@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Submit Anonymous Articleship Review - My Student Club</title>
+  <meta name="description" content="Share your anonymous CA articleship firm review on stipend, working hours, learning exposure, work culture, and leave support to guide fellow CA students.">
+  <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/scripts/portal-style.css">
+  <link rel="stylesheet" href="/articleship-review-wizard.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --font-main: 'Inter', system-ui, -apple-system, sans-serif !important;
+      --font-mono: 'JetBrains Mono', monospace !important;
+      --sr-navy-dark: #0d2452;
+      --sr-navy-light: #123063;
+      --sr-blue: #2563eb;
+      --sr-emerald: #059669;
+      --border-color: #e2e8f0;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      margin: 0 !important;
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
+      padding: 0 !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background: #ffffff;
+      color: #0f172a;
+      -webkit-font-smoothing: antialiased;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      height: 100vh;
+      width: 100vw;
+      padding: 0 !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+      margin: 0 !important;
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
+    }
+
+    @media (min-width: 1024px) {
+      body {
+        padding-top: 0 !important;
+        margin-top: 0 !important;
+      }
+      .site-header {
+        top: 0 !important;
+        margin-top: 0 !important;
+      }
+    }
+
+    /* ── Header Styling ──────────────────────────────────────────────── */
+    .site-header {
+      position: relative !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      margin: 0 !important;
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
+      padding-top: 0 !important;
+      width: 100%;
+      background: #ffffff !important;
+      border-bottom: 1px solid var(--border-color) !important;
+      z-index: 100;
+      flex-shrink: 0;
+    }
+    .header-container {
+      max-width: 100% !important;
+      padding: 0.75rem 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .brand-logo {
+      height: 32px !important;
+      width: auto !important;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .afd-header-pill-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.4rem 1rem;
+      font-family: var(--font-main);
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 99px;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      background: #eff6ff;
+      color: #2563eb;
+      border: 1px solid #bfdbfe;
+    }
+    .afd-header-pill-link:hover {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    /* ── Clean Sidemenu Styling ────────────────────────────────────────── */
+    .expanded-menu {
+      position: fixed !important;
+      top: 0 !important;
+      right: -320px !important;
+      width: 300px !important;
+      max-width: 85vw !important;
+      height: 100vh !important;
+      background: #ffffff !important;
+      box-shadow: -10px 0 30px rgba(15, 23, 42, 0.15) !important;
+      padding: 1.5rem 1.25rem !important;
+      padding-top: 4.5rem !important;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      z-index: 1001 !important;
+      overflow-y: auto !important;
+    }
+
+    .expanded-menu.active {
+      transform: translateX(-320px) !important;
+    }
+
+    .menu-close-btn {
+      position: absolute !important;
+      top: 1.25rem !important;
+      right: 1.25rem !important;
+      width: 36px !important;
+      height: 36px !important;
+      border-radius: 50% !important;
+      background: #f1f5f9 !important;
+      color: #64748b !important;
+      box-shadow: none !important;
+      border: 1px solid #e2e8f0 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      cursor: pointer !important;
+      transition: all 0.2s ease !important;
+    }
+
+    .menu-close-btn:hover {
+      background: #e2e8f0 !important;
+      color: #0f172a !important;
+      transform: rotate(90deg) !important;
+      box-shadow: none !important;
+    }
+
+    .menu-items-container {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 0.35rem !important;
+    }
+
+    .menu-item {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      gap: 0.85rem !important;
+      padding: 0.75rem 1rem !important;
+      color: #1e293b !important;
+      font-weight: 600 !important;
+      font-size: 0.925rem !important;
+      border-radius: 10px !important;
+      transition: all 0.2s ease !important;
+      text-decoration: none !important;
+      background: transparent !important;
+      border: none !important;
+      text-align: left !important;
+    }
+
+    .menu-item i {
+      font-size: 1.1rem !important;
+      width: 24px !important;
+      text-align: center !important;
+      flex-shrink: 0 !important;
+      margin-right: 0 !important;
+    }
+
+    .menu-item:hover {
+      background: #eff6ff !important;
+      color: #2563eb !important;
+    }
+
+    .menu-item:hover i {
+      color: #2563eb !important;
+    }
+
+    /* ── Main Layout (Desktop >= 1024px: 50/50 Split; Tablet & Mobile: Form Only) ── */
+    main.sr-two-col-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      height: 100%;
+      min-height: 0;
+      width: 100%;
+      overflow: auto;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    @media (min-width: 1024px) {
+      main.sr-two-col-layout {
+        grid-template-columns: 1fr 1fr; /* Exact 50/50 split on desktop */
+        overflow: hidden;
+      }
+      .sr-left-panel {
+        display: flex !important;
+      }
+    }
+
+    /* ── Left Column: Hero & Info Panel (Desktop Only) ───────────────── */
+    .sr-left-panel {
+      background:
+        radial-gradient(46% 90% at 82% -10%, rgba(96, 165, 250, 0.35), transparent 60%),
+        radial-gradient(52% 120% at -5% 115%, rgba(37, 99, 235, 0.45), transparent 62%),
+        linear-gradient(180deg, var(--sr-navy-light) 0%, var(--sr-navy-dark) 100%);
+      color: #ffffff;
+      padding: 2.75rem 3.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow-y: auto;
+      height: 100%;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    }
+
+    .sr-left-panel::-webkit-scrollbar {
+      width: 5px;
+    }
+    .sr-left-panel::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 99px;
+    }
+
+    .sr-left-content {
+      width: 100%;
+      max-width: 100%;
+      margin: auto 0;
+    }
+
+    .sr-hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.85rem;
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 99px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #60a5fa;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 1rem;
+    }
+
+    .sr-left-panel h1 {
+      font-size: clamp(1.65rem, 3vw, 2.35rem);
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 0.85rem;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+    }
+
+    .sr-left-panel p.sr-subtitle {
+      font-size: 0.975rem;
+      color: #cbd5e1;
+      line-height: 1.55;
+      margin-bottom: 1.75rem;
+      max-width: 640px;
+    }
+
+    .sr-feature-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+      margin-bottom: 1.5rem;
+    }
+    .sr-feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.85rem;
+    }
+    .sr-feature-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #60a5fa;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .sr-feature-text h4 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 0.2rem;
+    }
+    .sr-feature-text p {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+
+    /* ── Footer Lines Alignment across both 50/50 columns ───────────── */
+    .sr-left-footer,
+    .sr-right-footer {
+      width: 100%;
+      margin-top: auto !important;
+      padding-top: 1.25rem !important;
+      height: 3.5rem !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      box-sizing: border-box !important;
+    }
+
+    .sr-left-footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
+      width: 100%;
+      max-width: 100%;
+      gap: 1rem;
+      flex-wrap: nowrap;
+    }
+
+    .sr-left-footer-text {
+      font-size: 0.8rem;
+      color: #94a3b8;
+    }
+    .sr-browse-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.45rem 0.9rem;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .sr-browse-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+    }
+
+    .sr-right-footer {
+      border-top: 1px solid #f1f5f9 !important;
+      width: 100%;
+      max-width: 100%;
+      font-size: 0.775rem;
+      color: #94a3b8;
+    }
+
+    /* ── Right Column: Form Panel ────────────────────────────────────── */
+    .sr-right-panel {
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      overflow-y: auto;
+      height: 100%;
+      padding: 2.75rem 3.5rem 2rem;
+      scrollbar-width: thin;
+      scrollbar-color: #cbd5e1 transparent;
+    }
+
+    .sr-right-panel::-webkit-scrollbar {
+      width: 5px;
+    }
+    .sr-right-panel::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 99px;
+    }
+
+    .sr-form-wrapper {
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Tablet & Mobile Responsiveness (< 1024px) ───────────────────── */
+    @media (max-width: 1023px) {
+      html, body {
+        overflow: auto;
+        height: auto !important;
+        min-height: 100vh;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        background: #ffffff;
+      }
+      body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        height: auto !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+      }
+      .site-header {
+        position: relative !important;
+        top: 0 !important;
+        margin-top: 0 !important;
+      }
+      main.sr-two-col-layout {
+        grid-template-columns: 1fr;
+        overflow: visible;
+        height: auto !important;
+        min-height: 0 !important;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      .sr-left-panel {
+        display: none !important;
+      }
+      .sr-right-panel {
+        width: 100%;
+        padding: 1.25rem 1.25rem 1.5rem !important;
+        height: auto !important;
+        min-height: 0 !important;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: stretch;
+      }
+      .sr-form-wrapper {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      .sr-right-footer {
+        display: none !important;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .sr-right-panel {
+        padding: 0.85rem 1rem 1.25rem !important;
+      }
+      .header-container {
+        padding: 0.5rem 0.85rem;
+      }
+      .brand-logo {
+        height: 26px !important;
+      }
+      .afd-header-pill-link {
+        display: none;
+      }
+      .sr-right-footer {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="/" class="brand-link">
+        <img src="/assets/logo.png" alt="My Student Club" class="brand-logo">
+      </a>
+      <div class="nav-actions">
+        <a href="/ca-articleship-opportunities.html" class="afd-header-pill-link"><i class="fas fa-briefcase" style="margin-right:0.35rem;"></i> Job Portal</a>
+        <button class="icon-button menu-toggle-btn" id="menuButton" aria-label="Open menu">
+          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Expanded Sidemenu -->
+  <div class="expanded-menu" id="expandedMenu">
+    <button class="icon-button menu-close-btn" id="menuCloseBtn" aria-label="Close menu">
+      <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+    <div class="menu-items-container">
+      <a href="/articleship-firm-reviews.html" class="menu-item"><i class="fas fa-star" style="margin-right:0.5rem;color:#3b82f6;"></i> Articleship Firm Reviews</a>
+      <a href="/ca-articleship-opportunities.html" class="menu-item"><i class="fas fa-briefcase" style="margin-right:0.5rem;color:#3b82f6;"></i> Job Portal</a>
+      <a href="/articleship-program/" class="menu-item"><i class="fas fa-graduation-cap" style="margin-right:0.5rem;color:#3b82f6;"></i> MSC Articleship Program</a>
+      <a href="/ca-industrial-training-program/" class="menu-item"><i class="fas fa-building" style="margin-right:0.5rem;color:#3b82f6;"></i> MSC Industrial Training Program</a>
+      <a href="/" class="menu-item"><i class="fas fa-home" style="margin-right:0.5rem;color:#3b82f6;"></i> Home</a>
+    </div>
+  </div>
+
+  <!-- Main 50/50 Grid Section -->
+  <main class="sr-two-col-layout">
+    <!-- Left Hero Column (50%) -->
+    <div class="sr-left-panel">
+      <div class="sr-left-content">
+        <div class="sr-hero-badge">
+          <i class="fas fa-user-secret"></i> 100% Anonymous Review
+        </div>
+        <h1>Share Your CA Articleship Experience</h1>
+        <p class="sr-subtitle">Your honest feedback on stipend, working hours, leave support, and learning exposure guides thousands of future CA students.</p>
+
+        <div class="sr-feature-list">
+          <div class="sr-feature-item">
+            <div class="sr-feature-icon"><i class="fas fa-shield-halved"></i></div>
+            <div class="sr-feature-text">
+              <h4>Strict Identity Protection</h4>
+              <p>We do not store your name, email, or credentials. Your review remains 100% confidential.</p>
+            </div>
+          </div>
+          <div class="sr-feature-item">
+            <div class="sr-feature-icon"><i class="fas fa-bolt"></i></div>
+            <div class="sr-feature-text">
+              <h4>Quick 4-Step Wizard</h4>
+              <p>Takes less than 2 minutes to rate your firm's stipend, culture, and domain exposure.</p>
+            </div>
+          </div>
+          <div class="sr-feature-item">
+            <div class="sr-feature-icon"><i class="fas fa-floppy-disk"></i></div>
+            <div class="sr-feature-text">
+              <h4>Auto-Saved Progress</h4>
+              <p>Work saved locally in your browser so you can resume whenever convenient.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sr-left-footer">
+        <span class="sr-left-footer-text">Built for CA Students & Aspirants</span>
+        <a href="/articleship-firm-reviews.html" class="sr-browse-btn"><i class="fas fa-arrow-right"></i> Browse All Reviews</a>
+      </div>
+    </div>
+
+    <!-- Right Form Column (50%) -->
+    <div class="sr-right-panel">
+      <div class="sr-form-wrapper">
+        <div id="review-wizard-container"></div>
+      </div>
+      <div class="sr-right-footer">
+        <span><i class="fas fa-lock" style="color:#10b981;margin-right:0.35rem;"></i> 100% Encrypted & Anonymous</span>
+        <span>Step-by-step submission</span>
+      </div>
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script src="/articleship-review-wizard.js"></script>
+  <script>
+    const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+    // Navigation Menu Drawer Logic
+    const menuButton = document.getElementById('menuButton');
+    const expandedMenu = document.getElementById('expandedMenu');
+    const menuCloseBtn = document.getElementById('menuCloseBtn');
+    if (menuButton && expandedMenu) {
+      menuButton.addEventListener('click', () => expandedMenu.classList.add('active'));
+    }
+    if (menuCloseBtn && expandedMenu) {
+      menuCloseBtn.addEventListener('click', () => expandedMenu.classList.remove('active'));
+    }
+    document.addEventListener('click', (e) => {
+      if (expandedMenu && expandedMenu.classList.contains('active') &&
+          !expandedMenu.contains(e.target) && !menuButton.contains(e.target)) {
+        expandedMenu.classList.remove('active');
+      }
+    });
+
+    // Parse URL query parameters to pre-fill firm details if navigated with ?firm=Name or ?firm_id=UUID
+    const urlParams = new URLSearchParams(window.location.search);
+    const firmNameParam = urlParams.get('firm') || urlParams.get('firm_name') || '';
+    const firmIdParam = urlParams.get('firm_id') || '';
+
+    // Initialize Review Wizard inline into the right column container
+    ArticleshipReviewWizard.init(supabaseClient, {
+      container: '#review-wizard-container',
+      firmName: firmNameParam,
+      firmId: firmIdParam,
+      autoOpen: true
+    });
+  </script>
+</body>
+</html>

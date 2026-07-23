@@ -408,7 +408,7 @@ function renderJobCard(job) {
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="11" height="11"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                 ${job.Location || "N/A"}
             </span>
-            <span class="job-tag job-tag-exp"><i class="far fa-clock"></i> ${job.Experience || "0–2 Years"}</span>
+            ${job.Experience ? `<span class="job-tag job-tag-exp"><i class="far fa-clock"></i> ${job.Experience}</span>` : ""}
             <span class="job-tag tag-primary"><i class="fas fa-briefcase"></i> ${primaryDomain}</span>
             ${companyType ? `<span class="job-tag"><i class="fas fa-building"></i> ${companyType}</span>` : ""}
             ${firmType ? `<span class="job-tag"><i class="fas fa-file-alt"></i> ${firmType}</span>` : ""}

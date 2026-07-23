@@ -563,11 +563,49 @@
         color: rgba(11, 27, 51, 0.12);
       }
 
+      .afd-hero-rating-count {
+        margin-top: 0.4rem;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--h-navy-500);
+      }
+
       .afd-hero-panel-div {
         margin: 1.25rem 0;
         height: 1px;
         background: var(--h-line);
       }
+
+      .afd-hero-limited {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+        margin: -0.35rem 0 1.1rem;
+        padding: 0.65rem 0.8rem;
+        background: #fff7ed;
+        border: 1px solid #fed7aa;
+        border-radius: 10px;
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 1.45;
+        color: #9a3412;
+      }
+      .afd-hero-limited i { color: #ea580c; margin-top: 1px; }
+
+      .afd-legal-disclaimer {
+        max-width: 1500px;
+        margin: 1.75rem auto 2.25rem;
+        padding: 0.85rem 1rem;
+        background: #f8fafc;
+        border: 1px solid var(--h-line);
+        border-radius: 12px;
+        font-size: 11.5px;
+        line-height: 1.55;
+        color: var(--h-navy-500);
+        text-align: left;
+      }
+      .afd-legal-disclaimer i { color: var(--h-brand-600); margin-right: 0.35rem; }
+      .afd-legal-disclaimer a { color: var(--h-brand-600); font-weight: 600; text-decoration: underline; }
 
       .afd-hero-panel-grid {
         display: grid;
@@ -879,7 +917,7 @@
       }
 
       .afd-similar-section .afd-section-title::before {
-        content: "03 \2014  Similar Firms";
+        content: "03 \2014  Explore More Firms";
         font-family: var(--h-mono);
         font-size: 10px;
         font-weight: 700;
@@ -1131,7 +1169,8 @@
       .afd-review-info-pill.hours-pill i {
         color: var(--h-brand-600);
       }
-      .afd-review-info-pill.industrial-pill i {
+      .afd-review-info-pill.industrial-pill i,
+      .afd-review-info-pill.travel-pill i {
         color: #7c3aed;
         background: #f5f3ff;
       }
@@ -1596,6 +1635,7 @@
       .afd-similar-rating-big.good { color: var(--h-emerald-600); }
       .afd-similar-rating-big.mid  { color: var(--h-amber-600); }
       .afd-similar-rating-big.bad  { color: var(--h-rose-600); }
+      .afd-similar-rating-big.muted { color: #94a3b8; }
       .afd-similar-rating-stars {
         color: var(--h-amber-400);
         font-size: 0.58rem;
@@ -1622,6 +1662,25 @@
         border-radius: 12px;
         padding: 0.65rem 0.25rem;
       }
+      .afd-similar-scorecard.afd-similar-scorecard-muted {
+        grid-template-columns: 1fr;
+        align-items: center;
+        justify-items: center;
+        min-height: 52px;
+      }
+      .afd-similar-nodata {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        color: #94a3b8;
+        font-size: 0.72rem;
+        font-weight: 600;
+        text-align: center;
+        line-height: 1.35;
+        padding: 0 0.5rem;
+      }
+      .afd-similar-nodata i { color: #cbd5e1; }
       .afd-similar-score-col {
         display: flex;
         flex-direction: column;
@@ -2306,11 +2365,17 @@
           <div id="afd-pagination" class="afd-pagination" aria-label="Reviews pagination" style="display:none;"></div>
         </section>
 
-        <!-- Similar Firms Section -->
+        <!-- Explore More Firms Section -->
         <section class="afd-similar-section" id="afd-similar-section">
-          <h3 class="afd-section-title">Similar Firms</h3>
+          <h3 class="afd-section-title">Explore More Firms</h3>
           <div class="afd-similar-grid" id="afd-similar-grid"></div>
         </section>
+
+        <!-- Safe-harbour disclaimer -->
+        <p class="afd-legal-disclaimer">
+          <i class="fas fa-circle-info"></i>
+          Reviews are anonymous, user-submitted personal opinions and do not represent the views of My Student Club. As an intermediary we only host user-generated content and are not responsible for its accuracy; reported reviews are examined and removed if they breach our <a href="#" id="afd-guidelines-link">Review Guidelines</a>.
+        </p>
 
         <!-- CTA Section -->
         <section class="afd-section-cta" id="contribute">
@@ -2470,6 +2535,7 @@
       }
 
       let CURRENT_FIRM_ID = null;
+      let CURRENT_FIRM_CITY = null;
 
       async function loadFirmPage() {
         document.getElementById("afd-loading-state").innerHTML =
@@ -2486,6 +2552,7 @@
           if (error) throw error;
 
           CURRENT_FIRM_ID = reviews[0]?.firm_id || null;
+          CURRENT_FIRM_CITY = reviews[0]?.location || null;
 
           document.getElementById("afd-loading-state").style.display = "none";
           document.getElementById("afd-layout").style.display = "flex";
@@ -2555,14 +2622,18 @@
           return top ? L[col][top[0]] : null;
         };
 
+        // Below this many reviews, derived stats read as unreliable — show a muted state.
+        const MIN_REVIEWS_FOR_STATS = 5;
+        const enoughData = reviews.length >= MIN_REVIEWS_FOR_STATS;
+
         const ratingText = overallAvg ? overallAvg.toFixed(1) : "—";
-        const recText = recommendPct !== null ? recommendPct + "%" : "—";
-        const stipendText = avgStipend
+        const recText = enoughData && recommendPct !== null ? recommendPct + "%" : "—";
+        const stipendText = enoughData && avgStipend
           ? avgStipend >= 1000
             ? "₹" + (avgStipend / 1000).toFixed(1).replace(".0", "") + "k"
             : "₹" + avgStipend
           : "—";
-        const hoursText = modeOf("working_hours") || "—";
+        const hoursText = enoughData ? (modeOf("working_hours") || "—") : "—";
 
         // Recommend rate dial logic (circumference = 2 * PI * r)
         const dialRadius = 28;
@@ -2691,14 +2762,14 @@
               <div class="afd-hero-eyebrow">
                 <span class="idx">MSC</span>
                 <span class="rule"></span>
-                <span class="txt">Anonymous report · Verified</span>
+                <span class="txt">Anonymous report</span>
               </div>
 
               <h1 class="afd-hero-name">${escapeHTML(FIRM_NAME)}<span class="dot-b">.</span></h1>
 
               <div class="afd-hero-meta-pills">
                 <span class="afd-hero-pill"><i class="fas fa-location-dot"></i> ${escapeHTML(location)}</span>
-                <span class="afd-hero-pill verified"><i class="fas fa-shield-halved"></i> ${reviews.length} Verified Reviews</span>
+                <span class="afd-hero-pill verified"><i class="fas fa-user-secret"></i> ${reviews.length} Anonymous Review${reviews.length !== 1 ? "s" : ""}</span>
                 <span class="afd-hero-pill"><i class="fas fa-graduation-cap"></i> Articleship Seat</span>
               </div>
 
@@ -2726,6 +2797,7 @@
                       <span class="num">${ratingText}</span>
                       <span class="of">/ 5</span>
                     </div>
+                    <p class="afd-hero-rating-count">${reviews.length} review${reviews.length !== 1 ? "s" : ""}</p>
                   </div>
                   <div class="afd-hero-stars">
                     ${starRatingHTML}
@@ -2733,6 +2805,7 @@
                 </div>
 
                 <div class="afd-hero-panel-div"></div>
+                ${!enoughData ? `<div class="afd-hero-limited"><i class="fas fa-circle-info"></i> Limited data — based on ${reviews.length} review${reviews.length !== 1 ? "s" : ""}. Treat these numbers as indicative until more students review this firm.</div>` : ""}
 
                 <div class="afd-hero-panel-grid">
                   <!-- Recommend rate card -->
@@ -2861,7 +2934,7 @@
                   : '';
 
             const stipendText = r.stipend != null
-              ? `₹${Number(r.stipend).toLocaleString('en-IN')}/mo`
+              ? `₹${Number(r.stipend).toLocaleString('en-IN')}/mo${r.stipend_year ? ' · ' + r.stipend_year : ''}`
               : '—';
 
             let stipendDelayText = 'Timeliness not reported';
@@ -2888,14 +2961,36 @@
               }
             }
 
-            let indTrainingText = 'Not reported';
-            let indTrainingColor = '#94a3b8';
-            if (r.allow_industrial_training) {
+            let travelValText = 'Not reported';
+            let travelStatusText = 'Travel policy';
+            let travelStatusColor = '#94a3b8';
+            let travelLblText = 'Outstation Travel';
+            let travelIcon = 'fas fa-plane-departure';
+
+            if (r.outstation_travel) {
+              const text = L.outstation_travel[r.outstation_travel] || r.outstation_travel;
+              travelValText = text;
+              const raw = String(r.outstation_travel).toLowerCase();
+              if (raw.includes('never')) {
+                travelStatusText = 'Local clients only';
+                travelStatusColor = '#16a34a';
+              } else if (raw.includes('occasionally') || raw.includes('occasional')) {
+                travelStatusText = 'Some audit travel';
+                travelStatusColor = '#d97706';
+              } else if (raw.includes('frequently') || raw.includes('frequent')) {
+                travelStatusText = 'High travel';
+                travelStatusColor = '#dc2626';
+              }
+            } else if (r.allow_industrial_training) {
+              // Fallback for older reviews that only reported industrial training
               const text = L.allow_industrial_training[r.allow_industrial_training];
               if (text) {
-                indTrainingText = text;
+                travelValText = text;
+                travelLblText = 'Industrial Training';
+                travelIcon = 'fas fa-graduation-cap';
+                travelStatusText = 'Policy';
                 const lower = text.toLowerCase();
-                indTrainingColor = lower.includes('yes') ? '#16a34a' : lower.includes('no') ? '#dc2626' : '#d97706';
+                travelStatusColor = lower.includes('yes') ? '#16a34a' : lower.includes('no') ? '#dc2626' : '#d97706';
               }
             }
 
@@ -2926,6 +3021,20 @@
                 <span class="afd-review-testimonial-label">Overall Experience</span>
                 <p class="${textClass}">"${escapeHTML(r.review_text)}"</p>
                 ${btnHTML}
+              </div>`;
+            }
+
+            let firmResponseHTML = '';
+            if (r.firm_response) {
+              firmResponseHTML = `
+              <div class="afd-firm-response-box" style="margin: 0.85rem 0; padding: 0.85rem 1rem; background: #f8fafc; border-left: 3.5px solid #2563eb; border-radius: 10px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.4rem;">
+                  <span style="font-size:0.75rem;font-weight:700;color:#1e40af;text-transform:uppercase;letter-spacing:0.05em;display:inline-flex;align-items:center;gap:0.4rem;">
+                    <i class="fas fa-building-user"></i> Official Firm Response
+                  </span>
+                  <span style="font-size:0.7rem;color:#64748b;">${r.firm_response_at ? relTime(r.firm_response_at) : ''}</span>
+                </div>
+                <p style="font-size:0.85rem;color:#334155;line-height:1.5;margin:0;">"${escapeHTML(r.firm_response)}"</p>
               </div>`;
             }
 
@@ -2963,22 +3072,23 @@
                   <span class="afd-review-info-pill-sub" style="color:${hoursStatusColor};">${escapeHTML(hoursStatusText)}</span>
                 </div>
               </div>
-              <div class="afd-review-info-pill industrial-pill">
-                <i class="fas fa-graduation-cap"></i>
+              <div class="afd-review-info-pill travel-pill">
+                <i class="${travelIcon}"></i>
                 <div class="afd-review-info-pill-content">
-                  <span class="afd-review-info-pill-lbl">Industrial Training</span>
-                  <span class="afd-review-info-pill-val" style="color:${indTrainingColor};">${escapeHTML(indTrainingText)}</span>
+                  <span class="afd-review-info-pill-lbl">${escapeHTML(travelLblText)}</span>
+                  <span class="afd-review-info-pill-val">${escapeHTML(travelValText)}</span>
+                  <span class="afd-review-info-pill-sub" style="color:${travelStatusColor};">${escapeHTML(travelStatusText)}</span>
                 </div>
               </div>
             </div>
 
             ${tagsSectionHTML}
+            ${firmResponseHTML}
 
             <div class="afd-review-footer">
               ${recHTML}
               <div class="afd-review-actions-right">
                 <button type="button" class="afd-report-btn" onclick="openAfdReportModal('${r.id}')"><i class="far fa-flag"></i> Report</button>
-                <span class="afd-review-verified-badge"><i class="fas fa-shield-halved"></i> Verified Review</span>
               </div>
             </div>
           </div>`;
@@ -3068,6 +3178,15 @@
         });
       }
 
+      // Safe-harbour disclaimer → open Review Guidelines overlay
+      const afdGuidelinesLink = document.getElementById('afd-guidelines-link');
+      if (afdGuidelinesLink) {
+        afdGuidelinesLink.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (ArticleshipReviewWizard.openGuidelines) ArticleshipReviewWizard.openGuidelines();
+        });
+      }
+
       async function loadSimilarFirms() {
         try {
           const { data: allRecs, error } = await supabaseClient
@@ -3109,8 +3228,14 @@
             };
           });
 
-          // Sort by review count and rating
-          firms.sort((a, b) => b.reviewsCount - a.reviewsCount || b.rating - a.rating);
+          // Prefer firms in the same city, then more reviews, then higher rated.
+          const norm = (s) => String(s || "").trim().toLowerCase();
+          const cur = norm(CURRENT_FIRM_CITY);
+          firms.sort((a, b) => {
+            const aCity = cur && norm(a.location) === cur ? 1 : 0;
+            const bCity = cur && norm(b.location) === cur ? 1 : 0;
+            return (bCity - aCity) || (b.reviewsCount - a.reviewsCount) || (b.rating - a.rating);
+          });
 
           // Take top 4
           const top4 = firms.slice(0, 4);
@@ -3132,11 +3257,14 @@
           return;
         }
 
+        const MIN_REVIEWS = 5;
+
         grid.innerHTML = firms
           .map((f) => {
             const color = firmColor(f.name);
             const initial = f.name.trim()[0].toUpperCase();
-            const tierClass = f.rating >= 4 ? 'good' : f.rating >= 3 ? 'mid' : 'bad';
+            const enough = f.reviewsCount >= MIN_REVIEWS;
+            const tierClass = enough ? (f.rating >= 4 ? 'good' : f.rating >= 3 ? 'mid' : 'bad') : 'muted';
             const starsHTMLStr = f.rating ? starsHTML(f.rating) : "";
             
             const recommendVal = f.recommend !== null ? f.recommend + "%" : "—";
@@ -3146,6 +3274,25 @@
               ? "₹" + (f.stipend >= 1000 ? (f.stipend / 1000).toFixed(1).replace(".0", "") + "k" : f.stipend)
               : "—";
             const stipendTier = f.stipend >= 8000 ? 'good' : f.stipend >= 5000 ? 'mid' : 'bad';
+
+            const scorecardHTML = enough ? `
+              <div class="afd-similar-scorecard">
+                <div class="afd-similar-score-col">
+                  <span class="afd-similar-score-val ${f.stipend ? stipendTier : 'na'}">${stipendVal}</span>
+                  <span class="afd-similar-score-lbl">Stipend</span>
+                </div>
+                <div class="afd-similar-score-col">
+                  <span class="afd-similar-score-val ${f.recommend !== null ? recommendTier : 'na'}">${recommendVal}</span>
+                  <span class="afd-similar-score-lbl">Recommend</span>
+                </div>
+                <div class="afd-similar-score-col">
+                  <span class="afd-similar-score-val" style="color: #6366f1;">${f.reviewsCount}</span>
+                  <span class="afd-similar-score-lbl">Reviews</span>
+                </div>
+              </div>` : `
+              <div class="afd-similar-scorecard afd-similar-scorecard-muted">
+                <span class="afd-similar-nodata"><i class="fas fa-circle-info"></i> Not enough data yet — needs more reviews for reliable stats</span>
+              </div>`;
 
             return `
             <a href="/articleship-firm-review.html?firm=${encodeURIComponent(f.name)}" class="afd-similar-card" style="--card-color: ${color}">
@@ -3160,23 +3307,10 @@
                 <div class="afd-similar-rating-block">
                   <span class="afd-similar-rating-big ${tierClass}">${f.rating ? f.rating.toFixed(1) : "—"}</span>
                   <div class="afd-similar-rating-stars">${starsHTMLStr}</div>
-                  <span class="afd-similar-rating-label">Rating</span>
+                  <span class="afd-similar-rating-label">${f.reviewsCount} review${f.reviewsCount !== 1 ? 's' : ''}</span>
                 </div>
               </div>
-              <div class="afd-similar-scorecard">
-                <div class="afd-similar-score-col">
-                  <span class="afd-similar-score-val ${f.stipend ? stipendTier : 'na'}">${stipendVal}</span>
-                  <span class="afd-similar-score-lbl">Stipend</span>
-                </div>
-                <div class="afd-similar-score-col">
-                  <span class="afd-similar-score-val ${f.recommend !== null ? recommendTier : 'na'}">${recommendVal}</span>
-                  <span class="afd-similar-score-lbl">Recommend</span>
-                </div>
-                <div class="afd-similar-score-col">
-                  <span class="afd-similar-score-val" style="color: #6366f1;">${f.reviewsCount}</span>
-                  <span class="afd-similar-score-lbl">Reviews</span>
-                </div>
-              </div>
+              ${scorecardHTML}
               <div class="afd-similar-footer">
                 <span class="afd-similar-reviews-count">
                   <i class="far fa-comment-alt"></i> ${f.reviewsCount} review${f.reviewsCount !== 1 ? "s" : ""}
@@ -3253,7 +3387,7 @@
               setReportStatus('Please specify your reason for reporting.', 'err');
               return;
             }
-            finalReason = customText;
+            finalReason = 'Other: ' + customText;
           }
 
           const submitBtn = e.target.querySelector('.afd-btn-modal-submit');

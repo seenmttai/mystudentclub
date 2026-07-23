@@ -35,6 +35,55 @@
   const DEVICE_KEY = 'afr_device_token';
   const DRAFT_TTL_MS = 24 * 60 * 60 * 1000;
 
+  // ── Validation / anti-abuse config ────────────────────────────────────
+  const MIN_WORDS = 30;
+  const MAX_WORDS = 500;
+  const STIPEND_MAX = 50000;
+  const STIPEND_YEAR_MIN = 2019;
+  const MIN_SUBMIT_MS = 4000; // a fresh form submitted faster than this ⇒ treat as a bot
+
+  // Unverifiable allegations we refuse to publish (whole-word, case-insensitive).
+  const ALLEGATION_WORDS = ['fraud', 'fraudulent', 'scam', 'scamster', 'cheat', 'cheated', 'cheating', 'bribe', 'bribery', 'corrupt', 'corruption', 'harass', 'harassed', 'harassment', 'molest', 'molested', 'molestation', 'illegal', 'launder', 'laundering', 'embezzle', 'embezzled', 'embezzlement', 'forgery', 'forged', 'criminal', 'theft', 'stole', 'stolen', 'rape', 'raped', 'casteist', 'casteism', 'racist', 'racism', 'pervert', 'predator'];
+  const ALLEGATION_RE = new RegExp('\\b(' + ALLEGATION_WORDS.join('|') + ')\\b', 'i');
+  // Honorific + a capitalised word ⇒ names a specific person. CA/Adv share a course-term stoplist.
+  const HONORIFIC_RE = /\b(mr|mrs|ms|miss|shri|smt|dr)\b\.?\s+([A-Za-z][a-z]{1,})/gi;
+  const TITLE_RE = /\b(ca|adv|advocate)\b\.?\s+([A-Z][a-z]{2,})/;
+  const TITLE_STOPWORDS = new Set(['final', 'inter', 'intermediate', 'foundation', 'firm', 'firms', 'course', 'courses', 'exam', 'exams', 'article', 'articles', 'articleship', 'student', 'students', 'result', 'results', 'institute', 'curriculum', 'syllabus', 'practice', 'profession', 'professional', 'fresher', 'freshers', 'aspirant', 'aspirants']);
+
+  function wordCount(s) {
+    return String(s || '').trim().split(/\s+/).filter(Boolean).length;
+  }
+  // Best-effort personal-name detector (backstop is the consent checkbox).
+  function namesIndividual(t) {
+    let m;
+    HONORIFIC_RE.lastIndex = 0;
+    while ((m = HONORIFIC_RE.exec(t)) !== null) {
+      const name = m[2];
+      if (name[0] === name[0].toUpperCase()) return true; // honorific + Capitalised ⇒ a name
+    }
+    const title = t.match(TITLE_RE);
+    return !!(title && !TITLE_STOPWORDS.has(title[2].toLowerCase()));
+  }
+  // Returns { ok, message } for the free-text review body.
+  function validateReviewText(text) {
+    const t = String(text || '').trim();
+    const words = wordCount(t);
+    if (words < MIN_WORDS) {
+      return { ok: false, message: `Please write at least ${MIN_WORDS} words so your review is useful to others (currently ${words}).` };
+    }
+    if (words > MAX_WORDS) {
+      return { ok: false, message: `Your review must not exceed ${MAX_WORDS} words.` };
+    }
+    const alleg = t.match(ALLEGATION_RE);
+    if (alleg) {
+      return { ok: false, message: `Please remove "${alleg[1]}". We can't publish unverifiable allegations — describe what happened factually instead.` };
+    }
+    if (namesIndividual(t)) {
+      return { ok: false, message: `Please don't name individuals. Remove personal names and refer to the role instead (e.g., "the principal", "a senior").` };
+    }
+    return { ok: true, message: '' };
+  }
+
   let sb = null;
   let onComplete = null;
   let modal = null;
@@ -96,11 +145,88 @@
     if (el) { el.textContent = msg || ''; el.className = 'arw-status' + (cls ? ' ' + cls : ''); }
   }
 
-  // ── Modal shell ───────────────────────────────────────────────────────
+  // ── Guidelines & safe-harbour disclaimer overlay ──────────────────────
+  function openGuidelines() {
+    let ov = document.getElementById('arw-guidelines-overlay');
+    if (!ov) {
+      ov = document.createElement('div');
+      ov.id = 'arw-guidelines-overlay';
+      ov.className = 'arw-guidelines-overlay';
+      ov.innerHTML = `
+        <div class="arw-guidelines-card" role="dialog" aria-modal="true" aria-labelledby="arw-guidelines-title">
+          <button type="button" class="arw-guidelines-close" aria-label="Close">&times;</button>
+          <h3 id="arw-guidelines-title"><i class="fas fa-scale-balanced"></i> Review Guidelines &amp; Disclaimer</h3>
+          <p class="arw-guidelines-lead">Reviews are anonymous, first-hand opinions meant to help fellow CA students. Please keep them fair and factual.</p>
+          <div class="arw-guidelines-cols">
+            <div>
+              <h4 class="ok"><i class="fas fa-circle-check"></i> Please do</h4>
+              <ul>
+                <li>Share your own genuine experience at the firm.</li>
+                <li>Be specific about stipend, hours, learning and culture.</li>
+                <li>Describe roles ("the principal", "a senior") — not people.</li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="no"><i class="fas fa-circle-xmark"></i> Please don't</h4>
+              <ul>
+                <li>Name individuals or partners.</li>
+                <li>Make unverifiable allegations (fraud, harassment, etc.).</li>
+                <li>Post hearsay, abuse, or anything you can't stand behind.</li>
+              </ul>
+            </div>
+          </div>
+          <p class="arw-guidelines-disclaimer"><i class="fas fa-circle-info"></i> Reviews express the personal opinions of anonymous contributors, not those of My Student Club. As an intermediary we host user-generated content and are not liable for it; reported reviews are examined and removed if they breach these guidelines.</p>
+          <button type="button" class="arw-btn-primary arw-guidelines-got">Got it</button>
+        </div>`;
+      document.body.appendChild(ov);
+      const closeOv = () => ov.classList.remove('active');
+      ov.querySelector('.arw-guidelines-close').addEventListener('click', closeOv);
+      ov.querySelector('.arw-guidelines-got').addEventListener('click', closeOv);
+      ov.addEventListener('click', e => { if (e.target === ov) closeOv(); });
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && ov.classList.contains('active')) closeOv();
+      });
+    }
+    ov.classList.add('active');
+  }
+
+  let isInline = false;
+
+  // ── Modal / Inline shell ──────────────────────────────────────────────
   function init(client, opts = {}) {
     sb = client;
     onComplete = opts.onComplete || null;
     if (modal) return;
+
+    if (opts.container) {
+      isInline = true;
+      const target = typeof opts.container === 'string' ? document.querySelector(opts.container) : opts.container;
+      if (target) {
+        modal = document.createElement('div');
+        modal.id = 'arw-inline-container';
+        modal.className = 'arw-inline-wrapper active';
+        modal.innerHTML = `
+          <div class="arw-card arw-inline-card" role="region" aria-label="Review Submission Form">
+            <div class="arw-header">
+              <div>
+                <h2 id="arw-title">Share Your Anonymous Review</h2>
+                <p class="arw-anon"><i class="fas fa-user-secret"></i> 100% anonymous — we never collect anything that identifies you</p>
+              </div>
+            </div>
+            <div class="arw-progress" hidden>
+              <div class="arw-progress-label"><span id="arw-progress-text"></span></div>
+              <div class="arw-progress-track"><div class="arw-progress-fill" id="arw-progress-fill"></div></div>
+            </div>
+            <div class="arw-body" id="arw-body"></div>
+          </div>`;
+        target.appendChild(modal);
+        if (opts.autoOpen !== false) {
+          open(opts);
+        }
+        return;
+      }
+    }
+
     modal = document.createElement('div');
     modal.id = 'arw-modal';
     modal.setAttribute('aria-hidden', 'true');
@@ -139,7 +265,7 @@
   function open(opts = {}) {
     if (!modal) throw new Error('ArticleshipReviewWizard.init() must be called first.');
     lastFocused = document.activeElement;
-    const draft = loadDraft();
+    const draft = opts.forceNew ? null : loadDraft();
     const wantsFirm = opts.firmId || null;
     // Resume rules: with a firm id or firm name match, resume draft.
     const firmMatches = draft && (
@@ -170,6 +296,7 @@
   }
 
   function close() {
+    if (isInline) return;
     modal.classList.remove('active');
     modal.setAttribute('aria-hidden', 'true');
     if (lastFocused && lastFocused.focus) lastFocused.focus();
@@ -259,28 +386,39 @@
     const body = document.getElementById('arw-body');
     body.innerHTML = `
       <form id="arw-step1">
-        <div class="arw-field arw-firm-wrap">
-          <label for="arw-firm">Firm Name <span style="color:#dc2626">*</span></label>
-          <input id="arw-firm" autocomplete="off" placeholder="Start typing your firm's name…" value="${esc(state.firmName)}">
-          <div class="arw-firm-results" id="arw-firm-results" hidden></div>
-        </div>
-        <div class="arw-field arw-location-wrap">
-          <label for="arw-location">Office Location <span style="color:#dc2626">*</span></label>
-          <input id="arw-location" autocomplete="off" placeholder="e.g., Mumbai">
-          <div class="arw-location-results" id="arw-location-results" hidden></div>
+        <div class="arw-grid-2">
+          <div class="arw-field arw-firm-wrap">
+            <label for="arw-firm">Firm Name <span style="color:#dc2626">*</span></label>
+            <input id="arw-firm" autocomplete="off" placeholder="Start typing your firm's name…" value="${esc(state.firmName)}">
+            <div class="arw-firm-results" id="arw-firm-results" hidden></div>
+          </div>
+          <div class="arw-field arw-location-wrap">
+            <label for="arw-location">Office Location <span style="color:#dc2626">*</span></label>
+            <input id="arw-location" autocomplete="off" placeholder="e.g., Mumbai">
+            <div class="arw-location-results" id="arw-location-results" hidden></div>
+          </div>
         </div>
         <div class="arw-field" style="position: relative;">
           <label for="arw-review">Anonymous Review <span style="color:#dc2626">*</span></label>
-          <textarea id="arw-review" rows="3" placeholder="Example: &quot;Great learning exposure in statutory audit. Working hours are standard (9-7 PM) but can stretch during tax season. Partners are approachable. Stipend is paid on time, and leaves for exams are supported.&quot;"></textarea>
-          <div id="arw-char-counter" style="font-size: 11px; color: #64748b; text-align: right; margin-top: 0.25rem; font-family: monospace;">0 / 500 words · 0 characters</div>
+          <textarea id="arw-review" rows="4" placeholder="Example: &quot;Great learning exposure in statutory audit. Working hours are standard (9-7 PM) but can stretch during tax season. Partners are approachable. Stipend is paid on time, and leaves for exams are supported.&quot;"></textarea>
+          <div id="arw-char-counter" style="font-size: 11px; color: #64748b; text-align: right; margin-top: 0.35rem; font-family: monospace;">0 / ${MIN_WORDS} words minimum</div>
         </div>
         <div class="arw-field">
           <label>Overall Rating <span style="color:#dc2626">*</span></label>
           <div class="arw-stars arw-stars-lg" id="arw-overall"></div>
         </div>
+        <!-- Honeypot: hidden from humans; bots that fill it are silently dropped. -->
+        <div class="arw-hp" aria-hidden="true">
+          <label for="arw-hp-field">Company website</label>
+          <input id="arw-hp-field" type="text" name="company_url" tabindex="-1" autocomplete="off">
+        </div>
+        <label class="arw-consent">
+          <input type="checkbox" id="arw-consent">
+          <span>I confirm this is my own genuine experience, it names no individuals and contains no unverifiable allegations, and I accept the <button type="button" class="arw-guidelines-link" id="arw-guidelines-open">Review Guidelines</button>.</span>
+        </label>
         <p class="arw-status" id="arw-status" role="status"></p>
         <div class="arw-step-footer">
-          <button type="submit" class="arw-btn-primary"><i class="fas fa-paper-plane"></i> Submit Anonymous Review</button>
+          <button type="submit" class="arw-btn-primary" id="arw-step1-submit"><i class="fas fa-paper-plane"></i> Submit Anonymous Review</button>
         </div>
       </form>`;
 
@@ -305,11 +443,13 @@
     }
 
     function autoSaveStep1() {
+      const consentEl = document.getElementById('arw-consent');
       state.savedData = Object.assign({}, state.savedData, {
         firmName: firmInput.value,
         location: locInput.value,
         reviewText: reviewTextarea.value,
         overallRating: Number(overallStars.dataset.value) || 0,
+        consent: consentEl ? consentEl.checked : false,
       });
       state.firmName = firmInput.value;
       saveDraft();
@@ -353,42 +493,62 @@
       });
     }
 
+    // Time-trap: remember when a *fresh* form appeared. Resumed drafts skip the check.
+    state.step1RenderedAt = Date.now();
+    state.step1WasFresh = !(saved.reviewText && saved.reviewText.trim());
+
+    const consentBox = document.getElementById('arw-consent');
+    const submitBtn = document.getElementById('arw-step1-submit');
+    if (saved.consent) consentBox.checked = true;
+
+    function refreshSubmitState() {
+      const words = wordCount(reviewTextarea.value);
+      const ready = words >= MIN_WORDS && consentBox.checked;
+      submitBtn.disabled = !ready;
+    }
     function updateCounter() {
-      const val = reviewTextarea.value;
-      const characters = val.length;
-      const words = val.trim().split(/\s+/).filter(Boolean).length;
-      counterDiv.textContent = `${words} / 500 words · ${characters} characters`;
-      if (words > 500) {
+      const words = wordCount(reviewTextarea.value);
+      if (words > MAX_WORDS) {
+        counterDiv.textContent = `${words} / ${MAX_WORDS} words — too long`;
         counterDiv.style.color = '#dc2626';
         counterDiv.style.fontWeight = '700';
+      } else if (words < MIN_WORDS) {
+        counterDiv.textContent = `${words} / ${MIN_WORDS} words minimum`;
+        counterDiv.style.color = '#dc2626';
+        counterDiv.style.fontWeight = '600';
       } else {
-        counterDiv.style.color = '#64748b';
-        counterDiv.style.fontWeight = 'normal';
+        counterDiv.textContent = `${words} words · looks good`;
+        counterDiv.style.color = '#16a34a';
+        counterDiv.style.fontWeight = '600';
       }
     }
     reviewTextarea.addEventListener('input', () => {
       updateCounter();
+      refreshSubmitState();
       autoSaveStep1();
     });
+    consentBox.addEventListener('change', () => {
+      refreshSubmitState();
+      autoSaveStep1();
+    });
+    const guidelinesOpen = document.getElementById('arw-guidelines-open');
+    if (guidelinesOpen) guidelinesOpen.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); openGuidelines(); });
     updateCounter();
+    refreshSubmitState();
 
-    const fixedCities = ["Mumbai", "Delhi", "Gurgaon", "Noida", "Bangalore", "Pune", "Kolkata", "Chennai", "Hyderabad", "Ahmedabad", "Jaipur"];
+    // City autocomplete — debounced search_cities RPC (mirrors firm autocomplete)
+    let locDebounce = null;
 
-    function renderLocResults() {
-      const q = locInput.value.trim();
-      const normQ = normName(q);
-      const matches = fixedCities.filter(c => normName(c).includes(normQ));
-      const exact = matches.some(c => normName(c) === normQ);
-      
-      let html = matches.map(c => `<button type="button" class="arw-location-item" data-name="${esc(c)}">${esc(c)}</button>`).join('');
+    function renderLocItems(items, q) {
+      const exact = items.some(c => normName(c.name) === normName(q));
+      let html = items.map(c =>
+        `<button type="button" class="arw-location-item" data-name="${esc(c.name)}">${esc(c.name)}</button>`
+      ).join('');
+      // Always append free-text option if query isn't already an exact match
       if (q && !exact) {
         html += `<button type="button" class="arw-location-item" data-name="${esc(q)}">${esc(q)}</button>`;
       }
-      
-      if (!html) {
-        locResults.hidden = true;
-        return;
-      }
+      if (!html) { locResults.hidden = true; return; }
       locResults.innerHTML = html;
       locResults.hidden = false;
       locResults.querySelectorAll('.arw-location-item').forEach(btn => {
@@ -400,10 +560,27 @@
       });
     }
 
-    locInput.addEventListener('focus', renderLocResults);
+    async function fetchLocResults() {
+      const q = locInput.value.trim();
+      if (!q) { locResults.hidden = true; return; }
+      try {
+        const { data, error } = await sb.rpc('search_cities', { q });
+        if (error) throw error;
+        renderLocItems(data || [], q);
+      } catch (_) {
+        // On RPC error show free-text fallback only
+        renderLocItems([], q);
+      }
+    }
+
+    locInput.addEventListener('focus', () => {
+      clearTimeout(locDebounce);
+      locDebounce = setTimeout(fetchLocResults, 150);
+    });
     locInput.addEventListener('input', () => {
-      renderLocResults();
       autoSaveStep1();
+      clearTimeout(locDebounce);
+      locDebounce = setTimeout(fetchLocResults, 250);
     });
     document.addEventListener('click', e => {
       if (!locResults.hidden && !locResults.contains(e.target) && e.target !== locInput) {
@@ -419,19 +596,30 @@
 
   async function submitStep1(e) {
     e.preventDefault();
+    const hp = (document.getElementById('arw-hp-field')?.value || '').trim();
+    const tooFast = state.step1WasFresh && (Date.now() - (state.step1RenderedAt || 0)) < MIN_SUBMIT_MS;
+    // Silent bot drop: mimic success without touching the database.
+    if (hp || tooFast) {
+      clearDraft();
+      state.step = 5;
+      renderStep();
+      return;
+    }
+
     const firmName = document.getElementById('arw-firm').value.trim();
     const location = document.getElementById('arw-location').value.trim();
     const reviewText = document.getElementById('arw-review').value.trim();
     const overall = Number(document.getElementById('arw-overall').dataset.value) || 0;
+    const consented = document.getElementById('arw-consent')?.checked;
 
     if (!firmName) return setStatus('Please enter your firm name.', 'err');
     if (!location) return setStatus('Please enter the office location.', 'err');
-    if (!reviewText) return setStatus('Please write your review.', 'err');
-    
-    const wordsCount = reviewText.split(/\s+/).filter(Boolean).length;
-    if (wordsCount > 500) return setStatus('Your review must not exceed 500 words.', 'err');
+
+    const textCheck = validateReviewText(reviewText);
+    if (!textCheck.ok) return setStatus(textCheck.message, 'err');
 
     if (!overall) return setStatus('Please give an overall rating.', 'err');
+    if (!consented) return setStatus('Please accept the Review Guidelines to continue.', 'err');
 
     const btn = e.target.querySelector('button[type="submit"]');
     btn.disabled = true;
@@ -444,6 +632,7 @@
         p_review_text: reviewText,
         p_overall_rating: overall,
         p_device_token: deviceToken(),
+        p_honeypot: hp,
       });
       if (error) throw error;
       state.reviewId = data.review_id;
@@ -482,10 +671,17 @@
       </div>`;
   }
 
-  function wireFooter(collect) {
-    const go = async () => advance(collect ? collect() : {});
-    document.getElementById('arw-next').addEventListener('click', go);
-    document.getElementById('arw-skip').addEventListener('click', go);
+  function wireFooter(collect, validate) {
+    const go = async (checked) => {
+      if (checked && validate) {
+        const err = validate();
+        if (err) { setStatus(err, 'err'); return; }
+      }
+      setStatus('');
+      advance(collect ? collect() : {});
+    };
+    document.getElementById('arw-next').addEventListener('click', () => go(true));
+    document.getElementById('arw-skip').addEventListener('click', () => go(false));
     const backBtn = document.getElementById('arw-back');
     if (backBtn) {
       backBtn.addEventListener('click', () => {
@@ -612,8 +808,22 @@
         ${segHTML('allow_industrial_training', opt('allow_industrial_training'))}
       </div>
       <div class="arw-field">
-        <label for="arw-stipend">Monthly Stipend (₹)</label>
-        <input id="arw-stipend" type="number" min="0" inputmode="numeric" placeholder="e.g., 12000">
+        <label>Monthly Stipend (₹)</label>
+        <div class="arw-stipend-row">
+          <input id="arw-stipend" type="number" min="0" max="${STIPEND_MAX}" inputmode="numeric" placeholder="e.g., 12000">
+          <div class="arw-custom-select" id="arw-stipend-year-wrap">
+            <button type="button" class="arw-select-trigger" id="arw-stipend-year-trigger" aria-haspopup="listbox" aria-expanded="false">
+              <span class="arw-select-label placeholder" id="arw-stipend-year-label">Year</span>
+              <i class="fas fa-chevron-down arw-select-arrow"></i>
+            </button>
+            <div class="arw-select-menu" role="listbox" id="arw-stipend-year-menu">
+              <div class="arw-select-option" data-value="" role="option">Year</div>
+              ${(() => { const y = new Date().getFullYear(); let o = ''; for (let i = y; i >= STIPEND_YEAR_MIN; i--) o += `<div class="arw-select-option" data-value="${i}" role="option">${i}</div>`; return o; })()}
+            </div>
+            <input type="hidden" id="arw-stipend-year" name="stipend_year" value="">
+          </div>
+        </div>
+        <div class="arw-field-hint" id="arw-stipend-hint">Enter monthly stipend (max ₹${STIPEND_MAX.toLocaleString('en-IN')}) and the year it applied to.</div>
       </div>
       <div class="arw-field">
         <span class="arw-group-label">Was the stipend paid on time?</span>
@@ -657,8 +867,81 @@
       if (wrap) wrap.hidden = false;
     }
     const stipendInput = document.getElementById('arw-stipend');
+    const stipendYearWrap = document.getElementById('arw-stipend-year-wrap');
+    const stipendYearTrigger = document.getElementById('arw-stipend-year-trigger');
+    const stipendYearLabel = document.getElementById('arw-stipend-year-label');
+    const stipendYearMenu = document.getElementById('arw-stipend-year-menu');
+    const stipendYear = document.getElementById('arw-stipend-year');
+    const stipendHint = document.getElementById('arw-stipend-hint');
+
+    function setStipendYearValue(val) {
+      if (!stipendYear) return;
+      const cleanVal = val ? String(val) : '';
+      stipendYear.value = cleanVal;
+      if (stipendYearLabel) {
+        stipendYearLabel.textContent = cleanVal || 'Year';
+        stipendYearLabel.classList.toggle('placeholder', !cleanVal);
+      }
+      if (stipendYearMenu) {
+        stipendYearMenu.querySelectorAll('.arw-select-option').forEach(opt => {
+          opt.classList.toggle('selected', opt.dataset.value === cleanVal);
+        });
+      }
+      refreshStipendHint();
+      autoSaveStep3();
+    }
+
     if (saved.stipend !== undefined && saved.stipend !== null && stipendInput) {
       stipendInput.value = saved.stipend;
+    }
+    if (saved.stipend_year) {
+      setStipendYearValue(saved.stipend_year);
+    }
+
+    // Custom select interaction logic
+    if (stipendYearTrigger && stipendYearWrap) {
+      stipendYearTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isActive = stipendYearWrap.classList.contains('active');
+        stipendYearWrap.classList.toggle('active', !isActive);
+        stipendYearTrigger.setAttribute('aria-expanded', !isActive ? 'true' : 'false');
+      });
+    }
+
+    if (stipendYearMenu) {
+      stipendYearMenu.querySelectorAll('.arw-select-option').forEach(opt => {
+        opt.addEventListener('click', (e) => {
+          e.stopPropagation();
+          setStipendYearValue(opt.dataset.value);
+          if (stipendYearWrap) stipendYearWrap.classList.remove('active');
+          if (stipendYearTrigger) stipendYearTrigger.setAttribute('aria-expanded', 'false');
+        });
+      });
+    }
+
+    const handleOutsideClick = (e) => {
+      if (stipendYearWrap && !stipendYearWrap.contains(e.target)) {
+        stipendYearWrap.classList.remove('active');
+        if (stipendYearTrigger) stipendYearTrigger.setAttribute('aria-expanded', 'false');
+      }
+    };
+    document.addEventListener('click', handleOutsideClick);
+
+    // Returns an error string (blocks Next) or null. Skip bypasses it.
+    function stipendError() {
+      const raw = stipendInput ? stipendInput.value.trim() : '';
+      if (raw === '') return null;
+      const n = Number(raw);
+      if (!Number.isFinite(n) || n < 0) return 'Please enter a valid stipend amount.';
+      if (n > STIPEND_MAX) return `Stipend looks too high — please enter a monthly amount up to ₹${STIPEND_MAX.toLocaleString('en-IN')}.`;
+      if (n > 0 && stipendYear && !stipendYear.value) return 'Please select the year this stipend applied to.';
+      return null;
+    }
+    function refreshStipendHint() {
+      if (!stipendHint) return;
+      const err = stipendError();
+      stipendHint.textContent = err || `Enter monthly stipend (max ₹${STIPEND_MAX.toLocaleString('en-IN')}) and the year it applied to.`;
+      stipendHint.classList.toggle('err', !!err);
     }
 
     function autoSaveStep3() {
@@ -672,38 +955,92 @@
         const ta = segValue(body, 'transfer_approved');
         if (ta) patch.transfer_approved = ta;
       }
-      const stipend = stipendInput ? stipendInput.value : '';
-      if (stipend !== '' && Number(stipend) >= 0) patch.stipend = parseInt(stipend, 10);
-
+      const stipend = stipendInput ? stipendInput.value.trim() : '';
+      const stipendNum = Number(stipend);
+      // Only persist an in-range stipend so an out-of-range value never poisons averages.
+      if (stipend !== '' && Number.isFinite(stipendNum) && stipendNum >= 0 && stipendNum <= STIPEND_MAX) {
+        patch.stipend = parseInt(stipend, 10);
+        if (stipendYear && stipendYear.value) patch.stipend_year = parseInt(stipendYear.value, 10);
+      }
       state.savedData = Object.assign({}, state.savedData, patch);
       state.pendingPatch = Object.assign({}, state.pendingPatch, patch);
       saveDraft();
       return patch;
     }
 
-    if (stipendInput) stipendInput.addEventListener('input', autoSaveStep3);
+    if (stipendInput) stipendInput.addEventListener('input', () => { refreshStipendHint(); autoSaveStep3(); });
+    refreshStipendHint();
 
-    wireFooter(autoSaveStep3);
+    wireFooter(autoSaveStep3, stipendError);
+  }
+
+  function getSuggestedTags(firmName) {
+    const fn = String(firmName || '').toLowerCase().trim();
+    if (!fn) return new Set();
+
+    const suggested = new Set();
+    if (/kpmg|deloitte|pwc|pricewaterhouse|ey\b|ernst|bdo|grant thornton|haribhakti|singhi|walker chandiok|mska|s\.r\. batliboi|b s r/i.test(fn)) {
+      ['Statutory Audit', 'Internal Audit', 'Direct Tax', 'Indirect Tax', 'Risk Advisory', 'Ind AS / IFRS', 'Financial Modelling', 'Listed Companies'].forEach(t => suggested.add(t));
+    }
+    if (/tax|direct tax|indirect tax|gst/i.test(fn)) {
+      ['Income Tax', 'GST', 'Direct Tax', 'Indirect Tax', 'Transfer Pricing', 'FEMA'].forEach(t => suggested.add(t));
+    }
+    if (/audit|statutory|risk/i.test(fn)) {
+      ['Statutory Audit', 'Internal Audit', 'Bank Audit', 'Concurrent Audit', 'Risk Advisory'].forEach(t => suggested.add(t));
+    }
+    if (/advisory|valuation|corporate|transaction|consulting/i.test(fn)) {
+      ['Valuation', 'Due Diligence', 'Transaction Advisory', 'Financial Modelling', 'Management Consultancy'].forEach(t => suggested.add(t));
+    }
+    if (suggested.size === 0) {
+      ['Statutory Audit', 'Income Tax', 'GST', 'Excel', 'Tally', 'Accounting', 'MSMEs'].forEach(t => suggested.add(t));
+    }
+    return suggested;
   }
 
   // ── Step 4: Learning & Exposure ───────────────────────────────────────
   function renderStep4() {
+    const suggestedTags = getSuggestedTags(state.firmName);
+    const hasSuggestions = suggestedTags.size > 0 && state.firmName;
+
+    const bannerHTML = hasSuggestions ? `
+      <div style="background:#f0f9ff;border:1.5px solid #bae6fd;border-radius:10px;padding:0.6rem 0.85rem;margin-bottom:1.1rem;font-size:0.825rem;color:#0369a1;display:flex;align-items:center;gap:0.5rem;">
+        <i class="fas fa-wand-magic-sparkles" style="color:#0284c7;"></i>
+        <span>Smart suggestions highlighted for <strong>${esc(state.firmName)}</strong> — tap to select.</span>
+      </div>` : '';
+
     const chips = (col, label, options) => `
       <span class="arw-group-label">${esc(label)} <small style="font-weight:400;color:#94a3b8">(select all that apply)</small></span>
       <div class="arw-chip-group" data-col="${col}">
-        ${options.map(o => `<button type="button" class="arw-chip" data-v="${esc(o)}">${esc(o)}</button>`).join('')}
+        ${options.map(o => {
+          const isSugg = suggestedTags.has(o);
+          return `<button type="button" class="arw-chip${isSugg ? ' arw-chip-suggested' : ''}" data-v="${esc(o)}">${esc(o)}${isSugg ? ' ✨' : ''}</button>`;
+        }).join('')}
       </div>`;
     const body = document.getElementById('arw-body');
     body.innerHTML = stepShell('Step 4 — Learning & Exposure', `
+      ${bannerHTML}
       ${chips('domain_tags', 'Domain Worked In', DOMAIN_OPTIONS)}
+      <div id="arw-custom-domain-box" style="margin: -0.25rem 0 0.85rem; display: none;">
+        <input type="text" id="arw-custom-domain-input" placeholder="Specify custom domain (e.g. ESG Consulting, M&A Tax, IFC)" style="width: 100%; height: 40px; padding: 0 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-family: inherit; font-size: 0.875rem; color: #0f172a; outline: none; transition: border-color 0.15s ease;">
+      </div>
       ${chips('client_tags', 'Client Exposure', CLIENT_OPTIONS)}
       ${chips('skill_tags', 'Skills Learned', SKILL_OPTIONS)}`, 'Finish');
+
+    const customDomainBox = document.getElementById('arw-custom-domain-box');
+    const customDomainInput = document.getElementById('arw-custom-domain-input');
 
     function autoSaveStep4() {
       const patch = {};
       body.querySelectorAll('.arw-chip-group').forEach(group => {
-        const vals = [...group.querySelectorAll('.arw-chip.active')].map(c => c.dataset.v);
-        if (vals.length) patch[group.dataset.col] = vals;
+        const col = group.dataset.col;
+        let vals = [...group.querySelectorAll('.arw-chip.active')].map(c => c.dataset.v);
+        
+        // If domain_tags has "Other" and user typed a custom domain, include the specified custom domain
+        if (col === 'domain_tags' && vals.includes('Other') && customDomainInput && customDomainInput.value.trim()) {
+          const customVal = customDomainInput.value.trim();
+          vals = vals.filter(v => v !== 'Other').concat(customVal);
+        }
+        if (vals.length) patch[col] = vals;
       });
       state.savedData = Object.assign({}, state.savedData, patch);
       state.pendingPatch = Object.assign({}, state.pendingPatch, patch);
@@ -714,9 +1051,38 @@
     body.querySelectorAll('.arw-chip').forEach(chip => {
       chip.addEventListener('click', () => {
         chip.classList.toggle('active');
+        
+        // Toggle custom domain input when "Other" domain chip is clicked
+        if (chip.dataset.v === 'Other' && chip.closest('[data-col="domain_tags"]')) {
+          const isOtherActive = chip.classList.contains('active');
+          if (customDomainBox) {
+            customDomainBox.style.display = isOtherActive ? 'block' : 'none';
+            if (isOtherActive && customDomainInput) customDomainInput.focus();
+          }
+        }
         autoSaveStep4();
       });
     });
+
+    if (customDomainInput) {
+      customDomainInput.addEventListener('input', () => {
+        const customDomain = customDomainInput.value.toLowerCase().trim();
+        // Dynamically highlight matching skill tags if custom domain mentions audit/tax/advisory/tech
+        if (customDomain) {
+          body.querySelectorAll('.arw-chip-group[data-col="skill_tags"] .arw-chip').forEach(skillChip => {
+            const skillName = skillChip.dataset.v.toLowerCase();
+            if (customDomain.includes('tax') && (skillName.includes('tax') || skillName.includes('gst'))) {
+              skillChip.classList.add('arw-chip-suggested');
+            } else if (customDomain.includes('audit') && skillName.includes('audit')) {
+              skillChip.classList.add('arw-chip-suggested');
+            } else if ((customDomain.includes('esg') || customDomain.includes('advisory') || customDomain.includes('m&a') || customDomain.includes('valuation')) && (skillName.includes('modelling') || skillName.includes('analytics'))) {
+              skillChip.classList.add('arw-chip-suggested');
+            }
+          });
+        }
+        autoSaveStep4();
+      });
+    }
 
     // Pre-populate saved answers
     const saved = state.savedData || {};
@@ -727,8 +1093,21 @@
           group.querySelectorAll('.arw-chip').forEach(chip => {
             if (saved[col].includes(chip.dataset.v)) {
               chip.classList.add('active');
+              if (chip.dataset.v === 'Other' && col === 'domain_tags' && customDomainBox) {
+                customDomainBox.style.display = 'block';
+              }
             }
           });
+          // Pre-fill custom domain if saved
+          if (col === 'domain_tags') {
+            const customSaved = saved[col].find(v => !DOMAIN_OPTIONS.includes(v));
+            if (customSaved && customDomainInput && customDomainBox) {
+              const otherBtn = group.querySelector('.arw-chip[data-v="Other"]');
+              if (otherBtn) otherBtn.classList.add('active');
+              customDomainBox.style.display = 'block';
+              customDomainInput.value = customSaved;
+            }
+          }
         }
       }
     });
@@ -744,16 +1123,35 @@
         <div class="arw-done-emoji">🎉</div>
         <h3>Thank You!</h3>
         <p>Your anonymous review has been submitted successfully.</p>
-        <p>Your feedback will help thousands of future CA students make informed decisions before joining an articleship firm.</p>
-        <button type="button" class="arw-btn-primary" id="arw-done-btn">Done</button>
+        <p style="font-size:0.85rem;color:#64748b;">Your feedback will help thousands of future CA students make informed decisions before joining an articleship firm.</p>
+        <div class="arw-done-actions">
+          <a href="/articleship-firm-reviews.html" id="arw-browse-all-btn" class="arw-done-btn-primary"><i class="fas fa-search"></i> Browse All Reviews</a>
+          <button type="button" id="arw-submit-another-btn" class="arw-done-btn-secondary"><i class="fas fa-plus"></i> Submit Another</button>
+        </div>
       </div>`;
-    document.getElementById('arw-done-btn').addEventListener('click', () => {
-      close();
-      if (onComplete) onComplete();
-    });
+
+    const browseBtn = document.getElementById('arw-browse-all-btn');
+    if (browseBtn) {
+      browseBtn.addEventListener('click', (e) => {
+        if (window.location.pathname.endsWith('articleship-firm-reviews.html')) {
+          e.preventDefault();
+          closeModal();
+        }
+      });
+    }
+
+    const submitAnother = document.getElementById('arw-submit-another-btn');
+    if (submitAnother) {
+      submitAnother.addEventListener('click', () => {
+        clearDraft();
+        open({ forceNew: true });
+      });
+    }
+
+    if (onComplete) onComplete();
   }
 
   window.ArticleshipReviewWizard = {
-    init, open, LABELS, RATING_FIELDS, DOMAIN_OPTIONS, CLIENT_OPTIONS, SKILL_OPTIONS,
+    init, open, openGuidelines, LABELS, RATING_FIELDS, DOMAIN_OPTIONS, CLIENT_OPTIONS, SKILL_OPTIONS,
   };
 })();
