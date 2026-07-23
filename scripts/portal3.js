@@ -92,6 +92,7 @@ let currentTable = 'Industrial Training Job Portal';
 let currentSession = null;
 let appliedJobIds = new Set();
 let debounceTimeout = null;
+let firmReviewsMap = new Map();
 let allLocations = [];
 let allCategories = {};
 let currentFcmToken = null;
@@ -317,11 +318,43 @@ function toggleSaveJob(job, btnElement) {
 }
 
 function renderJobCard(job) {
+    const companyName = (job.Company || '').trim();
+    const companyKey = companyName.toLowerCase();
+    
+    // Ratings initialization
+    let ratingHtml = '';
+    let ratingInfo = null;
+
+    if (currentTable === 'Articleship Jobs') {
+        ratingInfo = firmReviewsMap.get(companyKey);
+        if (ratingInfo && ratingInfo.count > 5) {
+            // Show gold star rating badge beside company name
+            ratingHtml = `
+                <span class="job-card-rating-inline" style="
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.25rem;
+                    background: #fffbeb;
+                    border: 1px solid #fde047;
+                    padding: 0.1rem 0.4rem;
+                    border-radius: 6px;
+                    font-size: 0.72rem;
+                    font-weight: 700;
+                    color: #ca8a04;
+                    vertical-align: middle;
+                ">
+                    <i class="fas fa-star" style="color: #ca8a04; font-size: 0.65rem;"></i>
+                    <span style="color: #1e293b;">${ratingInfo.avgOverall.toFixed(1)}</span>
+                    <span style="color: #64748b; font-weight: 500; font-size: 0.68rem;">(${ratingInfo.count} review${ratingInfo.count > 1 ? 's' : ''})</span>
+                </span>
+            `;
+        }
+    }
+
     const jobCard = document.createElement('article');
     jobCard.className = 'job-card' + (job.is_exclusive ? ' job-card-exclusive' : '');
     jobCard.dataset.jobId = job.id;
 
-    const companyName = (job.Company || '').trim();
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
     const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'N/A';
     const isApplied = appliedJobIds.has(job.id);
@@ -391,7 +424,7 @@ function renderJobCard(job) {
             <div class="job-card-logo">${companyInitial}</div>
             <div class="job-card-header">
                 <h3 class="job-card-role-title">${roleLabel} <span class="job-card-role-posted ${postedClass}" style="color: var(--text-muted); font-weight: 400; margin-left: 4px;">| Posted ${postedDate}</span></h3>
-                <h3 class="job-card-company">${job.Company || "N/A"}</h3>
+                <h3 class="job-card-company" style="display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap;"><span>${job.Company || "N/A"}</span>${ratingHtml}</h3>
                 <p class="job-card-posted ${postedClass}">Posted ${postedDate}</p>
             </div>
             <button class="job-card-bookmark" title="Save job" aria-label="Bookmark job">
@@ -709,6 +742,40 @@ function showModal(job) {
         }
     }
 
+    // Reviews logic for detailed modal
+    let modalRatingHtml = '';
+    let modalReviewButtonHtml = '';
+    if (currentTable === 'Articleship Jobs') {
+        const compKey = companyName.toLowerCase();
+        const ratingInfo = firmReviewsMap.get(compKey);
+        if (ratingInfo) {
+            if (ratingInfo.count > 5) {
+                modalRatingHtml = `
+                    <div class="job-card-rating-inline" style="display: inline-flex; align-items: center; gap: 0.35rem; margin-top: 0.25rem;">
+                        <span class="rating-value" style="font-weight: 700; color: #1e293b; font-size: 0.8rem; background: #fef08a; padding: 1px 6px; border-radius: 6px; display: inline-flex; align-items: center; gap: 2px;">
+                            <i class="fas fa-star" style="color: #ca8a04; font-size: 0.7rem;"></i>
+                            ${ratingInfo.avgOverall.toFixed(1)}
+                        </span>
+                        <span class="rating-count" style="font-size: 0.78rem; color: #64748b;">(${ratingInfo.count} review${ratingInfo.count > 1 ? 's' : ''})</span>
+                    </div>
+                `;
+            }
+            modalReviewButtonHtml = `
+                <a href="/articleship-firm-review.html?firm=${encodeURIComponent(companyName)}" target="_blank" class="btn btn-secondary btn-modal-secondary" style="border-color: #2563eb; color: #2563eb; display: inline-flex; align-items: center; gap: 0.3rem;">
+                    <i class="fas fa-comments"></i>
+                    Read Reviews
+                </a>
+            `;
+        } else {
+            modalReviewButtonHtml = `
+                <a href="/submit-review.html?firm=${encodeURIComponent(companyName)}&location=${encodeURIComponent(job.Location || '')}" target="_blank" class="btn btn-secondary btn-modal-secondary" style="border-color: #cbd5e1; color: #475569; display: inline-flex; align-items: center; gap: 0.3rem;">
+                    <i class="fas fa-pen-to-square"></i>
+                    Submit Review
+                </a>
+            `;
+        }
+    }
+
     // Build the bottom action link row with View Original Post if available
     let secondaryActionsHtml = '';
     const connectButtonHtml = `
@@ -732,12 +799,14 @@ function showModal(job) {
             <div class="modal-secondary-actions">
                 ${connectButtonHtml}
                 ${originalPostHtml}
+                ${modalReviewButtonHtml}
                 ${shareButtonHtml}
             </div>`;
     } else {
         secondaryActionsHtml = `
             <div class="modal-secondary-actions">
                 ${connectButtonHtml}
+                ${modalReviewButtonHtml}
                 ${shareButtonHtml}
             </div>`;
     }
@@ -804,6 +873,7 @@ function showModal(job) {
             <div class="modal-logo">${companyInitial}</div>
             <div class="modal-title-group">
                 <h2>${job.Company}</h2>
+                ${modalRatingHtml}
                 <p>${job.Location}</p>
             </div>
         </div>
@@ -967,6 +1037,45 @@ function updateFilterCache() {
         ? [...flatCategories].sort((a, b) => b.length - a.length)
         : [];
 
+}
+
+async function fetchFirmReviews() {
+    try {
+        const { data, error } = await supabaseClient
+            .from('articleship_firm_reviews_public')
+            .select('firm_name, overall_rating');
+        if (error) throw error;
+        
+        const groups = {};
+        (data || []).forEach(r => {
+            if (!r.firm_name) return;
+            const key = r.firm_name.trim().toLowerCase();
+            if (!groups[key]) {
+                groups[key] = {
+                    firmName: r.firm_name.trim(),
+                    ratings: [],
+                    count: 0
+                };
+            }
+            if (typeof r.overall_rating === 'number') {
+                groups[key].ratings.push(r.overall_rating);
+            }
+            groups[key].count++;
+        });
+
+        firmReviewsMap.clear();
+        for (const key in groups) {
+            const g = groups[key];
+            const avg = g.ratings.length ? g.ratings.reduce((a, b) => a + b, 0) / g.ratings.length : null;
+            firmReviewsMap.set(key, {
+                firmName: g.firmName,
+                avgOverall: avg,
+                count: g.count
+            });
+        }
+    } catch (err) {
+        console.warn('Failed to load firm reviews for rating display:', err);
+    }
 }
 
 async function fetchFilterOptions() {
@@ -1158,10 +1267,18 @@ async function fetchJobs() {
             // Batch DOM operations using DocumentFragment for better performance
             const fragment = document.createDocumentFragment();
             for (let i = 0; i < data.length; i++) {
-                fragment.appendChild(renderJobCard(data[i]));
+                const card = renderJobCard(data[i]);
+                if (card) {
+                    fragment.appendChild(card);
+                }
             }
             if (dom.jobsContainer) {
-                dom.jobsContainer.appendChild(fragment);
+                const hasExistingCards = dom.jobsContainer.querySelector('.job-card');
+                if (fragment.childElementCount === 0 && !hasExistingCards && page === 0) {
+                    dom.jobsContainer.innerHTML = '<p class="no-jobs-found">No jobs found matching your criteria.</p>';
+                } else {
+                    dom.jobsContainer.appendChild(fragment);
+                }
             }
 
             page++;
@@ -2766,6 +2883,7 @@ async function initializePage() {
     }
 
     await fetchFilterOptions();
+    await fetchFirmReviews();
 
     populateSalaryFilter();
     setupEventListeners();

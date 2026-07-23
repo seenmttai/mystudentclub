@@ -3210,7 +3210,7 @@ body:has(.portal-nav-bar) {
     padding: 0.4rem 0.75rem !important;
   }
 
-  .modal-secondary-actions > *:nth-child(3) {
+  .modal-secondary-actions > *:last-child:nth-child(odd) {
     grid-column: span 2 !important;
   }
 

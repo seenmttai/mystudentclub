@@ -610,12 +610,14 @@
     const urlParams = new URLSearchParams(window.location.search);
     const firmNameParam = urlParams.get('firm') || urlParams.get('firm_name') || '';
     const firmIdParam = urlParams.get('firm_id') || '';
+    const locationParam = urlParams.get('location') || '';
 
     // Initialize Review Wizard inline into the right column container
     ArticleshipReviewWizard.init(supabaseClient, {
       container: '#review-wizard-container',
       firmName: firmNameParam,
       firmId: firmIdParam,
+      location: locationParam,
       autoOpen: true
     });
   </script>
