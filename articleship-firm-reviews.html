@@ -2578,10 +2578,30 @@
     // ── Search / filter / sort ────────────────────────────────────────────
     let SELECTED_TAG = null;
 
-    function populateLocationFilter() {
-      const locs = [...new Set(FIRMS.map(f => f.location))].sort();
+    async function populateLocationFilter() {
+      const locSet = new Set(FIRMS.map(f => f.location).filter(Boolean));
+
+      try {
+        const { data: rpcCities } = await supabaseClient.rpc('search_cities', { q: '' });
+        if (Array.isArray(rpcCities) && rpcCities.length) {
+          rpcCities.forEach(c => { if (c && c.name) locSet.add(c.name.trim()); });
+        }
+      } catch (e) {
+        /* RPC fallback */
+      }
+
+      try {
+        const { data: tableCities } = await supabaseClient.from('master_cities').select('name');
+        if (Array.isArray(tableCities) && tableCities.length) {
+          tableCities.forEach(c => { if (c && c.name) locSet.add(c.name.trim()); });
+        }
+      } catch (e) {
+        /* Table fallback */
+      }
+
+      const sortedLocs = [...locSet].filter(Boolean).sort((a, b) => a.localeCompare(b));
       const optionsHTML = '<option value="">All locations</option>' +
-        locs.map(l => `<option value="${escapeHTML(l)}">${escapeHTML(l)}</option>`).join('');
+        sortedLocs.map(l => `<option value="${escapeHTML(l)}">${escapeHTML(l)}</option>`).join('');
 
       const locSel = document.getElementById('filter-location');
       if (locSel) locSel.innerHTML = optionsHTML;
@@ -2789,7 +2809,7 @@
       try {
         const reviews = await fetchAllReviews();
         FIRMS = groupByFirm(reviews);
-        populateLocationFilter();
+        await populateLocationFilter();
         updateHeroStats(reviews);
         initTagCloud();
         
