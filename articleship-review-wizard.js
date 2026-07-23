@@ -277,6 +277,7 @@
         step: draft.step || 1,
         firmId: draft.firmId || opts.firmId || null,
         firmName: draft.firmName || opts.firmName || '',
+        location: draft.location || opts.location || '',
         lock: !!opts.lock,
         reviewId: draft.reviewId || null,
         editToken: draft.editToken || null,
@@ -286,6 +287,7 @@
     } else {
       state = {
         step: 1, firmId: opts.firmId || null, firmName: opts.firmName || '',
+        location: opts.location || '',
         lock: !!opts.lock, reviewId: null, editToken: null, pendingPatch: {},
         savedData: {},
       };
@@ -435,7 +437,12 @@
     // Pre-populate Step 1 if returning/resuming
     const saved = state.savedData || {};
     if (saved.firmName && !firmInput.value) firmInput.value = saved.firmName;
-    if (saved.location) locInput.value = saved.location;
+    if (saved.location) {
+      locInput.value = saved.location;
+    } else if (state.location && !locInput.value) {
+      locInput.value = state.location;
+      state.savedData.location = state.location;
+    }
     if (saved.reviewText) reviewTextarea.value = saved.reviewText;
     if (saved.overallRating) {
       overallStars.dataset.value = String(saved.overallRating);
