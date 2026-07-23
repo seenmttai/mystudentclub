@@ -1635,6 +1635,78 @@
           </div>
         </section>
       </div>
+
+      <!-- ── Master Lists Page ─────────────────────────────── -->
+      <div id="adminMasterListsPage" class="admin-page">
+        <section class="admin-controls lms-resource-section">
+          <!-- ===== FIRMS SECTION ===== -->
+          <div class="lms-section-header" style="background:#ffffff;border:1px solid #e5e7eb;border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1.25rem;box-shadow:0 2px 10px rgba(0,0,0,0.02);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+            <div style="display:flex;align-items:center;gap:0.85rem;">
+              <div style="background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg style="width:24px;height:24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+              </div>
+              <div>
+                <h2 style="font-size:1.25rem;font-weight:700;color:#111827;margin:0;">Firms Master List <span id="ml-firms-count-badge" style="background:#dbeafe;color:#1e40af;border:1px solid #93c5fd;font-size:0.725rem;font-weight:700;padding:0.15rem 0.65rem;border-radius:9999px;">Loading...</span></h2>
+                <p style="font-size:0.85rem;color:#6b7280;margin:0.2rem 0 0;">All known CA firms — add, search, or delete (deletion blocked if firm has reviews).</p>
+              </div>
+            </div>
+            <button type="button" id="ml-firms-refresh-btn" onclick="mlLoadFirms()" class="admin-btn" style="background:#2563eb;color:#fff;font-weight:600;font-size:0.825rem;padding:0.55rem 1.1rem;border-radius:10px;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:0.4rem;box-shadow:0 2px 8px rgba(37,99,235,0.25);">
+              <svg style="width:0.95rem;height:0.95rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+              Refresh
+            </button>
+          </div>
+
+          <!-- Add firm row -->
+          <div style="display:flex;gap:0.6rem;flex-wrap:wrap;margin-bottom:1rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:0.85rem 1rem;">
+            <input id="ml-firm-name-input" type="text" placeholder="Firm name *" style="flex:3;min-width:160px;border:1.5px solid #cbd5e1;border-radius:8px;padding:0.5rem 0.75rem;font-size:0.875rem;outline:none;">
+            <input id="ml-firm-category-input" type="text" placeholder="Category (e.g. Big 4)" style="flex:2;min-width:120px;border:1.5px solid #cbd5e1;border-radius:8px;padding:0.5rem 0.75rem;font-size:0.875rem;outline:none;">
+            <input id="ml-firm-city-input" type="text" placeholder="HQ City" style="flex:2;min-width:100px;border:1.5px solid #cbd5e1;border-radius:8px;padding:0.5rem 0.75rem;font-size:0.875rem;outline:none;">
+            <button type="button" id="ml-firm-add-btn" onclick="mlAddFirm()" style="background:#16a34a;color:#fff;border:none;border-radius:8px;padding:0.5rem 1rem;font-weight:600;font-size:0.85rem;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:0.35rem;">
+              <svg style="width:0.9rem;height:0.9rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              Add Firm
+            </button>
+          </div>
+
+          <!-- Firm search -->
+          <input id="ml-firms-search" type="text" placeholder="Search firms by name, category, or city…" oninput="mlFilterFirms()" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:0.6rem 0.9rem;font-size:0.875rem;margin-bottom:1rem;box-sizing:border-box;outline:none;">
+
+          <div id="ml-firms-container" style="max-height:55vh;overflow-y:auto;">
+            <div style="color:#6b7280;font-size:0.85rem;padding:1.5rem;text-align:center;">Loading firms…</div>
+          </div>
+
+          <hr style="border:none;border-top:1.5px solid #e5e7eb;margin:2rem 0;">
+
+          <!-- ===== CITIES SECTION ===== -->
+          <div class="lms-section-header" style="background:#ffffff;border:1px solid #e5e7eb;border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1.25rem;box-shadow:0 2px 10px rgba(0,0,0,0.02);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+            <div style="display:flex;align-items:center;gap:0.85rem;">
+              <div style="background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg style="width:24px;height:24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              </div>
+              <div>
+                <h2 style="font-size:1.25rem;font-weight:700;color:#111827;margin:0;">Cities Master List <span id="ml-cities-count-badge" style="background:#dcfce7;color:#15803d;border:1px solid #86efac;font-size:0.725rem;font-weight:700;padding:0.15rem 0.65rem;border-radius:9999px;">Loading...</span></h2>
+                <p style="font-size:0.85rem;color:#6b7280;margin:0.2rem 0 0;">Canonical city names used in the review wizard autocomplete.</p>
+              </div>
+            </div>
+            <button type="button" onclick="mlLoadCities()" class="admin-btn" style="background:#16a34a;color:#fff;font-weight:600;font-size:0.825rem;padding:0.55rem 1.1rem;border-radius:10px;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:0.4rem;box-shadow:0 2px 8px rgba(22,163,74,0.25);">
+              <svg style="width:0.95rem;height:0.95rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+              Refresh
+            </button>
+          </div>
+
+          <!-- Add city row -->
+          <div style="display:flex;gap:0.6rem;flex-wrap:wrap;margin-bottom:1rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:0.85rem 1rem;">
+            <input id="ml-city-name-input" type="text" placeholder="City name *" style="flex:1;min-width:160px;border:1.5px solid #cbd5e1;border-radius:8px;padding:0.5rem 0.75rem;font-size:0.875rem;outline:none;">
+            <button type="button" id="ml-city-add-btn" onclick="mlAddCity()" style="background:#16a34a;color:#fff;border:none;border-radius:8px;padding:0.5rem 1rem;font-weight:600;font-size:0.85rem;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:0.35rem;">
+              <svg style="width:0.9rem;height:0.9rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              Add City
+            </button>
+          </div>
+
+          <div id="ml-cities-container" style="max-height:40vh;overflow-y:auto;">
+            <div style="color:#6b7280;font-size:0.85rem;padding:1.5rem;text-align:center;">Loading cities…</div>
+          </div>
+        </section>
+      </div>
     </main>
 
     <div id="modal" class="modal-overlay" onclick="closeModal(event)">
@@ -1888,6 +1960,13 @@
             d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
         </svg>
         <span>Firm Reviews</span>
+      </button>
+      <button class="footer-tab" data-page="masterlists">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+        </svg>
+        <span>Master Lists</span>
       </button>
     </nav>
   </div>
@@ -3503,19 +3582,23 @@
       const setAdminPage = (page) => {
         const isLms = page === 'lms';
         const isReviews = page === 'reviews';
-        const isJobs = !isLms && !isReviews;
+        const isMasterLists = page === 'masterlists';
+        const isJobs = !isLms && !isReviews && !isMasterLists;
 
         const jobsPg = dom.adminJobsPage || document.getElementById('adminJobsPage');
         const lmsPg = dom.adminLmsPage || document.getElementById('adminLmsPage');
         const reviewsPg = dom.adminReviewsPage || document.getElementById('adminReviewsPage');
+        const masterListsPg = document.getElementById('adminMasterListsPage');
 
         if (jobsPg) jobsPg.classList.toggle('active', isJobs);
         if (lmsPg) lmsPg.classList.toggle('active', isLms);
         if (reviewsPg) reviewsPg.classList.toggle('active', isReviews);
+        if (masterListsPg) masterListsPg.classList.toggle('active', isMasterLists);
 
         if (!isLms) closeLmsResourceEditor();
         if (!isLms) closeLmsViewer();
         if (isReviews) loadArticleshipModerationReports();
+        if (isMasterLists) { mlLoadFirms(); mlLoadCities(); }
       };
 
       let debounceTimeout = null;
@@ -3718,7 +3801,7 @@
           tab.classList.add('active');
           const targetPage = tab.dataset.page || 'jobs';
           setAdminPage(targetPage);
-          if (targetPage === 'lms' || targetPage === 'reviews') return;
+          if (targetPage === 'lms' || targetPage === 'reviews' || targetPage === 'masterlists') return;
           currentTable = tab.dataset.table;
 
           if (currentTable === 'Fresher Jobs' || currentTable === 'Semi Qualified Jobs') {
@@ -4019,6 +4102,459 @@
       window.takeDownReviewAdmin = takeDownReviewAdmin;
       window.dismissReportAdmin = dismissReportAdmin;
       window.promptFirmResponseAdmin = promptFirmResponseAdmin;
+
+      // ── Master Lists ───────────────────────────────────────────
+      let mlFirmsData = [];
+
+      function mlEsc(str) {
+        return String(str ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      }
+
+      function mlShowToast(msg, type = 'success') { showCustomToast(msg, type); }
+
+      // ── FIRMS ────────────────────────────────────────────────
+      async function mlLoadFirms() {
+        const container = document.getElementById('ml-firms-container');
+        const badge = document.getElementById('ml-firms-count-badge');
+        if (!container) return;
+        container.innerHTML = `<div style="color:#6b7280;font-size:0.85rem;padding:1.5rem;text-align:center;">Loading firms…</div>`;
+        try {
+          const { data, error } = await supabaseClient.rpc('admin_list_firms');
+          if (error) throw error;
+          mlFirmsData = data || [];
+          if (badge) badge.textContent = `${mlFirmsData.length} firms`;
+          mlRenderFirms(mlFirmsData);
+        } catch (err) {
+          container.innerHTML = `<div style="color:#dc2626;font-size:0.85rem;padding:0.75rem;background:#fef2f2;border-radius:8px;border:1px solid #fca5a5;">Failed to load firms: ${mlEsc(err.message)}</div>`;
+        }
+      }
+
+      function mlFilterFirms() {
+        const q = (document.getElementById('ml-firms-search')?.value || '').toLowerCase().trim();
+        if (!q) { mlRenderFirms(mlFirmsData); return; }
+        mlRenderFirms(mlFirmsData.filter(f =>
+          (f.name || '').toLowerCase().includes(q) ||
+          (f.category || '').toLowerCase().includes(q) ||
+          (f.hq_city || '').toLowerCase().includes(q)
+        ));
+      }
+
+      function mlRenderFirms(firms) {
+        const container = document.getElementById('ml-firms-container');
+        if (!container) return;
+        if (!firms.length) {
+          container.innerHTML = `<div style="color:#6b7280;font-size:0.85rem;padding:1.5rem;text-align:center;">No firms found.</div>`;
+          return;
+        }
+        container.innerHTML = `
+          <table style="width:100%;border-collapse:collapse;font-size:0.84rem;">
+            <thead>
+              <tr style="background:#eef2ff;">
+                <th style="padding:0.6rem 0.85rem;text-align:left;font-weight:700;color:#1e40af;border-bottom:2px solid #c7d2fe;">Firm Name</th>
+                <th style="padding:0.6rem 0.85rem;text-align:left;font-weight:700;color:#1e40af;border-bottom:2px solid #c7d2fe;">Category</th>
+                <th style="padding:0.6rem 0.85rem;text-align:left;font-weight:700;color:#1e40af;border-bottom:2px solid #c7d2fe;">HQ City</th>
+                <th style="padding:0.6rem 0.85rem;text-align:center;font-weight:700;color:#1e40af;border-bottom:2px solid #c7d2fe;">Reviews</th>
+                <th style="padding:0.6rem 0.85rem;text-align:center;font-weight:700;color:#1e40af;border-bottom:2px solid #c7d2fe;">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${firms.map((f, i) => `
+                <tr style="background:${i % 2 === 0 ? '#ffffff' : '#f8fafc'};border-bottom:1px solid #f1f5f9;" id="ml-firm-row-${mlEsc(f.id)}">
+                  <td style="padding:0.6rem 0.85rem;font-weight:600;color:#0f172a;">${mlEsc(f.name)}</td>
+                  <td style="padding:0.6rem 0.85rem;color:#475569;">${mlEsc(f.category || '—')}</td>
+                  <td style="padding:0.6rem 0.85rem;color:#475569;">${mlEsc(f.hq_city || '—')}</td>
+                  <td style="padding:0.6rem 0.85rem;text-align:center;">
+                    <span style="background:${Number(f.review_count) > 0 ? '#dbeafe' : '#f3f4f6'};color:${Number(f.review_count) > 0 ? '#1e40af' : '#6b7280'};border-radius:9999px;padding:0.15rem 0.55rem;font-weight:700;font-size:0.75rem;">${f.review_count}</span>
+                  </td>
+                  <td style="padding:0.6rem 0.85rem;text-align:center;">
+                    <div style="display:flex;gap:0.35rem;justify-content:center;">
+                      <button type="button" onclick="mlOpenMergeModal('${mlEsc(f.id)}', '${mlEsc(f.name)}')" title="Merge into another firm" style="background:#fefce8;color:#854d0e;border:1px solid #fde68a;border-radius:7px;padding:0.3rem 0.6rem;font-size:0.78rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:0.3rem;">
+                        <svg style="width:0.8rem;height:0.8rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                        Merge
+                      </button>
+                      <button type="button" onclick="mlDeleteFirm('${mlEsc(f.id)}', '${mlEsc(f.name)}', ${Number(f.review_count)})" title="Delete firm" style="background:#fef2f2;color:#dc2626;border:1px solid #fca5a5;border-radius:7px;padding:0.3rem 0.6rem;font-size:0.78rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:0.3rem;">
+                        <svg style="width:0.8rem;height:0.8rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>`).join('')}
+            </tbody>
+          </table>`;
+      }
+
+      async function mlAddFirm() {
+        const nameEl = document.getElementById('ml-firm-name-input');
+        const catEl  = document.getElementById('ml-firm-category-input');
+        const cityEl = document.getElementById('ml-firm-city-input');
+        const btn    = document.getElementById('ml-firm-add-btn');
+        const name = (nameEl?.value || '').trim();
+        if (!name) { mlShowToast('Firm name is required.', 'error'); return; }
+        btn.disabled = true; btn.textContent = 'Adding…';
+        try {
+          const { error } = await supabaseClient.rpc('admin_add_firm', {
+            p_name:     name,
+            p_category: (catEl?.value || '').trim() || null,
+            p_hq_city:  (cityEl?.value || '').trim() || null,
+          });
+          if (error) throw error;
+          if (nameEl) nameEl.value = '';
+          if (catEl)  catEl.value  = '';
+          if (cityEl) cityEl.value = '';
+          mlShowToast(`Firm "${name}" added.`, 'success');
+          mlLoadFirms();
+        } catch (err) {
+          mlShowToast('Error: ' + err.message, 'error');
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = '<svg style="width:0.9rem;height:0.9rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> Add Firm';
+        }
+      }
+
+      // ── Delete / Force-Delete Modals ─────────────────────────────────────
+      let _mlDeleteCtx = {}; // holds {id, name, reviewCount} for the pending action
+
+      function mlEnsureDeleteModal() {
+        if (document.getElementById('ml-delete-modal')) return;
+        const el = document.createElement('div');
+        el.id = 'ml-delete-modal';
+        el.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,0.65);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:10000;padding:1rem;';
+        el.innerHTML = `
+          <div style="background:#fff;border-radius:18px;width:90%;max-width:460px;padding:1.75rem;box-shadow:0 24px 48px rgba(0,0,0,0.18);border:1px solid #e2e8f0;">
+            <!-- Header -->
+            <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.1rem;">
+              <div id="ml-del-icon" style="width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg style="width:22px;height:22px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              </div>
+              <div>
+                <h3 id="ml-del-title" style="font-size:1.05rem;font-weight:700;color:#0f172a;margin:0;"></h3>
+                <p id="ml-del-subtitle" style="font-size:0.8rem;color:#64748b;margin:0.1rem 0 0;"></p>
+              </div>
+            </div>
+
+            <!-- Firm name pill -->
+            <div id="ml-del-firm-pill" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:0.65rem 1rem;margin-bottom:1rem;font-size:0.875rem;font-weight:600;color:#0f172a;"></div>
+
+            <!-- Warning (force-delete only) -->
+            <div id="ml-del-warning" style="display:none;background:#fef2f2;border:1px solid #fca5a5;border-radius:10px;padding:0.75rem 1rem;margin-bottom:1rem;font-size:0.83rem;color:#991b1b;line-height:1.5;"></div>
+
+            <!-- Merge suggestion (force-delete only) -->
+            <div id="ml-del-merge-hint" style="display:none;background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:0.65rem 1rem;margin-bottom:1rem;font-size:0.83rem;color:#92400e;display:none;align-items:center;gap:0.5rem;">
+              <svg style="width:1rem;height:1rem;flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <span>Tip: Use <strong>Merge</strong> instead to move the reviews to the correct firm without losing data.</span>
+            </div>
+
+            <!-- Type-to-confirm (force-delete only) -->
+            <div id="ml-del-confirm-wrap" style="display:none;margin-bottom:1rem;">
+              <label style="display:block;font-size:0.75rem;font-weight:700;color:#334155;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.4rem;">Type the firm name to confirm</label>
+              <input id="ml-del-confirm-input" type="text" placeholder="Firm name…" oninput="mlDelCheckInput()" autocomplete="off"
+                style="width:100%;border:1.5px solid #fca5a5;border-radius:8px;padding:0.5rem 0.75rem;font-size:0.875rem;outline:none;box-sizing:border-box;color:#0f172a;">
+              <p id="ml-del-confirm-hint" style="font-size:0.75rem;color:#dc2626;margin:0.3rem 0 0;display:none;">Name doesn't match — check spelling.</p>
+            </div>
+
+            <!-- Actions -->
+            <div style="display:flex;gap:0.6rem;justify-content:flex-end;flex-wrap:wrap;">
+              <button type="button" onclick="mlCloseDeleteModal()" style="background:#f1f5f9;color:#475569;border:none;padding:0.6rem 1.1rem;border-radius:10px;font-weight:600;font-size:0.85rem;cursor:pointer;">Cancel</button>
+              <button type="button" id="ml-del-merge-btn" onclick="mlDelSwitchToMerge()" style="display:none;background:#fefce8;color:#854d0e;border:1px solid #fde68a;padding:0.6rem 1.1rem;border-radius:10px;font-weight:600;font-size:0.85rem;cursor:pointer;">
+                <svg style="width:0.85rem;height:0.85rem;vertical-align:-0.1em;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                Merge Instead
+              </button>
+              <button type="button" id="ml-del-confirm-btn" style="padding:0.6rem 1.25rem;border-radius:10px;font-weight:600;font-size:0.85rem;cursor:pointer;border:none;color:#fff;display:inline-flex;align-items:center;gap:0.4rem;" onclick="mlDelConfirm()">
+                <svg style="width:0.85rem;height:0.85rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                Delete
+              </button>
+            </div>
+          </div>`;
+        document.body.appendChild(el);
+        el.addEventListener('click', e => { if (e.target === el) mlCloseDeleteModal(); });
+      }
+
+      function mlCloseDeleteModal() {
+        const m = document.getElementById('ml-delete-modal');
+        if (m) { m.style.display = 'none'; m.style.alignItems = 'center'; }
+      }
+
+      function mlDelCheckInput() {
+        const input = document.getElementById('ml-del-confirm-input');
+        const hint  = document.getElementById('ml-del-confirm-hint');
+        const btn   = document.getElementById('ml-del-confirm-btn');
+        const val   = (input?.value || '').trim();
+        const match = val === (_mlDeleteCtx.name || '').trim();
+        if (btn)   { btn.disabled = !match; btn.style.opacity = match ? '1' : '0.45'; }
+        if (hint)  { hint.style.display = val && !match ? 'block' : 'none'; }
+      }
+
+      function mlDelSwitchToMerge() {
+        mlCloseDeleteModal();
+        mlOpenMergeModal(_mlDeleteCtx.id, _mlDeleteCtx.name);
+      }
+
+      async function mlDelConfirm() {
+        const { id, name, reviewCount } = _mlDeleteCtx;
+        const btn = document.getElementById('ml-del-confirm-btn');
+        const origHtml = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<svg style="width:0.85rem;height:0.85rem;animation:spin 0.8s linear infinite" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg> Deleting…';
+
+        try {
+          if (reviewCount > 0) {
+            // Force delete
+            const { data, error } = await supabaseClient.rpc('admin_force_delete_firm', { p_id: id });
+            if (error) throw error;
+            mlCloseDeleteModal();
+            mlShowToast(`✓ Deleted "${data.firm_name}" and ${data.reviews_deleted} review(s).`, 'success');
+          } else {
+            // Safe delete
+            const { error } = await supabaseClient.rpc('admin_delete_firm', { p_id: id });
+            if (error) throw error;
+            mlCloseDeleteModal();
+            mlShowToast(`Firm "${name}" deleted.`, 'success');
+          }
+          mlLoadFirms();
+        } catch (err) {
+          mlShowToast('Delete failed: ' + err.message, 'error');
+          btn.disabled = false;
+          btn.innerHTML = origHtml;
+        }
+      }
+
+      function mlDeleteFirm(id, name, reviewCount) {
+        _mlDeleteCtx = { id, name, reviewCount };
+        mlEnsureDeleteModal();
+
+        const isForce    = reviewCount > 0;
+        const icon       = document.getElementById('ml-del-icon');
+        const title      = document.getElementById('ml-del-title');
+        const subtitle   = document.getElementById('ml-del-subtitle');
+        const pill       = document.getElementById('ml-del-firm-pill');
+        const warning    = document.getElementById('ml-del-warning');
+        const mergeHint  = document.getElementById('ml-del-merge-hint');
+        const confirmWrap= document.getElementById('ml-del-confirm-wrap');
+        const confirmInp = document.getElementById('ml-del-confirm-input');
+        const confirmHint= document.getElementById('ml-del-confirm-hint');
+        const mergeBtn   = document.getElementById('ml-del-merge-btn');
+        const delBtn     = document.getElementById('ml-del-confirm-btn');
+
+        if (isForce) {
+          icon.style.cssText    = 'width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#fef2f2;color:#dc2626;';
+          title.textContent     = 'Force Delete Firm';
+          subtitle.textContent  = 'This will permanently delete the firm and all its reviews.';
+          warning.style.display = 'block';
+          warning.innerHTML     = `<strong>⚠ ${reviewCount} review(s)</strong> attached to this firm will also be permanently deleted. This cannot be undone.`;
+          mergeHint.style.display  = 'flex';
+          confirmWrap.style.display= 'block';
+          confirmInp.value         = '';
+          confirmHint.style.display= 'none';
+          mergeBtn.style.display   = 'inline-flex';
+          delBtn.style.background  = '#dc2626';
+          delBtn.disabled          = true;
+          delBtn.style.opacity     = '0.45';
+          delBtn.innerHTML         = '<svg style="width:0.85rem;height:0.85rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg> Force Delete';
+        } else {
+          icon.style.cssText    = 'width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#fef2f2;color:#dc2626;';
+          title.textContent     = 'Delete Firm';
+          subtitle.textContent  = 'This action cannot be undone.';
+          warning.style.display = 'none';
+          mergeHint.style.display  = 'none';
+          confirmWrap.style.display= 'none';
+          mergeBtn.style.display   = 'none';
+          delBtn.style.background  = '#dc2626';
+          delBtn.disabled          = false;
+          delBtn.style.opacity     = '1';
+          delBtn.innerHTML         = '<svg style="width:0.85rem;height:0.85rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg> Delete Firm';
+        }
+
+        pill.textContent = name;
+        const modal = document.getElementById('ml-delete-modal');
+        modal.style.display = 'flex';
+        if (isForce) setTimeout(() => confirmInp?.focus(), 100);
+      }
+
+      // mlForceDeleteFirm kept for backwards compat but no longer called directly
+      async function mlForceDeleteFirm(id, name, reviewCount) {
+        mlDeleteFirm(id, name, reviewCount);
+      }
+
+
+      // Merge modal state
+      let mlMergeFromId = null;
+      let mlMergeFromName = '';
+
+      function mlOpenMergeModal(fromId, fromName) {
+        mlMergeFromId   = fromId;
+        mlMergeFromName = fromName;
+
+        // Build modal if not exists
+        let modal = document.getElementById('ml-merge-modal');
+        if (!modal) {
+          modal = document.createElement('div');
+          modal.id = 'ml-merge-modal';
+          modal.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,0.6);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:9999;padding:1rem;';
+          modal.innerHTML = `
+            <div style="background:#fff;border-radius:16px;width:90%;max-width:520px;padding:1.5rem 1.75rem;box-shadow:0 20px 40px rgba(0,0,0,0.15);border:1px solid #e2e8f0;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:1px solid #f1f5f9;">
+                <h3 id="ml-merge-title" style="font-size:1.1rem;font-weight:700;color:#0f172a;margin:0;">Merge Firm</h3>
+                <button type="button" onclick="document.getElementById('ml-merge-modal').style.display='none'" style="background:#f1f5f9;border:none;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#64748b;font-size:1rem;cursor:pointer;">✕</button>
+              </div>
+              <p id="ml-merge-desc" style="font-size:0.875rem;color:#475569;margin:0 0 1rem;line-height:1.5;"></p>
+              <label style="display:block;font-size:0.75rem;font-weight:700;color:#334155;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.4rem;">Merge into (keep this firm)</label>
+              <input id="ml-merge-search" type="text" placeholder="Search for canonical firm…" oninput="mlMergeFilter()" style="width:100%;border:1.5px solid #cbd5e1;border-radius:8px;padding:0.5rem 0.75rem;font-size:0.875rem;outline:none;box-sizing:border-box;margin-bottom:0.5rem;">
+              <div id="ml-merge-list" style="max-height:200px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;"></div>
+              <div style="display:flex;justify-content:flex-end;gap:0.75rem;margin-top:1.25rem;">
+                <button type="button" onclick="document.getElementById('ml-merge-modal').style.display='none'" style="background:#f1f5f9;color:#475569;border:none;padding:0.6rem 1.1rem;border-radius:10px;font-weight:600;font-size:0.85rem;cursor:pointer;">Cancel</button>
+                <button type="button" id="ml-merge-confirm-btn" onclick="mlConfirmMerge()" disabled style="background:#d97706;color:#fff;border:none;padding:0.6rem 1.25rem;border-radius:10px;font-weight:600;font-size:0.85rem;cursor:pointer;opacity:0.5;">Merge & Delete Duplicate</button>
+              </div>
+            </div>`;
+          document.body.appendChild(modal);
+          modal.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; });
+        }
+
+        document.getElementById('ml-merge-title').textContent = `Merge: "${fromName}"`;
+        document.getElementById('ml-merge-desc').textContent =
+          `All reviews under "${fromName}" will be moved to the firm you select below. Then "${fromName}" will be permanently deleted.`;
+        document.getElementById('ml-merge-search').value = '';
+        document.getElementById('ml-merge-confirm-btn').disabled = true;
+        document.getElementById('ml-merge-confirm-btn').style.opacity = '0.5';
+        mlMergeSelectedId = null;
+        mlMergeFilter();
+        modal.style.display = 'flex';
+      }
+
+      let mlMergeSelectedId = null;
+
+      function mlMergeFilter() {
+        const q = (document.getElementById('ml-merge-search')?.value || '').toLowerCase().trim();
+        const list = document.getElementById('ml-merge-list');
+        if (!list) return;
+        const candidates = mlFirmsData.filter(f =>
+          f.id !== mlMergeFromId &&
+          (!q || (f.name || '').toLowerCase().includes(q))
+        ).slice(0, 50);
+        if (!candidates.length) {
+          list.innerHTML = `<div style="padding:0.75rem;font-size:0.85rem;color:#6b7280;text-align:center;">No firms found.</div>`;
+          return;
+        }
+        list.innerHTML = candidates.map(f => `
+          <div onclick="mlMergeSelectFirm('${mlEsc(f.id)}', '${mlEsc(f.name)}', this)"
+            style="padding:0.55rem 0.85rem;font-size:0.875rem;cursor:pointer;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center;"
+            onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=this.dataset.sel==='1'?'#eff6ff':'#fff'" data-sel="0">
+            <span style="font-weight:600;color:#0f172a;">${mlEsc(f.name)}</span>
+            <span style="font-size:0.75rem;color:#94a3b8;">${f.review_count} reviews</span>
+          </div>`).join('');
+      }
+
+      function mlMergeSelectFirm(id, name, el) {
+        mlMergeSelectedId = id;
+        document.querySelectorAll('#ml-merge-list div').forEach(d => { d.style.background = '#fff'; d.dataset.sel = '0'; });
+        el.style.background = '#eff6ff'; el.dataset.sel = '1';
+        const btn = document.getElementById('ml-merge-confirm-btn');
+        btn.disabled = false; btn.style.opacity = '1';
+        btn.textContent = `Merge into "${name}"`;
+      }
+
+      async function mlConfirmMerge() {
+        if (!mlMergeFromId || !mlMergeSelectedId) return;
+        const btn = document.getElementById('ml-merge-confirm-btn');
+        btn.disabled = true; btn.textContent = 'Merging…';
+        try {
+          const { data, error } = await supabaseClient.rpc('admin_merge_firms', {
+            p_from_id: mlMergeFromId,
+            p_to_id:   mlMergeSelectedId,
+          });
+          if (error) throw error;
+          document.getElementById('ml-merge-modal').style.display = 'none';
+          mlShowToast(`✓ Merged "${data.from_firm}" → "${data.to_firm}" (${data.reviews_moved} review(s) moved).`, 'success');
+          mlLoadFirms();
+        } catch (err) {
+          mlShowToast('Merge failed: ' + err.message, 'error');
+          btn.disabled = false; btn.textContent = 'Merge & Delete Duplicate';
+        }
+      }
+
+      // ── CITIES ───────────────────────────────────────────────
+      async function mlLoadCities() {
+        const container = document.getElementById('ml-cities-container');
+        const badge = document.getElementById('ml-cities-count-badge');
+        if (!container) return;
+        container.innerHTML = `<div style="color:#6b7280;font-size:0.85rem;padding:1.5rem;text-align:center;">Loading cities…</div>`;
+        try {
+          const { data, error } = await supabaseClient.rpc('admin_list_cities');
+          if (error) throw error;
+          const cities = data || [];
+          if (badge) badge.textContent = `${cities.length} cities`;
+          mlRenderCities(cities);
+        } catch (err) {
+          container.innerHTML = `<div style="color:#dc2626;font-size:0.85rem;padding:0.75rem;background:#fef2f2;border-radius:8px;border:1px solid #fca5a5;">Failed to load cities: ${mlEsc(err.message)}</div>`;
+        }
+      }
+
+      function mlRenderCities(cities) {
+        const container = document.getElementById('ml-cities-container');
+        if (!container) return;
+        if (!cities.length) {
+          container.innerHTML = `<div style="color:#6b7280;font-size:0.85rem;padding:1.5rem;text-align:center;">No cities found.</div>`;
+          return;
+        }
+        container.innerHTML = `
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.6rem;padding:0.5rem 0;">
+            ${cities.map(c => `
+              <div style="display:flex;justify-content:space-between;align-items:center;background:#f8fafc;border:1px solid #e2e8f0;border-radius:9px;padding:0.5rem 0.75rem;gap:0.5rem;">
+                <span style="font-size:0.875rem;font-weight:600;color:#0f172a;">${mlEsc(c.name)}</span>
+                <button type="button" onclick="mlDeleteCity('${mlEsc(c.id)}', '${mlEsc(c.name)}')" title="Delete city" style="background:none;border:none;color:#dc2626;cursor:pointer;padding:0.2rem;display:flex;align-items:center;opacity:0.7;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.7">
+                  <svg style="width:0.9rem;height:0.9rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+              </div>`).join('')}
+          </div>`;
+      }
+
+      async function mlAddCity() {
+        const nameEl = document.getElementById('ml-city-name-input');
+        const btn    = document.getElementById('ml-city-add-btn');
+        const name = (nameEl?.value || '').trim();
+        if (!name) { mlShowToast('City name is required.', 'error'); return; }
+        btn.disabled = true; btn.textContent = 'Adding…';
+        try {
+          const { error } = await supabaseClient.rpc('admin_add_city', { p_name: name });
+          if (error) throw error;
+          if (nameEl) nameEl.value = '';
+          mlShowToast(`City "${name}" added.`, 'success');
+          mlLoadCities();
+        } catch (err) {
+          mlShowToast('Error: ' + err.message, 'error');
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = '<svg style="width:0.9rem;height:0.9rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> Add City';
+        }
+      }
+
+      async function mlDeleteCity(id, name) {
+        if (!confirm(`Delete city "${name}"? This cannot be undone.`)) return;
+        try {
+          const { error } = await supabaseClient.rpc('admin_delete_city', { p_id: id });
+          if (error) throw error;
+          mlShowToast(`City "${name}" deleted.`, 'success');
+          mlLoadCities();
+        } catch (err) {
+          mlShowToast('Error: ' + err.message, 'error');
+        }
+      }
+
+      window.mlLoadFirms = mlLoadFirms;
+      window.mlFilterFirms = mlFilterFirms;
+      window.mlAddFirm = mlAddFirm;
+      window.mlDeleteFirm = mlDeleteFirm;
+      window.mlForceDeleteFirm = mlForceDeleteFirm;
+      window.mlCloseDeleteModal = mlCloseDeleteModal;
+      window.mlDelCheckInput = mlDelCheckInput;
+      window.mlDelSwitchToMerge = mlDelSwitchToMerge;
+      window.mlDelConfirm = mlDelConfirm;
+      window.mlOpenMergeModal = mlOpenMergeModal;
+      window.mlMergeFilter = mlMergeFilter;
+      window.mlMergeSelectFirm = mlMergeSelectFirm;
+      window.mlConfirmMerge = mlConfirmMerge;
+      window.mlLoadCities = mlLoadCities;
+      window.mlAddCity = mlAddCity;
+      window.mlDeleteCity = mlDeleteCity;
 
       try { await loadLmsVideos(); } catch (error) { console.error("Failed to load LMS resources:", error); }
       try { await loadBanners(); } catch (error) { console.error("Failed to load banners:", error); }

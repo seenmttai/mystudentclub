@@ -536,23 +536,19 @@
     updateCounter();
     refreshSubmitState();
 
-    const fixedCities = ["Mumbai", "Delhi", "Gurgaon", "Noida", "Bangalore", "Pune", "Kolkata", "Chennai", "Hyderabad", "Ahmedabad", "Jaipur"];
+    // City autocomplete — debounced search_cities RPC (mirrors firm autocomplete)
+    let locDebounce = null;
 
-    function renderLocResults() {
-      const q = locInput.value.trim();
-      const normQ = normName(q);
-      const matches = fixedCities.filter(c => normName(c).includes(normQ));
-      const exact = matches.some(c => normName(c) === normQ);
-      
-      let html = matches.map(c => `<button type="button" class="arw-location-item" data-name="${esc(c)}">${esc(c)}</button>`).join('');
+    function renderLocItems(items, q) {
+      const exact = items.some(c => normName(c.name) === normName(q));
+      let html = items.map(c =>
+        `<button type="button" class="arw-location-item" data-name="${esc(c.name)}">${esc(c.name)}</button>`
+      ).join('');
+      // Always append free-text option if query isn't already an exact match
       if (q && !exact) {
         html += `<button type="button" class="arw-location-item" data-name="${esc(q)}">${esc(q)}</button>`;
       }
-      
-      if (!html) {
-        locResults.hidden = true;
-        return;
-      }
+      if (!html) { locResults.hidden = true; return; }
       locResults.innerHTML = html;
       locResults.hidden = false;
       locResults.querySelectorAll('.arw-location-item').forEach(btn => {
@@ -564,10 +560,27 @@
       });
     }
 
-    locInput.addEventListener('focus', renderLocResults);
+    async function fetchLocResults() {
+      const q = locInput.value.trim();
+      if (!q) { locResults.hidden = true; return; }
+      try {
+        const { data, error } = await sb.rpc('search_cities', { q });
+        if (error) throw error;
+        renderLocItems(data || [], q);
+      } catch (_) {
+        // On RPC error show free-text fallback only
+        renderLocItems([], q);
+      }
+    }
+
+    locInput.addEventListener('focus', () => {
+      clearTimeout(locDebounce);
+      locDebounce = setTimeout(fetchLocResults, 150);
+    });
     locInput.addEventListener('input', () => {
-      renderLocResults();
       autoSaveStep1();
+      clearTimeout(locDebounce);
+      locDebounce = setTimeout(fetchLocResults, 250);
     });
     document.addEventListener('click', e => {
       if (!locResults.hidden && !locResults.contains(e.target) && e.target !== locInput) {
