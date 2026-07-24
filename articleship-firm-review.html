@@ -2018,6 +2018,30 @@
         color: var(--h-rose-700);
         border-color: var(--h-rose-200);
       }
+      .afd-delete-btn {
+        background: none;
+        border: none;
+        color: #64748b;
+        font-family: var(--h-mono);
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.25rem 0.625rem;
+        border-radius: 8px;
+        border: 1px solid var(--h-line);
+        transition: all 0.2s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        line-height: 1;
+      }
+      .afd-delete-btn:hover {
+        background: #fef2f2;
+        color: #dc2626;
+        border-color: #fecaca;
+      }
       
       /* Premium Glassmorphic Modal */
       .afd-modal-backdrop {
@@ -2536,6 +2560,21 @@
 
       let CURRENT_FIRM_ID = null;
       let CURRENT_FIRM_CITY = null;
+      let MY_REVIEW_IDS = new Set();
+
+      async function fetchMyReviewIds() {
+        const deviceToken = localStorage.getItem('afr_device_token');
+        if (deviceToken) {
+          try {
+            const { data, error } = await supabaseClient.rpc('get_my_review_ids', { p_device_token: deviceToken });
+            if (!error && data) {
+              MY_REVIEW_IDS = new Set(data.map(r => r.id));
+            }
+          } catch (e) {
+            console.error("Error loading user review IDs:", e);
+          }
+        }
+      }
 
       async function loadFirmPage() {
         document.getElementById("afd-loading-state").innerHTML =
@@ -2544,6 +2583,8 @@
         document.getElementById("afd-layout").style.display = "none";
 
         try {
+          await fetchMyReviewIds();
+
           const { data: reviews, error } = await supabaseClient
             .from("articleship_firm_reviews_public")
             .select("*")
@@ -2551,8 +2592,20 @@
             .order("created_at", { ascending: false });
           if (error) throw error;
 
-          CURRENT_FIRM_ID = reviews[0]?.firm_id || null;
+           CURRENT_FIRM_ID = reviews[0]?.firm_id || null;
           CURRENT_FIRM_CITY = reviews[0]?.location || null;
+
+          // Sort reviews so that own reviews are placed at the top
+          if (reviews && reviews.length && MY_REVIEW_IDS && MY_REVIEW_IDS.size) {
+            reviews.sort((a, b) => {
+              const aOwn = MY_REVIEW_IDS.has(a.id) ? 1 : 0;
+              const bOwn = MY_REVIEW_IDS.has(b.id) ? 1 : 0;
+              if (aOwn !== bOwn) {
+                return bOwn - aOwn;
+              }
+              return new Date(b.created_at) - new Date(a.created_at);
+            });
+          }
 
           document.getElementById("afd-loading-state").style.display = "none";
           document.getElementById("afd-layout").style.display = "flex";
@@ -2982,7 +3035,6 @@
                 travelStatusColor = '#dc2626';
               }
             } else if (r.allow_industrial_training) {
-              // Fallback for older reviews that only reported industrial training
               const text = L.allow_industrial_training[r.allow_industrial_training];
               if (text) {
                 travelValText = text;
@@ -3038,6 +3090,11 @@
               </div>`;
             }
 
+            const isOwn = MY_REVIEW_IDS.has(r.id);
+            const deleteBtnHTML = isOwn
+              ? `<button type="button" class="afd-delete-btn" onclick="openAfdDeleteModal('${r.id}')"><i class="far fa-trash-can"></i> Delete</button>`
+              : '';
+
             return `
           <div class="afd-review-card" data-id="${r.id}">
             <div class="afd-review-header">
@@ -3088,6 +3145,7 @@
             <div class="afd-review-footer">
               ${recHTML}
               <div class="afd-review-actions-right">
+                ${deleteBtnHTML}
                 <button type="button" class="afd-report-btn" onclick="openAfdReportModal('${r.id}')"><i class="far fa-flag"></i> Report</button>
               </div>
             </div>
@@ -3361,8 +3419,71 @@
         document.body.style.overflow = '';
       };
 
+      let deleteReviewId = null;
+
+      window.openAfdDeleteModal = function(reviewId) {
+        deleteReviewId = reviewId;
+        const statusEl = document.getElementById('afd-delete-status');
+        if (statusEl) {
+          statusEl.style.display = 'none';
+          statusEl.textContent = '';
+        }
+        const confirmBtn = document.getElementById('afd-confirm-delete-btn');
+        if (confirmBtn) {
+          confirmBtn.disabled = false;
+          confirmBtn.innerHTML = 'Delete Review';
+        }
+        document.getElementById('afd-delete-modal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      };
+
+      window.closeAfdDeleteModal = function() {
+        document.getElementById('afd-delete-modal').style.display = 'none';
+        document.body.style.overflow = '';
+        deleteReviewId = null;
+      };
+
       // Handle custom reason text area toggle & Form submission (wrapped in DOMContentLoaded)
       document.addEventListener('DOMContentLoaded', () => {
+        const confirmDeleteBtn = document.getElementById('afd-confirm-delete-btn');
+        if (confirmDeleteBtn) {
+          confirmDeleteBtn.addEventListener('click', async () => {
+            if (!deleteReviewId) return;
+
+            const submitBtn = document.getElementById('afd-confirm-delete-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+
+            const statusEl = document.getElementById('afd-delete-status');
+            statusEl.style.display = 'none';
+
+            try {
+              const deviceToken = localStorage.getItem('afr_device_token');
+              if (!deviceToken) throw new Error("No device token found.");
+
+              const { error } = await supabaseClient.rpc('delete_own_review', {
+                p_review_id: deleteReviewId,
+                p_device_token: deviceToken
+              });
+              if (error) throw error;
+
+              statusEl.textContent = 'Your review has been successfully deleted.';
+              statusEl.className = 'afd-report-status ok';
+              statusEl.style.display = 'block';
+
+              setTimeout(() => {
+                closeAfdDeleteModal();
+                loadFirmPage();
+              }, 1500);
+            } catch (err) {
+              statusEl.textContent = err.message || 'Something went wrong. Please try again.';
+              statusEl.className = 'afd-report-status err';
+              statusEl.style.display = 'block';
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = 'Delete Review';
+            }
+          });
+        }
         document.querySelectorAll('input[name="report_reason"]').forEach(radio => {
           radio.addEventListener('change', (e) => {
             const customWrap = document.getElementById('afd-report-custom-wrap');
@@ -3485,6 +3606,26 @@
             <button type="submit" class="afd-btn-modal-submit">Submit Report</button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <!-- Delete Review Confirmation Modal -->
+    <div id="afd-delete-modal" class="afd-modal-backdrop" style="display: none;">
+      <div class="afd-modal-card">
+        <div class="afd-modal-header">
+          <h3>Delete Anonymous Review</h3>
+          <button type="button" class="afd-modal-close" onclick="closeAfdDeleteModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="afd-modal-body">
+          <p style="font-size: 0.875rem; color: #475569; line-height: 1.5; margin: 0;">
+            Are you sure you want to permanently delete your anonymous review? This action is immediate and cannot be undone.
+          </p>
+          <div id="afd-delete-status" class="afd-report-status" style="display: none; font-size: 0.8125rem; margin-top: 1rem; font-weight: 500;"></div>
+        </div>
+        <div class="afd-modal-footer">
+          <button type="button" class="afd-btn-modal-cancel" onclick="closeAfdDeleteModal()">Cancel</button>
+          <button type="button" class="afd-btn-modal-submit" id="afd-confirm-delete-btn" style="background: #dc2626; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);">Delete Review</button>
+        </div>
       </div>
     </div>
   </body>

@@ -2591,7 +2591,7 @@
       }
 
       try {
-        const { data: tableCities } = await supabaseClient.from('master_cities').select('name');
+        const { data: tableCities } = await supabaseClient.from('cities').select('name');
         if (Array.isArray(tableCities) && tableCities.length) {
           tableCities.forEach(c => { if (c && c.name) locSet.add(c.name.trim()); });
         }
