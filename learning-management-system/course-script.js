@@ -102,6 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
         pdfNextPage: document.getElementById('pdf-next-page'),
         pdfPageInfo: document.getElementById('pdf-page-info'),
         viewerDownloadBtn: document.getElementById('viewer-download-btn'),
+        viewerOpenExternalBtn: document.getElementById('viewer-open-external-btn'),
         iframeViewerContainer: document.getElementById('iframe-viewer-container'),
         resourceIframe: document.getElementById('resource-iframe'),
         footer: document.getElementById('footer'),
@@ -1668,13 +1669,19 @@ document.addEventListener('DOMContentLoaded', () => {
             if (pdfPrev) pdfPrev.style.display = 'none';
             if (pdfInfo) pdfInfo.style.display = 'none';
             if (pdfNext) pdfNext.style.display = 'none';
+            if (DOMElements.viewerOpenExternalBtn && resource.url) {
+                DOMElements.viewerOpenExternalBtn.href = resource.url;
+                DOMElements.viewerOpenExternalBtn.style.display = 'inline-flex';
+            }
             DOMElements.resourceViewerModal.querySelector('.resource-viewer-controls').style.display = 'flex';
         } else if (type === 'pdf') {
             if (pdfPrev) pdfPrev.style.display = 'inline-block';
             if (pdfInfo) pdfInfo.style.display = 'inline';
             if (pdfNext) pdfNext.style.display = 'inline-block';
+            if (DOMElements.viewerOpenExternalBtn) DOMElements.viewerOpenExternalBtn.style.display = 'none';
             DOMElements.resourceViewerModal.querySelector('.resource-viewer-controls').style.display = 'flex';
         } else {
+            if (DOMElements.viewerOpenExternalBtn) DOMElements.viewerOpenExternalBtn.style.display = 'none';
             DOMElements.resourceViewerModal.querySelector('.resource-viewer-controls').style.display = 'none';
         }
 
