@@ -645,7 +645,7 @@
                     </div>
                     <!-- Controls for iframe / Google Sheets -->
                     <div v-else-if="previewType === 'iframe'" class="resource-viewer-controls" style="justify-content: center; gap: 0.75rem;">
-                        <a v-if="currentResource?.url" :href="currentResource.url" target="_blank" rel="noopener noreferrer" class="viewer-nav-button">
+                        <a v-if="currentResource?.url" :href="getSheetPreviewUrl(currentResource.url)" target="_blank" rel="noopener noreferrer" class="viewer-nav-button">
                             <i class="fas fa-external-link-alt"></i> Open Full Sheet
                         </a>
                         <button @click="downloadResource(currentResource)" class="viewer-nav-button viewer-download-btn">
@@ -753,6 +753,17 @@
                         viewer.classList.remove('pseudo-fullscreen');
                         this.isFullscreen = false;
                     }
+                },
+
+                // Convert /edit URLs to /preview to prevent mobile deep-linking
+                getSheetPreviewUrl(url) {
+                    if (!url) return url;
+                    const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+                    if (!match) return url;
+                    const sheetId = match[1];
+                    const gidMatch = url.match(/[#&]gid=([0-9]+)/);
+                    const gid = gidMatch ? gidMatch[1] : '0';
+                    return `https://docs.google.com/spreadsheets/d/${sheetId}/preview?gid=${gid}`;
                 },
 
                 async checkAuth() {
