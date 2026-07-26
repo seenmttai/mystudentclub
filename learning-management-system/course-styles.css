@@ -785,12 +785,12 @@
 
 .resource-viewer-content {
     background-color: white;
-    padding: 1.5rem;
+    padding: 1.25rem;
     border-radius: 12px;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    width: 95vw;
-    max-width: 900px;
-    height: 95vh;
+    width: 96vw;
+    max-width: 1280px;
+    height: 94vh;
     display: flex;
     flex-direction: column;
     position: relative;
@@ -845,6 +845,12 @@
     margin-top: 0.35rem;
     font-size: 0.88rem;
     color: #64748b;
+}
+
+@media (max-width: 768px) {
+    .resource-viewer-subtitle {
+        display: none !important;
+    }
 }
 
 .resource-viewer-header>div {
@@ -943,13 +949,22 @@
 
 .viewer-nav-button {
     padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1;
+    height: 38px;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
     border: 1px solid #4f46e5;
     background-color: white;
     color: #4f46e5;
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s ease;
-    font-weight: 500;
+    text-decoration: none;
 }
 
 .viewer-nav-button:hover:not(:disabled) {
@@ -969,9 +984,15 @@
 }
 
 .viewer-download-btn {
-    background-color: var(--success-500);
+    background-color: #059669;
     color: white;
-    border-color: var(--success-500);
+    border-color: #059669;
+}
+
+.viewer-download-btn:hover:not(:disabled) {
+    background-color: #047857;
+    border-color: #047857;
+    color: white;
 }
 
 .viewer-download-btn:hover:not(:disabled) {
