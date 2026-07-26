@@ -135,8 +135,18 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const isGoogleSheetResource = (resource) => {
-        const url = resource?.url || '';
-        return url.toLowerCase().includes('docs.google.com/spreadsheets/d/');
+        if (!resource) return false;
+        const url = String(resource.url || resource.view_storage_path || resource.download_storage_path || '').toLowerCase();
+        const type = String(resource.type || '').toLowerCase();
+        const title = String(resource.title || '').toLowerCase();
+
+        return url.includes('docs.google.com/spreadsheets') ||
+               url.includes('drive.google.com/spreadsheets') ||
+               url.includes('spreadsheets/d/') ||
+               type === 'spreadsheet' ||
+               type === 'sheets' ||
+               type === 'gsheet' ||
+               title.includes('hiring companies list');
     };
 
     const isDocxPreviewResource = (resource) => {
