@@ -351,6 +351,8 @@
             width: 100%;
             height: 100%;
             background: white;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         #resource-iframe {
@@ -360,18 +362,8 @@
         }
 
         .iframe-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            /* Leave space for scrollbar on right (17px) and sheet tabs at bottom (40px) */
-            width: calc(100% - 17px);
-            height: calc(100% - 40px);
-            z-index: 10;
-            cursor: default;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
+            display: none !important;
+            pointer-events: none !important;
         }
 
         /* PDF & CSV Styles */
@@ -592,7 +584,6 @@
 
                         <!-- Iframe -->
                         <div v-show="previewType === 'iframe'" class="iframe-container">
-                            <div class="iframe-overlay"></div>
                             <iframe id="resource-iframe" :src="iframeSrc" title="Embedded Resource"></iframe>
                         </div>
 
@@ -615,6 +606,12 @@
                         <span>Page {{ pdfCurrentPage }} of {{ pdfTotalPages }}</span>
                         <button @click="renderPdfPage(pdfCurrentPage + 1)" :disabled="pdfCurrentPage >= pdfTotalPages"
                             class="viewer-nav-button">Next</button>
+                    </div>
+                    <!-- Controls for iframe / Google Sheets -->
+                    <div v-else-if="previewType === 'iframe'" class="resource-viewer-controls" style="justify-content: center;">
+                        <button @click="downloadResource(currentResource)" class="viewer-nav-button viewer-download-btn">
+                            <i class="fas fa-download"></i> Download Excel
+                        </button>
                     </div>
                 </div>
             </div>
@@ -763,29 +760,31 @@
                 },
 
                 isSpecialSheet(resource) {
-                    const specialUrls = [
-                        'https://docs.google.com/spreadsheets/d/1NcACOrX0PsQCQ3P4b80EvGsI1fFxW8wlC-6y258HE-Y/edit?gid=1269177841#gid=1269177841',
-                        'https://docs.google.com/spreadsheets/d/1vVVFbHawgCnr01_-eSVQLiSa3TZ9yuB00fgmNPZKZJc/edit?gid=1309949710#gid=1309949710'
-                    ];
-                    return specialUrls.includes(resource.url);
+                    const url = resource?.url || '';
+                    return url.toLowerCase().includes('docs.google.com/spreadsheets/d/');
                 },
                 hasViewPath(resource) {
                     return resource.view_storage_path && resource.view_storage_path !== 'None';
                 },
                 hasDownloadPath(resource) {
-                    return resource.download_storage_path && resource.download_storage_path !== 'None';
+                    return (resource.download_storage_path && resource.download_storage_path !== 'None') || this.isSpecialSheet(resource);
                 },
                 isDocxPreviewResource(resource) {
                     const type = String(resource?.type || '').toLowerCase();
                     return type === 'docx' && this.hasViewPath(resource) && this.hasDownloadPath(resource);
                 },
                 getViewLabel(resource) {
+                    if (this.isSpecialSheet(resource)) return 'View Sheet';
                     return this.isDocxPreviewResource(resource) ? 'Preview PDF' : 'View';
                 },
                 getDownloadLabel(resource) {
+                    if (this.isSpecialSheet(resource)) return 'Download Excel';
                     return this.isDocxPreviewResource(resource) ? 'Download DOCX' : 'Download';
                 },
                 getResourceFormatNote(resource) {
+                    if (this.isSpecialSheet(resource)) {
+                        return 'Interactive sheet preview available. Download exports as Excel (.xlsx).';
+                    }
                     return this.isDocxPreviewResource(resource)
                         ? 'PDF preview available. Download returns the original DOCX file.'
                         : '';
@@ -980,8 +979,20 @@
                 },
 
                 async downloadResource(resource) {
-                    const path = resource.download_storage_path;
+                    const path = resource?.download_storage_path;
                     if (!path || path === 'None') {
+                        if (resource && this.isSpecialSheet(resource)) {
+                            const matches = resource.url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+                            const sheetId = matches ? matches[1] : '';
+                            const gidMatch = resource.url.match(/[#&]gid=([0-9]+)/);
+                            const gid = gidMatch ? gidMatch[1] : '';
+                            if (sheetId) {
+                                let exportUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=xlsx`;
+                                if (gid) exportUrl += `&gid=${gid}`;
+                                window.open(exportUrl, '_blank');
+                                return;
+                            }
+                        }
                         alert('No downloadable file available.');
                         return;
                     }

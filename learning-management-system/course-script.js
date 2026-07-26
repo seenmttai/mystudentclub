@@ -133,6 +133,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const isGoogleSheetResource = (resource) => {
+        const url = resource?.url || '';
+        return url.toLowerCase().includes('docs.google.com/spreadsheets/d/');
+    };
+
     const isDocxPreviewResource = (resource) => {
         const type = String(resource?.type || '').toLowerCase();
         const hasPreview = resource?.view_storage_path && resource.view_storage_path !== 'None';
@@ -140,17 +145,29 @@ document.addEventListener('DOMContentLoaded', () => {
         return type === 'docx' && hasPreview && hasDownload;
     };
 
-    const getResourceViewLabel = (resource) => isDocxPreviewResource(resource) ? 'Preview PDF' : 'View';
+    const getResourceViewLabel = (resource) => {
+        if (isGoogleSheetResource(resource)) return 'View Sheet';
+        return isDocxPreviewResource(resource) ? 'Preview PDF' : 'View';
+    };
 
-    const getResourceDownloadLabel = (resource) => isDocxPreviewResource(resource) ? 'Download DOCX' : 'Download';
+    const getResourceDownloadLabel = (resource) => {
+        if (isGoogleSheetResource(resource)) return 'Download Excel';
+        return isDocxPreviewResource(resource) ? 'Download DOCX' : 'Download';
+    };
 
-    const getResourceFormatNote = (resource) => (
-        isDocxPreviewResource(resource)
+    const getResourceFormatNote = (resource) => {
+        if (isGoogleSheetResource(resource)) {
+            return 'Interactive sheet preview available. Download exports as Excel (.xlsx).';
+        }
+        return isDocxPreviewResource(resource)
             ? 'PDF preview available. Download returns the original DOCX file.'
-            : ''
-    );
+            : '';
+    };
 
     const getResourceViewerSubtitle = (resource, type) => {
+        if (isGoogleSheetResource(resource) && type === 'iframe') {
+            return 'Interactive sheet preview. Download exports the file as Excel (.xlsx).';
+        }
         if (isDocxPreviewResource(resource) && type === 'pdf') {
             return 'Previewing the PDF version. Use download to get the original DOCX file.';
         }
@@ -1313,7 +1330,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
                             <div class="resource-actions">
                                 <button class="resource-btn resource-btn-view" data-resource="${safeResourceStr}"><i class="fas fa-eye"></i> ${viewLabel}</button>
-                                ${resource.download_storage_path && resource.download_storage_path !== 'None' ?
+                                ${((resource.download_storage_path && resource.download_storage_path !== 'None') || isGoogleSheetResource(resource)) ?
                             `<button class="resource-btn resource-btn-download" data-resource="${safeResourceStr}"><i class="fas fa-download"></i> ${downloadLabel}</button>` :
                             `<span class="resource-btn resource-btn-download disabled"><i class="fas fa-download"></i> ${downloadLabel}</span>`
                         }
@@ -1396,13 +1413,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const handleResourceClick = async (resource) => {
-        // Define all sheets that should open in the embedded viewer
-        const specialSheetUrls = [
-            'https://docs.google.com/spreadsheets/d/1NcACOrX0PsQCQ3P4b80EvGsI1fFxW8wlC-6y258HE-Y/edit?gid=1269177841#gid=1269177841',
-            'https://docs.google.com/spreadsheets/d/1vVVFbHawgCnr01_-eSVQLiSa3TZ9yuB00fgmNPZKZJc/edit?gid=1309949710#gid=1309949710'
-        ];
-
-        if (specialSheetUrls.includes(resource.url)) {
+        if (isGoogleSheetResource(resource)) {
             await openResourceViewer(resource, 'iframe');
             return;
         }
@@ -1469,6 +1480,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const downloadResource = async (resource) => {
         let path = resource.download_storage_path;
         if (!path || path === 'None') {
+            if (resource && isGoogleSheetResource(resource)) {
+                const matches = resource.url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+                const sheetId = matches ? matches[1] : '';
+                const gidMatch = resource.url.match(/[#&]gid=([0-9]+)/);
+                const gid = gidMatch ? gidMatch[1] : '';
+                if (sheetId) {
+                    let exportUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=xlsx`;
+                    if (gid) exportUrl += `&gid=${gid}`;
+                    window.open(exportUrl, '_blank');
+                    return;
+                }
+            }
             DOMElements.noDownloadPopup.classList.add('active');
             return;
         }
@@ -1637,9 +1660,25 @@ document.addEventListener('DOMContentLoaded', () => {
         DOMElements.csvViewerContainer.style.display = 'none';
         DOMElements.iframeViewerContainer.style.display = 'none';
 
-        DOMElements.resourceViewerModal.querySelector('.resource-viewer-controls').style.display = type === 'iframe' ? 'none' : 'flex';
-        
-        const hasDl = resource.download_storage_path && resource.download_storage_path !== 'None';
+        const pdfPrev = document.getElementById('pdf-prev-page');
+        const pdfInfo = document.getElementById('pdf-page-info');
+        const pdfNext = document.getElementById('pdf-next-page');
+
+        if (type === 'iframe') {
+            if (pdfPrev) pdfPrev.style.display = 'none';
+            if (pdfInfo) pdfInfo.style.display = 'none';
+            if (pdfNext) pdfNext.style.display = 'none';
+            DOMElements.resourceViewerModal.querySelector('.resource-viewer-controls').style.display = 'flex';
+        } else if (type === 'pdf') {
+            if (pdfPrev) pdfPrev.style.display = 'inline-block';
+            if (pdfInfo) pdfInfo.style.display = 'inline';
+            if (pdfNext) pdfNext.style.display = 'inline-block';
+            DOMElements.resourceViewerModal.querySelector('.resource-viewer-controls').style.display = 'flex';
+        } else {
+            DOMElements.resourceViewerModal.querySelector('.resource-viewer-controls').style.display = 'none';
+        }
+
+        const hasDl = (resource.download_storage_path && resource.download_storage_path !== 'None') || isGoogleSheetResource(resource);
         if (DOMElements.viewerDownloadBtn) {
             DOMElements.viewerDownloadBtn.style.display = hasDl ? 'inline-block' : 'none';
             DOMElements.viewerDownloadBtn.textContent = getResourceDownloadLabel(resource);
