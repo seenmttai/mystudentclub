@@ -36,7 +36,7 @@
   const DRAFT_TTL_MS = 24 * 60 * 60 * 1000;
 
   // ── Validation / anti-abuse config ────────────────────────────────────
-  const MIN_WORDS = 30;
+  const MIN_CHARS = 30;
   const MAX_WORDS = 500;
   const STIPEND_MAX = 50000;
   const STIPEND_YEAR_MIN = 2019;
@@ -53,6 +53,9 @@
   function wordCount(s) {
     return String(s || '').trim().split(/\s+/).filter(Boolean).length;
   }
+  function charCount(s) {
+    return String(s || '').trim().length;
+  }
   // Best-effort personal-name detector (backstop is the consent checkbox).
   function namesIndividual(t) {
     let m;
@@ -67,9 +70,10 @@
   // Returns { ok, message } for the free-text review body.
   function validateReviewText(text) {
     const t = String(text || '').trim();
+    const chars = charCount(t);
     const words = wordCount(t);
-    if (words < MIN_WORDS) {
-      return { ok: false, message: `Please write at least ${MIN_WORDS} words so your review is useful to others (currently ${words}).` };
+    if (chars < MIN_CHARS) {
+      return { ok: false, message: `Please write at least ${MIN_CHARS} characters so your review is useful to others (currently ${chars}).` };
     }
     if (words > MAX_WORDS) {
       return { ok: false, message: `Your review must not exceed ${MAX_WORDS} words.` };
@@ -403,7 +407,7 @@
         <div class="arw-field" style="position: relative;">
           <label for="arw-review">Anonymous Review <span style="color:#dc2626">*</span></label>
           <textarea id="arw-review" rows="4" placeholder="Example: &quot;Great learning exposure in statutory audit. Working hours are standard (9-7 PM) but can stretch during tax season. Partners are approachable. Stipend is paid on time, and leaves for exams are supported.&quot;"></textarea>
-          <div id="arw-char-counter" style="font-size: 11px; color: #64748b; text-align: right; margin-top: 0.35rem; font-family: monospace;">0 / ${MIN_WORDS} words minimum</div>
+          <div id="arw-char-counter" style="font-size: 11px; color: #64748b; text-align: right; margin-top: 0.35rem; font-family: monospace;">0 / ${MIN_CHARS} characters minimum</div>
         </div>
         <div class="arw-field">
           <label>Overall Rating <span style="color:#dc2626">*</span></label>
@@ -509,22 +513,24 @@
     if (saved.consent) consentBox.checked = true;
 
     function refreshSubmitState() {
+      const chars = charCount(reviewTextarea.value);
       const words = wordCount(reviewTextarea.value);
-      const ready = words >= MIN_WORDS && consentBox.checked;
+      const ready = chars >= MIN_CHARS && words <= MAX_WORDS && consentBox.checked;
       submitBtn.disabled = !ready;
     }
     function updateCounter() {
+      const chars = charCount(reviewTextarea.value);
       const words = wordCount(reviewTextarea.value);
       if (words > MAX_WORDS) {
         counterDiv.textContent = `${words} / ${MAX_WORDS} words — too long`;
         counterDiv.style.color = '#dc2626';
         counterDiv.style.fontWeight = '700';
-      } else if (words < MIN_WORDS) {
-        counterDiv.textContent = `${words} / ${MIN_WORDS} words minimum`;
+      } else if (chars < MIN_CHARS) {
+        counterDiv.textContent = `${chars} / ${MIN_CHARS} characters minimum`;
         counterDiv.style.color = '#dc2626';
         counterDiv.style.fontWeight = '600';
       } else {
-        counterDiv.textContent = `${words} words · looks good`;
+        counterDiv.textContent = `${chars} characters · looks good`;
         counterDiv.style.color = '#16a34a';
         counterDiv.style.fontWeight = '600';
       }
