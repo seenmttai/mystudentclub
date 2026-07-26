@@ -532,7 +532,8 @@
 
             document.getElementById('sheet-modal-title').textContent = title;
             document.getElementById('sheet-modal-iframe').src = embedUrl;
-            document.getElementById('sheet-modal-open-external').href = url;
+            // Use /preview URL to prevent mobile deep-linking to native Sheets app
+            document.getElementById('sheet-modal-open-external').href = `https://docs.google.com/spreadsheets/d/${sheetId}/preview${gid ? '?gid=' + gid : ''}`;
             document.getElementById('sheet-modal-download').href = exportUrl;
             modal.style.display = 'flex';
         }

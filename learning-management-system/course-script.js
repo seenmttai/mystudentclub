@@ -149,6 +149,18 @@ document.addEventListener('DOMContentLoaded', () => {
                title.includes('hiring companies list');
     };
 
+    // Convert Google Sheet URLs from /edit to /preview to prevent
+    // mobile OS from deep-linking to the native Google Sheets app
+    const getSheetPreviewUrl = (url) => {
+        if (!url) return url;
+        const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+        if (!match) return url;
+        const sheetId = match[1];
+        const gidMatch = url.match(/[#&]gid=([0-9]+)/);
+        const gid = gidMatch ? gidMatch[1] : '0';
+        return `https://docs.google.com/spreadsheets/d/${sheetId}/preview?gid=${gid}`;
+    };
+
     const isDocxPreviewResource = (resource) => {
         const type = String(resource?.type || '').toLowerCase();
         const hasPreview = resource?.view_storage_path && resource.view_storage_path !== 'None';
@@ -1680,7 +1692,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (pdfInfo) pdfInfo.style.display = 'none';
             if (pdfNext) pdfNext.style.display = 'none';
             if (DOMElements.viewerOpenExternalBtn && resource.url) {
-                DOMElements.viewerOpenExternalBtn.href = resource.url;
+                DOMElements.viewerOpenExternalBtn.href = isGoogleSheetResource(resource) ? getSheetPreviewUrl(resource.url) : resource.url;
                 DOMElements.viewerOpenExternalBtn.style.display = 'inline-flex';
             }
             DOMElements.resourceViewerModal.querySelector('.resource-viewer-controls').style.display = 'flex';
