@@ -815,22 +815,9 @@
         ${segHTML('allow_industrial_training', opt('allow_industrial_training'))}
       </div>
       <div class="arw-field">
-        <label>Monthly Stipend (₹)</label>
-        <div class="arw-stipend-row">
-          <input id="arw-stipend" type="number" min="0" max="${STIPEND_MAX}" inputmode="numeric" placeholder="e.g., 12000">
-          <div class="arw-custom-select" id="arw-stipend-year-wrap">
-            <button type="button" class="arw-select-trigger" id="arw-stipend-year-trigger" aria-haspopup="listbox" aria-expanded="false">
-              <span class="arw-select-label placeholder" id="arw-stipend-year-label">Year</span>
-              <i class="fas fa-chevron-down arw-select-arrow"></i>
-            </button>
-            <div class="arw-select-menu" role="listbox" id="arw-stipend-year-menu">
-              <div class="arw-select-option" data-value="" role="option">Year</div>
-              ${(() => { const y = new Date().getFullYear(); let o = ''; for (let i = y; i >= STIPEND_YEAR_MIN; i--) o += `<div class="arw-select-option" data-value="${i}" role="option">${i}</div>`; return o; })()}
-            </div>
-            <input type="hidden" id="arw-stipend-year" name="stipend_year" value="">
-          </div>
-        </div>
-        <div class="arw-field-hint" id="arw-stipend-hint">Enter monthly stipend (max ₹${STIPEND_MAX.toLocaleString('en-IN')}) and the year it applied to.</div>
+        <label for="arw-stipend">Monthly Stipend (₹)</label>
+        <input id="arw-stipend" type="number" min="0" max="${STIPEND_MAX}" inputmode="numeric" placeholder="e.g., 12000">
+        <div class="arw-field-hint" id="arw-stipend-hint">Enter monthly stipend (max ₹${STIPEND_MAX.toLocaleString('en-IN')}).</div>
       </div>
       <div class="arw-field">
         <span class="arw-group-label">Was the stipend paid on time?</span>
@@ -874,65 +861,11 @@
       if (wrap) wrap.hidden = false;
     }
     const stipendInput = document.getElementById('arw-stipend');
-    const stipendYearWrap = document.getElementById('arw-stipend-year-wrap');
-    const stipendYearTrigger = document.getElementById('arw-stipend-year-trigger');
-    const stipendYearLabel = document.getElementById('arw-stipend-year-label');
-    const stipendYearMenu = document.getElementById('arw-stipend-year-menu');
-    const stipendYear = document.getElementById('arw-stipend-year');
     const stipendHint = document.getElementById('arw-stipend-hint');
-
-    function setStipendYearValue(val) {
-      if (!stipendYear) return;
-      const cleanVal = val ? String(val) : '';
-      stipendYear.value = cleanVal;
-      if (stipendYearLabel) {
-        stipendYearLabel.textContent = cleanVal || 'Year';
-        stipendYearLabel.classList.toggle('placeholder', !cleanVal);
-      }
-      if (stipendYearMenu) {
-        stipendYearMenu.querySelectorAll('.arw-select-option').forEach(opt => {
-          opt.classList.toggle('selected', opt.dataset.value === cleanVal);
-        });
-      }
-      refreshStipendHint();
-      autoSaveStep3();
-    }
 
     if (saved.stipend !== undefined && saved.stipend !== null && stipendInput) {
       stipendInput.value = saved.stipend;
     }
-    if (saved.stipend_year) {
-      setStipendYearValue(saved.stipend_year);
-    }
-
-    // Custom select interaction logic
-    if (stipendYearTrigger && stipendYearWrap) {
-      stipendYearTrigger.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isActive = stipendYearWrap.classList.contains('active');
-        stipendYearWrap.classList.toggle('active', !isActive);
-        stipendYearTrigger.setAttribute('aria-expanded', !isActive ? 'true' : 'false');
-      });
-    }
-
-    if (stipendYearMenu) {
-      stipendYearMenu.querySelectorAll('.arw-select-option').forEach(opt => {
-        opt.addEventListener('click', (e) => {
-          e.stopPropagation();
-          setStipendYearValue(opt.dataset.value);
-          if (stipendYearWrap) stipendYearWrap.classList.remove('active');
-          if (stipendYearTrigger) stipendYearTrigger.setAttribute('aria-expanded', 'false');
-        });
-      });
-    }
-
-    const handleOutsideClick = (e) => {
-      if (stipendYearWrap && !stipendYearWrap.contains(e.target)) {
-        stipendYearWrap.classList.remove('active');
-        if (stipendYearTrigger) stipendYearTrigger.setAttribute('aria-expanded', 'false');
-      }
-    };
-    document.addEventListener('click', handleOutsideClick);
 
     // Returns an error string (blocks Next) or null. Skip bypasses it.
     function stipendError() {
@@ -941,13 +874,12 @@
       const n = Number(raw);
       if (!Number.isFinite(n) || n < 0) return 'Please enter a valid stipend amount.';
       if (n > STIPEND_MAX) return `Stipend looks too high — please enter a monthly amount up to ₹${STIPEND_MAX.toLocaleString('en-IN')}.`;
-      if (n > 0 && stipendYear && !stipendYear.value) return 'Please select the year this stipend applied to.';
       return null;
     }
     function refreshStipendHint() {
       if (!stipendHint) return;
       const err = stipendError();
-      stipendHint.textContent = err || `Enter monthly stipend (max ₹${STIPEND_MAX.toLocaleString('en-IN')}) and the year it applied to.`;
+      stipendHint.textContent = err || `Enter monthly stipend (max ₹${STIPEND_MAX.toLocaleString('en-IN')}).`;
       stipendHint.classList.toggle('err', !!err);
     }
 
@@ -967,7 +899,6 @@
       // Only persist an in-range stipend so an out-of-range value never poisons averages.
       if (stipend !== '' && Number.isFinite(stipendNum) && stipendNum >= 0 && stipendNum <= STIPEND_MAX) {
         patch.stipend = parseInt(stipend, 10);
-        if (stipendYear && stipendYear.value) patch.stipend_year = parseInt(stipendYear.value, 10);
       }
       state.savedData = Object.assign({}, state.savedData, patch);
       state.pendingPatch = Object.assign({}, state.pendingPatch, patch);
