@@ -15,15 +15,25 @@
     }
   </script>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="https://mystudentclub.pages.dev/scripts/style.css">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="cv-reviewer-styles.css">
   <style>
-    .results-grid {
-      display: grid;
-      grid-template-columns: 280px 1fr;
-      gap: 2rem;
+    html, body {
+      overflow: visible;
+    }
+
+    .feedback-section {
+      overflow: hidden;
+    }
+
+    .content-area {
+      max-width: 100% !important;
+      overflow-wrap: anywhere !important;
+      word-break: break-word !important;
+      overflow: hidden;
     }
 
     .results-sidebar {
@@ -40,7 +50,7 @@
     .feedback-section {
       background: var(--surface);
       border-radius: 16px;
-      padding: 2rem;
+      padding: 1.15rem 1.5rem;
       margin-bottom: 2rem;
       border: 1px solid var(--border);
       box-shadow: var(--shadow-md);
@@ -56,8 +66,24 @@
       justify-content: space-between;
       align-items: center;
       cursor: pointer;
-      padding-bottom: 1rem;
+      padding-top: 0;
+      padding-bottom: 0.3rem;
+      margin-top: 0;
+      margin-bottom: 0.35rem;
       border-bottom: 1px solid var(--border);
+    }
+
+    .content-area {
+      padding-top: 0 !important;
+      margin-top: 0 !important;
+    }
+
+    .content-area > :first-child,
+    .content-area > ul:first-child,
+    .content-area > ol:first-child,
+    .content-area > p:first-child {
+      margin-top: 0 !important;
+      padding-top: 0 !important;
     }
 
     .feedback-section .section-header h3 {
@@ -265,7 +291,7 @@
     }
 
     .tab-btn {
-      padding: 1rem 2rem;
+      padding: 0.75rem 1.5rem;
       cursor: pointer;
       border: none;
       background: transparent;
@@ -316,26 +342,66 @@
 
     @media (max-width: 1024px) {
       .results-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
       }
 
       .results-sidebar {
-        position: static;
-        margin-bottom: 2.5rem;
+        position: static !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        margin-bottom: 1.5rem !important;
+      }
+
+      .results-main {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+      }
+
+      .feedback-section {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
       }
     }
 
     @media (max-width: 768px) {
+      #resultsSection,
+      .results-section {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+      }
+
       .results-sidebar {
-        padding: 1.5rem;
+        padding: 1.25rem !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
       }
 
       .feedback-section {
-        padding: 1.5rem;
+        padding: 1rem !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
       }
 
       .results-grid {
-        gap: 2rem;
+        gap: 1rem !important;
+      }
+
+      .content-area,
+      .content-area * {
+        max-width: 100% !important;
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+        box-sizing: border-box !important;
       }
 
       /* Mobile-friendly tabs */
@@ -345,14 +411,11 @@
         gap: 0.25rem;
         padding-bottom: 0.5rem;
         scrollbar-width: none;
-        /* Firefox */
       }
 
       .tabs::-webkit-scrollbar {
         display: none;
       }
-
-      /* WebKit */
 
       .tab-btn {
         flex: 0 0 auto;
@@ -369,8 +432,18 @@
     }
 
     @media (max-width: 480px) {
+      #resultsSection,
+      .results-section {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+      }
+
+      .feedback-section {
+        padding: 0.85rem !important;
+      }
+
       .feedback-section h3 {
-        font-size: 1.25rem;
+        font-size: 1.1rem !important;
       }
 
       .feedback-point p,
@@ -379,8 +452,20 @@
       }
 
       .score-circle {
-        width: 70px;
-        height: 70px;
+        width: 130px;
+        height: 130px;
+      }
+
+      /* Action buttons */
+      .action-buttons {
+        flex-direction: column !important;
+        gap: 0.75rem !important;
+      }
+
+      .action-buttons .btn-primary,
+      .action-buttons .btn-secondary {
+        width: 100% !important;
+        justify-content: center !important;
       }
     }
   </style>
@@ -392,6 +477,9 @@
       <a href="/" class="brand-link">
         <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club" class="brand-logo">
       </a>
+      <div id="headerPageTitle" class="header-page-title" style="display:none;">
+        <span class="header-page-title-text">Resume Analysis Report</span>
+      </div>
       <div class="auth-buttons">
         <a href="/login" class="auth-icon-btn">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -414,9 +502,23 @@
         </svg>
       </button>
       <div class="menu-items">
+        <button type="button" class="menu-item border-none bg-transparent cursor-pointer w-full text-left" id="navHistoryLink" style="font-family: inherit; display: flex; align-items: center; gap: 0.5rem; border: none; padding: 0.75rem 1rem;">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:20px;height:20px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>My Review History
+        </button>
+        <!-- CTA buttons injected in menu for mobile only -->
+        <div id="menuCTAButtons" style="display: none; flex-direction: column;">
+          <button type="button" class="menu-item border-none bg-transparent cursor-pointer w-full text-left" id="menuAnalyzeAnotherBtn" style="font-family: inherit; display: flex; align-items: center; gap: 0.5rem; border: none; padding: 0.75rem 1rem;">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:20px;height:20px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            Analyze Another CV
+          </button>
+          <button type="button" class="menu-item border-none bg-transparent cursor-pointer w-full text-left" id="menuFixInBuilderBtn" style="font-family: inherit; display: flex; align-items: center; gap: 0.5rem; border: none; padding: 0.75rem 1rem;">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:20px;height:20px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+            Polish in CV Builder
+          </button>
+        </div>
         <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My Courses</a>
 
-        <a href="/ca-industrial-training-program/" class="menu-item">MSC Industrial Training Program</a>
+        <a href="/ca-industrial-training-program/" class="menu-item">MSCIT Industrial Training Program</a>
 
         <div class="menu-item-dropdown">
           <button class="menu-item" style="width: 100%; justify-content: space-between;">
@@ -439,25 +541,81 @@
   </div>
 
   <main class="cv-reviewer-container">
-    <div class="hero-section" id="heroSection" style="display: block;">
-      <h1 class="main-heading">Evaluate Your Resume with AI Precision</h1>
-      <h2 class="sub-heading">Get instant insights on your resume's strengths and areas for improvement to enhance your
-        job prospects.</h2>
+    <section id="landingSection">
+    <div class="hero-section" id="heroSection">
+      <div class="hero-glow" aria-hidden="true"></div>
+      <div class="hero-container-flex">
+        <div class="hero-inner">
+          <span class="hero-eyebrow">AI resume review · built for CA profiles</span>
+          <h1 class="main-heading">Your CA resume, read the way recruiters read it.</h1>
+          <p class="sub-heading">Get a recruiter-grade audit — formatting precision, quantified impact, compliance depth, and the predicted interview questions your profile invites.</p>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <div class="visual-card visual-card--score">
+            <div class="visual-score-circle">
+              <span class="visual-score-num">87</span>
+              <span class="visual-score-label">Overall Score</span>
+            </div>
+            <div class="visual-score-breakdown">
+              <div class="visual-bar-item">
+                <span>Quantified Impact</span>
+                <div class="visual-bar"><div class="visual-bar-fill" style="width: 90%"></div></div>
+              </div>
+              <div class="visual-bar-item">
+                <span>Formatting & Alignment</span>
+                <div class="visual-bar"><div class="visual-bar-fill" style="width: 85%"></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="visual-card visual-card--feedback">
+            <h4 class="visual-card-title">Analyzing CV Quality...</h4>
+            <div class="visual-checklist">
+              <div class="visual-check-item good">
+                <span class="visual-icon">✓</span>
+                <span>Quantified achievements (e.g. ₹50Cr+ client scale)</span>
+              </div>
+              <div class="visual-check-item good">
+                <span class="visual-icon">✓</span>
+                <span>Compliance standards verified (CARO/Ind AS)</span>
+              </div>
+              <div class="visual-check-item issue">
+                <span class="visual-icon">✗</span>
+                <span>"Responsible for filing returns" → Rewrite suggested</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="upload-section" id="uploadSection" style="display: block;">
-      <div class="upload-area" id="dropArea">
-        <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-        </svg>
-        <h3>Upload Your CV/Resume</h3>
-        <p>Drag & drop your PDF file here or click to browse</p>
-        <input type="file" id="fileInput" accept="application/pdf" class="file-input" />
-        <button class="upload-btn" id="browseButton">Browse Files</button>
-      </div>
+    <div class="upload-section" id="uploadSection">
+      <div class="start-step upload-step">
+        <div class="start-step-head flex justify-between items-center w-full flex-wrap gap-3">
+          <div class="flex items-center gap-3">
+            <span class="step-index">1</span>
+            <div class="start-step-titles">
+              <h3 class="start-step-title">Upload your resume</h3>
+              <p class="start-step-sub">PDF only · processed in your browser for the preview.</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <button type="button" class="view-history-shortcut hidden lg:inline-flex" id="landingHistoryBtn">
+              <i class="fa-solid fa-clock-rotate-left"></i>My History
+            </button>
+          </div>
+        </div>
+        <div class="upload-area" id="dropArea">
+          <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+          </svg>
+          <h3>Drop your CV here</h3>
+          <p>Drag &amp; drop your PDF file or click to browse</p>
+          <input type="file" id="fileInput" accept="application/pdf" class="file-input" />
+          <button class="upload-btn" id="browseButton">Browse files</button>
+        </div>
 
-      <div class="preview-area" id="previewArea" style="display: none;">
+        <div class="preview-area" id="previewArea" style="display: none;">
         <div class="file-info">
           <svg class="file-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -483,68 +641,241 @@
         </div>
         <div class="preview-thumbnail" id="previewThumbnail"></div>
       </div>
+        <div class="flex justify-center mt-5 lg:hidden">
+          <button type="button" class="view-history-shortcut" id="landingHistoryBtnMobile">
+            <i class="fa-solid fa-clock-rotate-left"></i>My History
+          </button>
+        </div>
+      </div>
     </div>
 
-    <!--  <div class="upload-section" id="domainSpecializationSection" style="display: none;">
-        <button id="backToUploadBtn" class="text-sm text-gray-600 hover:text-primary mb-4 inline-flex items-center">
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>Back
-        </button>
-        <h3 class="text-xl font-semibold text-primary mb-4 text-center">Domain & Specialization</h3>
-        <p class="text-center text-text-secondary mb-6">Select the domain and specialization most relevant to your resume and target jobs.</p>
-        <div class="max-w-md mx-auto">
-            <div class="form-group">
-                <label for="domainSelect" class="form-group label">Your Domain</label>
-                <select id="domainSelect" name="domain" class="w-full p-3 border border-border rounded-lg bg-gray-50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
-                    <option value="Finance & Accounting" selected>Finance & Accounting</option>
-                    <option value="Banking">Banking</option>
-                    <option value="Human Resource">Human Resource</option>
-                    <option value="Marketing & Growth">Marketing & Growth</option>
-                    <option value="Sales & Business Development">Sales & Business Development</option>
-                    <option value="Technology">Technology</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="specializationSelect" class="form-group label">Your Specialization</label>
-                <select id="specializationSelect" name="specialization" class="w-full p-3 border border-border rounded-lg bg-gray-50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
-                    <option value="Accountant" selected>Accountant</option>
-                    <option value="AP/AR Specialist">AP/AR Specialist</option>
-                    <option value="Corporate Income Tax">Corporate Income Tax</option>
-                    <option value="Direct Tax">Direct Tax</option>
-                    <option value="Equity Research">Equity Research</option>
-                    <option value="ESG">ESG</option>
-                </select>
-            </div>
-            <button class="submit-btn w-full" id="analyzeBtn">
-                 <svg class="inline-block mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6 4l4 4m0 0l4-4"/></svg>Scan Resume
-            </button>
+    <div class="stats-band">
+      <div class="stat">
+        <span class="stat-num">5,000<span class="stat-plus">+</span></span>
+        <span class="stat-label">Resumes scanned</span>
+      </div>
+      <span class="stat-divider" aria-hidden="true"></span>
+      <div class="stat">
+        <span class="stat-num">98<span class="stat-plus">%</span></span>
+        <span class="stat-label">ATS accuracy</span>
+      </div>
+      <span class="stat-divider" aria-hidden="true"></span>
+      <div class="stat">
+        <span class="stat-num">100<span class="stat-plus">+</span></span>
+        <span class="stat-label">Recruiter criteria checked</span>
+      </div>
+    </div>
+
+    <section class="features-section">
+      <div class="section-heading">
+        <span class="section-eyebrow">What the AI evaluates</span>
+        <h2>Every line, weighed like a reviewer would</h2>
+        <p>Beyond spell-check — the model reads your resume against what CA recruiters actually shortlist on.</p>
+      </div>
+      <div class="features-grid">
+        <article class="feature-card">
+          <span class="feature-icon" aria-hidden="true">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                d="M4 6h16M4 10h10M4 14h16M4 18h8" />
+            </svg>
+          </span>
+          <h3>Formatting &amp; readability</h3>
+          <p>Layout, length, and structure checked for one-page recruiter scanning and clean ATS parsing.</p>
+        </article>
+        <article class="feature-card">
+          <span class="feature-icon" aria-hidden="true">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </span>
+          <h3>Articleship &amp; Experience</h3>
+          <p>Firm calibre, client scale, and the depth of your audit, tax, or corporate finance work — not just dates.</p>
+        </article>
+        <article class="feature-card">
+          <span class="feature-icon" aria-hidden="true">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          </span>
+          <h3>Action verbs &amp; impact</h3>
+          <p>Weak, passive phrasing flagged and rewritten into measurable, results-first bullet points.</p>
+        </article>
+        <article class="feature-card">
+          <span class="feature-icon" aria-hidden="true">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                d="M12 6.5V3m0 3.5a5.5 5.5 0 015.5 5.5m-5.5-5.5A5.5 5.5 0 006.5 12M12 21v-3.5m0 3.5a5.5 5.5 0 01-5.5-5.5m5.5 5.5a5.5 5.5 0 005.5-5.5M3 12h3.5M17.5 12H21" />
+            </svg>
+          </span>
+          <h3>Skill alignment</h3>
+          <p>Hard and soft skills matched to the role — Ind AS/IFRS, tax, tools — and the gaps that hold you back.</p>
+        </article>
+        <article class="feature-card">
+          <span class="feature-icon" aria-hidden="true">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                d="M8 10h.01M12 10h.01M16 10h.01M21 12a8 8 0 01-11.6 7.13L3 21l1.87-6.4A8 8 0 1121 12z" />
+            </svg>
+          </span>
+          <h3>Predicted interview questions</h3>
+          <p>The questions your profile invites — so you walk in ready for what the panel will actually ask.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="ca-info-section">
+      <div class="ca-info-grid">
+        <div class="ca-info-copy">
+          <span class="section-eyebrow">Why a CA resume is different</span>
+          <h2>A generic tool can't read professional CA calibre.</h2>
+          <p>Most resume checkers were trained on standard corporate CVs. They miss what actually decides a CA shortlist — the scale of clients you audited, the compliance standards you applied, and the visual detail of your formatting.</p>
+          <ul class="ca-info-list">
+            <li>
+              <span class="ca-info-tick" aria-hidden="true">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                </svg>
+              </span>
+              <span><strong>Professional Exposure</strong> — firm tier, client turnover, and the real scope of your audit, tax and compliance work.</span>
+            </li>
+            <li>
+              <span class="ca-info-tick" aria-hidden="true">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                </svg>
+              </span>
+              <span><strong>Compliance Signals</strong> — depth of technical standards (CARO, Ind AS, Income Tax) that generic scanners overlook.</span>
+            </li>
+            <li>
+              <span class="ca-info-tick" aria-hidden="true">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                </svg>
+              </span>
+              <span><strong>Domain Specialisation</strong> — direct tax, audit, FP&amp;A or corporate finance, each read on its own terms.</span>
+            </li>
+          </ul>
         </div>
-    </div>-->
+        <aside class="ca-info-compare" aria-label="Comparison of generic tools versus this reviewer">
+          <div class="compare-col compare-col--generic">
+            <span class="compare-tag">Generic resume tools</span>
+            <ul>
+              <li>Count keywords blindly</li>
+              <li>Miss professional exposure scale</li>
+              <li>Fail visual physics checks</li>
+            </ul>
+          </div>
+          <div class="compare-col compare-col--ours">
+            <span class="compare-tag">CA Resume Reviewer</span>
+            <ul>
+              <li>Reads client scale &amp; exposure</li>
+              <li>Weighs compliance depth</li>
+              <li>Audits visual layout precision</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </section>
+    </section>
 
     <div class="loading-section" id="loadingSection" style="display: none;">
       <div class="loading-content">
-        <div class="loading-spinner"></div>
-        <h3>Evaluating Resume...</h3>
-        <p id="loadingProgressText">Hang tight as we prepare the next steps!</p>
+        <!-- Futuristic Scanner -->
+        <div class="scanner-wrapper">
+          <div class="scanner-halo"></div>
+          <div class="scanner-card">
+            <div class="scanner-line-sim"></div>
+            <div class="scanner-line-sim"></div>
+            <div class="scanner-line-sim"></div>
+            <div class="scanner-line-sim"></div>
+            <div class="scanner-line-sim"></div>
+            <div class="scanner-laser"></div>
+          </div>
+        </div>
+
+        <h3 class="loading-title">Analyzing your CA Profile...</h3>
+        
+        <!-- Real-Time Progress Checklist -->
+        <div class="loading-checklist">
+          <div class="loading-step" id="loadStep1">
+            <span class="step-bullet"><i class="fa-solid fa-spinner fa-spin"></i></span>
+            <span class="step-text">Resume Upload & Parsing</span>
+          </div>
+          <div class="loading-step" id="loadStep2">
+            <span class="step-bullet"></span>
+            <span class="step-text">Formatting & Layout Audit</span>
+          </div>
+          <div class="loading-step" id="loadStep3">
+            <span class="step-bullet"></span>
+            <span class="step-text">Experience & Client Calibre Audit</span>
+          </div>
+          <div class="loading-step" id="loadStep4">
+            <span class="step-bullet"></span>
+            <span class="step-text">AI Suggestions & Panel Prep</span>
+          </div>
+        </div>
+
+        <p id="loadingProgressText" class="mt-4">Hang tight as we prepare the next steps!</p>
       </div>
     </div>
 
     <div class="results-section" id="resultsSection" style="display: none;">
-      <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
-        <h2 class="text-2xl font-semibold text-primary">Resume Analysis Report</h2>
-        <div></div>
-      </div>
 
-      <div class="tabs">
-        <button class="tab-btn active" data-tab="analysis">Analysis</button>
-        <button class="tab-btn" data-tab="leaderboard">Leaderboard</button>
-        <button class="tab-btn" data-tab="history">My History</button>
+      <!-- Results Header Container: sticky, contains BOTH main tabs and analysis sub-tabs -->
+      <div class="results-header-wrapper">
+        <!-- Row 1: Main Tabs + CTA Buttons -->
+        <div class="results-header-row">
+          <div class="main-tabs-row">
+            <div class="tabs">
+              <button class="tab-btn active" data-tab="analysis">Analysis</button>
+              <button class="tab-btn" data-tab="leaderboard">Leaderboard</button>
+              <button class="tab-btn" data-tab="history">My History</button>
+            </div>
+          </div>
+          <div class="results-header-actions">
+            <button type="button" id="headerAnalyzeAnotherBtn" class="results-header-cta results-header-cta--secondary">
+              <span class="results-cta-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:15px;height:15px;stroke-width:2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+              </span>
+              <span>Analyze Another CV</span>
+            </button>
+            <button type="button" id="btnFixInBuilder" class="results-header-cta">
+              <span class="results-cta-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:15px;height:15px;stroke-width:2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+              </span>
+              <span>Polish in CV Builder</span>
+            </button>
+          </div>
+        </div>
+        <!-- Row 2: Analysis Sub-Tabs (only shown when analysis tab is active) -->
+        <div class="analysis-tabs" id="analysisSubTabs">
+          <button type="button" class="analysis-tab-btn active" data-subtab="audit">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            Audit &amp; Tips
+          </button>
+          <button type="button" class="analysis-tab-btn" data-subtab="impact">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+            Impact &amp; Phrasing
+          </button>
+          <button type="button" class="analysis-tab-btn" data-subtab="skills">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            Skills &amp; Gaps
+          </button>
+          <button type="button" class="analysis-tab-btn" data-subtab="experience">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.42A12 12 0 0112 21a12 12 0 01-6.16-10.42L12 14z"/></svg>
+            Experience &amp; Prep
+          </button>
+        </div>
       </div>
 
       <div id="tab-analysis" class="tab-content active">
         <div class="results-grid">
           <div class="results-sidebar">
             <h3 class="text-lg font-semibold mb-4 text-center">Overall Score</h3>
-            <div class="score-card mb-6 justify-center">
+            <div class="score-card mb-6 justify-center flex-col items-center">
               <div class="score-circle">
                 <svg viewBox="0 0 36 36" class="score-chart">
                   <defs>
@@ -557,16 +888,21 @@
                     d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
                   <path id="scoreProgress" class="score-progress" stroke-dasharray="0, 100"
                     d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                  <text x="18" y="20.5" class="score-text" id="scoreText">0</text>
+                  <!-- Score display layout inside circular ring -->
+                  <g class="score-display-group">
+                    <text x="18" y="19" class="score-num" id="scoreText">0</text>
+                    <text x="18" y="25" class="score-total">/100</text>
+                  </g>
                 </svg>
               </div>
+              <div id="scoreRatingBadge" class="score-rating-badge mt-3 text-center"></div>
             </div>
 
             <h3 class="text-lg font-semibold mb-4 text-center">Score Breakdown</h3>
             <div class="breakdown-categories space-y-3">
               <div class="category-item" data-category="structure">
                 <div class="category-header">
-                  <h4>Structure & Completeness</h4><span class="points text-sm font-medium text-primary">0/20 pts</span>
+                  <h4><i class="fa-solid fa-layer-group text-primary mr-2"></i>Structure</h4><span class="points text-sm font-semibold text-primary">0/20 pts</span>
                 </div>
                 <div class="category-bar">
                   <div class="category-fill" style="width: 0%"></div>
@@ -574,7 +910,7 @@
               </div>
               <div class="category-item" data-category="impact">
                 <div class="category-header">
-                  <h4>Impact Demonstration</h4><span class="points text-sm font-medium text-primary">0/25 pts</span>
+                  <h4><i class="fa-solid fa-chart-line text-primary mr-2"></i>Impact</h4><span class="points text-sm font-semibold text-primary">0/25 pts</span>
                 </div>
                 <div class="category-bar">
                   <div class="category-fill" style="width: 0%"></div>
@@ -582,7 +918,7 @@
               </div>
               <div class="category-item" data-category="expertise">
                 <div class="category-header">
-                  <h4>Professional Expertise</h4><span class="points text-sm font-medium text-primary">0/25 pts</span>
+                  <h4><i class="fa-solid fa-graduation-cap text-primary mr-2"></i>Expertise</h4><span class="points text-sm font-semibold text-primary">0/25 pts</span>
                 </div>
                 <div class="category-bar">
                   <div class="category-fill" style="width: 0%"></div>
@@ -590,7 +926,7 @@
               </div>
               <div class="category-item" data-category="experience">
                 <div class="category-header">
-                  <h4>Experience Description</h4><span class="points text-sm font-medium text-primary">0/20 pts</span>
+                  <h4><i class="fa-solid fa-briefcase text-primary mr-2"></i>Experience</h4><span class="points text-sm font-semibold text-primary">0/20 pts</span>
                 </div>
                 <div class="category-bar">
                   <div class="category-fill" style="width: 0%"></div>
@@ -598,7 +934,7 @@
               </div>
               <div class="category-item" data-category="presentation">
                 <div class="category-header">
-                  <h4>Overall Presentation</h4><span class="points text-sm font-medium text-primary">0/10 pts</span>
+                  <h4><i class="fa-solid fa-display text-primary mr-2"></i>Presentation</h4><span class="points text-sm font-semibold text-primary">0/10 pts</span>
                 </div>
                 <div class="category-bar">
                   <div class="category-fill" style="width: 0%"></div>
@@ -610,115 +946,172 @@
               <p class="text-xs text-text-secondary" id="scoreJustification">Loading...</p>
             </div>
           </div>
-
+ 
           <div class="results-main">
-            <div class="feedback-section" id="recruiterTipsSection">
-              <div class="section-header">
-                <h3>Recruiter Tips</h3>
-                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                </svg>
+            <!-- Subtab Content Audit -->
+            <div class="subtab-content" id="subtab-audit">
+              <div class="feedback-section" id="recruiterTipsSection">
+                <div class="section-header">
+                  <h3>
+                    <svg class="section-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364.364l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                    Recruiter Tips
+                  </h3>
+                  <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </div>
+                <div class="content-area">Loading...</div>
               </div>
-              <div class="content-area">Loading...</div>
+              <div class="feedback-grid">
+                <div class="feedback-section" id="formattingSection">
+                  <div class="section-header">
+                    <h3>
+                      <svg class="section-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm0 8a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/></svg>
+                      Formatting & Readability
+                    </h3>
+                    <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
+                  <div class="content-area">Loading...</div>
+                </div>
+                <div class="feedback-section" id="finalRecommendationsSection">
+                  <div class="section-header">
+                    <h3>
+                      <svg class="section-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                      Final Recommendations
+                    </h3>
+                    <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
+                  <div class="content-area">Loading...</div>
+                </div>
+              </div>
             </div>
-            <div class="feedback-section" id="measurableResultsSection">
-              <div class="section-header">
-                <h3>Measurable Results</h3>
-                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                </svg>
+
+            <!-- Subtab Content Impact -->
+            <div class="subtab-content" id="subtab-impact" style="display: none;">
+              <div class="feedback-section" id="measurableResultsSection">
+                <div class="section-header">
+                  <h3>
+                    <svg class="section-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                    Measurable Results
+                  </h3>
+                  <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </div>
+                <div class="content-area">Loading...</div>
               </div>
-              <div class="content-area">Loading...</div>
+              <div class="feedback-grid">
+                <div class="feedback-section" id="actionVerbsSection">
+                  <div class="section-header">
+                    <h3>
+                      <svg class="section-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                      Action Verbs Usage
+                    </h3>
+                    <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
+                  <div class="content-area">Loading...</div>
+                </div>
+                <div class="feedback-section" id="phrasesSuggestionsSection">
+                  <div class="section-header">
+                    <h3>
+                      <svg class="section-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                      Phrases Suggestions
+                    </h3>
+                    <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
+                  <div class="content-area">Loading...</div>
+                </div>
+              </div>
+              <div class="feedback-section" id="grammarCheckSection">
+                <div class="section-header">
+                  <h3>
+                    <svg class="section-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                    Grammar & Proofreading
+                  </h3>
+                  <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </div>
+                <div class="content-area">Loading...</div>
+              </div>
             </div>
-            <div class="feedback-section" id="phrasesSuggestionsSection">
-              <div class="section-header">
-                <h3>Phrases Suggestions</h3>
-                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                </svg>
+
+            <!-- Subtab Content Skills -->
+            <div class="subtab-content" id="subtab-skills" style="display: none;">
+              <div class="feedback-section" id="educationSection">
+                <div class="section-header">
+                  <h3>
+                    <svg class="section-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.42A12 12 0 0112 21a12 12 0 01-6.16-10.42L12 14z"/></svg>
+                    Education & Qualification
+                  </h3>
+                  <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </div>
+                <div class="content-area">Loading...</div>
               </div>
-              <div class="content-area">Loading...</div>
+              <div class="feedback-grid">
+                <div class="feedback-section" id="hardSkillsSection">
+                  <div class="section-header">
+                    <h3>
+                      <svg class="section-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                      Hard Skills Analysis
+                    </h3>
+                    <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
+                  <div class="content-area">Loading...</div>
+                </div>
+                <div class="feedback-section" id="softSkillsSection">
+                  <div class="section-header">
+                    <h3>
+                      <svg class="section-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                      Soft Skills Analysis
+                    </h3>
+                    <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
+                  <div class="content-area">Loading...</div>
+                </div>
+              </div>
             </div>
-            <div class="feedback-section" id="hardSkillsSection">
-              <div class="section-header">
-                <h3>Hard Skills Analysis</h3>
-                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                </svg>
+
+            <!-- Subtab Content Experience -->
+            <div class="subtab-content" id="subtab-experience" style="display: none;">
+              <div class="feedback-section" id="articleshipSection">
+                <div class="section-header">
+                  <h3>
+                    <svg class="section-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    Articleship Experience
+                  </h3>
+                  <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </div>
+                <div class="content-area">Loading...</div>
               </div>
-              <div class="content-area">Loading...</div>
-            </div>
-            <div class="feedback-section" id="softSkillsSection">
-              <div class="section-header">
-                <h3>Soft Skills Analysis</h3>
-                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                </svg>
+              <div class="feedback-section" id="interviewQuestionsSection">
+                <div class="section-header">
+                  <h3>
+                    <svg class="section-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Predicted Interview Questions
+                  </h3>
+                  <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </div>
+                <div class="content-area">Loading...</div>
               </div>
-              <div class="content-area">Loading...</div>
-            </div>
-            <div class="feedback-section" id="actionVerbsSection">
-              <div class="section-header">
-                <h3>Action Verbs Usage</h3>
-                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                </svg>
-              </div>
-              <div class="content-area">Loading...</div>
-            </div>
-            <div class="feedback-section" id="grammarCheckSection">
-              <div class="section-header">
-                <h3>Grammar & Proofreading</h3>
-                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                </svg>
-              </div>
-              <div class="content-area">Loading...</div>
-            </div>
-            <div class="feedback-section" id="formattingSection">
-              <div class="section-header">
-                <h3>Formatting & Readability</h3>
-                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                </svg>
-              </div>
-              <div class="content-area">Loading...</div>
-            </div>
-            <div class="feedback-section" id="educationSection">
-              <div class="section-header">
-                <h3>Education & Qualification</h3>
-                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                </svg>
-              </div>
-              <div class="content-area">Loading...</div>
-            </div>
-            <div class="feedback-section" id="articleshipSection">
-              <div class="section-header">
-                <h3>Articleship Experience</h3>
-                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                </svg>
-              </div>
-              <div class="content-area">Loading...</div>
-            </div>
-            <div class="feedback-section" id="interviewQuestionsSection">
-              <div class="section-header">
-                <h3>Predicted Interview Questions</h3>
-                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                </svg>
-              </div>
-              <div class="content-area">Loading...</div>
-            </div>
-            <div class="feedback-section" id="finalRecommendationsSection">
-              <div class="section-header">
-                <h3>Final Recommendations</h3>
-                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                </svg>
-              </div>
-              <div class="content-area">Loading...</div>
             </div>
 
             <div class="action-buttons mt-6">
@@ -790,6 +1183,59 @@
       </div>
     </div>
   </main>
+
+  <footer class="cv-footer">
+    <div class="cv-footer-inner">
+      <div class="cv-footer-brand">
+        <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club" class="cv-footer-logo">
+        <p>Career tools and training built for India's Chartered Accountants — from articleship to your first
+          finance role.</p>
+        <div class="cv-footer-social" aria-label="Social links">
+          <a href="https://www.linkedin.com/company/mystudentclub/" aria-label="LinkedIn" target="_blank" rel="noopener">
+            <svg fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM.24 8h4.52V24H.24V8zm7.5 0h4.33v2.19h.06c.6-1.14 2.07-2.34 4.26-2.34 4.56 0 5.4 3 5.4 6.9V24h-4.52v-6.65c0-1.59-.03-3.63-2.21-3.63-2.21 0-2.55 1.73-2.55 3.52V24H7.74V8z" />
+            </svg>
+          </a>
+          <a href="https://www.instagram.com/mystudentclub/" aria-label="Instagram" target="_blank" rel="noopener">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="5" stroke-width="1.8" />
+              <circle cx="12" cy="12" r="4" stroke-width="1.8" />
+              <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+            </svg>
+          </a>
+          <a href="https://www.youtube.com/@mystudentclub" aria-label="YouTube" target="_blank" rel="noopener">
+            <svg fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 00.5 6.2 31.4 31.4 0 000 12a31.4 31.4 0 00.5 5.8 3 3 0 002.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 002.1-2.1A31.4 31.4 0 0024 12a31.4 31.4 0 00-.5-5.8zM9.6 15.6V8.4l6.2 3.6-6.2 3.6z" />
+            </svg>
+          </a>
+        </div>
+      </div>
+      <div class="cv-footer-links">
+        <div class="cv-footer-col">
+          <h4>Free resources</h4>
+          <a href="/ca-fresher-training-resources.html">CA Fresher</a>
+          <a href="/ca-industrial-training-resources.html">Industrial Training</a>
+          <a href="/ca-articleship-opportunities">Articleship</a>
+        </div>
+        <div class="cv-footer-col">
+          <h4>Programs</h4>
+          <a href="/ca-industrial-training-program/">Industrial Training Program</a>
+          <a href="/learning-management-system/">My Courses</a>
+        </div>
+        <div class="cv-footer-col">
+          <h4>Company</h4>
+          <a href="/">Home</a>
+          <a href="/contact.html">Contact us</a>
+        </div>
+      </div>
+    </div>
+    <div class="cv-footer-base">
+      <span>&copy; <span id="footerYear">2026</span> My Student Club. All rights reserved.</span>
+      <span class="cv-footer-note">Resume analysis is guidance, not a guarantee of shortlisting.</span>
+    </div>
+  </footer>
 
   <script src="https://unpkg.com/markdown-pdfjs@1.0.1/dist/markdown-pdf.umd.js"></script>
   <script type="module" src="cv-reviewer.js"></script>
@@ -876,6 +1322,73 @@
           style="background:#2563eb; color:#fff; border:1px solid #2563eb; padding:10px 16px; border-radius:10px; font-weight:600; cursor:pointer;">Download
           PDF</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Login gate: shown when a logged-out user tries to run a review -->
+  <div class="trial-modal-overlay" id="reviewLoginOverlay" role="dialog" aria-modal="true" aria-labelledby="reviewLoginTitle">
+    <div class="trial-modal">
+      <button class="trial-modal-close" id="reviewLoginClose" type="button" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+      <span class="trial-modal-emblem" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/></svg>
+      </span>
+      <h3 id="reviewLoginTitle">Log in to review your CV</h3>
+      <p>Sign in to your MSC account to run your AI resume review. You get <strong>3 free reviews</strong> to get started.</p>
+      <a class="trial-modal-cta" href="/login">
+        Log in / Sign up
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- Buy gate: shown when a free user has used all 3 trials -->
+  <div class="trial-modal-overlay" id="reviewBuyOverlay" role="dialog" aria-modal="true" aria-labelledby="reviewBuyTitle">
+    <div class="trial-modal trial-modal--wide">
+      <button class="trial-modal-close" id="reviewBuyClose" type="button" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+      <span class="trial-modal-emblem trial-modal-emblem--gold" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </span>
+      <h3 id="reviewBuyTitle">You've used all 3 free reviews</h3>
+      <p>Enroll in any MSC course to unlock <strong>unlimited</strong> AI resume reviews and the full toolkit.</p>
+      <div class="trial-course-list" id="reviewBuyCourseList"></div>
+    </div>
+  </div>
+
+  <!-- Out of Context Warning Modal -->
+  <div class="trial-modal-overlay" id="contextWarningOverlay" role="dialog" aria-modal="true" aria-labelledby="contextWarningTitle">
+    <div class="trial-modal">
+      <button class="trial-modal-close" id="contextWarningClose" type="button" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+      <span class="trial-modal-emblem" aria-hidden="true" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </span>
+      <h3 id="contextWarningTitle">Invalid Resume Field</h3>
+      <p id="contextWarningText">This AI CV Reviewer is custom-built exclusively for Chartered Accountants (CA), Finance, and Accounting professionals. Please upload a relevant resume.</p>
+      <button type="button" class="trial-modal-cta" id="contextWarningBtn" style="margin-top: 1.5rem; background: #0f172a; width: 100%; border-radius: 12px; font-weight: 600; padding: 0.85rem; color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+        Got it, let me re-upload
+      </button>
+    </div>
+  </div>
+
+  <!-- Generic Notice / Error Modal -->
+  <div class="trial-modal-overlay" id="noticeModalOverlay" role="dialog" aria-modal="true" aria-labelledby="noticeModalTitle">
+    <div class="trial-modal">
+      <button class="trial-modal-close" id="noticeModalClose" type="button" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+      <span class="trial-modal-emblem" id="noticeModalEmblem" aria-hidden="true" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </span>
+      <h3 id="noticeModalTitle">Notice</h3>
+      <p id="noticeModalText">Something went wrong.</p>
+      <button type="button" class="trial-modal-cta" id="noticeModalBtn" style="margin-top: 1.5rem; background: #0f172a; width: 100%; border-radius: 12px; font-weight: 600; padding: 0.85rem; color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+        Dismiss
+      </button>
     </div>
   </div>
 </body>
