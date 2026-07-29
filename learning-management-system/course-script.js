@@ -269,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const markVideoCompleted = () => {
-        if (!state.currentVideoId) return;
+        if (state.currentVideoId === null || state.currentVideoId === undefined) return;
         const videoToMark = findVideoById(state.currentVideoId);
         if (videoToMark && !videoToMark.completed) {
             videoToMark.completed = true;
@@ -493,7 +493,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             hlsPath = tsPath;
                         }
 
-                        const day = meta.day_number || 1;
+                        const day = (meta.day_number !== undefined && meta.day_number !== null) ? meta.day_number : 1;
                         let parsedResources = [];
                         if (meta.resources) {
                             if (typeof meta.resources === 'string') {
@@ -518,9 +518,10 @@ document.addEventListener('DOMContentLoaded', () => {
             state.courseSections = Object.keys(videosByDay).map(dayNum => {
                 const dayVideos = videosByDay[dayNum];
                 const mainVideo = dayVideos[0] || {};
+                const parsedDay = parseInt(dayNum);
                 return {
-                    day_number: parseInt(dayNum), title: mainVideo.title || `Day ${dayNum}`,
-                    expanded: parseInt(dayNum) === 1, videos: dayVideos, mainVideo: mainVideo
+                    day_number: parsedDay, title: mainVideo.title || (parsedDay === 0 ? 'Day 0' : `Day ${parsedDay}`),
+                    expanded: parsedDay === 1 || parsedDay === 0, videos: dayVideos, mainVideo: mainVideo
                 };
             }).sort((a, b) => a.day_number - b.day_number);
 
@@ -1391,7 +1392,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const getAdjacentVideo = (direction) => {
-        if (!state.currentVideoId) return null;
+        if (state.currentVideoId === null || state.currentVideoId === undefined) return null;
         const allVideos = [];
         state.courseSections.forEach(section => {
             section.videos.forEach(v => allVideos.push(v));
@@ -1409,7 +1410,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const updateVideoCounter = () => {
-        if (!state.currentVideoId) {
+        if (state.currentVideoId === null || state.currentVideoId === undefined) {
             DOMElements.videoCounter.textContent = '';
             return;
         }
@@ -1417,7 +1418,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (section) {
             const currentVideoIndex = section.videos.findIndex(v => v.id === state.currentVideoId) + 1;
             const sessionText = section.videos.length > 1 ? ` - Session ${currentVideoIndex}/${section.videos.length}` : '';
-            DOMElements.videoCounter.textContent = `Day ${section.day_number} of ${state.courseSections.length}${sessionText}`;
+            const totalDays = state.courseSections.filter(s => s.day_number > 0).length;
+            DOMElements.videoCounter.textContent = section.day_number === 0 
+                ? `Day 0${sessionText}` 
+                : `Day ${section.day_number} of ${totalDays}${sessionText}`;
         }
     };
 
