@@ -2530,18 +2530,29 @@ async function loadProfile() {
             }
         }
 
-        // Show cached files
-        ['resume', 'cover_letter'].forEach(type => {
-            const config = fileConfig[type];
-            if (type === 'resume') {
-                const cachedImages = localStorage.getItem(config.storageKeyImages);
-                const cachedName = localStorage.getItem(config.storageKeyName);
-                if (cachedImages && cachedName) showFileDisplay(type, cachedName);
-            } else {
-                const cachedName = localStorage.getItem(config.storageKeyName);
-                if (cachedName) showFileDisplay(type, cachedName);
-            }
-        });
+        // Show resume — prefer local cache, fall back to backend when localStorage was wiped
+        const resumeConfig = fileConfig['resume'];
+        const cachedImages = localStorage.getItem(resumeConfig.storageKeyImages);
+        const cachedName   = localStorage.getItem(resumeConfig.storageKeyName);
+        if (cachedImages && cachedName) {
+            // Normal path: file images still in localStorage
+            showFileDisplay('resume', cachedName);
+        } else if (data && data.ocr_cv) {
+            // localStorage was wiped but the resume exists in the backend (ocr_cv present).
+            // Restore the display using the filename saved to the profile, so the user
+            // doesn't need to re-upload on every browser cleanup.
+            const backendFileName = (profileObj && profileObj.cv_filename) || 'Your Resume.pdf';
+            showFileDisplay('resume', backendFileName);
+            // Also restore localStorage name so downstream save-guard passes
+            localStorage.setItem(resumeConfig.storageKeyName, backendFileName);
+            // Restore the cloud-sync flag so the save guard doesn't block saving
+            if (profileObj && profileObj.cv_cloud_synced) setCloudSyncFlag();
+        }
+
+        // Cover letter (unchanged)
+        const clConfig = fileConfig['cover_letter'];
+        const clName = localStorage.getItem(clConfig.storageKeyName);
+        if (clName) showFileDisplay('cover_letter', clName);
 
         setTimeout(() => refreshHeader(), 150);
         return profileObj;
@@ -2658,9 +2669,168 @@ function hideFileDisplay(type) {
     localStorage.removeItem(config.storageKeyText);
     localStorage.removeItem(config.storageKeyName);
     if (config.storageKeyImages) localStorage.removeItem(config.storageKeyImages);
-    if (type === 'resume') localStorage.removeItem('userCVPdf');
+    if (type === 'resume') {
+        localStorage.removeItem('userCVPdf');
+        // Clear the persisted filename from local profileData so the next save
+        // doesn't accidentally restore a removed resume
+        try {
+            const pd = JSON.parse(localStorage.getItem('userProfileData') || '{}');
+            delete pd.cv_filename;
+            delete pd.cv_cloud_synced;
+            localStorage.setItem('userProfileData', JSON.stringify(pd));
+        } catch (_) { /* ignore */ }
+    }
     config.input.value = '';
 }
+
+// =================== RESUME VIEWER ===================
+const STORER_WORKER_URL = 'https://storer.bhansalimanan55.workers.dev';
+const ZOOM_LEVELS = [75, 100, 125, 150, 175, 200, 250];
+let currentZoomIndex = 1; // Default 100%
+
+function applyZoomLevel(zoomPct) {
+    const pagesEl = document.getElementById('resumeViewerPages');
+    const zoomLevelEl = document.getElementById('resumeViewerZoomLevel');
+    if (zoomLevelEl) zoomLevelEl.textContent = `${zoomPct}%`;
+    if (!pagesEl) return;
+
+    if (zoomPct === 100) {
+        pagesEl.style.removeProperty('--p2-zoom-width');
+        pagesEl.style.removeProperty('--p2-zoom-max-width');
+    } else {
+        const scaleFraction = zoomPct / 100;
+        const calcMaxWidth = Math.round(680 * scaleFraction);
+        pagesEl.style.setProperty('--p2-zoom-width', `${zoomPct}%`);
+        pagesEl.style.setProperty('--p2-zoom-max-width', `${calcMaxWidth}px`);
+    }
+}
+
+function zoomResume(direction) {
+    if (direction === 'in' && currentZoomIndex < ZOOM_LEVELS.length - 1) {
+        currentZoomIndex++;
+    } else if (direction === 'out' && currentZoomIndex > 0) {
+        currentZoomIndex--;
+    } else if (direction === 'reset') {
+        currentZoomIndex = 1; // 100%
+    }
+    applyZoomLevel(ZOOM_LEVELS[currentZoomIndex]);
+}
+
+async function openResumePreview() {
+    const modal      = document.getElementById('resumeViewerModal');
+    const pagesEl    = document.getElementById('resumeViewerPages');
+    const loading    = document.getElementById('resumeViewerLoading');
+    const errEl      = document.getElementById('resumeViewerError');
+    const titleEl    = document.getElementById('resumeViewerFilename');
+    const countEl    = document.getElementById('resumeViewerPageCount');
+    if (!modal) return;
+
+    // Reset zoom state
+    currentZoomIndex = 1;
+    applyZoomLevel(100);
+
+    // Set filename in header
+    const filename = localStorage.getItem('userCVFileName') || 'Resume';
+    if (titleEl) titleEl.textContent = filename;
+    if (countEl) countEl.textContent = '';
+
+    // Show modal in loading state
+    pagesEl.style.display = 'none';
+    pagesEl.innerHTML = '';
+    errEl.style.display = 'none';
+    loading.style.display = 'flex';
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+
+    try {
+        let imageSrcs = []; // array of src strings (data URIs or https signed URLs)
+
+        // ── Path 1: images already in localStorage (instant, no network) ──
+        const cached = localStorage.getItem('userCVImages');
+        if (cached) {
+            const images = JSON.parse(cached);
+            if (Array.isArray(images) && images.length > 0) {
+                imageSrcs = images.map(b64 => `data:image/jpeg;base64,${b64}`);
+            }
+        }
+
+        // ── Path 2: localStorage wiped — fetch signed URLs from storer worker ──
+        if (imageSrcs.length === 0 && currentUser) {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session?.access_token) throw new Error('no_session');
+
+            const res = await fetch(
+                `${STORER_WORKER_URL}/?uuid=${currentUser.id}`,
+                { headers: { 'Authorization': `Bearer ${session.access_token}` } }
+            );
+
+            if (!res.ok) throw new Error(`storer_get_failed_${res.status}`);
+
+            const data = await res.json();
+            if (!data.ok || !Array.isArray(data.pages) || data.pages.length === 0) {
+                throw new Error('no_pages_from_worker');
+            }
+
+            imageSrcs = data.pages;
+        }
+
+        if (imageSrcs.length === 0) throw new Error('no_images');
+
+        // ── Render pages ──
+        imageSrcs.forEach((src, i) => {
+            const wrap = document.createElement('div');
+            wrap.className = 'p2-pdf-page-wrap';
+            const img = document.createElement('img');
+            img.src = src;
+            img.alt = `Page ${i + 1}`;
+            img.loading = i === 0 ? 'eager' : 'lazy';
+
+            // Double tap / double click to toggle zoom (100% <-> 150%)
+            let lastTapTime = 0;
+            img.addEventListener('click', () => {
+                const now = Date.now();
+                if (now - lastTapTime < 300) {
+                    // Double tap detected
+                    if (currentZoomIndex === 1) {
+                        currentZoomIndex = ZOOM_LEVELS.indexOf(150); // 150%
+                    } else {
+                        currentZoomIndex = 1; // 100%
+                    }
+                    applyZoomLevel(ZOOM_LEVELS[currentZoomIndex]);
+                }
+                lastTapTime = now;
+            });
+
+            const label = document.createElement('span');
+            label.className = 'p2-pdf-page-label';
+            label.textContent = `Page ${i + 1} of ${imageSrcs.length}`;
+            wrap.appendChild(img);
+            wrap.appendChild(label);
+            pagesEl.appendChild(wrap);
+        });
+
+        if (countEl) countEl.textContent = `${imageSrcs.length} page${imageSrcs.length > 1 ? 's' : ''}`;
+        loading.style.display = 'none';
+        pagesEl.style.display = 'flex';
+
+    } catch (err) {
+        loading.style.display = 'none';
+        errEl.style.display = 'flex';
+        console.warn('Resume preview failed:', err.message);
+    }
+}
+
+function closeResumePreview() {
+    const modal   = document.getElementById('resumeViewerModal');
+    const pagesEl = document.getElementById('resumeViewerPages');
+    if (modal)   modal.style.display = 'none';
+    if (pagesEl) pagesEl.innerHTML = '';
+    document.body.style.overflow = '';
+    currentZoomIndex = 1;
+    applyZoomLevel(100);
+}
+
+
 
 function showProjectFileDisplay(filename) {
     const filenameEl = document.getElementById('project-filename');
@@ -3131,6 +3301,9 @@ async function handleSave(e) {
     const profileData = Object.fromEntries(formData.entries());
     delete profileData.resume;
     delete profileData.cover_letter;
+    // Persist the CV filename so the resume display survives localStorage wipes
+    const cvFileName = localStorage.getItem('userCVFileName');
+    if (cvFileName) profileData.cv_filename = cvFileName;
     if (currentUser?.email) {
         profileData.email = currentUser.email;
     }
@@ -4436,6 +4609,37 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (btn && btn.getAttribute('data-target')) {
             hideFileDisplay(btn.getAttribute('data-target'));
             refreshHeader();
+        }
+    });
+
+    // View resume button
+    const viewResumeBtn = document.getElementById('viewResumeBtn');
+    if (viewResumeBtn) viewResumeBtn.addEventListener('click', openResumePreview);
+
+    // Zoom resume buttons
+    const zoomInBtn = document.getElementById('resumeViewerZoomIn');
+    if (zoomInBtn) zoomInBtn.addEventListener('click', () => zoomResume('in'));
+
+    const zoomOutBtn = document.getElementById('resumeViewerZoomOut');
+    if (zoomOutBtn) zoomOutBtn.addEventListener('click', () => zoomResume('out'));
+
+    // Close resume viewer
+    const resumeViewerClose = document.getElementById('resumeViewerClose');
+    if (resumeViewerClose) resumeViewerClose.addEventListener('click', closeResumePreview);
+
+    // Close on overlay click
+    const resumeViewerModal = document.getElementById('resumeViewerModal');
+    if (resumeViewerModal) {
+        resumeViewerModal.addEventListener('click', (e) => {
+            if (e.target === resumeViewerModal) closeResumePreview();
+        });
+    }
+
+    // Close on Escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('resumeViewerModal');
+            if (modal && modal.style.display !== 'none') closeResumePreview();
         }
     });
 
