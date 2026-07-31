@@ -59,14 +59,9 @@ body {
 .auth-icon-btn {
   display: flex;
   padding: 0.625rem;
-  border-radius: 10px;
   color: var(--primary, #2563eb); 
-  background: rgba(37, 99, 235, 0.08);
-  transition: all 0.2s ease;
-  border: 1px solid rgba(37, 99, 235, 0.15);
 }
 .auth-icon-btn:hover {
-  background: rgba(37, 99, 235, 0.15);
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(37, 99, 235, 0.15);
 }
