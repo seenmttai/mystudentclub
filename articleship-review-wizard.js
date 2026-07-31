@@ -39,7 +39,6 @@
   const MIN_CHARS = 30;
   const MAX_WORDS = 500;
   const STIPEND_MAX = 50000;
-  const STIPEND_YEAR_MIN = 2019;
   const MIN_SUBMIT_MS = 4000; // a fresh form submitted faster than this ⇒ treat as a bot
 
   // Unverifiable allegations we refuse to publish (whole-word, case-insensitive).

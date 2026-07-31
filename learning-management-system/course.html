@@ -171,6 +171,20 @@
                                 </video>
                                 <div class="loading-overlay" id="video-loading-overlay"><i
                                         class="fas fa-spinner fa-spin"></i></div>
+                                <!-- Video Locked Overlay (View Limit Reached) -->
+                                <div id="video-locked-overlay" style="display:none;">
+                                    <div class="locked-overlay-content">
+                                        <div class="locked-icon"><i class="fas fa-lock"></i></div>
+                                        <h3>Watch Limit Reached</h3>
+                                        <p>You've watched this video the maximum allowed number of times.</p>
+                                        <small>Limit: 2&times; video duration per user</small>
+                                    </div>
+                                </div>
+                                <!-- Watch Time Remaining Badge (shown only when ≤ 30 mins left) -->
+                                <div id="watch-time-badge" style="display:none;">
+                                    <i class="fas fa-hourglass-half"></i>
+                                    <span id="watch-time-badge-text"></span> watch time remaining
+                                </div>
                             </div>
                             <div class="no-video-selected" id="no-video-message-player" style="display: none;">
                                 <div class="empty-state">
