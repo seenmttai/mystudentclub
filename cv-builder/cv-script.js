@@ -2898,7 +2898,16 @@
             { file: 'clean-rule.html', name: 'Clean Rule', accent: '#0D56C4', style: 'template38' },
             { file: 'continuous-outline.html', name: 'Continuous Outline', accent: '#1F477B', style: 'template39' },
             { file: 'formal-docket.html', name: 'Formal Docket', accent: '#001F5E', style: 'template40' },
-            { file: 'open-panel.html', name: 'Open Panel', accent: '#8C8C8C', style: 'template41' }
+            { file: 'open-panel.html', name: 'Open Panel', accent: '#8C8C8C', style: 'template41' },
+            { file: 'executive-docket.html', name: 'Executive Docket', accent: '#1B365D', style: 'execdocket' },
+            { file: 'tabular-ledger.html', name: 'Tabular Ledger', accent: '#1F4E79', style: 'tabledger' },
+            { file: 'grid-docket.html', name: 'Grid Docket', accent: '#002060', style: 'griddocket' },
+            { file: 'split-banner.html', name: 'Split Banner', accent: '#002060', style: 'splitbanner' },
+            { file: 'wave-grid.html', name: 'Wave Grid', accent: '#002060', style: 'wavegrid' },
+            { file: 'side-panel.html', name: 'Side Panel', accent: '#002060', style: 'sidepanel' },
+            { file: 'serif-docket.html', name: 'Serif Docket', accent: '#002060', style: 'serifdocket' },
+            { file: 'composite-ledger.html', name: 'Composite Ledger', accent: '#002060', style: 'compositeledger' },
+            { file: 'dotted-split.html', name: 'Dotted Split', accent: '#002060', style: 'dottedsplit' }
         ];
         const TEMPLATE_COLOR_PRESETS = ['#2b2b2b', '#0f6cbd', '#155e95', '#1f8f63', '#c0392b', '#7b4db3'];
 
