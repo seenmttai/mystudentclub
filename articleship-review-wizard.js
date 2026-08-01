@@ -36,10 +36,9 @@
   const DRAFT_TTL_MS = 24 * 60 * 60 * 1000;
 
   // ── Validation / anti-abuse config ────────────────────────────────────
-  const MIN_WORDS = 30;
+  const MIN_CHARS = 30;
   const MAX_WORDS = 500;
   const STIPEND_MAX = 50000;
-  const STIPEND_YEAR_MIN = 2019;
   const MIN_SUBMIT_MS = 4000; // a fresh form submitted faster than this ⇒ treat as a bot
 
   // Unverifiable allegations we refuse to publish (whole-word, case-insensitive).
@@ -52,6 +51,9 @@
 
   function wordCount(s) {
     return String(s || '').trim().split(/\s+/).filter(Boolean).length;
+  }
+  function charCount(s) {
+    return String(s || '').trim().length;
   }
   // Best-effort personal-name detector (backstop is the consent checkbox).
   function namesIndividual(t) {
@@ -67,9 +69,10 @@
   // Returns { ok, message } for the free-text review body.
   function validateReviewText(text) {
     const t = String(text || '').trim();
+    const chars = charCount(t);
     const words = wordCount(t);
-    if (words < MIN_WORDS) {
-      return { ok: false, message: `Please write at least ${MIN_WORDS} words so your review is useful to others (currently ${words}).` };
+    if (chars < MIN_CHARS) {
+      return { ok: false, message: `Please write at least ${MIN_CHARS} characters so your review is useful to others (currently ${chars}).` };
     }
     if (words > MAX_WORDS) {
       return { ok: false, message: `Your review must not exceed ${MAX_WORDS} words.` };
@@ -403,7 +406,7 @@
         <div class="arw-field" style="position: relative;">
           <label for="arw-review">Anonymous Review <span style="color:#dc2626">*</span></label>
           <textarea id="arw-review" rows="4" placeholder="Example: &quot;Great learning exposure in statutory audit. Working hours are standard (9-7 PM) but can stretch during tax season. Partners are approachable. Stipend is paid on time, and leaves for exams are supported.&quot;"></textarea>
-          <div id="arw-char-counter" style="font-size: 11px; color: #64748b; text-align: right; margin-top: 0.35rem; font-family: monospace;">0 / ${MIN_WORDS} words minimum</div>
+          <div id="arw-char-counter" style="font-size: 11px; color: #64748b; text-align: right; margin-top: 0.35rem; font-family: monospace;">0 / ${MIN_CHARS} characters minimum</div>
         </div>
         <div class="arw-field">
           <label>Overall Rating <span style="color:#dc2626">*</span></label>
@@ -509,22 +512,24 @@
     if (saved.consent) consentBox.checked = true;
 
     function refreshSubmitState() {
+      const chars = charCount(reviewTextarea.value);
       const words = wordCount(reviewTextarea.value);
-      const ready = words >= MIN_WORDS && consentBox.checked;
+      const ready = chars >= MIN_CHARS && words <= MAX_WORDS && consentBox.checked;
       submitBtn.disabled = !ready;
     }
     function updateCounter() {
+      const chars = charCount(reviewTextarea.value);
       const words = wordCount(reviewTextarea.value);
       if (words > MAX_WORDS) {
         counterDiv.textContent = `${words} / ${MAX_WORDS} words — too long`;
         counterDiv.style.color = '#dc2626';
         counterDiv.style.fontWeight = '700';
-      } else if (words < MIN_WORDS) {
-        counterDiv.textContent = `${words} / ${MIN_WORDS} words minimum`;
+      } else if (chars < MIN_CHARS) {
+        counterDiv.textContent = `${chars} / ${MIN_CHARS} characters minimum`;
         counterDiv.style.color = '#dc2626';
         counterDiv.style.fontWeight = '600';
       } else {
-        counterDiv.textContent = `${words} words · looks good`;
+        counterDiv.textContent = `${chars} characters · looks good`;
         counterDiv.style.color = '#16a34a';
         counterDiv.style.fontWeight = '600';
       }
@@ -815,22 +820,9 @@
         ${segHTML('allow_industrial_training', opt('allow_industrial_training'))}
       </div>
       <div class="arw-field">
-        <label>Monthly Stipend (₹)</label>
-        <div class="arw-stipend-row">
-          <input id="arw-stipend" type="number" min="0" max="${STIPEND_MAX}" inputmode="numeric" placeholder="e.g., 12000">
-          <div class="arw-custom-select" id="arw-stipend-year-wrap">
-            <button type="button" class="arw-select-trigger" id="arw-stipend-year-trigger" aria-haspopup="listbox" aria-expanded="false">
-              <span class="arw-select-label placeholder" id="arw-stipend-year-label">Year</span>
-              <i class="fas fa-chevron-down arw-select-arrow"></i>
-            </button>
-            <div class="arw-select-menu" role="listbox" id="arw-stipend-year-menu">
-              <div class="arw-select-option" data-value="" role="option">Year</div>
-              ${(() => { const y = new Date().getFullYear(); let o = ''; for (let i = y; i >= STIPEND_YEAR_MIN; i--) o += `<div class="arw-select-option" data-value="${i}" role="option">${i}</div>`; return o; })()}
-            </div>
-            <input type="hidden" id="arw-stipend-year" name="stipend_year" value="">
-          </div>
-        </div>
-        <div class="arw-field-hint" id="arw-stipend-hint">Enter monthly stipend (max ₹${STIPEND_MAX.toLocaleString('en-IN')}) and the year it applied to.</div>
+        <label for="arw-stipend">Monthly Stipend (₹)</label>
+        <input id="arw-stipend" type="number" min="0" max="${STIPEND_MAX}" inputmode="numeric" placeholder="e.g., 12000">
+        <div class="arw-field-hint" id="arw-stipend-hint">Enter monthly stipend (max ₹${STIPEND_MAX.toLocaleString('en-IN')}).</div>
       </div>
       <div class="arw-field">
         <span class="arw-group-label">Was the stipend paid on time?</span>
@@ -874,65 +866,11 @@
       if (wrap) wrap.hidden = false;
     }
     const stipendInput = document.getElementById('arw-stipend');
-    const stipendYearWrap = document.getElementById('arw-stipend-year-wrap');
-    const stipendYearTrigger = document.getElementById('arw-stipend-year-trigger');
-    const stipendYearLabel = document.getElementById('arw-stipend-year-label');
-    const stipendYearMenu = document.getElementById('arw-stipend-year-menu');
-    const stipendYear = document.getElementById('arw-stipend-year');
     const stipendHint = document.getElementById('arw-stipend-hint');
-
-    function setStipendYearValue(val) {
-      if (!stipendYear) return;
-      const cleanVal = val ? String(val) : '';
-      stipendYear.value = cleanVal;
-      if (stipendYearLabel) {
-        stipendYearLabel.textContent = cleanVal || 'Year';
-        stipendYearLabel.classList.toggle('placeholder', !cleanVal);
-      }
-      if (stipendYearMenu) {
-        stipendYearMenu.querySelectorAll('.arw-select-option').forEach(opt => {
-          opt.classList.toggle('selected', opt.dataset.value === cleanVal);
-        });
-      }
-      refreshStipendHint();
-      autoSaveStep3();
-    }
 
     if (saved.stipend !== undefined && saved.stipend !== null && stipendInput) {
       stipendInput.value = saved.stipend;
     }
-    if (saved.stipend_year) {
-      setStipendYearValue(saved.stipend_year);
-    }
-
-    // Custom select interaction logic
-    if (stipendYearTrigger && stipendYearWrap) {
-      stipendYearTrigger.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isActive = stipendYearWrap.classList.contains('active');
-        stipendYearWrap.classList.toggle('active', !isActive);
-        stipendYearTrigger.setAttribute('aria-expanded', !isActive ? 'true' : 'false');
-      });
-    }
-
-    if (stipendYearMenu) {
-      stipendYearMenu.querySelectorAll('.arw-select-option').forEach(opt => {
-        opt.addEventListener('click', (e) => {
-          e.stopPropagation();
-          setStipendYearValue(opt.dataset.value);
-          if (stipendYearWrap) stipendYearWrap.classList.remove('active');
-          if (stipendYearTrigger) stipendYearTrigger.setAttribute('aria-expanded', 'false');
-        });
-      });
-    }
-
-    const handleOutsideClick = (e) => {
-      if (stipendYearWrap && !stipendYearWrap.contains(e.target)) {
-        stipendYearWrap.classList.remove('active');
-        if (stipendYearTrigger) stipendYearTrigger.setAttribute('aria-expanded', 'false');
-      }
-    };
-    document.addEventListener('click', handleOutsideClick);
 
     // Returns an error string (blocks Next) or null. Skip bypasses it.
     function stipendError() {
@@ -941,13 +879,12 @@
       const n = Number(raw);
       if (!Number.isFinite(n) || n < 0) return 'Please enter a valid stipend amount.';
       if (n > STIPEND_MAX) return `Stipend looks too high — please enter a monthly amount up to ₹${STIPEND_MAX.toLocaleString('en-IN')}.`;
-      if (n > 0 && stipendYear && !stipendYear.value) return 'Please select the year this stipend applied to.';
       return null;
     }
     function refreshStipendHint() {
       if (!stipendHint) return;
       const err = stipendError();
-      stipendHint.textContent = err || `Enter monthly stipend (max ₹${STIPEND_MAX.toLocaleString('en-IN')}) and the year it applied to.`;
+      stipendHint.textContent = err || `Enter monthly stipend (max ₹${STIPEND_MAX.toLocaleString('en-IN')}).`;
       stipendHint.classList.toggle('err', !!err);
     }
 
@@ -967,7 +904,6 @@
       // Only persist an in-range stipend so an out-of-range value never poisons averages.
       if (stipend !== '' && Number.isFinite(stipendNum) && stipendNum >= 0 && stipendNum <= STIPEND_MAX) {
         patch.stipend = parseInt(stipend, 10);
-        if (stipendYear && stipendYear.value) patch.stipend_year = parseInt(stipendYear.value, 10);
       }
       state.savedData = Object.assign({}, state.savedData, patch);
       state.pendingPatch = Object.assign({}, state.pendingPatch, patch);

@@ -75,7 +75,7 @@
   </div>
 
   <div class="open-notice" data-aos="fade-down" style="z-index: 1; max-width: 1200px; width: 100%; box-sizing: border-box; justify-content: center; text-align: center; margin-bottom: 30px;">
-    <i class="fas fa-info-circle"></i> Next Batch Registrations Starts 1st Aug for those turning eligible from 1st July to 31st Oct
+    <i class="fas fa-info-circle"></i> Registrations will start from August 9th for Batch Commencing from Aug 13th
   </div>
 
   <div class="hero-container">
@@ -512,10 +512,46 @@
   </button>
 </div>
 
+<!-- Registration Announcement Modal -->
+<div id="registrationModal" class="registration-modal-overlay">
+  <div class="registration-modal-card">
+    <button id="registrationModalClose" class="registration-modal-close" aria-label="Close modal">&times;</button>
+    <div class="registration-modal-badge">
+      <i class="fas fa-bullhorn"></i> Important Announcement
+    </div>
+    <h3 class="registration-modal-title">MSC Industrial Training Program</h3>
+    <p class="registration-modal-message">
+      Registrations will start from <strong>August 9th</strong> for the Batch Commencing from <strong>Aug 13th</strong>.
+    </p>
+    <div class="registration-modal-actions">
+      <button id="registrationModalOk" class="registration-modal-btn">Got It!</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
 <script src="app.js" type="module"></script>
 <script>
   document.addEventListener('DOMContentLoaded', async () => {
+    // Show Registration Announcement Modal on page load
+    const registrationModal = document.getElementById('registrationModal');
+    const registrationModalClose = document.getElementById('registrationModalClose');
+    const registrationModalOk = document.getElementById('registrationModalOk');
+
+    if (registrationModal) {
+      registrationModal.classList.add('active');
+
+      const closeModal = () => {
+        registrationModal.classList.remove('active');
+      };
+
+      if (registrationModalClose) registrationModalClose.addEventListener('click', closeModal);
+      if (registrationModalOk) registrationModalOk.addEventListener('click', closeModal);
+      registrationModal.addEventListener('click', (e) => {
+        if (e.target === registrationModal) closeModal();
+      });
+    }
+
     // Menu Toggle
     const menuButton = document.getElementById('menuButton');
     const expandedMenu = document.getElementById('expandedMenu');
@@ -728,34 +764,6 @@
     }
 
     initNotifyMe();
-
-    // Show postponed modal on page load (occurs every visit/reload)
-    /*
-    const postponedModal = document.getElementById('postponedModal');
-    const postponedCloseBtn = document.getElementById('postponedCloseBtn');
-    const postponedOkBtn = document.getElementById('postponedOkBtn');
-
-    if (postponedModal) {
-      postponedModal.style.display = 'flex';
-
-      const closePostponed = () => {
-        postponedModal.style.display = 'none';
-      };
-
-      if (postponedCloseBtn) {
-        postponedCloseBtn.addEventListener('click', closePostponed);
-      }
-      if (postponedOkBtn) {
-        postponedOkBtn.addEventListener('click', closePostponed);
-      }
-
-      postponedModal.addEventListener('click', (e) => {
-        if (e.target === postponedModal) {
-          closePostponed();
-        }
-      });
-    }
-    */
   });
 </script>
 <!-- Google Analytics -->

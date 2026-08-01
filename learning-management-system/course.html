@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Course Details | My Student Club LMS</title>
-    <link rel="stylesheet" href="styles.css?v=2">
-    <link rel="stylesheet" href="course-styles.css?v=2">
+    <link rel="stylesheet" href="styles.css?v=2.1">
+    <link rel="stylesheet" href="course-styles.css?v=2.1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Plyr Video Player -->
     <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
@@ -171,6 +171,20 @@
                                 </video>
                                 <div class="loading-overlay" id="video-loading-overlay"><i
                                         class="fas fa-spinner fa-spin"></i></div>
+                                <!-- Video Locked Overlay (View Limit Reached) -->
+                                <div id="video-locked-overlay" style="display:none;">
+                                    <div class="locked-overlay-content">
+                                        <div class="locked-icon"><i class="fas fa-lock"></i></div>
+                                        <h3>Watch Limit Reached</h3>
+                                        <p>You've watched this video the maximum allowed number of times.</p>
+                                        <small>Limit: 2&times; video duration per user</small>
+                                    </div>
+                                </div>
+                                <!-- Watch Time Remaining Badge (shown only when ≤ 30 mins left) -->
+                                <div id="watch-time-badge" style="display:none;">
+                                    <i class="fas fa-hourglass-half"></i>
+                                    <span id="watch-time-badge-text"></span> watch time remaining
+                                </div>
                             </div>
                             <div class="no-video-selected" id="no-video-message-player" style="display: none;">
                                 <div class="empty-state">
@@ -257,13 +271,13 @@
                         <table class="csv-preview-table"></table>
                     </div>
                     <div id="iframe-viewer-container" class="iframe-container" style="display: none;">
-                        <div class="iframe-overlay"></div>
                         <iframe id="resource-iframe" title="Embedded Resource"></iframe>
                     </div>
                 </div>
                 <div class="resource-viewer-controls">
                     <button id="pdf-prev-page" class="viewer-nav-button">Previous</button>
                     <span id="pdf-page-info"></span>
+                    <a id="viewer-open-external-btn" target="_blank" rel="noopener noreferrer" class="viewer-nav-button" style="display:none; text-decoration:none;"><i class="fas fa-external-link-alt"></i> Open Full Sheet</a>
                     <button id="viewer-download-btn" class="viewer-nav-button viewer-download-btn">Download</button>
                     <button id="pdf-next-page" class="viewer-nav-button">Next</button>
                 </div>
@@ -334,7 +348,7 @@
 
 
 
-    <script src="course-script.js"></script>
+    <script src="course-script.js?v=2.1"></script>
 </body>
 
 </html>

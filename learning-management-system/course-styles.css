@@ -785,12 +785,12 @@
 
 .resource-viewer-content {
     background-color: white;
-    padding: 1.5rem;
+    padding: 1.25rem;
     border-radius: 12px;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    width: 95vw;
-    max-width: 900px;
-    height: 95vh;
+    width: 96vw;
+    max-width: 1280px;
+    height: 94vh;
     display: flex;
     flex-direction: column;
     position: relative;
@@ -845,6 +845,12 @@
     margin-top: 0.35rem;
     font-size: 0.88rem;
     color: #64748b;
+}
+
+@media (max-width: 768px) {
+    .resource-viewer-subtitle {
+        display: none !important;
+    }
 }
 
 .resource-viewer-header>div {
@@ -943,13 +949,22 @@
 
 .viewer-nav-button {
     padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1;
+    height: 38px;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
     border: 1px solid #4f46e5;
     background-color: white;
     color: #4f46e5;
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s ease;
-    font-weight: 500;
+    text-decoration: none;
 }
 
 .viewer-nav-button:hover:not(:disabled) {
@@ -969,9 +984,15 @@
 }
 
 .viewer-download-btn {
-    background-color: var(--success-500);
+    background-color: #059669;
     color: white;
-    border-color: var(--success-500);
+    border-color: #059669;
+}
+
+.viewer-download-btn:hover:not(:disabled) {
+    background-color: #047857;
+    border-color: #047857;
+    color: white;
 }
 
 .viewer-download-btn:hover:not(:disabled) {
@@ -1388,7 +1409,8 @@
     position: relative;
     width: 100%;
     height: 100%;
-    overflow: hidden;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
     background-color: #fff;
 }
 
@@ -1399,19 +1421,8 @@
 }
 
 .iframe-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    /* Leave space for scrollbar on right (17px) and sheet tabs at bottom (40px) */
-    width: calc(100% - 17px);
-    height: calc(100% - 40px);
-    z-index: 10;
-    cursor: default;
-    /* Prevent selection/interaction */
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+    display: none !important;
+    pointer-events: none !important;
 }
 
 /* =========================================
@@ -1699,3 +1710,117 @@
         padding: 4px 12px;
     }
 }
+
+#video-locked-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 10, 20, 0.92);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    border-radius: inherit;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
+.locked-overlay-content {
+    text-align: center;
+    color: #fff;
+    padding: 2rem;
+    max-width: 340px;
+    animation: fadeInScale 0.3s ease;
+}
+
+@keyframes fadeInScale {
+    from { opacity: 0; transform: scale(0.9); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+.locked-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ef4444, #b91c1c);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
+    font-size: 1.8rem;
+    box-shadow: 0 0 30px rgba(239, 68, 68, 0.4);
+}
+
+.locked-overlay-content h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 0.6rem;
+    letter-spacing: 0.01em;
+}
+
+.locked-overlay-content p {
+    font-size: 0.95rem;
+    color: #cbd5e1;
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+}
+
+.locked-overlay-content small {
+    font-size: 0.78rem;
+    color: #64748b;
+}
+
+/* Watch-time remaining badge — floating top-right over video player */
+#watch-time-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 35;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #f87171;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 20px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    pointer-events: none;
+    animation: pulseBadge 2s infinite;
+}
+
+@keyframes pulseBadge {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.7; }
+}
+
+#watch-time-badge i {
+    font-size: 0.78rem;
+}
+
+/* Sidebar — locked video item */
+.sub-video-item.view-limit-locked {
+    opacity: 0.55;
+    pointer-events: none;
+    cursor: default;
+}
+
+.sub-video-item.view-limit-locked .sub-video-header i {
+    color: #ef4444;
+}
+
+.view-limit-lock-icon {
+    font-size: 0.7rem;
+    color: #ef4444;
+    margin-left: 5px;
+    vertical-align: middle;
+}
+
+/* Hide empty video counter pill */
+.video-counter:empty {
+    display: none !important;
+}
+

@@ -180,6 +180,13 @@
                 window.history.scrollRestoration = 'manual';
             }
 
+            // Check if redirecting from CV Reviewer to import
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('import_from_reviewer') === 'true' && localStorage.getItem('import_cv_images')) {
+                handleReviewerImport();
+                return;
+            }
+
             const saved = localStorage.getItem('cv_maker_data');
             if (saved) {
                 try { 
@@ -236,6 +243,192 @@
             resetEditorScrollToTop();
             requestAnimationFrame(() => resetEditorScrollToTop());
         };
+
+        function showNoticeModal(title, message, isError = true, onDismiss = null) {
+            let overlay = document.getElementById('notice-modal-overlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.id = 'notice-modal-overlay';
+                overlay.style.position = 'fixed';
+                overlay.style.top = '0';
+                overlay.style.left = '0';
+                overlay.style.width = '100vw';
+                overlay.style.height = '100vh';
+                overlay.style.backgroundColor = 'rgba(15, 23, 42, 0.6)';
+                overlay.style.backdropFilter = 'blur(4px)';
+                overlay.style.zIndex = '9999999';
+                overlay.style.display = 'flex';
+                overlay.style.alignItems = 'center';
+                overlay.style.justifyContent = 'center';
+                overlay.style.fontFamily = 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+                
+                overlay.innerHTML = `
+                    <div style="text-align: center; max-width: 400px; width: 90%; padding: 2.5rem; background: #ffffff; border-radius: 20px; box-shadow: 0 20px 50px -12px rgba(0,0,0,0.15); border: 1px solid rgba(0,0,0,0.04); position: relative; box-sizing: border-box;">
+                        <button id="notice-modal-close" style="position: absolute; top: 1.25rem; right: 1.25rem; border: none; background: transparent; cursor: pointer; color: #64748b; padding: 4px; display: flex; align-items: center; justify-content: center; transition: color 0.2s;" aria-label="Close">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                        </button>
+                        <span id="notice-modal-emblem" style="display: inline-flex; align-items: center; justify-content: center; width: 54px; height: 54px; border-radius: 50%; margin-bottom: 1.25rem; font-size: 1.5rem;">
+                        </span>
+                        <h3 id="notice-modal-title" style="color: #0f172a; font-size: 1.25rem; font-weight: 800; margin: 0 0 0.5rem 0; letter-spacing: -0.02em;"></h3>
+                        <p id="notice-modal-text" style="color: #64748b; font-size: 0.9rem; line-height: 1.6; margin: 0; word-break: break-word; text-align: center;"></p>
+                        <button type="button" id="notice-modal-btn" style="margin-top: 1.5rem; background: #0f172a; width: 100%; border-radius: 12px; font-weight: 600; padding: 0.85rem; color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; transition: background 0.2s;">
+                            Dismiss
+                        </button>
+                    </div>
+                `;
+                document.body.appendChild(overlay);
+            }
+            
+            const titleEl = document.getElementById('notice-modal-title');
+            const descEl = document.getElementById('notice-modal-text');
+            const emblem = document.getElementById('notice-modal-emblem');
+            const btn = document.getElementById('notice-modal-btn');
+            const closeBtn = document.getElementById('notice-modal-close');
+            
+            if (titleEl) titleEl.textContent = title;
+            if (descEl) descEl.textContent = message;
+            
+            if (emblem) {
+                if (isError) {
+                    emblem.style.background = 'rgba(239, 68, 68, 0.1)';
+                    emblem.style.color = '#ef4444';
+                    emblem.innerHTML = `<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
+                } else {
+                    emblem.style.background = 'rgba(37, 99, 235, 0.1)';
+                    emblem.style.color = '#2563eb';
+                    emblem.innerHTML = `<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
+                }
+            }
+            
+            function dismiss() {
+                overlay.remove();
+                if (onDismiss) onDismiss();
+            }
+            
+            btn.onclick = dismiss;
+            closeBtn.onclick = dismiss;
+            overlay.onclick = (e) => { if (e.target === overlay) dismiss(); };
+        }
+
+        async function handleReviewerImport() {
+            const storedImages = localStorage.getItem('import_cv_images');
+            if (!storedImages) return;
+
+            showImportLoadingOverlay();
+
+            try {
+                const images = JSON.parse(storedImages);
+                const response = await fetch(`${WORKER_URL}/convert`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ images: images })
+                });
+
+                const res = await response.json();
+                if (res.ok && res.data) {
+                    cvData = normalizeImportedPayload(res.data);
+                    ensureCvDataShape();
+                    normalizeSectionOrder();
+                    parseLegacyContact(cvData.personal);
+                    
+                    // Set template to classic
+                    cvData.templateFile = 'classic.html';
+                    const templateSelect = document.getElementById('template-select');
+                    if (templateSelect) {
+                        templateSelect.value = 'classic.html';
+                    }
+                    if (typeof syncCurrentTemplateName === 'function') {
+                        syncCurrentTemplateName();
+                    }
+                    
+                    // Save to standard CV Builder local storage key
+                    localStorage.setItem('cv_maker_data', JSON.stringify(cvData));
+                    
+                    // Clear temporary values
+                    localStorage.removeItem('import_cv_images');
+                    localStorage.removeItem('import_cv_filename');
+                    
+                    // Remove query parameter from URL
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    
+                    // Initialize and render
+                    initSummaryEditor();
+                    initSkillsEditor();
+                    renderEditor();
+                    renderCustomSectionEditors();
+                    updateProgress();
+                    initializeUndoRedoHistory();
+                    initUndoRedoShortcuts();
+                    updateUndoRedoControls();
+                    
+                    const frame = document.getElementById('cv-frame');
+                    if (frame) {
+                        frame.src = `classic.html?v=${Date.now()}`;
+                        frame.onload = () => {
+                            postToFrame();
+                            setTimeout(() => {
+                                updatePreviewScale();
+                            }, 300);
+                        };
+                    }
+                    showToast("CV Imported successfully from Reviewer!");
+                } else {
+                    throw new Error(res.error || "Failed to parse CV");
+                }
+            } catch (e) {
+                console.error("Import failed:", e);
+                showNoticeModal("Import Failed", "Failed to import CV: " + e.message, true, () => {
+                    // On failure, fall back to standard load
+                    localStorage.removeItem('import_cv_images');
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    window.location.reload();
+                });
+            } finally {
+                hideImportLoadingOverlay();
+            }
+        }
+
+        function showImportLoadingOverlay() {
+            let overlay = document.getElementById('reviewer-import-overlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.id = 'reviewer-import-overlay';
+                overlay.style.position = 'fixed';
+                overlay.style.top = '0';
+                overlay.style.left = '0';
+                overlay.style.width = '100vw';
+                overlay.style.height = '100vh';
+                overlay.style.backgroundColor = 'rgba(255, 255, 255, 0.96)';
+                overlay.style.zIndex = '999999';
+                overlay.style.display = 'flex';
+                overlay.style.flexDirection = 'column';
+                overlay.style.alignItems = 'center';
+                overlay.style.justifyContent = 'center';
+                overlay.style.fontFamily = 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+                
+                overlay.innerHTML = `
+                    <div style="text-align: center; max-width: 420px; padding: 2.5rem; background: #ffffff; border-radius: 20px; box-shadow: 0 20px 50px -12px rgba(0,0,0,0.08); border: 1px solid rgba(0,0,0,0.04);">
+                        <div class="import-spinner" style="width: 48px; height: 48px; border: 4px solid rgba(37, 99, 235, 0.1); border-top: 4px solid #2563eb; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1.5rem auto;"></div>
+                        <h2 style="color: #0f172a; font-size: 1.4rem; font-weight: 800; margin: 0 0 0.5rem 0; letter-spacing: -0.025em;">Importing from Reviewer</h2>
+                        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.6; margin: 0;">We are parsing your reviewed CV details and loading them into the builder template. This will take a few seconds...</p>
+                    </div>
+                    <style>
+                        @keyframes spin {
+                            0% { transform: rotate(0deg); }
+                            100% { transform: rotate(360deg); }
+                        }
+                    </style>
+                `;
+                document.body.appendChild(overlay);
+            }
+        }
+
+        function hideImportLoadingOverlay() {
+            const overlay = document.getElementById('reviewer-import-overlay');
+            if (overlay) {
+                overlay.remove();
+            }
+        }
 
         function resetEditorScrollToTop() {
             const editorPane = document.querySelector('.editor-content');
@@ -4127,7 +4320,7 @@ async function downloadCvFile(format = 'pdf') {
                 } else throw new Error(res.error || "Unknown error");
             } catch (e) {
                 console.error(e);
-                alert("Import failed: " + e.message);
+                showNoticeModal("Import Failed", "Import failed: " + e.message, true);
             } finally {
                 overlay.classList.remove('active');
                 input.value = '';

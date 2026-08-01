@@ -324,6 +324,12 @@
             color: #64748b;
         }
 
+        @media (max-width: 768px) {
+            .resource-viewer-subtitle {
+                display: none !important;
+            }
+        }
+
         .resource-viewer-close-button {
             background: none;
             border: none;
@@ -351,6 +357,8 @@
             width: 100%;
             height: 100%;
             background: white;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         #resource-iframe {
@@ -360,18 +368,8 @@
         }
 
         .iframe-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            /* Leave space for scrollbar on right (17px) and sheet tabs at bottom (40px) */
-            width: calc(100% - 17px);
-            height: calc(100% - 40px);
-            z-index: 10;
-            cursor: default;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
+            display: none !important;
+            pointer-events: none !important;
         }
 
         /* PDF & CSV Styles */
@@ -436,21 +434,44 @@
 
         .viewer-nav-button {
             padding: 0.5rem 1rem;
-            border: 1px solid #e2e8f0;
+            font-size: 0.875rem;
+            font-weight: 500;
+            line-height: 1;
+            height: 38px;
+            box-sizing: border-box;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            border: 1px solid #4f46e5;
             background: white;
+            color: #4f46e5;
             border-radius: 6px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
+            text-decoration: none;
         }
 
         .viewer-nav-button:hover:not(:disabled) {
-            background: #f1f5f9;
-            border-color: #cbd5e1;
+            background: #4f46e5;
+            color: white;
         }
 
         .viewer-nav-button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+        }
+
+        .viewer-download-btn {
+            background-color: #059669;
+            color: white;
+            border-color: #059669;
+        }
+
+        .viewer-download-btn:hover:not(:disabled) {
+            background-color: #047857;
+            border-color: #047857;
+            color: white;
         }
 
         @keyframes fadeIn {
@@ -580,8 +601,15 @@
             <div v-if="isViewerVisible" id="resource-viewer-modal">
                 <div class="resource-viewer-content">
                     <div class="resource-viewer-header">
-                        <h2 class="resource-viewer-title">{{ currentResourceTitle }}{{ currentResourceSubtitle ? ' · PDF Preview' : '' }}</h2>
-                        <button @click="closeViewer" class="resource-viewer-close-button">×</button>
+                        <div class="resource-viewer-title-wrap">
+                            <h2 class="resource-viewer-title">{{ currentResourceTitle }}{{ currentResourceSubtitle ? ' · PDF Preview' : '' }}</h2>
+                        </div>
+                        <div>
+                            <button @click="toggleFullscreen" class="resource-viewer-fullscreen-button" title="Toggle Fullscreen">
+                                <i class="fas" :class="isFullscreen ? 'fa-compress' : 'fa-expand'"></i>
+                            </button>
+                            <button @click="closeViewer" class="resource-viewer-close-button">×</button>
+                        </div>
                     </div>
 
                     <div class="viewer-main-content">
@@ -592,7 +620,6 @@
 
                         <!-- Iframe -->
                         <div v-show="previewType === 'iframe'" class="iframe-container">
-                            <div class="iframe-overlay"></div>
                             <iframe id="resource-iframe" :src="iframeSrc" title="Embedded Resource"></iframe>
                         </div>
 
@@ -615,6 +642,15 @@
                         <span>Page {{ pdfCurrentPage }} of {{ pdfTotalPages }}</span>
                         <button @click="renderPdfPage(pdfCurrentPage + 1)" :disabled="pdfCurrentPage >= pdfTotalPages"
                             class="viewer-nav-button">Next</button>
+                    </div>
+                    <!-- Controls for iframe / Google Sheets -->
+                    <div v-else-if="previewType === 'iframe'" class="resource-viewer-controls" style="justify-content: center; gap: 0.75rem;">
+                        <a v-if="currentResource?.url" :href="getSheetPreviewUrl(currentResource.url)" target="_blank" rel="noopener noreferrer" class="viewer-nav-button">
+                            <i class="fas fa-external-link-alt"></i> Open Full Sheet
+                        </a>
+                        <button @click="downloadResource(currentResource)" class="viewer-nav-button viewer-download-btn">
+                            <i class="fas fa-download"></i> Download Excel
+                        </button>
                     </div>
                 </div>
             </div>
@@ -682,7 +718,9 @@
                     // Viewer State
                     isViewerVisible: false,
                     viewerLoading: false,
+                    isFullscreen: false,
                     previewType: null, // 'iframe', 'pdf', 'csv'
+                    currentResource: null,
                     currentResourceTitle: '',
                     currentResourceSubtitle: '',
 
@@ -700,6 +738,33 @@
             },
             methods: {
                 toggleMenu() { this.menuActive = !this.menuActive; },
+
+                toggleFullscreen() {
+                    const viewer = document.querySelector('#resource-viewer-modal .resource-viewer-content');
+                    if (!viewer) return;
+                    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                        if (viewer.requestFullscreen) viewer.requestFullscreen();
+                        else if (viewer.webkitRequestFullscreen) viewer.webkitRequestFullscreen();
+                        else viewer.classList.add('pseudo-fullscreen');
+                        this.isFullscreen = true;
+                    } else {
+                        if (document.exitFullscreen) document.exitFullscreen();
+                        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+                        viewer.classList.remove('pseudo-fullscreen');
+                        this.isFullscreen = false;
+                    }
+                },
+
+                // Convert /edit URLs to /preview to prevent mobile deep-linking
+                getSheetPreviewUrl(url) {
+                    if (!url) return url;
+                    const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+                    if (!match) return url;
+                    const sheetId = match[1];
+                    const gidMatch = url.match(/[#&]gid=([0-9]+)/);
+                    const gid = gidMatch ? gidMatch[1] : '0';
+                    return `https://docs.google.com/spreadsheets/d/${sheetId}/preview?gid=${gid}`;
+                },
 
                 async checkAuth() {
                     const { data: { session } } = await supabase.auth.getSession();
@@ -763,29 +828,41 @@
                 },
 
                 isSpecialSheet(resource) {
-                    const specialUrls = [
-                        'https://docs.google.com/spreadsheets/d/1NcACOrX0PsQCQ3P4b80EvGsI1fFxW8wlC-6y258HE-Y/edit?gid=1269177841#gid=1269177841',
-                        'https://docs.google.com/spreadsheets/d/1vVVFbHawgCnr01_-eSVQLiSa3TZ9yuB00fgmNPZKZJc/edit?gid=1309949710#gid=1309949710'
-                    ];
-                    return specialUrls.includes(resource.url);
+                    if (!resource) return false;
+                    const url = String(resource.url || resource.view_storage_path || resource.download_storage_path || '').toLowerCase();
+                    const type = String(resource.type || '').toLowerCase();
+                    const title = String(resource.title || '').toLowerCase();
+
+                    return url.includes('docs.google.com/spreadsheets') ||
+                           url.includes('drive.google.com/spreadsheets') ||
+                           url.includes('spreadsheets/d/') ||
+                           type === 'spreadsheet' ||
+                           type === 'sheets' ||
+                           type === 'gsheet' ||
+                           title.includes('hiring companies list');
                 },
                 hasViewPath(resource) {
                     return resource.view_storage_path && resource.view_storage_path !== 'None';
                 },
                 hasDownloadPath(resource) {
-                    return resource.download_storage_path && resource.download_storage_path !== 'None';
+                    return (resource.download_storage_path && resource.download_storage_path !== 'None') || this.isSpecialSheet(resource);
                 },
                 isDocxPreviewResource(resource) {
                     const type = String(resource?.type || '').toLowerCase();
                     return type === 'docx' && this.hasViewPath(resource) && this.hasDownloadPath(resource);
                 },
                 getViewLabel(resource) {
+                    if (this.isSpecialSheet(resource)) return 'View Sheet';
                     return this.isDocxPreviewResource(resource) ? 'Preview PDF' : 'View';
                 },
                 getDownloadLabel(resource) {
+                    if (this.isSpecialSheet(resource)) return 'Download Excel';
                     return this.isDocxPreviewResource(resource) ? 'Download DOCX' : 'Download';
                 },
                 getResourceFormatNote(resource) {
+                    if (this.isSpecialSheet(resource)) {
+                        return 'Interactive sheet preview available. Download exports as Excel (.xlsx).';
+                    }
                     return this.isDocxPreviewResource(resource)
                         ? 'PDF preview available. Download returns the original DOCX file.'
                         : '';
@@ -842,6 +919,7 @@
                     }
 
                     this.isViewerVisible = true;
+                    this.currentResource = resource;
                     this.currentResourceTitle = resource.title;
                     this.currentResourceSubtitle = this.isDocxPreviewResource(resource) && type === 'pdf'
                         ? 'Previewing the PDF version. Download gets the original DOCX file.'
@@ -980,8 +1058,20 @@
                 },
 
                 async downloadResource(resource) {
-                    const path = resource.download_storage_path;
+                    const path = resource?.download_storage_path;
                     if (!path || path === 'None') {
+                        if (resource && this.isSpecialSheet(resource)) {
+                            const matches = resource.url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+                            const sheetId = matches ? matches[1] : '';
+                            const gidMatch = resource.url.match(/[#&]gid=([0-9]+)/);
+                            const gid = gidMatch ? gidMatch[1] : '';
+                            if (sheetId) {
+                                let exportUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=xlsx`;
+                                if (gid) exportUrl += `&gid=${gid}`;
+                                window.open(exportUrl, '_blank');
+                                return;
+                            }
+                        }
                         alert('No downloadable file available.');
                         return;
                     }

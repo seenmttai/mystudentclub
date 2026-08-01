@@ -19,7 +19,12 @@ document.addEventListener('DOMContentLoaded', () => {
         pdfCurrentPage: 1, pdfTotalPages: 1, isFullscreen: false, isPlaying: false,
         retryCount: 0, maxRetries: 5,
         plyrPlayer: null,
-        hlsInstance: null  // HLS.js instance for streaming
+        hlsInstance: null,  // HLS.js instance for streaming
+        // --- View Limit Tracking ---
+        watchData: {},          
+        watchTrackingTimer: null,    
+        watchLastTime: 0,       
+        watchSessionActive: false    
     };
 
     const courses = {
@@ -102,11 +107,16 @@ document.addEventListener('DOMContentLoaded', () => {
         pdfNextPage: document.getElementById('pdf-next-page'),
         pdfPageInfo: document.getElementById('pdf-page-info'),
         viewerDownloadBtn: document.getElementById('viewer-download-btn'),
+        viewerOpenExternalBtn: document.getElementById('viewer-open-external-btn'),
         iframeViewerContainer: document.getElementById('iframe-viewer-container'),
         resourceIframe: document.getElementById('resource-iframe'),
         footer: document.getElementById('footer'),
         noDownloadPopup: document.getElementById('no-download-popup'),
-        closeNoDownloadBtn: document.getElementById('close-no-download-btn')
+        closeNoDownloadBtn: document.getElementById('close-no-download-btn'),
+        // View limit elements
+        videoLockedOverlay: document.getElementById('video-locked-overlay'),
+        watchTimeBadge: document.getElementById('watch-time-badge'),
+        watchTimeBadgeText: document.getElementById('watch-time-badge-text')
     };
 
     const getResourceIcon = (type) => {
@@ -133,6 +143,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const isGoogleSheetResource = (resource) => {
+        if (!resource) return false;
+        const url = String(resource.url || resource.view_storage_path || resource.download_storage_path || '').toLowerCase();
+        const type = String(resource.type || '').toLowerCase();
+        const title = String(resource.title || '').toLowerCase();
+
+        return url.includes('docs.google.com/spreadsheets') ||
+               url.includes('drive.google.com/spreadsheets') ||
+               url.includes('spreadsheets/d/') ||
+               type === 'spreadsheet' ||
+               type === 'sheets' ||
+               type === 'gsheet' ||
+               title.includes('hiring companies list');
+    };
+
+    // Convert Google Sheet URLs from /edit to /preview to prevent
+    // mobile OS from deep-linking to the native Google Sheets app
+    const getSheetPreviewUrl = (url) => {
+        if (!url) return url;
+        const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+        if (!match) return url;
+        const sheetId = match[1];
+        const gidMatch = url.match(/[#&]gid=([0-9]+)/);
+        const gid = gidMatch ? gidMatch[1] : '0';
+        return `https://docs.google.com/spreadsheets/d/${sheetId}/preview?gid=${gid}`;
+    };
+
     const isDocxPreviewResource = (resource) => {
         const type = String(resource?.type || '').toLowerCase();
         const hasPreview = resource?.view_storage_path && resource.view_storage_path !== 'None';
@@ -140,17 +177,29 @@ document.addEventListener('DOMContentLoaded', () => {
         return type === 'docx' && hasPreview && hasDownload;
     };
 
-    const getResourceViewLabel = (resource) => isDocxPreviewResource(resource) ? 'Preview PDF' : 'View';
+    const getResourceViewLabel = (resource) => {
+        if (isGoogleSheetResource(resource)) return 'View Sheet';
+        return isDocxPreviewResource(resource) ? 'Preview PDF' : 'View';
+    };
 
-    const getResourceDownloadLabel = (resource) => isDocxPreviewResource(resource) ? 'Download DOCX' : 'Download';
+    const getResourceDownloadLabel = (resource) => {
+        if (isGoogleSheetResource(resource)) return 'Download Excel';
+        return isDocxPreviewResource(resource) ? 'Download DOCX' : 'Download';
+    };
 
-    const getResourceFormatNote = (resource) => (
-        isDocxPreviewResource(resource)
+    const getResourceFormatNote = (resource) => {
+        if (isGoogleSheetResource(resource)) {
+            return 'Interactive sheet preview available. Download exports as Excel (.xlsx).';
+        }
+        return isDocxPreviewResource(resource)
             ? 'PDF preview available. Download returns the original DOCX file.'
-            : ''
-    );
+            : '';
+    };
 
     const getResourceViewerSubtitle = (resource, type) => {
+        if (isGoogleSheetResource(resource) && type === 'iframe') {
+            return 'Interactive sheet preview. Download exports the file as Excel (.xlsx).';
+        }
         if (isDocxPreviewResource(resource) && type === 'pdf') {
             return 'Previewing the PDF version. Use download to get the original DOCX file.';
         }
@@ -228,8 +277,210 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem(`courseVideos_${state.courseSlug}`, JSON.stringify(newData));
     };
 
+    const WATCH_LIMIT_MULTIPLIER = 2;
+    const CLOUD_SYNC_INTERVAL_MS = 60 * 1000;
+    const CLOUD_OVERRIDE_THRESHOLD = 120;
+    const BADGE_SHOW_THRESHOLD = 30 * 60;
+
+    const saveLocalWatchTime = (videoId) => {
+        if (!state.user || videoId === null || videoId === undefined) return;
+        const key = `wt_${state.courseSlug}_${videoId}_${state.user.id}`;
+        const data = state.watchData[videoId];
+        if (data) localStorage.setItem(key, String(data.localSeconds));
+    };
+
+    /** Load local watch seconds from localStorage */
+    const loadLocalWatchTime = (videoId) => {
+        if (!state.user || videoId === null || videoId === undefined) return 0;
+        const key = `wt_${state.courseSlug}_${videoId}_${state.user.id}`;
+        return parseFloat(localStorage.getItem(key) || '0');
+    };
+
+    /** Fetch cloud watch-time for ALL videos of this course in one query */
+    const fetchWatchTimeForCourse = async () => {
+        if (!state.user) return;
+        try {
+            const { data, error } = await supabase
+                .from('video_watch_time')
+                .select('video_id, watched_seconds')
+                .eq('user_id', state.user.id)
+                .eq('course_slug', state.courseSlug);
+
+            if (error) throw error;
+            if (data) {
+                data.forEach(row => {
+                    const vid = row.video_id;
+                    const cloud = parseFloat(row.watched_seconds) || 0;
+                    const local = loadLocalWatchTime(vid);
+
+                    // Cloud override: if local > cloud by threshold, trust cloud (admin reset)
+                    const trusted = (local - cloud >= CLOUD_OVERRIDE_THRESHOLD) ? cloud : local;
+
+                    if (!state.watchData[vid]) state.watchData[vid] = { localSeconds: 0, cloudSeconds: 0, limitSeconds: 0 };
+                    state.watchData[vid].cloudSeconds = cloud;
+                    state.watchData[vid].localSeconds = trusted;
+
+                    // Sync corrected value back to localStorage
+                    saveLocalWatchTime(vid);
+                });
+            }
+        } catch (e) {
+            console.warn('fetchWatchTimeForCourse failed:', e);
+        }
+    };
+
+    /** Upsert current local watch-time to Supabase for a specific video */
+    const flushWatchTimeToSupabase = async (videoId) => {
+        if (!state.user || videoId === null || videoId === undefined) return;
+        const data = state.watchData[videoId];
+        if (!data) return;
+        try {
+            await supabase.from('video_watch_time').upsert({
+                user_id: state.user.id,
+                user_email: state.user.email,
+                course_slug: state.courseSlug,
+                video_id: videoId,
+                watched_seconds: Math.round(data.localSeconds * 100) / 100,
+                updated_at: new Date().toISOString()
+            }, { onConflict: 'user_id,course_slug,video_id' });
+            data.cloudSeconds = data.localSeconds;
+        } catch (e) {
+            console.warn('flushWatchTimeToSupabase failed:', e);
+        }
+    };
+
+    /** Returns true if the video has exceeded its watch-time limit */
+    const isVideoViewLimitLocked = (videoId) => {
+        const data = state.watchData[videoId];
+        if (!data || data.limitSeconds <= 0) return false;
+        return data.localSeconds >= data.limitSeconds;
+    };
+
+    /** Show the locked overlay on the video player */
+    const showLockedOverlay = () => {
+        if (DOMElements.videoLockedOverlay) DOMElements.videoLockedOverlay.style.display = 'flex';
+        if (DOMElements.watchTimeBadge) DOMElements.watchTimeBadge.style.display = 'none';
+    };
+
+    /** Hide the locked overlay */
+    const hideLockedOverlay = () => {
+        if (DOMElements.videoLockedOverlay) DOMElements.videoLockedOverlay.style.display = 'none';
+    };
+
+    /** Format seconds as MM:SS or HH:MM:SS */
+    const formatWatchTime = (secs) => {
+        const s = Math.max(0, Math.floor(secs));
+        const h = Math.floor(s / 3600);
+        const m = Math.floor((s % 3600) / 60).toString().padStart(2, '0');
+        const sec = (s % 60).toString().padStart(2, '0');
+        return h > 0 ? `${h}:${m}:${sec}` : `${m}:${sec}`;
+    };
+
+    /** Update the watch-time remaining badge */
+    const updateWatchTimeBadge = (videoId) => {
+        const data = state.watchData[videoId];
+        if (!data || data.limitSeconds <= 0 || !DOMElements.watchTimeBadge) return;
+        const remaining = data.limitSeconds - data.localSeconds;
+        if (remaining <= BADGE_SHOW_THRESHOLD && remaining > 0) {
+            DOMElements.watchTimeBadgeText.textContent = formatWatchTime(remaining);
+            DOMElements.watchTimeBadge.style.display = 'flex';
+        } else {
+            DOMElements.watchTimeBadge.style.display = 'none';
+        }
+    };
+
+    /** Stop all active watch-tracking (timers + listeners) */
+    const stopWatchTracking = async (flush = true) => {
+        state.watchSessionActive = false;
+        if (state.watchTrackingTimer) {
+            clearInterval(state.watchTrackingTimer);
+            state.watchTrackingTimer = null;
+        }
+        if (flush && state.currentVideoId !== null && state.currentVideoId !== undefined) {
+            await flushWatchTimeToSupabase(state.currentVideoId);
+        }
+    };
+
+    /** Start watch-tracking for the currently active video */
+    const startWatchTracking = (videoId) => {
+        state.watchSessionActive = true;
+        state.watchLastTime = DOMElements.videoPlayer ? DOMElements.videoPlayer.currentTime : 0;
+
+        // 1-minute cloud sync interval
+        if (state.watchTrackingTimer) clearInterval(state.watchTrackingTimer);
+        state.watchTrackingTimer = setInterval(() => {
+            if (state.watchSessionActive && state.currentVideoId) {
+                flushWatchTimeToSupabase(state.currentVideoId);
+            }
+        }, CLOUD_SYNC_INTERVAL_MS);
+    };
+
+    /** Called on every timeupdate event — accumulates delta into localSeconds */
+    const onWatchTimeUpdate = () => {
+        const videoId = state.currentVideoId;
+        if (videoId === null || videoId === undefined || !state.watchSessionActive) return;
+        const video = DOMElements.videoPlayer;
+        if (!video) return;
+
+        const currentTime = video.currentTime;
+        const delta = currentTime - state.watchLastTime;
+        state.watchLastTime = currentTime;
+
+        // Only count forward playback (ignore seeks backward)
+        if (delta > 0 && delta < 5) { // ignore large jumps (seeks)
+            if (!state.watchData[videoId]) {
+                state.watchData[videoId] = { localSeconds: 0, cloudSeconds: 0, limitSeconds: 0 };
+            }
+            state.watchData[videoId].localSeconds += delta;
+            saveLocalWatchTime(videoId);
+            updateWatchTimeBadge(videoId);
+
+            // Check if limit crossed mid-session — do NOT lock now, just stop tracking
+            if (isVideoViewLimitLocked(videoId)) {
+                state.watchSessionActive = false;
+                if (DOMElements.watchTimeBadge) DOMElements.watchTimeBadge.style.display = 'none';
+                flushWatchTimeToSupabase(videoId);
+            }
+        }
+    };
+
+    /** Unified helper called whenever video metadata (duration) is loaded */
+    const handleVideoMetadata = (video) => {
+        const videoId = state.currentVideoId;
+        if (videoId === null || videoId === undefined || !video) return;
+
+        const duration = video.duration;
+        if (duration && !isNaN(duration)) {
+            if (!state.watchData[videoId]) {
+                state.watchData[videoId] = {
+                    localSeconds: loadLocalWatchTime(videoId),
+                    cloudSeconds: 0,
+                    limitSeconds: 0
+                };
+            }
+            state.watchData[videoId].limitSeconds = duration * WATCH_LIMIT_MULTIPLIER;
+
+            // Check lock — if already over limit, show overlay on new open
+            if (isVideoViewLimitLocked(videoId)) {
+                if (video.currentTime < 2) {
+                    video.pause();
+                    DOMElements.videoLoadingOverlay.style.display = 'none';
+                    showLockedOverlay();
+                    if (state.plyrPlayer) {
+                        try { state.plyrPlayer.pause(); } catch(e){}
+                    }
+                    return;
+                }
+            }
+
+            // Start tracking
+            startWatchTracking(videoId);
+            updateWatchTimeBadge(videoId);
+        }
+    };
+
     const markVideoCompleted = () => {
-        if (!state.currentVideoId) return;
+        if (state.currentVideoId === null || state.currentVideoId === undefined) return;
         const videoToMark = findVideoById(state.currentVideoId);
         if (videoToMark && !videoToMark.completed) {
             videoToMark.completed = true;
@@ -345,7 +596,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    const loadVideoProgress = () => {
+    const loadVideoProgress = async () => {
         const savedVideos = localStorage.getItem(`courseVideos_${state.courseSlug}`);
         if (savedVideos) {
             try {
@@ -358,6 +609,10 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (e) { console.error("Error parsing progress", e); }
         }
         updateCourseProgress();
+
+        // Fetch cloud watch-time data before selecting first video
+        await fetchWatchTimeForCourse();
+
         const lastVideoId = localStorage.getItem(`lastVideoId_${state.courseSlug}`);
         if (lastVideoId && findVideoById(parseInt(lastVideoId))) {
             selectVideo(parseInt(lastVideoId));
@@ -453,7 +708,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             hlsPath = tsPath;
                         }
 
-                        const day = meta.day_number || 1;
+                        const day = (meta.day_number !== undefined && meta.day_number !== null) ? meta.day_number : 1;
                         let parsedResources = [];
                         if (meta.resources) {
                             if (typeof meta.resources === 'string') {
@@ -478,9 +733,10 @@ document.addEventListener('DOMContentLoaded', () => {
             state.courseSections = Object.keys(videosByDay).map(dayNum => {
                 const dayVideos = videosByDay[dayNum];
                 const mainVideo = dayVideos[0] || {};
+                const parsedDay = parseInt(dayNum);
                 return {
-                    day_number: parseInt(dayNum), title: mainVideo.title || `Day ${dayNum}`,
-                    expanded: parseInt(dayNum) === 1, videos: dayVideos, mainVideo: mainVideo
+                    day_number: parsedDay, title: mainVideo.title || (parsedDay === 0 ? 'Day 0' : `Day ${parsedDay}`),
+                    expanded: parsedDay === 1 || parsedDay === 0, videos: dayVideos, mainVideo: mainVideo
                 };
             }).sort((a, b) => a.day_number - b.day_number);
 
@@ -819,24 +1075,57 @@ document.addEventListener('DOMContentLoaded', () => {
         state.plyrPlayer = new Plyr(DOMElements.videoPlayer, options);
 
         // Re-attach event listeners
-        state.plyrPlayer.on('play', () => { state.isPlaying = true; });
-        state.plyrPlayer.on('pause', () => { state.isPlaying = false; });
+        state.plyrPlayer.on('play', () => {
+            state.isPlaying = true;
+            // Resume tracking on play (e.g. after pause)
+            if (state.currentVideoId && !state.watchSessionActive) {
+                state.watchLastTime = DOMElements.videoPlayer ? DOMElements.videoPlayer.currentTime : 0;
+                state.watchSessionActive = true;
+            }
+        });
+        state.plyrPlayer.on('pause', () => {
+            state.isPlaying = false;
+            state.watchSessionActive = false;
+            flushWatchTimeToSupabase(state.currentVideoId);
+        });
+        state.plyrPlayer.on('timeupdate', onWatchTimeUpdate);
         state.plyrPlayer.on('ended', markVideoCompleted);
+        state.plyrPlayer.on('ended', () => {
+            state.watchSessionActive = false;
+            flushWatchTimeToSupabase(state.currentVideoId);
+        });
+        state.plyrPlayer.on('loadedmetadata', () => handleVideoMetadata(DOMElements.videoPlayer));
+        state.plyrPlayer.on('ready', () => handleVideoMetadata(DOMElements.videoPlayer));
         state.plyrPlayer.on('enterfullscreen', () => { state.isFullscreen = true; });
         state.plyrPlayer.on('exitfullscreen', () => { state.isFullscreen = false; });
     };
 
 
 
-    const selectVideo = (videoId) => {
+    const selectVideo = async (videoId) => {
+        // Flush watch time for previous video before switching
+        await stopWatchTracking(true);
+
         state.retryCount = 0;
         DOMElements.videoLoadingOverlay.style.display = 'flex';
         state.currentVideoId = videoId;
 
         DOMElements.noVideoSelectedPlaceholder.style.display = 'none';
         DOMElements.videoSectionContainer.style.display = 'block';
+        hideLockedOverlay();
+        if (DOMElements.watchTimeBadge) DOMElements.watchTimeBadge.style.display = 'none';
 
         const currentVideo = findVideoById(videoId);
+
+        // --- Check view limit BEFORE loading the video ---
+        // Initialise watchData entry for this video from localStorage
+        if (!state.watchData[videoId]) {
+            state.watchData[videoId] = {
+                localSeconds: loadLocalWatchTime(videoId),
+                cloudSeconds: 0,
+                limitSeconds: 0   // will be set after loadedmetadata
+            };
+        }
 
         // Cleanup in correct order: Plyr first, then HLS
         if (state.plyrPlayer) {
@@ -1239,6 +1528,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 DOMElements.videoPlayer.src = `https://advertisement.bhansalimanan55.workers.dev/stream/${encodeURIComponent(currentVideo.fileName)}`;
                 DOMElements.videoPlayer.load();
                 DOMElements.videoPlayer.addEventListener('ended', markVideoCompleted, { once: true });
+                DOMElements.videoPlayer.addEventListener('loadedmetadata', () => handleVideoMetadata(DOMElements.videoPlayer), { once: true });
             }
         } else {
             DOMElements.videoPlayerContainer.style.display = 'none';
@@ -1313,7 +1603,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
                             <div class="resource-actions">
                                 <button class="resource-btn resource-btn-view" data-resource="${safeResourceStr}"><i class="fas fa-eye"></i> ${viewLabel}</button>
-                                ${resource.download_storage_path && resource.download_storage_path !== 'None' ?
+                                ${((resource.download_storage_path && resource.download_storage_path !== 'None') || isGoogleSheetResource(resource)) ?
                             `<button class="resource-btn resource-btn-download" data-resource="${safeResourceStr}"><i class="fas fa-download"></i> ${downloadLabel}</button>` :
                             `<span class="resource-btn resource-btn-download disabled"><i class="fas fa-download"></i> ${downloadLabel}</span>`
                         }
@@ -1351,7 +1641,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const getAdjacentVideo = (direction) => {
-        if (!state.currentVideoId) return null;
+        if (state.currentVideoId === null || state.currentVideoId === undefined) return null;
         const allVideos = [];
         state.courseSections.forEach(section => {
             section.videos.forEach(v => allVideos.push(v));
@@ -1369,15 +1659,22 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const updateVideoCounter = () => {
-        if (!state.currentVideoId) {
+        if (state.currentVideoId === null || state.currentVideoId === undefined) {
             DOMElements.videoCounter.textContent = '';
+            DOMElements.videoCounter.style.display = 'none';
             return;
         }
         const section = state.courseSections.find(s => s.videos.some(v => v.id === state.currentVideoId));
         if (section) {
             const currentVideoIndex = section.videos.findIndex(v => v.id === state.currentVideoId) + 1;
             const sessionText = section.videos.length > 1 ? ` - Session ${currentVideoIndex}/${section.videos.length}` : '';
-            DOMElements.videoCounter.textContent = `Day ${section.day_number} of ${state.courseSections.length}${sessionText}`;
+            const totalDays = state.courseSections.filter(s => s.day_number > 0).length;
+            DOMElements.videoCounter.textContent = section.day_number === 0 
+                ? `Day 0${sessionText}` 
+                : `Day ${section.day_number} of ${totalDays}${sessionText}`;
+            DOMElements.videoCounter.style.display = 'inline-block';
+        } else {
+            DOMElements.videoCounter.style.display = 'none';
         }
     };
 
@@ -1396,13 +1693,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const handleResourceClick = async (resource) => {
-        // Define all sheets that should open in the embedded viewer
-        const specialSheetUrls = [
-            'https://docs.google.com/spreadsheets/d/1NcACOrX0PsQCQ3P4b80EvGsI1fFxW8wlC-6y258HE-Y/edit?gid=1269177841#gid=1269177841',
-            'https://docs.google.com/spreadsheets/d/1vVVFbHawgCnr01_-eSVQLiSa3TZ9yuB00fgmNPZKZJc/edit?gid=1309949710#gid=1309949710'
-        ];
-
-        if (specialSheetUrls.includes(resource.url)) {
+        if (isGoogleSheetResource(resource)) {
             await openResourceViewer(resource, 'iframe');
             return;
         }
@@ -1469,6 +1760,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const downloadResource = async (resource) => {
         let path = resource.download_storage_path;
         if (!path || path === 'None') {
+            if (resource && isGoogleSheetResource(resource)) {
+                const matches = resource.url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+                const sheetId = matches ? matches[1] : '';
+                const gidMatch = resource.url.match(/[#&]gid=([0-9]+)/);
+                const gid = gidMatch ? gidMatch[1] : '';
+                if (sheetId) {
+                    let exportUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=xlsx`;
+                    if (gid) exportUrl += `&gid=${gid}`;
+                    window.open(exportUrl, '_blank');
+                    return;
+                }
+            }
             DOMElements.noDownloadPopup.classList.add('active');
             return;
         }
@@ -1637,9 +1940,31 @@ document.addEventListener('DOMContentLoaded', () => {
         DOMElements.csvViewerContainer.style.display = 'none';
         DOMElements.iframeViewerContainer.style.display = 'none';
 
-        DOMElements.resourceViewerModal.querySelector('.resource-viewer-controls').style.display = type === 'iframe' ? 'none' : 'flex';
-        
-        const hasDl = resource.download_storage_path && resource.download_storage_path !== 'None';
+        const pdfPrev = document.getElementById('pdf-prev-page');
+        const pdfInfo = document.getElementById('pdf-page-info');
+        const pdfNext = document.getElementById('pdf-next-page');
+
+        if (type === 'iframe') {
+            if (pdfPrev) pdfPrev.style.display = 'none';
+            if (pdfInfo) pdfInfo.style.display = 'none';
+            if (pdfNext) pdfNext.style.display = 'none';
+            if (DOMElements.viewerOpenExternalBtn && resource.url) {
+                DOMElements.viewerOpenExternalBtn.href = isGoogleSheetResource(resource) ? getSheetPreviewUrl(resource.url) : resource.url;
+                DOMElements.viewerOpenExternalBtn.style.display = 'inline-flex';
+            }
+            DOMElements.resourceViewerModal.querySelector('.resource-viewer-controls').style.display = 'flex';
+        } else if (type === 'pdf') {
+            if (pdfPrev) pdfPrev.style.display = 'inline-block';
+            if (pdfInfo) pdfInfo.style.display = 'inline';
+            if (pdfNext) pdfNext.style.display = 'inline-block';
+            if (DOMElements.viewerOpenExternalBtn) DOMElements.viewerOpenExternalBtn.style.display = 'none';
+            DOMElements.resourceViewerModal.querySelector('.resource-viewer-controls').style.display = 'flex';
+        } else {
+            if (DOMElements.viewerOpenExternalBtn) DOMElements.viewerOpenExternalBtn.style.display = 'none';
+            DOMElements.resourceViewerModal.querySelector('.resource-viewer-controls').style.display = 'none';
+        }
+
+        const hasDl = (resource.download_storage_path && resource.download_storage_path !== 'None') || isGoogleSheetResource(resource);
         if (DOMElements.viewerDownloadBtn) {
             DOMElements.viewerDownloadBtn.style.display = hasDl ? 'inline-block' : 'none';
             DOMElements.viewerDownloadBtn.textContent = getResourceDownloadLabel(resource);
@@ -1868,8 +2193,26 @@ document.addEventListener('DOMContentLoaded', () => {
         DOMElements.sidebarToggleBtn.addEventListener('click', () => DOMElements.courseSidebar.classList.add('active'));
         DOMElements.sidebarCloseBtn.addEventListener('click', () => DOMElements.courseSidebar.classList.remove('active'));
 
-        DOMElements.prevVideoBtn.addEventListener('click', () => { const v = getAdjacentVideo('previous'); if (v) selectVideo(v.id); });
-        DOMElements.nextVideoBtn.addEventListener('click', () => { const v = getAdjacentVideo('next'); if (v) selectVideo(v.id); });
+        DOMElements.prevVideoBtn.addEventListener('click', () => {
+            flushWatchTimeToSupabase(state.currentVideoId);
+            const v = getAdjacentVideo('previous'); if (v) selectVideo(v.id);
+        });
+        DOMElements.nextVideoBtn.addEventListener('click', () => {
+            flushWatchTimeToSupabase(state.currentVideoId);
+            const v = getAdjacentVideo('next'); if (v) selectVideo(v.id);
+        });
+
+        // Flush watch time on tab hide / browser minimize (abrupt close safety net)
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden' && state.currentVideoId) {
+                state.watchSessionActive = false;
+                flushWatchTimeToSupabase(state.currentVideoId);
+            }
+            if (document.visibilityState === 'visible' && state.isPlaying && state.currentVideoId) {
+                state.watchLastTime = DOMElements.videoPlayer ? DOMElements.videoPlayer.currentTime : 0;
+                state.watchSessionActive = true;
+            }
+        });
 
         DOMElements.postCommentBtn.addEventListener('click', async () => {
             const content = DOMElements.newCommentInput.value.trim();
@@ -1941,6 +2284,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (virtualStartTime > 0 && video.currentTime < virtualStartTime) {
                 video.currentTime = virtualStartTime;
             }
+            handleVideoMetadata(video);
         });
         video.addEventListener('waiting', () => DOMElements.videoLoadingOverlay.style.display = 'flex');
         video.addEventListener('playing', () => DOMElements.videoLoadingOverlay.style.display = 'none');
