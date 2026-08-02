@@ -1143,7 +1143,8 @@
       /* Info Pills Row */
       .afd-review-info-pills {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        /* auto-fit: shows 3 pills on wide cards, drops to 2 or 1 on narrow ones — no breakpoints needed */
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 130px), 1fr));
         gap: 0.75rem;
         z-index: 2;
       }
@@ -1157,6 +1158,8 @@
         align-items: center;
         gap: 0.75rem;
         transition: all 0.25s var(--h-ease);
+        min-width: 0;       /* allow grid track to constrain this item */
+        overflow: hidden;   /* clip anything that still overflows */
       }
       .afd-review-info-pill:hover {
         border-color: var(--h-brand-200);
@@ -1362,18 +1365,21 @@
         .afd-hero-stats-grid {
           grid-template-columns: repeat(2, 1fr);
         }
+        .afd-review-tags-section {
+          grid-template-columns: 1fr;
+          gap: 0.85rem;
+        }
       }
 
       @media (max-width: 768px) {
         .afd-perf-grid {
           grid-template-columns: repeat(2, 1fr);
         }
+      }
+
+      @media (max-width: 600px) {
         .afd-review-info-pills {
-          grid-template-columns: 1fr;
-        }
-        .afd-review-tags-section {
-          grid-template-columns: 1fr;
-          gap: 0.85rem;
+          grid-template-columns: 1fr; /* stack pills vertically on mobile */
         }
       }
 
