@@ -170,6 +170,9 @@
                             <div class="p2-file-tag">
                                 <i class="fas fa-file-pdf"></i>
                                 <span id="resume-filename"></span>
+                                <button type="button" class="p2-view-resume-btn" id="viewResumeBtn" title="Preview resume">
+                                    <i class="fas fa-eye"></i> View
+                                </button>
                                 <button type="button" class="p2-remove-file" data-target="resume"><i class="fas fa-times"></i></button>
                             </div>
                         </div>
@@ -1952,7 +1955,44 @@
         </div>
     </div>
 
-    <script type="module" src="scripts/profile.js?v=20260703"></script>
+    <!-- Resume PDF Viewer Modal -->
+    <div class="p2-pdf-modal-overlay" id="resumeViewerModal" style="display:none;" role="dialog" aria-modal="true" aria-label="Resume Preview">
+        <div class="p2-pdf-modal">
+            <div class="p2-pdf-modal-header">
+                <div class="p2-pdf-modal-title">
+                    <i class="fas fa-file-pdf"></i>
+                    <span id="resumeViewerFilename">Resume Preview</span>
+                </div>
+                <div class="p2-pdf-modal-actions">
+                    <div class="p2-pdf-zoom-controls">
+                        <button type="button" class="p2-pdf-zoom-btn" id="resumeViewerZoomOut" title="Zoom out" aria-label="Zoom out"><i class="fas fa-minus"></i></button>
+                        <span class="p2-pdf-zoom-level" id="resumeViewerZoomLevel">100%</span>
+                        <button type="button" class="p2-pdf-zoom-btn" id="resumeViewerZoomIn" title="Zoom in" aria-label="Zoom in"><i class="fas fa-plus"></i></button>
+                    </div>
+                    <span class="p2-pdf-page-count" id="resumeViewerPageCount"></span>
+                    <button type="button" class="p2-pdf-modal-close" id="resumeViewerClose" aria-label="Close preview">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p2-pdf-modal-body">
+                <div class="p2-pdf-loading" id="resumeViewerLoading">
+                    <div class="p2-pdf-spinner"></div>
+                    <span>Loading your resume&hellip;</span>
+                </div>
+                <div class="p2-pdf-error" id="resumeViewerError" style="display:none;">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <p>Could not load the resume preview.</p>
+                    <p class="p2-pdf-error-sub">Please save your profile again to re-sync it.</p>
+                </div>
+                <div class="p2-pdf-pages" id="resumeViewerPages" style="display:none;"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="module" src="scripts/profile.js?v=20260731_3"></script>
+
 </body>
 
 </html>
