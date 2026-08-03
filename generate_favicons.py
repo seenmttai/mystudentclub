@@ -2,7 +2,8 @@ import fitz
 from PIL import Image
 import os
 
-# SVG content with transparent background (removed the background rect path: <path d="m207 0.98h-207v221.6h207v-221.6z" fill="#FEFFFE" fill-opacity=".6"/>)
+# Original SVG provided in the prompt with transparent background
+# LinearGradients #94ADB9->#889CA7, #557484->#6E8793, etc. are accurate slate grey gradients!
 svg_content = '''<svg xmlns="http://www.w3.org/2000/svg" width="207" height="223" fill="none" viewBox="0 0 207 223">
   <path d="m188.4 49.73-72.25-41.61c-9.06-5.29-18.21-4.74-26.19 0l-70.9 40.81c-7.32 4.03-10.97 11.88-10.97 19.86v14.89c2.12-1.59 4.37-1.94 6.61-1.87 2.38 0.08 4.05 0.7 5.79 1.95v-14.58c0-4.34 1.26-6.8 5.52-9.26l71.93-41.41c4.95-2.85 9.07-1.13 12.08 0.83l70.98 40.74c3.8 2.14 5.39 4.6 5.39 9.1v14.58c2.12-1.33 3.53-1.95 5.99-1.95 2.78-0.07 5.03 0.55 7.35 2.14v-15.16c0-7.78-4.5-15.18-11.33-19.06z" fill="url(#paint0_linear_1_103)"/>
   <path d="m199.7 128.3-2.24 3.32c-6.68 8.36-7.65 15.35-5.97 24.32 1.1 5.85 1.72 10.43-0.31 15.01 5.85-4.19 8.52-11.51 8.52-16.78v-25.87z" fill="url(#paint1_linear_1_103)"/>
@@ -40,26 +41,27 @@ svg_content = '''<svg xmlns="http://www.w3.org/2000/svg" width="207" height="223
   </defs>
 </svg>'''
 
-# Write favicon.svg
+# Save SVG
 with open('favicon.svg', 'w', encoding='utf-8') as f:
     f.write(svg_content)
-print("Saved favicon.svg with transparent background")
 
-# Render SVG to PNG using PyMuPDF (fitz)
+# Render SVG to PNG using PyMuPDF (fitz) with alpha
 doc = fitz.open(stream=svg_content.encode('utf-8'), filetype="svg")
 page = doc[0]
 
-# Render to 192x192 PNG with alpha channel (transparent background)
-zoom_x = 192.0 / page.rect.width
-zoom_y = 192.0 / page.rect.height
-mat = fitz.Matrix(zoom_x, zoom_y)
+zoom = 512.0 / max(page.rect.width, page.rect.height)
+mat = fitz.Matrix(zoom, zoom)
 pix = page.get_pixmap(matrix=mat, alpha=True)
-png_path = 'favicon.png'
-pix.save(png_path)
-print("Saved favicon.png (192x192 transparent)")
 
-# Generate ICO with transparent background and multiple sizes
-img = Image.open(png_path)
+# Convert pixmap directly to PIL Image with RGBA
+img = Image.frombytes("RGBA", [pix.width, pix.height], pix.samples)
+
+# Save 192x192 PNG with full RGBA transparency
+img_192 = img.resize((192, 192), Image.Resampling.LANCZOS)
+img_192.save('favicon.png', format='PNG')
+print("Saved transparent RGBA favicon.png")
+
+# Save ICO file preserving transparency across 16x16, 32x32, 48x48, 64x64, 128x128 sizes
 ico_sizes = [(16, 16), (32, 32), (48, 48), (64, 64), (128, 128)]
 img.save('favicon.ico', format='ICO', sizes=ico_sizes)
-print("Saved favicon.ico (transparent)")
+print("Saved transparent RGBA favicon.ico")
