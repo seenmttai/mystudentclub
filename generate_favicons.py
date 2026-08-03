@@ -2,8 +2,8 @@ import fitz
 from PIL import Image
 import os
 
+# SVG content with transparent background (removed the background rect path: <path d="m207 0.98h-207v221.6h207v-221.6z" fill="#FEFFFE" fill-opacity=".6"/>)
 svg_content = '''<svg xmlns="http://www.w3.org/2000/svg" width="207" height="223" fill="none" viewBox="0 0 207 223">
-  <path d="m207 0.98h-207v221.6h207v-221.6z" fill="#FEFFFE" fill-opacity=".6"/>
   <path d="m188.4 49.73-72.25-41.61c-9.06-5.29-18.21-4.74-26.19 0l-70.9 40.81c-7.32 4.03-10.97 11.88-10.97 19.86v14.89c2.12-1.59 4.37-1.94 6.61-1.87 2.38 0.08 4.05 0.7 5.79 1.95v-14.58c0-4.34 1.26-6.8 5.52-9.26l71.93-41.41c4.95-2.85 9.07-1.13 12.08 0.83l70.98 40.74c3.8 2.14 5.39 4.6 5.39 9.1v14.58c2.12-1.33 3.53-1.95 5.99-1.95 2.78-0.07 5.03 0.55 7.35 2.14v-15.16c0-7.78-4.5-15.18-11.33-19.06z" fill="url(#paint0_linear_1_103)"/>
   <path d="m199.7 128.3-2.24 3.32c-6.68 8.36-7.65 15.35-5.97 24.32 1.1 5.85 1.72 10.43-0.31 15.01 5.85-4.19 8.52-11.51 8.52-16.78v-25.87z" fill="url(#paint1_linear_1_103)"/>
   <path d="m8.12 127.8v26.34c0 6.72 2.93 13.52 8.79 17.94-1.95-4.73-1.49-9.15-0.23-16.09 1.59-9.05-1.04-17.8-6.52-24.4l-2.04-2.77v-1.02z" fill="url(#paint2_linear_1_103)"/>
@@ -43,23 +43,23 @@ svg_content = '''<svg xmlns="http://www.w3.org/2000/svg" width="207" height="223
 # Write favicon.svg
 with open('favicon.svg', 'w', encoding='utf-8') as f:
     f.write(svg_content)
-print("Saved favicon.svg")
+print("Saved favicon.svg with transparent background")
 
 # Render SVG to PNG using PyMuPDF (fitz)
 doc = fitz.open(stream=svg_content.encode('utf-8'), filetype="svg")
 page = doc[0]
 
-# Render to 192x192 PNG
+# Render to 192x192 PNG with alpha channel (transparent background)
 zoom_x = 192.0 / page.rect.width
 zoom_y = 192.0 / page.rect.height
 mat = fitz.Matrix(zoom_x, zoom_y)
 pix = page.get_pixmap(matrix=mat, alpha=True)
 png_path = 'favicon.png'
 pix.save(png_path)
-print("Saved favicon.png (192x192)")
+print("Saved favicon.png (192x192 transparent)")
 
-# Generate ICO with multiple sizes (16x16, 32x32, 48x48, 64x64)
+# Generate ICO with transparent background and multiple sizes
 img = Image.open(png_path)
 ico_sizes = [(16, 16), (32, 32), (48, 48), (64, 64), (128, 128)]
 img.save('favicon.ico', format='ICO', sizes=ico_sizes)
-print("Saved favicon.ico")
+print("Saved favicon.ico (transparent)")
