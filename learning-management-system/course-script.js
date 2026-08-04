@@ -158,16 +158,14 @@ document.addEventListener('DOMContentLoaded', () => {
                title.includes('hiring companies list');
     };
 
-    // Convert Google Sheet URLs from /edit to /preview to prevent
-    // mobile OS from deep-linking to the native Google Sheets app
     const getSheetPreviewUrl = (url) => {
         if (!url) return url;
         const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
         if (!match) return url;
         const sheetId = match[1];
         const gidMatch = url.match(/[#&]gid=([0-9]+)/);
-        const gid = gidMatch ? gidMatch[1] : '0';
-        return `https://docs.google.com/spreadsheets/d/${sheetId}/preview?gid=${gid}`;
+        const gid = gidMatch ? gidMatch[1] : '';
+        return `https://docs.google.com/spreadsheets/d/${sheetId}/edit${gid ? '#gid=' + gid : ''}`;
     };
 
     const isDocxPreviewResource = (resource) => {
@@ -187,9 +185,15 @@ document.addEventListener('DOMContentLoaded', () => {
         return isDocxPreviewResource(resource) ? 'Download DOCX' : 'Download';
     };
 
+    const isDirectRedirectSheetResource = (resource) => {
+        if (!resource) return false;
+        const title = String(resource.title || '').toLowerCase();
+        return title.includes('automail');
+    };
+
     const getResourceFormatNote = (resource) => {
         if (isGoogleSheetResource(resource)) {
-            return 'Interactive sheet preview available. Download exports as Excel (.xlsx).';
+            return 'Opens Google Sheet. Download exports as Excel (.xlsx).';
         }
         return isDocxPreviewResource(resource)
             ? 'PDF preview available. Download returns the original DOCX file.'
@@ -1694,7 +1698,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const handleResourceClick = async (resource) => {
         if (isGoogleSheetResource(resource)) {
-            await openResourceViewer(resource, 'iframe');
+            const redirectUrl = getSheetPreviewUrl(resource.url || resource.view_storage_path) || resource.url;
+            if (redirectUrl) {
+                window.open(redirectUrl, '_blank');
+            } else {
+                alert("Invalid Sheet URL");
+            }
             return;
         }
 
@@ -1972,25 +1981,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             if (type === 'iframe') {
-                const matches = resource.url.match(/\/d\/([a-zA-Z0-9-_]+)/);
-                const sheetId = matches ? matches[1] : '';
-                const gidMatch = resource.url.match(/[#&]gid=([0-9]+)/);
-                const gid = gidMatch ? gidMatch[1] : '';
-
-                if (sheetId) {
-                    // Use /htmlembed with widget=true to show sheet tabs
-                    // gid sets the initially selected sheet
-                    let embedUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/htmlembed?widget=true&chrome=false`;
-                    if (gid) {
-                        embedUrl += `&gid=${gid}`;
-                    }
-                    DOMElements.resourceIframe.src = embedUrl;
-                    DOMElements.iframeViewerContainer.style.display = 'block';
-                    DOMElements.viewerLoadingScreen.style.display = 'none';
+                const redirectUrl = getSheetPreviewUrl(resource.url || resource.view_storage_path) || resource.url;
+                if (redirectUrl) {
+                    window.open(redirectUrl, '_blank');
                 } else {
                     alert("Invalid Sheet URL");
-                    closeResourceViewer();
                 }
+                closeResourceViewer();
                 return;
             }
 

@@ -3057,8 +3057,122 @@ document.getElementById('resumePromptModal')?.addEventListener('click', (e) => {
 // =================== DPDP CONSENT CHECK ===================
 const DPDP_CONSENT_TEXT = 'I consent to My Student Club sharing my CV and complete profile details with potential companies and recruiters for job-matching purposes.';
 
+function getOrInjectConsentModal() {
+    let modal = document.getElementById('cvConsentPromptModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'cvConsentPromptModal';
+        modal.className = 'modal-overlay-container';
+        modal.style.cssText = 'display: none; z-index: 2004;';
+        modal.innerHTML = `
+    <div class="modal-dialog" style="max-width: 460px;">
+      <div style="padding: 2rem; text-align: center;">
+        <div style="width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #D1FAE5, #ECFDF5); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem;">
+          <i class="fas fa-shield-alt" style="font-size: 1.75rem; color: #16A34A;"></i>
+        </div>
+        <h3 style="font-size: 1.25rem; font-weight: 700; color: #1f2937; margin-bottom: 0.5rem;">Your CV Data Consent</h3>
+        <p style="color: #6b7280; margin-bottom: 0.25rem; line-height: 1.6; font-size: 0.92rem;">
+          Under India's <strong>Digital Personal Data Protection Act, 2023</strong>, we need your explicit permission to share your CV with employers.
+        </p>
+        <div style="background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 10px; padding: 1rem; margin: 1.25rem 0; text-align: left;">
+          <p style="color: #374151; font-size: 0.88rem; line-height: 1.6; margin: 0;">
+            <i class="fas fa-quote-left" style="color: #16A34A; margin-right: 0.3rem; font-size: 0.7rem;"></i>
+            I consent to My Student Club sharing my CV and complete profile details with potential companies and recruiters for job-matching purposes.
+            <i class="fas fa-quote-right" style="color: #16A34A; margin-left: 0.3rem; font-size: 0.7rem;"></i>
+          </p>
+        </div>
+        <button id="cvConsentAcceptBtn" class="btn btn-primary"
+          style="width: 100%; padding: 0.875rem; font-size: 1rem; margin-bottom: 0.75rem; background: linear-gradient(135deg, #16A34A, #15803D); border-color: #16A34A;">
+          <i class="fas fa-check-circle"></i>&nbsp; I Agree — Share My CV
+        </button>
+        <button id="cvConsentDeclineBtn"
+          style="background: none; border: none; color: #6b7280; cursor: pointer; font-size: 0.85rem; padding: 0.5rem; transition: color 0.2s;">
+          No thanks — take me to my profile
+        </button>
+        <p style="color: #9CA3AF; font-size: 0.75rem; margin-top: 0.75rem; line-height: 1.5;">
+          You can withdraw consent at any time from your <a href="/profile.html" style="color: #457EFF;">profile page</a>.
+          <a href="/privacy-policy.html" target="_blank" style="color: #457EFF;">Read our Privacy Policy</a>.
+        </p>
+      </div>
+    </div>`;
+        document.body.appendChild(modal);
+    }
+    bindConsentModalButtons();
+    return modal;
+}
+
+function bindConsentModalButtons() {
+    const acceptBtn = document.getElementById('cvConsentAcceptBtn');
+    if (acceptBtn && !acceptBtn.dataset.bound) {
+        acceptBtn.dataset.bound = 'true';
+        acceptBtn.addEventListener('click', async () => {
+            console.log("DEBUG: cvConsentAcceptBtn clicked!");
+            const modal = document.getElementById('cvConsentPromptModal');
+            if (modal) modal.style.display = 'none';
+            sessionStorage.setItem('cvConsentDismissed', 'true');
+            localStorage.setItem('cvConsentDismissed', 'true');
+            showToast('Syncing your CV to cloud...', 'info');
+            try {
+                const syncSuccess = await checkAndSyncCVBackground();
+                if (syncSuccess) {
+                    const now = new Date().toISOString();
+                    await supabaseClient.from('consentform').upsert({
+                        user_id: currentSession.user.id,
+                        cv_sharing_consent: true,
+                        consent_text: DPDP_CONSENT_TEXT,
+                        consented_at: now,
+                        withdrawn_at: null,
+                        user_agent: navigator.userAgent,
+                        updated_at: now
+                    }, { onConflict: 'user_id' });
+
+                    showToast('Thank you! Your CV has been backed up and your consent has been recorded.', 'success');
+                } else {
+                    showToast('CV backup sync failed. Please complete/update your profile to consent.', 'error', 8000);
+                }
+            } catch (e) {
+                console.error('Failed to sync CV and save consent:', e);
+                showToast('Could not save consent. Please try again from your profile.', 'error');
+            }
+        });
+    }
+
+    const declineBtn = document.getElementById('cvConsentDeclineBtn');
+    if (declineBtn && !declineBtn.dataset.bound) {
+        declineBtn.dataset.bound = 'true';
+        declineBtn.addEventListener('click', async () => {
+            const modal = document.getElementById('cvConsentPromptModal');
+            if (modal) modal.style.display = 'none';
+            sessionStorage.setItem('cvConsentDismissed', 'true');
+            localStorage.setItem('cvConsentDismissed', 'true');
+
+            if (currentSession && currentSession.user) {
+                try {
+                    const now = new Date().toISOString();
+                    await supabaseClient.from('consentform').upsert({
+                        user_id: currentSession.user.id,
+                        cv_sharing_consent: false,
+                        consent_text: DPDP_CONSENT_TEXT,
+                        consented_at: null,
+                        withdrawn_at: now,
+                        user_agent: navigator.userAgent,
+                        updated_at: now
+                    }, { onConflict: 'user_id' });
+                } catch (e) {
+                    console.error('Failed to record consent decline:', e);
+                }
+            }
+
+            window.location.href = '/profile.html';
+        });
+    }
+}
+
 async function checkAndPromptConsent() {
     if (!currentSession) return;
+    if (sessionStorage.getItem('cvConsentDismissed') === 'true' || localStorage.getItem('cvConsentDismissed') === 'true') {
+        return;
+    }
     const hasCV = localStorage.getItem('userCVText');
     if (!hasCV) return; // No CV uploaded, no consent needed
 
@@ -3069,12 +3183,13 @@ async function checkAndPromptConsent() {
             .eq('user_id', currentSession.user.id)
             .maybeSingle();
 
-        // If no record or consent is false/withdrawn, show prompt
-        if (!data || !data.cv_sharing_consent) {
+        // Only prompt if no record exists in consentform table (data is null)
+        // If data exists (whether cv_sharing_consent is true or false), the user has already responded/consented/declined.
+        if (!data) {
             const path = window.location.pathname;
             if (path === '/' || path === '/index.html' || path.includes('/articleship') || path.includes('/fresher') || path.includes('/semi-qualified') || path.includes('/experienced')) {
                 setTimeout(() => {
-                    const modal = document.getElementById('cvConsentPromptModal');
+                    const modal = getOrInjectConsentModal();
                     if (modal) modal.style.display = 'flex';
                 }, 1500);
             }
@@ -3086,41 +3201,7 @@ async function checkAndPromptConsent() {
 
 // Trigger consent check and register listeners after page loads
 document.addEventListener('DOMContentLoaded', () => {
-    // Consent Accept Button
-    document.getElementById('cvConsentAcceptBtn')?.addEventListener('click', async () => {
-        console.log("DEBUG: cvConsentAcceptBtn clicked!");
-        document.getElementById('cvConsentPromptModal').style.display = 'none';
-        showToast('Syncing your CV to cloud...', 'info');
-        try {
-            const syncSuccess = await checkAndSyncCVBackground();
-            if (syncSuccess) {
-                const now = new Date().toISOString();
-                await supabaseClient.from('consentform').upsert({
-                    user_id: currentSession.user.id,
-                    cv_sharing_consent: true,
-                    consent_text: DPDP_CONSENT_TEXT,
-                    consented_at: now,
-                    withdrawn_at: null,
-                    user_agent: navigator.userAgent,
-                    updated_at: now
-                }, { onConflict: 'user_id' });
-
-                showToast('Thank you! Your CV has been backed up and your consent has been recorded.', 'success');
-            } else {
-                showToast('CV backup sync failed. Please complete/update your profile to consent.', 'error', 8000);
-            }
-        } catch (e) {
-            console.error('Failed to sync CV and save consent:', e);
-            showToast('Could not save consent. Please try again from your profile.', 'error');
-        }
-    });
-
-    // Consent Decline Button
-    document.getElementById('cvConsentDeclineBtn')?.addEventListener('click', () => {
-        document.getElementById('cvConsentPromptModal').style.display = 'none';
-        window.location.href = '/profile.html';
-    });
-
+    bindConsentModalButtons();
     setTimeout(() => checkAndPromptConsent(), 2000);
 });
 

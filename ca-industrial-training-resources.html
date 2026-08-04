@@ -490,58 +490,16 @@
         }
 
         function openSheetModal(titleEncoded, urlEncoded) {
-            const title = decodeURIComponent(titleEncoded);
             const url = decodeURIComponent(urlEncoded);
             const matches = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
             const sheetId = matches ? matches[1] : '';
             const gidMatch = url.match(/[#&]gid=([0-9]+)/);
             const gid = gidMatch ? gidMatch[1] : '';
-            if (!sheetId) return;
-
-            const embedUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/htmlembed?widget=true&chrome=false${gid ? '&gid=' + gid : ''}`;
-            const exportUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=xlsx${gid ? '&gid=' + gid : ''}`;
-
-            let modal = document.getElementById('sheet-modal-overlay');
-            if (!modal) {
-                modal = document.createElement('div');
-                modal.id = 'sheet-modal-overlay';
-                modal.style.cssText = 'position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.75); backdrop-filter:blur(4px); z-index:99999; display:flex; align-items:center; justify-content:center;';
-                modal.innerHTML = `
-                    <div class="sheet-modal-content" style="background:white; width:96vw; max-width:1280px; height:94vh; border-radius:12px; display:flex; flex-direction:column; overflow:hidden; position:relative;">
-                        <div style="padding:0.75rem 1.25rem; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0;">
-                            <h3 id="sheet-modal-title" style="margin:0; font-size:1.1rem; font-weight:600; color:#0f172a;">Sheet Preview</h3>
-                            <div>
-                                <button id="sheet-modal-fullscreen" style="background:none; border:none; font-size:1.25rem; cursor:pointer; color:#64748b; padding:0.25rem 0.5rem;"><i class="fas fa-expand"></i></button>
-                                <button id="sheet-modal-close" style="background:none; border:none; font-size:1.75rem; cursor:pointer; color:#64748b; line-height:1;">×</button>
-                            </div>
-                        </div>
-                        <div style="flex:1; position:relative; overflow:auto; -webkit-overflow-scrolling:touch; background:#fff;">
-                            <iframe id="sheet-modal-iframe" style="width:100%; height:100%; border:none;" title="Sheet Preview"></iframe>
-                        </div>
-                        <div style="padding:0.75rem; display:flex; justify-content:center; gap:0.75rem; border-top:1px solid #e2e8f0; background:#f8fafc;">
-                            <a id="sheet-modal-open-external" href="#" target="_blank" rel="noopener noreferrer" style="height:38px; padding:0.5rem 1rem; border:1px solid #4f46e5; background:white; color:#4f46e5; border-radius:6px; font-size:0.875rem; font-weight:500; text-decoration:none; display:inline-flex; align-items:center; gap:0.5rem;"><i class="fas fa-external-link-alt"></i> Open Full Sheet</a>
-                            <a id="sheet-modal-download" href="#" download target="_blank" rel="noopener noreferrer" style="height:38px; padding:0.5rem 1rem; border:1px solid #059669; background:#059669; color:white; border-radius:6px; font-size:0.875rem; font-weight:500; text-decoration:none; display:inline-flex; align-items:center; gap:0.5rem;"><i class="fas fa-download"></i> Download Excel</a>
-                        </div>
-                    </div>`;
-                document.body.appendChild(modal);
-
-                document.getElementById('sheet-modal-close').onclick = () => { modal.style.display = 'none'; };
-                document.getElementById('sheet-modal-fullscreen').onclick = () => {
-                    const content = modal.querySelector('.sheet-modal-content');
-                    if (!document.fullscreenElement) {
-                        if (content.requestFullscreen) content.requestFullscreen();
-                    } else {
-                        if (document.exitFullscreen) document.exitFullscreen();
-                    }
-                };
+            if (sheetId) {
+                window.open(`https://docs.google.com/spreadsheets/d/${sheetId}/edit${gid ? '#gid=' + gid : ''}`, '_blank');
+            } else {
+                window.open(url, '_blank');
             }
-
-            document.getElementById('sheet-modal-title').textContent = title;
-            document.getElementById('sheet-modal-iframe').src = embedUrl;
-            // Use /preview URL to prevent mobile deep-linking to native Sheets app
-            document.getElementById('sheet-modal-open-external').href = `https://docs.google.com/spreadsheets/d/${sheetId}/preview${gid ? '?gid=' + gid : ''}`;
-            document.getElementById('sheet-modal-download').href = exportUrl;
-            modal.style.display = 'flex';
         }
 
         function renderResourceCard(resource) {
@@ -550,6 +508,7 @@
             const fileType = getFileType(resource.url);
             const isSheet = isGoogleSheetLink(resource.url);
             let downloadUrl = resource.url;
+            let viewSheetUrl = resource.url;
             if (isSheet) {
                 const matches = resource.url.match(/\/d\/([a-zA-Z0-9-_]+)/);
                 const sheetId = matches ? matches[1] : '';
@@ -557,18 +516,14 @@
                 const gid = gidMatch ? gidMatch[1] : '';
                 if (sheetId) {
                     downloadUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=xlsx${gid ? '&gid=' + gid : ''}`;
+                    viewSheetUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/edit${gid ? '#gid=' + gid : ''}`;
                 }
             }
 
-            const primaryActionBtn = isSheet ? `
-                <button onclick="openSheetModal('${encodeURIComponent(resource.title)}', '${encodeURIComponent(resource.url)}')" class="action-button primary-action">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="width:16px; height:16px;"><path d="M10 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z"/><path fill-rule="evenodd" d="M.664 10.59a1.651 1.651 0 010-1.186A10.004 10.004 0 0110 3c4.257 0 7.893 2.66 9.336 6.41.147.381.147.804 0 1.186A10.004 10.004 0 0110 17c-4.257 0-7.893-2.66-9.336-6.41zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>
-                    View Sheet
-                </button>
-            ` : `
-                <a href="${resource.url}" target="_blank" rel="noopener noreferrer" class="action-button primary-action">
+            const primaryActionBtn = `
+                <a href="${viewSheetUrl}" target="_blank" rel="noopener noreferrer" class="action-button primary-action">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="width:16px; height:16px;"><path fill-rule="evenodd" d="M4.25 5.5a.75.75 0 00-.75.75v8.5c0 .414.336.75.75.75h8.5a.75.75 0 00.75-.75v-4a.75.75 0 011.5 0v4A2.25 2.25 0 0112.75 18h-8.5A2.25 2.25 0 014.25 5h4a.75.75 0 010 1.5h-4a.75.75 0 00-.75.75z" clip-rule="evenodd" /><path fill-rule="evenodd" d="M6.194 12.753a.75.75 0 001.06.053L16.5 4.44v2.81a.75.75 0 001.5 0v-4.5a.75.75 0 00-.75-.75h-4.5a.75.75 0 000 1.5h2.553l-9.056 8.19a.75.75 0 00-.053 1.06z" clip-rule="evenodd" /></svg>
-                    Open Link
+                    ${isSheet ? 'View Sheet' : 'Open Link'}
                 </a>
             `;
 
