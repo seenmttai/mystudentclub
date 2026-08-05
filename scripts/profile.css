@@ -30,7 +30,7 @@
 /* ── Page layout ── */
 .app-main.pn-main {
   padding-top: var(--header-h);
-  padding-bottom: calc(72px + var(--safe-bottom));
+  padding-bottom: calc(var(--bnav-h) + 24px + var(--safe-bottom));
   min-height: 100vh;
 }
 .pn-content {
