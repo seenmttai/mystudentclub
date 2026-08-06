@@ -1464,13 +1464,13 @@ function cleanRawText(t) {
     out = out.replace(/\n\*\*\n/g, '\n');  // ** between newlines
 
     // 2) Mirror the bullet splitting used for on-page formatting
-    // After sentence boundaries followed by a capital letter -> start a new markdown bullet
-    out = out.replace(/([.!?])\s+(?=[A-Z])/g, '$1\n- ');
+    // Separate inline label header from first bullet item if on same line
+    out = out.replace(/^(\s*(?:\*\s*)?\*\*([^*:]+):\*\*)[ \t]+(?=[A-Z]|\[)/gm, '$1\n- ');
 
-    // After ISSUE markers when explanation continues
+    // After sentence boundaries (optionally followed by GOOD/ISSUE status tag), start a new markdown bullet
     out = out.replace(
-        /(\[ISSUE(?:\s*-\s*SEVERITY:\s*(?:Critical|High|Moderate|Low))?[^\]]*\])\.?\s+([A-Z])/gi,
-        '$1\n- $2'
+        /([.!?](?:\s*\[(?:GOOD|ISSUE(?:\s*-\s*SEVERITY:\s*(?:Critical|High|Moderate|Low))?)[^\]]*\])?)[ \t]+(?=[A-Z]|\[(?:GOOD|ISSUE)(?:\s*-\s*SEVERITY:\s*(?:Critical|High|Moderate|Low))?[^\]]*\]\s+[A-Z])/gi,
+        '$1\n- '
     );
 
     // Ensure inline numbered items become separate lines
@@ -1490,10 +1490,20 @@ function formatFeedbackText(text) {
     let processedText = text;
 
     // The model often returns long paragraphs. Break them into bullet-friendly lines:
-    // 1) After sentence boundaries (., ?, !) followed by a capital letter -> new bullet
-    processedText = processedText.replace(/([.!?])\s+(?=[A-Z])/g, '$1\n\u2022 ');
-    // 2) After ISSUE markers when explanation continues
-    processedText = processedText.replace(/(\[ISSUE(?:\s*-\s*SEVERITY:\s*(?:Critical|High|Moderate|Low))?[^\]]*\])\.?\s+([A-Z])/gi, '$1\n\u2022 $2');
+    // 0a) Separate adjacent [GOOD] [ISSUE...] tags so [ISSUE...] starts on a new bullet line
+    processedText = processedText.replace(/(\[GOOD\])\s*(\[ISSUE(?:\s*-\s*SEVERITY:\s*(?:Critical|High|Moderate|Low))?[^\]]*\])/gi, '$1\n\u2022 $2');
+
+    // 0b) If an [ISSUE...] tag is on a line by itself before a bullet item, attach it to the bullet text
+    processedText = processedText.replace(/(\u2022\s*)?(\[ISSUE(?:\s*-\s*SEVERITY:\s*(?:Critical|High|Moderate|Low))?[^\]]*\])\s*\n\s*(?:[\u2022\*\-]\s*)?/gi, '\n\u2022 $2 ');
+
+    // 1) Separate inline label header from first bullet item if on same line
+    processedText = processedText.replace(/^(\s*(?:\*\s*)?\*\*([^*:]+):\*\*)[ \t]+(?=[A-Z]|\[)/gm, '$1\n\u2022 ');
+
+    // 2) After sentence boundaries (optionally followed by GOOD status tag), start a new bullet
+    processedText = processedText.replace(
+        /([.!?](?:\s*\[GOOD\])?)[ \t]+(?=[A-Z]|\[(?:GOOD|ISSUE))/gi,
+        '$1\n\u2022 '
+    );
     // 3) Convert inline numbered items (1. 2. 3. etc.) to bullet points
     // First, handle patterns like "text. 1. more" or "text 1. more" - any " N. " pattern
     processedText = processedText.replace(/\s+(\d+)\.\s+/g, '\n ');
