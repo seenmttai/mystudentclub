@@ -1742,7 +1742,7 @@
           <button class="modal-close" onclick="closeJobEditModal()">✕</button>
         </div>
         <div class="modal-inner">
-          <form id="job-form" class="job-form">
+          <form id="job-form" class="job-form" onsubmit="event.preventDefault();">
             <div class="form-group">
               <label class="form-label">Company</label>
               <input type="text" name="Company" class="form-input" required>
@@ -3819,6 +3819,142 @@
           debouncedFetch();
         });
       });
+
+      if (dom.jobForm) {
+        dom.jobForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const submitButton = e.target.querySelector('button[type="submit"]');
+          if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.classList.add('loading');
+          }
+          try {
+            const formData = new FormData(e.target);
+            const jobData = Object.fromEntries(formData.entries());
+            const { table, id, ...dataToSave } = jobData;
+
+            // Handle optional fields
+            if (dataToSave.Salary === '' || dataToSave.Salary === undefined) {
+              dataToSave.Salary = null;
+            } else {
+              dataToSave.Salary = Number(dataToSave.Salary);
+            }
+
+            if (dataToSave.connect_link === '') {
+              dataToSave.connect_link = null;
+            }
+
+            // Handle Experience based on target table
+            if (table === "Fresher Jobs" || table === "Semi Qualified Jobs") {
+              if (!dataToSave.Experience) dataToSave.Experience = null;
+            } else {
+              delete dataToSave.Experience;
+            }
+
+            // Handle is_exclusive checkbox for Industrial Training
+            if (table === "Industrial Training Job Portal") {
+              dataToSave.is_exclusive = dataToSave.is_exclusive === 'true' || dataToSave.is_exclusive === true;
+            } else {
+              delete dataToSave.is_exclusive;
+            }
+
+            // Handle Created_At timestamp
+            if (!dataToSave.Created_At) {
+              dataToSave.Created_At = new Date().toISOString();
+            } else {
+              dataToSave.Created_At = new Date(dataToSave.Created_At).toISOString();
+            }
+
+            const isEdit = Boolean(id && id.trim() !== '');
+            let savedJob;
+
+            if (isEdit) {
+              let updateRes = await supabaseClient.from(table).update(dataToSave).eq('id', id).select().single();
+              if (updateRes.error && updateRes.error.message && updateRes.error.message.includes('is_exclusive')) {
+                delete dataToSave.is_exclusive;
+                updateRes = await supabaseClient.from(table).update(dataToSave).eq('id', id).select().single();
+              }
+              if (updateRes.error) throw updateRes.error;
+              savedJob = updateRes.data;
+            } else {
+              let insertRes = await supabaseClient.from(table).insert([dataToSave]).select().single();
+              if (insertRes.error && insertRes.error.message && insertRes.error.message.includes('is_exclusive')) {
+                delete dataToSave.is_exclusive;
+                insertRes = await supabaseClient.from(table).insert([dataToSave]).select().single();
+              }
+              if (insertRes.error) throw insertRes.error;
+              savedJob = insertRes.data;
+            }
+
+            closeJobEditModal();
+            if (typeof showCustomToast === 'function') {
+              showCustomToast(isEdit ? 'Job updated successfully!' : 'Job added successfully!', 'success');
+            } else {
+              alert(isEdit ? 'Job updated successfully!' : 'Job added successfully!');
+            }
+
+            if (isEdit) {
+              const oldCard = dom.jobs.querySelector(`.job-card[data-job-id='${id}']`);
+              if (oldCard) {
+                const newCard = renderJobCard(savedJob, table);
+                oldCard.replaceWith(newCard);
+              }
+            } else {
+              if (dom.jobs.textContent.includes('No jobs found')) {
+                dom.jobs.innerHTML = '';
+              }
+              const newCard = renderJobCard(savedJob, table);
+              dom.jobs.prepend(newCard);
+              if (currentSession?.access_token) {
+                try {
+                  await triggerNotifications({ ...savedJob, table }, currentSession.access_token);
+                } catch (notifErr) {
+                  console.error('Failed to send notification:', notifErr);
+                }
+              }
+            }
+          } catch (error) {
+            console.error('Error saving job:', error);
+            if (typeof showCustomToast === 'function') {
+              showCustomToast('Failed to save job: ' + error.message, 'error');
+            }
+            alert('Failed to save job: ' + error.message);
+          } finally {
+            if (submitButton) {
+              submitButton.disabled = false;
+              submitButton.classList.remove('loading');
+            }
+          }
+        });
+      }
+
+      if (dom.jobs) {
+        dom.jobs.addEventListener('click', async (e) => {
+          const card = e.target.closest('.job-card');
+          if (!card) return;
+
+          const button = e.target.closest('button[data-action]');
+          const jobId = card.dataset.jobId;
+
+          if (button) {
+            e.stopPropagation();
+            const action = button.dataset.action;
+            if (action === 'delete') {
+              await deleteJob(jobId, currentTable);
+            } else if (action === 'edit') {
+              const jobDetails = await getJobById(jobId, currentTable);
+              if (jobDetails) showEditJobModal(jobDetails);
+            }
+          } else {
+            const job = await getJobById(jobId, currentTable);
+            if (job) showModal(job);
+          }
+        });
+      }
+
+      if (dom.tableSelect) {
+        dom.tableSelect.addEventListener('change', (e) => updateCategoryOptions(e.target.value));
+      }
 
       function escapeHTML(str) {
         if (str === null || str === undefined) return '';
