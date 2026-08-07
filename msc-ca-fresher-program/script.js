@@ -529,18 +529,19 @@ const initializeBenefitsScrollytelling = () => {
 
     // --- LOTTIE SCRUB ---
     try {
-      // The Lottie animation is driven linearly by the scroll progress.
-      // We want the full animation (all the way to 1.0) so the tickmarks 
-      // appear at the very bottom.
-      const adjustedProgress = progress;
+      const END_FRAME_RATIO = 0.7; // Finishes before the shrinking begins
 
       if (lottiePlayer.getLottie) {
         const anim = lottiePlayer.getLottie();
         if (anim && anim.totalFrames) {
-          anim.goToAndStop(adjustedProgress * anim.totalFrames, true);
+          const END_FRAME = anim.totalFrames * END_FRAME_RATIO;
+          const frame = progress * END_FRAME;
+          const clampedFrame = Math.min(frame, END_FRAME);
+          anim.goToAndStop(clampedFrame, true);
         }
       } else if (lottiePlayer.seek) {
-        lottiePlayer.seek(adjustedProgress * 100 + '%');
+        const endPercent = END_FRAME_RATIO * 100;
+        lottiePlayer.seek(Math.min(progress * endPercent, endPercent) + '%');
       }
     } catch (e) { }
 
