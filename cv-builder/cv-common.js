@@ -121,8 +121,30 @@ function renderCV(data) {
         // Map both 'institute' and 'institution' field names for compatibility across templates and worker output
         setHTMLIn(row, '[data-field="institution"]', item.institute || item.institution);
         setHTMLIn(row, '[data-field="institute"]', item.institute || item.institution);
-        setHTMLIn(row, '[data-field="marks"]', item.marks || item.remarks);
-        setHTMLIn(row, '[data-field="remarks"]', item.remarks);
+        const marksEl = row.querySelector('[data-field="marks"]');
+        const remarksEl = row.querySelector('[data-field="remarks"]');
+
+        if (marksEl) {
+            setHTMLIn(row, '[data-field="marks"]', item.marks);
+            const marksVal = (item.marks || '').trim();
+            marksEl.style.display = stripTags(marksVal).trim() ? '' : 'none';
+        }
+        if (remarksEl) {
+            setHTMLIn(row, '[data-field="remarks"]', item.remarks);
+            const remarksVal = (item.remarks || '').trim();
+            remarksEl.style.display = stripTags(remarksVal).trim() ? '' : 'none';
+        }
+
+        const instHeader = row.querySelector('[data-field="institution-header"]');
+        const instEl = row.querySelector('[data-field="institution"], [data-field="institute"], .edu-inst, .card-subtitle');
+        const isMerged = !!item.mergedWithPrevious || !!item.mergeWithPrevious;
+        if (isMerged) {
+            if (instHeader) instHeader.style.display = 'none';
+            if (instEl) instEl.style.display = 'none';
+        } else {
+            if (instHeader) instHeader.style.display = '';
+            if (instEl) instEl.style.display = '';
+        }
     });
     applyEducationInstituteMerges(data.education || []);
     
@@ -245,6 +267,7 @@ function renderCV(data) {
             const datesEl = block.querySelector('[data-field="dates"]');
             if (companyEl) companyEl.style.display = 'none';
             if (datesEl) datesEl.style.display = 'none';
+            block.querySelectorAll('.subhead-bar, .exp-subhead-bar, .exp-role-row, .exp-header-row, .exp-subhead-top, .exp-company-title, .exp-role-title').forEach(h => h.style.display = 'none');
         }
 
         const ul = block.querySelector('[data-list="bullets"]');
@@ -371,6 +394,10 @@ function renderCV(data) {
         if (typeof window.scaleToFit === 'function') {
             window.scaleToFit();
         }
+        // Composite-ledger specific: linkify contact fields + build exp-subhead (no-op in all other templates)
+        if (typeof window.__clContactFix === 'function') {
+            window.__clContactFix(data);
+        }
     });
 }
 
@@ -459,6 +486,43 @@ function entryLinkChipHTML(url) {
     return ` <a class="cv-entry-link" href="${escapeAttr(href)}" target="_blank" rel="noopener noreferrer" style="color:#2563eb;text-decoration:none;font-weight:500;white-space:nowrap;">[Link]</a>`;
 }
 
+function applyEducationInstituteMerges(educationList) {
+    if (!Array.isArray(educationList) || educationList.length === 0) return;
+    const eduListContainer = document.getElementById('education-list');
+    if (!eduListContainer) return;
+
+    const rows = Array.from(eduListContainer.children).filter(child => child && !child.classList.contains('template') && child.tagName !== 'THEAD');
+
+    for (let i = 0; i < educationList.length; i++) {
+        const item = educationList[i];
+        const row = rows[i];
+        if (!row) continue;
+
+        const isMerged = !!item.mergedWithPrevious || !!item.mergeWithPrevious;
+        const instHeader = row.querySelector('[data-field="institution-header"]');
+        const instEl = row.querySelector('[data-field="institution"], [data-field="institute"], .edu-inst, .card-subtitle');
+
+        if (isMerged) {
+            if (instHeader) instHeader.style.display = 'none';
+            if (instEl) instEl.style.display = 'none';
+        } else {
+            if (instHeader) instHeader.style.display = '';
+            if (instEl) instEl.style.display = '';
+        }
+
+        const marksEl = row.querySelector('[data-field="marks"]');
+        const remarksEl = row.querySelector('[data-field="remarks"]');
+        if (marksEl) {
+            const marksVal = (item.marks || '').trim();
+            marksEl.style.display = stripTags(marksVal).trim() ? '' : 'none';
+        }
+        if (remarksEl) {
+            const remarksVal = (item.remarks || '').trim();
+            remarksEl.style.display = stripTags(remarksVal).trim() ? '' : 'none';
+        }
+    }
+}
+
 function enforceExperienceOnlyLeftLabels() {
     const labelSelectors = ['.category-label', '.skills-col-label', '.work-label', '.col-left', '.details-label', '.grey-label'];
     const nonExpSections = document.querySelectorAll('.sortable-section[data-section-id]:not([data-section-id="experience"])');
@@ -491,7 +555,8 @@ function enforceExperienceOnlyLeftLabels() {
         });
 
         // If section tables have a 2-col colgroup, remove first col so content spans full width.
-        section.querySelectorAll('table colgroup').forEach(colgroup => {
+        // Skip tables that explicitly preserve label columns (e.g. grid-docket ledger tables).
+        section.querySelectorAll('table:not([data-preserve-label-columns]) colgroup').forEach(colgroup => {
             const cols = colgroup.querySelectorAll('col');
             if (cols.length === 2) {
                 // Removing only the first col can leave the remaining col at width:80%.
@@ -560,14 +625,25 @@ function enforceExperienceOnlyLeftLabels() {
 
 function stabilizeSectionLayouts() {
     // Keep table columns fluid so content adapts on zoom and during import-heavy payloads.
-    document.querySelectorAll('.sortable-section table').forEach(table => {
+    document.querySelectorAll('.sortable-section table:not(.ledger-table):not([data-preserve-label-columns])').forEach(table => {
         table.style.setProperty('width', '100%', 'important');
         table.style.setProperty('table-layout', 'auto', 'important');
         table.style.setProperty('max-width', '100%', 'important');
     });
 
-    document.querySelectorAll('.sortable-section td, .sortable-section th').forEach(cell => {
+    // Apply word-wrap hardening, but skip cells inside preserved-label tables
+    // so their explicit width constraints (26% / 74%) are not blown out.
+    document.querySelectorAll('.sortable-section td:not(.ledger-table td):not([data-preserve-label-columns] td), .sortable-section th:not(.ledger-table th):not([data-preserve-label-columns] th)').forEach(cell => {
         cell.style.setProperty('max-width', '100%', 'important');
+        cell.style.setProperty('overflow-wrap', 'anywhere', 'important');
+        cell.style.setProperty('word-break', 'break-word', 'important');
+        if (cell.style.whiteSpace === 'nowrap') {
+            cell.style.setProperty('white-space', 'normal', 'important');
+        }
+    });
+
+    // Also apply word-wrap to ledger-table cells but WITHOUT overriding width/max-width.
+    document.querySelectorAll('.ledger-table td, [data-preserve-label-columns] td, .ledger-table th, [data-preserve-label-columns] th').forEach(cell => {
         cell.style.setProperty('overflow-wrap', 'anywhere', 'important');
         cell.style.setProperty('word-break', 'break-word', 'important');
         if (cell.style.whiteSpace === 'nowrap') {
@@ -633,7 +709,7 @@ function applySectionLabels(sectionLabels) {
         // .section-header-bar aren't destroyed; only fall back to overwriting
         // the whole label cell when it has no such nested title element.
         if (customText !== null && customText !== '') {
-            const titleEl = labelCell.querySelector('.section-header-title, .section-header, .section-header-2, .section-title, .gray-bar') || labelCell;
+            const titleEl = labelCell.querySelector('.section-header-title, .section-header, .section-header-2, .section-title, .gray-bar, .pill-banner, .section-banner, .right-title-text') || labelCell;
             const currentText = (titleEl.textContent || '').trim();
             if (currentText !== customText) {
                 titleEl.textContent = customText;
@@ -887,7 +963,7 @@ function applyTemplateAccent(accent) {
     if (!root) return;
 
     if (!color) {
-        ['--blue-header', '--header-bg', '--accent-color', '--blue-deep', '--blue-text', '--section-bg', '--header-bg-dark', '--sub-header-bg', '--sub-bg', '--grey-bg', '--blueshade-color', '--blue-shade']
+        ['--blue-header', '--header-bg', '--accent-color', '--blue-deep', '--blue-text', '--section-bg', '--header-bg-dark', '--sub-header-bg', '--sub-bg', '--grey-bg', '--label-bg', '--blueshade-color', '--blue-shade']
             .forEach(name => root.style.removeProperty(name));
         clearAccentInlineStyles();
         return;
@@ -907,6 +983,7 @@ function applyTemplateAccent(accent) {
     root.style.setProperty('--sub-header-bg', light);
     root.style.setProperty('--sub-bg', light);
     root.style.setProperty('--grey-bg', light);
+    root.style.setProperty('--label-bg', light);
     root.style.setProperty('--blueshade-color', light);
     root.style.setProperty('--blue-shade', softer);
     applyAccentInlineStyles(color, light, softer, deep);
@@ -1123,6 +1200,13 @@ function applyExperienceTitleMergeDisplayV2(block, item) {
         addWrapper(el.closest('.work-subheader'));
         addWrapper(el.closest('.work-box-header'));
         addWrapper(el.closest('.work-box-header-row'));
+        addWrapper(el.closest('.subhead-bar'));
+        addWrapper(el.closest('.exp-subhead-bar'));
+        addWrapper(el.closest('.exp-role-row'));
+        addWrapper(el.closest('.exp-header-row'));
+        addWrapper(el.closest('.exp-subhead-top'));
+        addWrapper(el.closest('.exp-company-title'));
+        addWrapper(el.closest('.exp-role-title'));
     });
 
     wrappersToToggle.forEach(el => {
@@ -1976,7 +2060,7 @@ function toReadableSectionLabel(text) {
 }
 
 function getSectionHeaderElement(section) {
-    return section?.querySelector('.section-header, .section-header-2, .section-title, .gray-bar, h2, h3') || null;
+    return section?.querySelector('.section-header, .section-header-2, .section-title, .gray-bar, h2, h3, .banner-row td, tr.banner-row td') || null;
 }
 
 function getClassicBlueSectionLabel(section, fallbackTitle) {
@@ -2526,6 +2610,7 @@ function setSectionHeaderText(root, title) {
         '.section-header',
         '.section-header-2',
         '.section-title',
+        '.section-banner',
         '.section-header-title',
         '.gray-bar',
         'td.section-header',
@@ -2591,7 +2676,7 @@ function createStyledCustomSection(section, items) {
     const listHost = getOrCreateListHost(wrapper);
     const bodyHost = listHost.parentElement || wrapper;
     Array.from(bodyHost.children).forEach(child => {
-        if (child !== listHost && !child.classList?.contains('section-header')) child.remove();
+        if (child !== listHost && !child.classList?.contains('section-header') && !child.classList?.contains('section-header-2') && !child.classList?.contains('section-title') && !child.classList?.contains('section-banner') && !child.classList?.contains('section-divider')) child.remove();
     });
     listHost.classList.add('bullet-list');
     listHost.innerHTML = items.map(item => `<li>${item}</li>`).join('');
@@ -2640,6 +2725,9 @@ function applySectionOrder(sectionOrder) {
     const parentMap = new Map();
 
     wrappers.forEach((wrapper, originalIndex) => {
+        const sectionId = wrapper.getAttribute('data-section-id');
+        if (sectionId === 'personal' || sectionId === 'contact') return;
+
         const parent = wrapper.parentElement;
         if (!parent) return;
         if (!parentMap.has(parent)) parentMap.set(parent, []);

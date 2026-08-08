@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Resume - Grid Docket</title>
+<style>
+
+:root {
+  --blue-header:  #002060;   /* Accent color target */
+  --header-bg:    #002060;
+  --accent-color: #002060;
+  --banner-bg:      var(--accent-color, #002060); /* Section Banners */
+  --banner-txt:     #FFFFFF;   /* White Banner Text */
+  --label-bg:       var(--sub-header-bg, color-mix(in srgb, var(--accent-color, #002060) 18%, #E2E2E2)); /* Dynamic Accent Tinted Gray Label & Sub-header Background */
+  --text-dark:      #000000;   /* Black Body Text */
+  --text-muted:     #555555;   /* Gray Muted Subtext & Dates */
+  --border-black:   #000000;   /* Crisp 1px Black Borders */
+  --link-email:     #0000FF;   /* Blue Email Link */
+  --link-li:        var(--accent-color, #002060); /* LinkedIn Link */
+  --page-bg:        #FFFFFF;   /* White A4 Sheet */
+  --viewer-bg:      #525659;   /* Outer Canvas Background */
+  --font-main:      'Calibri', 'Segoe UI', Arial, sans-serif;
+  --cs:             1.0;       /* Content scale variable adjusted by shrinkContentToFit() */
+}
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+body {
+  background: var(--viewer-bg);
+  font-family: var(--font-main);
+  color: var(--text-dark);
+  min-height: 100vh;
+  width: 100vw;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.2s ease-in;
+}
+
+/* ── Viewer Centering Wrapper ── */
+#zoom-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 24px 0 32px;
+}
+
+/* ── A4 Page Card Container ── */
+#cv-page {
+  position: relative;
+  width: 1000px;
+  min-height: 1413.94px;
+  background: var(--page-bg);
+  color: var(--text-dark);
+  padding: 36px 25px 30px 25px; /* Physical margins */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+  flex-shrink: 0;
+  transform-origin: top center;
+  font-size: calc(14px * var(--cs));
+  line-height: 1.32;
+}
+
+.template { display: none !important; }
+
+/* ── Header Table ── */
+.header-table {
+  width: 100%;
+  margin-bottom: calc(10px * var(--cs));
+  font-size: calc(14px * var(--cs));
+  border-collapse: collapse;
+}
+
+.candidate-name {
+  font-size: calc(22px * var(--cs));
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: calc(2px * var(--cs));
+}
+
+.tagline {
+  font-size: calc(14.5px * var(--cs));
+  font-weight: 700;
+  color: var(--banner-bg);
+  margin-bottom: calc(4px * var(--cs));
+}
+
+.header-label {
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.header-table a {
+  color: var(--link-email);
+  text-decoration: underline;
+}
+
+.header-table a.li-link {
+  color: var(--link-li);
+}
+
+.header-table .contact-row {
+  margin-top: calc(2px * var(--cs));
+}
+
+.header-table td:last-child .contact-icon-item {
+  justify-content: flex-end;
+}
+
+.sortable-section {
+  margin-top: -1px;
+}
+
+.sortable-section:first-of-type {
+  margin-top: 0;
+}
+
+/* ── Master Ledger Table ── */
+table.ledger-table {
+  width: 100% !important;
+  border-collapse: collapse;
+  table-layout: fixed !important;
+  font-size: calc(14px * var(--cs));
+  margin-bottom: 0 !important;
+}
+
+/* Full-width single-cell rows (Summary, Education table container, Banner rows) */
+table.ledger-table tr > td[colspan],
+table.ledger-table tr > th[colspan],
+table.ledger-table tr.banner-row > td {
+  width: 100% !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* 2-Column Detail Rows: Left Label Cell = 26% */
+table.ledger-table tr > td.label-cell,
+table.ledger-table tr > td.section-label,
+table.ledger-table tr > td:first-child:not([colspan]) {
+  width: 26% !important;
+  min-width: 26% !important;
+  max-width: 26% !important;
+  box-sizing: border-box !important;
+}
+
+/* 2-Column Detail Rows: Right Content Cell = 74% */
+table.ledger-table tr > td:last-child:not([colspan]) {
+  width: 74% !important;
+  min-width: 74% !important;
+  max-width: 74% !important;
+  box-sizing: border-box !important;
+}
+
+table.ledger-table td, table.ledger-table th {
+  border: 1px solid var(--border-black);
+  padding: calc(4px * var(--cs)) calc(6px * var(--cs));
+  vertical-align: top;
+  word-wrap: break-word;
+}
+
+/* Section Banner Rows */
+.banner-row td {
+  background-color: var(--banner-bg) !important;
+  color: var(--banner-txt) !important;
+  font-weight: 700;
+  font-size: calc(16.5px * var(--cs));
+  padding: calc(4px * var(--cs)) calc(8px * var(--cs));
+  text-align: left;
+}
+
+/* Sub-header Rows */
+.sub-header-row td {
+  background-color: var(--label-bg) !important;
+  font-weight: 700;
+}
+
+/* Left Category Label Cells - Fixed 26% width */
+.label-cell, .section-label {
+  background-color: var(--label-bg) !important;
+  font-weight: 700;
+  vertical-align: top;
+  width: 26% !important;
+  min-width: 26% !important;
+  max-width: 26% !important;
+  box-sizing: border-box;
+}
+
+.company-name {
+  font-weight: 700;
+  font-size: calc(14px * var(--cs));
+  color: var(--text-dark);
+}
+
+.date-range {
+  font-weight: 700;
+  font-size: calc(13.5px * var(--cs));
+}
+
+.role-title {
+  font-weight: 700;
+}
+
+.exp-category {
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+/* Academic Qualifications Table */
+.acad-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.acad-table td, .acad-table th {
+  border: 1px solid var(--border-black);
+  padding: calc(4px * var(--cs)) calc(6px * var(--cs));
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Remove duplicate outer borders on embedded academic table */
+.acad-table tr td:first-child, .acad-table tr th:first-child { border-left: none; }
+.acad-table tr td:last-child,  .acad-table tr th:last-child  { border-right: none; }
+.acad-table tr:first-child td { border-top: none; }
+.acad-table tr:last-child td  { border-bottom: none; }
+
+.acad-header td, .acad-header th {
+  background-color: var(--label-bg) !important;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* Bullet List inside Table Cells */
+.cell-bullets, .bullet-list {
+  list-style-type: disc;
+  padding-left: calc(18px * var(--cs));
+  margin: 0;
+  line-height: 1.35;
+  font-size: calc(13.5px * var(--cs));
+}
+
+.cell-bullets li, .bullet-list li {
+  margin-bottom: calc(3px * var(--cs));
+  text-align: justify;
+}
+
+.cell-bullets li:last-child, .bullet-list li:last-child {
+  margin-bottom: 0;
+}
+
+.summary-text {
+  font-size: calc(13.5px * var(--cs));
+  line-height: 1.4;
+  color: var(--text-dark);
+  text-align: justify;
+}
+
+/* ── Print Styles (A4 Page Output) ── */
+@media print {
+  html, body {
+    background: none !important;
+    margin: 0;
+    padding: 0;
+  }
+  #zoom-wrapper {
+    padding: 0;
+  }
+  #cv-page {
+    transform: scale(1) !important;
+    margin: 0 !important;
+    width: 210mm;
+    min-height: 297mm;
+    box-shadow: none;
+    padding: 9mm 7mm 9mm 7mm;
+  }
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+}
+</style>
+</head>
+<body data-section-grouping>
+<div id="zoom-wrapper">
+<div id="cv-page">
+
+  <!-- ══ HEADER SECTION ══════════════════════════════════════════ -->
+  <table class="header-table">
+    <tr>
+      <td style="width: 50%; vertical-align: top;">
+        <div class="candidate-name" data-field="name">CA Padam Bhansali</div>
+        <div class="tagline" data-field="tagline">Chartered Accountant</div>
+        <div class="contact-row"><span class="contact-value" data-field="location">Mumbai, Maharashtra</span></div>
+      </td>
+      <td style="width: 50%; vertical-align: top; text-align: right;">
+        <div class="contact-row"><span class="contact-value" data-field="phone">+91 7228881182</span></div>
+        <div class="contact-row"><span class="contact-value" data-field="email">capadambhansali@gmail.com</span></div>
+        <div class="contact-row"><span class="contact-value" data-field="linkedin">linkedin.com/in/ca-padam-bhansali</span></div>
+      </td>
+    </tr>
+  </table>
+
+  <!-- ══ PROFESSIONAL SUMMARY ════════════════════════════════════ -->
+  <div class="sortable-section" data-section-id="summary">
+    <table class="ledger-table" data-preserve-label-columns>
+      <colgroup>
+        <col style="width: 26%;" class="col-label">
+        <col style="width: 74%;" class="col-content">
+      </colgroup>
+      <tbody>
+        <tr class="banner-row">
+          <td colspan="2">Professional Summary</td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <div class="summary-text" data-field="summary">
+              Chartered Accountant with 3 years of experience executing internal, forensic, and transaction audits across NBFCs, corporate banking branches, and group subsidiaries. Backed by a strong foundation in evaluating risk management, financial controls, and compliance frameworks.
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══ ACADEMIC QUALIFICATIONS ═════════════════════════════════ -->
+  <div class="sortable-section" data-section-id="education">
+    <table class="ledger-table" data-preserve-label-columns>
+      <colgroup>
+        <col style="width: 26%;" class="col-label">
+        <col style="width: 74%;" class="col-content">
+      </colgroup>
+      <tbody>
+        <tr class="banner-row">
+          <td colspan="2">Academic Qualifications</td>
+        </tr>
+        <tr>
+          <td colspan="2" style="padding: 0;">
+            <table class="acad-table">
+              <colgroup>
+                <col style="width: 14%;">
+                <col style="width: 22%;">
+                <col style="width: 34%;">
+                <col style="width: 12%;">
+                <col style="width: 18%;">
+              </colgroup>
+              <thead>
+                <tr class="acad-header">
+                  <td data-field="year">Year</td>
+                  <td data-field="degree">Examination</td>
+                  <td data-field="institution">Institute</td>
+                  <td data-field="marks">%/Marks</td>
+                  <td data-field="remarks">Remarks</td>
+                </tr>
+              </thead>
+              <tbody id="education-list">
+                <tr class="template">
+                  <td data-field="year">March 2025</td>
+                  <td data-field="degree">CA Final</td>
+                  <td data-field="institution">The Institute of Chartered Accountants of India</td>
+                  <td data-field="marks">565/800</td>
+                  <td data-field="remarks">Exemption in all papers</td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══ WORK EXPERIENCE ═════════════════════════════════════════ -->
+  <div class="sortable-section" data-section-id="experience">
+    <table class="ledger-table" data-preserve-label-columns>
+      <colgroup>
+        <col style="width: 26%;" class="col-label">
+        <col style="width: 74%;" class="col-content">
+      </colgroup>
+      <tbody>
+        <tr class="banner-row">
+          <td colspan="2">Work Experience</td>
+        </tr>
+      </tbody>
+    </table>
+    <div id="experience-list">
+      <div class="experience-item template">
+        <table class="ledger-table" data-preserve-label-columns style="margin-top: -1px;">
+          <colgroup>
+            <col style="width: 26%;" class="col-label">
+            <col style="width: 74%;" class="col-content">
+          </colgroup>
+          <tbody>
+            <tr class="sub-header-row">
+              <td class="company-name" data-field="company">Article Assistant - Deloitte Haskins & Sells</td>
+              <td class="date-range" data-field="dates" style="text-align: right;">September 2023 - August 2025</td>
+            </tr>
+            <tr>
+              <td class="label-cell">
+                <div class="role-title" data-field="role"></div>
+                <div class="exp-category" data-field="category">Mergers & Acquisition Tax</div>
+                <div class="exp-intro" data-field="intro" style="font-style:italic; font-size:calc(13.2px * var(--cs)); margin-top:calc(4px * var(--cs));"></div>
+              </td>
+              <td>
+                <ul class="cell-bullets" data-list="bullets"></ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PROJECTS ════════════════════════════════════════════════ -->
+  <div class="sortable-section" data-section-id="projects">
+    <table class="ledger-table" data-preserve-label-columns>
+      <colgroup>
+        <col style="width: 26%;" class="col-label">
+        <col style="width: 74%;" class="col-content">
+      </colgroup>
+      <tbody>
+        <tr class="banner-row">
+          <td colspan="2">Projects</td>
+        </tr>
+      </tbody>
+    </table>
+    <div id="projects-list">
+      <div class="experience-item template">
+        <table class="ledger-table" data-preserve-label-columns style="margin-top: -1px;">
+          <colgroup>
+            <col style="width: 26%;" class="col-label">
+            <col style="width: 74%;" class="col-content">
+          </colgroup>
+          <tbody>
+            <tr>
+              <td class="label-cell" data-field="title">Project Title</td>
+              <td>
+                <div class="exp-intro" data-field="description" style="font-style:italic;">Project Description</div>
+                <ul class="cell-bullets" data-list="bullets"></ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SKILLS & TECHNICAL PROFICIENCY ═════════════════════════ -->
+  <div class="sortable-section" data-section-id="skills">
+    <table class="ledger-table" data-preserve-label-columns>
+      <colgroup>
+        <col style="width: 26%;" class="col-label">
+        <col style="width: 74%;" class="col-content">
+      </colgroup>
+      <tbody>
+        <tr class="banner-row">
+          <td colspan="2">Skills & Technical Proficiency</td>
+        </tr>
+        <tr>
+          <td class="label-cell section-label">Technical & Soft Skills</td>
+          <td>
+            <div data-field="skills"></div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══ CERTIFICATIONS ══════════════════════════════════════════ -->
+  <div class="sortable-section" data-section-id="certifications">
+    <table class="ledger-table" data-preserve-label-columns>
+      <colgroup>
+        <col style="width: 26%;" class="col-label">
+        <col style="width: 74%;" class="col-content">
+      </colgroup>
+      <tbody>
+        <tr class="banner-row">
+          <td colspan="2">Certifications</td>
+        </tr>
+        <tr>
+          <td class="label-cell section-label">Certifications</td>
+          <td>
+            <ul class="cell-bullets" data-list="certifications" id="cert-list"></ul>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══ EXTRACURRICULAR ACHIEVEMENTS ════════════════════════════ -->
+  <div class="sortable-section" data-section-id="achievements">
+    <table class="ledger-table" data-preserve-label-columns>
+      <colgroup>
+        <col style="width: 26%;" class="col-label">
+        <col style="width: 74%;" class="col-content">
+      </colgroup>
+      <tbody>
+        <tr class="banner-row">
+          <td colspan="2">Extracurricular Achievements</td>
+        </tr>
+        <tr>
+          <td class="label-cell section-label">Excellence & Awards</td>
+          <td>
+            <ul class="cell-bullets" data-list="achievements"></ul>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══ POSITIONS OF RESPONSIBILITY ════════════════════════════ -->
+  <div class="sortable-section" data-section-id="leadership">
+    <table class="ledger-table" data-preserve-label-columns>
+      <colgroup>
+        <col style="width: 26%;" class="col-label">
+        <col style="width: 74%;" class="col-content">
+      </colgroup>
+      <tbody>
+        <tr class="banner-row">
+          <td colspan="2">Positions of Responsibility</td>
+        </tr>
+        <tr>
+          <td class="label-cell section-label">Leadership & Execution</td>
+          <td>
+            <ul class="cell-bullets" data-list="leadership"></ul>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══ INTERESTS & HOBBIES ═════════════════════════════════════ -->
+  <div class="sortable-section" data-section-id="interests">
+    <table class="ledger-table" data-preserve-label-columns>
+      <colgroup>
+        <col style="width: 26%;" class="col-label">
+        <col style="width: 74%;" class="col-content">
+      </colgroup>
+      <tbody>
+        <tr class="banner-row">
+          <td colspan="2">Interests & Hobbies</td>
+        </tr>
+        <tr>
+          <td class="label-cell section-label">Sports & Activities</td>
+          <td>
+            <ul class="cell-bullets" data-list="interests"></ul>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div><!-- #cv-page -->
+</div><!-- #zoom-wrapper -->
+
+<!-- ══ SCRIPT ENGINE ════════════════════════════════════════════ -->
+<script src="cv-common.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var PAGE_H = 1413.94; /* A4 page height limit in px */
+  var PAGE_W = 1000;    /* A4 viewer width in px */
+
+  /* Scale page to fit window width dynamically */
+  function scaleToFit() {
+    var page = document.getElementById('cv-page');
+    if (!page || document.body.classList.contains('print-mode')) return;
+    var avail = window.innerWidth - 20;
+    var scale = avail < PAGE_W ? avail / PAGE_W : 1.0;
+    page.style.transform = 'scale(' + scale + ')';
+    page.style.marginBottom = '-' + (PAGE_H - PAGE_H * scale) + 'px';
+  }
+
+  /* Shrink content font-size and spacing (--cs) if it exceeds PAGE_H */
+  function shrinkContentToFit() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    var cs = 1.0;
+    document.documentElement.style.setProperty('--cs', cs);
+    page.style.height = 'auto';
+    var iter = 0;
+    while (page.scrollHeight > PAGE_H + 1 && iter < 80) {
+      cs = Math.round((cs - 0.01) * 1000) / 1000;
+      document.documentElement.style.setProperty('--cs', cs);
+      iter++;
+    }
+    page.style.height = '';
+  }
+
+  window.scaleToFit = scaleToFit;
+  window.shrinkContentToFit = shrinkContentToFit;
+
+  var _tx = '', _mb = '';
+
+  function enablePrintMode() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    _tx = page.style.transform;
+    _mb = page.style.marginBottom;
+    document.body.classList.add('print-mode');
+    page.style.transform = 'scale(1)';
+    page.style.marginBottom = '0';
+    shrinkContentToFit();
+  }
+
+  function disablePrintMode() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    document.body.classList.remove('print-mode');
+    page.style.transform = _tx || '';
+    page.style.marginBottom = _mb || '';
+    scaleToFit();
+  }
+
+  window.addEventListener('load', function () {
+    shrinkContentToFit();
+    scaleToFit();
+    document.body.style.opacity = '1';
+    var mq = window.matchMedia('print');
+    var handler = function (e) { e.matches ? enablePrintMode() : disablePrintMode(); };
+    if (mq.addEventListener) { mq.addEventListener('change', handler); }
+    else if (mq.addListener)  { mq.addListener(handler); }
+    window.addEventListener('beforeprint', enablePrintMode);
+    window.addEventListener('afterprint',  disablePrintMode);
+  });
+
+  var _rt;
+  window.addEventListener('resize', function () {
+    clearTimeout(_rt);
+    _rt = setTimeout(scaleToFit, 100);
+  });
+}());
+</script>
+</body>
+</html>
