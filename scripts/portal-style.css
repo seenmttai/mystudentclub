@@ -3985,41 +3985,43 @@ body:has(.portal-nav-bar) {
 @media (min-width: 1024px) {
   .dv2-has-rail .job-card {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     grid-template-areas:
-      "top  side actions"
-      "tags side actions";
-    column-gap: 1.25rem;
-    align-items: center;
-    padding: 0.9rem 1.25rem;
+      "top   side"
+      "tags  actions";
+    column-gap: 1.5rem;
+    row-gap: 0.3rem;
+    align-items: start;
+    padding: 0.95rem 1.25rem;
     border-radius: 14px;
+    position: relative;
   }
 
   .dv2-has-rail .job-card-top-row {
     grid-area: top;
-    margin-bottom: 0.45rem;
+    display: flex;
     align-items: center;
-    gap: 0.7rem;
+    gap: 0.75rem;
+    margin-bottom: 0;
   }
 
   .dv2-has-rail .job-card-logo {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     border-radius: 10px;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
+    flex-shrink: 0;
   }
 
-  /* Company as headline with the role small beneath it. The markup
-     order is role-title then company (mobile shows only company), so
-     flex order flips them visually here on desktop. */
   .dv2-has-rail .job-card-header {
     display: flex;
     flex-direction: column;
+    min-width: 0;
   }
 
   .dv2-has-rail .job-card-company {
     order: 1;
-    font-size: 0.95rem;
+    font-size: 0.98rem;
     font-weight: 700;
     color: var(--text-primary);
     line-height: 1.3;
@@ -4032,7 +4034,7 @@ body:has(.portal-nav-bar) {
   .dv2-has-rail .job-card-role-title {
     display: block;
     order: 2;
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     font-weight: 500;
     color: var(--text-secondary);
     line-height: 1.3;
@@ -4046,44 +4048,21 @@ body:has(.portal-nav-bar) {
     display: none;
   }
 
-  /* Small pills in a single row under the title, aligned past the logo */
-  .dv2-has-rail .job-card-tags {
-    grid-area: tags;
-    margin-bottom: 0;
-    margin-left: calc(40px + 0.7rem);
-    gap: 0.35rem;
-  }
-
-  .dv2-has-rail .job-card .job-tag {
-    font-size: 0.68rem;
-    padding: 0.2rem 0.55rem;
-  }
-
-  .dv2-has-rail .job-tag-exp,
-  .dv2-has-rail .job-tag-location,
-  .dv2-has-rail .job-tag-industry {
-    display: inline-flex;
-  }
-
-  /* Reference card has no description or labeled info rows */
-  .dv2-has-rail .job-card-description,
-  .dv2-has-rail .job-card-info-row {
-    display: none;
-  }
-
-  /* Salary + posted date column on the right */
+  /* Salary / Stipend Side - top right, aligned closely above buttons */
   .dv2-has-rail .job-card-side {
     grid-area: side;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    justify-content: center;
+    justify-content: flex-end;
+    align-self: end;
     gap: 0.1rem;
-    min-width: 110px;
+    padding-right: 1.8rem;
+    padding-bottom: 0.1rem;
   }
 
   .dv2-has-rail .job-card-side-comp {
-    font-size: 0.95rem;
+    font-size: 0.92rem;
     font-weight: 700;
     color: var(--text-primary);
     white-space: nowrap;
@@ -4095,31 +4074,50 @@ body:has(.portal-nav-bar) {
     white-space: nowrap;
   }
 
-  /* Bookmark pinned to the card's top-right corner like the reference */
-  .dv2-has-rail .job-card-bookmark {
-    position: absolute;
-    top: 0.8rem;
-    right: 1rem;
+  /* Tags Row - main left area alongside the buttons */
+  .dv2-has-rail .job-card-tags {
+    grid-area: tags;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.3rem 0.35rem;
+    margin-bottom: 0;
+    margin-left: 0;
+    width: 100%;
   }
 
-  .dv2-has-rail .job-card-bookmark svg {
-    width: 16px;
-    height: 16px;
+  .dv2-has-rail .job-card .job-tag {
+    font-size: 0.7rem;
+    padding: 0.22rem 0.6rem;
+    border-radius: var(--radius-full);
+    white-space: nowrap;
   }
 
-  /* Compact buttons, vertically centered on the far right */
+  .dv2-has-rail .job-tag-exp,
+  .dv2-has-rail .job-tag-location,
+  .dv2-has-rail .job-tag-industry {
+    display: inline-flex;
+  }
+
+  .dv2-has-rail .job-card-description,
+  .dv2-has-rail .job-card-info-row {
+    display: none;
+  }
+
+  /* Action buttons on bottom right, aligned right below salary */
   .dv2-has-rail .job-card-actions {
     grid-area: actions;
     display: flex;
     align-items: center;
+    justify-content: flex-end;
+    align-self: start;
     gap: 0.5rem;
     margin-top: 0;
-    padding-right: 0.25rem;
   }
 
   .dv2-has-rail .job-card-actions .apply-now-card-btn,
   .dv2-has-rail .job-card-actions .view-details-card-btn {
-    padding: 0.45rem 1rem;
+    padding: 0.45rem 0.9rem;
     font-size: 0.75rem;
     border-radius: 10px;
   }
@@ -4129,7 +4127,17 @@ body:has(.portal-nav-bar) {
     height: 11px;
   }
 
-  /* Tighter spacing between cards to match the reference density */
+  .dv2-has-rail .job-card-bookmark {
+    position: absolute;
+    top: 0.95rem;
+    right: 0.95rem;
+  }
+
+  .dv2-has-rail .job-card-bookmark svg {
+    width: 16px;
+    height: 16px;
+  }
+
   .dv2-has-rail .job-listing-area {
     gap: 0.9rem;
   }

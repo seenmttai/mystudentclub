@@ -8,8 +8,7 @@
       name="description"
       content="Anonymous reviews for this CA articleship firm — stipend, culture, learning, and more."
     />
-    <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300..900&family=JetBrains+Mono:wght@400;500;600&display=swap"
@@ -1143,7 +1142,8 @@
       /* Info Pills Row */
       .afd-review-info-pills {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        /* auto-fit: shows 3 pills on wide cards, drops to 2 or 1 on narrow ones — no breakpoints needed */
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 130px), 1fr));
         gap: 0.75rem;
         z-index: 2;
       }
@@ -1157,6 +1157,8 @@
         align-items: center;
         gap: 0.75rem;
         transition: all 0.25s var(--h-ease);
+        min-width: 0;       /* allow grid track to constrain this item */
+        overflow: hidden;   /* clip anything that still overflows */
       }
       .afd-review-info-pill:hover {
         border-color: var(--h-brand-200);
@@ -1362,18 +1364,21 @@
         .afd-hero-stats-grid {
           grid-template-columns: repeat(2, 1fr);
         }
+        .afd-review-tags-section {
+          grid-template-columns: 1fr;
+          gap: 0.85rem;
+        }
       }
 
       @media (max-width: 768px) {
         .afd-perf-grid {
           grid-template-columns: repeat(2, 1fr);
         }
+      }
+
+      @media (max-width: 600px) {
         .afd-review-info-pills {
-          grid-template-columns: 1fr;
-        }
-        .afd-review-tags-section {
-          grid-template-columns: 1fr;
-          gap: 0.85rem;
+          grid-template-columns: 1fr; /* stack pills vertically on mobile */
         }
       }
 
@@ -2217,7 +2222,13 @@
         to { transform: translateY(0); opacity: 1; }
       }
     </style>
-  </head>
+    <!-- Standard Favicon -->
+<!-- Fallback Shortcut Icon -->
+  <!-- Standard Favicon -->
+  <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
+  <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
+  <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
+</head>
   <body>
     <header class="site-header">
       <div class="header-container">

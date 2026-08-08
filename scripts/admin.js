@@ -449,29 +449,66 @@ document.addEventListener('DOMContentLoaded', async () => {
     dom.jobForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const submitButton = e.target.querySelector('button[type="submit"]');
-        submitButton.disabled = true;
-        submitButton.classList.add('loading');
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.classList.add('loading');
+        }
         try {
             const formData = new FormData(e.target);
             const jobData = Object.fromEntries(formData.entries());
             const { table, id, ...dataToSave } = jobData;
-            if (dataToSave.Salary === '') dataToSave.Salary = null;
-            if (dataToSave.connect_link === '') dataToSave.connect_link = null;
 
-            const isEdit = id && id.trim() !== '';
+            if (dataToSave.Salary === '' || dataToSave.Salary === undefined) {
+                dataToSave.Salary = null;
+            } else {
+                dataToSave.Salary = Number(dataToSave.Salary);
+            }
+
+            if (dataToSave.connect_link === '') {
+                dataToSave.connect_link = null;
+            }
+
+            if (table === "Fresher Jobs" || table === "Semi Qualified Jobs") {
+                if (!dataToSave.Experience) dataToSave.Experience = null;
+            } else {
+                delete dataToSave.Experience;
+            }
+
+            if (table === "Industrial Training Job Portal") {
+                dataToSave.is_exclusive = dataToSave.is_exclusive === 'true' || dataToSave.is_exclusive === true;
+            } else {
+                delete dataToSave.is_exclusive;
+            }
+
+            if (!dataToSave.Created_At) {
+                dataToSave.Created_At = new Date().toISOString();
+            } else {
+                dataToSave.Created_At = new Date(dataToSave.Created_At).toISOString();
+            }
+
+            const isEdit = Boolean(id && id.trim() !== '');
             let savedJob;
 
             if (isEdit) {
-                const { data, error } = await supabaseClient.from(table).update(dataToSave).eq('id', id).select().single();
-                if (error) throw error;
-                savedJob = data;
+                let updateRes = await supabaseClient.from(table).update(dataToSave).eq('id', id).select().single();
+                if (updateRes.error && updateRes.error.message && updateRes.error.message.includes('is_exclusive')) {
+                    delete dataToSave.is_exclusive;
+                    updateRes = await supabaseClient.from(table).update(dataToSave).eq('id', id).select().single();
+                }
+                if (updateRes.error) throw updateRes.error;
+                savedJob = updateRes.data;
             } else {
-                const { data, error } = await supabaseClient.from(table).insert([dataToSave]).select().single();
-                if (error) throw error;
-                savedJob = data;
+                let insertRes = await supabaseClient.from(table).insert([dataToSave]).select().single();
+                if (insertRes.error && insertRes.error.message && insertRes.error.message.includes('is_exclusive')) {
+                    delete dataToSave.is_exclusive;
+                    insertRes = await supabaseClient.from(table).insert([dataToSave]).select().single();
+                }
+                if (insertRes.error) throw insertRes.error;
+                savedJob = insertRes.data;
             }
 
             closeJobEditModal();
+            alert(isEdit ? 'Job updated successfully!' : 'Job added successfully!');
 
             if (isEdit) {
                 const oldCard = dom.jobs.querySelector(`.job-card[data-job-id='${id}']`);
@@ -480,7 +517,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     oldCard.replaceWith(newCard);
                 }
             } else {
-                if (dom.jobs.textContent === 'No jobs found.') {
+                if (dom.jobs.textContent.includes('No jobs found')) {
                     dom.jobs.innerHTML = '';
                 }
                 const newCard = renderJobCard(savedJob, table);
@@ -492,8 +529,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (error) {
             alert('Failed to save job: ' + error.message);
         } finally {
-            submitButton.disabled = false;
-            submitButton.classList.remove('loading');
+            if (submitButton) {
+                submitButton.disabled = false;
+                submitButton.classList.remove('loading');
+            }
         }
     });
 

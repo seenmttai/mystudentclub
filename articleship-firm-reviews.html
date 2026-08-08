@@ -5,8 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Articleship Firm Reviews - My Student Club</title>
   <meta name="description" content="Read and write anonymous reviews of CA articleship firms — stipend, work-life balance, learning exposure, and culture.">
-  <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@300..900&family=JetBrains+Mono:wght@400;500;600&display=swap"
@@ -1841,6 +1840,12 @@
         box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
       }
     </style>
+  <!-- Standard Favicon -->
+<!-- Fallback Shortcut Icon -->
+  <!-- Standard Favicon -->
+  <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
+  <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
+  <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
 </head>
 <body>
 
@@ -2338,9 +2343,24 @@
     }
 
     let FIRMS = [];
-    const PAGE_SIZE = 16;
+    let PAGE_SIZE = 16; // updated adaptively per viewport
     const MIN_REVIEWS_FOR_STATS = 5; // below this, show a muted "Not enough data" state
     let currentPage = 1;
+
+    /**
+     * Compute a PAGE_SIZE that is always an exact multiple of the current
+     * CSS grid column count so the last row is never left partially empty.
+     */
+    function computePageSize() {
+      const gridEl = document.getElementById('firm-list');
+      const containerWidth = gridEl ? gridEl.clientWidth : 800;
+      const CARD_MIN = 290;  // matches minmax(min(100%, 290px), 1fr)
+      const GAP_PX  = 19;   // 1.2rem ≈ 19px
+      const cols = Math.max(1, Math.floor((containerWidth + GAP_PX) / (CARD_MIN + GAP_PX)));
+      // Target ~4 visible rows; round up to nearest full row
+      const targetRows = Math.max(4, Math.ceil(12 / cols));
+      return cols * targetRows;
+    }
     let currentFilteredFirms = [];
 
     function firmCardHTML(f) {
@@ -2401,6 +2421,9 @@
     }
 
     function renderFirmList(firms) {
+      // Recompute page size first so the slice always fills complete rows
+      PAGE_SIZE = computePageSize();
+
       const host = document.getElementById('firm-list');
       const titleCount = document.getElementById('title-firms-count');
       const countText = `${firms.length} ${firms.length === 1 ? 'firm' : 'firms'} found`;
@@ -2480,6 +2503,7 @@
           btn.addEventListener('click', () => {
             const p = parseInt(btn.dataset.page);
             if (isNaN(p) || p < 1 || p > totalPages || p === currentPage) return;
+            PAGE_SIZE = computePageSize();
             currentPage = p;
             const host = document.getElementById('firm-list');
             host.innerHTML = currentFilteredFirms.slice((p - 1) * PAGE_SIZE, p * PAGE_SIZE).map(firmCardHTML).join('');
@@ -2490,6 +2514,18 @@
       }
       build(currentPage);
     }
+
+    // ── Adaptive resize: re-render when viewport width changes ────────────
+    let _resizeDebounce;
+    window.addEventListener('resize', () => {
+      clearTimeout(_resizeDebounce);
+      _resizeDebounce = setTimeout(() => {
+        if (!currentFilteredFirms.length) return;
+        PAGE_SIZE = computePageSize();
+        // Re-render from page 1 so page size mismatch never leaves a broken page
+        renderFirmList(currentFilteredFirms);
+      }, 200);
+    });
 
     // ── Custom Dropdowns UI Generator ──
     function toggleCustomDropdown(wrapper, trigger) {
