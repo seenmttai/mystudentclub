@@ -14,7 +14,7 @@
         const CA_SKILLS = ["Statutory Audit", "Tax Audit", "Internal Audit", "GST", "TDS", "Ind AS", "Excel", "Tally", "SAP", "Bank Audit"];
         const CA_DEGREES = ["CA Final", "CA Intermediate", "B.Com", "Class XII", "Class X"];
         const AUDIT_VERBS = ["Executed", "Analyzed", "Prepared", "Reviewed", "Led", "Verified"];
-        const BASE_SECTION_ORDER = ['summary', 'education', 'experience', 'projects', 'certifications', 'achievements', 'leadership', 'interests', 'skills'];
+        const BASE_SECTION_ORDER = ['summary', 'education', 'experience', 'projects', 'skills', 'certifications', 'achievements', 'leadership', 'interests'];
         const EDUCATION_COLUMN_META = {
             degree: { label: 'Examination', min: 12, max: 42 },
             year: { label: 'Year', min: 8, max: 28 },
@@ -203,6 +203,10 @@
                 catch (e) { console.error('Load failed', e); }
             }
             ensureCvDataShape();
+            if (!cvData.experience || cvData.experience.length === 0) {
+                const artEntry = buildArticleshipEntryFromProfile();
+                if (artEntry) cvData.experience = [artEntry];
+            }
             normalizeSectionOrder();
             loadHistory();
 
@@ -2740,7 +2744,74 @@
             renderReorderDrawer();
         }
 
+        function prefillCAEducation(e) {
+            e.stopPropagation();
+            if (confirm("Replace current education with CA path?")) {
+                cvData.education = [
+                    { degree: "CA Final", institute: "ICAI", year: "", marks: "", remarks: "" },
+                    { degree: "CA Intermediate", institute: "ICAI", year: "", marks: "", remarks: "Both Groups" },
+                    { degree: "B.Com", institute: "", year: "", marks: "", remarks: "" },
+                    { degree: "Class XII", institute: "CBSE", year: "", marks: "", remarks: "" }
+                ];
+                renderEduInputs(); updateCV();
+            }
+        }
 
+        function buildArticleshipEntryFromProfile() {
+            const raw = localStorage.getItem('userProfileData');
+            if (!raw) return null;
+            let p;
+            try { p = JSON.parse(raw); } catch(e) { return null; }
+
+            const firmName = (p.articleship_firm_name || '').trim();
+            const firmType = (p.articleship_firm_type || '').trim();
+            if (!firmName && (!firmType || firmType === 'None')) return null;
+
+            const domain = (p.articleship_domain || '').trim();
+            const startMonth = (p.articleship_start_month || '').trim();
+            const startYear = String(p.articleship_start_year || '').trim();
+            const endMonth = (p.articleship_end_month || '').trim();
+            const endYear = String(p.articleship_end_year || '').trim();
+            const responsibilities = (p.articleship_responsibilities || '').trim();
+
+            const startPart = [startMonth, startYear].filter(Boolean).join(' ');
+            const endPart = endYear ? [endMonth, endYear].filter(Boolean).join(' ') : 'Present';
+            const dates = startPart ? `${startPart} – ${endPart}` : '';
+
+            const company = [firmName, firmType && firmType !== 'None' ? firmType : ''].filter(Boolean).join(' | ');
+
+            const bullets = responsibilities
+                ? responsibilities.split('\n')
+                    .map(line => line.replace(/^[\s\-•●*]+/, '').trim())
+                    .filter(Boolean)
+                    .map(line => normalizeImportedRichText(line, 'experience'))
+                : [];
+
+            return {
+                role: 'Article Assistant',
+                company,
+                dates,
+                intro: '',
+                category: domain,
+                bullets,
+                mergedWithPrevious: false,
+                titleMergedWithPrevious: false
+            };
+        }
+
+        function importArticleshipFromProfile(e) {
+            if (e) e.stopPropagation();
+            const entry = buildArticleshipEntryFromProfile();
+            if (!entry) {
+                alert('No articleship data found in your profile. Please fill in the Articleship Experience section on your profile page first.');
+                return;
+            }
+            if (cvData.experience.length > 0 && !confirm('This will replace your current experience entries with your profile articleship data. Continue?')) return;
+            cvData.experience = [entry];
+            normalizeExperienceMerges();
+            renderExpInputs();
+            postToFrame();
+        }
 
         // Core Utilities
         /**
@@ -2834,9 +2905,19 @@
             { file: 'split-banner.html', name: 'Split Banner', accent: '#002060', style: 'splitbanner' },
             { file: 'wave-grid.html', name: 'Wave Grid', accent: '#002060', style: 'wavegrid' },
             { file: 'side-panel.html', name: 'Side Panel', accent: '#002060', style: 'sidepanel' },
-            { file: 'serif-docket.html', name: 'Serif Docket', accent: '#002060', style: 'serifdocket' },
+            { file: 'classic-docket.html', name: 'Classic Docket', accent: '#002060', style: 'classicdocket' },
             { file: 'composite-ledger.html', name: 'Composite Ledger', accent: '#002060', style: 'compositeledger' },
-            { file: 'dotted-split.html', name: 'Dotted Split', accent: '#002060', style: 'dottedsplit' }
+            { file: 'dotted-split.html', name: 'Dotted Split', accent: '#002060', style: 'dottedsplit' },
+            { file: 'pill-header-split.html', name: 'Pill Header Split', accent: '#0B2046', style: 'pillheader' },
+            { file: 'banner-executive-split.html', name: 'Banner Executive Split', accent: '#05436E', style: 'bannerexecutive' },
+            { file: 'sidebar-panel-split.html', name: 'Sidebar Panel Split', accent: '#004B87', style: 'sidebarpanel' },
+            { file: 'timeline-flow-split.html', name: 'Timeline Flow Split', accent: '#313A4A', style: 'timelineflow' },
+            { file: 'executive-header-split.html', name: 'Executive Header Split', accent: '#05436E', style: 'executiveheadersplit' },
+            { file: 'bordered-box-ledger.html', name: 'Bordered Box Ledger', accent: '#102B4E', style: 'borderedboxledger' },
+            { file: 'matrix-grid-ledger.html', name: 'Matrix Grid Ledger', accent: '#185FA5', style: 'matrixgridledger' },
+            { file: 'clean-line-executive.html', name: 'Clean Line Executive', accent: '#0B3052', style: 'cleanlineexecutive' },
+            { file: 'minimalist-executive.html', name: 'Minimalist Executive', accent: '#0E2C55', style: 'minimalistexecutive' },
+            { file: 'accent-split-summary.html', name: 'Accent Split Summary', accent: '#1A365D', style: 'accentsplitsummary' }
         ];
         const TEMPLATE_COLOR_PRESETS = ['#2b2b2b', '#0f6cbd', '#155e95', '#1f8f63', '#c0392b', '#7b4db3'];
 

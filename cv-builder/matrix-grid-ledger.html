@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Matrix Grid Ledger CV</title>
+<style>
+/* ═══════════════════════════════════════════════════════════
+   DESIGN SYSTEM & ENGINE TOKENS — Matrix Grid Ledger
+   Page: A4 (1000 px base viewer width × 1413.94 px height)
+   Scaling Engine:
+     - --cs (content-scale factor): shrinkContentToFit() dynamically
+       adjusts --cs so all content fits strictly within 1413.94 px (A4 1-page limit).
+     - scaleToFit(): viewport responsive scaling using transform: scale().
+ ═══════════════════════════════════════════════════════════ */
+
+:root {
+  --blue-banner:   var(--accent-color, #185FA5);   /* Section Banner Accent */
+  --table-th-bg:   color-mix(in srgb, var(--accent-color, #185FA5) 20%, #FFFFFF);   /* Dynamic Academic Table Header */
+  --subhead-bg:    color-mix(in srgb, var(--accent-color, #185FA5) 12%, #FFFFFF);   /* Dynamic Subhead Bar Fill */
+  --text-dark:     #000000;   /* Black Text */
+  --text-body:     #111111;   /* Body Text */
+  --border-black:  #000000;   /* Solid Black Grid Borders */
+  --link-blue:     #000000;   /* Black Link / Underline */
+  --page-bg:       #FFFFFF;   /* White A4 Sheet */
+  --viewer-bg:     #525659;   /* Outer Canvas Background */
+  --font-serif:    'Times New Roman', Times, Georgia, serif;
+  --cs:            1.0;       /* Content scale variable adjusted by shrinkContentToFit() */
+}
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+body {
+  background: var(--viewer-bg);
+  font-family: var(--font-serif);
+  color: var(--text-dark);
+  min-height: 100vh;
+  width: 100vw;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.2s ease-in;
+}
+
+.template { display: none !important; }
+
+/* ── Viewer Centering Wrapper ── */
+#zoom-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 24px 0 32px;
+}
+
+/* ── A4 Page Card Container ── */
+#cv-page {
+  position: relative;
+  width: 1000px;
+  min-height: 1413.94px;
+  background: var(--page-bg);
+  color: var(--text-dark);
+  border: calc(2px * var(--cs)) solid #000000;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+  flex-shrink: 0;
+  transform-origin: top center;
+  font-size: calc(12.5px * var(--cs));
+  line-height: 1.3;
+  padding: calc(18px * var(--cs)) calc(20px * var(--cs));
+}
+
+/* ── Header Block ── */
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: color-mix(in srgb, var(--accent-color, #185FA5) 15%, #FFFFFF);
+  border: calc(1.5px * var(--cs)) solid #000000;
+  padding: calc(8px * var(--cs)) calc(12px * var(--cs));
+  margin-bottom: calc(14px * var(--cs));
+}
+
+.header-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.candidate-name {
+  font-family: var(--font-serif);
+  font-size: calc(28px * var(--cs));
+  font-weight: 700;
+  color: var(--text-dark);
+  line-height: 1.1;
+}
+
+.candidate-title {
+  font-family: var(--font-serif);
+  font-size: calc(13.5px * var(--cs));
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-top: calc(3px * var(--cs));
+  letter-spacing: 0.3px;
+}
+
+.header-right {
+  display: grid;
+  grid-template-columns: auto auto;
+  column-gap: calc(16px * var(--cs));
+  row-gap: calc(3px * var(--cs));
+  font-size: calc(12.2px * var(--cs));
+  color: var(--text-dark);
+  text-align: left;
+}
+
+.header-right-item strong {
+  font-weight: 700;
+}
+
+.header-right a {
+  color: #000000;
+  text-decoration: underline;
+}
+
+.sortable-section {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* ── Section Banners ── */
+.section-banner,
+.sortable-section .section-title {
+  background-color: var(--blue-banner);
+  color: #FFFFFF;
+  font-family: var(--font-serif);
+  font-size: calc(13.2px * var(--cs));
+  font-weight: 700;
+  padding: calc(3.5px * var(--cs)) calc(8px * var(--cs));
+  margin-top: -1px;
+  margin-bottom: 0;
+  letter-spacing: 0.2px;
+  border: 1px solid #000000;
+  text-transform: uppercase;
+}
+
+.sortable-section:first-of-type .section-banner,
+.sortable-section:first-of-type .section-title {
+  margin-top: 0;
+}
+
+/* ── Academic Table ── */
+.academic-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: calc(12px * var(--cs));
+  margin-bottom: 0;
+}
+
+.academic-table th, .academic-table td {
+  border: 1px solid var(--border-black);
+  padding: calc(3px * var(--cs)) calc(6px * var(--cs));
+  text-align: center;
+  vertical-align: middle;
+}
+
+.academic-table th {
+  background-color: var(--table-th-bg);
+  color: #000000;
+  font-weight: 700;
+}
+
+.academic-table td.remarks-col {
+  text-align: left;
+}
+
+/* ── Work Experience Subhead Bar ── */
+.exp-subhead-bar {
+  background-color: var(--subhead-bg);
+  border: 1px solid #000000;
+  margin-top: -1px;
+  padding: calc(3.5px * var(--cs)) calc(8px * var(--cs));
+  font-size: calc(12.5px * var(--cs));
+}
+
+.exp-subhead-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.exp-subhead-bottom {
+  font-style: italic;
+  font-size: calc(11.8px * var(--cs));
+  color: #222222;
+  margin-top: calc(1px * var(--cs));
+}
+
+/* ── 2-Column Experience Matrix Table ── */
+.exp-matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: calc(12px * var(--cs));
+}
+
+.exp-matrix-table td {
+  border: 1px solid var(--border-black);
+  padding: calc(4px * var(--cs)) calc(6px * var(--cs));
+  vertical-align: top;
+}
+
+.exp-category-cell {
+  width: 14%;
+  font-weight: 700;
+  text-align: center;
+  vertical-align: middle !important;
+  background-color: var(--subhead-bg);
+  color: #000000;
+  line-height: 1.25;
+  padding: calc(4px * var(--cs)) calc(3px * var(--cs)) !important;
+}
+
+.exp-bullets-cell {
+  width: 86%;
+  background-color: #FFFFFF;
+}
+
+/* Square Bullet List */
+.bullet-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+  font-size: calc(12px * var(--cs));
+  line-height: 1.3;
+}
+
+.bullet-list li {
+  position: relative;
+  padding-left: calc(14px * var(--cs));
+  margin-bottom: calc(3px * var(--cs));
+  text-align: justify;
+}
+
+.bullet-list li::before {
+  content: "▪";
+  position: absolute;
+  left: calc(2px * var(--cs));
+  font-size: calc(11px * var(--cs));
+  color: #000000;
+}
+
+.bullet-list li:last-child {
+  margin-bottom: 0;
+}
+
+/* Technical & Soft Skills / Certifications Section Box */
+.content-section-box {
+  border: 1px solid #000000;
+  border-top: 0;
+  padding: calc(6px * var(--cs)) calc(8px * var(--cs));
+  background: #FFFFFF;
+}
+
+.summary-paragraph {
+  font-size: calc(12.5px * var(--cs));
+  line-height: 1.36;
+  color: var(--text-body);
+  text-align: justify;
+}
+
+.company-desc {
+  font-size: calc(12px * var(--cs));
+  font-style: italic;
+  padding: calc(2px * var(--cs)) calc(8px * var(--cs));
+}
+
+/* ── Print Styles (A4 Page Output) ── */
+@media print {
+  html, body {
+    background: none !important;
+    margin: 0;
+    padding: 0;
+  }
+  #zoom-wrapper {
+    padding: 0;
+  }
+  #cv-page {
+    transform: scale(1) !important;
+    margin: 0 !important;
+    width: 210mm;
+    min-height: 297mm;
+    box-shadow: none;
+    padding: 10mm 12mm;
+  }
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+}
+</style>
+</head>
+<body>
+<div id="zoom-wrapper">
+<div id="cv-page" data-section-append-host>
+
+  <!-- ══ HEADER SECTION ══════════════════════════════════════════ -->
+  <div class="header-container">
+    <div class="header-left">
+      <h1 class="candidate-name" data-field="name">CA Padam Bhansali</h1>
+      <div class="candidate-title" data-field="tagline">CHARTERED ACCOUNTANT, B.COM(HONS.)</div>
+    </div>
+    <div class="header-right contact-block" data-field="contact">
+      <div class="header-right-item" data-field="location-wrap"><strong>Address:</strong> <span class="contact-value" data-field="location">Gurugram, Haryana</span></div>
+      <div class="header-right-item" data-field="email-wrap"><strong>Email:</strong> <a href="mailto:capadambhansali@gmail.com" class="contact-value" data-field="email">capadambhansali@gmail.com</a></div>
+      <div class="header-right-item" data-field="phone-wrap"><strong>Contact:</strong> <span class="contact-value" data-field="phone">+91 7228881182</span></div>
+      <div class="header-right-item" data-field="linkedin-wrap"><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/ca-padam/" target="_blank" rel="noopener" class="contact-value" data-field="linkedin">LinkedIn</a></div>
+    </div>
+  </div>
+
+  <div class="sortable-section" data-section-id="summary">
+    <div class="section-banner section-title">SUMMARY</div>
+    <div class="content-section-box">
+      <p class="summary-paragraph" data-field="summary"></p>
+    </div>
+  </div>
+
+  <!-- ══ 1. ACADEMIC QUALIFICATIONS ══════════════════════════════ -->
+  <div class="sortable-section" data-section-id="education">
+    <div class="section-banner section-title">Academic Qualifications</div>
+
+    <table class="academic-table">
+      <thead>
+        <tr>
+          <th style="width: 14%;">Year</th>
+          <th style="width: 16%;">Examination</th>
+          <th style="width: 16%;">Institute</th>
+          <th style="width: 18%;">Score (%)</th>
+          <th style="width: 36%;">Remarks/Achievements</th>
+        </tr>
+      </thead>
+      <tbody id="education-list">
+        <tr class="template">
+          <td data-field="year">May 2026</td>
+          <td data-field="degree">Final</td>
+          <td data-field="institution">ICAI</td>
+          <td data-field="marks">315/600 (52.5%)</td>
+          <td class="remarks-col" data-field="remarks">Exemption</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══ 2. WORK EXPERIENCE ═════════════════════════════════════ -->
+  <div class="sortable-section" data-section-id="experience">
+    <div class="section-banner section-title">Work Experience</div>
+
+    <div id="experience-list">
+      <div class="exp-item template">
+        <div class="exp-subhead-bar">
+          <div class="exp-subhead-top">
+            <span><strong data-field="company"></strong> <span data-field="role"></span></span>
+            <span data-field="dates"></span>
+          </div>
+          <div class="exp-subhead-bottom" data-field="intro"></div>
+        </div>
+
+        <table class="exp-matrix-table">
+          <tbody>
+            <tr>
+              <td class="exp-category-cell" data-field="category">Details</td>
+              <td class="exp-bullets-cell">
+                <ul class="bullet-list" data-list="bullets"></ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 3. PROJECTS ═════════════════════════════════════════════ -->
+  <div class="sortable-section" data-section-id="projects">
+    <div class="section-banner section-title">Projects</div>
+
+    <div id="projects-list">
+      <div class="exp-item template">
+        <div class="exp-subhead-bar">
+          <div class="exp-subhead-top">
+            <span data-field="title"></span>
+          </div>
+          <div class="exp-subhead-bottom" data-field="description"></div>
+        </div>
+        <div class="content-section-box">
+          <ul class="bullet-list" data-list="bullets"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 4. TECHNICAL & SOFT SKILLS ═════════════════════════════ -->
+  <div class="sortable-section" data-section-id="skills">
+    <div class="section-banner section-title">Technical &amp; Soft Skills</div>
+    <div class="content-section-box">
+      <div class="bullet-list" data-field="skills"></div>
+    </div>
+  </div>
+
+  <!-- ══ 5. CERTIFICATIONS ═══════════════════════════════════════ -->
+  <div class="sortable-section" data-section-id="certifications">
+    <div class="section-banner section-title">Certifications</div>
+    <div class="content-section-box">
+      <ul class="bullet-list" id="cert-list" data-list="certifications"></ul>
+    </div>
+  </div>
+
+  <!-- ══ 6. ACHIEVEMENTS & ACTIVITIES ════════════════════════════ -->
+  <div class="sortable-section" data-section-id="achievements">
+    <div class="section-banner section-title">Achievements &amp; Activities</div>
+    <div class="content-section-box">
+      <ul class="bullet-list" data-list="achievements"></ul>
+    </div>
+  </div>
+
+  <!-- ══ 7. POSITION OF RESPONSIBILITY ═══════════════════════════ -->
+  <div class="sortable-section" data-section-id="leadership">
+    <div class="section-banner section-title">Position of Responsibility</div>
+    <div class="content-section-box">
+      <ul class="bullet-list" data-list="leadership"></ul>
+    </div>
+  </div>
+
+  <!-- ══ 8. HOBBIES & INTERESTS ══════════════════════════════════ -->
+  <div class="sortable-section" data-section-id="interests">
+    <div class="section-banner section-title">Hobbies &amp; Interests</div>
+    <div class="content-section-box">
+      <ul class="bullet-list" data-list="interests"></ul>
+    </div>
+  </div>
+
+</div><!-- #cv-page -->
+</div><!-- #zoom-wrapper -->
+
+<!-- ══ SCRIPT ENGINE ════════════════════════════════════════════ -->
+<script src="cv-common.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var PAGE_H = 1413.94; /* A4 page height limit in px */
+  var PAGE_W = 1000;    /* A4 viewer width in px */
+
+  function scaleToFit() {
+    var page = document.getElementById('cv-page');
+    if (!page || document.body.classList.contains('print-mode')) return;
+    var avail = window.innerWidth - 20;
+    var scale = avail < PAGE_W ? avail / PAGE_W : 1.0;
+    page.style.transform = 'scale(' + scale + ')';
+    page.style.marginBottom = '-' + (PAGE_H - PAGE_H * scale) + 'px';
+  }
+
+  function shrinkContentToFit() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    var cs = 1.0;
+    document.documentElement.style.setProperty('--cs', cs);
+    page.style.height = 'auto';
+    var iter = 0;
+    while (page.scrollHeight > PAGE_H + 1 && iter < 80) {
+      cs = Math.round((cs - 0.01) * 1000) / 1000;
+      document.documentElement.style.setProperty('--cs', cs);
+      iter++;
+    }
+    page.style.height = '';
+  }
+
+  window.scaleToFit = scaleToFit;
+  window.shrinkContentToFit = shrinkContentToFit;
+
+  var _tx = '', _mb = '';
+
+  function enablePrintMode() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    _tx = page.style.transform;
+    _mb = page.style.marginBottom;
+    document.body.classList.add('print-mode');
+    page.style.transform = 'scale(1)';
+    page.style.marginBottom = '0';
+    shrinkContentToFit();
+  }
+
+  function disablePrintMode() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    document.body.classList.remove('print-mode');
+    page.style.transform = _tx || '';
+    page.style.marginBottom = _mb || '';
+    scaleToFit();
+  }
+
+  window.addEventListener('load', function () {
+    shrinkContentToFit();
+    scaleToFit();
+    document.body.style.opacity = '1';
+    var mq = window.matchMedia('print');
+    var handler = function (e) { e.matches ? enablePrintMode() : disablePrintMode(); };
+    if (mq.addEventListener) { mq.addEventListener('change', handler); }
+    else if (mq.addListener)  { mq.addListener(handler); }
+    window.addEventListener('beforeprint', enablePrintMode);
+    window.addEventListener('afterprint',  disablePrintMode);
+  });
+
+  var _rt;
+  window.addEventListener('resize', function () {
+    clearTimeout(_rt);
+    _rt = setTimeout(scaleToFit, 100);
+  });
+}());
+</script>
+</body>
+</html>

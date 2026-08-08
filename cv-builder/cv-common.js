@@ -267,6 +267,7 @@ function renderCV(data) {
             const datesEl = block.querySelector('[data-field="dates"]');
             if (companyEl) companyEl.style.display = 'none';
             if (datesEl) datesEl.style.display = 'none';
+            block.querySelectorAll('.subhead-bar, .exp-subhead-bar, .exp-role-row, .exp-header-row, .exp-subhead-top, .exp-company-title, .exp-role-title').forEach(h => h.style.display = 'none');
         }
 
         const ul = block.querySelector('[data-list="bullets"]');
@@ -708,7 +709,7 @@ function applySectionLabels(sectionLabels) {
         // .section-header-bar aren't destroyed; only fall back to overwriting
         // the whole label cell when it has no such nested title element.
         if (customText !== null && customText !== '') {
-            const titleEl = labelCell.querySelector('.section-header-title, .section-header, .section-header-2, .section-title, .gray-bar') || labelCell;
+            const titleEl = labelCell.querySelector('.section-header-title, .section-header, .section-header-2, .section-title, .gray-bar, .pill-banner, .section-banner, .right-title-text') || labelCell;
             const currentText = (titleEl.textContent || '').trim();
             if (currentText !== customText) {
                 titleEl.textContent = customText;
@@ -1199,6 +1200,13 @@ function applyExperienceTitleMergeDisplayV2(block, item) {
         addWrapper(el.closest('.work-subheader'));
         addWrapper(el.closest('.work-box-header'));
         addWrapper(el.closest('.work-box-header-row'));
+        addWrapper(el.closest('.subhead-bar'));
+        addWrapper(el.closest('.exp-subhead-bar'));
+        addWrapper(el.closest('.exp-role-row'));
+        addWrapper(el.closest('.exp-header-row'));
+        addWrapper(el.closest('.exp-subhead-top'));
+        addWrapper(el.closest('.exp-company-title'));
+        addWrapper(el.closest('.exp-role-title'));
     });
 
     wrappersToToggle.forEach(el => {
@@ -2717,6 +2725,9 @@ function applySectionOrder(sectionOrder) {
     const parentMap = new Map();
 
     wrappers.forEach((wrapper, originalIndex) => {
+        const sectionId = wrapper.getAttribute('data-section-id');
+        if (sectionId === 'personal' || sectionId === 'contact') return;
+
         const parent = wrapper.parentElement;
         if (!parent) return;
         if (!parentMap.has(parent)) parentMap.set(parent, []);
