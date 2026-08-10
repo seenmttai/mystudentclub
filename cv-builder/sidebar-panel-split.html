@@ -184,14 +184,20 @@ body {
 
 /* Right Panel Candidate Header */
 .candidate-name {
-  font-size: calc(30px * var(--cs));
+  font-size: calc(36px * var(--cs));
   font-weight: 700;
-  color: #383B3E;
+  color: #000000;
   line-height: 1.1;
   margin-bottom: calc(10px * var(--cs));
 }
 
-.candidate-name span {
+.candidate-name [data-field="name"] {
+  font-size: calc(36px * var(--cs));
+  font-weight: 700;
+  color: #000000;
+}
+
+.candidate-name [data-field="tagline"] {
   font-weight: 400;
   color: #62666A;
   font-size: calc(20px * var(--cs));

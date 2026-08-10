@@ -7,11 +7,12 @@
     <title>My Resume</title>
     <style>
         :root {
-            --navy: var(--header-bg, #45497D);
-            --purple: var(--sub-header-bg, #8064A2);
-            --frame: #bcd8e7;
+            --accent-color: #45497D;
+            --navy: var(--accent-color, #45497D);
+            --purple: color-mix(in srgb, var(--accent-color, #45497D) 70%, #000000);
+            --frame: var(--frame, color-mix(in srgb, var(--accent-color, #45497D) 25%, #FFFFFF));
             --ink: #000000;
-            --link: #0000FF;
+            --link: var(--accent-color, #0000FF);
             --page-bg: #ffffff;
             --viewer-bg: #525659;
             --font-main: "Times New Roman", "Liberation Serif", Times, serif;

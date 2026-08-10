@@ -285,6 +285,25 @@ body {
   margin-bottom: calc(8px * var(--cs));
 }
 
+/* Subsection / Title Merged Display Fixes */
+.experience-title-merged .exp-role-card {
+  display: none !important;
+}
+
+.experience-title-merged [data-field="category"],
+.subgroup-banner-title {
+  font-size: calc(13.5px * var(--cs));
+  font-weight: 700;
+  font-style: normal !important;
+  color: var(--banner-blue);
+  background-color: var(--card-bg);
+  padding: calc(4px * var(--cs)) calc(10px * var(--cs));
+  border-radius: calc(3px * var(--cs));
+  margin-top: calc(8px * var(--cs));
+  margin-bottom: calc(6px * var(--cs));
+  display: block;
+}
+
 .course-item {
   margin-bottom: calc(10px * var(--cs));
 }
@@ -456,6 +475,38 @@ body {
 <script>
 (function () {
   'use strict';
+
+  const originalRenderCV = window.renderCV;
+  window.renderCV = function (data) {
+    if (typeof originalRenderCV === 'function') originalRenderCV(data);
+    adjustExperienceSubgroups();
+    requestAnimationFrame(function () {
+      shrinkContentToFit();
+      scaleToFit();
+    });
+  };
+
+  function adjustExperienceSubgroups() {
+    document.querySelectorAll('#experience-list .exp-block').forEach(function (block) {
+      if (block.classList.contains('template')) return;
+      const isMerged = block.classList.contains('experience-title-merged');
+      const card = block.querySelector('.exp-role-card');
+      const cat = block.querySelector('[data-field="category"]');
+
+      if (isMerged) {
+        if (card) card.style.display = 'none';
+        if (cat) {
+          const text = (cat.textContent || '').trim();
+          if (text) {
+            cat.style.display = 'block';
+            cat.classList.add('subgroup-banner-title');
+          } else {
+            cat.style.display = 'none';
+          }
+        }
+      }
+    });
+  }
 
   var PAGE_H = 1413.94; /* A4 page height limit in px */
   var PAGE_W = 1000;    /* A4 viewer width in px */

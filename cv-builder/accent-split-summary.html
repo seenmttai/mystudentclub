@@ -205,14 +205,20 @@ body {
 
 .acad-table th, .acad-table td {
   border: 1px solid var(--border-gray);
-  padding: calc(4px * var(--cs)) calc(8px * var(--cs));
+  padding: calc(5px * var(--cs)) calc(10px * var(--cs));
   text-align: left;
+  vertical-align: middle;
 }
 
 .acad-table th {
   background-color: var(--th-bg);
   color: var(--navy-accent);
   font-weight: 700;
+}
+
+.acad-table td[data-field="degree"], .acad-table td:first-child {
+  font-weight: 700;
+  color: var(--text-dark);
 }
 
 .acad-table td:last-child, .acad-table th:last-child {
@@ -349,16 +355,20 @@ body {
     <table class="acad-table">
       <thead>
         <tr>
-          <th style="width: 38%;">Program / Degree</th>
-          <th style="width: 44%;">Institution / Board / University</th>
-          <th style="width: 18%;">Score / Result</th>
+          <th style="width: 25%;" data-field="degree">Program / Degree</th>
+          <th style="width: 35%;" data-field="institution">Institution / Board / University</th>
+          <th style="width: 12%;" data-field="year">Year</th>
+          <th style="width: 14%;" data-field="marks">Score / Result</th>
+          <th style="width: 14%;" data-field="remarks">Remarks</th>
         </tr>
       </thead>
       <tbody id="education-list">
         <tr class="template">
           <td data-field="degree">Chartered Accountancy (CA Final)</td>
           <td data-field="institution">ICAI</td>
+          <td data-field="year">May 2026</td>
           <td data-field="marks">306 / 600 (51.00%)</td>
+          <td data-field="remarks">First Attempt</td>
         </tr>
       </tbody>
     </table>

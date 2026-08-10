@@ -87,68 +87,57 @@ body {
   margin-bottom: calc(10px * var(--cs));
 }
 
+.header-left {
+  text-align: left;
+}
+
 .candidate-name {
   font-family: var(--font-heading);
   font-size: calc(26px * var(--cs));
   font-weight: 700;
   color: var(--text-dark);
   line-height: 1.1;
+  text-align: left;
 }
 
 .candidate-title {
   font-family: var(--font-body);
-  font-size: calc(14px * var(--cs));
+  font-size: calc(13.5px * var(--cs));
   font-weight: 400;
   color: var(--text-dark);
   margin-top: calc(2px * var(--cs));
   letter-spacing: 0.5px;
+  text-align: left;
 }
 
-.header-right {
+.ledger-contact-block {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: calc(4px * var(--cs));
+  text-align: right;
+  font-family: var(--font-body);
   font-size: calc(12.5px * var(--cs));
+  color: #000000;
   line-height: 1.35;
 }
 
-.header-right .contact-item {
-  display: flex !important;
+.ledger-contact-line {
+  display: flex;
+  justify-content: flex-end;
   align-items: center;
-  gap: calc(6px * var(--cs));
-  margin: 0 !important;
-  color: #000000 !important;
-  font-weight: 400 !important;
+  flex-wrap: wrap;
+  gap: 0;
 }
 
-.header-right .contact-value .contact-icon-glyph,
-.header-right .contact-value > .contact-icon-item > .contact-icon-glyph {
-  display: none !important;
+.ledger-contact-line a {
+  color: var(--link-blue, #0000EE);
+  text-decoration: underline;
 }
 
-.header-right .contact-item,
-.header-right .contact-item *,
-.header-right .contact-value,
-.header-right .contact-value a,
-.header-right .contact-icon-text {
-  color: #000000 !important;
-  font-weight: 400 !important;
-  border-bottom: none !important;
-}
-
-.header-right .contact-value a,
-.header-right a.contact-icon-text {
-  color: #000000 !important;
-  text-decoration: underline !important;
-}
-
-.header-right .contact-value span.contact-icon-text:not(a) {
-  text-decoration: none !important;
-}
-
-.header-right .contact-sep {
-  display: none !important;
+.ledger-contact-sep {
+  margin: 0 calc(5px * var(--cs));
+  color: #000000;
+  font-weight: normal;
 }
 
 .header-right svg {
@@ -327,26 +316,25 @@ body {
 
   <!-- ══ HEADER SECTION (OUTSIDE BODY BORDER BOX) ════════════════ -->
   <div class="header-container">
-    <div>
+    <div class="header-left">
       <h1 class="candidate-name" data-field="name">CA Padam Bhansali</h1>
       <div class="candidate-title" data-field="tagline">CHARTERED ACCOUNTANT</div>
     </div>
-    <div class="header-right contact-block">
-      <div class="contact-item contact-row" data-field="phone-wrap">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="#000000" style="flex-shrink:0;"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-        <span class="contact-value" data-field="phone">+91 9749112503</span>
+    <div class="ledger-contact-block" id="ledger-contact-block">
+      <div class="ledger-contact-line" id="ledger-contact-line1">
+        <span id="bb-location-wrap"><span id="bb-location">Delhi</span></span>
+        <span id="bb-phone-wrap"><span class="ledger-contact-sep" id="bb-phone-sep"> | </span>Contact: <span id="bb-phone">+91 9749112503</span></span>
       </div>
-      <div class="contact-item contact-row" data-field="email-wrap">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="#000000" style="flex-shrink:0;"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-        <a href="mailto:capadambhansali@gmail.com" class="contact-value" data-field="email">capadambhansali@gmail.com</a>
-      </div>
-      <div class="contact-item contact-row" data-field="linkedin-wrap">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="#000000" style="flex-shrink:0;"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
-        <a href="https://linkedin.com" target="_blank" rel="noopener" class="contact-value" data-field="linkedin">LinkedIn</a>
-      </div>
-      <div class="contact-item contact-row" data-field="location-wrap">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="#000000" style="flex-shrink:0;"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5-2.5-1.12 2.5-2.5 2.5z"/></svg>
-        <span class="contact-value" data-field="location">Delhi</span>
+      <div class="ledger-contact-line" id="ledger-contact-line2" style="margin-top: 2px;">
+        <span id="bb-email-wrap">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="1.8" style="vertical-align:-0.15em;margin-right:4px;"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"></path><path d="m22 6-10 7L2 6"></path></svg>
+          <a href="mailto:capadambhansali@gmail.com" id="bb-email">capadambhansali@gmail.com</a>
+        </span>
+        <span id="bb-linkedin-wrap">
+          <span class="ledger-contact-sep" id="bb-linkedin-sep"> | </span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="1.8" style="vertical-align:-0.15em;margin-right:4px;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+          <a href="https://linkedin.com" target="_blank" rel="noopener" id="bb-linkedin">LinkedIn</a>
+        </span>
       </div>
     </div>
   </div>
@@ -458,6 +446,67 @@ body {
 <script>
 (function () {
   'use strict';
+
+  const originalRenderCV = window.renderCV;
+  window.renderCV = function (data) {
+    if (typeof originalRenderCV === 'function') originalRenderCV(data);
+    adjustBorderedBoxContact(data ? (data.personal || {}) : {});
+    requestAnimationFrame(function () {
+      shrinkContentToFit();
+      scaleToFit();
+    });
+  };
+
+  function adjustBorderedBoxContact(personal) {
+    const emailWrap = document.getElementById('bb-email-wrap');
+    const linkedinWrap = document.getElementById('bb-linkedin-wrap');
+    const phoneWrap = document.getElementById('bb-phone-wrap');
+    const locationWrap = document.getElementById('bb-location-wrap');
+
+    const emailEl = document.getElementById('bb-email');
+    const linkedinEl = document.getElementById('bb-linkedin');
+    const phoneEl = document.getElementById('bb-phone');
+    const locationEl = document.getElementById('bb-location');
+
+    const phoneSep = document.getElementById('bb-phone-sep');
+    const linkedinSep = document.getElementById('bb-linkedin-sep');
+
+    const email = (personal.email || '').trim();
+    const linkedin = (personal.linkedin || '').trim();
+    const phone = (personal.phone || '').trim();
+    const location = (personal.location || '').trim();
+
+    if (locationWrap) locationWrap.style.display = location ? 'inline' : 'none';
+    if (locationEl) locationEl.textContent = location;
+
+    if (phoneWrap) phoneWrap.style.display = phone ? 'inline' : 'none';
+    if (phoneEl) phoneEl.textContent = phone;
+
+    if (phoneSep) {
+      phoneSep.style.display = (location && phone) ? 'inline' : 'none';
+    }
+
+    if (emailWrap) emailWrap.style.display = email ? 'inline' : 'none';
+    if (emailEl) {
+      emailEl.href = email ? 'mailto:' + email : '#';
+      emailEl.textContent = email;
+    }
+
+    if (linkedinWrap) linkedinWrap.style.display = linkedin ? 'inline' : 'none';
+    if (linkedinEl) {
+      linkedinEl.href = linkedin ? (/^https?:\/\//i.test(linkedin) ? linkedin : 'https://' + linkedin) : '#';
+      linkedinEl.textContent = 'LinkedIn';
+    }
+
+    if (linkedinSep) {
+      linkedinSep.style.display = (email && linkedin) ? 'inline' : 'none';
+    }
+
+    const line1 = document.getElementById('ledger-contact-line1');
+    const line2 = document.getElementById('ledger-contact-line2');
+    if (line1) line1.style.display = (location || phone) ? 'flex' : 'none';
+    if (line2) line2.style.display = (email || linkedin) ? 'flex' : 'none';
+  }
 
   var PAGE_H = 1413.94; /* A4 page height limit in px */
   var PAGE_W = 1000;    /* A4 viewer width in px */

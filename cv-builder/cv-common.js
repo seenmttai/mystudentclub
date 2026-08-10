@@ -39,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function renderCV(data) {
     if (!data) return;
+    window.__currentCVData = data;
 
     ensureRichTextGuards();
     ensureUniversalSections();
@@ -125,14 +126,22 @@ function renderCV(data) {
         const remarksEl = row.querySelector('[data-field="remarks"]');
 
         if (marksEl) {
-            setHTMLIn(row, '[data-field="marks"]', item.marks);
-            const marksVal = (item.marks || '').trim();
-            marksEl.style.display = stripTags(marksVal).trim() ? '' : 'none';
+            const marksVal = item.marks || item.score || item.result || item.percentage || item.gpa || '';
+            setHTMLIn(row, '[data-field="marks"]', marksVal);
+            if (marksEl.tagName === 'TD' || marksEl.closest('tr')) {
+                marksEl.style.display = '';
+            } else {
+                marksEl.style.display = stripTags(String(marksVal)).trim() ? '' : 'none';
+            }
         }
         if (remarksEl) {
             setHTMLIn(row, '[data-field="remarks"]', item.remarks);
             const remarksVal = (item.remarks || '').trim();
-            remarksEl.style.display = stripTags(remarksVal).trim() ? '' : 'none';
+            if (remarksEl.tagName === 'TD' || remarksEl.closest('tr')) {
+                remarksEl.style.display = '';
+            } else {
+                remarksEl.style.display = stripTags(remarksVal).trim() ? '' : 'none';
+            }
         }
 
         const instHeader = row.querySelector('[data-field="institution-header"]');
@@ -512,11 +521,11 @@ function applyEducationInstituteMerges(educationList) {
 
         const marksEl = row.querySelector('[data-field="marks"]');
         const remarksEl = row.querySelector('[data-field="remarks"]');
-        if (marksEl) {
+        if (marksEl && marksEl.tagName !== 'TD' && !marksEl.closest('tr')) {
             const marksVal = (item.marks || '').trim();
             marksEl.style.display = stripTags(marksVal).trim() ? '' : 'none';
         }
-        if (remarksEl) {
+        if (remarksEl && remarksEl.tagName !== 'TD' && !remarksEl.closest('tr')) {
             const remarksVal = (item.remarks || '').trim();
             remarksEl.style.display = stripTags(remarksVal).trim() ? '' : 'none';
         }
@@ -884,8 +893,19 @@ function applyEducationTableFormat(columns) {
             indexMap[field] = index;
         });
 
+        const currentEdu = window.__currentCVData?.education || [];
+        const hasValue = (field) => {
+            if (field === 'degree' || field === 'institution') return true;
+            return currentEdu.some(item => {
+                const val = field === 'institution' 
+                    ? (item.institute || item.institution) 
+                    : (field === 'marks' ? (item.marks || item.score || item.result || item.percentage || item.gpa) : item[field]);
+                return !!(val && String(val).trim());
+            });
+        };
+
         const visibleEntries = Object.entries(indexMap)
-            .filter(([field]) => config[field]?.visible !== false)
+            .filter(([field]) => (config[field]?.visible !== false) && hasValue(field))
             .map(([field, index]) => ({ field, index, width: config[field].width }));
         const totalWidth = visibleEntries.reduce((sum, entry) => sum + entry.width, 0) || 1;
 
@@ -893,9 +913,24 @@ function applyEducationTableFormat(columns) {
         table.style.setProperty('width', '100%', 'important');
 
         Object.entries(indexMap).forEach(([field, index]) => {
-            const isVisible = config[field]?.visible !== false;
+            const isVisible = (config[field]?.visible !== false) && hasValue(field);
             const percent = isVisible ? `${((config[field].width / totalWidth) * 100).toFixed(2)}%` : '0%';
-            table.querySelectorAll(`tr > *:nth-child(${index})`).forEach((cell) => {
+
+            table.querySelectorAll(`thead tr > *:nth-child(${index})`).forEach((th) => {
+                th.style.display = isVisible ? '' : 'none';
+                th.style.setProperty('width', percent, 'important');
+                th.style.setProperty('max-width', percent, 'important');
+            });
+
+            const selectors = field === 'institution'
+                ? '[data-field="institution"], [data-field="institute"]'
+                : `[data-field="${field}"]`;
+
+            table.querySelectorAll(`tbody tr`).forEach((tr) => {
+                const fieldEl = tr.querySelector(selectors);
+                if (!fieldEl) return;
+                const cell = fieldEl.closest('td, th') || fieldEl;
+                if (!cell) return;
                 cell.style.display = isVisible ? '' : 'none';
                 cell.style.setProperty('width', percent, 'important');
                 cell.style.setProperty('max-width', percent, 'important');
@@ -963,7 +998,7 @@ function applyTemplateAccent(accent) {
     if (!root) return;
 
     if (!color) {
-        ['--blue-header', '--header-bg', '--accent-color', '--blue-deep', '--blue-text', '--section-bg', '--header-bg-dark', '--sub-header-bg', '--sub-bg', '--grey-bg', '--label-bg', '--blueshade-color', '--blue-shade']
+        ['--blue-header', '--header-bg', '--accent-color', '--blue-deep', '--blue-text', '--section-bg', '--header-bg-dark', '--sub-header-bg', '--sub-bg', '--grey-bg', '--label-bg', '--blueshade-color', '--blue-shade', '--frame', '--navy', '--purple']
             .forEach(name => root.style.removeProperty(name));
         clearAccentInlineStyles();
         return;
@@ -976,6 +1011,9 @@ function applyTemplateAccent(accent) {
     root.style.setProperty('--blue-header', color);
     root.style.setProperty('--header-bg', color);
     root.style.setProperty('--accent-color', color);
+    root.style.setProperty('--navy', color);
+    root.style.setProperty('--purple', softer);
+    root.style.setProperty('--frame', light);
     root.style.setProperty('--blue-deep', color);
     root.style.setProperty('--blue-text', color);
     root.style.setProperty('--header-bg-dark', color);
@@ -1318,6 +1356,8 @@ function applyEducationInstituteMerges(educationItems) {
         }
         i = runEnd - 1;
     }
+    const tableSettings = window.__currentCVData?.tableSettings || {};
+    applyEducationTableFormat(tableSettings?.education?.columns || {});
 }
 
 function renderSimpleList(items, selector) {
@@ -1815,7 +1855,7 @@ function renderContactWithIcons(personal) {
     const sep = '<span class="contact-sep" style="margin:0 0.4em;opacity:0.65;">|</span>';
     const items = [];
 
-    const contactLinkStyle = 'color:#2563eb;text-decoration:none;border-bottom:1px solid rgba(37,99,235,0.45);padding-bottom:1px;font-weight:500;';
+    const contactLinkStyle = 'color:inherit;text-decoration:none;border-bottom:none;padding-bottom:0;';
 
     if (isRealPhone(phone)) {
         const tel = phone.replace(/[^\d+]/g, '');

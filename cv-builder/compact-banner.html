@@ -640,69 +640,82 @@
         // read as one plain bullet list in the source design — fold them all
         // into #skills-other-list instead of giving each its own section.
         function mergeIntoSkillsAndOther(data) {
-            const list = document.getElementById('skills-other-list');
-            if (!list) return;
+            const container = document.querySelector('[data-section-id="skills"] .section-body');
+            if (!container) return;
 
             const labels = data.sectionLabels || {};
             const visible = (key) => ((labels[key] || {}).visible !== false);
-            const items = [];
+            const groups = [];
 
             if (visible('skills')) {
+                const skillItems = [];
                 const skillsHTML = renderSkillsContent(data.skills || '');
                 if (skillsHTML) {
                     const tmp = document.createElement('div');
                     tmp.innerHTML = skillsHTML;
                     const lis = tmp.querySelectorAll('li');
                     if (lis.length) {
-                        lis.forEach(li => items.push(li.innerHTML));
+                        lis.forEach(li => skillItems.push(li.innerHTML));
                     } else if (tmp.textContent.trim()) {
-                        items.push(tmp.innerHTML);
+                        skillItems.push(tmp.innerHTML);
                     }
+                }
+                if (skillItems.length) {
+                    const title = (labels.skills && labels.skills.text && labels.skills.text.trim().toLowerCase() !== 'skills') ? labels.skills.text : 'TECHNICAL SKILLS';
+                    groups.push({ title, items: skillItems });
                 }
             }
 
             if (visible('certifications')) {
+                const certItems = [];
                 (Array.isArray(data.certifications) ? data.certifications : []).forEach(c => {
                     if (typeof c === 'string') {
-                        if (c.trim()) items.push(c.trim());
+                        if (c.trim()) certItems.push(c.trim());
                     } else if (c && c.name) {
                         const issuer = c.issuer && c.issuer.trim() ? ' - ' + c.issuer.trim() : '';
-                        items.push(c.name.trim() + issuer);
+                        certItems.push(c.name.trim() + issuer);
                     }
                 });
+                if (certItems.length) {
+                    const title = (labels.certifications && labels.certifications.text) ? labels.certifications.text : 'CERTIFICATIONS';
+                    groups.push({ title, items: certItems });
+                }
             }
 
-            const pushArray = (key) => {
+            const pushArrayGroup = (key, defaultTitle) => {
                 if (!visible(key)) return;
-                (Array.isArray(data[key]) ? data[key] : [])
+                const arr = (Array.isArray(data[key]) ? data[key] : [])
                     .map(v => String(v || '').trim())
-                    .filter(Boolean)
-                    .forEach(v => items.push(v));
+                    .filter(Boolean);
+                if (arr.length) {
+                    const title = (labels[key] && labels[key].text) ? labels[key].text : defaultTitle;
+                    groups.push({ title, items: arr });
+                }
             };
-            pushArray('achievements');
-            pushArray('leadership');
-            pushArray('interests');
 
-            list.innerHTML = items.map(i => `<li>${i}</li>`).join('');
+            pushArrayGroup('achievements', 'ACHIEVEMENTS & AWARDS');
+            pushArrayGroup('leadership', 'LEADERSHIP');
+            pushArrayGroup('interests', 'INTERESTS & ACTIVITIES');
 
-            const section = list.closest('.sortable-section[data-section-id="skills"]');
-            if (section) section.style.display = items.length ? '' : 'none';
+            if (groups.length === 0) {
+                container.innerHTML = '<ul class="bullets" id="skills-other-list" data-list="skills-other"></ul>';
+            } else {
+                container.innerHTML = groups.map((g, idx) => `
+                    <div class="skills-subgroup" style="${idx > 0 ? 'margin-top: calc(8px * var(--content-scale));' : ''} margin-bottom: calc(6px * var(--content-scale));">
+                        <div class="sub-category-header" style="font-family: var(--font-main, sans-serif); font-weight: 700; font-size: calc(13.8px * var(--content-scale)); color: var(--banner-bg, var(--dark, #292D2D)); margin-bottom: calc(3px * var(--content-scale)); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1.5px solid var(--banner-bg, #292D2D); padding-bottom: calc(2px * var(--content-scale)); display: inline-block; width: 100%;">${g.title}</div>
+                        <ul class="bullets" style="margin-top: calc(3px * var(--content-scale));">
+                            ${g.items.map(i => `<li>${i}</li>`).join('')}
+                        </ul>
+                    </div>
+                `).join('');
+            }
 
-            // applySectionLabels() (run earlier by originalRenderCV) always
-            // writes cvData.sectionLabels.skills.text into this banner, and
-            // that field defaults to the generic cross-template "Skills"
-            // (see SECTION_LABEL_DEFAULTS in cv-script.js) — it has no
-            // concept that this template's own default title for the merged
-            // Skills+Certifications+Achievements+Leadership+Interests list
-            // is "SKILLS AND OTHER ACTIVITIES". So unless the user has
-            // actually customized the label away from that generic default,
-            // put the template's real title back.
+            const section = container.closest('.sortable-section[data-section-id="skills"]');
+            if (section) section.style.display = groups.length ? '' : 'none';
+
             const banner = section ? section.querySelector('.banner') : null;
             if (banner) {
-                const labelText = ((data.sectionLabels || {}).skills || {}).text || '';
-                if (!labelText.trim() || labelText.trim().toLowerCase() === 'skills') {
-                    banner.textContent = 'SKILLS AND OTHER ACTIVITIES';
-                }
+                banner.textContent = 'SKILLS AND OTHER ACTIVITIES';
             }
         }
 

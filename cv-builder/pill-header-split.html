@@ -138,9 +138,30 @@ body {
   margin-bottom: calc(4px * var(--cs));
 }
 
-.details-item a {
+.details-item a,
+.contact-value a {
   color: var(--link-blue);
   word-break: break-all;
+  text-decoration: none !important;
+  border-bottom: none !important;
+}
+
+/* Custom Section Title Pill Headers */
+.sortable-section .section-title {
+  display: inline-block;
+  background-color: var(--navy-pill);
+  color: #FFFFFF;
+  font-family: var(--font-heading);
+  font-size: calc(14.8px * var(--cs));
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: calc(4px * var(--cs)) calc(18px * var(--cs));
+  border-radius: calc(5px * var(--cs));
+  letter-spacing: 0.5px;
+  margin-top: calc(14px * var(--cs));
+  margin-bottom: calc(8px * var(--cs));
+  position: relative;
+  z-index: 2;
 }
 
 .details-list .contact-value .contact-icon-glyph,
@@ -510,6 +531,53 @@ body {
 (function () {
   'use strict';
 
+  const originalRenderCV = window.renderCV;
+  window.renderCV = function (data) {
+    if (typeof originalRenderCV === 'function') originalRenderCV(data);
+    formatCustomSectionHeaders(data);
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        shrinkContentToFit();
+        scaleToFit();
+      });
+    });
+  };
+
+  function formatCustomSectionHeaders(data) {
+    (data.customSections || []).forEach(function (section) {
+      if (!section) return;
+      var wrapper = document.querySelector('[data-custom-section-root="' + section.id + '"]');
+      if (!wrapper) return;
+
+      var titleText = (section.title || 'Custom Section').toUpperCase();
+
+      var existingRow = wrapper.querySelector('.pill-banner-row');
+      if (existingRow) {
+        var banner = existingRow.querySelector('.pill-banner');
+        if (banner) banner.textContent = titleText;
+        return;
+      }
+
+      var titleEl = wrapper.querySelector('.section-title, .section-header, .section-banner, h2, h3');
+      if (titleEl) titleEl.remove();
+
+      var row = document.createElement('div');
+      row.className = 'pill-banner-row';
+
+      var pill = document.createElement('div');
+      pill.className = 'pill-banner';
+      pill.textContent = titleText;
+
+      var line = document.createElement('div');
+      line.className = 'pill-line';
+
+      row.appendChild(pill);
+      row.appendChild(line);
+
+      wrapper.insertBefore(row, wrapper.firstChild);
+    });
+  }
+
   var PAGE_H = 1413.94; /* A4 page height limit in px */
   var PAGE_W = 1000;    /* A4 viewer width in px */
 
@@ -574,12 +642,14 @@ body {
     window.addEventListener('afterprint',  disablePrintMode);
   });
 
-  var _rt;
+  var _rt = null;
   window.addEventListener('resize', function () {
-    clearTimeout(_rt);
-    _rt = setTimeout(scaleToFit, 100);
+    if (_rt) clearTimeout(_rt);
+    _rt = setTimeout(function () {
+      scaleToFit();
+    }, 100);
   });
-}());
+})();
 </script>
 </body>
 </html>

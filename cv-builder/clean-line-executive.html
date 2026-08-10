@@ -112,7 +112,8 @@ body {
 
 .contact-row {
   font-size: calc(13.2px * var(--cs));
-  color: #3333ff;
+  color: var(--text-dark);
+  text-align: center;
 }
 
 .contact-row strong {
@@ -121,13 +122,18 @@ body {
 }
 
 .contact-row a {
-  color: #3333ff;
+  color: var(--text-dark, #222222);
   text-decoration: underline;
 }
 
+.ci-sep {
+  color: var(--text-dark);
+  font-weight: normal;
+  margin: 0 4px;
+}
+
 /* ── Horizontal Section Divider Lines ── */
-.section-divider,
-.custom-section-injected:not(:last-child)::after {
+.section-divider {
   content: "";
   display: block;
   width: 100%;
@@ -136,6 +142,11 @@ body {
   box-shadow: none !important;
   margin-top: calc(12px * var(--cs));
   margin-bottom: calc(12px * var(--cs));
+}
+
+.custom-section-injected::after {
+  display: none !important;
+  content: none !important;
 }
 
 /* ── Section Headings ── */
@@ -275,11 +286,11 @@ body {
   <div class="header-container">
     <h1 class="candidate-name" data-field="name">CA Padam Bhansali</h1>
     <div class="candidate-subtitle" data-field="tagline" style="display:none;"></div>
-    <div class="contact-row contact-block" data-field="contact">
-      <span data-field="email-wrap"><strong>Email ID:</strong> <a href="mailto:capadambhansali@gmail.com" class="contact-value" data-field="email">capadambhansali@gmail.com</a></span>
-      <span data-field="linkedin-wrap" style="margin-left: 4px;">| <strong>LinkedIn:</strong> <a href="https://linkedin.com" target="_blank" rel="noopener" class="contact-value" data-field="linkedin">Profile Link</a></span>
-      <span data-field="phone-wrap" style="margin-left: 4px;">| <strong>Mobile:</strong> <span class="contact-value" data-field="phone">+91 7228881182</span></span>
-      <span data-field="location-wrap" style="margin-left: 4px;">| <strong>Location:</strong> <span class="contact-value" data-field="location">Delhi</span></span>
+    <div class="contact-row" id="contact-row">
+      <span id="ci-email-wrap"><span class="ci-sep"> | </span><strong>Email ID:</strong> <a href="mailto:capadambhansali@gmail.com" id="ci-email">capadambhansali@gmail.com</a></span>
+      <span id="ci-linkedin-wrap"><span class="ci-sep"> | </span><strong>LinkedIn:</strong> <a href="https://linkedin.com" target="_blank" rel="noopener" id="ci-linkedin">Profile Link</a></span>
+      <span id="ci-phone-wrap"><span class="ci-sep"> | </span><strong>Mobile:</strong> <span id="ci-phone">+91 7228881182</span></span>
+      <span id="ci-location-wrap"><span class="ci-sep"> | </span><strong>Location:</strong> <span id="ci-location">Delhi</span></span>
     </div>
   </div>
 
@@ -390,6 +401,92 @@ body {
 <script>
 (function () {
   'use strict';
+
+  const originalRenderCV = window.renderCV;
+  window.renderCV = function (data) {
+    if (typeof originalRenderCV === 'function') originalRenderCV(data);
+    adjustContactRow(data ? (data.personal || {}) : {});
+    cleanUpDuplicateDividers();
+    requestAnimationFrame(function () {
+      shrinkContentToFit();
+      scaleToFit();
+    });
+  };
+
+  function cleanUpDuplicateDividers() {
+    document.querySelectorAll('#cv-page .sortable-section, #cv-page .custom-section-injected').forEach(function (sec) {
+      const dividers = Array.from(sec.querySelectorAll('.section-divider'));
+      if (dividers.length > 1) {
+        dividers.slice(1).forEach(function (d) { d.remove(); });
+      }
+    });
+
+    const visibleSections = Array.from(document.querySelectorAll('#cv-page .sortable-section, #cv-page .custom-section-injected'))
+      .filter(function (el) {
+        return el.style.display !== 'none';
+      });
+
+    visibleSections.forEach(function (sec, idx) {
+      const divider = sec.querySelector('.section-divider');
+      if (divider) {
+        divider.style.display = (idx === visibleSections.length - 1) ? 'none' : '';
+      }
+    });
+  }
+
+  function adjustContactRow(personal) {
+    const emailWrap = document.getElementById('ci-email-wrap');
+    const linkedinWrap = document.getElementById('ci-linkedin-wrap');
+    const phoneWrap = document.getElementById('ci-phone-wrap');
+    const locationWrap = document.getElementById('ci-location-wrap');
+
+    const emailEl = document.getElementById('ci-email');
+    const linkedinEl = document.getElementById('ci-linkedin');
+    const phoneEl = document.getElementById('ci-phone');
+    const locationEl = document.getElementById('ci-location');
+
+    const email = (personal.email || '').trim();
+    const linkedin = (personal.linkedin || '').trim();
+    const phone = (personal.phone || '').trim();
+    const location = (personal.location || '').trim();
+
+    if (emailWrap) emailWrap.style.display = email ? 'inline' : 'none';
+    if (emailEl) {
+      emailEl.href = email ? 'mailto:' + email : '#';
+      emailEl.textContent = email;
+    }
+
+    if (linkedinWrap) linkedinWrap.style.display = linkedin ? 'inline' : 'none';
+    if (linkedinEl) {
+      linkedinEl.href = linkedin ? (/^https?:\/\//i.test(linkedin) ? linkedin : 'https://' + linkedin) : '#';
+      linkedinEl.textContent = 'Profile Link';
+    }
+
+    if (phoneWrap) phoneWrap.style.display = phone ? 'inline' : 'none';
+    if (phoneEl) phoneEl.textContent = phone;
+
+    if (locationWrap) locationWrap.style.display = location ? 'inline' : 'none';
+    if (locationEl) locationEl.textContent = location;
+
+    const visibleItems = [
+      email ? emailWrap : null,
+      linkedin ? linkedinWrap : null,
+      phone ? phoneWrap : null,
+      location ? locationWrap : null
+    ].filter(Boolean);
+
+    const row = document.getElementById('contact-row');
+    if (row) row.style.display = visibleItems.length > 0 ? '' : 'none';
+
+    [emailWrap, linkedinWrap, phoneWrap, locationWrap].forEach(function (wrap) {
+      if (!wrap) return;
+      const sep = wrap.querySelector('.ci-sep');
+      if (sep) {
+        const isFirst = visibleItems[0] === wrap;
+        sep.style.display = isFirst ? 'none' : 'inline';
+      }
+    });
+  }
 
   var PAGE_H = 1413.94; /* A4 page height limit in px */
   var PAGE_W = 1000;    /* A4 viewer width in px */

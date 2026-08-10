@@ -81,15 +81,20 @@ body {
 }
 
 .candidate-name {
-  font-size: calc(24px * var(--cs));
+  font-size: calc(26px * var(--cs));
   font-weight: 700;
   color: var(--navy-accent);
-  line-height: 1.1;
+  line-height: 1.15;
   margin-bottom: calc(4px * var(--cs));
 }
 
-.candidate-name span {
-  font-size: calc(18px * var(--cs));
+.candidate-name [data-field="name"] {
+  font-size: calc(26px * var(--cs));
+  font-weight: 700;
+}
+
+.candidate-name [data-field="tagline"] {
+  font-size: calc(17px * var(--cs));
   font-weight: 700;
 }
 
@@ -150,7 +155,10 @@ body {
   font-weight: 700;
   padding: calc(6px * var(--cs)) calc(8px * var(--cs));
   text-align: left;
-  border: 1px solid var(--navy-accent);
+  border-top: 1px solid var(--navy-accent);
+  border-bottom: 1px solid var(--navy-accent);
+  border-left: none !important;
+  border-right: none !important;
 }
 
 .edu-table th:nth-child(3),
@@ -160,7 +168,10 @@ body {
 }
 
 .edu-table td {
-  border: 1px solid #D0D5DD;
+  border-top: 1px solid #D0D5DD;
+  border-bottom: 1px solid #D0D5DD;
+  border-left: none !important;
+  border-right: none !important;
   padding: calc(6px * var(--cs)) calc(8px * var(--cs));
   vertical-align: middle;
   color: var(--text-dark);
@@ -171,9 +182,9 @@ body {
   color: var(--text-dark);
 }
 
-.edu-table td:nth-child(3),
-.edu-table td:nth-child(4),
-.edu-table td:nth-child(5) {
+.edu-table td[data-field="year"],
+.edu-table td[data-field="marks"],
+.edu-table td[data-field="remarks"] {
   text-align: center;
 }
 
