@@ -1,4 +1,4 @@
-const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+const supabaseUrl = 'https://auth.mystudentclub.com';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
@@ -187,9 +187,9 @@ async function updateCourseBanner(id, itemElement) {
     const headingInput = itemElement.querySelector('.banner-heading');
     const linkInput = itemElement.querySelector('.banner-link');
     try {
-        const { error } = await supabaseClient.from('course_banner').update({ 
-            heading: headingInput.value, 
-            link: linkInput.value 
+        const { error } = await supabaseClient.from('course_banner').update({
+            heading: headingInput.value,
+            link: linkInput.value
         }).eq('id', id);
         if (error) throw error;
         alert('Course banner updated successfully');
@@ -212,8 +212,8 @@ async function deleteCourseBanner(id) {
 function addNewCourseBanner() {
     (async () => {
         try {
-            const { error } = await supabaseClient.from('course_banner').insert([{ 
-                heading: 'New Stylish Banner', 
+            const { error } = await supabaseClient.from('course_banner').insert([{
+                heading: 'New Stylish Banner',
                 link: '#'
             }]);
             if (error) throw error;

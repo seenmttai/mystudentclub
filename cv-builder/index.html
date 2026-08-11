@@ -36,12 +36,12 @@
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
         integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
-  <!-- Standard Favicon -->
-<!-- Fallback Shortcut Icon -->
-  <!-- Standard Favicon -->
-  <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
-  <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
-  <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
+    <!-- Standard Favicon -->
+    <!-- Fallback Shortcut Icon -->
+    <!-- Standard Favicon -->
+    <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
+    <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
+    <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
 </head>
 
 <body class="view-editor">
@@ -878,7 +878,7 @@
         // Note: pdfjsLib is loaded via dynamic import below
 
         // Configuration
-        const SUPABASE_URL = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+        const SUPABASE_URL = 'https://auth.mystudentclub.com';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 
         let supabase = null;
@@ -949,7 +949,7 @@
                 if (typeof crypto !== 'undefined' && crypto.randomUUID) {
                     userId = crypto.randomUUID();
                 } else {
-                    userId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                    userId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
                         const r = Math.random() * 16 | 0;
                         const v = c === 'x' ? r : (r & 0x3 | 0x8);
                         return v.toString(16);

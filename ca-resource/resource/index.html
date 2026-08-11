@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +11,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        *, *::before, *::after {
+        *,
+        *::before,
+        *::after {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
@@ -63,8 +66,13 @@
         }
 
         @keyframes float-slow {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(40px, 40px) scale(1.1); }
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            100% {
+                transform: translate(40px, 40px) scale(1.1);
+            }
         }
 
         .container {
@@ -116,13 +124,26 @@
             border-color: #818cf8 transparent transparent transparent;
         }
 
-        .spinner-ring div:nth-child(1) { animation-delay: -0.45s; }
-        .spinner-ring div:nth-child(2) { animation-delay: -0.3s; }
-        .spinner-ring div:nth-child(3) { animation-delay: -0.15s; }
+        .spinner-ring div:nth-child(1) {
+            animation-delay: -0.45s;
+        }
+
+        .spinner-ring div:nth-child(2) {
+            animation-delay: -0.3s;
+        }
+
+        .spinner-ring div:nth-child(3) {
+            animation-delay: -0.15s;
+        }
 
         @keyframes spinner-ring {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         .status-title {
@@ -171,9 +192,17 @@
         }
 
         @keyframes pulse-red {
-            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-            70% { box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+            0% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 12px rgba(239, 68, 68, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+            }
         }
 
         .error-title {
@@ -235,13 +264,14 @@
             color: #ffffff;
         }
     </style>
-  <!-- Standard Favicon -->
-<!-- Fallback Shortcut Icon -->
-  <!-- Standard Favicon -->
-  <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
-  <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
-  <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
+    <!-- Standard Favicon -->
+    <!-- Fallback Shortcut Icon -->
+    <!-- Standard Favicon -->
+    <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
+    <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
+    <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
 </head>
+
 <body>
     <div class="ambient-bg">
         <div class="ambient-circle-1"></div>
@@ -252,7 +282,10 @@
         <!-- Loading Card -->
         <div id="loading-card" class="card loading-view">
             <div class="spinner-ring">
-                <div></div><div></div><div></div><div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
             </div>
             <h2 class="status-title">Verifying Permissions</h2>
             <p class="status-text" id="loading-message">Retrieving resource and signing URL...</p>
@@ -264,7 +297,8 @@
                 <i class="fas fa-shield-halved"></i>
             </div>
             <h2 class="error-title">Access Restricted</h2>
-            <p class="error-text" id="error-message">You do not have active permission to view this resource. Please make sure you are enrolled in the corresponding program.</p>
+            <p class="error-text" id="error-message">You do not have active permission to view this resource. Please
+                make sure you are enrolled in the corresponding program.</p>
             <div class="actions">
                 <a href="https://mystudentclub.com/login" id="action-login-btn" class="btn btn-primary">
                     <i class="fas fa-sign-in-alt"></i> Login to My Student Club
@@ -277,7 +311,7 @@
     </div>
 
     <script>
-        const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+        const supabaseUrl = 'https://auth.mystudentclub.com';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
         const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
@@ -285,11 +319,11 @@
             document.getElementById('loading-card').style.display = 'none';
             const restrictedCard = document.getElementById('restricted-card');
             restrictedCard.classList.add('active');
-            
+
             if (message) {
                 document.getElementById('error-message').textContent = message;
             }
-            
+
             const loginBtn = document.getElementById('action-login-btn');
             if (showLogin) {
                 loginBtn.style.display = 'inline-flex';
@@ -332,12 +366,12 @@
 
                 // Optionally, attempt to generate the download URL as well
                 let targetUrl = `/ca-resource/?pdf=${encodeURIComponent(viewData.signedUrl)}`;
-                
+
                 try {
                     const { data: dlData, error: dlError } = await supabaseClient.storage
                         .from('industrial-training-mastery-resources')
                         .createSignedUrl(resourceName, 300, { download: true });
-                    
+
                     if (!dlError && dlData?.signedUrl) {
                         targetUrl += `&dl=${encodeURIComponent(dlData.signedUrl)}`;
                     }
@@ -358,4 +392,5 @@
         window.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
+
 </html>

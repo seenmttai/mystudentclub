@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet" href="/scripts/portal-style.css">
+    <link rel="stylesheet" href="/scripts/portal-style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
@@ -573,12 +573,12 @@
             padding: 0.5rem 1rem;
         }
     </style>
-  <!-- Standard Favicon -->
-<!-- Fallback Shortcut Icon -->
-  <!-- Standard Favicon -->
-  <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
-  <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
-  <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
+    <!-- Standard Favicon -->
+    <!-- Fallback Shortcut Icon -->
+    <!-- Standard Favicon -->
+    <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
+    <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
+    <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
 </head>
 
 <body>
@@ -646,12 +646,13 @@
                 </div>
             </div>
 
-            <form id="contact-form" class="contact-form" action="https://formsubmit.co/capadambhansali@gmail.com" method="POST">
+            <form id="contact-form" class="contact-form" action="https://formsubmit.co/capadambhansali@gmail.com"
+                method="POST">
                 <!-- FormSubmit Configuration -->
                 <input type="hidden" name="_subject" value="New Contact Form Submission - My Student Club">
                 <input type="hidden" name="_captcha" value="false">
                 <input type="hidden" name="_template" value="table">
-                
+
                 <div class="form-group">
                     <label for="name">Your Name</label>
                     <input type="text" id="name" name="name" placeholder="Full name">
@@ -715,7 +716,7 @@
 
     <script>
         // Supabase Configuration
-        const SUPABASE_URL = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+        const SUPABASE_URL = 'https://auth.mystudentclub.com';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -856,7 +857,7 @@
             });
 
             // Auth Check
-            const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+            const supabaseUrl = 'https://auth.mystudentclub.com';
             const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
             const sb = window.supabase ? window.supabase.createClient(supabaseUrl, supabaseKey) : supabaseClient;
 
@@ -925,7 +926,7 @@
                 // Send Email via FormSubmit AJAX
                 const formElement = document.getElementById('contact-form');
                 const formData = new FormData(formElement);
-                
+
                 const formSubmitResponse = await fetch("https://formsubmit.co/ajax/capadambhansali@gmail.com", {
                     method: "POST",
                     body: formData,
@@ -939,7 +940,7 @@
                 }
 
                 const result = await formSubmitResponse.json();
-                
+
                 if (result.success === "true" || result.success === true) {
                     form.style.display = 'none';
                     successMessage.classList.add('show');

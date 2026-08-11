@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Submit Anonymous Articleship Review - My Student Club</title>
-  <meta name="description" content="Share your anonymous CA articleship firm review on stipend, working hours, learning exposure, work culture, and leave support to guide fellow CA students.">
-<link rel="preconnect" href="https://fonts.googleapis.com" />
+  <meta name="description"
+    content="Share your anonymous CA articleship firm review on stipend, working hours, learning exposure, work culture, and leave support to guide fellow CA students.">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300..900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/scripts/portal-style.css">
   <link rel="stylesheet" href="/articleship-review-wizard.css">
@@ -23,9 +27,16 @@
       --border-color: #e2e8f0;
     }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-    html, body {
+    html,
+    body {
       height: 100%;
       margin: 0 !important;
       margin-top: 0 !important;
@@ -58,6 +69,7 @@
         padding-top: 0 !important;
         margin-top: 0 !important;
       }
+
       .site-header {
         top: 0 !important;
         margin-top: 0 !important;
@@ -80,6 +92,7 @@
       z-index: 100;
       flex-shrink: 0;
     }
+
     .header-container {
       max-width: 100% !important;
       padding: 0.75rem 1.75rem;
@@ -87,6 +100,7 @@
       align-items: center;
       justify-content: space-between;
     }
+
     .brand-logo {
       height: 32px !important;
       width: auto !important;
@@ -97,6 +111,7 @@
       align-items: center;
       gap: 0.75rem;
     }
+
     .afd-header-pill-link {
       display: inline-flex;
       align-items: center;
@@ -112,6 +127,7 @@
       color: #2563eb;
       border: 1px solid #bfdbfe;
     }
+
     .afd-header-pill-link:hover {
       background: #dbeafe;
       color: #1d4ed8;
@@ -217,9 +233,11 @@
 
     @media (min-width: 1024px) {
       main.sr-two-col-layout {
-        grid-template-columns: 1fr 1fr; /* Exact 50/50 split on desktop */
+        grid-template-columns: 1fr 1fr;
+        /* Exact 50/50 split on desktop */
         overflow: hidden;
       }
+
       .sr-left-panel {
         display: flex !important;
       }
@@ -245,6 +263,7 @@
     .sr-left-panel::-webkit-scrollbar {
       width: 5px;
     }
+
     .sr-left-panel::-webkit-scrollbar-thumb {
       background: rgba(255, 255, 255, 0.2);
       border-radius: 99px;
@@ -296,11 +315,13 @@
       gap: 1.1rem;
       margin-bottom: 1.5rem;
     }
+
     .sr-feature-item {
       display: flex;
       align-items: flex-start;
       gap: 0.85rem;
     }
+
     .sr-feature-icon {
       width: 38px;
       height: 38px;
@@ -314,12 +335,14 @@
       font-size: 1rem;
       flex-shrink: 0;
     }
+
     .sr-feature-text h4 {
       font-size: 0.9rem;
       font-weight: 700;
       color: #ffffff;
       margin-bottom: 0.2rem;
     }
+
     .sr-feature-text p {
       font-size: 0.8rem;
       color: #94a3b8;
@@ -351,6 +374,7 @@
       font-size: 0.8rem;
       color: #94a3b8;
     }
+
     .sr-browse-btn {
       display: inline-flex;
       align-items: center;
@@ -366,6 +390,7 @@
       transition: all 0.2s ease;
       white-space: nowrap;
     }
+
     .sr-browse-btn:hover {
       background: rgba(255, 255, 255, 0.25);
       color: #ffffff;
@@ -396,6 +421,7 @@
     .sr-right-panel::-webkit-scrollbar {
       width: 5px;
     }
+
     .sr-right-panel::-webkit-scrollbar-thumb {
       background: #cbd5e1;
       border-radius: 99px;
@@ -412,7 +438,9 @@
 
     /* ── Tablet & Mobile Responsiveness (< 1024px) ───────────────────── */
     @media (max-width: 1023px) {
-      html, body {
+
+      html,
+      body {
         overflow: auto;
         height: auto !important;
         min-height: 100vh;
@@ -422,6 +450,7 @@
         margin-bottom: 0 !important;
         background: #ffffff;
       }
+
       body {
         display: flex;
         flex-direction: column;
@@ -432,11 +461,13 @@
         margin-top: 0 !important;
         margin-bottom: 0 !important;
       }
+
       .site-header {
         position: relative !important;
         top: 0 !important;
         margin-top: 0 !important;
       }
+
       main.sr-two-col-layout {
         grid-template-columns: 1fr;
         overflow: visible;
@@ -446,9 +477,11 @@
         display: flex;
         flex-direction: column;
       }
+
       .sr-left-panel {
         display: none !important;
       }
+
       .sr-right-panel {
         width: 100%;
         padding: 1.25rem 1.25rem 1.5rem !important;
@@ -460,6 +493,7 @@
         justify-content: flex-start;
         align-items: stretch;
       }
+
       .sr-form-wrapper {
         width: 100%;
         max-width: 600px;
@@ -468,6 +502,7 @@
         display: flex;
         flex-direction: column;
       }
+
       .sr-right-footer {
         display: none !important;
       }
@@ -477,27 +512,32 @@
       .sr-right-panel {
         padding: 0.85rem 1rem 1.25rem !important;
       }
+
       .header-container {
         padding: 0.5rem 0.85rem;
       }
+
       .brand-logo {
         height: 26px !important;
       }
+
       .afd-header-pill-link {
         display: none;
       }
+
       .sr-right-footer {
         display: none !important;
       }
     }
   </style>
   <!-- Standard Favicon -->
-<!-- Fallback Shortcut Icon -->
+  <!-- Fallback Shortcut Icon -->
   <!-- Standard Favicon -->
   <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
   <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
   <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
 </head>
+
 <body>
 
   <!-- Site Header -->
@@ -507,7 +547,8 @@
         <img src="/assets/logo.png" alt="My Student Club" class="brand-logo">
       </a>
       <div class="nav-actions">
-        <a href="/ca-articleship-opportunities.html" class="afd-header-pill-link"><i class="fas fa-briefcase" style="margin-right:0.35rem;"></i> Job Portal</a>
+        <a href="/ca-articleship-opportunities.html" class="afd-header-pill-link"><i class="fas fa-briefcase"
+            style="margin-right:0.35rem;"></i> Job Portal</a>
         <button class="icon-button menu-toggle-btn" id="menuButton" aria-label="Open menu">
           <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -525,10 +566,14 @@
       </svg>
     </button>
     <div class="menu-items-container">
-      <a href="/articleship-firm-reviews.html" class="menu-item"><i class="fas fa-star" style="margin-right:0.5rem;color:#3b82f6;"></i> Articleship Firm Reviews</a>
-      <a href="/ca-articleship-opportunities.html" class="menu-item"><i class="fas fa-briefcase" style="margin-right:0.5rem;color:#3b82f6;"></i> Job Portal</a>
-      <a href="/articleship-program/" class="menu-item"><i class="fas fa-graduation-cap" style="margin-right:0.5rem;color:#3b82f6;"></i> MSC Articleship Program</a>
-      <a href="/ca-industrial-training-program/" class="menu-item"><i class="fas fa-building" style="margin-right:0.5rem;color:#3b82f6;"></i> MSC Industrial Training Program</a>
+      <a href="/articleship-firm-reviews.html" class="menu-item"><i class="fas fa-star"
+          style="margin-right:0.5rem;color:#3b82f6;"></i> Articleship Firm Reviews</a>
+      <a href="/ca-articleship-opportunities.html" class="menu-item"><i class="fas fa-briefcase"
+          style="margin-right:0.5rem;color:#3b82f6;"></i> Job Portal</a>
+      <a href="/articleship-program/" class="menu-item"><i class="fas fa-graduation-cap"
+          style="margin-right:0.5rem;color:#3b82f6;"></i> MSC Articleship Program</a>
+      <a href="/ca-industrial-training-program/" class="menu-item"><i class="fas fa-building"
+          style="margin-right:0.5rem;color:#3b82f6;"></i> MSC Industrial Training Program</a>
       <a href="/" class="menu-item"><i class="fas fa-home" style="margin-right:0.5rem;color:#3b82f6;"></i> Home</a>
     </div>
   </div>
@@ -542,7 +587,8 @@
           <i class="fas fa-user-secret"></i> 100% Anonymous Review
         </div>
         <h1>Share Your CA Articleship Experience</h1>
-        <p class="sr-subtitle">Your honest feedback on stipend, working hours, leave support, and learning exposure guides thousands of future CA students.</p>
+        <p class="sr-subtitle">Your honest feedback on stipend, working hours, leave support, and learning exposure
+          guides thousands of future CA students.</p>
 
         <div class="sr-feature-list">
           <div class="sr-feature-item">
@@ -571,7 +617,8 @@
 
       <div class="sr-left-footer">
         <span class="sr-left-footer-text">Built for CA Students & Aspirants</span>
-        <a href="/articleship-firm-reviews.html" class="sr-browse-btn"><i class="fas fa-arrow-right"></i> Browse All Reviews</a>
+        <a href="/articleship-firm-reviews.html" class="sr-browse-btn"><i class="fas fa-arrow-right"></i> Browse All
+          Reviews</a>
       </div>
     </div>
 
@@ -590,7 +637,7 @@
   <!-- Scripts -->
   <script src="/articleship-review-wizard.js"></script>
   <script>
-    const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+    const supabaseUrl = 'https://auth.mystudentclub.com';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
@@ -606,7 +653,7 @@
     }
     document.addEventListener('click', (e) => {
       if (expandedMenu && expandedMenu.classList.contains('active') &&
-          !expandedMenu.contains(e.target) && !menuButton.contains(e.target)) {
+        !expandedMenu.contains(e.target) && !menuButton.contains(e.target)) {
         expandedMenu.classList.remove('active');
       }
     });
@@ -627,4 +674,5 @@
     });
   </script>
 </body>
+
 </html>

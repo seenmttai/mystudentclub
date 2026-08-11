@@ -1,12 +1,12 @@
 import { getDaysAgo } from './date-utils.js';
 
 function isSalaryDisclosed(val) {
-    if (!val) return false;
-    const clean = val.toString().replace(/[₹\s\-\.]/g, '').toLowerCase();
-    return clean !== '' && clean !== 'notdisclosed' && clean !== 'nil' && clean !== 'null' && clean !== 'na';
+  if (!val) return false;
+  const clean = val.toString().replace(/[₹\s\-\.]/g, '').toLowerCase();
+  return clean !== '' && clean !== 'notdisclosed' && clean !== 'nil' && clean !== 'null' && clean !== 'na';
 }
 
-const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+const supabaseUrl = 'https://auth.mystudentclub.com';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey, { global: { headers: { 'apikey': supabaseKey } } });
 const jobsContainer = document.getElementById('jobs');
@@ -518,7 +518,7 @@ export function updateHeaderAuth(session) {
       if (profileData.name && profileData.name.trim()) {
         displayName = profileData.name.trim();
       }
-    } catch (e) {}
+    } catch (e) { }
     if (!displayName && session.user?.user_metadata?.full_name) {
       displayName = session.user.user_metadata.full_name;
     }

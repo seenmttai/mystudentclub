@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Articleship Firm Reviews - My Student Club</title>
-  <meta name="description" content="Read and write anonymous reviews of CA articleship firms — stipend, work-life balance, learning exposure, and culture.">
-<link rel="preconnect" href="https://fonts.googleapis.com" />
+  <meta name="description"
+    content="Read and write anonymous reviews of CA articleship firms — stipend, work-life balance, learning exposure, and culture.">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@300..900&family=JetBrains+Mono:wght@400;500;600&display=swap"
-    rel="stylesheet"
-  />
+    rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/scripts/portal-style.css">
   <link rel="stylesheet" href="/articleship-review-wizard.css">
@@ -21,14 +22,21 @@
       --font-mono: 'JetBrains Mono', monospace !important;
     }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
       font-family: var(--font-main);
       background: #f8fafc;
       color: var(--text-primary);
       -webkit-font-smoothing: antialiased;
-      overflow-x: clip; /* guard against any stray horizontal scroll */
+      overflow-x: clip;
+      /* guard against any stray horizontal scroll */
     }
 
     /* ── Header Glassmorphism & Unified Search/Filter Overrides ── */
@@ -44,9 +52,11 @@
       right: 0 !important;
       z-index: 999 !important;
     }
+
     .header-container {
       max-width: 1500px !important;
     }
+
     .menu-toggle-btn {
       display: flex !important;
       background: transparent !important;
@@ -58,11 +68,13 @@
       justify-content: center !important;
       flex-shrink: 0;
     }
+
     .menu-toggle-btn svg {
       width: 24px;
       height: 24px;
       stroke: currentColor;
     }
+
     /* Custom Dropdown Container */
     .custom-dropdown {
       position: relative;
@@ -74,15 +86,18 @@
       border-radius: 10px;
       transition: all 0.2s ease;
     }
+
     .custom-dropdown:hover {
       background: #f1f5f9;
       border-color: #cbd5e1;
     }
+
     .custom-dropdown.active {
       background: #ffffff;
       border-color: #3b82f6;
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
     }
+
     .dropdown-trigger {
       width: 100%;
       background: transparent;
@@ -102,24 +117,29 @@
       text-align: left;
       border-radius: 10px;
     }
+
     .custom-dropdown:hover .dropdown-trigger {
       color: #0f172a;
     }
+
     .custom-dropdown.active .dropdown-trigger {
       color: #1d4ed8;
     }
+
     .dropdown-trigger .trigger-label {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
       flex: 1;
     }
+
     .dropdown-trigger i {
       font-size: 0.65rem;
       color: #94a3b8;
       transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
       margin-left: 0.25rem;
     }
+
     .custom-dropdown.active .dropdown-trigger i {
       transform: rotate(180deg);
       color: #1d4ed8;
@@ -137,7 +157,7 @@
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(226, 232, 240, 0.9);
       border-radius: 14px;
-      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.08), 0 8px 16px -6px rgba(0,0,0,0.03);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 16px -6px rgba(0, 0, 0, 0.03);
       z-index: 1000;
       max-height: 240px;
       overflow-y: auto;
@@ -149,6 +169,7 @@
       scrollbar-width: thin;
       scrollbar-color: #cbd5e1 transparent;
     }
+
     .custom-dropdown.active .custom-dropdown-menu {
       opacity: 1;
       transform: translateY(0) scale(1);
@@ -169,22 +190,27 @@
       align-items: center;
       justify-content: space-between;
     }
+
     .custom-dropdown-item:hover {
       background: #f1f5f9;
       color: #0f172a;
     }
+
     .custom-dropdown-item.selected {
       background: #eff6ff;
       color: #1d4ed8;
     }
+
     .custom-dropdown-item.selected::after {
       content: '✓';
       font-size: 0.75rem;
       font-weight: 800;
     }
+
     .custom-dropdown-menu::-webkit-scrollbar {
       width: 4px;
     }
+
     .custom-dropdown-menu::-webkit-scrollbar-thumb {
       background: #cbd5e1;
       border-radius: 99px;
@@ -196,6 +222,7 @@
       max-width: none !important;
       display: block !important;
     }
+
     @media (max-width: 768px) {
       .brand-logo {
         height: 28px !important;
@@ -221,19 +248,21 @@
       /* full-bleed band; the inner carries the 1.5rem header-aligned gutter */
       padding: clamp(2.5rem, 5vw, 3.5rem) 0 5rem;
     }
+
     /* quiet hairline-grid texture — the only decorative flourish */
     .afr-hero::after {
       content: '';
       position: absolute;
       inset: 0;
       background-image:
-        linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+        linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
       background-size: 46px 46px;
       -webkit-mask-image: radial-gradient(70% 100% at 80% 0%, #000, transparent 70%);
-              mask-image: radial-gradient(70% 100% at 80% 0%, #000, transparent 70%);
+      mask-image: radial-gradient(70% 100% at 80% 0%, #000, transparent 70%);
       pointer-events: none;
     }
+
     .afr-hero-inner {
       position: relative;
       z-index: 1;
@@ -245,7 +274,12 @@
       align-items: center;
       gap: clamp(1.75rem, 4vw, 3.5rem);
     }
-    .afr-hero-copy { min-width: 0; max-width: 620px; }
+
+    .afr-hero-copy {
+      min-width: 0;
+      max-width: 620px;
+    }
+
     .afr-hero-eyebrow {
       display: inline-flex;
       align-items: center;
@@ -262,7 +296,12 @@
       border-radius: 999px;
       margin-bottom: 1.1rem;
     }
-    .afr-hero-eyebrow i { font-size: 0.72rem; color: #93c5fd; }
+
+    .afr-hero-eyebrow i {
+      font-size: 0.72rem;
+      color: #93c5fd;
+    }
+
     .afr-hero h1 {
       font-size: clamp(1.9rem, 3.4vw, 2.65rem);
       font-weight: 800;
@@ -271,6 +310,7 @@
       margin-bottom: 0.8rem;
       color: #fff;
     }
+
     .afr-hero-sub {
       font-size: clamp(0.9rem, 1.4vw, 1rem);
       line-height: 1.6;
@@ -278,6 +318,7 @@
       max-width: 500px;
       margin-bottom: 1.75rem;
     }
+
     .afr-hero-features {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -285,12 +326,14 @@
       margin-top: 1.5rem;
       width: 100%;
     }
+
     @media (max-width: 768px) {
       .afr-hero-features {
         grid-template-columns: 1fr;
         gap: 0.75rem;
       }
     }
+
     .afr-hfeature {
       display: flex;
       align-items: center;
@@ -302,12 +345,14 @@
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       cursor: default;
     }
+
     .afr-hfeature:hover {
       background: rgba(255, 255, 255, 0.08);
       border-color: rgba(255, 255, 255, 0.18);
       transform: translateY(-2px);
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
     }
+
     .afr-hfeature-icon-wrap {
       width: 32px;
       height: 32px;
@@ -322,18 +367,21 @@
       font-size: 0.85rem;
       transition: all 0.3s ease;
     }
+
     .afr-hfeature:hover .afr-hfeature-icon-wrap {
       background: #1d4ed8;
       border-color: #3b82f6;
       color: #ffffff;
       box-shadow: 0 0 10px rgba(29, 78, 216, 0.55);
     }
+
     .afr-hfeature-text {
       display: flex;
       flex-direction: column;
       gap: 0.15rem;
       min-width: 0;
     }
+
     .afr-hfeature-title {
       font-size: 0.78rem;
       font-weight: 800;
@@ -342,12 +390,13 @@
       line-height: 1.1;
       white-space: nowrap;
     }
+
     .afr-hfeature-desc {
       font-size: 0.62rem;
       color: rgba(219, 231, 255, 0.55);
       line-height: 1.3;
     }
-    
+
     .text-gradient {
       background: linear-gradient(135deg, #a5f3fc 0%, #60a5fa 50%, #3b82f6 100%);
       -webkit-background-clip: text;
@@ -355,54 +404,68 @@
       background-clip: text;
       color: #3b82f6;
     }
-    
+
     /* fadeInUp, fadeInRight, fadeInLeft animations */
     @keyframes fadeInUp {
       from {
         opacity: 0;
         transform: translateY(20px);
       }
+
       to {
         opacity: 1;
         transform: translateY(0);
       }
     }
-    
+
     @keyframes fadeInRight {
       from {
         opacity: 0;
         transform: translateX(-20px);
       }
+
       to {
         opacity: 1;
         transform: translateX(0);
       }
     }
-    
+
     @keyframes fadeInLeft {
       from {
         opacity: 0;
         transform: translateX(20px);
       }
+
       to {
         opacity: 1;
         transform: translateX(0);
       }
     }
-    
+
     .animate-fade-up {
       animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
+
     .animate-fade-right {
       animation: fadeInRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
+
     .animate-fade-left {
       animation: fadeInLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
-    
-    .delay-100 { animation-delay: 100ms; }
-    .delay-200 { animation-delay: 200ms; }
-    .delay-300 { animation-delay: 300ms; }
+
+    .delay-100 {
+      animation-delay: 100ms;
+    }
+
+    .delay-200 {
+      animation-delay: 200ms;
+    }
+
+    .delay-300 {
+      animation-delay: 300ms;
+    }
+
     /* CTA panel & Floating Infographics */
     .afr-hero-side-container {
       display: flex;
@@ -413,6 +476,7 @@
       max-width: 100%;
       position: relative;
     }
+
     .afr-hero-side {
       display: flex;
       flex-direction: column;
@@ -431,15 +495,18 @@
       -webkit-backdrop-filter: blur(8px);
       transition: transform 0.3s ease;
     }
+
     .afr-hero-side:hover {
       transform: translateY(-2px);
     }
+
     .afr-hero-side-title {
       font-size: 0.95rem;
       font-weight: 700;
       line-height: 1.4;
       color: #fff;
     }
+
     .afr-hero-btn {
       width: 100%;
       justify-content: center;
@@ -458,9 +525,22 @@
       box-shadow: 0 10px 24px rgba(2, 8, 40, 0.35);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-    .afr-hero-btn:hover { transform: translateY(-2px); box-shadow: 0 16px 34px rgba(2, 8, 40, 0.45); }
-    .afr-hero-btn:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
-    .afr-hero-note { font-size: 0.7rem; font-weight: 600; color: rgba(191, 219, 254, 0.78); }
+
+    .afr-hero-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 34px rgba(2, 8, 40, 0.45);
+    }
+
+    .afr-hero-btn:focus-visible {
+      outline: 2px solid #fff;
+      outline-offset: 3px;
+    }
+
+    .afr-hero-note {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: rgba(191, 219, 254, 0.78);
+    }
 
     /* Floating reviews infographic */
     .afr-floating-reviews-wrap {
@@ -471,6 +551,7 @@
       min-width: 250px;
       position: relative;
     }
+
     .afr-floating-review {
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.1);
@@ -482,23 +563,44 @@
       transition: all 0.3s ease;
       cursor: default;
     }
+
     @keyframes float1 {
-      0% { transform: translateY(0px) rotate(0deg); }
-      50% { transform: translateY(-6px) rotate(0.5deg); }
-      100% { transform: translateY(0px) rotate(0deg); }
+      0% {
+        transform: translateY(0px) rotate(0deg);
+      }
+
+      50% {
+        transform: translateY(-6px) rotate(0.5deg);
+      }
+
+      100% {
+        transform: translateY(0px) rotate(0deg);
+      }
     }
+
     @keyframes float2 {
-      0% { transform: translateY(0px) rotate(0deg); }
-      50% { transform: translateY(6px) rotate(-0.5deg); }
-      100% { transform: translateY(0px) rotate(0deg); }
+      0% {
+        transform: translateY(0px) rotate(0deg);
+      }
+
+      50% {
+        transform: translateY(6px) rotate(-0.5deg);
+      }
+
+      100% {
+        transform: translateY(0px) rotate(0deg);
+      }
     }
+
     .afr-floating-review.card-1 {
       animation: float1 6s ease-in-out infinite;
     }
+
     .afr-floating-review.card-2 {
       animation: float2 6s ease-in-out infinite;
       margin-left: 1.5rem;
     }
+
     .afr-floating-review:hover {
       background: rgba(255, 255, 255, 0.09);
       border-color: rgba(255, 255, 255, 0.2);
@@ -506,12 +608,14 @@
       transform: scale(1.02);
       animation-play-state: paused;
     }
+
     .afr-fr-header {
       display: flex;
       align-items: center;
       gap: 0.6rem;
       margin-bottom: 0.45rem;
     }
+
     .afr-fr-avatar {
       width: 28px;
       height: 28px;
@@ -525,12 +629,14 @@
       font-weight: 800;
       color: #ffffff;
     }
+
     .afr-fr-info {
       display: flex;
       flex-direction: column;
       min-width: 0;
       flex: 1;
     }
+
     .afr-fr-name {
       font-size: 0.75rem;
       font-weight: 700;
@@ -539,11 +645,13 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+
     .afr-fr-loc {
       font-size: 0.6rem;
       color: rgba(219, 231, 255, 0.6);
       font-weight: 500;
     }
+
     .afr-fr-rating {
       font-size: 0.7rem;
       font-weight: 700;
@@ -556,6 +664,7 @@
       border-radius: 6px;
       border: 1px solid rgba(245, 158, 11, 0.25);
     }
+
     .afr-fr-text {
       font-size: 0.65rem;
       color: rgba(219, 231, 255, 0.85);
@@ -563,6 +672,7 @@
       margin-bottom: 0.5rem;
       font-style: italic;
     }
+
     .afr-fr-meta {
       display: flex;
       align-items: center;
@@ -570,6 +680,7 @@
       border-top: 1px solid rgba(255, 255, 255, 0.06);
       padding-top: 0.4rem;
     }
+
     .afr-fr-tag {
       font-size: 0.58rem;
       font-weight: 600;
@@ -578,38 +689,53 @@
       padding: 0.15rem 0.4rem;
       border-radius: 4px;
     }
+
     .afr-fr-stipend {
       font-size: 0.625rem;
       font-weight: 700;
       color: #10b981;
     }
+
     .afr-fr-stipend-wrap {
       display: flex;
       align-items: center;
       gap: 0.35rem;
     }
+
     .afr-sparkline {
       opacity: 0.85;
       animation: pulseSparkline 3s ease-in-out infinite;
     }
+
     @keyframes pulseSparkline {
-      0%, 100% { opacity: 0.7; }
-      50% { opacity: 1; filter: drop-shadow(0 0 2px rgba(16, 185, 129, 0.4)); }
+
+      0%,
+      100% {
+        opacity: 0.7;
+      }
+
+      50% {
+        opacity: 1;
+        filter: drop-shadow(0 0 2px rgba(16, 185, 129, 0.4));
+      }
     }
 
     @media (max-width: 1100px) {
       .afr-floating-reviews-wrap {
         display: none;
       }
+
       .afr-hero-side-container {
         width: 300px;
         justify-content: center;
       }
     }
+
     @media (max-width: 900px) {
       .afr-hero-side-container {
         width: 100%;
       }
+
       .afr-hero-side {
         width: 100%;
         flex-shrink: 1;
@@ -640,22 +766,27 @@
       pointer-events: none;
       transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
+
     .floating-write-btn.visible {
       opacity: 1;
       transform: translateY(0) scale(1);
       pointer-events: auto;
     }
+
     .floating-write-btn:hover {
       transform: translateY(-3px) scale(1.03);
       box-shadow: 0 14px 35px rgba(29, 78, 216, 0.45);
       color: #ffffff;
     }
+
     .floating-write-btn:active {
       transform: translateY(-1px) scale(0.98);
     }
+
     .floating-write-btn i {
       font-size: 0.85rem;
     }
+
     @media (max-width: 620px) {
       .floating-write-btn {
         bottom: 1.5rem;
@@ -666,36 +797,46 @@
     }
 
     /* ── Body wrapper + docked command bar ─────────────────────────── */
-    .afr-body-wrapper { background: #f4f6fb; width: 100%; }
+    .afr-body-wrapper {
+      background: #f4f6fb;
+      width: 100%;
+    }
+
     .afr-body-container {
       max-width: 1500px;
       margin: 0 auto;
       padding: 0 1.5rem 5rem;
     }
+
     .afr-command-bar {
       background: #fff;
       border: 1px solid #e3eaf4;
       border-radius: 20px;
       box-shadow: 0 20px 44px -24px rgba(13, 36, 82, 0.34);
       padding: 0.9rem 1rem 0.75rem;
-      margin-top: -3rem;         /* docks the bar into the hero base */
-      margin-bottom: 1.75rem;    /* push the results cards down to avoid overlap */
+      margin-top: -3rem;
+      /* docks the bar into the hero base */
+      margin-bottom: 1.75rem;
+      /* push the results cards down to avoid overlap */
       position: sticky;
       top: 78px;
       z-index: 90;
     }
+
     .afr-command-bar::before {
       content: '';
       position: absolute;
       inset: -12px -16px;
       border-radius: 28px;
-      background: rgba(244, 246, 251, 0.75); /* semi-translucent body bg to blend naturally */
+      background: rgba(244, 246, 251, 0.75);
+      /* semi-translucent body bg to blend naturally */
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       z-index: -1;
       pointer-events: none;
       box-shadow: 0 10px 30px rgba(13, 36, 82, 0.03);
     }
+
     /* Unified Search & Filter capsule */
     .afr-search-bar-unified {
       display: flex;
@@ -708,10 +849,12 @@
       width: 100%;
       transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
+
     .afr-search-bar-unified:focus-within {
       border-color: #3b82f6;
       box-shadow: 0 20px 40px -16px rgba(59, 130, 246, 0.2), 0 0 0 3px rgba(59, 130, 246, 0.08);
     }
+
     .search-segment {
       display: flex;
       align-items: center;
@@ -723,28 +866,34 @@
       min-width: 0;
       gap: 0.8rem;
     }
+
     .search-segment:hover {
       background-color: #f8fafc;
     }
+
     .segment-search {
       flex: 1.5;
     }
+
     .segment-icon {
       font-size: 1.05rem;
       color: #94a3b8;
       transition: color 0.2s ease;
       flex-shrink: 0;
     }
+
     .search-segment:focus-within .segment-icon,
     .search-segment:hover .segment-icon {
       color: #3b82f6;
     }
+
     .segment-details {
       display: flex;
       flex-direction: column;
       flex: 1;
       min-width: 0;
     }
+
     .segment-label {
       font-family: var(--font-mono) !important;
       font-size: 0.63rem;
@@ -756,6 +905,7 @@
       pointer-events: none;
       user-select: none;
     }
+
     .segment-search input {
       border: none;
       background: transparent;
@@ -767,10 +917,12 @@
       width: 100%;
       outline: none;
     }
+
     .segment-search input::placeholder {
       color: #cbd5e1;
       font-weight: 500;
     }
+
     .segment-divider {
       width: 1px;
       height: 34px;
@@ -778,7 +930,7 @@
       margin: 0 0.15rem;
       flex-shrink: 0;
     }
-    
+
     /* Dropdown segment overrides */
     .search-segment .custom-dropdown {
       border: none !important;
@@ -789,9 +941,11 @@
       box-shadow: none !important;
       flex: none;
     }
+
     .search-segment .custom-dropdown:hover {
       background: transparent !important;
     }
+
     .search-segment .dropdown-trigger {
       padding: 0 !important;
       border: none !important;
@@ -805,15 +959,17 @@
       width: 100% !important;
       min-height: auto !important;
     }
+
     .search-segment .custom-dropdown.active .dropdown-trigger {
       color: #1d4ed8 !important;
     }
+
     .search-segment .dropdown-trigger i {
       font-size: 0.7rem !important;
       color: #cbd5e1 !important;
       margin-left: 0.5rem !important;
     }
-    
+
     /* Dropdown Menu positioning under Segment */
     .search-segment .custom-dropdown-menu {
       top: calc(100% + 14px) !important;
@@ -821,7 +977,7 @@
       box-shadow: 0 12px 30px rgba(13, 36, 82, 0.08) !important;
       border: 1px solid #e2e8f0 !important;
     }
-    
+
     /* Chip Rail split design */
     .afr-chip-rail {
       display: flex;
@@ -833,7 +989,7 @@
       margin-top: 0.95rem;
       padding: 0.85rem 1.5rem 0.1rem;
     }
-    
+
     /* Dynamic tab switch styling */
     .afr-filter-tabs {
       display: inline-flex;
@@ -843,6 +999,7 @@
       gap: 0.15rem;
       flex-shrink: 0;
     }
+
     .afr-tab-btn {
       border: none;
       background: transparent;
@@ -858,15 +1015,17 @@
       align-items: center;
       gap: 0.25rem;
     }
+
     .afr-tab-btn:hover {
       color: #0f172a;
     }
+
     .afr-tab-btn.active {
       background: #ffffff;
       color: #1d4ed8;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
     }
-    
+
     .afr-tab-separator {
       width: 1px;
       height: 20px;
@@ -875,13 +1034,14 @@
       flex-shrink: 0;
       align-self: center;
     }
-    
+
     .afr-filter-contents {
       flex: 1;
       min-width: 0;
       display: flex;
       align-items: center;
     }
+
     .afr-tab-panel {
       display: none;
       align-items: center;
@@ -889,15 +1049,24 @@
       flex-wrap: wrap;
       width: 100%;
     }
+
     .afr-tab-panel.active {
       display: flex;
       animation: tabFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
+
     @keyframes tabFadeIn {
-      from { opacity: 0; transform: translateY(2px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(2px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
-    
+
     .tag-pill-btn {
       background: #f8fafc;
       border: 1px solid #e2e8f0;
@@ -912,6 +1081,7 @@
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       outline: none;
     }
+
     .tag-pill-btn:hover {
       background: #eff6ff;
       border-color: #bfdbfe;
@@ -919,14 +1089,19 @@
       transform: translateY(-1px);
       box-shadow: 0 4px 10px rgba(29, 78, 216, 0.06);
     }
-    .tag-pill-btn:focus-visible { outline: 2px solid #3b82f6; outline-offset: 2px; }
+
+    .tag-pill-btn:focus-visible {
+      outline: 2px solid #3b82f6;
+      outline-offset: 2px;
+    }
+
     .tag-pill-btn.active {
       background: linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%);
       border-color: #1d4ed8;
       color: #fff;
       box-shadow: 0 4px 12px rgba(29, 78, 216, 0.2);
     }
-    
+
     .afr-chip-rail-right {
       display: flex;
       align-items: center;
@@ -935,6 +1110,7 @@
       margin-left: auto;
       flex-shrink: 0;
     }
+
     .afr-count-badge {
       background: #eff6ff;
       color: #1d4ed8;
@@ -948,6 +1124,7 @@
       align-items: center;
       gap: 0.25rem;
     }
+
     .active-filter-badge {
       font-size: 0.725rem;
       color: #1d4ed8;
@@ -960,6 +1137,7 @@
       align-items: center;
       gap: 0.3rem;
     }
+
     .clear-filters-btn {
       background: #fef2f2;
       border: 1px solid #fecaca;
@@ -976,18 +1154,22 @@
       transition: all 0.2s ease;
       outline: none;
     }
+
     @media (max-width: 900px) {
       .afr-tab-separator {
         display: none;
       }
+
       .afr-chip-rail {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.75rem;
       }
+
       .afr-filter-contents {
         width: 100%;
       }
+
       .afr-chip-rail-right {
         margin-left: 0;
         width: 100%;
@@ -996,20 +1178,25 @@
         justify-content: flex-start;
       }
     }
+
     @media (max-width: 480px) {
       .afr-tab-btn {
         padding: 0.3rem 0.5rem;
         font-size: 0.65rem;
       }
     }
-    
 
-    .afr-main-content { min-width: 0; }
+
+    .afr-main-content {
+      min-width: 0;
+    }
+
     .afr-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr));
       gap: 1.2rem;
-      align-items: stretch;   /* equal-height cards per row */
+      align-items: stretch;
+      /* equal-height cards per row */
     }
 
     /* ── CTA Section (reviews listing page) ─────────────────────────── */
@@ -1021,6 +1208,7 @@
       margin-right: auto;
       width: 100%;
     }
+
     .afr-cta-card {
       position: relative;
       overflow: hidden;
@@ -1030,71 +1218,168 @@
       text-align: center;
       box-shadow: 0 20px 60px -10px rgba(29, 78, 216, 0.45);
     }
-    @media (min-width: 768px) { .afr-cta-card { padding: 6rem 2rem; } }
+
+    @media (min-width: 768px) {
+      .afr-cta-card {
+        padding: 6rem 2rem;
+      }
+    }
+
     .afr-cta-grid-bg {
-      position: absolute; inset: 0; pointer-events: none;
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
       background-image:
-        linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px);
+        linear-gradient(rgba(255, 255, 255, .08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, .08) 1px, transparent 1px);
       background-size: 56px 56px;
       -webkit-mask-image: radial-gradient(ellipse 65% 70% at 50% 50%, black, transparent);
       mask-image: radial-gradient(ellipse 65% 70% at 50% 50%, black, transparent);
       z-index: 1;
     }
+
     .afr-cta-glow-1 {
-      position: absolute; width: 320px; height: 320px;
-      left: -96px; top: -96px; border-radius: 999px;
-      background: rgba(255,255,255,.08); filter: blur(90px);
-      animation: afrCtaPulse 11s ease-in-out infinite; z-index: 1;
+      position: absolute;
+      width: 320px;
+      height: 320px;
+      left: -96px;
+      top: -96px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .08);
+      filter: blur(90px);
+      animation: afrCtaPulse 11s ease-in-out infinite;
+      z-index: 1;
     }
+
     .afr-cta-glow-2 {
-      position: absolute; width: 384px; height: 384px;
-      right: -64px; bottom: -128px; border-radius: 999px;
-      background: rgba(11,27,51,.2); filter: blur(100px); z-index: 1;
+      position: absolute;
+      width: 384px;
+      height: 384px;
+      right: -64px;
+      bottom: -128px;
+      border-radius: 999px;
+      background: rgba(11, 27, 51, .2);
+      filter: blur(100px);
+      z-index: 1;
     }
-    @keyframes afrCtaPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
-    .afr-cta-inner { position: relative; z-index: 2; }
+
+    @keyframes afrCtaPulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.12);
+      }
+    }
+
+    .afr-cta-inner {
+      position: relative;
+      z-index: 2;
+    }
+
     .afr-cta-eyebrow {
-      display: flex; align-items: center; justify-content: center;
-      gap: 0.75rem; margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
     }
+
     .afr-cta-eyebrow .idx {
-      font-family: 'JetBrains Mono', monospace; font-size: 11px;
-      font-weight: 700; letter-spacing: 0.25em; color: #fcd34d;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      color: #fcd34d;
     }
-    .afr-cta-eyebrow .rule { width: 2.5rem; height: 1px; background: rgba(255,255,255,.4); }
+
+    .afr-cta-eyebrow .rule {
+      width: 2.5rem;
+      height: 1px;
+      background: rgba(255, 255, 255, .4);
+    }
+
     .afr-cta-eyebrow .txt {
-      font-family: 'JetBrains Mono', monospace; font-size: 11px;
-      text-transform: uppercase; letter-spacing: 0.25em; color: rgba(255,255,255,.75);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.25em;
+      color: rgba(255, 255, 255, .75);
     }
+
     .afr-cta-title {
-      margin: 1rem auto 0; max-width: 48rem;
-      font-size: clamp(1.75rem, 4vw, 2.75rem); font-weight: 850;
-      line-height: 1.1; letter-spacing: -.025em; color: #ffffff;
+      margin: 1rem auto 0;
+      max-width: 48rem;
+      font-size: clamp(1.75rem, 4vw, 2.75rem);
+      font-weight: 850;
+      line-height: 1.1;
+      letter-spacing: -.025em;
+      color: #ffffff;
     }
-    .afr-cta-title em { font-style: italic; color: #fcd34d; }
+
+    .afr-cta-title em {
+      font-style: italic;
+      color: #fcd34d;
+    }
+
     .afr-cta-copy {
-      margin: 1.25rem auto 0; max-width: 36rem;
-      font-size: 15px; line-height: 1.625; color: rgba(255,255,255,.8);
+      margin: 1.25rem auto 0;
+      max-width: 36rem;
+      font-size: 15px;
+      line-height: 1.625;
+      color: rgba(255, 255, 255, .8);
     }
+
     .afr-btn-white {
-      margin-top: 2.25rem; display: inline-flex; align-items: center;
-      gap: 0.625rem; border-radius: 999px; background: #ffffff;
-      padding: 0.875rem 2rem; font-size: 14.5px; font-weight: 700;
-      color: #1d4ed8; border: none; cursor: pointer;
-      box-shadow: 0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -4px rgba(0,0,0,.1);
-      transition: transform 0.2s, background 0.2s; font-family: inherit;
+      margin-top: 2.25rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.625rem;
+      border-radius: 999px;
+      background: #ffffff;
+      padding: 0.875rem 2rem;
+      font-size: 14.5px;
+      font-weight: 700;
+      color: #1d4ed8;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, .1), 0 4px 6px -4px rgba(0, 0, 0, .1);
+      transition: transform 0.2s, background 0.2s;
+      font-family: inherit;
     }
-    .afr-btn-white:hover { transform: translateY(-2px); background: #f8fafc; }
-    .afr-btn-white .afr-cta-arr { transition: transform 0.3s; }
-    .afr-btn-white:hover .afr-cta-arr { transform: translateX(4px); }
+
+    .afr-btn-white:hover {
+      transform: translateY(-2px);
+      background: #f8fafc;
+    }
+
+    .afr-btn-white .afr-cta-arr {
+      transition: transform 0.3s;
+    }
+
+    .afr-btn-white:hover .afr-cta-arr {
+      transform: translateX(4px);
+    }
+
     .afr-cta-note {
-      margin-top: 1.75rem; display: flex; align-items: center;
-      justify-content: center; gap: 0.4rem;
-      font-family: 'JetBrains Mono', monospace; font-size: 11px;
-      text-transform: uppercase; letter-spacing: 0.18em; color: rgba(255,255,255,.65);
+      margin-top: 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: rgba(255, 255, 255, .65);
     }
-    .afr-cta-note i { color: #6ee7b7; }
+
+    .afr-cta-note i {
+      color: #6ee7b7;
+    }
 
     /* ── Paginator ──────────────────────────────────────────────────────── */
     .afr-pagination {
@@ -1106,6 +1391,7 @@
       padding-bottom: 0.5rem;
       flex-wrap: wrap;
     }
+
     .pg-btn {
       display: inline-flex;
       align-items: center;
@@ -1124,11 +1410,13 @@
       transition: all 0.18s ease;
       line-height: 1;
     }
+
     .pg-btn:hover:not(.pg-disabled):not(.pg-active) {
       border-color: #bfdbfe;
       background: #eff6ff;
       color: #1d4ed8;
     }
+
     .pg-btn.pg-active {
       background: #1d4ed8;
       border-color: #1d4ed8;
@@ -1136,12 +1424,18 @@
       font-weight: 700;
       box-shadow: 0 4px 12px rgba(29, 78, 216, 0.28);
     }
-    .pg-btn.pg-arrow { color: #64748b; font-size: 0.7rem; }
+
+    .pg-btn.pg-arrow {
+      color: #64748b;
+      font-size: 0.7rem;
+    }
+
     .pg-btn.pg-disabled {
       opacity: 0.35;
       cursor: not-allowed;
       pointer-events: none;
     }
+
     .pg-ellipsis {
       display: inline-flex;
       align-items: center;
@@ -1171,13 +1465,18 @@
       box-shadow: 0 4px 14px rgba(13, 36, 82, 0.045);
       transition: box-shadow 0.24s ease, transform 0.24s ease, border-color 0.2s ease;
     }
+
     /* colored top accent keyed to the firm */
     .afr-card:hover {
       box-shadow: 0 24px 48px -18px rgba(13, 36, 82, 0.22);
       transform: translateY(-5px);
       border-color: color-mix(in srgb, var(--card-color, #2563eb) 35%, #e6ebf3);
     }
-    .afr-card:focus-visible { outline: 2px solid var(--primary-brand); outline-offset: 2px; }
+
+    .afr-card:focus-visible {
+      outline: 2px solid var(--primary-brand);
+      outline-offset: 2px;
+    }
 
     .afr-card-top {
       display: flex;
@@ -1185,6 +1484,7 @@
       justify-content: space-between;
       gap: 0.75rem;
     }
+
     .afr-card-heading {
       display: flex;
       align-items: center;
@@ -1192,6 +1492,7 @@
       min-width: 0;
       flex: 1;
     }
+
     .afr-firm-avatar {
       width: 48px;
       height: 48px;
@@ -1207,7 +1508,12 @@
       background: color-mix(in srgb, var(--card-color, #2563eb) 9%, #fff);
       border: 1.5px solid color-mix(in srgb, var(--card-color, #2563eb) 22%, #fff);
     }
-    .afr-card-info { flex: 1; min-width: 0; }
+
+    .afr-card-info {
+      flex: 1;
+      min-width: 0;
+    }
+
     .afr-card-name {
       font-size: 1.1rem;
       font-weight: 750;
@@ -1218,6 +1524,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+
     .afr-card-loc {
       font-size: 0.8rem;
       color: var(--text-muted);
@@ -1226,7 +1533,11 @@
       align-items: center;
       gap: 0.32rem;
     }
-    .afr-card-loc i { color: #cbd5e1; font-size: 0.78rem; }
+
+    .afr-card-loc i {
+      color: #cbd5e1;
+      font-size: 0.78rem;
+    }
 
     /* rating: big score + micro stars, top-right */
     .afr-card-rating-block {
@@ -1238,22 +1549,37 @@
       flex-shrink: 0;
       min-width: 62px;
     }
+
     .afr-rating-big {
       font-size: 1.35rem;
       font-weight: 800;
       line-height: 1;
       letter-spacing: -0.02em;
     }
-    .afr-rating-big.good { color: #16a34a; }
-    .afr-rating-big.mid  { color: #d97706; }
-    .afr-rating-big.bad  { color: #dc2626; }
+
+    .afr-rating-big.good {
+      color: #16a34a;
+    }
+
+    .afr-rating-big.mid {
+      color: #d97706;
+    }
+
+    .afr-rating-big.bad {
+      color: #dc2626;
+    }
+
     .afr-rating-stars {
       color: #f59e0b;
       font-size: 0.58rem;
       letter-spacing: 1.5px;
       line-height: 1;
     }
-    .afr-rating-stars .far { color: #d6dee8; }
+
+    .afr-rating-stars .far {
+      color: #d6dee8;
+    }
+
     .afr-rating-label {
       color: #94a3b8;
       font-size: 0.53rem;
@@ -1274,7 +1600,11 @@
       line-height: 1;
       text-transform: uppercase;
     }
-    .afr-card-section-title i { color: var(--card-color, #2563eb); font-size: 0.68rem; }
+
+    .afr-card-section-title i {
+      color: var(--card-color, #2563eb);
+      font-size: 0.68rem;
+    }
 
     /* scorecard: three comparison axes, aligned across every card */
     .afr-scorecard {
@@ -1285,6 +1615,7 @@
       border-radius: 13px;
       padding: 0.78rem 0.3rem;
     }
+
     .afr-score-col {
       display: flex;
       flex-direction: column;
@@ -1295,7 +1626,11 @@
       border-right: 1px solid #e6ecf4;
       min-width: 0;
     }
-    .afr-score-col:last-child { border-right: none; }
+
+    .afr-score-col:last-child {
+      border-right: none;
+    }
+
     .afr-score-val {
       font-size: 0.95rem;
       font-weight: 800;
@@ -1306,11 +1641,25 @@
       text-overflow: ellipsis;
       max-width: 100%;
     }
-    .afr-score-val.good { color: #16a34a; }
-    .afr-score-val.mid  { color: #d97706; }
-    .afr-score-val.bad  { color: #dc2626; }
+
+    .afr-score-val.good {
+      color: #16a34a;
+    }
+
+    .afr-score-val.mid {
+      color: #d97706;
+    }
+
+    .afr-score-val.bad {
+      color: #dc2626;
+    }
+
     .afr-score-val.na,
-    .afr-score-val .na  { color: #cbd5e1; font-weight: 700; }
+    .afr-score-val .na {
+      color: #cbd5e1;
+      font-weight: 700;
+    }
+
     .afr-score-lbl {
       font-size: 0.58rem;
       font-weight: 700;
@@ -1321,13 +1670,17 @@
     }
 
     /* Small-sample muted states */
-    .afr-rating-big.muted { color: #94a3b8; }
+    .afr-rating-big.muted {
+      color: #94a3b8;
+    }
+
     .afr-scorecard.afr-scorecard-muted {
       grid-template-columns: 1fr;
       align-items: center;
       justify-items: center;
       min-height: 58px;
     }
+
     .afr-nodata {
       display: flex;
       align-items: center;
@@ -1339,7 +1692,10 @@
       line-height: 1.35;
       padding: 0 0.5rem;
     }
-    .afr-nodata i { color: #cbd5e1; }
+
+    .afr-nodata i {
+      color: #cbd5e1;
+    }
 
     /* Safe-harbour disclaimer */
     .afr-legal-disclaimer {
@@ -1352,8 +1708,17 @@
       line-height: 1.55;
       color: #64748b;
     }
-    .afr-legal-disclaimer i { color: #2563eb; margin-right: 0.35rem; }
-    .afr-legal-disclaimer a { color: #2563eb; font-weight: 600; text-decoration: underline; }
+
+    .afr-legal-disclaimer i {
+      color: #2563eb;
+      margin-right: 0.35rem;
+    }
+
+    .afr-legal-disclaimer a {
+      color: #2563eb;
+      font-weight: 600;
+      text-decoration: underline;
+    }
 
     /* work exposure / domain tags */
     .afr-exposure {
@@ -1363,12 +1728,17 @@
       border-radius: 13px;
       background: #fbfcfe;
     }
-    .afr-exposure .afr-card-section-title { margin-bottom: 0.55rem; }
+
+    .afr-exposure .afr-card-section-title {
+      margin-bottom: 0.55rem;
+    }
+
     .afr-tags {
       display: flex;
       flex-wrap: wrap;
       gap: 0.45rem;
     }
+
     .afr-tag {
       font-size: 0.7rem;
       font-weight: 600;
@@ -1379,6 +1749,7 @@
       border-radius: var(--radius-full);
       white-space: nowrap;
     }
+
     .afr-tags-empty {
       color: #94a3b8;
       font-size: 0.75rem;
@@ -1394,13 +1765,19 @@
       border-top: 1px solid #eaf0f6;
       margin-top: auto;
     }
+
     .afr-review-count {
       font-size: 0.75rem;
       color: var(--text-muted);
       font-weight: 600;
       line-height: 1;
     }
-    .afr-review-count i { color: #94a3b8; margin-right: 0.25rem; }
+
+    .afr-review-count i {
+      color: #94a3b8;
+      margin-right: 0.25rem;
+    }
+
     .afr-card-cta {
       font-size: 0.78rem;
       font-weight: 700;
@@ -1414,8 +1791,15 @@
       padding: 0.48rem 0.65rem;
       box-shadow: 0 4px 10px rgba(29, 78, 216, 0.16);
     }
-    .afr-card-cta i { transition: transform 0.2s ease; font-size: 0.75rem; }
-    .afr-card:hover .afr-card-cta i { transform: translateX(4px); }
+
+    .afr-card-cta i {
+      transition: transform 0.2s ease;
+      font-size: 0.75rem;
+    }
+
+    .afr-card:hover .afr-card-cta i {
+      transform: translateX(4px);
+    }
 
     /* ── States ────────────────────────────────────────────────────── */
     .afr-loading {
@@ -1427,23 +1811,40 @@
       padding: 5rem 1rem;
       color: var(--text-muted);
     }
+
     .afr-spinner {
-      width: 38px; height: 38px;
+      width: 38px;
+      height: 38px;
       border: 3px solid #e2e8f0;
       border-top-color: var(--primary-brand);
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    @media (prefers-reduced-motion: reduce) {
-      .afr-spinner { animation-duration: 1.6s; }
-      .afr-card, .afr-hero-btn, .afr-card-cta i { transition: none; }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
     }
+
+    @media (prefers-reduced-motion: reduce) {
+      .afr-spinner {
+        animation-duration: 1.6s;
+      }
+
+      .afr-card,
+      .afr-hero-btn,
+      .afr-card-cta i {
+        transition: none;
+      }
+    }
+
     .afr-empty {
       grid-column: 1/-1;
       text-align: center;
       padding: 4rem 1rem;
     }
+
     .afr-empty-icon {
       font-size: 2.25rem !important;
       margin-bottom: 1rem !important;
@@ -1451,18 +1852,21 @@
       opacity: 0.45 !important;
       color: #94a3b8 !important;
     }
+
     .afr-empty h3 {
       font-size: 1.125rem;
       color: #0f172a;
       margin-bottom: 0.35rem;
       font-weight: 700;
     }
+
     .afr-empty p {
       font-size: 0.8125rem;
       color: #64748b;
       font-weight: 500;
       margin-bottom: 0.5rem;
     }
+
     .afr-btn-empty-state {
       background: linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%);
       color: #fff;
@@ -1480,10 +1884,12 @@
       box-shadow: 0 6px 16px rgba(29, 78, 216, 0.2);
       transition: all 0.2s ease;
     }
+
     .afr-btn-empty-state:hover {
       transform: translateY(-1px);
       box-shadow: 0 10px 22px rgba(29, 78, 216, 0.3);
     }
+
     .afr-btn-empty-state i {
       font-size: 0.8125rem !important;
       display: inline-block !important;
@@ -1491,24 +1897,47 @@
       color: #fff !important;
       margin-bottom: 0 !important;
     }
+
     .afr-error {
       grid-column: 1/-1;
       text-align: center;
       padding: 3rem 1rem;
       color: #dc2626;
     }
-    .afr-error i { font-size: 2rem; margin-bottom: 0.75rem; display: block; }
+
+    .afr-error i {
+      font-size: 2rem;
+      margin-bottom: 0.75rem;
+      display: block;
+    }
 
     /* ── Responsive ────────────────────────────────────────────────── */
     @media (max-width: 1024px) {
-      .afr-body-container { padding: 0 1.25rem 4rem; }
-      .afr-grid { gap: 1.1rem; }
+      .afr-body-container {
+        padding: 0 1.25rem 4rem;
+      }
+
+      .afr-grid {
+        gap: 1.1rem;
+      }
     }
+
     @media (max-width: 900px) {
-      .afr-hero { padding: 2.5rem 0 4.25rem; }
-      .afr-hero-inner { flex-direction: column; align-items: stretch; gap: 1.75rem; }
+      .afr-hero {
+        padding: 2.5rem 0 4.25rem;
+      }
+
+      .afr-hero-inner {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1.75rem;
+      }
+
       .afr-hero-side,
-      .afr-hero-side-container { display: none !important; }
+      .afr-hero-side-container {
+        display: none !important;
+      }
+
       .afr-command-bar {
         position: sticky !important;
         top: 60px !important;
@@ -1520,7 +1949,7 @@
         border-radius: 20px !important;
         border: 1px solid #e3eaf4 !important;
       }
-      
+
       .afr-search-bar-unified {
         flex-direction: row !important;
         align-items: center !important;
@@ -1530,33 +1959,38 @@
         box-shadow: none !important;
         border-radius: 14px !important;
       }
+
       .afr-search-bar-unified .segment-divider,
       .afr-search-bar-unified .segment-dropdown-container {
         display: none !important;
       }
+
       .afr-mobile-filter-btn {
         display: inline-flex !important;
       }
+
       .afr-search-bar-unified .segment-search {
         padding: 0.5rem 0.75rem !important;
         flex: 1 !important;
       }
+
       .afr-chip-rail {
         display: none !important;
       }
     }
-    
+
     /* Mobile results count bar */
     .mobile-results-header {
       display: none;
     }
+
     @media (max-width: 900px) {
       .mobile-results-header {
         display: block;
         margin-bottom: 0.85rem;
       }
     }
-    
+
     /* Mobile Filters Button (Mobile only) */
     .afr-mobile-filter-btn {
       display: none;
@@ -1577,22 +2011,35 @@
       height: 40px;
       margin-left: 0.5rem;
     }
+
     .afr-mobile-filter-btn:hover {
       transform: translateY(-1px);
       box-shadow: 0 6px 14px rgba(29, 78, 216, 0.25);
     }
+
     .afr-mobile-filter-btn i {
       font-size: 0.875rem;
     }
+
     @media (max-width: 620px) {
-      .afr-body-container { padding: 0 1rem 3.5rem; }
-      .afr-hstat { padding: 0 1rem; }
-      .afr-grid { grid-template-columns: 1fr; }
+      .afr-body-container {
+        padding: 0 1rem 3.5rem;
+      }
+
+      .afr-hstat {
+        padding: 0 1rem;
+      }
+
+      .afr-grid {
+        grid-template-columns: 1fr;
+      }
+
       .afr-chip-rail {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.8rem;
       }
+
       .afr-chip-rail-right {
         margin-left: 0;
         width: 100%;
@@ -1612,9 +2059,11 @@
       align-items: flex-end;
       justify-content: center;
     }
+
     .filter-modal-overlay.show .filter-modal-content {
       transform: translateY(0);
     }
+
     .filter-modal-content {
       background: #ffffff;
       border-radius: 24px 24px 0 0;
@@ -1627,6 +2076,7 @@
       transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
       overflow: hidden;
     }
+
     .filter-modal-content .modal-header {
       display: flex;
       align-items: center;
@@ -1635,12 +2085,14 @@
       border-bottom: 1px solid #edf2f7;
       flex-shrink: 0;
     }
+
     .filter-modal-content .modal-header h4 {
       margin: 0;
       font-size: 1.05rem;
       font-weight: 700;
       color: #1e293b;
     }
+
     .filter-modal-content .modal-close-action {
       background: #f1f5f9;
       border: none;
@@ -1656,17 +2108,21 @@
       line-height: 1;
       transition: background 0.15s;
     }
+
     .filter-modal-content .modal-close-action:hover {
       background: #e2e8f0;
     }
+
     .filter-modal-content .modal-body {
       padding: 1rem 1.25rem;
       overflow-y: auto;
       flex: 1;
     }
+
     .filter-modal-content .filter-group {
       margin-bottom: 1.1rem;
     }
+
     .filter-modal-content .filter-group label {
       display: block;
       font-size: 0.7rem;
@@ -1676,6 +2132,7 @@
       color: #64748b;
       margin-bottom: 0.45rem;
     }
+
     .filter-modal-content .filter-control {
       width: 100%;
       padding: 0.65rem 0.85rem;
@@ -1693,11 +2150,13 @@
       cursor: pointer;
       transition: border-color 0.15s;
     }
+
     .filter-modal-content .filter-control:focus {
       outline: none;
       border-color: #3b82f6;
       background-color: #fff;
     }
+
     .filter-modal-content .modal-footer {
       display: flex;
       gap: 0.75rem;
@@ -1705,6 +2164,7 @@
       border-top: 1px solid #edf2f7;
       flex-shrink: 0;
     }
+
     .filter-modal-content .modal-footer .btn {
       flex: 1;
       padding: 0.7rem 1rem;
@@ -1716,23 +2176,28 @@
       transition: all 0.15s;
       border: none;
     }
+
     .filter-modal-content .modal-footer .btn:first-child {
       background: #f1f5f9;
       color: #64748b;
       border: 1.5px solid #e2e8f0;
     }
+
     .filter-modal-content .modal-footer .btn:first-child:hover {
       background: #e2e8f0;
     }
+
     .filter-modal-content .modal-footer .btn:last-child {
       background: linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%);
       color: #ffffff;
       box-shadow: 0 4px 12px rgba(29, 78, 216, 0.3);
     }
+
     .filter-modal-content .modal-footer .btn:last-child:hover {
       transform: translateY(-1px);
       box-shadow: 0 6px 16px rgba(29, 78, 216, 0.35);
     }
+
     /* Mobile drawer tag pills styling */
     .filter-modal-content .tag-pill-btn {
       display: inline-flex;
@@ -1749,16 +2214,19 @@
       cursor: pointer;
       transition: all 0.15s;
     }
+
     .filter-modal-content .tag-pill-btn:hover {
       border-color: #3b82f6;
       color: #1d4ed8;
       background: #eff6ff;
     }
+
     .filter-modal-content .tag-pill-btn.active {
       background: linear-gradient(135deg, #1d4ed8, #1e3a8a);
       color: #ffffff;
       border-color: transparent;
     }
+
     /* Mobile drawer tab switcher overrides */
     .filter-modal-content .afr-filter-tabs {
       background: #f1f5f9;
@@ -1766,24 +2234,29 @@
       border-radius: 10px;
       gap: 2px;
     }
+
     .filter-modal-content .afr-tab-btn {
       flex: 1;
       padding: 0.4rem 0.5rem;
       font-size: 0.73rem;
     }
+
     .filter-modal-content .afr-tab-panel {
       display: none;
       flex-wrap: wrap;
       gap: 0;
     }
+
     .filter-modal-content .afr-tab-panel.active {
       display: flex;
     }
+
     .mobile-drawer-tabs {
       display: flex;
       margin-bottom: 0.75rem;
       width: 100%;
     }
+
     .mobile-drawer-tab-contents {
       display: flex;
       flex-direction: column;
@@ -1793,60 +2266,65 @@
       padding: 0.85rem;
       background: #f8fafc;
     }
-      /* ── Redesigned Header Link Pills ───────────────────────────────────── */
+
+    /* ── Redesigned Header Link Pills ───────────────────────────────────── */
+    .afd-header-pill-link {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 0.4rem 1rem;
+      font-family: var(--font-main);
+      font-size: 12.5px;
+      font-weight: 700;
+      border-radius: 99px;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      box-shadow: 0 2px 6px rgba(46, 108, 230, 0.04);
+    }
+
+    @media (min-width: 640px) {
       .afd-header-pill-link {
-        display: none;
-        align-items: center;
-        justify-content: center;
-        padding: 0.4rem 1rem;
-        font-family: var(--font-main);
-        font-size: 12.5px;
-        font-weight: 700;
-        border-radius: 99px;
-        transition: all 0.2s ease;
-        text-decoration: none;
-        box-shadow: 0 2px 6px rgba(46, 108, 230, 0.04);
+        display: inline-flex;
       }
-      @media (min-width: 640px) {
-        .afd-header-pill-link {
-          display: inline-flex;
-        }
-      }
+    }
 
-      /* Articleship Program (Primary theme) */
-      .afd-header-pill-link:not(.secondary) {
-        background: #eaf1fe;
-        color: #1d4ed8;
-        border: 1px solid #dbe7fd;
-      }
-      .afd-header-pill-link:not(.secondary):hover {
-        background: #dbe7fd;
-        color: #1e3a8a;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 10px rgba(46, 108, 230, 0.08);
-      }
+    /* Articleship Program (Primary theme) */
+    .afd-header-pill-link:not(.secondary) {
+      background: #eaf1fe;
+      color: #1d4ed8;
+      border: 1px solid #dbe7fd;
+    }
 
-      /* Portal Link (Secondary theme) */
-      .afd-header-pill-link.secondary {
-        background: #ffffff;
-        color: #475569;
-        border: 1px solid #e2e8f0;
-      }
-      .afd-header-pill-link.secondary:hover {
-        background: #eaf1fe;
-        color: #1d4ed8;
-        border-color: #bcd4fb;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
-      }
-    </style>
+    .afd-header-pill-link:not(.secondary):hover {
+      background: #dbe7fd;
+      color: #1e3a8a;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(46, 108, 230, 0.08);
+    }
+
+    /* Portal Link (Secondary theme) */
+    .afd-header-pill-link.secondary {
+      background: #ffffff;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+    }
+
+    .afd-header-pill-link.secondary:hover {
+      background: #eaf1fe;
+      color: #1d4ed8;
+      border-color: #bcd4fb;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+    }
+  </style>
   <!-- Standard Favicon -->
-<!-- Fallback Shortcut Icon -->
+  <!-- Fallback Shortcut Icon -->
   <!-- Standard Favicon -->
   <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
   <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
   <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
 </head>
+
 <body>
 
   <header class="site-header">
@@ -1900,10 +2378,12 @@
           </svg>
         </button>
         <div class="dropdown-content" id="toolsDropdown">
-          <a href="/articleship-firm-reviews.html" class="dropdown-item active" aria-current="page">Articleship Firm Reviews</a>
+          <a href="/articleship-firm-reviews.html" class="dropdown-item active" aria-current="page">Articleship Firm
+            Reviews</a>
           <a href="/cv-reviewer/" class="dropdown-item">AI CV Reviewer</a>
           <a href="/ai-interview.html" class="dropdown-item">AI Mock Interview Bot</a>
-          <a href="/ICAI-Campus-Shortlisting-Predictor/index.html" class="dropdown-item">Campus Shortlisting Predictor</a>
+          <a href="/ICAI-Campus-Shortlisting-Predictor/index.html" class="dropdown-item">Campus Shortlisting
+            Predictor</a>
         </div>
       </div>
       <a href="/contact.html" class="menu-item">Contact Us</a>
@@ -1916,10 +2396,12 @@
   <section class="afr-hero">
     <div class="afr-hero-inner">
       <div class="afr-hero-copy animate-fade-right">
-        <span class="afr-hero-eyebrow"><i class="fas fa-user-secret"></i> 100% anonymous · by CA articles, for CA articles</span>
+        <span class="afr-hero-eyebrow"><i class="fas fa-user-secret"></i> 100% anonymous · by CA articles, for CA
+          articles</span>
         <h1>Know the firm <span class="text-gradient">before you sign.</span></h1>
-        <p class="afr-hero-sub">Honest reviews of articleship firms — stipend, hours, culture — written anonymously by students who trained there.</p>
-        
+        <p class="afr-hero-sub">Honest reviews of articleship firms — stipend, hours, culture — written anonymously by
+          students who trained there.</p>
+
         <div class="afr-hero-features">
           <div class="afr-hfeature">
             <div class="afr-hfeature-icon-wrap"><i class="fas fa-user-shield"></i></div>
@@ -1950,7 +2432,9 @@
           <!-- Card 1 -->
           <div class="afr-floating-review card-1">
             <div class="afr-fr-header">
-              <div class="afr-fr-avatar" style="background: rgba(59, 130, 246, 0.15); border-color: rgba(59, 130, 246, 0.3); color: #60a5fa">P</div>
+              <div class="afr-fr-avatar"
+                style="background: rgba(59, 130, 246, 0.15); border-color: rgba(59, 130, 246, 0.3); color: #60a5fa">P
+              </div>
               <div class="afr-fr-info">
                 <span class="afr-fr-name">PwC India</span>
                 <span class="afr-fr-loc">Mumbai</span>
@@ -1959,22 +2443,26 @@
                 <i class="fas fa-star" style="color: #f59e0b"></i> 4.8
               </div>
             </div>
-            <p class="afr-fr-text">"Excellent learning exposure in Statutory Audit. Work hours are long but stipend is always on time."</p>
+            <p class="afr-fr-text">"Excellent learning exposure in Statutory Audit. Work hours are long but stipend is
+              always on time."</p>
             <div class="afr-fr-meta">
               <span class="afr-fr-tag">Stat Audit</span>
               <div class="afr-fr-stipend-wrap">
                 <svg class="afr-sparkline" width="36" height="14" viewBox="0 0 36 14">
-                  <path d="M0 10 Q 9 2, 18 8 T 36 2" fill="none" stroke="#10b981" stroke-width="1.8" stroke-linecap="round"></path>
+                  <path d="M0 10 Q 9 2, 18 8 T 36 2" fill="none" stroke="#10b981" stroke-width="1.8"
+                    stroke-linecap="round"></path>
                 </svg>
                 <span class="afr-fr-stipend">₹15,000</span>
               </div>
             </div>
           </div>
-          
+
           <!-- Card 2 -->
           <div class="afr-floating-review card-2">
             <div class="afr-fr-header">
-              <div class="afr-fr-avatar" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.3); color: #34d399">D</div>
+              <div class="afr-fr-avatar"
+                style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.3); color: #34d399">D
+              </div>
               <div class="afr-fr-info">
                 <span class="afr-fr-name">Deloitte</span>
                 <span class="afr-fr-loc">Bangalore</span>
@@ -1983,12 +2471,14 @@
                 <i class="fas fa-star" style="color: #f59e0b"></i> 4.5
               </div>
             </div>
-            <p class="afr-fr-text">"Amazing work-life balance compared to peer firms. Transfer support is easily approved."</p>
+            <p class="afr-fr-text">"Amazing work-life balance compared to peer firms. Transfer support is easily
+              approved."</p>
             <div class="afr-fr-meta">
               <span class="afr-fr-tag">Taxation</span>
               <div class="afr-fr-stipend-wrap">
                 <svg class="afr-sparkline" width="36" height="14" viewBox="0 0 36 14">
-                  <path d="M0 8 Q 9 12, 18 4 T 36 2" fill="none" stroke="#10b981" stroke-width="1.8" stroke-linecap="round"></path>
+                  <path d="M0 8 Q 9 12, 18 4 T 36 2" fill="none" stroke="#10b981" stroke-width="1.8"
+                    stroke-linecap="round"></path>
                 </svg>
                 <span class="afr-fr-stipend">₹12,500</span>
               </div>
@@ -2020,7 +2510,7 @@
               <input id="search-input" type="search" placeholder="Search firms…" aria-label="Search firm name">
             </div>
           </div>
-          
+
           <div class="segment-divider"></div>
 
           <!-- Segment 2: Location -->
@@ -2065,22 +2555,23 @@
               </select>
             </div>
           </div>
-          
+
           <!-- Filters Button (Mobile Only) -->
           <button id="open-filter-modal-btn" class="afr-mobile-filter-btn" aria-label="Open Filters">
             <i class="fas fa-sliders"></i>
             <span>Filters</span>
           </button>
         </div>
-        
+
         <div class="afr-chip-rail">
           <!-- Switcher -->
           <div class="afr-filter-tabs">
             <button class="afr-tab-btn active" data-target="domain-group"><i class="fas fa-tags"></i> Domain</button>
             <button class="afr-tab-btn" data-target="client-group"><i class="fas fa-building"></i> Clients</button>
-            <button class="afr-tab-btn" data-target="skill-group"><i class="fas fa-screwdriver-wrench"></i> Skills</button>
+            <button class="afr-tab-btn" data-target="skill-group"><i class="fas fa-screwdriver-wrench"></i>
+              Skills</button>
           </div>
-          
+
           <!-- Separator -->
           <div class="afr-tab-separator"></div>
 
@@ -2110,7 +2601,8 @@
               <button class="tag-pill-btn" data-type="Skills" data-tag="SAP">SAP</button>
               <button class="tag-pill-btn" data-type="Skills" data-tag="Excel">Excel</button>
               <button class="tag-pill-btn" data-type="Skills" data-tag="Tally">Tally</button>
-              <button class="tag-pill-btn" data-type="Skills" data-tag="Financial Modelling">Financial Modelling</button>
+              <button class="tag-pill-btn" data-type="Skills" data-tag="Financial Modelling">Financial
+                Modelling</button>
               <button class="tag-pill-btn" data-type="Skills" data-tag="Data Analytics">Data Analytics</button>
             </div>
           </div>
@@ -2119,7 +2611,8 @@
           <div class="afr-chip-rail-right">
             <span id="title-firms-count" class="afr-count-badge" style="display: none;"></span>
             <span id="active-tag-badge" class="active-filter-badge" style="display: none;"></span>
-            <button id="clear-filters-btn" class="clear-filters-btn" style="display: none;"><i class="fas fa-xmark"></i> Clear Filters</button>
+            <button id="clear-filters-btn" class="clear-filters-btn" style="display: none;"><i class="fas fa-xmark"></i>
+              Clear Filters</button>
           </div>
         </div>
       </div>
@@ -2131,7 +2624,9 @@
         <!-- Safe-harbour disclaimer -->
         <p class="afr-legal-disclaimer">
           <i class="fas fa-circle-info"></i>
-          Reviews are anonymous, user-submitted personal opinions and do not represent the views of My Student Club. As an intermediary we only host user-generated content and are not responsible for its accuracy; reported reviews are examined and removed if they breach our <a href="#" id="afr-guidelines-link">Review Guidelines</a>.
+          Reviews are anonymous, user-submitted personal opinions and do not represent the views of My Student Club. As
+          an intermediary we only host user-generated content and are not responsible for its accuracy; reported reviews
+          are examined and removed if they breach our <a href="#" id="afr-guidelines-link">Review Guidelines</a>.
         </p>
       </main>
 
@@ -2148,7 +2643,8 @@
               <span class="txt">Pay it forward</span>
             </div>
             <h2 class="afr-cta-title">Survived those<br /><em>articleship</em> days?</h2>
-            <p class="afr-cta-copy">Tell the next batch what it's really like — the learning, the stipend timeliness, and the hours. Two minutes of honesty can redirect someone's career.</p>
+            <p class="afr-cta-copy">Tell the next batch what it's really like — the learning, the stipend timeliness,
+              and the hours. Two minutes of honesty can redirect someone's career.</p>
             <button class="afr-btn-white" id="cta-reviews-write-btn">
               <i class="fas fa-pen" style="font-size:14px;margin-right:4px;"></i>
               Write an anonymous review
@@ -2200,23 +2696,31 @@
         <div class="filter-group">
           <label>Expertise &amp; Exposure Tags</label>
           <div class="afr-filter-tabs mobile-drawer-tabs">
-            <button type="button" class="afr-tab-btn active" data-target="domain-group-mobile"><i class="fas fa-tags"></i> Domain</button>
-            <button type="button" class="afr-tab-btn" data-target="client-group-mobile"><i class="fas fa-building"></i> Clients</button>
-            <button type="button" class="afr-tab-btn" data-target="skill-group-mobile"><i class="fas fa-screwdriver-wrench"></i> Skills</button>
+            <button type="button" class="afr-tab-btn active" data-target="domain-group-mobile"><i
+                class="fas fa-tags"></i> Domain</button>
+            <button type="button" class="afr-tab-btn" data-target="client-group-mobile"><i class="fas fa-building"></i>
+              Clients</button>
+            <button type="button" class="afr-tab-btn" data-target="skill-group-mobile"><i
+                class="fas fa-screwdriver-wrench"></i> Skills</button>
           </div>
           <div class="mobile-drawer-tab-contents">
             <div class="afr-tab-panel active" id="domain-group-mobile">
-              <button type="button" class="tag-pill-btn" data-type="Domain" data-tag="Statutory Audit">Statutory Audit</button>
-              <button type="button" class="tag-pill-btn" data-type="Domain" data-tag="Internal Audit">Internal Audit</button>
+              <button type="button" class="tag-pill-btn" data-type="Domain" data-tag="Statutory Audit">Statutory
+                Audit</button>
+              <button type="button" class="tag-pill-btn" data-type="Domain" data-tag="Internal Audit">Internal
+                Audit</button>
               <button type="button" class="tag-pill-btn" data-type="Domain" data-tag="Income Tax">Income Tax</button>
               <button type="button" class="tag-pill-btn" data-type="Domain" data-tag="GST">GST</button>
               <button type="button" class="tag-pill-btn" data-type="Domain" data-tag="Bank Audit">Bank Audit</button>
               <button type="button" class="tag-pill-btn" data-type="Domain" data-tag="Accounting">Accounting</button>
             </div>
             <div class="afr-tab-panel" id="client-group-mobile">
-              <button type="button" class="tag-pill-btn" data-type="Clients" data-tag="Listed Companies">Listed Companies</button>
-              <button type="button" class="tag-pill-btn" data-type="Clients" data-tag="Manufacturing">Manufacturing</button>
-              <button type="button" class="tag-pill-btn" data-type="Clients" data-tag="Financial Services">Financial Services</button>
+              <button type="button" class="tag-pill-btn" data-type="Clients" data-tag="Listed Companies">Listed
+                Companies</button>
+              <button type="button" class="tag-pill-btn" data-type="Clients"
+                data-tag="Manufacturing">Manufacturing</button>
+              <button type="button" class="tag-pill-btn" data-type="Clients" data-tag="Financial Services">Financial
+                Services</button>
               <button type="button" class="tag-pill-btn" data-type="Clients" data-tag="Real Estate">Real Estate</button>
               <button type="button" class="tag-pill-btn" data-type="Clients" data-tag="Outsourcing">Outsourcing</button>
             </div>
@@ -2224,8 +2728,10 @@
               <button type="button" class="tag-pill-btn" data-type="Skills" data-tag="SAP">SAP</button>
               <button type="button" class="tag-pill-btn" data-type="Skills" data-tag="Excel">Excel</button>
               <button type="button" class="tag-pill-btn" data-type="Skills" data-tag="Tally">Tally</button>
-              <button type="button" class="tag-pill-btn" data-type="Skills" data-tag="Financial Modelling">Financial Modelling</button>
-              <button type="button" class="tag-pill-btn" data-type="Skills" data-tag="Data Analytics">Data Analytics</button>
+              <button type="button" class="tag-pill-btn" data-type="Skills" data-tag="Financial Modelling">Financial
+                Modelling</button>
+              <button type="button" class="tag-pill-btn" data-type="Skills" data-tag="Data Analytics">Data
+                Analytics</button>
             </div>
           </div>
         </div>
@@ -2245,7 +2751,7 @@
   <script src="/articleship-review-wizard.js"></script>
 
   <script>
-    const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+    const supabaseUrl = 'https://auth.mystudentclub.com';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
@@ -2257,7 +2763,7 @@
     menuCloseBtn.addEventListener('click', () => expandedMenu.classList.remove('active'));
     document.addEventListener('click', (e) => {
       if (expandedMenu.classList.contains('active') &&
-          !expandedMenu.contains(e.target) && !menuButton.contains(e.target))
+        !expandedMenu.contains(e.target) && !menuButton.contains(e.target))
         expandedMenu.classList.remove('active');
     });
     document.querySelectorAll('.menu-item-dropdown > .menu-item').forEach(btn => {
@@ -2272,10 +2778,10 @@
     // ── Helpers ───────────────────────────────────────────────────────────
     function escapeHTML(s) {
       return String(s ?? '').replace(/[&<>"']/g, c =>
-        ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+        ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     }
 
-    const AVATAR_COLORS = ['#1e3a8a','#1d4ed8','#2563eb','#0284c7','#475569','#334155'];
+    const AVATAR_COLORS = ['#1e3a8a', '#1d4ed8', '#2563eb', '#0284c7', '#475569', '#334155'];
     function firmColor(name) {
       let h = 0;
       for (const c of String(name)) h = (h * 31 + c.charCodeAt(0)) & 0x7fffffff;
@@ -2355,7 +2861,7 @@
       const gridEl = document.getElementById('firm-list');
       const containerWidth = gridEl ? gridEl.clientWidth : 800;
       const CARD_MIN = 290;  // matches minmax(min(100%, 290px), 1fr)
-      const GAP_PX  = 19;   // 1.2rem ≈ 19px
+      const GAP_PX = 19;   // 1.2rem ≈ 19px
       const cols = Math.max(1, Math.floor((containerWidth + GAP_PX) / (CARD_MIN + GAP_PX)));
       // Target ~4 visible rows; round up to nearest full row
       const targetRows = Math.max(4, Math.ceil(12 / cols));
@@ -2554,7 +3060,7 @@
 
       // Rebuild inner HTML of custom dropdown
       const selectedOption = select.options[select.selectedIndex] || select.options[0] || { text: '', value: '' };
-      
+
       let itemsHTML = '';
       for (let i = 0; i < select.options.length; i++) {
         const opt = select.options[i];
@@ -2591,11 +3097,11 @@
         item.addEventListener('click', (e) => {
           e.stopPropagation();
           select.value = item.dataset.value;
-          
+
           // Trigger events
           select.dispatchEvent(new Event('input', { bubbles: true }));
           select.dispatchEvent(new Event('change', { bubbles: true }));
-          
+
           // Re-init this dropdown to update selection classes and labels
           initCustomDropdown(selectId);
         });
@@ -2642,7 +3148,7 @@
       const locSel = document.getElementById('filter-location');
       if (locSel) locSel.innerHTML = optionsHTML;
       initCustomDropdown('filter-location');
-      
+
       const locSelMobile = document.getElementById('filter-location-mobile');
       if (locSelMobile) locSelMobile.innerHTML = optionsHTML;
     }
@@ -2650,14 +3156,14 @@
     function updateHeroStats(reviews) {
       const totalEl = document.getElementById('stat-total-reviews');
       if (totalEl) totalEl.textContent = reviews.length;
-      
+
       const stipendEl = document.getElementById('stat-avg-stipend');
       if (stipendEl) {
         const stipends = reviews.map(r => r.stipend).filter(s => typeof s === 'number');
         const avgStipend = stipends.length ? Math.round(stipends.reduce((a, b) => a + b, 0) / stipends.length) : null;
         stipendEl.textContent = avgStipend ? `₹${Number(avgStipend).toLocaleString('en-IN')}/mo` : '—';
       }
-      
+
       const locationsEl = document.getElementById('stat-locations-count');
       if (locationsEl) {
         const locations = new Set(reviews.map(r => r.location).filter(Boolean));
@@ -2670,43 +3176,43 @@
       const loc = document.getElementById('filter-location').value;
       const minStipend = document.getElementById('filter-stipend').value;
       const sort = document.getElementById('sort-by').value;
-      
+
       const qTokens = q.split(/\s+/).filter(Boolean);
       let out = FIRMS.filter(f => {
         const matchesQuery = !qTokens.length || qTokens.every(tok => {
           return f.firmName.toLowerCase().includes(tok) ||
-                 (f.location && f.location.toLowerCase().includes(tok)) ||
-                 f.topTags.some(t => t.toLowerCase().includes(tok)) ||
-                 f.reviews.some(r =>
-                   (r.domain_tags || []).some(t => t.toLowerCase().includes(tok)) ||
-                   (r.client_tags || []).some(t => t.toLowerCase().includes(tok)) ||
-                   (r.skill_tags || []).some(t => t.toLowerCase().includes(tok)) ||
-                   (r.review_text && r.review_text.toLowerCase().includes(tok))
-                 );
+            (f.location && f.location.toLowerCase().includes(tok)) ||
+            f.topTags.some(t => t.toLowerCase().includes(tok)) ||
+            f.reviews.some(r =>
+              (r.domain_tags || []).some(t => t.toLowerCase().includes(tok)) ||
+              (r.client_tags || []).some(t => t.toLowerCase().includes(tok)) ||
+              (r.skill_tags || []).some(t => t.toLowerCase().includes(tok)) ||
+              (r.review_text && r.review_text.toLowerCase().includes(tok))
+            );
         });
         const matchesLocation = !loc || f.location === loc;
         const matchesStipend = !minStipend || (f.avgStipend && f.avgStipend >= parseInt(minStipend, 10));
-        const matchesTag = !SELECTED_TAG || 
-          f.topTags.includes(SELECTED_TAG) || 
-          f.reviews.some(r => 
+        const matchesTag = !SELECTED_TAG ||
+          f.topTags.includes(SELECTED_TAG) ||
+          f.reviews.some(r =>
             (r.domain_tags || []).includes(SELECTED_TAG) ||
             (r.client_tags || []).includes(SELECTED_TAG) ||
             (r.skill_tags || []).includes(SELECTED_TAG)
           );
         return matchesQuery && matchesLocation && matchesStipend && matchesTag;
       });
-      
+
       if (sort === 'rating') out.sort((a, b) => b.avgOverall - a.avgOverall);
       else if (sort === 'count') out.sort((a, b) => b.count - a.count);
       else out.sort((a, b) => new Date(b.reviews[0].created_at) - new Date(a.reviews[0].created_at));
-      
+
       renderFirmList(out);
 
       // Manage Active Filters summary panel status update
       const statusContent = document.getElementById('filter-status-content');
       const clearBtnLink = document.getElementById('clear-filters-btn-panel');
       const firmsCountBadge = document.getElementById('title-firms-count-badge');
-      
+
       const activeFilters = [];
       if (q) activeFilters.push(`<span class="afr-status-pill">Name: ${escapeHTML(q)}</span>`);
       if (loc) activeFilters.push(`<span class="afr-status-pill">Loc: ${escapeHTML(loc)}</span>`);
@@ -2740,7 +3246,7 @@
 
     function initTagCloud() {
       const badge = document.getElementById('active-tag-badge');
-      
+
       // Scoped tab switching behavior for desktop and mobile tab groups
       document.querySelectorAll('.afr-tab-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -2749,18 +3255,18 @@
             tabTrack.querySelectorAll('.afr-tab-btn').forEach(b => b.classList.remove('active'));
           }
           btn.classList.add('active');
-          
+
           // Hide sibling panels in the respective parent container
           const panelParent = btn.closest('.afr-chip-rail') || btn.closest('.filter-group');
           if (panelParent) {
             panelParent.querySelectorAll('.afr-tab-panel').forEach(p => p.classList.remove('active'));
           }
-          
+
           const panel = document.getElementById(btn.dataset.target);
           if (panel) panel.classList.add('active');
         });
       });
-      
+
       // Tag pill click synchronization across desktop and mobile
       document.querySelectorAll('.tag-pill-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -2779,40 +3285,40 @@
               badge.style.display = 'inline-flex';
             }
           }
-          
+
           // Do not trigger filtering immediately inside mobile drawer overlays
           if (!btn.closest('.filter-modal-overlay')) {
             applyControls();
           }
         });
       });
-      
+
       const clearBtn = document.getElementById('clear-filters-btn');
       if (clearBtn) {
         clearBtn.addEventListener('click', () => {
           // Clear search
           const searchInput = document.getElementById('search-input');
           if (searchInput) searchInput.value = '';
-          
+
           // Clear location
           const locSel = document.getElementById('filter-location');
           if (locSel) {
             locSel.value = '';
             initCustomDropdown('filter-location');
           }
-          
+
           // Clear stipend
           const stipendSel = document.getElementById('filter-stipend');
           if (stipendSel) {
             stipendSel.value = '';
             initCustomDropdown('filter-stipend');
           }
-          
+
           // Clear tag
           SELECTED_TAG = null;
           document.querySelectorAll('.tag-pill-btn').forEach(b => b.classList.remove('active'));
           if (badge) badge.style.display = 'none';
-          
+
           applyControls();
         });
       }
@@ -2825,9 +3331,9 @@
             if (e.target !== input) input.focus();
             return;
           }
-          
+
           if (e.target.closest('.custom-dropdown-menu')) return;
-          
+
           const wrapper = seg.querySelector('.custom-dropdown');
           const trigger = seg.querySelector('.dropdown-trigger');
           if (wrapper && trigger) {
@@ -2848,16 +3354,16 @@
         await populateLocationFilter();
         updateHeroStats(reviews);
         initTagCloud();
-        
+
         // Initialize custom static dropdowns
         initCustomDropdown('filter-stipend');
         initCustomDropdown('sort-by');
-        
+
         const sidebarWriteBtn = document.getElementById('sidebar-write-btn');
         if (sidebarWriteBtn) {
           sidebarWriteBtn.addEventListener('click', () => ArticleshipReviewWizard.open());
         }
-        
+
         // Parse search query parameter from URL to pre-fill search input
         const urlParams = new URLSearchParams(window.location.search);
         const urlQuery = urlParams.get('q');
@@ -2867,7 +3373,7 @@
             searchInput.value = urlQuery;
           }
         }
-        
+
         applyControls();
       } catch (e) {
         host.innerHTML = `<div class="afr-error"><i class="fas fa-triangle-exclamation"></i><p>Couldn't load reviews: ${escapeHTML(e.message)}</p></div>`;
@@ -2911,110 +3417,110 @@
 
     // ── Mobile Drawer event wiring (deferred so modal HTML is guaranteed in DOM) ──
     function initMobileDrawer() {
-    const filterModalOverlay = document.getElementById('filterModalOverlay');
-    const openFilterModalBtn = document.getElementById('open-filter-modal-btn');
-    const closeFilterModalBtn = document.getElementById('closeFilterModalBtn');
-    const applyFiltersBtn = document.getElementById('applyFiltersBtn');
-    const mobileResetBtn = document.getElementById('mobileResetBtn');
-    
-    if (openFilterModalBtn && filterModalOverlay) {
-      // Open drawer
-      openFilterModalBtn.addEventListener('click', () => {
-        // Sync values from desktop inputs to mobile selects
-        const locMobile = document.getElementById('filter-location-mobile');
-        const stipendMobile = document.getElementById('filter-stipend-mobile');
-        const sortMobile = document.getElementById('sort-by-mobile');
-        
-        if (locMobile) locMobile.value = document.getElementById('filter-location').value;
-        if (stipendMobile) stipendMobile.value = document.getElementById('filter-stipend').value;
-        if (sortMobile) sortMobile.value = document.getElementById('sort-by').value;
-        
-        // Sync tag active classes inside the drawer
-        document.querySelectorAll('.filter-modal-content .tag-pill-btn').forEach(b => {
-          if (SELECTED_TAG && b.dataset.tag === SELECTED_TAG) {
-            b.classList.add('active');
-            
-            // Also trigger click on the corresponding tab button to switch to its panel inside the drawer!
-            const parentPanel = b.closest('.afr-tab-panel');
-            if (parentPanel) {
-              const tabBtn = document.querySelector(`.mobile-drawer-tabs .afr-tab-btn[data-target="${parentPanel.id}"]`);
-              if (tabBtn) tabBtn.click();
+      const filterModalOverlay = document.getElementById('filterModalOverlay');
+      const openFilterModalBtn = document.getElementById('open-filter-modal-btn');
+      const closeFilterModalBtn = document.getElementById('closeFilterModalBtn');
+      const applyFiltersBtn = document.getElementById('applyFiltersBtn');
+      const mobileResetBtn = document.getElementById('mobileResetBtn');
+
+      if (openFilterModalBtn && filterModalOverlay) {
+        // Open drawer
+        openFilterModalBtn.addEventListener('click', () => {
+          // Sync values from desktop inputs to mobile selects
+          const locMobile = document.getElementById('filter-location-mobile');
+          const stipendMobile = document.getElementById('filter-stipend-mobile');
+          const sortMobile = document.getElementById('sort-by-mobile');
+
+          if (locMobile) locMobile.value = document.getElementById('filter-location').value;
+          if (stipendMobile) stipendMobile.value = document.getElementById('filter-stipend').value;
+          if (sortMobile) sortMobile.value = document.getElementById('sort-by').value;
+
+          // Sync tag active classes inside the drawer
+          document.querySelectorAll('.filter-modal-content .tag-pill-btn').forEach(b => {
+            if (SELECTED_TAG && b.dataset.tag === SELECTED_TAG) {
+              b.classList.add('active');
+
+              // Also trigger click on the corresponding tab button to switch to its panel inside the drawer!
+              const parentPanel = b.closest('.afr-tab-panel');
+              if (parentPanel) {
+                const tabBtn = document.querySelector(`.mobile-drawer-tabs .afr-tab-btn[data-target="${parentPanel.id}"]`);
+                if (tabBtn) tabBtn.click();
+              }
+            } else {
+              b.classList.remove('active');
             }
-          } else {
-            b.classList.remove('active');
-          }
+          });
+
+          filterModalOverlay.style.display = 'flex';
+          setTimeout(() => filterModalOverlay.classList.add('show'), 10);
         });
-        
-        filterModalOverlay.style.display = 'flex';
-        setTimeout(() => filterModalOverlay.classList.add('show'), 10);
-      });
-      
-      // Close function
-      const closeDrawer = () => {
-        filterModalOverlay.classList.remove('show');
-        setTimeout(() => filterModalOverlay.style.display = 'none', 300);
-      };
-      
-      if (closeFilterModalBtn) {
-        closeFilterModalBtn.addEventListener('click', closeDrawer);
-      }
-      
-      // Close on backdrop click
-      filterModalOverlay.addEventListener('click', (e) => {
-        if (e.target === filterModalOverlay) closeDrawer();
-      });
-      
-      // Apply filters
-      if (applyFiltersBtn) {
-        applyFiltersBtn.addEventListener('click', () => {
-          const locVal = document.getElementById('filter-location-mobile').value;
-          const stipendVal = document.getElementById('filter-stipend-mobile').value;
-          const sortVal = document.getElementById('sort-by-mobile').value;
-          
-          // Copy to desktop inputs
-          document.getElementById('filter-location').value = locVal;
-          document.getElementById('filter-stipend').value = stipendVal;
-          document.getElementById('sort-by').value = sortVal;
-          
-          // Refresh custom dropdown visuals
-          initCustomDropdown('filter-location');
-          initCustomDropdown('filter-stipend');
-          initCustomDropdown('sort-by');
-          
-          applyControls();
-          closeDrawer();
+
+        // Close function
+        const closeDrawer = () => {
+          filterModalOverlay.classList.remove('show');
+          setTimeout(() => filterModalOverlay.style.display = 'none', 300);
+        };
+
+        if (closeFilterModalBtn) {
+          closeFilterModalBtn.addEventListener('click', closeDrawer);
+        }
+
+        // Close on backdrop click
+        filterModalOverlay.addEventListener('click', (e) => {
+          if (e.target === filterModalOverlay) closeDrawer();
         });
-      }
-      
-      // Reset filters
-      if (mobileResetBtn) {
-        mobileResetBtn.addEventListener('click', () => {
-          document.getElementById('filter-location-mobile').value = '';
-          document.getElementById('filter-stipend-mobile').value = '';
-          document.getElementById('sort-by-mobile').value = 'rating';
-          
-          document.getElementById('filter-location').value = '';
-          document.getElementById('filter-stipend').value = '';
-          document.getElementById('sort-by').value = 'rating';
-          
-          const searchInput = document.getElementById('search-input');
-          if (searchInput) searchInput.value = '';
-          
-          SELECTED_TAG = null;
-          document.querySelectorAll('.tag-pill-btn').forEach(b => b.classList.remove('active'));
-          const badge = document.getElementById('active-tag-badge');
-          if (badge) badge.style.display = 'none';
-          
-          // Refresh custom dropdown visuals
-          initCustomDropdown('filter-location');
-          initCustomDropdown('filter-stipend');
-          initCustomDropdown('sort-by');
-          
-          applyControls();
-          closeDrawer();
-        }); // end mobileResetBtn listener
-      } // end if(mobileResetBtn)
-    } // end if(openFilterModalBtn && filterModalOverlay)
+
+        // Apply filters
+        if (applyFiltersBtn) {
+          applyFiltersBtn.addEventListener('click', () => {
+            const locVal = document.getElementById('filter-location-mobile').value;
+            const stipendVal = document.getElementById('filter-stipend-mobile').value;
+            const sortVal = document.getElementById('sort-by-mobile').value;
+
+            // Copy to desktop inputs
+            document.getElementById('filter-location').value = locVal;
+            document.getElementById('filter-stipend').value = stipendVal;
+            document.getElementById('sort-by').value = sortVal;
+
+            // Refresh custom dropdown visuals
+            initCustomDropdown('filter-location');
+            initCustomDropdown('filter-stipend');
+            initCustomDropdown('sort-by');
+
+            applyControls();
+            closeDrawer();
+          });
+        }
+
+        // Reset filters
+        if (mobileResetBtn) {
+          mobileResetBtn.addEventListener('click', () => {
+            document.getElementById('filter-location-mobile').value = '';
+            document.getElementById('filter-stipend-mobile').value = '';
+            document.getElementById('sort-by-mobile').value = 'rating';
+
+            document.getElementById('filter-location').value = '';
+            document.getElementById('filter-stipend').value = '';
+            document.getElementById('sort-by').value = 'rating';
+
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) searchInput.value = '';
+
+            SELECTED_TAG = null;
+            document.querySelectorAll('.tag-pill-btn').forEach(b => b.classList.remove('active'));
+            const badge = document.getElementById('active-tag-badge');
+            if (badge) badge.style.display = 'none';
+
+            // Refresh custom dropdown visuals
+            initCustomDropdown('filter-location');
+            initCustomDropdown('filter-stipend');
+            initCustomDropdown('sort-by');
+
+            applyControls();
+            closeDrawer();
+          }); // end mobileResetBtn listener
+        } // end if(mobileResetBtn)
+      } // end if(openFilterModalBtn && filterModalOverlay)
     } // end initMobileDrawer
     initMobileDrawer();
   </script>
@@ -3022,4 +3528,5 @@
 
 
 </body>
+
 </html>

@@ -11,15 +11,36 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="scripts/style.css">
   <link rel="stylesheet" href="scripts/admin-styles.css">
-<style>
+  <style>
     /* SVG Sizing Fallbacks if Tailwind CDN fails */
-    svg.w-5 { width: 1.25rem; }
-    svg.h-5 { height: 1.25rem; }
-    svg.w-6 { width: 1.5rem; }
-    svg.h-6 { height: 1.5rem; }
-    svg.w-8 { width: 2rem; }
-    svg.h-8 { height: 2rem; }
-    svg { display: inline-block; vertical-align: middle; }
+    svg.w-5 {
+      width: 1.25rem;
+    }
+
+    svg.h-5 {
+      height: 1.25rem;
+    }
+
+    svg.w-6 {
+      width: 1.5rem;
+    }
+
+    svg.h-6 {
+      height: 1.5rem;
+    }
+
+    svg.w-8 {
+      width: 2rem;
+    }
+
+    svg.h-8 {
+      height: 2rem;
+    }
+
+    svg {
+      display: inline-block;
+      vertical-align: middle;
+    }
 
     .admin-header-actions {
       display: flex;
@@ -143,6 +164,7 @@
         opacity: 0;
         transform: translateY(-6px);
       }
+
       to {
         opacity: 1;
         transform: translateY(0);
@@ -499,11 +521,13 @@
       gap: 1rem;
       flex-wrap: wrap;
     }
+
     .lms-section-header-left {
       display: flex;
       align-items: center;
       gap: 0.75rem;
     }
+
     .lms-section-icon {
       display: flex;
       align-items: center;
@@ -515,7 +539,12 @@
       color: var(--primary);
       flex-shrink: 0;
     }
-    .lms-section-icon svg { width: 1.25rem; height: 1.25rem; }
+
+    .lms-section-icon svg {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+
     .lms-section-title {
       font-size: 1.15rem;
       font-weight: 700;
@@ -523,6 +552,7 @@
       margin: 0;
       line-height: 1.3;
     }
+
     .lms-section-subtitle {
       font-size: 0.82rem;
       color: var(--text-secondary);
@@ -540,20 +570,24 @@
       border: 1px solid var(--border);
       border-radius: 14px;
     }
+
     .lms-toolbar-select-wrap,
     .lms-toolbar-search-wrap {
       position: relative;
       display: flex;
       align-items: center;
     }
+
     .lms-toolbar-select-wrap {
       flex: 0 1 280px;
       min-width: 180px;
     }
+
     .lms-toolbar-search-wrap {
       flex: 1 1 220px;
       min-width: 160px;
     }
+
     .lms-toolbar-icon {
       position: absolute;
       left: 0.65rem;
@@ -563,6 +597,7 @@
       pointer-events: none;
       z-index: 1;
     }
+
     .lms-toolbar-select,
     .lms-toolbar-search {
       width: 100%;
@@ -579,18 +614,21 @@
       appearance: none;
       -webkit-appearance: none;
     }
+
     .lms-toolbar-select {
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%2394a3b8' viewBox='0 0 24 24'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2.5' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
       background-position: right 0.75rem center;
       padding-right: 2rem;
     }
+
     .lms-toolbar-select:focus,
     .lms-toolbar-search:focus {
       outline: none;
       border-color: var(--primary);
       box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
     }
+
     .lms-toolbar-sort-btn {
       display: inline-flex;
       align-items: center;
@@ -608,17 +646,27 @@
       transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
       flex-shrink: 0;
     }
-    .lms-toolbar-sort-btn svg { width: 1rem; height: 1rem; color: var(--text-secondary); }
+
+    .lms-toolbar-sort-btn svg {
+      width: 1rem;
+      height: 1rem;
+      color: var(--text-secondary);
+    }
+
     .lms-toolbar-sort-btn:hover {
       border-color: rgba(79, 70, 229, 0.35);
       box-shadow: var(--shadow-sm);
     }
+
     .lms-toolbar-sort-btn.active {
       background: rgba(79, 70, 229, 0.08);
       border-color: rgba(79, 70, 229, 0.3);
       color: var(--primary);
     }
-    .lms-toolbar-sort-btn.active svg { color: var(--primary); }
+
+    .lms-toolbar-sort-btn.active svg {
+      color: var(--primary);
+    }
 
     .lms-resource-status {
       min-height: 1.25rem;
@@ -787,28 +835,96 @@
       justify-content: center;
       flex-shrink: 0;
     }
+
     .lms-resource-type-icon svg {
       width: 1.1rem;
       height: 1.1rem;
     }
 
     /* ──── Type Color Themes ──── */
-    .lms-resource-type-icon.type-pdf { background: rgba(239, 68, 68, 0.1); color: #dc2626; }
-    .lms-resource-type-icon.type-csv { background: rgba(16, 185, 129, 0.1); color: #059669; }
-    .lms-resource-type-icon.type-link { background: rgba(139, 92, 246, 0.1); color: #7c3aed; }
-    .lms-resource-type-icon.type-image { background: rgba(245, 158, 11, 0.1); color: #d97706; }
-    .lms-resource-type-icon.type-video { background: rgba(6, 182, 212, 0.1); color: #0891b2; }
-    .lms-resource-type-icon.type-doc { background: rgba(59, 130, 246, 0.1); color: #2563eb; }
+    .lms-resource-type-icon.type-pdf {
+      background: rgba(239, 68, 68, 0.1);
+      color: #dc2626;
+    }
 
-    .lms-resource-tag.type-pdf { background: rgba(239, 68, 68, 0.08); color: #dc2626; border-color: rgba(239, 68, 68, 0.2); }
-    .lms-resource-tag.type-csv { background: rgba(16, 185, 129, 0.08); color: #059669; border-color: rgba(16, 185, 129, 0.2); }
-    .lms-resource-tag.type-link { background: rgba(139, 92, 246, 0.08); color: #7c3aed; border-color: rgba(139, 92, 246, 0.2); }
-    .lms-resource-tag.type-image { background: rgba(245, 158, 11, 0.08); color: #d97706; border-color: rgba(245, 158, 11, 0.2); }
-    .lms-resource-tag.type-video { background: rgba(6, 182, 212, 0.08); color: #0891b2; border-color: rgba(6, 182, 212, 0.2); }
-    .lms-resource-tag.type-doc { background: rgba(59, 130, 246, 0.08); color: #2563eb; border-color: rgba(59, 130, 246, 0.2); }
-    .lms-resource-tag.type-view { background: rgba(79, 70, 229, 0.06); color: var(--primary); border-color: rgba(79, 70, 229, 0.15); }
-    .lms-resource-tag.type-dl { background: rgba(16, 185, 129, 0.06); color: #059669; border-color: rgba(16, 185, 129, 0.15); }
-    .lms-resource-tag.type-viewonly { background: rgba(107, 114, 128, 0.06); color: #6b7280; border-color: rgba(107, 114, 128, 0.15); }
+    .lms-resource-type-icon.type-csv {
+      background: rgba(16, 185, 129, 0.1);
+      color: #059669;
+    }
+
+    .lms-resource-type-icon.type-link {
+      background: rgba(139, 92, 246, 0.1);
+      color: #7c3aed;
+    }
+
+    .lms-resource-type-icon.type-image {
+      background: rgba(245, 158, 11, 0.1);
+      color: #d97706;
+    }
+
+    .lms-resource-type-icon.type-video {
+      background: rgba(6, 182, 212, 0.1);
+      color: #0891b2;
+    }
+
+    .lms-resource-type-icon.type-doc {
+      background: rgba(59, 130, 246, 0.1);
+      color: #2563eb;
+    }
+
+    .lms-resource-tag.type-pdf {
+      background: rgba(239, 68, 68, 0.08);
+      color: #dc2626;
+      border-color: rgba(239, 68, 68, 0.2);
+    }
+
+    .lms-resource-tag.type-csv {
+      background: rgba(16, 185, 129, 0.08);
+      color: #059669;
+      border-color: rgba(16, 185, 129, 0.2);
+    }
+
+    .lms-resource-tag.type-link {
+      background: rgba(139, 92, 246, 0.08);
+      color: #7c3aed;
+      border-color: rgba(139, 92, 246, 0.2);
+    }
+
+    .lms-resource-tag.type-image {
+      background: rgba(245, 158, 11, 0.08);
+      color: #d97706;
+      border-color: rgba(245, 158, 11, 0.2);
+    }
+
+    .lms-resource-tag.type-video {
+      background: rgba(6, 182, 212, 0.08);
+      color: #0891b2;
+      border-color: rgba(6, 182, 212, 0.2);
+    }
+
+    .lms-resource-tag.type-doc {
+      background: rgba(59, 130, 246, 0.08);
+      color: #2563eb;
+      border-color: rgba(59, 130, 246, 0.2);
+    }
+
+    .lms-resource-tag.type-view {
+      background: rgba(79, 70, 229, 0.06);
+      color: var(--primary);
+      border-color: rgba(79, 70, 229, 0.15);
+    }
+
+    .lms-resource-tag.type-dl {
+      background: rgba(16, 185, 129, 0.06);
+      color: #059669;
+      border-color: rgba(16, 185, 129, 0.15);
+    }
+
+    .lms-resource-tag.type-viewonly {
+      background: rgba(107, 114, 128, 0.06);
+      color: #6b7280;
+      border-color: rgba(107, 114, 128, 0.15);
+    }
 
     /* ──── Action Button Icons ──── */
     .lms-resource-mini-btn {
@@ -816,9 +932,20 @@
       align-items: center;
       gap: 0.3rem;
     }
-    .lms-resource-mini-btn svg { flex-shrink: 0; }
-    .lms-resource-mini-btn.view-btn:hover { border-color: rgba(79, 70, 229, 0.35); color: var(--primary); }
-    .lms-resource-mini-btn.edit-btn:hover { border-color: rgba(245, 158, 11, 0.35); color: #d97706; }
+
+    .lms-resource-mini-btn svg {
+      flex-shrink: 0;
+    }
+
+    .lms-resource-mini-btn.view-btn:hover {
+      border-color: rgba(79, 70, 229, 0.35);
+      color: var(--primary);
+    }
+
+    .lms-resource-mini-btn.edit-btn:hover {
+      border-color: rgba(245, 158, 11, 0.35);
+      color: #d97706;
+    }
 
     .lms-resource-card-title {
       margin: 0;
@@ -916,6 +1043,7 @@
       flex-shrink: 0;
       font-family: inherit;
     }
+
     .lms-resource-primary-btn svg {
       width: 1rem;
       height: 1rem;
@@ -980,7 +1108,7 @@
       transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
     }
 
-    .lms-resource-mode-option input:checked + span {
+    .lms-resource-mode-option input:checked+span {
       background: #fff;
       color: var(--primary);
       box-shadow: var(--shadow-sm);
@@ -1275,10 +1403,12 @@
         flex-direction: column;
         align-items: stretch;
       }
+
       .lms-toolbar-select-wrap,
       .lms-toolbar-search-wrap {
         flex: 1 1 100%;
       }
+
       .lms-resource-form-grid {
         grid-template-columns: 1fr;
       }
@@ -1303,18 +1433,20 @@
         flex-direction: column;
         align-items: stretch;
       }
+
       .lms-section-header {
         flex-direction: column;
         align-items: flex-start;
       }
     }
+
     .exclusive-job-card {
       border-left: 3px solid #f59e0b !important;
       background: linear-gradient(135deg, #fffbeb 0%, #fff 100%) !important;
     }
   </style>
   <!-- Standard Favicon -->
-<!-- Fallback Shortcut Icon -->
+  <!-- Fallback Shortcut Icon -->
   <!-- Standard Favicon -->
   <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
   <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
@@ -1343,17 +1475,20 @@
       </h1>
       <div class="admin-header-actions">
         <div class="export-menu-wrap">
-          <button id="downloadProfilesBtn" class="admin-btn profile-export-trigger" type="button" aria-expanded="false" aria-controls="profileExportPanel" aria-haspopup="dialog">
+          <button id="downloadProfilesBtn" class="admin-btn profile-export-trigger" type="button" aria-expanded="false"
+            aria-controls="profileExportPanel" aria-haspopup="dialog">
             <span class="profile-export-trigger__icon-wrap" aria-hidden="true">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </span>
             <span class="profile-export-trigger__text">
               <span class="profile-export-trigger__label">Profiles</span>
               <span class="profile-export-trigger__hint">Export as CSV</span>
             </span>
-            <svg class="profile-export-trigger__chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <svg class="profile-export-trigger__chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+              aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
           </button>
@@ -1363,7 +1498,8 @@
                 <h2 class="export-panel-title">Export profiles</h2>
                 <p class="export-panel-subtitle">Pick a scope, then download a CSV. Dates use your local calendar.</p>
               </div>
-              <button type="button" id="profileExportCloseBtn" class="export-panel-close" aria-label="Close export panel">
+              <button type="button" id="profileExportCloseBtn" class="export-panel-close"
+                aria-label="Close export panel">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -1393,7 +1529,8 @@
                   <div class="export-date-card">
                     <label class="export-filter-label" for="profileExportDay">
                       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                       Day to export
                     </label>
@@ -1405,17 +1542,20 @@
                   <div class="export-date-card">
                     <span class="export-filter-label" id="profileExportRangeLabel">
                       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                       Date range
                     </span>
                     <div class="export-filter-row" role="group" aria-labelledby="profileExportRangeLabel">
                       <div class="export-filter-group">
-                        <label class="export-filter-label export-filter-label--compact" for="profileExportStartDate">Start</label>
+                        <label class="export-filter-label export-filter-label--compact"
+                          for="profileExportStartDate">Start</label>
                         <input id="profileExportStartDate" class="export-date-input" type="date" autocomplete="off">
                       </div>
                       <div class="export-filter-group">
-                        <label class="export-filter-label export-filter-label--compact" for="profileExportEndDate">End</label>
+                        <label class="export-filter-label export-filter-label--compact"
+                          for="profileExportEndDate">End</label>
                         <input id="profileExportEndDate" class="export-date-input" type="date" autocomplete="off">
                       </div>
                     </div>
@@ -1425,9 +1565,11 @@
 
               <div class="export-panel-actions">
                 <button id="profileExportResetBtn" class="admin-btn export-panel-reset" type="button">Reset</button>
-                <button id="profileExportConfirmBtn" class="admin-btn save-btn profile-export-download-btn" type="button">
+                <button id="profileExportConfirmBtn" class="admin-btn save-btn profile-export-download-btn"
+                  type="button">
                   <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                   </svg>
                   Download CSV
                 </button>
@@ -1440,7 +1582,8 @@
         <button id="downloadAllTablesBtn" class="admin-btn profile-export-trigger" type="button">
           <span class="profile-export-trigger__icon-wrap" aria-hidden="true">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
             </svg>
           </span>
           <span class="profile-export-trigger__text">
@@ -1454,94 +1597,94 @@
 
     <main>
       <div id="adminJobsPage" class="admin-page active">
-      <section class="admin-controls">
-        <h2>
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-          Banner Management
-        </h2>
-        <div class="banner-editor" id="banner-editor"></div>
-        <div class="add-button-container">
-          <button class="icon-btn add-icon-btn" onclick="addNewBanner()" title="Add New Banner">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        <section class="admin-controls">
+          <h2>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-          </button>
-        </div>
-      </section>
+            Banner Management
+          </h2>
+          <div class="banner-editor" id="banner-editor"></div>
+          <div class="add-button-container">
+            <button class="icon-btn add-icon-btn" onclick="addNewBanner()" title="Add New Banner">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+            </button>
+          </div>
+        </section>
 
-      <section class="admin-controls">
-        <h2>
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-          Course Banner Management
-        </h2>
-        <div class="banner-editor" id="course-banner-editor"></div>
-        <div class="add-button-container">
-          <button class="icon-btn add-icon-btn" onclick="addNewCourseBanner()" title="Add New Course Banner">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        <section class="admin-controls">
+          <h2>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-          </button>
+            Course Banner Management
+          </h2>
+          <div class="banner-editor" id="course-banner-editor"></div>
+          <div class="add-button-container">
+            <button class="icon-btn add-icon-btn" onclick="addNewCourseBanner()" title="Add New Course Banner">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+            </button>
+          </div>
+        </section>
+
+        <div class="search-container">
+          <input type="text" id="searchInput" placeholder="Search keywords" class="search-input">
         </div>
-      </section>
 
-      <div class="search-container">
-        <input type="text" id="searchInput" placeholder="Search keywords" class="search-input">
-      </div>
-
-      <div class="filter-container">
-        <input type="text" id="locationSearchInput" placeholder="Search Location" class="filter-input">
-        <select id="salaryFilter" class="filter-select">
-          <option value="">Any Stipend</option>
-          <option value="10000-20000">₹10,000 - ₹20,000</option>
-          <option value="20000-40000">₹20,000 - ₹40,000</option>
-          <option value="40000+">₹40,000+</option>
-        </select>
-        <div id="experienceFilterContainer" style="display: none;">
-          <select id="experienceFilter" class="filter-select">
-            <option value="">All Experience</option>
-            <option value="Freshers">Freshers</option>
-            <option value="Experienced">Experienced</option>
-            <option value="null">Not Specified</option>
+        <div class="filter-container">
+          <input type="text" id="locationSearchInput" placeholder="Search Location" class="filter-input">
+          <select id="salaryFilter" class="filter-select">
+            <option value="">Any Stipend</option>
+            <option value="10000-20000">₹10,000 - ₹20,000</option>
+            <option value="20000-40000">₹20,000 - ₹40,000</option>
+            <option value="40000+">₹40,000+</option>
           </select>
+          <div id="experienceFilterContainer" style="display: none;">
+            <select id="experienceFilter" class="filter-select">
+              <option value="">All Experience</option>
+              <option value="Freshers">Freshers</option>
+              <option value="Experienced">Experienced</option>
+              <option value="null">Not Specified</option>
+            </select>
+          </div>
         </div>
-      </div>
 
-      <div class="admin-controls">
-        <h2>
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-          </svg>
-          Job Management
-        </h2>
-        <div class="add-button-container">
-          <button class="icon-btn add-icon-btn" onclick="showAddJobModal()" title="Add New Job">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        <div class="admin-controls">
+          <h2>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
-          </button>
+            Job Management
+          </h2>
+          <div class="add-button-container">
+            <button class="icon-btn add-icon-btn" onclick="showAddJobModal()" title="Add New Job">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+            </button>
+          </div>
         </div>
-      </div>
 
-      <div id="jobs" class="job-grid"></div>
-      <div class="loader" id="loader" style="display: none;">
-        <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none"
-          viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-          </path>
-        </svg>
-      </div>
-      <div class="load-more-container">
-        <button id="loadMore" class="load-more-btn" style="display: none;">Load More Jobs</button>
-      </div>
+        <div id="jobs" class="job-grid"></div>
+        <div class="loader" id="loader" style="display: none;">
+          <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+            </path>
+          </svg>
+        </div>
+        <div class="load-more-container">
+          <button id="loadMore" class="load-more-btn" style="display: none;">Load More Jobs</button>
+        </div>
       </div>
 
       <div id="adminLmsPage" class="admin-page">
@@ -1566,28 +1709,44 @@
           <!-- ===== UNIFIED TOOLBAR ===== -->
           <div class="lms-resource-toolbar-v2">
             <div class="lms-toolbar-select-wrap">
-              <svg class="lms-toolbar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+              <svg class="lms-toolbar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
               <select id="lmsCourseSelect" class="lms-toolbar-select">
                 <option value="industrial-training-mastery">Industrial Training Mastery</option>
                 <option value="msc-ca-freshers-program">MSC CA Freshers Program</option>
               </select>
             </div>
             <div class="lms-toolbar-select-wrap">
-              <svg class="lms-toolbar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+              <svg class="lms-toolbar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
               <select id="lmsVideoSelect" class="lms-toolbar-select">
                 <option value="">Loading sessions...</option>
               </select>
             </div>
             <div class="lms-toolbar-search-wrap">
-              <svg class="lms-toolbar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-              <input id="lmsResourceSearchInput" type="search" class="lms-toolbar-search" placeholder="Search by title, group, type...">
+              <svg class="lms-toolbar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input id="lmsResourceSearchInput" type="search" class="lms-toolbar-search"
+                placeholder="Search by title, group, type...">
             </div>
-            <button type="button" id="lmsSortToggleBtn" class="lms-toolbar-sort-btn" title="Sort by oldest" data-sort="asc">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"/></svg>
+            <button type="button" id="lmsSortToggleBtn" class="lms-toolbar-sort-btn" title="Sort by oldest"
+              data-sort="asc">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+              </svg>
               <span>Oldest</span>
             </button>
             <button type="button" id="lmsResourceAddBtn" class="lms-resource-primary-btn">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
               Add Resource
             </button>
           </div>
@@ -1614,29 +1773,41 @@
 
       <div id="adminReviewsPage" class="admin-page">
         <section class="admin-controls lms-resource-section">
-          <div class="lms-section-header" style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 2px 10px rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div class="lms-section-header"
+            style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 2px 10px rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
             <div class="lms-section-header-left" style="display: flex; align-items: center; gap: 0.85rem;">
-              <div class="lms-section-icon" style="background: #fef2f2; color: #dc2626; border: 1px solid #fca5a5; width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 6px rgba(220,38,38,0.1);">
+              <div class="lms-section-icon"
+                style="background: #fef2f2; color: #dc2626; border: 1px solid #fca5a5; width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 6px rgba(220,38,38,0.1);">
                 <svg style="width: 24px; height: 24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
               </div>
               <div>
-                <h2 style="font-size: 1.25rem; font-weight: 700; color: #111827; margin: 0; display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+                <h2
+                  style="font-size: 1.25rem; font-weight: 700; color: #111827; margin: 0; display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
                   Articleship Reviews Moderation
-                  <span id="reports-count-badge" style="background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; font-size: 0.725rem; font-weight: 700; padding: 0.15rem 0.65rem; border-radius: 9999px;">Loading...</span>
+                  <span id="reports-count-badge"
+                    style="background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; font-size: 0.725rem; font-weight: 700; padding: 0.15rem 0.65rem; border-radius: 9999px;">Loading...</span>
                 </h2>
-                <p style="font-size: 0.85rem; color: #6b7280; margin: 0.2rem 0 0;">Review flagged items, perform 1-click takedowns, or publish official firm responses.</p>
+                <p style="font-size: 0.85rem; color: #6b7280; margin: 0.2rem 0 0;">Review flagged items, perform 1-click
+                  takedowns, or publish official firm responses.</p>
               </div>
             </div>
-            <button type="button" id="refresh-reports-btn" onclick="loadArticleshipModerationReports()" class="admin-btn" style="background: #2563eb; color: #ffffff; font-weight: 600; font-size: 0.825rem; padding: 0.55rem 1.1rem; border-radius: 10px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(37,99,235,0.25);">
-              <svg style="width: 0.95rem; height: 0.95rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+            <button type="button" id="refresh-reports-btn" onclick="loadArticleshipModerationReports()"
+              class="admin-btn"
+              style="background: #2563eb; color: #ffffff; font-weight: 600; font-size: 0.825rem; padding: 0.55rem 1.1rem; border-radius: 10px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(37,99,235,0.25);">
+              <svg style="width: 0.95rem; height: 0.95rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
               Refresh Queue
             </button>
           </div>
 
           <div id="articleship-reports-container">
-            <div style="color: #6b7280; font-size: 0.85rem; padding: 1.5rem; text-align: center;">Loading flagged reports...</div>
+            <div style="color: #6b7280; font-size: 0.85rem; padding: 1.5rem; text-align: center;">Loading flagged
+              reports...</div>
           </div>
         </section>
       </div>
@@ -1645,35 +1816,57 @@
       <div id="adminMasterListsPage" class="admin-page">
         <section class="admin-controls lms-resource-section">
           <!-- ===== FIRMS SECTION ===== -->
-          <div class="lms-section-header" style="background:#ffffff;border:1px solid #e5e7eb;border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1.25rem;box-shadow:0 2px 10px rgba(0,0,0,0.02);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+          <div class="lms-section-header"
+            style="background:#ffffff;border:1px solid #e5e7eb;border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1.25rem;box-shadow:0 2px 10px rgba(0,0,0,0.02);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
             <div style="display:flex;align-items:center;gap:0.85rem;">
-              <div style="background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                <svg style="width:24px;height:24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+              <div
+                style="background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg style="width:24px;height:24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
               </div>
               <div>
-                <h2 style="font-size:1.25rem;font-weight:700;color:#111827;margin:0;">Firms Master List <span id="ml-firms-count-badge" style="background:#dbeafe;color:#1e40af;border:1px solid #93c5fd;font-size:0.725rem;font-weight:700;padding:0.15rem 0.65rem;border-radius:9999px;">Loading...</span></h2>
-                <p style="font-size:0.85rem;color:#6b7280;margin:0.2rem 0 0;">All known CA firms — add, search, or delete (deletion blocked if firm has reviews).</p>
+                <h2 style="font-size:1.25rem;font-weight:700;color:#111827;margin:0;">Firms Master List <span
+                    id="ml-firms-count-badge"
+                    style="background:#dbeafe;color:#1e40af;border:1px solid #93c5fd;font-size:0.725rem;font-weight:700;padding:0.15rem 0.65rem;border-radius:9999px;">Loading...</span>
+                </h2>
+                <p style="font-size:0.85rem;color:#6b7280;margin:0.2rem 0 0;">All known CA firms — add, search, or
+                  delete (deletion blocked if firm has reviews).</p>
               </div>
             </div>
-            <button type="button" id="ml-firms-refresh-btn" onclick="mlLoadFirms()" class="admin-btn" style="background:#2563eb;color:#fff;font-weight:600;font-size:0.825rem;padding:0.55rem 1.1rem;border-radius:10px;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:0.4rem;box-shadow:0 2px 8px rgba(37,99,235,0.25);">
-              <svg style="width:0.95rem;height:0.95rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            <button type="button" id="ml-firms-refresh-btn" onclick="mlLoadFirms()" class="admin-btn"
+              style="background:#2563eb;color:#fff;font-weight:600;font-size:0.825rem;padding:0.55rem 1.1rem;border-radius:10px;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:0.4rem;box-shadow:0 2px 8px rgba(37,99,235,0.25);">
+              <svg style="width:0.95rem;height:0.95rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
               Refresh
             </button>
           </div>
 
           <!-- Add firm row -->
-          <div style="display:flex;gap:0.6rem;flex-wrap:wrap;margin-bottom:1rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:0.85rem 1rem;">
-            <input id="ml-firm-name-input" type="text" placeholder="Firm name *" style="flex:3;min-width:160px;border:1.5px solid #cbd5e1;border-radius:8px;padding:0.5rem 0.75rem;font-size:0.875rem;outline:none;">
-            <input id="ml-firm-category-input" type="text" placeholder="Category (e.g. Big 4)" style="flex:2;min-width:120px;border:1.5px solid #cbd5e1;border-radius:8px;padding:0.5rem 0.75rem;font-size:0.875rem;outline:none;">
-            <input id="ml-firm-city-input" type="text" placeholder="HQ City" style="flex:2;min-width:100px;border:1.5px solid #cbd5e1;border-radius:8px;padding:0.5rem 0.75rem;font-size:0.875rem;outline:none;">
-            <button type="button" id="ml-firm-add-btn" onclick="mlAddFirm()" style="background:#16a34a;color:#fff;border:none;border-radius:8px;padding:0.5rem 1rem;font-weight:600;font-size:0.85rem;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:0.35rem;">
-              <svg style="width:0.9rem;height:0.9rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          <div
+            style="display:flex;gap:0.6rem;flex-wrap:wrap;margin-bottom:1rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:0.85rem 1rem;">
+            <input id="ml-firm-name-input" type="text" placeholder="Firm name *"
+              style="flex:3;min-width:160px;border:1.5px solid #cbd5e1;border-radius:8px;padding:0.5rem 0.75rem;font-size:0.875rem;outline:none;">
+            <input id="ml-firm-category-input" type="text" placeholder="Category (e.g. Big 4)"
+              style="flex:2;min-width:120px;border:1.5px solid #cbd5e1;border-radius:8px;padding:0.5rem 0.75rem;font-size:0.875rem;outline:none;">
+            <input id="ml-firm-city-input" type="text" placeholder="HQ City"
+              style="flex:2;min-width:100px;border:1.5px solid #cbd5e1;border-radius:8px;padding:0.5rem 0.75rem;font-size:0.875rem;outline:none;">
+            <button type="button" id="ml-firm-add-btn" onclick="mlAddFirm()"
+              style="background:#16a34a;color:#fff;border:none;border-radius:8px;padding:0.5rem 1rem;font-weight:600;font-size:0.85rem;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:0.35rem;">
+              <svg style="width:0.9rem;height:0.9rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
               Add Firm
             </button>
           </div>
 
           <!-- Firm search -->
-          <input id="ml-firms-search" type="text" placeholder="Search firms by name, category, or city…" oninput="mlFilterFirms()" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:0.6rem 0.9rem;font-size:0.875rem;margin-bottom:1rem;box-sizing:border-box;outline:none;">
+          <input id="ml-firms-search" type="text" placeholder="Search firms by name, category, or city…"
+            oninput="mlFilterFirms()"
+            style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:0.6rem 0.9rem;font-size:0.875rem;margin-bottom:1rem;box-sizing:border-box;outline:none;">
 
           <div id="ml-firms-container" style="max-height:55vh;overflow-y:auto;">
             <div style="color:#6b7280;font-size:0.85rem;padding:1.5rem;text-align:center;">Loading firms…</div>
@@ -1682,27 +1875,47 @@
           <hr style="border:none;border-top:1.5px solid #e5e7eb;margin:2rem 0;">
 
           <!-- ===== CITIES SECTION ===== -->
-          <div class="lms-section-header" style="background:#ffffff;border:1px solid #e5e7eb;border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1.25rem;box-shadow:0 2px 10px rgba(0,0,0,0.02);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+          <div class="lms-section-header"
+            style="background:#ffffff;border:1px solid #e5e7eb;border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1.25rem;box-shadow:0 2px 10px rgba(0,0,0,0.02);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
             <div style="display:flex;align-items:center;gap:0.85rem;">
-              <div style="background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                <svg style="width:24px;height:24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              <div
+                style="background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg style="width:24px;height:24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
               </div>
               <div>
-                <h2 style="font-size:1.25rem;font-weight:700;color:#111827;margin:0;">Cities Master List <span id="ml-cities-count-badge" style="background:#dcfce7;color:#15803d;border:1px solid #86efac;font-size:0.725rem;font-weight:700;padding:0.15rem 0.65rem;border-radius:9999px;">Loading...</span></h2>
-                <p style="font-size:0.85rem;color:#6b7280;margin:0.2rem 0 0;">Canonical city names used in the review wizard autocomplete.</p>
+                <h2 style="font-size:1.25rem;font-weight:700;color:#111827;margin:0;">Cities Master List <span
+                    id="ml-cities-count-badge"
+                    style="background:#dcfce7;color:#15803d;border:1px solid #86efac;font-size:0.725rem;font-weight:700;padding:0.15rem 0.65rem;border-radius:9999px;">Loading...</span>
+                </h2>
+                <p style="font-size:0.85rem;color:#6b7280;margin:0.2rem 0 0;">Canonical city names used in the review
+                  wizard autocomplete.</p>
               </div>
             </div>
-            <button type="button" onclick="mlLoadCities()" class="admin-btn" style="background:#16a34a;color:#fff;font-weight:600;font-size:0.825rem;padding:0.55rem 1.1rem;border-radius:10px;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:0.4rem;box-shadow:0 2px 8px rgba(22,163,74,0.25);">
-              <svg style="width:0.95rem;height:0.95rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            <button type="button" onclick="mlLoadCities()" class="admin-btn"
+              style="background:#16a34a;color:#fff;font-weight:600;font-size:0.825rem;padding:0.55rem 1.1rem;border-radius:10px;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:0.4rem;box-shadow:0 2px 8px rgba(22,163,74,0.25);">
+              <svg style="width:0.95rem;height:0.95rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
               Refresh
             </button>
           </div>
 
           <!-- Add city row -->
-          <div style="display:flex;gap:0.6rem;flex-wrap:wrap;margin-bottom:1rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:0.85rem 1rem;">
-            <input id="ml-city-name-input" type="text" placeholder="City name *" style="flex:1;min-width:160px;border:1.5px solid #cbd5e1;border-radius:8px;padding:0.5rem 0.75rem;font-size:0.875rem;outline:none;">
-            <button type="button" id="ml-city-add-btn" onclick="mlAddCity()" style="background:#16a34a;color:#fff;border:none;border-radius:8px;padding:0.5rem 1rem;font-weight:600;font-size:0.85rem;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:0.35rem;">
-              <svg style="width:0.9rem;height:0.9rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          <div
+            style="display:flex;gap:0.6rem;flex-wrap:wrap;margin-bottom:1rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:0.85rem 1rem;">
+            <input id="ml-city-name-input" type="text" placeholder="City name *"
+              style="flex:1;min-width:160px;border:1.5px solid #cbd5e1;border-radius:8px;padding:0.5rem 0.75rem;font-size:0.875rem;outline:none;">
+            <button type="button" id="ml-city-add-btn" onclick="mlAddCity()"
+              style="background:#16a34a;color:#fff;border:none;border-radius:8px;padding:0.5rem 1rem;font-weight:600;font-size:0.85rem;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:0.35rem;">
+              <svg style="width:0.9rem;height:0.9rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
               Add City
             </button>
           </div>
@@ -1722,13 +1935,19 @@
     </div>
 
     <!-- Custom Moderation Modal Overlay -->
-    <div id="mod-custom-modal" class="modal-overlay" style="display: none; align-items: center; justify-content: center; z-index: 9999; backdrop-filter: blur(4px); background: rgba(15, 23, 42, 0.6);">
-      <div style="background: #ffffff; border-radius: 16px; width: 90%; max-width: 500px; padding: 1.5rem 1.75rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); border: 1px solid #e2e8f0;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid #f1f5f9;">
-          <h3 id="mod-modal-title" style="font-size: 1.15rem; font-weight: 700; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.5rem;"></h3>
-          <button type="button" onclick="closeModCustomModal()" style="background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 1rem; cursor: pointer; transition: all 0.2s;">✕</button>
+    <div id="mod-custom-modal" class="modal-overlay"
+      style="display: none; align-items: center; justify-content: center; z-index: 9999; backdrop-filter: blur(4px); background: rgba(15, 23, 42, 0.6);">
+      <div
+        style="background: #ffffff; border-radius: 16px; width: 90%; max-width: 500px; padding: 1.5rem 1.75rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); border: 1px solid #e2e8f0;">
+        <div
+          style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid #f1f5f9;">
+          <h3 id="mod-modal-title"
+            style="font-size: 1.15rem; font-weight: 700; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+          </h3>
+          <button type="button" onclick="closeModCustomModal()"
+            style="background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 1rem; cursor: pointer; transition: all 0.2s;">✕</button>
         </div>
-        
+
         <div id="mod-modal-body" style="margin-bottom: 1.25rem;"></div>
 
         <div id="mod-modal-actions" style="display: flex; justify-content: flex-end; gap: 0.75rem;"></div>
@@ -1763,11 +1982,14 @@
               <label class="form-label">Connect to Peer Link (Optional)</label>
               <input type="text" name="connect_link" class="form-input" placeholder="Enter LinkedIn URL...">
             </div>
-            <div class="form-group" style="background: #fffbeb; border: 1px solid #fbbf24; border-radius: 8px; padding: 0.75rem 1rem; display: flex; align-items: center; gap: 0.75rem;">
-              <input type="checkbox" name="is_exclusive" id="is_exclusive_checkbox" value="true" style="width: 18px; height: 18px; accent-color: #d97706; cursor: pointer; flex-shrink: 0;">
+            <div class="form-group"
+              style="background: #fffbeb; border: 1px solid #fbbf24; border-radius: 8px; padding: 0.75rem 1rem; display: flex; align-items: center; gap: 0.75rem;">
+              <input type="checkbox" name="is_exclusive" id="is_exclusive_checkbox" value="true"
+                style="width: 18px; height: 18px; accent-color: #d97706; cursor: pointer; flex-shrink: 0;">
               <label for="is_exclusive_checkbox" style="cursor: pointer; margin: 0; font-size: 0.9rem;">
                 <strong style="color: #92400e;">⭐ Exclusive Vacancy</strong>
-                <span style="display: block; font-size: 0.78rem; color: #78350f; font-weight: 400;">Only MSC Industrial Training Program students can view full details. Others will see a lock screen.</span>
+                <span style="display: block; font-size: 0.78rem; color: #78350f; font-weight: 400;">Only MSC Industrial
+                  Training Program students can view full details. Others will see a lock screen.</span>
               </label>
             </div>
             <div class="form-group">
@@ -1816,7 +2038,8 @@
             <h3 class="lms-resource-panel-title" id="lmsResourceFormTitle">Add resource</h3>
             <p>Create file-backed or external-link resources using the same structure consumed by the LMS.</p>
           </div>
-          <button type="button" id="lmsResourceEditorCloseBtn" class="lms-resource-editor-close" aria-label="Close resource editor">×</button>
+          <button type="button" id="lmsResourceEditorCloseBtn" class="lms-resource-editor-close"
+            aria-label="Close resource editor">×</button>
         </div>
 
         <form id="lmsResourceForm" class="lms-resource-form">
@@ -1843,7 +2066,8 @@
             </div>
             <div class="form-group">
               <label class="form-label" for="lmsResourceGroup">Group</label>
-              <input id="lmsResourceGroup" type="text" class="form-input" placeholder="Search or add new group..." list="lmsResourceGroupList" autocomplete="off">
+              <input id="lmsResourceGroup" type="text" class="form-input" placeholder="Search or add new group..."
+                list="lmsResourceGroupList" autocomplete="off">
               <datalist id="lmsResourceGroupList"></datalist>
             </div>
             <div class="form-group" id="lmsResourceTypeRow">
@@ -1856,7 +2080,8 @@
             </div>
             <div class="form-group description-group">
               <label class="form-label" for="lmsResourceDescription">Description</label>
-              <textarea id="lmsResourceDescription" class="form-textarea" placeholder="Optional resource description"></textarea>
+              <textarea id="lmsResourceDescription" class="form-textarea"
+                placeholder="Optional resource description"></textarea>
             </div>
           </div>
 
@@ -1864,12 +2089,16 @@
             <div class="form-group">
               <label class="form-label" id="lmsResourceFileLabel" for="lmsResourceFile">Upload file</label>
               <input id="lmsResourceFile" type="file" class="form-input">
-              <div class="lms-resource-inline-note">Files are uploaded to the <code>industrial-training-mastery-resources</code> bucket.</div>
+              <div class="lms-resource-inline-note">Files are uploaded to the
+                <code>industrial-training-mastery-resources</code> bucket.
+              </div>
             </div>
-            <div class="form-group" id="lmsDocxExtraUpload" style="display:none; border-top: 1px solid #333; padding-top: 15px; margin-top: 15px;">
+            <div class="form-group" id="lmsDocxExtraUpload"
+              style="display:none; border-top: 1px solid #333; padding-top: 15px; margin-top: 15px;">
               <label class="form-label" for="lmsResourceFilePdf">Upload PDF Preview (For View)</label>
               <input id="lmsResourceFilePdf" type="file" accept=".pdf" class="form-input">
-              <div class="lms-resource-inline-note">LMS needs a PDF to render the view securely. The DOCX file will be used as the download.</div>
+              <div class="lms-resource-inline-note">LMS needs a PDF to render the view securely. The DOCX file will be
+                used as the download.</div>
             </div>
             <label class="lms-resource-checkbox" id="lmsResourceViewOnlyWrap">
               <input id="lmsResourceViewOnly" type="checkbox">
@@ -1882,12 +2111,14 @@
             <div class="form-group">
               <label class="form-label" for="lmsResourceUrl">External URL</label>
               <input id="lmsResourceUrl" type="url" class="form-input" placeholder="https://...">
-              <div class="lms-resource-inline-note">Use this for Google Docs, Sheets, Drive links, or any external study resource.</div>
+              <div class="lms-resource-inline-note">Use this for Google Docs, Sheets, Drive links, or any external study
+                resource.</div>
             </div>
           </div>
 
           <div class="lms-resource-actions">
-            <span class="lms-resource-inline-note">Only the selected session's <code>videos.resources</code> entry is updated.</span>
+            <span class="lms-resource-inline-note">Only the selected session's <code>videos.resources</code> entry is
+              updated.</span>
             <div class="lms-resource-actions-right">
               <button type="button" id="lmsResourceCancelBtn" class="lms-resource-mini-btn">Cancel</button>
               <button type="submit" id="lmsResourceSaveBtn" class="admin-btn save-btn">Save Resource</button>
@@ -1905,14 +2136,16 @@
             <p id="lmsViewerSubtitle" class="lms-viewer-subtitle">Preview LMS resource content.</p>
           </div>
           <div class="lms-viewer-actions">
-            <button type="button" id="lmsViewerDownloadBtn" class="lms-resource-mini-btn lms-btn-primary" style="display:none;">Download File</button>
+            <button type="button" id="lmsViewerDownloadBtn" class="lms-resource-mini-btn lms-btn-primary"
+              style="display:none;">Download File</button>
             <button type="button" id="lmsViewerOpenBtn" class="lms-resource-mini-btn">Open in new tab</button>
             <button type="button" id="lmsViewerCloseBtn" class="lms-resource-mini-btn">Close</button>
           </div>
         </div>
         <div class="lms-viewer-body">
           <div id="lmsViewerLoading" class="lms-viewer-loading">Loading resource preview...</div>
-          <div id="lmsViewerEmpty" class="lms-viewer-empty">This resource cannot be previewed inline. Use “Open in new tab” instead.</div>
+          <div id="lmsViewerEmpty" class="lms-viewer-empty">This resource cannot be previewed inline. Use “Open in new
+            tab” instead.</div>
           <div id="lmsViewerFrame" class="lms-viewer-frame">
             <iframe id="lmsViewerIframe" title="LMS resource preview"></iframe>
           </div>
@@ -1977,7 +2210,7 @@
   </div>
 
   <script>
-    const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+    const supabaseUrl = 'https://auth.mystudentclub.com';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
@@ -2283,7 +2516,7 @@
       if (!trimmed) return '';
 
       if ((key === 'certifications_json' || key === 'projects_json' || key === 'notification_subscriptions') &&
-          (trimmed.startsWith('[') || trimmed.startsWith('{'))) {
+        (trimmed.startsWith('[') || trimmed.startsWith('{'))) {
         try {
           const parsed = JSON.parse(trimmed);
           if (Array.isArray(parsed)) {
@@ -2638,7 +2871,7 @@
     function renderLmsVideoOptions() {
       const select = document.getElementById('lmsVideoSelect');
       if (!select) return;
-      
+
       const courseVideos = lmsResourceState.videos.filter(v => (v.course || 'industrial-training-mastery') === lmsResourceState.selectedCourseKey);
 
       if (!courseVideos.length) {
@@ -2775,12 +3008,12 @@
           <h4>${escapeHtml(groupName)}</h4>
           <div class="lms-resource-group-grid">
             ${items.map(({ resource, index }) => {
-              const typeColor = getTypeColorClass(resource.type);
-              const typeIcon = getTypeIconSvg(resource.type);
-              const hasView = resource.view_storage_path && resource.view_storage_path !== 'None';
-              const hasDl = resource.download_storage_path && resource.download_storage_path !== 'None';
-              const isLink = resource.type === 'external_link' || resource.url;
-              return `
+        const typeColor = getTypeColorClass(resource.type);
+        const typeIcon = getTypeIconSvg(resource.type);
+        const hasView = resource.view_storage_path && resource.view_storage_path !== 'None';
+        const hasDl = resource.download_storage_path && resource.download_storage_path !== 'None';
+        const isLink = resource.type === 'external_link' || resource.url;
+        return `
               <article class="lms-resource-card ${typeColor}">
                 <div class="lms-resource-card-head">
                   <div class="lms-resource-type-icon ${typeColor}">${typeIcon}</div>
@@ -2811,7 +3044,7 @@
                   </button>
                 </div>
               </article>`;
-            }).join('')}
+      }).join('')}
           </div>
         </div>
       `).join('');
@@ -2822,7 +3055,7 @@
       const linkPanel = document.getElementById('lmsLinkModePanel');
       const typeSelect = document.getElementById('lmsResourceType');
       const typeRow = document.getElementById('lmsResourceTypeRow');
-      
+
       if (filePanel) filePanel.classList.toggle('active', mode === 'file');
       if (linkPanel) linkPanel.classList.toggle('active', mode === 'link');
       if (typeRow) typeRow.style.display = mode === 'file' ? 'block' : 'none';
@@ -2982,12 +3215,12 @@
         .eq('day_number', video.day_number)
         .eq('video_number', video.video_number)
         .select();
-      
+
       if (error) throw error;
       if (!data || data.length === 0) {
         throw new Error("Database update silently failed (0 rows updated). You likely need an UPDATE policy on the 'videos' table for this admin user.");
       }
-      
+
       video.resources = normalizedResources;
       renderLmsResourceList();
     }
@@ -3089,8 +3322,8 @@
         throw new Error('This resource does not have a previewable file path.');
       }
       const { data, error } = await supabaseClient.storage.from(LMS_RESOURCE_BUCKET).createSignedUrl(
-        storagePath, 
-        300, 
+        storagePath,
+        300,
         preferDownload ? { download: true } : undefined
       );
       if (error) throw error;
@@ -4079,7 +4312,7 @@
         }
       }
 
-      window.toggleReviewText = function(reportId) {
+      window.toggleReviewText = function (reportId) {
         const textEl = document.getElementById(`review-text-${reportId}`);
         const btnEl = document.getElementById(`read-more-btn-${reportId}`);
         const iconEl = document.getElementById(`read-more-icon-${reportId}`);
@@ -4096,7 +4329,7 @@
         }
       };
 
-      window.closeModCustomModal = function() {
+      window.closeModCustomModal = function () {
         const modal = document.getElementById('mod-custom-modal');
         if (modal) modal.style.display = 'none';
       };
@@ -4161,7 +4394,7 @@
         modal.style.display = 'flex';
       }
 
-      window.executeTakedownCustom = async function(reviewId) {
+      window.executeTakedownCustom = async function (reviewId) {
         const btn = document.getElementById('confirm-takedown-btn');
         if (btn) { btn.disabled = true; btn.textContent = 'Deleting...'; }
         try {
@@ -4212,7 +4445,7 @@
         setTimeout(() => document.getElementById('custom-firm-response-input')?.focus(), 100);
       }
 
-      window.submitFirmResponseCustom = async function(reviewId) {
+      window.submitFirmResponseCustom = async function (reviewId) {
         const input = document.getElementById('custom-firm-response-input');
         const btn = document.getElementById('submit-firm-resp-btn');
         if (!input || !input.value.trim()) {
@@ -4248,7 +4481,7 @@
       let mlFirmsData = [];
 
       function mlEsc(str) {
-        return String(str ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        return String(str ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
       }
 
       function mlShowToast(msg, type = 'success') { showCustomToast(msg, type); }
@@ -4326,21 +4559,21 @@
 
       async function mlAddFirm() {
         const nameEl = document.getElementById('ml-firm-name-input');
-        const catEl  = document.getElementById('ml-firm-category-input');
+        const catEl = document.getElementById('ml-firm-category-input');
         const cityEl = document.getElementById('ml-firm-city-input');
-        const btn    = document.getElementById('ml-firm-add-btn');
+        const btn = document.getElementById('ml-firm-add-btn');
         const name = (nameEl?.value || '').trim();
         if (!name) { mlShowToast('Firm name is required.', 'error'); return; }
         btn.disabled = true; btn.textContent = 'Adding…';
         try {
           const { error } = await supabaseClient.rpc('admin_add_firm', {
-            p_name:     name,
+            p_name: name,
             p_category: (catEl?.value || '').trim() || null,
-            p_hq_city:  (cityEl?.value || '').trim() || null,
+            p_hq_city: (cityEl?.value || '').trim() || null,
           });
           if (error) throw error;
           if (nameEl) nameEl.value = '';
-          if (catEl)  catEl.value  = '';
+          if (catEl) catEl.value = '';
           if (cityEl) cityEl.value = '';
           mlShowToast(`Firm "${name}" added.`, 'success');
           mlLoadFirms();
@@ -4417,12 +4650,12 @@
 
       function mlDelCheckInput() {
         const input = document.getElementById('ml-del-confirm-input');
-        const hint  = document.getElementById('ml-del-confirm-hint');
-        const btn   = document.getElementById('ml-del-confirm-btn');
-        const val   = (input?.value || '').trim();
+        const hint = document.getElementById('ml-del-confirm-hint');
+        const btn = document.getElementById('ml-del-confirm-btn');
+        const val = (input?.value || '').trim();
         const match = val === (_mlDeleteCtx.name || '').trim();
-        if (btn)   { btn.disabled = !match; btn.style.opacity = match ? '1' : '0.45'; }
-        if (hint)  { hint.style.display = val && !match ? 'block' : 'none'; }
+        if (btn) { btn.disabled = !match; btn.style.opacity = match ? '1' : '0.45'; }
+        if (hint) { hint.style.display = val && !match ? 'block' : 'none'; }
       }
 
       function mlDelSwitchToMerge() {
@@ -4463,46 +4696,46 @@
         _mlDeleteCtx = { id, name, reviewCount };
         mlEnsureDeleteModal();
 
-        const isForce    = reviewCount > 0;
-        const icon       = document.getElementById('ml-del-icon');
-        const title      = document.getElementById('ml-del-title');
-        const subtitle   = document.getElementById('ml-del-subtitle');
-        const pill       = document.getElementById('ml-del-firm-pill');
-        const warning    = document.getElementById('ml-del-warning');
-        const mergeHint  = document.getElementById('ml-del-merge-hint');
-        const confirmWrap= document.getElementById('ml-del-confirm-wrap');
+        const isForce = reviewCount > 0;
+        const icon = document.getElementById('ml-del-icon');
+        const title = document.getElementById('ml-del-title');
+        const subtitle = document.getElementById('ml-del-subtitle');
+        const pill = document.getElementById('ml-del-firm-pill');
+        const warning = document.getElementById('ml-del-warning');
+        const mergeHint = document.getElementById('ml-del-merge-hint');
+        const confirmWrap = document.getElementById('ml-del-confirm-wrap');
         const confirmInp = document.getElementById('ml-del-confirm-input');
-        const confirmHint= document.getElementById('ml-del-confirm-hint');
-        const mergeBtn   = document.getElementById('ml-del-merge-btn');
-        const delBtn     = document.getElementById('ml-del-confirm-btn');
+        const confirmHint = document.getElementById('ml-del-confirm-hint');
+        const mergeBtn = document.getElementById('ml-del-merge-btn');
+        const delBtn = document.getElementById('ml-del-confirm-btn');
 
         if (isForce) {
-          icon.style.cssText    = 'width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#fef2f2;color:#dc2626;';
-          title.textContent     = 'Force Delete Firm';
-          subtitle.textContent  = 'This will permanently delete the firm and all its reviews.';
+          icon.style.cssText = 'width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#fef2f2;color:#dc2626;';
+          title.textContent = 'Force Delete Firm';
+          subtitle.textContent = 'This will permanently delete the firm and all its reviews.';
           warning.style.display = 'block';
-          warning.innerHTML     = `<strong>⚠ ${reviewCount} review(s)</strong> attached to this firm will also be permanently deleted. This cannot be undone.`;
-          mergeHint.style.display  = 'flex';
-          confirmWrap.style.display= 'block';
-          confirmInp.value         = '';
-          confirmHint.style.display= 'none';
-          mergeBtn.style.display   = 'inline-flex';
-          delBtn.style.background  = '#dc2626';
-          delBtn.disabled          = true;
-          delBtn.style.opacity     = '0.45';
-          delBtn.innerHTML         = '<svg style="width:0.85rem;height:0.85rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg> Force Delete';
+          warning.innerHTML = `<strong>⚠ ${reviewCount} review(s)</strong> attached to this firm will also be permanently deleted. This cannot be undone.`;
+          mergeHint.style.display = 'flex';
+          confirmWrap.style.display = 'block';
+          confirmInp.value = '';
+          confirmHint.style.display = 'none';
+          mergeBtn.style.display = 'inline-flex';
+          delBtn.style.background = '#dc2626';
+          delBtn.disabled = true;
+          delBtn.style.opacity = '0.45';
+          delBtn.innerHTML = '<svg style="width:0.85rem;height:0.85rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg> Force Delete';
         } else {
-          icon.style.cssText    = 'width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#fef2f2;color:#dc2626;';
-          title.textContent     = 'Delete Firm';
-          subtitle.textContent  = 'This action cannot be undone.';
+          icon.style.cssText = 'width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#fef2f2;color:#dc2626;';
+          title.textContent = 'Delete Firm';
+          subtitle.textContent = 'This action cannot be undone.';
           warning.style.display = 'none';
-          mergeHint.style.display  = 'none';
-          confirmWrap.style.display= 'none';
-          mergeBtn.style.display   = 'none';
-          delBtn.style.background  = '#dc2626';
-          delBtn.disabled          = false;
-          delBtn.style.opacity     = '1';
-          delBtn.innerHTML         = '<svg style="width:0.85rem;height:0.85rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg> Delete Firm';
+          mergeHint.style.display = 'none';
+          confirmWrap.style.display = 'none';
+          mergeBtn.style.display = 'none';
+          delBtn.style.background = '#dc2626';
+          delBtn.disabled = false;
+          delBtn.style.opacity = '1';
+          delBtn.innerHTML = '<svg style="width:0.85rem;height:0.85rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg> Delete Firm';
         }
 
         pill.textContent = name;
@@ -4522,7 +4755,7 @@
       let mlMergeFromName = '';
 
       function mlOpenMergeModal(fromId, fromName) {
-        mlMergeFromId   = fromId;
+        mlMergeFromId = fromId;
         mlMergeFromName = fromName;
 
         // Build modal if not exists
@@ -4600,7 +4833,7 @@
         try {
           const { data, error } = await supabaseClient.rpc('admin_merge_firms', {
             p_from_id: mlMergeFromId,
-            p_to_id:   mlMergeSelectedId,
+            p_to_id: mlMergeSelectedId,
           });
           if (error) throw error;
           document.getElementById('ml-merge-modal').style.display = 'none';
@@ -4694,7 +4927,7 @@
 
       async function mlAddCity() {
         const nameEl = document.getElementById('ml-city-name-input');
-        const btn    = document.getElementById('ml-city-add-btn');
+        const btn = document.getElementById('ml-city-add-btn');
         const name = (nameEl?.value || '').trim();
         if (!name) { mlShowToast('City name is required.', 'error'); return; }
         btn.disabled = true; btn.textContent = 'Adding…';

@@ -6,7 +6,7 @@ function isSalaryDisclosed(val) {
     return clean !== '' && clean !== 'notdisclosed' && clean !== 'nil' && clean !== 'null' && clean !== 'na';
 }
 
-const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+const supabaseUrl = 'https://auth.mystudentclub.com';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
@@ -326,9 +326,9 @@ function renderApplicationCard(application) {
         </div>
         <p class="job-card-description" style="margin-bottom: 0.85rem;">${snippet}</p>
         <div class="job-card-actions" style="display: grid; grid-template-columns: ${application.isSaved ? '1fr 1fr' : '1fr 1.5fr'}; gap: 0.5rem; margin-top: auto; width: 100%;">
-             ${application.isSaved 
-                 ? `<button class="unsave-btn" type="button" style="padding: 0.65rem 1rem; background: #fff; color: #ef4444; border: 1.5px solid #fee2e2; border-radius: 12px; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">Remove</button>` 
-                 : `<div class="app-status-badge" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.25rem; padding: 0.65rem 1rem; border-radius: 12px; font-size: 0.82rem; font-weight: 700; background: rgba(16, 185, 129, 0.08); color: #10b981; border: 1.5px solid rgba(16, 185, 129, 0.15); box-sizing: border-box; text-align: center; height: 38px;">
+             ${application.isSaved
+            ? `<button class="unsave-btn" type="button" style="padding: 0.65rem 1rem; background: #fff; color: #ef4444; border: 1.5px solid #fee2e2; border-radius: 12px; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">Remove</button>`
+            : `<div class="app-status-badge" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.25rem; padding: 0.65rem 1rem; border-radius: 12px; font-size: 0.82rem; font-weight: 700; background: rgba(16, 185, 129, 0.08); color: #10b981; border: 1.5px solid rgba(16, 185, 129, 0.15); box-sizing: border-box; text-align: center; height: 38px;">
                       <svg fill="currentColor" viewBox="0 0 24 24" style="width:11px; height:11px;"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Applied
                     </div>`}
              <button class="view-details-card-btn secondary" type="button" style="width: 100%;">View Details ›</button>

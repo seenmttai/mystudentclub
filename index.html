@@ -13,14 +13,14 @@
     rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/scripts/portal-style.css">
-<link rel="canonical" href="https://www.mystudentclub.com/" />
+  <link rel="canonical" href="https://www.mystudentclub.com/" />
   <meta name="robots" content="index, follow">
   <script src="scripts/vendor/supabase.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging-compat.js"></script>
   <script>
     (function () {
-      const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+      const supabaseUrl = 'https://auth.mystudentclub.com';
       const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 
       let errorClient = null;
@@ -184,17 +184,20 @@
     .onboarding-modal-dialog::-webkit-scrollbar {
       width: 6px;
     }
+
     .onboarding-modal-dialog::-webkit-scrollbar-track {
       background: transparent;
     }
+
     .onboarding-modal-dialog::-webkit-scrollbar-thumb {
       background: rgba(156, 163, 175, 0.3);
       border-radius: 99px;
     }
+
     .onboarding-modal-dialog::-webkit-scrollbar-thumb:hover {
       background: rgba(156, 163, 175, 0.5);
     }
-    
+
     .modal-overlay-container.show-modal .onboarding-modal-dialog {
       transform: scale(1);
       opacity: 1;
@@ -266,13 +269,13 @@
       align-items: center;
       text-align: center;
       transition: all 0.25s ease;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
     }
 
     .onboarding-option-card:hover {
       border-color: #cbd5e1;
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
 
     .onboarding-option-card.active {
@@ -292,10 +295,21 @@
       font-size: 1.1rem;
     }
 
-    .pink-gradient { background: linear-gradient(135deg, #ec4899, #f43f5e); }
-    .orange-gradient { background: linear-gradient(135deg, #f97316, #f59e0b); }
-    .purple-gradient { background: linear-gradient(135deg, #8b5cf6, #a855f7); }
-    .blue-gradient { background: linear-gradient(135deg, #3b82f6, #06b6d4); }
+    .pink-gradient {
+      background: linear-gradient(135deg, #ec4899, #f43f5e);
+    }
+
+    .orange-gradient {
+      background: linear-gradient(135deg, #f97316, #f59e0b);
+    }
+
+    .purple-gradient {
+      background: linear-gradient(135deg, #8b5cf6, #a855f7);
+    }
+
+    .blue-gradient {
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+    }
 
     .option-title {
       font-size: 0.8rem;
@@ -329,8 +343,15 @@
     }
 
     @keyframes fadeInField {
-      from { opacity: 0; transform: translateY(5px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(5px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .input-with-icon {
@@ -442,7 +463,7 @@
     }
   </style>
   <!-- Standard Favicon -->
-<!-- Fallback Shortcut Icon -->
+  <!-- Fallback Shortcut Icon -->
   <!-- Standard Favicon -->
   <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
   <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
@@ -564,23 +585,39 @@
 
     <nav class="portal-nav-bar">
       <a href="/" class="footer-tab active">
-        <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+        <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+            d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
         <span>Industrial Training</span>
       </a>
       <a href="/ca-articleship-opportunities" class="footer-tab">
-        <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
         <span>Articleship</span>
       </a>
       <a href="/semi-qualified-ca-jobs" class="footer-tab">
-        <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
+        <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 14l9-5-9-5-9 5 9 5z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+            d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+        </svg>
         <span>Semi Qualified</span>
       </a>
       <a href="/ca-fresher-jobs" class="footer-tab">
-        <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+        <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+        </svg>
         <span>CA Freshers</span>
       </a>
       <a href="/experienced-ca-jobs" class="footer-tab">
-        <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
         <span>Experienced CA</span><span class="dv2-badge-new">New</span>
       </a>
     </nav>
@@ -883,7 +920,8 @@
     <div class="modal-dialog" style="max-width: 400px;">
       <div style="padding: 2rem; text-align: center;">
         <h3>Create a Free Account</h3>
-        <p style="margin: 1rem 0;">Create a free account to keep browsing jobs, get vacancy alerts, and access exclusive career tools.</p>
+        <p style="margin: 1rem 0;">Create a free account to keep browsing jobs, get vacancy alerts, and access exclusive
+          career tools.</p>
         <a href="/login.html" class="btn btn-primary" style="width: 100%;">Sign Up / Login</a>
       </div>
     </div>
@@ -897,8 +935,12 @@
       <div style="padding: 2rem; text-align: center;">
         <img src="/assets/logo.png" alt="My Student Club"
           style="width: 180px; height: auto; margin: 0 auto 1.5rem; display: block;">
-        <h3 id="resumePromptTitle" style="font-size: 1.35rem; font-weight: 700; color: #1f2937; margin-bottom: 0.75rem;">Complete your MSC Profile</h3>
-        <p id="resumePromptDesc" style="color: #6b7280; margin-bottom: 1.5rem; line-height: 1.6;">Complete your MSC Profile and get discovered by 1000+ recruiters hiring for <strong id="resumePromptRoleType">Industrial Trainees/Article Assistants/CA Freshers/Experienced CA/Semi Qualified CA</strong>.</p>
+        <h3 id="resumePromptTitle"
+          style="font-size: 1.35rem; font-weight: 700; color: #1f2937; margin-bottom: 0.75rem;">Complete your MSC
+          Profile</h3>
+        <p id="resumePromptDesc" style="color: #6b7280; margin-bottom: 1.5rem; line-height: 1.6;">Complete your MSC
+          Profile and get discovered by 1000+ recruiters hiring for <strong id="resumePromptRoleType">Industrial
+            Trainees/Article Assistants/CA Freshers/Experienced CA/Semi Qualified CA</strong>.</p>
         <a href="/profile.html" class="btn btn-primary"
           style="width: 100%; padding: 0.875rem; font-size: 1rem; margin-bottom: 0.75rem;">
           Upload Resume & Complete Profile
@@ -915,17 +957,22 @@
   <div id="cvConsentPromptModal" class="modal-overlay-container" style="display: none; z-index: 2004;">
     <div class="modal-dialog" style="max-width: 460px;">
       <div style="padding: 2rem; text-align: center;">
-        <div style="width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #D1FAE5, #ECFDF5); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem;">
+        <div
+          style="width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #D1FAE5, #ECFDF5); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem;">
           <i class="fas fa-shield-alt" style="font-size: 1.75rem; color: #16A34A;"></i>
         </div>
-        <h3 style="font-size: 1.25rem; font-weight: 700; color: #1f2937; margin-bottom: 0.5rem;">Your CV Data Consent</h3>
+        <h3 style="font-size: 1.25rem; font-weight: 700; color: #1f2937; margin-bottom: 0.5rem;">Your CV Data Consent
+        </h3>
         <p style="color: #6b7280; margin-bottom: 0.25rem; line-height: 1.6; font-size: 0.92rem;">
-          Under India's <strong>Digital Personal Data Protection Act, 2023</strong>, we need your explicit permission to share your CV with employers.
+          Under India's <strong>Digital Personal Data Protection Act, 2023</strong>, we need your explicit permission to
+          share your CV with employers.
         </p>
-        <div style="background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 10px; padding: 1rem; margin: 1.25rem 0; text-align: left;">
+        <div
+          style="background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 10px; padding: 1rem; margin: 1.25rem 0; text-align: left;">
           <p style="color: #374151; font-size: 0.88rem; line-height: 1.6; margin: 0;">
             <i class="fas fa-quote-left" style="color: #16A34A; margin-right: 0.3rem; font-size: 0.7rem;"></i>
-            I consent to My Student Club sharing my CV and complete profile details with potential companies and recruiters for job-matching purposes.
+            I consent to My Student Club sharing my CV and complete profile details with potential companies and
+            recruiters for job-matching purposes.
             <i class="fas fa-quote-right" style="color: #16A34A; margin-left: 0.3rem; font-size: 0.7rem;"></i>
           </p>
         </div>
@@ -938,7 +985,8 @@
           No thanks — take me to my profile
         </button>
         <p style="color: #9CA3AF; font-size: 0.75rem; margin-top: 0.75rem; line-height: 1.5;">
-          You can withdraw consent at any time from your <a href="/profile.html" style="color: #457EFF;">profile page</a>.
+          You can withdraw consent at any time from your <a href="/profile.html" style="color: #457EFF;">profile
+            page</a>.
           <a href="/privacy-policy.html" target="_blank" style="color: #457EFF;">Read our Privacy Policy</a>.
         </p>
       </div>
@@ -1146,24 +1194,76 @@
               <div class="attempt-picker-row" id="final-attempt-picker">
                 <select id="ca_final_attempt_month" class="form-input-custom select-custom">
                   <option value="" disabled selected>Month</option>
-                  <option>Jan</option><option>Feb</option><option>Mar</option>
-                  <option>Apr</option><option>May</option><option>Jun</option>
-                  <option>Jul</option><option>Aug</option><option>Sep</option>
-                  <option>Oct</option><option>Nov</option><option>Dec</option>
+                  <option>Jan</option>
+                  <option>Feb</option>
+                  <option>Mar</option>
+                  <option>Apr</option>
+                  <option>May</option>
+                  <option>Jun</option>
+                  <option>Jul</option>
+                  <option>Aug</option>
+                  <option>Sep</option>
+                  <option>Oct</option>
+                  <option>Nov</option>
+                  <option>Dec</option>
                 </select>
                 <select id="ca_final_attempt_year" class="form-input-custom select-custom">
                   <option value="" disabled selected>Year</option>
-                  <option>2035</option><option>2034</option><option>2033</option><option>2032</option><option>2031</option>
-                  <option>2030</option><option>2029</option><option>2028</option><option>2027</option><option>2026</option>
-                  <option>2025</option><option>2024</option><option>2023</option><option>2022</option><option>2021</option>
-                  <option>2020</option><option>2019</option><option>2018</option><option>2017</option><option>2016</option>
-                  <option>2015</option><option>2014</option><option>2013</option><option>2012</option><option>2011</option>
-                  <option>2010</option><option>2009</option><option>2008</option><option>2007</option><option>2006</option>
-                  <option>2005</option><option>2004</option><option>2003</option><option>2002</option><option>2001</option>
-                  <option>2000</option><option>1999</option><option>1998</option><option>1997</option><option>1996</option>
-                  <option>1995</option><option>1994</option><option>1993</option><option>1992</option><option>1991</option>
-                  <option>1990</option><option>1989</option><option>1988</option><option>1987</option><option>1986</option>
-                  <option>1985</option><option>1984</option><option>1983</option><option>1982</option><option>1981</option>
+                  <option>2035</option>
+                  <option>2034</option>
+                  <option>2033</option>
+                  <option>2032</option>
+                  <option>2031</option>
+                  <option>2030</option>
+                  <option>2029</option>
+                  <option>2028</option>
+                  <option>2027</option>
+                  <option>2026</option>
+                  <option>2025</option>
+                  <option>2024</option>
+                  <option>2023</option>
+                  <option>2022</option>
+                  <option>2021</option>
+                  <option>2020</option>
+                  <option>2019</option>
+                  <option>2018</option>
+                  <option>2017</option>
+                  <option>2016</option>
+                  <option>2015</option>
+                  <option>2014</option>
+                  <option>2013</option>
+                  <option>2012</option>
+                  <option>2011</option>
+                  <option>2010</option>
+                  <option>2009</option>
+                  <option>2008</option>
+                  <option>2007</option>
+                  <option>2006</option>
+                  <option>2005</option>
+                  <option>2004</option>
+                  <option>2003</option>
+                  <option>2002</option>
+                  <option>2001</option>
+                  <option>2000</option>
+                  <option>1999</option>
+                  <option>1998</option>
+                  <option>1997</option>
+                  <option>1996</option>
+                  <option>1995</option>
+                  <option>1994</option>
+                  <option>1993</option>
+                  <option>1992</option>
+                  <option>1991</option>
+                  <option>1990</option>
+                  <option>1989</option>
+                  <option>1988</option>
+                  <option>1987</option>
+                  <option>1986</option>
+                  <option>1985</option>
+                  <option>1984</option>
+                  <option>1983</option>
+                  <option>1982</option>
+                  <option>1981</option>
                   <option>1980</option>
                 </select>
               </div>
@@ -1171,19 +1271,23 @@
                 <input type="checkbox" id="ca_final_cleared"> Already Cleared / Passed
               </label>
               <input type="hidden" id="ca_final_attempt">
-              <label class="input-label-custom" for="fresher_years_of_experience" style="margin-top:1rem;">Years of Experience <span class="help-text">(put 0 if none)</span></label>
+              <label class="input-label-custom" for="fresher_years_of_experience" style="margin-top:1rem;">Years of
+                Experience <span class="help-text">(put 0 if none)</span></label>
               <div class="input-with-icon">
                 <i class="fas fa-hourglass-half"></i>
-                <input type="number" id="fresher_years_of_experience" class="form-input-custom" placeholder="e.g. 1 (put 0 if none)" min="0" max="50">
+                <input type="number" id="fresher_years_of_experience" class="form-input-custom"
+                  placeholder="e.g. 1 (put 0 if none)" min="0" max="50">
               </div>
             </div>
 
             <!-- Semi Qualified CA -->
             <div class="onboarding-conditional-field" id="field-semi">
-              <label class="input-label-custom" for="years_of_experience">Years of Experience <span class="help-text">(if Fresher put 0)</span></label>
+              <label class="input-label-custom" for="years_of_experience">Years of Experience <span
+                  class="help-text">(if Fresher put 0)</span></label>
               <div class="input-with-icon">
                 <i class="fas fa-hourglass-half"></i>
-                <input type="text" id="years_of_experience" class="form-input-custom" placeholder="e.g. 2 (if Fresher put 0)">
+                <input type="text" id="years_of_experience" class="form-input-custom"
+                  placeholder="e.g. 2 (if Fresher put 0)">
               </div>
             </div>
           </div>
