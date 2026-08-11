@@ -9,9 +9,55 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 let userId = null;
 let supabase = null;
 let authUser = null;
+let isPremiumEnrolled = false;
+
+const IP_REVIEW_LIMIT = 1;
+const FREE_USER_LIFETIME_LIMIT = 3;
+const IP_REVIEW_COUNT_KEY = 'msc_cv_ip_review_count';
+
+const PREMIUM_COURSES = [
+    { title: "CA Articleship Mastery (ITM)", url: "https://mystudentclub.com/courses/industrial-training-mastery", desc: "Complete guide to landing top Big4 & industrial training articleships." },
+    { title: "CA Fresher Mastery", url: "https://mystudentclub.com/courses/ca-fresher-mastery", desc: "A-Z placement preparation for newly qualified Chartered Accountants." },
+    { title: "Finance & Accounting Mastery", url: "https://mystudentclub.com/courses/finance-mastery", desc: "Core financial modeling, statutory audit, and tax consulting skills." }
+];
+
+const LOCKED_SECTION_IDS = [
+    'phrasesSuggestionsSection',
+    'hardSkillsSection',
+    'softSkillsSection',
+    'actionVerbsSection',
+    'grammarCheckSection',
+    'formattingSection',
+    'interviewQuestionsSection',
+    'finalRecommendationsSection'
+];
+
+function getIpReviewCount() {
+    return parseInt(localStorage.getItem(IP_REVIEW_COUNT_KEY) || '0', 10);
+}
+
+function incrementIpReviewCount() {
+    const current = getIpReviewCount();
+    localStorage.setItem(IP_REVIEW_COUNT_KEY, String(current + 1));
+}
+
+async function getFreeUserLifetimeCount() {
+    if (!supabase || !authUser) return 0;
+    try {
+        const { count, error } = await supabase
+            .from('msc_cv_ai_resume_reviews')
+            .select('id', { count: 'exact', head: true })
+            .eq('user_id', authUser.id);
+        if (error) return 0;
+        return count || 0;
+    } catch (e) {
+        return 0;
+    }
+}
 
 const heroSection = document.getElementById('heroSection');
 const uploadSection = document.getElementById('uploadSection');
+const uploadPageHistorySection = document.getElementById('uploadPageHistorySection');
 const dropArea = document.getElementById('dropArea');
 const fileInput = document.getElementById('fileInput');
 const browseButton = document.getElementById('browseButton');
@@ -89,6 +135,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     await refreshAuthUser();
     setupTabs();
     setupCollapsibleSections();
+    await loadHistory();
+
+    const refreshHistoryBtn = document.getElementById('refreshHistoryBtn');
+    if (refreshHistoryBtn) {
+        refreshHistoryBtn.addEventListener('click', () => loadHistory());
+    }
 });
 
 function setupUserId() {
@@ -103,14 +155,16 @@ function setupTabs() {
     const tabContainer = document.querySelector('.tabs');
     if (!tabContainer) return;
     tabContainer.addEventListener('click', async (e) => {
-        if (e.target.matches('.tab-btn')) {
-            const tabId = e.target.dataset.tab;
+        const btn = e.target.closest('.tab-btn');
+        if (btn) {
+            const tabId = btn.dataset.tab;
 
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            e.target.classList.add('active');
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
 
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            document.getElementById(`tab-${tabId}`).classList.add('active');
+            const targetTab = document.getElementById(`tab-${tabId}`);
+            if (targetTab) targetTab.classList.add('active');
 
             if (tabId === 'leaderboard') {
                 await loadLeaderboard();
@@ -134,13 +188,41 @@ function setupCollapsibleSections() {
     });
 }
 
-menuButton.addEventListener('click', () => {
+menuButton.addEventListener('click', (e) => {
+    e.stopPropagation();
     expandedMenu.classList.toggle('active');
 });
 
-menuCloseBtn.addEventListener('click', () => {
+menuCloseBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
     expandedMenu.classList.remove('active');
 });
+
+const logoutMenuBtn = document.getElementById('logoutMenuBtn');
+if (logoutMenuBtn) {
+    logoutMenuBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        try {
+            if (!supabase) initializeSupabase();
+            if (supabase && supabase.auth) {
+                await supabase.auth.signOut();
+            }
+        } catch (err) {
+            console.error('Error during logout:', err);
+        }
+        localStorage.removeItem('msc_cv_ip_review_count');
+        localStorage.removeItem('msc_active_review_id');
+        window.location.reload();
+    });
+}
+
+function updateAuthUI() {
+    const logoutBtn = document.getElementById('logoutMenuBtn');
+    if (logoutBtn) {
+        logoutBtn.style.display = authUser ? 'flex' : 'none';
+    }
+}
 
 document.addEventListener('click', (e) => {
     if (!expandedMenu.contains(e.target) && !menuButton.contains(e.target) && expandedMenu.classList.contains('active')) {
@@ -162,13 +244,13 @@ function unhighlight() { dropArea.classList.remove('dragover'); }
 function handleDrop(e) {
     const file = e.dataTransfer.files[0];
     if (file && file.type === 'application/pdf') handleFile(file);
-    else alert('Please upload a PDF file');
+    else showNoticeModal('Invalid File', 'Please upload a PDF file.');
 }
 
 function handleFileSelect(e) {
     const file = e.target.files[0];
     if (file && file.type === 'application/pdf') handleFile(file);
-    else alert('Please upload a PDF file');
+    else showNoticeModal('Invalid File', 'Please upload a PDF file.');
 }
 
 async function handleFile(file) {
@@ -188,7 +270,7 @@ async function handleFile(file) {
         proceedToReviewBtn.disabled = false;
         proceedToReviewBtn.classList.remove('opacity-50', 'cursor-not-allowed');
     } catch (error) {
-        alert(`Error processing PDF: ${error.message}. Please try another file.`);
+        showNoticeModal('Error Processing PDF', `Error processing PDF: ${error.message}. Please try another file.`);
         resetUpload();
     } finally {
         removeFileBtn.disabled = false;
@@ -248,6 +330,7 @@ async function convertPdfToImages() {
             const imageDataUrl = canvas.toDataURL('image/jpeg', 0.9);
             pdfImages.push(imageDataUrl.split(',')[1]);
         }
+        localStorage.setItem('import_cv_images', JSON.stringify(pdfImages));
     } catch (error) {
         pdfImages = [];
         throw error;
@@ -270,15 +353,7 @@ function resetUpload() {
     proceedToReviewBtn.classList.add('opacity-50', 'cursor-not-allowed');
 }
 
-proceedToReviewBtn.addEventListener('click', () => {
-    if (!selectedFile || pdfImages.length === 0) {
-        alert("Please wait for the PDF preview and processing to complete.");
-        return;
-    }
-    uploadSection.style.display = 'none';
-    //domainSpecializationSection.style.display = 'block';
-    //domainSpecializationSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-});
+// proceedToReviewBtn triggers analyzeCv directly
 
 /*backToUploadBtn.addEventListener('click', () => {
     //domainSpecializationSection.style.display = 'none';
@@ -321,20 +396,59 @@ async function refreshAuthUser() {
     if (!supabase) initializeSupabase();
     const { data } = await supabase.auth.getUser();
     authUser = data?.user || null;
+    isPremiumEnrolled = false;
+
+    if (authUser) {
+        try {
+            const { count, error } = await supabase
+                .from('enrollment')
+                .select('course', { count: 'exact', head: true })
+                .eq('uuid', authUser.id);
+            if (!error && count > 0) {
+                isPremiumEnrolled = true;
+            }
+        } catch (e) {
+            console.warn('Error checking premium enrollment:', e);
+        }
+    }
+    updateAuthUI();
 }
 
 proceedToReviewBtn.addEventListener('click', analyzeCv);
 
 async function analyzeCv() {
     if (!selectedFile || pdfImages.length === 0) {
-        alert('PDF not processed correctly. Please re-upload.');
+        showNoticeModal('PDF Not Ready', 'Please wait for the PDF preview and processing to complete.');
         return;
+    }
+
+    await refreshAuthUser();
+
+    // 1) Guest Logged-Out Users: 1 Free Review limit -> prompt Login/Signup
+    if (!authUser) {
+        const ipCount = getIpReviewCount();
+        if (ipCount >= IP_REVIEW_LIMIT) {
+            openReviewLoginModal();
+            return;
+        }
+    }
+    // 2) Free Logged-In Users: 3 Lifetime Reviews limit -> prompt Course Enrollment
+    else if (!isPremiumEnrolled) {
+        const lifetimeCount = await getFreeUserLifetimeCount();
+        if (lifetimeCount >= FREE_USER_LIFETIME_LIMIT) {
+            openReviewBuyModal();
+            const titleEl = document.getElementById('reviewBuyTitle');
+            if (titleEl) titleEl.textContent = "You've used all 3 free reviews";
+            return;
+        }
     }
 
     const selectedDomain = 'Financing';
     const selectedSpecialization = 'Accounting';
 
     heroSection.style.display = 'none';
+    uploadSection.style.display = 'none';
+    if (uploadPageHistorySection) uploadPageHistorySection.style.display = 'none';
     loadingSection.style.display = 'block';
     resultsSection.style.display = 'none';
     tipsSection.style.display = 'none';
@@ -370,11 +484,29 @@ async function analyzeCv() {
         }
 
         analysisResultText = data.response;
-        console.log(analysisResultText);
 
-        processStructuredResults(analysisResultText);
+        // Check if the uploaded resume is out of context (Non-CA/Finance CV)
+        if (analysisResultText.includes('<<<OUT_OF_CONTEXT>>>')) {
+            let msg = analysisResultText.replace('<<<OUT_OF_CONTEXT>>>', '').trim();
+            if (!msg) {
+                msg = "This AI CV Reviewer is custom-built exclusively for Chartered Accountants (CA), Finance, and Accounting professionals. Please upload a relevant resume.";
+            }
+            stopLoadingAnimation();
+            loadingSection.style.display = 'none';
+            uploadSection.style.display = 'block';
+            if (heroSection) heroSection.style.display = 'block';
+            showContextWarningModal(msg);
+            return;
+        }
+
         await refreshAuthUser();
+        processStructuredResults(analysisResultText);
+        applyRoleLocks();
         await saveReview(analysisResultText);
+
+        if (!authUser) {
+            incrementIpReviewCount();
+        }
 
         loadingSection.style.display = 'none';
         resultsSection.style.display = 'block';
@@ -384,7 +516,7 @@ async function analyzeCv() {
     } catch (error) {
         stopLoadingAnimation();
         loadingSection.style.display = 'none';
-        alert(`Error during analysis: ${error.message}. Please try again later.`);
+        showNoticeModal('Analysis Failed', `Error during analysis: ${error.message}. Please try again later.`);
         resetToUploadStageOnError();
     }
 }
@@ -392,8 +524,7 @@ async function analyzeCv() {
 async function saveReview(reviewText) {
     if (!supabase) return;
 
-    const scoreSection = extractSectionContent(reviewText, '<<<OVERALL_SCORE>>>', '<<<END_OVERALL_SCORE>>>');
-    let score = 0; const m = scoreSection?.match(/Score:\s*([\d.]+)\/100/i); if (m) score = parseFloat(parseFloat(m[1]).toFixed(2));
+    const score = extractOverallScoreValue(reviewText);
 
     const insertPayload = {
         user_id: authUser ? authUser.id : userId,
@@ -407,22 +538,27 @@ async function saveReview(reviewText) {
 
 function startLoadingAnimation() {
     stopLoadingAnimation();
+    resetLoadingChecklist();
     let stage = 0;
+
     const stages = [
         "Uploading resume securely...",
         "Analyzing document structure...",
         "Extracting key skills and experience...",
-        "Evaluating alignment with " + "Financing" + " standards...",
-        "Assessing impact and achievements...",
-        "Checking grammar and readability...",
-        "Generating tailored recommendations for " + "Domain" + "...",
+        "Evaluating alignment with CA standards...",
+        "Assessing articleship impact and achievements...",
+        "Checking corporate readiness and grammar...",
+        "Generating tailored recommendations...",
         "Compiling your detailed report...",
         "Finalizing results..."
     ];
-    loadingProgressText.textContent = "Hang tight as we prepare the next steps!";
+    const loadingProgressText = document.getElementById('loadingProgressText');
+    if (loadingProgressText) loadingProgressText.textContent = "Hang tight as we prepare the next steps!";
+    updateLoadingChecklist(0);
 
     currentProgressInterval = setInterval(() => {
-        loadingProgressText.textContent = stages[stage % stages.length];
+        if (loadingProgressText) loadingProgressText.textContent = stages[stage % stages.length];
+        updateLoadingChecklist(stage);
         stage++;
     }, 3000);
 }
@@ -432,7 +568,51 @@ function stopLoadingAnimation() {
         clearInterval(currentProgressInterval);
         currentProgressInterval = null;
     }
-    loadingProgressText.textContent = "Processing complete!";
+    const loadingProgressText = document.getElementById('loadingProgressText');
+    if (loadingProgressText) loadingProgressText.textContent = "Processing complete!";
+}
+
+function resetLoadingChecklist() {
+    for (let num = 1; num <= 4; num++) {
+        const stepEl = document.getElementById(`loadStep${num}`);
+        if (!stepEl) continue;
+        stepEl.className = 'loading-step';
+        const bulletEl = stepEl.querySelector('.step-bullet');
+        if (bulletEl) bulletEl.innerHTML = '';
+    }
+}
+
+function updateLoadingChecklist(stage) {
+    let currentStep = 1;
+    if (stage >= 2 && stage <= 3) {
+        currentStep = 2;
+    } else if (stage >= 4 && stage <= 5) {
+        currentStep = 3;
+    } else if (stage >= 6) {
+        currentStep = 4;
+    }
+
+    const checkIcon = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+    const spinIcon = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>`;
+
+    for (let num = 1; num <= 4; num++) {
+        const stepEl = document.getElementById(`loadStep${num}`);
+        if (!stepEl) continue;
+        const bulletEl = stepEl.querySelector('.step-bullet');
+
+        if (num < currentStep) {
+            stepEl.className = 'loading-step completed';
+            if (bulletEl) bulletEl.innerHTML = checkIcon;
+        } else if (num === currentStep) {
+            stepEl.className = 'loading-step active';
+            if (bulletEl && !bulletEl.querySelector('svg')) {
+                bulletEl.innerHTML = spinIcon;
+            }
+        } else {
+            stepEl.className = 'loading-step';
+            if (bulletEl) bulletEl.innerHTML = '';
+        }
+    }
 }
 
 function extractSectionContent(text, startMarker, endMarker) {
@@ -451,31 +631,61 @@ function extractSectionContent(text, startMarker, endMarker) {
     return text.substring(contentStartIndex, endIndex).trim();
 }
 
-function parseAndDisplayOverallScore(text) {
+function extractOverallScoreValue(text) {
+    if (!text) return 0;
     const scoreSection = extractSectionContent(text, '<<<OVERALL_SCORE>>>', '<<<END_OVERALL_SCORE>>>');
     let overallScore = 0;
-    let justification = "Not available.";
 
     if (scoreSection) {
-        const scoreMatch = scoreSection.match(/Score:\s*([\d.]+)\/100/i);
-        const justMatch = scoreSection.match(/Justification:\s*(.*)/is);
-
-        if (scoreMatch) {
+        const scoreMatch = scoreSection.match(/Score:\s*\**([\d.]+)\**\s*\/\s*100/i) ||
+                           scoreSection.match(/Score:\s*\**([\d.]+)\**/i) ||
+                           scoreSection.match(/([\d.]+)\s*\/\s*100/i) ||
+                           scoreSection.match(/Score\s*[:=]\s*([\d.]+)/i);
+        if (scoreMatch && scoreMatch[1]) {
             overallScore = parseFloat(scoreMatch[1]);
-        }
-        if (justMatch) {
-            justification = justMatch[1].trim();
-        }
-    } else {
-        const fallbackScoreMatch = text.match(/<score>([\d.]+)<\/score>/i) || text.match(/Overall Score:\s*([\d.]+)\/100/i);
-        if (fallbackScoreMatch) {
-            overallScore = parseFloat(fallbackScoreMatch[1]);
-            justification = "Score extracted via fallback method.";
         }
     }
 
+    if (!overallScore || isNaN(overallScore)) {
+        const fallbackMatch = text.match(/<score>([\d.]+)<\/score>/i) ||
+                              text.match(/Overall Score:\s*\**([\d.]+)\**/i) ||
+                              text.match(/Score:\s*\**([\d.]+)\**\s*\/\s*100/i) ||
+                              text.match(/Score:\s*\**([\d.]+)\**/i) ||
+                              text.match(/([\d.]+)\s*\/\s*100/i);
+        if (fallbackMatch && fallbackMatch[1]) {
+            overallScore = parseFloat(fallbackMatch[1]);
+        }
+    }
+
+    return isNaN(overallScore) ? 0 : Math.min(Math.max(overallScore, 0), 100);
+}
+
+function parseAndDisplayOverallScore(text) {
+    if (!text) return 0;
+
+    const overallScore = extractOverallScoreValue(text);
+    const scoreSection = extractSectionContent(text, '<<<OVERALL_SCORE>>>', '<<<END_OVERALL_SCORE>>>');
+    let justification = "";
+
+    if (scoreSection) {
+        const justMatch = scoreSection.match(/Justification:\s*([\s\S]+)/i);
+        if (justMatch && justMatch[1]) {
+            justification = justMatch[1].trim();
+        } else {
+            justification = scoreSection.replace(/Score:\s*\**[\d.]+\**(?:\/\d+)?/gi, '').trim();
+        }
+    }
+
+    if (!justification) {
+        justification = "Score justification based on comprehensive AI resume audit.";
+    }
+
     animateScore(overallScore);
-    scoreJustification.innerHTML = simpleMarkdownToHtml(justification);
+
+    if (scoreJustification) {
+        scoreJustification.innerHTML = formatFeedbackText(justification);
+    }
+
     return overallScore;
 }
 
@@ -641,6 +851,212 @@ function processStructuredResults(resultsText) {
     updateScoreBreakdown(overallScore, resultsText);
 }
 
+function lockPillHTML() {
+    return `<span class="section-lock-pill"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="12" height="12"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>Locked</span>`;
+}
+
+function lockPanelHTML() {
+    return `
+    <div class="lock-panel">
+      <div class="lock-skeleton" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+      <div class="lock-overlay">
+        <span class="lock-icon">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="28" height="28"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+        </span>
+        <h4>Unlock the full report</h4>
+        <p>Enroll in any MSC course to unlock complete detailed recommendations, phrasing rewrites, and skill gap analyses.</p>
+        <button type="button" class="lock-cta open-buy-modal-btn">Enroll to Unlock Full Report
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+        </button>
+      </div>
+    </div>`;
+}
+
+function applyRoleLocks() {
+    clearRoleLocks();
+    if (isPremiumEnrolled) return;
+
+    LOCKED_SECTION_IDS.forEach(id => {
+        const section = document.getElementById(id);
+        if (!section) return;
+        section.classList.add('locked');
+
+        const h3 = section.querySelector('.section-header h3');
+        if (h3 && !h3.querySelector('.section-lock-pill')) {
+            h3.insertAdjacentHTML('beforeend', lockPillHTML());
+        }
+
+        const content = section.querySelector('.content-area');
+        if (content) {
+            content.classList.remove('collapsed');
+            content.innerHTML = lockPanelHTML();
+        }
+        const icon = section.querySelector('.toggle-icon');
+        if (icon) icon.classList.remove('collapsed');
+    });
+
+    if (downloadReportBtn) {
+        downloadReportBtn.classList.add('is-locked');
+        downloadReportBtn.dataset.locked = 'true';
+        downloadReportBtn.innerHTML = `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>Unlock full report`;
+    }
+}
+
+function clearRoleLocks() {
+    LOCKED_SECTION_IDS.forEach(id => {
+        const section = document.getElementById(id);
+        if (!section) return;
+        section.classList.remove('locked');
+        const pill = section.querySelector('.section-lock-pill');
+        if (pill) pill.remove();
+    });
+    if (downloadReportBtn) {
+        downloadReportBtn.classList.remove('is-locked');
+        downloadReportBtn.dataset.locked = 'false';
+    }
+}
+
+document.addEventListener('click', (e) => {
+    // Open Buy Modal from lock CTA
+    const lockBtn = e.target.closest('.lock-cta, .open-buy-modal-btn');
+    if (lockBtn) {
+        e.preventDefault();
+        openReviewBuyModal();
+        return;
+    }
+
+    // Close Login Modal (X button, cancel button, or clicking overlay backdrop)
+    if (e.target.closest('#reviewLoginClose, #closeReviewLoginBtn, #cancelReviewLoginBtn') || e.target === document.getElementById('reviewLoginOverlay')) {
+        closeReviewLoginModal();
+    }
+
+    // Close Buy Modal (X button, cancel button, or clicking overlay backdrop)
+    if (e.target.closest('#reviewBuyClose, #closeReviewBuyBtn, #cancelReviewBuyBtn') || e.target === document.getElementById('reviewBuyOverlay')) {
+        closeReviewBuyModal();
+    }
+
+    // Close Context Warning Modal (X button, Got It button, or clicking overlay backdrop)
+    if (e.target.closest('#contextWarningClose, #contextWarningBtn, #closeContextWarningBtn, #ackContextWarningBtn') || e.target === document.getElementById('contextWarningOverlay')) {
+        closeContextWarningModal();
+    }
+
+    // Close Notice / Error Modal (X button, Dismiss button, or clicking overlay backdrop)
+    if (e.target.closest('#noticeModalClose, #noticeModalBtn, #closeNoticeModalBtn, #ackNoticeModalBtn') || e.target === document.getElementById('noticeModalOverlay')) {
+        closeNoticeModal();
+    }
+
+    // Universal fallback: Any .trial-modal-close button closes its parent modal overlay
+    const closeBtn = e.target.closest('.trial-modal-close');
+    if (closeBtn) {
+        const overlay = closeBtn.closest('.trial-modal-overlay');
+        if (overlay) {
+            overlay.classList.remove('active');
+        }
+    }
+});
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeReviewLoginModal();
+        closeReviewBuyModal();
+        closeContextWarningModal();
+        closeNoticeModal();
+    }
+});
+
+function ensureUploadSectionVisible() {
+    if (resultsSection && resultsSection.style.display === 'block') return;
+    if (loadingSection && loadingSection.style.display === 'block') return;
+    if (heroSection) heroSection.style.display = 'block';
+    if (uploadSection) uploadSection.style.display = 'block';
+    if (uploadPageHistorySection) uploadPageHistorySection.style.display = 'block';
+}
+
+function openReviewLoginModal() {
+    const overlay = document.getElementById('reviewLoginOverlay');
+    if (overlay) overlay.classList.add('active');
+}
+function closeReviewLoginModal() {
+    const overlay = document.getElementById('reviewLoginOverlay');
+    if (overlay) overlay.classList.remove('active');
+    ensureUploadSectionVisible();
+}
+
+function openReviewBuyModal() {
+    const list = document.getElementById('reviewBuyCourseList');
+    if (list) {
+        list.innerHTML = PREMIUM_COURSES.map(c => `
+            <a class="trial-course-card" href="${c.url}" target="_blank" rel="noopener noreferrer">
+                <span class="trial-course-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 10 12 5 2 10l10 5 10-5z"></path>
+                        <path d="M6 12v5c0 1 2.7 3 6 3s6-2 6-3v-5"></path>
+                    </svg>
+                </span>
+                <div class="trial-course-info">
+                    <div class="trial-course-title">${c.title}</div>
+                    <div class="trial-course-desc">${c.desc}</div>
+                </div>
+                <span class="trial-course-cta" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>
+                </span>
+            </a>`).join('');
+    }
+    const overlay = document.getElementById('reviewBuyOverlay');
+    if (overlay) overlay.classList.add('active');
+}
+function closeReviewBuyModal() {
+    const overlay = document.getElementById('reviewBuyOverlay');
+    if (overlay) overlay.classList.remove('active');
+    ensureUploadSectionVisible();
+}
+
+function showContextWarningModal(message) {
+    const overlay = document.getElementById('contextWarningOverlay');
+    const desc = document.getElementById('contextWarningText');
+    if (desc && message) desc.textContent = message;
+    if (overlay) overlay.classList.add('active');
+}
+function closeContextWarningModal() {
+    const overlay = document.getElementById('contextWarningOverlay');
+    if (overlay) overlay.classList.remove('active');
+    resetToUploadStage();
+}
+
+function showNoticeModal(title, message, isError = true) {
+    const overlay = document.getElementById('noticeModalOverlay');
+    const titleEl = document.getElementById('noticeModalTitle');
+    const descEl = document.getElementById('noticeModalText');
+    const emblem = document.getElementById('noticeModalEmblem');
+
+    if (titleEl) titleEl.textContent = title;
+    if (descEl) descEl.textContent = message;
+
+    if (emblem) {
+        if (isError) {
+            emblem.style.background = 'rgba(239, 68, 68, 0.1)';
+            emblem.style.color = '#ef4444';
+            emblem.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
+        } else {
+            emblem.style.background = 'rgba(37, 99, 235, 0.1)';
+            emblem.style.color = '#2563eb';
+            emblem.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
+        }
+    }
+    if (overlay) overlay.classList.add('active');
+}
+function closeNoticeModal() {
+    const overlay = document.getElementById('noticeModalOverlay');
+    if (overlay) overlay.classList.remove('active');
+    ensureUploadSectionVisible();
+}
+
+window.openReviewLoginModal = openReviewLoginModal;
+window.openReviewBuyModal = openReviewBuyModal;
+window.showContextWarningModal = showContextWarningModal;
+window.showNoticeModal = showNoticeModal;
+window.closeNoticeModal = closeNoticeModal;
+
 function clearResultsContent() {
     const contentAreas = [
         recruiterTipsContent, measurableResultsContent, phrasesSuggestionsContent,
@@ -764,14 +1180,23 @@ function formatFeedbackText(text) {
     // STEP 1: Pre-process raw text before HTML conversion
     let processedText = text;
 
-    // The model often returns long paragraphs. Break them into bullet-friendly lines:
-    // 1) After sentence boundaries (., ?, !) followed by a capital letter -> new bullet
-    processedText = processedText.replace(/([.!?])\s+(?=[A-Z])/g, '$1\n\u2022 ');
-    // 2) After ISSUE markers when explanation continues
-    processedText = processedText.replace(/(\[ISSUE(?:\s*-\s*SEVERITY:\s*(?:Critical|High|Moderate|Low))?[^\]]*\])\.?\s+([A-Z])/gi, '$1\n\u2022 $2');
+    // 0a) Separate adjacent [GOOD] [ISSUE...] tags so [ISSUE...] starts on a new bullet line
+    processedText = processedText.replace(/(\[GOOD\])\s*(\[ISSUE(?:\s*-\s*SEVERITY:\s*(?:Critical|High|Moderate|Low))?[^\]]*\])/gi, '$1\n• $2');
+
+    // 0b) If an [ISSUE...] tag is on a line by itself before a bullet item, attach it to the bullet text
+    processedText = processedText.replace(/(\u2022\s*)?(\[ISSUE(?:\s*-\s*SEVERITY:\s*(?:Critical|High|Moderate|Low))?[^\]]*\])\s*\n\s*(?:[\u2022\*\-]\s*)?/gi, '\n• $2 ');
+
+    // 1) Separate inline label header from first bullet item if on same line
+    processedText = processedText.replace(/^(\s*(?:\*\s*)?\*\*([^*:]+):\*\*)[ \t]+(?=[A-Z]|\[)/gm, '$1\n• ');
+
+    // 2) After sentence boundaries (optionally followed by GOOD status tag), start a new bullet
+    processedText = processedText.replace(
+        /([.!?](?:\s*\[GOOD\])?)[ \t]+(?=[A-Z]|\[(?:GOOD|ISSUE))/gi,
+        '$1\n• '
+    );
     // 3) Convert inline numbered items (1. 2. 3. etc.) to bullet points
     // First, handle patterns like "text. 1. more" or "text 1. more" - any " N. " pattern
-    processedText = processedText.replace(/\s+(\d+)\.\s+/g, '\n ');
+    processedText = processedText.replace(/\s+(\d+)\.\s+/g, '\n• ');
     // Also handle numbered items at the very start of text
     processedText = processedText.replace(/^(\d+)\.\s+/gm, '');
 
@@ -828,6 +1253,24 @@ function animateScore(score) {
     const increment = score / steps;
 
     const scoreTextEl = document.getElementById('scoreText');
+    const scoreGradeBadge = document.getElementById('scoreGradeBadge');
+
+    const updateGradeBadge = (val) => {
+        if (!scoreGradeBadge) return;
+        if (val >= 80) {
+            scoreGradeBadge.textContent = 'Excellent';
+            scoreGradeBadge.className = 'score-badge score-badge-excel';
+        } else if (val >= 65) {
+            scoreGradeBadge.textContent = 'Good';
+            scoreGradeBadge.className = 'score-badge score-badge-good';
+        } else if (val >= 45) {
+            scoreGradeBadge.textContent = 'Average';
+            scoreGradeBadge.className = 'score-badge score-badge-avg';
+        } else {
+            scoreGradeBadge.textContent = 'Needs Work';
+            scoreGradeBadge.className = 'score-badge score-badge-low';
+        }
+    };
 
     const scoreInterval = setInterval(() => {
         currentScore += increment;
@@ -836,52 +1279,55 @@ function animateScore(score) {
             clearInterval(scoreInterval);
         }
         const displayScore = currentScore.toFixed(1).replace(/\.0$/, '');
-        scoreTextEl.textContent = displayScore;
+        if (scoreTextEl) scoreTextEl.textContent = displayScore;
         const clampedDash = Math.min(currentScore, 100);
-        scoreProgress.setAttribute('stroke-dasharray', `${clampedDash.toFixed(1)}, 100`);
+        if (scoreProgress) scoreProgress.setAttribute('stroke-dasharray', `${clampedDash.toFixed(1)}, 100`);
+        updateGradeBadge(currentScore);
     }, stepTime);
 }
 
 function updateScoreBreakdown(overallScore, resultsText) {
-
     const categoryScores = {};
     const scorePatterns = {
-        structure: /Structure.*?Completeness.*?(\d+)\s*\/\s*20/i,
-        impact: /Impact.*?Demonstration.*?(\d+)\s*\/\s*25/i,
-        expertise: /Professional.*?Expertise.*?(\d+)\s*\/\s*25/i,
-        experience: /Experience.*?Description.*?(\d+)\s*\/\s*20/i,
-        presentation: /Overall.*?Presentation.*?(\d+)\s*\/\s*10/i
+        structure: /(?:Structure|Completeness).*?(\d+)\s*\/\s*20/i,
+        impact: /(?:Impact|Demonstration).*?(\d+)\s*\/\s*25/i,
+        expertise: /(?:Professional|Expertise).*?(\d+)\s*\/\s*25/i,
+        experience: /(?:Experience|Description).*?(\d+)\s*\/\s*20/i,
+        presentation: /(?:Overall|Presentation).*?(\d+)\s*\/\s*10/i
     };
 
-    let foundSpecificScores = true;
-    for (const [key, pattern] of Object.entries(scorePatterns)) {
-        const match = resultsText.match(pattern);
-        if (match && match[1]) {
-            categoryScores[key] = parseInt(match[1], 10);
-        } else {
-            foundSpecificScores = false;
-
+    if (resultsText) {
+        for (const [key, pattern] of Object.entries(scorePatterns)) {
+            const match = resultsText.match(pattern);
+            if (match && match[1]) {
+                categoryScores[key] = parseInt(match[1], 10);
+            }
         }
     }
+
+    const safeOverallScore = (typeof overallScore === 'number' && !isNaN(overallScore)) ? overallScore : 0;
 
     categoryItems.forEach(item => {
         const categoryKey = item.dataset.category;
         const pointsEl = item.querySelector('.points');
         const fillBar = item.querySelector('.category-fill');
+        if (!pointsEl) return;
+
         const maxPointsText = pointsEl.textContent.split('/')[1];
         if (!maxPointsText) return;
-        const maxPoints = parseInt(maxPointsText.match(/\d+/)[0], 10);
+        const maxPointsMatch = maxPointsText.match(/\d+/);
+        if (!maxPointsMatch) return;
+        const maxPoints = parseInt(maxPointsMatch[0], 10);
 
         let calculatedPoints = 0;
         let percentage = 0;
 
-        if (foundSpecificScores && categoryScores[categoryKey] !== undefined) {
+        if (categoryScores[categoryKey] !== undefined) {
             calculatedPoints = Math.min(categoryScores[categoryKey], maxPoints);
             percentage = (calculatedPoints / maxPoints) * 100;
         } else {
-
-            calculatedPoints = Math.round((overallScore / 100) * maxPoints);
-            percentage = overallScore;
+            calculatedPoints = Math.round((safeOverallScore / 100) * maxPoints);
+            percentage = safeOverallScore;
         }
 
         pointsEl.textContent = `${calculatedPoints}/${maxPoints} pts`;
@@ -899,6 +1345,7 @@ function resetToUploadStage() {
     loadingSection.style.display = 'none';
     heroSection.style.display = 'block';
     uploadSection.style.display = 'block';
+    if (uploadPageHistorySection) uploadPageHistorySection.style.display = 'block';
     window.scrollTo({ top: 0, behavior: 'smooth' });
     // Re-initialize supabase client in case user ID was just set.
     if (!supabase) initializeSupabase();
@@ -1001,6 +1448,7 @@ function resetToUploadStageOnError() {
     //domainSpecializationSection.style.display = 'none';
     resetUpload();
     uploadSection.style.display = 'block';
+    if (uploadPageHistorySection) uploadPageHistorySection.style.display = 'block';
     heroSection.style.display = 'block';
     uploadSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
@@ -1029,10 +1477,11 @@ function fixInlineCodeMarkdown(md) {
 
 async function loadLeaderboard() {
     const contentEl = document.getElementById('leaderboardContent');
-    contentEl.innerHTML = 'Loading...';
+    if (!contentEl) return;
+    contentEl.innerHTML = '<p class="text-sm text-text-secondary">Loading leaderboard...</p>';
     await refreshAuthUser();
     if (!supabase || !authUser) {
-        contentEl.innerHTML = 'You must be logged in to view and be part of the leaderboard.';
+        contentEl.innerHTML = '<p class="text-sm text-text-secondary">You must be logged in to view and be part of the leaderboard.</p>';
         return;
     }
     const { data, error } = await supabase
@@ -1040,35 +1489,63 @@ async function loadLeaderboard() {
         .select('score, created_at, file_name, user_name')
         .order('score', { ascending: false })
         .limit(10);
-    if (error) { console.error('Error fetching leaderboard:', error); contentEl.innerHTML = '<p class="text-danger">Could not load leaderboard data.</p>'; return; }
-    if (!data?.length) { contentEl.innerHTML = '<p>No entries yet. Be the first!</p>'; return; }
-    let html = '<ol class="list-decimal list-inside space-y-3">';
-    data.forEach(item => {
+    if (error) {
+        console.error('Error fetching leaderboard:', error);
+        contentEl.innerHTML = `<p class="text-danger text-sm">Could not load leaderboard data. ${error.message}</p>`;
+        return;
+    }
+    if (!data?.length) {
+        contentEl.innerHTML = '<p class="text-sm text-text-secondary">No entries yet. Be the first!</p>';
+        return;
+    }
+    let html = '<div class="leaderboard-list space-y-2.5">';
+    data.forEach((item, index) => {
         const date = new Date(item.created_at).toLocaleDateString();
         let name = 'Anonymous';
         if (item.user_name && !item.user_name.includes('@')) {
             name = item.user_name;
         } else if (item.file_name) {
             name = item.file_name;
-            if (name.length > 25) {
-                name = name.substring(0, 22) + '...';
-            }
         }
-        html += `<li class="p-3 rounded-lg border border-border bg-background-light">
-                    <div class="flex justify-between items-center">
-                        <span class="font-semibold text-primary">${item.score.toFixed(1)}%</span>
-                        <span class="text-sm text-text-secondary">${name} &bull; ${date}</span>
+        const rank = index + 1;
+        let rankBadgeClass = 'rank-badge-other';
+        if (rank === 1) rankBadgeClass = 'rank-badge-1';
+        else if (rank === 2) rankBadgeClass = 'rank-badge-2';
+        else if (rank === 3) rankBadgeClass = 'rank-badge-3';
+
+        html += `
+            <div class="leaderboard-card p-3 rounded-xl border border-border bg-background-light flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3 min-w-0 flex-1">
+                    <span class="rank-badge ${rankBadgeClass}">${rank}</span>
+                    <div class="min-w-0 flex-1">
+                        <p class="font-semibold text-text truncate text-sm" title="${name}">${name}</p>
+                        <p class="text-xs text-text-secondary">${date}</p>
                     </div>
-                 </li>`;
+                </div>
+                <div class="text-right flex-shrink-0">
+                    <span class="font-bold text-base text-primary">${item.score.toFixed(1)}%</span>
+                </div>
+            </div>`;
     });
-    html += '</ol>'; contentEl.innerHTML = html;
+    html += '</div>';
+    contentEl.innerHTML = html;
 }
 
 async function loadHistory() {
-    const contentEl = document.getElementById('historyContent'); const detailEl = document.getElementById('historyDetailContent');
-    detailEl.style.display = 'none'; contentEl.innerHTML = 'Loading...';
+    const uploadHistoryEl = document.getElementById('historyContent');
+    const tabHistoryEl = document.getElementById('tabHistoryContent');
+
+    if (uploadHistoryEl) uploadHistoryEl.innerHTML = '<p class="text-sm text-text-secondary">Loading...</p>';
+    if (tabHistoryEl) tabHistoryEl.innerHTML = '<p class="text-sm text-text-secondary">Loading...</p>';
+
     await refreshAuthUser();
-    if (!supabase) { contentEl.innerHTML = 'Could not retrieve user history.'; return; }
+    if (!supabase) {
+        const msg = '<p class="text-sm text-text-secondary">Could not retrieve user history.</p>';
+        if (uploadHistoryEl) uploadHistoryEl.innerHTML = msg;
+        if (tabHistoryEl) tabHistoryEl.innerHTML = msg;
+        return;
+    }
+
     const historyUserId = authUser ? authUser.id : userId;
     const { data, error } = await supabase
         .from('msc_cv_ai_resume_reviews')
@@ -1076,37 +1553,79 @@ async function loadHistory() {
         .eq('user_id', historyUserId)
         .order('created_at', { ascending: false })
         .limit(20);
-    if (error) { console.error('Error fetching history:', error); contentEl.innerHTML = `<p class="text-danger">Could not load history. ${error.message}</p>`; return; }
-    if (!data?.length) { contentEl.innerHTML = '<p>You have no past reviews.</p>'; return; }
-    let html = '<div class="space-y-2">';
+
+    if (error) {
+        console.error('Error fetching history:', error);
+        const errorMsg = `<p class="text-danger text-sm">Could not load history. ${error.message}</p>`;
+        if (uploadHistoryEl) uploadHistoryEl.innerHTML = errorMsg;
+        if (tabHistoryEl) tabHistoryEl.innerHTML = errorMsg;
+        return;
+    }
+
+    if (!data?.length) {
+        const emptyMsg = '<p class="text-sm text-text-secondary">You have no past reviews.</p>';
+        if (uploadHistoryEl) uploadHistoryEl.innerHTML = emptyMsg;
+        if (tabHistoryEl) tabHistoryEl.innerHTML = emptyMsg;
+        return;
+    }
+
+    let html = '<div class="space-y-2.5">';
     data.forEach(item => {
+        let displayScore = item.score;
+        if ((!displayScore || displayScore === 0) && item.review_data && item.review_data.review) {
+            displayScore = extractOverallScoreValue(item.review_data.review);
+        }
         const date = new Date(item.created_at).toLocaleString();
-        html += `<div class="history-item p-3 rounded-lg border border-border bg-background-light cursor-pointer hover:bg-gray-50" data-review-id="${item.id}">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <p class="font-semibold">${item.file_name}</p>
-                            <p class="text-sm text-text-secondary">${date}</p>
+        html += `<div class="history-item p-3 rounded-xl border border-border bg-background-light cursor-pointer transition-all hover:border-primary" data-review-id="${item.id}">
+                    <div class="flex justify-between items-center gap-3">
+                        <div class="min-w-0 flex-1">
+                            <p class="font-semibold text-text truncate text-sm" title="${item.file_name}">${item.file_name}</p>
+                            <p class="text-xs text-text-secondary">${date}</p>
                         </div>
-                        <span class="font-bold text-lg text-primary">${item.score.toFixed(1)}%</span>
+                        <span class="font-bold text-base text-primary flex-shrink-0">${Number(displayScore).toFixed(1)}%</span>
                     </div>
                  </div>`;
     });
     html += '</div>';
-    contentEl.innerHTML = html;
 
-    contentEl.addEventListener('click', e => {
+    if (uploadHistoryEl) uploadHistoryEl.innerHTML = html;
+    if (tabHistoryEl) tabHistoryEl.innerHTML = html;
+
+    const handleHistoryClick = (e) => {
         const itemEl = e.target.closest('.history-item');
         if (itemEl) {
             const reviewId = itemEl.dataset.reviewId;
             const reviewData = data.find(r => r.id == reviewId);
-            if (reviewData) {
-                detailEl.innerHTML = `
-                    <h4 class="text-lg font-semibold mb-2">Details for ${reviewData.file_name}</h4>
-                    <div class="p-4 border rounded-lg bg-white">${formatFeedbackText(reviewData.review_data.review)}</div>
-                `;
-                detailEl.style.display = 'block';
-                detailEl.scrollIntoView({ behavior: 'smooth' });
+            if (reviewData && reviewData.review_data && reviewData.review_data.review) {
+                analysisResultText = reviewData.review_data.review;
+                if (fileName) fileName.textContent = reviewData.file_name || 'document.pdf';
+
+                processStructuredResults(analysisResultText);
+                applyRoleLocks();
+
+                // Switch active tab back to Analysis
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                const analysisBtn = document.querySelector('.tab-btn[data-tab="analysis"]');
+                if (analysisBtn) analysisBtn.classList.add('active');
+
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                const analysisTab = document.getElementById('tab-analysis');
+                if (analysisTab) analysisTab.classList.add('active');
+
+                heroSection.style.display = 'none';
+                uploadSection.style.display = 'none';
+                if (uploadPageHistorySection) uploadPageHistorySection.style.display = 'none';
+                loadingSection.style.display = 'none';
+
+                resultsSection.style.display = 'block';
+                tipsSection.style.display = 'block';
+                resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         }
-    });
+    };
+
+    if (uploadHistoryEl) uploadHistoryEl.onclick = handleHistoryClick;
+    if (tabHistoryEl) tabHistoryEl.onclick = handleHistoryClick;
 }
+
+

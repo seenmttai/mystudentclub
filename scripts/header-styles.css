@@ -95,16 +95,19 @@ body {
   position: fixed;
   top: 0;
   right: 0;
-  width: 300px;
+  width: min(320px, 86vw);
   height: 100vh;
+  height: 100dvh;
   background: white;
-  padding: 1rem;
-  box-shadow: -4px 0 12px rgba(0,0,0,0.1);
+  padding: 0;
+  box-shadow: -10px 0 40px rgba(15, 23, 42, 0.22);
   transform: translateX(100%);
   opacity: 0;
-  transition: all 0.3s ease;
+  transition: all 0.32s cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: none;
   overflow-y: auto;
+  z-index: 10000;
+  border-radius: 24px 0 0 24px;
 }
 
 .expanded-menu.active {

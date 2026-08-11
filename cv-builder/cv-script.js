@@ -158,6 +158,10 @@
             normalizeSectionOrder();
             loadHistory();
 
+            if (localStorage.getItem('import_cv_images') || window.location.search.includes('import=reviewer')) {
+                handleReviewerImport();
+            }
+
             initSummaryEditor();
             initSkillsEditor();
             renderEditor();
@@ -3778,4 +3782,165 @@ async function downloadCvFile(format = 'pdf') {
                 }
             }, 1200); // Delay to ensure page is fully loaded
         });
+
+        function showNoticeModal(title, message, isError = true, onDismiss = null) {
+            let overlay = document.getElementById('noticeModalOverlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.id = 'noticeModalOverlay';
+                overlay.className = 'trial-modal-overlay';
+                overlay.innerHTML = `
+                    <div class="trial-modal">
+                        <button class="trial-modal-close" id="cbNoticeModalClose" type="button" aria-label="Close">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                        </button>
+                        <span class="trial-modal-emblem" id="cbNoticeModalEmblem" aria-hidden="true" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+                            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        </span>
+                        <h3 id="cbNoticeModalTitle">Notice</h3>
+                        <p id="cbNoticeModalText"></p>
+                        <button type="button" class="trial-modal-cta" id="cbNoticeModalBtn" style="margin-top: 1.5rem; background: #0f172a; width: 100%; border-radius: 12px; font-weight: 600; padding: 0.85rem; color: #fff; border: none; cursor: pointer;">
+                            Dismiss
+                        </button>
+                    </div>
+                `;
+                document.body.appendChild(overlay);
+            }
+
+            const titleEl = document.getElementById('cbNoticeModalTitle');
+            const textEl = document.getElementById('cbNoticeModalText');
+            const btnEl = document.getElementById('cbNoticeModalBtn');
+            const closeEl = document.getElementById('cbNoticeModalClose');
+            const emblem = document.getElementById('cbNoticeModalEmblem');
+
+            if (titleEl) titleEl.textContent = title;
+            if (textEl) textEl.textContent = message;
+
+            if (emblem) {
+                emblem.style.background = isError ? 'rgba(239, 68, 68, 0.1)' : 'rgba(37, 99, 235, 0.1)';
+                emblem.style.color = isError ? '#ef4444' : '#2563eb';
+            }
+
+            overlay.classList.add('active');
+
+            const dismiss = () => {
+                overlay.classList.remove('active');
+                if (onDismiss) onDismiss();
+            };
+
+            if (btnEl) btnEl.onclick = dismiss;
+            if (closeEl) closeEl.onclick = dismiss;
+        }
+
+        async function handleReviewerImport() {
+            const storedImages = localStorage.getItem('import_cv_images');
+            if (!storedImages) return;
+
+            showImportLoadingOverlay();
+
+            try {
+                const images = JSON.parse(storedImages);
+                const response = await fetch(`${WORKER_URL}/convert`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ images: images })
+                });
+
+                const res = await response.json();
+                if (res.ok && res.data) {
+                    cvData = normalizeImportedPayload(res.data);
+                    ensureCvDataShape();
+                    normalizeSectionOrder();
+                    parseLegacyContact(cvData.personal);
+                    
+                    cvData.templateFile = 'classic.html';
+                    const templateSelect = document.getElementById('template-select');
+                    if (templateSelect) {
+                        templateSelect.value = 'classic.html';
+                    }
+                    if (typeof syncCurrentTemplateName === 'function') {
+                        syncCurrentTemplateName();
+                    }
+                    
+                    localStorage.setItem('cv_maker_data', JSON.stringify(cvData));
+                    localStorage.removeItem('import_cv_images');
+                    localStorage.removeItem('import_cv_filename');
+                    
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    
+                    initSummaryEditor();
+                    initSkillsEditor();
+                    renderEditor();
+                    renderCustomSectionEditors();
+                    updateProgress();
+                    initializeUndoRedoHistory();
+                    initUndoRedoShortcuts();
+                    updateUndoRedoControls();
+                    
+                    const frame = document.getElementById('cv-frame');
+                    if (frame) {
+                        frame.src = `classic.html?v=${Date.now()}`;
+                        frame.onload = () => {
+                            postToFrame();
+                            setTimeout(() => {
+                                updatePreviewScale();
+                            }, 300);
+                        };
+                    }
+                    showToast("CV Imported successfully from Reviewer!");
+                } else {
+                    throw new Error(res.error || "Failed to parse CV");
+                }
+            } catch (e) {
+                console.error("Import failed:", e);
+                showNoticeModal("Import Failed", "Failed to import CV: " + e.message, true, () => {
+                    localStorage.removeItem('import_cv_images');
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                });
+            } finally {
+                hideImportLoadingOverlay();
+            }
+        }
+
+        function showImportLoadingOverlay() {
+            let overlay = document.getElementById('reviewer-import-overlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.id = 'reviewer-import-overlay';
+                overlay.style.position = 'fixed';
+                overlay.style.top = '0';
+                overlay.style.left = '0';
+                overlay.style.width = '100vw';
+                overlay.style.height = '100vh';
+                overlay.style.backgroundColor = 'rgba(255, 255, 255, 0.96)';
+                overlay.style.zIndex = '999999';
+                overlay.style.display = 'flex';
+                overlay.style.flexDirection = 'column';
+                overlay.style.alignItems = 'center';
+                overlay.style.justifyContent = 'center';
+                overlay.style.fontFamily = 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+                
+                overlay.innerHTML = `
+                    <div style="text-align: center; max-width: 420px; padding: 2.5rem; background: #ffffff; border-radius: 20px; box-shadow: 0 20px 50px -12px rgba(0,0,0,0.08); border: 1px solid rgba(0,0,0,0.04);">
+                        <div class="import-spinner" style="width: 48px; height: 48px; border: 4px solid rgba(37, 99, 235, 0.1); border-top: 4px solid #2563eb; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1.5rem auto;"></div>
+                        <h2 style="color: #0f172a; font-size: 1.4rem; font-weight: 800; margin: 0 0 0.5rem 0; letter-spacing: -0.025em;">Importing from Reviewer</h2>
+                        <p style="color: #64748b; font-size: 0.9rem; line-height: 1.6; margin: 0;">We are parsing your reviewed CV details and loading them into the builder template. This will take a few seconds...</p>
+                    </div>
+                    <style>
+                        @keyframes spin {
+                            0% { transform: rotate(0deg); }
+                            100% { transform: rotate(360deg); }
+                        }
+                    </style>
+                `;
+                document.body.appendChild(overlay);
+            }
+        }
+
+        function hideImportLoadingOverlay() {
+            const overlay = document.getElementById('reviewer-import-overlay');
+            if (overlay) {
+                overlay.remove();
+            }
+        }
 

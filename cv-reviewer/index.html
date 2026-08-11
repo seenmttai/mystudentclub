@@ -19,6 +19,7 @@
   </script>
 
   <!-- Styles -->
+  <link rel="stylesheet" href="/scripts/portal-style.css" />
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="cv-reviewer-styles.css" />
   <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png" />
@@ -80,34 +81,84 @@
 
   <!-- SIDE MENU -->
   <div class="expanded-menu" id="expandedMenu">
-    <button class="hdr-icon-btn menu-close-btn" id="menuCloseBtn" aria-label="Close menu">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-      </svg>
-    </button>
+    <div class="expanded-menu-header">
+      <div class="menu-brand-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="menu-brand-icon"><rect width="7" height="7" x="3" y="3" rx="1.5"/><rect width="7" height="7" x="14" y="3" rx="1.5"/><rect width="7" height="7" x="14" y="14" rx="1.5"/><rect width="7" height="7" x="3" y="14" rx="1.5"/></svg>
+        <span>Navigation</span>
+      </div>
+      <button class="hdr-icon-btn menu-close-btn" id="menuCloseBtn" aria-label="Close menu">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
     <div class="menu-items-container">
-      <a href="/" class="menu-item">Home</a>
-      <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display:none">My Courses</a>
-      <a href="/ca-industrial-training-program/" class="menu-item">MSC Industrial Training</a>
-      <a href="/articleship-program/" class="menu-item">MSC Articleship Program</a>
-      <a href="/msc-ca-fresher-program/" class="menu-item">MSC CA Freshers Program</a>
+      <a href="/" class="menu-item">
+        <span class="menu-item-left">
+          <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span>Home</span>
+        </span>
+      </a>
+      <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display:none">
+        <span class="menu-item-left">
+          <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          <span>My Courses</span>
+        </span>
+      </a>
+      <a href="/ca-industrial-training-program/" class="menu-item">
+        <span class="menu-item-left">
+          <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          <span>MSC Industrial Training</span>
+        </span>
+      </a>
+      <a href="/articleship-program/" class="menu-item">
+        <span class="menu-item-left">
+          <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15a7 7 0 1 0 0-14 7 7 0 0 0 0 14Z"/><path d="M8.21 13.89 7 23l5-3 5 3-1.21-9.12"/></svg>
+          <span>MSC Articleship Program</span>
+        </span>
+      </a>
+      <a href="/msc-ca-fresher-program/" class="menu-item">
+        <span class="menu-item-left">
+          <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-3.05 11a22.35 22.35 0 0 1-3.95 2z"/></svg>
+          <span>MSC CA Freshers Program</span>
+        </span>
+      </a>
 
       <div class="menu-item-dropdown">
-        <button class="menu-item" style="width:100%; justify-content:space-between;">
-          Free Resources
+        <button class="menu-item">
+          <span class="menu-item-left">
+            <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+            <span>Free Resources</span>
+          </span>
           <svg class="dropdown-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
           </svg>
         </button>
-        <div class="dropdown-content" style="display:none; padding-left:1.5rem;">
-          <a href="/ca-fresher-training-resources.html" class="menu-item">CA Fresher</a>
-          <a href="/ca-industrial-training-resources.html" class="menu-item">Industrial Training</a>
-          <a href="/ca-articleship-jobs" class="menu-item">Articleship</a>
+        <div class="dropdown-content">
+          <a href="/ca-fresher-training-resources.html" class="dropdown-item">CA Fresher</a>
+          <a href="/ca-industrial-training-resources.html" class="dropdown-item">Industrial Training</a>
+          <a href="/ca-articleship-jobs" class="dropdown-item">Articleship</a>
         </div>
       </div>
 
-      <a href="/login.html" class="menu-item">Login / Account</a>
-      <a href="/contact.html" class="menu-item">Contact Us</a>
+      <a href="/profile.html" class="menu-item">
+        <span class="menu-item-left">
+          <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>My Profile</span>
+        </span>
+      </a>
+      <a href="/contact.html" class="menu-item">
+        <span class="menu-item-left">
+          <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          <span>Contact Us</span>
+        </span>
+      </a>
+      <div class="menu-footer">
+        <button id="logoutMenuBtn" class="menu-item menu-item--danger">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          <span>Logout</span>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -161,6 +212,26 @@
       </div>
     </div>
 
+    <!-- Previous Reviews / History Section -->
+    <div class="cvr-history-section" id="uploadPageHistorySection" style="margin-top: 2rem;">
+      <div class="history-card-container">
+        <div class="section-card-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; padding-bottom: 12px; border-bottom: 1px solid var(--border, #f1f5f9);">
+          <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text, #0f172a); display: flex; align-items: center; gap: 8px; margin: 0;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #2563eb;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Previous Reviews
+          </h3>
+          <button id="refreshHistoryBtn" type="button" style="background: var(--chip, #f1f5f9); border: none; color: #2563eb; font-size: 0.82rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 8px; transition: background 0.15s;">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+            Refresh
+          </button>
+        </div>
+        <div id="historyContent" class="history-content-box">
+          <p class="text-sm text-text-secondary" style="color: var(--muted, #64748b); font-size: 0.9rem;">Loading previous reviews...</p>
+        </div>
+        <div id="historyDetailContent" class="history-detail-box" style="display:none; margin-top: 1rem;"></div>
+      </div>
+    </div>
+
     <!-- Domain specialisation (commented out — preserved for future use) -->
     <!--
     <div class="upload-section" id="domainSpecializationSection" style="display:none;">
@@ -195,9 +266,42 @@
     <!-- Loading -->
     <div class="loading-section" id="loadingSection" style="display:none;">
       <div class="loading-content">
-        <div class="loading-spinner"></div>
-        <h3>Evaluating Resume…</h3>
-        <p id="loadingProgressText">Hang tight as we prepare the next steps!</p>
+        <!-- Futuristic Scanner -->
+        <div class="scanner-wrapper">
+          <div class="scanner-halo"></div>
+          <div class="scanner-card">
+            <div class="scanner-line-sim"></div>
+            <div class="scanner-line-sim"></div>
+            <div class="scanner-line-sim"></div>
+            <div class="scanner-line-sim"></div>
+            <div class="scanner-line-sim"></div>
+            <div class="scanner-laser"></div>
+          </div>
+        </div>
+
+        <h3 class="loading-title">Evaluating Resume with AI...</h3>
+
+        <!-- Real-Time Progress Checklist -->
+        <div class="loading-checklist">
+          <div class="loading-step" id="loadStep1">
+            <span class="step-bullet"></span>
+            <span class="step-text">Resume Upload &amp; Parsing</span>
+          </div>
+          <div class="loading-step" id="loadStep2">
+            <span class="step-bullet"></span>
+            <span class="step-text">Formatting &amp; Layout Audit</span>
+          </div>
+          <div class="loading-step" id="loadStep3">
+            <span class="step-bullet"></span>
+            <span class="step-text">Experience &amp; Calibre Audit</span>
+          </div>
+          <div class="loading-step" id="loadStep4">
+            <span class="step-bullet"></span>
+            <span class="step-text">AI Suggestions &amp; Scoring</span>
+          </div>
+        </div>
+
+        <p id="loadingProgressText" class="mt-4">Hang tight as we prepare the next steps!</p>
       </div>
     </div>
 
@@ -220,16 +324,22 @@
               <div class="score-circle">
                 <svg viewBox="0 0 36 36" class="score-chart">
                   <defs>
-                    <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stop-color="#818cf8"/>
+                    <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#2563eb"/>
                       <stop offset="100%" stop-color="#4f46e5"/>
                     </linearGradient>
                   </defs>
                   <path class="score-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
                   <path id="scoreProgress" class="score-progress" stroke-dasharray="0, 100"
                     d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                  <text x="18" y="20.5" class="score-text" id="scoreText">0</text>
                 </svg>
+                <div class="score-display-overlay">
+                  <div class="score-num-wrap">
+                    <span class="score-val" id="scoreText">0</span>
+                    <span class="score-unit">/100</span>
+                  </div>
+                  <span class="score-badge score-badge-good" id="scoreGradeBadge">Analysis</span>
+                </div>
               </div>
             </div>
 
@@ -427,8 +537,7 @@
       <!-- History tab -->
       <div id="tab-history" class="tab-content">
         <h3 class="text-lg font-semibold mb-4" style="color:var(--text)">My Past Reviews</h3>
-        <div id="historyContent" class="space-y-2">Loading…</div>
-        <div id="historyDetailContent" class="mt-4" style="display:none;"></div>
+        <div id="tabHistoryContent" class="space-y-2">Loading…</div>
       </div>
     </div>
 
@@ -586,5 +695,71 @@
       }
     });
   </script>
+  <!-- Login gate: shown when a logged-out user tries to run a review -->
+  <div class="trial-modal-overlay" id="reviewLoginOverlay" role="dialog" aria-modal="true" aria-labelledby="reviewLoginTitle">
+    <div class="trial-modal">
+      <button class="trial-modal-close" id="reviewLoginClose" type="button" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+      <span class="trial-modal-emblem" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/></svg>
+      </span>
+      <h3 id="reviewLoginTitle">Log in to review your CV</h3>
+      <p>Sign in to your MSC account to run your AI resume review. You get <strong>3 free reviews</strong> to get started.</p>
+      <a class="trial-modal-cta" href="/login">
+        Log in / Sign up
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- Buy gate: shown when a free user has used all 3 trials -->
+  <div class="trial-modal-overlay" id="reviewBuyOverlay" role="dialog" aria-modal="true" aria-labelledby="reviewBuyTitle">
+    <div class="trial-modal trial-modal--wide">
+      <button class="trial-modal-close" id="reviewBuyClose" type="button" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+      <span class="trial-modal-emblem trial-modal-emblem--gold" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </span>
+      <h3 id="reviewBuyTitle">You've used all 3 free reviews</h3>
+      <p>Enroll in any MSC course to unlock <strong>unlimited</strong> AI resume reviews and the full toolkit.</p>
+      <div class="trial-course-list" id="reviewBuyCourseList"></div>
+    </div>
+  </div>
+
+  <!-- Out of Context Warning Modal -->
+  <div class="trial-modal-overlay" id="contextWarningOverlay" role="dialog" aria-modal="true" aria-labelledby="contextWarningTitle">
+    <div class="trial-modal">
+      <button class="trial-modal-close" id="contextWarningClose" type="button" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+      <span class="trial-modal-emblem" aria-hidden="true" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </span>
+      <h3 id="contextWarningTitle">Invalid Resume Field</h3>
+      <p id="contextWarningText">This AI CV Reviewer is custom-built exclusively for Chartered Accountants (CA), Finance, and Accounting professionals. Please upload a relevant resume.</p>
+      <button type="button" class="trial-modal-cta" id="contextWarningBtn" style="margin-top: 1.5rem; background: #0f172a; width: 100%; border-radius: 12px; font-weight: 600; padding: 0.85rem; color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+        Got it, let me re-upload
+      </button>
+    </div>
+  </div>
+
+  <!-- Generic Notice / Error Modal -->
+  <div class="trial-modal-overlay" id="noticeModalOverlay" role="dialog" aria-modal="true" aria-labelledby="noticeModalTitle">
+    <div class="trial-modal">
+      <button class="trial-modal-close" id="noticeModalClose" type="button" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+      <span class="trial-modal-emblem" id="noticeModalEmblem" aria-hidden="true" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </span>
+      <h3 id="noticeModalTitle">Notice</h3>
+      <p id="noticeModalText">Something went wrong.</p>
+      <button type="button" class="trial-modal-cta" id="noticeModalBtn" style="margin-top: 1.5rem; background: #0f172a; width: 100%; border-radius: 12px; font-weight: 600; padding: 0.85rem; color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+        Dismiss
+      </button>
+    </div>
+  </div>
 </body>
 </html>
