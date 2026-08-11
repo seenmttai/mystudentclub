@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = import.meta.env.SUPABASE_URL || 'https://auth.mystudentclub.com';
+const SUPABASE_URL = import.meta.env.SUPABASE_URL || 'https://izsggdtdiacxdsjjncdq.supabase.co';
 const SUPABASE_KEY = import.meta.env.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
