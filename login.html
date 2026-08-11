@@ -9,7 +9,7 @@
     content="Login or sign up to My Student Club - Access CA jobs, industrial training, and career resources.">
   <script src="/scripts/supabase.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<style>
+  <style>
     * {
       margin: 0;
       padding: 0;
@@ -846,7 +846,7 @@
     }
   </style>
   <!-- Standard Favicon -->
-<!-- Fallback Shortcut Icon -->
+  <!-- Fallback Shortcut Icon -->
   <!-- Standard Favicon -->
   <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
   <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
@@ -990,9 +990,13 @@
               </div>
             </div>
             <div class="form-group" style="margin-top: 1rem; margin-bottom: 1.25rem;">
-              <label style="display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.75rem; color: #6b7280; cursor: pointer; user-select: none;">
-                <input type="checkbox" id="signup-age-declaration" required style="margin-top: 0.15rem; width: 16px; height: 16px; min-width: 16px; accent-color: #4f46e5;">
-                <span>By using this platform, you declare that you are <strong>18 years of age or older</strong> and agree to our <a href="/privacy-policy.html" target="_blank" style="color: #4f46e5; text-decoration: none;">Privacy Policy</a>.</span>
+              <label
+                style="display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.75rem; color: #6b7280; cursor: pointer; user-select: none;">
+                <input type="checkbox" id="signup-age-declaration" required
+                  style="margin-top: 0.15rem; width: 16px; height: 16px; min-width: 16px; accent-color: #4f46e5;">
+                <span>By using this platform, you declare that you are <strong>18 years of age or older</strong> and
+                  agree to our <a href="/privacy-policy.html" target="_blank"
+                    style="color: #4f46e5; text-decoration: none;">Privacy Policy</a>.</span>
               </label>
             </div>
             <button type="submit" class="submit-btn" id="signup-submit">
@@ -1023,7 +1027,9 @@
 
       <div class="marketing-content">
         <h2 class="marketing-title">Unlock Your Dream<br>CA Career</h2>
-        <p class="marketing-subtitle">Discover opportunities across Industrial Training, Articleship, Semi-Qualified CA, CA Fresher, and Experienced CA roles, backed by expert mentorship, career resources, and personalized guidance to help you achieve your career goals.</p>
+        <p class="marketing-subtitle">Discover opportunities across Industrial Training, Articleship, Semi-Qualified CA,
+          CA Fresher, and Experienced CA roles, backed by expert mentorship, career resources, and personalized guidance
+          to help you achieve your career goals.</p>
       </div>
 
       <div class="testimonial-carousel">
@@ -1132,7 +1138,7 @@
 
       // Initialize Supabase
       const supabaseClient = supabase.createClient(
-        'https://izsggdtdiacxdsjjncdq.supabase.co',
+        'https://auth.mystudentclub.com',
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0',
         {
           global: {
@@ -1142,7 +1148,7 @@
       );
 
       const supabaseGoogleClient = supabase.createClient(
-        'https://izsggdtdiacxdsjjncdq.supabase.co',
+        'https://auth.mystudentclub.com',
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0'
       );
 

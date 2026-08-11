@@ -16,7 +16,7 @@
     <!-- Promise.withResolvers polyfill for older browsers/devices -->
     <script>
         if (typeof Promise.withResolvers === 'undefined') {
-            Promise.withResolvers = function() {
+            Promise.withResolvers = function () {
                 let resolve, reject;
                 const promise = new Promise((res, rej) => {
                     resolve = res;
@@ -36,12 +36,12 @@
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
         integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
-  <!-- Standard Favicon -->
-<!-- Fallback Shortcut Icon -->
-  <!-- Standard Favicon -->
-  <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
-  <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
-  <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
+    <!-- Standard Favicon -->
+    <!-- Fallback Shortcut Icon -->
+    <!-- Standard Favicon -->
+    <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
+    <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
+    <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
 </head>
 
 <body class="view-editor">
@@ -51,7 +51,8 @@
     <!-- Download Overlay Menu -->
     <div id="download-menu-popover" class="dropdown-menu-popover">
         <button class="dropdown-item" onclick="downloadCvFile('pdf')">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="margin-right: 6px;">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+                style="margin-right: 6px;">
                 <path d="M6 9V2h12v7"></path>
                 <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
                 <rect x="6" y="14" width="12" height="8"></rect>
@@ -59,7 +60,8 @@
             Export as PDF
         </button>
         <button class="dropdown-item" onclick="downloadCvFile('docx')">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="margin-right: 6px;">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+                style="margin-right: 6px;">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                 <polyline points="14 2 14 8 20 8"></polyline>
                 <line x1="16" y1="13" x2="8" y2="13"></line>
@@ -111,8 +113,10 @@
                     </svg>
                     AI Review
                 </button>
-                <button class="btn-icon dropdown-trigger" aria-label="Download" onclick="toggleDownloadMenu(event, this)">
-                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                <button class="btn-icon dropdown-trigger" aria-label="Download"
+                    onclick="toggleDownloadMenu(event, this)">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+                        aria-hidden="true">
                         <path d="M12 3v12"></path>
                         <path d="M7 10l5 5 5-5"></path>
                         <path d="M5 21h14"></path>
@@ -213,18 +217,22 @@
             <details id="highlights-panel" style="display:none">
                 <summary>Highlight Banners</summary>
                 <div class="section-body">
-                    <p style="font-size:12px;color:#888;margin-bottom:10px;">These 3 banners appear at the top of the Clean Ledger template.</p>
+                    <p style="font-size:12px;color:#888;margin-bottom:10px;">These 3 banners appear at the top of the
+                        Clean Ledger template.</p>
                     <div class="form-group">
                         <label>Banner 1</label>
-                        <input type="text" class="form-control" id="inp-highlight1" placeholder="e.g. Top Academic Performer" oninput="updateCV()">
+                        <input type="text" class="form-control" id="inp-highlight1"
+                            placeholder="e.g. Top Academic Performer" oninput="updateCV()">
                     </div>
                     <div class="form-group">
                         <label>Banner 2</label>
-                        <input type="text" class="form-control" id="inp-highlight2" placeholder="e.g. Article Trainee Experience" oninput="updateCV()">
+                        <input type="text" class="form-control" id="inp-highlight2"
+                            placeholder="e.g. Article Trainee Experience" oninput="updateCV()">
                     </div>
                     <div class="form-group">
                         <label>Banner 3</label>
-                        <input type="text" class="form-control" id="inp-highlight3" placeholder="e.g. Leadership & Awards" oninput="updateCV()">
+                        <input type="text" class="form-control" id="inp-highlight3"
+                            placeholder="e.g. Leadership & Awards" oninput="updateCV()">
                     </div>
                 </div>
             </details>
@@ -266,9 +274,11 @@
                         <div class="table-format-panel-head">
                             <div>
                                 <div class="table-format-title">Education Table Format</div>
-                                <div class="table-format-subtitle">Hide optional columns or rebalance widths for this table.</div>
+                                <div class="table-format-subtitle">Hide optional columns or rebalance widths for this
+                                    table.</div>
                             </div>
-                            <button class="btn-mini" type="button" onclick="resetEducationTableSettings()">Reset</button>
+                            <button class="btn-mini" type="button"
+                                onclick="resetEducationTableSettings()">Reset</button>
                         </div>
                         <div id="education-format-panel" class="table-format-panel"></div>
                     </div>
@@ -305,11 +315,15 @@
                 <summary>Projects</summary>
                 <div class="section-body">
                     <div class="form-group">
-                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+                        <div
+                            style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
                             <label style="margin-bottom:0;">Projects (All)</label>
-                            <button type="button" class="btn-mini" onclick="aiRefineProjects()" title="Refine project bullets with AI">
+                            <button type="button" class="btn-mini" onclick="aiRefineProjects()"
+                                title="Refine project bullets with AI">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M12 3l2.09 4.26L19 8l-3.5 3.4L16.18 17 12 14.8 7.82 17 9 11.4 5 8l4.91-.74L12 3z"></path>
+                                    <path
+                                        d="M12 3l2.09 4.26L19 8l-3.5 3.4L16.18 17 12 14.8 7.82 17 9 11.4 5 8l4.91-.74L12 3z">
+                                    </path>
                                 </svg>
                                 AI refine
                             </button>
@@ -334,7 +348,8 @@
                         style="font-size:10px; padding:4px 8px;">Label</button>
                 </summary>
                 <div class="section-body">
-                    <div id="section-label-panel-certifications" class="table-format-panel-wrap" aria-hidden="true"></div>
+                    <div id="section-label-panel-certifications" class="table-format-panel-wrap" aria-hidden="true">
+                    </div>
                     <div id="cert-container"></div>
                     <button class="btn-dashed" onclick="addCertification()">
                         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
@@ -356,11 +371,15 @@
                 <div class="section-body">
                     <div id="section-label-panel-achievements" class="table-format-panel-wrap" aria-hidden="true"></div>
                     <div class="form-group">
-                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+                        <div
+                            style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
                             <label style="margin-bottom:0;">Achievements (All)</label>
-                            <button type="button" class="btn-mini" onclick="aiRefineAchievements()" title="Refine achievements with AI">
+                            <button type="button" class="btn-mini" onclick="aiRefineAchievements()"
+                                title="Refine achievements with AI">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M12 3l2.09 4.26L19 8l-3.5 3.4L16.18 17 12 14.8 7.82 17 9 11.4 5 8l4.91-.74L12 3z"></path>
+                                    <path
+                                        d="M12 3l2.09 4.26L19 8l-3.5 3.4L16.18 17 12 14.8 7.82 17 9 11.4 5 8l4.91-.74L12 3z">
+                                    </path>
                                 </svg>
                                 AI refine
                             </button>
@@ -387,11 +406,15 @@
                 <div class="section-body">
                     <div id="section-label-panel-leadership" class="table-format-panel-wrap" aria-hidden="true"></div>
                     <div class="form-group">
-                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+                        <div
+                            style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
                             <label style="margin-bottom:0;">Leadership (All)</label>
-                            <button type="button" class="btn-mini" onclick="aiRefineLeadership()" title="Refine leadership items with AI">
+                            <button type="button" class="btn-mini" onclick="aiRefineLeadership()"
+                                title="Refine leadership items with AI">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M12 3l2.09 4.26L19 8l-3.5 3.4L16.18 17 12 14.8 7.82 17 9 11.4 5 8l4.91-.74L12 3z"></path>
+                                    <path
+                                        d="M12 3l2.09 4.26L19 8l-3.5 3.4L16.18 17 12 14.8 7.82 17 9 11.4 5 8l4.91-.74L12 3z">
+                                    </path>
                                 </svg>
                                 AI refine
                             </button>
@@ -418,11 +441,15 @@
                 <div class="section-body">
                     <div id="section-label-panel-interests" class="table-format-panel-wrap" aria-hidden="true"></div>
                     <div class="form-group">
-                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+                        <div
+                            style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
                             <label style="margin-bottom:0;">Interests (All)</label>
-                            <button type="button" class="btn-mini" onclick="aiRefineInterests()" title="Refine interests with AI">
+                            <button type="button" class="btn-mini" onclick="aiRefineInterests()"
+                                title="Refine interests with AI">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M12 3l2.09 4.26L19 8l-3.5 3.4L16.18 17 12 14.8 7.82 17 9 11.4 5 8l4.91-.74L12 3z"></path>
+                                    <path
+                                        d="M12 3l2.09 4.26L19 8l-3.5 3.4L16.18 17 12 14.8 7.82 17 9 11.4 5 8l4.91-.74L12 3z">
+                                    </path>
                                 </svg>
                                 AI refine
                             </button>
@@ -474,8 +501,7 @@
             <div id="custom-sections-area"></div>
 
             <button class="btn-dashed" id="add-custom-section-btn" onclick="addCustomSection()">
-                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
-                    viewBox="0 0 24 24">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <line x1="12" y1="5" x2="12" y2="19"></line>
                     <line x1="5" y1="12" x2="19" y2="12"></line>
                 </svg>
@@ -494,7 +520,8 @@
         <div class="template-floater">
             <button class="floater-pill" onclick="toggleTemplateSidebar(true)">
                 <span class="template-label">Template</span>
-                <span id="current-template-name" style="font-size: 13px; font-weight: 600; color: var(--text-main);">Classic</span>
+                <span id="current-template-name"
+                    style="font-size: 13px; font-weight: 600; color: var(--text-main);">Classic</span>
                 <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path d="M6 9l6 6 6-6" />
                 </svg>
@@ -514,15 +541,19 @@
             <div class="floater-pill undo-redo-pill">
                 <span class="template-label">History</span>
                 <div class="undo-redo-group">
-                    <button class="undo-redo-btn" id="btn-undo" data-undo-control onclick="undoChange()" title="Undo (Ctrl+Z)">
-                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+                    <button class="undo-redo-btn" id="btn-undo" data-undo-control onclick="undoChange()"
+                        title="Undo (Ctrl+Z)">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
                             <path d="M3 10h10a4 4 0 1 1 0 8h-1"></path>
                             <path d="M3 10l3-3"></path>
                             <path d="M3 10l3 3"></path>
                         </svg>
                     </button>
-                    <button class="undo-redo-btn" id="btn-redo" data-redo-control onclick="redoChange()" title="Redo (Ctrl+Y)">
-                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+                    <button class="undo-redo-btn" id="btn-redo" data-redo-control onclick="redoChange()"
+                        title="Redo (Ctrl+Y)">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
                             <path d="M21 10H11a4 4 0 1 0 0 8h1"></path>
                             <path d="M21 10l-3-3"></path>
                             <path d="M21 10l-3 3"></path>
@@ -579,14 +610,16 @@
 
         <div class="mobile-history-controls">
             <button class="mobile-history-btn" data-undo-control onclick="undoChange()" title="Undo (Ctrl+Z)">
-                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M3 10h10a4 4 0 1 1 0 8h-1"></path>
                     <path d="M3 10l3-3"></path>
                     <path d="M3 10l3 3"></path>
                 </svg>
             </button>
             <button class="mobile-history-btn" data-redo-control onclick="redoChange()" title="Redo (Ctrl+Y)">
-                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M21 10H11a4 4 0 1 0 0 8h1"></path>
                     <path d="M21 10l-3-3"></path>
                     <path d="M21 10l-3 3"></path>
@@ -808,7 +841,7 @@
         // Note: pdfjsLib is loaded via dynamic import below
 
         // Configuration
-        const SUPABASE_URL = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+        const SUPABASE_URL = 'https://auth.mystudentclub.com';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 
         let supabase = null;
@@ -879,7 +912,7 @@
                 if (typeof crypto !== 'undefined' && crypto.randomUUID) {
                     userId = crypto.randomUUID();
                 } else {
-                    userId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                    userId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
                         const r = Math.random() * 16 | 0;
                         const v = c === 'x' ? r : (r & 0x3 | 0x8);
                         return v.toString(16);
@@ -1340,11 +1373,14 @@
 
 
     <!-- AI Prompt, DOCX Info, and AI Preview Overlays -->
-    <div id="ai-prompt-overlay" class="ai-prompt-overlay" aria-hidden="true" onclick="handleAiPromptOverlayClick(event)">
-        <div class="ai-prompt-card" role="dialog" aria-modal="true" aria-labelledby="ai-prompt-title" onclick="event.stopPropagation()">
+    <div id="ai-prompt-overlay" class="ai-prompt-overlay" aria-hidden="true"
+        onclick="handleAiPromptOverlayClick(event)">
+        <div class="ai-prompt-card" role="dialog" aria-modal="true" aria-labelledby="ai-prompt-title"
+            onclick="event.stopPropagation()">
             <div class="ai-prompt-header">
                 <h3 id="ai-prompt-title">Optional AI instruction</h3>
-                <button class="ai-prompt-close" type="button" onclick="closeAiPrompt('cancel')" aria-label="Close">×</button>
+                <button class="ai-prompt-close" type="button" onclick="closeAiPrompt('cancel')"
+                    aria-label="Close">×</button>
             </div>
             <p class="ai-prompt-sub">Add a short instruction for this section (optional).</p>
             <div id="ai-prompt-suggestions" class="ai-prompt-suggestions"></div>
@@ -1370,7 +1406,8 @@
                     </svg>
                 </div>
                 <h3>Perfect DOCX Export</h3>
-                <button class="docx-info-close" type="button" onclick="closeDocxInfoModal()" aria-label="Close">×</button>
+                <button class="docx-info-close" type="button" onclick="closeDocxInfoModal()"
+                    aria-label="Close">×</button>
             </div>
             <div class="docx-info-body">
                 <p class="docx-info-text">
@@ -1378,7 +1415,8 @@
                 </p>
                 <div class="docx-tip-box">
                     <span class="docx-tip-badge">Note</span>
-                    <p>To get perfect editable files, use <a href="https://www.ilovepdf.com/pdf_to_word" target="_blank" rel="noopener noreferrer" class="docx-link">ilovepdf</a> for pdf to docx conversion.</p>
+                    <p>To get perfect editable files, use <a href="https://www.ilovepdf.com/pdf_to_word" target="_blank"
+                            rel="noopener noreferrer" class="docx-link">ilovepdf</a> for pdf to docx conversion.</p>
                 </div>
             </div>
             <div class="docx-info-actions">
@@ -1389,29 +1427,36 @@
 
     <!-- Premium template: login required (shown to logged-out users) -->
     <div id="template-login-overlay" class="tpl-gate-overlay" aria-hidden="true" onclick="closeTemplateLoginModal()">
-        <div class="tpl-gate-card" role="dialog" aria-modal="true" aria-labelledby="tpl-login-title" onclick="event.stopPropagation()">
-            <button class="tpl-gate-close" type="button" onclick="closeTemplateLoginModal()" aria-label="Close">×</button>
+        <div class="tpl-gate-card" role="dialog" aria-modal="true" aria-labelledby="tpl-login-title"
+            onclick="event.stopPropagation()">
+            <button class="tpl-gate-close" type="button" onclick="closeTemplateLoginModal()"
+                aria-label="Close">×</button>
             <div class="tpl-gate-emblem">
-                <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <rect x="4.5" y="10.5" width="15" height="10.5" rx="2.5"></rect>
                     <path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"></path>
                 </svg>
             </div>
             <h3 id="tpl-login-title">Log in to unlock premium templates</h3>
-            <p class="tpl-gate-text" id="tpl-login-text">This template is part of MSC's premium collection. Sign in to your MSC account to continue.</p>
+            <p class="tpl-gate-text" id="tpl-login-text">This template is part of MSC's premium collection. Sign in to
+                your MSC account to continue.</p>
             <div class="tpl-gate-actions">
                 <a class="tpl-gate-btn-primary" href="/login.html">Log in</a>
-                <button class="tpl-gate-btn-ghost" type="button" onclick="closeTemplateLoginModal()">Maybe later</button>
+                <button class="tpl-gate-btn-ghost" type="button" onclick="closeTemplateLoginModal()">Maybe
+                    later</button>
             </div>
         </div>
     </div>
 
     <!-- Premium template: purchase prompt (logged-in users without any enrollment) -->
     <div id="template-buy-overlay" class="tpl-gate-overlay" aria-hidden="true" onclick="closeTemplateBuyModal()">
-        <div class="tpl-gate-card" role="dialog" aria-modal="true" aria-labelledby="tpl-buy-title" onclick="event.stopPropagation()">
+        <div class="tpl-gate-card" role="dialog" aria-modal="true" aria-labelledby="tpl-buy-title"
+            onclick="event.stopPropagation()">
             <button class="tpl-gate-close" type="button" onclick="closeTemplateBuyModal()" aria-label="Close">×</button>
             <div class="tpl-gate-emblem">
-                <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <rect x="4.5" y="10.5" width="15" height="10.5" rx="2.5"></rect>
                     <path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"></path>
                 </svg>
@@ -1426,11 +1471,14 @@
             </div>
         </div>
     </div>
-    <div id="ai-preview-overlay" class="ai-preview-overlay" aria-hidden="true" onclick="handleAiPreviewOverlayClick(event)">
-        <div class="ai-preview-card" role="dialog" aria-modal="true" aria-labelledby="ai-preview-title" onclick="event.stopPropagation()">
+    <div id="ai-preview-overlay" class="ai-preview-overlay" aria-hidden="true"
+        onclick="handleAiPreviewOverlayClick(event)">
+        <div class="ai-preview-card" role="dialog" aria-modal="true" aria-labelledby="ai-preview-title"
+            onclick="event.stopPropagation()">
             <div class="ai-preview-header">
                 <h3 id="ai-preview-title">Review AI changes</h3>
-                <button class="ai-prompt-close" type="button" onclick="closeAiPreview(false)" aria-label="Close">×</button>
+                <button class="ai-prompt-close" type="button" onclick="closeAiPreview(false)"
+                    aria-label="Close">×</button>
             </div>
             <div class="ai-preview-grid">
                 <div class="ai-preview-pane">
@@ -1471,7 +1519,8 @@
                 <label for="theme-accent-picker">Custom RGB</label>
                 <div class="template-theme-custom-row">
                     <input type="color" id="theme-accent-picker" onchange="updateThemeAccent(this.value)">
-                    <input type="text" id="theme-accent-value" class="form-control" placeholder="#2F557F" oninput="updateThemeAccentFromText(this.value)">
+                    <input type="text" id="theme-accent-value" class="form-control" placeholder="#2F557F"
+                        oninput="updateThemeAccentFromText(this.value)">
                     <div class="template-theme-chip" id="theme-accent-chip">Accent</div>
                 </div>
             </div>

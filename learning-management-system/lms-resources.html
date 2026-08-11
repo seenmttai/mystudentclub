@@ -478,20 +478,23 @@
             from {
                 opacity: 0;
             }
+
             to {
                 opacity: 1;
             }
         }
 
-        [v-cloak], #app[v-cloak] #resource-viewer-modal, #app[v-cloak] * {
+        [v-cloak],
+        #app[v-cloak] #resource-viewer-modal,
+        #app[v-cloak] * {
             display: none !important;
         }
     </style>
-  <!-- Standard Favicon -->
-  <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
-  
-  <!-- Fallback Shortcut Icon -->
-  <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
+    <!-- Standard Favicon -->
+    <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
+
+    <!-- Fallback Shortcut Icon -->
+    <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
 </head>
 
 <body>
@@ -577,11 +580,12 @@
                         </div>
                         <div class="resource-description">
                             <p>{{ resource.description || 'Access this resource below.' }}</p>
-                            <p v-if="getResourceFormatNote(resource)" class="resource-format-note">{{ getResourceFormatNote(resource) }}</p>
+                            <p v-if="getResourceFormatNote(resource)" class="resource-format-note">{{
+                                getResourceFormatNote(resource) }}</p>
                         </div>
                         <div class="resource-actions">
-                            <a v-if="isSpecialSheet(resource)" :href="getSheetPreviewUrl(resource.url) || resource.url" target="_blank" rel="noopener noreferrer"
-                                class="resource-btn resource-btn-view">
+                            <a v-if="isSpecialSheet(resource)" :href="getSheetPreviewUrl(resource.url) || resource.url"
+                                target="_blank" rel="noopener noreferrer" class="resource-btn resource-btn-view">
                                 <i class="fas fa-external-link-alt"></i> View Sheet
                             </a>
 
@@ -610,10 +614,12 @@
                 <div class="resource-viewer-content">
                     <div class="resource-viewer-header">
                         <div class="resource-viewer-title-wrap">
-                            <h2 class="resource-viewer-title">{{ currentResourceTitle }}{{ currentResourceSubtitle ? ' · PDF Preview' : '' }}</h2>
+                            <h2 class="resource-viewer-title">{{ currentResourceTitle }}{{ currentResourceSubtitle ? ' ·
+                                PDF Preview' : '' }}</h2>
                         </div>
                         <div>
-                            <button @click="toggleFullscreen" class="resource-viewer-fullscreen-button" title="Toggle Fullscreen">
+                            <button @click="toggleFullscreen" class="resource-viewer-fullscreen-button"
+                                title="Toggle Fullscreen">
                                 <i class="fas" :class="isFullscreen ? 'fa-compress' : 'fa-expand'"></i>
                             </button>
                             <button @click="closeViewer" class="resource-viewer-close-button">×</button>
@@ -652,11 +658,14 @@
                             class="viewer-nav-button">Next</button>
                     </div>
                     <!-- Controls for iframe / Google Sheets -->
-                    <div v-else-if="previewType === 'iframe'" class="resource-viewer-controls" style="justify-content: center; gap: 0.75rem;">
-                        <a v-if="currentResource?.url" :href="getSheetPreviewUrl(currentResource.url)" target="_blank" rel="noopener noreferrer" class="viewer-nav-button">
+                    <div v-else-if="previewType === 'iframe'" class="resource-viewer-controls"
+                        style="justify-content: center; gap: 0.75rem;">
+                        <a v-if="currentResource?.url" :href="getSheetPreviewUrl(currentResource.url)" target="_blank"
+                            rel="noopener noreferrer" class="viewer-nav-button">
                             <i class="fas fa-external-link-alt"></i> Open Full Sheet
                         </a>
-                        <button @click="downloadResource(currentResource)" class="viewer-nav-button viewer-download-btn">
+                        <button @click="downloadResource(currentResource)"
+                            class="viewer-nav-button viewer-download-btn">
                             <i class="fas fa-download"></i> Download Excel
                         </button>
                     </div>
@@ -706,7 +715,7 @@
     <script type="module">
         import { createApp, markRaw } from 'vue';
 
-        const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+        const supabaseUrl = 'https://auth.mystudentclub.com';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
@@ -833,12 +842,12 @@
                     const title = String(resource.title || '').toLowerCase();
 
                     return url.includes('docs.google.com/spreadsheets') ||
-                           url.includes('drive.google.com/spreadsheets') ||
-                           url.includes('spreadsheets/d/') ||
-                           type === 'spreadsheet' ||
-                           type === 'sheets' ||
-                           type === 'gsheet' ||
-                           title.includes('hiring companies list');
+                        url.includes('drive.google.com/spreadsheets') ||
+                        url.includes('spreadsheets/d/') ||
+                        type === 'spreadsheet' ||
+                        type === 'sheets' ||
+                        type === 'gsheet' ||
+                        title.includes('hiring companies list');
                 },
                 hasViewPath(resource) {
                     return resource.view_storage_path && resource.view_storage_path !== 'None';

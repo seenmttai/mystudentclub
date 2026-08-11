@@ -125,12 +125,12 @@
             display: none;
         }
     </style>
-  <!-- Standard Favicon -->
-<!-- Fallback Shortcut Icon -->
-  <!-- Standard Favicon -->
-  <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
-  <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
-  <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
+    <!-- Standard Favicon -->
+    <!-- Fallback Shortcut Icon -->
+    <!-- Standard Favicon -->
+    <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
+    <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
+    <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
 </head>
 
 <body>
@@ -193,7 +193,8 @@
             </svg>
             Delete Your Account
         </h1>
-        <p>This action is irreversible. When you delete your account, all of your personal data will be permanently removed, including:</p>
+        <p>This action is irreversible. When you delete your account, all of your personal data will be permanently
+            removed, including:</p>
         <ul style="margin: 0.75rem 0 1rem 1.5rem; color: #6b7280; line-height: 1.8; font-size: 0.95rem;">
             <li>Profile data &amp; CV</li>
             <li>CV sharing consent records (DPDP Act)</li>
@@ -215,9 +216,9 @@
     </div>
 
     <script>
-        const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+        const supabaseUrl = 'https://auth.mystudentclub.com';
         const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-        
+
         // Initialize client and attach to window to avoid scope issues across scripts.
         // Use 'supabaseClient' instead of 'supabase' to avoid collision with the global library namespace.
         const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
