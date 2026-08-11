@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = import.meta.env.SUPABASE_URL || 'https://izsggdtdiacxdsjjncdq.supabase.co';
+const SUPABASE_URL = import.meta.env.SUPABASE_URL || 'https://auth.mystudentclub.com';
 const SUPABASE_KEY = import.meta.env.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -48,7 +48,7 @@ export function getDaysAgo(dateString: any): string {
     const past = new Date(dateString);
     const diffMs = now.getTime() - past.getTime();
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays === 0) return 'Today';
     if (diffDays === 1) return '1 day ago';
     if (diffDays < 7) return `${diffDays} days ago`;
@@ -104,7 +104,7 @@ export function constructMailto(job: any, tableName: string): string {
 export function generateJsonLd(job: any, jobId: any, categorySlug: any): any {
     const DOMAIN = 'https://www.mystudentclub.com';
     const datePosted = formatDate(job.Created_At);
-    const description = job.Description 
+    const description = job.Description
         ? JSON.stringify(String(job.Description).replace(/\n/g, '\\n').replace(/"/g, '\\"'))
         : '"No description available"';
 

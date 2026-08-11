@@ -67,7 +67,7 @@ async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) 
     }
 }
 
-const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+const supabaseUrl = 'https://auth.mystudentclub.com';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 const WORKER_URL = 'https://storer.bhansalimanan55.workers.dev';
@@ -320,7 +320,7 @@ function toggleSaveJob(job, btnElement) {
 function renderJobCard(job) {
     const companyName = (job.Company || '').trim();
     const companyKey = companyName.toLowerCase();
-    
+
     // Ratings initialization
     let ratingHtml = '';
     let ratingInfo = null;
@@ -788,7 +788,7 @@ function showModal(job) {
             <i class="fas fa-share-alt"></i>
             Share this job
         </button>`;
-    
+
     if (job.posts_link) {
         const originalPostHtml = `
             <a href="${job.posts_link}" id="modalOriginalPostBtn" target="_blank" class="btn btn-secondary btn-modal-secondary" style="border-color: #0a66c2; color: #0a66c2;">
@@ -1045,7 +1045,7 @@ async function fetchFirmReviews() {
             .from('articleship_firm_reviews_public')
             .select('firm_name, overall_rating');
         if (error) throw error;
-        
+
         const groups = {};
         (data || []).forEach(r => {
             if (!r.firm_name) return;
@@ -1140,7 +1140,7 @@ async function fetchJobs() {
                     const keyword = state.keywords[i].trim();
                     // wildcard matching for spaces to find "PhonePe" from "Phone Pe"
                     const flexibleTerm = keyword.replace(/\s+/g, '%');
-                    
+
                     const cols = [
                         `Company.ilike."%${flexibleTerm}%"`,
                         `Description.ilike."%${flexibleTerm}%"`,
@@ -1148,7 +1148,7 @@ async function fetchJobs() {
                         `Location.ilike."%${flexibleTerm}%"`,
                         `"Primary Domain".ilike."%${flexibleTerm}%"`
                     ];
-                    
+
                     if (currentTable === "Fresher Jobs") {
                         cols.push(`"Secondary Domain".ilike."%${flexibleTerm}%"`);
                         cols.push(`Tags.cs.{"${keyword}"}`);
@@ -1162,7 +1162,7 @@ async function fetchJobs() {
                         cols.push(`"Exposure Tags".cs.{"${keyword}"}`);
                         cols.push(`"Client Exposure Tags".cs.{"${keyword}"}`);
                     }
-                    
+
                     keywordOrs.push(...cols);
                 }
                 q = q.or(keywordOrs.join(','));
@@ -1181,7 +1181,7 @@ async function fetchJobs() {
                 for (let i = 0; i < state.categories.length; i++) {
                     const cat = state.categories[i];
                     const hasSecondary = (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs");
-                    
+
                     categoryOr.push(`"Primary Domain".eq."${cat}"`);
                     if (hasSecondary) {
                         categoryOr.push(`"Secondary Domain".eq."${cat}"`);
@@ -2128,10 +2128,10 @@ async function loadBanners() {
 
         const relevantBanners = banners.filter(b => {
             const matchesType = b.Type === 'All' || b.Type === currentType;
-            const matchesEnrollment = b.visible_to_unenrolled === null || 
-                                      b.visible_to_unenrolled === undefined || 
-                                      (b.visible_to_unenrolled === true && !isEnrolled) || 
-                                      (b.visible_to_unenrolled === false && isEnrolled);
+            const matchesEnrollment = b.visible_to_unenrolled === null ||
+                b.visible_to_unenrolled === undefined ||
+                (b.visible_to_unenrolled === true && !isEnrolled) ||
+                (b.visible_to_unenrolled === false && isEnrolled);
             return matchesType && matchesEnrollment;
         });
 
@@ -2834,7 +2834,7 @@ async function initializePage() {
         let profile = null;
         const cached = localStorage.getItem('userProfileData');
         if (cached) {
-            try { profile = JSON.parse(cached); } catch (e) {}
+            try { profile = JSON.parse(cached); } catch (e) { }
         }
         if (!profile || !profile.looking_for) {
             profile = await fetchAndCacheProfileData();
@@ -2982,7 +2982,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const hasResume = localStorage.getItem('userCVText');
 
     if (isNewUser === 'true') {
-        const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+        const supabaseUrl = 'https://auth.mystudentclub.com';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
@@ -2996,7 +2996,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const cachedProfile = localStorage.getItem('userProfileData');
                     let profile = null;
                     if (cachedProfile) {
-                        try { profile = JSON.parse(cachedProfile); } catch (e) {}
+                        try { profile = JSON.parse(cachedProfile); } catch (e) { }
                     }
                     const jobPref = localStorage.getItem('userJobPreference');
                     const lookingFor = profile?.looking_for;
@@ -3489,7 +3489,7 @@ async function checkAndSyncCVBackground() {
                 if (cachedProfile) {
                     try {
                         profileObj = JSON.parse(cachedProfile);
-                    } catch (e) {}
+                    } catch (e) { }
                 }
                 profileObj.cv_cloud_synced = true;
                 if (!profileObj.email && currentSession.user.email) profileObj.email = currentSession.user.email;
@@ -3589,9 +3589,9 @@ function initOnboardingSegmentForm() {
 
     const fields = {
         'CA Industrial Training Default': { element: document.getElementById('field-industrial') },
-        'CA Articleship':                 { element: document.getElementById('field-articleship') },
-        'CA Fresher':                     { element: document.getElementById('field-fresher') },
-        'Semi Qualified CA':              { element: document.getElementById('field-semi') }
+        'CA Articleship': { element: document.getElementById('field-articleship') },
+        'CA Fresher': { element: document.getElementById('field-fresher') },
+        'Semi Qualified CA': { element: document.getElementById('field-semi') }
     };
 
     function setFieldActive(key, isActive) {
@@ -3621,11 +3621,11 @@ function initOnboardingSegmentForm() {
 
     // Sync month+year selects → hidden attempt inputs
     function syncAttempt(monthId, yearId, clearedId, hiddenId, pickerRowId) {
-        const monthEl  = document.getElementById(monthId);
-        const yearEl   = document.getElementById(yearId);
+        const monthEl = document.getElementById(monthId);
+        const yearEl = document.getElementById(yearId);
         const clearedEl = document.getElementById(clearedId);
         const hiddenEl = document.getElementById(hiddenId);
-        const rowEl    = document.getElementById(pickerRowId);
+        const rowEl = document.getElementById(pickerRowId);
         if (!monthEl || !yearEl || !clearedEl || !hiddenEl) return;
 
         function update() {
@@ -3766,9 +3766,9 @@ function initOnboardingSegmentForm() {
             const cached = localStorage.getItem('userProfileData');
             let profileObj = {};
             if (cached) {
-                try { profileObj = JSON.parse(cached); } catch (_) {}
+                try { profileObj = JSON.parse(cached); } catch (_) { }
             }
-            
+
             // Merge properties locally
             Object.assign(profileObj, updateData);
             localStorage.setItem('userProfileData', JSON.stringify(profileObj));
@@ -3815,7 +3815,7 @@ function calculateProfileCompletion() {
 
     let profile = null;
     if (cachedProfile) {
-        try { profile = JSON.parse(cachedProfile); } catch (e) {}
+        try { profile = JSON.parse(cachedProfile); } catch (e) { }
     }
 
     if (!currentSession) return 0;
@@ -3873,7 +3873,7 @@ function renderProfileCompletionBanner() {
     }
 
     const percent = currentSession ? calculateProfileCompletion() : 0;
-    
+
     if (percent === 100) {
         document.body.classList.remove('with-completion-banner');
         document.body.style.paddingTop = '';

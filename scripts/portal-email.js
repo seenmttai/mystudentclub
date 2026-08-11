@@ -67,7 +67,7 @@ async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) 
     }
 }
 
-const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+const supabaseUrl = 'https://auth.mystudentclub.com';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 const WORKER_URL = 'https://storer.bhansalimanan55.workers.dev';
@@ -444,7 +444,7 @@ function showModal(job) {
             <i class="fas fa-share-alt"></i>
             Share this job
         </button>`;
-    
+
     let originalPostHtml = '';
     if (job.posts_link) {
         originalPostHtml = `
@@ -636,8 +636,8 @@ function updateFilterCache() {
         : [];
 
 
-    const currentCategories = state.portalType === 'all' 
-        ? Object.values(allCategories).flat() 
+    const currentCategories = state.portalType === 'all'
+        ? Object.values(allCategories).flat()
         : (allCategories[state.portalType] || []);
     cachedSortedCategories = currentCategories.length > 0
         ? [...new Set(currentCategories)].sort((a, b) => b.length - a.length)
@@ -687,7 +687,7 @@ async function fetchJobs() {
         if (page === 0 || !cachedMergedJobs) {
             const PORTALS = ['Industrial Training Job Portal', 'Articleship Jobs', 'Semi Qualified Jobs', 'Fresher Jobs'];
             const tablesToFetch = state.portalType === 'all' ? PORTALS : [state.portalType];
-            
+
             let selectColumnsFresher = 'id, Company, Location, Salary, Description, Created_At, Category, "Application ID", application_count, Experience, yoe';
             let selectColumnsSemi = 'id, Company, Location, Salary, Description, Created_At, Category, "Application ID", application_count, Experience';
             let selectColumnsBase = 'id, Company, Location, Salary, Description, Created_At, Category, "Application ID", application_count';
@@ -740,7 +740,7 @@ async function fetchJobs() {
             let isAsc = false;
             if (state.sortBy === 'salary_asc') { sortCol = 'Salary'; isAsc = true; }
             else if (state.sortBy === 'salary_desc') { sortCol = 'Salary'; isAsc = false; }
-            
+
             cachedMergedJobs.sort((a, b) => {
                 if (state.sortBy === 'popular') {
                     return (b.application_count || 0) - (a.application_count || 0);
@@ -2271,7 +2271,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const hasResume = localStorage.getItem('userCVText');
 
     if (isNewUser === 'true') {
-        const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+        const supabaseUrl = 'https://auth.mystudentclub.com';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
@@ -2285,7 +2285,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const cachedProfile = localStorage.getItem('userProfileData');
                     let profile = null;
                     if (cachedProfile) {
-                        try { profile = JSON.parse(cachedProfile); } catch (e) {}
+                        try { profile = JSON.parse(cachedProfile); } catch (e) { }
                     }
                     const jobPref = localStorage.getItem('userJobPreference');
                     const lookingFor = profile?.looking_for;
@@ -2673,7 +2673,7 @@ async function checkAndSyncCVBackground() {
                 if (cachedProfile) {
                     try {
                         profileObj = JSON.parse(cachedProfile);
-                    } catch (e) {}
+                    } catch (e) { }
                 }
                 profileObj.cv_cloud_synced = true;
                 if (!profileObj.email && currentSession.user.email) profileObj.email = currentSession.user.email;
@@ -2727,17 +2727,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 function calculateProfileCompletion() {
     const cachedProfile = localStorage.getItem('userProfileData');
     const hasResume = localStorage.getItem('userCVText') || localStorage.getItem('userCVPdf');
-    
+
     let profile = null;
     if (cachedProfile) {
-        try { profile = JSON.parse(cachedProfile); } catch (e) {}
+        try { profile = JSON.parse(cachedProfile); } catch (e) { }
     }
 
     if (!currentSession) return 0;
     if (!profile && !hasResume) return 10;
 
     let score = 0;
-    
+
     if (hasResume) {
         score += 40;
     }
@@ -2769,7 +2769,7 @@ function renderProfileCompletionBanner() {
     }
 
     const percent = currentSession ? calculateProfileCompletion() : 0;
-    
+
     if (percent === 100) {
         document.body.classList.remove('with-completion-banner');
         document.body.style.paddingTop = '';

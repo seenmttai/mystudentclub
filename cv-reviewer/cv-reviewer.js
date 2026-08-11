@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.7.107/build/pdf.worker.min.js';
 
-const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+const supabaseUrl = 'https://auth.mystudentclub.com';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 
 let userId = null;
@@ -44,18 +44,18 @@ const recruiterTipsContent = document.querySelector('#recruiterTipsSection .cont
 const measurableResultsContent = document.querySelector('#measurableResultsSection .content-area');
 
 function showHeaderTitle() {
-  if (headerPageTitle) headerPageTitle.style.display = 'flex';
+    if (headerPageTitle) headerPageTitle.style.display = 'flex';
 }
 function hideHeaderTitle() {
-  if (headerPageTitle) headerPageTitle.style.display = 'none';
+    if (headerPageTitle) headerPageTitle.style.display = 'none';
 }
 function showResults() {
-  resultsSection.style.display = 'block';
-  showHeaderTitle();
+    resultsSection.style.display = 'block';
+    showHeaderTitle();
 }
 function hideResults() {
-  resultsSection.style.display = 'none';
-  hideHeaderTitle();
+    resultsSection.style.display = 'none';
+    hideHeaderTitle();
 }
 const phrasesSuggestionsContent = document.querySelector('#phrasesSuggestionsSection .content-area');
 const hardSkillsContent = document.querySelector('#hardSkillsSection .content-area');
@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     localStorage.setItem('import_cv_images', JSON.stringify(pdfImages));
                     localStorage.setItem('import_cv_filename', (selectedFile ? selectedFile.name : '') || activeReviewFileName || 'Resume');
                 }
-                
+
                 if (localStorage.getItem('import_cv_images')) {
                     window.location.href = '/cv-builder/?import_from_reviewer=true';
                 } else {
@@ -222,14 +222,14 @@ function setupCopyListeners() {
             await navigator.clipboard.writeText(textToCopy);
             const icon = btn.querySelector('i');
             const tooltip = btn.querySelector('.copy-success-tooltip');
-            
+
             if (icon) {
                 icon.className = 'fa-solid fa-check';
             }
             if (tooltip) {
                 tooltip.classList.add('show');
             }
-            
+
             setTimeout(() => {
                 if (icon) {
                     icon.className = 'fa-regular fa-copy';
@@ -328,10 +328,10 @@ function showNoticeModal(title, message, isError = true) {
     const titleEl = document.getElementById('noticeModalTitle');
     const descEl = document.getElementById('noticeModalText');
     const emblem = document.getElementById('noticeModalEmblem');
-    
+
     if (titleEl) titleEl.textContent = title;
     if (descEl) descEl.textContent = message;
-    
+
     if (emblem) {
         if (isError) {
             emblem.style.background = 'rgba(239, 68, 68, 0.1)';
@@ -343,7 +343,7 @@ function showNoticeModal(title, message, isError = true) {
             emblem.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
         }
     }
-    
+
     if (overlay) overlay.classList.add('active');
 }
 
@@ -360,11 +360,11 @@ function setupTrialGateModals() {
     document.getElementById('contextWarningBtn')?.addEventListener('click', closeContextWarningModal);
     document.getElementById('noticeModalClose')?.addEventListener('click', closeNoticeModal);
     document.getElementById('noticeModalBtn')?.addEventListener('click', closeNoticeModal);
-    
+
     ['reviewLoginOverlay', 'reviewBuyOverlay', 'contextWarningOverlay', 'noticeModalOverlay'].forEach(id => {
         const overlay = document.getElementById(id);
         if (!overlay) return;
-        overlay.addEventListener('click', (e) => { 
+        overlay.addEventListener('click', (e) => {
             if (e.target === overlay) {
                 if (id === 'reviewLoginOverlay') closeReviewLoginModal();
                 else if (id === 'reviewBuyOverlay') closeReviewBuyModal();
@@ -574,7 +574,7 @@ function setupUserId() {
         if (typeof crypto !== 'undefined' && crypto.randomUUID) {
             userId = crypto.randomUUID();
         } else {
-            userId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            userId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
                 const r = Math.random() * 16 | 0;
                 const v = c === 'x' ? r : (r & 0x3 | 0x8);
                 return v.toString(16);
@@ -1080,7 +1080,7 @@ function stopLoadingAnimation() {
         currentProgressInterval = null;
     }
     loadingProgressText.textContent = "Processing complete!";
-    
+
     // Mark all steps completed on success
     for (let num = 1; num <= 4; num++) {
         const stepEl = document.getElementById(`loadStep${num}`);
@@ -1577,7 +1577,7 @@ function animateScore(score) {
 
         const displayScore = currentVal.toFixed(1).replace(/\.0$/, '');
         scoreTextEl.textContent = displayScore;
-        
+
         const clampedDash = Math.min(currentVal, 100);
         scoreProgress.setAttribute('stroke-dasharray', `${clampedDash.toFixed(1)}, 100`);
 
@@ -1670,7 +1670,7 @@ function setupSubtabListeners() {
 function resetSubtabsToDefault() {
     const tabBtns = document.querySelectorAll('.analysis-tab-btn');
     const tabContents = document.querySelectorAll('.subtab-content');
-    
+
     tabBtns.forEach((btn, index) => {
         const targetContent = document.getElementById(`subtab-${btn.dataset.subtab}`);
         if (index === 0) {
@@ -1856,7 +1856,7 @@ async function loadLeaderboard() {
         <i class="fa-solid fa-spinner fa-spin text-3xl text-primary mb-3"></i>
         <p class="text-sm font-medium text-text-secondary">Loading candidate rankings...</p>
       </div>`;
-      
+
     await refreshAuthUser();
     if (!supabase || !authUser) {
         contentEl.innerHTML = `
@@ -1877,15 +1877,15 @@ async function loadLeaderboard() {
         .order('score', { ascending: false })
         .limit(100);
 
-    if (error) { 
-        console.error('Error fetching leaderboard:', error); 
-        contentEl.innerHTML = '<p class="text-danger text-center p-4">Could not load leaderboard data.</p>'; 
-        return; 
+    if (error) {
+        console.error('Error fetching leaderboard:', error);
+        contentEl.innerHTML = '<p class="text-danger text-center p-4">Could not load leaderboard data.</p>';
+        return;
     }
 
-    if (!data?.length) { 
-        contentEl.innerHTML = '<p class="text-center p-8 text-text-secondary italic">No entries yet. Be the first to analyze your CV!</p>'; 
-        return; 
+    if (!data?.length) {
+        contentEl.innerHTML = '<p class="text-center p-8 text-text-secondary italic">No entries yet. Be the first to analyze your CV!</p>';
+        return;
     }
 
     // Filter duplicate users in memory to get unique user ranking (best score per user)
@@ -1898,7 +1898,7 @@ async function loadLeaderboard() {
     });
 
     const uniqueRankings = Array.from(uniqueUsersMap.values()).slice(0, 10);
-    
+
     // Split into podium (top 3) and contenders list (4-10)
     const podiumItems = uniqueRankings.slice(0, 3);
     const listItems = uniqueRankings.slice(3);
@@ -1970,7 +1970,7 @@ async function loadLeaderboard() {
                 <span class="contenders-count">${listItems.length} active candidates</span>
             </div>
             <div class="contenders-list">`;
-        
+
         listItems.forEach((item, index) => {
             const rank = index + 4;
             const date = new Date(item.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
@@ -2066,10 +2066,10 @@ async function showHistoryView() {
     landingSection.style.display = 'none';
     showResults();
     tipsSection.style.display = 'none';
-    
+
     // Clear viewing highlight when checking general history
     document.querySelectorAll('.history-item').forEach(el => el.classList.remove('is-active'));
-    
+
     activateTab('history');
     await loadHistory();
     window.scrollTo({ top: 0, behavior: 'smooth' });

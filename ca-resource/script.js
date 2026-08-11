@@ -1,5 +1,5 @@
 // ─── Supabase Client & Authentication State ───
-const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+const supabaseUrl = 'https://auth.mystudentclub.com';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 const supabaseClient = window.supabase ? window.supabase.createClient(supabaseUrl, supabaseKey) : null;
 
@@ -129,7 +129,7 @@ async function renderPageToCanvas(pageNum, width, height) {
     const ctx = canvas.getContext('2d', { alpha: false });
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
-    
+
     // Render the PDF content
     await page.render({
         canvasContext: ctx,
@@ -152,33 +152,33 @@ async function renderPageToCanvas(pageNum, width, height) {
 
 function drawWatermarkOnCanvas(ctx, canvasWidth, canvasHeight, outputScale, email) {
     ctx.save();
-    
+
     // Set font style
     const fontSize = Math.max(10, Math.round(14 * outputScale));
     ctx.font = `bold ${fontSize}px 'Inter', sans-serif`;
     ctx.fillStyle = 'rgba(128, 128, 128, 0.14)'; // light gray with transparency
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    
+
     // Calculate diagonal steps to cover the canvas with a grid of watermarks
     const angle = -30 * Math.PI / 180;
     ctx.rotate(angle);
-    
+
     const stepX = 250 * outputScale;
     const stepY = 180 * outputScale;
-    
+
     // Cover rotated canvas bounds
     const startX = -canvasWidth;
     const endX = canvasWidth * 2;
     const startY = -canvasHeight;
     const endY = canvasHeight * 2;
-    
+
     for (let x = startX; x < endX; x += stepX) {
         for (let y = startY; y < endY; y += stepY) {
             ctx.fillText(email, x, y);
         }
     }
-    
+
     ctx.restore();
 }
 
@@ -254,14 +254,14 @@ async function drawHighlightsOnCanvas(ctx, page, viewport, outputScale) {
             if (!item.str) return;
             const str = item.str.toLowerCase();
             let idx = -1;
-            
+
             while ((idx = str.indexOf(term, idx + 1)) !== -1) {
                 // Determine if this is the "active" match
-                const isCurrentMatch = searchIndex >= 0 && 
-                                     searchMatches[searchIndex] &&
-                                     searchMatches[searchIndex].page === page.pageNumber &&
-                                     searchMatches[searchIndex].itemIdx === itemIdx &&
-                                     searchMatches[searchIndex].charOffset === idx;
+                const isCurrentMatch = searchIndex >= 0 &&
+                    searchMatches[searchIndex] &&
+                    searchMatches[searchIndex].page === page.pageNumber &&
+                    searchMatches[searchIndex].itemIdx === itemIdx &&
+                    searchMatches[searchIndex].charOffset === idx;
 
                 drawMatchHighlight(ctx, item, viewport, idx, term.length, isCurrentMatch);
             }
@@ -276,16 +276,16 @@ function drawMatchHighlight(ctx, item, viewport, charOffset, len, isCurrent) {
     // The item.transform is [scaleX, skewX, skewY, scaleY, tx, ty]
     // PDF.js coordinates have origin at bottom-left.
     const tx = pdfjsLib.Util.transform(viewport.transform, item.transform);
-    
+
     // fontHeight is approximately the scaleY of the combined transform
     const fontHeight = Math.sqrt(tx[2] * tx[2] + tx[3] * tx[3]);
     const fontWidth = Math.sqrt(tx[0] * tx[0] + tx[1] * tx[1]);
-    
+
     // Estimate width per character if we don't have individual glyph widths
     // PDF.js items have 'width' which is the total width of the string in PDF units
     const totalWidth = item.width * (fontWidth / (item.transform[0] || fontWidth));
     const charWidth = totalWidth / item.str.length;
-    
+
     const x = tx[4] + (charOffset * charWidth);
     const y = tx[5] - fontHeight; // text baseline is at tx[5], move up to top of font
     const rectWidth = len * charWidth;
@@ -293,7 +293,7 @@ function drawMatchHighlight(ctx, item, viewport, charOffset, len, isCurrent) {
 
     ctx.fillStyle = isCurrent ? 'rgba(255, 150, 0, 0.6)' : 'rgba(255, 255, 0, 0.4)';
     ctx.fillRect(x, y, rectWidth, rectHeight);
-    
+
     // Add a small border to current match
     if (isCurrent) {
         ctx.strokeStyle = 'rgba(255, 100, 0, 0.9)';
@@ -317,13 +317,13 @@ async function buildFlipbook() {
         const pageDiv = document.createElement('div');
         pageDiv.className = 'flipbook-page';
         pageDiv.dataset.page = i;
-        
+
         // Loading placeholder
         const placeholder = document.createElement('div');
         placeholder.className = 'page-loading';
         placeholder.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
         pageDiv.appendChild(placeholder);
-        
+
         flipbookEl.appendChild(pageDiv);
     }
 
@@ -340,7 +340,7 @@ async function buildFlipbook() {
         elevation: 50,
         duration: 1000,
         when: {
-            turning: function(event, page, view) {
+            turning: function (event, page, view) {
                 updatePageDisplay(page);
                 const size = $(flipbookEl).turn('size');
                 const pW = viewMode === 'single' ? size.width : size.width / 2;
@@ -348,7 +348,7 @@ async function buildFlipbook() {
                 // Pre-render adjacent pages
                 view.forEach(p => { if (p) renderFlipbookPage(p, pW, pH); });
             },
-            turned: function(event, page, view) {
+            turned: function (event, page, view) {
                 updatePageDisplay(page);
                 updateThumbActive(page);
                 const size = $(flipbookEl).turn('size');
@@ -502,13 +502,13 @@ async function renderFlipbookPage(pageNum, pageW, pageH) {
 async function goToPage(num) {
     if (!flipbookReady) return;
     num = Math.max(1, Math.min(num, totalPages));
-    
+
     // Pre-render the target page and its neighbors before jumping
     // so it doesn't get stuck on the loading spinner
     const size = $(flipbookEl).turn('size');
     const pW = viewMode === 'single' ? size.width : size.width / 2;
     const pH = size.height;
-    
+
     const promises = [];
     for (let p = Math.max(1, num - 1); p <= Math.min(totalPages, num + 2); p++) {
         promises.push(renderFlipbookPage(p, pW, pH));
@@ -665,7 +665,7 @@ function fitToWidth() {
         const { availW, availH } = getFlipbookDimensions();
         let pageW = viewMode === 'single' ? Math.floor(availW * 0.9) : Math.floor(availW / 2 * 0.95);
         let pageH = Math.floor(pageW / (vp.width / vp.height));
-        
+
         // Secure zoom constraint: enforce a minimum page height of 1.25x viewport height
         const minSecureHeight = Math.round(availH * 1.25);
         if (pageH < minSecureHeight) {
@@ -742,7 +742,7 @@ async function generateThumbnails() {
             thumbCanvas.height = thumbVP.height;
             const ctx = thumbCanvas.getContext('2d');
             await page.render({ canvasContext: ctx, viewport: thumbVP }).promise;
-        } catch (e) {}
+        } catch (e) { }
     }
 }
 
@@ -765,7 +765,7 @@ async function searchDocument(term) {
     currentSearchTerm = term;
     searchMatches = [];
     searchIndex = -1;
-    
+
     if (!pdfDoc || !term) {
         updateSearchControls();
         if (oldTerm) {
@@ -782,7 +782,7 @@ async function searchDocument(term) {
         try {
             const page = await pdfDoc.getPage(i);
             const textContent = await page.getTextContent();
-            
+
             textContent.items.forEach((item, itemIdx) => {
                 if (!item.str) return;
                 const str = item.str.toLowerCase();
@@ -802,8 +802,8 @@ async function searchDocument(term) {
 
     if (searchMatches.length === 0) {
         searchInfo.textContent = 'No results';
-        setTimeout(() => { 
-            if (currentSearchTerm === term) searchInfo.textContent = ''; 
+        setTimeout(() => {
+            if (currentSearchTerm === term) searchInfo.textContent = '';
         }, 2000);
         updateSearchControls();
         return;
@@ -812,9 +812,9 @@ async function searchDocument(term) {
     searchIndex = 0;
     updateSearchControls();
     updateSearchInfo();
-    
+
     // Jump to first match and force re-render
-    renderedPages.clear(); 
+    renderedPages.clear();
     goToPage(searchMatches[0].page);
     refreshFlipbookView();
 }
@@ -824,9 +824,9 @@ function onSearchNext() {
     const oldPage = searchMatches[searchIndex].page;
     searchIndex = (searchIndex + 1) % searchMatches.length;
     const newMatch = searchMatches[searchIndex];
-    
+
     updateSearchInfo();
-    
+
     if (newMatch.page !== oldPage) {
         goToPage(newMatch.page);
     } else {
@@ -848,9 +848,9 @@ function onSearchPrev() {
     const oldPage = searchMatches[searchIndex].page;
     searchIndex = (searchIndex - 1 + searchMatches.length) % searchMatches.length;
     const newMatch = searchMatches[searchIndex];
-    
+
     updateSearchInfo();
-    
+
     if (newMatch.page !== oldPage) {
         goToPage(newMatch.page);
     } else {
@@ -1151,7 +1151,7 @@ function setupSecurityListeners() {
     blurOverlay.style.color = '#f1f5f9';
     blurOverlay.style.fontFamily = "'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
     blurOverlay.style.cursor = 'pointer';
-    
+
     blurOverlay.innerHTML = `
         <div style="text-align: center; padding: 32px; max-width: 400px; background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);">
             <i class="fas fa-eye-slash" style="font-size: 54px; color: #818cf8; margin-bottom: 20px; animation: pulse-glow 2s infinite;"></i>
@@ -1166,7 +1166,7 @@ function setupSecurityListeners() {
             }
         </style>
     `;
-    
+
     document.body.appendChild(blurOverlay);
 
     const showBlur = () => {
@@ -1200,7 +1200,7 @@ function setupSecurityListeners() {
     window.addEventListener('keyup', (e) => {
         if (e.key === 'PrintScreen' || e.code === 'PrintScreen') {
             showBlur();
-            navigator.clipboard.writeText('Screenshots are disabled for this protected content.').catch(() => {});
+            navigator.clipboard.writeText('Screenshots are disabled for this protected content.').catch(() => { });
         }
     });
 
@@ -1225,7 +1225,7 @@ async function checkAuthAndLoad() {
 
     try {
         const { data: { session }, error } = await supabaseClient.auth.getSession();
-        
+
         if (error || !session || !session.user || !session.user.email) {
             showAccessRestrictedOverlay("You must be logged in to access this resource.");
             return;

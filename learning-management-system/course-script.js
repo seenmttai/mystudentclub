@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+    const supabaseUrl = 'https://auth.mystudentclub.com';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
     const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
     pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js`;
@@ -21,10 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
         plyrPlayer: null,
         hlsInstance: null,  // HLS.js instance for streaming
         // --- View Limit Tracking ---
-        watchData: {},          
-        watchTrackingTimer: null,    
-        watchLastTime: 0,       
-        watchSessionActive: false    
+        watchData: {},
+        watchTrackingTimer: null,
+        watchLastTime: 0,
+        watchSessionActive: false
     };
 
     const courses = {
@@ -150,12 +150,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const title = String(resource.title || '').toLowerCase();
 
         return url.includes('docs.google.com/spreadsheets') ||
-               url.includes('drive.google.com/spreadsheets') ||
-               url.includes('spreadsheets/d/') ||
-               type === 'spreadsheet' ||
-               type === 'sheets' ||
-               type === 'gsheet' ||
-               title.includes('hiring companies list');
+            url.includes('drive.google.com/spreadsheets') ||
+            url.includes('spreadsheets/d/') ||
+            type === 'spreadsheet' ||
+            type === 'sheets' ||
+            type === 'gsheet' ||
+            title.includes('hiring companies list');
     };
 
     const getSheetPreviewUrl = (url) => {
@@ -471,7 +471,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     DOMElements.videoLoadingOverlay.style.display = 'none';
                     showLockedOverlay();
                     if (state.plyrPlayer) {
-                        try { state.plyrPlayer.pause(); } catch(e){}
+                        try { state.plyrPlayer.pause(); } catch (e) { }
                     }
                     return;
                 }
@@ -516,7 +516,7 @@ document.addEventListener('DOMContentLoaded', () => {
             day.videos.forEach(video => {
                 const isVideoCompleted = video.completed;
                 const isVideoSelected = video.id === state.currentVideoId;
-                
+
                 let resourcesHTML = '';
                 if (video.resources && video.resources.length > 0) {
                     const groups = {};
@@ -783,12 +783,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            try { localStorage.setItem(UUID_KEY, uuid); } catch (e) {}
-            try { sessionStorage.setItem(UUID_KEY, uuid); } catch (e) {}
+            try { localStorage.setItem(UUID_KEY, uuid); } catch (e) { }
+            try { sessionStorage.setItem(UUID_KEY, uuid); } catch (e) { }
             try {
                 const maxAge = 60 * 60 * 24 * 730; // 2 years
                 document.cookie = `${UUID_KEY}=${encodeURIComponent(uuid)}; path=/; max-age=${maxAge}; SameSite=Lax`;
-            } catch (e) {}
+            } catch (e) { }
 
             return uuid;
         } catch (e) {
@@ -830,7 +830,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let tz = '';
         try {
             tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
-        } catch (e) {}
+        } catch (e) { }
 
         const profileStr = `${os}_${browser}_${deviceType}_${normRes}_c${cores}_t${touch}_${lang}_${tz}`;
 
@@ -863,7 +863,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const coarse = getCoarseHardwareProfile();
             const fp = `FP_${uuid}_${coarse.hashStr}`;
 
-            try { localStorage.setItem(STORAGE_KEY, fp); } catch (e) {}
+            try { localStorage.setItem(STORAGE_KEY, fp); } catch (e) { }
             return fp;
         } catch (e) {
             const uuid = getDeviceUuid();
@@ -951,7 +951,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const deviceLimitModal = document.getElementById('device-limit-modal');
                     if (deviceLimitModal) {
                         deviceLimitModal.style.display = 'flex';
-                        
+
                         // Setup contact support redirect
                         const supportBtn = document.getElementById('device-limit-support-btn');
                         if (supportBtn) {
@@ -1673,8 +1673,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const currentVideoIndex = section.videos.findIndex(v => v.id === state.currentVideoId) + 1;
             const sessionText = section.videos.length > 1 ? ` - Session ${currentVideoIndex}/${section.videos.length}` : '';
             const totalDays = state.courseSections.filter(s => s.day_number > 0).length;
-            DOMElements.videoCounter.textContent = section.day_number === 0 
-                ? `Day 0${sessionText}` 
+            DOMElements.videoCounter.textContent = section.day_number === 0
+                ? `Day 0${sessionText}`
                 : `Day ${section.day_number} of ${totalDays}${sessionText}`;
             DOMElements.videoCounter.style.display = 'inline-block';
         } else {
