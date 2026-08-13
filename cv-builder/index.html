@@ -171,43 +171,43 @@
 
         <div class="editor-content">
 
-            <details open data-section="education">
+            <details open>
                 <summary>Personal Details</summary>
                 <div class="section-body">
                     <div class="form-group">
-                        <label>Full Name</label>
-                        <input type="text" class="form-control" id="inp-name" placeholder="e.g. Padam Bhansali"
+                        <label for="inp-name">Full Name</label>
+                        <input type="text" class="form-control" id="inp-name" name="inp-name" placeholder="e.g. Padam Bhansali"
                             oninput="updateCV()" spellcheck="false">
                     </div>
                     <div class="form-group" data-section="tagline">
-                        <label>Tagline / Current Role</label>
-                        <input type="text" class="form-control" id="inp-tagline" placeholder="e.g. CA Final | Flipkart"
+                        <label for="inp-tagline">Tagline / Current Role</label>
+                        <input type="text" class="form-control" id="inp-tagline" name="inp-tagline" placeholder="e.g. CA Final | Flipkart"
                             oninput="updateCV()">
                     </div>
                     <div class="form-group" data-section="phone">
-                        <label>Phone</label>
-                        <input type="text" class="form-control" id="inp-phone" placeholder="+91 98765 43210"
+                        <label for="inp-phone">Phone</label>
+                        <input type="text" class="form-control" id="inp-phone" name="inp-phone" placeholder="+91 98765 43210"
                             oninput="updateCV()" onblur="formatPhoneInput(this)">
                     </div>
                     <div class="form-group" data-section="email">
-                        <label>Email</label>
-                        <input type="email" class="form-control" id="inp-email" placeholder="yourname@email.com"
+                        <label for="inp-email">Email</label>
+                        <input type="email" class="form-control" id="inp-email" name="inp-email" placeholder="yourname@email.com"
                             oninput="updateCV()">
                     </div>
                     <div class="form-group" data-section="linkedin">
-                        <label>LinkedIn</label>
-                        <input type="text" class="form-control" id="inp-linkedin" placeholder="linkedin.com/in/yourname"
+                        <label for="inp-linkedin">LinkedIn</label>
+                        <input type="text" class="form-control" id="inp-linkedin" name="inp-linkedin" placeholder="linkedin.com/in/yourname"
                             oninput="updateCV()">
                     </div>
                     <div class="form-group" data-section="location">
-                        <label>Location (optional)</label>
-                        <input type="text" class="form-control" id="inp-location" placeholder="e.g. Mumbai, India"
+                        <label for="inp-location">Location (optional)</label>
+                        <input type="text" class="form-control" id="inp-location" name="inp-location" placeholder="e.g. Mumbai, India"
                             oninput="updateCV()">
                     </div>
 
                     <!-- Social Links Section -->
                     <div class="form-group" style="margin-top: 15px; border-top: 1px dashed #ccc; padding-top: 10px;">
-                        <label>Social Links / Portfolio</label>
+                        <div class="form-label-heading">Social Links / Portfolio</div>
                         <div id="social-links-container"></div>
                         <button class="btn-dashed" onclick="addSocialLink()">+ Add Link</button>
                     </div>
@@ -220,18 +220,18 @@
                     <p style="font-size:12px;color:#888;margin-bottom:10px;">These 3 banners appear at the top of the
                         Clean Ledger template.</p>
                     <div class="form-group">
-                        <label>Banner 1</label>
-                        <input type="text" class="form-control" id="inp-highlight1"
+                        <label for="inp-highlight1">Banner 1</label>
+                        <input type="text" class="form-control" id="inp-highlight1" name="inp-highlight1"
                             placeholder="e.g. Top Academic Performer" oninput="updateCV()">
                     </div>
                     <div class="form-group">
-                        <label>Banner 2</label>
-                        <input type="text" class="form-control" id="inp-highlight2"
+                        <label for="inp-highlight2">Banner 2</label>
+                        <input type="text" class="form-control" id="inp-highlight2" name="inp-highlight2"
                             placeholder="e.g. Article Trainee Experience" oninput="updateCV()">
                     </div>
                     <div class="form-group">
-                        <label>Banner 3</label>
-                        <input type="text" class="form-control" id="inp-highlight3"
+                        <label for="inp-highlight3">Banner 3</label>
+                        <input type="text" class="form-control" id="inp-highlight3" name="inp-highlight3"
                             placeholder="e.g. Leadership & Awards" oninput="updateCV()">
                     </div>
                 </div>
@@ -243,7 +243,7 @@
                     <div class="form-group">
                         <div
                             style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
-                            <label style="margin-bottom:0;">Objective / Summary</label>
+                            <label style="margin-bottom:0;" for="inp-summary">Objective / Summary</label>
                             <button type="button" class="btn-mini" onclick="aiRefineSummary()"
                                 title="Let AI polish this section">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -255,7 +255,7 @@
                             </button>
                         </div>
                         <div id="inp-summary-editor" class="summary-rich-editor" style="display:none;"></div>
-                        <textarea class="form-control" id="inp-summary"
+                        <textarea class="form-control" id="inp-summary" name="inp-summary"
                             placeholder="Brief summary of your professional goals..." oninput="updateCV()"
                             maxlength="500"></textarea>
                         <div class="char-counter" id="summary-counter">0/500</div>
@@ -263,10 +263,10 @@
                 </div>
             </details>
 
-            <details open data-section="experience">
+            <details open data-section="education">
                 <summary>
                     <span>Education</span>
-                    <button class="chip" type="button" onclick="toggleEducationFormatPanel(event)"
+                   <button class="chip" type="button" onclick="toggleEducationFormatPanel(event)"
                         style="font-size:10px; padding:4px 8px;">Table format</button>
                 </summary>
                 <div class="section-body">
@@ -294,7 +294,7 @@
                 </div>
             </details>
 
-            <details open>
+            <details open data-section="experience">
                 <summary>
                     <span>Experience / Articleship</span>
                 </summary>
@@ -317,7 +317,7 @@
                     <div class="form-group">
                         <div
                             style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
-                            <label style="margin-bottom:0;">Projects (All)</label>
+                            <div class="form-label-heading" style="margin-bottom:0;">Projects (All)</div>
                             <button type="button" class="btn-mini" onclick="aiRefineProjects()"
                                 title="Refine project bullets with AI">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -344,8 +344,10 @@
             <details data-section="certifications">
                 <summary>
                     <span>Certifications</span>
-                    <button class="chip" type="button" onclick="toggleSectionLabelPanel('certifications', event)"
-                        style="font-size:10px; padding:4px 8px;">Label</button>
+                    <div class="summary-actions">
+                        <button class="chip" type="button" onclick="toggleSectionLabelPanel('certifications', event)"
+                            style="font-size:10px; padding:4px 8px;">Label</button>
+                    </div>
                 </summary>
                 <div class="section-body">
                     <div id="section-label-panel-certifications" class="table-format-panel-wrap" aria-hidden="true">
@@ -365,15 +367,17 @@
             <details data-section="achievements">
                 <summary>
                     <span>Achievements &amp; Awards</span>
-                    <button class="chip" type="button" onclick="toggleSectionLabelPanel('achievements', event)"
-                        style="font-size:10px; padding:4px 8px;">Label</button>
+                    <div class="summary-actions">
+                        <button class="chip" type="button" onclick="toggleSectionLabelPanel('achievements', event)"
+                            style="font-size:10px; padding:4px 8px;">Label</button>
+                    </div>
                 </summary>
                 <div class="section-body">
                     <div id="section-label-panel-achievements" class="table-format-panel-wrap" aria-hidden="true"></div>
                     <div class="form-group">
                         <div
                             style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
-                            <label style="margin-bottom:0;">Achievements (All)</label>
+                            <div class="form-label-heading" style="margin-bottom:0;">Achievements (All)</div>
                             <button type="button" class="btn-mini" onclick="aiRefineAchievements()"
                                 title="Refine achievements with AI">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -400,15 +404,17 @@
             <details data-section="leadership">
                 <summary>
                     <span>Leadership</span>
-                    <button class="chip" type="button" onclick="toggleSectionLabelPanel('leadership', event)"
-                        style="font-size:10px; padding:4px 8px;">Label</button>
+                    <div class="summary-actions">
+                        <button class="chip" type="button" onclick="toggleSectionLabelPanel('leadership', event)"
+                            style="font-size:10px; padding:4px 8px;">Label</button>
+                    </div>
                 </summary>
                 <div class="section-body">
                     <div id="section-label-panel-leadership" class="table-format-panel-wrap" aria-hidden="true"></div>
                     <div class="form-group">
                         <div
                             style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
-                            <label style="margin-bottom:0;">Leadership (All)</label>
+                            <div class="form-label-heading" style="margin-bottom:0;">Leadership (All)</div>
                             <button type="button" class="btn-mini" onclick="aiRefineLeadership()"
                                 title="Refine leadership items with AI">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -435,15 +441,17 @@
             <details data-section="interests">
                 <summary>
                     <span>Interests &amp; Hobbies</span>
-                    <button class="chip" type="button" onclick="toggleSectionLabelPanel('interests', event)"
-                        style="font-size:10px; padding:4px 8px;">Label</button>
+                    <div class="summary-actions">
+                        <button class="chip" type="button" onclick="toggleSectionLabelPanel('interests', event)"
+                            style="font-size:10px; padding:4px 8px;">Label</button>
+                    </div>
                 </summary>
                 <div class="section-body">
                     <div id="section-label-panel-interests" class="table-format-panel-wrap" aria-hidden="true"></div>
                     <div class="form-group">
                         <div
                             style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
-                            <label style="margin-bottom:0;">Interests (All)</label>
+                            <div class="form-label-heading" style="margin-bottom:0;">Interests (All)</div>
                             <button type="button" class="btn-mini" onclick="aiRefineInterests()"
                                 title="Refine interests with AI">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -470,8 +478,10 @@
             <details data-section="skills">
                 <summary>
                     <span>Skills</span>
-                    <button class="chip" type="button" onclick="toggleSectionLabelPanel('skills', event)"
-                        style="font-size:10px; padding:4px 8px;">Label</button>
+                    <div class="summary-actions">
+                        <button class="chip" type="button" onclick="toggleSectionLabelPanel('skills', event)"
+                            style="font-size:10px; padding:4px 8px;">Label</button>
+                    </div>
                 </summary>
                 <div class="section-body">
                     <div id="section-label-panel-skills" class="table-format-panel-wrap" aria-hidden="true"></div>
@@ -479,7 +489,7 @@
                     <div class="form-group">
                         <div
                             style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
-                            <label style="margin-bottom:0;">Skills Overview</label>
+                            <label style="margin-bottom:0;" for="inp-skills">Skills Overview</label>
                             <button type="button" class="btn-mini" onclick="aiRefineSkills()"
                                 title="Let AI refine your skills wording">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -491,7 +501,7 @@
                             </button>
                         </div>
                         <div id="inp-skills-editor" class="summary-rich-editor" style="display:none;"></div>
-                        <textarea class="form-control" id="inp-skills" placeholder="List your key skills..."
+                        <textarea class="form-control" id="inp-skills" name="inp-skills" placeholder="List your key skills..."
                             oninput="updateCV()" maxlength="300"></textarea>
                         <div class="char-counter" id="skills-counter">0/300</div>
                     </div>
@@ -599,6 +609,33 @@
             <option value="modern-ledger.html">Modern Ledger</option>
             <option value="standard-ledger.html">Standard Ledger</option>
             <option value="classic-grid.html">Classic Grid</option>
+            <option value="profile-sidebar.html">Profile Sidebar</option>
+            <option value="compact-banner.html">Compact Banner</option>
+            <option value="dual-columns.html">Dual Columns</option>
+            <option value="inset-frame.html">Inset Frame</option>
+            <option value="clean-rule.html">Clean Rule</option>
+            <option value="continuous-outline.html">Continuous Outline</option>
+            <option value="formal-docket.html">Formal Docket</option>
+            <option value="open-panel.html">Open Panel</option>
+            <option value="executive-docket.html">Executive Docket</option>
+            <option value="tabular-ledger.html">Tabular Ledger</option>
+            <option value="grid-docket.html">Grid Docket</option>
+            <option value="split-banner.html">Split Banner</option>
+            <option value="wave-grid.html">Wave Grid</option>
+            <option value="side-panel.html">Side Panel</option>
+            <option value="classic-docket.html">Classic Docket</option>
+            <option value="composite-ledger.html">Composite Ledger</option>
+            <option value="dotted-split.html">Dotted Split</option>
+            <option value="pill-header-split.html">Pill Header Split</option>
+            <option value="banner-executive-split.html">Banner Executive Split</option>
+            <option value="sidebar-panel-split.html">Sidebar Panel Split</option>
+            <option value="timeline-flow-split.html">Timeline Flow Split</option>
+            <option value="executive-header-split.html">Executive Header Split</option>
+            <option value="bordered-box-ledger.html">Bordered Box Ledger</option>
+            <option value="matrix-grid-ledger.html">Matrix Grid Ledger</option>
+            <option value="clean-line-executive.html">Clean Line Executive</option>
+            <option value="minimalist-executive.html">Minimalist Executive</option>
+            <option value="accent-split-summary.html">Accent Split Summary</option>
         </select>
 
         <div class="preview-wrapper">
@@ -1155,20 +1192,10 @@
             processedText = processedText.replace(/\n\* /g, '\n• ');
 
             // The model often returns long paragraphs. Break them into bullet-friendly lines:
-            // 0a) Separate adjacent [GOOD] [ISSUE...] tags so [ISSUE...] starts on a new bullet line
-            processedText = processedText.replace(/(\[GOOD\])\s*(\[ISSUE(?:\s*-\s*SEVERITY:\s*(?:Critical|High|Moderate|Low))?[^\]]*\])/gi, '$1\n• $2');
-
-            // 0b) If an [ISSUE...] tag is on a line by itself before a bullet item, attach it to the bullet text
-            processedText = processedText.replace(/(•\s*)?(\[ISSUE(?:\s*-\s*SEVERITY:\s*(?:Critical|High|Moderate|Low))?[^\]]*\])\s*\n\s*(?:[•\*\-]\s*)?/gi, '\n• $2 ');
-
-            // 1) Separate inline label header from first bullet item if on same line
-            processedText = processedText.replace(/^(\s*(?:\*\s*)?\*\*([^*:]+):\*\*)[ \t]+(?=[A-Z]|\[)/gm, '$1\n• ');
-
-            // 2) After sentence boundaries (optionally followed by GOOD status tag), start a new bullet
-            processedText = processedText.replace(
-                /([.!?](?:\s*\[GOOD\])?)[ \t]+(?=[A-Z]|\[(?:GOOD|ISSUE))/gi,
-                '$1\n• '
-            );
+            // 1) After sentence boundaries (., ?, !) followed by a capital letter → new bullet
+            processedText = processedText.replace(/([.!?])\s+(?=[A-Z])/g, '$1\n• ');
+            // 2) After ISSUE markers when explanation continues
+            processedText = processedText.replace(/(\[ISSUE(?:\s*-\s*SEVERITY:\s*(?:Critical|High|Moderate|Low))?[^\]]*\])\.?\s+([A-Z])/gi, '$1\n• $2');
             // 3) Convert inline numbered items (1. 2. 3. etc.) to bullet points
             // First, handle patterns like "text. 1. more" or "text 1. more" - any " N. " pattern
             processedText = processedText.replace(/\s+(\d+)\.\s+/g, '\n ');

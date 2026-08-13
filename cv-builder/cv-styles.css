@@ -397,6 +397,7 @@
 
         /* Accordion Cards */
         details {
+            position: relative;
             background: var(--bg-panel);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-md);
@@ -404,6 +405,27 @@
             transition: all 0.2s ease;
             box-shadow: var(--shadow-xs);
             overflow: hidden;
+        }
+
+        /* Header action buttons (Auto-fill, Table format, Label, move up/down,
+           etc.) live inside <summary> itself, in the same single-line row as
+           the title, not as a sibling of <summary>. Chromium 131+ wraps
+           everything after <summary> in an internal ::details-content box
+           that collapses to zero height and stops painting when the
+           <details> is closed — no author CSS on a sibling can override
+           that, so a sibling row silently disappears (and its buttons
+           become unreachable) whenever the section is collapsed. <summary>
+           itself is the one part of a closed <details> guaranteed to keep
+           rendering, so this row has to be its child. Interactive content
+           inside <summary> works fine in every evergreen browser; every
+           button here already calls event.stopPropagation() so clicking it
+           doesn't also toggle the section open/closed.
+           display:contents dissolves this div's own box so its children
+           (chip buttons, and the move-up/down span injected by
+           renderInlineSectionReorderControls()) become direct flex items of
+           <summary>, sitting right after the title on one line. */
+        .summary-actions {
+            display: contents;
         }
 
         details:hover {
@@ -424,8 +446,9 @@
             cursor: pointer;
             list-style: none;
             display: flex;
+            flex-wrap: wrap;
             align-items: center;
-            justify-content: space-between;
+            gap: 8px;
             user-select: none;
             transition: background 0.2s;
             letter-spacing: 0.3px;
@@ -440,6 +463,16 @@
             border-bottom: 1px solid var(--border-color);
         }
 
+        /* Only ONE item per row may carry margin-left:auto — when a flex line
+           has two auto-margin items, the free space splits EVENLY between
+           them instead of the first one consuming it all, which left a gap
+           between the arrows and the chevron. So the chevron's own auto
+           margin is cancelled (margin-left:0) whenever a
+           .section-reorder-controls sibling is present to do the pushing
+           instead; the chevron then just follows it immediately. For
+           sections with no reorder controls at all (Personal Details,
+           Highlight Banners), the chevron keeps its own auto margin so it
+           still lands on the far right. */
         summary::after {
             content: '';
             width: 16px;
@@ -449,6 +482,19 @@
             background-repeat: no-repeat;
             transition: transform 0.2s;
             opacity: 0.6;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+
+        summary:has(.section-reorder-controls)::after {
+            margin-left: 0;
+        }
+
+        .section-reorder-controls {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-left: auto;
         }
 
         details[open] summary::after {
@@ -481,6 +527,20 @@
         }
 
         label {
+            display: block;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        /* Same look as `label`, for heading text that introduces a group of
+           dynamically-added fields (e.g. "Projects (All)") rather than
+           labelling one specific input — using <label> there with no `for`
+           target trips "label not associated with a form field" checks. */
+        .form-label-heading {
             display: block;
             font-size: 10px;
             font-weight: 700;

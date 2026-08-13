@@ -14,7 +14,7 @@
         const CA_SKILLS = ["Statutory Audit", "Tax Audit", "Internal Audit", "GST", "TDS", "Ind AS", "Excel", "Tally", "SAP", "Bank Audit"];
         const CA_DEGREES = ["CA Final", "CA Intermediate", "B.Com", "Class XII", "Class X"];
         const AUDIT_VERBS = ["Executed", "Analyzed", "Prepared", "Reviewed", "Led", "Verified"];
-        const BASE_SECTION_ORDER = ['summary', 'education', 'experience', 'projects', 'certifications', 'achievements', 'leadership', 'interests', 'skills'];
+        const BASE_SECTION_ORDER = ['summary', 'education', 'experience', 'projects', 'skills', 'certifications', 'achievements', 'leadership', 'interests'];
         const EDUCATION_COLUMN_META = {
             degree: { label: 'Examination', min: 12, max: 42 },
             year: { label: 'Year', min: 8, max: 28 },
@@ -203,6 +203,10 @@
                 catch (e) { console.error('Load failed', e); }
             }
             ensureCvDataShape();
+            if (!cvData.experience || cvData.experience.length === 0) {
+                const artEntry = buildArticleshipEntryFromProfile();
+                if (artEntry) cvData.experience = [artEntry];
+            }
             normalizeSectionOrder();
             loadHistory();
 
@@ -1595,12 +1599,13 @@
                     <button class="btn-mini" type="button" onclick="resetSectionLabel('${sectionId}')">Reset</button>
                 </div>
                 <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-                    <input type="text" class="form-control section-label-text-input" style="flex:1; min-width:120px;"
+                    <label for="section-label-text-${sectionId}" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap;">Label text</label>
+                    <input type="text" id="section-label-text-${sectionId}" name="section-label-text-${sectionId}" class="form-control section-label-text-input" style="flex:1; min-width:120px;"
                         value="${(config.text || '').replace(/"/g, '&quot;')}"
                         placeholder="e.g. Certifications"
                         oninput="updateSectionLabel('${sectionId}', 'text', this.value)">
-                    <label style="display:flex; align-items:center; gap:6px; font-size:13px; font-weight:600; white-space:nowrap; cursor:pointer;">
-                        <input type="checkbox" class="section-label-visible-check" ${config.visible ? 'checked' : ''}
+                    <label for="section-label-visible-${sectionId}" style="display:flex; align-items:center; gap:6px; font-size:13px; font-weight:600; white-space:nowrap; cursor:pointer;">
+                        <input type="checkbox" id="section-label-visible-${sectionId}" name="section-label-visible-${sectionId}" class="section-label-visible-check" ${config.visible ? 'checked' : ''}
                             onchange="updateSectionLabel('${sectionId}', 'visible', this.checked)">
                         Show label
                     </label>
@@ -1838,14 +1843,15 @@
                 const disabledAttr = config?.visible === false ? 'disabled' : '';
                 return `
                     <div class="table-format-row">
-                        <label class="table-format-label">
-                            <input type="checkbox" ${config?.visible === false ? '' : 'checked'} onchange="toggleEducationColumnVisibility('${key}', this.checked)">
+                        <label class="table-format-label" for="edu-col-visible-${key}">
+                            <input type="checkbox" id="edu-col-visible-${key}" name="edu-col-visible-${key}" ${config?.visible === false ? '' : 'checked'} onchange="toggleEducationColumnVisibility('${key}', this.checked)">
                             <span>${meta.label}</span>
                         </label>
                         <div class="table-format-controls">
-                            <input class="table-format-range" type="range" min="${meta.min}" max="${meta.max}" value="${width}" ${disabledAttr}
+                            <label for="edu-col-width-range-${key}" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap;">${meta.label} width</label>
+                            <input class="table-format-range" id="edu-col-width-range-${key}" name="edu-col-width-range-${key}" type="range" min="${meta.min}" max="${meta.max}" value="${width}" ${disabledAttr}
                                 oninput="updateEducationColumnWidth('${key}', this.value, true)" onchange="updateEducationColumnWidth('${key}', this.value)">
-                            <input class="table-format-number" type="number" min="${meta.min}" max="${meta.max}" value="${width}" ${disabledAttr}
+                            <input class="table-format-number" id="edu-col-width-number-${key}" name="edu-col-width-number-${key}" type="number" min="${meta.min}" max="${meta.max}" value="${width}" ${disabledAttr}
                                 oninput="updateEducationColumnWidth('${key}', this.value, true)" onchange="updateEducationColumnWidth('${key}', this.value)">
                             <span class="table-format-unit">wt</span>
                         </div>
@@ -1973,29 +1979,29 @@
                     </div>
                     ${isMerged ? `<div style="margin-bottom:8px; padding:8px 10px; border:1px solid #dbeafe; background:#eff6ff; border-radius:12px; color:#1d4ed8; font-size:12px;">This row's institute is merged with the row above in preview and PDF.</div>` : ''}
                     <div class="form-group">
-                        <label>Degree / Exam</label>
+                        <label for="edu-degree-${index}">Degree / Exam</label>
                         <div class="chip-container" style="margin-bottom:6px">
                             ${CA_DEGREES.map(d => `<span class="chip" style="font-size:10px; padding:2px 8px;" onclick="updateEdu(${index}, 'degree', '${d}')">${d}</span>`).join('')}
                         </div>
-                        <input class="form-control" value="${edu.degree || ''}" oninput="updateEdu(${index}, 'degree', this.value)" placeholder="e.g. CA Intermediate">
+                        <input id="edu-degree-${index}" name="edu-degree-${index}" class="form-control" value="${edu.degree || ''}" oninput="updateEdu(${index}, 'degree', this.value)" placeholder="e.g. CA Intermediate">
                     </div>
                     <div class="form-group">
-                        <label>Institute / Board <span style="font-size:10px; color:#6b7280; font-weight:400;">(Enter for new line)</span></label>
-                        <textarea class="form-control" style="min-height:56px; resize:vertical;" oninput="updateEdu(${index}, 'institute', this.value)" placeholder="e.g. ICAI&#10;(Mumbai University)">${htmlToMultilineText(edu.institute || '')}</textarea>
+                        <label for="edu-institute-${index}">Institute / Board <span style="font-size:10px; color:#6b7280; font-weight:400;">(Enter for new line)</span></label>
+                        <textarea id="edu-institute-${index}" name="edu-institute-${index}" class="form-control" style="min-height:56px; resize:vertical;" oninput="updateEdu(${index}, 'institute', this.value)" placeholder="e.g. ICAI&#10;(Mumbai University)">${htmlToMultilineText(edu.institute || '')}</textarea>
                     </div>
                     <div style="display:flex; gap:10px;">
                         <div class="form-group" style="flex:1">
-                            <label>Year</label>
-                            <input class="form-control" value="${edu.year || ''}" oninput="updateEdu(${index}, 'year', this.value)" placeholder="2023">
+                            <label for="edu-year-${index}">Year</label>
+                            <input id="edu-year-${index}" name="edu-year-${index}" class="form-control" value="${edu.year || ''}" oninput="updateEdu(${index}, 'year', this.value)" placeholder="2023">
                         </div>
                         <div class="form-group" style="flex:1">
-                            <label>Marks / Grade</label>
-                            <input class="form-control" value="${edu.marks || ''}" oninput="updateEdu(${index}, 'marks', this.value)" placeholder="65%">
+                            <label for="edu-marks-${index}">Marks / Grade</label>
+                            <input id="edu-marks-${index}" name="edu-marks-${index}" class="form-control" value="${edu.marks || ''}" oninput="updateEdu(${index}, 'marks', this.value)" placeholder="65%">
                         </div>
                     </div>
                     <div class="form-group" style="margin-bottom:0">
-                        <label>Remarks</label>
-                        <input class="form-control" value="${edu.remarks || ''}" oninput="updateEdu(${index}, 'remarks', this.value)" placeholder="Optional (e.g. AIR 50)">
+                        <label for="edu-remarks-${index}">Remarks</label>
+                        <input id="edu-remarks-${index}" name="edu-remarks-${index}" class="form-control" value="${edu.remarks || ''}" oninput="updateEdu(${index}, 'remarks', this.value)" placeholder="Optional (e.g. AIR 50)">
                     </div>
                 `;
                 container.appendChild(div);
@@ -2040,33 +2046,33 @@
                     ${isMergedChild ? `<div style="margin-bottom:8px; padding:8px 10px; border:1px solid #dbeafe; background:#eff6ff; border-radius:12px; color:#1d4ed8; font-size:12px;">This stint is merged with the experience above in preview and PDF.</div>` : ''}
                     ${isTitleMergedChild ? `<div style="margin-bottom:8px; padding:8px 10px; border:1px solid #d1fae5; background:#ecfdf5; border-radius:12px; color:#047857; font-size:12px;">This subsection reuses the title above in preview and PDF, but keeps its own category and bullets.</div>` : ''}
                     <div class="form-group">
-                        <label>Role</label>
-                        <input class="form-control" value="${exp.role || ''}" oninput="updateExp(${index}, 'role', this.value)" placeholder="e.g. Articled Assistant">
+                        <label for="exp-role-${index}">Role</label>
+                        <input id="exp-role-${index}" name="exp-role-${index}" class="form-control" value="${exp.role || ''}" oninput="updateExp(${index}, 'role', this.value)" placeholder="e.g. Articled Assistant">
                     </div>
                     <div class="form-group">
-                        <label>Firm / Company</label>
-                        <input class="form-control" value="${exp.company || ''}" oninput="updateExp(${index}, 'company', this.value)" placeholder="e.g. ABC & Associates">
+                        <label for="exp-company-${index}">Firm / Company</label>
+                        <input id="exp-company-${index}" name="exp-company-${index}" class="form-control" value="${exp.company || ''}" oninput="updateExp(${index}, 'company', this.value)" placeholder="e.g. ABC & Associates">
                     </div>
                     <div class="form-group">
-                        <label>Link <span style="font-weight:400;color:var(--text-muted);">(optional — shows a clickable [Link] next to the firm)</span></label>
-                        <input class="form-control" value="${exp.link || ''}" oninput="updateExp(${index}, 'link', this.value)" placeholder="e.g. company website or LinkedIn URL">
+                        <label for="exp-link-${index}">Link <span style="font-weight:400;color:var(--text-muted);">(optional — shows a clickable [Link] next to the firm)</span></label>
+                        <input id="exp-link-${index}" name="exp-link-${index}" class="form-control" value="${exp.link || ''}" oninput="updateExp(${index}, 'link', this.value)" placeholder="e.g. company website or LinkedIn URL">
                     </div>
                     <div class="form-group">
-                        <label>Duration</label>
-                        <input class="form-control" value="${exp.dates || ''}" oninput="updateExp(${index}, 'dates', this.value)" placeholder="e.g. Jan 2023 - Present">
+                        <label for="exp-dates-${index}">Duration</label>
+                        <input id="exp-dates-${index}" name="exp-dates-${index}" class="form-control" value="${exp.dates || ''}" oninput="updateExp(${index}, 'dates', this.value)" placeholder="e.g. Jan 2023 - Present">
                     </div>
                     ${!isMergedChild && !isTitleMergedChild ? `
                     <div class="form-group">
-                        <label>Intro / Description (optional)</label>
-                        <textarea class="form-control" style="min-height:60px" oninput="updateExp(${index}, 'intro', this.value)" placeholder="Short italic intro shown once under the header&#10;e.g. Top-tier CA firm (est. 1928) serving 3000+ clients">${exp.intro || ''}</textarea>
+                        <label for="exp-intro-${index}">Intro / Description (optional)</label>
+                        <textarea id="exp-intro-${index}" name="exp-intro-${index}" class="form-control" style="min-height:60px" oninput="updateExp(${index}, 'intro', this.value)" placeholder="Short italic intro shown once under the header&#10;e.g. Top-tier CA firm (est. 1928) serving 3000+ clients">${exp.intro || ''}</textarea>
                     </div>` : ''}
                     <div class="form-group" data-section="category">
-                        <label>Department / Category (optional)</label>
-                        <textarea class="form-control" style="min-height:78px" oninput="updateExp(${index}, 'category', this.value)" placeholder="Add one department/category per line&#10;e.g. Accounting&#10;Auditing & Assurance">${htmlToMultilineText(exp.category || '')}</textarea>
+                        <label for="exp-category-${index}">Department / Category (optional)</label>
+                        <textarea id="exp-category-${index}" name="exp-category-${index}" class="form-control" style="min-height:78px" oninput="updateExp(${index}, 'category', this.value)" placeholder="Add one department/category per line&#10;e.g. Accounting&#10;Auditing & Assurance">${htmlToMultilineText(exp.category || '')}</textarea>
                     </div>
                     <div class="form-group" style="margin-bottom:0">
                         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
-                            <label style="margin-bottom:0;">Key Responsibilities (Bullets)</label>
+                            <label style="margin-bottom:0;" for="exp-bullets-${index}">Key Responsibilities (Bullets)</label>
                             <button type="button" class="btn-mini" onclick="aiRefineExperience(${index})" title="AI refine these bullets">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M12 3l2.09 4.26L19 8l-3.5 3.4L16.18 17 12 14.8 7.82 17 9 11.4 5 8l4.91-.74L12 3z"></path>
@@ -2103,19 +2109,19 @@
                         <div class="action-btn delete" onclick="removeProj(${index})">×</div>
                     </div>
                     <div class="form-group">
-                        <label>Project Title</label>
-                        <input class="form-control" value="${proj.title || ''}" oninput="updateProj(${index}, 'title', this.value)" placeholder="e.g. Parag Milk Foods Ltd">
+                        <label for="proj-title-${index}">Project Title</label>
+                        <input id="proj-title-${index}" name="proj-title-${index}" class="form-control" value="${proj.title || ''}" oninput="updateProj(${index}, 'title', this.value)" placeholder="e.g. Parag Milk Foods Ltd">
                     </div>
                     <div class="form-group">
-                        <label>Link <span style="font-weight:400;color:var(--text-muted);">(optional — shows a clickable [Link] next to the title)</span></label>
-                        <input class="form-control" value="${proj.titleLink || ''}" oninput="updateProj(${index}, 'titleLink', this.value)" placeholder="e.g. https://drive.google.com/...">
+                        <label for="proj-link-${index}">Link <span style="font-weight:400;color:var(--text-muted);">(optional — shows a clickable [Link] next to the title)</span></label>
+                        <input id="proj-link-${index}" name="proj-link-${index}" class="form-control" value="${proj.titleLink || ''}" oninput="updateProj(${index}, 'titleLink', this.value)" placeholder="e.g. https://drive.google.com/...">
                     </div>
                     <div class="form-group">
-                        <label>Description</label>
-                        <input class="form-control" value="${proj.description || ''}" oninput="updateProj(${index}, 'description', this.value)" placeholder="e.g. Valued a leading dairy company">
+                        <label for="proj-description-${index}">Description</label>
+                        <input id="proj-description-${index}" name="proj-description-${index}" class="form-control" value="${proj.description || ''}" oninput="updateProj(${index}, 'description', this.value)" placeholder="e.g. Valued a leading dairy company">
                     </div>
                     <div class="form-group" style="margin-bottom:0">
-                        <label>Key Points (Bullets)</label>
+                        <label for="proj-bullets-${index}">Key Points (Bullets)</label>
                         <textarea id="proj-bullets-${index}" class="form-control" data-rich-proj-index="${index}" oninput="updateProj(${index}, 'bullets', this.value)" placeholder="Add bullet points with formatting">${bulletsToRichHTML(proj.bullets || [])}</textarea>
                     </div>
                 `;
@@ -2135,12 +2141,12 @@
                         <div class="action-btn delete" onclick="removeCert(${index})">×</div>
                     </div>
                     <div class="form-group">
-                        <label>Certification Name/ Bullet Point</label>
-                        <input class="form-control" value="${cert.name || ''}" oninput="updateCert(${index}, 'name', this.value)" placeholder="e.g. Power BI Course/Cleared CFA Level 1 in first attempt ">
+                        <label for="cert-name-${index}">Certification Name/ Bullet Point</label>
+                        <input id="cert-name-${index}" name="cert-name-${index}" class="form-control" value="${cert.name || ''}" oninput="updateCert(${index}, 'name', this.value)" placeholder="e.g. Power BI Course/Cleared CFA Level 1 in first attempt ">
                     </div>
                     <div class="form-group" style="margin-bottom:0">
-                        <label>Issuer / Date (optional)</label>
-                        <input class="form-control" value="${cert.issuer || ''}" oninput="updateCert(${index}, 'issuer', this.value)" placeholder="e.g. CFI/2024">
+                        <label for="cert-issuer-${index}">Issuer / Date (optional)</label>
+                        <input id="cert-issuer-${index}" name="cert-issuer-${index}" class="form-control" value="${cert.issuer || ''}" oninput="updateCert(${index}, 'issuer', this.value)" placeholder="e.g. CFI/2024">
                     </div>
                 `;
                 container.appendChild(div);
@@ -2486,14 +2492,16 @@
                 details.innerHTML = `
                     <summary>
                         <span>${section.title || 'Custom Section'}</span>
-                        <button class="chip" type="button" onclick="toggleSectionLabelPanel('${section.id}', event)"
-                            style="font-size:10px; padding:4px 8px;">Label</button>
+                        <div class="summary-actions">
+                            <button class="chip" type="button" onclick="toggleSectionLabelPanel('${section.id}', event)"
+                                style="font-size:10px; padding:4px 8px;">Label</button>
+                        </div>
                     </summary>
                     <div class="section-body">
                         <div id="section-label-panel-${section.id}" class="table-format-panel-wrap" aria-hidden="true"></div>
                         <div class="form-group">
-                            <label>Section Title</label>
-                            <input type="text" class="form-control" value="${section.title || ''}"
+                            <label for="custom-title-${section.id}">Section Title</label>
+                            <input type="text" id="custom-title-${section.id}" name="custom-title-${section.id}" class="form-control" value="${section.title || ''}"
                                 oninput="updateCustomSectionTitle('${section.id}', this.value)"
                                 placeholder="e.g. Languages, Volunteering">
                         </div>
@@ -2504,7 +2512,7 @@
                                         <div class="action-btn delete" onclick="removeCustomSectionItem('${section.id}', ${index})">×</div>
                                     </div>
                                     <div class="form-group" style="margin-bottom:0">
-                                        <textarea class="form-control" style="min-height:60px" data-rich-custom-id="${section.id}" data-rich-custom-index="${index}"
+                                        <textarea id="custom-item-${section.id}-${index}" name="custom-item-${section.id}-${index}" class="form-control" style="min-height:60px" data-rich-custom-id="${section.id}" data-rich-custom-index="${index}"
                                             oninput="updateCustomSectionItem('${section.id}', ${index}, this.value)"
                                             placeholder="One bullet per line or short item">${item || ''}</textarea>
                                     </div>
@@ -2668,6 +2676,14 @@
         }
 
         // Override legacy list-only renderer: support optional form list + preview drawer.
+        // Move-up/down controls live inside <summary> itself (in the shared
+        // .summary-actions row also used by each section's own chip buttons,
+        // e.g. "Auto-fill CA Path"/"Label") — created fresh for sections that
+        // don't already have one. They must be a <summary> descendant because
+        // Chromium's closed-<details> rendering only keeps <summary> itself
+        // painted; a sibling row goes invisible (and unreachable) whenever the
+        // section is collapsed. See the .summary-actions comment in
+        // cv-styles.css for the full explanation.
         function renderInlineSectionReorderControls() {
             normalizeSectionOrder();
             document.querySelectorAll('.editor-content details[data-section]').forEach((details) => {
@@ -2677,18 +2693,18 @@
                 const summary = details.querySelector(':scope > summary');
                 if (!summary) return;
 
-                summary.style.display = 'flex';
-                summary.style.alignItems = 'center';
-                summary.style.gap = '8px';
+                let actions = summary.querySelector(':scope > .summary-actions');
+                if (!actions) {
+                    actions = document.createElement('div');
+                    actions.className = 'summary-actions';
+                    summary.appendChild(actions);
+                }
 
-                let controls = summary.querySelector('.section-reorder-controls');
+                let controls = actions.querySelector('.section-reorder-controls');
                 if (!controls) {
                     controls = document.createElement('span');
                     controls.className = 'section-reorder-controls';
-                    controls.style.marginLeft = 'auto';
-                    controls.style.display = 'inline-flex';
-                    controls.style.gap = '4px';
-                    summary.appendChild(controls);
+                    actions.appendChild(controls);
                 }
 
                 const index = cvData.sectionOrder.indexOf(sectionId);
@@ -2717,7 +2733,7 @@
                             <div class="action-btn" onclick="moveSectionOrder(${index}, 1)">&#9660;</div>
                         </div>
                         <div class="form-group" style="margin-bottom:0">
-                            <label style="margin-bottom:0">${getSectionLabel(sectionId)}</label>
+                            <div class="form-label-heading" style="margin-bottom:0">${getSectionLabel(sectionId)}</div>
                         </div>
                     `;
                     list.appendChild(row);
@@ -2728,7 +2744,74 @@
             renderReorderDrawer();
         }
 
+        function prefillCAEducation(e) {
+            e.stopPropagation();
+            if (confirm("Replace current education with CA path?")) {
+                cvData.education = [
+                    { degree: "CA Final", institute: "ICAI", year: "", marks: "", remarks: "" },
+                    { degree: "CA Intermediate", institute: "ICAI", year: "", marks: "", remarks: "Both Groups" },
+                    { degree: "B.Com", institute: "", year: "", marks: "", remarks: "" },
+                    { degree: "Class XII", institute: "CBSE", year: "", marks: "", remarks: "" }
+                ];
+                renderEduInputs(); updateCV();
+            }
+        }
 
+        function buildArticleshipEntryFromProfile() {
+            const raw = localStorage.getItem('userProfileData');
+            if (!raw) return null;
+            let p;
+            try { p = JSON.parse(raw); } catch(e) { return null; }
+
+            const firmName = (p.articleship_firm_name || '').trim();
+            const firmType = (p.articleship_firm_type || '').trim();
+            if (!firmName && (!firmType || firmType === 'None')) return null;
+
+            const domain = (p.articleship_domain || '').trim();
+            const startMonth = (p.articleship_start_month || '').trim();
+            const startYear = String(p.articleship_start_year || '').trim();
+            const endMonth = (p.articleship_end_month || '').trim();
+            const endYear = String(p.articleship_end_year || '').trim();
+            const responsibilities = (p.articleship_responsibilities || '').trim();
+
+            const startPart = [startMonth, startYear].filter(Boolean).join(' ');
+            const endPart = endYear ? [endMonth, endYear].filter(Boolean).join(' ') : 'Present';
+            const dates = startPart ? `${startPart} – ${endPart}` : '';
+
+            const company = [firmName, firmType && firmType !== 'None' ? firmType : ''].filter(Boolean).join(' | ');
+
+            const bullets = responsibilities
+                ? responsibilities.split('\n')
+                    .map(line => line.replace(/^[\s\-•●*]+/, '').trim())
+                    .filter(Boolean)
+                    .map(line => normalizeImportedRichText(line, 'experience'))
+                : [];
+
+            return {
+                role: 'Article Assistant',
+                company,
+                dates,
+                intro: '',
+                category: domain,
+                bullets,
+                mergedWithPrevious: false,
+                titleMergedWithPrevious: false
+            };
+        }
+
+        function importArticleshipFromProfile(e) {
+            if (e) e.stopPropagation();
+            const entry = buildArticleshipEntryFromProfile();
+            if (!entry) {
+                alert('No articleship data found in your profile. Please fill in the Articleship Experience section on your profile page first.');
+                return;
+            }
+            if (cvData.experience.length > 0 && !confirm('This will replace your current experience entries with your profile articleship data. Continue?')) return;
+            cvData.experience = [entry];
+            normalizeExperienceMerges();
+            renderExpInputs();
+            postToFrame();
+        }
 
         // Core Utilities
         /**
@@ -2807,7 +2890,34 @@
             { file: 'smart-ledger.html', name: 'Smart Ledger', accent: '#000D53', style: 'template30' },
             { file: 'modern-ledger.html', name: 'Modern Ledger', accent: '#2E5395', style: 'template31' },
             { file: 'standard-ledger.html', name: 'Standard Ledger', accent: '#0E4660', style: 'template32' },
-            { file: 'classic-grid.html', name: 'Classic Grid', accent: '#2E5395', style: 'template33' }
+            { file: 'classic-grid.html', name: 'Classic Grid', accent: '#2E5395', style: 'template33' },
+            { file: 'profile-sidebar.html', name: 'Profile Sidebar', accent: '#464978', style: 'template34' },
+            { file: 'compact-banner.html', name: 'Compact Banner', accent: '#292D2D', style: 'template35' },
+            { file: 'dual-columns.html', name: 'Dual Columns', accent: '#292C2C', style: 'template36' },
+            { file: 'inset-frame.html', name: 'Inset Frame', accent: '#45497D', style: 'template37' },
+            { file: 'clean-rule.html', name: 'Clean Rule', accent: '#0D56C4', style: 'template38' },
+            { file: 'continuous-outline.html', name: 'Continuous Outline', accent: '#1F477B', style: 'template39' },
+            { file: 'formal-docket.html', name: 'Formal Docket', accent: '#001F5E', style: 'template40' },
+            { file: 'open-panel.html', name: 'Open Panel', accent: '#8C8C8C', style: 'template41' },
+            { file: 'executive-docket.html', name: 'Executive Docket', accent: '#1B365D', style: 'execdocket' },
+            { file: 'tabular-ledger.html', name: 'Tabular Ledger', accent: '#1F4E79', style: 'tabledger' },
+            { file: 'grid-docket.html', name: 'Grid Docket', accent: '#002060', style: 'griddocket' },
+            { file: 'split-banner.html', name: 'Split Banner', accent: '#002060', style: 'splitbanner' },
+            { file: 'wave-grid.html', name: 'Wave Grid', accent: '#002060', style: 'wavegrid' },
+            { file: 'side-panel.html', name: 'Side Panel', accent: '#002060', style: 'sidepanel' },
+            { file: 'classic-docket.html', name: 'Classic Docket', accent: '#002060', style: 'classicdocket' },
+            { file: 'composite-ledger.html', name: 'Composite Ledger', accent: '#002060', style: 'compositeledger' },
+            { file: 'dotted-split.html', name: 'Dotted Split', accent: '#002060', style: 'dottedsplit' },
+            { file: 'pill-header-split.html', name: 'Pill Header Split', accent: '#0B2046', style: 'pillheader' },
+            { file: 'banner-executive-split.html', name: 'Banner Executive Split', accent: '#05436E', style: 'bannerexecutive' },
+            { file: 'sidebar-panel-split.html', name: 'Sidebar Panel Split', accent: '#004B87', style: 'sidebarpanel' },
+            { file: 'timeline-flow-split.html', name: 'Timeline Flow Split', accent: '#313A4A', style: 'timelineflow' },
+            { file: 'executive-header-split.html', name: 'Executive Header Split', accent: '#05436E', style: 'executiveheadersplit' },
+            { file: 'bordered-box-ledger.html', name: 'Bordered Box Ledger', accent: '#102B4E', style: 'borderedboxledger' },
+            { file: 'matrix-grid-ledger.html', name: 'Matrix Grid Ledger', accent: '#185FA5', style: 'matrixgridledger' },
+            { file: 'clean-line-executive.html', name: 'Clean Line Executive', accent: '#0B3052', style: 'cleanlineexecutive' },
+            { file: 'minimalist-executive.html', name: 'Minimalist Executive', accent: '#0E2C55', style: 'minimalistexecutive' },
+            { file: 'accent-split-summary.html', name: 'Accent Split Summary', accent: '#1A365D', style: 'accentsplitsummary' }
         ];
         const TEMPLATE_COLOR_PRESETS = ['#2b2b2b', '#0f6cbd', '#155e95', '#1f8f63', '#c0392b', '#7b4db3'];
 

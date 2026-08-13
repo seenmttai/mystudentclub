@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>My Resume</title>
+    <style>
+        :root {
+            --banner-bg: var(--header-bg, #292D2D);
+            --dark: #292D2D;
+            --gray: #333333;
+            --company: #444444;
+            --subtitle: #6E7578;
+            --tablehead: var(--sub-header-bg, #BEC6C6);
+            --tablebody: #F1F1F1;
+            --link: #0505ff;
+            --page-bg: #ffffff;
+            --viewer-bg: #525659;
+            --font-main: "Microsoft Sans Serif", Arial, Helvetica, sans-serif;
+            --content-scale: 1.0;
+            --inset: 18.88px;
+            /* 15px pad in the source's own 794.67px page context = 11.25pt */
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        body {
+            background-color: var(--viewer-bg);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            min-height: 100vh;
+            width: 100vw;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #zoom-wrapper {
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            padding: 24px 0;
+        }
+
+        /* Page grows with content (min-height only, no overflow:hidden anywhere
+           above the text) so shrinkContentToFit() can measure true overflow. */
+        .page {
+            position: relative;
+            width: 1000px;
+            min-height: 1413.94px;
+            background: var(--page-bg);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, .55);
+            color: var(--gray);
+            transform-origin: top center;
+            flex-shrink: 0;
+            padding-bottom: calc(20px * var(--content-scale));
+            box-sizing: border-box;
+        }
+
+        /* ===== Header ===== */
+        .header {
+            margin-top: calc(20.13px * var(--content-scale));
+            padding: 0 var(--inset);
+        }
+
+        .name {
+            margin: 0;
+            font-size: calc(36.91px * var(--content-scale));
+            line-height: 1.05;
+            color: var(--dark);
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            margin: calc(3.36px * var(--content-scale)) 0 0 0;
+            font-size: calc(20.97px * var(--content-scale));
+            line-height: 1.2;
+            color: var(--subtitle);
+        }
+
+        .contact-row {
+            margin: calc(13.42px * var(--content-scale)) 0 0 0;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            column-gap: calc(20.13px * var(--content-scale));
+            row-gap: calc(6px * var(--content-scale));
+            font-size: calc(15.94px * var(--content-scale));
+            color: var(--gray);
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: calc(6.71px * var(--content-scale));
+            white-space: nowrap;
+            max-width: 100%;
+            overflow-wrap: anywhere;
+        }
+
+        .contact-item img {
+            width: calc(16.78px * var(--content-scale));
+            height: calc(16.78px * var(--content-scale));
+            flex: 0 0 auto;
+            display: block;
+        }
+
+        .contact-item img.email-ic {
+            height: calc(13.42px * var(--content-scale));
+        }
+
+        .contact-item a {
+            color: var(--gray);
+            text-decoration: none;
+        }
+
+        .contact-item a.link {
+            color: var(--link);
+            text-decoration: underline;
+        }
+
+        /* ===== Section banners (full-bleed dark bars, inset like the header) ===== */
+        .banner {
+            margin: calc(6.71px * var(--content-scale)) var(--inset) 0 var(--inset);
+            background: var(--banner-bg);
+            color: #fff;
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: 700;
+            font-size: calc(17.62px * var(--content-scale));
+            line-height: 1;
+            padding: calc(5.03px * var(--content-scale)) 0 calc(2.18px * var(--content-scale)) calc(8.39px * var(--content-scale));
+            letter-spacing: calc(0.34px * var(--content-scale));
+        }
+
+        .section-body {
+            padding: calc(5px * var(--content-scale)) var(--inset) 0 var(--inset);
+        }
+
+        /* ===== Summary ===== */
+        .summary-text {
+            margin: 0;
+            font-size: calc(15.94px * var(--content-scale));
+            line-height: 1.16;
+            color: var(--gray);
+            text-align: justify;
+            padding-left: calc(3.36px * var(--content-scale));
+        }
+
+        .summary-text b {
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: 700;
+        }
+
+        /* ===== Education table ===== */
+        .edu-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        .edu-table th {
+            background: var(--tablehead);
+            color: var(--dark);
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: 700;
+            font-size: calc(15.94px * var(--content-scale));
+            text-align: left;
+            vertical-align: top;
+            padding: calc(3px * var(--content-scale))
+             calc(8px * var(--content-scale))
+             calc(3px * var(--content-scale))
+             calc(8.39px * var(--content-scale));
+        }
+
+        .edu-table th:first-child,
+        .edu-table td:first-child {
+            padding-left: calc(8.39px * var(--content-scale));
+        }
+
+        .edu-table td {
+            background: var(--tablebody);
+            color: var(--gray);
+            font-size: calc(15.94px * var(--content-scale));
+            line-height: 1.15;
+            text-align: left;
+            padding: calc(6.71px * var(--content-scale)) calc(10.07px * var(--content-scale));
+            vertical-align: top;
+        }
+
+        .edu-table td.date {
+            white-space: nowrap;
+        }
+
+        .edu-table td.date img {
+            width: calc(13.42px * var(--content-scale));
+            height: calc(13.42px * var(--content-scale));
+            vertical-align: -1px;
+            margin-right: calc(5.03px * var(--content-scale));
+            flex-shrink: 0;
+        }
+
+        /* ===== Work experience / Projects ===== */
+        .job-title {
+            margin: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: calc(10.07px * var(--content-scale));
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: 700;
+            font-size: calc(17.62px * var(--content-scale));
+            color: var(--dark);
+            flex-wrap: wrap;
+        }
+
+        .job-title>span:first-child {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .job-cat-sep {
+            font-weight: 400;
+        }
+
+        .job-date {
+            display: flex;
+            align-items: center;
+            gap: calc(5.03px * var(--content-scale));
+            font-size: calc(15.94px * var(--content-scale));
+            font-weight: 400;
+            color: var(--gray);
+            white-space: nowrap;
+            font-family: "Microsoft Sans Serif", Arial, sans-serif;
+            flex: 0 0 auto;
+        }
+
+        .job-date img {
+            width: calc(13.42px * var(--content-scale));
+            height: calc(14.77px * var(--content-scale));
+            flex: 0 0 auto;
+        }
+
+        .job-company {
+            margin: calc(1px * var(--content-scale)) 0 0 0;
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: 700;
+            font-size: calc(15.94px * var(--content-scale));
+            color: var(--company);
+        }
+
+        .job-entry {
+            margin-top: calc(3px * var(--content-scale));
+        }
+
+        .job-entry:first-child {
+            margin-top:  calc(2px * var(--content-scale));
+        }
+
+        .subhead {
+            margin-top: calc(4px * var(--content-scale));
+            margin-bottom: calc(2px * var(--content-scale));
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .subhead-title {
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: 700;
+            font-size: calc(15.94px * var(--content-scale));
+            color: var(--dark);
+        }
+
+        .subhead-dates {
+            font-size: calc(15.94px * var(--content-scale));
+            font-weight: 400;
+            color: var(--gray);
+            font-family: "Microsoft Sans Serif", Arial, sans-serif;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: calc(5.03px * var(--content-scale));
+        }
+
+        .subhead-dates img {
+            width: calc(13.42px * var(--content-scale));
+            height: calc(14.77px * var(--content-scale));
+            flex: 0 0 auto;
+        }
+
+        .bullets {
+            list-style: none;
+            margin: calc(6.71px * var(--content-scale)) 0 0 0;
+            padding: 0;
+        }
+
+        .bullets li {
+            position: relative;
+            padding-left: calc(20.13px * var(--content-scale));
+            margin-top: calc(2.52px * var(--content-scale));
+            font-size: calc(15.94px * var(--content-scale));
+            line-height: 1.2;
+            color: var(--gray);
+            text-align: justify;
+        }
+
+        .bullets li:first-child {
+            margin-top: 0;
+        }
+
+        .bullets li::before {
+            content: "";
+            position: absolute;
+            left: calc(2.52px * var(--content-scale));
+            top: .52em;
+            width: calc(5.03px * var(--content-scale));
+            height: calc(5.03px * var(--content-scale));
+            border-radius: 50%;
+            background: var(--gray);
+            transform: translateY(-50%);
+        }
+
+        .bullets b {
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: 700;
+        }
+
+        .bullets a {
+            color: var(--link);
+            text-decoration: underline;
+        }
+
+        .proj-desc {
+            margin-top: calc(2.52px * var(--content-scale));
+            font-size: calc(15.94px * var(--content-scale));
+            line-height: 1.2;
+            color: var(--gray);
+            text-align: justify;
+        }
+
+        .proj-desc:empty {
+            display: none;
+        }
+
+        .bottom-pad {
+            height: calc(16.78px * var(--content-scale));
+        }
+
+        .template {
+            display: none !important;
+        }
+
+        [data-universal-section="skills"][data-section-id="skills"],
+        [data-universal-section="certifications"][data-section-id="certifications"],
+        [data-universal-section="achievements"][data-section-id="achievements"],
+        [data-universal-section="leadership"][data-section-id="leadership"],
+        [data-universal-section="interests"][data-section-id="interests"] {
+            display: none !important;
+        }
+
+        /* ── PRINT (A4 exact, same convention as every other template) ── */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+
+            html,
+            body {
+                background: var(--page-bg);
+                width: 210mm;
+                height: 297mm;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+            }
+
+            #zoom-wrapper {
+                padding: 0;
+                display: block;
+                min-height: 0;
+                width: 100% !important;
+                height: auto !important;
+            }
+
+            .page {
+                box-shadow: none;
+                transform: none;
+                zoom: 0.79375;
+                margin: 0 auto;
+                position: static !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="zoom-wrapper">
+        <div class="page" id="cv-page">
+
+            <!-- HEADER -->
+            <div class="header">
+                <div class="name" data-field="name"></div>
+                <div class="subtitle" data-field="tagline"></div>
+                <div class="contact-row" id="contact-row">
+                    <div class="contact-item" id="ci-phone">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23333333'%3E%3Cpath d='M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2a1.003 1.003 0 011.02-.24c1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z'/%3E%3C/svg%3E" alt="phone">
+                        <span data-field="phone"></span>
+                    </div>
+                    <div class="contact-item" id="ci-email">
+                        <img class="email-ic" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAASCAYAAABB7B6eAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAACG0lEQVQ4jWNctWpV8axZs3oYaADS0tJKGd3c3P7++/ePiRYWMDAwMLD8//+fkYGBgUFERORpfHx8naSk5D1KDHz+/LnSwoULm968eSPNwMDAwOjq6voPZgkrK+vP0NDQnsjIyDYODo5vpBj8/ft37hUrVlSuXr265Pfv3+wwcXjQqKionP/37x/zsmXLqpOSkm7u378/gljD9+3bF5mcnHxj2bJl1f/+/WNWUVE5j2GBj4/PjJkzZ+obGRntef36tUxbW9vy4uLig3fv3tXHZfCdO3cMioqKDrW3ty97/fq1jLGx8e5Zs2bp+fj4zMCwgIGBgUFeXv5aZ2ene319fbCEhMSDS5cu2WVlZZ2dNGnStE+fPgnB1H369El44sSJ07Ozs89evnzZVkJC4n59fX1QR0eHm5yc3HVkM+GRjAxsbGzWmZmZbVu5cmXZqlWryjdv3px54MCB8ISEhNr///8zLly4sOnz589CHBwc38LDwzvCwsK62djYfmDzJQsu77Oxsf2IjY1tcnd3nz9z5szeQ4cOhU6ePHkqTN7e3n5VWlpaiZiY2GNcZuC1AAbExMQe19bWhl28eNFh6tSpkxgZGf9nZWXl6evrHySklygLYEBfX//A9OnTDRkYGBiYmZn/EquPaAtINRgGaFZEDB8L4HHw5MkTtYsXLzpQw9AnT56owdiMLi4u/6lhKC7AlJqaWkYrw1NTU8sA7KjQKkqrV14AAAAASUVORK5CYII=" alt="email">
+                        <a id="ci-email-link" class="link" href="#"><span data-field="email"></span></a>
+                    </div>
+                    <div class="contact-item" id="ci-linkedin">
+                        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAVCAYAAACpF6WWAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAB7ElEQVQ4jc3SMYsaQRQA4Dc7q4YlumQ3syTBlILVNinPFAemOLCQQBCbQ0h+gbBg59gllYWmSOE/EC6dcAsByyjKFm5hWpUcblQcQckmu5tqxAQPcnsXyKvevHnzzRsYNB6Pn1FKPzqOk4RbBiFkSinNo2KxOLkL8BAWD8FUKjXUdb3LGFNN0zwPgzqOkxQPwXq9nonFYjsAAFEU3W6n8yYMLPBE1/UuBwEAFEW5CgP+hjLGVJ57nodt2z4Ji+6fb5rmuSiKrqIoV7Ztn1iWdRoWRdlsNgh7+LrYTypJEjMMo8TXjUbj/XK5fFwoFN6l0+nPAAD9fv9MlmUnl8t9wBj/WCwWT1qt1tvhcJg9Oqksy9/a7TbhG6VS6ctsNktVq9WXmUzmAgBgPp8/1TRtcgi4rhur1WoXvV7vjNcEuEFomjaxLOt0MBi88DwPAwBEo9Hv5XL5Ncb4Zyi02+2+MgzjU6VSuWw2m01eV1X1qyRJLBS6Wq0e8Xw0Gj2/ru9G6N/GnaEIof3X/L8n/efo/vMjhIJEIrHgG5vN5oHv+1iSJBaJRFwAANd17+12u/sAAIIgePF4fMX7GWNqEAQIAEAkhEwdx0kGQYDW6/XDP2/dbreJY9P4vo+P9RNCpgKlNE8Imd72yRyklOZ/AeShwub/DLmXAAAAAElFTkSuQmCC" alt="linkedin">
+                        <a id="ci-linkedin-link" class="link" href="#" target="_blank" rel="noopener noreferrer"><span data-field="linkedin"></span></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SUMMARY -->
+            <div class="section sortable-section" data-section-id="summary">
+                <div class="banner">SUMMARY</div>
+                <div class="section-body">
+                    <p class="summary-text" data-field="summary"></p>
+                </div>
+            </div>
+
+            <!-- EDUCATION -->
+            <div class="section sortable-section" data-section-id="education">
+                <div class="banner">EDUCATION</div>
+                <div class="section-body">
+                    <table id="education-table" class="edu-table">
+                        <colgroup>
+                            <col style="width:26.63%">
+                            <col style="width:14.19%">
+                            <col style="width:24.74%">
+                            <col style="width:8.89%">
+                            <col style="width:25.54%">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>Course</th>
+                                <th>Year</th>
+                                <th>Institution</th>
+                                <th>Score</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody id="education-list">
+                            <tr class="template">
+                                <td data-field="degree"></td>
+                                <td class="date"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAYCAYAAAAVibZIAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABTklEQVQ4jWP4//8/AwxPmTatQVNX979PQMBVZHFc2Ccg4Kqmru7/KdOmNSCLMzHQALA8ePBAbcGiRcX///9nvHrtmjEDAwPDm9evJesbG2cR0vzm9WtJBgYGhv0HDvi+evVKipGR8X9ifHwPo5Ob28Pnz5/LUcuVEuLiTxi19PT+/f//n5FahjIwMNAmTIeOoSwwRlhIyCwtLa2z5Bp07do141Vr1qQxMDAwMGjp6f3T1NX9v33nzlBiEjwuvH3nzlBNXd3/mrq6/1nQY/7Tp08Cj588UUZ3iZio6DNRUdHnJHkfBo6dOOFaVFKyCl08OzOzMTszs4EYQ4dO7A8dQzEiip+P772WpuY5dHFRUdFnZBtqaWGxZ83Klcakuw8Bhk6Y0jaiTpw44fLp0ydBcg26Bq2KGBgYGBg1dXX/U+oydMBUXlpaRE0DK8rKCgG+WcRirPLzkAAAAABJRU5ErkJggg==" alt=""><span data-field="year"></span></td>
+                                <td data-field="institution"></td>
+                                <td data-field="marks"></td>
+                                <td data-field="remarks"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- WORK EXPERIENCE -->
+            <div class="section sortable-section" data-section-id="experience">
+                <div class="banner">WORK EXPERIENCE</div>
+                <div class="section-body">
+                    <div id="experience-list">
+                        <div class="job-entry template">
+                            <div class="job-title job-title-row">
+                                <span><span data-field="role"></span><span class="job-cat-sep" style="display:none;"> | </span><span data-field="category"></span></span>
+                                <span class="job-date"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAYCAYAAAAVibZIAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABTklEQVQ4jWP4//8/AwxPmTatQVNX979PQMBVZHFc2Ccg4Kqmru7/KdOmNSCLMzHQALA8ePBAbcGiRcX///9nvHrtmjEDAwPDm9evJesbG2cR0vzm9WtJBgYGhv0HDvi+evVKipGR8X9ifHwPo5Ob28Pnz5/LUcuVEuLiTxi19PT+/f//n5FahjIwMNAmTIeOoSwwRlhIyCwtLa2z5Bp07do141Vr1qQxMDAwMGjp6f3T1NX9v33nzlBiEjwuvH3nzlBNXd3/mrq6/1nQY/7Tp08Cj588UUZ3iZio6DNRUdHnJHkfBo6dOOFaVFKyCl08OzOzMTszs4EYQ4dO7A8dQzEiip+P772WpuY5dHFRUdFnZBtqaWGxZ83Klcakuw8Bhk6Y0jaiTpw44fLp0ydBcg26Bq2KGBgYGBg1dXX/U+oydMBUXlpaRE0DK8rKCgG+WcRirPLzkAAAAABJRU5ErkJggg==" alt=""><span data-field="dates"></span></span>
+                            </div>
+                            <div class="job-company" data-field="company"></div>
+                            <ul class="bullets" data-list="bullets"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PROJECTS (hidden by default; shown automatically when data exists) -->
+            <div class="section sortable-section" data-section-id="projects" style="display:none;">
+                <div class="banner">PROJECTS</div>
+                <div class="section-body">
+                    <div id="projects-list">
+                        <div class="job-entry template">
+                            <div class="job-title">
+                                <span data-field="title"></span>
+                            </div>
+                            <div class="proj-desc" data-field="description"></div>
+                            <ul class="bullets" data-list="bullets"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SKILLS AND OTHER ACTIVITIES (Skills + Certifications + Achievements
+                 + Leadership + Interests merged into one bullet list, matching the
+                 source design where all of these were one casual bullet list) -->
+            <div class="section sortable-section" data-section-id="skills">
+                <div class="banner">SKILLS AND OTHER ACTIVITIES</div>
+                <div class="section-body">
+                    <ul class="bullets" id="skills-other-list" data-list="skills-other"></ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="cv-common.js"></script>
+    <script>
+        // ── Template-specific post-processing over the shared renderer ──
+        const originalRenderCV = window.renderCV;
+
+        window.renderCV = function (data) {
+            originalRenderCV(data);
+
+            adjustContactRow(data.personal || {});
+            adjustJobCategorySeparators();
+            renderSubsectionHeadings();
+            mergeIntoSkillsAndOther(data);
+            fixCustomSectionStyling();
+
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    shrinkContentToFit();
+                    scaleToFit();
+                });
+            });
+        };
+
+        // Subsection entries (editor "Subsection" merge): cv-common hides the
+        // entry's role/company/dates, but users can still fill them — surface
+        // them as a bold heading above the subsection's category and bullets.
+        function renderSubsectionHeadings() {
+            const calIconHTML = '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAYCAYAAAAVibZIAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABTklEQVQ4jWP4//8/AwxPmTatQVNX979PQMBVZHFc2Ccg4Kqmru7/KdOmNSCLMzHQALA8ePBAbcGiRcX///9nvHrtmjEDAwPDm9evJesbG2cR0vzm9WtJBgYGhv0HDvi+evVKipGR8X9ifHwPo5Ob28Pnz5/LUcuVEuLiTxi19PT+/f//n5FahjIwMNAmTIeOoSwwRlhIyCwtLa2z5Bp07do141Vr1qQxMDAwMGjp6f3T1NX9v33nzlBiEjwuvH3nzlBNXd3/mrq6/1nQY/7Tp08Cj588UUZ3iZio6DNRUdHnJHkfBo6dOOFaVFKyCl08OzOzMTszs4EYQ4dO7A8dQzEiip+P772WpuY5dHFRUdFnZBtqaWGxZ83Klcakuw8Bhk6Y0jaiTpw44fLp0ydBcg26Bq2KGBgYGBg1dXX/U+oydMBUXlpaRE0DK8rKCgG+WcRirPLzkAAAAABJRU5ErkJggg==" alt="">';
+
+            document.querySelectorAll('#experience-list > *').forEach(block => {
+                if (block.classList.contains('template')) return;
+                const stale = block.querySelector('.subhead');
+                if (stale) stale.remove();
+
+                const jobTitleRow = block.querySelector('.job-title-row, .job-title');
+                const jobCompany = block.querySelector('.job-company');
+
+                if (block.classList.contains('experience-title-merged')) {
+                    if (jobTitleRow) jobTitleRow.style.display = 'none';
+                    if (jobCompany) jobCompany.style.display = 'none';
+
+                    const roleEl = block.querySelector('[data-field="role"]');
+                    const companyEl = block.querySelector('[data-field="company"]');
+                    const datesEl = block.querySelector('[data-field="dates"]');
+                    const roleText = (roleEl?.textContent || '').trim();
+                    const companyText = (companyEl?.textContent || '').trim();
+                    const datesText = (datesEl?.textContent || '').trim();
+                    if (!roleText && !companyText && !datesText) return;
+
+                    const titleHTML = (roleText && companyText)
+                        ? roleEl.innerHTML + ' | ' + companyEl.innerHTML
+                        : (roleText ? roleEl.innerHTML : (companyText ? companyEl.innerHTML : ''));
+
+                    const subHead = document.createElement('div');
+                    subHead.className = 'subhead';
+                    subHead.innerHTML = '<span class="subhead-title">' + titleHTML + '</span>' +
+                        (datesText ? '<span class="subhead-dates">' + calIconHTML + '<span>' + datesText + '</span></span>' : '');
+
+                    const bullets = block.querySelector('.bullets, [data-list="bullets"]');
+                    if (bullets && bullets.parentElement) {
+                        bullets.parentElement.insertBefore(subHead, bullets);
+                    } else {
+                        block.appendChild(subHead);
+                    }
+                } else {
+                    if (jobTitleRow) jobTitleRow.style.display = '';
+                    if (jobCompany) jobCompany.style.display = '';
+                }
+            });
+        }
+
+        // Bespoke base64 icons stay untouched by cv-common's generic contact
+        // renderer (we don't use the `.contact-value` class), so we hide/show
+        // each icon+text pair ourselves and wire hrefs by hand.
+        function adjustContactRow(personal) {
+            const phoneEl = document.querySelector('#ci-phone [data-field="phone"]');
+            const emailEl = document.querySelector('#ci-email [data-field="email"]');
+            const ciPhone = document.getElementById('ci-phone');
+            const ciEmail = document.getElementById('ci-email');
+            const ciLinkedin = document.getElementById('ci-linkedin');
+            const emailLink = document.getElementById('ci-email-link');
+            const linkedinLink = document.getElementById('ci-linkedin-link');
+
+            const hasPhone = !!(phoneEl && phoneEl.textContent.trim());
+            const email = (personal.email || '').trim();
+            const linkedin = (personal.linkedin || '').trim();
+
+            if (ciPhone) ciPhone.style.display = hasPhone ? '' : 'none';
+            if (ciEmail) ciEmail.style.display = email ? '' : 'none';
+            if (ciLinkedin) ciLinkedin.style.display = linkedin ? '' : 'none';
+
+            if (emailLink) emailLink.href = email ? 'mailto:' + email : '#';
+            if (linkedinLink) {
+                linkedinLink.href = linkedin
+                    ? (/^https?:\/\//i.test(linkedin) ? linkedin : 'https://' + linkedin)
+                    : '#';
+            }
+
+            const row = document.getElementById('contact-row');
+            if (row) row.style.display = (hasPhone || email || linkedin) ? '' : 'none';
+        }
+
+        // Show the " | " separator between role and category only when both
+        // are present (matches the source's "Role | Category" job title line).
+        function adjustJobCategorySeparators() {
+            document.querySelectorAll('#experience-list > .job-entry').forEach(entry => {
+                if (entry.classList.contains('template')) return;
+                const roleEl = entry.querySelector('[data-field="role"]');
+                const catEl = entry.querySelector('[data-field="category"]');
+                const sep = entry.querySelector('.job-cat-sep');
+                const hasRole = !!(roleEl && roleEl.textContent.trim());
+                const hasCat = !!(catEl && catEl.textContent.trim());
+                if (sep) sep.style.display = (hasRole && hasCat) ? '' : 'none';
+            });
+        }
+
+        // Skills, Certifications, Achievements, Leadership and Interests all
+        // read as one plain bullet list in the source design — fold them all
+        // into #skills-other-list instead of giving each its own section.
+        function mergeIntoSkillsAndOther(data) {
+            const container = document.querySelector('[data-section-id="skills"] .section-body');
+            if (!container) return;
+
+            const labels = data.sectionLabels || {};
+            const visible = (key) => ((labels[key] || {}).visible !== false);
+            const groups = [];
+
+            if (visible('skills')) {
+                const skillItems = [];
+                const skillsHTML = renderSkillsContent(data.skills || '');
+                if (skillsHTML) {
+                    const tmp = document.createElement('div');
+                    tmp.innerHTML = skillsHTML;
+                    const lis = tmp.querySelectorAll('li');
+                    if (lis.length) {
+                        lis.forEach(li => skillItems.push(li.innerHTML));
+                    } else if (tmp.textContent.trim()) {
+                        skillItems.push(tmp.innerHTML);
+                    }
+                }
+                if (skillItems.length) {
+                    const title = (labels.skills && labels.skills.text && labels.skills.text.trim().toLowerCase() !== 'skills') ? labels.skills.text : 'TECHNICAL SKILLS';
+                    groups.push({ title, items: skillItems });
+                }
+            }
+
+            if (visible('certifications')) {
+                const certItems = [];
+                (Array.isArray(data.certifications) ? data.certifications : []).forEach(c => {
+                    if (typeof c === 'string') {
+                        if (c.trim()) certItems.push(c.trim());
+                    } else if (c && c.name) {
+                        const issuer = c.issuer && c.issuer.trim() ? ' - ' + c.issuer.trim() : '';
+                        certItems.push(c.name.trim() + issuer);
+                    }
+                });
+                if (certItems.length) {
+                    const title = (labels.certifications && labels.certifications.text) ? labels.certifications.text : 'CERTIFICATIONS';
+                    groups.push({ title, items: certItems });
+                }
+            }
+
+            const pushArrayGroup = (key, defaultTitle) => {
+                if (!visible(key)) return;
+                const arr = (Array.isArray(data[key]) ? data[key] : [])
+                    .map(v => String(v || '').trim())
+                    .filter(Boolean);
+                if (arr.length) {
+                    const title = (labels[key] && labels[key].text) ? labels[key].text : defaultTitle;
+                    groups.push({ title, items: arr });
+                }
+            };
+
+            pushArrayGroup('achievements', 'ACHIEVEMENTS & AWARDS');
+            pushArrayGroup('leadership', 'LEADERSHIP');
+            pushArrayGroup('interests', 'INTERESTS & ACTIVITIES');
+
+            if (groups.length === 0) {
+                container.innerHTML = '<ul class="bullets" id="skills-other-list" data-list="skills-other"></ul>';
+            } else {
+                container.innerHTML = groups.map((g, idx) => `
+                    <div class="skills-subgroup" style="${idx > 0 ? 'margin-top: calc(8px * var(--content-scale));' : ''} margin-bottom: calc(6px * var(--content-scale));">
+                        <div class="sub-category-header" style="font-family: var(--font-main, sans-serif); font-weight: 700; font-size: calc(13.8px * var(--content-scale)); color: var(--banner-bg, var(--dark, #292D2D)); margin-bottom: calc(3px * var(--content-scale)); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1.5px solid var(--banner-bg, #292D2D); padding-bottom: calc(2px * var(--content-scale)); display: inline-block; width: 100%;">${g.title}</div>
+                        <ul class="bullets" style="margin-top: calc(3px * var(--content-scale));">
+                            ${g.items.map(i => `<li>${i}</li>`).join('')}
+                        </ul>
+                    </div>
+                `).join('');
+            }
+
+            const section = container.closest('.sortable-section[data-section-id="skills"]');
+            if (section) section.style.display = groups.length ? '' : 'none';
+
+            const banner = section ? section.querySelector('.banner') : null;
+            if (banner) {
+                banner.textContent = 'SKILLS AND OTHER ACTIVITIES';
+            }
+        }
+
+        // cv-common.js has no native section here to clone a custom section's
+        // structure from (this template merges Certifications/Achievements/
+        // Leadership/Interests into the Skills list instead of keeping them
+        // separate), so a user-added custom section comes back as a bare
+        // "section-header" div (the shared renderer's generic fallback class)
+        // instead of this template's ".banner" bar, with its list carrying
+        // the shared renderer's generic "bullet-list" class instead of this
+        // template's own ".bullets". Restyle both in place after every
+        // render — this only changes classes, never removes/rebuilds nodes,
+        // so it's safe to call repeatedly.
+        function fixCustomSectionStyling() {
+            document.querySelectorAll('[data-custom-section-root]').forEach(wrapper => {
+                const header = wrapper.querySelector(':scope > .section-header');
+                if (header) header.className = 'banner';
+
+                const list = wrapper.querySelector('[data-list]');
+                if (list && !list.closest('.section-body')) {
+                    list.classList.remove('bullet-list');
+                    list.classList.add('bullets');
+                    const body = document.createElement('div');
+                    body.className = 'section-body';
+                    list.parentElement.insertBefore(body, list);
+                    body.appendChild(list);
+                }
+            });
+        }
+
+        // ── Standard scaling / print plumbing (same contract as other templates) ──
+        function scaleToFit() {
+            const page = document.getElementById('cv-page');
+            const targetWidth = window.innerWidth - 20;
+            const scale = targetWidth < 1000 ? targetWidth / 1000 : 1.0;
+            page.style.transform = `scale(${scale})`;
+            const spaceToRemove = 1413.94 - (1413.94 * scale);
+            page.style.marginBottom = `-${spaceToRemove}px`;
+        }
+
+        function shrinkContentToFit() {
+            const page = document.getElementById('cv-page');
+            let contentScale = 1.0;
+            document.documentElement.style.setProperty('--content-scale', contentScale);
+            page.style.height = 'auto';
+            let i = 0;
+            while (page.scrollHeight > 1415 && i < 60) {
+                contentScale -= 0.01;
+                document.documentElement.style.setProperty('--content-scale', contentScale);
+                i++;
+            }
+            page.style.height = '';
+        }
+
+        let _screenTransform = '';
+        let _screenMarginBottom = '';
+
+        function enablePrintMode() {
+            const page = document.getElementById('cv-page');
+            _screenTransform = page.style.transform;
+            _screenMarginBottom = page.style.marginBottom;
+            page.style.transform = 'scale(1)';
+            page.style.marginBottom = '0px';
+            shrinkContentToFit();
+        }
+
+        function disablePrintMode() {
+            const page = document.getElementById('cv-page');
+            page.style.transform = _screenTransform || '';
+            page.style.marginBottom = _screenMarginBottom || '';
+            scaleToFit();
+        }
+
+        window.addEventListener('load', function () {
+            shrinkContentToFit();
+            scaleToFit();
+            const mq = window.matchMedia('print');
+            if (mq.addEventListener) {
+                mq.addEventListener('change', e => e.matches ? enablePrintMode() : disablePrintMode());
+            } else if (mq.addListener) {
+                mq.addListener(e => e.matches ? enablePrintMode() : disablePrintMode());
+            }
+            window.addEventListener('beforeprint', enablePrintMode);
+            window.addEventListener('afterprint', disablePrintMode);
+        });
+
+        let _resizeTimer;
+        window.addEventListener('resize', function () {
+            clearTimeout(_resizeTimer);
+            _resizeTimer = setTimeout(scaleToFit, 100);
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>My Resume</title>
+    <style>
+        :root {
+            --navy: var(--header-bg, #1F477B);
+            --lightblue: var(--sub-header-bg, #B8CCE3);
+            --ink: #000000;
+            --link: #0000FF;
+            --page-bg: #ffffff;
+            --viewer-bg: #525659;
+            --font-main: 'Calibri', 'Carlito', 'Segoe UI', Arial, sans-serif;
+            --content-scale: 1.0;
+            --hair: calc(1.26px * var(--content-scale));
+            --frame: calc(2.52px * var(--content-scale));
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        body {
+            background-color: var(--viewer-bg);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            min-height: 100vh;
+            width: 100vw;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--ink);
+        }
+
+        #zoom-wrapper {
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            padding: 24px 0;
+        }
+
+        .page {
+            position: relative;
+            width: 1000px;
+            min-height: 1413.94px;
+            background: var(--page-bg);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, .55);
+            transform-origin: top center;
+            flex-shrink: 0;
+            padding: calc(20.15px * var(--content-scale)) calc(25.19px * var(--content-scale));
+            font-size: calc(16.79px * var(--content-scale));
+            line-height: 1.2;
+        }
+
+        p { margin: 0; padding: 0; }
+
+        a { color: var(--link); text-decoration: underline; }
+
+        b, strong { font-weight: bold; }
+
+        .template { display: none !important; }
+
+        /* ===== Header ===== */
+        .header-box {
+            margin-bottom: calc(10.08px * var(--content-scale));
+            padding: 0 calc(2.52px * var(--content-scale));
+        }
+
+        .name {
+            font-size: calc(25.19px * var(--content-scale));
+            font-weight: bold;
+            line-height: 1.15;
+            margin-bottom: calc(3.78px * var(--content-scale));
+        }
+
+        .tagline {
+            font-size: calc(16.79px * var(--content-scale));
+            font-style: italic;
+            margin-bottom: calc(3.78px * var(--content-scale));
+        }
+
+        .tagline:empty { display: none; }
+
+        .contact-line {
+            font-size: calc(16.79px * var(--content-scale));
+        }
+
+        .contact-line .sep { padding: 0 calc(3px * var(--content-scale)); }
+
+        .contact-line a { color: var(--link); text-decoration: underline; }
+
+        /* =====================================================================
+           LEDGER FRAME - one outer border wraps every section below the header
+           so the whole resume reads as a single unbroken bordered ledger, exactly
+           like the source (one <table> with border-collapse). Individual rows/
+           sections only ever draw a border-bottom as a divider; nothing draws its
+           own top/left/right border, so adjoining edges never double up.
+           A tiny JS pass (updateLedgerFrameBorders) strips the divider off
+           whichever section is currently the last VISIBLE one, so the frame's
+           own closing edge is the only line at the very bottom.
+           ===================================================================== */
+        .ledger-frame {
+            border: var(--frame) solid #000000;
+        }
+
+        table.main-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        table.main-table td {
+            padding: calc(3.15px * var(--content-scale)) calc(7.56px * var(--content-scale));
+            vertical-align: top;
+            font-size: calc(16.79px * var(--content-scale));
+        }
+
+        /* Dark navy full-width banners (top-level section titles) */
+        .navy-banner {
+            background-color: var(--navy) !important;
+            color: #FFFFFF !important;
+            font-weight: bold;
+            font-size: calc(16.79px * var(--content-scale));
+            padding: calc(3.78px * var(--content-scale)) calc(7.56px * var(--content-scale)) !important;
+            border-bottom: var(--hair) solid #000000 !important;
+            text-transform: uppercase;
+        }
+
+        /* Academic table header row */
+        .academic-header th, .academic-header td {
+            background-color: var(--lightblue) !important;
+            font-weight: bold;
+            text-align: center;
+            text-transform: uppercase;
+            font-size: calc(16.79px * var(--content-scale));
+            border-bottom: var(--hair) solid #000000 !important;
+            border-right: var(--hair) solid #000000 !important;
+            white-space: nowrap;
+        }
+        .academic-header th:last-child, .academic-header td:last-child { border-right: none !important; }
+
+        /* Academic table body rows */
+        #education-list tr td {
+            border-bottom: var(--hair) solid #000000 !important;
+            border-right: var(--hair) solid #000000 !important;
+            overflow-wrap: break-word;
+        }
+        #education-list tr td:last-child { border-right: none !important; }
+
+        .center-text { text-align: center; }
+
+        /* Single full-width content cell (Professional Summary) */
+        .content-cell {
+            border-bottom: var(--hair) solid #000000;
+            text-align: justify;
+        }
+
+        /* 2-column label|value rows (Certifications / Achievements / Leadership / Skills / Interests) */
+        .col-label-cell {
+            background-color: var(--lightblue) !important;
+            border-right: var(--hair) solid #000000 !important;
+            border-bottom: var(--hair) solid #000000 !important;
+            font-weight: bold;
+            vertical-align: middle !important;
+            width: 14%;
+        }
+
+        .col-value-cell {
+            border-bottom: var(--hair) solid #000000 !important;
+            width: 86%;
+        }
+
+        /* Bullet lists inside bordered cells */
+        ul.cell-bullets, ul.cv-skills-list {
+            list-style-type: disc;
+            margin: 0;
+            padding-left: calc(17.63px * var(--content-scale));
+        }
+
+        ul.cell-bullets li, ul.cv-skills-list li {
+            margin-bottom: calc(3.15px * var(--content-scale));
+            line-height: 1.25;
+        }
+
+        ul.cell-bullets li:last-child, ul.cv-skills-list li:last-child { margin-bottom: 0; }
+
+        ul.cell-bullets:empty, .cv-skills-inline:empty { display: none; }
+
+        /* ===== Work Experience ===== */
+        .job-header-block {
+            padding: calc(5.04px * var(--content-scale)) calc(7.56px * var(--content-scale));
+            border-bottom: var(--hair) solid #000000;
+        }
+
+        .job-role {
+            font-weight: bold;
+            text-decoration: underline;
+            margin-bottom: calc(3.78px * var(--content-scale));
+        }
+
+        .firm-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: calc(7.56px * var(--content-scale));
+            font-weight: bold;
+        }
+
+        .firm-dates {
+            font-size: calc(14.27px * var(--content-scale));
+            font-style: italic;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .job-intro {
+            font-style: italic;
+            margin-top: calc(3.78px * var(--content-scale));
+        }
+
+        .job-intro:empty, .job-role:empty { display: none; }
+
+        .job-entry.experience-title-merged .job-header-block { display: none; }
+
+        .cat-banner {
+            background-color: var(--lightblue);
+            font-weight: bold;
+            text-transform: uppercase;
+            padding: calc(3.15px * var(--content-scale)) calc(7.56px * var(--content-scale));
+            border-bottom: var(--hair) solid #000000;
+        }
+
+        .job-bullets-block {
+            padding: calc(5.04px * var(--content-scale)) calc(7.56px * var(--content-scale));
+            border-bottom: var(--hair) solid #000000;
+        }
+
+        .job-bullets-block:has(ul.cell-bullets:empty) { display: none; }
+
+        /* ===== Projects (bonus section - not part of the source design) ===== */
+        #projects-list .job-entry .proj-title { font-weight: bold; }
+        #projects-list .job-entry .proj-desc { font-style: italic; margin-top: calc(2px * var(--content-scale)); }
+        #projects-list .job-entry .proj-desc:empty { display: none; }
+
+        /* The very last VISIBLE section in the ledger doesn't need its own
+           closing divider - the frame's own bottom edge already closes it.
+           (Toggled by updateLedgerFrameBorders() in the script block below.) */
+        .ledger-last-visible table tr:last-child td,
+        .ledger-last-visible .content-cell,
+        .ledger-last-visible #experience-list > .job-entry:last-child .job-header-block,
+        .ledger-last-visible #experience-list > .job-entry:last-child .job-bullets-block,
+        .ledger-last-visible #projects-list > .job-entry:last-child .job-header-block,
+        .ledger-last-visible #projects-list > .job-entry:last-child .job-bullets-block {
+            border-bottom: none !important;
+        }
+
+        /* ===== Print (A4 exact, same convention as every other template) ===== */
+        @media print {
+            @page { size: A4 portrait; margin: 0; }
+
+            html, body {
+                background: var(--page-bg);
+                width: 210mm;
+                height: 297mm;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+            }
+
+            #zoom-wrapper {
+                padding: 0;
+                display: block;
+                min-height: 0;
+                width: 100% !important;
+                height: auto !important;
+            }
+
+            .page {
+                box-shadow: none;
+                transform: none;
+                zoom: 0.79375;
+                margin: 0 auto;
+                position: static !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="zoom-wrapper">
+        <div class="page" id="cv-page">
+
+            <!-- HEADER -->
+            <div class="header-box">
+                <div class="name" data-field="name"></div>
+                <div class="tagline" data-field="tagline"></div>
+                <div class="contact-line" id="contact-line">
+                    <span class="contact-item" id="ci-phone" data-field="phone"></span>
+                    <span class="sep" id="sep-1">|</span>
+                    <span class="contact-item" id="ci-email"><a id="ci-email-link" href="#"><span data-field="email"></span></a></span>
+                    <span class="sep" id="sep-2">|</span>
+                    <span class="contact-item" id="ci-linkedin"><a id="ci-linkedin-link" href="#" target="_blank" rel="noopener noreferrer"><span data-field="linkedin"></span></a></span>
+                </div>
+            </div>
+
+            <div class="ledger-frame" data-section-append-host>
+
+                <!-- PROFESSIONAL SUMMARY (bonus section - the source design has no summary paragraph) -->
+                <div class="section sortable-section" data-section-id="summary">
+                    <table class="main-table">
+                        <tr><td class="navy-banner section-header">PROFESSIONAL SUMMARY</td></tr>
+                        <tr><td class="content-cell" data-field="summary"></td></tr>
+                    </table>
+                </div>
+
+                <!-- PROFESSIONAL & ACADEMIC CREDENTIALS -->
+                <div class="section sortable-section" data-section-id="education">
+                    <table id="education-table" class="main-table">
+                        <tr><td colspan="5" class="navy-banner section-header">Professional &amp; Academic Credentials</td></tr>
+                        <tr class="academic-header">
+                            <td style="text-align:left;">Degree/Examination</td>
+                            <td>Board/Institute</td>
+                            <td>Score</td>
+                            <td>Year</td>
+                            <td>Remarks</td>
+                        </tr>
+                        <tbody id="education-list">
+                            <tr class="template">
+                                <td data-field="degree"></td>
+                                <td class="center-text" data-field="institution"></td>
+                                <td class="center-text" data-field="marks"></td>
+                                <td class="center-text" data-field="year"></td>
+                                <td data-field="remarks"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- WORK EXPERIENCE -->
+                <div class="section sortable-section" data-section-id="experience">
+                    <table class="main-table">
+                        <tr><td class="navy-banner section-header">Work Experience</td></tr>
+                    </table>
+                    <div id="experience-list">
+                        <div class="job-entry template">
+                            <div class="job-header-block">
+                                <div class="job-role" data-field="role"></div>
+                                <div class="firm-line">
+                                    <span data-field="company"></span>
+                                    <span class="firm-dates" data-field="dates"></span>
+                                </div>
+                                <div class="job-intro" data-field="intro"></div>
+                            </div>
+                            <div class="cat-banner" data-field="category"></div>
+                            <div class="job-bullets-block">
+                                <ul class="cell-bullets" data-list="bullets"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PROJECTS (bonus section, hidden until the user adds project data) -->
+                <div class="section sortable-section" data-section-id="projects" style="display:none;">
+                    <table class="main-table">
+                        <tr><td class="navy-banner section-header">Projects</td></tr>
+                    </table>
+                    <div id="projects-list">
+                        <div class="job-entry template">
+                            <div class="job-header-block">
+                                <div class="proj-title" data-field="title"></div>
+                                <div class="proj-desc" data-field="description"></div>
+                            </div>
+                            <div class="job-bullets-block">
+                                <ul class="cell-bullets" data-list="bullets"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ACHIEVEMENTS & CO-CURRICULAR ACTIVITIES (Achievements / Certifications /
+                     Leadership stay independent sortable-sections - so each can still be
+                     individually reordered, hidden, and relabeled - but when they sit next
+                     to each other they share one banner: mergeAdjacentGroupBanners() below
+                     hides the banner on every member of a run except the first, so the
+                     group reads as one bordered box with several labelled rows, matching
+                     the source's "Public Speaking / Sports / Other Achievements" layout. -->
+                <div class="section sortable-section" data-section-id="achievements">
+                    <table class="main-table" data-preserve-label-columns>
+                        <tr><td colspan="2" class="navy-banner section-header">Achievements &amp; Co-Curricular Activities</td></tr>
+                        <tr>
+                            <td class="col-label-cell section-label">Achievements</td>
+                            <td class="col-value-cell"><ul class="cell-bullets" data-list="achievements"></ul></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- CERTIFICATIONS (bonus section - not present in the source design; grouped
+                     under the Achievements banner above when both are visible and adjacent) -->
+                <div class="section sortable-section" data-section-id="certifications" style="display:none;">
+                    <table class="main-table" data-preserve-label-columns>
+                        <tr><td colspan="2" class="navy-banner section-header">Certifications</td></tr>
+                        <tr>
+                            <td class="col-label-cell section-label">Certifications</td>
+                            <td class="col-value-cell"><ul class="cell-bullets" data-list="certifications"></ul></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- LEADERSHIP (bonus section - not present in the source design; grouped
+                     under the Achievements banner above when visible and adjacent) -->
+                <div class="section sortable-section" data-section-id="leadership" style="display:none;">
+                    <table class="main-table" data-preserve-label-columns>
+                        <tr><td colspan="2" class="navy-banner section-header">Leadership &amp; Positions of Responsibility</td></tr>
+                        <tr>
+                            <td class="col-label-cell section-label">Leadership</td>
+                            <td class="col-value-cell"><ul class="cell-bullets" data-list="leadership"></ul></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- SKILLS AND INTERESTS (Technical Skills / Interests stay independent
+                     sortable-sections but share one banner, mirroring the source's
+                     "Technical skills / Interpersonal Skills / Hobbies" grouping) -->
+                <div class="section sortable-section" data-section-id="skills">
+                    <table class="main-table" data-preserve-label-columns>
+                        <tr><td colspan="2" class="navy-banner section-header">Skills and Interests</td></tr>
+                        <tr>
+                            <td class="col-label-cell section-label">Technical Skills</td>
+                            <td class="col-value-cell"><div data-field="skills"></div></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="section sortable-section" data-section-id="interests">
+                    <table class="main-table" data-preserve-label-columns>
+                        <tr><td colspan="2" class="navy-banner section-header">Skills and Interests</td></tr>
+                        <tr>
+                            <td class="col-label-cell section-label">Interests</td>
+                            <td class="col-value-cell"><ul class="cell-bullets" data-list="interests"></ul></td>
+                        </tr>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="cv-common.js"></script>
+    <script>
+        // Template-specific post-processing over the shared renderer.
+        const originalRenderCV = window.renderCV;
+
+        window.renderCV = function (data) {
+            // Remove last render's cloned rows first: while they exist there
+            // are two elements matching e.g. [data-list="certifications"], and
+            // cv-common's querySelector-based field updates would hit
+            // whichever one comes first in DOM order instead of the real,
+            // persistent one inside the Certifications section.
+            document.querySelectorAll('[data-cloned-row]').forEach(el => el.remove());
+
+            originalRenderCV(data);
+
+            adjustContactRow(data.personal || {});
+            dedupeRepeatedExperienceRoles();
+            consolidateAchievementsGroup(data);
+            mergeAdjacentGroupBanners(['skills', 'interests']);
+            updateLedgerFrameBorders();
+            fixEducationBannerRow();
+            applyEducationColumnWidths(data);
+
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    shrinkContentToFit();
+                    scaleToFit();
+                });
+            });
+        };
+
+        // Plain-text contact row (no icons in the source design) - hide any
+        // item whose field is empty, and wire the email/linkedin hrefs by hand.
+        function adjustContactRow(personal) {
+            const phoneEl = document.querySelector('#ci-phone[data-field="phone"]');
+            const hasPhone = !!(phoneEl && phoneEl.textContent.trim());
+            const email = (personal.email || '').trim();
+            const linkedin = (personal.linkedin || '').trim();
+
+            const ciPhone = document.getElementById('ci-phone');
+            const ciEmail = document.getElementById('ci-email');
+            const ciLinkedin = document.getElementById('ci-linkedin');
+            const emailLink = document.getElementById('ci-email-link');
+            const linkedinLink = document.getElementById('ci-linkedin-link');
+
+            if (ciPhone) ciPhone.style.display = hasPhone ? '' : 'none';
+            if (ciEmail) ciEmail.style.display = email ? '' : 'none';
+            if (ciLinkedin) ciLinkedin.style.display = linkedin ? '' : 'none';
+
+            if (emailLink) emailLink.href = email ? 'mailto:' + email : '#';
+            if (linkedinLink) {
+                linkedinLink.href = linkedin
+                    ? (/^https?:\/\//i.test(linkedin) ? linkedin : 'https://' + linkedin)
+                    : '#';
+            }
+
+            const sep1 = document.getElementById('sep-1');
+            const sep2 = document.getElementById('sep-2');
+            if (sep1) sep1.style.display = (hasPhone && (email || linkedin)) ? '' : 'none';
+            if (sep2) sep2.style.display = (email && linkedin) ? '' : 'none';
+
+            const row = document.getElementById('contact-line');
+            if (row) row.style.display = (hasPhone || email || linkedin) ? '' : 'none';
+        }
+
+        // The source design states the job title ("ARTICLE TRAINEE") once above
+        // two firm blocks rather than repeating it per firm. Consecutive,
+        // non-merged experience entries that share the exact same role text
+        // collapse to that same look: only the first entry in the run shows
+        // the bold underlined role label.
+        function dedupeRepeatedExperienceRoles() {
+            let previousRole = null;
+            document.querySelectorAll('#experience-list > .job-entry').forEach(entry => {
+                if (entry.classList.contains('template')) return;
+                const roleEl = entry.querySelector('[data-field="role"]');
+                const isMerged = entry.classList.contains('experience-title-merged');
+                if (isMerged) { previousRole = null; return; }
+
+                const roleText = (roleEl?.textContent || '').trim();
+                if (roleEl) {
+                    if (roleText && roleText === previousRole) {
+                        roleEl.style.display = 'none';
+                    } else if (roleText) {
+                        roleEl.style.display = '';
+                    }
+                }
+                previousRole = roleText || previousRole;
+            });
+        }
+
+        // Achievements, Certifications, Leadership, and any custom section the
+        // user adds all live under ONE fixed "Achievements & Co-Curricular
+        // Activities" banner, no matter where they sit in the section order or
+        // whether they're adjacent to each other.
+        //
+        // Certifications/Leadership stay real, independent sortable-sections
+        // (so cv-common's generic hide-when-empty logic still runs on them
+        // normally, against their own persistent [data-list] element) - this
+        // function clones their already-rendered label/value row into the
+        // Achievements table for display, and permanently hides their own
+        // standalone box so it never doubles up on the page. The clone is
+        // torn down at the start of the next render (see window.renderCV
+        // above) before cv-common touches the DOM again.
+        //
+        // Custom sections are fully torn down and rebuilt by cv-common on
+        // every render anyway, so their row can just be moved, not cloned.
+        //
+        // The shared section itself is shown whenever ANY member has content.
+        function consolidateAchievementsGroup(data) {
+            const achievementsSection = document.querySelector('.sortable-section[data-section-id="achievements"]');
+            const achievementsTable = achievementsSection?.querySelector('table');
+            if (!achievementsSection || !achievementsTable) return;
+
+            const dataRowOf = (section) => Array.from(section.querySelectorAll('table tr'))
+                .find(tr => !tr.querySelector('.navy-banner'));
+
+            ['certifications', 'leadership'].forEach(id => {
+                const section = document.querySelector(`.sortable-section[data-section-id="${id}"]`);
+                const row = section && dataRowOf(section);
+                if (!section || !row) return;
+                const wasVisible = section.style.display !== 'none';
+                if (wasVisible) {
+                    const clone = row.cloneNode(true);
+                    clone.setAttribute('data-cloned-row', id);
+                    achievementsTable.appendChild(clone);
+                }
+                section.style.display = 'none';
+            });
+
+            document.querySelectorAll('.custom-section-injected').forEach(customSec => {
+                const table = customSec.querySelector('table');
+                if (!table) return;
+                Array.from(table.querySelectorAll('tr')).forEach(tr => {
+                    if (tr.querySelector('.navy-banner')) return;
+                    tr.setAttribute('data-cloned-row', 'custom');
+                    achievementsTable.appendChild(tr);
+                });
+                customSec.style.display = 'none';
+            });
+
+            const hasText = (list) => Array.isArray(list) && list.some(item => String(item || '').trim());
+            const hasAchievements = hasText(data.achievements);
+            const hasCerts = Array.isArray(data.certifications) && data.certifications.length > 0;
+            const hasLeadership = hasText(data.leadership);
+            const hasCustom = Array.isArray(data.customSections)
+                && data.customSections.some(s => hasText(s?.items));
+
+            achievementsSection.style.display = (hasAchievements || hasCerts || hasLeadership || hasCustom) ? '' : 'none';
+
+            const achievementsRow = Array.from(achievementsTable.querySelectorAll('tr'))
+                .find(tr => tr.querySelector('[data-list="achievements"]'));
+            if (achievementsRow) achievementsRow.style.display = hasAchievements ? '' : 'none';
+        }
+
+        // Skills/Interests are independent sections so each can be reordered,
+        // hidden, or relabeled on its own - but visually the source groups
+        // them under one shared banner. Walk the visible top-level sections in
+        // order; within a run of consecutive, visible, same-group sections,
+        // keep the banner on the first one and hide it on the rest, so they
+        // read as extra rows under that one banner. A non-group (or hidden)
+        // section breaks the run.
+        function mergeAdjacentGroupBanners(groupIds) {
+            const sections = Array.from(document.querySelectorAll('.ledger-frame > .sortable-section'));
+            let runActive = false;
+            sections.forEach(sec => {
+                const visible = sec.style.display !== 'none' && getComputedStyle(sec).display !== 'none';
+                if (!visible) return;
+
+                const inGroup = groupIds.includes(sec.getAttribute('data-section-id'));
+                if (!inGroup) { runActive = false; return; }
+
+                const bannerRow = sec.querySelector('.navy-banner')?.closest('tr');
+                if (bannerRow) bannerRow.style.display = runActive ? 'none' : '';
+                runActive = true;
+            });
+        }
+
+        // The frame itself supplies the ledger's outer border; every section
+        // only draws its own closing divider (border-bottom). Whichever section
+        // ends up last among the currently-visible ones shouldn't also draw
+        // that divider, or the frame's edge and the divider double up.
+        function updateLedgerFrameBorders() {
+            const frame = document.querySelector('.ledger-frame');
+            if (!frame) return;
+            const sections = Array.from(frame.querySelectorAll(':scope > .sortable-section'));
+            sections.forEach(sec => sec.classList.remove('ledger-last-visible'));
+            const visible = sections.filter(sec => sec.style.display !== 'none' && getComputedStyle(sec).display !== 'none');
+            const last = visible[visible.length - 1];
+            if (last) last.classList.add('ledger-last-visible');
+        }
+
+        // cv-common.js's education table-format logic finds each field's
+        // column index from the data row (a normal 5-cell <tr>) and then
+        // applies that same nth-child index's width/visibility across EVERY
+        // row in the table — but the title row above the data
+        // ("Professional & Academic Credentials") is a single colspan="5"
+        // cell, so it only has ONE child, at nth-child(1). That collides
+        // with the "degree" column's index (also 1), so toggling or
+        // resizing "degree" was actually hiding/shrinking the banner
+        // instead. Since the banner spans the whole table regardless of any
+        // per-column settings, reset it back to its natural width/display
+        // after every render.
+        function fixEducationBannerRow() {
+            const bannerCell = document.querySelector('#education-table .navy-banner');
+            const cell = bannerCell ? bannerCell.closest('td') : null;
+            if (!cell) return;
+            cell.style.removeProperty('display');
+            cell.style.removeProperty('width');
+            cell.style.removeProperty('max-width');
+        }
+
+        // The education table originally shipped a <colgroup> with fixed
+        // <col> widths (18/23/17/10/32%) matching the source design. Under
+        // table-layout:fixed, that meant a user resizing a column in the
+        // editor's Table Format panel saw no visual change at all — the
+        // colgroup's <col> widths always win over any width cv-common.js's
+        // table-format logic sets on individual cells.
+        //
+        // Removing the <colgroup> doesn't actually fix that, though: per the
+        // fixed-table-layout algorithm, when there's no <colgroup>, column
+        // widths are taken from the table's FIRST row only (any other row's
+        // cell widths are ignored for sizing purposes) — and this table's
+        // first row is the "Professional & Academic Credentials" banner, a
+        // single colspan="5" cell with no per-column width info to offer.
+        // With neither a colgroup nor a usable first row, browsers fall back
+        // to splitting the table equally across all 5 columns regardless of
+        // what cv-common.js sets on the header/data rows below.
+        //
+        // So the fix keeps a <colgroup>, but rebuilds its <col> widths
+        // ourselves on every render from the same tableSettings the editor's
+        // Table Format panel writes to — reusing this template's own
+        // original proportions as the default for any column the user hasn't
+        // explicitly resized, and folding a hidden column's width into 0
+        // (redistributing the rest) exactly like cv-common's own per-cell
+        // logic does.
+        function applyEducationColumnWidths(data) {
+            const table = document.getElementById('education-table');
+            if (!table) return;
+
+            const templateDefaultWidths = { degree: 18, institution: 23, marks: 17, year: 10, remarks: 32 };
+            const order = ['degree', 'institution', 'marks', 'year', 'remarks'];
+            const columns = data?.tableSettings?.education?.columns || {};
+
+            const config = order.map((key) => {
+                const colConfig = columns[key] || {};
+                const visible = colConfig.visible !== false;
+                const width = Number.isFinite(Number(colConfig.width)) ? Number(colConfig.width) : templateDefaultWidths[key];
+                return { visible, width };
+            });
+            const totalVisibleWidth = config.filter((c) => c.visible).reduce((sum, c) => sum + c.width, 0) || 1;
+
+            let colgroup = table.querySelector(':scope > colgroup');
+            if (!colgroup) {
+                colgroup = document.createElement('colgroup');
+                table.insertBefore(colgroup, table.firstChild);
+            }
+            colgroup.innerHTML = '';
+            config.forEach((c) => {
+                const col = document.createElement('col');
+                col.style.width = c.visible ? `${((c.width / totalVisibleWidth) * 100).toFixed(2)}%` : '0%';
+                colgroup.appendChild(col);
+            });
+        }
+
+        // Standard scaling / print plumbing (same contract as other templates).
+        function scaleToFit() {
+            const page = document.getElementById('cv-page');
+            const targetWidth = window.innerWidth - 20;
+            const scale = targetWidth < 1000 ? targetWidth / 1000 : 1.0;
+            page.style.transform = `scale(${scale})`;
+            const spaceToRemove = 1413.94 - (1413.94 * scale);
+            page.style.marginBottom = `-${spaceToRemove}px`;
+        }
+
+        function shrinkContentToFit() {
+            const page = document.getElementById('cv-page');
+            let contentScale = 1.0;
+            document.documentElement.style.setProperty('--content-scale', contentScale);
+            page.style.height = 'auto';
+            let i = 0;
+            while (page.scrollHeight > 1415 && i < 60) {
+                contentScale -= 0.01;
+                document.documentElement.style.setProperty('--content-scale', contentScale);
+                i++;
+            }
+            page.style.height = '';
+        }
+
+        let _screenTransform = '';
+        let _screenMarginBottom = '';
+
+        function enablePrintMode() {
+            const page = document.getElementById('cv-page');
+            _screenTransform = page.style.transform;
+            _screenMarginBottom = page.style.marginBottom;
+            page.style.transform = 'scale(1)';
+            page.style.marginBottom = '0px';
+            shrinkContentToFit();
+        }
+
+        function disablePrintMode() {
+            const page = document.getElementById('cv-page');
+            page.style.transform = _screenTransform || '';
+            page.style.marginBottom = _screenMarginBottom || '';
+            scaleToFit();
+        }
+
+        window.addEventListener('load', function () {
+            shrinkContentToFit();
+            scaleToFit();
+            const mq = window.matchMedia('print');
+            if (mq.addEventListener) {
+                mq.addEventListener('change', e => e.matches ? enablePrintMode() : disablePrintMode());
+            } else if (mq.addListener) {
+                mq.addListener(e => e.matches ? enablePrintMode() : disablePrintMode());
+            }
+            window.addEventListener('beforeprint', enablePrintMode);
+            window.addEventListener('afterprint', disablePrintMode);
+        });
+
+        let _resizeTimer;
+        window.addEventListener('resize', function () {
+            clearTimeout(_resizeTimer);
+            _resizeTimer = setTimeout(scaleToFit, 100);
+        });
+    </script>
+</body>
+
+</html>

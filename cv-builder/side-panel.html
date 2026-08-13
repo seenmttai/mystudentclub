@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Resume - Side Panel</title>
+<style>
+
+:root {
+  --accent-color:   #002060;
+  --primary-accent: var(--accent-color, #B42D2E);
+  --sidebar-bg:     color-mix(in srgb, var(--accent-color, #002060) 8%, #F6EAEA);
+  --text-dark:      #292C2C;
+  --text-body:      #424242;
+  --text-muted:     #606363;
+  --link-blue:      var(--accent-color, #002060);
+  --page-bg:        #FFFFFF;
+  --viewer-bg:      #525659;
+  --font-main:      'Microsoft Sans Serif', 'Segoe UI', Arial, sans-serif;
+  --cs:             1.0;
+}
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+body {
+  background: var(--viewer-bg);
+  font-family: var(--font-main);
+  color: var(--text-dark);
+  min-height: 100vh;
+  width: 100vw;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.2s ease-in;
+}
+
+#zoom-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 24px 0 32px;
+}
+
+#cv-page {
+  position: relative;
+  width: 1000px;
+  min-height: 1413.94px;
+  background: var(--page-bg);
+  color: var(--text-dark);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+  flex-shrink: 0;
+  transform-origin: top center;
+  font-size: calc(15.5px * var(--cs));
+  line-height: 1.46;
+  display: flex;
+}
+
+.template { display: none !important; }
+
+/* ── 2-Column Split Layout ── */
+.left-panel {
+  width: 37%;
+  background-color: var(--sidebar-bg);
+  padding: calc(32px * var(--cs)) calc(28px * var(--cs));
+  box-sizing: border-box;
+}
+
+.right-panel {
+  width: 63%;
+  background-color: var(--page-bg);
+  padding: calc(32px * var(--cs)) calc(36px * var(--cs));
+  box-sizing: border-box;
+}
+
+.sortable-section {
+  margin-bottom: calc(14px * var(--cs));
+}
+
+/* Section Banner Headings */
+.section-title {
+  font-size: calc(15.5px * var(--cs));
+  font-weight: 700;
+  color: var(--primary-accent);
+  text-transform: uppercase;
+  border-bottom: calc(1.5px * var(--cs)) solid var(--primary-accent);
+  padding-bottom: calc(3px * var(--cs));
+  margin-top: calc(18px * var(--cs));
+  margin-bottom: calc(14px * var(--cs));
+  letter-spacing: 0.3px;
+}
+
+.left-panel .sortable-section:first-child .section-title,
+.right-panel .sortable-section:first-child .section-title {
+  margin-top: 0;
+}
+
+.summary-paragraph {
+  font-size: calc(14px * var(--cs));
+  line-height: 1.46;
+  color: var(--text-body);
+  text-align: justify;
+  margin-bottom: calc(14px * var(--cs));
+}
+
+.edu-block {
+  margin-bottom: calc(14px * var(--cs));
+}
+
+.edu-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: calc(2px * var(--cs));
+}
+
+.edu-title {
+  font-size: calc(15.5px * var(--cs));
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.edu-date {
+  font-size: calc(12px * var(--cs));
+  color: var(--text-muted);
+}
+
+.edu-inst {
+  font-size: calc(14px * var(--cs));
+  color: var(--text-muted);
+  margin-bottom: calc(2px * var(--cs));
+}
+
+.edu-score-row {
+  margin-top: calc(3px * var(--cs));
+}
+.edu-marks {
+  display: inline-block;
+  font-size: calc(13px * var(--cs));
+  font-weight: 600;
+  color: var(--text-dark);
+  border: 1px solid rgba(255,255,255,0.25);
+  background-color: rgba(255,255,255,0.12);
+  padding: calc(1px * var(--cs)) calc(6px * var(--cs));
+  border-radius: calc(3px * var(--cs));
+  margin-right: calc(6px * var(--cs));
+}
+.edu-remarks {
+  display: inline-block;
+  font-size: calc(12.5px * var(--cs));
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+.skills-text {
+  font-size: calc(14px * var(--cs));
+  line-height: 1.46;
+  color: var(--text-body);
+}
+
+/* Header in Right Panel */
+.candidate-name {
+  font-size: calc(34px * var(--cs));
+  font-weight: 700;
+  color: var(--text-dark);
+  line-height: 1.1;
+  margin-bottom: calc(4px * var(--cs));
+}
+
+.candidate-tagline {
+  font-size: calc(16px * var(--cs));
+  font-weight: 600;
+  color: var(--primary-accent);
+  margin-bottom: calc(8px * var(--cs));
+}
+
+.contact-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(14px * var(--cs));
+  font-size: calc(14px * var(--cs));
+  color: #555555;
+  margin-bottom: calc(18px * var(--cs));
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: calc(4px * var(--cs));
+}
+
+.contact-item a {
+  color: var(--link-blue);
+  text-decoration: underline;
+}
+
+.exp-item {
+  margin-bottom: calc(14px * var(--cs));
+}
+
+.exp-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: calc(8px * var(--cs));
+  margin-bottom: calc(2px * var(--cs));
+}
+
+.exp-title {
+  font-size: calc(15.5px * var(--cs));
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.exp-date {
+  font-size: calc(14px * var(--cs));
+  color: var(--text-muted);
+}
+
+.exp-company {
+  font-size: calc(14px * var(--cs));
+  color: var(--text-muted);
+  margin-bottom: calc(4px * var(--cs));
+}
+
+.exp-desc {
+  font-size: calc(14px * var(--cs));
+  font-style: italic;
+  color: var(--text-body);
+  margin-bottom: calc(6px * var(--cs));
+}
+
+.bullet-list {
+  list-style-type: disc;
+  padding-left: calc(16px * var(--cs));
+  font-size: calc(14px * var(--cs));
+  line-height: 1.46;
+  color: var(--text-body);
+  margin-bottom: calc(14px * var(--cs));
+}
+
+.bullet-list li {
+  margin-bottom: calc(5px * var(--cs));
+  text-align: justify;
+}
+
+.bullet-list li:last-child {
+  margin-bottom: 0;
+}
+
+@media print {
+  html, body {
+    background: none !important;
+    margin: 0;
+    padding: 0;
+  }
+  #zoom-wrapper {
+    padding: 0;
+  }
+  #cv-page {
+    transform: scale(1) !important;
+    margin: 0 !important;
+    width: 210mm;
+    min-height: 297mm;
+    box-shadow: none;
+  }
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+}
+</style>
+</head>
+<body>
+<div id="zoom-wrapper">
+<div id="cv-page">
+
+  <!-- ── LEFT SIDEBAR PANEL ── -->
+  <div class="left-panel">
+
+    <div class="sortable-section" data-section-id="summary">
+      <div class="section-title">Summary</div>
+      <div class="summary-paragraph" data-field="summary"></div>
+    </div>
+
+    <div class="sortable-section" data-section-id="education">
+      <div class="section-title">Education</div>
+      <div id="education-list">
+        <div class="edu-block template">
+          <div class="edu-header-row">
+            <span class="edu-title" data-field="degree"></span>
+            <span class="edu-date" data-field="year"></span>
+          </div>
+          <div data-field="institution-header">
+            <div class="edu-inst" data-field="institution"></div>
+          </div>
+          <div class="edu-score-row">
+            <span class="edu-marks" data-field="marks"></span>
+            <span class="edu-remarks" data-field="remarks"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sortable-section" data-section-id="skills">
+      <div class="section-title">Skills</div>
+      <div class="skills-text" data-field="skills"></div>
+    </div>
+
+    <div class="sortable-section" data-section-id="certifications">
+      <div class="section-title">Certifications</div>
+      <ul class="bullet-list" id="cert-list" data-list="certifications"></ul>
+    </div>
+
+    <div class="sortable-section" data-section-id="interests">
+      <div class="section-title">Interests</div>
+      <ul class="bullet-list" data-list="interests"></ul>
+    </div>
+
+  </div><!-- .left-panel -->
+
+  <!-- ── RIGHT CONTENT PANEL ── -->
+  <div class="right-panel" data-section-append-host>
+
+    <h1 class="candidate-name" data-field="name">Padam Bhansali</h1>
+    <div class="candidate-tagline" data-field="tagline">Chartered Accountant</div>
+    
+    <div class="contact-row contact-block">
+      <div class="contact-item contact-row">
+        <span class="contact-value" data-field="phone">+91 7228881182</span>
+      </div>
+      <div class="contact-item contact-row">
+        <span>✉</span> <a href="#" class="contact-value" data-field="email">capadambhansali@gmail.com</a>
+      </div>
+      <div class="contact-item contact-row">
+        <span>🔗</span> <a href="#" target="_blank" rel="noopener" class="contact-value" data-field="linkedin">linkedin.com/in/ca-padam-bhansali</a>
+      </div>
+      <div class="contact-item contact-row">
+        <span class="contact-value" data-field="location">Mumbai</span>
+      </div>
+    </div>
+
+    <div class="sortable-section" data-section-id="experience">
+      <div class="section-title">Experience</div>
+      <div id="experience-list">
+        <div class="exp-item template">
+          <div class="exp-header-row">
+            <span class="exp-title" data-field="role"></span>
+            <span class="exp-date" data-field="dates"></span>
+          </div>
+          <div class="exp-company" data-field="company"></div>
+          <div class="exp-desc" data-field="category"></div>
+          <div class="exp-desc" data-field="intro"></div>
+          <ul class="bullet-list" data-list="bullets"></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="sortable-section" data-section-id="projects">
+      <div class="section-title">Projects</div>
+      <div id="projects-list">
+        <div class="exp-item template">
+          <div class="exp-header-row">
+            <span class="exp-title" data-field="title"></span>
+          </div>
+          <div class="exp-desc" data-field="description"></div>
+          <ul class="bullet-list" data-list="bullets"></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="sortable-section" data-section-id="leadership">
+      <div class="section-title">Leadership</div>
+      <ul class="bullet-list" data-list="leadership"></ul>
+    </div>
+
+    <div class="sortable-section" data-section-id="achievements">
+      <div class="section-title">Achievements</div>
+      <ul class="bullet-list" data-list="achievements"></ul>
+    </div>
+
+  </div><!-- .right-panel -->
+
+</div><!-- #cv-page -->
+</div><!-- #zoom-wrapper -->
+
+<script src="cv-common.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var PAGE_H = 1413.94;
+  var PAGE_W = 1000;
+
+  function scaleToFit() {
+    var page = document.getElementById('cv-page');
+    if (!page || document.body.classList.contains('print-mode')) return;
+    var avail = window.innerWidth - 20;
+    var scale = avail < PAGE_W ? avail / PAGE_W : 1.0;
+    page.style.transform = 'scale(' + scale + ')';
+    page.style.marginBottom = '-' + (PAGE_H - PAGE_H * scale) + 'px';
+  }
+
+  function shrinkContentToFit() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    var cs = 1.0;
+    document.documentElement.style.setProperty('--cs', cs);
+    page.style.height = 'auto';
+    var iter = 0;
+    while (page.scrollHeight > PAGE_H + 1 && iter < 80) {
+      cs = Math.round((cs - 0.01) * 1000) / 1000;
+      document.documentElement.style.setProperty('--cs', cs);
+      iter++;
+    }
+    page.style.height = '';
+  }
+
+  window.scaleToFit = scaleToFit;
+  window.shrinkContentToFit = shrinkContentToFit;
+
+  var _tx = '', _mb = '';
+
+  function enablePrintMode() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    _tx = page.style.transform;
+    _mb = page.style.marginBottom;
+    document.body.classList.add('print-mode');
+    page.style.transform = 'scale(1)';
+    page.style.marginBottom = '0';
+    shrinkContentToFit();
+  }
+
+  function disablePrintMode() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    document.body.classList.remove('print-mode');
+    page.style.transform = _tx || '';
+    page.style.marginBottom = _mb || '';
+    scaleToFit();
+  }
+
+  window.addEventListener('load', function () {
+    shrinkContentToFit();
+    scaleToFit();
+    document.body.style.opacity = '1';
+    var mq = window.matchMedia('print');
+    var handler = function (e) { e.matches ? enablePrintMode() : disablePrintMode(); };
+    if (mq.addEventListener) { mq.addEventListener('change', handler); }
+    else if (mq.addListener)  { mq.addListener(handler); }
+    window.addEventListener('beforeprint', enablePrintMode);
+    window.addEventListener('afterprint',  disablePrintMode);
+  });
+
+  var _rt;
+  window.addEventListener('resize', function () {
+    clearTimeout(_rt);
+    _rt = setTimeout(scaleToFit, 100);
+  });
+}());
+</script>
+</body>
+</html>
