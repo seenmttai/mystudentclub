@@ -2133,6 +2133,7 @@ function initJobPreferenceModal() {
 
 async function checkAndPromptConsent() {
   if (!currentSession || !localStorage.getItem("userCVText")) return;
+  if (sessionStorage.getItem("cvConsentPromptDismissed")) return;
   try {
     const { data } = await supabaseClient
       .from("consentform")
@@ -2141,6 +2142,7 @@ async function checkAndPromptConsent() {
       .maybeSingle();
     if (!data || !data.cv_sharing_consent) {
       setTimeout(() => {
+        if (sessionStorage.getItem("cvConsentPromptDismissed")) return;
         const modal = document.getElementById("cvConsentPromptModal");
         if (modal) modal.style.display = "flex";
       }, 1500);
@@ -2429,8 +2431,17 @@ function setupEventListeners() {
   document
     .getElementById("cvConsentDeclineBtn")
     ?.addEventListener("click", () => {
-      document.getElementById("cvConsentPromptModal").style.display = "none";
-      window.location.href = "/profile.html";
+      sessionStorage.setItem("cvConsentPromptDismissed", "true");
+      const modal = document.getElementById("cvConsentPromptModal");
+      if (modal) modal.style.display = "none";
+    });
+  document
+    .getElementById("cvConsentPromptModal")
+    ?.addEventListener("click", (e) => {
+      if (e.target.id === "cvConsentPromptModal") {
+        sessionStorage.setItem("cvConsentPromptDismissed", "true");
+        e.currentTarget.style.display = "none";
+      }
     });
   document
     .getElementById("closeProfileIncomplete")
