@@ -1607,7 +1607,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
                             <div class="resource-actions">
                                 <button class="resource-btn resource-btn-view" data-resource="${safeResourceStr}"><i class="fas fa-eye"></i> ${viewLabel}</button>
-                                ${((resource.download_storage_path && resource.download_storage_path !== 'None') || isGoogleSheetResource(resource)) ?
+                                ${(resource.download_storage_path && resource.download_storage_path !== 'None') ?
                             `<button class="resource-btn resource-btn-download" data-resource="${safeResourceStr}"><i class="fas fa-download"></i> ${downloadLabel}</button>` :
                             `<span class="resource-btn resource-btn-download disabled"><i class="fas fa-download"></i> ${downloadLabel}</span>`
                         }
@@ -1769,18 +1769,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const downloadResource = async (resource) => {
         let path = resource.download_storage_path;
         if (!path || path === 'None') {
-            if (resource && isGoogleSheetResource(resource)) {
-                const matches = resource.url.match(/\/d\/([a-zA-Z0-9-_]+)/);
-                const sheetId = matches ? matches[1] : '';
-                const gidMatch = resource.url.match(/[#&]gid=([0-9]+)/);
-                const gid = gidMatch ? gidMatch[1] : '';
-                if (sheetId) {
-                    let exportUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=xlsx`;
-                    if (gid) exportUrl += `&gid=${gid}`;
-                    window.open(exportUrl, '_blank');
-                    return;
-                }
-            }
             DOMElements.noDownloadPopup.classList.add('active');
             return;
         }
@@ -1973,7 +1961,7 @@ document.addEventListener('DOMContentLoaded', () => {
             DOMElements.resourceViewerModal.querySelector('.resource-viewer-controls').style.display = 'none';
         }
 
-        const hasDl = (resource.download_storage_path && resource.download_storage_path !== 'None') || isGoogleSheetResource(resource);
+        const hasDl = (resource.download_storage_path && resource.download_storage_path !== 'None');
         if (DOMElements.viewerDownloadBtn) {
             DOMElements.viewerDownloadBtn.style.display = hasDl ? 'inline-block' : 'none';
             DOMElements.viewerDownloadBtn.textContent = getResourceDownloadLabel(resource);

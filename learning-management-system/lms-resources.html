@@ -663,7 +663,7 @@
                             rel="noopener noreferrer" class="viewer-nav-button">
                             <i class="fas fa-external-link-alt"></i> Open Full Sheet
                         </a>
-                        <button @click="downloadResource(currentResource)"
+                        <button v-if="currentResource && hasDownloadPath(currentResource)" @click="downloadResource(currentResource)"
                             class="viewer-nav-button viewer-download-btn">
                             <i class="fas fa-download"></i> Download Excel
                         </button>
@@ -852,7 +852,7 @@
                     return resource.view_storage_path && resource.view_storage_path !== 'None';
                 },
                 hasDownloadPath(resource) {
-                    return (resource.download_storage_path && resource.download_storage_path !== 'None') || this.isSpecialSheet(resource);
+                    return (resource.download_storage_path && resource.download_storage_path !== 'None');
                 },
                 isDocxPreviewResource(resource) {
                     const type = String(resource?.type || '').toLowerCase();
@@ -1071,18 +1071,6 @@
                 async downloadResource(resource) {
                     const path = resource?.download_storage_path;
                     if (!path || path === 'None') {
-                        if (resource && this.isSpecialSheet(resource)) {
-                            const matches = resource.url.match(/\/d\/([a-zA-Z0-9-_]+)/);
-                            const sheetId = matches ? matches[1] : '';
-                            const gidMatch = resource.url.match(/[#&]gid=([0-9]+)/);
-                            const gid = gidMatch ? gidMatch[1] : '';
-                            if (sheetId) {
-                                let exportUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=xlsx`;
-                                if (gid) exportUrl += `&gid=${gid}`;
-                                window.open(exportUrl, '_blank');
-                                return;
-                            }
-                        }
                         alert('No downloadable file available.');
                         return;
                     }
