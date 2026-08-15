@@ -720,12 +720,13 @@ const CONSENT_TEXT =
   "I consent to My Student Club sharing my CV and profile details with registered companies and recruiters for job-matching purposes.";
 
 async function loadConsentStatus() {
-  if (!currentUser) return;
+  const user = currentUser || (await supabaseClient.auth.getSession())?.data?.session?.user;
+  if (!user) return;
   try {
     const { data, error } = await supabaseClient
       .from("consentform")
       .select("cv_sharing_consent, consented_at, withdrawn_at")
-      .eq("user_id", currentUser.id)
+      .eq("user_id", user.id)
       .maybeSingle();
 
     const checkbox = document.getElementById("cvSharingConsent");
@@ -734,6 +735,7 @@ async function loadConsentStatus() {
     const privacyDate = document.getElementById("privacyConsentDate");
 
     if (data && data.cv_sharing_consent) {
+      localStorage.setItem("msc_cv_consent_given", "true");
       if (checkbox) checkbox.checked = true;
       const dateStr = data.consented_at
         ? new Date(data.consented_at).toLocaleDateString("en-IN", {
@@ -749,6 +751,7 @@ async function loadConsentStatus() {
       }
       if (privacyDate) privacyDate.textContent = dateStr;
     } else {
+      localStorage.setItem("msc_cv_consent_given", "false");
       if (checkbox) checkbox.checked = false;
       if (statusText) statusText.textContent = data ? "Consent withdrawn" : "";
       if (privacyStatus) {
@@ -763,10 +766,11 @@ async function loadConsentStatus() {
 }
 
 async function saveConsentRecord(isConsented) {
-  if (!currentUser) return;
+  const user = currentUser || (await supabaseClient.auth.getSession())?.data?.session?.user;
+  if (!user) return false;
   const now = new Date().toISOString();
   const payload = {
-    user_id: currentUser.id,
+    user_id: user.id,
     cv_sharing_consent: isConsented,
     consent_text: CONSENT_TEXT,
     user_agent: navigator.userAgent,
@@ -784,13 +788,17 @@ async function saveConsentRecord(isConsented) {
       .from("consentform")
       .upsert(payload, { onConflict: "user_id" });
     if (error) throw error;
+    if (isConsented) {
+      localStorage.setItem("msc_cv_consent_given", "true");
+    } else {
+      localStorage.setItem("msc_cv_consent_given", "false");
+    }
     return true;
   } catch (e) {
     console.error("Failed to save consent record:", e);
     showToast(
-      "Could not save consent record. Please try again.",
+      "Could not save consent preference. Please try again.",
       "error",
-      6000,
     );
     return false;
   }
@@ -982,7 +990,13 @@ async function handleSave(e) {
     }
   }
 
-  if (!localStorage.getItem("userCVImages")) {
+  const hasResumeLocallyOrRemote =
+    localStorage.getItem("userCVImages") ||
+    localStorage.getItem("userCVFileName") ||
+    localStorage.getItem("userCVText") ||
+    document.getElementById("resume-filename")?.textContent?.trim();
+
+  if (!hasResumeLocallyOrRemote) {
     showToast(
       "Please upload your resume. It is required to use the AI features.",
       "warning",

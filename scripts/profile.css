@@ -548,6 +548,7 @@ body.p2-modal-open {
     border-color 0.15s,
     background 0.15s;
   -webkit-appearance: none;
+  appearance: none;
 }
 .p2-card input:focus,
 .p2-card select:focus,

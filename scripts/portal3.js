@@ -329,8 +329,11 @@ function renderJobCard(job) {
   const industryType = job['Industry Type'];
   const postedText = postedDate ? `Posted ${postedDate}` : "";
 
+  const isExclusive = !!job.is_exclusive;
+  const isLocked = isExclusive && !isEnrolledSync("Industrial Training Job Portal");
+
   const card = document.createElement("article");
-  card.className = "job-card-new";
+  card.className = "job-card-new" + (isExclusive ? " job-card-exclusive" : "");
   card.dataset.jobId = job.id;
   card.innerHTML = `
         <div class="jc-top">
@@ -346,6 +349,7 @@ function renderJobCard(job) {
             </button>
         </div>
         <div class="jc-chips">
+            ${isExclusive ? `<span class="jc-chip" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; border-color: #d97706; font-weight: 700;">⭐ Exclusive</span>` : ""}
             ${primaryDomain ? `<span class="jc-chip jc-chip-domain">${primaryDomain}</span>` : ""}
             ${secondaryDomain ? `<span class="jc-chip jc-chip-domain" style="background-color: #e0f2fe; color: #0369a1; border-color: #bae6fd;">${secondaryDomain}</span>` : ""}
             ${companyType ? `<span class="jc-chip"><i class="fa-solid fa-building" style="margin-right: 4px; color: #94a3b8;"></i>${companyType}</span>` : ""}
@@ -376,7 +380,7 @@ function renderJobCard(job) {
                 })()}
                 <div class="jc-meta">${applicants > 0 ? `${applicants} applied` : "Be the first to apply!"}</div>
             </div>
-            <button class="jc-apply-btn${isApplied ? " applied" : ""}">${isApplied ? "✓ Applied" : "Apply →"}</button>
+            <button class="jc-apply-btn${isApplied ? " applied" : ""}${isLocked ? " exclusive-locked-btn" : ""}" style="${isLocked ? "background: linear-gradient(135deg, #f59e0b, #d97706) !important; color: white !important; border: none !important;" : ""}">${isLocked ? "Exclusive" : isApplied ? "✓ Applied" : "Apply →"}</button>
         </div>`;
 
   card.addEventListener("click", (e) => {
@@ -411,7 +415,7 @@ async function fetchJobs() {
     } else if (currentTable === "Semi Qualified Jobs") {
       selectCols += ', Experience, "Secondary Domain", Tags';
     } else if (currentTable === "Industrial Training Job Portal") {
-      selectCols += ', "Stipend Range", "Functional Tags", "Technology Tags"';
+      selectCols += ', "Stipend Range", "Functional Tags", "Technology Tags", is_exclusive';
     } else if (currentTable === "Articleship Jobs") {
       selectCols += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range"';
     }
@@ -756,9 +760,132 @@ function populateSalaryFilter() {
 }
 
 
+let enrollmentStatusCache = null;
+
+async function prefetchEnrollmentStatus(userId) {
+  if (!userId) return;
+  try {
+    const { count: anyCount, error: e1 } = await supabaseClient
+      .from("enrollment")
+      .select("course", { count: "exact", head: true })
+      .eq("uuid", userId);
+    if (e1) throw e1;
+    const hasAny = (anyCount || 0) > 0;
+    enrollmentStatusCache = { any: hasAny, industrialTraining: false, freshers: false };
+    if (hasAny) {
+      const [r1, r2] = await Promise.all([
+        supabaseClient
+          .from("enrollment")
+          .select("course", { count: "exact", head: true })
+          .eq("uuid", userId)
+          .eq("course", "industrial-training-mastery"),
+        supabaseClient
+          .from("enrollment")
+          .select("course", { count: "exact", head: true })
+          .eq("uuid", userId)
+          .eq("course", "msc-ca-freshers-program"),
+      ]);
+      enrollmentStatusCache.industrialTraining = (r1.count || 0) > 0;
+      enrollmentStatusCache.freshers = (r2.count || 0) > 0;
+    }
+  } catch (e) {
+    console.error("Failed to prefetch enrollment:", e);
+    enrollmentStatusCache = { any: false, industrialTraining: false, freshers: false };
+  }
+}
+
+function isEnrolledSync(tableName) {
+  if (!enrollmentStatusCache) return false;
+  if (tableName === "Industrial Training Job Portal")
+    return enrollmentStatusCache.industrialTraining;
+  return enrollmentStatusCache.any;
+}
+
+function showExclusiveLockedModal(job) {
+  if (!dom.jobDetailOverlay || !dom.jobDetailContent) return;
+  const colors = getCompanyColors(job.Company || "");
+  const initials = getInitials(job.Company || "");
+
+  dom.jobDetailContent.innerHTML = `
+    <div class="jd-topbar">
+        <button class="jd-back-btn" id="jdExclusiveBackBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5m6-6-6 6 6 6"/></svg>
+        </button>
+        <span class="jd-topbar-title">Exclusive Vacancy</span>
+        <div class="jd-topbar-actions"></div>
+    </div>
+    <div class="jd-body">
+        <div class="jd-hero-card">
+            <div class="jd-hero-top">
+                <div class="jd-hero-avatar" style="background:${colors.bg};color:${colors.fg}">${initials}</div>
+                <div class="jd-hero-info">
+                    <div class="jd-hero-company">${job.Company || "Company"}</div>
+                    <div class="jd-hero-location">${job.Location || ""}</div>
+                </div>
+            </div>
+            <div class="jd-meta-pills">
+                <span class="jc-chip" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border-color:#d97706;font-weight:700;">⭐ Exclusive</span>
+                ${job['Primary Domain'] || job.Category ? `<span class="jc-chip jc-chip-domain">${job['Primary Domain'] || job.Category}</span>` : ""}
+            </div>
+        </div>
+
+        <div style="margin: 1rem 0; border-radius: 18px; overflow: hidden; border: 1.5px solid #fcd34d; background: linear-gradient(160deg, #fffbeb 0%, #fef3c7 100%);">
+            <div style="padding: 1.75rem 1.25rem 1.5rem; text-align: center;">
+                <div style="width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #fef3c7, #fde68a); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 1.75rem; box-shadow: 0 4px 16px rgba(245,158,11,0.25);">🔒</div>
+                <h3 style="color: #78350f; font-size: 1.1rem; font-weight: 700; margin: 0 0 0.5rem; line-height: 1.3;">MSC Program Students Only</h3>
+                <p style="color: #92400e; font-size: 0.875rem; line-height: 1.6; margin: 0 0 1.25rem;">
+                    This vacancy is exclusively reserved for students enrolled in the <strong>MSC Industrial Training Program</strong>. Enroll to unlock full details and apply.
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 0.625rem;">
+                    <a href="/ca-industrial-training-program/" style="display:flex;align-items:center;justify-content:center;gap:0.5rem;padding:0.875rem 1.25rem;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;border-radius:14px;font-weight:700;font-size:0.9rem;text-decoration:none;box-shadow:0 4px 16px rgba(217,119,6,0.35);letter-spacing:0.01em;">
+                        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
+                        Unlock Access — Explore MSC Program
+                    </a>
+                    ${!currentSession ? `
+                    <a href="/login.html" style="display:flex;align-items:center;justify-content:center;gap:0.4rem;padding:0.75rem 1.25rem;background:transparent;color:#92400e;border:1.5px solid #fbbf24;border-radius:14px;font-weight:600;font-size:0.85rem;text-decoration:none;">
+                        Already enrolled? Sign in
+                    </a>` : ""}
+                </div>
+            </div>
+            <div style="border-top:1px solid #fde68a;padding:0.75rem 1.25rem;display:flex;align-items:center;gap:0.5rem;background:rgba(251,191,36,0.1);">
+                <svg width="15" height="15" viewBox="0 0 20 20" fill="#f59e0b"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                <span style="color:#78350f;font-size:0.8rem;font-weight:500;">Premium access for enrolled MSC students</span>
+            </div>
+        </div>
+
+        <div class="jd-section">
+            <h3 class="jd-section-title">What's included in MSC Program?</h3>
+            <div style="display:flex;flex-direction:column;gap:0.625rem;margin-top:0.75rem;">
+                ${[
+                  ["🏢", "Exclusive industrial training placements"],
+                  ["📄", "AI-powered resume & application assistance"],
+                  ["👥", "Connect with industry professionals & peers"],
+                  ["🎓", "Structured CA industrial training curriculum"],
+                ].map(([icon, text]) => `
+                  <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem 1rem;background:var(--card,#fff);border:1px solid var(--line,#e2e8f0);border-radius:12px;">
+                      <span style="font-size:1.1rem;min-width:24px;text-align:center;">${icon}</span>
+                      <span style="font-size:0.85rem;color:var(--text,#1e293b);font-weight:500;">${text}</span>
+                  </div>`).join("")}
+            </div>
+        </div>
+    </div>`;
+
+  dom.jobDetailOverlay.classList.add("show");
+  document.body.style.overflow = "hidden";
+
+  document.getElementById("jdExclusiveBackBtn")?.addEventListener("click", () => {
+    dom.jobDetailOverlay.classList.remove("show");
+    document.body.style.overflow = "";
+  });
+}
+
 //  JOB DETAIL BOTTOM SHEET
 
 function showJobDetail(job) {
+  if (job.is_exclusive && !isEnrolledSync("Industrial Training Job Portal")) {
+    showExclusiveLockedModal(job);
+    return;
+  }
   if (!dom.jobDetailOverlay || !dom.jobDetailContent) return;
   const colors = getCompanyColors(job.Company || "");
   const initials = getInitials(job.Company || "");
@@ -1339,6 +1466,7 @@ async function initializeUserFeatures() {
       );
     }
   } catch (_) {}
+  await prefetchEnrollmentStatus(currentSession.user.id);
   checkAndSyncCVBackground();
 }
 
@@ -2132,20 +2260,46 @@ function initJobPreferenceModal() {
 //  DPDP CONSENT
 
 async function checkAndPromptConsent() {
-  if (!currentSession || !localStorage.getItem("userCVText")) return;
-  if (sessionStorage.getItem("cvConsentPromptDismissed")) return;
+  if (localStorage.getItem("msc_cv_consent_given") === "true") return;
+  if (localStorage.getItem("cvConsentPromptDismissed") === "true") return;
   try {
+    const session =
+      currentSession ||
+      (await supabaseClient.auth.getSession())?.data?.session;
+    if (!session) return;
+
     const { data } = await supabaseClient
       .from("consentform")
       .select("cv_sharing_consent")
-      .eq("user_id", currentSession.user.id)
+      .eq("user_id", session.user.id)
       .maybeSingle();
-    if (!data || !data.cv_sharing_consent) {
-      setTimeout(() => {
-        if (sessionStorage.getItem("cvConsentPromptDismissed")) return;
-        const modal = document.getElementById("cvConsentPromptModal");
-        if (modal) modal.style.display = "flex";
-      }, 1500);
+
+    if (data && data.cv_sharing_consent) {
+      localStorage.setItem("msc_cv_consent_given", "true");
+      return;
+    }
+
+    let hasCV = !!(
+      localStorage.getItem("userCVText") ||
+      localStorage.getItem("userCVFileName") ||
+      localStorage.getItem("userCVImages")
+    );
+
+    if (!hasCV) {
+      const { data: prof } = await supabaseClient
+        .from("profiles")
+        .select("ocr_cv, profile")
+        .eq("uuid", session.user.id)
+        .maybeSingle();
+      if (prof?.ocr_cv || prof?.profile?.cv_filename) {
+        hasCV = true;
+      }
+    }
+
+    if (hasCV) {
+      if (localStorage.getItem("cvConsentPromptDismissed") === "true") return;
+      const modal = document.getElementById("cvConsentPromptModal");
+      if (modal) modal.style.display = "flex";
     }
   } catch (_) {}
 }
@@ -2391,37 +2545,44 @@ function setupEventListeners() {
     .getElementById("cvConsentAcceptBtn")
     ?.addEventListener("click", async () => {
       document.getElementById("cvConsentPromptModal").style.display = "none";
-      showToast("Syncing your CV to cloud...", "info");
+      showToast("Saving your consent...", "info");
       try {
-        const syncSuccess = await checkAndSyncCVBackground();
-        if (syncSuccess) {
-          const now = new Date().toISOString();
-          await supabaseClient
-            .from("consentform")
-            .upsert(
-              {
-                user_id: currentSession.user.id,
-                cv_sharing_consent: true,
-                consent_text: DPDP_CONSENT_TEXT,
-                consented_at: now,
-                withdrawn_at: null,
-                user_agent: navigator.userAgent,
-                updated_at: now,
-              },
-              { onConflict: "user_id" },
-            );
-          showToast(
-            "Thank you! Your CV has been backed up and consent recorded.",
-            "success",
-          );
-        } else {
-          showToast(
-            "CV backup sync failed. Please complete/update your profile to consent.",
-            "error",
-            8000,
-          );
+        const session =
+          currentSession ||
+          (await supabaseClient.auth.getSession())?.data?.session;
+        if (!session) {
+          showToast("Session expired. Please sign in again.", "error");
+          return;
         }
-      } catch (_) {
+
+        const now = new Date().toISOString();
+        const { error } = await supabaseClient
+          .from("consentform")
+          .upsert(
+            {
+              user_id: session.user.id,
+              cv_sharing_consent: true,
+              consent_text: DPDP_CONSENT_TEXT,
+              consented_at: now,
+              withdrawn_at: null,
+              user_agent: navigator.userAgent,
+              updated_at: now,
+            },
+            { onConflict: "user_id" },
+          );
+
+        if (error) throw error;
+
+        localStorage.setItem("msc_cv_consent_given", "true");
+        localStorage.setItem("cv_cloud_synced", "true");
+        showToast(
+          "Thank you! Your consent has been recorded.",
+          "success",
+        );
+
+        checkAndSyncCVBackground().catch(() => {});
+      } catch (err) {
+        console.error("Consent save error:", err);
         showToast(
           "Could not save consent. Please try again from your profile.",
           "error",
@@ -2431,7 +2592,7 @@ function setupEventListeners() {
   document
     .getElementById("cvConsentDeclineBtn")
     ?.addEventListener("click", () => {
-      sessionStorage.setItem("cvConsentPromptDismissed", "true");
+      localStorage.setItem("cvConsentPromptDismissed", "true");
       const modal = document.getElementById("cvConsentPromptModal");
       if (modal) modal.style.display = "none";
     });
@@ -2439,7 +2600,7 @@ function setupEventListeners() {
     .getElementById("cvConsentPromptModal")
     ?.addEventListener("click", (e) => {
       if (e.target.id === "cvConsentPromptModal") {
-        sessionStorage.setItem("cvConsentPromptDismissed", "true");
+        localStorage.setItem("cvConsentPromptDismissed", "true");
         e.currentTarget.style.display = "none";
       }
     });
@@ -2610,6 +2771,7 @@ async function initializePage() {
     if (maybeRedirectToPreferredPortal(pageConfig)) return;
 
     await initializeUserFeatures();
+    setTimeout(() => checkAndPromptConsent(), 1000);
 
     if (!profile?.looking_for) setTimeout(showOnboardingSegmentModal, 800);
   } else {
@@ -2648,12 +2810,12 @@ async function initializePage() {
   if (dom.sortBySelect) {
     initCustomSelect(
       dom.sortBySelect,
-      "🔥 Trending",
+      "Trending",
       [
-        { value: "popular", label: "🔥 Trending" },
-        { value: "newest", label: "🕐 Newest First" },
-        { value: "salary_desc", label: "💰 Stipend: High to Low" },
-        { value: "salary_asc", label: "💰 Stipend: Low to High" },
+        { value: "popular", label: "Trending" },
+        { value: "newest", label: "Newest First" },
+        { value: "salary_desc", label: "Stipend: High to Low" },
+        { value: "salary_asc", label: "Stipend: Low to High" },
       ],
       () => { state.sortBy = dom.sortBySelect.value; }
     );
