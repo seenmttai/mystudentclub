@@ -72,6 +72,142 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 const WORKER_URL = 'https://storer.bhansalimanan55.workers.dev';
 
+// Anti-Scraping Middleman & Turnstile Configuration
+const UNLOCK_WORKER_URL = 'https://jobs.mystudentclub.com';
+const TURNSTILE_SITE_KEY = '0x4AAAAAAESf1Ha-laDI3OGO';
+
+const PUBLIC_VIEW_MAP = {
+    "Industrial Training Job Portal": "public_industrial_jobs",
+    "Fresher Jobs": "public_fresher_jobs",
+    "Semi Qualified Jobs": "public_semi_qualified_jobs",
+    "Articleship Jobs": "public_articleship_jobs"
+};
+
+// In-memory cache for unlocked jobs (avoids duplicate requests during the same browser session)
+const unlockedJobsCache = new Map();
+
+function loadTurnstileScript() {
+    if (window.turnstile) return Promise.resolve();
+    if (document.getElementById('turnstile-script')) {
+        return new Promise((resolve) => {
+            const checkInterval = setInterval(() => {
+                if (window.turnstile) {
+                    clearInterval(checkInterval);
+                    resolve();
+                }
+            }, 100);
+            setTimeout(() => { clearInterval(checkInterval); resolve(); }, 5000);
+        });
+    }
+
+    return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.id = 'turnstile-script';
+        script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+        script.async = true;
+        script.defer = true;
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error('Failed to connect to verification service'));
+        document.head.appendChild(script);
+    });
+}
+
+function getTurnstileToken() {
+    return new Promise(async (resolve, reject) => {
+        try {
+            await loadTurnstileScript();
+        } catch (e) {
+            return reject(e);
+        }
+
+        if (!window.turnstile) {
+            return reject(new Error('Verification service temporarily unavailable. Please refresh.'));
+        }
+
+        let container = document.getElementById('msc-turnstile-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'msc-turnstile-container';
+            container.style.cssText = 'position:fixed;bottom:10px;right:10px;z-index:99999;';
+            document.body.appendChild(container);
+        }
+
+        const widgetDiv = document.createElement('div');
+        container.appendChild(widgetDiv);
+
+        try {
+            const widgetId = window.turnstile.render(widgetDiv, {
+                sitekey: TURNSTILE_SITE_KEY,
+                callback: (token) => {
+                    setTimeout(() => {
+                        try { window.turnstile.remove(widgetId); } catch (_) {}
+                        widgetDiv.remove();
+                    }, 300);
+                    resolve(token);
+                },
+                'error-callback': () => {
+                    try { window.turnstile.remove(widgetId); } catch (_) {}
+                    widgetDiv.remove();
+                    reject(new Error('Verification was not completed. Please try again.'));
+                },
+                'expired-callback': () => {
+                    try { window.turnstile.remove(widgetId); } catch (_) {}
+                    widgetDiv.remove();
+                    reject(new Error('Verification session timed out. Please try again.'));
+                }
+            });
+        } catch (err) {
+            widgetDiv.remove();
+            reject(err);
+        }
+    });
+}
+
+async function unlockJobDetails(job, tableName) {
+    if (unlockedJobsCache.has(job.id)) {
+        return unlockedJobsCache.get(job.id);
+    }
+
+    const token = await getTurnstileToken();
+    let response;
+    try {
+        response = await fetch(`${UNLOCK_WORKER_URL}/api/unlock-job`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                jobId: job.id,
+                table: tableName,
+                turnstileToken: token
+            })
+        });
+    } catch (_) {
+        // Fallback to base URL if sub-route is not configured
+        response = await fetch(UNLOCK_WORKER_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                jobId: job.id,
+                table: tableName,
+                turnstileToken: token
+            })
+        });
+    }
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data.success) {
+        console.error('[Verification Service Error]:', data);
+        const errMsg = data.error || (data.details ? data.details.join(', ') : 'Unable to load application details.');
+        throw new Error(errMsg);
+    }
+
+    unlockedJobsCache.set(job.id, data);
+    job['Application ID'] = data.applicationId;
+    job.Description = data.description;
+    if (data.postsLink) job.posts_link = data.postsLink;
+
+    return data;
+}
+
 window.flutter_app = {
     isReady: false,
     fcmToken: null
@@ -360,7 +496,8 @@ function renderJobCard(job) {
     const isApplied = appliedJobIds.has(job.id);
     const isPopular = (job.application_count || 0) > 50;
     const buttonClass = isApplied ? 'applied' : '';
-    const applyLink = getApplicationLink(job['Application ID']);
+    const isUnlocked = unlockedJobsCache.has(job.id) || !!(job['Application ID'] && job['Application ID'] !== 'null');
+    const applyLink = isUnlocked ? getApplicationLink(job['Application ID']) : '#';
 
     // Data values
     const primaryDomain = job['Primary Domain'] || job.Category || 'N/A';
@@ -462,6 +599,11 @@ function renderJobCard(job) {
             if (isLocked) {
                 e.preventDefault();
                 showExclusiveLockedModal(job);
+                return;
+            }
+            if (!isUnlocked) {
+                e.preventDefault();
+                showModal(job);
                 return;
             }
             setTimeout(() => markJobAsApplied(job), 500);
@@ -717,12 +859,21 @@ function showModal(job) {
         showExclusiveLockedModal(job);
         return;
     }
+
+    const isUnlocked = unlockedJobsCache.has(job.id) || !!(job['Application ID'] && job['Application ID'] !== 'null');
+    if (unlockedJobsCache.has(job.id)) {
+        const cached = unlockedJobsCache.get(job.id);
+        if (cached.description) job.Description = cached.description;
+        if (cached.applicationId) job['Application ID'] = cached.applicationId;
+        if (cached.postsLink) job.posts_link = cached.postsLink;
+    }
+
     const companyName = (job.Company || '').trim();
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
     const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'N/A';
     const applyCount = job.application_count || 0;
-    const applyLink = getApplicationLink(job['Application ID'], job.Company);
-    const isMailto = applyLink.startsWith('mailto:');
+    const applyLink = isUnlocked ? getApplicationLink(job['Application ID'], job.Company) : '#';
+    const isMailto = isUnlocked && applyLink.startsWith('mailto:');
     const isApplied = appliedJobIds.has(job.id);
     const buttonClass = isApplied ? 'applied' : '';
 
@@ -812,7 +963,15 @@ function showModal(job) {
     }
 
     let primaryActionsHtml = '';
-    if (isMailto) {
+    if (!isUnlocked) {
+        primaryActionsHtml = `
+            <div class="modal-primary-actions">
+                <button id="modalLockedApplyBtn" class="btn btn-primary btn-modal-primary ${buttonClass}" style="width: 100%;">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    <span>Apply for this Job</span>
+                </button>
+            </div>`;
+    } else if (isMailto) {
         const simpleApplyText = 'Simple Apply';
         const aiApplyText = 'AI Powered Apply';
         primaryActionsHtml = `
@@ -868,6 +1027,38 @@ function showModal(job) {
         tagsSectionsHtml += renderPillSection("Client Sector Exposure", job["Client Exposure Tags"], "#fff7ed", "#9a3412", "#ffedd5");
     }
 
+    // Description Section (Truncated preview with Read More if not yet expanded)
+    const rawDesc = job.Description || '';
+    const isTruncated = !isUnlocked;
+    const descContentHtml = isTruncated
+        ? `
+            <div class="modal-description-wrapper is-collapsed" id="modalDescriptionWrapper">
+                <div class="modal-description" id="modalDescriptionContent">${renderMarkdown(rawDesc)}</div>
+                <div class="read-more-gradient" id="readMoreGradient">
+                    <button class="btn-read-more" id="btnReadMore">
+                        <span>Read Full Description</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+            </div>
+        `
+        : `
+            <div class="modal-description-wrapper" id="modalDescriptionWrapper">
+                <div class="modal-description" id="modalDescriptionContent">${renderMarkdown(rawDesc)}</div>
+            </div>
+        `;
+
+    // Application Section
+    const applicationContentHtml = isUnlocked && job['Application ID']
+        ? generateApplicationLinks(job['Application ID'])
+        : `
+            <div class="apply-prompt-box" id="applyPromptBox">
+                <button class="btn btn-primary btn-reveal-app" id="btnRevealAppId">
+                    <i class="fas fa-paper-plane"></i> View Application Details & Apply
+                </button>
+            </div>
+        `;
+
     dom.modalBody.innerHTML = `
         <div class="modal-header">
             <div class="modal-logo">${companyInitial}</div>
@@ -886,16 +1077,20 @@ function showModal(job) {
             ${job['Firm Type'] ? `<span class="job-tag"><i class="fas fa-briefcase" style="margin-right: 4px;"></i>${job['Firm Type']}</span>` : ''}
             ${job['Industry Type'] ? `<span class="job-tag"><i class="fas fa-industry" style="margin-right: 4px;"></i>${job['Industry Type']}</span>` : ''}
         </div>
-        ${primaryActionsHtml}
+        <div id="modalPrimaryActionsContainer">
+            ${primaryActionsHtml}
+        </div>
         ${secondaryActionsHtml}
         ${tagsSectionsHtml}
         <div class="modal-section">
             <h3><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>Apply here!</h3>
-            ${generateApplicationLinks(job['Application ID'])}
+            <div id="modalAppLinksContainer">
+                ${applicationContentHtml}
+            </div>
         </div>
         <div class="modal-section">
             <h3><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Job Description</h3>
-            <div class="modal-description">${renderMarkdown(job.Description)}</div>
+            ${descContentHtml}
         </div>
         <div class="modal-footer" style="text-align: center; padding: 1rem; border-top: 1px solid #e5e7eb; margin-top: 5rem;">
             <p style="color: #6b7280; font-size: 0.9rem;">
@@ -907,43 +1102,130 @@ function showModal(job) {
     dom.modalOverlay.style.display = 'flex';
     document.body.style.overflow = 'hidden';
 
-    if (isMailto) {
-        const modalSimpleApplyBtn = document.getElementById('modalSimpleApplyBtn');
-        const modalAiApplyBtn = document.getElementById('modalAiApplyBtn');
+    // Copy button event listener binding helper
+    const attachCopyListeners = () => {
+        const copyBtns = document.querySelectorAll('.modal-copy-btn');
+        copyBtns.forEach((copyBtn) => {
+            copyBtn.addEventListener('click', () => {
+                const text = copyBtn.getAttribute('data-copy-text');
+                const icon = copyBtn.querySelector('i');
+                const originalClass = icon.className;
 
-        if (modalSimpleApplyBtn) {
-            modalSimpleApplyBtn.addEventListener('click', async (e) => {
-                e.preventDefault(); // Prevent default mailto behavior initially
-                const shouldProceed = await recordApplication(job, e.currentTarget);
-                if (shouldProceed) {
-                    window.open(applyLink, '_blank'); // Open mailto link
-                }
+                navigator.clipboard.writeText(text).then(() => {
+                    icon.className = 'fas fa-check';
+                    copyBtn.style.background = '#22c55e';
+                    setTimeout(() => {
+                        icon.className = originalClass;
+                        copyBtn.style.background = '#2563eb';
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Copy failed:', err);
+                    alert('Failed to copy. Please copy manually.');
+                });
             });
+        });
+    };
+
+    attachCopyListeners();
+
+    // Unified Unlock Handler with smooth UX
+    const handleUnlockFlow = async (btnElement, autoAction = null) => {
+        const originalHtml = btnElement ? btnElement.innerHTML : '';
+        if (btnElement) {
+            btnElement.innerHTML = '<span class="unlock-spinner"></span> Loading...';
+            btnElement.disabled = true;
         }
-        if (modalAiApplyBtn) {
-            modalAiApplyBtn.addEventListener('click', async (e) => {
-                e.preventDefault();
-                if (!currentSession) {
-                    window.location.href = '/login.html';
-                    return;
-                }
+
+        try {
+            const unlocked = await unlockJobDetails(job, currentTable);
+
+            // Re-render modal in fully unlocked state
+            showModal(job);
+
+            // If an action was requested (e.g. Simple Apply / AI Apply / External Apply), execute it immediately
+            if (autoAction === 'simple' || autoAction === 'external') {
+                const updatedLink = getApplicationLink(unlocked.applicationId, job.Company);
+                recordApplication(job, btnElement);
+                window.open(updatedLink, '_blank');
+            } else if (autoAction === 'ai') {
+                const updatedLink = getApplicationLink(unlocked.applicationId, job.Company);
                 if (isEnrolledSync(currentTable)) {
-                    await handleAiApplyClick(job, e.currentTarget, currentTable, applyLink);
+                    handleAiApplyClick(job, btnElement, currentTable, updatedLink);
                 } else {
                     showEnrollmentRequiredPopup();
                 }
-            });
+            }
+
+        } catch (err) {
+            console.error('Fetch error:', err);
+            const userMsg = err.message || 'Unable to load application details. Please try again.';
+            if (typeof showToast === 'function') {
+                showToast(userMsg, 'error');
+            } else {
+                alert(userMsg);
+            }
+            if (btnElement) {
+                btnElement.innerHTML = originalHtml;
+                btnElement.disabled = false;
+            }
         }
-    } else {
-        const modalExternalApplyBtn = document.getElementById('modalExternalApplyBtn');
-        if (modalExternalApplyBtn) {
-            modalExternalApplyBtn.addEventListener('click', async (e) => {
-                e.preventDefault(); // Prevent default navigation initially
-                const shouldProceed = await recordApplication(job, e.currentTarget);
-                if (shouldProceed) {
-                    window.open(applyLink, '_blank'); // Open external link
-                }
-            });
+    };
+
+    // Attach unlock trigger listeners
+    const btnReadMore = document.getElementById('btnReadMore');
+    if (btnReadMore) {
+        btnReadMore.addEventListener('click', () => handleUnlockFlow(btnReadMore));
+    }
+
+    const btnRevealAppId = document.getElementById('btnRevealAppId');
+    if (btnRevealAppId) {
+        btnRevealAppId.addEventListener('click', () => handleUnlockFlow(btnRevealAppId));
+    }
+
+    const modalLockedApplyBtn = document.getElementById('modalLockedApplyBtn');
+    if (modalLockedApplyBtn) {
+        modalLockedApplyBtn.addEventListener('click', () => handleUnlockFlow(modalLockedApplyBtn, 'external'));
+    }
+
+    if (isUnlocked) {
+        if (isMailto) {
+            const modalSimpleApplyBtn = document.getElementById('modalSimpleApplyBtn');
+            const modalAiApplyBtn = document.getElementById('modalAiApplyBtn');
+
+            if (modalSimpleApplyBtn) {
+                modalSimpleApplyBtn.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    const shouldProceed = await recordApplication(job, e.currentTarget);
+                    if (shouldProceed) {
+                        window.open(applyLink, '_blank');
+                    }
+                });
+            }
+            if (modalAiApplyBtn) {
+                modalAiApplyBtn.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    if (!currentSession) {
+                        window.location.href = '/login.html';
+                        return;
+                    }
+                    if (isEnrolledSync(currentTable)) {
+                        await handleAiApplyClick(job, e.currentTarget, currentTable, applyLink);
+                    } else {
+                        showEnrollmentRequiredPopup();
+                    }
+                });
+            }
+        } else {
+            const modalExternalApplyBtn = document.getElementById('modalExternalApplyBtn');
+            if (modalExternalApplyBtn) {
+                modalExternalApplyBtn.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    const shouldProceed = await recordApplication(job, e.currentTarget);
+                    if (shouldProceed) {
+                        window.open(applyLink, '_blank');
+                    }
+                });
+            }
         }
     }
 
@@ -955,12 +1237,10 @@ function showModal(job) {
                 window.location.href = '/login.html';
                 return;
             }
-            console.log('[Enrollment] cache:', enrollmentStatusCache, 'table:', currentTable);
             if (!isEnrolledSync(currentTable)) {
                 e.preventDefault();
                 showEnrollmentRequiredPopup();
             }
-            // enrolled: let natural <a href target="_blank"> open the link
         });
     }
 
@@ -972,39 +1252,13 @@ function showModal(job) {
                 window.location.href = '/login.html';
                 return;
             }
-            console.log('[Enrollment] cache:', enrollmentStatusCache, 'table:', currentTable);
             if (!isEnrolledSync(currentTable)) {
                 e.preventDefault();
                 showEnrollmentRequiredPopup();
             }
-            // enrolled: let natural <a href target="_blank"> open the link
         });
     }
 
-    // Attach copy button event listeners (multiple buttons for comma-separated links)
-    const copyBtns = document.querySelectorAll('.modal-copy-btn');
-    copyBtns.forEach((copyBtn, index) => {
-        copyBtn.addEventListener('click', () => {
-            const text = copyBtn.getAttribute('data-copy-text');
-            // Pass button element directly for visual feedback
-            const icon = copyBtn.querySelector('i');
-            const originalClass = icon.className;
-
-            navigator.clipboard.writeText(text).then(() => {
-                icon.className = 'fas fa-check';
-                copyBtn.style.background = '#22c55e';
-                setTimeout(() => {
-                    icon.className = originalClass;
-                    copyBtn.style.background = '#2563eb';
-                }, 2000);
-            }).catch(err => {
-                console.error('Copy failed:', err);
-                alert('Failed to copy. Please copy manually.');
-            });
-        });
-    });
-
-    // Attach share button event listener (inline button in actions)
     const shareBtnInline = document.getElementById('modalShareBtnInline');
     if (shareBtnInline) {
         shareBtnInline.addEventListener('click', (e) => {
@@ -1131,7 +1385,8 @@ async function fetchJobs() {
         }
 
         const buildQuery = (cols) => {
-            let q = supabaseClient.from(currentTable).select(cols);
+            const querySource = PUBLIC_VIEW_MAP[currentTable] || currentTable;
+            let q = supabaseClient.from(querySource).select(cols);
 
             // Optimize keyword query building - pre-process terms once
             if (state.keywords.length > 0) {
@@ -3990,8 +4245,9 @@ async function dv2PopulateTrending() {
     const list = document.getElementById('dv2TrendingList');
     if (!card || !list) return;
     try {
+        const querySource = PUBLIC_VIEW_MAP[currentTable] || currentTable;
         const { data, error } = await supabaseClient
-            .from(currentTable)
+            .from(querySource)
             .select('*')
             .order('Created_At', { ascending: false, nullsFirst: false })
             .limit(5);
