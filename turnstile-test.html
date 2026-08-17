@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turnstile & Worker Diagnostic Lab | My Student Club</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Cloudflare Turnstile API -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --card-border: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .header {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 1.5rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header h1 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            color: #ffffff;
+        }
+
+        .badge {
+            background: #3b82f620;
+            color: var(--primary);
+            border: 1px solid #3b82f650;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .card h2 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 0.75rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .form-group label {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .input-field, .select-field {
+            background: #0f172a;
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            padding: 0.65rem 0.9rem;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            outline: none;
+            transition: border-color 0.2s;
+            width: 100%;
+        }
+
+        .input-field:focus, .select-field:focus {
+            border-color: var(--primary);
+        }
+
+        .btn {
+            background: var(--primary);
+            color: #ffffff;
+            border: none;
+            padding: 0.75rem 1.25rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.92rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #334155;
+            color: #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        .btn-success {
+            background: #16a34a;
+        }
+        .btn-success:hover {
+            background: #15803d;
+        }
+
+        /* Widget Container */
+        .widget-box {
+            background: #0f172a;
+            border: 1.5px dashed var(--card-border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 120px;
+            text-align: center;
+        }
+
+        /* Console Output */
+        .console-card {
+            background: #090d16;
+            border: 1px solid #1e293b;
+            border-radius: 16px;
+            padding: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+        }
+
+        .console-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .console-title {
+            color: #94a3b8;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .clear-btn {
+            background: transparent;
+            border: none;
+            color: #64748b;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+
+        .clear-btn:hover {
+            color: #94a3b8;
+        }
+
+        .console-logs {
+            max-height: 320px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .log-entry {
+            display: flex;
+            gap: 0.6rem;
+            line-height: 1.5;
+            word-break: break-all;
+        }
+
+        .log-time {
+            color: #64748b;
+            flex-shrink: 0;
+        }
+
+        .log-info { color: #38bdf8; }
+        .log-success { color: #4ade80; }
+        .log-warn { color: #fbbf24; }
+        .log-error { color: #f87171; }
+        .log-json {
+            background: #1e293b;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            border-left: 3px solid var(--primary);
+            margin: 0.25rem 0;
+            color: #e2e8f0;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <h1><i class="fas fa-shield-halved" style="color: var(--primary);"></i> Turnstile & Worker Test Lab</h1>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.2rem;">Verify Turnstile token generation and Middleman Worker verification in real-time.</p>
+            </div>
+            <span class="badge" id="turnstileStatus">Script Loading...</span>
+        </div>
+
+        <div class="grid">
+            <!-- Test Parameters Card -->
+            <div class="card">
+                <h2><i class="fas fa-sliders"></i> Test Parameters</h2>
+                
+                <div class="form-group">
+                    <label>Turnstile Site Key</label>
+                    <input type="text" id="siteKeyInput" class="input-field" value="0x4AAAAAAESf1Ha-laDI3OGO">
+                </div>
+
+                <div class="form-group">
+                    <label>Worker Unlock Endpoint URL</label>
+                    <input type="text" id="workerUrlInput" class="input-field" value="https://jobs.mystudentclub.com/api/unlock-job">
+                </div>
+
+                <div class="form-group">
+                    <label>Test Table</label>
+                    <select id="tableSelect" class="select-field">
+                        <option value="Industrial Training Job Portal">Industrial Training Job Portal</option>
+                        <option value="Fresher Jobs">Fresher Jobs</option>
+                        <option value="Semi Qualified Jobs">Semi Qualified Jobs</option>
+                        <option value="Articleship Jobs">Articleship Jobs</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Test Job ID</label>
+                    <input type="number" id="jobIdInput" class="input-field" value="1">
+                </div>
+            </div>
+
+            <!-- Execution & Widget Card -->
+            <div class="card">
+                <h2><i class="fas fa-play"></i> Interactive Challenge Box</h2>
+                
+                <p style="font-size: 0.85rem; color: var(--text-muted);">
+                    Click the button below to render the Turnstile challenge, generate a token, and verify it against your Cloudflare Worker.
+                </p>
+
+                <div class="widget-box" id="widgetMountArea">
+                    <p style="color: #64748b; font-size: 0.85rem;" id="widgetPlaceholder">
+                        Widget will mount here on test click
+                    </p>
+                </div>
+
+                <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                    <button class="btn" id="btnRunFullTest" style="flex: 1;">
+                        <i class="fas fa-bolt"></i> Run Full Unlock Test
+                    </button>
+                    <button class="btn btn-secondary" id="btnOnlyGetToken" title="Only test Turnstile widget without calling Worker">
+                        <i class="fas fa-key"></i> Token Only
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Console Log Card -->
+        <div class="console-card">
+            <div class="console-header">
+                <span class="console-title"><i class="fas fa-terminal"></i> Diagnostic Logs</span>
+                <button class="clear-btn" id="btnClearLogs">Clear Log</button>
+            </div>
+            <div class="console-logs" id="consoleLogs">
+                <div class="log-entry">
+                    <span class="log-time">[Init]</span>
+                    <span class="log-info">Diagnostic Lab initialized. Waiting for action...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Log Helper
+        function log(message, type = 'info', rawJson = null) {
+            const logsContainer = document.getElementById('consoleLogs');
+            const now = new Date();
+            const timeStr = now.toTimeString().split(' ')[0] + '.' + String(now.getMilliseconds()).padStart(3, '0');
+
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+
+            const timeSpan = document.createElement('span');
+            timeSpan.className = 'log-time';
+            timeSpan.textContent = `[${timeStr}]`;
+
+            const msgSpan = document.createElement('span');
+            msgSpan.className = `log-${type}`;
+            msgSpan.textContent = message;
+
+            entry.appendChild(timeSpan);
+            entry.appendChild(msgSpan);
+            logsContainer.appendChild(entry);
+
+            if (rawJson) {
+                const jsonDiv = document.createElement('div');
+                jsonDiv.className = 'log-json';
+                jsonDiv.textContent = typeof rawJson === 'string' ? rawJson : JSON.stringify(rawJson, null, 2);
+                logsContainer.appendChild(jsonDiv);
+            }
+
+            logsContainer.scrollTop = logsContainer.scrollHeight;
+        }
+
+        // Clear Logs
+        document.getElementById('btnClearLogs').addEventListener('click', () => {
+            document.getElementById('consoleLogs').innerHTML = '';
+            log('Logs cleared.', 'info');
+        });
+
+        // Check Turnstile Script Availability
+        let checkScriptInterval = setInterval(() => {
+            if (window.turnstile) {
+                clearInterval(checkScriptInterval);
+                const badge = document.getElementById('turnstileStatus');
+                badge.textContent = 'Turnstile Ready';
+                badge.style.background = '#22c55e20';
+                badge.style.color = '#22c55e';
+                badge.style.borderColor = '#22c55e50';
+                log('Cloudflare Turnstile API script successfully loaded.', 'success');
+            }
+        }, 100);
+
+        setTimeout(() => {
+            if (!window.turnstile) {
+                const badge = document.getElementById('turnstileStatus');
+                badge.textContent = 'Script Error';
+                badge.style.background = '#ef444420';
+                badge.style.color = '#ef4444';
+                badge.style.borderColor = '#ef444450';
+                log('Turnstile script failed to load after 5 seconds.', 'error');
+            }
+        }, 5000);
+
+        // Turnstile Token Generator Promise
+        function requestTurnstileToken(siteKey) {
+            return new Promise((resolve, reject) => {
+                if (!window.turnstile) {
+                    return reject(new Error('window.turnstile is not available. Check network.'));
+                }
+
+                const mountArea = document.getElementById('widgetMountArea');
+                mountArea.innerHTML = ''; // Clear placeholder
+
+                const wrapper = document.createElement('div');
+                mountArea.appendChild(wrapper);
+
+                log(`Rendering Turnstile widget with Site Key: ${siteKey.slice(0, 10)}...`, 'info');
+
+                try {
+                    const widgetId = window.turnstile.render(wrapper, {
+                        sitekey: siteKey,
+                        theme: 'dark',
+                        callback: (token) => {
+                            log(`Turnstile token received! Length: ${token.length} chars (Prefix: ${token.slice(0, 16)}...)`, 'success');
+                            resolve({ token, widgetId });
+                        },
+                        'error-callback': (code) => {
+                            log(`Turnstile error-callback fired! Code: ${code || 'Unknown'}`, 'error');
+                            reject(new Error(`Turnstile Widget error: ${code || 'Unknown'}`));
+                        },
+                        'expired-callback': () => {
+                            log('Turnstile token expired.', 'warn');
+                            reject(new Error('Turnstile token expired.'));
+                        }
+                    });
+                } catch (e) {
+                    reject(e);
+                }
+            });
+        }
+
+        // Test 1: Only Get Token
+        document.getElementById('btnOnlyGetToken').addEventListener('click', async () => {
+            const siteKey = document.getElementById('siteKeyInput').value.trim();
+            const btn = document.getElementById('btnOnlyGetToken');
+            btn.disabled = true;
+
+            try {
+                log('--- Starting Token-Only Test ---', 'info');
+                const { token } = await requestTurnstileToken(siteKey);
+                log('Token successfully generated. Client-side Turnstile is 100% HEALTHY.', 'success');
+            } catch (err) {
+                log(`Token Generation Failed: ${err.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+            }
+        });
+
+        // Test 2: Full End-to-End Unlock Test
+        document.getElementById('btnRunFullTest').addEventListener('click', async () => {
+            const siteKey = document.getElementById('siteKeyInput').value.trim();
+            const workerUrl = document.getElementById('workerUrlInput').value.trim();
+            const table = document.getElementById('tableSelect').value;
+            const jobId = Number(document.getElementById('jobIdInput').value);
+
+            const btn = document.getElementById('btnRunFullTest');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Testing...';
+
+            try {
+                log('=== Starting Full End-to-End Verification Test ===', 'info');
+                
+                // Step 1: Get Token
+                const { token } = await requestTurnstileToken(siteKey);
+
+                // Step 2: Post to Middleman Worker
+                const payload = {
+                    jobId: jobId,
+                    table: table,
+                    turnstileToken: token
+                };
+
+                log(`Sending POST request to Middleman Worker: ${workerUrl}`, 'info');
+                log('Outgoing Request Payload:', 'info', payload);
+
+                const startTime = performance.now();
+                const response = await fetch(workerUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const elapsed = Math.round(performance.now() - startTime);
+
+                log(`Worker response received in ${elapsed}ms. HTTP Status: ${response.status} ${response.statusText}`, response.ok ? 'success' : 'error');
+
+                const responseData = await response.json().catch(() => ({ raw: 'Failed to parse JSON' }));
+                log('Worker Response Body:', response.ok ? 'success' : 'error', responseData);
+
+                if (response.ok && responseData.success) {
+                    log('🎉 FULL TEST PASSED! The Middleman Worker verified the token and returned the unlocked fields.', 'success');
+                } else {
+                    log(`❌ Verification Failed with status ${response.status}. Check the response payload above for error codes.`, 'error');
+                }
+
+            } catch (err) {
+                log(`Test Execution Error: ${err.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-bolt"></i> Run Full Unlock Test';
+            }
+        });
+    </script>
+</body>
+</html>
