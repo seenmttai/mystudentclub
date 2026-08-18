@@ -1,4 +1,4 @@
-﻿const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
@@ -458,17 +458,31 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (dataToSave.Salary === '') dataToSave.Salary = null;
             if (dataToSave.connect_link === '') dataToSave.connect_link = null;
 
+            if (table === "Industrial Training Job Portal") {
+                dataToSave.is_exclusive = dataToSave.is_exclusive === 'true' || dataToSave.is_exclusive === true;
+            } else {
+                delete dataToSave.is_exclusive;
+            }
+
             const isEdit = id && id.trim() !== '';
             let savedJob;
 
             if (isEdit) {
-                const { data, error } = await supabaseClient.from(table).update(dataToSave).eq('id', id).select().single();
-                if (error) throw error;
-                savedJob = data;
+                let updateRes = await supabaseClient.from(table).update(dataToSave).eq('id', id).select().single();
+                if (updateRes.error && updateRes.error.message && updateRes.error.message.includes('is_exclusive')) {
+                    delete dataToSave.is_exclusive;
+                    updateRes = await supabaseClient.from(table).update(dataToSave).eq('id', id).select().single();
+                }
+                if (updateRes.error) throw updateRes.error;
+                savedJob = updateRes.data;
             } else {
-                const { data, error } = await supabaseClient.from(table).insert([dataToSave]).select().single();
-                if (error) throw error;
-                savedJob = data;
+                let insertRes = await supabaseClient.from(table).insert([dataToSave]).select().single();
+                if (insertRes.error && insertRes.error.message && insertRes.error.message.includes('is_exclusive')) {
+                    delete dataToSave.is_exclusive;
+                    insertRes = await supabaseClient.from(table).insert([dataToSave]).select().single();
+                }
+                if (insertRes.error) throw insertRes.error;
+                savedJob = insertRes.data;
             }
 
             closeJobEditModal();
