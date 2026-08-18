@@ -3406,8 +3406,8 @@ async function handleSave(e) {
         lastUpdatedISO = new Date().toISOString();
         refreshHeader();
 
-        // Save consent record (Only if the Storer API has successfully completed the resume storage process)
-        if (consentCheckbox && consentCheckbox.checked && syncSuccess) {
+        // Save consent record whenever consent checkbox is checked
+        if (consentCheckbox && consentCheckbox.checked) {
             await saveConsentRecord(true);
             updatePrivacyCard(true);
             const statusText = document.getElementById('consentStatusText');
@@ -5028,7 +5028,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Live update privacy card when consent checkbox changes
+    // Live update privacy card & save consent record when consent checkbox changes
     const cvConsentCheckbox = document.getElementById('cvSharingConsent');
     if (cvConsentCheckbox) {
         cvConsentCheckbox.addEventListener('change', () => {
@@ -5039,6 +5039,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const statusText = document.getElementById('consentStatusText');
                 if (statusText) statusText.textContent = 'Consent withdrawn';
                 showToast('CV sharing consent withdrawn. Your CV will no longer be shared with employers.', 'warning', 8000);
+            } else {
+                // Consent granted — save immediately
+                saveConsentRecord(true);
+                updatePrivacyCard(true);
+                const statusText = document.getElementById('consentStatusText');
+                if (statusText) statusText.textContent = 'Consent given on ' + new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+                showToast('CV sharing consent granted.', 'success', 5000);
             }
         });
     }

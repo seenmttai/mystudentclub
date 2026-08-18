@@ -3368,25 +3368,26 @@ function bindConsentModalButtons() {
             localStorage.setItem('cvConsentDismissed', 'true');
             showToast('Syncing your CV to cloud...', 'info');
             try {
+                const now = new Date().toISOString();
+                // Save consent record immediately
+                await supabaseClient.from('consentform').upsert({
+                    user_id: currentSession.user.id,
+                    cv_sharing_consent: true,
+                    consent_text: DPDP_CONSENT_TEXT,
+                    consented_at: now,
+                    withdrawn_at: null,
+                    user_agent: navigator.userAgent,
+                    updated_at: now
+                }, { onConflict: 'user_id' });
+
                 const syncSuccess = await checkAndSyncCVBackground();
                 if (syncSuccess) {
-                    const now = new Date().toISOString();
-                    await supabaseClient.from('consentform').upsert({
-                        user_id: currentSession.user.id,
-                        cv_sharing_consent: true,
-                        consent_text: DPDP_CONSENT_TEXT,
-                        consented_at: now,
-                        withdrawn_at: null,
-                        user_agent: navigator.userAgent,
-                        updated_at: now
-                    }, { onConflict: 'user_id' });
-
                     showToast('Thank you! Your CV has been backed up and your consent has been recorded.', 'success');
                 } else {
-                    showToast('CV backup sync failed. Please complete/update your profile to consent.', 'error', 8000);
+                    showToast('Consent recorded successfully! Note: CV background sync will complete on your next profile save.', 'info', 6000);
                 }
             } catch (e) {
-                console.error('Failed to sync CV and save consent:', e);
+                console.error('Failed to save consent:', e);
                 showToast('Could not save consent. Please try again from your profile.', 'error');
             }
         });
