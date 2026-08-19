@@ -293,14 +293,16 @@
       position: relative;
       display: flex;
       align-items: center;
+      width: 100%;
     }
 
-    .input-wrapper i {
+    .input-wrapper > i {
       position: absolute;
       left: 1rem;
       color: #94a3b8;
       font-size: 0.95rem;
       pointer-events: none;
+      z-index: 1;
     }
 
     .form-input, .form-select {
@@ -312,6 +314,16 @@
       color: var(--dark);
       background: white;
       transition: all 0.2s;
+    }
+
+    .form-input.has-toggle {
+      padding-right: 2.75rem;
+    }
+
+    /* Hide browser default password reveal icons (Edge, Chrome, Safari) */
+    input[type="password"]::-ms-reveal,
+    input[type="password"]::-ms-clear {
+      display: none !important;
     }
 
     .form-select {
@@ -333,11 +345,28 @@
     .password-toggle-btn {
       position: absolute;
       right: 0.75rem;
-      background: none;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
       border: none;
       color: #94a3b8;
       cursor: pointer;
-      padding: 0.25rem;
+      padding: 0.35rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      z-index: 2;
+      line-height: 1;
+      border-radius: 6px;
+      transition: color 0.2s;
+    }
+
+    .password-toggle-btn i {
+      position: static !important;
+      left: auto !important;
+      color: inherit;
+      pointer-events: auto !important;
       font-size: 0.95rem;
     }
 
@@ -623,7 +652,7 @@
 
       <div id="successAlert" class="alert-box alert-success">
         <i class="fas fa-check-circle"></i>
-        <span id="successMessage">Account created successfully!</span>
+        <span id="successMessage">Verification email sent! Please check your email (and spam folder) to verify.</span>
       </div>
 
       <form id="hirerForm">
@@ -732,8 +761,8 @@
             <label class="form-label" for="password">Password <span class="req">*</span></label>
             <div class="input-wrapper">
               <i class="fas fa-lock"></i>
-              <input type="password" id="password" class="form-input" placeholder="Min. 6 characters" required minlength="6">
-              <button type="button" class="password-toggle-btn" onclick="togglePass('password', this)">
+              <input type="password" id="password" class="form-input has-toggle" placeholder="Min. 6 characters" required minlength="6">
+              <button type="button" class="password-toggle-btn" onclick="togglePass('password', this)" aria-label="Toggle password visibility">
                 <i class="far fa-eye"></i>
               </button>
             </div>
@@ -744,8 +773,8 @@
             <label class="form-label" for="confirmPassword">Confirm Password <span class="req">*</span></label>
             <div class="input-wrapper">
               <i class="fas fa-lock"></i>
-              <input type="password" id="confirmPassword" class="form-input" placeholder="Repeat password" required minlength="6">
-              <button type="button" class="password-toggle-btn" onclick="togglePass('confirmPassword', this)">
+              <input type="password" id="confirmPassword" class="form-input has-toggle" placeholder="Repeat password" required minlength="6">
+              <button type="button" class="password-toggle-btn" onclick="togglePass('confirmPassword', this)" aria-label="Toggle confirm password visibility">
                 <i class="far fa-eye"></i>
               </button>
             </div>
@@ -806,7 +835,7 @@
     }
 
     function showSuccess(msg) {
-      successMessage.textContent = msg;
+      successMessage.innerHTML = msg;
       successAlert.classList.add('show');
       errorAlert.classList.remove('show');
       window.scrollTo({ top: successAlert.offsetTop - 100, behavior: 'smooth' });
@@ -890,7 +919,7 @@
         localStorage.setItem('msc_company_name', companyName);
 
         if (data.user && !data.session) {
-          showSuccess("Registration successful! Please check your work email to confirm your account, then log in to post jobs.");
+          showSuccess("<strong>Verification email sent!</strong> Please check your email to verify your account. <span style='display:block; margin-top:0.35rem; font-size:0.85rem; opacity:0.95;'>⚠️ If not found in your Primary inbox, please check your <strong>Spam / Junk</strong> folder too.</span>");
           form.reset();
         } else if (data.session) {
           showSuccess("Account created! Redirecting to Post a Job portal...");
@@ -898,10 +927,10 @@
             window.location.href = '/post-a-job.html';
           }, 1200);
         } else {
-          showSuccess("Registration submitted! You can now log in.");
+          showSuccess("<strong>Verification email sent!</strong> Please check your email (and Spam folder) to verify your account before logging in.");
           setTimeout(() => {
             window.location.href = '/login.html?redirect=/post-a-job.html';
-          }, 1500);
+          }, 3500);
         }
 
       } catch (err) {
