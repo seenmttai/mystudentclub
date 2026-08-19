@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hirer & Recruiter Sign Up - My Student Club</title>
+  <meta name="description"
+    content="Register as a hirer or recruiter on My Student Club to post CA Industrial Training, CA Fresher, Semi-Qualified CA, and Articleship vacancies to 50,000+ candidates.">
+  
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Supabase -->
+  <script src="/scripts/supabase.js"></script>
+
+  <!-- Favicons -->
+  <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
+  <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
+  <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
+
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --primary-light: #eef2ff;
+      --accent: #06b6d4;
+      --success: #10b981;
+      --dark: #0f172a;
+      --gray-50: #f8fafc;
+      --gray-100: #f1f5f9;
+      --gray-200: #e2e8f0;
+      --gray-300: #cbd5e1;
+      --gray-600: #475569;
+      --gray-700: #334155;
+      --gray-800: #1e293b;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background-color: var(--gray-50);
+      color: var(--gray-800);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Header */
+    .top-header {
+      background: white;
+      border-bottom: 1px solid var(--gray-200);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand-logo {
+      height: 38px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .header-links {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .header-link {
+      color: var(--gray-600);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .header-link:hover {
+      color: var(--primary);
+    }
+
+    .candidate-link-btn {
+      padding: 0.5rem 1rem;
+      background: var(--gray-100);
+      color: var(--gray-700);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .candidate-link-btn:hover {
+      background: var(--gray-200);
+      color: var(--dark);
+    }
+
+    /* Main Container */
+    .signup-page-wrapper {
+      flex: 1;
+      display: flex;
+      max-width: 1280px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 2.5rem 1.5rem;
+      gap: 3rem;
+      align-items: flex-start;
+    }
+
+    /* Left Value Proposition Section */
+    .hero-info-column {
+      flex: 1;
+      position: sticky;
+      top: 6rem;
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #e0e7ff;
+      color: #4338ca;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      margin-bottom: 1.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .hero-title {
+      font-size: 2.25rem;
+      font-weight: 800;
+      line-height: 1.25;
+      color: var(--dark);
+      margin-bottom: 1rem;
+    }
+
+    .hero-title span {
+      background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: 1.05rem;
+      color: var(--gray-600);
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+
+    .value-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .value-card {
+      display: flex;
+      gap: 1rem;
+      background: white;
+      padding: 1.25rem;
+      border-radius: 14px;
+      border: 1px solid var(--gray-200);
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s;
+    }
+
+    .value-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: #cbd5e1;
+    }
+
+    .value-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: var(--primary-light);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .value-text h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 0.25rem;
+    }
+
+    .value-text p {
+      font-size: 0.85rem;
+      color: var(--gray-600);
+      line-height: 1.4;
+    }
+
+    .stat-bar {
+      margin-top: 2rem;
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+      color: white;
+      border-radius: 16px;
+      padding: 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      text-align: center;
+    }
+
+    .stat-item h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #38bdf8;
+    }
+
+    .stat-item p {
+      font-size: 0.75rem;
+      color: #c7d2fe;
+      margin-top: 0.2rem;
+    }
+
+    /* Right Form Card */
+    .form-column {
+      flex: 1.2;
+      background: white;
+      border-radius: 20px;
+      padding: 2.5rem;
+      box-shadow: var(--shadow-xl);
+      border: 1px solid var(--gray-200);
+    }
+
+    .form-header {
+      margin-bottom: 1.75rem;
+    }
+
+    .form-header h2 {
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: var(--dark);
+    }
+
+    .form-header p {
+      font-size: 0.9rem;
+      color: var(--gray-600);
+      margin-top: 0.35rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .form-group.full-width {
+      grid-column: span 2;
+    }
+
+    .form-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--gray-700);
+    }
+
+    .form-label .req {
+      color: #ef4444;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-wrapper i {
+      position: absolute;
+      left: 1rem;
+      color: #94a3b8;
+      font-size: 0.95rem;
+      pointer-events: none;
+    }
+
+    .form-input, .form-select {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 2.6rem;
+      border: 1.5px solid var(--gray-300);
+      border-radius: 10px;
+      font-size: 0.9rem;
+      color: var(--dark);
+      background: white;
+      transition: all 0.2s;
+    }
+
+    .form-select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      background-size: 1rem;
+      padding-right: 2.5rem;
+    }
+
+    .form-input:focus, .form-select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+    }
+
+    .password-toggle-btn {
+      position: absolute;
+      right: 0.75rem;
+      background: none;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      padding: 0.25rem;
+      font-size: 0.95rem;
+    }
+
+    .password-toggle-btn:hover {
+      color: var(--gray-700);
+    }
+
+    /* Checkbox Group */
+    .hiring-pills-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-top: 0.25rem;
+    }
+
+    .pill-checkbox-label {
+      cursor: pointer;
+    }
+
+    .pill-checkbox-label input {
+      display: none;
+    }
+
+    .pill-content {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.45rem 0.85rem;
+      border-radius: 8px;
+      border: 1.5px solid var(--gray-200);
+      background: var(--gray-50);
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--gray-700);
+      transition: all 0.2s;
+      user-select: none;
+    }
+
+    .pill-checkbox-label input:checked + .pill-content {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    /* Submit Button */
+    .submit-btn {
+      width: 100%;
+      padding: 0.875rem;
+      background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+      transition: all 0.2s;
+      margin-top: 1rem;
+    }
+
+    .submit-btn:hover {
+      background: linear-gradient(135deg, #4338ca 0%, #3730a3 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(79, 70, 229, 0.35);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .divider-row {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: 1.25rem 0;
+      color: #94a3b8;
+      font-size: 0.8rem;
+    }
+
+    .divider-row::before, .divider-row::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .divider-row span {
+      padding: 0 0.75rem;
+    }
+
+    /* Google Button */
+    .google-btn {
+      width: 100%;
+      padding: 0.75rem;
+      background: white;
+      color: var(--gray-700);
+      border: 1.5px solid var(--gray-300);
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      transition: all 0.2s;
+    }
+
+    .google-btn:hover {
+      background: var(--gray-50);
+      border-color: #94a3b8;
+    }
+
+    .google-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .login-redirect-text {
+      text-align: center;
+      font-size: 0.875rem;
+      color: var(--gray-600);
+      margin-top: 1.5rem;
+    }
+
+    .login-redirect-text a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .login-redirect-text a:hover {
+      text-decoration: underline;
+    }
+
+    /* Alert Boxes */
+    .alert-box {
+      display: none;
+      padding: 0.85rem 1rem;
+      border-radius: 10px;
+      font-size: 0.875rem;
+      margin-bottom: 1.25rem;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .alert-box.show {
+      display: flex;
+    }
+
+    .alert-error {
+      background: #fef2f2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    .alert-success {
+      background: #f0fdf4;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+
+    /* Responsive */
+    @media (max-width: 960px) {
+      .signup-page-wrapper {
+        flex-direction: column;
+        padding: 1.5rem 1rem;
+        gap: 2rem;
+      }
+
+      .hero-info-column {
+        position: static;
+      }
+
+      .form-column {
+        padding: 1.5rem;
+        width: 100%;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-group.full-width {
+        grid-column: span 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Header -->
+  <header class="top-header">
+    <a href="/">
+      <img src="/assets/logo.png" alt="My Student Club" class="brand-logo">
+    </a>
+    <div class="header-links">
+      <a href="/login.html" class="header-link">Sign In</a>
+      <a href="/" class="candidate-link-btn"><i class="fas fa-user-graduate"></i> I am a Student / Jobseeker</a>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="signup-page-wrapper">
+
+    <!-- Left Column: Value Prop -->
+    <div class="hero-info-column">
+      <div class="badge-pill">
+        <i class="fas fa-building"></i> Hirer & Employer Portal
+      </div>
+      <h1 class="hero-title">Hire India's Finest <span>CA & Finance Talent</span></h1>
+      <p class="hero-subtitle">
+        Join 500+ top CA firms, MNCs, and corporate leaders hiring Industrial Trainees, CA Freshers, Semi-Qualified CAs, and Articleship candidates directly.
+      </p>
+
+      <div class="value-cards">
+        <div class="value-card">
+          <div class="value-icon">
+            <i class="fas fa-bullhorn"></i>
+          </div>
+          <div class="value-text">
+            <h4>Reach 50,000+ Targeted Candidates</h4>
+            <p>Direct exposure on India's #1 dedicated CA community portal and mobile network.</p>
+          </div>
+        </div>
+
+        <div class="value-card">
+          <div class="value-icon">
+            <i class="fas fa-bolt"></i>
+          </div>
+          <div class="value-text">
+            <h4>Instant Job Publishing</h4>
+            <p>Publish openings with instant candidate discovery and zero hidden listing fees.</p>
+          </div>
+        </div>
+
+        <div class="value-card">
+          <div class="value-icon">
+            <i class="fas fa-filter"></i>
+          </div>
+          <div class="value-text">
+            <h4>Direct Candidate Applications</h4>
+            <p>Receive CVs straight into your HR inbox or ATS application link without middleman delays.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-bar">
+        <div class="stat-item">
+          <h3>50K+</h3>
+          <p>Active CA Seekers</p>
+        </div>
+        <div class="stat-item">
+          <h3>4 Portals</h3>
+          <p>Specialized Feeds</p>
+        </div>
+        <div class="stat-item">
+          <h3>100% Free</h3>
+          <p>For Hirers</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Registration Form -->
+    <div class="form-column">
+      <div class="form-header">
+        <h2>Register Hirer Account</h2>
+        <p>Create your recruiter profile to start publishing job openings immediately.</p>
+      </div>
+
+      <!-- Alerts -->
+      <div id="errorAlert" class="alert-box alert-error">
+        <i class="fas fa-exclamation-circle"></i>
+        <span id="errorMessage">An error occurred.</span>
+      </div>
+
+      <div id="successAlert" class="alert-box alert-success">
+        <i class="fas fa-check-circle"></i>
+        <span id="successMessage">Account created successfully!</span>
+      </div>
+
+      <!-- Google Sign In -->
+      <button type="button" id="googleHirerBtn" class="google-btn">
+        <svg viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+        </svg>
+        Continue with Google
+      </button>
+
+      <div class="divider-row">
+        <span>or sign up with work email</span>
+      </div>
+
+      <form id="hirerForm">
+        <div class="form-grid">
+
+          <!-- Contact Person Name -->
+          <div class="form-group">
+            <label class="form-label" for="fullName">Your Full Name <span class="req">*</span></label>
+            <div class="input-wrapper">
+              <i class="fas fa-user"></i>
+              <input type="text" id="fullName" class="form-input" placeholder="e.g. Rahul Sharma" required>
+            </div>
+          </div>
+
+          <!-- Designation / Role -->
+          <div class="form-group">
+            <label class="form-label" for="designation">Designation / Role <span class="req">*</span></label>
+            <div class="input-wrapper">
+              <i class="fas fa-id-badge"></i>
+              <input type="text" id="designation" class="form-input" placeholder="e.g. HR Manager / Partner" required>
+            </div>
+          </div>
+
+          <!-- Company / Firm Name -->
+          <div class="form-group full-width">
+            <label class="form-label" for="companyName">Company / CA Firm Name <span class="req">*</span></label>
+            <div class="input-wrapper">
+              <i class="fas fa-building"></i>
+              <input type="text" id="companyName" class="form-input" placeholder="e.g. ABC & Associates / Deloitte / Tata Group" required>
+            </div>
+          </div>
+
+          <!-- Work Email -->
+          <div class="form-group">
+            <label class="form-label" for="email">Work Email <span class="req">*</span></label>
+            <div class="input-wrapper">
+              <i class="fas fa-envelope"></i>
+              <input type="email" id="email" class="form-input" placeholder="name@company.com" required>
+            </div>
+          </div>
+
+          <!-- Mobile Number -->
+          <div class="form-group">
+            <label class="form-label" for="phone">Phone / WhatsApp <span class="req">*</span></label>
+            <div class="input-wrapper">
+              <i class="fas fa-phone"></i>
+              <input type="tel" id="phone" class="form-input" placeholder="+91 98765 43210" required>
+            </div>
+          </div>
+
+          <!-- Organization Type -->
+          <div class="form-group">
+            <label class="form-label" for="companyType">Organization Type <span class="req">*</span></label>
+            <div class="input-wrapper">
+              <i class="fas fa-briefcase"></i>
+              <select id="companyType" class="form-select" required>
+                <option value="" disabled selected>Select Organization Type</option>
+                <option value="CA Firm / Audit Firm">CA Firm / Audit Firm</option>
+                <option value="Corporate / MNC">Corporate / MNC</option>
+                <option value="Investment Banking / Financial Services">Investment Banking / Financial Services</option>
+                <option value="Consulting & Advisory">Consulting & Advisory</option>
+                <option value="Startup / Tech">Startup / Tech</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Website / LinkedIn -->
+          <div class="form-group">
+            <label class="form-label" for="website">Company Website or LinkedIn</label>
+            <div class="input-wrapper">
+              <i class="fas fa-globe"></i>
+              <input type="text" id="website" class="form-input" placeholder="https://company.com">
+            </div>
+          </div>
+
+          <!-- Hiring Focus Pills -->
+          <div class="form-group full-width">
+            <label class="form-label">What are you hiring for? (Select all that apply)</label>
+            <div class="hiring-pills-container">
+              <label class="pill-checkbox-label">
+                <input type="checkbox" name="hiringFocus" value="CA Industrial Training" checked>
+                <span class="pill-content"><i class="fas fa-industry"></i> CA Industrial Training</span>
+              </label>
+              <label class="pill-checkbox-label">
+                <input type="checkbox" name="hiringFocus" value="CA Fresher" checked>
+                <span class="pill-content"><i class="fas fa-graduation-cap"></i> CA Fresher</span>
+              </label>
+              <label class="pill-checkbox-label">
+                <input type="checkbox" name="hiringFocus" value="Semi-Qualified CA">
+                <span class="pill-content"><i class="fas fa-user-check"></i> Semi-Qualified CA</span>
+              </label>
+              <label class="pill-checkbox-label">
+                <input type="checkbox" name="hiringFocus" value="CA Articleship">
+                <span class="pill-content"><i class="fas fa-book-reader"></i> CA Articleship</span>
+              </label>
+              <label class="pill-checkbox-label">
+                <input type="checkbox" name="hiringFocus" value="Experienced CA">
+                <span class="pill-content"><i class="fas fa-user-tie"></i> Experienced CA</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Password -->
+          <div class="form-group">
+            <label class="form-label" for="password">Password <span class="req">*</span></label>
+            <div class="input-wrapper">
+              <i class="fas fa-lock"></i>
+              <input type="password" id="password" class="form-input" placeholder="Min. 6 characters" required minlength="6">
+              <button type="button" class="password-toggle-btn" onclick="togglePass('password', this)">
+                <i class="far fa-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Confirm Password -->
+          <div class="form-group">
+            <label class="form-label" for="confirmPassword">Confirm Password <span class="req">*</span></label>
+            <div class="input-wrapper">
+              <i class="fas fa-lock"></i>
+              <input type="password" id="confirmPassword" class="form-input" placeholder="Repeat password" required minlength="6">
+              <button type="button" class="password-toggle-btn" onclick="togglePass('confirmPassword', this)">
+                <i class="far fa-eye"></i>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <button type="submit" id="submitBtn" class="submit-btn">
+          <span>Create Hirer Account</span>
+          <i class="fas fa-arrow-right"></i>
+        </button>
+
+        <div class="login-redirect-text">
+          Already have a hirer account? <a href="/login.html?redirect=/post-a-job.html">Sign In here</a>
+        </div>
+      </form>
+    </div>
+
+  </div>
+
+  <script>
+    // Supabase client initialization
+    const supabaseUrl = 'https://auth.mystudentclub.com';
+    const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+    
+    let supabaseClient = null;
+    if (window.supabase) {
+      supabaseClient = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+    }
+
+    const form = document.getElementById('hirerForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const errorAlert = document.getElementById('errorAlert');
+    const errorMessage = document.getElementById('errorMessage');
+    const successAlert = document.getElementById('successAlert');
+    const successMessage = document.getElementById('successMessage');
+    const googleBtn = document.getElementById('googleHirerBtn');
+
+    // Toggle password visibility
+    window.togglePass = function (inputId, btn) {
+      const input = document.getElementById(inputId);
+      const icon = btn.querySelector('i');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    };
+
+    function showError(msg) {
+      errorMessage.textContent = msg;
+      errorAlert.classList.add('show');
+      successAlert.classList.remove('show');
+      window.scrollTo({ top: errorAlert.offsetTop - 100, behavior: 'smooth' });
+    }
+
+    function showSuccess(msg) {
+      successMessage.textContent = msg;
+      successAlert.classList.add('show');
+      errorAlert.classList.remove('show');
+      window.scrollTo({ top: successAlert.offsetTop - 100, behavior: 'smooth' });
+    }
+
+    // Check if user is already logged in
+    window.addEventListener('DOMContentLoaded', async () => {
+      if (!supabaseClient) return;
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session && session.user) {
+          // If already logged in, check role or send to post-a-job
+          window.location.href = '/post-a-job.html';
+        }
+      } catch (_) {}
+    });
+
+    // Form Submission
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorAlert.classList.remove('show');
+      successAlert.classList.remove('show');
+
+      const fullName = document.getElementById('fullName').value.trim();
+      const designation = document.getElementById('designation').value.trim();
+      const companyName = document.getElementById('companyName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const companyType = document.getElementById('companyType').value;
+      const website = document.getElementById('website').value.trim();
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+
+      // Collect selected hiring interests
+      const hiringFocusNodes = document.querySelectorAll('input[name="hiringFocus"]:checked');
+      const hiringInterests = Array.from(hiringFocusNodes).map(n => n.value);
+
+      if (password !== confirmPassword) {
+        showError("Passwords do not match. Please verify.");
+        return;
+      }
+
+      if (password.length < 6) {
+        showError("Password must be at least 6 characters long.");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Hirer Account...';
+
+      try {
+        if (!supabaseClient) {
+          throw new Error("Supabase client is not loaded.");
+        }
+
+        const { data, error } = await supabaseClient.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/post-a-job.html`,
+            data: {
+              role: 'hirer',
+              user_type: 'hirer',
+              full_name: fullName,
+              company_name: companyName,
+              designation: designation,
+              phone: phone,
+              company_type: companyType,
+              website: website,
+              hiring_interests: hiringInterests,
+              is_hirer: true
+            }
+          }
+        });
+
+        if (error) throw error;
+
+        // Store local session info for immediate access
+        localStorage.setItem('msc_user_role', 'hirer');
+        localStorage.setItem('msc_company_name', companyName);
+
+        if (data.user && !data.session) {
+          showSuccess("Registration successful! Please check your work email to confirm your account, then log in to post jobs.");
+          form.reset();
+        } else if (data.session) {
+          showSuccess("Account created! Redirecting to Post a Job portal...");
+          setTimeout(() => {
+            window.location.href = '/post-a-job.html';
+          }, 1200);
+        } else {
+          showSuccess("Registration submitted! You can now log in.");
+          setTimeout(() => {
+            window.location.href = '/login.html?redirect=/post-a-job.html';
+          }, 1500);
+        }
+
+      } catch (err) {
+        console.error("Hirer signup error:", err);
+        if (err.message && err.message.includes("User already registered")) {
+          showError("This email is already registered. Please sign in to your existing account.");
+        } else {
+          showError(err.message || "Failed to create hirer account. Please try again.");
+        }
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>Create Hirer Account</span> <i class="fas fa-arrow-right"></i>';
+      }
+    });
+
+    // Google Sign In for Hirers
+    googleBtn.addEventListener('click', async () => {
+      errorAlert.classList.remove('show');
+      try {
+        if (!supabaseClient) throw new Error("Supabase client not loaded.");
+        
+        // Save role intent before Google OAuth redirect
+        localStorage.setItem('msc_user_role', 'hirer');
+
+        const { error } = await supabaseClient.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: `${window.location.origin}/post-a-job.html`,
+            queryParams: {
+              access_type: 'offline',
+              prompt: 'consent',
+            }
+          }
+        });
+
+        if (error) throw error;
+      } catch (err) {
+        console.error("Google sign-in error:", err);
+        showError(err.message || "Failed to initiate Google Sign-In.");
+      }
+    });
+  </script>
+</body>
+
+</html>
