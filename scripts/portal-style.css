@@ -2176,12 +2176,15 @@ body {
   bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 9999;
+  z-index: 99999;
   display: flex;
   flex-direction: column;
   gap: 8px;
   align-items: center;
   pointer-events: none;
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  box-sizing: border-box;
 }
 .toast {
   padding: 12px 20px;
@@ -2190,8 +2193,11 @@ body {
   font-weight: 600;
   color: #fff;
   box-shadow: 0 6px 20px rgba(15, 27, 45, 0.18);
-  white-space: nowrap;
-  max-width: 90vw;
+  white-space: normal;
+  text-align: center;
+  word-break: break-word;
+  max-width: calc(100vw - 32px);
+  box-sizing: border-box;
   animation: toast-in 0.28s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .toast-success {
@@ -2788,3 +2794,103 @@ body {
     --app-w: 1280px;
   }
 }
+
+/* ============================================================
+   MOBILE NATIVE TURNSTILE UNLOCK STYLES
+   ============================================================ */
+.jd-description-wrapper {
+  position: relative;
+}
+.jd-description-wrapper.is-collapsed {
+  max-height: 140px;
+  overflow: hidden;
+}
+.jd-read-more-gradient {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 70px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0), var(--card, #ffffff));
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 4px;
+}
+[data-theme="dark"] .jd-read-more-gradient {
+  background: linear-gradient(to bottom, rgba(15, 23, 42, 0), var(--card, #0f172a));
+}
+.jd-read-more-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: var(--chip, #f1f5f9);
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: 20px;
+  color: var(--brand, #2563eb);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.jd-read-more-btn:active {
+  transform: scale(0.97);
+}
+
+.jd-unlock-prompt-box {
+  background: var(--chip, #f8fafc);
+  border: 1.5px dashed var(--line, #cbd5e1);
+  border-radius: 14px;
+  padding: 14px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+[data-theme="dark"] .jd-unlock-prompt-box {
+  background: rgba(30, 41, 59, 0.5);
+  border-color: rgba(148, 163, 184, 0.25);
+}
+.jd-unlock-prompt-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sub, #64748b);
+}
+.jd-reveal-btn {
+  width: 100%;
+  justify-content: center;
+  font-size: 13px;
+  gap: 8px;
+}
+
+.jd-unlock-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: jd-spin 0.6s linear infinite;
+  display: inline-block;
+  vertical-align: middle;
+}
+@keyframes jd-spin {
+  to { transform: rotate(360deg); }
+}
+
+#msc-turnstile-container {
+  position: fixed;
+  bottom: calc(var(--bnav-h, 60px) + 12px);
+  right: 12px;
+  z-index: 99999;
+}
+

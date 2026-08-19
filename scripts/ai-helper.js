@@ -171,9 +171,9 @@ export function showToast(message, type = 'info') {
                 background: #333;
                 color: white;
                 padding: 12px 24px;
-                border-radius: 8px;
+                border-radius: 14px;
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-                z-index: 11000 !important;
+                z-index: 99999 !important;
                 transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
                 opacity: 0;
                 font-size: 0.95rem;
@@ -182,13 +182,19 @@ export function showToast(message, type = 'info') {
                 align-items: center;
                 gap: 10px;
                 font-family: 'Poppins', sans-serif;
+                white-space: normal;
+                text-align: center;
+                word-break: break-word;
+                max-width: calc(100vw - 32px);
+                width: max-content;
+                box-sizing: border-box;
             }
             .toast-notification.show {
                 transform: translateX(-50%) translateY(0);
                 opacity: 1;
             }
-            .toast-error { background: #ef4444; }
-            .toast-success { background: #22c55e; }
+            .toast-error { background: #dc2626; }
+            .toast-success { background: #16a34a; }
             .toast-info { background: #1f2937; }
         `;
         document.head.appendChild(style);

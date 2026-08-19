@@ -1,4 +1,4 @@
-﻿
+
 import { getDaysAgo } from './date-utils.js';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 
@@ -18,6 +18,13 @@ const TABLE_MAP = {
     "fresher": "Fresher Jobs",
     "semi": "Semi Qualified Jobs",
     "articleship": "Articleship Jobs"
+};
+
+const PUBLIC_VIEW_MAP = {
+    "Industrial Training Job Portal": "public_industrial_jobs",
+    "Fresher Jobs": "public_fresher_jobs",
+    "Semi Qualified Jobs": "public_semi_qualified_jobs",
+    "Articleship Jobs": "public_articleship_jobs"
 };
 
 async function init() {
@@ -108,8 +115,9 @@ function copyApplyLink(event) {
 }
 
 async function fetchJobDetails(id, tableName) {
+    const querySource = PUBLIC_VIEW_MAP[tableName] || tableName;
     const { data, error } = await supabaseClient
-        .from(tableName)
+        .from(querySource)
         .select('*')
         .eq('id', id)
         .single();
