@@ -5,6 +5,107 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const supabaseClient = window._mscSupabaseClient || supabase.createClient(supabaseUrl, supabaseKey);
 window._mscSupabaseClient = supabaseClient;
 
+const UNLOCK_WORKER_URL = 'https://jobs.mystudentclub.com';
+const TURNSTILE_SITE_KEY = '0x4AAAAAAESf1Ha-laDI3OGO';
+const unlockedJobsCache = new Map();
+
+function loadTurnstileScript() {
+  if (window.turnstile) return Promise.resolve();
+  if (document.getElementById('turnstile-script')) {
+    return new Promise((resolve) => {
+      const checkInterval = setInterval(() => {
+        if (window.turnstile) { clearInterval(checkInterval); resolve(); }
+      }, 100);
+      setTimeout(() => { clearInterval(checkInterval); resolve(); }, 5000);
+    });
+  }
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.id = 'turnstile-script';
+    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+    script.async = true;
+    script.defer = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error('Failed to connect to verification service'));
+    document.head.appendChild(script);
+  });
+}
+
+function getTurnstileToken() {
+  return new Promise(async (resolve, reject) => {
+    try { await loadTurnstileScript(); } catch (e) { return reject(e); }
+    if (!window.turnstile) return reject(new Error('Verification service temporarily unavailable. Please refresh.'));
+
+    let container = document.getElementById('msc-turnstile-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'msc-turnstile-container';
+      container.style.cssText = 'position:fixed;bottom:72px;right:12px;z-index:99999;';
+      document.body.appendChild(container);
+    }
+
+    const widgetDiv = document.createElement('div');
+    container.appendChild(widgetDiv);
+
+    try {
+      const widgetId = window.turnstile.render(widgetDiv, {
+        sitekey: TURNSTILE_SITE_KEY,
+        callback: (token) => {
+          setTimeout(() => {
+            try { window.turnstile.remove(widgetId); } catch (_) {}
+            widgetDiv.remove();
+          }, 300);
+          resolve(token);
+        },
+        'error-callback': (errCode) => {
+          try { window.turnstile.remove(widgetId); } catch (_) {}
+          widgetDiv.remove();
+          console.warn('[Turnstile Error Code]:', errCode);
+          reject(new Error('Verification was not completed. Please try again.'));
+        },
+        'expired-callback': () => {
+          try { window.turnstile.remove(widgetId); } catch (_) {}
+          widgetDiv.remove();
+          reject(new Error('Verification session timed out. Please try again.'));
+        }
+      });
+    } catch (err) {
+      widgetDiv.remove();
+      reject(err);
+    }
+  });
+}
+
+async function unlockJobDetails(job, tableName) {
+  if (unlockedJobsCache.has(job.id)) return unlockedJobsCache.get(job.id);
+  const token = await getTurnstileToken();
+  let response;
+  try {
+    response = await fetch(`${UNLOCK_WORKER_URL}/api/unlock-job`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jobId: job.id, table: tableName, turnstileToken: token })
+    });
+  } catch (_) {
+    response = await fetch(UNLOCK_WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jobId: job.id, table: tableName, turnstileToken: token })
+    });
+  }
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok || !data.success) {
+    const errMsg = data.error || (data.details ? data.details.join(', ') : 'Unable to load application details.');
+    throw new Error(errMsg);
+  }
+  unlockedJobsCache.set(job.id, data);
+  job['Application ID'] = data.applicationId;
+  job.Description = data.description;
+  if (data.postsLink) job.posts_link = data.postsLink;
+  return data;
+}
+
+
 const BOOKMARKS_KEY = 'msc_bookmarks';
 
 const PORTAL_LABELS = {
