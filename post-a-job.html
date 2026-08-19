@@ -411,6 +411,18 @@
       box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
     }
 
+    /* Hide ugly browser native datalist downward arrow in Chrome / Edge */
+    input::-webkit-calendar-picker-indicator {
+      display: none !important;
+      -webkit-appearance: none !important;
+      opacity: 0 !important;
+      background: transparent !important;
+      color: transparent !important;
+      cursor: text !important;
+      height: 0px !important;
+      width: 0px !important;
+    }
+
     .form-select {
       cursor: pointer;
       appearance: none;
@@ -916,23 +928,72 @@
     @media (max-width: 1024px) {
       .portal-content-grid {
         grid-template-columns: 1fr;
+        gap: 2rem;
       }
       .preview-sticky-col {
         position: static;
-        order: -1;
-        margin-bottom: 2rem;
+        order: 2; /* Place preview below the form on mobile/tablets */
+        margin-top: 1rem;
+        margin-bottom: 0;
       }
     }
 
-    @media (max-width: 640px) {
+    @media (max-width: 768px) {
       .site-header {
-        padding: 0.75rem 1rem;
+        padding: 0.6rem 1rem;
+      }
+      .brand-logo {
+        height: 28px;
+        max-width: 130px;
+      }
+      .header-nav {
+        gap: 0.6rem;
+      }
+      .nav-feed-text {
+        display: none;
+      }
+      .recruiter-profile-pill {
+        padding: 0.25rem 0.6rem;
+        gap: 0.4rem;
+        max-width: 150px;
+      }
+      .recruiter-avatar {
+        width: 24px;
+        height: 24px;
+        font-size: 0.72rem;
+      }
+      .recruiter-name {
+        font-size: 0.78rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 95px;
+      }
+      .recruiter-company {
+        display: none !important;
       }
       .main-wrapper {
-        padding: 1.25rem 1rem 3rem;
+        padding: 1rem 0.85rem 3rem;
+      }
+      .page-title-banner {
+        margin-bottom: 1.25rem;
+      }
+      .page-title-text h1 {
+        font-size: 1.45rem;
+        line-height: 1.25;
+      }
+      .page-title-text p {
+        font-size: 0.82rem;
+        line-height: 1.4;
+        margin-top: 0.35rem;
       }
       .form-card {
-        padding: 1.5rem 1.25rem;
+        padding: 1.25rem 1rem;
+        border-radius: 16px;
+      }
+      .form-section-title {
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
       }
       .form-row {
         grid-template-columns: 1fr;
@@ -942,20 +1003,38 @@
       }
       .portal-selector-grid {
         grid-template-columns: 1fr;
+        gap: 0.6rem;
       }
-      .daily-quota-banner {
+      .portal-option-card {
+        padding: 0.75rem 0.85rem;
+      }
+      .desc-toolbar {
         flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
+        align-items: stretch;
+        gap: 0.5rem;
       }
-      .quota-right {
-        text-align: left;
-        width: 100%;
-        justify-content: space-between;
+      .toolbar-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+      }
+      .toolbar-btn {
+        font-size: 0.78rem;
+        padding: 0.35rem 0.6rem;
       }
       .auth-banner-overlay {
         flex-direction: column;
         align-items: flex-start;
+        gap: 0.85rem;
+        padding: 1rem;
+      }
+      .auth-banner-actions {
+        width: 100%;
+        justify-content: flex-start;
+      }
+      .preview-job-card {
+        padding: 1.25rem 1rem;
+        border-radius: 16px;
       }
     }
   </style>
@@ -970,12 +1049,15 @@
         <img src="/assets/logo.png" alt="My Student Club" class="brand-logo">
       </a>
       <div class="header-nav">
-        <a href="/" class="nav-link"><i class="fas fa-arrow-left"></i> Job Feeds</a>
+        <a href="/" class="nav-link" title="Back to Feeds">
+          <i class="fas fa-arrow-left"></i>
+          <span class="nav-feed-text">Job Feeds</span>
+        </a>
         
         <!-- Recruiter Pill or Login Link -->
         <div id="authNavContainer">
           <a href="/hirer-signup.html" class="nav-link" style="color: var(--primary); font-weight: 600;">
-            <i class="fas fa-user-plus"></i> Hirer Sign Up
+            <i class="fas fa-user-plus"></i> <span class="nav-feed-text">Hirer Sign Up</span>
           </a>
         </div>
       </div>
@@ -1219,7 +1301,6 @@
             <span class="live-pulse"></span>
             Live Job Listing Preview
           </h3>
-          <span style="font-size: 0.75rem; color: var(--gray-500);">Real-time rendering</span>
         </div>
 
         <div class="preview-job-card">
@@ -1236,7 +1317,7 @@
               <i class="fas fa-map-marker-alt"></i> <span>Mumbai</span>
             </span>
             <span class="preview-chip salary" id="prevSalary">
-              <i class="fas fa-indian-rupee-sign"></i> <span>₹ Not Disclosed</span>
+              <i class="fas fa-indian-rupee-sign"></i> <span>Best in Industry</span>
             </span>
             <span class="preview-chip" id="prevPortalTag">
               <i class="fas fa-industry"></i> <span>Industrial Training</span>
@@ -1513,7 +1594,7 @@ Reputed Chartered Accountancy firm invites applications from CA Inter cleared st
       prevCompanyLogo.textContent = companyVal ? companyVal.charAt(0).toUpperCase() : 'A';
       prevCategory.textContent = categoryVal || 'Select Category';
       prevLocation.textContent = locationVal || 'City, Location';
-      prevSalary.textContent = salaryVal ? `₹${salaryVal}` : '₹ Best in Industry';
+      prevSalary.textContent = salaryVal ? salaryVal : 'Best in Industry';
       prevDesc.textContent = descVal || 'Job description preview will appear here as you type. Responsibilities and requirements will be formatted nicely for candidates.';
 
       if (applyVal && applyVal.includes('@')) {
@@ -1647,35 +1728,18 @@ Reputed Chartered Accountancy firm invites applications from CA Inter cleared st
           body: JSON.stringify(jobPayload)
         });
 
-        // If worker endpoint returned 404 or failed on local test, attempt direct Supabase fallback
-        if (response.status === 404 || (!response.ok && response.status >= 500)) {
-          console.warn("Middleman worker unavailable, attempting Supabase direct insertion...");
-          const insertPayload = {
-            "Company": company,
-            "Category": category,
-            "Location": location,
-            "Salary": jobPayload.salary ? Number(jobPayload.salary) : null,
-            "Description": description,
-            "Application ID": applicationId,
-            "Created_At": new Date().toISOString(),
-            "connect_link": connectLink || null
-          };
-          if (jobPayload.experience) insertPayload["Experience"] = jobPayload.experience;
-
-          const { data, error } = await supabaseClient.from(currentSelectedPortal).insert([insertPayload]).select().single();
-          if (error) throw error;
-
-          openSuccessModal(data);
-          return;
+        let result;
+        try {
+          result = await response.json();
+        } catch (_) {
+          result = { error: `Server error (${response.status})` };
         }
-
-        const result = await response.json();
 
         if (!response.ok || !result.ok) {
           if (response.status === 429) {
             showStatus(result.error || "Daily posting limit reached (Maximum 5 vacancies per day). Quota resets at midnight IST.", "error");
           } else if (response.status === 403) {
-            showStatus("Access Denied: Only verified Hirer accounts can post vacancies. Please complete your Hirer Profile.", "error");
+            showStatus(result.error || "Access Denied: Only verified Hirer accounts can post vacancies. Please complete your Hirer Profile.", "error");
             showCandidateNotice();
           } else {
             showStatus(result.error || "Failed to post job. Please check your entries and try again.", "error");

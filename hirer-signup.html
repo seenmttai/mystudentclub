@@ -539,16 +539,21 @@
     @media (max-width: 960px) {
       .signup-page-wrapper {
         flex-direction: column;
-        padding: 1.5rem 1rem;
-        gap: 2rem;
+        padding: 1.25rem 0.85rem 3rem;
+        gap: 1.75rem;
       }
 
       .hero-info-column {
         position: static;
       }
 
+      .hero-title {
+        font-size: 1.65rem;
+      }
+
       .form-column {
-        padding: 1.5rem;
+        padding: 1.25rem 1rem;
+        border-radius: 16px;
         width: 100%;
       }
 
@@ -558,6 +563,25 @@
 
       .form-group.full-width {
         grid-column: span 1;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .top-header {
+        padding: 0.6rem 1rem;
+      }
+
+      .brand-logo {
+        height: 28px;
+      }
+
+      .candidate-link-text {
+        display: none;
+      }
+
+      .candidate-link-btn {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.78rem;
       }
     }
   </style>
@@ -572,7 +596,10 @@
     </a>
     <div class="header-links">
       <a href="/login.html" class="header-link">Sign In</a>
-      <a href="/" class="candidate-link-btn"><i class="fas fa-user-graduate"></i> I am a Student / Jobseeker</a>
+      <a href="/" class="candidate-link-btn" title="I am a Student / Jobseeker">
+        <i class="fas fa-user-graduate"></i>
+        <span class="candidate-link-text">Candidate Portal</span>
+      </a>
     </div>
   </header>
 
