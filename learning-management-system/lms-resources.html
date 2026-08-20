@@ -572,7 +572,7 @@
                     <div v-else-if="allResources.length === 0" class="empty-state">
                         <p>No resources found for your enrolled courses.</p>
                     </div>
-                    <div v-else v-for="resource in allResources" :key="resource.title + resource.download_storage_path"
+                    <div v-else v-for="resource in allResources" :key="resource.title + (resource.view_storage_path || resource.download_storage_path || resource.url || '')"
                         class="resource-card">
                         <div class="resource-header">
                             <div class="resource-icon"><i :class="getResourceIcon(resource.type)"></i></div>
@@ -614,7 +614,7 @@
                 <div class="resource-viewer-content">
                     <div class="resource-viewer-header">
                         <div class="resource-viewer-title-wrap">
-                            <h2 class="resource-viewer-title">{{ currentResourceTitle }}{{ currentResourceSubtitle ? ' · PDF Preview' : '' }}</h2>
+                            <h2 class="resource-viewer-title">{{ currentResourceTitle }}{{ currentResourceSubtitle ? ' · Preview' : '' }}</h2>
                         </div>
                         <div>
                             <button @click="toggleFullscreen" class="resource-viewer-fullscreen-button"
@@ -666,6 +666,14 @@
                         <button v-if="currentResource && hasDownloadPath(currentResource)" @click="downloadResource(currentResource)"
                             class="viewer-nav-button viewer-download-btn">
                             <i class="fas fa-download"></i> Download Excel
+                        </button>
+                    </div>
+                    <!-- Controls for CSV -->
+                    <div v-else-if="previewType === 'csv' && currentResource && hasDownloadPath(currentResource)" class="resource-viewer-controls"
+                        style="justify-content: center; gap: 0.75rem;">
+                        <button @click="downloadResource(currentResource)"
+                            class="viewer-nav-button viewer-download-btn">
+                            <i class="fas fa-download"></i> {{ getDownloadLabel(currentResource) }}
                         </button>
                     </div>
                 </div>
@@ -810,15 +818,19 @@
 
                         const uniqueResources = new Map();
                         videos.forEach(video => {
-                            if (video.resources && Array.isArray(video.resources)) {
-                                video.resources.forEach(resource => {
+                            let parsedResources = video.resources;
+                            if (typeof parsedResources === 'string') {
+                                try { parsedResources = JSON.parse(parsedResources); } catch(e) { parsedResources = []; }
+                            }
+                            if (parsedResources && Array.isArray(parsedResources)) {
+                                parsedResources.forEach(resource => {
                                     const isSpecial = this.isSpecialSheet(resource);
                                     const canView = this.hasViewPath(resource);
                                     const canDownload = this.hasDownloadPath(resource);
                                     const isLink = resource.type === 'external_link';
 
                                     if (isSpecial || canView || canDownload || isLink) {
-                                        const uniqueKey = resource.title + (resource.url || resource.download_storage_path);
+                                        const uniqueKey = (resource.title || '') + '_' + (resource.view_storage_path || resource.download_storage_path || resource.url || '');
                                         if (!uniqueResources.has(uniqueKey)) {
                                             uniqueResources.set(uniqueKey, resource);
                                         }
@@ -849,22 +861,37 @@
                         title.includes('hiring companies list');
                 },
                 hasViewPath(resource) {
-                    return resource.view_storage_path && resource.view_storage_path !== 'None';
+                    if (!resource || !resource.view_storage_path) return false;
+                    const path = String(resource.view_storage_path).trim();
+                    return path !== '' && path.toLowerCase() !== 'none' && path.toLowerCase() !== 'null' && path.toLowerCase() !== 'undefined';
                 },
                 hasDownloadPath(resource) {
-                    return (resource.download_storage_path && resource.download_storage_path !== 'None');
+                    if (!resource || !resource.download_storage_path) return false;
+                    const path = String(resource.download_storage_path).trim();
+                    return path !== '' && path.toLowerCase() !== 'none' && path.toLowerCase() !== 'null' && path.toLowerCase() !== 'undefined';
                 },
                 isDocxPreviewResource(resource) {
                     const type = String(resource?.type || '').toLowerCase();
                     return type === 'docx' && this.hasViewPath(resource) && this.hasDownloadPath(resource);
                 },
+                isCsvPreviewResource(resource) {
+                    const type = String(resource?.type || '').toLowerCase();
+                    const viewPath = String(resource?.view_storage_path || '').toLowerCase();
+                    return (type === 'csv' || viewPath.endsWith('.csv')) && this.hasViewPath(resource) && this.hasDownloadPath(resource);
+                },
                 getViewLabel(resource) {
                     if (this.isSpecialSheet(resource)) return 'View Sheet';
-                    return this.isDocxPreviewResource(resource) ? 'Preview PDF' : 'View';
+                    if (this.isDocxPreviewResource(resource)) return 'Preview PDF';
+                    if (this.isCsvPreviewResource(resource)) return 'Preview CSV';
+                    return 'View';
                 },
                 getDownloadLabel(resource) {
                     if (this.isSpecialSheet(resource)) return 'Download Excel';
-                    return this.isDocxPreviewResource(resource) ? 'Download DOCX' : 'Download';
+                    if (this.isDocxPreviewResource(resource)) return 'Download DOCX';
+                    const dlPath = String(resource?.download_storage_path || '').toLowerCase();
+                    if (dlPath.endsWith('.xlsx') || dlPath.endsWith('.xls')) return 'Download Excel';
+                    if (dlPath.endsWith('.csv') || resource?.type === 'csv') return 'Download CSV';
+                    return 'Download';
                 },
                 isDirectRedirectSheet(resource) {
                     if (!resource) return false;
@@ -884,9 +911,17 @@
                     if (this.isSpecialSheet(resource)) {
                         return 'Opens Google Sheet. Download exports as Excel (.xlsx).';
                     }
-                    return this.isDocxPreviewResource(resource)
-                        ? 'PDF preview available. Download returns the original DOCX file.'
-                        : '';
+                    if (this.isDocxPreviewResource(resource)) {
+                        return 'PDF preview available. Download returns the original DOCX file.';
+                    }
+                    if (this.isCsvPreviewResource(resource)) {
+                        const dlPath = String(resource?.download_storage_path || '').toLowerCase();
+                        if (dlPath.endsWith('.xlsx') || dlPath.endsWith('.xls')) {
+                            return 'CSV preview available. Download returns the original Excel (.xlsx) file.';
+                        }
+                        return 'CSV preview available. Download returns the file.';
+                    }
+                    return '';
                 },
                 getPreviewType(resource) {
                     if (this.isSpecialSheet(resource)) return 'iframe';
@@ -942,9 +977,11 @@
                     this.isViewerVisible = true;
                     this.currentResource = resource;
                     this.currentResourceTitle = resource.title;
-                    this.currentResourceSubtitle = this.isDocxPreviewResource(resource) && type === 'pdf'
+                    this.currentResourceSubtitle = (this.isDocxPreviewResource(resource) && type === 'pdf')
                         ? 'Previewing the PDF version. Download gets the original DOCX file.'
-                        : '';
+                        : (type === 'csv' && this.hasDownloadPath(resource) && (String(resource.download_storage_path).toLowerCase().endsWith('.xlsx') || String(resource.download_storage_path).toLowerCase().endsWith('.xls'))
+                            ? 'Previewing CSV version. Download gets the original Excel (.xlsx) file.'
+                            : '');
                     this.previewType = type;
                     this.viewerLoading = true;
 

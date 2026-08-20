@@ -1,0 +1,1800 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hirer Dashboard - My Student Club</title>
+  <meta name="description" content="Manage job postings, review candidate applications, and inspect candidate CVs directly on My Student Club.">
+  
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Supabase -->
+  <script src="/scripts/supabase.js"></script>
+
+  <!-- Favicons -->
+  <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
+  <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
+  <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
+
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --primary-light: #eef2ff;
+      --secondary: #06b6d4;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --dark: #0f172a;
+      --gray-50: #f8fafc;
+      --gray-100: #f1f5f9;
+      --gray-200: #e2e8f0;
+      --gray-300: #cbd5e1;
+      --gray-400: #94a3b8;
+      --gray-500: #64748b;
+      --gray-600: #475569;
+      --gray-700: #334155;
+      --gray-800: #1e293b;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+      --radius-xl: 24px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -2px rgba(0,0,0,0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.05);
+      --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.05);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background-color: #f8fafc;
+      color: var(--gray-800);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .site-header {
+      background: white;
+      border-bottom: 1px solid var(--gray-200);
+      padding: 0.85rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-inner {
+      max-width: 1380px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand-link {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+    }
+
+    .brand-logo {
+      height: 36px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .header-nav {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.5rem 0.9rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .nav-btn-primary {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
+    }
+
+    .nav-btn-primary:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    .nav-btn-outline {
+      background: white;
+      color: var(--gray-700);
+      border: 1.5px solid var(--gray-200);
+    }
+
+    .nav-btn-outline:hover {
+      background: var(--gray-50);
+      color: var(--primary);
+      border-color: var(--primary-light);
+    }
+
+    .recruiter-profile-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .recruiter-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .recruiter-name {
+      font-weight: 600;
+      color: var(--dark);
+      max-width: 120px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Main Container */
+    .dashboard-wrapper {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+      width: 100%;
+      flex: 1;
+    }
+
+    /* Welcome Banner */
+    .welcome-banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 60%, #4338ca 100%);
+      color: white;
+      padding: 2rem 2.25rem;
+      border-radius: var(--radius-xl);
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .welcome-banner::after {
+      content: '';
+      position: absolute;
+      right: -40px;
+      bottom: -40px;
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 70%);
+      border-radius: 50%;
+    }
+
+    .welcome-text h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    .welcome-text p {
+      font-size: 0.92rem;
+      color: #c7d2fe;
+      max-width: 600px;
+      line-height: 1.5;
+    }
+
+    .welcome-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    /* Metrics Grid */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+      margin-bottom: 2.25rem;
+    }
+
+    .metric-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 1.4rem;
+      border: 1px solid var(--gray-200);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: 1.1rem;
+      transition: all 0.2s;
+    }
+
+    .metric-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .metric-icon-wrap {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      flex-shrink: 0;
+    }
+
+    .metric-icon-jobs { background: #e0e7ff; color: #4338ca; }
+    .metric-icon-apps { background: #e0f2fe; color: #0284c7; }
+    .metric-icon-short { background: #ecfdf5; color: #059669; }
+    .metric-icon-recent { background: #fef3c7; color: #d97706; }
+
+    .metric-info h3 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--dark);
+      line-height: 1.1;
+    }
+
+    .metric-info p {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--gray-500);
+      margin-top: 0.25rem;
+    }
+
+    /* 2-Column Layout */
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: 1.4fr 0.8fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    /* Section Card */
+    .section-card {
+      background: white;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--gray-200);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+    }
+
+    .section-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--gray-200);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: white;
+    }
+
+    .section-header h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .section-header h2 i {
+      color: var(--primary);
+    }
+
+    /* Job List */
+    .job-list {
+      display: flex;
+      flex-direction: column;
+      divide-y: 1px solid var(--gray-100);
+    }
+
+    .job-row {
+      padding: 1.35rem 1.5rem;
+      border-bottom: 1px solid var(--gray-100);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      transition: background 0.15s;
+    }
+
+    .job-row:last-child {
+      border-bottom: none;
+    }
+
+    .job-row:hover {
+      background: var(--gray-50);
+    }
+
+    .job-row.active-selected {
+      background: #f5f3ff;
+      border-left: 4px solid var(--primary);
+    }
+
+    .job-main-info {
+      flex: 1;
+    }
+
+    .job-title-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.35rem;
+    }
+
+    .job-portal-badge {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.2rem 0.55rem;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .portal-badge-it { background: #e0e7ff; color: #4338ca; }
+    .portal-badge-fresher { background: #ecfdf5; color: #047857; }
+    .portal-badge-semi { background: #fef3c7; color: #b45309; }
+    .portal-badge-art { background: #f3e8ff; color: #7e22ce; }
+
+    .job-company-title {
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: var(--dark);
+    }
+
+    .job-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 0.8rem;
+      color: var(--gray-500);
+      flex-wrap: wrap;
+    }
+
+    .job-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .job-action-area {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .applicant-counter-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1.5px solid #bfdbfe;
+      padding: 0.55rem 1rem;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .applicant-counter-btn:hover {
+      background: #3b82f6;
+      color: white;
+      border-color: #3b82f6;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(59, 130, 246, 0.25);
+    }
+
+    .applicant-counter-btn .count-badge {
+      background: #3b82f6;
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      border-radius: 9999px;
+    }
+
+    .applicant-counter-btn:hover .count-badge {
+      background: white;
+      color: #1d4ed8;
+    }
+
+    /* Right Sidebar: Recent Applicants Feed */
+    .recent-applicant-item {
+      padding: 1.1rem 1.4rem;
+      border-bottom: 1px solid var(--gray-100);
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .recent-applicant-item:hover {
+      background: var(--gray-50);
+    }
+
+    .applicant-avatar-sm {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .recent-app-details {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .recent-app-name {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--dark);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .recent-app-job {
+      font-size: 0.76rem;
+      color: var(--gray-500);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 0.1rem;
+    }
+
+    .recent-app-time {
+      font-size: 0.72rem;
+      color: var(--gray-400);
+      margin-top: 0.15rem;
+    }
+
+    /* Applicants Drawer / Table View */
+    #applicantsSection {
+      margin-top: 2rem;
+      display: none;
+    }
+
+    #applicantsSection.show {
+      display: block;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .drawer-header {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+      color: white;
+      padding: 1.5rem 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top-left-radius: var(--radius-xl);
+      border-top-right-radius: var(--radius-xl);
+    }
+
+    .drawer-title-group h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.2rem;
+    }
+
+    .drawer-title-group p {
+      font-size: 0.82rem;
+      color: #c7d2fe;
+    }
+
+    .status-filter-pills {
+      display: flex;
+      gap: 0.5rem;
+      padding: 1rem 1.5rem;
+      background: var(--gray-50);
+      border-bottom: 1px solid var(--gray-200);
+      overflow-x: auto;
+    }
+
+    .status-pill {
+      padding: 0.4rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      border: 1px solid var(--gray-300);
+      background: white;
+      color: var(--gray-600);
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .status-pill.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .applicant-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.25rem;
+      padding: 1.5rem;
+    }
+
+    .candidate-card {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      padding: 1.35rem;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.2s;
+    }
+
+    .candidate-card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: #cbd5e1;
+    }
+
+    .candidate-card-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.9rem;
+      margin-bottom: 1rem;
+    }
+
+    .candidate-avatar-large {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .candidate-title-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .candidate-title-info h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--dark);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .candidate-contact-preview {
+      font-size: 0.78rem;
+      color: var(--gray-500);
+      margin-top: 0.15rem;
+    }
+
+    .candidate-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .cand-chip {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      background: var(--gray-100);
+      color: var(--gray-700);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .cand-chip.ca-badge { background: #e0e7ff; color: #4338ca; }
+    .cand-chip.loc-badge { background: #f1f5f9; color: #475569; }
+    .cand-chip.np-badge { background: #fef3c7; color: #b45309; }
+
+    .candidate-card-actions {
+      border-top: 1px solid var(--gray-100);
+      padding-top: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .view-cv-btn {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      background: var(--primary);
+      color: white;
+      padding: 0.5rem 0.9rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .view-cv-btn:hover {
+      background: var(--primary-hover);
+    }
+
+    .quick-contact-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--gray-200);
+      background: white;
+      color: var(--gray-600);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .quick-contact-btn:hover {
+      background: var(--gray-100);
+      color: var(--primary);
+    }
+
+    .status-select-sm {
+      font-size: 0.76rem;
+      font-weight: 600;
+      padding: 0.3rem 0.5rem;
+      border-radius: 6px;
+      border: 1px solid var(--gray-300);
+      background: white;
+      color: var(--gray-700);
+      cursor: pointer;
+    }
+
+    /* Modal for Profile & In-Browser CV Viewer */
+    .profile-modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(6px);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .profile-modal-backdrop.show {
+      display: flex;
+    }
+
+    .profile-modal-dialog {
+      background: white;
+      border-radius: var(--radius-xl);
+      max-width: 980px;
+      width: 100%;
+      height: 88vh;
+      max-height: 850px;
+      box-shadow: var(--shadow-xl);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .modal-nav-header {
+      padding: 1.25rem 1.75rem;
+      border-bottom: 1px solid var(--gray-200);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: white;
+      flex-shrink: 0;
+    }
+
+    .modal-candidate-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .modal-tabs-row {
+      display: flex;
+      border-bottom: 1px solid var(--gray-200);
+      background: var(--gray-50);
+      padding: 0 1.75rem;
+      flex-shrink: 0;
+    }
+
+    .modal-tab-btn {
+      padding: 0.85rem 1.25rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--gray-500);
+      background: none;
+      border: none;
+      border-bottom: 2.5px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .modal-tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      background: white;
+    }
+
+    .modal-tab-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.75rem;
+    }
+
+    /* CV Viewer Area */
+    .cv-viewer-container {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cv-viewer-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .cv-render-box {
+      flex: 1;
+      background: var(--gray-100);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--gray-200);
+      overflow-y: auto;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 400px;
+    }
+
+    .cv-page-image {
+      max-width: 100%;
+      box-shadow: var(--shadow-md);
+      border-radius: 8px;
+      margin-bottom: 1.25rem;
+      background: white;
+    }
+
+    .cv-ocr-text-box {
+      width: 100%;
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Profile Details Grid in Modal */
+    .profile-details-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+
+    .profile-card-block {
+      background: var(--gray-50);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      border: 1px solid var(--gray-200);
+    }
+
+    .profile-card-block.full-width {
+      grid-column: span 2;
+    }
+
+    .profile-card-block h4 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .profile-info-table {
+      width: 100%;
+      font-size: 0.84rem;
+    }
+
+    .profile-info-table td {
+      padding: 0.35rem 0;
+    }
+
+    .profile-info-table td.label {
+      color: var(--gray-500);
+      width: 40%;
+    }
+
+    .profile-info-table td.value {
+      color: var(--dark);
+      font-weight: 600;
+    }
+
+    /* Empty States */
+    .empty-state-box {
+      text-align: center;
+      padding: 3.5rem 1.5rem;
+      color: var(--gray-500);
+    }
+
+    .empty-state-icon {
+      font-size: 3rem;
+      color: var(--gray-300);
+      margin-bottom: 1rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .dashboard-layout {
+        grid-template-columns: 1fr;
+      }
+      .profile-details-grid {
+        grid-template-columns: 1fr;
+      }
+      .profile-card-block.full-width {
+        grid-column: span 1;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .site-header {
+        padding: 0.6rem 1rem;
+      }
+      .brand-logo {
+        height: 28px;
+      }
+      .welcome-banner {
+        padding: 1.25rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      .welcome-text h1 {
+        font-size: 1.35rem;
+      }
+      .metrics-grid {
+        grid-template-columns: 1fr;
+        gap: 0.85rem;
+      }
+      .dashboard-wrapper {
+        padding: 1rem 0.85rem 3rem;
+      }
+      .applicant-grid {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+      }
+      .modal-nav-header {
+        padding: 1rem;
+      }
+      .profile-modal-dialog {
+        height: 94vh;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Top Header Navigation -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="/" class="brand-link">
+        <img src="/assets/logo.png" alt="My Student Club" class="brand-logo">
+      </a>
+      <div class="header-nav">
+        <a href="/post-a-job.html" class="nav-btn nav-btn-primary">
+          <i class="fas fa-plus"></i> <span>Post a Job</span>
+        </a>
+        <a href="/" class="nav-btn nav-btn-outline">
+          <i class="fas fa-arrow-left"></i> <span>Job Feeds</span>
+        </a>
+        <div id="recruiterPillContainer"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="dashboard-wrapper">
+
+    <!-- Welcome & Action Banner -->
+    <div class="welcome-banner">
+      <div class="welcome-text">
+        <h1>Welcome, <span id="recruiterHeaderName">Recruiter</span> 👋</h1>
+        <p id="recruiterSubtext">
+          Track real-time applicant submissions, review candidate qualifications, and inspect resumes directly from your verified employer dashboard.
+        </p>
+      </div>
+      <div class="welcome-actions">
+        <a href="/post-a-job.html" class="nav-btn nav-btn-primary" style="background: white; color: var(--primary); font-weight: 700;">
+          <i class="fas fa-bullhorn"></i> Post New Vacancy
+        </a>
+      </div>
+    </div>
+
+    <!-- 4 Metrics Overview -->
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-icon-wrap metric-icon-jobs">
+          <i class="fas fa-briefcase"></i>
+        </div>
+        <div class="metric-info">
+          <h3 id="statTotalJobs">0</h3>
+          <p>Active Job Postings</p>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon-wrap metric-icon-apps">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="metric-info">
+          <h3 id="statTotalApplicants">0</h3>
+          <p>Total Candidates Applied</p>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon-wrap metric-icon-short">
+          <i class="fas fa-user-check"></i>
+        </div>
+        <div class="metric-info">
+          <h3 id="statShortlisted">0</h3>
+          <p>Shortlisted Profiles</p>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon-wrap metric-icon-recent">
+          <i class="fas fa-bolt"></i>
+        </div>
+        <div class="metric-info">
+          <h3 id="statRecentApps">0</h3>
+          <p>Recent (Last 7 Days)</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2-Column: Posted Jobs List + Recent Applicants Feed -->
+    <div class="dashboard-layout">
+
+      <!-- LEFT: Posted Jobs -->
+      <div class="section-card">
+        <div class="section-header">
+          <h2><i class="fas fa-list-check"></i> Your Job Postings</h2>
+          <span style="font-size: 0.8rem; color: var(--gray-500);" id="jobsCountText">Showing active jobs</span>
+        </div>
+
+        <div class="job-list" id="jobListContainer">
+          <div class="empty-state-box" id="jobsLoadingSpinner">
+            <i class="fas fa-spinner fa-spin empty-state-icon"></i>
+            <p>Loading your job postings & live applicant counts...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Recent Applicants Feed -->
+      <div class="section-card">
+        <div class="section-header">
+          <h2><i class="fas fa-clock-rotate-left"></i> Recent Applicants</h2>
+          <span style="font-size: 0.78rem; color: var(--gray-400);">Latest submissions</span>
+        </div>
+
+        <div id="recentApplicantsContainer">
+          <div class="empty-state-box">
+            <i class="fas fa-user-clock empty-state-icon"></i>
+            <p>No recent applications yet.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- APPLICANTS DRAWER / DETAIL SECTION -->
+    <div id="applicantsSection" class="section-card">
+      <div class="drawer-header">
+        <div class="drawer-title-group">
+          <h2 id="activeJobTitleDisplay">Job Applicants</h2>
+          <p id="activeJobMetaDisplay">Review candidate CVs, academic credentials, and contact details.</p>
+        </div>
+        <button type="button" class="nav-btn nav-btn-outline" style="background: rgba(255,255,255,0.15); color: white; border: none;" onclick="closeApplicantsView()">
+          <i class="fas fa-times"></i> Close View
+        </button>
+      </div>
+
+      <!-- Status Filter Tabs -->
+      <div class="status-filter-pills">
+        <button type="button" class="status-pill active" onclick="filterApplicantsByStatus('all', this)">All Candidates (<span id="tabCountAll">0</span>)</button>
+        <button type="button" class="status-pill" onclick="filterApplicantsByStatus('new', this)">New (<span id="tabCountNew">0</span>)</button>
+        <button type="button" class="status-pill" onclick="filterApplicantsByStatus('shortlisted', this)">Shortlisted (<span id="tabCountShortlisted">0</span>)</button>
+        <button type="button" class="status-pill" onclick="filterApplicantsByStatus('interviewed', this)">Interview Scheduled (<span id="tabCountInterview">0</span>)</button>
+        <button type="button" class="status-pill" onclick="filterApplicantsByStatus('contacted', this)">Contacted (<span id="tabCountContacted">0</span>)</button>
+        <button type="button" class="status-pill" onclick="filterApplicantsByStatus('rejected', this)">Rejected (<span id="tabCountRejected">0</span>)</button>
+      </div>
+
+      <div class="applicant-grid" id="applicantCardsGrid">
+        <!-- Dynamically rendered candidate cards -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- CANDIDATE FULL PROFILE & IN-BROWSER CV VIEWER MODAL -->
+  <div id="candidateProfileModal" class="profile-modal-backdrop">
+    <div class="profile-modal-dialog">
+      
+      <!-- Modal Header -->
+      <div class="modal-nav-header">
+        <div class="modal-candidate-header">
+          <div class="candidate-avatar-large" id="modalCandidateAvatar">R</div>
+          <div>
+            <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--dark);" id="modalCandidateName">Candidate Name</h3>
+            <p style="font-size: 0.8rem; color: var(--gray-500);" id="modalCandidateSubtext">Applied for Industrial Training • 2 days ago</p>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <select id="modalStatusSelect" class="status-select-sm" onchange="updateCandidateStatusFromModal(this.value)">
+            <option value="new">Status: New</option>
+            <option value="shortlisted">Status: Shortlisted</option>
+            <option value="interviewed">Status: Interview Scheduled</option>
+            <option value="contacted">Status: Contacted</option>
+            <option value="rejected">Status: Rejected</option>
+          </select>
+          <button type="button" style="background: none; border: none; font-size: 1.25rem; color: var(--gray-400); cursor: pointer; padding: 0.25rem;" onclick="closeCandidateModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Tabs -->
+      <div class="modal-tabs-row">
+        <button type="button" class="modal-tab-btn active" id="tabBtnProfile" onclick="switchModalTab('profile')">
+          <i class="fas fa-user"></i> Full Candidate Profile
+        </button>
+        <button type="button" class="modal-tab-btn" id="tabBtnCv" onclick="switchModalTab('cv')">
+          <i class="fas fa-file-pdf"></i> In-Browser CV & Documents
+        </button>
+      </div>
+
+      <!-- Tab 1: Full Candidate Profile -->
+      <div class="modal-tab-content" id="modalTabProfile">
+        <div class="profile-details-grid">
+
+          <!-- Contact Information -->
+          <div class="profile-card-block">
+            <h4><i class="fas fa-address-card"></i> Contact Information</h4>
+            <table class="profile-info-table">
+              <tr>
+                <td class="label">Email:</td>
+                <td class="value"><a id="modalCandEmail" href="#" style="color: var(--primary); text-decoration: none;">—</a></td>
+              </tr>
+              <tr>
+                <td class="label">Phone / WhatsApp:</td>
+                <td class="value"><span id="modalCandPhone">—</span></td>
+              </tr>
+              <tr>
+                <td class="label">Current City:</td>
+                <td class="value" id="modalCandCity">—</td>
+              </tr>
+              <tr>
+                <td class="label">Notice Period:</td>
+                <td class="value" id="modalCandNotice">—</td>
+              </tr>
+            </table>
+          </div>
+
+          <!-- CA Credentials & Academics -->
+          <div class="profile-card-block">
+            <h4><i class="fas fa-graduation-cap"></i> CA Status & Academics</h4>
+            <table class="profile-info-table">
+              <tr>
+                <td class="label">CA Final:</td>
+                <td class="value" id="modalCaFinal">—</td>
+              </tr>
+              <tr>
+                <td class="label">CA Inter Attempts:</td>
+                <td class="value" id="modalCaInter">—</td>
+              </tr>
+              <tr>
+                <td class="label">Graduation:</td>
+                <td class="value" id="modalGraduation">—</td>
+              </tr>
+              <tr>
+                <td class="label">Rank / AIR:</td>
+                <td class="value" id="modalAirRank">—</td>
+              </tr>
+            </table>
+          </div>
+
+          <!-- Articleship & Experience -->
+          <div class="profile-card-block full-width">
+            <h4><i class="fas fa-building"></i> Articleship & Work Experience</h4>
+            <table class="profile-info-table">
+              <tr>
+                <td class="label">Articleship Firm:</td>
+                <td class="value" id="modalArticleshipFirm">—</td>
+              </tr>
+              <tr>
+                <td class="label">Exposure Domains:</td>
+                <td class="value" id="modalArticleshipDomain">—</td>
+              </tr>
+              <tr>
+                <td class="label">Industrial Training:</td>
+                <td class="value" id="modalItCompany">—</td>
+              </tr>
+              <tr>
+                <td class="label">Key Skills:</td>
+                <td class="value" id="modalKeySkills">—</td>
+              </tr>
+            </table>
+          </div>
+
+          <!-- Profile Summary -->
+          <div class="profile-card-block full-width">
+            <h4><i class="fas fa-quote-left"></i> Candidate Summary & Bio</h4>
+            <p id="modalProfileSummary" style="font-size: 0.85rem; color: var(--gray-600); line-height: 1.6;">
+              No bio summary provided by candidate.
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Tab 2: In-Browser CV Viewer -->
+      <div class="modal-tab-content" id="modalTabCv" style="display: none;">
+        <div class="cv-viewer-container">
+          <div class="cv-viewer-toolbar">
+            <span style="font-size: 0.85rem; font-weight: 600; color: var(--dark);" id="modalCvFilenameDisplay">Candidate_Resume.pdf</span>
+            <div style="display: flex; gap: 0.5rem;">
+              <button type="button" class="nav-btn nav-btn-primary" id="modalDownloadCvBtn" onclick="downloadCandidateCv()">
+                <i class="fas fa-download"></i> Download CV
+              </button>
+            </div>
+          </div>
+
+          <div class="cv-render-box" id="modalCvRenderBox">
+            <div class="empty-state-box">
+              <i class="fas fa-file-lines empty-state-icon"></i>
+              <p>Loading candidate CV document...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://auth.mystudentclub.com';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+    const WORKER_BASE_URL = 'https://postjob.bhansalimanan55.workers.dev';
+
+    let supabaseClient = null;
+    if (window.supabase) {
+      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+
+    let currentSession = null;
+    let currentUser = null;
+    let recruiterJobs = [];
+    let allApplicantsData = [];
+    let activeSelectedJob = null;
+    let currentActiveCandidate = null;
+    let currentStatusFilter = 'all';
+
+    // Check Recruiter Authentication
+    async function initDashboard() {
+      if (!supabaseClient) return;
+
+      try {
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
+        if (error || !session) {
+          window.location.href = '/login.html?redirect=/hirer-dashboard.html';
+          return;
+        }
+
+        currentSession = session;
+        currentUser = session.user;
+        const meta = currentUser.user_metadata || {};
+
+        // Verify Hirer status
+        const isHirerRole = meta.role === 'hirer' || meta.user_type === 'hirer' || meta.is_hirer || Boolean(meta.company_name);
+        if (!isHirerRole) {
+          alert("Access restricted to verified Employer & Hirer accounts.");
+          window.location.href = '/hirer-signup.html';
+          return;
+        }
+
+        renderRecruiterHeader(currentUser);
+        await fetchRecruiterJobs();
+
+      } catch (err) {
+        console.error("Dashboard initialization error:", err);
+      }
+    }
+
+    function renderRecruiterHeader(user) {
+      const meta = user.user_metadata || {};
+      const company = meta.company_name || 'Verified Employer';
+      const name = meta.full_name || user.email.split('@')[0];
+      const initial = name.charAt(0).toUpperCase();
+
+      document.getElementById('recruiterHeaderName').textContent = name;
+      document.getElementById('recruiterSubtext').textContent = `Manage job postings, track candidate submissions, and inspect candidate CVs for ${company}.`;
+
+      document.getElementById('recruiterPillContainer').innerHTML = `
+        <div class="recruiter-profile-pill" onclick="handleSignOut()" title="Click to Sign Out">
+          <div class="recruiter-avatar">${initial}</div>
+          <span class="recruiter-name">${name}</span>
+          <i class="fas fa-sign-out-alt" style="color: var(--gray-400); font-size: 0.75rem; margin-left: 0.2rem;"></i>
+        </div>
+      `;
+    }
+
+    async function handleSignOut() {
+      if (confirm("Are you sure you want to sign out?")) {
+        await supabaseClient.auth.signOut();
+        window.location.href = '/login.html';
+      }
+    }
+
+    // Fetch Jobs posted by this recruiter
+    async function fetchRecruiterJobs() {
+      const container = document.getElementById('jobListContainer');
+      const recentContainer = document.getElementById('recentApplicantsContainer');
+
+      try {
+        // 1. Fetch via Worker API or Direct Supabase with JWT
+        let jobs = [];
+        let applications = [];
+
+        try {
+          const res = await fetch(`${WORKER_BASE_URL}/api/hirer/jobs`, {
+            headers: {
+              'Authorization': `Bearer ${currentSession.access_token}`
+            }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.jobs) jobs = data.jobs;
+          }
+        } catch (_) {}
+
+        // Fallback: Query all 4 tables where posted_by = user.id
+        if (!jobs || jobs.length === 0) {
+          const tables = ["Industrial Training Job Portal", "Fresher Jobs", "Semi Qualified Jobs", "Articleship Jobs"];
+          const jobQueries = tables.map(async (table) => {
+            const { data } = await supabaseClient
+              .from(table)
+              .select('*')
+              .or(`posted_by.eq.${currentUser.id},hirer_email.eq.${currentUser.email}`)
+              .order('Created_At', { ascending: false });
+            return (data || []).map(j => ({ ...j, table_name: table }));
+          });
+
+          const results = await Promise.all(jobQueries);
+          jobs = results.flat().sort((a,b) => new Date(b.Created_At || 0) - new Date(a.Created_At || 0));
+        }
+
+        recruiterJobs = jobs;
+        document.getElementById('statTotalJobs').textContent = jobs.length;
+
+        // Fetch application counts across all jobs
+        const allJobIds = jobs.map(j => j.id);
+        if (allJobIds.length > 0) {
+          const { data: appsData } = await supabaseClient
+            .from('job_applications')
+            .select('*')
+            .order('applied_at', { ascending: false });
+
+          if (appsData) {
+            // Match applications belonging to this recruiter's jobs
+            applications = appsData.filter(app => {
+              const targetJobId = app.job_id?.toString();
+              return jobs.some(j => j.id?.toString() === targetJobId || app.job_table?.includes(j.id?.toString()));
+            });
+          }
+        }
+
+        allApplicantsData = applications;
+        document.getElementById('statTotalApplicants').textContent = applications.length;
+
+        // Count recent (last 7 days)
+        const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+        const recentCount = applications.filter(a => new Date(a.applied_at) >= sevenDaysAgo).length;
+        document.getElementById('statRecentApps').textContent = recentCount;
+
+        renderJobsList(jobs, applications);
+        renderRecentApplicantsFeed(applications, jobs);
+
+      } catch (err) {
+        console.error("Error fetching recruiter jobs:", err);
+        container.innerHTML = `
+          <div class="empty-state-box">
+            <i class="fas fa-exclamation-circle empty-state-icon" style="color: #ef4444;"></i>
+            <p>Failed to load jobs. Please refresh the page.</p>
+          </div>
+        `;
+      }
+    }
+
+    function getPortalBadgeClass(portal) {
+      if (portal?.includes('Industrial')) return { cls: 'portal-badge-it', label: 'Industrial Training' };
+      if (portal?.includes('Fresher')) return { cls: 'portal-badge-fresher', label: 'CA Fresher' };
+      if (portal?.includes('Semi')) return { cls: 'portal-badge-semi', label: 'Semi-Qualified' };
+      return { cls: 'portal-badge-art', label: 'Articleship' };
+    }
+
+    function renderJobsList(jobs, applications) {
+      const container = document.getElementById('jobListContainer');
+
+      if (!jobs || jobs.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state-box">
+            <i class="fas fa-folder-open empty-state-icon"></i>
+            <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--dark); margin-bottom: 0.4rem;">No Vacancies Posted Yet</h3>
+            <p style="font-size: 0.85rem; max-width: 380px; margin: 0 auto 1.25rem;">Publish your CA Industrial Training, Fresher, or Articleship openings to receive candidate applications.</p>
+            <a href="/post-a-job.html" class="nav-btn nav-btn-primary"><i class="fas fa-plus"></i> Post a Vacancy</a>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = jobs.map(job => {
+        const portalInfo = getPortalBadgeClass(job.table_name);
+        const jobApps = applications.filter(a => a.job_id?.toString() === job.id?.toString() || a.job_table?.includes(job.id?.toString()));
+        const appCount = jobApps.length;
+        const dateStr = job.Created_At ? new Date(job.Created_At).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) : 'Recent';
+
+        return `
+          <div class="job-row" id="jobRow_${job.id}">
+            <div class="job-main-info">
+              <div class="job-title-row">
+                <span class="job-portal-badge ${portalInfo.cls}">${portalInfo.label}</span>
+                <span class="job-company-title">${job.Company || 'Company Opening'}</span>
+              </div>
+              <div class="job-meta-row">
+                <span class="job-meta-item"><i class="fas fa-tag"></i> ${job.Category || 'Finance'}</span>
+                <span class="job-meta-item"><i class="fas fa-map-marker-alt"></i> ${job.Location || 'City'}</span>
+                <span class="job-meta-item"><i class="fas fa-calendar-alt"></i> Posted ${dateStr}</span>
+              </div>
+            </div>
+            <div class="job-action-area">
+              <button type="button" class="applicant-counter-btn" onclick="openJobApplicants('${job.id}', '${job.table_name}')">
+                <i class="fas fa-users-viewfinder"></i> View Applicants
+                <span class="count-badge">${appCount}</span>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Render Recent Applicants Feed
+    async function renderRecentApplicantsFeed(applications, jobs) {
+      const container = document.getElementById('recentApplicantsContainer');
+
+      if (!applications || applications.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state-box">
+            <i class="fas fa-user-clock empty-state-icon"></i>
+            <p>No candidate applications received yet.</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Fetch profiles for the recent applicants
+      const recentApps = applications.slice(0, 8);
+      const userIds = recentApps.map(a => a.user_id).filter(Boolean);
+
+      let profilesMap = {};
+      if (userIds.length > 0) {
+        const { data: profiles } = await supabaseClient
+          .from('profiles')
+          .select('uuid, profile, ocr_cv')
+          .in('uuid', userIds);
+
+        if (profiles) {
+          profiles.forEach(p => {
+            profilesMap[p.uuid] = p.profile || {};
+          });
+        }
+      }
+
+      container.innerHTML = recentApps.map(app => {
+        const profile = profilesMap[app.user_id] || {};
+        const candName = profile.full_name || profile.name || 'Candidate ' + app.user_id.substring(0, 5);
+        const initial = candName.charAt(0).toUpperCase();
+        const matchingJob = jobs.find(j => j.id?.toString() === app.job_id?.toString() || app.job_table?.includes(j.id?.toString()));
+        const jobTitle = matchingJob ? `${matchingJob.Category} at ${matchingJob.Company}` : 'Job Vacancy';
+        const timeAgo = formatTimeAgo(app.applied_at);
+
+        return `
+          <div class="recent-applicant-item" onclick="openCandidateModalById('${app.user_id}', '${app.job_id}', '${app.job_table}')">
+            <div class="applicant-avatar-sm">${initial}</div>
+            <div class="recent-app-details">
+              <div class="recent-app-name">${candName}</div>
+              <div class="recent-app-job">${jobTitle}</div>
+              <div class="recent-app-time"><i class="fas fa-clock"></i> Applied ${timeAgo}</div>
+            </div>
+            <i class="fas fa-chevron-right" style="color: var(--gray-300); font-size: 0.8rem;"></i>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function formatTimeAgo(dateStr) {
+      if (!dateStr) return 'recently';
+      const diffSec = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
+      if (diffSec < 3600) return `${Math.max(1, Math.floor(diffSec / 60))}m ago`;
+      if (diffSec < 86400) return `${Math.floor(diffSec / 3600)}h ago`;
+      return `${Math.floor(diffSec / 86400)}d ago`;
+    }
+
+    // Open Applicants View for a specific job
+    async function openJobApplicants(jobId, tableName) {
+      const job = recruiterJobs.find(j => j.id?.toString() === jobId?.toString());
+      activeSelectedJob = job || { id: jobId, table_name: tableName, Company: 'Job' };
+
+      document.querySelectorAll('.job-row').forEach(r => r.classList.remove('active-selected'));
+      const activeRow = document.getElementById(`jobRow_${jobId}`);
+      if (activeRow) activeRow.classList.add('active-selected');
+
+      document.getElementById('activeJobTitleDisplay').textContent = `Applicants for ${job.Category || 'Role'} (${job.Company || 'Company'})`;
+      document.getElementById('activeJobMetaDisplay').textContent = `${job.Location || 'City'} • ${job.table_name || tableName}`;
+
+      const section = document.getElementById('applicantsSection');
+      section.classList.add('show');
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      // Fetch all applicants for this specific job
+      const grid = document.getElementById('applicantCardsGrid');
+      grid.innerHTML = '<div class="empty-state-box" style="grid-column: 1/-1;"><i class="fas fa-spinner fa-spin empty-state-icon"></i><p>Loading candidate profiles...</p></div>';
+
+      const jobApps = allApplicantsData.filter(a => a.job_id?.toString() === jobId?.toString() || a.job_table?.includes(jobId?.toString()));
+      const userIds = jobApps.map(a => a.user_id).filter(Boolean);
+
+      let profilesList = [];
+      if (userIds.length > 0) {
+        const { data: profData } = await supabaseClient
+          .from('profiles')
+          .select('*')
+          .in('uuid', userIds);
+
+        profilesList = profData || [];
+      }
+
+      // Merge application status with profile
+      const candidates = jobApps.map(app => {
+        const pObj = profilesList.find(p => p.uuid === app.user_id);
+        return {
+          application_id: app.id,
+          user_id: app.user_id,
+          job_id: jobId,
+          job_table: tableName,
+          applied_at: app.applied_at,
+          status: app.status || 'new',
+          notes: app.notes || '',
+          profile: pObj?.profile || {},
+          ocr_cv: pObj?.ocr_cv || ''
+        };
+      });
+
+      window._currentJobCandidates = candidates;
+      updateStatusTabCounts(candidates);
+      renderCandidateCards(candidates);
+    }
+
+    function updateStatusTabCounts(candidates) {
+      document.getElementById('tabCountAll').textContent = candidates.length;
+      document.getElementById('tabCountNew').textContent = candidates.filter(c => (c.status || 'new') === 'new').length;
+      document.getElementById('tabCountShortlisted').textContent = candidates.filter(c => c.status === 'shortlisted').length;
+      document.getElementById('tabCountInterview').textContent = candidates.filter(c => c.status === 'interviewed').length;
+      document.getElementById('tabCountContacted').textContent = candidates.filter(c => c.status === 'contacted').length;
+      document.getElementById('tabCountRejected').textContent = candidates.filter(c => c.status === 'rejected').length;
+
+      const shortlistedCount = candidates.filter(c => c.status === 'shortlisted').length;
+      document.getElementById('statShortlisted').textContent = shortlistedCount;
+    }
+
+    function filterApplicantsByStatus(status, btn) {
+      currentStatusFilter = status;
+      document.querySelectorAll('.status-pill').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+
+      const all = window._currentJobCandidates || [];
+      const filtered = status === 'all' ? all : all.filter(c => (c.status || 'new') === status);
+      renderCandidateCards(filtered);
+    }
+
+    function renderCandidateCards(candidates) {
+      const grid = document.getElementById('applicantCardsGrid');
+
+      if (!candidates || candidates.length === 0) {
+        grid.innerHTML = `
+          <div class="empty-state-box" style="grid-column: 1/-1;">
+            <i class="fas fa-user-xmark empty-state-icon"></i>
+            <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--dark); margin-bottom: 0.3rem;">No Candidates Found</h3>
+            <p style="font-size: 0.85rem;">No applicants matching the selected filter for this job.</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = candidates.map(c => {
+        const p = c.profile || {};
+        const name = p.full_name || p.name || 'CA Candidate';
+        const initial = name.charAt(0).toUpperCase();
+        const city = p.current_city || p.city || 'Location N/A';
+        const caAttempts = p.ca_inter_attempts ? `Inter: ${p.ca_inter_attempts} att` : (p.ca_final_attempts ? `Final: ${p.ca_final_attempts} att` : 'CA Inter');
+        const articleship = p.articleship_firm_name ? `${p.articleship_firm_name}` : (p.industrial_training_company || 'Articleship');
+        const notice = p.notice_period || 'Immediate';
+        const email = p.email || c.user_id;
+        const phone = p.contact_number || p.phone || '';
+
+        return `
+          <div class="candidate-card">
+            <div>
+              <div class="candidate-card-top">
+                <div class="candidate-avatar-large">${initial}</div>
+                <div class="candidate-title-info">
+                  <h3>${name}</h3>
+                  <div class="candidate-contact-preview"><i class="fas fa-envelope"></i> ${email}</div>
+                  <div class="candidate-contact-preview"><i class="fas fa-clock"></i> Applied ${formatTimeAgo(c.applied_at)}</div>
+                </div>
+              </div>
+
+              <div class="candidate-chips">
+                <span class="cand-chip ca-badge"><i class="fas fa-graduation-cap"></i> ${caAttempts}</span>
+                <span class="cand-chip loc-badge"><i class="fas fa-building"></i> ${articleship}</span>
+                <span class="cand-chip loc-badge"><i class="fas fa-location-dot"></i> ${city}</span>
+                <span class="cand-chip np-badge"><i class="fas fa-calendar-check"></i> ${notice}</span>
+              </div>
+            </div>
+
+            <div class="candidate-card-actions">
+              <button type="button" class="view-cv-btn" onclick="openCandidateFullModal('${c.user_id}')">
+                <i class="fas fa-file-pdf"></i> View Profile & CV
+              </button>
+
+              ${email ? `<a href="mailto:${email}?subject=Application for ${activeSelectedJob?.Category || 'Role'}" class="quick-contact-btn" title="Email Candidate"><i class="fas fa-envelope"></i></a>` : ''}
+              ${phone ? `<a href="https://wa.me/${phone.replace(/[^0-9]/g,'')}" target="_blank" class="quick-contact-btn" title="WhatsApp Candidate" style="color: #10b981;"><i class="fab fa-whatsapp"></i></a>` : ''}
+
+              <select class="status-select-sm" onchange="changeCandidateStatus('${c.user_id}', this.value)">
+                <option value="new" ${c.status === 'new' ? 'selected' : ''}>New</option>
+                <option value="shortlisted" ${c.status === 'shortlisted' ? 'selected' : ''}>Shortlisted</option>
+                <option value="interviewed" ${c.status === 'interviewed' ? 'selected' : ''}>Interview</option>
+                <option value="contacted" ${c.status === 'contacted' ? 'selected' : ''}>Contacted</option>
+                <option value="rejected" ${c.status === 'rejected' ? 'selected' : ''}>Rejected</option>
+              </select>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function closeApplicantsView() {
+      document.getElementById('applicantsSection').classList.remove('show');
+      document.querySelectorAll('.job-row').forEach(r => r.classList.remove('active-selected'));
+    }
+
+    // Modal Opening & Switching
+    async function openCandidateFullModal(userId) {
+      const candidate = (window._currentJobCandidates || []).find(c => c.user_id === userId);
+      if (!candidate) return;
+
+      currentActiveCandidate = candidate;
+      const p = candidate.profile || {};
+      const name = p.full_name || p.name || 'Candidate Details';
+      const initial = name.charAt(0).toUpperCase();
+
+      document.getElementById('modalCandidateAvatar').textContent = initial;
+      document.getElementById('modalCandidateName').textContent = name;
+      document.getElementById('modalCandidateSubtext').textContent = `Applied for ${activeSelectedJob?.Category || 'Job'} • ${formatTimeAgo(candidate.applied_at)}`;
+      document.getElementById('modalStatusSelect').value = candidate.status || 'new';
+
+      // Populate Contact details
+      document.getElementById('modalCandEmail').textContent = p.email || '—';
+      document.getElementById('modalCandEmail').href = p.email ? `mailto:${p.email}` : '#';
+      document.getElementById('modalCandPhone').textContent = p.contact_number || p.phone || '—';
+      document.getElementById('modalCandCity').textContent = p.current_city || p.city || '—';
+      document.getElementById('modalCandNotice').textContent = p.notice_period || 'Immediate';
+
+      // Populate Academics
+      document.getElementById('modalCaFinal').textContent = p.ca_final_attempts ? `${p.ca_final_attempts} Attempts (${p.ca_final_clear_year || 'Cleared'})` : 'CA Inter Qualified';
+      document.getElementById('modalCaInter').textContent = p.ca_inter_attempts ? `${p.ca_inter_attempts} Attempts` : 'Both Groups Cleared';
+      document.getElementById('modalGraduation').textContent = p.grad_degree ? `${p.grad_degree} (${p.grad_percentage || '—'}%)` : 'B.Com';
+      document.getElementById('modalAirRank').textContent = p.ca_final_air || p.ca_inter_air || 'None';
+
+      // Populate Experience
+      document.getElementById('modalArticleshipFirm').textContent = p.articleship_firm_name || '—';
+      document.getElementById('modalArticleshipDomain').textContent = p.articleship_domain || p.articleship_client_industries || 'Statutory & Tax Audit';
+      document.getElementById('modalItCompany').textContent = p.industrial_training_company || 'None';
+      document.getElementById('modalKeySkills').textContent = p.key_skills || 'Financial Analysis, GST, Ind AS, Auditing';
+      document.getElementById('modalProfileSummary').textContent = p.profile_summary || p.headline || 'Detailed CA profile submitted for recruiter review.';
+
+      // Setup CV tab
+      renderCandidateCvView(candidate);
+
+      switchModalTab('profile');
+      document.getElementById('candidateProfileModal').classList.add('show');
+    }
+
+    async function openCandidateModalById(userId, jobId, tableName) {
+      await openJobApplicants(jobId, tableName);
+      openCandidateFullModal(userId);
+    }
+
+    function switchModalTab(tabName) {
+      document.getElementById('tabBtnProfile').classList.toggle('active', tabName === 'profile');
+      document.getElementById('tabBtnCv').classList.toggle('active', tabName === 'cv');
+      document.getElementById('modalTabProfile').style.display = tabName === 'profile' ? 'block' : 'none';
+      document.getElementById('modalTabCv').style.display = tabName === 'cv' ? 'block' : 'none';
+    }
+
+    function renderCandidateCvView(candidate) {
+      const renderBox = document.getElementById('modalCvRenderBox');
+      const filename = candidate.profile?.cv_filename || 'Candidate_Resume.pdf';
+      document.getElementById('modalCvFilenameDisplay').textContent = filename;
+
+      // Check if OCR Text or CV Images are available
+      const ocr = candidate.ocr_cv;
+      if (ocr && ocr.trim().length > 30) {
+        renderBox.innerHTML = `
+          <div class="cv-ocr-text-box">
+            ${escapeHtml(ocr)}
+          </div>
+        `;
+      } else {
+        renderBox.innerHTML = `
+          <div class="empty-state-box">
+            <i class="fas fa-file-pdf empty-state-icon" style="color: var(--primary);"></i>
+            <h4 style="font-size: 1rem; font-weight: 700; color: var(--dark); margin-bottom: 0.3rem;">${filename}</h4>
+            <p style="font-size: 0.85rem; margin-bottom: 1.25rem;">Candidate resume is available for review and download.</p>
+            <button type="button" class="nav-btn nav-btn-primary" onclick="downloadCandidateCv()"><i class="fas fa-download"></i> Download Resume</button>
+          </div>
+        `;
+      }
+    }
+
+    function escapeHtml(text) {
+      const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+      return text.replace(/[&<>"']/g, m => map[m]);
+    }
+
+    function downloadCandidateCv() {
+      if (!currentActiveCandidate) return;
+      const ocr = currentActiveCandidate.ocr_cv;
+      const filename = currentActiveCandidate.profile?.cv_filename || 'Candidate_Resume.txt';
+
+      if (ocr) {
+        const blob = new Blob([ocr], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename.endsWith('.txt') ? filename : filename + '.txt';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } else {
+        alert("Candidate resume document is being processed.");
+      }
+    }
+
+    async function changeCandidateStatus(userId, newStatus) {
+      const candidate = (window._currentJobCandidates || []).find(c => c.user_id === userId);
+      if (!candidate) return;
+
+      candidate.status = newStatus;
+
+      try {
+        // Update in Supabase
+        await supabaseClient
+          .from('job_applications')
+          .update({ status: newStatus })
+          .match({ user_id: userId, job_id: candidate.job_id });
+
+        updateStatusTabCounts(window._currentJobCandidates || []);
+      } catch (err) {
+        console.error("Status update error:", err);
+      }
+    }
+
+    function updateCandidateStatusFromModal(newStatus) {
+      if (!currentActiveCandidate) return;
+      changeCandidateStatus(currentActiveCandidate.user_id, newStatus);
+    }
+
+    function closeCandidateModal() {
+      document.getElementById('candidateProfileModal').classList.remove('show');
+    }
+
+    // Close modal on click outside
+    document.getElementById('candidateProfileModal').addEventListener('click', (e) => {
+      if (e.target.id === 'candidateProfileModal') closeCandidateModal();
+    });
+
+    window.addEventListener('DOMContentLoaded', initDashboard);
+  </script>
+</body>
+
+</html>

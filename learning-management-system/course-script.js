@@ -170,19 +170,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const isDocxPreviewResource = (resource) => {
         const type = String(resource?.type || '').toLowerCase();
-        const hasPreview = resource?.view_storage_path && resource.view_storage_path !== 'None';
-        const hasDownload = resource?.download_storage_path && resource.download_storage_path !== 'None';
+        const hasPreview = resource?.view_storage_path && resource.view_storage_path !== 'None' && String(resource.view_storage_path).trim() !== '';
+        const hasDownload = resource?.download_storage_path && resource.download_storage_path !== 'None' && String(resource.download_storage_path).trim() !== '';
         return type === 'docx' && hasPreview && hasDownload;
+    };
+
+    const isCsvPreviewResource = (resource) => {
+        const type = String(resource?.type || '').toLowerCase();
+        const viewPath = String(resource?.view_storage_path || '').toLowerCase();
+        const hasPreview = viewPath && viewPath !== 'none' && viewPath.trim() !== '';
+        const hasDownload = resource?.download_storage_path && resource.download_storage_path !== 'None' && String(resource.download_storage_path).trim() !== '';
+        return (type === 'csv' || viewPath.endsWith('.csv')) && hasPreview && hasDownload;
     };
 
     const getResourceViewLabel = (resource) => {
         if (isGoogleSheetResource(resource)) return 'View Sheet';
-        return isDocxPreviewResource(resource) ? 'Preview PDF' : 'View';
+        if (isDocxPreviewResource(resource)) return 'Preview PDF';
+        if (isCsvPreviewResource(resource)) return 'Preview CSV';
+        return 'View';
     };
 
     const getResourceDownloadLabel = (resource) => {
         if (isGoogleSheetResource(resource)) return 'Download Excel';
-        return isDocxPreviewResource(resource) ? 'Download DOCX' : 'Download';
+        if (isDocxPreviewResource(resource)) return 'Download DOCX';
+        const dlPath = String(resource?.download_storage_path || '').toLowerCase();
+        if (dlPath.endsWith('.xlsx') || dlPath.endsWith('.xls')) return 'Download Excel';
+        if (dlPath.endsWith('.csv') || resource?.type === 'csv') return 'Download CSV';
+        return 'Download';
     };
 
     const isDirectRedirectSheetResource = (resource) => {
@@ -195,9 +209,17 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isGoogleSheetResource(resource)) {
             return 'Opens Google Sheet. Download exports as Excel (.xlsx).';
         }
-        return isDocxPreviewResource(resource)
-            ? 'PDF preview available. Download returns the original DOCX file.'
-            : '';
+        if (isDocxPreviewResource(resource)) {
+            return 'PDF preview available. Download returns the original DOCX file.';
+        }
+        if (isCsvPreviewResource(resource)) {
+            const dlPath = String(resource?.download_storage_path || '').toLowerCase();
+            if (dlPath.endsWith('.xlsx') || dlPath.endsWith('.xls')) {
+                return 'CSV preview available. Download returns the original Excel (.xlsx) file.';
+            }
+            return 'CSV preview available. Download returns the file.';
+        }
+        return '';
     };
 
     const getResourceViewerSubtitle = (resource, type) => {
@@ -206,6 +228,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (isDocxPreviewResource(resource) && type === 'pdf') {
             return 'Previewing the PDF version. Use download to get the original DOCX file.';
+        }
+        if (type === 'csv' && resource?.download_storage_path && resource.download_storage_path !== 'None') {
+            const dlPath = String(resource.download_storage_path).toLowerCase();
+            if (dlPath.endsWith('.xlsx') || dlPath.endsWith('.xls')) {
+                return 'CSV preview available. Use download to get the original Excel (.xlsx) file.';
+            }
+            return 'CSV preview available. Use download to get the file.';
         }
         return '';
     };
@@ -1607,7 +1636,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
                             <div class="resource-actions">
                                 <button class="resource-btn resource-btn-view" data-resource="${safeResourceStr}"><i class="fas fa-eye"></i> ${viewLabel}</button>
-                                ${(resource.download_storage_path && resource.download_storage_path !== 'None') ?
+                                ${(resource.download_storage_path && resource.download_storage_path !== 'None' && String(resource.download_storage_path).trim() !== '') ?
                             `<button class="resource-btn resource-btn-download" data-resource="${safeResourceStr}"><i class="fas fa-download"></i> ${downloadLabel}</button>` :
                             `<span class="resource-btn resource-btn-download disabled"><i class="fas fa-download"></i> ${downloadLabel}</span>`
                         }
@@ -1941,6 +1970,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const pdfInfo = document.getElementById('pdf-page-info');
         const pdfNext = document.getElementById('pdf-next-page');
 
+        const hasDl = Boolean(resource.download_storage_path && resource.download_storage_path !== 'None' && String(resource.download_storage_path).trim() !== '');
+
         if (type === 'iframe') {
             if (pdfPrev) pdfPrev.style.display = 'none';
             if (pdfInfo) pdfInfo.style.display = 'none';
@@ -1956,12 +1987,17 @@ document.addEventListener('DOMContentLoaded', () => {
             if (pdfNext) pdfNext.style.display = 'inline-block';
             if (DOMElements.viewerOpenExternalBtn) DOMElements.viewerOpenExternalBtn.style.display = 'none';
             DOMElements.resourceViewerModal.querySelector('.resource-viewer-controls').style.display = 'flex';
+        } else if (type === 'csv') {
+            if (pdfPrev) pdfPrev.style.display = 'none';
+            if (pdfInfo) pdfInfo.style.display = 'none';
+            if (pdfNext) pdfNext.style.display = 'none';
+            if (DOMElements.viewerOpenExternalBtn) DOMElements.viewerOpenExternalBtn.style.display = 'none';
+            DOMElements.resourceViewerModal.querySelector('.resource-viewer-controls').style.display = hasDl ? 'flex' : 'none';
         } else {
             if (DOMElements.viewerOpenExternalBtn) DOMElements.viewerOpenExternalBtn.style.display = 'none';
-            DOMElements.resourceViewerModal.querySelector('.resource-viewer-controls').style.display = 'none';
+            DOMElements.resourceViewerModal.querySelector('.resource-viewer-controls').style.display = hasDl ? 'flex' : 'none';
         }
 
-        const hasDl = (resource.download_storage_path && resource.download_storage_path !== 'None');
         if (DOMElements.viewerDownloadBtn) {
             DOMElements.viewerDownloadBtn.style.display = hasDl ? 'inline-block' : 'none';
             DOMElements.viewerDownloadBtn.textContent = getResourceDownloadLabel(resource);

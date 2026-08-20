@@ -1280,8 +1280,176 @@ function showEnrollmentRequiredPopup() {
 
 
 
-async function handleApplyClick(job, buttonElement, isAiApply = false) {
+// Profile Check & Gating for Recruiter Jobs (posted via post-a-job)
+function isRecruiterPostedJob(job) {
+    return Boolean(job && (job.posted_by || job.hirer_email || job['posted_by'] || job['hirer_email']));
+}
 
+function showRecruiterProfileRequiredPopup(job) {
+    const existing = document.querySelector('.recruiter-gate-popup-overlay');
+    if (existing) existing.remove();
+
+    const popupHtml = `
+        <div class="recruiter-gate-popup-overlay cv-popup-overlay">
+            <div class="cv-popup-card" style="max-width: 440px; text-align: center;">
+                <div class="cv-popup-icon" style="background-color: #fee2e2; color: #ef4444; margin: 0 auto 1rem;">
+                    <i class="fas fa-id-card-clip"></i>
+                </div>
+                <h3 style="font-size: 1.25rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">Profile Required to Apply</h3>
+                <p style="font-size: 0.88rem; color: #475569; line-height: 1.5; margin-bottom: 1.5rem;">
+                    This job is posted directly by a verified recruiter. Please fill your profile details and upload your CV before applying so the employer can review your candidacy.
+                </p>
+                <div class="cv-popup-btns" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <a href="/profile.html?redirect=${encodeURIComponent(window.location.href)}" class="cv-popup-btn-primary" style="display: block; text-align: center; text-decoration: none; padding: 0.75rem;">
+                        <i class="fas fa-user-pen"></i> Complete Profile Now
+                    </a>
+                    <button type="button" class="cv-popup-btn-secondary" id="closeGateRequiredBtn" style="padding: 0.65rem;">
+                        Maybe Later
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', popupHtml);
+    const overlay = document.querySelector('.recruiter-gate-popup-overlay');
+    setTimeout(() => overlay.classList.add('show'), 10);
+
+    const closeBtn = document.getElementById('closeGateRequiredBtn');
+    const closePopup = () => {
+        overlay.classList.remove('show');
+        setTimeout(() => overlay.remove(), 300);
+    };
+
+    closeBtn.addEventListener('click', closePopup);
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closePopup();
+    });
+}
+
+function showRecruiterProfileWarningPopup(job, percent, onProceedCallback) {
+    const existing = document.querySelector('.recruiter-gate-popup-overlay');
+    if (existing) existing.remove();
+
+    const popupHtml = `
+        <div class="recruiter-gate-popup-overlay cv-popup-overlay">
+            <div class="cv-popup-card" style="max-width: 450px; text-align: center;">
+                <div class="cv-popup-icon" style="background-color: #fef3c7; color: #d97706; margin: 0 auto 1rem;">
+                    <i class="fas fa-triangle-exclamation"></i>
+                </div>
+                <h3 style="font-size: 1.2rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">Profile Incomplete (${percent}%)</h3>
+                <p style="font-size: 0.88rem; color: #475569; line-height: 1.5; margin-bottom: 1.5rem;">
+                    Your profile is only <strong>${percent}% complete</strong>. Verified recruiters heavily prioritize candidates with complete profiles and uploaded CVs.
+                </p>
+                <div class="cv-popup-btns" style="display: flex; gap: 0.75rem;">
+                    <a href="/profile.html?redirect=${encodeURIComponent(window.location.href)}" class="cv-popup-btn-primary" style="flex: 1; text-align: center; text-decoration: none; padding: 0.75rem;">
+                        <i class="fas fa-user-pen"></i> Complete Profile
+                    </a>
+                    <button type="button" class="cv-popup-btn-secondary" id="applyAnywayBtn" style="flex: 1; padding: 0.75rem; font-weight: 600;">
+                        Apply Anyway
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', popupHtml);
+    const overlay = document.querySelector('.recruiter-gate-popup-overlay');
+    setTimeout(() => overlay.classList.add('show'), 10);
+
+    const applyAnywayBtn = document.getElementById('applyAnywayBtn');
+    const closePopup = () => {
+        overlay.classList.remove('show');
+        setTimeout(() => overlay.remove(), 300);
+    };
+
+    applyAnywayBtn.addEventListener('click', () => {
+        closePopup();
+        if (typeof onProceedCallback === 'function') onProceedCallback();
+    });
+
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closePopup();
+    });
+}
+
+function showPortalToast(message) {
+    const existing = document.getElementById('portalToastAlert');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.id = 'portalToastAlert';
+    toast.style.cssText = `
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 99999;
+        background: #0f172a;
+        color: white;
+        padding: 0.9rem 1.25rem;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.25);
+        font-family: 'Poppins', sans-serif;
+        font-size: 0.85rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        border-left: 4px solid #4f46e5;
+        max-width: 380px;
+        line-height: 1.4;
+    `;
+
+    toast.innerHTML = `
+        <i class="fas fa-info-circle" style="color: #818cf8; font-size: 1.1rem; flex-shrink: 0;"></i>
+        <span>${message}</span>
+    `;
+
+    document.body.appendChild(toast);
+    setTimeout(() => {
+        if (toast.parentNode) {
+            toast.style.transition = 'opacity 0.3s';
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 300);
+        }
+    }, 5500);
+}
+
+async function handleApplyClick(job, buttonElement, isAiApply = false) {
+    // Check if this is a recruiter-posted job
+    if (isRecruiterPostedJob(job)) {
+        if (!currentSession) {
+            window.location.href = `/login.html?redirect=${encodeURIComponent(window.location.href)}`;
+            return;
+        }
+
+        const percent = calculateProfileCompletion();
+
+        // 1. If 0% (No profile created)
+        if (percent === 0) {
+            showRecruiterProfileRequiredPopup(job);
+            return;
+        }
+
+        // 2. If < 50%
+        if (percent < 50) {
+            showRecruiterProfileWarningPopup(job, percent, () => {
+                executeActualApply(job, buttonElement, isAiApply);
+            });
+            return;
+        }
+
+        // 3. If >= 50%
+        executeActualApply(job, buttonElement, isAiApply);
+        showPortalToast("Application submitted! We recommend completing your profile to 100% for maximum recruiter response.");
+        return;
+    }
+
+    // Standard application flow for non-recruiter jobs
+    executeActualApply(job, buttonElement, isAiApply);
+}
+
+async function executeActualApply(job, buttonElement, isAiApply = false) {
     markJobAsApplied(job);
 
     if (isAiApply) {

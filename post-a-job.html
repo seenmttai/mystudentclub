@@ -1666,11 +1666,16 @@ Reputed Chartered Accountancy firm invites applications from CA Inter cleared st
       const initial = name.charAt(0).toUpperCase();
 
       authNavContainer.innerHTML = `
-        <div class="recruiter-profile-pill">
-          <div class="recruiter-avatar">${initial}</div>
-          <div class="recruiter-info-text">
-            <span class="recruiter-name">${name}</span>
-            <span class="recruiter-company"><i class="fas fa-check-circle" style="color: #10b981;"></i> ${company}</span>
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <a href="/hirer-dashboard.html" class="nav-link" style="color: var(--primary); font-weight: 600;">
+            <i class="fas fa-chart-line"></i> <span class="nav-feed-text">Dashboard</span>
+          </a>
+          <div class="recruiter-profile-pill" onclick="window.location.href='/hirer-dashboard.html'" style="cursor: pointer;" title="Open Hirer Dashboard">
+            <div class="recruiter-avatar">${initial}</div>
+            <div class="recruiter-info-text">
+              <span class="recruiter-name">${name}</span>
+              <span class="recruiter-company"><i class="fas fa-check-circle" style="color: #10b981;"></i> ${company}</span>
+            </div>
           </div>
         </div>
       `;
