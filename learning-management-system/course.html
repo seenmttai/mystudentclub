@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Course Details | My Student Club LMS</title>
-    <link rel="stylesheet" href="styles.css?v=2.1">
-    <link rel="stylesheet" href="course-styles.css?v=2.1">
+    <link rel="stylesheet" href="styles.css?v=2.5">
+    <link rel="stylesheet" href="course-styles.css?v=2.5">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Plyr Video Player -->
     <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
@@ -257,10 +257,13 @@
                         <h2 class="resource-viewer-title" id="resource-viewer-title">Resource Preview</h2>
                         <p class="resource-viewer-subtitle" id="resource-viewer-subtitle"></p>
                     </div>
-                    <div>
-                        <button class="resource-viewer-fullscreen-button" id="viewer-fullscreen-btn"><i
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <button class="viewer-nav-button viewer-download-btn" id="viewer-header-download-btn" style="display: none; height: 34px; padding: 0.25rem 0.85rem; font-size: 0.85rem;">
+                            <i class="fas fa-download"></i> <span id="viewer-header-download-text">Download</span>
+                        </button>
+                        <button class="resource-viewer-fullscreen-button" id="viewer-fullscreen-btn" title="Toggle Fullscreen"><i
                                 class="fas fa-expand"></i></button>
-                        <button class="resource-viewer-close-button" id="viewer-close-btn">×</button>
+                        <button class="resource-viewer-close-button" id="viewer-close-btn" title="Close">×</button>
                     </div>
                 </div>
                 <div class="viewer-main-content">
@@ -353,7 +356,7 @@
 
 
 
-    <script src="course-script.js?v=2.1"></script>
+    <script src="course-script.js?v=2.5"></script>
 </body>
 
 </html>

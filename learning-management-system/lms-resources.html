@@ -616,7 +616,11 @@
                         <div class="resource-viewer-title-wrap">
                             <h2 class="resource-viewer-title">{{ currentResourceTitle }}{{ currentResourceSubtitle ? ' · Preview' : '' }}</h2>
                         </div>
-                        <div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <button v-if="currentResource && hasDownloadPath(currentResource)" @click="downloadResource(currentResource)"
+                                class="viewer-nav-button viewer-download-btn" style="height: 34px; padding: 0.25rem 0.85rem; font-size: 0.85rem;">
+                                <i class="fas fa-download"></i> {{ getDownloadLabel(currentResource) }}
+                            </button>
                             <button @click="toggleFullscreen" class="resource-viewer-fullscreen-button"
                                 title="Toggle Fullscreen">
                                 <i class="fas" :class="isFullscreen ? 'fa-compress' : 'fa-expand'"></i>

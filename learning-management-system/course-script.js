@@ -107,6 +107,8 @@ document.addEventListener('DOMContentLoaded', () => {
         pdfNextPage: document.getElementById('pdf-next-page'),
         pdfPageInfo: document.getElementById('pdf-page-info'),
         viewerDownloadBtn: document.getElementById('viewer-download-btn'),
+        viewerHeaderDownloadBtn: document.getElementById('viewer-header-download-btn'),
+        viewerHeaderDownloadText: document.getElementById('viewer-header-download-text'),
         viewerOpenExternalBtn: document.getElementById('viewer-open-external-btn'),
         iframeViewerContainer: document.getElementById('iframe-viewer-container'),
         resourceIframe: document.getElementById('resource-iframe'),
@@ -1998,6 +2000,13 @@ document.addEventListener('DOMContentLoaded', () => {
             DOMElements.resourceViewerModal.querySelector('.resource-viewer-controls').style.display = hasDl ? 'flex' : 'none';
         }
 
+        if (DOMElements.viewerHeaderDownloadBtn) {
+            DOMElements.viewerHeaderDownloadBtn.style.display = hasDl ? 'inline-flex' : 'none';
+            if (DOMElements.viewerHeaderDownloadText) {
+                DOMElements.viewerHeaderDownloadText.textContent = getResourceDownloadLabel(resource);
+            }
+        }
+
         if (DOMElements.viewerDownloadBtn) {
             DOMElements.viewerDownloadBtn.style.display = hasDl ? 'inline-block' : 'none';
             DOMElements.viewerDownloadBtn.textContent = getResourceDownloadLabel(resource);
@@ -2278,6 +2287,9 @@ document.addEventListener('DOMContentLoaded', () => {
         DOMElements.pdfPrevPage.addEventListener('click', () => { if (state.pdfCurrentPage > 1) renderPdfPage(state.pdfCurrentPage - 1); });
         DOMElements.pdfNextPage.addEventListener('click', () => { if (state.pdfCurrentPage < state.pdfTotalPages) renderPdfPage(state.pdfCurrentPage + 1); });
         DOMElements.viewerDownloadBtn.addEventListener('click', () => { if (state.currentResource) downloadResource(state.currentResource) });
+        if (DOMElements.viewerHeaderDownloadBtn) {
+            DOMElements.viewerHeaderDownloadBtn.addEventListener('click', () => { if (state.currentResource) downloadResource(state.currentResource); });
+        }
 
         // Synchronize state and UI when native fullscreen is entered/exited
         document.addEventListener('fullscreenchange', () => {
