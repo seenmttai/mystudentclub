@@ -225,6 +225,14 @@ let page = 0;
 const limit = 15;
 let hasMoreData = true;
 let currentTable = 'Industrial Training Job Portal';
+
+// SEO: Maps table names to URL slugs used in /jobs/{slug}/{id}.html
+const TABLE_SLUG_MAP = {
+    'Industrial Training Job Portal': 'industrial',
+    'Fresher Jobs': 'fresher',
+    'Semi Qualified Jobs': 'semi-qualified',
+    'Articleship Jobs': 'articleship'
+};
 let currentSession = null;
 let appliedJobIds = new Set();
 let debounceTimeout = null;
@@ -589,7 +597,7 @@ function renderJobCard(job) {
         ${descriptionText ? `<p class="job-card-description">${descriptionText.slice(0, 120)}${descriptionText.length > 120 ? "…" : ""}</p>` : ""}
         <div class="job-card-actions">
             ${applyButtonHtml}
-            <button class="view-details-card-btn secondary">View Details ›</button>
+            <a href="/jobs/${TABLE_SLUG_MAP[currentTable] || 'industrial'}/${job.id}.html" class="view-details-card-btn secondary" onclick="event.preventDefault();">View Details ›</a>
         </div>`;
 
     const applyBtn = jobCard.querySelector('.apply-now-card-btn.primary');

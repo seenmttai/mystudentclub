@@ -1702,6 +1702,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.3rem;
+  text-decoration: none;
 }
 
 .view-details-card-btn:hover {

@@ -111,7 +111,7 @@ export function generateJsonLd(job: any, jobId: any, categorySlug: any): any {
     return {
         "@context": "https://schema.org/",
         "@type": "JobPosting",
-        "title": job.Company || "Job Vacancy",
+        "title": job.Role || job.Category || "Job Vacancy",
         "description": description,
         "identifier": {
             "@type": "PropertyValue",
@@ -119,7 +119,7 @@ export function generateJsonLd(job: any, jobId: any, categorySlug: any): any {
             "value": jobId
         },
         "datePosted": datePosted,
-        "validThrough": new Date(new Date(datePosted).setMonth(new Date(datePosted).getMonth() + 3)).toISOString(),
+        "validThrough": new Date(new Date(datePosted).setDate(new Date(datePosted).getDate() + 3)).toISOString(),
         "employmentType": "FULL_TIME",
         "hiringOrganization": {
             "@type": "Organization",
