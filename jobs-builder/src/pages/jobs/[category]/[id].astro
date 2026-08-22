@@ -2,6 +2,7 @@
 import { 
   supabase,
   TABLE_MAP,
+  VIEW_NAME_MAP,
   JOB_TITLE_MAP,
   escapeHtml,
   getDaysAgo,
@@ -41,7 +42,7 @@ export async function getStaticPaths() {
 
   for (const [tableName, categorySlug] of Object.entries(TABLE_MAP)) {
     let query = supabase
-      .from(tableName)
+      .from(VIEW_NAME_MAP[tableName] || tableName)
       .select('*')
       .order('Created_At', { ascending: false })
       .limit(FETCH_LIMIT);
@@ -129,6 +130,16 @@ const backLinkUrl = (portalMap as Record<string, any>)[categorySlug as string]?.
 const copyText = applyInfo.isEmail ? applyInfo.link.replace('mailto:', '') : applyInfo.link;
 
 const jsonLd = generateJsonLd(job, job.id, categorySlug);
+
+// SEO: Human-readable category label for titles
+const CATEGORY_LABEL_MAP: Record<string, string> = {
+  'industrial': 'CA Industrial Training',
+  'fresher': 'CA Fresher Job',
+  'semi-qualified': 'Semi Qualified CA Job',
+  'articleship': 'CA Articleship'
+};
+const categoryLabel = CATEGORY_LABEL_MAP[categorySlug as string] || 'CA Job';
+const roleLabel = job.Role ? job.Role.trim() : categoryLabel;
 ---
 
 <!DOCTYPE html>
@@ -136,8 +147,21 @@ const jsonLd = generateJsonLd(job, job.id, categorySlug);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{escapeHtml(companyName)} - {escapeHtml(location)} | My Student Club</title>
-    <meta name="description" content={`Apply for ${escapeHtml(companyName)} in ${escapeHtml(location)}. Find more CA Industrial Training, Fresher, and Articleship jobs on My Student Club.`}>
+    <title>{`${roleLabel} at ${companyName}, ${location} | My Student Club`}</title>
+    <meta name="description" content={`${escapeHtml(roleLabel)} opening at ${escapeHtml(companyName)} in ${escapeHtml(location)}. Apply now on My Student Club – India's CA job portal for fresher, industrial training and articleship opportunities.`}>
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href={`https://www.mystudentclub.com/jobs/${categorySlug}/${job.id}.html`}>
+
+    <!-- Open Graph / Social Sharing -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content={`https://www.mystudentclub.com/jobs/${categorySlug}/${job.id}.html`}>
+    <meta property="og:title" content={`${escapeHtml(roleLabel)} at ${escapeHtml(companyName)}, ${escapeHtml(location)}`}>
+    <meta property="og:description" content={`${escapeHtml(roleLabel)} opening at ${escapeHtml(companyName)} in ${escapeHtml(location)}. Apply on My Student Club.`}>
+    <meta property="og:image" content="https://www.mystudentclub.com/assets/og-jobs.png">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content={`${escapeHtml(roleLabel)} at ${escapeHtml(companyName)}, ${escapeHtml(location)}`}>
+    <meta name="twitter:description" content={`${escapeHtml(roleLabel)} opening in ${escapeHtml(location)}. Apply on My Student Club.`}>
+
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">

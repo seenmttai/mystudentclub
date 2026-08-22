@@ -21,6 +21,29 @@ const TABLE_MAP = {
 
 console.log('Starting folder cleanup...');
 
+function getFileTimestamp(filePath, fileName) {
+    try {
+        const content = fs.readFileSync(filePath, 'utf8');
+        const match = content.match(/"datePosted":\s*"([^"]+)"/);
+        if (match && match[1]) {
+            const ts = new Date(match[1]).getTime();
+            if (!isNaN(ts)) return ts;
+        }
+    } catch (_) {}
+
+    // Fallback to numeric ID if available (e.g. 29424.html)
+    const idMatch = fileName.match(/^(\d+)\.html$/);
+    if (idMatch) {
+        return parseInt(idMatch[1], 10);
+    }
+
+    try {
+        return fs.statSync(filePath).mtime.getTime();
+    } catch (_) {
+        return 0;
+    }
+}
+
 for (const folderName of Object.values(TABLE_MAP)) {
     const folderPath = path.join(DIST_JOBS_DIR, folderName);
     
@@ -29,7 +52,7 @@ for (const folderName of Object.values(TABLE_MAP)) {
         continue;
     }
 
-    // Get all HTML files with their modification times
+    // Get all HTML files with their parsed timestamps
     let allFiles = fs.readdirSync(folderPath)
         .filter(file => file.endsWith('.html'))
         .map(file => {
@@ -37,34 +60,18 @@ for (const folderName of Object.values(TABLE_MAP)) {
             return {
                 name: file,
                 path: filePath,
-                mtime: fs.statSync(filePath).mtime
+                time: getFileTimestamp(filePath, file)
             };
         });
 
-    // Sort by modification time (newest first)
-    allFiles.sort((a, b) => b.mtime - a.mtime);
+    // Sort by timestamp (newest first)
+    allFiles.sort((a, b) => b.time - a.time);
 
     console.log(`${folderName}: ${allFiles.length} files found`);
 
     if (allFiles.length > FOLDER_LIMIT) {
-        console.log(`⚠️  Folder limit exceeded (${allFiles.length} > ${FOLDER_LIMIT}). Initiating bulk cleanup...`);
-        
-        // Find the oldest file (last in sorted array)
-        const oldestFile = allFiles[allFiles.length - 1];
-        const oldestDate = new Date(oldestFile.mtime);
-        
-        console.log(`   Oldest file: ${oldestFile.name} (${oldestDate.toISOString()})`);
-        
-        // Calculate purge cutoff (oldest date + 7 days)
-        const purgeCutoff = new Date(oldestDate);
-        purgeCutoff.setDate(purgeCutoff.getDate() + 7);
-        
-        console.log(`   Purging files older than: ${purgeCutoff.toISOString()} (7-day buffer)`);
-        
-        // Filter files to delete
-        const filesToDelete = allFiles.filter(f => f.mtime <= purgeCutoff);
-        
-        console.log(`   Deleting ${filesToDelete.length} files...`);
+        const filesToDelete = allFiles.slice(FOLDER_LIMIT);
+        console.log(`⚠️  Folder limit exceeded (${allFiles.length} > ${FOLDER_LIMIT}). Deleting ${filesToDelete.length} oldest excess files...`);
         
         let deletedCount = 0;
         for (const file of filesToDelete) {
@@ -76,8 +83,7 @@ for (const folderName of Object.values(TABLE_MAP)) {
             }
         }
         
-        console.log(`✅ Bulk cleanup complete. Deleted ${deletedCount} files.`);
-        console.log(`   Remaining files: ${allFiles.length - deletedCount}`);
+        console.log(`✅ Cleanup complete. Deleted ${deletedCount} oldest files. Retained ${allFiles.length - deletedCount} newest files.`);
     } else {
         console.log(`✅ Folder check passed: ${allFiles.length} files (Limit: ${FOLDER_LIMIT})`);
     }

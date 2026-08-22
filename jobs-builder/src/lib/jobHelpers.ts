@@ -12,6 +12,14 @@ export const TABLE_MAP = {
     'Articleship Jobs': 'articleship'
 };
 
+// Maps display table names to actual Supabase view names (changed after Turnstile PR)
+export const VIEW_NAME_MAP: Record<string, string> = {
+    'Industrial Training Job Portal': 'public_industrial_jobs',
+    'Fresher Jobs': 'public_fresher_jobs',
+    'Semi Qualified Jobs': 'public_semi_qualified_jobs',
+    'Articleship Jobs': 'public_articleship_jobs'
+};
+
 export const JOB_TITLE_MAP = {
     "Industrial Training Job Portal": "Industrial Trainee",
     "Fresher Jobs": "CA Fresher",
@@ -111,7 +119,7 @@ export function generateJsonLd(job: any, jobId: any, categorySlug: any): any {
     return {
         "@context": "https://schema.org/",
         "@type": "JobPosting",
-        "title": job.Company || "Job Vacancy",
+        "title": job.Role || job.Category || "Job Vacancy",
         "description": description,
         "identifier": {
             "@type": "PropertyValue",
@@ -119,7 +127,7 @@ export function generateJsonLd(job: any, jobId: any, categorySlug: any): any {
             "value": jobId
         },
         "datePosted": datePosted,
-        "validThrough": new Date(new Date(datePosted).setMonth(new Date(datePosted).getMonth() + 3)).toISOString(),
+        "validThrough": new Date(new Date(datePosted).setDate(new Date(datePosted).getDate() + 3)).toISOString(),
         "employmentType": "FULL_TIME",
         "hiringOrganization": {
             "@type": "Organization",
