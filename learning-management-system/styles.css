@@ -451,6 +451,80 @@ body {
     border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
+/* Empty State Primary Action Button */
+.empty-state-icon-container {
+    width: 80px;
+    height: 80px;
+    background: #f1f5f9;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+    border: 1px solid #e2e8f0;
+}
+
+.browse-courses-primary-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 0.85rem 2.25rem;
+    background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+    color: #ffffff !important;
+    font-size: 1.05rem;
+    font-weight: 600;
+    text-decoration: none !important;
+    border-radius: 50px;
+    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+}
+
+.browse-courses-primary-btn:hover {
+    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.45);
+    color: #ffffff !important;
+}
+
+.browse-courses-primary-btn .fa-arrow-right {
+    transition: transform 0.2s ease;
+}
+
+.browse-courses-primary-btn:hover .fa-arrow-right {
+    transform: translateX(4px);
+}
+
+.browse-courses-primary-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+
+/* Fallback for enroll-btn */
+.enroll-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 0.85rem 2.25rem;
+    background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+    color: #ffffff !important;
+    font-size: 1.05rem;
+    font-weight: 600;
+    text-decoration: none !important;
+    border-radius: 50px;
+    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
+    transition: all 0.25s ease;
+}
+
+.enroll-btn:hover {
+    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.45);
+    color: #ffffff !important;
+}
+
 .courses-section-enhanced {
     margin-top: -40px;
     position: relative;

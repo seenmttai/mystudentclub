@@ -192,6 +192,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     await restoreActiveReview();
+    // Show remaining review counter for returning users (only if ≥1 review already used)
+    updateReviewsRemainingBanner();
 });
 
 function startNewAnalysis() {
@@ -204,6 +206,7 @@ function startNewAnalysis() {
     if (loadingSection) loadingSection.style.display = 'none';
     if (landingSection) landingSection.style.display = 'block';
     if (expandedMenu) expandedMenu.classList.remove('active');
+    updateReviewsRemainingBanner();
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -968,6 +971,9 @@ async function analyzeCv() {
         tipsSection.style.display = 'block';
         resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
+        // Show remaining reviews counter (non-intrusive, only after first use)
+        updateReviewsRemainingBanner();
+
     } catch (error) {
         stopLoadingAnimation();
         loadingSection.style.display = 'none';
@@ -975,6 +981,88 @@ async function analyzeCv() {
         resetToUploadStageOnError();
     }
 }
+
+// Shows a quiet "X reviews remaining" banner — only after the user has done ≥1 review.
+// Displays both above the upload box and on the results sidebar.
+// Hidden for premium/enrolled users entirely.
+async function updateReviewsRemainingBanner() {
+    const landingBanner = document.getElementById('reviewsRemainingBanner');
+    const landingTextEl = document.getElementById('reviewsRemainingText');
+    const resultsBanner = document.getElementById('resultsReviewsRemainingBanner');
+    const resultsTextEl = document.getElementById('resultsReviewsRemainingText');
+
+    const banners = [
+        { banner: landingBanner, textEl: landingTextEl },
+        { banner: resultsBanner, textEl: resultsTextEl }
+    ];
+
+    // Premium users: never show the banner
+    if (isPremiumEnrolled) {
+        banners.forEach(({ banner }) => {
+            if (banner) banner.style.display = 'none';
+        });
+        return;
+    }
+
+    const limit = FREE_USER_LIFETIME_LIMIT; // 3 free reviews total
+    let used = 0;
+
+    if (!authUser) {
+        // IP-based (not logged in)
+        used = getIpReviewCount();
+    } else {
+        // Free logged-in user
+        used = await getFreeUserLifetimeCount();
+    }
+
+    const remaining = Math.max(0, limit - used);
+
+    // Only show after at least 1 review has been used
+    if (used <= 0) {
+        banners.forEach(({ banner }) => {
+            if (banner) banner.style.display = 'none';
+        });
+        return;
+    }
+
+    // Compose message & styles
+    let msg = '';
+    let isUrgent = false;
+
+    if (remaining === 0) {
+        msg = '0 free reviews remaining';
+        isUrgent = true;
+    } else if (remaining === 1) {
+        msg = '⚠️ 1 free review remaining';
+        isUrgent = true;
+    } else {
+        msg = `${remaining} free reviews remaining`;
+        isUrgent = false;
+    }
+
+    banners.forEach(({ banner, textEl }) => {
+        if (!banner || !textEl) return;
+
+        textEl.textContent = msg;
+
+        if (isUrgent) {
+            banner.style.background = 'rgba(220, 38, 38, 0.08)';
+            banner.style.borderColor = 'rgba(220, 38, 38, 0.35)';
+            banner.style.color = '#991b1b';
+            const icon = banner.querySelector('i');
+            if (icon) icon.style.color = '#dc2626';
+        } else {
+            banner.style.background = 'rgba(245, 158, 11, 0.08)';
+            banner.style.borderColor = 'rgba(245, 158, 11, 0.3)';
+            banner.style.color = '#92400e';
+            const icon = banner.querySelector('i');
+            if (icon) icon.style.color = '#d97706';
+        }
+
+        banner.style.display = 'flex';
+    });
+}
+
 
 async function saveReview(reviewText) {
     if (!supabase) return null;

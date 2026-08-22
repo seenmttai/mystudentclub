@@ -34,6 +34,56 @@
             width: 200px;
         }
 
+        .empty-state-icon-container {
+            width: 80px;
+            height: 80px;
+            background: #f1f5f9;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .browse-courses-primary-btn {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 0.6rem !important;
+            padding: 0.85rem 2.25rem !important;
+            background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%) !important;
+            color: #ffffff !important;
+            font-size: 1.05rem !important;
+            font-weight: 600 !important;
+            text-decoration: none !important;
+            border-radius: 50px !important;
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35) !important;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            cursor: pointer !important;
+            margin-top: 0.5rem !important;
+        }
+
+        .browse-courses-primary-btn:hover {
+            background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%) !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.45) !important;
+            color: #ffffff !important;
+        }
+
+        .browse-courses-primary-btn .fa-arrow-right {
+            transition: transform 0.2s ease !important;
+        }
+
+        .browse-courses-primary-btn:hover .fa-arrow-right {
+            transform: translateX(4px) !important;
+        }
+
+        .browse-courses-primary-btn:active {
+            transform: translateY(0) !important;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3) !important;
+        }
+
         .profile-dropdown-container {
             position: relative;
             cursor: pointer;
@@ -268,14 +318,16 @@
                 <p>Loading your dashboard...</p>
             </div>
 
-            <section v-else-if="enrolledCourses.length === 0" class="progress-dashboard">
-                <div class="section-container" style="text-align: center;">
-                    <i class="fas fa-folder-open fa-4x" style="color: #cbd5e1; margin-bottom: 1rem;"></i>
-                    <h2>No Enrolled Courses Found</h2>
-                    <p>It looks like you haven't enrolled in any courses yet.</p>
-                    <a href="https://www.mystudentclub.com/ca-industrial-training-program/" class="enroll-btn"
-                        style="display: inline-flex; margin-top: 1rem;">
-                        Browse Courses
+            <section v-else-if="enrolledCourses.length === 0" class="progress-dashboard empty-courses-dashboard">
+                <div class="section-container" style="text-align: center; padding: 4rem 1.5rem;">
+                    <div class="empty-state-icon-container">
+                        <i class="fas fa-folder-open fa-3x" style="color: #94a3b8;"></i>
+                    </div>
+                    <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin-top: 1rem; margin-bottom: 0.5rem;">No Enrolled Courses Found</h2>
+                    <p style="color: var(--gray-500); font-size: 1rem; max-width: 480px; margin: 0 auto 1.75rem; line-height: 1.5;">It looks like you haven't enrolled in any courses yet.</p>
+                    <a href="https://www.mystudentclub.com/ca-industrial-training-program/" class="browse-courses-primary-btn" style="display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 0.6rem !important; padding: 0.85rem 2.25rem !important; background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%) !important; color: #ffffff !important; font-size: 1.05rem !important; font-weight: 600 !important; text-decoration: none !important; border-radius: 50px !important; box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35) !important;">
+                        <span>Browse Courses</span>
+                        <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
             </section>
@@ -283,13 +335,17 @@
             <section v-else class="courses-section-enhanced">
                 <div class="section-container">
                     <div class="section-header-enhanced"
-                        style="display: flex; justify-content: space-between; align-items: center;">
+                        style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                         <div>
                             <h2>My Learning Path</h2>
                             <p style="margin-bottom: 0;">Pick up where you left off</p>
                         </div>
 
-                        <div class="view-controls" style="margin-top: 0;">
+                        <div class="view-controls" style="margin-top: 0; display: flex; align-items: center; gap: 0.75rem;">
+                            <a href="https://www.mystudentclub.com/ca-industrial-training-program/" class="browse-courses-primary-btn" style="display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 0.5rem !important; padding: 0.55rem 1.25rem !important; font-size: 0.88rem !important; background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%) !important; color: #ffffff !important; font-weight: 600 !important; text-decoration: none !important; border-radius: 50px !important; box-shadow: 0 3px 10px rgba(37, 99, 235, 0.25) !important;">
+                                <span>Browse Courses</span>
+                                <i class="fas fa-arrow-right" style="font-size: 0.8rem;"></i>
+                            </a>
                             <div class="view-toggle">
                                 <button class="view-btn" :class="{ 'active': viewMode === 'grid' }"
                                     @click="viewMode = 'grid'">
@@ -581,7 +637,7 @@
                         this.user = session.user;
                         await this.fetchUserEnrollments();
                     } else {
-                        window.location.href = 'https://www.mystudentclub.com/login';
+                        window.location.href = '/login.html';
                     }
                 },
 
@@ -592,7 +648,7 @@
 
                 async logout() {
                     await supabase.auth.signOut();
-                    window.location.href = 'https://www.mystudentclub.com/login';
+                    window.location.href = '/login.html';
                 },
 
                 openReportModal() {

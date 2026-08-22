@@ -9,6 +9,7 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/scripts/portal-style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
@@ -813,6 +814,16 @@
         let realtimeChannel = null;
 
         // UTILITY FUNCTIONS
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
         function timeAgo(date) {
             const seconds = Math.floor((new Date() - new Date(date)) / 1000);
             let interval = seconds / 31536000;
@@ -848,12 +859,12 @@
                 data?.forEach(cat => {
                     container.innerHTML += `
                         <a class="category-item" data-category="${cat.id}">
-                            <span class="category-icon"><i class="${cat.icon}"></i></span>
-                            <span class="category-name">${cat.name}</span>
+                            <span class="category-icon"><i class="${escapeHTML(cat.icon)}"></i></span>
+                            <span class="category-name">${escapeHTML(cat.name)}</span>
                             <span class="category-count">${cat.thread_count}</span>
                         </a>
                     `;
-                    select.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+                    select.innerHTML += `<option value="${cat.id}">${escapeHTML(cat.name)}</option>`;
                 });
 
                 // Attach click handlers
@@ -908,10 +919,10 @@
 
                 container.innerHTML = data.map(thread => `
                     <a href="/thread.html?id=${thread.id}" class="thread-item ${thread.is_pinned ? 'pinned' : ''} ${thread.is_locked ? 'locked' : ''}">
-                        <div class="thread-avatar">${getAvatar(thread.author_email)}</div>
+                        <div class="thread-avatar">${escapeHTML(getAvatar(thread.author_email))}</div>
                         <div class="thread-main">
                             <div class="thread-header">
-                                <h2 class="thread-title">${thread.title}</h2>
+                                <h2 class="thread-title">${escapeHTML(thread.title)}</h2>
                                 <div class="thread-badges">
                                     ${thread.is_pinned ? '<span class="badge pinned"><i class="fas fa-thumbtack"></i> Pinned</span>' : ''}
                                     ${thread.is_locked ? '<span class="badge locked"><i class="fas fa-lock"></i> Locked</span>' : ''}
@@ -920,13 +931,13 @@
                             </div>
                             <div class="thread-meta">
                                 <span class="thread-meta-item">
-                                    ${thread.forum_categories ? `<span class="thread-category" style="background:${thread.forum_categories.color}20;color:${thread.forum_categories.color}"><i class="${thread.forum_categories.icon}"></i> ${thread.forum_categories.name}</span>` : ''}
+                                    ${thread.forum_categories ? `<span class="thread-category" style="background:${escapeHTML(thread.forum_categories.color)}20;color:${escapeHTML(thread.forum_categories.color)}"><i class="${escapeHTML(thread.forum_categories.icon)}"></i> ${escapeHTML(thread.forum_categories.name)}</span>` : ''}
                                 </span>
-                                <span class="thread-meta-item"><i class="far fa-user"></i> ${thread.forum_user_profiles?.display_name || thread.author_email?.split('@')[0] || 'Anonymous'}</span>
+                                <span class="thread-meta-item"><i class="far fa-user"></i> ${escapeHTML(thread.forum_user_profiles?.display_name || thread.author_email?.split('@')[0] || 'Anonymous')}</span>
                                 <span class="thread-meta-item"><i class="far fa-clock"></i> ${timeAgo(thread.created_at)}</span>
                                 <span class="thread-meta-item"><i class="far fa-eye"></i> ${thread.views} views</span>
                             </div>
-                            ${thread.tags && thread.tags.length ? `<div class="thread-tags">${thread.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}</div>` : ''}
+                            ${thread.tags && thread.tags.length ? `<div class="thread-tags">${thread.tags.map(tag => `<span class="tag">${escapeHTML(tag)}</span>`).join('')}</div>` : ''}
                         </div>
                         <div class="thread-stats">
                             <div class="vote-display">
@@ -960,7 +971,7 @@
                 const container = document.getElementById('trending-threads');
                 container.innerHTML = data?.map(t => `
                     <a href="/thread.html?id=${t.id}" class="trending-item">
-                        <div class="trending-title">${t.title}</div>
+                        <div class="trending-title">${escapeHTML(t.title)}</div>
                         <div class="trending-stats">${t.views} views · ${t.reply_count} replies</div>
                     </a>
                 `).join('') || '<p style="font-size: 0.875rem; color: var(--forum-text-muted);">No trending threads yet.</p>';
@@ -986,7 +997,7 @@
                     <div class="top-user">
                         <div class="top-user-avatar"><i class="fas fa-user"></i></div>
                         <div class="top-user-info">
-                            <div class="top-user-name"><span class="top-user-rank">#${i + 1}</span> ${u.display_name || u.username}</div>
+                            <div class="top-user-name"><span class="top-user-rank">#${i + 1}</span> ${escapeHTML(u.display_name || u.username)}</div>
                             <div class="top-user-rep">${u.reputation} reputation</div>
                         </div>
                     </div>

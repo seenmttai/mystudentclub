@@ -557,12 +557,20 @@
           <p class="sub-heading">Get a recruiter-grade audit — formatting precision, quantified impact, compliance depth, and the predicted interview questions your profile invites.</p>
         </div>
         <div class="hero-visual" aria-hidden="true">
-          <div class="visual-card visual-card--score">
-            <div class="visual-score-circle">
+          <div class="visual-card visual-card--score" style="position: relative; overflow: hidden;">
+            <!-- Sample Report Badge -->
+            <div style="position: absolute; top: 10px; right: 10px; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.5); color: #d97706; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 8px; border-radius: 20px; z-index: 2;">
+              Sample Report
+            </div>
+            <!-- Diagonal watermark -->
+            <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; z-index: 1; opacity: 0.07; transform: rotate(-30deg); font-size: 1.4rem; font-weight: 900; color: #fff; letter-spacing: 0.15em; text-transform: uppercase; white-space: nowrap;">
+              SAMPLE
+            </div>
+            <div class="visual-score-circle" style="position: relative; z-index: 2;">
               <span class="visual-score-num">87</span>
               <span class="visual-score-label">Overall Score</span>
             </div>
-            <div class="visual-score-breakdown">
+            <div class="visual-score-breakdown" style="position: relative; z-index: 2;">
               <div class="visual-bar-item">
                 <span>Quantified Impact</span>
                 <div class="visual-bar"><div class="visual-bar-fill" style="width: 90%"></div></div>
@@ -574,7 +582,10 @@
             </div>
           </div>
           <div class="visual-card visual-card--feedback">
-            <h4 class="visual-card-title">Analyzing CV Quality...</h4>
+            <h4 class="visual-card-title" style="display: flex; align-items: center; gap: 0.5rem;">
+              Analyzing CV Quality...
+              <span style="font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.5); color: #d97706; padding: 2px 7px; border-radius: 20px;">Sample</span>
+            </h4>
             <div class="visual-checklist">
               <div class="visual-check-item good">
                 <span class="visual-icon">✓</span>
@@ -609,6 +620,12 @@
               <i class="fa-solid fa-clock-rotate-left"></i>My History
             </button>
           </div>
+        </div>
+        <!-- Reviews remaining counter — shown only after at least 1 review has been done -->
+        <div id="reviewsRemainingBanner" style="display: none; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; padding: 0.55rem 1rem; border-radius: 10px; font-size: 0.85rem; font-weight: 500; background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.3); color: #92400e;">
+          <i class="fa-solid fa-circle-exclamation" style="color: #d97706; font-size: 0.9rem;"></i>
+          <span id="reviewsRemainingText">2 free reviews remaining</span>
+          <a href="https://www.mystudentclub.com/ca-industrial-training-program/" style="margin-left: auto; font-size: 0.78rem; color: #1d4ed8; font-weight: 600; text-decoration: none; white-space: nowrap;">Unlock unlimited →</a>
         </div>
         <div class="upload-area" id="dropArea">
           <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -880,6 +897,15 @@
       <div id="tab-analysis" class="tab-content active">
         <div class="results-grid">
           <div class="results-sidebar">
+            <!-- Remaining reviews counter in Results Sidebar -->
+            <div id="resultsReviewsRemainingBanner" style="display: none; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 1.25rem; padding: 0.55rem 0.85rem; border-radius: 10px; font-size: 0.82rem; font-weight: 500; background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.3); color: #92400e;">
+              <div style="display: flex; align-items: center; gap: 0.4rem;">
+                <i class="fa-solid fa-circle-exclamation" style="color: #d97706; font-size: 0.85rem;"></i>
+                <span id="resultsReviewsRemainingText">2 free reviews remaining</span>
+              </div>
+              <a href="https://www.mystudentclub.com/ca-industrial-training-program/" style="font-size: 0.75rem; color: #1d4ed8; font-weight: 600; text-decoration: none; white-space: nowrap;">Unlock unlimited →</a>
+            </div>
+
             <h3 class="text-lg font-semibold mb-4 text-center">Overall Score</h3>
             <div class="score-card mb-6 justify-center flex-col items-center">
               <div class="score-circle">

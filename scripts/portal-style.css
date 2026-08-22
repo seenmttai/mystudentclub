@@ -4350,3 +4350,188 @@ body:has(.portal-nav-bar) {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+/* ==========================================================================
+   Stipend & Salary Custom Range Filter Component
+   ========================================================================== */
+.stipend-filter-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  width: 100%;
+}
+
+.stipend-preset-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.stipend-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  border-radius: 20px;
+  background-color: var(--neutral-bg, #f1f5f9);
+  color: var(--text-secondary, #4b5563);
+  border: 1px solid var(--border-medium, #e2e8f0);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  line-height: 1.2;
+}
+
+.stipend-chip:hover {
+  background-color: #e2e8f0;
+  color: var(--text-primary, #1e293b);
+  border-color: #cbd5e1;
+}
+
+.stipend-chip.active {
+  background-color: var(--primary-brand, #2563eb);
+  color: #ffffff;
+  border-color: var(--primary-brand, #2563eb);
+  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.25);
+}
+
+.stipend-inputs-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stipend-input-box {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.stipend-input-prefix {
+  position: absolute;
+  left: 0.65rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted, #94a3b8);
+  pointer-events: none;
+}
+
+.stipend-input-field {
+  width: 100%;
+  padding: 0.5rem 0.5rem 0.5rem 1.45rem;
+  font-size: 0.82rem;
+  font-family: inherit;
+  color: var(--text-primary, #1e293b);
+  background-color: var(--surface-bg, #ffffff);
+  border: 1px solid var(--border-medium, #e2e8f0);
+  border-radius: var(--radius-md, 8px);
+  transition: all 0.2s ease;
+  -moz-appearance: textfield;
+}
+
+.stipend-input-field::-webkit-outer-spin-button,
+.stipend-input-field::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.stipend-input-field:focus {
+  outline: none;
+  border-color: var(--primary-brand, #2563eb);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+.stipend-input-separator {
+  font-size: 0.8rem;
+  color: var(--text-muted, #94a3b8);
+  font-weight: 500;
+  user-select: none;
+}
+
+/* Dual Range Slider */
+.stipend-slider-wrapper {
+  position: relative;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  margin-top: 0.1rem;
+}
+
+.stipend-slider-track-bg {
+  position: absolute;
+  width: 100%;
+  height: 5px;
+  background-color: var(--border-medium, #e2e8f0);
+  border-radius: 4px;
+}
+
+.stipend-slider-track-fill {
+  position: absolute;
+  height: 5px;
+  background: linear-gradient(90deg, #3b82f6, #2563eb);
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+.stipend-range-input {
+  position: absolute;
+  width: 100%;
+  height: 5px;
+  background: none;
+  pointer-events: none;
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+.stipend-range-input::-webkit-slider-thumb {
+  pointer-events: auto;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid var(--primary-brand, #2563eb);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.stipend-range-input::-moz-range-thumb {
+  pointer-events: auto;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid var(--primary-brand, #2563eb);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.stipend-range-input::-webkit-slider-thumb:hover,
+.stipend-range-input::-moz-range-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4);
+}
+
+.stipend-range-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: var(--text-muted, #94a3b8);
+  margin-top: -0.3rem;
+}
+
+.filter-modal-content .stipend-input-field {
+  background-color: var(--neutral-bg, #f8fafc) !important;
+  border-radius: 10px !important;
+}
+
+.filter-modal-content .stipend-input-field:focus {
+  background-color: var(--surface-bg, #ffffff) !important;
+}
