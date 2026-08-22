@@ -257,6 +257,7 @@ let cachedSortedLocations = null;
 let cachedSortedCategories = null;
 let currentFcmToken = null;
 let firebaseMessaging;
+let firmReviewsMap = new Map();
 
 const state = {
   keywords: [],
@@ -420,6 +421,47 @@ async function fetchTrendingJobs() {
   }
 }
 
+async function fetchFirmReviews() {
+  try {
+    const { data, error } = await supabaseClient
+      .from('articleship_firm_reviews_public')
+      .select('firm_name, overall_rating');
+    if (error) throw error;
+
+    const groups = {};
+    (data || []).forEach((r) => {
+      if (!r.firm_name) return;
+      const key = r.firm_name.trim().toLowerCase();
+      if (!groups[key]) {
+        groups[key] = {
+          firmName: r.firm_name.trim(),
+          ratings: [],
+          count: 0,
+        };
+      }
+      if (typeof r.overall_rating === 'number') {
+        groups[key].ratings.push(r.overall_rating);
+      }
+      groups[key].count++;
+    });
+
+    firmReviewsMap.clear();
+    for (const key in groups) {
+      const g = groups[key];
+      const avg = g.ratings.length
+        ? g.ratings.reduce((a, b) => a + b, 0) / g.ratings.length
+        : null;
+      firmReviewsMap.set(key, {
+        firmName: g.firmName,
+        avgOverall: avg,
+        count: g.count,
+      });
+    }
+  } catch (err) {
+    console.warn('Failed to load firm reviews for rating display:', err);
+  }
+}
+
 function renderTrendingCard(job, _idx) {
   const initials = getInitials(job.Company || "");
   const applicants = job.application_count || 0;
@@ -454,7 +496,6 @@ function renderJobCard(job) {
   const initials = getInitials(job.Company || "");
   const isApplied = appliedJobIds.has(job.id);
   const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : "";
-  const applicants = job.application_count || 0;
   const portalLabel =
     PORTALS.find((p) => p.id === currentPortalId)?.label || "";
 
@@ -469,6 +510,9 @@ function renderJobCard(job) {
   const isExclusive = !!job.is_exclusive;
   const isLocked = isExclusive && !isEnrolledSync("Industrial Training Job Portal");
 
+  const companyKey = (job.Company || "").trim().toLowerCase();
+  const ratingInfo = currentTable === "Articleship Jobs" ? firmReviewsMap.get(companyKey) : null;
+
   const card = document.createElement("article");
   card.className = "job-card-new" + (isExclusive ? " job-card-exclusive" : "");
   card.dataset.jobId = job.id;
@@ -477,7 +521,7 @@ function renderJobCard(job) {
             <div class="jc-avatar" style="background:${colors.bg};color:${colors.fg}">${initials}</div>
             <div class="jc-info">
                 <div class="jc-role">${job.Company || "N/A"}</div>
-                <div class="jc-company">${postedText}</div>
+                ${job.Location ? `<div class="jc-company">${job.Location.split(",")[0]}</div>` : ""}
             </div>
             <button class="jc-bookmark${isBookmarked(job.id, currentTable) ? " saved" : ""}" aria-label="Save">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="${isBookmarked(job.id, currentTable) ? "currentColor" : "none"}" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -487,13 +531,13 @@ function renderJobCard(job) {
         </div>
         <div class="jc-chips">
             ${isExclusive ? `<span class="jc-chip" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; border-color: #d97706; font-weight: 700;">⭐ Exclusive</span>` : ""}
+            ${ratingInfo && ratingInfo.count > 5 ? `<a href="/articleship-firm-review.html?firm=${encodeURIComponent(job.Company || '')}" class="jc-chip" style="background: #fef9c3; color: #854d0e; border-color: #fde047; font-weight: 700; text-decoration: none;" onclick="event.stopPropagation();"><i class="fa-solid fa-star" style="color: #ca8a04; margin-right: 4px;"></i>${ratingInfo.avgOverall.toFixed(1)} (${ratingInfo.count})</a>` : ""}
             ${primaryDomain ? `<span class="jc-chip jc-chip-domain">${primaryDomain}</span>` : ""}
             ${secondaryDomain ? `<span class="jc-chip jc-chip-domain" style="background-color: #e0f2fe; color: #0369a1; border-color: #bae6fd;">${secondaryDomain}</span>` : ""}
             ${companyType ? `<span class="jc-chip"><i class="fa-solid fa-building" style="margin-right: 4px; color: #94a3b8;"></i>${companyType}</span>` : ""}
             ${firmType ? `<span class="jc-chip"><i class="fa-solid fa-briefcase" style="margin-right: 4px; color: #94a3b8;"></i>${firmType}</span>` : ""}
             ${industryType ? `<span class="jc-chip"><i class="fa-solid fa-industry" style="margin-right: 4px; color: #94a3b8;"></i>${industryType}</span>` : ""}
             ${job.Experience ? `<span class="jc-chip">${job.Experience}</span>` : ""}
-            ${job.Location ? `<span class="jc-chip"><i class="fa-regular fa-compass" style="margin-right: 4px; color: #94a3b8;"></i>${job.Location.split(",")[0]}</span>` : ""}
         </div>
         <div class="jc-divider"></div>
         <div class="jc-footer">
@@ -515,7 +559,7 @@ function renderJobCard(job) {
                     return "";
                   }
                 })()}
-                <div class="jc-meta">${applicants > 0 ? `${applicants} applied` : "Be the first to apply!"}</div>
+                ${postedText ? `<div class="jc-meta">${postedText}</div>` : ""}
             </div>
             <button class="jc-apply-btn${isApplied ? " applied" : ""}${isLocked ? " exclusive-locked-btn" : ""}" style="${isLocked ? "background: linear-gradient(135deg, #f59e0b, #d97706) !important; color: white !important; border: none !important;" : ""}">${isLocked ? "Exclusive" : isApplied ? "✓ Applied" : "Apply →"}</button>
         </div>`;
@@ -1039,7 +1083,10 @@ function showJobDetail(job) {
   const isApplied = appliedJobIds.has(job.id);
   const applyLink = isUnlocked ? getApplicationLink(job["Application ID"], job.Company) : "#";
   const isMailto = isUnlocked && applyLink.startsWith("mailto:");
-  const applicants = job.application_count || 0;
+  const industry = job['Industry Type'] || job['Company Type'] || job['Firm Type'] || '';
+  const showCompanyTypePill = job['Company Type'] && job['Company Type'] !== industry;
+  const showFirmTypePill = job['Firm Type'] && job['Firm Type'] !== industry;
+  const ratingInfo = currentTable === "Articleship Jobs" ? firmReviewsMap.get((job.Company || "").trim().toLowerCase()) : null;
 
   // Build LinkedIn connect link
   const suffixPattern =
@@ -1140,15 +1187,17 @@ function showJobDetail(job) {
                 <div class="jd-hero-top">
                     <div class="jd-hero-avatar" style="background:${colors.bg};color:${colors.fg}">${initials}</div>
                     <div class="jd-hero-info">
-                        <div class="jd-hero-company">${job.Company || ""}</div>
+                        <div class="jd-hero-company">
+                            ${job.Company || ""}
+                            ${ratingInfo && ratingInfo.count > 5 ? `<span style="display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:700;color:#ca8a04;background:#fef9c3;padding:2px 7px;border-radius:6px;margin-left:6px;border:1px solid #fde047;vertical-align:middle;"><i class="fa-solid fa-star" style="font-size:10px;"></i>${ratingInfo.avgOverall.toFixed(1)}</span>` : ""}
+                        </div>
                         <div class="jd-hero-location">${job.Location || ""}</div>
                     </div>
                 </div>
                 <div class="jd-meta-pills">
                     ${job['Secondary Domain'] ? `<span class="jc-chip jc-chip-domain" style="background-color:#e0f2fe;color:#0369a1;border-color:#bae6fd;">${job['Secondary Domain']}</span>` : ""}
-                    ${job['Company Type'] ? `<span class="jc-chip"><i class="fa-solid fa-building" style="margin-right:4px;color:#94a3b8;"></i>${job['Company Type']}</span>` : ""}
-                    ${job['Firm Type'] ? `<span class="jc-chip"><i class="fa-solid fa-briefcase" style="margin-right:4px;color:#94a3b8;"></i>${job['Firm Type']}</span>` : ""}
-                    ${job['Industry Type'] ? `<span class="jc-chip"><i class="fa-solid fa-industry" style="margin-right:4px;color:#94a3b8;"></i>${job['Industry Type']}</span>` : ""}
+                    ${showCompanyTypePill ? `<span class="jc-chip"><i class="fa-solid fa-building" style="margin-right:4px;color:#94a3b8;"></i>${job['Company Type']}</span>` : ""}
+                    ${showFirmTypePill ? `<span class="jc-chip"><i class="fa-solid fa-briefcase" style="margin-right:4px;color:#94a3b8;"></i>${job['Firm Type']}</span>` : ""}
                     ${job.Experience ? `<span class="jc-chip">${job.Experience}</span>` : ""}
                 </div>
                 <div class="jd-stats-grid">
@@ -1167,8 +1216,7 @@ function showJobDetail(job) {
                       }
                       return "";
                     })()}
-                    ${applicants > 0 ? `<div class="jd-stat"><span class="jd-stat-label">Applicants</span><span class="jd-stat-value">${applicants}</span></div>` : ""}
-
+                    ${industry ? `<div class="jd-stat"><span class="jd-stat-label">Industry</span><span class="jd-stat-value">${industry}</span></div>` : ""}
                 </div>
             </div>
             ${applyHtml}
@@ -1179,6 +1227,15 @@ function showJobDetail(job) {
                 <button class="jd-action-link" id="jdShareInline">
                     <i class="fas fa-share-alt"></i> Share Job
                 </button>
+                ${currentTable === "Articleship Jobs" ? (
+                  ratingInfo && ratingInfo.count > 0 ? `
+                    <a href="/articleship-firm-review.html?firm=${encodeURIComponent(job.Company || '')}" class="jd-action-link" style="color: #2563eb;">
+                        <i class="fas fa-comments"></i> Read Reviews (${ratingInfo.count})
+                    </a>` : `
+                    <a href="/submit-review.html?firm=${encodeURIComponent(job.Company || '')}&location=${encodeURIComponent(job.Location ? job.Location.split(',')[0].trim() : '')}" class="jd-action-link">
+                        <i class="fas fa-pen-to-square"></i> Review Firm
+                    </a>`
+                ) : ""}
             </div>
             <div class="jd-section">
                 <h3 class="jd-section-title">Application Details</h3>
@@ -3053,7 +3110,7 @@ async function initializePage() {
   setupInfiniteScroll();
 
   // Fetch data
-  await Promise.all([fetchTrendingJobs(), fetchJobs(), loadBanners()]);
+  await Promise.all([fetchFirmReviews(), fetchTrendingJobs(), fetchJobs(), loadBanners()]);
 
   // Handle shared job URL
   checkAndOpenSharedJob();

@@ -266,7 +266,7 @@ function renderAppliedCard(app) {
             <div class="jc-avatar" style="background:${colors.bg};color:${colors.fg}">${initials}</div>
             <div class="jc-info">
                 <div class="jc-role">${job.Company || 'N/A'}</div>
-                <div class="jc-company">${postedText}</div>
+                ${job.Location ? `<div class="jc-company">${job.Location.split(',')[0]}</div>` : ''}
             </div>
             <span class="hist-applied-badge">✓ Applied</span>
         </div>
@@ -277,7 +277,6 @@ function renderAppliedCard(app) {
             ${companyType ? `<span class="jc-chip"><i class="fa-solid fa-building" style="margin-right: 4px; color: #94a3b8;"></i>${companyType}</span>` : ''}
             ${firmType ? `<span class="jc-chip"><i class="fa-solid fa-briefcase" style="margin-right: 4px; color: #94a3b8;"></i>${firmType}</span>` : ''}
             ${industryType ? `<span class="jc-chip"><i class="fa-solid fa-industry" style="margin-right: 4px; color: #94a3b8;"></i>${industryType}</span>` : ''}
-            ${job.Location ? `<span class="jc-chip"><i class="fa-regular fa-compass" style="margin-right: 4px; color: #94a3b8;"></i>${job.Location.split(',')[0]}</span>` : ''}
         </div>
         <div class="jc-divider"></div>
         <div class="jc-footer">
@@ -331,7 +330,7 @@ function renderSavedCard(bm) {
             <div class="jc-avatar" style="background:${colors.bg};color:${colors.fg}">${initials}</div>
             <div class="jc-info">
                 <div class="jc-role">${bm.Company || 'N/A'}</div>
-                <div class="jc-company">${postedText}</div>
+                ${bm.Location ? `<div class="jc-company">${bm.Location.split(',')[0]}</div>` : ''}
             </div>
             <button class="jc-bookmark saved" data-id="${bm.id}" data-table="${bm.table || ''}" aria-label="Remove saved">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17l-6-4-6 4z"/></svg>
@@ -344,7 +343,6 @@ function renderSavedCard(bm) {
             ${companyType ? `<span class="jc-chip"><i class="fa-solid fa-building" style="margin-right: 4px; color: #94a3b8;"></i>${companyType}</span>` : ''}
             ${firmType ? `<span class="jc-chip"><i class="fa-solid fa-briefcase" style="margin-right: 4px; color: #94a3b8;"></i>${firmType}</span>` : ''}
             ${industryType ? `<span class="jc-chip"><i class="fa-solid fa-industry" style="margin-right: 4px; color: #94a3b8;"></i>${industryType}</span>` : ''}
-            ${bm.Location ? `<span class="jc-chip"><i class="fa-regular fa-compass" style="margin-right: 4px; color: #94a3b8;"></i>${bm.Location.split(',')[0]}</span>` : ''}
         </div>
         <div class="jc-divider"></div>
         <div class="jc-footer">
