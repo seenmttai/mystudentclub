@@ -611,7 +611,13 @@
           <div class="flex items-center gap-3">
             <span class="step-index">1</span>
             <div class="start-step-titles">
-              <h3 class="start-step-title">Upload your resume</h3>
+              <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+                <h3 class="start-step-title" style="margin: 0;">Upload your resume</h3>
+                <span id="freeReviewsBadge" style="background: rgba(37, 99, 235, 0.1); border: 1px solid rgba(37, 99, 235, 0.3); color: #1d4ed8; font-size: 0.75rem; font-weight: 600; padding: 3px 9px; border-radius: 20px; display: inline-flex; align-items: center; gap: 4px;">
+                  <i class="fa-solid fa-sparkles" style="font-size: 0.7rem; color: #2563eb;"></i>
+                  <span>3 Free Reviews</span>
+                </span>
+              </div>
               <p class="start-step-sub">PDF only · processed in your browser for the preview.</p>
             </div>
           </div>
@@ -621,10 +627,10 @@
             </button>
           </div>
         </div>
-        <!-- Reviews remaining counter — shown only after at least 1 review has been done -->
-        <div id="reviewsRemainingBanner" style="display: none; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; padding: 0.55rem 1rem; border-radius: 10px; font-size: 0.85rem; font-weight: 500; background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.3); color: #92400e;">
-          <i class="fa-solid fa-circle-exclamation" style="color: #d97706; font-size: 0.9rem;"></i>
-          <span id="reviewsRemainingText">2 free reviews remaining</span>
+        <!-- Reviews remaining counter banner -->
+        <div id="reviewsRemainingBanner" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; padding: 0.55rem 1rem; border-radius: 10px; font-size: 0.85rem; font-weight: 500; background: rgba(37, 99, 235, 0.07); border: 1px solid rgba(37, 99, 235, 0.25); color: #1e40af;">
+          <i class="fa-solid fa-circle-check" style="color: #2563eb; font-size: 0.9rem;"></i>
+          <span id="reviewsRemainingText">3 free reviews available</span>
           <a href="https://www.mystudentclub.com/ca-industrial-training-program/" style="margin-left: auto; font-size: 0.78rem; color: #1d4ed8; font-weight: 600; text-decoration: none; white-space: nowrap;">Unlock unlimited →</a>
         </div>
         <div class="upload-area" id="dropArea">

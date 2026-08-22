@@ -982,7 +982,7 @@ async function analyzeCv() {
     }
 }
 
-// Shows a quiet "X reviews remaining" banner — only after the user has done ≥1 review.
+// Shows a clear indicator of free reviews available (3 chances total).
 // Displays both above the upload box and on the results sidebar.
 // Hidden for premium/enrolled users entirely.
 async function updateReviewsRemainingBanner() {
@@ -990,17 +990,24 @@ async function updateReviewsRemainingBanner() {
     const landingTextEl = document.getElementById('reviewsRemainingText');
     const resultsBanner = document.getElementById('resultsReviewsRemainingBanner');
     const resultsTextEl = document.getElementById('resultsReviewsRemainingText');
+    const freeReviewsBadge = document.getElementById('freeReviewsBadge');
 
     const banners = [
         { banner: landingBanner, textEl: landingTextEl },
         { banner: resultsBanner, textEl: resultsTextEl }
     ];
 
-    // Premium users: never show the banner
+    // Premium users: never show the limit banner
     if (isPremiumEnrolled) {
         banners.forEach(({ banner }) => {
             if (banner) banner.style.display = 'none';
         });
+        if (freeReviewsBadge) {
+            freeReviewsBadge.innerHTML = '<i class="fa-solid fa-crown" style="font-size: 0.7rem; color: #d97706;"></i> <span>Unlimited Reviews</span>';
+            freeReviewsBadge.style.background = 'rgba(245, 158, 11, 0.1)';
+            freeReviewsBadge.style.borderColor = 'rgba(245, 158, 11, 0.3)';
+            freeReviewsBadge.style.color = '#b45309';
+        }
         return;
     }
 
@@ -1017,27 +1024,40 @@ async function updateReviewsRemainingBanner() {
 
     const remaining = Math.max(0, limit - used);
 
-    // Only show after at least 1 review has been used
-    if (used <= 0) {
-        banners.forEach(({ banner }) => {
-            if (banner) banner.style.display = 'none';
-        });
-        return;
+    // Update Header Badge
+    if (freeReviewsBadge) {
+        if (remaining === 3) {
+            freeReviewsBadge.innerHTML = '<i class="fa-solid fa-sparkles" style="font-size: 0.7rem; color: #2563eb;"></i> <span>3 Free Reviews</span>';
+        } else if (remaining > 0) {
+            freeReviewsBadge.innerHTML = `<i class="fa-solid fa-clock-rotate-left" style="font-size: 0.7rem; color: #d97706;"></i> <span>${remaining} Review${remaining > 1 ? 's' : ''} Left</span>`;
+            freeReviewsBadge.style.background = 'rgba(245, 158, 11, 0.1)';
+            freeReviewsBadge.style.borderColor = 'rgba(245, 158, 11, 0.3)';
+            freeReviewsBadge.style.color = '#b45309';
+        } else {
+            freeReviewsBadge.innerHTML = '<i class="fa-solid fa-lock" style="font-size: 0.7rem; color: #dc2626;"></i> <span>0 Reviews Left</span>';
+            freeReviewsBadge.style.background = 'rgba(220, 38, 38, 0.1)';
+            freeReviewsBadge.style.borderColor = 'rgba(220, 38, 38, 0.3)';
+            freeReviewsBadge.style.color = '#b91c1c';
+        }
     }
 
-    // Compose message & styles
+    // Compose message & styles for banners
     let msg = '';
     let isUrgent = false;
+    let isInitial = false;
 
-    if (remaining === 0) {
-        msg = '0 free reviews remaining';
-        isUrgent = true;
+    if (remaining === 3) {
+        msg = '✨ 3 free AI resume reviews available';
+        isInitial = true;
+    } else if (remaining === 2) {
+        msg = '2 free reviews remaining';
+        isUrgent = false;
     } else if (remaining === 1) {
-        msg = '⚠️ 1 free review remaining';
+        msg = '⚠️ 1 free review remaining — make it count!';
         isUrgent = true;
     } else {
-        msg = `${remaining} free reviews remaining`;
-        isUrgent = false;
+        msg = '0 free reviews remaining — limit reached';
+        isUrgent = true;
     }
 
     banners.forEach(({ banner, textEl }) => {
@@ -1045,18 +1065,33 @@ async function updateReviewsRemainingBanner() {
 
         textEl.textContent = msg;
 
-        if (isUrgent) {
+        if (isInitial) {
+            banner.style.background = 'rgba(37, 99, 235, 0.07)';
+            banner.style.borderColor = 'rgba(37, 99, 235, 0.25)';
+            banner.style.color = '#1e40af';
+            const icon = banner.querySelector('i');
+            if (icon) {
+                icon.className = 'fa-solid fa-circle-check';
+                icon.style.color = '#2563eb';
+            }
+        } else if (isUrgent) {
             banner.style.background = 'rgba(220, 38, 38, 0.08)';
             banner.style.borderColor = 'rgba(220, 38, 38, 0.35)';
             banner.style.color = '#991b1b';
             const icon = banner.querySelector('i');
-            if (icon) icon.style.color = '#dc2626';
+            if (icon) {
+                icon.className = 'fa-solid fa-circle-exclamation';
+                icon.style.color = '#dc2626';
+            }
         } else {
             banner.style.background = 'rgba(245, 158, 11, 0.08)';
             banner.style.borderColor = 'rgba(245, 158, 11, 0.3)';
             banner.style.color = '#92400e';
             const icon = banner.querySelector('i');
-            if (icon) icon.style.color = '#d97706';
+            if (icon) {
+                icon.className = 'fa-solid fa-circle-exclamation';
+                icon.style.color = '#d97706';
+            }
         }
 
         banner.style.display = 'flex';
