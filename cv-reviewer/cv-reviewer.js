@@ -1041,60 +1041,9 @@ async function updateReviewsRemainingBanner() {
         }
     }
 
-    // Compose message & styles for banners
-    let msg = '';
-    let isUrgent = false;
-    let isInitial = false;
-
-    if (remaining === 3) {
-        msg = '✨ 3 free AI resume reviews available';
-        isInitial = true;
-    } else if (remaining === 2) {
-        msg = '2 free reviews remaining';
-        isUrgent = false;
-    } else if (remaining === 1) {
-        msg = '⚠️ 1 free review remaining — make it count!';
-        isUrgent = true;
-    } else {
-        msg = '0 free reviews remaining — limit reached';
-        isUrgent = true;
-    }
-
-    banners.forEach(({ banner, textEl }) => {
-        if (!banner || !textEl) return;
-
-        textEl.textContent = msg;
-
-        if (isInitial) {
-            banner.style.background = 'rgba(37, 99, 235, 0.07)';
-            banner.style.borderColor = 'rgba(37, 99, 235, 0.25)';
-            banner.style.color = '#1e40af';
-            const icon = banner.querySelector('i');
-            if (icon) {
-                icon.className = 'fa-solid fa-circle-check';
-                icon.style.color = '#2563eb';
-            }
-        } else if (isUrgent) {
-            banner.style.background = 'rgba(220, 38, 38, 0.08)';
-            banner.style.borderColor = 'rgba(220, 38, 38, 0.35)';
-            banner.style.color = '#991b1b';
-            const icon = banner.querySelector('i');
-            if (icon) {
-                icon.className = 'fa-solid fa-circle-exclamation';
-                icon.style.color = '#dc2626';
-            }
-        } else {
-            banner.style.background = 'rgba(245, 158, 11, 0.08)';
-            banner.style.borderColor = 'rgba(245, 158, 11, 0.3)';
-            banner.style.color = '#92400e';
-            const icon = banner.querySelector('i');
-            if (icon) {
-                icon.className = 'fa-solid fa-circle-exclamation';
-                icon.style.color = '#d97706';
-            }
-        }
-
-        banner.style.display = 'flex';
+    // Banners are removed; keep them hidden if present
+    banners.forEach(({ banner }) => {
+        if (banner) banner.style.display = 'none';
     });
 }
 
