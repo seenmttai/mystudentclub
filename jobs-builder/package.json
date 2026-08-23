@@ -12,7 +12,8 @@
     "expire": "node scripts/expire-old-jobs.js",
     "sitemap": "node scripts/generate-sitemap.js",
     "sync:update": "node scripts/update-sync-state.js",
-    "build:full": "npm run build && npm run sync:update && npm run cleanup && npm run expire && npm run sitemap"
+    "index": "node scripts/index-now.js",
+    "build:full": "npm run build && npm run sync:update && npm run cleanup && npm run expire && npm run sitemap && npm run index"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.6",

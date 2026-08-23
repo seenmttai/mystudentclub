@@ -109,7 +109,31 @@ export function constructMailto(job: any, tableName: string): string {
     return `mailto:${email}?subject=${encodeURIComponent(subject)}`;
 }
 
-export function generateJsonLd(job: any, jobId: any, categorySlug: any): any {
+export function slugifyText(text: any): string {
+    if (text === null || text === undefined || text === '') return '';
+    return String(text)
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 50);
+}
+
+export function generateJobSlug(job: any): string {
+    const company = slugifyText(job.Company || 'job');
+    const role = slugifyText(job.Role || job.Category || '');
+    const rawLocation = String(job.Location || '').split(',')[0].trim();
+    const location = slugifyText(rawLocation || 'india');
+    const id = String(job.id || '');
+
+    const parts = [company];
+    if (role && role !== company) parts.push(role);
+    if (location) parts.push(location);
+    if (id) parts.push(id);
+
+    return parts.filter(Boolean).join('-');
+}
+
+export function generateJsonLd(job: any, slug: string, categorySlug: any): any {
     const DOMAIN = 'https://www.mystudentclub.com';
     const datePosted = formatDate(job.Created_At);
     const description = job.Description
@@ -124,8 +148,9 @@ export function generateJsonLd(job: any, jobId: any, categorySlug: any): any {
         "identifier": {
             "@type": "PropertyValue",
             "name": job.Company,
-            "value": jobId
+            "value": String(job.id)
         },
+        "url": `${DOMAIN}/jobs/${categorySlug}/${slug}.html`,
         "datePosted": datePosted,
         "validThrough": new Date(new Date(datePosted).setDate(new Date(datePosted).getDate() + 3)).toISOString(),
         "employmentType": "FULL_TIME",
@@ -157,3 +182,4 @@ export function generateJsonLd(job: any, jobId: any, categorySlug: any): any {
         }
     };
 }
+
