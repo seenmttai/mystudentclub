@@ -36,7 +36,7 @@
   const DRAFT_TTL_MS = 24 * 60 * 60 * 1000;
 
   // ── Validation / anti-abuse config ────────────────────────────────────
-  const MIN_CHARS = 30;
+  const MIN_WORDS = 30;
   const MAX_WORDS = 500;
   const STIPEND_MAX = 50000;
   const MIN_SUBMIT_MS = 4000; // a fresh form submitted faster than this ⇒ treat as a bot
@@ -69,10 +69,9 @@
   // Returns { ok, message } for the free-text review body.
   function validateReviewText(text) {
     const t = String(text || '').trim();
-    const chars = charCount(t);
     const words = wordCount(t);
-    if (chars < MIN_CHARS) {
-      return { ok: false, message: `Please write at least ${MIN_CHARS} characters so your review is useful to others (currently ${chars}).` };
+    if (words < MIN_WORDS) {
+      return { ok: false, message: `Please write at least ${MIN_WORDS} words so your review is useful to others (currently ${words} words).` };
     }
     if (words > MAX_WORDS) {
       return { ok: false, message: `Your review must not exceed ${MAX_WORDS} words.` };
@@ -99,16 +98,25 @@
       ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
   function uuid() {
-    if (crypto.randomUUID) return crypto.randomUUID();
+    if (crypto && crypto.randomUUID) return crypto.randomUUID();
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
       const r = (Math.random() * 16) | 0;
       return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
     });
   }
+  let inMemoryDeviceToken = null;
   function deviceToken() {
-    let t = localStorage.getItem(DEVICE_KEY);
-    if (!t) { t = uuid(); localStorage.setItem(DEVICE_KEY, t); }
-    return t;
+    try {
+      let t = localStorage.getItem(DEVICE_KEY);
+      if (!t || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(t)) {
+        t = uuid();
+        localStorage.setItem(DEVICE_KEY, t);
+      }
+      return t;
+    } catch (e) {
+      if (!inMemoryDeviceToken) inMemoryDeviceToken = uuid();
+      return inMemoryDeviceToken;
+    }
   }
   function normName(s) {
     return String(s || '').trim().replace(/\s+/g, ' ').toLowerCase();
@@ -117,24 +125,28 @@
     try {
       const d = JSON.parse(localStorage.getItem(DRAFT_KEY));
       if (d && Date.now() - d.savedAt < DRAFT_TTL_MS) return d;
-    } catch (e) { /* corrupt draft — ignore */ }
+    } catch (e) { /* corrupt draft or storage blocked */ }
     return null;
   }
   function saveDraft() {
     if (!state) return;
-    localStorage.setItem(DRAFT_KEY, JSON.stringify({
-      reviewId: state.reviewId || null,
-      editToken: state.editToken || null,
-      firmId: state.firmId || null,
-      firmName: state.firmName || '',
-      location: state.location || '',
-      step: state.step || 1,
-      pendingPatch: state.pendingPatch || {},
-      savedData: state.savedData || {},
-      savedAt: Date.now(),
-    }));
+    try {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify({
+        reviewId: state.reviewId || null,
+        editToken: state.editToken || null,
+        firmId: state.firmId || null,
+        firmName: state.firmName || '',
+        location: state.location || '',
+        step: state.step || 1,
+        pendingPatch: state.pendingPatch || {},
+        savedData: state.savedData || {},
+        savedAt: Date.now(),
+      }));
+    } catch (e) {}
   }
-  function clearDraft() { localStorage.removeItem(DRAFT_KEY); }
+  function clearDraft() {
+    try { localStorage.removeItem(DRAFT_KEY); } catch (e) {}
+  }
 
   function toast(msg) {
     let t = document.querySelector('.arw-toast');
@@ -424,7 +436,7 @@
         <div class="arw-field" style="position: relative;">
           <label for="arw-review">Anonymous Review <span style="color:#dc2626">*</span></label>
           <textarea id="arw-review" rows="4" placeholder="Example: &quot;Great learning exposure in statutory audit. Working hours are standard (9-7 PM) but can stretch during tax season. Partners are approachable. Stipend is paid on time, and leaves for exams are supported.&quot;"></textarea>
-          <div id="arw-char-counter" style="font-size: 11px; color: #64748b; text-align: right; margin-top: 0.35rem; font-family: monospace;">0 / ${MIN_CHARS} characters minimum</div>
+          <div id="arw-char-counter" style="font-size: 11px; color: #64748b; text-align: right; margin-top: 0.35rem; font-family: monospace;">0 / ${MIN_WORDS} words minimum</div>
         </div>
         <div class="arw-field">
           <label>Overall Rating <span style="color:#dc2626">*</span></label>
@@ -533,24 +545,22 @@
     if (saved.consent) consentBox.checked = true;
 
     function refreshSubmitState() {
-      const chars = charCount(reviewTextarea.value);
       const words = wordCount(reviewTextarea.value);
-      const ready = chars >= MIN_CHARS && words <= MAX_WORDS && consentBox.checked;
+      const ready = words >= MIN_WORDS && words <= MAX_WORDS && consentBox.checked;
       submitBtn.disabled = !ready;
     }
     function updateCounter() {
-      const chars = charCount(reviewTextarea.value);
       const words = wordCount(reviewTextarea.value);
       if (words > MAX_WORDS) {
         counterDiv.textContent = `${words} / ${MAX_WORDS} words — too long`;
         counterDiv.style.color = '#dc2626';
         counterDiv.style.fontWeight = '700';
-      } else if (chars < MIN_CHARS) {
-        counterDiv.textContent = `${chars} / ${MIN_CHARS} characters minimum`;
+      } else if (words < MIN_WORDS) {
+        counterDiv.textContent = `${words} / ${MIN_WORDS} words minimum`;
         counterDiv.style.color = '#dc2626';
         counterDiv.style.fontWeight = '600';
       } else {
-        counterDiv.textContent = `${chars} characters · looks good`;
+        counterDiv.textContent = `${words} words · looks good`;
         counterDiv.style.color = '#16a34a';
         counterDiv.style.fontWeight = '600';
       }
@@ -658,16 +668,21 @@
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting…';
     try {
-      const { data, error } = await sb.rpc('submit_review_step1', {
-        p_firm_id: state.firmId,
-        p_new_firm_name: state.firmId ? null : firmName,
+      const validFirmId = (state.firmId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(state.firmId)) ? state.firmId : null;
+      const payload = {
+        p_firm_id: validFirmId,
+        p_new_firm_name: validFirmId ? null : firmName,
         p_location: location,
         p_review_text: reviewText,
         p_overall_rating: overall,
         p_device_token: deviceToken(),
-        p_honeypot: hp,
-      });
-      if (error) throw error;
+        p_honeypot: hp || '',
+      };
+      const { data, error } = await sb.rpc('submit_review_step1', payload);
+      if (error) {
+        console.error('Supabase submit_review_step1 error:', error);
+        throw error;
+      }
       state.reviewId = data.review_id;
       state.editToken = data.edit_token;
       state.firmId = data.firm_id;
@@ -683,7 +698,9 @@
       if (onComplete) onComplete(); // review is live — let the page refresh in background
       renderStep();
     } catch (err) {
-      setStatus(err.message || 'Something went wrong. Please try again.', 'err');
+      console.error('Submit review error:', err);
+      const errMsg = err.message || err.details || err.hint || 'Something went wrong. Please try again.';
+      setStatus(errMsg, 'err');
       btn.disabled = false;
       btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Anonymous Review';
     }
