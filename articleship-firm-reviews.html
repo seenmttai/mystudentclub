@@ -1038,6 +1038,69 @@
       flex-shrink: 0;
     }
 
+    /* Select dropdown styling in search bar */
+    select.afr-filter-select,
+    .search-segment select,
+    .segment-details select {
+      border: none !important;
+      background: transparent !important;
+      background-color: transparent !important;
+      padding: 0 1.25rem 0 0 !important;
+      font-family: var(--font-main) !important;
+      font-size: 0.875rem !important;
+      font-weight: 600 !important;
+      color: #0f172a !important;
+      width: 100% !important;
+      height: auto !important;
+      min-height: 0 !important;
+      line-height: 1.4 !important;
+      outline: none !important;
+      cursor: pointer !important;
+      appearance: none !important;
+      -webkit-appearance: none !important;
+      -moz-appearance: none !important;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-9'/%3E%3C/svg%3E") !important;
+      background-repeat: no-repeat !important;
+      background-position: right center !important;
+      background-size: 11px 11px !important;
+      box-shadow: none !important;
+    }
+
+    select.afr-filter-select:focus,
+    .search-segment select:focus {
+      color: #3b82f6 !important;
+    }
+
+    select.afr-filter-select option,
+    .search-segment select option {
+      background: #ffffff;
+      color: #0f172a;
+      padding: 8px 12px;
+      font-weight: 500;
+    }
+
+    .filter-control {
+      width: 100%;
+      height: 42px;
+      padding: 0 2rem 0 1rem;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      background-color: #f8fafc;
+      font-family: var(--font-main);
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #0f172a;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.85rem center;
+      background-size: 12px 12px;
+    }
+
     /* Dropdown segment overrides */
     .search-segment .custom-dropdown {
       border: none !important;
@@ -1083,6 +1146,189 @@
       border-radius: 14px !important;
       box-shadow: 0 12px 30px rgba(13, 36, 82, 0.08) !important;
       border: 1px solid #e2e8f0 !important;
+    }
+
+    /* Stipend Dual Range Slider Styles */
+    .stipend-popover-menu {
+      min-width: 280px !important;
+      padding: 0 !important;
+      max-height: none !important;
+      overflow: visible !important;
+    }
+
+    .stipend-slider-container {
+      padding: 1.1rem 1.15rem 0.85rem;
+      width: 280px;
+      box-sizing: border-box;
+    }
+
+    .stipend-inputs-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.6rem;
+      margin-bottom: 1.1rem;
+    }
+
+    .stipend-input-wrap {
+      position: relative;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 12px;
+      background: #ffffff;
+      padding: 0.35rem 0.6rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .stipend-input-wrap:focus-within {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+
+    .currency-symbol {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #64748b;
+      margin-right: 0.35rem;
+      user-select: none;
+    }
+
+    .stipend-input-wrap input {
+      width: 100%;
+      border: none !important;
+      background: transparent !important;
+      outline: none !important;
+      font-family: var(--font-main);
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #0f172a;
+      padding: 0 !important;
+      box-shadow: none !important;
+    }
+
+    .stipend-input-wrap input::-webkit-outer-spin-button,
+    .stipend-input-wrap input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .stipend-input-wrap input[type=number] {
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+
+    .stipend-to-label {
+      font-size: 0.825rem;
+      font-weight: 500;
+      color: #64748b;
+      padding: 0 0.15rem;
+      user-select: none;
+    }
+
+    .dual-range-wrapper {
+      position: relative;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      margin: 0.4rem 0 0.2rem;
+    }
+
+    .dual-range-track {
+      position: absolute;
+      width: 100%;
+      height: 4px;
+      border-radius: 4px;
+      background: #e2e8f0;
+      z-index: 1;
+    }
+
+    .dual-range-wrapper input[type="range"] {
+      position: absolute;
+      width: 100%;
+      height: 4px;
+      background: none !important;
+      pointer-events: none;
+      -webkit-appearance: none;
+      appearance: none;
+      z-index: 2;
+      margin: 0;
+      outline: none !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+
+    .dual-range-wrapper input[type="range"]::-webkit-slider-thumb {
+      height: 18px;
+      width: 18px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 2.5px solid #2563eb;
+      cursor: pointer;
+      pointer-events: auto;
+      -webkit-appearance: none;
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+
+    .dual-range-wrapper input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+      border-color: #1d4ed8;
+    }
+
+    .dual-range-wrapper input[type="range"]::-moz-range-thumb {
+      height: 18px;
+      width: 18px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 2.5px solid #2563eb;
+      cursor: pointer;
+      pointer-events: auto;
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+    }
+
+    .stipend-slider-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #94a3b8;
+      margin-top: 0.35rem;
+      user-select: none;
+    }
+
+    /* Dark mode stipend slider overrides */
+    [data-theme="dark"] .stipend-input-wrap {
+      background: #0f1117 !important;
+      border-color: #334155 !important;
+    }
+
+    [data-theme="dark"] .stipend-input-wrap:focus-within {
+      border-color: #3b82f6 !important;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+    }
+
+    [data-theme="dark"] .stipend-input-wrap input {
+      color: #edf2ff !important;
+    }
+
+    [data-theme="dark"] .currency-symbol,
+    [data-theme="dark"] .stipend-to-label {
+      color: #8896ae !important;
+    }
+
+    [data-theme="dark"] .dual-range-track {
+      background: #252836 !important;
+    }
+
+    [data-theme="dark"] .dual-range-wrapper input[type="range"]::-webkit-slider-thumb {
+      background: #1a1d27 !important;
+      border-color: #3b82f6 !important;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    [data-theme="dark"] .stipend-slider-labels {
+      color: #64748b !important;
     }
 
     /* Chip Rail split design */
@@ -2603,9 +2849,77 @@
     [data-theme="dark"] .segment-divider {
       background: #252836 !important;
     }
+    [data-theme="dark"] .search-segment:hover {
+      background-color: #1e2130 !important;
+    }
+    [data-theme="dark"] select.afr-filter-select,
+    [data-theme="dark"] .search-segment select,
+    [data-theme="dark"] .segment-details select {
+      color: #edf2ff !important;
+      background: #1a1d27 !important;
+      background-color: #1a1d27 !important;
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+      appearance: none !important;
+      -webkit-appearance: none !important;
+      -moz-appearance: none !important;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238896ae' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-9'/%3E%3C/svg%3E") !important;
+      background-repeat: no-repeat !important;
+      background-position: right center !important;
+      background-size: 11px 11px !important;
+    }
+    [data-theme="dark"] .search-segment:hover select.afr-filter-select,
+    [data-theme="dark"] .search-segment:hover select,
+    [data-theme="dark"] .search-segment:hover .segment-details select {
+      background: #1e2130 !important;
+      background-color: #1e2130 !important;
+    }
+    [data-theme="dark"] select.afr-filter-select:focus,
+    [data-theme="dark"] .search-segment select:focus {
+      color: #60a5fa !important;
+    }
+    [data-theme="dark"] select.afr-filter-select option,
+    [data-theme="dark"] .search-segment select option,
+    [data-theme="dark"] .segment-details select option {
+      background-color: #1a1d27 !important;
+      color: #edf2ff !important;
+    }
+    [data-theme="dark"] .filter-control {
+      background-color: #0f1117 !important;
+      border-color: #252836 !important;
+      color: #edf2ff !important;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238896ae' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-9'/%3E%3C/svg%3E") !important;
+    }
+    [data-theme="dark"] .filter-control option {
+      background: #1a1d27 !important;
+      color: #edf2ff !important;
+    }
     [data-theme="dark"] .custom-dropdown {
       background: #0f1117 !important;
       border-color: #252836 !important;
+    }
+    [data-theme="dark"] .search-segment .custom-dropdown,
+    [data-theme="dark"] .search-segment .custom-dropdown:hover {
+      background: transparent !important;
+      background-color: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+    [data-theme="dark"] .search-segment .dropdown-trigger {
+      background: transparent !important;
+      background-color: transparent !important;
+      border: none !important;
+      padding: 0 !important;
+      color: #edf2ff !important;
+    }
+    [data-theme="dark"] .search-segment .dropdown-trigger .trigger-label {
+      color: #edf2ff !important;
+      font-weight: 600 !important;
+      font-size: 0.875rem !important;
+    }
+    [data-theme="dark"] .search-segment .dropdown-trigger i {
+      color: #8896ae !important;
     }
     [data-theme="dark"] .custom-dropdown:hover {
       background: #1e2130 !important;
@@ -3143,17 +3457,42 @@
           <div class="segment-divider"></div>
 
           <!-- Segment 3: Stipend -->
-          <div class="search-segment segment-dropdown-container">
+          <div class="search-segment segment-dropdown-container" id="stipend-segment">
             <i class="fas fa-indian-rupee-sign segment-icon"></i>
             <div class="segment-details">
-              <span class="segment-label">Min Stipend</span>
-              <select id="filter-stipend" class="afr-filter-select" aria-label="Filter by stipend">
-                <option value="">Any stipend</option>
-                <option value="5000">₹5,000+</option>
-                <option value="10000">₹10,000+</option>
-                <option value="15000">₹15,000+</option>
-                <option value="20000">₹20,000+</option>
-              </select>
+              <span class="segment-label">Stipend Range</span>
+              <div class="custom-dropdown" id="custom-dropdown-stipend">
+                <button type="button" class="dropdown-trigger" id="stipend-trigger">
+                  <span class="trigger-label" id="stipend-selected-label">Any stipend</span>
+                  <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="custom-dropdown-menu stipend-popover-menu" id="stipend-menu">
+                  <div class="stipend-slider-container">
+                    <div class="stipend-inputs-row">
+                      <div class="stipend-input-wrap">
+                        <span class="currency-symbol">₹</span>
+                        <input type="number" id="stipend-min-input" min="0" max="100000" step="1000" placeholder="Min" value="0">
+                      </div>
+                      <span class="stipend-to-label">to</span>
+                      <div class="stipend-input-wrap">
+                        <span class="currency-symbol">₹</span>
+                        <input type="number" id="stipend-max-input" min="0" max="100000" step="1000" placeholder="Max" value="100000">
+                      </div>
+                    </div>
+
+                    <div class="dual-range-wrapper">
+                      <div class="dual-range-track" id="stipend-range-track"></div>
+                      <input type="range" id="stipend-range-min" min="0" max="100000" step="1000" value="0">
+                      <input type="range" id="stipend-range-max" min="0" max="100000" step="1000" value="100000">
+                    </div>
+
+                    <div class="stipend-slider-labels">
+                      <span>₹0</span>
+                      <span>1L+</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -3292,14 +3631,31 @@
           </select>
         </div>
         <div class="filter-group">
-          <label for="filter-stipend-mobile">Min Stipend</label>
-          <select id="filter-stipend-mobile" class="filter-control">
-            <option value="">Any stipend</option>
-            <option value="5000">₹5,000+</option>
-            <option value="10000">₹10,000+</option>
-            <option value="15000">₹15,000+</option>
-            <option value="20000">₹20,000+</option>
-          </select>
+          <label>Stipend Range</label>
+          <div class="stipend-slider-container" style="width: 100%; padding: 0.5rem 0;">
+            <div class="stipend-inputs-row">
+              <div class="stipend-input-wrap">
+                <span class="currency-symbol">₹</span>
+                <input type="number" id="stipend-min-input-mobile" min="0" max="100000" step="1000" placeholder="Min" value="0">
+              </div>
+              <span class="stipend-to-label">to</span>
+              <div class="stipend-input-wrap">
+                <span class="currency-symbol">₹</span>
+                <input type="number" id="stipend-max-input-mobile" min="0" max="100000" step="1000" placeholder="Max" value="100000">
+              </div>
+            </div>
+
+            <div class="dual-range-wrapper">
+              <div class="dual-range-track" id="stipend-range-track-mobile"></div>
+              <input type="range" id="stipend-range-min-mobile" min="0" max="100000" step="1000" value="0">
+              <input type="range" id="stipend-range-max-mobile" min="0" max="100000" step="1000" value="100000">
+            </div>
+
+            <div class="stipend-slider-labels">
+              <span>₹0</span>
+              <span>1L+</span>
+            </div>
+          </div>
         </div>
         <div class="filter-group">
           <label for="sort-by-mobile">Sort By</label>
@@ -3764,6 +4120,8 @@
       const locSel = document.getElementById('filter-location');
       if (locSel) locSel.innerHTML = optionsHTML;
       initCustomDropdown('filter-location');
+      initCustomDropdown('filter-stipend');
+      initCustomDropdown('sort-by');
 
       const locSelMobile = document.getElementById('filter-location-mobile');
       if (locSelMobile) locSelMobile.innerHTML = optionsHTML;
@@ -3790,11 +4148,124 @@
       }
     }
 
+    // ── Stipend Dual Range Slider Handler ──────────────────────────────────
+    function initStipendDualSlider() {
+      const stipendWrapper = document.getElementById('custom-dropdown-stipend');
+      const stipendTrigger = document.getElementById('stipend-trigger');
+      const stipendMenu = document.getElementById('stipend-menu');
+
+      if (stipendTrigger && stipendWrapper) {
+        stipendTrigger.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleCustomDropdown(stipendWrapper, stipendTrigger);
+        });
+      }
+
+      if (stipendMenu) {
+        stipendMenu.addEventListener('click', (e) => {
+          e.stopPropagation();
+        });
+      }
+
+      const minRange = document.getElementById('stipend-range-min');
+      const maxRange = document.getElementById('stipend-range-max');
+      const minInput = document.getElementById('stipend-min-input');
+      const maxInput = document.getElementById('stipend-max-input');
+      const track = document.getElementById('stipend-range-track');
+
+      const minRangeMob = document.getElementById('stipend-range-min-mobile');
+      const maxRangeMob = document.getElementById('stipend-range-max-mobile');
+      const minInputMob = document.getElementById('stipend-min-input-mobile');
+      const maxInputMob = document.getElementById('stipend-max-input-mobile');
+      const trackMob = document.getElementById('stipend-range-track-mobile');
+
+      const triggerLabel = document.getElementById('stipend-selected-label');
+
+      if (!minRange || !maxRange || !minInput || !maxInput || !track) return;
+
+      const MAX_VAL = 100000;
+      const STEP = 1000;
+
+      function updateSlider(source, isMobile = false) {
+        const curMinRange = isMobile ? minRangeMob : minRange;
+        const curMaxRange = isMobile ? maxRangeMob : maxRange;
+        const curMinInput = isMobile ? minInputMob : minInput;
+        const curMaxInput = isMobile ? maxInputMob : maxInput;
+
+        let minVal = parseInt(curMinRange.value, 10);
+        let maxVal = parseInt(curMaxRange.value, 10);
+
+        if (source === 'minInput') {
+          minVal = Math.min(Math.max(parseInt(curMinInput.value || 0, 10), 0), maxVal - STEP);
+          curMinRange.value = minVal;
+        } else if (source === 'maxInput') {
+          maxVal = Math.min(Math.max(parseInt(curMaxInput.value || MAX_VAL, 10), minVal + STEP), MAX_VAL);
+          curMaxRange.value = maxVal;
+        } else if (source === 'minRange') {
+          if (minVal >= maxVal) {
+            minVal = maxVal - STEP;
+            curMinRange.value = minVal;
+          }
+          curMinInput.value = minVal;
+        } else if (source === 'maxRange') {
+          if (maxVal <= minVal) {
+            maxVal = minVal + STEP;
+            curMaxRange.value = maxVal;
+          }
+          curMaxInput.value = maxVal;
+        }
+
+        // Sync desktop & mobile controls
+        if (minRangeMob && minRange) { minRangeMob.value = minVal; minRange.value = minVal; }
+        if (maxRangeMob && maxRange) { maxRangeMob.value = maxVal; maxRange.value = maxVal; }
+        if (minInputMob && minInput) { minInputMob.value = minVal; minInput.value = minVal; }
+        if (maxInputMob && maxInput) { maxInputMob.value = maxVal; maxInput.value = maxVal; }
+
+        // Track fill gradient
+        const pctMin = (minVal / MAX_VAL) * 100;
+        const pctMax = (maxVal / MAX_VAL) * 100;
+        const activeColor = '#2563eb';
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const trackBg = isDark ? '#252836' : '#e2e8f0';
+        const gradientCSS = `linear-gradient(to right, ${trackBg} 0%, ${trackBg} ${pctMin}%, ${activeColor} ${pctMin}%, ${activeColor} ${pctMax}%, ${trackBg} ${pctMax}%, ${trackBg} 100%)`;
+
+        if (track) track.style.background = gradientCSS;
+        if (trackMob) trackMob.style.background = gradientCSS;
+
+        // Label display
+        if (triggerLabel) {
+          if (minVal === 0 && maxVal >= MAX_VAL) {
+            triggerLabel.textContent = 'Any stipend';
+          } else if (maxVal >= MAX_VAL) {
+            triggerLabel.textContent = `₹${minVal.toLocaleString('en-IN')}+`;
+          } else {
+            triggerLabel.textContent = `₹${minVal.toLocaleString('en-IN')} - ₹${maxVal.toLocaleString('en-IN')}`;
+          }
+        }
+
+        applyControls();
+      }
+
+      minRange.addEventListener('input', () => updateSlider('minRange', false));
+      maxRange.addEventListener('input', () => updateSlider('maxRange', false));
+      minInput.addEventListener('input', () => updateSlider('minInput', false));
+      maxInput.addEventListener('input', () => updateSlider('maxInput', false));
+
+      if (minRangeMob) minRangeMob.addEventListener('input', () => updateSlider('minRange', true));
+      if (maxRangeMob) maxRangeMob.addEventListener('input', () => updateSlider('maxRange', true));
+      if (minInputMob) minInputMob.addEventListener('input', () => updateSlider('minInput', true));
+      if (maxInputMob) maxInputMob.addEventListener('input', () => updateSlider('maxInput', true));
+
+      updateSlider('init', false);
+    }
+
     function applyControls() {
       const q = document.getElementById('search-input').value.trim().toLowerCase();
-      const loc = document.getElementById('filter-location').value;
-      const minStipend = document.getElementById('filter-stipend').value;
-      const sort = document.getElementById('sort-by').value;
+      const loc = document.getElementById('filter-location')?.value || '';
+      const minStipend = parseInt(document.getElementById('stipend-min-input')?.value || '0', 10);
+      const maxStipend = parseInt(document.getElementById('stipend-max-input')?.value || '100000', 10);
+      const sort = document.getElementById('sort-by')?.value || 'rating';
 
       const qTokens = q.split(/\s+/).filter(Boolean);
       let out = FIRMS.filter(f => {
@@ -3810,7 +4281,9 @@
             );
         });
         const matchesLocation = !loc || f.location === loc;
-        const matchesStipend = !minStipend || (f.avgStipend && f.avgStipend >= parseInt(minStipend, 10));
+        const matchesStipend = (minStipend === 0 && maxStipend >= 100000) || (
+          f.avgStipend && f.avgStipend >= minStipend && (maxStipend >= 100000 || f.avgStipend <= maxStipend)
+        );
         const matchesTag = !SELECTED_TAG ||
           f.topTags.includes(SELECTED_TAG) ||
           f.reviews.some(r =>
@@ -3835,7 +4308,10 @@
       const activeFilters = [];
       if (q) activeFilters.push(`<span class="afr-status-pill">Name: ${escapeHTML(q)}</span>`);
       if (loc) activeFilters.push(`<span class="afr-status-pill">Loc: ${escapeHTML(loc)}</span>`);
-      if (minStipend) activeFilters.push(`<span class="afr-status-pill">Stipend: ₹${Number(minStipend).toLocaleString('en-IN')}+</span>`);
+      if (minStipend > 0 || maxStipend < 100000) {
+        const stipendTxt = maxStipend >= 100000 ? `₹${minStipend.toLocaleString('en-IN')}+` : `₹${minStipend.toLocaleString('en-IN')} - ₹${maxStipend.toLocaleString('en-IN')}`;
+        activeFilters.push(`<span class="afr-status-pill">Stipend: ${stipendTxt}</span>`);
+      }
       if (SELECTED_TAG) {
         const activeBtn = document.querySelector(`.tag-pill-btn[data-tag="${SELECTED_TAG}"]`);
         const type = activeBtn ? activeBtn.dataset.type : 'Tag';
@@ -3974,8 +4450,8 @@
         updateHeroStats(reviews);
         initTagCloud();
 
-        // Initialize custom static dropdowns
-        initCustomDropdown('filter-stipend');
+        // Initialize stipend dual slider and custom dropdowns
+        initStipendDualSlider();
         initCustomDropdown('sort-by');
 
         const sidebarWriteBtn = document.getElementById('sidebar-write-btn');

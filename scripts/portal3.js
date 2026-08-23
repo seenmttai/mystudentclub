@@ -814,18 +814,18 @@ function renderActiveFilters() {
 
 //  FILTER SHEET
 function showFilterSheet() {
-  dom.filterSheetOverlay?.classList.add("show");
+  const overlay = dom.filterSheetOverlay || document.getElementById("filterSheetOverlay");
+  if (overlay) overlay.classList.add("show");
   document.body.style.overflow = "hidden";
-  // Sync filter state to sheet UI
   if (dom.sortBySelect) dom.sortBySelect.value = state.sortBy;
-  if (dom.salaryFilter) dom.salaryFilter.value = state.salary;
   renderLocationPills();
   renderStatusToggles();
   setupLocationDropdown();
 }
 
 function hideFilterSheet() {
-  dom.filterSheetOverlay?.classList.remove("show");
+  const overlay = dom.filterSheetOverlay || document.getElementById("filterSheetOverlay");
+  if (overlay) overlay.classList.remove("show");
   document.body.style.overflow = "";
 }
 
@@ -902,43 +902,153 @@ function setupLocationDropdown() {
   };
 }
 
+function getSalaryMinVal(val) {
+  if (!val) return 0;
+  if (val.endsWith("+")) return parseInt(val, 10) || 0;
+  if (val.includes("-")) return parseInt(val.split("-")[0], 10) || 0;
+  return 0;
+}
+
+function getSalaryMaxVal(val, maxVal) {
+  if (!val) return maxVal;
+  if (val.endsWith("+")) return maxVal;
+  if (val.includes("-")) return parseInt(val.split("-")[1], 10) || maxVal;
+  return maxVal;
+}
+
+function formatSalaryTriggerLabel(val, isFresher, isStipend, maxVal) {
+  if (!val) return "Any " + (isStipend ? "Stipend" : "Salary");
+  const min = getSalaryMinVal(val);
+  const max = getSalaryMaxVal(val, maxVal);
+  if (min === 0 && max >= maxVal) return "Any " + (isStipend ? "Stipend" : "Salary");
+  if (max >= maxVal) {
+    return isFresher ? `₹${(min / 100000).toFixed(1)} LPA+` : `₹${min.toLocaleString("en-IN")}+`;
+  }
+  return isFresher ? `₹${(min / 100000).toFixed(1)} - ₹${(max / 100000).toFixed(1)} LPA` : `₹${min.toLocaleString("en-IN")} - ₹${max.toLocaleString("en-IN")}`;
+}
+
 function populateSalaryFilter() {
   if (!dom.salaryFilter) return;
-  let rawOptions = [];
-  if (currentTable === "Industrial Training Job Portal")
-    rawOptions = [
-      { value: "", text: "Any Stipend" },
-      { value: "10000-20000", text: "₹10k - ₹20k" },
-      { value: "20000-40000", text: "₹20k - ₹40k" },
-      { value: "40000+", text: "₹40k+" },
-    ];
-  else if (currentTable === "Articleship Jobs")
-    rawOptions = [
-      { value: "", text: "Any Stipend" },
-      { value: "0-5000", text: "Below ₹5k" },
-      { value: "5000-10000", text: "₹5k - ₹10k" },
-      { value: "10000-15000", text: "₹10k - ₹15k" },
-      { value: "15000+", text: "₹15k+" },
-    ];
-  else if (currentTable === "Semi Qualified Jobs")
-    rawOptions = [
-      { value: "", text: "Any Salary" },
-      { value: "0-25000", text: "Below ₹25k" },
-      { value: "25000-35000", text: "₹25k - ₹35k" },
-      { value: "35000-50000", text: "₹35k - ₹50k" },
-      { value: "50000+", text: "Above ₹50k" },
-    ];
-  else if (currentTable === "Fresher Jobs")
-    rawOptions = [
-      { value: "", text: "Any Salary" },
-      { value: "0-1200000", text: "< 12 LPA" },
-      { value: "1200000-1800000", text: "12-18 LPA" },
-      { value: "1800000+", text: "> 18 LPA" },
-    ];
-  const options = rawOptions.map((o) => ({ value: o.value, label: o.text }));
-  const placeholder = options[0]?.label || "Any Stipend";
-  initCustomSelect(dom.salaryFilter, placeholder, options, null);
-  dom.salaryFilter.value = state.salary;
+
+  const isFresher = currentTable === "Fresher Jobs";
+  const maxVal = isFresher ? 3000000 : 100000;
+  const stepVal = isFresher ? 50000 : 1000;
+  const isStipend = currentTable === "Industrial Training Job Portal" || currentTable === "Articleship Jobs";
+
+  const curMin = getSalaryMinVal(state.salary);
+  const curMax = getSalaryMaxVal(state.salary, maxVal);
+
+  dom.salaryFilter.className = "custom-select filter-custom-select";
+  dom.salaryFilter.style.position = "relative";
+  dom.salaryFilter.innerHTML = `
+    <button class="custom-select-trigger" type="button" id="portalSalaryTrigger">
+      <span class="cs-label" id="portalSalaryLabel">${formatSalaryTriggerLabel(state.salary, isFresher, isStipend, maxVal)}</span>
+      <svg class="cs-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+    <div class="cs-dropdown stipend-popover-menu" id="portalSalaryDropdown" style="display: none; padding: 0;">
+      <div class="stipend-slider-container">
+        <div class="stipend-inputs-row">
+          <div class="stipend-input-wrap">
+            <span class="currency-symbol">₹</span>
+            <input type="number" id="ps-min-input" min="0" max="${maxVal}" step="${stepVal}" placeholder="Min" value="${curMin}">
+          </div>
+          <span class="stipend-to-label">to</span>
+          <div class="stipend-input-wrap">
+            <span class="currency-symbol">₹</span>
+            <input type="number" id="ps-max-input" min="0" max="${maxVal}" step="${stepVal}" placeholder="Max" value="${curMax}">
+          </div>
+        </div>
+
+        <div class="dual-range-wrapper">
+          <div class="dual-range-track" id="ps-range-track"></div>
+          <input type="range" id="ps-range-min" min="0" max="${maxVal}" step="${stepVal}" value="${curMin}">
+          <input type="range" id="ps-range-max" min="0" max="${maxVal}" step="${stepVal}" value="${curMax}">
+        </div>
+
+        <div class="stipend-slider-labels">
+          <span>₹0</span>
+          <span>${isFresher ? "30 LPA+" : "1L+"}</span>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const trigger = dom.salaryFilter.querySelector("#portalSalaryTrigger");
+  const dropdown = dom.salaryFilter.querySelector("#portalSalaryDropdown");
+
+  if (trigger && dropdown) {
+    trigger.onclick = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const isOpen = dropdown.style.display === "block";
+      document.querySelectorAll(".cs-dropdown").forEach(d => d.style.display = "none");
+      dropdown.style.display = isOpen ? "none" : "block";
+    };
+    dropdown.onclick = (e) => e.stopPropagation();
+  }
+
+  const minRange = dom.salaryFilter.querySelector("#ps-range-min");
+  const maxRange = dom.salaryFilter.querySelector("#ps-range-max");
+  const minInput = dom.salaryFilter.querySelector("#ps-min-input");
+  const maxInput = dom.salaryFilter.querySelector("#ps-max-input");
+  const track = dom.salaryFilter.querySelector("#ps-range-track");
+  const label = dom.salaryFilter.querySelector("#portalSalaryLabel");
+
+  if (!minRange || !maxRange || !minInput || !maxInput || !track) return;
+
+  function update() {
+    let minVal = parseInt(minRange.value, 10);
+    let maxValCurrent = parseInt(maxRange.value, 10);
+
+    if (minVal >= maxValCurrent) {
+      minVal = maxValCurrent - stepVal;
+      minRange.value = minVal;
+    }
+    minInput.value = minVal;
+    maxInput.value = maxValCurrent;
+
+    const pctMin = (minVal / maxVal) * 100;
+    const pctMax = (maxValCurrent / maxVal) * 100;
+    const activeColor = "#3b82f6";
+    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+    const trackBg = isDark ? "#252836" : "#e2e8f0";
+    const gradientCSS = `linear-gradient(to right, ${trackBg} 0%, ${trackBg} ${pctMin}%, ${activeColor} ${pctMin}%, ${activeColor} ${pctMax}%, ${trackBg} ${pctMax}%, ${trackBg} 100%)`;
+    track.style.setProperty("background", gradientCSS, "important");
+
+    if (minVal === 0 && maxValCurrent >= maxVal) {
+      state.salary = "";
+    } else if (maxValCurrent >= maxVal) {
+      state.salary = `${minVal}+`;
+    } else {
+      state.salary = `${minVal}-${maxValCurrent}`;
+    }
+
+    if (label) label.textContent = formatSalaryTriggerLabel(state.salary, isFresher, isStipend, maxVal);
+
+    renderActiveFilters();
+    resetAndFetch();
+  }
+
+  minRange.oninput = () => { minInput.value = minRange.value; update(); };
+  maxRange.oninput = () => { maxInput.value = maxRange.value; update(); };
+  minInput.onchange = () => {
+    let val = Math.min(Math.max(parseInt(minInput.value || 0, 10), 0), parseInt(maxRange.value, 10) - stepVal);
+    minRange.value = val;
+    update();
+  };
+  maxInput.onchange = () => {
+    let val = Math.min(Math.max(parseInt(maxInput.value || maxVal, 10), parseInt(minRange.value, 10) + stepVal), maxVal);
+    maxRange.value = val;
+    update();
+  };
+
+  const pctMin = (curMin / maxVal) * 100;
+  const pctMax = (curMax / maxVal) * 100;
+  const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+  const trackBg = isDark ? "#252836" : "#e2e8f0";
+  const activeColor = "#3b82f6";
+  const initGradientCSS = `linear-gradient(to right, ${trackBg} 0%, ${trackBg} ${pctMin}%, ${activeColor} ${pctMin}%, ${activeColor} ${pctMax}%, ${trackBg} ${pctMax}%, ${trackBg} 100%)`;
+  track.style.setProperty("background", initGradientCSS, "important");
 }
 
 
