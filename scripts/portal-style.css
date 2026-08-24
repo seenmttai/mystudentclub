@@ -4535,3 +4535,117 @@ body:has(.portal-nav-bar) {
 .filter-modal-content .stipend-input-field:focus {
   background-color: var(--surface-bg, #ffffff) !important;
 }
+
+/* ========================================
+   Turnstile Managed Challenge & Verification UI
+   ======================================== */
+.turnstile-inline-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  padding: 0.5rem 0.25rem;
+  width: 100%;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.turnstile-status-text {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.turnstile-status-text i {
+  color: #3b82f6;
+  font-size: 1rem;
+}
+
+.turnstile-widget-mount {
+  min-height: 65px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.turnstile-inline-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+}
+
+.turnstile-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  animation: fadeIn 0.2s ease-out;
+  padding: 1rem;
+}
+
+.turnstile-modal-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  border: 1px solid #e2e8f0;
+  position: relative;
+}
+
+.turnstile-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.turnstile-modal-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.turnstile-modal-title i {
+  color: #3b82f6;
+}
+
+.turnstile-modal-close {
+  background: transparent;
+  border: none;
+  font-size: 1.35rem;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0.25rem;
+  line-height: 1;
+  border-radius: 6px;
+  transition: color 0.2s;
+}
+
+.turnstile-modal-close:hover {
+  color: #0f172a;
+}
+
+.turnstile-modal-desc {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}

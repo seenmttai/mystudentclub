@@ -1,14 +1,40 @@
 -- ==============================================================================
 -- My Student Club - Hirer Access Control & Row-Level Security (RLS) Policies
 -- ==============================================================================
--- Purpose:
--- 1. Candidates can view and update only their own profile.
--- 2. Hirers / Recruiters can ONLY view profiles and CVs of candidates who have
---    applied to job vacancies posted by that specific Hirer (posted_by = auth.uid()).
--- 3. Hirers CANNOT view profiles of any candidate who has not applied to their jobs.
+-- Run this in your Supabase SQL Editor.
+-- Step 1 adds the required columns (`posted_by`, `hirer_email`, `status`, `notes`)
+-- Step 2 enables Row Level Security
+-- Step 3 creates the helper security function
+-- Step 4 creates the RLS policies for `profiles` and `job_applications`
 -- ==============================================================================
 
--- 1. Enable RLS on core tables
+-- ------------------------------------------------------------------------------
+-- 1. Add `posted_by` & `hirer_email` columns to all 4 job tables (if not already present)
+-- ------------------------------------------------------------------------------
+ALTER TABLE IF EXISTS public."Industrial Training Job Portal"
+ADD COLUMN IF NOT EXISTS posted_by uuid REFERENCES auth.users(id),
+ADD COLUMN IF NOT EXISTS hirer_email text;
+
+ALTER TABLE IF EXISTS public."Fresher Jobs"
+ADD COLUMN IF NOT EXISTS posted_by uuid REFERENCES auth.users(id),
+ADD COLUMN IF NOT EXISTS hirer_email text;
+
+ALTER TABLE IF EXISTS public."Semi Qualified Jobs"
+ADD COLUMN IF NOT EXISTS posted_by uuid REFERENCES auth.users(id),
+ADD COLUMN IF NOT EXISTS hirer_email text;
+
+ALTER TABLE IF EXISTS public."Articleship Jobs"
+ADD COLUMN IF NOT EXISTS posted_by uuid REFERENCES auth.users(id),
+ADD COLUMN IF NOT EXISTS hirer_email text;
+
+-- Add `status` and `notes` to job_applications
+ALTER TABLE IF EXISTS public.job_applications
+ADD COLUMN IF NOT EXISTS status text DEFAULT 'new',
+ADD COLUMN IF NOT EXISTS notes text;
+
+-- ------------------------------------------------------------------------------
+-- 2. Enable RLS on core tables
+-- ------------------------------------------------------------------------------
 ALTER TABLE IF EXISTS public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS public.job_applications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS public."Industrial Training Job Portal" ENABLE ROW LEVEL SECURITY;
@@ -17,7 +43,7 @@ ALTER TABLE IF EXISTS public."Semi Qualified Jobs" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS public."Articleship Jobs" ENABLE ROW LEVEL SECURITY;
 
 -- ------------------------------------------------------------------------------
--- 2. Helper Security Function: Check if candidate applied to any job posted by Hirer
+-- 3. Helper Security Function: Check if candidate applied to any job posted by Hirer
 -- ------------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION public.is_hirer_for_applicant(hirer_uid uuid, applicant_uid uuid)
 RETURNS boolean
@@ -65,7 +91,7 @@ END;
 $$;
 
 -- ------------------------------------------------------------------------------
--- 3. RLS Policies on `profiles`
+-- 4. RLS Policies on `profiles`
 -- ------------------------------------------------------------------------------
 DROP POLICY IF EXISTS "Users can view own profile or hirer can view applicant profile" ON public.profiles;
 
@@ -97,7 +123,7 @@ USING (auth.uid() = uuid)
 WITH CHECK (auth.uid() = uuid);
 
 -- ------------------------------------------------------------------------------
--- 4. RLS Policies on `job_applications`
+-- 5. RLS Policies on `job_applications`
 -- ------------------------------------------------------------------------------
 DROP POLICY IF EXISTS "Applicants can view own applications or hirers can view applications to their jobs" ON public.job_applications;
 
@@ -144,7 +170,6 @@ FOR INSERT
 TO authenticated
 WITH CHECK (auth.uid() = user_id);
 
--- Optional: Allow Hirers to update application status / notes
 DROP POLICY IF EXISTS "Hirers can update status of applications for their jobs" ON public.job_applications;
 CREATE POLICY "Hirers can update status of applications for their jobs"
 ON public.job_applications
