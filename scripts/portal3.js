@@ -85,6 +85,8 @@ const PUBLIC_VIEW_MAP = {
 
 // In-memory cache for unlocked jobs (avoids duplicate requests during the same browser session)
 const unlockedJobsCache = new Map();
+// In-flight mutex map to prevent race conditions and duplicate concurrent verification calls
+const inFlightUnlocks = new Map();
 
 function loadTurnstileScript() {
     if (window.turnstile) return Promise.resolve();
@@ -194,18 +196,12 @@ function getTurnstileToken(mountContainer = null) {
                 callback: (token) => {
                     if (!isResolved) {
                         isResolved = true;
-                        if (mountContainer) {
-                            mountContainer.innerHTML = `
-                                <div class="turnstile-status-text" style="color: #16a34a; padding: 0.75rem;">
-                                    <i class="fas fa-circle-check" style="color: #16a34a;"></i>
-                                    <span>Verified! Unlocking details...</span>
-                                </div>
-                            `;
-                        }
-                        setTimeout(() => {
+                        // IMPORTANT: Do NOT destroy or mutate the mount container DOM here.
+                        // Let Turnstile complete its internal handshake cleanly.
+                        if (overlayElement) {
                             cleanup();
-                            resolve(token);
-                        }, 250);
+                        }
+                        resolve(token);
                     }
                 },
                 'error-callback': () => {
@@ -242,44 +238,59 @@ async function unlockJobDetails(job, tableName, mountContainer = null) {
         return unlockedJobsCache.get(job.id);
     }
 
-    const token = await getTurnstileToken(mountContainer);
-    let response;
+    // Return in-flight promise if already unlocking this job to prevent duplicate requests
+    if (inFlightUnlocks.has(job.id)) {
+        return inFlightUnlocks.get(job.id);
+    }
+
+    const unlockPromise = (async () => {
+        const token = await getTurnstileToken(mountContainer);
+        let response;
+        try {
+            response = await fetch(`${UNLOCK_WORKER_URL}/api/unlock-job`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    jobId: job.id,
+                    table: tableName,
+                    turnstileToken: token
+                })
+            });
+        } catch (_) {
+            // Fallback to base URL if sub-route is not configured
+            response = await fetch(UNLOCK_WORKER_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    jobId: job.id,
+                    table: tableName,
+                    turnstileToken: token
+                })
+            });
+        }
+
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || !data.success) {
+            console.error('[Verification Service Error]:', data);
+            const errMsg = data.error || (data.details ? data.details.join(', ') : 'Unable to load application details.');
+            throw new Error(errMsg);
+        }
+
+        unlockedJobsCache.set(job.id, data);
+        job['Application ID'] = data.applicationId;
+        job.Description = data.description;
+        if (data.postsLink) job.posts_link = data.postsLink;
+
+        return data;
+    })();
+
+    inFlightUnlocks.set(job.id, unlockPromise);
+
     try {
-        response = await fetch(`${UNLOCK_WORKER_URL}/api/unlock-job`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                jobId: job.id,
-                table: tableName,
-                turnstileToken: token
-            })
-        });
-    } catch (_) {
-        // Fallback to base URL if sub-route is not configured
-        response = await fetch(UNLOCK_WORKER_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                jobId: job.id,
-                table: tableName,
-                turnstileToken: token
-            })
-        });
+        return await unlockPromise;
+    } finally {
+        inFlightUnlocks.delete(job.id);
     }
-
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok || !data.success) {
-        console.error('[Verification Service Error]:', data);
-        const errMsg = data.error || (data.details ? data.details.join(', ') : 'Unable to load application details.');
-        throw new Error(errMsg);
-    }
-
-    unlockedJobsCache.set(job.id, data);
-    job['Application ID'] = data.applicationId;
-    job.Description = data.description;
-    if (data.postsLink) job.posts_link = data.postsLink;
-
-    return data;
 }
 
 window.flutter_app = {
@@ -1210,17 +1221,28 @@ function showModal(job) {
 
     attachCopyListeners();
 
-    // Unified Unlock Handler with smooth UX
+    // Unified Unlock Handler with smooth UX and click locking
     const handleUnlockFlow = async (btnElement, autoAction = null) => {
         const applyPromptBox = document.getElementById('applyPromptBox');
-        const originalHtml = btnElement ? btnElement.innerHTML : '';
-        if (btnElement && (!applyPromptBox || btnElement !== applyPromptBox.querySelector('#btnRevealAppId'))) {
-            btnElement.innerHTML = '<span class="unlock-spinner"></span> Verifying...';
-            btnElement.disabled = true;
+        const btnReadMore = document.getElementById('btnReadMore');
+        const btnRevealAppId = document.getElementById('btnRevealAppId');
+        const modalLockedApplyBtn = document.getElementById('modalLockedApplyBtn');
+
+        const triggerButtons = [btnReadMore, btnRevealAppId, modalLockedApplyBtn].filter(Boolean);
+        const originalStates = triggerButtons.map(btn => ({ btn, html: btn.innerHTML, disabled: btn.disabled }));
+
+        // Lock all trigger buttons to prevent parallel clicks / race conditions
+        triggerButtons.forEach(btn => {
+            btn.disabled = true;
+            btn.style.pointerEvents = 'none';
+        });
+
+        if (modalLockedApplyBtn) {
+            modalLockedApplyBtn.innerHTML = '<span class="unlock-spinner"></span> Verifying...';
         }
 
         // If triggered from top button or read more, scroll applyPromptBox into view smoothly
-        if (applyPromptBox && btnElement && btnElement !== applyPromptBox.querySelector('#btnRevealAppId')) {
+        if (applyPromptBox && btnElement && btnElement !== btnRevealAppId) {
             applyPromptBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
@@ -1269,10 +1291,14 @@ function showModal(job) {
                 alert(userMsg);
             }
 
-            if (btnElement && (!applyPromptBox || btnElement !== applyPromptBox.querySelector('#btnRevealAppId'))) {
-                btnElement.innerHTML = originalHtml;
-                btnElement.disabled = false;
-            }
+            // Restore buttons on failure
+            originalStates.forEach(({ btn, html, disabled }) => {
+                if (btn && document.body.contains(btn) && btn.id !== 'btnRevealAppId') {
+                    btn.innerHTML = html;
+                    btn.disabled = disabled;
+                    btn.style.pointerEvents = 'auto';
+                }
+            });
         }
     };
 
