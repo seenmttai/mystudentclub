@@ -1588,10 +1588,40 @@
     color: #1e293b;
 }
 
-/* Header Cells */
-.csv-preview-table thead th {
+/* Banner / Section Header Row (Pinned Top) */
+.csv-preview-table thead tr.csv-banner-row th {
     position: sticky !important;
     top: 0 !important;
+    left: 0 !important;
+    z-index: 35 !important;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+    color: #f8fafc !important;
+    font-weight: 700;
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    border-bottom: 1px solid #334155 !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+    text-align: left;
+    user-select: none;
+}
+
+.csv-banner-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #38bdf8;
+}
+
+/* Header Cells (when banner row is present, sticky under banner at 34px) */
+.csv-preview-table thead tr.csv-has-banner th {
+    top: 33px !important;
+}
+
+.csv-preview-table thead th {
+    position: sticky !important;
+    top: 0;
     z-index: 10 !important;
     background-color: #f1f5f9 !important;
     color: #334155;
@@ -1611,7 +1641,7 @@
 /* Top-Left Corner `#` */
 .csv-preview-table thead th.csv-row-num {
     position: sticky !important;
-    top: 0 !important;
+    top: 0;
     left: 0 !important;
     z-index: 25 !important;
     background-color: #e2e8f0 !important;
@@ -1625,6 +1655,11 @@
     min-width: 48px;
     max-width: 48px;
     padding: 10px 4px;
+}
+
+.csv-preview-table thead tr.csv-has-banner th.csv-row-num {
+    top: 33px !important;
+    z-index: 28 !important;
 }
 
 /* Row Number Data Cell */
@@ -1661,6 +1696,40 @@
     box-sizing: border-box;
     line-height: 1.5;
     transition: background-color 0.1s ease;
+}
+
+/* Sub-Header Row (e.g. Row 6 in Sheet 1: "Section", "Skills Tested") */
+.csv-preview-table tbody tr.csv-sub-header-row > td {
+    background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%) !important;
+    color: #0f172a !important;
+    font-weight: 700 !important;
+    font-size: 12px !important;
+    letter-spacing: 0.04em !important;
+    text-transform: uppercase !important;
+    border-top: 1px solid #cbd5e1 !important;
+    border-bottom: 2px solid #cbd5e1 !important;
+}
+
+.csv-preview-table tbody tr.csv-sub-header-row > td.csv-row-num {
+    background-color: #cbd5e1 !important;
+    color: #334155 !important;
+    font-weight: 700 !important;
+}
+
+/* Section Title Row (e.g. Row 5 in Sheet 1: "Sections & Suggested Time") */
+.csv-preview-table tbody tr.csv-section-title-row > td {
+    background-color: #f8fafc !important;
+    color: #1e293b !important;
+    font-weight: 700 !important;
+    font-size: 13px !important;
+    letter-spacing: 0.02em !important;
+    border-top: 1px solid #e2e8f0 !important;
+}
+
+.csv-preview-table tbody tr.csv-section-title-row > td.csv-row-num {
+    background-color: #f1f5f9 !important;
+    color: #64748b !important;
+    font-weight: 600 !important;
 }
 
 /* Row striping */

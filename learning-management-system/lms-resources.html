@@ -559,10 +559,40 @@
             color: #1e293b;
         }
 
-        /* Header Cells */
-        .csv-preview-table thead th {
+        /* Banner / Section Header Row (Pinned Top) */
+        .csv-preview-table thead tr.csv-banner-row th {
             position: sticky !important;
             top: 0 !important;
+            left: 0 !important;
+            z-index: 35 !important;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+            color: #f8fafc !important;
+            font-weight: 700;
+            font-size: 11.5px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            padding: 8px 16px;
+            border-bottom: 1px solid #334155 !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+            text-align: left;
+            user-select: none;
+        }
+
+        .csv-banner-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #38bdf8;
+        }
+
+        /* Header Cells (when banner row is present, sticky under banner at 34px) */
+        .csv-preview-table thead tr.csv-has-banner th {
+            top: 33px !important;
+        }
+
+        .csv-preview-table thead th {
+            position: sticky !important;
+            top: 0;
             z-index: 10 !important;
             background-color: #f1f5f9 !important;
             color: #334155;
@@ -582,7 +612,7 @@
         /* Top-Left Corner `#` */
         .csv-preview-table thead th.csv-row-num {
             position: sticky !important;
-            top: 0 !important;
+            top: 0;
             left: 0 !important;
             z-index: 25 !important;
             background-color: #e2e8f0 !important;
@@ -596,6 +626,11 @@
             min-width: 48px;
             max-width: 48px;
             padding: 10px 4px;
+        }
+
+        .csv-preview-table thead tr.csv-has-banner th.csv-row-num {
+            top: 33px !important;
+            z-index: 28 !important;
         }
 
         /* Row Number Data Cell */
@@ -632,6 +667,40 @@
             box-sizing: border-box;
             line-height: 1.5;
             transition: background-color 0.1s ease;
+        }
+
+        /* Sub-Header Row (e.g. Row 6 in Sheet 1: "Section", "Skills Tested") */
+        .csv-preview-table tbody tr.csv-sub-header-row > td {
+            background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%) !important;
+            color: #0f172a !important;
+            font-weight: 700 !important;
+            font-size: 12px !important;
+            letter-spacing: 0.04em !important;
+            text-transform: uppercase !important;
+            border-top: 1px solid #cbd5e1 !important;
+            border-bottom: 2px solid #cbd5e1 !important;
+        }
+
+        .csv-preview-table tbody tr.csv-sub-header-row > td.csv-row-num {
+            background-color: #cbd5e1 !important;
+            color: #334155 !important;
+            font-weight: 700 !important;
+        }
+
+        /* Section Title Row (e.g. Row 5 in Sheet 1: "Sections & Suggested Time") */
+        .csv-preview-table tbody tr.csv-section-title-row > td {
+            background-color: #f8fafc !important;
+            color: #1e293b !important;
+            font-weight: 700 !important;
+            font-size: 13px !important;
+            letter-spacing: 0.02em !important;
+            border-top: 1px solid #e2e8f0 !important;
+        }
+
+        .csv-preview-table tbody tr.csv-section-title-row > td.csv-row-num {
+            background-color: #f1f5f9 !important;
+            color: #64748b !important;
+            font-weight: 600 !important;
         }
 
         /* Row striping */
@@ -1449,7 +1518,7 @@
                     Papa.parse(csvText, {
                         skipEmptyLines: true,
                         complete(results) {
-                            const data = results.data;
+                            const rawData = results.data;
                             const tableEl = self.$refs.csvTableEl;
                             const scrollEl = self.$refs.csvScrollEl;
                             if (!tableEl) return;
@@ -1458,7 +1527,7 @@
                             const existingEmpty = scrollEl ? scrollEl.querySelector('.csv-empty-state') : null;
                             if (existingEmpty) existingEmpty.remove();
 
-                            if (!data || data.length === 0) {
+                            if (!rawData || rawData.length === 0) {
                                 tableEl.style.display = 'none';
                                 if (scrollEl) {
                                     const emptyDiv = document.createElement('div');
@@ -1472,46 +1541,181 @@
                                 return;
                             }
 
+                            // Normalize CSV data: split pipes, detect banner title, trim empty columns
+                            const isColEmpty = (rows, c) => rows.length > 0 && rows.every(r => !r[c] || String(r[c]).trim() === '');
+                            const normalizeCsv = (rowsIn) => {
+                                let rows = rowsIn.filter(row => Array.isArray(row) && row.some(cell => String(cell || '').trim() !== ''));
+                                if (rows.length === 0) return { banner: null, headerRow: [], dataRows: [] };
+
+                                let maxCols = Math.max(...rows.map(r => r.length));
+                                rows = rows.map(r => {
+                                    const copy = [...r];
+                                    while (copy.length < maxCols) copy.push('');
+                                    return copy.map(cell => String(cell ?? '').trim());
+                                });
+
+                                const pipeSplitCols = {};
+                                for (let c = 0; c < maxCols; c++) {
+                                    let pipeCount = 0, totalNonEmpty = 0, maxSplits = 1;
+                                    for (let r = 0; r < rows.length; r++) {
+                                        const val = rows[r][c];
+                                        if (val) {
+                                            totalNonEmpty++;
+                                            if (val.includes('|')) {
+                                                pipeCount++;
+                                                const count = val.split('|').length;
+                                                if (count > maxSplits) maxSplits = count;
+                                            }
+                                        }
+                                    }
+                                    if (totalNonEmpty > 0 && pipeCount >= Math.min(2, totalNonEmpty) && (pipeCount / totalNonEmpty >= 0.35)) {
+                                        pipeSplitCols[c] = maxSplits;
+                                    }
+                                }
+
+                                if (Object.keys(pipeSplitCols).length > 0) {
+                                    rows = rows.map(r => {
+                                        const newRow = [];
+                                        for (let c = 0; c < r.length; c++) {
+                                            if (pipeSplitCols[c]) {
+                                                const parts = r[c] ? r[c].split('|').map(s => s.trim()) : [];
+                                                const needed = pipeSplitCols[c];
+                                                for (let p = 0; p < needed; p++) {
+                                                    newRow.push(p < parts.length ? parts[p] : '');
+                                                }
+                                            } else {
+                                                newRow.push(r[c]);
+                                            }
+                                        }
+                                        return newRow;
+                                    });
+                                }
+
+                                maxCols = Math.max(...rows.map(r => r.length));
+                                let actualMaxCol = 0;
+                                rows.forEach(r => {
+                                    for (let c = r.length - 1; c >= 0; c--) {
+                                        if (r[c] !== '') {
+                                            if (c + 1 > actualMaxCol) actualMaxCol = c + 1;
+                                            break;
+                                        }
+                                    }
+                                });
+
+                                let bannerTitle = null;
+                                let headerRowIndex = 0;
+                                const row0NonEmpty = rows[0].filter(c => c !== '');
+                                if (rows.length > 1 && row0NonEmpty.length === 1 && (rows[0][0] !== '' || rows[0].findIndex(c => c !== '') === 0)) {
+                                    bannerTitle = rows[0].find(c => c !== '') || null;
+                                    headerRowIndex = 1;
+                                }
+
+                                let headerRow = [...(rows[headerRowIndex] || [])];
+                                let dataRows = rows.slice(headerRowIndex + 1).map(r => [...r]);
+
+                                // Header Realignment: Detect columns whose header is one line below (in dataRows[0])
+                                if (dataRows.length > 0) {
+                                    for (let c = 0; c < headerRow.length; c++) {
+                                        if (!headerRow[c] && dataRows[0][c]) {
+                                            const firstVal = dataRows[0][c];
+                                            const isDateOrPureNumber = /^\d{4}-\d{2}-\d{2}$|^\d+(\.\d+)?$/.test(firstVal);
+                                            if (!isDateOrPureNumber) {
+                                                headerRow[c] = firstVal;
+                                                for (let r = 0; r < dataRows.length - 1; r++) {
+                                                    dataRows[r][c] = dataRows[r + 1][c] || '';
+                                                }
+                                                dataRows[dataRows.length - 1][c] = '';
+                                            }
+                                        }
+                                    }
+                                }
+
+                                // STRIP ALL 100% EMPTY COLUMNS
+                                const keptCols = [];
+                                for (let c = 0; c < headerRow.length; c++) {
+                                    const headerHasText = headerRow[c] && String(headerRow[c]).trim() !== '';
+                                    const dataHasText = dataRows.some(r => r[c] && String(r[c]).trim() !== '');
+                                    if (headerHasText || dataHasText) {
+                                        keptCols.push(c);
+                                    }
+                                }
+
+                                headerRow = keptCols.map(c => headerRow[c] || '');
+                                dataRows = dataRows.map(r => keptCols.map(c => r[c] ?? ''));
+
+                                return {
+                                    banner: bannerTitle,
+                                    headerRow,
+                                    dataRows
+                                };
+                            };
+
+                            const { banner, headerRow, dataRows } = normalizeCsv(rawData);
+
                             tableEl.style.display = '';
-                            const headerCols = data[0].length;
-                            const rowCount = data.length - 1;
+                            const headerCols = headerRow.length;
+                            const rowCount = dataRows.length;
                             self.csvRowCount = rowCount;
                             self.csvColCount = headerCols;
                             self.csvVisibleCount = null; // all visible
 
                             // Build <thead>
                             const thead = document.createElement('thead');
-                            const headerRow = document.createElement('tr');
+
+                            if (banner) {
+                                const bannerTr = document.createElement('tr');
+                                bannerTr.className = 'csv-banner-row';
+                                const bannerTh = document.createElement('th');
+                                bannerTh.colSpan = headerCols + 1;
+                                bannerTh.innerHTML = `<span class="csv-banner-badge"><i class="fas fa-layer-group"></i> ${banner}</span>`;
+                                bannerTr.appendChild(bannerTh);
+                                thead.appendChild(bannerTr);
+                            }
+
+                            const headerTr = document.createElement('tr');
+                            if (banner) headerTr.className = 'csv-has-banner';
+
                             const thNum = document.createElement('th');
                             thNum.className = 'csv-row-num';
                             thNum.textContent = '#';
-                            headerRow.appendChild(thNum);
-                            data[0].forEach(cell => {
+                            headerTr.appendChild(thNum);
+
+                            headerRow.forEach((colName) => {
                                 const th = document.createElement('th');
-                                th.textContent = cell || '';
-                                headerRow.appendChild(th);
+                                th.textContent = colName || '';
+                                headerTr.appendChild(th);
                             });
-                            thead.appendChild(headerRow);
+                            thead.appendChild(headerTr);
                             tableEl.appendChild(thead);
 
                             // Build <tbody>
                             const tbody = document.createElement('tbody');
-                            for (let i = 1; i < data.length; i++) {
-                                const row = document.createElement('tr');
+                            dataRows.forEach((rowVals, rIdx) => {
+                                const tr = document.createElement('tr');
                                 const tdNum = document.createElement('td');
                                 tdNum.className = 'csv-row-num';
-                                tdNum.textContent = i;
-                                row.appendChild(tdNum);
-                                const rowData = data[i];
-                                for (let j = 0; j < headerCols; j++) {
+                                tdNum.textContent = rIdx + 1;
+                                tr.appendChild(tdNum);
+
+                                const filled = rowVals.filter(c => c && String(c).trim() !== '');
+                                const nextRowVals = rIdx + 1 < dataRows.length ? dataRows[rIdx + 1] : null;
+                                const nextHasNumbers = nextRowVals && nextRowVals.some(v => /^\d+[\.\)]/.test(String(v || '').trim()));
+
+                                if (filled.length === 1 && filled[0].length > 3 && !/^\d+[\.\)]/.test(filled[0]) && !/^\d+(\.\d+)?$/.test(filled[0])) {
+                                    tr.classList.add('csv-section-title-row');
+                                } else if (filled.length >= 1 && (filled.some(v => v.toLowerCase() === 'section' || v.toLowerCase() === 'skills tested' || v.toLowerCase() === 'suggested time') || (nextHasNumbers && !/^\d+[\.\)]/.test(filled[0])))) {
+                                    tr.classList.add('csv-sub-header-row');
+                                }
+
+                                for (let c = 0; c < headerCols; c++) {
                                     const td = document.createElement('td');
-                                    const cellVal = j < rowData.length ? (rowData[j] ?? '') : '';
+                                    const cellVal = c < rowVals.length ? (rowVals[c] ?? '') : '';
                                     td.textContent = cellVal;
                                     td.dataset.raw = cellVal;
-                                    row.appendChild(td);
+                                    tr.appendChild(td);
                                 }
-                                tbody.appendChild(row);
-                            }
+                                tbody.appendChild(tr);
+                            });
                             tableEl.appendChild(tbody);
 
                             // Scroll to top
