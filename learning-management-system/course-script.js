@@ -102,6 +102,9 @@ document.addEventListener('DOMContentLoaded', () => {
         viewerLoadingScreen: document.getElementById('viewer-loading-screen'),
         pdfViewerContainer: document.getElementById('pdf-viewer-container'),
         csvViewerContainer: document.getElementById('csv-viewer-container'),
+        csvTable: document.getElementById('csv-preview-table'),
+        csvSearchInput: document.getElementById('csv-search-input'),
+        csvInfoBar: document.getElementById('csv-info-bar'),
         pdfCanvas: document.getElementById('pdf-canvas'),
         pdfPrevPage: document.getElementById('pdf-prev-page'),
         pdfNextPage: document.getElementById('pdf-next-page'),
@@ -1045,7 +1048,8 @@ document.addEventListener('DOMContentLoaded', () => {
             await checkEnrollment();
             await loadDynamicBanner();
         } else {
-            window.location.href = 'https://mystudentclub.com/login';
+            const loginUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? '/login.html' : 'https://mystudentclub.com/login';
+            window.location.href = loginUrl;
         }
     };
 
@@ -1948,6 +1952,63 @@ document.addEventListener('DOMContentLoaded', () => {
     const certBtn = document.getElementById('download-certificate-btn');
     if (certBtn) certBtn.addEventListener('click', generateCertificate);
 
+    let csvTooltipElement = null;
+    const attachCsvTooltipListener = (tableEl) => {
+        if (!tableEl) return;
+        if (!csvTooltipElement) {
+            csvTooltipElement = document.getElementById('csv-floating-tooltip');
+            if (!csvTooltipElement) {
+                csvTooltipElement = document.createElement('div');
+                csvTooltipElement.id = 'csv-floating-tooltip';
+                csvTooltipElement.className = 'csv-floating-tooltip';
+                document.body.appendChild(csvTooltipElement);
+            }
+        }
+
+        if (tableEl._hasTooltipListener) return;
+        tableEl._hasTooltipListener = true;
+
+        const updatePos = (e) => {
+            if (!csvTooltipElement || !csvTooltipElement.classList.contains('active')) return;
+            const gap = 12;
+            let x = e.clientX + gap;
+            let y = e.clientY + gap;
+            csvTooltipElement.style.left = '0px';
+            csvTooltipElement.style.top = '0px';
+            const rect = csvTooltipElement.getBoundingClientRect();
+            if (x + rect.width > window.innerWidth - 12) {
+                x = e.clientX - rect.width - gap;
+            }
+            if (y + rect.height > window.innerHeight - 12) {
+                y = e.clientY - rect.height - gap;
+            }
+            csvTooltipElement.style.left = Math.max(8, x) + 'px';
+            csvTooltipElement.style.top = Math.max(8, y) + 'px';
+        };
+
+        tableEl.addEventListener('mouseover', (e) => {
+            const cell = e.target.closest('td, th');
+            if (!cell || cell.classList.contains('csv-row-num')) {
+                if (csvTooltipElement) csvTooltipElement.classList.remove('active');
+                return;
+            }
+            const text = (cell.textContent || '').trim();
+            if (!text) {
+                if (csvTooltipElement) csvTooltipElement.classList.remove('active');
+                return;
+            }
+            csvTooltipElement.textContent = text;
+            csvTooltipElement.classList.add('active');
+            updatePos(e);
+        });
+
+        tableEl.addEventListener('mousemove', updatePos);
+
+        tableEl.addEventListener('mouseleave', () => {
+            if (csvTooltipElement) csvTooltipElement.classList.remove('active');
+        });
+    };
+
     const openResourceViewer = async (resource, type) => {
         state.pdfDoc = null; state.csvData = null; state.pdfCurrentPage = 1; state.pdfTotalPages = 1;
         const ctx = DOMElements.pdfCanvas.getContext('2d');
@@ -2037,55 +2098,121 @@ document.addEventListener('DOMContentLoaded', () => {
                 await renderPdfPage(1);
             } else if (type === 'csv') {
                 const csvText = await response.text();
+                // Reset search input and info bar before rendering
+                if (DOMElements.csvSearchInput) {
+                    DOMElements.csvSearchInput.value = '';
+                }
+                if (DOMElements.csvInfoBar) DOMElements.csvInfoBar.textContent = '';
+
                 Papa.parse(csvText, {
                     skipEmptyLines: true,
                     complete: function (results) {
                         const data = results.data;
-                        const table = DOMElements.csvViewerContainer.querySelector('table');
+                        const table = DOMElements.csvTable || DOMElements.csvViewerContainer.querySelector('table');
+                        const scrollEl = document.getElementById('csv-table-scroll');
                         table.innerHTML = '';
 
-                        if (data.length === 0) {
-                            table.innerHTML = '<tbody><tr><td style="text-align:center; padding: 2rem;">No data found in CSV</td></tr></tbody>';
+                        // Show the container first so layout is established
+                        DOMElements.csvViewerContainer.style.display = 'flex';
+                        // Hide loading only after we have the DOM ready
+                        DOMElements.viewerLoadingScreen.style.display = 'none';
+
+                        const existingEmpty = scrollEl ? scrollEl.querySelector('.csv-empty-state') : null;
+                        if (existingEmpty) existingEmpty.remove();
+
+                        if (!data || data.length === 0) {
+                            table.style.display = 'none';
+                            if (scrollEl) {
+                                const emptyDiv = document.createElement('div');
+                                emptyDiv.className = 'csv-empty-state';
+                                emptyDiv.innerHTML = '<i class="fas fa-table"></i><span>No data found in this CSV file.</span>';
+                                scrollEl.appendChild(emptyDiv);
+                            }
+                            if (DOMElements.csvInfoBar) DOMElements.csvInfoBar.textContent = '0 rows';
                             return;
                         }
 
+                        table.style.display = '';
+                        const headerCols = data[0].length;
+                        const rowCount = data.length - 1; // exclude header
+
+                        // Build <thead>
                         const thead = document.createElement('thead');
                         const headerRow = document.createElement('tr');
+
+                        // Row number header cell
+                        const thNum = document.createElement('th');
+                        thNum.className = 'csv-row-num';
+                        thNum.textContent = '#';
+                        headerRow.appendChild(thNum);
+
                         data[0].forEach(cell => {
                             const th = document.createElement('th');
-                            th.textContent = cell;
+                            th.textContent = cell || '';
                             headerRow.appendChild(th);
                         });
                         thead.appendChild(headerRow);
                         table.appendChild(thead);
 
+                        // Build <tbody>
                         const tbody = document.createElement('tbody');
                         for (let i = 1; i < data.length; i++) {
                             const row = document.createElement('tr');
-                            data[i].forEach(cell => {
+                            // Row number cell
+                            const tdNum = document.createElement('td');
+                            tdNum.className = 'csv-row-num';
+                            tdNum.textContent = i;
+                            row.appendChild(tdNum);
+
+                            const rowData = data[i];
+                            for (let j = 0; j < headerCols; j++) {
                                 const td = document.createElement('td');
-                                td.textContent = cell;
-                                td.title = cell;
+                                const cellVal = j < rowData.length ? (rowData[j] ?? '') : '';
+                                td.textContent = cellVal;
+                                td.dataset.raw = cellVal;
                                 row.appendChild(td);
-                            });
+                            }
                             tbody.appendChild(row);
                         }
                         table.appendChild(tbody);
+
+                        // Update info bar
+                        if (DOMElements.csvInfoBar) {
+                            DOMElements.csvInfoBar.textContent = `${rowCount.toLocaleString()} row${rowCount !== 1 ? 's' : ''} · ${headerCols} col${headerCols !== 1 ? 's' : ''}`;
+                        }
+
+                        // Scroll to top on fresh load
+                        if (scrollEl) scrollEl.scrollTop = 0;
+                        attachCsvTooltipListener(table);
                     },
                     error: function (err) {
                         console.error("CSV Parse Error:", err);
-                        const table = DOMElements.csvViewerContainer.querySelector('table');
-                        table.innerHTML = '<tbody><tr><td style="color:red; padding:1rem;">Error parsing CSV file.</td></tr></tbody>';
+                        DOMElements.csvViewerContainer.style.display = 'flex';
+                        DOMElements.viewerLoadingScreen.style.display = 'none';
+                        const table = DOMElements.csvTable || DOMElements.csvViewerContainer.querySelector('table');
+                        const scrollEl = document.getElementById('csv-table-scroll');
+                        if (table) table.style.display = 'none';
+                        if (scrollEl) {
+                            const existingEmpty = scrollEl.querySelector('.csv-empty-state');
+                            if (existingEmpty) existingEmpty.remove();
+                            const errorDiv = document.createElement('div');
+                            errorDiv.className = 'csv-empty-state csv-error';
+                            errorDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i><span>Could not parse the CSV file. It may be malformed.</span>';
+                            scrollEl.appendChild(errorDiv);
+                        }
                     }
                 });
-
-                DOMElements.csvViewerContainer.style.display = 'block';
+                // Do NOT set display here — it's set inside complete/error callbacks
+                // to prevent flash of loading → empty → content
             }
         } catch (err) {
             alert("Could not load the resource for viewing.");
             closeResourceViewer();
         } finally {
-            DOMElements.viewerLoadingScreen.style.display = 'none';
+            // CSV hides the loading screen inside its PapaParse callbacks
+            if (state.previewType !== 'csv') {
+                DOMElements.viewerLoadingScreen.style.display = 'none';
+            }
         }
     };
 
@@ -2131,6 +2258,9 @@ document.addEventListener('DOMContentLoaded', () => {
             viewerSubtitle.textContent = '';
             viewerSubtitle.style.display = 'none';
         }
+        if (DOMElements.csvSearchInput) DOMElements.csvSearchInput.value = '';
+        if (DOMElements.csvInfoBar) DOMElements.csvInfoBar.textContent = '';
+        if (csvTooltipElement) csvTooltipElement.classList.remove('active');
         state.pdfDoc = null; state.currentResource = null; state.previewType = null;
     };
 
@@ -2208,12 +2338,13 @@ document.addEventListener('DOMContentLoaded', () => {
         DOMElements.hamburgerMenu.addEventListener('click', () => DOMElements.navLinks.classList.toggle('active'));
         DOMElements.logoutButton.addEventListener('click', async () => {
             await supabase.auth.signOut();
-            window.location.href = 'https://mystudentclub.com/login';
+            const loginUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? '/login.html' : 'https://mystudentclub.com/login';
+            window.location.href = loginUrl;
         });
 
-
         DOMElements.enrollRedirectBtn.addEventListener('click', () => {
-            window.location.href = 'https://mystudentclub.com/login';
+            const loginUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? '/login.html' : 'https://mystudentclub.com/login';
+            window.location.href = loginUrl;
         });
 
         if (DOMElements.downloadCertificateBtn) {
@@ -2379,10 +2510,95 @@ document.addEventListener('DOMContentLoaded', () => {
                 DOMElements.profileDropdownEmail.textContent = session.user.email;
                 if (!state.isEnrolled) await checkEnrollment();
             } else {
-                window.location.href = 'https://mystudentclub.com/login';
+                const loginUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? '/login.html' : 'https://mystudentclub.com/login';
+                window.location.href = loginUrl;
             }
         });
     };
 
     init();
 });
+
+/**
+ * csvFilterRows — global, called by the search input's oninput handler.
+ * Shows/hides rows, highlights matching cells and exact matching words.
+ * Excludes row numbers from matching so row indices are not falsely matched.
+ */
+function csvFilterRows(query) {
+    const table = document.getElementById('csv-preview-table');
+    const infoBar = document.getElementById('csv-info-bar');
+    if (!table) return;
+
+    const rows = table.querySelectorAll('tbody tr');
+    const q = (query || '').trim();
+    const qLower = q.toLowerCase();
+    let visibleCount = 0;
+    let matchCount = 0;
+    const totalCount = rows.length;
+
+    const escapeRegex = (s) => s.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+    const regex = q ? new RegExp(`(${escapeRegex(q)})`, 'gi') : null;
+
+    rows.forEach(row => {
+        const dataCells = row.querySelectorAll('td:not(.csv-row-num)');
+        if (!q) {
+            row.classList.remove('csv-row-hidden', 'csv-row-match');
+            dataCells.forEach(cell => {
+                cell.classList.remove('csv-cell-match');
+                const raw = cell.dataset.raw !== undefined ? cell.dataset.raw : cell.textContent;
+                cell.textContent = raw;
+            });
+            visibleCount++;
+        } else {
+            let rowMatched = false;
+            dataCells.forEach(cell => {
+                const raw = cell.dataset.raw !== undefined ? cell.dataset.raw : cell.textContent;
+                if (!cell.dataset.raw) cell.dataset.raw = raw;
+
+                if (raw && raw.toLowerCase().includes(qLower)) {
+                    rowMatched = true;
+                    matchCount++;
+                    cell.classList.add('csv-cell-match');
+                    cell.innerHTML = raw.replace(regex, '<mark class="csv-highlight">$1</mark>');
+                } else {
+                    cell.classList.remove('csv-cell-match');
+                    cell.textContent = raw;
+                }
+            });
+
+            if (rowMatched) {
+                row.classList.remove('csv-row-hidden');
+                row.classList.add('csv-row-match');
+                visibleCount++;
+            } else {
+                row.classList.add('csv-row-hidden');
+                row.classList.remove('csv-row-match');
+            }
+        }
+    });
+
+    const clearBtn = document.getElementById('csv-search-clear-btn');
+    if (clearBtn) {
+        clearBtn.style.display = q ? 'flex' : 'none';
+    }
+
+    if (infoBar) {
+        const colMatch = table.querySelector('thead tr') ? (table.querySelector('thead tr').cells.length - 1) : 0;
+        if (q) {
+            infoBar.textContent = `${visibleCount} of ${totalCount} row${totalCount !== 1 ? 's' : ''} (${matchCount} match${matchCount !== 1 ? 'es' : ''}) · ${colMatch} cols`;
+        } else {
+            infoBar.textContent = `${totalCount} row${totalCount !== 1 ? 's' : ''} · ${colMatch} cols`;
+        }
+    }
+}
+
+function clearCsvSearch() {
+    const input = document.getElementById('csv-search-input');
+    const clearBtn = document.getElementById('csv-search-clear-btn');
+    if (input) {
+        input.value = '';
+        csvFilterRows('');
+        input.focus();
+    }
+    if (clearBtn) clearBtn.style.display = 'none';
+}

@@ -637,7 +637,8 @@
                         this.user = session.user;
                         await this.fetchUserEnrollments();
                     } else {
-                        window.location.href = '/login.html';
+                        const loginUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? '/login.html' : 'https://www.mystudentclub.com/login';
+                        window.location.href = loginUrl;
                     }
                 },
 
@@ -648,7 +649,8 @@
 
                 async logout() {
                     await supabase.auth.signOut();
-                    window.location.href = '/login.html';
+                    const loginUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? '/login.html' : 'https://www.mystudentclub.com/login';
+                    window.location.href = loginUrl;
                 },
 
                 openReportModal() {
@@ -763,7 +765,8 @@
 
                 supabase.auth.onAuthStateChange((event, session) => {
                     if (event === 'SIGNED_OUT') {
-                        window.location.href = 'https://www.mystudentclub.com/login';
+                        const loginUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? '/login.html' : 'https://www.mystudentclub.com/login';
+                        window.location.href = loginUrl;
                     }
                 });
             }
