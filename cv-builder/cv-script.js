@@ -60,10 +60,12 @@
             leadership: [],
             skills: "",
             themeAccent: "",
+            themeFont: "",
             customSections: [],
             sectionOrder: [...BASE_SECTION_ORDER],
             tableSettings: getDefaultTableSettings(),
             sectionLabels: {},
+            sectionTitles: {},
             sectionGroups: {}
         };
 
@@ -218,6 +220,8 @@
             initializeUndoRedoHistory();
             initUndoRedoShortcuts();
             updateUndoRedoControls();
+            renderFontControls();
+            renderThemeControls();
 
             const frame = document.getElementById('cv-frame');
             if (frame) {
@@ -1344,6 +1348,7 @@
                     leadership: [],
                     skills: "",
                     themeAccent: "",
+                    themeFont: "",
                     customSections: [],
                     sectionOrder: [...BASE_SECTION_ORDER],
                     tableSettings: getDefaultTableSettings(),
@@ -1367,6 +1372,7 @@
             if (typeof cvData.summary !== 'string') cvData.summary = cvData.summary ? String(cvData.summary) : '';
             if (typeof cvData.skills !== 'string') cvData.skills = cvData.skills ? String(cvData.skills) : '';
             if (typeof cvData.themeAccent !== 'string') cvData.themeAccent = '';
+            if (typeof cvData.themeFont !== 'string') cvData.themeFont = '';
             cvData.personal.name = normalizeImportedString(cvData.personal.name || '');
             cvData.personal.tagline = normalizeImportedString(cvData.personal.tagline || '');
             cvData.personal.contact = normalizeImportedString(cvData.personal.contact || '');
@@ -1426,6 +1432,9 @@
                     items: Array.isArray(entry.items) ? entry.items : []
                 };
             });
+            if (!cvData.sectionTitles || typeof cvData.sectionTitles !== 'object') {
+                cvData.sectionTitles = {};
+            }
             ensureTableSettingsShape();
             ensureSectionLabelsShape();
             normalizeSectionGroups();
@@ -1815,6 +1824,11 @@
 
             updateCharCounter('inp-summary', 'summary-counter', 500, getSummaryPlainText().length);
             updateCharCounter('inp-skills', 'skills-counter', 300, getSkillsPlainText().length);
+
+            ['summary', 'education', 'experience', 'projects', 'certifications', 'achievements', 'leadership', 'interests', 'skills'].forEach(id => {
+                const el = document.getElementById(`inp-title-${id}`);
+                if (el) el.value = (cvData.sectionTitles && cvData.sectionTitles[id]) || '';
+            });
 
             renderEduInputs();
             renderExpInputs();
@@ -2550,10 +2564,21 @@
         }
 
         function getSectionLabel(sectionId) {
+            if (cvData.sectionTitles && cvData.sectionTitles[sectionId] && cvData.sectionTitles[sectionId].trim()) {
+                return cvData.sectionTitles[sectionId].trim();
+            }
             if (SECTION_LABELS[sectionId]) return SECTION_LABELS[sectionId];
             const customSection = (cvData.customSections || []).find(section => section.id === sectionId);
             if (customSection) return customSection.title || 'Custom Section';
             return sectionId;
+        }
+
+        function updateSectionTitle(sectionId, value) {
+            if (!cvData.sectionTitles || typeof cvData.sectionTitles !== 'object') cvData.sectionTitles = {};
+            cvData.sectionTitles[sectionId] = String(value || '');
+            saveLocal();
+            renderSectionOrderEditor();
+            postToFrame();
         }
 
         function moveSectionOrder(index, direction) {
@@ -3097,20 +3122,30 @@
             const picker = document.getElementById('theme-accent-picker');
             const text = document.getElementById('theme-accent-value');
             const chip = document.getElementById('theme-accent-chip');
-            if (!swatchHost || !picker || !text) return;
+            const swatchBtn = document.getElementById('current-color-swatch');
+            const colorName = document.getElementById('current-color-name');
 
             const active = getThemeAccent();
-            swatchHost.innerHTML = TEMPLATE_COLOR_PRESETS.map(color => `
-                <button type="button" class="template-theme-swatch ${active === color.toUpperCase() ? 'active' : ''}" style="background:${color}" title="${color}" onclick="updateThemeAccent('${color}')"></button>
-            `).join('');
+            if (swatchHost) {
+                swatchHost.innerHTML = TEMPLATE_COLOR_PRESETS.map(color => `
+                    <button type="button" class="template-theme-swatch ${active === color.toUpperCase() ? 'active' : ''}" style="background:${color}" title="${color}" onclick="updateThemeAccent('${color}')"></button>
+                `).join('');
+            }
 
             const fallbackColor = active || '#2F557F';
-            picker.value = fallbackColor;
-            text.value = active;
+            if (picker) picker.value = fallbackColor;
+            if (text) text.value = active;
             if (chip) {
                 chip.style.color = active || '#64748b';
                 chip.style.borderColor = active ? `${active}33` : '#dbe3ef';
                 chip.style.background = active ? `${active}14` : '#ffffff';
+            }
+            if (swatchBtn) {
+                swatchBtn.style.background = active || '#2F557F';
+                swatchBtn.style.display = active ? 'inline-block' : 'none';
+            }
+            if (colorName) {
+                colorName.textContent = active || 'Default';
             }
         }
 
@@ -3118,6 +3153,7 @@
             const normalized = normalizeHexColor(value);
             if (!normalized) return;
             cvData.themeAccent = normalized;
+            saveLocal();
             renderThemeControls();
             postToFrame();
             renderTemplateCards();
@@ -3133,10 +3169,128 @@
 
         function resetThemeAccent() {
             cvData.themeAccent = '';
+            saveLocal();
             renderThemeControls();
             postToFrame();
             renderTemplateCards();
         }
+
+        let activeFontCategory = 'all';
+
+        const TEMPLATE_FONTS = [
+            { key: '', name: 'Default', category: 'all', family: '', type: 'Template Native', preview: 'Aa Bb Gg 123' },
+            // Modern Sans-Serif
+            { key: 'Calibri', name: 'Calibri', category: 'sans', family: "Calibri, 'Segoe UI', Arial, sans-serif", type: 'Modern Corporate', preview: 'Aa Bb Gg 123' },
+            { key: 'Inter', name: 'Inter', category: 'sans', family: "'Inter', sans-serif", type: 'Contemporary UI', preview: 'Aa Bb Gg 123' },
+            { key: 'Roboto', name: 'Roboto', category: 'sans', family: "'Roboto', sans-serif", type: 'Clean Geometric', preview: 'Aa Bb Gg 123' },
+            { key: 'Open Sans', name: 'Open Sans', category: 'sans', family: "'Open Sans', sans-serif", type: 'Balanced Neutral', preview: 'Aa Bb Gg 123' },
+            { key: 'Lato', name: 'Lato', category: 'sans', family: "'Lato', sans-serif", type: 'Warm Professional', preview: 'Aa Bb Gg 123' },
+            { key: 'Montserrat', name: 'Montserrat', category: 'sans', family: "'Montserrat', sans-serif", type: 'Modern Architectural', preview: 'Aa Bb Gg 123' },
+            { key: 'Poppins', name: 'Poppins', category: 'sans', family: "'Poppins', sans-serif", type: 'Geometric Clean', preview: 'Aa Bb Gg 123' },
+            { key: 'Outfit', name: 'Outfit', category: 'sans', family: "'Outfit', sans-serif", type: 'Premium Tech', preview: 'Aa Bb Gg 123' },
+            { key: 'Nunito', name: 'Nunito', category: 'sans', family: "'Nunito', sans-serif", type: 'Soft & Friendly', preview: 'Aa Bb Gg 123' },
+            { key: 'Raleway', name: 'Raleway', category: 'sans', family: "'Raleway', sans-serif", type: 'Elegant Modern', preview: 'Aa Bb Gg 123' },
+            { key: 'Arial', name: 'Arial', category: 'sans', family: "Arial, Helvetica, sans-serif", type: 'Crisp Neutral', preview: 'Aa Bb Gg 123' },
+            { key: 'Trebuchet MS', name: 'Trebuchet MS', category: 'sans', family: "'Trebuchet MS', 'Lucida Sans', sans-serif", type: 'Dynamic Sans', preview: 'Aa Bb Gg 123' },
+            { key: 'Century Gothic', name: 'Century Gothic', category: 'sans', family: "'Century Gothic', Arial, sans-serif", type: 'Geometric Standard', preview: 'Aa Bb Gg 123' },
+            // Classic & Editorial Serif
+            { key: 'Cambria', name: 'Cambria', category: 'serif', family: "Cambria, Georgia, 'Times New Roman', serif", type: 'Executive Serif', preview: 'Aa Bb Gg 123' },
+            { key: 'Times New Roman', name: 'Times New Roman', category: 'serif', family: "'Times New Roman', Times, serif", type: 'Classic Formal', preview: 'Aa Bb Gg 123' },
+            { key: 'Georgia', name: 'Georgia', category: 'serif', family: "Georgia, 'Times New Roman', serif", type: 'Editorial Serif', preview: 'Aa Bb Gg 123' },
+            { key: 'Garamond', name: 'Garamond', category: 'serif', family: "Garamond, 'EB Garamond', Georgia, serif", type: 'Literary Serif', preview: 'Aa Bb Gg 123' },
+            { key: 'Merriweather', name: 'Merriweather', category: 'serif', family: "'Merriweather', serif", type: 'High Legibility', preview: 'Aa Bb Gg 123' },
+            { key: 'Playfair Display', name: 'Playfair Display', category: 'serif', family: "'Playfair Display', Georgia, serif", type: 'High-Contrast Editorial', preview: 'Aa Bb Gg 123' },
+            { key: 'Lora', name: 'Lora', category: 'serif', family: "'Lora', Georgia, serif", type: 'Contemporary Serif', preview: 'Aa Bb Gg 123' },
+            { key: 'Libre Baskerville', name: 'Libre Baskerville', category: 'serif', family: "'Libre Baskerville', Georgia, serif", type: 'Traditional British', preview: 'Aa Bb Gg 123' },
+            { key: 'PT Serif', name: 'PT Serif', category: 'serif', family: "'PT Serif', Georgia, serif", type: 'Academic Formal', preview: 'Aa Bb Gg 123' },
+            { key: 'Palatino', name: 'Palatino', category: 'serif', family: "'Palatino Linotype', 'Book Antiqua', Palatino, serif", type: 'Refined Book Serif', preview: 'Aa Bb Gg 123' },
+            { key: 'Cinzel', name: 'Cinzel', category: 'serif', family: "'Cinzel', Georgia, serif", type: 'Classic Roman', preview: 'Aa Bb Gg 123' }
+        ];
+
+        function getThemeFont() {
+            return String(cvData.themeFont || '').trim();
+        }
+
+        function filterFontCategory(cat) {
+            activeFontCategory = cat || 'all';
+            document.querySelectorAll('.template-font-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.getAttribute('data-cat') === activeFontCategory);
+            });
+            renderFontControls();
+        }
+
+        function renderFontControls() {
+            const fontGrid = document.getElementById('template-font-grid');
+            const current = getThemeFont();
+            if (fontGrid) {
+                const list = TEMPLATE_FONTS.filter(f => {
+                    if (activeFontCategory === 'all') return true;
+                    if (!f.key) return true; // Always show Default
+                    return f.category === activeFontCategory;
+                });
+
+                fontGrid.innerHTML = list.map(f => {
+                    const isActive = (f.key.toLowerCase() === current.toLowerCase()) || (!f.key && !current);
+                    return `
+                        <div class="template-font-card ${isActive ? 'active' : ''}" onclick="updateThemeFont('${f.key}')" style="${f.family ? `font-family:${f.family};` : ''}">
+                            <div class="template-font-name" style="${f.family ? `font-family:${f.family};` : ''}">${f.name}</div>
+                            <div class="template-font-preview">${f.type} &bull; ${f.preview}</div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            const fontLabel = document.getElementById('current-font-name');
+            if (fontLabel) {
+                const match = TEMPLATE_FONTS.find(f => f.key.toLowerCase() === current.toLowerCase());
+                fontLabel.textContent = match ? match.name : (current || 'Default');
+            }
+        }
+
+        function updateThemeFont(key) {
+            cvData.themeFont = String(key || '').trim();
+            saveLocal();
+            renderFontControls();
+            postToFrame();
+        }
+
+        function resetThemeFont() {
+            cvData.themeFont = '';
+            saveLocal();
+            renderFontControls();
+            postToFrame();
+        }
+
+        function toggleColorDropdown(event) {
+            if (event) event.stopPropagation();
+            const fontMenu = document.getElementById('font-dropdown-menu');
+            if (fontMenu) fontMenu.classList.remove('open');
+            const colorMenu = document.getElementById('color-dropdown-menu');
+            if (colorMenu) {
+                const isOpen = colorMenu.classList.toggle('open');
+                if (isOpen) renderThemeControls();
+            }
+        }
+
+        function toggleFontDropdown(event) {
+            if (event) event.stopPropagation();
+            const colorMenu = document.getElementById('color-dropdown-menu');
+            if (colorMenu) colorMenu.classList.remove('open');
+            const fontMenu = document.getElementById('font-dropdown-menu');
+            if (fontMenu) {
+                const isOpen = fontMenu.classList.toggle('open');
+                if (isOpen) renderFontControls();
+            }
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.floater-dropdown-wrap')) {
+                const colorMenu = document.getElementById('color-dropdown-menu');
+                const fontMenu = document.getElementById('font-dropdown-menu');
+                if (colorMenu) colorMenu.classList.remove('open');
+                if (fontMenu) fontMenu.classList.remove('open');
+            }
+        });
 
         function toggleTemplateSidebar(show) {
             const sidebar = document.getElementById('template-sidebar');
@@ -3144,7 +3298,6 @@
             if (show) {
                 sidebar.classList.add('open');
                 overlay.classList.add('open');
-                renderThemeControls();
                 renderTemplateCards();
             } else {
                 sidebar.classList.remove('open');
@@ -3292,6 +3445,8 @@
             if (!payload.personal) payload.personal = { name: "", tagline: "", contact: "", phone: "", email: "", linkedin: "", location: "", socialLinks: [] };
             if (!payload.personal.socialLinks) payload.personal.socialLinks = [];
             payload.themeAccent = normalizeHexColor(payload.themeAccent || cvData.themeAccent || '');
+            payload.themeFont = String(payload.themeFont || cvData.themeFont || '').trim();
+            payload.sectionTitles = cvData.sectionTitles || {};
             applyFormattedContact(payload);
             return payload;
         }

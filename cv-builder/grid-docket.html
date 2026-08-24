@@ -216,6 +216,12 @@ table.ledger-table td, table.ledger-table th {
   color: var(--text-dark);
 }
 
+.role-title:empty,
+.exp-category:empty,
+.exp-intro:empty {
+  display: none;
+}
+
 /* Academic Qualifications Table */
 .acad-table {
   width: 100%;
@@ -401,8 +407,12 @@ table.ledger-table td, table.ledger-table th {
           </colgroup>
           <tbody>
             <tr class="sub-header-row">
-              <td class="company-name" data-field="company">Article Assistant - Deloitte Haskins & Sells</td>
-              <td class="date-range" data-field="dates" style="text-align: right;">September 2023 - August 2025</td>
+              <td colspan="2" class="sub-header-cell">
+                <div class="sub-header-content" style="display: flex; justify-content: space-between; align-items: baseline; width: 100%;">
+                  <span class="company-name" data-field="company">Article Assistant - Deloitte Haskins & Sells</span>
+                  <span class="date-range" data-field="dates" style="text-align: right; white-space: nowrap; flex-shrink: 0; margin-left: calc(10px * var(--cs));">September 2023 - August 2025</span>
+                </div>
+              </td>
             </tr>
             <tr>
               <td class="label-cell">

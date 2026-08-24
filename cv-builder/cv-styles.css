@@ -1105,6 +1105,85 @@
             background: rgba(148, 163, 184, 0.15);
         }
 
+        .floater-dropdown-wrap {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .floater-dropdown-menu {
+            position: absolute;
+            top: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%) translateY(6px);
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 18px;
+            box-shadow: 0 16px 36px rgba(15, 23, 42, 0.16), 0 4px 12px rgba(15, 23, 42, 0.08);
+            padding: 16px;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            visibility: hidden;
+            transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.2s;
+        }
+
+        .floater-dropdown-menu.open {
+            opacity: 1;
+            pointer-events: all;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .color-dropdown-menu {
+            width: 300px;
+        }
+
+        .font-dropdown-menu {
+            width: 360px;
+        }
+
+        .template-font-tabs {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .template-font-tab {
+            padding: 4px 10px;
+            border-radius: 999px;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            color: #64748b;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .template-font-tab:hover {
+            color: #1e293b;
+            background: #f1f5f9;
+        }
+
+        .template-font-tab.active {
+            border-color: #6366f1;
+            background: #6366f1;
+            color: #ffffff;
+        }
+
+        .floater-color-preview {
+            width: 13px;
+            height: 13px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(0, 0, 0, 0.15);
+            background: #2F557F;
+            display: inline-block;
+            margin-right: 2px;
+            flex-shrink: 0;
+        }
+
         .undo-redo-pill {
             gap: 8px;
             cursor: default;
@@ -1464,6 +1543,68 @@
             font-size: 12px;
             font-weight: 700;
             white-space: nowrap;
+        }
+
+        .template-font-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 2px;
+        }
+
+        .template-font-grid::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .template-font-grid::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        .template-font-card {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 8px 10px;
+            border-radius: 12px;
+            border: 1.5px solid #e2e8f0;
+            background: #ffffff;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.18s ease;
+            user-select: none;
+        }
+
+        .template-font-card:hover {
+            border-color: #93c5fd;
+            background: #f8fafc;
+            transform: translateY(-1px);
+        }
+
+        .template-font-card.active {
+            border-color: #6366f1;
+            background: #eff6ff;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+        }
+
+        .template-font-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #0f172a;
+            line-height: 1.2;
+        }
+
+        .template-font-preview {
+            font-size: 10.5px;
+            color: #64748b;
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
         }
 
         .template-sidebar-overlay {

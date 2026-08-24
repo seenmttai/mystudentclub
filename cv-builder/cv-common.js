@@ -45,6 +45,7 @@ function renderCV(data) {
     ensureUniversalSections();
     ensureSectionWrappers();
     applyTemplateAccent(data.themeAccent || '');
+    applyTemplateFont(data.themeFont || '');
     syncDocumentTitle(data);
 
     // 1. Personal Info
@@ -301,21 +302,29 @@ function renderCV(data) {
             const host = ensureFieldHostSupportsRichContent(descSpan, normalized);
             host.innerHTML = normalized;
 
-            // Find the parent TD containing the description
+            // If description is empty, hide its host element
+            const descEmpty = !stripTags(descriptionText).trim();
+            host.style.display = descEmpty ? 'none' : '';
+
+            // Find the parent TD containing the description if description is in its own column
             const descCell = host.closest('td');
             if (descCell) {
-                const descEmpty = !stripTags(descriptionText).trim();
-                descCell.style.display = descEmpty ? 'none' : '';
-                
-                const bulletsCell = descCell.nextElementSibling;
-                if (bulletsCell && /^TD$/i.test(bulletsCell.tagName || '')) {
-                    if (descEmpty) {
-                        bulletsCell.setAttribute('colspan', '2');
-                        bulletsCell.style.setProperty('width', '100%', 'important');
-                    } else {
-                        bulletsCell.removeAttribute('colspan');
-                        bulletsCell.style.removeProperty('width');
+                const ulInSameCell = descCell.querySelector('[data-list="bullets"]');
+                if (!ulInSameCell) {
+                    descCell.style.display = descEmpty ? 'none' : '';
+                    
+                    const bulletsCell = descCell.nextElementSibling;
+                    if (bulletsCell && /^TD$/i.test(bulletsCell.tagName || '')) {
+                        if (descEmpty) {
+                            bulletsCell.setAttribute('colspan', '2');
+                            bulletsCell.style.setProperty('width', '100%', 'important');
+                        } else {
+                            bulletsCell.removeAttribute('colspan');
+                            bulletsCell.style.removeProperty('width');
+                        }
                     }
+                } else {
+                    descCell.style.display = '';
                 }
             }
         }
@@ -392,11 +401,16 @@ function renderCV(data) {
     // 12. Configurable section labels (rename / hide the grey left-label cells)
     applySectionLabels(data.sectionLabels || {});
 
-    // 12. Recalculate Layout (Scale/Shrink)
+    // 13. Configurable section titles (rename section headings, or fall back to template default)
+    applySectionTitles(data.sectionTitles || {});
+
+    // 14. Recalculate Layout (Scale/Shrink)
     // These functions exist in the templates script block
     // Use requestAnimationFrame to ensure DOM is fully updated before recalculating
     requestAnimationFrame(() => {
+        applySectionTitles(data.sectionTitles || {});
         applyTemplateAccent(data.themeAccent || '');
+        applyTemplateFont(data.themeFont || '');
         if (typeof window.shrinkContentToFit === 'function') {
             window.shrinkContentToFit();
         }
@@ -836,8 +850,90 @@ function applySectionLabels(sectionLabels) {
     });
 }
 
+function applySectionTitles(sectionTitles) {
+    const titles = (sectionTitles && typeof sectionTitles === 'object') ? sectionTitles : {};
+    const SECTION_IDS = ['summary', 'education', 'experience', 'projects', 'certifications', 'achievements', 'leadership', 'interests', 'skills'];
 
+    const TITLE_SELECTORS = [
+        '.section-header-title',
+        '.right-title-text',
+        '.section-banner-row td',
+        '.banner-row td',
+        '.section-banner',
+        '.section-header p span',
+        '.section-header p',
+        '.section-header',
+        '.section-header-2',
+        '.section-title',
+        '.pill-banner',
+        '.gray-bar',
+        '.sec-head',
+        '.sec-title',
+        '.heading',
+        '.section-heading',
+        'h2',
+        'h3'
+    ];
 
+    const IGNORE_CONTAINERS = '#experience-list, #education-list, #projects-list, #social-links-container, .experience-item, .job-group, .education-item, .project-item, .list-item, tbody[id], .sub-header-row, .sub-header-cell, .sub-header-content, .sub-section-header, .exp-category, .category-cell';
+
+    SECTION_IDS.forEach(sectionId => {
+        const customTitle = (titles[sectionId] || '').trim();
+        const section = document.querySelector(`.sortable-section[data-section-id="${sectionId}"]`);
+        if (!section) return;
+
+        let titleEl = null;
+        for (const selector of TITLE_SELECTORS) {
+            const elements = section.querySelectorAll(selector);
+            for (const el of elements) {
+                if (!el.closest(IGNORE_CONTAINERS)) {
+                    titleEl = el;
+                    break;
+                }
+            }
+            if (titleEl) break;
+        }
+
+        if (!titleEl) return;
+
+        if (!titleEl.hasAttribute('data-default-title')) {
+            titleEl.setAttribute('data-default-title', titleEl.textContent.trim());
+        }
+
+        const defaultTitle = titleEl.getAttribute('data-default-title') || '';
+        const targetTitle = customTitle || defaultTitle;
+
+        if (titleEl.textContent.trim() !== targetTitle) {
+            titleEl.textContent = targetTitle;
+        }
+    });
+
+    // Custom sections
+    const customSections = window.__currentCVData?.customSections || [];
+    customSections.forEach(cs => {
+        if (!cs || !cs.id) return;
+        const customTitle = (titles[cs.id] !== undefined ? titles[cs.id] : (cs.title || '')).trim();
+        const section = document.querySelector(`[data-custom-section-root="${cs.id}"], .sortable-section[data-section-id="${cs.id}"]`);
+        if (!section) return;
+        let titleEl = null;
+        for (const selector of TITLE_SELECTORS) {
+            const elements = section.querySelectorAll(selector);
+            for (const el of elements) {
+                if (!el.closest(IGNORE_CONTAINERS)) {
+                    titleEl = el;
+                    break;
+                }
+            }
+            if (titleEl) break;
+        }
+        if (titleEl && customTitle) {
+            if (!titleEl.hasAttribute('data-default-title')) {
+                titleEl.setAttribute('data-default-title', titleEl.textContent.trim());
+            }
+            titleEl.textContent = customTitle;
+        }
+    });
+}
 
 function applyEducationTableFormat(columns) {
     const section = document.querySelector('.sortable-section[data-section-id="education"]');
@@ -1097,6 +1193,189 @@ function clearInlineStyles(selector, keys) {
     });
 }
 
+const CV_FONT_CONFIGS = {
+    'calibri': {
+        name: 'Calibri',
+        cssFamily: "Calibri, 'Segoe UI', Arial, sans-serif"
+    },
+    'cambria': {
+        name: 'Cambria',
+        cssFamily: "Cambria, Georgia, 'Times New Roman', serif"
+    },
+    'times': {
+        name: 'Times New Roman',
+        cssFamily: "'Times New Roman', Times, serif"
+    },
+    'times new roman': {
+        name: 'Times New Roman',
+        cssFamily: "'Times New Roman', Times, serif"
+    },
+    'georgia': {
+        name: 'Georgia',
+        cssFamily: "Georgia, 'Times New Roman', serif"
+    },
+    'garamond': {
+        name: 'Garamond',
+        cssFamily: "Garamond, 'EB Garamond', Georgia, serif",
+        googleFont: 'EB+Garamond:wght@400;600;700'
+    },
+    'eb garamond': {
+        name: 'Garamond',
+        cssFamily: "Garamond, 'EB Garamond', Georgia, serif",
+        googleFont: 'EB+Garamond:wght@400;600;700'
+    },
+    'arial': {
+        name: 'Arial',
+        cssFamily: "Arial, Helvetica, sans-serif"
+    },
+    'inter': {
+        name: 'Inter',
+        cssFamily: "'Inter', sans-serif",
+        googleFont: 'Inter:wght@400;500;600;700'
+    },
+    'roboto': {
+        name: 'Roboto',
+        cssFamily: "'Roboto', sans-serif",
+        googleFont: 'Roboto:wght@400;500;700'
+    },
+    'open sans': {
+        name: 'Open Sans',
+        cssFamily: "'Open Sans', sans-serif",
+        googleFont: 'Open+Sans:wght@400;600;700'
+    },
+    'lato': {
+        name: 'Lato',
+        cssFamily: "'Lato', sans-serif",
+        googleFont: 'Lato:wght@400;700'
+    },
+    'montserrat': {
+        name: 'Montserrat',
+        cssFamily: "'Montserrat', sans-serif",
+        googleFont: 'Montserrat:wght@400;500;600;700'
+    },
+    'poppins': {
+        name: 'Poppins',
+        cssFamily: "'Poppins', sans-serif",
+        googleFont: 'Poppins:wght@400;500;600;700'
+    },
+    'outfit': {
+        name: 'Outfit',
+        cssFamily: "'Outfit', sans-serif",
+        googleFont: 'Outfit:wght@400;500;600;700'
+    },
+    'nunito': {
+        name: 'Nunito',
+        cssFamily: "'Nunito', sans-serif",
+        googleFont: 'Nunito:wght@400;600;700'
+    },
+    'raleway': {
+        name: 'Raleway',
+        cssFamily: "'Raleway', sans-serif",
+        googleFont: 'Raleway:wght@400;500;600;700'
+    },
+    'trebuchet': {
+        name: 'Trebuchet MS',
+        cssFamily: "'Trebuchet MS', 'Lucida Sans', sans-serif"
+    },
+    'trebuchet ms': {
+        name: 'Trebuchet MS',
+        cssFamily: "'Trebuchet MS', 'Lucida Sans', sans-serif"
+    },
+    'century gothic': {
+        name: 'Century Gothic',
+        cssFamily: "'Century Gothic', Arial, sans-serif"
+    },
+    'merriweather': {
+        name: 'Merriweather',
+        cssFamily: "'Merriweather', serif",
+        googleFont: 'Merriweather:wght@400;700'
+    },
+    'playfair display': {
+        name: 'Playfair Display',
+        cssFamily: "'Playfair Display', Georgia, serif",
+        googleFont: 'Playfair+Display:wght@400;600;700'
+    },
+    'lora': {
+        name: 'Lora',
+        cssFamily: "'Lora', Georgia, serif",
+        googleFont: 'Lora:wght@400;500;600'
+    },
+    'libre baskerville': {
+        name: 'Libre Baskerville',
+        cssFamily: "'Libre Baskerville', Georgia, serif",
+        googleFont: 'Libre+Baskerville:wght@400;700'
+    },
+    'pt serif': {
+        name: 'PT Serif',
+        cssFamily: "'PT Serif', Georgia, serif",
+        googleFont: 'PT+Serif:wght@400;700'
+    },
+    'palatino': {
+        name: 'Palatino',
+        cssFamily: "'Palatino Linotype', 'Book Antiqua', Palatino, serif"
+    },
+    'cinzel': {
+        name: 'Cinzel',
+        cssFamily: "'Cinzel', Georgia, serif",
+        googleFont: 'Cinzel:wght@400;600;700'
+    }
+};
+
+function ensureGoogleFontLoaded(fontQuery) {
+    if (!fontQuery) return;
+    const linkId = 'cv-google-font-' + fontQuery.replace(/[^a-zA-Z0-9]/g, '-');
+    if (document.getElementById(linkId)) return;
+    const link = document.createElement('link');
+    link.id = linkId;
+    link.rel = 'stylesheet';
+    link.href = 'https://fonts.googleapis.com/css2?family=' + fontQuery + '&display=swap';
+    document.head.appendChild(link);
+}
+
+function applyTemplateFont(fontKey) {
+    const key = String(fontKey || '').trim().toLowerCase();
+    const root = document.documentElement;
+    const page = document.getElementById('cv-page');
+    let customStyle = document.getElementById('cv-custom-font-style');
+
+    if (!key || key === 'default') {
+        if (customStyle) customStyle.remove();
+        if (page) page.style.removeProperty('font-family');
+        ['--font-main', '--font-body', '--font-heading', '--font-serif', '--font-tahoma', '--font-treb', '--font-name']
+            .forEach(name => root && root.style && root.style.removeProperty(name));
+        return;
+    }
+
+    const config = CV_FONT_CONFIGS[key] || { cssFamily: fontKey };
+    if (config.googleFont) {
+        ensureGoogleFontLoaded(config.googleFont);
+    }
+
+    if (!customStyle) {
+        customStyle = document.createElement('style');
+        customStyle.id = 'cv-custom-font-style';
+        document.head.appendChild(customStyle);
+    }
+
+    customStyle.textContent = `
+        #cv-page, #cv-page *:not(.fa):not(.fas):not(.far):not(.fab):not([class*="icon"]):not(svg):not(path) {
+            font-family: ${config.cssFamily} !important;
+        }
+    `;
+
+    if (root && root.style) {
+        ['--font-main', '--font-body', '--font-heading', '--font-serif', '--font-tahoma', '--font-treb', '--font-name']
+            .forEach(name => root.style.setProperty(name, config.cssFamily));
+    }
+
+    if (document.fonts && typeof document.fonts.ready?.then === 'function') {
+        document.fonts.ready.then(() => {
+            if (typeof window.shrinkContentToFit === 'function') window.shrinkContentToFit();
+            if (typeof window.scaleToFit === 'function') window.scaleToFit();
+        });
+    }
+}
+
 function buildRenderedExperience(items) {
     const source = Array.isArray(items) ? items : [];
     const groups = [];
@@ -1232,6 +1511,7 @@ function applyExperienceTitleMergeDisplayV2(block, item) {
         addWrapper(el.closest('.item-date'));
         addWrapper(el.closest('.exp-title'));
         addWrapper(el.closest('.sub-header-cell'));
+        addWrapper(el.closest('.sub-header-row'));
         addWrapper(el.closest('.job-title-row'));
         addWrapper(el.closest('.job-header'));
         addWrapper(el.closest('.exp-header-details'));
@@ -1245,12 +1525,13 @@ function applyExperienceTitleMergeDisplayV2(block, item) {
         addWrapper(el.closest('.exp-subhead-top'));
         addWrapper(el.closest('.exp-company-title'));
         addWrapper(el.closest('.exp-role-title'));
+        addWrapper(el.closest('.exp-titlebar'));
     });
 
     wrappersToToggle.forEach(el => {
         el.style.display = hideTitle ? 'none' : '';
         const row = el.closest('tr');
-        if (row && row !== block && row.querySelector('.sub-header-cell')) {
+        if (row && row !== block && (row.querySelector('.sub-header-cell') || row.querySelector('.exp-titlebar') || row.classList.contains('sub-header-row'))) {
             row.style.display = hideTitle ? 'none' : '';
         }
     });
