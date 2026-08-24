@@ -112,7 +112,7 @@ function loadTurnstileScript() {
     });
 }
 
-function getTurnstileToken() {
+function getTurnstileToken(mountContainer = null) {
     return new Promise(async (resolve, reject) => {
         try {
             await loadTurnstileScript();
@@ -124,51 +124,125 @@ function getTurnstileToken() {
             return reject(new Error('Verification service temporarily unavailable. Please refresh.'));
         }
 
-        let container = document.getElementById('msc-turnstile-container');
-        if (!container) {
-            container = document.createElement('div');
-            container.id = 'msc-turnstile-container';
-            container.style.cssText = 'position:fixed;bottom:10px;right:10px;z-index:99999;';
-            document.body.appendChild(container);
+        let widgetSlot = null;
+        let overlayElement = null;
+        let isResolved = false;
+        let currentWidgetId = null;
+
+        const cleanup = () => {
+            if (currentWidgetId && window.turnstile) {
+                try { window.turnstile.remove(currentWidgetId); } catch (_) {}
+            }
+            if (overlayElement) {
+                overlayElement.remove();
+                overlayElement = null;
+            }
+        };
+
+        if (mountContainer) {
+            // Mount directly inside the modal's apply prompt box
+            mountContainer.innerHTML = `
+                <div class="turnstile-inline-container" id="turnstileInlineContainer">
+                    <div class="turnstile-status-text">
+                        <i class="fas fa-shield-halved"></i>
+                        <span>Security Verification</span>
+                    </div>
+                    <div id="msc-turnstile-slot" class="turnstile-widget-mount"></div>
+                </div>
+            `;
+            widgetSlot = mountContainer.querySelector('#msc-turnstile-slot');
+        } else {
+            // Centered Modal Overlay Fallback (never hidden bottom-right)
+            overlayElement = document.createElement('div');
+            overlayElement.id = 'msc-turnstile-modal-overlay';
+            overlayElement.className = 'turnstile-modal-overlay';
+            overlayElement.innerHTML = `
+                <div class="turnstile-modal-card">
+                    <div class="turnstile-modal-header">
+                        <div class="turnstile-modal-title">
+                            <i class="fas fa-shield-halved"></i>
+                            <span>Security Verification</span>
+                        </div>
+                        <button class="turnstile-modal-close" id="mscTurnstileCloseBtn" title="Close">&times;</button>
+                    </div>
+                    <p class="turnstile-modal-desc">Please complete the verification below to view application details.</p>
+                    <div id="msc-turnstile-slot" class="turnstile-widget-mount"></div>
+                </div>
+            `;
+            document.body.appendChild(overlayElement);
+            widgetSlot = overlayElement.querySelector('#msc-turnstile-slot');
+
+            const closeBtn = overlayElement.querySelector('#mscTurnstileCloseBtn');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => {
+                    if (!isResolved) {
+                        isResolved = true;
+                        cleanup();
+                        reject(new Error('Verification cancelled.'));
+                    }
+                });
+            }
         }
 
-        const widgetDiv = document.createElement('div');
-        container.appendChild(widgetDiv);
-
         try {
-            const widgetId = window.turnstile.render(widgetDiv, {
+            currentWidgetId = window.turnstile.render(widgetSlot, {
                 sitekey: TURNSTILE_SITE_KEY,
+                theme: 'light',
+                size: 'normal',
+                appearance: 'always',
+                action: 'unlock_job',
                 callback: (token) => {
-                    setTimeout(() => {
-                        try { window.turnstile.remove(widgetId); } catch (_) {}
-                        widgetDiv.remove();
-                    }, 300);
-                    resolve(token);
+                    if (!isResolved) {
+                        isResolved = true;
+                        if (mountContainer) {
+                            mountContainer.innerHTML = `
+                                <div class="turnstile-status-text" style="color: #16a34a; padding: 0.75rem;">
+                                    <i class="fas fa-circle-check" style="color: #16a34a;"></i>
+                                    <span>Verified! Unlocking details...</span>
+                                </div>
+                            `;
+                        }
+                        setTimeout(() => {
+                            cleanup();
+                            resolve(token);
+                        }, 250);
+                    }
                 },
                 'error-callback': () => {
-                    try { window.turnstile.remove(widgetId); } catch (_) {}
-                    widgetDiv.remove();
-                    reject(new Error('Verification was not completed. Please try again.'));
+                    if (!isResolved) {
+                        isResolved = true;
+                        cleanup();
+                        reject(new Error('Verification failed. Please try again.'));
+                    }
                 },
                 'expired-callback': () => {
-                    try { window.turnstile.remove(widgetId); } catch (_) {}
-                    widgetDiv.remove();
-                    reject(new Error('Verification session timed out. Please try again.'));
+                    if (!isResolved) {
+                        isResolved = true;
+                        cleanup();
+                        reject(new Error('Verification expired. Please try again.'));
+                    }
+                },
+                'timeout-callback': () => {
+                    if (!isResolved) {
+                        isResolved = true;
+                        cleanup();
+                        reject(new Error('Verification timed out. Please try again.'));
+                    }
                 }
             });
         } catch (err) {
-            widgetDiv.remove();
+            cleanup();
             reject(err);
         }
     });
 }
 
-async function unlockJobDetails(job, tableName) {
+async function unlockJobDetails(job, tableName, mountContainer = null) {
     if (unlockedJobsCache.has(job.id)) {
         return unlockedJobsCache.get(job.id);
     }
 
-    const token = await getTurnstileToken();
+    const token = await getTurnstileToken(mountContainer);
     let response;
     try {
         response = await fetch(`${UNLOCK_WORKER_URL}/api/unlock-job`, {
@@ -1138,14 +1212,20 @@ function showModal(job) {
 
     // Unified Unlock Handler with smooth UX
     const handleUnlockFlow = async (btnElement, autoAction = null) => {
+        const applyPromptBox = document.getElementById('applyPromptBox');
         const originalHtml = btnElement ? btnElement.innerHTML : '';
-        if (btnElement) {
-            btnElement.innerHTML = '<span class="unlock-spinner"></span> Loading...';
+        if (btnElement && (!applyPromptBox || btnElement !== applyPromptBox.querySelector('#btnRevealAppId'))) {
+            btnElement.innerHTML = '<span class="unlock-spinner"></span> Verifying...';
             btnElement.disabled = true;
         }
 
+        // If triggered from top button or read more, scroll applyPromptBox into view smoothly
+        if (applyPromptBox && btnElement && btnElement !== applyPromptBox.querySelector('#btnRevealAppId')) {
+            applyPromptBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
         try {
-            const unlocked = await unlockJobDetails(job, currentTable);
+            const unlocked = await unlockJobDetails(job, currentTable, applyPromptBox || null);
 
             // Re-render modal in fully unlocked state
             showModal(job);
@@ -1165,14 +1245,31 @@ function showModal(job) {
             }
 
         } catch (err) {
-            console.error('Fetch error:', err);
+            console.error('Unlock error:', err);
             const userMsg = err.message || 'Unable to load application details. Please try again.';
-            if (typeof showToast === 'function') {
+            
+            if (applyPromptBox) {
+                applyPromptBox.innerHTML = `
+                    <div class="turnstile-inline-error">
+                        <p style="color: #ef4444; font-size: 0.85rem; font-weight: 500; margin-bottom: 0.5rem;">
+                            <i class="fas fa-circle-exclamation"></i> ${userMsg}
+                        </p>
+                        <button class="btn btn-primary btn-reveal-app" id="btnRetryUnlock" style="padding: 0.6rem 1.25rem; font-size: 0.9rem;">
+                            <i class="fas fa-rotate-right"></i> Try Verification Again
+                        </button>
+                    </div>
+                `;
+                const btnRetry = applyPromptBox.querySelector('#btnRetryUnlock');
+                if (btnRetry) {
+                    btnRetry.addEventListener('click', () => handleUnlockFlow(btnRetry, autoAction));
+                }
+            } else if (typeof showToast === 'function') {
                 showToast(userMsg, 'error');
             } else {
                 alert(userMsg);
             }
-            if (btnElement) {
+
+            if (btnElement && (!applyPromptBox || btnElement !== applyPromptBox.querySelector('#btnRevealAppId'))) {
                 btnElement.innerHTML = originalHtml;
                 btnElement.disabled = false;
             }
