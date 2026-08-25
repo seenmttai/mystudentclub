@@ -257,6 +257,7 @@ let cachedSortedLocations = null;
 let cachedSortedCategories = null;
 let currentFcmToken = null;
 let firebaseMessaging;
+let firmReviewsMap = new Map();
 
 const state = {
   keywords: [],
@@ -420,6 +421,47 @@ async function fetchTrendingJobs() {
   }
 }
 
+async function fetchFirmReviews() {
+  try {
+    const { data, error } = await supabaseClient
+      .from('articleship_firm_reviews_public')
+      .select('firm_name, overall_rating');
+    if (error) throw error;
+
+    const groups = {};
+    (data || []).forEach((r) => {
+      if (!r.firm_name) return;
+      const key = r.firm_name.trim().toLowerCase();
+      if (!groups[key]) {
+        groups[key] = {
+          firmName: r.firm_name.trim(),
+          ratings: [],
+          count: 0,
+        };
+      }
+      if (typeof r.overall_rating === 'number') {
+        groups[key].ratings.push(r.overall_rating);
+      }
+      groups[key].count++;
+    });
+
+    firmReviewsMap.clear();
+    for (const key in groups) {
+      const g = groups[key];
+      const avg = g.ratings.length
+        ? g.ratings.reduce((a, b) => a + b, 0) / g.ratings.length
+        : null;
+      firmReviewsMap.set(key, {
+        firmName: g.firmName,
+        avgOverall: avg,
+        count: g.count,
+      });
+    }
+  } catch (err) {
+    console.warn('Failed to load firm reviews for rating display:', err);
+  }
+}
+
 function renderTrendingCard(job, _idx) {
   const initials = getInitials(job.Company || "");
   const applicants = job.application_count || 0;
@@ -454,7 +496,6 @@ function renderJobCard(job) {
   const initials = getInitials(job.Company || "");
   const isApplied = appliedJobIds.has(job.id);
   const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : "";
-  const applicants = job.application_count || 0;
   const portalLabel =
     PORTALS.find((p) => p.id === currentPortalId)?.label || "";
 
@@ -469,6 +510,9 @@ function renderJobCard(job) {
   const isExclusive = !!job.is_exclusive;
   const isLocked = isExclusive && !isEnrolledSync("Industrial Training Job Portal");
 
+  const companyKey = (job.Company || "").trim().toLowerCase();
+  const ratingInfo = currentTable === "Articleship Jobs" ? firmReviewsMap.get(companyKey) : null;
+
   const card = document.createElement("article");
   card.className = "job-card-new" + (isExclusive ? " job-card-exclusive" : "");
   card.dataset.jobId = job.id;
@@ -477,7 +521,7 @@ function renderJobCard(job) {
             <div class="jc-avatar" style="background:${colors.bg};color:${colors.fg}">${initials}</div>
             <div class="jc-info">
                 <div class="jc-role">${job.Company || "N/A"}</div>
-                <div class="jc-company">${postedText}</div>
+                ${job.Location ? `<div class="jc-company">${job.Location.split(",")[0]}</div>` : ""}
             </div>
             <button class="jc-bookmark${isBookmarked(job.id, currentTable) ? " saved" : ""}" aria-label="Save">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="${isBookmarked(job.id, currentTable) ? "currentColor" : "none"}" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -487,13 +531,13 @@ function renderJobCard(job) {
         </div>
         <div class="jc-chips">
             ${isExclusive ? `<span class="jc-chip" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; border-color: #d97706; font-weight: 700;">⭐ Exclusive</span>` : ""}
+            ${ratingInfo && ratingInfo.count > 5 ? `<a href="/articleship-firm-review.html?firm=${encodeURIComponent(job.Company || '')}" class="jc-chip" style="background: #fef9c3; color: #854d0e; border-color: #fde047; font-weight: 700; text-decoration: none;" onclick="event.stopPropagation();"><i class="fa-solid fa-star" style="color: #ca8a04; margin-right: 4px;"></i>${ratingInfo.avgOverall.toFixed(1)} (${ratingInfo.count})</a>` : ""}
             ${primaryDomain ? `<span class="jc-chip jc-chip-domain">${primaryDomain}</span>` : ""}
             ${secondaryDomain ? `<span class="jc-chip jc-chip-domain" style="background-color: #e0f2fe; color: #0369a1; border-color: #bae6fd;">${secondaryDomain}</span>` : ""}
             ${companyType ? `<span class="jc-chip"><i class="fa-solid fa-building" style="margin-right: 4px; color: #94a3b8;"></i>${companyType}</span>` : ""}
             ${firmType ? `<span class="jc-chip"><i class="fa-solid fa-briefcase" style="margin-right: 4px; color: #94a3b8;"></i>${firmType}</span>` : ""}
             ${industryType ? `<span class="jc-chip"><i class="fa-solid fa-industry" style="margin-right: 4px; color: #94a3b8;"></i>${industryType}</span>` : ""}
             ${job.Experience ? `<span class="jc-chip">${job.Experience}</span>` : ""}
-            ${job.Location ? `<span class="jc-chip"><i class="fa-regular fa-compass" style="margin-right: 4px; color: #94a3b8;"></i>${job.Location.split(",")[0]}</span>` : ""}
         </div>
         <div class="jc-divider"></div>
         <div class="jc-footer">
@@ -515,7 +559,7 @@ function renderJobCard(job) {
                     return "";
                   }
                 })()}
-                <div class="jc-meta">${applicants > 0 ? `${applicants} applied` : "Be the first to apply!"}</div>
+                ${postedText ? `<div class="jc-meta">${postedText}</div>` : ""}
             </div>
             <button class="jc-apply-btn${isApplied ? " applied" : ""}${isLocked ? " exclusive-locked-btn" : ""}" style="${isLocked ? "background: linear-gradient(135deg, #f59e0b, #d97706) !important; color: white !important; border: none !important;" : ""}">${isLocked ? "Exclusive" : isApplied ? "✓ Applied" : "Apply →"}</button>
         </div>`;
@@ -770,18 +814,18 @@ function renderActiveFilters() {
 
 //  FILTER SHEET
 function showFilterSheet() {
-  dom.filterSheetOverlay?.classList.add("show");
+  const overlay = dom.filterSheetOverlay || document.getElementById("filterSheetOverlay");
+  if (overlay) overlay.classList.add("show");
   document.body.style.overflow = "hidden";
-  // Sync filter state to sheet UI
   if (dom.sortBySelect) dom.sortBySelect.value = state.sortBy;
-  if (dom.salaryFilter) dom.salaryFilter.value = state.salary;
   renderLocationPills();
   renderStatusToggles();
   setupLocationDropdown();
 }
 
 function hideFilterSheet() {
-  dom.filterSheetOverlay?.classList.remove("show");
+  const overlay = dom.filterSheetOverlay || document.getElementById("filterSheetOverlay");
+  if (overlay) overlay.classList.remove("show");
   document.body.style.overflow = "";
 }
 
@@ -858,43 +902,153 @@ function setupLocationDropdown() {
   };
 }
 
+function getSalaryMinVal(val) {
+  if (!val) return 0;
+  if (val.endsWith("+")) return parseInt(val, 10) || 0;
+  if (val.includes("-")) return parseInt(val.split("-")[0], 10) || 0;
+  return 0;
+}
+
+function getSalaryMaxVal(val, maxVal) {
+  if (!val) return maxVal;
+  if (val.endsWith("+")) return maxVal;
+  if (val.includes("-")) return parseInt(val.split("-")[1], 10) || maxVal;
+  return maxVal;
+}
+
+function formatSalaryTriggerLabel(val, isFresher, isStipend, maxVal) {
+  if (!val) return "Any " + (isStipend ? "Stipend" : "Salary");
+  const min = getSalaryMinVal(val);
+  const max = getSalaryMaxVal(val, maxVal);
+  if (min === 0 && max >= maxVal) return "Any " + (isStipend ? "Stipend" : "Salary");
+  if (max >= maxVal) {
+    return isFresher ? `₹${(min / 100000).toFixed(1)} LPA+` : `₹${min.toLocaleString("en-IN")}+`;
+  }
+  return isFresher ? `₹${(min / 100000).toFixed(1)} - ₹${(max / 100000).toFixed(1)} LPA` : `₹${min.toLocaleString("en-IN")} - ₹${max.toLocaleString("en-IN")}`;
+}
+
 function populateSalaryFilter() {
   if (!dom.salaryFilter) return;
-  let rawOptions = [];
-  if (currentTable === "Industrial Training Job Portal")
-    rawOptions = [
-      { value: "", text: "Any Stipend" },
-      { value: "10000-20000", text: "₹10k - ₹20k" },
-      { value: "20000-40000", text: "₹20k - ₹40k" },
-      { value: "40000+", text: "₹40k+" },
-    ];
-  else if (currentTable === "Articleship Jobs")
-    rawOptions = [
-      { value: "", text: "Any Stipend" },
-      { value: "0-5000", text: "Below ₹5k" },
-      { value: "5000-10000", text: "₹5k - ₹10k" },
-      { value: "10000-15000", text: "₹10k - ₹15k" },
-      { value: "15000+", text: "₹15k+" },
-    ];
-  else if (currentTable === "Semi Qualified Jobs")
-    rawOptions = [
-      { value: "", text: "Any Salary" },
-      { value: "0-25000", text: "Below ₹25k" },
-      { value: "25000-35000", text: "₹25k - ₹35k" },
-      { value: "35000-50000", text: "₹35k - ₹50k" },
-      { value: "50000+", text: "Above ₹50k" },
-    ];
-  else if (currentTable === "Fresher Jobs")
-    rawOptions = [
-      { value: "", text: "Any Salary" },
-      { value: "0-1200000", text: "< 12 LPA" },
-      { value: "1200000-1800000", text: "12-18 LPA" },
-      { value: "1800000+", text: "> 18 LPA" },
-    ];
-  const options = rawOptions.map((o) => ({ value: o.value, label: o.text }));
-  const placeholder = options[0]?.label || "Any Stipend";
-  initCustomSelect(dom.salaryFilter, placeholder, options, null);
-  dom.salaryFilter.value = state.salary;
+
+  const isFresher = currentTable === "Fresher Jobs";
+  const maxVal = isFresher ? 3000000 : 100000;
+  const stepVal = isFresher ? 50000 : 1000;
+  const isStipend = currentTable === "Industrial Training Job Portal" || currentTable === "Articleship Jobs";
+
+  const curMin = getSalaryMinVal(state.salary);
+  const curMax = getSalaryMaxVal(state.salary, maxVal);
+
+  dom.salaryFilter.className = "custom-select filter-custom-select";
+  dom.salaryFilter.style.position = "relative";
+  dom.salaryFilter.innerHTML = `
+    <button class="custom-select-trigger" type="button" id="portalSalaryTrigger">
+      <span class="cs-label" id="portalSalaryLabel">${formatSalaryTriggerLabel(state.salary, isFresher, isStipend, maxVal)}</span>
+      <svg class="cs-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+    <div class="cs-dropdown stipend-popover-menu" id="portalSalaryDropdown" style="display: none; padding: 0;">
+      <div class="stipend-slider-container">
+        <div class="stipend-inputs-row">
+          <div class="stipend-input-wrap">
+            <span class="currency-symbol">₹</span>
+            <input type="number" id="ps-min-input" min="0" max="${maxVal}" step="${stepVal}" placeholder="Min" value="${curMin}">
+          </div>
+          <span class="stipend-to-label">to</span>
+          <div class="stipend-input-wrap">
+            <span class="currency-symbol">₹</span>
+            <input type="number" id="ps-max-input" min="0" max="${maxVal}" step="${stepVal}" placeholder="Max" value="${curMax}">
+          </div>
+        </div>
+
+        <div class="dual-range-wrapper">
+          <div class="dual-range-track" id="ps-range-track"></div>
+          <input type="range" id="ps-range-min" min="0" max="${maxVal}" step="${stepVal}" value="${curMin}">
+          <input type="range" id="ps-range-max" min="0" max="${maxVal}" step="${stepVal}" value="${curMax}">
+        </div>
+
+        <div class="stipend-slider-labels">
+          <span>₹0</span>
+          <span>${isFresher ? "30 LPA+" : "1L+"}</span>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const trigger = dom.salaryFilter.querySelector("#portalSalaryTrigger");
+  const dropdown = dom.salaryFilter.querySelector("#portalSalaryDropdown");
+
+  if (trigger && dropdown) {
+    trigger.onclick = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const isOpen = dropdown.style.display === "block";
+      document.querySelectorAll(".cs-dropdown").forEach(d => d.style.display = "none");
+      dropdown.style.display = isOpen ? "none" : "block";
+    };
+    dropdown.onclick = (e) => e.stopPropagation();
+  }
+
+  const minRange = dom.salaryFilter.querySelector("#ps-range-min");
+  const maxRange = dom.salaryFilter.querySelector("#ps-range-max");
+  const minInput = dom.salaryFilter.querySelector("#ps-min-input");
+  const maxInput = dom.salaryFilter.querySelector("#ps-max-input");
+  const track = dom.salaryFilter.querySelector("#ps-range-track");
+  const label = dom.salaryFilter.querySelector("#portalSalaryLabel");
+
+  if (!minRange || !maxRange || !minInput || !maxInput || !track) return;
+
+  function update() {
+    let minVal = parseInt(minRange.value, 10);
+    let maxValCurrent = parseInt(maxRange.value, 10);
+
+    if (minVal >= maxValCurrent) {
+      minVal = maxValCurrent - stepVal;
+      minRange.value = minVal;
+    }
+    minInput.value = minVal;
+    maxInput.value = maxValCurrent;
+
+    const pctMin = (minVal / maxVal) * 100;
+    const pctMax = (maxValCurrent / maxVal) * 100;
+    const activeColor = "#3b82f6";
+    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+    const trackBg = isDark ? "#252836" : "#e2e8f0";
+    const gradientCSS = `linear-gradient(to right, ${trackBg} 0%, ${trackBg} ${pctMin}%, ${activeColor} ${pctMin}%, ${activeColor} ${pctMax}%, ${trackBg} ${pctMax}%, ${trackBg} 100%)`;
+    track.style.setProperty("background", gradientCSS, "important");
+
+    if (minVal === 0 && maxValCurrent >= maxVal) {
+      state.salary = "";
+    } else if (maxValCurrent >= maxVal) {
+      state.salary = `${minVal}+`;
+    } else {
+      state.salary = `${minVal}-${maxValCurrent}`;
+    }
+
+    if (label) label.textContent = formatSalaryTriggerLabel(state.salary, isFresher, isStipend, maxVal);
+
+    renderActiveFilters();
+    resetAndFetch();
+  }
+
+  minRange.oninput = () => { minInput.value = minRange.value; update(); };
+  maxRange.oninput = () => { maxInput.value = maxRange.value; update(); };
+  minInput.onchange = () => {
+    let val = Math.min(Math.max(parseInt(minInput.value || 0, 10), 0), parseInt(maxRange.value, 10) - stepVal);
+    minRange.value = val;
+    update();
+  };
+  maxInput.onchange = () => {
+    let val = Math.min(Math.max(parseInt(maxInput.value || maxVal, 10), parseInt(minRange.value, 10) + stepVal), maxVal);
+    maxRange.value = val;
+    update();
+  };
+
+  const pctMin = (curMin / maxVal) * 100;
+  const pctMax = (curMax / maxVal) * 100;
+  const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+  const trackBg = isDark ? "#252836" : "#e2e8f0";
+  const activeColor = "#3b82f6";
+  const initGradientCSS = `linear-gradient(to right, ${trackBg} 0%, ${trackBg} ${pctMin}%, ${activeColor} ${pctMin}%, ${activeColor} ${pctMax}%, ${trackBg} ${pctMax}%, ${trackBg} 100%)`;
+  track.style.setProperty("background", initGradientCSS, "important");
 }
 
 
@@ -1039,7 +1193,10 @@ function showJobDetail(job) {
   const isApplied = appliedJobIds.has(job.id);
   const applyLink = isUnlocked ? getApplicationLink(job["Application ID"], job.Company) : "#";
   const isMailto = isUnlocked && applyLink.startsWith("mailto:");
-  const applicants = job.application_count || 0;
+  const industry = job['Industry Type'] || job['Company Type'] || job['Firm Type'] || '';
+  const showCompanyTypePill = job['Company Type'] && job['Company Type'] !== industry;
+  const showFirmTypePill = job['Firm Type'] && job['Firm Type'] !== industry;
+  const ratingInfo = currentTable === "Articleship Jobs" ? firmReviewsMap.get((job.Company || "").trim().toLowerCase()) : null;
 
   // Build LinkedIn connect link
   const suffixPattern =
@@ -1140,15 +1297,17 @@ function showJobDetail(job) {
                 <div class="jd-hero-top">
                     <div class="jd-hero-avatar" style="background:${colors.bg};color:${colors.fg}">${initials}</div>
                     <div class="jd-hero-info">
-                        <div class="jd-hero-company">${job.Company || ""}</div>
+                        <div class="jd-hero-company">
+                            ${job.Company || ""}
+                            ${ratingInfo && ratingInfo.count > 5 ? `<span style="display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:700;color:#ca8a04;background:#fef9c3;padding:2px 7px;border-radius:6px;margin-left:6px;border:1px solid #fde047;vertical-align:middle;"><i class="fa-solid fa-star" style="font-size:10px;"></i>${ratingInfo.avgOverall.toFixed(1)}</span>` : ""}
+                        </div>
                         <div class="jd-hero-location">${job.Location || ""}</div>
                     </div>
                 </div>
                 <div class="jd-meta-pills">
                     ${job['Secondary Domain'] ? `<span class="jc-chip jc-chip-domain" style="background-color:#e0f2fe;color:#0369a1;border-color:#bae6fd;">${job['Secondary Domain']}</span>` : ""}
-                    ${job['Company Type'] ? `<span class="jc-chip"><i class="fa-solid fa-building" style="margin-right:4px;color:#94a3b8;"></i>${job['Company Type']}</span>` : ""}
-                    ${job['Firm Type'] ? `<span class="jc-chip"><i class="fa-solid fa-briefcase" style="margin-right:4px;color:#94a3b8;"></i>${job['Firm Type']}</span>` : ""}
-                    ${job['Industry Type'] ? `<span class="jc-chip"><i class="fa-solid fa-industry" style="margin-right:4px;color:#94a3b8;"></i>${job['Industry Type']}</span>` : ""}
+                    ${showCompanyTypePill ? `<span class="jc-chip"><i class="fa-solid fa-building" style="margin-right:4px;color:#94a3b8;"></i>${job['Company Type']}</span>` : ""}
+                    ${showFirmTypePill ? `<span class="jc-chip"><i class="fa-solid fa-briefcase" style="margin-right:4px;color:#94a3b8;"></i>${job['Firm Type']}</span>` : ""}
                     ${job.Experience ? `<span class="jc-chip">${job.Experience}</span>` : ""}
                 </div>
                 <div class="jd-stats-grid">
@@ -1167,8 +1326,7 @@ function showJobDetail(job) {
                       }
                       return "";
                     })()}
-                    ${applicants > 0 ? `<div class="jd-stat"><span class="jd-stat-label">Applicants</span><span class="jd-stat-value">${applicants}</span></div>` : ""}
-
+                    ${industry ? `<div class="jd-stat"><span class="jd-stat-label">Industry</span><span class="jd-stat-value">${industry}</span></div>` : ""}
                 </div>
             </div>
             ${applyHtml}
@@ -1179,6 +1337,15 @@ function showJobDetail(job) {
                 <button class="jd-action-link" id="jdShareInline">
                     <i class="fas fa-share-alt"></i> Share Job
                 </button>
+                ${currentTable === "Articleship Jobs" ? (
+                  ratingInfo && ratingInfo.count > 0 ? `
+                    <a href="/articleship-firm-review.html?firm=${encodeURIComponent(job.Company || '')}" class="jd-action-link" style="color: #2563eb;">
+                        <i class="fas fa-comments"></i> Read Reviews (${ratingInfo.count})
+                    </a>` : `
+                    <a href="/submit-review.html?firm=${encodeURIComponent(job.Company || '')}&location=${encodeURIComponent(job.Location ? job.Location.split(',')[0].trim() : '')}" class="jd-action-link">
+                        <i class="fas fa-pen-to-square"></i> Review Firm
+                    </a>`
+                ) : ""}
             </div>
             <div class="jd-section">
                 <h3 class="jd-section-title">Application Details</h3>
@@ -3053,7 +3220,7 @@ async function initializePage() {
   setupInfiniteScroll();
 
   // Fetch data
-  await Promise.all([fetchTrendingJobs(), fetchJobs(), loadBanners()]);
+  await Promise.all([fetchFirmReviews(), fetchTrendingJobs(), fetchJobs(), loadBanners()]);
 
   // Handle shared job URL
   checkAndOpenSharedJob();

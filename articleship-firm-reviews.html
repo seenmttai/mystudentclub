@@ -1,0 +1,4719 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    (function () {
+      const savedTheme = localStorage.getItem('msc-theme') || localStorage.getItem('portal_theme') || localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    })();
+  </script>
+  <title>Articleship Firm Reviews - My Student Club</title>
+  <meta name="description"
+    content="Read and write anonymous reviews of CA articleship firms — stipend, work-life balance, learning exposure, and culture.">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300..900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/scripts/portal-style.css">
+  <link rel="stylesheet" href="/articleship-review-wizard.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --font-main: 'Inter', system-ui, -apple-system, sans-serif !important;
+      --font-mono: 'JetBrains Mono', monospace !important;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background: var(--bg, #f8fafc);
+      color: var(--text, #0f172a);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: clip;
+      padding-top: var(--header-h, 54px);
+      padding-bottom: calc(75px + env(safe-area-inset-bottom, 0px));
+    }
+
+    /* ── Dark Mode Styles ── */
+    [data-theme="dark"] body {
+      background: var(--bg, #0f1117);
+      color: var(--text, #edf2ff);
+    }
+    [data-theme="dark"] .afr-hero {
+      background: linear-gradient(135deg, #091224 0%, #0d1e3d 50%, #081020 100%) !important;
+      border-bottom-color: #1e293b !important;
+    }
+    [data-theme="dark"] .afr-command-bar {
+      background: var(--card, #1a1d27) !important;
+      border-color: var(--line, #252836) !important;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+    }
+    [data-theme="dark"] .afr-search-box {
+      background: var(--bg, #0f1117) !important;
+      border-color: var(--line, #252836) !important;
+    }
+    [data-theme="dark"] #search-input {
+      color: var(--text, #edf2ff) !important;
+      background: transparent !important;
+    }
+    [data-theme="dark"] .custom-dropdown {
+      background: var(--bg, #0f1117) !important;
+      border-color: var(--line, #252836) !important;
+    }
+    [data-theme="dark"] .dropdown-trigger {
+      color: var(--text, #edf2ff) !important;
+    }
+    [data-theme="dark"] .custom-dropdown-menu {
+      background: var(--card, #1a1d27) !important;
+      border-color: var(--line, #252836) !important;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+    }
+    [data-theme="dark"] .custom-dropdown-item {
+      color: var(--text, #edf2ff) !important;
+    }
+    [data-theme="dark"] .custom-dropdown-item:hover {
+      background: var(--chip, #1e2130) !important;
+      color: var(--brand, #4f8aff) !important;
+    }
+    [data-theme="dark"] .afr-filter-bar {
+      background: var(--card, #1a1d27) !important;
+      border-color: var(--line, #252836) !important;
+    }
+    [data-theme="dark"] .afr-filter-tabs {
+      background: var(--bg, #0f1117) !important;
+    }
+    [data-theme="dark"] .afr-tab-btn {
+      color: var(--sub, #8896ae) !important;
+    }
+    [data-theme="dark"] .afr-tab-btn.active {
+      background: var(--card, #1a1d27) !important;
+      color: var(--brand, #4f8aff) !important;
+    }
+    [data-theme="dark"] .tag-pill-btn {
+      background: var(--bg, #0f1117) !important;
+      border-color: var(--line, #252836) !important;
+      color: var(--sub, #8896ae) !important;
+    }
+    [data-theme="dark"] .tag-pill-btn:hover {
+      background: var(--chip, #1e2130) !important;
+      color: var(--text, #edf2ff) !important;
+    }
+    [data-theme="dark"] .tag-pill-btn.active {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+      color: #ffffff !important;
+      border-color: transparent !important;
+    }
+    [data-theme="dark"] .afr-card {
+      background: var(--card, #1a1d27) !important;
+      border-color: var(--line, #252836) !important;
+      color: var(--text, #edf2ff) !important;
+      box-shadow: var(--shadow) !important;
+    }
+    [data-theme="dark"] .afr-card-name {
+      color: var(--text, #edf2ff) !important;
+    }
+    [data-theme="dark"] .afr-card-location {
+      color: var(--sub, #8896ae) !important;
+    }
+    [data-theme="dark"] .afr-stat-box {
+      background: var(--bg, #0f1117) !important;
+      border-color: var(--line, #252836) !important;
+    }
+    [data-theme="dark"] .afr-stat-val {
+      color: var(--text, #edf2ff) !important;
+    }
+    [data-theme="dark"] .afr-stat-lbl {
+      color: var(--sub, #8896ae) !important;
+    }
+    [data-theme="dark"] .afr-tag {
+      background: var(--chip, #1e2130) !important;
+      border-color: var(--line, #252836) !important;
+      color: var(--sub, #8896ae) !important;
+    }
+    [data-theme="dark"] .afr-card-footer {
+      border-top-color: var(--line, #252836) !important;
+    }
+    [data-theme="dark"] .filter-modal-sheet {
+      background: var(--card, #1a1d27) !important;
+      color: var(--text, #edf2ff) !important;
+    }
+    [data-theme="dark"] .filter-modal-header {
+      border-bottom-color: var(--line, #252836) !important;
+    }
+    [data-theme="dark"] .filter-modal-title {
+      color: var(--text, #edf2ff) !important;
+    }
+    [data-theme="dark"] .mobile-filter-select {
+      background: var(--bg, #0f1117) !important;
+      border-color: var(--line, #252836) !important;
+      color: var(--text, #edf2ff) !important;
+    }
+    [data-theme="dark"] .mobile-drawer-tab-contents {
+      background: var(--bg, #0f1117) !important;
+      border-color: var(--line, #252836) !important;
+    }
+    [data-theme="dark"] .filter-modal-footer {
+      background: var(--card, #1a1d27) !important;
+      border-top-color: var(--line, #252836) !important;
+    }
+    [data-theme="dark"] .pg-btn {
+      background: var(--card, #1a1d27) !important;
+      border-color: var(--line, #252836) !important;
+      color: var(--text, #edf2ff) !important;
+    }
+    [data-theme="dark"] .pg-btn.pg-active {
+      background: var(--brand, #4f8aff) !important;
+      border-color: var(--brand, #4f8aff) !important;
+      color: #ffffff !important;
+    }
+    [data-theme="dark"] .afr-empty h3 {
+      color: var(--text, #edf2ff) !important;
+    }
+
+    /* Custom Dropdown Container */
+    .custom-dropdown {
+      position: relative;
+      flex: 1;
+      display: inline-block;
+      min-width: 0;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      border-radius: 10px;
+      transition: all 0.2s ease;
+    }
+
+    .custom-dropdown:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+
+    .custom-dropdown.active {
+      background: #ffffff;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+    }
+
+    .dropdown-trigger {
+      width: 100%;
+      background: transparent;
+      border: none;
+      padding: 0.4rem 1.25rem 0.4rem 0.75rem;
+      font-family: var(--font-main);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: #475569;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.35rem;
+      cursor: pointer;
+      outline: none;
+      transition: color 0.2s ease;
+      text-align: left;
+      border-radius: 10px;
+    }
+
+    .custom-dropdown:hover .dropdown-trigger {
+      color: #0f172a;
+    }
+
+    .custom-dropdown.active .dropdown-trigger {
+      color: #1d4ed8;
+    }
+
+    .dropdown-trigger .trigger-label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
+
+    .dropdown-trigger i {
+      font-size: 0.65rem;
+      color: #94a3b8;
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      margin-left: 0.25rem;
+    }
+
+    .custom-dropdown.active .dropdown-trigger i {
+      transform: rotate(180deg);
+      color: #1d4ed8;
+    }
+
+    /* Floating Menu styling */
+    .custom-dropdown-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      min-width: 160px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      border-radius: 14px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 16px -6px rgba(0, 0, 0, 0.03);
+      z-index: 1000;
+      max-height: 240px;
+      overflow-y: auto;
+      opacity: 0;
+      transform: translateY(-8px) scale(0.96);
+      pointer-events: none;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: 0.35rem;
+      scrollbar-width: thin;
+      scrollbar-color: #cbd5e1 transparent;
+    }
+
+    .custom-dropdown.active .custom-dropdown-menu {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    /* Dropdown options */
+    .custom-dropdown-item {
+      padding: 0.45rem 0.75rem;
+      font-family: var(--font-main);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: #475569;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .custom-dropdown-item:hover {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+
+    .custom-dropdown-item.selected {
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    .custom-dropdown-item.selected::after {
+      content: '✓';
+      font-size: 0.75rem;
+      font-weight: 800;
+    }
+
+    .custom-dropdown-menu::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .custom-dropdown-menu::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 99px;
+    }
+
+    .brand-logo {
+      height: 35px !important;
+      width: auto !important;
+      max-width: none !important;
+      display: block !important;
+    }
+
+    @media (max-width: 768px) {
+      .brand-logo {
+        height: 28px !important;
+      }
+    }
+
+    /* ════════════════════════════════════════════════════════════════
+       ARTICLESHIP FIRM REVIEWS — page-specific layout
+       Palette: navy #0d2452 · brand #1d4ed8 · surfaces #fff / #f4f6fb
+       Semantic score colors: good #16a34a · mid #d97706 · bad #dc2626
+       Signature: the search/filter bar docks into the base of the hero.
+       ════════════════════════════════════════════════════════════════ */
+
+    /* ── Hero band ─────────────────────────────────────────────────── */
+    .afr-hero {
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(46% 90% at 82% -10%, rgba(96, 165, 250, 0.40), transparent 60%),
+        radial-gradient(52% 120% at -5% 115%, rgba(37, 99, 235, 0.50), transparent 62%),
+        linear-gradient(180deg, #123063 0%, #0d2452 100%);
+      color: #fff;
+      /* full-bleed band; the inner carries the 1.5rem header-aligned gutter */
+      padding: clamp(2.5rem, 5vw, 3.5rem) 0 5rem;
+    }
+
+    /* quiet hairline-grid texture — the only decorative flourish */
+    .afr-hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+      background-size: 46px 46px;
+      -webkit-mask-image: radial-gradient(70% 100% at 80% 0%, #000, transparent 70%);
+      mask-image: radial-gradient(70% 100% at 80% 0%, #000, transparent 70%);
+      pointer-events: none;
+    }
+
+    .afr-hero-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: clamp(1.75rem, 4vw, 3.5rem);
+    }
+
+    .afr-hero-copy {
+      min-width: 0;
+      max-width: 620px;
+    }
+
+    .afr-hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-mono) !important;
+      font-size: 0.52rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      color: #bfdbfe;
+      background: rgba(147, 197, 253, 0.12);
+      border: 1px solid rgba(147, 197, 253, 0.28);
+      padding: 0.4rem 0.8rem;
+      border-radius: 999px;
+      margin-bottom: 1.1rem;
+    }
+
+    .afr-hero-eyebrow i {
+      font-size: 0.72rem;
+      color: #93c5fd;
+    }
+
+    .afr-hero h1 {
+      font-size: clamp(1.9rem, 3.4vw, 2.65rem);
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      line-height: 1.08;
+      margin-bottom: 0.8rem;
+      color: #fff;
+    }
+
+    .afr-hero-sub {
+      font-size: clamp(0.9rem, 1.4vw, 1rem);
+      line-height: 1.6;
+      color: rgba(219, 231, 255, 0.82);
+      max-width: 500px;
+      margin-bottom: 1.75rem;
+    }
+
+    .afr-hero-features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.85rem;
+      margin-top: 1.5rem;
+      width: 100%;
+    }
+
+    @media (max-width: 768px) {
+      .afr-hero-features {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+    }
+
+    .afr-hfeature {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 0.65rem 0.8rem;
+      border-radius: 12px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: default;
+    }
+
+    .afr-hfeature:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.18);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .afr-hfeature-icon-wrap {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(147, 197, 253, 0.1);
+      border: 1px solid rgba(147, 197, 253, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: #93c5fd;
+      font-size: 0.85rem;
+      transition: all 0.3s ease;
+    }
+
+    .afr-hfeature:hover .afr-hfeature-icon-wrap {
+      background: #1d4ed8;
+      border-color: #3b82f6;
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(29, 78, 216, 0.55);
+    }
+
+    .afr-hfeature-text {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+      min-width: 0;
+    }
+
+    .afr-hfeature-title {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+
+    .afr-hfeature-desc {
+      font-size: 0.62rem;
+      color: rgba(219, 231, 255, 0.55);
+      line-height: 1.3;
+    }
+
+    .text-gradient {
+      background: linear-gradient(135deg, #a5f3fc 0%, #60a5fa 50%, #3b82f6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      color: #3b82f6;
+    }
+
+    /* fadeInUp, fadeInRight, fadeInLeft animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInRight {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes fadeInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .animate-fade-up {
+      animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .animate-fade-right {
+      animation: fadeInRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .animate-fade-left {
+      animation: fadeInLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .delay-100 {
+      animation-delay: 100ms;
+    }
+
+    .delay-200 {
+      animation-delay: 200ms;
+    }
+
+    .delay-300 {
+      animation-delay: 300ms;
+    }
+
+    /* CTA panel & Floating Infographics */
+    .afr-hero-side-container {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-shrink: 0;
+      width: 550px;
+      max-width: 100%;
+      position: relative;
+    }
+
+    .afr-hero-side {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 0.85rem;
+      flex-shrink: 0;
+      width: 270px;
+      max-width: 100%;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(147, 197, 253, 0.2);
+      border-radius: 18px;
+      padding: 1.6rem 1.4rem;
+      box-shadow: 0 24px 50px -24px rgba(2, 8, 40, 0.7);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      transition: transform 0.3s ease;
+    }
+
+    .afr-hero-side:hover {
+      transform: translateY(-2px);
+    }
+
+    .afr-hero-side-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      line-height: 1.4;
+      color: #fff;
+    }
+
+    .afr-hero-btn {
+      width: 100%;
+      justify-content: center;
+      background: #fff;
+      color: #1d4ed8;
+      border: none;
+      font-family: var(--font-main);
+      font-size: 0.9rem;
+      font-weight: 700;
+      padding: 0.85rem 1.6rem;
+      border-radius: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 10px 24px rgba(2, 8, 40, 0.35);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .afr-hero-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 34px rgba(2, 8, 40, 0.45);
+    }
+
+    .afr-hero-btn:focus-visible {
+      outline: 2px solid #fff;
+      outline-offset: 3px;
+    }
+
+    .afr-hero-note {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: rgba(191, 219, 254, 0.78);
+    }
+
+    /* Floating reviews infographic */
+    .afr-floating-reviews-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      flex: 1;
+      min-width: 250px;
+      position: relative;
+    }
+
+    .afr-floating-review {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 14px;
+      padding: 0.8rem 0.95rem;
+      box-shadow: 0 12px 30px rgba(2, 8, 40, 0.2);
+      transition: all 0.3s ease;
+      cursor: default;
+    }
+
+    @keyframes float1 {
+      0% {
+        transform: translateY(0px) rotate(0deg);
+      }
+
+      50% {
+        transform: translateY(-6px) rotate(0.5deg);
+      }
+
+      100% {
+        transform: translateY(0px) rotate(0deg);
+      }
+    }
+
+    @keyframes float2 {
+      0% {
+        transform: translateY(0px) rotate(0deg);
+      }
+
+      50% {
+        transform: translateY(6px) rotate(-0.5deg);
+      }
+
+      100% {
+        transform: translateY(0px) rotate(0deg);
+      }
+    }
+
+    .afr-floating-review.card-1 {
+      animation: float1 6s ease-in-out infinite;
+    }
+
+    .afr-floating-review.card-2 {
+      animation: float2 6s ease-in-out infinite;
+      margin-left: 1.5rem;
+    }
+
+    .afr-floating-review:hover {
+      background: rgba(255, 255, 255, 0.09);
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 20px 40px rgba(2, 8, 40, 0.35);
+      transform: scale(1.02);
+      animation-play-state: paused;
+    }
+
+    .afr-fr-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 0.45rem;
+    }
+
+    .afr-fr-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .afr-fr-info {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .afr-fr-name {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .afr-fr-loc {
+      font-size: 0.6rem;
+      color: rgba(219, 231, 255, 0.6);
+      font-weight: 500;
+    }
+
+    .afr-fr-rating {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #f59e0b;
+      display: flex;
+      align-items: center;
+      gap: 0.2rem;
+      background: rgba(245, 158, 11, 0.12);
+      padding: 0.2rem 0.45rem;
+      border-radius: 6px;
+      border: 1px solid rgba(245, 158, 11, 0.25);
+    }
+
+    .afr-fr-text {
+      font-size: 0.65rem;
+      color: rgba(219, 231, 255, 0.85);
+      line-height: 1.35;
+      margin-bottom: 0.5rem;
+      font-style: italic;
+    }
+
+    .afr-fr-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding-top: 0.4rem;
+    }
+
+    .afr-fr-tag {
+      font-size: 0.58rem;
+      font-weight: 600;
+      color: #93c5fd;
+      background: rgba(147, 197, 253, 0.12);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+    }
+
+    .afr-fr-stipend {
+      font-size: 0.625rem;
+      font-weight: 700;
+      color: #10b981;
+    }
+
+    .afr-fr-stipend-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .afr-sparkline {
+      opacity: 0.85;
+      animation: pulseSparkline 3s ease-in-out infinite;
+    }
+
+    @keyframes pulseSparkline {
+
+      0%,
+      100% {
+        opacity: 0.7;
+      }
+
+      50% {
+        opacity: 1;
+        filter: drop-shadow(0 0 2px rgba(16, 185, 129, 0.4));
+      }
+    }
+
+    @media (max-width: 1100px) {
+      .afr-floating-reviews-wrap {
+        display: none;
+      }
+
+      .afr-hero-side-container {
+        width: 300px;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .afr-hero-side-container {
+        width: 100%;
+      }
+
+      .afr-hero-side {
+        width: 100%;
+        flex-shrink: 1;
+      }
+    }
+
+    /* Floating FAB button */
+    .floating-write-btn {
+      position: fixed;
+      bottom: calc(65px + env(safe-area-inset-bottom, 0px) + 12px);
+      right: 1.25rem;
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 999px;
+      padding: 0.65rem 1.15rem;
+      font-family: var(--font-main);
+      font-size: 0.825rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.4);
+      cursor: pointer;
+      z-index: 150;
+      opacity: 0;
+      transform: translateY(20px) scale(0.9);
+      pointer-events: none;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .floating-write-btn.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .floating-write-btn:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 12px 28px rgba(37, 99, 235, 0.5);
+      color: #ffffff;
+    }
+
+    .floating-write-btn:active {
+      transform: translateY(-1px) scale(0.98);
+    }
+
+    .floating-write-btn i {
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 620px) {
+      .floating-write-btn {
+        bottom: calc(60px + env(safe-area-inset-bottom, 0px) + 10px);
+        right: 1rem;
+        padding: 0.6rem 1rem;
+        font-size: 0.8rem;
+      }
+    }
+
+    /* ── Body wrapper + docked command bar ─────────────────────────── */
+    .afr-body-wrapper {
+      background: #f4f6fb;
+      width: 100%;
+    }
+
+    .afr-body-container {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 0 1.5rem 5rem;
+    }
+
+    .afr-command-bar {
+      background: #fff;
+      border: 1px solid #e3eaf4;
+      border-radius: 20px;
+      box-shadow: 0 20px 44px -24px rgba(13, 36, 82, 0.34);
+      padding: 0.9rem 1rem 0.75rem;
+      margin-top: -3rem;
+      /* docks the bar into the hero base */
+      margin-bottom: 1.75rem;
+      /* push the results cards down to avoid overlap */
+      position: sticky;
+      top: 78px;
+      z-index: 90;
+    }
+
+    .afr-command-bar::before {
+      content: '';
+      position: absolute;
+      inset: -12px -16px;
+      border-radius: 28px;
+      background: rgba(244, 246, 251, 0.75);
+      /* semi-translucent body bg to blend naturally */
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      z-index: -1;
+      pointer-events: none;
+      box-shadow: 0 10px 30px rgba(13, 36, 82, 0.03);
+    }
+
+    /* Unified Search & Filter capsule */
+    .afr-search-bar-unified {
+      display: flex;
+      align-items: center;
+      background: #ffffff;
+      border: 1px solid #e3eaf4;
+      border-radius: 18px;
+      box-shadow: 0 16px 36px -16px rgba(13, 36, 82, 0.15), 0 4px 12px rgba(13, 36, 82, 0.03);
+      padding: 0.4rem;
+      width: 100%;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .afr-search-bar-unified:focus-within {
+      border-color: #3b82f6;
+      box-shadow: 0 20px 40px -16px rgba(59, 130, 246, 0.2), 0 0 0 3px rgba(59, 130, 246, 0.08);
+    }
+
+    .search-segment {
+      display: flex;
+      align-items: center;
+      padding: 0.6rem 1.1rem;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      flex: 1;
+      min-width: 0;
+      gap: 0.8rem;
+    }
+
+    .search-segment:hover {
+      background-color: #f8fafc;
+    }
+
+    .segment-search {
+      flex: 1.5;
+    }
+
+    .segment-icon {
+      font-size: 1.05rem;
+      color: #94a3b8;
+      transition: color 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .search-segment:focus-within .segment-icon,
+    .search-segment:hover .segment-icon {
+      color: #3b82f6;
+    }
+
+    .segment-details {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .segment-label {
+      font-family: var(--font-mono) !important;
+      font-size: 0.63rem;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.18rem;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .segment-search input {
+      border: none;
+      background: transparent;
+      padding: 0;
+      font-family: var(--font-main);
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #0f172a;
+      width: 100%;
+      outline: none;
+    }
+
+    .segment-search input::placeholder {
+      color: #cbd5e1;
+      font-weight: 500;
+    }
+
+    .segment-divider {
+      width: 1px;
+      height: 34px;
+      background-color: #eef2f6;
+      margin: 0 0.15rem;
+      flex-shrink: 0;
+    }
+
+    /* Select dropdown styling in search bar */
+    select.afr-filter-select,
+    .search-segment select,
+    .segment-details select {
+      border: none !important;
+      background: transparent !important;
+      background-color: transparent !important;
+      padding: 0 1.25rem 0 0 !important;
+      font-family: var(--font-main) !important;
+      font-size: 0.875rem !important;
+      font-weight: 600 !important;
+      color: #0f172a !important;
+      width: 100% !important;
+      height: auto !important;
+      min-height: 0 !important;
+      line-height: 1.4 !important;
+      outline: none !important;
+      cursor: pointer !important;
+      appearance: none !important;
+      -webkit-appearance: none !important;
+      -moz-appearance: none !important;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-9'/%3E%3C/svg%3E") !important;
+      background-repeat: no-repeat !important;
+      background-position: right center !important;
+      background-size: 11px 11px !important;
+      box-shadow: none !important;
+    }
+
+    select.afr-filter-select:focus,
+    .search-segment select:focus {
+      color: #3b82f6 !important;
+    }
+
+    select.afr-filter-select option,
+    .search-segment select option {
+      background: #ffffff;
+      color: #0f172a;
+      padding: 8px 12px;
+      font-weight: 500;
+    }
+
+    .filter-control {
+      width: 100%;
+      height: 42px;
+      padding: 0 2rem 0 1rem;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      background-color: #f8fafc;
+      font-family: var(--font-main);
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #0f172a;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.85rem center;
+      background-size: 12px 12px;
+    }
+
+    /* Dropdown segment overrides */
+    .search-segment .custom-dropdown {
+      border: none !important;
+      background: transparent !important;
+      border-radius: 0 !important;
+      width: 100% !important;
+      padding: 0 !important;
+      box-shadow: none !important;
+      flex: none;
+    }
+
+    .search-segment .custom-dropdown:hover {
+      background: transparent !important;
+    }
+
+    .search-segment .dropdown-trigger {
+      padding: 0 !important;
+      border: none !important;
+      background: transparent !important;
+      font-size: 0.875rem !important;
+      font-weight: 600 !important;
+      color: #475569 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      width: 100% !important;
+      min-height: auto !important;
+    }
+
+    .search-segment .custom-dropdown.active .dropdown-trigger {
+      color: #1d4ed8 !important;
+    }
+
+    .search-segment .dropdown-trigger i {
+      font-size: 0.7rem !important;
+      color: #cbd5e1 !important;
+      margin-left: 0.5rem !important;
+    }
+
+    /* Dropdown Menu positioning under Segment */
+    .search-segment .custom-dropdown-menu {
+      top: calc(100% + 14px) !important;
+      border-radius: 14px !important;
+      box-shadow: 0 12px 30px rgba(13, 36, 82, 0.08) !important;
+      border: 1px solid #e2e8f0 !important;
+    }
+
+    /* Stipend Dual Range Slider Styles */
+    .stipend-popover-menu {
+      min-width: 280px !important;
+      padding: 0 !important;
+      max-height: none !important;
+      overflow: visible !important;
+    }
+
+    .stipend-slider-container {
+      padding: 1.1rem 1.15rem 0.85rem;
+      width: 280px;
+      box-sizing: border-box;
+    }
+
+    .stipend-inputs-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.6rem;
+      margin-bottom: 1.1rem;
+    }
+
+    .stipend-input-wrap {
+      position: relative;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 12px;
+      background: #ffffff;
+      padding: 0.35rem 0.6rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .stipend-input-wrap:focus-within {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+
+    .currency-symbol {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #64748b;
+      margin-right: 0.35rem;
+      user-select: none;
+    }
+
+    .stipend-input-wrap input {
+      width: 100%;
+      border: none !important;
+      background: transparent !important;
+      outline: none !important;
+      font-family: var(--font-main);
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #0f172a;
+      padding: 0 !important;
+      box-shadow: none !important;
+    }
+
+    .stipend-input-wrap input::-webkit-outer-spin-button,
+    .stipend-input-wrap input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .stipend-input-wrap input[type=number] {
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+
+    .stipend-to-label {
+      font-size: 0.825rem;
+      font-weight: 500;
+      color: #64748b;
+      padding: 0 0.15rem;
+      user-select: none;
+    }
+
+    .dual-range-wrapper {
+      position: relative;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      margin: 0.4rem 0 0.2rem;
+    }
+
+    .dual-range-track {
+      position: absolute;
+      width: 100%;
+      height: 4px;
+      border-radius: 4px;
+      background: #e2e8f0;
+      z-index: 1;
+    }
+
+    .dual-range-wrapper input[type="range"] {
+      position: absolute;
+      width: 100%;
+      height: 4px;
+      background: none !important;
+      pointer-events: none;
+      -webkit-appearance: none;
+      appearance: none;
+      z-index: 2;
+      margin: 0;
+      outline: none !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+
+    .dual-range-wrapper input[type="range"]::-webkit-slider-thumb {
+      height: 18px;
+      width: 18px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 2.5px solid #2563eb;
+      cursor: pointer;
+      pointer-events: auto;
+      -webkit-appearance: none;
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+
+    .dual-range-wrapper input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+      border-color: #1d4ed8;
+    }
+
+    .dual-range-wrapper input[type="range"]::-moz-range-thumb {
+      height: 18px;
+      width: 18px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 2.5px solid #2563eb;
+      cursor: pointer;
+      pointer-events: auto;
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+    }
+
+    .stipend-slider-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #94a3b8;
+      margin-top: 0.35rem;
+      user-select: none;
+    }
+
+    /* Dark mode stipend slider overrides */
+    [data-theme="dark"] .stipend-input-wrap {
+      background: #0f1117 !important;
+      border-color: #334155 !important;
+    }
+
+    [data-theme="dark"] .stipend-input-wrap:focus-within {
+      border-color: #3b82f6 !important;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+    }
+
+    [data-theme="dark"] .stipend-input-wrap input {
+      color: #edf2ff !important;
+    }
+
+    [data-theme="dark"] .currency-symbol,
+    [data-theme="dark"] .stipend-to-label {
+      color: #8896ae !important;
+    }
+
+    [data-theme="dark"] .dual-range-track {
+      background: #252836 !important;
+    }
+
+    [data-theme="dark"] .dual-range-wrapper input[type="range"]::-webkit-slider-thumb {
+      background: #1a1d27 !important;
+      border-color: #3b82f6 !important;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    [data-theme="dark"] .stipend-slider-labels {
+      color: #64748b !important;
+    }
+
+    /* Chip Rail split design */
+    .afr-chip-rail {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      border-top: 1px solid #eef2f7;
+      margin-top: 0.95rem;
+      padding: 0.85rem 1.5rem 0.1rem;
+    }
+
+    /* Dynamic tab switch styling */
+    .afr-filter-tabs {
+      display: inline-flex;
+      background: #f1f5f9;
+      border-radius: 10px;
+      padding: 0.2rem;
+      gap: 0.15rem;
+      flex-shrink: 0;
+    }
+
+    .afr-tab-btn {
+      border: none;
+      background: transparent;
+      font-family: var(--font-main);
+      font-size: 0.725rem;
+      font-weight: 700;
+      color: #64748b;
+      padding: 0.35rem 0.65rem;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .afr-tab-btn:hover {
+      color: #0f172a;
+    }
+
+    .afr-tab-btn.active {
+      background: #ffffff;
+      color: #1d4ed8;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    }
+
+    .afr-tab-separator {
+      width: 1px;
+      height: 20px;
+      background: #cbd5e1;
+      margin: 0 0.4rem;
+      flex-shrink: 0;
+      align-self: center;
+    }
+
+    .afr-filter-contents {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .afr-tab-panel {
+      display: none;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    .afr-tab-panel.active {
+      display: flex;
+      animation: tabFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes tabFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(2px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .tag-pill-btn {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      color: #475569;
+      font-family: var(--font-main);
+      font-size: 0.725rem;
+      font-weight: 600;
+      border-radius: 999px;
+      padding: 0.35rem 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      outline: none;
+    }
+
+    .tag-pill-btn:hover {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+      color: #1d4ed8;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(29, 78, 216, 0.06);
+    }
+
+    .tag-pill-btn:focus-visible {
+      outline: 2px solid #3b82f6;
+      outline-offset: 2px;
+    }
+
+    .tag-pill-btn.active {
+      background: linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%);
+      border-color: #1d4ed8;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(29, 78, 216, 0.2);
+    }
+
+    .afr-chip-rail-right {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    .afr-count-badge {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+      font-size: 0.725rem;
+      font-weight: 700;
+      padding: 0.38rem 0.8rem;
+      border-radius: 999px;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .active-filter-badge {
+      font-size: 0.725rem;
+      color: #1d4ed8;
+      font-weight: 700;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      padding: 0.38rem 0.8rem;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .clear-filters-btn {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+      font-family: var(--font-main);
+      font-size: 0.725rem;
+      font-weight: 700;
+      border-radius: 999px;
+      padding: 0.38rem 0.8rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: all 0.2s ease;
+      outline: none;
+    }
+
+    @media (max-width: 900px) {
+      .afr-tab-separator {
+        display: none;
+      }
+
+      .afr-chip-rail {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+      }
+
+      .afr-filter-contents {
+        width: 100%;
+      }
+
+      .afr-chip-rail-right {
+        margin-left: 0;
+        width: 100%;
+        border-top: 1px solid #eef2f7;
+        padding-top: 0.75rem;
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .afr-tab-btn {
+        padding: 0.3rem 0.5rem;
+        font-size: 0.65rem;
+      }
+    }
+
+
+    .afr-main-content {
+      min-width: 0;
+    }
+
+    .afr-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr));
+      gap: 1.2rem;
+      align-items: stretch;
+      /* equal-height cards per row */
+    }
+
+    /* ── CTA Section (reviews listing page) ─────────────────────────── */
+    .afr-cta-section {
+      margin-top: 3rem;
+      padding-bottom: 2rem;
+      max-width: 1600px;
+      margin-left: auto;
+      margin-right: auto;
+      width: 100%;
+    }
+
+    .afr-cta-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 2rem;
+      background: linear-gradient(135deg, #1e3a8a, #2563eb 50%, #3b82f6);
+      padding: 5rem 1.5rem;
+      text-align: center;
+      box-shadow: 0 20px 60px -10px rgba(29, 78, 216, 0.45);
+    }
+
+    @media (min-width: 768px) {
+      .afr-cta-card {
+        padding: 6rem 2rem;
+      }
+    }
+
+    .afr-cta-grid-bg {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, .08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, .08) 1px, transparent 1px);
+      background-size: 56px 56px;
+      -webkit-mask-image: radial-gradient(ellipse 65% 70% at 50% 50%, black, transparent);
+      mask-image: radial-gradient(ellipse 65% 70% at 50% 50%, black, transparent);
+      z-index: 1;
+    }
+
+    .afr-cta-glow-1 {
+      position: absolute;
+      width: 320px;
+      height: 320px;
+      left: -96px;
+      top: -96px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .08);
+      filter: blur(90px);
+      animation: afrCtaPulse 11s ease-in-out infinite;
+      z-index: 1;
+    }
+
+    .afr-cta-glow-2 {
+      position: absolute;
+      width: 384px;
+      height: 384px;
+      right: -64px;
+      bottom: -128px;
+      border-radius: 999px;
+      background: rgba(11, 27, 51, .2);
+      filter: blur(100px);
+      z-index: 1;
+    }
+
+    @keyframes afrCtaPulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.12);
+      }
+    }
+
+    .afr-cta-inner {
+      position: relative;
+      z-index: 2;
+    }
+
+    .afr-cta-eyebrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .afr-cta-eyebrow .idx {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      color: #fcd34d;
+    }
+
+    .afr-cta-eyebrow .rule {
+      width: 2.5rem;
+      height: 1px;
+      background: rgba(255, 255, 255, .4);
+    }
+
+    .afr-cta-eyebrow .txt {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.25em;
+      color: rgba(255, 255, 255, .75);
+    }
+
+    .afr-cta-title {
+      margin: 1rem auto 0;
+      max-width: 48rem;
+      font-size: clamp(1.75rem, 4vw, 2.75rem);
+      font-weight: 850;
+      line-height: 1.1;
+      letter-spacing: -.025em;
+      color: #ffffff;
+    }
+
+    .afr-cta-title em {
+      font-style: italic;
+      color: #fcd34d;
+    }
+
+    .afr-cta-copy {
+      margin: 1.25rem auto 0;
+      max-width: 36rem;
+      font-size: 15px;
+      line-height: 1.625;
+      color: rgba(255, 255, 255, .8);
+    }
+
+    .afr-btn-white {
+      margin-top: 2.25rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.625rem;
+      border-radius: 999px;
+      background: #ffffff;
+      padding: 0.875rem 2rem;
+      font-size: 14.5px;
+      font-weight: 700;
+      color: #1d4ed8;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, .1), 0 4px 6px -4px rgba(0, 0, 0, .1);
+      transition: transform 0.2s, background 0.2s;
+      font-family: inherit;
+    }
+
+    .afr-btn-white:hover {
+      transform: translateY(-2px);
+      background: #f8fafc;
+    }
+
+    .afr-btn-white .afr-cta-arr {
+      transition: transform 0.3s;
+    }
+
+    .afr-btn-white:hover .afr-cta-arr {
+      transform: translateX(4px);
+    }
+
+    .afr-cta-note {
+      margin-top: 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: rgba(255, 255, 255, .65);
+    }
+
+    .afr-cta-note i {
+      color: #6ee7b7;
+    }
+
+    /* ── Paginator ──────────────────────────────────────────────────────── */
+    .afr-pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      margin-top: 2.25rem;
+      padding-bottom: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .pg-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 36px;
+      height: 36px;
+      padding: 0 0.5rem;
+      border-radius: 10px;
+      border: 1.5px solid #e3eaf4;
+      background: #ffffff;
+      color: #334155;
+      font-family: inherit;
+      font-size: 0.825rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      line-height: 1;
+    }
+
+    .pg-btn:hover:not(.pg-disabled):not(.pg-active) {
+      border-color: #bfdbfe;
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    .pg-btn.pg-active {
+      background: #1d4ed8;
+      border-color: #1d4ed8;
+      color: #ffffff;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(29, 78, 216, 0.28);
+    }
+
+    .pg-btn.pg-arrow {
+      color: #64748b;
+      font-size: 0.7rem;
+    }
+
+    .pg-btn.pg-disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .pg-ellipsis {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 28px;
+      height: 36px;
+      color: #94a3b8;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Firm card ─────────────────────────────────────────────────── */
+    .afr-card {
+      background: linear-gradient(145deg, #fff 0%, #fff 72%, color-mix(in srgb, var(--card-color, #2563eb) 3%, #fff) 100%);
+      border: 1px solid #e3eaf4;
+      border-radius: 18px;
+      padding: 1.2rem 1.2rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 14px rgba(13, 36, 82, 0.045);
+      transition: box-shadow 0.24s ease, transform 0.24s ease, border-color 0.2s ease;
+    }
+
+    /* colored top accent keyed to the firm */
+    .afr-card:hover {
+      box-shadow: 0 24px 48px -18px rgba(13, 36, 82, 0.22);
+      transform: translateY(-5px);
+      border-color: color-mix(in srgb, var(--card-color, #2563eb) 35%, #e6ebf3);
+    }
+
+    .afr-card:focus-visible {
+      outline: 2px solid var(--primary-brand);
+      outline-offset: 2px;
+    }
+
+    .afr-card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .afr-card-heading {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .afr-firm-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      font-weight: 800;
+      flex-shrink: 0;
+      letter-spacing: -0.02em;
+      color: var(--card-color, #2563eb);
+      background: color-mix(in srgb, var(--card-color, #2563eb) 9%, #fff);
+      border: 1.5px solid color-mix(in srgb, var(--card-color, #2563eb) 22%, #fff);
+    }
+
+    .afr-card-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .afr-card-name {
+      font-size: 1.1rem;
+      font-weight: 750;
+      color: var(--text-primary);
+      line-height: 1.25;
+      margin-bottom: 0.3rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .afr-card-loc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.32rem;
+    }
+
+    .afr-card-loc i {
+      color: #cbd5e1;
+      font-size: 0.78rem;
+    }
+
+    /* rating: big score + micro stars, top-right */
+    .afr-card-rating-block {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.28rem;
+      padding: 0.38rem 0.42rem;
+      flex-shrink: 0;
+      min-width: 62px;
+    }
+
+    .afr-rating-big {
+      font-size: 1.35rem;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+
+    .afr-rating-big.good {
+      color: #16a34a;
+    }
+
+    .afr-rating-big.mid {
+      color: #d97706;
+    }
+
+    .afr-rating-big.bad {
+      color: #dc2626;
+    }
+
+    .afr-rating-stars {
+      color: #f59e0b;
+      font-size: 0.72rem;
+      letter-spacing: 1px;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      gap: 1.5px;
+    }
+
+    .afr-rating-stars .far {
+      color: #cbd5e1;
+    }
+
+    .afr-rating-label {
+      color: #94a3b8;
+      font-size: 0.53rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    .afr-card-section-title {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      color: #64748b;
+      font-size: 0.64rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    .afr-card-section-title i {
+      color: var(--card-color, #2563eb);
+      font-size: 0.68rem;
+    }
+
+    /* scorecard: three comparison axes, aligned across every card */
+    .afr-scorecard {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      background: #f7f9fc;
+      border: 1px solid #edf1f7;
+      border-radius: 13px;
+      padding: 0.78rem 0.3rem;
+    }
+
+    .afr-score-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      text-align: center;
+      padding: 0 0.35rem;
+      border-right: 1px solid #e6ecf4;
+      min-width: 0;
+    }
+
+    .afr-score-col:last-child {
+      border-right: none;
+    }
+
+    .afr-score-val {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    .afr-score-val.good {
+      color: #16a34a;
+    }
+
+    .afr-score-val.mid {
+      color: #d97706;
+    }
+
+    .afr-score-val.bad {
+      color: #dc2626;
+    }
+
+    .afr-score-val.na,
+    .afr-score-val .na {
+      color: #cbd5e1;
+      font-weight: 700;
+    }
+
+    .afr-score-lbl {
+      font-size: 0.58rem;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      white-space: nowrap;
+    }
+
+    /* Small-sample muted states */
+    .afr-rating-big.muted {
+      color: #94a3b8;
+    }
+
+    .afr-scorecard.afr-scorecard-muted {
+      grid-template-columns: 1fr;
+      align-items: center;
+      justify-items: center;
+      min-height: 58px;
+    }
+
+    .afr-nodata {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: #94a3b8;
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-align: center;
+      line-height: 1.35;
+      padding: 0 0.5rem;
+    }
+
+    .afr-nodata i {
+      color: #cbd5e1;
+    }
+
+    /* Safe-harbour disclaimer */
+    .afr-legal-disclaimer {
+      margin: 1.5rem auto 0;
+      padding: 0.85rem 1rem;
+      background: #f7f9fc;
+      border: 1px solid #edf1f7;
+      border-radius: 12px;
+      font-size: 11.5px;
+      line-height: 1.55;
+      color: #64748b;
+    }
+
+    .afr-legal-disclaimer i {
+      color: #2563eb;
+      margin-right: 0.35rem;
+    }
+
+    .afr-legal-disclaimer a {
+      color: #2563eb;
+      font-weight: 600;
+      text-decoration: underline;
+    }
+
+    /* work exposure / domain tags */
+    .afr-exposure {
+      min-height: 67px;
+      padding: 0.72rem 0.8rem;
+      border: 1px solid #edf2f7;
+      border-radius: 13px;
+      background: #fbfcfe;
+    }
+
+    .afr-exposure .afr-card-section-title {
+      margin-bottom: 0.55rem;
+    }
+
+    .afr-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+    }
+
+    .afr-tag {
+      font-size: 0.725rem;
+      font-weight: 600;
+      color: #334155;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      padding: 0.28rem 0.75rem;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .afr-tags-empty {
+      color: #94a3b8;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    /* footer pinned to the bottom so equal-height cards line up */
+    .afr-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 0.9rem;
+      border-top: 1px solid #eaf0f6;
+      margin-top: auto;
+    }
+
+    .afr-review-count {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    .afr-review-count i {
+      color: #94a3b8;
+      margin-right: 0.25rem;
+    }
+
+    .afr-card-cta {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      letter-spacing: 0.01em;
+      background: #1d4ed8;
+      border-radius: 9px;
+      padding: 0.48rem 0.65rem;
+      box-shadow: 0 4px 10px rgba(29, 78, 216, 0.16);
+    }
+
+    .afr-card-cta i {
+      transition: transform 0.2s ease;
+      font-size: 0.75rem;
+    }
+
+    .afr-card:hover .afr-card-cta i {
+      transform: translateX(4px);
+    }
+
+    /* ── States ────────────────────────────────────────────────────── */
+    .afr-loading {
+      grid-column: 1/-1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      padding: 5rem 1rem;
+      color: var(--text-muted);
+    }
+
+    .afr-spinner {
+      width: 38px;
+      height: 38px;
+      border: 3px solid #e2e8f0;
+      border-top-color: var(--primary-brand);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .afr-spinner {
+        animation-duration: 1.6s;
+      }
+
+      .afr-card,
+      .afr-hero-btn,
+      .afr-card-cta i {
+        transition: none;
+      }
+    }
+
+    .afr-empty {
+      grid-column: 1/-1;
+      text-align: center;
+      padding: 4rem 1rem;
+    }
+
+    .afr-empty-icon {
+      font-size: 2.25rem !important;
+      margin-bottom: 1rem !important;
+      display: block !important;
+      opacity: 0.45 !important;
+      color: #94a3b8 !important;
+    }
+
+    .afr-empty h3 {
+      font-size: 1.125rem;
+      color: #0f172a;
+      margin-bottom: 0.35rem;
+      font-weight: 700;
+    }
+
+    .afr-empty p {
+      font-size: 0.8125rem;
+      color: #64748b;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+
+    .afr-btn-empty-state {
+      background: linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%);
+      color: #fff;
+      font-family: var(--font-main);
+      font-size: 0.8125rem;
+      font-weight: 700;
+      padding: 0.6rem 1.2rem;
+      border-radius: 11px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-top: 0.875rem;
+      box-shadow: 0 6px 16px rgba(29, 78, 216, 0.2);
+      transition: all 0.2s ease;
+    }
+
+    .afr-btn-empty-state:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba(29, 78, 216, 0.3);
+    }
+
+    .afr-btn-empty-state i {
+      font-size: 0.8125rem !important;
+      display: inline-block !important;
+      opacity: 1 !important;
+      color: #fff !important;
+      margin-bottom: 0 !important;
+    }
+
+    .afr-error {
+      grid-column: 1/-1;
+      text-align: center;
+      padding: 3rem 1rem;
+      color: #dc2626;
+    }
+
+    .afr-error i {
+      font-size: 2rem;
+      margin-bottom: 0.75rem;
+      display: block;
+    }
+
+    /* ── Responsive ────────────────────────────────────────────────── */
+    @media (max-width: 1024px) {
+      .afr-body-container {
+        padding: 0 1.25rem 4rem;
+      }
+
+      .afr-grid {
+        gap: 1.1rem;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .afr-hero {
+        display: none !important;
+      }
+
+      .afr-body-wrapper {
+        padding-top: 0.5rem;
+      }
+
+      .afr-command-bar {
+        position: sticky !important;
+        top: calc(var(--header-h, 54px) + 6px) !important;
+        z-index: 99 !important;
+        margin-top: 0.5rem !important;
+        margin-bottom: 0.75rem !important;
+        padding: 0.45rem 0.6rem !important;
+        box-shadow: 0 4px 18px rgba(13, 36, 82, 0.08);
+        background: #ffffff;
+        border-radius: 16px !important;
+        border: 1px solid #e3eaf4;
+      }
+
+      .afr-command-bar::before {
+        display: none !important;
+      }
+
+      .afr-search-bar-unified {
+        flex-direction: row !important;
+        align-items: center !important;
+        padding: 0.35rem 0.5rem !important;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        box-shadow: none !important;
+        border-radius: 14px !important;
+      }
+
+      .afr-search-bar-unified .segment-divider,
+      .afr-search-bar-unified .segment-dropdown-container {
+        display: none !important;
+      }
+
+      .afr-mobile-filter-btn {
+        display: inline-flex !important;
+      }
+
+      .afr-search-bar-unified .segment-search {
+        padding: 0.5rem 0.75rem !important;
+        flex: 1 !important;
+      }
+
+      .afr-chip-rail {
+        display: none !important;
+      }
+    }
+
+    /* Mobile results count bar */
+    .mobile-results-header {
+      display: none;
+    }
+
+    @media (max-width: 900px) {
+      .mobile-results-header {
+        display: block;
+        margin-bottom: 0.85rem;
+      }
+    }
+
+    /* Mobile Filters Button (Mobile only) */
+    .afr-mobile-filter-btn {
+      display: none;
+      align-items: center;
+      gap: 0.4rem;
+      background: linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      padding: 0.65rem 1rem;
+      font-family: var(--font-main);
+      font-size: 0.8125rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(29, 78, 216, 0.16);
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      height: 40px;
+      margin-left: 0.5rem;
+    }
+
+    .afr-mobile-filter-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(29, 78, 216, 0.25);
+    }
+
+    .afr-mobile-filter-btn i {
+      font-size: 0.875rem;
+    }
+
+    @media (max-width: 620px) {
+      .afr-body-container {
+        padding: 0 1rem calc(65px + env(safe-area-inset-bottom, 0px) + 16px);
+      }
+
+      .afr-hstat {
+        padding: 0 1rem;
+      }
+
+      .afr-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .afr-chip-rail {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.8rem;
+      }
+
+      .afr-chip-rail-right {
+        margin-left: 0;
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      .afr-legal-disclaimer {
+        margin: 0.5rem auto 0 !important;
+      }
+
+      .afr-cta-section {
+        margin-top: 0.75rem !important;
+        margin-bottom: 0 !important;
+        padding-bottom: 0 !important;
+        padding-left: 0.25rem;
+        padding-right: 0.25rem;
+      }
+
+      .afr-cta-card {
+        padding: 3.5rem 1.25rem 2.75rem !important;
+        border-radius: 1.5rem !important;
+      }
+
+      .afr-cta-title {
+        font-size: 1.6rem !important;
+        line-height: 1.25 !important;
+      }
+
+      .afr-cta-copy {
+        font-size: 0.875rem !important;
+        line-height: 1.55 !important;
+      }
+
+      .afr-cta-note {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 0.35rem !important;
+        font-size: 11px !important;
+        letter-spacing: 0.1em !important;
+        text-align: center !important;
+        line-height: 1.4 !important;
+        max-width: 290px;
+        margin: 1.5rem auto 0 !important;
+      }
+    }
+
+    /* ── Mobile Filter Drawer ──────────────────────────────────────────────── */
+    .filter-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(13, 30, 60, 0.55);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 9999;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .filter-modal-overlay.show .filter-modal-content {
+      transform: translateY(0);
+    }
+
+    .filter-modal-content {
+      background: #ffffff;
+      border-radius: 24px 24px 0 0;
+      width: 100%;
+      max-width: 600px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      transform: translateY(100%);
+      transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+      overflow: hidden;
+    }
+
+    .filter-modal-content .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.1rem 1.25rem 0.85rem;
+      border-bottom: 1px solid #edf2f7;
+      flex-shrink: 0;
+    }
+
+    .filter-modal-content .modal-header h4 {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .filter-modal-content .modal-close-action {
+      background: #f1f5f9;
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      font-size: 1.2rem;
+      color: #64748b;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      transition: background 0.15s;
+    }
+
+    .filter-modal-content .modal-close-action:hover {
+      background: #e2e8f0;
+    }
+
+    .filter-modal-content .modal-body {
+      padding: 1rem 1.25rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .filter-modal-content .filter-group {
+      margin-bottom: 1.1rem;
+    }
+
+    .filter-modal-content .filter-group label {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #64748b;
+      margin-bottom: 0.45rem;
+    }
+
+    /* Custom Dropdown UI in Drawer */
+    .filter-modal-content .custom-dropdown {
+      width: 100%;
+      position: relative;
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      transition: all 0.2s ease;
+      box-sizing: border-box;
+    }
+
+    .filter-modal-content .custom-dropdown.active {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+
+    .filter-modal-content .dropdown-trigger {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #1e293b;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .filter-modal-content .dropdown-trigger i {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      transition: transform 0.25s ease;
+    }
+
+    .filter-modal-content .custom-dropdown.active .dropdown-trigger i {
+      transform: rotate(180deg);
+    }
+
+    .filter-modal-content .custom-dropdown-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 14px;
+      box-shadow: 0 12px 32px rgba(13, 36, 82, 0.12);
+      z-index: 100;
+      max-height: 220px;
+      overflow-y: auto;
+      padding: 0.35rem;
+      display: none;
+    }
+
+    .filter-modal-content .custom-dropdown.active .custom-dropdown-menu {
+      display: block;
+      animation: afdDropdownIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .filter-modal-content .custom-dropdown-item {
+      padding: 0.65rem 0.85rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #334155;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .filter-modal-content .custom-dropdown-item:hover,
+    .filter-modal-content .custom-dropdown-item.selected {
+      background: #eff6ff;
+      color: #2563eb;
+    }
+
+    .filter-modal-content .custom-dropdown-item.selected::after {
+      content: '✓';
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #2563eb;
+    }
+
+    .filter-modal-content .modal-footer {
+      display: flex;
+      gap: 0.75rem;
+      padding: 0.85rem 1.25rem 1.1rem;
+      border-top: 1px solid #edf2f7;
+      flex-shrink: 0;
+    }
+
+    .filter-modal-content .modal-footer .btn {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      font-size: 0.875rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: none;
+    }
+
+    .filter-modal-content .modal-footer .btn:first-child {
+      background: #f1f5f9;
+      color: #64748b;
+      border: 1.5px solid #e2e8f0;
+    }
+
+    .filter-modal-content .modal-footer .btn:first-child:hover {
+      background: #e2e8f0;
+    }
+
+    .filter-modal-content .modal-footer .btn:last-child {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .filter-modal-content .modal-footer .btn:last-child:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+    }
+
+    /* Mobile drawer centered tabs switcher */
+    .mobile-drawer-tabs {
+      display: grid !important;
+      grid-template-columns: repeat(3, 1fr) !important;
+      gap: 4px !important;
+      background: #f1f5f9;
+      padding: 4px !important;
+      border-radius: 12px !important;
+      margin-bottom: 0.75rem !important;
+      width: 100% !important;
+      box-sizing: border-box;
+    }
+
+    .mobile-drawer-tabs .afr-tab-btn {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 0.4rem !important;
+      padding: 0.55rem 0.5rem !important;
+      font-size: 0.8rem !important;
+      font-weight: 700 !important;
+      border-radius: 9px !important;
+      text-align: center !important;
+      color: #64748b;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .mobile-drawer-tabs .afr-tab-btn.active {
+      background: #2563eb !important;
+      color: #ffffff !important;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+    }
+
+    .mobile-drawer-tab-contents {
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #e8eff9;
+      border-radius: 14px;
+      padding: 0.85rem;
+      background: #f8fafc;
+    }
+
+    .mobile-drawer-tab-contents .afr-tab-panel {
+      display: none;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .mobile-drawer-tab-contents .afr-tab-panel.active {
+      display: flex !important;
+    }
+
+    .mobile-drawer-tab-contents .tag-pill-btn {
+      border-radius: 999px !important;
+      padding: 0.4rem 0.85rem !important;
+      font-size: 0.8rem !important;
+      font-weight: 600 !important;
+      margin: 0 !important;
+    }
+
+    /* ── Redesigned Header Link Pills ───────────────────────────────────── */
+    .afd-header-pill-link {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 0.4rem 1rem;
+      font-family: var(--font-main);
+      font-size: 12.5px;
+      font-weight: 700;
+      border-radius: 99px;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      box-shadow: 0 2px 6px rgba(46, 108, 230, 0.04);
+    }
+
+    @media (min-width: 640px) {
+      .afd-header-pill-link {
+        display: inline-flex;
+      }
+    }
+
+    /* Articleship Program (Primary theme) */
+    .afd-header-pill-link:not(.secondary) {
+      background: #eaf1fe;
+      color: #1d4ed8;
+      border: 1px solid #dbe7fd;
+    }
+
+    .afd-header-pill-link:not(.secondary):hover {
+      background: #dbe7fd;
+      color: #1e3a8a;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(46, 108, 230, 0.08);
+    }
+
+    /* Portal Link (Secondary theme) */
+    .afd-header-pill-link.secondary {
+      background: #ffffff;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+    }
+
+    .afd-header-pill-link.secondary:hover {
+      background: #eaf1fe;
+      color: #1d4ed8;
+      border-color: #bcd4fb;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+    }
+
+    /* ════════════════════════════════════════════════════════════════════
+       FULL DARK MODE SYSTEM FOR ARTICLESHIP FIRM REVIEWS
+       ════════════════════════════════════════════════════════════════════ */
+    [data-theme="dark"] {
+      --bg: #0f1117;
+      --card: #1a1d27;
+      --card-subtle: #141721;
+      --text: #edf2ff;
+      --text-primary: #edf2ff;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --sub: #8896ae;
+      --line: #252836;
+      --chip: #1e2130;
+      --border: #252836;
+    }
+
+    [data-theme="dark"] body,
+    [data-theme="dark"] .afr-body-wrapper,
+    [data-theme="dark"] .afr-body-container {
+      background: #0f1117 !important;
+      color: #edf2ff !important;
+    }
+
+    /* Hero */
+    [data-theme="dark"] .afr-hero {
+      background: linear-gradient(135deg, #091224 0%, #0d1e3d 50%, #081020 100%) !important;
+      border-bottom-color: #1e293b !important;
+    }
+    [data-theme="dark"] .afr-hero-title {
+      color: #ffffff !important;
+    }
+    [data-theme="dark"] .afr-hero-sub {
+      color: #94a3b8 !important;
+    }
+    [data-theme="dark"] .afr-hstat-val {
+      color: #ffffff !important;
+    }
+    [data-theme="dark"] .afr-hstat-lbl {
+      color: #94a3b8 !important;
+    }
+    [data-theme="dark"] .afr-hero-side {
+      background: #1a1d27 !important;
+      border-color: #252836 !important;
+    }
+    [data-theme="dark"] .afr-hero-side h3 {
+      color: #edf2ff !important;
+    }
+    [data-theme="dark"] .afr-hero-side p {
+      color: #8896ae !important;
+    }
+
+    /* Command & Search Bar */
+    [data-theme="dark"] .afr-command-bar {
+      background: #141721 !important;
+      border-color: #252836 !important;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+    }
+    [data-theme="dark"] .afr-command-bar::before {
+      display: none !important;
+    }
+    [data-theme="dark"] .afr-search-bar-unified {
+      background: #1a1d27 !important;
+      border-color: #252836 !important;
+    }
+    [data-theme="dark"] .segment-search input {
+      background: transparent !important;
+      color: #edf2ff !important;
+    }
+    [data-theme="dark"] .segment-search input::placeholder {
+      color: #64748b !important;
+    }
+    [data-theme="dark"] .segment-label {
+      color: #8896ae !important;
+    }
+    [data-theme="dark"] .segment-divider {
+      background: #252836 !important;
+    }
+    [data-theme="dark"] .search-segment:hover {
+      background-color: #1e2130 !important;
+    }
+    [data-theme="dark"] select.afr-filter-select,
+    [data-theme="dark"] .search-segment select,
+    [data-theme="dark"] .segment-details select {
+      color: #edf2ff !important;
+      background: #1a1d27 !important;
+      background-color: #1a1d27 !important;
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+      appearance: none !important;
+      -webkit-appearance: none !important;
+      -moz-appearance: none !important;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238896ae' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-9'/%3E%3C/svg%3E") !important;
+      background-repeat: no-repeat !important;
+      background-position: right center !important;
+      background-size: 11px 11px !important;
+    }
+    [data-theme="dark"] .search-segment:hover select.afr-filter-select,
+    [data-theme="dark"] .search-segment:hover select,
+    [data-theme="dark"] .search-segment:hover .segment-details select {
+      background: #1e2130 !important;
+      background-color: #1e2130 !important;
+    }
+    [data-theme="dark"] select.afr-filter-select:focus,
+    [data-theme="dark"] .search-segment select:focus {
+      color: #60a5fa !important;
+    }
+    [data-theme="dark"] select.afr-filter-select option,
+    [data-theme="dark"] .search-segment select option,
+    [data-theme="dark"] .segment-details select option {
+      background-color: #1a1d27 !important;
+      color: #edf2ff !important;
+    }
+    [data-theme="dark"] .filter-control {
+      background-color: #0f1117 !important;
+      border-color: #252836 !important;
+      color: #edf2ff !important;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238896ae' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-9'/%3E%3C/svg%3E") !important;
+    }
+    [data-theme="dark"] .filter-control option {
+      background: #1a1d27 !important;
+      color: #edf2ff !important;
+    }
+    [data-theme="dark"] .custom-dropdown {
+      background: #0f1117 !important;
+      border-color: #252836 !important;
+    }
+    [data-theme="dark"] .search-segment .custom-dropdown,
+    [data-theme="dark"] .search-segment .custom-dropdown:hover {
+      background: transparent !important;
+      background-color: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+    [data-theme="dark"] .search-segment .dropdown-trigger {
+      background: transparent !important;
+      background-color: transparent !important;
+      border: none !important;
+      padding: 0 !important;
+      color: #edf2ff !important;
+    }
+    [data-theme="dark"] .search-segment .dropdown-trigger .trigger-label {
+      color: #edf2ff !important;
+      font-weight: 600 !important;
+      font-size: 0.875rem !important;
+    }
+    [data-theme="dark"] .search-segment .dropdown-trigger i {
+      color: #8896ae !important;
+    }
+    [data-theme="dark"] .custom-dropdown:hover {
+      background: #1e2130 !important;
+      border-color: #3b82f6 !important;
+    }
+    [data-theme="dark"] .custom-dropdown.active {
+      background: #1a1d27 !important;
+      border-color: #3b82f6 !important;
+    }
+    [data-theme="dark"] .dropdown-trigger {
+      color: #edf2ff !important;
+    }
+    [data-theme="dark"] .custom-dropdown-menu {
+      background: #1a1d27 !important;
+      border-color: #252836 !important;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6) !important;
+    }
+    [data-theme="dark"] .custom-dropdown-item {
+      color: #edf2ff !important;
+    }
+    [data-theme="dark"] .custom-dropdown-item:hover,
+    [data-theme="dark"] .custom-dropdown-item.selected {
+      background: #1e2130 !important;
+      color: #3b82f6 !important;
+    }
+
+    /* Chip rail & tag filter buttons */
+    [data-theme="dark"] .tag-pill-btn {
+      background: #1a1d27 !important;
+      border-color: #252836 !important;
+      color: #8896ae !important;
+    }
+    [data-theme="dark"] .tag-pill-btn:hover {
+      background: #1e2130 !important;
+      color: #edf2ff !important;
+      border-color: #3b82f6 !important;
+    }
+    [data-theme="dark"] .tag-pill-btn.active {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+      color: #ffffff !important;
+      border-color: transparent !important;
+    }
+    [data-theme="dark"] .active-tag-chip {
+      background: #1e2130 !important;
+      border-color: #252836 !important;
+      color: #3b82f6 !important;
+    }
+    [data-theme="dark"] .mobile-results-header {
+      color: #8896ae !important;
+    }
+
+    /* Firm Cards */
+    [data-theme="dark"] .afr-card {
+      background: #1a1d27 !important;
+      border-color: #252836 !important;
+      color: #edf2ff !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+    }
+    [data-theme="dark"] .afr-card:hover {
+      border-color: #3b82f6 !important;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5) !important;
+    }
+    [data-theme="dark"] .afr-firm-avatar {
+      background: #1e2130 !important;
+      border-color: #252836 !important;
+      color: #3b82f6 !important;
+    }
+    [data-theme="dark"] .afr-card-name {
+      color: #edf2ff !important;
+    }
+    [data-theme="dark"] .afr-card-loc {
+      color: #8896ae !important;
+    }
+    [data-theme="dark"] .afr-card-loc i {
+      color: #64748b !important;
+    }
+    [data-theme="dark"] .afr-rating-stars {
+      color: #f59e0b !important;
+    }
+    [data-theme="dark"] .afr-rating-stars .fas {
+      color: #f59e0b !important;
+    }
+    [data-theme="dark"] .afr-rating-stars .far {
+      color: #475569 !important;
+    }
+    [data-theme="dark"] .afr-rating-label {
+      color: #64748b !important;
+    }
+    [data-theme="dark"] .afr-card-section-title {
+      color: #8896ae !important;
+    }
+
+    /* Card scorecard (Review Snapshot Box) */
+    [data-theme="dark"] .afr-scorecard {
+      background: #0f1117 !important;
+      border-color: #252836 !important;
+    }
+    [data-theme="dark"] .afr-score-col {
+      border-right-color: #252836 !important;
+    }
+    [data-theme="dark"] .afr-score-val {
+      color: #edf2ff !important;
+    }
+    [data-theme="dark"] .afr-score-lbl {
+      color: #64748b !important;
+    }
+    [data-theme="dark"] .afr-nodata {
+      color: #8896ae !important;
+    }
+    [data-theme="dark"] .afr-nodata i {
+      color: #64748b !important;
+    }
+
+    /* Card exposure (Reported Work Exposure Box) */
+    [data-theme="dark"] .afr-exposure {
+      background: #0f1117 !important;
+      border-color: #252836 !important;
+    }
+    [data-theme="dark"] .afr-tag {
+      background: #1e2130 !important;
+      border-color: #252836 !important;
+      color: #edf2ff !important;
+    }
+    [data-theme="dark"] .afr-tags-empty {
+      color: #64748b !important;
+    }
+    [data-theme="dark"] .afr-card-footer {
+      border-top-color: #252836 !important;
+    }
+    [data-theme="dark"] .afr-review-count {
+      color: #8896ae !important;
+    }
+
+    /* Disclaimer & CTA section */
+    [data-theme="dark"] .afr-legal-disclaimer {
+      background: #1a1d27 !important;
+      border-color: #252836 !important;
+      color: #8896ae !important;
+    }
+    [data-theme="dark"] .afr-cta-section {
+      background: transparent !important;
+      border: none !important;
+    }
+    [data-theme="dark"] .afr-cta-card {
+      background: linear-gradient(135deg, #172554 0%, #1e40af 50%, #1e3a8a 100%) !important;
+      border: 1px solid rgba(255, 255, 255, 0.12) !important;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 50px -10px rgba(37, 99, 235, 0.3) !important;
+    }
+
+    /* Pagination */
+    [data-theme="dark"] .pg-btn {
+      background: #1a1d27 !important;
+      border-color: #252836 !important;
+      color: #edf2ff !important;
+    }
+    [data-theme="dark"] .pg-btn:hover:not(.pg-disabled):not(.pg-active) {
+      background: #1e2130 !important;
+      border-color: #3b82f6 !important;
+      color: #3b82f6 !important;
+    }
+    [data-theme="dark"] .pg-btn.pg-active {
+      background: #2563eb !important;
+      border-color: #2563eb !important;
+      color: #ffffff !important;
+    }
+    [data-theme="dark"] .pg-btn.pg-arrow {
+      color: #8896ae !important;
+    }
+    [data-theme="dark"] .pg-ellipsis {
+      color: #64748b !important;
+    }
+
+    /* Filter Modal Drawer */
+    [data-theme="dark"] .filter-modal-content {
+      background: #1a1d27 !important;
+      color: #edf2ff !important;
+      border-color: #252836 !important;
+    }
+    [data-theme="dark"] .filter-modal-content .modal-header {
+      border-bottom-color: #252836 !important;
+    }
+    [data-theme="dark"] .filter-modal-content .modal-header h4 {
+      color: #edf2ff !important;
+    }
+    [data-theme="dark"] .filter-modal-content .modal-close-action {
+      background: #1e2130 !important;
+      color: #8896ae !important;
+    }
+    [data-theme="dark"] .filter-modal-content .custom-dropdown {
+      background: #141721 !important;
+      border-color: #252836 !important;
+    }
+    [data-theme="dark"] .filter-modal-content .dropdown-trigger {
+      color: #edf2ff !important;
+    }
+    [data-theme="dark"] .filter-modal-content .dropdown-trigger i {
+      color: #8896ae !important;
+    }
+    [data-theme="dark"] .filter-modal-content .custom-dropdown-menu {
+      background: #1a1d27 !important;
+      border-color: #252836 !important;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6) !important;
+    }
+    [data-theme="dark"] .filter-modal-content .custom-dropdown-item {
+      color: #edf2ff !important;
+    }
+    [data-theme="dark"] .filter-modal-content .custom-dropdown-item:hover,
+    [data-theme="dark"] .filter-modal-content .custom-dropdown-item.selected {
+      background: #252836 !important;
+      color: #60a5fa !important;
+    }
+    [data-theme="dark"] .filter-modal-content .custom-dropdown-item.selected::after {
+      color: #60a5fa !important;
+    }
+    [data-theme="dark"] .filter-modal-content .modal-footer {
+      border-top-color: #252836 !important;
+    }
+    [data-theme="dark"] .filter-modal-content .modal-footer .btn:first-child {
+      background: #1e2130 !important;
+      border-color: #252836 !important;
+      color: #edf2ff !important;
+    }
+    [data-theme="dark"] .mobile-drawer-tabs {
+      background: #141721 !important;
+      border: 1px solid #252836 !important;
+    }
+    [data-theme="dark"] .mobile-drawer-tabs .afr-tab-btn {
+      color: #8896ae !important;
+    }
+    [data-theme="dark"] .mobile-drawer-tabs .afr-tab-btn.active {
+      background: #2563eb !important;
+      color: #ffffff !important;
+    }
+    [data-theme="dark"] .mobile-drawer-tab-contents {
+      background: #141721 !important;
+      border-color: #252836 !important;
+    }
+    [data-theme="dark"] .mobile-drawer-tab-contents .tag-pill-btn {
+      background: #1e2130 !important;
+      border-color: #252836 !important;
+      color: #edf2ff !important;
+    }
+    [data-theme="dark"] .mobile-drawer-tab-contents .tag-pill-btn:hover {
+      background: #252836 !important;
+      border-color: #3b82f6 !important;
+      color: #ffffff !important;
+    }
+    [data-theme="dark"] .mobile-drawer-tab-contents .tag-pill-btn.active {
+      background: #2563eb !important;
+      color: #ffffff !important;
+      border-color: #2563eb !important;
+    }
+    [data-theme="dark"] .afr-empty h3 {
+      color: #edf2ff !important;
+    }
+    [data-theme="dark"] .afr-empty p {
+      color: #8896ae !important;
+    }
+  </style>
+  <!-- Standard Favicon -->
+  <!-- Fallback Shortcut Icon -->
+  <!-- Standard Favicon -->
+  <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
+  <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
+  <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
+</head>
+
+<body>
+
+  <!-- ============================================================
+     APP HEADER
+     ============================================================ -->
+  <header class="app-header" id="appHeader">
+    <div class="header-left">
+      <svg class="header-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 207 223" fill="none" aria-label="My Student Club">
+        <path d="m188.4 49.73-72.25-41.61c-9.06-5.29-18.21-4.74-26.19 0l-70.9 40.81c-7.32 4.03-10.97 11.88-10.97 19.86v14.89c2.12-1.59 4.37-1.94 6.61-1.87 2.38 0.08 4.05 0.7 5.79 1.95v-14.58c0-4.34 1.26-6.8 5.52-9.26l71.93-41.41c4.95-2.85 9.07-1.13 12.08 0.83l70.98 40.74c3.8 2.14 5.39 4.6 5.39 9.1v14.58c2.12-1.33 3.53-1.95 5.99-1.95 2.78-0.07 5.03 0.55 7.35 2.14v-15.16c0-7.78-4.5-15.18-11.33-19.06z" fill="url(#msc-g0)" />
+        <path d="m199.7 128.3-2.24 3.32c-6.68 8.36-7.65 15.35-5.97 24.32 1.1 5.85 1.72 10.43-0.31 15.01 5.85-4.19 8.52-11.51 8.52-16.78v-25.87z" fill="url(#msc-g1)" />
+        <path d="m8.12 127.8v26.34c0 6.72 2.93 13.52 8.79 17.94-1.95-4.73-1.49-9.15-0.23-16.09 1.59-9.05-1.04-17.8-6.52-24.4l-2.04-2.77v-1.02z" fill="url(#msc-g2)" />
+        <path d="m199.4 90.46c-1.59-4.03-2.84-5.99-6.18-5.99-4.8 0-7.34 4.5-5.83 8.99 2.17 6.23 2.47 8.69 1.94 14.2-1.47 8.82-6.66 18.11-17.62 21.91-2.58 0.94-3.04 3.16-2.35 5.84l5.33 25.6c0.38 1.63-2.02 5.66-3.13 6.4-1.59 0-4.85-4.5-4.85-4.5v-24.19c0-3.7-1.05-6.46-4.31-6.84-6.61-0.74-15.44-1.91-20.77-0.5-2.46 0.65-2.92 9.09-2.15 15.69 1.18 7.02 4.44 20.34 3.74 29.02-0.85 9.05-4.51 14.56-10.36 17.88l-20.69 12.44c-5.56 3.32-12.96 2.93-18.29 0l-20.14-11.65c-6.68-3.32-9.14-8.44-9.14-19.69 0-8.06 3.11-18.67 3.49-24.9 0.94-11.41-2.56-18.45-5.82-18.83-5.41-0.66-10.36 0.27-17.26 0.42-3.5 0.08-4.94 2.12-4.94 6.61v24.19c0 1.17-3.66 5.51-4.6 5.36-1.59-0.31-3.76-4.42-3.69-5.08l5.93-25.53c0.77-2.84-0.08-5.43-3.01-6.25-10.49-3.24-17.17-13.07-17.24-23.4-0.08-5.51 1.65-9.75 2.7-13.85 1.18-4.49-2.4-9.07-6.44-9.07-3.81 0-5.42 1.69-7.01 6.27-5.11 12.13-3.45 26.9 3.71 37.71 7.26 9.37 8.85 15.9 7.11 27.52-1.82 9.13-1.36 15.78 5.9 19.81l67.46 38.73c7.82 4.03 16.03 3.29 23.51-0.59l69.51-38.41c6.34-3.33 6.15-11.62 4.35-19.54-2.24-10.41 0.31-18.26 6.99-27.09 7.48-10.1 8.73-24.38 4.15-38.69z" fill="url(#msc-g3)" />
+        <path d="m43.26 104.1c-6.92 0-10.8 5.82-10.8 10.74 0 6.78 5.26 10.98 10.8 10.98 6.49 0 10.83-5.59 10.83-10.98 0-5.97-4.88-10.74-10.83-10.74z" fill="url(#msc-g4)" />
+        <path d="m163.5 104.1c-7.4 0-11.05 6.23-11.05 10.74 0 6.39 5.25 10.98 10.66 10.98 6.99 0 11.33-5.59 11.33-10.98 0-5.97-5.07-10.74-10.94-10.74z" fill="url(#msc-g5)" />
+        <path d="m103.4 76.34c-9.14-0.31-14.92 7.54-14.92 14.67 0 8.52 7.26 14.75 14.61 14.75 9.14 0 15-7.85 15-14.75 0-7.85-6.68-14.67-14.69-14.67z" fill="#0077BF" />
+        <path d="m150.7 59.61c-2.11-4.19-4.78-4.85-8.04-4.85-6.6 0-9.54 6.25-7.8 11.37 2.86 6.56 3.55 11.05 3.09 18.06-1.39 13.72-12.85 26.7-28.26 29.94-2.46 0.31-3.4 1.94-4.66 4.25-0.54 0.94-0.31 0.71-0.38 1.88 1.41 14 6.49 46.02 7.1 52.58 0.15 1.02-6.68 9.23-6.68 9.23-1.59 1.31-3.08 0.47-4.11-1.06-1.87-2.15-6.01-6.64-6.24-7.58l6.92-52.52c-0.31-2.05-3.65-6.16-5.24-6.47-14.28-2.13-26.41-15.22-27.46-30.25-0.45-6.23 1.05-11.15 3.51-17.04 2.17-5.87-1.71-12.1-8.61-12.1-4.58 0-6.83 2.13-8.42 5.76-7.73 15.45-6.79 34.9 4.52 49.92 8.78 10.81 12.51 21.96 11.97 35.68-0.45 9.6-4.44 18.8-3.12 30.66 0.94 6.55 3.12 10.51 8.37 12.89l18.54 10.81c5.41 2.93 11.53 2.19 16.5-1.13l18.46-10.49c6.68-3.32 8.27-12.08 7.02-20.84-1.49-9.6-3.23-16.6-2.85-24.38 0.61-10.81 4.56-21.62 13.11-33.27 10.48-15.03 10.03-31.6 2.76-51.05z" fill="#0077BF" />
+        <defs>
+          <linearGradient id="msc-g0" x1="18.89" x2="184.3" y1="17.93" y2="75.88" gradientUnits="userSpaceOnUse"><stop stop-color="#94ADB9" /><stop offset="1" stop-color="#889CA7" /></linearGradient>
+          <linearGradient id="msc-g1" x1="193.3" x2="199.8" y1="133.1" y2="166.8" gradientUnits="userSpaceOnUse"><stop stop-color="#889CA7" /><stop offset="1" stop-color="#A4B5BE" /></linearGradient>
+          <linearGradient id="msc-g2" x1="8.119" x2="16.14" y1="132.7" y2="169.1" gradientUnits="userSpaceOnUse"><stop stop-color="#738A98" /><stop offset="1" stop-color="#A4B5BE" /></linearGradient>
+          <linearGradient id="msc-g3" x1="8.087" x2="199.9" y1="101.3" y2="170.5" gradientUnits="userSpaceOnUse"><stop stop-color="#557484" /><stop offset="1" stop-color="#6E8793" /></linearGradient>
+          <linearGradient id="msc-g4" x1="32.46" x2="53.29" y1="104.1" y2="125.2" gradientUnits="userSpaceOnUse"><stop stop-color="#557484" /><stop offset="1" stop-color="#627D8B" /></linearGradient>
+          <linearGradient id="msc-g5" x1="152.4" x2="173.8" y1="104.1" y2="125.7" gradientUnits="userSpaceOnUse"><stop stop-color="#557484" /><stop offset="1" stop-color="#627D8B" /></linearGradient>
+        </defs>
+      </svg>
+      <div class="header-greeting">
+        <div class="greeting-sub">Articleship</div>
+        <div class="greeting-name">Firm Reviews</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button id="themeToggleBtn" class="hdr-icon-btn" aria-label="Toggle dark mode">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5" /><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" /></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
+      </button>
+      <button id="menuButton" class="hdr-icon-btn" aria-label="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============================================================
+     SIDE MENU (slide-in navigation drawer)
+     ============================================================ -->
+  <div class="expanded-menu" id="expandedMenu">
+    <div class="expanded-menu-header">
+      <div class="menu-brand-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="menu-brand-icon"><rect width="7" height="7" x="3" y="3" rx="1.5"/><rect width="7" height="7" x="14" y="3" rx="1.5"/><rect width="7" height="7" x="14" y="14" rx="1.5"/><rect width="7" height="7" x="3" y="14" rx="1.5"/></svg>
+        <span>Navigation</span>
+      </div>
+      <button class="hdr-icon-btn menu-close-btn" id="menuCloseBtn" aria-label="Close menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
+      </button>
+    </div>
+    <div class="menu-items-container">
+      <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none">
+        <span class="menu-item-left">
+          <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          <span>My Courses</span>
+        </span>
+      </a>
+      <a href="/history.html" class="menu-item" id="history-nav-link" style="display: none">
+        <span class="menu-item-left">
+          <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span>My Activity</span>
+        </span>
+      </a>
+      <a href="/ca-industrial-training-program/" class="menu-item">
+        <span class="menu-item-left">
+          <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          <span>MSC Industrial Training Program</span>
+        </span>
+      </a>
+      <a href="/articleship-program/" class="menu-item">
+        <span class="menu-item-left">
+          <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15a7 7 0 1 0 0-14 7 7 0 0 0 0 14Z"/><path d="M8.21 13.89 7 23l5-3 5 3-1.21-9.12"/></svg>
+          <span>MSC Articleship Program</span>
+        </span>
+      </a>
+      <a href="/msc-ca-fresher-program/" class="menu-item">
+        <span class="menu-item-left">
+          <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-3.05 11a22.35 22.35 0 0 1-3.95 2z"/></svg>
+          <span>MSC CA Freshers Program</span>
+        </span>
+      </a>
+      <a href="/articleship-firm-reviews.html" class="menu-item">
+        <span class="menu-item-left">
+          <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <span>Articleship Firm Reviews</span>
+        </span>
+      </a>
+      <div class="menu-item-dropdown">
+        <button class="menu-item" id="resourcesDropdownBtn">
+          <span class="menu-item-left">
+            <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+            <span>Free Resources</span>
+          </span>
+          <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+        </button>
+        <div class="dropdown-content" id="resourcesDropdown">
+          <a href="/ca-fresher-training-resources.html" class="dropdown-item">CA Fresher</a>
+          <a href="/ca-industrial-training-resources.html" class="dropdown-item">Industrial Training</a>
+          <a href="/ca-articleship-jobs.html" class="dropdown-item">Articleship</a>
+        </div>
+      </div>
+      <a href="/contact.html" class="menu-item">
+        <span class="menu-item-left">
+          <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          <span>Contact Us</span>
+        </span>
+      </a>
+      <div class="menu-footer">
+        <button id="logoutMenuBtn" class="menu-item menu-item--danger">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
+          <span>Logout</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- Hero -->
+  <section class="afr-hero">
+    <div class="afr-hero-inner">
+      <div class="afr-hero-copy animate-fade-right">
+        <span class="afr-hero-eyebrow"><i class="fas fa-user-secret"></i> 100% anonymous · by CA articles, for CA
+          articles</span>
+        <h1>Know the firm <span class="text-gradient">before you sign.</span></h1>
+        <p class="afr-hero-sub">Honest reviews of articleship firms — stipend, hours, culture — written anonymously by
+          students who trained there.</p>
+
+        <div class="afr-hero-features">
+          <div class="afr-hfeature">
+            <div class="afr-hfeature-icon-wrap"><i class="fas fa-user-shield"></i></div>
+            <div class="afr-hfeature-text">
+              <span class="afr-hfeature-title">100% Anonymous</span>
+              <span class="afr-hfeature-desc">No login or signup required. Your identity is secure.</span>
+            </div>
+          </div>
+          <div class="afr-hfeature">
+            <div class="afr-hfeature-icon-wrap"><i class="fas fa-coins"></i></div>
+            <div class="afr-hfeature-text">
+              <span class="afr-hfeature-title">Real Stipend Data</span>
+              <span class="afr-hfeature-desc">Compare actual stipends and work hours before signing.</span>
+            </div>
+          </div>
+          <div class="afr-hfeature">
+            <div class="afr-hfeature-icon-wrap"><i class="fas fa-circle-check"></i></div>
+            <div class="afr-hfeature-text">
+              <span class="afr-hfeature-title">Written by Articles</span>
+              <span class="afr-hfeature-desc">Genuine experiences from students who trained there.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="afr-hero-side-container animate-fade-left">
+        <!-- Floating Review Cards Infographic -->
+        <div class="afr-floating-reviews-wrap">
+          <!-- Card 1 -->
+          <div class="afr-floating-review card-1">
+            <div class="afr-fr-header">
+              <div class="afr-fr-avatar"
+                style="background: rgba(59, 130, 246, 0.15); border-color: rgba(59, 130, 246, 0.3); color: #60a5fa">P
+              </div>
+              <div class="afr-fr-info">
+                <span class="afr-fr-name">PwC India</span>
+                <span class="afr-fr-loc">Mumbai</span>
+              </div>
+              <div class="afr-fr-rating">
+                <i class="fas fa-star" style="color: #f59e0b"></i> 4.8
+              </div>
+            </div>
+            <p class="afr-fr-text">"Excellent learning exposure in Statutory Audit. Work hours are long but stipend is
+              always on time."</p>
+            <div class="afr-fr-meta">
+              <span class="afr-fr-tag">Stat Audit</span>
+              <div class="afr-fr-stipend-wrap">
+                <svg class="afr-sparkline" width="36" height="14" viewBox="0 0 36 14">
+                  <path d="M0 10 Q 9 2, 18 8 T 36 2" fill="none" stroke="#10b981" stroke-width="1.8"
+                    stroke-linecap="round"></path>
+                </svg>
+                <span class="afr-fr-stipend">₹15,000</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="afr-floating-review card-2">
+            <div class="afr-fr-header">
+              <div class="afr-fr-avatar"
+                style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.3); color: #34d399">D
+              </div>
+              <div class="afr-fr-info">
+                <span class="afr-fr-name">Deloitte</span>
+                <span class="afr-fr-loc">Bangalore</span>
+              </div>
+              <div class="afr-fr-rating">
+                <i class="fas fa-star" style="color: #f59e0b"></i> 4.5
+              </div>
+            </div>
+            <p class="afr-fr-text">"Amazing work-life balance compared to peer firms. Transfer support is easily
+              approved."</p>
+            <div class="afr-fr-meta">
+              <span class="afr-fr-tag">Taxation</span>
+              <div class="afr-fr-stipend-wrap">
+                <svg class="afr-sparkline" width="36" height="14" viewBox="0 0 36 14">
+                  <path d="M0 8 Q 9 12, 18 4 T 36 2" fill="none" stroke="#10b981" stroke-width="1.8"
+                    stroke-linecap="round"></path>
+                </svg>
+                <span class="afr-fr-stipend">₹12,500</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main CTA Card -->
+        <div class="afr-hero-side">
+          <span class="afr-hero-side-title">Trained at a firm? Help the next batch.</span>
+          <button id="sidebar-write-btn" class="afr-hero-btn"><i class="fas fa-pen"></i> Write a Review</button>
+          <span class="afr-hero-note">Takes under a minute · no login needed</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Command bar + results -->
+  <div class="afr-body-wrapper">
+    <div class="afr-body-container">
+
+      <div class="afr-command-bar">
+        <div class="afr-search-bar-unified">
+          <!-- Segment 1: Search Firm -->
+          <div class="search-segment segment-search">
+            <i class="fas fa-search segment-icon"></i>
+            <div class="segment-details">
+              <label for="search-input" class="segment-label">Firm Name</label>
+              <input id="search-input" type="search" placeholder="Search firms…" aria-label="Search firm name">
+            </div>
+          </div>
+
+          <div class="segment-divider"></div>
+
+          <!-- Segment 2: Location -->
+          <div class="search-segment segment-dropdown-container">
+            <i class="fas fa-location-dot segment-icon"></i>
+            <div class="segment-details">
+              <span class="segment-label">Location</span>
+              <select id="filter-location" class="afr-filter-select" aria-label="Filter by location">
+                <option value="">All locations</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="segment-divider"></div>
+
+          <!-- Segment 3: Stipend -->
+          <div class="search-segment segment-dropdown-container" id="stipend-segment">
+            <i class="fas fa-indian-rupee-sign segment-icon"></i>
+            <div class="segment-details">
+              <span class="segment-label">Stipend Range</span>
+              <div class="custom-dropdown" id="custom-dropdown-stipend">
+                <button type="button" class="dropdown-trigger" id="stipend-trigger">
+                  <span class="trigger-label" id="stipend-selected-label">Any stipend</span>
+                  <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="custom-dropdown-menu stipend-popover-menu" id="stipend-menu">
+                  <div class="stipend-slider-container">
+                    <div class="stipend-inputs-row">
+                      <div class="stipend-input-wrap">
+                        <span class="currency-symbol">₹</span>
+                        <input type="number" id="stipend-min-input" min="0" max="100000" step="1000" placeholder="Min" value="0">
+                      </div>
+                      <span class="stipend-to-label">to</span>
+                      <div class="stipend-input-wrap">
+                        <span class="currency-symbol">₹</span>
+                        <input type="number" id="stipend-max-input" min="0" max="100000" step="1000" placeholder="Max" value="100000">
+                      </div>
+                    </div>
+
+                    <div class="dual-range-wrapper">
+                      <div class="dual-range-track" id="stipend-range-track"></div>
+                      <input type="range" id="stipend-range-min" min="0" max="100000" step="1000" value="0">
+                      <input type="range" id="stipend-range-max" min="0" max="100000" step="1000" value="100000">
+                    </div>
+
+                    <div class="stipend-slider-labels">
+                      <span>₹0</span>
+                      <span>1L+</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="segment-divider"></div>
+
+          <!-- Segment 4: Sort -->
+          <div class="search-segment segment-dropdown-container">
+            <i class="fas fa-arrow-down-wide-narrow segment-icon"></i>
+            <div class="segment-details">
+              <span class="segment-label">Sort By</span>
+              <select id="sort-by" class="afr-filter-select" aria-label="Sort">
+                <option value="rating">Highest rated</option>
+                <option value="count">Most reviewed</option>
+                <option value="newest">Newest</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Filters Button (Mobile Only) -->
+          <button id="open-filter-modal-btn" class="afr-mobile-filter-btn" aria-label="Open Filters">
+            <i class="fas fa-sliders"></i>
+            <span>Filters</span>
+          </button>
+        </div>
+
+        <div class="afr-chip-rail">
+          <!-- Switcher -->
+          <div class="afr-filter-tabs">
+            <button class="afr-tab-btn active" data-target="domain-group"><i class="fas fa-tags"></i> Domain</button>
+            <button class="afr-tab-btn" data-target="client-group"><i class="fas fa-building"></i> Clients</button>
+            <button class="afr-tab-btn" data-target="skill-group"><i class="fas fa-screwdriver-wrench"></i>
+              Skills</button>
+          </div>
+
+          <!-- Separator -->
+          <div class="afr-tab-separator"></div>
+
+          <!-- Tab Contents (Pills) -->
+          <div class="afr-filter-contents">
+            <!-- Domain Group -->
+            <div class="afr-tab-panel active" id="domain-group">
+              <button class="tag-pill-btn" data-type="Domain" data-tag="Statutory Audit">Statutory Audit</button>
+              <button class="tag-pill-btn" data-type="Domain" data-tag="Internal Audit">Internal Audit</button>
+              <button class="tag-pill-btn" data-type="Domain" data-tag="Income Tax">Income Tax</button>
+              <button class="tag-pill-btn" data-type="Domain" data-tag="GST">GST</button>
+              <button class="tag-pill-btn" data-type="Domain" data-tag="Bank Audit">Bank Audit</button>
+              <button class="tag-pill-btn" data-type="Domain" data-tag="Accounting">Accounting</button>
+            </div>
+
+            <!-- Client Exposure Group -->
+            <div class="afr-tab-panel" id="client-group">
+              <button class="tag-pill-btn" data-type="Clients" data-tag="Listed Companies">Listed Companies</button>
+              <button class="tag-pill-btn" data-type="Clients" data-tag="Manufacturing">Manufacturing</button>
+              <button class="tag-pill-btn" data-type="Clients" data-tag="Financial Services">Financial Services</button>
+              <button class="tag-pill-btn" data-type="Clients" data-tag="Real Estate">Real Estate</button>
+              <button class="tag-pill-btn" data-type="Clients" data-tag="Outsourcing">Outsourcing</button>
+            </div>
+
+            <!-- Skills Group -->
+            <div class="afr-tab-panel" id="skill-group">
+              <button class="tag-pill-btn" data-type="Skills" data-tag="SAP">SAP</button>
+              <button class="tag-pill-btn" data-type="Skills" data-tag="Excel">Excel</button>
+              <button class="tag-pill-btn" data-type="Skills" data-tag="Tally">Tally</button>
+              <button class="tag-pill-btn" data-type="Skills" data-tag="Financial Modelling">Financial
+                Modelling</button>
+              <button class="tag-pill-btn" data-type="Skills" data-tag="Data Analytics">Data Analytics</button>
+            </div>
+          </div>
+
+          <!-- Right Zone: Count and Clear -->
+          <div class="afr-chip-rail-right">
+            <span id="title-firms-count" class="afr-count-badge" style="display: none;"></span>
+            <span id="active-tag-badge" class="active-filter-badge" style="display: none;"></span>
+            <button id="clear-filters-btn" class="clear-filters-btn" style="display: none;"><i class="fas fa-xmark"></i>
+              Clear Filters</button>
+          </div>
+        </div>
+      </div>
+
+      <main class="afr-main-content">
+        <div class="afr-grid" id="firm-list" aria-live="polite"></div>
+        <!-- Pagination Bar -->
+        <div id="afr-pagination" class="afr-pagination" aria-label="Pagination" style="display:none;"></div>
+        <!-- Safe-harbour disclaimer -->
+        <p class="afr-legal-disclaimer">
+          <i class="fas fa-circle-info"></i>
+          Reviews are anonymous, user-submitted personal opinions and do not represent the views of My Student Club. As
+          an intermediary we only host user-generated content and are not responsible for its accuracy; reported reviews
+          are examined and removed if they breach our <a href="#" id="afr-guidelines-link">Review Guidelines</a>.
+        </p>
+      </main>
+
+      <!-- CTA Section -->
+      <section class="afr-cta-section">
+        <div class="afr-cta-card">
+          <div class="afr-cta-grid-bg"></div>
+          <div class="afr-cta-glow-1"></div>
+          <div class="afr-cta-glow-2"></div>
+          <div class="afr-cta-inner">
+            <div class="afr-cta-eyebrow">
+              <span class="idx">MSC</span>
+              <span class="rule"></span>
+              <span class="txt">Pay it forward</span>
+            </div>
+            <h2 class="afr-cta-title">Survived those<br /><em>articleship</em> days?</h2>
+            <p class="afr-cta-copy">Tell the next batch what it's really like — the learning, the stipend timeliness,
+              and the hours. Two minutes of honesty can redirect someone's career.</p>
+            <button class="afr-btn-white" id="cta-reviews-write-btn">
+              <i class="fas fa-pen" style="font-size:14px;margin-right:4px;"></i>
+              Write an anonymous review
+              <i class="fas fa-arrow-right afr-cta-arr" style="font-size:14px;margin-left:6px;"></i>
+            </button>
+            <p class="afr-cta-note">
+              <i class="fas fa-shield-halved" style="font-size:12px;margin-right:4px;"></i>
+              100% anonymous — your identity is never stored
+            </p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- Mobile Filters Drawer Modal Overlay -->
+  <div class="filter-modal-overlay" id="filterModalOverlay" style="display: none;">
+    <div class="filter-modal-content">
+      <div class="modal-header">
+        <h4>Filters</h4>
+        <button class="modal-close-action" id="closeFilterModalBtn">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="filter-group">
+          <label for="filter-location-mobile">Location</label>
+          <select id="filter-location-mobile" class="filter-control">
+            <option value="">All locations</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Stipend Range</label>
+          <div class="stipend-slider-container" style="width: 100%; padding: 0.5rem 0;">
+            <div class="stipend-inputs-row">
+              <div class="stipend-input-wrap">
+                <span class="currency-symbol">₹</span>
+                <input type="number" id="stipend-min-input-mobile" min="0" max="100000" step="1000" placeholder="Min" value="0">
+              </div>
+              <span class="stipend-to-label">to</span>
+              <div class="stipend-input-wrap">
+                <span class="currency-symbol">₹</span>
+                <input type="number" id="stipend-max-input-mobile" min="0" max="100000" step="1000" placeholder="Max" value="100000">
+              </div>
+            </div>
+
+            <div class="dual-range-wrapper">
+              <div class="dual-range-track" id="stipend-range-track-mobile"></div>
+              <input type="range" id="stipend-range-min-mobile" min="0" max="100000" step="1000" value="0">
+              <input type="range" id="stipend-range-max-mobile" min="0" max="100000" step="1000" value="100000">
+            </div>
+
+            <div class="stipend-slider-labels">
+              <span>₹0</span>
+              <span>1L+</span>
+            </div>
+          </div>
+        </div>
+        <div class="filter-group">
+          <label for="sort-by-mobile">Sort By</label>
+          <select id="sort-by-mobile" class="filter-control">
+            <option value="rating">Highest rated</option>
+            <option value="count">Most reviewed</option>
+            <option value="newest">Newest</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Expertise &amp; Exposure Tags</label>
+          <div class="afr-filter-tabs mobile-drawer-tabs">
+            <button type="button" class="afr-tab-btn active" data-target="domain-group-mobile"><i
+                class="fas fa-tags"></i> Domain</button>
+            <button type="button" class="afr-tab-btn" data-target="client-group-mobile"><i class="fas fa-building"></i>
+              Clients</button>
+            <button type="button" class="afr-tab-btn" data-target="skill-group-mobile"><i
+                class="fas fa-screwdriver-wrench"></i> Skills</button>
+          </div>
+          <div class="mobile-drawer-tab-contents">
+            <div class="afr-tab-panel active" id="domain-group-mobile">
+              <button type="button" class="tag-pill-btn" data-type="Domain" data-tag="Statutory Audit">Statutory
+                Audit</button>
+              <button type="button" class="tag-pill-btn" data-type="Domain" data-tag="Internal Audit">Internal
+                Audit</button>
+              <button type="button" class="tag-pill-btn" data-type="Domain" data-tag="Income Tax">Income Tax</button>
+              <button type="button" class="tag-pill-btn" data-type="Domain" data-tag="GST">GST</button>
+              <button type="button" class="tag-pill-btn" data-type="Domain" data-tag="Bank Audit">Bank Audit</button>
+              <button type="button" class="tag-pill-btn" data-type="Domain" data-tag="Accounting">Accounting</button>
+            </div>
+            <div class="afr-tab-panel" id="client-group-mobile">
+              <button type="button" class="tag-pill-btn" data-type="Clients" data-tag="Listed Companies">Listed
+                Companies</button>
+              <button type="button" class="tag-pill-btn" data-type="Clients"
+                data-tag="Manufacturing">Manufacturing</button>
+              <button type="button" class="tag-pill-btn" data-type="Clients" data-tag="Financial Services">Financial
+                Services</button>
+              <button type="button" class="tag-pill-btn" data-type="Clients" data-tag="Real Estate">Real Estate</button>
+              <button type="button" class="tag-pill-btn" data-type="Clients" data-tag="Outsourcing">Outsourcing</button>
+            </div>
+            <div class="afr-tab-panel" id="skill-group-mobile">
+              <button type="button" class="tag-pill-btn" data-type="Skills" data-tag="SAP">SAP</button>
+              <button type="button" class="tag-pill-btn" data-type="Skills" data-tag="Excel">Excel</button>
+              <button type="button" class="tag-pill-btn" data-type="Skills" data-tag="Tally">Tally</button>
+              <button type="button" class="tag-pill-btn" data-type="Skills" data-tag="Financial Modelling">Financial
+                Modelling</button>
+              <button type="button" class="tag-pill-btn" data-type="Skills" data-tag="Data Analytics">Data
+                Analytics</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="mobileResetBtn" class="btn">Reset</button>
+        <button id="applyFiltersBtn" class="btn">Apply Filters</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Action Button -->
+  <button id="floating-write-btn" class="floating-write-btn" aria-label="Write a Review">
+    <i class="fas fa-pen"></i> Write a Review
+  </button>
+
+  <script src="/articleship-review-wizard.js"></script>
+
+  <script>
+    const supabaseUrl = 'https://auth.mystudentclub.com';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+    // ── Sidemenu ──────────────────────────────────────────────────────────
+    const menuButton = document.getElementById('menuButton');
+    const expandedMenu = document.getElementById('expandedMenu');
+    const menuCloseBtn = document.getElementById('menuCloseBtn');
+    menuButton.addEventListener('click', () => expandedMenu.classList.add('active'));
+    menuCloseBtn.addEventListener('click', () => expandedMenu.classList.remove('active'));
+    document.addEventListener('click', (e) => {
+      if (expandedMenu.classList.contains('active') &&
+        !expandedMenu.contains(e.target) && !menuButton.contains(e.target))
+        expandedMenu.classList.remove('active');
+    });
+    document.querySelectorAll('.menu-item-dropdown > .menu-item').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panel = btn.nextElementSibling;
+        const icon = btn.querySelector('.dropdown-icon');
+        if (panel) panel.classList.toggle('active');
+        if (icon) icon.classList.toggle('open');
+      });
+    });
+
+    // ── Helpers ───────────────────────────────────────────────────────────
+    function escapeHTML(s) {
+      return String(s ?? '').replace(/[&<>"']/g, c =>
+        ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    const AVATAR_COLORS = ['#1e3a8a', '#1d4ed8', '#2563eb', '#0284c7', '#475569', '#334155'];
+    function firmColor(name) {
+      let h = 0;
+      for (const c of String(name)) h = (h * 31 + c.charCodeAt(0)) & 0x7fffffff;
+      return AVATAR_COLORS[h % AVATAR_COLORS.length];
+    }
+
+    function starsHTML(value) {
+      const full = Math.round(value);
+      let html = '';
+      for (let i = 1; i <= 5; i++)
+        html += `<i class="${i <= full ? 'fas' : 'far'} fa-star"></i>`;
+      return html;
+    }
+
+    function avg(nums) {
+      const xs = nums.filter(n => typeof n === 'number');
+      return xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0;
+    }
+
+    // ── Data ──────────────────────────────────────────────────────────────
+    async function fetchAllReviews() {
+      const { data, error } = await supabaseClient
+        .from('articleship_firm_reviews_public')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data || [];
+    }
+
+    function groupByFirm(reviews) {
+      const map = new Map();
+      for (const r of reviews) {
+        const key = r.firm_id || r.firm_name.trim().toLowerCase();
+        if (!map.has(key)) map.set(key, []);
+        map.get(key).push(r);
+      }
+      const HOURS_LBL = ArticleshipReviewWizard.LABELS.working_hours;
+      return [...map.values()].map(rs => {
+        const tagCounts = {};
+        rs.forEach(r => {
+          (r.domain_tags || []).forEach(t => { tagCounts[t] = (tagCounts[t] || 0) + 1; });
+          (r.client_tags || []).forEach(t => { tagCounts[t] = (tagCounts[t] || 0) + 1; });
+          (r.skill_tags || []).forEach(t => { tagCounts[t] = (tagCounts[t] || 0) + 1; });
+        });
+        const topTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]).slice(0, 5).map(e => e[0]);
+        const stipends = rs.map(r => r.stipend).filter(s => typeof s === 'number');
+        const recs = rs.map(r => r.would_recommend).filter(v => typeof v === 'boolean');
+        const hoursCounts = {};
+        rs.forEach(r => { if (r.working_hours) hoursCounts[r.working_hours] = (hoursCounts[r.working_hours] || 0) + 1; });
+        const topHoursKey = Object.entries(hoursCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || null;
+        return {
+          firmId: rs[0].firm_id,
+          firmName: rs[0].firm_name,
+          location: rs[0].location,
+          count: rs.length,
+          avgOverall: avg(rs.map(r => r.overall_rating)),
+          avgStipend: stipends.length ? Math.round(stipends.reduce((a, b) => a + b, 0) / stipends.length) : null,
+          recommendPct: recs.length ? Math.round((recs.filter(Boolean).length / recs.length) * 100) : null,
+          topHoursKey,
+          topHours: topHoursKey ? HOURS_LBL[topHoursKey] : null,
+          topTags,
+          reviews: rs,
+        };
+      });
+    }
+
+    let FIRMS = [];
+    let PAGE_SIZE = 16; // updated adaptively per viewport
+    const MIN_REVIEWS_FOR_STATS = 5; // below this, show a muted "Not enough data" state
+    let currentPage = 1;
+
+    /**
+     * Compute a PAGE_SIZE that is always an exact multiple of the current
+     * CSS grid column count so the last row is never left partially empty.
+     */
+    function computePageSize() {
+      const gridEl = document.getElementById('firm-list');
+      const containerWidth = gridEl ? gridEl.clientWidth : 800;
+      const CARD_MIN = 290;  // matches minmax(min(100%, 290px), 1fr)
+      const GAP_PX = 19;   // 1.2rem ≈ 19px
+      const cols = Math.max(1, Math.floor((containerWidth + GAP_PX) / (CARD_MIN + GAP_PX)));
+      // Target ~4 visible rows; round up to nearest full row
+      const targetRows = Math.max(4, Math.ceil(12 / cols));
+      return cols * targetRows;
+    }
+    let currentFilteredFirms = [];
+
+    function firmCardHTML(f) {
+      const HOURS_SHORT = { lt8: '<8h/day', '8_9': '8–9h/day', '9_10': '9–10h/day', '10_12': '10–12h/day', gt12: '12h+/day' };
+      const scoreClass = v => (v >= 4 ? 'good' : v >= 3 ? 'mid' : 'bad');
+      const recClass = p => (p >= 70 ? 'good' : p >= 40 ? 'mid' : 'bad');
+      const color = firmColor(f.firmName);
+      const initial = f.firmName.trim()[0].toUpperCase();
+      const tagsHTML = f.topTags.map(t => `<span class="afr-tag">${escapeHTML(t)}</span>`).join('');
+      const exposureHTML = tagsHTML || '<span class="afr-tags-empty">No work exposure details shared yet</span>';
+      const enough = f.count >= MIN_REVIEWS_FOR_STATS;
+      const countLbl = `${f.count} review${f.count !== 1 ? 's' : ''}`;
+      const scorecardHTML = enough ? `
+          <div class="afr-scorecard">
+            <div class="afr-score-col">
+              <span class="afr-score-val ${f.recommendPct !== null ? recClass(f.recommendPct) : 'na'}">${f.recommendPct !== null ? f.recommendPct + '%' : '—'}</span>
+              <span class="afr-score-lbl">Recommend</span>
+            </div>
+            <div class="afr-score-col">
+              <span class="afr-score-val">${f.avgStipend ? '₹' + Number(f.avgStipend).toLocaleString('en-IN') : '<span class="na">—</span>'}</span>
+              <span class="afr-score-lbl">Avg stipend</span>
+            </div>
+            <div class="afr-score-col">
+              <span class="afr-score-val">${f.topHoursKey ? HOURS_SHORT[f.topHoursKey] : '<span class="na">—</span>'}</span>
+              <span class="afr-score-lbl">Typical hours</span>
+            </div>
+          </div>` : `
+          <div class="afr-scorecard afr-scorecard-muted">
+            <span class="afr-nodata"><i class="fas fa-circle-info"></i> Not enough data yet — needs more reviews for reliable stats</span>
+          </div>`;
+      return `
+        <a class="afr-card" style="--card-color:${color}" href="/articleship-firm-review.html?firm=${encodeURIComponent(f.firmName)}" aria-label="View reviews for ${escapeHTML(f.firmName)}">
+          <div class="afr-card-top">
+            <div class="afr-card-heading">
+              <div class="afr-firm-avatar">${initial}</div>
+              <div class="afr-card-info">
+                <div class="afr-card-name">${escapeHTML(f.firmName)}</div>
+                <div class="afr-card-loc"><i class="fas fa-location-dot"></i> ${escapeHTML(f.location)}</div>
+              </div>
+            </div>
+            <div class="afr-card-rating-block">
+              <span class="afr-rating-big ${enough ? scoreClass(f.avgOverall) : 'muted'}">${f.avgOverall ? f.avgOverall.toFixed(1) : '—'}</span>
+              <span class="afr-rating-stars">${starsHTML(f.avgOverall)}</span>
+              <span class="afr-rating-label">${countLbl}</span>
+            </div>
+          </div>
+          <div class="afr-card-section-title"><i class="fas fa-chart-simple"></i> Review snapshot</div>
+          ${scorecardHTML}
+          <div class="afr-exposure">
+            <div class="afr-card-section-title"><i class="fas fa-briefcase"></i> Reported work exposure</div>
+            <div class="afr-tags">${exposureHTML}</div>
+          </div>
+          <div class="afr-card-footer">
+            <span class="afr-review-count"><i class="fas fa-comment-dots"></i>${f.count} review${f.count > 1 ? 's' : ''}</span>
+            <span class="afr-card-cta">View Reviews <i class="fas fa-arrow-right"></i></span>
+          </div>
+        </a>`;
+    }
+
+    function renderFirmList(firms) {
+      // Recompute page size first so the slice always fills complete rows
+      PAGE_SIZE = computePageSize();
+
+      const host = document.getElementById('firm-list');
+      const titleCount = document.getElementById('title-firms-count');
+      const countText = `${firms.length} ${firms.length === 1 ? 'firm' : 'firms'} found`;
+
+      currentFilteredFirms = firms;
+      currentPage = 1;
+
+      if (titleCount) {
+        if (firms.length > 0) {
+          titleCount.textContent = countText;
+          titleCount.style.display = 'inline-block';
+        } else {
+          titleCount.style.display = 'none';
+        }
+      }
+
+      if (!firms.length) {
+        const q = document.getElementById('search-input').value.trim();
+        let titleText = 'No firms found';
+        let descText = 'Be the first to add a review for your firm.';
+        if (q) {
+          titleText = `"${escapeHTML(q)}" is not available`;
+          descText = `Be the first one to write a review for ${escapeHTML(q)}!`;
+        }
+        host.innerHTML = `
+          <div class="afr-empty">
+            <i class="fas fa-building-circle-exclamation afr-empty-icon"></i>
+            <h3>${titleText}</h3>
+            <p>${descText}</p>
+            <button id="empty-write-btn" class="afr-btn-empty-state"><i class="fas fa-pen"></i> Write a Review</button>
+          </div>`;
+        const emptyBtn = document.getElementById('empty-write-btn');
+        if (emptyBtn) emptyBtn.addEventListener('click', () => ArticleshipReviewWizard.open({ firmName: q }));
+        renderPaginator(0, 'afr-pagination');
+        return;
+      }
+
+      // Render page 1
+      host.innerHTML = firms.slice(0, PAGE_SIZE).map(firmCardHTML).join('');
+      renderPaginator(firms.length, 'afr-pagination');
+    }
+
+    function renderPaginator(totalItems, containerId) {
+      const el = document.getElementById(containerId);
+      if (!el) return;
+      const totalPages = Math.ceil(totalItems / PAGE_SIZE);
+      if (totalPages <= 1) { el.style.display = 'none'; el.innerHTML = ''; return; }
+      el.style.display = 'flex';
+
+      const MAX_VISIBLE = 7;
+      function pageRange(cur, total) {
+        if (total <= MAX_VISIBLE) return Array.from({ length: total }, (_, i) => i + 1);
+        const pages = [];
+        pages.push(1);
+        if (cur > 3) pages.push('...');
+        const start = Math.max(2, cur - 1);
+        const end = Math.min(total - 1, cur + 1);
+        for (let i = start; i <= end; i++) pages.push(i);
+        if (cur < total - 2) pages.push('...');
+        pages.push(total);
+        return pages;
+      }
+
+      function build(page) {
+        const pages = pageRange(page, totalPages);
+        el.innerHTML = [
+          `<button class="pg-btn pg-arrow${page === 1 ? ' pg-disabled' : ''}" data-page="${page - 1}" aria-label="Previous page"><i class="fas fa-chevron-left"></i></button>`,
+          ...pages.map(p =>
+            p === '...'
+              ? `<span class="pg-ellipsis">…</span>`
+              : `<button class="pg-btn${p === page ? ' pg-active' : ''}" data-page="${p}">${p}</button>`
+          ),
+          `<button class="pg-btn pg-arrow${page === totalPages ? ' pg-disabled' : ''}" data-page="${page + 1}" aria-label="Next page"><i class="fas fa-chevron-right"></i></button>`
+        ].join('');
+
+        el.querySelectorAll('.pg-btn:not(.pg-disabled)').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const p = parseInt(btn.dataset.page);
+            if (isNaN(p) || p < 1 || p > totalPages || p === currentPage) return;
+            PAGE_SIZE = computePageSize();
+            currentPage = p;
+            const host = document.getElementById('firm-list');
+            host.innerHTML = currentFilteredFirms.slice((p - 1) * PAGE_SIZE, p * PAGE_SIZE).map(firmCardHTML).join('');
+            build(p);
+            host.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          });
+        });
+      }
+      build(currentPage);
+    }
+
+    // ── Adaptive resize: re-render when viewport width changes ────────────
+    let _resizeDebounce;
+    window.addEventListener('resize', () => {
+      clearTimeout(_resizeDebounce);
+      _resizeDebounce = setTimeout(() => {
+        if (!currentFilteredFirms.length) return;
+        PAGE_SIZE = computePageSize();
+        // Re-render from page 1 so page size mismatch never leaves a broken page
+        renderFirmList(currentFilteredFirms);
+      }, 200);
+    });
+
+    // ── Custom Dropdowns UI Generator ──
+    function toggleCustomDropdown(wrapper, trigger) {
+      if (!wrapper) return;
+      document.querySelectorAll('.custom-dropdown').forEach(d => {
+        if (d !== wrapper) d.classList.remove('active');
+      });
+      const isActive = wrapper.classList.toggle('active');
+      if (trigger) trigger.setAttribute('aria-expanded', isActive ? 'true' : 'false');
+    }
+
+    function initCustomDropdown(selectId) {
+      const select = document.getElementById(selectId);
+      if (!select) return;
+
+      // Hide native select
+      select.style.display = 'none';
+
+      // Check if wrapper already exists
+      let wrapper = select.nextElementSibling;
+      if (!wrapper || !wrapper.classList.contains('custom-dropdown')) {
+        wrapper = document.createElement('div');
+        wrapper.className = 'custom-dropdown';
+        select.parentNode.insertBefore(wrapper, select.nextSibling);
+      }
+
+      // Rebuild inner HTML of custom dropdown
+      const selectedOption = select.options[select.selectedIndex] || select.options[0] || { text: '', value: '' };
+
+      let itemsHTML = '';
+      for (let i = 0; i < select.options.length; i++) {
+        const opt = select.options[i];
+        const isSelected = opt.value === select.value;
+        itemsHTML += `
+          <div class="custom-dropdown-item ${isSelected ? 'selected' : ''}" data-value="${escapeHTML(opt.value)}">
+            ${escapeHTML(opt.text)}
+          </div>`;
+      }
+
+      wrapper.innerHTML = `
+        <button class="dropdown-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+          <span class="trigger-label">${escapeHTML(selectedOption.text)}</span>
+          <i class="fas fa-chevron-down"></i>
+        </button>
+        <div class="custom-dropdown-menu" role="listbox">
+          ${itemsHTML}
+        </div>
+      `;
+
+      const trigger = wrapper.querySelector('.dropdown-trigger');
+
+      // Click to toggle dropdown
+      if (trigger) {
+        trigger.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleCustomDropdown(wrapper, trigger);
+        });
+      }
+
+      // Click option item
+      wrapper.querySelectorAll('.custom-dropdown-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+          e.stopPropagation();
+          select.value = item.dataset.value;
+
+          // Trigger events
+          select.dispatchEvent(new Event('input', { bubbles: true }));
+          select.dispatchEvent(new Event('change', { bubbles: true }));
+
+          // Re-init this dropdown to update selection classes and labels
+          initCustomDropdown(selectId);
+        });
+      });
+    }
+
+    // Global click handler to close dropdowns when clicking outside
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.custom-dropdown').forEach(d => {
+        d.classList.remove('active');
+        const trigger = d.querySelector('.dropdown-trigger');
+        if (trigger) trigger.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    // ── Search / filter / sort ────────────────────────────────────────────
+    let SELECTED_TAG = null;
+
+    async function populateLocationFilter() {
+      const locSet = new Set(FIRMS.map(f => f.location).filter(Boolean));
+
+      try {
+        const { data: rpcCities } = await supabaseClient.rpc('search_cities', { q: '' });
+        if (Array.isArray(rpcCities) && rpcCities.length) {
+          rpcCities.forEach(c => { if (c && c.name) locSet.add(c.name.trim()); });
+        }
+      } catch (e) {
+        /* RPC fallback */
+      }
+
+      try {
+        const { data: tableCities } = await supabaseClient.from('cities').select('name');
+        if (Array.isArray(tableCities) && tableCities.length) {
+          tableCities.forEach(c => { if (c && c.name) locSet.add(c.name.trim()); });
+        }
+      } catch (e) {
+        /* Table fallback */
+      }
+
+      const sortedLocs = [...locSet].filter(Boolean).sort((a, b) => a.localeCompare(b));
+      const optionsHTML = '<option value="">All locations</option>' +
+        sortedLocs.map(l => `<option value="${escapeHTML(l)}">${escapeHTML(l)}</option>`).join('');
+
+      const locSel = document.getElementById('filter-location');
+      if (locSel) locSel.innerHTML = optionsHTML;
+      initCustomDropdown('filter-location');
+      initCustomDropdown('filter-stipend');
+      initCustomDropdown('sort-by');
+
+      const locSelMobile = document.getElementById('filter-location-mobile');
+      if (locSelMobile) locSelMobile.innerHTML = optionsHTML;
+      initCustomDropdown('filter-location-mobile');
+      initCustomDropdown('filter-stipend-mobile');
+      initCustomDropdown('sort-by-mobile');
+    }
+
+    function updateHeroStats(reviews) {
+      const totalEl = document.getElementById('stat-total-reviews');
+      if (totalEl) totalEl.textContent = reviews.length;
+
+      const stipendEl = document.getElementById('stat-avg-stipend');
+      if (stipendEl) {
+        const stipends = reviews.map(r => r.stipend).filter(s => typeof s === 'number');
+        const avgStipend = stipends.length ? Math.round(stipends.reduce((a, b) => a + b, 0) / stipends.length) : null;
+        stipendEl.textContent = avgStipend ? `₹${Number(avgStipend).toLocaleString('en-IN')}/mo` : '—';
+      }
+
+      const locationsEl = document.getElementById('stat-locations-count');
+      if (locationsEl) {
+        const locations = new Set(reviews.map(r => r.location).filter(Boolean));
+        locationsEl.textContent = locations.size;
+      }
+    }
+
+    // ── Stipend Dual Range Slider Handler ──────────────────────────────────
+    function initStipendDualSlider() {
+      const stipendWrapper = document.getElementById('custom-dropdown-stipend');
+      const stipendTrigger = document.getElementById('stipend-trigger');
+      const stipendMenu = document.getElementById('stipend-menu');
+
+      if (stipendTrigger && stipendWrapper) {
+        stipendTrigger.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleCustomDropdown(stipendWrapper, stipendTrigger);
+        });
+      }
+
+      if (stipendMenu) {
+        stipendMenu.addEventListener('click', (e) => {
+          e.stopPropagation();
+        });
+      }
+
+      const minRange = document.getElementById('stipend-range-min');
+      const maxRange = document.getElementById('stipend-range-max');
+      const minInput = document.getElementById('stipend-min-input');
+      const maxInput = document.getElementById('stipend-max-input');
+      const track = document.getElementById('stipend-range-track');
+
+      const minRangeMob = document.getElementById('stipend-range-min-mobile');
+      const maxRangeMob = document.getElementById('stipend-range-max-mobile');
+      const minInputMob = document.getElementById('stipend-min-input-mobile');
+      const maxInputMob = document.getElementById('stipend-max-input-mobile');
+      const trackMob = document.getElementById('stipend-range-track-mobile');
+
+      const triggerLabel = document.getElementById('stipend-selected-label');
+
+      if (!minRange || !maxRange || !minInput || !maxInput || !track) return;
+
+      const MAX_VAL = 100000;
+      const STEP = 1000;
+
+      function updateSlider(source, isMobile = false) {
+        const curMinRange = isMobile ? minRangeMob : minRange;
+        const curMaxRange = isMobile ? maxRangeMob : maxRange;
+        const curMinInput = isMobile ? minInputMob : minInput;
+        const curMaxInput = isMobile ? maxInputMob : maxInput;
+
+        let minVal = parseInt(curMinRange.value, 10);
+        let maxVal = parseInt(curMaxRange.value, 10);
+
+        if (source === 'minInput') {
+          minVal = Math.min(Math.max(parseInt(curMinInput.value || 0, 10), 0), maxVal - STEP);
+          curMinRange.value = minVal;
+        } else if (source === 'maxInput') {
+          maxVal = Math.min(Math.max(parseInt(curMaxInput.value || MAX_VAL, 10), minVal + STEP), MAX_VAL);
+          curMaxRange.value = maxVal;
+        } else if (source === 'minRange') {
+          if (minVal >= maxVal) {
+            minVal = maxVal - STEP;
+            curMinRange.value = minVal;
+          }
+          curMinInput.value = minVal;
+        } else if (source === 'maxRange') {
+          if (maxVal <= minVal) {
+            maxVal = minVal + STEP;
+            curMaxRange.value = maxVal;
+          }
+          curMaxInput.value = maxVal;
+        }
+
+        // Sync desktop & mobile controls
+        if (minRangeMob && minRange) { minRangeMob.value = minVal; minRange.value = minVal; }
+        if (maxRangeMob && maxRange) { maxRangeMob.value = maxVal; maxRange.value = maxVal; }
+        if (minInputMob && minInput) { minInputMob.value = minVal; minInput.value = minVal; }
+        if (maxInputMob && maxInput) { maxInputMob.value = maxVal; maxInput.value = maxVal; }
+
+        // Track fill gradient
+        const pctMin = (minVal / MAX_VAL) * 100;
+        const pctMax = (maxVal / MAX_VAL) * 100;
+        const activeColor = '#2563eb';
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const trackBg = isDark ? '#252836' : '#e2e8f0';
+        const gradientCSS = `linear-gradient(to right, ${trackBg} 0%, ${trackBg} ${pctMin}%, ${activeColor} ${pctMin}%, ${activeColor} ${pctMax}%, ${trackBg} ${pctMax}%, ${trackBg} 100%)`;
+
+        if (track) track.style.background = gradientCSS;
+        if (trackMob) trackMob.style.background = gradientCSS;
+
+        // Label display
+        if (triggerLabel) {
+          if (minVal === 0 && maxVal >= MAX_VAL) {
+            triggerLabel.textContent = 'Any stipend';
+          } else if (maxVal >= MAX_VAL) {
+            triggerLabel.textContent = `₹${minVal.toLocaleString('en-IN')}+`;
+          } else {
+            triggerLabel.textContent = `₹${minVal.toLocaleString('en-IN')} - ₹${maxVal.toLocaleString('en-IN')}`;
+          }
+        }
+
+        applyControls();
+      }
+
+      minRange.addEventListener('input', () => updateSlider('minRange', false));
+      maxRange.addEventListener('input', () => updateSlider('maxRange', false));
+      minInput.addEventListener('input', () => updateSlider('minInput', false));
+      maxInput.addEventListener('input', () => updateSlider('maxInput', false));
+
+      if (minRangeMob) minRangeMob.addEventListener('input', () => updateSlider('minRange', true));
+      if (maxRangeMob) maxRangeMob.addEventListener('input', () => updateSlider('maxRange', true));
+      if (minInputMob) minInputMob.addEventListener('input', () => updateSlider('minInput', true));
+      if (maxInputMob) maxInputMob.addEventListener('input', () => updateSlider('maxInput', true));
+
+      updateSlider('init', false);
+    }
+
+    function applyControls() {
+      const q = document.getElementById('search-input').value.trim().toLowerCase();
+      const loc = document.getElementById('filter-location')?.value || '';
+      const minStipend = parseInt(document.getElementById('stipend-min-input')?.value || '0', 10);
+      const maxStipend = parseInt(document.getElementById('stipend-max-input')?.value || '100000', 10);
+      const sort = document.getElementById('sort-by')?.value || 'rating';
+
+      const qTokens = q.split(/\s+/).filter(Boolean);
+      let out = FIRMS.filter(f => {
+        const matchesQuery = !qTokens.length || qTokens.every(tok => {
+          return f.firmName.toLowerCase().includes(tok) ||
+            (f.location && f.location.toLowerCase().includes(tok)) ||
+            f.topTags.some(t => t.toLowerCase().includes(tok)) ||
+            f.reviews.some(r =>
+              (r.domain_tags || []).some(t => t.toLowerCase().includes(tok)) ||
+              (r.client_tags || []).some(t => t.toLowerCase().includes(tok)) ||
+              (r.skill_tags || []).some(t => t.toLowerCase().includes(tok)) ||
+              (r.review_text && r.review_text.toLowerCase().includes(tok))
+            );
+        });
+        const matchesLocation = !loc || f.location === loc;
+        const matchesStipend = (minStipend === 0 && maxStipend >= 100000) || (
+          f.avgStipend && f.avgStipend >= minStipend && (maxStipend >= 100000 || f.avgStipend <= maxStipend)
+        );
+        const matchesTag = !SELECTED_TAG ||
+          f.topTags.includes(SELECTED_TAG) ||
+          f.reviews.some(r =>
+            (r.domain_tags || []).includes(SELECTED_TAG) ||
+            (r.client_tags || []).includes(SELECTED_TAG) ||
+            (r.skill_tags || []).includes(SELECTED_TAG)
+          );
+        return matchesQuery && matchesLocation && matchesStipend && matchesTag;
+      });
+
+      if (sort === 'rating') out.sort((a, b) => b.avgOverall - a.avgOverall);
+      else if (sort === 'count') out.sort((a, b) => b.count - a.count);
+      else out.sort((a, b) => new Date(b.reviews[0].created_at) - new Date(a.reviews[0].created_at));
+
+      renderFirmList(out);
+
+      // Manage Active Filters summary panel status update
+      const statusContent = document.getElementById('filter-status-content');
+      const clearBtnLink = document.getElementById('clear-filters-btn-panel');
+      const firmsCountBadge = document.getElementById('title-firms-count-badge');
+
+      const activeFilters = [];
+      if (q) activeFilters.push(`<span class="afr-status-pill">Name: ${escapeHTML(q)}</span>`);
+      if (loc) activeFilters.push(`<span class="afr-status-pill">Loc: ${escapeHTML(loc)}</span>`);
+      if (minStipend > 0 || maxStipend < 100000) {
+        const stipendTxt = maxStipend >= 100000 ? `₹${minStipend.toLocaleString('en-IN')}+` : `₹${minStipend.toLocaleString('en-IN')} - ₹${maxStipend.toLocaleString('en-IN')}`;
+        activeFilters.push(`<span class="afr-status-pill">Stipend: ${stipendTxt}</span>`);
+      }
+      if (SELECTED_TAG) {
+        const activeBtn = document.querySelector(`.tag-pill-btn[data-tag="${SELECTED_TAG}"]`);
+        const type = activeBtn ? activeBtn.dataset.type : 'Tag';
+        activeFilters.push(`<span class="afr-status-pill">${type}: ${escapeHTML(SELECTED_TAG)}</span>`);
+      }
+
+      if (statusContent) {
+        if (activeFilters.length > 0) {
+          statusContent.innerHTML = activeFilters.join('');
+          if (clearBtnLink) clearBtnLink.style.display = 'block';
+        } else {
+          statusContent.innerHTML = '<span class="afr-no-filters-msg">Showing all firms</span>';
+          if (clearBtnLink) clearBtnLink.style.display = 'none';
+        }
+      }
+
+      if (firmsCountBadge) {
+        firmsCountBadge.innerHTML = `<i class="fas fa-list-check"></i> ${out.length} ${out.length === 1 ? 'firm' : 'firms'} found`;
+      }
+    }
+
+    // Re-filter on any control change
+    ['search-input', 'filter-location', 'filter-stipend', 'sort-by'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', applyControls);
+    });
+
+    function initTagCloud() {
+      const badge = document.getElementById('active-tag-badge');
+
+      // Scoped tab switching behavior for desktop and mobile tab groups
+      document.querySelectorAll('.afr-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tabTrack = btn.closest('.afr-filter-tabs');
+          if (tabTrack) {
+            tabTrack.querySelectorAll('.afr-tab-btn').forEach(b => b.classList.remove('active'));
+          }
+          btn.classList.add('active');
+
+          // Hide sibling panels in the respective parent container
+          const panelParent = btn.closest('.afr-chip-rail') || btn.closest('.filter-group');
+          if (panelParent) {
+            panelParent.querySelectorAll('.afr-tab-panel').forEach(p => p.classList.remove('active'));
+          }
+
+          const panel = document.getElementById(btn.dataset.target);
+          if (panel) panel.classList.add('active');
+        });
+      });
+
+      // Tag pill click synchronization across desktop and mobile
+      document.querySelectorAll('.tag-pill-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tag = btn.dataset.tag;
+          if (SELECTED_TAG === tag) {
+            SELECTED_TAG = null;
+            document.querySelectorAll(`.tag-pill-btn[data-tag="${tag}"]`).forEach(b => b.classList.remove('active'));
+            if (badge) badge.style.display = 'none';
+          } else {
+            document.querySelectorAll('.tag-pill-btn').forEach(b => b.classList.remove('active'));
+            SELECTED_TAG = tag;
+            document.querySelectorAll(`.tag-pill-btn[data-tag="${tag}"]`).forEach(b => b.classList.add('active'));
+            if (badge) {
+              const type = btn.dataset.type || 'Tag';
+              badge.textContent = `${type}: ${tag}`;
+              badge.style.display = 'inline-flex';
+            }
+          }
+
+          // Do not trigger filtering immediately inside mobile drawer overlays
+          if (!btn.closest('.filter-modal-overlay')) {
+            applyControls();
+          }
+        });
+      });
+
+      const clearBtn = document.getElementById('clear-filters-btn');
+      if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+          // Clear search
+          const searchInput = document.getElementById('search-input');
+          if (searchInput) searchInput.value = '';
+
+          // Clear location
+          const locSel = document.getElementById('filter-location');
+          if (locSel) {
+            locSel.value = '';
+            initCustomDropdown('filter-location');
+          }
+
+          // Clear stipend
+          const stipendSel = document.getElementById('filter-stipend');
+          if (stipendSel) {
+            stipendSel.value = '';
+            initCustomDropdown('filter-stipend');
+          }
+
+          // Clear tag
+          SELECTED_TAG = null;
+          document.querySelectorAll('.tag-pill-btn').forEach(b => b.classList.remove('active'));
+          if (badge) badge.style.display = 'none';
+
+          applyControls();
+        });
+      }
+
+      // Add click-forwarding logic for search segments
+      document.querySelectorAll('.search-segment').forEach(seg => {
+        seg.addEventListener('click', (e) => {
+          const input = seg.querySelector('input');
+          if (input) {
+            if (e.target !== input) input.focus();
+            return;
+          }
+
+          if (e.target.closest('.custom-dropdown-menu')) return;
+
+          const wrapper = seg.querySelector('.custom-dropdown');
+          const trigger = seg.querySelector('.dropdown-trigger');
+          if (wrapper && trigger) {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleCustomDropdown(wrapper, trigger);
+          }
+        });
+      });
+    }
+
+    async function loadFirms() {
+      const host = document.getElementById('firm-list');
+      host.innerHTML = '<div class="afr-loading"><div class="afr-spinner"></div><span>Loading reviews…</span></div>';
+      try {
+        const reviews = await fetchAllReviews();
+        FIRMS = groupByFirm(reviews);
+        await populateLocationFilter();
+        updateHeroStats(reviews);
+        initTagCloud();
+
+        // Initialize stipend dual slider and custom dropdowns
+        initStipendDualSlider();
+        initCustomDropdown('sort-by');
+
+        const sidebarWriteBtn = document.getElementById('sidebar-write-btn');
+        if (sidebarWriteBtn) {
+          sidebarWriteBtn.addEventListener('click', () => ArticleshipReviewWizard.open());
+        }
+
+        // Parse search query parameter from URL to pre-fill search input
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlQuery = urlParams.get('q');
+        if (urlQuery) {
+          const searchInput = document.getElementById('search-input');
+          if (searchInput) {
+            searchInput.value = urlQuery;
+          }
+        }
+
+        applyControls();
+      } catch (e) {
+        host.innerHTML = `<div class="afr-error"><i class="fas fa-triangle-exclamation"></i><p>Couldn't load reviews: ${escapeHTML(e.message)}</p></div>`;
+      }
+    }
+    loadFirms();
+
+    // ── Review wizard (shared component) ─────────────────────────────────
+    ArticleshipReviewWizard.init(supabaseClient, { onComplete: loadFirms });
+
+    // Safe-harbour disclaimer → open Review Guidelines overlay
+    const afrGuidelinesLink = document.getElementById('afr-guidelines-link');
+    if (afrGuidelinesLink) {
+      afrGuidelinesLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (ArticleshipReviewWizard.openGuidelines) ArticleshipReviewWizard.openGuidelines();
+      });
+    }
+
+    // Floating FAB Write Review logic
+    const floatingWriteBtn = document.getElementById('floating-write-btn');
+    if (floatingWriteBtn) {
+      floatingWriteBtn.addEventListener('click', () => ArticleshipReviewWizard.open());
+      const handleScroll = () => {
+        const scrolled = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop;
+        if (scrolled > 10) {
+          floatingWriteBtn.classList.add('visible');
+        } else {
+          floatingWriteBtn.classList.remove('visible');
+        }
+      };
+      window.addEventListener('scroll', handleScroll);
+      handleScroll(); // initialize state on page load
+    }
+
+    // CTA card "Write an anonymous review" button
+    const ctaReviewsWriteBtn = document.getElementById('cta-reviews-write-btn');
+    if (ctaReviewsWriteBtn) {
+      ctaReviewsWriteBtn.addEventListener('click', () => ArticleshipReviewWizard.open());
+    }
+
+    // ── Mobile Drawer event wiring (deferred so modal HTML is guaranteed in DOM) ──
+    function initMobileDrawer() {
+      const filterModalOverlay = document.getElementById('filterModalOverlay');
+      const openFilterModalBtn = document.getElementById('open-filter-modal-btn');
+      const closeFilterModalBtn = document.getElementById('closeFilterModalBtn');
+      const applyFiltersBtn = document.getElementById('applyFiltersBtn');
+      const mobileResetBtn = document.getElementById('mobileResetBtn');
+
+      if (openFilterModalBtn && filterModalOverlay) {
+        // Open drawer
+        openFilterModalBtn.addEventListener('click', () => {
+          // Sync values from desktop inputs to mobile selects
+          const locMobile = document.getElementById('filter-location-mobile');
+          const stipendMobile = document.getElementById('filter-stipend-mobile');
+          const sortMobile = document.getElementById('sort-by-mobile');
+
+          if (locMobile) locMobile.value = document.getElementById('filter-location').value;
+          if (stipendMobile) stipendMobile.value = document.getElementById('filter-stipend').value;
+          if (sortMobile) sortMobile.value = document.getElementById('sort-by').value;
+
+          // Rebuild custom dropdown widgets for mobile sheet
+          initCustomDropdown('filter-location-mobile');
+          initCustomDropdown('filter-stipend-mobile');
+          initCustomDropdown('sort-by-mobile');
+
+          // Sync tag active classes inside the drawer
+          document.querySelectorAll('.filter-modal-content .tag-pill-btn').forEach(b => {
+            if (SELECTED_TAG && b.dataset.tag === SELECTED_TAG) {
+              b.classList.add('active');
+
+              // Also trigger click on the corresponding tab button to switch to its panel inside the drawer!
+              const parentPanel = b.closest('.afr-tab-panel');
+              if (parentPanel) {
+                const tabBtn = document.querySelector(`.mobile-drawer-tabs .afr-tab-btn[data-target="${parentPanel.id}"]`);
+                if (tabBtn) tabBtn.click();
+              }
+            } else {
+              b.classList.remove('active');
+            }
+          });
+
+          filterModalOverlay.style.display = 'flex';
+          setTimeout(() => filterModalOverlay.classList.add('show'), 10);
+        });
+
+        // Close function
+        const closeDrawer = () => {
+          filterModalOverlay.classList.remove('show');
+          setTimeout(() => filterModalOverlay.style.display = 'none', 300);
+        };
+
+        if (closeFilterModalBtn) {
+          closeFilterModalBtn.addEventListener('click', closeDrawer);
+        }
+
+        // Close on backdrop click
+        filterModalOverlay.addEventListener('click', (e) => {
+          if (e.target === filterModalOverlay) closeDrawer();
+        });
+
+        // Apply filters
+        if (applyFiltersBtn) {
+          applyFiltersBtn.addEventListener('click', () => {
+            const locVal = document.getElementById('filter-location-mobile').value;
+            const stipendVal = document.getElementById('filter-stipend-mobile').value;
+            const sortVal = document.getElementById('sort-by-mobile').value;
+
+            // Copy to desktop inputs
+            document.getElementById('filter-location').value = locVal;
+            document.getElementById('filter-stipend').value = stipendVal;
+            document.getElementById('sort-by').value = sortVal;
+
+            // Refresh custom dropdown visuals
+            initCustomDropdown('filter-location');
+            initCustomDropdown('filter-stipend');
+            initCustomDropdown('sort-by');
+
+            applyControls();
+            closeDrawer();
+          });
+        }
+
+        // Reset filters
+        if (mobileResetBtn) {
+          mobileResetBtn.addEventListener('click', () => {
+            document.getElementById('filter-location-mobile').value = '';
+            document.getElementById('filter-stipend-mobile').value = '';
+            document.getElementById('sort-by-mobile').value = 'rating';
+
+            document.getElementById('filter-location').value = '';
+            document.getElementById('filter-stipend').value = '';
+            document.getElementById('sort-by').value = 'rating';
+
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) searchInput.value = '';
+
+            SELECTED_TAG = null;
+            document.querySelectorAll('.tag-pill-btn').forEach(b => b.classList.remove('active'));
+            const badge = document.getElementById('active-tag-badge');
+            if (badge) badge.style.display = 'none';
+
+            // Refresh custom dropdown visuals
+            initCustomDropdown('filter-location');
+            initCustomDropdown('filter-stipend');
+            initCustomDropdown('sort-by');
+            initCustomDropdown('filter-location-mobile');
+            initCustomDropdown('filter-stipend-mobile');
+            initCustomDropdown('sort-by-mobile');
+
+            applyControls();
+            closeDrawer();
+          }); // end mobileResetBtn listener
+        } // end if(mobileResetBtn)
+      } // end if(openFilterModalBtn && filterModalOverlay)
+    } // end initMobileDrawer
+    initMobileDrawer();
+
+    // Theme initialization & Toggle
+    (function () {
+      const savedTheme = localStorage.getItem('msc-theme') || localStorage.getItem('portal_theme') || localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+
+      const themeToggleBtn = document.getElementById('themeToggleBtn');
+      if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+          const current = document.documentElement.getAttribute('data-theme') || 'light';
+          const next = current === 'dark' ? 'light' : 'dark';
+          document.documentElement.setAttribute('data-theme', next);
+          localStorage.setItem('msc-theme', next);
+          localStorage.setItem('portal_theme', next);
+          localStorage.setItem('theme', next);
+        });
+      }
+
+      // Drawer navigation
+      const menuButton = document.getElementById('menuButton');
+      const expandedMenu = document.getElementById('expandedMenu');
+      const menuCloseBtn = document.getElementById('menuCloseBtn');
+      if (menuButton && expandedMenu) {
+        menuButton.addEventListener('click', (e) => {
+          e.stopPropagation();
+          expandedMenu.classList.add('active');
+        });
+      }
+      if (menuCloseBtn && expandedMenu) {
+        menuCloseBtn.addEventListener('click', () => expandedMenu.classList.remove('active'));
+      }
+      document.addEventListener('click', (e) => {
+        if (expandedMenu && expandedMenu.classList.contains('active') &&
+            !expandedMenu.contains(e.target) && !menuButton.contains(e.target)) {
+          expandedMenu.classList.remove('active');
+        }
+      });
+
+      // Free resources dropdown in drawer
+      const resBtn = document.getElementById('resourcesDropdownBtn');
+      const resDropdown = document.getElementById('resourcesDropdown');
+      if (resBtn && resDropdown) {
+        resBtn.addEventListener('click', () => {
+          resDropdown.classList.toggle('show');
+        });
+      }
+
+      // Logout button in side menu
+      const logoutBtn = document.getElementById('logoutMenuBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', async () => {
+          try {
+            if (window.supabaseClient && window.supabaseClient.auth) {
+              await window.supabaseClient.auth.signOut();
+            }
+          } catch (err) {
+            console.error('Logout error:', err);
+          }
+          localStorage.clear();
+          sessionStorage.clear();
+          window.location.href = '/login.html';
+        });
+      }
+    })();
+  </script>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav" aria-label="Main navigation">
+    <div class="bottom-nav-inner">
+      <a href="/" class="bnav-item" aria-label="Home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z" /><path d="M9 21V12h6v9" /></svg>
+        <span>Home</span>
+      </a>
+      <a href="/history.html" class="bnav-item" aria-label="Applied">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="9" y1="13" x2="15" y2="13" /><line x1="9" y1="17" x2="12" y2="17" /></svg>
+        <span>Applied</span>
+      </a>
+      <a href="/learning-management-system/" class="bnav-item" aria-label="Learn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" /></svg>
+        <span>Learn</span>
+      </a>
+      <a href="/profile.html" class="bnav-item" aria-label="Profile">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+        <span>Profile</span>
+      </a>
+    </div>
+  </nav>
+
+</body>
+
+</html>

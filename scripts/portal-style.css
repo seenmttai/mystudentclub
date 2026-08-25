@@ -1164,7 +1164,7 @@ body {
 .jc-top {
   display: flex;
   gap: 12px;
-  align-items: flex-start;
+  align-items: center;
 }
 .jc-avatar {
   width: 50px;
@@ -1182,6 +1182,7 @@ body {
   min-width: 0;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 0;
 }
 .jc-role {
@@ -1191,11 +1192,11 @@ body {
   line-height: 1.3;
 }
 .jc-company {
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--sub);
   line-height: 1.3;
-  margin-top: 7px;
+  margin-top: 3px;
 }
 .jc-bookmark {
   width: 32px;
@@ -2787,6 +2788,35 @@ body {
     gap: 16px;
     align-items: start;
   }
+
+  /* Centered Filter & Detail Dialog Modal for iPad Pro, Tablet & Desktop */
+  .sheet-overlay {
+    align-items: flex-start !important;
+    justify-content: center !important;
+    padding-top: max(60px, 6vh) !important;
+    padding-bottom: 2rem !important;
+    overflow-y: auto !important;
+    z-index: 1000 !important;
+    box-sizing: border-box !important;
+  }
+
+  .sheet-overlay .bottom-sheet,
+  .bottom-sheet {
+    width: min(540px, 92vw) !important;
+    max-width: 540px !important;
+    max-height: calc(100vh - 100px) !important;
+    margin: 0 auto !important;
+    border-radius: 24px !important;
+    transform: scale(0.96) !important;
+    opacity: 0 !important;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
+  }
+
+  .sheet-overlay.show .bottom-sheet {
+    transform: scale(1) !important;
+    opacity: 1 !important;
+  }
 }
 
 @media (min-width: 1280px) {
@@ -2892,5 +2922,235 @@ body {
   bottom: calc(var(--bnav-h, 60px) + 12px);
   right: 12px;
   z-index: 99999;
+}
+
+/* ── Stipend Dual Range Slider Styles ── */
+/* ── Stipend Dual Range Slider Styles ── */
+.stipend-popover-menu,
+.cs-dropdown.stipend-popover-menu {
+  min-width: 280px !important;
+  padding: 0 !important;
+  max-height: none !important;
+  overflow: visible !important;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.12);
+  z-index: 10000;
+}
+
+.stipend-slider-container {
+  padding: 1.15rem 1.15rem 0.9rem;
+  width: 280px;
+  box-sizing: border-box;
+}
+
+.stipend-inputs-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 1.1rem;
+}
+
+.stipend-input-wrap {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 14px;
+  background: #ffffff;
+  padding: 0.4rem 0.65rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stipend-input-wrap:focus-within {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.currency-symbol {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #64748b;
+  margin-right: 0.35rem;
+  user-select: none;
+}
+
+.stipend-input-wrap input {
+  width: 100%;
+  border: none !important;
+  background: transparent !important;
+  outline: none !important;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #0f172a;
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+
+.stipend-input-wrap input::-webkit-outer-spin-button,
+.stipend-input-wrap input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.stipend-input-wrap input[type=number] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.stipend-to-label {
+  font-size: 0.825rem;
+  font-weight: 500;
+  color: #64748b;
+  padding: 0 0.15rem;
+  user-select: none;
+}
+
+.dual-range-wrapper {
+  position: relative;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  margin: 0.4rem 0 0.2rem;
+}
+
+.dual-range-track {
+  position: absolute;
+  width: 100%;
+  height: 4px;
+  border-radius: 4px;
+  background: #e2e8f0;
+  z-index: 1;
+}
+
+.dual-range-wrapper input[type="range"] {
+  position: absolute;
+  width: 100%;
+  height: 4px;
+  background: none !important;
+  pointer-events: none;
+  -webkit-appearance: none;
+  appearance: none;
+  z-index: 2;
+  margin: 0;
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.dual-range-wrapper input[type="range"]::-webkit-slider-thumb {
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 3px solid #2563eb;
+  cursor: pointer;
+  pointer-events: auto;
+  -webkit-appearance: none;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.dual-range-wrapper input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  border-color: #1d4ed8;
+}
+
+.dual-range-wrapper input[type="range"]::-moz-range-thumb {
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 3px solid #2563eb;
+  cursor: pointer;
+  pointer-events: auto;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+}
+
+.stipend-slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #94a3b8;
+  margin-top: 0.35rem;
+  user-select: none;
+}
+
+/* Dark mode stipend slider overrides */
+[data-theme="dark"] .stipend-popover-menu,
+[data-theme="dark"] .cs-dropdown.stipend-popover-menu {
+  background: #141721 !important;
+  border: 1.5px solid #252836 !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.65) !important;
+}
+
+[data-theme="dark"] .stipend-input-wrap {
+  background: #0d0f15 !important;
+  border-color: #272d3d !important;
+}
+
+[data-theme="dark"] .stipend-input-wrap:focus-within {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25) !important;
+}
+
+[data-theme="dark"] .stipend-input-wrap input {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .currency-symbol,
+[data-theme="dark"] .stipend-to-label {
+  color: #8b99b0 !important;
+}
+
+[data-theme="dark"] .dual-range-track {
+  background: #252836;
+}
+
+[data-theme="dark"] .dual-range-wrapper input[type="range"]::-webkit-slider-thumb {
+  background: #141721 !important;
+  border: 3.5px solid #3b82f6 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.7) !important;
+}
+
+[data-theme="dark"] .dual-range-wrapper input[type="range"]::-moz-range-thumb {
+  background: #141721 !important;
+  border: 3.5px solid #3b82f6 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.7) !important;
+}
+
+[data-theme="dark"] .stipend-slider-labels {
+  color: #8b99b0 !important;
+}
+
+/* iPad Pro & Tablet Responsive Filter Tab Fix */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .portal-chips-wrap {
+    padding: 12px 16px 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .portal-chips {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 10px;
+    width: max-content;
+    padding-bottom: 4px;
+  }
+  .portal-chip {
+    padding: 0 18px;
+    height: 40px;
+    font-size: 13.5px;
+    flex-shrink: 0;
+  }
+  .sticky-bar {
+    z-index: 120;
+  }
 }
 
