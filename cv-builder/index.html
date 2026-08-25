@@ -241,6 +241,11 @@
                 <summary>Career Objective</summary>
                 <div class="section-body">
                     <div class="form-group">
+                        <label for="inp-title-summary">Section Title (optional)</label>
+                        <input type="text" class="form-control" id="inp-title-summary" name="inp-title-summary"
+                            placeholder="Default: Career Objective" oninput="updateSectionTitle('summary', this.value)">
+                    </div>
+                    <div class="form-group">
                         <div
                             style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
                             <label style="margin-bottom:0;" for="inp-summary">Objective / Summary</label>
@@ -270,6 +275,11 @@
                         style="font-size:10px; padding:4px 8px;">Table format</button>
                 </summary>
                 <div class="section-body">
+                    <div class="form-group">
+                        <label for="inp-title-education">Section Title (optional)</label>
+                        <input type="text" class="form-control" id="inp-title-education" name="inp-title-education"
+                            placeholder="Default: Education" oninput="updateSectionTitle('education', this.value)">
+                    </div>
                     <div id="education-format-panel-wrap" class="table-format-panel-wrap" aria-hidden="true">
                         <div class="table-format-panel-head">
                             <div>
@@ -299,6 +309,11 @@
                     <span>Experience / Articleship</span>
                 </summary>
                 <div class="section-body">
+                    <div class="form-group">
+                        <label for="inp-title-experience">Section Title (optional)</label>
+                        <input type="text" class="form-control" id="inp-title-experience" name="inp-title-experience"
+                            placeholder="Default: Experience / Articleship" oninput="updateSectionTitle('experience', this.value)">
+                    </div>
                     <div id="exp-container"></div>
                     <button class="btn-dashed" onclick="addExperience()">
                         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
@@ -314,6 +329,11 @@
             <details data-section="projects">
                 <summary>Projects</summary>
                 <div class="section-body">
+                    <div class="form-group">
+                        <label for="inp-title-projects">Section Title (optional)</label>
+                        <input type="text" class="form-control" id="inp-title-projects" name="inp-title-projects"
+                            placeholder="Default: Projects" oninput="updateSectionTitle('projects', this.value)">
+                    </div>
                     <div class="form-group">
                         <div
                             style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
@@ -350,6 +370,11 @@
                     </div>
                 </summary>
                 <div class="section-body">
+                    <div class="form-group">
+                        <label for="inp-title-certifications">Section Title (optional)</label>
+                        <input type="text" class="form-control" id="inp-title-certifications" name="inp-title-certifications"
+                            placeholder="Default: Certifications" oninput="updateSectionTitle('certifications', this.value)">
+                    </div>
                     <div id="section-label-panel-certifications" class="table-format-panel-wrap" aria-hidden="true">
                     </div>
                     <div id="cert-container"></div>
@@ -373,6 +398,11 @@
                     </div>
                 </summary>
                 <div class="section-body">
+                    <div class="form-group">
+                        <label for="inp-title-achievements">Section Title (optional)</label>
+                        <input type="text" class="form-control" id="inp-title-achievements" name="inp-title-achievements"
+                            placeholder="Default: Achievements &amp; Awards" oninput="updateSectionTitle('achievements', this.value)">
+                    </div>
                     <div id="section-label-panel-achievements" class="table-format-panel-wrap" aria-hidden="true"></div>
                     <div class="form-group">
                         <div
@@ -410,6 +440,11 @@
                     </div>
                 </summary>
                 <div class="section-body">
+                    <div class="form-group">
+                        <label for="inp-title-leadership">Section Title (optional)</label>
+                        <input type="text" class="form-control" id="inp-title-leadership" name="inp-title-leadership"
+                            placeholder="Default: Leadership" oninput="updateSectionTitle('leadership', this.value)">
+                    </div>
                     <div id="section-label-panel-leadership" class="table-format-panel-wrap" aria-hidden="true"></div>
                     <div class="form-group">
                         <div
@@ -447,6 +482,11 @@
                     </div>
                 </summary>
                 <div class="section-body">
+                    <div class="form-group">
+                        <label for="inp-title-interests">Section Title (optional)</label>
+                        <input type="text" class="form-control" id="inp-title-interests" name="inp-title-interests"
+                            placeholder="Default: Interests &amp; Hobbies" oninput="updateSectionTitle('interests', this.value)">
+                    </div>
                     <div id="section-label-panel-interests" class="table-format-panel-wrap" aria-hidden="true"></div>
                     <div class="form-group">
                         <div
@@ -484,6 +524,11 @@
                     </div>
                 </summary>
                 <div class="section-body">
+                    <div class="form-group">
+                        <label for="inp-title-skills">Section Title (optional)</label>
+                        <input type="text" class="form-control" id="inp-title-skills" name="inp-title-skills"
+                            placeholder="Default: Skills" oninput="updateSectionTitle('skills', this.value)">
+                    </div>
                     <div id="section-label-panel-skills" class="table-format-panel-wrap" aria-hidden="true"></div>
                     <div class="chip-container" id="skills-chips"></div>
                     <div class="form-group">
@@ -536,6 +581,61 @@
                     <path d="M6 9l6 6 6-6" />
                 </svg>
             </button>
+            <div class="floater-dropdown-wrap" id="color-dropdown-wrap">
+                <button class="floater-pill" id="btn-color-floater" onclick="toggleColorDropdown(event)">
+                    <span class="template-label">Color</span>
+                    <span class="floater-color-preview" id="current-color-swatch"></span>
+                    <span id="current-color-name"
+                        style="font-size: 13px; font-weight: 600; color: var(--text-main);">Default</span>
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M6 9l6 6 6-6" />
+                    </svg>
+                </button>
+                <div class="floater-dropdown-menu color-dropdown-menu" id="color-dropdown-menu" onclick="event.stopPropagation()">
+                    <div class="template-theme-head">
+                        <div>
+                            <div class="template-theme-title">Color Theme</div>
+                            <div class="template-theme-subtitle">Use presets or custom color</div>
+                        </div>
+                        <button type="button" class="template-theme-reset" onclick="resetThemeAccent()">Default</button>
+                    </div>
+                    <div class="template-theme-swatches" id="template-theme-swatches"></div>
+                    <div class="template-theme-custom">
+                        <label for="theme-accent-picker">Custom RGB</label>
+                        <div class="template-theme-custom-row">
+                            <input type="color" id="theme-accent-picker" onchange="updateThemeAccent(this.value)">
+                            <input type="text" id="theme-accent-value" class="form-control" placeholder="#2F557F"
+                                oninput="updateThemeAccentFromText(this.value)">
+                            <div class="template-theme-chip" id="theme-accent-chip">Accent</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="floater-dropdown-wrap" id="font-dropdown-wrap">
+                <button class="floater-pill" id="btn-font-floater" onclick="toggleFontDropdown(event)">
+                    <span class="template-label">Font</span>
+                    <span id="current-font-name"
+                        style="font-size: 13px; font-weight: 600; color: var(--text-main);">Default</span>
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M6 9l6 6 6-6" />
+                    </svg>
+                </button>
+                <div class="floater-dropdown-menu font-dropdown-menu" id="font-dropdown-menu" onclick="event.stopPropagation()">
+                    <div class="template-theme-head">
+                        <div>
+                            <div class="template-theme-title">Typography &amp; Font</div>
+                            <div class="template-theme-subtitle">Select font or use template default</div>
+                        </div>
+                        <button type="button" class="template-theme-reset" onclick="resetThemeFont()">Default</button>
+                    </div>
+                    <div class="template-font-tabs" id="template-font-tabs">
+                        <button type="button" class="template-font-tab active" data-cat="all" onclick="filterFontCategory('all')">All</button>
+                        <button type="button" class="template-font-tab" data-cat="sans" onclick="filterFontCategory('sans')">Sans-Serif</button>
+                        <button type="button" class="template-font-tab" data-cat="serif" onclick="filterFontCategory('serif')">Serif</button>
+                    </div>
+                    <div class="template-font-grid" id="template-font-grid"></div>
+                </div>
+            </div>
             <button class="floater-pill" onclick="toggleReorderDrawer(true)">
                 <span class="template-label">Layout</span>
                 <span style="font-size: 13px; font-weight: 600; color: var(--text-main);">Reorder</span>
@@ -1532,25 +1632,6 @@
         <div class="template-sidebar-header">
             <h3>Choose Template</h3>
             <button class="template-sidebar-close" onclick="toggleTemplateSidebar(false)">×</button>
-        </div>
-        <div class="template-theme-panel">
-            <div class="template-theme-head">
-                <div>
-                    <div class="template-theme-title">Color Theme</div>
-                    <div class="template-theme-subtitle">Use presets or pick any accent color</div>
-                </div>
-                <button type="button" class="template-theme-reset" onclick="resetThemeAccent()">Default</button>
-            </div>
-            <div class="template-theme-swatches" id="template-theme-swatches"></div>
-            <div class="template-theme-custom">
-                <label for="theme-accent-picker">Custom RGB</label>
-                <div class="template-theme-custom-row">
-                    <input type="color" id="theme-accent-picker" onchange="updateThemeAccent(this.value)">
-                    <input type="text" id="theme-accent-value" class="form-control" placeholder="#2F557F"
-                        oninput="updateThemeAccentFromText(this.value)">
-                    <div class="template-theme-chip" id="theme-accent-chip">Accent</div>
-                </div>
-            </div>
         </div>
         <div class="template-grid" id="template-grid">
             <!-- Cards injected by JS -->

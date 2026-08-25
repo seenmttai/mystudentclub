@@ -515,7 +515,7 @@
             <div class="sortable-section" data-section-id="experience">
                 <div class="section-header">Work Experience</div>
                 <div id="experience-list">
-                    <!-- One bordered table per stint: grey title bar + "Key Areas of Exposure" row -->
+                    <!-- One bordered table per stint: grey title bar + Department/Category row -->
                     <table class="exp-entry template" style="display:none;">
                         <colgroup>
                             <col class="exp-l">
@@ -527,14 +527,13 @@
                                     <div class="exp-titlebar-inner">
                                         <span class="exp-titletext"><span class="exp-role"
                                                 data-field="role"></span><span class="exp-firm"
-                                                data-field="company"></span><span class="exp-cat"
-                                                data-field="category"></span></span>
+                                                data-field="company"></span></span>
                                         <span class="exp-date" data-field="dates"></span>
                                     </div>
                                 </td>
                             </tr>
                             <tr>
-                                <td class="exp-keylabel">Key Areas of Exposure:</td>
+                                <td class="exp-keylabel" data-field="category"></td>
                                 <td class="exp-keybody">
                                     <div class="exp-intro" data-field="intro"></div>
                                     <ul data-list="bullets"></ul>
