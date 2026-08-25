@@ -12,6 +12,7 @@
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         :root {
@@ -579,6 +580,16 @@
         let quillEditor = null;
         let userVote = null;
 
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
         function timeAgo(date) {
             const seconds = Math.floor((new Date() - new Date(date)) / 1000);
             let interval = seconds / 31536000;
@@ -620,7 +631,7 @@
             if (error || !thread) return;
 
             currentThread = thread;
-            document.title = `${thread.title} - My Student Club`;
+            document.title = `${escapeHTML(thread.title)} - My Student Club`;
 
             if (currentUser) {
                 const { data: vote } = await supabaseClient
@@ -652,20 +663,20 @@
 
             document.getElementById('thread-header-section').innerHTML = `
                 <div class="thread-header-section">
-                    <h1 class="thread-title-main">${thread.title}</h1>
+                    <h1 class="thread-title-main">${escapeHTML(thread.title)}</h1>
                     <div class="thread-meta-section">
                         <div class="thread-author">
-                            <div class="author-avatar">${getAvatar(thread.author_email)}</div>
+                            <div class="author-avatar">${escapeHTML(getAvatar(thread.author_email))}</div>
                             <div class="author-info">
-                                <div class="author-name">${thread.forum_user_profiles?.display_name || thread.author_email?.split('@')[0] || 'Anonymous'}</div>
+                                <div class="author-name">${escapeHTML(thread.forum_user_profiles?.display_name || thread.author_email?.split('@')[0] || 'Anonymous')}</div>
                                 <div class="author-rep">${thread.forum_user_profiles?.reputation || 0} reputation · ${timeAgo(thread.created_at)}</div>
                             </div>
                         </div>
-                        ${thread.forum_categories ? `<span class="thread-category" style="background:${thread.forum_categories.color}20;color:${thread.forum_categories.color}"><i class="${thread.forum_categories.icon}"></i> ${thread.forum_categories.name}</span>` : ''}
+                        ${thread.forum_categories ? `<span class="thread-category" style="background:${escapeHTML(thread.forum_categories.color)}20;color:${escapeHTML(thread.forum_categories.color)}"><i class="${escapeHTML(thread.forum_categories.icon)}"></i> ${escapeHTML(thread.forum_categories.name)}</span>` : ''}
                         <span style="color:var(--forum-text-muted);font-size:0.875rem;"><i class="far fa-eye"></i> ${thread.views} views</span>
                     </div>
-                    ${thread.tags && thread.tags.length ? `<div style="display:flex;gap:0.5rem;margin:1rem 0;flex-wrap:wrap;">${thread.tags.map(tag => `<span style="padding:0.25rem 0.75rem;background:var(--forum-hover);border-radius:12px;font-size:0.75rem;">${tag}</span>`).join('')}</div>` : ''}
-                    <div class="post-content">${marked.parse(thread.content)}</div>
+                    ${thread.tags && thread.tags.length ? `<div style="display:flex;gap:0.5rem;margin:1rem 0;flex-wrap:wrap;">${thread.tags.map(tag => `<span style="padding:0.25rem 0.75rem;background:var(--forum-hover);border-radius:12px;font-size:0.75rem;">${escapeHTML(tag)}</span>`).join('')}</div>` : ''}
+                    <div class="post-content">${DOMPurify.sanitize(marked.parse(thread.content || ''))}</div>
                     <div class="thread-actions">
                         <div class="vote-section">
                             <button class="vote-btn ${userVote === 'upvote' ? 'upvoted' : ''}" data-type="upvote" data-target="thread" ${isAuthor ? 'disabled' : ''}><i class="fas fa-arrow-up"></i></button>
@@ -729,15 +740,15 @@
                         ${canAcceptAnswer ? `<button class="accept-answer-btn" data-post-id="${post.id}"><i class="fas fa-check"></i> Accept Answer</button>` : ''}
                         <div class="post-header">
                             <div class="post-author">
-                                <div class="post-avatar">${getAvatar(post.author_email)}</div>
+                                <div class="post-avatar">${escapeHTML(getAvatar(post.author_email))}</div>
                                 <div class="post-author-info">
-                                    <div class="post-author-name">${post.forum_user_profiles?.display_name || post.author_email?.split('@')[0] || 'Anonymous'} ${isOP ? '<span style="background:var(--forum-primary);color:white;padding:0.125rem 0.5rem;border-radius:8px;font-size:0.75rem;margin-left:0.5rem;">OP</span>' : ''}</div>
+                                    <div class="post-author-name">${escapeHTML(post.forum_user_profiles?.display_name || post.author_email?.split('@')[0] || 'Anonymous')} ${isOP ? '<span style="background:var(--forum-primary);color:white;padding:0.125rem 0.5rem;border-radius:8px;font-size:0.75rem;margin-left:0.5rem;">OP</span>' : ''}</div>
                                     <div class="post-date">${post.forum_user_profiles?.reputation || 0} rep · ${timeAgo(post.created_at)}</div>
                                 </div>
                             </div>
                             ${post.edited_at ? `<div class="edit-indicator">Edited ${timeAgo(post.edited_at)}</div>` : ''}
                         </div>
-                        <div class="post-content">${marked.parse(post.content)}</div>
+                        <div class="post-content">${DOMPurify.sanitize(marked.parse(post.content || ''))}</div>
                         <div class="post-footer">
                             <div class="vote-section">
                                 <button class="vote-btn ${postVote === 'upvote' ? 'upvoted' : ''}" data-type="upvote" data-target="post" data-post-id="${post.id}" ${isPostAuthor ? 'disabled' : ''}><i class="fas fa-arrow-up"></i></button>

@@ -102,6 +102,9 @@ document.addEventListener('DOMContentLoaded', () => {
         viewerLoadingScreen: document.getElementById('viewer-loading-screen'),
         pdfViewerContainer: document.getElementById('pdf-viewer-container'),
         csvViewerContainer: document.getElementById('csv-viewer-container'),
+        csvTable: document.getElementById('csv-preview-table'),
+        csvSearchInput: document.getElementById('csv-search-input'),
+        csvInfoBar: document.getElementById('csv-info-bar'),
         pdfCanvas: document.getElementById('pdf-canvas'),
         pdfPrevPage: document.getElementById('pdf-prev-page'),
         pdfNextPage: document.getElementById('pdf-next-page'),
@@ -1045,7 +1048,8 @@ document.addEventListener('DOMContentLoaded', () => {
             await checkEnrollment();
             await loadDynamicBanner();
         } else {
-            window.location.href = 'https://mystudentclub.com/login';
+            const loginUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? '/login.html' : 'https://mystudentclub.com/login';
+            window.location.href = loginUrl;
         }
     };
 
@@ -1948,6 +1952,178 @@ document.addEventListener('DOMContentLoaded', () => {
     const certBtn = document.getElementById('download-certificate-btn');
     if (certBtn) certBtn.addEventListener('click', generateCertificate);
 
+    let csvTooltipElement = null;
+    const attachCsvTooltipListener = (tableEl) => {
+        if (!tableEl) return;
+        if (!csvTooltipElement) {
+            csvTooltipElement = document.getElementById('csv-floating-tooltip');
+            if (!csvTooltipElement) {
+                csvTooltipElement = document.createElement('div');
+                csvTooltipElement.id = 'csv-floating-tooltip';
+                csvTooltipElement.className = 'csv-floating-tooltip';
+                document.body.appendChild(csvTooltipElement);
+            }
+        }
+
+        if (tableEl._hasTooltipListener) return;
+        tableEl._hasTooltipListener = true;
+
+        const updatePos = (e) => {
+            if (!csvTooltipElement || !csvTooltipElement.classList.contains('active')) return;
+            const gap = 12;
+            let x = e.clientX + gap;
+            let y = e.clientY + gap;
+            csvTooltipElement.style.left = '0px';
+            csvTooltipElement.style.top = '0px';
+            const rect = csvTooltipElement.getBoundingClientRect();
+            if (x + rect.width > window.innerWidth - 12) {
+                x = e.clientX - rect.width - gap;
+            }
+            if (y + rect.height > window.innerHeight - 12) {
+                y = e.clientY - rect.height - gap;
+            }
+            csvTooltipElement.style.left = Math.max(8, x) + 'px';
+            csvTooltipElement.style.top = Math.max(8, y) + 'px';
+        };
+
+        tableEl.addEventListener('mouseover', (e) => {
+            const cell = e.target.closest('td, th');
+            if (!cell || cell.classList.contains('csv-row-num')) {
+                if (csvTooltipElement) csvTooltipElement.classList.remove('active');
+                return;
+            }
+            const text = (cell.textContent || '').trim();
+            if (!text) {
+                if (csvTooltipElement) csvTooltipElement.classList.remove('active');
+                return;
+            }
+            csvTooltipElement.textContent = text;
+            csvTooltipElement.classList.add('active');
+            updatePos(e);
+        });
+
+        tableEl.addEventListener('mousemove', updatePos);
+
+        tableEl.addEventListener('mouseleave', () => {
+            if (csvTooltipElement) csvTooltipElement.classList.remove('active');
+        });
+    };
+
+    const isColumnEmpty = (dataRows, colIdx) => {
+        return dataRows.length > 0 && dataRows.every(r => !r[colIdx] || String(r[colIdx]).trim() === '');
+    };
+
+    const normalizeCsvData = (rawRows) => {
+        if (!rawRows || rawRows.length === 0) return { banner: null, headerRow: [], dataRows: [] };
+
+        // 1. Clean and filter out completely empty rows
+        let rows = rawRows.filter(row => Array.isArray(row) && row.some(cell => String(cell || '').trim() !== ''));
+        if (rows.length === 0) return { banner: null, headerRow: [], dataRows: [] };
+
+        // 2. Find max columns and pad rows
+        let maxCols = Math.max(...rows.map(r => r.length));
+        rows = rows.map(r => {
+            const copy = [...r];
+            while (copy.length < maxCols) copy.push('');
+            return copy.map(cell => String(cell ?? '').trim());
+        });
+
+        // 3. Auto-detect if any column contains pipe-separated values
+        const pipeSplitCols = {};
+        for (let c = 0; c < maxCols; c++) {
+            let pipeCount = 0;
+            let totalNonEmpty = 0;
+            let maxSplits = 1;
+
+            for (let r = 0; r < rows.length; r++) {
+                const val = rows[r][c];
+                if (val) {
+                    totalNonEmpty++;
+                    if (val.includes('|')) {
+                        pipeCount++;
+                        const count = val.split('|').length;
+                        if (count > maxSplits) maxSplits = count;
+                    }
+                }
+            }
+
+            if (totalNonEmpty > 0 && pipeCount >= Math.min(2, totalNonEmpty) && (pipeCount / totalNonEmpty >= 0.35)) {
+                pipeSplitCols[c] = maxSplits;
+            }
+        }
+
+        // Expand rows where pipe columns exist
+        if (Object.keys(pipeSplitCols).length > 0) {
+            rows = rows.map(r => {
+                const newRow = [];
+                for (let c = 0; c < r.length; c++) {
+                    if (pipeSplitCols[c]) {
+                        const parts = r[c] ? r[c].split('|').map(s => s.trim()) : [];
+                        const needed = pipeSplitCols[c];
+                        for (let p = 0; p < needed; p++) {
+                            newRow.push(p < parts.length ? parts[p] : '');
+                        }
+                    } else {
+                        newRow.push(r[c]);
+                    }
+                }
+                return newRow;
+            });
+        }
+
+        // 4. Detect Section Title / Banner Row in row 0
+        let bannerTitle = null;
+        let headerRowIndex = 0;
+
+        const row0NonEmpty = rows[0].filter(c => c !== '');
+        if (rows.length > 1 && row0NonEmpty.length === 1 && (rows[0][0] !== '' || rows[0].findIndex(c => c !== '') === 0)) {
+            bannerTitle = rows[0].find(c => c !== '') || null;
+            headerRowIndex = 1;
+        }
+
+        let headerRow = [...(rows[headerRowIndex] || [])];
+        let dataRows = rows.slice(headerRowIndex + 1).map(r => [...r]);
+
+        // 5. Header Realignment: Detect columns whose header is one line below (in dataRows[0])
+        if (dataRows.length > 0) {
+            for (let c = 0; c < headerRow.length; c++) {
+                if (!headerRow[c] && dataRows[0][c]) {
+                    const firstVal = dataRows[0][c];
+                    // If it's a header title (not a date format or pure numeric value)
+                    const isDateOrPureNumber = /^\d{4}-\d{2}-\d{2}$|^\d+(\.\d+)?$/.test(firstVal);
+                    if (!isDateOrPureNumber) {
+                        // Promote to headerRow
+                        headerRow[c] = firstVal;
+                        // Shift column values up in dataRows
+                        for (let r = 0; r < dataRows.length - 1; r++) {
+                            dataRows[r][c] = dataRows[r + 1][c] || '';
+                        }
+                        dataRows[dataRows.length - 1][c] = '';
+                    }
+                }
+            }
+        }
+
+        // 6. STRIP ALL 100% EMPTY COLUMNS
+        const keptCols = [];
+        for (let c = 0; c < headerRow.length; c++) {
+            const headerHasText = headerRow[c] && String(headerRow[c]).trim() !== '';
+            const dataHasText = dataRows.some(r => r[c] && String(r[c]).trim() !== '');
+            if (headerHasText || dataHasText) {
+                keptCols.push(c);
+            }
+        }
+
+        headerRow = keptCols.map(c => headerRow[c] || '');
+        dataRows = dataRows.map(r => keptCols.map(c => r[c] ?? ''));
+
+        return {
+            banner: bannerTitle,
+            headerRow,
+            dataRows
+        };
+    };
+
     const openResourceViewer = async (resource, type) => {
         state.pdfDoc = null; state.csvData = null; state.pdfCurrentPage = 1; state.pdfTotalPages = 1;
         const ctx = DOMElements.pdfCanvas.getContext('2d');
@@ -2008,8 +2184,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (DOMElements.viewerDownloadBtn) {
-            DOMElements.viewerDownloadBtn.style.display = hasDl ? 'inline-block' : 'none';
-            DOMElements.viewerDownloadBtn.textContent = getResourceDownloadLabel(resource);
+            DOMElements.viewerDownloadBtn.style.display = hasDl ? 'inline-flex' : 'none';
+            DOMElements.viewerDownloadBtn.innerHTML = `<i class="fas fa-download"></i> ${getResourceDownloadLabel(resource)}`;
         }
 
         try {
@@ -2037,55 +2213,145 @@ document.addEventListener('DOMContentLoaded', () => {
                 await renderPdfPage(1);
             } else if (type === 'csv') {
                 const csvText = await response.text();
+                // Reset search input and info bar before rendering
+                if (DOMElements.csvSearchInput) {
+                    DOMElements.csvSearchInput.value = '';
+                }
+                if (DOMElements.csvInfoBar) DOMElements.csvInfoBar.textContent = '';
+
                 Papa.parse(csvText, {
                     skipEmptyLines: true,
                     complete: function (results) {
-                        const data = results.data;
-                        const table = DOMElements.csvViewerContainer.querySelector('table');
+                        const rawData = results.data;
+                        const table = DOMElements.csvTable || DOMElements.csvViewerContainer.querySelector('table');
+                        const scrollEl = document.getElementById('csv-table-scroll');
                         table.innerHTML = '';
 
-                        if (data.length === 0) {
-                            table.innerHTML = '<tbody><tr><td style="text-align:center; padding: 2rem;">No data found in CSV</td></tr></tbody>';
+                        // Show the container first so layout is established
+                        DOMElements.csvViewerContainer.style.display = 'flex';
+                        // Hide loading only after we have the DOM ready
+                        DOMElements.viewerLoadingScreen.style.display = 'none';
+
+                        const existingEmpty = scrollEl ? scrollEl.querySelector('.csv-empty-state') : null;
+                        if (existingEmpty) existingEmpty.remove();
+
+                        if (!rawData || rawData.length === 0) {
+                            table.style.display = 'none';
+                            if (scrollEl) {
+                                const emptyDiv = document.createElement('div');
+                                emptyDiv.className = 'csv-empty-state';
+                                emptyDiv.innerHTML = '<i class="fas fa-table"></i><span>No data found in this CSV file.</span>';
+                                scrollEl.appendChild(emptyDiv);
+                            }
+                            if (DOMElements.csvInfoBar) DOMElements.csvInfoBar.textContent = '0 rows';
                             return;
                         }
 
+                        // Normalize CSV data: split pipes, detect banner title, strip empty columns
+                        const { banner, headerRow, dataRows } = normalizeCsvData(rawData);
+
+                        table.style.display = '';
+                        const headerCols = headerRow.length;
+                        const rowCount = dataRows.length;
+
+                        // Build <thead>
                         const thead = document.createElement('thead');
-                        const headerRow = document.createElement('tr');
-                        data[0].forEach(cell => {
+
+                        if (banner) {
+                            const bannerTr = document.createElement('tr');
+                            bannerTr.className = 'csv-banner-row';
+                            const bannerTh = document.createElement('th');
+                            bannerTh.colSpan = headerCols + 1; // +1 for row number
+                            bannerTh.innerHTML = `<span class="csv-banner-badge"><i class="fas fa-layer-group"></i> ${banner}</span>`;
+                            bannerTr.appendChild(bannerTh);
+                            thead.appendChild(bannerTr);
+                        }
+
+                        const headerTr = document.createElement('tr');
+                        if (banner) headerTr.className = 'csv-has-banner';
+
+                        // Row number header cell
+                        const thNum = document.createElement('th');
+                        thNum.className = 'csv-row-num';
+                        thNum.textContent = '#';
+                        headerTr.appendChild(thNum);
+
+                        headerRow.forEach((colName) => {
                             const th = document.createElement('th');
-                            th.textContent = cell;
-                            headerRow.appendChild(th);
+                            th.textContent = colName || '';
+                            headerTr.appendChild(th);
                         });
-                        thead.appendChild(headerRow);
+                        thead.appendChild(headerTr);
                         table.appendChild(thead);
 
+                        // Build <tbody>
                         const tbody = document.createElement('tbody');
-                        for (let i = 1; i < data.length; i++) {
-                            const row = document.createElement('tr');
-                            data[i].forEach(cell => {
+                        dataRows.forEach((rowVals, rIdx) => {
+                            const tr = document.createElement('tr');
+                            // Row number cell
+                            const tdNum = document.createElement('td');
+                            tdNum.className = 'csv-row-num';
+                            tdNum.textContent = rIdx + 1;
+                            tr.appendChild(tdNum);
+
+                            const filled = rowVals.filter(c => c && String(c).trim() !== '');
+                            const nextRowVals = rIdx + 1 < dataRows.length ? dataRows[rIdx + 1] : null;
+                            const nextHasNumbers = nextRowVals && nextRowVals.some(v => /^\d+[\.\)]/.test(String(v || '').trim()));
+
+                            if (filled.length === 1 && filled[0].length > 3 && !/^\d+[\.\)]/.test(filled[0]) && !/^\d+(\.\d+)?$/.test(filled[0])) {
+                                tr.classList.add('csv-section-title-row');
+                            } else if (filled.length >= 1 && (filled.some(v => v.toLowerCase() === 'section' || v.toLowerCase() === 'skills tested' || v.toLowerCase() === 'suggested time') || (nextHasNumbers && !/^\d+[\.\)]/.test(filled[0])))) {
+                                tr.classList.add('csv-sub-header-row');
+                            }
+
+                            for (let c = 0; c < headerCols; c++) {
                                 const td = document.createElement('td');
-                                td.textContent = cell;
-                                td.title = cell;
-                                row.appendChild(td);
-                            });
-                            tbody.appendChild(row);
-                        }
+                                const cellVal = c < rowVals.length ? (rowVals[c] ?? '') : '';
+                                td.textContent = cellVal;
+                                td.dataset.raw = cellVal;
+                                tr.appendChild(td);
+                            }
+                            tbody.appendChild(tr);
+                        });
                         table.appendChild(tbody);
+
+                        // Update info bar
+                        if (DOMElements.csvInfoBar) {
+                            DOMElements.csvInfoBar.textContent = `${rowCount.toLocaleString()} row${rowCount !== 1 ? 's' : ''} · ${headerCols} col${headerCols !== 1 ? 's' : ''}`;
+                        }
+
+                        // Scroll to top on fresh load
+                        if (scrollEl) scrollEl.scrollTop = 0;
+                        attachCsvTooltipListener(table);
                     },
                     error: function (err) {
                         console.error("CSV Parse Error:", err);
-                        const table = DOMElements.csvViewerContainer.querySelector('table');
-                        table.innerHTML = '<tbody><tr><td style="color:red; padding:1rem;">Error parsing CSV file.</td></tr></tbody>';
+                        DOMElements.csvViewerContainer.style.display = 'flex';
+                        DOMElements.viewerLoadingScreen.style.display = 'none';
+                        const table = DOMElements.csvTable || DOMElements.csvViewerContainer.querySelector('table');
+                        const scrollEl = document.getElementById('csv-table-scroll');
+                        if (table) table.style.display = 'none';
+                        if (scrollEl) {
+                            const existingEmpty = scrollEl.querySelector('.csv-empty-state');
+                            if (existingEmpty) existingEmpty.remove();
+                            const errorDiv = document.createElement('div');
+                            errorDiv.className = 'csv-empty-state csv-error';
+                            errorDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i><span>Could not parse the CSV file. It may be malformed.</span>';
+                            scrollEl.appendChild(errorDiv);
+                        }
                     }
                 });
-
-                DOMElements.csvViewerContainer.style.display = 'block';
+                // Do NOT set display here — it's set inside complete/error callbacks
+                // to prevent flash of loading → empty → content
             }
         } catch (err) {
             alert("Could not load the resource for viewing.");
             closeResourceViewer();
         } finally {
-            DOMElements.viewerLoadingScreen.style.display = 'none';
+            // CSV hides the loading screen inside its PapaParse callbacks
+            if (state.previewType !== 'csv') {
+                DOMElements.viewerLoadingScreen.style.display = 'none';
+            }
         }
     };
 
@@ -2131,6 +2397,9 @@ document.addEventListener('DOMContentLoaded', () => {
             viewerSubtitle.textContent = '';
             viewerSubtitle.style.display = 'none';
         }
+        if (DOMElements.csvSearchInput) DOMElements.csvSearchInput.value = '';
+        if (DOMElements.csvInfoBar) DOMElements.csvInfoBar.textContent = '';
+        if (csvTooltipElement) csvTooltipElement.classList.remove('active');
         state.pdfDoc = null; state.currentResource = null; state.previewType = null;
     };
 
@@ -2208,12 +2477,13 @@ document.addEventListener('DOMContentLoaded', () => {
         DOMElements.hamburgerMenu.addEventListener('click', () => DOMElements.navLinks.classList.toggle('active'));
         DOMElements.logoutButton.addEventListener('click', async () => {
             await supabase.auth.signOut();
-            window.location.href = 'https://mystudentclub.com/login';
+            const loginUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? '/login.html' : 'https://mystudentclub.com/login';
+            window.location.href = loginUrl;
         });
 
-
         DOMElements.enrollRedirectBtn.addEventListener('click', () => {
-            window.location.href = 'https://mystudentclub.com/login';
+            const loginUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? '/login.html' : 'https://mystudentclub.com/login';
+            window.location.href = loginUrl;
         });
 
         if (DOMElements.downloadCertificateBtn) {
@@ -2379,10 +2649,95 @@ document.addEventListener('DOMContentLoaded', () => {
                 DOMElements.profileDropdownEmail.textContent = session.user.email;
                 if (!state.isEnrolled) await checkEnrollment();
             } else {
-                window.location.href = 'https://mystudentclub.com/login';
+                const loginUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? '/login.html' : 'https://mystudentclub.com/login';
+                window.location.href = loginUrl;
             }
         });
     };
 
     init();
 });
+
+/**
+ * csvFilterRows — global, called by the search input's oninput handler.
+ * Shows/hides rows, highlights matching cells and exact matching words.
+ * Excludes row numbers from matching so row indices are not falsely matched.
+ */
+function csvFilterRows(query) {
+    const table = document.getElementById('csv-preview-table');
+    const infoBar = document.getElementById('csv-info-bar');
+    if (!table) return;
+
+    const rows = table.querySelectorAll('tbody tr');
+    const q = (query || '').trim();
+    const qLower = q.toLowerCase();
+    let visibleCount = 0;
+    let matchCount = 0;
+    const totalCount = rows.length;
+
+    const escapeRegex = (s) => s.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+    const regex = q ? new RegExp(`(${escapeRegex(q)})`, 'gi') : null;
+
+    rows.forEach(row => {
+        const dataCells = row.querySelectorAll('td:not(.csv-row-num)');
+        if (!q) {
+            row.classList.remove('csv-row-hidden', 'csv-row-match');
+            dataCells.forEach(cell => {
+                cell.classList.remove('csv-cell-match');
+                const raw = cell.dataset.raw !== undefined ? cell.dataset.raw : cell.textContent;
+                cell.textContent = raw;
+            });
+            visibleCount++;
+        } else {
+            let rowMatched = false;
+            dataCells.forEach(cell => {
+                const raw = cell.dataset.raw !== undefined ? cell.dataset.raw : cell.textContent;
+                if (!cell.dataset.raw) cell.dataset.raw = raw;
+
+                if (raw && raw.toLowerCase().includes(qLower)) {
+                    rowMatched = true;
+                    matchCount++;
+                    cell.classList.add('csv-cell-match');
+                    cell.innerHTML = raw.replace(regex, '<mark class="csv-highlight">$1</mark>');
+                } else {
+                    cell.classList.remove('csv-cell-match');
+                    cell.textContent = raw;
+                }
+            });
+
+            if (rowMatched) {
+                row.classList.remove('csv-row-hidden');
+                row.classList.add('csv-row-match');
+                visibleCount++;
+            } else {
+                row.classList.add('csv-row-hidden');
+                row.classList.remove('csv-row-match');
+            }
+        }
+    });
+
+    const clearBtn = document.getElementById('csv-search-clear-btn');
+    if (clearBtn) {
+        clearBtn.style.display = q ? 'flex' : 'none';
+    }
+
+    if (infoBar) {
+        const colMatch = table.querySelector('thead tr') ? (table.querySelector('thead tr').cells.length - 1) : 0;
+        if (q) {
+            infoBar.textContent = `${visibleCount} of ${totalCount} row${totalCount !== 1 ? 's' : ''} (${matchCount} match${matchCount !== 1 ? 'es' : ''}) · ${colMatch} cols`;
+        } else {
+            infoBar.textContent = `${totalCount} row${totalCount !== 1 ? 's' : ''} · ${colMatch} cols`;
+        }
+    }
+}
+
+function clearCsvSearch() {
+    const input = document.getElementById('csv-search-input');
+    const clearBtn = document.getElementById('csv-search-clear-btn');
+    if (input) {
+        input.value = '';
+        csvFilterRows('');
+        input.focus();
+    }
+    if (clearBtn) clearBtn.style.display = 'none';
+}

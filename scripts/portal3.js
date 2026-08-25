@@ -377,6 +377,9 @@ const state = {
     locations: [],
     categories: [],
     salary: '',
+    salaryMin: null,
+    salaryMax: null,
+    salaryPreset: '',
     experience: '',
     sortBy: 'newest',
     applicationStatus: 'all',
@@ -537,6 +540,8 @@ function adjustFiltersForPortal() {
             label.textContent = 'Salary';
         });
     }
+
+    populateSalaryFilter();
 }
 
 const SAVED_JOBS_KEY = 'msc_saved_jobs';
@@ -1555,18 +1560,18 @@ async function fetchJobs() {
                     const flexibleTerm = keyword.replace(/\s+/g, '%');
 
                     const cols = [
-                        `Company.ilike."%${flexibleTerm}%"`,
-                        `Description.ilike."%${flexibleTerm}%"`,
-                        `Category.ilike."%${flexibleTerm}%"`,
-                        `Location.ilike."%${flexibleTerm}%"`,
-                        `"Primary Domain".ilike."%${flexibleTerm}%"`
+                        `Company.ilike.%${flexibleTerm}%`,
+                        `Description.ilike.%${flexibleTerm}%`,
+                        `Category.ilike.%${flexibleTerm}%`,
+                        `Location.ilike.%${flexibleTerm}%`,
+                        `"Primary Domain".ilike.%${flexibleTerm}%`
                     ];
 
                     if (currentTable === "Fresher Jobs") {
-                        cols.push(`"Secondary Domain".ilike."%${flexibleTerm}%"`);
+                        cols.push(`"Secondary Domain".ilike.%${flexibleTerm}%`);
                         cols.push(`Tags.cs.{"${keyword}"}`);
                     } else if (currentTable === "Semi Qualified Jobs") {
-                        cols.push(`"Secondary Domain".ilike."%${flexibleTerm}%"`);
+                        cols.push(`"Secondary Domain".ilike.%${flexibleTerm}%`);
                         cols.push(`Tags.cs.{"${keyword}"}`);
                     } else if (currentTable === "Industrial Training Job Portal") {
                         cols.push(`"Functional Tags".cs.{"${keyword}"}`);
@@ -1604,7 +1609,19 @@ async function fetchJobs() {
                 q = q.or(categoryOr.join(','));
             }
 
-            if (state.salary) {
+            if (state.salaryMin != null && state.salaryMin !== '') {
+                const min = Number(state.salaryMin);
+                if (!isNaN(min) && min > 0) {
+                    q = q.gte('Salary', min);
+                }
+            }
+            if (state.salaryMax != null && state.salaryMax !== '') {
+                const max = Number(state.salaryMax);
+                if (!isNaN(max) && max > 0) {
+                    q = q.lte('Salary', max);
+                }
+            }
+            if ((state.salaryMin == null || state.salaryMin === '') && (state.salaryMax == null || state.salaryMax === '') && state.salary) {
                 if (state.salary.endsWith('+')) {
                     const minValue = parseInt(state.salary);
                     if (!isNaN(minValue)) q = q.gte('Salary', minValue);
@@ -1672,6 +1689,44 @@ async function fetchJobs() {
 
         if (!error && data && state.sortBy === 'popular') {
             data.sort((a, b) => (b.application_count || 0) - (a.application_count || 0));
+        }
+
+        if (!error && data && state.keywords.length > 0) {
+            data = data.filter(job => {
+                return state.keywords.every(kw => {
+                    const kwClean = kw.toLowerCase().trim();
+                    const kwNoSpace = kwClean.replace(/\s+/g, '');
+
+                    const company = (job.Company || '').toLowerCase();
+                    const role = (job.Role || '').toLowerCase();
+                    const category = (job.Category || '').toLowerCase();
+                    const location = (job.Location || '').toLowerCase();
+                    const primaryDomain = (job['Primary Domain'] || '').toLowerCase();
+                    const secondaryDomain = (job['Secondary Domain'] || '').toLowerCase();
+                    const companyType = (job['Company Type'] || '').toLowerCase();
+                    const industryType = (job['Industry Type'] || '').toLowerCase();
+                    const tags = (Array.isArray(job.Tags) ? job.Tags.join(' ') : (job.Tags || '')).toLowerCase();
+                    const funcTags = (Array.isArray(job['Functional Tags']) ? job['Functional Tags'].join(' ') : (job['Functional Tags'] || '')).toLowerCase();
+                    const techTags = (Array.isArray(job['Technology Tags']) ? job['Technology Tags'].join(' ') : (job['Technology Tags'] || '')).toLowerCase();
+
+                    const structuredText = `${company} ${role} ${category} ${location} ${primaryDomain} ${secondaryDomain} ${companyType} ${industryType} ${tags} ${funcTags} ${techTags}`;
+
+                    // Direct match in structured fields (Company, Role, Category, Location, Domain, Tags)
+                    if (structuredText.includes(kwClean) || (kwNoSpace && structuredText.includes(kwNoSpace))) {
+                        return true;
+                    }
+
+                    // Description fallback: Do not match if the search term is a company name and the job belongs to a different company
+                    const description = (job.Description || '').toLowerCase();
+                    if (description.includes(kwClean) || (kwNoSpace && description.includes(kwNoSpace))) {
+                        // Check if the keyword matches Company, Role, Category, or Tags of any other job (e.g. "Amazon")
+                        // If it's a description-only match for a completely different company (like YesMadam), exclude it
+                        return false;
+                    }
+
+                    return false;
+                });
+            });
         }
 
         if (error) throw error;
@@ -1759,46 +1814,258 @@ function updateState(newState) {
     resetAndFetch();
 }
 
+function getSalaryConfig() {
+    const isSalary = (currentTable === 'Semi Qualified Jobs' || currentTable === 'Fresher Jobs');
+    const label = isSalary ? 'Salary' : 'Stipend';
+
+    if (currentTable === "Industrial Training Job Portal") {
+        return {
+            label: 'Stipend',
+            minBound: 0,
+            maxBound: 100000,
+            step: 1000,
+            presets: [
+                { value: '', label: 'Any Stipend', min: null, max: null },
+                { value: '10000-20000', label: '₹10k - ₹20k', min: 10000, max: 20000 },
+                { value: '20000-40000', label: '₹20k - ₹40k', min: 20000, max: 40000 },
+                { value: '40000+', label: '₹40k+', min: 40000, max: null }
+            ]
+        };
+    } else if (currentTable === "Articleship Jobs") {
+        return {
+            label: 'Stipend',
+            minBound: 0,
+            maxBound: 50000,
+            step: 1000,
+            presets: [
+                { value: '', label: 'Any Stipend', min: null, max: null },
+                { value: '0-5000', label: 'Below ₹5k', min: null, max: 5000 },
+                { value: '5000-10000', label: '₹5k - ₹10k', min: 5000, max: 10000 },
+                { value: '10000-15000', label: '₹10k - ₹15k', min: 10000, max: 15000 },
+                { value: '15000-20000', label: '₹15k - ₹20k', min: 15000, max: 20000 },
+                { value: '20000+', label: '₹20k+', min: 20000, max: null }
+            ]
+        };
+    } else if (currentTable === "Semi Qualified Jobs") {
+        return {
+            label: 'Salary',
+            minBound: 0,
+            maxBound: 100000,
+            step: 2500,
+            presets: [
+                { value: '', label: 'Any Salary', min: null, max: null },
+                { value: '0-25000', label: 'Below ₹25k', min: null, max: 25000 },
+                { value: '25000-35000', label: '₹25k - ₹35k', min: 25000, max: 35000 },
+                { value: '35000-50000', label: '₹35k - ₹50k', min: 35000, max: 50000 },
+                { value: '50000+', label: 'Above ₹50k', min: 50000, max: null }
+            ]
+        };
+    } else if (currentTable === "Fresher Jobs") {
+        return {
+            label: 'Salary',
+            minBound: 0,
+            maxBound: 4000000,
+            step: 50000,
+            presets: [
+                { value: '', label: 'Any Salary', min: null, max: null },
+                { value: '0-800000', label: 'Below ₹8 LPA', min: null, max: 800000 },
+                { value: '800000-1200000', label: '₹8-12 LPA', min: 800000, max: 1200000 },
+                { value: '1200000-1500000', label: '₹12-15 LPA', min: 1200000, max: 1500000 },
+                { value: '1500000-2000000', label: '₹15-20 LPA', min: 1500000, max: 2000000 },
+                { value: '2000000-3000000', label: '₹20-30 LPA', min: 2000000, max: 3000000 },
+                { value: '3000000+', label: '₹30+ LPA', min: 3000000, max: null }
+            ]
+        };
+    }
+    return {
+        label: 'Stipend',
+        minBound: 0,
+        maxBound: 100000,
+        step: 1000,
+        presets: [
+            { value: '', label: 'Any Stipend', min: null, max: null },
+            { value: '10000-20000', label: '₹10k - ₹20k', min: 10000, max: 20000 },
+            { value: '20000-40000', label: '₹20k - ₹40k', min: 20000, max: 40000 },
+            { value: '40000+', label: '₹40k+', min: 40000, max: null }
+        ]
+    };
+}
+
+function formatStipendAmount(val) {
+    if (val == null || val === '') return '';
+    const num = Number(val);
+    if (isNaN(num)) return val;
+    if (num >= 100000) {
+        return num % 100000 === 0 ? `${num / 100000} Lakh` : `${(num / 100000).toFixed(1)}L`;
+    }
+    if (num >= 1000) {
+        return num % 1000 === 0 ? `${num / 1000}k` : `${(num / 1000).toFixed(1)}k`;
+    }
+    return num.toLocaleString('en-IN');
+}
+
+function findMatchingPreset(min, max, presets) {
+    const minVal = (min !== '' && min != null) ? Number(min) : null;
+    const maxVal = (max !== '' && max != null) ? Number(max) : null;
+    if (minVal == null && maxVal == null) return '';
+    for (const p of presets) {
+        if (p.value === '') continue;
+        if (p.min === minVal && p.max === maxVal) return p.value;
+    }
+    return null;
+}
+
+function updateSliderTrack(container, minBound, maxBound) {
+    if (!container) return;
+    const sliderMin = container.querySelector('.stipend-range-min');
+    const sliderMax = container.querySelector('.stipend-range-max');
+    const trackFill = container.querySelector('.stipend-slider-track-fill');
+    if (!sliderMin || !sliderMax || !trackFill) return;
+    const minVal = parseFloat(sliderMin.value) || 0;
+    const maxVal = parseFloat(sliderMax.value) || maxBound;
+    const minPercent = ((minVal - minBound) / (maxBound - minBound)) * 100;
+    const maxPercent = ((maxVal - minBound) / (maxBound - minBound)) * 100;
+    trackFill.style.left = `${Math.max(0, Math.min(100, minPercent))}%`;
+    trackFill.style.width = `${Math.max(0, Math.min(100, maxPercent - minPercent))}%`;
+}
+
 function populateSalaryFilter() {
-    const salaryFilters = [dom.salaryFilterDesktop, dom.salaryFilterMobile];
-    let options = [];
-    if (currentTable === "Industrial Training Job Portal") options = [
-        { value: '', text: 'Any Stipend' },
-        { value: '10000-20000', text: '₹10k - ₹20k' },
-        { value: '20000-40000', text: '₹20k - ₹40k' },
-        { value: '40000+', text: '₹40k+' }
-    ];
-    else if (currentTable === "Articleship Jobs") options = [
-        { value: '', text: 'Any Stipend' },
-        { value: '0-5000', text: 'Below ₹5,000' },
-        { value: '5000-10000', text: '₹5,000-10,000' },
-        { value: '10000-15000', text: '₹10,000-15,000' },
-        { value: '15000-20000', text: '₹15,000-20,000' },
-        { value: '20000+', text: '₹20,000+' }
-    ];
-    else if (currentTable === "Semi Qualified Jobs") options = [
-        { value: '', text: 'Any Salary' },
-        { value: '0-25000', text: 'Below ₹25k' },
-        { value: '25000-35000', text: '₹25k - ₹35k' },
-        { value: '35000-50000', text: '₹35k - ₹50k' },
-        { value: '50000+', text: 'Above ₹50k' }
-    ];
-    else if (currentTable === "Fresher Jobs") options = [
-        { value: '', text: 'Any Salary' },
-        { value: '0-800000', text: 'Below ₹8 LPA' },
-        { value: '800000-1200000', text: '₹8-12 LPA' },
-        { value: '1200000-1500000', text: '₹12-15 LPA' },
-        { value: '1500000-2000000', text: '₹15-20 LPA' },
-        { value: '2000000-3000000', text: '₹20-30 LPA' },
-        { value: '3000000+', text: '₹30+ LPA' }
+    const config = getSalaryConfig();
+    const targets = [
+        { el: dom.salaryFilterDesktop, isMobile: false, id: 'salaryFilterDesktopWrapper' },
+        { el: dom.salaryFilterMobile, isMobile: true, id: 'salaryFilterMobileWrapper' }
     ];
 
-    salaryFilters.forEach(select => {
-        if (!select) return;
-        select.innerHTML = '';
-        options.forEach(opt => { let o = document.createElement('option'); o.value = opt.value; o.textContent = opt.text; select.appendChild(o); });
-        select.value = state.salary;
+    targets.forEach(target => {
+        if (!target.el) return;
+        const parent = target.el.closest('.filter-group') || target.el.parentElement;
+        if (!parent) return;
+
+        // Hide raw select if present
+        target.el.style.display = 'none';
+
+        let wrapper = parent.querySelector('.stipend-filter-wrapper');
+        if (!wrapper) {
+            wrapper = document.createElement('div');
+            wrapper.className = 'stipend-filter-wrapper';
+            wrapper.id = target.id;
+            parent.appendChild(wrapper);
+        }
+
+        const maxLabelFormatted = config.maxBound >= 100000 ? `${config.maxBound / 100000}L+` : `₹${config.maxBound / 1000}k+`;
+
+        wrapper.innerHTML = `
+            <div class="stipend-preset-chips">
+                ${config.presets.map(p => `
+                    <button type="button" class="stipend-chip" data-value="${p.value}" data-min="${p.min != null ? p.min : ''}" data-max="${p.max != null ? p.max : ''}">
+                        ${p.label}
+                    </button>
+                `).join('')}
+            </div>
+            <div class="stipend-inputs-row">
+                <div class="stipend-input-box">
+                    <span class="stipend-input-prefix">₹</span>
+                    <input type="number" class="stipend-input-field stipend-min-input" placeholder="Min" min="${config.minBound}" max="${config.maxBound}" step="${config.step}">
+                </div>
+                <span class="stipend-input-separator">to</span>
+                <div class="stipend-input-box">
+                    <span class="stipend-input-prefix">₹</span>
+                    <input type="number" class="stipend-input-field stipend-max-input" placeholder="Max" min="${config.minBound}" max="${config.maxBound}" step="${config.step}">
+                </div>
+            </div>
+            <div class="stipend-slider-wrapper">
+                <div class="stipend-slider-track-bg"></div>
+                <div class="stipend-slider-track-fill"></div>
+                <input type="range" class="stipend-range-input stipend-range-min" min="${config.minBound}" max="${config.maxBound}" step="${config.step}" value="${config.minBound}">
+                <input type="range" class="stipend-range-input stipend-range-max" min="${config.minBound}" max="${config.maxBound}" step="${config.step}" value="${config.maxBound}">
+            </div>
+            <div class="stipend-range-labels">
+                <span class="stipend-min-label">₹${config.minBound}</span>
+                <span class="stipend-max-label">${maxLabelFormatted}</span>
+            </div>
+        `;
+
+        const minInput = wrapper.querySelector('.stipend-min-input');
+        const maxInput = wrapper.querySelector('.stipend-max-input');
+        const sliderMin = wrapper.querySelector('.stipend-range-min');
+        const sliderMax = wrapper.querySelector('.stipend-range-max');
+        const chips = wrapper.querySelectorAll('.stipend-chip');
+
+        // Preset chip click
+        chips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                const val = chip.dataset.value;
+                const min = chip.dataset.min !== '' ? Number(chip.dataset.min) : null;
+                const max = chip.dataset.max !== '' ? Number(chip.dataset.max) : null;
+
+                state.salaryPreset = val;
+                state.salaryMin = min;
+                state.salaryMax = max;
+                state.salary = val;
+
+                if (!target.isMobile) {
+                    syncAndFetch();
+                } else {
+                    syncFiltersUI();
+                }
+            });
+        });
+
+        // Input change handler
+        const handleInputChange = () => {
+            const minVal = minInput.value.trim() !== '' ? Number(minInput.value) : null;
+            const maxVal = maxInput.value.trim() !== '' ? Number(maxInput.value) : null;
+
+            if (sliderMin) sliderMin.value = minVal != null ? minVal : config.minBound;
+            if (sliderMax) sliderMax.value = maxVal != null ? maxVal : config.maxBound;
+            updateSliderTrack(wrapper, config.minBound, config.maxBound);
+
+            const matched = findMatchingPreset(minVal, maxVal, config.presets);
+            chips.forEach(c => {
+                const isAny = c.dataset.value === '' && minVal == null && maxVal == null;
+                const isMatch = matched != null && c.dataset.value === matched;
+                c.classList.toggle('active', isAny || isMatch);
+            });
+
+            if (!target.isMobile) {
+                state.salaryMin = minVal;
+                state.salaryMax = maxVal;
+                state.salaryPreset = matched != null ? matched : '';
+                state.salary = (minVal != null || maxVal != null) ? `${minVal || 0}-${maxVal || ''}` : '';
+                resetAndFetch();
+            }
+        };
+
+        minInput.addEventListener('input', handleInputChange);
+        maxInput.addEventListener('input', handleInputChange);
+
+        // Range slider handlers
+        if (sliderMin && sliderMax) {
+            sliderMin.addEventListener('input', () => {
+                let minVal = parseFloat(sliderMin.value);
+                let maxVal = parseFloat(sliderMax.value);
+                if (minVal > maxVal) {
+                    sliderMin.value = maxVal;
+                    minVal = maxVal;
+                }
+                minInput.value = minVal > config.minBound ? minVal : '';
+                handleInputChange();
+            });
+
+            sliderMax.addEventListener('input', () => {
+                let minVal = parseFloat(sliderMin.value);
+                let maxVal = parseFloat(sliderMax.value);
+                if (maxVal < minVal) {
+                    sliderMax.value = minVal;
+                    maxVal = minVal;
+                }
+                maxInput.value = maxVal < config.maxBound ? maxVal : '';
+                handleInputChange();
+            });
+        }
     });
+
+    syncFiltersUI();
 }
 
 function renderPills(container, items, type) {
@@ -1824,7 +2091,7 @@ function renderPills(container, items, type) {
 
 function renderActiveFilterPills() {
     dom.activeFiltersDisplay.innerHTML = '';
-    const createPill = (item, type) => {
+    const createPill = (item, type, onRemove) => {
         const pill = document.createElement('div');
         pill.className = 'active-filter-pill';
         pill.textContent = item;
@@ -1832,8 +2099,12 @@ function renderActiveFilterPills() {
         const removeBtn = document.createElement('button');
         removeBtn.innerHTML = '×';
         removeBtn.onclick = () => {
-            state[type] = state[type].filter(i => i !== item);
-            syncAndFetch();
+            if (onRemove) {
+                onRemove();
+            } else {
+                state[type] = state[type].filter(i => i !== item);
+                syncAndFetch();
+            }
         };
         pill.appendChild(removeBtn);
         dom.activeFiltersDisplay.appendChild(pill);
@@ -1842,6 +2113,46 @@ function renderActiveFilterPills() {
     state.keywords.forEach(item => createPill(item, 'keywords'));
     state.locations.forEach(item => createPill(item, 'locations'));
     state.categories.forEach(item => createPill(item, 'categories'));
+
+    // Salary / Stipend Active Pill
+    const isSalary = (currentTable === 'Semi Qualified Jobs' || currentTable === 'Fresher Jobs');
+    const labelPrefix = isSalary ? 'Salary: ' : 'Stipend: ';
+    const hasMin = state.salaryMin != null && state.salaryMin !== '';
+    const hasMax = state.salaryMax != null && state.salaryMax !== '';
+
+    if (hasMin && hasMax) {
+        createPill(`${labelPrefix}₹${formatStipendAmount(state.salaryMin)} - ₹${formatStipendAmount(state.salaryMax)}`, 'salary', () => {
+            state.salaryMin = null;
+            state.salaryMax = null;
+            state.salaryPreset = '';
+            state.salary = '';
+            syncAndFetch();
+        });
+    } else if (hasMin) {
+        createPill(`${labelPrefix}≥ ₹${formatStipendAmount(state.salaryMin)}`, 'salary', () => {
+            state.salaryMin = null;
+            state.salaryMax = null;
+            state.salaryPreset = '';
+            state.salary = '';
+            syncAndFetch();
+        });
+    } else if (hasMax) {
+        createPill(`${labelPrefix}≤ ₹${formatStipendAmount(state.salaryMax)}`, 'salary', () => {
+            state.salaryMin = null;
+            state.salaryMax = null;
+            state.salaryPreset = '';
+            state.salary = '';
+            syncAndFetch();
+        });
+    } else if (state.salary) {
+        createPill(`${labelPrefix}${state.salary}`, 'salary', () => {
+            state.salaryMin = null;
+            state.salaryMax = null;
+            state.salaryPreset = '';
+            state.salary = '';
+            syncAndFetch();
+        });
+    }
 }
 
 function syncFiltersUI() {
@@ -1849,6 +2160,44 @@ function syncFiltersUI() {
     renderPills(dom.locationPillsMobile, state.locations, 'locations');
     renderPills(dom.categoryPillsDesktop, state.categories, 'categories');
     renderPills(dom.categoryPillsMobile, state.categories, 'categories');
+
+    // Sync Salary / Stipend controls
+    const config = getSalaryConfig();
+    const wrappers = [
+        document.getElementById('salaryFilterDesktopWrapper'),
+        document.getElementById('salaryFilterMobileWrapper')
+    ];
+
+    wrappers.forEach(wrapper => {
+        if (!wrapper) return;
+        const minInput = wrapper.querySelector('.stipend-min-input');
+        const maxInput = wrapper.querySelector('.stipend-max-input');
+        const sliderMin = wrapper.querySelector('.stipend-range-min');
+        const sliderMax = wrapper.querySelector('.stipend-range-max');
+        const chips = wrapper.querySelectorAll('.stipend-chip');
+
+        if (minInput && document.activeElement !== minInput) {
+            minInput.value = state.salaryMin != null ? state.salaryMin : '';
+        }
+        if (maxInput && document.activeElement !== maxInput) {
+            maxInput.value = state.salaryMax != null ? state.salaryMax : '';
+        }
+
+        if (sliderMin) {
+            sliderMin.value = state.salaryMin != null ? state.salaryMin : config.minBound;
+        }
+        if (sliderMax) {
+            sliderMax.value = state.salaryMax != null ? state.salaryMax : config.maxBound;
+        }
+        updateSliderTrack(wrapper, config.minBound, config.maxBound);
+
+        const matchedPreset = findMatchingPreset(state.salaryMin, state.salaryMax, config.presets);
+        chips.forEach(chip => {
+            const isAny = chip.dataset.value === '' && state.salaryMin == null && state.salaryMax == null;
+            const isMatch = matchedPreset != null && chip.dataset.value === matchedPreset;
+            chip.classList.toggle('active', isAny || isMatch);
+        });
+    });
 
     if (dom.salaryFilterDesktop) dom.salaryFilterDesktop.value = state.salary;
     if (dom.salaryFilterMobile) dom.salaryFilterMobile.value = state.salary;
@@ -2980,7 +3329,7 @@ function setupEventListeners() {
     dom.modalCloseBtn.addEventListener('click', closeModal);
     // dom.loadMoreButton.addEventListener('click', () => fetchJobs()); // Removed
 
-    [dom.searchInputMobile, dom.searchInputDesktop].forEach(input => {
+    [dom.searchInputMobile, dom.searchInputDesktop, dom.dv2TopSearchInput].forEach(input => {
         if (input) {
             input.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
@@ -2988,7 +3337,7 @@ function setupEventListeners() {
                     processAndApplySearch(input);
                 }
             });
-            const searchButton = input.parentElement.querySelector('.search-button');
+            const searchButton = input.parentElement?.querySelector('.search-button, .dv2-top-search-btn') || (input === dom.dv2TopSearchInput ? dom.dv2TopSearchBtn : null);
             if (searchButton) {
                 searchButton.addEventListener('click', () => processAndApplySearch(input));
             }
@@ -3018,7 +3367,19 @@ function setupEventListeners() {
     dom.filterModalOverlay.addEventListener('click', (e) => { if (e.target === dom.filterModalOverlay) dom.filterModalOverlay.classList.remove('show'); });
 
     dom.applyFiltersBtn.addEventListener('click', () => {
-        state.salary = dom.salaryFilterMobile.value;
+        const mobMinInput = document.querySelector('#salaryFilterMobileWrapper .stipend-min-input');
+        const mobMaxInput = document.querySelector('#salaryFilterMobileWrapper .stipend-max-input');
+        if (mobMinInput || mobMaxInput) {
+            const minVal = mobMinInput ? mobMinInput.value.trim() : '';
+            const maxVal = mobMaxInput ? mobMaxInput.value.trim() : '';
+            state.salaryMin = minVal !== '' ? Number(minVal) : null;
+            state.salaryMax = maxVal !== '' ? Number(maxVal) : null;
+            const config = getSalaryConfig();
+            state.salaryPreset = findMatchingPreset(state.salaryMin, state.salaryMax, config.presets) || '';
+            state.salary = (state.salaryMin != null || state.salaryMax != null) ? `${state.salaryMin || 0}-${state.salaryMax || ''}` : '';
+        } else if (dom.salaryFilterMobile) {
+            state.salary = dom.salaryFilterMobile.value;
+        }
         if (dom.companyTypeFilterMobile) state.companyType = dom.companyTypeFilterMobile.value;
         if (dom.industryTypeFilterMobile) state.industryType = dom.industryTypeFilterMobile.value;
         if (dom.firmTypeFilterMobile) state.firmType = dom.firmTypeFilterMobile.value;
@@ -3032,6 +3393,9 @@ function setupEventListeners() {
             state.locations = [];
             state.categories = [];
             state.salary = '';
+            state.salaryMin = null;
+            state.salaryMax = null;
+            state.salaryPreset = '';
             state.experience = '';
             state.sortBy = 'newest';
             state.applicationStatus = 'all';
@@ -3196,7 +3560,7 @@ function setupEventListeners() {
 // Optimal Custom Dropdown Implementation
 function initCustomSelects() {
     const selectorIds = [
-        'sortBySelect', 'salaryFilterDesktop', 'sortBySelectMobile', 'salaryFilterMobile', 'locationSelect', 'jobTypeSelect',
+        'sortBySelect', 'sortBySelectMobile', 'locationSelect', 'jobTypeSelect',
         'companyTypeFilterDesktop', 'companyTypeFilterMobile',
         'industryTypeFilterDesktop', 'industryTypeFilterMobile',
         'firmTypeFilterDesktop', 'firmTypeFilterMobile'
@@ -3360,6 +3724,8 @@ async function initializePage() {
     dom.modalCloseBtn = document.getElementById('modalCloseBtn');
     dom.searchInputMobile = document.getElementById('searchInputMobile');
     dom.searchInputDesktop = document.getElementById('searchFilterDesktop');
+    dom.dv2TopSearchInput = document.getElementById('dv2TopSearchInput');
+    dom.dv2TopSearchBtn = document.getElementById('dv2TopSearchBtn');
     dom.sortBySelect = document.getElementById('sortBySelect');
     dom.sortBySelectMobile = document.getElementById('sortBySelectMobile');
     // dom.loadMoreButton = document.getElementById('loadMore'); // Removed

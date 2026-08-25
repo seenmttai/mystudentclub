@@ -192,6 +192,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     await restoreActiveReview();
+    // Show remaining review counter for returning users (only if ≥1 review already used)
+    updateReviewsRemainingBanner();
 });
 
 function startNewAnalysis() {
@@ -204,6 +206,7 @@ function startNewAnalysis() {
     if (loadingSection) loadingSection.style.display = 'none';
     if (landingSection) landingSection.style.display = 'block';
     if (expandedMenu) expandedMenu.classList.remove('active');
+    updateReviewsRemainingBanner();
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -968,6 +971,9 @@ async function analyzeCv() {
         tipsSection.style.display = 'block';
         resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
+        // Show remaining reviews counter (non-intrusive, only after first use)
+        updateReviewsRemainingBanner();
+
     } catch (error) {
         stopLoadingAnimation();
         loadingSection.style.display = 'none';
@@ -975,6 +981,72 @@ async function analyzeCv() {
         resetToUploadStageOnError();
     }
 }
+
+// Shows a clear indicator of free reviews available (3 chances total).
+// Displays both above the upload box and on the results sidebar.
+// Hidden for premium/enrolled users entirely.
+async function updateReviewsRemainingBanner() {
+    const landingBanner = document.getElementById('reviewsRemainingBanner');
+    const landingTextEl = document.getElementById('reviewsRemainingText');
+    const resultsBanner = document.getElementById('resultsReviewsRemainingBanner');
+    const resultsTextEl = document.getElementById('resultsReviewsRemainingText');
+    const freeReviewsBadge = document.getElementById('freeReviewsBadge');
+
+    const banners = [
+        { banner: landingBanner, textEl: landingTextEl },
+        { banner: resultsBanner, textEl: resultsTextEl }
+    ];
+
+    // Premium users: never show the limit banner
+    if (isPremiumEnrolled) {
+        banners.forEach(({ banner }) => {
+            if (banner) banner.style.display = 'none';
+        });
+        if (freeReviewsBadge) {
+            freeReviewsBadge.innerHTML = '<i class="fa-solid fa-crown" style="font-size: 0.7rem; color: #d97706;"></i> <span>Unlimited Reviews</span>';
+            freeReviewsBadge.style.background = 'rgba(245, 158, 11, 0.1)';
+            freeReviewsBadge.style.borderColor = 'rgba(245, 158, 11, 0.3)';
+            freeReviewsBadge.style.color = '#b45309';
+        }
+        return;
+    }
+
+    const limit = FREE_USER_LIFETIME_LIMIT; // 3 free reviews total
+    let used = 0;
+
+    if (!authUser) {
+        // IP-based (not logged in)
+        used = getIpReviewCount();
+    } else {
+        // Free logged-in user
+        used = await getFreeUserLifetimeCount();
+    }
+
+    const remaining = Math.max(0, limit - used);
+
+    // Update Header Badge
+    if (freeReviewsBadge) {
+        if (remaining === 3) {
+            freeReviewsBadge.innerHTML = '<i class="fa-solid fa-sparkles" style="font-size: 0.7rem; color: #2563eb;"></i> <span>3 Free Reviews</span>';
+        } else if (remaining > 0) {
+            freeReviewsBadge.innerHTML = `<i class="fa-solid fa-clock-rotate-left" style="font-size: 0.7rem; color: #d97706;"></i> <span>${remaining} Review${remaining > 1 ? 's' : ''} Left</span>`;
+            freeReviewsBadge.style.background = 'rgba(245, 158, 11, 0.1)';
+            freeReviewsBadge.style.borderColor = 'rgba(245, 158, 11, 0.3)';
+            freeReviewsBadge.style.color = '#b45309';
+        } else {
+            freeReviewsBadge.innerHTML = '<i class="fa-solid fa-lock" style="font-size: 0.7rem; color: #dc2626;"></i> <span>0 Reviews Left</span>';
+            freeReviewsBadge.style.background = 'rgba(220, 38, 38, 0.1)';
+            freeReviewsBadge.style.borderColor = 'rgba(220, 38, 38, 0.3)';
+            freeReviewsBadge.style.color = '#b91c1c';
+        }
+    }
+
+    // Banners are removed; keep them hidden if present
+    banners.forEach(({ banner }) => {
+        if (banner) banner.style.display = 'none';
+    });
+}
+
 
 async function saveReview(reviewText) {
     if (!supabase) return null;
