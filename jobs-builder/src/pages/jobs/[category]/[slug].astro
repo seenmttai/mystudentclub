@@ -9,6 +9,7 @@ import {
   renderMarkdown,
   getApplicationLink,
   constructMailto,
+  generateJobSlug,
   generateJsonLd
 } from '../../../lib/jobHelpers';
 import fs from 'node:fs';
@@ -65,12 +66,13 @@ export async function getStaticPaths() {
     console.log(`  → Fetched ${(jobs || []).length} jobs from ${tableName}`);
 
     for (const job of jobs || []) {
+      const slug = generateJobSlug(job);
       paths.push({
         params: {
           category: categorySlug as string,
-          id: String(job.id)
+          slug: slug
         },
-        props: { job, tableName, categorySlug }
+        props: { job, tableName, categorySlug, slug }
       });
     }
   }
@@ -79,7 +81,7 @@ export async function getStaticPaths() {
   return paths;
 }
 
-const { job, tableName, categorySlug } = Astro.props;
+const { job, tableName, categorySlug, slug } = Astro.props;
 
 const companyName = (job.Company || 'Company Name').trim();
 const companyInitial = companyName.charAt(0).toUpperCase();
@@ -129,7 +131,7 @@ const backLinkUrl = (portalMap as Record<string, any>)[categorySlug as string]?.
 // Copy text for the copy button
 const copyText = applyInfo.isEmail ? applyInfo.link.replace('mailto:', '') : applyInfo.link;
 
-const jsonLd = generateJsonLd(job, job.id, categorySlug);
+const jsonLd = generateJsonLd(job, slug, categorySlug);
 
 // SEO: Human-readable category label for titles
 const CATEGORY_LABEL_MAP: Record<string, string> = {
@@ -150,14 +152,14 @@ const roleLabel = job.Role ? job.Role.trim() : categoryLabel;
     <title>{`${roleLabel} at ${companyName}, ${location} | My Student Club`}</title>
     <meta name="description" content={`${escapeHtml(roleLabel)} opening at ${escapeHtml(companyName)} in ${escapeHtml(location)}. Apply now on My Student Club – India's CA job portal for fresher, industrial training and articleship opportunities.`}>
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href={`https://www.mystudentclub.com/jobs/${categorySlug}/${job.id}.html`}>
+    <link rel="canonical" href={`https://www.mystudentclub.com/jobs/${categorySlug}/${slug}.html`}>
 
     <!-- Open Graph / Social Sharing -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content={`https://www.mystudentclub.com/jobs/${categorySlug}/${job.id}.html`}>
+    <meta property="og:url" content={`https://www.mystudentclub.com/jobs/${categorySlug}/${slug}.html`}>
     <meta property="og:title" content={`${escapeHtml(roleLabel)} at ${escapeHtml(companyName)}, ${escapeHtml(location)}`}>
     <meta property="og:description" content={`${escapeHtml(roleLabel)} opening at ${escapeHtml(companyName)} in ${escapeHtml(location)}. Apply on My Student Club.`}>
-    <meta property="og:image" content="https://www.mystudentclub.com/assets/og-jobs.png">
+    <meta property="og:image" content="https://www.mystudentclub.com/assets/banner.png">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content={`${escapeHtml(roleLabel)} at ${escapeHtml(companyName)}, ${escapeHtml(location)}`}>
     <meta name="twitter:description" content={`${escapeHtml(roleLabel)} opening in ${escapeHtml(location)}. Apply on My Student Club.`}>
@@ -165,7 +167,7 @@ const roleLabel = job.Role ? job.Role.trim() : categoryLabel;
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
-    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)}></script>
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)}></script>
     
     <style is:inline>
         /* Professional Job Details Design - Migrated from jobs-test.html */

@@ -31,8 +31,8 @@ function getFileTimestamp(filePath, fileName) {
         }
     } catch (_) {}
 
-    // Fallback to numeric ID if available (e.g. 29424.html)
-    const idMatch = fileName.match(/^(\d+)\.html$/);
+    // Fallback to numeric ID if available (e.g. 29424.html or company-role-location-29424.html)
+    const idMatch = fileName.match(/(?:^|-)(\d+)\.html$/);
     if (idMatch) {
         return parseInt(idMatch[1], 10);
     }

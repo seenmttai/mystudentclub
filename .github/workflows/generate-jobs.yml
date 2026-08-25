@@ -50,6 +50,11 @@ jobs:
     - name: Generate Sitemap
       run: cd jobs-builder && npm run sitemap
 
+    - name: Notify Google Indexing API
+      env:
+        GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+      run: cd jobs-builder && npm run index
+
     - name: Commit and Push Changes
       run: |
         git config --global user.name 'github-actions[bot]'
