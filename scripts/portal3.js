@@ -72,226 +72,7 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 const WORKER_URL = 'https://storer.bhansalimanan55.workers.dev';
 
-// Anti-Scraping Middleman & Turnstile Configuration
-const UNLOCK_WORKER_URL = 'https://jobs.mystudentclub.com';
-const TURNSTILE_SITE_KEY = '0x4AAAAAAESf1Ha-laDI3OGO';
 
-const PUBLIC_VIEW_MAP = {
-    "Industrial Training Job Portal": "public_industrial_jobs",
-    "Fresher Jobs": "public_fresher_jobs",
-    "Semi Qualified Jobs": "public_semi_qualified_jobs",
-    "Articleship Jobs": "public_articleship_jobs"
-};
-
-// In-memory cache for unlocked jobs (avoids duplicate requests during the same browser session)
-const unlockedJobsCache = new Map();
-// In-flight mutex map to prevent race conditions and duplicate concurrent verification calls
-const inFlightUnlocks = new Map();
-
-function loadTurnstileScript() {
-    if (window.turnstile) return Promise.resolve();
-    if (document.getElementById('turnstile-script')) {
-        return new Promise((resolve) => {
-            const checkInterval = setInterval(() => {
-                if (window.turnstile) {
-                    clearInterval(checkInterval);
-                    resolve();
-                }
-            }, 100);
-            setTimeout(() => { clearInterval(checkInterval); resolve(); }, 5000);
-        });
-    }
-
-    return new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        script.id = 'turnstile-script';
-        script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
-        script.async = true;
-        script.defer = true;
-        script.onload = () => resolve();
-        script.onerror = () => reject(new Error('Failed to connect to verification service'));
-        document.head.appendChild(script);
-    });
-}
-
-function getTurnstileToken(mountContainer = null) {
-    return new Promise(async (resolve, reject) => {
-        try {
-            await loadTurnstileScript();
-        } catch (e) {
-            return reject(e);
-        }
-
-        if (!window.turnstile) {
-            return reject(new Error('Verification service temporarily unavailable. Please refresh.'));
-        }
-
-        let widgetSlot = null;
-        let overlayElement = null;
-        let isResolved = false;
-        let currentWidgetId = null;
-
-        const cleanup = () => {
-            if (currentWidgetId && window.turnstile) {
-                try { window.turnstile.remove(currentWidgetId); } catch (_) {}
-            }
-            if (overlayElement) {
-                overlayElement.remove();
-                overlayElement = null;
-            }
-        };
-
-        if (mountContainer) {
-            // Mount directly inside the modal's apply prompt box
-            mountContainer.innerHTML = `
-                <div class="turnstile-inline-container" id="turnstileInlineContainer">
-                    <div class="turnstile-status-text">
-                        <i class="fas fa-shield-halved"></i>
-                        <span>Security Verification</span>
-                    </div>
-                    <div id="msc-turnstile-slot" class="turnstile-widget-mount"></div>
-                </div>
-            `;
-            widgetSlot = mountContainer.querySelector('#msc-turnstile-slot');
-        } else {
-            // Centered Modal Overlay Fallback (never hidden bottom-right)
-            overlayElement = document.createElement('div');
-            overlayElement.id = 'msc-turnstile-modal-overlay';
-            overlayElement.className = 'turnstile-modal-overlay';
-            overlayElement.innerHTML = `
-                <div class="turnstile-modal-card">
-                    <div class="turnstile-modal-header">
-                        <div class="turnstile-modal-title">
-                            <i class="fas fa-shield-halved"></i>
-                            <span>Security Verification</span>
-                        </div>
-                        <button class="turnstile-modal-close" id="mscTurnstileCloseBtn" title="Close">&times;</button>
-                    </div>
-                    <p class="turnstile-modal-desc">Please complete the verification below to view application details.</p>
-                    <div id="msc-turnstile-slot" class="turnstile-widget-mount"></div>
-                </div>
-            `;
-            document.body.appendChild(overlayElement);
-            widgetSlot = overlayElement.querySelector('#msc-turnstile-slot');
-
-            const closeBtn = overlayElement.querySelector('#mscTurnstileCloseBtn');
-            if (closeBtn) {
-                closeBtn.addEventListener('click', () => {
-                    if (!isResolved) {
-                        isResolved = true;
-                        cleanup();
-                        reject(new Error('Verification cancelled.'));
-                    }
-                });
-            }
-        }
-
-        try {
-            currentWidgetId = window.turnstile.render(widgetSlot, {
-                sitekey: TURNSTILE_SITE_KEY,
-                theme: 'light',
-                size: 'normal',
-                appearance: 'always',
-                action: 'unlock_job',
-                callback: (token) => {
-                    if (!isResolved) {
-                        isResolved = true;
-                        // IMPORTANT: Do NOT destroy or mutate the mount container DOM here.
-                        // Let Turnstile complete its internal handshake cleanly.
-                        if (overlayElement) {
-                            cleanup();
-                        }
-                        resolve(token);
-                    }
-                },
-                'error-callback': () => {
-                    if (!isResolved) {
-                        isResolved = true;
-                        cleanup();
-                        reject(new Error('Verification failed. Please try again.'));
-                    }
-                },
-                'expired-callback': () => {
-                    if (!isResolved) {
-                        isResolved = true;
-                        cleanup();
-                        reject(new Error('Verification expired. Please try again.'));
-                    }
-                },
-                'timeout-callback': () => {
-                    if (!isResolved) {
-                        isResolved = true;
-                        cleanup();
-                        reject(new Error('Verification timed out. Please try again.'));
-                    }
-                }
-            });
-        } catch (err) {
-            cleanup();
-            reject(err);
-        }
-    });
-}
-
-async function unlockJobDetails(job, tableName, mountContainer = null) {
-    if (unlockedJobsCache.has(job.id)) {
-        return unlockedJobsCache.get(job.id);
-    }
-
-    // Return in-flight promise if already unlocking this job to prevent duplicate requests
-    if (inFlightUnlocks.has(job.id)) {
-        return inFlightUnlocks.get(job.id);
-    }
-
-    const unlockPromise = (async () => {
-        const token = await getTurnstileToken(mountContainer);
-        let response;
-        try {
-            response = await fetch(`${UNLOCK_WORKER_URL}/api/unlock-job`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    jobId: job.id,
-                    table: tableName,
-                    turnstileToken: token
-                })
-            });
-        } catch (_) {
-            // Fallback to base URL if sub-route is not configured
-            response = await fetch(UNLOCK_WORKER_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    jobId: job.id,
-                    table: tableName,
-                    turnstileToken: token
-                })
-            });
-        }
-
-        const data = await response.json().catch(() => ({}));
-        if (!response.ok || !data.success) {
-            console.error('[Verification Service Error]:', data);
-            const errMsg = data.error || (data.details ? data.details.join(', ') : 'Unable to load application details.');
-            throw new Error(errMsg);
-        }
-
-        unlockedJobsCache.set(job.id, data);
-        job['Application ID'] = data.applicationId;
-        job.Description = data.description;
-        if (data.postsLink) job.posts_link = data.postsLink;
-
-        return data;
-    })();
-
-    inFlightUnlocks.set(job.id, unlockPromise);
-
-    try {
-        return await unlockPromise;
-    } finally {
-        inFlightUnlocks.delete(job.id);
-    }
-}
 
 window.flutter_app = {
     isReady: false,
@@ -618,8 +399,7 @@ function renderJobCard(job) {
     const isApplied = appliedJobIds.has(job.id);
     const isPopular = (job.application_count || 0) > 50;
     const buttonClass = isApplied ? 'applied' : '';
-    const isUnlocked = unlockedJobsCache.has(job.id) || !!(job['Application ID'] && job['Application ID'] !== 'null');
-    const applyLink = isUnlocked ? getApplicationLink(job['Application ID']) : '#';
+    const applyLink = getApplicationLink(job['Application ID']);
 
     // Data values
     const primaryDomain = job['Primary Domain'] || job.Category || 'N/A';
@@ -724,11 +504,6 @@ function renderJobCard(job) {
             if (isLocked) {
                 e.preventDefault();
                 showExclusiveLockedModal(job);
-                return;
-            }
-            if (!isUnlocked) {
-                e.preventDefault();
-                showModal(job);
                 return;
             }
             setTimeout(() => markJobAsApplied(job), 500);
@@ -985,20 +760,12 @@ function showModal(job) {
         return;
     }
 
-    const isUnlocked = unlockedJobsCache.has(job.id) || !!(job['Application ID'] && job['Application ID'] !== 'null');
-    if (unlockedJobsCache.has(job.id)) {
-        const cached = unlockedJobsCache.get(job.id);
-        if (cached.description) job.Description = cached.description;
-        if (cached.applicationId) job['Application ID'] = cached.applicationId;
-        if (cached.postsLink) job.posts_link = cached.postsLink;
-    }
-
     const companyName = (job.Company || '').trim();
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
     const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'N/A';
     const applyCount = job.application_count || 0;
-    const applyLink = isUnlocked ? getApplicationLink(job['Application ID'], job.Company) : '#';
-    const isMailto = isUnlocked && applyLink.startsWith('mailto:');
+    const applyLink = getApplicationLink(job['Application ID'], job.Company);
+    const isMailto = applyLink.startsWith('mailto:');
     const isApplied = appliedJobIds.has(job.id);
     const buttonClass = isApplied ? 'applied' : '';
 
@@ -1088,15 +855,7 @@ function showModal(job) {
     }
 
     let primaryActionsHtml = '';
-    if (!isUnlocked) {
-        primaryActionsHtml = `
-            <div class="modal-primary-actions">
-                <button id="modalLockedApplyBtn" class="btn btn-primary btn-modal-primary ${buttonClass}" style="width: 100%;">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                    <span>Apply for this Job</span>
-                </button>
-            </div>`;
-    } else if (isMailto) {
+    if (isMailto) {
         const simpleApplyText = 'Simple Apply';
         const aiApplyText = 'AI Powered Apply';
         primaryActionsHtml = `
@@ -1152,37 +911,14 @@ function showModal(job) {
         tagsSectionsHtml += renderPillSection("Client Sector Exposure", job["Client Exposure Tags"], "#fff7ed", "#9a3412", "#ffedd5");
     }
 
-    // Description Section (Truncated preview with Read More if not yet expanded)
     const rawDesc = job.Description || '';
-    const isTruncated = !isUnlocked;
-    const descContentHtml = isTruncated
-        ? `
-            <div class="modal-description-wrapper is-collapsed" id="modalDescriptionWrapper">
-                <div class="modal-description" id="modalDescriptionContent">${renderMarkdown(rawDesc)}</div>
-                <div class="read-more-gradient" id="readMoreGradient">
-                    <button class="btn-read-more" id="btnReadMore">
-                        <span>Read Full Description</span>
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                </div>
-            </div>
-        `
-        : `
-            <div class="modal-description-wrapper" id="modalDescriptionWrapper">
-                <div class="modal-description" id="modalDescriptionContent">${renderMarkdown(rawDesc)}</div>
-            </div>
-        `;
+    const descContentHtml = `
+        <div class="modal-description-wrapper" id="modalDescriptionWrapper">
+            <div class="modal-description" id="modalDescriptionContent">${renderMarkdown(rawDesc)}</div>
+        </div>
+    `;
 
-    // Application Section
-    const applicationContentHtml = isUnlocked && job['Application ID']
-        ? generateApplicationLinks(job['Application ID'])
-        : `
-            <div class="apply-prompt-box" id="applyPromptBox">
-                <button class="btn btn-primary btn-reveal-app" id="btnRevealAppId">
-                    <i class="fas fa-paper-plane"></i> View Application Details & Apply
-                </button>
-            </div>
-        `;
+    const applicationContentHtml = generateApplicationLinks(job['Application ID']);
 
     dom.modalBody.innerHTML = `
         <div class="modal-header">
@@ -1253,142 +989,43 @@ function showModal(job) {
 
     attachCopyListeners();
 
-    // Unified Unlock Handler with smooth UX and click locking
-    const handleUnlockFlow = async (btnElement, autoAction = null) => {
-        const applyPromptBox = document.getElementById('applyPromptBox');
-        const btnReadMore = document.getElementById('btnReadMore');
-        const btnRevealAppId = document.getElementById('btnRevealAppId');
-        const modalLockedApplyBtn = document.getElementById('modalLockedApplyBtn');
+    if (isMailto) {
+        const modalSimpleApplyBtn = document.getElementById('modalSimpleApplyBtn');
+        const modalAiApplyBtn = document.getElementById('modalAiApplyBtn');
 
-        const triggerButtons = [btnReadMore, btnRevealAppId, modalLockedApplyBtn].filter(Boolean);
-        const originalStates = triggerButtons.map(btn => ({ btn, html: btn.innerHTML, disabled: btn.disabled }));
-
-        // Lock all trigger buttons to prevent parallel clicks / race conditions
-        triggerButtons.forEach(btn => {
-            btn.disabled = true;
-            btn.style.pointerEvents = 'none';
-        });
-
-        if (modalLockedApplyBtn) {
-            modalLockedApplyBtn.innerHTML = '<span class="unlock-spinner"></span> Verifying...';
-        }
-
-        // If triggered from top button or read more, scroll applyPromptBox into view smoothly
-        if (applyPromptBox && btnElement && btnElement !== btnRevealAppId) {
-            applyPromptBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-
-        try {
-            const unlocked = await unlockJobDetails(job, currentTable, applyPromptBox || null);
-
-            // Re-render modal in fully unlocked state
-            showModal(job);
-
-            // If an action was requested (e.g. Simple Apply / AI Apply / External Apply), execute it immediately
-            if (autoAction === 'simple' || autoAction === 'external') {
-                const updatedLink = getApplicationLink(unlocked.applicationId, job.Company);
-                recordApplication(job, btnElement);
-                window.open(updatedLink, '_blank');
-            } else if (autoAction === 'ai') {
-                const updatedLink = getApplicationLink(unlocked.applicationId, job.Company);
-                if (isEnrolledSync(currentTable)) {
-                    handleAiApplyClick(job, btnElement, currentTable, updatedLink);
-                } else {
-                    showEnrollmentRequiredPopup();
-                }
-            }
-
-        } catch (err) {
-            console.error('Unlock error:', err);
-            const userMsg = err.message || 'Unable to load application details. Please try again.';
-            
-            if (applyPromptBox) {
-                applyPromptBox.innerHTML = `
-                    <div class="turnstile-inline-error">
-                        <p style="color: #ef4444; font-size: 0.85rem; font-weight: 500; margin-bottom: 0.5rem;">
-                            <i class="fas fa-circle-exclamation"></i> ${userMsg}
-                        </p>
-                        <button class="btn btn-primary btn-reveal-app" id="btnRetryUnlock" style="padding: 0.6rem 1.25rem; font-size: 0.9rem;">
-                            <i class="fas fa-rotate-right"></i> Try Verification Again
-                        </button>
-                    </div>
-                `;
-                const btnRetry = applyPromptBox.querySelector('#btnRetryUnlock');
-                if (btnRetry) {
-                    btnRetry.addEventListener('click', () => handleUnlockFlow(btnRetry, autoAction));
-                }
-            } else if (typeof showToast === 'function') {
-                showToast(userMsg, 'error');
-            } else {
-                alert(userMsg);
-            }
-
-            // Restore buttons on failure
-            originalStates.forEach(({ btn, html, disabled }) => {
-                if (btn && document.body.contains(btn) && btn.id !== 'btnRevealAppId') {
-                    btn.innerHTML = html;
-                    btn.disabled = disabled;
-                    btn.style.pointerEvents = 'auto';
+        if (modalSimpleApplyBtn) {
+            modalSimpleApplyBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                const shouldProceed = await recordApplication(job, e.currentTarget);
+                if (shouldProceed) {
+                    window.open(applyLink, '_blank');
                 }
             });
         }
-    };
-
-    // Attach unlock trigger listeners
-    const btnReadMore = document.getElementById('btnReadMore');
-    if (btnReadMore) {
-        btnReadMore.addEventListener('click', () => handleUnlockFlow(btnReadMore));
-    }
-
-    const btnRevealAppId = document.getElementById('btnRevealAppId');
-    if (btnRevealAppId) {
-        btnRevealAppId.addEventListener('click', () => handleUnlockFlow(btnRevealAppId));
-    }
-
-    const modalLockedApplyBtn = document.getElementById('modalLockedApplyBtn');
-    if (modalLockedApplyBtn) {
-        modalLockedApplyBtn.addEventListener('click', () => handleUnlockFlow(modalLockedApplyBtn, 'external'));
-    }
-
-    if (isUnlocked) {
-        if (isMailto) {
-            const modalSimpleApplyBtn = document.getElementById('modalSimpleApplyBtn');
-            const modalAiApplyBtn = document.getElementById('modalAiApplyBtn');
-
-            if (modalSimpleApplyBtn) {
-                modalSimpleApplyBtn.addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    const shouldProceed = await recordApplication(job, e.currentTarget);
-                    if (shouldProceed) {
-                        window.open(applyLink, '_blank');
-                    }
-                });
-            }
-            if (modalAiApplyBtn) {
-                modalAiApplyBtn.addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    if (!currentSession) {
-                        window.location.href = '/login.html';
-                        return;
-                    }
-                    if (isEnrolledSync(currentTable)) {
-                        await handleAiApplyClick(job, e.currentTarget, currentTable, applyLink);
-                    } else {
-                        showEnrollmentRequiredPopup();
-                    }
-                });
-            }
-        } else {
-            const modalExternalApplyBtn = document.getElementById('modalExternalApplyBtn');
-            if (modalExternalApplyBtn) {
-                modalExternalApplyBtn.addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    const shouldProceed = await recordApplication(job, e.currentTarget);
-                    if (shouldProceed) {
-                        window.open(applyLink, '_blank');
-                    }
-                });
-            }
+        if (modalAiApplyBtn) {
+            modalAiApplyBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                if (!currentSession) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+                if (isEnrolledSync(currentTable)) {
+                    await handleAiApplyClick(job, e.currentTarget, currentTable, applyLink);
+                } else {
+                    showEnrollmentRequiredPopup();
+                }
+            });
+        }
+    } else {
+        const modalExternalApplyBtn = document.getElementById('modalExternalApplyBtn');
+        if (modalExternalApplyBtn) {
+            modalExternalApplyBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                const shouldProceed = await recordApplication(job, e.currentTarget);
+                if (shouldProceed) {
+                    window.open(applyLink, '_blank');
+                }
+            });
         }
     }
 
@@ -1548,8 +1185,7 @@ async function fetchJobs() {
         }
 
         const buildQuery = (cols) => {
-            const querySource = PUBLIC_VIEW_MAP[currentTable] || currentTable;
-            let q = supabaseClient.from(querySource).select(cols);
+            let q = supabaseClient.from(currentTable).select(cols);
 
             // Optimize keyword query building - pre-process terms once
             if (state.keywords.length > 0) {
@@ -3851,18 +3487,20 @@ async function initializePage() {
     dv2Init();
 }
 
-// Check URL parameters and auto-open job modal if shared link
 function checkAndOpenSharedJob() {
     const urlParams = new URLSearchParams(window.location.search);
     const jobId = urlParams.get('id');
     const jobType = urlParams.get('type');
 
-    if (jobId && jobType) {
+    if (jobId) {
         // Set proper table based on type
-        if (jobType === 'semi') currentTable = 'Semi Qualified Jobs';
-        else if (jobType === 'fresher') currentTable = 'Fresher Jobs';
-        else if (jobType === 'articleship') currentTable = 'Articleship Jobs';
-        // else Default stays Industrial
+        if (jobType) {
+            const cleanType = jobType.toLowerCase();
+            if (cleanType === 'semi') currentTable = 'Semi Qualified Jobs';
+            else if (cleanType === 'fresher') currentTable = 'Fresher Jobs';
+            else if (cleanType === 'articleship') currentTable = 'Articleship Jobs';
+            else if (cleanType === 'industrial') currentTable = 'Industrial Training Job Portal';
+        }
 
         // Fetch and open the specific job
         fetchSharedJob(jobId);
@@ -4938,9 +4576,8 @@ async function dv2PopulateTrending() {
     const list = document.getElementById('dv2TrendingList');
     if (!card || !list) return;
     try {
-        const querySource = PUBLIC_VIEW_MAP[currentTable] || currentTable;
         const { data, error } = await supabaseClient
-            .from(querySource)
+            .from(currentTable)
             .select('*')
             .order('Created_At', { ascending: false, nullsFirst: false })
             .limit(5);

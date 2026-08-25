@@ -18,7 +18,7 @@
         // Extract parameters
         const urlParams = new URLSearchParams(window.location.search);
         const jobId = urlParams.get('id');
-        const jobType = urlParams.get('type');
+        const rawJobType = (urlParams.get('type') || '').toLowerCase().trim();
 
         // Map job type to portal page
         const portalPages = {
@@ -29,8 +29,10 @@
         };
 
         // Redirect to appropriate portal with parameters
-        if (jobId && jobType && portalPages[jobType]) {
-            window.location.href = `${portalPages[jobType]}?id=${jobId}&type=${jobType}`;
+        if (jobId && portalPages[rawJobType]) {
+            window.location.href = `${portalPages[rawJobType]}?id=${encodeURIComponent(jobId)}&type=${encodeURIComponent(rawJobType)}`;
+        } else if (jobId) {
+            window.location.href = `/?id=${encodeURIComponent(jobId)}&type=industrial`;
         } else {
             // Default to home if parameters missing
             window.location.href = '/';
