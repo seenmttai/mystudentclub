@@ -10,6 +10,219 @@ const supabaseUrl = 'https://auth.mystudentclub.com';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
+// Anti-Scraping Middleman & Turnstile Configuration
+const UNLOCK_WORKER_URL = 'https://jobs.mystudentclub.com';
+const TURNSTILE_SITE_KEY = '0x4AAAAAAESf1Ha-laDI3OGO';
+
+const PUBLIC_VIEW_MAP = {
+    "Industrial Training Job Portal": "public_industrial_jobs",
+    "Fresher Jobs": "public_fresher_jobs",
+    "Semi Qualified Jobs": "public_semi_qualified_jobs",
+    "Articleship Jobs": "public_articleship_jobs"
+};
+
+const unlockedJobsCache = new Map();
+const inFlightUnlocks = new Map();
+
+function loadTurnstileScript() {
+    if (window.turnstile) return Promise.resolve();
+    if (document.getElementById('turnstile-script')) {
+        return new Promise((resolve) => {
+            const checkInterval = setInterval(() => {
+                if (window.turnstile) {
+                    clearInterval(checkInterval);
+                    resolve();
+                }
+            }, 100);
+            setTimeout(() => { clearInterval(checkInterval); resolve(); }, 5000);
+        });
+    }
+
+    return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.id = 'turnstile-script';
+        script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+        script.async = true;
+        script.defer = true;
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error('Failed to connect to verification service'));
+        document.head.appendChild(script);
+    });
+}
+
+function getTurnstileToken(mountContainer = null) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            await loadTurnstileScript();
+        } catch (e) {
+            return reject(e);
+        }
+
+        if (!window.turnstile) {
+            return reject(new Error('Verification service temporarily unavailable. Please refresh.'));
+        }
+
+        let widgetSlot = null;
+        let overlayElement = null;
+        let isResolved = false;
+        let currentWidgetId = null;
+
+        const cleanup = () => {
+            if (currentWidgetId && window.turnstile) {
+                try { window.turnstile.remove(currentWidgetId); } catch (_) {}
+            }
+            if (overlayElement) {
+                overlayElement.remove();
+                overlayElement = null;
+            }
+        };
+
+        if (mountContainer) {
+            mountContainer.innerHTML = `
+                <div class="turnstile-inline-container" id="turnstileInlineContainer">
+                    <div class="turnstile-status-text">
+                        <i class="fas fa-shield-halved"></i>
+                        <span>Security Verification</span>
+                    </div>
+                    <div id="msc-turnstile-slot" class="turnstile-widget-mount"></div>
+                </div>
+            `;
+            widgetSlot = mountContainer.querySelector('#msc-turnstile-slot');
+        } else {
+            overlayElement = document.createElement('div');
+            overlayElement.id = 'msc-turnstile-modal-overlay';
+            overlayElement.className = 'turnstile-modal-overlay';
+            overlayElement.innerHTML = `
+                <div class="turnstile-modal-card">
+                    <div class="turnstile-modal-header">
+                        <div class="turnstile-modal-title">
+                            <i class="fas fa-shield-halved"></i>
+                            <span>Security Verification</span>
+                        </div>
+                        <button class="turnstile-modal-close" id="mscTurnstileCloseBtn" title="Close">&times;</button>
+                    </div>
+                    <p class="turnstile-modal-desc">Please complete the verification below to view application details.</p>
+                    <div id="msc-turnstile-slot" class="turnstile-widget-mount"></div>
+                </div>
+            `;
+            document.body.appendChild(overlayElement);
+            widgetSlot = overlayElement.querySelector('#msc-turnstile-slot');
+
+            const closeBtn = overlayElement.querySelector('#mscTurnstileCloseBtn');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => {
+                    if (!isResolved) {
+                        isResolved = true;
+                        cleanup();
+                        reject(new Error('Verification cancelled.'));
+                    }
+                });
+            }
+        }
+
+        try {
+            currentWidgetId = window.turnstile.render(widgetSlot, {
+                sitekey: TURNSTILE_SITE_KEY,
+                theme: 'light',
+                size: 'normal',
+                appearance: 'always',
+                action: 'unlock_job',
+                callback: (token) => {
+                    if (!isResolved) {
+                        isResolved = true;
+                        if (overlayElement) {
+                            cleanup();
+                        }
+                        resolve(token);
+                    }
+                },
+                'error-callback': () => {
+                    if (!isResolved) {
+                        isResolved = true;
+                        cleanup();
+                        reject(new Error('Verification failed. Please try again.'));
+                    }
+                },
+                'expired-callback': () => {
+                    if (!isResolved) {
+                        isResolved = true;
+                        cleanup();
+                        reject(new Error('Verification expired. Please try again.'));
+                    }
+                },
+                'timeout-callback': () => {
+                    if (!isResolved) {
+                        isResolved = true;
+                        cleanup();
+                        reject(new Error('Verification timed out. Please try again.'));
+                    }
+                }
+            });
+        } catch (err) {
+            cleanup();
+            reject(err);
+        }
+    });
+}
+
+async function unlockJobDetails(job, tableName, mountContainer = null) {
+    if (unlockedJobsCache.has(job.id)) {
+        return unlockedJobsCache.get(job.id);
+    }
+
+    if (inFlightUnlocks.has(job.id)) {
+        return inFlightUnlocks.get(job.id);
+    }
+
+    const unlockPromise = (async () => {
+        const token = await getTurnstileToken(mountContainer);
+        let response;
+        try {
+            response = await fetch(`${UNLOCK_WORKER_URL}/api/unlock-job`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    jobId: job.id,
+                    table: tableName,
+                    turnstileToken: token
+                })
+            });
+        } catch (_) {
+            response = await fetch(UNLOCK_WORKER_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    jobId: job.id,
+                    table: tableName,
+                    turnstileToken: token
+                })
+            });
+        }
+
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || !data.success) {
+            console.error('[Verification Service Error]:', data);
+            const errMsg = data.error || (data.details ? data.details.join(', ') : 'Unable to load application details.');
+            throw new Error(errMsg);
+        }
+
+        unlockedJobsCache.set(job.id, data);
+        job['Application ID'] = data.applicationId;
+        job.Description = data.description;
+        if (data.postsLink) job.posts_link = data.postsLink;
+
+        return data;
+    })();
+
+    inFlightUnlocks.set(job.id, unlockPromise);
+
+    try {
+        return await unlockPromise;
+    } finally {
+        inFlightUnlocks.delete(job.id);
+    }
+}
+
 let currentSession = null;
 let allApplications = [];
 let savedJobsList = [];
@@ -135,20 +348,22 @@ async function fetchApplications() {
 
         if (error) throw error;
 
-        // Fetch job details for each application
+        // Fetch job details for each application from public view
         const applicationsWithDetails = await Promise.all(
             data.map(async (app) => {
                 try {
                     let targetTable = app.job_table;
                     let targetJobId = app.job_id;
 
-                    if (app.job_table.includes('|')) {
+                    if (app.job_table && app.job_table.includes('|')) {
                         const parts = app.job_table.split('|');
                         targetTable = parts[0];
                         targetJobId = parts[1]; // This is the UUID
                     }
 
-                    let selectQuery = 'id, Company, Location, Category, Salary, Description, Created_At, "Application ID"';
+                    const publicTable = PUBLIC_VIEW_MAP[targetTable] || targetTable;
+
+                    let selectQuery = 'id, Company, Location, Category, Salary, Description, Created_At';
                     if (targetTable === 'Fresher Jobs') selectQuery += ', Experience';
 
                     let queryCols = selectQuery;
@@ -157,15 +372,15 @@ async function fetchApplications() {
                     }
 
                     let { data: jobData, error: jobError } = await supabaseClient
-                        .from(targetTable)
+                        .from(publicTable)
                         .select(queryCols)
                         .eq('id', targetJobId)
                         .single();
 
                     if (jobError && jobError.message && jobError.message.includes('is_exclusive')) {
-                        console.warn('is_exclusive column does not exist on Supabase yet. Retrying without it.');
+                        console.warn('is_exclusive column does not exist on Supabase view yet. Retrying without it.');
                         const retryRes = await supabaseClient
-                            .from(targetTable)
+                            .from(publicTable)
                             .select(selectQuery)
                             .eq('id', targetJobId)
                             .single();
@@ -174,7 +389,7 @@ async function fetchApplications() {
                     }
 
                     if (jobError) {
-                        console.error(`Failed to fetch job ${targetJobId} from ${targetTable}:`, jobError);
+                        console.error(`Failed to fetch job ${targetJobId} from ${publicTable}:`, jobError);
                         return {
                             ...app,
                             job_table: targetTable,
@@ -186,10 +401,17 @@ async function fetchApplications() {
                                 Category: 'Job Unavailable',
                                 Salary: 'N/A',
                                 Description: 'This job post may have been removed or is inaccessible.',
-                                Created_At: null,
-                                "Application ID": '#'
+                                Created_At: null
                             }
                         };
+                    }
+
+                    // Check if already unlocked in cache
+                    if (unlockedJobsCache.has(jobData.id)) {
+                        const cached = unlockedJobsCache.get(jobData.id);
+                        jobData['Application ID'] = cached.applicationId;
+                        jobData.Description = cached.description || jobData.Description;
+                        if (cached.postsLink) jobData.posts_link = cached.postsLink;
                     }
 
                     return {
@@ -206,8 +428,7 @@ async function fetchApplications() {
                             id: app.job_id,
                             Company: 'Error Loading',
                             Category: 'Error',
-                            Description: 'Failed to load job details.',
-                            "Application ID": '#'
+                            Description: 'Failed to load job details.'
                         }
                     };
                 }
@@ -236,12 +457,36 @@ async function fetchSavedJobs() {
 
     const results = await Promise.all(refs.map(async (ref) => {
         try {
-            const { data, error } = await supabaseClient
-                .from(ref.table)
-                .select('*')
+            const publicTable = PUBLIC_VIEW_MAP[ref.table] || ref.table;
+            let selectQuery = 'id, Company, Location, Category, Salary, Description, Created_At';
+            if (ref.table === 'Fresher Jobs') selectQuery += ', Experience';
+            if (ref.table === 'Industrial Training Job Portal') selectQuery += ', is_exclusive';
+
+            let { data, error } = await supabaseClient
+                .from(publicTable)
+                .select(selectQuery)
                 .eq('id', ref.id)
                 .single();
+
+            if (error && error.message && error.message.includes('is_exclusive')) {
+                const retryRes = await supabaseClient
+                    .from(publicTable)
+                    .select('id, Company, Location, Category, Salary, Description, Created_At')
+                    .eq('id', ref.id)
+                    .single();
+                data = retryRes.data;
+                error = retryRes.error;
+            }
+
             if (error || !data) return null;
+
+            if (unlockedJobsCache.has(data.id)) {
+                const cached = unlockedJobsCache.get(data.id);
+                data['Application ID'] = cached.applicationId;
+                data.Description = cached.description || data.Description;
+                if (cached.postsLink) data.posts_link = cached.postsLink;
+            }
+
             return {
                 isSaved: true,
                 applied_at: ref.savedAt,
@@ -458,6 +703,15 @@ function showJobModal(application) {
     const appliedDate = application.applied_at ? getDaysAgo(application.applied_at) : 'N/A';
     const portalName = PORTAL_DISPLAY_NAMES[application.job_table] || application.job_table;
 
+    // Check if unlocked
+    const isUnlocked = Boolean(job['Application ID']) || unlockedJobsCache.has(job.id);
+    if (unlockedJobsCache.has(job.id)) {
+        const cached = unlockedJobsCache.get(job.id);
+        job['Application ID'] = cached.applicationId;
+        job.Description = cached.description || job.Description;
+        if (cached.postsLink) job.posts_link = cached.postsLink;
+    }
+
     const renderMarkdown = (text) => {
         if (!text) return 'No description available.';
         let html = text
@@ -488,6 +742,16 @@ function showJobModal(application) {
             </div>
         `).join('');
     };
+
+    const applicationContentHtml = isUnlocked && job['Application ID']
+        ? generateApplicationLinks(job['Application ID'])
+        : `
+            <div class="apply-prompt-box" id="applyPromptBox">
+                <button class="btn btn-primary btn-reveal-app" id="btnRevealAppId" style="width: 100%; padding: 0.75rem 1.25rem; border-radius: 10px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); color: #ffffff; border: none; font-size: 0.92rem;">
+                    <i class="fas fa-paper-plane"></i> View Application Details
+                </button>
+            </div>
+        `;
 
     dom.modalBody.innerHTML = `
         <div class="modal-header">
@@ -522,7 +786,7 @@ function showJobModal(application) {
 
         <div class="modal-section">
             <h3><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>Apply here!</h3>
-            ${generateApplicationLinks(job['Application ID'])}
+            ${applicationContentHtml}
         </div>
 
         <div class="modal-section">
@@ -564,64 +828,134 @@ function showJobModal(application) {
         });
     });
 
+    const executeApplyNow = async () => {
+        const applyNowBtn = dom.modalBody.querySelector('#modalApplyNowBtn');
+        const appId = job['Application ID'];
+        const firstLink = appId ? appId.split(',')[0].trim() : null;
+
+        let applyHref = null;
+        if (firstLink) {
+            if (firstLink.toLowerCase().startsWith('http')) {
+                applyHref = firstLink;
+            } else if (firstLink.includes('@')) {
+                applyHref = `mailto:${firstLink}`;
+            } else {
+                applyHref = `https://www.google.com/search?q=${encodeURIComponent(firstLink + ' careers')}`;
+            }
+        }
+
+        if (applyNowBtn) {
+            applyNowBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="font-size:0.9rem;"></i> Applying...';
+            applyNowBtn.disabled = true;
+        }
+
+        const success = await recordApplicationFromSaved(application);
+
+        if (success) {
+            const newApp = {
+                ...application,
+                isSaved: false,
+                applied_at: new Date().toISOString()
+            };
+            delete newApp.isSaved;
+            allApplications.unshift(newApp);
+
+            removeSavedJob(application.job_id, application.job_table);
+            closeModal();
+
+            const appliedBtn = document.getElementById('appliedToggleBtn');
+            const savedBtn = document.getElementById('savedToggleBtn');
+            currentViewMode = 'applied';
+            if (appliedBtn) appliedBtn.classList.add('active');
+            if (savedBtn) savedBtn.classList.remove('active');
+            filterAndSortApplications();
+            updateCounts();
+
+            if (applyHref) window.open(applyHref, '_blank');
+        } else {
+            if (applyNowBtn) {
+                applyNowBtn.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg> Apply Now';
+                applyNowBtn.disabled = false;
+            }
+            alert('Failed to record application. Please try again.');
+        }
+    };
+
+    // Unlock flow handler
+    const handleUnlockFlow = async (btnElement, autoAction = null) => {
+        const applyPromptBox = dom.modalBody.querySelector('#applyPromptBox');
+        const btnRevealAppId = dom.modalBody.querySelector('#btnRevealAppId');
+        const modalApplyNowBtn = dom.modalBody.querySelector('#modalApplyNowBtn');
+
+        const triggerButtons = [btnRevealAppId, modalApplyNowBtn].filter(Boolean);
+        const originalStates = triggerButtons.map(btn => ({ btn, html: btn.innerHTML, disabled: btn.disabled }));
+
+        triggerButtons.forEach(btn => {
+            btn.disabled = true;
+            btn.style.pointerEvents = 'none';
+        });
+
+        if (modalApplyNowBtn && btnElement === modalApplyNowBtn) {
+            modalApplyNowBtn.innerHTML = '<span class="unlock-spinner"></span> Verifying...';
+        }
+
+        try {
+            const unlocked = await unlockJobDetails(job, application.job_table, applyPromptBox || null);
+
+            // Re-render modal in fully unlocked state
+            showJobModal(application);
+
+            if (autoAction === 'applyNow') {
+                await executeApplyNow();
+            }
+        } catch (err) {
+            console.error('Unlock error:', err);
+            const userMsg = err.message || 'Unable to load application details. Please try again.';
+
+            if (applyPromptBox) {
+                applyPromptBox.innerHTML = `
+                    <div class="turnstile-inline-error">
+                        <p style="color: #ef4444; font-size: 0.85rem; font-weight: 500; margin-bottom: 0.5rem;">
+                            <i class="fas fa-circle-exclamation"></i> ${userMsg}
+                        </p>
+                        <button class="btn btn-primary btn-reveal-app" id="btnRetryUnlock" style="padding: 0.6rem 1.25rem; font-size: 0.9rem; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                            <i class="fas fa-rotate-right"></i> Try Verification Again
+                        </button>
+                    </div>
+                `;
+                const btnRetry = applyPromptBox.querySelector('#btnRetryUnlock');
+                if (btnRetry) {
+                    btnRetry.addEventListener('click', () => handleUnlockFlow(btnRetry, autoAction));
+                }
+            } else {
+                alert(userMsg);
+            }
+
+            originalStates.forEach(({ btn, html, disabled }) => {
+                if (btn && document.body.contains(btn) && btn.id !== 'btnRevealAppId') {
+                    btn.innerHTML = html;
+                    btn.disabled = disabled;
+                    btn.style.pointerEvents = 'auto';
+                }
+            });
+        }
+    };
+
+    const btnRevealAppId = dom.modalBody.querySelector('#btnRevealAppId');
+    if (btnRevealAppId) {
+        btnRevealAppId.addEventListener('click', () => handleUnlockFlow(btnRevealAppId));
+    }
+
     // Apply Now button (only in saved view)
     if (application.isSaved) {
         const applyNowBtn = dom.modalBody.querySelector('#modalApplyNowBtn');
         if (applyNowBtn) {
             applyNowBtn.addEventListener('click', async () => {
-                const appId = job['Application ID'];
-                const firstLink = appId ? appId.split(',')[0].trim() : null;
-
-                // Determine link type
-                let applyHref = null;
-                if (firstLink) {
-                    if (firstLink.toLowerCase().startsWith('http')) {
-                        applyHref = firstLink;
-                    } else if (firstLink.includes('@')) {
-                        applyHref = `mailto:${firstLink}`;
-                    } else {
-                        applyHref = `https://www.google.com/search?q=${encodeURIComponent(firstLink + ' careers')}`;
-                    }
+                if (!isUnlocked) {
+                    await handleUnlockFlow(applyNowBtn, 'applyNow');
+                    return;
                 }
-
-                // Show loading
-                applyNowBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="font-size:0.9rem;"></i> Applying...';
-                applyNowBtn.disabled = true;
-
-                const success = await recordApplicationFromSaved(application);
-
-                if (success) {
-                    // Build full application record and push to allApplications
-                    const newApp = {
-                        ...application,
-                        isSaved: false,
-                        applied_at: new Date().toISOString()
-                    };
-                    delete newApp.isSaved;
-                    allApplications.unshift(newApp);
-
-                    // Remove from saved list
-                    removeSavedJob(application.job_id, application.job_table);
-
-                    // Close modal
-                    closeModal();
-
-                    // Switch to applied view
-                    const appliedBtn = document.getElementById('appliedToggleBtn');
-                    const savedBtn = document.getElementById('savedToggleBtn');
-                    currentViewMode = 'applied';
-                    if (appliedBtn) appliedBtn.classList.add('active');
-                    if (savedBtn) savedBtn.classList.remove('active');
-                    filterAndSortApplications();
-                    updateCounts();
-
-                    // Open the apply link
-                    if (applyHref) window.open(applyHref, '_blank');
-                } else {
-                    applyNowBtn.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg> Apply Now';
-                    applyNowBtn.disabled = false;
-                    alert('Failed to record application. Please try again.');
-                }
+                await executeApplyNow();
             });
         }
     }
