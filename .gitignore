@@ -1,3 +1,13 @@
 node_modules
 temp/
 logs/
+.wrangler/
+workers/
+scratch/
+jobs-builder/dist/
+jobs-builder/.astro/
+jobs-builder/node_modules/
+sample-job-test.html
+
+
+

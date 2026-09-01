@@ -2,13 +2,11 @@
 import { 
   supabase,
   TABLE_MAP,
-  VIEW_NAME_MAP,
   JOB_TITLE_MAP,
+  getPublicJobSelectColumns,
   escapeHtml,
   getDaysAgo,
   renderMarkdown,
-  getApplicationLink,
-  constructMailto,
   generateJobSlug,
   generateJsonLd
 } from '../../../lib/jobHelpers';
@@ -20,9 +18,7 @@ export async function getStaticPaths() {
   const paths: any[] = [];
   
   // Read sync state for incremental builds
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path.dirname(__filename);
-  const syncStatePath = path.join(__dirname, '..', '..', '..', '..', 'scripts', 'sync-state.json');
+  const syncStatePath = path.resolve(process.cwd(), 'scripts', 'sync-state.json');
   
   let syncState: Record<string, string> = {};
   let isFirstRun = true;
@@ -43,8 +39,8 @@ export async function getStaticPaths() {
 
   for (const [tableName, categorySlug] of Object.entries(TABLE_MAP)) {
     let query = supabase
-      .from(VIEW_NAME_MAP[tableName] || tableName)
-      .select('*')
+      .from(tableName)
+      .select(getPublicJobSelectColumns(tableName))
       .order('Created_At', { ascending: false })
       .limit(FETCH_LIMIT);
 
@@ -90,7 +86,6 @@ const salary = job.Salary ? `₹${job.Salary}` : '';
 const location = job.Location || 'Remote / Unspecified';
 const category = job.Category || 'General';
 const descriptionHtml = renderMarkdown(job.Description);
-const applyInfo = getApplicationLink(job['Application ID']);
 
 // Connect Link
 let connectLink = job.connect_link || job['connect_link'];
@@ -101,35 +96,23 @@ if (!connectLink || String(connectLink).trim() === '') {
   connectLink = `https://www.linkedin.com/search/results/people/?keywords=${encodedQuery}&origin=SWITCH_SEARCH_VERTICAL`;
 }
 
-// Apply Buttons
-let applyButtonsHtml = '';
-if (applyInfo.isEmail) {
-  const simpleMailto = constructMailto(job, tableName);
-  applyButtonsHtml = `
-    <div class="email-apply-buttons">
-      <a href="${simpleMailto}" class="btn-large btn-secondary-large">
-        <i class="fas fa-envelope"></i> Simple Apply
-      </a>
-    </div>
-  `;
-} else {
-  applyButtonsHtml = `
-    <a href="${applyInfo.link}" target="_blank" class="btn-large btn-primary-large">
-      <i class="fas fa-external-link-alt"></i> Apply Now
-    </a>
-  `;
-}
-
-const portalMap = {
+const portalMap: Record<string, { url: string; label: string }> = {
   'industrial': { url: '/', label: 'Industrial Training' },
-  'fresher': { url: '/ca-fresher-jobs', label: 'Fresher Jobs' },
-  'semi-qualified': { url: '/semi-qualified-ca-jobs', label: 'Semi Qualified' },
-  'articleship': { url: '/ca-articleship-opportunities', label: 'Articleship' }
+  'fresher': { url: '/ca-fresher-jobs.html', label: 'Fresher Jobs' },
+  'semi-qualified': { url: '/semi-qualified-ca-jobs.html', label: 'Semi Qualified' },
+  'articleship': { url: '/ca-articleship-opportunities.html', label: 'Articleship' }
 };
-const backLinkUrl = (portalMap as Record<string, any>)[categorySlug as string]?.url || '/';
+const backLinkUrl = portalMap[categorySlug as string]?.url || '/';
+const targetPortalUrl = `${backLinkUrl}?id=${job.id}&type=${categorySlug}`;
 
-// Copy text for the copy button
-const copyText = applyInfo.isEmail ? applyInfo.link.replace('mailto:', '') : applyInfo.link;
+// Protected Apply Button
+const applyButtonsHtml = `
+  <div class="email-apply-buttons">
+    <a href="${targetPortalUrl}" class="btn-large btn-primary-large">
+      <i class="fas fa-paper-plane"></i> View Application Details & Apply
+    </a>
+  </div>
+`;
 
 const jsonLd = generateJsonLd(job, slug, categorySlug);
 
@@ -782,32 +765,15 @@ const roleLabel = job.Role ? job.Role.trim() : categoryLabel;
 
                 <aside class="action-sidebar">
                     <div class="action-card">
-                        <h3>Apply here</h3>
-                        
-                        <div class="info-grid">
-                            <div class="info-card">
-                                <div>
-                                    <span class="info-label">Apply Link</span>
-                                    <div class="info-value-container">
-                                        <div class="info-value-scroll">
-                                            <i class="fas fa-link"></i>
-                                            <span class="apply-link-text">{copyText}</span>
-                                        </div>
-                                        <button class="copy-btn" onclick={`navigator.clipboard.writeText('${copyText.replace(/'/g, "\\'")}')`}>
-                                            <i class="fas fa-copy"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <h3 style="margin-top: 1rem;">Interested?</h3>
-                        <p>Apply now or connect with peers at this company.</p>
+                        <h3>Ready to Apply?</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.5;">
+                            Apply directly to this opening with verified recruiter contact details.
+                        </p>
                         
                         <div set:html={applyButtonsHtml}></div>
 
                         <a href={connectLink} target="_blank" class="btn-large btn-linkedin">
-                            <i class="fab fa-linkedin"></i> Connect to Peers
+                            <i class="fab fa-linkedin"></i> Connect with Peers
                         </a>
                         
                         <div class="action-card-footer" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color); text-align: center;">

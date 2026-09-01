@@ -12,13 +12,19 @@ export const TABLE_MAP = {
     'Articleship Jobs': 'articleship'
 };
 
-// Maps display table names to actual Supabase view names (changed after Turnstile PR)
-export const VIEW_NAME_MAP: Record<string, string> = {
-    'Industrial Training Job Portal': 'public_industrial_jobs',
-    'Fresher Jobs': 'public_fresher_jobs',
-    'Semi Qualified Jobs': 'public_semi_qualified_jobs',
-    'Articleship Jobs': 'public_articleship_jobs'
-};
+export function getPublicJobSelectColumns(tableName: string): string {
+    let columns = 'id, Company, Location, Salary, Description, Created_At, Category, posts_link, connect_link, "Primary Domain"';
+    if (tableName === 'Fresher Jobs') {
+        columns += ', Experience, yoe, "Secondary Domain", Tags, "Company Type", "Industry Type", "CTC Range"';
+    } else if (tableName === 'Semi Qualified Jobs') {
+        columns += ', Experience, "Secondary Domain", Tags, "Company Type", "Industry Type"';
+    } else if (tableName === 'Industrial Training Job Portal') {
+        columns += ', "Company Type", "Industry Type", "Stipend Range", "Functional Tags", "Technology Tags", is_exclusive';
+    } else if (tableName === 'Articleship Jobs') {
+        columns += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range"';
+    }
+    return columns;
+}
 
 export const JOB_TITLE_MAP = {
     "Industrial Training Job Portal": "Industrial Trainee",
@@ -137,8 +143,8 @@ export function generateJsonLd(job: any, slug: string, categorySlug: any): any {
     const DOMAIN = 'https://www.mystudentclub.com';
     const datePosted = formatDate(job.Created_At);
     const description = job.Description
-        ? JSON.stringify(String(job.Description).replace(/\n/g, '\\n').replace(/"/g, '\\"'))
-        : '"No description available"';
+        ? String(job.Description).trim()
+        : 'No description available';
 
     return {
         "@context": "https://schema.org/",
