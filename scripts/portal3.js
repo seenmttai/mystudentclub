@@ -1,5 +1,6 @@
 import { getDaysAgo } from './date-utils.js';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
+import { unlockJobDetails, getCachedUnlockedJob } from './browser-guard.js';
 
 function isSalaryDisclosed(val) {
     if (!val) return false;
@@ -70,7 +71,7 @@ async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) 
 const supabaseUrl = 'https://auth.mystudentclub.com';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
-const WORKER_URL = 'https://storer.bhansalimanan55.workers.dev';
+const BROWSER_GUARD_WORKER_URL = window.BROWSER_GUARD_WORKER_URL || 'https://browser-guard-unlock.bhansalimanan55.workers.dev';
 
 
 
@@ -99,6 +100,20 @@ const TABLE_SLUG_MAP = {
     'Semi Qualified Jobs': 'semi-qualified',
     'Articleship Jobs': 'articleship'
 };
+
+function getPublicJobSelectColumns(tableName) {
+    let columns = 'id, Company, Location, Salary, Description, Created_At, Category, application_count, posts_link, "Primary Domain"';
+    if (tableName === 'Fresher Jobs') {
+        columns += ', Experience, yoe, "Secondary Domain", Tags, "Company Type", "Industry Type", "CTC Range"';
+    } else if (tableName === 'Semi Qualified Jobs') {
+        columns += ', Experience, "Secondary Domain", Tags, "Company Type", "Industry Type"';
+    } else if (tableName === 'Industrial Training Job Portal') {
+        columns += ', "Company Type", "Industry Type", "Stipend Range", "Functional Tags", "Technology Tags", is_exclusive';
+    } else if (tableName === 'Articleship Jobs') {
+        columns += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range"';
+    }
+    return columns;
+}
 
 function slugifyText(text) {
     if (text === null || text === undefined || text === '') return '';
@@ -451,10 +466,10 @@ function renderJobCard(job) {
         `;
     } else {
         applyButtonHtml = `
-            <a href="${applyLink}" target="_blank" class="apply-now-card-btn primary ${buttonClass}">
-                Apply Now
+            <button type="button" class="apply-now-card-btn primary ${buttonClass}">
+                View & Apply
                 <svg fill="currentColor" viewBox="0 0 24 24" width="13" height="13"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg>
-            </a>
+            </button>
         `;
     }
 
@@ -506,7 +521,8 @@ function renderJobCard(job) {
                 showExclusiveLockedModal(job);
                 return;
             }
-            setTimeout(() => markJobAsApplied(job), 500);
+            e.preventDefault();
+            showModal(job);
         });
     }
 
@@ -764,7 +780,11 @@ function showModal(job) {
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
     const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'N/A';
     const applyCount = job.application_count || 0;
-    const applyLink = getApplicationLink(job['Application ID'], job.Company);
+    const cachedUnlocked = currentSession ? getCachedUnlockedJob(job.id, currentTable, currentSession) : null;
+    const isApplicationUnlocked = job.__browserGuardUnlocked === true || Boolean(cachedUnlocked) || Boolean(job['Application ID']);
+    const effectiveApplicationId = cachedUnlocked?.applicationId || job['Application ID'];
+    const effectiveDescription = cachedUnlocked?.description || job.Description || '';
+    const applyLink = getApplicationLink(effectiveApplicationId, job.Company);
     const isMailto = applyLink.startsWith('mailto:');
     const isApplied = appliedJobIds.has(job.id);
     const buttonClass = isApplied ? 'applied' : '';
@@ -855,7 +875,9 @@ function showModal(job) {
     }
 
     let primaryActionsHtml = '';
-    if (isMailto) {
+    if (!isApplicationUnlocked) {
+        primaryActionsHtml = '';
+    } else if (isMailto) {
         const simpleApplyText = 'Simple Apply';
         const aiApplyText = 'AI Powered Apply';
         primaryActionsHtml = `
@@ -911,14 +933,29 @@ function showModal(job) {
         tagsSectionsHtml += renderPillSection("Client Sector Exposure", job["Client Exposure Tags"], "#fff7ed", "#9a3412", "#ffedd5");
     }
 
-    const rawDesc = job.Description || '';
+    const rawDesc = effectiveDescription;
     const descContentHtml = `
         <div class="modal-description-wrapper" id="modalDescriptionWrapper">
             <div class="modal-description" id="modalDescriptionContent">${renderMarkdown(rawDesc)}</div>
         </div>
     `;
 
-    const applicationContentHtml = generateApplicationLinks(job['Application ID']);
+    const applicationContentHtml = isApplicationUnlocked
+        ? generateApplicationLinks(effectiveApplicationId)
+        : !currentSession
+            ? `
+                <div class="apply-prompt-box">
+                    <i class="fas fa-lock"></i>
+                    <p>Login to view Application Details and Apply</p>
+                    <a href="/login.html" class="btn btn-primary">Login / Sign Up Free</a>
+                </div>`
+            : `
+                <div class="apply-prompt-box" id="applyPromptBox">
+                    <button type="button" class="btn btn-primary btn-reveal-app" id="btnRevealAppId">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>View Application Details & Apply</span>
+                    </button>
+                </div>`;
 
     dom.modalBody.innerHTML = `
         <div class="modal-header">
@@ -962,6 +999,32 @@ function showModal(job) {
 
     dom.modalOverlay.style.display = 'flex';
     document.body.style.overflow = 'hidden';
+
+    // Reveal application ID with BrowserGuard
+    const revealButton = document.getElementById('btnRevealAppId');
+    if (revealButton) {
+        revealButton.addEventListener('click', async () => {
+            const originalHtml = revealButton.innerHTML;
+            revealButton.disabled = true;
+            revealButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Verifying...</span>';
+            try {
+                const unlocked = await unlockJobDetails(job, currentTable, currentSession, {
+                    endpoint: BROWSER_GUARD_WORKER_URL
+                });
+                showModal({
+                    ...job,
+                    'Application ID': unlocked.applicationId,
+                    Description: unlocked.description || job.Description,
+                    __browserGuardUnlocked: true
+                });
+            } catch (error) {
+                console.error('BrowserGuard unlock failed:', error);
+                showToast(error.message || 'Unable to verify this browser. Please try again.', 'error');
+                revealButton.disabled = false;
+                revealButton.innerHTML = originalHtml;
+            }
+        });
+    }
 
     // Copy button event listener binding helper
     const attachCopyListeners = () => {
@@ -1173,7 +1236,7 @@ async function fetchJobs() {
     // if (dom.loadMoreButton) dom.loadMoreButton.style.display = 'none'; // Removed
 
     try {
-        let selectColumns = 'id, Company, Location, Salary, Description, Created_At, Category, "Application ID", application_count, posts_link, "Primary Domain"';
+        let selectColumns = 'id, Company, Location, Salary, Description, Created_At, Category, application_count, posts_link, "Primary Domain"';
         if (currentTable === "Fresher Jobs") {
             selectColumns += ', Experience, yoe, "Secondary Domain", Tags, "Company Type", "Industry Type", "CTC Range"';
         } else if (currentTable === "Semi Qualified Jobs") {
@@ -3515,7 +3578,7 @@ async function fetchSharedJob(jobId) {
     try {
         const { data, error } = await supabaseClient
             .from(currentTable)
-            .select('*')
+            .select(getPublicJobSelectColumns(currentTable))
             .eq('id', jobId)
             .single();
 
@@ -4578,7 +4641,7 @@ async function dv2PopulateTrending() {
     try {
         const { data, error } = await supabaseClient
             .from(currentTable)
-            .select('*')
+            .select(getPublicJobSelectColumns(currentTable))
             .order('Created_At', { ascending: false, nullsFirst: false })
             .limit(5);
         if (error || !data || data.length === 0) return;
