@@ -150,6 +150,18 @@ async function fetchApplications() {
                         targetJobId = parts[1]; // This is the UUID
                     }
 
+                    const TABLE_NAME_ALIASES = {
+                        'industrial': 'Industrial Training Job Portal',
+                        'industrial-training': 'Industrial Training Job Portal',
+                        'fresher': 'Fresher Jobs',
+                        'freshers': 'Fresher Jobs',
+                        'semi': 'Semi Qualified Jobs',
+                        'semi-qualified': 'Semi Qualified Jobs',
+                        'articleship': 'Articleship Jobs',
+                        'experienced': 'Experienced CA Jobs'
+                    };
+                    targetTable = TABLE_NAME_ALIASES[targetTable] || targetTable;
+
                     // "Application ID" is intentionally excluded — it is protected by
                     // column-level RLS and served only through the BrowserGuard unlock flow.
                     let selectQuery = 'id, Company, Location, Category, Salary, Description, Created_At, posts_link';

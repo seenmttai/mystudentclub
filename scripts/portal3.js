@@ -547,6 +547,30 @@ function renderJobCard(job) {
     return jobCard;
 }
 
+// Truncate job description and mask potential contact details for unverified users
+function getTruncatedDescription(desc, maxLength = 260) {
+    if (!desc) return 'No description available.';
+    let clean = String(desc).trim();
+
+    // Mask emails that might have been pasted into the description
+    clean = clean.replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/gi, '[email protected]');
+    // Mask URLs
+    clean = clean.replace(/https?:\/\/[^\s\)]+/gi, '[link protected]');
+    // Mask phone numbers
+    clean = clean.replace(/(?:\+?91[\s-]?)?[6-9]\d{9}/g, '[phone protected]');
+
+    if (clean.length <= maxLength) {
+        return clean;
+    }
+
+    let cut = clean.slice(0, maxLength);
+    const lastSpace = cut.lastIndexOf(' ');
+    if (lastSpace > maxLength * 0.6) {
+        cut = cut.slice(0, lastSpace);
+    }
+    return cut + '...';
+}
+
 // Simple markdown renderer for job descriptions
 function renderMarkdown(text) {
     if (!text) return 'No description available.';
@@ -665,12 +689,19 @@ async function recordApplication(job, btnElement) {
     btnElement.innerHTML = '<div class="loader-spinner" style="width: 20px; height: 20px; border-width: 2px;"></div>';
 
     try {
+        let dbJobId = job.id;
+        let dbJobTable = currentTable;
+        if (typeof job.id === 'string' && job.id.includes('-')) {
+            dbJobId = Date.now() + Math.floor(Math.random() * 1000);
+            dbJobTable = `${currentTable}|${job.id}`;
+        }
+
         const { error } = await supabaseClient
             .from('job_applications')
             .insert({
                 user_id: currentSession.user.id,
-                job_id: job.id,
-                job_table: currentTable,
+                job_id: dbJobId,
+                job_table: dbJobTable,
                 applied_at: new Date().toISOString()
             });
 
@@ -876,7 +907,13 @@ function showModal(job) {
 
     let primaryActionsHtml = '';
     if (!isApplicationUnlocked) {
-        primaryActionsHtml = '';
+        primaryActionsHtml = `
+            <div class="modal-primary-actions">
+                <button id="modalApplyNowLockedBtn" class="btn btn-primary btn-modal-primary ${buttonClass}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    <span>Apply Now</span>
+                </button>
+            </div>`;
     } else if (isMailto) {
         const simpleApplyText = 'Simple Apply';
         const aiApplyText = 'AI Powered Apply';
@@ -933,7 +970,7 @@ function showModal(job) {
         tagsSectionsHtml += renderPillSection("Client Sector Exposure", job["Client Exposure Tags"], "#fff7ed", "#9a3412", "#ffedd5");
     }
 
-    const rawDesc = effectiveDescription;
+    const rawDesc = isApplicationUnlocked ? effectiveDescription : getTruncatedDescription(effectiveDescription, 260);
     const descContentHtml = `
         <div class="modal-description-wrapper" id="modalDescriptionWrapper">
             <div class="modal-description" id="modalDescriptionContent">${renderMarkdown(rawDesc)}</div>
@@ -952,8 +989,8 @@ function showModal(job) {
             : `
                 <div class="apply-prompt-box" id="applyPromptBox">
                     <button type="button" class="btn btn-primary btn-reveal-app" id="btnRevealAppId">
-                        <i class="fas fa-paper-plane"></i>
-                        <span>View Application Details & Apply</span>
+                        <i class="fas fa-external-link-alt" style="font-size: 0.85rem; margin-right: 4px;"></i>
+                        <span>View Application Details & Link to Apply</span>
                     </button>
                 </div>`;
 
@@ -1000,29 +1037,67 @@ function showModal(job) {
     dom.modalOverlay.style.display = 'flex';
     document.body.style.overflow = 'hidden';
 
-    // Reveal application ID with BrowserGuard
+    // Handler to unlock via BrowserGuard and optionally redirect immediately
+    const handleUnlockAndApply = async (btnElement, autoRedirect = true) => {
+        if (!currentSession) {
+            window.location.href = '/login.html';
+            return;
+        }
+
+        const originalHtml = btnElement.innerHTML;
+        btnElement.disabled = true;
+        // User requested: "just add a loading sign instead of writing verifying btw"
+        btnElement.innerHTML = '<i class="fas fa-spinner fa-spin" style="font-size: 1.1rem;"></i>';
+
+        try {
+            const unlocked = await unlockJobDetails(job, currentTable, currentSession, {
+                endpoint: BROWSER_GUARD_WORKER_URL
+            });
+
+            const unlockedJob = {
+                ...job,
+                'Application ID': unlocked.applicationId,
+                Description: unlocked.description || job.Description,
+                __browserGuardUnlocked: true
+            };
+
+            const targetApplyLink = getApplicationLink(unlocked.applicationId, job.Company);
+
+            // Only record application when the Apply button was clicked, not for 'View Application Link'
+            if (autoRedirect) {
+                await recordApplication(unlockedJob, btnElement);
+            }
+
+            // Re-render modal in fully unlocked state (untruncates description and displays links)
+            showModal(unlockedJob);
+
+            // Directly navigate only if primary Apply Now was clicked
+            if (autoRedirect && targetApplyLink) {
+                if (targetApplyLink.startsWith('mailto:')) {
+                    window.location.href = targetApplyLink;
+                } else {
+                    window.open(targetApplyLink, '_blank');
+                }
+            }
+        } catch (error) {
+            console.error('BrowserGuard unlock failed:', error);
+            showToast(error.message || 'Unable to verify this browser. Please try again.', 'error');
+            btnElement.disabled = false;
+            btnElement.innerHTML = originalHtml;
+        }
+    };
+
+    const modalApplyNowLockedBtn = document.getElementById('modalApplyNowLockedBtn');
+    if (modalApplyNowLockedBtn) {
+        modalApplyNowLockedBtn.addEventListener('click', () => {
+            handleUnlockAndApply(modalApplyNowLockedBtn, true);
+        });
+    }
+
     const revealButton = document.getElementById('btnRevealAppId');
     if (revealButton) {
-        revealButton.addEventListener('click', async () => {
-            const originalHtml = revealButton.innerHTML;
-            revealButton.disabled = true;
-            revealButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Verifying...</span>';
-            try {
-                const unlocked = await unlockJobDetails(job, currentTable, currentSession, {
-                    endpoint: BROWSER_GUARD_WORKER_URL
-                });
-                showModal({
-                    ...job,
-                    'Application ID': unlocked.applicationId,
-                    Description: unlocked.description || job.Description,
-                    __browserGuardUnlocked: true
-                });
-            } catch (error) {
-                console.error('BrowserGuard unlock failed:', error);
-                showToast(error.message || 'Unable to verify this browser. Please try again.', 'error');
-                revealButton.disabled = false;
-                revealButton.innerHTML = originalHtml;
-            }
+        revealButton.addEventListener('click', () => {
+            handleUnlockAndApply(revealButton, false);
         });
     }
 

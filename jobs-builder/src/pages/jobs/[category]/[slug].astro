@@ -85,7 +85,26 @@ const postedDate = getDaysAgo(job.Created_At);
 const salary = job.Salary ? `₹${job.Salary}` : '';
 const location = job.Location || 'Remote / Unspecified';
 const category = job.Category || 'General';
-const descriptionHtml = renderMarkdown(job.Description);
+function getSafePublicDescription(desc: any, maxLength = 300): { html: string; isTruncated: boolean } {
+  if (!desc) return { html: renderMarkdown('No description available'), isTruncated: false };
+  let clean = String(desc).trim();
+
+  // Mask emails and links that recruiters might have put in description
+  clean = clean.replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/gi, '[email protected]');
+  clean = clean.replace(/https?:\/\/[^\s\)]+/gi, '[link protected]');
+  clean = clean.replace(/(?:\+?91[\s-]?)?[6-9]\d{9}/g, '[phone protected]');
+
+  const isTruncated = clean.length > maxLength;
+  if (isTruncated) {
+    let cut = clean.slice(0, maxLength);
+    const lastSpace = cut.lastIndexOf(' ');
+    if (lastSpace > maxLength * 0.6) cut = cut.slice(0, lastSpace);
+    clean = cut + '...';
+  }
+  return { html: renderMarkdown(clean), isTruncated };
+}
+
+const { html: descriptionHtml, isTruncated: isDescTruncated } = getSafePublicDescription(job.Description);
 
 // Connect Link
 let connectLink = job.connect_link || job['connect_link'];
@@ -760,6 +779,12 @@ const roleLabel = job.Role ? job.Role.trim() : categoryLabel;
                     <div class="description-section">
                         <h2><i class="fas fa-file-lines"></i> Job Description</h2>
                         <div class="description-content" set:html={descriptionHtml}></div>
+                        {isDescTruncated && (
+                            <div style="margin-top: 1rem; padding: 0.85rem 1rem; background: rgba(59, 130, 246, 0.05); border: 1px dashed rgba(59, 130, 246, 0.3); border-radius: 8px; font-size: 0.85rem; color: var(--text-secondary); display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap;">
+                                <span><i class="fas fa-shield-alt" style="color: var(--primary-color, #2563eb); margin-right: 4px;"></i> Full description and recruiter contact details unlocked on the application portal.</span>
+                                <a href={targetPortalUrl} style="color: var(--primary-color, #2563eb); font-weight: 600; text-decoration: underline;">Unlock on Portal &rsaquo;</a>
+                            </div>
+                        )}
                     </div>
                 </div>
 
