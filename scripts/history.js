@@ -150,7 +150,9 @@ async function fetchApplications() {
                         targetJobId = parts[1]; // This is the UUID
                     }
 
-                    let selectQuery = 'id, Company, Location, Category, Salary, Description, Created_At, "Application ID", posts_link';
+                    // "Application ID" is intentionally excluded — it is protected by
+                    // column-level RLS and served only through the BrowserGuard unlock flow.
+                    let selectQuery = 'id, Company, Location, Category, Salary, Description, Created_At, posts_link';
                     if (targetTable === 'Fresher Jobs') selectQuery += ', Experience';
 
                     let queryCols = selectQuery;
@@ -236,7 +238,8 @@ async function fetchSavedJobs() {
 
     const results = await Promise.all(refs.map(async (ref) => {
         try {
-            let selectQuery = 'id, Company, Location, Category, Salary, Description, Created_At, "Application ID", posts_link';
+            // "Application ID" excluded — protected column served via BrowserGuard only.
+            let selectQuery = 'id, Company, Location, Category, Salary, Description, Created_At, posts_link';
             if (ref.table === 'Fresher Jobs') selectQuery += ', Experience';
             if (ref.table === 'Industrial Training Job Portal') selectQuery += ', is_exclusive';
 
@@ -249,7 +252,7 @@ async function fetchSavedJobs() {
             if (error && error.message && error.message.includes('is_exclusive')) {
                 const retryRes = await supabaseClient
                     .from(ref.table)
-                    .select('id, Company, Location, Category, Salary, Description, Created_At, "Application ID", posts_link')
+                    .select('id, Company, Location, Category, Salary, Description, Created_At, posts_link')
                     .eq('id', ref.id)
                     .single();
                 data = retryRes.data;
@@ -490,19 +493,40 @@ function showJobModal(application) {
         return '<p>' + html + '</p>';
     };
 
-    const generateApplicationLinks = (applicationId) => {
-        if (!applicationId) return '<p class="modal-description">No Application ID Available</p>';
-        const links = applicationId.split(',').map(link => link.trim()).filter(link => link);
-        if (links.length === 0) return '<p class="modal-description">No Application ID Available</p>';
-
-        return links.map((link, index) => `
-            <div style="display: flex; align-items: center; gap: 0.75rem; background: #f8fafc; padding: 0.4rem; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: ${index < links.length - 1 ? '0.75rem' : '0'};">
-                <p class="modal-description" style="flex: 1; margin: 0; word-break: break-all; font-size: 0.95rem; background:none; border:none; padding:0;">${link}</p>
-                <button class="modal-copy-btn" data-copy-text="${link.replace(/"/g, '&quot;')}" style="background: #3b82f6; color: white; border: none; border-radius: 6px; padding: 0.6rem 0.8rem; cursor: pointer; transition: all 0.2s; flex-shrink: 0; min-width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;" title="Copy to clipboard">
-                    <i class="fas fa-copy" style="font-size: 1rem;"></i>
-                </button>
+    const generateApplicationLinks = (_applicationId) => {
+        // Application ID is protected by BrowserGuard — direct users to the job portal
+        // to unlock recruiter details through the verified unlock flow.
+        const portalMap = {
+            'Industrial Training Job Portal': '/',
+            'Fresher Jobs': '/ca-fresher-jobs.html',
+            'Semi Qualified Jobs': '/semi-qualified-ca-jobs.html',
+            'Articleship Jobs': '/ca-articleship-opportunities.html',
+            'Experienced CA Jobs': '/experienced-ca-jobs.html'
+        };
+        const typeMap = {
+            'Industrial Training Job Portal': 'industrial',
+            'Fresher Jobs': 'fresher',
+            'Semi Qualified Jobs': 'semi',
+            'Articleship Jobs': 'articleship',
+            'Experienced CA Jobs': 'experienced'
+        };
+        const portalUrl = portalMap[application.job_table] || '/';
+        const jobId = application.job_id;
+        const jobType = typeMap[application.job_table] || 'industrial';
+        return `
+            <div style="background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 10px; padding: 1rem; display: flex; align-items: center; gap: 0.75rem;">
+                <div style="flex-shrink: 0; width: 36px; height: 36px; background: linear-gradient(135deg, #3b82f6, #6366f1); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-shield-alt" style="color: white; font-size: 0.85rem;"></i>
+                </div>
+                <div style="flex: 1;">
+                    <p style="margin: 0 0 0.25rem; font-size: 0.85rem; font-weight: 600; color: #1e40af;">Recruiter contact verified &amp; protected</p>
+                    <p style="margin: 0; font-size: 0.78rem; color: #3b82f6;">Open the job portal to unlock application details instantly.</p>
+                </div>
+                <a href="${portalUrl}?id=${jobId}&type=${jobType}" target="_blank" style="flex-shrink: 0; padding: 0.5rem 0.9rem; background: linear-gradient(135deg, #3b82f6, #6366f1); color: white; border-radius: 8px; font-size: 0.8rem; font-weight: 600; text-decoration: none; white-space: nowrap;">
+                    View &amp; Unlock
+                </a>
             </div>
-        `).join('');
+        `;
     };
 
     const applicationContentHtml = generateApplicationLinks(job['Application ID']);
@@ -531,10 +555,16 @@ function showJobModal(application) {
 
         ${application.isSaved ? `
         <div style="display: flex; gap: 0.65rem; flex-wrap: wrap;">
-            <button id="modalApplyNowBtn" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.7rem 1.25rem; background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); color: #fff; border: none; border-radius: 12px; font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(59,130,246,0.25);">
+            <a id="modalApplyNowBtn" href="${({
+                'Industrial Training Job Portal': '/',
+                'Fresher Jobs': '/ca-fresher-jobs.html',
+                'Semi Qualified Jobs': '/semi-qualified-ca-jobs.html',
+                'Articleship Jobs': '/ca-articleship-opportunities.html',
+                'Experienced CA Jobs': '/experienced-ca-jobs.html'
+            })[application.job_table] || '/'}?id=${application.job_id}&type=${{ 'Industrial Training Job Portal': 'industrial', 'Fresher Jobs': 'fresher', 'Semi Qualified Jobs': 'semi', 'Articleship Jobs': 'articleship', 'Experienced CA Jobs': 'experienced' }[application.job_table] || 'industrial'}" target="_blank" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.7rem 1.25rem; background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); color: #fff; border-radius: 12px; font-size: 0.88rem; font-weight: 700; text-decoration: none; box-shadow: 0 4px 12px rgba(59,130,246,0.25);">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                Apply Now
-            </button>
+                View &amp; Unlock Contact
+            </a>
         </div>
         ` : ''}
 
