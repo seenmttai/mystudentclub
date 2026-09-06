@@ -11,7 +11,9 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/scripts/portal-style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/scripts/supabase.js"></script>
+    <script src="/scripts/supabase-init.js"></script>
+    <script src="/scripts/error-reporter.js"></script>
     <style>
         :root {
             --primary-color: #1e3a5f;
@@ -715,10 +717,7 @@
     </main>
 
     <script>
-        // Supabase Configuration
-        const SUPABASE_URL = 'https://auth.mystudentclub.com';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabaseClient = window.supabaseClient;
 
         const form = document.getElementById('contact-form');
         const submitBtn = document.getElementById('submit-btn');
@@ -857,9 +856,7 @@
             });
 
             // Auth Check
-            const supabaseUrl = 'https://auth.mystudentclub.com';
-            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-            const sb = window.supabase ? window.supabase.createClient(supabaseUrl, supabaseKey) : supabaseClient;
+            const sb = window.supabaseClient || supabaseClient;
 
             const { data: { session } } = await sb.auth.getSession();
             const authContainer = document.querySelector('.auth-buttons-container');

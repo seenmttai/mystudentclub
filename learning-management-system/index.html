@@ -5,15 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | My Student Club LMS</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="/learning-management-system/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/scripts/supabase.js"></script>
+    <script src="/scripts/supabase-init.js"></script>
+    <script src="/scripts/error-reporter.js"></script>
     <script type="importmap">
     {
         "imports": {
-            "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+            "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.prod.js"
         }
     }
     </script>
@@ -253,11 +255,11 @@
                         <div class="bar"></div>
                     </div>
                     <ul class="nav-links" :class="{ 'active': menuActive }">
-                        <li><a href="index.html" class="active nav-item">
+                        <li><a href="/learning-management-system/" class="active nav-item">
                                 <i class="fas fa-graduation-cap"></i>
                                 <span>My Courses</span>
                             </a></li>
-                        <li><a href="lms-resources.html" class="nav-item">
+                        <li><a href="/learning-management-system/lms-resources.html" class="nav-item">
                                 <i class="fas fa-book-open"></i>
                                 <span>Resources</span>
                             </a></li>
@@ -494,8 +496,8 @@
                         <div class="footer-column">
                             <h5>Learning</h5>
                             <ul>
-                                <li><a href="index.html">My Dashboard</a></li>
-                                <li><a href="lms-resources.html">Resources Hub</a></li>
+                                <li><a href="/learning-management-system/">My Dashboard</a></li>
+                                <li><a href="/learning-management-system/lms-resources.html">Resources Hub</a></li>
                                 <li><a href="https://mystudentclub.com/cv-reviewer/">CV Review</a></li>
                             </ul>
                         </div>
@@ -523,63 +525,7 @@
     <script type="module">
         import { createApp } from 'vue';
 
-        const supabaseUrl = 'https://auth.mystudentclub.com';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-        const MAX_ERRORS = 6;
-        let errorCount = 0;
-
-        window.onerror = function (message, source, lineno, colno, error) {
-            if (errorCount < MAX_ERRORS) {
-                logFrontendError(message, source, lineno, colno, error ? error.stack : null);
-            }
-        };
-
-        async function logFrontendError(message, source, lineno, colno, stack) {
-            // Process message object if it's an Event or CustomEvent
-            let errorMsg = message;
-            if (errorMsg && typeof errorMsg === 'object') {
-                if (errorMsg.detail) {
-                    errorMsg = typeof errorMsg.detail === 'string' ? errorMsg.detail : JSON.stringify(errorMsg.detail);
-                } else if (errorMsg.message) {
-                    errorMsg = errorMsg.message;
-                } else {
-                    errorMsg = errorMsg.type ? `Event: ${errorMsg.type}` : JSON.stringify(errorMsg);
-                }
-            }
-            errorMsg = String(errorMsg || 'Unknown Error');
-
-            // Filter out non-actionable browser network noise
-            const noiseKeywords = [
-                'load failed',
-                'failed to fetch',
-                'networkerror',
-                'aborted',
-                'operation was aborted',
-                'cancelled'
-            ];
-            if (noiseKeywords.some(keyword => errorMsg.toLowerCase().includes(keyword))) {
-                return;
-            }
-
-            errorCount++;
-
-            try {
-                const { data: { session } } = await supabase.auth.getSession();
-                const userId = session?.user?.id || null;
-
-                await supabase.from('frontend_errors').insert({
-                    user_id: userId,
-                    error_message: errorMsg,
-                    stack_trace: stack || `${source}:${lineno}:${colno}`,
-                    url: window.location.href,
-                    user_agent: navigator.userAgent
-                });
-            } catch (e) {
-                console.warn("Failed to log error to Supabase", e);
-            }
-        }
+        const supabase = window.supabaseClient || (typeof getSupabaseClient === 'function' ? getSupabaseClient() : null);
 
         createApp({
             data() {
@@ -597,7 +543,7 @@
                             slug: 'industrial-training-mastery',
                             title: 'MSC Industrial Training Program',
                             description: 'Master industrial training requirements for CA candidates with real-world case studies.',
-                            thumbnail: '../assets/courseimg-industrial.png',
+                            thumbnail: '/assets/courseimg-industrial.png',
                             videoCountEstimate: 7
                         },
                         {
@@ -605,7 +551,7 @@
                             slug: 'msc-ca-freshers-program',
                             title: 'MSC CA Freshers Program',
                             description: 'A comprehensive program for CA freshers to kickstart their career.',
-                            thumbnail: '../assets/courseimg-fresher.png',
+                            thumbnail: '/assets/courseimg-fresher.png',
                             videoCountEstimate: 7
                         }
                     ],
@@ -637,8 +583,7 @@
                         this.user = session.user;
                         await this.fetchUserEnrollments();
                     } else {
-                        const loginUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? '/login.html' : 'https://www.mystudentclub.com/login';
-                        window.location.href = loginUrl;
+                        window.location.href = '/login.html';
                     }
                 },
 
@@ -649,8 +594,7 @@
 
                 async logout() {
                     await supabase.auth.signOut();
-                    const loginUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? '/login.html' : 'https://www.mystudentclub.com/login';
-                    window.location.href = loginUrl;
+                    window.location.href = '/login.html';
                 },
 
                 openReportModal() {
@@ -708,7 +652,7 @@
 
                     } catch (err) {
                         console.error("Error loading dashboard:", err);
-                        logFrontendError(err.message, 'index.html', 0, 0, err.stack);
+                        if (window.reportFrontendError) window.reportFrontendError(err);
                     } finally {
                         this.loading = false;
                     }
@@ -753,7 +697,7 @@
                 },
 
                 goToCourse(slug) {
-                    window.location.href = `course.html?course=${slug}`;
+                    window.location.href = `/learning-management-system/course?course=${slug}`;
                 },
 
                 getFloatingStyle(index) {
@@ -765,8 +709,7 @@
 
                 supabase.auth.onAuthStateChange((event, session) => {
                     if (event === 'SIGNED_OUT') {
-                        const loginUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? '/login.html' : 'https://www.mystudentclub.com/login';
-                        window.location.href = loginUrl;
+                        window.location.href = '/login.html';
                     }
                 });
             }

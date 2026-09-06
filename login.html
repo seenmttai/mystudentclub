@@ -8,6 +8,7 @@
   <meta name="description"
     content="Login or sign up to My Student Club - Access CA jobs, industrial training, and career resources.">
   <script src="/scripts/supabase.js"></script>
+  <script src="/scripts/supabase-init.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * {
@@ -1115,42 +1116,8 @@
     </div>
 
     <script>
-      // Custom fetch for fallback
-      const customFetch = async (url, options) => {
-        try {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 6000); // 6s timeout
-          const res = await fetch(url, { ...options, signal: controller.signal });
-          clearTimeout(timeoutId);
-          if (res.status >= 500) {
-            throw new Error('Server Error');
-          }
-          return res;
-        } catch (err) {
-          if (typeof url === 'string' && url.includes('izsggdtdiacxdsjjncdq.supabase.co')) {
-            console.warn('Primary fetch failed, using fallback:', err);
-            const fallbackUrl = url.replace('izsggdtdiacxdsjjncdq.supabase.co', 'izsggdtdiacxdsjjncdq.supabase.co');
-            return fetch(fallbackUrl, options);
-          }
-          throw err;
-        }
-      };
-
-      // Initialize Supabase
-      const supabaseClient = supabase.createClient(
-        'https://auth.mystudentclub.com',
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0',
-        {
-          global: {
-            fetch: customFetch
-          }
-        }
-      );
-
-      const supabaseGoogleClient = supabase.createClient(
-        'https://auth.mystudentclub.com',
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0'
-      );
+      // Reuse shared Supabase client
+      const supabaseClient = window.supabaseClient || (typeof getSupabaseClient === 'function' ? getSupabaseClient() : null);
 
       const redirectUrl = new URLSearchParams(window.location.search).get('redirect');
 
@@ -1348,7 +1315,7 @@
 
       async function handleGoogleSignIn() {
         try {
-          const { error } = await supabaseGoogleClient.auth.signInWithOAuth({
+          const { error } = await supabaseClient.auth.signInWithOAuth({
             provider: 'google',
             options: {
               redirectTo: redirectUrl ? `${window.location.origin}${redirectUrl}` : window.location.origin
@@ -1370,7 +1337,7 @@
       window.handleGoogleSignInToken = async function (id_token) {
         if (!id_token) return;
         try {
-          const { error } = await supabaseGoogleClient.auth.signInWithIdToken({
+          const { error } = await supabaseClient.auth.signInWithIdToken({
             provider: 'google',
             token: id_token
           });

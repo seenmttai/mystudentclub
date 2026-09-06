@@ -14,6 +14,8 @@
   
   <!-- Supabase -->
   <script src="/scripts/supabase.js"></script>
+  <script src="/scripts/supabase-init.js"></script>
+  <script src="/scripts/error-reporter.js"></script>
 
   <!-- Favicons -->
   <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
@@ -827,10 +829,7 @@
     const supabaseUrl = 'https://auth.mystudentclub.com';
     const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
     
-    let supabaseClient = null;
-    if (window.supabase) {
-      supabaseClient = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
-    }
+    let supabaseClient = window.supabaseClient || (window.supabase ? window.supabase.createClient(supabaseUrl, supabaseAnonKey) : null);
 
     const form = document.getElementById('hirerForm');
     const submitBtn = document.getElementById('submitBtn');

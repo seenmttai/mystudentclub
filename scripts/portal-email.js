@@ -69,7 +69,7 @@ async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) 
 
 const supabaseUrl = 'https://auth.mystudentclub.com';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+const supabaseClient = window.supabaseClient || (typeof supabase !== 'undefined' ? supabase.createClient(supabaseUrl, supabaseKey) : null);
 const WORKER_URL = 'https://storer.bhansalimanan55.workers.dev';
 
 window.flutter_app = {
@@ -2439,11 +2439,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const hasResume = localStorage.getItem('userCVText');
 
     if (isNewUser === 'true') {
-        const supabaseUrl = 'https://auth.mystudentclub.com';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
-
-        const { data: { session } } = await supabaseClient.auth.getSession();
+        const client = window.supabaseClient || supabaseClient;
+        const { data: { session } } = client ? await client.auth.getSession() : { data: { session: null } };
 
         if (session && !hasResume) {
             setTimeout(() => {

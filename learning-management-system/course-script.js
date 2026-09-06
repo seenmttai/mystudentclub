@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const supabaseUrl = 'https://auth.mystudentclub.com';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-    pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js`;
+    const supabase = window.supabaseClient || (typeof getSupabaseClient === 'function' ? getSupabaseClient() : null);
+    if (typeof pdfjsLib !== 'undefined' && pdfjsLib.GlobalWorkerOptions) {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js`;
+    }
 
     // HLS streaming base URL for industrial training
     // HLS streaming base URLs with QUIC fallback
@@ -31,13 +31,25 @@ document.addEventListener('DOMContentLoaded', () => {
         'industrial-training-mastery': {
             title: 'MSC Industrial Training Program',
             description: 'Master industrial training requirements for CA candidates with real-world case studies.',
-            thumbnail: '../assets/courseimg-industrial.png'
+            thumbnail: '/assets/courseimg-industrial.png'
         },
         'msc-ca-freshers-program': {
             title: 'MSC CA Freshers Program',
             description: 'A comprehensive program for CA freshers to kickstart their career.',
-            thumbnail: '../assets/courseimg-fresher.png'
+            thumbnail: '/assets/courseimg-fresher.png'
         }
+    };
+
+    const slugAliases = {
+        'industrial-training': 'industrial-training-mastery',
+        'ca-industrial-training': 'industrial-training-mastery',
+        'msc-industrial-training-program': 'industrial-training-mastery',
+        'industrial-training-program': 'industrial-training-mastery',
+        'msc-ca-industrial-training': 'industrial-training-mastery',
+        'ca-freshers': 'msc-ca-freshers-program',
+        'freshers': 'msc-ca-freshers-program',
+        'ca-freshers-program': 'msc-ca-freshers-program',
+        'msc-ca-freshers': 'msc-ca-freshers-program'
     };
 
     const DOMElements = {
@@ -660,54 +672,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const logFrontendError = async (message, stack, source) => {
-        if (state.errorLogCount >= 6) return;
-
-        // Process message object if it's an Event or CustomEvent
-        let errorMsg = message;
-        if (errorMsg && typeof errorMsg === 'object') {
-            if (errorMsg.detail) {
-                errorMsg = typeof errorMsg.detail === 'string' ? errorMsg.detail : JSON.stringify(errorMsg.detail);
-            } else if (errorMsg.message) {
-                errorMsg = errorMsg.message;
-            } else {
-                errorMsg = errorMsg.type ? `Event: ${errorMsg.type}` : JSON.stringify(errorMsg);
-            }
-        }
-        errorMsg = String(errorMsg || 'Unknown Error');
-
-        // Filter out non-actionable browser network noise
-        const noiseKeywords = [
-            'load failed',
-            'failed to fetch',
-            'networkerror',
-            'aborted',
-            'operation was aborted',
-            'cancelled'
-        ];
-        if (noiseKeywords.some(keyword => errorMsg.toLowerCase().includes(keyword))) {
-            return;
-        }
-
-        state.errorLogCount++;
-
-        const contextData = JSON.stringify({
-            course: state.courseSlug,
-            videoId: state.currentVideoId,
-            screen: `${window.screen.width}x${window.screen.height}`
-        });
-
-        try {
-            await supabase
-                .from('frontend_errors')
-                .insert({
-                    user_id: state.user ? state.user.id : null,
-                    error_message: `Source: ${source} | Message: ${errorMsg} | Context: ${contextData}`,
-                    stack_trace: stack || 'No Stack Trace',
-                    url: window.location.href,
-                    user_agent: navigator.userAgent
-                });
-        } catch (e) {
-            console.error('Error logging to Supabase:', e);
+        if (typeof window.reportFrontendError === 'function') {
+            window.reportFrontendError(message, stack, source);
         }
     };
 
@@ -724,48 +690,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const videosByDay = {};
             if (videoMetadata && videoMetadata.length > 0) {
-                for (const meta of videoMetadata) {
-                    try {
-                        // For industrial training, use HLS path; otherwise use regular video link
-                        let videoFileName = null;
-                        let hlsPath = null;
+                videoMetadata.forEach(meta => {
+                    const tsPathRaw = meta.industrial_training_path;
+                    const tsPath = (tsPathRaw && tsPathRaw.trim().toLowerCase() !== 'none') ? tsPathRaw.trim() : null;
 
-                        const tsPathRaw = meta.industrial_training_path;
-                        const tsPath = (tsPathRaw && tsPathRaw.trim().toLowerCase() !== 'none') ? tsPathRaw.trim() : null;
-
-                        const { data: rpcData, error: rpcError } = await supabase.rpc('get_video_link', {
-                            course_name_param: state.courseSlug,
-                            video_number_param: meta.video_number
-                        });
-                        const mp4Path = rpcData ? rpcData.trim() : null;
-
-                        // If the column holding .ts is empty but .mp4 is full then use .mp4, else use .ts
-                        if (!tsPath && mp4Path) {
-                            videoFileName = mp4Path;
-                        } else if (tsPath) {
-                            hlsPath = tsPath;
+                    const day = (meta.day_number !== undefined && meta.day_number !== null) ? meta.day_number : 1;
+                    let parsedResources = [];
+                    if (meta.resources) {
+                        if (typeof meta.resources === 'string') {
+                            try { parsedResources = JSON.parse(meta.resources); } catch (e) { console.warn("Error parsing resources", e); }
+                        } else if (Array.isArray(meta.resources)) {
+                            parsedResources = meta.resources;
                         }
+                    }
 
-                        const day = (meta.day_number !== undefined && meta.day_number !== null) ? meta.day_number : 1;
-                        let parsedResources = [];
-                        if (meta.resources) {
-                            if (typeof meta.resources === 'string') {
-                                try { parsedResources = JSON.parse(meta.resources); } catch (e) { console.warn("Error parsing resources", e); }
-                            } else if (Array.isArray(meta.resources)) {
-                                parsedResources = meta.resources;
-                            }
-                        }
-
-                        if (!videosByDay[day]) videosByDay[day] = [];
-                        videosByDay[day].push({
-                            id: meta.video_number,
-                            fileName: videoFileName,
-                            hlsPath: hlsPath,  // HLS folder path for industrial training
-                            title: meta.title || `Content for Day ${day}`,
-                            description: meta.description || '', resources: parsedResources, completed: false
-                        });
-                    } catch (err) { }
-                }
+                    if (!videosByDay[day]) videosByDay[day] = [];
+                    videosByDay[day].push({
+                        id: meta.video_number,
+                        fileName: null,
+                        hlsPath: tsPath,
+                        title: meta.title || `Content for Day ${day}`,
+                        description: meta.description || '',
+                        resources: parsedResources,
+                        completed: false
+                    });
+                });
             }
 
             state.courseSections = Object.keys(videosByDay).map(dayNum => {
@@ -906,8 +855,13 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const checkDeviceLimit = async () => {
+        const hostname = window.location.hostname;
+        if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '192.168.56.1' || hostname.startsWith('192.168.') || hostname.startsWith('10.') || hostname.startsWith('172.')) {
+            return true;
+        }
         const MAX_ALLOWED_DEVICES = 2;
         try {
+            if (!state.user || !state.user.id) return true;
             const currentFp = getDeviceFingerprint();
             const currentUuid = getDeviceUuid();
             const currentCoarse = getCoarseHardwareProfile();
@@ -918,7 +872,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 .select('fingerprint')
                 .eq('user_id', state.user.id);
 
-            if (error) throw error;
+            if (error) return true;
 
             const registeredFingerprints = devices ? devices.map(d => d.fingerprint) : [];
 
@@ -954,7 +908,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (insertError.code === '23505') {
                         return true;
                     }
-                    throw insertError;
+                    return true; // Don't block on insert errors
                 }
                 return true;
             }
@@ -962,8 +916,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // More than MAX_ALLOWED_DEVICES registered
             return false;
         } catch (err) {
-            console.error("Device verification failed:", err);
-            logFrontendError("Device limit check failed: " + err.message, err.stack, 'checkDeviceLimit');
+            console.warn("Device verification failed gracefully:", err);
             // Graceful degradation: allow user access on check failure
             return true;
         }
@@ -972,12 +925,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const checkEnrollment = async () => {
         try {
             const { data: enrollments, error } = await supabase
-                .from('enrollment').select('course').eq('uuid', state.user.id).eq('course', state.courseSlug);
-            if (error || !enrollments || enrollments.length === 0) {
+                .from('enrollment')
+                .select('course')
+                .eq('uuid', state.user.id);
+
+            const isMatch = !error && (enrollments || []).some(e => {
+                const enrolled = (e.course || '').trim().toLowerCase();
+                const normalizedEnrolled = slugAliases[enrolled] || enrolled;
+                return normalizedEnrolled === state.courseSlug || enrolled === state.courseSlug;
+            });
+
+            if (error || !isMatch) {
                 state.isEnrolled = false;
                 DOMElements.enrollmentModal.style.display = 'flex';
             } else {
                 state.isEnrolled = true;
+                DOMElements.enrollmentModal.style.display = 'none';
 
                 // Perform device limit check
                 const isDeviceAllowed = await checkDeviceLimit();
@@ -997,15 +960,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
 
+                if (DOMElements.loadingEnrollmentScreen) {
+                    DOMElements.loadingEnrollmentScreen.style.display = 'none';
+                }
                 DOMElements.coursePageContent.style.display = 'block';
-                DOMElements.footer.style.display = 'block';
+                if (DOMElements.footer) DOMElements.footer.style.display = 'block';
                 await loadCourseVideos();
             }
         } catch (error) {
+            console.error('Enrollment verification failed:', error);
             state.isEnrolled = false;
             DOMElements.enrollmentModal.style.display = 'flex';
         } finally {
-            DOMElements.loadingEnrollmentScreen.style.display = 'none';
+            if (DOMElements.loadingEnrollmentScreen) {
+                DOMElements.loadingEnrollmentScreen.style.display = 'none';
+            }
         }
     };
 
@@ -1019,7 +988,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 .select('*')
                 .order('created_at', { ascending: false })
                 .limit(1)
-                .single();
+                .maybeSingle();
 
             if (error || !banners || !banners.heading) return;
 
@@ -1039,17 +1008,41 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const checkAuth = async () => {
-        const { data: { session } } = await supabase.auth.getSession();
+        let session = null;
+        try {
+            const res = await supabase.auth.getSession();
+            session = res?.data?.session;
+        } catch (e) {
+            console.warn("getSession error:", e);
+        }
+
+        if (!session && window.__mscSession) {
+            session = window.__mscSession;
+        }
+
+        if (!session) {
+            try {
+                const userRes = await supabase.auth.getUser();
+                if (userRes?.data?.user) {
+                    session = { user: userRes.data.user };
+                }
+            } catch (e) {}
+        }
+
         if (session && session.user) {
             state.user = session.user;
-            DOMElements.userDisplayName.textContent = session.user.user_metadata?.first_name || session.user.email.split('@')[0];
-            DOMElements.profileDropdownName.textContent = session.user.user_metadata?.full_name || session.user.email.split('@')[0];
-            DOMElements.profileDropdownEmail.textContent = session.user.email;
+            if (DOMElements.userDisplayName) DOMElements.userDisplayName.textContent = session.user.user_metadata?.first_name || session.user.email.split('@')[0];
+            if (DOMElements.profileDropdownName) DOMElements.profileDropdownName.textContent = session.user.user_metadata?.full_name || session.user.email.split('@')[0];
+            if (DOMElements.profileDropdownEmail) DOMElements.profileDropdownEmail.textContent = session.user.email;
             await checkEnrollment();
             await loadDynamicBanner();
         } else {
-            const loginUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? '/login.html' : 'https://mystudentclub.com/login';
-            window.location.href = loginUrl;
+            const storageKey = 'sb-izsggdtdiacxdsjjncdq-auth-token';
+            const stored = localStorage.getItem(storageKey);
+            if (!stored) {
+                const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
+                window.location.href = `/login.html?redirect=${returnUrl}`;
+            }
         }
     };
 
@@ -1182,6 +1175,20 @@ document.addEventListener('DOMContentLoaded', () => {
         DOMElements.videoPlayer.load(); // Stop previous video buffering
 
         // Check if video has HLS path (industrial training) or regular file
+        if (currentVideo && !currentVideo.hlsPath && !currentVideo.fileName) {
+            try {
+                const { data: rpcData } = await supabase.rpc('get_video_link', {
+                    course_name_param: state.courseSlug,
+                    video_number_param: videoId
+                });
+                if (rpcData) {
+                    currentVideo.fileName = rpcData.trim();
+                }
+            } catch (e) {
+                console.warn("RPC video link load error:", e);
+            }
+        }
+
         if (currentVideo && (currentVideo.hlsPath || currentVideo.fileName)) {
             DOMElements.videoPlayerContainer.style.display = 'block';
             DOMElements.noVideoMessagePlayer.style.display = 'none';
@@ -2477,13 +2484,11 @@ document.addEventListener('DOMContentLoaded', () => {
         DOMElements.hamburgerMenu.addEventListener('click', () => DOMElements.navLinks.classList.toggle('active'));
         DOMElements.logoutButton.addEventListener('click', async () => {
             await supabase.auth.signOut();
-            const loginUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? '/login.html' : 'https://mystudentclub.com/login';
-            window.location.href = loginUrl;
+            window.location.href = '/login.html';
         });
 
         DOMElements.enrollRedirectBtn.addEventListener('click', () => {
-            const loginUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? '/login.html' : 'https://mystudentclub.com/login';
-            window.location.href = loginUrl;
+            window.location.href = '/learning-management-system/';
         });
 
         if (DOMElements.downloadCertificateBtn) {
@@ -2622,9 +2627,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const init = async () => {
         const urlParams = new URLSearchParams(window.location.search);
-        state.courseSlug = urlParams.get('course');
+        let rawSlug = (urlParams.get('course') || '').trim().toLowerCase().replace(/\/+$/, '');
+        if (slugAliases[rawSlug]) {
+            rawSlug = slugAliases[rawSlug];
+        }
+        state.courseSlug = rawSlug;
         if (!state.courseSlug || !courses[state.courseSlug]) {
-            window.location.href = 'index.html';
+            window.location.href = '/learning-management-system/';
             return;
         }
         state.course = { ...courses[state.courseSlug], progress: 0 };
@@ -2641,16 +2650,17 @@ document.addEventListener('DOMContentLoaded', () => {
         setupEventListeners();
         await checkAuth();
 
-        supabase.auth.onAuthStateChange(async (_event, session) => {
+        supabase.auth.onAuthStateChange(async (event, session) => {
+            if (event === 'SIGNED_OUT') {
+                window.location.href = '/login.html';
+                return;
+            }
             if (session && session.user) {
                 state.user = session.user;
-                DOMElements.userDisplayName.textContent = session.user.user_metadata?.first_name || session.user.email.split('@')[0];
-                DOMElements.profileDropdownName.textContent = session.user.user_metadata?.full_name || session.user.email;
-                DOMElements.profileDropdownEmail.textContent = session.user.email;
+                if (DOMElements.userDisplayName) DOMElements.userDisplayName.textContent = session.user.user_metadata?.first_name || session.user.email.split('@')[0];
+                if (DOMElements.profileDropdownName) DOMElements.profileDropdownName.textContent = session.user.user_metadata?.full_name || session.user.email;
+                if (DOMElements.profileDropdownEmail) DOMElements.profileDropdownEmail.textContent = session.user.email;
                 if (!state.isEnrolled) await checkEnrollment();
-            } else {
-                const loginUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? '/login.html' : 'https://mystudentclub.com/login';
-                window.location.href = loginUrl;
             }
         });
     };

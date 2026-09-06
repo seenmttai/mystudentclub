@@ -5,12 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LMS Resources | My Student Club</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="/learning-management-system/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Using a slightly older, more stable version of PDF.js for better compatibility -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/scripts/supabase.js"></script>
+    <script src="/scripts/supabase-init.js"></script>
+    <script src="/scripts/error-reporter.js"></script>
     <script type="importmap">
     {
         "imports": {
@@ -908,11 +910,11 @@
                         <div class="bar"></div>
                     </div>
                     <ul class="nav-links" :class="{ 'active': menuActive }">
-                        <li><a href="index.html" class="nav-item">
+                        <li><a href="/learning-management-system/" class="nav-item">
                                 <i class="fas fa-graduation-cap"></i>
                                 <span>My Courses</span>
                             </a></li>
-                        <li><a href="lms-resources.html" class="active nav-item">
+                        <li><a href="/learning-management-system/lms-resources.html" class="active nav-item">
                                 <i class="fas fa-book-open"></i>
                                 <span>Resources</span>
                             </a></li>
@@ -1121,9 +1123,9 @@
                     <div class="footer-column">
                         <h5>Learning</h5>
                         <ul>
-                            <li><a href="index.html">All Courses</a></li>
-                            <li><a href="lms-resources.html">Resources</a></li>
-                            <li><a href="cv-reviewer.html">CV Review</a></li>
+                            <li><a href="/learning-management-system/">All Courses</a></li>
+                            <li><a href="/learning-management-system/lms-resources.html">Resources</a></li>
+                            <li><a href="https://mystudentclub.com/cv-reviewer/">CV Review</a></li>
                         </ul>
                     </div>
                     <div class="footer-column">
@@ -1147,9 +1149,7 @@
     <script type="module">
         import { createApp, markRaw } from 'vue';
 
-        const supabaseUrl = 'https://auth.mystudentclub.com';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        const supabase = window.supabaseClient || (window.supabase ? window.supabase.createClient(supabaseUrl, supabaseKey) : null);
 
         // Setup PDF.js Worker
         if (window.pdfjsLib) {
@@ -1230,11 +1230,10 @@
                         this.user = session.user;
                         const { data: enrollments, error } = await supabase.from('enrollment').select('course').eq('uuid', this.user.id);
                         if (error || enrollments.length === 0) {
-                            window.location.href = 'index.html';
+                            window.location.href = '/learning-management-system/';
                         }
                     } else {
-                        const loginUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? '/login.html' : 'https://www.mystudentclub.com/login.html';
-                        window.location.href = loginUrl;
+                        window.location.href = '/login.html';
                     }
                 },
 
@@ -1245,14 +1244,12 @@
 
                 async logout() {
                     await supabase.auth.signOut();
-                    const loginUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? '/login.html' : 'https://www.mystudentclub.com/login';
-                    window.location.href = loginUrl;
+                    window.location.href = '/login.html';
                 },
 
                 handleProfileClick() {
                     if (!this.user) {
-                        const loginUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? '/login.html' : 'https://www.mystudentclub.com/login.html';
-                        window.location.href = loginUrl;
+                        window.location.href = '/login.html';
                     }
                 },
 
@@ -1898,6 +1895,12 @@
             async mounted() {
                 await this.checkAuth();
                 if (this.user) { await this.fetchAllResources(); }
+
+                supabase.auth.onAuthStateChange((event) => {
+                    if (event === 'SIGNED_OUT') {
+                        window.location.href = '/login.html';
+                    }
+                });
             }
         }).mount('#app');
     </script>

@@ -2,9 +2,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>MSC CA Industrial Training Program</title>
 <link rel="icon" type="image/png" href="https://mystudentclub.pages.dev/assets/icon-70x70.png">
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="sections.css">
-<link rel="stylesheet" href="footer.css">
+<link rel="stylesheet" href="/ca-industrial-training-program/style.css">
+<link rel="stylesheet" href="/ca-industrial-training-program/sections.css">
+<link rel="stylesheet" href="/ca-industrial-training-program/footer.css">
 <link
   href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Noto+Sans:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap"
   rel="stylesheet">
@@ -12,7 +12,9 @@
 <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="/scripts/portal-style.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/scripts/supabase.js"></script>
+<script src="/scripts/supabase-init.js"></script>
+<script src="/scripts/error-reporter.js"></script>
 <!-- Firebase for push notifications -->
 <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging-compat.js"></script>
@@ -547,13 +549,8 @@
       });
     });
 
-    // Supabase Credentials
-    const SUPABASE_URL = 'https://auth.mystudentclub.com';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-    let sb = null;
-    if (typeof supabase !== 'undefined') {
-      sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    }
+    // Supabase Client
+    let sb = window.supabaseClient;
 
     // Auth Check
     let session = null;

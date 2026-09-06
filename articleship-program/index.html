@@ -5,13 +5,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>MSC Articleship Program</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="sections.css">
+  <link rel="stylesheet" href="/articleship-program/style.css">
+  <link rel="stylesheet" href="/articleship-program/sections.css">
   <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
   <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/scripts/portal-style.css">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/scripts/supabase.js"></script>
+  <script src="/scripts/supabase-init.js"></script>
+  <script src="/scripts/error-reporter.js"></script>
   <!-- Firebase for push notifications -->
   <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging-compat.js"></script>
@@ -3624,10 +3626,8 @@
       });
 
       // Auth Check
-      if (typeof supabase !== 'undefined') {
-        const supabaseUrl = 'https://auth.mystudentclub.com';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-        const sb = window.supabase.createClient(supabaseUrl, supabaseKey);
+      const sb = window.supabaseClient;
+      if (sb) {
 
         const { data: { session } } = await sb.auth.getSession();
         const authContainer = document.querySelector('.auth-buttons-container');
@@ -3764,9 +3764,9 @@
             if (!data.success) throw new Error(data.error || 'Subscription failed');
 
             // Save to Supabase notifiable table
-            const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            const { data: { session } } = await sb.auth.getSession();
-            try { await saveToNotifiable(sb, session, fcmToken); } catch (_) {/* ignore duplicate key */ }
+            const notifSb = window.supabaseClient || sb;
+            const { data: { session } } = notifSb ? await notifSb.auth.getSession() : { data: { session: null } };
+            try { if (notifSb) await saveToNotifiable(notifSb, session, fcmToken); } catch (_) {/* ignore duplicate key */ }
 
             localStorage.setItem('notif_articleship_program', '1');
             localStorage.setItem('notif_fcm_token_ap', fcmToken);

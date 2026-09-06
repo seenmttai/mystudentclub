@@ -70,8 +70,13 @@ async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) 
 
 const supabaseUrl = 'https://auth.mystudentclub.com';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+const supabaseClient = window.supabaseClient || (typeof getSupabaseClient === 'function' ? getSupabaseClient() : supabase.createClient(supabaseUrl, supabaseKey));
 const BROWSER_GUARD_WORKER_URL = window.BROWSER_GUARD_WORKER_URL || 'https://browser-guard-unlock.bhansalimanan55.workers.dev';
+
+let currentJobFetchController = null;
+let lastCursor = null; // { createdAt, id }
+let lastFilterFingerprint = null;
+let lastJobListCache = null;
 
 
 
@@ -970,12 +975,35 @@ function showModal(job) {
         tagsSectionsHtml += renderPillSection("Client Sector Exposure", job["Client Exposure Tags"], "#fff7ed", "#9a3412", "#ffedd5");
     }
 
-    const rawDesc = isApplicationUnlocked ? effectiveDescription : getTruncatedDescription(effectiveDescription, 260);
+    const rawDesc = effectiveDescription
+        ? (isApplicationUnlocked ? effectiveDescription : getTruncatedDescription(effectiveDescription, 260))
+        : '';
     const descContentHtml = `
         <div class="modal-description-wrapper" id="modalDescriptionWrapper">
-            <div class="modal-description" id="modalDescriptionContent">${renderMarkdown(rawDesc)}</div>
+            <div class="modal-description" id="modalDescriptionContent">${rawDesc ? renderMarkdown(rawDesc) : '<p style="color: #64748b; font-style: italic;"><i class="fas fa-spinner fa-spin" style="margin-right: 6px;"></i>Loading full description...</p>'}</div>
         </div>
     `;
+
+    // Fetch full description on demand if not present
+    if (!effectiveDescription && !job.__fetchingDesc) {
+        job.__fetchingDesc = true;
+        supabaseClient.from(currentTable).select('Description').eq('id', job.id).maybeSingle()
+            .then(({ data, error }) => {
+                job.__fetchingDesc = false;
+                if (!error && data && data.Description) {
+                    job.Description = data.Description;
+                    const descEl = document.getElementById('modalDescriptionContent');
+                    if (descEl) {
+                        const updatedEffective = (currentSession ? getCachedUnlockedJob(job.id, currentTable, currentSession)?.description : null) || job.Description;
+                        const finalRaw = isApplicationUnlocked ? updatedEffective : getTruncatedDescription(updatedEffective, 260);
+                        descEl.innerHTML = renderMarkdown(finalRaw);
+                    }
+                }
+            })
+            .catch(() => {
+                job.__fetchingDesc = false;
+            });
+    }
 
     const applicationContentHtml = isApplicationUnlocked
         ? generateApplicationLinks(effectiveApplicationId)
@@ -1231,11 +1259,25 @@ function updateFilterCache() {
 
 }
 
-async function fetchFirmReviews() {
+async function fetchFirmRatingsForVisibleJobs(jobs) {
+    if (currentTable !== 'Articleship Jobs' || !Array.isArray(jobs) || jobs.length === 0) return;
+
+    const uncached = [];
+    jobs.forEach(j => {
+        const name = (j.Company || '').trim();
+        if (name && !firmReviewsMap.has(name.toLowerCase())) {
+            uncached.push(name);
+        }
+    });
+
+    if (uncached.length === 0) return;
+    const uniqueNames = Array.from(new Set(uncached));
+
     try {
         const { data, error } = await supabaseClient
             .from('articleship_firm_reviews_public')
-            .select('firm_name, overall_rating');
+            .select('firm_name, overall_rating')
+            .in('firm_name', uniqueNames);
         if (error) throw error;
 
         const groups = {};
@@ -1243,11 +1285,7 @@ async function fetchFirmReviews() {
             if (!r.firm_name) return;
             const key = r.firm_name.trim().toLowerCase();
             if (!groups[key]) {
-                groups[key] = {
-                    firmName: r.firm_name.trim(),
-                    ratings: [],
-                    count: 0
-                };
+                groups[key] = { firmName: r.firm_name.trim(), ratings: [], count: 0 };
             }
             if (typeof r.overall_rating === 'number') {
                 groups[key].ratings.push(r.overall_rating);
@@ -1255,19 +1293,57 @@ async function fetchFirmReviews() {
             groups[key].count++;
         });
 
-        firmReviewsMap.clear();
-        for (const key in groups) {
+        uniqueNames.forEach(name => {
+            const key = name.toLowerCase();
             const g = groups[key];
-            const avg = g.ratings.length ? g.ratings.reduce((a, b) => a + b, 0) / g.ratings.length : null;
-            firmReviewsMap.set(key, {
-                firmName: g.firmName,
-                avgOverall: avg,
-                count: g.count
-            });
-        }
+            if (g && g.ratings.length > 0) {
+                const avg = g.ratings.reduce((a, b) => a + b, 0) / g.ratings.length;
+                firmReviewsMap.set(key, { firmName: g.firmName, avgOverall: avg, count: g.count });
+            } else {
+                firmReviewsMap.set(key, { firmName: name, avgOverall: null, count: 0 });
+            }
+        });
+
+        // Update rating badges on visible cards
+        updateVisibleJobRatings();
     } catch (err) {
-        console.warn('Failed to load firm reviews for rating display:', err);
+        console.warn('Failed to load firm reviews for visible cards:', err);
     }
+}
+
+function updateVisibleJobRatings() {
+    if (currentTable !== 'Articleship Jobs') return;
+    const cards = document.querySelectorAll('.job-card');
+    cards.forEach(card => {
+        const compEl = card.querySelector('.job-card-company');
+        if (!compEl || card.querySelector('.job-card-rating-inline')) return;
+        const nameSpan = compEl.querySelector('span');
+        const companyName = nameSpan ? nameSpan.textContent.trim().toLowerCase() : '';
+        const ratingInfo = firmReviewsMap.get(companyName);
+        if (ratingInfo && ratingInfo.count > 5 && ratingInfo.avgOverall != null) {
+            const ratingSpan = document.createElement('span');
+            ratingSpan.className = 'job-card-rating-inline';
+            ratingSpan.style.cssText = `
+                display: inline-flex;
+                align-items: center;
+                gap: 0.25rem;
+                background: #fffbeb;
+                border: 1px solid #fde047;
+                padding: 0.1rem 0.4rem;
+                border-radius: 6px;
+                font-size: 0.72rem;
+                font-weight: 700;
+                color: #ca8a04;
+                vertical-align: middle;
+            `;
+            ratingSpan.innerHTML = `
+                <i class="fas fa-star" style="color: #ca8a04; font-size: 0.65rem;"></i>
+                <span style="color: #1e293b;">${ratingInfo.avgOverall.toFixed(1)}</span>
+                <span style="color: #64748b; font-weight: 500; font-size: 0.68rem;">(${ratingInfo.count} review${ratingInfo.count > 1 ? 's' : ''})</span>
+            `;
+            compEl.appendChild(ratingSpan);
+        }
+    });
 }
 
 async function fetchFilterOptions() {
@@ -1293,9 +1369,52 @@ async function fetchFilterOptions() {
     }
 }
 
+function getFilterFingerprint() {
+    return JSON.stringify({
+        currentTable,
+        keywords: state.keywords,
+        locations: state.locations,
+        categories: state.categories,
+        salaryMin: state.salaryMin,
+        salaryMax: state.salaryMax,
+        salary: state.salary,
+        experience: state.experience,
+        sortBy: state.sortBy,
+        applicationStatus: state.applicationStatus,
+        companyType: state.companyType,
+        industryType: state.industryType,
+        firmType: state.firmType
+    });
+}
+
 async function fetchJobs() {
     if (isFetching) return;
+
+    // Preserve in-memory response if filters have not changed on first page
+    const currentFingerprint = getFilterFingerprint();
+    if (page === 0 && lastFilterFingerprint === currentFingerprint && lastJobListCache && lastJobListCache.length > 0) {
+        if (dom.jobsContainer) {
+            dom.jobsContainer.innerHTML = '';
+            const fragment = document.createDocumentFragment();
+            for (let i = 0; i < lastJobListCache.length; i++) {
+                const card = renderJobCard(lastJobListCache[i]);
+                if (card) fragment.appendChild(card);
+            }
+            dom.jobsContainer.appendChild(fragment);
+            if (currentTable === 'Articleship Jobs') {
+                fetchFirmRatingsForVisibleJobs(lastJobListCache);
+            }
+        }
+        return;
+    }
+
     isFetching = true;
+
+    // Cancel any superseded job search request
+    if (currentJobFetchController) {
+        currentJobFetchController.abort();
+    }
+    currentJobFetchController = new AbortController();
 
     // Only show the main full-screen loader if it's the first page load
     if (page === 0 && dom.loader) {
@@ -1308,10 +1427,8 @@ async function fetchJobs() {
         sentinelSpinner.style.display = 'block';
     }
 
-    // if (dom.loadMoreButton) dom.loadMoreButton.style.display = 'none'; // Removed
-
     try {
-        let selectColumns = 'id, Company, Location, Salary, Description, Created_At, Category, application_count, posts_link, "Primary Domain"';
+        let selectColumns = 'id, Company, Location, Salary, Created_At, Category, application_count, posts_link, "Primary Domain"';
         if (currentTable === "Fresher Jobs") {
             selectColumns += ', Experience, yoe, "Secondary Domain", Tags, "Company Type", "Industry Type", "CTC Range"';
         } else if (currentTable === "Semi Qualified Jobs") {
@@ -1444,7 +1561,18 @@ async function fetchJobs() {
                 nullsFirst: false
             }).order('id', { ascending: false });
 
-            q = q.range(page * limit, (page + 1) * limit - 1);
+            // Cursor pagination for default newest order, range fallback for others
+            if (page > 0 && lastCursor && sortCol === 'Created_At' && !isAsc) {
+                q = q.or(`Created_At.lt.${lastCursor.createdAt},and(Created_At.eq.${lastCursor.createdAt},id.lt.${lastCursor.id})`);
+                q = q.limit(limit);
+            } else {
+                q = q.range(page * limit, (page + 1) * limit - 1);
+            }
+
+            if (currentJobFetchController) {
+                q = q.abortSignal(currentJobFetchController.signal);
+            }
+
             return q;
         };
 
@@ -1523,11 +1651,22 @@ async function fetchJobs() {
                 }
             }
 
+            if (page === 0) {
+                lastFilterFingerprint = currentFingerprint;
+                lastJobListCache = data;
+            }
+
+            const lastItem = data[data.length - 1];
+            if (lastItem) {
+                lastCursor = { createdAt: lastItem.Created_At, id: lastItem.id };
+            }
+
             page++;
             hasMoreData = data.length === limit;
-            // if (hasMoreData && dom.loadMoreButton) {
-            //     dom.loadMoreButton.style.display = 'block';
-            // }
+
+            if (currentTable === 'Articleship Jobs') {
+                fetchFirmRatingsForVisibleJobs(data);
+            }
         } else {
             hasMoreData = false;
             if (page === 0 && dom.jobsContainer) {
@@ -1535,6 +1674,10 @@ async function fetchJobs() {
             }
         }
     } catch (error) {
+        // Silently ignore superseded aborted queries
+        if (error && (error.name === 'AbortError' || error.message?.includes('aborted') || error.code === '20')) {
+            return;
+        }
         if (dom.jobsContainer) {
             const errMsg = (error.message || '').toLowerCase();
             const isNetworkError = errMsg.includes('failed to fetch') ||
@@ -1577,6 +1720,9 @@ function resetAndFetch() {
     clearTimeout(debounceTimeout);
     debounceTimeout = setTimeout(() => {
         page = 0;
+        lastCursor = null;
+        lastFilterFingerprint = null;
+        lastJobListCache = null;
         if (dom.jobsContainer) dom.jobsContainer.innerHTML = '';
         hasMoreData = true;
         fetchJobs();
@@ -2168,7 +2314,8 @@ function processAndApplySearch(inputElement) {
         for (let i = 0; i < terms.length; i++) {
             // Normalize internal spaces (e.g. "Phone   Pe" -> "Phone Pe")
             const cleanTerm = terms[i].replace(/\s+/g, ' ');
-            if (cleanTerm && !existingKeywords.has(cleanTerm)) {
+            // Require meaningful term of at least 2 characters
+            if (cleanTerm && cleanTerm.length >= 2 && !existingKeywords.has(cleanTerm)) {
                 state.keywords.push(cleanTerm);
                 existingKeywords.add(cleanTerm);
             }
@@ -2194,6 +2341,7 @@ async function updateLastAccessDate(userId) {
 async function checkAuth() {
     const { data: { session } } = await supabaseClient.auth.getSession();
     currentSession = session;
+    window.__mscSession = session;
 
     // If logged in, fetch and cache profile data
     if (session?.user?.id) {
@@ -2298,15 +2446,41 @@ window.handleLogout = async () => {
     window.location.href = '/';
 };
 
+async function fetchUserEnrollmentsOnce(userId) {
+    if (userEnrollmentsCache !== null) {
+        return userEnrollmentsCache;
+    }
+    if (!userId) {
+        userEnrollmentsCache = [];
+        enrollmentStatusCache = { any: false, industrialTraining: false, freshers: false };
+        return userEnrollmentsCache;
+    }
+    try {
+        const { data, error } = await supabaseClient
+            .from('enrollment')
+            .select('course')
+            .eq('uuid', userId);
+        if (error) throw error;
+        userEnrollmentsCache = (data || []).map(e => e.course);
+    } catch (err) {
+        console.error("Failed to fetch user enrollments:", err);
+        userEnrollmentsCache = [];
+    }
+    const hasAny = userEnrollmentsCache.length > 0;
+    enrollmentStatusCache = {
+        any: hasAny,
+        industrialTraining: userEnrollmentsCache.includes('industrial-training-mastery'),
+        freshers: userEnrollmentsCache.includes('msc-ca-freshers-program')
+    };
+    return userEnrollmentsCache;
+}
+
 async function checkUserEnrollment() {
     if (!currentSession || !currentSession.user) return;
     const lmsNavLink = document.getElementById('lms-nav-link');
     if (!lmsNavLink) return;
-    try {
-        const { error, count } = await supabaseClient.from('enrollment').select('course', { count: 'exact', head: true }).eq('uuid', currentSession.user.id);
-        if (error) throw error;
-        lmsNavLink.style.display = count > 0 ? 'flex' : 'none';
-    } catch (error) { lmsNavLink.style.display = 'none'; }
+    await fetchUserEnrollmentsOnce(currentSession.user.id);
+    lmsNavLink.style.display = (enrollmentStatusCache && enrollmentStatusCache.any) ? 'flex' : 'none';
 
     // Show My Applications link for logged in users
     const historyNavLink = document.getElementById('history-nav-link');
@@ -2319,26 +2493,7 @@ let userEnrollmentsCache = null;
 let enrollmentStatusCache = null; // { any, industrialTraining, freshers }
 
 async function prefetchEnrollmentStatus(userId) {
-    try {
-        const { count: anyCount, error: e1 } = await supabaseClient
-            .from('enrollment')
-            .select('course', { count: 'exact', head: true })
-            .eq('uuid', userId);
-        if (e1) throw e1;
-        const hasAny = (anyCount || 0) > 0;
-        enrollmentStatusCache = { any: hasAny, industrialTraining: false, freshers: false };
-        if (hasAny) {
-            const [r1, r2] = await Promise.all([
-                supabaseClient.from('enrollment').select('course', { count: 'exact', head: true }).eq('uuid', userId).eq('course', 'industrial-training-mastery'),
-                supabaseClient.from('enrollment').select('course', { count: 'exact', head: true }).eq('uuid', userId).eq('course', 'msc-ca-freshers-program')
-            ]);
-            enrollmentStatusCache.industrialTraining = (r1.count || 0) > 0;
-            enrollmentStatusCache.freshers = (r2.count || 0) > 0;
-        }
-    } catch (e) {
-        console.error('Failed to prefetch enrollment:', e);
-        enrollmentStatusCache = { any: false, industrialTraining: false, freshers: false };
-    }
+    await fetchUserEnrollmentsOnce(userId);
 }
 
 function isEnrolledSync(tableName) {
@@ -2348,42 +2503,18 @@ function isEnrolledSync(tableName) {
 }
 
 async function getUserEnrollments(userId) {
-    if (userEnrollmentsCache !== null) {
-        return userEnrollmentsCache;
-    }
-    try {
-        const { data, error } = await supabaseClient
-            .from('enrollment')
-            .select('course')
-            .eq('uuid', userId);
-        if (error) throw error;
-        userEnrollmentsCache = (data || []).map(e => e.course);
-        return userEnrollmentsCache;
-    } catch (err) {
-        console.error("Failed to fetch user enrollments:", err);
-        return [];
-    }
+    return fetchUserEnrollmentsOnce(userId);
 }
 
 async function checkEnrollmentForTable(tableName, userId) {
     if (!userId) return false;
-    try {
-        let query = supabaseClient
-            .from('enrollment')
-            .select('course', { count: 'exact', head: true })
-            .eq('uuid', userId);
-        if (tableName === 'Industrial Training Job Portal') {
-            query = query.eq('course', 'industrial-training-mastery');
-        } else if (tableName === 'Fresher Jobs') {
-            query = query.eq('course', 'msc-ca-freshers-program');
-        }
-        const { count, error } = await query;
-        if (error) throw error;
-        return count > 0;
-    } catch (err) {
-        console.error('Failed to check enrollment:', err);
-        return false;
-    }
+    await fetchUserEnrollmentsOnce(userId);
+    return isEnrolledSync(tableName);
+}
+
+function clearEnrollmentCache() {
+    userEnrollmentsCache = null;
+    enrollmentStatusCache = null;
 }
 
 function getCoursePageLink() {
@@ -2821,13 +2952,8 @@ async function loadBanners() {
         // Determine if current user is enrolled in any course
         let isEnrolled = false;
         if (currentSession?.user?.id) {
-            const { count, error: enrollErr } = await supabaseClient
-                .from('enrollment')
-                .select('course', { count: 'exact', head: true })
-                .eq('uuid', currentSession.user.id);
-            if (!enrollErr && count > 0) {
-                isEnrolled = true;
-            }
+            await fetchUserEnrollmentsOnce(currentSession.user.id);
+            isEnrolled = Boolean(enrollmentStatusCache && enrollmentStatusCache.any);
         }
 
         const relevantBanners = banners.filter(b => {
@@ -3604,7 +3730,6 @@ async function initializePage() {
     }
 
     await fetchFilterOptions();
-    await fetchFirmReviews();
 
     populateSalaryFilter();
     setupEventListeners();
@@ -3655,7 +3780,7 @@ async function fetchSharedJob(jobId) {
             .from(currentTable)
             .select(getPublicJobSelectColumns(currentTable))
             .eq('id', jobId)
-            .single();
+            .maybeSingle();
 
         if (!error && data) {
             setTimeout(() => showModal(data), 300);
@@ -3705,11 +3830,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const hasResume = localStorage.getItem('userCVText');
 
     if (isNewUser === 'true') {
-        const supabaseUrl = 'https://auth.mystudentclub.com';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
-
-        const { data: { session } } = await supabaseClient.auth.getSession();
+        const session = currentSession || (await supabaseClient.auth.getSession()).data.session;
 
         if (session && !hasResume) {
             setTimeout(() => {
@@ -4659,7 +4780,12 @@ function dv2Init() {
     if (!document.getElementById('dv2TopSearchInput') && !document.querySelector('.dv2-right-rail')) return;
     dv2SetupTopSearch();
     dv2UpdateProfileWidgets();
-    dv2PopulateTrending();
+    // Defer trending jobs until after first job list is visible
+    if ('requestIdleCallback' in window) {
+        requestIdleCallback(() => dv2PopulateTrending(), { timeout: 2000 });
+    } else {
+        setTimeout(() => dv2PopulateTrending(), 1000);
+    }
 }
 
 function dv2SetupTopSearch() {
