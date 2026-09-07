@@ -462,17 +462,17 @@
     </p>
 
     <div id="credentials-box" class="credentials-box" style="margin: 0.5rem 0; padding: 1rem;">
-      <h3
+      <h3 id="credentials-title"
         style="margin-bottom: 0.5rem; font-size: 1.1rem; display: flex; align-items: center; justify-content: space-between;">
-        Your ID Password
+        <span id="credentials-title-text">Your login credentials</span>
         <span id="login-success-tick" style="display: none; color: #10b981; font-size: 0.9rem; font-weight: 500;"
           title="Successfully logged in">
           <i class="fas fa-check-circle mr-1"></i> Successfully logged in
         </span>
       </h3>
       <p style="margin-bottom: 0.25rem;"><strong>Email:</strong> <code id="user-email"></code></p>
-      <p style="margin-bottom: 0.25rem;"><strong>Password:</strong> <code id="user-password"></code></p>
-      <p class="warning-text" style="margin-top: 0.5rem; font-size: 0.85rem;">
+      <p id="password-row" style="margin-bottom: 0.25rem;"><strong>Password:</strong> <code id="user-password"></code></p>
+      <p id="password-warning" class="warning-text" style="margin-top: 0.5rem; font-size: 0.85rem;">
         Please copy and save these details in a safe place. This is the only time your password will be shown.
       </p>
       <div id="login-status" class="login-status" style="margin: 0.5rem 0; padding: 0.75rem;"></div>
@@ -688,22 +688,46 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      const params = new URLSearchParams(window.location.search);
+      const fragmentParams = new URLSearchParams(window.location.hash.slice(1));
+      const queryParams = new URLSearchParams(window.location.search);
+      const params = fragmentParams.size ? fragmentParams : queryParams;
       const email = params.get('email');
       const password = params.get('password');
+      const accountStatus = params.get('status') || (email && password ? 'created' : null);
+      const enrollmentStatus = params.get('enrollment');
       const nameParam = params.get('name') || params.get('first_name');
+
+      // Remove credentials and personal information from browser history after reading them.
+      if (window.location.hash || window.location.search) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
 
       if (nameParam) {
         const nameSpan = document.getElementById('user-display-name');
         if (nameSpan) nameSpan.textContent = nameParam;
       }
 
-      if (email && password) {
+      if (email && accountStatus === 'existing') {
+        const credentialsTitle = document.getElementById('credentials-title-text');
+        if (credentialsTitle) {
+          credentialsTitle.textContent = enrollmentStatus === 'already-enrolled'
+            ? 'Enrollment already active'
+            : 'Enrollment added to your existing account';
+        }
+        document.getElementById('user-email').textContent = email;
+        document.getElementById('password-row').style.display = 'none';
+        document.getElementById('password-warning').style.display = 'none';
+        document.getElementById('credentials-box').style.display = 'block';
+
+        const loginStatus = document.getElementById('login-status');
+        loginStatus.textContent = enrollmentStatus === 'already-enrolled'
+          ? 'This account was already enrolled in this course. Use your existing password to sign in.'
+          : 'Your existing account has been enrolled successfully. Use your existing password to sign in.';
+        loginStatus.classList.add('show');
+      } else if (email && password && accountStatus === 'created') {
         document.getElementById('user-email').textContent = email;
         document.getElementById('user-password').textContent = password;
         document.getElementById('credentials-box').style.display = 'block';
-
-        // Attempt automatic login
         attemptAutoLogin(email, password);
       }
 
