@@ -1077,15 +1077,18 @@
             z-index: 50;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(12px);
-            padding: 8px 8px 8px 18px;
+            padding: 6px 12px;
             border-radius: 99px;
             box-shadow: var(--shadow-md);
             display: flex;
             align-items: center;
-            gap: 12px;
+            justify-content: center;
+            gap: 8px;
             margin-bottom: 24px;
             border: 1px solid rgba(255, 255, 255, 0.8);
-            max-width: 90%;
+            max-width: 100%;
+            width: max-content;
+            box-sizing: border-box;
         }
 
         .floater-pill {
@@ -1093,12 +1096,13 @@
             background: transparent;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 6px;
             cursor: pointer;
             border-radius: 999px;
-            padding: 6px 10px;
+            padding: 5px 8px;
             color: var(--text-main);
             transition: background 0.2s ease;
+            flex-shrink: 0;
         }
 
         .floater-pill:hover {
@@ -1109,6 +1113,7 @@
             position: relative;
             display: inline-flex;
             align-items: center;
+            flex-shrink: 0;
         }
 
         .floater-dropdown-menu {
@@ -1185,8 +1190,10 @@
         }
 
         .undo-redo-pill {
-            gap: 8px;
+            gap: 6px;
             cursor: default;
+            padding: 4px 6px;
+            flex-shrink: 0;
         }
 
         .undo-redo-pill:hover {
@@ -1196,12 +1203,12 @@
         .undo-redo-group {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
         }
 
         .undo-redo-btn {
-            width: 30px;
-            height: 30px;
+            width: 28px;
+            height: 28px;
             border-radius: 999px;
             border: 1px solid #d1d5db;
             background: #ffffff;
@@ -1216,8 +1223,8 @@
 
         .undo-redo-btn svg {
             display: block;
-            width: 14px;
-            height: 14px;
+            width: 13px;
+            height: 13px;
             stroke-width: 2.1;
         }
 
@@ -1242,6 +1249,26 @@
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 1400px) {
+            .undo-redo-pill .template-label {
+                display: none;
+            }
+        }
+
+        @media (max-width: 1240px) {
+            .template-floater {
+                gap: 4px;
+                padding: 4px 8px;
+            }
+            .floater-pill {
+                padding: 4px 6px;
+                gap: 4px;
+            }
+            .template-label {
+                display: none;
+            }
         }
 
         .template-select {

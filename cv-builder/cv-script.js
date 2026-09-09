@@ -49,7 +49,7 @@
         }
 
         let cvData = {
-            personal: { name: "", tagline: "", contact: "", phone: "+91 ", email: "", linkedin: "", location: "", socialLinks: [] },
+            personal: { name: "", tagline: "", contact: "", phone: "", email: "", linkedin: "", location: "", socialLinks: [] },
             summary: "",
             education: [],
             experience: [],
@@ -229,7 +229,18 @@
                 // Listen for frame saying it's ready (fix for white screen on reload)
                 window.addEventListener('message', (e) => {
                     if (e.data && e.data.type === 'cv-frame-ready') {
-                        postToFrame();
+                        const mainFrame = document.getElementById('cv-frame');
+                        if (mainFrame && e.source === mainFrame.contentWindow) {
+                            postToFrame();
+                        } else {
+                            const gridIframes = document.querySelectorAll('#template-grid iframe');
+                            for (let i = 0; i < gridIframes.length; i++) {
+                                if (gridIframes[i].contentWindow === e.source) {
+                                    injectPreviewData(gridIframes[i]);
+                                    break;
+                                }
+                            }
+                        }
                     } else if (e.data && e.data.type === 'section-grouping-capability') {
                         const supported = !!e.data.supported;
                         if (supported !== window.__sectionGroupingSupported) {
@@ -1337,7 +1348,7 @@
         function ensureCvDataShape() {
             if (!cvData || typeof cvData !== 'object') {
                 cvData = {
-                    personal: { name: "", tagline: "", contact: "", phone: "+91 ", email: "", linkedin: "", location: "", socialLinks: [] },
+                    personal: { name: "", tagline: "", contact: "", phone: "", email: "", linkedin: "", location: "", socialLinks: [] },
                     summary: "",
                     education: [],
                     experience: [],
@@ -1356,9 +1367,15 @@
                     sectionGroups: {}
                 };
             }
-            if (!cvData.personal) cvData.personal = { name: "", tagline: "", contact: "", phone: "+91 ", email: "", linkedin: "", location: "", socialLinks: [] };
-            if (!cvData.personal.phone) cvData.personal.phone = "+91 ";
+            if (!cvData.personal) cvData.personal = { name: "", tagline: "", contact: "", phone: "", email: "", linkedin: "", location: "", socialLinks: [] };
+            if (typeof cvData.personal.phone !== 'string') cvData.personal.phone = '';
+            if (typeof cvData.personal.email !== 'string') cvData.personal.email = '';
+            if (typeof cvData.personal.linkedin !== 'string') cvData.personal.linkedin = '';
+            if (typeof cvData.personal.location !== 'string') cvData.personal.location = '';
             if (!Array.isArray(cvData.personal.socialLinks)) cvData.personal.socialLinks = [];
+            if ((!cvData.personal.phone || !cvData.personal.email) && cvData.personal.contact) {
+                parseLegacyContact(cvData.personal);
+            }
             if (!Array.isArray(cvData.education)) cvData.education = [];
             if (!Array.isArray(cvData.experience)) cvData.experience = [];
             normalizeExperienceMerges();
@@ -2173,20 +2190,21 @@
             const digits = val.replace(/[^\d]/g, '');
             if (digits.length === 10 && !val.startsWith('+') && !val.startsWith('0')) {
                 input.value = '+91 ' + val;
+                if (cvData && cvData.personal) cvData.personal.phone = input.value;
                 updateCV();
             }
         }
 
         // Data Updates
         function updateCV() {
-            parseLegacyContact(cvData.personal);
-            cvData.personal.name = document.getElementById('inp-name').value;
-            cvData.personal.tagline = document.getElementById('inp-tagline').value;
+            if (!cvData.personal) cvData.personal = { name: "", tagline: "", contact: "", phone: "", email: "", linkedin: "", location: "", socialLinks: [] };
+            cvData.personal.name = document.getElementById('inp-name')?.value || '';
+            cvData.personal.tagline = document.getElementById('inp-tagline')?.value || '';
             // Keep legacy free-text contact blank now that separate fields are the source of truth.
-            cvData.personal.phone = document.getElementById('inp-phone').value;
-            cvData.personal.email = document.getElementById('inp-email').value;
-            cvData.personal.linkedin = document.getElementById('inp-linkedin').value;
-            cvData.personal.location = document.getElementById('inp-location').value;
+            cvData.personal.phone = document.getElementById('inp-phone')?.value || '';
+            cvData.personal.email = document.getElementById('inp-email')?.value || '';
+            cvData.personal.linkedin = document.getElementById('inp-linkedin')?.value || '';
+            cvData.personal.location = document.getElementById('inp-location')?.value || '';
             cvData.personal.highlight1 = document.getElementById('inp-highlight1')?.value || '';
             cvData.personal.highlight2 = document.getElementById('inp-highlight2')?.value || '';
             cvData.personal.highlight3 = document.getElementById('inp-highlight3')?.value || '';
@@ -3363,14 +3381,34 @@
             iframes.forEach(iframe => observer.observe(iframe));
         }
 
+        function isRealPhoneValue(phone) {
+            if (!phone) return false;
+            const trimmed = String(phone).trim();
+            if (trimmed === '' || trimmed === '+91' || trimmed === '+91 ') return false;
+            const digits = trimmed.replace(/[^\d]/g, '');
+            return digits.length > 2;
+        }
+
+        function hasItemContent(item) {
+            if (!item) return false;
+            if (typeof item === 'string') return !!getPlainTextFromHTML(item).trim();
+            if (Array.isArray(item)) return item.some(hasItemContent);
+            if (typeof item === 'object') {
+                return Object.entries(item).some(([key, val]) => {
+                    if (key === 'titleMergedWithPrevious' || key === 'mergedWithPrevious') return false;
+                    if (typeof val === 'string') return !!getPlainTextFromHTML(val).trim();
+                    if (Array.isArray(val)) return val.some(hasItemContent);
+                    if (typeof val === 'number') return true;
+                    if (typeof val === 'object' && val !== null) return hasItemContent(val);
+                    return false;
+                });
+            }
+            return false;
+        }
+
         function hasContentInList(list) {
-            return (list || []).some(item => {
-                if (typeof item === 'string') return !!item.trim();
-                if (item && typeof item === 'object') {
-                    return Object.values(item).some(value => typeof value === 'string' ? !!value.trim() : !!value);
-                }
-                return !!item;
-            });
+            if (!Array.isArray(list) || list.length === 0) return false;
+            return list.some(hasItemContent);
         }
 
         function hasUserEnteredData(data) {
@@ -3379,12 +3417,14 @@
             if ((p.name || '').trim()) return true;
             if ((p.tagline || '').trim()) return true;
             if ((p.contact || '').trim()) return true;
-            if ((p.phone || '').trim()) return true;
+            if (isRealPhoneValue(p.phone)) return true;
             if ((p.email || '').trim()) return true;
             if ((p.linkedin || '').trim()) return true;
-            if (Array.isArray(p.socialLinks) && p.socialLinks.some(link => (link.url || '').trim() || (link.label || '').trim())) return true;
+            if ((p.location || '').trim()) return true;
+            if (Array.isArray(p.socialLinks) && p.socialLinks.some(link => (link && ((link.url || '').trim() || (link.label || '').trim())))) return true;
+            if ((p.highlight1 || '').trim() || (p.highlight2 || '').trim() || (p.highlight3 || '').trim()) return true;
             if (getPlainTextFromHTML(data.summary || '').trim()) return true;
-            if ((data.skills || '').trim()) return true;
+            if (getPlainTextFromHTML(data.skills || '').trim()) return true;
             if (hasContentInList(data.education)) return true;
             if (hasContentInList(data.experience)) return true;
             if (hasContentInList(data.projects)) return true;
@@ -3392,7 +3432,7 @@
             if (hasContentInList(data.achievements)) return true;
             if (hasContentInList(data.interests)) return true;
             if (hasContentInList(data.leadership)) return true;
-            if (Array.isArray(data.customSections) && data.customSections.some(s => (s.title || '').trim() || hasContentInList(s.items))) return true;
+            if (Array.isArray(data.customSections) && data.customSections.some(s => s && ((s.title || '').trim() || hasContentInList(s.items)))) return true;
             return false;
         }
 
@@ -3462,6 +3502,21 @@
             }
         }
 
+        function updateTemplatePreviews() {
+            const grid = document.getElementById('template-grid');
+            if (!grid) return;
+            const iframes = grid.querySelectorAll('iframe');
+            if (!iframes || !iframes.length) return;
+            const payload = buildPreviewPayload({ useDemoFallback: true });
+            iframes.forEach(iframe => {
+                try {
+                    if (iframe.contentWindow && iframe.src) {
+                        iframe.contentWindow.postMessage({ type: 'update-cv', payload }, '*');
+                    }
+                } catch (e) {}
+            });
+        }
+
         function selectTemplate(file, name) {
             // Gate premium templates: don't switch — prompt to log in or unlock.
             if (isTemplateLocked(file)) {
@@ -3492,6 +3547,7 @@
                     console.error('postToFrame error:', e);
                 }
             }
+            updateTemplatePreviews();
             if (!skipSave) saveLocal();
             if (!skipHistory) pushUndoStateFromCurrent();
             updateUndoRedoControls();
@@ -3522,12 +3578,12 @@
 
         function updateProgress() {
             let filled = 0, total = 7;
-            if (cvData.personal.name) filled++;
-            if ((cvData.personal.phone || '').trim() || (cvData.personal.email || '').trim() || (cvData.personal.linkedin || '').trim() || (cvData.personal.location || '').trim() || (cvData.personal.socialLinks || []).some(link => (link?.url || '').trim())) filled++;
-            if (getPlainTextFromHTML(cvData.summary || '')) filled++;
-            if (getPlainTextFromHTML(cvData.skills || '')) filled++;
-            if (cvData.education.length) filled += 1.5;
-            if (cvData.experience.length) filled += 1.5;
+            if ((cvData.personal?.name || '').trim()) filled++;
+            if (isRealPhoneValue(cvData.personal?.phone) || (cvData.personal?.email || '').trim() || (cvData.personal?.linkedin || '').trim() || (cvData.personal?.location || '').trim() || (cvData.personal?.socialLinks || []).some(link => (link?.url || '').trim())) filled++;
+            if (getPlainTextFromHTML(cvData.summary || '').trim()) filled++;
+            if (getPlainTextFromHTML(cvData.skills || '').trim()) filled++;
+            if (hasContentInList(cvData.education)) filled += 1.5;
+            if (hasContentInList(cvData.experience)) filled += 1.5;
             const pct = Math.min((filled / total) * 100, 100);
             document.getElementById('progress-fill').style.width = pct + '%';
             const percentEl = document.getElementById('progress-percent');
@@ -3591,7 +3647,7 @@
         function resetData() {
             if (confirm("Clear all data?")) {
                 cvData = {
-                    personal: { name: "", tagline: "", contact: "", phone: "+91 ", email: "", linkedin: "", location: "", socialLinks: [] },
+                    personal: { name: "", tagline: "", contact: "", phone: "", email: "", linkedin: "", location: "", socialLinks: [] },
                     summary: "",
                     education: [],
                     experience: [],
