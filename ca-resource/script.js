@@ -1049,9 +1049,61 @@ window.addEventListener('beforeprint', e => {
     return false;
 });
 
+// ─── Back Button ───
+const backBtn = document.getElementById('viewer-back-btn');
+if (backBtn) {
+    backBtn.addEventListener('click', () => {
+        if (window.history.length > 1) {
+            window.history.back();
+        } else {
+            window.location.href = '/learning-management-system/';
+        }
+    });
+}
+
+// ─── Supabase In-Place Loader (Single Loading Step) ───
+const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+const supabaseClient = window.supabase ? window.supabase.createClient(supabaseUrl, supabaseKey) : null;
+
+async function loadResourceByName(resourceName) {
+    loadingOverlay.classList.remove('hidden');
+    const loaderText = loadingOverlay.querySelector('.loader-text');
+    if (loaderText) loaderText.textContent = 'Loading document...';
+
+    try {
+        if (!supabaseClient) throw new Error('Supabase client unavailable');
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) {
+            window.location.replace('/login.html');
+            return;
+        }
+
+        const { data, error } = await supabaseClient.storage
+            .from('industrial-training-mastery-resources')
+            .createSignedUrl(resourceName, 300);
+
+        if (error || !data?.signedUrl) {
+            throw new Error('Access denied or resource not found');
+        }
+
+        const proxyUrl = `https://pdf-proxy-viewer.bhansalimanan55.workers.dev/?url=${encodeURIComponent(data.signedUrl)}`;
+        loadPdf(proxyUrl);
+    } catch (err) {
+        console.error('Resource load error:', err);
+        if (loaderText) loaderText.textContent = 'Access Restricted or Document Unavailable';
+    }
+}
+
 // ─── Init ───
 updateSearchControls();
-loadPdf(PDF_URL);
+
+const paramName = urlParams.get('name');
+if (paramName) {
+    loadResourceByName(paramName);
+} else {
+    loadPdf(PDF_URL);
+}
 
 if (previewModeChip && previewMode === 'docx') {
     previewModeChip.style.display = 'inline-flex';

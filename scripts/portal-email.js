@@ -1,4 +1,4 @@
-﻿import { getDaysAgo } from './date-utils.js';
+import { getDaysAgo } from './date-utils.js';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 
 async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) {
@@ -294,21 +294,35 @@ https://chat.whatsapp.com/D491zsqKmv25S2YLloSUBR`;
             if (btnElement) {
                 const originalHtml = btnElement.innerHTML;
                 const originalStyles = btnElement.style.cssText;
+                const isIconOnly = btnElement.classList?.contains('jd-action-btn') || btnElement.offsetWidth <= 44;
 
                 // Visual feedback
-                btnElement.innerHTML = '<i class="fas fa-check"></i> Copied!';
-                btnElement.style.background = '#22c55e';
-                btnElement.style.color = '#ffffff';
+                if (isIconOnly) {
+                    btnElement.innerHTML = '<i class="fas fa-check"></i>';
+                    btnElement.style.background = '#16a34a';
+                    btnElement.style.color = '#ffffff';
+                } else {
+                    btnElement.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                    btnElement.style.background = '#16a34a';
+                    btnElement.style.color = '#ffffff';
+                }
 
                 setTimeout(() => {
                     btnElement.innerHTML = originalHtml;
                     btnElement.style.cssText = originalStyles;
                 }, 2000);
+            }
+            if (typeof showToast === 'function') {
+                showToast('Job link copied to clipboard!', 'success');
             } else {
                 alert('Job details copied to clipboard!');
             }
         }).catch(err => {
-            alert('Failed to copy details.');
+            if (typeof showToast === 'function') {
+                showToast('Failed to copy details.', 'error');
+            } else {
+                alert('Failed to copy details.');
+            }
         });
     }
 }

@@ -78,9 +78,6 @@ document.addEventListener('DOMContentLoaded', () => {
         prevVideoBtn: document.getElementById('prev-video-btn'),
         nextVideoBtn: document.getElementById('next-video-btn'),
         videoCounter: document.getElementById('video-counter'),
-        prevVideoBtn: document.getElementById('prev-video-btn'),
-        nextVideoBtn: document.getElementById('next-video-btn'),
-        videoCounter: document.getElementById('video-counter'),
         courseTabsContainer: document.getElementById('course-tabs-container'),
         tabContents: {
             overview: document.getElementById('tab-content-overview'),
@@ -163,8 +160,9 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const findVideoById = (videoId) => {
+        if (videoId === null || videoId === undefined) return null;
         for (const section of state.courseSections) {
-            const foundVideo = section.videos.find(v => v.id === videoId);
+            const foundVideo = section.videos.find(v => String(v.id) === String(videoId));
             if (foundVideo) return foundVideo;
         }
         return null;
@@ -450,14 +448,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         state.courseSections.forEach((day, dayIndex) => {
             const isDayCompleted = day.videos.every(v => v.completed);
-            const isDaySelected = day.videos.some(v => v.id === state.currentVideoId);
+            const isDaySelected = day.videos.some(v => String(v.id) === String(state.currentVideoId));
             const moduleDiv = document.createElement('div');
             moduleDiv.className = 'course-module';
 
             let sessionsHTML = '';
             day.videos.forEach(video => {
                 const isVideoCompleted = video.completed;
-                const isVideoSelected = video.id === state.currentVideoId;
+                const isVideoSelected = String(video.id) === String(state.currentVideoId);
                 
                 let resourcesHTML = '';
                 if (video.resources && video.resources.length > 0) {
@@ -526,8 +524,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         DOMElements.courseModulesContainer.querySelectorAll('.sub-video-item').forEach(el => {
             el.addEventListener('click', (e) => {
-                const videoId = parseInt(el.dataset.videoId);
-                if (!isNaN(videoId)) {
+                const videoId = el.dataset.videoId;
+                if (videoId !== undefined && videoId !== null && videoId !== '') {
                     selectVideo(videoId);
                 }
             });
@@ -560,8 +558,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Fetch cloud watch-time data before selecting first video
         await fetchWatchTimeForCourse();
         const lastVideoId = localStorage.getItem(`lastVideoId_${state.courseSlug}`);
-        if (lastVideoId && findVideoById(parseInt(lastVideoId))) {
-            selectVideo(parseInt(lastVideoId));
+        if (lastVideoId && findVideoById(lastVideoId)) {
+            selectVideo(lastVideoId);
         } else if (state.courseSections.length > 0 && state.courseSections[0].videos.length > 0) {
             selectVideo(state.courseSections[0].videos[0].id);
         }
@@ -1356,12 +1354,14 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const getAdjacentVideo = (direction) => {
-        if (!state.currentVideoId) return null;
+        if (state.currentVideoId === null || state.currentVideoId === undefined) return null;
         const allVideos = [];
         state.courseSections.forEach(section => {
-            section.videos.forEach(v => allVideos.push(v));
+            if (section.videos && Array.isArray(section.videos)) {
+                section.videos.forEach(v => allVideos.push(v));
+            }
         });
-        const currentIndex = allVideos.findIndex(video => video.id === state.currentVideoId);
+        const currentIndex = allVideos.findIndex(video => String(video.id) === String(state.currentVideoId));
         if (currentIndex === -1) return null;
         if (direction === 'previous' && currentIndex > 0) return allVideos[currentIndex - 1];
         if (direction === 'next' && currentIndex < allVideos.length - 1) return allVideos[currentIndex + 1];
@@ -1369,8 +1369,16 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const updateNavButtons = () => {
-        DOMElements.prevVideoBtn.disabled = getAdjacentVideo('previous') === null;
-        DOMElements.nextVideoBtn.disabled = getAdjacentVideo('next') === null;
+        const prevVideo = getAdjacentVideo('previous');
+        const nextVideo = getAdjacentVideo('next');
+        if (DOMElements.prevVideoBtn) {
+            DOMElements.prevVideoBtn.disabled = prevVideo === null;
+            DOMElements.prevVideoBtn.classList.toggle('disabled', prevVideo === null);
+        }
+        if (DOMElements.nextVideoBtn) {
+            DOMElements.nextVideoBtn.disabled = nextVideo === null;
+            DOMElements.nextVideoBtn.classList.toggle('disabled', nextVideo === null);
+        }
     };
 
     const updateVideoCounter = () => {
@@ -1379,9 +1387,9 @@ document.addEventListener('DOMContentLoaded', () => {
             DOMElements.videoCounter.style.display = 'none';
             return;
         }
-        const section = state.courseSections.find(s => s.videos.some(v => v.id === state.currentVideoId));
+        const section = state.courseSections.find(s => s.videos && s.videos.some(v => String(v.id) === String(state.currentVideoId)));
         if (section) {
-            const currentVideoIndex = section.videos.findIndex(v => v.id === state.currentVideoId) + 1;
+            const currentVideoIndex = section.videos.findIndex(v => String(v.id) === String(state.currentVideoId)) + 1;
             const sessionText = section.videos.length > 1 ? ` - Session ${currentVideoIndex}/${section.videos.length}` : '';
             DOMElements.videoCounter.textContent = section.day_number === 0 
                 ? `Day 0${sessionText}` 
@@ -1637,6 +1645,12 @@ document.addEventListener('DOMContentLoaded', () => {
         DOMElements.csvViewerContainer.style.display = 'none';
         DOMElements.iframeViewerContainer.style.display = 'none';
 
+        const courseZoomControls = document.getElementById('course-zoom-controls');
+        if (courseZoomControls) courseZoomControls.style.display = type === 'pdf' ? 'flex' : 'none';
+        courseZoomIndex = 1;
+        applyCourseZoom(100);
+        initCoursePinchZoom();
+
         DOMElements.resourceViewerModal.querySelector('.resource-viewer-controls').style.display = type === 'iframe' ? 'none' : 'flex';
         
         const hasDl = resource.download_storage_path && resource.download_storage_path !== 'None';
@@ -1734,6 +1748,79 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const COURSE_ZOOM_LEVELS = [75, 100, 125, 150, 175, 200, 250];
+    let courseZoomIndex = 1; // 100%
+
+    const applyCourseZoom = (zoomPct) => {
+        const canvas = DOMElements.pdfCanvas;
+        const container = DOMElements.pdfViewerContainer;
+        const zoomLevelEl = document.getElementById('course-zoom-level');
+        if (zoomLevelEl) zoomLevelEl.textContent = `${zoomPct}%`;
+        if (!canvas || !container) return;
+
+        const containerWidth = container.clientWidth ? (container.clientWidth - 32) : (window.innerWidth - 32);
+        const baseWidth = Math.min(containerWidth > 0 ? containerWidth : 680, 680);
+        const targetWidth = Math.round(baseWidth * (zoomPct / 100));
+
+        if (zoomPct === 100) {
+            canvas.style.width = '100%';
+            canvas.style.maxWidth = `${baseWidth}px`;
+            canvas.style.minWidth = '';
+        } else {
+            canvas.style.width = `${targetWidth}px`;
+            canvas.style.maxWidth = `${targetWidth}px`;
+            canvas.style.minWidth = `${targetWidth}px`;
+        }
+    };
+
+    const zoomCoursePdf = (direction) => {
+        if (direction === 'in' && courseZoomIndex < COURSE_ZOOM_LEVELS.length - 1) {
+            courseZoomIndex++;
+        } else if (direction === 'out' && courseZoomIndex > 0) {
+            courseZoomIndex--;
+        } else if (direction === 'reset') {
+            courseZoomIndex = 1;
+        }
+        applyCourseZoom(COURSE_ZOOM_LEVELS[courseZoomIndex]);
+    };
+
+    let coursePinchStartDist = 0;
+    const initCoursePinchZoom = () => {
+        const container = DOMElements.pdfViewerContainer;
+        if (!container || container.dataset.pinchBound) return;
+        container.dataset.pinchBound = 'true';
+
+        container.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 2) {
+                coursePinchStartDist = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+            }
+        }, { passive: true });
+
+        container.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 2 && coursePinchStartDist > 0) {
+                const currentDist = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+                const delta = currentDist - coursePinchStartDist;
+                if (delta > 35 && courseZoomIndex < COURSE_ZOOM_LEVELS.length - 1) {
+                    zoomCoursePdf('in');
+                    coursePinchStartDist = currentDist;
+                } else if (delta < -35 && courseZoomIndex > 0) {
+                    zoomCoursePdf('out');
+                    coursePinchStartDist = currentDist;
+                }
+            }
+        }, { passive: true });
+
+        container.addEventListener('touchend', (e) => {
+            if (e.touches.length < 2) coursePinchStartDist = 0;
+        }, { passive: true });
+    };
+
     const renderPdfPage = async (num) => {
         if (!state.pdfDoc) return;
         state.pdfCurrentPage = num;
@@ -1745,6 +1832,7 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.width = viewport.width;
         await page.render({ canvasContext: ctx, viewport: viewport }).promise;
         drawWatermark(canvas, ctx);
+        applyCourseZoom(COURSE_ZOOM_LEVELS[courseZoomIndex]);
 
         DOMElements.pdfPageInfo.textContent = `Page ${state.pdfCurrentPage} of ${state.pdfTotalPages}`;
         DOMElements.pdfPrevPage.disabled = state.pdfCurrentPage <= 1;
@@ -1902,6 +1990,11 @@ document.addEventListener('DOMContentLoaded', () => {
         DOMElements.pdfPrevPage.addEventListener('click', () => { if (state.pdfCurrentPage > 1) renderPdfPage(state.pdfCurrentPage - 1); });
         DOMElements.pdfNextPage.addEventListener('click', () => { if (state.pdfCurrentPage < state.pdfTotalPages) renderPdfPage(state.pdfCurrentPage + 1); });
         DOMElements.viewerDownloadBtn.addEventListener('click', () => { if (state.currentResource) downloadResource(state.currentResource) });
+
+        const courseZoomIn = document.getElementById('course-zoom-in');
+        if (courseZoomIn) courseZoomIn.addEventListener('click', () => zoomCoursePdf('in'));
+        const courseZoomOut = document.getElementById('course-zoom-out');
+        if (courseZoomOut) courseZoomOut.addEventListener('click', () => zoomCoursePdf('out'));
 
         if (DOMElements.closeNoDownloadBtn) {
             DOMElements.closeNoDownloadBtn.addEventListener('click', () => {

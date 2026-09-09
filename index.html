@@ -210,7 +210,7 @@
         </svg>
         <div class="header-greeting">
           <div class="greeting-sub" id="greetingText">Welcome!</div>
-          <div class="greeting-name" id="greetingName">User</div>
+          <div class="greeting-name" id="greetingName"><span>User</span><a href="/login.html" class="greeting-auth-badge" title="Login / Sign Up">Login/Signup</a></div>
         </div>
       </div>
       <div class="header-actions">
@@ -249,6 +249,7 @@
           id="notificationsBtn"
           class="hdr-icon-btn"
           aria-label="Notifications"
+          style="display: none;"
         >
           <svg
             viewBox="0 0 24 24"
@@ -263,6 +264,7 @@
           </svg>
           <span class="notif-dot" id="notifDot"></span>
         </button>
+        <div class="auth-buttons-container" id="headerAuthContainer"></div>
         <button id="menuButton" class="hdr-icon-btn" aria-label="Menu">
           <svg
             viewBox="0 0 24 24"
@@ -1154,7 +1156,6 @@
                     type="date"
                     id="articleship_1yr_end_date"
                     class="form-input-custom"
-                    required
                   />
                 </div>
               </div>

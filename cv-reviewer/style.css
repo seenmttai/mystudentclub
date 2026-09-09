@@ -58,8 +58,8 @@ body {
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
-  padding-top: calc(var(--header-h) + env(safe-area-inset-top, 0px));
-  padding-bottom: calc(var(--bnav-h) + env(safe-area-inset-bottom, 0px));
+  padding-top: calc(var(--header-h, 60px) + env(safe-area-inset-top, 0px));
+  padding-bottom: calc(var(--bnav-h, 60px) + env(safe-area-inset-bottom, 0px) + 24px);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }

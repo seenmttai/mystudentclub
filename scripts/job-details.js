@@ -20,13 +20,6 @@ const TABLE_MAP = {
     "articleship": "Articleship Jobs"
 };
 
-const PUBLIC_VIEW_MAP = {
-    "Industrial Training Job Portal": "public_industrial_jobs",
-    "Fresher Jobs": "public_fresher_jobs",
-    "Semi Qualified Jobs": "public_semi_qualified_jobs",
-    "Articleship Jobs": "public_articleship_jobs"
-};
-
 async function init() {
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
@@ -40,55 +33,44 @@ async function init() {
         return;
     }
 
-    let tableName = 'Industrial Training Job Portal';
-    if (tableParam) {
-        if (TABLE_MAP[tableParam]) tableName = TABLE_MAP[tableParam];
-        else if (Object.values(TABLE_MAP).includes(tableParam)) tableName = tableParam;
-    }
+    const tableName = TABLE_MAP[tableParam] || tableParam || "Industrial Training Job Portal";
 
     try {
         await fetchJobDetails(id, tableName);
     } catch (error) {
-        showError('Job not found or error loading details.');
-        console.error(error);
+        console.error('Error fetching job details:', error);
+        showError('Could not load job details. Please try again later.');
     }
 }
 
 function setBackLink(type) {
-    const backLink = document.getElementById('backLink');
-    const backLinkText = document.getElementById('backLinkText');
+    const backBtn = document.getElementById('backBtn');
+    if (!backBtn) return;
 
-    if (!backLink || !backLinkText) return;
-
-    const portalMap = {
-        'industrial': { url: '/', label: 'Industrial Training' },
-        'fresher': { url: '/ca-fresher-jobs', label: 'Fresher Jobs' },
-        'semi': { url: '/semi-qualified-ca-jobs', label: 'Semi Qualified' },
-        'articleship': { url: '/ca-articleship-jobs', label: 'Articleship' }
+    const returnUrls = {
+        'industrial': '/ca-industrial-training-jobs.html',
+        'fresher': '/ca-fresher-jobs.html',
+        'semi': '/semi-qualified-ca-jobs.html',
+        'articleship': '/ca-articleship-jobs.html'
     };
 
-    const portal = portalMap[type] || portalMap['industrial'];
-    backLink.href = portal.url;
-    backLinkText.textContent = 'Back to jobs';
+    backBtn.href = returnUrls[type] || '/index-new.html';
 }
 
 function renderMarkdown(text) {
-    if (!text) return 'No description provided.';
+    if (!text) return '';
 
     let html = text
         .replace(/^### (.*$)/gim, '<h3>$1</h3>')
         .replace(/^## (.*$)/gim, '<h2>$1</h2>')
         .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-        .replace(/__(.+?)__/g, '<strong>$1</strong>')
-        .replace(/\*(.+?)\*/g, '<em>$1</em>')
-        .replace(/_(.+?)_/g, '<em>$1</em>')
-        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
-        .replace(/\n\n/g, '</p><p>')
-        .replace(/\n/g, '<br>');
+        .replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>')
+        .replace(/\*(.*)\*/gim, '<em>$1</em>')
+        .replace(/\[([^\[]+)\]\(([^\)]+)\)/gim, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
 
+    html = html.replace(/\n\n/g, '</p><p>');
+    html = html.replace(/\n/g, '<br>');
     html = '<p>' + html + '</p>';
-
     html = html.replace(/<p><\/p>/g, '');
 
     return html;
@@ -102,23 +84,37 @@ function copyApplyLink(event) {
 
     navigator.clipboard.writeText(text).then(() => {
         const icon = btn.querySelector('i');
-        icon.className = 'fas fa-check';
-        btn.style.color = '#22c55e';
+        if (icon) icon.className = 'fas fa-check';
+        btn.style.color = '#16a34a';
+        showToast('Application link copied to clipboard!', 'success');
         setTimeout(() => {
-            icon.className = 'fas fa-copy';
+            if (icon) icon.className = 'fas fa-copy';
             btn.style.color = '';
         }, 2000);
     }).catch(err => {
         console.error('Copy failed:', err);
-        alert('Failed to copy. Please copy manually.');
+        showToast('Failed to copy. Please copy manually.', 'error');
     });
 }
 
+function getPublicJobSelectColumns(tableName) {
+    let columns = 'id, Company, Location, Salary, Description, Created_At, Category, application_count, posts_link, "Primary Domain"';
+    if (tableName === 'Fresher Jobs') {
+        columns += ', Experience, yoe, "Secondary Domain", Tags, "CTC Range", "Company Type", "Industry Type"';
+    } else if (tableName === 'Semi Qualified Jobs') {
+        columns += ', Experience, "Secondary Domain", Tags, "Company Type", "Industry Type"';
+    } else if (tableName === 'Industrial Training Job Portal') {
+        columns += ', "Stipend Range", "Functional Tags", "Technology Tags", is_exclusive, "Company Type", "Industry Type"';
+    } else if (tableName === 'Articleship Jobs') {
+        columns += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range"';
+    }
+    return columns;
+}
+
 async function fetchJobDetails(id, tableName) {
-    const querySource = PUBLIC_VIEW_MAP[tableName] || tableName;
     const { data, error } = await supabaseClient
-        .from(querySource)
-        .select('*')
+        .from(tableName)
+        .select(getPublicJobSelectColumns(tableName))
         .eq('id', id)
         .single();
 

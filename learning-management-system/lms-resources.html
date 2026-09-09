@@ -28,6 +28,7 @@
     </script>
     <style>
       * { box-sizing: border-box; margin: 0; padding: 0; }
+      [v-cloak] { display: none !important; }
       body { font-family: "Poppins", sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
       #app { min-height: 100vh; }
       .lms-menu-overlay { display: none; position: fixed; inset: 0; background: rgba(15,27,45,0.4); z-index: 390; }
@@ -60,24 +61,36 @@
       .lms-center { text-align: center; padding: 48px 20px; color: var(--sub); font-size: 14px; }
 
       /* Viewer modal */
-      .lms-viewer-overlay { position: fixed; inset: 0; background: rgba(15,27,45,0.55); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 500; }
+      .lms-viewer-overlay { position: fixed; inset: 0; background: rgba(15,27,45,0.65); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; z-index: 500; }
       .lms-viewer-panel { background: var(--card); border-radius: var(--r-sheet); width: 94vw; height: 88vh; max-width: 900px; display: flex; flex-direction: column; overflow: hidden; box-shadow: var(--shadow); }
-      .lms-viewer-header { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
-      .lms-viewer-title { font-size: 14px; font-weight: 700; }
-      .lms-viewer-body { flex: 1; overflow: auto; position: relative; background: var(--chip); display: flex; justify-content: center; align-items: flex-start; }
-      .lms-viewer-nav { padding: 10px 16px; border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: center; gap: 12px; flex-shrink: 0; }
-      .lms-page-counter { padding: 4px 12px; background: var(--chip); border-radius: var(--r-chip); font-size: 12px; font-weight: 600; color: var(--sub); }
+      .lms-viewer-header { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; gap: 8px; }
+      .lms-viewer-title { font-size: 14px; font-weight: 700; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; flex: 1; }
+      .lms-viewer-header-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+      .lms-zoom-controls { display: flex; align-items: center; background: var(--chip); border: 1px solid var(--line); border-radius: 20px; padding: 2px 4px; gap: 2px; }
+      .lms-zoom-btn { background: none; border: none; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text); font-size: 11px; transition: background 0.15s, color 0.15s; }
+      .lms-zoom-btn:hover { background: var(--line); color: var(--brand); }
+      .lms-zoom-level { font-size: 11px; font-weight: 600; color: var(--text); min-width: 36px; text-align: center; user-select: none; }
+      .lms-viewer-body { flex: 1; overflow-y: auto; overflow-x: auto; position: relative; background: var(--chip); display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-start; -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y pinch-zoom; overscroll-behavior: contain; }
+      .lms-viewer-nav { padding: 10px 16px; border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: center; gap: 8px; flex-shrink: 0; flex-wrap: nowrap; }
+      .lms-page-counter { padding: 4px 12px; background: var(--card); border: 1px solid var(--line); border-radius: var(--r-chip); font-size: 12px; font-weight: 600; color: var(--text); flex-shrink: 0; }
 
       /* Iframe + PDF + CSV inside viewer */
       .lms-iframe-wrap { position: absolute; inset: 0; background: var(--card); }
       .lms-iframe-wrap iframe { width: 100%; height: 100%; border: none; }
       .lms-iframe-overlay { position: absolute; top: 0; left: 0; width: calc(100% - 17px); height: calc(100% - 40px); z-index: 10; cursor: default; user-select: none; }
-      .lms-pdf-wrap { padding: 2rem; display: flex; justify-content: center; }
-      #pdf-canvas { box-shadow: var(--shadow); max-width: 100%; }
+      .lms-pdf-wrap { padding: 1.25rem 1rem; width: 100%; margin: 0 auto; display: flex; flex-direction: column; align-items: center; box-sizing: border-box; transition: width 0.15s ease-out, min-width 0.15s ease-out; }
+      #pdf-canvas { box-shadow: 0 4px 20px rgba(0,0,0,0.12); border-radius: 6px; background: #ffffff; display: block; margin: 0 auto; max-width: 680px; transition: width 0.15s ease-out, min-width 0.15s ease-out, max-width 0.15s ease-out; }
       .lms-csv-wrap { padding: 1rem; width: 100%; height: 100%; overflow: auto; user-select: none; }
       .lms-csv-table { border-collapse: collapse; background: var(--card); width: 100%; }
       .lms-csv-table th, .lms-csv-table td { padding: 8px 12px; border: 1px solid var(--line); text-align: left; font-size: 13px; min-width: 120px; max-width: 350px; word-wrap: break-word; }
       .lms-csv-table th { background: var(--chip); font-weight: 700; position: sticky; top: 0; z-index: 1; }
+
+      @media (max-width: 640px) {
+        .lms-viewer-panel { width: 100vw; height: 100vh; height: 100dvh; max-width: 100vw; border-radius: 0; }
+        .lms-viewer-header { padding: max(calc(env(safe-area-inset-top, 0px) + 12px), 36px) 12px 10px; }
+        .lms-viewer-nav { padding: 8px 12px max(calc(env(safe-area-inset-bottom, 0px) + 10px), 12px); }
+        .lms-pdf-wrap { padding: 0.75rem 0.5rem; }
+      }
 
       /* Bottom nav safe area */
       .lms-content-pad { padding-bottom: calc(var(--bnav-h) + var(--safe-bottom)); }
@@ -92,7 +105,7 @@
 </head>
 
 <body>
-    <div id="app">
+    <div id="app" v-cloak>
         <!-- HEADER -->
         <header class="app-header" id="appHeader">
           <div class="header-left">
@@ -326,11 +339,22 @@
             <div class="lms-viewer-panel">
               <div class="lms-viewer-header">
                 <span class="lms-viewer-title">{{ currentResourceTitle }}{{ currentResourceSubtitle ? ' · PDF Preview' : '' }}</span>
-                <button class="hdr-icon-btn" @click="closeViewer" aria-label="Close">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                </button>
+                <div class="lms-viewer-header-actions">
+                  <div v-if="previewType === 'pdf'" class="lms-zoom-controls">
+                    <button class="lms-zoom-btn" @click="zoomOut" title="Zoom Out" aria-label="Zoom Out">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                    <span class="lms-zoom-level">{{ zoomLevels[currentZoomIndex] }}%</span>
+                    <button class="lms-zoom-btn" @click="zoomIn" title="Zoom In" aria-label="Zoom In">
+                      <i class="fas fa-plus"></i>
+                    </button>
+                  </div>
+                  <button class="hdr-icon-btn" @click="closeViewer" aria-label="Close">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  </button>
+                </div>
               </div>
-              <div class="lms-viewer-body">
+              <div class="lms-viewer-body" ref="viewerBody">
                 <div v-if="viewerLoading" class="lms-center" style="position:absolute;top:40%;width:100%;">
                   <i class="fas fa-spinner fa-spin" style="font-size:32px;color:var(--brand);display:block;margin-bottom:12px;"></i>
                   Loading…
@@ -341,7 +365,7 @@
                   <iframe id="resource-iframe" :src="iframeSrc" title="Embedded Resource"></iframe>
                 </div>
                 <!-- PDF Canvas -->
-                <div v-show="previewType === 'pdf'" class="lms-pdf-wrap">
+                <div v-show="previewType === 'pdf'" class="lms-pdf-wrap" ref="pdfWrap">
                   <canvas ref="pdfCanvas" id="pdf-canvas"></canvas>
                 </div>
                 <!-- CSV Table -->
@@ -410,6 +434,10 @@
                     currentResourceTitle: '',
                     currentResourceSubtitle: '',
 
+                    // Zoom State
+                    zoomLevels: [75, 100, 125, 150, 175, 200, 250],
+                    currentZoomIndex: 1, // 100%
+
                     // Iframe Data
                     iframeSrc: '',
 
@@ -424,6 +452,86 @@
             },
             methods: {
                 toggleMenu() { this.menuActive = !this.menuActive; },
+
+                applyZoom(zoomPct) {
+                    const canvas = this.$refs.pdfCanvas;
+                    const body = this.$refs.viewerBody;
+                    const wrap = this.$refs.pdfWrap;
+                    if (!canvas || !body) return;
+
+                    const containerWidth = body.clientWidth ? (body.clientWidth - 32) : (window.innerWidth - 32);
+                    const baseWidth = Math.min(containerWidth > 0 ? containerWidth : 680, 680);
+                    const targetWidth = Math.round(baseWidth * (zoomPct / 100));
+
+                    if (zoomPct === 100) {
+                        canvas.style.width = '100%';
+                        canvas.style.maxWidth = `${baseWidth}px`;
+                        canvas.style.minWidth = '';
+                        if (wrap) {
+                            wrap.style.width = '100%';
+                            wrap.style.minWidth = '';
+                        }
+                    } else {
+                        canvas.style.width = `${targetWidth}px`;
+                        canvas.style.maxWidth = `${targetWidth}px`;
+                        canvas.style.minWidth = `${targetWidth}px`;
+                        if (wrap) {
+                            wrap.style.width = `${targetWidth}px`;
+                            wrap.style.minWidth = `${targetWidth}px`;
+                        }
+                    }
+                },
+
+                zoomIn() {
+                    if (this.currentZoomIndex < this.zoomLevels.length - 1) {
+                        this.currentZoomIndex++;
+                        this.applyZoom(this.zoomLevels[this.currentZoomIndex]);
+                    }
+                },
+
+                zoomOut() {
+                    if (this.currentZoomIndex > 0) {
+                        this.currentZoomIndex--;
+                        this.applyZoom(this.zoomLevels[this.currentZoomIndex]);
+                    }
+                },
+
+                initPinchZoom() {
+                    const body = this.$refs.viewerBody;
+                    if (!body || body.dataset.pinchBound) return;
+                    body.dataset.pinchBound = 'true';
+
+                    let pinchStartDist = 0;
+                    body.addEventListener('touchstart', (e) => {
+                        if (e.touches.length === 2) {
+                            pinchStartDist = Math.hypot(
+                                e.touches[0].clientX - e.touches[1].clientX,
+                                e.touches[0].clientY - e.touches[1].clientY
+                            );
+                        }
+                    }, { passive: true });
+
+                    body.addEventListener('touchmove', (e) => {
+                        if (e.touches.length === 2 && pinchStartDist > 0) {
+                            const currentDist = Math.hypot(
+                                e.touches[0].clientX - e.touches[1].clientX,
+                                e.touches[0].clientY - e.touches[1].clientY
+                            );
+                            const delta = currentDist - pinchStartDist;
+                            if (delta > 35 && this.currentZoomIndex < this.zoomLevels.length - 1) {
+                                this.zoomIn();
+                                pinchStartDist = currentDist;
+                            } else if (delta < -35 && this.currentZoomIndex > 0) {
+                                this.zoomOut();
+                                pinchStartDist = currentDist;
+                            }
+                        }
+                    }, { passive: true });
+
+                    body.addEventListener('touchend', (e) => {
+                        if (e.touches.length < 2) pinchStartDist = 0;
+                    }, { passive: true });
+                },
 
                 async checkAuth() {
                     const { data: { session } } = await supabase.auth.getSession();
@@ -563,6 +671,7 @@
                         : '';
                     this.previewType = type;
                     this.viewerLoading = true;
+                    this.currentZoomIndex = 1;
 
                     this.iframeSrc = '';
                     this.pdfDoc = null;
@@ -607,6 +716,10 @@
                             this.pdfCurrentPage = 1;
                             await this.$nextTick();
                             this.renderPdfPage(1);
+                            this.$nextTick(() => {
+                                this.applyZoom(100);
+                                this.initPinchZoom();
+                            });
                         } else if (type === 'csv') {
                             const csvText = await response.text();
                             this.renderCsv(csvText);
@@ -633,6 +746,9 @@
 
                     await page.render({ canvasContext: ctx, viewport: viewport }).promise;
                     this.drawWatermark(canvas, ctx);
+                    this.$nextTick(() => {
+                        this.applyZoom(this.zoomLevels[this.currentZoomIndex]);
+                    });
                 },
 
                 drawWatermark(canvas, ctx) {
