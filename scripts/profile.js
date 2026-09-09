@@ -11,6 +11,7 @@ const loadingOverlay = document.getElementById("loading-overlay");
 const saveBtn = document.getElementById("saveBtn");
 let currentUser = null;
 let lastUpdatedISO = null;
+let currentLookingFor = null;
 
 // =================== TOAST NOTIFICATIONS ===================
 function showToast(message, type = "info", duration = 6000) {
@@ -277,11 +278,12 @@ function showLoading(visible, text = "Loading...") {
 async function loadProfile() {
   if (!currentUser) return;
   showLoading(true, "Fetching your profile...");
+  let loadedProfile = {};
 
   try {
     const { data, error } = await supabaseClient
       .from("profiles")
-      .select("profile, ocr_cv, updated_at")
+      .select("profile, ocr_cv, updated_at, looking_for")
       .eq("uuid", currentUser.id)
       .single();
 
@@ -289,7 +291,9 @@ async function loadProfile() {
 
     if (data) {
       lastUpdatedISO = data.updated_at;
+      currentLookingFor = data.looking_for || data.profile?.looking_for || null;
       if (data.profile) {
+        loadedProfile = data.profile;
         populateForm(data.profile);
         localStorage.setItem("userProfileData", JSON.stringify(data.profile));
       }
@@ -299,7 +303,11 @@ async function loadProfile() {
       }
     } else {
       const localProfile = localStorage.getItem("userProfileData");
-      if (localProfile) populateForm(JSON.parse(localProfile));
+      if (localProfile) {
+        loadedProfile = JSON.parse(localProfile);
+        currentLookingFor = loadedProfile.looking_for || null;
+        populateForm(loadedProfile);
+      }
     }
 
     // Show cached / persisted files
@@ -326,11 +334,16 @@ async function loadProfile() {
   } catch (e) {
     console.error(e);
     const localProfile = localStorage.getItem("userProfileData");
-    if (localProfile) populateForm(JSON.parse(localProfile));
+    if (localProfile) {
+      loadedProfile = JSON.parse(localProfile);
+      currentLookingFor = loadedProfile.looking_for || null;
+      populateForm(loadedProfile);
+    }
     setTimeout(() => refreshHeader(), 150);
   } finally {
     showLoading(false);
   }
+  return loadedProfile;
 }
 
 // =================== POPULATE FORM ===================
@@ -2448,6 +2461,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // ----- Load profile -----
   loadProfile().then((d) => {
+    if (window.WZ) {
+      window.WZ.init(d, currentLookingFor, {
+        supabaseClient,
+        userId: currentUser.id,
+        showToast,
+        onSaved: (profile) => {
+          populateForm(profile);
+          refreshHeader();
+        },
+      });
+    }
     // Pre-fill skills on load if existing
     if (d && d.emp_skills_hidden) {
       let loadedSkills = d.emp_skills_hidden

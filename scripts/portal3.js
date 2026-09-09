@@ -1874,6 +1874,80 @@ async function initializeUserFeatures() {
 
 //  PROFILE & PREFERENCES
 
+function getProfileReminderDismissKey() {
+  return currentSession?.user?.id
+    ? `msc_profile_reminder_dismissed_${currentSession.user.id}`
+    : null;
+}
+
+function removeProfileCompletionPrompt() {
+  document.getElementById("profileCompletionBanner")?.remove();
+}
+
+function updateProfileCompletionPrompt(profile) {
+  const main = document.querySelector("main.app-main");
+  const hasName = Boolean(String(profile?.name || "").trim());
+  const hasPortal = Boolean(profile?.looking_for || profile?.job_preference);
+  const dismissKey = getProfileReminderDismissKey();
+  let dismissed = false;
+
+  try {
+    dismissed = Boolean(dismissKey && sessionStorage.getItem(dismissKey));
+  } catch (_) {}
+
+  // Portal selection has its own onboarding modal. Show this reminder only
+  // after that choice exists, so the two onboarding prompts never compete.
+  if (!currentSession || !main || !hasPortal || hasName || dismissed) {
+    removeProfileCompletionPrompt();
+    return;
+  }
+
+  if (document.getElementById("profileCompletionBanner")) return;
+
+  const banner = document.createElement("section");
+  banner.id = "profileCompletionBanner";
+  banner.className = "profile-completion-banner";
+  banner.setAttribute("aria-label", "Complete your profile");
+  banner.setAttribute("aria-live", "polite");
+  banner.innerHTML = `
+    <div class="profile-completion-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 21a8 8 0 0 0-16 0"></path>
+        <circle cx="12" cy="7" r="4"></circle>
+        <path d="m16 11 2 2 4-4"></path>
+      </svg>
+    </div>
+    <div class="profile-completion-copy">
+      <h2 class="profile-completion-title">Complete your profile</h2>
+      <p class="profile-completion-text">Add your details to improve job matches and recruiter visibility.</p>
+    </div>
+    <button type="button" class="profile-completion-dismiss" aria-label="Dismiss profile reminder">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M18 6 6 18M6 6l12 12"></path>
+      </svg>
+    </button>
+    <a class="profile-completion-cta" href="/profile.html">
+      <span>Complete Profile</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M5 12h14M13 6l6 6-6 6"></path>
+      </svg>
+    </a>
+  `;
+
+  banner
+    .querySelector(".profile-completion-dismiss")
+    ?.addEventListener("click", () => {
+      try {
+        if (dismissKey) sessionStorage.setItem(dismissKey, "true");
+      } catch (_) {}
+      banner.classList.remove("is-visible");
+      setTimeout(() => banner.remove(), 220);
+    });
+
+  main.insertBefore(banner, main.firstChild);
+  requestAnimationFrame(() => banner.classList.add("is-visible"));
+}
+
 async function fetchAndCacheProfileData() {
   if (!currentSession?.user?.id) return null;
   try {
@@ -2650,6 +2724,7 @@ function initOnboardingSegmentForm() {
       } catch (_) {}
       Object.assign(profileObj, updateData);
       localStorage.setItem("userProfileData", JSON.stringify(profileObj));
+      updateProfileCompletionPrompt(profileObj);
       hideOnboardingSegmentModal();
       showToast(
         "Personalization complete! Enjoy your personalized feed.",
@@ -3219,6 +3294,7 @@ async function initializePage() {
     // Profile + preference are up to date — evaluate the home → portal redirect.
     if (maybeRedirectToPreferredPortal(pageConfig)) return;
 
+    updateProfileCompletionPrompt(profile);
     await initializeUserFeatures();
     setTimeout(() => checkAndPromptConsent(), 1000);
 
