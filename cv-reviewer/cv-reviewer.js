@@ -82,6 +82,7 @@ let pdfImages = [];
 let analysisResultText = null;
 let currentProgressInterval = null;
 let scoreAnimationFrame = null;
+let isAnalysisInProgress = false;
 
 // --- Persistence state ---
 const ACTIVE_REVIEW_KEY = 'msc_cv_active_review_id';
@@ -198,6 +199,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function startNewAnalysis() {
+    if (isAnalysisInProgress) return;
     localStorage.removeItem(ACTIVE_REVIEW_KEY);
     analysisResultText = null;
     activeReviewFileName = null;
@@ -323,7 +325,8 @@ function showContextWarningModal(message) {
 }
 function closeContextWarningModal() {
     const overlay = document.getElementById('contextWarningOverlay');
-    if (overlay) overlay.classList.remove('active');
+    if (!overlay?.classList.contains('active')) return;
+    overlay.classList.remove('active');
     resetToUploadStage();
 }
 
@@ -553,6 +556,7 @@ function setupHistoryInteraction() {
 }
 
 function loadReviewIntoView(review) {
+    if (isAnalysisInProgress) return;
     const reviewText = review.review_data?.review;
     if (!reviewText) return;
 
@@ -656,6 +660,7 @@ function handleFileSelect(e) {
 }
 
 async function handleFile(file) {
+    if (isAnalysisInProgress) return;
     selectedFile = file;
     fileName.textContent = file.name;
     fileSize.textContent = formatFileSize(file.size);
@@ -867,50 +872,53 @@ async function getFreeUserLifetimeCount() {
 proceedToReviewBtn.addEventListener('click', analyzeCv);
 
 async function analyzeCv() {
+    // Claim this attempt synchronously, before auth or usage checks can yield.
+    if (isAnalysisInProgress) return;
     if (!selectedFile || pdfImages.length === 0) {
         alert('PDF not processed correctly. Please re-upload.');
         return;
     }
 
-    // Refresh auth user status to determine if user has full access (MSC enrolled) or partial access
-    await refreshAuthUser();
-    updateAuthUI();
-
-    // --- Three-tier gating ---
-    // 1) IP-based (not logged in): 2 reviews forever → then require login
-    if (!authUser) {
-        const ipCount = getIpReviewCount();
-        if (ipCount >= IP_REVIEW_LIMIT) {
-            openReviewLoginModal();
-            return;
-        }
-    }
-    // 2) Free logged-in (not enrolled): 3 reviews forever → then require enrollment
-    else if (!isPremiumEnrolled) {
-        const lifetimeCount = await getFreeUserLifetimeCount();
-        if (lifetimeCount >= FREE_USER_LIFETIME_LIMIT) {
-            openReviewBuyModal();
-            const titleEl = document.getElementById('reviewBuyTitle');
-            if (titleEl) titleEl.textContent = "You've used all 3 free reviews";
-            return;
-        }
-    }
-    // 3) Premium enrolled users: no frontend limit (backend handles 10/day)
-
-    const selectedDomain = 'Financing';
-    const selectedSpecialization = 'Accounting';
-
-    landingSection.style.display = 'none';
-    loadingSection.style.display = 'block';
-    hideResults();
-    tipsSection.style.display = 'none';
-
-    loadingSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-    startLoadingAnimation();
-    clearResultsContent();
-
+    isAnalysisInProgress = true;
+    const reviewButtonContent = proceedToReviewBtn.innerHTML;
     try {
+        proceedToReviewBtn.disabled = true;
+        proceedToReviewBtn.setAttribute('aria-busy', 'true');
+        proceedToReviewBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i> Starting review...';
+        removeFileBtn.disabled = true;
+
+        landingSection.style.display = 'none';
+        loadingSection.style.display = 'block';
+        hideResults();
+        tipsSection.style.display = 'none';
+        loadingSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        startLoadingAnimation();
+        loadingProgressText.textContent = 'Preparing your review...';
+        clearResultsContent();
+
+        // Refresh auth and enforce limits after acknowledging the first click.
+        await refreshAuthUser();
+        updateAuthUI();
+
+        if (!authUser) {
+            if (getIpReviewCount() >= IP_REVIEW_LIMIT) {
+                loadingSection.style.display = 'none';
+                landingSection.style.display = 'block';
+                openReviewLoginModal();
+                return;
+            }
+        } else if (!isPremiumEnrolled) {
+            const lifetimeCount = await getFreeUserLifetimeCount();
+            if (lifetimeCount >= FREE_USER_LIFETIME_LIMIT) {
+                loadingSection.style.display = 'none';
+                landingSection.style.display = 'block';
+                openReviewBuyModal();
+                const titleEl = document.getElementById('reviewBuyTitle');
+                if (titleEl) titleEl.textContent = "You've used all 3 free reviews";
+                return;
+            }
+        }
+
         const domainHeader = 'Financing';
         const specializationHeader = 'Accounting';
 
@@ -947,6 +955,7 @@ async function analyzeCv() {
                 msg = "This AI CV Reviewer is custom-built exclusively for Chartered Accountants (CA), Finance, and Accounting professionals. Please upload a relevant resume.";
             }
             loadingSection.style.display = 'none';
+            landingSection.style.display = 'block';
             showContextWarningModal(msg);
             return;
         }
@@ -986,6 +995,18 @@ async function analyzeCv() {
         loadingSection.style.display = 'none';
         showNoticeModal('Analysis Failed', error.message || 'An unexpected error occurred. Please try again later.');
         resetToUploadStageOnError();
+    } finally {
+        // Keep the lock through response handling and persistence, including
+        // early gate returns and errors before the model request is sent.
+        stopLoadingAnimation();
+        isAnalysisInProgress = false;
+        proceedToReviewBtn.innerHTML = reviewButtonContent;
+        proceedToReviewBtn.removeAttribute('aria-busy');
+        const canReview = Boolean(selectedFile && pdfImages.length > 0);
+        proceedToReviewBtn.disabled = !canReview;
+        proceedToReviewBtn.classList.toggle('opacity-50', !canReview);
+        proceedToReviewBtn.classList.toggle('cursor-not-allowed', !canReview);
+        removeFileBtn.disabled = false;
     }
 }
 
@@ -1813,6 +1834,7 @@ document.getElementById('menuFixInBuilderBtn')?.addEventListener('click', () => 
 });
 
 function resetToUploadStage() {
+    if (isAnalysisInProgress) return;
     localStorage.removeItem(ACTIVE_REVIEW_KEY);
     clearRoleLocks();
     analysisResultText = null;
@@ -2178,6 +2200,7 @@ async function loadHistory() {
 }
 
 async function showHistoryView() {
+    if (isAnalysisInProgress) return;
     landingSection.style.display = 'none';
     showResults();
     tipsSection.style.display = 'none';
