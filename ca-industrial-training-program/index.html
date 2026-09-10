@@ -79,16 +79,17 @@
   <div class="hero-container">
     <div class="hero-content" data-aos="fade-right">
       <h1 class="hero-title">MSC <span class="highlight-blue">Industrial Training Program</span></h1>
-      <p class="hero-subtitle">For Students completing 1 year between 1st Sep to 30th November</p>
+      <p class="closed-notice"><i class="fas fa-lock" aria-hidden="true"></i> Registrations Closed</p>
+      <p class="hero-subtitle">Next Batch Registration Starts 5th Oct for students completing their First Year between 1st Oct and 31st December.</p>
       <p class="live-batch-highlight"
         style="color: #4CAF50; font-weight: 800; font-size: 1.05rem; margin: 4px 0 16px; display: flex; align-items: center; gap: 6px;">
         ✅ Live Batch + Recordings Included!!!</p>
 
       <div class="hero-cta-group">
-        <a href="https://u.payu.in/4IknM3Yb3nEF" class="notify-me-btn pulse-btn hero-cta" style="text-decoration: none;">
-          <span class="notify-btn-icon">⚡</span>
-          <span class="notify-btn-text">Register Now</span>
-        </a>
+        <button id="notifyMeBtn" type="button" class="notify-me-btn hero-cta">
+          <span class="notify-btn-icon">🔔</span>
+          <span class="notify-btn-text">Notify Me When Open</span>
+        </button>
         <a href="#curriculum-section" class="btn-secondary">
           <i class="far fa-file-alt"></i> View Curriculum
         </a>
@@ -439,7 +440,7 @@
     <div class="pricing-card-savvy">
       <!-- Limited Seats badge -->
       <div class="limited-seats-badge">
-        <span>LIMITED SEATS</span>
+        <span>REGISTRATIONS CLOSED</span>
       </div>
 
       <div class="pricing-header">
@@ -491,10 +492,10 @@
       </div>
 
       <div class="pricing-cta">
-        <a href="https://u.payu.in/4IknM3Yb3nEF" id="registerButtonWorkshop" class="notify-me-btn pulse-btn" style="text-decoration: none; width: 100%; justify-content: center;">
-          <span class="notify-btn-icon">⚡</span>
-          <span class="notify-btn-text">Register Now</span>
-        </a>
+        <button id="notifyMeProgramBtn" type="button" class="notify-me-btn" style="width: 100%; justify-content: center;">
+          <span class="notify-btn-icon">🔔</span>
+          <span class="notify-btn-text">Notify Me When Open</span>
+        </button>
       </div>
     </div>
   </div>
@@ -511,10 +512,10 @@
       <span class="original">₹4999</span>
     </div>
   </div>
-  <a href="https://u.payu.in/4IknM3Yb3nEF" id="notifyMeFooterBtn" class="notify-me-footer-btn" style="margin-left: auto; text-decoration: none;">
-    <span class="notify-footer-icon">⚡</span>
-    <span class="notify-footer-text">Register Now</span>
-  </a>
+  <button id="notifyMeFooterBtn" type="button" class="notify-me-footer-btn" style="margin-left: auto;">
+    <span class="notify-footer-icon">🔔</span>
+    <span class="notify-footer-text">Notify Me</span>
+  </button>
 </div>
 
 <!-- Registration Announcement Modal removed -->
@@ -598,7 +599,7 @@
       measurementId: "G-X4M23TB936"
     };
     const NOTIFY_VAPID_KEY = "BGlNz4fQGzftJPr2U860MsoIo0dgNcqb2y2jAEbwJzjmj8CbDwJy_kD4eRAcruV6kNRs6Kz-mh9rdC37tVgeI5I";
-    const NOTIFY_TOPIC = "industrial-training-program-notify";
+    const NOTIFY_TOPIC = "industrial-training-october-batch-notify";
     const MANAGE_TOPIC_URL = "https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription";
 
     function getOrCreateDeviceKey() {
@@ -624,15 +625,15 @@
       const email = session?.user?.email || null;
       await sb
         .from('notifiable')
-        .insert({ key: deviceKey, email, topic: 'industrial-training' })
+        .insert({ key: deviceKey, email, topic: 'industrial-training-october-batch' })
         .throwOnError();
     }
 
     async function initNotifyMe() {
       const btn = document.getElementById('notifyMeBtn');
-      const workshopBtn = document.getElementById('registerButtonWorkshop');
+      const programBtn = document.getElementById('notifyMeProgramBtn');
       const footerBtn = document.getElementById('notifyMeFooterBtn');
-      const allBtns = [btn, workshopBtn, footerBtn];
+      const allBtns = [btn, programBtn, footerBtn];
 
       function syncButtonStates(subscribed) {
         if (btn) {
@@ -640,10 +641,10 @@
           btn.querySelector('.notify-btn-icon').textContent = subscribed ? '✅' : '🔔';
           btn.classList.toggle('subscribed', subscribed);
         }
-        if (workshopBtn) {
-          workshopBtn.querySelector('.notify-btn-text').textContent = subscribed ? 'You Will Be Notified!' : 'Notify Me When Open';
-          workshopBtn.querySelector('.notify-btn-icon').textContent = subscribed ? '✅' : '🔔';
-          workshopBtn.classList.toggle('subscribed', subscribed);
+        if (programBtn) {
+          programBtn.querySelector('.notify-btn-text').textContent = subscribed ? 'You Will Be Notified!' : 'Notify Me When Open';
+          programBtn.querySelector('.notify-btn-icon').textContent = subscribed ? '✅' : '🔔';
+          programBtn.classList.toggle('subscribed', subscribed);
         }
         if (footerBtn) {
           footerBtn.querySelector('.notify-footer-text').textContent = subscribed ? 'Notified' : 'Notify Me';
@@ -652,7 +653,7 @@
         }
       }
 
-      const isSubscribed = localStorage.getItem('notif_industrial_training_program') === '1';
+      const isSubscribed = localStorage.getItem('notif_industrial_training_october_batch') === '1';
       syncButtonStates(isSubscribed);
 
       async function handleNotifyClick() {
@@ -660,8 +661,8 @@
         allBtns.forEach(b => b && (b.disabled = true));
 
         // Already subscribed — unsubscribe
-        if (localStorage.getItem('notif_industrial_training_program') === '1') {
-          const token = localStorage.getItem('notif_fcm_token_it');
+        if (localStorage.getItem('notif_industrial_training_october_batch') === '1') {
+          const token = localStorage.getItem('notif_fcm_token_it_october');
           if (token) {
             try {
               await fetch(MANAGE_TOPIC_URL, {
@@ -671,8 +672,8 @@
               });
             } catch (_) { }
           }
-          localStorage.removeItem('notif_industrial_training_program');
-          localStorage.removeItem('notif_fcm_token_it');
+          localStorage.removeItem('notif_industrial_training_october_batch');
+          localStorage.removeItem('notif_fcm_token_it_october');
           syncButtonStates(false);
           setNotifyStatus('Unsubscribed.', 'info');
           allBtns.forEach(b => b && (b.disabled = false));
@@ -714,8 +715,8 @@
           // Save to Supabase notifiable table
           try { await saveToNotifiable(fcmToken); } catch (_) {/* ignore duplicate key */ }
 
-          localStorage.setItem('notif_industrial_training_program', '1');
-          localStorage.setItem('notif_fcm_token_it', fcmToken);
+          localStorage.setItem('notif_industrial_training_october_batch', '1');
+          localStorage.setItem('notif_fcm_token_it_october', fcmToken);
           syncButtonStates(true);
           setNotifyStatus("You're on the list! We'll notify you when the program opens.", 'success');
         } catch (err) {
@@ -725,9 +726,13 @@
 
         allBtns.forEach(b => b && (b.disabled = false));
       }
+
+      allBtns.forEach(btn => {
+        if (btn) btn.addEventListener('click', handleNotifyClick);
+      });
     }
 
-    // initNotifyMe();
+    initNotifyMe();
   });
 </script>
 <!-- Google Analytics -->
