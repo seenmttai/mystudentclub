@@ -81,6 +81,7 @@ let pdfDocument = null;
 let pdfImages = [];
 let analysisResultText = null;
 let currentProgressInterval = null;
+let scoreAnimationFrame = null;
 
 // --- Persistence state ---
 const ACTIVE_REVIEW_KEY = 'msc_cv_active_review_id';
@@ -952,17 +953,19 @@ async function analyzeCv() {
 
         activeReviewFileName = selectedFile ? selectedFile.name : null;
 
-        processStructuredResults(analysisResultText);
+        const overallScore = processStructuredResults(analysisResultText);
         applyRoleLocks();
         await refreshAuthUser();
         const reviewId = await saveReview(analysisResultText);
         if (reviewId) {
             localStorage.setItem(ACTIVE_REVIEW_KEY, reviewId);
+        } else {
+            localStorage.removeItem(ACTIVE_REVIEW_KEY);
         }
 
         // Track IP-based review count for unauthenticated users
         // (logged-in users are tracked via Supabase rows automatically)
-        if (!authUser) {
+        if (!authUser && overallScore !== null) {
             incrementIpReviewCount();
         }
 
@@ -970,6 +973,10 @@ async function analyzeCv() {
         showResults();
         tipsSection.style.display = 'block';
         resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        if (overallScore === null) {
+            showNoticeModal('Score unavailable', 'Your feedback is available below, but this report could not be saved because its score was missing or invalid. This will not use a free review.', false);
+        }
 
         // Show remaining reviews counter (non-intrusive, only after first use)
         updateReviewsRemainingBanner();
@@ -1051,8 +1058,12 @@ async function updateReviewsRemainingBanner() {
 async function saveReview(reviewText) {
     if (!supabase) return null;
 
-    const scoreSection = extractSectionContent(reviewText, '<<<OVERALL_SCORE>>>', '<<<END_OVERALL_SCORE>>>');
-    let score = 0; const m = scoreSection?.match(/Score:\s*([\d.]+)\/100/i); if (m) score = parseFloat(parseFloat(m[1]).toFixed(2));
+    const parsedScore = parseOverallScore(reviewText);
+    if (parsedScore === null) {
+        console.warn('Review not saved: overall score is unavailable.');
+        return null;
+    }
+    const score = Number(parsedScore.toFixed(2));
 
     const insertPayload = {
         user_id: authUser ? authUser.id : userId,
@@ -1182,34 +1193,45 @@ function extractSectionContent(text, startMarker, endMarker) {
     return text.substring(contentStartIndex, endIndex).trim();
 }
 
+// Share score parsing between the results view and persistence. Formatting is
+// presentation only; a missing or invalid score must never become a real zero.
+function parseOverallScore(text) {
+    if (typeof text !== 'string') return null;
+
+    const normalizedText = text.replace(/[*`]/g, '').replace(/__/g, '');
+    const scoreSection = extractSectionContent(normalizedText, '<<<OVERALL_SCORE>>>', '<<<END_OVERALL_SCORE>>>');
+    const scoreContent = scoreSection ?? normalizedText;
+    const match = scoreContent.match(/(?:^|\n)\s*(?:[-+]\s*)?(?:Overall\s+)?Score\s*:\s*(\d+(?:\.\d+)?)\s*\/\s*100(?!\d|\.\d)/i)
+        || scoreContent.match(/<score>\s*(\d+(?:\.\d+)?)\s*<\/score>/i);
+    if (!match) return null;
+
+    const score = Number(match[1]);
+    return Number.isFinite(score) && score >= 0 && score <= 100 ? score : null;
+}
+
 function parseAndDisplayOverallScore(text) {
     const scoreSection = extractSectionContent(text, '<<<OVERALL_SCORE>>>', '<<<END_OVERALL_SCORE>>>');
-    let overallScore = 0;
+    const overallScore = parseOverallScore(text);
     let justification = "Not available.";
 
     if (scoreSection) {
-        const scoreMatch = scoreSection.match(/Score:\s*([\d.]+)\/100/i);
         const justMatch = scoreSection.match(/Justification:\s*(.*)/is);
 
-        if (scoreMatch) {
-            overallScore = parseFloat(scoreMatch[1]);
-        }
         if (justMatch) {
             justification = justMatch[1].trim();
         }
-    } else {
-        const fallbackScoreMatch = text.match(/<score>([\d.]+)<\/score>/i) || text.match(/Overall Score:\s*([\d.]+)\/100/i);
-        if (fallbackScoreMatch) {
-            overallScore = parseFloat(fallbackScoreMatch[1]);
-            justification = "Score extracted via fallback method.";
-        }
+    } else if (overallScore !== null) {
+        justification = "Score extracted via fallback method.";
     }
 
     const badgeEl = document.getElementById('scoreRatingBadge');
     if (badgeEl) {
         let label = "Needs Polish";
         let ratingClass = "rating-badge-poor";
-        if (overallScore >= 85) {
+        if (overallScore === null) {
+            label = "Score unavailable";
+            ratingClass = "";
+        } else if (overallScore >= 85) {
             label = "Excellent";
             ratingClass = "rating-badge-excellent";
         } else if (overallScore >= 70) {
@@ -1430,6 +1452,7 @@ function processStructuredResults(resultsText) {
 
     updateScoreBreakdown(overallScore, resultsText);
     resetSubtabsToDefault();
+    return overallScore;
 }
 
 function clearResultsContent() {
@@ -1632,8 +1655,18 @@ function formatFeedbackText(text) {
 }
 
 function animateScore(score) {
+    if (scoreAnimationFrame !== null) {
+        cancelAnimationFrame(scoreAnimationFrame);
+        scoreAnimationFrame = null;
+    }
     const scoreTextEl = document.getElementById('scoreText');
     if (!scoreTextEl) return;
+
+    if (score === null) {
+        scoreTextEl.textContent = '—';
+        scoreProgress.setAttribute('stroke-dasharray', '0, 100');
+        return;
+    }
 
     const start = performance.now();
     const duration = 1600; // 1.6s duration
@@ -1654,14 +1687,15 @@ function animateScore(score) {
         scoreProgress.setAttribute('stroke-dasharray', `${clampedDash.toFixed(1)}, 100`);
 
         if (progress < 1) {
-            requestAnimationFrame(step);
+            scoreAnimationFrame = requestAnimationFrame(step);
         } else {
             scoreTextEl.textContent = score.toFixed(1).replace(/\.0$/, '');
             scoreProgress.setAttribute('stroke-dasharray', `${Math.min(score, 100).toFixed(1)}, 100`);
+            scoreAnimationFrame = null;
         }
     }
 
-    requestAnimationFrame(step);
+    scoreAnimationFrame = requestAnimationFrame(step);
 }
 
 function updateScoreBreakdown(overallScore, resultsText) {
@@ -1707,9 +1741,13 @@ function updateScoreBreakdown(overallScore, resultsText) {
             if (foundSpecificScores && categoryScores[categoryKey] !== undefined) {
                 calculatedPoints = Math.min(categoryScores[categoryKey], maxPoints);
                 percentage = (calculatedPoints / maxPoints) * 100;
-            } else {
+            } else if (overallScore !== null) {
                 calculatedPoints = Math.round((overallScore / 100) * maxPoints);
                 percentage = (calculatedPoints / maxPoints) * 100;
+            } else {
+                pointsEl.textContent = `—/${maxPoints} pts`;
+                if (fillBar) fillBar.style.width = '0%';
+                return;
             }
 
             pointsEl.textContent = `${calculatedPoints}/${maxPoints} pts`;
@@ -2117,6 +2155,11 @@ async function loadHistory() {
         const date = new Date(item.created_at).toLocaleString();
         const isActive = String(item.id) === String(activeId);
         const badges = isActive ? '<span class="history-badge history-badge--active">Viewing</span>' : '';
+        // Older reviews may have a stored zero from the Markdown parsing bug.
+        const score = typeof item.review_data?.review === 'string'
+            ? parseOverallScore(item.review_data.review)
+            : (Number.isFinite(item.score) && item.score >= 0 && item.score <= 100 ? item.score : null);
+        const scoreLabel = score === null ? 'Score unavailable' : `${score.toFixed(1)}%`;
         html += `<div class="history-item${isActive ? ' is-active' : ''}" data-review-id="${item.id}" role="button" tabindex="0">
                     <div class="flex justify-between items-center">
                         <div>
@@ -2126,7 +2169,7 @@ async function loadHistory() {
                               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:14px;height:14px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
                             </span>
                         </div>
-                        <span class="history-score">${item.score.toFixed(1)}%</span>
+                        <span class="history-score">${scoreLabel}</span>
                     </div>
                  </div>`;
     });
