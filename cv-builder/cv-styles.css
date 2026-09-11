@@ -2321,33 +2321,6 @@
     border-radius: 10px;
 }
 
-.device-save-actions {
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.device-save-actions button[hidden] {
-    display: none;
-}
-
-.device-save-status {
-    min-height: 20px;
-    margin: 0;
-    color: #b91c1c;
-    font-size: 12px;
-    line-height: 1.5;
-}
-
-@media (max-width: 480px) {
-    .device-save-actions {
-        flex-direction: column-reverse;
-    }
-
-    .device-save-actions button {
-        width: 100%;
-    }
-}
-
 .ai-prompt-overlay {
     position: fixed;
     inset: 0;

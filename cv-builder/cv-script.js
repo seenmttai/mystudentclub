@@ -3676,123 +3676,6 @@ async function downloadDocx() {
     return downloadCvFile('docx');
 }
 
-let pendingDeviceSave = null;
-
-function shouldUseDeviceSaveFlow() {
-    if (typeof navigator === 'undefined') return false;
-
-    const userAgent = navigator.userAgent || '';
-    const mobileOrTablet = /Android|iPad|iPhone|iPod|IEMobile|Windows Phone|Silk|Kindle/i.test(userAgent);
-    const embeddedBrowser = /; wv\)|\bWebView\b|FBAN|FBAV|Instagram|LinkedInApp/i.test(userAgent);
-    const desktopModeIPad = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
-
-    return mobileOrTablet || embeddedBrowser || desktopModeIPad;
-}
-
-function createShareableFile(blob, filename) {
-    if (typeof File !== 'function') return null;
-
-    try {
-        return new File([blob], filename, {
-            type: blob.type,
-            lastModified: Date.now(),
-        });
-    } catch (_) {
-        return null;
-    }
-}
-
-function canShareFile(file) {
-    if (
-        !file ||
-        typeof navigator === 'undefined' ||
-        typeof navigator.canShare !== 'function' ||
-        typeof navigator.share !== 'function'
-    ) {
-        return false;
-    }
-
-    try {
-        return navigator.canShare({ files: [file] });
-    } catch (_) {
-        return false;
-    }
-}
-
-function openDeviceSaveModal(blob, filename) {
-    const overlay = document.getElementById('device-save-overlay');
-    const shareButton = document.getElementById('device-save-share');
-    const printButton = document.getElementById('device-save-print');
-    const text = document.getElementById('device-save-text');
-    const status = document.getElementById('device-save-status');
-    if (!overlay || !shareButton || !printButton) return false;
-
-    const file = createShareableFile(blob, filename);
-    const shareAvailable = canShareFile(file);
-    pendingDeviceSave = { blob, file, filename };
-
-    shareButton.hidden = !shareAvailable;
-    printButton.classList.toggle('btn-primary', !shareAvailable);
-    if (text) {
-        text.textContent = shareAvailable
-            ? 'Your tablet blocks normal browser downloads. Use the device save menu, or print and choose Save as PDF.'
-            : 'Your tablet blocks normal browser downloads. Open the print dialog and choose Save as PDF.';
-    }
-    if (status) status.textContent = '';
-
-    overlay.classList.add('open');
-    overlay.setAttribute('aria-hidden', 'false');
-    return true;
-}
-
-function closeDeviceSaveModal() {
-    const overlay = document.getElementById('device-save-overlay');
-    if (overlay) {
-        overlay.classList.remove('open');
-        overlay.setAttribute('aria-hidden', 'true');
-    }
-    pendingDeviceSave = null;
-}
-
-async function sharePreparedCvFile() {
-    const prepared = pendingDeviceSave;
-    const button = document.getElementById('device-save-share');
-    const status = document.getElementById('device-save-status');
-    if (!prepared?.file || !canShareFile(prepared.file)) return;
-
-    if (button) button.disabled = true;
-    try {
-        // This call intentionally stays inside the Save button's click handler:
-        // the Web Share API requires a fresh user activation on mobile devices.
-        await navigator.share({
-            files: [prepared.file],
-            title: prepared.filename,
-        });
-        closeDeviceSaveModal();
-        showToast('PDF sent to your device save menu');
-    } catch (error) {
-        if (error?.name !== 'AbortError' && status) {
-            status.textContent = 'The device save menu could not open. Use Print / Save PDF instead.';
-        }
-    } finally {
-        if (button?.isConnected) button.disabled = false;
-    }
-}
-
-function printPreparedCv() {
-    const frame = document.getElementById('cv-frame');
-    const previewWindow = frame?.contentWindow;
-    if (!previewWindow || typeof previewWindow.print !== 'function') {
-        const status = document.getElementById('device-save-status');
-        if (status) status.textContent = 'Printing is not available in this browser. Open this page in Chrome or Safari.';
-        return;
-    }
-
-    closeDeviceSaveModal();
-    if (typeof previewWindow.focus === 'function') previewWindow.focus();
-    previewWindow.print();
-}
-
 function triggerBlobDownload(blob, filename) {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -3942,12 +3825,9 @@ async function downloadCvFile(format = 'pdf') {
             ? responseBlob
             : responseBlob.slice(0, responseBlob.size, mimeType);
 
-        if (format === 'pdf' && shouldUseDeviceSaveFlow() && openDeviceSaveModal(blob, filename)) {
-            showToast('PDF ready to save');
-        } else {
-            triggerBlobDownload(blob, filename);
-            showToast(`${extension.toUpperCase()} downloaded!`);
-        }
+        triggerBlobDownload(blob, filename);
+
+        showToast(`${extension.toUpperCase()} downloaded!`);
     } catch (e) {
         console.error(`${extension.toUpperCase()} generation error:`, e);
         alert(`${extension.toUpperCase()} download failed: ` + e.message);
