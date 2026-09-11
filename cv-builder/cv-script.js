@@ -3676,6 +3676,29 @@ async function downloadDocx() {
     return downloadCvFile('docx');
 }
 
+function triggerBlobDownload(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+
+    try {
+        link.click();
+    } catch (error) {
+        link.remove();
+        URL.revokeObjectURL(url);
+        throw error;
+    }
+
+    // Browsers resolve a synthetic download after the current JavaScript task.
+    // Revoking the blob URL immediately makes mobile and embedded browsers try
+    // to open an already-invalid URL instead of handing the file to downloads.
+    setTimeout(() => link.remove(), 0);
+    setTimeout(() => URL.revokeObjectURL(url), 60 * 1000);
+}
+
 function toggleDownloadMenu(event, btn) {
     if (event) {
         event.stopPropagation();
@@ -3788,18 +3811,21 @@ async function downloadCvFile(format = 'pdf') {
         // ── Step 4: Trigger the download ─────────────────────────────
         // Convert the response to a blob (binary data), create a temporary
         // URL for it, and simulate a link click to start the download.
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
+        const responseBlob = await res.blob();
+        if (!responseBlob.size) {
+            throw new Error(`${extension.toUpperCase()} generation returned an empty file`);
+        }
 
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
+        // Some WebViews need an explicit MIME type before they will pass the
+        // blob to the device's download handler.
+        const mimeType = format === 'docx'
+            ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            : 'application/pdf';
+        const blob = responseBlob.type === mimeType
+            ? responseBlob
+            : responseBlob.slice(0, responseBlob.size, mimeType);
 
-        // Cleanup: remove the invisible link and free the blob memory
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        triggerBlobDownload(blob, filename);
 
         showToast(`${extension.toUpperCase()} downloaded!`);
     } catch (e) {
