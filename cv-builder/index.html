@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css" />
     <script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css">
-    <link rel="stylesheet" href="cv-styles.css?v=2.6">
+    <link rel="stylesheet" href="cv-styles.css?v=2.8">
     <!-- Promise.withResolvers polyfill for older browsers/devices -->
     <script>
         if (typeof Promise.withResolvers === 'undefined') {
@@ -1553,6 +1553,37 @@
         </div>
     </div>
 
+    <div id="device-save-overlay" class="docx-info-overlay" aria-hidden="true" onclick="closeDeviceSaveModal()">
+        <div class="docx-info-card" role="dialog" aria-modal="true" aria-labelledby="device-save-title"
+            onclick="event.stopPropagation()">
+            <div class="docx-info-header">
+                <div class="docx-info-icon">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M12 3v12"></path>
+                        <path d="m7 10 5 5 5-5"></path>
+                        <path d="M5 21h14"></path>
+                    </svg>
+                </div>
+                <h3 id="device-save-title">Your PDF is ready</h3>
+                <button class="docx-info-close" type="button" onclick="closeDeviceSaveModal()"
+                    aria-label="Close">×</button>
+            </div>
+            <div class="docx-info-body">
+                <p id="device-save-text" class="docx-info-text"></p>
+                <p id="device-save-status" class="device-save-status" role="status"></p>
+            </div>
+            <div class="docx-info-actions device-save-actions">
+                <button id="device-save-print" class="btn-icon" type="button" onclick="printPreparedCv()">
+                    Print / Save PDF
+                </button>
+                <button id="device-save-share" class="btn-icon btn-primary" type="button"
+                    onclick="sharePreparedCvFile()">
+                    Save / Share PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Premium template: login required (shown to logged-out users) -->
     <div id="template-login-overlay" class="tpl-gate-overlay" aria-hidden="true" onclick="closeTemplateLoginModal()">
         <div class="tpl-gate-card" role="dialog" aria-modal="true" aria-labelledby="tpl-login-title"
@@ -1640,6 +1671,6 @@
     </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
-<script src="cv-script.js?v=2.7"></script>
+<script src="cv-script.js?v=2.8"></script>
 
 </html>
