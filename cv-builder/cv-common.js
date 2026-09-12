@@ -39,25 +39,55 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function renderCV(data) {
     if (!data) return;
+    window.__currentCVData = data;
 
     ensureRichTextGuards();
     ensureUniversalSections();
     ensureSectionWrappers();
     applyTemplateAccent(data.themeAccent || '');
+    applyTemplateFont(data.themeFont || '');
     syncDocumentTitle(data);
 
     // 1. Personal Info
     setHTML('[data-field="name"]', data.personal?.name);
     setHTML('[data-field="tagline"]', data.personal?.tagline);
     setHTML('[data-field="contact"]', data.personal?.contact);
-    setHTML('[data-field="phone"]', data.personal?.phone);
+    // Highlight banners logic
+    const h1Val = (data.personal?.highlight1 !== undefined && data.personal?.highlight1 !== null) ? data.personal.highlight1 : 'Top Academic Performer';
+    const h2Val = (data.personal?.highlight2 !== undefined && data.personal?.highlight2 !== null) ? data.personal.highlight2 : 'Article Trainee Experience';
+    const h3Val = (data.personal?.highlight3 !== undefined && data.personal?.highlight3 !== null) ? data.personal.highlight3 : 'Leadership & Awards';
+
+    const h1El = document.querySelector('[data-field="highlight1"]');
+    const h2El = document.querySelector('[data-field="highlight2"]');
+    const h3El = document.querySelector('[data-field="highlight3"]');
+
+    if (h1El) {
+        h1El.innerHTML = h1Val;
+        h1El.style.display = h1Val.trim() ? '' : 'none';
+    }
+    if (h2El) {
+        h2El.innerHTML = h2Val;
+        h2El.style.display = h2Val.trim() ? '' : 'none';
+    }
+    if (h3El) {
+        h3El.innerHTML = h3Val;
+        h3El.style.display = h3Val.trim() ? '' : 'none';
+    }
+
+    const highlightsContainer = document.querySelector('.highlights');
+    if (highlightsContainer) {
+        const hasAnyHighlight = !!(h1Val.trim() || h2Val.trim() || h3Val.trim());
+        highlightsContainer.style.display = hasAnyHighlight ? '' : 'none';
+    }
+    const phoneVal = formatPhoneNumber(data.personal?.phone);
+    setHTML('[data-field="phone"]', isRealPhone(phoneVal) ? phoneVal : '');
     setHTML('[data-field="email"]', data.personal?.email);
     setHTML('[data-field="linkedin"]', data.personal?.linkedin);
     setHTML('[data-field="location"]', data.personal?.location);
     
     // Hide contact-block if all contact details are empty (CV-5 pattern)
     const hasContactDetails = !!(
-        data.personal?.phone ||
+        isRealPhone(phoneVal) ||
         data.personal?.email ||
         data.personal?.linkedin ||
         data.personal?.location ||
@@ -93,9 +123,40 @@ function renderCV(data) {
         // Map both 'institute' and 'institution' field names for compatibility across templates and worker output
         setHTMLIn(row, '[data-field="institution"]', item.institute || item.institution);
         setHTMLIn(row, '[data-field="institute"]', item.institute || item.institution);
-        setHTMLIn(row, '[data-field="marks"]', item.marks || item.remarks);
-        setHTMLIn(row, '[data-field="remarks"]', item.remarks);
+        const marksEl = row.querySelector('[data-field="marks"]');
+        const remarksEl = row.querySelector('[data-field="remarks"]');
+
+        if (marksEl) {
+            const marksVal = item.marks || item.score || item.result || item.percentage || item.gpa || '';
+            setHTMLIn(row, '[data-field="marks"]', marksVal);
+            if (marksEl.tagName === 'TD' || marksEl.closest('tr')) {
+                marksEl.style.display = '';
+            } else {
+                marksEl.style.display = stripTags(String(marksVal)).trim() ? '' : 'none';
+            }
+        }
+        if (remarksEl) {
+            setHTMLIn(row, '[data-field="remarks"]', item.remarks);
+            const remarksVal = (item.remarks || '').trim();
+            if (remarksEl.tagName === 'TD' || remarksEl.closest('tr')) {
+                remarksEl.style.display = '';
+            } else {
+                remarksEl.style.display = stripTags(remarksVal).trim() ? '' : 'none';
+            }
+        }
+
+        const instHeader = row.querySelector('[data-field="institution-header"]');
+        const instEl = row.querySelector('[data-field="institution"], [data-field="institute"], .edu-inst, .card-subtitle');
+        const isMerged = !!item.mergedWithPrevious || !!item.mergeWithPrevious;
+        if (isMerged) {
+            if (instHeader) instHeader.style.display = 'none';
+            if (instEl) instEl.style.display = 'none';
+        } else {
+            if (instHeader) instHeader.style.display = '';
+            if (instEl) instEl.style.display = '';
+        }
     });
+    applyEducationInstituteMerges(data.education || []);
     
     // 3b. Grouped Education (CV8/CV9) - groups entries by institution
     const groupedEduContainer = document.getElementById('education-grouped-list');
@@ -182,21 +243,41 @@ function renderCV(data) {
     const hasExp = renderedExperience.length > 0;
     updateList('experience-list', renderedExperience, hasExp, (block, item) => {
         setHTMLIn(block, '[data-field="role"]', item.role);
-        setHTMLIn(block, '[data-field="company"]', item.company);
+        setHTMLIn(block, '[data-field="company"]', (item.company || '') + entryLinkChipHTML(item.link));
         setHTMLIn(block, '[data-field="dates"]', item.dates);
+        setHTMLIn(block, '[data-field="intro"]', item.intro); // Role/firm intro shown once under the header
         setHTMLIn(block, '[data-field="category"]', item.category); // Department/Area like "Business Finance"
         applyExperienceTitleMergeDisplayV2(block, item);
 
         const roleEl = block.querySelector('[data-field="role"]');
         if (roleEl) roleEl.style.display = stripTags(item.role || '').trim() ? '' : 'none';
         const categoryEl = block.querySelector('[data-field="category"]');
-        if (categoryEl) categoryEl.style.display = stripTags(item.category || '').trim() ? '' : 'none';
+        if (categoryEl) {
+            const categoryEmpty = !stripTags(item.category || '').trim();
+            categoryEl.style.display = categoryEmpty ? 'none' : '';
+            // When category is hidden, let the bullets column fill the full row width
+            const bulletsCell = categoryEl.nextElementSibling;
+            if (bulletsCell && /^TD$/i.test(bulletsCell.tagName || '')) {
+                if (categoryEmpty) {
+                    bulletsCell.setAttribute('colspan', '2');
+                    bulletsCell.style.setProperty('width', '100%', 'important');
+                } else {
+                    bulletsCell.removeAttribute('colspan');
+                    bulletsCell.style.removeProperty('width');
+                }
+            }
+        }
+        // Intro belongs to the header, so only the primary entry shows it; subsections hide it.
+        const introEl = block.querySelector('[data-field="intro"]');
+        if (introEl) introEl.style.display = (stripTags(item.intro || '').trim() && !item.titleMergedWithPrevious) ? '' : 'none';
         if (item.titleMergedWithPrevious) {
             if (roleEl) roleEl.style.display = 'none';
+            if (introEl) introEl.style.display = 'none';
             const companyEl = block.querySelector('[data-field="company"]');
             const datesEl = block.querySelector('[data-field="dates"]');
             if (companyEl) companyEl.style.display = 'none';
             if (datesEl) datesEl.style.display = 'none';
+            block.querySelectorAll('.subhead-bar, .exp-subhead-bar, .exp-role-row, .exp-header-row, .exp-subhead-top, .exp-company-title, .exp-role-title').forEach(h => h.style.display = 'none');
         }
 
         const ul = block.querySelector('[data-list="bullets"]');
@@ -212,8 +293,41 @@ function renderCV(data) {
     // 4b. Projects (CV-9)
     const hasProjects = data.projects && data.projects.length > 0;
     updateList('projects-list', data.projects, hasProjects, (block, item) => {
-        setHTMLIn(block, '[data-field="title"]', item.title);
-        setHTMLIn(block, '[data-field="description"]', item.description);
+        setHTMLIn(block, '[data-field="title"]', (item.title || '') + entryLinkChipHTML(item.titleLink));
+
+        const descSpan = block.querySelector('[data-field="description"]');
+        if (descSpan) {
+            const descriptionText = item.description || '';
+            const normalized = normalizeRichFieldHTML(descriptionText);
+            const host = ensureFieldHostSupportsRichContent(descSpan, normalized);
+            host.innerHTML = normalized;
+
+            // If description is empty, hide its host element
+            const descEmpty = !stripTags(descriptionText).trim();
+            host.style.display = descEmpty ? 'none' : '';
+
+            // Find the parent TD containing the description if description is in its own column
+            const descCell = host.closest('td');
+            if (descCell) {
+                const ulInSameCell = descCell.querySelector('[data-list="bullets"]');
+                if (!ulInSameCell) {
+                    descCell.style.display = descEmpty ? 'none' : '';
+                    
+                    const bulletsCell = descCell.nextElementSibling;
+                    if (bulletsCell && /^TD$/i.test(bulletsCell.tagName || '')) {
+                        if (descEmpty) {
+                            bulletsCell.setAttribute('colspan', '2');
+                            bulletsCell.style.setProperty('width', '100%', 'important');
+                        } else {
+                            bulletsCell.removeAttribute('colspan');
+                            bulletsCell.style.removeProperty('width');
+                        }
+                    }
+                } else {
+                    descCell.style.display = '';
+                }
+            }
+        }
 
         const ul = block.querySelector('[data-list="bullets"]');
         if (ul) {
@@ -275,20 +389,37 @@ function renderCV(data) {
 
     // 11. Section ordering
     applySectionOrder(data.sectionOrder || []);
+    normalizeClassicBlueDetailSections();
+    const groupingSupported = normalizeSectionGrouping(data.sectionGroups || {}, data.sectionLabels || {});
+    try {
+        window.parent.postMessage({ type: 'section-grouping-capability', supported: groupingSupported }, '*');
+    } catch (e) { /* cross-origin — ignore */ }
     enforceExperienceOnlyLeftLabels();
     stabilizeSectionLayouts();
     applyTableFormatSettings(data.tableSettings || {});
 
-    // 12. Recalculate Layout (Scale/Shrink)
+    // 12. Configurable section labels (rename / hide the grey left-label cells)
+    applySectionLabels(data.sectionLabels || {});
+
+    // 13. Configurable section titles (rename section headings, or fall back to template default)
+    applySectionTitles(data.sectionTitles || {});
+
+    // 14. Recalculate Layout (Scale/Shrink)
     // These functions exist in the templates script block
     // Use requestAnimationFrame to ensure DOM is fully updated before recalculating
     requestAnimationFrame(() => {
+        applySectionTitles(data.sectionTitles || {});
         applyTemplateAccent(data.themeAccent || '');
+        applyTemplateFont(data.themeFont || '');
         if (typeof window.shrinkContentToFit === 'function') {
             window.shrinkContentToFit();
         }
         if (typeof window.scaleToFit === 'function') {
             window.scaleToFit();
+        }
+        // Composite-ledger specific: linkify contact fields + build exp-subhead (no-op in all other templates)
+        if (typeof window.__clContactFix === 'function') {
+            window.__clContactFix(data);
         }
     });
 }
@@ -368,6 +499,53 @@ function normalizeRichFieldHTML(value) {
     return tpl.innerHTML;
 }
 
+// Renders an optional "[Link]" chip after an entry title/company when a URL is set.
+// Returns '' when no URL, so plain-text titles pass through unchanged.
+// The result is a real <a>, so it flows into the preview, PDF and DOCX export.
+function entryLinkChipHTML(url) {
+    const raw = String(url || '').trim();
+    if (!raw) return '';
+    const href = /^(https?:\/\/|mailto:|tel:)/i.test(raw) ? raw : `https://${raw}`;
+    return ` <a class="cv-entry-link" href="${escapeAttr(href)}" target="_blank" rel="noopener noreferrer" style="color:#2563eb;text-decoration:none;font-weight:500;white-space:nowrap;">[Link]</a>`;
+}
+
+function applyEducationInstituteMerges(educationList) {
+    if (!Array.isArray(educationList) || educationList.length === 0) return;
+    const eduListContainer = document.getElementById('education-list');
+    if (!eduListContainer) return;
+
+    const rows = Array.from(eduListContainer.children).filter(child => child && !child.classList.contains('template') && child.tagName !== 'THEAD');
+
+    for (let i = 0; i < educationList.length; i++) {
+        const item = educationList[i];
+        const row = rows[i];
+        if (!row) continue;
+
+        const isMerged = !!item.mergedWithPrevious || !!item.mergeWithPrevious;
+        const instHeader = row.querySelector('[data-field="institution-header"]');
+        const instEl = row.querySelector('[data-field="institution"], [data-field="institute"], .edu-inst, .card-subtitle');
+
+        if (isMerged) {
+            if (instHeader) instHeader.style.display = 'none';
+            if (instEl) instEl.style.display = 'none';
+        } else {
+            if (instHeader) instHeader.style.display = '';
+            if (instEl) instEl.style.display = '';
+        }
+
+        const marksEl = row.querySelector('[data-field="marks"]');
+        const remarksEl = row.querySelector('[data-field="remarks"]');
+        if (marksEl && marksEl.tagName !== 'TD' && !marksEl.closest('tr')) {
+            const marksVal = (item.marks || '').trim();
+            marksEl.style.display = stripTags(marksVal).trim() ? '' : 'none';
+        }
+        if (remarksEl && remarksEl.tagName !== 'TD' && !remarksEl.closest('tr')) {
+            const remarksVal = (item.remarks || '').trim();
+            remarksEl.style.display = stripTags(remarksVal).trim() ? '' : 'none';
+        }
+    }
+}
+
 function enforceExperienceOnlyLeftLabels() {
     const labelSelectors = ['.category-label', '.skills-col-label', '.work-label', '.col-left', '.details-label', '.grey-label'];
     const nonExpSections = document.querySelectorAll('.sortable-section[data-section-id]:not([data-section-id="experience"])');
@@ -400,7 +578,8 @@ function enforceExperienceOnlyLeftLabels() {
         });
 
         // If section tables have a 2-col colgroup, remove first col so content spans full width.
-        section.querySelectorAll('table colgroup').forEach(colgroup => {
+        // Skip tables that explicitly preserve label columns (e.g. grid-docket ledger tables).
+        section.querySelectorAll('table:not([data-preserve-label-columns]) colgroup').forEach(colgroup => {
             const cols = colgroup.querySelectorAll('col');
             if (cols.length === 2) {
                 // Removing only the first col can leave the remaining col at width:80%.
@@ -412,6 +591,9 @@ function enforceExperienceOnlyLeftLabels() {
         const sectionId = section.getAttribute('data-section-id') || '';
         if (sectionId !== 'education') {
             section.querySelectorAll('table').forEach(table => {
+                if (table.classList.contains('section-detail-table') || table.hasAttribute('data-preserve-label-columns')) {
+                    return;
+                }
                 const colCount = Math.max(1, table.querySelectorAll('colgroup col').length);
                 table.querySelectorAll('tr').forEach(row => {
                     const cells = Array.from(row.children).filter(el => /^(TD|TH)$/i.test(el.tagName));
@@ -466,14 +648,25 @@ function enforceExperienceOnlyLeftLabels() {
 
 function stabilizeSectionLayouts() {
     // Keep table columns fluid so content adapts on zoom and during import-heavy payloads.
-    document.querySelectorAll('.sortable-section table').forEach(table => {
+    document.querySelectorAll('.sortable-section table:not(.ledger-table):not([data-preserve-label-columns])').forEach(table => {
         table.style.setProperty('width', '100%', 'important');
         table.style.setProperty('table-layout', 'auto', 'important');
         table.style.setProperty('max-width', '100%', 'important');
     });
 
-    document.querySelectorAll('.sortable-section td, .sortable-section th').forEach(cell => {
+    // Apply word-wrap hardening, but skip cells inside preserved-label tables
+    // so their explicit width constraints (26% / 74%) are not blown out.
+    document.querySelectorAll('.sortable-section td:not(.ledger-table td):not([data-preserve-label-columns] td), .sortable-section th:not(.ledger-table th):not([data-preserve-label-columns] th)').forEach(cell => {
         cell.style.setProperty('max-width', '100%', 'important');
+        cell.style.setProperty('overflow-wrap', 'anywhere', 'important');
+        cell.style.setProperty('word-break', 'break-word', 'important');
+        if (cell.style.whiteSpace === 'nowrap') {
+            cell.style.setProperty('white-space', 'normal', 'important');
+        }
+    });
+
+    // Also apply word-wrap to ledger-table cells but WITHOUT overriding width/max-width.
+    document.querySelectorAll('.ledger-table td, [data-preserve-label-columns] td, .ledger-table th, [data-preserve-label-columns] th').forEach(cell => {
         cell.style.setProperty('overflow-wrap', 'anywhere', 'important');
         cell.style.setProperty('word-break', 'break-word', 'important');
         if (cell.style.whiteSpace === 'nowrap') {
@@ -492,6 +685,254 @@ function stabilizeSectionLayouts() {
 
 function applyTableFormatSettings(tableSettings) {
     applyEducationTableFormat(tableSettings?.education?.columns || {});
+}
+
+/**
+ * Apply user-configurable label text and visibility to the grey left-label cells
+ * in Certifications, Interests, Skills, Achievements, Leadership sections.
+ *
+ * Works for ALL templates by detecting label cells heuristically (2-cell table rows
+ * where one cell has no data binding and the adjacent one does).
+ *
+ * Classic Blue special-case: normalizeClassicBlueDetailSections() moves the visible
+ * rows into a .classic-blue-detail-group table tagged with data-detail-source, and
+ * hides the original sections. We must apply label changes to those rows too.
+ */
+function applySectionLabels(sectionLabels) {
+    const LABEL_SECTIONS = ['certifications', 'interests', 'skills', 'achievements', 'leadership'];
+
+    // Helper: apply text + visibility to a single 2-cell table/div row
+    function applyToRow(row, customText, visible) {
+        let cells;
+        if (row.tagName === 'TR') {
+            cells = Array.from(row.children).filter(el => /^(TD|TH)$/i.test(el.tagName));
+        } else {
+            // For div-based rows (like Serif Split)
+            cells = Array.from(row.children).filter(el => /^(DIV|TD|TH)$/i.test(el.tagName) && !el.classList.contains('template'));
+        }
+        if (cells.length !== 2) return;
+
+        const [first, second] = cells;
+        const firstHasBinding = !!(first.querySelector('[data-list], [data-field]'));
+        const secondHasBinding = !!(second.querySelector('[data-list], [data-field]'));
+
+        let labelCell, contentCell;
+        if (!firstHasBinding && secondHasBinding) {
+            labelCell = first;
+            contentCell = second;
+        } else if (firstHasBinding && !secondHasBinding) {
+            labelCell = second;
+            contentCell = first;
+        } else {
+            return; // Both or neither have bindings — skip
+        }
+
+        // Apply custom text if provided. Prefer writing into a nested title
+        // element (e.g. .section-header-title) so decorative siblings like
+        // .section-header-bar aren't destroyed; only fall back to overwriting
+        // the whole label cell when it has no such nested title element.
+        if (customText !== null && customText !== '') {
+            const titleEl = labelCell.querySelector('.section-header-title, .section-header, .section-header-2, .section-title, .gray-bar, .pill-banner, .section-banner, .right-title-text') || labelCell;
+            const currentText = (titleEl.textContent || '').trim();
+            if (currentText !== customText) {
+                titleEl.textContent = customText;
+            }
+        }
+
+        // Toggle label visibility
+        if (!visible) {
+            labelCell.style.display = 'none';
+            contentCell.setAttribute('colspan', '2');
+            contentCell.style.setProperty('width', '100%', 'important');
+        } else {
+            labelCell.style.display = '';
+            contentCell.removeAttribute('colspan');
+            contentCell.style.removeProperty('width');
+        }
+    }
+
+    // Classic Blue groups certifications/interests/skills/achievements/leadership
+    // into a single table with rows tagged data-detail-source="sectionId".
+    // These are the VISIBLE rows; the original sections are hidden.
+    const classicBlueGroup = document.querySelector('.sortable-section.classic-blue-detail-group');
+
+    // Combine built-in sections + any custom section IDs that have label config
+    const customSectionIds = Object.keys(sectionLabels).filter(id => !LABEL_SECTIONS.includes(id));
+
+    // --- Process built-in label sections ---
+    LABEL_SECTIONS.forEach(sectionId => {
+        const config = sectionLabels[sectionId];
+        const customText = config?.text || null;
+        const visible = config?.visible !== false; // default visible
+
+        // --- Pass 1: Classic Blue detail group rows (visible in Classic Blue) ---
+        if (classicBlueGroup) {
+            const detailRow = classicBlueGroup.querySelector(`tr[data-detail-source="${sectionId}"]`);
+            if (detailRow) applyToRow(detailRow, customText, visible);
+        }
+
+        // --- Pass 2: All other templates — look inside the sortable-section wrapper ---
+        // Special case: combined table where sections are inside a single table row rather than separate sortable-sections
+        const combinedBoundEl = document.querySelector(`table[data-preserve-label-columns] [data-field="${sectionId}"], table[data-preserve-label-columns] [data-list="${sectionId}"]`);
+        if (combinedBoundEl) {
+            const combinedRow = combinedBoundEl.closest('tr');
+            if (combinedRow) {
+                applyToRow(combinedRow, customText, visible);
+                return;
+            }
+        }
+
+        const section = document.querySelector(`.sortable-section[data-section-id="${sectionId}"]`);
+        if (!section) return;
+        // Skip the section if it is hidden (Classic Blue hides originals after grouping)
+        if (section.style.display === 'none') return;
+
+        const rows = section.querySelectorAll('tr');
+        if (rows.length > 0) {
+            rows.forEach(row => applyToRow(row, customText, visible));
+        } else {
+            // If there are no tr elements, the section container itself acts as the 2-column row (e.g. Serif Split)
+            applyToRow(section, customText, visible);
+        }
+    });
+
+    // --- Process custom section labels ---
+    const LABEL_SELECTORS = ['.category-label', '.skills-col-label', '.work-label', '.col-left', '.details-label', '.section-label', '.category'];
+
+    customSectionIds.forEach(sectionId => {
+        const config = sectionLabels[sectionId];
+        if (!config) return;
+        const customText = config.text || null;
+        const visible = config.visible !== false;
+
+        // Classic Blue: custom section rows are keyed as "custom-{id}" in the detail group
+        if (classicBlueGroup) {
+            const detailRow = classicBlueGroup.querySelector(`tr[data-detail-source="custom-${sectionId}"]`);
+            if (detailRow) applyToRow(detailRow, customText, visible);
+        }
+
+        // Other templates: find the wrapper by data-custom-section-root attribute
+        const wrapper = document.querySelector(`[data-custom-section-root="${sectionId}"]`);
+        if (!wrapper || wrapper.style.display === 'none') return;
+
+        // Find label element using the same selectors as setSectionBodyLabel
+        let labelEl = null;
+        for (const sel of LABEL_SELECTORS) {
+            labelEl = wrapper.querySelector(sel);
+            if (labelEl) break;
+        }
+        if (!labelEl) return;
+
+        // Apply custom text
+        if (customText !== null && customText !== '') {
+            labelEl.textContent = customText;
+        }
+
+        // Toggle visibility
+        if (!visible) {
+            labelEl.style.display = 'none';
+            // Try to expand the sibling content cell
+            const contentEl = labelEl.nextElementSibling || labelEl.parentElement?.querySelector('[data-list]')?.closest('td, .section-content');
+            if (contentEl) {
+                if (contentEl.tagName === 'TD' || contentEl.tagName === 'TH') {
+                    contentEl.setAttribute('colspan', '2');
+                    contentEl.style.setProperty('width', '100%', 'important');
+                }
+            }
+        } else {
+            labelEl.style.display = '';
+            const contentEl = labelEl.nextElementSibling;
+            if (contentEl) {
+                contentEl.removeAttribute('colspan');
+                contentEl.style.removeProperty('width');
+            }
+        }
+    });
+}
+
+function applySectionTitles(sectionTitles) {
+    const titles = (sectionTitles && typeof sectionTitles === 'object') ? sectionTitles : {};
+    const SECTION_IDS = ['summary', 'education', 'experience', 'projects', 'certifications', 'achievements', 'leadership', 'interests', 'skills'];
+
+    const TITLE_SELECTORS = [
+        '.section-header-title',
+        '.right-title-text',
+        '.section-banner-row td',
+        '.banner-row td',
+        '.section-banner',
+        '.section-header p span',
+        '.section-header p',
+        '.section-header',
+        '.section-header-2',
+        '.section-title',
+        '.pill-banner',
+        '.gray-bar',
+        '.sec-head',
+        '.sec-title',
+        '.heading',
+        '.section-heading',
+        'h2',
+        'h3'
+    ];
+
+    const IGNORE_CONTAINERS = '#experience-list, #education-list, #projects-list, #social-links-container, .experience-item, .job-group, .education-item, .project-item, .list-item, tbody[id], .sub-header-row, .sub-header-cell, .sub-header-content, .sub-section-header, .exp-category, .category-cell';
+
+    SECTION_IDS.forEach(sectionId => {
+        const customTitle = (titles[sectionId] || '').trim();
+        const section = document.querySelector(`.sortable-section[data-section-id="${sectionId}"]`);
+        if (!section) return;
+
+        let titleEl = null;
+        for (const selector of TITLE_SELECTORS) {
+            const elements = section.querySelectorAll(selector);
+            for (const el of elements) {
+                if (!el.closest(IGNORE_CONTAINERS)) {
+                    titleEl = el;
+                    break;
+                }
+            }
+            if (titleEl) break;
+        }
+
+        if (!titleEl) return;
+
+        if (!titleEl.hasAttribute('data-default-title')) {
+            titleEl.setAttribute('data-default-title', titleEl.textContent.trim());
+        }
+
+        const defaultTitle = titleEl.getAttribute('data-default-title') || '';
+        const targetTitle = customTitle || defaultTitle;
+
+        if (titleEl.textContent.trim() !== targetTitle) {
+            titleEl.textContent = targetTitle;
+        }
+    });
+
+    // Custom sections
+    const customSections = window.__currentCVData?.customSections || [];
+    customSections.forEach(cs => {
+        if (!cs || !cs.id) return;
+        const customTitle = (titles[cs.id] !== undefined ? titles[cs.id] : (cs.title || '')).trim();
+        const section = document.querySelector(`[data-custom-section-root="${cs.id}"], .sortable-section[data-section-id="${cs.id}"]`);
+        if (!section) return;
+        let titleEl = null;
+        for (const selector of TITLE_SELECTORS) {
+            const elements = section.querySelectorAll(selector);
+            for (const el of elements) {
+                if (!el.closest(IGNORE_CONTAINERS)) {
+                    titleEl = el;
+                    break;
+                }
+            }
+            if (titleEl) break;
+        }
+        if (titleEl && customTitle) {
+            if (!titleEl.hasAttribute('data-default-title')) {
+                titleEl.setAttribute('data-default-title', titleEl.textContent.trim());
+            }
+            titleEl.textContent = customTitle;
+        }
+    });
 }
 
 function applyEducationTableFormat(columns) {
@@ -548,8 +989,19 @@ function applyEducationTableFormat(columns) {
             indexMap[field] = index;
         });
 
+        const currentEdu = window.__currentCVData?.education || [];
+        const hasValue = (field) => {
+            if (field === 'degree' || field === 'institution') return true;
+            return currentEdu.some(item => {
+                const val = field === 'institution' 
+                    ? (item.institute || item.institution) 
+                    : (field === 'marks' ? (item.marks || item.score || item.result || item.percentage || item.gpa) : item[field]);
+                return !!(val && String(val).trim());
+            });
+        };
+
         const visibleEntries = Object.entries(indexMap)
-            .filter(([field]) => config[field]?.visible !== false)
+            .filter(([field]) => (config[field]?.visible !== false) && hasValue(field))
             .map(([field, index]) => ({ field, index, width: config[field].width }));
         const totalWidth = visibleEntries.reduce((sum, entry) => sum + entry.width, 0) || 1;
 
@@ -557,9 +1009,24 @@ function applyEducationTableFormat(columns) {
         table.style.setProperty('width', '100%', 'important');
 
         Object.entries(indexMap).forEach(([field, index]) => {
-            const isVisible = config[field]?.visible !== false;
+            const isVisible = (config[field]?.visible !== false) && hasValue(field);
             const percent = isVisible ? `${((config[field].width / totalWidth) * 100).toFixed(2)}%` : '0%';
-            table.querySelectorAll(`tr > *:nth-child(${index})`).forEach((cell) => {
+
+            table.querySelectorAll(`thead tr > *:nth-child(${index})`).forEach((th) => {
+                th.style.display = isVisible ? '' : 'none';
+                th.style.setProperty('width', percent, 'important');
+                th.style.setProperty('max-width', percent, 'important');
+            });
+
+            const selectors = field === 'institution'
+                ? '[data-field="institution"], [data-field="institute"]'
+                : `[data-field="${field}"]`;
+
+            table.querySelectorAll(`tbody tr`).forEach((tr) => {
+                const fieldEl = tr.querySelector(selectors);
+                if (!fieldEl) return;
+                const cell = fieldEl.closest('td, th') || fieldEl;
+                if (!cell) return;
                 cell.style.display = isVisible ? '' : 'none';
                 cell.style.setProperty('width', percent, 'important');
                 cell.style.setProperty('max-width', percent, 'important');
@@ -627,7 +1094,7 @@ function applyTemplateAccent(accent) {
     if (!root) return;
 
     if (!color) {
-        ['--blue-header', '--header-bg', '--accent-color', '--blue-deep', '--blue-text', '--section-bg', '--header-bg-dark', '--sub-header-bg', '--sub-bg', '--grey-bg', '--blueshade-color', '--blue-shade']
+        ['--blue-header', '--header-bg', '--accent-color', '--blue-deep', '--blue-text', '--section-bg', '--header-bg-dark', '--sub-header-bg', '--sub-bg', '--grey-bg', '--label-bg', '--blueshade-color', '--blue-shade', '--frame', '--navy', '--purple']
             .forEach(name => root.style.removeProperty(name));
         clearAccentInlineStyles();
         return;
@@ -640,6 +1107,9 @@ function applyTemplateAccent(accent) {
     root.style.setProperty('--blue-header', color);
     root.style.setProperty('--header-bg', color);
     root.style.setProperty('--accent-color', color);
+    root.style.setProperty('--navy', color);
+    root.style.setProperty('--purple', softer);
+    root.style.setProperty('--frame', light);
     root.style.setProperty('--blue-deep', color);
     root.style.setProperty('--blue-text', color);
     root.style.setProperty('--header-bg-dark', color);
@@ -647,6 +1117,7 @@ function applyTemplateAccent(accent) {
     root.style.setProperty('--sub-header-bg', light);
     root.style.setProperty('--sub-bg', light);
     root.style.setProperty('--grey-bg', light);
+    root.style.setProperty('--label-bg', light);
     root.style.setProperty('--blueshade-color', light);
     root.style.setProperty('--blue-shade', softer);
     applyAccentInlineStyles(color, light, softer, deep);
@@ -686,12 +1157,12 @@ function hexToRgb(hex) {
 }
 
 function applyAccentInlineStyles(color, light, softer, deep) {
-    setInlineStyles('.section-header, .section-header-2, .work-exp-header, .project-title-row, .header-name-box', {
+    setInlineStyles('.section-header, .section-header-2, .header-name-box', {
         backgroundColor: color,
         color: '#ffffff',
         borderColor: deep
     });
-    setInlineStyles('.contact-bar, .work-company-row, .qual-table th, .extra-table td.category, .role-col, .summary-box, .summary-content, .header-bg-lite', {
+    setInlineStyles('.contact-bar, .work-company-row, .qual-table th, .extra-table td.category, .section-detail-table td.section-label, .role-col, .summary-box, .summary-content, .header-bg-lite, .project-title-row, .work-exp-header, .contact-container .contact-icon-item', {
         backgroundColor: light,
         borderColor: deep
     });
@@ -701,8 +1172,8 @@ function applyAccentInlineStyles(color, light, softer, deep) {
 }
 
 function clearAccentInlineStyles() {
-    clearInlineStyles('.section-header, .section-header-2, .work-exp-header, .project-title-row, .header-name-box', ['backgroundColor', 'color', 'borderColor']);
-    clearInlineStyles('.contact-bar, .work-company-row, .qual-table th, .extra-table td.category, .role-col, .summary-box, .summary-content, .header-bg-lite', ['backgroundColor', 'borderColor']);
+    clearInlineStyles('.section-header, .section-header-2, .header-name-box', ['backgroundColor', 'color', 'borderColor']);
+    clearInlineStyles('.contact-bar, .work-company-row, .qual-table th, .extra-table td.category, .section-detail-table td.section-label, .role-col, .summary-box, .summary-content, .header-bg-lite, .project-title-row, .work-exp-header, .contact-container .contact-icon-item', ['backgroundColor', 'borderColor']);
     clearInlineStyles('.edu-institution', ['color']);
 }
 
@@ -720,6 +1191,189 @@ function clearInlineStyles(selector, keys) {
             node.style[key] = '';
         });
     });
+}
+
+const CV_FONT_CONFIGS = {
+    'calibri': {
+        name: 'Calibri',
+        cssFamily: "Calibri, 'Segoe UI', Arial, sans-serif"
+    },
+    'cambria': {
+        name: 'Cambria',
+        cssFamily: "Cambria, Georgia, 'Times New Roman', serif"
+    },
+    'times': {
+        name: 'Times New Roman',
+        cssFamily: "'Times New Roman', Times, serif"
+    },
+    'times new roman': {
+        name: 'Times New Roman',
+        cssFamily: "'Times New Roman', Times, serif"
+    },
+    'georgia': {
+        name: 'Georgia',
+        cssFamily: "Georgia, 'Times New Roman', serif"
+    },
+    'garamond': {
+        name: 'Garamond',
+        cssFamily: "Garamond, 'EB Garamond', Georgia, serif",
+        googleFont: 'EB+Garamond:wght@400;600;700'
+    },
+    'eb garamond': {
+        name: 'Garamond',
+        cssFamily: "Garamond, 'EB Garamond', Georgia, serif",
+        googleFont: 'EB+Garamond:wght@400;600;700'
+    },
+    'arial': {
+        name: 'Arial',
+        cssFamily: "Arial, Helvetica, sans-serif"
+    },
+    'inter': {
+        name: 'Inter',
+        cssFamily: "'Inter', sans-serif",
+        googleFont: 'Inter:wght@400;500;600;700'
+    },
+    'roboto': {
+        name: 'Roboto',
+        cssFamily: "'Roboto', sans-serif",
+        googleFont: 'Roboto:wght@400;500;700'
+    },
+    'open sans': {
+        name: 'Open Sans',
+        cssFamily: "'Open Sans', sans-serif",
+        googleFont: 'Open+Sans:wght@400;600;700'
+    },
+    'lato': {
+        name: 'Lato',
+        cssFamily: "'Lato', sans-serif",
+        googleFont: 'Lato:wght@400;700'
+    },
+    'montserrat': {
+        name: 'Montserrat',
+        cssFamily: "'Montserrat', sans-serif",
+        googleFont: 'Montserrat:wght@400;500;600;700'
+    },
+    'poppins': {
+        name: 'Poppins',
+        cssFamily: "'Poppins', sans-serif",
+        googleFont: 'Poppins:wght@400;500;600;700'
+    },
+    'outfit': {
+        name: 'Outfit',
+        cssFamily: "'Outfit', sans-serif",
+        googleFont: 'Outfit:wght@400;500;600;700'
+    },
+    'nunito': {
+        name: 'Nunito',
+        cssFamily: "'Nunito', sans-serif",
+        googleFont: 'Nunito:wght@400;600;700'
+    },
+    'raleway': {
+        name: 'Raleway',
+        cssFamily: "'Raleway', sans-serif",
+        googleFont: 'Raleway:wght@400;500;600;700'
+    },
+    'trebuchet': {
+        name: 'Trebuchet MS',
+        cssFamily: "'Trebuchet MS', 'Lucida Sans', sans-serif"
+    },
+    'trebuchet ms': {
+        name: 'Trebuchet MS',
+        cssFamily: "'Trebuchet MS', 'Lucida Sans', sans-serif"
+    },
+    'century gothic': {
+        name: 'Century Gothic',
+        cssFamily: "'Century Gothic', Arial, sans-serif"
+    },
+    'merriweather': {
+        name: 'Merriweather',
+        cssFamily: "'Merriweather', serif",
+        googleFont: 'Merriweather:wght@400;700'
+    },
+    'playfair display': {
+        name: 'Playfair Display',
+        cssFamily: "'Playfair Display', Georgia, serif",
+        googleFont: 'Playfair+Display:wght@400;600;700'
+    },
+    'lora': {
+        name: 'Lora',
+        cssFamily: "'Lora', Georgia, serif",
+        googleFont: 'Lora:wght@400;500;600'
+    },
+    'libre baskerville': {
+        name: 'Libre Baskerville',
+        cssFamily: "'Libre Baskerville', Georgia, serif",
+        googleFont: 'Libre+Baskerville:wght@400;700'
+    },
+    'pt serif': {
+        name: 'PT Serif',
+        cssFamily: "'PT Serif', Georgia, serif",
+        googleFont: 'PT+Serif:wght@400;700'
+    },
+    'palatino': {
+        name: 'Palatino',
+        cssFamily: "'Palatino Linotype', 'Book Antiqua', Palatino, serif"
+    },
+    'cinzel': {
+        name: 'Cinzel',
+        cssFamily: "'Cinzel', Georgia, serif",
+        googleFont: 'Cinzel:wght@400;600;700'
+    }
+};
+
+function ensureGoogleFontLoaded(fontQuery) {
+    if (!fontQuery) return;
+    const linkId = 'cv-google-font-' + fontQuery.replace(/[^a-zA-Z0-9]/g, '-');
+    if (document.getElementById(linkId)) return;
+    const link = document.createElement('link');
+    link.id = linkId;
+    link.rel = 'stylesheet';
+    link.href = 'https://fonts.googleapis.com/css2?family=' + fontQuery + '&display=swap';
+    document.head.appendChild(link);
+}
+
+function applyTemplateFont(fontKey) {
+    const key = String(fontKey || '').trim().toLowerCase();
+    const root = document.documentElement;
+    const page = document.getElementById('cv-page');
+    let customStyle = document.getElementById('cv-custom-font-style');
+
+    if (!key || key === 'default') {
+        if (customStyle) customStyle.remove();
+        if (page) page.style.removeProperty('font-family');
+        ['--font-main', '--font-body', '--font-heading', '--font-serif', '--font-tahoma', '--font-treb', '--font-name']
+            .forEach(name => root && root.style && root.style.removeProperty(name));
+        return;
+    }
+
+    const config = CV_FONT_CONFIGS[key] || { cssFamily: fontKey };
+    if (config.googleFont) {
+        ensureGoogleFontLoaded(config.googleFont);
+    }
+
+    if (!customStyle) {
+        customStyle = document.createElement('style');
+        customStyle.id = 'cv-custom-font-style';
+        document.head.appendChild(customStyle);
+    }
+
+    customStyle.textContent = `
+        #cv-page, #cv-page *:not(.fa):not(.fas):not(.far):not(.fab):not([class*="icon"]):not(svg):not(path) {
+            font-family: ${config.cssFamily} !important;
+        }
+    `;
+
+    if (root && root.style) {
+        ['--font-main', '--font-body', '--font-heading', '--font-serif', '--font-tahoma', '--font-treb', '--font-name']
+            .forEach(name => root.style.setProperty(name, config.cssFamily));
+    }
+
+    if (document.fonts && typeof document.fonts.ready?.then === 'function') {
+        document.fonts.ready.then(() => {
+            if (typeof window.shrinkContentToFit === 'function') window.shrinkContentToFit();
+            if (typeof window.scaleToFit === 'function') window.scaleToFit();
+        });
+    }
 }
 
 function buildRenderedExperience(items) {
@@ -857,18 +1511,27 @@ function applyExperienceTitleMergeDisplayV2(block, item) {
         addWrapper(el.closest('.item-date'));
         addWrapper(el.closest('.exp-title'));
         addWrapper(el.closest('.sub-header-cell'));
+        addWrapper(el.closest('.sub-header-row'));
         addWrapper(el.closest('.job-title-row'));
         addWrapper(el.closest('.job-header'));
         addWrapper(el.closest('.exp-header-details'));
         addWrapper(el.closest('.work-subheader'));
         addWrapper(el.closest('.work-box-header'));
         addWrapper(el.closest('.work-box-header-row'));
+        addWrapper(el.closest('.subhead-bar'));
+        addWrapper(el.closest('.exp-subhead-bar'));
+        addWrapper(el.closest('.exp-role-row'));
+        addWrapper(el.closest('.exp-header-row'));
+        addWrapper(el.closest('.exp-subhead-top'));
+        addWrapper(el.closest('.exp-company-title'));
+        addWrapper(el.closest('.exp-role-title'));
+        addWrapper(el.closest('.exp-titlebar'));
     });
 
     wrappersToToggle.forEach(el => {
         el.style.display = hideTitle ? 'none' : '';
         const row = el.closest('tr');
-        if (row && row !== block && row.querySelector('.sub-header-cell')) {
+        if (row && row !== block && (row.querySelector('.sub-header-cell') || row.querySelector('.exp-titlebar') || row.classList.contains('sub-header-row'))) {
             row.style.display = hideTitle ? 'none' : '';
         }
     });
@@ -941,6 +1604,43 @@ function updateList(listId, dataArray, hasData, fillFn) {
     });
 }
 
+function applyEducationInstituteMerges(educationItems) {
+    const listContainer = document.getElementById('education-list');
+    if (!listContainer) return;
+
+    const rows = Array.from(listContainer.children)
+        .filter(row => row.tagName === 'TR' && !row.classList.contains('template'));
+    if (rows.length !== educationItems.length) return; // row/data mismatch — leave table untouched
+
+    const instituteCellOf = (row) => {
+        const field = row.querySelector('[data-field="institution"], [data-field="institute"]');
+        return field ? field.closest('td') : null;
+    };
+
+    for (let i = 0; i < rows.length; i++) {
+        if (educationItems[i]?.mergedWithPrevious) continue; // handled as part of an earlier run
+
+        // Count how many following rows merge into this one.
+        let runEnd = i + 1;
+        while (runEnd < rows.length && educationItems[runEnd]?.mergedWithPrevious) runEnd++;
+        const span = runEnd - i;
+        if (span < 2) continue;
+
+        const anchorCell = instituteCellOf(rows[i]);
+        if (!anchorCell) continue; // template doesn't use a table cell for institute — skip
+
+        anchorCell.setAttribute('rowspan', String(span));
+        anchorCell.style.verticalAlign = 'middle';
+
+        for (let j = i + 1; j < runEnd; j++) {
+            instituteCellOf(rows[j])?.remove();
+        }
+        i = runEnd - 1;
+    }
+    const tableSettings = window.__currentCVData?.tableSettings || {};
+    applyEducationTableFormat(tableSettings?.education?.columns || {});
+}
+
 function renderSimpleList(items, selector) {
     const container = document.querySelector(selector);
     if (!container) return;
@@ -951,9 +1651,9 @@ function renderSimpleList(items, selector) {
     const hasItems = normalizedItems.length > 0;
     toggleSectionElement(container, hasItems);
 
-    if (hasItems) {
-        container.innerHTML = normalizedItems.map(item => `<li>${item}</li>`).join('');
-    }
+    container.innerHTML = hasItems
+        ? normalizedItems.map(item => `<li>${item}</li>`).join('')
+        : '';
 }
 
 // Helper: Toggle visibility of a section based on content presence
@@ -1407,8 +2107,26 @@ function ensureRichTextGuards() {
     document.head.appendChild(style);
 }
 
+function formatPhoneNumber(phone) {
+    if (!phone) return '';
+    const trimmed = phone.trim();
+    const digits = trimmed.replace(/[^\d]/g, '');
+    if (digits.length === 10 && !trimmed.startsWith('+') && !trimmed.startsWith('0')) {
+        return '+91 ' + trimmed;
+    }
+    return trimmed;
+}
+
+function isRealPhone(phone) {
+    if (!phone) return false;
+    const trimmed = phone.trim();
+    if (trimmed === '' || trimmed === '+91' || trimmed === '+91 ') return false;
+    const digits = trimmed.replace(/[^\d]/g, '');
+    return digits.length > 2;
+}
+
 function renderContactWithIcons(personal) {
-    const phone = (personal.phone || '').trim();
+    const phone = formatPhoneNumber(personal.phone || '');
     const email = (personal.email || '').trim();
     const linkedin = (personal.linkedin || '').trim();
     const location = (personal.location || '').trim();
@@ -1418,9 +2136,9 @@ function renderContactWithIcons(personal) {
     const sep = '<span class="contact-sep" style="margin:0 0.4em;opacity:0.65;">|</span>';
     const items = [];
 
-    const contactLinkStyle = 'color:#2563eb;text-decoration:none;border-bottom:1px solid rgba(37,99,235,0.45);padding-bottom:1px;font-weight:500;';
+    const contactLinkStyle = 'color:inherit;text-decoration:none;border-bottom:none;padding-bottom:0;';
 
-    if (phone) {
+    if (isRealPhone(phone)) {
         const tel = phone.replace(/[^\d+]/g, '');
         items.push(`
             <span class="contact-icon-item" style="display:inline-flex;align-items:center;">
@@ -1514,7 +2232,7 @@ function renderContactWithIcons(personal) {
         el.innerHTML = items.length ? items.join(sep) : '';
     });
 
-    renderStandaloneContactField('phone', phone ? `
+    renderStandaloneContactField('phone', isRealPhone(phone) ? `
         <span class="contact-icon-item">
             <span class="contact-icon-glyph">
                 <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -1628,6 +2346,283 @@ function getTemplateHeaderClass() {
     return 'section-header';
 }
 
+function isClassicBlueTemplate() {
+    return /classic-blue\.html$/i.test(String(window.location.pathname || ''));
+}
+
+function isClassicBlueDetailSectionKey(key) {
+    return ['achievements', 'certifications', 'leadership', 'interests'].includes(String(key || '').toLowerCase());
+}
+
+function buildClassicBlueDetailSection(title, listAttr) {
+    const safeTitle = escapeHTML(title || 'Custom Section');
+    return `
+        <table class="extra-table section-detail-table">
+            <tbody>
+                <tr>
+                    <td class="section-label">${safeTitle}</td>
+                    <td class="section-content">
+                        <ul class="bullet-list" data-list="${escapeAttr(listAttr)}"></ul>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    `;
+}
+
+function toReadableSectionLabel(text) {
+    const raw = String(text || '').trim();
+    if (!raw) return 'Custom Section';
+    const compact = raw.replace(/\s+/g, ' ').trim();
+    if (compact === compact.toUpperCase()) {
+        return compact.toLowerCase().replace(/\b\w/g, ch => ch.toUpperCase());
+    }
+    return compact;
+}
+
+function getSectionHeaderElement(section) {
+    return section?.querySelector('.section-header, .section-header-2, .section-title, .gray-bar, h2, h3, .banner-row td, tr.banner-row td') || null;
+}
+
+function getClassicBlueSectionLabel(section, fallbackTitle) {
+    const explicit = section?.getAttribute('data-section-label');
+    if (explicit) return explicit;
+    const header = getSectionHeaderElement(section);
+    const headerText = header?.textContent || '';
+    return toReadableSectionLabel(headerText || fallbackTitle);
+}
+
+function buildClassicBlueGroupHeader(labels) {
+    const cleaned = Array.from(new Set((labels || []).map(label => String(label || '').trim()).filter(Boolean)));
+    if (cleaned.length === 0) return 'ADDITIONAL INFORMATION';
+    if (cleaned.length === 1) return cleaned[0].toUpperCase();
+    if (cleaned.length === 2) return `${cleaned[0]} & ${cleaned[1]}`.toUpperCase();
+    return `${cleaned.slice(0, -1).join(', ')} & ${cleaned[cleaned.length - 1]}`.toUpperCase();
+}
+
+const GROUPABLE_SECTION_DEFAULT_LABELS = {
+    certifications: 'Certifications',
+    interests: 'Interests',
+    skills: 'Skills',
+    achievements: 'Highlights',
+    leadership: 'Positions of Responsibility'
+};
+const GROUPABLE_SECTIONS = Object.keys(GROUPABLE_SECTION_DEFAULT_LABELS);
+
+/**
+ * Lets the user merge Certifications/Achievements/Leadership/Interests/Skills sections so
+ * they share one heading (mirroring Classic Blue's built-in grouping) instead of each getting
+ * its own banner. Driven by cvData.sectionGroups: { [sectionId]: true } means "grouped with
+ * whatever groupable section precedes it in the current section order." Reuses the anchor
+ * section's own real header element rather than inventing a new one, so the merged heading
+ * automatically matches each template's visual style.
+ */
+function getHeaderToggleTarget(header) {
+    // Headers embedded in a table row (colspan banner) must hide the whole <tr>,
+    // otherwise an empty row remains. Div-based headers toggle directly.
+    return header.closest('tr') || header;
+}
+
+
+function templateSupportsSectionGrouping() {
+    if (!document.querySelector('body[data-section-grouping]')) return false;
+    return GROUPABLE_SECTIONS.some(id => {
+        const section = document.querySelector(`.sortable-section[data-section-id="${id}"]`);
+        return !!(section && section.querySelector('.section-label'));
+    });
+}
+
+// Returns true when this template supports grouping (so the editor can show/hide the toggle).
+function normalizeSectionGrouping(sectionGroups, sectionLabels) {
+    if (!templateSupportsSectionGrouping()) return false;
+
+    const groups = sectionGroups || {};
+    const labels = sectionLabels || {};
+    // Custom sections have no static default label, so fall back to their own left-label cell
+    // (populated by setSectionBodyLabel from the user's section title).
+    const labelFor = (member) => {
+        const custom = labels[member.id]?.text;
+        if (custom && String(custom).trim()) return String(custom).trim();
+        if (GROUPABLE_SECTION_DEFAULT_LABELS[member.id]) return GROUPABLE_SECTION_DEFAULT_LABELS[member.id];
+        const labelCell = member.section.querySelector('.section-label');
+        return toReadableSectionLabel(labelCell?.textContent || 'Custom Section');
+    };
+
+    const orderedSections = Array.from(document.querySelectorAll('.sortable-section[data-section-id]'))
+        .filter(section => GROUPABLE_SECTIONS.includes(section.getAttribute('data-section-id'))
+            || section.hasAttribute('data-custom-section-root'));
+
+    let anchor = null;
+    let anchorMembers = [];
+
+    const flushAnchorHeader = () => {
+        if (anchor && anchorMembers.length > 1) {
+            const header = getSectionHeaderElement(anchor);
+            if (header) header.textContent = buildClassicBlueGroupHeader(anchorMembers.map(labelFor));
+        }
+    };
+
+    orderedSections.forEach(section => {
+        const id = section.getAttribute('data-section-id');
+        if (section.style.display === 'none') return; // empty sections don't join the chain
+
+        section.classList.remove('section-grouped-continuation');
+        const header = getSectionHeaderElement(section);
+        if (header) getHeaderToggleTarget(header).style.display = '';
+
+        const grouped = !!groups[id] && !!anchor;
+        if (!grouped) {
+            flushAnchorHeader();
+            anchor = section;
+            anchorMembers = [{ section, id }];
+            return;
+        }
+
+        section.classList.add('section-grouped-continuation');
+        if (header) getHeaderToggleTarget(header).style.display = 'none';
+        anchorMembers.push({ section, id });
+    });
+    flushAnchorHeader();
+    return true;
+}
+
+function hasMeaningfulRenderedContent(node) {
+    if (!node) return false;
+    const text = (node.textContent || '').replace(/\s+/g, ' ').trim();
+    if (text) return true;
+    return !!node.querySelector('li, p, div, span, a, br, ul, ol');
+}
+
+function normalizeClassicBlueDetailSections() {
+    if (!isClassicBlueTemplate()) return;
+
+    const detailDefs = [
+        { key: 'certifications', label: 'Certifications' },
+        { key: 'achievements', label: 'Achievements' },
+        { key: 'leadership', label: 'Leadership' },
+        { key: 'interests', label: 'Interests' },
+        { key: 'skills', label: 'Skills' }
+    ];
+    const labelMap = new Map(detailDefs.map(def => [def.key, def.label]));
+
+    const orderedSourceSections = Array.from(document.querySelectorAll('.sortable-section'))
+        .filter(section => {
+            if (section.classList.contains('classic-blue-detail-group')) return false;
+            const sectionId = section.getAttribute('data-section-id') || '';
+            return labelMap.has(sectionId) || section.hasAttribute('data-custom-section-root');
+        });
+
+    const anchorSection = orderedSourceSections[0] || null;
+    if (!anchorSection) return;
+
+    let group = document.querySelector('.sortable-section.classic-blue-detail-group');
+    if (!group) {
+        group = document.createElement('div');
+        group.className = 'sortable-section classic-blue-detail-group';
+        group.setAttribute('data-section-id', 'classic-blue-detail-group');
+
+        const header = document.createElement('div');
+        header.className = 'section-header';
+        header.textContent = 'ADDITIONAL INFORMATION';
+        group.appendChild(header);
+
+        const table = document.createElement('table');
+        table.className = 'extra-table section-detail-table';
+        table.setAttribute('data-preserve-label-columns', '');
+
+        const tbody = document.createElement('tbody');
+        table.appendChild(tbody);
+        group.appendChild(table);
+    }
+
+    anchorSection.parentElement?.insertBefore(group, anchorSection);
+    const tbody = group.querySelector('tbody');
+    if (!tbody) return;
+
+    const orderedRows = [];
+    const getExistingRow = (key) => group.querySelector(`tr[data-detail-source="${key}"]`);
+
+    const ensureRow = (key, label, bodyType) => {
+        let row = getExistingRow(key);
+        if (!row) {
+            const holder = document.createElement('tbody');
+            holder.innerHTML = bodyType === 'skills'
+                ? `
+                    <tr data-detail-source="${escapeAttr(key)}">
+                        <td class="section-label">${escapeHTML(label)}</td>
+                        <td class="section-content">
+                            <div data-field="skills"></div>
+                        </td>
+                    </tr>
+                `
+                : `
+                    <tr data-detail-source="${escapeAttr(key)}">
+                        <td class="section-label">${escapeHTML(label)}</td>
+                        <td class="section-content">
+                            <ul class="bullet-list" data-list="${escapeAttr(key)}"></ul>
+                        </td>
+                    </tr>
+                `;
+            row = holder.querySelector('tr');
+        }
+        const labelCell = row.querySelector('.section-label');
+        if (labelCell) labelCell.textContent = label;
+        return row;
+    };
+
+    orderedSourceSections.forEach((section, index) => {
+        const customRoot = section.getAttribute('data-custom-section-root');
+        const key = customRoot ? `custom-${customRoot || index}` : (section.getAttribute('data-section-id') || '');
+        const label = customRoot
+            ? getClassicBlueSectionLabel(section, 'Custom Section')
+            : getClassicBlueSectionLabel(section, labelMap.get(key) || 'Section');
+        const row = ensureRow(key, label, !customRoot && key === 'skills' ? 'skills' : 'list');
+        let sourceHasContent = false;
+
+        if (!customRoot && key === 'skills') {
+            const sourceField = section.querySelector('[data-field="skills"]');
+            const targetField = row.querySelector('[data-field="skills"]');
+            if (sourceField && targetField && sourceField !== targetField && sourceField.innerHTML.trim()) {
+                targetField.innerHTML = sourceField.innerHTML;
+            }
+            sourceHasContent = hasMeaningfulRenderedContent(sourceField) || hasMeaningfulRenderedContent(targetField);
+        } else {
+            const sourceList = customRoot
+                ? section.querySelector('[data-list="custom-items"]')
+                : section.querySelector(`[data-list="${key}"]`);
+            const targetList = row.querySelector(`[data-list="${key}"]`);
+            if (sourceList && targetList && sourceList !== targetList && sourceList.innerHTML.trim()) {
+                targetList.innerHTML = sourceList.innerHTML;
+            }
+            sourceHasContent = hasMeaningfulRenderedContent(sourceList) || hasMeaningfulRenderedContent(targetList);
+        }
+        row.style.display = sourceHasContent ? '' : 'none';
+        if (customRoot) row.setAttribute('data-custom-detail-row', 'true');
+        orderedRows.push(row);
+        if (customRoot) {
+            section.remove();
+        } else {
+            section.style.display = 'none';
+        }
+    });
+
+    Array.from(tbody.querySelectorAll('tr[data-detail-source]')).forEach(row => {
+        if (!orderedRows.includes(row)) row.remove();
+    });
+    orderedRows.forEach(row => tbody.appendChild(row));
+
+    const visibleRows = orderedRows.filter(row => row.style.display !== 'none');
+    const header = group.querySelector('.section-header');
+    if (header) {
+        const headerLabels = visibleRows.map(row => {
+            if (row.hasAttribute('data-custom-detail-row')) return 'Additional';
+            return toReadableSectionLabel(row.querySelector('.section-label')?.textContent || '');
+        });
+        header.textContent = buildClassicBlueGroupHeader(headerLabels);
+    }
+    group.style.display = visibleRows.length > 0 ? '' : 'none';
+}
+
 function createInjectedSection(title, contentHTML, key) {
     const wrapper = document.createElement('div');
     wrapper.className = 'section sortable-section universal-injected';
@@ -1641,7 +2636,9 @@ function createInjectedSection(title, contentHTML, key) {
     wrapper.appendChild(header);
 
     const body = document.createElement('div');
-    body.innerHTML = contentHTML;
+    body.innerHTML = isClassicBlueTemplate() && isClassicBlueDetailSectionKey(key)
+        ? buildClassicBlueDetailSection(title, key)
+        : contentHTML;
     Array.from(body.childNodes).forEach(node => wrapper.appendChild(node));
     return wrapper;
 }
@@ -1934,6 +2931,7 @@ function setSectionHeaderText(root, title) {
         '.section-header',
         '.section-header-2',
         '.section-title',
+        '.section-banner',
         '.section-header-title',
         '.gray-bar',
         'td.section-header',
@@ -1952,7 +2950,7 @@ function setSectionHeaderText(root, title) {
 
 function setSectionBodyLabel(root, title) {
     const label = title || 'Custom Section';
-    const labelSelectors = ['.category-label', '.skills-col-label', '.work-label', '.col-left', '.details-label'];
+    const labelSelectors = ['.category-label', '.skills-col-label', '.work-label', '.col-left', '.details-label', '.section-label', '.category'];
     for (const selector of labelSelectors) {
         const el = root.querySelector(selector);
         if (el) {
@@ -1999,7 +2997,7 @@ function createStyledCustomSection(section, items) {
     const listHost = getOrCreateListHost(wrapper);
     const bodyHost = listHost.parentElement || wrapper;
     Array.from(bodyHost.children).forEach(child => {
-        if (child !== listHost && !child.classList?.contains('section-header')) child.remove();
+        if (child !== listHost && !child.classList?.contains('section-header') && !child.classList?.contains('section-header-2') && !child.classList?.contains('section-title') && !child.classList?.contains('section-banner') && !child.classList?.contains('section-divider')) child.remove();
     });
     listHost.classList.add('bullet-list');
     listHost.innerHTML = items.map(item => `<li>${item}</li>`).join('');
@@ -2019,6 +3017,17 @@ function createFallbackCustomSection(section, items) {
     header.textContent = (section.title || 'Custom Section').toUpperCase();
     wrapper.appendChild(header);
 
+    if (isClassicBlueTemplate()) {
+        const body = document.createElement('div');
+        body.innerHTML = buildClassicBlueDetailSection(section.title || 'Custom Section', 'custom-items');
+        Array.from(body.childNodes).forEach(node => wrapper.appendChild(node));
+        const list = wrapper.querySelector('[data-list="custom-items"]');
+        if (list) {
+            list.innerHTML = items.map(item => `<li>${item}</li>`).join('');
+        }
+        return wrapper;
+    }
+
     const list = document.createElement('ul');
     list.className = 'bullet-list';
     list.innerHTML = items.map(item => `<li>${item}</li>`).join('');
@@ -2037,6 +3046,9 @@ function applySectionOrder(sectionOrder) {
     const parentMap = new Map();
 
     wrappers.forEach((wrapper, originalIndex) => {
+        const sectionId = wrapper.getAttribute('data-section-id');
+        if (sectionId === 'personal' || sectionId === 'contact') return;
+
         const parent = wrapper.parentElement;
         if (!parent) return;
         if (!parentMap.has(parent)) parentMap.set(parent, []);

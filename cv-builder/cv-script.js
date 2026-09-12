@@ -427,14 +427,14 @@
                 const key = textarea.getAttribute('data-rich-list-key');
                 const idx = Number(textarea.getAttribute('data-rich-list-index'));
                 if (!key || Number.isNaN(idx)) return;
-                initInlineRichEditor(textarea, `list:${key}:${idx}`, (value) => updateListItem(key, idx, value));
+                initInlineRichEditor(textarea, `list:${key}:${idx}`, (value) => updateListItem(key, idx, value), { allowOrderedList: false });
             });
 
             document.querySelectorAll('textarea[data-rich-custom-id][data-rich-custom-index]').forEach((textarea) => {
                 const id = textarea.getAttribute('data-rich-custom-id');
                 const idx = Number(textarea.getAttribute('data-rich-custom-index'));
                 if (!id || Number.isNaN(idx)) return;
-                initInlineRichEditor(textarea, `custom:${id}:${idx}`, (value) => updateCustomSectionItem(id, idx, value));
+                initInlineRichEditor(textarea, `custom:${id}:${idx}`, (value) => updateCustomSectionItem(id, idx, value), { allowOrderedList: false });
             });
 
             document.querySelectorAll('textarea[data-rich-exp-index]').forEach((textarea) => {
@@ -1471,6 +1471,7 @@
                         <div class="action-btn delete" onclick="removeListItem('${key}', ${index})">×</div>
                     </div>
                     <div class="form-group" style="margin-bottom:0">
+                        <label>Key Points (Bullets)</label>
                         <textarea class="form-control" style="min-height:60px" data-rich-list-key="${key}" data-rich-list-index="${index}" oninput="updateListItem('${key}', ${index}, this.value)" placeholder="${placeholder}">${item || ''}</textarea>
                     </div>
                 `;
@@ -1528,7 +1529,7 @@
                     <div class="form-group">
                         <label>Degree / Exam</label>
                         <div class="chip-container" style="margin-bottom:6px">
-                            ${CA_DEGREES.map(d => `<span class="chip" style="font-size:10px; padding:2px 8px;" onclick="updateEdu(${index}, 'degree', '${d}')">${d}</span>`).join('')}
+                            ${CA_DEGREES.map(d => `<span class="chip" onclick="updateEdu(${index}, 'degree', '${d}')">${d}</span>`).join('')}
                         </div>
                         <input class="form-control" value="${edu.degree || ''}" oninput="updateEdu(${index}, 'degree', this.value)" placeholder="e.g. CA Intermediate">
                     </div>
@@ -1619,7 +1620,7 @@
                             </button>
                         </div>
                         <div class="chip-container" style="margin-bottom:6px">
-                            ${AUDIT_VERBS.map(v => `<span class="chip" style="font-size:10px; padding:2px 8px;" onclick="appendBullet(${index}, '${v} ')">${v}</span>`).join('')}
+                            ${AUDIT_VERBS.map(v => `<span class="chip" onclick="appendBullet(${index}, '${v} ')">${v}</span>`).join('')}
                         </div>
                         <textarea id="exp-bullets-${index}" class="form-control" data-rich-exp-index="${index}" oninput="updateExp(${index}, 'bullets', this.value)" placeholder="Add bullet points with formatting">${bulletsToRichHTML(exp.bullets || [])}</textarea>
                     </div>
@@ -1985,6 +1986,7 @@
                                         <div class="action-btn delete" onclick="removeCustomSectionItem('${section.id}', ${index})">×</div>
                                     </div>
                                     <div class="form-group" style="margin-bottom:0">
+                                        <label>Key Points (Bullets)</label>
                                         <textarea class="form-control" style="min-height:60px" data-rich-custom-id="${section.id}" data-rich-custom-index="${index}"
                                             oninput="updateCustomSectionItem('${section.id}', ${index}, this.value)"
                                             placeholder="One bullet per line or short item">${item || ''}</textarea>
@@ -2143,7 +2145,7 @@
             normalizeSectionOrder();
             document.querySelectorAll('.editor-content details[data-section]').forEach((details) => {
                 const sectionId = details.getAttribute('data-section');
-                if (!sectionId || sectionId === 'section-order') return;
+                if (!sectionId || sectionId === 'section-order' || sectionId === 'personal') return;
 
                 const summary = details.querySelector(':scope > summary');
                 if (!summary) return;
@@ -2167,8 +2169,8 @@
                 const canMoveDown = index >= 0 && index < cvData.sectionOrder.length - 1;
 
                 controls.innerHTML = `
-                    <button type="button" class="action-btn" onclick="event.stopPropagation(); moveSectionById('${sectionId}', -1)" ${canMoveUp ? '' : 'disabled'} title="Move Up">&#9650;</button>
-                    <button type="button" class="action-btn" onclick="event.stopPropagation(); moveSectionById('${sectionId}', 1)" ${canMoveDown ? '' : 'disabled'} title="Move Down">&#9660;</button>
+                    <button type="button" class="section-reorder-btn" onclick="event.stopPropagation(); moveSectionById('${sectionId}', -1)" ${canMoveUp ? '' : 'disabled'} title="Move Up">&#9650;</button>
+                    <button type="button" class="section-reorder-btn" onclick="event.stopPropagation(); moveSectionById('${sectionId}', 1)" ${canMoveDown ? '' : 'disabled'} title="Move Down">&#9660;</button>
                 `;
             });
         }
@@ -3720,7 +3722,7 @@ async function downloadCvFile(format = 'pdf') {
             // AI Review
             if (isMobile) {
                 steps.push({
-                    element: '.nav-tab[onclick="switchTab(\'reviewer\')"]',
+                    element: '.nav-tab[onclick*="reviewer"]',
                     popover: {
                         title: '🤖 AI Review',
                         description: 'Tap Review to get instant AI feedback and score!',
@@ -3729,20 +3731,23 @@ async function downloadCvFile(format = 'pdf') {
                     }
                 });
             } else {
-                steps.push({
-                    element: 'button[onclick="startReviewFromPreview()"]',
-                    popover: {
-                        title: '🤖 AI Review',
-                        description: 'Get instant AI feedback and suggestions to improve your resume.',
-                        side: 'bottom',
-                        align: 'center'
-                    }
-                });
+                const reviewEl = document.querySelector('button[onclick="startReviewFromPreview()"]');
+                if (reviewEl) {
+                    steps.push({
+                        element: 'button[onclick="startReviewFromPreview()"]',
+                        popover: {
+                            title: '🤖 AI Review',
+                            description: 'Get instant AI feedback and suggestions to improve your resume.',
+                            side: 'bottom',
+                            align: 'center'
+                        }
+                    });
+                }
             }
             
             // Download
             steps.push({
-                element: 'label.dropdown-trigger',
+                element: '.dropdown-trigger',
                 popover: {
                     title: '📥 Download',
                     description: 'Choose PDF or DOCX from this dropdown to export your CV.',
@@ -3750,6 +3755,9 @@ async function downloadCvFile(format = 'pdf') {
                     align: 'center'
                 }
             });
+
+            // Keep only steps where element exists in DOM
+            steps = steps.filter(s => !s.element || document.querySelector(s.element));
             
             const driverObj = window.driver.js.driver({
                 showProgress: true,

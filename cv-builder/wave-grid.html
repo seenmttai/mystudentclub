@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Resume - Wave Grid</title>
+<style>
+
+:root {
+  --accent-color:  #002060;
+  --navy-deep:     var(--accent-color, #002A7D);
+  --blue-tagline:  color-mix(in srgb, var(--accent-color, #002060) 70%, #38BDF8);
+  --text-dark:     #4D4D4D;
+  --text-muted:    #5F696B;
+  --badge-border:  #B0C4DE;
+  --page-bg:       #FFFFFF;
+  --viewer-bg:     #525659;
+  --font-treb:     'Trebuchet MS', sans-serif;
+  --font-tahoma:   'Tahoma', sans-serif;
+  --cs:            1.0;
+}
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+body {
+  background: var(--viewer-bg);
+  font-family: var(--font-tahoma);
+  color: var(--text-dark);
+  min-height: 100vh;
+  width: 100vw;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.2s ease-in;
+}
+
+#zoom-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 24px 0 32px;
+}
+
+#cv-page {
+  position: relative;
+  width: 1000px;
+  min-height: 1413.94px;
+  background: var(--page-bg);
+  color: var(--text-dark);
+  padding: 42px 48px 35px 48px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+  flex-shrink: 0;
+  transform-origin: top center;
+  font-size: calc(14.5px * var(--cs));
+  line-height: 1.45;
+  overflow: hidden;
+}
+
+.template { display: none !important; }
+
+/* Background Decorative Wave SVG Curves */
+.bg-wave-top {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 1000px;
+  height: 300px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bg-wave-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 1000px;
+  height: 350px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Header Section ── */
+.header-container {
+  margin-bottom: calc(14px * var(--cs));
+  position: relative;
+  z-index: 1;
+}
+
+.candidate-name {
+  font-family: var(--font-treb);
+  font-size: calc(36px * var(--cs));
+  font-weight: 700;
+  color: var(--navy-deep);
+  line-height: 1.1;
+  margin-bottom: calc(4px * var(--cs));
+}
+
+.candidate-tagline {
+  font-family: var(--font-treb);
+  font-size: calc(17px * var(--cs));
+  font-weight: 700;
+  color: var(--blue-tagline);
+  margin-bottom: calc(8px * var(--cs));
+}
+
+.contact-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(16px * var(--cs));
+  font-size: calc(14px * var(--cs));
+  color: var(--text-dark);
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: calc(5px * var(--cs));
+}
+
+.contact-item a {
+  color: var(--text-dark);
+  text-decoration: none;
+}
+
+.contact-item a:hover {
+  text-decoration: underline;
+}
+
+/* ── Section Title ── */
+.section-title {
+  font-family: var(--font-treb);
+  font-size: calc(14px * var(--cs));
+  font-weight: 700;
+  color: var(--navy-deep);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: calc(16px * var(--cs));
+  margin-bottom: calc(7px * var(--cs));
+}
+
+.sortable-section {
+  margin-bottom: calc(10px * var(--cs));
+}
+
+.column-left .sortable-section:first-child .section-title,
+.column-right .sortable-section:first-child .section-title {
+  margin-top: 0;
+}
+
+/* ── 2-Column Grid Layout ── */
+.main-content {
+  display: grid;
+  grid-template-columns: 53% 43%;
+  column-gap: 4%;
+  position: relative;
+  z-index: 1;
+}
+
+.summary-text {
+  font-size: calc(14.5px * var(--cs));
+  line-height: 1.45;
+  color: var(--text-dark);
+  text-align: justify;
+  margin-bottom: calc(12px * var(--cs));
+}
+
+.item-title {
+  font-family: var(--font-treb);
+  font-size: calc(15.5px * var(--cs));
+  font-weight: 700;
+  color: var(--navy-deep);
+  margin-bottom: calc(1px * var(--cs));
+}
+
+.item-subtitle {
+  font-family: var(--font-treb);
+  font-size: calc(13.5px * var(--cs));
+  color: var(--text-dark);
+  margin-bottom: calc(2px * var(--cs));
+}
+
+.date-location {
+  font-size: calc(13px * var(--cs));
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.bullet-list {
+  list-style-type: disc;
+  padding-left: calc(16px * var(--cs));
+  font-size: calc(14px * var(--cs));
+  line-height: 1.45;
+  color: var(--text-dark);
+  margin-bottom: calc(12px * var(--cs));
+}
+
+.bullet-list li {
+  margin-bottom: calc(4px * var(--cs));
+  text-align: justify;
+}
+
+.bullet-list li:last-child {
+  margin-bottom: 0;
+}
+
+.edu-card {
+  margin-bottom: calc(12px * var(--cs));
+}
+
+.edu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.edu-title {
+  font-family: var(--font-treb);
+  font-size: calc(16px * var(--cs));
+  font-weight: 700;
+  color: var(--navy-deep);
+}
+
+.edu-inst {
+  font-family: var(--font-treb);
+  font-size: calc(14px * var(--cs));
+  color: var(--blue-tagline);
+  margin-bottom: calc(2px * var(--cs));
+}
+
+.edu-score-row {
+  margin-top: calc(3px * var(--cs));
+}
+.score-badge {
+  display: inline-block;
+  font-size: calc(11.5px * var(--cs));
+  border: 1px solid var(--badge-border);
+  padding: calc(1px * var(--cs)) calc(6px * var(--cs));
+  border-radius: 3px;
+  background-color: #F8FAFC;
+  color: var(--text-dark);
+  margin-right: calc(6px * var(--cs));
+}
+.edu-remarks {
+  display: inline-block;
+  font-size: calc(11.5px * var(--cs));
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+.skills-text {
+  font-size: calc(14px * var(--cs));
+  line-height: 1.45;
+  color: var(--text-dark);
+}
+
+@media print {
+  html, body {
+    background: none !important;
+    margin: 0;
+    padding: 0;
+  }
+  #zoom-wrapper {
+    padding: 0;
+  }
+  #cv-page {
+    transform: scale(1) !important;
+    margin: 0 !important;
+    width: 210mm;
+    min-height: 297mm;
+    box-shadow: none;
+    padding: 10mm 11mm 10mm 11mm;
+  }
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+}
+</style>
+</head>
+<body>
+<div id="zoom-wrapper">
+<div id="cv-page">
+
+  <!-- Background Decorative Wave SVG Curves -->
+  <svg class="bg-wave-top" viewBox="0 0 1000 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0 0 H1000 V120 C850 200 650 260 450 180 C250 100 100 220 0 160 Z" fill="var(--navy-deep)" opacity="0.04"/>
+  </svg>
+  <svg class="bg-wave-bottom" viewBox="0 0 1000 350" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0 200 C150 120 350 280 550 220 C750 160 900 280 1000 200 V350 H0 Z" fill="var(--blue-tagline)" opacity="0.04"/>
+  </svg>
+
+  <!-- ══ HEADER SECTION ══════════════════════════════════════════ -->
+  <div class="header-container">
+    <h1 class="candidate-name" data-field="name">Padam Bhansali</h1>
+    <div class="candidate-tagline" data-field="tagline">Chartered Accountant</div>
+    <div class="contact-row contact-block">
+      <div class="contact-item contact-row">
+        <span class="contact-value" data-field="phone">+91 7228881182</span>
+      </div>
+      <div class="contact-item contact-row">
+        <span>✉</span> <a href="#" class="contact-value" data-field="email">capadambhansali@gmail.com</a>
+      </div>
+      <div class="contact-item contact-row">
+        <span>🔗</span> <a href="#" target="_blank" rel="noopener" class="contact-value" data-field="linkedin">linkedin.com/in/ca-padam-bhansali</a>
+      </div>
+      <div class="contact-item contact-row">
+        <span class="contact-value" data-field="location">Mumbai</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MAIN 2-COLUMN CONTENT ══════════════════════════════════ -->
+  <div class="main-content">
+
+    <!-- ── LEFT COLUMN ── -->
+    <div class="column-left">
+
+      <div class="sortable-section" data-section-id="summary">
+        <div class="section-title">Summary</div>
+        <div class="summary-text" data-field="summary"></div>
+      </div>
+
+      <div class="sortable-section" data-section-id="experience">
+        <div class="section-title">Experience</div>
+        <div id="experience-list">
+          <div class="edu-card template">
+            <div class="item-title" data-field="role"></div>
+            <div class="item-subtitle" data-field="company"></div>
+            <div class="date-location">
+              <span data-field="dates"></span>
+              <span data-field="category"></span>
+            </div>
+            <div class="item-subtitle" data-field="intro" style="font-style: italic;"></div>
+            <ul class="bullet-list" data-list="bullets"></ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="sortable-section" data-section-id="skills">
+        <div class="section-title">Skills</div>
+        <div class="skills-text" data-field="skills"></div>
+      </div>
+
+      <div class="sortable-section" data-section-id="certifications">
+        <div class="section-title">Certifications & Awards</div>
+        <ul class="bullet-list" id="cert-list" data-list="certifications"></ul>
+      </div>
+
+    </div>
+
+    <!-- ── RIGHT COLUMN ── -->
+    <div class="column-right" data-section-append-host>
+
+      <div class="sortable-section" data-section-id="education">
+        <div class="section-title">Education</div>
+        <div id="education-list">
+          <div class="edu-card template">
+            <div class="edu-header">
+              <div class="edu-title" data-field="degree"></div>
+              <div class="date-location" data-field="year"></div>
+            </div>
+            <div data-field="institution-header">
+              <div class="edu-inst" data-field="institution"></div>
+            </div>
+            <div class="edu-score-row">
+              <span class="score-badge" data-field="marks"></span>
+              <span class="edu-remarks" data-field="remarks"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sortable-section" data-section-id="projects">
+        <div class="section-title">Projects</div>
+        <div id="projects-list">
+          <div class="edu-card template">
+            <div class="item-title" data-field="title"></div>
+            <div class="item-subtitle" data-field="description"></div>
+            <ul class="bullet-list" data-list="bullets"></ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="sortable-section" data-section-id="leadership">
+        <div class="section-title">Leadership</div>
+        <ul class="bullet-list" data-list="leadership"></ul>
+      </div>
+
+      <div class="sortable-section" data-section-id="achievements">
+        <div class="section-title">Achievements</div>
+        <ul class="bullet-list" data-list="achievements"></ul>
+      </div>
+
+      <div class="sortable-section" data-section-id="interests">
+        <div class="section-title">Interests</div>
+        <ul class="bullet-list" data-list="interests"></ul>
+      </div>
+
+    </div>
+
+  </div><!-- .main-content -->
+
+</div><!-- #cv-page -->
+</div><!-- #zoom-wrapper -->
+
+<script src="cv-common.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var PAGE_H = 1413.94;
+  var PAGE_W = 1000;
+
+  function scaleToFit() {
+    var page = document.getElementById('cv-page');
+    if (!page || document.body.classList.contains('print-mode')) return;
+    var avail = window.innerWidth - 20;
+    var scale = avail < PAGE_W ? avail / PAGE_W : 1.0;
+    page.style.transform = 'scale(' + scale + ')';
+    page.style.marginBottom = '-' + (PAGE_H - PAGE_H * scale) + 'px';
+  }
+
+  function shrinkContentToFit() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    var cs = 1.0;
+    document.documentElement.style.setProperty('--cs', cs);
+    page.style.height = 'auto';
+    var iter = 0;
+    while (page.scrollHeight > PAGE_H + 1 && iter < 80) {
+      cs = Math.round((cs - 0.01) * 1000) / 1000;
+      document.documentElement.style.setProperty('--cs', cs);
+      iter++;
+    }
+    page.style.height = '';
+  }
+
+  window.scaleToFit = scaleToFit;
+  window.shrinkContentToFit = shrinkContentToFit;
+
+  var _tx = '', _mb = '';
+
+  function enablePrintMode() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    _tx = page.style.transform;
+    _mb = page.style.marginBottom;
+    document.body.classList.add('print-mode');
+    page.style.transform = 'scale(1)';
+    page.style.marginBottom = '0';
+    shrinkContentToFit();
+  }
+
+  function disablePrintMode() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    document.body.classList.remove('print-mode');
+    page.style.transform = _tx || '';
+    page.style.marginBottom = _mb || '';
+    scaleToFit();
+  }
+
+  window.addEventListener('load', function () {
+    shrinkContentToFit();
+    scaleToFit();
+    document.body.style.opacity = '1';
+    var mq = window.matchMedia('print');
+    var handler = function (e) { e.matches ? enablePrintMode() : disablePrintMode(); };
+    if (mq.addEventListener) { mq.addEventListener('change', handler); }
+    else if (mq.addListener)  { mq.addListener(handler); }
+    window.addEventListener('beforeprint', enablePrintMode);
+    window.addEventListener('afterprint',  disablePrintMode);
+  });
+
+  var _rt;
+  window.addEventListener('resize', function () {
+    clearTimeout(_rt);
+    _rt = setTimeout(scaleToFit, 100);
+  });
+}());
+</script>
+</body>
+</html>

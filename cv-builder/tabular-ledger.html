@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Resume - Tabular Ledger</title>
+<style>
+
+:root {
+  --blue-header:  #1F4E79;   /* Accent color target */
+  --header-bg:    #1F4E79;
+  --accent-color: #1F4E79;
+  --primary-navy: var(--accent-color, #1F4E79); /* Corporate Steel Blue / Navy for Headers & Table Headers */
+  --text-dark:    #000000;   /* Black Body Text */
+  --text-muted:   #666666;   /* Gray Muted Subtext & Dates */
+  --line-color:   var(--accent-color, #1F4E79); /* Divider Line Color */
+  --link-color:   var(--accent-color, #1F4E79); /* Underlined Links */
+  --table-border: #B0C4DE;   /* Light Steel Blue Table Border */
+  --table-alt-bg: #F2F6F9;   /* Alternating Row Tint */
+  --page-bg:      #FFFFFF;   /* White A4 Sheet */
+  --viewer-bg:    #525659;   /* Outer Canvas Background */
+  --font-main:    'Arial', sans-serif;
+  --cs:           1.0;       /* Content scale variable adjusted by shrinkContentToFit() */
+}
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+body {
+  background: var(--viewer-bg);
+  font-family: var(--font-main);
+  color: var(--text-dark);
+  min-height: 100vh;
+  width: 100vw;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.2s ease-in;
+}
+
+/* ── Viewer Centering Wrapper ── */
+#zoom-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 24px 0 32px;
+}
+
+/* ── A4 Page Card Container ── */
+#cv-page {
+  position: relative;
+  width: 1000px;
+  min-height: 1413.94px;
+  background: var(--page-bg);
+  color: var(--text-dark);
+  padding: 45px 48px 40px 48px; /* Physical margins */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+  flex-shrink: 0;
+  transform-origin: top center;
+  font-size: calc(13.5px * var(--cs));
+  line-height: 1.35;
+}
+
+.template { display: none !important; }
+
+/* ── Header Section (Centered Layout) ── */
+.header-container {
+  text-align: center;
+  margin-bottom: calc(12px * var(--cs));
+}
+
+.candidate-name {
+  font-size: calc(30px * var(--cs));
+  font-weight: 700;
+  color: var(--primary-navy);
+  line-height: 1.1;
+  margin-bottom: calc(2px * var(--cs));
+}
+
+.candidate-subtitle {
+  font-size: calc(16px * var(--cs));
+  font-weight: 700;
+  color: var(--primary-navy);
+  margin-bottom: calc(6px * var(--cs));
+}
+
+.contact-info {
+  font-size: calc(13.5px * var(--cs));
+  color: var(--text-dark);
+}
+
+.contact-info a {
+  color: var(--link-color);
+  text-decoration: underline;
+}
+
+.contact-sep {
+  margin: 0 calc(5px * var(--cs));
+  color: var(--text-dark);
+}
+
+/* ── Section Title & Horizontal Rule ── */
+.section-title {
+  font-size: calc(16.5px * var(--cs));
+  font-weight: 700;
+  color: var(--primary-navy);
+  text-transform: uppercase;
+  margin-top: calc(12px * var(--cs));
+  margin-bottom: calc(3px * var(--cs));
+  letter-spacing: 0.2px;
+}
+
+.section-divider {
+  width: 100%;
+  height: calc(1.5px * var(--cs));
+  background-color: var(--line-color);
+  border: none;
+  margin-bottom: calc(8px * var(--cs));
+}
+
+/* ── Professional Summary ── */
+.summary-text {
+  font-size: calc(13.5px * var(--cs));
+  line-height: 1.4;
+  color: var(--text-dark);
+  text-align: justify;
+}
+
+/* ── Education Table ── */
+.edu-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: calc(6px * var(--cs));
+  font-size: calc(13.2px * var(--cs));
+}
+
+.edu-table th, .edu-table td {
+  border: 1px solid var(--table-border);
+  padding: calc(5px * var(--cs)) calc(8px * var(--cs));
+  vertical-align: middle;
+}
+
+.edu-table th {
+  background-color: var(--primary-navy);
+  color: #FFFFFF;
+  font-weight: 700;
+  text-align: left;
+}
+
+.edu-table tr:nth-child(even) td {
+  background-color: var(--table-alt-bg);
+}
+
+/* ── Work Experience ── */
+.experience-item {
+  margin-bottom: calc(10px * var(--cs));
+}
+
+.experience-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: calc(4px * var(--cs));
+}
+
+.company-name {
+  font-size: calc(14.2px * var(--cs));
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.date-range {
+  font-size: calc(13px * var(--cs));
+  font-style: italic;
+  color: var(--text-muted);
+  text-align: right;
+}
+
+.role-title {
+  font-size: calc(13.8px * var(--cs));
+  font-weight: 700;
+  color: var(--primary-navy);
+  margin-top: calc(3px * var(--cs));
+  margin-bottom: calc(3px * var(--cs));
+}
+
+.sub-category-title {
+  font-size: calc(13.8px * var(--cs));
+  font-weight: 700;
+  color: var(--primary-navy);
+  margin-top: calc(5px * var(--cs));
+  margin-bottom: calc(3px * var(--cs));
+}
+
+.bullet-list {
+  list-style-type: disc;
+  padding-left: calc(18px * var(--cs));
+  font-size: calc(13.2px * var(--cs));
+  line-height: 1.38;
+  color: var(--text-dark);
+}
+
+.bullet-list li {
+  margin-bottom: calc(3px * var(--cs));
+  text-align: justify;
+}
+
+.bullet-list li:last-child {
+  margin-bottom: 0;
+}
+
+/* ── Print Styles (A4 Page Output) ── */
+@media print {
+  html, body {
+    background: none !important;
+    margin: 0;
+    padding: 0;
+  }
+  #zoom-wrapper {
+    padding: 0;
+  }
+  #cv-page {
+    transform: scale(1) !important;
+    margin: 0 !important;
+    width: 210mm;
+    min-height: 297mm;
+    box-shadow: none;
+    padding: 11mm 12mm 10mm 12mm;
+  }
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+}
+</style>
+</head>
+<body>
+<div id="zoom-wrapper">
+<div id="cv-page">
+
+  <!-- ══ HEADER SECTION ══════════════════════════════════════════ -->
+  <div class="header-container">
+    <h1 class="candidate-name" data-field="name">Padam Bhansali</h1>
+    <div class="candidate-subtitle" data-field="tagline">Chartered Accountant</div>
+    <div class="contact-info" data-field="contact">
+      221/2B,Bagmari Road, Kolkata – 700054 <span class="contact-sep">|</span> +91 7228881182 <span class="contact-sep">|</span> <a href="mailto:capadambhansali@gmail.com">capadambhansali@gmail.com</a> <span class="contact-sep">|</span> <a href="https://linkedin.com/in/ca-padam-bhansali" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </div>
+  <div class="section-divider section-divider-top" style="margin-top: calc(8px * var(--cs)); margin-bottom: calc(10px * var(--cs));"></div>
+
+  <!-- ══ PROFESSIONAL SUMMARY ════════════════════════════════════ -->
+  <div class="sortable-section" data-section-id="summary">
+    <div class="section-title">PROFESSIONAL SUMMARY</div>
+    <div class="section-divider"></div>
+    <div class="summary-text" data-field="summary">
+      Chartered Accountant and B.Com (Hons.) graduate with 3 years of comprehensive articleship experience. Demonstrated expertise across statutory audits, tax audits, GST compliance, financial statement preparation, and consolidation for a diverse client portfolio spanning manufacturing, trading, NBFCs, PSUs, and listed entities.
+    </div>
+  </div>
+
+  <!-- ══ EDUCATION & PROFESSIONAL QUALIFICATIONS ═════════════════ -->
+  <div class="sortable-section" data-section-id="education">
+    <div class="section-title">EDUCATION & PROFESSIONAL QUALIFICATIONS</div>
+    <div class="section-divider"></div>
+    <table class="edu-table">
+      <thead>
+        <tr>
+          <th style="width: 18%;" data-field="degree">Course</th>
+          <th style="width: 26%;" data-field="institution">Institute</th>
+          <th style="width: 14%;" data-field="year">Year</th>
+          <th style="width: 14%;" data-field="marks">Score</th>
+          <th style="width: 28%;" data-field="remarks">Remarks</th>
+        </tr>
+      </thead>
+      <tbody id="education-list">
+        <tr class="template">
+          <td data-field="degree">CA Final – Group 2</td>
+          <td data-field="institution">ICAI</td>
+          <td data-field="year">May 2026</td>
+          <td data-field="marks">172/300</td>
+          <td data-field="remarks">Exemption: Direct Tax</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══ WORK EXPERIENCE ═════════════════════════════════════════ -->
+  <div class="sortable-section" data-section-id="experience">
+    <div class="section-title">WORK EXPERIENCE</div>
+    <div class="section-divider"></div>
+
+    <div id="experience-list">
+      <div class="experience-item template">
+        <div class="experience-header">
+          <span class="company-name" data-field="company">Article Assistant – Salarpuria Jajodia & Co., Kolkata</span>
+          <span class="date-range" data-field="dates">Feb 2023 – Feb 2026</span>
+        </div>
+        <div class="role-title" data-field="role"></div>
+        <div class="exp-intro" data-field="intro" style="font-style:italic; font-size:calc(13.2px * var(--cs)); margin-bottom:calc(4px * var(--cs));"></div>
+        <div class="sub-category-title" data-field="category">Statutory Audit & Limited Review</div>
+        <ul class="bullet-list" data-list="bullets">
+          <li>Led statutory audits of 15+ clients in manufacturing and trading sector (revenues up to ₹40 Cr); ensured compliance with Schedule III, AS, and Ind AS.</li>
+          <li>Drafted Independent Auditor's Reports for 12+ entities including CARO 2020 reporting and IFC annexures.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PROJECTS ════════════════════════════════════════════════ -->
+  <div class="sortable-section" data-section-id="projects">
+    <div class="section-title">PROJECTS</div>
+    <div class="section-divider"></div>
+    <div id="projects-list">
+      <div class="experience-item template">
+        <div class="experience-header">
+          <span class="company-name" data-field="title">Project Title</span>
+        </div>
+        <div class="exp-intro" data-field="description" style="font-style:italic;">Project Description</div>
+        <ul class="bullet-list" data-list="bullets"></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SKILLS & TECHNICAL PROFICIENCY ═════════════════════════ -->
+  <div class="sortable-section" data-section-id="skills">
+    <div class="section-title">SKILLS & TECHNICAL PROFICIENCY</div>
+    <div class="section-divider"></div>
+    <div data-field="skills">
+      <ul class="bullet-list">
+        <li><strong>Software:</strong> Tally, Business Dynamics, Advanced MS Excel, MS Word, MS PowerPoint</li>
+        <li><strong>Standards:</strong> Ind AS, AS, SA, CARO 2020, Income Tax Act 1961, SEBI (LODR), GST</li>
+        <li><strong>Soft Skills:</strong> Leadership, Team Management, Deadline-Oriented</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ══ CERTIFICATIONS ══════════════════════════════════════════ -->
+  <div class="sortable-section" data-section-id="certifications">
+    <div class="section-title">CERTIFICATIONS</div>
+    <div class="section-divider"></div>
+    <ul class="bullet-list" data-list="certifications" id="cert-list"></ul>
+  </div>
+
+  <!-- ══ ACHIEVEMENTS & EXTRA-CURRICULAR ════════════════════════ -->
+  <div class="sortable-section" data-section-id="achievements">
+    <div class="section-title">ACHIEVEMENTS & EXTRA-CURRICULAR</div>
+    <div class="section-divider"></div>
+    <ul class="bullet-list" data-list="achievements"></ul>
+  </div>
+
+  <!-- ══ LEADERSHIP ══════════════════════════════════════════════ -->
+  <div class="sortable-section" data-section-id="leadership">
+    <div class="section-title">LEADERSHIP</div>
+    <div class="section-divider"></div>
+    <ul class="bullet-list" data-list="leadership"></ul>
+  </div>
+
+  <!-- ══ INTERESTS & HOBBIES ═════════════════════════════════════ -->
+  <div class="sortable-section" data-section-id="interests">
+    <div class="section-title">INTERESTS & HOBBIES</div>
+    <div class="section-divider"></div>
+    <ul class="bullet-list" data-list="interests"></ul>
+  </div>
+
+</div><!-- #cv-page -->
+</div><!-- #zoom-wrapper -->
+
+<!-- ══ SCRIPT ENGINE ════════════════════════════════════════════ -->
+<script src="cv-common.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var PAGE_H = 1413.94; /* A4 page height limit in px */
+  var PAGE_W = 1000;    /* A4 viewer width in px */
+
+  /* Scale page to fit window width dynamically */
+  function scaleToFit() {
+    var page = document.getElementById('cv-page');
+    if (!page || document.body.classList.contains('print-mode')) return;
+    var avail = window.innerWidth - 20;
+    var scale = avail < PAGE_W ? avail / PAGE_W : 1.0;
+    page.style.transform = 'scale(' + scale + ')';
+    page.style.marginBottom = '-' + (PAGE_H - PAGE_H * scale) + 'px';
+  }
+
+  /* Shrink content font-size and spacing (--cs) if it exceeds PAGE_H */
+  function shrinkContentToFit() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    var cs = 1.0;
+    document.documentElement.style.setProperty('--cs', cs);
+    page.style.height = 'auto';
+    var iter = 0;
+    while (page.scrollHeight > PAGE_H + 1 && iter < 80) {
+      cs = Math.round((cs - 0.01) * 1000) / 1000;
+      document.documentElement.style.setProperty('--cs', cs);
+      iter++;
+    }
+    page.style.height = '';
+  }
+
+  window.scaleToFit = scaleToFit;
+  window.shrinkContentToFit = shrinkContentToFit;
+
+  var _tx = '', _mb = '';
+
+  function enablePrintMode() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    _tx = page.style.transform;
+    _mb = page.style.marginBottom;
+    document.body.classList.add('print-mode');
+    page.style.transform = 'scale(1)';
+    page.style.marginBottom = '0';
+    shrinkContentToFit();
+  }
+
+  function disablePrintMode() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    document.body.classList.remove('print-mode');
+    page.style.transform = _tx || '';
+    page.style.marginBottom = _mb || '';
+    scaleToFit();
+  }
+
+  window.addEventListener('load', function () {
+    shrinkContentToFit();
+    scaleToFit();
+    document.body.style.opacity = '1';
+    var mq = window.matchMedia('print');
+    var handler = function (e) { e.matches ? enablePrintMode() : disablePrintMode(); };
+    if (mq.addEventListener) { mq.addEventListener('change', handler); }
+    else if (mq.addListener)  { mq.addListener(handler); }
+    window.addEventListener('beforeprint', enablePrintMode);
+    window.addEventListener('afterprint',  disablePrintMode);
+  });
+
+  var _rt;
+  window.addEventListener('resize', function () {
+    clearTimeout(_rt);
+    _rt = setTimeout(scaleToFit, 100);
+  });
+}());
+</script>
+</body>
+</html>

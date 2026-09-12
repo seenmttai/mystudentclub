@@ -365,38 +365,33 @@
   </div>
 
   <script>
-    // Custom fetch for fallback
+    // Keep auth requests bounded so a network failure cannot hang the form.
     const customFetch = async (url, options) => {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 6000);
       try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 6000); // 6s timeout
         const res = await fetch(url, { ...options, signal: controller.signal });
-        clearTimeout(timeoutId);
         if (res.status >= 500) {
           throw new Error('Server Error');
         }
         return res;
-      } catch (err) {
-        if (typeof url === 'string' && url.includes('izsggdtdiacxdsjjncdq.supabase.co')) {
-          console.warn('Primary fetch failed, using fallback:', err);
-          const fallbackUrl = url.replace('izsggdtdiacxdsjjncdq.supabase.co', 'izsggdtdiacxdsjjncdq.supabase.co');
-          return fetch(fallbackUrl, options);
-        }
-        throw err;
+      } finally {
+        clearTimeout(timeoutId);
       }
     };
 
-    const supabaseClient = supabase.createClient('https://izsggdtdiacxdsjjncdq.supabase.co',
+    const supabaseClient = supabase.createClient('https://auth.mystudentclub.com',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0',
       {
+        auth: { storageKey: 'sb-izsggdtdiacxdsjjncdq-auth-token' },
         global: {
           fetch: customFetch
         }
       }
     );
 
-    const supabaseGoogleClient = supabase.createClient('https://izsggdtdiacxdsjjncdq.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0'
+    const supabaseGoogleClient = supabase.createClient('https://auth.mystudentclub.com',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0', { auth: { storageKey: 'sb-izsggdtdiacxdsjjncdq-auth-token' } }
     );
 
     const signupForm = document.getElementById('signup-form');

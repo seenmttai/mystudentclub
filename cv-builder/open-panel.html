@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>My Resume</title>
+    <style>
+        :root {
+            --banner-bg: var(--header-bg, #CCCCCC);
+            --ink: #000000;
+            --link: #0000FF;
+            --page-bg: #ffffff;
+            --viewer-bg: #525659;
+            --font-main: 'Georgia', 'Cambria', serif;
+            --content-scale: 1.0;
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        body {
+            background-color: var(--viewer-bg);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            min-height: 100vh;
+            width: 100vw;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--ink);
+        }
+
+        #zoom-wrapper {
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            padding: 24px 0;
+        }
+
+        .page {
+            position: relative;
+            width: 1000px;
+            min-height: 1413.94px;
+            background: var(--page-bg);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, .55);
+            transform-origin: top center;
+            flex-shrink: 0;
+            padding: calc(35.68px * var(--content-scale));
+            font-size: calc(15.11px * var(--content-scale));
+            line-height: 1.25;
+        }
+
+        p { margin: 0; padding: 0; }
+
+        a { color: var(--link); text-decoration: underline; }
+
+        b, strong { font-weight: bold; }
+
+        .template { display: none !important; }
+
+        /* ===== Header ===== */
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: calc(7.56px * var(--content-scale));
+        }
+
+        .header-left { flex: 1; }
+
+        .header-name {
+            font-size: calc(23.51px * var(--content-scale));
+            font-weight: bold;
+            margin-bottom: calc(2.52px * var(--content-scale));
+        }
+
+        .header-title {
+            font-size: calc(16.79px * var(--content-scale));
+            margin-bottom: calc(5.04px * var(--content-scale));
+        }
+
+        .header-title:empty { display: none; }
+
+        .header-contact {
+            font-size: calc(15.11px * var(--content-scale));
+            line-height: 1.4;
+        }
+
+        .header-contact > div:empty,
+        .header-contact > div.hc-hidden { display: none; }
+
+        .header-contact a { color: #000000; }
+
+        /* ===== Section gray-bar banners ===== */
+        .section-banner {
+            background-color: var(--banner-bg);
+            font-weight: bold;
+            font-size: calc(15.95px * var(--content-scale));
+            padding: calc(3.15px * var(--content-scale)) calc(5.04px * var(--content-scale));
+            margin-top: calc(10.08px * var(--content-scale));
+            margin-bottom: calc(5.04px * var(--content-scale));
+            width: 100%;
+            letter-spacing: 0.2px;
+        }
+
+        .job-dates:empty { display: none; }
+
+        .subtitle {
+            font-weight: bold;
+            font-size: calc(15.11px * var(--content-scale));
+            margin-top: calc(3.78px * var(--content-scale));
+            margin-bottom: calc(3.78px * var(--content-scale));
+        }
+
+        .job-role-value:empty { display: none; }
+        .subtitle:has(.job-role-value:empty) { display: none; }
+
+        /* When an entry is merged as a "subsection" of the previous one,
+           cv-common.js unconditionally hides its company/dates/role fields
+           regardless of whether they hold data — leaving the static "(" ")"
+           characters around the (now invisible) company/dates fields
+           showing as a bare, meaningless "()" gray bar, and the "Role:"
+           label dangling alone whenever the underlying role field still
+           holds text (the :empty-based rule above only catches a genuinely
+           blank role, not one that's merely hidden). A subsection entry
+           never has anything meaningful to show in either element, so hide
+           both outright. */
+        .job-entry.experience-title-merged .section-banner,
+        .job-entry.experience-title-merged .subtitle {
+            display: none;
+        }
+
+        .content-para {
+            font-size: calc(15.11px * var(--content-scale));
+            line-height: 1.25;
+            margin-bottom: calc(7.56px * var(--content-scale));
+        }
+
+        /* ===== Bullet lists ===== */
+        .bullet-list {
+            margin: 0;
+            padding-left: calc(20.15px * var(--content-scale));
+            list-style-type: disc;
+        }
+
+        .bullet-list li {
+            margin-bottom: calc(3.78px * var(--content-scale));
+            line-height: 1.22;
+            font-size: calc(15.11px * var(--content-scale));
+        }
+
+        .bullet-list:empty { display: none; }
+
+        .job-entry { margin-bottom: calc(7.56px * var(--content-scale)); }
+
+        /* The gap before a subsection entry (merged with the one above it)
+           comes from the PRECEDING entry's own margin-bottom, not from
+           anything on the subsection itself — so when the next entry
+           continues the current one (whether that next entry is itself
+           primary or another subsection), zero this entry's margin instead
+           of leaving a bigger gap than between two ordinary bullets. A
+           subsection followed by a genuinely new job keeps the normal gap,
+           since that following entry won't match .experience-title-merged. */
+        .job-entry:has(+ .job-entry.experience-title-merged) {
+            margin-bottom: 0;
+        }
+
+        /* ===== Qualification table ===== */
+        .qual-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: calc(5.04px * var(--content-scale));
+            margin-bottom: calc(10.08px * var(--content-scale));
+            font-size: calc(15.11px * var(--content-scale));
+        }
+
+        .qual-table th, .qual-table td {
+            border: calc(1.26px * var(--content-scale)) solid #000000;
+            padding: calc(3.78px * var(--content-scale)) calc(6.3px * var(--content-scale));
+            vertical-align: top;
+        }
+
+        .qual-table th {
+            font-weight: bold;
+            text-align: center;
+            background-color: #ffffff;
+        }
+
+        .qual-table td.center-text { text-align: center; }
+
+        /* #main-content is a column flexbox purely so .two-col-container can
+           use "order" to stay visually last regardless of where cv-common's
+           applySectionOrder() leaves it in the DOM (see the HTML comment
+           above .two-col-container for why it has to live first in markup). */
+        #main-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ===== 2x2 grid (Achievements + any custom sections) ===== */
+        .achievements-grid {
+            order: 500;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: calc(20.15px * var(--content-scale));
+        }
+
+        .achievements-grid .section-banner {
+            margin-top: 0;
+        }
+
+        /* ===== 2x2 grid (Technical Proficiency / Strengths / Languages Known / Certifications) =====
+           A real grid, not two independent vertical stacks: all four fields
+           are direct grid children sharing one parent, so cv-common's own
+           section-order logic can reorder them freely (the two-stack version
+           couldn't, since Skills/Strengths/Languages and Certifications lived
+           in separate parents). An empty/hidden field just leaves its cell to
+           the browser's normal grid auto-placement - no gap-filling JS needed. */
+        .two-col-container {
+            order: 999;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: calc(20.15px * var(--content-scale));
+            margin-top: calc(5.04px * var(--content-scale));
+        }
+
+        .two-col-container .section-banner {
+            margin-top: 0;
+        }
+
+        .col-content {
+            font-size: calc(15.11px * var(--content-scale));
+            line-height: 1.25;
+            margin-bottom: calc(7.56px * var(--content-scale));
+        }
+
+        .col-content:empty,
+        .col-content:has(ul.bullet-list:empty) { display: none; }
+
+        /* ===== Projects / Achievements (bonus sections - not part of the source design) ===== */
+        #projects-list .job-entry .proj-title { font-weight: bold; }
+        #projects-list .job-entry .proj-desc { font-style: italic; margin-top: calc(2.52px * var(--content-scale)); }
+        #projects-list .job-entry .proj-desc:empty { display: none; }
+
+        /* ===== Print (A4 exact, same convention as every other template) ===== */
+        @media print {
+            @page { size: A4 portrait; margin: 0; }
+
+            html, body {
+                background: var(--page-bg);
+                width: 210mm;
+                height: 297mm;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+            }
+
+            #zoom-wrapper {
+                padding: 0;
+                display: block;
+                min-height: 0;
+                width: 100% !important;
+                height: auto !important;
+            }
+
+            .page {
+                box-shadow: none;
+                transform: none;
+                zoom: 0.79375;
+                margin: 0 auto;
+                position: static !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="zoom-wrapper">
+        <div class="page" id="cv-page">
+
+            <!-- HEADER -->
+            <div class="header-container">
+                <div class="header-left">
+                    <div class="header-name" data-field="name"></div>
+                    <div class="header-title" data-field="tagline"></div>
+                    <div class="header-contact">
+                        <div id="hc-email">&#128231; <a id="hc-email-link" href="#"><span data-field="email"></span></a></div>
+                        <div id="hc-phone">&#9742; <span data-field="phone"></span></div>
+                        <div id="hc-linkedin">&#127760; <a id="hc-linkedin-link" href="#" target="_blank" rel="noopener noreferrer"><span data-field="linkedin"></span></a></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="main-content">
+
+                <!-- ACHIEVEMENTS + CUSTOM SECTIONS 2-column grid. Placed first in DOM
+                     order (same reason as .two-col-container below) but visually
+                     pinned between the reorderable sections and the skills grid via
+                     flex "order". This is also where custom sections get appended
+                     (data-section-append-host lives here now, not on #main-content),
+                     so any custom section the user adds joins Achievements in this
+                     same 2-column grid instead of rendering full-width. -->
+                <div class="achievements-grid" data-section-append-host>
+                    <div class="section sortable-section" data-section-id="achievements" style="display:none;">
+                        <div class="section-banner section-header">Achievements</div>
+                        <ul class="bullet-list" data-list="achievements"></ul>
+                    </div>
+                </div>
+
+                <!-- 2x2 GRID: Technical Proficiency / Strengths / Languages Known / Certifications.
+                     Placed first in DOM order (see the .two-col-container CSS rule below for
+                     why) but visually pinned to the end of the page via flex "order" so
+                     cv-common's generic section-reordering doesn't shove it to the top.
+                     All four are direct grid children sharing one parent, so cv-common's
+                     native applySectionOrder() can reorder them freely against each other -
+                     no custom reordering logic needed. -->
+                <div class="two-col-container">
+
+                    <div class="section sortable-section" data-section-id="skills" style="display:none;">
+                        <div class="section-banner section-header">Technical Proficiency</div>
+                        <div class="col-content"><div data-field="skills"></div></div>
+                    </div>
+
+                    <div class="section sortable-section" data-section-id="certifications" style="display:none;">
+                        <div class="section-banner section-header">Certifications</div>
+                        <div class="col-content"><ul class="bullet-list" data-list="certifications"></ul></div>
+                    </div>
+
+                    <div class="section sortable-section" data-section-id="leadership" style="display:none;">
+                        <div class="section-banner section-header">Strengths</div>
+                        <div class="col-content"><ul class="bullet-list" data-list="leadership"></ul></div>
+                    </div>
+
+                    <div class="section sortable-section" data-section-id="interests" style="display:none;">
+                        <div class="section-banner section-header">Languages Known</div>
+                        <div class="col-content"><ul class="bullet-list" data-list="interests"></ul></div>
+                    </div>
+
+                </div>
+
+                <!-- PROFESSIONAL SUMMARY -->
+                <div class="section sortable-section" data-section-id="summary">
+                    <div class="section-banner section-header">Professional Summary</div>
+                    <p class="content-para" data-field="summary"></p>
+                </div>
+
+                <!-- WORK EXPERIENCE (each entry gets its own gray banner with the
+                     company + dates, matching the source's per-job banner style;
+                     the varying "Work Experience:"/"Articleship Experience:" text
+                     prefix used in the source is dropped since it isn't part of
+                     the generic schema - the Role field covers that distinction) -->
+                <div class="section sortable-section" data-section-id="experience">
+                    <div id="experience-list">
+                        <div class="job-entry template">
+                            <div class="section-banner section-header">
+                                <span data-field="company"></span> (<span class="job-dates" data-field="dates"></span>)
+                            </div>
+                            <div class="subtitle"><span class="job-role-label">Role:</span> <span class="job-role-value" data-field="role"></span></div>
+                            <ul class="bullet-list" data-list="bullets"></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PROJECTS (bonus section, hidden until the user adds project data) -->
+                <div class="section sortable-section" data-section-id="projects" style="display:none;">
+                    <div class="section-banner section-header">Projects</div>
+                    <div id="projects-list">
+                        <div class="job-entry template">
+                            <div class="proj-title" data-field="title"></div>
+                            <div class="proj-desc" data-field="description"></div>
+                            <ul class="bullet-list" data-list="bullets"></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- QUALIFICATION TABLE -->
+                <div class="section sortable-section" data-section-id="education">
+                    <div class="section-banner section-header">Professional and Academic Qualification</div>
+                    <table id="education-table" class="qual-table">
+                        <colgroup>
+                            <col style="width:26%;"><col style="width:44%;"><col style="width:15%;"><col style="width:15%;">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>Name of the Course</th>
+                                <th>Name of Institution</th>
+                                <th>Year of Passing</th>
+                                <th>Marks</th>
+                            </tr>
+                        </thead>
+                        <tbody id="education-list">
+                            <tr class="template">
+                                <td data-field="degree"></td>
+                                <td data-field="institution"></td>
+                                <td class="center-text" data-field="year"></td>
+                                <td class="center-text" data-field="marks"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="cv-common.js"></script>
+    <script>
+        // Template-specific post-processing over the shared renderer.
+        const originalRenderCV = window.renderCV;
+
+        window.renderCV = function (data) {
+            originalRenderCV(data);
+
+            adjustHeaderContact(data.personal || {});
+            enforceEducationColumnWidths(data);
+
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    shrinkContentToFit();
+                    scaleToFit();
+                });
+            });
+        };
+
+        // Force the qualification table's column widths to match the source
+        // design exactly (26% / 44% / 15% / 15%) - cv-common's generic
+        // applyEducationTableFormat() runs first and imposes its own default
+        // proportions (tuned for a 5-column degree/year/institution/marks/
+        // remarks table); since this table only has 4 columns, its defaults
+        // land close but not exact. Runs after cv-common, so these inline
+        // widths are the final, authoritative ones - UNLESS the user has
+        // explicitly customized a column's width via the table-format panel,
+        // in which case that customization must win instead of being silently
+        // overwritten. Visibility toggles (hide a column) still get honored:
+        // the remaining visible columns are renormalized against these same
+        // base proportions.
+        function enforceEducationColumnWidths(data) {
+            const table = document.getElementById('education-table');
+            if (!table) return;
+
+            const fields = ['degree', 'institution', 'year', 'marks'];
+            const baseWidths = { degree: 26, institution: 44, year: 15, marks: 15 };
+            const userColumns = data?.tableSettings?.education?.columns || {};
+
+            const hasCustomWidth = fields.some(f => Number.isFinite(Number(userColumns?.[f]?.width)));
+            if (hasCustomWidth) return; // user has customized column widths - don't override
+
+            const visibleFields = fields.filter(f => userColumns?.[f]?.visible !== false);
+            const totalWeight = visibleFields.reduce((sum, f) => sum + baseWidths[f], 0) || 1;
+
+            fields.forEach((field, i) => {
+                if (!visibleFields.includes(field)) return; // leave cv-common's own hide/colspan logic alone
+                const pct = `${((baseWidths[field] / totalWeight) * 100).toFixed(2)}%`;
+                table.querySelectorAll(`tr > *:nth-child(${i + 1})`).forEach(cell => {
+                    cell.style.setProperty('width', pct, 'important');
+                });
+            });
+        }
+
+        // Hide the email/phone/LinkedIn contact rows individually when their
+        // field is empty, instead of showing a stray icon with nothing next
+        // to it, and wire the email/linkedin hrefs by hand (plain emoji rows,
+        // not cv-common's icon renderer).
+        function adjustHeaderContact(personal) {
+            const email = (personal.email || '').trim();
+            const phoneEl = document.querySelector('#hc-phone [data-field="phone"]');
+            const hasPhone = !!(phoneEl && phoneEl.textContent.trim());
+            const linkedin = (personal.linkedin || '').trim();
+
+            const emailRow = document.getElementById('hc-email');
+            const phoneRow = document.getElementById('hc-phone');
+            const linkedinRow = document.getElementById('hc-linkedin');
+            const emailLink = document.getElementById('hc-email-link');
+            const linkedinLink = document.getElementById('hc-linkedin-link');
+
+            if (emailRow) emailRow.classList.toggle('hc-hidden', !email);
+            if (phoneRow) phoneRow.classList.toggle('hc-hidden', !hasPhone);
+            if (linkedinRow) linkedinRow.classList.toggle('hc-hidden', !linkedin);
+
+            if (emailLink) emailLink.href = email ? 'mailto:' + email : '#';
+            if (linkedinLink) {
+                linkedinLink.href = linkedin
+                    ? (/^https?:\/\//i.test(linkedin) ? linkedin : 'https://' + linkedin)
+                    : '#';
+            }
+        }
+
+        // Standard scaling / print plumbing (same contract as other templates).
+        function scaleToFit() {
+            const page = document.getElementById('cv-page');
+            const targetWidth = window.innerWidth - 20;
+            const scale = targetWidth < 1000 ? targetWidth / 1000 : 1.0;
+            page.style.transform = `scale(${scale})`;
+            const spaceToRemove = 1413.94 - (1413.94 * scale);
+            page.style.marginBottom = `-${spaceToRemove}px`;
+        }
+
+        function shrinkContentToFit() {
+            const page = document.getElementById('cv-page');
+            let contentScale = 1.0;
+            document.documentElement.style.setProperty('--content-scale', contentScale);
+            page.style.height = 'auto';
+            let i = 0;
+            while (page.scrollHeight > 1415 && i < 60) {
+                contentScale -= 0.01;
+                document.documentElement.style.setProperty('--content-scale', contentScale);
+                i++;
+            }
+            page.style.height = '';
+        }
+
+        let _screenTransform = '';
+        let _screenMarginBottom = '';
+
+        function enablePrintMode() {
+            const page = document.getElementById('cv-page');
+            _screenTransform = page.style.transform;
+            _screenMarginBottom = page.style.marginBottom;
+            page.style.transform = 'scale(1)';
+            page.style.marginBottom = '0px';
+            shrinkContentToFit();
+        }
+
+        function disablePrintMode() {
+            const page = document.getElementById('cv-page');
+            page.style.transform = _screenTransform || '';
+            page.style.marginBottom = _screenMarginBottom || '';
+            scaleToFit();
+        }
+
+        window.addEventListener('load', function () {
+            shrinkContentToFit();
+            scaleToFit();
+            const mq = window.matchMedia('print');
+            if (mq.addEventListener) {
+                mq.addEventListener('change', e => e.matches ? enablePrintMode() : disablePrintMode());
+            } else if (mq.addListener) {
+                mq.addListener(e => e.matches ? enablePrintMode() : disablePrintMode());
+            }
+            window.addEventListener('beforeprint', enablePrintMode);
+            window.addEventListener('afterprint', disablePrintMode);
+        });
+
+        let _resizeTimer;
+        window.addEventListener('resize', function () {
+            clearTimeout(_resizeTimer);
+            _resizeTimer = setTimeout(scaleToFit, 100);
+        });
+    </script>
+</body>
+
+</html>

@@ -18,9 +18,9 @@
       (function () {
         const t = localStorage.getItem("msc-theme");
         if (t) document.documentElement.setAttribute("data-theme", t);
-        const supabaseUrl = "https://izsggdtdiacxdsjjncdq.supabase.co";
+        const supabaseUrl = "https://auth.mystudentclub.com";
         const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0";
-        if (window.supabase) window._mscSupabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+        if (window.supabase) window._mscSupabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey, { auth: { storageKey: 'sb-izsggdtdiacxdsjjncdq-auth-token' } });
       })();
     </script>
     <style>
@@ -646,9 +646,9 @@
 
     <script>
       // Init Supabase client for auth check
-      const SUPABASE_URL = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+      const SUPABASE_URL = 'https://auth.mystudentclub.com';
       const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-      const supabaseClient = window._mscSupabaseClient || window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      const supabaseClient = window._mscSupabaseClient || window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { storageKey: 'sb-izsggdtdiacxdsjjncdq-auth-token' } });
 
       const form = document.getElementById('contact-form');
       const submitBtn = document.getElementById('submit-btn');
