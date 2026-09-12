@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Timeline Flow Split CV</title>
+<style>
+/* ═══════════════════════════════════════════════════════════
+   DESIGN SYSTEM & ENGINE TOKENS — Timeline Flow Split
+   Page: A4 (1000 px base viewer width × 1413.94 px height)
+   Scaling Engine:
+     - --cs (content-scale factor): shrinkContentToFit() dynamically
+       adjusts --cs so all content fits strictly within 1413.94 px (A4 1-page limit).
+     - scaleToFit(): viewport responsive scaling using transform: scale().
+ ═══════════════════════════════════════════════════════════ */
+
+:root {
+  --slate-dark:    var(--accent-color, #313A4A);   /* Header & Accent */
+  --sidebar-bg:    color-mix(in srgb, var(--accent-color, #313A4A) 10%, #FFFFFF);   /* Dynamic Soft Sidebar Background */
+  --text-dark:     #2D3440;   /* Dark Slate Text */
+  --text-body:     #333333;   /* Body Paragraph Color */
+  --text-muted:    #555555;   /* Secondary Muted Color */
+  --link-blue:     var(--accent-color, #313A4A);   /* Dynamic Link Blue */
+  --page-bg:       #FFFFFF;   /* White A4 Sheet */
+  --viewer-bg:     #525659;   /* Outer Canvas Background */
+  --font-heading:  Arial, 'Segoe UI', sans-serif;
+  --font-body:     Calibri, Arial, sans-serif;
+  --cs:            1.0;       /* Content scale variable adjusted by shrinkContentToFit() */
+}
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+body {
+  background: var(--viewer-bg);
+  font-family: var(--font-body);
+  color: var(--text-dark);
+  min-height: 100vh;
+  width: 100vw;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.2s ease-in;
+}
+
+.template { display: none !important; }
+
+/* ── Viewer Centering Wrapper ── */
+#zoom-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 24px 0 32px;
+}
+
+/* ── A4 Page Card Container ── */
+#cv-page {
+  position: relative;
+  width: 1000px;
+  min-height: 1413.94px;
+  background: var(--page-bg);
+  color: var(--text-dark);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+  flex-shrink: 0;
+  transform-origin: top center;
+  font-size: calc(16px * var(--cs));
+  line-height: 1.34;
+}
+
+/* ── Header Section ── */
+.top-header {
+  background-color: var(--slate-dark);
+  color: #FFFFFF;
+  text-align: center;
+  padding: calc(28px * var(--cs)) calc(20px * var(--cs));
+}
+
+.candidate-name {
+  font-family: var(--font-heading);
+  font-size: calc(46px * var(--cs));
+  font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1.1;
+  margin-bottom: calc(6px * var(--cs));
+  letter-spacing: 0.5px;
+}
+
+.candidate-subtitle {
+  font-family: var(--font-heading);
+  font-size: calc(24px * var(--cs));
+  font-weight: 400;
+  color: #FFFFFF;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+/* ── 2-Column Split Layout ── */
+.main-content {
+  display: flex;
+  min-height: calc(1413.94px - 110px);
+}
+
+.left-panel {
+  width: 32%;
+  background-color: var(--sidebar-bg);
+  padding: calc(26px * var(--cs)) calc(22px * var(--cs));
+  box-sizing: border-box;
+}
+
+.right-panel {
+  width: 68%;
+  background-color: var(--page-bg);
+  padding: calc(22px * var(--cs)) calc(26px * var(--cs));
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* Sidebar Section Titles */
+.left-panel .section-title {
+  font-family: var(--font-heading);
+  font-size: calc(20.5px * var(--cs));
+  font-weight: 700;
+  color: var(--slate-dark);
+  text-transform: uppercase;
+  border-bottom: calc(2.2px * var(--cs)) solid var(--slate-dark);
+  padding-bottom: calc(3px * var(--cs));
+  margin-top: calc(20px * var(--cs));
+  margin-bottom: calc(12px * var(--cs));
+  letter-spacing: 0.5px;
+}
+
+.left-panel .section-title:first-child {
+  margin-top: 0;
+}
+
+/* Sidebar Contact Items */
+.contact-list {
+  margin-bottom: calc(14px * var(--cs));
+}
+
+.contact-item {
+  display: flex !important;
+  align-items: center;
+  gap: calc(8px * var(--cs));
+  font-size: calc(15.2px * var(--cs));
+  color: var(--text-dark);
+  margin-bottom: calc(11px * var(--cs));
+}
+
+.contact-item a {
+  color: var(--slate-dark);
+  text-decoration: underline;
+  word-break: break-all;
+}
+
+.contact-item svg {
+  flex-shrink: 0;
+}
+
+.contact-list .contact-value .contact-icon-glyph,
+.contact-list .contact-value > .contact-icon-item > .contact-icon-glyph {
+  display: none !important;
+}
+
+.contact-list .contact-sep {
+  display: none !important;
+}
+
+/* Sidebar Education Items */
+.edu-sub-item {
+  margin-bottom: calc(14px * var(--cs));
+}
+
+.edu-college-title {
+  font-size: calc(19px * var(--cs));
+  font-weight: 700;
+  color: var(--slate-dark);
+  text-decoration: underline;
+  margin-bottom: calc(3px * var(--cs));
+}
+
+/* Sidebar Bullet List */
+.left-list {
+  list-style-type: disc;
+  padding-left: calc(14px * var(--cs));
+  font-size: calc(15px * var(--cs));
+  color: var(--text-body);
+  line-height: 1.4;
+}
+
+.left-list li {
+  margin-bottom: calc(3px * var(--cs));
+}
+
+.skills-text {
+  font-size: calc(15px * var(--cs));
+  line-height: 1.4;
+  color: var(--text-body);
+  margin-bottom: calc(14px * var(--cs));
+}
+
+/* Right Section Timeline Wrapper */
+.right-timeline-container {
+  position: relative;
+  padding-left: calc(44px * var(--cs));
+}
+
+/* Section Header Row with Icon Badge */
+.right-section-header,
+.right-timeline-container .sortable-section > .section-title {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-bottom: calc(2.5px * var(--cs)) solid var(--slate-dark);
+  padding-bottom: calc(4px * var(--cs));
+  margin-top: calc(20px * var(--cs));
+  margin-bottom: calc(14px * var(--cs));
+  font-family: var(--font-heading);
+  font-size: calc(20.5px * var(--cs));
+  font-weight: 700;
+  color: var(--slate-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.right-timeline-container .sortable-section:first-child .right-section-header,
+.right-timeline-container .sortable-section:first-child > .section-title {
+  margin-top: 0;
+}
+
+/* Fallback circular badge for custom sections created without .icon-badge child */
+.right-timeline-container .sortable-section > .section-title:not(:has(.icon-badge))::before {
+  content: '';
+  position: absolute;
+  left: calc(-44px * var(--cs));
+  width: calc(34px * var(--cs));
+  height: calc(34px * var(--cs));
+  background-color: var(--slate-dark);
+  border-radius: 50%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23FFFFFF'%3E%3Cpath d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 18px 18px;
+  z-index: 2;
+}
+
+.icon-badge {
+  position: absolute;
+  left: calc(-44px * var(--cs));
+  width: calc(34px * var(--cs));
+  height: calc(34px * var(--cs));
+  background-color: var(--slate-dark);
+  color: #FFFFFF;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.icon-badge svg {
+  width: calc(19px * var(--cs));
+  height: calc(19px * var(--cs));
+  fill: #FFFFFF;
+}
+
+.right-title-text {
+  font-family: var(--font-heading);
+  font-size: calc(20.5px * var(--cs));
+  font-weight: 700;
+  color: var(--slate-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+/* Vertical Timeline Section Box */
+.section-timeline-block {
+  position: relative;
+  margin-bottom: calc(14px * var(--cs));
+}
+
+.right-timeline-container .sortable-section.custom-section-injected {
+  position: relative;
+}
+
+/* Vertical line extending down from circular badge */
+.section-timeline-line,
+.right-timeline-container .sortable-section.custom-section-injected:not(:has(.section-timeline-line))::after {
+  content: '';
+  position: absolute;
+  left: calc(-27px * var(--cs));
+  top: calc(-10px * var(--cs));
+  bottom: calc(10px * var(--cs));
+  width: calc(1.2px * var(--cs));
+  background-color: #555555;
+  z-index: 1;
+}
+
+/* Profile Box Text */
+.profile-text {
+  font-size: calc(16px * var(--cs));
+  line-height: 1.4;
+  color: var(--text-body);
+  padding-left: 0;
+}
+
+/* Work Experience Items inside Timeline */
+.timeline-item {
+  position: relative;
+  margin-bottom: calc(18px * var(--cs));
+  padding-left: 0;
+}
+
+.timeline-item:last-child {
+  margin-bottom: 0;
+}
+
+/* Small open circle node on timeline line */
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: calc(-32px * var(--cs));
+  top: calc(6px * var(--cs));
+  width: calc(10px * var(--cs));
+  height: calc(10px * var(--cs));
+  background-color: #FFFFFF;
+  border: calc(1.8px * var(--cs)) solid var(--slate-dark);
+  border-radius: 50%;
+  z-index: 3;
+}
+
+.exp-company-title {
+  font-size: calc(20px * var(--cs));
+  font-weight: 700;
+  color: var(--slate-dark);
+  text-decoration: underline;
+  margin-bottom: calc(2px * var(--cs));
+}
+
+.exp-role-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: calc(18px * var(--cs));
+  color: var(--text-muted);
+  margin-bottom: calc(6px * var(--cs));
+}
+
+.exp-role-name {
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.exp-date-range {
+  font-size: calc(15.5px * var(--cs));
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.company-desc {
+  font-size: calc(14px * var(--cs));
+  font-style: italic;
+  color: var(--text-body);
+  margin-bottom: calc(6px * var(--cs));
+}
+
+/* Right Column Bullet List */
+.bullet-list {
+  list-style-type: disc;
+  padding-left: calc(15px * var(--cs));
+  font-size: calc(15.8px * var(--cs));
+  line-height: 1.38;
+  color: var(--text-body);
+}
+
+.bullet-list li {
+  margin-bottom: calc(3.5px * var(--cs));
+  text-align: justify;
+}
+
+.bullet-list li:last-child {
+  margin-bottom: 0;
+}
+
+/* ── Print Styles (A4 Page Output) ── */
+@media print {
+  html, body {
+    background: none !important;
+    margin: 0;
+    padding: 0;
+  }
+  #zoom-wrapper {
+    padding: 0;
+  }
+  #cv-page {
+    transform: scale(1) !important;
+    margin: 0 !important;
+    width: 210mm;
+    min-height: 297mm;
+    box-shadow: none;
+  }
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+}
+
+</style>
+</head>
+<body>
+<div id="zoom-wrapper">
+<div id="cv-page">
+
+  <!-- ══ HEADER SECTION ══════════════════════════════════════════ -->
+  <div class="top-header">
+    <h1 class="candidate-name" data-field="name">Padam Bhansali</h1>
+    <div class="candidate-subtitle" data-field="tagline">CHARTERED ACCOUNTANT</div>
+  </div>
+
+  <!-- ══ MAIN 2-COLUMN LAYOUT ════════════════════════════════════ -->
+  <div class="main-content">
+
+    <!-- ── LEFT SIDEBAR PANEL ── -->
+    <div class="left-panel">
+
+      <!-- CONTACT SECTION -->
+      <div class="sortable-section" data-section-id="personal">
+        <div class="section-title">CONTACT</div>
+        <div class="contact-list">
+          <div class="contact-item contact-row" data-field="phone-wrap">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="var(--slate-dark)"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+            <span class="contact-value" data-field="phone">+91 7228881182</span>
+          </div>
+          <div class="contact-item contact-row" data-field="email-wrap">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="var(--slate-dark)"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            <a href="mailto:capadambhansali@gmail.com" class="contact-value" data-field="email">capadambhansali@gmail.com</a>
+          </div>
+          <div class="contact-item contact-row" data-field="linkedin-wrap">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="var(--slate-dark)"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+            <a href="https://linkedin.com" target="_blank" rel="noopener" class="contact-value" data-field="linkedin">LinkedIn</a>
+          </div>
+          <div class="contact-item contact-row" data-field="location-wrap">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="var(--slate-dark)"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5-2.5-1.12 2.5-2.5 2.5z"/></svg>
+            <span class="contact-value" data-field="location">New Delhi</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- EDUCATION SECTION -->
+      <div class="sortable-section" data-section-id="education">
+        <div class="section-title">EDUCATION</div>
+        <div id="education-list">
+          <div class="edu-sub-item template">
+            <div class="edu-college-title" data-field="degree"></div>
+            <div data-field="institution-header">
+              <div style="font-size: calc(14px * var(--cs)); color: var(--text-muted); margin-bottom: calc(3px * var(--cs));" data-field="institution"></div>
+            </div>
+            <ul class="left-list">
+              <li>
+                <span data-field="year"></span> | <span data-field="marks"></span> [<span data-field="remarks"></span>]
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- SKILLS SECTION -->
+      <div class="sortable-section" data-section-id="skills">
+        <div class="section-title">SKILLS</div>
+        <div class="skills-text" data-field="skills"></div>
+      </div>
+
+    </div><!-- .left-panel -->
+
+    <!-- ── RIGHT MAIN PANEL ── -->
+    <div class="right-panel">
+
+      <div class="right-timeline-container" data-section-append-host>
+
+        <!-- PROFILE SECTION -->
+        <div class="sortable-section" data-section-id="summary">
+          <div class="right-section-header">
+            <div class="icon-badge">
+              <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            </div>
+            <div class="right-title-text section-title">PROFILE</div>
+          </div>
+
+          <div class="section-timeline-block">
+            <div class="section-timeline-line section-divider"></div>
+            <div class="profile-text" data-field="summary"></div>
+          </div>
+        </div>
+
+        <!-- WORK EXPERIENCE SECTION -->
+        <div class="sortable-section" data-section-id="experience">
+          <div class="right-section-header">
+            <div class="icon-badge">
+              <svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>
+            </div>
+            <div class="right-title-text section-title">WORK EXPERIENCE</div>
+          </div>
+
+          <div class="section-timeline-block">
+            <div class="section-timeline-line section-divider"></div>
+            <div id="experience-list">
+              <div class="timeline-item template">
+                <div class="exp-company-title" data-field="company"></div>
+                <div class="exp-role-row">
+                  <span class="exp-role-name" data-field="role"></span>
+                  <span class="exp-date-range" data-field="dates"></span>
+                </div>
+                <div class="company-desc" data-field="intro"></div>
+                <div class="company-desc" data-field="category"></div>
+                <ul class="bullet-list" data-list="bullets"></ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PROJECTS SECTION -->
+        <div class="sortable-section" data-section-id="projects">
+          <div class="right-section-header">
+            <div class="icon-badge">
+              <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.11 0-2 .89-2 2v14c0 1.11.89 2 2 2h14c1.11 0 2-.89 2-2V5c0-1.11-.89-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+            </div>
+            <div class="right-title-text section-title">PROJECTS</div>
+          </div>
+
+          <div class="section-timeline-block">
+            <div class="section-timeline-line section-divider"></div>
+            <div id="projects-list">
+              <div class="timeline-item template">
+                <div class="exp-company-title" data-field="title"></div>
+                <div class="company-desc" data-field="description"></div>
+                <ul class="bullet-list" data-list="bullets"></ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- KEY ACCOMPLISHMENTS SECTION -->
+        <div class="sortable-section" data-section-id="achievements">
+          <div class="right-section-header">
+            <div class="icon-badge">
+              <svg viewBox="0 0 24 24"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/></svg>
+            </div>
+            <div class="right-title-text section-title">KEY ACCOMPLISHMENTS</div>
+          </div>
+
+          <div class="section-timeline-block">
+            <div class="section-timeline-line section-divider"></div>
+            <ul class="bullet-list" data-list="achievements"></ul>
+          </div>
+        </div>
+
+        <!-- CERTIFICATIONS SECTION -->
+        <div class="sortable-section" data-section-id="certifications">
+          <div class="right-section-header">
+            <div class="icon-badge">
+              <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+            </div>
+            <div class="right-title-text section-title">CERTIFICATIONS</div>
+          </div>
+
+          <div class="section-timeline-block">
+            <div class="section-timeline-line section-divider"></div>
+            <ul class="bullet-list" id="cert-list" data-list="certifications"></ul>
+          </div>
+        </div>
+
+        <!-- LEADERSHIP SECTION -->
+        <div class="sortable-section" data-section-id="leadership">
+          <div class="right-section-header">
+            <div class="icon-badge">
+              <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+            </div>
+            <div class="right-title-text section-title">LEADERSHIP</div>
+          </div>
+
+          <div class="section-timeline-block">
+            <div class="section-timeline-line section-divider"></div>
+            <ul class="bullet-list" data-list="leadership"></ul>
+          </div>
+        </div>
+
+        <!-- INTERESTS SECTION -->
+        <div class="sortable-section" data-section-id="interests">
+          <div class="right-section-header">
+            <div class="icon-badge">
+              <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            </div>
+            <div class="right-title-text section-title">INTERESTS</div>
+          </div>
+
+          <div class="section-timeline-block">
+            <div class="section-timeline-line section-divider"></div>
+            <ul class="bullet-list" data-list="interests"></ul>
+          </div>
+        </div>
+
+      </div><!-- .right-timeline-container -->
+
+    </div><!-- .right-panel -->
+
+  </div><!-- .main-content -->
+
+</div><!-- #cv-page -->
+</div><!-- #zoom-wrapper -->
+
+<!-- ══ SCRIPT ENGINE ════════════════════════════════════════════ -->
+<script src="cv-common.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var PAGE_H = 1413.94; /* A4 page height limit in px */
+  var PAGE_W = 1000;    /* A4 viewer width in px */
+
+  function scaleToFit() {
+    var page = document.getElementById('cv-page');
+    if (!page || document.body.classList.contains('print-mode')) return;
+    var avail = window.innerWidth - 20;
+    var scale = avail < PAGE_W ? avail / PAGE_W : 1.0;
+    page.style.transform = 'scale(' + scale + ')';
+    page.style.marginBottom = '-' + (PAGE_H - PAGE_H * scale) + 'px';
+  }
+
+  function shrinkContentToFit() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    var cs = 1.0;
+    document.documentElement.style.setProperty('--cs', cs);
+    page.style.height = 'auto';
+    var iter = 0;
+    while (page.scrollHeight > PAGE_H + 1 && iter < 80) {
+      cs = Math.round((cs - 0.01) * 1000) / 1000;
+      document.documentElement.style.setProperty('--cs', cs);
+      iter++;
+    }
+    page.style.height = '';
+  }
+
+  window.scaleToFit = scaleToFit;
+  window.shrinkContentToFit = shrinkContentToFit;
+
+  var _tx = '', _mb = '';
+
+  function enablePrintMode() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    _tx = page.style.transform;
+    _mb = page.style.marginBottom;
+    document.body.classList.add('print-mode');
+    page.style.transform = 'scale(1)';
+    page.style.marginBottom = '0';
+    shrinkContentToFit();
+  }
+
+  function disablePrintMode() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    document.body.classList.remove('print-mode');
+    page.style.transform = _tx || '';
+    page.style.marginBottom = _mb || '';
+    scaleToFit();
+  }
+
+  window.addEventListener('load', function () {
+    shrinkContentToFit();
+    scaleToFit();
+    document.body.style.opacity = '1';
+    var mq = window.matchMedia('print');
+    var handler = function (e) { e.matches ? enablePrintMode() : disablePrintMode(); };
+    if (mq.addEventListener) { mq.addEventListener('change', handler); }
+    else if (mq.addListener)  { mq.addListener(handler); }
+    window.addEventListener('beforeprint', enablePrintMode);
+    window.addEventListener('afterprint',  disablePrintMode);
+  });
+
+  var _rt;
+  window.addEventListener('resize', function () {
+    clearTimeout(_rt);
+    _rt = setTimeout(scaleToFit, 100);
+  });
+}());
+</script>
+</body>
+</html>

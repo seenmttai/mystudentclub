@@ -1,4 +1,4 @@
-﻿import { getDaysAgo } from './date-utils.js';
+import { getDaysAgo } from './date-utils.js';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 
 async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) {
@@ -61,9 +61,9 @@ async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) 
     }
 }
 
-const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+const supabaseUrl = 'https://auth.mystudentclub.com';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey, { auth: { storageKey: 'sb-izsggdtdiacxdsjjncdq-auth-token' } });
 const WORKER_URL = 'https://storer.bhansalimanan55.workers.dev';
 
 window.flutter_app = {
@@ -294,21 +294,35 @@ https://chat.whatsapp.com/D491zsqKmv25S2YLloSUBR`;
             if (btnElement) {
                 const originalHtml = btnElement.innerHTML;
                 const originalStyles = btnElement.style.cssText;
+                const isIconOnly = btnElement.classList?.contains('jd-action-btn') || btnElement.offsetWidth <= 44;
 
                 // Visual feedback
-                btnElement.innerHTML = '<i class="fas fa-check"></i> Copied!';
-                btnElement.style.background = '#22c55e';
-                btnElement.style.color = '#ffffff';
+                if (isIconOnly) {
+                    btnElement.innerHTML = '<i class="fas fa-check"></i>';
+                    btnElement.style.background = '#16a34a';
+                    btnElement.style.color = '#ffffff';
+                } else {
+                    btnElement.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                    btnElement.style.background = '#16a34a';
+                    btnElement.style.color = '#ffffff';
+                }
 
                 setTimeout(() => {
                     btnElement.innerHTML = originalHtml;
                     btnElement.style.cssText = originalStyles;
                 }, 2000);
+            }
+            if (typeof showToast === 'function') {
+                showToast('Job link copied to clipboard!', 'success');
             } else {
                 alert('Job details copied to clipboard!');
             }
         }).catch(err => {
-            alert('Failed to copy details.');
+            if (typeof showToast === 'function') {
+                showToast('Failed to copy details.', 'error');
+            } else {
+                alert('Failed to copy details.');
+            }
         });
     }
 }
@@ -2093,9 +2107,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const hasResume = localStorage.getItem('userCVText');
 
     if (isNewUser === 'true') {
-        const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+        const supabaseUrl = 'https://auth.mystudentclub.com';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey, { auth: { storageKey: 'sb-izsggdtdiacxdsjjncdq-auth-token' } });
 
         const { data: { session } } = await supabaseClient.auth.getSession();
 

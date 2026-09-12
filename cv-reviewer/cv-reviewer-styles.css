@@ -2,7 +2,7 @@
 .cvr-main {
   max-width: 960px;
   margin: 0 auto;
-  padding: 24px 20px 40px;
+  padding: 24px 20px calc(var(--bnav-h, 60px) + var(--safe-bottom, env(safe-area-inset-bottom, 0px)) + 36px);
 }
 
 /* Hero */
@@ -834,6 +834,7 @@
   box-shadow: var(--shadow);
   padding: 28px 24px;
   margin-top: 12px;
+  margin-bottom: 24px;
 }
 
 .tips-section h2 {
@@ -1013,7 +1014,9 @@
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
-  .cvr-main { padding: 16px 16px 40px; }
+  .cvr-main {
+    padding: 16px 16px calc(var(--bnav-h, 60px) + var(--safe-bottom, env(safe-area-inset-bottom, 0px)) + 48px);
+  }
 
   .results-grid {
     grid-template-columns: 1fr;

@@ -982,12 +982,12 @@
         });
 
         // Supabase Credentials
-        const SUPABASE_URL = "https://izsggdtdiacxdsjjncdq.supabase.co";
+        const SUPABASE_URL = "https://auth.mystudentclub.com";
         const SUPABASE_KEY =
           "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0";
         let sb = null;
         if (typeof supabase !== "undefined") {
-          sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+          sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storageKey: 'sb-izsggdtdiacxdsjjncdq-auth-token' } });
         }
 
         // Auth Check
@@ -1029,6 +1029,34 @@
         const NOTIFY_TOPIC = "ca-fresher-program-notify";
         const MANAGE_TOPIC_URL =
           "https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription";
+
+        window.flutter_app = window.flutter_app || {
+          isReady: false,
+          fcmToken: null,
+        };
+        window.setFcmToken = function (token) {
+          if (!token) return;
+          window.flutter_app = window.flutter_app || {};
+          window.flutter_app.isReady = true;
+          window.flutter_app.fcmToken = token;
+        };
+
+        function isFlutterApp() {
+          return Boolean(
+            window.flutter_app?.isReady ||
+              window.flutter_app?.fcmToken ||
+              window.flutter_inappwebview,
+          );
+        }
+
+        async function getFlutterFcmToken() {
+          let token = window.flutter_app?.fcmToken;
+          if (!token && window.flutter_inappwebview?.callHandler) {
+            token = await window.flutter_inappwebview.callHandler("getFcmToken");
+            if (token) window.setFcmToken(token);
+          }
+          return token;
+        }
 
         function getOrCreateDeviceKey() {
           let key = localStorage.getItem("msc_device_key");
@@ -1102,9 +1130,16 @@
             if (this.disabled) return;
             allBtns.forEach((b) => b && (b.disabled = true));
 
+            const runningInFlutterApp = isFlutterApp();
+
             // Already subscribed — unsubscribe
             if (localStorage.getItem("notif_ca_fresher_program") === "1") {
-              const token = localStorage.getItem("notif_fcm_token_caf");
+              let token = localStorage.getItem("notif_fcm_token_caf");
+              if (!token && runningInFlutterApp) {
+                try {
+                  token = await getFlutterFcmToken();
+                } catch (_) {}
+              }
               if (token) {
                 try {
                   await fetch(MANAGE_TOPIC_URL, {
@@ -1126,38 +1161,45 @@
               return;
             }
 
-            // Request notification permission
-            setNotifyStatus("Requesting permission…", "info");
-            let permission;
-            try {
-              permission = await Notification.requestPermission();
-            } catch (e) {
-              permission = "denied";
-            }
+            if (!runningInFlutterApp) {
+              // Web browsers use the existing Web Push permission flow.
+              setNotifyStatus("Requesting permission…", "info");
+              let permission;
+              try {
+                permission = await Notification.requestPermission();
+              } catch (e) {
+                permission = "denied";
+              }
 
-            if (permission !== "granted") {
-              setNotifyStatus(
-                "Please allow notifications in your browser settings.",
-                "error",
-              );
-              allBtns.forEach((b) => b && (b.disabled = false));
-              return;
+              if (permission !== "granted") {
+                setNotifyStatus(
+                  "Please allow notifications in your browser settings.",
+                  "error",
+                );
+                allBtns.forEach((b) => b && (b.disabled = false));
+                return;
+              }
             }
 
             // Initialize Firebase & get FCM token
             setNotifyStatus("Setting up…", "info");
             try {
-              if (!firebase.apps.length)
-                firebase.initializeApp(NOTIFY_FIREBASE_CONFIG);
-              const messaging = firebase.messaging();
-              if ("serviceWorker" in navigator) {
-                await navigator.serviceWorker.register(
-                  "/firebase-messaging-sw.js",
-                );
+              let fcmToken;
+              if (runningInFlutterApp) {
+                fcmToken = await getFlutterFcmToken();
+              } else {
+                if (!firebase.apps.length)
+                  firebase.initializeApp(NOTIFY_FIREBASE_CONFIG);
+                const messaging = firebase.messaging();
+                if ("serviceWorker" in navigator) {
+                  await navigator.serviceWorker.register(
+                    "/firebase-messaging-sw.js",
+                  );
+                }
+                fcmToken = await messaging.getToken({
+                  vapidKey: NOTIFY_VAPID_KEY,
+                });
               }
-              const fcmToken = await messaging.getToken({
-                vapidKey: NOTIFY_VAPID_KEY,
-              });
               if (!fcmToken) throw new Error("No FCM token");
 
               // Subscribe to FCM topic

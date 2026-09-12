@@ -50,7 +50,10 @@
             themeAccent: "",
             customSections: [],
             sectionOrder: [...BASE_SECTION_ORDER],
-            tableSettings: getDefaultTableSettings()
+            tableSettings: getDefaultTableSettings(),
+            sectionLabels: {},
+            sectionTitles: {},
+            sectionGroups: {}
         };
         
         const DEMO_PREVIEW_DATA = {
@@ -178,6 +181,12 @@
                 window.addEventListener('message', (e) => {
                     if (e.data && e.data.type === 'cv-frame-ready') {
                         postToFrame();
+                    } else if (e.data && e.data.type === 'section-grouping-capability') {
+                        const supported = !!e.data.supported;
+                        if (supported !== window.__sectionGroupingSupported) {
+                            window.__sectionGroupingSupported = supported;
+                            if (typeof renderSectionOrderEditor === 'function') renderSectionOrderEditor();
+                        }
                     }
                 });
                 // Fallback attempt
@@ -427,14 +436,14 @@
                 const key = textarea.getAttribute('data-rich-list-key');
                 const idx = Number(textarea.getAttribute('data-rich-list-index'));
                 if (!key || Number.isNaN(idx)) return;
-                initInlineRichEditor(textarea, `list:${key}:${idx}`, (value) => updateListItem(key, idx, value));
+                initInlineRichEditor(textarea, `list:${key}:${idx}`, (value) => updateListItem(key, idx, value), { allowOrderedList: false });
             });
 
             document.querySelectorAll('textarea[data-rich-custom-id][data-rich-custom-index]').forEach((textarea) => {
                 const id = textarea.getAttribute('data-rich-custom-id');
                 const idx = Number(textarea.getAttribute('data-rich-custom-index'));
                 if (!id || Number.isNaN(idx)) return;
-                initInlineRichEditor(textarea, `custom:${id}:${idx}`, (value) => updateCustomSectionItem(id, idx, value));
+                initInlineRichEditor(textarea, `custom:${id}:${idx}`, (value) => updateCustomSectionItem(id, idx, value), { allowOrderedList: false });
             });
 
             document.querySelectorAll('textarea[data-rich-exp-index]').forEach((textarea) => {
@@ -1079,7 +1088,10 @@
                     themeAccent: "",
                     customSections: [],
                     sectionOrder: [...BASE_SECTION_ORDER],
-                    tableSettings: getDefaultTableSettings()
+                    tableSettings: getDefaultTableSettings(),
+                    sectionLabels: {},
+                    sectionTitles: {},
+                    sectionGroups: {}
                 };
             }
             if (!cvData.personal) cvData.personal = { name: "", tagline: "", contact: "", phone: "", email: "", linkedin: "", location: "", socialLinks: [] };
@@ -1155,6 +1167,8 @@
                 };
             });
             ensureTableSettingsShape();
+            ensureSectionLabelsShape();
+            normalizeSectionGroups();
         }
 
         function ensureTableSettingsShape() {
@@ -1191,8 +1205,168 @@
             return cvData.tableSettings.education.columns;
         }
 
+        // --- Section Label Defaults ---
+        const SECTION_LABEL_DEFAULTS = {
+            certifications: 'Certifications',
+            interests: 'Interests',
+            skills: 'Skills',
+            achievements: 'Highlights',
+            leadership: 'Positions of Responsibility'
+        };
+
+        function ensureSectionLabelsShape() {
+            if (!cvData.sectionLabels || typeof cvData.sectionLabels !== 'object') {
+                cvData.sectionLabels = {};
+            }
+            Object.keys(SECTION_LABEL_DEFAULTS).forEach(key => {
+                if (!cvData.sectionLabels[key] || typeof cvData.sectionLabels[key] !== 'object') {
+                    cvData.sectionLabels[key] = { text: SECTION_LABEL_DEFAULTS[key], visible: true };
+                }
+                if (typeof cvData.sectionLabels[key].text !== 'string') {
+                    cvData.sectionLabels[key].text = SECTION_LABEL_DEFAULTS[key];
+                }
+                if (typeof cvData.sectionLabels[key].visible !== 'boolean') {
+                    cvData.sectionLabels[key].visible = true;
+                }
+            });
+            // Migrate the old terse leadership default to the clearer label.
+            if (cvData.sectionLabels.leadership && cvData.sectionLabels.leadership.text === 'Responsibility') {
+                cvData.sectionLabels.leadership.text = 'Positions of Responsibility';
+            }
+        }
+
+        // --- Section Grouping (merge Certifications/Achievements/Leadership/Interests/Skills
+        // and any custom sections under one shared heading) ---
+        const GROUPABLE_SECTIONS = Object.keys(SECTION_LABEL_DEFAULTS);
+
+        // Custom sections are groupable too — in the preview they are cloned from a built-in
+        // section, so they carry the same header + left-label structure grouping relies on.
+        function isGroupableSectionId(sectionId) {
+            if (GROUPABLE_SECTIONS.includes(sectionId)) return true;
+            return (cvData.customSections || []).some(section => section.id === sectionId);
+        }
+
+        // A section can only be grouped with whatever groupable section precedes it in the
+        // current section order — same adjacency rule as experience/education merging.
+        function normalizeSectionGroups() {
+            if (!cvData.sectionGroups || typeof cvData.sectionGroups !== 'object') {
+                cvData.sectionGroups = {};
+            }
+            const order = Array.isArray(cvData.sectionOrder) && cvData.sectionOrder.length
+                ? cvData.sectionOrder
+                : BASE_SECTION_ORDER;
+            const groupableInOrder = order.filter(isGroupableSectionId);
+            const cleaned = {};
+            groupableInOrder.forEach((id, index) => {
+                cleaned[id] = index > 0 && !!cvData.sectionGroups[id];
+            });
+            cvData.sectionGroups = cleaned;
+        }
+
+        function groupSectionWithPrevious(sectionId) {
+            normalizeSectionOrder();
+            cvData.sectionGroups = cvData.sectionGroups || {};
+            cvData.sectionGroups[sectionId] = true;
+            normalizeSectionGroups();
+            renderSectionOrderEditor();
+            postToFrame();
+            saveLocal();
+        }
+
+        function ungroupSection(sectionId) {
+            cvData.sectionGroups = cvData.sectionGroups || {};
+            cvData.sectionGroups[sectionId] = false;
+            normalizeSectionGroups();
+            renderSectionOrderEditor();
+            postToFrame();
+            saveLocal();
+        }
+
+        function updateSectionLabel(sectionId, field, value) {
+            ensureSectionLabelsShape();
+            // Auto-initialize label entry for custom sections (not pre-seeded by ensureSectionLabelsShape)
+            if (!cvData.sectionLabels[sectionId]) {
+                const customSection = (cvData.customSections || []).find(s => s.id === sectionId);
+                if (customSection) {
+                    cvData.sectionLabels[sectionId] = { text: customSection.title || '', visible: true };
+                } else {
+                    return;
+                }
+            }
+            if (field === 'visible') {
+                cvData.sectionLabels[sectionId].visible = !!value;
+            } else if (field === 'text') {
+                cvData.sectionLabels[sectionId].text = String(value || '');
+            }
+            postToFrame();
+            // Sync the panel UI for this section
+            const panelId = `section-label-panel-${sectionId}`;
+            const panel = document.getElementById(panelId);
+            if (panel && panel.classList.contains('open')) {
+                // Refresh the input values without closing
+                const textInput = panel.querySelector('.section-label-text-input');
+                const checkbox = panel.querySelector('.section-label-visible-check');
+                const config = cvData.sectionLabels[sectionId];
+                if (textInput && field !== 'text') textInput.value = config.text;
+                if (checkbox && field !== 'visible') checkbox.checked = config.visible;
+            }
+        }
+
+        function toggleSectionLabelPanel(sectionId, event) {
+            if (event) { event.preventDefault(); event.stopPropagation(); }
+            const panelId = `section-label-panel-${sectionId}`;
+            const panel = document.getElementById(panelId);
+            if (!panel) return;
+            const shouldOpen = !panel.classList.contains('open');
+            panel.classList.toggle('open', shouldOpen);
+            panel.setAttribute('aria-hidden', shouldOpen ? 'false' : 'true');
+            if (shouldOpen) renderSectionLabelPanel(sectionId);
+        }
+
+        function renderSectionLabelPanel(sectionId) {
+            ensureSectionLabelsShape();
+            const panelId = `section-label-panel-${sectionId}`;
+            const panel = document.getElementById(panelId);
+            if (!panel) return;
+            const customSectionDefault = (cvData.customSections || []).find(s => s.id === sectionId);
+            const config = cvData.sectionLabels[sectionId] || { text: SECTION_LABEL_DEFAULTS[sectionId] || (customSectionDefault ? customSectionDefault.title || '' : ''), visible: true };
+            panel.innerHTML = `
+                <div class="table-format-panel-head">
+                    <div>
+                        <div class="table-format-title">Section Label</div>
+                        <div class="table-format-subtitle">Rename or hide the grey left-label column.</div>
+                    </div>
+                    <button class="btn-mini" type="button" onclick="resetSectionLabel('${sectionId}')">Reset</button>
+                </div>
+                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                    <label for="section-label-text-${sectionId}" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap;">Label text</label>
+                    <input type="text" id="section-label-text-${sectionId}" name="section-label-text-${sectionId}" class="form-control section-label-text-input" style="flex:1; min-width:120px;"
+                        value="${(config.text || '').replace(/"/g, '&quot;')}"
+                        placeholder="e.g. Certifications"
+                        oninput="updateSectionLabel('${sectionId}', 'text', this.value)">
+                    <label for="section-label-visible-${sectionId}" style="display:flex; align-items:center; gap:6px; font-size:13px; font-weight:600; white-space:nowrap; cursor:pointer;">
+                        <input type="checkbox" id="section-label-visible-${sectionId}" name="section-label-visible-${sectionId}" class="section-label-visible-check" ${config.visible ? 'checked' : ''}
+                            onchange="updateSectionLabel('${sectionId}', 'visible', this.checked)">
+                        Show label
+                    </label>
+                </div>
+            `;
+        }
+
+        function resetSectionLabel(sectionId) {
+            ensureSectionLabelsShape();
+            if (cvData.sectionLabels[sectionId]) {
+                // For custom sections, reset text to the section's own title
+                const customSection = (cvData.customSections || []).find(s => s.id === sectionId);
+                cvData.sectionLabels[sectionId].text = SECTION_LABEL_DEFAULTS[sectionId] || (customSection ? customSection.title || '' : '');
+                cvData.sectionLabels[sectionId].visible = true;
+            }
+            renderSectionLabelPanel(sectionId);
+            postToFrame();
+        }
+
         function getSelectedTemplateFile() {
-            return document.getElementById('template-select')?.value || 'classic-blue.html';
+            return document.getElementById('template-select')?.value || 'classic.html';
         }
 
         function syncCurrentTemplateName() {
@@ -1267,7 +1441,8 @@
             normalizeSectionOrder();
 
             const select = document.getElementById('template-select');
-            const targetTemplate = state.templateFile || 'classic-blue.html';
+            const rawTemplate = state.templateFile || 'classic.html';
+            const targetTemplate = window.resolveTemplateFile ? window.resolveTemplateFile(rawTemplate) : rawTemplate;
             if (select) select.value = targetTemplate;
             syncCurrentTemplateName();
 
@@ -1471,6 +1646,7 @@
                         <div class="action-btn delete" onclick="removeListItem('${key}', ${index})">×</div>
                     </div>
                     <div class="form-group" style="margin-bottom:0">
+                        <label>Key Points (Bullets)</label>
                         <textarea class="form-control" style="min-height:60px" data-rich-list-key="${key}" data-rich-list-index="${index}" oninput="updateListItem('${key}', ${index}, this.value)" placeholder="${placeholder}">${item || ''}</textarea>
                     </div>
                 `;
@@ -1528,7 +1704,7 @@
                     <div class="form-group">
                         <label>Degree / Exam</label>
                         <div class="chip-container" style="margin-bottom:6px">
-                            ${CA_DEGREES.map(d => `<span class="chip" style="font-size:10px; padding:2px 8px;" onclick="updateEdu(${index}, 'degree', '${d}')">${d}</span>`).join('')}
+                            ${CA_DEGREES.map(d => `<span class="chip" onclick="updateEdu(${index}, 'degree', '${d}')">${d}</span>`).join('')}
                         </div>
                         <input class="form-control" value="${edu.degree || ''}" oninput="updateEdu(${index}, 'degree', this.value)" placeholder="e.g. CA Intermediate">
                     </div>
@@ -1619,7 +1795,7 @@
                             </button>
                         </div>
                         <div class="chip-container" style="margin-bottom:6px">
-                            ${AUDIT_VERBS.map(v => `<span class="chip" style="font-size:10px; padding:2px 8px;" onclick="appendBullet(${index}, '${v} ')">${v}</span>`).join('')}
+                            ${AUDIT_VERBS.map(v => `<span class="chip" onclick="appendBullet(${index}, '${v} ')">${v}</span>`).join('')}
                         </div>
                         <textarea id="exp-bullets-${index}" class="form-control" data-rich-exp-index="${index}" oninput="updateExp(${index}, 'bullets', this.value)" placeholder="Add bullet points with formatting">${bulletsToRichHTML(exp.bullets || [])}</textarea>
                     </div>
@@ -1985,6 +2161,7 @@
                                         <div class="action-btn delete" onclick="removeCustomSectionItem('${section.id}', ${index})">×</div>
                                     </div>
                                     <div class="form-group" style="margin-bottom:0">
+                                        <label>Key Points (Bullets)</label>
                                         <textarea class="form-control" style="min-height:60px" data-rich-custom-id="${section.id}" data-rich-custom-index="${index}"
                                             oninput="updateCustomSectionItem('${section.id}', ${index}, this.value)"
                                             placeholder="One bullet per line or short item">${item || ''}</textarea>
@@ -2102,18 +2279,28 @@
             if (!list) return;
 
             normalizeSectionOrder();
+            normalizeSectionGroups();
+            const groupingSupported = !!window.__sectionGroupingSupported;
+            const groupableInOrder = cvData.sectionOrder.filter(isGroupableSectionId);
             list.innerHTML = '';
             cvData.sectionOrder.forEach((sectionId, index) => {
                 const row = document.createElement('div');
                 row.className = 'reorder-item';
                 row.draggable = true;
                 row.setAttribute('data-section-id', sectionId);
+                const isGroupable = groupingSupported && isGroupableSectionId(sectionId);
+                const isGrouped = isGroupable && !!cvData.sectionGroups[sectionId];
+                const canGroup = isGroupable && groupableInOrder.indexOf(sectionId) > 0;
+                const groupBtn = isGroupable
+                    ? `<button class="reorder-group-btn${isGrouped ? ' active' : ''}" onclick="${isGrouped ? `ungroupSection('${sectionId}')` : `groupSectionWithPrevious('${sectionId}')`}" ${(!isGrouped && !canGroup) ? 'disabled' : ''} title="${isGrouped ? 'Ungroup — give this section its own heading' : (canGroup ? 'Group under the heading above' : 'No groupable section above')}">${isGrouped ? 'Ungroup' : 'Group'}</button>`
+                    : '';
                 row.innerHTML = `
                     <span class="reorder-item-handle">::</span>
-                    <span class="reorder-item-label">${getSectionLabel(sectionId)}</span>
+                    <span class="reorder-item-label">${getSectionLabel(sectionId)}${isGrouped ? '<span class="reorder-grouped-tag">grouped</span>' : ''}</span>
                     <span class="reorder-mini-actions">
                         <button class="reorder-mini-btn" onclick="moveSectionOrder(${index}, -1)" ${index > 0 ? '' : 'disabled'} title="Move Up">&#9650;</button>
                         <button class="reorder-mini-btn" onclick="moveSectionOrder(${index}, 1)" ${index < cvData.sectionOrder.length - 1 ? '' : 'disabled'} title="Move Down">&#9660;</button>
+                        ${groupBtn}
                     </span>
                 `;
 
@@ -2143,7 +2330,7 @@
             normalizeSectionOrder();
             document.querySelectorAll('.editor-content details[data-section]').forEach((details) => {
                 const sectionId = details.getAttribute('data-section');
-                if (!sectionId || sectionId === 'section-order') return;
+                if (!sectionId || sectionId === 'section-order' || sectionId === 'personal') return;
 
                 const summary = details.querySelector(':scope > summary');
                 if (!summary) return;
@@ -2167,8 +2354,8 @@
                 const canMoveDown = index >= 0 && index < cvData.sectionOrder.length - 1;
 
                 controls.innerHTML = `
-                    <button type="button" class="action-btn" onclick="event.stopPropagation(); moveSectionById('${sectionId}', -1)" ${canMoveUp ? '' : 'disabled'} title="Move Up">&#9650;</button>
-                    <button type="button" class="action-btn" onclick="event.stopPropagation(); moveSectionById('${sectionId}', 1)" ${canMoveDown ? '' : 'disabled'} title="Move Down">&#9660;</button>
+                    <button type="button" class="section-reorder-btn" onclick="event.stopPropagation(); moveSectionById('${sectionId}', -1)" ${canMoveUp ? '' : 'disabled'} title="Move Up">&#9650;</button>
+                    <button type="button" class="section-reorder-btn" onclick="event.stopPropagation(); moveSectionById('${sectionId}', 1)" ${canMoveDown ? '' : 'disabled'} title="Move Down">&#9660;</button>
                 `;
             });
         }
@@ -2255,22 +2442,18 @@
         }
 
         // Template Sidebar Logic
-        const TEMPLATES = [
-            { file: 'classic-blue.html', name: 'Classic Blue', accent: '#1e40af', style: 'sans' },
-            { file: 'modern-serif.html', name: 'Modern Serif', accent: '#4f81bc', style: 'serif' },
-            { file: 'grid-layout.html', name: 'Grid Layout', accent: '#059669', style: 'grid' },
-            { file: 'professional.html', name: 'Professional', accent: '#374151', style: 'clean' },
-            { file: 'corporate.html', name: 'Corporate', accent: '#0369a1', style: 'formal' },
-            { file: 'minimalist.html', name: 'Minimalist', accent: '#6b7280', style: 'minimal' },
-            { file: 'bold-modern.html', name: 'Bold Modern', accent: '#dc2626', style: 'bold' },
-            { file: 'classic-refined.html', name: 'Classic Refined', accent: '#2F557F', style: 'refined' },
-            { file: 'modern-deep-blue.html', name: 'Modern Deep Blue', accent: '#2c5d79', style: 'deepblue' },
-            { file: 'executive-dark.html', name: 'Executive Dark', accent: '#404040', style: 'dark' },
-            { file: 'navy-merit.html', name: 'Navy Merit', accent: '#0f2f63', style: 'merit' },
-            { file: 'monochrome-ledger.html', name: 'Monochrome Ledger', accent: '#111111', style: 'mono' },
-            { file: 'slate-split.html', name: 'Slate Split', accent: '#28535e', style: 'split' },
-            { file: 'blue-horizon-split.html', name: 'Blue Horizon Split', accent: '#1f385c', style: 'splitblue' }
-        ];
+        const TEMPLATES = window.CV_TEMPLATE_CATALOG || [];
+        const templateSelect = document.getElementById('template-select');
+        if (templateSelect && TEMPLATES.length) {
+            const rawTemplate = templateSelect.value || 'classic.html';
+            const currentTemplate = window.resolveTemplateFile ? window.resolveTemplateFile(rawTemplate) : rawTemplate;
+            templateSelect.innerHTML = TEMPLATES
+                .map(template => `<option value="${template.file}">${template.name}</option>`)
+                .join('');
+            templateSelect.value = TEMPLATES.some(template => template.file === currentTemplate)
+                ? currentTemplate
+                : TEMPLATES[0].file;
+        }
         const TEMPLATE_COLOR_PRESETS = ['#2b2b2b', '#0f6cbd', '#155e95', '#1f8f63', '#c0392b', '#7b4db3'];
 
         function normalizeHexColor(value) {
@@ -2478,6 +2661,10 @@
             if (!payload.personal) payload.personal = { name: "", tagline: "", contact: "", phone: "", email: "", linkedin: "", location: "", socialLinks: [] };
             if (!payload.personal.socialLinks) payload.personal.socialLinks = [];
             payload.themeAccent = normalizeHexColor(payload.themeAccent || cvData.themeAccent || '');
+            payload.themeFont = String(payload.themeFont || cvData.themeFont || '').trim();
+            payload.sectionTitles = cvData.sectionTitles || {};
+            payload.sectionGroups = cvData.sectionGroups || {};
+            payload.sectionLabels = cvData.sectionLabels || {};
             applyFormattedContact(payload);
             return payload;
         }
@@ -2519,6 +2706,7 @@
             if (!skipSave) saveLocal();
             if (!skipHistory) pushUndoStateFromCurrent();
             updateUndoRedoControls();
+            window.syncPreviewControls?.();
         }
 
         function changeTemplate(options = {}) {
@@ -2738,21 +2926,9 @@ async function downloadCvFile(format = 'pdf') {
             throw new Error(errMsg);
         }
 
-        // ── Step 4: Trigger the download ─────────────────────────────
-        // Convert the response to a blob (binary data), create a temporary
-        // URL for it, and simulate a link click to start the download.
+        // ── Step 4: Deliver to Flutter or the browser ────────────────
         const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-
-        // Cleanup: remove the invisible link and free the blob memory
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        await deliverDownloadedBlob(blob, filename);
 
         showToast(`${extension.toUpperCase()} downloaded!`);
     } catch (e) {
@@ -2764,12 +2940,52 @@ async function downloadCvFile(format = 'pdf') {
     }
 }
 
+function blobToBase64(blob) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            const result = String(reader.result || '');
+            const separator = result.indexOf(',');
+            if (separator < 0) {
+                reject(new Error('Could not encode the downloaded file.'));
+                return;
+            }
+            resolve(result.slice(separator + 1));
+        };
+        reader.onerror = () => reject(reader.error || new Error('Could not read the downloaded file.'));
+        reader.onabort = () => reject(new Error('Reading the downloaded file was cancelled.'));
+        reader.readAsDataURL(blob);
+    });
+}
+
+async function deliverDownloadedBlob(blob, filename) {
+    const nativeBridge = window.flutter_inappwebview;
+    if (nativeBridge && typeof nativeBridge.callHandler === 'function') {
+        const base64 = await blobToBase64(blob);
+        await nativeBridge.callHandler('blobToBase64Handler', base64, filename);
+        return;
+    }
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    try {
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+    } finally {
+        link.remove();
+        // Give the browser time to begin reading the blob before releasing it.
+        setTimeout(() => URL.revokeObjectURL(url), 60000);
+    }
+}
+
         // AI & Import Logic
         async function refineSection(fieldType, text, customPrompt = '') {
             const trimmed = (text || '').trim();
             if (!trimmed) throw new Error('Nothing to refine');
 
-            const templateFile = document.getElementById('template-select')?.value || 'classic-blue.html';
+            const templateFile = document.getElementById('template-select')?.value || 'classic.html';
             const templateId = 'template_' + templateFile.replace('cv', '').replace('-', '').replace('.html', '');
 
             const response = await fetch(`${WORKER_URL}/refine-section`, {
@@ -3720,7 +3936,7 @@ async function downloadCvFile(format = 'pdf') {
             // AI Review
             if (isMobile) {
                 steps.push({
-                    element: '.nav-tab[onclick="switchTab(\'reviewer\')"]',
+                    element: '.nav-tab[onclick*="reviewer"]',
                     popover: {
                         title: '🤖 AI Review',
                         description: 'Tap Review to get instant AI feedback and score!',
@@ -3729,20 +3945,23 @@ async function downloadCvFile(format = 'pdf') {
                     }
                 });
             } else {
-                steps.push({
-                    element: 'button[onclick="startReviewFromPreview()"]',
-                    popover: {
-                        title: '🤖 AI Review',
-                        description: 'Get instant AI feedback and suggestions to improve your resume.',
-                        side: 'bottom',
-                        align: 'center'
-                    }
-                });
+                const reviewEl = document.querySelector('button[onclick="startReviewFromPreview()"]');
+                if (reviewEl) {
+                    steps.push({
+                        element: 'button[onclick="startReviewFromPreview()"]',
+                        popover: {
+                            title: '🤖 AI Review',
+                            description: 'Get instant AI feedback and suggestions to improve your resume.',
+                            side: 'bottom',
+                            align: 'center'
+                        }
+                    });
+                }
             }
             
             // Download
             steps.push({
-                element: 'label.dropdown-trigger',
+                element: '.dropdown-trigger',
                 popover: {
                     title: '📥 Download',
                     description: 'Choose PDF or DOCX from this dropdown to export your CV.',
@@ -3750,6 +3969,9 @@ async function downloadCvFile(format = 'pdf') {
                     align: 'center'
                 }
             });
+
+            // Keep only steps where element exists in DOM
+            steps = steps.filter(s => !s.element || document.querySelector(s.element));
             
             const driverObj = window.driver.js.driver({
                 showProgress: true,

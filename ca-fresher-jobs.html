@@ -38,12 +38,12 @@
     <script>
       /* Capture uncaught JS errors + promise rejections and log them to Supabase (capped, de-duplicated) */
       (function () {
-        const supabaseUrl = "https://izsggdtdiacxdsjjncdq.supabase.co";
+        const supabaseUrl = "https://auth.mystudentclub.com";
         const supabaseKey =
           "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0";
         let errorClient = null;
         if (window.supabase) {
-          errorClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+          errorClient = window.supabase.createClient(supabaseUrl, supabaseKey, { auth: { storageKey: 'sb-izsggdtdiacxdsjjncdq-auth-token' } });
           window._mscSupabaseClient = errorClient;
         }
         const MAX_ERRORS = 15;
@@ -213,7 +213,7 @@
         </svg>
         <div class="header-greeting">
           <div class="greeting-sub" id="greetingText">Welcome!</div>
-          <div class="greeting-name" id="greetingName">User</div>
+          <div class="greeting-name" id="greetingName"><span>User</span><a href="/login.html" class="greeting-auth-badge" title="Login / Sign Up">Login/Signup</a></div>
         </div>
       </div>
       <div class="header-actions">
@@ -252,6 +252,7 @@
           id="notificationsBtn"
           class="hdr-icon-btn"
           aria-label="Notifications"
+          style="display: none;"
         >
           <svg
             viewBox="0 0 24 24"
@@ -266,6 +267,7 @@
           </svg>
           <span class="notif-dot" id="notifDot"></span>
         </button>
+        <div class="auth-buttons-container" id="headerAuthContainer"></div>
         <button id="menuButton" class="hdr-icon-btn" aria-label="Menu">
           <svg
             viewBox="0 0 24 24"
@@ -1158,7 +1160,6 @@
                     type="date"
                     id="articleship_1yr_end_date"
                     class="form-input-custom"
-                    required
                   />
                 </div>
               </div>

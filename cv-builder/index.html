@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>My Student Club CV Builder</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,7 +19,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css" />
     <script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css">
-    <link rel="stylesheet" href="cv-styles.css">
+    <link rel="stylesheet" href="cv-styles.css?v=20260912_5">
+    <link rel="stylesheet" href="cv-preview.css?v=20260912_1">
     <!-- Old image-based PDF libs (replaced by Cloudflare Worker + Puppeteer for ATS-friendly PDFs) -->
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script> -->
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
@@ -59,10 +60,10 @@
             <div class="brand-row">
                 <a class="app-logo" href="/" title="Go to My Student Club">
                     <img src="/assets/logo.png" alt="My Student Club logo">
-                    <span class="beta-badge">Beta</span>
+                    <span class="beta-badge">BETA</span>
                 </a>
                 <div class="hdr-actions">
-                    <button class="hdr-icon-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle light / dark" aria-label="Toggle theme">
+                    <button class="hdr-icon-btn btn-theme-toggle" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle light / dark" aria-label="Toggle theme">
                         <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="5"></circle>
                             <path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"></path>
@@ -71,83 +72,74 @@
                             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                         </svg>
                     </button>
-                    <button class="hdr-icon-btn" onclick="startTour()" title="Take a quick tour" aria-label="Help">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <button class="hdr-icon-btn btn-hdr-help" onclick="startTour()" title="Take a quick tour" aria-label="Help">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
                             <circle cx="12" cy="12" r="10"></circle>
                             <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                            <circle cx="12" cy="17" r="0.5" fill="currentColor"></circle>
+                            <circle cx="12" cy="17" r="0.6" fill="currentColor"></circle>
                         </svg>
                     </button>
-                    <button class="btn-icon btn-magic" onclick="generateAI()" title="Auto-improve with AI">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <path
-                                d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z">
-                            </path>
+                    <button class="btn-icon btn-magic btn-hdr-enhance" onclick="generateAI()" title="Auto-improve with AI">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                         </svg>
-                        AI Enhance
+                        <span>AI Enhance</span>
                     </button>
                 </div>
             </div>
 
-            <div class="action-bar">
-                <button class="btn-icon" onclick="startReviewFromPreview()"
-                    style="color: var(--primary); border-color: var(--primary-light); background: #f0f9ff;">
-                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path
-                            d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
-                        </path>
-                    </svg>
-                    AI Review
-                </button>
-                <button class="btn-icon dropdown-trigger" aria-label="Download" onclick="toggleDownloadMenu(event, this)">
-                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+            <div class="action-bar" aria-label="CV Actions">
+                <button type="button" class="btn-icon action-btn-download dropdown-trigger" aria-label="Download" onclick="toggleDownloadMenu(event, this)" title="Download CV">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 3v12"></path>
                         <path d="M7 10l5 5 5-5"></path>
                         <path d="M5 21h14"></path>
                     </svg>
-                    Download
+                    <span>Download</span>
                 </button>
-                <button class="btn-icon" onclick="document.getElementById('file-upload').click()">
-                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <button type="button" class="btn-icon action-btn-import" onclick="document.getElementById('file-upload').click()" title="Import CV">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                         <circle cx="8.5" cy="8.5" r="1.5"></circle>
                         <polyline points="21 15 16 10 5 21"></polyline>
                     </svg>
-                    Import
+                    <span>Import</span>
                 </button>
-                <button class="btn-icon btn-primary" onclick="manualSave()">
-                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <button type="button" class="btn-icon btn-primary action-btn-save" onclick="manualSave()" title="Save CV">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M5 5v14a1 1 0 0 0 1 1h12"></path>
                         <path d="M5 5h11l3 3v12a1 1 0 0 1-1 1H6"></path>
                         <path d="M9 9h6v4H9z"></path>
                     </svg>
-                    Save
+                    <span>Save</span>
                 </button>
-                <button class="btn-icon" style="color: #ef4444; border-color: #fecaca; margin-left: auto;"
-                    onclick="resetData()">
-                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <button type="button" class="btn-icon action-btn-reset" onclick="resetData()" title="Reset CV data">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="3 6 5 6 21 6"></polyline>
                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                     </svg>
-                    Reset
+                    <span>Reset</span>
                 </button>
-
             </div>
 
             <input type="file" id="file-upload" accept="image/*,application/pdf" style="display:none"
                 onchange="handleImageUpload(this)">
 
-            <div class="progress-head">
-                <span>Completion</span>
-                <span id="progress-percent">0%</span>
-            </div>
-            <div class="progress-track" title="Completion">
-                <div class="progress-fill" id="progress-fill" style="width: 10%"></div>
+            <div class="progress-section">
+                <div class="progress-head">
+                    <span class="progress-title">COMPLETION</span>
+                    <div class="progress-meta">
+                        <span id="autosave-indicator" role="status" aria-live="polite"></span>
+                        <span id="progress-percent">0%</span>
+                    </div>
+                </div>
+                <div class="progress-track" title="Completion">
+                    <div class="progress-fill" id="progress-fill" style="width: 10%"></div>
+                </div>
             </div>
 
             <div class="history-strip" id="history-strip">
-                <div class="history-header">Your CV versions</div>
+                <div class="history-header">YOUR CV VERSIONS</div>
                 <div class="history-list" id="history-list">
                     <div class="history-empty">Snapshots will appear here as you edit.</div>
                 </div>
@@ -156,7 +148,7 @@
 
         <div class="editor-content">
 
-            <details open data-section="education">
+            <details open id="details-personal">
                 <summary>Personal Details</summary>
                 <div class="section-body">
                     <div class="form-group">
@@ -225,13 +217,12 @@
                 </div>
             </details>
 
-            <details open data-section="experience">
+            <details open data-section="education">
                 <summary>
-                    <span>Education</span>
-                    <button class="chip" onclick="prefillCAEducation(event)"
-                        style="font-size:10px; padding:4px 8px;">Auto-fill CA Path</button>
-                    <button class="chip" type="button" onclick="toggleEducationFormatPanel(event)"
-                        style="font-size:10px; padding:4px 8px;">Table format</button>
+                    <span class="summary-title">Education</span>
+                    <div class="summary-chips">
+                        <button class="summary-chip" type="button" onclick="toggleEducationFormatPanel(event)">Table format</button>
+                    </div>
                 </summary>
                 <div class="section-body">
                     <div id="education-format-panel-wrap" class="table-format-panel-wrap" aria-hidden="true">
@@ -256,7 +247,7 @@
                 </div>
             </details>
 
-            <details open>
+            <details open data-section="experience">
                 <summary>Experience / Articleship</summary>
                 <div class="section-body">
                     <div id="exp-container"></div>
@@ -439,10 +430,18 @@
         <div class="template-floater">
             <button class="floater-pill" onclick="toggleTemplateSidebar(true)">
                 <span class="template-label">Template</span>
-                <span id="current-template-name" style="font-size: 13px; font-weight: 600; color: var(--text-main);">Classic Blue</span>
+                <span id="current-template-name" style="font-size: 13px; font-weight: 600; color: var(--text-main);">Classic</span>
                 <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path d="M6 9l6 6 6-6" />
                 </svg>
+            </button>
+            <button class="floater-pill" onclick="openPreviewSheet('color')" aria-haspopup="dialog">
+                <span class="template-label">Color</span>
+                <span id="preview-color-name">Default</span>
+            </button>
+            <button class="floater-pill" onclick="openPreviewSheet('font')" aria-haspopup="dialog">
+                <span class="template-label">Font</span>
+                <span id="preview-font-name">Default</span>
             </button>
             <button class="floater-pill" onclick="toggleReorderDrawer(true)">
                 <span class="template-label">Layout</span>
@@ -479,27 +478,27 @@
 
         <!-- Hidden dropdown for legacy compatibility -->
         <select id="template-select" style="display: none;" onchange="changeTemplate()">
-            <option value="classic-blue.html">Classic Blue</option>
-            <option value="modern-serif.html">Modern Serif</option>
+            <option value="classic.html">Classic</option>
+            <option value="ledger-layout.html">Ledger Layout</option>
+            <option value="structured-grid.html">Structured Grid</option>
             <option value="grid-layout.html">Grid Layout</option>
             <option value="professional.html">Professional</option>
             <option value="corporate.html">Corporate</option>
             <option value="minimalist.html">Minimalist</option>
             <option value="bold-modern.html">Bold Modern</option>
-            <option value="classic-refined.html">Classic Refined</option>
-            <option value="modern-deep-blue.html">Modern Deep Blue</option>
-            <option value="executive-dark.html">Executive Dark</option>
-            <option value="navy-merit.html">Navy Merit</option>
-            <option value="monochrome-ledger.html">Monochrome Ledger</option>
-            <option value="slate-split.html">Slate Split</option>
-            <option value="blue-horizon-split.html">Blue Horizon Split</option>
         </select>
 
         <div class="preview-wrapper">
-            <iframe id="cv-frame" src="classic-blue.html"></iframe>
+            <iframe id="cv-frame" src="classic.html"></iframe>
             <div id="ai-spinner" class="loading-overlay">
                 <div class="spinner"></div>
             </div>
+            <button type="button" class="preview-enlarge-btn" onclick="openEnlargedPreview()" aria-label="Enlarge CV">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"></path>
+                </svg>
+                <span>Enlarge</span>
+            </button>
         </div>
         <div id="ai-prompt-overlay" class="ai-prompt-overlay" aria-hidden="true" onclick="handleAiPromptOverlayClick(event)">
             <div class="ai-prompt-card" role="dialog" aria-modal="true" aria-labelledby="ai-prompt-title" onclick="event.stopPropagation()">
@@ -540,20 +539,28 @@
                 </div>
             </div>
         </div>
-        <div class="mobile-history-controls">
-            <button class="mobile-history-btn" data-undo-control onclick="undoChange()" title="Undo (Ctrl+Z)">
-                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M3 10h10a4 4 0 1 1 0 8h-1"></path>
-                    <path d="M3 10l3-3"></path>
-                    <path d="M3 10l3 3"></path>
-                </svg>
-            </button>
-            <button class="mobile-history-btn" data-redo-control onclick="redoChange()" title="Redo (Ctrl+Y)">
-                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M21 10H11a4 4 0 1 0 0 8h1"></path>
-                    <path d="M21 10l-3-3"></path>
-                    <path d="M21 10l-3 3"></path>
-                </svg>
+        <div class="cv-preview-actions">
+            <div class="mobile-history-controls">
+                <button class="mobile-history-btn" data-undo-control onclick="undoChange()" title="Undo (Ctrl+Z)">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M3 10h10a4 4 0 1 1 0 8h-1"></path>
+                        <path d="M3 10l3-3"></path>
+                        <path d="M3 10l3 3"></path>
+                    </svg>
+                    <span>Undo</span>
+                </button>
+                <button class="mobile-history-btn" data-redo-control onclick="redoChange()" title="Redo (Ctrl+Y)">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M21 10H11a4 4 0 1 0 0 8h1"></path>
+                        <path d="M21 10l-3-3"></path>
+                        <path d="M21 10l-3 3"></path>
+                    </svg>
+                    <span>Redo</span>
+                </button>
+            </div>
+            <button type="button" class="mobile-download-fab" onclick="openPreviewSheet('download')" aria-haspopup="dialog">
+                <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v4h14v-4"/></svg>
+                <span>Download CV</span>
             </button>
         </div>
 
@@ -748,7 +755,7 @@
             </svg>
             <span>Edit</span>
         </div>
-        <div class="nav-tab" onclick="switchTab('reviewer')" style="color:var(--primary);">
+        <div class="nav-tab" onclick="switchTab('reviewer')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <path
                     d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
@@ -1322,6 +1329,49 @@
             <!-- Cards injected by JS -->
         </div>
     </div>
+    <dialog id="preview-sheet" class="preview-sheet" aria-labelledby="preview-sheet-title">
+        <div class="preview-sheet-handle" aria-hidden="true"></div>
+        <div class="preview-sheet-heading">
+            <div class="preview-sheet-title-group">
+                <h2 id="preview-sheet-title">Customize your CV</h2>
+                <p id="preview-sheet-subtitle" class="preview-sheet-subtitle" style="display: none;"></p>
+            </div>
+            <div class="preview-sheet-actions">
+                <button type="button" id="preview-sheet-reset-btn" class="preview-sheet-reset-btn" style="display: none;">Default</button>
+                <button type="button" class="preview-sheet-close" onclick="closePreviewSheet()" aria-label="Close preview options">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+                </button>
+            </div>
+        </div>
+        <div id="preview-sheet-content"></div>
+    </dialog>
+    <dialog id="cv-zoom-viewer" class="cv-zoom-viewer" aria-labelledby="cv-zoom-title">
+        <div class="cv-zoom-shell">
+            <header class="cv-zoom-header">
+                <div>
+                    <span class="cv-zoom-eyebrow">Pinch to zoom · drag to move</span>
+                    <h2 id="cv-zoom-title">Enlarged view</h2>
+                </div>
+                <button type="button" class="cv-zoom-close" onclick="closeEnlargedPreview()" aria-label="Close enlarged preview">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+                </button>
+            </header>
+            <div id="cv-zoom-scroll" class="cv-zoom-scroll" tabindex="0" aria-label="Scrollable enlarged CV">
+                <div id="cv-zoom-stage" class="cv-zoom-stage" data-scale="0.75">
+                    <iframe id="cv-zoom-frame" title="Enlarged CV preview"></iframe>
+                </div>
+            </div>
+            <div class="cv-zoom-controls" aria-label="Zoom controls">
+                <button type="button" onclick="adjustPreviewZoom(-0.25)" aria-label="Zoom out">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14"/></svg>
+                </button>
+                <button type="button" id="cv-zoom-percent" onclick="resetPreviewZoom()" aria-label="Reset zoom">75%</button>
+                <button type="button" onclick="adjustPreviewZoom(0.25)" aria-label="Zoom in">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                </button>
+            </div>
+        </div>
+    </dialog>
 </body>
 <script>
     // Airy Flow theme toggle — persists to localStorage 'msc-theme' (shared across portal)
@@ -1333,6 +1383,9 @@
     }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
-<script src="cv-script.js"></script>
+<script src="cv-template-catalog.js?v=20260912_1"></script>
+<script src="cv-script.js?v=20260912_7"></script>
+<script src="cv-preview-zoom.js?v=20260912_1"></script>
+<script src="cv-preview.js?v=20260912_2"></script>
 
 </html>

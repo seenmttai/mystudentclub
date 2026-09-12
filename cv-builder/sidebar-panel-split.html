@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Sidebar Panel Split CV</title>
+<style>
+/* ═══════════════════════════════════════════════════════════
+   DESIGN SYSTEM & ENGINE TOKENS — Sidebar Panel Split
+   Page: A4 (1000 px base viewer width × 1413.94 px height)
+   Scaling Engine:
+     - --cs (content-scale factor): shrinkContentToFit() dynamically
+       adjusts --cs so all content fits strictly within 1413.94 px (A4 1-page limit).
+     - scaleToFit(): viewport responsive scaling using transform: scale().
+ ═══════════════════════════════════════════════════════════ */
+
+:root {
+  --steel-blue:    var(--accent-color, #004B87);   /* Accent for Section Titles */
+  --sidebar-bg:    color-mix(in srgb, var(--accent-color, #004B87) 12%, #FFFFFF);   /* Dynamic Soft Sidebar Panel Fill */
+  --tag-bg:        #FFFFFF;   /* Pure White Pill Tag Chips */
+  --text-dark:     #111111;   /* Primary Headings & Bold Text */
+  --text-body:     #333333;   /* Body Paragraphs & Bullet Points */
+  --text-muted:    #555555;   /* Secondary Muted Text */
+  --link-blue:     var(--accent-color, #004B87);   /* Dynamic Link Blue */
+  --page-bg:       #FFFFFF;   /* White A4 Sheet */
+  --viewer-bg:     #525659;   /* Outer Canvas Background */
+  --font-main:     Arial, 'Segoe UI', sans-serif;
+  --cs:            1.0;       /* Content scale variable adjusted by shrinkContentToFit() */
+}
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+body {
+  background: var(--viewer-bg);
+  font-family: var(--font-main);
+  color: var(--text-dark);
+  min-height: 100vh;
+  width: 100vw;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.2s ease-in;
+}
+
+.template { display: none !important; }
+
+/* ── Viewer Centering Wrapper ── */
+#zoom-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 24px 0 32px;
+}
+
+/* ── A4 Page Card Container ── */
+#cv-page {
+  position: relative;
+  width: 1000px;
+  min-height: 1413.94px;
+  background: var(--page-bg);
+  color: var(--text-dark);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+  flex-shrink: 0;
+  transform-origin: top center;
+  font-size: calc(14px * var(--cs));
+  line-height: 1.34;
+  display: flex;
+}
+
+/* ── 2-Column Split Layout ── */
+.left-panel {
+  width: 36%;
+  background-color: var(--sidebar-bg);
+  padding: calc(16px * var(--cs)) calc(14px * var(--cs));
+  box-sizing: border-box;
+  border-radius: calc(12px * var(--cs));
+  margin: calc(20px * var(--cs)) 0 calc(20px * var(--cs)) calc(20px * var(--cs));
+}
+
+.right-panel {
+  width: 64%;
+  background-color: var(--page-bg);
+  padding: calc(36px * var(--cs)) calc(24px * var(--cs)) calc(20px * var(--cs)) calc(24px * var(--cs));
+  box-sizing: border-box;
+}
+
+/* Section Title Underlined Accent */
+.section-title {
+  font-size: calc(15.5px * var(--cs));
+  font-weight: 700;
+  color: var(--steel-blue);
+  text-transform: uppercase;
+  border-bottom: calc(1.8px * var(--cs)) solid #000000;
+  padding-bottom: calc(3px * var(--cs));
+  margin-top: calc(14px * var(--cs));
+  margin-bottom: calc(10px * var(--cs));
+  letter-spacing: 0.3px;
+}
+
+.left-panel .section-title:first-child,
+.right-panel .section-title:first-child {
+  margin-top: 0;
+}
+
+/* Left Panel Education Blocks */
+.edu-block {
+  margin-bottom: calc(8px * var(--cs));
+}
+
+.edu-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: calc(1px * var(--cs));
+}
+
+.edu-title {
+  font-size: calc(14.8px * var(--cs));
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.edu-date {
+  font-size: calc(12px * var(--cs));
+  color: var(--text-muted);
+}
+
+.edu-inst-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: calc(13.2px * var(--cs));
+  color: var(--text-muted);
+  margin-bottom: calc(1px * var(--cs));
+}
+
+.edu-score {
+  font-size: calc(13.2px * var(--cs));
+  color: var(--text-body);
+}
+
+/* Skill Tags */
+.skill-category {
+  font-size: calc(14.2px * var(--cs));
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-top: calc(8px * var(--cs));
+  margin-bottom: calc(6px * var(--cs));
+}
+
+.tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(6px * var(--cs));
+  margin-bottom: calc(8px * var(--cs));
+}
+
+.tag-chip {
+  background-color: #FFFFFF;
+  color: var(--steel-blue);
+  font-size: calc(13px * var(--cs));
+  padding: calc(4px * var(--cs)) calc(10px * var(--cs));
+  border-radius: calc(4px * var(--cs));
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+}
+
+.skills-block {
+  font-size: calc(13px * var(--cs));
+  line-height: 1.38;
+  color: var(--text-body);
+  margin-bottom: calc(10px * var(--cs));
+}
+
+/* Right Panel Candidate Header */
+.candidate-name {
+  font-size: calc(36px * var(--cs));
+  font-weight: 700;
+  color: #000000;
+  line-height: 1.1;
+  margin-bottom: calc(10px * var(--cs));
+}
+
+.candidate-name [data-field="name"] {
+  font-size: calc(36px * var(--cs));
+  font-weight: 700;
+  color: #000000;
+}
+
+.candidate-name [data-field="tagline"] {
+  font-weight: 400;
+  color: #62666A;
+  font-size: calc(20px * var(--cs));
+}
+
+.summary-paragraph {
+  font-size: calc(12.8px * var(--cs));
+  line-height: 1.38;
+  color: var(--text-body);
+  text-align: justify;
+  margin-bottom: calc(10px * var(--cs));
+}
+
+.contact-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(14px * var(--cs));
+  font-size: calc(12.5px * var(--cs));
+  color: var(--text-dark);
+  margin-bottom: calc(14px * var(--cs));
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: calc(4px * var(--cs));
+}
+
+.contact-item a {
+  color: var(--text-dark);
+  text-decoration: none;
+}
+
+/* Experience Block */
+.exp-block {
+  margin-bottom: calc(10px * var(--cs));
+}
+
+.exp-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: calc(1px * var(--cs));
+}
+
+.exp-title {
+  font-size: calc(15.5px * var(--cs));
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.exp-date {
+  font-size: calc(12px * var(--cs));
+  color: var(--text-muted);
+}
+
+.exp-company-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: calc(12.5px * var(--cs));
+  color: var(--text-muted);
+  margin-bottom: calc(6px * var(--cs));
+}
+
+.company-desc {
+  font-size: calc(12px * var(--cs));
+  font-style: italic;
+  color: var(--text-body);
+  margin-bottom: calc(6px * var(--cs));
+}
+
+.subgroup-title {
+  font-size: calc(14px * var(--cs));
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-top: calc(6px * var(--cs));
+  margin-bottom: calc(4px * var(--cs));
+}
+
+.bullet-list {
+  list-style-type: disc;
+  padding-left: calc(16px * var(--cs));
+  font-size: calc(12.5px * var(--cs));
+  line-height: 1.36;
+  color: var(--text-body);
+  margin-bottom: calc(6px * var(--cs));
+}
+
+.bullet-list li {
+  margin-bottom: calc(3px * var(--cs));
+  text-align: justify;
+}
+
+.bullet-list li:last-child {
+  margin-bottom: 0;
+}
+
+/* ── Print Styles (A4 Page Output) ── */
+@media print {
+  html, body {
+    background: none !important;
+    margin: 0;
+    padding: 0;
+  }
+  #zoom-wrapper {
+    padding: 0;
+  }
+  #cv-page {
+    transform: scale(1) !important;
+    margin: 0 !important;
+    width: 210mm;
+    min-height: 297mm;
+    box-shadow: none;
+  }
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+}
+</style>
+</head>
+<body>
+<div id="zoom-wrapper">
+<div id="cv-page">
+
+  <!-- ══ LEFT SIDEBAR PANEL ══════════════════════════════════════ -->
+  <div class="left-panel">
+
+    <div class="sortable-section" data-section-id="education">
+      <div class="section-title">EDUCATION</div>
+      <div id="education-list">
+        <div class="edu-block template">
+          <div class="edu-header-row">
+            <span class="edu-title" data-field="degree"></span>
+            <span class="edu-date" data-field="year"></span>
+          </div>
+          <div data-field="institution-header">
+            <div class="edu-inst-row">
+              <span data-field="institution"></span>
+            </div>
+          </div>
+          <div class="edu-score">
+            <span data-field="marks"></span>
+            <span data-field="remarks"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sortable-section" data-section-id="certifications">
+      <div class="section-title">AWARDS AND CERTIFICATIONS</div>
+      <ul class="bullet-list" id="cert-list" data-list="certifications"></ul>
+    </div>
+
+    <div class="sortable-section" data-section-id="skills">
+      <div class="section-title">SKILLS</div>
+      <div class="skills-block" data-field="skills"></div>
+    </div>
+
+  </div><!-- .left-panel -->
+
+  <!-- ══ RIGHT MAIN CONTENT PANEL ════════════════════════════════ -->
+  <div class="right-panel" data-section-append-host>
+
+    <h1 class="candidate-name"><span data-field="name">Padam Jain</span> <span data-field="tagline">| Chartered Accountant</span></h1>
+
+    <div class="sortable-section" data-section-id="summary">
+      <p class="summary-paragraph" data-field="summary"></p>
+    </div>
+
+    <div class="contact-row contact-block" data-field="contact">
+      <div class="contact-item" data-field="phone-wrap">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="#222222" style="display:inline-block; vertical-align:-2px; margin-right:3px;"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+        <span class="contact-value" data-field="phone">+91 7228881172</span>
+      </div>
+      <div class="contact-item" data-field="email-wrap">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#222222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-1px; margin-right:3px;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+        <a href="mailto:capadambhansali@gmail.com" class="contact-value" data-field="email">capadambhansali@gmail.com</a>
+      </div>
+      <div class="contact-item" data-field="linkedin-wrap">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="#222222" style="display:inline-block; vertical-align:-2px; margin-right:3px;"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+        <a href="https://linkedin.com" target="_blank" rel="noopener" class="contact-value" data-field="linkedin">LinkedIn</a>
+      </div>
+      <div class="contact-item" data-field="location-wrap">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="#555555" style="display:inline-block; vertical-align:-2px; margin-right:3px;"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5-2.5-1.12 2.5-2.5 2.5z"/></svg>
+        <span class="contact-value" data-field="location">Chhatrapati Sambhajinagar</span>
+      </div>
+    </div>
+
+    <div class="sortable-section" data-section-id="experience">
+      <div class="section-title">EXPERIENCE</div>
+      <div id="experience-list">
+        <div class="exp-block template">
+          <div class="exp-header-row">
+            <span class="exp-title" data-field="role"></span>
+            <span class="exp-date" data-field="dates"></span>
+          </div>
+          <div class="exp-company-row">
+            <span data-field="company"></span>
+          </div>
+          <div class="company-desc" data-field="intro"></div>
+          <div class="company-desc" data-field="category"></div>
+          <ul class="bullet-list" data-list="bullets"></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="sortable-section" data-section-id="projects">
+      <div class="section-title">PROJECTS</div>
+      <div id="projects-list">
+        <div class="exp-block template">
+          <div class="exp-header-row">
+            <span class="exp-title" data-field="title"></span>
+          </div>
+          <div class="company-desc" data-field="description"></div>
+          <ul class="bullet-list" data-list="bullets"></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="sortable-section" data-section-id="achievements">
+      <div class="section-title">CO-CURRICULAR ACTIVITIES</div>
+      <ul class="bullet-list" data-list="achievements"></ul>
+    </div>
+
+    <div class="sortable-section" data-section-id="leadership">
+      <div class="section-title">LEADERSHIP</div>
+      <ul class="bullet-list" data-list="leadership"></ul>
+    </div>
+
+    <div class="sortable-section" data-section-id="interests">
+      <div class="section-title">INTERESTS</div>
+      <ul class="bullet-list" data-list="interests"></ul>
+    </div>
+
+  </div><!-- .right-panel -->
+
+</div><!-- #cv-page -->
+</div><!-- #zoom-wrapper -->
+
+<!-- ══ SCRIPT ENGINE ════════════════════════════════════════════ -->
+<script src="cv-common.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var PAGE_H = 1413.94; /* A4 page height limit in px */
+  var PAGE_W = 1000;    /* A4 viewer width in px */
+
+  function scaleToFit() {
+    var page = document.getElementById('cv-page');
+    if (!page || document.body.classList.contains('print-mode')) return;
+    var avail = window.innerWidth - 20;
+    var scale = avail < PAGE_W ? avail / PAGE_W : 1.0;
+    page.style.transform = 'scale(' + scale + ')';
+    page.style.marginBottom = '-' + (PAGE_H - PAGE_H * scale) + 'px';
+  }
+
+  function shrinkContentToFit() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    var cs = 1.0;
+    document.documentElement.style.setProperty('--cs', cs);
+    page.style.height = 'auto';
+    var iter = 0;
+    while (page.scrollHeight > PAGE_H + 1 && iter < 80) {
+      cs = Math.round((cs - 0.01) * 1000) / 1000;
+      document.documentElement.style.setProperty('--cs', cs);
+      iter++;
+    }
+    page.style.height = '';
+  }
+
+  window.scaleToFit = scaleToFit;
+  window.shrinkContentToFit = shrinkContentToFit;
+
+  var _tx = '', _mb = '';
+
+  function enablePrintMode() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    _tx = page.style.transform;
+    _mb = page.style.marginBottom;
+    document.body.classList.add('print-mode');
+    page.style.transform = 'scale(1)';
+    page.style.marginBottom = '0';
+    shrinkContentToFit();
+  }
+
+  function disablePrintMode() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    document.body.classList.remove('print-mode');
+    page.style.transform = _tx || '';
+    page.style.marginBottom = _mb || '';
+    scaleToFit();
+  }
+
+  window.addEventListener('load', function () {
+    shrinkContentToFit();
+    scaleToFit();
+    document.body.style.opacity = '1';
+    var mq = window.matchMedia('print');
+    var handler = function (e) { e.matches ? enablePrintMode() : disablePrintMode(); };
+    if (mq.addEventListener) { mq.addEventListener('change', handler); }
+    else if (mq.addListener)  { mq.addListener(handler); }
+    window.addEventListener('beforeprint', enablePrintMode);
+    window.addEventListener('afterprint',  disablePrintMode);
+  });
+
+  var _rt;
+  window.addEventListener('resize', function () {
+    clearTimeout(_rt);
+    _rt = setTimeout(scaleToFit, 100);
+  });
+}());
+</script>
+</body>
+</html>
