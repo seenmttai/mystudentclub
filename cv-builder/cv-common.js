@@ -2347,7 +2347,7 @@ function getTemplateHeaderClass() {
 }
 
 function isClassicBlueTemplate() {
-    return /classic-blue\.html$/i.test(String(window.location.pathname || ''));
+    return /(^|\/)(classic|classic-blue)\.html$/i.test(String(window.location.pathname || ''));
 }
 
 function isClassicBlueDetailSectionKey(key) {
@@ -2426,6 +2426,7 @@ function getHeaderToggleTarget(header) {
 
 function templateSupportsSectionGrouping() {
     if (!document.querySelector('body[data-section-grouping]')) return false;
+    if (isClassicBlueTemplate()) return true;
     return GROUPABLE_SECTIONS.some(id => {
         const section = document.querySelector(`.sortable-section[data-section-id="${id}"]`);
         return !!(section && section.querySelector('.section-label'));

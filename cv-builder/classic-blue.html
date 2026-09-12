@@ -237,18 +237,26 @@
         }
 
         .bullet-list {
-            list-style-type: disc;
-            padding-left: calc(20px * var(--content-scale));
+            list-style-type: none !important;
+            padding-left: 0 !important;
             margin: 0;
         }
 
         .bullet-list li {
             margin-bottom: calc(3px * var(--content-scale));
-            line-height: 1.05;
+            line-height: 1.15;
+            position: relative;
+            padding-left: calc(15px * var(--content-scale));
+            text-align: justify !important;
         }
 
         .bullet-list li::before {
-            content: none;
+            content: "\2022";
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-size: calc(16px * var(--content-scale));
+            line-height: 1.15;
         }
 
         /* Skills rich text lists should match the same round marker style */
@@ -278,6 +286,26 @@
             vertical-align: top;
         }
 
+        .section-detail-table td.section-label {
+            background-color: #f2f2f2;
+            font-weight: 900;
+            width: 18%;
+            text-align: center;
+            vertical-align: middle;
+            line-height: 1.25;
+            padding: calc(6px * var(--content-scale));
+        }
+
+        .section-detail-table td.section-content {
+            text-align: left;
+            vertical-align: top;
+            padding: calc(6px * var(--content-scale));
+        }
+
+        .section-detail-table .bullet-list {
+            margin: 0;
+        }
+
         .no-top-border {
             border-top: none;
         }
@@ -289,6 +317,7 @@
             font-size: calc(16px * var(--content-scale));
             line-height: 1.2;
             text-align: left;
+            background-color: transparent !important;
         }
 
         .project-entry {
@@ -372,9 +401,15 @@
         }
     </style>
     </style>
+  <!-- Standard Favicon -->
+<!-- Fallback Shortcut Icon -->
+  <!-- Standard Favicon -->
+  <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
+  <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
+  <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
 </head>
 
-<body>
+<body data-section-grouping="enabled">
 
     <!-- WRAPPER FIX -->
     <div id="zoom-wrapper">
@@ -447,12 +482,13 @@
                 <div class="section-header">PROJECTS</div>
                 <div id="projects-list">
                     <div class="project-entry template">
-                        <div class="project-title-row" data-field="title"></div>
-                        <table class="work-table">
+                        <div class="project-title-row no-top-border">
+                            <span><span data-field="title"></span></span>
+                        </div>
+                        <table class="work-table" data-preserve-label-columns>
                             <tr>
-                                <td class="role-col">Description</td>
+                                <td class="role-col"><span data-field="description"></span></td>
                                 <td class="desc-col">
-                                    <div class="project-desc" data-field="description"></div>
                                     <ul class="bullet-list" data-list="bullets"></ul>
                                 </td>
                             </tr>
@@ -463,11 +499,11 @@
 
             <div class="sortable-section" data-section-id="skills">
                 <div class="section-header">SKILLS</div>
-                <table class="extra-table">
+                <table class="extra-table section-detail-table" data-preserve-label-columns>
                     <tbody>
                         <tr>
-                            <td class="category">Skills</td>
-                            <td class="details">
+                            <td class="section-label">Skills</td>
+                            <td class="section-content">
                                 <div data-field="skills"></div>
                             </td>
                         </tr>
@@ -477,11 +513,11 @@
 
             <div class="sortable-section" data-section-id="achievements">
                 <div class="section-header">ACHIEVEMENTS</div>
-                <table class="extra-table">
+                <table class="extra-table section-detail-table">
                     <tbody>
                         <tr>
-                            <td class="category">Achievements</td>
-                            <td class="details">
+                            <td class="section-label">Achievements</td>
+                            <td class="section-content">
                                 <ul class="bullet-list" data-list="achievements">
                                 </ul>
                             </td>
@@ -492,11 +528,11 @@
 
             <div class="sortable-section" data-section-id="certifications">
                 <div class="section-header">CERTIFICATIONS</div>
-                <table class="extra-table">
+                <table class="extra-table section-detail-table">
                     <tbody>
                         <tr>
-                            <td class="category">Certifications</td>
-                            <td class="details">
+                            <td class="section-label">Certifications</td>
+                            <td class="section-content">
                                 <ul class="bullet-list" data-list="certifications">
                                 </ul>
                             </td>
@@ -507,11 +543,11 @@
 
             <div class="sortable-section" data-section-id="interests">
                 <div class="section-header">INTERESTS</div>
-                <table class="extra-table">
+                <table class="extra-table section-detail-table">
                     <tbody>
                         <tr>
-                            <td class="category">Interests</td>
-                            <td class="details">
+                            <td class="section-label">Interests</td>
+                            <td class="section-content">
                                 <ul class="bullet-list" data-list="interests">
                                 </ul>
                             </td>
@@ -522,11 +558,11 @@
 
             <div class="sortable-section" data-section-id="leadership">
                 <div class="section-header">LEADERSHIP</div>
-                <table class="extra-table">
+                <table class="extra-table section-detail-table">
                     <tbody>
                         <tr>
-                            <td class="category">Leadership</td>
-                            <td class="details">
+                            <td class="section-label">Leadership</td>
+                            <td class="section-content">
                                 <ul class="bullet-list" data-list="leadership">
                                 </ul>
                             </td>
