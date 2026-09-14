@@ -401,10 +401,19 @@
                         <h2 class="resource-viewer-title" id="resource-viewer-title">Resource Preview</h2>
                         <p class="resource-viewer-subtitle" id="resource-viewer-subtitle"></p>
                     </div>
-                    <div>
-                        <button class="resource-viewer-fullscreen-button" id="viewer-fullscreen-btn"><i
+                    <div class="resource-viewer-header-actions">
+                        <div class="lms-zoom-controls" id="course-zoom-controls" style="display: none;">
+                            <button class="lms-zoom-btn" id="course-zoom-out" title="Zoom Out" aria-label="Zoom Out">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <span class="lms-zoom-level" id="course-zoom-level">100%</span>
+                            <button class="lms-zoom-btn" id="course-zoom-in" title="Zoom In" aria-label="Zoom In">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        <button class="resource-viewer-fullscreen-button" id="viewer-fullscreen-btn" title="Fullscreen"><i
                                 class="fas fa-expand"></i></button>
-                        <button class="resource-viewer-close-button" id="viewer-close-btn">×</button>
+                        <button class="resource-viewer-close-button" id="viewer-close-btn" title="Close">×</button>
                     </div>
                 </div>
                 <div class="viewer-main-content">
@@ -425,10 +434,12 @@
                     </div>
                 </div>
                 <div class="resource-viewer-controls">
-                    <button id="pdf-prev-page" class="viewer-nav-button">Previous</button>
-                    <span id="pdf-page-info"></span>
-                    <button id="viewer-download-btn" class="viewer-nav-button viewer-download-btn">Download</button>
-                    <button id="pdf-next-page" class="viewer-nav-button">Next</button>
+                    <div class="viewer-nav-group">
+                        <button id="pdf-prev-page" class="viewer-nav-button">Previous</button>
+                        <span id="pdf-page-info"></span>
+                        <button id="pdf-next-page" class="viewer-nav-button">Next</button>
+                    </div>
+                    <button id="viewer-download-btn" class="viewer-nav-button viewer-download-btn"><i class="fas fa-download"></i> Download</button>
                 </div>
             </div>
         </div>

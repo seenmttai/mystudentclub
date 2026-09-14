@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>My Resume</title>
+    <style>
+        /* ============================================================
+           Violet Sidebar — built from Resume_Template_34.html
+           (templates/Resume_Template_34.html is the pixel reference).
+           Source page: 596pt x 870pt. Converted at 1000px-wide-page
+           convention used across this builder: 1pt = 1000/596 = 1.677852px.
+           Two full-height columns: white profile column (left) +
+           violet sidebar column (right) holding Experience/Skills.
+           ============================================================ */
+        :root {
+            --purple: #464875;
+            --sidebar-color: #464875;
+            --dark: #000000;
+            --gray: #1a1a1a;
+            --midgray: #222222;
+            --white: #ffffff;
+            --page-bg: #ffffff;
+            --viewer-bg: #525659;
+            --font-main: "Microsoft Sans Serif", Arial, Helvetica, sans-serif;
+            --content-scale: 1.0;
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        body {
+            background-color: var(--viewer-bg);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            min-height: 100vh;
+            width: 100vw;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #zoom-wrapper {
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            padding: 24px 0;
+        }
+
+        /* Page grows with content (min-height only) so the shrink-to-fit
+           script can measure true overflow; the violet column stretches to
+           match whichever column is taller via default flex align-items. */
+        .page {
+            position: relative;
+            width: 1000px;
+            min-height: 1413.94px;
+            background: var(--page-bg);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, .55);
+            display: flex;
+            flex-shrink: 0;
+            transform-origin: top center;
+            color: var(--dark);
+            padding-left: 23.83px;
+            /* 14.2pt page inset for the left column */
+        }
+
+        .left-col {
+            flex: 0 0 534.90px;
+            /* 318.8pt */
+            width: 534.90px;
+            padding-right: 31.38px;
+            /* 18.7pt gutter to the violet column */
+            padding-bottom: calc(23.49px * var(--content-scale));
+        }
+
+        .right-col {
+            flex: 1 1 auto;
+            background: var(--sidebar-color, var(--purple, #464875));
+            color: var(--white);
+            padding: calc(21.81px * var(--content-scale)) 35.74px calc(23.49px * var(--content-scale)) 13.76px;
+            /* 13pt top / 21.3pt right / 14pt bottom / 8.2pt left */
+        }
+
+        /* ===== Header ===== */
+        .name {
+            margin: calc(21.81px * var(--content-scale)) 0 0 0;
+            font-size: calc(37.75px * var(--content-scale));
+            line-height: 1.05;
+            color: #000000;
+            font-weight: 700;
+            letter-spacing: calc(0.17px * var(--content-scale));
+        }
+
+        .subtitle {
+            margin: calc(3.36px * var(--content-scale)) 0 0 0;
+            font-size: calc(20.97px * var(--content-scale));
+            line-height: 1.15;
+            color: var(--sidebar-color, var(--purple, #464875));
+            font-weight: 600;
+        }
+
+        .contact-row {
+            margin-top: calc(16.78px * var(--content-scale));
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            column-gap: calc(20px * var(--content-scale));
+            row-gap: calc(6px * var(--content-scale));
+            font-size: calc(16.78px * var(--content-scale));
+            color: var(--midgray);
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: calc(6.71px * var(--content-scale));
+            white-space: nowrap;
+            max-width: 100%;
+            overflow-wrap: anywhere;
+        }
+
+        .contact-item img {
+            width: calc(13.42px * var(--content-scale));
+            height: calc(13.42px * var(--content-scale));
+            flex: 0 0 auto;
+            display: block;
+        }
+
+        .contact-item img.email-ic {
+            width: calc(14.60px * var(--content-scale));
+            height: calc(11.75px * var(--content-scale));
+        }
+
+        .contact-item a {
+            color: var(--midgray);
+            text-decoration: none;
+        }
+
+        /* ===== Section headers ===== */
+        .section {
+            margin-top: calc(18.46px * var(--content-scale));
+        }
+
+        .section-head {
+            display: block;
+        }
+
+        .section-title {
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: 700;
+            font-size: calc(20.97px * var(--content-scale));
+            letter-spacing: calc(-0.34px * var(--content-scale));
+            color: var(--sidebar-color, var(--purple, #464875));
+            margin: 0;
+        }
+
+        .right-col .section-title {
+            color: var(--white) !important;
+        }
+
+        .divider {
+            height: calc(1.26px * var(--content-scale));
+            background: #000000;
+            width: 100%;
+            margin: calc(5.03px * var(--content-scale)) 0 calc(10.07px * var(--content-scale)) 0;
+        }
+
+        .right-col .divider {
+            background: var(--white);
+        }
+
+        /* ===== Summary ===== */
+        .summary-text {
+            margin: 0;
+            font-size: calc(15.94px * var(--content-scale));
+            line-height: 1.32;
+            color: var(--gray);
+            text-align: justify;
+        }
+
+        /* ===== Education ===== */
+        .edu-entry {
+            margin-top: calc(13.42px * var(--content-scale));
+        }
+
+        .edu-entry:first-child {
+            margin-top: 0;
+        }
+
+        .edu-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: calc(6.71px * var(--content-scale));
+        }
+
+        .edu-title {
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: 700;
+            font-size: calc(17.62px * var(--content-scale));
+            color: var(--dark);
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .edu-date {
+            display: flex;
+            align-items: center;
+            gap: calc(5.03px * var(--content-scale));
+            font-size: calc(15.94px * var(--content-scale));
+            color: var(--dark);
+            white-space: nowrap;
+            flex: 0 0 auto;
+        }
+
+        .edu-date img {
+            width: calc(13.42px * var(--content-scale));
+            height: calc(14.77px * var(--content-scale));
+            flex: 0 0 auto;
+        }
+
+        .edu-institute {
+            margin-top: calc(3.36px * var(--content-scale));
+            font-size: calc(15.94px * var(--content-scale));
+            color: var(--dark);
+        }
+
+        .edu-remarks,
+        .edu-score {
+            margin-top: calc(2.52px * var(--content-scale));
+            font-size: calc(15.94px * var(--content-scale));
+            color: var(--gray);
+            line-height: 1.22;
+            display: flex;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: calc(4px * var(--content-scale));
+        }
+
+        .edu-remarks b,
+        .edu-score b {
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: 700;
+            color: var(--dark);
+            flex: 0 0 auto;
+            white-space: nowrap;
+        }
+
+        .edu-remarks span,
+        .edu-score span {
+            flex: 1 1 auto;
+            text-align: justify;
+            min-width: 120px;
+        }
+
+        /* ===== Certifications / Extra-curriculars (bulleted) ===== */
+        .bullet-list {
+            list-style: none;
+            margin: calc(8.39px * var(--content-scale)) 0 0 0;
+            padding: 0;
+        }
+
+        .bullet-list li {
+            position: relative;
+            padding-left: calc(18.46px * var(--content-scale));
+            font-size: calc(15.94px * var(--content-scale));
+            line-height: 1.3;
+            color: var(--gray);
+            margin-top: calc(3.36px * var(--content-scale));
+            text-align: justify;
+        }
+
+        .bullet-list li:first-child {
+            margin-top: 0;
+        }
+
+        .bullet-list li::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: .45em;
+            width: calc(6.71px * var(--content-scale));
+            height: calc(6.71px * var(--content-scale));
+            border-radius: 50%;
+            background: #212121;
+        }
+
+        /* ===== Experience (sidebar) ===== */
+        .exp-entry {
+            margin-top: calc(15.10px * var(--content-scale));
+        }
+
+        .exp-entry:first-child {
+            margin-top: 0;
+        }
+
+        .exp-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: calc(6.71px * var(--content-scale));
+        }
+
+        .exp-title {
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: 700;
+            font-size: calc(17.62px * var(--content-scale));
+            color: var(--white);
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .exp-date {
+            display: flex;
+            align-items: center;
+            gap: calc(5.03px * var(--content-scale));
+            font-size: calc(15.94px * var(--content-scale));
+            color: var(--white);
+            white-space: nowrap;
+            flex: 0 0 auto;
+        }
+
+        .exp-date img {
+            width: calc(13.42px * var(--content-scale));
+            height: calc(14.77px * var(--content-scale));
+            flex: 0 0 auto;
+            filter: brightness(0) invert(1);
+        }
+
+        .exp-company {
+            margin-top: calc(5.54px * var(--content-scale));
+            font-size: calc(15.94px * var(--content-scale));
+            color: var(--white);
+        }
+
+        .exp-bullets {
+            list-style: none;
+            margin: calc(7.13px * var(--content-scale)) 0 0 0;
+            padding: 0;
+        }
+
+        .exp-bullets li {
+            position: relative;
+            padding-left: calc(18.46px * var(--content-scale));
+            font-size: calc(15.94px * var(--content-scale));
+            line-height: 1.28;
+            color: var(--white);
+            margin-top: calc(5.03px * var(--content-scale));
+            text-align: justify;
+        }
+
+        .exp-bullets li:first-child {
+            margin-top: 0;
+        }
+
+        .exp-bullets li::before {
+            content: "";
+            position: absolute;
+            left: calc(1.68px * var(--content-scale));
+            top: .5em;
+            width: calc(5.5px * var(--content-scale));
+            /* Smaller bullet */
+            height: calc(5.5px * var(--content-scale));
+            /* Smaller bullet */
+            background: var(--white);
+            transform: translateY(-50%) rotate(45deg);
+        }
+
+        .subhead {
+            margin-top: calc(6px * var(--content-scale));
+            margin-bottom: calc(2px * var(--content-scale));
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: calc(6.71px * var(--content-scale));
+        }
+
+        .subhead-title {
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: 700;
+            font-size: calc(15px * var(--content-scale));
+            color: #ffffff;
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .subhead-dates {
+            font-size: calc(14px * var(--content-scale));
+            font-weight: 400;
+            color: #ffffff;
+            font-family: Arial, Helvetica, sans-serif;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: calc(4px * var(--content-scale));
+            flex: 0 0 auto;
+        }
+
+        .subhead-dates img {
+            width: calc(13px * var(--content-scale));
+            height: calc(14px * var(--content-scale));
+            flex: 0 0 auto;
+            filter: brightness(0) invert(1);
+        }
+
+        .exp-bullets b {
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: 700;
+        }
+
+        /* ===== Projects (sidebar) ===== */
+        .proj-entry {
+            margin-top: calc(15.10px * var(--content-scale));
+        }
+
+        .proj-entry:first-child {
+            margin-top: 0;
+        }
+
+        .proj-title {
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: 700;
+            font-size: calc(17.62px * var(--content-scale));
+            color: var(--white);
+        }
+
+        .proj-description {
+            margin-top: calc(3.36px * var(--content-scale));
+            font-size: calc(15.94px * var(--content-scale));
+            line-height: 1.28;
+            color: var(--white);
+            text-align: justify;
+        }
+
+        .proj-description:empty {
+            display: none;
+        }
+
+        /* ===== Skills ===== */
+        .skills-block {
+            margin-top: calc(13.42px * var(--content-scale));
+        }
+
+        [data-field="skills"] {
+            font-size: calc(15.94px * var(--content-scale));
+            line-height: 1.3;
+            color: var(--white);
+        }
+
+        [data-field="skills"] p {
+            margin: calc(10.07px * var(--content-scale)) 0 0 0;
+        }
+
+        [data-field="skills"] p:first-child {
+            margin-top: 0;
+        }
+
+        [data-field="skills"] b {
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: 700;
+            font-size: calc(17.62px * var(--content-scale));
+        }
+
+        [data-field="skills"] ul {
+            list-style: disc;
+            padding-left: calc(18px * var(--content-scale));
+            margin: calc(6px * var(--content-scale)) 0;
+        }
+
+        [data-field="skills"] li {
+            margin: calc(3px * var(--content-scale)) 0;
+        }
+
+        .template {
+            display: none !important;
+        }
+
+        [data-universal-section="leadership"][data-section-id="leadership"],
+        [data-universal-section="achievements"][data-section-id="achievements"] {
+            display: none !important;
+        }
+
+        /* ── PRINT (A4 exact, same convention as every other template) ── */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+
+            html,
+            body {
+                background: var(--page-bg);
+                width: 210mm;
+                height: 297mm;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+            }
+
+            #zoom-wrapper {
+                padding: 0;
+                display: block;
+                min-height: 0;
+                width: 100% !important;
+                height: auto !important;
+            }
+
+            .page {
+                box-shadow: none;
+                transform: none;
+                zoom: 0.79375;
+                margin: 0 auto;
+                position: static !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="zoom-wrapper">
+        <div class="page" id="cv-page">
+
+            <!-- LEFT COLUMN (white) -->
+            <div class="left-col" data-section-append-host>
+                <div class="name" data-field="name"></div>
+                <div class="subtitle" data-field="tagline"></div>
+
+                <div class="contact-row" id="contact-row">
+                    <div class="contact-item" id="ci-phone">
+                        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAVCAYAAACpF6WWAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAB9klEQVQ4ja3SP4jaUBwH8N/LIFou1v7hSIaDoyW6xKHkdPGgg285KoLIFeTAtUIXO3RxTl3VSkrbvYNTwUUoCqack20HcTGR4yajHiqaWnXJ6xS5ermDRr+Q5fdNPvnxeCiZTHZ7vd5TuBaEEBFF8UUwGKyAjVC6rj/cHBJCkKZpT+yAAAAUx3E/rQpCCLVzdKtNvV7vD6ui1Wo93zna7XafDYfDA1sowzCXbrd7tFnwPH/u8XiubKEAAJvnyvP8eTabPXE4HEvbqM/na26CLpfrtx1wjUajUYmm6QkAQCAQqGwDAgAAIQQIIVCtVs8wxiQSicw1TTs053ae9QUPh8NfQqHQ1+VyeS+fz38yDMP25f/nD+PxeD8ej19hjIkkSQW7m94Y1Ov1U4wxwRiTUqn09rYPV6uVczAYHFh1iBByY3tRFEuyLL8EAIjFYu9TqdQbiqIMs18sFnuZTKbSbrePOY775ff7v7Mse4EQMliWvbBE5/P5/Vwu99mEBUH4lk6nXzEMc3kdtDpOhBCxRM3IsnxaLBY/TKfTx06n808ikXjXbDZPbgPX8F0oAMBkMtkvFAofG41G7M4X/wc1U6vVziRJKuq6/mBnKADAaDRiy+Xy606nE1BVVZjNZo+2RjfT7/cPFUU5UhTlSFVVQVVVgabp8V9fKnPRfBka9gAAAABJRU5ErkJggg=="
+                            alt="">
+                        <span data-field="phone"></span>
+                    </div>
+                    <div class="contact-item" id="ci-email">
+                        <img class="email-ic"
+                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAASCAYAAABB7B6eAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAACG0lEQVQ4jWNctWpV8axZs3oYaADS0tJKGd3c3P7++/ePiRYWMDAwMLD8//+fkYGBgUFERORpfHx8naSk5D1KDHz+/LnSwoULm968eSPNwMDAwOjq6voPZgkrK+vP0NDQnsjIyDYODo5vpBj8/ft37hUrVlSuXr265Pfv3+wwcXjQqKionP/37x/zsmXLqpOSkm7u378/gljD9+3bF5mcnHxj2bJl1f/+/WNWUVE5j2GBj4/PjJkzZ+obGRntef36tUxbW9vy4uLig3fv3tXHZfCdO3cMioqKDrW3ty97/fq1jLGx8e5Zs2bp+fj4zMCwgIGBgUFeXv5aZ2ene319fbCEhMSDS5cu2WVlZZ2dNGnStE+fPgnB1H369El44sSJ07Ozs89evnzZVkJC4n59fX1QR0eHm5yc3HVkM+GRjAxsbGzWmZmZbVu5cmXZqlWryjdv3px54MCB8ISEhNr///8zLly4sOnz589CHBwc38LDwzvCwsK62djYfmDzJQsu77Oxsf2IjY1tcnd3nz9z5szeQ4cOhU6ePHkqTN7e3n5VWlpaiZiY2GNcZuC1AAbExMQe19bWhl28eNFh6tSpkxgZGf9nZWXl6evrHySklygLYEBfX//A9OnTDRkYGBiYmZn/EquPaAtINRgGaFZEDB8L4HHw5MkTtYsXLzpQw9AnT56owdiMLi4u/6lhKC7AlJqaWkYrw1NTU8sA7KjQKkqrV14AAAAASUVORK5CYII="
+                            alt="">
+                        <span data-field="email"></span>
+                    </div>
+                    <div class="contact-item" id="ci-linkedin">
+                        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAVCAYAAACpF6WWAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAB7ElEQVQ4jc3SMYsaQRQA4Dc7q4YlumQ3syTBlILVNinPFAemOLCQQBCbQ0h+gbBg59gllYWmSOE/EC6dcAsByyjKFm5hWpUcblQcQckmu5tqxAQPcnsXyKvevHnzzRsYNB6Pn1FKPzqOk4RbBiFkSinNo2KxOLkL8BAWD8FUKjXUdb3LGFNN0zwPgzqOkxQPwXq9nonFYjsAAFEU3W6n8yYMLPBE1/UuBwEAFEW5CgP+hjLGVJ57nodt2z4Ji+6fb5rmuSiKrqIoV7Ztn1iWdRoWRdlsNgh7+LrYTypJEjMMo8TXjUbj/XK5fFwoFN6l0+nPAAD9fv9MlmUnl8t9wBj/WCwWT1qt1tvhcJg9Oqksy9/a7TbhG6VS6ctsNktVq9WXmUzmAgBgPp8/1TRtcgi4rhur1WoXvV7vjNcEuEFomjaxLOt0MBi88DwPAwBEo9Hv5XL5Ncb4Zyi02+2+MgzjU6VSuWw2m01eV1X1qyRJLBS6Wq0e8Xw0Gj2/ru9G6N/GnaEIof3X/L8n/efo/vMjhIJEIrHgG5vN5oHv+1iSJBaJRFwAANd17+12u/sAAIIgePF4fMX7GWNqEAQIAEAkhEwdx0kGQYDW6/XDP2/dbreJY9P4vo+P9RNCpgKlNE8Imd72yRyklOZ/AeShwub/DLmXAAAAAElFTkSuQmCC"
+                            alt="">
+                        <a id="ci-linkedin-link" href="#" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+                    </div>
+                </div>
+
+                <!-- SUMMARY -->
+                <div class="section sortable-section" data-section-id="summary">
+                    <div class="section-head">
+                        <div class="section-title">SUMMARY</div>
+                        <div class="divider"></div>
+                    </div>
+                    <div class="summary-text" data-field="summary"></div>
+                </div>
+
+                <!-- EDUCATION -->
+                <div class="section sortable-section" data-section-id="education">
+                    <div class="section-head">
+                        <div class="section-title">EDUCATION</div>
+                        <div class="divider"></div>
+                    </div>
+                    <div id="education-list">
+                        <div class="edu-entry template">
+                            <div class="edu-row">
+                                <span class="edu-title" data-field="degree"></span>
+                                <span class="edu-date"><img
+                                        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAYCAYAAAAVibZIAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABTklEQVQ4jWP4//8/AwxPmTatQVNX979PQMBVZHFc2Ccg4Kqmru7/KdOmNSCLMzHQALA8ePBAbcGiRcX///9nvHrtmjEDAwPDm9evJesbG2cR0vzm9WtJBgYGhv0HDvi+evVKipGR8X9ifHwPo5Ob28Pnz5/LUcuVEuLiTxi19PT+/f//n5FahjIwMNAmTIeOoSwwRlhIyCwtLa2z5Bp07do141Vr1qQxMDAwMGjp6f3T1NX9v33nzlBiEjwuvH3nzlBNXd3/mrq6/1nQY/7Tp08Cj588UUZ3iZio6DNRUdHnJHkfBo6dOOFaVFKyCl08OzOzMTszs4EYQ4dO7A8dQzEiip+P772WpuY5dHFRUdFnZBtqaWGxZ83Klcakuw8Bhk6Y0jaiTpw44fLp0ydBcg26Bq2KGBgYGBg1dXX/U+oydMBUXlpaRE0DK8rKCgG+WcRirPLzkAAAAABJRU5ErkJggg=="
+                                        alt=""><span data-field="year"></span></span>
+                            </div>
+                            <div class="edu-institute" data-field="institution"></div>
+                            <div class="edu-remarks"><b>Remarks:</b> <span data-field="remarks"></span></div>
+                            <div class="edu-score"><b>Score:</b> <span data-field="marks"></span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CERTIFICATIONS (Achievements & Awards merged in, since both are
+                     credentials/recognitions and the source design has no separate
+                     Achievements section) -->
+                <div class="section sortable-section" data-section-id="certifications">
+                    <div class="section-head">
+                        <div class="section-title">CERTIFICATIONS</div>
+                        <div class="divider"></div>
+                    </div>
+                    <div class="section-body"><ul class="bullet-list" data-list="certifications"></ul></div>
+                </div>
+
+                <!-- EXTRA-CURRICULARS (Interests + Leadership merged into one list,
+                     matching the source design where these were one casual bullet list) -->
+                <div class="section sortable-section" data-section-id="interests">
+                    <div class="section-head">
+                        <div class="section-title">EXTRA-CURRICULARS</div>
+                        <div class="divider"></div>
+                    </div>
+                    <div class="section-body"><ul class="bullet-list" data-list="interests"></ul></div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN (violet sidebar) -->
+            <div class="right-col">
+                <div class="section sortable-section" data-section-id="experience" style="margin-top:0;">
+                    <div class="section-head">
+                        <div class="section-title">EXPERIENCE</div>
+                        <div class="divider"></div>
+                    </div>
+                    <div id="experience-list">
+                        <div class="exp-entry template">
+                            <div class="exp-row">
+                                <span class="exp-title" data-field="role"></span>
+                                <span class="exp-date"><img
+                                        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAYCAYAAAAVibZIAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABTklEQVQ4jWP4//8/AwxPmTatQVNX979PQMBVZHFc2Ccg4Kqmru7/KdOmNSCLMzHQALA8ePBAbcGiRcX///9nvHrtmjEDAwPDm9evJesbG2cR0vzm9WtJBgYGhv0HDvi+evVKipGR8X9ifHwPo5Ob28Pnz5/LUcuVEuLiTxi19PT+/f//n5FahjIwMNAmTIeOoSwwRlhIyCwtLa2z5Bp07do141Vr1qQxMDAwMGjp6f3T1NX9v33nzlBiEjwuvH3nzlBNXd3/mrq6/1nQY/7Tp08Cj588UUZ3iZio6DNRUdHnJHkfBo6dOOFaVFKyCl08OzOzMTszs4EYQ4dO7A8dQzEiip+P772WpuY5dHFRUdFnZBtqaWGxZ83Klcakuw8Bhk6Y0jaiTpw44fLp0ydBcg26Bq2KGBgYGBg1dXX/U+oydMBUXlpaRE0DK8rKCgG+WcRirPLzkAAAAABJRU5ErkJggg=="
+                                        alt=""><span data-field="dates"></span></span>
+                            </div>
+                            <div class="exp-company" data-field="company"></div>
+                            <ul class="exp-bullets" data-list="bullets"></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section sortable-section" data-section-id="projects"
+                    style="margin-top:calc(20.13px * var(--content-scale));">
+                    <div class="section-head">
+                        <div class="section-title">PROJECTS</div>
+                        <div class="divider"></div>
+                    </div>
+                    <div id="projects-list">
+                        <div class="proj-entry template">
+                            <div class="proj-title" data-field="title"></div>
+                            <div class="proj-description" data-field="description"></div>
+                            <ul class="exp-bullets" data-list="bullets"></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section sortable-section" data-section-id="skills"
+                    style="margin-top:calc(20.13px * var(--content-scale));">
+                    <div class="section-head">
+                        <div class="section-title">SKILLS</div>
+                        <div class="divider"></div>
+                    </div>
+                    <div class="skills-block">
+                        <div data-field="skills"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="cv-common.js"></script>
+    <script>
+        // ── Template-specific post-processing over the shared renderer ──
+        const originalApplyAccentColor = window.applyAccentColor;
+        window.applyAccentColor = function (color) {
+            if (typeof originalApplyAccentColor === 'function') {
+                originalApplyAccentColor(color);
+            }
+            syncSidebarAccentColor(color);
+        };
+
+        const originalRenderCV = window.renderCV;
+
+        window.renderCV = function (data) {
+            originalRenderCV(data);
+
+            syncSidebarAccentColor();
+            adjustContactRow(data.personal || {});
+            refreshEducationRows();
+            renderSubsectionHeadings();
+            mergeLeadershipIntoExtras(data);
+            mergeAchievementsIntoCertifications(data);
+            fixCustomSectionHeader(data);
+
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    shrinkContentToFit();
+                    scaleToFit();
+                });
+            });
+        };
+
+        function syncSidebarAccentColor(explicitColor) {
+            const root = document.documentElement;
+            const c = explicitColor ||
+                      root.style.getPropertyValue('--header-bg') ||
+                      root.style.getPropertyValue('--accent-color') ||
+                      root.style.getPropertyValue('--blue-header') ||
+                      root.style.getPropertyValue('--blue-deep');
+            const clean = (c || '').trim();
+            if (clean) {
+                const darkColor = mixHexColor(clean, '#000000', 0.15);
+                root.style.setProperty('--purple', darkColor);
+                root.style.setProperty('--sidebar-color', darkColor);
+            } else {
+                root.style.removeProperty('--purple');
+                root.style.removeProperty('--sidebar-color');
+            }
+        }
+
+        function mixHexColor(base, target, ratio) {
+            function hexToRgb(h) {
+                const raw = String(h || '').trim().replace('#', '');
+                if (raw.length === 3) {
+                    return {
+                        r: parseInt(raw[0] + raw[0], 16),
+                        g: parseInt(raw[1] + raw[1], 16),
+                        b: parseInt(raw[2] + raw[2], 16)
+                    };
+                }
+                if (raw.length === 6) {
+                    return {
+                        r: parseInt(raw.substring(0, 2), 16),
+                        g: parseInt(raw.substring(2, 4), 16),
+                        b: parseInt(raw.substring(4, 6), 16)
+                    };
+                }
+                return null;
+            }
+            const a = hexToRgb(base);
+            const b = hexToRgb(target);
+            if (!a || !b) return base;
+            const t = Math.max(0, Math.min(1, Number(ratio) || 0));
+            const r = Math.round(a.r + (b.r - a.r) * t);
+            const g = Math.round(a.g + (b.g - a.g) * t);
+            const bl = Math.round(a.b + (b.b - a.b) * t);
+            return `#${[r, g, bl].map(v => v.toString(16).padStart(2, '0')).join('')}`;
+        }
+
+        // Subsection entries (editor "Subsection" merge): cv-common hides the
+        // entry's role/company/dates, but users can still fill them — surface
+        // them as a bold heading above the subsection's category and bullets.
+        function renderSubsectionHeadings() {
+            const calIconHTML = '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAYCAYAAAAVibZIAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABTklEQVQ4jWP4//8/AwxPmTatQVNX979PQMBVZHFc2Ccg4Kqmru7/KdOmNSCLMzHQALA8ePBAbcGiRcX///9nvHrtmjEDAwPDm9evJesbG2cR0vzm9WtJBgYGhv0HDvi+evVKipGR8X9ifHwPo5Ob28Pnz5/LUcuVEuLiTxi19PT+/f//n5FahjIwMNAmTIeOoSwwRlhIyCwtLa2z5Bp07do141Vr1qQxMDAwMGjp6f3T1NX9v33nzlBiEjwuvH3nzlBNXd3/mrq6/1nQY/7Tp08Cj588UUZ3iZio6DNRUdHnJHkfBo6dOOFaVFKyCl08OzOzMTszs4EYQ4dO7A8dQzEiip+P772WpuY5dHFRUdFnZBtqaWGxZ83Klcakuw8Bhk6Y0jaiTpw44fLp0ydBcg26Bq2KGBgYGBg1dXX/U+oydMBUXlpaRE0DK8rKCgG+WcRirPLzkAAAAABJRU5ErkJggg==" alt="">';
+
+            document.querySelectorAll('#experience-list > *').forEach(block => {
+                if (block.classList.contains('template')) return;
+                const stale = block.querySelector('.subhead');
+                if (stale) stale.remove();
+
+                const expRow = block.querySelector('.exp-row');
+                const expCompany = block.querySelector('.exp-company');
+
+                if (block.classList.contains('experience-title-merged')) {
+                    if (expRow) expRow.style.display = 'none';
+                    if (expCompany) expCompany.style.display = 'none';
+
+                    const roleEl = block.querySelector('[data-field="role"]');
+                    const companyEl = block.querySelector('[data-field="company"]');
+                    const datesEl = block.querySelector('[data-field="dates"]');
+                    const roleText = (roleEl?.textContent || '').trim();
+                    const companyText = (companyEl?.textContent || '').trim();
+                    const datesText = (datesEl?.textContent || '').trim();
+                    if (!roleText && !companyText && !datesText) return;
+
+                    const titleHTML = (roleText && companyText)
+                        ? roleEl.innerHTML + ' | ' + companyEl.innerHTML
+                        : (roleText ? roleEl.innerHTML : (companyText ? companyEl.innerHTML : ''));
+
+                    const subHead = document.createElement('div');
+                    subHead.className = 'subhead';
+                    subHead.innerHTML = '<span class="subhead-title">' + titleHTML + '</span>' +
+                        (datesText ? '<span class="subhead-dates">' + calIconHTML + '<span>' + datesText + '</span></span>' : '');
+
+                    const bullets = block.querySelector('.exp-bullets, .bullets, [data-list="bullets"]');
+                    if (bullets && bullets.parentElement) {
+                        bullets.parentElement.insertBefore(subHead, bullets);
+                    } else {
+                        block.appendChild(subHead);
+                    }
+                } else {
+                    if (expRow) expRow.style.display = '';
+                    if (expCompany) expCompany.style.display = '';
+                }
+            });
+        }
+
+        // Bespoke base64 icons stay untouched by cv-common's generic contact
+        // renderer (we don't use the `.contact-value` class), so we hide/show
+        // each icon+text pair ourselves and wire the LinkedIn href by hand
+        // (the visible label stays the word "LinkedIn", matching the source).
+        function adjustContactRow(personal) {
+            const phoneEl = document.querySelector('#ci-phone [data-field="phone"]');
+            const emailEl = document.querySelector('#ci-email [data-field="email"]');
+            const ciPhone = document.getElementById('ci-phone');
+            const ciEmail = document.getElementById('ci-email');
+            const ciLinkedin = document.getElementById('ci-linkedin');
+            const linkedinLink = document.getElementById('ci-linkedin-link');
+
+            const hasPhone = !!(phoneEl && phoneEl.textContent.trim());
+            const hasEmail = !!(emailEl && emailEl.textContent.trim());
+            const linkedin = (personal.linkedin || '').trim();
+
+            if (ciPhone) ciPhone.style.display = hasPhone ? '' : 'none';
+            if (ciEmail) ciEmail.style.display = hasEmail ? '' : 'none';
+            if (ciLinkedin) ciLinkedin.style.display = linkedin ? '' : 'none';
+            if (linkedinLink) {
+                linkedinLink.href = linkedin
+                    ? (/^https?:\/\//i.test(linkedin) ? linkedin : 'https://' + linkedin)
+                    : '#';
+            }
+
+            const row = document.getElementById('contact-row');
+            if (row) row.style.display = (hasPhone || hasEmail || linkedin) ? '' : 'none';
+        }
+
+        // Hide the "Remarks:"/"Score:" lines (and the institute line) per
+        // education entry when that field is empty, instead of showing an
+        // empty bold label with nothing after it.
+        function refreshEducationRows() {
+            // A field can be empty-text (hide it here) OR explicitly hidden by
+            // applyEducationTableFormat() via the table-format panel (already
+            // display:none by the time this runs, right after originalRenderCV
+            // in the window.renderCV override below) - respect both, so toggling
+            // a column off there doesn't get silently re-shown here just because
+            // the underlying value happens to be non-empty text.
+            const isSuppressed = (el) => !el || el.style.display === 'none' || !el.textContent.trim();
+
+            document.querySelectorAll('#education-list > .edu-entry').forEach(entry => {
+                if (entry.classList.contains('template')) return;
+
+                const instituteEl = entry.querySelector('[data-field="institution"]');
+                if (instituteEl && instituteEl.style.display !== 'none') {
+                    instituteEl.style.display = instituteEl.textContent.trim() ? '' : 'none';
+                }
+
+                const remarksRow = entry.querySelector('.edu-remarks');
+                const remarksVal = entry.querySelector('[data-field="remarks"]');
+                if (remarksRow) remarksRow.style.display = isSuppressed(remarksVal) ? 'none' : '';
+
+                const scoreRow = entry.querySelector('.edu-score');
+                const scoreVal = entry.querySelector('[data-field="marks"]');
+                if (scoreRow) scoreRow.style.display = isSuppressed(scoreVal) ? 'none' : '';
+
+                const dateEl = entry.querySelector('.edu-date');
+                const yearVal = entry.querySelector('[data-field="year"]');
+                if (dateEl) dateEl.style.display = isSuppressed(yearVal) ? 'none' : '';
+            });
+        }
+
+        // The source design shows Leadership-flavored items and hobbies as one
+        // casual bullet list under EXTRA-CURRICULARS, so we fold data.leadership
+        // into the visible [data-list="interests"] <ul> instead of giving it a
+        // separate section. The hidden [data-list="leadership"] placeholder only
+        // exists so cv-common's ensureUniversalSections() doesn't auto-inject a
+        // duplicate "Leadership" section elsewhere on the page.
+        function mergeLeadershipIntoExtras(data) {
+            const interestsList = document.querySelector('ul[data-list="interests"]');
+            if (!interestsList) return;
+
+            interestsList.querySelectorAll('li[data-leadership-item]').forEach(li => li.remove());
+
+            const leadershipConfig = (data.sectionLabels && data.sectionLabels.leadership) || {};
+            const leadershipVisible = leadershipConfig.visible !== false;
+            const leadershipItems = (Array.isArray(data.leadership) ? data.leadership : [])
+                .map(item => String(item || '').trim())
+                .filter(Boolean);
+
+            if (leadershipVisible) {
+                leadershipItems.forEach(item => {
+                    const li = document.createElement('li');
+                    li.setAttribute('data-leadership-item', '');
+                    li.innerHTML = item;
+                    interestsList.appendChild(li);
+                });
+            }
+
+            const section = interestsList.closest('.sortable-section[data-section-id="interests"]');
+            if (section) section.style.display = interestsList.children.length > 0 ? '' : 'none';
+        }
+
+        // Achievements & Awards has no dedicated section in the source design —
+        // it reads as the same kind of "credential" bullet as Certifications, so
+        // we fold data.achievements into the visible [data-list="certifications"]
+        // <ul> instead of giving it a separate section. Same pattern as
+        // mergeLeadershipIntoExtras() above.
+        function mergeAchievementsIntoCertifications(data) {
+            const certList = document.querySelector('ul[data-list="certifications"]');
+            if (!certList) return;
+
+            certList.querySelectorAll('li[data-achievement-item]').forEach(li => li.remove());
+
+            const achievementsConfig = (data.sectionLabels && data.sectionLabels.achievements) || {};
+            const achievementsVisible = achievementsConfig.visible !== false;
+            const achievementItems = (Array.isArray(data.achievements) ? data.achievements : [])
+                .map(item => String(item || '').trim())
+                .filter(Boolean);
+
+            if (achievementsVisible) {
+                achievementItems.forEach(item => {
+                    const li = document.createElement('li');
+                    li.setAttribute('data-achievement-item', '');
+                    li.innerHTML = item;
+                    certList.appendChild(li);
+                });
+            }
+
+            const section = certList.closest('.sortable-section[data-section-id="certifications"]');
+            if (section) section.style.display = certList.children.length > 0 ? '' : 'none';
+        }
+
+        // A user-added custom section has no native Achievements/Leadership
+        // section in this template to clone its structure from (both are
+        // merged into Certifications/Extra-Curriculars instead), so
+        // cv-common.js falls back to cloning a synthesized placeholder for
+        // one of those keys. That placeholder's title element doesn't carry
+        // cv-common's generic "section-header" class, so its cleanup step
+        // for custom sections strips the header out entirely, leaving just
+        // the bare <ul>. Rebuild the .section-head/.divider header from the
+        // CV data directly, since the title text no longer exists anywhere
+        // in the DOM to recover — custom sections are torn down and rebuilt
+        // from scratch on every render, so this has to run every time too.
+        function fixCustomSectionHeader(data) {
+            (data.customSections || []).forEach(section => {
+                const wrappers = document.querySelectorAll(`[data-custom-section-root="${section.id}"]`);
+                if (wrappers.length > 1) {
+                    for (let i = 1; i < wrappers.length; i++) {
+                        wrappers[i].remove();
+                    }
+                }
+                const wrapper = wrappers[0];
+                if (!wrapper) return;
+
+                wrapper.classList.add('section', 'sortable-section');
+
+                // Remove any generic fallback headers created by cv-common
+                wrapper.querySelectorAll('.section-header, .section-header-2, .section-banner').forEach(el => el.remove());
+
+                // Ensure at most one .section-head
+                const heads = Array.from(wrapper.querySelectorAll('.section-head'));
+                if (heads.length > 1) {
+                    heads.slice(1).forEach(h => h.remove());
+                }
+
+                let head = wrapper.querySelector('.section-head');
+                if (!head) {
+                    head = document.createElement('div');
+                    head.className = 'section-head';
+                    const titleDiv = document.createElement('div');
+                    titleDiv.className = 'section-title';
+                    const divider = document.createElement('div');
+                    divider.className = 'divider';
+                    head.appendChild(titleDiv);
+                    head.appendChild(divider);
+
+                    if (wrapper.firstChild) {
+                        wrapper.insertBefore(head, wrapper.firstChild);
+                    } else {
+                        wrapper.appendChild(head);
+                    }
+                }
+
+                // Remove any orphan .section-title elements outside the section-head
+                wrapper.querySelectorAll('.section-title').forEach(t => {
+                    if (!head.contains(t)) t.remove();
+                });
+
+                const titleEl = head.querySelector('.section-title');
+                if (titleEl) {
+                    titleEl.textContent = (section.title || 'Custom Section').toUpperCase();
+                }
+            });
+        }
+
+        // ── Standard scaling / print plumbing (same contract as other templates) ──
+        function scaleToFit() {
+            const page = document.getElementById('cv-page');
+            const targetWidth = window.innerWidth - 20;
+            const scale = targetWidth < 1000 ? targetWidth / 1000 : 1.0;
+            page.style.transform = `scale(${scale})`;
+            const spaceToRemove = 1413.94 - (1413.94 * scale);
+            page.style.marginBottom = `-${spaceToRemove}px`;
+        }
+
+        function shrinkContentToFit() {
+            const page = document.getElementById('cv-page');
+            let contentScale = 1.0;
+            document.documentElement.style.setProperty('--content-scale', contentScale);
+            page.style.height = 'auto';
+            let i = 0;
+            while (page.scrollHeight > 1415 && i < 60) {
+                contentScale -= 0.01;
+                document.documentElement.style.setProperty('--content-scale', contentScale);
+                i++;
+            }
+            page.style.height = '';
+        }
+
+        let _screenTransform = '';
+        let _screenMarginBottom = '';
+
+        function enablePrintMode() {
+            const page = document.getElementById('cv-page');
+            _screenTransform = page.style.transform;
+            _screenMarginBottom = page.style.marginBottom;
+            page.style.transform = 'scale(1)';
+            page.style.marginBottom = '0px';
+            shrinkContentToFit();
+        }
+
+        function disablePrintMode() {
+            const page = document.getElementById('cv-page');
+            page.style.transform = _screenTransform || '';
+            page.style.marginBottom = _screenMarginBottom || '';
+            scaleToFit();
+        }
+
+        window.addEventListener('load', function () {
+            shrinkContentToFit();
+            scaleToFit();
+            const mq = window.matchMedia('print');
+            if (mq.addEventListener) {
+                mq.addEventListener('change', e => e.matches ? enablePrintMode() : disablePrintMode());
+            } else if (mq.addListener) {
+                mq.addListener(e => e.matches ? enablePrintMode() : disablePrintMode());
+            }
+            window.addEventListener('beforeprint', enablePrintMode);
+            window.addEventListener('afterprint', disablePrintMode);
+        });
+
+        let _resizeTimer;
+        window.addEventListener('resize', function () {
+            clearTimeout(_resizeTimer);
+            _resizeTimer = setTimeout(scaleToFit, 100);
+        });
+    </script>
+</body>
+
+</html>

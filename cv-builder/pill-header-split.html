@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Pill Header Split CV</title>
+<style>
+
+:root {
+  --navy-pill:     var(--accent-color, #0B2046);   /* Dark Pill Banner Color */
+  --sidebar-bg:    color-mix(in srgb, var(--accent-color, #0B2046) 8%, #F4F4F4);   /* Dynamic Soft Sidebar Background */
+  --text-dark:     #1C1C1C;   /* Dark Charcoal Text */
+  --border-navy:   var(--accent-color, #0B2046);   /* Dark Border Line */
+  --link-blue:     var(--accent-color, #0056B3);   /* Dynamic Link Blue */
+  --page-bg:       #FFFFFF;   /* White A4 Sheet */
+  --viewer-bg:     #525659;   /* Outer Canvas Background */
+  --font-serif:    Cambria, Georgia, serif;
+  --font-heading:  'Times New Roman', Times, serif;
+  --cs:            1.0;       /* Content scale variable adjusted by shrinkContentToFit() */
+}
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+body {
+  background: var(--viewer-bg);
+  font-family: var(--font-serif);
+  color: var(--text-dark);
+  min-height: 100vh;
+  width: 100vw;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.2s ease-in;
+}
+
+.template { display: none !important; }
+
+/* ── Viewer Centering Wrapper ── */
+#zoom-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 24px 0 32px;
+}
+
+/* ── A4 Page Card Container with Outer Border ── */
+#cv-page {
+  position: relative;
+  width: 1000px;
+  min-height: 1413.94px;
+  background: var(--page-bg);
+  color: var(--text-dark);
+  border: 2px solid #1f1f1f;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+  flex-shrink: 0;
+  transform-origin: top center;
+  font-size: calc(14.5px * var(--cs));
+  line-height: 1.4;
+  display: flex;
+}
+
+/* ── 2-Column Split Layout ── */
+.left-panel {
+  width: 33%;
+  background-color: var(--sidebar-bg);
+  border-right: calc(1.5px * var(--cs)) solid var(--border-navy);
+  padding: calc(24px * var(--cs)) calc(16px * var(--cs));
+  box-sizing: border-box;
+}
+
+.right-panel {
+  width: 67%;
+  background-color: var(--page-bg);
+  padding: calc(24px * var(--cs)) calc(22px * var(--cs));
+  box-sizing: border-box;
+}
+
+/* Candidate Name */
+.candidate-name {
+  font-family: var(--font-serif);
+  font-size: calc(28px * var(--cs));
+  font-weight: 400;
+  color: var(--text-dark);
+  line-height: 1.15;
+  margin-bottom: calc(14px * var(--cs));
+}
+
+.candidate-tagline {
+  font-family: var(--font-heading);
+  font-size: calc(15px * var(--cs));
+  font-weight: 700;
+  color: var(--navy-pill);
+  margin-bottom: calc(8px * var(--cs));
+}
+
+/* Pill Banners */
+.pill-banner {
+  display: inline-block;
+  background-color: var(--navy-pill);
+  color: #FFFFFF;
+  font-family: var(--font-heading);
+  font-size: calc(14.8px * var(--cs));
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: calc(3px * var(--cs)) calc(18px * var(--cs));
+  border-radius: calc(5px * var(--cs));
+  margin-top: calc(14px * var(--cs));
+  margin-bottom: calc(8px * var(--cs));
+  letter-spacing: 0.5px;
+}
+
+.left-panel .pill-banner:first-child,
+.right-panel .pill-banner:first-child {
+  margin-top: 0;
+}
+
+/* Left Panel Details Contact List */
+.details-list {
+  font-size: calc(14px * var(--cs));
+  line-height: 1.4;
+  margin-bottom: calc(12px * var(--cs));
+}
+
+.details-item {
+  display: flex !important;
+  align-items: center;
+  gap: calc(6px * var(--cs));
+  margin-bottom: calc(4px * var(--cs));
+}
+
+.details-item a,
+.contact-value a {
+  color: var(--link-blue);
+  word-break: break-all;
+  text-decoration: none !important;
+  border-bottom: none !important;
+}
+
+/* Custom Section Title Pill Headers */
+.sortable-section .section-title {
+  display: inline-block;
+  background-color: var(--navy-pill);
+  color: #FFFFFF;
+  font-family: var(--font-heading);
+  font-size: calc(14.8px * var(--cs));
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: calc(4px * var(--cs)) calc(18px * var(--cs));
+  border-radius: calc(5px * var(--cs));
+  letter-spacing: 0.5px;
+  margin-top: calc(14px * var(--cs));
+  margin-bottom: calc(8px * var(--cs));
+  position: relative;
+  z-index: 2;
+}
+
+.details-list .contact-value .contact-icon-glyph,
+.details-list .contact-value > .contact-icon-item > .contact-icon-glyph {
+  display: none !important;
+}
+
+.details-list .contact-sep {
+  display: none !important;
+}
+
+/* Left Panel Technical & Other Skills */
+.skills-text {
+  font-size: calc(14px * var(--cs));
+  line-height: 1.4;
+  margin-bottom: calc(12px * var(--cs));
+}
+
+.skill-heading {
+  font-family: var(--font-heading);
+  font-size: calc(14.5px * var(--cs));
+  font-weight: 700;
+  text-decoration: underline;
+  color: var(--text-dark);
+  margin-top: calc(6px * var(--cs));
+  margin-bottom: calc(6px * var(--cs));
+}
+
+.left-bullet-list {
+  list-style: none;
+  padding-left: 0;
+  font-size: calc(14px * var(--cs));
+  line-height: 1.4;
+  margin-bottom: calc(12px * var(--cs));
+}
+
+.left-bullet-list li {
+  position: relative;
+  padding-left: calc(12px * var(--cs));
+  margin-bottom: calc(5px * var(--cs));
+  text-align: justify;
+}
+
+.left-bullet-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--text-dark);
+  font-size: calc(14.5px * var(--cs));
+  line-height: 1;
+}
+
+/* Right Panel Styles */
+.summary-text {
+  font-size: calc(13.6px * var(--cs));
+  line-height: 1.4;
+  color: var(--text-dark);
+  text-align: justify;
+  margin-bottom: calc(12px * var(--cs));
+}
+
+.edu-bullet-list {
+  list-style: none;
+  padding-left: 0;
+  font-size: calc(13.4px * var(--cs));
+  line-height: 1.4;
+  margin-bottom: calc(12px * var(--cs));
+}
+
+.edu-bullet-list li {
+  position: relative;
+  padding-left: calc(14px * var(--cs));
+  margin-bottom: calc(5px * var(--cs));
+}
+
+.edu-bullet-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--text-dark);
+}
+
+.exp-block {
+  margin-bottom: calc(10px * var(--cs));
+}
+
+.exp-role-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: calc(6px * var(--cs));
+  margin-bottom: calc(2px * var(--cs));
+}
+
+.exp-role-title {
+  font-family: var(--font-heading);
+  font-size: calc(15.2px * var(--cs));
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.exp-date {
+  font-size: calc(14px * var(--cs));
+  font-weight: 700;
+}
+
+.company-name {
+  font-family: var(--font-heading);
+  font-size: calc(14px * var(--cs));
+  font-weight: 700;
+}
+
+.company-desc {
+  font-size: calc(12.2px * var(--cs));
+  font-style: italic;
+  margin-bottom: calc(6px * var(--cs));
+}
+
+.right-bullet-list {
+  list-style: none;
+  padding-left: 0;
+  font-size: calc(14px * var(--cs));
+  line-height: 1.38;
+  margin-bottom: calc(12px * var(--cs));
+}
+
+.right-bullet-list li {
+  position: relative;
+  padding-left: calc(14px * var(--cs));
+  margin-bottom: calc(4px * var(--cs));
+  text-align: justify;
+}
+
+.right-bullet-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--text-dark);
+}
+
+.sub-arrow-list {
+  list-style: none;
+  padding-left: calc(18px * var(--cs));
+  margin-top: calc(2px * var(--cs));
+  margin-bottom: calc(4px * var(--cs));
+}
+
+.sub-arrow-list li {
+  position: relative;
+  padding-left: calc(14px * var(--cs));
+  margin-bottom: calc(2px * var(--cs));
+}
+
+.sub-arrow-list li::before {
+  content: "➢";
+  position: absolute;
+  left: 0;
+  font-size: calc(11px * var(--cs));
+}
+
+.roles-resp-block {
+  margin-top: calc(4px * var(--cs));
+  margin-bottom: calc(6px * var(--cs));
+  font-size: calc(14px * var(--cs));
+  line-height: 1.38;
+  text-align: justify;
+}
+
+/* ── Print Styles (A4 Page Output) ── */
+@media print {
+  html, body {
+    background: none !important;
+    margin: 0;
+    padding: 0;
+  }
+  #zoom-wrapper {
+    padding: 0;
+  }
+  #cv-page {
+    transform: scale(1) !important;
+    margin: 0 !important;
+    width: 210mm;
+    min-height: 297mm;
+    box-shadow: none;
+    border: none;
+  }
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+}
+
+/* Pill Banner Header Row */
+.pill-banner-row {
+  display: flex;
+  align-items: flex-end;
+  margin-top: calc(14px * var(--cs));
+  margin-bottom: calc(8px * var(--cs));
+  position: relative;
+}
+
+.left-panel .pill-banner-row:first-child,
+.right-panel .pill-banner-row:first-child {
+  margin-top: 0;
+}
+
+.pill-banner-row .pill-banner {
+  display: inline-block;
+  background-color: var(--navy-pill);
+  color: #FFFFFF;
+  font-family: var(--font-heading);
+  font-size: calc(14.8px * var(--cs));
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: calc(4px * var(--cs)) calc(18px * var(--cs));
+  border-radius: calc(5px * var(--cs));
+  letter-spacing: 0.5px;
+  margin: 0;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.pill-line {
+  flex-grow: 1;
+  height: calc(1.5px * var(--cs));
+  background-color: var(--navy-pill);
+  margin-left: calc(-8px * var(--cs));
+  margin-bottom: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.left-panel .pill-line {
+  margin-right: calc(-16px * var(--cs));
+}
+
+.right-panel .pill-line {
+  margin-right: calc(-22px * var(--cs));
+}
+
+.name-divider {
+  height: calc(1.5px * var(--cs));
+  background-color: var(--navy-pill);
+  margin-top: calc(10px * var(--cs));
+  margin-bottom: calc(10px * var(--cs));
+  margin-left: calc(-16px * var(--cs));
+  margin-right: calc(-16px * var(--cs));
+}
+
+</style>
+</head>
+<body>
+<div id="zoom-wrapper">
+<div id="cv-page">
+
+  <!-- ══ LEFT SIDEBAR PANEL ══════════════════════════════════════ -->
+  <div class="left-panel">
+
+    <h1 class="candidate-name" data-field="name">Padam<br>Bhansali</h1>
+    <div class="candidate-tagline" data-field="tagline"></div>
+    <div class="name-divider"></div>
+
+    <div class="sortable-section" data-section-id="personal">
+      <div class="pill-banner-row"><div class="pill-banner">CONTACT DETAILS</div><div class="pill-line"></div></div>
+      <div class="details-list">
+        <div class="details-item contact-row" data-field="phone-wrap">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--navy-pill)" style="flex-shrink:0;"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+          <span class="contact-value" data-field="phone">+91-7228881182</span>
+        </div>
+        <div class="details-item contact-row" data-field="email-wrap">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--navy-pill)" style="flex-shrink:0;"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+          <a href="mailto:capadam@gmail.com" class="contact-value" data-field="email">capadam@gmail.com</a>
+        </div>
+        <div class="details-item contact-row" data-field="linkedin-wrap">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--navy-pill)" style="flex-shrink:0;"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+          <a href="https://www.linkedin.com/in/ca-padam-bhansali" target="_blank" rel="noopener" class="contact-value" data-field="linkedin">LinkedIn</a>
+        </div>
+        <div class="details-item contact-row" data-field="location-wrap">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--navy-pill)" style="flex-shrink:0;"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5-2.5-1.12 2.5-2.5 2.5z"/></svg>
+          <span class="contact-value" data-field="location">Delhi</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sortable-section" data-section-id="skills">
+      <div class="pill-banner-row"><div class="pill-banner">TECHNICAL SKILLS</div><div class="pill-line"></div></div>
+      <div class="skills-text" data-field="skills"></div>
+    </div>
+
+    <div class="sortable-section" data-section-id="achievements">
+      <div class="pill-banner-row"><div class="pill-banner">ACHIEVEMENTS</div><div class="pill-line"></div></div>
+      <ul class="left-bullet-list" data-list="achievements"></ul>
+    </div>
+
+  </div><!-- .left-panel -->
+
+  <!-- ══ RIGHT MAIN CONTENT PANEL ════════════════════════════════ -->
+  <div class="right-panel" data-section-append-host>
+
+    <div class="sortable-section" data-section-id="summary">
+      <div class="pill-banner-row"><div class="pill-banner">SUMMARY</div><div class="pill-line"></div></div>
+      <div class="summary-text" data-field="summary"></div>
+    </div>
+
+    <div class="sortable-section" data-section-id="education">
+      <div class="pill-banner-row"><div class="pill-banner">EDUCATION</div><div class="pill-line"></div></div>
+      <ul class="edu-bullet-list" id="education-list">
+        <li class="template">
+          <strong data-field="degree"></strong>, <span data-field="year"></span> | <span data-field="marks"></span> | <span data-field="institution"></span> [<span data-field="remarks"></span>]
+        </li>
+      </ul>
+    </div>
+
+    <div class="sortable-section" data-section-id="experience">
+      <div class="pill-banner-row"><div class="pill-banner">WORK EXPERIENCE</div><div class="pill-line"></div></div>
+      <div id="experience-list">
+        <div class="exp-block template">
+          <div class="exp-role-row">
+            <span class="exp-role-title" data-field="role"></span>
+            <span class="exp-date" data-field="dates"></span>
+          </div>
+          <div class="company-name" data-field="company"></div>
+          <div class="company-desc" data-field="intro"></div>
+          <div class="company-desc" data-field="category"></div>
+          <ul class="right-bullet-list" data-list="bullets"></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="sortable-section" data-section-id="projects">
+      <div class="pill-banner-row"><div class="pill-banner">PROJECTS</div><div class="pill-line"></div></div>
+      <div id="projects-list">
+        <div class="exp-block template">
+          <div class="exp-role-row">
+            <span class="exp-role-title" data-field="title"></span>
+          </div>
+          <div class="company-desc" data-field="description"></div>
+          <ul class="right-bullet-list" data-list="bullets"></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="sortable-section" data-section-id="certifications">
+      <div class="pill-banner-row"><div class="pill-banner">CERTIFICATIONS</div><div class="pill-line"></div></div>
+      <ul class="right-bullet-list" id="cert-list" data-list="certifications"></ul>
+    </div>
+
+    <div class="sortable-section" data-section-id="leadership">
+      <div class="pill-banner-row"><div class="pill-banner">LEADERSHIP</div><div class="pill-line"></div></div>
+      <ul class="right-bullet-list" data-list="leadership"></ul>
+    </div>
+
+    <div class="sortable-section" data-section-id="interests">
+      <div class="pill-banner-row"><div class="pill-banner">INTERESTS</div><div class="pill-line"></div></div>
+      <ul class="right-bullet-list" data-list="interests"></ul>
+    </div>
+
+  </div><!-- .right-panel -->
+
+</div><!-- #cv-page -->
+</div><!-- #zoom-wrapper -->
+
+<!-- ══ SCRIPT ENGINE ════════════════════════════════════════════ -->
+<script src="cv-common.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  const originalRenderCV = window.renderCV;
+  window.renderCV = function (data) {
+    if (typeof originalRenderCV === 'function') originalRenderCV(data);
+    formatCustomSectionHeaders(data);
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        shrinkContentToFit();
+        scaleToFit();
+      });
+    });
+  };
+
+  function formatCustomSectionHeaders(data) {
+    (data.customSections || []).forEach(function (section) {
+      if (!section) return;
+      var wrapper = document.querySelector('[data-custom-section-root="' + section.id + '"]');
+      if (!wrapper) return;
+
+      var titleText = (section.title || 'Custom Section').toUpperCase();
+
+      var existingRow = wrapper.querySelector('.pill-banner-row');
+      if (existingRow) {
+        var banner = existingRow.querySelector('.pill-banner');
+        if (banner) banner.textContent = titleText;
+        return;
+      }
+
+      var titleEl = wrapper.querySelector('.section-title, .section-header, .section-banner, h2, h3');
+      if (titleEl) titleEl.remove();
+
+      var row = document.createElement('div');
+      row.className = 'pill-banner-row';
+
+      var pill = document.createElement('div');
+      pill.className = 'pill-banner';
+      pill.textContent = titleText;
+
+      var line = document.createElement('div');
+      line.className = 'pill-line';
+
+      row.appendChild(pill);
+      row.appendChild(line);
+
+      wrapper.insertBefore(row, wrapper.firstChild);
+    });
+  }
+
+  var PAGE_H = 1413.94; /* A4 page height limit in px */
+  var PAGE_W = 1000;    /* A4 viewer width in px */
+
+  function scaleToFit() {
+    var page = document.getElementById('cv-page');
+    if (!page || document.body.classList.contains('print-mode')) return;
+    var avail = window.innerWidth - 20;
+    var scale = avail < PAGE_W ? avail / PAGE_W : 1.0;
+    page.style.transform = 'scale(' + scale + ')';
+    page.style.marginBottom = '-' + (PAGE_H - PAGE_H * scale) + 'px';
+  }
+
+  function shrinkContentToFit() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    var cs = 1.0;
+    document.documentElement.style.setProperty('--cs', cs);
+    page.style.height = 'auto';
+    var iter = 0;
+    while (page.scrollHeight > PAGE_H + 1 && iter < 80) {
+      cs = Math.round((cs - 0.01) * 1000) / 1000;
+      document.documentElement.style.setProperty('--cs', cs);
+      iter++;
+    }
+    page.style.height = '';
+  }
+
+  window.scaleToFit = scaleToFit;
+  window.shrinkContentToFit = shrinkContentToFit;
+
+  var _tx = '', _mb = '';
+
+  function enablePrintMode() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    _tx = page.style.transform;
+    _mb = page.style.marginBottom;
+    document.body.classList.add('print-mode');
+    page.style.transform = 'scale(1)';
+    page.style.marginBottom = '0';
+    shrinkContentToFit();
+  }
+
+  function disablePrintMode() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    document.body.classList.remove('print-mode');
+    page.style.transform = _tx || '';
+    page.style.marginBottom = _mb || '';
+    scaleToFit();
+  }
+
+  window.addEventListener('load', function () {
+    shrinkContentToFit();
+    scaleToFit();
+    document.body.style.opacity = '1';
+    var mq = window.matchMedia('print');
+    var handler = function (e) { e.matches ? enablePrintMode() : disablePrintMode(); };
+    if (mq.addEventListener) { mq.addEventListener('change', handler); }
+    else if (mq.addListener)  { mq.addListener(handler); }
+    window.addEventListener('beforeprint', enablePrintMode);
+    window.addEventListener('afterprint',  disablePrintMode);
+  });
+
+  var _rt = null;
+  window.addEventListener('resize', function () {
+    if (_rt) clearTimeout(_rt);
+    _rt = setTimeout(function () {
+      scaleToFit();
+    }, 100);
+  });
+})();
+</script>
+</body>
+</html>

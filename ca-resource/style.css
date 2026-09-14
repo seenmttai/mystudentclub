@@ -365,60 +365,87 @@ body {
     letter-spacing: 0.3px;
 }
 
-/* ──────── Responsive: Tablet ──────── */
+/* ──────── Responsive: Tablet & Mobile ──────── */
 @media (max-width: 768px) {
     #toolbar {
-        padding: 6px 8px;
+        padding-top: max(calc(env(safe-area-inset-top, 0px) + 12px), 36px);
+        padding-bottom: 8px;
+        padding-left: 8px;
+        padding-right: 8px;
+        gap: 6px;
+        flex-wrap: nowrap;
+        min-height: calc(env(safe-area-inset-top, 0px) + 52px);
+    }
+
+    .toolbar-left {
+        order: 1;
+        flex: 0 0 auto;
         gap: 4px;
-        flex-wrap: wrap;
-        min-height: auto;
     }
 
-    .toolbar-left { order: 1; flex: 1; }
-    .toolbar-right { order: 2; }
     .toolbar-center {
-        order: 3;
-        flex-basis: 100%;
-        max-width: none;
-        margin: 4px 0 0;
+        display: none;
     }
 
-    .search-bar { max-width: none; }
+    .toolbar-right {
+        order: 2;
+        margin-left: auto;
+        gap: 4px;
+    }
 
-    /* Hide dual-page, fit controls, zoom display on tablet/mobile */
+    /* Hide dual-page, fit controls, zoom display on tablet/mobile to keep single clean row */
     #view-dual,
+    #view-single,
     #fit-width-btn,
     #fit-page-btn,
-    .zoom-display { display: none; }
-
-    .toolbar-right .toolbar-separator { display: none; }
+    .zoom-display,
+    .toolbar-separator {
+        display: none !important;
+    }
 
     #sidebar { width: 120px; }
     #sidebar.sidebar-hidden { margin-left: -120px; }
 
-    #viewer-area { padding: 8px; }
+    #viewer-area { padding: 6px 4px; }
 
-    .toolbar-logo img { height: 22px; }
-    .toolbar-btn { width: 32px; height: 32px; font-size: 13px; }
-    .page-indicator input { width: 36px; font-size: 12px; }
-    .page-indicator { font-size: 12px; }
+    .toolbar-logo img { height: 20px; }
+    .toolbar-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 13px;
+    }
+    .page-indicator input {
+        width: 34px;
+        font-size: 12px;
+        padding: 2px 2px;
+    }
+    .page-indicator {
+        font-size: 12px;
+        gap: 2px;
+    }
 }
 
 /* ──────── Responsive: Phone ──────── */
 @media (max-width: 480px) {
-    #toolbar { padding: 4px 6px; }
+    #toolbar {
+        padding-top: max(calc(env(safe-area-inset-top, 0px) + 14px), 40px);
+        padding-bottom: 6px;
+        padding-left: 6px;
+        padding-right: 6px;
+    }
 
-    /* Hide sidebar toggle and search on very small screens */
     #sidebar-toggle { display: none; }
-    .toolbar-center { display: none; }
+    .toolbar-logo { display: none; }
 
-    #sidebar { width: 90px; }
-    #sidebar.sidebar-hidden { margin-left: -90px; }
-
-    #viewer-area { padding: 4px; }
-
-    .toolbar-btn { width: 28px; height: 28px; font-size: 12px; }
-    .page-indicator input { width: 32px; font-size: 11px; }
+    .toolbar-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 13px;
+    }
+    .page-indicator input {
+        width: 30px;
+        font-size: 11px;
+    }
 }
 
 /* ──────── Clickable PDF Annotations Layer ──────── */

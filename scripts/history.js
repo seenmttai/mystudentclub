@@ -1,110 +1,9 @@
 import { getDaysAgo } from './date-utils.js';
 
-const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+const supabaseUrl = 'https://auth.mystudentclub.com';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-const supabaseClient = window._mscSupabaseClient || supabase.createClient(supabaseUrl, supabaseKey);
+const supabaseClient = window._mscSupabaseClient || supabase.createClient(supabaseUrl, supabaseKey, { auth: { storageKey: 'sb-izsggdtdiacxdsjjncdq-auth-token' } });
 window._mscSupabaseClient = supabaseClient;
-
-const UNLOCK_WORKER_URL = 'https://jobs.mystudentclub.com';
-const TURNSTILE_SITE_KEY = '0x4AAAAAAESf1Ha-laDI3OGO';
-const unlockedJobsCache = new Map();
-
-function loadTurnstileScript() {
-  if (window.turnstile) return Promise.resolve();
-  if (document.getElementById('turnstile-script')) {
-    return new Promise((resolve) => {
-      const checkInterval = setInterval(() => {
-        if (window.turnstile) { clearInterval(checkInterval); resolve(); }
-      }, 100);
-      setTimeout(() => { clearInterval(checkInterval); resolve(); }, 5000);
-    });
-  }
-  return new Promise((resolve, reject) => {
-    const script = document.createElement('script');
-    script.id = 'turnstile-script';
-    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
-    script.async = true;
-    script.defer = true;
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error('Failed to connect to verification service'));
-    document.head.appendChild(script);
-  });
-}
-
-function getTurnstileToken() {
-  return new Promise(async (resolve, reject) => {
-    try { await loadTurnstileScript(); } catch (e) { return reject(e); }
-    if (!window.turnstile) return reject(new Error('Verification service temporarily unavailable. Please refresh.'));
-
-    let container = document.getElementById('msc-turnstile-container');
-    if (!container) {
-      container = document.createElement('div');
-      container.id = 'msc-turnstile-container';
-      container.style.cssText = 'position:fixed;bottom:72px;right:12px;z-index:99999;';
-      document.body.appendChild(container);
-    }
-
-    const widgetDiv = document.createElement('div');
-    container.appendChild(widgetDiv);
-
-    try {
-      const widgetId = window.turnstile.render(widgetDiv, {
-        sitekey: TURNSTILE_SITE_KEY,
-        callback: (token) => {
-          setTimeout(() => {
-            try { window.turnstile.remove(widgetId); } catch (_) {}
-            widgetDiv.remove();
-          }, 300);
-          resolve(token);
-        },
-        'error-callback': (errCode) => {
-          try { window.turnstile.remove(widgetId); } catch (_) {}
-          widgetDiv.remove();
-          console.warn('[Turnstile Error Code]:', errCode);
-          reject(new Error('Verification was not completed. Please try again.'));
-        },
-        'expired-callback': () => {
-          try { window.turnstile.remove(widgetId); } catch (_) {}
-          widgetDiv.remove();
-          reject(new Error('Verification session timed out. Please try again.'));
-        }
-      });
-    } catch (err) {
-      widgetDiv.remove();
-      reject(err);
-    }
-  });
-}
-
-async function unlockJobDetails(job, tableName) {
-  if (unlockedJobsCache.has(job.id)) return unlockedJobsCache.get(job.id);
-  const token = await getTurnstileToken();
-  let response;
-  try {
-    response = await fetch(`${UNLOCK_WORKER_URL}/api/unlock-job`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ jobId: job.id, table: tableName, turnstileToken: token })
-    });
-  } catch (_) {
-    response = await fetch(UNLOCK_WORKER_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ jobId: job.id, table: tableName, turnstileToken: token })
-    });
-  }
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok || !data.success) {
-    const errMsg = data.error || (data.details ? data.details.join(', ') : 'Unable to load application details.');
-    throw new Error(errMsg);
-  }
-  unlockedJobsCache.set(job.id, data);
-  job['Application ID'] = data.applicationId;
-  job.Description = data.description;
-  if (data.postsLink) job.posts_link = data.postsLink;
-  return data;
-}
-
 
 const BOOKMARKS_KEY = 'msc_bookmarks';
 
@@ -117,10 +16,29 @@ const PORTAL_LABELS = {
 };
 
 const PORTAL_URLS = {
-    'Industrial Training Job Portal': '/index-new.html',
-    'Articleship Jobs': '/articleship-new.html',
-    'Fresher Jobs': '/fresher-new.html',
-    'Semi Qualified Jobs': '/semi-new.html',
+    'Industrial Training Job Portal': '/',
+    'Articleship Jobs': '/ca-articleship-jobs.html',
+    'Fresher Jobs': '/ca-fresher-jobs.html',
+    'Semi Qualified Jobs': '/semi-qualified-ca-jobs.html',
+    'Experienced CA Jobs': '/ca-fresher-jobs.html',
+    'industrial': '/',
+    'articleship': '/ca-articleship-jobs.html',
+    'fresher': '/ca-fresher-jobs.html',
+    'semi': '/semi-qualified-ca-jobs.html',
+    'experienced': '/ca-fresher-jobs.html'
+};
+
+const PORTAL_TYPE_MAP = {
+    'Industrial Training Job Portal': 'industrial',
+    'Articleship Jobs': 'articleship',
+    'Fresher Jobs': 'fresher',
+    'Semi Qualified Jobs': 'semi',
+    'Experienced CA Jobs': 'fresher',
+    'industrial': 'industrial',
+    'articleship': 'articleship',
+    'fresher': 'fresher',
+    'semi': 'semi',
+    'experienced': 'fresher'
 };
 
 // ── State ──
@@ -156,6 +74,30 @@ function renderMarkdown(text) {
         .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
         .replace(/\n\n/g, '</p><p>')
         .replace(/\n/g, '<br>') + '</p>';
+}
+
+// Truncate job description and mask potential contact details
+function getTruncatedDescription(desc, maxLength = 260) {
+    if (!desc) return 'No description available.';
+    let clean = String(desc).trim();
+
+    // Mask emails that might have been pasted into the description
+    clean = clean.replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/gi, '[email protected]');
+    // Mask URLs
+    clean = clean.replace(/https?:\/\/[^\s\)]+/gi, '[link protected]');
+    // Mask phone numbers
+    clean = clean.replace(/(?:\+?91[\s-]?)?[6-9]\d{9}/g, '[phone protected]');
+
+    if (clean.length <= maxLength) {
+        return clean;
+    }
+
+    let cut = clean.slice(0, maxLength);
+    const lastSpace = cut.lastIndexOf(' ');
+    if (lastSpace > maxLength * 0.6) {
+        cut = cut.slice(0, lastSpace);
+    }
+    return cut + '...';
 }
 
 // ── Bookmarks ──
@@ -211,7 +153,19 @@ async function fetchApplications() {
                     const [t, id] = app.job_table.split('|');
                     targetTable = t; targetJobId = id;
                 }
-                let sel = 'id, Company, Location, Category, Salary, Description, Created_At, "Application ID", "Primary Domain", "Company Type", "Industry Type"';
+                const TABLE_NAME_ALIASES = {
+                    'industrial': 'Industrial Training Job Portal',
+                    'industrial-training': 'Industrial Training Job Portal',
+                    'fresher': 'Fresher Jobs',
+                    'freshers': 'Fresher Jobs',
+                    'semi': 'Semi Qualified Jobs',
+                    'semi-qualified': 'Semi Qualified Jobs',
+                    'articleship': 'Articleship Jobs',
+                    'experienced': 'Experienced CA Jobs'
+                };
+                targetTable = TABLE_NAME_ALIASES[targetTable] || targetTable;
+
+                let sel = 'id, Company, Location, Category, Salary, Description, Created_At, "Primary Domain", "Company Type", "Industry Type"';
                 if (targetTable === 'Fresher Jobs') {
                     sel += ', Experience, yoe, "Secondary Domain", Tags, "CTC Range"';
                 } else if (targetTable === 'Semi Qualified Jobs') {
@@ -221,8 +175,15 @@ async function fetchApplications() {
                 } else if (targetTable === 'Articleship Jobs') {
                     sel += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range"';
                 }
-                const { data: job, error: je } = await supabaseClient.from(targetTable).select(sel).eq('id', targetJobId).single();
-                if (je) return { ...app, job_table: targetTable, job_id: targetJobId, job: { id: targetJobId, Company: 'Unknown Company', Location: 'N/A', Category: 'Job Unavailable', Description: 'This job post may have been removed.', 'Application ID': '#' } };
+                let { data: job, error: je } = await supabaseClient.from(targetTable).select(sel).eq('id', targetJobId).single();
+                if (je && !isNaN(targetJobId)) {
+                    const retry = await supabaseClient.from(targetTable).select(sel).eq('id', Number(targetJobId)).single();
+                    if (!retry.error && retry.data) {
+                        job = retry.data;
+                        je = null;
+                    }
+                }
+                if (je) return { ...app, job_table: targetTable, job_id: targetJobId, job: { id: targetJobId, Company: 'Unknown Company', Location: 'N/A', Category: 'Job Unavailable', Description: 'This job post may have been removed.' } };
                 return { ...app, job_table: targetTable, job_id: targetJobId, job };
             } catch { return null; }
         }))).filter(Boolean);
@@ -302,7 +263,7 @@ function renderAppliedCard(app) {
             </div>
             <button class="jc-apply-btn applied">View →</button>
         </div>`;
-    card.addEventListener('click', () => showJobDetail(job, { type: 'applied', appliedAt: app.applied_at, jobTable: app.job_table }));
+    card.addEventListener('click', () => showJobDetail(job, { type: 'applied', appliedAt: app.applied_at, jobTable: app.job_table, jobId: app.job_id }));
     return card;
 }
 
@@ -369,9 +330,13 @@ function renderSavedCard(bm) {
             <button class="jc-apply-btn">Apply →</button>
         </div>`;
 
+    const table = bm.table || '';
+    const jobType = PORTAL_TYPE_MAP[table] || 'industrial';
+    const portalUrl = PORTAL_URLS[table] || '/';
+
     card.querySelector('.jc-apply-btn').addEventListener('click', (e) => {
         e.stopPropagation();
-        window.location.href = PORTAL_URLS[bm.table] || '/index-new.html';
+        window.location.href = `${portalUrl}?id=${encodeURIComponent(bm.id)}&type=${encodeURIComponent(jobType)}`;
     });
 
     card.querySelector('.jc-bookmark').addEventListener('click', (e) => {
@@ -382,7 +347,7 @@ function renderSavedCard(bm) {
         showToast('Removed from saved', 'info');
     });
 
-    card.addEventListener('click', () => showJobDetail(bm, { type: 'saved', savedAt: bm.savedAt, table: bm.table }));
+    card.addEventListener('click', () => showJobDetail(bm, { type: 'saved', savedAt: bm.savedAt, table: bm.table, jobId: bm.id }));
     return card;
 }
 
@@ -427,7 +392,7 @@ function renderContent() {
                 <div class="esn-sub">${activeTab === 'applied'
                     ? (isEmpty ? "Apply to jobs and they'll show up here." : "Try a different search or filter.")
                     : (isEmpty ? "Tap the bookmark icon on any job to save it." : "Try a different search term.")}</div>
-                ${activeTab === 'applied' && isEmpty ? '<a href="/index-new.html" class="btn btn-primary" style="margin-top:1.25rem;display:inline-flex;">Browse Jobs</a>' : ''}
+                ${activeTab === 'applied' && isEmpty ? '<a href="/" class="btn btn-primary" style="margin-top:1.25rem;display:inline-flex;">Browse Jobs</a>' : ''}
             </div>`;
         return;
     }
@@ -479,17 +444,46 @@ function showJobDetail(job, meta) {
     const isApplied = meta?.type === 'applied';
 
     const generateLinks = (appId) => {
-        if (!appId || appId === '#') return `<p style="color:var(--sub);font-size:0.85rem;">No application link available.</p>`;
-        return appId.split(',').map(link => link.trim()).filter(Boolean).map(link => `
-            <div class="hist-link-row">
-                <span class="hist-link-text">${link}</span>
-                <button class="hist-copy-btn" data-copy="${link.replace(/"/g, '&quot;')}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                </button>
-            </div>`).join('');
+        if (appId && appId !== '#') {
+            return appId.split(',').map(link => link.trim()).filter(Boolean).map(link => `
+                <div class="hist-link-row">
+                    <span class="hist-link-text">${link}</span>
+                    <button class="hist-copy-btn" data-copy="${link.replace(/"/g, '&quot;')}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    </button>
+                </div>`).join('');
+        }
+        const table = meta?.jobTable || meta?.table || '';
+        const portalUrl = PORTAL_URLS[table] || '/';
+        const jobType = PORTAL_TYPE_MAP[table] || 'industrial';
+        const targetJobId = meta?.jobId || job.id;
+        const unlockHref = `${portalUrl}?id=${encodeURIComponent(targetJobId)}&type=${encodeURIComponent(jobType)}`;
+        return `
+            <div class="hist-protect-card">
+                <div class="hist-protect-header">
+                    <div class="hist-protect-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="hist-protect-info">
+                        <div class="hist-protect-title">Application Protected</div>
+                        <div class="hist-protect-sub">Details are secured &amp; verified. Unlock to view recruiter info &amp; apply.</div>
+                    </div>
+                </div>
+                <a href="${unlockHref}" class="hist-protect-unlock-btn">
+                    <i class="fas fa-unlock-alt"></i>
+                    <span>Unlock &amp; View in Portal</span>
+                </a>
+            </div>`;
     };
 
     const portalLabel = meta?.jobTable ? (PORTAL_LABELS[meta.jobTable] || meta.jobTable) : (PORTAL_LABELS[meta?.table] || '');
+    const savedTable = meta?.table || meta?.jobTable || '';
+    const savedPortalUrl = PORTAL_URLS[savedTable] || '/';
+    const savedJobType = PORTAL_TYPE_MAP[savedTable] || 'industrial';
+    const savedJobId = meta?.jobId || job.id;
+
+    const rawDesc = getTruncatedDescription(job.Description || '', 260);
+    const descHtml = renderMarkdown(rawDesc);
 
     content.innerHTML = `
         <div class="jd-topbar">
@@ -506,9 +500,9 @@ function showJobDetail(job, meta) {
                     <div class="jd-hero-info">
                         <div class="jd-hero-company">${job.Company || ''}</div>
                         <div class="jd-hero-location">${job.Location || ''}</div>
+                        ${job.Category ? `<div class="jd-hero-category"><i class="fas fa-briefcase" style="font-size:10px;"></i>${job.Category}</div>` : ''}
                     </div>
                 </div>
-                ${job.Category ? `<div class="jd-hero-category">${job.Category}</div>` : ''}
                 <div class="jd-stats-grid">
                     ${isApplied ? `<div class="jd-stat"><span class="jd-stat-label">Applied</span><span class="jd-stat-value">${meta.appliedAt ? getDaysAgo(meta.appliedAt) : 'N/A'}</span></div>` : ''}
                     ${job.Salary ? `<div class="jd-stat"><span class="jd-stat-label">Stipend/Salary</span><span class="jd-stat-value">₹${job.Salary}</span></div>` : ''}
@@ -522,12 +516,16 @@ function showJobDetail(job, meta) {
                 ${generateLinks(job['Application ID'])}
             </div>` : `
             <div class="jd-apply-section">
-                <a href="${PORTAL_URLS[meta?.table] || '/index-new.html'}" class="jd-btn-primary" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;">Apply Now →</a>
+                <a href="${savedPortalUrl}?id=${encodeURIComponent(savedJobId)}&type=${encodeURIComponent(savedJobType)}" class="jd-btn-primary" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;">Apply Now →</a>
             </div>`}
 
             <div class="jd-section">
                 <h3 class="jd-section-title">Job Description</h3>
-                <div class="jd-description">${renderMarkdown(job.Description)}</div>
+                <div class="jd-description">${descHtml}</div>
+                <div class="jd-desc-locked-notice">
+                    <i class="fas fa-shield-halved"></i>
+                    <span>Unlock in the portal to view full job description and recruiter details.</span>
+                </div>
             </div>
         </div>`;
 

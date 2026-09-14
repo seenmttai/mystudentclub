@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Resume - Composite Ledger</title>
+<style>
+
+:root {
+  --accent-color:  #002060;
+  --banner-bg:     var(--accent-color, #1F5FBF);
+  --banner-txt:    #FFFFFF;
+  --border-black:  #000000;
+  --text-dark:     #000000;
+  --link-blue:     var(--accent-color, #002060);
+  --page-bg:       #FFFFFF;
+  --viewer-bg:     #525659;
+  --font-serif:    'Times New Roman', Times, serif;
+  --cs:            1.0;
+}
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+body {
+  background: var(--viewer-bg);
+  font-family: var(--font-serif);
+  color: var(--text-dark);
+  min-height: 100vh;
+  width: 100vw;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.2s ease-in;
+}
+
+#zoom-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 24px 0 32px;
+}
+
+#cv-page {
+  position: relative;
+  width: 1000px;
+  min-height: 1413.94px;
+  background: var(--page-bg);
+  color: var(--text-dark);
+  padding: 35px 40px 30px 40px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+  flex-shrink: 0;
+  transform-origin: top center;
+  font-size: calc(13.2px * var(--cs));
+  line-height: 1.34;
+}
+
+.template { display: none !important; }
+
+/* ── Header Section ── */
+.header-table {
+  width: 100%;
+  margin-bottom: calc(10px * var(--cs));
+  border-collapse: collapse;
+}
+
+.candidate-name {
+  font-size: calc(28px * var(--cs));
+  font-weight: 700;
+  color: var(--text-dark);
+  line-height: 1.1;
+  margin-bottom: calc(3px * var(--cs));
+}
+
+.candidate-subtitle {
+  font-size: calc(13.5px * var(--cs));
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.contact-info {
+  font-size: calc(13px * var(--cs));
+  text-align: right;
+  line-height: 1.5;
+}
+
+.contact-info .contact-label {
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.contact-info a {
+  color: var(--link-blue);
+  text-decoration: underline;
+}
+
+.header-table .contact-row {
+  margin-top: calc(2px * var(--cs));
+}
+
+.header-table td:last-child .contact-icon-item {
+  justify-content: flex-end;
+}
+
+.sortable-section {
+  margin-top: -1px;
+  margin-bottom: calc(8px * var(--cs));
+}
+
+/* Section Banner Headings */
+.section-banner, .section-header {
+  background-color: var(--banner-bg);
+  color: var(--banner-txt);
+  border: 1px solid var(--border-black);
+  font-size: calc(14px * var(--cs));
+  font-weight: 700;
+  padding: calc(3px * var(--cs)) calc(8px * var(--cs));
+  margin-top: calc(8px * var(--cs));
+  margin-bottom: calc(6px * var(--cs));
+}
+
+/* ── Top 2-Column Section (Summary & Education) ── */
+.top-grid {
+  display: grid;
+  grid-template-columns: 44% 53%;
+  column-gap: 3%;
+  margin-bottom: calc(6px * var(--cs));
+}
+
+.summary-box {
+  background-color: transparent !important;
+  background: transparent !important;
+}
+
+.summary-box .section-banner,
+.edu-box .section-banner {
+  margin-top: 0;
+}
+
+.summary-text {
+  font-size: calc(12.4px * var(--cs));
+  line-height: 1.34;
+  text-align: justify;
+}
+
+/* Educational Qualification Table */
+.edu-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: calc(12.2px * var(--cs));
+  text-align: center;
+}
+
+.edu-table th, .edu-table td {
+  border: 1px solid var(--border-black);
+  padding: calc(3px * var(--cs)) calc(4px * var(--cs));
+  vertical-align: middle;
+}
+
+.edu-table th {
+  font-style: italic;
+  font-weight: 700;
+}
+
+/* Ledger Tables */
+.ledger-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: calc(12.5px * var(--cs));
+  margin-bottom: 0 !important;
+}
+
+.ledger-table th, .ledger-table td {
+  border: 1px solid var(--border-black);
+  padding: calc(4px * var(--cs)) calc(6px * var(--cs));
+  vertical-align: top;
+}
+
+.ledger-table th {
+  font-style: italic;
+  font-weight: 700;
+  text-align: center;
+}
+
+.ledger-table td.category-cell,
+.ledger-table td.label-cell {
+  width: 11% !important;
+  font-size: calc(12.2px * var(--cs));
+  font-weight: 400;
+  text-align: center;
+  vertical-align: middle !important;
+}
+
+.ledger-table td.content-cell {
+  width: 89% !important;
+}
+
+.ledger-table tr > td[colspan] {
+  width: 100% !important;
+}
+
+/* Experience independent subheader (company / role / dates line) */
+.exp-subhead-wrap {
+  margin-top: calc(8px * var(--cs));
+  margin-bottom: calc(4px * var(--cs));
+}
+#experience-list > .ledger-exp-item:first-child .exp-subhead-wrap {
+  margin-top: 0;
+}
+.exp-subhead {
+  font-size: calc(13px * var(--cs));
+  font-weight: 700;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.exp-company:not(:empty) + .exp-role:not(:empty)::before {
+  content: " – ";
+  font-weight: 700;
+}
+
+/* Bullet Lists */
+.bullet-list {
+  list-style: none;
+  padding-left: 0;
+  font-size: calc(12.5px * var(--cs));
+  line-height: 1.35;
+  margin-bottom: calc(4px * var(--cs));
+}
+
+.bullet-list li {
+  position: relative;
+  padding-left: calc(11px * var(--cs));
+  margin-bottom: calc(3px * var(--cs));
+  text-align: justify;
+}
+
+.bullet-list li::before {
+  content: "•";
+  position: absolute;
+  left: calc(2px * var(--cs));
+  font-size: calc(15.5px * var(--cs));
+  line-height: 1.2;
+}
+
+.bullet-list li:last-child {
+  margin-bottom: 0;
+}
+
+.skills-text {
+  font-size: calc(12.5px * var(--cs));
+  line-height: 1.35;
+  color: var(--text-dark);
+}
+
+@media print {
+  html, body {
+    background: none !important;
+    margin: 0;
+    padding: 0;
+  }
+  #zoom-wrapper {
+    padding: 0;
+  }
+  #cv-page {
+    transform: scale(1) !important;
+    margin: 0 !important;
+    width: 210mm;
+    min-height: 297mm;
+    box-shadow: none;
+    padding: 10mm 11mm 10mm 11mm;
+  }
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+}
+</style>
+</head>
+<body data-section-grouping>
+<div id="zoom-wrapper">
+<div id="cv-page">
+
+  <!-- ══ HEADER SECTION ══════════════════════════════════════════ -->
+  <table class="header-table">
+    <tr>
+      <td style="width: 50%; vertical-align: top;">
+        <h1 class="candidate-name" data-field="name">Padam Bhansali</h1>
+        <div class="candidate-subtitle" data-field="tagline">Chartered Accountant</div>
+        <div class="contact-row"><span class="contact-value" data-field="location">Mumbai, Maharashtra</span></div>
+      </td>
+      <td style="width: 50%; vertical-align: top; text-align: right;">
+        <div class="contact-row"><span class="contact-value" data-field="phone">+91 7228881182</span></div>
+        <div class="contact-row"><span class="contact-value" data-field="email">capadambhansali@gmail.com</span></div>
+        <div class="contact-row"><span class="contact-value" data-field="linkedin">linkedin.com/in/ca-padam-bhansali</span></div>
+      </td>
+    </tr>
+  </table>
+
+  <!-- ══ SUMMARY & EDUCATION GRID ═════════════════════════════════ -->
+  <div class="top-grid">
+    <div class="summary-box sortable-section" data-section-id="summary">
+      <div class="section-banner">Summary</div>
+      <div class="summary-text" data-field="summary"></div>
+    </div>
+
+    <div class="edu-box sortable-section" data-section-id="education">
+      <div class="section-banner">Educational Qualification</div>
+      <table class="edu-table">
+        <thead>
+          <tr>
+            <th style="width: 26%;">Course</th>
+            <th style="width: 42%;">Institute</th>
+            <th style="width: 32%;">Result</th>
+          </tr>
+        </thead>
+        <tbody id="education-list">
+          <tr class="template">
+            <td data-field="degree"></td>
+            <td data-field="institution"></td>
+            <td data-field="remarks"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ WORK EXPERIENCE ═════════════════════════════════════════ -->
+  <div class="sortable-section" data-section-id="experience">
+    <div class="section-banner">Work Experience</div>
+    <div id="experience-list">
+      <div class="ledger-exp-item template">
+        <div class="exp-subhead-wrap">
+          <div class="exp-subhead">
+            <span class="exp-left">
+              <span class="exp-company" data-field="company"></span>
+              <span class="exp-role" data-field="role"></span>
+            </span>
+            <span class="exp-dates" data-field="dates"></span>
+          </div>
+          <div class="exp-intro" data-field="intro" style="font-style:italic; font-size:calc(12.5px * var(--cs)); margin-bottom:calc(4px * var(--cs));"></div>
+        </div>
+        <table class="ledger-table" data-preserve-label-columns>
+          <thead class="exp-thead">
+            <tr>
+              <th style="width:11%;">Category</th>
+              <th style="width:89%;">Key Responsibilities &amp; Achievements</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="category-cell" data-field="category"></td>
+              <td class="content-cell">
+                <ul class="bullet-list" data-list="bullets"></ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PROJECTS ════════════════════════════════════════════════ -->
+  <div class="sortable-section" data-section-id="projects">
+    <div class="section-banner">Projects</div>
+    <div id="projects-list">
+      <table class="ledger-table template" data-preserve-label-columns>
+        <tbody>
+          <tr>
+            <td class="category-cell" data-field="title"></td>
+            <td class="content-cell">
+              <div style="font-style:italic; margin-bottom: 4px;" data-field="description"></div>
+              <ul class="bullet-list" data-list="bullets"></ul>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ SKILLS ══════════════════════════════════════════════════ -->
+  <div class="sortable-section" data-section-id="skills">
+    <div class="section-banner">Skills</div>
+    <div class="skills-text" data-field="skills"></div>
+  </div>
+
+  <!-- ══ CERTIFICATIONS ══════════════════════════════════════════ -->
+  <div class="sortable-section" data-section-id="certifications">
+    <div class="section-banner">Certifications & Awards</div>
+    <ul class="bullet-list" id="cert-list" data-list="certifications"></ul>
+  </div>
+
+  <!-- ══ ACHIEVEMENTS ════════════════════════════════════════════ -->
+  <div class="sortable-section" data-section-id="achievements">
+    <div class="section-banner">Achievements</div>
+    <ul class="bullet-list" data-list="achievements"></ul>
+  </div>
+
+  <!-- ══ LEADERSHIP ══════════════════════════════════════════════ -->
+  <div class="sortable-section" data-section-id="leadership">
+    <div class="section-banner">Leadership</div>
+    <ul class="bullet-list" data-list="leadership"></ul>
+  </div>
+
+  <!-- ══ INTERESTS ═══════════════════════════════════════════════ -->
+  <div class="sortable-section" data-section-id="interests">
+    <div class="section-banner">Interests</div>
+    <ul class="bullet-list" data-list="interests"></ul>
+  </div>
+
+</div><!-- #cv-page -->
+</div><!-- #zoom-wrapper -->
+
+<script src="cv-common.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var PAGE_H = 1413.94;
+  var PAGE_W = 1000;
+
+  function scaleToFit() {
+    var page = document.getElementById('cv-page');
+    if (!page || document.body.classList.contains('print-mode')) return;
+    var avail = window.innerWidth - 20;
+    var scale = avail < PAGE_W ? avail / PAGE_W : 1.0;
+    page.style.transform = 'scale(' + scale + ')';
+    page.style.marginBottom = '-' + (PAGE_H - PAGE_H * scale) + 'px';
+  }
+
+  function shrinkContentToFit() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    var cs = 1.0;
+    document.documentElement.style.setProperty('--cs', cs);
+    page.style.height = 'auto';
+    var iter = 0;
+    while (page.scrollHeight > PAGE_H + 1 && iter < 80) {
+      cs = Math.round((cs - 0.01) * 1000) / 1000;
+      document.documentElement.style.setProperty('--cs', cs);
+      iter++;
+    }
+    page.style.height = '';
+  }
+
+  window.scaleToFit = scaleToFit;
+  window.shrinkContentToFit = shrinkContentToFit;
+
+  var _tx = '', _mb = '';
+
+  function enablePrintMode() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    _tx = page.style.transform;
+    _mb = page.style.marginBottom;
+    document.body.classList.add('print-mode');
+    page.style.transform = 'scale(1)';
+    page.style.marginBottom = '0';
+    shrinkContentToFit();
+  }
+
+  function disablePrintMode() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    document.body.classList.remove('print-mode');
+    page.style.transform = _tx || '';
+    page.style.marginBottom = _mb || '';
+    scaleToFit();
+  }
+
+  window.addEventListener('load', function () {
+    shrinkContentToFit();
+    scaleToFit();
+    document.body.style.opacity = '1';
+    var mq = window.matchMedia('print');
+    var handler = function (e) { e.matches ? enablePrintMode() : disablePrintMode(); };
+    if (mq.addEventListener) { mq.addEventListener('change', handler); }
+    else if (mq.addListener)  { mq.addListener(handler); }
+    window.addEventListener('beforeprint', enablePrintMode);
+    window.addEventListener('afterprint',  disablePrintMode);
+  });
+
+  var _rt;
+  window.addEventListener('resize', function () {
+    clearTimeout(_rt);
+    _rt = setTimeout(scaleToFit, 100);
+  });
+}());
+</script>
+</body>
+<script>
+// Composite-ledger only: linkify email/linkedin, hide empty contact rows, build exp-subhead.
+// Runs after cv-common.js populates data-field elements via setHTML.
+(function clContactFix() {
+  function fix(data) {
+    // --- Summary box background reset ---
+    var summaryBox = document.querySelector('.summary-box');
+    if (summaryBox) {
+      summaryBox.style.setProperty('background-color', 'transparent', 'important');
+      summaryBox.style.setProperty('background', 'transparent', 'important');
+    }
+
+    // --- Experience headers and table standardizing ---
+    var expItems = document.querySelectorAll('#experience-list > .ledger-exp-item:not(.template)');
+    expItems.forEach(function(itemBlock, idx) {
+      var companyEl = itemBlock.querySelector('[data-field="company"]');
+      var roleEl = itemBlock.querySelector('[data-field="role"]');
+      var datesEl = itemBlock.querySelector('[data-field="dates"]');
+      var wrap = itemBlock.querySelector('.exp-subhead-wrap');
+      var thead = itemBlock.querySelector('.exp-thead');
+
+      var hasCompany = companyEl && companyEl.style.display !== 'none' && companyEl.textContent.trim() !== '';
+      var hasRole = roleEl && roleEl.style.display !== 'none' && roleEl.textContent.trim() !== '';
+      var hasDates = datesEl && datesEl.style.display !== 'none' && datesEl.textContent.trim() !== '';
+      var hasHeader = hasCompany || hasRole || hasDates;
+
+      if (wrap) {
+        wrap.style.display = hasHeader ? '' : 'none';
+      }
+      if (thead) {
+        thead.style.display = (hasHeader || idx === 0) ? '' : 'none';
+      }
+    });
+  }
+  // Hook: run shortly after DOMContentLoaded so cv-common.js has time to populate fields
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() { setTimeout(fix, 80); });
+  } else {
+    setTimeout(fix, 80);
+  }
+  // Also expose so cv-script.js can call it after each renderCV (receives data arg from cv-common.js)
+  window.__clContactFix = fix;
+}());
+</script>
+
+</html>

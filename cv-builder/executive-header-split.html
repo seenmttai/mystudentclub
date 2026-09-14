@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Executive Header Split CV</title>
+<style>
+/* ═══════════════════════════════════════════════════════════
+   DESIGN SYSTEM & ENGINE TOKENS — Executive Header Split
+   Page: A4 (1000 px base viewer width × 1413.94 px height)
+   Scaling Engine:
+     - --cs (content-scale factor): shrinkContentToFit() dynamically
+       adjusts --cs so all content fits strictly within 1413.94 px (A4 1-page limit).
+     - scaleToFit(): viewport responsive scaling using transform: scale().
+ ═══════════════════════════════════════════════════════════ */
+
+:root {
+  --header-blue:   var(--accent-color, #05436E);   /* Header Banner Accent */
+  --steel-blue:    var(--accent-color, #094978);   /* Section Accent & Titles */
+  --text-dark:     #222222;   /* Dark Charcoal Text */
+  --text-body:     #424242;   /* Paragraph Body Text */
+  --text-muted:    #606363;   /* Secondary Muted Text */
+  --link-white:    #FFFFFF;   /* Header Link White */
+  --page-bg:       #FFFFFF;   /* White A4 Sheet */
+  --viewer-bg:     #525659;   /* Outer Canvas Background */
+  --font-main:     Arial, 'Segoe UI', sans-serif;
+  --cs:            1.0;       /* Content scale variable adjusted by shrinkContentToFit() */
+}
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+body {
+  background: var(--viewer-bg);
+  font-family: var(--font-main);
+  color: var(--text-dark);
+  min-height: 100vh;
+  width: 100vw;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.2s ease-in;
+}
+
+.template { display: none !important; }
+
+/* ── Viewer Centering Wrapper ── */
+#zoom-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 24px 0 32px;
+}
+
+/* ── A4 Page Card Container ── */
+#cv-page {
+  position: relative;
+  width: 1000px;
+  min-height: 1413.94px;
+  background: var(--page-bg);
+  color: var(--text-dark);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+  flex-shrink: 0;
+  transform-origin: top center;
+  font-size: calc(14.5px * var(--cs));
+  line-height: 1.34;
+}
+
+/* ── Header Section ── */
+.top-header {
+  background-color: var(--header-blue);
+  color: #FFFFFF;
+  padding: calc(38px * var(--cs)) calc(36px * var(--cs));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.candidate-name {
+  font-size: calc(34px * var(--cs));
+  font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1.1;
+  margin-bottom: calc(4px * var(--cs));
+}
+
+.candidate-subtitle {
+  font-size: calc(17px * var(--cs));
+  font-weight: 400;
+  color: #FFFFFF;
+}
+
+.header-right {
+  display: flex;
+  flex-direction: column;
+  gap: calc(5px * var(--cs));
+  font-size: calc(13.8px * var(--cs));
+  color: #FFFFFF;
+  text-align: left;
+}
+
+.header-contact-item {
+  display: flex;
+  align-items: center;
+  gap: calc(10px * var(--cs));
+  color: #FFFFFF !important;
+  font-weight: 700 !important;
+}
+
+.header-contact-item,
+.header-contact-item *,
+.header-contact-item a,
+.header-contact-item .contact-value,
+.header-contact-item .contact-value a,
+.header-contact-item .contact-icon-text {
+  color: #FFFFFF !important;
+  font-weight: 700 !important;
+  border-bottom: none !important;
+}
+
+.header-contact-item a,
+.header-contact-item .contact-value a,
+.header-contact-item a.contact-icon-text {
+  text-decoration: underline !important;
+}
+
+.header-contact-item .contact-sep {
+  display: none !important;
+}
+
+.header-contact-item .contact-icon-glyph {
+  display: none !important;
+}
+
+.header-contact-item svg {
+  fill: #FFFFFF !important;
+  stroke: #FFFFFF !important;
+  color: #FFFFFF !important;
+}
+
+/* ── 2-Column Split Layout ── */
+.main-content {
+  display: grid;
+  grid-template-columns: 42% 55%;
+  column-gap: 3%;
+  padding: calc(20px * var(--cs)) calc(36px * var(--cs)) calc(30px * var(--cs)) calc(36px * var(--cs));
+}
+
+/* Section Title Underlined Accent */
+.section-title {
+  font-size: calc(16.5px * var(--cs));
+  font-weight: 700;
+  color: var(--steel-blue);
+  text-transform: uppercase;
+  border-bottom: calc(2px * var(--cs)) solid var(--steel-blue);
+  padding-bottom: calc(2px * var(--cs));
+  margin-top: calc(14px * var(--cs));
+  margin-bottom: calc(8px * var(--cs));
+  letter-spacing: 0.3px;
+}
+
+.column-left .section-title:first-child,
+.column-right .section-title:first-child {
+  margin-top: 0;
+}
+
+/* Paragraphs & Lists */
+.summary-paragraph {
+  font-size: calc(12.5px * var(--cs));
+  line-height: 1.36;
+  color: var(--text-body);
+  text-align: justify;
+  margin-bottom: calc(8px * var(--cs));
+}
+
+.bullet-list {
+  list-style-type: disc;
+  padding-left: calc(16px * var(--cs));
+  font-size: calc(12.5px * var(--cs));
+  line-height: 1.35;
+  color: var(--text-body);
+  margin-bottom: calc(8px * var(--cs));
+}
+
+.bullet-list li {
+  margin-bottom: calc(4px * var(--cs));
+  text-align: justify;
+}
+
+.bullet-list li:last-child {
+  margin-bottom: 0;
+}
+
+/* Education & Experience Entries */
+.entry-block {
+  margin-bottom: calc(8px * var(--cs));
+}
+
+.entry-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: calc(1px * var(--cs));
+}
+
+.entry-title {
+  font-size: calc(13.8px * var(--cs));
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.entry-date {
+  font-size: calc(12px * var(--cs));
+  color: var(--text-muted);
+}
+
+.entry-subtitle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: calc(13.8px * var(--cs));
+  color: var(--text-muted);
+  margin-bottom: calc(4px * var(--cs));
+}
+
+.entry-note {
+  font-size: calc(13px * var(--cs));
+  color: var(--text-body);
+}
+
+.entry-score {
+  font-size: calc(13.8px * var(--cs));
+  color: var(--text-dark);
+  font-weight: 700;
+}
+
+.company-desc {
+  font-size: calc(13.2px * var(--cs));
+  font-style: italic;
+  color: var(--text-body);
+  margin-top: calc(2px * var(--cs));
+  margin-bottom: calc(8px * var(--cs));
+}
+
+.subgroup-title {
+  font-size: calc(12.8px * var(--cs));
+  font-weight: 700;
+  text-decoration: underline;
+  color: var(--text-dark);
+  margin-top: calc(6px * var(--cs));
+  margin-bottom: calc(4px * var(--cs));
+}
+
+.skills-block {
+  font-size: calc(12.5px * var(--cs));
+  line-height: 1.36;
+  color: var(--text-body);
+  margin-bottom: calc(8px * var(--cs));
+}
+
+/* ── Print Styles (A4 Page Output) ── */
+@media print {
+  html, body {
+    background: none !important;
+    margin: 0;
+    padding: 0;
+  }
+  #zoom-wrapper {
+    padding: 0;
+  }
+  #cv-page {
+    transform: scale(1) !important;
+    margin: 0 !important;
+    width: 210mm;
+    min-height: 297mm;
+    box-shadow: none;
+  }
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+}
+</style>
+</head>
+<body>
+<div id="zoom-wrapper">
+<div id="cv-page">
+
+  <!-- ══ HEADER SECTION ══════════════════════════════════════════ -->
+  <div class="top-header">
+    <div class="header-left">
+      <h1 class="candidate-name" data-field="name">Padam Bhansali</h1>
+      <div class="candidate-subtitle" data-field="tagline">Chartered Accountant</div>
+    </div>
+    <div class="header-right contact-block">
+      <div class="header-contact-item contact-row" data-field="phone-wrap">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFFFFF" style="flex-shrink:0;"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+        <span class="contact-value" data-field="phone">+91 7228881182</span>
+      </div>
+      <div class="header-contact-item contact-row" data-field="email-wrap">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFFFFF" style="flex-shrink:0;"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        <a href="mailto:capadambhansali@gmail.com" class="contact-value" data-field="email">capadambhansali@gmail.com</a>
+      </div>
+      <div class="header-contact-item contact-row" data-field="linkedin-wrap">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFFFFF" style="flex-shrink:0;"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 19H6v-9h3v9zM7.5 8.73c-.97 0-1.75-.79-1.75-1.75s.78-1.75 1.75-1.75 1.75.79 1.75 1.75-.78 1.75-1.75-1.75zm11.5 10.27h-3v-4.5c0-1.1-.9-2-2-2s-2 .9-2 2v4.5h-3v-9h3v1.3c.7-.9 1.8-1.5 3-1.5 2.2 0 4 1.8 4 4v5.2z"/></svg>
+        <a href="https://www.linkedin.com/in/ca-padam" target="_blank" rel="noopener" class="contact-value" data-field="linkedin">www.linkedin.com/in/ca-padam</a>
+      </div>
+      <div class="header-contact-item contact-row" data-field="location-wrap">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFFFFF" style="flex-shrink:0;"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5-2.5-1.12 2.5-2.5 2.5z"/></svg>
+        <span class="contact-value" data-field="location">Trivandrum, Kerala</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MAIN 2-COLUMN CONTENT ══════════════════════════════════ -->
+  <div class="main-content">
+
+    <!-- ── LEFT COLUMN ── -->
+    <div class="column-left">
+
+      <div class="sortable-section" data-section-id="summary">
+        <div class="section-title">SUMMARY</div>
+        <p class="summary-paragraph" data-field="summary"></p>
+      </div>
+
+      <div class="sortable-section" data-section-id="leadership">
+        <div class="section-title">LEADERSHIP</div>
+        <ul class="bullet-list" data-list="leadership"></ul>
+      </div>
+
+      <div class="sortable-section" data-section-id="achievements">
+        <div class="section-title">EXTRACURRICULAR ACTIVITIES</div>
+        <ul class="bullet-list" data-list="achievements"></ul>
+      </div>
+
+      <div class="sortable-section" data-section-id="education">
+        <div class="section-title">EDUCATION</div>
+        <div id="education-list">
+          <div class="entry-block template">
+            <div class="entry-header-row">
+              <span class="entry-title" data-field="degree"></span>
+              <span class="entry-date" data-field="year"></span>
+            </div>
+            <div data-field="institution-header">
+              <div class="entry-subtitle-row">
+                <span data-field="institution"></span>
+              </div>
+            </div>
+            <div class="entry-note" data-field="remarks"></div>
+            <div class="entry-score" data-field="marks"></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- .column-left -->
+
+    <!-- ── RIGHT COLUMN ── -->
+    <div class="column-right" data-section-append-host>
+
+      <div class="sortable-section" data-section-id="certifications">
+        <div class="section-title">AWARDS AND CERTIFICATIONS</div>
+        <ul class="bullet-list" id="cert-list" data-list="certifications"></ul>
+      </div>
+
+      <div class="sortable-section" data-section-id="experience">
+        <div class="section-title">EXPERIENCE</div>
+        <div id="experience-list">
+          <div class="entry-block template">
+            <div class="entry-header-row">
+              <span class="entry-title" data-field="role"></span>
+              <span class="entry-date" data-field="dates"></span>
+            </div>
+            <div class="entry-subtitle-row">
+              <span data-field="company"></span>
+            </div>
+            <div class="company-desc" data-field="intro"></div>
+            <div class="company-desc" data-field="category"></div>
+            <ul class="bullet-list" data-list="bullets"></ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="sortable-section" data-section-id="projects">
+        <div class="section-title">PROJECTS</div>
+        <div id="projects-list">
+          <div class="entry-block template">
+            <div class="entry-header-row">
+              <span class="entry-title" data-field="title"></span>
+            </div>
+            <div class="company-desc" data-field="description"></div>
+            <ul class="bullet-list" data-list="bullets"></ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="sortable-section" data-section-id="skills">
+        <div class="section-title">SKILLS</div>
+        <div class="skills-block" data-field="skills"></div>
+      </div>
+
+      <div class="sortable-section" data-section-id="interests">
+        <div class="section-title">INTERESTS</div>
+        <ul class="bullet-list" data-list="interests"></ul>
+      </div>
+
+    </div><!-- .column-right -->
+
+  </div><!-- .main-content -->
+
+</div><!-- #cv-page -->
+</div><!-- #zoom-wrapper -->
+
+<!-- ══ SCRIPT ENGINE ════════════════════════════════════════════ -->
+<script src="cv-common.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var PAGE_H = 1413.94; /* A4 page height limit in px */
+  var PAGE_W = 1000;    /* A4 viewer width in px */
+
+  function scaleToFit() {
+    var page = document.getElementById('cv-page');
+    if (!page || document.body.classList.contains('print-mode')) return;
+    var avail = window.innerWidth - 20;
+    var scale = avail < PAGE_W ? avail / PAGE_W : 1.0;
+    page.style.transform = 'scale(' + scale + ')';
+    page.style.marginBottom = '-' + (PAGE_H - PAGE_H * scale) + 'px';
+  }
+
+  function shrinkContentToFit() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    var cs = 1.0;
+    document.documentElement.style.setProperty('--cs', cs);
+    page.style.height = 'auto';
+    var iter = 0;
+    while (page.scrollHeight > PAGE_H + 1 && iter < 80) {
+      cs = Math.round((cs - 0.01) * 1000) / 1000;
+      document.documentElement.style.setProperty('--cs', cs);
+      iter++;
+    }
+    page.style.height = '';
+  }
+
+  window.scaleToFit = scaleToFit;
+  window.shrinkContentToFit = shrinkContentToFit;
+
+  var _tx = '', _mb = '';
+
+  function enablePrintMode() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    _tx = page.style.transform;
+    _mb = page.style.marginBottom;
+    document.body.classList.add('print-mode');
+    page.style.transform = 'scale(1)';
+    page.style.marginBottom = '0';
+    shrinkContentToFit();
+  }
+
+  function disablePrintMode() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    document.body.classList.remove('print-mode');
+    page.style.transform = _tx || '';
+    page.style.marginBottom = _mb || '';
+    scaleToFit();
+  }
+
+  window.addEventListener('load', function () {
+    shrinkContentToFit();
+    scaleToFit();
+    document.body.style.opacity = '1';
+    var mq = window.matchMedia('print');
+    var handler = function (e) { e.matches ? enablePrintMode() : disablePrintMode(); };
+    if (mq.addEventListener) { mq.addEventListener('change', handler); }
+    else if (mq.addListener)  { mq.addListener(handler); }
+    window.addEventListener('beforeprint', enablePrintMode);
+    window.addEventListener('afterprint',  disablePrintMode);
+  });
+
+  var _rt;
+  window.addEventListener('resize', function () {
+    clearTimeout(_rt);
+    _rt = setTimeout(scaleToFit, 100);
+  });
+}());
+</script>
+</body>
+</html>

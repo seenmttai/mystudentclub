@@ -1,8 +1,8 @@
 import { getDaysAgo } from './date-utils.js';
 
-const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+const supabaseUrl = 'https://auth.mystudentclub.com';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey, { global: { headers: { 'apikey': supabaseKey } } });
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey, { auth: { storageKey: 'sb-izsggdtdiacxdsjjncdq-auth-token' }, global: { headers: { 'apikey': supabaseKey } } });
 const jobsContainer = document.getElementById('jobs');
 const loader = document.getElementById('loader');
 const modal = document.getElementById('modal');

@@ -23,6 +23,7 @@
     />
     <link rel="stylesheet" href="/scripts/portal-style.css" />
     <link rel="stylesheet" href="/scripts/profile.css" />
+    <link rel="stylesheet" href="/scripts/profile-wizard.css" />
     <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png" />
     <script src="scripts/vendor/pdf.min.js"></script>
     <script src="scripts/vendor/supabase.js"></script>
@@ -296,6 +297,66 @@
     <!-- Toast container -->
     <div id="toast-container" class="toast-container"></div>
 
+    <!-- Profile onboarding wizard -->
+    <div
+      id="profile-wizard"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Create your profile"
+      aria-hidden="true"
+      inert
+    >
+      <div class="wz-topbar">
+        <a href="/" class="wz-brand" aria-label="My Student Club home">
+          <img
+            src="/assets/logo.png"
+            alt="My Student Club"
+            class="wz-brand-logo"
+          />
+        </a>
+        <div class="wz-progress-wrap">
+          <div
+            class="wz-progress-track"
+            role="progressbar"
+            aria-label="Profile setup progress"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+          >
+            <div class="wz-progress-fill" id="wz-progress-fill"></div>
+          </div>
+          <span class="wz-step-pill" id="wz-step-pill">Step 1</span>
+        </div>
+      </div>
+      <div class="wz-body" id="wz-body">
+        <div class="wz-screen wz-screen-a wz-active" id="wz-screen-a"></div>
+        <div class="wz-screen wz-screen-b" id="wz-screen-b"></div>
+      </div>
+      <div class="wz-footer">
+        <button
+          type="button"
+          class="wz-back-btn"
+          id="wz-back-btn"
+          style="visibility: hidden"
+        >
+          &larr; Back
+        </button>
+        <div class="wz-footer-right">
+          <button
+            type="button"
+            class="wz-skip-btn"
+            id="wz-skip-btn"
+            style="display: none"
+          >
+            Skip
+          </button>
+          <button type="button" class="wz-next-btn" id="wz-next-btn">
+            Continue &rarr;
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Global backdrop -->
     <div
       id="p2_global_backdrop"
@@ -306,6 +367,7 @@
     <!-- ============================================================
        MAIN
        ============================================================ -->
+    <div id="profile-main" style="display: none">
     <main class="app-main pn-main">
       <div class="pn-content">
         <!-- ── HERO: avatar + info ── -->
@@ -2624,6 +2686,7 @@
         </a>
       </div>
     </nav>
+    </div>
 
     <!-- Consent Required Modal -->
     <div
@@ -2713,6 +2776,7 @@
         </div>
     </div>
 
+    <script src="/scripts/profile-wizard.js"></script>
     <script type="module" src="scripts/profile.js"></script>
     <script src="scripts/custom-select-enhance.js" defer></script>
   </body>

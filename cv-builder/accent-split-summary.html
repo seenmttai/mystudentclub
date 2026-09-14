@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Accent Split Summary CV</title>
+<style>
+/* ═══════════════════════════════════════════════════════════
+   DESIGN SYSTEM & ENGINE TOKENS — Accent Split Summary
+   Page: A4 (1000 px base viewer width × 1413.94 px height)
+   Scaling Engine:
+     - --cs (content-scale factor): shrinkContentToFit() dynamically
+       adjusts --cs so all content fits strictly within 1413.94 px (A4 1-page limit).
+     - scaleToFit(): viewport responsive scaling using transform: scale().
+ ═══════════════════════════════════════════════════════════ */
+
+:root {
+  --navy-accent:   var(--accent-color, #1A365D);   /* Accent Color */
+  --th-bg:         color-mix(in srgb, var(--accent-color, #1A365D) 10%, #FFFFFF);   /* Dynamic Soft Light Table Header Fill */
+  --text-dark:     #2C3646;   /* Dark Charcoal Text */
+  --text-body:     #2C3646;   /* Paragraph Body Text */
+  --text-muted:    #555555;   /* Secondary Muted Text */
+  --link-blue:     var(--accent-color, #0000EE);   /* Dynamic Link Blue */
+  --border-gray:   #D0D5DD;   /* Table Border Gray */
+  --page-bg:       #FFFFFF;   /* White A4 Sheet */
+  --viewer-bg:     #525659;   /* Outer Canvas Background */
+  --font-main:     Arial, 'Segoe UI', sans-serif;
+  --cs:            1.0;       /* Content scale variable adjusted by shrinkContentToFit() */
+}
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+body {
+  background: var(--viewer-bg);
+  font-family: var(--font-main);
+  color: var(--text-dark);
+  min-height: 100vh;
+  width: 100vw;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.2s ease-in;
+}
+
+.template { display: none !important; }
+
+/* ── Viewer Centering Wrapper ── */
+#zoom-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 24px 0 32px;
+}
+
+/* ── A4 Page Card Container ── */
+#cv-page {
+  position: relative;
+  width: 1000px;
+  min-height: 1413.94px;
+  background: var(--page-bg);
+  color: var(--text-dark);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+  flex-shrink: 0;
+  transform-origin: top center;
+  font-size: calc(12.8px * var(--cs));
+  line-height: 1.34;
+  padding: calc(24px * var(--cs)) calc(32px * var(--cs));
+}
+
+/* Header Section */
+.top-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-bottom: calc(18px * var(--cs));
+  border-bottom: calc(2px * var(--cs)) solid var(--navy-accent);
+  margin-bottom: calc(12px * var(--cs));
+}
+
+.candidate-name {
+  font-size: calc(28px * var(--cs));
+  font-weight: 700;
+  color: var(--navy-accent);
+  line-height: 1.1;
+  margin-bottom: calc(2px * var(--cs));
+}
+
+.candidate-subtitle {
+  font-size: calc(16px * var(--cs));
+  font-weight: 700;
+  color: #3370A6;
+  letter-spacing: 0.5px;
+}
+
+.header-right {
+  font-size: calc(12px * var(--cs));
+  text-align: right;
+  line-height: 1.4;
+  color: var(--text-dark);
+}
+
+.header-right a {
+  color: var(--link-blue);
+  text-decoration: underline;
+}
+
+/* Section Title Underlined Accent */
+.section-title {
+  font-size: calc(14px * var(--cs));
+  font-weight: 700;
+  color: var(--navy-accent);
+  text-transform: uppercase;
+  border-top: none;
+  border-bottom: calc(2px * var(--cs)) solid var(--navy-accent);
+  padding-bottom: calc(3px * var(--cs));
+  margin-top: calc(14px * var(--cs));
+  margin-bottom: calc(8px * var(--cs));
+  letter-spacing: 0.3px;
+}
+
+.sortable-section:first-of-type .section-title {
+  margin-top: 0;
+}
+
+/* Paragraphs */
+.summary-paragraph {
+  font-size: calc(12.8px * var(--cs));
+  line-height: 1.36;
+  color: var(--text-body);
+  text-align: justify;
+  margin-bottom: calc(10px * var(--cs));
+}
+
+/* Competencies List */
+.competency-item {
+  display: flex;
+  gap: calc(8px * var(--cs));
+  margin-bottom: calc(6px * var(--cs));
+  font-size: calc(12.5px * var(--cs));
+  line-height: 1.34;
+}
+
+.competency-label {
+  font-weight: 700;
+  color: var(--text-dark);
+  flex-shrink: 0;
+  width: calc(160px * var(--cs));
+}
+
+/* Experience Block */
+.exp-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: calc(4px * var(--cs));
+  margin-bottom: calc(1px * var(--cs));
+}
+
+.role-title {
+  font-size: calc(13.8px * var(--cs));
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.exp-date {
+  font-size: calc(12.2px * var(--cs));
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.company-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: calc(12.2px * var(--cs));
+  font-style: italic;
+  color: var(--text-muted);
+  margin-bottom: calc(6px * var(--cs));
+}
+
+.company-desc {
+  font-size: calc(12.5px * var(--cs));
+  font-style: italic;
+  color: var(--text-body);
+  margin-bottom: calc(4px * var(--cs));
+}
+
+/* Academic Qualifications Table */
+.acad-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: calc(10px * var(--cs));
+  font-size: calc(12.2px * var(--cs));
+}
+
+.acad-table th, .acad-table td {
+  border: 1px solid var(--border-gray);
+  padding: calc(5px * var(--cs)) calc(10px * var(--cs));
+  text-align: left;
+  vertical-align: middle;
+}
+
+.acad-table th {
+  background-color: var(--th-bg);
+  color: var(--navy-accent);
+  font-weight: 700;
+}
+
+.acad-table td[data-field="degree"], .acad-table td:first-child {
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.acad-table td:last-child, .acad-table th:last-child {
+  text-align: right;
+}
+
+.acad-table td strong {
+  font-weight: 700;
+}
+
+/* Bullet List Styling */
+.bullet-list {
+  list-style: none;
+  padding-left: 0;
+  font-size: calc(12.5px * var(--cs));
+  line-height: 1.34;
+  color: var(--text-body);
+  margin-bottom: calc(8px * var(--cs));
+}
+
+.bullet-list li {
+  position: relative;
+  padding-left: calc(14px * var(--cs));
+  margin-bottom: calc(4px * var(--cs));
+  text-align: justify;
+}
+
+.bullet-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  font-size: calc(13px * var(--cs));
+  color: var(--text-dark);
+}
+
+.bullet-list li:last-child {
+  margin-bottom: 0;
+}
+
+/* ── Print Styles (A4 Page Output) ── */
+@media print {
+  html, body {
+    background: none !important;
+    margin: 0;
+    padding: 0;
+  }
+  #zoom-wrapper {
+    padding: 0;
+  }
+  #cv-page {
+    transform: scale(1) !important;
+    margin: 0 !important;
+    width: 210mm;
+    min-height: 297mm;
+    box-shadow: none;
+    padding: 10mm 12mm;
+  }
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+}
+</style>
+</head>
+<body>
+<div id="zoom-wrapper">
+<div id="cv-page">
+
+  <!-- ══ HEADER SECTION ══════════════════════════════════════════ -->
+  <div class="top-header">
+    <div>
+      <h1 class="candidate-name" data-field="name">Padam Bhansali</h1>
+      <div class="candidate-subtitle" data-field="tagline">CHARTERED ACCOUNTANT</div>
+    </div>
+    <div class="header-right contact-block" data-field="contact">
+      <div data-field="phone-wrap"><strong>Mob:</strong> <span class="contact-value" data-field="phone">+91 7228881182</span></div>
+      <div data-field="email-wrap"><strong>Email:</strong> <a href="mailto:capadambhansali@gmail.com" class="contact-value" data-field="email">capadambhansali@gmail.com</a></div>
+      <div data-field="linkedin-wrap"><strong>LinkedIn:</strong> <a href="https://linkedin.com/in/capadambhansali" target="_blank" rel="noopener" class="contact-value" data-field="linkedin">linkedin.com/in/capadambhansali</a></div>
+      <div data-field="location-wrap"><strong>Location:</strong> <span class="contact-value" data-field="location">Bathinda, Punjab</span></div>
+    </div>
+  </div>
+
+  <!-- ══ 1. PROFESSIONAL SUMMARY ═════════════════════════════════ -->
+  <div class="sortable-section" data-section-id="summary">
+    <div class="section-title">PROFESSIONAL SUMMARY</div>
+    <p class="summary-paragraph" data-field="summary"></p>
+  </div>
+
+  <!-- ══ 2. CORE COMPETENCIES & TECHNICAL SKILLS ═════════════════ -->
+  <div class="sortable-section" data-section-id="skills">
+    <div class="section-title">CORE COMPETENCIES &amp; TECHNICAL SKILLS</div>
+    <div class="bullet-list" data-field="skills"></div>
+  </div>
+
+  <!-- ══ 3. PROFESSIONAL EXPERIENCE ══════════════════════════════ -->
+  <div class="sortable-section" data-section-id="experience">
+    <div class="section-title">PROFESSIONAL EXPERIENCE</div>
+
+    <div id="experience-list">
+      <div class="exp-block template">
+        <div class="exp-header-row">
+          <span class="role-title" data-field="role"></span>
+          <span class="exp-date" data-field="dates"></span>
+        </div>
+        <div class="company-row">
+          <span data-field="company"></span>
+        </div>
+        <div class="company-desc" data-field="intro"></div>
+        <div class="company-desc" data-field="category"></div>
+        <ul class="bullet-list" data-list="bullets"></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 4. PROJECTS ═════════════════════════════════════════════ -->
+  <div class="sortable-section" data-section-id="projects">
+    <div class="section-title">PROJECTS</div>
+
+    <div id="projects-list">
+      <div class="exp-block template">
+        <div class="exp-header-row">
+          <span class="role-title" data-field="title"></span>
+        </div>
+        <div class="company-desc" data-field="description"></div>
+        <ul class="bullet-list" data-list="bullets"></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 5. ACADEMIC QUALIFICATIONS ══════════════════════════════ -->
+  <div class="sortable-section" data-section-id="education">
+    <div class="section-title">ACADEMIC QUALIFICATIONS</div>
+
+    <table class="acad-table">
+      <thead>
+        <tr>
+          <th style="width: 25%;" data-field="degree">Program / Degree</th>
+          <th style="width: 35%;" data-field="institution">Institution / Board / University</th>
+          <th style="width: 12%;" data-field="year">Year</th>
+          <th style="width: 14%;" data-field="marks">Score / Result</th>
+          <th style="width: 14%;" data-field="remarks">Remarks</th>
+        </tr>
+      </thead>
+      <tbody id="education-list">
+        <tr class="template">
+          <td data-field="degree">Chartered Accountancy (CA Final)</td>
+          <td data-field="institution">ICAI</td>
+          <td data-field="year">May 2026</td>
+          <td data-field="marks">306 / 600 (51.00%)</td>
+          <td data-field="remarks">First Attempt</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══ 6. KEY ACCOMPLISHMENTS ══════════════════════════════════ -->
+  <div class="sortable-section" data-section-id="achievements">
+    <div class="section-title">KEY ACCOMPLISHMENTS &amp; CERTIFICATIONS</div>
+    <ul class="bullet-list" data-list="achievements"></ul>
+  </div>
+
+  <!-- ══ 7. CERTIFICATIONS ═══════════════════════════════════════ -->
+  <div class="sortable-section" data-section-id="certifications">
+    <div class="section-title">CERTIFICATIONS</div>
+    <ul class="bullet-list" id="cert-list" data-list="certifications"></ul>
+  </div>
+
+  <!-- ══ 8. LEADERSHIP ═══════════════════════════════════════════ -->
+  <div class="sortable-section" data-section-id="leadership">
+    <div class="section-title">LEADERSHIP</div>
+    <ul class="bullet-list" data-list="leadership"></ul>
+  </div>
+
+  <!-- ══ 9. INTERESTS ════════════════════════════════════════════ -->
+  <div class="sortable-section" data-section-id="interests">
+    <div class="section-title">INTERESTS</div>
+    <ul class="bullet-list" data-list="interests"></ul>
+  </div>
+
+</div><!-- #cv-page -->
+</div><!-- #zoom-wrapper -->
+
+<!-- ══ SCRIPT ENGINE ════════════════════════════════════════════ -->
+<script src="cv-common.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var PAGE_H = 1413.94; /* A4 page height limit in px */
+  var PAGE_W = 1000;    /* A4 viewer width in px */
+
+  function scaleToFit() {
+    var page = document.getElementById('cv-page');
+    if (!page || document.body.classList.contains('print-mode')) return;
+    var avail = window.innerWidth - 20;
+    var scale = avail < PAGE_W ? avail / PAGE_W : 1.0;
+    page.style.transform = 'scale(' + scale + ')';
+    page.style.marginBottom = '-' + (PAGE_H - PAGE_H * scale) + 'px';
+  }
+
+  function shrinkContentToFit() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    var cs = 1.0;
+    document.documentElement.style.setProperty('--cs', cs);
+    page.style.height = 'auto';
+    var iter = 0;
+    while (page.scrollHeight > PAGE_H + 1 && iter < 80) {
+      cs = Math.round((cs - 0.01) * 1000) / 1000;
+      document.documentElement.style.setProperty('--cs', cs);
+      iter++;
+    }
+    page.style.height = '';
+  }
+
+  window.scaleToFit = scaleToFit;
+  window.shrinkContentToFit = shrinkContentToFit;
+
+  var _tx = '', _mb = '';
+
+  function enablePrintMode() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    _tx = page.style.transform;
+    _mb = page.style.marginBottom;
+    document.body.classList.add('print-mode');
+    page.style.transform = 'scale(1)';
+    page.style.marginBottom = '0';
+    shrinkContentToFit();
+  }
+
+  function disablePrintMode() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    document.body.classList.remove('print-mode');
+    page.style.transform = _tx || '';
+    page.style.marginBottom = _mb || '';
+    scaleToFit();
+  }
+
+  window.addEventListener('load', function () {
+    shrinkContentToFit();
+    scaleToFit();
+    document.body.style.opacity = '1';
+    var mq = window.matchMedia('print');
+    var handler = function (e) { e.matches ? enablePrintMode() : disablePrintMode(); };
+    if (mq.addEventListener) { mq.addEventListener('change', handler); }
+    else if (mq.addListener)  { mq.addListener(handler); }
+    window.addEventListener('beforeprint', enablePrintMode);
+    window.addEventListener('afterprint',  disablePrintMode);
+  });
+
+  var _rt;
+  window.addEventListener('resize', function () {
+    clearTimeout(_rt);
+    _rt = setTimeout(scaleToFit, 100);
+  });
+}());
+</script>
+</body>
+</html>

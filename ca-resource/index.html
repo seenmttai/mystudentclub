@@ -9,18 +9,17 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         // Pre-fetch the PDF binary while the page is loading
         (function() {
             var params = new URLSearchParams(window.location.search);
             var pdfUrl = params.get('pdf');
-            if (!pdfUrl) {
-                window.location.replace('/ca-resource/resource/?name=doc.pdf');
-                return;
+            if (pdfUrl) {
+                window.__pdfPreFetch = fetch(pdfUrl)
+                    .then(function(r) { return r.arrayBuffer(); })
+                    .catch(function() { return null; });
             }
-            window.__pdfPreFetch = fetch(pdfUrl)
-                .then(function(r) { return r.arrayBuffer(); })
-                .catch(function() { return null; });
         })();
     </script>
 </head>
@@ -29,6 +28,10 @@
         <!-- Top Toolbar -->
         <div id="toolbar">
             <div class="toolbar-left">
+                <button id="viewer-back-btn" class="toolbar-btn toolbar-back-btn" title="Back" aria-label="Back">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <div class="toolbar-separator"></div>
                 <a href="https://mystudentclub.com" class="toolbar-logo" title="My Student Club">
                     <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club">
                 </a>

@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>My Resume</title>
+    <style>
+        :root {
+            --accent-color: #45497D;
+            --navy: var(--accent-color, #45497D);
+            --purple: color-mix(in srgb, var(--accent-color, #45497D) 70%, #000000);
+            --frame: var(--frame, color-mix(in srgb, var(--accent-color, #45497D) 25%, #FFFFFF));
+            --ink: #000000;
+            --link: var(--accent-color, #0000FF);
+            --page-bg: #ffffff;
+            --viewer-bg: #525659;
+            --font-main: "Times New Roman", "Liberation Serif", Times, serif;
+            --content-scale: 1.08;
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        body {
+            background-color: var(--viewer-bg);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            min-height: 100vh;
+            width: 100vw;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #zoom-wrapper {
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            padding: 24px 0;
+        }
+
+        .page {
+            position: relative;
+            width: 1000px;
+            min-height: 1413.94px;
+            background: var(--frame);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, .55);
+            color: var(--ink);
+            transform-origin: top center;
+            flex-shrink: 0;
+            padding: 21.49px 24.60px 22.00px 19.56px;
+        }
+
+        .sheet {
+            background: var(--page-bg);
+            min-height: calc(1413.94px - 21.49px - 22.00px);
+            padding: calc(10px * var(--content-scale)) calc(21px * var(--content-scale));
+        }
+
+        /* ===== Header ===== */
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: calc(10px * var(--content-scale));
+            flex-wrap: wrap;
+        }
+
+        .name {
+            font-size: calc(36.94px * var(--content-scale));
+            font-weight: bold;
+            color: var(--navy);
+            line-height: 1.1;
+        }
+
+        .subtitle {
+            margin-top: calc(3px * var(--content-scale));
+            font-size: calc(18.47px * var(--content-scale));
+            font-style: italic;
+            color: var(--ink);
+            line-height: 1.15;
+        }
+
+        .contact {
+            text-align: right;
+            font-size: calc(18.47px * var(--content-scale));
+            font-style: italic;
+            line-height: 1.2;
+            flex: 0 0 auto;
+        }
+
+        .contact-item:empty {
+            display: none;
+        }
+
+        .contact a,
+        .contact .email {
+            color: var(--link);
+            text-decoration: underline;
+        }
+
+        /* ===== Section headings + rules ===== */
+        .section {
+            margin-top: calc(16px * var(--content-scale));
+        }
+
+        .section:first-of-type {
+            margin-top: calc(8px * var(--content-scale));
+        }
+
+        .section-head {
+            display: block;
+        }
+
+        .sec-title {
+            font-size: calc(20.15px * var(--content-scale));
+            font-weight: bold;
+            color: var(--navy);
+            line-height: 1;
+        }
+
+        .rule {
+            margin: calc(5px * var(--content-scale)) 0 calc(8px * var(--content-scale)) 0;
+            border-top: calc(1.26px * var(--content-scale)) solid var(--navy);
+            height: 0;
+        }
+
+        /* ===== Body text blocks ===== */
+        .body-block {
+            font-size: calc(16.79px * var(--content-scale));
+            line-height: 1.35;
+            color: var(--ink);
+        }
+
+        .body-block b {
+            font-weight: bold;
+        }
+
+        .justify {
+            text-align: justify;
+            text-justify: inter-word;
+        }
+
+        /* ===== Bullet lists ===== */
+        .bl,
+        .bullet-list,
+        [data-list="custom-items"],
+        .custom-section-injected ul {
+            list-style: none;
+            margin: calc(6px * var(--content-scale)) 0 0 0;
+            padding: 0;
+        }
+
+        .bl li,
+        .bullet-list li,
+        [data-list="custom-items"] li,
+        .custom-section-injected ul li {
+            position: relative;
+            padding-left: calc(15.79px * var(--content-scale));
+            margin-top: calc(4px * var(--content-scale));
+            font-size: calc(16.79px * var(--content-scale));
+            line-height: 1.35;
+            color: var(--ink);
+            text-align: justify;
+            text-justify: inter-word;
+        }
+
+        .bl li:first-child,
+        .bullet-list li:first-child,
+        [data-list="custom-items"] li:first-child,
+        .custom-section-injected ul li:first-child {
+            margin-top: 0;
+        }
+
+        .bl li:empty,
+        .bullet-list li:empty,
+        [data-list="custom-items"] li:empty,
+        [data-field="skills"] li:empty,
+        .cv-skills-list li:empty {
+            display: none !important;
+        }
+
+        .bl li::before,
+        .bullet-list li::before,
+        [data-list="custom-items"] li::before,
+        .custom-section-injected ul li::before {
+            content: "";
+            position: absolute;
+            left: calc(3.78px * var(--content-scale));
+            top: .6em;
+            width: calc(3.78px * var(--content-scale));
+            height: calc(3.78px * var(--content-scale));
+            border-radius: 50%;
+            background: #000;
+            transform: translateY(-50%);
+        }
+
+        .bl li b,
+        .bullet-list li b,
+        [data-list="custom-items"] li b,
+        .custom-section-injected ul li b {
+            font-weight: bold;
+        }
+
+        /* ===== Experience / Projects job rows ===== */
+        .job-entry {
+            margin-top: calc(14px * var(--content-scale));
+        }
+
+        .job-entry:first-child {
+            margin-top: 0;
+        }
+
+        /* A subsection entry (merged with the previous one) has no role/
+           company/dates/date of its own — its bullets are meant to read as
+           a continuation of the entry above, not a new block — so it
+           shouldn't carry the same top margin every other .job-entry gets.
+           Its <ul> also has its own margin-top (normally the gap between
+           the job-row heading and the first bullet below it), which still
+           applies even once .job-row itself is hidden — zero that too, or
+           the subsection's first bullet still sits noticeably further from
+           the entry above it than two ordinary bullets would. */
+        .job-entry.experience-title-merged {
+            margin-top: 0;
+        }
+
+        .job-entry.experience-title-merged .bl {
+            margin-top: 0;
+        }
+
+        /* .bl li:first-child normally zeroes the gap between a heading and
+           the first bullet below it — but a subsection's first bullet has
+           no heading of its own, it's a continuation of the list above, so
+           it needs the same margin as any other bullet, not the zero a
+           "first" bullet would otherwise get. */
+        .job-entry.experience-title-merged .bl li:first-child {
+            margin-top: calc(4px * var(--content-scale));
+        }
+
+        .job-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: calc(8px * var(--content-scale));
+            flex-wrap: wrap;
+        }
+
+        .job-title {
+            font-size: calc(18.47px * var(--content-scale));
+            line-height: 1.2;
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .job-title b {
+            font-weight: bold;
+        }
+
+        .job-title i {
+            font-style: italic;
+        }
+
+        .job-title i:empty,
+        .job-title i:has(span:empty) {
+            display: none;
+        }
+
+        .job-date {
+            font-size: calc(18.47px * var(--content-scale));
+            font-style: italic;
+            line-height: 1.2;
+            white-space: nowrap;
+            flex: 0 0 auto;
+        }
+
+        .proj-desc {
+            margin-top: calc(3px * var(--content-scale));
+        }
+
+        .proj-desc:empty {
+            display: none;
+        }
+
+        /* ===== Education table ===== */
+        .edu-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            font-size: calc(20px * var(--content-scale));
+            color: var(--ink);
+        }
+
+        .edu-table td,
+        .edu-table th {
+            border: calc(1.26px * var(--content-scale)) solid var(--navy);
+            text-align: center;
+            vertical-align: middle;
+            padding: calc(4px * var(--content-scale)) calc(3px * var(--content-scale));
+            line-height: 1.2;
+            overflow-wrap: break-word;
+        }
+
+        .edu-table th {
+            background: var(--purple);
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .template {
+            display: none !important;
+        }
+
+        /* Achievements has no dedicated section in this design — "CERTIFICATE
+           & AWARDS" merges Certifications + Achievements into one bullet list
+           (see mergeAchievementsIntoCertifications() below). cv-common still
+           auto-injects a generic Achievements section since nothing else on
+           the page binds that field; hide only that original node here (the
+           compound selector can't match a section that merely clones it as a
+           styling reference, e.g. Projects or a user's custom section). */
+        [data-universal-section="achievements"][data-section-id="achievements"] {
+            display: none !important;
+        }
+
+        /* ── PRINT (A4 exact, same convention as every other template) ── */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+
+            html,
+            body {
+                background: var(--page-bg);
+                width: 210mm;
+                height: 297mm;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+            }
+
+            #zoom-wrapper {
+                padding: 0;
+                display: block;
+                min-height: 0;
+                width: 100% !important;
+                height: auto !important;
+            }
+
+            .page {
+                box-shadow: none;
+                transform: none;
+                zoom: 0.79375;
+                margin: 0 auto;
+                position: static !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="zoom-wrapper">
+        <div class="page" id="cv-page">
+            <div class="sheet" data-section-append-host>
+
+                <!-- HEADER -->
+                <div class="header-row">
+                    <div>
+                        <div class="name" data-field="name"></div>
+                        <div class="subtitle" data-field="tagline"></div>
+                    </div>
+                    <div class="contact" id="contact-block">
+                        <div class="contact-item" id="ci-email"><a id="ci-email-link" class="email" href="#"><span
+                                    data-field="email"></span></a></div>
+                        <div class="contact-item" id="ci-linkedin"><span data-field="linkedin"></span></div>
+                        <div class="contact-item" id="ci-phone"><span data-field="phone"></span></div>
+                    </div>
+                </div>
+
+                <!-- PROFILE -->
+                <div class="section sortable-section" data-section-id="summary">
+                    <div class="section-head">
+                        <div class="sec-title section-title">PROFILE</div>
+                        <div class="rule"></div>
+                    </div>
+                    <div class="body-block justify" data-field="summary"></div>
+                </div>
+
+                <!-- EDUCATION -->
+                <div class="section sortable-section" data-section-id="education">
+                    <div class="section-head">
+                        <div class="sec-title section-title">EDUCATION</div>
+                        <div class="rule"></div>
+                    </div>
+                    <table id="education-table" class="edu-table">
+                        <colgroup>
+                            <col style="width:19.74%">
+                            <col style="width:15.12%">
+                            <col style="width:30.49%">
+                            <col style="width:12.34%">
+                            <col style="width:22.31%">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>Qualification</th>
+                                <th>Year</th>
+                                <th>Institution</th>
+                                <th>Result</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody id="education-list">
+                            <tr class="template">
+                                <td data-field="degree"></td>
+                                <td data-field="year"></td>
+                                <td data-field="institution"></td>
+                                <td data-field="marks"></td>
+                                <td data-field="remarks"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- EXPERIENCE -->
+                <div class="section sortable-section" data-section-id="experience">
+                    <div class="section-head">
+                        <div class="sec-title section-title">EXPERIENCE</div>
+                        <div class="rule"></div>
+                    </div>
+                    <div id="experience-list">
+                        <div class="job-entry template">
+                            <div class="job-row">
+                                <div class="job-title"><b data-field="company"></b> <i>(<span
+                                            data-field="role"></span>)</i></div>
+                                <div class="job-date" data-field="dates"></div>
+                            </div>
+                            <ul class="bl" data-list="bullets"></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PROJECTS (hidden by default; shown automatically when data exists) -->
+                <div class="section sortable-section" data-section-id="projects" style="display:none;">
+                    <div class="section-head">
+                        <div class="sec-title section-title">PROJECTS</div>
+                        <div class="rule"></div>
+                    </div>
+                    <div id="projects-list">
+                        <div class="job-entry template">
+                            <div class="job-row">
+                                <div class="job-title" data-field="title"></div>
+                            </div>
+                            <div class="body-block justify proj-desc" data-field="description"></div>
+                            <ul class="bl" data-list="bullets"></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CERTIFICATE & AWARDS (Certifications + Achievements merged into
+                     one bullet list, matching the source design where both read as
+                     one casual list under a single heading) -->
+                <div class="section sortable-section" data-section-id="certifications">
+                    <div class="section-head">
+                        <div class="sec-title section-title">CERTIFICATE &amp; AWARDS</div>
+                        <div class="rule"></div>
+                    </div>
+                    <div class="section-body"><ul class="bl" data-list="certifications"></ul></div>
+                </div>
+
+                <!-- SKILLS -->
+                <div class="section sortable-section" data-section-id="skills">
+                    <div class="section-head">
+                        <div class="sec-title section-title">SKILLS</div>
+                        <div class="rule"></div>
+                    </div>
+                    <div class="section-body"><div class="body-block" data-field="skills"></div></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="cv-common.js"></script>
+    <script>
+        // ── Template-specific post-processing over the shared renderer ──
+        const originalRenderCV = window.renderCV;
+
+        window.renderCV = function (data) {
+            originalRenderCV(data);
+
+            adjustContactBlock(data.personal || {});
+            adjustJobRoleParens();
+            mergeAchievementsIntoCertifications(data);
+            formatCustomSectionHeaders(data);
+            uppercaseHeaderText(['skills', 'certifications']);
+
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    shrinkContentToFit();
+                    scaleToFit();
+                });
+            });
+        };
+
+        function formatCustomSectionHeaders(data) {
+            const customSections = (data && data.customSections) || [];
+            const customMap = new Map(customSections.map(s => [s.id, s.title]));
+
+            // Achievements/Leadership/Interests have no native section in this
+            // template's source design (only Summary/Education/Experience/
+            // Projects/Certifications/Skills are real), so cv-common.js
+            // synthesizes a flat "<title div> + <ul>" placeholder for them —
+            // same flat shape a user-added custom section clones, which is
+            // exactly what this function already exists to reformat. Folding
+            // .universal-injected sections into the same pass fixes both.
+            document.querySelectorAll('.custom-section-injected, [data-custom-section-root], .universal-injected').forEach(sec => {
+                const secId = sec.getAttribute('data-custom-section-root') || sec.getAttribute('data-section-id');
+                const fallbackTitle = customMap.get(secId) || 'CUSTOM SECTION';
+
+                let head = sec.querySelector('.section-head');
+                if (!head) {
+                    const oldHeader = sec.querySelector('.section-header, .section-title, .sec-title, .sec-h, h2, h3');
+                    const titleText = (oldHeader ? oldHeader.textContent.trim() : '') || fallbackTitle;
+
+                    head = document.createElement('div');
+                    head.className = 'section-head';
+
+                    const titleEl = document.createElement('div');
+                    titleEl.className = 'sec-title';
+                    titleEl.textContent = (titleText || fallbackTitle).toUpperCase();
+
+                    const ruleEl = document.createElement('div');
+                    ruleEl.className = 'rule';
+
+                    head.appendChild(titleEl);
+                    head.appendChild(ruleEl);
+
+                    if (oldHeader) {
+                        oldHeader.replaceWith(head);
+                    } else {
+                        sec.insertBefore(head, sec.firstChild);
+                    }
+                } else {
+                    const titleEl = head.querySelector('.sec-title, .sec-h, .section-title, .section-header');
+                    if (titleEl) {
+                        titleEl.className = 'sec-title';
+                        if (!titleEl.textContent.trim() && customMap.has(secId)) {
+                            titleEl.textContent = customMap.get(secId).toUpperCase();
+                        }
+                    }
+                    if (!head.querySelector('.rule')) {
+                        const ruleEl = document.createElement('div');
+                        ruleEl.className = 'rule';
+                        head.appendChild(ruleEl);
+                    }
+                }
+
+                const list = sec.querySelector('ul');
+                if (list) {
+                    list.classList.add('bl');
+                }
+            });
+        }
+
+        // cv-common.js's generic "Label" rename feature (the editor's Label
+        // chip on a section) writes whatever text the user typed as-is, with
+        // no case enforcement — fine for templates that don't care, but this
+        // one always renders these two headers in caps by default (typed
+        // that way directly in the source HTML), so a rename to anything
+        // else falls out of step with the rest of the page. Force it back
+        // every render.
+        function uppercaseHeaderText(sectionIds) {
+            sectionIds.forEach(id => {
+                const titleEl = document.querySelector(`.sortable-section[data-section-id="${id}"] .sec-title`);
+                if (titleEl && titleEl.textContent) titleEl.textContent = titleEl.textContent.toUpperCase();
+            });
+        }
+
+        // Plain-text contact rows (no icons in the source design) — hide any
+        // row whose field is empty, and wire the email's mailto href by hand.
+        function adjustContactBlock(personal) {
+            const email = (personal.email || '').trim();
+            const linkedin = (personal.linkedin || '').trim();
+            const hasPhone = !!(document.querySelector('#ci-phone [data-field="phone"]')?.textContent.trim());
+
+            const ciEmail = document.getElementById('ci-email');
+            const ciLinkedin = document.getElementById('ci-linkedin');
+            const ciPhone = document.getElementById('ci-phone');
+            const emailLink = document.getElementById('ci-email-link');
+
+            if (ciEmail) ciEmail.style.display = email ? '' : 'none';
+            if (ciLinkedin) ciLinkedin.style.display = linkedin ? '' : 'none';
+            if (ciPhone) ciPhone.style.display = hasPhone ? '' : 'none';
+            if (emailLink) emailLink.href = email ? 'mailto:' + email : '#';
+
+            const block = document.getElementById('contact-block');
+            if (block) block.style.display = (email || linkedin || hasPhone) ? '' : 'none';
+        }
+
+        // Hide the italicized "(role)" parenthetical when an experience/project
+        // entry has no role text, instead of showing empty parentheses. Also
+        // force it hidden for a "subsection" entry (merged with the previous
+        // one) even if its role field still holds text underneath — cv-common.js
+        // hides that field unconditionally for merged entries regardless of
+        // content, so checking only roleSpan.textContent here would miss the
+        // case where the (now-invisible) text is still non-empty, leaving the
+        // parens rendering as a bare, meaningless "()".
+        function adjustJobRoleParens() {
+            document.querySelectorAll('#experience-list > .job-entry').forEach(entry => {
+                if (entry.classList.contains('template')) return;
+                const roleSpan = entry.querySelector('.job-title i span[data-field="role"]');
+                const roleWrap = entry.querySelector('.job-title i');
+                const isMerged = entry.classList.contains('experience-title-merged');
+                if (roleWrap) roleWrap.style.display = (!isMerged && roleSpan && roleSpan.textContent.trim()) ? '' : 'none';
+            });
+        }
+
+        // Certifications and Achievements read as one plain bullet list under
+        // "CERTIFICATE & AWARDS" in the source design — fold data.achievements
+        // into the visible [data-list="certifications"] <ul> instead of giving
+        // it a separate section.
+        function mergeAchievementsIntoCertifications(data) {
+            const certList = document.querySelector('ul[data-list="certifications"]');
+            if (!certList) return;
+
+            certList.querySelectorAll('li[data-achievement-item]').forEach(li => li.remove());
+
+            const achievementsConfig = (data.sectionLabels && data.sectionLabels.achievements) || {};
+            const achievementsVisible = achievementsConfig.visible !== false;
+            const achievementItems = (Array.isArray(data.achievements) ? data.achievements : [])
+                .map(item => String(item || '').trim())
+                .filter(Boolean);
+
+            if (achievementsVisible) {
+                achievementItems.forEach(item => {
+                    const li = document.createElement('li');
+                    li.setAttribute('data-achievement-item', '');
+                    li.innerHTML = item;
+                    certList.appendChild(li);
+                });
+            }
+
+            const section = certList.closest('.sortable-section[data-section-id="certifications"]');
+            if (section) section.style.display = certList.children.length ? '' : 'none';
+        }
+
+        // ── Standard scaling / print plumbing (same contract as other templates) ──
+        function scaleToFit() {
+            const page = document.getElementById('cv-page');
+            const targetWidth = window.innerWidth - 20;
+            const scale = targetWidth < 1000 ? targetWidth / 1000 : 1.0;
+            page.style.transform = `scale(${scale})`;
+            const spaceToRemove = 1413.94 - (1413.94 * scale);
+            page.style.marginBottom = `-${spaceToRemove}px`;
+        }
+
+        function shrinkContentToFit() {
+            const page = document.getElementById('cv-page');
+            // Baseline bumped from 1.0 to 1.08 — every font-size/spacing rule
+            // in this template is expressed as calc(Npx * var(--content-scale)),
+            // so this raises the whole template's text size a bit (per user
+            // request) while the auto-shrink loop below still works exactly
+            // as before, just counting down from the new, larger baseline.
+            let contentScale = 1.08;
+            document.documentElement.style.setProperty('--content-scale', contentScale);
+            page.style.height = 'auto';
+            let i = 0;
+            while (page.scrollHeight > 1415 && i < 60) {
+                contentScale -= 0.01;
+                document.documentElement.style.setProperty('--content-scale', contentScale);
+                i++;
+            }
+            page.style.height = '';
+        }
+
+        let _screenTransform = '';
+        let _screenMarginBottom = '';
+
+        function enablePrintMode() {
+            const page = document.getElementById('cv-page');
+            _screenTransform = page.style.transform;
+            _screenMarginBottom = page.style.marginBottom;
+            page.style.transform = 'scale(1)';
+            page.style.marginBottom = '0px';
+            shrinkContentToFit();
+        }
+
+        function disablePrintMode() {
+            const page = document.getElementById('cv-page');
+            page.style.transform = _screenTransform || '';
+            page.style.marginBottom = _screenMarginBottom || '';
+            scaleToFit();
+        }
+
+        window.addEventListener('load', function () {
+            shrinkContentToFit();
+            scaleToFit();
+            const mq = window.matchMedia('print');
+            if (mq.addEventListener) {
+                mq.addEventListener('change', e => e.matches ? enablePrintMode() : disablePrintMode());
+            } else if (mq.addListener) {
+                mq.addListener(e => e.matches ? enablePrintMode() : disablePrintMode());
+            }
+            window.addEventListener('beforeprint', enablePrintMode);
+            window.addEventListener('afterprint', disablePrintMode);
+        });
+
+        let _resizeTimer;
+        window.addEventListener('resize', function () {
+            clearTimeout(_resizeTimer);
+            _resizeTimer = setTimeout(scaleToFit, 100);
+        });
+    </script>
+</body>
+
+</html>

@@ -1,9 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
+import { consumeAutoReviewPayload } from '../cv-builder/cv-review-bridge.js';
 // Using markdown-pdfjs(Created by Manan Bhansali, which is me :-) ) for PDF generation. 
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.7.107/build/pdf.worker.min.js';
 
-const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+const supabaseUrl = 'https://auth.mystudentclub.com';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 
 let userId = null;
@@ -137,11 +138,84 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupCollapsibleSections();
     await loadHistory();
 
+    let autoReviewStorage = null;
+    try {
+        autoReviewStorage = window.sessionStorage;
+    } catch (error) {
+        console.warn('CV Builder auto-review storage is unavailable:', error);
+    }
+    const autoReviewPayload = consumeAutoReviewPayload(autoReviewStorage);
+    if (autoReviewPayload && initializeBuilderAutoReview(autoReviewPayload)) {
+        showAutoReviewBanner();
+        setTimeout(() => analyzeCv(), 800);
+    }
+
     const refreshHistoryBtn = document.getElementById('refreshHistoryBtn');
     if (refreshHistoryBtn) {
         refreshHistoryBtn.addEventListener('click', () => loadHistory());
     }
 });
+
+function initializeBuilderAutoReview(payload) {
+    try {
+        const byteString = atob(payload.images[0]);
+        const bytes = new Uint8Array(byteString.length);
+        for (let index = 0; index < byteString.length; index++) bytes[index] = byteString.charCodeAt(index);
+
+        selectedFile = new File([bytes], payload.fileName, { type: 'image/jpeg' });
+        pdfImages = payload.images.slice();
+
+        if (fileName) fileName.textContent = selectedFile.name;
+        if (fileSize) fileSize.textContent = formatFileSize(selectedFile.size);
+        if (dropArea) dropArea.style.display = 'none';
+        if (previewArea) {
+            previewArea.style.display = 'flex';
+            previewArea.classList.add('flex-col', 'gap-4');
+        }
+        if (previewThumbnail) {
+            const image = document.createElement('img');
+            image.src = `data:image/jpeg;base64,${payload.images[0]}`;
+            image.alt = 'CV preview from CV Builder';
+            image.style.cssText = 'max-width:100%; border-radius:8px; box-shadow:0 2px 12px rgba(0,0,0,0.1);';
+            previewThumbnail.replaceChildren(image);
+        }
+        if (proceedToReviewBtn) {
+            proceedToReviewBtn.disabled = false;
+            proceedToReviewBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+        return true;
+    } catch (error) {
+        console.warn('CV Builder auto-review bridge error:', error);
+        selectedFile = null;
+        pdfImages = [];
+        return false;
+    }
+}
+
+function showAutoReviewBanner() {
+    const banner = document.createElement('div');
+    banner.setAttribute('role', 'status');
+    banner.style.cssText = 'background:linear-gradient(135deg,#eff6ff,#dbeafe);border:1px solid #bfdbfe;border-radius:12px;padding:12px 16px;font-size:13px;font-weight:600;color:#1d4ed8;display:flex;align-items:center;gap:10px;margin-bottom:16px;';
+
+    const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    icon.setAttribute('width', '16');
+    icon.setAttribute('height', '16');
+    icon.setAttribute('viewBox', '0 0 24 24');
+    icon.setAttribute('fill', 'none');
+    icon.setAttribute('stroke', 'currentColor');
+    icon.setAttribute('stroke-width', '2');
+    const check = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    check.setAttribute('d', 'M9 11l3 3L22 4');
+    const box = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    box.setAttribute('d', 'M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11');
+    icon.append(check, box);
+
+    const message = document.createElement('span');
+    message.textContent = 'CV loaded from CV Builder — starting AI review…';
+    banner.append(icon, message);
+    uploadSection?.parentNode?.insertBefore(banner, uploadSection);
+    setTimeout(() => banner.remove(), 5000);
+}
 
 function setupUserId() {
     userId = localStorage.getItem('msc_cv_reviewer_uuid');
@@ -389,7 +463,7 @@ function initializeSupabase() {
     const headers = {
         'x-msc-user-id': userId
     };
-    supabase = createClient(supabaseUrl, supabaseKey, { global: { headers } });
+    supabase = createClient(supabaseUrl, supabaseKey, { auth: { storageKey: 'sb-izsggdtdiacxdsjjncdq-auth-token' }, global: { headers } });
 }
 
 async function refreshAuthUser() {

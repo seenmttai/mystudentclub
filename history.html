@@ -24,12 +24,12 @@
     <script>
       /* Capture uncaught JS errors + promise rejections and log them to Supabase (capped, de-duplicated) */
       (function () {
-        const supabaseUrl = "https://izsggdtdiacxdsjjncdq.supabase.co";
+        const supabaseUrl = "https://auth.mystudentclub.com";
         const supabaseKey =
           "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0";
         let errorClient = null;
         if (window.supabase) {
-          errorClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+          errorClient = window.supabase.createClient(supabaseUrl, supabaseKey, { auth: { storageKey: 'sb-izsggdtdiacxdsjjncdq-auth-token' } });
           window._mscSupabaseClient = errorClient;
         }
         const MAX_ERRORS = 10;

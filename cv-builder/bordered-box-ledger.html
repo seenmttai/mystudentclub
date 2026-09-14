@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Bordered Box Ledger CV</title>
+<style>
+/* ═══════════════════════════════════════════════════════════
+   DESIGN SYSTEM & ENGINE TOKENS — Bordered Box Ledger
+   Page: A4 (1000 px base viewer width × 1413.94 px height)
+   Scaling Engine:
+     - --cs (content-scale factor): shrinkContentToFit() dynamically
+       adjusts --cs so all content fits strictly within 1413.94 px (A4 1-page limit).
+     - scaleToFit(): viewport responsive scaling using transform: scale().
+ ═══════════════════════════════════════════════════════════ */
+
+:root {
+  --navy-banner:   var(--accent-color, #102B4E);   /* Section Banner Header Accent */
+  --subhead-bg:    color-mix(in srgb, var(--accent-color, #102B4E) 12%, #FFFFFF);   /* Dynamic Sub-bar Tint */
+  --text-dark:     #000000;   /* Black Text */
+  --text-body:     #1A1A1A;   /* Paragraph Body Text */
+  --border-black:  #000000;   /* Solid Black Borders */
+  --link-blue:     var(--accent-color, #0000EE);   /* Dynamic Link Blue */
+  --page-bg:       #FFFFFF;   /* White A4 Sheet */
+  --viewer-bg:     #525659;   /* Outer Canvas Background */
+  --font-heading:  Cambria, Georgia, serif;
+  --font-body:     'Times New Roman', Times, serif;
+  --cs:            1.0;       /* Content scale variable adjusted by shrinkContentToFit() */
+}
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+body {
+  background: var(--viewer-bg);
+  font-family: var(--font-body);
+  color: var(--text-dark);
+  min-height: 100vh;
+  width: 100vw;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.2s ease-in;
+}
+
+.template { display: none !important; }
+
+/* ── Viewer Centering Wrapper ── */
+#zoom-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 24px 0 32px;
+}
+
+/* ── A4 Page Card Container ── */
+#cv-page {
+  position: relative;
+  width: 1000px;
+  min-height: 1413.94px;
+  background: var(--page-bg);
+  color: var(--text-dark);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+  flex-shrink: 0;
+  transform-origin: top center;
+  font-size: calc(12.8px * var(--cs));
+  line-height: 1.32;
+  padding: calc(24px * var(--cs)) calc(28px * var(--cs));
+}
+
+/* Header Block (Outside the Body Border Box) */
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-bottom: calc(1.3px * var(--cs)) solid #000000;
+  padding-bottom: calc(6px * var(--cs));
+  margin-bottom: calc(10px * var(--cs));
+}
+
+.header-left {
+  text-align: left;
+}
+
+.candidate-name {
+  font-family: var(--font-heading);
+  font-size: calc(26px * var(--cs));
+  font-weight: 700;
+  color: var(--text-dark);
+  line-height: 1.1;
+  text-align: left;
+}
+
+.candidate-title {
+  font-family: var(--font-body);
+  font-size: calc(13.5px * var(--cs));
+  font-weight: 400;
+  color: var(--text-dark);
+  margin-top: calc(2px * var(--cs));
+  letter-spacing: 0.5px;
+  text-align: left;
+}
+
+.ledger-contact-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  font-family: var(--font-body);
+  font-size: calc(12.5px * var(--cs));
+  color: #000000;
+  line-height: 1.35;
+}
+
+.ledger-contact-line {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0;
+}
+
+.ledger-contact-line a {
+  color: var(--link-blue, #0000EE);
+  text-decoration: underline;
+}
+
+.ledger-contact-sep {
+  margin: 0 calc(5px * var(--cs));
+  color: #000000;
+  font-weight: normal;
+}
+
+.header-right svg {
+  fill: #000000 !important;
+  stroke: #000000 !important;
+  color: #000000 !important;
+  width: calc(14px * var(--cs)) !important;
+  height: calc(14px * var(--cs)) !important;
+  flex-shrink: 0 !important;
+}
+
+/* ── Main Body Outline Box (Encloses All Sections Below Header) ── */
+.body-border-box {
+  border: calc(1.3px * var(--cs)) solid #000000;
+  box-sizing: border-box;
+}
+
+/* Section Banners */
+.section-banner,
+.sortable-section .section-title {
+  background-color: var(--navy-banner);
+  color: #FFFFFF;
+  font-family: var(--font-body);
+  font-size: calc(13px * var(--cs));
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: calc(3.5px * var(--cs)) calc(8px * var(--cs));
+  letter-spacing: 0.4px;
+}
+
+.sortable-section:not(:first-child) .section-banner,
+.sortable-section:not(:first-child) .section-title {
+  border-top: 1px solid #000000;
+}
+
+.sortable-section .summary-paragraph {
+  padding: calc(6px * var(--cs)) calc(8px * var(--cs));
+  font-size: calc(12.5px * var(--cs));
+  line-height: 1.35;
+  color: var(--text-body);
+  text-align: justify;
+}
+
+/* Academic Credentials Table */
+.credentials-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: calc(12.2px * var(--cs));
+}
+
+.credentials-table th, .credentials-table td {
+  border: 1px solid var(--border-black);
+  padding: calc(3.5px * var(--cs)) calc(6px * var(--cs));
+  text-align: center;
+}
+
+.credentials-table th:first-child, .credentials-table td:first-child {
+  border-left: 0;
+}
+
+.credentials-table th:last-child, .credentials-table td:last-child {
+  border-right: 0;
+}
+
+.credentials-table th {
+  background-color: var(--subhead-bg);
+  color: #000000;
+  font-weight: 700;
+}
+
+.credentials-table td:nth-child(3) {
+  text-align: left;
+}
+
+/* Sub-header Bar (Company / Role Title Row) */
+.subhead-bar {
+  background-color: var(--subhead-bg);
+  border-top: calc(0.9px * var(--cs)) solid #000000;
+  border-bottom: calc(0.9px * var(--cs)) solid #000000;
+  border-left: 0;
+  border-right: 0;
+  padding: calc(3.5px * var(--cs)) calc(8px * var(--cs));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: calc(12.8px * var(--cs));
+  font-weight: 700;
+  color: #000000;
+  margin-top: calc(6px * var(--cs));
+  margin-bottom: calc(4px * var(--cs));
+}
+
+.subhead-bar span:last-child {
+  font-style: italic;
+}
+
+.section-banner + .subhead-bar,
+.sortable-section .subhead-bar:first-child {
+  margin-top: 0;
+}
+
+.subgroup-title {
+  font-size: calc(12.5px * var(--cs));
+  font-weight: 700;
+  font-style: italic;
+  text-decoration: underline;
+  margin-top: calc(4px * var(--cs));
+  margin-bottom: calc(2px * var(--cs));
+  padding-left: calc(8px * var(--cs));
+}
+
+.company-desc {
+  font-size: calc(12px * var(--cs));
+  font-style: italic;
+  padding-left: calc(8px * var(--cs));
+  margin-bottom: calc(4px * var(--cs));
+}
+
+/* Bullet List Styling inside Body Box */
+.bullet-list {
+  list-style: none;
+  padding-left: 0;
+  font-size: calc(12.2px * var(--cs));
+  line-height: 1.32;
+  margin-bottom: calc(4px * var(--cs));
+  padding-right: calc(6px * var(--cs));
+}
+
+.bullet-list li {
+  position: relative;
+  padding-left: calc(18px * var(--cs));
+  margin-bottom: calc(3px * var(--cs));
+  text-align: justify;
+}
+
+.bullet-list li::before {
+  content: "•";
+  position: absolute;
+  left: calc(8px * var(--cs));
+  font-size: calc(12px * var(--cs));
+  color: var(--text-dark);
+}
+
+.bullet-list li:last-child {
+  margin-bottom: 0;
+}
+
+/* ── Print Styles (A4 Page Output) ── */
+@media print {
+  html, body {
+    background: none !important;
+    margin: 0;
+    padding: 0;
+  }
+  #zoom-wrapper {
+    padding: 0;
+  }
+  #cv-page {
+    transform: scale(1) !important;
+    margin: 0 !important;
+    width: 210mm;
+    min-height: 297mm;
+    box-shadow: none;
+    padding: 10mm 12mm;
+  }
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+}
+</style>
+</head>
+<body>
+<div id="zoom-wrapper">
+<div id="cv-page">
+
+  <!-- ══ HEADER SECTION (OUTSIDE BODY BORDER BOX) ════════════════ -->
+  <div class="header-container">
+    <div class="header-left">
+      <h1 class="candidate-name" data-field="name">CA Padam Bhansali</h1>
+      <div class="candidate-title" data-field="tagline">CHARTERED ACCOUNTANT</div>
+    </div>
+    <div class="ledger-contact-block" id="ledger-contact-block">
+      <div class="ledger-contact-line" id="ledger-contact-line1">
+        <span id="bb-location-wrap"><span id="bb-location">Delhi</span></span>
+        <span id="bb-phone-wrap"><span class="ledger-contact-sep" id="bb-phone-sep"> | </span>Contact: <span id="bb-phone">+91 9749112503</span></span>
+      </div>
+      <div class="ledger-contact-line" id="ledger-contact-line2" style="margin-top: 2px;">
+        <span id="bb-email-wrap">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="1.8" style="vertical-align:-0.15em;margin-right:4px;"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"></path><path d="m22 6-10 7L2 6"></path></svg>
+          <a href="mailto:capadambhansali@gmail.com" id="bb-email">capadambhansali@gmail.com</a>
+        </span>
+        <span id="bb-linkedin-wrap">
+          <span class="ledger-contact-sep" id="bb-linkedin-sep"> | </span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="1.8" style="vertical-align:-0.15em;margin-right:4px;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+          <a href="https://linkedin.com" target="_blank" rel="noopener" id="bb-linkedin">LinkedIn</a>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MAIN BODY OUTLINE BOX (ENCLOSING ALL SECTIONS BELOW HEADER) ══ -->
+  <div class="body-border-box" data-section-append-host>
+
+    <!-- 0. SUMMARY -->
+    <div class="sortable-section" data-section-id="summary">
+      <div class="section-banner section-title">PROFESSIONAL SUMMARY</div>
+      <p class="summary-paragraph" data-field="summary"></p>
+    </div>
+
+    <!-- 1. ACADEMIC CREDENTIALS -->
+    <div class="sortable-section" data-section-id="education">
+      <div class="section-banner section-title">PROFESSIONAL AND ACADEMIC CREDENTIALS</div>
+
+      <table class="credentials-table">
+        <thead>
+          <tr>
+            <th style="width: 22%;">COURSE</th>
+            <th style="width: 14%;">YEAR</th>
+            <th style="width: 36%;">INSTITUTION</th>
+            <th style="width: 14%;">%/CGPA</th>
+            <th style="width: 14%;">REMARKS</th>
+          </tr>
+        </thead>
+        <tbody id="education-list">
+          <tr class="template">
+            <td data-field="degree">CA Final</td>
+            <td data-field="year">May’ 26</td>
+            <td data-field="institution">ICAI</td>
+            <td data-field="marks">63.00%</td>
+            <td data-field="remarks">Exemption</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 2. PROFESSIONAL EXPERIENCE -->
+    <div class="sortable-section" data-section-id="experience">
+      <div class="section-banner section-title">PROFESSIONAL EXPERIENCE</div>
+
+      <div id="experience-list">
+        <div class="exp-block template">
+          <div class="subhead-bar">
+            <span><strong data-field="company"></strong> <span data-field="role"></span></span>
+            <span data-field="dates"></span>
+          </div>
+          <div class="company-desc" data-field="intro"></div>
+          <div class="company-desc" data-field="category"></div>
+          <ul class="bullet-list" data-list="bullets"></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. PROJECTS -->
+    <div class="sortable-section" data-section-id="projects">
+      <div class="section-banner section-title">PROJECTS</div>
+
+      <div id="projects-list">
+        <div class="exp-block template">
+          <div class="subhead-bar">
+            <span data-field="title"></span>
+          </div>
+          <div class="company-desc" data-field="description"></div>
+          <ul class="bullet-list" data-list="bullets"></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. POSITION OF RESPONSIBILITY -->
+    <div class="sortable-section" data-section-id="leadership">
+      <div class="section-banner section-title">POSITION OF RESPONSIBILITY</div>
+      <ul class="bullet-list" data-list="leadership" style="padding-top: calc(4px * var(--cs));"></ul>
+    </div>
+
+    <!-- 5. EXTRA-CURRICULAR ACTIVITIES -->
+    <div class="sortable-section" data-section-id="achievements">
+      <div class="section-banner section-title">EXTRA-CURRICULAR ACTIVITIES</div>
+      <ul class="bullet-list" data-list="achievements" style="padding-top: calc(4px * var(--cs));"></ul>
+    </div>
+
+    <!-- 6. AWARDS AND CERTIFICATIONS -->
+    <div class="sortable-section" data-section-id="certifications">
+      <div class="section-banner section-title">AWARDS AND CERTIFICATIONS</div>
+      <ul class="bullet-list" id="cert-list" data-list="certifications" style="padding-top: calc(4px * var(--cs));"></ul>
+    </div>
+
+    <!-- 7. TECHNICAL & INTERPERSONAL SKILLS -->
+    <div class="sortable-section" data-section-id="skills">
+      <div class="section-banner section-title">TECHNICAL &amp; INTERPERSONAL SKILLS</div>
+      <div class="bullet-list" data-field="skills" style="padding: calc(4px * var(--cs)) calc(8px * var(--cs));"></div>
+    </div>
+
+    <!-- 8. HOBBIES AND INTERESTS -->
+    <div class="sortable-section" data-section-id="interests">
+      <div class="section-banner section-title">HOBBIES AND INTERESTS</div>
+      <ul class="bullet-list" data-list="interests" style="padding: calc(4px * var(--cs)) calc(8px * var(--cs)); margin-bottom: 0;"></ul>
+    </div>
+
+  </div><!-- .body-border-box -->
+
+</div><!-- #cv-page -->
+</div><!-- #zoom-wrapper -->
+
+<!-- ══ SCRIPT ENGINE ════════════════════════════════════════════ -->
+<script src="cv-common.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  const originalRenderCV = window.renderCV;
+  window.renderCV = function (data) {
+    if (typeof originalRenderCV === 'function') originalRenderCV(data);
+    adjustBorderedBoxContact(data ? (data.personal || {}) : {});
+    requestAnimationFrame(function () {
+      shrinkContentToFit();
+      scaleToFit();
+    });
+  };
+
+  function adjustBorderedBoxContact(personal) {
+    const emailWrap = document.getElementById('bb-email-wrap');
+    const linkedinWrap = document.getElementById('bb-linkedin-wrap');
+    const phoneWrap = document.getElementById('bb-phone-wrap');
+    const locationWrap = document.getElementById('bb-location-wrap');
+
+    const emailEl = document.getElementById('bb-email');
+    const linkedinEl = document.getElementById('bb-linkedin');
+    const phoneEl = document.getElementById('bb-phone');
+    const locationEl = document.getElementById('bb-location');
+
+    const phoneSep = document.getElementById('bb-phone-sep');
+    const linkedinSep = document.getElementById('bb-linkedin-sep');
+
+    const email = (personal.email || '').trim();
+    const linkedin = (personal.linkedin || '').trim();
+    const phone = (personal.phone || '').trim();
+    const location = (personal.location || '').trim();
+
+    if (locationWrap) locationWrap.style.display = location ? 'inline' : 'none';
+    if (locationEl) locationEl.textContent = location;
+
+    if (phoneWrap) phoneWrap.style.display = phone ? 'inline' : 'none';
+    if (phoneEl) phoneEl.textContent = phone;
+
+    if (phoneSep) {
+      phoneSep.style.display = (location && phone) ? 'inline' : 'none';
+    }
+
+    if (emailWrap) emailWrap.style.display = email ? 'inline' : 'none';
+    if (emailEl) {
+      emailEl.href = email ? 'mailto:' + email : '#';
+      emailEl.textContent = email;
+    }
+
+    if (linkedinWrap) linkedinWrap.style.display = linkedin ? 'inline' : 'none';
+    if (linkedinEl) {
+      linkedinEl.href = linkedin ? (/^https?:\/\//i.test(linkedin) ? linkedin : 'https://' + linkedin) : '#';
+      linkedinEl.textContent = 'LinkedIn';
+    }
+
+    if (linkedinSep) {
+      linkedinSep.style.display = (email && linkedin) ? 'inline' : 'none';
+    }
+
+    const line1 = document.getElementById('ledger-contact-line1');
+    const line2 = document.getElementById('ledger-contact-line2');
+    if (line1) line1.style.display = (location || phone) ? 'flex' : 'none';
+    if (line2) line2.style.display = (email || linkedin) ? 'flex' : 'none';
+  }
+
+  var PAGE_H = 1413.94; /* A4 page height limit in px */
+  var PAGE_W = 1000;    /* A4 viewer width in px */
+
+  function scaleToFit() {
+    var page = document.getElementById('cv-page');
+    if (!page || document.body.classList.contains('print-mode')) return;
+    var avail = window.innerWidth - 20;
+    var scale = avail < PAGE_W ? avail / PAGE_W : 1.0;
+    page.style.transform = 'scale(' + scale + ')';
+    page.style.marginBottom = '-' + (PAGE_H - PAGE_H * scale) + 'px';
+  }
+
+  function shrinkContentToFit() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    var cs = 1.0;
+    document.documentElement.style.setProperty('--cs', cs);
+    page.style.height = 'auto';
+    var iter = 0;
+    while (page.scrollHeight > PAGE_H + 1 && iter < 80) {
+      cs = Math.round((cs - 0.01) * 1000) / 1000;
+      document.documentElement.style.setProperty('--cs', cs);
+      iter++;
+    }
+    page.style.height = '';
+  }
+
+  window.scaleToFit = scaleToFit;
+  window.shrinkContentToFit = shrinkContentToFit;
+
+  var _tx = '', _mb = '';
+
+  function enablePrintMode() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    _tx = page.style.transform;
+    _mb = page.style.marginBottom;
+    document.body.classList.add('print-mode');
+    page.style.transform = 'scale(1)';
+    page.style.marginBottom = '0';
+    shrinkContentToFit();
+  }
+
+  function disablePrintMode() {
+    var page = document.getElementById('cv-page');
+    if (!page) return;
+    document.body.classList.remove('print-mode');
+    page.style.transform = _tx || '';
+    page.style.marginBottom = _mb || '';
+    scaleToFit();
+  }
+
+  window.addEventListener('load', function () {
+    shrinkContentToFit();
+    scaleToFit();
+    document.body.style.opacity = '1';
+    var mq = window.matchMedia('print');
+    var handler = function (e) { e.matches ? enablePrintMode() : disablePrintMode(); };
+    if (mq.addEventListener) { mq.addEventListener('change', handler); }
+    else if (mq.addListener)  { mq.addListener(handler); }
+    window.addEventListener('beforeprint', enablePrintMode);
+    window.addEventListener('afterprint',  disablePrintMode);
+  });
+
+  var _rt;
+  window.addEventListener('resize', function () {
+    clearTimeout(_rt);
+    _rt = setTimeout(scaleToFit, 100);
+  });
+}());
+</script>
+</body>
+</html>

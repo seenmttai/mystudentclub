@@ -1,7 +1,7 @@
-const supabaseUrl = "https://izsggdtdiacxdsjjncdq.supabase.co";
+const supabaseUrl = "https://auth.mystudentclub.com";
 const supabaseKey =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0";
-const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey, { auth: { storageKey: 'sb-izsggdtdiacxdsjjncdq-auth-token' } });
 pdfjsLib.GlobalWorkerOptions.workerSrc = "/scripts/vendor/pdf.worker.min.js";
 const WORKER_URL = "https://profile.mystudentclub.com";
 
@@ -11,6 +11,7 @@ const loadingOverlay = document.getElementById("loading-overlay");
 const saveBtn = document.getElementById("saveBtn");
 let currentUser = null;
 let lastUpdatedISO = null;
+let currentLookingFor = null;
 
 // =================== TOAST NOTIFICATIONS ===================
 function showToast(message, type = "info", duration = 6000) {
@@ -277,11 +278,12 @@ function showLoading(visible, text = "Loading...") {
 async function loadProfile() {
   if (!currentUser) return;
   showLoading(true, "Fetching your profile...");
+  let loadedProfile = {};
 
   try {
     const { data, error } = await supabaseClient
       .from("profiles")
-      .select("profile, ocr_cv, updated_at")
+      .select("profile, ocr_cv, updated_at, looking_for")
       .eq("uuid", currentUser.id)
       .single();
 
@@ -289,7 +291,9 @@ async function loadProfile() {
 
     if (data) {
       lastUpdatedISO = data.updated_at;
+      currentLookingFor = data.looking_for || data.profile?.looking_for || null;
       if (data.profile) {
+        loadedProfile = data.profile;
         populateForm(data.profile);
         localStorage.setItem("userProfileData", JSON.stringify(data.profile));
       }
@@ -299,7 +303,11 @@ async function loadProfile() {
       }
     } else {
       const localProfile = localStorage.getItem("userProfileData");
-      if (localProfile) populateForm(JSON.parse(localProfile));
+      if (localProfile) {
+        loadedProfile = JSON.parse(localProfile);
+        currentLookingFor = loadedProfile.looking_for || null;
+        populateForm(loadedProfile);
+      }
     }
 
     // Show cached / persisted files
@@ -326,11 +334,16 @@ async function loadProfile() {
   } catch (e) {
     console.error(e);
     const localProfile = localStorage.getItem("userProfileData");
-    if (localProfile) populateForm(JSON.parse(localProfile));
+    if (localProfile) {
+      loadedProfile = JSON.parse(localProfile);
+      currentLookingFor = loadedProfile.looking_for || null;
+      populateForm(loadedProfile);
+    }
     setTimeout(() => refreshHeader(), 150);
   } finally {
     showLoading(false);
   }
+  return loadedProfile;
 }
 
 // =================== POPULATE FORM ===================
@@ -838,15 +851,22 @@ function applyZoomLevel(zoomPct) {
     if (zoomLevelEl) zoomLevelEl.textContent = `${zoomPct}%`;
     if (!pagesEl) return;
 
-    if (zoomPct === 100) {
-        pagesEl.style.removeProperty('--p2-zoom-width');
-        pagesEl.style.removeProperty('--p2-zoom-max-width');
-    } else {
-        const scaleFraction = zoomPct / 100;
-        const calcMaxWidth = Math.round(680 * scaleFraction);
-        pagesEl.style.setProperty('--p2-zoom-width', `${zoomPct}%`);
-        pagesEl.style.setProperty('--p2-zoom-max-width', `${calcMaxWidth}px`);
-    }
+    const pageWraps = pagesEl.querySelectorAll('.p2-pdf-page-wrap');
+    const containerWidth = pagesEl.clientWidth ? (pagesEl.clientWidth - 20) : (window.innerWidth - 20);
+    const baseWidth = Math.min(containerWidth > 0 ? containerWidth : 680, 680);
+    const targetWidth = Math.round(baseWidth * (zoomPct / 100));
+
+    pageWraps.forEach(wrap => {
+        if (zoomPct === 100) {
+            wrap.style.width = '100%';
+            wrap.style.maxWidth = `${baseWidth}px`;
+            wrap.style.minWidth = '';
+        } else {
+            wrap.style.width = `${targetWidth}px`;
+            wrap.style.maxWidth = `${targetWidth}px`;
+            wrap.style.minWidth = `${targetWidth}px`;
+        }
+    });
 }
 
 function zoomResume(direction) {
@@ -858,6 +878,81 @@ function zoomResume(direction) {
         currentZoomIndex = 1; // 100%
     }
     applyZoomLevel(ZOOM_LEVELS[currentZoomIndex]);
+}
+
+let pinchStartDist = 0;
+function initResumePinchZoom() {
+    const pagesEl = document.getElementById('resumeViewerPages');
+    if (!pagesEl || pagesEl.dataset.pinchBound) return;
+    pagesEl.dataset.pinchBound = 'true';
+
+    pagesEl.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 2) {
+            pinchStartDist = Math.hypot(
+                e.touches[0].clientX - e.touches[1].clientX,
+                e.touches[0].clientY - e.touches[1].clientY
+            );
+        }
+    }, { passive: true });
+
+    pagesEl.addEventListener('touchmove', (e) => {
+        if (e.touches.length === 2 && pinchStartDist > 0) {
+            const currentDist = Math.hypot(
+                e.touches[0].clientX - e.touches[1].clientX,
+                e.touches[0].clientY - e.touches[1].clientY
+            );
+            const delta = currentDist - pinchStartDist;
+            if (delta > 35 && currentZoomIndex < ZOOM_LEVELS.length - 1) {
+                zoomResume('in');
+                pinchStartDist = currentDist;
+            } else if (delta < -35 && currentZoomIndex > 0) {
+                zoomResume('out');
+                pinchStartDist = currentDist;
+            }
+        }
+    }, { passive: true });
+
+    pagesEl.addEventListener('touchend', (e) => {
+        if (e.touches.length < 2) pinchStartDist = 0;
+    }, { passive: true });
+}
+
+function initResumePan() {
+    const pagesEl = document.getElementById('resumeViewerPages');
+    if (!pagesEl || pagesEl.dataset.panBound) return;
+    pagesEl.dataset.panBound = 'true';
+
+    let isDown = false;
+    let startX = 0, startY = 0;
+    let scrollLeft = 0, scrollTop = 0;
+
+    pagesEl.addEventListener('mousedown', (e) => {
+        if (e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
+        isDown = true;
+        startX = e.pageX - pagesEl.offsetLeft;
+        startY = e.pageY - pagesEl.offsetTop;
+        scrollLeft = pagesEl.scrollLeft;
+        scrollTop = pagesEl.scrollTop;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        pagesEl.style.cursor = 'grabbing';
+        const x = e.pageX - pagesEl.offsetLeft;
+        const y = e.pageY - pagesEl.offsetTop;
+        const walkX = x - startX;
+        const walkY = y - startY;
+        pagesEl.scrollLeft = scrollLeft - walkX;
+        pagesEl.scrollTop = scrollTop - walkY;
+    });
+
+    window.addEventListener('mouseup', () => {
+        if (isDown) {
+            isDown = false;
+            pagesEl.style.cursor = '';
+        }
+    });
 }
 
 async function openResumePreview() {
@@ -872,6 +967,16 @@ async function openResumePreview() {
     // Reset zoom state
     currentZoomIndex = 1;
     applyZoomLevel(100);
+    initResumePinchZoom();
+    initResumePan();
+
+    // Bind zoom controls directly to ensure active events
+    const zoomInBtn = document.getElementById('resumeViewerZoomIn');
+    if (zoomInBtn) zoomInBtn.onclick = (e) => { e.preventDefault(); e.stopPropagation(); zoomResume('in'); };
+    const zoomOutBtn = document.getElementById('resumeViewerZoomOut');
+    if (zoomOutBtn) zoomOutBtn.onclick = (e) => { e.preventDefault(); e.stopPropagation(); zoomResume('out'); };
+    const closeBtn = document.getElementById('resumeViewerClose');
+    if (closeBtn) closeBtn.onclick = (e) => { e.preventDefault(); e.stopPropagation(); closeResumePreview(); };
 
     // Set filename in header
     const filename = localStorage.getItem('userCVFileName') || 'Resume';
@@ -931,10 +1036,10 @@ async function openResumePreview() {
 
             // Double tap / double click to toggle zoom (100% <-> 150%)
             let lastTapTime = 0;
-            img.addEventListener('click', () => {
+            wrap.addEventListener('touchend', (e) => {
                 const now = Date.now();
-                if (now - lastTapTime < 300) {
-                    // Double tap detected
+                if (now - lastTapTime < 320 && now - lastTapTime > 0) {
+                    e.preventDefault();
                     if (currentZoomIndex === 1) {
                         currentZoomIndex = ZOOM_LEVELS.indexOf(150); // 150%
                     } else {
@@ -943,6 +1048,16 @@ async function openResumePreview() {
                     applyZoomLevel(ZOOM_LEVELS[currentZoomIndex]);
                 }
                 lastTapTime = now;
+            });
+
+            wrap.addEventListener('dblclick', (e) => {
+                e.preventDefault();
+                if (currentZoomIndex === 1) {
+                    currentZoomIndex = ZOOM_LEVELS.indexOf(150);
+                } else {
+                    currentZoomIndex = 1;
+                }
+                applyZoomLevel(ZOOM_LEVELS[currentZoomIndex]);
             });
 
             const label = document.createElement('span');
@@ -956,6 +1071,7 @@ async function openResumePreview() {
         if (countEl) countEl.textContent = `${imageSrcs.length} page${imageSrcs.length > 1 ? 's' : ''}`;
         loading.style.display = 'none';
         pagesEl.style.display = 'flex';
+        applyZoomLevel(ZOOM_LEVELS[currentZoomIndex]);
 
     } catch (err) {
         loading.style.display = 'none';
@@ -2345,6 +2461,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // ----- Load profile -----
   loadProfile().then((d) => {
+    if (window.WZ) {
+      window.WZ.init(d, currentLookingFor, {
+        supabaseClient,
+        userId: currentUser.id,
+        showToast,
+        onSaved: (profile) => {
+          populateForm(profile);
+          refreshHeader();
+        },
+      });
+    }
     // Pre-fill skills on load if existing
     if (d && d.emp_skills_hidden) {
       let loadedSkills = d.emp_skills_hidden
