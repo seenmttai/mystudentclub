@@ -152,8 +152,7 @@ body {
 .link-card {
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 1rem;
+  padding: 0.95rem 1.25rem;
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   backdrop-filter: blur(12px);
@@ -165,6 +164,8 @@ body {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
+  gap: 0.875rem;
+  min-height: 58px;
 }
 
 .link-card::before {
@@ -188,25 +189,32 @@ body {
 }
 
 .link-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-3px);
   background: var(--glass-hover);
   border-color: var(--accent-color);
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
 }
 
 .link-card i {
-  position: absolute;
-  left: 1.25rem;
   font-size: 1.25rem;
+  width: 24px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: transform 0.3s ease;
 }
 
 .link-card:hover i {
-  transform: scale(1.1);
+  transform: scale(1.15);
 }
 
 .link-card span {
-  font-size: 1rem;
+  flex: 1;
+  text-align: center;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  padding-right: 24px;
 }
 
 /* Social Icons (Bottom) */
@@ -282,10 +290,19 @@ body {
   }
   
   .link-card {
-    padding: 0.875rem;
+    padding: 0.85rem 1rem;
+    gap: 0.75rem;
+    min-height: 52px;
+  }
+
+  .link-card i {
+    font-size: 1.15rem;
+    width: 20px;
   }
   
   .link-card span {
-    font-size: 0.9rem;
+    font-size: 0.875rem;
+    line-height: 1.3;
+    padding-right: 20px;
   }
 }
