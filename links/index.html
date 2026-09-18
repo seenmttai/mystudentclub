@@ -21,6 +21,7 @@
   
   <!-- Fallback Shortcut Icon -->
   <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
@@ -163,7 +164,138 @@
       // Hide all tab contents
       document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
       // Show target tab content
-      document.getElementById(tabId).classList.add('active');
+      const target = document.getElementById(tabId);
+      if (target) target.classList.add('active');
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    async function loadLiveLinks() {
+      const SUPABASE_URL = 'https://auth.mystudentclub.com';
+      const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+
+      try {
+        if (!window.supabase || typeof window.supabase.createClient !== 'function') {
+          return;
+        }
+
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const { data, error } = await supabaseClient
+          .from('links')
+          .select('*')
+          .eq('is_active', true)
+          .order('display_order', { ascending: true })
+          .order('created_at', { ascending: true });
+
+        if (error) {
+          console.warn('Could not fetch links from Supabase (using static fallback):', error.message);
+          return;
+        }
+
+        if (!data || data.length === 0) return;
+
+        // Group links by category
+        const categorized = {};
+        data.forEach(item => {
+          const cat = item.category || 'other';
+          if (!categorized[cat]) categorized[cat] = [];
+          categorized[cat].push(item);
+        });
+
+        // Predefined tabs mapping
+        const tabContainers = {
+          'industrial': document.getElementById('industrial'),
+          'ca': document.getElementById('ca'),
+          'articleship': document.getElementById('articleship'),
+          'semi-qualified': document.getElementById('semi-qualified')
+        };
+
+        // Render category links for each tab
+        Object.keys(tabContainers).forEach(cat => {
+          const container = tabContainers[cat];
+          if (container && categorized[cat] && categorized[cat].length > 0) {
+            container.innerHTML = categorized[cat].map(link => {
+              const cardClass = (link.card_type && link.card_type !== 'default' && link.card_type !== 'social')
+                ? `link-card ${link.card_type}`
+                : 'link-card';
+              return `
+                <a href="${escapeHtml(link.url)}" target="_blank" rel="noopener noreferrer" class="${cardClass}">
+                  <i class="${escapeHtml(link.icon || 'fas fa-link')}"></i>
+                  <span>${escapeHtml(link.title)}</span>
+                </a>
+              `;
+            }).join('');
+          }
+        });
+
+        // Render social footer links if present
+        if (categorized['social'] && categorized['social'].length > 0) {
+          const footer = document.querySelector('.social-footer');
+          if (footer) {
+            footer.innerHTML = categorized['social'].map(item => `
+              <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer" class="social-icon" title="${escapeHtml(item.title)}">
+                <i class="${escapeHtml(item.icon || 'fas fa-link')}"></i>
+              </a>
+            `).join('');
+          }
+        }
+
+        // Handle any additional categories dynamically created by admin
+        const tabsWrapper = document.querySelector('.tabs-container');
+        const linksContainer = document.querySelector('.links-container');
+        if (tabsWrapper && linksContainer) {
+          Object.keys(categorized).forEach(cat => {
+            if (!tabContainers[cat] && cat !== 'social') {
+              let tabBtn = document.getElementById(`tab-${cat}`);
+              let tabContent = document.getElementById(cat);
+
+              if (!tabBtn) {
+                tabBtn = document.createElement('button');
+                tabBtn.className = 'tab-btn';
+                tabBtn.id = `tab-${cat}`;
+                tabBtn.textContent = cat.charAt(0).toUpperCase() + cat.slice(1).replace(/-/g, ' ');
+                tabBtn.onclick = function () { switchTab(this, cat); };
+                tabsWrapper.appendChild(tabBtn);
+              }
+
+              if (!tabContent) {
+                tabContent = document.createElement('div');
+                tabContent.className = 'tab-content';
+                tabContent.id = cat;
+                linksContainer.appendChild(tabContent);
+              }
+
+              tabContent.innerHTML = categorized[cat].map(link => {
+                const cardClass = (link.card_type && link.card_type !== 'default' && link.card_type !== 'social')
+                  ? `link-card ${link.card_type}`
+                  : 'link-card';
+                return `
+                  <a href="${escapeHtml(link.url)}" target="_blank" rel="noopener noreferrer" class="${cardClass}">
+                    <i class="${escapeHtml(link.icon || 'fas fa-link')}"></i>
+                    <span>${escapeHtml(link.title)}</span>
+                  </a>
+                `;
+              }).join('');
+            }
+          });
+        }
+      } catch (err) {
+        console.warn('Error hydrating live links:', err);
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadLiveLinks);
+    } else {
+      loadLiveLinks();
     }
   </script>
 </body>
