@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css">
     <link rel="stylesheet" href="cv-styles.css?v=20260912_5">
     <link rel="stylesheet" href="cv-preview.css?v=20260912_1">
+    <link rel="stylesheet" href="cv-reviewer-embedded.css?v=20260921_1">
     <!-- Old image-based PDF libs (replaced by Cloudflare Worker + Puppeteer for ATS-friendly PDFs) -->
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script> -->
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
@@ -56,6 +57,29 @@
 
     <!-- LEFT PANEL -->
     <div class="editor">
+        <!-- In-Editor Loading Overlay for CV Import & AI Processing -->
+        <div id="editor-loading-overlay" class="editor-loading-overlay" aria-hidden="true" role="status">
+            <div class="editor-loader-card">
+                <div class="editor-loader-spinner-wrap">
+                    <div class="editor-loader-spinner"></div>
+                    <div class="editor-loader-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                    </div>
+                </div>
+                <h4 class="editor-loader-title" id="editor-loader-title">Importing &amp; Parsing CV...</h4>
+                <p class="editor-loader-sub" id="editor-loader-sub">Extracting sections, contact info, and education with AI...</p>
+                <div class="editor-loader-steps">
+                    <span class="editor-loader-step-dot"></span>
+                    <span class="editor-loader-step-dot"></span>
+                    <span class="editor-loader-step-dot"></span>
+                </div>
+            </div>
+        </div>
+
         <div class="editor-header">
             <div class="brand-row">
                 <a class="app-logo" href="/" title="Go to My Student Club">
@@ -626,179 +650,365 @@
         </aside>
     </div>
 
-    <!-- MOBILE NAV -->
-    <!-- REVIEWER PANEL -->
-    <div id="reviewer-overlay" class="reviewer-overlay">
-        <div class="reviewer-container">
-            <div class="reviewer-header-bar">
-                <div class="brand-row" style="margin:0">
-                    <div class="app-logo">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" style="color:var(--primary)">
-                            <path
-                                d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
-                            </path>
-                        </svg>
-                        AI CV Reviewer
+    <!-- EMBEDDED CV REVIEWER VIEW -->
+    <div id="reviewer-view">
+        <!-- Top Action Bar -->
+        <header class="reviewer-topbar">
+            <div class="reviewer-topbar-left">
+                <button type="button" class="reviewer-icon-btn reviewer-back-btn" onclick="switchTab('editor')" aria-label="Back to Editor" title="Back to Editor">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    <span class="btn-text-desktop">Editor</span>
+                </button>
+                <div class="reviewer-brand-wrap">
+                    <div class="reviewer-title-row">
+                        <h2 class="reviewer-topbar-title">AI CV Review</h2>
+                        <span class="reviewer-badge">AI Audit</span>
                     </div>
                 </div>
-                <button class="btn-icon" onclick="toggleReviewer(false)">Close</button>
+            </div>
+            <div class="reviewer-topbar-actions">
+                <button type="button" class="reviewer-btn-reeval" id="embeddedReevaluateBtn" title="Re-evaluate CV">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                    </svg>
+                    <span class="btn-text-desktop">Re-evaluate</span>
+                </button>
+                <button type="button" class="reviewer-icon-btn reviewer-btn-theme" onclick="toggleTheme()" aria-label="Toggle theme" title="Toggle theme">
+                    <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/>
+                    </svg>
+                    <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
+                <button type="button" class="reviewer-icon-btn reviewer-btn-preview" onclick="switchTab('preview')" aria-label="Preview CV" title="Preview CV">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                    <span class="btn-text-desktop">Preview</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="reviewer-container">
+            <!-- 3D Scanner Loading Section -->
+            <div class="reviewer-loading-section" id="reviewerLoading" style="display:none;">
+                <div class="scanner-wrapper">
+                    <div class="scanner-halo"></div>
+                    <div class="scanner-card">
+                        <div class="scanner-line-sim"></div>
+                        <div class="scanner-line-sim"></div>
+                        <div class="scanner-line-sim"></div>
+                        <div class="scanner-line-sim"></div>
+                        <div class="scanner-line-sim"></div>
+                        <div class="scanner-laser"></div>
+                    </div>
+                </div>
+
+                <h3 class="loading-title">Evaluating Resume with AI...</h3>
+
+                <!-- 4-Step Progress Checklist -->
+                <div class="loading-checklist">
+                    <div class="loading-step" id="embeddedLoadStep1">
+                        <span class="step-bullet"></span>
+                        <span class="step-text">Resume Upload &amp; Parsing</span>
+                    </div>
+                    <div class="loading-step" id="embeddedLoadStep2">
+                        <span class="step-bullet"></span>
+                        <span class="step-text">Formatting &amp; Layout Audit</span>
+                    </div>
+                    <div class="loading-step" id="embeddedLoadStep3">
+                        <span class="step-bullet"></span>
+                        <span class="step-text">Experience &amp; Calibre Audit</span>
+                    </div>
+                    <div class="loading-step" id="embeddedLoadStep4">
+                        <span class="step-bullet"></span>
+                        <span class="step-text">AI Suggestions &amp; Scoring</span>
+                    </div>
+                </div>
+
+                <p id="embeddedLoadingProgressText">Hang tight as we evaluate your CV with AI precision!</p>
             </div>
 
-            <div class="reviewer-body">
-                <!-- HERO -->
-                <div id="heroSection" class="hero-section">
-                    <h2>Optimize your CV</h2>
-                    <p>Get instant, AI-powered feedback on structure, keywords, and impact.
-                    </p>
-                    <div style="display:flex; flex-direction:column; gap:10px; margin-top:16px;">
-                        <button class="btn-primary" onclick="if(typeof window.startReviewFromPreview==='function') window.startReviewFromPreview()" style="width:100%;">
-                            🔍 Review My Current CV
-                        </button>
-                        <button class="btn-secondary" onclick="document.getElementById('heroSection').style.display='none'; document.getElementById('uploadSection').style.display='block';" style="width:100%;">
-                            📄 Upload a PDF Instead
-                        </button>
+            <!-- Error / Empty State Section (Prevents Blank Screen on Any Error) -->
+            <div class="reviewer-error-section" id="reviewerError" style="display:none;">
+                <div class="reviewer-error-card">
+                    <div class="reviewer-error-icon-wrap warning" id="reviewerErrorIconWrap">
+                        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                            <line x1="12" y1="9" x2="12" y2="13"/>
+                            <line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
                     </div>
-                </div>
+                    <h3 class="reviewer-error-title" id="reviewerErrorTitle">Invalid Resume Content</h3>
+                    <p class="reviewer-error-message" id="reviewerErrorMessage">The attachment appears blank or unreadable; no CV/resume content is available for review.</p>
 
-                <!-- UPLOAD -->
-                <div id="uploadSection" class="upload-section" style="display:none;">
-                    <div id="dropArea" class="drop-area">
-                        <span class="icon-cloud">☁️</span>
-                        <p>Drag & drop your PDF here</p>
-                        <p class="sub-text">or click to browse</p>
-                        <button id="browseButton" class="btn-primary">Browse Files</button>
+                    <div class="reviewer-error-tips" id="reviewerErrorTips">
+                        <div class="error-tip-item">
+                            <span class="tip-dot"></span>
+                            <span>Make sure your name, contact info, and at least one section (Education/Experience) are filled in.</span>
+                        </div>
+                        <div class="error-tip-item">
+                            <span class="tip-dot"></span>
+                            <span>Switch to the <strong>Preview</strong> tab to confirm your CV layout is visible and rendering properly.</span>
+                        </div>
+                        <div class="error-tip-item">
+                            <span class="tip-dot"></span>
+                            <span>This AI evaluator is tailored specifically for Chartered Accountants (CA) and Finance profiles.</span>
+                        </div>
                     </div>
-                    <input type="file" id="fileInput" hidden accept=".pdf">
-                </div>
 
-                <!-- PREVIEW -->
-                <div id="previewArea" class="preview-area" style="display:none;">
-                    <div id="previewThumbnail" class="preview-thumb"></div>
-                    <div class="file-info">
-                        <span id="fileName">filename.pdf</span>
-                        <span id="fileSize" class="text-muted">0 KB</span>
-                    </div>
-                    <div class="preview-actions">
-                        <button id="removeFileBtn" class="btn-icon"
-                            style="color:var(--danger); border-color:var(--border-color);">Remove</button>
-                        <button id="proceedToReviewBtn" class="btn-primary" disabled>Analyze CV</button>
-                    </div>
-                </div>
-
-                <!-- LOADING -->
-                <div id="loadingSection" class="loading-section" style="display:none; text-align:center; padding:40px;">
-                    <div class="spinner" style="margin:0 auto 20px;"></div>
-                    <p id="loadingProgressText" style="font-weight:600; color:var(--text-main);">Analyzing...</p>
-                </div>
-
-                <!-- RESULTS -->
-                <div id="resultsSection" class="results-section" style="display:none;">
-                    <!-- Score -->
-                    <div class="score-section">
-                        <h3 class="score-section-title">Overall Score</h3>
-                        <div class="score-container">
-                            <svg class="score-chart" viewBox="0 0 36 36">
-                                <defs>
-                                    <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                        <stop offset="0%" stop-color="#818cf8" />
-                                        <stop offset="100%" stop-color="#4f46e5" />
-                                    </linearGradient>
-                                </defs>
-                                <path class="score-bg"
-                                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831">
-                                </path>
-                                <path id="scoreProgress" class="score-progress" stroke-dasharray="0, 100"
-                                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831">
-                                </path>
+                    <div class="reviewer-error-actions">
+                        <button type="button" class="btn-error-primary" onclick="switchTab('editor')">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                             </svg>
-                            <div id="scoreText" class="score-value">0</div>
-                        </div>
-                        <div class="score-label">out of 100</div>
+                            <span>Edit CV Details</span>
+                        </button>
+                        <button type="button" class="btn-error-secondary" onclick="switchTab('preview')">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            <span>View Preview</span>
+                        </button>
+                        <button type="button" class="btn-error-secondary" onclick="window.cvReviewerEmbedded?.reevaluateCv()">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                            </svg>
+                            <span>Try Again</span>
+                        </button>
                     </div>
-                    <div id="scoreJustification" class="score-notes"></div>
+                </div>
+            </div>
 
-                    <!-- Tabs -->
-                    <div class="tabs">
-                        <button class="tab-btn active" data-tab="analysis">Analysis</button>
-                        <button class="tab-btn" data-tab="history">History</button>
-                        <button class="tab-btn" data-tab="leaderboard">Leaderboard</button>
-                    </div>
+            <!-- Analysis Results Section -->
+            <div class="reviewer-results-section" id="reviewerResults" style="display:none;">
+                <div class="results-grid">
 
-                    <!-- Analysis Tab -->
-                    <div id="tab-analysis" class="tab-content active">
-                        <div id="tipsSection">
-                            <!-- Dynamic Sections -->
-                            <div id="recruiterTipsSection" class="review-card">
-                                <div class="section-header">Recruiter Tips <span class="toggle-icon">▼</span></div>
-                                <div class="content-area"></div>
-                            </div>
-                            <div id="measurableResultsSection" class="review-card">
-                                <div class="section-header">Measurable Results <span class="toggle-icon">▼</span></div>
-                                <div class="content-area"></div>
-                            </div>
-                            <div id="phrasesSuggestionsSection" class="review-card">
-                                <div class="section-header">Phrase Suggestions <span class="toggle-icon">▼</span></div>
-                                <div class="content-area"></div>
-                            </div>
-                            <div id="hardSkillsSection" class="review-card">
-                                <div class="section-header">Hard Skills <span class="toggle-icon">▼</span></div>
-                                <div class="content-area"></div>
-                            </div>
-                            <div id="softSkillsSection" class="review-card">
-                                <div class="section-header">Soft Skills <span class="toggle-icon">▼</span></div>
-                                <div class="content-area"></div>
-                            </div>
-                            <div id="actionVerbsSection" class="review-card">
-                                <div class="section-header">Action Verbs <span class="toggle-icon">▼</span></div>
-                                <div class="content-area"></div>
-                            </div>
-                            <div id="grammarCheckSection" class="review-card">
-                                <div class="section-header">Grammar Check <span class="toggle-icon">▼</span></div>
-                                <div class="content-area"></div>
-                            </div>
-                            <div id="formattingSection" class="review-card">
-                                <div class="section-header">Formatting <span class="toggle-icon">▼</span></div>
-                                <div class="content-area"></div>
-                            </div>
-                            <div id="educationSection" class="review-card">
-                                <div class="section-header">Education <span class="toggle-icon">▼</span></div>
-                                <div class="content-area"></div>
-                            </div>
-                            <div id="articleshipSection" class="review-card">
-                                <div class="section-header">Articleship <span class="toggle-icon">▼</span></div>
-                                <div class="content-area"></div>
-                            </div>
-                            <div id="interviewQuestionsSection" class="review-card">
-                                <div class="section-header">Interview Prep <span class="toggle-icon">▼</span></div>
-                                <div class="content-area"></div>
-                            </div>
-                            <div id="finalRecommendationsSection" class="review-card">
-                                <div class="section-header">Final Verdict <span class="toggle-icon">▼</span></div>
-                                <div class="content-area"></div>
+                    <!-- Left: Overall Score Card & Breakdown -->
+                    <div class="results-sidebar">
+                        <h3>Overall Score</h3>
+                        <div class="score-card">
+                            <div class="score-circle">
+                                <svg viewBox="0 0 36 36" class="score-chart">
+                                    <defs>
+                                        <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stop-color="#2563eb"/>
+                                            <stop offset="100%" stop-color="#4f46e5"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <path class="score-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                    <path id="embeddedScoreProgress" class="score-progress" stroke-dasharray="0, 100"
+                                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                </svg>
+                                <div class="score-display-overlay">
+                                    <div class="score-num-wrap">
+                                        <span class="score-val" id="embeddedScoreText">0</span>
+                                        <span class="score-unit">/100</span>
+                                    </div>
+                                    <span class="score-badge score-badge-good" id="embeddedScoreGradeBadge">Analysis</span>
+                                </div>
                             </div>
                         </div>
+
+                        <h3>Score Breakdown</h3>
+                        <div class="breakdown-categories">
+                            <div class="category-item" data-category="structure">
+                                <div class="category-header">
+                                    <h4>Structure &amp; Completeness</h4>
+                                    <span class="points">0/20 pts</span>
+                                </div>
+                                <div class="category-bar"><div class="category-fill" style="width:0%"></div></div>
+                            </div>
+                            <div class="category-item" data-category="impact">
+                                <div class="category-header">
+                                    <h4>Impact Demonstration</h4>
+                                    <span class="points">0/25 pts</span>
+                                </div>
+                                <div class="category-bar"><div class="category-fill" style="width:0%"></div></div>
+                            </div>
+                            <div class="category-item" data-category="expertise">
+                                <div class="category-header">
+                                    <h4>Professional Expertise</h4>
+                                    <span class="points">0/25 pts</span>
+                                </div>
+                                <div class="category-bar"><div class="category-fill" style="width:0%"></div></div>
+                            </div>
+                            <div class="category-item" data-category="experience">
+                                <div class="category-header">
+                                    <h4>Experience Description</h4>
+                                    <span class="points">0/20 pts</span>
+                                </div>
+                                <div class="category-bar"><div class="category-fill" style="width:0%"></div></div>
+                            </div>
+                            <div class="category-item" data-category="presentation">
+                                <div class="category-header">
+                                    <h4>Overall Presentation</h4>
+                                    <span class="points">0/10 pts</span>
+                                </div>
+                                <div class="category-bar"><div class="category-fill" style="width:0%"></div></div>
+                            </div>
+                        </div>
+
+                        <div class="justification-box">
+                            <h4>Score Justification</h4>
+                            <p id="scoreJustification">Loading…</p>
+                        </div>
                     </div>
 
-                    <!-- History Tab -->
-                    <div id="tab-history" class="tab-content">
-                        <div id="historyContent"></div>
-                        <div id="historyDetailContent" style="display:none; margin-top:20px;"></div>
-                    </div>
+                    <!-- Right: 12 Feedback Modules -->
+                    <div class="results-main">
+                        <div class="feedback-section" id="recruiterTipsSection">
+                            <div class="section-header">
+                                <h3>Recruiter Tips</h3>
+                                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </div>
+                            <div class="content-area">Loading…</div>
+                        </div>
 
-                    <!-- Leaderboard Tab -->
-                    <div id="tab-leaderboard" class="tab-content">
-                        <div id="leaderboardContent"></div>
-                    </div>
+                        <div class="feedback-section" id="measurableResultsSection">
+                            <div class="section-header">
+                                <h3>Measurable Results</h3>
+                                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </div>
+                            <div class="content-area">Loading…</div>
+                        </div>
 
-                    <!-- Actions -->
-                    <div class="reviewer-footer">
-                        <button id="startOverBtn" class="btn-secondary">Analyze Another</button>
+                        <div class="feedback-section" id="phrasesSuggestionsSection">
+                            <div class="section-header">
+                                <h3>Phrases Suggestions</h3>
+                                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </div>
+                            <div class="content-area">Loading…</div>
+                        </div>
+
+                        <div class="feedback-section" id="hardSkillsSection">
+                            <div class="section-header">
+                                <h3>Hard Skills Analysis</h3>
+                                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </div>
+                            <div class="content-area">Loading…</div>
+                        </div>
+
+                        <div class="feedback-section" id="softSkillsSection">
+                            <div class="section-header">
+                                <h3>Soft Skills Analysis</h3>
+                                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </div>
+                            <div class="content-area">Loading…</div>
+                        </div>
+
+                        <div class="feedback-section" id="actionVerbsSection">
+                            <div class="section-header">
+                                <h3>Action Verbs Usage</h3>
+                                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </div>
+                            <div class="content-area">Loading…</div>
+                        </div>
+
+                        <div class="feedback-section" id="grammarCheckSection">
+                            <div class="section-header">
+                                <h3>Grammar &amp; Proofreading</h3>
+                                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </div>
+                            <div class="content-area">Loading…</div>
+                        </div>
+
+                        <div class="feedback-section" id="formattingSection">
+                            <div class="section-header">
+                                <h3>Formatting &amp; Readability</h3>
+                                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </div>
+                            <div class="content-area">Loading…</div>
+                        </div>
+
+                        <div class="feedback-section" id="educationSection">
+                            <div class="section-header">
+                                <h3>Education &amp; Qualification</h3>
+                                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </div>
+                            <div class="content-area">Loading…</div>
+                        </div>
+
+                        <div class="feedback-section" id="articleshipSection">
+                            <div class="section-header">
+                                <h3>Articleship Experience</h3>
+                                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </div>
+                            <div class="content-area">Loading…</div>
+                        </div>
+
+                        <div class="feedback-section" id="interviewQuestionsSection">
+                            <div class="section-header">
+                                <h3>Predicted Interview Questions</h3>
+                                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </div>
+                            <div class="content-area">Loading…</div>
+                        </div>
+
+                        <div class="feedback-section" id="finalRecommendationsSection">
+                            <div class="section-header">
+                                <h3>Final Recommendations</h3>
+                                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </div>
+                            <div class="content-area">Loading…</div>
+                        </div>
+
+                        <!-- Report Action Bar -->
+                        <div class="report-action-bar">
+                            <button class="primary-btn" id="downloadReportBtn" type="button">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                </svg>
+                                <span>Download Report</span>
+                            </button>
+                            <button class="secondary-btn" type="button" onclick="switchTab('editor')">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                </svg>
+                                <span>Return to Editor</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- MOBILE NAV -->
 
     <div class="mobile-nav">
         <div class="nav-tab active" onclick="switchTab('editor')">
@@ -825,532 +1035,9 @@
         </div>
     </div>
 
-    <!-- REVIEWER LOGIC -->
-    <script type="module">
-        import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-        // Note: pdfjsLib is loaded via dynamic import below
-
-        // Configuration
-        const SUPABASE_URL = 'https://izsggdtdiacxdsjjncdq.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-
-        let supabase = null;
-        let userId = null;
-        let authUser = null;
-        let selectedFile = null;
-        let pdfImages = [];
-        let analysisResultText = null;
-
-        // UI Elements
-        const els = {};
-
-        function initReviewer() {
-            // Map Elements
-            ['heroSection', 'uploadSection', 'dropArea', 'fileInput', 'browseButton', 'previewArea', 'previewThumbnail',
-                'fileName', 'fileSize', 'removeFileBtn', 'proceedToReviewBtn', 'loadingSection', 'resultsSection',
-                'scoreText', 'scoreProgress', 'scoreJustification', 'tipsSection', 'historyContent', 'leaderboardContent',
-                'downloadReportBtn', 'startOverBtn'].forEach(id => els[id] = document.getElementById(id));
-
-            // Listeners
-            if (els.browseButton) els.browseButton.onclick = () => els.fileInput.click();
-            if (els.fileInput) els.fileInput.onchange = handleFileSelect;
-            if (els.dropArea) {
-                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(e => els.dropArea.addEventListener(e, preventDefaults, false));
-                ['dragenter', 'dragover'].forEach(e => els.dropArea.addEventListener(e, () => els.dropArea.classList.add('dragover'), false));
-                ['dragleave', 'drop'].forEach(e => els.dropArea.addEventListener(e, () => els.dropArea.classList.remove('dragover'), false));
-                els.dropArea.addEventListener('drop', handleDrop, false);
-            }
-            if (els.removeFileBtn) els.removeFileBtn.onclick = resetUpload;
-            if (els.proceedToReviewBtn) els.proceedToReviewBtn.onclick = analyzeCv;
-            if (els.startOverBtn) els.startOverBtn.onclick = resetToUploadStage;
-
-            // Tabs
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.onclick = () => {
-                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                    btn.classList.add('active');
-                    const tabId = btn.dataset.tab;
-                    document.getElementById('tab-' + tabId).classList.add('active');
-                    if (tabId === 'history') loadHistory();
-                    if (tabId === 'leaderboard') loadLeaderboard();
-                };
-            });
-
-            // Collapsible Sections
-            document.getElementById('tipsSection').addEventListener('click', (e) => {
-                const header = e.target.closest('.section-header');
-                if (header) {
-                    const card = header.closest('.review-card');
-                    card.classList.toggle('open');
-                }
-            });
-
-            setupUserId();
-            supabase = createClient(SUPABASE_URL, SUPABASE_KEY, { global: { headers: { 'x-msc-user-id': userId } } });
-        }
-
-        function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
-        function handleDrop(e) { handleFile(e.dataTransfer.files[0]); }
-        function handleFileSelect(e) { handleFile(e.target.files[0]); }
-
-        function setupUserId() {
-            userId = localStorage.getItem('msc_cv_reviewer_uuid');
-            if (!userId) {
-                userId = crypto.randomUUID();
-                localStorage.setItem('msc_cv_reviewer_uuid', userId);
-            }
-        }
-
-        async function handleFile(file) {
-            if (!file || file.type !== 'application/pdf') return alert('Please upload a PDF.');
-            selectedFile = file;
-            els.fileName.innerText = file.name;
-            els.fileSize.innerText = (file.size / 1024).toFixed(1) + ' KB';
-
-            els.dropArea.parentElement.style.display = 'none'; // Hide upload section
-            els.previewArea.style.display = 'block';
-            els.previewThumbnail.innerHTML = '<div style="padding:20px; text-align:center;">Loading Preview...</div>';
-
-            try {
-                const pdfjsLib = await import('https://esm.sh/pdfjs-dist@4.8.69');
-                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://esm.sh/pdfjs-dist@4.8.69/build/pdf.worker.min.js';
-
-                const arrayBuffer = await file.arrayBuffer();
-                const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
-                const page = await pdf.getPage(1);
-                const viewport = page.getViewport({ scale: 0.5 });
-                const canvas = document.createElement('canvas');
-                const context = canvas.getContext('2d');
-                canvas.width = viewport.width;
-                canvas.height = viewport.height;
-                await page.render({ canvasContext: context, viewport }).promise;
-
-                els.previewThumbnail.innerHTML = '';
-                els.previewThumbnail.appendChild(canvas);
-
-                // Convert to images for API
-                pdfImages = [];
-                for (let i = 1; i <= Math.min(pdf.numPages, 3); i++) {
-                    const p = await pdf.getPage(i);
-                    const v = p.getViewport({ scale: 1.5 });
-                    const c = document.createElement('canvas');
-                    c.width = v.width; c.height = v.height;
-                    await p.render({ canvasContext: c.getContext('2d'), viewport: v }).promise;
-                    pdfImages.push(c.toDataURL('image/jpeg', 0.8).split(',')[1]);
-                }
-
-                els.proceedToReviewBtn.disabled = false;
-            } catch (e) {
-                alert('Error processing PDF: ' + e.message);
-                resetUpload();
-            }
-        }
-
-        function resetUpload() {
-            selectedFile = null;
-            pdfImages = [];
-            els.fileInput.value = '';
-            els.previewArea.style.display = 'none';
-            els.uploadSection.style.display = 'none';
-            els.heroSection.style.display = 'block';
-            els.proceedToReviewBtn.disabled = true;
-        }
-
-        function resetToUploadStage() {
-            resetUpload();
-            els.resultsSection.style.display = 'none';
-            els.heroSection.style.display = 'block';
-        }
-
-        async function analyzeCv() {
-            if (!pdfImages.length) return;
-            els.heroSection.style.display = 'none';
-            els.uploadSection.style.display = 'none';
-            els.previewArea.style.display = 'none';
-            els.loadingSection.style.display = 'block';
-
-            try {
-                const res = await fetch('https://cv-reviewer.bhansalimanan55.workers.dev/', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-Domain': 'Finance', 'X-Specialization': 'Audit' },
-                    body: JSON.stringify({ images: pdfImages })
-                });
-
-                const data = await res.json();
-                if (!data.ok) throw new Error(data.error || 'Analysis failed');
-
-                analysisResultText = data.response;
-                processResults(analysisResultText);
-                saveReview(analysisResultText);
-
-                els.loadingSection.style.display = 'none';
-                els.resultsSection.style.display = 'block';
-            } catch (e) {
-                alert(e.message);
-                resetToUploadStage();
-            }
-        }
-
-        function processResults(text) {
-            const score = parseScore(text);
-            animateScore(score);
-
-            // Map sections
-            const sections = {
-                '<<<RECRUITER_TIPS>>>': 'recruiterTipsSection',
-                '<<<MEASURABLE_RESULTS>>>': 'measurableResultsSection',
-                '<<<PHRASES_SUGGESTIONS>>>': 'phrasesSuggestionsSection',
-                '<<<HARD_SKILLS>>>': 'hardSkillsSection',
-                '<<<SOFT_SKILLS>>>': 'softSkillsSection',
-                '<<<ACTION_VERBS>>>': 'actionVerbsSection',
-                '<<<GRAMMAR_CHECK>>>': 'grammarCheckSection',
-                '<<<FORMATTING_READABILITY>>>': 'formattingSection',
-                '<<<EDUCATION_QUALIFICATION>>>': 'educationSection',
-                '<<<ARTICLESHIP_EXPERIENCE>>>': 'articleshipSection',
-                '<<<INTERVIEW_QUESTIONS>>>': 'interviewQuestionsSection',
-                '<<<FINAL_RECOMMENDATIONS>>>': 'finalRecommendationsSection'
-            };
-
-            for (const [marker, id] of Object.entries(sections)) {
-                const endMarker = marker.replace('<<<', '<<<END_');
-                const content = extractSection(text, marker, endMarker);
-                const container = document.getElementById(id).querySelector('.content-area');
-
-                // Special handling for sections with <<POINT>> markers
-                if (marker === '<<<MEASURABLE_RESULTS>>>' || marker === '<<<PHRASES_SUGGESTIONS>>>') {
-                    container.innerHTML = formatPointSection(content);
-                } else {
-                    container.innerHTML = formatText(content);
-                }
-            }
-
-            // Notes
-            const just = extractSection(text, '<<<OVERALL_SCORE>>>', '<<<END_OVERALL_SCORE>>>');
-            const justMatch = just?.match(/Justification:\s*(.*)/is);
-            els.scoreJustification.innerHTML = formatText(justMatch ? justMatch[1] : 'Analysis complete.');
-        }
-
-        function extractSection(text, start, end) {
-            const s = text.indexOf(start);
-            if (s === -1) return null;
-            const e = text.indexOf(end, s);
-            return text.substring(s + start.length, e === -1 ? undefined : e).trim();
-        }
-
-        function parseScore(text) {
-            const m = text.match(/Score:\s*([\d.]+)\/100/i) || text.match(/Overall Score:\s*([\d.]+)/i);
-            return m ? parseFloat(m[1]) : 0;
-        }
-
-        // Special formatter for sections with <<POINT>> markers (Measurable Results, Phrases Suggestions)
-        function formatPointSection(content) {
-            if (!content) return '<p class="text-muted italic">No specific feedback.</p>';
-
-            // Split by <<END_POINT>> or --- delimiters
-            const points = content.split(/<<END_POINT>>|---/);
-            let html = '';
-
-            points.forEach((point) => {
-                if (!point.trim()) return;
-
-                // Remove <<POINT>> marker
-                point = point.replace(/<<POINT>>/g, '').trim();
-                if (!point) return;
-
-                // Extract Original quote
-                const originalMatch = point.match(/Original:\s*"([\s\S]+?)"/i);
-                // Extract Critique
-                const critiqueMatch = point.match(/Critique:\s*([\s\S]+?)(?=Rewrite Suggestion \d+:|$)/i);
-
-                html += `<div class="feedback-point" style="border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 16px; background: #fafbfc;">`;
-
-                if (originalMatch && originalMatch[1]) {
-                    html += `<div style="margin-bottom: 12px;">
-                        <span style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Original</span>
-                        <div style="margin-top: 4px; padding: 10px 12px; background: #fff; border: 1px solid var(--border-color); border-radius: 6px; font-style: italic; color: var(--text-main); line-height: 1.5;">"${originalMatch[1].trim()}"</div>
-                    </div>`;
-                }
-
-                if (critiqueMatch && critiqueMatch[1]) {
-                    const critiqueText = critiqueMatch[1].trim();
-                    html += `<div style="margin-bottom: 12px;">
-                        <span style="font-size: 10px; font-weight: 700; color: var(--danger); text-transform: uppercase; letter-spacing: 0.5px;">Critique</span>
-                        <div style="margin-top: 4px; color: var(--text-main); line-height: 1.6;">${formatCritiqueText(critiqueText)}</div>
-                    </div>`;
-                }
-
-                // Extract all rewrite suggestions
-                const allSuggestions = [...point.matchAll(/Rewrite Suggestion (\d+):\s*([\s\S]+?)(?=Rewrite Suggestion \d+:|$)/gi)];
-
-                if (allSuggestions.length > 0) {
-                    html += `<div>
-                        <span style="font-size: 10px; font-weight: 700; color: var(--success); text-transform: uppercase; letter-spacing: 0.5px;">Rewrite Suggestions</span>
-                        <div style="margin-top: 8px;">`;
-
-                    allSuggestions.forEach((match, idx) => {
-                        const suggestionText = match[2].trim();
-                        if (suggestionText) {
-                            html += `<div style="display: flex; gap: 10px; margin-bottom: 8px; padding: 10px 12px; background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 6px;">
-                                <span style="flex-shrink: 0; width: 22px; height: 22px; background: var(--success); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700;">${idx + 1}</span>
-                                <div style="color: var(--text-main); line-height: 1.5;">${escapeHtml(suggestionText)}</div>
-                            </div>`;
-                        }
-                    });
-
-                    html += `</div></div>`;
-                }
-
-                html += `</div>`;
-            });
-
-            return html || '<p class="text-muted italic">No specific feedback.</p>';
-        }
-
-        function formatCritiqueText(text) {
-            // Escape HTML and format
-            let html = escapeHtml(text);
-            // Convert line breaks
-            html = html.replace(/\n/g, '<br>');
-            return html;
-        }
-
-        function escapeHtml(text) {
-            return text
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
-        }
-
-
-        function formatText(md) {
-            if (!md) return '<p class="text-muted italic">No specific feedback.</p>';
-
-            // STEP 1: Pre-process raw text before HTML conversion
-            let processedText = md;
-
-            // Replace asterisks at the start of lines with bullet points
-            processedText = processedText.replace(/^\* /gm, '• ');
-            processedText = processedText.replace(/\n\* /g, '\n• ');
-
-            // 0a) Separate adjacent [GOOD] [ISSUE...] tags so [ISSUE...] starts on a new bullet line
-            processedText = processedText.replace(/(\[GOOD\])\s*(\[ISSUE(?:\s*-\s*SEVERITY:\s*(?:Critical|High|Moderate|Low))?[^\]]*\])/gi, '$1\n• $2');
-
-            // 0b) If an [ISSUE...] tag is on a line by itself before a bullet item, attach it to the bullet text
-            processedText = processedText.replace(/(•\s*)?(\[ISSUE(?:\s*-\s*SEVERITY:\s*(?:Critical|High|Moderate|Low))?[^\]]*\])\s*\n\s*(?:[•\*\-]\s*)?/gi, '\n• $2 ');
-
-            // 1) Separate inline label header from first bullet item if on same line
-            processedText = processedText.replace(/^(\s*(?:\*\s*)?\*\*([^*:]+):\*\*)[ \t]+(?=[A-Z]|\[)/gm, '$1\n• ');
-
-            // 2) After sentence boundaries (optionally followed by GOOD status tag), start a new bullet
-            processedText = processedText.replace(
-                /([.!?](?:\s*\[GOOD\])?)[ \t]+(?=[A-Z]|\[(?:GOOD|ISSUE))/gi,
-                '$1\n• '
-            );
-
-            // 3) Convert inline numbered items (1. 2. 3. etc.) to bullet points
-            // First, handle patterns like "text. 1. more" or "text 1. more" - any " N. " pattern
-            processedText = processedText.replace(/\s+(\d+)\.\s+/g, '\n ');
-            // Also handle numbered items at the very start of text
-            processedText = processedText.replace(/^(\d+)\.\s+/gm, '');
-
-            // STEP 2: Convert to HTML with escaping and markdown
-            let html = processedText
-                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                .replace(/`([^`]+)`/g, '<code class="bg-gray-200 px-1 rounded text-sm">$1</code>')
-                .replace(/(\r\n|\n|\r)/g, '<br>');
-
-            // STEP 3: Replace markers with styled elements
-            // Replace [GOOD] with styled checkmark
-            html = html.replace(/\[GOOD\]/g, '<span class="highlight-good" title="Good point">✓</span>');
-
-            // Replace [ISSUE] with styled X (without severity)
-            html = html.replace(/\[ISSUE\](?!\s*-\s*SEVERITY)/g, '<span class="highlight-issue" title="Area for improvement">✗</span>');
-
-            // Replace [ISSUE - SEVERITY: Level] with compact severity badges
-            html = html.replace(/\[ISSUE\s*-\s*SEVERITY:\s*(Critical|High|Moderate|Low)(?:[^\]]*)\]/gi, (match, severity) => {
-                const level = severity.toLowerCase();
-                return `<span class="highlight-issue" title="Issue">✗</span><span class="severity-badge severity-${level}">${severity}</span>`;
-            });
-
-            // STEP 4: Format section labels: "**Label:**" pattern
-            html = html.replace(/<br>\s*\*\*([^*:]+):\*\*/g, '</p><h4 class="feedback-label">$1:</h4><p>');
-            html = html.replace(/^\*\*([^*:]+):\*\*/gm, '<h4 class="feedback-label">$1:</h4>');
-
-            // STEP 5: Convert bullet markers to styled paragraphs
-            html = html.replace(/<br>\s*•\s*/g, '</p><p class="feedback-bullet">');
-            html = html.replace(/<p>•\s*/g, '<p class="feedback-bullet">');
-            html = html.replace(/^•\s*/gm, '');
-
-            // Convert numbered items to styled format
-            html = html.replace(/<br>\s*(\d+)\.\s+/g, '</p><p class="feedback-numbered"><strong>$1.</strong> ');
-
-            // Convert <br><br> to separate paragraphs for better spacing
-            html = html.replace(/<br>\s*<br>/g, '</p><p>');
-
-            // Convert hyphen list markers to feedback-bullet paragraphs
-            html = html.replace(/<br>\s*-\s+/g, '</p><p class="feedback-bullet">');
-            html = html.replace(/<br>\s*\*\s+/g, '</p><p class="feedback-bullet">');
-
-            // STEP 6: Clean up empty paragraphs and fix structure
-            html = html.replace(/<p>\s*<\/p>/g, '');
-            html = html.replace(/<\/p>\s*<\/p>/g, '</p>');
-            html = html.replace(/<p>\s*<p/g, '<p');
-
-            // Wrap in paragraph if not already
-            if (!html.startsWith('<p') && !html.startsWith('<h')) {
-                html = '<p>' + html + '</p>';
-            }
-
-            return html;
-        }
-
-        function animateScore(target) {
-            let current = 0;
-            const el = els.scoreText;
-            const bar = els.scoreProgress;
-            const step = () => {
-                current += (target - current) * 0.1;
-                if (Math.abs(target - current) < 0.5) current = target;
-                el.innerText = current.toFixed(0);
-                bar.setAttribute('stroke-dasharray', `${Math.min(current, 100)}, 100`);
-                if (current !== target) requestAnimationFrame(step);
-            };
-            step();
-        }
-
-        async function saveReview(text) {
-            const { error } = await supabase.from('msc_cv_ai_resume_reviews').insert([{
-                user_id: userId,
-                score: parseScore(text),
-                review_data: { review: text },
-                file_name: selectedFile?.name || buildPreviewReviewFilename()
-            }]);
-            if (error) console.error(error);
-        }
-
-        async function loadHistory() {
-            els.historyContent.innerHTML = 'Loading...';
-            const { data } = await supabase.from('msc_cv_ai_resume_reviews').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(10);
-            if (!data || !data.length) return els.historyContent.innerHTML = '<p class="text-muted">No history yet.</p>';
-
-            els.historyContent.innerHTML = data.map(i => `
-                <div class="history-item" onclick="showHistoryDetail('${i.id}')">
-                    <div style="display:flex; justify-content:space-between;">
-                        <strong>${i.file_name}</strong>
-                        <span style="color:var(--primary); font-weight:bold;">${i.score?.toFixed(0)}%</span>
-                    </div>
-                    <div class="text-muted text-sm">${new Date(i.created_at).toLocaleDateString()}</div>
-                </div>
-            `).join('');
-
-            // Hack to store data for detail view
-            window._historyData = data;
-        }
-
-        window.showHistoryDetail = (id) => {
-            const item = window._historyData.find(i => i.id == id);
-            const detail = document.getElementById('historyDetailContent');
-            detail.style.display = 'block';
-            detail.innerHTML = `<div class="review-card open"><div class="content-area" style="display:block">${formatText(item.review_data.review)}</div></div>`;
-        };
-
-        async function loadLeaderboard() {
-            els.leaderboardContent.innerHTML = 'Loading...';
-            const { data } = await supabase.from('msc_cv_ai_resume_reviews').select('score, file_name, created_at').order('score', { ascending: false }).limit(10);
-            if (!data) return;
-            els.leaderboardContent.innerHTML = data.map((i, idx) => `
-                <div class="history-item" style="cursor:default;">
-                    <div style="display:flex; justify-content:space-between;">
-                        <span>#${idx + 1} ${i.file_name.substring(0, 15)}...</span>
-                        <span style="color:var(--primary); font-weight:bold;">${i.score?.toFixed(0)}%</span>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // Initialize
-        initReviewer();
-
-        async function ensureHtml2Canvas() {
-            if (typeof window.html2canvas === 'function') return window.html2canvas;
-
-            const module = await import('https://esm.sh/html2canvas@1.4.1');
-            const html2canvasLib = module?.default || module?.html2canvas;
-
-            if (typeof html2canvasLib !== 'function') {
-                throw new Error('Review engine failed to load.');
-            }
-
-            window.html2canvas = html2canvasLib;
-            return html2canvasLib;
-        }
-
-        function buildPreviewReviewFilename() {
-            const activeCvData = typeof cvData !== 'undefined' ? cvData : window.cvData;
-            const rawName = (activeCvData?.personal?.name || 'cv-preview').trim();
-            const safeName = rawName
-                .replace(/[\\/:*?"<>|]+/g, ' ')
-                .replace(/\s+/g, ' ')
-                .trim();
-            return `${safeName || 'cv-preview'}.pdf`;
-        }
-
-        // Expose a function to start review from the current live preview
-        window.startReviewFromPreview = async function () {
-            try {
-                if (window.toggleReviewer) window.toggleReviewer(true);
-
-                const h2c = await ensureHtml2Canvas();
-
-                const frame = document.getElementById('cv-frame');
-                const doc = frame?.contentDocument || frame?.contentWindow?.document;
-                const node = doc?.getElementById('cv-page') || doc?.body;
-                if (!frame || !doc || !node) {
-                    alert('Unable to access the live CV preview.');
-                    return;
-                }
-
-                // Reset UI to loading state
-                if (els.heroSection) els.heroSection.style.display = 'none';
-                if (els.uploadSection) els.uploadSection.style.display = 'none';
-                if (els.previewArea) els.previewArea.style.display = 'none';
-                if (els.loadingSection) els.loadingSection.style.display = 'block';
-
-                if (doc.fonts?.ready) {
-                    await doc.fonts.ready;
-                }
-
-                // Capture the current CV preview as an image (same content as the PDF)
-                const canvas = await h2c(node, {
-                    scale: 2,
-                    useCORS: true,
-                    logging: false,
-                    onclone: (clonedDoc) => {
-                        // Ensure styles are available in the clone for correct capture
-                        const styles = doc.querySelectorAll('style, link[rel="stylesheet"]');
-                        styles.forEach(s => clonedDoc.head.appendChild(s.cloneNode(true)));
-                    }
-                });
-
-                pdfImages = [canvas.toDataURL('image/jpeg', 0.85).split(',')[1]];
-                selectedFile = selectedFile || { name: buildPreviewReviewFilename() };
-
-                // Re-use the existing analysis pipeline
-                await analyzeCv();
-            } catch (e) {
-                console.error("Review capture error:", e);
-                alert('Failed to analyze current CV: ' + (e.message || 'Unknown error'));
-                if (els.loadingSection) els.loadingSection.style.display = 'none';
-                if (els.heroSection) els.heroSection.style.display = 'block';
-                if (els.uploadSection) els.uploadSection.style.display = 'none';
-            }
-        };
-    </script>
+    <!-- Reviewer Integration Bridge -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script type="module" src="cv-review-bridge.js"></script>
 
     <!-- Template Sidebar Overlay -->
     <div class="template-sidebar-overlay" id="template-sidebar-overlay" onclick="toggleTemplateSidebar(false)"></div>
@@ -1426,6 +1113,69 @@
             </div>
         </div>
     </dialog>
+
+    <!-- Buy gate: shown when a free user clicks locked section or reaches free trial limit -->
+    <div class="trial-modal-overlay" id="reviewBuyOverlay" role="dialog" aria-modal="true" aria-labelledby="reviewBuyTitle">
+        <div class="trial-modal trial-modal--wide">
+            <button class="trial-modal-close" id="reviewBuyClose" type="button" aria-label="Close">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+            <span class="trial-modal-emblem trial-modal-emblem--gold" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </span>
+            <h3 id="reviewBuyTitle">Enroll to unlock full report</h3>
+            <p>Enroll in any MSC course to unlock complete detailed recommendations, phrasing rewrites, and skill gap analyses.</p>
+            <div class="trial-course-list" id="reviewBuyCourseList"></div>
+        </div>
+    </div>
+
+    <!-- Out of Context Warning Modal -->
+    <div class="trial-modal-overlay" id="contextWarningOverlay" role="dialog" aria-modal="true" aria-labelledby="contextWarningTitle">
+        <div class="trial-modal">
+            <button class="trial-modal-close" id="contextWarningClose" type="button" aria-label="Close">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+            <span class="trial-modal-emblem" aria-hidden="true" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            </span>
+            <h3 id="contextWarningTitle">Invalid Resume Content</h3>
+            <p id="contextWarningText">This AI CV Reviewer is custom-built exclusively for Chartered Accountants (CA), Finance, and Accounting professionals. Please ensure your CV content is relevant.</p>
+            <button type="button" class="trial-modal-cta" id="contextWarningBtn" style="margin-top: 1.5rem; background: #0f172a; width: 100%; border-radius: 12px; font-weight: 600; padding: 0.85rem; color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                Got it, let me edit CV
+            </button>
+        </div>
+    </div>
+
+    <!-- Generic Notice / Error Modal -->
+    <div class="trial-modal-overlay" id="noticeModalOverlay" role="dialog" aria-modal="true" aria-labelledby="noticeModalTitle">
+        <div class="trial-modal">
+            <button class="trial-modal-close" id="noticeModalClose" type="button" aria-label="Close">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+            <span class="trial-modal-emblem" id="noticeModalEmblem" aria-hidden="true" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            </span>
+            <h3 id="noticeModalTitle">Notice</h3>
+            <p id="noticeModalText">Something went wrong.</p>
+            <button type="button" class="trial-modal-cta" id="noticeModalBtn" style="margin-top: 1.5rem; background: #0f172a; width: 100%; border-radius: 12px; font-weight: 600; padding: 0.85rem; color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                Dismiss
+            </button>
+        </div>
+    </div>
+
+    <!-- PDF preview modal -->
+    <div id="pdfPreviewModal" style="display:none;">
+        <div class="cvr-modal-shell">
+            <div class="cvr-modal-head">
+                <h3>Preview: CV Analysis Report</h3>
+                <button class="cvr-modal-close" id="pdfPreviewCloseBtn">Close</button>
+            </div>
+            <div class="cvr-modal-body" id="pdfPreviewContainer"></div>
+            <div class="cvr-modal-foot">
+                <button class="cvr-modal-download" id="pdfPreviewDownloadBtn">Download PDF</button>
+            </div>
+        </div>
+    </div>
 </body>
 <script>
     // Airy Flow theme toggle — persists to localStorage 'msc-theme' (shared across portal)
@@ -1441,5 +1191,7 @@
 <script src="cv-script.js?v=20260912_7"></script>
 <script src="cv-preview-zoom.js?v=20260912_1"></script>
 <script src="cv-preview.js?v=20260912_2"></script>
+<script src="https://unpkg.com/markdown-pdfjs@1.0.1/dist/markdown-pdf.umd.js"></script>
+<script type="module" src="cv-reviewer-embedded.js?v=20260921_1"></script>
 
 </html>

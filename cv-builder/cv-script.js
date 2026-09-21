@@ -1517,10 +1517,15 @@
         // Tabs
         function switchTab(tab) {
             if (tab === 'reviewer') {
-                toggleReviewer(true);
-                // Mark reviewer nav tab active
+                toggleReviewer(false);
+                document.body.className = 'view-reviewer';
                 document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
-                document.querySelectorAll('.nav-tab')[1].classList.add('active');
+                const navTabs = document.querySelectorAll('.nav-tab');
+                if (navTabs[1]) navTabs[1].classList.add('active');
+
+                if (window.cvReviewerEmbedded && typeof window.cvReviewerEmbedded.openReview === 'function') {
+                    window.cvReviewerEmbedded.openReview();
+                }
                 return;
             }
             toggleReviewer(false);
@@ -1532,11 +1537,14 @@
 
             if (tab === 'preview') postToFrame();
         }
+        window.switchTab = switchTab;
 
         function toggleReviewer(show) {
             const overlay = document.getElementById('reviewer-overlay');
-            if (show) overlay.classList.add('active');
-            else overlay.classList.remove('active');
+            if (overlay) {
+                if (show) overlay.classList.add('active');
+                else overlay.classList.remove('active');
+            }
         }
 
         // Render Functions
@@ -3539,11 +3547,29 @@ async function deliverDownloadedBlob(blob, filename) {
             }
         }
 
+        function showEditorLoader(show, title = 'Importing & Parsing CV...', sub = 'Extracting sections, contact info, and education with AI...') {
+            const overlay = document.getElementById('editor-loading-overlay');
+            if (!overlay) return;
+            const titleEl = document.getElementById('editor-loader-title');
+            const subEl = document.getElementById('editor-loader-sub');
+            if (titleEl && title) titleEl.textContent = title;
+            if (subEl && sub) subEl.textContent = sub;
+            if (show) {
+                overlay.classList.add('active');
+                overlay.setAttribute('aria-hidden', 'false');
+            } else {
+                overlay.classList.remove('active');
+                overlay.setAttribute('aria-hidden', 'true');
+            }
+        }
+        window.showEditorLoader = showEditorLoader;
+
         async function generateAI() {
             if (!cvData.personal.name && !getPlainTextFromHTML(cvData.summary || '')) return alert("Please fill basic info first.");
 
             const overlay = document.querySelector('.loading-overlay');
-            overlay.classList.add('active');
+            if (overlay) overlay.classList.add('active');
+            showEditorLoader(true, "AI Enhancing CV...", "Analyzing and optimizing your resume sections...");
 
             try {
                 const customPrompt = await getCustomPrompt('AI Enhance');
@@ -3651,20 +3677,23 @@ async function deliverDownloadedBlob(blob, filename) {
             } catch (e) {
                 alert("Error: " + e.message);
             } finally {
-                overlay.classList.remove('active');
+                if (overlay) overlay.classList.remove('active');
+                showEditorLoader(false);
             }
         }
 
         async function handleImageUpload(input) {
             if (!input.files[0]) return;
             const overlay = document.querySelector('.loading-overlay');
-            overlay.classList.add('active');
+            if (overlay) overlay.classList.add('active');
+            showEditorLoader(true, "Importing & Parsing CV...", "Processing your document and preparing for AI extraction...");
 
             try {
                 const file = input.files[0];
                 let images = [];
 
                 if (file.type === 'application/pdf') {
+                    showEditorLoader(true, "Processing PDF Document...", "Rendering pages for AI text extraction...");
                     const pdfjsLib = await import('https://esm.sh/pdfjs-dist@4.8.69');
                     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://esm.sh/pdfjs-dist@4.8.69/build/pdf.worker.js';
                     const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
@@ -3673,6 +3702,7 @@ async function deliverDownloadedBlob(blob, filename) {
                     const maxPages = Math.min(pdf.numPages, 3);
 
                     for (let i = 1; i <= maxPages; i++) {
+                        showEditorLoader(true, "Processing PDF Document...", `Rendering page ${i} of ${maxPages}...`);
                         const page = await pdf.getPage(i);
                         const viewport = page.getViewport({ scale: 2 });
                         const canvas = document.createElement('canvas');
@@ -3683,6 +3713,7 @@ async function deliverDownloadedBlob(blob, filename) {
                         images.push(canvas.toDataURL('image/jpeg', 0.8).split(',')[1]);
                     }
                 } else {
+                    showEditorLoader(true, "Processing Image...", "Preparing image for AI analysis...");
                     const base64 = await new Promise((r) => {
                         const reader = new FileReader();
                         reader.onload = () => r(reader.result.split(',')[1]);
@@ -3690,6 +3721,8 @@ async function deliverDownloadedBlob(blob, filename) {
                     });
                     images.push(base64);
                 }
+
+                showEditorLoader(true, "AI Parsing in Progress...", "Extracting your experience, education, and skills with AI...");
 
                 const response = await fetch(`${WORKER_URL}/convert`, {
                     method: 'POST',
@@ -3699,6 +3732,7 @@ async function deliverDownloadedBlob(blob, filename) {
 
                 const res = await response.json();
                 if (res.ok && res.data) {
+                    showEditorLoader(true, "Applying Imported Data...", "Populating editor fields with your CV details...");
                     cvData = normalizeImportedPayload(res.data);
                     ensureCvDataShape();
                     normalizeSectionOrder();
@@ -3717,7 +3751,8 @@ async function deliverDownloadedBlob(blob, filename) {
                 console.error(e);
                 alert("Import failed: " + e.message);
             } finally {
-                overlay.classList.remove('active');
+                if (overlay) overlay.classList.remove('active');
+                showEditorLoader(false);
                 input.value = '';
             }
         }

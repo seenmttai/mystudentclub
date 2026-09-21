@@ -146,8 +146,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     const autoReviewPayload = consumeAutoReviewPayload(autoReviewStorage);
     if (autoReviewPayload && initializeBuilderAutoReview(autoReviewPayload)) {
-        showAutoReviewBanner();
-        setTimeout(() => analyzeCv(), 800);
+        if (heroSection) heroSection.style.display = 'none';
+        if (uploadSection) uploadSection.style.display = 'none';
+        if (uploadPageHistorySection) uploadPageHistorySection.style.display = 'none';
+        if (loadingSection) loadingSection.style.display = 'block';
+        startLoadingAnimation();
+        analyzeCv();
     }
 
     const refreshHistoryBtn = document.getElementById('refreshHistoryBtn');
@@ -167,11 +171,6 @@ function initializeBuilderAutoReview(payload) {
 
         if (fileName) fileName.textContent = selectedFile.name;
         if (fileSize) fileSize.textContent = formatFileSize(selectedFile.size);
-        if (dropArea) dropArea.style.display = 'none';
-        if (previewArea) {
-            previewArea.style.display = 'flex';
-            previewArea.classList.add('flex-col', 'gap-4');
-        }
         if (previewThumbnail) {
             const image = document.createElement('img');
             image.src = `data:image/jpeg;base64,${payload.images[0]}`;
@@ -502,6 +501,10 @@ async function analyzeCv() {
     if (!authUser) {
         const ipCount = getIpReviewCount();
         if (ipCount >= IP_REVIEW_LIMIT) {
+            stopLoadingAnimation();
+            if (loadingSection) loadingSection.style.display = 'none';
+            if (heroSection) heroSection.style.display = 'block';
+            if (uploadSection) uploadSection.style.display = 'block';
             openReviewLoginModal();
             return;
         }
@@ -510,6 +513,10 @@ async function analyzeCv() {
     else if (!isPremiumEnrolled) {
         const lifetimeCount = await getFreeUserLifetimeCount();
         if (lifetimeCount >= FREE_USER_LIFETIME_LIMIT) {
+            stopLoadingAnimation();
+            if (loadingSection) loadingSection.style.display = 'none';
+            if (heroSection) heroSection.style.display = 'block';
+            if (uploadSection) uploadSection.style.display = 'block';
             openReviewBuyModal();
             const titleEl = document.getElementById('reviewBuyTitle');
             if (titleEl) titleEl.textContent = "You've used all 3 free reviews";
