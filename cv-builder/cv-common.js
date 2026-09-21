@@ -2347,7 +2347,9 @@ function getTemplateHeaderClass() {
 }
 
 function isClassicBlueTemplate() {
-    return /(^|\/)(classic|classic-blue)\.html$/i.test(String(window.location.pathname || ''));
+    // Match classic-blue.html only — NOT classic.html (which is a separate template
+    // that uses the standard per-section grouping, not the forced classic-blue detail group).
+    return /(^|\/)classic-blue\.html$/i.test(String(window.location.pathname || ''));
 }
 
 function isClassicBlueDetailSectionKey(key) {
