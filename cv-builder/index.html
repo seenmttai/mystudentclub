@@ -195,6 +195,11 @@
                 <summary>Career Objective</summary>
                 <div class="section-body">
                     <div class="form-group">
+                        <label for="inp-title-summary">Section Title (optional)</label>
+                        <input type="text" class="form-control" id="inp-title-summary" name="inp-title-summary"
+                            placeholder="Default: Career Objective" oninput="updateSectionTitle('summary', this.value)">
+                    </div>
+                    <div class="form-group">
                         <div
                             style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
                             <label style="margin-bottom:0;">Objective / Summary</label>
@@ -225,6 +230,11 @@
                     </div>
                 </summary>
                 <div class="section-body">
+                    <div class="form-group">
+                        <label for="inp-title-education">Section Title (optional)</label>
+                        <input type="text" class="form-control" id="inp-title-education" name="inp-title-education"
+                            placeholder="Default: Education" oninput="updateSectionTitle('education', this.value)">
+                    </div>
                     <div id="education-format-panel-wrap" class="table-format-panel-wrap" aria-hidden="true">
                         <div class="table-format-panel-head">
                             <div>
@@ -250,6 +260,11 @@
             <details open data-section="experience">
                 <summary>Experience / Articleship</summary>
                 <div class="section-body">
+                    <div class="form-group">
+                        <label for="inp-title-experience">Section Title (optional)</label>
+                        <input type="text" class="form-control" id="inp-title-experience" name="inp-title-experience"
+                            placeholder="Default: Experience / Articleship" oninput="updateSectionTitle('experience', this.value)">
+                    </div>
                     <div id="exp-container"></div>
                     <button class="btn-dashed" onclick="addExperience()">
                         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
@@ -265,6 +280,11 @@
             <details data-section="projects">
                 <summary>Projects</summary>
                 <div class="section-body">
+                    <div class="form-group">
+                        <label for="inp-title-projects">Section Title (optional)</label>
+                        <input type="text" class="form-control" id="inp-title-projects" name="inp-title-projects"
+                            placeholder="Default: Projects" oninput="updateSectionTitle('projects', this.value)">
+                    </div>
                     <div class="form-group">
                         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
                             <label style="margin-bottom:0;">Projects (All)</label>
@@ -291,6 +311,11 @@
             <details data-section="certifications">
                 <summary>Certifications</summary>
                 <div class="section-body">
+                    <div class="form-group">
+                        <label for="inp-title-certifications">Section Title (optional)</label>
+                        <input type="text" class="form-control" id="inp-title-certifications" name="inp-title-certifications"
+                            placeholder="Default: Certifications" oninput="updateSectionTitle('certifications', this.value)">
+                    </div>
                     <div id="cert-container"></div>
                     <button class="btn-dashed" onclick="addCertification()">
                         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
@@ -306,6 +331,11 @@
             <details data-section="achievements">
                 <summary>Achievements & Awards</summary>
                 <div class="section-body">
+                    <div class="form-group">
+                        <label for="inp-title-achievements">Section Title (optional)</label>
+                        <input type="text" class="form-control" id="inp-title-achievements" name="inp-title-achievements"
+                            placeholder="Default: Achievements &amp; Awards" oninput="updateSectionTitle('achievements', this.value)">
+                    </div>
                     <div class="form-group">
                         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
                             <label style="margin-bottom:0;">Achievements (All)</label>
@@ -333,6 +363,11 @@
                 <summary>Leadership</summary>
                 <div class="section-body">
                     <div class="form-group">
+                        <label for="inp-title-leadership">Section Title (optional)</label>
+                        <input type="text" class="form-control" id="inp-title-leadership" name="inp-title-leadership"
+                            placeholder="Default: Leadership" oninput="updateSectionTitle('leadership', this.value)">
+                    </div>
+                    <div class="form-group">
                         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
                             <label style="margin-bottom:0;">Leadership (All)</label>
                             <button type="button" class="btn-mini" onclick="aiRefineLeadership()" title="Refine leadership items with AI">
@@ -359,6 +394,11 @@
                 <summary>Interests & Hobbies</summary>
                 <div class="section-body">
                     <div class="form-group">
+                        <label for="inp-title-interests">Section Title (optional)</label>
+                        <input type="text" class="form-control" id="inp-title-interests" name="inp-title-interests"
+                            placeholder="Default: Interests &amp; Hobbies" oninput="updateSectionTitle('interests', this.value)">
+                    </div>
+                    <div class="form-group">
                         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
                             <label style="margin-bottom:0;">Interests (All)</label>
                             <button type="button" class="btn-mini" onclick="aiRefineInterests()" title="Refine interests with AI">
@@ -384,6 +424,11 @@
             <details data-section="skills">
                 <summary>Skills</summary>
                 <div class="section-body">
+                    <div class="form-group">
+                        <label for="inp-title-skills">Section Title (optional)</label>
+                        <input type="text" class="form-control" id="inp-title-skills" name="inp-title-skills"
+                            placeholder="Default: Skills" oninput="updateSectionTitle('skills', this.value)">
+                    </div>
                     <div class="chip-container" id="skills-chips"></div>
                     <div class="form-group">
                         <div
@@ -604,12 +649,20 @@
                 <!-- HERO -->
                 <div id="heroSection" class="hero-section">
                     <h2>Optimize your CV</h2>
-                    <p>Upload your resume PDF to get instant, AI-powered feedback on structure, keywords, and impact.
+                    <p>Get instant, AI-powered feedback on structure, keywords, and impact.
                     </p>
+                    <div style="display:flex; flex-direction:column; gap:10px; margin-top:16px;">
+                        <button class="btn-primary" onclick="if(typeof window.startReviewFromPreview==='function') window.startReviewFromPreview()" style="width:100%;">
+                            🔍 Review My Current CV
+                        </button>
+                        <button class="btn-secondary" onclick="document.getElementById('heroSection').style.display='none'; document.getElementById('uploadSection').style.display='block';" style="width:100%;">
+                            📄 Upload a PDF Instead
+                        </button>
+                    </div>
                 </div>
 
                 <!-- UPLOAD -->
-                <div id="uploadSection" class="upload-section">
+                <div id="uploadSection" class="upload-section" style="display:none;">
                     <div id="dropArea" class="drop-area">
                         <span class="icon-cloud">☁️</span>
                         <p>Drag & drop your PDF here</p>
@@ -899,7 +952,8 @@
             pdfImages = [];
             els.fileInput.value = '';
             els.previewArea.style.display = 'none';
-            els.uploadSection.style.display = 'block';
+            els.uploadSection.style.display = 'none';
+            els.heroSection.style.display = 'block';
             els.proceedToReviewBtn.disabled = true;
         }
 
@@ -1293,7 +1347,7 @@
                 alert('Failed to analyze current CV: ' + (e.message || 'Unknown error'));
                 if (els.loadingSection) els.loadingSection.style.display = 'none';
                 if (els.heroSection) els.heroSection.style.display = 'block';
-                if (els.uploadSection) els.uploadSection.style.display = 'block';
+                if (els.uploadSection) els.uploadSection.style.display = 'none';
             }
         };
     </script>

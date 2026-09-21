@@ -1123,8 +1123,28 @@ if (dlBtn && dlSep) {
             dlBtn.setAttribute('aria-label', 'Download DOCX');
             dlBtn.innerHTML = '<i class="fas fa-download"></i><span class="toolbar-btn-label">DOCX</span>';
         }
-        dlBtn.addEventListener('click', () => {
-            window.open(paramDl, '_blank');
+        dlBtn.addEventListener('click', async () => {
+            const origHTML = dlBtn.innerHTML;
+            dlBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            try {
+                const response = await fetch(paramDl);
+                if (!response.ok) throw new Error('Fetch failed');
+                const blob = await response.blob();
+                let filename = 'resource';
+                try {
+                    const cleanPath = paramDl.split('?')[0];
+                    filename = cleanPath.split('/').pop() || 'resource';
+                } catch (_) {}
+                if (previewMode === 'docx' && !filename.endsWith('.docx')) {
+                    filename += '.docx';
+                }
+                await deliverDownloadedBlob(blob, filename);
+            } catch (err) {
+                console.warn('Direct blob delivery failed, falling back to window.open:', err);
+                window.open(paramDl, '_blank');
+            } finally {
+                dlBtn.innerHTML = origHTML;
+            }
         });
     } else {
         dlBtn.style.opacity = '0.4';
@@ -1133,5 +1153,44 @@ if (dlBtn && dlSep) {
         dlBtn.addEventListener('click', () => {
             alert('This resource is restricted to view-only mode. Downloading is currently disabled.');
         });
+    }
+}
+
+function blobToBase64(blob) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            const result = String(reader.result || '');
+            const separator = result.indexOf(',');
+            if (separator < 0) {
+                reject(new Error('Could not encode the downloaded file.'));
+                return;
+            }
+            resolve(result.slice(separator + 1));
+        };
+        reader.onerror = () => reject(reader.error || new Error('Could not read the downloaded file.'));
+        reader.onabort = () => reject(new Error('Reading the downloaded file was cancelled.'));
+        reader.readAsDataURL(blob);
+    });
+}
+
+async function deliverDownloadedBlob(blob, filename) {
+    const nativeBridge = window.flutter_inappwebview;
+    if (nativeBridge && typeof nativeBridge.callHandler === 'function') {
+        const base64 = await blobToBase64(blob);
+        await nativeBridge.callHandler('blobToBase64Handler', base64, filename);
+        return;
+    }
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    try {
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+    } finally {
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 60000);
     }
 }

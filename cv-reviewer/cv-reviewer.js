@@ -1493,17 +1493,105 @@ downloadReportBtn.addEventListener('click', () => {
 
     pdfPreviewModal.style.display = 'block';
 
-    const onDownload = () => {
-        MarkdownPDF.download(markdown, {
-            filename: `${safeFileName}_Analysis_Report.pdf`,
-            ...pdfOptions
-        }).finally(() => {
+    const onDownload = async () => {
+        const btn = pdfPreviewDownloadBtn;
+        if (btn.disabled) return;
+        btn.disabled = true;
+        const origText = btn.innerHTML;
+        btn.innerHTML = 'Generating PDF...';
+
+        try {
+            await MarkdownPDF.download(markdown, {
+                filename: `${safeFileName}_Analysis_Report.pdf`,
+                ...pdfOptions
+            });
+        } catch (err) {
+            console.error('PDF download error:', err);
+            alert('Failed to generate PDF: ' + (err?.message || err));
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = origText;
             pdfPreviewModal.style.display = 'none';
-            pdfPreviewDownloadBtn.removeEventListener('click', onDownload);
-        });
+            btn.removeEventListener('click', onDownload);
+        }
     };
     pdfPreviewDownloadBtn.addEventListener('click', onDownload);
 });
+
+function blobToBase64(blob) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            const result = String(reader.result || '');
+            const separator = result.indexOf(',');
+            if (separator < 0) {
+                reject(new Error('Could not encode the downloaded file.'));
+                return;
+            }
+            resolve(result.slice(separator + 1));
+        };
+        reader.onerror = () => reject(reader.error || new Error('Could not read the downloaded file.'));
+        reader.onabort = () => reject(new Error('Reading the downloaded file was cancelled.'));
+        reader.readAsDataURL(blob);
+    });
+}
+
+async function deliverDownloadedBlob(blob, filename) {
+    const nativeBridge = window.flutter_inappwebview;
+    if (nativeBridge && typeof nativeBridge.callHandler === 'function') {
+        const base64 = await blobToBase64(blob);
+        await nativeBridge.callHandler('blobToBase64Handler', base64, filename);
+        return;
+    }
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    try {
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+    } finally {
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 60000);
+    }
+}
+
+// Global interceptor for programmatic link downloads in Flutter InAppWebView
+(function setupFlutterDownloadInterceptor() {
+    if (typeof window === 'undefined') return;
+
+    const handleAnchorDownload = (anchor) => {
+        const nativeBridge = window.flutter_inappwebview;
+        if (!nativeBridge || typeof nativeBridge.callHandler !== 'function') return false;
+
+        const href = anchor.href || anchor.getAttribute('href') || '';
+        const filename = anchor.download || anchor.getAttribute('download') || 'download.pdf';
+
+        if (filename && (href.startsWith('blob:') || href.startsWith('data:'))) {
+            fetch(href)
+                .then(r => r.blob())
+                .then(blob => deliverDownloadedBlob(blob, filename))
+                .catch(err => console.error('Error handling blob download in Flutter WebView:', err));
+            return true;
+        }
+        return false;
+    };
+
+    const origClick = HTMLAnchorElement.prototype.click;
+    HTMLAnchorElement.prototype.click = function() {
+        if (handleAnchorDownload(this)) return;
+        return origClick.apply(this, arguments);
+    };
+
+    const origDispatchEvent = HTMLAnchorElement.prototype.dispatchEvent;
+    HTMLAnchorElement.prototype.dispatchEvent = function(event) {
+        if (event && event.type === 'click' && handleAnchorDownload(this)) {
+            return true;
+        }
+        return origDispatchEvent.apply(this, arguments);
+    };
+})();
 
 pdfPreviewCloseBtn.addEventListener('click', () => {
     pdfPreviewModal.style.display = 'none';

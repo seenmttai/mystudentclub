@@ -1166,6 +1166,9 @@
                     items: Array.isArray(entry.items) ? entry.items : []
                 };
             });
+            if (!cvData.sectionTitles || typeof cvData.sectionTitles !== 'object') {
+                cvData.sectionTitles = {};
+            }
             ensureTableSettingsShape();
             ensureSectionLabelsShape();
             normalizeSectionGroups();
@@ -1514,11 +1517,10 @@
         // Tabs
         function switchTab(tab) {
             if (tab === 'reviewer') {
-                if (typeof window.startReviewFromPreview === 'function') {
-                    window.startReviewFromPreview();
-                } else {
-                    toggleReviewer(true);
-                }
+                toggleReviewer(true);
+                // Mark reviewer nav tab active
+                document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+                document.querySelectorAll('.nav-tab')[1].classList.add('active');
                 return;
             }
             toggleReviewer(false);
@@ -1550,6 +1552,11 @@
 
             updateCharCounter('inp-summary', 'summary-counter', 500, getSummaryPlainText().length);
             updateCharCounter('inp-skills', 'skills-counter', 300, getSkillsPlainText().length);
+
+            ['summary', 'education', 'experience', 'projects', 'certifications', 'achievements', 'leadership', 'interests', 'skills'].forEach(id => {
+                const el = document.getElementById(`inp-title-${id}`);
+                if (el) el.value = (cvData.sectionTitles && cvData.sectionTitles[id]) || '';
+            });
 
             renderEduInputs();
             renderExpInputs();
@@ -2200,10 +2207,21 @@
         }
 
         function getSectionLabel(sectionId) {
+            if (cvData.sectionTitles && cvData.sectionTitles[sectionId] && cvData.sectionTitles[sectionId].trim()) {
+                return cvData.sectionTitles[sectionId].trim();
+            }
             if (SECTION_LABELS[sectionId]) return SECTION_LABELS[sectionId];
             const customSection = (cvData.customSections || []).find(section => section.id === sectionId);
             if (customSection) return customSection.title || 'Custom Section';
             return sectionId;
+        }
+
+        function updateSectionTitle(sectionId, value) {
+            if (!cvData.sectionTitles || typeof cvData.sectionTitles !== 'object') cvData.sectionTitles = {};
+            cvData.sectionTitles[sectionId] = String(value || '');
+            saveLocal();
+            renderSectionOrderEditor();
+            postToFrame();
         }
 
         function moveSectionOrder(index, direction) {
@@ -2761,12 +2779,9 @@
             showToast('Saved');
         }
 
-        function saveJSON() {
+        async function saveJSON() {
             const blob = new Blob([JSON.stringify(cvData, null, 2)], { type: 'application/json' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'cv_data.json';
-            a.click();
+            await deliverDownloadedBlob(blob, 'cv_data.json');
             showToast("JSON Saved");
         }
 
@@ -2839,17 +2854,33 @@ function toggleDownloadMenu(event, btn) {
 
     const rect = btn.getBoundingClientRect();
     
-    // Always align the right edge of the popup to the right edge of the button
-    // It's much cleaner since usually the Download button is on the right side of the toolbar.
-    menu.style.top = (rect.bottom + 8) + 'px';
-    
-    // Using display off/on to let the DOM calculate min-width before checking width
+    // Using visibility hidden while active to measure accurate rendered dimensions
     menu.style.visibility = 'hidden'; 
     menu.classList.add('active'); 
     
     requestAnimationFrame(() => {
         const menuRect = menu.getBoundingClientRect();
-        menu.style.left = (rect.right - menuRect.width) + 'px';
+        const padding = 10;
+        
+        // Prefer aligning with button's left edge
+        let targetLeft = rect.left;
+        
+        // If aligning left causes right edge to overflow screen, align to button's right edge instead
+        if (targetLeft + menuRect.width > window.innerWidth - padding) {
+            targetLeft = rect.right - menuRect.width;
+        }
+        
+        // Ensure menu never clips outside viewport bounds on either side
+        targetLeft = Math.max(padding, Math.min(targetLeft, window.innerWidth - menuRect.width - padding));
+        
+        // Vertical placement: default below button; flip above if space below is too tight
+        let targetTop = rect.bottom + 8;
+        if (targetTop + menuRect.height > window.innerHeight - padding && (rect.top - menuRect.height - 8) > 0) {
+            targetTop = rect.top - menuRect.height - 8;
+        }
+        
+        menu.style.left = targetLeft + 'px';
+        menu.style.top = targetTop + 'px';
         menu.style.visibility = 'visible';
     });
 }

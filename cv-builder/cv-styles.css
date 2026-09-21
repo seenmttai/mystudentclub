@@ -347,10 +347,12 @@
             flex-direction: column;
             gap: 4px;
             min-width: 160px;
+            max-width: calc(100vw - 24px);
+            box-sizing: border-box;
             opacity: 0;
             visibility: hidden;
             transform: translateY(-8px);
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
             z-index: 9999;
         }
         
@@ -374,6 +376,7 @@
             cursor: pointer;
             transition: all 0.15s ease;
             width: 100%;
+            white-space: nowrap;
         }
 
         .dropdown-item:hover {
