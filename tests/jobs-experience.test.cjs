@@ -267,3 +267,19 @@ test('email network failure reports a recoverable load error without claiming an
   assert.doesNotMatch(page.window.document.getElementById('jobs').textContent,/maintenance|permission|table/i);
   page.window.close();
 });
+
+test('profile completion prompt appears only for an incomplete signed-in profile',()=>{
+  const page=new JSDOM('<body class="with-completion-banner"><div id="profile-completion-banner">Old prompt</div></body>',{runScripts:'outside-only'});
+  const w=page.window;
+  const source=fs.readFileSync(path.join(__dirname,'../scripts/portal3.js'),'utf8');
+  w.currentSession=null;w.calculateProfileCompletion=()=>40;
+  w.ResizeObserver=class{observe(){}disconnect(){}};
+  w.eval(source.slice(source.indexOf('function renderProfileCompletionBanner()'),source.indexOf('\nfunction dv2Init()')));
+  w.renderProfileCompletionBanner();
+  assert.equal(w.document.getElementById('profile-completion-banner'),null);
+  assert.equal(w.document.body.classList.contains('with-completion-banner'),false);
+  w.currentSession={user:{id:'test-member'}};w.renderProfileCompletionBanner();
+  assert.match(w.document.getElementById('profile-completion-banner').textContent,/40%/);
+  w.calculateProfileCompletion=()=>100;w.renderProfileCompletionBanner();
+  assert.equal(w.document.getElementById('profile-completion-banner'),null);page.window.close();
+});

@@ -4802,7 +4802,7 @@ function renderProfileCompletionBanner() {
 
     const percent = currentSession ? calculateProfileCompletion() : 0;
 
-    if (percent === 100) {
+    if (!currentSession || percent === 100) {
         document.body.classList.remove('with-completion-banner');
         document.body.style.paddingTop = '';
         const header = document.querySelector('.site-header, .floating-header');
@@ -4953,4 +4953,3 @@ async function dv2PopulateTrending() {
         console.warn('dv2 trending failed:', err);
     }
 }
-
