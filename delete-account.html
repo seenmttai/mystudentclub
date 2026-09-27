@@ -131,10 +131,10 @@
     <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
     <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
     <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
-<link rel="stylesheet" href="/scripts/site-navigation.css?v=20260927.5"><script src="/scripts/site-navigation.js?v=20260927.5" defer></script>
+<link rel="stylesheet" href="/scripts/site-navigation.css?v=20260927.9"><script src="/scripts/site-navigation.js?v=20260927.9" defer></script>
 </head>
 
-<body class="msc-account-page msc-delete-page">
+<body>
     <header class="site-header">
         <div class="header-container">
             <a href="/" class="brand-link">
@@ -153,7 +153,7 @@
     </header>
 
     <div class="expanded-menu" id="expandedMenu">
-        <button aria-label="Close menu" class="menu-close-btn" id="menuCloseBtn">
+        <button class="menu-close-btn" id="menuCloseBtn">
             <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -203,7 +203,7 @@
             <li>Application history</li>
         </ul>
 
-        <div id="auth-status" role="status" aria-live="polite">Verifying your session...</div>
+        <div id="auth-status">Verifying your session...</div>
 
         <div id="delete-section" class="hidden">
             <div class="form-group">
@@ -213,7 +213,7 @@
             <button id="delete-account-btn" class="delete-btn" disabled>Permanently Delete My Account</button>
         </div>
 
-        <div id="result-message" role="status" aria-live="polite"></div>
+        <div id="result-message"></div>
     </div>
 
     <script>

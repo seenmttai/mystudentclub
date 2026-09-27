@@ -5,8 +5,6 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import jobRobots from '../../scripts/job-robots.cjs';
-const { markJobNoindex } = jobRobots;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -74,9 +72,13 @@ for (const category of CATEGORIES) {
                             );
                         }
                         
-                        // Replace an existing index directive instead of publishing
-                        // conflicting index and noindex metadata on the same page.
-                        updatedContent = markJobNoindex(updatedContent);
+                        // Inject noindex meta tag
+                        if (!hasNoindexMeta) {
+                            updatedContent = updatedContent.replace(
+                                /(<meta name="viewport"[^>]*>)/,
+                                '$1\n    <meta name="robots" content="noindex, follow">'
+                            );
+                        }
                         
                         // Write updated content
                         fs.writeFileSync(filePath, updatedContent);

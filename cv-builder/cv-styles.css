@@ -407,15 +407,25 @@
             overflow: hidden;
         }
 
-        /* Keep actions outside the disclosure trigger so keyboard and assistive
-           technology users can operate each control independently. */
+        /* Header action buttons (Auto-fill, Table format, Label, move up/down,
+           etc.) live inside <summary> itself, in the same single-line row as
+           the title, not as a sibling of <summary>. Chromium 131+ wraps
+           everything after <summary> in an internal ::details-content box
+           that collapses to zero height and stops painting when the
+           <details> is closed — no author CSS on a sibling can override
+           that, so a sibling row silently disappears (and its buttons
+           become unreachable) whenever the section is collapsed. <summary>
+           itself is the one part of a closed <details> guaranteed to keep
+           rendering, so this row has to be its child. Interactive content
+           inside <summary> works fine in every evergreen browser; every
+           button here already calls event.stopPropagation() so clicking it
+           doesn't also toggle the section open/closed.
+           display:contents dissolves this div's own box so its children
+           (chip buttons, and the move-up/down span injected by
+           renderInlineSectionReorderControls()) become direct flex items of
+           <summary>, sitting right after the title on one line. */
         .summary-actions {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-bottom: 16px;
+            display: contents;
         }
 
         details:hover {

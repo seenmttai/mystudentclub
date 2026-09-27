@@ -29,7 +29,7 @@
   <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
   <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
   <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
-<link rel="stylesheet" href="/scripts/site-navigation.css?v=20260927.5"><script src="/scripts/site-navigation.js?v=20260927.5" defer></script>
+<link rel="stylesheet" href="/scripts/site-navigation.css?v=20260927.9"><script src="/scripts/site-navigation.js?v=20260927.9" defer></script>
 </head>
 
 <body>
@@ -50,7 +50,7 @@
   </header>
 
   <div class="expanded-menu" id="expandedMenu">
-    <button aria-label="Close menu" class="menu-close-btn" id="menuCloseBtn">
+    <button class="menu-close-btn" id="menuCloseBtn">
       <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
       </svg>
@@ -84,8 +84,9 @@
   <main id="app" class="container">
     <div class="hero">
       <h1>ICAI Campus Shortlist Predictor</h1>
-      <p>Explore historical shortlisting averages or get an estimate based on your profile. Results are guidance, not a placement guarantee.</p>
-      <a href="/ca-fresher-jobs" class="hero-cta-button" target="_blank" rel="noopener noreferrer">
+      <p>Explore placement data with two powerful views: a dynamic Tabular analysis of averages, or our personalized AI
+        Predictor.</p>
+      <a href="https://www.mystudentclub.com/fresher" class="hero-cta-button" target="_blank" rel="noopener noreferrer">
         Explore Latest Job Openings for CA Freshers
       </a>
     </div>
@@ -109,7 +110,7 @@
           <form id="profile-form">
             <!-- Form fields remain the same -->
             <div class="field">
-              <label for="city">Preferred City for Placement</label>
+              <label>Preferred City for Placement</label>
               <select id="city">
                 <option value="">Select city</option>
                 <option value="Mumbai">Mumbai</option>
@@ -123,14 +124,14 @@
                 <option value="Other">Other</option>
               </select>
             </div>
-            <div class="field"><label for="tier">Articleship Firm Tier</label><select id="tier">
+            <div class="field"><label>Articleship Firm Tier</label><select id="tier">
                 <option>Big4</option>
                 <option>Big6</option>
                 <option>Mid Size</option>
                 <option>Small Size</option>
                 <option>Other</option>
               </select></div>
-            <div class="field"><label for="domain">Articleship Domain</label><select id="domain">
+            <div class="field"><label>Articleship Domain</label><select id="domain">
                 <option value="">Any Domain (Optional)</option>
                 <option>Statutory Audit</option>
                 <option>Internal Audit</option>
@@ -138,14 +139,14 @@
                 <option>Indirect Taxation</option>
                 <option>Mixed Exposure</option>
               </select></div>
-            <div class="field"><label for="score">CA Final Score (%)</label><select id="score">
+            <div class="field"><label>CA Final Score (%)</label><select id="score">
                 <option>50-55</option>
                 <option>55-60</option>
                 <option>60-65</option>
                 <option>65-70</option>
                 <option>70+</option>
               </select></div>
-            <div class="field"><label for="attempts">CA Final Attempts</label><select id="attempts">
+            <div class="field"><label>CA Final Attempts</label><select id="attempts">
                 <option>1</option>
                 <option>2</option>
                 <option>3</option>
@@ -153,16 +154,16 @@
                 <option>5+</option>
               </select></div>
             <div class="row">
-              <div class="field"><label for="it_present">Completed Industrial Training?</label><select id="it_present">
+              <div class="field"><label>Completed Industrial Training?</label><select id="it_present">
                   <option value="false">No</option>
                   <option value="true">Yes</option>
                 </select></div>
-              <div class="field"><label for="rank_present">Are you a Rank Holder?</label><select id="rank_present">
+              <div class="field"><label>Are you a Rank Holder?</label><select id="rank_present">
                   <option value="false">No</option>
                   <option value="true">Yes</option>
                 </select></div>
             </div>
-            <button type="submit" class="primary">View my shortlisting estimate</button>
+            <button type="submit" class="primary">Reveal My Placement Chances</button>
           </form>
         </div>
         <div id="ai-results-container">

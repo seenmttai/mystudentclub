@@ -13,7 +13,7 @@
   <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
   <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
   <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
-<link rel="stylesheet" href="/scripts/site-navigation.css?v=20260927.5"><script src="/scripts/site-navigation.js?v=20260927.5" defer></script>
+<link rel="stylesheet" href="/scripts/site-navigation.css?v=20260927.9"><script src="/scripts/site-navigation.js?v=20260927.9" defer></script>
 </head>
 
 <body>
@@ -25,8 +25,7 @@
         <p>Verifying Access...</p>
     </div>
 
-    <div id="pdf-viewer-container" role="main" aria-label="Document reader" style="display: none;">
-        <h1 class="msc-sr-only">Indirect Tax Interview Booklet</h1>
+    <div id="pdf-viewer-container" style="display: none;">
         <div id="viewer-controls">
             <button id="prev-page" title="Previous Page">◄</button>
             <span class="page-info">Page: <span id="page-num">0</span> / <span id="page-count">0</span></span>
@@ -35,7 +34,7 @@
 
         <div id="extra-controls">
             <div id="search-controls">
-                <input aria-label="Search PDF" type="text" id="search-input" placeholder="Search PDF">
+                <input type="text" id="search-input" placeholder="Search PDF">
                 <button id="search-btn">Search</button>
                 <button id="search-prev" title="Previous Match" disabled>«</button>
                 <button id="search-next" title="Next Match" disabled>»</button>
@@ -45,7 +44,7 @@
                 <button id="zoom-in" title="Zoom In">+</button>
             </div>
             <div id="goto-controls">
-                <input aria-label="Go to document page number" type="number" id="goto-input" min="1" placeholder="Page #">
+                <input type="number" id="goto-input" min="1" placeholder="Page #">
                 <button id="goto-page-btn">Go</button>
             </div>
         </div>

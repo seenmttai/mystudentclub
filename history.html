@@ -24,7 +24,7 @@
   <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
   <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
   <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
-<link rel="stylesheet" href="/scripts/site-navigation.css?v=20260927.5"><script src="/scripts/site-navigation.js?v=20260927.5" defer></script>
+<link rel="stylesheet" href="/scripts/site-navigation.css?v=20260927.9"><script src="/scripts/site-navigation.js?v=20260927.9" defer></script>
 </head>
 
 <body>
@@ -88,7 +88,7 @@
   <div id="notificationPopup" class="notification-popup">
     <div class="notification-popup-header">
       <h3>Notification Preferences</h3>
-      <button id="closeNotificationPopup" class="icon-button" aria-label="Close dialog">×</button>
+      <button id="closeNotificationPopup" class="icon-button">×</button>
     </div>
     <div class="notification-status" id="notificationStatus"></div>
     <div id="notification-permission-status"></div>
@@ -104,8 +104,8 @@
       <div class="subscription-form" id="specific-subscription-form">
         <h4>Add Specific Subscription:</h4>
         <div class="subscription-selectors">
-          <select aria-label="Job alert location" id="locationSelect" class="filter-control"></select>
-          <select aria-label="Job alert category" id="jobTypeSelect" class="filter-control"></select>
+          <select id="locationSelect" class="filter-control"></select>
+          <select id="jobTypeSelect" class="filter-control"></select>
           <button id="subscribeBtn" class="action-button" disabled>Subscribe</button>
         </div>
       </div>
@@ -165,7 +165,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
-          <input aria-label="Search applications" type="text" id="mobileSearchInput" placeholder="Search applications..." class="search-input-field">
+          <input type="text" id="mobileSearchInput" placeholder="Search applications..." class="search-input-field">
         </div>
         <button id="mobileFilterToggle" class="filter-toggle-btn">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">

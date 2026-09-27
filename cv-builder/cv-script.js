@@ -1807,17 +1807,12 @@
                 return;
             }
             toggleReviewer(false);
-            document.body.classList.remove('view-editor', 'view-preview');
-            document.body.classList.add('view-' + tab);
-            document.querySelectorAll('.nav-tab').forEach(el => {
-                el.classList.remove('active');
-                if (el.hasAttribute('aria-pressed')) el.setAttribute('aria-pressed', 'false');
-            });
+            document.body.className = 'view-' + tab;
+            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
             // simple index check won't work with 3 items now, update manually
             if (tab === 'editor') document.querySelectorAll('.nav-tab')[0].classList.add('active');
             if (tab === 'preview') document.querySelectorAll('.nav-tab')[2].classList.add('active');
 
-            document.querySelector('.nav-tab.active')?.setAttribute('aria-pressed', 'true');
             if (tab === 'preview') postToFrame();
         }
 
@@ -2529,12 +2524,12 @@
                 details.innerHTML = `
                     <summary>
                         <span>${section.title || 'Custom Section'}</span>
-                    </summary>
-                    <div class="section-body">
                         <div class="summary-actions">
                             <button class="chip" type="button" onclick="toggleSectionLabelPanel('${section.id}', event)"
                                 style="font-size:10px; padding:4px 8px;">Label</button>
                         </div>
+                    </summary>
+                    <div class="section-body">
                         <div id="section-label-panel-${section.id}" class="table-format-panel-wrap" aria-hidden="true"></div>
                         <div class="form-group">
                             <label for="custom-title-${section.id}">Section Title</label>
@@ -2723,23 +2718,29 @@
             });
         }
 
-        // Keep disclosure summaries as a single interactive control. Section actions
-        // are available after opening a section; the preview reorder drawer remains
-        // available for arranging all sections without opening each editor.
+        // Override legacy list-only renderer: support optional form list + preview drawer.
+        // Move-up/down controls live inside <summary> itself (in the shared
+        // .summary-actions row also used by each section's own chip buttons,
+        // e.g. "Auto-fill CA Path"/"Label") — created fresh for sections that
+        // don't already have one. They must be a <summary> descendant because
+        // Chromium's closed-<details> rendering only keeps <summary> itself
+        // painted; a sibling row goes invisible (and unreachable) whenever the
+        // section is collapsed. See the .summary-actions comment in
+        // cv-styles.css for the full explanation.
         function renderInlineSectionReorderControls() {
             normalizeSectionOrder();
             document.querySelectorAll('.editor-content details[data-section]').forEach((details) => {
                 const sectionId = details.getAttribute('data-section');
                 if (!sectionId || sectionId === 'section-order') return;
 
-                const sectionBody = details.querySelector(':scope > .section-body');
-                if (!sectionBody) return;
+                const summary = details.querySelector(':scope > summary');
+                if (!summary) return;
 
-                let actions = sectionBody.querySelector(':scope > .summary-actions');
+                let actions = summary.querySelector(':scope > .summary-actions');
                 if (!actions) {
                     actions = document.createElement('div');
                     actions.className = 'summary-actions';
-                    sectionBody.prepend(actions);
+                    summary.appendChild(actions);
                 }
 
                 let controls = actions.querySelector('.section-reorder-controls');

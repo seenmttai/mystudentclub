@@ -213,7 +213,7 @@
             <div class="arw-header">
               <div>
                 <h2 id="arw-title">Share Your Anonymous Review</h2>
-                <p class="arw-anon"><i class="fas fa-user-secret"></i> Your review is published without your name</p>
+                <p class="arw-anon"><i class="fas fa-user-secret"></i> 100% anonymous — we never collect anything that identifies you</p>
               </div>
             </div>
             <div class="arw-progress" hidden>
@@ -238,7 +238,7 @@
         <div class="arw-header">
           <div>
             <h2 id="arw-title">Share Your Anonymous Review</h2>
-            <p class="arw-anon"><i class="fas fa-user-secret"></i> Your review is published without your name</p>
+            <p class="arw-anon"><i class="fas fa-user-secret"></i> 100% anonymous — we never collect anything that identifies you</p>
           </div>
           <button type="button" class="arw-close" aria-label="Close"><i class="fas fa-times"></i></button>
         </div>

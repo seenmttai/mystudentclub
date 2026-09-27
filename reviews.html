@@ -1005,10 +1005,10 @@
     <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
     <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
     <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
-<link rel="stylesheet" href="/scripts/site-navigation.css?v=20260927.5"><script src="/scripts/site-navigation.js?v=20260927.5" defer></script>
+<link rel="stylesheet" href="/scripts/site-navigation.css?v=20260927.9"><script src="/scripts/site-navigation.js?v=20260927.9" defer></script>
 </head>
 
-<body class="msc-community-page msc-reviews-page">
+<body>
     <header class="site-header">
         <div class="header-container">
             <a href="/" class="brand-link"><img src="https://mystudentclub.com/assets/logo.png" alt="My Student Club"
@@ -1051,14 +1051,13 @@
                 </div>
             </div>
 
-            <a href="/articleship-firm-reviews.html" class="menu-item">Firm Reviews</a>
+            <a href="/firm-reviews.html" class="menu-item">Firm Reviews</a>
             <a href="/profile.html" class="menu-item">My Profile</a>
             <a href="/contact.html" class="menu-item">Contact Us</a>
         </div>
     </div>
 
     <main class="main-content-area">
-        <header class="community-page-heading"><p class="community-eyebrow">LEARN FROM THE COMMUNITY</p><h1>Firm &amp; stipend reviews</h1><p class="community-intro">Explore experiences shared by other CA students and professionals. Compare firms, roles and compensation.</p></header>
         <div class="create-review-section">
             <button id="open-review-form-btn" class="submit-btn">
                 <i class="fas fa-pen-to-square"></i> Share Your Experience
@@ -1066,10 +1065,10 @@
         </div>
 
         <div id="review-form-modal" class="modal">
-            <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="review-form-title" tabindex="-1">
+            <div class="modal-content">
                 <div class="modal-header">
-                    <h2 id="review-form-title"><i class="fas fa-pen-to-square"></i> Share Your Experience</h2>
-                    <button class="modal-close" id="review-modal-close-btn" aria-label="Close dialog">×</button>
+                    <h2><i class="fas fa-pen-to-square"></i> Share Your Experience</h2>
+                    <button class="modal-close" id="review-modal-close-btn">×</button>
                 </div>
                 <div class="modal-body">
                     <div id="review-form-login-prompt"
@@ -1131,60 +1130,60 @@
                                     <div class="form-group rating-group">
                                         <label>Overall Rating *</label>
                                         <div class="stars">
-                                            <input aria-label="Overall experience: 5 out of 5" type="radio" id="overall-5" name="overall_rating" value="5"
+                                            <input type="radio" id="overall-5" name="overall_rating" value="5"
                                                 required><label for="overall-5"><i class="fas fa-star"></i></label>
-                                            <input aria-label="Overall experience: 4 out of 5" type="radio" id="overall-4" name="overall_rating" value="4"><label
+                                            <input type="radio" id="overall-4" name="overall_rating" value="4"><label
                                                 for="overall-4"><i class="fas fa-star"></i></label>
-                                            <input aria-label="Overall experience: 3 out of 5" type="radio" id="overall-3" name="overall_rating" value="3"><label
+                                            <input type="radio" id="overall-3" name="overall_rating" value="3"><label
                                                 for="overall-3"><i class="fas fa-star"></i></label>
-                                            <input aria-label="Overall experience: 2 out of 5" type="radio" id="overall-2" name="overall_rating" value="2"><label
+                                            <input type="radio" id="overall-2" name="overall_rating" value="2"><label
                                                 for="overall-2"><i class="fas fa-star"></i></label>
-                                            <input aria-label="Overall experience: 1 out of 5" type="radio" id="overall-1" name="overall_rating" value="1"><label
+                                            <input type="radio" id="overall-1" name="overall_rating" value="1"><label
                                                 for="overall-1"><i class="fas fa-star"></i></label>
                                         </div>
                                     </div>
                                     <div class="form-group rating-group">
                                         <label>Work-Life Balance</label>
                                         <div class="stars">
-                                            <input aria-label="Work-life balance: 5 out of 5" type="radio" id="wlb-5" name="work_life_balance_rating"
+                                            <input type="radio" id="wlb-5" name="work_life_balance_rating"
                                                 value="5"><label for="wlb-5"><i class="fas fa-star"></i></label>
-                                            <input aria-label="Work-life balance: 4 out of 5" type="radio" id="wlb-4" name="work_life_balance_rating"
+                                            <input type="radio" id="wlb-4" name="work_life_balance_rating"
                                                 value="4"><label for="wlb-4"><i class="fas fa-star"></i></label>
-                                            <input aria-label="Work-life balance: 3 out of 5" type="radio" id="wlb-3" name="work_life_balance_rating"
+                                            <input type="radio" id="wlb-3" name="work_life_balance_rating"
                                                 value="3"><label for="wlb-3"><i class="fas fa-star"></i></label>
-                                            <input aria-label="Work-life balance: 2 out of 5" type="radio" id="wlb-2" name="work_life_balance_rating"
+                                            <input type="radio" id="wlb-2" name="work_life_balance_rating"
                                                 value="2"><label for="wlb-2"><i class="fas fa-star"></i></label>
-                                            <input aria-label="Work-life balance: 1 out of 5" type="radio" id="wlb-1" name="work_life_balance_rating"
+                                            <input type="radio" id="wlb-1" name="work_life_balance_rating"
                                                 value="1"><label for="wlb-1"><i class="fas fa-star"></i></label>
                                         </div>
                                     </div>
                                     <div class="form-group rating-group">
                                         <label>Learning Experience</label>
                                         <div class="stars">
-                                            <input aria-label="Learning experience: 5 out of 5" type="radio" id="learning-5" name="learning_experience_rating"
+                                            <input type="radio" id="learning-5" name="learning_experience_rating"
                                                 value="5"><label for="learning-5"><i class="fas fa-star"></i></label>
-                                            <input aria-label="Learning experience: 4 out of 5" type="radio" id="learning-4" name="learning_experience_rating"
+                                            <input type="radio" id="learning-4" name="learning_experience_rating"
                                                 value="4"><label for="learning-4"><i class="fas fa-star"></i></label>
-                                            <input aria-label="Learning experience: 3 out of 5" type="radio" id="learning-3" name="learning_experience_rating"
+                                            <input type="radio" id="learning-3" name="learning_experience_rating"
                                                 value="3"><label for="learning-3"><i class="fas fa-star"></i></label>
-                                            <input aria-label="Learning experience: 2 out of 5" type="radio" id="learning-2" name="learning_experience_rating"
+                                            <input type="radio" id="learning-2" name="learning_experience_rating"
                                                 value="2"><label for="learning-2"><i class="fas fa-star"></i></label>
-                                            <input aria-label="Learning experience: 1 out of 5" type="radio" id="learning-1" name="learning_experience_rating"
+                                            <input type="radio" id="learning-1" name="learning_experience_rating"
                                                 value="1"><label for="learning-1"><i class="fas fa-star"></i></label>
                                         </div>
                                     </div>
                                     <div class="form-group rating-group">
                                         <label>Interview Difficulty</label>
                                         <div class="stars">
-                                            <input aria-label="Interview difficulty: 5 out of 5" type="radio" id="interview-5" name="interview_difficulty_rating"
+                                            <input type="radio" id="interview-5" name="interview_difficulty_rating"
                                                 value="5"><label for="interview-5"><i class="fas fa-star"></i></label>
-                                            <input aria-label="Interview difficulty: 4 out of 5" type="radio" id="interview-4" name="interview_difficulty_rating"
+                                            <input type="radio" id="interview-4" name="interview_difficulty_rating"
                                                 value="4"><label for="interview-4"><i class="fas fa-star"></i></label>
-                                            <input aria-label="Interview difficulty: 3 out of 5" type="radio" id="interview-3" name="interview_difficulty_rating"
+                                            <input type="radio" id="interview-3" name="interview_difficulty_rating"
                                                 value="3"><label for="interview-3"><i class="fas fa-star"></i></label>
-                                            <input aria-label="Interview difficulty: 2 out of 5" type="radio" id="interview-2" name="interview_difficulty_rating"
+                                            <input type="radio" id="interview-2" name="interview_difficulty_rating"
                                                 value="2"><label for="interview-2"><i class="fas fa-star"></i></label>
-                                            <input aria-label="Interview difficulty: 1 out of 5" type="radio" id="interview-1" name="interview_difficulty_rating"
+                                            <input type="radio" id="interview-1" name="interview_difficulty_rating"
                                                 value="1"><label for="interview-1"><i class="fas fa-star"></i></label>
                                         </div>
                                     </div>
@@ -1324,11 +1323,11 @@
 
                 <div class="filter-grid">
                     <div class="filter-group">
-                        <label for="search-firm">Search Firm</label>
-                        <input aria-label="Search firms by name" type="text" id="search-firm" placeholder="Search by name...">
+                        <label>Search Firm</label>
+                        <input type="text" id="search-firm" placeholder="Search by name...">
                     </div>
                     <div class="filter-group">
-                        <label for="filter-job-type">Job Type</label>
+                        <label>Job Type</label>
                         <select id="filter-job-type">
                             <option value="">All Types</option>
                             <option value="Articleship">Articleship</option>
@@ -1338,11 +1337,11 @@
                         </select>
                     </div>
                     <div class="filter-group">
-                        <label for="filter-location">Location</label>
-                        <input aria-label="Filter firms by location" type="text" id="filter-location" placeholder="e.g., Mumbai">
+                        <label>Location</label>
+                        <input type="text" id="filter-location" placeholder="e.g., Mumbai">
                     </div>
                     <div class="filter-group">
-                        <label for="filter-rating">Min Rating</label>
+                        <label>Min Rating</label>
                         <select id="filter-rating">
                             <option value="">Any Rating</option>
                             <option value="4">4+ Stars</option>
@@ -1351,7 +1350,7 @@
                         </select>
                     </div>
                     <div class="filter-group">
-                        <label for="sort-by">Sort By</label>
+                        <label>Sort By</label>
                         <select id="sort-by">
                             <option value="created_at">Latest First</option>
                             <option value="overall_rating">Highest Rated</option>
@@ -1400,10 +1399,10 @@
     </main>
 
     <div id="firm-modal" class="modal">
-        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modal-firm-name" tabindex="-1">
+        <div class="modal-content">
             <div class="modal-header">
                 <h2 id="modal-firm-name"></h2>
-                <button class="modal-close" id="modal-close-btn" aria-label="Close dialog">×</button>
+                <button class="modal-close" id="modal-close-btn">×</button>
             </div>
             <div class="modal-body">
                 <div class="firm-stats-grid">
@@ -1436,10 +1435,10 @@
     </div>
 
     <div class="filter-modal-overlay" id="filterModalOverlay">
-        <div class="filter-modal-content" role="dialog" aria-modal="true" aria-labelledby="review-filters-title" tabindex="-1">
+        <div class="filter-modal-content">
             <div class="modal-header">
-                <h4 id="review-filters-title">Filter reviews</h4>
-                <button class="modal-close-action" id="closeFilterModalBtn" aria-label="Close dialog">×</button>
+                <h4>Filters</h4>
+                <button class="modal-close-action" id="closeFilterModalBtn">×</button>
             </div>
             <div class="modal-body">
 
@@ -1522,7 +1521,7 @@
             card.innerHTML = `
                 <div class="review-header">
                     <div class="review-firm">
-                        <h3><button type="button" class="firm-details-button">${review.firm_name}</button></h3>
+                        <h3 data-firm="${review.firm_name}">${review.firm_name}</h3>
                         <div class="review-meta-top">
                             <span class="meta-badge">
                                 <i class="fas fa-briefcase"></i> ${review.job_type}
@@ -1590,7 +1589,7 @@
                 </div>
             `;
 
-            card.querySelector('.firm-details-button').addEventListener('click', () => openFirmModal(review.firm_name));
+            card.querySelector('h3').addEventListener('click', () => openFirmModal(review.firm_name));
 
             if (currentUser) {
                 card.querySelector('.helpful-btn').addEventListener('click', (e) => {
@@ -1752,18 +1751,15 @@
             }
         }
 
-        async function shareReview(review) {
+        function shareReview(review) {
             const text = `Check out this review of ${review.firm_name} on My Student Club`;
             const url = window.location.href;
 
-            try {
-                if (navigator.share) await navigator.share({ title: text, url });
-                else {
-                    await navigator.clipboard.writeText(url);
-                    alert('Review link copied.');
-                }
-            } catch (error) {
-                if (error.name !== 'AbortError') alert('The link could not be shared. Copy the page address from your browser.');
+            if (navigator.share) {
+                navigator.share({ title: text, url });
+            } else {
+                navigator.clipboard.writeText(url);
+                alert('Link copied to clipboard!');
             }
         }
 
@@ -2088,44 +2084,6 @@
         dom.reviewFormModal.addEventListener('click', (e) => {
             if (e.target === dom.reviewFormModal) {
                 dom.reviewFormModal.classList.remove('active');
-            }
-        });
-
-        // Preserve focus and keyboard access for review, firm-detail and filter dialogs.
-        let activeReviewDialog = null;
-        [
-            ['review-form-modal', 'review-modal-close-btn', 'active'],
-            ['firm-modal', 'modal-close-btn', 'active'],
-            ['filterModalOverlay', 'closeFilterModalBtn', 'show']
-        ].forEach(([id, closeId, openClass]) => {
-            const overlay = document.getElementById(id);
-            const dialog = overlay.querySelector('[role="dialog"]');
-            let wasOpen = false, trigger = null;
-            new MutationObserver(() => {
-                const open = overlay.classList.contains(openClass);
-                if (open && !wasOpen) {
-                    trigger = document.activeElement;
-                    activeReviewDialog = { overlay, dialog, closeId };
-                    dialog.focus({ preventScroll: true });
-                } else if (!open && wasOpen) {
-                    if (activeReviewDialog?.overlay === overlay) activeReviewDialog = null;
-                    if (trigger?.isConnected) trigger.focus({ preventScroll: true });
-                }
-                wasOpen = open;
-            }).observe(overlay, { attributes: true, attributeFilter: ['class'] });
-        });
-        document.addEventListener('keydown', event => {
-            if (!activeReviewDialog) return;
-            if (event.key === 'Escape') {
-                event.preventDefault();
-                document.getElementById(activeReviewDialog.closeId).click();
-            } else if (event.key === 'Tab') {
-                const { dialog } = activeReviewDialog;
-                const focusable = [...dialog.querySelectorAll('button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled])')].filter(el => el.getClientRects().length);
-                const first = focusable[0], last = focusable.at(-1);
-                if (!first) { event.preventDefault(); dialog.focus(); }
-                else if (event.shiftKey && (document.activeElement === first || document.activeElement === dialog)) { event.preventDefault(); last.focus(); }
-                else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
             }
         });
 

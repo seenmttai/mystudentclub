@@ -230,7 +230,6 @@ const initializeCarousel = () => {
 
 const initializeCountdown = () => {
   const timer = document.getElementById('timer');
-  if (!timer) return;
 
   function updateTimer() {
     const now = new Date();
@@ -339,7 +338,7 @@ const initializeLinkedInPosts = () => {
           <p class="linkedin-user-title">${post.title}</p>
         </div>
       </div>
-      <div class="linkedin-card-content" tabindex="0" role="region" aria-label="Student career story">
+      <div class="linkedin-card-content">
         ${post.content.replace(/\n/g, '<br>')}
       </div>
       <div class="linkedin-reactions">
@@ -516,7 +515,6 @@ const initializeTestimonials = () => {
   const testimonialsContent = document.querySelector('.testimonials-content');
   const prevButton = document.querySelector('.prev-button');
   const nextButton = document.querySelector('.next-button');
-  if (!testimonialsContainer || !testimonialsContent) return;
 
   let currentIndex = 0;
   const autoScrollInterval = 5000;
@@ -548,13 +546,13 @@ const initializeTestimonials = () => {
     testimonialsContent.appendChild(testimonialElement);
   });
 
-  prevButton?.addEventListener('click', () => {
+  prevButton.addEventListener('click', () => {
     showPrevTestimonial();
     clearInterval(autoScrollTimer);
     startAutoScroll();
   });
 
-  nextButton?.addEventListener('click', () => {
+  nextButton.addEventListener('click', () => {
     showNextTestimonial();
     clearInterval(autoScrollTimer);
     startAutoScroll();

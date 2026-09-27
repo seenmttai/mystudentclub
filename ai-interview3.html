@@ -2779,10 +2779,10 @@
     <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
     <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
     <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
-<link rel="stylesheet" href="/scripts/site-navigation.css?v=20260927.5"><script src="/scripts/site-navigation.js?v=20260927.5" defer></script>
+<link rel="stylesheet" href="/scripts/site-navigation.css?v=20260927.9"><script src="/scripts/site-navigation.js?v=20260927.9" defer></script>
 </head>
 
-<body class="msc-interview-page">
+<body>
 
     <div id="setup-screen" class="setup-container">
         <div class="setup-card fade-in">
@@ -2801,7 +2801,7 @@
             <form id="setup-form">
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label" for="positionApplied">Role Category</label>
+                        <label class="form-label">Role Category</label>
                         <select id="positionApplied" class="form-select">
                             <option value="CA Fresher">CA Fresher</option>
                             <option value="Industrial Trainee" selected>Industrial Trainee</option>
@@ -2810,7 +2810,7 @@
                         </select>
                     </div>
                     <div id="exp-group" class="form-group">
-                        <label class="form-label" for="experienceLevel">Experience Level</label>
+                        <label class="form-label">Experience Level</label>
                         <select id="experienceLevel" class="form-select">
                             <option value="Fresher">Fresher (0-1 yr)</option>
                             <option value="Junior">Junior (1-3 yrs)</option>
@@ -2821,12 +2821,12 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label" for="companyName">Company Name</label>
-                        <input aria-label="Company name" type="text" id="companyName" class="form-input"
+                        <label class="form-label">Company Name</label>
+                        <input type="text" id="companyName" class="form-input"
                             placeholder="e.g. Deloitte, Reliance, etc." required>
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="companyType">Company Type</label>
+                        <label class="form-label">Company Type</label>
                         <select id="companyType" class="form-select">
                             <option value="Corporate" selected>Corporate</option>
                             <option value="Big 4">Big 4 / Top Tier Firm</option>
@@ -2839,7 +2839,7 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label" for="interviewDomain">Interview Domain</label>
+                        <label class="form-label">Interview Domain</label>
                         <select id="interviewDomain" class="form-select">
                             <option value="Statutory Audit">Statutory Audit</option>
                             <option value="Internal Audit">Internal Audit</option>
@@ -2854,7 +2854,7 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label" for="interviewDuration">Interview Duration</label>
+                        <label class="form-label">Interview Duration</label>
                         <select id="interviewDuration" class="form-select">
                             <option value="30" selected>30 Minutes</option>
                             <option value="60">60 Minutes</option>
@@ -2877,7 +2877,7 @@
                     <div class="form-group">
                         <label class="form-label">Upload CV (PDF only)</label>
                         <div class="file-upload-wrapper">
-                            <input aria-label="Upload your CV as a PDF" type="file" id="cvFile" class="file-upload-input" accept=".pdf">
+                            <input type="file" id="cvFile" class="file-upload-input" accept=".pdf">
                             <div class="file-upload-label">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                     stroke-width="2">
@@ -2889,8 +2889,8 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="jobDescription">Job Description (Optional)</label>
-                        <textarea aria-label="Job description (optional)" id="jobDescription" class="form-input" rows="2" style="resize: none; height: 82px;"
+                        <label class="form-label">Job Description (Optional)</label>
+                        <textarea id="jobDescription" class="form-input" rows="2" style="resize: none; height: 82px;"
                             placeholder="Paste JD for tailored questions..."></textarea>
                     </div>
                 </div>
@@ -3133,7 +3133,7 @@
             </div>
             <div id="mobile-chat-messages" class="sheet-messages"></div>
             <div class="sheet-input">
-                <input aria-label="Message to the interviewer" id="mobile-chat-input" type="text" placeholder="Type your message..." />
+                <input id="mobile-chat-input" type="text" placeholder="Type your message..." />
                 <button id="mobile-send-btn" class="btn btn-primary">Send</button>
             </div>
         </div>
@@ -3517,7 +3517,8 @@
         async function init() {
             const { data: { session }, error: sessionError } = await supabase.auth.getSession();
             if (sessionError || !session) {
-                window.location.replace('/login.html?redirect=' + encodeURIComponent(window.location.pathname + window.location.search));
+                alert('Please sign in to access this interview.');
+                window.location.href = 'login.html';
                 return;
             }
             userSession = session;
@@ -5030,8 +5031,160 @@
             reportScreen.classList.remove('hidden');
         }
 
-        // Native selects provide keyboard, touch and screen-reader support.
+        // Custom Dropdown Implementation
+        function initCustomSelects() {
+            const selectorIds = ['positionApplied', 'experienceLevel', 'companyType', 'interviewDomain'];
 
+            // Close dropdowns on outside click
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.custom-select-wrapper')) {
+                    document.querySelectorAll('.custom-select-wrapper.open').forEach(wrapper => {
+                        wrapper.classList.remove('open');
+                        const opts = wrapper.querySelector('.custom-options');
+                        if (opts) {
+                            opts.style.opacity = '0';
+                            setTimeout(() => opts.style.display = 'none', 200);
+                        }
+                    });
+                }
+            });
+
+            selectorIds.forEach(id => {
+                const select = document.getElementById(id);
+                if (!select) return;
+
+                // Ensure we don't double-wrap if re-run
+                if (select.parentNode.classList.contains('custom-select-wrapper')) return;
+
+                // Create Custom UI
+                const wrapper = document.createElement('div');
+                wrapper.className = 'custom-select-wrapper custom-dropdown';
+
+                const trigger = document.createElement('div');
+                trigger.className = 'custom-select-trigger custom-dropdown-trigger';
+                trigger.innerHTML = `<span>${select.options[select.selectedIndex]?.text || 'Select'}</span><div class="custom-dropdown-arrow">▾</div>`;
+
+                const optionsList = document.createElement('div');
+                optionsList.className = 'custom-options custom-dropdown-menu';
+
+                // Function to rebuild options (handles optgroups)
+                const buildOptions = () => {
+                    optionsList.innerHTML = '';
+                    Array.from(select.children).forEach(child => {
+                        if (child.tagName === 'OPTGROUP') {
+                            const groupLabel = document.createElement('div');
+                            groupLabel.className = 'custom-dropdown-group-label';
+                            groupLabel.textContent = child.label;
+                            optionsList.appendChild(groupLabel);
+
+                            Array.from(child.children).forEach(opt => {
+                                const div = document.createElement('div');
+                                div.className = `custom-option custom-dropdown-option ${opt.selected ? 'selected' : ''}`;
+                                div.textContent = opt.text;
+                                div.dataset.value = opt.value;
+                                div.addEventListener('click', (e) => {
+                                    e.stopPropagation();
+                                    select.value = opt.value;
+                                    trigger.querySelector('span').textContent = opt.text;
+                                    wrapper.classList.remove('open');
+                                    optionsList.style.display = 'none';
+                                    optionsList.querySelectorAll('.custom-option').forEach(o => o.classList.remove('selected'));
+                                    div.classList.add('selected');
+                                    select.dispatchEvent(new Event('change'));
+                                });
+                                optionsList.appendChild(div);
+                            });
+                        } else if (child.tagName === 'OPTION') {
+                            const div = document.createElement('div');
+                            div.className = `custom-option custom-dropdown-option ${child.selected ? 'selected' : ''}`;
+                            div.textContent = child.text;
+                            div.dataset.value = child.value;
+                            div.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                select.value = child.value;
+                                trigger.querySelector('span').textContent = child.text;
+                                wrapper.classList.remove('open');
+                                optionsList.style.display = 'none';
+                                optionsList.querySelectorAll('.custom-option').forEach(o => o.classList.remove('selected'));
+                                div.classList.add('selected');
+                                select.dispatchEvent(new Event('change'));
+                            });
+                            optionsList.appendChild(div);
+                        }
+                    });
+                };
+
+                // Initial build
+                buildOptions();
+
+                // Assemble
+                select.style.display = 'none';
+                select.parentNode.insertBefore(wrapper, select);
+                wrapper.appendChild(select);
+                wrapper.appendChild(trigger);
+                wrapper.appendChild(optionsList);
+
+                // Toggle Event
+                trigger.addEventListener('click', () => {
+                    const isOpen = wrapper.classList.contains('open');
+                    document.querySelectorAll('.custom-select-wrapper.open').forEach(w => {
+                        if (w !== wrapper) {
+                            w.classList.remove('open');
+                            w.querySelector('.custom-options').style.display = 'none';
+                        }
+                    });
+
+                    if (!isOpen) {
+                        wrapper.classList.add('open');
+                        optionsList.style.display = 'block';
+                        optionsList.offsetHeight;
+                        optionsList.style.opacity = '1';
+                    } else {
+                        wrapper.classList.remove('open');
+                        optionsList.style.opacity = '0';
+                        setTimeout(() => optionsList.style.display = 'none', 200);
+                    }
+                });
+
+                // MutationObserver for option changes
+                const observer = new MutationObserver(() => {
+                    buildOptions();
+                    const sel = select.options[select.selectedIndex];
+                    if (sel) trigger.querySelector('span').textContent = sel.text;
+                });
+                observer.observe(select, { childList: true, subtree: true });
+
+                // Intercept programmatic .value changes
+                const descriptor = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value');
+                Object.defineProperty(select, 'value', {
+                    get: function () { return descriptor.get.call(this); },
+                    set: function (val) {
+                        descriptor.set.call(this, val);
+                        const sel = this.options[this.selectedIndex];
+                        if (sel) {
+                            trigger.querySelector('span').textContent = sel.text;
+                            optionsList.querySelectorAll('.custom-option').forEach(o => {
+                                o.classList.toggle('selected', o.dataset.value === val);
+                            });
+                        }
+                    }
+                });
+
+                // Listen for internal value changes
+                select.addEventListener('change', () => {
+                    const sel = select.options[select.selectedIndex];
+                    if (sel) {
+                        trigger.querySelector('span').textContent = sel.text;
+                        optionsList.querySelectorAll('.custom-option').forEach(o => {
+                            o.classList.toggle('selected', o.dataset.value === select.value);
+                        });
+                    }
+                });
+            });
+        }
+
+        // Initialize custom selects on load
+        initCustomSelects();
 
         init();
     </script>

@@ -41,11 +41,10 @@
   <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
   <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
   <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
-<link rel="stylesheet" href="/scripts/site-navigation.css?v=20260927.5"><script src="/scripts/site-navigation.js?v=20260927.5" defer></script>
+<link rel="stylesheet" href="/scripts/site-navigation.css?v=20260927.9"><script src="/scripts/site-navigation.js?v=20260927.9" defer></script>
 </head>
 <body>
-    <div id="pdf-app" role="main" aria-label="Document reader">
-        <h1 class="msc-sr-only">Document reader</h1>
+    <div id="pdf-app">
         <!-- Top Toolbar -->
         <div id="toolbar">
             <div class="toolbar-left">
@@ -61,7 +60,7 @@
                     <i class="fas fa-chevron-left"></i>
                 </button>
                 <div class="page-indicator">
-                    <input aria-label="Document page number" type="number" id="page-input" min="1" value="1">
+                    <input type="number" id="page-input" min="1" value="1">
                     <span class="page-sep">/</span>
                     <span id="page-count">0</span>
                 </div>
@@ -73,7 +72,7 @@
             <div class="toolbar-center">
                 <div class="search-bar">
                     <i class="fas fa-search search-icon"></i>
-                    <input aria-label="Search in document" type="text" id="search-input" placeholder="Search in document...">
+                    <input type="text" id="search-input" placeholder="Search in document...">
                     <button id="search-prev" class="toolbar-btn-sm" title="Previous Match" disabled><i class="fas fa-chevron-up"></i></button>
                     <button id="search-next" class="toolbar-btn-sm" title="Next Match" disabled><i class="fas fa-chevron-down"></i></button>
                     <span id="search-info" class="search-info-badge"></span>

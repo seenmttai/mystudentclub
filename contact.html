@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>Contact Us | My Student Club</title>
     <meta name="description"
         content="Report an issue or contact My Student Club. We're here to help you with any questions or concerns.">
@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/scripts/portal-style.css">
     <script src="/scripts/supabase.js"></script>
-    <script src="/scripts/supabase-init.js?v=20260927.5"></script>
+    <script src="/scripts/supabase-init.js?v=20260927.9"></script>
     <script src="/scripts/error-reporter.js"></script>
     <style>
         :root {
@@ -581,7 +581,7 @@
     <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
     <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
     <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
-<link rel="stylesheet" href="/scripts/site-navigation.css?v=20260927.5"><script src="/scripts/site-navigation.js?v=20260927.5" defer></script>
+<link rel="stylesheet" href="/scripts/site-navigation.css?v=20260927.9"><script src="/scripts/site-navigation.js?v=20260927.9" defer></script>
 </head>
 
 <body>
@@ -603,7 +603,7 @@
     </header>
 
     <div class="expanded-menu" id="expandedMenu">
-        <button aria-label="Close menu" class="menu-close-btn" id="menuCloseBtn">
+        <button class="menu-close-btn" id="menuCloseBtn">
             <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -658,18 +658,18 @@
 
                 <div class="form-group">
                     <label for="name">Your Name</label>
-                    <input type="text" id="name" name="name" autocomplete="name" required placeholder="Your name">
+                    <input type="text" id="name" name="name" placeholder="Full name">
                     <span class="error-text">Please enter your name</span>
                 </div>
                 <div class="form-group">
                     <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email" autocomplete="email" required placeholder="you@example.com">
+                    <input type="email" id="email" name="email" placeholder="email@example.com">
                     <span class="error-text">Please enter a valid email</span>
                 </div>
 
                 <div class="form-group">
                     <label for="category">Category</label>
-                    <select id="category" name="category" required>
+                    <select id="category" name="category">
                         <option value="">Select a category</option>
                         <option value="technical_issue">Technical Issue</option>
                         <option value="false_job_listing">False Job Listing</option>
@@ -684,18 +684,18 @@
 
                 <div class="form-group">
                     <label for="description">Description</label>
-                    <textarea aria-label="Job description" id="description" name="description" required
+                    <textarea id="description" name="description"
                         placeholder="Describe your issue or question..."></textarea>
                     <span class="error-text">Please describe your issue</span>
                 </div>
 
                 <button type="submit" class="submit-btn" id="submit-btn">
                     <i class="fas fa-paper-plane"></i>
-                    <span>Send message</span>
+                    <span>Submit</span>
                 </button>
             </form>
 
-            <div class="success-message" id="success-message" role="status" aria-live="polite">
+            <div class="success-message" id="success-message">
                 <i class="fas fa-check-circle"></i>
                 <h2>Thank You!</h2>
                 <p>Your message has been submitted. We'll get back to you soon.</p>
@@ -710,7 +710,7 @@
                 <div class="contact-methods">
                     <a href="mailto:padam@mystudentclub.com" class="contact-method">
                         <i class="fas fa-envelope"></i>
-                        <span>padam@mystudentclub.com</span>
+                        <span>admin@mystudentclub.com</span>
                     </a>
                 </div>
             </div>
@@ -743,7 +743,93 @@
 
         checkAuth();
 
-        // Native category select supports keyboard, touch and assistive technology.
+        // Initialize Custom Dropdown
+        function initCustomSelect() {
+            const select = document.getElementById('category');
+
+            if (!select || select.parentNode.classList.contains('custom-select-wrapper')) {
+                return;
+            }
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'custom-select-wrapper';
+
+            const trigger = document.createElement('div');
+            trigger.className = 'custom-select-trigger';
+            trigger.innerHTML = `<span>${select.options[select.selectedIndex]?.text || 'Select a category'}</span><div class="custom-arrow"></div>`;
+
+            const optionsList = document.createElement('div');
+            optionsList.className = 'custom-options';
+
+            const buildOptions = () => {
+                optionsList.innerHTML = '';
+                Array.from(select.options).forEach(opt => {
+                    const div = document.createElement('div');
+                    div.className = `custom-option ${opt.selected ? 'selected' : ''}`;
+                    div.textContent = opt.text;
+                    div.dataset.value = opt.value;
+                    div.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        select.value = opt.value;
+                        trigger.querySelector('span').textContent = opt.text;
+                        wrapper.classList.remove('open');
+                        optionsList.style.display = 'none';
+                        optionsList.querySelectorAll('.custom-option').forEach(o => o.classList.remove('selected'));
+                        div.classList.add('selected');
+                        select.dispatchEvent(new Event('change'));
+                    });
+                    optionsList.appendChild(div);
+                });
+            };
+
+            buildOptions();
+
+            select.style.display = 'none';
+            select.parentNode.insertBefore(wrapper, select);
+            wrapper.appendChild(select);
+            wrapper.appendChild(trigger);
+            wrapper.appendChild(optionsList);
+
+            trigger.addEventListener('click', () => {
+                const isOpen = wrapper.classList.contains('open');
+                document.querySelectorAll('.custom-select-wrapper.open').forEach(w => {
+                    if (w !== wrapper) {
+                        w.classList.remove('open');
+                        w.querySelector('.custom-options').style.display = 'none';
+                    }
+                });
+
+                if (!isOpen) {
+                    wrapper.classList.add('open');
+                    optionsList.style.display = 'block';
+                    optionsList.offsetHeight;
+                    optionsList.style.opacity = '1';
+                } else {
+                    wrapper.classList.remove('open');
+                    optionsList.style.opacity = '0';
+                    setTimeout(() => optionsList.style.display = 'none', 200);
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.custom-select-wrapper')) {
+                    document.querySelectorAll('.custom-select-wrapper.open').forEach(wrapper => {
+                        wrapper.classList.remove('open');
+                        const opts = wrapper.querySelector('.custom-options');
+                        if (opts) {
+                            opts.style.opacity = '0';
+                            setTimeout(() => opts.style.display = 'none', 200);
+                        }
+                    });
+                }
+            });
+        }
+
+        // Initialize dropdown after DOM is fully ready
+        setTimeout(() => {
+            initCustomSelect();
+        }, 100);
+
         // Standard Menu Script
         document.addEventListener('DOMContentLoaded', async () => {
             // Menu Toggle
@@ -865,7 +951,7 @@
                 alert('Something went wrong. Please try again or contact us via email at admin@mystudentclub.com.');
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i><span>Send message</span>';
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i><span>Submit</span>';
             }
         });
 

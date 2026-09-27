@@ -12,8 +12,8 @@
     <link rel="stylesheet" href="/scripts/profile.css">
 <script src="scripts/vendor/pdf.min.js"></script>
     <script src="/scripts/supabase.js"></script>
-    <script src="/scripts/supabase-init.js?v=20260927.5"></script>
-    <script src="/scripts/career-profile.js?v=20260927.5"></script>
+    <script src="/scripts/supabase-init.js?v=20260927.9"></script>
+    <script src="/scripts/career-profile.js?v=20260927.9"></script>
     <script src="/scripts/error-reporter.js"></script>
   <!-- Standard Favicon -->
 <!-- Fallback Shortcut Icon -->
@@ -21,10 +21,10 @@
   <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
   <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
   <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
-<link rel="stylesheet" href="/scripts/site-navigation.css?v=20260927.5"><script src="/scripts/site-navigation.js?v=20260927.5" defer></script>
+<link rel="stylesheet" href="/scripts/site-navigation.css?v=20260927.9"><script src="/scripts/site-navigation.js?v=20260927.9" defer></script>
 </head>
 
-<body class="msc-account-page msc-profile-page">
+<body>
     <!-- ========== SITE HEADER ========== -->
     <header class="site-header">
         <div class="header-container">
@@ -106,7 +106,7 @@
                     <label for="photoUploadInput" class="p2-avatar-upload-badge" title="Upload profile photo">
                         <i class="fas fa-camera"></i>
                     </label>
-                    <input aria-label="Upload profile photo" type="file" id="photoUploadInput" accept="image/jpeg,image/png,image/webp" style="display: none;">
+                    <input type="file" id="photoUploadInput" accept="image/jpeg,image/png,image/webp" style="display: none;">
                     <div class="p2-pct-badge" id="pctBadge">
                         <i class="fas fa-fire"></i> <span id="pctText">0</span>%
                     </div>
@@ -167,7 +167,7 @@
                                 <i class="fas fa-cloud-upload-alt"></i>
                                 <p><strong>Upload resume</strong></p>
                                  <span>Supported Format: PDF &mdash; Max 5 MB</span>
-                                 <input aria-label="Upload your CV as a PDF" type="file" id="resume" name="resume" accept=".pdf">
+                                 <input type="file" id="resume" name="resume" accept=".pdf">
                             </div>
                         </div>
                         <div id="resume-display-area" style="display:none;">
@@ -177,7 +177,7 @@
                                 <button type="button" class="p2-view-resume-btn" id="viewResumeBtn" title="Preview resume">
                                     <i class="fas fa-eye"></i> View
                                 </button>
-                                <button aria-label="Remove attached CV" type="button" class="p2-remove-file" data-target="resume"><i class="fas fa-times"></i></button>
+                                <button type="button" class="p2-remove-file" data-target="resume"><i class="fas fa-times"></i></button>
                             </div>
                         </div>
                         <!-- DPDP Act Consent Checkbox -->
@@ -211,7 +211,7 @@
                                         <div class="p2-saved-title">Summary</div>
                                         <div class="p2-saved-meta" id="summary-text-display"></div>
                                     </div>
-                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-headline-form" aria-label="Edit profile summary" role="button" onkeydown="if(event.key===' '){event.preventDefault();this.click()}"><i class="fas fa-pencil-alt"></i></a>
+                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-headline-form"><i class="fas fa-pencil-alt"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -245,7 +245,7 @@
                                         <div class="p2-saved-title">Key Skills</div>
                                         <div class="p2-saved-meta" id="key-skills-text-display"></div>
                                     </div>
-                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-skills-form" aria-label="Edit key skills" role="button" onkeydown="if(event.key===' '){event.preventDefault();this.click()}"><i class="fas fa-pencil-alt"></i></a>
+                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-skills-form"><i class="fas fa-pencil-alt"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -277,7 +277,7 @@
                                         <div class="p2-saved-title" id="cert-title-display">Certification</div>
                                         <div class="p2-saved-meta" id="cert-meta-display"></div>
                                     </div>
-                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-certification-form" aria-label="Edit certification" role="button" onkeydown="if(event.key===' '){event.preventDefault();this.click()}"><i class="fas fa-pencil-alt"></i></a>
+                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-certification-form"><i class="fas fa-pencil-alt"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -298,12 +298,12 @@
                                 <div class="p2-form-row">
                                     <label>Completion Date</label>
                                     <div style="display:flex; gap:0.5rem;">
-                                        <select aria-label="Certification month" id="cert_month" name="cert_month" style="flex:1;">
+                                        <select id="cert_month" name="cert_month" style="flex:1;">
                                             <option value="">Month</option>
                                             <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option>
                                             <option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
                                         </select>
-                                        <input aria-label="Certification year" type="number" id="cert_year" name="cert_year" min="1990" max="2035" placeholder="Year" style="flex:1; max-width:100px;">
+                                        <input type="number" id="cert_year" name="cert_year" min="1990" max="2035" placeholder="Year" style="flex:1; max-width:100px;">
                                     </div>
                                 </div>
                                 <div class="p2-form-row p2-full-width">
@@ -333,7 +333,7 @@
                                         <div class="p2-saved-title" id="edu-final-title">CA Final</div>
                                         <div class="p2-saved-meta" id="edu-final-meta"></div>
                                     </div>
-                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-ca-final-form" aria-label="Edit CA Final details" role="button" onkeydown="if(event.key===' '){event.preventDefault();this.click()}"><i class="fas fa-pencil-alt"></i></a>
+                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-ca-final-form"><i class="fas fa-pencil-alt"></i></a>
                                 </div>
                             </div>
                             <!-- CA Inter -->
@@ -343,7 +343,7 @@
                                         <div class="p2-saved-title" id="edu-inter-title">CA Inter</div>
                                         <div class="p2-saved-meta" id="edu-inter-meta"></div>
                                     </div>
-                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-ca-inter-form" aria-label="Edit CA Inter details" role="button" onkeydown="if(event.key===' '){event.preventDefault();this.click()}"><i class="fas fa-pencil-alt"></i></a>
+                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-ca-inter-form"><i class="fas fa-pencil-alt"></i></a>
                                 </div>
                             </div>
                             <!-- CA Foundation -->
@@ -353,7 +353,7 @@
                                         <div class="p2-saved-title" id="edu-found-title">CA Foundation</div>
                                         <div class="p2-saved-meta" id="edu-found-meta"></div>
                                     </div>
-                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-ca-foundation-form" aria-label="Edit CA Foundation details" role="button" onkeydown="if(event.key===' '){event.preventDefault();this.click()}"><i class="fas fa-pencil-alt"></i></a>
+                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-ca-foundation-form"><i class="fas fa-pencil-alt"></i></a>
                                 </div>
                             </div>
                             <!-- Graduation -->
@@ -363,7 +363,7 @@
                                         <div class="p2-saved-title" id="edu-grad-title">Graduation</div>
                                         <div class="p2-saved-meta" id="edu-grad-meta"></div>
                                     </div>
-                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-grad-form" aria-label="Edit graduation details" role="button" onkeydown="if(event.key===' '){event.preventDefault();this.click()}"><i class="fas fa-pencil-alt"></i></a>
+                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-grad-form"><i class="fas fa-pencil-alt"></i></a>
                                 </div>
                             </div>
                             <!-- Class XII -->
@@ -373,7 +373,7 @@
                                         <div class="p2-saved-title" id="edu-12-title">Class XII</div>
                                         <div class="p2-saved-meta" id="edu-12-meta"></div>
                                     </div>
-                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-12-form" aria-label="Edit Class XII details" role="button" onkeydown="if(event.key===' '){event.preventDefault();this.click()}"><i class="fas fa-pencil-alt"></i></a>
+                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-12-form"><i class="fas fa-pencil-alt"></i></a>
                                 </div>
                             </div>
                             <!-- Class X -->
@@ -383,7 +383,7 @@
                                         <div class="p2-saved-title" id="edu-10-title">Class X</div>
                                         <div class="p2-saved-meta" id="edu-10-meta"></div>
                                     </div>
-                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-10-form" aria-label="Edit Class X details" role="button" onkeydown="if(event.key===' '){event.preventDefault();this.click()}"><i class="fas fa-pencil-alt"></i></a>
+                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-10-form"><i class="fas fa-pencil-alt"></i></a>
                                 </div>
                             </div>
                             <!-- Other Education -->
@@ -393,7 +393,7 @@
                                         <div class="p2-saved-title" id="edu-other-title">Other Education</div>
                                         <div class="p2-saved-meta" id="edu-other-meta"></div>
                                     </div>
-                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-other-edu-form" aria-label="Edit other education" role="button" onkeydown="if(event.key===' '){event.preventDefault();this.click()}"><i class="fas fa-pencil-alt"></i></a>
+                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-other-edu-form"><i class="fas fa-pencil-alt"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -468,7 +468,7 @@
                                 </div>
                                 <div class="p2-form-row">
                                     <label>Education</label>
-                                    <input aria-label="Qualification type" type="text" value="Professional Course" disabled>
+                                    <input type="text" value="Professional Course" disabled>
                                 </div>
                                 <div class="p2-form-row" id="ca_final_course_group">
                                     <label for="ca_final_course">Course *</label>
@@ -498,14 +498,14 @@
                                 <div class="p2-form-row ca_final_cleared_fields">
                                     <label>When did you clear</label>
                                     <div style="display:flex; gap:0.5rem;">
-                                        <select aria-label="CA Final completion month" id="ca_final_clear_month" name="ca_final_clear_month" style="flex:1;">
+                                        <select id="ca_final_clear_month" name="ca_final_clear_month" style="flex:1;">
                                             <option value="">Month</option>
                                             <option>Jan</option>
                                             <option>May</option>
                                             <option>Sep</option>
                                             <option>Nov</option>
                                         </select>
-                                        <select aria-label="CA Final completion year" id="ca_final_clear_year" name="ca_final_clear_year" class="populate-past-years" style="flex:1;">
+                                        <select id="ca_final_clear_year" name="ca_final_clear_year" class="populate-past-years" style="flex:1;">
                                             <option value="">Year</option>
                                         </select>
                                     </div>
@@ -533,13 +533,13 @@
                                 <div class="p2-form-row ca_final_appearance_fields" style="display:none;">
                                     <label>Expected Appearance</label>
                                     <div style="display:flex; gap:0.5rem;">
-                                        <select aria-label="CA Final next attempt month" id="ca_final_app_month" name="ca_final_app_month" style="flex:1;">
+                                        <select id="ca_final_app_month" name="ca_final_app_month" style="flex:1;">
                                             <option value="">Month</option>
                                             <option>Jan</option>
                                             <option>May</option>
                                             <option>Sep</option>
                                         </select>
-                                        <select aria-label="CA Final next attempt year" id="ca_final_app_year" name="ca_final_app_year" class="populate-future-years" style="flex:1;">
+                                        <select id="ca_final_app_year" name="ca_final_app_year" class="populate-future-years" style="flex:1;">
                                             <option value="">Year</option>
                                         </select>
                                     </div>
@@ -560,7 +560,7 @@
                             <div class="p2-form-grid">
                                 <div class="p2-form-row">
                                     <label>Education</label>
-                                    <input aria-label="Qualification type" type="text" value="Professional Course" disabled>
+                                    <input type="text" value="Professional Course" disabled>
                                 </div>
                                 <div class="p2-form-row" id="ca_inter_course_group">
                                     <label for="ca_inter_course">Course *</label>
@@ -597,14 +597,14 @@
                                 <div class="p2-form-row">
                                     <label>When did you clear</label>
                                     <div style="display:flex; gap:0.5rem;">
-                                        <select aria-label="CA Inter completion month" id="ca_inter_clear_month" name="ca_inter_clear_month" style="flex:1;">
+                                        <select id="ca_inter_clear_month" name="ca_inter_clear_month" style="flex:1;">
                                             <option value="">Month</option>
                                             <option>Jan</option>
                                             <option>May</option>
                                             <option>Sep</option>
                                             <option>Nov</option>
                                         </select>
-                                        <select aria-label="CA Inter completion year" id="ca_inter_clear_year" name="ca_inter_clear_year" class="populate-past-years" style="flex:1;">
+                                        <select id="ca_inter_clear_year" name="ca_inter_clear_year" class="populate-past-years" style="flex:1;">
                                             <option value="">Year</option>
                                         </select>
                                     </div>
@@ -643,7 +643,7 @@
                             <div class="p2-form-grid">
                                 <div class="p2-form-row">
                                     <label>Education</label>
-                                    <input aria-label="Qualification type" type="text" value="Professional Course" disabled>
+                                    <input type="text" value="Professional Course" disabled>
                                 </div>
                                 <div class="p2-form-row" id="ca_found_course_group">
                                     <label for="ca_found_course">Course *</label>
@@ -670,14 +670,14 @@
                                 <div class="p2-form-row">
                                     <label>When did you clear</label>
                                     <div style="display:flex; gap:0.5rem;">
-                                        <select aria-label="CA Foundation completion month" id="ca_found_clear_month" name="ca_found_clear_month" style="flex:1;">
+                                        <select id="ca_found_clear_month" name="ca_found_clear_month" style="flex:1;">
                                             <option value="">Month</option>
                                             <option>Jan</option>
                                             <option>May</option>
                                             <option>Sep</option>
                                             <option>Nov</option>
                                         </select>
-                                        <select aria-label="CA Foundation completion year" id="ca_found_clear_year" name="ca_found_clear_year" class="populate-past-years" style="flex:1;">
+                                        <select id="ca_found_clear_year" name="ca_found_clear_year" class="populate-past-years" style="flex:1;">
                                             <option value="">Year</option>
                                         </select>
                                     </div>
@@ -891,7 +891,7 @@
                                         <div class="p2-saved-meta" id="emp-art-meta"></div>
                                         <div class="p2-saved-desc" id="emp-art-responsibilities" style="display:none;margin-top:0.35rem;font-size:0.82rem;color:#555;white-space:pre-wrap;"></div>
                                     </div>
-                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-art-form" aria-label="Edit articleship details" role="button" onkeydown="if(event.key===' '){event.preventDefault();this.click()}"><i class="fas fa-pencil-alt"></i></a>
+                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-art-form"><i class="fas fa-pencil-alt"></i></a>
                                 </div>
                             </div>
                             <!-- Industrial Training / Other Work Experience -->
@@ -902,7 +902,7 @@
                                         <div class="p2-saved-meta" id="emp-it-meta"></div>
                                         <div class="p2-saved-desc" id="emp-it-responsibilities" style="display:none;margin-top:0.35rem;font-size:0.82rem;color:#555;white-space:pre-wrap;"></div>
                                     </div>
-                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-it-form" aria-label="Edit industrial training details" role="button" onkeydown="if(event.key===' '){event.preventDefault();this.click()}"><i class="fas fa-pencil-alt"></i></a>
+                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-it-form"><i class="fas fa-pencil-alt"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -935,8 +935,8 @@
                                 <div class="p2-form-row">
                                     <label>Start Date</label>
                                     <div style="display:flex; gap:0.5rem;">
-                                        <select aria-label="Articleship start year" id="articleship_start_year" name="articleship_start_year" class="populate-past-years" style="flex:1;"><option value="">Year</option></select>
-                                        <select aria-label="Articleship start month" id="articleship_start_month" name="articleship_start_month" style="flex:1;">
+                                        <select id="articleship_start_year" name="articleship_start_year" class="populate-past-years" style="flex:1;"><option value="">Year</option></select>
+                                        <select id="articleship_start_month" name="articleship_start_month" style="flex:1;">
                                             <option value="">Month</option>
                                             <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option><option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
                                         </select>
@@ -948,8 +948,8 @@
                                         <input type="checkbox" id="articleship_currently_working" style="cursor:pointer;"> Currently working here
                                     </label>
                                     <div id="art_completion_date_wrap" style="display:flex; gap:0.5rem;">
-                                        <select aria-label="Articleship end year" id="articleship_end_year" name="articleship_end_year" class="populate-past-years" style="flex:1;"><option value="">Year</option></select>
-                                        <select aria-label="Articleship end month" id="articleship_end_month" name="articleship_end_month" style="flex:1;">
+                                        <select id="articleship_end_year" name="articleship_end_year" class="populate-past-years" style="flex:1;"><option value="">Year</option></select>
+                                        <select id="articleship_end_month" name="articleship_end_month" style="flex:1;">
                                             <option value="">Month</option>
                                             <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option><option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
                                         </select>
@@ -1037,8 +1037,8 @@
                                 <div class="p2-form-row">
                                     <label>Start Date</label>
                                     <div style="display:flex; gap:0.5rem;">
-                                        <select aria-label="Industrial training start year" id="it_start_year" name="it_start_year" class="populate-past-years" style="flex:1;"><option value="">Year</option></select>
-                                        <select aria-label="Industrial training start month" id="it_start_month" name="it_start_month" style="flex:1;">
+                                        <select id="it_start_year" name="it_start_year" class="populate-past-years" style="flex:1;"><option value="">Year</option></select>
+                                        <select id="it_start_month" name="it_start_month" style="flex:1;">
                                             <option value="">Month</option>
                                             <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option><option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
                                         </select>
@@ -1047,8 +1047,8 @@
                                 <div class="p2-form-row">
                                     <label>End Date</label>
                                     <div style="display:flex; gap:0.5rem;">
-                                        <select aria-label="Industrial training end year" id="it_end_year" name="it_end_year" class="populate-past-years" style="flex:1;"><option value="">Year</option></select>
-                                        <select aria-label="Industrial training end month" id="it_end_month" name="it_end_month" style="flex:1;">
+                                        <select id="it_end_year" name="it_end_year" class="populate-past-years" style="flex:1;"><option value="">Year</option></select>
+                                        <select id="it_end_month" name="it_end_month" style="flex:1;">
                                             <option value="">Month</option>
                                             <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option><option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
                                         </select>
@@ -1068,7 +1068,7 @@
 
                     <!-- ===== WORK EXPERIENCE ===== -->
                     <section class="p2-card" id="sec-employment" data-portal="fresher_experienced,semi_experienced,articleship">
-                        <div class="p2-card-header" id="sec-experience">
+                        <div class="p2-card-header">
                             <h2>Work Experience</h2>
                             <a href="javascript:void(0)" class="p2-card-action" id="empEditToggle" data-toggle="sec-experience-form">Add experience</a>
                         </div>
@@ -1083,7 +1083,7 @@
                                         <div class="p2-saved-meta" id="emp-org-meta"></div>
                                         <div class="p2-saved-desc" id="emp-org-profile" style="display:none;margin-top:0.35rem;font-size:0.82rem;color:#555;white-space:pre-wrap;"></div>
                                     </div>
-                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-experience-form" aria-label="Edit work experience" role="button" onkeydown="if(event.key===' '){event.preventDefault();this.click()}"><i class="fas fa-pencil-alt"></i></a>
+                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-experience-form"><i class="fas fa-pencil-alt"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -1120,10 +1120,10 @@
                                 <div class="p2-form-row p2-full-width">
                                     <label>Total experience <span style="color:var(--p2-red);">*</span></label>
                                     <div style="display:flex; gap:0.5rem;">
-                                        <select aria-label="Total experience in years" id="emp_exp_years" name="emp_exp_years" style="flex:1;">
+                                        <select id="emp_exp_years" name="emp_exp_years" style="flex:1;">
                                             <option value="">Years</option>
                                         </select>
-                                        <select aria-label="Additional months of experience" id="emp_exp_months" name="emp_exp_months" style="flex:1;">
+                                        <select id="emp_exp_months" name="emp_exp_months" style="flex:1;">
                                             <option value="">Months</option>
                                         </select>
                                     </div>
@@ -1160,8 +1160,8 @@
                                 <div class="p2-form-row">
                                     <label>Join Date</label>
                                     <div style="display:flex; gap:0.5rem;">
-                                        <select aria-label="Current employment start year" id="emp_join_year" name="emp_join_year" class="populate-past-years" style="flex:1;"><option value="">Year</option></select>
-                                        <select aria-label="Current employment start month" id="emp_join_month" name="emp_join_month" style="flex:1;">
+                                        <select id="emp_join_year" name="emp_join_year" class="populate-past-years" style="flex:1;"><option value="">Year</option></select>
+                                        <select id="emp_join_month" name="emp_join_month" style="flex:1;">
                                             <option value="">Month</option>
                                             <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option><option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
                                         </select>
@@ -1302,8 +1302,8 @@
                                 <div class="p2-form-row">
                                     <label>Start Date</label>
                                     <div style="display:flex; gap:0.5rem;">
-                                        <select aria-label="Previous employment start year" id="prev_emp_start_year" name="prev_emp_start_year" class="populate-past-years" style="flex:1;"><option value="">Year</option></select>
-                                        <select aria-label="Previous employment start month" id="prev_emp_start_month" name="prev_emp_start_month" style="flex:1;">
+                                        <select id="prev_emp_start_year" name="prev_emp_start_year" class="populate-past-years" style="flex:1;"><option value="">Year</option></select>
+                                        <select id="prev_emp_start_month" name="prev_emp_start_month" style="flex:1;">
                                             <option value="">Month</option>
                                             <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option><option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
                                         </select>
@@ -1312,8 +1312,8 @@
                                 <div class="p2-form-row">
                                     <label>End Date</label>
                                     <div style="display:flex; gap:0.5rem;">
-                                        <select aria-label="Previous employment end year" id="prev_emp_end_year" name="prev_emp_end_year" class="populate-past-years" style="flex:1;"><option value="">Year</option></select>
-                                        <select aria-label="Previous employment end month" id="prev_emp_end_month" name="prev_emp_end_month" style="flex:1;">
+                                        <select id="prev_emp_end_year" name="prev_emp_end_year" class="populate-past-years" style="flex:1;"><option value="">Year</option></select>
+                                        <select id="prev_emp_end_month" name="prev_emp_end_month" style="flex:1;">
                                             <option value="">Month</option>
                                             <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option><option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
                                         </select>
@@ -1350,7 +1350,7 @@
                                         <div class="p2-saved-meta" id="project-desc-display" style="margin-top:0.35rem;"></div>
                                         <div class="p2-saved-meta" id="project-attachment-display" style="margin-top:0.35rem;"></div>
                                     </div>
-                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-project-form" aria-label="Edit project" role="button" onkeydown="if(event.key===' '){event.preventDefault();this.click()}"><i class="fas fa-pencil-alt"></i></a>
+                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-project-form"><i class="fas fa-pencil-alt"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -1436,18 +1436,18 @@
                                         <button type="button" class="p2-attach-opt" id="proj-attach-link-btn"><i class="fas fa-link" style="font-size:0.75rem;margin-right:4px;"></i>Drive Link</button>
                                     </div>
                                     <div id="proj-attach-file-section">
-                                        <input aria-label="Attach a project file" type="file" id="project_attachment" accept=".pdf,.xls,.xlsx,.csv,.doc,.docx,.ppt,.pptx,.txt,.zip,.rar,image/*">
+                                        <input type="file" id="project_attachment" accept=".pdf,.xls,.xlsx,.csv,.doc,.docx,.ppt,.pptx,.txt,.zip,.rar,image/*">
                                         <input type="hidden" id="project_attachment_name" name="project_attachment_name">
                                         <div id="project-file-display" style="display:none; margin-top:0.5rem;">
                                             <div class="p2-file-tag">
                                                 <i class="fas fa-paperclip"></i>
                                                 <span id="project-filename"></span>
-                                                <button aria-label="Remove attached project file" type="button" class="p2-remove-file" id="project-file-remove"><i class="fas fa-times"></i></button>
+                                                <button type="button" class="p2-remove-file" id="project-file-remove"><i class="fas fa-times"></i></button>
                                             </div>
                                         </div>
                                     </div>
                                     <div id="proj-attach-link-section" style="display:none; margin-top:0.5rem;">
-                                        <input aria-label="Project sharing link" type="url" id="project_drive_link" name="project_drive_link" placeholder="Paste Google Drive or OneDrive link...">
+                                        <input type="url" id="project_drive_link" name="project_drive_link" placeholder="Paste Google Drive or OneDrive link...">
                                         <p class="p2-attach-link-hint">Make sure the link is set to "Anyone with the link can view"</p>
                                     </div>
                                 </div>
@@ -1995,7 +1995,7 @@
     </div>
 
 
-    <script type="module" src="scripts/profile.js?v=20260927.5"></script>
+    <script type="module" src="scripts/profile.js?v=20260927.9"></script>
 
 </body>
 

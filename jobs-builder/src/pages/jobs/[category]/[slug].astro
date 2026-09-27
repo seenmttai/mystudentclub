@@ -13,7 +13,6 @@ import {
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import jobUi from '../../../../../scripts/job-ui.cjs';
 
 export async function getStaticPaths() {
   const paths: any[] = [];
@@ -82,7 +81,7 @@ const { job, tableName, categorySlug, slug } = Astro.props;
 
 const companyName = (job.Company || 'Company Name').trim();
 const companyInitial = companyName.charAt(0).toUpperCase();
-const postedDate = jobUi.formatJobPostedDate(job.Created_At) || getDaysAgo(job.Created_At);
+const postedDate = getDaysAgo(job.Created_At);
 const salary = job.Salary ? `₹${job.Salary}` : '';
 const location = job.Location || 'Remote / Unspecified';
 const category = job.Category || 'General';
@@ -728,7 +727,7 @@ const roleLabel = job.Role ? job.Role.trim() : categoryLabel;
             }
         }
     </style>
-<link rel="stylesheet" href="/scripts/site-navigation.css?v=20260927.5"><script is:inline src="/scripts/site-navigation.js?v=20260927.5" defer></script>
+<link rel="stylesheet" href="/scripts/site-navigation.css?v=20260927.9"><script is:inline src="/scripts/site-navigation.js?v=20260927.9" defer></script>
 </head>
 <body>
     <header>
@@ -794,7 +793,7 @@ const roleLabel = job.Role ? job.Role.trim() : categoryLabel;
                     <div class="action-card">
                         <h3>Ready to Apply?</h3>
                         <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.5;">
-                            View application details and available contact information in the job portal.
+                            Apply directly to this opening with verified recruiter contact details.
                         </p>
                         
                         <div set:html={applyButtonsHtml}></div>
@@ -804,7 +803,7 @@ const roleLabel = job.Role ? job.Role.trim() : categoryLabel;
                         </a>
                         
                         <div class="action-card-footer" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color); text-align: center;">
-                            Problem with this listing? <a href="/contact.html" style="color: var(--primary-color); text-decoration: none; font-weight: 500;">Report it</a>
+                            False job vacancy? <a href="/contact.html" style="color: var(--primary-color); text-decoration: none; font-weight: 500;">Report it</a>
                         </div>
                     </div>
                 </aside>

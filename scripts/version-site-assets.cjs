@@ -3,21 +3,17 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const root = path.resolve(__dirname, '..');
-const release = '20260927.5';
-const assetReleases = new Map([['scripts/homepage-layout.css','20260927.8'],['scripts/homepage-layout.js','20260927.8'],['scripts/portal3.js','20260927.6'],['scripts/jobs-experience.css','20260927.6'],['scripts/resource-library.css','20260927.7']]);
+const release = '20260927.9';
+const assetReleases = new Map();
 const assets = new Set([
   'scripts/site-navigation.js', 'scripts/site-navigation.css',
-  'scripts/homepage-layout.css', 'scripts/homepage-layout.js',
   'scripts/career-profile.js', 'scripts/career-profile.css',
   'scripts/resource-form-collector.js', 'scripts/resource-library.js', 'scripts/resource-library.css',
   'scripts/program-access.js', 'scripts/supabase-init.js', 'scripts/portal3.js', 'scripts/profile.js',
   'cv-builder/cv-script.js', 'cv-builder/cv-styles.css', 'cv-reviewer/cv-reviewer.js',
   'learning-management-system/course-script.js',
-  'scripts/site-experience.css', 'scripts/learning-experience.css', 'scripts/community-experience.css',
-  'scripts/support-experience.css',
-  'scripts/jobs-experience.css', 'scripts/jobs-experience.js', 'scripts/portal-email.js',
-  'articleship-program/app.js', 'articleship-review-wizard.js',
-  'ca-industrial-training-program/app.js', 'msc-ca-fresher-program/script.js', 'skill-check/render.js'
+  'scripts/portal-email.js', 'articleship-program/app.js', 'articleship-review-wizard.js',
+  'ca-industrial-training-program/app.js', 'msc-ca-fresher-program/script.js', 'skill-check/render.js', 'skill-check/app.js'
 ]);
 const excluded = new Set(['.git', 'node_modules', 'work', 'scratch', 'tests', 'dist', '.astro', 'workers', '.wrangler', 'logs']);
 const checkOnly = process.argv.includes('--check');
@@ -37,11 +33,11 @@ function walk(dir) {
     if (excluded.has(entry.name)) continue;
     const file = path.join(dir, entry.name);
     if (entry.isDirectory()) { walk(file); continue; }
-    if (file === __filename || !/\.(?:html|astro|js|cjs|css)$/.test(file)) continue;
+    if (file === __filename || !/\.(?:html|astro|js|cjs)$/.test(file)) continue;
     const before = fs.readFileSync(file, 'utf8');
     // Limit changes to asset attributes/assignments and our script loader calls.
     // Do not change source-code includes(), filesystem paths or API parameters.
-    const after = before.replace(/(\b(?:src|href)\s*=\s*|\bloadScript\(\s*|@import\s+url\(\s*)(["'])([^"'\r\n]+)\2/g,
+    const after = before.replace(/(\b(?:src|href)\s*=\s*|\bloadScript\(\s*)(["'])([^"'\r\n]+)\2/g,
       (whole, prefix, quote, value) => prefix + quote + version(value, file) + quote);
     if (before !== after) {
       changed++;

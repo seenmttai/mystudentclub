@@ -75,7 +75,6 @@ const BROWSER_GUARD_WORKER_URL = window.BROWSER_GUARD_WORKER_URL || 'https://bro
 const WORKER_URL = window.WORKER_URL || 'https://storer.bhansalimanan55.workers.dev';
 
 let currentJobFetchController = null;
-let jobFetchGeneration = 0;
 let lastCursor = null; // { createdAt, id }
 let lastFilterFingerprint = null;
 let lastJobListCache = null;
@@ -252,7 +251,7 @@ function setActivePortalTab() {
         state.companyType = '';
     }
 
-    document.querySelectorAll(`.portal-nav-bar ${activeSelector}, .site-footer-nav ${activeSelector}`).forEach(el => el.classList.add('active'));
+    document.querySelectorAll(activeSelector).forEach(el => el.classList.add('active'));
 
     // Update cache when table changes (categories are table-specific)
     if (allLocations.length > 0 || Object.keys(allCategories).length > 0) {
@@ -466,7 +465,7 @@ function renderJobCard(job) {
     let applyButtonHtml = '';
     if (isLocked) {
         applyButtonHtml = `
-            <button class="apply-now-card-btn primary exclusive-locked-btn" style="background: #805b13 !important; color: white !important; border: none !important; cursor: pointer; display: flex; align-items: center; gap: 0.25rem; font-weight: 600;">
+            <button class="apply-now-card-btn primary exclusive-locked-btn" style="background: linear-gradient(135deg, #f59e0b, #d97706) !important; color: white !important; border: none !important; cursor: pointer; display: flex; align-items: center; gap: 0.25rem; font-weight: 600;">
                 <svg fill="currentColor" viewBox="0 0 20 20" width="13" height="13" style="color: white; margin-right: 2px;"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
                 Unlock Apply
             </button>
@@ -487,7 +486,7 @@ function renderJobCard(job) {
         <div class="job-card-top-row">
             <div class="job-card-logo">${companyInitial}</div>
             <div class="job-card-header">
-                <h3 class="job-card-role-title">${roleLabel} <span class="job-card-role-posted ${postedClass}" style="color: var(--text-muted); font-weight: 400; margin-left: 4px;">Posted ${postedDate}</span></h3>
+                <h3 class="job-card-role-title">${roleLabel} <span class="job-card-role-posted ${postedClass}" style="color: var(--text-muted); font-weight: 400; margin-left: 4px;">| Posted ${postedDate}</span></h3>
                 <h3 class="job-card-company" style="display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap;"><span>${job.Company || "N/A"}</span>${ratingHtml}</h3>
                 <p class="job-card-posted ${postedClass}">Posted ${postedDate}</p>
             </div>
@@ -516,7 +515,7 @@ function renderJobCard(job) {
         ${descriptionText ? `<p class="job-card-description">${descriptionText.slice(0, 120)}${descriptionText.length > 120 ? "…" : ""}</p>` : ""}
         <div class="job-card-actions">
             ${applyButtonHtml}
-            <a href="/jobs/${jobCategorySlug}/${jobSlug}.html" class="view-details-card-btn secondary" onclick="event.preventDefault();">View details</a>
+            <a href="/jobs/${jobCategorySlug}/${jobSlug}.html" class="view-details-card-btn secondary" onclick="event.preventDefault();">View Details ›</a>
         </div>`;
 
     const applyBtn = jobCard.querySelector('.apply-now-card-btn.primary');
@@ -642,7 +641,7 @@ function shareJob(job, btnElement) {
     const shareText = `Check out this job at *${job.Company}* for *${job.Location}*
 URL - ${jobUrl}
 
-Do turn on notifications to stay updated with all such opportunities and ensure joining the WhatsApp group below
+Do turn on notifications to stay updated with all such opportunites and ensure joining the whatsapp group below
 https://chat.whatsapp.com/D491zsqKmv25S2YLloSUBR`;
 
     const shareData = {
@@ -1389,12 +1388,6 @@ function getFilterFingerprint() {
     });
 }
 
-function showJobEmptyState() {
-    if (!dom.jobsContainer) return;
-    dom.jobsContainer.innerHTML = '<div class="jobs-empty-state"><h3>No matching opportunities yet</h3><p>Try a different keyword or clear a filter to see more roles.</p><button type="button">Clear filters</button></div>';
-    dom.jobsContainer.querySelector('button').addEventListener('click', () => dom.desktopResetBtn?.click());
-}
-
 async function fetchJobs() {
     if (isFetching) return;
 
@@ -1417,7 +1410,6 @@ async function fetchJobs() {
     }
 
     isFetching = true;
-    const requestGeneration = ++jobFetchGeneration;
 
     // Cancel any superseded job search request
     if (currentJobFetchController) {
@@ -1587,7 +1579,6 @@ async function fetchJobs() {
 
         let query = buildQuery(selectColumns);
         let { data, error } = await query;
-        if (requestGeneration !== jobFetchGeneration) return;
 
         // Failsafe Fallback: If is_exclusive does not exist yet on the table, strip it and retry.
         if (error && error.message && error.message.includes('is_exclusive') && selectColumns.includes('is_exclusive')) {
@@ -1595,7 +1586,6 @@ async function fetchJobs() {
             selectColumns = selectColumns.replace(', is_exclusive', '');
             query = buildQuery(selectColumns);
             const fallbackResult = await query;
-            if (requestGeneration !== jobFetchGeneration) return;
             data = fallbackResult.data;
             error = fallbackResult.error;
         }
@@ -1656,7 +1646,7 @@ async function fetchJobs() {
             if (dom.jobsContainer) {
                 const hasExistingCards = dom.jobsContainer.querySelector('.job-card');
                 if (fragment.childElementCount === 0 && !hasExistingCards && page === 0) {
-                    showJobEmptyState();
+                    dom.jobsContainer.innerHTML = '<p class="no-jobs-found">No jobs found matching your criteria.</p>';
                 } else {
                     dom.jobsContainer.appendChild(fragment);
                 }
@@ -1681,28 +1671,32 @@ async function fetchJobs() {
         } else {
             hasMoreData = false;
             if (page === 0 && dom.jobsContainer) {
-                showJobEmptyState();
+                dom.jobsContainer.innerHTML = '<p class="no-jobs-found">No jobs found matching your criteria.</p>';
             }
         }
     } catch (error) {
-        if (requestGeneration !== jobFetchGeneration) return;
         // Silently ignore superseded aborted queries
         if (error && (error.name === 'AbortError' || error.message?.includes('aborted') || error.code === '20')) {
             return;
         }
         if (dom.jobsContainer) {
-            // A network failure does not establish an outage or a recovery time.
-            // Keep already loaded jobs when loading the next page fails.
-            dom.jobsContainer.querySelector('.jobs-load-error')?.remove();
-            const message = document.createElement('div');
-            message.className = 'jobs-empty-state jobs-load-error';
-            message.innerHTML = '<h3>We couldn’t load these opportunities</h3><p>Please check your connection and try again. Your filters are still selected.</p><button type="button">Try again</button>';
-            message.querySelector('button').addEventListener('click', () => { message.remove(); fetchJobs(); });
-            dom.jobsContainer.appendChild(message);
+            const errMsg = (error.message || '').toLowerCase();
+            const isNetworkError = errMsg.includes('failed to fetch') ||
+                errMsg.includes('network') ||
+                errMsg.includes('fetch');
+
+            if (isNetworkError) {
+                dom.jobsContainer.innerHTML = `
+                    <div style="text-align: center; padding: 3rem 1rem; color: #ef4444;">
+                        <i class="fas fa-tools" style="font-size: 3rem; margin-bottom: 1rem; color: #f59e0b;"></i>
+                        <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; color: #1f2937;">Site Under Maintenance</h3>
+                        <p style="color: #6b7280;">We will be back online in 30 minutes.</p>
+                    </div>`;
+            } else {
+                dom.jobsContainer.innerHTML = `<p class="no-jobs-found" style="color:red;">Failed to load jobs: ${error.message}</p>`;
+            }
         }
     } finally {
-        // Superseded responses must not repaint filters or stop the newer loader.
-        if (requestGeneration !== jobFetchGeneration) return;
         isFetching = false;
         if (dom.loader) dom.loader.style.display = 'none';
 
@@ -1711,10 +1705,8 @@ async function fetchJobs() {
 
         // Defer UI updates to avoid blocking render
         const updateUI = () => {
-            if (requestGeneration !== jobFetchGeneration) return;
             renderActiveFilterPills();
-            // Keep uncommitted native select choices while the filter dialog is open.
-            if (!dom.filterModalOverlay?.classList.contains('show')) syncFiltersUI();
+            syncFiltersUI();
         };
         if (typeof requestAnimationFrame !== 'undefined') {
             requestAnimationFrame(updateUI);
@@ -1727,15 +1719,6 @@ async function fetchJobs() {
 
 function resetAndFetch() {
     clearTimeout(debounceTimeout);
-    // Invalidate immediately: a pending response may settle during the debounce.
-    jobFetchGeneration++;
-    currentJobFetchController?.abort();
-    currentJobFetchController = null;
-    isFetching = false;
-    hasMoreData = false;
-    if (dom.jobsContainer) dom.jobsContainer.innerHTML = '';
-    if (dom.loader) dom.loader.style.display = 'block';
-    renderActiveFilterPills();
     debounceTimeout = setTimeout(() => {
         page = 0;
         lastCursor = null;
@@ -1903,19 +1886,19 @@ function populateSalaryFilter() {
             <div class="stipend-inputs-row">
                 <div class="stipend-input-box">
                     <span class="stipend-input-prefix">₹</span>
-                    <input type="number" class="stipend-input-field stipend-min-input" aria-label="Minimum ${config.label.toLowerCase()} in rupees" placeholder="Min" min="${config.minBound}" max="${config.maxBound}" step="${config.step}">
+                    <input type="number" class="stipend-input-field stipend-min-input" placeholder="Min" min="${config.minBound}" max="${config.maxBound}" step="${config.step}">
                 </div>
                 <span class="stipend-input-separator">to</span>
                 <div class="stipend-input-box">
                     <span class="stipend-input-prefix">₹</span>
-                    <input type="number" class="stipend-input-field stipend-max-input" aria-label="Maximum ${config.label.toLowerCase()} in rupees" placeholder="Max" min="${config.minBound}" max="${config.maxBound}" step="${config.step}">
+                    <input type="number" class="stipend-input-field stipend-max-input" placeholder="Max" min="${config.minBound}" max="${config.maxBound}" step="${config.step}">
                 </div>
             </div>
             <div class="stipend-slider-wrapper">
                 <div class="stipend-slider-track-bg"></div>
                 <div class="stipend-slider-track-fill"></div>
-                <input type="range" class="stipend-range-input stipend-range-min" aria-label="Minimum ${config.label.toLowerCase()} in rupees" min="${config.minBound}" max="${config.maxBound}" step="${config.step}" value="${config.minBound}">
-                <input type="range" class="stipend-range-input stipend-range-max" aria-label="Maximum ${config.label.toLowerCase()} in rupees" min="${config.minBound}" max="${config.maxBound}" step="${config.step}" value="${config.maxBound}">
+                <input type="range" class="stipend-range-input stipend-range-min" min="${config.minBound}" max="${config.maxBound}" step="${config.step}" value="${config.minBound}">
+                <input type="range" class="stipend-range-input stipend-range-max" min="${config.minBound}" max="${config.maxBound}" step="${config.step}" value="${config.maxBound}">
             </div>
             <div class="stipend-range-labels">
                 <span class="stipend-min-label">₹${config.minBound}</span>
@@ -2014,9 +1997,7 @@ function renderPills(container, items, type) {
         pill.className = 'selected-pill';
         pill.textContent = item;
         const removeBtn = document.createElement('button');
-        removeBtn.textContent = '×';
-        removeBtn.type = 'button';
-        removeBtn.setAttribute('aria-label', `Remove ${item} filter`);
+        removeBtn.innerHTML = '×';
         removeBtn.onclick = () => {
             state[type] = state[type].filter(i => i !== item);
             renderPills(container, state[type], type);
@@ -2030,7 +2011,6 @@ function renderPills(container, items, type) {
 }
 
 function renderActiveFilterPills() {
-    if (!dom.activeFiltersDisplay) return;
     dom.activeFiltersDisplay.innerHTML = '';
     const createPill = (item, type, onRemove) => {
         const pill = document.createElement('div');
@@ -2038,9 +2018,7 @@ function renderActiveFilterPills() {
         pill.textContent = item;
         pill.dataset.type = type;
         const removeBtn = document.createElement('button');
-        removeBtn.textContent = '×';
-        removeBtn.type = 'button';
-        removeBtn.setAttribute('aria-label', `Remove ${item} filter`);
+        removeBtn.innerHTML = '×';
         removeBtn.onclick = () => {
             if (onRemove) {
                 onRemove();
@@ -2056,13 +2034,6 @@ function renderActiveFilterPills() {
     state.keywords.forEach(item => createPill(item, 'keywords'));
     state.locations.forEach(item => createPill(item, 'locations'));
     state.categories.forEach(item => createPill(item, 'categories'));
-    [['companyType', 'Company'], ['industryType', 'Industry'], ['firmType', 'Firm']].forEach(([key, label]) => {
-        if (!state[key]) return;
-        createPill(`${label}: ${state[key]}`, key, () => {
-            state[key] = '';
-            syncAndFetch();
-        });
-    });
 
     // Salary / Stipend Active Pill
     const isSalary = (currentTable === 'Semi Qualified Jobs' || currentTable === 'Fresher Jobs');
@@ -2181,28 +2152,11 @@ function setupMultiSelect(container) {
     const input = container.querySelector('.multi-select-input');
     const optionsContainer = container.querySelector('.multi-select-options');
     const type = container.dataset.type;
-    input.setAttribute('role', 'combobox');
-    input.setAttribute('aria-autocomplete', 'list');
-    input.setAttribute('aria-haspopup', 'listbox');
-    optionsContainer.setAttribute('role', 'listbox');
-    optionsContainer.setAttribute('aria-label', type === 'location' ? 'Locations' : 'Categories');
-    input.setAttribute('aria-expanded', 'false');
-    input.setAttribute('aria-controls', `${input.id}-options`);
-    optionsContainer.id = `${input.id}-options`;
-    const closeOptions = (focusInput = false) => {
-        optionsContainer.classList.remove('show');
-        input.setAttribute('aria-expanded', 'false');
-        if (focusInput) input.focus();
-    };
     const pillsContainerId = `${type}Pills${container.closest('.filter-modal-content') ? 'Mobile' : 'Desktop'}`;
     const pillsContainer = document.getElementById(pillsContainerId);
 
     const addOptionEl = (item, stateKey) => {
-        const optionEl = document.createElement('button');
-        optionEl.type = 'button';
-        optionEl.tabIndex = -1;
-        optionEl.setAttribute('role', 'option');
-        optionEl.setAttribute('aria-selected', 'false');
+        const optionEl = document.createElement('div');
         optionEl.className = 'multi-select-option';
         optionEl.textContent = item;
         optionEl.onclick = () => {
@@ -2212,7 +2166,7 @@ function setupMultiSelect(container) {
                 if (container.closest('.filter-sidebar')) resetAndFetch();
             }
             input.value = '';
-            closeOptions();
+            optionsContainer.classList.remove('show');
         };
         optionsContainer.appendChild(optionEl);
     };
@@ -2248,13 +2202,9 @@ function setupMultiSelect(container) {
         }
 
         if (filter.trim()) {
-            const customOption = document.createElement('button');
-            customOption.type = 'button';
-            customOption.tabIndex = -1;
-            customOption.setAttribute('role', 'option');
-            customOption.setAttribute('aria-selected', 'false');
+            const customOption = document.createElement('div');
             customOption.className = 'multi-select-option';
-            customOption.textContent = `Search for “${filter.trim()}”`;
+            customOption.innerHTML = `Add filter for: <strong>"${filter}"</strong>`;
             customOption.onclick = () => {
                 const term = filter.trim();
                 if (term && !state[stateKey].includes(term)) {
@@ -2263,14 +2213,12 @@ function setupMultiSelect(container) {
                     if (container.closest('.filter-sidebar')) resetAndFetch();
                 }
                 input.value = '';
-                closeOptions();
+                optionsContainer.classList.remove('show');
             };
             optionsContainer.appendChild(customOption);
         }
 
-        const hasOptions = optionsContainer.querySelectorAll('.multi-select-option').length > 0;
-        optionsContainer.classList.toggle('show', hasOptions);
-        input.setAttribute('aria-expanded', String(hasOptions));
+        optionsContainer.classList.toggle('show', optionsContainer.children.length > 0);
     };
 
     input.addEventListener('input', () => renderOptions(input.value));
@@ -2278,14 +2226,6 @@ function setupMultiSelect(container) {
 
     // Add Enter key handler to apply filter (similar to keyword search)
     input.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-            e.preventDefault();
-            if (!optionsContainer.classList.contains('show')) renderOptions(input.value);
-            const options = optionsContainer.querySelectorAll('.multi-select-option');
-            (e.key === 'ArrowDown' ? options[0] : options[options.length - 1])?.focus();
-            return;
-        }
-        if (e.key === 'Escape' && optionsContainer.classList.contains('show')) { e.preventDefault(); e.stopPropagation(); closeOptions(); return; }
         if (e.key === 'Enter') {
             e.preventDefault();
             const filterValue = input.value.trim();
@@ -2306,7 +2246,7 @@ function setupMultiSelect(container) {
 
                 renderPills(pillsContainer, state[stateKey], stateKey);
                 input.value = '';
-                closeOptions();
+                optionsContainer.classList.remove('show');
 
                 // Trigger fetch if in sidebar (not modal)
                 if (container.closest('.filter-sidebar')) {
@@ -2316,28 +2256,8 @@ function setupMultiSelect(container) {
         }
     });
 
-    optionsContainer.addEventListener('keydown', e => {
-        const options = [...optionsContainer.querySelectorAll('.multi-select-option')];
-        const index = options.indexOf(document.activeElement);
-        if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-            e.preventDefault();
-            const next = (index + (e.key === 'ArrowDown' ? 1 : -1) + options.length) % options.length;
-            options[next]?.focus();
-        } else if (e.key === 'Escape') {
-            e.preventDefault();
-            e.stopPropagation();
-            input.focus();
-            closeOptions();
-        }
-    });
-    optionsContainer.addEventListener('click', e => {
-        if (e.target.closest('.multi-select-option')) { input.focus(); closeOptions(); }
-    });
-    container.addEventListener('focusout', () => {
-        setTimeout(() => { if (!container.contains(document.activeElement)) closeOptions(); }, 0);
-    });
-    document.addEventListener('click', e => {
-        if (!container.contains(e.target)) closeOptions();
+    document.addEventListener('click', (e) => {
+        if (!container.contains(e.target)) optionsContainer.classList.remove('show');
     });
 }
 
@@ -2808,7 +2728,7 @@ async function handleApplyClick(job, buttonElement, isAiApply = false) {
 
         // 3. If >= 50%
         executeActualApply(job, buttonElement, isAiApply);
-        showPortalToast("Continue in the application form or email window. A complete profile helps employers understand your experience.");
+        showPortalToast("Application submitted! We recommend completing your profile to 100% for maximum recruiter response.");
         return;
     }
 
@@ -3028,7 +2948,6 @@ async function loadBanners() {
         if (error) throw error;
         const banners = data;
         carousel.innerHTML = '';
-        bannerSection.querySelector('.carousel-controls')?.remove();
         const currentType = currentTable === "Semi Qualified Jobs" ? "Semi-Qualified" : currentTable === "Fresher Jobs" ? "Freshers" : currentTable.split(' ')[0];
 
         // Determine if current user is enrolled in any course
@@ -3055,13 +2974,9 @@ async function loadBanners() {
             a.href = banner.Hyperlink;
             a.className = `carousel-item ${i === 0 ? 'active' : ''}`;
             a.target = "_blank";
-            a.rel = 'noopener noreferrer';
-            a.setAttribute('aria-label', `Explore featured career resource ${i + 1} (opens in a new tab)`);
-            a.tabIndex = i === 0 ? 0 : -1;
-            a.setAttribute('aria-hidden', String(i !== 0));
             const img = document.createElement('img');
             img.src = banner.Image;
-            img.alt = `Featured career resource ${i + 1}`;
+            img.alt = `Banner`;
             a.appendChild(img);
             carousel.appendChild(a);
         });
@@ -3069,24 +2984,8 @@ async function loadBanners() {
         const slides = document.querySelectorAll('.carousel-item');
         if (slides.length > 1) {
             let currentSlide = 0;
-            const controls = document.createElement('div');
-            controls.className = 'carousel-controls';
-            controls.innerHTML = '<button type="button" aria-label="Previous featured resource">‹</button><span aria-live="polite"></span><button type="button" aria-label="Next featured resource">›</button>';
-            const position = controls.querySelector('span');
-            const showSlide = idx => {
-                currentSlide = (idx + slides.length) % slides.length;
-                slides.forEach((slide, index) => {
-                    const active = index === currentSlide;
-                    slide.classList.toggle('active', active);
-                    slide.tabIndex = active ? 0 : -1;
-                    slide.setAttribute('aria-hidden', String(!active));
-                });
-                position.textContent = `${currentSlide + 1} of ${slides.length}`;
-            };
-            controls.firstElementChild.addEventListener('click', () => showSlide(currentSlide - 1));
-            controls.lastElementChild.addEventListener('click', () => showSlide(currentSlide + 1));
-            bannerSection.appendChild(controls);
-            showSlide(0);
+            const showSlide = (idx) => { slides.forEach(s => s.classList.remove('active')); slides[idx].classList.add('active'); };
+            setInterval(() => { currentSlide = (currentSlide + 1) % slides.length; showSlide(currentSlide); }, 5000);
         }
     } catch (e) {
         bannerSection.style.display = 'none';
@@ -3135,7 +3034,7 @@ function renderSubscribedTopics() {
             const { location, jobType } = formatTopicForDisplay(topic);
             const tag = document.createElement('div');
             tag.className = 'topic-tag';
-            tag.innerHTML = `<span>${location}${jobType ? ` - ${jobType}` : ''}</span><button class="topic-remove" aria-label="Remove notification subscription" data-topic="${topic}">×</button>`;
+            tag.innerHTML = `<span>${location}${jobType ? ` - ${jobType}` : ''}</span><button class="topic-remove" data-topic="${topic}">×</button>`;
             dom.subscribedTopicsListEl.appendChild(tag);
         });
         dom.subscribedTopicsListEl.querySelectorAll('.topic-remove').forEach(btn => btn.addEventListener('click', async (e) => {
@@ -3311,16 +3210,16 @@ function updateSortOptions() {
             if (!select.querySelector('option[value="popular"]')) {
                 const popularOpt = document.createElement('option');
                 popularOpt.value = 'popular';
-                popularOpt.textContent = 'Most popular';
+                popularOpt.textContent = 'Sort by Trending';
                 select.insertBefore(popularOpt, select.firstChild);
             }
             // Rename 'newest' to 'Sort by Last Created' or Update text
             const newestOpt = select.querySelector('option[value="newest"]');
             if (newestOpt) {
-                newestOpt.textContent = 'Newest first';
+                newestOpt.textContent = 'Sort by Last Created';
             }
-            // The displayed sort must match the order used by the query.
-            select.value = state.sortBy;
+            // Ensure default is popular
+            if (select.value === 'newest') select.value = 'popular';
         }
     });
 }
@@ -3349,10 +3248,6 @@ function setupEventListeners() {
     const handleSortChange = (e) => {
         const newSortBy = e.target.value;
         if (state.sortBy !== newSortBy) {
-            if (e.target.id === 'sortBySelectMobile') {
-                state.sortBy = newSortBy;
-                return; // Commit all mobile filter changes together with Show opportunities.
-            }
             updateState({ sortBy: newSortBy });
             if (e.target.id === 'sortBySelect' && dom.sortBySelectMobile) {
                 dom.sortBySelectMobile.value = newSortBy;
@@ -3368,30 +3263,11 @@ function setupEventListeners() {
     dom.menuButton.addEventListener('click', () => dom.expandedMenu.classList.add('active'));
     dom.menuCloseBtn.addEventListener('click', () => dom.expandedMenu.classList.remove('active'));
 
-    let mobileFilterSnapshot = null;
-    let filterBackdropPressed = false;
-    const closeFilterDialog = () => {
-        if (mobileFilterSnapshot) {
-            Object.assign(state, mobileFilterSnapshot);
-            mobileFilterSnapshot = null;
-            syncFiltersUI();
-        }
-        dom.filterModalOverlay.classList.remove('show');
-    };
-    dom.openFilterModalBtn.addEventListener('click', () => {
-        filterBackdropPressed = false;
-        mobileFilterSnapshot = { ...state, keywords: [...state.keywords], locations: [...state.locations], categories: [...state.categories] };
-        dom.filterModalOverlay.classList.add('show');
-    });
-    dom.closeFilterModalBtn.addEventListener('click', closeFilterDialog);
-    dom.filterModalOverlay.addEventListener('pointerdown', e => { filterBackdropPressed = e.target === dom.filterModalOverlay; });
-    dom.filterModalOverlay.addEventListener('click', e => {
-        if (filterBackdropPressed && e.target === dom.filterModalOverlay) closeFilterDialog();
-        filterBackdropPressed = false;
-    });
+    dom.openFilterModalBtn.addEventListener('click', () => dom.filterModalOverlay.classList.add('show'));
+    dom.closeFilterModalBtn.addEventListener('click', () => dom.filterModalOverlay.classList.remove('show'));
+    dom.filterModalOverlay.addEventListener('click', (e) => { if (e.target === dom.filterModalOverlay) dom.filterModalOverlay.classList.remove('show'); });
 
     dom.applyFiltersBtn.addEventListener('click', () => {
-        mobileFilterSnapshot = null;
         const mobMinInput = document.querySelector('#salaryFilterMobileWrapper .stipend-min-input');
         const mobMaxInput = document.querySelector('#salaryFilterMobileWrapper .stipend-max-input');
         if (mobMinInput || mobMaxInput) {
@@ -3414,7 +3290,6 @@ function setupEventListeners() {
 
     [dom.desktopResetBtn, dom.mobileResetBtn].forEach(btn => {
         if (btn) btn.addEventListener('click', () => {
-            mobileFilterSnapshot = null;
             state.keywords = [];
             state.locations = [];
             state.categories = [];
@@ -3433,7 +3308,6 @@ function setupEventListeners() {
                 state.experience = isExperiencedFresherPortal() ? 'Experienced' : 'Freshers';
             }
             if (dom.searchInputDesktop) dom.searchInputDesktop.value = '';
-            if (dom.dv2TopSearchInput) dom.dv2TopSearchInput.value = '';
             syncAndFetch();
             if (btn.id === 'mobileResetBtn') dom.filterModalOverlay.classList.remove('show');
         });
@@ -3451,8 +3325,7 @@ function setupEventListeners() {
                 if (currentTable !== 'Semi Qualified Jobs') return;
                 const value = e.target.dataset.value;
                 state.experience = state.experience === value ? '' : value;
-                if (group.closest('.filter-modal-content')) syncFiltersUI();
-                else syncAndFetch();
+                syncAndFetch();
             }
         });
     });
@@ -3462,8 +3335,7 @@ function setupEventListeners() {
             if (e.target.classList.contains('pill-btn')) {
                 const value = e.target.dataset.value;
                 state.applicationStatus = value;
-                if (group.closest('.filter-modal-content')) syncFiltersUI();
-                else syncAndFetch();
+                syncAndFetch();
             }
         });
     });
@@ -3588,8 +3460,6 @@ function setupEventListeners() {
 
 // Optimal Custom Dropdown Implementation
 function initCustomSelects() {
-    // Native controls retain platform keyboard, touch and screen-reader behavior.
-    if (document.body.classList.contains('msc-jobs')) return;
     const selectorIds = [
         'sortBySelect', 'sortBySelectMobile', 'locationSelect', 'jobTypeSelect',
         'companyTypeFilterDesktop', 'companyTypeFilterMobile',
@@ -3801,18 +3671,7 @@ async function initializePage() {
     setActivePortalTab();
     initCustomSelects();
 
-    const resultStatus = document.getElementById('jobs-results-summary');
-    if (resultStatus) resultStatus.textContent = 'Preparing opportunities…';
-    let authTimeout;
-    let session;
-    try {
-        session = await Promise.race([
-            checkAuth(),
-            new Promise((_, reject) => { authTimeout = setTimeout(() => reject(new Error('Account initialization timed out')), 15000); })
-        ]);
-    } finally {
-        clearTimeout(authTimeout);
-    }
+    const session = await checkAuth();
     updateHeaderAuth(session);
 
     if (session) {
@@ -3856,10 +3715,9 @@ async function initializePage() {
     }
 
     if (currentTable === 'Fresher Jobs') {
-        state.experience = isExperiencedFresherPortal() ? 'Experienced' : 'Freshers';
+        state.experience = 'Freshers';
     }
 
-    if (resultStatus) resultStatus.textContent = 'Loading search filters…';
     await fetchFilterOptions();
 
     populateSalaryFilter();
@@ -3921,20 +3779,7 @@ async function fetchSharedJob(jobId) {
     }
 }
 
-const startPortal = () => {
-    initializePage().catch(error => {
-        console.error('Could not initialize the opportunity directory:', error);
-        if (dom.loader) dom.loader.style.display = 'none';
-        if (!dom.jobsContainer) return;
-        dom.jobsContainer.innerHTML = '<div class="jobs-empty-state jobs-load-error"><h3>We couldn’t finish loading the directory</h3><p>Please reload the page to try again.</p><button type="button">Reload opportunities</button></div>';
-        dom.jobsContainer.querySelector('button').addEventListener('click', () => window.location.reload());
-    });
-};
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', startPortal, { once: true });
-} else {
-    startPortal();
-}
+document.addEventListener('DOMContentLoaded', initializePage);
 
 // Handle explicit portal nav navigation flag
 document.addEventListener('DOMContentLoaded', () => {
@@ -4147,9 +3992,9 @@ const PREFERENCE_REDIRECT_MAP = {
 
 function getCurrentPagePreference() {
     const path = window.location.pathname;
-    if (path.includes('/ca-articleship-opportunities') || path.includes('/articleship')) return 'articleship';
+    if (path.includes('/articleship')) return 'articleship';
     if (path.toLowerCase().includes('/experienced-ca')) return 'fresher_experienced';
-    if (path.includes('/ca-fresher-jobs') || path.includes('/fresher')) return 'fresher_fresher';
+    if (path.includes('/fresher')) return 'fresher_fresher';
     if (path.includes('/semi-qualified')) return state.experience === 'Experienced' ? 'semi_experienced' : 'semi_fresher';
     return 'industrial';
 }
@@ -4802,7 +4647,7 @@ function renderProfileCompletionBanner() {
 
     const percent = currentSession ? calculateProfileCompletion() : 0;
 
-    if (!currentSession || percent === 100) {
+    if (percent === 100) {
         document.body.classList.remove('with-completion-banner');
         document.body.style.paddingTop = '';
         const header = document.querySelector('.site-header, .floating-header');
@@ -4817,7 +4662,7 @@ function renderProfileCompletionBanner() {
 
     banner.innerHTML = `
         <div class="banner-text">
-            <span>🎯 Complete your Profile<span class="banner-desc"> to help employers understand your experience</span>.</span>
+            <span>🎯 Complete your Profile<span class="banner-desc"> to get 5x higher interview opportunities</span>.</span>
             <span class="completion-badge">Profile Completion: ${percent}%</span>
         </div>
         <a href="/profile.html" class="banner-btn">Complete Profile</a>
@@ -4861,7 +4706,7 @@ function renderProfileCompletionBanner() {
 
 function dv2Init() {
     if (!document.getElementById('dv2TopSearchInput') && !document.querySelector('.dv2-right-rail')) return;
-    // Search events are registered once in setupEventListeners().
+    dv2SetupTopSearch();
     dv2UpdateProfileWidgets();
     // Defer trending jobs until after first job list is visible
     if ('requestIdleCallback' in window) {
@@ -4953,3 +4798,4 @@ async function dv2PopulateTrending() {
         console.warn('dv2 trending failed:', err);
     }
 }
+

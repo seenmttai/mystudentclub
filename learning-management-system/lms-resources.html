@@ -11,7 +11,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="/scripts/supabase.js"></script>
-    <script src="/scripts/supabase-init.js?v=20260927.5"></script>
+    <script src="/scripts/supabase-init.js?v=20260927.9"></script>
     <script src="/scripts/error-reporter.js"></script>
     <script type="importmap">
     {
@@ -891,10 +891,10 @@
 
     <!-- Fallback Shortcut Icon -->
     <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
-<link rel="stylesheet" href="/scripts/site-navigation.css?v=20260927.5"><script src="/scripts/site-navigation.js?v=20260927.5" defer></script>
+<link rel="stylesheet" href="/scripts/site-navigation.css?v=20260927.9"><script src="/scripts/site-navigation.js?v=20260927.9" defer></script>
 </head>
 
-<body class="msc-lms-page msc-lms-resources">
+<body>
     <div id="app" v-cloak>
         <header class="glass-header">
             <div class="header-container">
@@ -1018,7 +1018,7 @@
                                 title="Toggle Fullscreen">
                                 <i class="fas" :class="isFullscreen ? 'fa-compress' : 'fa-expand'"></i>
                             </button>
-                            <button @click="closeViewer" class="resource-viewer-close-button" aria-label="Close dialog">×</button>
+                            <button @click="closeViewer" class="resource-viewer-close-button">×</button>
                         </div>
                     </div>
 
@@ -1046,7 +1046,7 @@
                                     <div class="csv-search-wrapper">
                                         <i class="fas fa-search csv-search-icon"></i>
                                         <input
- aria-label="Search this spreadsheet"                                            type="text"
+                                            type="text"
                                             class="csv-search-input"
                                             placeholder="Search in spreadsheet…"
                                             autocomplete="off"

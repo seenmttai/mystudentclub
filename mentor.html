@@ -422,7 +422,7 @@
     <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
     <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
     <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
-<link rel="stylesheet" href="/scripts/site-navigation.css?v=20260927.5"><script src="/scripts/site-navigation.js?v=20260927.5" defer></script>
+<link rel="stylesheet" href="/scripts/site-navigation.css?v=20260927.9"><script src="/scripts/site-navigation.js?v=20260927.9" defer></script>
 </head>
 
 <body>
@@ -492,23 +492,23 @@
         <div class="filters-section">
             <div class="search-bar">
                 <i class="fas fa-search"></i>
-                <input aria-label="Search mentors by name or expertise" type="text" id="search-input" placeholder="Search mentors by name or expertise...">
+                <input type="text" id="search-input" placeholder="Search mentors by name or expertise...">
             </div>
             <div class="filter-group">
-                <label for="area-filter">Area:</label>
+                <label>Area:</label>
                 <select id="area-filter" class="filter-select">
                     <option value="">All Areas</option>
                 </select>
             </div>
             <div class="filter-group">
-                <label for="availability-filter">Availability:</label>
+                <label>Availability:</label>
                 <select id="availability-filter" class="filter-select">
                     <option value="">Any</option>
                     <option value="available">Available</option>
                 </select>
             </div>
             <div class="filter-group">
-                <label for="sort-filter">Sort:</label>
+                <label>Sort:</label>
                 <select id="sort-filter" class="filter-select">
                     <option value="rating">Highest Rated</option>
                     <option value="reviews">Most Reviews</option>
@@ -529,13 +529,13 @@
             <form id="request-form">
                 <input type="hidden" id="selected-mentor-id">
                 <div class="form-group">
-                    <label for="request-message">Why do you want this mentor?</label>
-                    <textarea aria-label="Your mentoring goals" id="request-message" required
+                    <label>Why do you want this mentor?</label>
+                    <textarea id="request-message" required
                         placeholder="Explain your goals and what you hope to learn..."></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="request-topics">Topics you'd like to focus on:</label>
-                    <input aria-label="Topics for mentoring" type="text" id="request-topics"
+                    <label>Topics you'd like to focus on:</label>
+                    <input type="text" id="request-topics"
                         placeholder="e.g. Career planning, Interview prep (comma-separated)">
                 </div>
                 <button type="submit" class="btn-primary" style="width:100%;">Send Request</button>
@@ -551,38 +551,38 @@
             </div>
             <form id="mentor-form">
                 <div class="form-group">
-                    <label for="mentor-bio">Bio *</label>
-                    <textarea aria-label="Mentor biography" id="mentor-bio" required
+                    <label>Bio *</label>
+                    <textarea id="mentor-bio" required
                         placeholder="Tell potential mentees about yourself, your experience, and what you can help with..."></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="mentor-areas">Areas of Expertise * (select multiple)</label>
-                    <select aria-label="Areas of expertise" id="mentor-areas" multiple style="height: 150px;" required></select>
+                    <label>Areas of Expertise * (select multiple)</label>
+                    <select id="mentor-areas" multiple style="height: 150px;" required></select>
                     <small style="color: var(--forum-text-muted);">Hold Ctrl/Cmd to select multiple</small>
                 </div>
                 <div class="form-group">
-                    <label for="mentor-experience">Years of Experience *</label>
-                    <input aria-label="Years of experience" type="number" id="mentor-experience" required min="0" placeholder="e.g. 5">
+                    <label>Years of Experience *</label>
+                    <input type="number" id="mentor-experience" required min="0" placeholder="e.g. 5">
                 </div>
                 <div class="form-group">
-                    <label for="mentor-availability">Availability *</label>
-                    <select aria-label="Availability" id="mentor-availability" required>
+                    <label>Availability *</label>
+                    <select id="mentor-availability" required>
                         <option value="weekdays">Weekdays</option>
                         <option value="weekends">Weekends</option>
                         <option value="flexible">Flexible</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="mentor-max-mentees">Maximum Mentees</label>
-                    <input aria-label="Maximum number of mentees" type="number" id="mentor-max-mentees" value="5" min="1" max="20">
+                    <label>Maximum Mentees</label>
+                    <input type="number" id="mentor-max-mentees" value="5" min="1" max="20">
                 </div>
                 <div class="form-group">
-                    <label for="mentor-duration">Session Duration (minutes)</label>
-                    <input aria-label="Session duration in minutes" type="number" id="mentor-duration" value="30" min="15" step="15">
+                    <label>Session Duration (minutes)</label>
+                    <input type="number" id="mentor-duration" value="30" min="15" step="15">
                 </div>
                 <div class="form-group">
-                    <label for="mentor-linkedin">LinkedIn URL (optional)</label>
-                    <input aria-label="LinkedIn profile URL" type="url" id="mentor-linkedin" placeholder="https://linkedin.com/in/yourprofile">
+                    <label>LinkedIn URL (optional)</label>
+                    <input type="url" id="mentor-linkedin" placeholder="https://linkedin.com/in/yourprofile">
                 </div>
                 <button type="submit" class="btn-primary" style="width:100%;">Create Mentor Profile</button>
             </form>
@@ -726,7 +726,7 @@
                                 View Profile
                             </a>
                             ${isAvailable && currentUser ?
-                        `<button class="btn-secondary" onclick="requestMentor('${mentor.id}')" title="Request Mentorship">
+                        `<button class="btn-secondary" onclick="requestMentor('${mentor.id}')"" title="Request Mentorship">
                                     <i class="fas fa-paper-plane"></i>
                                 </button>` : ''
                     }
