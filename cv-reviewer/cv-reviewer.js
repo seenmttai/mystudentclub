@@ -10,7 +10,8 @@ let userId = null;
 let supabase = null;
 let authUser = null;
 let isMscitEnrolled = false;
-let isPremiumEnrolled = false;   // any enrollment row → unlimited reviews
+let isPremiumEnrolled = false;   // verified eligible MSC program enrollment
+let reviewAuthSubscribed = false;
 
 const landingSection = document.getElementById('landingSection');
 const heroSection = document.getElementById('heroSection');
@@ -80,28 +81,21 @@ let selectedFile = null;
 let pdfDocument = null;
 let pdfImages = [];
 let analysisResultText = null;
+let activeReviewPartial = false;
+let reviewIdentityVersion = 0;
+let activeReviewController = null;
+let reportPreviewDownloadHandler = null;
 let currentProgressInterval = null;
 let scoreAnimationFrame = null;
 let isAnalysisInProgress = false;
 
 // --- Persistence state ---
-const ACTIVE_REVIEW_KEY = 'msc_cv_active_review_id';
+let ACTIVE_REVIEW_KEY = 'msc_cv_active_review_v2:guest';
 const ENROLL_URL = '/learning-management-system/';
 
 
 // Courses offered in the "buy to unlock" popup (mirrors the CV Builder paywall).
-const PREMIUM_COURSES = [
-    {
-        title: 'MSC Industrial Training Program',
-        desc: 'Master industrial training requirements for CA candidates with real-world case studies.',
-        url: 'https://www.mystudentclub.com/ca-industrial-training-program/'
-    },
-    {
-        title: 'MSC CA Freshers Program',
-        desc: 'A comprehensive program for CA freshers to kickstart their career.',
-        url: 'https://www.mystudentclub.com/ca-industrial-training-program/'
-    }
-];
+const PREMIUM_COURSES = window.MSCProgramAccess.PROGRAMS;
 
 let activeReviewFileName = null;       // used for PDF filename after restore/history load
 let historyReviews = [];               // latest fetched history rows (for click reload)
@@ -202,6 +196,7 @@ function startNewAnalysis() {
     if (isAnalysisInProgress) return;
     localStorage.removeItem(ACTIVE_REVIEW_KEY);
     analysisResultText = null;
+    activeReviewPartial = false;
     activeReviewFileName = null;
     resetUpload();
     hideResults();
@@ -290,8 +285,10 @@ function closeReviewLoginModal() {
 }
 function openReviewBuyModal() {
     const list = document.getElementById('reviewBuyCourseList');
+    const stageProgram = window.MSCProgramAccess.programForStage(window.MSCCareerProfile?.getCurrentStage?.());
+    const courses = stageProgram ? [stageProgram] : PREMIUM_COURSES;
     if (list) {
-        list.innerHTML = PREMIUM_COURSES.map(c => `
+        list.innerHTML = courses.map(c => `
             <a class="trial-course-card" href="${escapeHtml(c.url)}" target="_blank" rel="noopener noreferrer">
                 <span class="trial-course-icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -301,7 +298,7 @@ function openReviewBuyModal() {
                 </span>
                 <div class="trial-course-info">
                     <div class="trial-course-title">${escapeHtml(c.title)}</div>
-                    <div class="trial-course-desc">${escapeHtml(c.desc)}</div>
+                    <div class="trial-course-desc">Unlock the full CV report with program enrollment.</div>
                 </div>
                 <span class="trial-course-cta" aria-hidden="true">
                     <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>
@@ -424,6 +421,7 @@ function lockPillHTML() {
 }
 
 function lockPanelHTML() {
+    if (isPremiumEnrolled && activeReviewPartial) return `<div class="lock-panel"><div class="lock-overlay"><h4>Review your CV for the full report</h4><p>This saved review was generated with free access. Your program now includes a complete review.</p><button type="button" class="lock-cta start-new-review-btn">Review CV Again</button></div></div>`;
     return `
     <div class="lock-panel">
       <div class="lock-skeleton" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
@@ -441,6 +439,11 @@ function lockPanelHTML() {
 }
 
 document.addEventListener('click', (e) => {
+    if (e.target.closest('.start-new-review-btn')) {
+        e.preventDefault();
+        startNewAnalysis();
+        return;
+    }
     const lockBtn = e.target.closest('.lock-cta, .open-buy-modal-btn');
     if (lockBtn) {
         e.preventDefault();
@@ -450,7 +453,7 @@ document.addEventListener('click', (e) => {
 
 function applyRoleLocks() {
     clearRoleLocks();
-    if (isPremiumEnrolled) return;
+    if (isPremiumEnrolled && !activeReviewPartial) return;
 
     LOCKED_SECTION_IDS.forEach(id => {
         const section = document.getElementById(id);
@@ -475,6 +478,7 @@ function applyRoleLocks() {
         downloadReportBtn.classList.add('is-locked');
         downloadReportBtn.dataset.locked = 'true';
         downloadReportBtn.innerHTML = `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>Unlock full report`;
+        if (isPremiumEnrolled && activeReviewPartial) downloadReportBtn.textContent = 'Review CV for Full Report';
     }
 }
 
@@ -495,6 +499,7 @@ function clearRoleLocks() {
 
 // --- Persistence: restore the active review on page load ---
 async function restoreActiveReview() {
+    const restoreIdentity = reviewIdentityVersion;
     const activeId = localStorage.getItem(ACTIVE_REVIEW_KEY);
     if (!activeId) return;
 
@@ -509,13 +514,17 @@ async function restoreActiveReview() {
             .from('msc_cv_ai_resume_reviews')
             .select('score, review_data, file_name, created_at')
             .eq('id', activeId)
+            .eq('user_id', authUser?.id || userId)
             .single();
+
+        if (restoreIdentity !== reviewIdentityVersion) return;
 
         if (error || !data || !data.review_data || !data.review_data.review) {
             throw { isDbError: true, message: error ? error.message : 'Saved review not found' };
         }
 
         analysisResultText = data.review_data.review;
+        activeReviewPartial = data.review_data.partial === true;
         activeReviewFileName = data.file_name || null;
 
         processStructuredResults(analysisResultText);
@@ -561,6 +570,7 @@ function loadReviewIntoView(review) {
     if (!reviewText) return;
 
     analysisResultText = reviewText;
+    activeReviewPartial = review.review_data.partial === true;
     activeReviewFileName = review.file_name || null;
 
     processStructuredResults(reviewText);
@@ -801,12 +811,44 @@ function initializeSupabase() {
     };
     supabase = window.supabaseClient || createClient(supabaseUrl, supabaseKey, { global: { headers } });
     window.supabaseClient = supabase;
+    if (!reviewAuthSubscribed) {
+        reviewAuthSubscribed = true;
+        supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'INITIAL_SESSION') return;
+            const accountChanged = (authUser?.id || null) !== (session?.user?.id || null);
+            if (event !== 'SIGNED_OUT' && !accountChanged) return;
+            reviewIdentityVersion++;
+            activeReviewController?.abort();
+            localStorage.removeItem(ACTIVE_REVIEW_KEY);
+            historyReviews = [];
+            analysisResultText = null;
+            activeReviewFileName = null;
+            activeReviewPartial = false;
+            selectedFile = null;
+            pdfImages = [];
+            hideResults();
+            clearResultsContent();
+            const history = document.getElementById('historyContent');
+            if (history) history.innerHTML = '';
+            pdfPreviewModal.style.display = 'none';
+            pdfPreviewContainer.innerHTML = '';
+            if (reportPreviewDownloadHandler) pdfPreviewDownloadBtn.removeEventListener('click', reportPreviewDownloadHandler);
+            reportPreviewDownloadHandler = null;
+            setTimeout(async () => {
+                await refreshAuthUser();
+                if (!isAnalysisInProgress) startNewAnalysis();
+                updateAuthUI();
+            }, 0);
+        });
+    }
 }
 
 async function refreshAuthUser() {
     if (!supabase) initializeSupabase();
     const access = await window.MSCProgramAccess.getAccess(supabase);
     authUser = access.user;
+    localStorage.removeItem('msc_cv_active_review_id');
+    ACTIVE_REVIEW_KEY = `msc_cv_active_review_v2:${authUser?.id || 'guest-' + userId}`;
     isPremiumEnrolled = access.hasAccess;
     isMscitEnrolled = access.hasAccess && access.courses.includes('industrial-training-mastery');
 }
@@ -814,7 +856,7 @@ async function refreshAuthUser() {
 // --- Three-tier usage limits ---
 // IP-based (no login): 1 review forever → then login required
 // Free logged-in:      3 reviews forever → then enroll required
-// Paid (MSC enrolled): unlimited frontend (backend enforces 10/day)
+// Paid (MSC enrolled): no frontend lifetime quota; backend enforces its configured IP limit.
 const IP_REVIEW_LIMIT = 1;
 const FREE_USER_LIFETIME_LIMIT = 3;
 const IP_REVIEW_COUNT_KEY = 'msc_cv_ip_review_count';
@@ -871,6 +913,7 @@ async function analyzeCv() {
         // Refresh auth and enforce limits after acknowledging the first click.
         await refreshAuthUser();
         updateAuthUI();
+        const reviewIdentity = reviewIdentityVersion;
 
         if (!isPremiumEnrolled) {
             if (!window.MSCCareerProfile) throw new Error('Career details are unavailable. Please reload and try again.');
@@ -902,16 +945,22 @@ async function analyzeCv() {
 
         const domainHeader = 'Financing';
         const specializationHeader = 'Accounting';
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError) throw new Error('Unable to verify your session. Please sign in again.');
+        const accessToken = sessionData?.session?.access_token;
+        if ((sessionData?.session?.user?.id || null) !== (authUser?.id || null)) throw new Error('Your account changed. Please start your review again.');
+        activeReviewController = new AbortController();
 
         const response = await fetch('https://cv-reviewer.bhansalimanan55.workers.dev/', {
             method: 'POST',
+            signal: activeReviewController.signal,
             headers: {
                 'Content-Type': 'application/json',
                 'X-Domain': domainHeader,
                 'X-Specialization': specializationHeader,
-                'Origin': window.location.origin
+                ...(accessToken ? { 'Authorization': `Bearer ${accessToken}` } : {})
             },
-            body: JSON.stringify({ images: pdfImages, isPremium: isPremiumEnrolled })
+            body: JSON.stringify({ images: pdfImages })
         });
 
         stopLoadingAnimation();
@@ -922,12 +971,15 @@ async function analyzeCv() {
         }
 
         const data = await response.json();
+        if (reviewIdentity !== reviewIdentityVersion) throw new Error('Your account changed. Please start your review again.');
 
         if (!data.ok || !data.response) {
             throw new Error(`Analysis unsuccessful: ${data.error || 'Received invalid data from server.'}`);
         }
 
         analysisResultText = data.response;
+        activeReviewPartial = data.access?.partial ?? !isPremiumEnrolled;
+        if (typeof data.access?.premium === 'boolean') isPremiumEnrolled = data.access.premium;
 
         // Check if the uploaded resume is out of context
         if (analysisResultText.includes('<<<OUT_OF_CONTEXT>>>')) {
@@ -946,6 +998,7 @@ async function analyzeCv() {
         const overallScore = processStructuredResults(analysisResultText);
         applyRoleLocks();
         await refreshAuthUser();
+        if (reviewIdentity !== reviewIdentityVersion) throw new Error('Your account changed. Please start your review again.');
         const reviewId = await saveReview(analysisResultText);
         if (reviewId) {
             localStorage.setItem(ACTIVE_REVIEW_KEY, reviewId);
@@ -981,6 +1034,7 @@ async function analyzeCv() {
         // early gate returns and errors before the model request is sent.
         stopLoadingAnimation();
         isAnalysisInProgress = false;
+        activeReviewController = null;
         proceedToReviewBtn.innerHTML = reviewButtonContent;
         proceedToReviewBtn.removeAttribute('aria-busy');
         const canReview = Boolean(selectedFile && pdfImages.length > 0);
@@ -1071,7 +1125,7 @@ async function saveReview(reviewText) {
         user_id: authUser ? authUser.id : userId,
         user_name: authUser ? (authUser.user_metadata?.full_name || authUser.email || 'User') : null,
         score,
-        review_data: { review: reviewText, target_role: 'standard' },
+        review_data: { review: reviewText, target_role: 'standard', partial: activeReviewPartial },
         file_name: selectedFile ? selectedFile.name : 'resume.pdf'
     };
 
@@ -1835,6 +1889,7 @@ function resetToUploadStage() {
 
 downloadReportBtn.addEventListener('click', () => {
     if (downloadReportBtn.dataset.locked === 'true') {
+        if (isPremiumEnrolled && activeReviewPartial) { startNewAnalysis(); return; }
         openReviewBuyModal();
         return;
     }
@@ -1914,6 +1969,8 @@ downloadReportBtn.addEventListener('click', () => {
             pdfPreviewDownloadBtn.removeEventListener('click', onDownload);
         });
     };
+    if (reportPreviewDownloadHandler) pdfPreviewDownloadBtn.removeEventListener('click', reportPreviewDownloadHandler);
+    reportPreviewDownloadHandler = onDownload;
     pdfPreviewDownloadBtn.addEventListener('click', onDownload);
 });
 
@@ -2130,6 +2187,7 @@ async function loadHistory() {
     if (detailEl) detailEl.style.display = 'none';
     contentEl.innerHTML = 'Loading...';
     await refreshAuthUser();
+    const historyIdentity = reviewIdentityVersion;
     if (!supabase) { contentEl.innerHTML = 'Could not retrieve user history.'; return; }
 
     const historyUserId = authUser ? authUser.id : userId;
@@ -2137,16 +2195,13 @@ async function loadHistory() {
         .from('msc_cv_ai_resume_reviews')
         .select('id, score, created_at, file_name, review_data');
 
-    // Merge authenticated and anonymous histories
-    if (authUser && authUser.id && userId) {
-        query = query.or(`user_id.eq.${authUser.id},user_id.eq.${userId}`);
-    } else {
-        query = query.eq('user_id', historyUserId);
-    }
+    // Never merge a browser's guest history into a different signed-in account.
+    query = query.eq('user_id', historyUserId);
 
     const { data, error } = await query
         .order('created_at', { ascending: false })
         .limit(20);
+    if (historyIdentity !== reviewIdentityVersion) return;
     if (error) { console.error('Error fetching history:', error); contentEl.innerHTML = `<p class="text-danger">Could not load history. ${error.message}</p>`; return; }
     if (!data?.length) { contentEl.innerHTML = '<p>You have no past reviews.</p>'; return; }
 
@@ -2218,4 +2273,3 @@ window.clearRoleLocks = clearRoleLocks;
 window.resetToUploadStage = resetToUploadStage;
 window.showNoticeModal = showNoticeModal;
 window.closeNoticeModal = closeNoticeModal;
-

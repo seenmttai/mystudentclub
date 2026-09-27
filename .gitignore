@@ -4,6 +4,7 @@ logs/
 .wrangler/
 workers/*
 !workers/cv-pdf-worker/
+!workers/cv-reviewer/
 scratch/
 jobs-builder/dist/
 jobs-builder/.astro/

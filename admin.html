@@ -1717,6 +1717,7 @@
               <select id="lmsCourseSelect" class="lms-toolbar-select">
                 <option value="industrial-training-mastery">Industrial Training Mastery</option>
                 <option value="msc-ca-freshers-program">MSC CA Freshers Program</option>
+                <option value="msc-articleship-program">MSC Articleship Program</option>
               </select>
             </div>
             <div class="lms-toolbar-select-wrap">
@@ -3338,7 +3339,7 @@
         const { data, error } = await supabaseClient
           .from('videos')
           .select('course, video_number, title, day_number, resources')
-          .in('course', ['industrial-training-mastery', 'msc-ca-freshers-program'])
+          .in('course', ['industrial-training-mastery', 'msc-ca-freshers-program', 'msc-articleship-program'])
           .order('course', { ascending: true })
           .order('day_number', { ascending: true })
           .order('video_number', { ascending: true });

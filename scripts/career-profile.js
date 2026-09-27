@@ -15,6 +15,7 @@
   const CONSENT = 'I confirm that my details are correct and agree to My Student Club sharing my profile with recruiters and sending me relevant opportunities and updates via email.';
   let identity = null;
   let activeModal = null;
+  let activeOnboarding = null;
   let authBound = false;
   let onboardingStarting = false;
   const completed = new Map();
@@ -31,6 +32,7 @@
       }
     } catch (_) {}
     activeModal?.cancel();
+    activeOnboarding?.cancel();
   }
   async function currentUser() {
     const db = client();
@@ -56,7 +58,7 @@
   function loadStyles() {
     if (document.querySelector('link[data-msc-career]')) return;
     const link = document.createElement('link');
-    link.rel = 'stylesheet'; link.href = '/scripts/career-profile.css'; link.dataset.mscCareer = 'true';
+    link.rel = 'stylesheet'; link.href = '/scripts/career-profile.css?v=20260927.3'; link.dataset.mscCareer = 'true';
     document.head.appendChild(link);
   }
   function select(name, label, options, selected = '') {
@@ -131,7 +133,10 @@
     const key = cacheKey(user, stage);
     if (completed.has(key)) return completed.get(key);
     if (!user) {
-      try { return JSON.parse(safeGet(key) || 'null'); } catch (_) { return null; }
+      try {
+        const saved = JSON.parse(safeGet(key) || 'null');
+        return saved?.stage === stage && saved.consent_version === VERSION && saved.sharing_consent ? saved : null;
+      } catch (_) { return null; }
     }
     const { data, error } = await client().from('career_intakes').select('details,consent_version').eq('user_id', user.id).eq('stage', stage).maybeSingle();
     if (error) throw new Error('Unable to load your saved details. Please try again.');
@@ -166,7 +171,9 @@
     return normalized;
   }
   function formModal(options, user) {
-    if (activeModal) return activeModal.promise;
+    const scope = `${user?.id || 'guest'}:${options.source?.kind || 'intake'}:${options.stage || 'choose-stage'}`;
+    // One category's open form must never authorize a simultaneous request for another.
+    if (activeModal) return activeModal.scope === scope ? activeModal.promise : Promise.resolve(false);
     loadStyles();
     const previousFocus = document.activeElement;
     const originalOverflow = document.body.style.overflow;
@@ -206,7 +213,7 @@
         const saved = await persist(details,options.source,user); close(saved);
       } catch (err) { error.textContent = err.message; error.hidden = false; button.disabled = false; button.textContent = options.submitLabel || 'Continue'; }
     });
-    activeModal = { promise, cancel:()=>close(false) };
+    activeModal = { scope, promise, cancel:()=>close(false) };
     backdrop.querySelector('input,select')?.focus();
     return promise;
   }
@@ -221,21 +228,31 @@
     if (await hasEnrollment(user)) return true;
     // Each tool uses the same career data for the current account, but never inherits a different category's resource completion.
     const key = `${PREFIX}${user?.id || 'guest'}:tool-stage`;
-    const stage = safeGet(key);
-    if (stage && await existingDetails(user,stage)) return true;
+    let stage = safeGet(key) || safeGet(`${PREFIX}${user?.id || 'guest'}:current-stage`);
+    if (!stage && user) {
+      const {data,error} = await client().from('career_intakes').select('stage,details,consent_version').eq('user_id',user.id).eq('consent_version',VERSION).order('updated_at',{ascending:false}).limit(1);
+      if (error) throw new Error('Unable to load your saved career details. Please try again.');
+      if (data?.[0]?.details?.sharing_consent) stage = data[0].stage || data[0].details.stage;
+    }
+    if (stage && await existingDetails(user,stage)) {
+      safeSet(key,stage); safeSet(`${PREFIX}${user?.id || 'guest'}:current-stage`,stage);
+      return true;
+    }
     const result = await formModal({title:'Tell us about your career stage',subtitle:'Get support and opportunities relevant to your next step.',stageLabel:'Your Career Stage',allowOther:true,source:{kind:'tool',title:toolName,url:location.pathname}},user);
     if (result) safeSet(key,result.stage);
     return Boolean(result);
   }
-  async function finishAuth(user, redirect = '/') {
-    if (!user) user = await currentUser();
-    if (!user) return false;
+  async function finishAuth(user, redirect) {
+    const authenticated = await currentUser();
+    if (!authenticated || (user && user.id !== authenticated.id)) return false;
+    user = authenticated;
+    redirect = safeRedirect(redirect || user.user_metadata?.msc_auth_redirect || '/');
     let hasIntake = false;
     const metadata = user.user_metadata || {};
     if (metadata.msc_career_intake?.sharing_consent) {
       const stage = metadata.msc_career_intake.stage;
       hasIntake = Boolean(await existingDetails(user,stage));
-      if (!hasIntake) { await persist({...metadata.msc_career_intake,name:metadata.full_name || metadata.name,email:user.email},{kind:'signup',title:'Account signup',url:'/login.html'},user); hasIntake = true; }
+      if (!hasIntake) { await persist({...metadata.msc_career_intake,name:metadata.full_name || metadata.name || metadata.msc_career_intake.name,email:user.email},{kind:'signup',title:'Account signup',url:'/login.html'},user); hasIntake = true; }
     } else {
       const {data,error} = await client().from('career_intakes').select('stage').eq('user_id',user.id).eq('consent_version',VERSION).limit(1);
       if (error) throw new Error('Unable to load your signup details. Please try again.');
@@ -245,6 +262,7 @@
     if (!hasIntake) return false;
     if (!metadata.msc_onboarding_seen) {
       const completeProfile = await showOnboarding();
+      if (completeProfile === null || (await currentUser())?.id !== user.id) return false;
       if (completeProfile) redirect = '/profile.html?onboarding=1#sec-resume';
       const { error } = await client().auth.updateUser({data:{msc_onboarding_seen:true}});
       if (error) console.warn('Could not remember onboarding dismissal.');
@@ -255,15 +273,35 @@
   }
   function safeRedirect(value) { try { const target = new URL(value,location.origin); return target.origin === location.origin ? target.pathname + target.search + target.hash : '/'; } catch (_) { return '/'; } }
   function showOnboarding() {
+    if (activeOnboarding) return activeOnboarding.promise;
     loadStyles();
-    return new Promise(resolve=>{
+    const previousFocus = document.activeElement;
+    const originalOverflow = document.body.style.overflow;
+    let cancel;
+    const promise = new Promise(resolve=>{
       const box=document.createElement('div');box.className='msc-career-overlay';
       box.innerHTML='<section class="msc-career-dialog msc-onboarding" role="dialog" aria-modal="true" aria-labelledby="msc-onboarding-title"><p class="msc-career-eyebrow">YOUR NEXT OPPORTUNITY</p><h2 id="msc-onboarding-title">Don’t just search for jobs. Let recruiters find you.</h2><p>Share your details in <strong>less than 2 minutes</strong> with <strong>MSC’s network of 1,000+ recruiters</strong>. Let your next opportunity find you.</p><div class="msc-onboarding-steps"><span>1. Add your CV</span><span>2. Complete education &amp; experience</span><span>3. Set your availability</span></div><a href="/profile.html?onboarding=1#sec-resume" class="msc-career-primary">Complete My Profile →</a><button type="button" class="msc-career-later">I’ll do this later</button></section>';
       document.body.appendChild(box);
-      box.querySelector('a').addEventListener('click',event=>{event.preventDefault();safeSet('msc_profile_tour','1');box.remove();resolve(true);});
-      box.querySelector('button').addEventListener('click',()=>{box.remove();resolve(false);});
+      document.body.style.overflow = 'hidden';
+      const close = result => {
+        document.removeEventListener('keydown',keyHandler); box.remove();
+        document.body.style.overflow = originalOverflow; activeOnboarding = null;
+        previousFocus?.focus?.(); resolve(result);
+      };
+      const keyHandler = event => {
+        const first = box.querySelector('a'), last = box.querySelector('button');
+        if (event.key === 'Escape') { event.preventDefault(); close(false); }
+        if (event.key === 'Tab' && event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+        else if (event.key === 'Tab' && !event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+      };
+      document.addEventListener('keydown',keyHandler);
+      cancel = () => close(null);
+      box.querySelector('a').addEventListener('click',event=>{event.preventDefault();safeSet('msc_profile_tour','1');close(true);});
+      box.querySelector('button').addEventListener('click',()=>close(false));
       box.querySelector('a').focus();
     });
+    activeOnboarding = {promise,cancel};
+    return promise;
   }
   function startProfileTour() {
     if (document.querySelector('.msc-profile-tour')) return;
@@ -291,7 +329,7 @@
       if (!user) return;
       const emailSignupPending = user.user_metadata?.msc_career_intake?.sharing_consent && !user.user_metadata?.msc_onboarding_seen;
       if (!safeGet('msc_career_auth_pending') && !emailSignupPending) return;
-      await finishAuth(user,safeGet('msc_career_auth_redirect') || location.pathname + location.search);
+      await finishAuth(user,safeGet('msc_career_auth_redirect') || (emailSignupPending && user.user_metadata?.msc_auth_redirect) || location.pathname + location.search);
     } catch (error) {
       const notice = document.createElement('aside');
       notice.className = 'msc-profile-tour'; notice.setAttribute('role','alert');

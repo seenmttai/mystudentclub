@@ -34,3 +34,11 @@ test('no session is free; enrollment outages and account switches do not reuse p
     const failure=await shared.getAccess(client({enrollmentError:new Error('offline')}));
     assert.equal(failure.hasAccess,false);assert.ok(failure.error);
 });
+test('retained alumni rows and every known legacy LMS purchase slug remain eligible',async()=>{
+    const aliases=Object.keys(api().COURSE_ALIASES);
+    for(const course of [...aliases,' MSC-CA-FRESHERS-PROGRAM ','msc-articleship-program']) {
+        const access=await api().getAccess(client({courses:[course]}));
+        assert.equal(access.hasAccess,true,course);
+    }
+    for(const course of ['alumni','industrial-training-free','freshers-demo','msc-articleship-program-preview']) assert.equal(api().isEligibleCourse(course),false,course);
+});

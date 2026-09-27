@@ -14,6 +14,10 @@ html.msc-shared-navigation body > header:not(#msc-site-navigation),html.msc-shar
 #msc-site-navigation .msc-nav-group[open] summary{background:#eff6ff;color:#2563eb}
 #msc-site-navigation .msc-nav-dropdown{position:absolute;top:calc(100% + 8px);left:0;min-width:235px;background:white;border:1px solid #e2e8f0;padding:8px;border-radius:12px;box-shadow:0 14px 35px #16324f1c}
 #msc-site-navigation .msc-nav-dropdown a{display:block;padding:11px 13px;border-radius:7px}
+#msc-site-navigation .msc-nav-logout{display:block;width:100%;padding:11px 13px;border:0;border-radius:7px;text-align:left;background:none;color:#36465a;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer}
+#msc-site-navigation .msc-nav-logout:hover{background:#eff6ff;color:#2563eb}
+#msc-site-navigation .msc-nav-logout:disabled{opacity:.6;cursor:wait}
+#msc-site-navigation .msc-nav-auth-error{margin:8px 13px;color:#b42318;font-size:12px;line-height:1.5;white-space:normal}
 #msc-site-navigation .msc-nav-account{margin-left:auto;display:flex;gap:4px;align-items:center}
 #msc-site-navigation .msc-nav-account-menu .msc-nav-dropdown{left:auto;right:0;min-width:190px}
 #msc-site-navigation #notificationsBtn{position:relative;display:flex;align-items:center;justify-content:center;flex:0 0 38px;width:38px;height:38px;margin:0;padding:8px;border:0;border-radius:50%;background:#f3f7fd;color:#52647b;cursor:pointer}
