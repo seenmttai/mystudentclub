@@ -8,8 +8,8 @@
   <meta name="description"
     content="Login or sign up to My Student Club - Access CA jobs, industrial training, and career resources.">
   <script src="/scripts/supabase.js"></script>
-  <script src="/scripts/supabase-init.js"></script>
-  <script src="/scripts/career-profile.js"></script>
+  <script src="/scripts/supabase-init.js?v=20260927.3"></script>
+  <script src="/scripts/career-profile.js?v=20260927.3"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * {
@@ -853,7 +853,7 @@
   <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
   <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
   <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
-<link rel="stylesheet" href="/scripts/site-navigation.css"><script src="/scripts/site-navigation.js" defer></script>
+<link rel="stylesheet" href="/scripts/site-navigation.css?v=20260927.3"><script src="/scripts/site-navigation.js?v=20260927.3" defer></script>
 </head>
 
 <body class="msc-auth-page msc-login-page">
@@ -1128,11 +1128,12 @@
       // Reuse shared Supabase client
       const supabaseClient = window.supabaseClient || (typeof getSupabaseClient === 'function' ? getSupabaseClient() : null);
 
-      const redirectUrl = MSCCareerProfile.safeRedirect(new URLSearchParams(window.location.search).get('redirect') || sessionStorage.getItem('msc_career_auth_redirect') || '/');
+      const requestedRedirect = new URLSearchParams(window.location.search).get('redirect') || sessionStorage.getItem('msc_career_auth_redirect');
+      const redirectUrl = requestedRedirect ? MSCCareerProfile.safeRedirect(requestedRedirect) : '';
       const signupCareerFields = MSCCareerProfile.mountFields(document.getElementById('signup-career-fields'));
       async function completeAuthentication(user) {
         try { return await MSCCareerProfile.finishAuth(user, redirectUrl); }
-        catch (error) { const el = document.getElementById('login-error'); el.textContent = error.message; el.classList.add('show'); return false; }
+        catch (error) { const el = document.getElementById(document.getElementById('authContainer').classList.contains('signup-active') ? 'signup-error' : 'login-error'); el.textContent = error.message; el.classList.add('show'); return false; }
       }
 
       // Check if already logged in
@@ -1295,6 +1296,7 @@
                 first_name: firstName,
                 last_name: lastName,
                 full_name: `${firstName} ${lastName}`.trim(),
+                msc_auth_redirect: MSCCareerProfile.safeRedirect(redirectUrl || '/'),
                 msc_career_intake: { ...signupCareerFields.read(), name: `${firstName} ${lastName}`.trim(), email, phone: document.getElementById('signup-phone').value.trim() }
               }
             }

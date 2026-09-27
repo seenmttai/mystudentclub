@@ -127,3 +127,24 @@ test('production varchar recruiter columns receive contact, joining, attempt and
   assert.equal(row.email_id,'verified-a@example.test');assert.equal(row.mobile_number,base.phone);assert.equal(row.earliest_joining_date,'2026-11-01');assert.equal(row.ca_final_attempt,'November 2001');assert.equal(Number(row.years_of_experience),8.5);
  }finally{await db.exec('reset role');}
 });
+
+test('all six authenticated intake branches merge an existing registration and keep identity server-owned',async()=>{
+ const db=await createDB();try{
+  const cases=[
+   ['ca-fresher',{...base,status:'Result Awaited',attempt_month:'November',attempt_year:'2050'}],
+   ['industrial-training',{...base,earliest_joining_date:'2027-01-10',industrial_training_eligibility_date:'2026-12-01'}],
+   ['articleship',{...base,status:'Cleared one group',attempt_month:'January'}],
+   ['semi-qualified',{...base,status:'Discontinued CA studies',earliest_joining_date:'2027-01-10',experience_type:'other',experience_years:'3',experience_months:'4'}],
+   ['experienced-ca',{...base,attempt_month:'December',attempt_year:'2010',earliest_joining_date:'2027-01-10',experience_years:'15',experience_months:'9'}],
+   ['other',{...base,other_stage:'Finance graduate'}]
+  ];
+  for(const [stage,details] of cases){
+   await role(db,'authenticated',A);await submit(db,stage,{...details,name:'Google Supplied Name',email:'attacker@example.test',user_id:B},{kind:'signup',title:'Account signup',url:'/login.html'});
+   await role(db,'postgres');const row=(await db.query('select * from profiles where uuid=$1',[A])).rows[0];
+   assert.equal(row.profile.cv_filename,'Existing CV.pdf');assert.equal(row.profile.preferred_locations,'Mumbai');assert.equal(row.profile.email,'verified-a@example.test');assert.equal(row.email_id,'verified-a@example.test');assert.equal(row.profile.name,'Google Supplied Name');assert.equal(row.profile.career_intake.stage,stage);assert.equal(row.profile.marketing_email_consent,true);
+   const intake=(await db.query('select user_id,details from career_intakes where user_id=$1 and stage=$2',[A,stage])).rows[0];assert.equal(intake.user_id,A);assert.equal(intake.details.email,'verified-a@example.test');assert.equal(intake.details.consent_text, 'I confirm that my details are correct and agree to My Student Club sharing my profile with recruiters and sending me relevant opportunities and updates via email.');
+  }
+  assert.equal((await db.query('select count(*)::integer n from career_intakes where user_id=$1',[A])).rows[0].n,6);assert.equal((await db.query('select count(*)::integer n from profiles where uuid=$1',[B])).rows[0].n,0);
+  assert.equal((await db.query('select count(*)::integer n from consentform where user_id=$1 and cv_sharing_consent=true and withdrawn_at is null',[A])).rows[0].n,1);
+ }finally{await db.exec('reset role');}
+});

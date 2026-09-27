@@ -14,6 +14,30 @@ let currentUser = null;
 let lastUpdatedISO = null;
 let currentLookingFor = null;
 
+// Intake fields without editor controls must survive ordinary profile saves.
+// Read browser drafts only when they are explicitly owned by this account.
+function readOwnProfileCache() {
+    try {
+        if (!currentUser || localStorage.getItem('msc_profile_cache_owner') !== currentUser.id) return null;
+        return JSON.parse(localStorage.getItem('userProfileData') || 'null');
+    } catch (_) { return null; }
+}
+function cacheOwnProfile(profile) {
+    if (!currentUser) return;
+    localStorage.setItem('msc_profile_cache_owner', currentUser.id);
+    localStorage.setItem('userProfileData', JSON.stringify(profile));
+}
+function preserveCareerProfileFields(values) {
+    const saved = readOwnProfileCache() || {};
+    const result = {};
+    for (const key of ['career_intake', 'recruiter_sharing_consent', 'marketing_email_consent', 'career_intake_consent_at',
+        'industrial_training_eligibility_date', 'articleship_1yr_end_date', 'ca_final_status', 'ca_inter_status',
+        'ca_final_attempt', 'ca_inter_attempt', 'ca_final_groups_cleared', 'portal_type', 'total_experience', 'years_of_experience']) {
+        if (Object.prototype.hasOwnProperty.call(saved, key)) result[key] = saved[key];
+    }
+    return Object.assign(result, values);
+}
+
 // =================== TOAST NOTIFICATIONS ===================
 function showToast(message, type = 'info', duration = 6000) {
     const container = document.getElementById('toast-container');
@@ -2216,7 +2240,7 @@ const WZ = (() => {
             });
             if (error) throw error;
             currentLookingFor = lookingForVal;
-            localStorage.setItem('userProfileData', JSON.stringify(profileData));
+            cacheOwnProfile(profileData);
         } catch (e) {
             console.error(e);
             showToast('Could not save profile. Please try again.', 'error');
@@ -2354,7 +2378,7 @@ const WZ = (() => {
             if (el.type === 'checkbox') return; // chip checkboxes are unnamed; named checkboxes saved via hidden inputs
             if (el.value) obj[el.name] = el.value;
         });
-        return obj;
+        return preserveCareerProfileFields(obj);
     }
 
     // Maps AI response keys to form field names when they differ
@@ -2416,7 +2440,7 @@ const WZ = (() => {
 
         supabaseClient.from('profiles').upsert(upsertData).then(({ error }) => {
             if (error) console.warn('Progress save failed:', error.message);
-            else localStorage.setItem('userProfileData', JSON.stringify(profileData));
+            else cacheOwnProfile(profileData);
         });
     }
 
@@ -2510,7 +2534,7 @@ async function loadProfile() {
             if (data.profile) {
                 profileObj = data.profile;
                 populateForm(data.profile);
-                localStorage.setItem('userProfileData', JSON.stringify(data.profile));
+                cacheOwnProfile(data.profile);
             }
             if (data.ocr_cv) {
                 localStorage.setItem('userCVText', data.ocr_cv);
@@ -2523,9 +2547,9 @@ async function loadProfile() {
                 clearCloudSyncFlag();
             }
         } else {
-            const localProfile = localStorage.getItem('userProfileData');
+            const localProfile = readOwnProfileCache();
             if (localProfile) {
-                profileObj = JSON.parse(localProfile);
+                profileObj = localProfile;
                 populateForm(profileObj);
             }
         }
@@ -2559,9 +2583,9 @@ async function loadProfile() {
 
     } catch (e) {
         console.error(e);
-        const localProfile = localStorage.getItem('userProfileData');
+        const localProfile = readOwnProfileCache();
         if (localProfile) {
-            profileObj = JSON.parse(localProfile);
+            profileObj = localProfile;
             populateForm(profileObj);
         }
         setTimeout(() => refreshHeader(), 150);
@@ -2683,10 +2707,10 @@ function hideFileDisplay(type) {
         // Clear the persisted filename from local profileData so the next save
         // doesn't accidentally restore a removed resume
         try {
-            const pd = JSON.parse(localStorage.getItem('userProfileData') || '{}');
+            const pd = readOwnProfileCache() || {};
             delete pd.cv_filename;
             delete pd.cv_cloud_synced;
-            localStorage.setItem('userProfileData', JSON.stringify(pd));
+            cacheOwnProfile(pd);
         } catch (_) { /* ignore */ }
     }
     config.input.value = '';
@@ -3307,7 +3331,7 @@ async function handleSave(e) {
     saveBtn.disabled = true;
 
     const formData = new FormData(profileForm);
-    const profileData = Object.fromEntries(formData.entries());
+    const profileData = preserveCareerProfileFields(Object.fromEntries(formData.entries()));
     delete profileData.resume;
     delete profileData.cover_letter;
     // Persist the CV filename so the resume display survives localStorage wipes
@@ -3397,7 +3421,7 @@ async function handleSave(e) {
     }
     profileData.cv_cloud_synced = currentlySynced;
 
-    localStorage.setItem('userProfileData', JSON.stringify(profileData));
+    cacheOwnProfile(profileData);
 
     try {
         const { error } = await supabaseClient.from('profiles').upsert({
@@ -4989,7 +5013,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (user) {
         let displayName = '';
         try {
-            const pd = JSON.parse(localStorage.getItem('userProfileData') || '{}');
+            const pd = readOwnProfileCache() || {};
             if (pd.name && pd.name.trim()) displayName = pd.name.trim();
         } catch (e) { }
         if (!displayName && user.user_metadata && user.user_metadata.full_name) {
@@ -5120,4 +5144,3 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 });
-

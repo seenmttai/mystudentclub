@@ -36,6 +36,8 @@ function makeHarness() {
         authUser: { id: 'test-user', user_metadata: { full_name: 'Test User' } },
         userId: 'test-user',
         selectedFile: { name: 'test-resume.pdf' },
+        activeReviewPartial: false,
+        reviewIdentityVersion: 0,
         supabase: {
             from(table) {
                 assert.equal(table, 'msc_cv_ai_resume_reviews');

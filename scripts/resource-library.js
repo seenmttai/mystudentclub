@@ -23,7 +23,7 @@
     ];
     const industrialResources = [
         editable('CV Template 2', INDUSTRIAL_DIR, 'Industrial_Training_CV_Template_2', 1),
-        editable('CV Template 3', INDUSTRIAL_DIR, 'Industrial_Training_CV_Template_1', 2),
+        { ...editable('CV Template 3', INDUSTRIAL_DIR, 'Industrial_Training_CV_Template_1', 2), fileName: 'Industrial Training CV Template 3.docx' },
         editable('Cover Letter', INDUSTRIAL_DIR, 'Coverletter', 3),
         pdf('Interview Syllabus', INDUSTRIAL_DIR, 'Syllabus', 4),
         pdf('Finance Interview Questions', INDUSTRIAL_DIR, 'Finance-interview', 5),
@@ -31,8 +31,8 @@
             title: 'Industrial Training Hiring Companies List', category: 'application-tricks', sort_order: 6,
             viewUrl: 'https://docs.google.com/spreadsheets/d/1yDCBRaadD_qddFyKYRpesyL8h_E91X1dlzA0PfoEdKM/edit?gid=0#gid=0',
             downloadUrl: 'https://docs.google.com/spreadsheets/d/1yDCBRaadD_qddFyKYRpesyL8h_E91X1dlzA0PfoEdKM/export?format=xlsx&gid=0',
-            fileName: 'Industrial Training Hiring Companies List.xlsx', format: 'XLSX',
-            description: 'Explore hiring companies and plan where to apply.'
+            fileName: 'Industrial Training Hiring Companies List.xlsx', format: 'XLSX', downloadUnavailable: true,
+            description: 'Explore hiring companies. Download availability is managed by the sheet owner.'
         }
     ];
     const programs = {
@@ -40,6 +40,15 @@
         'ca-fresher': { title: 'MSC CA Fresher Program', url: '/msc-ca-fresher-program/', courses: ['msc-ca-freshers-program', 'msc-ca-fresher-program', 'ca-freshers'] },
         'articleship': { title: 'MSC Articleship Program', url: '/articleship-program/', courses: ['msc-articleship-program', 'articleship-program', 'articleship', 'articleship-mastery', 'msc-articleship-mastery'] }
     };
+    function hasProgramEnrollment(courses, programId, canonicalCourse) {
+        const program = programs[programId];
+        if (!program) return false;
+        return (Array.isArray(courses) ? courses : []).some(entry => {
+            const course = String(typeof entry === 'string' ? entry : entry?.course || '').trim().toLowerCase();
+            const canonical = typeof canonicalCourse === 'function' ? canonicalCourse(course) : course;
+            return program.courses.includes(course) || canonical === program.courses[0];
+        });
+    }
     const pages = {
         'industrial-training': { resources: industrialResources, premiumProgram: 'industrial-training' },
         'ca-fresher': { resources: fresherResources, premiumProgram: 'ca-fresher' },
@@ -80,7 +89,7 @@
             }];
         });
     }
-    const exports = { cleanFileName, sanitizeCatalogue, pages, programs, compareResourceTitles, organizeResources, searchResources };
+    const exports = { cleanFileName, sanitizeCatalogue, pages, programs, hasProgramEnrollment, compareResourceTitles, organizeResources, searchResources };
     if (typeof module !== 'undefined' && module.exports) module.exports = exports;
     global.MSCResourceLibrary = exports;
     if (typeof document === 'undefined') return;
@@ -128,9 +137,9 @@
             document.body.appendChild(link); link.click(); link.remove();
             if (objectUrl) setTimeout(() => URL.revokeObjectURL(objectUrl), 60000);
         } else {
-            const viewUrl = url.pathname.toLowerCase().endsWith('.pdf')
-                ? '/ca-resource/index.html?pdf=' + encodeURIComponent(url.href) : url.href;
-            global.open(viewUrl, '_blank', 'noopener,noreferrer');
+            // These are public free files. The protected LMS viewer requires a login
+            // and would block guests even after they completed the resource intake.
+            global.open(url.href, '_blank', 'noopener,noreferrer');
         }
     }
     async function freeAction(resource, download) {
@@ -157,9 +166,7 @@
             if (!global.MSCProgramAccess) throw new Error('Access check unavailable');
             const access = await global.MSCProgramAccess.getAccess();
             if (access.error) throw access.error;
-            const program = programs[resource.program];
-            const courses = access?.courses || [];
-            const isEnrolled = courses.some(entry => program.courses.includes(String(typeof entry === 'string' ? entry : entry.course).trim().toLowerCase()));
+            const isEnrolled = hasProgramEnrollment(access?.courses, resource.program, global.MSCProgramAccess.canonicalCourse);
             if (isEnrolled) {
                 global.location.href = '/learning-management-system/lms-resources.html';
             } else showEnrollment(resource, trigger);
@@ -188,15 +195,15 @@
         } else {
             const file = element('div', 'resource-file-icon');
             file.append(icon('file'));
-            top.append(file, element('span', 'resource-format', resource.format === 'DOCX' ? 'EDITABLE WORD' : resource.format));
+            top.append(file, element('span', 'resource-format', resource.downloadUnavailable ? 'GOOGLE SHEET' : resource.format === 'DOCX' ? 'EDITABLE WORD' : resource.format));
         }
         card.append(top, element('h3', 'resource-title', resource.title));
         if (!resource.premium) card.append(element('p', 'resource-description', resource.description));
         const actions = element('div', 'resource-actions');
-        (resource.premium ? [false, true] : [true, false]).forEach(download => {
-            const label = download ? (resource.premium ? 'Download Now' : 'Download ' + resource.format) : (resource.premium ? 'View Now' : 'Preview');
-            const visibleLabel = resource.premium ? (download ? 'Download' : 'View') : (download ? 'Download ' + resource.format : 'Preview');
-            const button = element('button', 'resource-action' + ((!download || resource.premium) ? ' secondary' : ''));
+        (resource.downloadUnavailable ? [false] : resource.premium ? [false, true] : [true, false]).forEach(download => {
+            const label = resource.downloadUnavailable ? 'Open Google Sheet' : download ? (resource.premium ? 'Download Now' : 'Download ' + resource.format) : (resource.premium ? 'View Now' : 'Preview');
+            const visibleLabel = resource.downloadUnavailable ? 'Open Google Sheet' : resource.premium ? (download ? 'Download' : 'View') : (download ? 'Download ' + resource.format : 'Preview');
+            const button = element('button', 'resource-action' + ((!resource.downloadUnavailable && (!download || resource.premium)) ? ' secondary' : ''));
             if (resource.premium || download) button.append(icon(resource.premium ? 'lock' : 'download'));
             button.append(document.createTextNode(visibleLabel));
             button.type = 'button';

@@ -37,6 +37,11 @@ document.addEventListener('DOMContentLoaded', () => {
             title: 'MSC CA Freshers Program',
             description: 'A comprehensive program for CA freshers to kickstart their career.',
             thumbnail: '/assets/courseimg-fresher.png'
+        },
+        'msc-articleship-program': {
+            title: 'MSC Articleship Program',
+            description: 'Resources and guidance for your articleship preparation.',
+            thumbnail: '/assets/articleship-course-main.png'
         }
     };
 
@@ -49,7 +54,11 @@ document.addEventListener('DOMContentLoaded', () => {
         'ca-freshers': 'msc-ca-freshers-program',
         'freshers': 'msc-ca-freshers-program',
         'ca-freshers-program': 'msc-ca-freshers-program',
-        'msc-ca-freshers': 'msc-ca-freshers-program'
+        'msc-ca-freshers': 'msc-ca-freshers-program',
+        'articleship': 'msc-articleship-program',
+        'articleship-program': 'msc-articleship-program',
+        'articleship-mastery': 'msc-articleship-program',
+        'msc-articleship-mastery': 'msc-articleship-program'
     };
 
     const DOMElements = {

@@ -13,7 +13,7 @@ function harness(user=null) {
     auth:{getSession:async()=>({data:{session:state.user?{user:state.user}:null}}),onAuthStateChange:fn=>state.callbacks.push(fn),updateUser:async data=>{state.metadata.push(data);return{};}},
     from(table) {
       const filters={};
-      const query={select(){return query;},eq(key,value){filters[key]=value;return query;},
+      const query={select(){return query;},eq(key,value){filters[key]=value;return query;},order(){return query;},
         maybeSingle:async()=>({data:state.records.get(`${filters.user_id}:${filters.stage}`)||null}),
         limit:async()=>({data:[...state.records.entries()].filter(([key])=>key.startsWith(`${filters.user_id}:`)).map(([,row])=>row)}),
         then(resolve){return Promise.resolve({data:table==='enrollment' && state.enrolled?[{course:'industrial-training-mastery'}]:[]}).then(resolve);}};
@@ -185,4 +185,72 @@ test('both job generators and scheduled installer preserve shared navigation',()
     const content=fs.readFileSync(path.join(__dirname,file),'utf8');assert.match(content,/site-navigation\.css/);assert.match(content,/site-navigation\.js/);
   }
   assert.match(fs.readFileSync(path.join(__dirname,'../.github/workflows/generate-jobs.yml'),'utf8'),/node scripts\/install-site-navigation\.cjs/);
+});
+
+test('a concurrent resource from a different stage cannot borrow the open form outcome',async()=>{
+  const {dom,state,api,submit}=harness();
+  const first=api.ensureForResource('ca-fresher','CV','/cv.docx');await tick();
+  assert.equal(await api.ensureForResource('industrial-training','IT CV','/it.docx'),false);
+  await submit('ca-fresher');assert.equal(await first,true);assert.equal(state.writes.length,1);assert.equal(state.writes[0].args.p_stage,'ca-fresher');
+  const later=api.ensureForResource('industrial-training','IT CV','/it.docx');await tick();assert.ok(dom.window.document.querySelector('[name="industrial_training_eligibility_date"]'));dom.window.document.querySelector('.msc-career-close').click();assert.equal(await later,false);dom.window.close();
+});
+
+test('tools reuse saved account career intake after reload and guests reuse only their own completed stage',async()=>{
+  const user={id:'saved-member',email:'saved@example.test',user_metadata:{}};
+  const {dom,state,api}=harness(user);
+  state.records.set('saved-member:articleship',{stage:'articleship',details:{stage:'articleship',sharing_consent:true},consent_version:'2026-09-27'});
+  assert.equal(await api.ensureForTool('cv-reviewer'),true);assert.equal(api.getCurrentStage(),'articleship');assert.equal(state.writes.length,0);
+  state.switchUser({id:'new-member',email:'new@example.test',user_metadata:{}});
+  const other=api.ensureForTool('cv-builder');await tick();assert.ok(dom.window.document.querySelector('[name="career_stage"]'));dom.window.document.querySelector('.msc-career-close').click();assert.equal(await other,false);dom.window.close();
+  const guest=harness();const saved=guest.api.ensureForResource('ca-fresher','CV','/cv.docx');await tick();await guest.submit('ca-fresher');await saved;
+  assert.equal(await guest.api.ensureForTool('ai-interview'),true);assert.equal(guest.state.writes.length,1);guest.dom.window.close();
+});
+
+test('onboarding traps focus, restores scrolling, and cannot continue as a different account',async()=>{
+  const user={id:'onboard-a',email:'a@example.test',user_metadata:{}};
+  const {dom,state,api}=harness(user);state.records.set('onboard-a:ca-fresher',{details:{stage:'ca-fresher',sharing_consent:true},consent_version:'2026-09-27'});
+  dom.window.document.body.style.overflow='auto';
+  const pending=api.finishAuth(user);await tick();await tick();const first=dom.window.document.querySelector('.msc-onboarding a'),last=dom.window.document.querySelector('.msc-career-later');assert.ok(first);assert.equal(dom.window.document.body.style.overflow,'hidden');
+  first.focus();dom.window.document.dispatchEvent(new dom.window.KeyboardEvent('keydown',{key:'Tab',shiftKey:true,cancelable:true}));assert.equal(dom.window.document.activeElement,last);
+  dom.window.document.dispatchEvent(new dom.window.KeyboardEvent('keydown',{key:'Tab',cancelable:true}));assert.equal(dom.window.document.activeElement,first);
+  state.switchUser({id:'onboard-b',email:'b@example.test',user_metadata:{}});assert.equal(await pending,false);assert.equal(state.metadata.length,0);assert.equal(dom.window.document.body.style.overflow,'auto');assert.equal(dom.window.document.querySelector('.msc-onboarding'),null);dom.window.close();
+});
+
+test('profile saves retain intake fields without restoring removed files or another account draft',()=>{
+  const {dom}=harness();const profileSource=fs.readFileSync(path.join(__dirname,'../scripts/profile.js'),'utf8');
+  const start=profileSource.indexOf('function readOwnProfileCache()');const end=profileSource.indexOf('// =================== TOAST',start);
+  dom.window.currentUser={id:'profile-a'};dom.window.eval(profileSource.slice(start,end));
+  dom.window.cacheOwnProfile({name:'Old Name',career_intake:{stage:'industrial-training'},marketing_email_consent:true,industrial_training_eligibility_date:'2027-05-01',cv_filename:'Removed.pdf'});
+  const updated=dom.window.preserveCareerProfileFields({name:'New Name'});assert.equal(updated.name,'New Name');assert.equal(updated.career_intake.stage,'industrial-training');assert.equal(updated.industrial_training_eligibility_date,'2027-05-01');assert.equal(updated.marketing_email_consent,true);assert.equal(updated.cv_filename,undefined);
+  dom.window.currentUser={id:'profile-b'};assert.equal(dom.window.readOwnProfileCache(),null);assert.equal(dom.window.preserveCareerProfileFields({name:'B'}).career_intake,undefined);
+  assert.match(profileSource,/const profileData = preserveCareerProfileFields\(Object\.fromEntries\(formData\.entries\(\)\)\)/);assert.match(profileSource,/return preserveCareerProfileFields\(obj\)/);dom.window.close();
+});
+
+async function authPageHarness(file) {
+  const html=fs.readFileSync(path.join(__dirname,'..',file),'utf8');
+  const dom=new JSDOM(html,{url:'https://mystudentclub.com/'+file+'?redirect=%2Fcv-builder%2F',runScripts:'outside-only',pretendToBeVisual:true});
+  const writes=[],flows=[];dom.window.requestAnimationFrame=()=>{};
+  dom.window.MSCCareerProfile={safeRedirect:value=>value.startsWith('/')?value:'/',mountFields:()=>({read:()=>({stage:'ca-fresher',status:'Qualified',attempt_month:'May',attempt_year:'2026',sharing_consent:true,consent_version:'2026-09-27'})}),finishAuth:async(user,redirect)=>{flows.push({user,redirect});},markAuthPending(){}};
+  dom.window.supabaseClient={auth:{getSession:async()=>({data:{session:null}}),signUp:async data=>{writes.push(data);return{data:{user:{id:'pending'},session:null}}}}};
+  for(const script of dom.window.document.querySelectorAll('script:not([src])'))dom.window.eval(script.textContent);
+  await tick();return{dom,writes,flows};
+}
+test('both email signup pages retain tool return destination in confirmation metadata',async()=>{
+  for(const file of ['login.html','sign-up.html']){
+    const {dom,writes}=await authPageHarness(file);const doc=dom.window.document;
+    for(const [id,value] of Object.entries({'signup-firstname':'Test Name','signup-name':'Test Name','signup-email':'test@example.test','email':'test@example.test','signup-password':'password123','password':'password123','confirm-password':'password123','signup-phone':'9999999999'})){if(doc.getElementById(id))doc.getElementById(id).value=value;}
+    doc.getElementById('signup-form').dispatchEvent(new dom.window.Event('submit',{bubbles:true,cancelable:true}));await tick();await tick();assert.equal(writes.length,1,file);assert.equal(writes[0].options.data.msc_auth_redirect,'/cv-builder/');assert.equal(writes[0].options.data.msc_career_intake.phone,'9999999999');dom.window.close();
+  }
+});
+
+test('signup continuation failure is shown in the visible signup panel',async()=>{
+  const {dom}=await authPageHarness('login.html');dom.window.document.getElementById('authContainer').classList.add('signup-active');dom.window.MSCCareerProfile.finishAuth=async()=>{throw new Error('Please retry saving your signup details.');};
+  assert.equal(await dom.window.completeAuthentication({id:'member'}),false);assert.match(dom.window.document.getElementById('signup-error').textContent,/retry saving/);assert.ok(dom.window.document.getElementById('signup-error').classList.contains('show'));dom.window.close();
+});
+
+test('shared signout clears only account-owned profile/CV caches even when client already exists',async()=>{
+  const {dom,state}=harness({id:'cache-a',email:'a@example.test'});const keys=['userProfileData','msc_profile_cache_owner','userCVText','userCVFileName','userCVImages','userCVPdf','userCoverLetterText','userCoverLetterFileName','cv_cloud_synced','cv_images_synced','userJobPreference','newUserSignup','newUserEmail'];
+  keys.forEach(key=>dom.window.localStorage.setItem(key,'private'));dom.window.localStorage.setItem('preferred-theme','dark');dom.window.document.cookie='cv_cloud_synced=true; path=/';dom.window.sessionStorage.setItem('msc_career_v2:guest:ca-fresher','private');dom.window.sessionStorage.setItem('msc_profile_tour','1');dom.window._wzCVImages=['private'];dom.window._wzCVPdf='private';
+  dom.window.eval(fs.readFileSync(path.join(__dirname,'../scripts/supabase-init.js'),'utf8'));const callbackCount=state.callbacks.length;dom.window.getSupabaseClient();assert.equal(state.callbacks.length,callbackCount);
+  state.switchUser(null);keys.forEach(key=>assert.equal(dom.window.localStorage.getItem(key),null,key));assert.equal(dom.window.localStorage.getItem('preferred-theme'),'dark');assert.equal(dom.window.sessionStorage.getItem('msc_career_v2:guest:ca-fresher'),null);assert.equal(dom.window.sessionStorage.getItem('msc_profile_tour'),null);assert.equal(dom.window.document.cookie.includes('cv_cloud_synced'),false);assert.equal(dom.window._wzCVImages,null);assert.equal(dom.window._wzCVPdf,null);dom.window.close();
 });

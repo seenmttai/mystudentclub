@@ -72,6 +72,11 @@ function makeHarness(options = {}) {
         pdfImages: images,
         analysisResultText: null,
         activeReviewFileName: null,
+        activeReviewPartial: false,
+        reviewIdentityVersion: 0,
+        activeReviewController: null,
+        AbortController,
+        supabase: { auth: { getSession: async () => ({data:{session:context.authUser ? {access_token:'verified-session-token',user:context.authUser} : null}}) } },
         authUser: options.guest ? null : { id: 'test-user' },
         isPremiumEnrolled: options.premium ?? true,
         IP_REVIEW_LIMIT: 1,
@@ -189,7 +194,7 @@ test('shows loading immediately and ignores repeated clicks throughout auth, quo
     assertBusy(harness);
     assert.equal(calls.fetch.length, 1);
     assert.equal(calls.saved.length, 0);
-    assert.deepEqual(JSON.parse(calls.fetch[0].request.body), { images: harness.images, isPremium: false });
+    assert.deepEqual(JSON.parse(calls.fetch[0].request.body), { images: harness.images });
 
     network.resolve(successResponse());
     await flushPromises();
@@ -385,4 +390,39 @@ test('verified premium reviewer skips career intake', async () => {
     await harness.context.analyzeCv();
     assert.equal(harness.calls.profile, 0);
     assert.equal(harness.calls.fetch.length, 1);
+});
+test('review request sends the verified session token and never a caller premium flag',async()=>{
+    const h=makeHarness({premium:true});await h.context.analyzeCv();
+    assert.equal(h.calls.fetch.length,1);
+    assert.equal(h.calls.fetch[0].request.headers.Authorization,'Bearer verified-session-token');
+    assert.equal(JSON.parse(h.calls.fetch[0].request.body).isPremium,undefined);
+});
+test('anonymous partial response is preserved as partial for saving and UI locks',async()=>{
+    const h=makeHarness({guest:true,premium:false,fetch:async()=>({ok:true,json:async()=>({ok:true,response:modelResponse,access:{premium:false,partial:true}})})});
+    await h.context.analyzeCv();
+    assert.equal(h.calls.fetch[0].request.headers.Authorization,undefined);
+    assert.equal(h.context.activeReviewPartial,true);assert.equal(h.context.isPremiumEnrolled,false);
+});
+test('an account switch during a request discards the previous account response',async()=>{
+    const pending=deferred();const h=makeHarness({premium:true,fetch:()=>pending.promise});
+    const request=h.context.analyzeCv();await flushPromises();
+    h.context.reviewIdentityVersion++;
+    pending.resolve(successResponse());await request;
+    assert.equal(h.calls.saved.length,0);assert.equal(h.elements.resultsSection.style.display,'none');
+    assert.match(h.calls.notices[0][1],/account changed/);
+});
+test('logout clears report, history, pending download and legacy account state',async()=>{
+ const callback={};const stored=new Map([['account-key','full-report-id']]);const preview=element('block');const container=element();container.innerHTML='paid report';const history=element();history.innerHTML='paid history';const handler=()=>{};const removed=[];
+ const context=vm.createContext({
+  userId:'guest-id',supabase:null,window:{supabaseClient:{auth:{onAuthStateChange:fn=>{callback.fn=fn;}}}},reviewAuthSubscribed:false,
+  authUser:{id:'paid-account'},reviewIdentityVersion:0,activeReviewController:new AbortController(),analysisResultText:'FULL PAID REPORT',activeReviewFileName:'paid.pdf',activeReviewPartial:false,selectedFile:{name:'paid.pdf'},pdfImages:['private-image'],historyReviews:[{id:1}],ACTIVE_REVIEW_KEY:'account-key',
+  localStorage:{removeItem:key=>stored.delete(key)},document:{getElementById:()=>history},pdfPreviewModal:preview,pdfPreviewContainer:container,pdfPreviewDownloadBtn:{removeEventListener:(type,fn)=>removed.push(fn)},reportPreviewDownloadHandler:handler,
+  hideResults(){},clearResultsContent(){},setTimeout:fn=>{callback.later=fn;},refreshAuthUser:async()=>{context.authUser=null;},isAnalysisInProgress:false,startNewAnalysis(){},updateAuthUI(){}
+ });
+ vm.runInContext(sourceBetween('function initializeSupabase()', 'async function refreshAuthUser()'),context);
+ context.initializeSupabase();callback.fn('SIGNED_OUT',null);
+ assert.equal(context.activeReviewController.signal.aborted,true);assert.equal(context.reviewIdentityVersion,1);
+ assert.equal(context.analysisResultText,null);assert.equal(context.activeReviewFileName,null);assert.equal(context.selectedFile,null);assert.equal(context.pdfImages.length,0);assert.equal(context.historyReviews.length,0);
+ assert.equal(preview.style.display,'none');assert.equal(container.innerHTML,'');assert.equal(history.innerHTML,'');assert.deepEqual(removed,[handler]);assert.equal(stored.has('account-key'),false);
+ await callback.later();assert.equal(context.authUser,null);
 });

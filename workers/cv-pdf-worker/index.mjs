@@ -5,6 +5,26 @@ const TEMPLATES = new Set(["bold-modern.html", "inset-frame.html", "clean-rule.h
 const SUPABASE_URL = 'https://auth.mystudentclub.com';
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0";
 
+// Explicit legacy slugs from the LMS purchase mapping; never accept arbitrary courses.
+const COURSE_ALIASES = {
+  'industrial-training': 'industrial-training-mastery',
+  'ca-industrial-training': 'industrial-training-mastery',
+  'msc-industrial-training-program': 'industrial-training-mastery',
+  'industrial-training-program': 'industrial-training-mastery',
+  'msc-ca-industrial-training': 'industrial-training-mastery',
+  'ca-freshers': 'msc-ca-freshers-program',
+  'freshers': 'msc-ca-freshers-program',
+  'ca-freshers-program': 'msc-ca-freshers-program',
+  'msc-ca-freshers': 'msc-ca-freshers-program',
+  'msc-ca-fresher-program': 'msc-ca-freshers-program'
+};
+function isEligibleCourse(course) {
+  const value = String(course || '').trim().toLowerCase();
+  const canonical = COURSE_ALIASES[value] || value;
+  return ['industrial-training-mastery','msc-ca-freshers-program'].includes(canonical) ||
+    /^(?:msc-)?(?:ca-)?articleship(?:-mastery|-program)?$/.test(canonical);
+}
+
 function accessError(message, status) { return Object.assign(new Error(message), {status}); }
 async function authorizeExport(request) {
   const declaredSize = Number(request.headers.get('Content-Length') || 0);
@@ -29,7 +49,7 @@ async function authorizeExport(request) {
       enrollment = await fetch(SUPABASE_URL + '/rest/v1/enrollment?select=course&uuid=eq.' + encodeURIComponent(user.id), {headers});
       if (!enrollment.ok) throw accessError('Unable to verify enrollment. Please try again.', 503);
       const rows = await enrollment.json();
-      const eligible = Array.isArray(rows) && rows.some(row => ['industrial-training-mastery','msc-ca-freshers-program'].includes(row.course) || /^(?:msc-)?(?:ca-)?articleship(?:-mastery|-program)?$/.test(String(row.course || '')));
+      const eligible = Array.isArray(rows) && rows.some(row => isEligibleCourse(row.course));
       if (!eligible) throw accessError('Enroll in an MSC program to export premium templates', 403);
     } catch (error) {
       if (error.status) throw error;
@@ -52,7 +72,7 @@ const worker = {
       return handleDocxRequest(request, env2);
     }
     if (url.pathname === "/health") {
-      return jsonResponse({ ok: true, routes: ["/pdf", "/docx"], version: "2026-09-27-template-entitlements-v1", exportProtocol: "template-data-v1" });
+      return jsonResponse({ ok: true, routes: ["/pdf", "/docx"], version: "2026-09-27-template-entitlements-v2", exportProtocol: "template-data-v1" });
     }
     return jsonResponse({ ok: false, error: "Not found" }, 404);
   }
@@ -379,4 +399,3 @@ function sleep(ms) {
 export {
   worker as default
 };
-

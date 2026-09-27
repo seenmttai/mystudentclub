@@ -24,6 +24,12 @@ test('all four pages render only Free and Premium sections with community above 
         assert.deepEqual([...doc.querySelectorAll('.resource-jump-nav a')].map(node => node.getAttribute('href')), ['#resource-free','#resource-premium']);
         assert.ok(doc.querySelector('.resource-search-toolbar').hidden, 'a catalogue with no premium resources does not show an unusable search');
         for (const button of doc.querySelectorAll('.resource-free-section button')) assert.ok(button.getAttribute('aria-label').includes(button.textContent));
+        if (slug === 'ca-industrial-training-resources') {
+            const sheet = [...doc.querySelectorAll('.resource-card')].find(card => card.textContent.includes('Industrial Training Hiring Companies List'));
+            assert.equal(sheet.querySelectorAll('button').length, 1);
+            assert.equal(sheet.querySelector('button').textContent, 'Open Google Sheet');
+            assert.match(sheet.textContent, /Download availability is managed by the sheet owner/);
+        }
         dom.window.close();
     }
 });

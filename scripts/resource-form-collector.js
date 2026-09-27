@@ -5,7 +5,7 @@
   function loadCareerProfile() {
     if (global.MSCCareerProfile) return Promise.resolve(global.MSCCareerProfile);
     if (!careerReady) careerReady = new Promise((resolve,reject) => {
-      const script=document.createElement('script');script.src='/scripts/career-profile.js';
+      const script=document.createElement('script');script.src='/scripts/career-profile.js?v=20260927.3';
       script.onload=()=>resolve(global.MSCCareerProfile);script.onerror=()=>reject(new Error('Unable to load the form. Please reload and try again.'));
       document.head.appendChild(script);
     });

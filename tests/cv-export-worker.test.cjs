@@ -66,3 +66,13 @@ test('template traversal, unknown templates and legacy HTML-only exports are rej
         assert.equal(response.status,400);assert.equal(h.pages.length,0);
     }
 });
+test('frontend and server recognize the same canonical and legacy purchase slugs',async()=>{
+    const context={window:{}};
+    vm.runInNewContext(fs.readFileSync(require('node:path').join(__dirname,'../scripts/program-access.js'),'utf8'),context);
+    const aliases=Object.keys(context.window.MSCProgramAccess.COURSE_ALIASES);
+    for(const course of [...aliases,' MSC-CA-FRESHERS-PROGRAM ','msc-articleship-program']) {
+        const h=harness({courses:[course]});
+        const response=await h.context.worker.fetch(h.request('classic.html',{},'/pdf','verified-token'),{});
+        assert.equal(response.status,200,course);
+    }
+});

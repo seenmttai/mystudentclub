@@ -74,3 +74,20 @@ test('premium search matches all supplied words across the entire catalogue with
     assert.deepEqual(library.searchResources(resources, 'missing'), []);
     assert.equal(library.searchResources(resources, '').length, 3);
 });
+
+
+test('premium resources require the matching program, including canonical aliases from shared enrollment verification', () => {
+    const vm = require('node:vm');
+    const context = {window:{}};
+    vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../scripts/program-access.js'),'utf8'), context);
+    const canonical = context.window.MSCProgramAccess.canonicalCourse;
+    assert.equal(typeof canonical, 'function');
+    assert.equal(library.hasProgramEnrollment(['msc-ca-freshers-program'],'industrial-training',canonical), false);
+    assert.equal(library.hasProgramEnrollment(['industrial-training-mastery'],'ca-fresher',canonical), false);
+    assert.equal(library.hasProgramEnrollment(['industrial-training-mastery'],'articleship',canonical), false);
+    assert.equal(library.hasProgramEnrollment(['ca-industrial-training'],'industrial-training',canonical), true);
+    assert.equal(library.hasProgramEnrollment(['msc-articleship-program'],'articleship',canonical), true);
+    assert.equal(library.hasProgramEnrollment(['msc-ca-freshers-program'],'ca-fresher',canonical), true);
+    assert.equal(library.hasProgramEnrollment(['unknown-course'],'articleship',canonical), false);
+    assert.equal(library.hasProgramEnrollment([], 'articleship', canonical), false);
+});

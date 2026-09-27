@@ -5,10 +5,28 @@
     const PROGRAMS = Object.freeze([
         { id: 'industrial-training', course: 'industrial-training-mastery', title: 'MSC Industrial Training Program', url: '/ca-industrial-training-program/' },
         { id: 'ca-fresher', course: 'msc-ca-freshers-program', title: 'MSC CA Fresher Program', url: '/msc-ca-fresher-program/' },
-        { id: 'articleship', course: null, title: 'MSC Articleship Program', url: '/articleship-program/' }
+        { id: 'articleship', course: 'msc-articleship-program', title: 'MSC Articleship Program', url: '/articleship-program/' }
     ]);
-    function isEligibleCourse(course) {
+    // Keep legacy purchase slugs compatible with learning-management-system/course-script.js.
+    // Eligibility comes from an existing enrollment row, including retained alumni enrollments.
+    const COURSE_ALIASES = Object.freeze({
+        'industrial-training': 'industrial-training-mastery',
+        'ca-industrial-training': 'industrial-training-mastery',
+        'msc-industrial-training-program': 'industrial-training-mastery',
+        'industrial-training-program': 'industrial-training-mastery',
+        'msc-ca-industrial-training': 'industrial-training-mastery',
+        'ca-freshers': 'msc-ca-freshers-program',
+        'freshers': 'msc-ca-freshers-program',
+        'ca-freshers-program': 'msc-ca-freshers-program',
+        'msc-ca-freshers': 'msc-ca-freshers-program',
+        'msc-ca-fresher-program': 'msc-ca-freshers-program'
+    });
+    function canonicalCourse(course) {
         const value = String(course || '').trim().toLowerCase();
+        return COURSE_ALIASES[value] || value;
+    }
+    function isEligibleCourse(course) {
+        const value = canonicalCourse(course);
         return value === 'industrial-training-mastery' || value === 'msc-ca-freshers-program' ||
             /^(?:msc-)?(?:ca-)?articleship(?:-mastery|-program)?$/.test(value);
     }
@@ -38,5 +56,5 @@
             return result;
         }
     }
-    global.MSCProgramAccess = Object.freeze({ FREE_TEMPLATES, PROGRAMS, getAccess, programForStage, isEligibleCourse });
+    global.MSCProgramAccess = Object.freeze({ FREE_TEMPLATES, PROGRAMS, COURSE_ALIASES, canonicalCourse, getAccess, programForStage, isEligibleCourse });
 })(window);

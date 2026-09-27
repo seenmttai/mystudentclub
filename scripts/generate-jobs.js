@@ -224,8 +224,8 @@ const htmlTemplate = (job, jsonLd, categorySlug, jobId, tableName) => {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://www.mystudentclub.com/scripts/portal-style.css">
-    <link rel="stylesheet" href="/scripts/site-navigation.css">
-    <script src="/scripts/site-navigation.js" defer></script>
+    <link rel="stylesheet" href="/scripts/site-navigation.css?v=20260927.3">
+    <script src="/scripts/site-navigation.js?v=20260927.3" defer></script>
     <link rel="icon" type="image/x-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
     <script type="application/ld+json">
     ${JSON.stringify(jsonLd)}

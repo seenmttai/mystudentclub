@@ -11,7 +11,7 @@ const args=process.argv.slice(2),index=args.indexOf('--evidence-dir');
 const evidenceDir=args[index+1];
 if(index<0||!path.isAbsolute(evidenceDir||''))throw new Error('Supply --evidence-dir /absolute/work/directory');
 const origin='https://cv-pdf-worker.bhansalimanan55.workers.dev';
-const version='2026-09-27-template-entitlements-v1';
+const version='2026-09-27-template-entitlements-v2';
 const data={personal:{name:'MSC Release Check',email:'qa@example.invalid',tagline:'Export verification'},summary:'Verified canonical CV content.',skills:'Excel, Accounting',education:[{degree:'CA',institution:'Example Institute',year:'2025'}],experience:[],projects:[],certifications:[],achievements:[],leadership:[],interests:[],customSections:[]};
 const results=[];
 await fs.mkdir(evidenceDir,{recursive:true});
