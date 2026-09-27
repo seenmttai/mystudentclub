@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/ort.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@ricky0123/vad-web@0.0.27/dist/bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.7.107/pdf.min.js"></script>
@@ -113,10 +113,11 @@
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
-            padding: 2rem 1rem;
+            padding: calc(env(safe-area-inset-top, 0px) + 32px) 1rem calc(env(safe-area-inset-bottom, 0px) + 2rem);
             position: relative;
             overflow-y: auto;
             background: radial-gradient(circle at top, rgba(79, 70, 229, 0.1) 0%, transparent 70%);
+            box-sizing: border-box;
         }
 
         .subtitles-overlay {
@@ -1060,14 +1061,15 @@
         }
 
         .interview-header {
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(10px);
-            padding: 1rem 2rem;
+            padding: calc(env(safe-area-inset-top, 0px) + 14px) 1.5rem 1rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
             border-bottom: 1px solid var(--border);
             z-index: 10;
+            box-sizing: border-box;
         }
 
         .interview-title {
@@ -1506,9 +1508,14 @@
         /* Mobile (max-width: 767px) */
         @media (max-width: 767px) {
             .setup-container {
-                padding: 0.5rem;
+                padding: calc(env(safe-area-inset-top, 0px) + 24px) 0.75rem calc(env(safe-area-inset-bottom, 0px) + 1.5rem);
                 min-height: 100vh;
                 height: auto;
+                box-sizing: border-box;
+            }
+
+            .interview-header {
+                padding: calc(env(safe-area-inset-top, 0px) + 12px) 1rem 0.85rem;
             }
 
             .setup-card {
@@ -1614,7 +1621,7 @@
             }
 
             .report-screen {
-                padding: 12px;
+                padding: calc(env(safe-area-inset-top, 0px) + 16px) 12px calc(env(safe-area-inset-bottom, 0px) + 16px);
             }
 
             .report-card {

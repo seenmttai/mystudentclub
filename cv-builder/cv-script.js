@@ -1523,8 +1523,28 @@
                 const navTabs = document.querySelectorAll('.nav-tab');
                 if (navTabs[1]) navTabs[1].classList.add('active');
 
-                if (window.cvReviewerEmbedded && typeof window.cvReviewerEmbedded.openReview === 'function') {
-                    window.cvReviewerEmbedded.openReview();
+                if (typeof postToFrame === 'function') {
+                    postToFrame();
+                }
+
+                const triggerReview = () => {
+                    if (window.cvReviewerEmbedded && typeof window.cvReviewerEmbedded.openReview === 'function') {
+                        window.cvReviewerEmbedded.openReview();
+                        return true;
+                    }
+                    return false;
+                };
+
+                if (!triggerReview()) {
+                    const loadingSection = document.getElementById('reviewerLoading');
+                    if (loadingSection) loadingSection.style.display = 'block';
+                    let attempts = 0;
+                    const interval = setInterval(() => {
+                        attempts++;
+                        if (triggerReview() || attempts > 60) {
+                            clearInterval(interval);
+                        }
+                    }, 50);
                 }
                 return;
             }

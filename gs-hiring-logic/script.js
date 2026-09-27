@@ -443,12 +443,36 @@ async function init() {
 
         if (error) throw error;
 
+        if (document.referrer && !document.referrer.includes('hiring-logic') && !document.referrer.includes('ca-resource')) {
+            sessionStorage.setItem('msc_guidebook_return_url', document.referrer);
+        } else if (!sessionStorage.getItem('msc_guidebook_return_url')) {
+            sessionStorage.setItem('msc_guidebook_return_url', '/learning-management-system/');
+        }
+
+        sessionStorage.setItem('msc_guidebook_active', '1');
         const proxyUrl = `https://pdf-proxy-viewer.bhansalimanan55.workers.dev/?url=${encodeURIComponent(data.signedUrl)}`;
         window.location.replace('/ca-resource/index.html?pdf=' + encodeURIComponent(proxyUrl));
     } catch (e) {
+        if (sessionStorage.getItem('msc_guidebook_active') || document.hidden) return;
         console.error('Error loading guidebook:', e);
         alert('Failed to load guidebook.');
     }
 }
 
-init();
+// Immediate check on script execution to catch back navigation before init() runs
+const navEntry = window.performance?.getEntriesByType?.('navigation')?.[0];
+if (navEntry?.type === 'back_forward' || sessionStorage.getItem('msc_guidebook_active')) {
+    sessionStorage.removeItem('msc_guidebook_active');
+    const returnUrl = sessionStorage.getItem('msc_guidebook_return_url') || '/learning-management-system/';
+    window.location.replace(returnUrl);
+} else {
+    window.addEventListener('pageshow', (event) => {
+        if (event.persisted || (window.performance?.getEntriesByType && window.performance.getEntriesByType('navigation')[0]?.type === 'back_forward')) {
+            sessionStorage.removeItem('msc_guidebook_active');
+            const returnUrl = sessionStorage.getItem('msc_guidebook_return_url') || '/learning-management-system/';
+            window.location.replace(returnUrl);
+        }
+    });
+
+    init();
+}

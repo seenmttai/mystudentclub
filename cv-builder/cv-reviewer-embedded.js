@@ -691,29 +691,46 @@ export async function runReviewEvaluation(force = false) {
     if (isEvaluating) return;
     isEvaluating = true;
 
-    await refreshAuthUser();
-
-    // Limit check for guest users
-    if (!authUser) {
-        const ipCount = getIpReviewCount();
-        if (ipCount >= IP_REVIEW_LIMIT) {
-            isEvaluating = false;
-            showNoticeModal('Login Required', 'You have used your 1 free guest review. Please sign in to your MSC account to get 3 additional free reviews.');
-            return;
-        }
-    } else if (!isPremiumEnrolled) {
-        const lifetimeCount = await getFreeUserLifetimeCount();
-        if (lifetimeCount >= FREE_USER_LIFETIME_LIMIT) {
-            isEvaluating = false;
-            openReviewBuyModal();
-            return;
-        }
-    }
-
     showLoadingView();
     startLoadingAnimation();
 
     try {
+        try {
+            await Promise.race([
+                refreshAuthUser(),
+                new Promise(res => setTimeout(res, 3500))
+            ]);
+        } catch (authErr) {
+            console.warn('Auth check non-fatal error:', authErr);
+        }
+
+        // Limit check for guest users
+        if (!authUser) {
+            const ipCount = getIpReviewCount();
+            if (ipCount >= IP_REVIEW_LIMIT) {
+                stopLoadingAnimation();
+                showLoadingView(false);
+                showNoticeModal('Login Required', 'You have used your 1 free guest review. Please sign in to your MSC account to get 3 additional free reviews.');
+                return;
+            }
+        } else if (!isPremiumEnrolled) {
+            let lifetimeCount = 0;
+            try {
+                lifetimeCount = await Promise.race([
+                    getFreeUserLifetimeCount(),
+                    new Promise(res => setTimeout(() => res(0), 3000))
+                ]);
+            } catch (cntErr) {
+                console.warn('Lifetime count check non-fatal error:', cntErr);
+            }
+            if (lifetimeCount >= FREE_USER_LIFETIME_LIMIT) {
+                stopLoadingAnimation();
+                showLoadingView(false);
+                openReviewBuyModal();
+                return;
+            }
+        }
+
         const { image, fileName } = await captureCvPreviewBase64(window);
         if (!image) throw new Error('Could not capture the current CV preview.');
 
@@ -1153,5 +1170,11 @@ window.cvReviewerEmbedded = {
     closeReviewBuyModal,
     showNoticeModal,
     showContextWarningModal,
-    showErrorView
+    showErrorView,
+    getCvDataSignature
 };
+
+// If the user already switched to the Reviewer tab before this module loaded, launch review immediately
+if (document.body && document.body.classList.contains('view-reviewer')) {
+    openReview();
+}

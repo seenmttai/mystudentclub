@@ -263,12 +263,15 @@ function setupCollapsibleSections() {
 
 menuButton.addEventListener('click', (e) => {
     e.stopPropagation();
-    expandedMenu.classList.toggle('active');
+    const isActive = expandedMenu.classList.toggle('active');
+    const backdrop = document.getElementById('menuBackdrop');
+    if (backdrop) backdrop.classList.toggle('active', isActive);
 });
 
 menuCloseBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     expandedMenu.classList.remove('active');
+    document.getElementById('menuBackdrop')?.classList.remove('active');
 });
 
 const logoutMenuBtn = document.getElementById('logoutMenuBtn');
@@ -300,6 +303,7 @@ function updateAuthUI() {
 document.addEventListener('click', (e) => {
     if (!expandedMenu.contains(e.target) && !menuButton.contains(e.target) && expandedMenu.classList.contains('active')) {
         expandedMenu.classList.remove('active');
+        document.getElementById('menuBackdrop')?.classList.remove('active');
     }
 });
 

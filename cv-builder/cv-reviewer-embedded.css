@@ -66,8 +66,8 @@ body.view-reviewer .mobile-download-fab {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 58px;
-  padding: 0 16px;
+  height: calc(58px + max(env(safe-area-inset-top, 0px), var(--safe-area-inset-top, 0px)));
+  padding: max(env(safe-area-inset-top, 0px), var(--safe-area-inset-top, 0px)) 16px 0 16px;
   background: var(--cvr-card-bg);
   border-bottom: 1px solid var(--cvr-border);
   position: sticky;
@@ -235,8 +235,8 @@ body.view-reviewer .mobile-download-fab {
 /* Responsive adjustments */
 @media (max-width: 680px) {
   .reviewer-topbar {
-    padding: 0 10px;
-    height: 52px;
+    padding: max(env(safe-area-inset-top, 0px), var(--safe-area-inset-top, 0px)) 10px 0 10px;
+    height: calc(52px + max(env(safe-area-inset-top, 0px), var(--safe-area-inset-top, 0px)));
   }
   .reviewer-icon-btn {
     width: 36px;

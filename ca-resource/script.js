@@ -1052,12 +1052,25 @@ window.addEventListener('beforeprint', e => {
 // ─── Back Button ───
 const backBtn = document.getElementById('viewer-back-btn');
 if (backBtn) {
-    backBtn.addEventListener('click', () => {
-        if (window.history.length > 1) {
-            window.history.back();
-        } else {
-            window.location.href = '/learning-management-system/';
+    backBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        sessionStorage.removeItem('msc_guidebook_active');
+        const returnUrl = sessionStorage.getItem('msc_guidebook_return_url');
+        if (returnUrl) {
+            sessionStorage.removeItem('msc_guidebook_return_url');
+            window.location.href = returnUrl;
+            return;
         }
+        const ref = document.referrer;
+        if (ref && !ref.includes('ca-resource') && !ref.includes('guidebook') && !ref.includes('hiring-logic') && !ref.includes('interview-booklet')) {
+            window.location.href = ref;
+            return;
+        }
+        if (window.history.length > 2 && ref && (ref.includes('guidebook') || ref.includes('hiring-logic') || ref.includes('interview-booklet'))) {
+            window.history.go(-2);
+            return;
+        }
+        window.location.href = '/learning-management-system/';
     });
 }
 

@@ -2900,17 +2900,27 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
   }
 
-  if (menuButton && expandedMenu) {
-    menuButton.addEventListener("click", (e) => {
-      e.stopPropagation();
-      expandedMenu.classList.add("active");
-    });
-  }
-  if (menuCloseBtn && expandedMenu) {
-    menuCloseBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      expandedMenu.classList.remove("active");
-    });
+  const menuBackdrop = document.getElementById("menuBackdrop");
+
+  const openProfileMenu = (e) => {
+    e?.stopPropagation();
+    expandedMenu?.classList.add("active");
+    menuBackdrop?.classList.add("active");
+  };
+  const closeProfileMenu = (e) => {
+    e?.stopPropagation();
+    expandedMenu?.classList.remove("active");
+    menuBackdrop?.classList.remove("active");
+  };
+
+  if (menuButton) menuButton.addEventListener("click", openProfileMenu);
+  if (menuCloseBtn) menuCloseBtn.addEventListener("click", closeProfileMenu);
+  if (menuBackdrop) menuBackdrop.addEventListener("click", closeProfileMenu);
+
+  if (expandedMenu && menuBackdrop && window.MutationObserver) {
+    new MutationObserver(() => {
+      menuBackdrop.classList.toggle("active", expandedMenu.classList.contains("active"));
+    }).observe(expandedMenu, { attributes: true, attributeFilter: ["class"] });
   }
 
   // Close menu when clicking outside
@@ -2920,9 +2930,21 @@ document.addEventListener("DOMContentLoaded", async () => {
       !expandedMenu.contains(e.target) &&
       !menuButton?.contains(e.target)
     ) {
-      expandedMenu.classList.remove("active");
+      closeProfileMenu();
     }
   });
+
+  // Resources dropdown toggle in profile menu
+  const resourcesBtn = document.getElementById("resourcesDropdownBtn");
+  if (resourcesBtn) {
+    resourcesBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const dropdown = document.getElementById("resourcesDropdown");
+      const icon = resourcesBtn.querySelector(".dropdown-icon");
+      dropdown?.classList.toggle("active");
+      icon?.classList.toggle("open");
+    });
+  }
 
   // Logout button in side menu
   const logoutMenuBtn = document.getElementById("logoutMenuBtn");
