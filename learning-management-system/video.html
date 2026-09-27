@@ -174,7 +174,7 @@
 <link rel="stylesheet" href="/scripts/site-navigation.css"><script src="/scripts/site-navigation.js" defer></script>
 </head>
 
-<body>
+<body class="msc-lms-page msc-lms-video">
     <div id="app">
         <header>
             <div class="logo-container">
@@ -188,8 +188,8 @@
                 </div>
                 <ul class="nav-links" :class="{ 'active': menuActive }">
                     <li><a href="index.html">Courses</a></li>
-                    <li><a href="resources.html">Resources</a></li>
-                    <li><a href="cv-reviewer.html">CV Review</a></li>
+                    <li><a href="/learning-management-system/lms-resources.html">Resources</a></li>
+                    <li><a href="/cv-reviewer/">CV Review</a></li>
                     <li class="profile-link">
                         <a href="#"><i class="fas fa-user-circle"></i> My Profile</a>
                     </li>
@@ -200,14 +200,14 @@
         <div class="video-fullpage">
             <aside class="video-sidebar" :class="{ 'active': sidebarActive }">
                 <div class="course-selector">
-                    <select v-model="selectedCourseId" @change="changeCourse">
+                    <select aria-label="Choose a course" v-model="selectedCourseId" @change="changeCourse">
                         <option v-for="course in courses" :key="course.id" :value="course.id">{{ course.title }}
                         </option>
                     </select>
                 </div>
                 <div class="playlist-header">
                     <span>Course Content</span>
-                    <button @click="toggleSidebar" class="close-sidebar">
+                    <button aria-label="Close course content" @click="toggleSidebar" class="close-sidebar">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
@@ -239,7 +239,7 @@
                 </div>
             </aside>
 
-            <div class="video-main">
+            <div class="video-main" role="main">
                 <div class="video-player-large">
                     <video controls preload="metadata" @ended="markVideoCompleted" controlsList="nodownload">
                         <source :src="videoUrl" type="video/mp4">
@@ -248,7 +248,7 @@
                 </div>
 
                 <div class="video-info-panel">
-                    <h2>{{ currentVideo ? currentVideo.title : 'Select a video' }}</h2>
+                    <h1 style="font-size:inherit;line-height:inherit;font-weight:inherit;margin:0">{{ currentVideo ? currentVideo.title : 'Select a video' }}</h1>
                     <div class="meta" v-if="currentVideo">
                         <span><i class="fas fa-clock"></i> {{ currentVideo.duration }}</span>
                         <span v-if="currentVideo.completed"><i class="fas fa-check-circle"></i> Completed</span>
@@ -258,7 +258,7 @@
                     </div>
                 </div>
 
-                <button class="playlist-toggle" @click="toggleSidebar">
+                <button aria-label="Toggle course content" class="playlist-toggle" @click="toggleSidebar">
                     <i :class="['fas', sidebarActive ? 'fa-times' : 'fa-list']"></i>
                 </button>
             </div>

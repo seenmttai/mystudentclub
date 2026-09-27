@@ -498,7 +498,7 @@
 <link rel="stylesheet" href="/scripts/site-navigation.css"><script src="/scripts/site-navigation.js" defer></script>
 </head>
 
-<body>
+<body class="msc-community-page msc-thread-page">
     <header class="site-header">
         <div class="header-container">
             <a href="/" class="brand-link">
@@ -529,7 +529,7 @@
             <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My
                 Courses</a>
             <a href="/ai-interview.html" class="menu-item">AI Interview Bot</a>
-            <a href="/" class="menu-item">Discussion Forum</a>
+            <a href="/forum.html" class="menu-item">Discussion Forum</a>
             <div class="menu-item-dropdown">
                 <button class="menu-item" id="resourcesDropdownBtn">
                     Resources
@@ -549,7 +549,8 @@
     <main class="thread-container">
         <a href="/forum.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Forum</a>
 
-        <div id="thread-header-section"></div>
+        <div id="thread-header-section"><h1>Loading discussion…</h1></div>
+        <p id="thread-action-status" role="status" aria-live="polite"></p>
 
         <div class="replies-section">
             <div class="replies-header">
@@ -617,7 +618,7 @@
         }
 
         async function loadThread() {
-            if (!threadId) return;
+            if (!threadId) { document.getElementById('thread-header-section').innerHTML = '<div class="community-state"><h1>Choose a discussion</h1><p>Return to the forum to find a conversation.</p></div>'; return; }
 
             const { data: thread, error } = await supabaseClient
                 .from('forum_threads')
@@ -629,10 +630,10 @@
                 .eq('id', threadId)
                 .single();
 
-            if (error || !thread) return;
+            if (error || !thread) { document.getElementById('thread-header-section').innerHTML = '<div class="community-state"><h1>Discussion unavailable</h1><p>This discussion could not be loaded. Try again or return to the forum.</p></div>'; return; }
 
             currentThread = thread;
-            document.title = `${escapeHTML(thread.title)} - My Student Club`;
+            document.title = `${thread.title} - My Student Club`;
 
             if (currentUser) {
                 const { data: vote } = await supabaseClient
@@ -680,13 +681,13 @@
                     <div class="post-content">${DOMPurify.sanitize(marked.parse(thread.content || ''))}</div>
                     <div class="thread-actions">
                         <div class="vote-section">
-                            <button class="vote-btn ${userVote === 'upvote' ? 'upvoted' : ''}" data-type="upvote" data-target="thread" ${isAuthor ? 'disabled' : ''}><i class="fas fa-arrow-up"></i></button>
+                            <button class="vote-btn ${userVote === 'upvote' ? 'upvoted' : ''}" aria-label="Upvote discussion" aria-pressed="${userVote === 'upvote'}" data-type="upvote" data-target="thread" ${isAuthor ? 'disabled' : ''}><i class="fas fa-arrow-up"></i></button>
                             <div class="vote-count">${voteScore}</div>
-                            <button class="vote-btn ${userVote === 'downvote' ? 'downvoted' : ''}" data-type="downvote" data-target="thread" ${isAuthor ? 'disabled' : ''}><i class="fas fa-arrow-down"></i></button>
+                            <button class="vote-btn ${userVote === 'downvote' ? 'downvoted' : ''}" aria-label="Downvote discussion" aria-pressed="${userVote === 'downvote'}" data-type="downvote" data-target="thread" ${isAuthor ? 'disabled' : ''}><i class="fas fa-arrow-down"></i></button>
                         </div>
                         ${currentUser ? `
-                            <button class="action-btn ${isBookmarked ? 'active' : ''}" id="bookmark-btn"><i class="fas fa-bookmark"></i> ${isBookmarked ? 'Bookmarked' : 'Bookmark'}</button>
-                            <button class="action-btn ${isWatching ? 'active' : ''}" id="watch-btn"><i class="fas fa-eye"></i> ${isWatching ? 'Watching' : 'Watch'}</button>
+                            <button class="action-btn ${isBookmarked ? 'active' : ''}" id="bookmark-btn" aria-pressed="${Boolean(isBookmarked)}"><i class="fas fa-bookmark"></i> ${isBookmarked ? 'Bookmarked' : 'Bookmark'}</button>
+                            <button class="action-btn ${isWatching ? 'active' : ''}" id="watch-btn" aria-pressed="${Boolean(isWatching)}"><i class="fas fa-eye"></i> ${isWatching ? 'Watching' : 'Watch'}</button>
                             <button class="action-btn" id="share-btn"><i class="fas fa-share"></i> Share</button>
                         ` : ''}
                     </div>
@@ -699,6 +700,7 @@
         }
 
         async function loadPosts() {
+            if (!currentThread) return;
             const { data: posts } = await supabaseClient
                 .from('forum_posts')
                 .select(`
@@ -752,9 +754,9 @@
                         <div class="post-content">${DOMPurify.sanitize(marked.parse(post.content || ''))}</div>
                         <div class="post-footer">
                             <div class="vote-section">
-                                <button class="vote-btn ${postVote === 'upvote' ? 'upvoted' : ''}" data-type="upvote" data-target="post" data-post-id="${post.id}" ${isPostAuthor ? 'disabled' : ''}><i class="fas fa-arrow-up"></i></button>
+                                <button class="vote-btn ${postVote === 'upvote' ? 'upvoted' : ''}" aria-label="Upvote reply" aria-pressed="${postVote === 'upvote'}" data-type="upvote" data-target="post" data-post-id="${post.id}" ${isPostAuthor ? 'disabled' : ''}><i class="fas fa-arrow-up"></i></button>
                                 <div class="vote-count" style="font-size:1.25rem;">${voteScore}</div>
-                                <button class="vote-btn ${postVote === 'downvote' ? 'downvoted' : ''}" data-type="downvote" data-target="post" data-post-id="${post.id}" ${isPostAuthor ? 'disabled' : ''}><i class="fas fa-arrow-down"></i></button>
+                                <button class="vote-btn ${postVote === 'downvote' ? 'downvoted' : ''}" aria-label="Downvote reply" aria-pressed="${postVote === 'downvote'}" data-type="downvote" data-target="post" data-post-id="${post.id}" ${isPostAuthor ? 'disabled' : ''}><i class="fas fa-arrow-down"></i></button>
                             </div>
                             <div class="post-reactions">
                                 <button class="reaction-btn" data-reaction="like"><i class="fas fa-thumbs-up"></i> Like</button>
@@ -851,14 +853,28 @@
                 if (!error) await loadThread();
             });
 
-            document.getElementById('share-btn')?.addEventListener('click', () => {
-                navigator.clipboard.writeText(window.location.href);
-                alert('Link copied to clipboard!');
+            document.getElementById('share-btn')?.addEventListener('click', async () => {
+                try {
+                    await navigator.clipboard.writeText(window.location.href);
+                    document.getElementById('thread-action-status').textContent = 'Discussion link copied.';
+                } catch (_) {
+                    document.getElementById('thread-action-status').textContent = 'The link could not be copied. Copy the address from your browser to share this discussion.';
+                }
             });
         }
 
         async function initReplyEditor() {
-            if (!currentUser) return;
+            if (!currentThread) return;
+            if (currentThread.is_locked) {
+                document.getElementById('thread-action-status').textContent = 'This discussion is closed to new replies.';
+                return;
+            }
+            if (!currentUser) {
+                const prompt = document.getElementById('reply-form-section');
+                prompt.style.display = 'block';
+                prompt.innerHTML = '<p>Sign in to join the discussion.</p><a class="action-button" href="/login.html?redirect=' + encodeURIComponent(window.location.pathname + window.location.search) + '">Sign in to reply</a>';
+                return;
+            }
 
             document.getElementById('reply-form-section').style.display = 'block';
 
@@ -876,9 +892,17 @@
                 }
             });
 
+            quillEditor.root.setAttribute('role', 'textbox');
+            quillEditor.root.setAttribute('aria-label', 'Your reply');
+            quillEditor.root.setAttribute('aria-multiline', 'true');
+            document.querySelectorAll('.ql-toolbar button').forEach(button => {
+                const command = [...button.classList].find(name => name.startsWith('ql-'))?.slice(3) || 'Format';
+                button.setAttribute('aria-label', `${command}${button.value ? ' ' + button.value : ''}`);
+            });
+
             document.getElementById('submit-reply-btn').addEventListener('click', async () => {
                 const content = quillEditor.root.innerHTML;
-                if (!content || content === '<p><br></p>') return;
+                if (!content || content === '<p><br></p>') { document.getElementById('thread-action-status').textContent = 'Write a reply before posting.'; quillEditor.focus(); return; }
 
                 const btn = document.getElementById('submit-reply-btn');
                 btn.disabled = true;

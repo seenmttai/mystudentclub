@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <base href="/cv-builder/">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Student Club CV Builder</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -46,7 +46,7 @@
 <link rel="stylesheet" href="/scripts/site-navigation.css"><script src="/scripts/site-navigation.js" defer></script>
 </head>
 
-<body class="view-editor">
+<body class="view-editor msc-cv-editor-page">
 
     <div id="toast">Changes saved</div>
 
@@ -75,13 +75,13 @@
     </div>
 
     <!-- LEFT PANEL -->
-    <div class="editor">
+    <div class="editor" role="main" aria-label="CV editor">
         <div class="editor-header">
             <div class="brand-row">
-                <a class="app-logo" href="/" title="Go to My Student Club">
-                    <img src="/assets/logo.png" alt="My Student Club logo">
+                <div class="app-logo">
+                    <h1 class="msc-editor-title">CV Builder</h1>
                     <span class="beta-badge">Beta</span>
-                </a>
+                </div>
                 <div style="display: flex; gap: 6px;">
                     <button class="btn-icon" onclick="startTour()" title="Take a quick tour"
                         style="background: #f0f4ff; border-color: var(--primary-light);">
@@ -152,7 +152,7 @@
 
             </div>
 
-            <input type="file" id="file-upload" accept="image/*,application/pdf" style="display:none"
+            <input aria-label="Upload an image or PDF" type="file" id="file-upload" accept="image/*,application/pdf" style="display:none"
                 onchange="handleImageUpload(this)">
 
             <div class="progress-head">
@@ -273,10 +273,10 @@
             <details open data-section="education">
                 <summary>
                     <span>Education</span>
-                   <button class="chip" type="button" onclick="toggleEducationFormatPanel(event)"
-                        style="font-size:10px; padding:4px 8px;">Table format</button>
                 </summary>
                 <div class="section-body">
+                    <div class="summary-actions"><button class="chip" type="button" onclick="toggleEducationFormatPanel(event)"
+                        style="font-size:10px; padding:4px 8px;">Table format</button></div>
                     <div class="form-group">
                         <label for="inp-title-education">Section Title (optional)</label>
                         <input type="text" class="form-control" id="inp-title-education" name="inp-title-education"
@@ -366,12 +366,12 @@
             <details data-section="certifications">
                 <summary>
                     <span>Certifications</span>
+                </summary>
+                <div class="section-body">
                     <div class="summary-actions">
                         <button class="chip" type="button" onclick="toggleSectionLabelPanel('certifications', event)"
                             style="font-size:10px; padding:4px 8px;">Label</button>
                     </div>
-                </summary>
-                <div class="section-body">
                     <div class="form-group">
                         <label for="inp-title-certifications">Section Title (optional)</label>
                         <input type="text" class="form-control" id="inp-title-certifications" name="inp-title-certifications"
@@ -394,12 +394,12 @@
             <details data-section="achievements">
                 <summary>
                     <span>Achievements &amp; Awards</span>
+                </summary>
+                <div class="section-body">
                     <div class="summary-actions">
                         <button class="chip" type="button" onclick="toggleSectionLabelPanel('achievements', event)"
                             style="font-size:10px; padding:4px 8px;">Label</button>
                     </div>
-                </summary>
-                <div class="section-body">
                     <div class="form-group">
                         <label for="inp-title-achievements">Section Title (optional)</label>
                         <input type="text" class="form-control" id="inp-title-achievements" name="inp-title-achievements"
@@ -436,12 +436,12 @@
             <details data-section="leadership">
                 <summary>
                     <span>Leadership</span>
+                </summary>
+                <div class="section-body">
                     <div class="summary-actions">
                         <button class="chip" type="button" onclick="toggleSectionLabelPanel('leadership', event)"
                             style="font-size:10px; padding:4px 8px;">Label</button>
                     </div>
-                </summary>
-                <div class="section-body">
                     <div class="form-group">
                         <label for="inp-title-leadership">Section Title (optional)</label>
                         <input type="text" class="form-control" id="inp-title-leadership" name="inp-title-leadership"
@@ -478,12 +478,12 @@
             <details data-section="interests">
                 <summary>
                     <span>Interests &amp; Hobbies</span>
+                </summary>
+                <div class="section-body">
                     <div class="summary-actions">
                         <button class="chip" type="button" onclick="toggleSectionLabelPanel('interests', event)"
                             style="font-size:10px; padding:4px 8px;">Label</button>
                     </div>
-                </summary>
-                <div class="section-body">
                     <div class="form-group">
                         <label for="inp-title-interests">Section Title (optional)</label>
                         <input type="text" class="form-control" id="inp-title-interests" name="inp-title-interests"
@@ -520,12 +520,12 @@
             <details data-section="skills">
                 <summary>
                     <span>Skills</span>
+                </summary>
+                <div class="section-body">
                     <div class="summary-actions">
                         <button class="chip" type="button" onclick="toggleSectionLabelPanel('skills', event)"
                             style="font-size:10px; padding:4px 8px;">Label</button>
                     </div>
-                </summary>
-                <div class="section-body">
                     <div class="form-group">
                         <label for="inp-title-skills">Section Title (optional)</label>
                         <input type="text" class="form-control" id="inp-title-skills" name="inp-title-skills"
@@ -606,8 +606,8 @@
                     <div class="template-theme-custom">
                         <label for="theme-accent-picker">Custom RGB</label>
                         <div class="template-theme-custom-row">
-                            <input type="color" id="theme-accent-picker" onchange="updateThemeAccent(this.value)">
-                            <input type="text" id="theme-accent-value" class="form-control" placeholder="#2F557F"
+                            <input aria-label="Theme accent colour" type="color" id="theme-accent-picker" onchange="updateThemeAccent(this.value)">
+                            <input aria-label="Theme accent colour as a hex code" type="text" id="theme-accent-value" class="form-control" placeholder="#2F557F"
                                 oninput="updateThemeAccentFromText(this.value)">
                             <div class="template-theme-chip" id="theme-accent-chip">Accent</div>
                         </div>
@@ -677,7 +677,7 @@
         </div>
 
         <!-- Hidden dropdown for legacy compatibility -->
-        <select id="template-select" style="display: none;" onchange="changeTemplate()">
+        <select aria-label="CV template" id="template-select" style="display: none;" onchange="changeTemplate()">
             <option value="bold-modern.html">Bold Modern</option>
             <option value="inset-frame.html">Inset Frame</option>
             <option value="clean-rule.html">Clean Rule</option>
@@ -819,7 +819,7 @@
                         <p class="sub-text">or click to browse</p>
                         <button id="browseButton" class="btn-primary">Browse Files</button>
                     </div>
-                    <input type="file" id="fileInput" hidden accept=".pdf">
+                    <input aria-label="Import a PDF CV" type="file" id="fileInput" hidden accept=".pdf">
                 </div>
 
                 <!-- PREVIEW -->
@@ -951,28 +951,28 @@
     </div>
 
     <div class="mobile-nav">
-        <div class="nav-tab active" onclick="switchTab('editor')">
+        <button type="button" class="nav-tab active" aria-pressed="true" onclick="switchTab('editor')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
             </svg>
             <span>Edit</span>
-        </div>
-        <div class="nav-tab" onclick="switchTab('reviewer')" style="color:var(--primary);">
+        </button>
+        <button type="button" class="nav-tab" onclick="switchTab('reviewer')" style="color:var(--primary);">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <path
                     d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
                 </path>
             </svg>
             <span>Review</span>
-        </div>
-        <div class="nav-tab" onclick="switchTab('preview')">
+        </button>
+        <button type="button" class="nav-tab" aria-pressed="false" onclick="switchTab('preview')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                 <circle cx="12" cy="12" r="3"></circle>
             </svg>
             <span>Preview</span>
-        </div>
+        </button>
     </div>
 
     <!-- REVIEWER LOGIC -->
@@ -1515,7 +1515,7 @@
             </div>
             <p class="ai-prompt-sub">Add a short instruction for this section (optional).</p>
             <div id="ai-prompt-suggestions" class="ai-prompt-suggestions"></div>
-            <textarea id="ai-prompt-input" class="form-control" rows="3"
+            <textarea aria-label="Instructions for AI writing assistance" id="ai-prompt-input" class="form-control" rows="3"
                 placeholder="e.g. Use action verbs, keep bullets under 18 words"></textarea>
             <div class="ai-prompt-actions">
                 <button class="btn-icon" type="button" onclick="closeAiPrompt('cancel')">Cancel</button>
@@ -1635,7 +1635,7 @@
     <div class="template-sidebar" id="template-sidebar">
         <div class="template-sidebar-header">
             <h3>Choose Template</h3>
-            <button class="template-sidebar-close" onclick="toggleTemplateSidebar(false)">×</button>
+            <button class="template-sidebar-close" onclick="toggleTemplateSidebar(false)" aria-label="Close dialog">×</button>
         </div>
         <div class="template-grid" id="template-grid">
             <!-- Cards injected by JS -->

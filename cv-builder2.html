@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI CV Builder - Full Suite</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -1016,7 +1016,7 @@
 <link rel="stylesheet" href="/scripts/site-navigation.css"><script src="/scripts/site-navigation.js" defer></script>
 </head>
 
-<body>
+<body class="msc-cv-legacy-page">
 
     <div class="loader" id="loader">
         <div class="spinner"></div>
@@ -1025,37 +1025,38 @@
 
     <div class="header">
         <div class="logo"><i class="fas fa-layer-group"></i> StrictCV</div>
-        <button class="btn btn-outline mobile-toggle" style="display:none;" onclick="toggleEditor()">
+        <button aria-label="Toggle CV editor" class="btn btn-outline mobile-toggle" style="display:none;" onclick="toggleEditor()">
             <i class="fas fa-bars"></i>
         </button>
         <div style="display: flex; gap:10px;">
             <label for="file-upload" class="btn btn-outline" style="font-size:0.85rem; padding:8px 12px;">
                 <i class="fas fa-cloud-upload-alt"></i> Import
             </label>
-            <input type="file" id="file-upload" style="display:none" accept="image/jpeg,image/png,application/pdf">
+            <input aria-label="Upload an image or PDF" type="file" id="file-upload" style="display:none" accept="image/jpeg,image/png,application/pdf">
         </div>
     </div>
 
-    <div class="editor" id="editor-panel">
+    <div class="editor" id="editor-panel" role="main" aria-label="CV editor">
+        <h1 class="msc-sr-only">CV Builder</h1>
         <div class="scroll-area">
             <!-- Personal Info -->
             <div class="section">
-                <div class="sec-head" onclick="toggleSec(this)">Personal Details <i class="fas fa-chevron-down"></i>
+                <div class="sec-head" role="button" tabindex="0" aria-expanded="true" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" onclick="toggleSec(this)">Personal Details <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="sec-body">
-                    <label>Full Name</label><input id="p-name" oninput="render()">
-                    <label>Contact (Phone | Email | LinkedIn)</label><input id="p-contact" oninput="render()">
-                    <label>Role / Tagline (Templates 6 & 3)</label><input id="p-tagline" oninput="render()">
+                    <label for="p-name">Full Name</label><input aria-label="Full name" id="p-name" oninput="render()">
+                    <label for="p-contact">Contact (Phone | Email | LinkedIn)</label><input aria-label="Phone, email and LinkedIn contact details" id="p-contact" oninput="render()">
+                    <label for="p-tagline">Role / Tagline (Templates 6 & 3)</label><input aria-label="Professional role or tagline" id="p-tagline" oninput="render()">
                 </div>
             </div>
 
             <!-- Summary -->
             <div class="section">
-                <div class="sec-head" onclick="toggleSec(this)">Career Objective <i class="fas fa-chevron-down"></i>
+                <div class="sec-head" role="button" tabindex="0" aria-expanded="true" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" onclick="toggleSec(this)">Career Objective <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="sec-body">
                     <div class="input-wrapper">
-                        <textarea id="summary" oninput="render()"
+                        <textarea aria-label="Professional summary" id="summary" oninput="render()"
                             placeholder="Short professional summary..."></textarea>
                         <button class="ai-btn" onclick="refine('summary', 'summary')" title="AI Shorten"><i
                                 class="fas fa-magic"></i></button>
@@ -1065,7 +1066,7 @@
 
             <!-- Education -->
             <div class="section">
-                <div class="sec-head" onclick="toggleSec(this)">Education <i class="fas fa-chevron-down"></i></div>
+                <div class="sec-head" role="button" tabindex="0" aria-expanded="true" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" onclick="toggleSec(this)">Education <i class="fas fa-chevron-down"></i></div>
                 <div class="sec-body" id="edu-list"></div>
                 <div style="padding:0 20px 20px 20px;">
                     <button class="btn btn-add" onclick="addEdu()">+ Add Qualification</button>
@@ -1074,7 +1075,7 @@
 
             <!-- Experience -->
             <div class="section">
-                <div class="sec-head" onclick="toggleSec(this)">Experience <i class="fas fa-chevron-down"></i></div>
+                <div class="sec-head" role="button" tabindex="0" aria-expanded="true" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" onclick="toggleSec(this)">Experience <i class="fas fa-chevron-down"></i></div>
                 <div class="sec-body" id="exp-list"></div>
                 <div style="padding:0 20px 20px 20px;">
                     <button class="btn btn-add" onclick="addExp()">+ Add Job</button>
@@ -1083,24 +1084,24 @@
 
             <!-- Skills -->
             <div class="section">
-                <div class="sec-head" onclick="toggleSec(this)">Skills <i class="fas fa-chevron-down"></i></div>
+                <div class="sec-head" role="button" tabindex="0" aria-expanded="true" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" onclick="toggleSec(this)">Skills <i class="fas fa-chevron-down"></i></div>
                 <div class="sec-body">
-                    <textarea id="skills" oninput="render()" placeholder="List skills..."></textarea>
+                    <textarea aria-label="Professional skills" id="skills" oninput="render()" placeholder="List skills..."></textarea>
                 </div>
             </div>
 
             <div class="section">
-                <div class="sec-head" onclick="toggleSec(this)">Template Style <i class="fas fa-chevron-down"></i></div>
+                <div class="sec-head" role="button" tabindex="0" aria-expanded="true" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" onclick="toggleSec(this)">Template Style <i class="fas fa-chevron-down"></i></div>
                 <div class="sec-body open" style="padding:0;">
-                    <div class="template-grid">
-                        <div id="t7-thumb" class="t-thumb active" onclick="setTemplate('template_7')">Strict<br>Minimal
-                        </div>
-                        <div id="t1-thumb" class="t-thumb" onclick="setTemplate('template_1')">Pro<br>Black</div>
-                        <div id="t2-thumb" class="t-thumb" onclick="setTemplate('template_2')">Corp<br>Blue</div>
-                        <div id="t3-thumb" class="t-thumb" onclick="setTemplate('template_3')">Grid<br>Layout</div>
-                        <div id="t4-thumb" class="t-thumb" onclick="setTemplate('template_4')">Modern<br>Blue</div>
-                        <div id="t5-thumb" class="t-thumb" onclick="setTemplate('template_5')">Times<br>Serif</div>
-                        <div id="t6-thumb" class="t-thumb" onclick="setTemplate('template_6')">Header<br>Blocks</div>
+                    <div class="template-grid" role="group" aria-label="CV template styles" tabindex="0">
+                        <button type="button" id="t7-thumb" class="t-thumb active" aria-pressed="true" onclick="setTemplate('template_7')">Strict<br>Minimal
+                        </button>
+                        <button type="button" id="t1-thumb" class="t-thumb" aria-pressed="false" onclick="setTemplate('template_1')">Pro<br>Black</button>
+                        <button type="button" id="t2-thumb" class="t-thumb" aria-pressed="false" onclick="setTemplate('template_2')">Corp<br>Blue</button>
+                        <button type="button" id="t3-thumb" class="t-thumb" aria-pressed="false" onclick="setTemplate('template_3')">Grid<br>Layout</button>
+                        <button type="button" id="t4-thumb" class="t-thumb" aria-pressed="false" onclick="setTemplate('template_4')">Modern<br>Blue</button>
+                        <button type="button" id="t5-thumb" class="t-thumb" aria-pressed="false" onclick="setTemplate('template_5')">Times<br>Serif</button>
+                        <button type="button" id="t6-thumb" class="t-thumb" aria-pressed="false" onclick="setTemplate('template_6')">Header<br>Blocks</button>
                     </div>
                 </div>
             </div>
@@ -1223,25 +1224,25 @@
 
         function addEdu(d = {}) {
             const div = document.createElement('div'); div.className = 'repeater edu-item';
-            div.innerHTML = `<button class="del-btn" onclick="this.parentElement.remove(); render()"><i class="fas fa-times"></i></button>
+            div.innerHTML = `<button type="button" class="del-btn" aria-label="Remove this qualification" onclick="this.parentElement.remove(); render()"><i class="fas fa-times"></i></button>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <div><label>Degree</label><input class="d" value="${d.degree || ''}" oninput="render()"></div>
-                <div><label>Institute</label><input class="i" value="${d.institute || ''}" oninput="render()"></div>
-                <div><label>Year</label><input class="y" value="${d.year || ''}" oninput="render()"></div>
-                <div><label>Remarks</label><input class="r" value="${d.remarks || ''}" oninput="render()"></div>
+                <div><label>Degree</label><input aria-label="Qualification or degree" class="d" value="${d.degree || ''}" oninput="render()"></div>
+                <div><label>Institute</label><input aria-label="Institute" class="i" value="${d.institute || ''}" oninput="render()"></div>
+                <div><label>Year</label><input aria-label="Qualification year" class="y" value="${d.year || ''}" oninput="render()"></div>
+                <div><label>Remarks</label><input aria-label="Qualification remarks" class="r" value="${d.remarks || ''}" oninput="render()"></div>
             </div>`;
             document.getElementById('edu-list').appendChild(div);
         }
 
         function addExp(d = {}) {
             const div = document.createElement('div'); div.className = 'repeater exp-item';
-            div.innerHTML = `<button class="del-btn" onclick="this.parentElement.remove(); render()"><i class="fas fa-times"></i></button>
-            <label>Role</label><input class="r" value="${d.role || ''}" oninput="render()">
-            <label>Company</label><input class="c" value="${d.company || ''}" oninput="render()">
-            <label>Dates</label><input class="d" value="${d.dates || ''}" oninput="render()">
+            div.innerHTML = `<button type="button" class="del-btn" aria-label="Remove this job" onclick="this.parentElement.remove(); render()"><i class="fas fa-times"></i></button>
+            <label>Role</label><input aria-label="Job role" class="r" value="${d.role || ''}" oninput="render()">
+            <label>Company</label><input aria-label="Company name" class="c" value="${d.company || ''}" oninput="render()">
+            <label>Dates</label><input aria-label="Employment dates" class="d" value="${d.dates || ''}" oninput="render()">
             <label>Bullets</label>
             <div class="input-wrapper">
-                <textarea class="b" oninput="render()">${(d.bullets || []).join('\n')}</textarea>
+                <textarea aria-label="Job responsibilities and achievements" class="b" oninput="render()">${(d.bullets || []).join('\n')}</textarea>
                 <button class="ai-btn" onclick="refine(this.previousElementSibling, 'bullets')" title="AI Refine"><i class="fas fa-magic"></i></button>
             </div>`;
             document.getElementById('exp-list').appendChild(div);
@@ -1250,11 +1251,12 @@
         // --- INTERACTION ---
         function setTemplate(t) {
             currTemplate = t;
-            document.querySelectorAll('.t-thumb').forEach(el => el.classList.remove('active'));
-            document.getElementById(t.replace('template_', 't') + '-thumb').classList.add('active');
+            document.querySelectorAll('.t-thumb').forEach(el => { el.classList.remove('active'); el.setAttribute('aria-pressed', 'false'); });
+            const selected = document.getElementById(t.replace('template_', 't') + '-thumb');
+            selected.classList.add('active'); selected.setAttribute('aria-pressed', 'true');
             render();
         }
-        function toggleSec(el) { el.classList.toggle('collapsed'); el.nextElementSibling.classList.toggle('hidden'); }
+        function toggleSec(el) { const collapsed = el.classList.toggle('collapsed'); el.setAttribute('aria-expanded', String(!collapsed)); el.nextElementSibling.classList.toggle('hidden'); }
         function toggleEditor() { document.getElementById('editor-panel').classList.toggle('active'); }
 
         // --- API & EXPORT ---

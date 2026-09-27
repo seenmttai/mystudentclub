@@ -1,3 +1,6 @@
+@import url('/scripts/site-experience.css?v=20260927');
+@import url('/scripts/learning-experience.css?v=20260927');
+@import url('/scripts/community-experience.css?v=20260927');
 html.msc-shared-navigation body > header:not(#msc-site-navigation),html.msc-shared-navigation .floating-header:not(#msc-site-navigation),html.msc-shared-navigation .site-header:not(#msc-site-navigation),html.msc-shared-navigation #expandedMenu{display:none!important}
 #msc-site-navigation,#msc-site-navigation *{box-sizing:border-box}
 #msc-site-navigation{position:fixed!important;inset:0 0 auto!important;height:80px!important;z-index:1500!important;background:#fff!important;border-bottom:1px solid #e2e8f0!important;box-shadow:0 2px 12px #16324f08!important;padding:0 24px!important;margin:0!important;color:#233247!important;font-family:Inter,Poppins,Arial,sans-serif!important;line-height:1.45!important;transform:none!important}
@@ -29,3 +32,23 @@ body.msc-needs-header-space{padding-top:80px!important;box-sizing:border-box}
 @media print{#msc-site-navigation{display:none!important}body.msc-needs-header-space{padding-top:0!important}}
 /* The Vue course dashboard keeps its original header nodes for existing scripts. */
 html.msc-shared-navigation #app > header.glass-header{display:none!important}
+
+/* MSC 2026: one calm navigation system across the site. */
+#msc-site-navigation{box-shadow:none!important;font-family:var(--msc-font)!important}
+#msc-site-navigation .msc-nav-shell{max-width:1440px;gap:32px}
+#msc-site-navigation .msc-nav-brand{gap:10px;min-height:44px;padding:0;background:none;color:#172b46}
+#msc-site-navigation .msc-nav-brand img{width:32px;height:36px;max-height:36px}
+#msc-site-navigation .msc-nav-wordmark{font-size:18px;font-weight:750;letter-spacing:-.6px;line-height:1.15}
+#msc-site-navigation .msc-nav-link,#msc-site-navigation summary{min-height:44px;font-size:14px;font-weight:550;padding:10px 12px;border-radius:8px}
+#msc-site-navigation .msc-nav-login{border-radius:8px;background:#245bdb;padding:12px 16px;line-height:20px;font-weight:650}
+#msc-site-navigation .msc-nav-login:hover{background:#1949bc;color:#fff}
+#msc-site-navigation .msc-nav-group.msc-nav-current>summary{color:#245bdb;background:#edf3ff}
+#msc-site-navigation .msc-nav-dropdown{min-width:258px;padding:8px;box-shadow:0 12px 28px #172b4612;border-color:#dce3ed;border-radius:12px}
+#msc-site-navigation .msc-nav-dropdown a{min-height:44px;display:flex;align-items:center;font-weight:500}
+#msc-site-navigation summary>span[aria-hidden]{font-size:16px;transition:transform .15s}
+#msc-site-navigation details[open]>summary>span[aria-hidden]{transform:rotate(180deg)}
+#msc-site-navigation .msc-nav-toggle{min-width:44px;min-height:44px;background:#fff;color:#172b46;border-color:#dce3ed;box-shadow:none}
+@media(min-width:1051px) and (max-width:1240px){#msc-site-navigation .msc-nav-shell{gap:12px}#msc-site-navigation .msc-nav-wordmark{font-size:16px}#msc-site-navigation .msc-nav-link,#msc-site-navigation summary{font-size:12px;padding:10px 7px}#msc-site-navigation .msc-nav-login{font-size:12px;padding:10px 12px}}
+@media(max-width:1050px){#msc-site-navigation .msc-nav-shell{gap:12px}#msc-site-navigation .msc-nav-wordmark{font-size:18px}#msc-site-navigation .msc-nav-link,#msc-site-navigation summary{font-size:16px;min-height:48px;padding:12px}#msc-site-navigation .msc-nav-dropdown{min-width:0;padding:4px 8px;border-radius:0;border-left:2px solid #dce3ed;box-shadow:none}#msc-site-navigation .msc-nav-dropdown a{min-height:46px;font-size:15px;padding:10px 12px}#msc-site-navigation .msc-nav-login{display:inline-flex;margin:4px 0;min-height:44px;align-items:center}}
+
+#msc-site-navigation .msc-nav-brand[aria-current=page]{background:none;color:#172b46}

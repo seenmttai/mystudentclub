@@ -670,7 +670,7 @@
 <link rel="stylesheet" href="/scripts/site-navigation.css"><script src="/scripts/site-navigation.js" defer></script>
 </head>
 
-<body>
+<body class="msc-community-page msc-forum-page">
     <header class="site-header">
         <div class="header-container">
             <a href="/" class="brand-link">
@@ -701,7 +701,7 @@
             <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My
                 Courses</a>
             <a href="/ai-interview.html" class="menu-item">AI Interview Bot</a>
-            <a href="/" class="menu-item">Discussion Forum</a>
+            <a href="/forum.html" class="menu-item">Discussion Forum</a>
 
             <div class="menu-item-dropdown">
                 <button class="menu-item" id="resourcesDropdownBtn">
@@ -727,31 +727,32 @@
             </div>
             <div class="sidebar-section">
                 <h3>Sort By</h3>
-                <div class="sort-options">
-                    <button class="sort-btn active" data-sort="recent">Recent</button>
-                    <button class="sort-btn" data-sort="popular">Popular</button>
-                    <button class="sort-btn" data-sort="trending">Hot</button>
+                <div class="sort-options" role="group" aria-label="Sort discussions">
+                    <button class="sort-btn active" data-sort="recent" aria-pressed="true">Recent</button>
+                    <button class="sort-btn" data-sort="popular" aria-pressed="false">Popular</button>
+                    <button class="sort-btn" data-sort="trending" aria-pressed="false">Hot</button>
                 </div>
             </div>
         </aside>
 
         <main class="main-content">
             <div class="forum-header">
-                <h1>Discussions</h1>
+                <div><p class="community-eyebrow">THE CA COMMUNITY</p><h1>Discussions</h1></div>
                 <div class="search-bar">
                     <i class="fas fa-search"></i>
-                    <input type="text" id="search-input" placeholder="Search discussions...">
+                    <input aria-label="Search discussions" type="text" id="search-input" placeholder="Search discussions...">
                 </div>
                 <a href="/new-thread.html" id="new-thread-btn" class="action-button" style="display: none;">
                     <i class="fas fa-plus"></i> New Thread
                 </a>
             </div>
 
-            <div class="filter-chips">
-                <button class="filter-chip active" data-filter="all">All</button>
-                <button class="filter-chip" data-filter="unanswered">Unanswered</button>
-                <button class="filter-chip" data-filter="solved">Solved</button>
-                <button class="filter-chip" data-filter="following">Following</button>
+            <p class="community-intro">Ask questions, share what you know and learn from people on the same journey.</p>
+            <div class="filter-chips" role="group" aria-label="Filter discussions">
+                <button class="filter-chip active" data-filter="all" aria-pressed="true">All</button>
+                <button class="filter-chip" data-filter="unanswered" aria-pressed="false">Unanswered</button>
+                <button class="filter-chip" data-filter="solved" aria-pressed="false">Solved</button>
+                <button class="filter-chip" data-filter="following" aria-pressed="false">Following</button>
             </div>
 
             <section id="quick-create" class="quick-create">
@@ -761,23 +762,21 @@
                         the community.</p>
                     <a href="/login.html" class="action-button">Login to Post</a>
                 </div>
-                <div id="quick-create-collapsed" style="display: none; cursor: pointer;">
-                    <input type="text" placeholder="Start a new discussion..." readonly
-                        style="cursor: pointer; text-align: center; font-weight: 500;">
-                </div>
+<button type="button" id="quick-create-collapsed" class="quick-create-trigger" aria-expanded="false" aria-controls="quick-create-form" style="display: none;">Start a new discussion…</button>
                 <form id="quick-create-form" style="display: none;">
-                    <select id="qc-category" required
+                    <select aria-label="Discussion category" id="qc-category" required
                         style="width:100%;padding:.875rem;margin-bottom:1rem;border:2px solid var(--forum-border);border-radius:10px;">
                         <option value="">Select Category</option>
                     </select>
-                    <input id="qc-title" type="text" placeholder="Thread title" required>
-                    <textarea id="qc-content" placeholder="Write your question or topic..." required></textarea>
-                    <input id="qc-tags" type="text" placeholder="Tags (comma separated)">
+                    <input aria-label="Discussion title" id="qc-title" type="text" placeholder="Thread title" required>
+                    <textarea aria-label="Discussion question or topic" id="qc-content" placeholder="Write your question or topic..." required></textarea>
+                    <input aria-label="Discussion tags, separated by commas" id="qc-tags" type="text" placeholder="Tags (comma separated)">
                     <button type="submit" class="action-button">Create Thread</button>
                 </form>
             </section>
 
-            <div id="threads-list" class="threads-list">
+            <p id="forum-results-status" role="status" aria-live="polite"></p>
+            <div id="threads-list" class="threads-list" role="region" aria-label="Discussions">
                 <div class="loader-container">
                     <div class="loader-spinner"></div>
                 </div>
@@ -813,6 +812,7 @@
         let currentFilter = 'all';
         let searchQuery = '';
         let realtimeChannel = null;
+        let threadRequest = 0;
 
         // UTILITY FUNCTIONS
         function escapeHTML(str) {
@@ -854,16 +854,16 @@
                 const container = document.getElementById('categories-list');
                 const select = document.getElementById('qc-category');
 
-                container.innerHTML = '<a class="category-item active" data-category="all"><span class="category-icon"><i class="fas fa-folder"></i></span><span class="category-name">All Topics</span></a>';
+                container.innerHTML = '<button type="button" class="category-item active" aria-pressed="true" data-category="all"><span class="category-icon"><i class="fas fa-folder"></i></span><span class="category-name">All topics</span></button>';
                 select.innerHTML = '<option value="">Select Category</option>';
 
                 data?.forEach(cat => {
                     container.innerHTML += `
-                        <a class="category-item" data-category="${cat.id}">
+                        <button type="button" class="category-item" aria-pressed="false" data-category="${cat.id}">
                             <span class="category-icon"><i class="${escapeHTML(cat.icon)}"></i></span>
                             <span class="category-name">${escapeHTML(cat.name)}</span>
                             <span class="category-count">${cat.thread_count}</span>
-                        </a>
+                        </button>
                     `;
                     select.innerHTML += `<option value="${cat.id}">${escapeHTML(cat.name)}</option>`;
                 });
@@ -872,8 +872,9 @@
                 document.querySelectorAll('.category-item').forEach(item => {
                     item.addEventListener('click', (e) => {
                         e.preventDefault();
-                        document.querySelectorAll('.category-item').forEach(i => i.classList.remove('active'));
+                        document.querySelectorAll('.category-item').forEach(i => { i.classList.remove('active'); i.setAttribute('aria-pressed', 'false'); });
                         item.classList.add('active');
+                        item.setAttribute('aria-pressed', 'true');
                         currentCategory = item.dataset.category === 'all' ? null : item.dataset.category;
                         loadThreads();
                     });
@@ -886,6 +887,10 @@
 
         async function loadThreads() {
             const container = document.getElementById('threads-list');
+            const status = document.getElementById('forum-results-status');
+            const request = ++threadRequest;
+            container.setAttribute('aria-busy', 'true');
+            status.textContent = 'Loading discussions…';
             container.innerHTML = '<div class="loader-container"><div class="loader-spinner"></div></div>';
 
             try {
@@ -898,6 +903,19 @@
                     `)
                     .eq('is_deleted', false);
 
+                if (currentFilter === 'following') {
+                    if (!currentUser) throw new Error('Please sign in to view followed discussions.');
+                    const { data: watched, error: watchError } = await supabaseClient.from('forum_thread_watchers').select('thread_id').eq('user_id', currentUser.id);
+                    if (watchError) throw watchError;
+                    if (request !== threadRequest) return;
+                    const threadIds = (watched || []).map(row => row.thread_id);
+                    if (!threadIds.length) {
+                        container.innerHTML = '<div class="empty-state"><p>You are not following any discussions yet. Open a discussion and choose Watch to follow it.</p></div>';
+                        status.textContent = 'No followed discussions';
+                        return;
+                    }
+                    query = query.in('id', threadIds);
+                }
                 if (currentCategory) query = query.eq('category_id', currentCategory);
                 if (currentFilter === 'unanswered') query = query.eq('reply_count', 0);
                 if (currentFilter === 'solved') query = query.eq('has_accepted_answer', true);
@@ -910,14 +928,17 @@
                 query = query.order('is_pinned', { ascending: false }).limit(20);
 
                 const { data, error } = await query;
+                if (request !== threadRequest) return;
 
                 if (error) throw error;
 
                 if (!data || data.length === 0) {
-                    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon"><i class="fas fa-comments"></i></div><p>No discussions yet. Be the first!</p></div>';
+                    status.textContent = 'No matching discussions';
+                    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon"><i class="fas fa-comments"></i></div><p>No discussions match these filters. Try a different search or choose All.</p></div>';
                     return;
                 }
 
+                status.textContent = `${data.length} discussion${data.length === 1 ? '' : 's'} shown`;
                 container.innerHTML = data.map(thread => `
                     <a href="/thread.html?id=${thread.id}" class="thread-item ${thread.is_pinned ? 'pinned' : ''} ${thread.is_locked ? 'locked' : ''}">
                         <div class="thread-avatar">${escapeHTML(getAvatar(thread.author_email))}</div>
@@ -953,8 +974,13 @@
                     </a>
                 `).join('');
             } catch (e) {
+                if (request !== threadRequest) return;
+                status.textContent = 'Discussions could not be loaded';
                 console.error('Failed to load threads:', e);
-                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon"><i class="fas fa-exclamation-triangle"></i></div><p>Error loading threads. Please refresh the page.</p></div>';
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon"><i class="fas fa-exclamation-triangle"></i></div><p>We couldn’t load discussions.</p><button type="button" class="action-button">Try again</button></div>';
+                container.querySelector('button').addEventListener('click', loadThreads);
+            } finally {
+                if (request === threadRequest) container.setAttribute('aria-busy', 'false');
             }
         }
 
@@ -1132,8 +1158,9 @@
         // Sort buttons
         document.querySelectorAll('.sort-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.sort-btn').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
                 btn.classList.add('active');
+                btn.setAttribute('aria-pressed', 'true');
                 currentSort = btn.dataset.sort;
                 loadThreads();
             });
@@ -1147,8 +1174,9 @@
                     alert('Please log in to see threads you follow.');
                     return;
                 }
-                document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+                document.querySelectorAll('.filter-chip').forEach(c => { c.classList.remove('active'); c.setAttribute('aria-pressed', 'false'); });
                 chip.classList.add('active');
+                chip.setAttribute('aria-pressed', 'true');
                 currentFilter = chip.dataset.filter;
                 loadThreads();
             });
@@ -1166,6 +1194,7 @@
 
         // Quick-create collapsed state click handler
         document.getElementById('quick-create-collapsed')?.addEventListener('click', () => {
+            document.getElementById('quick-create-collapsed').setAttribute('aria-expanded', 'true');
             document.getElementById('quick-create-collapsed').style.display = 'none';
             document.getElementById('quick-create-form').style.display = 'block';
             document.getElementById('qc-title').focus();

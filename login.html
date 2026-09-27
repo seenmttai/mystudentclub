@@ -856,7 +856,7 @@
 <link rel="stylesheet" href="/scripts/site-navigation.css"><script src="/scripts/site-navigation.js" defer></script>
 </head>
 
-<body>
+<body class="msc-auth-page msc-login-page">
   <div class="auth-container" id="authContainer">
     <!-- Form Panel -->
     <div class="form-panel">
@@ -879,9 +879,10 @@
         </div>
 
         <div class="form-container">
-          <h1 class="form-title">Welcome</h1>
+          <h1 class="form-title">Welcome back</h1>
+          <p class="msc-auth-intro">Sign in to continue your CA career journey.</p>
 
-          <div id="login-error" class="error-message"></div>
+          <div id="login-error" class="error-message" role="alert"></div>
 
           <button type="button" id="google-login-btn" class="google-btn">
             <svg viewBox="0 0 48 48">
@@ -897,18 +898,20 @@
               <path fill="#34A853"
                 d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
             </svg>
-            Login with Google
+            Continue with Google
           </button>
 
           <div class="divider">or</div>
 
           <form id="login-form">
             <div class="form-group">
-              <input type="email" id="login-email" class="form-input" placeholder="Email address" required>
+              <label class="msc-field-label" for="login-email">Email address</label>
+              <input type="email" id="login-email" class="form-input" placeholder="Email address" required autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false">
             </div>
             <div class="form-group">
+              <label class="msc-field-label" for="login-password">Password</label>
               <div class="password-wrapper">
-                <input type="password" id="login-password" class="form-input" placeholder="Password" required>
+                <input type="password" id="login-password" class="form-input" placeholder="Password" required autocomplete="current-password">
                 <button type="button" class="password-toggle" data-target="login-password"
                   aria-label="Toggle password visibility">
                   <svg class="eye-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -929,7 +932,7 @@
           <a href="#" class="forgot-link" id="forgot-password-link">Forgot your password?</a>
 
           <div class="switch-link">
-            Not a user? <a href="#" id="show-signup">Sign up
+            New to My Student Club? <a href="#" id="show-signup">Sign up
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
               </svg>
@@ -947,8 +950,8 @@
         <div class="form-container">
           <h1 class="form-title">Create an account</h1>
 
-          <div id="signup-error" class="error-message"></div>
-          <div id="signup-success" class="success-message"></div>
+          <div id="signup-error" class="error-message" role="alert"></div>
+          <div id="signup-success" class="success-message" role="status"></div>
 
           <button type="button" id="google-signup-btn" class="google-btn">
             <svg viewBox="0 0 48 48">
@@ -961,7 +964,7 @@
               <path fill="#34A853"
                 d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
             </svg>
-            Signup with Google
+            Continue with Google
           </button>
 
           <div class="divider">or</div>
@@ -969,16 +972,19 @@
           <form id="signup-form">
             <div class="name-row">
               <div class="form-group">
-                <input type="text" id="signup-firstname" class="form-input" placeholder="Name" aria-label="Name" autocomplete="name" maxlength="160" required>
+                <label class="msc-field-label" for="signup-firstname">Full name</label>
+              <input type="text" id="signup-firstname" class="form-input" placeholder="Name" aria-label="Name" autocomplete="name" maxlength="160" required>
               </div>
               <input type="hidden" id="signup-lastname" value="">
             </div>
             <div class="form-group">
-              <input type="email" id="signup-email" class="form-input" placeholder="Email address" required>
+              <label class="msc-field-label" for="signup-email">Email address</label>
+              <input type="email" id="signup-email" class="form-input" placeholder="Email address" required autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false">
             </div>
             <div class="form-group">
+              <label class="msc-field-label" for="signup-password">Password</label>
               <div class="password-wrapper">
-                <input type="password" id="signup-password" class="form-input" placeholder="Password" required>
+                <input type="password" id="signup-password" class="form-input" placeholder="Password" required autocomplete="new-password">
                 <button type="button" class="password-toggle" data-target="signup-password"
                   aria-label="Toggle password visibility">
                   <svg class="eye-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1048,7 +1054,7 @@
         <div class="testimonial-card" data-index="1">
           <p class="testimonial-text">
             <strong>AI-Powered Edge:</strong> Utilize our AI CV Reviewer and Interview Bot to perfect your resume and
-            boost your shortlist chances by 3x compared to standard applicants.
+            identify ways to make your applications clearer and more relevant.
           </p>
         </div>
 
@@ -1101,14 +1107,15 @@
 
     <!-- Forgot Password Modal -->
     <div class="modal-overlay" id="forgot-password-modal">
-      <div class="modal-content">
-        <h3 class="modal-title">Reset Password</h3>
+      <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="reset-password-title">
+        <h3 class="modal-title" id="reset-password-title">Reset your password</h3>
         <p class="modal-subtitle">Enter your email address and we'll send you a link to reset your password.</p>
 
         <div class="form-group">
-          <input type="email" id="reset-email" class="form-input" placeholder="Email address" required>
+          <label class="msc-field-label" for="reset-email">Email address</label>
+              <input type="email" id="reset-email" class="form-input" placeholder="Email address" required autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false">
         </div>
-        <div id="reset-message"></div>
+        <div id="reset-message" role="status" aria-live="polite"></div>
 
         <div class="modal-buttons">
           <button type="button" class="modal-btn secondary" id="cancel-reset">Cancel</button>

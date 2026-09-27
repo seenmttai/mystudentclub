@@ -894,7 +894,7 @@
 <link rel="stylesheet" href="/scripts/site-navigation.css"><script src="/scripts/site-navigation.js" defer></script>
 </head>
 
-<body>
+<body class="msc-lms-page msc-lms-resources">
     <div id="app" v-cloak>
         <header class="glass-header">
             <div class="header-container">
@@ -1018,7 +1018,7 @@
                                 title="Toggle Fullscreen">
                                 <i class="fas" :class="isFullscreen ? 'fa-compress' : 'fa-expand'"></i>
                             </button>
-                            <button @click="closeViewer" class="resource-viewer-close-button">×</button>
+                            <button @click="closeViewer" class="resource-viewer-close-button" aria-label="Close dialog">×</button>
                         </div>
                     </div>
 
@@ -1046,7 +1046,7 @@
                                     <div class="csv-search-wrapper">
                                         <i class="fas fa-search csv-search-icon"></i>
                                         <input
-                                            type="text"
+ aria-label="Search this spreadsheet"                                            type="text"
                                             class="csv-search-input"
                                             placeholder="Search in spreadsheet…"
                                             autocomplete="off"

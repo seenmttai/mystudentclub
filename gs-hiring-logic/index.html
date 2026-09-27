@@ -25,7 +25,8 @@
         <p>Verifying Access...</p>
     </div>
 
-    <div id="pdf-viewer-container" style="display: none;">
+    <div id="pdf-viewer-container" role="main" aria-label="Document reader" style="display: none;">
+        <h1 class="msc-sr-only">GS Hiring Logic</h1>
         <div id="viewer-controls">
             <button id="prev-page" title="Previous Page">◄</button>
             <span class="page-info">Page: <span id="page-num">0</span> / <span id="page-count">0</span></span>
@@ -34,7 +35,7 @@
 
         <div id="extra-controls">
             <div id="search-controls">
-                <input type="text" id="search-input" placeholder="Search PDF">
+                <input aria-label="Search PDF" type="text" id="search-input" placeholder="Search PDF">
                 <button id="search-btn">Search</button>
                 <button id="search-prev" title="Previous Match" disabled>«</button>
                 <button id="search-next" title="Next Match" disabled>»</button>
@@ -44,7 +45,7 @@
                 <button id="zoom-in" title="Zoom In">+</button>
             </div>
             <div id="goto-controls">
-                <input type="number" id="goto-input" min="1" placeholder="Page #">
+                <input aria-label="Go to document page number" type="number" id="goto-input" min="1" placeholder="Page #">
                 <button id="goto-page-btn">Go</button>
             </div>
         </div>

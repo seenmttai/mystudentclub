@@ -326,9 +326,11 @@
   <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
   <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
 <link rel="stylesheet" href="/scripts/site-navigation.css"><script src="/scripts/site-navigation.js" defer></script>
+  <link rel="stylesheet" href="/scripts/jobs-experience.css?v=20260927">
+  <script src="/scripts/jobs-experience.js?v=20260927" defer></script>
 </head>
 
-<body>
+<body class="msc-jobs">
 
   <header class="site-header">
     <div class="header-container">
@@ -412,7 +414,7 @@
   <div id="notificationPopup" class="notification-popup">
     <div class="notification-popup-header">
       <h3>Notification Preferences</h3>
-      <button id="closeNotificationPopup" class="icon-button">×</button>
+      <button id="closeNotificationPopup" aria-label="Close notification preferences" class="icon-button">×</button>
     </div>
     <div class="notification-status" id="notificationStatus"></div>
     <div id="notification-permission-status"></div>
@@ -428,8 +430,8 @@
       <div class="subscription-form" id="specific-subscription-form">
         <h4>Add Specific Subscription:</h4>
         <div class="subscription-selectors">
-          <select id="locationSelect" class="filter-control"></select>
-          <select id="jobTypeSelect" class="filter-control"></select>
+          <select id="locationSelect" aria-label="Notification location" class="filter-control"></select>
+          <select id="jobTypeSelect" aria-label="Notification job type" class="filter-control"></select>
           <button id="subscribeBtn" class="action-button" disabled>Subscribe</button>
         </div>
       </div>
@@ -440,10 +442,18 @@
     </div>
   </div>
 
-  <main class="main-content-area">
+  <main class="main-content-area" id="job-opportunities">
+      <header class="jobs-page-heading">
+        <div>
+          <p class="jobs-eyebrow">YOUR CA CAREER, ONE STEP FORWARD</p>
+          <h1>Industrial training opportunities</h1>
+          <p class="jobs-page-intro">Make your next move count. Explore industrial training roles, compare opportunities and find the right fit for your CA journey.</p>
+        </div>
+        <a class="jobs-resource-link" href="/ca-industrial-training-resources.html">Industrial training resources <span aria-hidden="true">↗</span></a>
+      </header>
 
-    <nav class="portal-nav-bar">
-      <a href="/" class="footer-tab active">
+    <nav class="portal-nav-bar" aria-label="Choose your career stage">
+      <a href="/" class="footer-tab active" aria-current="page">
         <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
             d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -463,7 +473,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
             d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
         </svg>
-        <span>Semi Qualified</span>
+        <span>Semi-qualified CA</span>
       </a>
       <a href="/ca-fresher-jobs" class="footer-tab">
         <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -477,7 +487,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
             d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
         </svg>
-        <span>Experienced CA</span><span class="dv2-badge-new">New</span>
+        <span>Experienced CA</span>
       </a>
     </nav>
 
@@ -485,7 +495,7 @@
       <aside class="filter-sidebar">
         <div class="filter-sidebar-header">
           <h3>Filters</h3>
-          <button class="reset-filters-btn" id="desktopResetBtn">Reset All</button>
+          <button class="reset-filters-btn" id="desktopResetBtn">Clear all</button>
         </div>
         <div class="filter-group experience-filter-group" style="display: none;">
           <label>Experience Level</label>
@@ -576,9 +586,9 @@
       </aside>
 
       <div class="job-listings-container">
-        <div class="dv2-top-search">
+        <div class="dv2-top-search" role="search" aria-label="Search opportunities">
           <i class="fas fa-search" aria-hidden="true"></i>
-          <input type="text" id="dv2TopSearchInput" placeholder="Search jobs, companies or keywords...">
+          <input type="text" id="dv2TopSearchInput" aria-label="Search by role, company or keyword" placeholder="Search jobs, companies or keywords...">
           <button type="button" id="dv2TopSearchBtn" class="dv2-top-search-btn">Search</button>
         </div>
 
@@ -589,10 +599,10 @@
         <div class="mobile-controls">
           <div class="search-bar-wrapper">
             <i class="fas fa-search search-button"></i>
-            <input type="text" id="searchInputMobile" placeholder="Search jobs by keyword..."
+            <input type="text" id="searchInputMobile" aria-label="Search by role, company or keyword" placeholder="Search jobs by keyword..."
               class="search-input-field">
           </div>
-          <button id="open-filter-modal-btn" class="filter-toggle-btn">
+          <button id="open-filter-modal-btn" aria-haspopup="dialog" aria-controls="filterModalOverlay" class="filter-toggle-btn">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L12 14.414V19a1 1 0 01-1.447.894l-2-1A1 1 0 018 18v-3.586L3.293 6.707A1 1 0 013 6V4z">
@@ -603,10 +613,11 @@
         </div>
 
         <div class="listings-header">
+          <p class="jobs-results-summary" id="jobs-results-summary" role="status" aria-live="polite">Finding opportunities…</p>
           <div id="active-filters-display" class="active-filters-container"></div>
         </div>
 
-        <div class="job-listing-area" id="jobs"></div>
+        <div class="job-listing-area" id="jobs" role="region" aria-label="Job opportunities"></div>
         <div class="loader-container" id="loader">
           <div class="loader-spinner"></div>
         </div>
@@ -674,16 +685,16 @@
 
   <div id="modal" class="modal-overlay-container">
     <div class="modal-dialog">
-      <button class="modal-close-action" id="modalCloseBtn">×</button>
+      <button class="modal-close-action" id="modalCloseBtn" aria-label="Close job details">×</button>
       <div id="modal-body-content"></div>
     </div>
   </div>
 
   <div class="filter-modal-overlay" id="filterModalOverlay">
-    <div class="filter-modal-content">
+    <div class="filter-modal-content" role="dialog" aria-modal="true" aria-labelledby="job-filters-title" tabindex="-1">
       <div class="modal-header">
-        <h4>Filters</h4>
-        <button class="modal-close-action" id="closeFilterModalBtn">×</button>
+        <h4 id="job-filters-title">Filter opportunities</h4>
+        <button class="modal-close-action" id="closeFilterModalBtn" aria-label="Close filters">×</button>
       </div>
       <div class="modal-body">
         <div class="filter-group experience-filter-group" style="display: none;">
@@ -775,7 +786,7 @@
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" id="mobileResetBtn">Reset</button>
-        <button class="btn btn-primary" id="applyFiltersBtn">Show Jobs</button>
+        <button class="btn btn-primary" id="applyFiltersBtn">Show opportunities</button>
       </div>
     </div>
   </div>
@@ -849,12 +860,12 @@
   <!-- Profile Incomplete Modal for AI Apply -->
   <div id="profileIncompleteModal" class="modal-overlay-container" style="display: none; z-index: 2002;">
     <div class="modal-dialog" style="max-width: 450px;">
-      <button class="modal-close-action">×</button>
+      <button type="button" class="modal-close-action" aria-label="Close profile reminder">×</button>
       <div style="padding: 2rem; text-align: center;">
         <i class="fas fa-file-pdf" style="font-size: 3rem; color: #ef4444; margin-bottom: 1rem;"></i>
         <h3 style="font-size: 1.35rem; font-weight: 700; color: #1f2937; margin-bottom: 0.75rem;">Your profile is
           incomplete</h3>
-        <p style="color: #6b7280; margin-bottom: 1.5rem; line-height: 1.6;">Please upload your CV to PDF to use
+        <p style="color: #6b7280; margin-bottom: 1.5rem; line-height: 1.6;">Please upload your CV as a PDF to use
           <strong>AI Powered Apply</strong>.
         </p>
         <a href="/profile.html" class="btn btn-primary"
@@ -974,7 +985,7 @@
         <div class="onboarding-modal-header">
           <img src="/assets/logo.png" alt="My Student Club" class="onboarding-brand-logo">
           <h3>Help Us Personalize Your Portal</h3>
-          <p>Tell us what you are looking for to see the best opportunities.</p>
+          <p>Tell us what you are looking for to see opportunities for your career stage.</p>
         </div>
 
         <form id="onboardingSegmentForm" class="onboarding-form" novalidate>
@@ -1045,7 +1056,7 @@
             <div class="onboarding-conditional-field" id="field-fresher">
               <label class="input-label-custom">CA Final Attempt Month &amp; Year</label>
               <div class="attempt-picker-row" id="final-attempt-picker">
-                <select id="ca_final_attempt_month" class="form-input-custom select-custom">
+                <select aria-label="CA Final attempt month" id="ca_final_attempt_month" class="form-input-custom select-custom">
                   <option value="" disabled selected>Month</option>
                   <option>Jan</option>
                   <option>Feb</option>
@@ -1060,7 +1071,7 @@
                   <option>Nov</option>
                   <option>Dec</option>
                 </select>
-                <select id="ca_final_attempt_year" class="form-input-custom select-custom">
+                <select aria-label="CA Final attempt year" id="ca_final_attempt_year" class="form-input-custom select-custom">
                   <option value="" disabled selected>Year</option>
                   <option>2035</option>
                   <option>2034</option>
@@ -1154,7 +1165,7 @@
     </div>
   </div>
 
-  <script type="module" src="/scripts/portal3.js?v=2.1"></script>
+  <script type="module" src="/scripts/portal3.js?v=20260927"></script>
   <script type="module" src="/scripts/date-utils.js"></script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-1450NCVE65"></script>
   <script>

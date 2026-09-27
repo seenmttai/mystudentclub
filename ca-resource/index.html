@@ -44,7 +44,8 @@
 <link rel="stylesheet" href="/scripts/site-navigation.css"><script src="/scripts/site-navigation.js" defer></script>
 </head>
 <body>
-    <div id="pdf-app">
+    <div id="pdf-app" role="main" aria-label="Document reader">
+        <h1 class="msc-sr-only">Document reader</h1>
         <!-- Top Toolbar -->
         <div id="toolbar">
             <div class="toolbar-left">
@@ -60,7 +61,7 @@
                     <i class="fas fa-chevron-left"></i>
                 </button>
                 <div class="page-indicator">
-                    <input type="number" id="page-input" min="1" value="1">
+                    <input aria-label="Document page number" type="number" id="page-input" min="1" value="1">
                     <span class="page-sep">/</span>
                     <span id="page-count">0</span>
                 </div>
@@ -72,7 +73,7 @@
             <div class="toolbar-center">
                 <div class="search-bar">
                     <i class="fas fa-search search-icon"></i>
-                    <input type="text" id="search-input" placeholder="Search in document...">
+                    <input aria-label="Search in document" type="text" id="search-input" placeholder="Search in document...">
                     <button id="search-prev" class="toolbar-btn-sm" title="Previous Match" disabled><i class="fas fa-chevron-up"></i></button>
                     <button id="search-next" class="toolbar-btn-sm" title="Next Match" disabled><i class="fas fa-chevron-down"></i></button>
                     <span id="search-info" class="search-info-badge"></span>

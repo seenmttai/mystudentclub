@@ -590,7 +590,7 @@
 <link rel="stylesheet" href="/scripts/site-navigation.css"><script src="/scripts/site-navigation.js" defer></script>
 </head>
 
-<body>
+<body class="msc-community-page msc-auth-page msc-hirer-signup-page">
 
   <!-- Header -->
   <header class="top-header">
@@ -607,7 +607,7 @@
   </header>
 
   <!-- Main Content -->
-  <div class="signup-page-wrapper">
+  <main class="signup-page-wrapper">
 
     <!-- Left Column: Value Prop -->
     <div class="hero-info-column">
@@ -675,16 +675,21 @@
       </div>
 
       <!-- Alerts -->
-      <div id="errorAlert" class="alert-box alert-error">
+      <div id="errorAlert" class="alert-box alert-error" role="alert">
         <i class="fas fa-exclamation-circle"></i>
         <span id="errorMessage">An error occurred.</span>
       </div>
 
-      <div id="successAlert" class="alert-box alert-success">
+      <div id="successAlert" class="alert-box alert-success" role="status">
         <i class="fas fa-check-circle"></i>
         <span id="successMessage">Verification email sent! Please check your email (and spam folder) to verify.</span>
       </div>
 
+      <section id="existing-account-panel" class="community-state" hidden aria-labelledby="existing-account-title">
+        <h3 id="existing-account-title">You’re already signed in</h3>
+        <p>Continue to the recruiter portal with this account, or choose a different account to register.</p>
+        <div class="community-actions"><a href="/post-a-job.html" class="community-primary-link">Continue with this account</a><button type="button" id="use-different-account">Use a different account</button></div>
+      </section>
       <form id="hirerForm">
         <div class="form-grid">
 
@@ -693,7 +698,7 @@
             <label class="form-label" for="fullName">Your Full Name <span class="req">*</span></label>
             <div class="input-wrapper">
               <i class="fas fa-user"></i>
-              <input type="text" id="fullName" class="form-input" placeholder="e.g. Rahul Sharma" required>
+              <input type="text" id="fullName" autocomplete="name" class="form-input" placeholder="e.g. Rahul Sharma" required>
             </div>
           </div>
 
@@ -702,7 +707,7 @@
             <label class="form-label" for="designation">Designation / Role <span class="req">*</span></label>
             <div class="input-wrapper">
               <i class="fas fa-id-badge"></i>
-              <input type="text" id="designation" class="form-input" placeholder="e.g. HR Manager / Partner" required>
+              <input type="text" id="designation" autocomplete="organization-title" class="form-input" placeholder="e.g. HR Manager / Partner" required>
             </div>
           </div>
 
@@ -711,7 +716,7 @@
             <label class="form-label" for="companyName">Company / CA Firm Name <span class="req">*</span></label>
             <div class="input-wrapper">
               <i class="fas fa-building"></i>
-              <input type="text" id="companyName" class="form-input" placeholder="e.g. ABC & Associates / Deloitte / Tata Group" required>
+              <input aria-label="Company name" type="text" id="companyName" autocomplete="organization" class="form-input" placeholder="e.g. ABC & Associates / Deloitte / Tata Group" required>
             </div>
           </div>
 
@@ -720,7 +725,7 @@
             <label class="form-label" for="email">Work Email <span class="req">*</span></label>
             <div class="input-wrapper">
               <i class="fas fa-envelope"></i>
-              <input type="email" id="email" class="form-input" placeholder="name@company.com" required>
+              <input type="email" id="email" autocomplete="email" class="form-input" placeholder="name@company.com" required>
             </div>
           </div>
 
@@ -729,7 +734,7 @@
             <label class="form-label" for="phone">Phone / WhatsApp <span class="req">*</span></label>
             <div class="input-wrapper">
               <i class="fas fa-phone"></i>
-              <input type="tel" id="phone" class="form-input" placeholder="+91 98765 43210" required>
+              <input type="tel" id="phone" autocomplete="tel" class="form-input" placeholder="+91 98765 43210" required>
             </div>
           </div>
 
@@ -755,7 +760,7 @@
             <label class="form-label" for="website">Company Website or LinkedIn</label>
             <div class="input-wrapper">
               <i class="fas fa-globe"></i>
-              <input type="text" id="website" class="form-input" placeholder="https://company.com">
+              <input type="text" id="website" autocomplete="url" class="form-input" placeholder="https://company.com">
             </div>
           </div>
 
@@ -791,7 +796,7 @@
             <label class="form-label" for="password">Password <span class="req">*</span></label>
             <div class="input-wrapper">
               <i class="fas fa-lock"></i>
-              <input type="password" id="password" class="form-input has-toggle" placeholder="Min. 6 characters" required minlength="6">
+              <input type="password" id="password" autocomplete="new-password" class="form-input has-toggle" placeholder="Min. 6 characters" required minlength="6">
               <button type="button" class="password-toggle-btn" onclick="togglePass('password', this)" aria-label="Toggle password visibility">
                 <i class="far fa-eye"></i>
               </button>
@@ -803,7 +808,7 @@
             <label class="form-label" for="confirmPassword">Confirm Password <span class="req">*</span></label>
             <div class="input-wrapper">
               <i class="fas fa-lock"></i>
-              <input type="password" id="confirmPassword" class="form-input has-toggle" placeholder="Repeat password" required minlength="6">
+              <input type="password" id="confirmPassword" autocomplete="new-password" class="form-input has-toggle" placeholder="Repeat password" required minlength="6">
               <button type="button" class="password-toggle-btn" onclick="togglePass('confirmPassword', this)" aria-label="Toggle confirm password visibility">
                 <i class="far fa-eye"></i>
               </button>
@@ -823,7 +828,7 @@
       </form>
     </div>
 
-  </div>
+  </main>
 
   <script>
     // Supabase client initialization
@@ -845,10 +850,14 @@
       const icon = btn.querySelector('i');
       if (input.type === 'password') {
         input.type = 'text';
+        btn.setAttribute('aria-pressed', 'true');
+        btn.setAttribute('aria-label', 'Hide password');
         icon.classList.remove('fa-eye');
         icon.classList.add('fa-eye-slash');
       } else {
         input.type = 'password';
+        btn.setAttribute('aria-pressed', 'false');
+        btn.setAttribute('aria-label', 'Show password');
         icon.classList.remove('fa-eye-slash');
         icon.classList.add('fa-eye');
       }
@@ -868,22 +877,42 @@
       window.scrollTo({ top: successAlert.offsetTop - 100, behavior: 'smooth' });
     }
 
-    // If user is already logged in (e.g. as candidate), log them out so they can register as hirer
+    // Visiting registration must never change an existing account session.
+    let checkingExistingAccount = true;
+    let existingAccount = null;
+    const existingAccountPanel = document.getElementById('existing-account-panel');
     window.addEventListener('DOMContentLoaded', async () => {
-      if (!supabaseClient) return;
+      if (!supabaseClient) { showError('Account services are unavailable. Please reload the page.'); return; }
       try {
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        if (session && session.user) {
-          await supabaseClient.auth.signOut();
-          localStorage.removeItem('msc_user_role');
-          localStorage.removeItem('msc_company_name');
-        }
-      } catch (_) {}
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
+        if (error) throw error;
+        existingAccount = session?.user || null;
+        form.hidden = Boolean(existingAccount);
+        existingAccountPanel.hidden = !existingAccount;
+        checkingExistingAccount = false;
+      } catch (_) { showError('We could not check your account. Please reload the page to try again.'); }
+    });
+    document.getElementById('use-different-account').addEventListener('click', async event => {
+      const button = event.currentTarget;
+      button.disabled = true;
+      try {
+        const { error } = await supabaseClient.auth.signOut();
+        if (error) throw error;
+        localStorage.removeItem('msc_user_role');
+        localStorage.removeItem('msc_company_name');
+        existingAccount = null;
+        checkingExistingAccount = false;
+        existingAccountPanel.hidden = true;
+        form.hidden = false;
+        document.getElementById('fullName').focus();
+      } catch (_) { showError('We could not switch accounts. Please try again.'); }
+      finally { button.disabled = false; }
     });
 
     // Form Submission
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (checkingExistingAccount || existingAccount) { showError('Please finish checking or switching your account before registering.'); return; }
       errorAlert.classList.remove('show');
       successAlert.classList.remove('show');
 

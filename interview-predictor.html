@@ -351,11 +351,11 @@
   <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
 <link rel="stylesheet" href="/scripts/site-navigation.css"><script src="/scripts/site-navigation.js" defer></script>
 </head>
-<body>
+<body class="msc-interview-predictor-page">
 
     <div class="header">
         <h1>CA Interview Predictor</h1>
-        <p>AI Document Understanding analyzes your CV and generates a target-specific prep dossier.</p>
+        <p>Upload your CV and choose a company and role to build a focused interview preparation guide.</p>
     </div>
 
     <div class="container">
@@ -363,7 +363,7 @@
             <div class="form-grid">
                 
                 <div class="form-group">
-                    <label>Target Company <span class="label-hint">Uses Historical Matrix</span></label>
+                    <label for="targetCompany">Target company <span class="label-hint">Uses Historical Matrix</span></label>
                     <select id="targetCompany" required>
                         <option value="Amazon">Amazon (FP&A / Controllership / ITX)</option>
                         <option value="Goldman Sachs">Goldman Sachs (EMEA Reg Reporting / Hedge Fund)</option>
@@ -379,7 +379,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Target Domain / Role <span class="label-hint">Technical Core</span></label>
+                    <label for="targetDomain">Target role <span class="label-hint">Technical Core</span></label>
                     <select id="targetDomain" required>
                         <option value="Financial Reporting & Accounting">Financial Reporting & Accounting</option>
                         <option value="FP&A & Business Finance">FP&A & Business Finance</option>
@@ -412,7 +412,7 @@
                 <div class="form-group full-width">
                     <label>Upload Your CV (PDF) <span class="label-hint">Recommended</span></label>
                     <div class="file-upload-wrapper">
-                        <input type="file" id="cvFile" accept="application/pdf">
+                        <input type="file" id="cvFile" aria-label="Upload your CV as a PDF" accept="application/pdf">
                         <div class="file-upload-label" id="fileNameDisplay">Click or drag PDF to upload</div>
                         <div class="file-upload-hint">We will analyze your CV directly using native AI Document Understanding.</div>
                     </div>
@@ -420,7 +420,7 @@
 
                 <div class="form-group full-width">
                     <label>Or Paste Key Experience <span class="label-hint">If PDF is not available</span></label>
-                    <textarea id="cvText" rows="3" placeholder="e.g. 2 years Statutory Audit at mid-size firm, handled FMCG clients."></textarea>
+                    <textarea id="cvText" aria-label="Your experience summary" rows="3" placeholder="e.g. 2 years Statutory Audit at mid-size firm, handled FMCG clients."></textarea>
                 </div>
 
                 <div class="form-group full-width">
@@ -442,7 +442,7 @@
                 <div class="metric-title">Target Match Fit</div>
             </div>
             <div class="metric-box">
-                <div class="metric-val">Verified</div>
+                <div class="metric-val">Guidance</div>
                 <div class="metric-title">ATS CV Readiness</div>
             </div>
             <div class="metric-box">

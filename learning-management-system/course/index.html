@@ -137,7 +137,7 @@
                     <aside class="course-sidebar" id="course-sidebar">
                         <div class="sidebar-header">
                             <h3>Course Content</h3>
-                            <button class="sidebar-close" id="sidebar-close-btn"><i class="fas fa-times"></i></button>
+                            <button aria-label="Close course content" class="sidebar-close" id="sidebar-close-btn"><i class="fas fa-times"></i></button>
                         </div>
                         <div class="sidebar-progress">
                             <div class="course-progress-container">
@@ -220,7 +220,7 @@
                             <div id="tab-content-discussion" class="tab-content">
                                 <div class="discussion-container">
                                     <div class="comment-input-area">
-                                        <textarea id="new-comment-input" class="comment-input"
+                                        <textarea aria-label="Question or comment about the lecture" id="new-comment-input" class="comment-input"
                                             placeholder="Ask a question or share your thoughts about this lecture..."></textarea>
                                         <button class="post-btn" id="post-comment-btn">Post</button>
                                     </div>
@@ -233,7 +233,7 @@
                                 <div class="report-form">
                                     <h3>Report a Problem</h3>
                                     <p>Encountered an issue with this video or content? Let us know.</p>
-                                    <textarea id="report-description-input" class="report-textarea"
+                                    <textarea aria-label="Describe the content issue" id="report-description-input" class="report-textarea"
                                         placeholder="Describe the issue you are facing..."></textarea>
                                     <button class="report-submit-btn" id="submit-report-btn">Submit Report</button>
                                 </div>
@@ -279,7 +279,7 @@
                             <div class="csv-toolbar-left">
                                 <div class="csv-search-wrapper">
                                     <i class="fas fa-search csv-search-icon"></i>
-                                    <input type="text" id="csv-search-input" class="csv-search-input"
+                                    <input aria-label="Search this spreadsheet" type="text" id="csv-search-input" class="csv-search-input"
                                         placeholder="Search in spreadsheet…" autocomplete="off"
                                         oninput="csvFilterRows(this.value)"
                                         onselectstart="event.stopPropagation();"
@@ -340,11 +340,11 @@
                         <p>Empowering the next generation of Chartered Accountants with world-class education and
                             resources.</p>
                         <div class="social-links">
-                            <a href="https://www.linkedin.com/company/mystudentclub" target="_blank"
+                            <a aria-label="My Student Club on LinkedIn" href="https://www.linkedin.com/company/mystudentclub" target="_blank"
                                 rel="noopener noreferrer"><i class="fab fa-linkedin"></i></a>
-                            <a href="https://www.instagram.com/my_student_club/" target="_blank"
+                            <a aria-label="My Student Club on Instagram" href="https://www.instagram.com/my_student_club/" target="_blank"
                                 rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
-                            <a href="https://www.youtube.com/@capadambhansali" target="_blank"
+                            <a aria-label="My Student Club on YouTube" href="https://www.youtube.com/@capadambhansali" target="_blank"
                                 rel="noopener noreferrer"><i class="fab fa-youtube"></i></a>
                         </div>
                     </div>

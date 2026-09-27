@@ -989,7 +989,7 @@
       border-color: #e2e8f0;
     }
 
-    /* ── Redesigned Verified Reviews Section ───────────────────────────────── */
+    /* ── Redesigned Community Reviews Section ───────────────────────────────── */
     .afd-reviews-section {
       display: flex;
       flex-direction: column;
@@ -1011,7 +1011,7 @@
     }
 
     .afd-reviews-section .afd-section-title::before {
-      content: "02 \2014  Verified Feedback";
+      content: "02 \2014  Community Feedback";
       font-family: var(--h-mono);
       font-size: 10px;
       font-weight: 700;
@@ -2557,7 +2557,7 @@
       <div id="afd-hero-card" class="afd-hero-card"></div>
       <!-- Reviews list area -->
       <section class="afd-reviews-section">
-        <h3 class="afd-section-title">Verified Reviews</h3>
+        <h3 class="afd-section-title">Community Reviews</h3>
         <div id="afd-reviews-list" aria-live="polite"></div>
         <!-- Paginator -->
         <div id="afd-pagination" class="afd-pagination" aria-label="Reviews pagination" style="display:none;"></div>
@@ -2606,7 +2606,7 @@
 
             <p class="afd-cta-note">
               <i class="fas fa-shield-halved" style="font-size: 12px; margin-right: 4px;"></i>
-              100% anonymous — your identity is never stored
+              Share your experience to help other CA students
             </p>
           </div>
         </div>
@@ -3738,7 +3738,7 @@
     <div class="afd-modal-card">
       <div class="afd-modal-header">
         <h3>Report Fake/Spam Review</h3>
-        <button type="button" class="afd-modal-close" onclick="closeAfdReportModal()"><i
+        <button aria-label="Close report dialog" type="button" class="afd-modal-close" onclick="closeAfdReportModal()"><i
             class="fas fa-times"></i></button>
       </div>
       <form id="afd-report-form">
@@ -3784,7 +3784,7 @@
             style="display: none; font-size: 0.8125rem; margin-top: 1rem; font-weight: 500;"></p>
         </div>
         <div class="afd-modal-footer">
-          <button type="button" class="afd-btn-modal-cancel" onclick="closeAfdReportModal()">Cancel</button>
+          <button aria-label="Close report dialog" type="button" class="afd-btn-modal-cancel" onclick="closeAfdReportModal()">Cancel</button>
           <button type="submit" class="afd-btn-modal-submit">Submit Report</button>
         </div>
       </form>
@@ -3796,7 +3796,7 @@
     <div class="afd-modal-card">
       <div class="afd-modal-header">
         <h3>Delete Anonymous Review</h3>
-        <button type="button" class="afd-modal-close" onclick="closeAfdDeleteModal()"><i
+        <button aria-label="Close delete confirmation" type="button" class="afd-modal-close" onclick="closeAfdDeleteModal()"><i
             class="fas fa-times"></i></button>
       </div>
       <div class="afd-modal-body">
@@ -3808,7 +3808,7 @@
           style="display: none; font-size: 0.8125rem; margin-top: 1rem; font-weight: 500;"></div>
       </div>
       <div class="afd-modal-footer">
-        <button type="button" class="afd-btn-modal-cancel" onclick="closeAfdDeleteModal()">Cancel</button>
+        <button aria-label="Close delete confirmation" type="button" class="afd-btn-modal-cancel" onclick="closeAfdDeleteModal()">Cancel</button>
         <button type="button" class="afd-btn-modal-submit" id="afd-confirm-delete-btn"
           style="background: #dc2626; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);">Delete Review</button>
       </div>

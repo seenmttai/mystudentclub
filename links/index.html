@@ -141,17 +141,17 @@
     </header>
 
     <div class="tabs-wrapper">
-      <div class="tabs-container">
-        <button class="tab-btn active" id="tab-industrial" onclick="switchTab(this, 'industrial')">Industrial Training</button>
-        <button class="tab-btn" id="tab-ca" onclick="switchTab(this, 'ca')">CA Fresher</button>
-        <button class="tab-btn" id="tab-articleship" onclick="switchTab(this, 'articleship')">Articleship</button>
-        <button class="tab-btn" id="tab-semi-qualified" onclick="switchTab(this, 'semi-qualified')">Semi Qualified CA</button>
+      <div class="tabs-container" role="tablist" aria-label="Career stage">
+        <button class="tab-btn active" id="tab-industrial" type="button" role="tab" aria-controls="industrial" aria-selected="true" tabindex="0" onclick="switchTab(this, 'industrial')">Industrial Training</button>
+        <button class="tab-btn" id="tab-ca" type="button" role="tab" aria-controls="ca" aria-selected="false" tabindex="-1" onclick="switchTab(this, 'ca')">CA Fresher</button>
+        <button class="tab-btn" id="tab-articleship" type="button" role="tab" aria-controls="articleship" aria-selected="false" tabindex="-1" onclick="switchTab(this, 'articleship')">Articleship</button>
+        <button class="tab-btn" id="tab-semi-qualified" type="button" role="tab" aria-controls="semi-qualified" aria-selected="false" tabindex="-1" onclick="switchTab(this, 'semi-qualified')">Semi-Qualified CA</button>
       </div>
     </div>
 
     <main class="links-container">
       <!-- Industrial Training Section -->
-      <div id="industrial" class="tab-content active">
+      <div id="industrial" role="tabpanel" aria-labelledby="tab-industrial" class="tab-content active">
         <a href="https://www.mystudentclub.com/ca-industrial-training-program" target="_blank" rel="noopener noreferrer" class="link-card program" id="link-industrial-program">
           <i class="fas fa-graduation-cap"></i>
           <span>MSC Industrial Training Program Details</span>
@@ -162,7 +162,7 @@
         </a>
         <a href="https://chat.whatsapp.com/EraSLyThpGLEoquF8Inmkr" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-industrial-whatsapp-aspirants">
           <i class="fab fa-whatsapp"></i>
-          <span>Industrial Training Aspirants Whatsapp Group</span>
+          <span>Industrial Training Aspirants WhatsApp Group</span>
         </a>
         <a href="https://www.mystudentclub.com/ca-industrial-training-resources" target="_blank" rel="noopener noreferrer" class="link-card resources" id="link-industrial-resources">
           <i class="fas fa-book-open"></i>
@@ -183,14 +183,14 @@
       </div>
 
       <!-- CA Section -->
-      <div id="ca" class="tab-content">
+      <div id="ca" role="tabpanel" aria-labelledby="tab-ca" class="tab-content">
         <a href="https://www.mystudentclub.com/msc-ca-fresher-program/" target="_blank" rel="noopener noreferrer" class="link-card program" id="link-ca-program">
           <i class="fas fa-graduation-cap"></i>
           <span>Program Details</span>
         </a>
         <a href="https://whatsapp.com/channel/0029Vb8XM5GDzgT6YyWk4x0F" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-ca-whatsapp">
           <i class="fab fa-whatsapp"></i>
-          <span>Whatsapp Community</span>
+          <span>WhatsApp Community</span>
         </a>
         <a href="https://www.mystudentclub.com/ca-fresher-training-resources" target="_blank" rel="noopener noreferrer" class="link-card resources" id="link-ca-resources">
           <i class="fas fa-book-open"></i>
@@ -211,16 +211,16 @@
       </div>
 
       <!-- Articleship Section -->
-      <div id="articleship" class="tab-content">
+      <div id="articleship" role="tabpanel" aria-labelledby="tab-articleship" class="tab-content">
         <a href="https://www.mystudentclub.com/articleship-program/" target="_blank" rel="noopener noreferrer" class="link-card program" id="link-articleship-program">
           <i class="fas fa-graduation-cap"></i>
           <span>Program Details</span>
         </a>
         <a href="https://whatsapp.com/channel/0029Vb8XM5GDzgT6YyWk4x0F" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-articleship-whatsapp">
           <i class="fab fa-whatsapp"></i>
-          <span>Whatsapp Community</span>
+          <span>WhatsApp Community</span>
         </a>
-        <a href="https://www.mystudentclub.com/ca-articleship-resources" target="_blank" rel="noopener noreferrer" class="link-card resources" id="link-articleship-resources">
+        <a href="https://www.mystudentclub.com/articleship-resources" target="_blank" rel="noopener noreferrer" class="link-card resources" id="link-articleship-resources">
           <i class="fas fa-book-open"></i>
           <span>Free Resources</span>
         </a>
@@ -239,10 +239,11 @@
       </div>
 
       <!-- Semi Qualified Section -->
-      <div id="semi-qualified" class="tab-content">
+      <div id="semi-qualified" role="tabpanel" aria-labelledby="tab-semi-qualified" class="tab-content">
+        <a href="/semi-qualified-ca-resources" class="link-card resources"><i class="fas fa-book-open" aria-hidden="true"></i><span>Free resources</span></a>
         <a href="https://whatsapp.com/channel/0029Vb8XM5GDzgT6YyWk4x0F" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-semiqualified-whatsapp">
           <i class="fab fa-whatsapp"></i>
-          <span>Whatsapp Community</span>
+          <span>WhatsApp Community</span>
         </a>
         <a href="https://www.linkedin.com/in/ca-padam-bhansali/" target="_blank" rel="noopener noreferrer" class="link-card linkedin" id="link-semiqualified-linkedin-personal">
           <i class="fab fa-linkedin"></i>
@@ -260,18 +261,18 @@
     </main>
 
     <footer class="social-footer">
-      <a href="https://www.youtube.com/@capadambhansali" target="_blank" class="social-icon" id="footer-youtube"><i class="fab fa-youtube"></i></a>
-      <a href="https://www.linkedin.com/in/ca-padam-bhansali/" target="_blank" class="social-icon" id="footer-linkedin"><i class="fab fa-linkedin"></i></a>
-      <a href="mailto:contact@mystudentclub.com" class="social-icon" id="footer-email"><i class="fas fa-envelope"></i></a>
+      <a href="https://www.youtube.com/@capadambhansali" target="_blank" class="social-icon" id="footer-youtube" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+      <a href="https://www.linkedin.com/in/ca-padam-bhansali/" target="_blank" class="social-icon" id="footer-linkedin" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+      <a href="mailto:contact@mystudentclub.com" class="social-icon" id="footer-email" aria-label="Email My Student Club"><i class="fas fa-envelope"></i></a>
     </footer>
   </div>
 
   <script>
     function switchTab(element, tabId) {
       // Deactivate all tab buttons
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(btn => { btn.classList.remove('active'); btn.setAttribute('aria-selected', 'false'); btn.tabIndex = -1; });
       // Activate clicked button
-      element.classList.add('active');
+      element.classList.add('active'); element.setAttribute('aria-selected', 'true'); element.tabIndex = 0;
       
       // Hide all tab contents
       document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -279,6 +280,15 @@
       const target = document.getElementById(tabId);
       if (target) target.classList.add('active');
     }
+
+    document.querySelector('.tabs-container').addEventListener('keydown', event => {
+      const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
+      const index = tabs.indexOf(document.activeElement);
+      if (index < 0 || !['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) return;
+      event.preventDefault();
+      const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+      tabs[next].focus(); tabs[next].click();
+    });
 
     function escapeHtml(str) {
       if (!str) return '';

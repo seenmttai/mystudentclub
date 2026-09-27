@@ -6,7 +6,7 @@ export function renderTopicSelection() {
     app.innerHTML = `
         <div class="container fade-in">
             <div class="hero-section">
-                <h2 class="main-heading">Select Competency Area</h2>
+                <h1 class="main-heading">Select Competency Area</h1>
                 <p class="sub-heading">Choose specific modules or enter a custom topic for assessment.</p>
             </div>
 
@@ -22,7 +22,7 @@ export function renderTopicSelection() {
             </div>
 
             <div class="custom-topic-section">
-                <label class="form-label">Custom Topic</label>
+                <label class="form-label" for="custom-topic">Custom Topic</label>
                 <input 
                     type="text" 
                     id="custom-topic" 

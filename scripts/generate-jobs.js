@@ -2,6 +2,8 @@ require('dotenv').config();
 const { createClient } = require('@supabase/supabase-js');
 const fs = require('fs');
 const path = require('path');
+const { markJobNoindex } = require('./job-robots.cjs');
+const { jobPortalUrl, formatJobPostedDate } = require('./job-ui.cjs');
 
 // --- Configuration ---
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://auth.mystudentclub.com';
@@ -167,7 +169,7 @@ function generateJsonLd(job, jobId, categorySlug) {
 const htmlTemplate = (job, jsonLd, categorySlug, jobId, tableName) => {
     const companyName = (job.Company || 'Company Name').trim();
     const companyInitial = companyName.charAt(0).toUpperCase();
-    const postedDate = getDaysAgo(job.Created_At);
+    const postedDate = formatJobPostedDate(job.Created_At) || getDaysAgo(job.Created_At);
     const salary = job.Salary ? `₹${job.Salary}` : '';
     const location = job.Location || 'Remote / Unspecified';
     const category = job.Category || 'General';
@@ -188,14 +190,13 @@ const htmlTemplate = (job, jsonLd, categorySlug, jobId, tableName) => {
         const simpleMailto = constructMailto(job, tableName);
         applyButtonsHtml = `
             <div class="email-apply-buttons">
-                <a href="${simpleMailto}" class="btn-large btn-secondary-large" id="simpleApplyBtn">
-                    <i class="fas fa-envelope"></i> Simple Apply
-                </a>
-                <a href="${simpleMailto}" class="btn-large btn-ai-apply">
-                   <i class="fas fa-magic"></i> AI Powered Apply
+                <a href="${simpleMailto}" class="btn-large btn-secondary-large">
+                    <i class="fas fa-envelope"></i> Email application
                 </a>
             </div>
         `;
+    } else if (applyInfo.link === '#') {
+        applyButtonsHtml = `<a href="${jobPortalUrl(categorySlug, jobId) || '/'}" class="btn-large btn-primary-large"><i class="fas fa-arrow-right"></i> View application details</a>`;
     } else {
         applyButtonsHtml = `
             <a href="${applyInfo.link}" target="_blank" class="btn-large btn-primary-large">
@@ -964,7 +965,7 @@ const htmlTemplate = (job, jsonLd, categorySlug, jobId, tableName) => {
                         </a>
                         
                         <div class="action-card-footer">
-                            False job vacancy? <a href="/contact.html">Report it</a>
+                            Problem with this listing? <a href="/contact.html">Report it</a>
                         </div>
                     </div>
                 </aside>
@@ -1201,14 +1202,8 @@ async function generateSitemap(jobsDir) {
                                     );
                                 }
 
-                                // Inject noindex meta tag if not present
-                                if (!hasNoindexMeta) {
-                                    // Insert after the viewport meta tag (or first meta tag)
-                                    updatedContent = updatedContent.replace(
-                                        /(<meta name="viewport"[^>]*>)/,
-                                        '$1\n    <meta name="robots" content="noindex, follow">'
-                                    );
-                                }
+                                // Keep one unambiguous directive for expired jobs.
+                                updatedContent = markJobNoindex(updatedContent);
 
                                 // Write updated content
                                 fs.writeFileSync(filePath, updatedContent);
@@ -1256,4 +1251,3 @@ async function generateSitemap(jobsDir) {
 }
 
 generateJobs();
-

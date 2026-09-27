@@ -239,7 +239,7 @@
 <link rel="stylesheet" href="/scripts/site-navigation.css"><script src="/scripts/site-navigation.js" defer></script>
 </head>
 
-<body>
+<body class="msc-lms-page msc-lms-dashboard">
     <div id="app">
         <header class="glass-header">
             <div class="header-container">
@@ -309,7 +309,7 @@
                     <div class="search-enhanced">
                         <div class="search-wrapper">
                             <i class="fas fa-search search-icon"></i>
-                            <input type="text" placeholder="Search your enrolled courses..." v-model="searchQuery"
+                            <input aria-label="Search your enrolled courses" type="text" placeholder="Search your enrolled courses..." v-model="searchQuery"
                                 class="search-input">
                         </div>
                     </div>
@@ -350,11 +350,11 @@
                                 <i class="fas fa-arrow-right" style="font-size: 0.8rem;"></i>
                             </a>
                             <div class="view-toggle">
-                                <button class="view-btn" :class="{ 'active': viewMode === 'grid' }"
+                                <button aria-label="Show courses in a grid" class="view-btn" :class="{ 'active': viewMode === 'grid' }"
                                     @click="viewMode = 'grid'">
                                     <i class="fas fa-th-large"></i>
                                 </button>
-                                <button class="view-btn" :class="{ 'active': viewMode === 'list' }"
+                                <button aria-label="Show courses in a list" class="view-btn" :class="{ 'active': viewMode === 'list' }"
                                     @click="viewMode = 'list'">
                                     <i class="fas fa-list"></i>
                                 </button>
@@ -366,12 +366,12 @@
                         <div v-for="course in filteredEnrolledCourses" :key="course.id"
                             class="course-card-enhanced-premium" @click="goToCourse(course.slug)">
                             <div class="course-image-premium">
-                                <img :src="course.thumbnail" :alt="course.title">
+                                <img :src="course.thumbnail" alt="" :alt="course.title">
                                 <div class="course-overlay-premium">
                                     <div class="premium-badge">
                                         <i class="fas fa-check-circle"></i> Enrolled
                                     </div>
-                                    <button class="play-btn-premium">
+                                    <button aria-label="Open course" class="play-btn-premium">
                                         <div class="play-icon"><i class="fas fa-play"></i></div>
                                     </button>
                                 </div>
@@ -463,7 +463,7 @@
                 <p style="color: #64748b; font-size: 0.9rem;">Describe the issue you are facing. We will look into it
                     shortly.</p>
                 <div class="report-form">
-                    <textarea v-model="reportText" placeholder="E.g., The video on Day 2 isn't loading..."></textarea>
+                    <textarea aria-label="Describe the course issue" v-model="reportText" placeholder="E.g., The video on Day 2 isn't loading..."></textarea>
                 </div>
                 <div class="modal-actions">
                     <button class="btn-cancel" @click="showReportModal = false">Cancel</button>
@@ -485,12 +485,9 @@
                         <p>Empowering the next generation of Chartered Accountants with world-class education and
                             resources.</p>
                         <div class="social-links">
-                            <a href="https://www.linkedin.com/company/mystudentclub" target="_blank"><i
-                                    class="fab fa-linkedin"></i></a>
-                            <a href="https://www.instagram.com/my_student_club/" target="_blank"><i
-                                    class="fab fa-instagram"></i></a>
-                            <a href="https://www.youtube.com/@capadambhansali" target="_blank"><i
-                                    class="fab fa-youtube"></i></a>
+                            <a href="https://www.linkedin.com/company/mystudentclub" target="_blank" aria-label="My Student Club on LinkedIn" rel="noopener noreferrer"><i class="fab fa-linkedin" aria-hidden="true"></i></a>
+                            <a href="https://www.instagram.com/my_student_club/" target="_blank" aria-label="My Student Club on Instagram" rel="noopener noreferrer"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                            <a href="https://www.youtube.com/@capadambhansali" target="_blank" aria-label="My Student Club on YouTube" rel="noopener noreferrer"><i class="fab fa-youtube" aria-hidden="true"></i></a>
                         </div>
                     </div>
                     <div class="footer-links">

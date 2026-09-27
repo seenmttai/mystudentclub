@@ -1,0 +1,177 @@
+/* The opportunity directory uses the same readable, responsive layout at every career stage. */
+body.msc-jobs {
+  --primary-brand: #2458d3;
+  --primary-hover: #1944ad;
+  --neutral-bg: #f7f8fa;
+  --surface-bg: #fff;
+  --text-primary: #17253c;
+  --text-secondary: #4e5e73;
+  --text-muted: #657388;
+  --border-light: #e1e6ee;
+  --border-medium: #c7d0de;
+  --font-main: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--font-main);
+  background: var(--neutral-bg);
+  color: var(--text-primary);
+  padding-bottom: 24px;
+}
+.msc-jobs .main-content-area { max-width: 1440px; padding: 36px 32px 56px; }
+.msc-jobs .jobs-page-heading { display: flex; align-items: center; justify-content: space-between; gap: 32px; margin: 4px 0 28px; }
+.msc-jobs .jobs-eyebrow { color: #52627a; font-size: 11px; letter-spacing: .12em; font-weight: 700; margin-bottom: 9px; }
+.msc-jobs .jobs-page-heading h1 { font-size: clamp(26px, 2.7vw, 38px); line-height: 1.2; letter-spacing: -.035em; font-weight: 700; max-width: 850px; }
+.msc-jobs .jobs-page-intro { max-width: 760px; color: var(--text-secondary); font-size: 15px; line-height: 1.65; margin: 12px 0 0; }
+.msc-jobs .jobs-resource-link { display: inline-flex; gap: 14px; align-items: center; flex-shrink: 0; color: var(--primary-brand); text-decoration: none; font-size: 13px; font-weight: 650; min-height: 44px; }
+.msc-jobs .jobs-resource-link:hover { text-decoration: underline; }
+.msc-jobs .main-content-area .portal-nav-bar { position: static; display: flex; gap: 4px; overflow-x: auto; background: #eef1f6; border: 1px solid var(--border-light); border-radius: 12px; padding: 5px; margin: 0 0 24px; box-shadow: none; scrollbar-width: thin; }
+.msc-jobs .main-content-area .portal-nav-bar .footer-tab { flex: 1 0 auto; flex-direction: row; justify-content: center; gap: 7px; min-height: 44px; border: 1px solid transparent; border-radius: 8px; padding: 10px 16px; color: var(--text-secondary); background: transparent; box-shadow: none; font-size: 13px; font-weight: 600; text-decoration: none; }
+.msc-jobs .main-content-area .portal-nav-bar .footer-tab.active { color: var(--primary-brand); background: white; border-color: #dbe2ee; box-shadow: 0 1px 2px #17253c08; }
+.msc-jobs .main-content-area .portal-nav-bar .footer-tab:hover { background: #fff; transform: none; }
+.msc-jobs .main-content-area .portal-nav-bar .footer-tab span:first-of-type { font-size: inherit; }
+.msc-jobs .main-content-area .portal-nav-bar .tab-nav-icon { width: 17px; height: 17px; margin: 0; }
+.msc-jobs .job-portal-layout.dv2-has-rail { display: grid; grid-template-columns: 248px minmax(0, 1fr); gap: 24px; align-items: start; }
+.msc-jobs .job-listings-container { min-width: 0; overflow: visible; }
+.msc-jobs .filter-sidebar { display: block; padding: 20px; border-radius: 14px; box-shadow: none; top: 92px; max-height: calc(100dvh - 112px); }
+.msc-jobs .filter-sidebar-header { margin-bottom: 20px; padding-bottom: 12px; gap: 8px; }
+.msc-jobs .filter-sidebar-header h3 { font-size: 15px; }
+.msc-jobs .reset-filters-btn { min-height: 40px; font-size: 12px; color: var(--primary-brand); }
+.msc-jobs .filter-group { margin-bottom: 20px; }
+.msc-jobs .filter-group:last-child { margin-bottom: 0; }
+.msc-jobs .filter-group label { color: #33445d; font-size: 12px; margin-bottom: 8px; font-weight: 650; }
+.msc-jobs .filter-control, .msc-jobs .multi-select-input, .msc-jobs .stipend-input-field { border: 1px solid #c7d0de; background: #fff; color: var(--text-primary); min-height: 44px; border-radius: 8px; font-family: inherit; font-size: 13px; box-shadow: none; }
+.msc-jobs .filter-control { padding-right: 28px; }
+.msc-jobs .multi-select-options { border-radius: 8px; border: 1px solid var(--border-medium); box-shadow: 0 8px 24px #17253c12; }
+.msc-jobs .multi-select-option { width: 100%; min-height: 44px; font: inherit; font-size: 13px; text-align: left; background: #fff; border: 0; padding: 10px 12px; color: var(--text-primary); cursor: pointer; }
+.msc-jobs .multi-select-option:hover, .msc-jobs .multi-select-option:focus { background: #edf3ff; color: var(--primary-brand); }
+.msc-jobs .selected-pill, .msc-jobs .active-filter-pill { background: #eef3fe; color: #1944ad; border: 1px solid #d6e2fc; border-radius: 6px; font-size: 12px; }
+.msc-jobs .selected-pill button, .msc-jobs .active-filter-pill button { min-width: 28px; min-height: 28px; color: #1944ad; }
+.msc-jobs .pill-btn { min-height: 38px; font-size: 12px; border-radius: 7px; }
+.msc-jobs .pill-btn.active { background: #edf3ff; border-color: #afc6f6; color: #1944ad; }
+.msc-jobs .dv2-top-search { display: flex; position: static; align-items: center; gap: 12px; padding: 7px 7px 7px 16px; background: white; border: 1px solid #c7d0de; border-radius: 12px; box-shadow: none; margin: 0 0 16px; }
+.msc-jobs .dv2-top-search i { color: #657388; font-size: 15px; }
+.msc-jobs .dv2-top-search input { flex: 1; min-width: 0; border: 0; background: transparent; color: var(--text-primary); outline: none; font: inherit; font-size: 14px; min-height: 40px; padding: 0; }
+.msc-jobs .dv2-top-search:focus-within { outline: 3px solid #b8cef8; border-color: var(--primary-brand); outline-offset: 2px; }
+.msc-jobs .dv2-top-search-btn { flex-shrink: 0; min-height: 42px; padding: 0 20px; border-radius: 8px; border: 0; background: var(--primary-brand); color: white; font: inherit; font-size: 13px; font-weight: 650; cursor: pointer; }
+.msc-jobs .mobile-controls { display: none; }
+.msc-jobs .listings-header { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; margin: 0 0 14px; padding: 0; border: 0; }
+.msc-jobs .jobs-results-summary { font-size: 13px; color: var(--text-secondary); }
+.msc-jobs .active-filters-container:empty { display: none; }
+.msc-jobs .banner-section .carousel { background: #edf1f8; border: 1px solid var(--border-light); border-radius: 12px; }
+.msc-jobs .carousel-controls { display: flex; align-items: center; justify-content: flex-end; gap: 8px; padding-top: 6px; }
+.msc-jobs .carousel-controls button { min-height: 32px; min-width: 32px; border: 1px solid var(--border-light); border-radius: 6px; background: white; color: var(--text-secondary); font: inherit; font-size: 12px; cursor: pointer; }
+.msc-jobs .carousel-controls span { font-size: 11px; color: var(--text-muted); }
+.msc-jobs .job-listing-area { display: grid; gap: 14px; }
+.msc-jobs .dv2-has-rail .job-card { display: flex; flex-direction: column; align-items: stretch; gap: 0; position: relative; padding: 22px; border: 1px solid var(--border-light); border-radius: 14px; box-shadow: 0 1px 2px #17253c03; background: #fff; transform: none; cursor: pointer; transition: border-color .16s, box-shadow .16s; }
+.msc-jobs .dv2-has-rail .job-card:hover { border-color: #b5c6e5; box-shadow: 0 3px 12px #17253c08; transform: none; }
+.msc-jobs .dv2-has-rail .job-card-top-row { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 15px; width: 100%; padding-right: 35px; }
+.msc-jobs .dv2-has-rail .job-card-logo { flex: 0 0 44px; width: 44px; height: 44px; border-radius: 10px; background: #eef3fc; border: 1px solid #e0e8f6; color: #355c9e; font-size: 18px; box-shadow: none; }
+.msc-jobs .dv2-has-rail .job-card-header { min-width: 0; gap: 4px; }
+.msc-jobs .dv2-has-rail .job-card-company { white-space: normal; overflow: visible; overflow-wrap: anywhere; text-overflow: clip; color: var(--text-primary); font-size: 17px; font-weight: 700; line-height: 1.4; margin: 0; }
+.msc-jobs .dv2-has-rail .job-card-role-title { display: block; font-size: 13px; white-space: normal; overflow: visible; font-weight: 400; line-height: 1.55; color: var(--text-secondary); }
+.msc-jobs .job-card-role-posted { display: block; margin-left: 0 !important; font-size: 11px; }
+.msc-jobs .dv2-has-rail .job-card-header .job-card-posted { display: none; }
+.msc-jobs .dv2-has-rail .job-card-bookmark { position: absolute; top: 15px; right: 12px; padding: 10px; width: 42px; height: 42px; min-width: 42px; border-radius: 8px; }
+.msc-jobs .dv2-has-rail .job-card-bookmark svg { width: 19px; height: 19px; }
+.msc-jobs .dv2-has-rail .job-card-side { display: none; }
+.msc-jobs .dv2-has-rail .job-card-tags { display: flex; gap: 6px; margin: 0 0 14px; }
+.msc-jobs .dv2-has-rail .job-card .job-tag { padding: 4px 8px; border-radius: 5px; background: #f4f6f9; color: #4d5b70; border: 1px solid #e9edf2; white-space: normal; font-size: 11px; line-height: 1.45; }
+.msc-jobs .dv2-has-rail .job-tag-exp { display: inline-flex; }
+.msc-jobs .dv2-has-rail .job-tag-location, .msc-jobs .dv2-has-rail .job-tag-industry { display: none; }
+.msc-jobs .dv2-has-rail .job-card .tag-primary { background: #edf3ff; border-color: #dce7fb; color: #2452a3; }
+.msc-jobs .dv2-has-rail .job-card .tag-exclusive { color: #80570e; background: #fff7e5; border-color: #f1dfb1; }
+.msc-jobs .dv2-has-rail .job-card .tag-popular { background: #f5f1fc; color: #6c4b98; border-color: #e9e0f5; }
+.msc-jobs .dv2-has-rail .job-card-info-row { width: 100%; display: flex; flex-wrap: wrap; gap: 14px 24px; padding: 0; margin: 0 0 12px; border: 0; background: none; }
+.msc-jobs .job-info-item, .msc-jobs .job-info-item + .job-info-item { flex: 1 1 110px; min-width: 0; padding: 0; border: 0; }
+.msc-jobs .job-info-label { font-size: 10px; letter-spacing: .04em; color: var(--text-muted); margin: 0 0 3px; }
+.msc-jobs .job-info-value { font-size: 12px; font-weight: 600; white-space: normal; overflow: visible; overflow-wrap: anywhere; line-height: 1.5; }
+.msc-jobs .dv2-has-rail .job-card-description { display: block; font-size: 13px; color: var(--text-secondary); line-height: 1.7; margin: 0 0 15px; }
+.msc-jobs .dv2-has-rail .job-card-actions { width: 100%; display: flex; justify-content: flex-end; gap: 10px; padding: 14px 0 0; border-top: 1px solid #edf0f5; margin: 0; }
+.msc-jobs .dv2-has-rail .job-card-actions .apply-now-card-btn, .msc-jobs .dv2-has-rail .job-card-actions .view-details-card-btn { min-height: 42px; padding: 10px 16px; font-size: 12px; line-height: 1.3; font-weight: 650; border-radius: 8px; flex: 0 1 auto; min-width: 105px; box-shadow: none; transform: none; }
+.msc-jobs .apply-now-card-btn.primary { background: var(--primary-brand); color: #fff; border: 1px solid var(--primary-brand); }
+.msc-jobs .apply-now-card-btn.primary:hover { background: var(--primary-hover); }
+.msc-jobs .dv2-has-rail .job-card-actions .view-details-card-btn { order: -1; background: white; color: #33445d; border: 1px solid #c7d0de; }
+.msc-jobs .dv2-has-rail .job-card-exclusive { background: white; border-color: #d8c9a2; }
+.msc-jobs .job-card-exclusive::after { display: none; }
+.msc-jobs .exclusive-locked-btn { background: #805b13 !important; color: white !important; }
+.msc-jobs .dv2-right-rail { display: flex; position: static; grid-column: 2; flex-direction: column; gap: 16px; max-height: none; overflow: visible; }
+.msc-jobs .dv2-rail-card { padding: 20px; background: white; border: 1px solid var(--border-light); border-radius: 14px; box-shadow: none; }
+.msc-jobs .dv2-rail-card h3 { font-size: 15px; font-weight: 650; margin-bottom: 6px; }
+.msc-jobs .dv2-rail-sub { font-size: 12px; line-height: 1.6; color: var(--text-secondary); margin: 0 0 12px; }
+.msc-jobs .dv2-rail-link { display: flex; align-items: center; gap: 10px; padding: 12px 0; border-top: 1px solid #edf0f5; margin: 0; text-decoration: none; }
+.msc-jobs .dv2-rail-link-icon { display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; flex-shrink: 0; border-radius: 7px; background: #f2f5fa; color: #526b8e; font-size: 12px; }
+.msc-jobs .dv2-rail-link-text { flex: 1; color: #33445d; font-size: 12px; line-height: 1.5; font-weight: 500; }
+.msc-jobs .dv2-rail-arrow { font-size: 10px; color: #657388; }
+.msc-jobs .dv2-rail-link:hover .dv2-rail-link-text { color: var(--primary-brand); }
+.msc-jobs .jobs-empty-state { text-align: center; background: white; padding: 40px 24px; border: 1px solid var(--border-light); border-radius: 14px; }
+.msc-jobs .jobs-empty-state h3 { font-size: 18px; margin-bottom: 8px; }
+.msc-jobs .jobs-empty-state p { font-size: 14px; color: var(--text-secondary); margin-bottom: 18px; }
+.msc-jobs .jobs-empty-state button { font: inherit; font-size: 13px; padding: 10px 18px; min-height: 44px; border: 1px solid #c7d0de; background: white; color: var(--primary-brand); border-radius: 8px; cursor: pointer; }
+.msc-jobs .modal-dialog { background: white; border-radius: 16px; max-height: calc(100dvh - 40px); box-shadow: 0 20px 80px #101e3630; }
+.msc-jobs .modal-close-action { min-width: 44px; min-height: 44px; border-radius: 9px; }
+.msc-jobs .modal-title-group h2 { font-size: 23px; line-height: 1.4; padding-right: 26px; }
+.msc-jobs .filter-modal-content { max-width: 620px; border-radius: 18px 18px 0 0; max-height: calc(100dvh - 32px); }
+.msc-jobs .filter-modal-content .modal-body { padding: 20px 24px; overscroll-behavior: contain; }
+.msc-jobs .filter-modal-content .modal-footer { padding-bottom: max(16px, env(safe-area-inset-bottom)); }
+.msc-jobs :is(a, button, input, select, [tabindex]):focus-visible { outline: 3px solid #93b7f5; outline-offset: 3px; }
+.msc-jobs .dv2-top-search input:focus-visible { outline: none; }
+.msc-jobs .jobs-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+@media (min-width: 1280px) {
+  .msc-jobs .job-portal-layout.dv2-has-rail { grid-template-columns: 236px minmax(0, 1fr) 264px; }
+  .msc-jobs .dv2-right-rail { grid-column: auto; position: sticky; top: 92px; }
+}
+@media (max-width: 1023px) {
+  .msc-jobs .main-content-area { padding: 28px 20px 48px; }
+  .msc-jobs .jobs-page-heading { gap: 16px; align-items: flex-start; }
+  .msc-jobs .jobs-resource-link { max-width: 150px; flex-shrink: 1; }
+  .msc-jobs .job-portal-layout.dv2-has-rail { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .msc-jobs .filter-sidebar { display: none; }
+  .msc-jobs .dv2-right-rail { grid-column: 1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .msc-jobs .mobile-controls { display: flex; justify-content: flex-end; margin: 0 0 12px; }
+  .msc-jobs .mobile-controls .search-bar-wrapper { display: none; }
+  .msc-jobs .filter-toggle-btn { min-height: 42px; padding: 8px 14px; border-radius: 8px; border: 1px solid #c7d0de; color: #33445d; background: white; font: inherit; font-size: 13px; }
+  .msc-jobs .filter-toggle-btn svg { width: 16px; height: 16px; }
+  .msc-jobs .main-content-area .portal-nav-bar .footer-tab { flex: 1 0 auto; padding: 8px 12px; font-size: 12px; }
+}
+@media (max-width: 600px) {
+  .msc-jobs .main-content-area { padding: 24px 16px 36px; }
+  .msc-jobs .jobs-page-heading { display: block; margin-bottom: 20px; }
+  .msc-jobs .jobs-eyebrow { font-size: 9px; letter-spacing: .1em; }
+  .msc-jobs .jobs-page-heading h1 { font-size: 29px; }
+  .msc-jobs .jobs-page-intro { font-size: 13px; line-height: 1.65; margin-top: 10px; }
+  .msc-jobs .jobs-resource-link { max-width: none; font-size: 12px; margin-top: 6px; }
+  .msc-jobs .main-content-area .portal-nav-bar { margin-bottom: 20px; }
+  .msc-jobs .main-content-area .portal-nav-bar .tab-nav-icon { display: none; }
+  .msc-jobs .dv2-top-search { gap: 9px; padding-left: 12px; }
+  .msc-jobs .dv2-top-search input { font-size: 13px; }
+  .msc-jobs .dv2-top-search-btn { padding: 0 13px; font-size: 12px; }
+  .msc-jobs .dv2-has-rail .job-card { padding: 18px 16px; }
+  .msc-jobs .dv2-has-rail .job-card-company { font-size: 16px; }
+  .msc-jobs .dv2-has-rail .job-card-logo { flex-basis: 38px; width: 38px; height: 38px; font-size: 16px; }
+  .msc-jobs .dv2-has-rail .job-card-actions > * { flex: 1; }
+  .msc-jobs .dv2-right-rail { grid-template-columns: minmax(0, 1fr); }
+  .msc-jobs .modal-dialog { max-width: calc(100vw - 24px); }
+  .msc-jobs .modal-title-group h2 { font-size: 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .msc-jobs *, .msc-jobs *::before, .msc-jobs *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+/* Retire the older mobile overrides within the redesigned directory only. */
+@media (max-width: 768px) {
+  .msc-jobs .main-content-area .portal-nav-bar { display: flex !important; overflow-x: auto !important; gap: 4px !important; padding: 5px !important; border-radius: 12px !important; background: #eef1f6 !important; box-shadow: none !important; margin: 0 0 20px !important; }
+  .msc-jobs .main-content-area .portal-nav-bar .footer-tab { flex: 1 0 auto !important; flex-direction: row !important; min-height: 44px !important; width: auto !important; min-width: max-content !important; padding: 8px 12px !important; border: 1px solid transparent !important; border-radius: 8px !important; color: #4e5e73 !important; }
+  .msc-jobs .main-content-area .portal-nav-bar .footer-tab span { font-size: 12px !important; white-space: nowrap !important; line-height: 1.4 !important; }
+  .msc-jobs .main-content-area .portal-nav-bar .footer-tab.active { background: #fff !important; color: #2458d3 !important; border-color: #dbe2ee !important; box-shadow: none !important; }
+  .msc-jobs .main-content-area .portal-nav-bar .footer-tab .tab-nav-icon { display: none !important; }
+  .msc-jobs .dv2-has-rail .job-card { padding: 18px 16px !important; border-radius: 14px !important; box-shadow: 0 1px 2px #17253c03 !important; }
+  .msc-jobs .dv2-has-rail .job-card-logo { width: 38px !important; height: 38px !important; flex-basis: 38px !important; font-size: 16px !important; }
+  .msc-jobs .dv2-has-rail .job-card-info-row { display: flex !important; flex-wrap: wrap !important; gap: 12px 16px !important; padding: 0 !important; border: 0 !important; }
+  .msc-jobs .job-info-item, .msc-jobs .job-info-item + .job-info-item { flex: 1 1 100px; padding: 0 !important; border: 0 !important; }
+  .msc-jobs .job-info-label { color: #657388 !important; font-size: 10px !important; }
+  .msc-jobs .job-info-value { font-size: 12px !important; line-height: 1.5 !important; }
+  .msc-jobs .dv2-has-rail .job-card-actions { display: flex !important; gap: 10px !important; }
+  .msc-jobs .dv2-has-rail .job-card-actions > * { flex: 1 !important; font-size: 12px !important; border-radius: 8px !important; }
+}
+.msc-jobs .onboarding-modal-dialog { background: #fff !important; backdrop-filter: none; border: 1px solid var(--border-light); border-radius: 16px !important; }
+.msc-jobs .onboarding-option-card { border: 1px solid var(--border-medium); border-radius: 10px; box-shadow: none; }
+.msc-jobs .onboarding-option-card.active { border-color: var(--primary-brand); box-shadow: none; background: #edf3ff; }
+.msc-jobs .option-icon-box, .msc-jobs .pref-option-btn > div:first-child { background: #edf3ff !important; color: var(--primary-brand); }
+.msc-jobs .pref-option-btn > div:first-child svg { color: var(--primary-brand) !important; }

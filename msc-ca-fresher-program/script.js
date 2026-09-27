@@ -302,7 +302,7 @@ const initializeLinkedInPosts = () => {
           <p class="linkedin-user-title">${post.title}</p>
         </div>
       </div>
-      <div class="linkedin-card-content" style="overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none;">
+      <div class="linkedin-card-content" tabindex="0" role="region" aria-label="Student career story" style="overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none;">
         <style>.linkedin-card-content::-webkit-scrollbar { display: none; }</style>
         ${post.content.replace(/\n/g, '<br>')}
       </div>
