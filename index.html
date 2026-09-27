@@ -325,8 +325,8 @@
   <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
   <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
   <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
-<link rel="stylesheet" href="/scripts/site-navigation.css?v=20260927.5"><script src="/scripts/site-navigation.js?v=20260927.5" defer></script>
-  <link rel="stylesheet" href="/scripts/jobs-experience.css?v=20260927.6">
+<link rel="stylesheet" href="/scripts/homepage-layout.css?v=20260927.8"><script src="/scripts/site-navigation.js?v=20260927.5" defer></script>
+  <script src="/scripts/homepage-layout.js?v=20260927.8" defer></script>
   <script src="/scripts/jobs-experience.js?v=20260927.5" defer></script>
 </head>
 
@@ -443,14 +443,7 @@
   </div>
 
   <main class="main-content-area" id="job-opportunities">
-      <header class="jobs-page-heading">
-        <div>
-          <p class="jobs-eyebrow">YOUR CA CAREER, ONE STEP FORWARD</p>
-          <h1>Industrial training opportunities</h1>
-          <p class="jobs-page-intro">Make your next move count. Explore industrial training roles, compare opportunities and find the right fit for your CA journey.</p>
-        </div>
-        <a class="jobs-resource-link" href="/ca-industrial-training-resources.html">Industrial training resources <span aria-hidden="true">↗</span></a>
-      </header>
+    <h1 class="jobs-sr-only">Industrial training opportunities</h1>
 
     <nav class="portal-nav-bar" aria-label="Choose your career stage">
       <a href="/" class="footer-tab active" aria-current="page">
@@ -473,7 +466,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
             d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
         </svg>
-        <span>Semi-qualified CA</span>
+        <span>Semi Qualified</span>
       </a>
       <a href="/ca-fresher-jobs" class="footer-tab">
         <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -495,7 +488,7 @@
       <aside class="filter-sidebar">
         <div class="filter-sidebar-header">
           <h3>Filters</h3>
-          <button class="reset-filters-btn" id="desktopResetBtn">Clear all</button>
+          <button class="reset-filters-btn" id="desktopResetBtn">Reset All</button>
         </div>
         <div class="filter-group experience-filter-group" style="display: none;">
           <label>Experience Level</label>
@@ -613,7 +606,7 @@
         </div>
 
         <div class="listings-header">
-          <p class="jobs-results-summary" id="jobs-results-summary" role="status" aria-live="polite">Finding opportunities…</p>
+          <p class="jobs-results-summary jobs-sr-only" id="jobs-results-summary" role="status" aria-live="polite">Finding opportunities…</p>
           <div id="active-filters-display" class="active-filters-container"></div>
         </div>
 
@@ -693,7 +686,7 @@
   <div class="filter-modal-overlay" id="filterModalOverlay">
     <div class="filter-modal-content" role="dialog" aria-modal="true" aria-labelledby="job-filters-title" tabindex="-1">
       <div class="modal-header">
-        <h4 id="job-filters-title">Filter opportunities</h4>
+        <h4 id="job-filters-title">Filters</h4>
         <button class="modal-close-action" id="closeFilterModalBtn" aria-label="Close filters">×</button>
       </div>
       <div class="modal-body">
@@ -786,7 +779,7 @@
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" id="mobileResetBtn">Reset</button>
-        <button class="btn btn-primary" id="applyFiltersBtn">Show opportunities</button>
+        <button class="btn btn-primary" id="applyFiltersBtn">Show Jobs</button>
       </div>
     </div>
   </div>

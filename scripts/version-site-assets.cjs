@@ -4,9 +4,10 @@ const fs = require('node:fs');
 const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const release = '20260927.5';
-const assetReleases = new Map([['scripts/portal3.js','20260927.6'],['scripts/jobs-experience.css','20260927.6'],['scripts/resource-library.css','20260927.7']]);
+const assetReleases = new Map([['scripts/homepage-layout.css','20260927.8'],['scripts/homepage-layout.js','20260927.8'],['scripts/portal3.js','20260927.6'],['scripts/jobs-experience.css','20260927.6'],['scripts/resource-library.css','20260927.7']]);
 const assets = new Set([
   'scripts/site-navigation.js', 'scripts/site-navigation.css',
+  'scripts/homepage-layout.css', 'scripts/homepage-layout.js',
   'scripts/career-profile.js', 'scripts/career-profile.css',
   'scripts/resource-form-collector.js', 'scripts/resource-library.js', 'scripts/resource-library.css',
   'scripts/program-access.js', 'scripts/supabase-init.js', 'scripts/portal3.js', 'scripts/profile.js',
