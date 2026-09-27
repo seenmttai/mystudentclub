@@ -91,16 +91,32 @@
         clearTimeout(showError.timer);
         showError.timer = setTimeout(() => { status.textContent = ''; }, 8000);
     }
-    function openFree(resource, download) {
+    async function openFree(resource, download) {
         const url = new URL(download ? resource.downloadUrl : resource.viewUrl, global.location.origin);
         if (download) {
             const link = element('a');
-            link.href = url.href;
+            let objectUrl = null;
+            if (url.origin === global.location.origin) {
+                // Ignore server Content-Disposition filenames (including encoded names).
+                // The browser saves this Blob with the readable filename below.
+                try {
+                    const response = await fetch(url.href, { credentials: 'same-origin' });
+                    if (!response.ok || /text\/html/i.test(response.headers.get('content-type') || '')) throw new Error('Unavailable file');
+                    const file = await response.blob();
+                    if (!file.size) throw new Error('Empty file');
+                    objectUrl = URL.createObjectURL(file);
+                } catch (_) {
+                    throw new Error('This download could not be completed. Please try again.');
+                }
+            }
+            link.href = objectUrl || url.href;
             link.download = cleanFileName(resource.fileName);
             link.dataset.noIntercept = 'true';
             link.rel = 'noopener noreferrer';
             if (url.origin !== global.location.origin) link.target = '_blank';
+            link.hidden = true;
             document.body.appendChild(link); link.click(); link.remove();
+            if (objectUrl) setTimeout(() => URL.revokeObjectURL(objectUrl), 60000);
         } else {
             const viewUrl = url.pathname.toLowerCase().endsWith('.pdf')
                 ? '/ca-resource/index.html?pdf=' + encodeURIComponent(url.href) : url.href;
@@ -169,7 +185,7 @@
             heading.id = 'resource-' + group.id;
             section.setAttribute('aria-labelledby', heading.id);
             section.append(heading, element('p', 'resource-section-intro', group.description));
-            const items = resources.filter(r => r.category === group.id).sort((a, b) => a.sort_order - b.sort_order || Number(a.premium || false) - Number(b.premium || false) || a.title.localeCompare(b.title));
+            const items = resources.filter(r => r.category === group.id).sort((a, b) => Number(a.premium || false) - Number(b.premium || false) || a.sort_order - b.sort_order || a.title.localeCompare(b.title));
             if (items.length) {
                 const grid = element('div', 'resources-list');
                 items.forEach(item => grid.append(renderCard(item)));
