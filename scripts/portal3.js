@@ -2984,12 +2984,24 @@ function setupEventListeners() {
   }
 
   // Menu
-  dom.menuButton?.addEventListener("click", () =>
-    dom.expandedMenu?.classList.add("active"),
-  );
-  dom.menuCloseBtn?.addEventListener("click", () =>
-    dom.expandedMenu?.classList.remove("active"),
-  );
+  const menuBackdrop = document.getElementById("menuBackdrop");
+  dom.menuButton?.addEventListener("click", () => {
+    dom.expandedMenu?.classList.add("active");
+    menuBackdrop?.classList.add("active");
+  });
+  dom.menuCloseBtn?.addEventListener("click", () => {
+    dom.expandedMenu?.classList.remove("active");
+    menuBackdrop?.classList.remove("active");
+  });
+  menuBackdrop?.addEventListener("click", () => {
+    dom.expandedMenu?.classList.remove("active");
+    menuBackdrop?.classList.remove("active");
+  });
+  if (dom.expandedMenu && menuBackdrop && window.MutationObserver) {
+    new MutationObserver(() => {
+      menuBackdrop.classList.toggle("active", dom.expandedMenu.classList.contains("active"));
+    }).observe(dom.expandedMenu, { attributes: true, attributeFilter: ["class"] });
+  }
 
   // Logout button in side menu
   document

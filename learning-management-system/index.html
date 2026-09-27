@@ -536,7 +536,7 @@
             class="hdr-icon-btn menu-close-btn"
             id="lmsMenuCloseBtn"
             aria-label="Close menu"
-            onclick="document.getElementById('lmsExpandedMenu').classList.remove('active')"
+            onclick="document.getElementById('lmsExpandedMenu')?.classList.remove('active')"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -545,7 +545,7 @@
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              stroke-width="2"
+              stroke-width="2.2"
               stroke-linecap="round"
               stroke-linejoin="round"
             >
@@ -555,7 +555,13 @@
           </button>
         </div>
         <div class="menu-items-container">
-          <a href="/learning-management-system/index.html" class="menu-item">
+          <a href="/" class="menu-item">
+            <span class="menu-item-left">
+              <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              <span>Home</span>
+            </span>
+          </a>
+          <a href="/learning-management-system/index.html" class="menu-item active">
             <span class="menu-item-left">
               <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
               <span>My Courses</span>
@@ -576,27 +582,93 @@
               <span>CV Review</span>
             </span>
           </a>
+          <a href="/ca-industrial-training-program/" class="menu-item">
+            <span class="menu-item-left">
+              <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+              <span>MSC Industrial Training Program</span>
+            </span>
+          </a>
+          <a href="/articleship-program/" class="menu-item">
+            <span class="menu-item-left">
+              <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15a7 7 0 1 0 0-14 7 7 0 0 0 0 14Z"/><path d="M8.21 13.89 7 23l5-3 5 3-1.21-9.12"/></svg>
+              <span>MSC Articleship Program</span>
+            </span>
+          </a>
+          <a href="/msc-ca-fresher-program/" class="menu-item">
+            <span class="menu-item-left">
+              <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-3.05 11a22.35 22.35 0 0 1-3.95 2z"/></svg>
+              <span>MSC CA Freshers Program</span>
+            </span>
+          </a>
+          <a href="/articleship-firm-reviews.html" class="menu-item">
+            <span class="menu-item-left">
+              <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <span>Articleship Firm Reviews</span>
+            </span>
+          </a>
+          <div class="menu-item-dropdown">
+            <button class="menu-item" id="resourcesDropdownBtn" type="button">
+              <span class="menu-item-left">
+                <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+                <span>Free Resources</span>
+              </span>
+              <svg
+                class="dropdown-icon"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+            <div class="dropdown-content" id="resourcesDropdown">
+              <a href="/ca-fresher-training-resources.html" class="dropdown-item"
+                >CA Fresher</a
+              >
+              <a
+                href="/ca-industrial-training-resources.html"
+                class="dropdown-item"
+                >Industrial Training</a
+              >
+              <a href="/ca-articleship-jobs.html" class="dropdown-item"
+                >Articleship</a
+              >
+            </div>
+          </div>
           <a href="/profile.html" class="menu-item">
             <span class="menu-item-left">
-              <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
               <span>My Profile</span>
             </span>
           </a>
-          <button class="menu-item" @click="openReportModal">
+          <a href="/contact.html" class="menu-item">
+            <span class="menu-item-left">
+              <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              <span>Contact Us</span>
+            </span>
+          </a>
+          <button class="menu-item" @click="openReportModal" type="button">
             <span class="menu-item-left">
               <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
               <span>Report a Problem</span>
             </span>
           </button>
           <div class="menu-footer">
-            <button id="lmsLogoutMenuBtn" class="menu-item menu-item--danger">
+            <button id="lmsLogoutMenuBtn" class="menu-item menu-item--danger" type="button">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
               <span>Logout</span>
             </button>
           </div>
         </div>
       </div>
-      <div class="lms-menu-overlay" id="lmsMenuOverlay"></div>
+      <div class="expanded-menu-backdrop" id="menuBackdrop" onclick="document.getElementById('lmsExpandedMenu')?.classList.remove('active'); this.classList.remove('active');"></div>
+      <div class="lms-menu-overlay" id="lmsMenuOverlay" onclick="document.getElementById('lmsExpandedMenu')?.classList.remove('active'); this.classList.remove('active');"></div>
+
 
       <main class="lms-content-pad">
         <!-- Hero -->
