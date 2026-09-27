@@ -66,7 +66,11 @@
     }
     function searchResources(resources, query) {
         const terms = String(query || '').trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
-        return resources.filter(resource => terms.every(term => resource.title.toLocaleLowerCase().includes(term)));
+        return resources.filter(resource => {
+            const day = Number.isInteger(resource.day_number) ? 'Day ' + resource.day_number : '';
+            const text = [resource.title, resource.group_name, inferResourceGroup(resource), day].join(' ').toLocaleLowerCase();
+            return terms.every(term => text.includes(term));
+        });
     }
 
     function cleanFileName(name) {
@@ -74,29 +78,84 @@
         for (let i = 0; i < 2; i++) { try { const next = decodeURIComponent(value); if (next === value) break; value = next; } catch (_) { break; } }
         return value.replace(/[\\/\x00-\x1f<>:"|?*]/g, '-').trim() || 'Resource';
     }
+    const ordinal = value => (typeof value === 'number' || (typeof value === 'string' && /^\d+$/.test(value))) && Number.isInteger(Number(value)) && Number(value) >= 0 && Number(value) <= 100000 ? Number(value) : null;
+    const collectionNames = ['CV Templates', 'Cover Letter Templates', 'CV Guidance', 'Application & Outreach', 'Interview Preparation', 'Excel Practice', 'Hiring Companies', 'Registration & Forms', 'Career Tools', 'WhatsApp Communities', 'More Resources'];
+    function inferResourceGroup(resource) {
+        const source = String(resource.group_name || '').trim();
+        if (source && !/^(general(?: resources)?|resources|others?)$/i.test(source)) {
+            if (/^(?:industrial )?(?:cv|resume) templates?$/i.test(source)) return 'CV Templates';
+            if (/^cover[ -]?letters?(?: templates?)?$/i.test(source)) return 'Cover Letter Templates';
+            return source;
+        }
+        const title = resource.title.toLocaleLowerCase();
+        if (/cover[ -]?letter/.test(title)) return 'Cover Letter Templates';
+        if (/(?:cv|resume|résumé) templates?/.test(title)) return 'CV Templates';
+        if (/whats\s*app/.test(title)) return 'WhatsApp Communities';
+        if (/excel/.test(title)) return 'Excel Practice';
+        if (/\b(ai|tool|builder|waalaxy)\b|personal cv review/.test(title)) return 'Career Tools';
+        if (/cv|resume|résumé|professional summary/.test(title)) return 'CV Guidance';
+        if (/mail|application|connection notes|message template|follow.?up/.test(title)) return 'Application & Outreach';
+        if (/interview|syllabus|technical (round|topics)/.test(title)) return 'Interview Preparation';
+        if (/compan|hiring|list of .*firms/.test(title)) return 'Hiring Companies';
+        if (/registration|stamp paper|form \d|consent letter/.test(title)) return 'Registration & Forms';
+        return 'More Resources';
+    }
     function sanitizeCatalogue(rows, program) {
         const seen = new Set();
         return (Array.isArray(rows) ? rows : []).flatMap(row => {
-            if (row.program_type !== program || typeof row.title !== 'string' || !row.title.trim()) return [];
+            if (!row || typeof row !== 'object' || Array.isArray(row) || row.program_type !== program || typeof row.title !== 'string' || !row.title.trim()) return [];
             const title = row.title.trim().slice(0, 300);
-            const key = title.toLocaleLowerCase();
+            const day_number = ordinal(row.day_number);
+            const group_name = typeof row.group_name === 'string' ? row.group_name.trim().slice(0, 120) : '';
+            const key = JSON.stringify([day_number, group_name.toLocaleLowerCase(), title.toLocaleLowerCase()]);
             if (seen.has(key)) return [];
             seen.add(key);
-            // Deliberately project only safe fields even if a backend response changes.
-            return [{ title, premium: true, program,
+            // Only public names and ordering metadata cross this boundary. Never copy file paths.
+            return [{ title, premium: true, program, day_number, group_name,
+                session_order: ordinal(row.session_order), group_order: ordinal(row.group_order), resource_order: ordinal(row.resource_order),
                 category: categories.includes(row.category) ? row.category : 'application-tricks',
                 sort_order: Number.isFinite(Number(row.sort_order)) ? Number(row.sort_order) : 50
             }];
         });
     }
-    const exports = { cleanFileName, sanitizeCatalogue, pages, programs, hasProgramEnrollment, compareResourceTitles, organizeResources, searchResources };
+    function groupPremiumResources(resources) {
+        const days = new Map();
+        const rank = value => value === null || value === undefined ? Number.MAX_SAFE_INTEGER : value;
+        for (const resource of resources) {
+            const dayNumber = ordinal(resource.day_number);
+            const dayKey = dayNumber === null ? 'library' : String(dayNumber);
+            if (!days.has(dayKey)) days.set(dayKey, { key: dayKey, day_number: dayNumber, groups: new Map() });
+            const day = days.get(dayKey);
+            const title = inferResourceGroup(resource);
+            const key = JSON.stringify([dayKey, title.toLocaleLowerCase()]);
+            if (!day.groups.has(key)) day.groups.set(key, { key, title, resources: [], order: rank(resource.group_order), session: rank(resource.session_order) });
+            const group = day.groups.get(key);
+            group.resources.push(resource);
+            group.order = Math.min(group.order, rank(resource.group_order));
+            group.session = Math.min(group.session, rank(resource.session_order));
+        }
+        const fallbackRank = title => { const n = collectionNames.indexOf(title); return n < 0 ? collectionNames.length : n; };
+        return [...days.values()].sort((a,b) => rank(a.day_number) - rank(b.day_number)).map(day => ({
+            key: day.key, day_number: day.day_number,
+            groups: [...day.groups.values()].sort((a,b) => a.session - b.session || a.order - b.order || fallbackRank(a.title) - fallbackRank(b.title) || titleCollator.compare(a.title,b.title)).map(group => ({
+                key: group.key, title: group.title,
+                resources: [...group.resources].sort((a,b) => {
+                    // Keep numbered template families easy to scan even when a source array was uploaded out of order.
+                    if (/templates?/i.test(group.title)) return compareResourceTitles(a,b);
+                    return rank(a.session_order) - rank(b.session_order) || rank(a.resource_order) - rank(b.resource_order) || a.sort_order - b.sort_order || compareResourceTitles(a,b);
+                })
+            }))
+        }));
+    }
+    const exports = { cleanFileName, sanitizeCatalogue, pages, programs, hasProgramEnrollment, compareResourceTitles, organizeResources, searchResources, inferResourceGroup, groupPremiumResources };
     if (typeof module !== 'undefined' && module.exports) module.exports = exports;
     global.MSCResourceLibrary = exports;
     if (typeof document === 'undefined') return;
 
     let config, stage, premiumRows = [], returnFocus, catalogueLoaded = false, catalogueError = false;
-    let premiumQuery = '', visiblePremiumCount = 24;
-    const PREMIUM_PAGE_SIZE = 24;
+    let premiumQuery = '', selectedDay = 'all';
+    const expandedGroups = new Set();
+    const GROUP_PREVIEW_SIZE = 3;
     const element = (tag, className, text) => {
         const node = document.createElement(tag);
         if (className) node.className = className;
@@ -185,7 +244,7 @@
         node.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">' + paths[name] + '</svg>';
         return node;
     }
-    function renderCard(resource) {
+    function renderCard(resource, headingLevel = 'h3') {
         const card = element('article', 'resource-card' + (resource.premium ? ' resource-premium' : ''));
         const top = element('div', 'resource-card-top');
         if (resource.premium) {
@@ -197,7 +256,7 @@
             file.append(icon('file'));
             top.append(file, element('span', 'resource-format', resource.downloadUnavailable ? 'GOOGLE SHEET' : resource.format === 'DOCX' ? 'EDITABLE WORD' : resource.format));
         }
-        card.append(top, element('h3', 'resource-title', resource.title));
+        card.append(top, element(headingLevel, 'resource-title', resource.title));
         if (!resource.premium) card.append(element('p', 'resource-description', resource.description));
         const actions = element('div', 'resource-actions');
         (resource.downloadUnavailable ? [false] : resource.premium ? [false, true] : [true, false]).forEach(download => {
@@ -228,28 +287,78 @@
         header.append(copy);
         return header;
     }
-    function renderPremiumResults() {
+    function renderPremiumResults(focusGroup) {
         const grid = document.getElementById('premium-resources-list');
         if (!grid) return;
-        const sorted = organizeResources([], premiumRows).premium;
-        const matching = searchResources(sorted, premiumQuery);
-        const shown = matching.slice(0, visiblePremiumCount);
+        const days = groupPremiumResources(premiumRows);
+        const filters = document.getElementById('premium-day-filters');
+        const focusedDay = filters.contains(document.activeElement) ? document.activeElement.dataset.day : null;
+        const hasDays = days.some(day => day.day_number !== null);
+        if (selectedDay !== 'all' && !days.some(day => day.key === selectedDay)) selectedDay = 'all';
+        filters.replaceChildren();
+        filters.hidden = !hasDays;
+        if (hasDays) [{key:'all',label:'All days',count:premiumRows.length}, ...days.map(day => ({key:day.key,label:day.day_number === null ? 'More resources' : 'Day ' + day.day_number,count:day.groups.reduce((sum,group)=>sum+group.resources.length,0)}))].forEach(day => {
+            const button = element('button', 'premium-day-filter'); button.type = 'button'; button.dataset.day = day.key;
+            button.setAttribute('aria-pressed', String(selectedDay === day.key));
+            button.setAttribute('aria-label',day.label + ', ' + day.count + (day.count===1 ? ' resource' : ' resources'));
+            button.append(document.createTextNode(day.label),element('span','',String(day.count)));
+            button.addEventListener('click',()=>{selectedDay=day.key;renderPremiumResults();});
+            filters.append(button);
+            if (focusedDay === day.key) button.focus({preventScroll:true});
+        });
         const count = document.getElementById('resource-premium-count');
         count.textContent = catalogueLoaded ? String(premiumRows.length) : '—';
         count.setAttribute('aria-label', catalogueLoaded ? premiumRows.length + ' resources' : (catalogueError ? 'Resource count unavailable' : 'Resource count loading'));
         grid.replaceChildren();
-        shown.forEach(resource => grid.append(renderCard(resource)));
+        const searching = Boolean(premiumQuery.trim());
+        let matches = 0, collectionCount = 0;
+        days.filter(day => selectedDay === 'all' || day.key === selectedDay).forEach((day, dayIndex) => {
+            const matchingGroups = day.groups.map(group => ({...group, matching:searchResources(group.resources,premiumQuery)})).filter(group => group.matching.length);
+            if (!matchingGroups.length) return;
+            const section = element('section','premium-day');
+            const dayHeading = element('div','premium-day-heading');
+            const heading = element('h3','',day.day_number === null ? (hasDays ? 'More resources' : 'Resource collections') : 'Day ' + day.day_number);
+            heading.id = 'premium-day-' + day.key;
+            section.setAttribute('aria-labelledby',heading.id);
+            const dayCount = matchingGroups.reduce((sum,group)=>sum+group.matching.length,0);
+            dayHeading.append(heading,element('p','',matchingGroups.length + (matchingGroups.length===1 ? ' collection' : ' collections') + ' · ' + dayCount + (dayCount===1 ? ' resource' : ' resources')));
+            section.append(dayHeading);
+            matchingGroups.forEach((group,groupIndex) => {
+                matches += group.matching.length; collectionCount++;
+                const expanded = expandedGroups.has(group.key);
+                const shown = searching || expanded ? group.matching : group.matching.slice(0,GROUP_PREVIEW_SIZE);
+                const collection = element('section','premium-collection');
+                collection.dataset.group = group.key;
+                const collectionId = 'premium-collection-' + dayIndex + '-' + groupIndex;
+                const header = element('div','premium-collection-header');
+                const copy = element('div','premium-collection-copy');
+                const groupHeading = element('h4','',group.title); groupHeading.id = collectionId + '-title';
+                collection.setAttribute('aria-labelledby',groupHeading.id);
+                copy.append(groupHeading,element('p','',searching ? group.matching.length + ' matching · ' + group.resources.length + ' total' : group.resources.length + (group.resources.length===1 ? ' resource' : ' resources')));
+                header.append(copy);
+                if (!searching && group.resources.length > GROUP_PREVIEW_SIZE) {
+                    const toggle = element('button','premium-group-toggle',expanded ? 'Show less' : 'View all ' + group.resources.length);
+                    toggle.type='button'; toggle.dataset.groupToggle=group.key;
+                    toggle.setAttribute('aria-expanded',String(expanded)); toggle.setAttribute('aria-controls',collectionId);
+                    toggle.setAttribute('aria-label',(expanded ? 'Show less: ' : 'View all ' + group.resources.length + ' ') + group.title + (day.day_number===null ? '' : ' for Day ' + day.day_number));
+                    toggle.addEventListener('click',()=>{if(expandedGroups.has(group.key))expandedGroups.delete(group.key);else expandedGroups.add(group.key);renderPremiumResults(group.key);});
+                    header.append(toggle);
+                }
+                const list = element('div','resources-list premium-collection-list'); list.id=collectionId;
+                shown.forEach(resource=>list.append(renderCard(resource,'h5')));
+                collection.append(header,list);section.append(collection);
+            });
+            grid.append(section);
+        });
         const empty = document.getElementById('premium-resources-empty');
-        empty.hidden = shown.length > 0 || !catalogueLoaded;
-        empty.textContent = premiumRows.length ? 'No resources match your search. Try another keyword.' : 'New program resources will appear here as they are added.';
+        empty.hidden = matches > 0 || !catalogueLoaded;
+        empty.textContent = premiumRows.length ? 'No resources match your search. Try another keyword or choose All days.' : 'New program resources will appear here as they are added.';
         const summary = document.getElementById('premium-search-results');
-        summary.textContent = !catalogueLoaded ? (catalogueError ? 'Premium library unavailable' : 'Loading resources…') : premiumQuery.trim()
-            ? matching.length + (matching.length === 1 ? ' match' : ' matches') + ' · Showing ' + shown.length
-            : premiumRows.length ? 'Showing ' + shown.length + ' of ' + premiumRows.length + ' resources' : 'No premium resources added yet';
+        summary.textContent = !catalogueLoaded ? (catalogueError ? 'Premium library unavailable' : 'Loading resources…') : searching
+            ? matches + (matches===1 ? ' match' : ' matches') + (selectedDay==='all' ? '' : ' in ' + (selectedDay==='library' ? 'More resources' : 'Day ' + selectedDay))
+            : premiumRows.length ? matches + ' resources · ' + collectionCount + (collectionCount===1 ? ' collection' : ' collections') : 'No premium resources added yet';
         document.querySelector('.resource-search-toolbar').hidden = catalogueLoaded && premiumRows.length === 0;
-        const more = document.getElementById('premium-show-more');
-        more.hidden = shown.length >= matching.length;
-        more.textContent = 'Show ' + Math.min(PREMIUM_PAGE_SIZE, matching.length - shown.length) + ' more resources';
+        if (focusGroup) [...grid.querySelectorAll('[data-group-toggle]')].find(button=>button.dataset.groupToggle===focusGroup)?.focus({preventScroll:true});
     }
     function renderResources() {
         const container = document.getElementById('resources-container');
@@ -276,11 +385,10 @@
         const input = element('input');
         input.id = 'premium-resource-search';
         input.type = 'search';
-        input.placeholder = 'Search by resource name';
+        input.placeholder = 'Search templates, topics or resources';
         input.autocomplete = 'off';
         input.addEventListener('input', () => {
             premiumQuery = input.value;
-            visiblePremiumCount = PREMIUM_PAGE_SIZE;
             renderPremiumResults();
         });
         searchLabel.append(input);
@@ -292,23 +400,15 @@
         premium.append(toolbar);
         const status = document.getElementById('resource-catalog-status');
         premium.append(status);
-        const grid = element('div', 'resources-list premium-resources-list');
+        const filters = element('div', 'premium-day-filters');
+        filters.id = 'premium-day-filters'; filters.setAttribute('role','group'); filters.setAttribute('aria-label','Browse resources by program day'); filters.hidden=true;
+        premium.append(filters);
+        const grid = element('div', 'premium-resources-list');
         grid.id = 'premium-resources-list';
         const empty = element('p', 'resource-empty');
         empty.id = 'premium-resources-empty';
         empty.hidden = true;
-        const more = element('button', 'resource-action secondary resource-show-more');
-        more.id = 'premium-show-more';
-        more.type = 'button';
-        more.hidden = true;
-        more.addEventListener('click', () => {
-            const firstNewIndex = visiblePremiumCount;
-            visiblePremiumCount += PREMIUM_PAGE_SIZE;
-            renderPremiumResults();
-            // Keep keyboard users at the next newly revealed resource.
-            grid.querySelectorAll('.resource-card')[firstNewIndex]?.querySelector('button')?.focus({ preventScroll: true });
-        });
-        premium.append(grid, empty, more);
+        premium.append(grid, empty);
         container.append(free, premium);
         renderPremiumResults();
     }
@@ -318,9 +418,11 @@
         try {
             const client = global.supabaseClient || global.getSupabaseClient?.();
             if (!client) throw new Error('Client unavailable');
-            const { data, error } = await client.rpc('get_public_resource_catalog', { p_program: config.premiumProgram });
-            if (error) throw error;
-            premiumRows = sanitizeCatalogue(data, config.premiumProgram);
+            let response = await client.rpc('get_public_resource_catalog_v2', { p_program: config.premiumProgram });
+            // Older databases keep their existing resource names usable, without invented day labels.
+            if (response.error?.code === 'PGRST202') response = await client.rpc('get_public_resource_catalog', { p_program: config.premiumProgram });
+            if (response.error) throw response.error;
+            premiumRows = sanitizeCatalogue(response.data, config.premiumProgram);
             catalogueLoaded = true;
             catalogueError = false;
             renderPremiumResults();
@@ -344,7 +446,7 @@
         loadCatalogue();
         // A fresh visit/focus picks up materials added in the existing LMS admin.
         let lastRefresh = Date.now();
-        global.addEventListener('focus', () => { if (Date.now() - lastRefresh > 60000) { lastRefresh = Date.now(); loadCatalogue(); } });
+        global.addEventListener('focus', () => { if (!modal.open && Date.now() - lastRefresh > 60000) { lastRefresh = Date.now(); loadCatalogue(); } });
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })(typeof window !== 'undefined' ? window : globalThis);

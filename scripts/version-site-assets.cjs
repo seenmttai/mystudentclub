@@ -3,7 +3,8 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const root = path.resolve(__dirname, '..');
-const release = '20260927.4';
+const release = '20260927.5';
+const assetReleases = new Map();
 const assets = new Set([
   'scripts/site-navigation.js', 'scripts/site-navigation.css',
   'scripts/career-profile.js', 'scripts/career-profile.css',
@@ -27,7 +28,7 @@ function version(value, file) {
   const target = pathname.startsWith('/') ? path.resolve(root, '.' + pathname) : path.resolve(path.dirname(file), pathname);
   if (!assets.has(path.relative(root, target))) return value;
   const params = new URLSearchParams(query);
-  params.set('v', release);
+  params.set('v', assetReleases.get(path.relative(root, target)) || release);
   return pathname + '?' + params.toString() + (hash === undefined ? '' : '#' + hash);
 }
 function walk(dir) {
