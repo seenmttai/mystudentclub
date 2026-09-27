@@ -321,7 +321,7 @@ function shareJob(job, btnElement) {
     const shareText = `Check out this job at *${job.Company}* for *${job.Location}*
 URL - ${jobUrl}
 
-Do turn on notifications to stay updated with all such opportunites and ensure joining the whatsapp group below
+Do turn on notifications to stay updated with all such opportunities and ensure joining the WhatsApp group below
 https://chat.whatsapp.com/D491zsqKmv25S2YLloSUBR`;
 
     const shareData = {
@@ -669,10 +669,47 @@ async function fetchFilterOptions() {
 }
 
 let cachedMergedJobs = null;
+let cachedJobLoadError = null;
+let emailJobGeneration = 0;
+
+function showEmailJobsError(error, partial = false) {
+    if (!dom.jobsContainer) return;
+    dom.jobsContainer.querySelector('.email-jobs-error')?.remove();
+    dom.jobsContainer.querySelector('.no-jobs-found:not(.email-jobs-error)')?.remove();
+    const restricted = error?.code === '42501' || error?.status === 401 || error?.status === 403 || /permission denied|not authorized|unauthorized/i.test(error?.message || '');
+    const panel = document.createElement('section');
+    panel.className = 'jobs-empty-state no-jobs-found email-jobs-error';
+    panel.setAttribute('role', 'status');
+    const title = document.createElement('h2');
+    title.textContent = partial ? 'Some email jobs could not be loaded' : restricted ? 'Email application details need account access' : 'We couldn’t load email jobs';
+    const message = document.createElement('p');
+    message.textContent = restricted
+        ? currentSession ? 'Your account could not access every email job source. Try again, or browse all opportunities.' : 'Your current access does not include every email job source. Sign in to check access, or browse all opportunities.'
+        : 'Please check your connection and try again. Your selected filters are still saved.';
+    const actions = document.createElement('div');
+    actions.className = 'email-jobs-error-actions';
+    if (restricted && !currentSession) {
+        const signIn = document.createElement('a');
+        signIn.className = 'btn btn-primary';
+        signIn.href = '/login.html?redirect=%2Fjobs-by-email.html';
+        signIn.textContent = 'Sign in';
+        actions.appendChild(signIn);
+    }
+    const retry = document.createElement('button');
+    retry.type = 'button'; retry.className = 'btn btn-secondary'; retry.textContent = 'Try again';
+    retry.addEventListener('click', resetAndFetch);
+    const browse = document.createElement('a');
+    browse.className = 'btn btn-secondary'; browse.href = '/'; browse.textContent = 'Browse all opportunities';
+    actions.append(retry, browse);
+    panel.append(title, message, actions);
+    dom.jobsContainer.appendChild(panel);
+}
 
 async function fetchJobs() {
     if (isFetching) return;
     isFetching = true;
+    const requestGeneration = ++emailJobGeneration;
+    dom.jobsContainer?.setAttribute('aria-busy', 'true');
 
     if (page === 0 && dom.loader) {
         dom.loader.style.display = 'block';
@@ -733,8 +770,12 @@ async function fetchJobs() {
                 return (data || []).map(job => ({ ...job, source_table: table }));
             });
 
-            const results = await Promise.all(queries);
-            cachedMergedJobs = results.flat();
+            const results = await Promise.allSettled(queries);
+            if (requestGeneration !== emailJobGeneration) return;
+            const successes = results.filter(result => result.status === 'fulfilled');
+            cachedJobLoadError = results.find(result => result.status === 'rejected')?.reason || null;
+            if (!successes.length && cachedJobLoadError) throw cachedJobLoadError;
+            cachedMergedJobs = successes.flatMap(result => result.value);
 
             let sortCol = 'Created_At';
             let isAsc = false;
@@ -775,25 +816,20 @@ async function fetchJobs() {
                 dom.jobsContainer.innerHTML = '<p class="no-jobs-found">No email-based jobs found matching your criteria.</p>';
             }
         }
+        if (cachedJobLoadError) showEmailJobsError(cachedJobLoadError, cachedMergedJobs.length > 0);
     } catch (error) {
-        if (dom.jobsContainer) {
-            const errMsg = (error.message || '').toLowerCase();
-            const isNetworkError = errMsg.includes('failed to fetch') ||
-                errMsg.includes('network') ||
-                errMsg.includes('fetch');
-
-            if (isNetworkError) {
-                dom.jobsContainer.innerHTML = `<div style="text-align: center; padding: 3rem 1rem; color: #ef4444;"><i class="fas fa-tools" style="font-size: 3rem; margin-bottom: 1rem; color: #f59e0b;"></i><h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; color: #1f2937;">Site Under Maintenance</h3></div>`;
-            } else {
-                dom.jobsContainer.innerHTML = `<p class="no-jobs-found" style="color:red;">Failed to load jobs: ${error.message}</p>`;
-            }
-        }
+        if (requestGeneration !== emailJobGeneration) return;
+        hasMoreData = false;
+        showEmailJobsError(error);
     } finally {
+        if (requestGeneration !== emailJobGeneration) return;
         isFetching = false;
+        dom.jobsContainer?.setAttribute('aria-busy', 'false');
         if (dom.loader) dom.loader.style.display = 'none';
         if (sentinelSpinner) sentinelSpinner.style.display = 'none';
 
         const updateUI = () => {
+            if (requestGeneration !== emailJobGeneration) return;
             renderActiveFilterPills();
             syncFiltersUI();
         };
@@ -804,6 +840,11 @@ async function fetchJobs() {
 
 function resetAndFetch() {
     clearTimeout(debounceTimeout);
+    emailJobGeneration++;
+    isFetching = false;
+    hasMoreData = false;
+    cachedMergedJobs = null;
+    cachedJobLoadError = null;
     debounceTimeout = setTimeout(() => {
         page = 0;
         if (dom.jobsContainer) dom.jobsContainer.innerHTML = '';
@@ -2431,7 +2472,15 @@ async function fetchSharedJob(jobId, table) {
     }
 }
 
-document.addEventListener('DOMContentLoaded', initializePage);
+function startEmailJobsPage() {
+    initializePage().catch(error => {
+        hasMoreData = false;
+        if (dom.loader) dom.loader.style.display = 'none';
+        showEmailJobsError(error);
+    });
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', startEmailJobsPage, { once: true });
+else startEmailJobsPage();
 
 // Check for new user signup and show resume prompt
 document.addEventListener('DOMContentLoaded', async () => {

@@ -5,6 +5,9 @@ body.msc-support-page { background:#f7f9fc; color:#142d4b; color-scheme:light; f
 .msc-support-page :is(.container,.legal-content,.success-card,.fail-card) { overflow-wrap:anywhere; }
 .msc-support-page :is(.container,.legal-container,.success-card,.fail-card) h1 { color:#142d4b; font-size:clamp(28px,3.5vw,40px); line-height:1.2; letter-spacing:-.035em; }
 .msc-support-page :is(.container,.legal-content) a { color:#245fe5; text-underline-offset:3px; }
+.msc-legal-page :is(.container,.legal-content) :is(p,li) a { text-decoration:underline; }
+.msc-support-page :is(.roadmap-btn-whatsapp,.btn-primary) { background:#167242; color:#fff; }
+.msc-support-page .roadmap-btn-teal { background:#0b7169; color:#fff; }
 .msc-support-page :is(.container,.legal-content) :is(p,li) { line-height:1.75; }
 
 /* Long-form documents keep a comfortable measure and visible section hierarchy. */

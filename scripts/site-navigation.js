@@ -17,7 +17,7 @@
     if (window.getSupabaseClient) return window.getSupabaseClient();
     if (window.supabaseClient && window.supabaseClient.auth) return window.supabaseClient;
     if (!window.supabase || !window.supabase.createClient) await loadScript('/scripts/vendor/supabase.js');
-    await loadScript('/scripts/supabase-init.js?v=20260927.4');
+    await loadScript('/scripts/supabase-init.js?v=20260927.5');
     return window.getSupabaseClient();
   }
   function init() {
@@ -107,7 +107,7 @@
         } finally { logout.disabled = false; logout.textContent = 'Log out'; }
       });
       window.dispatchEvent(new CustomEvent('msc:auth-ready', { detail: { client: sb } }));
-      if (!window.MSCCareerProfile) await loadScript('/scripts/career-profile.js?v=20260927.4');
+      if (!window.MSCCareerProfile) await loadScript('/scripts/career-profile.js?v=20260927.5');
       if (window.MSCCareerProfile && window.MSCCareerProfile.initOnboarding) window.MSCCareerProfile.initOnboarding();
     }).catch(error => console.warn('MSC account navigation could not initialize:', error.message));
   }

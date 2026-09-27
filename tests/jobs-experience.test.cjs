@@ -187,3 +187,83 @@ test('canonical career-stage routes are recognized before considering preference
     dom.window.close();
   }
 });
+
+test('a new industry search supersedes an in-flight page and never renders stale jobs', async () => {
+  const page = new JSDOM('<div id="jobs"></div><div id="loader"></div><div id="filters"></div>', {runScripts:'outside-only'});
+  const w=page.window, d=w.document, pending=[];
+  Object.assign(w, { page:0, limit:15, isFetching:false, hasMoreData:true, currentTable:'Industrial Training Job Portal', currentJobFetchController:null, jobFetchGeneration:0, lastCursor:null, lastFilterFingerprint:null, lastJobListCache:null, debounceTimeout:null, currentSession:null, appliedJobIds:new Set(), state:{keywords:[],locations:[],categories:[],salary:'',salaryMin:null,salaryMax:null,experience:'',sortBy:'newest',applicationStatus:'all',companyType:'',industryType:'',firmType:''}, dom:{jobsContainer:d.getElementById('jobs'),loader:d.getElementById('loader'),activeFiltersDisplay:d.getElementById('filters')} });
+  w.syncFiltersUI=()=>{}; w.formatStipendAmount=String;
+  w.requestAnimationFrame=fn=>fn();
+  w.renderJobCard=job=>{const card=d.createElement('article');card.className='job-card';card.textContent=job.Company;return card;};
+  w.supabaseClient={from(){const calls=[]; const query=new Proxy({}, {get(_,name){if(name==='then')return(resolve,reject)=>new Promise(done=>pending.push({calls,done})).then(resolve,reject);return(...args)=>{calls.push([name,...args]);return query;};}});return query;}};
+  w.eval(extract('function getFilterFingerprint()', '\nfunction getSalaryConfig'));
+  w.eval(extract('function renderActiveFilterPills()', '\nfunction syncFiltersUI'));
+  w.syncAndFetch=()=>w.resetAndFetch();
+  const original=w.fetchJobs(); await tick();
+  w.state.industryType='Banking'; w.resetAndFetch();
+  assert.equal(d.querySelector('.active-filter-pill').dataset.type,'industryType');
+  await new Promise(resolve=>setTimeout(resolve,400));
+  assert.equal(pending.length,2,'filtered request starts while the old request is unresolved');
+  assert.ok(pending[1].calls.some(call=>call[0]==='eq'&&call[1]==='Industry Type'&&call[2]==='Banking'));
+  pending[1].done({data:[{id:2,Company:'Banking result',Created_At:'2026-09-27'}],error:null});await tick();
+  pending[0].done({data:[{id:1,Company:'Stale original result',Created_At:'2026-09-27'}],error:null});await original;await tick();
+  assert.equal(d.getElementById('jobs').textContent,'Banking result');
+  assert.equal(w.page,1);
+  assert.equal(w.isFetching,false);
+  for(const [key,value] of [['companyType','MNC'],['firmType','Big 4']])w.state[key]=value;
+  w.renderActiveFilterPills();
+  assert.equal(d.querySelectorAll('.active-filter-pill').length,3);
+  d.querySelector('[data-type="industryType"] button').click();
+  assert.equal(w.state.industryType,'');
+  assert.equal(d.querySelectorAll('.active-filter-pill').length,2);
+  page.window.close();
+});
+
+function emailJobsFixture({session=null, response}) {
+  const page=new JSDOM('<div id="jobs"></div><div id="loader"></div>',{runScripts:'outside-only',url:'https://mystudentclub.com/jobs-by-email.html'});
+  const w=page.window,d=w.document;
+  Object.assign(w,{page:0,limit:15,isFetching:false,hasMoreData:true,currentSession:session,appliedJobIds:new Set(),debounceTimeout:null,state:{portalType:'all',keywords:[],locations:[],categories:[],salary:'',experience:'',sortBy:'newest',applicationStatus:'all'},dom:{jobsContainer:d.getElementById('jobs'),loader:d.getElementById('loader')}});
+  w.renderActiveFilterPills=()=>{};w.syncFiltersUI=()=>{};w.requestAnimationFrame=fn=>fn();
+  w.renderJobCard=job=>{const card=d.createElement('article');card.className='job-card';card.textContent=job.Company;return card;};
+  w.supabaseClient={from(table){const query=new Proxy({}, {get(_,name){if(name==='then')return(resolve,reject)=>Promise.resolve(response(table)).then(resolve,reject);return()=>query;}});return query;}};
+  const emailSource=fs.readFileSync(path.join(root,'scripts/portal-email.js'),'utf8');
+  w.eval(emailSource.slice(emailSource.indexOf('let cachedMergedJobs'),emailSource.indexOf('\nfunction populateSalaryFilter')));
+  return page;
+}
+
+test('email-job access denial offers sign-in, retry and directory recovery without leaking database errors', async()=>{
+  let queries=0;
+  const page=emailJobsFixture({response:()=>{queries++;return{data:null,error:{code:'42501',message:'permission denied for table Articleship Jobs'}};}});
+  const w=page.window,d=w.document;
+  await w.fetchJobs();
+  assert.equal(queries,4);
+  assert.ok(d.querySelector('a[href="/login.html?redirect=%2Fjobs-by-email.html"]'));
+  assert.ok(d.querySelector('a[href="/"]'));
+  assert.doesNotMatch(d.getElementById('jobs').textContent,/permission denied|Articleship Jobs|maintenance/i);
+  assert.equal(w.hasMoreData,false);
+  assert.equal(d.getElementById('jobs').getAttribute('aria-busy'),'false');
+  d.querySelector('.email-jobs-error button').click();
+  await new Promise(resolve=>setTimeout(resolve,400));
+  assert.equal(queries,8,'retry makes a fresh attempt with existing filters');
+  page.window.close();
+});
+
+test('email directory preserves allowed results when another source is restricted',async()=>{
+  const page=emailJobsFixture({session:{user:{id:'known-user'}},response:table=>table==='Industrial Training Job Portal'?{data:[{id:9,Company:'Available result',Created_At:'2026-09-27'}],error:null}:{data:null,error:{code:'42501',message:'permission denied'}}});
+  await page.window.fetchJobs();
+  const d=page.window.document;
+  assert.equal(d.querySelectorAll('.job-card').length,1);
+  assert.equal(d.querySelector('.job-card').textContent,'Available result');
+  assert.equal(d.querySelector('.email-jobs-error h2').textContent,'Some email jobs could not be loaded');
+  assert.equal(d.querySelector('a[href*="login"]'),null,'an existing session is not presented as signed out');
+  assert.doesNotMatch(d.getElementById('jobs').textContent,/No email-based jobs/);
+  page.window.close();
+});
+
+test('email network failure reports a recoverable load error without claiming an outage',async()=>{
+  const page=emailJobsFixture({response:()=>({data:null,error:{message:'Failed to fetch'}})});
+  await page.window.fetchJobs();
+  assert.match(page.window.document.querySelector('.email-jobs-error h2').textContent,/couldn’t load/);
+  assert.doesNotMatch(page.window.document.getElementById('jobs').textContent,/maintenance|permission|table/i);
+  page.window.close();
+});

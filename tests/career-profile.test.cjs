@@ -177,7 +177,7 @@ test('resource collection honors explicit Industrial stage on legacy URL and all
   const paths={'/ca-industrial-training-resources':'industrial-training','/ca-fresher-training-resources':'ca-fresher','/articleship-resources':'articleship','/semi-qualified-ca-resources':'semi-qualified'};
   for(const [url,stage] of Object.entries(paths)){dom.reconfigure({url:'https://mystudentclub.com'+url});delete dom.window.document.body.dataset.resourceStage;assert.equal(dom.window.ResourceFormCollector.detectProgramType(),stage);}
   dom.reconfigure({url:'https://mystudentclub.com/resource.html'});dom.window.document.body.dataset.resourceStage='industrial-training';assert.equal(dom.window.ResourceFormCollector.detectProgramType(),'industrial-training');
-  const legacy=fs.readFileSync(path.join(__dirname,'../resource.html'),'utf8');assert.match(legacy,/<body data-resource-stage="industrial-training">/);dom.window.close();
+  const legacy=new JSDOM(fs.readFileSync(path.join(__dirname,'../resource.html'),'utf8'));assert.equal(legacy.window.document.body.dataset.resourceStage,'industrial-training');legacy.window.close();dom.window.close();
 });
 
 test('both job generators and scheduled installer preserve shared navigation',()=>{

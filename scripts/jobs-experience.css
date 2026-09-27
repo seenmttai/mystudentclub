@@ -111,6 +111,7 @@ body.msc-jobs {
 .msc-jobs .filter-modal-content { max-width: 620px; border-radius: 18px 18px 0 0; max-height: calc(100dvh - 32px); }
 .msc-jobs .filter-modal-content .modal-body { padding: 20px 24px; overscroll-behavior: contain; }
 .msc-jobs .filter-modal-content .modal-footer { padding-bottom: max(16px, env(safe-area-inset-bottom)); }
+.msc-jobs .filter-modal-overlay:not(.show) { pointer-events:none; visibility:hidden; transition:none; }
 .msc-jobs :is(a, button, input, select, [tabindex]):focus-visible { outline: 3px solid #93b7f5; outline-offset: 3px; }
 .msc-jobs .dv2-top-search input:focus-visible { outline: none; }
 .msc-jobs .jobs-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }

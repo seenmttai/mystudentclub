@@ -75,6 +75,7 @@ const BROWSER_GUARD_WORKER_URL = window.BROWSER_GUARD_WORKER_URL || 'https://bro
 const WORKER_URL = window.WORKER_URL || 'https://storer.bhansalimanan55.workers.dev';
 
 let currentJobFetchController = null;
+let jobFetchGeneration = 0;
 let lastCursor = null; // { createdAt, id }
 let lastFilterFingerprint = null;
 let lastJobListCache = null;
@@ -641,7 +642,7 @@ function shareJob(job, btnElement) {
     const shareText = `Check out this job at *${job.Company}* for *${job.Location}*
 URL - ${jobUrl}
 
-Do turn on notifications to stay updated with all such opportunites and ensure joining the whatsapp group below
+Do turn on notifications to stay updated with all such opportunities and ensure joining the WhatsApp group below
 https://chat.whatsapp.com/D491zsqKmv25S2YLloSUBR`;
 
     const shareData = {
@@ -1416,6 +1417,7 @@ async function fetchJobs() {
     }
 
     isFetching = true;
+    const requestGeneration = ++jobFetchGeneration;
 
     // Cancel any superseded job search request
     if (currentJobFetchController) {
@@ -1585,6 +1587,7 @@ async function fetchJobs() {
 
         let query = buildQuery(selectColumns);
         let { data, error } = await query;
+        if (requestGeneration !== jobFetchGeneration) return;
 
         // Failsafe Fallback: If is_exclusive does not exist yet on the table, strip it and retry.
         if (error && error.message && error.message.includes('is_exclusive') && selectColumns.includes('is_exclusive')) {
@@ -1592,6 +1595,7 @@ async function fetchJobs() {
             selectColumns = selectColumns.replace(', is_exclusive', '');
             query = buildQuery(selectColumns);
             const fallbackResult = await query;
+            if (requestGeneration !== jobFetchGeneration) return;
             data = fallbackResult.data;
             error = fallbackResult.error;
         }
@@ -1681,6 +1685,7 @@ async function fetchJobs() {
             }
         }
     } catch (error) {
+        if (requestGeneration !== jobFetchGeneration) return;
         // Silently ignore superseded aborted queries
         if (error && (error.name === 'AbortError' || error.message?.includes('aborted') || error.code === '20')) {
             return;
@@ -1696,6 +1701,8 @@ async function fetchJobs() {
             dom.jobsContainer.appendChild(message);
         }
     } finally {
+        // Superseded responses must not repaint filters or stop the newer loader.
+        if (requestGeneration !== jobFetchGeneration) return;
         isFetching = false;
         if (dom.loader) dom.loader.style.display = 'none';
 
@@ -1704,8 +1711,10 @@ async function fetchJobs() {
 
         // Defer UI updates to avoid blocking render
         const updateUI = () => {
+            if (requestGeneration !== jobFetchGeneration) return;
             renderActiveFilterPills();
-            syncFiltersUI();
+            // Keep uncommitted native select choices while the filter dialog is open.
+            if (!dom.filterModalOverlay?.classList.contains('show')) syncFiltersUI();
         };
         if (typeof requestAnimationFrame !== 'undefined') {
             requestAnimationFrame(updateUI);
@@ -1718,6 +1727,15 @@ async function fetchJobs() {
 
 function resetAndFetch() {
     clearTimeout(debounceTimeout);
+    // Invalidate immediately: a pending response may settle during the debounce.
+    jobFetchGeneration++;
+    currentJobFetchController?.abort();
+    currentJobFetchController = null;
+    isFetching = false;
+    hasMoreData = false;
+    if (dom.jobsContainer) dom.jobsContainer.innerHTML = '';
+    if (dom.loader) dom.loader.style.display = 'block';
+    renderActiveFilterPills();
     debounceTimeout = setTimeout(() => {
         page = 0;
         lastCursor = null;
@@ -2012,6 +2030,7 @@ function renderPills(container, items, type) {
 }
 
 function renderActiveFilterPills() {
+    if (!dom.activeFiltersDisplay) return;
     dom.activeFiltersDisplay.innerHTML = '';
     const createPill = (item, type, onRemove) => {
         const pill = document.createElement('div');
@@ -2037,6 +2056,13 @@ function renderActiveFilterPills() {
     state.keywords.forEach(item => createPill(item, 'keywords'));
     state.locations.forEach(item => createPill(item, 'locations'));
     state.categories.forEach(item => createPill(item, 'categories'));
+    [['companyType', 'Company'], ['industryType', 'Industry'], ['firmType', 'Firm']].forEach(([key, label]) => {
+        if (!state[key]) return;
+        createPill(`${label}: ${state[key]}`, key, () => {
+            state[key] = '';
+            syncAndFetch();
+        });
+    });
 
     // Salary / Stipend Active Pill
     const isSalary = (currentTable === 'Semi Qualified Jobs' || currentTable === 'Fresher Jobs');

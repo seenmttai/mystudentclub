@@ -1,7 +1,7 @@
-@import url('/scripts/site-experience.css?v=20260927.4');
-@import url('/scripts/learning-experience.css?v=20260927.4');
-@import url('/scripts/community-experience.css?v=20260927.4');
-@import url('/scripts/support-experience.css?v=20260927.4');
+@import url('/scripts/site-experience.css?v=20260927.5');
+@import url('/scripts/learning-experience.css?v=20260927.5');
+@import url('/scripts/community-experience.css?v=20260927.5');
+@import url('/scripts/support-experience.css?v=20260927.5');
 html.msc-shared-navigation body > header:not(#msc-site-navigation),html.msc-shared-navigation .floating-header:not(#msc-site-navigation),html.msc-shared-navigation .site-header:not(#msc-site-navigation),html.msc-shared-navigation #expandedMenu{display:none!important}
 #msc-site-navigation,#msc-site-navigation *{box-sizing:border-box}
 #msc-site-navigation{position:fixed!important;inset:0 0 auto!important;height:80px!important;z-index:1500!important;background:#fff!important;border-bottom:1px solid #e2e8f0!important;box-shadow:0 2px 12px #16324f08!important;padding:0 24px!important;margin:0!important;color:#233247!important;font-family:Inter,Poppins,Arial,sans-serif!important;line-height:1.45!important;transform:none!important}
