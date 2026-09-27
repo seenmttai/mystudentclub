@@ -160,7 +160,7 @@
 
         const WORKER_URL = "https://cv-maker.bhansalimanan55.workers.dev";
         // PDF Worker URL — update this after deploying cv-pdf-worker
-        const FILE_WORKER_URL = window.localStorage.getItem('cv_file_worker_url') || "https://cv-pdf-worker.bhansalimanan55.workers.dev";
+        const FILE_WORKER_URL = "https://cv-pdf-worker.bhansalimanan55.workers.dev";
         const HISTORY_KEY = 'cv_maker_history_v1';
         let history = [];
         const UNDO_LIMIT = 120;
@@ -347,10 +347,10 @@
                     parseLegacyContact(cvData.personal);
                     
                     // Set template to classic
-                    cvData.templateFile = 'classic.html';
+                    cvData.templateFile = 'bold-modern.html';
                     const templateSelect = document.getElementById('template-select');
                     if (templateSelect) {
-                        templateSelect.value = 'classic.html';
+                        templateSelect.value = 'bold-modern.html';
                     }
                     if (typeof syncCurrentTemplateName === 'function') {
                         syncCurrentTemplateName();
@@ -378,7 +378,7 @@
                     
                     const frame = document.getElementById('cv-frame');
                     if (frame) {
-                        frame.src = `classic.html?v=${Date.now()}`;
+                        frame.src = `bold-modern.html?v=${Date.now()}`;
                         frame.onload = () => {
                             postToFrame();
                             setTimeout(() => {
@@ -1652,7 +1652,7 @@
         }
 
         function getSelectedTemplateFile() {
-            return document.getElementById('template-select')?.value || 'classic.html';
+            return document.getElementById('template-select')?.value || 'bold-modern.html';
         }
 
         function syncCurrentTemplateName() {
@@ -1727,7 +1727,7 @@
             normalizeSectionOrder();
 
             const select = document.getElementById('template-select');
-            const targetTemplate = state.templateFile || 'classic.html';
+            const targetTemplate = state.templateFile || 'bold-modern.html';
             if (select) select.value = targetTemplate;
             syncCurrentTemplateName();
 
@@ -1738,12 +1738,12 @@
             const frame = document.getElementById('cv-frame');
             if (frame && frame.getAttribute('src') !== targetTemplate) {
                 const overlay = document.querySelector('.loading-overlay');
-                if (overlay) overlay.classList.add('active');
+                if (overlay) { overlay.classList.add('active'); overlay.setAttribute('aria-hidden', 'false'); }
                 frame.src = targetTemplate;
                 frame.onload = () => {
                     setTimeout(() => {
                         postToFrame({ skipHistory: true });
-                        if (overlay) overlay.classList.remove('active');
+                        if (overlay) { overlay.classList.remove('active'); overlay.setAttribute('aria-hidden', 'true'); }
                         isApplyingUndoRedo = false;
                         setEditorScrollTop(preservedScrollTop);
                     }, 250);
@@ -2900,6 +2900,9 @@
 
         // Template Sidebar Logic
         const TEMPLATES = [
+            { file: 'bold-modern.html', name: 'Bold Modern', accent: '#dc2626', style: 'bold' },
+            { file: 'inset-frame.html', name: 'Inset Frame', accent: '#45497D', style: 'template37' },
+            { file: 'clean-rule.html', name: 'Clean Rule', accent: '#0D56C4', style: 'template38' },
             { file: 'classic.html', name: 'Classic', accent: '#1e40af', style: 'sans' },
             { file: 'ledger-layout.html', name: 'Ledger Layout', accent: '#0d465f', style: 'ledger' },
             { file: 'structured-grid.html', name: 'Structured Grid', accent: '#2d5294', style: 'royal' },
@@ -2914,7 +2917,6 @@
             { file: 'professional.html', name: 'Professional', accent: '#374151', style: 'clean' },
             { file: 'corporate.html', name: 'Corporate', accent: '#0369a1', style: 'formal' },
             { file: 'minimalist.html', name: 'Minimalist', accent: '#6b7280', style: 'minimal' },
-            { file: 'bold-modern.html', name: 'Bold Modern', accent: '#dc2626', style: 'bold' },
             { file: 'refined-classic.html', name: 'Refined Classic', accent: '#2F557F', style: 'refined' },
             { file: 'modern-bold.html', name: 'Modern Bold', accent: '#2c5d79', style: 'deepblue' },
             { file: 'executive.html', name: 'Executive', accent: '#404040', style: 'dark' },
@@ -2937,8 +2939,6 @@
             { file: 'profile-sidebar.html', name: 'Profile Sidebar', accent: '#464978', style: 'template34' },
             { file: 'compact-banner.html', name: 'Compact Banner', accent: '#292D2D', style: 'template35' },
             { file: 'dual-columns.html', name: 'Dual Columns', accent: '#292C2C', style: 'template36' },
-            { file: 'inset-frame.html', name: 'Inset Frame', accent: '#45497D', style: 'template37' },
-            { file: 'clean-rule.html', name: 'Clean Rule', accent: '#0D56C4', style: 'template38' },
             { file: 'continuous-outline.html', name: 'Continuous Outline', accent: '#1F477B', style: 'template39' },
             { file: 'formal-docket.html', name: 'Formal Docket', accent: '#001F5E', style: 'template40' },
             { file: 'open-panel.html', name: 'Open Panel', accent: '#8C8C8C', style: 'template41' },
@@ -2964,91 +2964,52 @@
         ];
         const TEMPLATE_COLOR_PRESETS = ['#2b2b2b', '#0f6cbd', '#155e95', '#1f8f63', '#c0392b', '#7b4db3'];
 
-        // ── Template paywall ──────────────────────────────────────────────
-        // First 3 templates are free for everyone; the rest are premium.
-        // Any paid enrollment (a row in the `enrollment` table) unlocks all.
-        const FREE_TEMPLATES = ['classic.html', 'ledger-layout.html', 'structured-grid.html'];
-        const FREE_FALLBACK_TEMPLATE = 'classic.html';
+        // Every template is editable. Only exports of premium templates need enrollment.
+        const FREE_TEMPLATES = ['bold-modern.html', 'inset-frame.html', 'clean-rule.html'];
+        const PREMIUM_COURSES = window.MSCProgramAccess.PROGRAMS;
+        let templateAccess = { checked: false, loggedIn: false, hasAccess: false, courses: [] };
+        let exportInProgress = false;
 
-        // Courses shown in the "unlock" popup. Add the 3rd entry here later.
-        const PREMIUM_COURSES = [
-            {
-                title: 'MSC Industrial Training Program',
-                desc: 'Master industrial training requirements for CA candidates with real-world case studies.',
-                url: 'https://www.mystudentclub.com/ca-industrial-training-program/'
-            },
-            {
-                title: 'MSC CA Freshers Program',
-                desc: 'A comprehensive program for CA freshers to kickstart their career.',
-                url: 'https://www.mystudentclub.com/ca-industrial-training-program/'
-            }
-        ];
+        function isFreeTemplate(file) { return FREE_TEMPLATES.includes(file); }
+        function hasTemplateAccess() { return Boolean(templateAccess.hasAccess); }
+        function isTemplateLocked(file) { return !isFreeTemplate(file) && !hasTemplateAccess(); }
 
-        // Entitlement state, resolved asynchronously once Supabase is ready.
-        let templateAccess = { checked: false, loggedIn: false, hasAccess: false };
-        let landingLoginPromptShown = false;
-
-        function isFreeTemplate(file) {
-            return FREE_TEMPLATES.includes(file);
-        }
-        function hasTemplateAccess() {
-            return !!templateAccess.hasAccess;
-        }
-        function isTemplateLocked(file) {
-            return !isFreeTemplate(file) && !hasTemplateAccess();
-        }
-
-        // Checks login + enrollment via the shared Supabase client, then
-        // re-renders the picker and enforces access on the current template.
         async function refreshTemplateAccess() {
-            const sb = window.mscSupabase;
-            if (!sb) return; // Not ready yet; the ready-event handler will retry.
-            try {
-                const { data: { session } } = await sb.auth.getSession();
-                if (!session || !session.user) {
-                    templateAccess = { checked: true, loggedIn: false, hasAccess: false };
-                } else {
-                    // Session is local/fast — mark logged-in right away so the
-                    // feature gates don't misfire during the enrollment lookup.
-                    templateAccess = { checked: true, loggedIn: true, hasAccess: false };
-                    const { count, error } = await sb
-                        .from('enrollment')
-                        .select('course', { count: 'exact', head: true })
-                        .eq('uuid', session.user.id);
-                    if (error) throw error;
-                    templateAccess.hasAccess = (count || 0) > 0;
-                }
-            } catch (e) {
-                console.error('Template access check failed:', e);
-                // Fail closed: treat as logged-in-no-access so premium stays locked
-                // but the builder remains usable with the free templates.
-                templateAccess = { checked: true, loggedIn: !!(templateAccess.loggedIn), hasAccess: false };
-            }
-            enforceTemplateAccess();
-            const grid = document.getElementById('template-grid');
-            if (grid && grid.children.length) renderTemplateCards();
-
-            // On landing, invite logged-out users to sign in (dismissible).
-            if (!templateAccess.loggedIn && !landingLoginPromptShown) {
-                landingLoginPromptShown = true;
-                openTemplateLoginModal({
-                    title: 'Welcome to the MSC CV Builder',
-                    text: 'Log in to your MSC account to use AI tools, import, and export your CV. You can keep editing with the free templates in the meantime.'
-                });
-            }
+            const access = await window.MSCProgramAccess.getAccess(window.mscSupabase);
+            templateAccess = { ...access, checked: true };
+            // Premium templates stay selected and editable even without an enrollment.
+            updateExportNotice();
+            return access;
         }
 
-        // If the active template is premium and the user isn't entitled,
-        // silently switch to the free default before it can be used.
-        function enforceTemplateAccess() {
-            if (!templateAccess.checked || templateAccess.hasAccess) return;
-            const select = document.getElementById('template-select');
-            if (!select || !isTemplateLocked(select.value)) return;
-            const fallback = TEMPLATES.find(t => t.file === FREE_FALLBACK_TEMPLATE);
-            select.value = FREE_FALLBACK_TEMPLATE;
-            const nameSpan = document.getElementById('current-template-name');
-            if (nameSpan && fallback) nameSpan.textContent = fallback.name;
-            changeTemplate();
+        function updateExportNotice() {
+            const premium = !isFreeTemplate(getSelectedTemplateFile());
+            document.body.classList.toggle('premium-export-locked', premium && !hasTemplateAccess());
+            const notice = document.getElementById('template-export-notice');
+            if (notice) notice.textContent = premium
+                ? (hasTemplateAccess() ? 'Premium template · Export included in your program' : 'Premium template · Try and edit freely. Enroll in an MSC program to export.')
+                : 'Free template · PDF and Word export included';
+        }
+
+        async function ensureBuilderProfile() {
+            if (!window.MSCCareerProfile) {
+                alert('Career details are unavailable. Please reload and try again.');
+                return false;
+            }
+            return window.MSCCareerProfile.ensureForTool('cv-builder');
+        }
+
+        async function authorizeTemplateExport() {
+            if (!await ensureBuilderProfile()) return false;
+            const access = await refreshTemplateAccess();
+            if (isFreeTemplate(getSelectedTemplateFile())) return true;
+            if (access.error) {
+                alert('We could not verify your enrollment. Please try again.');
+                return false;
+            }
+            if (access.hasAccess) return true;
+            openTemplateBuyModal();
+            return false;
         }
 
         const TPL_LOGIN_DEFAULTS = {
@@ -3061,11 +3022,11 @@
             if (titleEl) titleEl.textContent = opts.title || TPL_LOGIN_DEFAULTS.title;
             if (textEl) textEl.textContent = opts.text || TPL_LOGIN_DEFAULTS.text;
             const overlay = document.getElementById('template-login-overlay');
-            if (overlay) overlay.classList.add('active');
+            if (overlay) { overlay.classList.add('active'); overlay.setAttribute('aria-hidden', 'false'); }
         }
         function closeTemplateLoginModal() {
             const overlay = document.getElementById('template-login-overlay');
-            if (overlay) overlay.classList.remove('active');
+            if (overlay) { overlay.classList.remove('active'); overlay.setAttribute('aria-hidden', 'true'); }
         }
 
         // Gate for login-only features (AI tools, import, export). Returns true
@@ -3087,8 +3048,13 @@
         }
         function openTemplateBuyModal() {
             const list = document.getElementById('tpl-buy-course-list');
+            const stage = window.MSCCareerProfile?.getCurrentStage?.();
+            const selectedProgram = window.MSCProgramAccess.programForStage(stage);
+            const courses = selectedProgram ? [selectedProgram] : PREMIUM_COURSES;
+            const title = document.getElementById('tpl-buy-title');
+            if (title) title.textContent = selectedProgram ? `Enroll in ${selectedProgram.title} to export` : 'Enroll in an MSC program to export';
             if (list) {
-                list.innerHTML = PREMIUM_COURSES.map(c => `
+                list.innerHTML = courses.map(c => `
                     <a class="tpl-course-card" href="${escapeHtml(c.url)}" target="_blank" rel="noopener noreferrer">
                         <span class="tpl-course-icon" aria-hidden="true">
                             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -3098,18 +3064,18 @@
                         </span>
                         <div class="tpl-course-info">
                             <div class="tpl-course-title">${escapeHtml(c.title)}</div>
-                            <div class="tpl-course-desc">${escapeHtml(c.desc)}</div>
+                            <div class="tpl-course-desc">Try every template free. Export premium templates with program enrollment.</div>
                         </div>
                         <span class="tpl-course-cta">View<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg></span>
                     </a>
                 `).join('');
             }
             const overlay = document.getElementById('template-buy-overlay');
-            if (overlay) overlay.classList.add('active');
+            if (overlay) { overlay.classList.add('active'); overlay.setAttribute('aria-hidden', 'false'); }
         }
         function closeTemplateBuyModal() {
             const overlay = document.getElementById('template-buy-overlay');
-            if (overlay) overlay.classList.remove('active');
+            if (overlay) { overlay.classList.remove('active'); overlay.setAttribute('aria-hidden', 'true'); }
         }
 
         // Resolve entitlement as soon as the Supabase client is available.
@@ -3317,6 +3283,7 @@
                 sidebar.classList.add('open');
                 overlay.classList.add('open');
                 renderTemplateCards();
+                document.getElementById('template-grid').scrollTop = 0;
             } else {
                 sidebar.classList.remove('open');
                 overlay.classList.remove('open');
@@ -3328,24 +3295,16 @@
             const currentTemplate = document.getElementById('template-select').value;
             
             grid.innerHTML = TEMPLATES.map(t => {
-                const locked = isTemplateLocked(t.file);
+                const free = isFreeTemplate(t.file);
                 return `
-                <div class="template-card ${t.file === currentTemplate ? 'active' : ''} ${locked ? 'locked' : ''}" onclick="selectTemplate('${t.file}', '${t.name}')">
+                <button type="button" class="template-card ${t.file === currentTemplate ? 'active' : ''}" onclick="selectTemplate('${t.file}', '${t.name}')" aria-label="Try ${t.name} — ${free ? 'Free' : 'Premium export'}">
                     <div class="template-card-preview">
-                        <iframe data-src="${t.file}" data-template="${t.file}"></iframe>
+                        <iframe data-src="${t.file}" data-template="${t.file}" title="${t.name} preview" tabindex="-1"></iframe>
                         <div class="template-loading" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:12px;color:#9ca3af;">Loading...</div>
-                        ${locked ? `
-                        <div class="template-lock-scrim"></div>
-                        <div class="template-premium-badge">
-                            <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <rect x="4.5" y="10.5" width="15" height="10" rx="2"></rect>
-                                <path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"></path>
-                            </svg>
-                            PREMIUM
-                        </div>` : ''}
+                        <span class="template-premium-badge ${free ? 'template-free-badge' : ''}">${free ? 'FREE' : 'PREMIUM'}</span>
                     </div>
                     <div class="template-card-name">${t.name}</div>
-                </div>`;
+                </button>`;
             }).join('');
             
             // Initialize lazy loading after rendering
@@ -3518,13 +3477,6 @@
         }
 
         function selectTemplate(file, name) {
-            // Gate premium templates: don't switch — prompt to log in or unlock.
-            if (isTemplateLocked(file)) {
-                if (!templateAccess.loggedIn) openTemplateLoginModal();
-                else openTemplateBuyModal();
-                return;
-            }
-
             const select = document.getElementById('template-select');
             const nameSpan = document.getElementById('current-template-name');
 
@@ -3532,6 +3484,7 @@
             if (nameSpan) nameSpan.textContent = name;
             
             changeTemplate();
+            updateExportNotice();
             toggleTemplateSidebar(false);
         }
 
@@ -3568,6 +3521,7 @@
             document.querySelector('.loading-overlay').classList.add('active');
             frame.src = select.value;
             syncCurrentTemplateName();
+            updateExportNotice();
             frame.onload = () => {
                 setTimeout(() => {
                     postToFrame({ skipHistory });
@@ -3742,8 +3696,20 @@ async function downloadCvFile(format = 'pdf') {
     const menu = document.getElementById('download-menu-popover');
     if (menu) menu.classList.remove('active');
 
-    // Export is login-gated.
-    if (!requireLogin(format === 'docx' ? 'Word export' : 'PDF export')) return;
+    if (exportInProgress) return;
+    exportInProgress = true;
+    try {
+        if (!await authorizeTemplateExport()) return;
+        return await generateCvFile(format);
+    } catch (error) {
+        console.error('CV export access check failed:', error);
+        alert(error.message || 'Unable to verify export access. Please try again.');
+    } finally {
+        exportInProgress = false;
+    }
+}
+
+async function generateCvFile(format) {
 
     if (format === 'docx') {
         openDocxInfoModal();
@@ -3768,11 +3734,14 @@ async function downloadCvFile(format = 'pdf') {
     overlay?.classList.add('active');
 
     try {
+        const sessionResult = await window.mscSupabase?.auth.getSession();
+        const accessToken = sessionResult?.data?.session?.access_token;
+        const exportHeaders = { 'Content-Type': 'application/json' };
+        if (accessToken) exportHeaders.Authorization = `Bearer ${accessToken}`;
         // ── Step 1: Extract the FULL HTML from the iframe ─────────────
-        // We grab the entire <html>...</html> including <head> (styles/fonts)
-        // and <body> (content). This way the Worker's Chromium renders it
-        // with the exact same styling the user sees in the preview.
-        const fullHTML = '<!DOCTYPE html>' + doc.documentElement.outerHTML;
+        // The Worker selects the canonical template and renders these editor values.
+        // Sending raw HTML would let a premium design be relabelled as free.
+        const exportData = buildPreviewPayload({ useDemoFallback: false });
 
         // ── Step 2: POST the HTML to our Cloudflare Worker ───────────
         // Includes a retry mechanism to gracefully handle high traffic (429 errors).
@@ -3782,8 +3751,8 @@ async function downloadCvFile(format = 'pdf') {
         while (retries > 0) {
             res = await fetch(`${FILE_WORKER_URL}/${route}`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ html: fullHTML, filename }),
+                headers: exportHeaders,
+                body: JSON.stringify({ data: exportData, filename, template: getSelectedTemplateFile() }),
             });
 
             if (res.status === 429) {
@@ -3842,7 +3811,7 @@ async function downloadCvFile(format = 'pdf') {
             const trimmed = (text || '').trim();
             if (!trimmed) throw new Error('Nothing to refine');
 
-            const templateFile = document.getElementById('template-select')?.value || 'classic.html';
+            const templateFile = document.getElementById('template-select')?.value || 'bold-modern.html';
             const templateId = 'template_' + templateFile.replace('cv', '').replace('-', '').replace('.html', '');
 
             const response = await fetch(`${WORKER_URL}/refine-section`, {
@@ -4893,3 +4862,22 @@ async function downloadCvFile(format = 'pdf') {
             }, 1200); // Delay to ensure page is fully loaded
         });
 
+
+// Ask for career details on first editing use; browsing template previews stays available.
+let builderProfileRequest = null;
+document.addEventListener('focusin', event => {
+    if (!event.target.closest('.editor') || !event.target.matches('input, textarea, select, [contenteditable="true"]')) return;
+    if (!builderProfileRequest) builderProfileRequest = ensureBuilderProfile().catch(error => {
+        console.warn('Career details could not be saved:', error);
+        return false;
+    }).finally(() => { builderProfileRequest = null; });
+});
+window.addEventListener('msc-career-profile-saved', updateExportNotice);
+window.addEventListener('msc-supabase-ready', () => {
+    window.mscSupabase?.auth.onAuthStateChange(() => {
+        // Run outside the Supabase auth callback lock.
+        templateAccess = { checked: false, loggedIn: false, hasAccess: false, courses: [] };
+        updateExportNotice();
+        setTimeout(refreshTemplateAccess, 0);
+    });
+});

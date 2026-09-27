@@ -2,7 +2,8 @@ node_modules
 temp/
 logs/
 .wrangler/
-workers/
+workers/*
+!workers/cv-pdf-worker/
 scratch/
 jobs-builder/dist/
 jobs-builder/.astro/

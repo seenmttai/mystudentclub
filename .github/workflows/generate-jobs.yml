@@ -41,6 +41,9 @@ jobs:
           echo "No new job pages to copy in jobs-builder/dist/jobs"
         fi
 
+    - name: Install shared site navigation
+      run: node scripts/install-site-navigation.cjs
+
     - name: Run Folder Cleanup (3000 limit)
       run: cd jobs-builder && npm run cleanup
 

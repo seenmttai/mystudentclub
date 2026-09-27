@@ -2576,7 +2576,16 @@ function populateForm(profileData) {
     for (const key in profileData) {
         if (key === 'resume' || key === 'cover_letter' || key === 'project_attachment') continue;
         const field = profileForm.elements[key];
-        if (field) field.value = profileData[key];
+        if (field) {
+            const value = String(profileData[key] ?? '');
+            // Preserve saved intake values such as Nov / 2050 and every career status.
+            // The profile editor's older dropdown lists must not silently discard them.
+            if (field.tagName === 'SELECT' && value && !Array.from(field.options).some(option => option.value === value)) {
+                field.add(new Option(value, value));
+            }
+            if (field.type === 'checkbox') field.checked = ['true', 'on', 'yes', '1'].includes(value.toLowerCase());
+            else field.value = value;
+        }
     }
 
     const emailField = document.getElementById('email');

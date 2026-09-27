@@ -60,14 +60,14 @@ function makeHarness(options = {}) {
         'resultsSection', 'proceedToReviewBtn', 'removeFileBtn', 'reviewBuyTitle', 'loadingProgressText'
     ].map(id => [id, element(['landingSection', 'heroSection', 'uploadSection'].includes(id) ? 'block' : 'none')]));
     elements.proceedToReviewBtn.innerHTML = defaultButtonHtml;
-    const calls = { auth: 0, quota: 0, fetch: [], saved: [], login: 0, buy: 0, notices: [], alerts: [], contexts: [], starts: 0, stops: 0, increments: 0 };
+    const calls = { auth: 0, quota: 0, fetch: [], saved: [], login: 0, buy: 0, notices: [], alerts: [], contexts: [], starts: 0, stops: 0, increments: 0, profile: 0 };
     const stored = new Map();
     const pdf = { name: 'resume.pdf' };
     const images = ['data:image/png;base64,test-resume'];
     const context = vm.createContext({
         ...elements,
         document: { getElementById: id => elements[id] || null },
-        window: { location: { origin: 'https://www.mystudentclub.com' } },
+        window: { location: { origin: 'https://www.mystudentclub.com' }, MSCCareerProfile: { async ensureForTool(tool) { assert.equal(tool, 'cv-reviewer'); calls.profile++; return options.profile ? options.profile() : true; } } },
         selectedFile: pdf,
         pdfImages: images,
         analysisResultText: null,
@@ -360,4 +360,29 @@ test('closing an inactive context warning does not reset the upload', () => {
     context.closeContextWarningModal();
     assert.equal(resets, 1);
     assert.equal(elements.contextWarningOverlay.classList.contains('active'), false);
+});
+
+
+test('free reviewer waits for career details and cancel preserves the uploaded CV', async () => {
+    const profile = deferred();
+    const harness = makeHarness({premium:false, profile:()=>profile.promise});
+    const pending = harness.context.analyzeCv();
+    await flushPromises();
+    assert.equal(harness.calls.profile, 1);
+    assert.equal(harness.calls.fetch.length, 0);
+    await repeatClicks(harness);
+    assert.equal(harness.calls.profile, 1);
+    profile.resolve(false);
+    await pending;
+    assertReady(harness);
+    assert.equal(harness.context.selectedFile, harness.pdf);
+    assert.equal(harness.elements.landingSection.style.display, 'block');
+    assert.equal(harness.calls.fetch.length, 0);
+});
+
+test('verified premium reviewer skips career intake', async () => {
+    const harness = makeHarness({premium:true});
+    await harness.context.analyzeCv();
+    assert.equal(harness.calls.profile, 0);
+    assert.equal(harness.calls.fetch.length, 1);
 });

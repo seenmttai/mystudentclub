@@ -11,6 +11,8 @@
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.7.107/pdf.worker.min.js';
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/scripts/program-access.js"></script>
+    <script src="/scripts/career-profile.js"></script>
 
     <title>AI Video Interview - Professional Practice Platform</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -2779,6 +2781,7 @@
     <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
     <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
     <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
+<link rel="stylesheet" href="/scripts/site-navigation.css"><script src="/scripts/site-navigation.js" defer></script>
 </head>
 
 <body>
@@ -2834,6 +2837,8 @@
                             <option value="CA Fresher">CA Fresher</option>
                             <option value="Industrial Trainee" selected>Industrial Trainee</option>
                             <option value="CA Articleship">CA Articleship</option>
+                            <option value="Experienced CA">Experienced CA</option>
+                            <option value="Semi Qualified CA">Semi Qualified CA</option>
                             <option value="Other Finance Role">Other Finance Role</option>
                         </select>
                     </div>
@@ -3296,7 +3301,8 @@
         // --- SUPABASE & AUTH CONFIG ---
         const supabaseUrl = 'https://auth.mystudentclub.com';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        const supabase = window.supabaseClient || window.supabase.createClient(supabaseUrl, supabaseKey);
+        window.supabaseClient = supabase;
 
         // --- NEW STATE ---
         let interviewPlan = null;
@@ -3517,50 +3523,16 @@
         const pdfPreviewModal = document.getElementById('pdf-preview-modal'), pdfPreviewContainer = document.getElementById('pdf-preview-container'), pdfPreviewCloseBtn = document.getElementById('pdf-preview-close-btn'), pdfPreviewDownloadBtn = document.getElementById('pdf-preview-download-btn');
 
         async function init() {
-            const authCheckingScreen = document.getElementById('auth-checking-screen');
-            const setupScreen = document.getElementById('setup-screen');
-            const enrollmentLockedScreen = document.getElementById('enrollment-locked-screen');
-
-            try {
-                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-                if (sessionError) throw sessionError;
-
-                if (!session || !session.user) {
-                    // Redirect to login page
-                    window.location.href = 'https://mystudentclub.com/login?redirect=' + encodeURIComponent(window.location.pathname);
-                    return;
-                }
-
-                // Check enrollment
-                const { data: enrollments, error: enrollError } = await supabase
-                    .from('enrollment')
-                    .select('course')
-                    .eq('uuid', session.user.id);
-
-                if (enrollError) throw enrollError;
-
-                if (!enrollments || enrollments.length === 0) {
-                    // Not enrolled
-                    authCheckingScreen.classList.add('hidden');
-                    enrollmentLockedScreen.classList.remove('hidden');
-                    return;
-                }
-
-                // User is authenticated and enrolled! Proceed to load page contents
-                authCheckingScreen.classList.add('hidden');
-                setupScreen.classList.remove('hidden');
-
-                setupEventListeners();
-                setupContinuousSpeechRecognition();
-                initializeVAD(); // Pre-load VAD model in background
-                loadModelInBackground();
-                subtitlesBtn.classList.toggle('active', areSubtitlesOn);
-
-            } catch (error) {
-                console.error("Auth check failed:", error);
-                // Fallback to login redirect
-                window.location.href = 'https://mystudentclub.com/login?redirect=' + encodeURIComponent(window.location.pathname);
-            }
+            // Everyone can prepare an interview. Collect career details only when they start;
+            // verified enrolled users bypass the shared form automatically.
+            document.getElementById('auth-checking-screen').classList.add('hidden');
+            document.getElementById('enrollment-locked-screen').classList.add('hidden');
+            setupScreen.classList.remove('hidden');
+            setupEventListeners();
+            setupContinuousSpeechRecognition();
+            // Microphone/VAD starts only after career intake and the user starts an interview.
+            loadModelInBackground();
+            subtitlesBtn.classList.toggle('active', areSubtitlesOn);
         }
 
         function setupEventListeners() {
@@ -4442,10 +4414,25 @@
         }
         function updateLoadingProgress(p, t) { loadingProgressBar.style.width = `${p}%`; const lt = document.querySelector('.loading-text'); if (lt) lt.textContent = t; }
 
+        let setupSubmissionInProgress = false;
         async function handleSetupSubmit(e) {
             e.preventDefault();
+            if (setupSubmissionInProgress) return;
+            setupSubmissionInProgress = true;
+            try {
+                if (!window.MSCCareerProfile) throw new Error('Career details are unavailable. Please reload and try again.');
+                if (!await window.MSCCareerProfile.ensureForTool('ai-interview')) return;
+                await startConfiguredInterview(e);
+            } catch (error) {
+                console.error('Could not start interview:', error);
+                alert(error.message || 'Unable to start your interview. Please try again.');
+            } finally {
+                setupSubmissionInProgress = false;
+            }
+        }
 
-            const btn = e.submitter;
+        async function startConfiguredInterview(e) {
+            const btn = e.submitter || setupForm.querySelector('[type="submit"]');
             const originalBtnText = btn.innerHTML;
             btn.disabled = true;
             btn.innerHTML = '<span class="loading-spinner" style="width:16px;height:16px;border-width:2px;"></span> Initializing...';

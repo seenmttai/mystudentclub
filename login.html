@@ -9,6 +9,7 @@
     content="Login or sign up to My Student Club - Access CA jobs, industrial training, and career resources.">
   <script src="/scripts/supabase.js"></script>
   <script src="/scripts/supabase-init.js"></script>
+  <script src="/scripts/career-profile.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * {
@@ -852,6 +853,7 @@
   <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
   <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
   <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
+<link rel="stylesheet" href="/scripts/site-navigation.css"><script src="/scripts/site-navigation.js" defer></script>
 </head>
 
 <body>
@@ -967,11 +969,9 @@
           <form id="signup-form">
             <div class="name-row">
               <div class="form-group">
-                <input type="text" id="signup-firstname" class="form-input" placeholder="First Name" required>
+                <input type="text" id="signup-firstname" class="form-input" placeholder="Name" aria-label="Name" autocomplete="name" maxlength="160" required>
               </div>
-              <div class="form-group">
-                <input type="text" id="signup-lastname" class="form-input" placeholder="Last Name" required>
-              </div>
+              <input type="hidden" id="signup-lastname" value="">
             </div>
             <div class="form-group">
               <input type="email" id="signup-email" class="form-input" placeholder="Email address" required>
@@ -990,6 +990,8 @@
                 </button>
               </div>
             </div>
+            <label class="msc-career-field">Phone Number<input id="signup-phone" type="tel" autocomplete="tel" pattern="[+]?[0-9]{10,15}" maxlength="16" required></label>
+            <div id="signup-career-fields"></div>
             <div class="form-group" style="margin-top: 1rem; margin-bottom: 1.25rem;">
               <label
                 style="display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.75rem; color: #6b7280; cursor: pointer; user-select: none;">
@@ -1119,13 +1121,18 @@
       // Reuse shared Supabase client
       const supabaseClient = window.supabaseClient || (typeof getSupabaseClient === 'function' ? getSupabaseClient() : null);
 
-      const redirectUrl = new URLSearchParams(window.location.search).get('redirect');
+      const redirectUrl = MSCCareerProfile.safeRedirect(new URLSearchParams(window.location.search).get('redirect') || sessionStorage.getItem('msc_career_auth_redirect') || '/');
+      const signupCareerFields = MSCCareerProfile.mountFields(document.getElementById('signup-career-fields'));
+      async function completeAuthentication(user) {
+        try { return await MSCCareerProfile.finishAuth(user, redirectUrl); }
+        catch (error) { const el = document.getElementById('login-error'); el.textContent = error.message; el.classList.add('show'); return false; }
+      }
 
       // Check if already logged in
       window.addEventListener('DOMContentLoaded', async () => {
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (session) {
-          window.location.href = redirectUrl || '/';
+          await completeAuthentication(session.user);
         }
 
         // Animated Counter for Stats
@@ -1233,7 +1240,9 @@
           });
 
           if (error) throw error;
-          window.location.href = redirectUrl || '/';
+          await completeAuthentication(data.user);
+          loginSubmit.classList.remove('loading');
+          loginSubmit.disabled = false;
 
         } catch (error) {
           loginError.textContent = error.message;
@@ -1278,7 +1287,8 @@
               data: {
                 first_name: firstName,
                 last_name: lastName,
-                full_name: `${firstName} ${lastName}`
+                full_name: `${firstName} ${lastName}`.trim(),
+                msc_career_intake: { ...signupCareerFields.read(), name: `${firstName} ${lastName}`.trim(), email, phone: document.getElementById('signup-phone').value.trim() }
               }
             }
           });
@@ -1286,14 +1296,12 @@
           if (error) throw error;
 
           if (data.user && !data.session) {
-            // Mark as new user for resume prompt on first login
-            localStorage.setItem('newUserSignup', 'true');
-            localStorage.setItem('newUserEmail', email);
+            // Career details are stored with this signup and resumed after email confirmation.
             signupSuccess.textContent = 'Sign up successful! Please check your email to confirm your account.';
             signupSuccess.classList.add('show');
             signupForm.reset();
           } else if (data.session) {
-            window.location.href = '/';
+            await completeAuthentication(data.user);
           }
 
         } catch (error) {
@@ -1314,11 +1322,13 @@
       const googleSignupBtn = document.getElementById('google-signup-btn');
 
       async function handleGoogleSignIn() {
+        MSCCareerProfile.markAuthPending(redirectUrl);
         try {
           const { error } = await supabaseClient.auth.signInWithOAuth({
             provider: 'google',
             options: {
-              redirectTo: redirectUrl ? `${window.location.origin}${redirectUrl}` : window.location.origin
+              redirectTo: `${window.location.origin}/login.html`,
+              scopes: 'openid email profile'
             }
           });
           if (error) throw error;
@@ -1337,14 +1347,14 @@
       window.handleGoogleSignInToken = async function (id_token) {
         if (!id_token) return;
         try {
-          const { error } = await supabaseClient.auth.signInWithIdToken({
+          const { data, error } = await supabaseClient.auth.signInWithIdToken({
             provider: 'google',
             token: id_token
           });
           if (error) {
             alert('Could not complete Google Sign-In: ' + error.message);
           } else {
-            window.location.href = redirectUrl || '/';
+            await completeAuthentication(data.user);
           }
         } catch (e) {
           console.error('Error during Google Sign-In:', e);

@@ -799,45 +799,17 @@ function initializeSupabase() {
     const headers = {
         'x-msc-user-id': userId
     };
-    supabase = createClient(supabaseUrl, supabaseKey, { global: { headers } });
+    supabase = window.supabaseClient || createClient(supabaseUrl, supabaseKey, { global: { headers } });
+    window.supabaseClient = supabase;
 }
 
 async function refreshAuthUser() {
     if (!supabase) initializeSupabase();
-    const { data } = await supabase.auth.getUser();
-    authUser = data?.user || null;
-
-    isMscitEnrolled = false;
-    isPremiumEnrolled = false;
-    if (authUser) {
-        try {
-            // Any enrollment row → premium (unlimited reviews).
-            const { count: anyCount, error: anyErr } = await supabase
-                .from('enrollment')
-                .select('course', { count: 'exact', head: true })
-                .eq('uuid', authUser.id);
-            if (!anyErr && anyCount > 0) {
-                isPremiumEnrolled = true;
-            }
-        } catch (e) {
-            console.warn('Error checking premium enrollment:', e);
-        }
-        try {
-            // Specific MSCIT course → unlocks the Industrial deep-dive sections.
-            const { count, error } = await supabase
-                .from('enrollment')
-                .select('course', { count: 'exact', head: true })
-                .eq('uuid', authUser.id)
-                .eq('course', 'industrial-training-mastery');
-            if (!error && count > 0) {
-                isMscitEnrolled = true;
-            }
-        } catch (e) {
-            console.warn('Error checking MSCIT enrollment:', e);
-        }
-    }
+    const access = await window.MSCProgramAccess.getAccess(supabase);
+    authUser = access.user;
+    isPremiumEnrolled = access.hasAccess;
+    isMscitEnrolled = access.hasAccess && access.courses.includes('industrial-training-mastery');
 }
-
 
 // --- Three-tier usage limits ---
 // IP-based (no login): 1 review forever → then login required
@@ -899,6 +871,15 @@ async function analyzeCv() {
         // Refresh auth and enforce limits after acknowledging the first click.
         await refreshAuthUser();
         updateAuthUI();
+
+        if (!isPremiumEnrolled) {
+            if (!window.MSCCareerProfile) throw new Error('Career details are unavailable. Please reload and try again.');
+            if (!await window.MSCCareerProfile.ensureForTool('cv-reviewer')) {
+                loadingSection.style.display = 'none';
+                landingSection.style.display = 'block';
+                return;
+            }
+        }
 
         if (!authUser) {
             if (getIpReviewCount() >= IP_REVIEW_LIMIT) {

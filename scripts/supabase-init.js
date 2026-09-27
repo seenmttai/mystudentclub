@@ -26,7 +26,17 @@
 
       // Listen for auth changes to keep synchronous session cache up to date
       try {
+        let previousUserId = global.__mscSession?.user?.id || null;
         global.supabaseClient.auth.onAuthStateChange(function (event, session) {
+          const nextUserId = session?.user?.id || null;
+          if (event === 'SIGNED_OUT' || (previousUserId && previousUserId !== nextUserId)) {
+            Object.keys(sessionStorage).forEach(key => {
+              if (key === 'msc_lead_submitted' || key.startsWith('msc_career_v2:') || key === 'msc_career_auth_pending' || key === 'msc_career_auth_redirect') sessionStorage.removeItem(key);
+            });
+            ['userProfileData', 'userCVText', 'userJobPreference', 'newUserSignup', 'newUserEmail'].forEach(key => localStorage.removeItem(key));
+            global.MSCCareerProfile?.clearGuestState();
+          }
+          previousUserId = nextUserId;
           global.__mscSession = session || null;
         });
       } catch (e) {

@@ -1,0 +1,31 @@
+html.msc-shared-navigation body > header:not(#msc-site-navigation),html.msc-shared-navigation .floating-header:not(#msc-site-navigation),html.msc-shared-navigation .site-header:not(#msc-site-navigation),html.msc-shared-navigation #expandedMenu{display:none!important}
+#msc-site-navigation,#msc-site-navigation *{box-sizing:border-box}
+#msc-site-navigation{position:fixed!important;inset:0 0 auto!important;height:80px!important;z-index:1500!important;background:#fff!important;border-bottom:1px solid #e2e8f0!important;box-shadow:0 2px 12px #16324f08!important;padding:0 24px!important;margin:0!important;color:#233247!important;font-family:Inter,Poppins,Arial,sans-serif!important;line-height:1.45!important;transform:none!important}
+#msc-site-navigation .msc-nav-shell{height:100%;max-width:1800px;margin:auto;display:flex;align-items:center;gap:28px}
+#msc-site-navigation .msc-nav-brand{display:flex;flex-shrink:0;align-items:center}
+#msc-site-navigation .msc-nav-brand img{width:190px;height:auto;max-height:44px;object-fit:contain}
+#msc-main-menu{display:flex;align-items:center;gap:4px;flex:1;min-width:0}
+#msc-site-navigation a{text-decoration:none;color:#36465a;font-size:14px;font-weight:600;white-space:nowrap}
+#msc-site-navigation .msc-nav-link,#msc-site-navigation summary{display:flex;align-items:center;gap:8px;padding:11px 12px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;list-style:none;margin:0}
+#msc-site-navigation summary::-webkit-details-marker{display:none}
+#msc-site-navigation a:hover,#msc-site-navigation summary:hover,#msc-site-navigation a[aria-current=page]{background:#eff6ff;color:#2563eb}
+#msc-site-navigation a:focus-visible,#msc-site-navigation summary:focus-visible,#msc-site-navigation button:focus-visible{outline:3px solid #93c5fd;outline-offset:2px}
+#msc-site-navigation .msc-nav-group{position:relative}
+#msc-site-navigation .msc-nav-group[open] summary{background:#eff6ff;color:#2563eb}
+#msc-site-navigation .msc-nav-dropdown{position:absolute;top:calc(100% + 8px);left:0;min-width:235px;background:white;border:1px solid #e2e8f0;padding:8px;border-radius:12px;box-shadow:0 14px 35px #16324f1c}
+#msc-site-navigation .msc-nav-dropdown a{display:block;padding:11px 13px;border-radius:7px}
+#msc-site-navigation .msc-nav-account{margin-left:auto;display:flex;gap:4px;align-items:center}
+#msc-site-navigation .msc-nav-account-menu .msc-nav-dropdown{left:auto;right:0;min-width:190px}
+#msc-site-navigation #notificationsBtn{position:relative;display:flex;align-items:center;justify-content:center;flex:0 0 38px;width:38px;height:38px;margin:0;padding:8px;border:0;border-radius:50%;background:#f3f7fd;color:#52647b;cursor:pointer}
+#msc-site-navigation #notificationsBtn svg{width:22px;height:22px}
+html.msc-shared-navigation #notificationPopup{z-index:1501}
+#msc-site-navigation .msc-nav-login,#msc-site-navigation .msc-nav-profile{padding:10px 15px;background:#347cf5;color:#fff;border-radius:24px}
+#msc-site-navigation .msc-nav-profile{font-size:12px;padding:10px}
+#msc-site-navigation [hidden]{display:none!important}
+#msc-site-navigation .msc-nav-toggle{display:none}
+body.msc-needs-header-space{padding-top:80px!important;box-sizing:border-box}
+@media(max-width:1300px){#msc-site-navigation{padding:0 16px!important}#msc-site-navigation .msc-nav-shell{gap:8px}#msc-site-navigation .msc-nav-brand img{width:140px}#msc-site-navigation .msc-nav-link,#msc-site-navigation summary{padding:10px 6px;font-size:12px}#msc-site-navigation .msc-nav-profile{font-size:11px;padding:10px 8px}}
+@media(max-width:1050px){#msc-site-navigation{height:68px!important;padding:0 18px!important}#msc-site-navigation .msc-nav-shell{justify-content:space-between}#msc-site-navigation .msc-nav-brand img{width:175px}#msc-site-navigation .msc-nav-toggle{display:flex;gap:8px;align-items:center;border:1px solid #dbe5f2;background:#f3f7fd;color:#2563eb;border-radius:10px;padding:9px 12px;font-size:14px;font-weight:600;cursor:pointer}#msc-main-menu{display:none;position:absolute;top:67px;left:0;right:0;background:#fff;padding:12px 18px 20px;max-height:calc(100dvh - 68px);overflow:auto;border-bottom:1px solid #e2e8f0;box-shadow:0 12px 20px #16324f14}#msc-site-navigation.msc-nav-open #msc-main-menu{display:block}#msc-site-navigation .msc-nav-link,#msc-site-navigation summary{font-size:15px;padding:13px 12px}#msc-site-navigation summary{justify-content:space-between}#msc-site-navigation .msc-nav-dropdown{position:static;box-shadow:none;border:0;border-left:2px solid #dbeafe;border-radius:0;margin:4px 12px 12px;min-width:0}#msc-site-navigation .msc-nav-dropdown a{white-space:normal}#msc-site-navigation .msc-nav-account{border-top:1px solid #e2e8f0;margin-top:10px;padding-top:12px;flex-wrap:wrap}#msc-site-navigation .msc-nav-account-menu{flex:1 1 100%}#msc-site-navigation .msc-nav-account-menu .msc-nav-dropdown{min-width:0}#msc-site-navigation .msc-nav-profile{display:block;font-size:12px}body.msc-needs-header-space{padding-top:68px!important}}
+@media print{#msc-site-navigation{display:none!important}body.msc-needs-header-space{padding-top:0!important}}
+/* The Vue course dashboard keeps its original header nodes for existing scripts. */
+html.msc-shared-navigation #app > header.glass-header{display:none!important}

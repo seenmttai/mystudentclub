@@ -3693,7 +3693,7 @@ async function initializePage() {
             const path = window.location.pathname;
             if (path === '/' || path === '/index.html') {
                 setTimeout(() => {
-                    showOnboardingSegmentModal();
+                    if (!window.MSCCareerProfile) showOnboardingSegmentModal();
                 }, 800); // Small pleasant delay after load
             }
         } else {
@@ -3710,20 +3710,8 @@ async function initializePage() {
             }
         }
     } else {
-        // Track visits for unlogged users
-        let visitCount = parseInt(localStorage.getItem('portalVisitCount') || '0');
-        visitCount++;
-        localStorage.setItem('portalVisitCount', visitCount);
-
-        if (visitCount === 3) {
-            showToast("Create a free account to keep browsing jobs, get vacancy alerts, and access exclusive career tools.", "info");
-        } else if (visitCount >= 5) {
-            const overlay = document.getElementById('loginPromptOverlay');
-            if (overlay) {
-                overlay.style.display = 'flex';
-                document.body.style.overflow = 'hidden'; // Prevent browsing jobs
-            }
-        }
+        // Public job browsing stays available without a visit-count login wall.
+        localStorage.removeItem('portalVisitCount');
     }
 
     if (currentTable === 'Fresher Jobs') {
@@ -3825,68 +3813,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateMask();
 });
 
-// Check for new user signup and show resume prompt
-document.addEventListener('DOMContentLoaded', async () => {
-    const isNewUser = localStorage.getItem('newUserSignup');
-    const hasResume = localStorage.getItem('userCVText');
-
-    if (isNewUser === 'true') {
-        const session = currentSession || (await supabaseClient.auth.getSession()).data.session;
-
-        if (session && !hasResume) {
-            setTimeout(() => {
-                const modal = document.getElementById('resumePromptModal');
-                if (modal) {
-                    let roleType = 'Industrial Trainees/Article Assistants/CA Freshers/Experienced CA/Semi Qualified CA';
-                    const cachedProfile = localStorage.getItem('userProfileData');
-                    let profile = null;
-                    if (cachedProfile) {
-                        try { profile = JSON.parse(cachedProfile); } catch (e) { }
-                    }
-                    const jobPref = localStorage.getItem('userJobPreference');
-                    const lookingFor = profile?.looking_for;
-
-                    if (jobPref === 'industrial' || lookingFor === 'CA Industrial Training Default') {
-                        roleType = 'Industrial Trainees';
-                    } else if (jobPref === 'articleship' || lookingFor === 'CA Articleship') {
-                        roleType = 'Article Assistants';
-                    } else if (jobPref === 'fresher_fresher') {
-                        roleType = 'CA Freshers';
-                    } else if (jobPref === 'fresher_experienced') {
-                        roleType = 'Experienced CA';
-                    } else if (lookingFor === 'CA Fresher') {
-                        roleType = 'CA Freshers';
-                    } else if (jobPref === 'semi_fresher' || jobPref === 'semi_experienced' || lookingFor === 'Semi Qualified CA') {
-                        roleType = 'Semi Qualified CA';
-                    } else {
-                        const path = window.location.pathname;
-                        if (path.includes('/articleship')) roleType = 'Article Assistants';
-                        else if (path.toLowerCase().includes('/experienced-ca')) roleType = 'Experienced CA';
-                        else if (path.includes('/fresher')) roleType = 'CA Freshers';
-                        else if (path.includes('/semi-qualified')) roleType = 'Semi Qualified CA';
-                        else roleType = 'Industrial Trainees';
-                    }
-
-                    const titleEl = document.getElementById('resumePromptTitle');
-                    const descEl = document.getElementById('resumePromptDesc');
-                    const roleTypeEl = document.getElementById('resumePromptRoleType');
-
-                    if (titleEl) titleEl.textContent = 'Complete your MSC Profile';
-                    if (roleTypeEl) {
-                        roleTypeEl.textContent = roleType;
-                    } else if (descEl) {
-                        descEl.innerHTML = `Complete your MSC Profile and get discovered by 1000+ recruiters hiring for <strong>${roleType}</strong>.`;
-                    }
-                    modal.style.display = 'flex';
-                }
-            }, 1000);
-        }
-
-        localStorage.removeItem('newUserSignup');
-        localStorage.removeItem('newUserEmail');
-    }
-});
-
+// Signup guidance is managed centrally by MSCCareerProfile.
 document.getElementById('skipResumePrompt')?.addEventListener('click', () => {
     const modal = document.getElementById('resumePromptModal');
     if (modal) modal.style.display = 'none';
