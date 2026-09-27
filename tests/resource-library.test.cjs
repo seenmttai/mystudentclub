@@ -52,3 +52,25 @@ test('all resource pages use shared navigation, form collection, and correct com
         for (const required of ['site-navigation.js','career-profile.js','resource-form-collector.js','resource-library.js','href="/links"']) assert.ok(html.includes(required), slug+': '+required);
     }
 });
+
+test('resource sections keep free files before premium titles and sort numbered template series naturally', () => {
+    const free = library.pages['industrial-training'].resources;
+    const premium = [62, 10, 2, 20, 1, 11, 3].map(number => ({ title: 'Industrial CV Template ' + number, premium: true, sort_order: 10 }));
+    premium.push({ title: 'Featured programme guide', premium: true, sort_order: 1 });
+    const before = JSON.stringify({free, premium});
+    const sections = library.organizeResources(free, premium);
+    assert.deepEqual(Object.keys(sections), ['free', 'premium']);
+    assert.deepEqual(sections.free.slice(0, 3).map(resource => resource.title), ['CV Template 2', 'CV Template 3', 'Cover Letter']);
+    assert.ok(sections.free.every(resource => !resource.premium));
+    assert.ok(sections.premium.every(resource => resource.premium));
+    assert.deepEqual(sections.premium.map(resource => resource.title), ['Featured programme guide', ...[1, 2, 3, 10, 11, 20, 62].map(number => 'Industrial CV Template ' + number)]);
+    assert.equal(JSON.stringify({free, premium}), before, 'sorting does not mutate the source catalogue');
+});
+
+test('premium search matches all supplied words across the entire catalogue without mutating results', () => {
+    const resources = ['Industrial CV Template 2', 'Finance Interview Questions', 'Industrial CV Template 62'].map(title => ({title}));
+    assert.deepEqual(library.searchResources(resources, '  template 62  ').map(resource => resource.title), ['Industrial CV Template 62']);
+    assert.deepEqual(library.searchResources(resources, 'INTERVIEW finance').map(resource => resource.title), ['Finance Interview Questions']);
+    assert.deepEqual(library.searchResources(resources, 'missing'), []);
+    assert.equal(library.searchResources(resources, '').length, 3);
+});
