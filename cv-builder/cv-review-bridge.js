@@ -38,24 +38,41 @@ export function consumeAutoReviewPayload(storage) {
     try {
         raw = storage?.getItem(AUTO_REVIEW_KEY);
     } catch {
-        return null;
+        // Storage access blocked
     }
+
+    if (!raw && typeof window !== 'undefined') {
+        try {
+            raw = window.localStorage?.getItem(AUTO_REVIEW_KEY);
+            if (raw) window.localStorage.removeItem(AUTO_REVIEW_KEY);
+        } catch {}
+    }
+
     if (!raw) return null;
 
     try {
-        storage.removeItem(AUTO_REVIEW_KEY);
+        storage?.removeItem(AUTO_REVIEW_KEY);
     } catch {
-        // Continue with the in-memory value. A later load may retry it if removal is blocked.
+        // Continue with in-memory value
     }
     return parseAutoReviewPayload(raw);
 }
 
 export function storeAutoReviewPayload(storage, payload) {
+    const serialized = JSON.stringify(payload);
     try {
-        storage?.setItem(AUTO_REVIEW_KEY, JSON.stringify(payload));
+        storage?.setItem(AUTO_REVIEW_KEY, serialized);
         return true;
     } catch (error) {
-        console.warn('Unable to store CV review payload:', error);
+        console.warn('sessionStorage failed, attempting localStorage fallback:', error);
+        try {
+            if (typeof window !== 'undefined') {
+                window.localStorage?.setItem(AUTO_REVIEW_KEY, serialized);
+                return true;
+            }
+        } catch (e) {
+            console.warn('localStorage fallback failed:', e);
+        }
         return false;
     }
 }
@@ -66,7 +83,7 @@ async function getReadyPreview(targetWindow) {
         const frame = targetWindow.document?.getElementById('cv-frame');
         try {
             const frameDocument = frame?.contentDocument || frame?.contentWindow?.document;
-            const node = frameDocument?.getElementById('cv-page') || frameDocument?.body;
+            const node = frameDocument?.getElementById('cv-page') || frameDocument?.querySelector?.('.cv-page') || frameDocument?.body;
             if (frame && frameDocument && node && frameDocument.readyState !== 'loading') return { frameDocument, node };
         } catch {
             throw new Error('The live CV preview is not accessible.');
@@ -98,7 +115,7 @@ async function waitForLayout(targetWindow) {
 }
 
 async function prepareCaptureLayout(targetWindow, frame, node) {
-    const preview = frame.closest?.('.preview');
+    const preview = frame.closest?.('.preview') || frame.closest?.('.preview-wrapper');
     const restorePreview = rememberInlineStyle(preview);
     const restoreNode = rememberInlineStyle(node);
 
@@ -115,7 +132,6 @@ async function prepareCaptureLayout(targetWindow, frame, node) {
     setStyle(node.style, 'zoom', '1', 'important');
 
     await waitForLayout(targetWindow);
-    // Template resize handlers may restore their screen scale after the preview becomes visible.
     setStyle(node.style, 'transform', 'none', 'important');
     setStyle(node.style, 'margin-bottom', '0px', 'important');
 
@@ -125,74 +141,94 @@ async function prepareCaptureLayout(targetWindow, frame, node) {
     };
 }
 
+async function ensureHtml2Canvas(targetWindow = window) {
+    if (typeof targetWindow.html2canvas === 'function') return targetWindow.html2canvas;
+    if (targetWindow.html2canvas?.default) return targetWindow.html2canvas.default;
+
+    return new Promise((resolve, reject) => {
+        const existing = targetWindow.document.querySelector('script[src*="html2canvas"]');
+        if (existing) {
+            existing.addEventListener('load', () => resolve(targetWindow.html2canvas));
+            existing.addEventListener('error', reject);
+            return;
+        }
+        const script = targetWindow.document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
+        script.onload = () => resolve(targetWindow.html2canvas);
+        script.onerror = () => reject(new Error('Failed to load canvas capture tools.'));
+        targetWindow.document.head.appendChild(script);
+    });
+}
+
+export function buildPreviewReviewFilename(targetWindow = window) {
+    const activeCvData = targetWindow.cvData || (typeof cvData !== 'undefined' ? cvData : null);
+    const rawName = (activeCvData?.personal?.name || 'cv-preview').trim();
+    const safeName = rawName
+        .replace(/[\\/:*?"<>|]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    return `${safeName || 'cv-preview'}.pdf`;
+}
+
+export async function captureCvPreviewBase64(targetWindow = window) {
+    const { frameDocument, node } = await getReadyPreview(targetWindow);
+    const frame = targetWindow.document.getElementById('cv-frame');
+
+    const h2c = await ensureHtml2Canvas(targetWindow);
+    if (typeof h2c !== 'function') throw new Error('CV capture tools are not ready. Please reload and try again.');
+
+    if (frameDocument.fonts?.ready) await frameDocument.fonts.ready;
+    const restoreLayout = await prepareCaptureLayout(targetWindow, frame, node);
+    let canvas;
+    try {
+        const width = Math.max(node.scrollWidth || 0, node.offsetWidth || 0, 800);
+        const height = Math.max(node.scrollHeight || 0, node.offsetHeight || 0, 1100);
+        canvas = await h2c(node, {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            width,
+            height,
+            windowWidth: width,
+            windowHeight: height,
+            onclone: clonedDocument => {
+                frameDocument.querySelectorAll?.('style, link[rel="stylesheet"]').forEach(style => {
+                    clonedDocument.head?.appendChild(style.cloneNode(true));
+                });
+            }
+        });
+    } finally {
+        restoreLayout();
+    }
+
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+    const image = dataUrl.startsWith('data:image/jpeg;base64,') ? dataUrl.slice(dataUrl.indexOf(',') + 1) : '';
+    const fileName = buildPreviewReviewFilename(targetWindow);
+    return { image, fileName };
+}
+
 export function registerBuilderReviewBridge(targetWindow = window) {
     if (!targetWindow?.document?.getElementById('cv-frame')) return false;
-    if (targetWindow.startReviewFromPreview?.isCvBuilderRedirectBridge) return true;
 
-    const inlineReview = targetWindow.startInlineReviewFromPreview || targetWindow.startReviewFromPreview;
-    if (typeof inlineReview === 'function') targetWindow.startInlineReviewFromPreview = inlineReview;
+    targetWindow.buildPreviewReviewFilename = () => buildPreviewReviewFilename(targetWindow);
+    targetWindow.captureCvPreviewBase64 = () => captureCvPreviewBase64(targetWindow);
 
     targetWindow.startReviewFromPreview = async function startReviewFromPreview() {
-        try {
-            targetWindow.showToast?.('Preparing CV for review…');
-            const { frameDocument, node } = await getReadyPreview(targetWindow);
-            const frame = targetWindow.document.getElementById('cv-frame');
-            const ensureHtml2Canvas = targetWindow.ensureHtml2Canvas;
-            if (typeof ensureHtml2Canvas !== 'function') throw new Error('CV capture tools are not ready. Please reload and try again.');
-
-            const html2canvas = await ensureHtml2Canvas();
-            if (frameDocument.fonts?.ready) await frameDocument.fonts.ready;
-            const restoreLayout = await prepareCaptureLayout(targetWindow, frame, node);
-            let canvas;
-            try {
-                const width = Math.max(node.scrollWidth || 0, node.offsetWidth || 0);
-                const height = Math.max(node.scrollHeight || 0, node.offsetHeight || 0);
-                canvas = await html2canvas(node, {
-                    scale: 2,
-                    useCORS: true,
-                    logging: false,
-                    width,
-                    height,
-                    windowWidth: width,
-                    windowHeight: height,
-                    onclone: clonedDocument => {
-                        frameDocument.querySelectorAll?.('style, link[rel="stylesheet"]').forEach(style => {
-                            clonedDocument.head?.appendChild(style.cloneNode(true));
-                        });
-                    }
-                });
-            } finally {
-                restoreLayout();
-            }
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
-            const image = dataUrl.startsWith('data:image/jpeg;base64,') ? dataUrl.slice(dataUrl.indexOf(',') + 1) : '';
-            const payload = parseAutoReviewPayload({
-                source: 'cv-builder',
-                images: [image],
-                fileName: targetWindow.buildPreviewReviewFilename?.() || 'cv-preview.jpg'
-            });
-            if (!payload) throw new Error('The CV preview could not be converted to an image.');
-
-            targetWindow.saveCvBuilderLocal?.();
-            if (!storeAutoReviewPayload(targetWindow.sessionStorage, payload)) {
-                throw new Error('This CV is too large to transfer for review. Try downloading it as PDF and upload it on the reviewer page.');
-            }
-            targetWindow.location.href = '/cv-reviewer/';
-        } catch (error) {
-            console.error('Review redirect error:', error);
-            targetWindow.alert?.(error?.message || 'Failed to prepare the CV for review.');
+        if (targetWindow.cvReviewerEmbedded && typeof targetWindow.cvReviewerEmbedded.openReview === 'function') {
+            targetWindow.cvReviewerEmbedded.openReview();
+            return;
         }
+        if (typeof targetWindow.switchTab === 'function') {
+            targetWindow.switchTab('reviewer');
+            return;
+        }
+        targetWindow.location.href = '/cv-reviewer/';
     };
-    targetWindow.startReviewFromPreview.isCvBuilderRedirectBridge = true;
+    targetWindow.startReviewFromPreview.isCvBuilderRedirectBridge = false;
     return true;
 }
 
 if (typeof window !== 'undefined') {
-    const registerWhenInlineReviewerIsReady = () => {
-        if (typeof window.startReviewFromPreview === 'function' && typeof window.ensureHtml2Canvas === 'function') {
-            registerBuilderReviewBridge(window);
-        }
-    };
-    registerWhenInlineReviewerIsReady();
-    document.addEventListener('DOMContentLoaded', registerWhenInlineReviewerIsReady, { once: true });
+    registerBuilderReviewBridge(window);
+    document.addEventListener('DOMContentLoaded', () => registerBuilderReviewBridge(window), { once: true });
 }

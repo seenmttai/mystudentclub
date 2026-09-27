@@ -1474,6 +1474,45 @@ document.addEventListener('DOMContentLoaded', () => {
         downloadResource(resource);
     };
 
+    function blobToBase64(blob) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const result = String(reader.result || '');
+                const separator = result.indexOf(',');
+                if (separator < 0) {
+                    reject(new Error('Could not encode the downloaded file.'));
+                    return;
+                }
+                resolve(result.slice(separator + 1));
+            };
+            reader.onerror = () => reject(reader.error || new Error('Could not read the downloaded file.'));
+            reader.onabort = () => reject(new Error('Reading the downloaded file was cancelled.'));
+            reader.readAsDataURL(blob);
+        });
+    }
+
+    async function deliverDownloadedBlob(blob, filename) {
+        const nativeBridge = window.flutter_inappwebview;
+        if (nativeBridge && typeof nativeBridge.callHandler === 'function') {
+            const base64 = await blobToBase64(blob);
+            await nativeBridge.callHandler('blobToBase64Handler', base64, filename);
+            return;
+        }
+
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        try {
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+        } finally {
+            link.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 60000);
+        }
+    }
+
     const downloadResource = async (resource) => {
         let path = resource.download_storage_path;
         if (!path || path === 'None') {
@@ -1487,25 +1526,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) throw new Error('Network response was not ok.');
             const blob = await response.blob();
             const filename = path.split('/').pop() || 'download';
-            if (window.flutter_inappwebview && typeof window.flutter_inappwebview.callHandler === 'function') {
-                const reader = new FileReader();
-                reader.readAsDataURL(blob);
-                reader.onloadend = function () {
-                    const base64Content = reader.result.split(',')[1];
-                    window.flutter_inappwebview.callHandler('blobToBase64Handler', base64Content, filename)
-                        .then(result => console.log("Saved to app"))
-                        .catch(err => {
-                            console.error("App save failed:", err);
-                            alert("The app could not save the file to your device storage.");
-                        });
-                };
-            } else {
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url; a.download = filename;
-                document.body.appendChild(a); a.click();
-                window.URL.revokeObjectURL(url); a.remove();
-            }
+            await deliverDownloadedBlob(blob, filename);
         } catch (err) {
             console.error('Download error:', err);
             alert('Could not download the file. Please try again.');
@@ -1538,7 +1559,7 @@ document.addEventListener('DOMContentLoaded', () => {
             img.src = '../assets/certificate_template.png';
             img.crossOrigin = 'Anonymous';
 
-            img.onload = () => {
+            img.onload = async () => {
                 doc.addImage(img, 'PNG', 0, 0, width, height);
 
                 let studentName = state.user.user_metadata.full_name || state.user.email.split('@')[0];
@@ -1575,7 +1596,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Positioned at ~81% height and ~75% width to sit on the line
                 doc.text(`${completionTime}`, width * 0.68, height * 0.82, { align: 'center' });
 
-                doc.save(`${studentName.replace(/\s+/g, '_')}_Certificate.pdf`);
+                try {
+                    const certBlob = doc.output('blob');
+                    await deliverDownloadedBlob(certBlob, `${studentName.replace(/\s+/g, '_')}_Certificate.pdf`);
+                } catch (saveErr) {
+                    console.error("Certificate save failed:", saveErr);
+                    doc.save(`${studentName.replace(/\s+/g, '_')}_Certificate.pdf`);
+                }
             };
 
             img.onerror = () => {
@@ -1583,7 +1610,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const imgJPG = new Image();
                 imgJPG.src = '../assets/certificate_template.jpg';
                 imgJPG.crossOrigin = 'Anonymous';
-                imgJPG.onload = () => {
+                imgJPG.onload = async () => {
                     doc.addImage(imgJPG, 'JPG', 0, 0, width, height);
 
                     // Get name again for fallback (scoped differently)
@@ -1609,7 +1636,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     doc.setFontSize(14); doc.setFont("helvetica", "bold"); doc.setTextColor(0, 0, 0);
                     doc.text(`${completionTime}`, width * 0.68, height * 0.82, { align: 'center' });
 
-                    doc.save(`${studentNameFallback.replace(/\s+/g, '_')}_Certificate.pdf`);
+                    try {
+                        const certBlob = doc.output('blob');
+                        await deliverDownloadedBlob(certBlob, `${studentNameFallback.replace(/\s+/g, '_')}_Certificate.pdf`);
+                    } catch (saveErr) {
+                        console.error("Certificate save fallback failed:", saveErr);
+                        doc.save(`${studentNameFallback.replace(/\s+/g, '_')}_Certificate.pdf`);
+                    }
                 };
                 imgJPG.onerror = () => {
                     alert('Certificate template not found. Please ensure "certificate_template.png" or "certificate_template.jpg" exists in the assets folder.');

@@ -347,10 +347,12 @@
             flex-direction: column;
             gap: 4px;
             min-width: 160px;
+            max-width: calc(100vw - 24px);
+            box-sizing: border-box;
             opacity: 0;
             visibility: hidden;
             transform: translateY(-8px);
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
             z-index: 9999;
         }
         
@@ -374,6 +376,7 @@
             cursor: pointer;
             transition: all 0.15s ease;
             width: 100%;
+            white-space: nowrap;
         }
 
         .dropdown-item:hover {
@@ -2356,6 +2359,168 @@
 .loading-overlay.active {
     opacity: 1;
     pointer-events: all;
+}
+
+/* --- In-Editor Loading Overlay (for CV Import & AI Processing) --- */
+.editor {
+    position: relative;
+}
+
+.editor-loading-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+@media (max-width: 850px) {
+    .editor-loading-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        padding: 20px;
+    }
+}
+
+.editor-loading-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+[data-theme="dark"] .editor-loading-overlay {
+    background: rgba(15, 23, 42, 0.88);
+}
+
+.editor-loader-card {
+    background: #ffffff;
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    border-radius: 24px;
+    padding: 32px 28px;
+    max-width: 360px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 45px -12px rgba(15, 23, 42, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.04);
+    animation: editorLoaderPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-sizing: border-box;
+}
+
+[data-theme="dark"] .editor-loader-card {
+    background: #1e293b;
+    border-color: rgba(51, 65, 85, 0.9);
+    box-shadow: 0 20px 45px -12px rgba(0, 0, 0, 0.6);
+}
+
+.editor-loader-spinner-wrap {
+    position: relative;
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.editor-loader-spinner {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 3.5px solid rgba(37, 99, 235, 0.12);
+    border-top-color: #2563eb;
+    border-right-color: #3b82f6;
+    animation: editorSpin 0.9s linear infinite;
+}
+
+[data-theme="dark"] .editor-loader-spinner {
+    border-color: rgba(96, 165, 250, 0.15);
+    border-top-color: #60a5fa;
+    border-right-color: #38bdf8;
+}
+
+.editor-loader-icon {
+    color: #2563eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: editorPulse 1.8s ease-in-out infinite;
+}
+
+[data-theme="dark"] .editor-loader-icon {
+    color: #60a5fa;
+}
+
+.editor-loader-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-main, #0f172a);
+    margin: 0 0 8px 0;
+    letter-spacing: -0.015em;
+}
+
+[data-theme="dark"] .editor-loader-title {
+    color: #f8fafc;
+}
+
+.editor-loader-sub {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: #64748b;
+    margin: 0 0 16px 0;
+}
+
+[data-theme="dark"] .editor-loader-sub {
+    color: #94a3b8;
+}
+
+.editor-loader-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+}
+
+.editor-loader-step-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #cbd5e1;
+    animation: editorDotPulse 1.4s ease-in-out infinite;
+}
+
+.editor-loader-step-dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.editor-loader-step-dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes editorSpin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes editorPulse {
+    0%, 100% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(1.1); opacity: 1; }
+}
+
+@keyframes editorDotPulse {
+    0%, 100% { transform: scale(0.8); opacity: 0.5; background: #cbd5e1; }
+    50% { transform: scale(1.25); opacity: 1; background: #2563eb; }
+}
+
+@keyframes editorLoaderPop {
+    from { opacity: 0; transform: scale(0.92); }
+    to { opacity: 1; transform: scale(1); }
 }
 
 /* DOCX Export Info Popup */
