@@ -3,15 +3,17 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const root = path.resolve(__dirname, '..');
-const release = '20260927.3';
-const assetReleases = new Map([['scripts/resource-library.js', '20260927.4'], ['scripts/resource-library.css', '20260927.4']]);
+const release = '20260927.9';
+const assetReleases = new Map();
 const assets = new Set([
   'scripts/site-navigation.js', 'scripts/site-navigation.css',
   'scripts/career-profile.js', 'scripts/career-profile.css',
   'scripts/resource-form-collector.js', 'scripts/resource-library.js', 'scripts/resource-library.css',
   'scripts/program-access.js', 'scripts/supabase-init.js', 'scripts/portal3.js', 'scripts/profile.js',
   'cv-builder/cv-script.js', 'cv-builder/cv-styles.css', 'cv-reviewer/cv-reviewer.js',
-  'learning-management-system/course-script.js'
+  'learning-management-system/course-script.js',
+  'scripts/portal-email.js', 'articleship-program/app.js', 'articleship-review-wizard.js',
+  'ca-industrial-training-program/app.js', 'msc-ca-fresher-program/script.js', 'skill-check/render.js', 'skill-check/app.js'
 ]);
 const excluded = new Set(['.git', 'node_modules', 'work', 'scratch', 'tests', 'dist', '.astro', 'workers', '.wrangler', 'logs']);
 const checkOnly = process.argv.includes('--check');

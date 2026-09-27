@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <script src="/scripts/supabase.js"></script>
-    <script src="/scripts/supabase-init.js?v=20260927.3"></script>
+    <script src="/scripts/supabase-init.js?v=20260927.9"></script>
     <script src="/scripts/error-reporter.js"></script>
     <script type="importmap">
     {
@@ -236,7 +236,7 @@
 
     <!-- Fallback Shortcut Icon -->
     <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
-<link rel="stylesheet" href="/scripts/site-navigation.css?v=20260927.3"><script src="/scripts/site-navigation.js?v=20260927.3" defer></script>
+<link rel="stylesheet" href="/scripts/site-navigation.css?v=20260927.9"><script src="/scripts/site-navigation.js?v=20260927.9" defer></script>
 </head>
 
 <body>
@@ -256,6 +256,39 @@
                         <div class="bar"></div>
                     </div>
                     <ul class="nav-links" :class="{ 'active': menuActive }">
+                        <li><a href="/" class="nav-item">Jobs</a></li>
+                        <li>
+                            <details class="msc-native-group">
+                                <summary class="nav-item">Free Resources</summary>
+                                <div class="msc-native-dropdown">
+                                    <a href="/ca-industrial-training-resources">Industrial Training</a>
+                                    <a href="/articleship-resources">Articleship</a>
+                                    <a href="/ca-fresher-training-resources">CA Fresher</a>
+                                    <a href="/semi-qualified-ca-resources">Semi-Qualified CA</a>
+                                </div>
+                            </details>
+                        </li>
+                        <li>
+                            <details class="msc-native-group">
+                                <summary class="nav-item">Tools</summary>
+                                <div class="msc-native-dropdown">
+                                    <a href="/cv-builder/">CV Builder</a>
+                                    <a href="/cv-reviewer/">CV Reviewer</a>
+                                    <a href="/ai-interview">AI Interview Bot</a>
+                                </div>
+                            </details>
+                        </li>
+                        <li>
+                            <details class="msc-native-group">
+                                <summary class="nav-item">Programs</summary>
+                                <div class="msc-native-dropdown">
+                                    <a href="/ca-industrial-training-program/">MSC Industrial Training Program</a>
+                                    <a href="/articleship-program/">MSC Articleship Program</a>
+                                    <a href="/msc-ca-fresher-program/">MSC CA Fresher Program</a>
+                                </div>
+                            </details>
+                        </li>
+                        <li><a href="https://hire.mystudentclub.com" class="nav-item">For Recruiters</a></li>
                         <li><a href="/learning-management-system/" class="active nav-item">
                                 <i class="fas fa-graduation-cap"></i>
                                 <span>My Courses</span>
@@ -263,10 +296,6 @@
                         <li><a href="/learning-management-system/lms-resources.html" class="nav-item">
                                 <i class="fas fa-book-open"></i>
                                 <span>Resources</span>
-                            </a></li>
-                        <li><a href="https://mystudentclub.com/cv-reviewer/" class="nav-item">
-                                <i class="fas fa-file-alt"></i>
-                                <span>CV Review</span>
                             </a></li>
 
                         <li class="profile-link profile-dropdown-container">

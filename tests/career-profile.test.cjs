@@ -141,12 +141,11 @@ test('shared navigation resumes pending OAuth fallback and does not duplicate th
 
 test('navigation advertises all resource and tool routes and keeps member controls visible',async()=>{
   const user={id:'nav-member',email:'member@example.test',user_metadata:{msc_onboarding_seen:true}};
-  const {dom}=harness(user);dom.window.eval(fs.readFileSync(path.join(__dirname,'../scripts/site-navigation.js'),'utf8'));
-  await tick();await tick();const nav=dom.window.document.querySelector('#msc-site-navigation');assert.ok(nav);
+  const {dom}=harness(user);dom.window.document.body.insertAdjacentHTML('afterbegin','<header class="floating-header"><div class="header-container"></div></header><div id="expandedMenu"><div class="menu-items"></div></div>');dom.window.eval(fs.readFileSync(path.join(__dirname,'../scripts/site-navigation.js'),'utf8'));
+  await tick();await tick();const nav=dom.window.document.querySelector('.msc-native-nav');assert.ok(nav);
   for(const route of ['/articleship-resources','/semi-qualified-ca-resources','/cv-builder/','/cv-reviewer/','/ai-interview'])assert.ok(nav.querySelector(`a[href="${route}"]`));
-  assert.equal(nav.querySelector('.msc-nav-login').hidden,true);assert.ok([...nav.querySelectorAll('.msc-member')].every(el=>!el.hidden));
-  nav.querySelector('.msc-nav-toggle').click();assert.equal(nav.querySelector('.msc-nav-toggle').getAttribute('aria-expanded'),'true');
-  dom.window.document.dispatchEvent(new dom.window.KeyboardEvent('keydown',{key:'Escape'}));assert.equal(nav.querySelector('.msc-nav-toggle').getAttribute('aria-expanded'),'false');
+  assert.equal(nav.querySelector('.msc-native-login').hidden,true);assert.ok([...nav.querySelectorAll('.msc-native-member')].every(el=>!el.hidden));
+  assert.equal(dom.window.document.querySelectorAll('header').length,1);
   dom.window.close();
 });
 

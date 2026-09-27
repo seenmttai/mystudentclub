@@ -38,6 +38,25 @@ function preserveCareerProfileFields(values) {
     return Object.assign(result, values);
 }
 
+async function handleProfileLogout(event) {
+    const button = event.currentTarget;
+    if (button.disabled) return;
+    const label = button.textContent;
+    button.disabled = true;
+    button.textContent = 'Logging out…';
+    try {
+        const { error } = await supabaseClient.auth.signOut();
+        if (error) throw error;
+        // Shared SIGNED_OUT handling clears account data without deleting preferences.
+        window.location.href = '/login.html';
+    } catch (_) {
+        showToast('Could not log out. Please try again.', 'error');
+    } finally {
+        button.disabled = false;
+        button.textContent = label;
+    }
+}
+
 // =================== TOAST NOTIFICATIONS ===================
 function showToast(message, type = 'info', duration = 6000) {
     const container = document.getElementById('toast-container');
@@ -5034,11 +5053,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         }
 
-        document.getElementById('logoutBtn').addEventListener('click', async () => {
-            await supabaseClient.auth.signOut();
-            localStorage.clear();
-            window.location.href = '/login.html';
-        });
+        document.getElementById('logoutBtn').addEventListener('click', handleProfileLogout);
     }
 
     menuButton.addEventListener('click', () => expandedMenu.classList.add('active'));

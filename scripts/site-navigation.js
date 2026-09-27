@@ -1,82 +1,137 @@
-/* Shared navigation for every MSC public page, including generated job pages. */
+/* Keep each page's original header and controls; add the requested links in place. */
 (function () {
   'use strict';
-  if (window.self !== window.top || document.getElementById('msc-site-navigation')) return;
+  if (window.self !== window.top || window.MSCNativeNavigation) return;
+  window.MSCNativeNavigation = true;
   const groups = [
     ['Free Resources', [['Industrial Training', '/ca-industrial-training-resources'], ['Articleship', '/articleship-resources'], ['CA Fresher', '/ca-fresher-training-resources'], ['Semi-Qualified CA', '/semi-qualified-ca-resources']]],
     ['Tools', [['CV Builder', '/cv-builder/'], ['CV Reviewer', '/cv-reviewer/'], ['AI Interview Bot', '/ai-interview']]],
     ['Programs', [['MSC Industrial Training Program', '/ca-industrial-training-program/'], ['MSC Articleship Program', '/articleship-program/'], ['MSC CA Fresher Program', '/msc-ca-fresher-program/']]]
   ];
-  function loadScript(src) {
-    return new Promise((resolve, reject) => {
-      const script = document.createElement('script'); script.src = src;
-      script.onload = resolve; script.onerror = reject; document.head.append(script);
-    });
+  const menus = [];
+  const make = (tag, className, text) => { const node=document.createElement(tag);if(className)node.className=className;if(text)node.textContent=text;return node; };
+  function link(label,url,className) {const node=make('a',className,label);node.href=url;return node;}
+  function group(label, links, desktop) {
+    const node=make('details','msc-native-group');
+    const summary=make('summary',desktop ? 'dv2-nav-link msc-native-link' : 'menu-item msc-native-link',label);
+    summary.append(make('span','msc-native-chevron','⌄'));
+    const items=make('div','msc-native-dropdown');
+    links.forEach(([name,url])=>items.append(link(name,url,'msc-native-item')));
+    node.append(summary,items);return node;
   }
+  function navigation(desktop=false, nativeAccount=false) {
+    const nav=make('nav',desktop ? 'msc-native-nav msc-native-desktop' : 'msc-native-nav msc-native-drawer');
+    nav.setAttribute('aria-label','Main navigation');
+    const cls=desktop ? 'dv2-nav-link msc-native-link' : 'menu-item msc-native-link';
+    nav.append(link('Jobs','/',cls));
+    groups.forEach(([name,items])=>nav.append(group(name,items,desktop)));
+    nav.append(link('For Recruiters','https://hire.mystudentclub.com',cls));
+    const courses=link('My Courses','/learning-management-system/',cls+' msc-native-member');courses.hidden=true;nav.append(courses);
+    if (!desktop || !nativeAccount) {
+      const account=group('My Account',[['My Profile','/profile.html'],['My Applications','/history.html'],['Complete Profile','/profile.html?onboarding=1']],desktop);
+      account.classList.add('msc-native-member');account.hidden=true;
+      const logout=make('button','msc-native-item msc-native-logout','Log out');logout.type='button';
+      const error=make('p','msc-native-auth-error');error.setAttribute('role','alert');error.hidden=true;
+      account.querySelector('.msc-native-dropdown').append(logout,error);nav.append(account);
+      nav.append(link('Sign Up / Login','/login.html',cls+' msc-native-login'));
+    }
+    menus.push(nav);return nav;
+  }
+  function compact(host) {
+    if(!host)return;
+    const details=make('details','msc-native-compact');
+    const trigger=make('summary','msc-native-compact-trigger','Menu');
+    trigger.append(make('span','msc-native-chevron','⌄'));
+    details.append(trigger,navigation());host.append(details);
+  }
+  function enhance() {
+    // These old flags hid native headers and shifted tools down underneath a second bar.
+    document.documentElement.classList.remove('msc-shared-navigation');
+    document.body.classList.remove('msc-needs-header-space');
+    const header=document.querySelector('header.site-header,.floating-header');
+    const drawer=document.getElementById('expandedMenu');
+    const items=drawer?.querySelector('.menu-items-container,.menu-items');
+    if(items) {
+      // Preserve original IDs/listeners and all page-specific actions (e.g. review history).
+      // Only superseded navigation entries are hidden; the original drawer stays intact.
+      const replaced=new Set(['/', '/history', '/learning-management-system', '/cv-reviewer', '/cv-builder', '/ai-interview', '/ca-industrial-training-program', '/articleship-program', '/msc-ca-fresher-program', '/ca-fresher-training-resources', '/ca-industrial-training-resources', '/articleship-resources', '/semi-qualified-ca-resources', '/ca-articleship-opportunities']);
+      items.querySelectorAll('a[href]').forEach(anchor=>{
+        try {const url=new URL(anchor.href,location.href);const pathname=url.pathname.replace(/\.html$/,'').replace(/\/$/,'')||'/';
+          if(url.hostname.replace(/^www\./,'')===location.hostname.replace(/^www\./,'') && replaced.has(pathname))anchor.dataset.mscReplacedNav='true';
+        }catch(_){}
+      });
+      items.querySelectorAll('.menu-item-dropdown').forEach(item=>{
+        const title=item.querySelector('button,summary')?.textContent.trim();
+        if(title && /^(Free Resources|Programs|Tools)\b/.test(title))item.dataset.mscReplacedNav='true';
+      });
+      items.querySelectorAll('div.menu-item').forEach(item=>{if(/^(Free Resources|Programs|Tools)$/.test(item.textContent.trim()))item.dataset.mscReplacedNav='true';});
+      items.prepend(navigation());
+      // The restored resource headers have no legacy inline script. Other pages retain theirs.
+      if(document.body.dataset.resourceStage) {
+        const open=document.getElementById('menuButton'),close=document.getElementById('menuCloseBtn');
+        open?.addEventListener('click',()=>drawer.classList.add('active'));
+        close?.addEventListener('click',()=>drawer.classList.remove('active'));
+      }
+      const trigger=document.getElementById('menuButton');
+      if(trigger){trigger.setAttribute('aria-controls','expandedMenu');trigger.setAttribute('aria-label','Open menu');
+        const sync=()=>trigger.setAttribute('aria-expanded',String(drawer.classList.contains('active')));
+        sync();new MutationObserver(sync).observe(drawer,{attributes:true,attributeFilter:['class']});}
+    }
+    if(header) {
+      const existing=header.querySelector('.dv2-header-nav');
+      const nativeAccount=Boolean(header.querySelector('.auth-buttons-container,.auth-icon-btn,.auth-buttons'));
+      const desktop=navigation(true,nativeAccount);
+      if(existing) {existing.replaceChildren(...desktop.childNodes);existing.classList.add('msc-native-nav','msc-native-desktop');menus[menus.indexOf(desktop)]=existing;}
+      else {
+        const container=header.querySelector('.header-container')||header;
+        const actions=container.querySelector('.nav-actions,.header-actions,.auth-buttons');
+        if(actions?.parentElement===container)container.insertBefore(desktop,actions);else container.append(desktop);
+      }
+    } else if(!document.querySelector('.glass-header')) {
+      // Apps without a site header get a small menu in an existing toolbar, never another bar.
+      const editor=document.querySelector('.editor-header .brand-row');
+      const login=document.querySelector('.auth-container .form-panel');
+      const signup=document.querySelector('.signup-header > div');
+      const setup=document.querySelector('#setup-screen .setup-header');
+      if(editor)compact(editor);else if(login){compact(login);login.querySelector(':scope > .msc-native-compact')?.classList.add('msc-native-login-menu');}
+      else if(signup)compact(signup);else if(setup)compact(setup);
+    }
+    document.addEventListener('click',event=>{
+      document.querySelectorAll('.msc-native-group[open],.msc-native-compact[open]').forEach(item=>{if(!item.contains(event.target))item.open=false;});
+    });
+    document.addEventListener('keydown',event=>{
+      if(event.key!=='Escape')return;
+      const detail=document.activeElement?.closest('.msc-native-group[open],.msc-native-compact[open]')||document.querySelector('.msc-native-group[open],.msc-native-compact[open]');
+      if(detail){detail.open=false;detail.querySelector('summary')?.focus();return;}
+      if(drawer?.classList.contains('active')){drawer.classList.remove('active');document.getElementById('menuButton')?.focus();}
+    });
+    return header;
+  }
+  function loadScript(src) {return new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=src;script.onload=resolve;script.onerror=reject;document.head.append(script);});}
   async function client() {
-    if (window.getSupabaseClient) return window.getSupabaseClient();
-    if (window.supabaseClient && window.supabaseClient.auth) return window.supabaseClient;
-    if (!window.supabase || !window.supabase.createClient) await loadScript('/scripts/vendor/supabase.js');
-    await loadScript('/scripts/supabase-init.js?v=20260927.3');
-    return window.getSupabaseClient();
+    if(window.getSupabaseClient)return window.getSupabaseClient();
+    if(window.supabaseClient?.auth)return window.supabaseClient;
+    if(!window.supabase?.createClient)await loadScript('/scripts/vendor/supabase.js');
+    await loadScript('/scripts/supabase-init.js?v=20260927.9');return window.getSupabaseClient();
   }
   function init() {
-    if (document.getElementById('msc-site-navigation')) return;
-    document.documentElement.classList.add('msc-shared-navigation');
-    const header = document.createElement('header'); header.id = 'msc-site-navigation';
-    header.innerHTML = `<div class="msc-nav-shell"><a class="msc-nav-brand" href="/" aria-label="My Student Club home"><img src="/assets/logo.png" alt="My Student Club" width="200" height="36"></a><button class="msc-nav-toggle" type="button" aria-label="Open main menu" aria-expanded="false" aria-controls="msc-main-menu"><span aria-hidden="true">☰</span><span>Menu</span></button><nav id="msc-main-menu" aria-label="Main navigation"><a class="msc-nav-link" href="/">Jobs</a>${groups.map(([label, links]) => `<details class="msc-nav-group"><summary>${label}<span aria-hidden="true">⌄</span></summary><div class="msc-nav-dropdown">${links.map(([name, url]) => `<a href="${url}">${name}</a>`).join('')}</div></details>`).join('')}<a class="msc-nav-link" href="https://hire.mystudentclub.com">For Recruiters</a><div class="msc-nav-account"><a class="msc-nav-link msc-member" href="/learning-management-system/" hidden>My Courses</a><details class="msc-nav-group msc-nav-account-menu msc-member" hidden><summary>My Account<span aria-hidden="true">⌄</span></summary><div class="msc-nav-dropdown"><a href="/profile.html">My Profile</a><a href="/history.html">My Applications</a></div></details><a class="msc-nav-profile msc-member" href="/profile.html?onboarding=1" hidden>Complete Profile</a><a class="msc-nav-login" href="/login.html">Sign Up / Login</a></div></nav></div>`;
-    document.body.prepend(header);
-    const logout = document.createElement('button');
-    logout.type = 'button'; logout.className = 'msc-nav-logout'; logout.textContent = 'Log out';
-    const authError = document.createElement('p');
-    authError.className = 'msc-nav-auth-error'; authError.setAttribute('role', 'alert'); authError.hidden = true;
-    header.querySelector('.msc-nav-account-menu .msc-nav-dropdown').append(logout, authError);
-    // Move the original node so its notification handler, badge and popup keep working.
-    const notifications = document.getElementById('notificationsBtn');
-    if (notifications) header.querySelector('.msc-nav-account').append(notifications);
-    const toggle = header.querySelector('.msc-nav-toggle');
-    const close = () => { header.classList.remove('msc-nav-open'); toggle.setAttribute('aria-expanded', 'false'); };
-    if (notifications) notifications.addEventListener('click', close);
-    toggle.addEventListener('click', () => { const open = header.classList.toggle('msc-nav-open'); toggle.setAttribute('aria-expanded', String(open)); });
-    header.querySelectorAll('details').forEach(detail => detail.addEventListener('toggle', () => {
-      if (detail.open) header.querySelectorAll('details').forEach(other => { if (other !== detail) other.open = false; });
-    }));
-    document.addEventListener('click', event => { if (!header.contains(event.target)) { close(); header.querySelectorAll('details').forEach(item => { item.open = false; }); } });
-    document.addEventListener('keydown', event => {
-      if (event.key !== 'Escape') return;
-      const openGroup = header.querySelector('details[open]');
-      const mobileOpen = header.classList.contains('msc-nav-open');
-      if (!openGroup && !mobileOpen) return;
-      const returnFocus = mobileOpen ? toggle : openGroup.querySelector('summary');
-      close(); header.querySelectorAll('details').forEach(item => { item.open = false; }); returnFocus.focus();
-    });
-    header.querySelectorAll('a').forEach(link => { if (new URL(link.href).pathname === location.pathname && new URL(link.href).host === location.host) link.setAttribute('aria-current', 'page'); });
-    // Keep existing page scripts' header nodes and IDs intact while replacing their presentation.
-    const top = document.querySelector('main, .main-content, .main-content-area, .container');
-    if (!top || top.getBoundingClientRect().top < 76) document.body.classList.add('msc-needs-header-space');
-    client().then(async sb => {
-      const update = session => {
-        header.querySelectorAll('.msc-member').forEach(item => { item.hidden = !session; });
-        header.querySelector('.msc-nav-login').hidden = !!session;
+    const header=enhance();
+    client().then(async sb=>{
+      const update=session=>{
+        menus.forEach(nav=>{nav.querySelectorAll('.msc-native-member').forEach(item=>item.hidden=!session);nav.querySelectorAll('.msc-native-login').forEach(item=>item.hidden=!!session);});
+        if(document.body.dataset.resourceStage){const icon=header?.querySelector('.auth-icon-btn');if(icon){icon.href=session?'/profile.html':'/login.html';icon.setAttribute('aria-label',session?'My Account':'Sign Up / Login');}}
       };
-      const { data } = await sb.auth.getSession(); update(data.session);
-      sb.auth.onAuthStateChange((event, session) => update(session));
-      logout.addEventListener('click', async () => {
-        if (logout.disabled) return;
-        logout.disabled = true; logout.textContent = 'Logging out…'; authError.hidden = true;
-        try {
-          const result = await sb.auth.signOut();
-          if (result.error) throw result.error;
-          update(null); close();
-          window.location.assign('/');
-        } catch (_) {
-          authError.textContent = 'Could not log out. Please try again.'; authError.hidden = false;
-        } finally { logout.disabled = false; logout.textContent = 'Log out'; }
-      });
-      window.dispatchEvent(new CustomEvent('msc:auth-ready', { detail: { client: sb } }));
-      if (!window.MSCCareerProfile) await loadScript('/scripts/career-profile.js?v=20260927.3');
-      if (window.MSCCareerProfile && window.MSCCareerProfile.initOnboarding) window.MSCCareerProfile.initOnboarding();
-    }).catch(error => console.warn('MSC account navigation could not initialize:', error.message));
+      const {data}=await sb.auth.getSession();update(data.session);sb.auth.onAuthStateChange((event,session)=>update(session));
+      menus.forEach(nav=>nav.querySelectorAll('.msc-native-logout').forEach(button=>button.addEventListener('click',async()=>{
+        const error=button.nextElementSibling;button.disabled=true;error.hidden=true;
+        try{const result=await sb.auth.signOut();if(result.error)throw result.error;update(null);location.assign('/');}
+        catch(_){error.textContent='Could not log out. Please try again.';error.hidden=false;}
+        finally{button.disabled=false;}
+      })));
+      window.dispatchEvent(new CustomEvent('msc:auth-ready',{detail:{client:sb}}));
+      if(!window.MSCCareerProfile)await loadScript('/scripts/career-profile.js?v=20260927.9');
+      window.MSCCareerProfile?.initOnboarding?.();
+    }).catch(error=>console.warn('MSC account navigation could not initialize:',error.message));
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();

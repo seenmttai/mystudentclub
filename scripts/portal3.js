@@ -2408,43 +2408,36 @@ function updateHeaderAuth(session) {
     }
 }
 
-window.handleLogout = async () => {
-    userEnrollmentsCache = null;
-    enrollmentStatusCache = null;
-    // Sign out from Supabase
-    await supabaseClient.auth.signOut();
-
-    // Clear all user-specific localStorage data
-    localStorage.removeItem('userJobPreference');
-    localStorage.removeItem('userProfileData');
-    localStorage.removeItem('userCVFileName');
-    localStorage.removeItem('userCVText');
-    localStorage.removeItem('userCVImages');
-    localStorage.removeItem('subscribedTopics');
-    localStorage.removeItem('newUserSignup');
-    localStorage.removeItem('newUserEmail');
-
-    const keysToRemove = [];
-    for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && (key.startsWith('sb-') || key.includes('supabase'))) {
-            keysToRemove.push(key);
-        }
+let logoutInProgress = false;
+window.handleLogout = async (event) => {
+    if (logoutInProgress) return;
+    logoutInProgress = true;
+    const button = event?.currentTarget || document.getElementById('logoutBtn');
+    const label = button?.textContent;
+    if (button) { button.disabled = true; button.textContent = 'Logging out…'; }
+    try {
+        const { error } = await supabaseClient.auth.signOut();
+        if (error) throw error;
+        // Shared SIGNED_OUT handling clears the account's stored profile and CV.
+        // Only the portal's notification preference needs its existing extra cleanup.
+        try { localStorage.removeItem('subscribedTopics'); } catch (_) { /* storage may be unavailable */ }
+        userEnrollmentsCache = null;
+        enrollmentStatusCache = null;
+        currentSession = null;
+        appliedJobIds.clear();
+        updateHeaderAuth(null);
+        document.querySelectorAll('.application-status-filter-group').forEach(el => el.style.display = 'none');
+        const lmsNavLink = document.getElementById('lms-nav-link');
+        if (lmsNavLink) lmsNavLink.style.display = 'none';
+        state.applicationStatus = 'all';
+        state.experience = 'All';
+        window.location.href = '/';
+    } catch (_) {
+        showToast('Could not log out. Please try again.', 'error');
+    } finally {
+        logoutInProgress = false;
+        if (button) { button.disabled = false; button.textContent = label; }
     }
-    keysToRemove.forEach(key => localStorage.removeItem(key));
-
-    // Reset app state
-    currentSession = null;
-    appliedJobIds.clear();
-    updateHeaderAuth(null);
-    document.querySelectorAll('.application-status-filter-group').forEach(el => el.style.display = 'none');
-    const lmsNavLink = document.getElementById('lms-nav-link');
-    if (lmsNavLink) lmsNavLink.style.display = 'none';
-    state.applicationStatus = 'all';
-    state.experience = 'All';
-
-    // Redirect to home page
-    window.location.href = '/';
 };
 
 async function fetchUserEnrollmentsOnce(userId) {
@@ -4798,4 +4791,3 @@ async function dv2PopulateTrending() {
         console.warn('dv2 trending failed:', err);
     }
 }
-
