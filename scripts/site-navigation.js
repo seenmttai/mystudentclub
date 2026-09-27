@@ -17,7 +17,7 @@
     if (window.getSupabaseClient) return window.getSupabaseClient();
     if (window.supabaseClient && window.supabaseClient.auth) return window.supabaseClient;
     if (!window.supabase || !window.supabase.createClient) await loadScript('/scripts/vendor/supabase.js');
-    await loadScript('/scripts/supabase-init.js?v=20260927.3');
+    await loadScript('/scripts/supabase-init.js?v=20260927.4');
     return window.getSupabaseClient();
   }
   function init() {
@@ -81,7 +81,7 @@
     const footerPages = ['/links', '/contact', '/explore', '/privacy-policy', '/interview-predictor', '/career_navigator', '/salary-estimator', '/cv-checklist', '/articleship-scorer', '/linkedin-connection-message'];
     if (footerPages.includes(currentPath) && !document.getElementById('msc-site-footer')) {
       const footer = document.createElement('footer'); footer.id = 'msc-site-footer';
-      footer.innerHTML = '<div class="msc-footer-inner"><div><strong>My Student Club</strong><p>Resources, community and opportunities for your CA career.</p></div><nav aria-label="Helpful links"><a href="/">Find jobs</a><a href="/explore">Tools &amp; guides</a><a href="/links/">Community</a><a href="/contact">Contact us</a><a href="/privacy-policy">Privacy</a><a href="/terms">Terms</a></nav></div>';
+      footer.innerHTML = '<div class="msc-footer-inner"><div><strong>My Student Club</strong><p>Resources, community and opportunities for your CA career.</p></div><nav aria-label="Helpful links"><a href="/">Find jobs</a><a href="/explore">Tools &amp; guides</a><a href="/links/">Community</a><a href="/contact">Contact us</a><a href="/privacy-policy">Privacy</a><a href="/ca-industrial-training-program/terms-and-conditions.html">Program terms</a></nav></div>';
       document.body.append(footer);
     }
     // Keep existing page scripts' header nodes and IDs intact while replacing their presentation.
@@ -107,7 +107,7 @@
         } finally { logout.disabled = false; logout.textContent = 'Log out'; }
       });
       window.dispatchEvent(new CustomEvent('msc:auth-ready', { detail: { client: sb } }));
-      if (!window.MSCCareerProfile) await loadScript('/scripts/career-profile.js?v=20260927.3');
+      if (!window.MSCCareerProfile) await loadScript('/scripts/career-profile.js?v=20260927.4');
       if (window.MSCCareerProfile && window.MSCCareerProfile.initOnboarding) window.MSCCareerProfile.initOnboarding();
     }).catch(error => console.warn('MSC account navigation could not initialize:', error.message));
   }

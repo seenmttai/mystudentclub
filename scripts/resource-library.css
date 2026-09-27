@@ -68,7 +68,7 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #82b5
 .resource-show-more{display:flex;margin:24px auto 0;min-width:220px;min-height:44px}
 .resource-catalog-status{font-size:12px;color:var(--rl-muted);line-height:1.7;margin:0 0 18px}.resource-catalog-status:empty{display:none}
 .resource-catalog-status button{padding:0;background:none;border:0;text-decoration:underline;color:var(--rl-blue);cursor:pointer}
-.resource-empty{padding:30px 22px;border:1px dashed #cbd7e7;background:#f0f4fa;border-radius:12px;font-size:13px;line-height:1.7;text-align:center;color:var(--rl-muted);margin:0}
+.resource-empty{padding:30px 22px;border:1px dashed #cbd7e7;background:#f0f4fa;border-radius:12px;font-size:13px;line-height:1.7;text-align:center;color:#52627a;margin:0}
 .resource-footer{background:#fff;border-top:1px solid var(--rl-line);padding:22px 28px;text-align:center;color:var(--rl-muted);font-size:12px}.resource-footer a{margin:0 10px}
 .resource-enroll-dialog{border:1px solid var(--rl-line);border-radius:20px;padding:34px;max-width:500px;width:calc(100% - 32px);color:var(--rl-ink);box-shadow:0 24px 80px #172a4240}
 .resource-enroll-dialog::backdrop{background:#16283f99;backdrop-filter:blur(3px)}

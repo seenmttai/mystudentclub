@@ -8,6 +8,11 @@ body.msc-community-page {
   --text-muted: #657388; --border-color: #d8e0eb; --border-light: #e1e6ee;
   background: #f7f8fa; color: #17253c; font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
+.msc-community-page .thread-category { color:#2452a3!important; background:#edf3ff!important; }
+.msc-community-page .thread-tags .tag { color:#52627a; }
+.msc-community-page .auth-cta-btn { background:#92510a; color:#fff; }
+.msc-community-page :is(.portal-card-text p,label .helper) { color:#52627a; }
+.msc-community-page .no-jobs-found { color:#9d2424!important; }
 .msc-community-page [hidden] { display: none !important; }
 .msc-community-page main, .msc-community-page section, .msc-community-page form, .msc-community-page .form-group { min-width: 0; }
 .msc-community-page :is(h1,h2,h3,p,a,button) { overflow-wrap: anywhere; }

@@ -405,5 +405,6 @@ body.msc-program-page { display:block; padding-bottom:92px; }
 }
 .msc-fresher-program .ls-benefit-item { visibility:hidden; transition:transform .3s ease; }
 .msc-fresher-program .ls-benefit-item.active { visibility:visible; opacity:1; }
+.msc-cv-editor-page :is(.ai-prompt-overlay,.docx-info-overlay,.tpl-gate-overlay,.ai-preview-overlay)[aria-hidden="true"] { visibility:hidden; }
 .msc-fresher-program .ls-text h3 { color:#fff; }
 .msc-fresher-program .ls-text p { color:#d5dce6; }

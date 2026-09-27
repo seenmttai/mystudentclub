@@ -4,10 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registration Successful - My Student Club</title>
+  <title>Check your enrollment - My Student Club</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="/scripts/supabase.js"></script>
-  <script src="/scripts/supabase-init.js?v=20260927.3"></script>
+  <script src="/scripts/supabase-init.js?v=20260927.4"></script>
   <script src="/scripts/error-reporter.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -398,10 +398,10 @@
   <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
   <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
   <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
-<link rel="stylesheet" href="/scripts/site-navigation.css?v=20260927.3"><script src="/scripts/site-navigation.js?v=20260927.3" defer></script>
+<link rel="stylesheet" href="/scripts/site-navigation.css?v=20260927.4"><script src="/scripts/site-navigation.js?v=20260927.4" defer></script>
 </head>
 
-<body class="bg-gray-50 flex flex-col items-center min-h-screen pt-24 pb-8">
+<body class="bg-gray-50 flex flex-col items-center min-h-screen pt-24 pb-8 msc-support-page msc-payment-page msc-payment-status">
   <header class="site-header">
     <div class="header-container">
       <a href="/" class="brand-link">
@@ -450,17 +450,22 @@
     </div>
   </div>
 
-  <div class="success-card">
+  <div class="success-card" role="main">
     <div class="success-icon">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"
         stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+        <circle cx="12" cy="12" r="9" /><path stroke-linecap="round" d="M12 11v6M12 7v.1" />
       </svg>
     </div>
-    <h1 class="text-2xl font-bold text-gray-800 mb-2">Enrollment Confirmed!</h1>
+    <h1 class="text-2xl font-bold text-gray-800 mb-2">Check your enrollment</h1>
     <p class="text-gray-600 mb-4">
-      Here is what you need to know before we begin:
+      Sign in to check your course access. This page alone does not confirm payment or enrollment.
     </p>
+
+    <div class="msc-enrollment-actions">
+      <a href="/learning-management-system/" class="msc-support-primary">Check my courses</a>
+      <a href="/login.html" class="msc-support-secondary">Sign in to your account</a>
+    </div>
 
     <div id="credentials-box" class="credentials-box" style="margin: 0.5rem 0; padding: 1rem;">
       <h3 id="credentials-title"
@@ -481,9 +486,8 @@
 
     <div class="text-left mb-6">
       <p class="text-gray-700 font-medium text-lg">Hey <span id="user-display-name">there</span> 👋,</p>
-      <p class="text-gray-700 font-medium mt-2">Firstly, thank you for enrolling in the <strong>MSC Industrial Training
-          Program!</strong> ❤️</p>
-      <p class="text-gray-700 font-medium mt-1">Welcome to the MSC Family.</p>
+      <p class="text-gray-700 font-medium mt-2">Explore the next steps for the <strong>MSC Industrial Training Program</strong> below.</p>
+      <p class="text-gray-700 font-medium mt-1">Your account’s course list shows your available learning content.</p>
     </div>
 
     <!-- Onboarding Roadmap -->
@@ -711,9 +715,7 @@
       if (email && accountStatus === 'existing') {
         const credentialsTitle = document.getElementById('credentials-title-text');
         if (credentialsTitle) {
-          credentialsTitle.textContent = enrollmentStatus === 'already-enrolled'
-            ? 'Enrollment already active'
-            : 'Enrollment added to your existing account';
+          credentialsTitle.textContent = 'Your existing account';
         }
         document.getElementById('user-email').textContent = email;
         document.getElementById('password-row').style.display = 'none';
@@ -721,9 +723,7 @@
         document.getElementById('credentials-box').style.display = 'block';
 
         const loginStatus = document.getElementById('login-status');
-        loginStatus.textContent = enrollmentStatus === 'already-enrolled'
-          ? 'This account was already enrolled in this course. Use your existing password to sign in.'
-          : 'Your existing account has been enrolled successfully. Use your existing password to sign in.';
+        loginStatus.textContent = 'Use your existing password to sign in and check your course access.';
         loginStatus.classList.add('show');
       } else if (email && password && accountStatus === 'created') {
         document.getElementById('user-email').textContent = email;

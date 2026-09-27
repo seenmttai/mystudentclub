@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Job Open Handler</title>
+    <title>Job application | My Student Club</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="referrer" content="no-referrer" />
     <style>
@@ -27,21 +27,22 @@
   <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
   <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
   <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
-<link rel="stylesheet" href="/scripts/site-navigation.css?v=20260927.3"><script src="/scripts/site-navigation.js?v=20260927.3" defer></script>
+<link rel="stylesheet" href="/scripts/site-navigation.css?v=20260927.4"><script src="/scripts/site-navigation.js?v=20260927.4" defer></script>
 </head>
-  <body>
+  <body class="msc-support-page msc-application-status">
     <header>
-      <div>Job Open Handler</div>
+      <div>Job application</div>
       <div id="portalPill" class="pill hidden"></div>
     </header>
 
-    <div class="wrap">
-      <div id="info" class="status"></div>
-      <div id="error" class="status hidden" style="background:#ffecec; color:#a00;"></div>
-      <div id="aiProgress" class="status hidden"><span class="spinner"></span><span id="aiMsg">Preparing AI email…</span></div>
+    <div class="wrap" role="main">
+      <h1>Job application</h1>
+      <div id="info" class="status" role="status" aria-live="polite"></div>
+      <div id="error" role="alert" class="status hidden" style="background:#ffecec; color:#a00;"></div>
+      <div id="aiProgress" class="status hidden" role="status" aria-live="polite"><span class="spinner"></span><span id="aiMsg">Preparing AI email…</span></div>
     </div>
 
-    <iframe id="pageFrame" class="hidden"
+    <iframe id="pageFrame" title="Job application page" class="hidden"
             sandbox="allow-forms allow-scripts allow-popups allow-downloads"
             referrerpolicy="no-referrer"
             loading="eager">

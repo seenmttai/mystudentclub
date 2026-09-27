@@ -18,7 +18,8 @@ html.msc-shared-navigation :where(img,video){max-width:100%}
 #msc-site-footer a:hover{color:var(--msc-blue);text-decoration:underline}
 body.msc-community{background:var(--msc-canvas);background-image:none;display:block;color:var(--msc-ink);padding:112px 24px 0!important}
 body.msc-community>.container{max-width:760px;margin:0 auto}
-.msc-community .profile{margin-bottom:28px}
+.msc-community .profile{margin-bottom:28px;animation:none;opacity:1;transform:none}
+.msc-community :is(.tab-content,.link-card,.social-footer){animation:none;opacity:1;transform:none}
 .msc-community .profile .avatar{width:68px;height:68px;padding:8px;border:0;background:#fff;box-shadow:none;margin-bottom:12px}
 .msc-community .profile h1{font-size:clamp(28px,4vw,40px);letter-spacing:-.04em;line-height:1.15;color:var(--msc-ink)}
 .msc-community .profile p{max-width:530px;color:var(--msc-muted);font-size:16px;line-height:1.7}
@@ -47,7 +48,7 @@ body.msc-contact{height:auto;min-height:100vh;overflow:visible;display:block;bac
 .msc-contact .form-group label{font-size:14px;font-weight:600;color:var(--msc-ink);margin-bottom:7px}
 .msc-contact .form-group :is(input,select,textarea){border:1px solid #c8d3e1;border-radius:9px;background:#fff;padding:12px 14px;min-height:48px;font-size:16px;line-height:1.5;width:100%;color:var(--msc-ink)}
 .msc-contact .form-group textarea{min-height:144px;resize:vertical}
-.msc-contact .submit-btn{background:var(--msc-blue);box-shadow:none;border-radius:9px;min-height:48px;font-size:16px;font-weight:600;transform:none}
+.msc-contact .submit-btn{background:var(--msc-blue);box-shadow:none;border-radius:9px;min-height:48px;font-size:16px;font-weight:600;transform:none;transition:none}
 .msc-contact .contact-info{background:#f9fafc;padding:24px 32px;border-radius:0 0 18px 18px;border-top:1px solid var(--msc-border)}
 .msc-contact .contact-info h3{font-size:15px}
 .msc-contact .error-text{font-size:13px}
@@ -61,6 +62,7 @@ body.msc-support-tool{background:var(--msc-canvas);color:var(--msc-ink);padding-
 .msc-support-tool :is(.question-title,.form-group label){color:var(--msc-ink);line-height:1.6}
 .msc-support-tool .option-label{border:1px solid var(--msc-border);border-radius:10px;box-shadow:none;padding:14px;min-height:48px}
 .msc-support-tool .option-label:has(input:checked){background:#edf3ff;border-color:var(--msc-blue)}
+.msc-support-tool .question-group.active{animation:none;opacity:1;transform:none}
 .msc-support-tool .coming-soon-container{min-height:55vh;padding:40px 24px}
 .msc-support-tool .hero-text{font-size:clamp(32px,5vw,48px);color:var(--msc-ink);background:none;-webkit-text-fill-color:var(--msc-ink);animation:none}
 .msc-support-tool .feature-card{border:1px solid var(--msc-border);box-shadow:none;border-radius:14px}

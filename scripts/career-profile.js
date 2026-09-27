@@ -58,7 +58,7 @@
   function loadStyles() {
     if (document.querySelector('link[data-msc-career]')) return;
     const link = document.createElement('link');
-    link.rel = 'stylesheet'; link.href = '/scripts/career-profile.css?v=20260927.3'; link.dataset.mscCareer = 'true';
+    link.rel = 'stylesheet'; link.href = '/scripts/career-profile.css?v=20260927.4'; link.dataset.mscCareer = 'true';
     document.head.appendChild(link);
   }
   function select(name, label, options, selected = '') {
