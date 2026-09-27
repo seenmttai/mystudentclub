@@ -4,7 +4,7 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const excluded = new Set(['.git','node_modules','work','scratch','tests','dist','.astro']);
 const internalPages = new Set(['admin.html','hirer-dashboard.html','mentor-dashboard.html','auth-test.html','browser-guard-test.html','moonshine-test.html','payment-test.html','speak-test.html','testing.html','turnstile-test.html']);
-const assets = '<link rel="stylesheet" href="/scripts/site-navigation.css?v=20260927.9"><script src="/scripts/site-navigation.js?v=20260927.9" defer></script>';
+const assets = '<link rel="stylesheet" href="/scripts/site-navigation.css?v=20260927.10"><script src="/scripts/site-navigation.js?v=20260927.10" defer></script>';
 let count = 0;
 function walk(dir) {
   for (const entry of fs.readdirSync(dir, {withFileTypes:true})) {

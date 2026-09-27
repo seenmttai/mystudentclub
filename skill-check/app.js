@@ -1,5 +1,5 @@
 import { state } from './state.js';
-import { renderTopicSelection, renderQuiz, renderResults } from './render.js';
+import { renderTopicSelection, renderQuiz, renderResults } from './render.js?v=20260927.9';
 import { generateQuestions, gradeExam } from './api.js';
 import { logError } from './logger.js';
 
