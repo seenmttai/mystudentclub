@@ -13,7 +13,7 @@
 
 const DEFAULT_ENDPOINT = (typeof window !== 'undefined' && window.BROWSER_GUARD_WORKER_URL)
     ? window.BROWSER_GUARD_WORKER_URL
-    : 'https://browser-guard-unlock.bhansalimanan55.workers.dev';
+    : 'https://browser.mystudentclub.com';
 
 const unlockCache = new Map();
 
