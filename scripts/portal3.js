@@ -9,6 +9,8 @@ function isSalaryDisclosed(val) {
 }
 
 async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) {
+    if (isRecruiterPostedJob(job)) return recordApplication(job, btnElement);
+
     if (!currentSession) {
         window.location.href = '/login.html';
         return;
@@ -32,33 +34,21 @@ async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) 
 
     try {
         const emailBody = await generateEmailBody(job, tableName, supabaseClient, currentSession?.user);
-
-        // Construct mailto with AI body
         const rawLink = job['Application ID'];
         const emailMatch = rawLink.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
         const email = emailMatch ? emailMatch[0] : '';
         const subject = simpleMailtoLink.split('subject=')[1]?.split('&')[0] || `Application for ${job.Category} (Ref: My Student Club)`;
-
         const aiMailto = `mailto:${email}?subject=${subject}&body=${encodeURIComponent(emailBody)}`;
-
         await recordApplication(job, btnElement);
         openMailtoLink(aiMailto);
-
     } catch (error) {
         console.error("AI Apply Failed:", error);
         showToast("Server busy, reverting to simple apply", "error");
-
         const rawLink = job['Application ID'];
         const emailMatch = rawLink.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
         const email = emailMatch ? emailMatch[0] : '';
         const subject = simpleMailtoLink.split('subject=')[1]?.split('&')[0] || `Application for ${job.Category} (Ref: My Student Club)`;
-
-        const simpleMailto = `mailto:${email}?subject=${subject}`;
-
-        await recordApplication(job, btnElement);
-        setTimeout(() => {
-            openMailtoLink(simpleMailto);
-        }, 3000);
+        setTimeout(() => openMailtoLink(`mailto:${email}?subject=${subject}`), 3000);
     } finally {
         // Reset button state
         btnElement.classList.remove('loading');
@@ -689,7 +679,10 @@ function checkConnectLink(job) {
 }
 
 async function recordApplication(job, btnElement) {
-    if (!currentSession) return true; // Allow default navigation if not logged in
+    if (!currentSession) {
+        window.location.href = `/login.html?redirect=${encodeURIComponent(window.location.href)}`;
+        return false;
+    }
 
     const originalText = btnElement.innerHTML;
     btnElement.innerHTML = '<div class="loader-spinner" style="width: 20px; height: 20px; border-width: 2px;"></div>';
@@ -725,11 +718,12 @@ async function recordApplication(job, btnElement) {
 
         btnElement.classList.add('applied');
         btnElement.innerHTML = originalText;
+        showToast('Application submitted to the hirer dashboard.', 'success');
         return true;
     } catch (e) {
         console.error('Application exception:', e);
         btnElement.innerHTML = originalText;
-        return true; // Still allow navigation
+        return false;
     }
 }
 
@@ -817,12 +811,13 @@ function showModal(job) {
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
     const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'N/A';
     const applyCount = job.application_count || 0;
+    const recruiterPosted = isRecruiterPostedJob(job);
     const cachedUnlocked = currentSession ? getCachedUnlockedJob(job.id, currentTable, currentSession) : null;
-    const isApplicationUnlocked = job.__browserGuardUnlocked === true || Boolean(cachedUnlocked) || Boolean(job['Application ID']);
-    const effectiveApplicationId = cachedUnlocked?.applicationId || job['Application ID'];
+    const isApplicationUnlocked = recruiterPosted || job.__browserGuardUnlocked === true || Boolean(cachedUnlocked) || Boolean(job['Application ID']);
+    const effectiveApplicationId = recruiterPosted ? null : (cachedUnlocked?.applicationId || job['Application ID']);
     const effectiveDescription = cachedUnlocked?.description || job.Description || '';
     const applyLink = getApplicationLink(effectiveApplicationId, job.Company);
-    const isMailto = applyLink.startsWith('mailto:');
+    const isMailto = !recruiterPosted && applyLink.startsWith('mailto:');
     const isApplied = appliedJobIds.has(job.id);
     const buttonClass = isApplied ? 'applied' : '';
 
@@ -1006,7 +1001,9 @@ function showModal(job) {
             });
     }
 
-    const applicationContentHtml = isApplicationUnlocked
+    const applicationContentHtml = recruiterPosted
+        ? '<p class="modal-description">Easy Apply is enabled. Click Apply Now to send your profile and CV to the hirer dashboard.</p>'
+        : isApplicationUnlocked
         ? generateApplicationLinks(effectiveApplicationId)
         : !currentSession
             ? `
@@ -1163,8 +1160,10 @@ function showModal(job) {
         if (modalSimpleApplyBtn) {
             modalSimpleApplyBtn.addEventListener('click', async (e) => {
                 e.preventDefault();
-                const shouldProceed = await recordApplication(job, e.currentTarget);
-                if (shouldProceed) {
+                if (recruiterPosted) {
+                    await recordApplication(job, e.currentTarget);
+                } else {
+                    if (currentSession) await recordApplication(job, e.currentTarget);
                     window.open(applyLink, '_blank');
                 }
             });
@@ -1188,8 +1187,10 @@ function showModal(job) {
         if (modalExternalApplyBtn) {
             modalExternalApplyBtn.addEventListener('click', async (e) => {
                 e.preventDefault();
-                const shouldProceed = await recordApplication(job, e.currentTarget);
-                if (shouldProceed) {
+                if (recruiterPosted) {
+                    await recordApplication(job, e.currentTarget);
+                } else {
+                    if (currentSession) await recordApplication(job, e.currentTarget);
                     window.open(applyLink, '_blank');
                 }
             });
@@ -2737,42 +2738,19 @@ async function handleApplyClick(job, buttonElement, isAiApply = false) {
 }
 
 async function executeActualApply(job, buttonElement, isAiApply = false) {
+    if (isRecruiterPostedJob(job)) return recordApplication(job, buttonElement);
     markJobAsApplied(job);
-
-    if (isAiApply) {
-        if (!currentSession) { window.location.href = '/login.html'; return; }
-        if (!isProfileComplete()) {
-            showCvUploadPopup();
-            return;
-        }
-
-        const btnText = buttonElement.querySelector('.btn-text');
-        const spinner = buttonElement.querySelector('i.fa-spin');
-        const originalText = btnText.textContent;
-        btnText.textContent = 'Preparing...';
-        if (spinner) spinner.style.display = 'inline-block';
-        buttonElement.disabled = true;
-
-        try {
-            const profileData = JSON.parse(localStorage.getItem('userProfileData') || '{}');
-            const cvImages = JSON.parse(localStorage.getItem('userCVImages') || '[]');
-            const emailBody = await generateEmailBody(profileData, cvImages, job);
-            openMailtoLink(constructMailto(job, emailBody));
-        } catch (e) {
-            const fallbackBody = generateFallbackEmail(job);
-            openMailtoLink(constructMailto(job, fallbackBody));
-        } finally {
-            btnText.textContent = originalText;
-            if (spinner) spinner.style.display = 'none';
-            buttonElement.disabled = false;
-        }
-    } else {
+    if (!isAiApply) {
         const applyLink = getApplicationLink(job['Application ID']);
-        if (applyLink.startsWith('mailto:')) {
-            const fallbackBody = generateFallbackEmail(job);
-            openMailtoLink(constructMailto(job, fallbackBody));
-        }
+        if (applyLink.startsWith('mailto:')) openMailtoLink(constructMailto(job, generateFallbackEmail(job, currentTable)));
+        else if (applyLink && applyLink !== '#') window.open(applyLink, '_blank');
+        return true;
     }
+    if (!currentSession) { window.location.href = '/login.html'; return false; }
+    if (!isProfileComplete()) { showCvUploadPopup(); return false; }
+    const emailBody = await generateEmailBody(job, currentTable, supabaseClient, currentSession.user);
+    openMailtoLink(constructMailto(job, emailBody));
+    return true;
 }
 
 async function markJobAsApplied(job) {

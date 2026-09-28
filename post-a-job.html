@@ -1259,15 +1259,11 @@
           </div>
 
           <div class="form-row">
-            <!-- Application ID (Email or URL) -->
+            <!-- Direct application flow -->
             <div class="form-group full-width">
-              <label class="form-label" for="applicationId">HR Email or Application URL <span class="req">*</span></label>
-              <div class="input-icon-wrap">
-                <i class="fas fa-link"></i>
-                <input type="text" id="applicationId" class="form-control" placeholder="e.g. careers@company.com OR https://company.com/apply/123" required>
-              </div>
+              <label class="form-label">Application Method</label>
               <span class="helper" style="font-size: 0.75rem; color: var(--gray-500); margin-top: 0.25rem;">
-                If an email is provided, candidates can send CVs directly with 1-click. If a URL is provided, candidates are directed to your career portal.
+                Candidates apply directly with one click. Their profile and CV will appear in your hirer dashboard.
               </span>
             </div>
           </div>
@@ -1588,7 +1584,6 @@ Reputed Chartered Accountancy firm invites applications from CA Inter cleared st
       const locationVal = document.getElementById('location').value.trim();
       const salaryVal = document.getElementById('salary').value.trim();
       const descVal = document.getElementById('description').value.trim();
-      const applyVal = document.getElementById('applicationId').value.trim();
 
       prevCompany.textContent = companyVal || 'Company / Firm Name';
       prevCompanyLogo.textContent = companyVal ? companyVal.charAt(0).toUpperCase() : 'A';
@@ -1597,15 +1592,11 @@ Reputed Chartered Accountancy firm invites applications from CA Inter cleared st
       prevSalary.textContent = salaryVal ? salaryVal : 'Best in Industry';
       prevDesc.textContent = descVal || 'Job description preview will appear here as you type. Responsibilities and requirements will be formatted nicely for candidates.';
 
-      if (applyVal && applyVal.includes('@')) {
-        prevApplyBtn.innerHTML = '<i class="fas fa-envelope"></i> Simple Apply';
-      } else {
-        prevApplyBtn.innerHTML = '<i class="fas fa-arrow-up-right-from-square"></i> Apply Online';
-      }
+      prevApplyBtn.innerHTML = '<i class="fas fa-bolt"></i> Apply Directly';
     }
 
     // Attach listeners for live preview
-    ['company', 'category', 'location', 'salary', 'description', 'applicationId'].forEach(id => {
+    ['company', 'category', 'location', 'salary', 'description'].forEach(id => {
       const el = document.getElementById(id);
       if (el) {
         el.addEventListener('input', updateLivePreview);
@@ -1699,10 +1690,9 @@ Reputed Chartered Accountancy firm invites applications from CA Inter cleared st
       const salary = document.getElementById('salary').value.trim();
       const experience = document.getElementById('experience').value;
       const description = document.getElementById('description').value.trim();
-      const applicationId = document.getElementById('applicationId').value.trim();
       const connectLink = document.getElementById('connectLink').value.trim();
 
-      if (!company || !category || !location || !description || !applicationId) {
+      if (!company || !category || !location || !description) {
         showStatus("Please complete all required fields (*).", "error");
         return;
       }
@@ -1717,7 +1707,6 @@ Reputed Chartered Accountancy firm invites applications from CA Inter cleared st
         location: location,
         salary: salary ? salary.replace(/[^0-9.]/g, '') : null,
         description: description,
-        application_id: applicationId,
         connect_link: connectLink || null,
         experience: (currentSelectedPortal === 'Fresher Jobs' || currentSelectedPortal === 'Semi Qualified Jobs') ? experience : null
       };
