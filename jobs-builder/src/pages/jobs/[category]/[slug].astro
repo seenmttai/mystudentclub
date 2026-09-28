@@ -144,6 +144,15 @@ const CATEGORY_LABEL_MAP: Record<string, string> = {
 };
 const categoryLabel = CATEGORY_LABEL_MAP[categorySlug as string] || 'CA Job';
 const roleLabel = job.Role ? job.Role.trim() : categoryLabel;
+
+// Category-specific high-resolution social share banner (1200x630)
+const CATEGORY_OG_MAP: Record<string, string> = {
+  'industrial': 'https://www.mystudentclub.com/assets/og-industrial.png',
+  'articleship': 'https://www.mystudentclub.com/assets/og-articleship.png',
+  'fresher': 'https://www.mystudentclub.com/assets/og-fresher.png',
+  'semi-qualified': 'https://www.mystudentclub.com/assets/og-fresher.png'
+};
+const ogImage = CATEGORY_OG_MAP[categorySlug as string] || 'https://www.mystudentclub.com/assets/og-image.png';
 ---
 
 <!DOCTYPE html>
@@ -156,15 +165,24 @@ const roleLabel = job.Role ? job.Role.trim() : categoryLabel;
     <meta name="robots" content="index, follow">
     <link rel="canonical" href={`https://www.mystudentclub.com/jobs/${categorySlug}/${slug}.html`}>
 
-    <!-- Open Graph / Social Sharing -->
+    <!-- Open Graph / WhatsApp / Facebook / LinkedIn -->
     <meta property="og:type" content="website">
     <meta property="og:url" content={`https://www.mystudentclub.com/jobs/${categorySlug}/${slug}.html`}>
     <meta property="og:title" content={`${escapeHtml(roleLabel)} at ${escapeHtml(companyName)}, ${escapeHtml(location)}`}>
     <meta property="og:description" content={`${escapeHtml(roleLabel)} opening at ${escapeHtml(companyName)} in ${escapeHtml(location)}. Apply on My Student Club.`}>
-    <meta property="og:image" content="https://www.mystudentclub.com/assets/banner.png">
-    <meta name="twitter:card" content="summary">
+    <meta property="og:image" content={ogImage}>
+    <meta property="og:image:secure_url" content={ogImage}>
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content={`${escapeHtml(roleLabel)} at ${escapeHtml(companyName)}`}>
+    <meta property="og:site_name" content="My Student Club">
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content={`${escapeHtml(roleLabel)} at ${escapeHtml(companyName)}, ${escapeHtml(location)}`}>
     <meta name="twitter:description" content={`${escapeHtml(roleLabel)} opening in ${escapeHtml(location)}. Apply on My Student Club.`}>
+    <meta name="twitter:image" content={ogImage}>
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
