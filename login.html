@@ -9,6 +9,7 @@
     content="Login or sign up to My Student Club - Access CA jobs, industrial training, and career resources.">
   <script src="/scripts/supabase.js"></script>
   <script src="/scripts/supabase-init.js"></script>
+  <script src="/scripts/profile-state.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * {
@@ -1097,6 +1098,117 @@
       </div>
     </div>
 
+    <style>
+      .login-signup-onboarding {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        display: grid;
+        place-items: center;
+        padding: 1rem;
+        background: rgba(17, 24, 39, 0.58);
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity .2s ease, visibility .2s ease;
+      }
+      .login-signup-onboarding.is-visible {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+      }
+      .login-signup-onboarding-card {
+        width: min(100%, 560px);
+        max-height: calc(100vh - 2rem);
+        overflow-y: auto;
+        position: relative;
+        padding: clamp(1.5rem, 5vw, 2.5rem);
+        border-radius: 24px;
+        background: linear-gradient(145deg, #fff, #f7f7ff);
+        box-shadow: 0 24px 70px rgba(17, 24, 39, .28);
+      }
+      .login-signup-onboarding-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        width: 2.25rem;
+        height: 2.25rem;
+        border: 0;
+        border-radius: 50%;
+        background: #eef0ff;
+        color: #4f46e5;
+        font-size: 1.4rem;
+        cursor: pointer;
+      }
+      .login-signup-onboarding-title {
+        margin: 0 2rem .85rem 0;
+        color: #111827;
+        font-size: clamp(1.55rem, 4vw, 2.2rem);
+        line-height: 1.15;
+      }
+      .login-signup-onboarding-copy {
+        color: #4b5563;
+        line-height: 1.65;
+      }
+      .login-signup-onboarding-sections {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: .7rem;
+        margin: 1.5rem 0;
+      }
+      .login-signup-onboarding-section {
+        padding: .8rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, .8);
+        color: #374151;
+        font-size: .84rem;
+        font-weight: 600;
+      }
+      .login-signup-onboarding-cta {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 3rem;
+        border-radius: 11px;
+        background: #4f46e5;
+        color: #fff;
+        font-weight: 700;
+        text-decoration: none;
+      }
+      .login-signup-onboarding-later {
+        display: block;
+        margin: .9rem auto 0;
+        border: 0;
+        background: transparent;
+        color: #6b7280;
+        cursor: pointer;
+      }
+      @media (max-width: 480px) {
+        .login-signup-onboarding-sections { grid-template-columns: 1fr; }
+      }
+    </style>
+
+    <div id="login-signup-onboarding" class="login-signup-onboarding" role="dialog" aria-modal="true"
+      aria-labelledby="login-signup-onboarding-title" aria-describedby="login-signup-onboarding-copy" aria-hidden="true" inert>
+      <div class="login-signup-onboarding-card">
+        <button type="button" id="login-signup-onboarding-close" class="login-signup-onboarding-close" aria-label="Close onboarding prompt">&times;</button>
+        <div style="margin-bottom:.85rem;color:#4f46e5;font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;">Your profile is your opportunity</div>
+        <h2 id="login-signup-onboarding-title" class="login-signup-onboarding-title">Don’t just search for jobs. Let recruiters find you.</h2>
+        <p id="login-signup-onboarding-copy" class="login-signup-onboarding-copy">Share your details in less than 2 minutes with MSC’s network of 1,000+ recruiters. Let your next opportunity find you.</p>
+        <div class="login-signup-onboarding-sections" aria-label="Complete Profile sections">
+          <div class="login-signup-onboarding-section">↗ Resume</div>
+          <div class="login-signup-onboarding-section">◎ Personal details</div>
+          <div class="login-signup-onboarding-section">◇ Education</div>
+          <div class="login-signup-onboarding-section">▣ Experience</div>
+          <div class="login-signup-onboarding-section">✦ Key skills</div>
+          <div class="login-signup-onboarding-section">◌ Career preferences</div>
+        </div>
+        <a id="login-signup-onboarding-cta" class="login-signup-onboarding-cta" href="/profile.html">Complete My Profile →</a>
+        <button type="button" id="login-signup-onboarding-later" class="login-signup-onboarding-later">Maybe later</button>
+      </div>
+    </div>
+
     <!-- Forgot Password Modal -->
     <div class="modal-overlay" id="forgot-password-modal">
       <div class="modal-content">
@@ -1248,13 +1360,53 @@
       const signupError = document.getElementById('signup-error');
       const signupSuccess = document.getElementById('signup-success');
       const signupSubmit = document.getElementById('signup-submit');
+      const loginSignupOnboarding = document.getElementById('login-signup-onboarding');
+      const loginSignupOnboardingClose = document.getElementById('login-signup-onboarding-close');
+      const loginSignupOnboardingLater = document.getElementById('login-signup-onboarding-later');
+      const loginSignupOnboardingCta = document.getElementById('login-signup-onboarding-cta');
+      let loginSignupEmail = '';
+
+      function hideLoginSignupOnboarding({ recordDismissal = true } = {}) {
+        if (!loginSignupOnboarding) return;
+        if (recordDismissal && loginSignupEmail) {
+          window.MSCProfileState?.setOnboardingDismissed(loginSignupEmail);
+        }
+        loginSignupOnboarding.classList.remove('is-visible');
+        loginSignupOnboarding.setAttribute('aria-hidden', 'true');
+        loginSignupOnboarding.setAttribute('inert', '');
+      }
+
+      function showLoginSignupOnboarding() {
+        if (!loginSignupOnboarding) return;
+        loginSignupOnboarding.removeAttribute('inert');
+        loginSignupOnboarding.setAttribute('aria-hidden', 'false');
+        loginSignupOnboarding.classList.add('is-visible');
+        requestAnimationFrame(() => loginSignupOnboardingClose?.focus());
+      }
+
+      loginSignupOnboardingClose?.addEventListener('click', hideLoginSignupOnboarding);
+      loginSignupOnboardingLater?.addEventListener('click', hideLoginSignupOnboarding);
+      loginSignupOnboarding?.addEventListener('click', (event) => {
+        if (event.target === loginSignupOnboarding) hideLoginSignupOnboarding();
+      });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && loginSignupOnboarding?.classList.contains('is-visible')) {
+          hideLoginSignupOnboarding();
+        }
+      });
+      loginSignupOnboardingCta?.addEventListener('click', async (event) => {
+        event.preventDefault();
+        hideLoginSignupOnboarding({ recordDismissal: false });
+        const { data: { session } = {} } = await supabaseClient.auth.getSession();
+        window.location.href = session ? '/profile.html' : `/login.html?redirect=${encodeURIComponent('/profile.html')}`;
+      });
 
       signupForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const firstName = document.getElementById('signup-firstname').value;
-        const lastName = document.getElementById('signup-lastname').value;
-        const email = document.getElementById('signup-email').value;
+        const firstName = document.getElementById('signup-firstname').value.trim();
+        const lastName = document.getElementById('signup-lastname').value.trim();
+        const email = document.getElementById('signup-email').value.trim();
         const password = document.getElementById('signup-password').value;
 
         signupError.classList.remove('show');
@@ -1270,6 +1422,7 @@
         signupSubmit.disabled = true;
 
         try {
+          loginSignupEmail = email;
           const { data, error } = await supabaseClient.auth.signUp({
             email,
             password,
@@ -1278,7 +1431,7 @@
               data: {
                 first_name: firstName,
                 last_name: lastName,
-                full_name: `${firstName} ${lastName}`
+                full_name: `${firstName} ${lastName}`.trim()
               }
             }
           });
@@ -1292,8 +1445,9 @@
             signupSuccess.textContent = 'Sign up successful! Please check your email to confirm your account.';
             signupSuccess.classList.add('show');
             signupForm.reset();
+            showLoginSignupOnboarding();
           } else if (data.session) {
-            window.location.href = '/';
+            showLoginSignupOnboarding();
           }
 
         } catch (error) {

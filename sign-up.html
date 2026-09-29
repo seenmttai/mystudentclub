@@ -295,6 +295,195 @@
       height: 20px;
       margin-right: 0.5rem;
     }
+
+    /* Post-signup onboarding prompt */
+    .signup-onboarding {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: grid;
+      place-items: center;
+      padding: 1rem;
+      background: rgba(17, 24, 39, 0.58);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.2s ease, visibility 0.2s ease;
+    }
+
+    .signup-onboarding.is-visible {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .signup-onboarding-card {
+      width: min(100%, 560px);
+      max-height: min(720px, calc(100vh - 2rem));
+      overflow-y: auto;
+      position: relative;
+      padding: clamp(1.5rem, 5vw, 2.5rem);
+      border: 1px solid rgba(129, 140, 248, 0.25);
+      border-radius: 24px;
+      background: linear-gradient(145deg, #ffffff 0%, #f7f7ff 100%);
+      box-shadow: 0 24px 70px rgba(17, 24, 39, 0.28);
+      transform: translateY(12px) scale(0.98);
+      transition: transform 0.25s ease;
+    }
+
+    .signup-onboarding.is-visible .signup-onboarding-card {
+      transform: translateY(0) scale(1);
+    }
+
+    .signup-onboarding-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 2.25rem;
+      height: 2.25rem;
+      display: grid;
+      place-items: center;
+      border: 0;
+      border-radius: 50%;
+      background: #eef0ff;
+      color: #4f46e5;
+      font-size: 1.4rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .signup-onboarding-close:hover,
+    .signup-onboarding-close:focus-visible {
+      background: #e0e2ff;
+      outline: 3px solid rgba(79, 70, 229, 0.2);
+      outline-offset: 2px;
+    }
+
+    .signup-onboarding-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      margin-bottom: 0.85rem;
+      color: #4f46e5;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .signup-onboarding-eyebrow::before {
+      content: '';
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px #dcfce7;
+    }
+
+    .signup-onboarding-title {
+      max-width: 470px;
+      margin: 0 2rem 0.85rem 0;
+      color: #111827;
+      font-size: clamp(1.55rem, 4vw, 2.2rem);
+      font-weight: 700;
+      line-height: 1.15;
+    }
+
+    .signup-onboarding-copy {
+      margin: 0;
+      color: #4b5563;
+      font-size: 0.98rem;
+      line-height: 1.65;
+    }
+
+    .signup-onboarding-sections {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.7rem;
+      margin: 1.5rem 0;
+    }
+
+    .signup-onboarding-section {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      min-width: 0;
+      padding: 0.8rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.8);
+      color: #374151;
+      font-size: 0.84rem;
+      font-weight: 600;
+    }
+
+    .signup-onboarding-section-icon {
+      display: grid;
+      place-items: center;
+      width: 2rem;
+      height: 2rem;
+      flex: 0 0 2rem;
+      border-radius: 9px;
+      background: #eef0ff;
+      color: #4f46e5;
+      font-size: 1rem;
+    }
+
+    .signup-onboarding-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 3rem;
+      padding: 0.8rem 1.2rem;
+      border-radius: 11px;
+      background: #4f46e5;
+      color: #fff;
+      font-size: 0.98rem;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: 0 8px 18px rgba(79, 70, 229, 0.24);
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .signup-onboarding-cta:hover,
+    .signup-onboarding-cta:focus-visible {
+      background: #4338ca;
+      color: #fff;
+      transform: translateY(-1px);
+      outline: 3px solid rgba(79, 70, 229, 0.2);
+      outline-offset: 2px;
+    }
+
+    .signup-onboarding-later {
+      display: block;
+      margin: 0.9rem auto 0;
+      border: 0;
+      background: transparent;
+      color: #6b7280;
+      font: inherit;
+      font-size: 0.86rem;
+      cursor: pointer;
+    }
+
+    .signup-onboarding-later:hover,
+    .signup-onboarding-later:focus-visible {
+      color: #374151;
+      text-decoration: underline;
+      outline: none;
+    }
+
+    @media (max-width: 480px) {
+      .signup-onboarding-sections {
+        grid-template-columns: 1fr;
+        gap: 0.55rem;
+        margin: 1.25rem 0;
+      }
+
+      .signup-onboarding-card {
+        border-radius: 18px;
+      }
+    }
   </style>
   <!-- Standard Favicon -->
   <!-- Fallback Shortcut Icon -->
@@ -370,6 +559,29 @@
     </main>
   </div>
 
+  <div id="signup-onboarding" class="signup-onboarding" role="dialog" aria-modal="true" aria-labelledby="signup-onboarding-title"
+    aria-describedby="signup-onboarding-copy" aria-hidden="true" inert>
+    <div class="signup-onboarding-card">
+      <button type="button" id="signup-onboarding-close" class="signup-onboarding-close" aria-label="Close onboarding prompt">&times;</button>
+      <div class="signup-onboarding-eyebrow">Your profile is your opportunity</div>
+      <h2 id="signup-onboarding-title" class="signup-onboarding-title">Don’t just search for jobs. Let recruiters find you.</h2>
+      <p id="signup-onboarding-copy" class="signup-onboarding-copy">Share your details in less than 2 minutes with MSC’s network of 1,000+ recruiters. Let your next opportunity find you.</p>
+
+      <div class="signup-onboarding-sections" aria-label="Complete Profile sections">
+        <div class="signup-onboarding-section"><span class="signup-onboarding-section-icon" aria-hidden="true">↗</span>Resume</div>
+        <div class="signup-onboarding-section"><span class="signup-onboarding-section-icon" aria-hidden="true">◎</span>Personal details</div>
+        <div class="signup-onboarding-section"><span class="signup-onboarding-section-icon" aria-hidden="true">◇</span>Education</div>
+        <div class="signup-onboarding-section"><span class="signup-onboarding-section-icon" aria-hidden="true">▣</span>Experience</div>
+        <div class="signup-onboarding-section"><span class="signup-onboarding-section-icon" aria-hidden="true">✦</span>Key skills</div>
+        <div class="signup-onboarding-section"><span class="signup-onboarding-section-icon" aria-hidden="true">◌</span>Career preferences</div>
+      </div>
+
+      <a id="signup-onboarding-cta" class="signup-onboarding-cta" href="/profile.html">Complete My Profile →</a>
+      <button type="button" id="signup-onboarding-later" class="signup-onboarding-later">Maybe later</button>
+    </div>
+  </div>
+
+  <script src="/scripts/profile-state.js"></script>
   <script>
     // Reuse shared Supabase client
     const supabaseClient = window.supabaseClient || (typeof getSupabaseClient === 'function' ? getSupabaseClient() : null);
@@ -382,6 +594,64 @@
     const passwordInput = document.getElementById('password');
     const confirmPasswordInput = document.getElementById('confirm-password');
     const emailInput = document.getElementById('email');
+    const signupOnboarding = document.getElementById('signup-onboarding');
+    const onboardingCloseButton = document.getElementById('signup-onboarding-close');
+    const onboardingLaterButton = document.getElementById('signup-onboarding-later');
+    const onboardingCta = document.getElementById('signup-onboarding-cta');
+    const onboardingSeenKey = 'msc_signup_onboarding_seen';
+    let lastSignupEmail = '';
+
+    function hasSeenSignupOnboarding() {
+      try {
+        return sessionStorage.getItem(onboardingSeenKey) === 'true';
+      } catch (storageError) {
+        return false;
+      }
+    }
+
+    function markSignupOnboardingSeen() {
+      try {
+        sessionStorage.setItem(onboardingSeenKey, 'true');
+      } catch (storageError) {
+        // The prompt remains usable when storage is unavailable.
+      }
+    }
+
+    function hideSignupOnboarding({ recordDismissal = true } = {}) {
+      if (!signupOnboarding) return;
+      if (recordDismissal && lastSignupEmail) {
+        window.MSCProfileState?.setOnboardingDismissed(lastSignupEmail);
+      }
+      signupOnboarding.classList.remove('is-visible');
+      signupOnboarding.setAttribute('aria-hidden', 'true');
+      signupOnboarding.setAttribute('inert', '');
+    }
+
+    function showSignupOnboarding() {
+      if (!signupOnboarding || hasSeenSignupOnboarding()) return;
+      markSignupOnboardingSeen();
+      signupOnboarding.removeAttribute('inert');
+      signupOnboarding.setAttribute('aria-hidden', 'false');
+      signupOnboarding.classList.add('is-visible');
+      requestAnimationFrame(() => onboardingCloseButton?.focus());
+    }
+
+    onboardingCloseButton?.addEventListener('click', hideSignupOnboarding);
+    onboardingLaterButton?.addEventListener('click', hideSignupOnboarding);
+    signupOnboarding?.addEventListener('click', (event) => {
+      if (event.target === signupOnboarding) hideSignupOnboarding();
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && signupOnboarding?.classList.contains('is-visible')) {
+        hideSignupOnboarding();
+      }
+    });
+    onboardingCta?.addEventListener('click', async (event) => {
+      event.preventDefault();
+      hideSignupOnboarding({ recordDismissal: false });
+      const { data: { session } = {} } = await supabaseClient.auth.getSession();
+      window.location.href = session ? '/profile.html' : '/login.html?redirect=%2Fprofile.html';
+    });
 
     window.addEventListener('DOMContentLoaded', async () => {
       const { data: { session }, error } = await supabaseClient.auth.getSession();
@@ -393,7 +663,7 @@
     signupForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      const email = emailInput.value;
+      const email = emailInput.value.trim();
       const password = passwordInput.value;
       const confirmPassword = confirmPasswordInput.value;
 
@@ -418,6 +688,7 @@
       signupButton.disabled = true;
 
       try {
+        lastSignupEmail = email.trim();
         const { data, error } = await supabaseClient.auth.signUp({
           email: email,
           password: password
@@ -431,8 +702,9 @@
           successMessage.textContent = 'Sign up successful! Please check your email to confirm your account.';
           successMessage.classList.add('show');
           signupForm.reset();
+          showSignupOnboarding();
         } else if (data.session) {
-          window.location.href = '/';
+          showSignupOnboarding();
         } else {
           errorMessage.textContent = 'An unexpected issue occurred during signup. Please try again.';
           errorMessage.classList.add('show');

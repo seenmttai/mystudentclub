@@ -2496,21 +2496,19 @@ async function loadProfile() {
     try {
         await fetchUserPhoto(currentUser.id);
 
-        const { data, error } = await supabaseClient
-            .from('profiles')
-            .select('profile, ocr_cv, updated_at, looking_for')
-            .eq('uuid', currentUser.id)
-            .maybeSingle();
-
-        if (error) throw error;
+        const profileState = window.MSCProfileState;
+        const hydrated = profileState
+            ? await profileState.hydrateProfileFromSupabase(supabaseClient, currentUser)
+            : null;
+        const data = hydrated?.data || null;
 
         if (data) {
             lastUpdatedISO = data.updated_at;
             if (data.looking_for) currentLookingFor = data.looking_for;
-            if (data.profile) {
-                profileObj = data.profile;
-                populateForm(data.profile);
-                localStorage.setItem('userProfileData', JSON.stringify(data.profile));
+            if (hydrated?.profile || data.profile) {
+                profileObj = hydrated?.profile || data.profile;
+                populateForm(profileObj);
+                profileState?.cacheProfile(profileObj, currentUser.id);
             }
             if (data.ocr_cv) {
                 localStorage.setItem('userCVText', data.ocr_cv);
@@ -2523,7 +2521,7 @@ async function loadProfile() {
                 clearCloudSyncFlag();
             }
         } else {
-            const localProfile = localStorage.getItem('userProfileData');
+            const localProfile = profileState?.readCachedProfile(currentUser.id) || localStorage.getItem('userProfileData');
             if (localProfile) {
                 profileObj = JSON.parse(localProfile);
                 populateForm(profileObj);
@@ -2559,10 +2557,15 @@ async function loadProfile() {
 
     } catch (e) {
         console.error(e);
-        const localProfile = localStorage.getItem('userProfileData');
-        if (localProfile) {
-            profileObj = JSON.parse(localProfile);
+        const localProfile = window.MSCProfileState?.readCachedProfile(currentUser.id) || localStorage.getItem('userProfileData');
+        if (localProfile || window.MSCProfileState) {
+            let cachedProfile = {};
+            try { cachedProfile = localProfile ? JSON.parse(localProfile) : {}; } catch (_) { cachedProfile = {}; }
+            profileObj = window.MSCProfileState
+                ? window.MSCProfileState.mergeAuthSignupValues(cachedProfile, currentUser).profile
+                : cachedProfile;
             populateForm(profileObj);
+            window.MSCProfileState?.cacheProfile(profileObj, currentUser.id);
         }
         setTimeout(() => refreshHeader(), 150);
         return profileObj;

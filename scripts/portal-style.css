@@ -1442,6 +1442,15 @@ body {
   background: var(--text-muted);
 }
 
+.job-card-posted.expired {
+  color: #b91c1c;
+  font-weight: 700;
+}
+
+.job-card-posted.expired::before {
+  background: #dc2626;
+}
+
 .job-card-bookmark {
   background: none;
   border: none;
@@ -1515,6 +1524,17 @@ body {
   color: #d97706;
   border-color: #fcd34d;
   font-weight: 600;
+}
+
+.job-tag.tag-expired {
+  background-color: #fef2f2;
+  color: #b91c1c;
+  border-color: #fecaca;
+  font-weight: 700;
+}
+
+.job-card.job-card-expired {
+  border-color: #fecaca;
 }
 
 /* Exclusive vacancy badge */

@@ -6,13 +6,13 @@ import {
   getPublicJobSelectColumns,
   escapeHtml,
   getDaysAgo,
+  isJobExpired,
   renderMarkdown,
   generateJobSlug,
   generateJsonLd
 } from '../../../lib/jobHelpers';
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 export async function getStaticPaths() {
   const paths: any[] = [];
@@ -81,7 +81,8 @@ const { job, tableName, categorySlug, slug } = Astro.props;
 
 const companyName = (job.Company || 'Company Name').trim();
 const companyInitial = companyName.charAt(0).toUpperCase();
-const postedDate = getDaysAgo(job.Created_At);
+const isExpired = isJobExpired(job.Created_At);
+const postedDate = isExpired ? 'Expired' : getDaysAgo(job.Created_At);
 const salary = job.Salary ? `₹${job.Salary}` : '';
 const location = job.Location || 'Remote / Unspecified';
 const category = job.Category || 'General';
@@ -353,6 +354,11 @@ const ogImage = CATEGORY_OG_MAP[categorySlug as string] || 'https://www.mystuden
 
         .job-meta-item i {
             opacity: 0.8;
+        }
+
+        .job-expired-status {
+            color: #fecaca;
+            font-weight: 700;
         }
 
         /* Body Layout */
@@ -779,8 +785,14 @@ const ogImage = CATEGORY_OG_MAP[categorySlug as string] || 'https://www.mystuden
                             )}
                             <div class="job-meta-item">
                                 <i class="far fa-clock"></i>
-                                <span>Posted {postedDate}</span>
+                                <span>{isExpired ? 'Expired' : `Posted ${postedDate}`}</span>
                             </div>
+                            {isExpired && (
+                                <div class="job-meta-item job-expired-status">
+                                    <i class="fas fa-hourglass-end"></i>
+                                    <span>Expired</span>
+                                </div>
+                            )}
                             {category && (
                                 <div class="job-meta-item">
                                     <i class="fas fa-tag"></i>

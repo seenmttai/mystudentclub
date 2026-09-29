@@ -44,7 +44,7 @@ jobs:
     - name: Run Folder Cleanup (3000 limit)
       run: cd jobs-builder && npm run cleanup
 
-    - name: Run Job Expiration (3-day soft delete)
+    - name: Delete Jobs Older Than 15 Days
       run: cd jobs-builder && npm run expire
 
     - name: Generate Sitemap

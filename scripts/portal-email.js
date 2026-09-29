@@ -1,4 +1,4 @@
-import { getDaysAgo } from './date-utils.js';
+import { getDaysAgo, isJobExpired } from './date-utils.js';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 
 function isSalaryDisclosed(val) {
@@ -79,6 +79,7 @@ const limit = 15;
 let hasMoreData = true;
 let currentTable = 'Industrial Training Job Portal';
 let currentSession = null;
+let profileHydrationPromise = null;
 let appliedJobIds = new Set();
 let debounceTimeout = null;
 let allLocations = [];
@@ -154,7 +155,8 @@ function renderJobCard(job) {
 
     const companyName = (job.Company || '').trim();
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
-    const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'N/A';
+    const isExpired = isJobExpired(job.Created_At);
+    const postedDate = isExpired ? 'Expired' : (job.Created_At ? getDaysAgo(job.Created_At) : 'N/A');
     const isApplied = appliedJobIds.has(job.id);
     const isPopular = (job.application_count || 0) > 50;
     const buttonClass = isApplied ? 'applied' : '';
@@ -177,21 +179,23 @@ function renderJobCard(job) {
     }
     const roleLabel = job.Role || (table === 'Industrial Training Job Portal' ? 'Industrial Trainee' : table === 'Articleship Jobs' ? 'Articleship' : 'Professional');
     const isRecent = job.Created_At && (Date.now() - new Date(job.Created_At).getTime()) < 3 * 24 * 60 * 60 * 1000;
-    const postedClass = isRecent ? '' : 'old';
+    const postedClass = isExpired ? 'expired' : (isRecent ? '' : 'old');
     const descriptionText = job.Description ? job.Description.replace(/[#*_`\[\]]/g, '').trim() : '';
 
+    jobCard.classList.toggle('job-card-expired', isExpired);
     jobCard.innerHTML = `
         <div class="job-card-top-row">
             <div class="job-card-logo">${companyInitial}</div>
             <div class="job-card-header">
                 <h3 class="job-card-company">${job.Company || 'N/A'}</h3>
-                <p class="job-card-posted ${postedClass}">Posted ${postedDate}</p>
+                <p class="job-card-posted ${postedClass}">${isExpired ? 'Expired' : `Posted ${postedDate}`}</p>
             </div>
             <button class="job-card-bookmark" title="Save job" aria-label="Bookmark job">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
             </button>
         </div>
         <div class="job-card-tags">
+            ${isExpired ? `<span class="job-tag tag-expired"><i class="fas fa-hourglass-end"></i> Expired</span>` : ''}
             ${isPopular ? `<span class="job-tag tag-popular"><i class="fas fa-fire"></i> Popular</span>` : ''}
             <span class="job-tag">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="11" height="11"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -317,7 +321,7 @@ function shareJob(job, btnElement) {
 URL - ${jobUrl}
 
 Do turn on notifications to stay updated with all such opportunites and ensure joining the whatsapp group below
-https://chat.whatsapp.com/D491zsqKmv25S2YLloSUBR`;
+mystudentclub.com/links`;
 
     const shareData = {
         title: `Job at ${job.Company}`,
@@ -408,7 +412,8 @@ async function recordApplication(job, btnElement) {
 function showModal(job) {
     const companyName = (job.Company || '').trim();
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
-    const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'N/A';
+    const isExpired = isJobExpired(job.Created_At);
+    const postedDate = isExpired ? 'Expired' : (job.Created_At ? getDaysAgo(job.Created_At) : 'N/A');
     const applyCount = job.application_count || 0;
     const recruiterPosted = isRecruiterPostedJob(job);
     const applyLink = getApplicationLink(job['Application ID'], job.Company);
@@ -496,6 +501,7 @@ function showModal(job) {
             </div>
         </div>
         <div class="modal-meta-tags">
+            ${isExpired ? '<span class="job-tag tag-expired"><i class="fas fa-hourglass-end"></i> Expired</span>' : ''}
             ${isSalaryDisclosed(job.Salary) ? `<span class="job-tag">${((job.source_table || state.portalType) === 'Semi Qualified Jobs' || (job.source_table || state.portalType) === 'Fresher Jobs') ? 'Salary' : 'Stipend'}: ₹${job.Salary}</span>` : ''}
             <span class="job-tag">Posted: ${postedDate}</span>
             ${job.Category ? `<span class="job-tag">Category: ${job.Category}</span>` : ''}
@@ -1098,11 +1104,10 @@ async function checkAuth() {
     // If logged in, fetch and cache profile data
     if (session?.user?.id) {
         prefetchEnrollmentStatus(session.user.id);
-        // Check if profile data needs to be fetched (not in localStorage)
-        const cachedProfile = localStorage.getItem('userProfileData');
-        if (!cachedProfile) {
-            fetchAndCacheProfileData(); // Don't await, let it run in background
-        }
+        // Supabase is the source of truth for profile-dependent UI. Refresh it
+        // before rendering prompts so signup values cannot be asked again.
+        window.MSCProfileState.prepareUserCache(session.user.id);
+        profileHydrationPromise = fetchAndCacheProfileData();
     }
 
     return session;
@@ -2422,8 +2427,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (isNewUser === 'true') {
         const client = window.supabaseClient || supabaseClient;
         const { data: { session } } = client ? await client.auth.getSession() : { data: { session: null } };
+        if (profileHydrationPromise) await profileHydrationPromise;
+        const onboardingDismissed = window.MSCProfileState?.wasOnboardingDismissed(session?.user?.email);
 
-        if (session && !hasResume) {
+        if (session && !hasResume && !onboardingDismissed) {
             setTimeout(() => {
                 const modal = document.getElementById('resumePromptModal');
                 if (modal) {
@@ -2480,12 +2487,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 document.getElementById('skipResumePrompt')?.addEventListener('click', () => {
     const modal = document.getElementById('resumePromptModal');
     if (modal) modal.style.display = 'none';
+    window.MSCProfileState?.setOnboardingDismissed(currentSession?.user?.email);
 });
 
 document.getElementById('resumePromptModal')?.addEventListener('click', (e) => {
     if (e.target.id === 'resumePromptModal') {
         const modal = document.getElementById('resumePromptModal');
         if (modal) modal.style.display = 'none';
+        window.MSCProfileState?.setOnboardingDismissed(currentSession?.user?.email);
     }
 });
 
@@ -2548,14 +2557,11 @@ async function fetchAndCacheProfileData() {
     if (!currentSession?.user?.id) return null;
 
     try {
-        const { data } = await supabaseClient
-            .from('profiles')
-            .select('profile, ocr_cv')
-            .eq('uuid', currentSession.user.id)
-            .single();
+        const hydrated = await window.MSCProfileState.hydrateProfileFromSupabase(supabaseClient, currentSession.user);
+        const data = hydrated.data;
 
         if (data) {
-            const profileObj = data.profile || {};
+            const profileObj = hydrated.profile || data.profile || {};
             if (data.ocr_cv) {
                 localStorage.setItem('userCVText', data.ocr_cv);
                 if (profileObj.cv_cloud_synced) {
@@ -2566,15 +2572,15 @@ async function fetchAndCacheProfileData() {
             } else {
                 clearCloudSyncFlag();
             }
-            if (data.profile) {
-                localStorage.setItem('userProfileData', JSON.stringify(data.profile));
+            if (hydrated.profile || data.profile) {
+                window.MSCProfileState.cacheProfile(profileObj, currentSession.user.id);
 
-                if (data.profile.job_preference) {
-                    localStorage.setItem(JOB_PREFERENCE_KEY, data.profile.job_preference);
+                if (profileObj.job_preference) {
+                    localStorage.setItem(JOB_PREFERENCE_KEY, profileObj.job_preference);
                 }
 
-                if (data.profile.notification_subscriptions && Array.isArray(data.profile.notification_subscriptions)) {
-                    localStorage.setItem('subscribedTopics', JSON.stringify(data.profile.notification_subscriptions));
+                if (profileObj.notification_subscriptions && Array.isArray(profileObj.notification_subscriptions)) {
+                    localStorage.setItem('subscribedTopics', JSON.stringify(profileObj.notification_subscriptions));
                     updateNotificationBadge();
                 }
 
@@ -2929,9 +2935,11 @@ function renderProfileCompletionBanner() {
     banner.className = 'profile-completion-banner';
     banner.style.display = 'flex';
 
+    const dismissedOnboarding = window.MSCProfileState?.wasOnboardingDismissed(currentSession?.user?.email);
+    banner.classList.toggle('profile-onboarding-reminder', !!dismissedOnboarding);
     banner.innerHTML = `
         <div class="banner-text">
-            <span>🎯 Complete your Profile to get 5x higher interview opportunities.</span>
+            <span>${dismissedOnboarding ? '🔎 Let recruiters find you — complete your Profile' : '🎯 Complete your Profile'} to get 5x higher interview opportunities.</span>
             <span class="completion-badge">Profile Completion: ${percent}%</span>
         </div>
         <a href="/profile.html" class="banner-btn">Complete Profile</a>

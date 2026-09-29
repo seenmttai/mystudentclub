@@ -1,5 +1,5 @@
 
-import { getDaysAgo } from './date-utils.js';
+import { getDaysAgo, isJobExpired } from './date-utils.js';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 
 function isSalaryDisclosed(val) {
@@ -140,7 +140,8 @@ function renderJob(job, tableName) {
 
     const companyName = (job.Company || 'Company Name').trim();
     const companyInitial = companyName.charAt(0).toUpperCase();
-    const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'Recently';
+    const isExpired = isJobExpired(job.Created_At);
+    const postedDate = isExpired ? 'Expired' : (job.Created_At ? getDaysAgo(job.Created_At) : 'Recently');
     const salary = isSalaryDisclosed(job.Salary) ? `₹${job.Salary}` : '';
     const location = job.Location || 'Remote / Unspecified';
     const category = job.Category || 'General';
@@ -175,8 +176,9 @@ function renderJob(job, tableName) {
                 ` : ''}
                 <div class="job-meta-item">
                     <i class="far fa-clock"></i>
-                    <span>Posted ${postedDate}</span>
+                    <span>${isExpired ? 'Expired' : `Posted ${postedDate}`}</span>
                 </div>
+                ${isExpired ? `<div class="job-meta-item job-expired-status"><i class="fas fa-hourglass-end"></i><span>Expired</span></div>` : ''}
                 <div class="job-meta-item">
                     <i class="fas fa-tag"></i>
                     <span>${category}</span>

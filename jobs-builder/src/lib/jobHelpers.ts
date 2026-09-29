@@ -40,6 +40,14 @@ export const EMAIL_SUBJECT_MAP = {
     "Articleship Jobs": "Application for CA Articleship"
 };
 
+export const JOB_EXPIRATION_DAYS = 15;
+
+export function isJobExpired(dateString: any, now = new Date()): boolean {
+    if (!dateString) return false;
+    const createdAt = new Date(dateString);
+    return Number.isFinite(createdAt.getTime()) && now.getTime() - createdAt.getTime() > JOB_EXPIRATION_DAYS * 24 * 60 * 60 * 1000;
+}
+
 export function escapeHtml(text: any): string {
     if (text === null || text === undefined || text === '') return '';
     return String(text)
@@ -158,7 +166,7 @@ export function generateJsonLd(job: any, slug: string, categorySlug: any): any {
         },
         "url": `${DOMAIN}/jobs/${categorySlug}/${slug}.html`,
         "datePosted": datePosted,
-        "validThrough": new Date(new Date(datePosted).setDate(new Date(datePosted).getDate() + 3)).toISOString(),
+        "validThrough": new Date(new Date(datePosted).setDate(new Date(datePosted).getDate() + JOB_EXPIRATION_DAYS)).toISOString(),
         "employmentType": "FULL_TIME",
         "hiringOrganization": {
             "@type": "Organization",

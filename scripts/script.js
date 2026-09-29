@@ -1,4 +1,4 @@
-import { getDaysAgo } from './date-utils.js';
+import { getDaysAgo, isJobExpired } from './date-utils.js';
 
 function isSalaryDisclosed(val) {
   if (!val) return false;
@@ -43,12 +43,13 @@ function renderJobCard(job, table) {
 
   let postedInfo = '';
   if (job.Created_At) {
-    const daysAgo = getDaysAgo(job.Created_At);
-    postedInfo = `<span class="job-tag time-tag">
+    const isExpired = isJobExpired(job.Created_At);
+    const daysAgo = isExpired ? 'Expired' : getDaysAgo(job.Created_At);
+    postedInfo = `<span class="job-tag time-tag${isExpired ? ' expired' : ''}">
       <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
       </svg>
-      Posted ${daysAgo}
+      ${isExpired ? 'Expired' : `Posted ${daysAgo}`}
     </span>`;
   }
 

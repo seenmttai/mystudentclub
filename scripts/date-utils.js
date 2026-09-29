@@ -1,3 +1,12 @@
+const JOB_EXPIRATION_DAYS = 15;
+const JOB_EXPIRATION_MS = JOB_EXPIRATION_DAYS * 24 * 60 * 60 * 1000;
+
+function isJobExpired(timestampStr, now = new Date()) {
+  if (!timestampStr) return false;
+  const timestamp = new Date(timestampStr);
+  return Number.isFinite(timestamp.getTime()) && now.getTime() - timestamp.getTime() > JOB_EXPIRATION_MS;
+}
+
 function getDaysAgo(timestampStr) {
   const timestamp = new Date(timestampStr);
   const now = new Date();
@@ -20,5 +29,5 @@ function getDaysAgo(timestampStr) {
   }
 }
 
-export { getDaysAgo };
+export { getDaysAgo, isJobExpired, JOB_EXPIRATION_DAYS };
 

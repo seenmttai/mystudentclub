@@ -124,6 +124,12 @@
   background: #f0f7ff;
   color: #1e40af;
 }
+.time-tag.expired,
+.job-expired-status {
+  background: #fef2f2;
+  color: #b91c1c;
+  font-weight: 700;
+}
 .job-actions {
   display: flex;
   gap: 1rem;

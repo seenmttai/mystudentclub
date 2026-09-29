@@ -1,5 +1,5 @@
 // expire-old-jobs.js
-// Soft-deletes jobs older than 3 days by removing JSON-LD and adding noindex meta
+// Deletes generated job pages older than 15 days.
 // Run after: cleanup-folders.js
 
 import fs from 'fs';
@@ -9,7 +9,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const EXPIRATION_DAYS = 3;
+const EXPIRATION_DAYS = 15;
 const DIST_JOBS_DIR = path.join(__dirname, '..', '..', 'jobs');
 
 const CATEGORIES = ['industrial', 'fresher', 'semi-qualified', 'articleship'];
@@ -21,9 +21,9 @@ console.log(`Expiration threshold: ${EXPIRATION_DAYS} days\n`);
 const cutoffDate = new Date();
 cutoffDate.setDate(cutoffDate.getDate() - EXPIRATION_DAYS);
 console.log(`Cutoff date: ${cutoffDate.toISOString().split('T')[0]}`);
-console.log(`Jobs posted before this date will be soft-deleted.\n`);
+console.log(`Jobs posted before this timestamp will be deleted.\n`);
 
-let totalExpired = 0;
+let totalDeleted = 0;
 
 for (const category of CATEGORIES) {
     const folderPath = path.join(DIST_JOBS_DIR, category);
@@ -34,7 +34,7 @@ for (const category of CATEGORIES) {
     }
 
     const files = fs.readdirSync(folderPath).filter(file => file.endsWith('.html'));
-    let expiredCount = 0;
+    let deletedCount = 0;
     
     console.log(`Processing ${category}: ${files.length} files`);
     
@@ -43,60 +43,22 @@ for (const category of CATEGORIES) {
         
         try {
             const content = fs.readFileSync(filePath, 'utf8');
-            
-            // Extract datePosted from JSON-LD
-            const dateMatch = content.match(/"datePosted":\s*"(\d{4}-\d{2}-\d{2})/);
-            
-            if (dateMatch && dateMatch[1]) {
-                const jobDate = new Date(dateMatch[1]);
-                
-                // Check if job is expired
-                if (jobDate <= cutoffDate) {
-                    // Check if already processed
-                    const hasJsonLd = content.includes('<script type="application/ld+json">');
-                    const hasNoindexMeta = content.includes('<meta name="robots" content="noindex');
-                    
-                    if (hasJsonLd || !hasNoindexMeta) {
-                        // Get original file stats to preserve timestamps
-                        const stats = fs.statSync(filePath);
-                        const originalMtime = stats.mtime;
-                        const originalAtime = stats.atime;
-                        
-                        let updatedContent = content;
-                        
-                        // Remove JSON-LD block
-                        if (hasJsonLd) {
-                            updatedContent = updatedContent.replace(
-                                /<script type="application\/ld\+json">[\s\S]*?<\/script>/,
-                                ''
-                            );
-                        }
-                        
-                        // Inject noindex meta tag
-                        if (!hasNoindexMeta) {
-                            updatedContent = updatedContent.replace(
-                                /(<meta name="viewport"[^>]*>)/,
-                                '$1\n    <meta name="robots" content="noindex, follow">'
-                            );
-                        }
-                        
-                        // Write updated content
-                        fs.writeFileSync(filePath, updatedContent);
-                        
-                        // Restore original timestamps
-                        fs.utimesSync(filePath, originalAtime, originalMtime);
-                        
-                        expiredCount++;
-                    }
-                }
+            const dateMatch = content.match(/"datePosted":\s*"([^"]+)"/);
+            const parsedDate = dateMatch ? new Date(dateMatch[1]) : fs.statSync(filePath).mtime;
+
+            // Use a strict comparison: exactly 15 days old is retained; older is deleted.
+            if (Number.isFinite(parsedDate.getTime()) && parsedDate < cutoffDate) {
+                fs.unlinkSync(filePath);
+                deletedCount++;
+                console.log(`  Deleted ${file} (created ${parsedDate.toISOString()})`);
             }
         } catch (err) {
             console.error(`  Error processing ${file}:`, err.message);
         }
     }
     
-    console.log(`  ✅ Expired ${expiredCount} jobs in ${category}`);
-    totalExpired += expiredCount;
+    console.log(`  ✅ Deleted ${deletedCount} jobs in ${category}`);
+    totalDeleted += deletedCount;
 }
 
-console.log(`\n✅ Job expiration complete! Total expired: ${totalExpired}`);
+console.log(`\n✅ Job deletion complete! Total deleted: ${totalDeleted}`);

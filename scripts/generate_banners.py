@@ -22,7 +22,7 @@ BANNERS = [
         "pill_bg": "#eff6ff",
         "pill_border": "#bfdbfe",
         "headline": "Your Path to a<br><span style='color: #1d4ed8;'>Top CA Career</span>",
-        "subheadline": "CA Industrial Training, Big 4 Articleships & Fresher Jobs at Fortune 500 Companies.",
+        "subheadline": "CA Industrial Training, Big 4 Articleships, Semi Qualified, Fresher & Experienced CA Jobs at Top Companies",
         "bottom_bg": "linear-gradient(90deg, #1d4ed8, #2563eb)",
         "bottom_left": "Industrial Training • Articleships • Fresher Jobs",
         "bottom_right": "mystudentclub.com • free",
@@ -44,41 +44,41 @@ BANNERS = [
     {
         "id": "og-articleship",
         "pill": "CA ARTICLESHIP OPPORTUNITIES",
-        "pill_color": "#059669",
-        "pill_bg": "#ecfdf5",
-        "pill_border": "#a7f3d0",
-        "headline": "Land Your Dream<br><span style='color: #059669;'>CA Articleship</span>",
+        "pill_color": "#2563eb",
+        "pill_bg": "#eff6ff",
+        "pill_border": "#bfdbfe",
+        "headline": "Land Your Dream<br><span style='color: #2563eb;'>CA Articleship</span>",
         "subheadline": "Openings across Big 4, Top 20 Accounting Firms & Boutique Practices pan-India.",
-        "bottom_bg": "linear-gradient(90deg, #059669, #047857)",
+        "bottom_bg": "linear-gradient(90deg, #2563eb, #1d4ed8)",
         "bottom_left": "Big 4 • Statutory Audit • Tax Advisory • M&A",
         "bottom_right": "mystudentclub.com • free",
-        "ambient": "radial-gradient(circle at 85% 20%, rgba(5, 150, 105, 0.08) 0%, transparent 60%)"
+        "ambient": "radial-gradient(circle at 85% 20%, rgba(37, 99, 235, 0.08) 0%, transparent 60%)"
     },
     {
         "id": "og-fresher",
         "pill": "CA FRESHER & SEMI-QUALIFIED JOBS",
-        "pill_color": "#7c3aed",
-        "pill_bg": "#f5f3ff",
-        "pill_border": "#ddd6fe",
-        "headline": "High-Growth Finance &<br><span style='color: #7c3aed;'>CA Fresher Roles</span>",
+        "pill_color": "#4338ca",
+        "pill_bg": "#eef2ff",
+        "pill_border": "#c7d2fe",
+        "headline": "High-Growth Finance &<br><span style='color: #4338ca;'>CA Fresher Roles</span>",
         "subheadline": "Direct recruiter applications for Auditing, FP&A, Taxation & Corporate Advisory.",
-        "bottom_bg": "linear-gradient(90deg, #7c3aed, #6d28d9)",
+        "bottom_bg": "linear-gradient(90deg, #4338ca, #3730a3)",
         "bottom_left": "Audit • Taxation • FP&A • Corporate Advisory",
         "bottom_right": "mystudentclub.com • free",
-        "ambient": "radial-gradient(circle at 85% 20%, rgba(124, 58, 237, 0.08) 0%, transparent 60%)"
+        "ambient": "radial-gradient(circle at 85% 20%, rgba(67, 56, 202, 0.08) 0%, transparent 60%)"
     },
     {
         "id": "og-reviews",
         "pill": "CA FIRM REVIEWS & STIPENDS",
-        "pill_color": "#ea580c",
-        "pill_bg": "#fff7ed",
-        "pill_border": "#ffedd5",
-        "headline": "Honest Reviews.<br><span style='color: #ea580c;'>Transparent Stipends.</span>",
+        "pill_color": "#1e40af",
+        "pill_bg": "#eff6ff",
+        "pill_border": "#bfdbfe",
+        "headline": "Honest Reviews.<br><span style='color: #1e40af;'>Transparent Stipends.</span>",
         "subheadline": "Real insider reviews covering work culture, working hours, exam leaves & stipends.",
-        "bottom_bg": "linear-gradient(90deg, #ea580c, #c2410c)",
+        "bottom_bg": "linear-gradient(90deg, #1e40af, #1e3a8a)",
         "bottom_left": "Culture • Working Hours • Exam Leaves • Learning Exposure",
         "bottom_right": "mystudentclub.com • free",
-        "ambient": "radial-gradient(circle at 85% 20%, rgba(234, 88, 12, 0.08) 0%, transparent 60%)"
+        "ambient": "radial-gradient(circle at 85% 20%, rgba(30, 64, 175, 0.08) 0%, transparent 60%)"
     },
     {
         "id": "og-cv-suite",
@@ -109,28 +109,28 @@ BANNERS = [
     {
         "id": "og-lms",
         "pill": "MY STUDENT CLUB ACADEMY",
-        "pill_color": "#059669",
-        "pill_bg": "#ecfdf5",
-        "pill_border": "#a7f3d0",
-        "headline": "Master High-Growth<br><span style='color: #059669;'>Finance & CA Skills</span>",
+        "pill_color": "#1d4ed8",
+        "pill_bg": "#eff6ff",
+        "pill_border": "#bfdbfe",
+        "headline": "Master High-Growth<br><span style='color: #1d4ed8;'>Finance & CA Skills</span>",
         "subheadline": "Practical masterclasses in Financial Modeling, Valuation, PowerBI & Taxation.",
-        "bottom_bg": "linear-gradient(90deg, #059669, #047857)",
+        "bottom_bg": "linear-gradient(90deg, #1d4ed8, #1e40af)",
         "bottom_left": "Financial Modeling • PowerBI • Practical Masterclasses",
         "bottom_right": "mystudentclub.com • free",
-        "ambient": "radial-gradient(circle at 85% 20%, rgba(5, 150, 105, 0.08) 0%, transparent 60%)"
+        "ambient": "radial-gradient(circle at 85% 20%, rgba(29, 78, 216, 0.08) 0%, transparent 60%)"
     },
     {
         "id": "og-tools",
         "pill": "AI CA CAREER TOOLS",
-        "pill_color": "#0d9488",
-        "pill_bg": "#f0fdfa",
-        "pill_border": "#ccfbf1",
-        "headline": "Supercharge Your<br><span style='color: #0d9488;'>CA Preparation</span>",
+        "pill_color": "#0369a1",
+        "pill_bg": "#f0f9ff",
+        "pill_border": "#bae6fd",
+        "headline": "Supercharge Your<br><span style='color: #0369a1;'>CA Preparation</span>",
         "subheadline": "ATS CV Maker, AI Video Mock Interviews & ICAI Campus Shortlist Predictor.",
-        "bottom_bg": "linear-gradient(90deg, #0d9488, #0f766e)",
+        "bottom_bg": "linear-gradient(90deg, #0369a1, #075985)",
         "bottom_left": "ATS CVs • AI Video Interviews • Campus Predictor",
         "bottom_right": "mystudentclub.com • free",
-        "ambient": "radial-gradient(circle at 85% 20%, rgba(13, 148, 136, 0.08) 0%, transparent 60%)"
+        "ambient": "radial-gradient(circle at 85% 20%, rgba(3, 105, 161, 0.08) 0%, transparent 60%)"
     }
 ]
 

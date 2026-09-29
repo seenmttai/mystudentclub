@@ -15,6 +15,7 @@
         const CA_DEGREES = ["CA Final", "CA Intermediate", "B.Com", "Class XII", "Class X"];
         const AUDIT_VERBS = ["Executed", "Analyzed", "Prepared", "Reviewed", "Led", "Verified"];
         const BASE_SECTION_ORDER = ['summary', 'education', 'experience', 'projects', 'skills', 'certifications', 'achievements', 'leadership', 'interests'];
+        const DEFAULT_TEMPLATE_FILE = 'classic.html';
         const EDUCATION_COLUMN_META = {
             degree: { label: 'Examination', min: 12, max: 42 },
             year: { label: 'Year', min: 8, max: 28 },
@@ -66,7 +67,8 @@
             tableSettings: getDefaultTableSettings(),
             sectionLabels: {},
             sectionTitles: {},
-            sectionGroups: {}
+            sectionGroups: {},
+            templateFile: DEFAULT_TEMPLATE_FILE
         };
 
         const DEMO_PREVIEW_DATA = {
@@ -204,6 +206,16 @@
                 }
                 catch (e) { console.error('Load failed', e); }
             }
+            const templateSelect = document.getElementById('template-select');
+            const initialTemplateFile = getPreferredTemplateFile(
+                cvData.templateFile,
+                templateSelect ? Array.from(templateSelect.options).map(option => option.value) : []
+            );
+            cvData.templateFile = initialTemplateFile;
+            if (templateSelect) templateSelect.value = initialTemplateFile;
+            const initialFrame = document.getElementById('cv-frame');
+            if (initialFrame) initialFrame.src = initialTemplateFile;
+            syncCurrentTemplateName();
             ensureCvDataShape();
             if (!cvData.experience || cvData.experience.length === 0) {
                 const artEntry = buildArticleshipEntryFromProfile();
@@ -1364,7 +1376,8 @@
                     sectionOrder: [...BASE_SECTION_ORDER],
                     tableSettings: getDefaultTableSettings(),
                     sectionLabels: {},
-                    sectionGroups: {}
+                    sectionGroups: {},
+                    templateFile: DEFAULT_TEMPLATE_FILE
                 };
             }
             if (!cvData.personal) cvData.personal = { name: "", tagline: "", contact: "", phone: "", email: "", linkedin: "", location: "", socialLinks: [] };
@@ -1651,8 +1664,13 @@
             postToFrame();
         }
 
+        function getPreferredTemplateFile(savedTemplateFile, availableTemplateFiles = []) {
+            const saved = typeof savedTemplateFile === 'string' ? savedTemplateFile.trim() : '';
+            return saved && availableTemplateFiles.includes(saved) ? saved : DEFAULT_TEMPLATE_FILE;
+        }
+
         function getSelectedTemplateFile() {
-            return document.getElementById('template-select')?.value || 'classic.html';
+            return document.getElementById('template-select')?.value || DEFAULT_TEMPLATE_FILE;
         }
 
         function syncCurrentTemplateName() {
@@ -1727,7 +1745,7 @@
             normalizeSectionOrder();
 
             const select = document.getElementById('template-select');
-            const targetTemplate = state.templateFile || 'classic.html';
+            const targetTemplate = state.templateFile || DEFAULT_TEMPLATE_FILE;
             if (select) select.value = targetTemplate;
             syncCurrentTemplateName();
 
@@ -3563,6 +3581,7 @@
             const select = document.getElementById('template-select');
             const frame = document.getElementById('cv-frame');
             const skipHistory = !!options.skipHistory;
+            if (select) cvData.templateFile = select.value || DEFAULT_TEMPLATE_FILE;
             updateTemplateSpecificPanels();
 
             document.querySelector('.loading-overlay').classList.add('active');
@@ -3604,7 +3623,10 @@
             setTimeout(() => t.classList.remove('show'), 2000);
         }
 
-        function saveLocal() { localStorage.setItem('cv_maker_data', JSON.stringify(cvData)); }
+        function saveLocal() {
+            cvData.templateFile = getSelectedTemplateFile();
+            localStorage.setItem('cv_maker_data', JSON.stringify(cvData));
+        }
 
         function manualSave() {
             saveLocal();
