@@ -2486,3 +2486,106 @@ body.p2-modal-open {
     .wz-q-title { font-size: 1.2rem; }
     .wz-inner { padding-top: 0.75rem; }
 }
+
+/* ===== Got placed? card (scripts/placed-card.js) ===== */
+.p2-placed-card {
+    border-left: 4px solid var(--p2-blue);
+}
+
+.p2-placed-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.p2-placed-icon {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--p2-blue-light);
+    color: var(--p2-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+}
+
+.p2-placed-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.p2-placed-text h2 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 0 0 0.25rem;
+}
+
+.p2-placed-text .p2-card-sub {
+    margin: 0;
+}
+
+.p2-placed-btn {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, var(--p2-blue) 0%, #3A6FE0 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.7rem 1.4rem;
+    font-family: var(--p2-font);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(69, 126, 255, 0.35);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.p2-placed-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(69, 126, 255, 0.45);
+}
+
+.p2-placed-btn:focus-visible {
+    outline: 3px solid var(--p2-blue-light);
+    outline-offset: 2px;
+}
+
+.p2-placed-btn:disabled {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.p2-placed-btn [hidden] {
+    display: none;
+}
+
+.p2-placed-status:empty {
+    display: none;
+}
+
+.p2-placed-status {
+    margin: 0.75rem 0 0;
+    font-size: 0.85rem;
+    color: var(--p2-red);
+}
+
+.p2-ql-share {
+    color: var(--p2-blue);
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+@media (max-width: 600px) {
+    .p2-placed-row {
+        flex-wrap: wrap;
+    }
+
+    .p2-placed-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
