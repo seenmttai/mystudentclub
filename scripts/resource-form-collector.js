@@ -92,6 +92,7 @@ class ResourceFormCollector {
                             <select id="studentStage" name="stage">
                                 ${this.stageOptionsHtml()}
                             </select>
+                            <small class="form-hint">So we send you what fits your stage.</small>
                         </div>
                         <div class="form-group">
                             <label for="studentProgram">Program Type</label>
@@ -241,6 +242,12 @@ class ResourceFormCollector {
                     background: #f9fafb;
                     color: #6b7280;
                     cursor: not-allowed;
+                }
+                .form-group .form-hint {
+                    display: block;
+                    margin-top: 0.35rem;
+                    color: #6b7280;
+                    font-size: 0.8rem;
                 }
                 .form-actions {
                     margin-top: 1.5rem;
