@@ -2723,7 +2723,7 @@ body:has(.expanded-menu.active) .expanded-menu-backdrop {
   margin-bottom: 1.5rem;
 }
 .onboarding-brand-logo {
-  width: 90px;
+  width: 120px;
   height: auto;
   margin: 0 auto 0.75rem;
   display: block;
@@ -3563,3 +3563,13 @@ body:has(.expanded-menu.active) .expanded-menu-backdrop {
   }
 }
 
+
+/* Header logo image on pages that use assets/logo.png (the rule was missing, so it rendered at 2048px). */
+.brand-logo { height: 33px; width: auto; max-width: 100%; display: block; }
+@media (max-width: 768px) { .brand-logo { height: 29px; } }
+@media (max-width: 480px) { .brand-logo { height: 27px; } }
+/* The onboarding pop-up turns dark in dark mode, where the navy logo disappears: use the light version. */
+[data-theme="dark"] .onboarding-brand-logo { content: url("https://www.mystudentclub.com/assets/logo-dark.png"); }
+
+/* The logo artwork reaches the edges of its image: never round or clip its corners. */
+img[src*="/assets/logo"] { border-radius: 0 !important; }
