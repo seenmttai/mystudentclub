@@ -37,6 +37,12 @@
     { "source": "/cv-reviewer", "destination": "/cv-reviewer/index.html" },
     { "source": "/cv-reviewer/", "destination": "/cv-reviewer/index.html" },
     { "source": "/ca-resource", "destination": "/ca-resource/index.html" },
-    { "source": "/ca-resource/", "destination": "/ca-resource/index.html" }
+    { "source": "/ca-resource/", "destination": "/ca-resource/index.html" },
+    { "source": "/sessions", "destination": "/sessions/index.html" },
+    { "source": "/sessions/", "destination": "/sessions/index.html" }
+  ],
+  "redirects": [
+    { "source": "/events", "destination": "/sessions/", "type": 301 },
+    { "source": "/events/", "destination": "/sessions/", "type": 301 }
   ]
 }
