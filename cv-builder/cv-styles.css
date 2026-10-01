@@ -187,7 +187,7 @@
         }
 
         .app-logo img {
-            height: 30px;
+            height: 33px;
             width: auto;
             max-width: 220px;
             display: block;
@@ -3201,9 +3201,12 @@
                 height: 24px;
             }
             .app-logo img {
-                height: 34px;
+                height: 37px;
                 width: auto;
                 max-width: 190px;
+            }
+            .beta-badge {
+                display: none;
             }
             
             .btn-icon {
@@ -3490,7 +3493,7 @@
                 height: 20px;
             }
             .app-logo img {
-                height: 28px;
+                height: 31px;
                 width: auto;
                 max-width: 160px;
             }

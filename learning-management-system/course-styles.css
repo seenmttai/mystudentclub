@@ -1134,8 +1134,8 @@
    1. Header & Navigation Components
    ========================================= */
 .logo-enhanced {
-    width: 140px;
-    height: auto;
+    width: auto;
+    height: 33px;
     object-fit: contain;
     transition: transform 0.2s;
 }
@@ -1174,6 +1174,7 @@
 /* Footer logo - larger size */
 .footer-brand .logo-enhanced {
     width: 200px;
+    height: auto;
 }
 
 .profile-dropdown-container {

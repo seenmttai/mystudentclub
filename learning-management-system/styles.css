@@ -1113,7 +1113,7 @@ body {
     width: 100px;
     height: 62px;
     object-fit: contain;
-    border-radius: var(--radius-md);
+    border-radius: 0;
     transition: var(--transition-base);
 }
 
@@ -1889,3 +1889,6 @@ header .logo {
     object-fit: contain;
 }
 
+
+/* The logo artwork reaches the edges of its image: never round or clip its corners. */
+img[src*="/assets/logo"] { border-radius: 0 !important; }

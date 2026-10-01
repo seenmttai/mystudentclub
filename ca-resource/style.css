@@ -49,7 +49,7 @@ body {
     flex-shrink: 0;
 }
 .toolbar-logo img {
-    height: 28px;
+    height: 30px;
     width: auto;
     object-fit: contain;
     transition: opacity 0.2s;
@@ -398,7 +398,7 @@ body {
 
     #viewer-area { padding: 8px; }
 
-    .toolbar-logo img { height: 22px; }
+    .toolbar-logo img { height: 24px; }
     .toolbar-btn { width: 32px; height: 32px; font-size: 13px; }
     .page-indicator input { width: 36px; font-size: 12px; }
     .page-indicator { font-size: 12px; }

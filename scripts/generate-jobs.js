@@ -286,7 +286,7 @@ const htmlTemplate = (job, jsonLd, categorySlug, jobId, tableName) => {
         }
 
         .logo {
-            height: 32px;
+            height: 35px;
         }
 
         .back-link {
@@ -809,7 +809,7 @@ const htmlTemplate = (job, jsonLd, categorySlug, jobId, tableName) => {
             }
 
             .logo {
-                height: 28px;
+                height: 31px;
             }
 
             .back-link {
