@@ -492,10 +492,7 @@
         </span>
       </h3>
       <p style="margin-bottom: 0.25rem;"><strong>Email:</strong> <code id="user-email"></code></p>
-      <p id="password-row" style="margin-bottom: 0.25rem;"><strong>Password:</strong> <code id="user-password"></code></p>
-      <p id="password-warning" class="warning-text" style="margin-top: 0.5rem; font-size: 0.85rem;">
-        Please copy and save these details in a safe place. This is the only time your password will be shown.
-      </p>
+
       <div id="login-status" class="login-status" style="margin: 0.5rem 0; padding: 0.75rem;"></div>
     </div>
 
@@ -673,90 +670,44 @@
 
 
 
-    async function attemptAutoLogin(email, password) {
-      const loginStatus = document.getElementById('login-status');
-      const successTick = document.getElementById('login-success-tick');
-
-      try {
-        loginStatus.textContent = 'Logging you in automatically...';
-        loginStatus.classList.add('show');
-
-        const { data, error } = await supabaseClient.auth.signInWithPassword({
-          email: email,
-          password: password
-        });
-
-        if (error) {
-          throw error;
-        }
-
-        loginStatus.style.display = 'none'; // Hide the main banner on success
-        if (successTick) successTick.style.display = 'inline-flex';
-
-        // Update display name from logged in user metadata
-        const userObj = data.user || (data.session && data.session.user);
-        if (userObj && userObj.user_metadata && userObj.user_metadata.full_name) {
-          const nameSpan = document.getElementById('user-display-name');
-          if (nameSpan) nameSpan.textContent = userObj.user_metadata.full_name;
-        }
-
-      } catch (error) {
-        console.error('Auto-login error:', error);
-        loginStatus.textContent = '⚠ Could not log you in automatically. Please use the credentials above to log in manually.';
-        loginStatus.classList.add('error');
-        if (successTick) successTick.style.display = 'none';
-      }
-    }
-
     document.addEventListener('DOMContentLoaded', () => {
       const fragmentParams = new URLSearchParams(window.location.hash.slice(1));
       const queryParams = new URLSearchParams(window.location.search);
       const params = fragmentParams.size ? fragmentParams : queryParams;
-      const email = params.get('email');
-      const password = params.get('password');
-      const accountStatus = params.get('status') || (email && password ? 'created' : null);
+      const accountStatus = params.get('status');
       const enrollmentStatus = params.get('enrollment');
-      const nameParam = params.get('name') || params.get('first_name');
 
-      // Remove credentials and personal information from browser history after reading them.
       if (window.location.hash || window.location.search) {
         window.history.replaceState({}, document.title, window.location.pathname);
       }
 
-      if (nameParam) {
-        const nameSpan = document.getElementById('user-display-name');
-        if (nameSpan) nameSpan.textContent = nameParam;
-      }
-
-      if (email && accountStatus === 'existing') {
+      if (accountStatus === 'existing') {
         const credentialsTitle = document.getElementById('credentials-title-text');
         if (credentialsTitle) {
           credentialsTitle.textContent = enrollmentStatus === 'already-enrolled'
             ? 'Enrollment already active'
             : 'Enrollment added to your existing account';
         }
-        document.getElementById('user-email').textContent = email;
-        document.getElementById('password-row').style.display = 'none';
-        document.getElementById('password-warning').style.display = 'none';
-        document.getElementById('credentials-box').style.display = 'block';
-
         const loginStatus = document.getElementById('login-status');
         loginStatus.textContent = enrollmentStatus === 'already-enrolled'
-          ? 'This account was already enrolled in this course. Use your existing password to sign in.'
-          : 'Your existing account has been enrolled successfully. Use your existing password to sign in.';
+          ? 'This course is already active on your account. Log in with your existing password.'
+          : 'Your existing account has been enrolled successfully. Log in with your existing password.';
         loginStatus.classList.add('show');
-      } else if (email && password && accountStatus === 'created') {
-        document.getElementById('user-email').textContent = email;
-        document.getElementById('user-password').textContent = password;
         document.getElementById('credentials-box').style.display = 'block';
-        attemptAutoLogin(email, password);
+      } else if (accountStatus === 'created') {
+        const credentialsTitle = document.getElementById('credentials-title-text');
+        if (credentialsTitle) credentialsTitle.textContent = 'Check your email to get started';
+        const loginStatus = document.getElementById('login-status');
+        loginStatus.textContent = '📧 We sent you an email with a link to set your password. Check your inbox (and spam folder).';
+        loginStatus.classList.add('show');
+        document.getElementById('credentials-box').style.display = 'block';
       }
 
       // Check if user is already logged in (e.g. session exists)
       supabaseClient.auth.getSession().then(({ data: { session } }) => {
         if (session && session.user && session.user.user_metadata && session.user.user_metadata.full_name) {
           const nameSpan = document.getElementById('user-display-name');
-          if (nameSpan && !nameParam) {
+          if (nameSpan) {
             nameSpan.textContent = session.user.user_metadata.full_name;
           }
         }
