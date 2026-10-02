@@ -3586,6 +3586,16 @@ body:has(.portal-nav-bar) {
     border-top: 1px solid var(--border-light);
   }
 
+  /* Keep the menu hovered while the pointer crosses its visual gap. */
+  .dv2-dropdown-menu::after {
+    content: '';
+    position: absolute;
+    top: -0.5rem;
+    left: 0;
+    right: 0;
+    height: 0.5rem;
+  }
+
   .dv2-nav-dropdown:hover .dv2-dropdown-menu {
     display: block;
   }
