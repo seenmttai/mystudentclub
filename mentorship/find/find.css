@@ -1,0 +1,95 @@
+/* =============================================================================
+   Find a mentor: page-only styles (/mentorship/find/find.css?v=1). Prefix ms-find-.
+   Shared mentor components live in /mentorship/find/mentor-ui.css.
+   ========================================================================== */
+
+.ms-find-hero .ms-hero__inner { padding: 22px 0 18px; gap: 10px; }
+@media (min-width: 768px) { .ms-find-hero .ms-hero__inner { padding: 40px 0 30px; gap: 14px; } }
+.ms-find-wrap { padding-top: 16px; padding-bottom: 8px; display: flex; flex-direction: column; gap: 12px; }
+.ms-find-wrap > #find-banner:empty, .ms-find-wrap > #find-tabs:empty { display: none; }
+
+/* sticky search bar: full-bleed on phones, static on desktop (filters live in the sidebar) */
+.ms-find-bar { margin-left: -16px; margin-right: -16px; padding-left: 16px; padding-right: 16px; border-bottom: 1px solid transparent; }
+@media (min-width: 768px) { .ms-find-bar { margin-left: -24px; margin-right: -24px; padding-left: 24px; padding-right: 24px; } }
+@media (min-width: 1024px) {
+  .ms-find-bar { position: static; margin: 0; padding: 0; background: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .ms-find-filter-btn { display: none; }
+}
+.ms-find-filter-btn { flex: 0 0 auto; border-radius: var(--ms-r-full); }
+.ms-find-filter-count { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: var(--ms-primary); color: #fff; font-size: 0.72rem; font-weight: 700; }
+.ms-find-filter-count[hidden] { display: none; }
+@media (max-width: 379px) { .ms-find-filter-btn > span:not(.ms-find-filter-count) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } }
+
+/* active filter chips */
+.ms-find-active:empty { display: none; }
+.ms-find-chip { display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 5px 12px; border-radius: var(--ms-r-full);
+  border: 1.5px solid var(--ms-border-strong); background: #fff; color: var(--ms-gray-700); font: 500 0.82rem/1.2 var(--ms-font); cursor: pointer; white-space: nowrap; }
+.ms-find-chip:hover { border-color: var(--ms-blue-300); }
+.ms-find-chip:focus-visible { outline: none; box-shadow: var(--ms-ring); }
+.ms-find-chip[aria-pressed="true"] { background: var(--ms-blue-50); border-color: var(--ms-blue-300); color: var(--ms-blue-800); }
+.ms-find-chip[aria-pressed="true"] i { color: var(--ms-primary); }
+.ms-find-chip--on { background: var(--ms-blue-600); border-color: var(--ms-blue-600); color: #fff; }
+.ms-find-chip--on:hover { background: var(--ms-blue-700); border-color: var(--ms-blue-700); }
+.ms-find-chip--on i { font-size: 0.75rem; opacity: 0.9; }
+
+/* layout: sidebar only from 1024px */
+@media (max-width: 1023px) { .ms-find-aside { display: none; } }
+.ms-find-aside__card { padding: 16px; }
+@media (min-width: 1024px) {
+  .ms-find-aside__card { max-height: calc(100vh - var(--ms-sticky-top) - 32px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+}
+.ms-find-filters { display: flex; flex-direction: column; gap: 18px; }
+.ms-find-filters .ms-fieldset > legend { margin-bottom: 8px; }
+.ms-find-filters .ms-choice span { min-height: 34px; padding: 5px 12px; font-size: 0.82rem; }
+.ms-find-n { font-style: normal; font-size: 0.72rem; font-weight: 600; opacity: 0.6; margin-left: 2px; }
+.ms-find-filter-sheet .ms-find-filters__head { display: none; }
+.ms-find-filter-sheet .ms-modal__foot .ms-btn { white-space: normal; }
+
+/* results */
+.ms-find-results { min-width: 0; }
+.ms-find-results-head { margin-bottom: 12px; min-height: 40px; }
+.ms-find-sort { display: inline-flex; align-items: center; gap: 8px; font-size: 0.84rem; color: var(--ms-text-2); font-weight: 500; }
+.ms-find-sort .ms-select { width: auto; min-height: 38px; padding: 6px 36px 6px 12px; border-radius: var(--ms-r-full); font-size: 16px; }
+.ms-find-grid { align-items: stretch; }
+.ms-find-grid .ms-mentor-card__name > span:first-child { min-width: 0; overflow-wrap: anywhere; }
+.ms-find-grid .ms-mentor-card__meta a { font-weight: 500; }
+.ms-find-grid .ms-mentor-card__foot { row-gap: 10px; }
+
+/* program tabs */
+.ms-find-tabs { width: fit-content; }
+
+/* banners */
+.ms-find-banner .ms-grow { min-width: 0; }
+.ms-find-upsell { display: flex; gap: 14px; align-items: flex-start; border-color: var(--ms-amber-100); background: linear-gradient(135deg, #fffbeb 0%, #ffffff 70%); box-shadow: none; }
+.ms-find-upsell__icon { flex: 0 0 auto; width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: var(--ms-amber-100); color: var(--ms-amber-700); font-size: 1.1rem; }
+.ms-find-upsell__title { font-size: 0.98rem; color: var(--ms-gray-900); line-height: 1.4; }
+.ms-find-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.ms-find-steps li { display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: var(--ms-r-md); background: #fff; border: 1px solid var(--ms-border); font-size: 0.76rem; line-height: 1.4; color: var(--ms-gray-700); }
+.ms-find-steps span { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: var(--ms-blue-600); color: #fff; font-size: 0.72rem; font-weight: 700; }
+@media (min-width: 640px) {
+  .ms-find-steps li { flex-direction: row; align-items: center; gap: 10px; padding: 10px 14px; font-size: 0.84rem; }
+  .ms-find-steps span { flex: 0 0 auto; }
+}
+
+/* booking sheet */
+.ms-find-book__focus:focus { outline: none; }
+.ms-find-promises { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.ms-find-promises li { display: flex; gap: 10px; align-items: flex-start; font-size: 0.86rem; line-height: 1.5; color: var(--ms-gray-700); }
+.ms-find-promises i { flex: 0 0 auto; margin-top: 4px; color: var(--ms-green-600); font-size: 0.8rem; }
+.ms-find-promises li.is-never i { color: var(--ms-red-600); }
+.ms-find-book .ms-check__text strong { font-weight: 500; }
+.ms-find-book-modal .ms-modal__foot .ms-btn { white-space: normal; text-align: center; line-height: 1.3; }
+@media (max-width: 479px) {
+  .ms-find-book-modal .ms-modal__foot { flex-direction: column-reverse; }
+  .ms-find-book-modal .ms-modal__foot > .ms-btn { flex: 0 0 auto; width: 100%; }
+}
+
+/* success */
+.ms-find-success { display: flex; flex-direction: column; gap: 16px; align-items: flex-start; padding: 24px 18px; }
+@media (min-width: 768px) { .ms-find-success { padding: 36px; } }
+.ms-find-success__icon { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; background: var(--ms-green-600); color: #fff; font-size: 1.4rem; box-shadow: 0 0 0 8px var(--ms-green-50); }
+.ms-find-success__mentor { width: 100%; }
+.ms-find-success .ms-btn-row { width: 100%; }
+.ms-find-success .ms-hojayega { width: 100%; }
+.ms-find-success__next { width: 100%; }
+.ms-find-book #book-alert:empty { display: none; }

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="only light">
+  <title>MSC Mentorship: a senior for your IT hunt | My Student Club</title>
+  <meta name="description" content="Pick a mentor who did industrial training where you want to go. WhatsApp support within hours, a weekly call, CV review and mock interviews, all the way to joining. For MSC Industrial Training Program students.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.mystudentclub.com/mentorship/">
+  <meta property="og:title" content="MSC Mentorship: a senior who has been there, for your IT hunt">
+  <meta property="og:description" content="WhatsApp support within hours, a weekly call, CV review and mock interviews with a senior who did industrial training. Hojayega.">
+  <meta property="og:image" content="https://www.mystudentclub.com/assets/og-image.png">
+  <meta property="og:site_name" content="My Student Club">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://www.mystudentclub.com/mentorship/">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/scripts/portal-style.css?v=2.1">
+  <link rel="stylesheet" href="/mentorship/assets/mentorship.css?v=1">
+  <link rel="stylesheet" href="/mentorship/hub.css?v=1">
+  <script src="/scripts/supabase.js"></script>
+  <script src="/scripts/supabase-init.js"></script>
+  <script src="/scripts/error-reporter.js"></script>
+  <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
+  <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
+  <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
+</head>
+<body class="ms-body">
+  <main id="ms-main" class="ms-main">
+
+    <!-- Hero -->
+    <section class="ms-hero ms-hub-hero">
+      <div class="ms-container">
+        <div class="ms-hub-hero__grid">
+          <div class="ms-hero__inner ms-hub-hero__text">
+            <span class="ms-eyebrow"><i class="fas fa-user-group" aria-hidden="true"></i> MSC Mentorship</span>
+            <h1 class="ms-h1">A senior who has been there, for your <span class="ms-hub-grad">IT hunt</span></h1>
+            <p class="ms-lead">Pick a mentor who did industrial training where you want to go. WhatsApp support within hours, a weekly call, CV review and mock interviews, all the way to joining. Hojayega.</p>
+            <div class="ms-btn-row ms-btn-row--stack" id="hub-cta">
+              <a class="ms-btn ms-btn--primary ms-btn--lg" href="/mentorship/find/"><i class="fas fa-magnifying-glass" aria-hidden="true"></i><span>Find your mentor</span></a>
+              <a class="ms-btn ms-btn--secondary ms-btn--lg" href="/mentorship/apply/"><span>Become a mentor</span></a>
+            </div>
+            <div id="hub-status" hidden></div>
+            <ul class="ms-hub-proof" aria-label="What you get">
+              <li><i class="fas fa-bolt" aria-hidden="true"></i>Responds within 4-5 hours</li>
+              <li><i class="fas fa-phone" aria-hidden="true"></i>A call every week</li>
+              <li><i class="fas fa-file-circle-check" aria-hidden="true"></i>CV review and mock interview</li>
+            </ul>
+          </div>
+
+          <figure class="ms-hub-chat" aria-label="Illustration: the first WhatsApp message from a mentor">
+            <div class="ms-hub-chat__head">
+              <span class="ms-hub-chat__avatar" aria-hidden="true">A</span>
+              <span class="ms-hub-chat__who"><strong>Ananya, your mentor</strong><small>online</small></span>
+              <i class="fab fa-whatsapp ms-hub-chat__wa" aria-hidden="true"></i>
+            </div>
+            <div class="ms-hub-chat__body">
+              <p class="ms-hub-bubble">Hi Riya! This is Ananya, your mentor from My Student Club. I did my industrial training in risk advisory, so think of me as your elder sister for this hunt.<time>9:12 pm</time></p>
+              <p class="ms-hub-bubble">Send me your latest CV and where you have applied so far. Quick 15-minute call tomorrow evening?<time>9:12 pm</time></p>
+              <p class="ms-hub-bubble ms-hub-bubble--me">Sending it now. 7 pm works!<time>9:20 pm</time></p>
+              <p class="ms-hub-bubble ms-hub-bubble--short">Perfect. Hojayega!<time>9:21 pm</time></p>
+            </div>
+            <figcaption class="ms-hub-chat__cap">Illustration of a first message. Names are examples.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mentors preview (logged-in visitors, filled by hub.js) -->
+    <section class="ms-container ms-section" id="hub-mentors" hidden aria-labelledby="hub-mentors-title">
+      <div class="ms-hub-sechead">
+        <div>
+          <span class="ms-hub-kicker">Taking mentees now</span>
+          <h2 class="ms-h2" id="hub-mentors-title">A few mentors you can pick</h2>
+        </div>
+        <a class="ms-link" href="/mentorship/find/">See all mentors <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+      </div>
+      <div class="ms-grid ms-grid--3" id="hub-mentors-list"></div>
+    </section>
+
+    <!-- How it works -->
+    <section class="ms-container ms-section" id="how" aria-labelledby="how-title">
+      <div class="ms-hub-sechead ms-hub-sechead--center">
+        <span class="ms-hub-kicker">For students</span>
+        <h2 class="ms-h2" id="how-title">How it works</h2>
+        <p class="ms-text-2" data-hub-programs>Mentorship is part of the MSC Industrial Training Program.</p>
+      </div>
+      <ol class="ms-hub-steps">
+        <li class="ms-card ms-hub-step">
+          <span class="ms-hub-step__num" aria-hidden="true">1</span>
+          <h3 class="ms-h3">Pick your mentor</h3>
+          <p>Browse by company, domain, city and language. See where they did their industrial training and articleship, and what other students say about them.</p>
+        </li>
+        <li class="ms-card ms-hub-step">
+          <span class="ms-hub-step__num" aria-hidden="true">2</span>
+          <h3 class="ms-h3">They message you within 24 hours</h3>
+          <p>Your mentor sends a WhatsApp intro, asks for your CV and fixes your first call. You both get an email with each other's details.</p>
+        </li>
+        <li class="ms-card ms-hub-step">
+          <span class="ms-hub-step__num" aria-hidden="true">3</span>
+          <h3 class="ms-h3">A weekly call, a CV review and a mock interview</h3>
+          <p>15 minutes every week on how the hunt is going: applications, shortlists, interviews and what to do next. Plus a line-by-line CV review and at least one full mock interview.</p>
+        </li>
+        <li class="ms-card ms-hub-step">
+          <span class="ms-hub-step__num" aria-hidden="true">4</span>
+          <h3 class="ms-h3">Help until you join</h3>
+          <p>Offer letter, joining formalities and first-week doubts. Then a joining post on LinkedIn that tags everyone who helped: Padam Bhansali, My Student Club, your mentor and your parents.</p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- What your mentor does -->
+    <section class="ms-hub-band" aria-labelledby="does-title">
+      <div class="ms-container ms-section">
+        <div class="ms-hub-sechead ms-hub-sechead--center">
+          <span class="ms-hub-kicker">Every mentor promises this</span>
+          <h2 class="ms-h2" id="does-title">What your mentor does</h2>
+          <p class="ms-text-2">Each mentor agrees to these, one by one, before Team MSC approves them.</p>
+        </div>
+        <ul class="ms-hub-duties">
+          <li class="ms-hub-duty"><span class="ms-hub-duty__icon" aria-hidden="true"><i class="fas fa-bolt"></i></span><span><strong>Responds within 4-5 hours</strong>On WhatsApp. Nothing stays unread at the end of the day.</span></li>
+          <li class="ms-hub-duty"><span class="ms-hub-duty__icon" aria-hidden="true"><i class="fas fa-phone"></i></span><span><strong>A call every week</strong>15 minutes on your stage, your applications and your next steps.</span></li>
+          <li class="ms-hub-duty"><span class="ms-hub-duty__icon" aria-hidden="true"><i class="fas fa-file-circle-check"></i></span><span><strong>Reviews your CV</strong>Line by line with the MSC CV checklist, then checks the new version too.</span></li>
+          <li class="ms-hub-duty"><span class="ms-hub-duty__icon" aria-hidden="true"><i class="fas fa-user-tie"></i></span><span><strong>Takes a mock interview</strong>At least one full mock before your real interviews, with honest feedback.</span></li>
+          <li class="ms-hub-duty"><span class="ms-hub-duty__icon" aria-hidden="true"><i class="fas fa-person-running"></i></span><span><strong>Keeps you applying</strong>Most openings come late: sate hai, wo last last mein hi aate hai. Your mentor won't let you give up.</span></li>
+          <li class="ms-hub-duty"><span class="ms-hub-duty__icon" aria-hidden="true"><i class="fas fa-book-open"></i></span><span><strong>Shares the right MSC resources</strong>Guidebook, interview booklets and CV tools, at the right time.</span></li>
+          <li class="ms-hub-duty"><span class="ms-hub-duty__icon" aria-hidden="true"><i class="fas fa-handshake"></i></span><span><strong>Helps you join</strong>Offer letter, documents, ICAI paperwork and first-week doubts.</span></li>
+          <li class="ms-hub-duty"><span class="ms-hub-duty__icon" aria-hidden="true"><i class="fas fa-heart"></i></span><span><strong>Is an elder brother or sister</strong>Patient, honest and on your side, especially on the bad days.</span></li>
+        </ul>
+
+        <div class="ms-hub-never">
+          <div class="ms-hub-never__title"><i class="fas fa-ban" aria-hidden="true"></i> What your mentor will never do</div>
+          <ul>
+            <li><i class="fas fa-xmark" aria-hidden="true"></i>Ask you for money, gifts or paid services</li>
+            <li><i class="fas fa-xmark" aria-hidden="true"></i>Sell you a course or a paid group</li>
+            <li><i class="fas fa-xmark" aria-hidden="true"></i>Move you to another group or community</li>
+            <li><i class="fas fa-xmark" aria-hidden="true"></i>Promise you a job, a referral or a placement</li>
+            <li><i class="fas fa-xmark" aria-hidden="true"></i>Guess. If they are not sure, they check with their senior mentor first</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Team MSC keeps an eye on it -->
+    <section class="ms-container ms-section" aria-labelledby="watch-title">
+      <div class="ms-hub-sechead ms-hub-sechead--center">
+        <span class="ms-hub-kicker">You are not on your own</span>
+        <h2 class="ms-h2" id="watch-title">Team MSC keeps an eye on every match</h2>
+      </div>
+      <div class="ms-grid ms-grid--4">
+        <div class="ms-card ms-card--flat ms-hub-watch">
+          <span class="ms-hub-watch__icon" aria-hidden="true"><i class="fas fa-clipboard-check"></i></span>
+          <h3 class="ms-h3">A 30-second weekly check-in</h3>
+          <p>Every week you tell us how it is going. Your answers go to Team MSC, not to your mentor.</p>
+        </div>
+        <div class="ms-card ms-card--flat ms-hub-watch">
+          <span class="ms-hub-watch__icon" aria-hidden="true"><i class="fas fa-user-shield"></i></span>
+          <h3 class="ms-h3">Senior mentors behind every mentor</h3>
+          <p>If a mentor is slow to respond or misses calls, we step in and talk to them.</p>
+        </div>
+        <div class="ms-card ms-card--flat ms-hub-watch">
+          <span class="ms-hub-watch__icon" aria-hidden="true"><i class="fas fa-right-left"></i></span>
+          <h3 class="ms-h3">One switch if it isn't working</h3>
+          <p>Ask from your My mentor page. Team MSC looks at it and finds you someone else.</p>
+        </div>
+        <div class="ms-card ms-card--flat ms-hub-watch">
+          <span class="ms-hub-watch__icon" aria-hidden="true"><i class="fas fa-star"></i></span>
+          <h3 class="ms-h3">Honest reviews</h3>
+          <p>After <span data-hub-review-weeks>4 weeks</span> you can review your mentor. Mentors cannot delete reviews.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- For mentors -->
+    <section class="ms-container ms-section" id="for-mentors" aria-labelledby="mentors-title">
+      <div class="ms-hub-mentor">
+        <div class="ms-stack" style="--ms-gap:14px">
+          <span class="ms-hub-kicker ms-hub-kicker--light">For mentors</span>
+          <h2 class="ms-h2" id="mentors-title">Done your IT or articleship? Become a mentor.</h2>
+          <p class="ms-hub-mentor__lead">Be the senior you wish you had. Guide MSC students through their industrial training hunt on WhatsApp, with one call a week each. MSC alumni are especially welcome.</p>
+          <ul class="ms-hub-mentor__list">
+            <li><i class="fas fa-check" aria-hidden="true"></i>CA Final students doing or done with industrial training, students who finished articleship, and qualified CAs</li>
+            <li><i class="fas fa-check" aria-hidden="true"></i>Usually 5 to 10 mentees per batch. You choose how many.</li>
+            <li><i class="fas fa-check" aria-hidden="true"></i>Mentor training first: a playbook, the mentor lecture and a short quiz</li>
+            <li><i class="fas fa-check" aria-hidden="true"></i>Team MSC reviews every application before you go live</li>
+          </ul>
+          <div class="ms-btn-row ms-btn-row--stack" id="hub-mentor-cta">
+            <a class="ms-btn ms-btn--lg ms-hub-btn-light" href="/mentorship/apply/"><i class="fas fa-hand-holding-heart" aria-hidden="true"></i><span>Become a mentor</span></a>
+          </div>
+        </div>
+        <div class="ms-hub-fee-card">
+          <div class="ms-hub-fee-card__label">Mentor fee</div>
+          <div class="ms-hub-fee-card__value"><span class="ms-nowrap" data-hub-fee>Rs 500</span> <small>per mentee</small></div>
+          <p class="ms-hub-fee-card__sub">Paid by Team MSC, never by students. For example, 8 mentees in a batch is <span class="ms-nowrap" data-hub-fee-example>Rs 4,000</span>.</p>
+          <ol class="ms-hub-mini-steps">
+            <li><strong>Apply</strong><span>About 10 minutes. Save and come back anytime.</span></li>
+            <li><strong>Training</strong><span>Playbook, mentor lecture and a short quiz.</span></li>
+            <li><strong>Review</strong><span>Team MSC reviews every application within 7 days.</span></li>
+            <li><strong>Get mentees</strong><span>Students pick you. You get their details by email.</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="ms-container ms-container--narrow ms-section" id="faq" aria-labelledby="faq-title">
+      <div class="ms-hub-sechead ms-hub-sechead--center">
+        <span class="ms-hub-kicker">Questions</span>
+        <h2 class="ms-h2" id="faq-title">Frequently asked</h2>
+      </div>
+      <div class="ms-hub-faq">
+        <details class="ms-acc">
+          <summary>Who are the mentors?</summary>
+          <div class="ms-acc__body ms-prose"><p>Seniors who have done what you are about to do: CA Final students who are doing or have finished industrial training, students who have completed articleship, and qualified CAs. We especially welcome MSC alumni. Each mentor shares their CA journey, scores, CV and LinkedIn with us, completes the mentor training and quiz, and is approved by Team MSC.</p></div>
+        </details>
+        <details class="ms-acc">
+          <summary>Is mentorship included in my program?</summary>
+          <div class="ms-acc__body ms-prose"><p><span data-hub-programs>Mentorship is part of the MSC Industrial Training Program.</span> Once you are enrolled, log in and pick your mentor. You never pay a mentor anything.</p></div>
+        </details>
+        <details class="ms-acc">
+          <summary>When will my mentor contact me?</summary>
+          <div class="ms-acc__body ms-prose"><p>Within 24 hours of you picking them, on WhatsApp. You also get an email with your mentor's details, and you can message them first from your My mentor page.</p></div>
+        </details>
+        <details class="ms-acc">
+          <summary>Can I change my mentor?</summary>
+          <div class="ms-acc__body ms-prose"><p>Yes, once. Use "Need a different mentor?" on your My mentor page and tell us why. Team MSC looks at every request and reassigns you to someone else.</p></div>
+        </details>
+        <details class="ms-acc">
+          <summary>What if my mentor does not respond?</summary>
+          <div class="ms-acc__body ms-prose"><p>Tell us in your weekly check-in. It takes 30 seconds and goes to Team MSC, not to your mentor. If a mentor is slow or misses calls, we step in, and we reassign you if it does not improve.</p></div>
+        </details>
+        <details class="ms-acc">
+          <summary>Will my mentor get me a job or a referral?</summary>
+          <div class="ms-acc__body ms-prose"><p>No, and nobody on MSC can promise you a job, a referral or a placement. Your mentor helps you prepare, apply well and keep going, week after week. If anyone asks you for money or promises a job, tell Team MSC.</p></div>
+        </details>
+        <details class="ms-acc">
+          <summary>How are mentors chosen?</summary>
+          <div class="ms-acc__body ms-prose"><p>Every mentor fills a detailed application: their CA journey, where they did industrial training and articleship, their scores, CV and LinkedIn, and a written answer to a real mentee situation. They agree to every mentor duty one by one, complete the mentor training and pass a quiz. Team MSC then reviews the application. After that, your weekly check-ins and reviews tell us how each mentor is doing.</p></div>
+        </details>
+        <details class="ms-acc">
+          <summary>How much do mentors earn, and who pays them?</summary>
+          <div class="ms-acc__body ms-prose"><p><span data-hub-fee>Rs 500</span> per mentee, paid by Team MSC. Students never pay a mentor, and a mentor should never ask you for money.</p></div>
+        </details>
+      </div>
+    </section>
+
+    <!-- Closing CTA -->
+    <section class="ms-container ms-section">
+      <div class="ms-hub-final">
+        <div class="ms-hojayega">Openings often come late. With a senior next to you every week, you keep applying. Hojayega.</div>
+        <div class="ms-btn-row ms-btn-row--stack" id="hub-cta-2">
+          <a class="ms-btn ms-btn--primary ms-btn--lg" href="/mentorship/find/"><i class="fas fa-magnifying-glass" aria-hidden="true"></i><span>Find your mentor</span></a>
+          <a class="ms-btn ms-btn--outline ms-btn--lg" href="/mentorship/apply/"><span>Become a mentor</span></a>
+        </div>
+        <p class="ms-xs ms-muted">Mentors share their own experience. Nobody on MSC can promise you a job, referral or placement, and no one should ask you for money.</p>
+      </div>
+    </section>
+
+  </main>
+  <script type="module" src="/mentorship/hub.js?v=1"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-1450NCVE65"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-1450NCVE65');</script>
+</body>
+</html>

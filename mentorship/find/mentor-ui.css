@@ -1,0 +1,50 @@
+/* =============================================================================
+   Student-side shared components (/mentorship/find/mentor-ui.css?v=1).
+   Used by /mentorship/find/ and /mentorship/my-mentor/. Owner: student builder.
+   Every class is prefixed ms-find-; base ms-* classes are never restyled globally.
+   ========================================================================== */
+
+/* disclaimer / small print with an icon */
+.ms-find-note { display: flex; gap: 8px; align-items: flex-start; font-size: 0.78rem; line-height: 1.55; color: var(--ms-muted); }
+.ms-find-note > i { margin-top: 3px; color: var(--ms-gray-400); flex: 0 0 auto; }
+
+/* compact mentor row (booking sheet, success screen) */
+.ms-find-mini { display: flex; gap: 12px; align-items: flex-start; padding: 12px; border-radius: var(--ms-r-md); background: var(--ms-blue-50); border: 1px solid var(--ms-blue-100); min-width: 0; }
+.ms-find-mini .ms-mentor-card__name > span:first-child { min-width: 0; overflow-wrap: anywhere; }
+
+/* "what your mentor does" grid */
+.ms-find-include { display: flex; gap: 12px; align-items: flex-start; }
+.ms-find-include p { margin-top: 2px; line-height: 1.55; }
+.ms-find-include__icon { flex: 0 0 auto; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--ms-blue-50); color: var(--ms-primary); font-size: 1.05rem; }
+.ms-find-include__icon .fa-whatsapp { color: var(--ms-wa); }
+
+/* never list */
+.ms-find-never { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.ms-find-never li { display: flex; gap: 10px; align-items: flex-start; font-size: 0.88rem; line-height: 1.5; color: var(--ms-gray-700); }
+.ms-find-never i { flex: 0 0 auto; width: 20px; height: 20px; margin-top: 1px; border-radius: 50%; display: grid; place-items: center; font-size: 0.7rem; background: var(--ms-red-50); color: var(--ms-red-600); }
+
+/* profile sheet */
+.ms-find-profile { display: flex; flex-direction: column; gap: 18px; }
+.ms-find-profile__head { display: flex; gap: 16px; align-items: center; min-width: 0; }
+.ms-find-profile__name { font-size: 1.15rem; }
+.ms-find-profile__name > span:first-child { min-width: 0; overflow-wrap: anywhere; }
+.ms-find-profile__headline { font-size: 0.95rem; line-height: 1.55; color: var(--ms-gray-700); }
+.ms-find-profile__h { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ms-muted); margin-bottom: 8px; }
+.ms-find-facts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; padding: 10px 12px; border-radius: var(--ms-r-md); background: var(--ms-gray-50); border: 1px solid var(--ms-border); }
+.ms-find-facts > div > i { color: var(--ms-gray-400); margin-right: 2px; }
+.ms-find-quote { margin: 0; padding: 12px 14px; border-left: 4px solid var(--ms-green-500); border-radius: 0 var(--ms-r-md) var(--ms-r-md) 0; background: var(--ms-green-50); color: var(--ms-gray-800); font-size: 0.93rem; line-height: 1.55; }
+.ms-find-quote > span { display: block; color: var(--ms-green-700); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 2px; }
+.ms-find-bio { white-space: pre-line; font-size: 0.93rem; line-height: 1.7; color: var(--ms-text); overflow-wrap: anywhere; }
+.ms-find-bigrating { font-size: 1.6rem; font-weight: 800; color: var(--ms-gray-900); line-height: 1; }
+.ms-find-reviews { list-style: none; margin: 12px 0 8px; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.ms-find-review { display: flex; flex-direction: column; gap: 6px; padding: 12px 14px; border: 1px solid var(--ms-border); border-radius: var(--ms-r-md); background: #fff; }
+.ms-find-review__body { font-size: 0.9rem; line-height: 1.6; color: var(--ms-text); overflow-wrap: anywhere; }
+.ms-find-sheet .ms-modal__foot .ms-btn { white-space: normal; text-align: center; }
+@media (max-width: 479px) {
+  .ms-find-profile__head { align-items: flex-start; }
+  .ms-find-profile__head .ms-avatar--xl { --size: 76px; }
+}
+
+/* roomier timeline gutter for student pages (base dot sits ~1px from the text) */
+.ms-find-timeline { padding-left: 30px; }
+.ms-find-timeline > li::before { left: -29px; }

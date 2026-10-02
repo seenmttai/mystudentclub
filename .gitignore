@@ -11,3 +11,6 @@ sample-job-test.html
 
 
 
+
+# Mentorship: private seed data (quiz answers). Never commit; Cloudflare Pages serves every repo file.
+supabase/mentorship/*.local.sql

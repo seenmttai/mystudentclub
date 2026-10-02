@@ -1,1 +1,5 @@
 /terms https://www.mystudentclub.com/ca-industrial-training-program/terms-and-conditions 301
+# Mentorship build documents and SQL are not pages: never serve them (Pages has no 404 rule, so redirect).
+/mentorship/SPEC.md /mentorship/ 302
+/supabase/mentorship/* /mentorship/ 302
+/MENTORSHIP-SUMMARY.md /mentorship/ 302

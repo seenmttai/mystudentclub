@@ -1,0 +1,140 @@
+/* =============================================================================
+   Mentorship hub (/mentorship/) page-only styles. Prefix: ms-hub-
+   Builds on /mentorship/assets/mentorship.css (never restyles ms-* base classes).
+   ========================================================================== */
+
+/* ---------- hero ---------------------------------------------------------- */
+.ms-hub-hero__grid { display: grid; grid-template-columns: minmax(0, 1fr); align-items: center; gap: 4px; }
+@media (min-width: 960px) {
+  .ms-hub-hero__grid { grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: 48px; }
+}
+.ms-hub-hero__text .ms-h1 { max-width: 640px; }
+.ms-hub-hero__text .ms-lead { max-width: 600px; }
+.ms-hub-grad { background: var(--ms-gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
+/* CTA labels such as "Join the Industrial Training Program" must wrap on phones, never widen the page */
+#hub-cta .ms-btn, #hub-cta-2 .ms-btn, #hub-mentor-cta .ms-btn { white-space: normal; text-align: center; max-width: 100%; }
+.ms-hub-proof { list-style: none; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.84rem; color: var(--ms-text-2); }
+.ms-hub-proof li { display: inline-flex; align-items: center; gap: 7px; }
+.ms-hub-proof i { color: var(--ms-green-600); font-size: 0.85rem; }
+
+/* role-aware status card under the hero buttons */
+.ms-hub-status { display: flex; flex-direction: column; gap: 10px; max-width: 560px; }
+.ms-hub-status__card { display: flex; gap: 12px; align-items: center; padding: 12px 14px; background: rgba(255, 255, 255, 0.85);
+  border: 1px solid var(--ms-border); border-radius: var(--ms-r-lg); box-shadow: var(--ms-shadow-xs); }
+.ms-hub-status__card .ms-btn { flex: 0 0 auto; }
+.ms-hub-status__card > .ms-grow { flex: 1 1 0; min-width: 0; }
+.ms-hub-status__label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ms-muted); }
+.ms-hub-status__name { font-weight: 600; color: var(--ms-gray-900); line-height: 1.3; }
+.ms-hub-status__sub { font-size: 0.8rem; color: var(--ms-text-2); }
+@media (max-width: 479px) {
+  .ms-hub-status__card { flex-wrap: wrap; }
+  .ms-hub-status__card .ms-btn { flex: 1 1 100%; }
+}
+
+/* WhatsApp-style illustration */
+.ms-hub-chat { width: 100%; max-width: 380px; margin: 4px auto 28px; border-radius: 22px; overflow: hidden; background: #efeae2;
+  background-image: radial-gradient(rgba(0, 0, 0, 0.035) 1px, transparent 1.2px); background-size: 14px 14px;
+  border: 1px solid rgba(15, 23, 42, 0.08); box-shadow: var(--ms-shadow-lg); }
+@media (min-width: 960px) { .ms-hub-chat { margin: 0 0 0 auto; transform: rotate(1.2deg); } }
+.ms-hub-chat__head { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: var(--ms-wa); color: #fff; }
+.ms-hub-chat__avatar { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; background: rgba(255, 255, 255, 0.22); }
+.ms-hub-chat__who { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; flex: 1 1 auto; }
+.ms-hub-chat__who strong { font-size: 0.92rem; font-weight: 600; }
+.ms-hub-chat__who small { font-size: 0.72rem; opacity: 0.85; }
+.ms-hub-chat__wa { font-size: 1.3rem; opacity: 0.9; }
+.ms-hub-chat__body { display: flex; flex-direction: column; gap: 8px; padding: 14px 12px 6px; }
+.ms-hub-bubble { position: relative; max-width: 86%; align-self: flex-start; padding: 8px 10px 18px; border-radius: 4px 12px 12px 12px;
+  background: #fff; color: #111b21; font-size: 0.84rem; line-height: 1.45; box-shadow: 0 1px 0.5px rgba(11, 20, 26, 0.13); }
+.ms-hub-bubble time { position: absolute; right: 8px; bottom: 3px; font-size: 0.64rem; color: #667781; }
+.ms-hub-bubble--me { align-self: flex-end; background: #d9fdd3; border-radius: 12px 4px 12px 12px; }
+.ms-hub-bubble--short { padding-right: 58px; padding-bottom: 8px; }
+.ms-hub-chat__cap { padding: 4px 12px 12px; font-size: 0.68rem; color: #667781; text-align: center; }
+@media (max-width: 479px) { .ms-hub-bubble:nth-child(2) { display: none; } }
+
+/* ---------- section heads ------------------------------------------------- */
+.ms-hub-sechead { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 8px 16px; margin-bottom: 20px; }
+.ms-hub-sechead--center { flex-direction: column; align-items: center; text-align: center; }
+.ms-hub-sechead--center p { max-width: 560px; }
+.ms-hub-kicker { display: block; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ms-blue-700); margin-bottom: 4px; }
+.ms-hub-kicker--light { color: #c7d2fe; margin-bottom: 0; }
+
+/* ---------- how it works -------------------------------------------------- */
+.ms-hub-steps { list-style: none; display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 640px) { .ms-hub-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; } }
+@media (min-width: 1024px) { .ms-hub-steps { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.ms-hub-step { display: flex; flex-direction: column; gap: 8px; }
+.ms-hub-step p { font-size: 0.88rem; color: var(--ms-text-2); line-height: 1.6; }
+.ms-hub-step__num { width: 36px; height: 36px; border-radius: 12px; display: grid; place-items: center; font-weight: 700;
+  color: #fff; background: var(--ms-gradient); box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25); margin-bottom: 4px; }
+
+@media (max-width: 639px) {
+  .ms-hub-step { display: grid; grid-template-columns: 36px minmax(0, 1fr); column-gap: 14px; row-gap: 4px; align-items: start; }
+  .ms-hub-step__num { grid-row: span 2; margin-bottom: 0; }
+}
+
+/* ---------- duties band --------------------------------------------------- */
+.ms-hub-band { background: linear-gradient(180deg, #ffffff 0%, #f1f5ff 100%); border-top: 1px solid var(--ms-border); border-bottom: 1px solid var(--ms-border); }
+.ms-hub-duties { list-style: none; display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 640px) { .ms-hub-duties { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 20px; } }
+@media (min-width: 1024px) { .ms-hub-duties { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.ms-hub-duty { display: flex; gap: 12px; align-items: flex-start; padding: 14px; background: #fff; border: 1px solid var(--ms-border); border-radius: var(--ms-r-lg); }
+.ms-hub-duty > span:last-child { display: flex; flex-direction: column; gap: 2px; font-size: 0.85rem; color: var(--ms-text-2); line-height: 1.55; min-width: 0; }
+.ms-hub-duty strong { color: var(--ms-gray-900); font-size: 0.93rem; font-weight: 600; }
+.ms-hub-duty__icon { flex: 0 0 auto; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--ms-blue-50); color: var(--ms-blue-600); }
+@media (max-width: 639px) {
+  .ms-hub-duties { gap: 0; background: #fff; border: 1px solid var(--ms-border); border-radius: var(--ms-r-lg); overflow: hidden; }
+  .ms-hub-duty { border: 0; border-radius: 0; border-bottom: 1px solid var(--ms-gray-100); }
+  .ms-hub-duty:last-child { border-bottom: 0; }
+  .ms-hub-duty__icon { width: 36px; height: 36px; border-radius: 10px; }
+}
+
+.ms-hub-never { margin-top: 20px; padding: 16px 18px; border-radius: var(--ms-r-lg); background: #fff; border: 1px solid var(--ms-red-100); box-shadow: var(--ms-shadow-xs); }
+.ms-hub-never__title { display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--ms-red-700); margin-bottom: 10px; }
+.ms-hub-never ul { list-style: none; display: grid; gap: 8px 20px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 768px) { .ms-hub-never ul { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.ms-hub-never li { display: flex; gap: 10px; align-items: flex-start; font-size: 0.9rem; color: var(--ms-gray-800); line-height: 1.5; }
+.ms-hub-never li i { color: var(--ms-red-600); margin-top: 4px; flex: 0 0 auto; }
+
+/* ---------- watch cards --------------------------------------------------- */
+.ms-hub-watch { display: flex; flex-direction: column; gap: 8px; }
+.ms-hub-watch p { font-size: 0.87rem; color: var(--ms-text-2); line-height: 1.6; }
+.ms-hub-watch__icon { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--ms-green-50); color: var(--ms-green-700); }
+@media (max-width: 639px) {
+  .ms-hub-watch { display: grid; grid-template-columns: 40px minmax(0, 1fr); column-gap: 14px; row-gap: 2px; align-items: start; }
+  .ms-hub-watch__icon { grid-row: span 2; }
+}
+
+/* ---------- for mentors --------------------------------------------------- */
+.ms-hub-mentor { display: grid; gap: 22px; grid-template-columns: minmax(0, 1fr); padding: 22px 18px; border-radius: var(--ms-r-xl); color: #e0e7ff;
+  background: radial-gradient(600px 300px at 0% 0%, rgba(99, 102, 241, 0.55), transparent 60%), linear-gradient(135deg, #1e3a8a 0%, #312e81 100%);
+  box-shadow: var(--ms-shadow-lg); }
+@media (min-width: 900px) { .ms-hub-mentor { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 40px; padding: 40px; align-items: center; } }
+.ms-hub-mentor .ms-h2 { color: #fff; }
+.ms-hub-mentor__lead { font-size: 0.97rem; line-height: 1.65; color: #e0e7ff; }
+.ms-hub-mentor__list { list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem; line-height: 1.5; }
+.ms-hub-mentor__list li { display: flex; gap: 10px; align-items: flex-start; }
+.ms-hub-mentor__list i { color: #6ee7b7; margin-top: 4px; flex: 0 0 auto; }
+.ms-hub-btn-light { background: #fff; color: var(--ms-blue-800); box-shadow: 0 6px 18px rgba(15, 23, 42, 0.25); }
+.ms-hub-btn-light:hover { background: var(--ms-blue-50); }
+.ms-hub-btn-ghost-light { background: transparent; color: #fff; border-color: rgba(255, 255, 255, 0.45); }
+.ms-hub-btn-ghost-light:hover { background: rgba(255, 255, 255, 0.1); }
+.ms-hub-fee-card { background: #fff; color: var(--ms-text); border-radius: var(--ms-r-lg); padding: 18px; box-shadow: var(--ms-shadow-md); }
+.ms-hub-fee-card__label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ms-muted); }
+.ms-hub-fee-card__value { font-size: 2.1rem; font-weight: 800; color: var(--ms-gray-900); letter-spacing: -0.02em; line-height: 1.2; margin-top: 4px; }
+.ms-hub-fee-card__value small { font-size: 0.95rem; font-weight: 600; color: var(--ms-text-2); letter-spacing: 0; }
+.ms-hub-fee-card__sub { font-size: 0.85rem; color: var(--ms-text-2); margin-top: 6px; line-height: 1.55; }
+.ms-hub-mini-steps { list-style: none; counter-reset: hubmini; display: flex; flex-direction: column; gap: 10px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--ms-border); }
+.ms-hub-mini-steps li { counter-increment: hubmini; position: relative; padding-left: 38px; display: flex; flex-direction: column; font-size: 0.84rem; color: var(--ms-text-2); line-height: 1.45; }
+.ms-hub-mini-steps li::before { content: counter(hubmini); position: absolute; left: 0; top: 1px; width: 26px; height: 26px; border-radius: 50%;
+  display: grid; place-items: center; font-size: 0.78rem; font-weight: 700; background: var(--ms-blue-50); color: var(--ms-blue-700); }
+.ms-hub-mini-steps strong { color: var(--ms-gray-900); font-size: 0.9rem; }
+
+/* ---------- FAQ + closing ------------------------------------------------- */
+.ms-hub-faq .ms-acc__body p { color: var(--ms-text-2); font-size: 0.93rem; }
+.ms-hub-final { display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center; max-width: 720px; margin: 0 auto; }
+.ms-hub-final .ms-hojayega { text-align: left; width: 100%; }
+.ms-hub-final .ms-btn-row { justify-content: center; width: 100%; }
+@media (max-width: 479px) { .ms-hub-final .ms-btn-row > .ms-btn { flex: 1 1 100%; } }
+
+/* ---------- mentor preview cards ------------------------------------------ */
+.ms-hub-mentors-note { font-size: 0.8rem; color: var(--ms-muted); margin-top: 10px; }

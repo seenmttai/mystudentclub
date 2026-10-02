@@ -1,0 +1,78 @@
+/* =============================================================================
+   My mentor: page-only styles (/mentorship/my-mentor/my-mentor.css?v=1).
+   Prefix ms-mymentor-. Shared mentor components: /mentorship/find/mentor-ui.css.
+   ========================================================================== */
+
+.ms-mymentor { display: flex; flex-direction: column; gap: 16px; }
+.ms-mymentor-head { display: flex; flex-direction: column; gap: 6px; }
+.ms-mymentor-col { min-width: 0; }
+.ms-mymentor-col > .ms-card, .ms-mymentor-col > div { scroll-margin-top: calc(var(--ms-sticky-top) + 12px); }
+.ms-mymentor-layout { gap: 16px; }
+@media (min-width: 1024px) { .ms-mymentor-layout { gap: 24px; } }
+
+/* contact card */
+.ms-mymentor-contact { border-top: 4px solid var(--ms-wa); }
+.ms-mymentor-name { min-width: 0; overflow-wrap: anywhere; font-size: 1.08rem; }
+.ms-mymentor-actions .ms-btn { min-width: 0; }
+@media (max-width: 479px) {
+  .ms-mymentor-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ms-mymentor-actions > .ms-btn--whatsapp { grid-column: 1 / -1; }
+  .ms-mymentor-actions > .ms-btn:only-child { grid-column: 1 / -1; }
+}
+.ms-mymentor-kv { grid-template-columns: minmax(84px, max-content) minmax(0, 1fr); column-gap: 18px; padding: 12px 14px; border-radius: var(--ms-r-md); background: var(--ms-gray-50); border: 1px solid var(--ms-border); font-size: 0.86rem; }
+.ms-mymentor-kv:empty { display: none; }
+.ms-mymentor-links { --ms-gap: 8px; }
+.ms-mymentor-contact .ms-hint i { color: var(--ms-gray-400); }
+
+/* pulse */
+.ms-mymentor-pulse { border: 1.5px solid var(--ms-blue-200); box-shadow: var(--ms-shadow-md); }
+.ms-mymentor-pulse__icon, .ms-mymentor-star, .ms-mymentor-switch__icon { margin-right: 8px; }
+.ms-mymentor-pulse__icon { color: var(--ms-red-500); }
+.ms-mymentor-star { color: var(--ms-amber-500); }
+.ms-mymentor-switch__icon { color: var(--ms-gray-500); }
+.ms-mymentor-private { display: flex; gap: 6px; align-items: center; margin-top: 12px; }
+.ms-mymentor-stepper { display: flex; align-items: stretch; gap: 8px; max-width: 220px; }
+.ms-mymentor-stepper .ms-icon-btn { width: 46px; height: 46px; border: 1.5px solid var(--ms-border-strong); background: #fff; border-radius: var(--ms-r-md); flex: 0 0 auto; }
+.ms-mymentor-stepper .ms-input { text-align: center; font-weight: 600; -moz-appearance: textfield; }
+.ms-mymentor-stepper .ms-input::-webkit-outer-spin-button, .ms-mymentor-stepper .ms-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.ms-mymentor-pulse-form .ms-choice span { min-height: 36px; padding: 6px 12px; font-size: 0.84rem; }
+.ms-mymentor-yesno { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.ms-mymentor-yesno .ms-option { padding: 12px; align-items: center; }
+.ms-mymentor-yesno .ms-option__mark { margin-top: 0; }
+.ms-mymentor-short { min-height: 88px; }
+.ms-mymentor-pulse-sum { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 0; }
+@media (min-width: 640px) { .ms-mymentor-pulse-sum { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.ms-mymentor-pulse-sum > div { padding: 10px 12px; border-radius: var(--ms-r-md); background: var(--ms-gray-50); border: 1px solid var(--ms-border); min-width: 0; }
+.ms-mymentor-pulse-sum dt { font-size: 0.72rem; color: var(--ms-muted); font-weight: 500; }
+.ms-mymentor-pulse-sum dd { margin: 2px 0 0; font-weight: 600; font-size: 0.92rem; color: var(--ms-gray-900); overflow-wrap: anywhere; }
+
+/* progress steps */
+.ms-mymentor-timeline { gap: 12px; }
+.ms-mymentor-timeline > li.is-next::before { background: var(--ms-blue-500); box-shadow: 0 0 0 3px var(--ms-blue-100); }
+.ms-mymentor-timeline > li.is-good::before { background: var(--ms-green-500); }
+.ms-mymentor-timeline > li.is-muted .ms-timeline__title { color: var(--ms-gray-600); font-weight: 500; }
+.ms-mymentor-done { color: var(--ms-green-700); font-weight: 600; }
+
+/* quotes (review body, switch reason) */
+.ms-mymentor-quote { margin: 0; padding: 10px 14px; border-left: 3px solid var(--ms-blue-200); background: var(--ms-blue-50); border-radius: 0 var(--ms-r-md) var(--ms-r-md) 0; font-size: 0.9rem; line-height: 1.6; color: var(--ms-gray-700); overflow-wrap: anywhere; }
+
+/* never / safety */
+.ms-mymentor-never { background: #fff; }
+
+/* resources */
+.ms-mymentor-res__main { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: var(--ms-r-md); border: 1px solid var(--ms-blue-100); background: var(--ms-blue-50); color: var(--ms-gray-900); text-decoration: none; }
+.ms-mymentor-res__main:hover { border-color: var(--ms-blue-300); }
+.ms-mymentor-res__main strong { display: block; font-size: 0.9rem; }
+.ms-mymentor-res__main .ms-grow { display: flex; flex-direction: column; }
+.ms-mymentor-res__icon { flex: 0 0 auto; width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; background: #fff; color: var(--ms-primary); }
+.ms-mymentor-res__list { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.ms-mymentor-res__list a { display: inline-flex; align-items: center; gap: 8px; font-size: 0.88rem; }
+.ms-mymentor-res__list i { width: 16px; text-align: center; color: var(--ms-gray-400); }
+
+/* past mentors */
+.ms-mymentor-past__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.ms-mymentor-past__list > li { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding-bottom: 12px; border-bottom: 1px solid var(--ms-border); }
+.ms-mymentor-past__list > li:last-child { border-bottom: 0; padding-bottom: 0; }
+.ms-mymentor-past__list .ms-person { width: 100%; }
+.ms-mymentor-past__list .ms-person .ms-grow { min-width: 0; }
+.ms-mymentor-past__list .ms-person > .ms-badge { flex-shrink: 0; }

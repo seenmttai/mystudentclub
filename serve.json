@@ -37,6 +37,20 @@
     { "source": "/cv-reviewer", "destination": "/cv-reviewer/index.html" },
     { "source": "/cv-reviewer/", "destination": "/cv-reviewer/index.html" },
     { "source": "/ca-resource", "destination": "/ca-resource/index.html" },
-    { "source": "/ca-resource/", "destination": "/ca-resource/index.html" }
+    { "source": "/ca-resource/", "destination": "/ca-resource/index.html" },
+    { "source": "/mentorship", "destination": "/mentorship/index.html" },
+    { "source": "/mentorship/", "destination": "/mentorship/index.html" },
+    { "source": "/mentorship/apply", "destination": "/mentorship/apply/index.html" },
+    { "source": "/mentorship/apply/", "destination": "/mentorship/apply/index.html" },
+    { "source": "/mentorship/training", "destination": "/mentorship/training/index.html" },
+    { "source": "/mentorship/training/", "destination": "/mentorship/training/index.html" },
+    { "source": "/mentorship/mentor", "destination": "/mentorship/mentor/index.html" },
+    { "source": "/mentorship/mentor/", "destination": "/mentorship/mentor/index.html" },
+    { "source": "/mentorship/find", "destination": "/mentorship/find/index.html" },
+    { "source": "/mentorship/find/", "destination": "/mentorship/find/index.html" },
+    { "source": "/mentorship/my-mentor", "destination": "/mentorship/my-mentor/index.html" },
+    { "source": "/mentorship/my-mentor/", "destination": "/mentorship/my-mentor/index.html" },
+    { "source": "/mentorship/admin", "destination": "/mentorship/admin/index.html" },
+    { "source": "/mentorship/admin/", "destination": "/mentorship/admin/index.html" }
   ]
 }

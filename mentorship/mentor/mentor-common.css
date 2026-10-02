@@ -1,0 +1,33 @@
+/* Shared styles for the mentor-side pages (apply, training, mentor dashboard).
+   Prefix: ms-mentor- (never .ms-mentor-card, which belongs to the core). */
+
+/* centered status screen */
+.ms-mentor-status { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; padding: 28px 18px; }
+@media (min-width: 768px) { .ms-mentor-status { padding: 40px 36px; } }
+.ms-mentor-status .ms-eyebrow { align-self: center; }
+.ms-mentor-status__icon { width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; font-size: 1.45rem; border: 1px solid transparent; }
+.ms-mentor-status__text { max-width: 520px; }
+.ms-mentor-status__actions { justify-content: center; margin-top: 6px; width: 100%; }
+.ms-mentor-status .ms-callout, .ms-mentor-status .ms-mentor-journey { text-align: left; width: 100%; max-width: 520px; }
+
+/* 4-step journey: apply -> training -> review -> live */
+.ms-mentor-journey { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .ms-mentor-journey--row { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.ms-mentor-journey li { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border: 1px solid var(--ms-border); border-radius: var(--ms-r-md); background: #fff; }
+.ms-mentor-journey__dot { flex: 0 0 auto; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--ms-gray-100); color: var(--ms-gray-500); font-size: 0.85rem; }
+.ms-mentor-journey__body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ms-mentor-journey__body strong { font-size: 0.9rem; color: var(--ms-gray-900); }
+.ms-mentor-journey__body small { font-size: 0.8rem; color: var(--ms-text-2); line-height: 1.45; }
+.ms-mentor-journey li.is-done .ms-mentor-journey__dot { background: var(--ms-green-600); color: #fff; }
+.ms-mentor-journey li.is-current { border-color: var(--ms-blue-200); background: var(--ms-blue-50); }
+.ms-mentor-journey li.is-current .ms-mentor-journey__dot { background: var(--ms-primary); color: #fff; box-shadow: 0 0 0 4px var(--ms-blue-100); }
+
+/* preview label above a mentor card */
+.ms-mentor-preview { display: flex; flex-direction: column; gap: 8px; max-width: 400px; width: 100%; }
+.ms-mentor-preview__label { display: inline-flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 600; color: var(--ms-text-2); text-transform: uppercase; letter-spacing: 0.04em; }
+.ms-mentor-preview .ms-mentor-card { pointer-events: none; }
+
+/* quick fact chips in heroes */
+.ms-mentor-facts { display: flex; flex-wrap: wrap; gap: 8px; }
+.ms-mentor-facts .ms-chip { background: #fff; border-color: var(--ms-border); color: var(--ms-gray-700); padding: 5px 12px; font-size: 0.8rem; }
+.ms-mentor-facts .ms-chip i { color: var(--ms-primary); }
