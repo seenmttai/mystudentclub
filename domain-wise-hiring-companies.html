@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Domain-wise Hiring Companies for CA Industrial Training - My Student Club</title>
+    <meta name="description" content="Free list of companies hiring CA Industrial Trainees, with location and stipend. Plus premium Industrial Training Program resources and the MSC community.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.mystudentclub.com/domain-wise-hiring-companies">
+    <meta property="og:title" content="Domain-wise Hiring Companies - My Student Club">
+    <meta property="og:description" content="Free list of companies hiring CA Industrial Trainees, with location and stipend.">
+    <meta property="og:image" content="https://www.mystudentclub.com/assets/og-industrial.png">
+    <meta property="og:site_name" content="My Student Club">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://www.mystudentclub.com/assets/og-industrial.png">
+    <link rel="canonical" href="https://www.mystudentclub.com/domain-wise-hiring-companies">
+    <link rel="icon" href="/favicon.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/scripts/resource-library.css?v=20261003.1">
+    <script src="/scripts/vendor/supabase.js" defer></script>
+    <script src="/scripts/supabase-init.js?v=20260927.9" defer></script>
+    <script src="/scripts/program-access.js?v=20260927.9" defer></script>
+    <script src="/scripts/career-profile.js?v=20260927.9" defer></script>
+    <script>
+        // The free list uses the shared career intake (Industrial Training form), not the older lead form.
+        window.resourceFormCollector = {
+            async checkAndAccess(title, url, open) {
+                try {
+                    if (!window.MSCCareerProfile) throw new Error('The form is still loading. Please try again in a moment.');
+                    if (await window.MSCCareerProfile.ensureForResource('industrial-training', title, url)) { await open(); return true; }
+                } catch (error) {
+                    const notice = document.getElementById('resource-access-error');
+                    if (notice) { notice.textContent = error.message || 'Unable to open this resource. Please try again.'; setTimeout(() => { notice.textContent = ''; }, 8000); }
+                }
+                return false;
+            }
+        };
+    </script>
+    <script src="/scripts/resource-library.js?v=20261003.1" defer></script>
+</head>
+<body data-resource-stage="domain-wise-companies">
+    <header class="floating-header">
+        <div class="header-container">
+            <a href="/" class="brand-link" aria-label="My Student Club home">
+                <img src="/assets/logo.png" alt="My Student Club" class="brand-logo">
+            </a>
+            <div class="header-actions">
+                <a href="/login.html" class="auth-icon-btn" aria-label="Login">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                </a>
+                <button class="menu-button-style" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="expandedMenu" id="menuButton">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="expanded-menu" id="expandedMenu">
+        <button type="button" class="menu-close-btn" id="menuCloseBtn" aria-label="Close menu">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+        <div class="menu-items">
+            <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">
+                <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+                My Courses
+            </a>
+            <a href="/ca-industrial-training-program/" class="menu-item">MSC Industrial Training Program</a>
+            <a href="/articleship-program/" class="menu-item">MSC Articleship Program</a>
+            <a href="/msc-ca-fresher-program/" class="menu-item">MSC CA Freshers Program</a>
+            <div class="menu-item" style="font-weight: 600; color: #1e293b; pointer-events: none; margin-top: 0.5rem;">
+                Free Resources</div>
+            <a href="/ca-fresher-training-resources.html" class="menu-item" style="padding-left: 2rem;">CA Fresher</a>
+            <a href="/ca-industrial-training-resources.html" class="menu-item" style="padding-left: 2rem;">Industrial Training</a>
+            <a href="/domain-wise-hiring-companies" class="menu-item" style="padding-left: 2rem; color: #4f46e5;" aria-current="page">Domain-wise Hiring Companies</a>
+            <a href="/ca-articleship-opportunities" class="menu-item" style="padding-left: 2rem;">Articleship</a>
+            <a href="/contact.html" class="menu-item" style="margin-top: 0.5rem;">Contact Us</a>
+
+        </div>
+    </div>
+    <main class="resource-main" id="main-content">
+        <section class="resource-hero" aria-labelledby="resource-page-title">
+            <p class="resource-eyebrow">CA Industrial Training</p>
+            <h1 id="resource-page-title">Domain-wise Hiring Companies</h1>
+            <p>Find companies hiring Industrial Trainees. Shortlist the ones in your domain and start applying.</p>
+        </section>
+        <aside class="resource-community" aria-labelledby="community-heading">
+            <div><h2 id="community-heading">Join MSC Industrial Training WhatsApp Community</h2><p>Get daily vacancy alerts and connect with your peers.</p></div>
+            <a href="/links" class="resource-action">Join Now →</a>
+        </aside>
+        <nav class="resource-jump-nav" aria-label="Jump to resource section">
+            <a href="#resource-free">Free Companies List <span aria-hidden="true">↓</span></a><a href="#resource-premium">Premium Resources <span aria-hidden="true">↓</span></a>
+        </nav>
+        <div id="resources-container" aria-label="Resource library"></div>
+        <p id="resource-catalog-status" class="resource-catalog-status" role="status"></p>
+        <noscript><p>Please enable JavaScript to browse the resource library and access forms.</p></noscript>
+    </main>
+    <dialog class="resource-enroll-dialog" id="resource-enroll-dialog" aria-labelledby="resource-enroll-title" aria-describedby="resource-enroll-description">
+        <button type="button" class="dialog-close" aria-label="Close enrollment information">×</button>
+        <p class="resource-eyebrow">Premium resource</p>
+        <h2 id="resource-enroll-title">Access premium resources</h2>
+        <p id="resource-enroll-resource"></p>
+        <p id="resource-enroll-description">This resource is included with the program. Enroll to view and download it from My Courses.</p>
+        <div class="dialog-actions"><a class="resource-action" id="resource-enroll-link" href="/ca-industrial-training-program/">Explore Program →</a><a class="resource-action secondary" href="/login?redirect=/learning-management-system/lms-resources.html">Already enrolled? Sign in</a></div>
+    </dialog>
+    <div id="resource-access-error" class="resource-access-error" role="alert"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const button = document.getElementById('menuButton'), menu = document.getElementById('expandedMenu'), closeBtn = document.getElementById('menuCloseBtn');
+            if (!button || !menu || !closeBtn) return;
+            const setOpen = open => { menu.classList.toggle('active', open); button.setAttribute('aria-expanded', String(open)); };
+            button.addEventListener('click', () => setOpen(!menu.classList.contains('active')));
+            closeBtn.addEventListener('click', () => setOpen(false));
+            document.addEventListener('click', e => { if (menu.classList.contains('active') && !menu.contains(e.target) && !button.contains(e.target)) setOpen(false); });
+            document.addEventListener('keydown', e => { if (e.key === 'Escape' && menu.classList.contains('active')) { setOpen(false); button.focus(); } });
+        });
+    </script>
+</body>
+</html>
