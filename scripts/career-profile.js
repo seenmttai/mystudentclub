@@ -84,14 +84,14 @@
       html += `<fieldset class="msc-career-attempt"><legend>${inter ? 'CA Inter' : 'CA Final'} Attempt</legend><div class="msc-career-row">${select('attempt_month','Month',months,values.attempt_month)}${select('attempt_year','Year',attemptYears,values.attempt_year)}</div></fieldset>`;
     }
     if (['industrial-training','experienced-ca','semi-qualified'].includes(stage)) html += input('earliest_joining_date', stage === 'industrial-training' ? 'Earliest Joining Date for Industrial Training' : 'Earliest Joining Date', 'date', values.earliest_joining_date, 'min="2024-01-01" max="2050-12-31"');
-    if (stage === 'industrial-training') html += input('industrial_training_eligibility_date','Eligibility Date','date',values.industrial_training_eligibility_date,'min="2024-01-01" max="2050-12-31"');
+    if (stage === 'industrial-training') html += input('industrial_training_eligibility_date','Industrial Training Eligibility Date','date',values.industrial_training_eligibility_date,'min="2024-01-01" max="2050-12-31"');
     if (stage === 'semi-qualified') html += select('experience_type','Years of Experience Excluding Articleship',[['fresher','Fresher'],['other','Other']],values.experience_type);
     if (['experienced-ca','semi-qualified'].includes(stage)) html += `<div data-experience-fields${stage === 'semi-qualified' && values.experience_type !== 'other' ? ' hidden' : ''}><div class="msc-career-row">${select('experience_years', stage === 'semi-qualified' ? 'Years (excluding articleship)' : 'Years of Experience',Array.from({length:61},(_,i)=>String(i)),values.experience_years)}${select('experience_months','Months',Array.from({length:12},(_,i)=>String(i)),values.experience_months)}</div></div>`;
     if (stage === 'other') html += input('other_stage','Please describe your career stage','text',values.other_stage,'maxlength="120"');
     return html;
   }
   function disclosure(stage) {
-    return `<div class="msc-career-disclosure"><p><strong>Before you submit:</strong> Please recheck all details, especially the <strong>year and date fields</strong>${stage === 'industrial-training' ? ' in your <strong>eligibility date</strong>' : ''}, as these will appear in your profile shared with recruiters.</p><label class="msc-career-consent"><input type="checkbox" name="sharing_consent" required><span>${CONSENT}</span></label></div>`;
+    return `<div class="msc-career-disclosure"><p><strong>Before you submit:</strong> Please recheck all details, especially the <strong>year and date fields</strong>${stage === 'industrial-training' ? ' in your <strong>Industrial Training eligibility date</strong>' : ''}, as these will appear in your profile shared with recruiters.</p><label class="msc-career-consent"><input type="checkbox" name="sharing_consent" required><span>${CONSENT}</span></label></div>`;
   }
   function mountFields(container, options = {}) {
     loadStyles();
