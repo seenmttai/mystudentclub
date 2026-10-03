@@ -1,5 +1,6 @@
 
 // ai-helper.js - Encapsulates AI Apply logic and UI helpers
+import { calculateProfileCompletion, readCachedProfile } from './profile-completion.js';
 
 const AI_WORKER_URL = 'https://emailgenerator.bhansalimanan55.workers.dev/';
 
@@ -9,10 +10,7 @@ const AI_WORKER_URL = 'https://emailgenerator.bhansalimanan55.workers.dev/';
  */
 export function isProfileComplete() {
     try {
-        const images = JSON.parse(localStorage.getItem('userCVImages') || '[]');
-        // Check for both image array (PDF) or text content (TXT/PDF text)
-        const text = localStorage.getItem('userCVText');
-        return (Array.isArray(images) && images.length > 0) || (text && text.trim().length > 0);
+        return calculateProfileCompletion(readCachedProfile(localStorage), localStorage) === 100;
     } catch (e) {
         return false;
     }

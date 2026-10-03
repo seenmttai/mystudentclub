@@ -186,6 +186,7 @@ function renderJob(job, tableName) {
 
     const recruiterPosted = isRecruiterPostedJob(job);
     const applyInfo = recruiterPosted ? { isEmail: false, link: '#' } : getApplicationLink(job['Application ID']);
+    const requiresEnrollment = recruiterPosted && !isEnrolledSync(tableName);
 
     let connectLink = checkConnectLink(job);
     if (!connectLink) {
@@ -194,7 +195,9 @@ function renderJob(job, tableName) {
         connectLink = `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(query)}&origin=SWITCH_SEARCH_VERTICAL`;
     }
 
-    const applyButtonsHtml = recruiterPosted
+    const applyButtonsHtml = requiresEnrollment
+        ? '<button class="btn-large btn-primary-large" id="simpleApplyBtn" type="button"><i class="fas fa-lock"></i> Unlock Apply</button>'
+        : recruiterPosted
         ? '<button class="btn-large btn-primary-large" id="simpleApplyBtn" type="button"><i class="fas fa-paper-plane"></i> Apply Now</button>'
         : generateApplyButtons(applyInfo, job);
 
@@ -290,7 +293,10 @@ function renderJob(job, tableName) {
     loadingState.style.display = 'none';
     container.style.display = 'block';
 
-    if (recruiterPosted) {
+    if (requiresEnrollment) {
+        const applyButton = container.querySelector('#simpleApplyBtn');
+        if (applyButton) applyButton.addEventListener('click', () => showEnrollmentRequiredPopup());
+    } else if (recruiterPosted) {
         const applyButton = container.querySelector('#simpleApplyBtn');
         if (applyButton) applyButton.addEventListener('click', () => recordRecruiterApplication(job, applyButton, tableName));
     }

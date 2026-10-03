@@ -1,6 +1,7 @@
 import { getDaysAgo, isJobExpired } from './date-utils.js';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 import { unlockJobDetails, getCachedUnlockedJob } from './browser-guard.js';
+import { calculateProfileCompletion as calculateSharedProfileCompletion, readCachedProfile } from './profile-completion.js';
 
 function isSalaryDisclosed(val) {
     if (!val) return false;
@@ -9,7 +10,17 @@ function isSalaryDisclosed(val) {
 }
 
 async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) {
-    if (isRecruiterPostedJob(job)) return recordApplication(job, btnElement);
+    if (isRecruiterPostedJob(job)) {
+        if (!currentSession) {
+            window.location.href = '/login.html';
+            return;
+        }
+        if (!isProfileComplete()) {
+            showRecruiterProfileWarningPopup(job, calculateProfileCompletion());
+            return;
+        }
+        return recordApplication(job, btnElement);
+    }
 
     if (!currentSession) {
         window.location.href = '/login.html';
@@ -415,6 +426,8 @@ function renderJobCard(job) {
     const isPopular = (job.application_count || 0) > 50;
     const buttonClass = isApplied ? 'applied' : '';
     const applyLink = getApplicationLink(job['Application ID']);
+    const recruiterPosted = isRecruiterPostedJob(job);
+    const isExclusive = Boolean(job.is_exclusive || recruiterPosted);
 
     // Data values
     const primaryDomain = job['Primary Domain'] || job.Category || 'N/A';
@@ -455,7 +468,7 @@ function renderJobCard(job) {
             </div>`);
     const infoRowHtml = infoRowItems.length ? `<div class="job-card-info-row">${infoRowItems.join('')}</div>` : '';
     const descriptionText = job.Description ? job.Description.replace(/[#*_`\[\]]/g, '').trim() : '';
-    const isLocked = job.is_exclusive && !isEnrolledSync('Industrial Training Job Portal');
+    const isLocked = isExclusive && !isEnrolledSync(currentTable);
     let applyButtonHtml = '';
     if (isLocked) {
         applyButtonHtml = `
@@ -494,7 +507,7 @@ function renderJobCard(job) {
         </div>
         <div class="job-card-tags">
             ${isExpired ? `<span class="job-tag tag-expired"><i class="fas fa-hourglass-end"></i> Expired</span>` : ""}
-            ${job.is_exclusive ? `<span class="job-tag tag-exclusive"><i class="fas fa-star"></i> Exclusive</span>` : ""}
+            ${isExclusive ? `<span class="job-tag tag-exclusive"><i class="fas fa-star"></i> Exclusive</span>` : ""}
             ${isPopular ? `<span class="job-tag tag-popular"><i class="fas fa-fire"></i> Popular</span>` : ""}
             <span class="job-tag job-tag-location">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="11" height="11"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -691,6 +704,10 @@ async function recordApplication(job, btnElement) {
     }
 
     const recruiterPosted = isRecruiterPostedJob(job);
+    if (recruiterPosted && !isProfileComplete()) {
+        showRecruiterProfileWarningPopup(job, calculateProfileCompletion());
+        return false;
+    }
     const applicationKey = `${currentTable}:${job.id}`;
     if (recruiterPosted && (pendingRecruiterApplications.has(applicationKey) || completedRecruiterApplications.has(applicationKey) || appliedJobIds.has(job.id))) {
         return false;
@@ -829,8 +846,11 @@ function showExclusiveLockedModal(job) {
 }
 
 function showModal(job) {
+    const recruiterPosted = isRecruiterPostedJob(job);
+    const isExclusive = Boolean(job.is_exclusive || recruiterPosted);
+
     // --- Exclusive vacancy gate ---
-    if (job.is_exclusive && !isEnrolledSync('Industrial Training Job Portal')) {
+    if (isExclusive && !isEnrolledSync(currentTable)) {
         showExclusiveLockedModal(job);
         return;
     }
@@ -840,7 +860,6 @@ function showModal(job) {
     const isExpired = isJobExpired(job.Created_At);
     const postedDate = isExpired ? 'Expired' : (job.Created_At ? getDaysAgo(job.Created_At) : 'N/A');
     const applyCount = job.application_count || 0;
-    const recruiterPosted = isRecruiterPostedJob(job);
     const cachedUnlocked = currentSession ? getCachedUnlockedJob(job.id, currentTable, currentSession) : null;
     const isApplicationUnlocked = recruiterPosted || job.__browserGuardUnlocked === true || Boolean(cachedUnlocked) || Boolean(job['Application ID']);
     const effectiveApplicationId = recruiterPosted ? null : (cachedUnlocked?.applicationId || job['Application ID']);
@@ -2644,7 +2663,7 @@ function showRecruiterProfileRequiredPopup(job) {
     });
 }
 
-function showRecruiterProfileWarningPopup(job, percent, onProceedCallback) {
+function showRecruiterProfileWarningPopup(job, percent) {
     const existing = document.querySelector('.recruiter-gate-popup-overlay');
     if (existing) existing.remove();
 
@@ -2656,14 +2675,14 @@ function showRecruiterProfileWarningPopup(job, percent, onProceedCallback) {
                 </div>
                 <h3 style="font-size: 1.2rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">Profile Incomplete (${percent}%)</h3>
                 <p style="font-size: 0.88rem; color: #475569; line-height: 1.5; margin-bottom: 1.5rem;">
-                    Your profile is only <strong>${percent}% complete</strong>. Verified recruiters heavily prioritize candidates with complete profiles and uploaded CVs.
+                    Your profile is only <strong>${percent}% complete</strong>. Easy Apply is available only when your profile is 100% complete.
                 </p>
                 <div class="cv-popup-btns" style="display: flex; gap: 0.75rem;">
                     <a href="/profile.html?redirect=${encodeURIComponent(window.location.href)}" class="cv-popup-btn-primary" style="flex: 1; text-align: center; text-decoration: none; padding: 0.75rem;">
                         <i class="fas fa-user-pen"></i> Complete Profile
                     </a>
-                    <button type="button" class="cv-popup-btn-secondary" id="applyAnywayBtn" style="flex: 1; padding: 0.75rem; font-weight: 600;">
-                        Apply Anyway
+                    <button type="button" class="cv-popup-btn-secondary" id="closeRecruiterGateBtn" style="flex: 1; padding: 0.75rem; font-weight: 600;">
+                        Maybe Later
                     </button>
                 </div>
             </div>
@@ -2674,16 +2693,13 @@ function showRecruiterProfileWarningPopup(job, percent, onProceedCallback) {
     const overlay = document.querySelector('.recruiter-gate-popup-overlay');
     setTimeout(() => overlay.classList.add('show'), 10);
 
-    const applyAnywayBtn = document.getElementById('applyAnywayBtn');
+    const closeBtn = document.getElementById('closeRecruiterGateBtn');
     const closePopup = () => {
         overlay.classList.remove('show');
         setTimeout(() => overlay.remove(), 300);
     };
 
-    applyAnywayBtn.addEventListener('click', () => {
-        closePopup();
-        if (typeof onProceedCallback === 'function') onProceedCallback();
-    });
+    closeBtn.addEventListener('click', closePopup);
 
     overlay.addEventListener('click', (e) => {
         if (e.target === overlay) closePopup();
@@ -2741,24 +2757,12 @@ async function handleApplyClick(job, buttonElement, isAiApply = false) {
         }
 
         const percent = calculateProfileCompletion();
-
-        // 1. If 0% (No profile created)
-        if (percent === 0) {
-            showRecruiterProfileRequiredPopup(job);
+        if (percent < 100) {
+            showRecruiterProfileWarningPopup(job, percent);
             return;
         }
 
-        // 2. If < 50%
-        if (percent < 50) {
-            showRecruiterProfileWarningPopup(job, percent, () => {
-                executeActualApply(job, buttonElement, isAiApply);
-            });
-            return;
-        }
-
-        // 3. If >= 50%
         executeActualApply(job, buttonElement, isAiApply);
-        showPortalToast("Application submitted! We recommend completing your profile to 100% for maximum recruiter response.");
         return;
     }
 
@@ -2768,6 +2772,8 @@ async function handleApplyClick(job, buttonElement, isAiApply = false) {
 
 async function executeActualApply(job, buttonElement, isAiApply = false) {
     if (isRecruiterPostedJob(job)) return recordApplication(job, buttonElement);
+    if (!currentSession) { window.location.href = '/login.html'; return false; }
+    if (isAiApply && !isProfileComplete()) { showCvUploadPopup(); return false; }
     markJobAsApplied(job);
     if (!isAiApply) {
         const applyLink = getApplicationLink(job['Application ID']);
@@ -2775,8 +2781,6 @@ async function executeActualApply(job, buttonElement, isAiApply = false) {
         else if (applyLink && applyLink !== '#') window.open(applyLink, '_blank');
         return true;
     }
-    if (!currentSession) { window.location.href = '/login.html'; return false; }
-    if (!isProfileComplete()) { showCvUploadPopup(); return false; }
     const emailBody = await generateEmailBody(job, currentTable, supabaseClient, currentSession.user);
     openMailtoLink(constructMailto(job, emailBody));
     return true;
@@ -4669,57 +4673,8 @@ function initOnboardingSegmentForm() {
 }
 
 function calculateProfileCompletion() {
-    const cachedProfile = localStorage.getItem('userProfileData');
-    const hasResume = localStorage.getItem('userCVText') || localStorage.getItem('userCVPdf');
-
-    let profile = null;
-    if (cachedProfile) {
-        try { profile = JSON.parse(cachedProfile); } catch (e) { }
-    }
-
     if (!currentSession) return 0;
-    if (!profile && !hasResume) return 10;
-
-    let score = 0;
-
-    if (hasResume) score += 14;
-
-    if (profile) {
-        if ((profile.full_name || profile.name || '').trim()) score += 14;
-        if ((profile.contact_number || profile.mobile || profile.phone || profile.phone_number || '').toString().trim()) score += 10;
-        if ((profile.current_city || profile.city || profile.current_location || profile.location || '').trim()) score += 3;
-        if ((profile.profile_summary || profile.headline || '').trim()) score += 10;
-        if (
-            (profile.ca_final_course || '').trim() ||
-            (profile.ca_inter_course || '').trim() ||
-            (profile.ca_found_course || '').trim() ||
-            (profile.grad_degree || '').trim() ||
-            (profile.class12_board || '').trim() ||
-            (profile.class10_board || '').trim() ||
-            (profile.other_edu_course || '').trim() ||
-            (profile.other_edu_level || '').trim()
-        ) score += 12;
-        if (
-            (profile.total_experience || '').trim() ||
-            (profile.emp_company_name || '').trim() ||
-            (profile.emp_job_title || '').trim() ||
-            (profile.emp_exp_years || '').toString().trim() ||
-            (profile.articleship_firm_name || '').trim() ||
-            ((profile.articleship_firm_type || '').trim() && profile.articleship_firm_type !== 'None') ||
-            (profile.industrial_training_company || '').trim()
-        ) score += 12;
-        if ((profile.notice_period || '').trim()) score += 7;
-        if (
-            (profile.emp_company_name || '').trim() ||
-            (profile.articleship_firm_name || '').trim() ||
-            (profile.industrial_training_company || '').trim()
-        ) score += 7;
-        if ((profile.looking_for || profile.job_preference || '').trim()) score += 7;
-        if ((profile.key_skills || profile.skills || profile.emp_skills_hidden || '').trim()) score += 2;
-        if ((profile.cert_name || '').trim()) score += 2;
-    }
-
-    return Math.min(100, score);
+    return calculateSharedProfileCompletion(readCachedProfile(localStorage), localStorage);
 }
 
 function renderProfileCompletionBanner() {
