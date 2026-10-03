@@ -2928,14 +2928,6 @@ function renderProfileCompletionBanner() {
 
     const percent = currentSession ? calculateProfileCompletion() : 0;
 
-    if (percent === 100) {
-        document.body.classList.remove('with-completion-banner');
-        document.body.style.paddingTop = '';
-        const header = document.querySelector('.site-header, .floating-header');
-        if (header) header.style.top = '';
-        return;
-    }
-
     const banner = document.createElement('div');
     banner.id = 'profile-completion-banner';
     banner.className = 'profile-completion-banner';
@@ -2945,10 +2937,10 @@ function renderProfileCompletionBanner() {
     banner.classList.toggle('profile-onboarding-reminder', !!dismissedOnboarding);
     banner.innerHTML = `
         <div class="banner-text">
-            <span>${dismissedOnboarding ? '🔎 Let recruiters find you — complete your Profile' : '🎯 Complete your Profile'} to get 5x higher interview opportunities.</span>
+            <span>${percent === 100 ? '✅ Your profile is complete — you can use Easy Apply.' : `${dismissedOnboarding ? '🔎 Let recruiters find you — complete your Profile' : '🎯 Complete your Profile'} to get 5x higher interview opportunities.`}</span>
             <span class="completion-badge">Profile Completion: ${percent}%</span>
         </div>
-        <a href="/profile.html" class="banner-btn">Complete Profile</a>
+        <a href="/profile.html" class="banner-btn">${percent === 100 ? 'View Profile' : 'Complete Profile'}</a>
     `;
 
     document.body.insertBefore(banner, document.body.firstChild);
