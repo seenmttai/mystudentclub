@@ -698,9 +698,9 @@ async function fetchJobs() {
             const PORTALS = ['Industrial Training Job Portal', 'Articleship Jobs', 'Semi Qualified Jobs', 'Fresher Jobs'];
             const tablesToFetch = state.portalType === 'all' ? PORTALS : [state.portalType];
 
-            let selectColumnsFresher = 'id, Company, Location, Salary, Description, Created_At, Category, "Application ID", application_count, Experience, yoe';
-            let selectColumnsSemi = 'id, Company, Location, Salary, Description, Created_At, Category, "Application ID", application_count, Experience';
-            let selectColumnsBase = 'id, Company, Location, Salary, Description, Created_At, Category, "Application ID", application_count';
+            let selectColumnsFresher = 'id, Company, Location, Salary, Description, Created_At, Category, "Application ID", application_count, Experience, yoe, posted_by, hirer_email';
+            let selectColumnsSemi = 'id, Company, Location, Salary, Description, Created_At, Category, "Application ID", application_count, Experience, posted_by, hirer_email';
+            let selectColumnsBase = 'id, Company, Location, Salary, Description, Created_At, Category, "Application ID", application_count, posted_by, hirer_email';
 
             const queries = tablesToFetch.map(async (table) => {
                 let selectColumns = selectColumnsBase;

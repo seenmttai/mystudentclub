@@ -1436,7 +1436,7 @@ async function fetchJobs() {
     }
 
     try {
-        let selectColumns = 'id, Company, Location, Salary, Created_At, Category, application_count, posts_link, "Primary Domain"';
+        let selectColumns = 'id, Company, Location, Salary, Created_At, Category, application_count, posts_link, "Primary Domain", posted_by, hirer_email';
         if (currentTable === "Fresher Jobs") {
             selectColumns += ', Experience, yoe, "Secondary Domain", Tags, "Company Type", "Industry Type", "CTC Range"';
         } else if (currentTable === "Semi Qualified Jobs") {
