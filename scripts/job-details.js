@@ -27,6 +27,43 @@ const TABLE_MAP = {
 };
 
 let currentSession = null;
+const pendingApplications = new Set();
+const completedApplications = new Set();
+
+function isRecruiterPostedJob(job) {
+    return Boolean(job && (job.posted_by || job.hirer_email || job['posted_by'] || job['hirer_email']));
+}
+
+async function recordRecruiterApplication(job, buttonElement, tableName) {
+    if (!currentSession) {
+        window.location.href = `/login.html?redirect=${encodeURIComponent(window.location.href)}`;
+        return;
+    }
+    const applicationKey = `${tableName}:${job.id}`;
+    if (pendingApplications.has(applicationKey) || completedApplications.has(applicationKey)) return;
+    pendingApplications.add(applicationKey);
+
+    const originalText = buttonElement.innerHTML;
+    buttonElement.disabled = true;
+    buttonElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Applying...';
+    try {
+        const { error } = await supabaseClient.from('job_applications').insert({
+            user_id: currentSession.user.id, job_id: job.id, job_table: tableName, applied_at: new Date().toISOString()
+        });
+        if (error && error.code !== '23505') throw error;
+        completedApplications.add(applicationKey);
+        buttonElement.classList.add('applied');
+        buttonElement.innerHTML = '<i class="fas fa-check"></i> Applied';
+        showToast('Application submitted to the hirer dashboard.', 'success');
+    } catch (error) {
+        console.error('Application exception:', error);
+        buttonElement.disabled = false;
+        buttonElement.innerHTML = originalText;
+        showToast('Unable to submit your application. Please try again.', 'error');
+    } finally {
+        pendingApplications.delete(applicationKey);
+    }
+}
 
 async function init() {
     currentSession = await getCurrentSession();
@@ -147,7 +184,8 @@ function renderJob(job, tableName) {
     const category = job.Category || 'General';
     const description = job.Description || 'No description provided.';
 
-    const applyInfo = getApplicationLink(job['Application ID']);
+    const recruiterPosted = isRecruiterPostedJob(job);
+    const applyInfo = recruiterPosted ? { isEmail: false, link: '#' } : getApplicationLink(job['Application ID']);
 
     let connectLink = checkConnectLink(job);
     if (!connectLink) {
@@ -156,7 +194,9 @@ function renderJob(job, tableName) {
         connectLink = `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(query)}&origin=SWITCH_SEARCH_VERTICAL`;
     }
 
-    const applyButtonsHtml = generateApplyButtons(applyInfo, job);
+    const applyButtonsHtml = recruiterPosted
+        ? '<button class="btn-large btn-primary-large" id="simpleApplyBtn" type="button"><i class="fas fa-paper-plane"></i> Apply Now</button>'
+        : generateApplyButtons(applyInfo, job);
 
     const html = `
       <div class="job-header-section">
@@ -205,7 +245,7 @@ function renderJob(job, tableName) {
             <div class="action-card">
                 <h3>Apply here</h3>
                 
-                <div class="info-grid">
+                ${recruiterPosted ? '<p><i class="fas fa-circle-info"></i> Easy Apply is enabled. Your profile and CV will be sent to the hirer dashboard.</p>' : `<div class="info-grid">
                     <div class="info-card">
                         <div>
                             <span class="info-label">${applyInfo.isEmail ? 'Email' : 'Apply Link'}</span>
@@ -220,7 +260,7 @@ function renderJob(job, tableName) {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div>`}
 
                 <h3 style="margin-top: 1rem;">Interested?</h3>
                 <p>Apply now or connect with peers at this company.</p>
@@ -250,7 +290,12 @@ function renderJob(job, tableName) {
     loadingState.style.display = 'none';
     container.style.display = 'block';
 
-    if (applyInfo.isEmail) {
+    if (recruiterPosted) {
+        const applyButton = container.querySelector('#simpleApplyBtn');
+        if (applyButton) applyButton.addEventListener('click', () => recordRecruiterApplication(job, applyButton, tableName));
+    }
+
+    if (!recruiterPosted && applyInfo.isEmail) {
         const aiApplyButtons = container.querySelectorAll('.btn-ai-apply');
         aiApplyButtons.forEach(btn => {
             btn.addEventListener('click', () => handleAiApply(job, btn, tableName));

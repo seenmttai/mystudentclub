@@ -173,6 +173,7 @@ const htmlTemplate = (job, jsonLd, categorySlug, jobId, tableName) => {
     const category = job.Category || 'General';
     const descriptionHtml = renderMarkdown(job.Description);
     const applyInfo = getApplicationLink(job['Application ID']);
+    const recruiterPosted = Boolean(job.posted_by || job.hirer_email || job['posted_by'] || job['hirer_email']);
 
     // Connect Link Logic
     let connectLink = job.connect_link || job['connect_link'];
@@ -184,7 +185,13 @@ const htmlTemplate = (job, jsonLd, categorySlug, jobId, tableName) => {
 
     // Apply Button Logic
     let applyButtonsHtml = '';
-    if (applyInfo.isEmail) {
+    if (recruiterPosted) {
+        applyButtonsHtml = `
+            <button class="btn-large btn-primary-large" id="simpleApplyBtn" type="button">
+                <i class="fas fa-paper-plane"></i> Apply Now
+            </button>
+        `;
+    } else if (applyInfo.isEmail) {
         const simpleMailto = constructMailto(job, tableName);
         applyButtonsHtml = `
             <div class="email-apply-buttons">
@@ -941,11 +948,11 @@ const htmlTemplate = (job, jsonLd, categorySlug, jobId, tableName) => {
                         <div class="info-grid">
                             <div class="info-card">
                                 <div>
-                                    <span class="info-label">${applyInfo.isEmail ? 'Email' : 'Apply Link'}</span>
+                                    <span class="info-label">${recruiterPosted ? 'Easy Apply' : (applyInfo.isEmail ? 'Email' : 'Apply Link')}</span>
                                     <div class="info-value-container">
                                         <div class="info-value-scroll">
-                                            <i class="fas ${applyInfo.isEmail ? 'fa-envelope' : 'fa-link'}"></i>
-                                            <span class="apply-link-text">${applyInfo.isEmail ? applyInfo.email : job['Application ID'] || 'N/A'}</span>
+                                            <i class="fas ${recruiterPosted ? 'fa-paper-plane' : (applyInfo.isEmail ? 'fa-envelope' : 'fa-link')}"></i>
+                                            <span class="apply-link-text">${recruiterPosted ? 'Apply with one click' : (applyInfo.isEmail ? applyInfo.email : job['Application ID'] || 'N/A')}</span>
                                         </div>
                                     </div>
                                 </div>
