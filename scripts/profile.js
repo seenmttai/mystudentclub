@@ -3262,6 +3262,34 @@ function updatePrivacyCard(isConsented) {
 }
 
 // =================== SAVE ===================
+async function persistProfileRecord(profileData, ocrText) {
+    const { error } = await supabaseClient.from('profiles').upsert({
+        uuid: currentUser.id,
+        profile: profileData,
+        ocr_cv: ocrText,
+        updated_at: new Date().toISOString()
+    });
+    if (error) throw error;
+}
+
+async function persistCurrentProfileSnapshot() {
+    if (!currentUser || !profileForm) return;
+
+    const profileData = Object.fromEntries(new FormData(profileForm).entries());
+    delete profileData.resume;
+    delete profileData.cover_letter;
+    const cvFileName = localStorage.getItem('userCVFileName');
+    if (cvFileName) profileData.cv_filename = cvFileName;
+    profileData.cv_cloud_synced = isCloudSynced();
+    if (currentUser.email) profileData.email = currentUser.email;
+
+    const ocrText = localStorage.getItem('userCVText') || '';
+    await persistProfileRecord(profileData, ocrText);
+    localStorage.setItem('userProfileData', JSON.stringify(profileData));
+    lastUpdatedISO = new Date().toISOString();
+    refreshHeader();
+}
+
 async function handleSave(e) {
     e.preventDefault();
 
@@ -3312,6 +3340,25 @@ async function handleSave(e) {
     }
 
     let ocrText = localStorage.getItem('userCVText') || '';
+
+    // Persist profile fields before starting the potentially slow CV upload.
+    // Otherwise navigating away while the upload is in progress cancels this
+    // whole handler and the next page reloads the previous profile name.
+    profileData.cv_cloud_synced = isCloudSynced();
+    localStorage.setItem('userProfileData', JSON.stringify(profileData));
+
+    try {
+        await persistProfileRecord(profileData, ocrText);
+        lastUpdatedISO = new Date().toISOString();
+        refreshHeader();
+    } catch (e) {
+        console.error(e);
+        showToast('Could not save your profile to the server. Please try again.', 'error', 10000);
+        btnText.textContent = originalText;
+        spinner.style.display = 'none';
+        saveBtn.disabled = false;
+        return;
+    }
 
     let syncSuccess = false;
     let hasImagesToSync = false;
@@ -3390,17 +3437,10 @@ async function handleSave(e) {
         currentlySynced = syncSuccess;
     }
     profileData.cv_cloud_synced = currentlySynced;
-
     localStorage.setItem('userProfileData', JSON.stringify(profileData));
 
     try {
-        const { error } = await supabaseClient.from('profiles').upsert({
-            uuid: currentUser.id,
-            profile: profileData,
-            ocr_cv: ocrText,
-            updated_at: new Date().toISOString()
-        });
-        if (error) throw error;
+        await persistProfileRecord(profileData, ocrText);
         if (currentlySynced) {
             setCloudSyncFlag();
         } else {
@@ -4938,15 +4978,28 @@ document.addEventListener('DOMContentLoaded', async () => {
         refreshHeader();
     });
 
-    // Modal Save buttons (section-level save, closes popup only)
-    document.body.addEventListener('click', (e) => {
+    // Modal Save buttons (persist the edited section before closing the popup)
+    document.body.addEventListener('click', async (e) => {
         const saveActionBtn = e.target.closest('.p2-inline-save[data-save], .p2-btn-save[data-save]');
         if (!saveActionBtn) return;
         const targetId = saveActionBtn.getAttribute('data-save');
         const target = document.getElementById(targetId);
+
+        saveActionBtn.disabled = true;
+        try {
+            await persistCurrentProfileSnapshot();
+            showToast('Profile section saved successfully!', 'success', 5000);
+        } catch (error) {
+            console.error(error);
+            showToast('Could not save this profile section. Please try again.', 'error', 8000);
+            saveActionBtn.disabled = false;
+            return;
+        }
+
         if (target && !target.classList.contains('collapsed')) {
             toggleForm(targetId);
         }
+        saveActionBtn.disabled = false;
         refreshHeader();
     });
 
