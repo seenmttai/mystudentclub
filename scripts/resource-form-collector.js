@@ -88,6 +88,12 @@ class ResourceFormCollector {
                             <input type="tel" id="studentPhone" name="phone" required placeholder="Enter your phone number" pattern="[0-9]{10}">
                         </div>
                         <div class="form-group">
+                            <label for="studentStage">Your Stage</label>
+                            <select id="studentStage" name="stage">
+                                ${this.stageOptionsHtml()}
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <label for="studentProgram">Program Type</label>
                             <input type="text" id="studentProgram" name="program" readonly value="${this.getProgramDisplayName()}">
                         </div>
@@ -215,7 +221,8 @@ class ResourceFormCollector {
                 .form-group .required {
                     color: #ef4444;
                 }
-                .form-group input {
+                .form-group input,
+                .form-group select {
                     width: 100%;
                     padding: 0.75rem;
                     border: 2px solid #e5e7eb;
@@ -224,7 +231,8 @@ class ResourceFormCollector {
                     transition: all 0.2s;
                     box-sizing: border-box;
                 }
-                .form-group input:focus {
+                .form-group input:focus,
+                .form-group select:focus {
                     outline: none;
                     border-color: #4f46e5;
                     box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
@@ -276,6 +284,82 @@ class ResourceFormCollector {
             </style>
         `;
         document.head.insertAdjacentHTML('beforeend', styles);
+    }
+
+    /**
+     * Stage options for the lead form. Keys are the same as career_intakes.stage and the Events page,
+     * so the mail system files the lead under the right stage.
+     */
+    static get STAGE_STORAGE_KEY() {
+        return 'msc_audience';
+    }
+
+    static get STAGES() {
+        return [
+            ['industrial-training', 'CA Industrial Training'],
+            ['articleship', 'CA Articleship'],
+            ['ca-fresher', 'CA Fresher'],
+            ['semi-qualified', 'Semi-Qualified CA'],
+            ['experienced-ca', 'Experienced CA'],
+            ['other', 'Others']
+        ];
+    }
+
+    static normalizeStage(value) {
+        const v = String(value || '').trim().toLowerCase();
+        return ResourceFormCollector.STAGES.some(([key]) => key === v) ? v : '';
+    }
+
+    /**
+     * Preselected stage: what this browser chose before (here or on /sessions), else the page's program.
+     * Optional: an empty choice never blocks the resource.
+     */
+    defaultStage() {
+        let stored = '';
+        try {
+            stored = localStorage.getItem(ResourceFormCollector.STAGE_STORAGE_KEY) || '';
+        } catch (e) {
+            stored = '';
+        }
+        return ResourceFormCollector.normalizeStage(stored) || ResourceFormCollector.normalizeStage(this.programType);
+    }
+
+    stageOptionsHtml() {
+        const selected = this.defaultStage();
+        const options = ResourceFormCollector.STAGES.map(([key, label]) =>
+            `<option value="${key}"${key === selected ? ' selected' : ''}>${label}</option>`);
+        return [`<option value=""${selected ? '' : ' selected'}>Select your stage</option>`, ...options].join('');
+    }
+
+    static rememberStage(stage) {
+        if (!stage) return;
+        try {
+            localStorage.setItem(ResourceFormCollector.STAGE_STORAGE_KEY, stage);
+        } catch (e) {
+            // private mode or blocked storage: nothing to remember
+        }
+    }
+
+    /** True when PostgREST/Postgres says the column does not exist (the stage column may not be added yet). */
+    static isMissingColumn(error, column) {
+        if (!error) return false;
+        if (error.code === 'PGRST204' || error.code === '42703') return true;
+        const text = `${error.message || ''} ${error.details || ''}`;
+        return /column/i.test(text) && new RegExp(`\\b${column}\\b`).test(text);
+    }
+
+    /**
+     * Saves the lead. If resource_access_logs has no stage column yet, saves it again without the stage,
+     * so the lead is never lost.
+     */
+    async saveLead(data) {
+        let { error } = await supabaseClient.from('resource_access_logs').insert([data]);
+        if (error && Object.prototype.hasOwnProperty.call(data, 'stage') && ResourceFormCollector.isMissingColumn(error, 'stage')) {
+            const withoutStage = Object.assign({}, data);
+            delete withoutStage.stage;
+            ({ error } = await supabaseClient.from('resource_access_logs').insert([withoutStage]));
+        }
+        return { error };
     }
 
     /**
@@ -491,6 +575,11 @@ class ResourceFormCollector {
             resource_url: resourceUrl,
             accessed_at: new Date().toISOString()
         };
+        const stage = ResourceFormCollector.normalizeStage(formData.get('stage'));
+        if (stage) {
+            data.stage = stage;
+            ResourceFormCollector.rememberStage(stage);
+        }
 
         // Disable submit button
         if (submitBtn) {
@@ -500,9 +589,7 @@ class ResourceFormCollector {
 
         try {
             // Save to Supabase
-            const { data: insertData, error } = await supabaseClient
-                .from('resource_access_logs')
-                .insert([data]);
+            const { error } = await this.saveLead(data);
 
             if (error) {
                 console.error('Error saving resource access:', error);
@@ -510,8 +597,6 @@ class ResourceFormCollector {
                 if (error.message && error.message.includes('does not exist')) {
                     // console.warn('Table "resource_access_logs" does not exist. Please run the SQL script in Supabase.');
                 }
-            } else {
-                // console.log('Resource access logged successfully:', insertData);
             }
 
             // Mark as submitted
