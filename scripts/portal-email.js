@@ -79,6 +79,8 @@ const limit = 15;
 let hasMoreData = true;
 let currentTable = 'Industrial Training Job Portal';
 let currentSession = null;
+const pendingRecruiterApplications = new Set();
+const completedRecruiterApplications = new Set();
 let profileHydrationPromise = null;
 let appliedJobIds = new Set();
 let debounceTimeout = null;
@@ -373,7 +375,18 @@ async function recordApplication(job, btnElement) {
         return false;
     }
 
+    const recruiterPosted = isRecruiterPostedJob(job);
+    const applicationKey = `${job.source_table || state.portalType}:${job.id}`;
+    if (recruiterPosted && (pendingRecruiterApplications.has(applicationKey) || completedRecruiterApplications.has(applicationKey) || appliedJobIds.has(job.id))) {
+        return false;
+    }
+
     const originalText = btnElement.innerHTML;
+    if (recruiterPosted) {
+        pendingRecruiterApplications.add(applicationKey);
+        btnElement.style.pointerEvents = 'none';
+        if ('disabled' in btnElement) btnElement.disabled = true;
+    }
     btnElement.innerHTML = '<div class="loader-spinner" style="width: 20px; height: 20px; border-width: 2px;"></div>';
 
     try {
@@ -390,7 +403,7 @@ async function recordApplication(job, btnElement) {
             if (error.code === '23505') { // Unique violation (already applied)
                 // Just proceed
             } else {
-                console.error('Error recording application:', error);
+                throw error;
             }
         } else {
             // Success
@@ -398,14 +411,25 @@ async function recordApplication(job, btnElement) {
             // Update local count if possible for immediate feedback (optional)
         }
 
+        if (recruiterPosted) {
+            completedRecruiterApplications.add(applicationKey);
+            appliedJobIds.add(job.id);
+        }
+
         btnElement.classList.add('applied');
-        btnElement.innerHTML = originalText;
+        btnElement.innerHTML = recruiterPosted ? '<i class="fas fa-check"></i> Applied' : originalText;
         showToast('Application submitted to the hirer dashboard.', 'success');
         return true;
     } catch (e) {
         console.error('Application exception:', e);
+        if (recruiterPosted) {
+            btnElement.style.pointerEvents = '';
+            if ('disabled' in btnElement) btnElement.disabled = false;
+        }
         btnElement.innerHTML = originalText;
         return false;
+    } finally {
+        if (recruiterPosted) pendingRecruiterApplications.delete(applicationKey);
     }
 }
 

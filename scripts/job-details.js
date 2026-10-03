@@ -27,6 +27,8 @@ const TABLE_MAP = {
 };
 
 let currentSession = null;
+const pendingApplications = new Set();
+const completedApplications = new Set();
 
 function isRecruiterPostedJob(job) {
     return Boolean(job && (job.posted_by || job.hirer_email || job['posted_by'] || job['hirer_email']));
@@ -37,6 +39,10 @@ async function recordRecruiterApplication(job, buttonElement, tableName) {
         window.location.href = `/login.html?redirect=${encodeURIComponent(window.location.href)}`;
         return;
     }
+    const applicationKey = `${tableName}:${job.id}`;
+    if (pendingApplications.has(applicationKey) || completedApplications.has(applicationKey)) return;
+    pendingApplications.add(applicationKey);
+
     const originalText = buttonElement.innerHTML;
     buttonElement.disabled = true;
     buttonElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Applying...';
@@ -45,6 +51,7 @@ async function recordRecruiterApplication(job, buttonElement, tableName) {
             user_id: currentSession.user.id, job_id: job.id, job_table: tableName, applied_at: new Date().toISOString()
         });
         if (error && error.code !== '23505') throw error;
+        completedApplications.add(applicationKey);
         buttonElement.classList.add('applied');
         buttonElement.innerHTML = '<i class="fas fa-check"></i> Applied';
         showToast('Application submitted to the hirer dashboard.', 'success');
@@ -53,6 +60,8 @@ async function recordRecruiterApplication(job, buttonElement, tableName) {
         buttonElement.disabled = false;
         buttonElement.innerHTML = originalText;
         showToast('Unable to submit your application. Please try again.', 'error');
+    } finally {
+        pendingApplications.delete(applicationKey);
     }
 }
 
