@@ -636,9 +636,14 @@ export function renderChips(current = null) {
 export function renderFilteredEmpty(audience) {
   return (
     `<div class="state state-empty">` +
-    `<p class="state-title">No event for ${esc(CHIP_LABELS[audience] || audienceLabel(audience))} right now.</p>` +
-    `<p class="state-text">New events are listed here first.</p>` +
-    `<div class="actions"><a class="btn btn-secondary" href="?" data-audience="">See all events</a></div>` +
+    `<div class="state-icon-wrap state-icon-empty"><i class="fas fa-filter"></i></div>` +
+    `<span class="state-badge"><span class="badge-dot"></span> Stage Filter</span>` +
+    `<p class="state-title">No upcoming event for ${esc(CHIP_LABELS[audience] || audienceLabel(audience))} right now</p>` +
+    `<p class="state-text">New live sessions and workshops are added regularly. You can reset your filter to view all events, or watch 100+ past sessions on YouTube.</p>` +
+    `<div class="actions">` +
+    `<a class="btn btn-primary" href="?" data-audience=""><i class="fas fa-layer-group"></i> See all events</a>` +
+    `<a class="btn btn-youtube" href="${esc(CONFIG.YOUTUBE)}" target="_blank" rel="noopener"><i class="fab fa-youtube"></i> Watch on YouTube</a>` +
+    `</div>` +
     `</div>`
   );
 }
@@ -646,8 +651,8 @@ export function renderFilteredEmpty(audience) {
 function fallbackLinks() {
   return (
     `<div class="actions">` +
-    `<a class="btn btn-primary" href="${esc(CONFIG.YOUTUBE)}">${ICONS.play}Watch on YouTube</a>` +
-    `<a class="btn btn-secondary" href="${esc(CONFIG.LINKS_HUB)}">All MSC links</a>` +
+    `<a class="btn btn-youtube" href="${esc(CONFIG.YOUTUBE)}" target="_blank" rel="noopener"><i class="fab fa-youtube"></i> Watch on YouTube</a>` +
+    `<a class="btn btn-secondary" href="${esc(CONFIG.LINKS_HUB)}"><i class="fas fa-arrow-up-right-from-square"></i> All MSC links</a>` +
     `</div>`
   );
 }
@@ -655,9 +660,12 @@ function fallbackLinks() {
 export function renderEmpty() {
   return (
     `<div class="state state-empty">` +
-    `<p class="state-title">No live session is scheduled right now — <a href="${esc(CONFIG.YOUTUBE)}">watch past sessions on YouTube</a></p>` +
-    `<p class="state-text">New sessions are listed here first. Our WhatsApp groups and channels are on the <a href="${esc(CONFIG.LINKS_HUB)}">MSC links page</a>.</p>` +
+    `<div class="state-icon-wrap state-icon-empty"><i class="fas fa-calendar-check"></i></div>` +
+    `<span class="state-badge"><span class="badge-dot"></span> Schedule Update</span>` +
+    `<p class="state-title">No live session is scheduled right now</p>` +
+    `<p class="state-text">We're lining up our next free Big 4 masterclasses and guest webinars. Meanwhile, catch over 100+ past session recordings on YouTube or find every MSC group on the <a href="${esc(CONFIG.LINKS_HUB)}">MSC links page</a>.</p>` +
     fallbackLinks() +
+    `<div class="state-footer-note"><i class="fas fa-bell"></i> New dates drop weekly · Calendar invites sent directly on registration</div>` +
     `</div>`
   );
 }
@@ -665,10 +673,16 @@ export function renderEmpty() {
 export function renderError() {
   return (
     `<div class="state state-error">` +
-    `<p class="state-title">We couldn't load the sessions right now.</p>` +
-    `<p class="state-text">Please try again in a minute. Meanwhile, past sessions are on YouTube.</p>` +
-    `<div class="actions"><button type="button" class="btn btn-secondary" data-action="retry">Try again</button></div>` +
-    fallbackLinks() +
+    `<div class="state-icon-wrap"><i class="fas fa-satellite-dish"></i></div>` +
+    `<span class="state-badge state-badge-sync"><span class="badge-dot pulse"></span> Live Schedule Sync</span>` +
+    `<p class="state-title">We couldn't connect to the live schedule right now</p>` +
+    `<p class="state-text">Our events feed is momentarily taking longer to respond. Tap <strong>Try again</strong> below to reconnect, or explore 100+ recorded masterclasses and interview sessions on YouTube.</p>` +
+    `<div class="actions">` +
+    `<button type="button" class="btn btn-primary" data-action="retry"><i class="fas fa-rotate-right"></i> Try again</button>` +
+    `<a class="btn btn-youtube" href="${esc(CONFIG.YOUTUBE)}" target="_blank" rel="noopener"><i class="fab fa-youtube"></i> Watch on YouTube</a>` +
+    `<a class="btn btn-secondary" href="${esc(CONFIG.LINKS_HUB)}">All MSC links</a>` +
+    `</div>` +
+    `<div class="state-footer-note"><i class="fas fa-shield-halved"></i> 100% Free · No sign-up fees · Never any charges for sessions</div>` +
     `</div>`
   );
 }
