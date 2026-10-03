@@ -219,11 +219,21 @@
             await collector.checkAndAccess(resource.title, download ? resource.downloadUrl : resource.viewUrl, () => openFree(resource, download));
         } catch (_) { showError('We could not open this resource. Please try again.'); }
     }
-    function showEnrollment(resource, trigger) {
+    function showEnrollment(resource, trigger, loggedIn) {
         const program = programs[resource.program];
         const modal = document.getElementById('resource-enroll-dialog');
-        document.getElementById('resource-enroll-title').textContent = 'Enroll in ' + program.title + ' to Access the Premium Resources';
-        document.getElementById('resource-enroll-resource').textContent = resource.title;
+        const set = (id, text) => { const node = document.getElementById(id); if (node) node.textContent = text; };
+        // Pages with the amber members-only card fill its parts; older markup keeps its own title.
+        if (document.getElementById('resource-enroll-collection')) {
+            set('resource-enroll-collection', inferResourceGroup(resource) + ' · ' + program.title);
+            set('resource-enroll-program', /\bCA\b/.test(program.title) ? program.title : program.title.replace(/^MSC /, 'MSC CA '));
+            set('resource-enroll-count', premiumRows.length > 1 ? 'all ' + premiumRows.length + ' premium resources' : 'all premium resources');
+            const signIn = document.getElementById('resource-enroll-signin');
+            if (signIn) signIn.hidden = Boolean(loggedIn);
+        } else {
+            set('resource-enroll-title', 'Enroll in ' + program.title + ' to Access the Premium Resources');
+        }
+        set('resource-enroll-resource', resource.title);
         document.getElementById('resource-enroll-link').href = program.url;
         returnFocus = trigger;
         modal.showModal();
@@ -237,7 +247,7 @@
             const isEnrolled = hasProgramEnrollment(access?.courses, resource.program, global.MSCProgramAccess.canonicalCourse);
             if (isEnrolled) {
                 global.location.href = '/learning-management-system/lms-resources.html';
-            } else showEnrollment(resource, trigger);
+            } else showEnrollment(resource, trigger, access.loggedIn);
         } catch (_) { showError('We could not check your program access. Please try again.'); }
         finally { trigger.disabled = false; }
     }
