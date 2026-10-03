@@ -22,6 +22,28 @@ test('both portals refresh Supabase before profile-dependent prompts', () => {
   }
 });
 
+test('profile section saves persist before the modal closes and before CV sync', () => {
+  const profileSource = read('scripts/profile.js');
+  const modalSave = profileSource.indexOf('await persistCurrentProfileSnapshot()');
+  const modalClose = profileSource.indexOf('toggleForm(targetId)', modalSave);
+  const profileSave = profileSource.indexOf('await persistProfileRecord(profileData, ocrText)');
+  const cvSync = profileSource.indexOf('let syncSuccess = false');
+
+  assert.ok(modalSave >= 0);
+  assert.ok(modalClose > modalSave);
+  assert.ok(profileSave >= 0);
+  assert.ok(cvSync > profileSave);
+});
+
+test('portal renders the account widget after profile hydration', () => {
+  const source = read('scripts/portal3.js');
+  const hydrationWait = source.indexOf('await profileHydrationPromise');
+  const headerRender = source.indexOf('updateHeaderAuth(session)', hydrationWait);
+
+  assert.ok(hydrationWait >= 0);
+  assert.ok(headerRender > hydrationWait);
+});
+
 test('all profile-dependent pages load the shared state helper before their module', () => {
   assert.match(read('profile.html'), /profile-state\.js[\s\S]*profile\.js/);
   assert.match(read('index.html'), /profile-state\.js[\s\S]*portal3\.js/);
