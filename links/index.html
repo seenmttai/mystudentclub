@@ -126,7 +126,7 @@
           <i class="fab fa-whatsapp"></i>
           <span>Whatsapp Community</span>
         </a>
-        <a href="https://www.mystudentclub.com/ca-articleship-resources" target="_blank" rel="noopener noreferrer" class="link-card resources" id="link-articleship-resources">
+        <a href="https://www.mystudentclub.com/ca-articleship-opportunities" target="_blank" rel="noopener noreferrer" class="link-card resources" id="link-articleship-resources">
           <i class="fas fa-book-open"></i>
           <span>Free Resources</span>
         </a>
@@ -307,6 +307,9 @@
         }
       } catch (err) {
         console.warn('Error hydrating live links:', err);
+      } finally {
+        // tabs.js opens a ?tab= / #hash tab that only exists once the admin's links are rendered.
+        document.dispatchEvent(new CustomEvent('msc:links-hydrated'));
       }
     }
 
@@ -316,6 +319,7 @@
       loadLiveLinks();
     }
   </script>
+  <script src="/links/tabs.js"></script>
 </body>
 
 </html>

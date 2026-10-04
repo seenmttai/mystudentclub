@@ -366,6 +366,7 @@
         </div>
         <a href="/learning-management-system/" class="dv2-nav-link">My Courses</a>
         <a href="/cv-reviewer/" class="dv2-nav-link">CV Reviewer</a>
+        <a href="/sessions/" class="dv2-nav-link dv2-nav-wide-only">Events</a>
         <a href="/contact.html" class="dv2-nav-link">Contact</a>
       </nav>
       <div class="nav-actions">
@@ -420,6 +421,7 @@
 
 
 
+      <a href="/sessions/" class="menu-item">Events &amp; Live Sessions</a>
       <a href="/contact.html" class="menu-item">Contact Us</a>
     </div>
   </div>
@@ -651,6 +653,17 @@
           <a href="/msc-ca-fresher-program/" class="dv2-rail-link">
             <span class="dv2-rail-link-icon"><i class="fas fa-graduation-cap" aria-hidden="true"></i></span>
             <span class="dv2-rail-link-text">MSC CA Freshers Program</span>
+            <i class="fas fa-chevron-right dv2-rail-arrow" aria-hidden="true"></i>
+          </a>
+        </div>
+
+        <div class="dv2-rail-card" id="dv2SessionsCard">
+          <h3>Upcoming Live Sessions</h3>
+          <p class="dv2-rail-sub">Free webinars, series and pre-placement talks. Register once for the calendar invite and reminders.</p>
+          <div id="dv2SessionsList" hidden></div>
+          <a href="/sessions/" class="dv2-rail-link">
+            <span class="dv2-rail-link-icon"><i class="fas fa-calendar-check" aria-hidden="true"></i></span>
+            <span class="dv2-rail-link-text">See all events</span>
             <i class="fas fa-chevron-right dv2-rail-arrow" aria-hidden="true"></i>
           </a>
         </div>
@@ -1178,6 +1191,7 @@
   <script src="/scripts/profile-state.js"></script>
   <script type="module" src="/scripts/portal3.js?v=2.2"></script>
   <script type="module" src="/scripts/date-utils.js"></script>
+  <script type="module" src="/scripts/upcoming-sessions.js"></script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-1450NCVE65"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
