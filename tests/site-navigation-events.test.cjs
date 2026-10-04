@@ -31,7 +31,7 @@ test('the desktop header nav links Events between CV Reviewer and Contact', () =
   for (const page of pages) {
     const html = read(page);
     assert.equal(html.split(DESKTOP_EVENTS).length - 1, 1, `${page}: one desktop Events link`);
-    assert.match(html, /CV Reviewer<\/a>\r?\n[ \t]*<a href="\/sessions\/" class="dv2-nav-link dv2-nav-wide-only">Events<\/a>\r?\n[ \t]*<a href="\/contact\.html" class="dv2-nav-link">Contact<\/a>/, page);
+    assert.match(html, /CV Reviewer<\/a>\r?\n[ \t]*<a href="\/sessions\/" class="dv2-nav-link dv2-nav-wide-only">Events<\/a>\r?\n[ \t]*<a href="\/blog\/" class="dv2-nav-link dv2-nav-wide-only">Guides<\/a>\r?\n[ \t]*<a href="\/contact\.html" class="dv2-nav-link">Contact<\/a>/, page);
   }
 });
 

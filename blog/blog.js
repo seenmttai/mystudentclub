@@ -161,7 +161,7 @@
       authorCard.innerHTML =
         '<span class="more-tag">Founder &amp; Mentor</span>' +
         '<div class="sidebar-author-top" style="margin: 0.15rem 0 0.25rem;">' +
-        '  <div class="sidebar-author-avatar">PB</div>' +
+        '  <img src="/assets/mentornew.png" alt="CA Padam Bhansali" class="sidebar-author-avatar">' +
         '  <div class="sidebar-author-info">' +
         '    <span class="more-title" style="font-size: 1.05rem; display: block;">CA Padam Bhansali</span>' +
         '    <p style="margin: 0; font-size: 0.8rem; color: var(--muted);">Founder, My Student Club</p>' +
