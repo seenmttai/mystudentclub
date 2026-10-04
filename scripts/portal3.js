@@ -4601,16 +4601,18 @@ function initOnboardingSegmentForm() {
         if (lookingFor === 'CA Articleship') mergedProfile.articleship_earliest_joining_date = earliestJoiningRaw;
         if (lookingFor === 'CA Fresher') mergedProfile.fresher_years_of_experience = document.getElementById('fresher_years_of_experience').value;
 
-        // Construct update object
+        // Construct update object — only write the field for the chosen stage.
+        // Do NOT null out other stages' fields; the user may switch stages later
+        // and their previously saved data must be preserved.
         const updateData = {
             looking_for: lookingFor,
-            articleship_1yr_end_date: lookingFor === 'CA Industrial Training Default' ? (articleshipDate || null) : null,
-            ca_inter_attempt: null,
-            ca_final_attempt: lookingFor === 'CA Fresher' ? (caFinalAttempt || null) : null,
-            years_of_experience: lookingFor === 'Semi Qualified CA' ? (yearsOfExp || null) : null,
             profile: mergedProfile,
             updated_at: new Date().toISOString()
         };
+        if (lookingFor === 'CA Industrial Training Default') updateData.articleship_1yr_end_date = articleshipDate || null;
+        if (lookingFor === 'CA Fresher') updateData.ca_final_attempt = caFinalAttempt || null;
+        if (lookingFor === 'Semi Qualified CA') updateData.years_of_experience = yearsOfExp || null;
+        // ca_inter_attempt is managed by career-profile.js, never wiped here.
 
         const submitBtn = form.querySelector('.onboarding-submit-btn');
         const originalBtnText = submitBtn.innerHTML;
