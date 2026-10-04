@@ -118,13 +118,6 @@ function makeHarness(options = {}) {
             context.pdfImages = [];
             elements.proceedToReviewBtn.disabled = true;
         },
-        supabase: {
-            auth: {
-                async getSession() {
-                    return { data: { session: null }, error: null };
-                }
-            }
-        },
         console: { warn() {}, error() {} }
     });
     const inProgressState = source.match(/^let isAnalysisInProgress\s*=\s*false;/m);

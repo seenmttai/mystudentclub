@@ -922,17 +922,13 @@ async function analyzeCv() {
         const domainHeader = 'Financing';
         const specializationHeader = 'Accounting';
 
-        const { data: sessionData } = await supabase.auth.getSession();
-        const accessToken = sessionData?.session?.access_token || null;
-
         const response = await fetch('https://cv-reviewer.bhansalimanan55.workers.dev/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-Domain': domainHeader,
                 'X-Specialization': specializationHeader,
-                'Origin': window.location.origin,
-                ...(accessToken ? { 'Authorization': `Bearer ${accessToken}` } : {})
+                'Origin': window.location.origin
             },
             body: JSON.stringify({ images: pdfImages, isPremium: isPremiumEnrolled })
         });

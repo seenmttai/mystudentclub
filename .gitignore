@@ -8,4 +8,6 @@ jobs-builder/dist/
 jobs-builder/.astro/
 jobs-builder/node_modules/
 sample-job-test.html
-context/
+
+
+

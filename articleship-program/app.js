@@ -1,212 +1,124 @@
-const getCompanyLogoSVG = (company) => {
-  const comp = (company || '').trim().toLowerCase();
-
-  if (comp.includes('deloitte')) {
-    return `<svg viewBox="0 0 110 26" class="company-logo-svg" fill="none">
-      <text x="2" y="20" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="20" font-weight="900" fill="#000000" letter-spacing="-0.5px">Deloitte<tspan fill="#86BC25">.</tspan></text>
-    </svg>`;
-  }
-
-  if (comp === 'ey' || comp.includes('ernst') || comp.includes('young')) {
-    return `<svg viewBox="0 0 56 26" class="company-logo-svg" fill="none">
-      <text x="6" y="20" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="22" font-weight="900" fill="#111827">EY</text>
-      <path d="M20 22 L44 22 L40 25 L16 25 Z" fill="#FFE600"/>
-    </svg>`;
-  }
-
-  if (comp.includes('kpmg')) {
-    return `<svg viewBox="0 0 76 28" class="company-logo-svg" fill="none">
-      <g stroke="#00338D" stroke-width="1.2" fill="none" opacity="0.85">
-        <rect x="3" y="1" width="14" height="9" rx="1.5"/>
-        <rect x="21" y="1" width="14" height="9" rx="1.5"/>
-        <rect x="39" y="1" width="14" height="9" rx="1.5"/>
-        <rect x="57" y="1" width="14" height="9" rx="1.5"/>
-      </g>
-      <text x="2" y="24" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="16" font-weight="900" font-style="italic" fill="#00338D" letter-spacing="1px">KPMG</text>
-    </svg>`;
-  }
-
-  if (comp.includes('pwc') || comp.includes('pricewaterhouse')) {
-    return `<svg viewBox="0 0 66 30" class="company-logo-svg" fill="none">
-      <rect x="26" y="1" width="7" height="7" fill="#DC6900"/>
-      <rect x="33" y="1" width="7" height="7" fill="#EB8C00"/>
-      <rect x="29" y="7" width="8" height="7" fill="#E0301E"/>
-      <rect x="22" y="7" width="7" height="7" fill="#FFB600"/>
-      <text x="8" y="26" font-family="'Georgia', serif" font-size="18" font-weight="bold" fill="#000000" letter-spacing="-0.5px">pwc</text>
-    </svg>`;
-  }
-
-  if (comp.includes('bsr')) {
-    return `<svg viewBox="0 0 74 26" class="company-logo-svg" fill="none">
-      <g transform="translate(2, 3)">
-        <circle cx="9" cy="9" r="8" stroke="#E07A5F" stroke-width="2.2" stroke-dasharray="2.5 1.5" fill="none"/>
-        <circle cx="9" cy="9" r="3.5" fill="#E07A5F"/>
-      </g>
-      <text x="27" y="18" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="17" font-weight="800" fill="#334155" letter-spacing="0.5px">BSR</text>
-    </svg>`;
-  }
-
-  if (comp.includes('genpact')) {
-    return `<svg viewBox="0 0 90 26" class="company-logo-svg" fill="none">
-      <g transform="translate(1, 3)">
-        <polygon points="9,1 16,5 16,13 9,17 2,13 2,5" fill="none" stroke="#E63946" stroke-width="2"/>
-        <polygon points="9,1 16,5 9,9 2,5" fill="#0d9488"/>
-      </g>
-      <text x="24" y="18" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="15" font-weight="800" fill="#0d9488" letter-spacing="-0.3px">genpact</text>
-    </svg>`;
-  }
-
-  if (comp.includes('infosys')) {
-    return `<svg viewBox="0 0 80 26" class="company-logo-svg" fill="none">
-      <text x="2" y="19" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="18" font-weight="700" fill="#007cc3" letter-spacing="-0.3px">Infosys</text>
-    </svg>`;
-  }
-
-  if (comp.includes('amazon')) {
-    return `<svg viewBox="0 0 78 26" class="company-logo-svg" fill="none">
-      <text x="2" y="17" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="16" font-weight="800" fill="#111827">amazon</text>
-      <path d="M12 21 C 28 26, 48 25, 62 20" stroke="#FF9900" stroke-width="2" fill="none" stroke-linecap="round"/>
-      <polygon points="62,18 67,20 62,23" fill="#FF9900"/>
-    </svg>`;
-  }
-
-  if (comp.includes('flipkart')) {
-    return `<svg viewBox="0 0 80 26" class="company-logo-svg" fill="none">
-      <text x="2" y="18" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="16" font-weight="800" font-style="italic" fill="#2874F0">Flipkart</text>
-      <polygon points="68,9 72,13 68,17" fill="#FFE500"/>
-    </svg>`;
-  }
-
-  if (comp.includes('shaw')) {
-    return `<svg viewBox="0 0 105 26" class="company-logo-svg" fill="none">
-      <text x="2" y="17" font-family="'Georgia', serif" font-size="12.5" font-weight="bold" fill="#002D62" letter-spacing="0.2px">DE Shaw & Co</text>
-    </svg>`;
-  }
-
-  if (comp.includes('morgan') || comp.includes('stanley')) {
-    return `<svg viewBox="0 0 98 26" class="company-logo-svg" fill="none">
-      <text x="2" y="17" font-family="'Georgia', serif" font-size="12" font-weight="bold" fill="#111827">Morgan Stanley</text>
-    </svg>`;
-  }
-
-  if (comp.includes('goldman') || comp.includes('sachs')) {
-    return `<svg viewBox="0 0 92 26" class="company-logo-svg" fill="none">
-      <text x="2" y="12" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="10" font-weight="800" fill="#111827">Goldman</text>
-      <text x="2" y="23" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="10" font-weight="800" fill="#111827">Sachs</text>
-    </svg>`;
-  }
-
-  if (comp.includes('deutsche')) {
-    return `<svg viewBox="0 0 92 26" class="company-logo-svg" fill="none">
-      <rect x="2" y="4" width="16" height="16" stroke="#0018A8" stroke-width="2" fill="none"/>
-      <line x1="5" y1="17" x2="15" y2="7" stroke="#0018A8" stroke-width="2.2"/>
-      <text x="22" y="16" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="10" font-weight="700" fill="#0018A8">Deutsche Bank</text>
-    </svg>`;
-  }
-
-  if (comp.includes('ubs')) {
-    return `<svg viewBox="0 0 60 26" class="company-logo-svg" fill="none">
-      <text x="2" y="19" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="19" font-weight="900" fill="#E60000" letter-spacing="1.5px">UBS</text>
-    </svg>`;
-  }
-
-  if (comp.includes('hdfc')) {
-    return `<svg viewBox="0 0 85 26" class="company-logo-svg" fill="none">
-      <rect x="2" y="4" width="16" height="16" fill="#004C8F" rx="2"/>
-      <rect x="6" y="8" width="8" height="8" fill="#ED232A"/>
-      <text x="22" y="17" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="800" fill="#004C8F">HDFC BANK</text>
-    </svg>`;
-  }
-
-  if (comp.includes('reliance')) {
-    return `<svg viewBox="0 0 85 26" class="company-logo-svg" fill="none">
-      <text x="2" y="18" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="15" font-weight="800" fill="#D32F2F" letter-spacing="0.5px">Reliance</text>
-    </svg>`;
-  }
-
-  if (comp.includes('cummins')) {
-    return `<svg viewBox="0 0 78 26" class="company-logo-svg" fill="none">
-      <rect x="2" y="4" width="16" height="16" fill="#D32F2F" rx="2"/>
-      <text x="6" y="16" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="900" fill="#fff">C</text>
-      <text x="22" y="17" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="800" fill="#111827">Cummins</text>
-    </svg>`;
-  }
-
-  if (comp.includes('unilever')) {
-    return `<svg viewBox="0 0 78 26" class="company-logo-svg" fill="none">
-      <text x="2" y="18" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="16" font-weight="800" fill="#1F36C7">Unilever</text>
-    </svg>`;
-  }
-
-  if (comp.includes('godrej')) {
-    return `<svg viewBox="0 0 90 26" class="company-logo-svg" fill="none">
-      <text x="2" y="18" font-family="'Brush Script MT', 'Lucida Calligraphy', cursive, sans-serif" font-size="19" font-weight="bold" fill="#0d9488">Godrej</text>
-      <text x="48" y="18" font-family="'Inter', sans-serif" font-size="10" font-weight="700" fill="#64748b">Agrovet</text>
-    </svg>`;
-  }
-
-  if (comp.includes('hsbc')) {
-    return `<svg viewBox="0 0 75 26" class="company-logo-svg" fill="none">
-      <polygon points="8,13 2,7 14,7" fill="#DB0011"/>
-      <polygon points="8,13 2,19 14,19" fill="#DB0011"/>
-      <polygon points="8,13 14,7 14,19" fill="#DB0011"/>
-      <text x="20" y="18" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="800" fill="#111827">HSBC</text>
-    </svg>`;
-  }
-
-  if (comp.includes('barclays')) {
-    return `<svg viewBox="0 0 85 26" class="company-logo-svg" fill="none">
-      <text x="2" y="18" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="800" fill="#00AEEF">BARCLAYS</text>
-    </svg>`;
-  }
-
-  if (comp.includes('pepsico') || comp.includes('pepsi')) {
-    return `<svg viewBox="0 0 85 26" class="company-logo-svg" fill="none">
-      <text x="2" y="18" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="800" fill="#004B93">PEPSICO</text>
-    </svg>`;
-  }
-
-  if (comp.includes('bpcl')) {
-    return `<svg viewBox="0 0 75 26" class="company-logo-svg" fill="none">
-      <circle cx="10" cy="13" r="8" fill="#FFCC00"/>
-      <circle cx="10" cy="13" r="4" fill="#003399"/>
-      <text x="24" y="18" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="900" fill="#003399">BPCL</text>
-    </svg>`;
-  }
-
-  if (comp.includes('dlf')) {
-    return `<svg viewBox="0 0 65 26" class="company-logo-svg" fill="none">
-      <text x="2" y="18" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="16" font-weight="900" fill="#003399">DLF</text>
-    </svg>`;
-  }
-
-  return `<span class="company-fallback-badge">${company}</span>`;
-};
-
 const generateData = () => {
-  // Real student profiles with their ACTUAL placement companies
-  const students = [
-    { name: "Gaurav Jaat", course: "CA Articleship Training Program", linkedin: "https://www.linkedin.com/in/gauravjaat/", image: "../assets/gaurav.jpg", fallback: "gaurav.jpg", company: "DE Shaw" },
-    { name: "Kanchan Kulhria", course: "CA Articleship Training Program", linkedin: "https://www.linkedin.com/in/kanchankulhria/", image: "../assets/kanchan.jpg", fallback: "kanchan.jpg", company: "Amazon" },
-    { name: "Anisha Joshi", course: "CA Articleship Training Program", linkedin: "https://www.linkedin.com/in/anishajoshi76/", image: "../assets/joshi.jpg", fallback: "joshi.jpg", company: "Godrej Agrovet" },
-    { name: "Khushi Gandhi", course: "CA Articleship Training Program", linkedin: "https://www.linkedin.com/in/khushi-gandhi-40a37a242/", image: "../assets/khushi.jpg", fallback: "khushi.jpg", company: "Morgan Stanley" },
-    { name: "Rohit Varma", course: "CA Articleship Training Program", linkedin: "https://www.linkedin.com/in/rohit-varma-0bb4792b8/", image: "../assets/varma.jpg", fallback: "varma.jpg", company: "Cummins" },
-    { name: "Vedang Sawant", course: "CA Articleship Training Program", linkedin: "https://www.linkedin.com/in/vedangsawant/", image: "../assets/vedang.jpg", fallback: "vedang.jpg", company: "Flipkart" },
-    { name: "Ishaan Isham", course: "CA Articleship Training Program", linkedin: "https://www.linkedin.com/in/ishaanisham/", image: "../assets/ishaan.jpg", fallback: "ishaan.jpg", company: "UBS" },
-    { name: "Simran Singh", course: "CA Articleship Training Program", linkedin: "https://www.linkedin.com/in/simransingh-ca-aspirant/", image: "../assets/simran.jpg", fallback: "simran.jpg", company: "Amazon" },
-    { name: "Virali Doshi", course: "CA Articleship Training Program", linkedin: "https://www.linkedin.com/in/virali-doshi1905", image: "../assets/virali.jpg", fallback: "virali.jpg", company: "Deutsche Bank" },
-    { name: "Chery Lunia", course: "CA Articleship Training Program", linkedin: "https://www.linkedin.com/in/cheryluniya/", image: "../assets/Chery.jpeg", fallback: "Chery.jpeg", company: "Goldman Sachs" },
-    { name: "Ananya Gupta", course: "CA Articleship Training Program", linkedin: "https://www.linkedin.com/in/ananyagupta-ca", image: "../assets/ananya.jpg", fallback: "ananya.jpg", company: "Amazon" },
-    { name: "Prabhjyot Singh", course: "CA Articleship Training Program", linkedin: "https://www.linkedin.com/in/prabhjyotsinghca/", image: "../assets/prabhjyot.jpeg", fallback: "prabhjyot.jpeg", company: "Unilever" },
-    { name: "Chandini Meher", course: "CA Articleship Training Program", linkedin: "https://www.linkedin.com/in/chandini-meher/", image: "../assets/Chandini.jpeg", fallback: "Chandini.jpeg", company: "HDFC Bank" },
-    { name: "Charu Kewalramani", course: "CA Articleship Training Program", linkedin: "https://www.linkedin.com/in/charu-kewalramani-40a55930b/", image: "../assets/Charu.jpg", fallback: "Charu.jpg", company: "DE Shaw" },
-    { name: "Pooja Kedia", course: "CA Articleship Training Program", linkedin: "https://www.linkedin.com/in/pooja-kedia-2578a1214/", image: "../assets/Pooja.jpg", fallback: "Pooja.jpg", company: "HSBC" },
-    { name: "Piyu Jain", course: "CA Articleship Training Program", linkedin: "https://www.linkedin.com/in/piyujain/", image: "../assets/Piyu.jpg", fallback: "Piyu.jpg", company: "Reliance" },
-    { name: "Anisha Nagwani", course: "CA Articleship Training Program", linkedin: "https://www.linkedin.com/in/anisha-nagwani/", image: "../assets/nagwani.jpg", fallback: "nagwani.jpg", company: "Barclays" },
-    { name: "Sajal Mittal", course: "CA Articleship Training Program", linkedin: "https://www.linkedin.com/in/sajalmittal15/", image: "../assets/sajal.jpg", fallback: "sajal.jpg", company: "PepsiCo" },
-    { name: "Kirti Yadav", course: "CA Articleship Training Program", linkedin: "https://www.linkedin.com/in/kirtiyadav07/", image: "../assets/Kirti.jpeg", fallback: "Kirti.jpeg", company: "DLF" },
-    { name: "Aakanksha Lolge", course: "CA Articleship Training Program", linkedin: "https://www.linkedin.com/in/aakankshalolge/", image: "../assets/Aakanksha-Lolge.jpg", fallback: "Aakanksha-Lolge.jpg", company: "BPCL" }
+  const baseURL = "https://www.mystudentclub.com/assets/";
+
+  const allAvailableStudents = [
+    { name: "Vedang Sawant", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/vedangsawant/", image: baseURL + "vedang.jpg", company: "Flipkart" },
+    { name: "Gaurav Jaat", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/gauravjaat/", image: baseURL + "gaurav.jpg", company: "DE Shaw" },
+    { name: "Kanchan Kulhria", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/kanchankulhria/", image: baseURL + "kanchan.jpg", company: "Amazon" },
+    { name: "Anisha Joshi", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/anishajoshi76/", image: baseURL + "joshi.jpg", company: "Godrej Agrovet" },
+    { name: "Khushi Gandhi", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/khushi-gandhi-40a37a242/", image: baseURL + "khushi.jpg", company: "Morgan Stanley" },
+    { name: "Rohit Varma", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/rohit-varma-0bb4792b8/?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app", image: baseURL + "varma.jpg", company: "Cummins" },
+    { name: "Ishaan Isham", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/ishaanisham/", image: baseURL + "ishaan.jpg", company: "UBS" },
+    { name: "Simran Singh", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/simransingh-ca-aspirant/", image: baseURL + "simran.jpg", company: "Amazon" },
+    { name: "Ananya Gupta", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/ananyagupta-ca", image: baseURL + "ananya.jpg", company: "Amazon" },
+    { name: "Virali Doshi", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/virali-doshi1905", image: baseURL + "virali.jpg", company: "Deutsche Bank" },
+    { name: "Anisha Mehta", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/anisha-mehta1/", image: baseURL + "anisha_mehta.jpeg", company: "Adani" },
+    { name: "Aarushi Agarwal", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/aarushi-agarwal003/", image: baseURL + "Aarushi.jpeg", company: "Mizuho Bank" },
+    { name: "Vindhya Gupta", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/vindhya-gupta/", image: baseURL + "vindhya.jpeg", company: "Hindustan Times" },
+    { name: "Vishal Sharma", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/vishal-sharma057/", image: baseURL + "vishal.jpeg", company: "Bajaj Finance" },
+    { name: "Chery Lunia", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/cheryluniya/", image: baseURL + "Chery.jpeg", company: "Goldman Sachs" },
+    { name: "Prabhjyot Singh", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/prabhjyotsinghca/", image: baseURL + "prabhjyot.jpeg", company: "Unilever" },
+    { name: "Chandini Meher", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/chandini-meher/", image: baseURL + "Chandini.jpeg", company: "HDFC Bank" },
+    { name: "Kirti Yadav", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/kirtiyadav07/", image: baseURL + "Kirti.jpeg", company: "DLF" },
+    { name: "Raunaq Verma", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/raunaqverma17662/", image: baseURL + "Raunaq.jpeg", company: "HDFC Bank" },
+    { name: "Kavin S", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/s-kavin/", image: baseURL + "Kavin.jpeg", company: "Ashok Leyland" },
+    { name: "Aishwarya Lakshmi", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/aishwary0406/", image: baseURL + "aishwarye.jpeg", company: "Flipkart" },
+    { name: "Shreya Jain", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/shreya-jain03/", image: baseURL + "Shreya.jpeg", company: "ONGC" },
+    { name: "Sakshi Suryavanshi", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/sakshiasuryavanshi/", image: baseURL + "sakshi.jpeg", company: "ZF" },
+    { name: "Deepanshu Jain", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/deepanshu-jain-23078822a/", image: baseURL + "deepanshu.jpeg", company: "Henkel" },
+    { name: "Chandra Lekha", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/chandralekhauckoo", image: baseURL + "Chandra.jpeg", company: "ITC" },
+    { name: "Sakshi Sipholya", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/sakshisipolya/", image: baseURL + "sipholya.jpeg", company: "Deutsche Bank" },
+    { name: "Rahul Koli", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/rahulkoli15/", image: baseURL + "koli.jpeg", company: "Morgan Stanley" },
+    { name: "Anisha Shah", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/anisha-shah25/", image: baseURL + "Anisha.jpeg", company: "UBS" },
+    { name: "Arbaz Jakate", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/arbaz-jakate/", image: baseURL + "Arbaz.jpeg", company: "Mondelez" },
+    { name: "Monisha Agrawala", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/monisha-agrawala-/", image: baseURL + "monisha.jpeg", company: "Goldman Sachs" },
+    { name: "Hari Karnati", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/hari-karnati", image: baseURL + "karnati.jpeg", company: "Amazon" },
+    { name: "Devang Sinsinwar", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/devang-sinsinwar/", image: baseURL + "devang.jpeg", company: "Intel" },
+    { name: "Viddhi S Mittal", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/viddhismittal/", image: baseURL + "viddhi.jpg", company: "Amazon" },
+    { name: "Priya Jain", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/priyaaajain/", image: baseURL + "Priya.jpg", company: "Amazon" },
+    { name: "Charu Kewalramani", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/charu-kewalramani-40a55930b/", image: baseURL + "Charu.jpg", company: "DE Shaw" },
+    { name: "Pooja Kedia", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/pooja-kedia-2578a1214/", image: baseURL + "Pooja.jpg", company: "HSBC" },
+    { name: "Piyu Jain", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/piyujain/", image: baseURL + "Piyu.jpg", company: "Reliance" },
+    { name: "Diksha Borse", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/diksha-borse/", image: baseURL + "Diksha.jpg", company: "Amazon" },
+    { name: "Dev Mundra", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/devmundra2003/", image: baseURL + "Dev.jpg", company: "UBS" },
+    { name: "Anisha Nagwani", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/anisha-nagwani/?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAADnKIpwBe0wAQbMcCPwAxAPt5utUANKgoA", image: baseURL + "nagwani.jpg", company: "Barclays" },
+    { name: "Sajal Mittal", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/sajalmittal15/", image: baseURL + "sajal.jpg", company: "PepsiCo" },
+    { name: "Abhishek Puranik", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/abhishek-puranik221b/", image: baseURL + "Abhishek-Puranik.jpg", company: "BPCL" },
+    { name: "NSR Varma", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/varmansr/", image: baseURL + "NSR-Varma.jpg", company: "Alivira" },
+    { name: "Harsh Yadav", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/fcaharshyadav/", image: baseURL + "Harsh-Yadav.jpg", company: "Avery Dennison" },
+    { name: "Nandana Krishnadas", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/nandana-krishnadas-120247318/", image: baseURL + "Nandana.jpg", company: "Amazon" },
+    { name: "Muskan Chawla", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/muskan-chawla-b994152a9/", image: baseURL + "Muskan-Chawla.jpg", company: "Whitewater Advisory" },
+    { name: "P Hritish Kumar", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/hritishkumar/", image: baseURL + "Hritish.jpg", company: "DLF" },
+    { name: "Aakanksha Lolge", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/aakankshalolge/", image: baseURL + "Aakanksha-Lolge.jpg", company: "BPCL" },
+    { name: "Harinee Selvam", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/harinee-selvam-a03416204/", image: baseURL + "Harinee-Selvam.jpg", company: "Flipkart" },
+    { name: "Pratik Ulhas Naik", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/naik-pratik/", image: baseURL + "Pratik-Naik-Protiviti.jpg", company: "Protiviti" },
+    { name: "Stephen DCosta", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/stephensn6/", image: baseURL + "Stephen.jpg", company: "UBS" },
+    { name: "Khushi Tejani", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/khushitejani/", image: baseURL + "Khushi-Tejani-BPCL.jpg", company: "BPCL" },
+    { name: "Yash Nema", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/yash-nema18/", image: baseURL + "Yash-Nema.jpg", company: "Amazon" },
+    { name: "Prathmesh Randive", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/prathmesh-randive/", image: baseURL + "Prathmesh-Randive.jpg", company: "UBS" },
+    { name: "Vivek Vardan", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/vivek-vardhan-9a05982a1/", image: baseURL + "Vivek-Vardhan.jpg", company: "UBS" },
+    { name: "Vishal Jangid", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/vishall-jangid/", image: baseURL + "Vishal-Jangid.jpg", company: "PPG Asian Paints" },
+    { name: "Swayam Atal", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/swayamatal/", image: baseURL + "Swayam-Atal.jpg", company: "Amazon" },
+    { name: "Siddhant Naithani", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/siddhantnaithani999/", image: baseURL + "Siddhant-Naithani.jpg", company: "Signify" },
+    { name: "Sanjana Sivakali", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/sanjanasivakali/", image: baseURL + "Sanjana-Sivakali.jpg", company: "Ashok Leyland" },
+    { name: "Shiv Pratap Singh", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/shiv-pratap-singh-52b721222/", image: baseURL + "Shiv-Pratap-Singh.jpg", company: "1MG" },
+    { name: "Aditi Tagalpallewar", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/aditi-tagalpallewar/", image: baseURL + "Aditi-Tagalwellakar.jpg", company: "UBS" },
+    { name: "Shubham Kumar", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/shubham-kumar-ca10/", image: baseURL + "kumar.jpg", company: "Reliance" },
+    { name: "Kamini Jha", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/jha-kamini/", image: baseURL + "kamini.jpg", company: "HSBC" },
+    { name: "Arjun Vasistha", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/arjun-vasistha/", image: baseURL + "vasistha.jpg", company: "Unilever" },
+    { name: "Tanya Bhojwani", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/tanya-bhojwani/", image: baseURL + "bhojwani.jpg", company: "Hindalco Eternia" }
   ];
+
+
+  const prioritizedStudentsOrder = [
+    { name: "Vedang Sawant", company: "Flipkart" },
+    { name: "Gaurav Jaat", company: "DE Shaw" },
+    { name: "Kanchan Kulhria", company: "Amazon" },
+    { name: "Anisha Joshi", company: "Godrej Agrovet" },
+    { name: "Khushi Gandhi", company: "Morgan Stanley" },
+    { name: "Rohit Varma", company: "Cummins" },
+    { name: "Ishaan Isham", company: "UBS" },
+    { name: "Simran Singh", company: "Amazon" },
+    { name: "Ananya Gupta", company: "Amazon" },
+    { name: "Virali Doshi", company: "Deutsche Bank" },
+    { name: "Viddhi S Mittal", company: "Amazon" },
+    { name: "Priya Jain", company: "Amazon" },
+    { name: "Charu Kewalramani", company: "DE Shaw" },
+    { name: "Pooja Kedia", company: "HSBC" },
+    { name: "Piyu Jain", company: "Reliance" },
+    { name: "Diksha Borse", company: "Amazon" },
+    { name: "Dev Mundra", company: "UBS" },
+    { name: "Anisha Nagwani", company: "Barclays" },
+    { name: "Sajal Mittal", company: "PepsiCo" },
+    { name: "shubham Kumar", company: "Reliance" },
+    { name: "kamini Jha", company: "HSBC" },
+    { name: "Arjun Vasistha", company: "Unilever" },
+    { name: "Tanya Bhojwani", company: "Hindalco Eternia" },
+  ];
+
+  const students = [];
+  const addedStudentKeys = new Set();
+
+  prioritizedStudentsOrder.forEach(pStudent => {
+    const foundStudent = allAvailableStudents.find(
+      s => s.name === pStudent.name && s.company === pStudent.company
+    );
+    if (foundStudent) {
+      const key = foundStudent.name + foundStudent.company;
+      if (!addedStudentKeys.has(key)) {
+        students.push(foundStudent);
+        addedStudentKeys.add(key);
+      }
+    }
+  });
+
+  allAvailableStudents.forEach(student => {
+    const key = student.name + student.company;
+    if (!addedStudentKeys.has(key)) {
+      students.push(student);
+      addedStudentKeys.add(key);
+    }
+  });
 
   return { students };
 };
@@ -214,172 +126,104 @@ const generateData = () => {
 const initializeCarousel = () => {
   const { students } = generateData();
   const carousel = document.getElementById('studentCarousel');
-  const carouselContainer = document.getElementById('studentCarouselContainer');
-  const prevBtn = document.getElementById('studentCarouselPrev');
-  const nextBtn = document.getElementById('studentCarouselNext');
 
-  if (!carousel) return;
-  carousel.innerHTML = '';
+  const getCardWidth = () => (window.innerWidth < 768 ? 250 : 300);
 
   students.forEach(student => {
     if (!student.image) return;
     const card = document.createElement('div');
     card.className = 'student-card';
     card.innerHTML = `
-      <div class="student-avatar-ring">
-        <img src="${student.image}" alt="${student.name}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='https://www.mystudentclub.com/assets/${student.fallback || 'icon-70x70.png'}';" />
+      <div class="student-image">
+        <img src="${student.image}" alt="${student.name}" loading="lazy" decoding="async" />
       </div>
-      <h3 class="student-name" title="${student.name}">${student.name}</h3>
-      <div class="student-firm-text">${student.company}</div>
-      <div class="student-company-logo">
-        ${getCompanyLogoSVG(student.company)}
-      </div>
-      <a href="${student.linkedin}" class="linkedin-pill-btn" target="_blank" rel="noopener noreferrer">
-        <svg viewBox="0 0 24 24" class="linkedin-pill-icon" fill="currentColor">
+      <h3>${student.name}</h3>
+      <p class="company-info">Placed at:<br><strong>${student.company}</strong></p>
+      <a href="${student.linkedin}" class="linkedin-button" target="_blank">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="linkedin-icon">
           <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
         </svg>
-        <span>View on LinkedIn</span>
+        View Profile
       </a>
     `;
     carousel.appendChild(card);
   });
 
-  // Duplicate cards for seamless continuous scrolling
-  const originalCards = [...carousel.children];
-  originalCards.forEach(card => {
+  const cards = [...carousel.children];
+  cards.forEach(card => {
     const clone = card.cloneNode(true);
     carousel.appendChild(clone);
   });
 
-  let halfLength = carousel.scrollWidth / 2 || 2000;
-  function updateHalfLength() {
-    halfLength = carousel.scrollWidth / 2 || 2000;
-  }
-  window.addEventListener('resize', updateHalfLength);
-  setTimeout(updateHalfLength, 100);
-
   let position = 0;
-  const speed = 0.9;
-  let animationId = null;
+  let speed = 2;
+  let animationId;
   let lastTime = 0;
   let onScreen = true;
-  let isPaused = false;
-  let dragging = false;
-  let startX = 0;
-  let dragStartPosition = 0;
-
-  // Arrow Navigation Controls
-  if (prevBtn) {
-    prevBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const step = window.innerWidth <= 768 ? 210 : 242;
-      position += step * 1.5;
-      if (position > 0) {
-        position = -halfLength;
-      }
-      carousel.style.transform = `translateX(${position}px)`;
-    });
-  }
-
-  if (nextBtn) {
-    nextBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const step = window.innerWidth <= 768 ? 210 : 242;
-      position -= step * 1.5;
-      if (Math.abs(position) >= halfLength) {
-        position = 0;
-      }
-      carousel.style.transform = `translateX(${position}px)`;
-    });
-  }
-
-  // Hover to pause
-  if (carouselContainer) {
-    carouselContainer.addEventListener('mouseenter', () => { isPaused = true; });
-    carouselContainer.addEventListener('mouseleave', () => { isPaused = false; });
-  }
 
   function animate(currentTime) {
-    if (!onScreen) {
+    // Below 768px the marquee stays fully stopped, regardless of which
+    // path (drag release, intersection, init) tried to resume it.
+    if (!onScreen || window.innerWidth <= 768) {
       animationId = null;
       return;
     }
     if (!lastTime) lastTime = currentTime;
     const delta = currentTime - lastTime;
 
-    if (!isPaused && !dragging) {
-      position -= speed * (delta / 16);
-      if (Math.abs(position) >= halfLength) {
-        position = 0;
-      }
-      carousel.style.transform = `translateX(${position}px)`;
+    position -= speed * (delta / 16);
+    if (position <= -(getCardWidth() * cards.length)) {
+      position = 0;
     }
+    carousel.style.transform = `translateX(${position}px)`;
 
     lastTime = currentTime;
     animationId = requestAnimationFrame(animate);
   }
 
-  // Pause when offscreen
-  if ('IntersectionObserver' in window && carouselContainer) {
+  let dragging = false;
+  let startX = 0;
+  let scrollLeft = 0;
+  let dragStartPosition = 0;
+
+  // Pause the marquee while it's off-screen so its per-frame transform work
+  // doesn't compete with scrolling (noticeable on mobile devices).
+  if ('IntersectionObserver' in window) {
     new IntersectionObserver(entries => {
       onScreen = entries[0].isIntersecting;
       if (onScreen && !dragging && animationId === null) {
         lastTime = 0;
         animationId = requestAnimationFrame(animate);
       }
-    }).observe(carouselContainer);
+    }).observe(carousel);
   }
 
-  // Mouse drag
   carousel.addEventListener('mousedown', (e) => {
     dragging = true;
-    startX = e.pageX;
+    startX = e.pageX - carousel.offsetLeft;
     dragStartPosition = position;
     carousel.style.cursor = 'grabbing';
+    cancelAnimationFrame(animationId);
   });
 
-  window.addEventListener('mousemove', (e) => {
+  carousel.addEventListener('mousemove', (e) => {
     if (!dragging) return;
-    const x = e.pageX;
-    const walk = (x - startX) * 1.2;
+    e.preventDefault();
+    const x = e.pageX - carousel.offsetLeft;
+    const walk = (x - startX) * 1.5;
     position = dragStartPosition + walk;
-    if (position > 0) position = -halfLength;
-    if (Math.abs(position) >= halfLength) position = 0;
     carousel.style.transform = `translateX(${position}px)`;
   });
-
-  // Touch drag
-  carousel.addEventListener('touchstart', (e) => {
-    dragging = true;
-    isPaused = true;
-    startX = e.touches[0].pageX;
-    dragStartPosition = position;
-  }, { passive: true });
-
-  carousel.addEventListener('touchmove', (e) => {
-    if (!dragging) return;
-    const x = e.touches[0].pageX;
-    const walk = (x - startX) * 1.2;
-    position = dragStartPosition + walk;
-    if (position > 0) position = -halfLength;
-    if (Math.abs(position) >= halfLength) position = 0;
-    carousel.style.transform = `translateX(${position}px)`;
-  }, { passive: true });
 
   function endDrag() {
-    if (!dragging) return;
     dragging = false;
-    isPaused = false;
     carousel.style.cursor = 'grab';
     lastTime = 0;
-    if (onScreen && animationId === null) {
-      animationId = requestAnimationFrame(animate);
-    }
+    animate(performance.now());
   }
 
-  window.addEventListener('mouseup', endDrag);
-  carousel.addEventListener('touchend', endDrag);
-  carousel.addEventListener('touchcancel', endDrag);
+  carousel.addEventListener('mouseup', endDrag);
+  carousel.addEventListener('mouseleave', endDrag);
 
   animate(performance.now());
 };
@@ -603,8 +447,6 @@ const initializeLinkedInPosts = () => {
 
 const initializeBenefitsCarousel = () => { };
 
-const initializeStudentStories = () => { };
-
 const initializeTestimonials = () => {
   const testimonials = [
     {
@@ -725,9 +567,12 @@ const initializeTestimonials = () => {
 
 const initializeCertificate = () => {
   const certificate = document.querySelector('.certificate-frame');
-  const container = document.querySelector('.certificate-container') || document.querySelector('.certified-preview-frame');
+  const container = document.querySelector('.certificate-container');
 
   if (certificate && container) {
+    // Cache the rect on enter and throttle transforms to one per frame —
+    // getBoundingClientRect + style writes on every mousemove force layout
+    // and made scrolling stutter around this section.
     let rect = null;
     let rafId = null;
     let lastEvent = null;
@@ -735,7 +580,7 @@ const initializeCertificate = () => {
     container.addEventListener('mouseenter', () => {
       rect = container.getBoundingClientRect();
       if (certificate.classList.contains('rotated')) {
-        certificate.style.transition = 'transform 0.08s ease-out';
+        certificate.style.transition = 'transform 0.05s ease-out';
       }
     });
 
@@ -749,18 +594,18 @@ const initializeCertificate = () => {
         const x = lastEvent.clientX - rect.left - rect.width / 2;
         const y = lastEvent.clientY - rect.top - rect.height / 2;
 
-        const factorX = 18;
-        const factorY = 24;
+        const factorX = 20;
+        const factorY = 30;
 
-        const baseRotateY = -18;
-        const baseRotateX = 6;
-        const baseRotateZ = -1;
+        const baseRotateY = -30;
+        const baseRotateX = 5;
+        const baseRotateZ = -2;
 
         certificate.style.transform = `
           rotateY(${baseRotateY + (x / factorX)}deg)
           rotateX(${baseRotateX + (-y / factorY)}deg)
           rotateZ(${baseRotateZ}deg)
-          translateZ(15px)
+          translateZ(10px)
         `;
       });
     });
@@ -769,11 +614,12 @@ const initializeCertificate = () => {
       rect = null;
       if (certificate.classList.contains('rotated')) {
         // Smooth spring animation when snapping back
-        certificate.style.transition = 'transform 1.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-        certificate.style.transform = 'rotateY(-18deg) rotateX(6deg) rotateZ(-1deg)';
+        certificate.style.transition = 'transform 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+        certificate.style.transform = 'rotateY(-30deg) rotateX(5deg) rotateZ(-2deg)';
       }
     });
   }
+
 };
 
 // The success-stories section has a full-size looping Lottie background;

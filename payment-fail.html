@@ -4,614 +4,72 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Payment Unsuccessful | My Student Club</title>
-  <meta name="description" content="Your payment was unsuccessful. Don't worry, your money is safe. Try again or contact MSC support for immediate assistance.">
-  <meta name="robots" content="noindex, nofollow">
-
-  <!-- Open Graph / WhatsApp / Facebook / LinkedIn -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://www.mystudentclub.com/payment-fail.html">
-  <meta property="og:title" content="Payment Unsuccessful | My Student Club">
-  <meta property="og:description" content="Your payment was unsuccessful. Don't worry, your money is safe. Try again or contact support.">
-  <meta property="og:image" content="https://www.mystudentclub.com/assets/og-image.png">
-
-  <!-- Supabase & Analytics -->
+  <title>Payment Failed - My Student Club</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/scripts/portal-style.css">
   <script src="/scripts/supabase.js"></script>
   <script src="/scripts/supabase-init.js"></script>
   <script src="/scripts/error-reporter.js"></script>
-
-  <!-- Typography & Icons -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="/scripts/portal-style.css">
-
-  <!-- Standard Favicons -->
-  <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
-  <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
-  <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
-
   <style>
-    /* ==========================================================================
-       Full-Bleed 1550px Canvas PhonePe Failure Design System
-       ========================================================================== */
-    :root {
-      --phonepe-red: #ef4444;
-      --phonepe-red-dark: #dc2626;
-      --phonepe-whatsapp: #25D366;
-      --phonepe-whatsapp-hover: #1eb855;
-      --surface: #ffffff;
-      --bg: #f8fafc;
-      --text-heading: #0f172a;
-      --text-body: #334155;
-      --text-muted: #64748b;
-      --border: #e2e8f0;
-      --max-width: 1550px;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
     body {
-      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--text-body);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-      padding-top: 70px;
-      padding-bottom: 0;
+      font-family: 'Poppins', sans-serif;
     }
 
-    /* Header 1550px Alignment */
-    .site-header .header-container {
-      max-width: var(--max-width);
-      padding: 0 clamp(20px, 3.5vw, 48px);
-    }
-
-    /* ==========================================================================
-       Full-Bleed Edge-to-Edge Hero Banner (Failure State)
-       ========================================================================== */
-    .fail-hero {
-      width: 100%;
-      background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 35%, #b91c1c 70%, #dc2626 100%);
-      color: #ffffff;
-      position: relative;
-      overflow: hidden;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-      padding: clamp(2.5rem, 4.5vw, 4rem) 0;
-    }
-
-    .fail-hero::before {
-      content: '';
-      position: absolute;
-      top: -40%;
-      right: -10%;
-      width: 550px;
-      height: 550px;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, transparent 65%);
-      border-radius: 50%;
-      pointer-events: none;
-    }
-
-    .fail-hero-inner {
-      max-width: var(--max-width);
-      width: 100%;
-      margin: 0 auto;
-      padding: 0 clamp(20px, 3.5vw, 48px);
-      position: relative;
-      z-index: 2;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+    .fail-card {
+      background: white;
+      padding: 3rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
       text-align: center;
-      gap: 1.25rem;
+      max-width: 500px;
+      width: 90%;
+      border-top: 5px solid #ef4444;
     }
 
-    .fail-hero-left {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      gap: 1rem;
-      width: 100%;
-      max-width: 820px;
-    }
-
-    /* Animated PhonePe Failure Cross */
-    .fail-status-icon-wrap {
-      position: relative;
-      width: 86px;
-      height: 86px;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 0.25rem;
-    }
-
-    .fail-status-circle {
+    .fail-icon {
       width: 80px;
       height: 80px;
+      background-color: #fee2e2;
+      color: #ef4444;
       border-radius: 50%;
-      background: linear-gradient(135deg, #ef4444, #dc2626);
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-      animation: phonepe-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
-      position: relative;
-      z-index: 2;
+      margin: 0 auto 1.5rem;
     }
 
-    .icon-pulse-ring-fail {
-      position: absolute;
-      top: -8px;
-      left: -8px;
-      right: -8px;
-      bottom: -8px;
-      border-radius: 50%;
-      border: 2.5px solid rgba(255, 255, 255, 0.45);
-      animation: phonepe-ring 2.2s cubic-bezier(0.24, 0, 0.38, 1) infinite;
-      z-index: 1;
+    .btn-primary {
+      background-color: #4f46e5;
+      color: white;
+      transition: all 0.3s ease;
     }
 
-    .cross-svg {
-      width: 44px;
-      height: 44px;
-      display: block;
-    }
-
-    .cross-circle {
-      stroke: rgba(255, 255, 255, 0.25);
-      stroke-width: 2.5;
-    }
-
-    .cross-line {
-      stroke: #ffffff;
-      stroke-width: 3.8;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      stroke-dasharray: 30;
-      stroke-dashoffset: 30;
-      animation: cross-draw 0.4s cubic-bezier(0.65, 0, 0.45, 1) 0.35s forwards;
-    }
-
-    @keyframes phonepe-pop {
-      0% {
-        transform: scale(0.3);
-        opacity: 0;
-      }
-      100% {
-        transform: scale(1);
-        opacity: 1;
-      }
-    }
-
-    @keyframes cross-draw {
-      100% {
-        stroke-dashoffset: 0;
-      }
-    }
-
-    @keyframes phonepe-ring {
-      0% {
-        transform: scale(0.92);
-        opacity: 0.9;
-      }
-      60% {
-        transform: scale(1.22);
-        opacity: 0;
-      }
-      100% {
-        transform: scale(1.22);
-        opacity: 0;
-      }
-    }
-
-    .fail-text-block {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      width: 100%;
-    }
-
-    .fail-pill-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.45rem;
-      background: rgba(255, 255, 255, 0.18);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      color: #ffffff;
-      font-size: 0.8rem;
-      font-weight: 700;
-      padding: 0.28rem 0.85rem;
-      border-radius: 9999px;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin: 0 auto 0.6rem;
-      border: 1px solid rgba(255, 255, 255, 0.25);
-    }
-
-    .fail-hero-title {
-      font-size: clamp(1.85rem, 3.2vw, 2.65rem);
-      font-weight: 800;
-      color: #ffffff;
-      line-height: 1.15;
-      margin-bottom: 0.4rem;
-      letter-spacing: -0.02em;
-      text-align: center;
-    }
-
-    .fail-hero-subtitle {
-      font-size: clamp(0.95rem, 1.4vw, 1.125rem);
-      color: rgba(255, 255, 255, 0.9);
-      max-width: 680px;
-      line-height: 1.5;
-      text-align: center;
-      margin: 0 auto;
-    }
-
-    /* ==========================================================================
-       Main 1550px Grid Framework (2-Column Web Layout)
-       ========================================================================== */
-    .page-main-wrap {
-      width: 100%;
-      flex: 1;
-      padding: 2.5rem 0 4rem;
-    }
-
-    .container-1550 {
-      max-width: var(--max-width);
-      width: 100%;
-      margin: 0 auto;
-      padding: 0 clamp(20px, 3.5vw, 48px);
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 420px;
-      gap: 2.25rem;
-      align-items: start;
-    }
-
-    .content-main-col {
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
-    }
-
-    .content-side-col {
-      display: flex;
-      flex-direction: column;
-      gap: 1.75rem;
-      position: sticky;
-      top: 90px;
-    }
-
-    /* Standard Card Component */
-    .web-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 1.85rem 2rem;
-      box-shadow: 0 4px 20px -4px rgba(15, 23, 42, 0.04);
-      transition: box-shadow 0.2s ease, border-color 0.2s ease;
-    }
-
-    .web-card:hover {
-      box-shadow: 0 8px 30px -4px rgba(15, 23, 42, 0.07);
-      border-color: #cbd5e1;
-    }
-
-    /* Reassurance Card */
-    .reassurance-main-card {
-      background: #f0fdf4;
-      border: 1px solid #bbf7d0;
-      border-left: 5px solid #10b981;
-      border-radius: 18px;
-      padding: 1.75rem 2rem;
-    }
-
-    .reassurance-title {
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: #14532d;
-      margin-bottom: 0.6rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .reassurance-desc {
-      font-size: 0.95rem;
-      color: #166534;
-      line-height: 1.65;
-      margin-bottom: 0.85rem;
-    }
-
-    /* Troubleshooting Card */
-    .troubleshoot-web-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 1.85rem 2rem;
-    }
-
-    .troubleshoot-header {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--text-heading);
-      margin-bottom: 1.1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .troubleshoot-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.25rem;
-    }
-
-    .troubleshoot-reason-box {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 14px;
-      padding: 1.25rem 1.35rem;
-    }
-
-    .reason-box-title {
-      font-weight: 700;
-      color: var(--text-heading);
-      font-size: 0.95rem;
-      margin-bottom: 0.35rem;
-      display: flex;
-      align-items: center;
-      gap: 0.45rem;
-    }
-
-    .reason-box-desc {
-      font-size: 0.88rem;
-      color: var(--text-muted);
-      line-height: 1.55;
-    }
-
-    /* Buttons */
-    .btn-action-primary {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.55rem;
-      padding: 0.85rem 1.45rem;
-      border-radius: 12px;
-      font-size: 1rem;
-      font-weight: 700;
-      text-decoration: none;
-      transition: all 0.2s ease;
-      cursor: pointer;
-      width: 100%;
-    }
-
-    .btn-action-primary:hover {
+    .btn-primary:hover {
+      background-color: #4338ca;
       transform: translateY(-2px);
     }
 
-    .btn-retry {
-      background: linear-gradient(135deg, #4f46e5, #4338ca);
-      color: #ffffff !important;
-      box-shadow: 0 6px 18px rgba(79, 70, 229, 0.3);
+    .btn-secondary {
+      color: #4f46e5;
+      font-weight: 500;
     }
 
-    .btn-retry:hover {
-      background: linear-gradient(135deg, #4338ca, #3730a3);
-      box-shadow: 0 8px 24px rgba(79, 70, 229, 0.45);
-    }
-
-    .btn-whatsapp-chat {
-      background: var(--phonepe-whatsapp);
-      color: #ffffff !important;
-      box-shadow: 0 6px 18px rgba(37, 211, 102, 0.3);
-    }
-
-    .btn-whatsapp-chat:hover {
-      background: var(--phonepe-whatsapp-hover);
-      box-shadow: 0 8px 24px rgba(37, 211, 102, 0.45);
-    }
-
-    /* Sidebar cards */
-    .side-actions-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 1.65rem 1.8rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      box-shadow: 0 4px 20px -4px rgba(15, 23, 42, 0.04);
-    }
-
-    .side-support-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 1.5rem 1.65rem;
-    }
-
-    .support-card-title {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: var(--text-heading);
-      margin-bottom: 0.75rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .support-list-wrap {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    .support-list-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 0.65rem;
-      font-size: 0.88rem;
-      line-height: 1.5;
-      color: var(--text-body);
-    }
-
-    .support-wa-icon {
-      color: var(--phonepe-whatsapp);
-      font-size: 1.1rem;
-      margin-top: 0.1rem;
-      flex-shrink: 0;
-    }
-
-    .support-link-btn {
-      color: #0284c7;
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    .support-link-btn:hover {
+    .contact-link {
+      color: #4b5563;
       text-decoration: underline;
     }
-
-    .back-home-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.4rem;
-      font-size: 0.88rem;
-      color: var(--text-muted);
-      text-decoration: none;
-      font-weight: 600;
-      padding: 0.4rem 0;
-      transition: color 0.2s ease;
-    }
-
-    .back-home-btn:hover {
-      color: var(--text-heading);
-    }
-
-    /* ==========================================================================
-       Responsive Breakpoints
-       ========================================================================== */
-    @media (max-width: 1080px) {
-      .container-1550 {
-        grid-template-columns: 1fr;
-        gap: 2rem;
-      }
-
-      .content-side-col {
-        position: static;
-        order: 1;
-      }
-
-      .content-main-col {
-        order: 2;
-      }
-    }
-
-    @media (max-width: 768px) {
-      body {
-        padding-top: 70px;
-      }
-
-      .fail-hero {
-        padding: 2.25rem 0 2rem;
-      }
-
-      .fail-hero-inner {
-        align-items: center;
-        text-align: center;
-        gap: 1.25rem;
-      }
-
-      .fail-hero-left {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        gap: 1rem;
-      }
-
-      .fail-text-block {
-        align-items: center;
-        text-align: center;
-      }
-
-      .fail-status-icon-wrap {
-        width: 76px;
-        height: 76px;
-        margin: 0 auto;
-      }
-
-      .fail-status-circle {
-        width: 68px;
-        height: 68px;
-      }
-
-      .cross-svg {
-        width: 38px;
-        height: 38px;
-      }
-
-      .fail-hero-title {
-        font-size: 1.65rem;
-        text-align: center;
-      }
-
-      .fail-hero-subtitle {
-        text-align: center;
-      }
-
-      .troubleshoot-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 640px) {
-      .header-container {
-        padding: 0 1rem;
-      }
-
-      .brand-logo {
-        height: 28px;
-      }
-
-      .header-actions {
-        gap: 0.5rem;
-      }
-
-      .auth-icon-btn {
-        width: 38px;
-        height: 38px;
-      }
-
-      .menu-button-style {
-        width: 38px;
-        height: 38px;
-      }
-
-      .page-main-wrap {
-        padding: 1.5rem 0 3rem;
-      }
-    }
   </style>
+  <!-- Standard Favicon -->
+  <!-- Fallback Shortcut Icon -->
+  <!-- Standard Favicon -->
+  <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
+  <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
+  <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
 </head>
 
-<body>
-  <!-- Site Header (Matched to 1550px Layout) -->
+<body class="bg-gray-50 flex flex-col items-center min-h-screen pt-24 pb-8">
   <header class="site-header">
     <div class="header-container">
       <a href="/" class="brand-link">
@@ -628,7 +86,6 @@
     </div>
   </header>
 
-  <!-- Expanded Mobile Menu -->
   <div class="expanded-menu" id="expandedMenu">
     <button class="menu-close-btn" id="menuCloseBtn">
       <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -637,6 +94,7 @@
     </button>
     <div class="menu-items">
       <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My Courses</a>
+
       <a href="/ca-industrial-training-program/" class="menu-item">MSC Industrial Training Program</a>
       <a href="/articleship-program/" class="menu-item">MSC Articleship Program</a>
       <a href="/msc-ca-fresher-program/" class="menu-item">MSC CA Freshers Program</a>
@@ -655,174 +113,36 @@
         </div>
       </div>
 
-      <a href="/sessions/" class="menu-item">Events &amp; Live Sessions</a>
+
       <a href="/contact.html" class="menu-item">Contact Us</a>
     </div>
   </div>
 
-  <!-- Full-Bleed Edge-to-Edge Hero Banner -->
-  <section class="fail-hero">
-    <div class="fail-hero-inner">
-      <div class="fail-hero-left">
-        <!-- PhonePe Animated Failure Cross -->
-        <div class="fail-status-icon-wrap">
-          <div class="icon-pulse-ring-fail"></div>
-          <div class="fail-status-circle">
-            <svg class="cross-svg" viewBox="0 0 52 52">
-              <circle class="cross-circle" cx="26" cy="26" r="23" fill="none" />
-              <path class="cross-line" fill="none" d="M16 16 L36 36" />
-              <path class="cross-line" fill="none" d="M36 16 L16 36" />
-            </svg>
-          </div>
-        </div>
-
-        <div class="fail-text-block">
-          <div class="fail-pill-badge">
-            <i class="fas fa-times-circle"></i> Payment Unsuccessful
-          </div>
-          <h1 class="fail-hero-title">Payment Could Not Be Completed</h1>
-          <p class="fail-hero-subtitle">
-            We were unable to process your payment authorization. Don't worry, your money is safe and no funds were captured by MSC.
-          </p>
-        </div>
-      </div>
+  <div class="fail-card">
+    <div class="fail-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+        stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
     </div>
-  </section>
+    <h1 class="text-2xl font-bold text-gray-800 mb-2">Registration Unsuccessful</h1>
+    <p class="text-gray-600 mb-6">
+      We're sorry, but we were unable to process your payment at this time. Please check your payment details and try
+      again.
+    </p>
+    <p class="text-gray-500 text-sm mb-6">
+      If the problem persists, please <a href="mailto:padam@mystudentclub.com" class="contact-link">contact our support
+        team</a> for assistance.
+    </p>
+    <a href="https://www.mystudentclub.com/ca-industrial-training-program/"
+      class="block w-full text-center px-6 py-3 rounded-lg font-semibold text-lg btn-primary mb-4">
+      Try Again
+    </a>
+    <a href="/" class="text-sm text-gray-500 hover:text-gray-700">Back to Homepage</a>
+  </div>
 
-  <!-- Main 1550px Two-Column Grid Framework -->
-  <main class="page-main-wrap">
-    <div class="container-1550">
-
-      <!-- Left Column (Main Information) -->
-      <div class="content-main-col">
-
-        <!-- Reassurance Banner -->
-        <div class="reassurance-main-card">
-          <div class="reassurance-title">
-            <i class="fas fa-shield-alt text-emerald-600"></i> Did your bank deduct money from your account?
-          </div>
-          <p class="reassurance-desc">
-            If money was deducted from your UPI or card during this attempt, it is held securely in the banking network. Most banks automatically reverse failed transactions within <strong>3 to 5 business days</strong>.
-          </p>
-          <p class="reassurance-desc" style="margin-bottom: 0;">
-            <strong>Need urgent manual activation?</strong> If you have been charged, you do not need to pay twice. Simply message our WhatsApp support team with your transaction screenshot, and we will verify and manually activate your LMS course within minutes.
-          </p>
-        </div>
-
-        <!-- Troubleshooting Card -->
-        <div class="troubleshoot-web-card">
-          <div class="troubleshoot-header">
-            <i class="fas fa-info-circle text-gray-500"></i> Common Reasons for Payment Failure
-          </div>
-          <div class="troubleshoot-grid">
-            <div class="troubleshoot-reason-box">
-              <div class="reason-box-title">
-                <i class="fas fa-clock text-amber-500"></i> Bank Server Timeout
-              </div>
-              <p class="reason-box-desc">
-                Your bank or UPI app took too long to authorize the transaction, causing a session timeout.
-              </p>
-            </div>
-            <div class="troubleshoot-reason-box">
-              <div class="reason-box-title">
-                <i class="fas fa-credit-card text-blue-500"></i> Account Limits Reached
-              </div>
-              <p class="reason-box-desc">
-                Daily UPI transaction limits or card online payment restrictions might have blocked authorization.
-              </p>
-            </div>
-            <div class="troubleshoot-reason-box">
-              <div class="reason-box-title">
-                <i class="fas fa-key text-red-500"></i> Verification Mismatch
-              </div>
-              <p class="reason-box-desc">
-                Incorrect UPI PIN entered or OTP expired before completion.
-              </p>
-            </div>
-            <div class="troubleshoot-reason-box">
-              <div class="reason-box-title">
-                <i class="fas fa-wifi text-indigo-500"></i> Network Drop
-              </div>
-              <p class="reason-box-desc">
-                Internet connectivity was interrupted while returning from the bank authorization page.
-              </p>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Right Column (Sidebar Actions & Support) -->
-      <aside class="content-side-col">
-
-        <!-- Actions Card -->
-        <div class="side-actions-card">
-          <a id="retry-payment-btn" href="/ca-industrial-training-program/" class="btn-action-primary btn-retry">
-            <i class="fas fa-redo"></i> Try Payment Again
-          </a>
-          <a href="https://wa.me/919558605393?text=Hi%20MSC%20team%2C%20my%20payment%20failed%20for%20the%20program.%20Please%20assist%20me." target="_blank" rel="noopener" class="btn-action-primary btn-whatsapp-chat">
-            <i class="fab fa-whatsapp"></i> Chat on WhatsApp Support
-          </a>
-          <a href="/" class="back-home-btn">
-            <i class="fas fa-arrow-left"></i> Back to Homepage
-          </a>
-        </div>
-
-        <!-- Direct Helpline Support -->
-        <div class="side-support-card">
-          <div class="support-card-title">
-            <i class="fas fa-headset" style="color: #0d9488;"></i> Contact MSC Team
-          </div>
-          <div class="support-list-wrap">
-            <div class="support-list-item">
-              <i class="fab fa-whatsapp support-wa-icon"></i>
-              <div>
-                <strong>Technical Support:</strong><br>
-                <a href="https://wa.me/919558605393" class="support-link-btn">WhatsApp 9558605393</a>
-              </div>
-            </div>
-            <div class="support-list-item">
-              <i class="fab fa-whatsapp support-wa-icon"></i>
-              <div>
-                <strong>Query &amp; Mentorship:</strong><br>
-                <a href="https://wa.me/917228881182" class="support-link-btn">WhatsApp 7228881182</a> (Padam)
-              </div>
-            </div>
-            <div class="support-list-item">
-              <i class="fas fa-envelope support-wa-icon" style="color: #64748b;"></i>
-              <div>
-                <strong>Email Support:</strong><br>
-                <a href="mailto:padam@mystudentclub.com" class="support-link-btn">padam@mystudentclub.com</a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </aside>
-
-    </div>
-  </main>
-
-  <!-- Script for Navigation & Referrer Detection -->
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
-      // Dynamic retry link detection from referrer if available
-      try {
-        const ref = document.referrer;
-        const retryBtn = document.getElementById('retry-payment-btn');
-        if (ref && retryBtn) {
-          if (ref.includes('msc-ca-fresher-program')) {
-            retryBtn.href = '/msc-ca-fresher-program/';
-          } else if (ref.includes('articleship-program')) {
-            retryBtn.href = '/articleship-program/';
-          } else if (ref.includes('ca-industrial-training-program')) {
-            retryBtn.href = '/ca-industrial-training-program/';
-          }
-        }
-      } catch (e) {
-        console.warn('Referrer check:', e);
-      }
-
       // Menu Toggle
       const menuButton = document.getElementById('menuButton');
       const expandedMenu = document.getElementById('expandedMenu');
@@ -838,7 +158,7 @@
       // Dropdowns
       const dropdowns = document.querySelectorAll('.menu-item-dropdown button');
       dropdowns.forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (e) => {
           const content = btn.nextElementSibling;
           if (content) {
             content.style.display = content.style.display === 'block' ? 'none' : 'block';
@@ -847,24 +167,20 @@
         });
       });
 
-      // Auth Check
       const sb = window.supabaseClient;
-      if (sb && sb.auth) {
-        try {
-          const { data: { session } } = await sb.auth.getSession();
-          const authContainer = document.querySelector('.auth-buttons-container');
-          const lmsLink = document.getElementById('lms-nav-link');
+      if (sb) {
 
-          if (authContainer) {
-            if (session) {
-              authContainer.innerHTML = '<a href="/profile.html" class="auth-icon-btn"><i class="fas fa-user"></i></a>';
-              if (lmsLink) lmsLink.style.display = 'flex';
-            } else {
-              authContainer.innerHTML = '<a href="/login.html" class="auth-icon-btn"><i class="fas fa-sign-in-alt"></i></a>';
-            }
+        const { data: { session } } = await sb.auth.getSession();
+        const authContainer = document.querySelector('.auth-buttons-container');
+        const lmsLink = document.getElementById('lms-nav-link');
+
+        if (authContainer) {
+          if (session) {
+            authContainer.innerHTML = '<a href="/profile.html" class="auth-icon-btn"><i class="fas fa-user"></i></a>';
+            if (lmsLink) lmsLink.style.display = 'flex';
+          } else {
+            authContainer.innerHTML = '<a href="/login.html" class="auth-icon-btn"><i class="fas fa-sign-in-alt"></i></a>';
           }
-        } catch (err) {
-          console.warn('Auth icon load error:', err);
         }
       }
     });
