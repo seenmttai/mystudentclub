@@ -710,6 +710,7 @@ async function recordApplication(job, btnElement) {
     }
     const applicationKey = `${currentTable}:${job.id}`;
     if (recruiterPosted && (pendingRecruiterApplications.has(applicationKey) || completedRecruiterApplications.has(applicationKey) || appliedJobIds.has(job.id))) {
+        showToast('Already applied to this vacancy.', 'info');
         return false;
     }
 
@@ -757,6 +758,12 @@ async function recordApplication(job, btnElement) {
 
         btnElement.classList.add('applied');
         btnElement.innerHTML = recruiterPosted ? '<i class="fas fa-check"></i> Applied' : originalText;
+        if (recruiterPosted) {
+            // Keep the completed state visible while allowing the guarded click
+            // handler to explain why another application will not be submitted.
+            btnElement.style.pointerEvents = '';
+            if ('disabled' in btnElement) btnElement.disabled = false;
+        }
         showToast('Application submitted to the hirer dashboard.', 'success');
         return true;
     } catch (e) {

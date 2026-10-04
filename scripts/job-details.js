@@ -40,7 +40,10 @@ async function recordRecruiterApplication(job, buttonElement, tableName) {
         return;
     }
     const applicationKey = `${tableName}:${job.id}`;
-    if (pendingApplications.has(applicationKey) || completedApplications.has(applicationKey)) return;
+    if (pendingApplications.has(applicationKey) || completedApplications.has(applicationKey)) {
+        showToast('Already applied to this vacancy.', 'info');
+        return;
+    }
     pendingApplications.add(applicationKey);
 
     const originalText = buttonElement.innerHTML;
@@ -54,6 +57,7 @@ async function recordRecruiterApplication(job, buttonElement, tableName) {
         completedApplications.add(applicationKey);
         buttonElement.classList.add('applied');
         buttonElement.innerHTML = '<i class="fas fa-check"></i> Applied';
+        buttonElement.disabled = false;
         showToast('Application submitted to the hirer dashboard.', 'success');
     } catch (error) {
         console.error('Application exception:', error);
