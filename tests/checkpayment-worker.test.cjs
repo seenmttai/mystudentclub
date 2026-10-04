@@ -1,4 +1,4 @@
-﻿'use strict';
+'use strict';
 // ---------------------------------------------------------------------------
 // tests/checkpayment-worker.test.cjs
 //
@@ -368,25 +368,27 @@ describe('Success redirect URL — no secrets', () => {
 
   const REDIRECT_SUCCESS_URL = 'https://www.mystudentclub.com/payment-success.html';
 
-  function buildSuccessUrl(accountStatus, enrollmentStatus) {
+  function buildSuccessUrl(accountStatus, enrollmentStatus, email) {
     const url = new URL(REDIRECT_SUCCESS_URL);
-    url.hash = new URLSearchParams({ status: accountStatus, enrollment: enrollmentStatus }).toString();
+    const p = { status: accountStatus, enrollment: enrollmentStatus };
+    if (email) p.email = email;
+    url.hash = new URLSearchParams(p).toString();
     return url.toString();
   }
 
   test('success URL contains status param', () => {
-    const url = buildSuccessUrl('created', 'enrolled');
+    const url = buildSuccessUrl('created', 'enrolled', 'student@example.com');
     assert.ok(url.includes('payment-success.html'));
     assert.ok(url.includes('status=created'));
   });
 
-  test('success URL does NOT contain email', () => {
-    const url = buildSuccessUrl('created', 'enrolled');
-    assert.ok(!url.includes('email'));
+  test('success URL contains email for UI rendering', () => {
+    const url = buildSuccessUrl('created', 'enrolled', 'student@example.com');
+    assert.ok(url.includes('email=student%40example.com'));
   });
 
   test('success URL does NOT contain password', () => {
-    const url = buildSuccessUrl('created', 'enrolled');
+    const url = buildSuccessUrl('created', 'enrolled', 'student@example.com');
     assert.ok(!url.includes('password'));
   });
 

@@ -1339,6 +1339,17 @@
         window.history.replaceState({}, document.title, window.location.pathname);
       }
 
+      const userEmail = params.get('email');
+      const emailLine = document.getElementById('credentials-email-line');
+      const emailCode = document.getElementById('user-email');
+
+      if (userEmail && emailCode) {
+        emailCode.textContent = userEmail;
+        if (emailLine) emailLine.style.display = 'block';
+      } else if (emailLine && (!emailCode || !emailCode.textContent.trim())) {
+        emailLine.style.display = 'none';
+      }
+
       if (accountStatus === 'existing') {
         const credentialsTitle = document.getElementById('credentials-title-text');
         if (credentialsTitle) {
