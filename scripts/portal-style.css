@@ -3657,6 +3657,25 @@ body:has(.portal-nav-bar) {
 
 }
 
+/* Seven header links next to "Complete Profile" overflow the header below ~1320px:
+   tighten them there, and below 1180px leave the wide-only links (Events) to the menu. */
+@media (min-width: 1024px) and (max-width: 1319px) {
+  .dv2-header-nav {
+    gap: 0;
+  }
+
+  .dv2-nav-link {
+    padding: 0.5rem 0.55rem;
+    font-size: 0.85rem;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1179px) {
+  .dv2-nav-link.dv2-nav-wide-only {
+    display: none;
+  }
+}
+
 /* ---- dv2 center column: top search, promo banner, stats ---- */
 .dv2-top-search,
 .dv2-promo-banner {
