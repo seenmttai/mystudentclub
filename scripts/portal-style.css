@@ -742,11 +742,11 @@ body {
   margin-bottom: 1rem;
 }
 
-/* Ideal banner size: 1200 × 375 px (16:5 ratio), max file size 300 KB */
+/* Use 16:5 until the active image's natural ratio is available. */
 .banner-section .carousel {
   width: 100%;
   aspect-ratio: 16 / 5;
-  background-color: #1a1a2e;
+  background-color: #fff;
   border-radius: var(--radius-lg);
   overflow: hidden;
   position: relative;
@@ -755,7 +755,7 @@ body {
 .banner-section .carousel img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Fill the banner space while preserving the image ratio */
+  object-fit: contain; /* Keep the complete banner visible without cropping */
   object-position: center;
   display: block;
 }

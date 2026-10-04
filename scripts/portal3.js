@@ -2993,10 +2993,33 @@ async function loadBanners() {
         });
 
         const slides = document.querySelectorAll('.carousel-item');
+        const fitCarouselToSlide = (slide) => {
+            const image = slide?.querySelector('img');
+            if (!image) return;
+
+            const updateAspectRatio = () => {
+                if (image.naturalWidth && image.naturalHeight) {
+                    carousel.style.aspectRatio = `${image.naturalWidth} / ${image.naturalHeight}`;
+                }
+            };
+
+            if (image.complete) updateAspectRatio();
+            else image.addEventListener('load', updateAspectRatio, { once: true });
+        };
+        const showSlide = (idx) => {
+            slides.forEach(s => s.classList.remove('active'));
+            const activeSlide = slides[idx];
+            activeSlide.classList.add('active');
+            fitCarouselToSlide(activeSlide);
+        };
+
+        showSlide(0);
         if (slides.length > 1) {
             let currentSlide = 0;
-            const showSlide = (idx) => { slides.forEach(s => s.classList.remove('active')); slides[idx].classList.add('active'); };
-            setInterval(() => { currentSlide = (currentSlide + 1) % slides.length; showSlide(currentSlide); }, 5000);
+            setInterval(() => {
+                currentSlide = (currentSlide + 1) % slides.length;
+                showSlide(currentSlide);
+            }, 5000);
         }
     } catch (e) {
         bannerSection.style.display = 'none';
