@@ -755,7 +755,8 @@ body {
 .banner-section .carousel img {
   width: 100%;
   height: 100%;
-  object-fit: contain; /* Never crop — letterbox if needed */
+  object-fit: cover; /* Fill the banner space while preserving the image ratio */
+  object-position: center;
   display: block;
 }
 
