@@ -1,5 +1,6 @@
 import { getDaysAgo, isJobExpired } from './date-utils.js';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
+import { calculateProfileCompletion as calculateSharedProfileCompletion, readCachedProfile } from './profile-completion.js';
 
 function isSalaryDisclosed(val) {
     if (!val) return false;
@@ -8,7 +9,17 @@ function isSalaryDisclosed(val) {
 }
 
 async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) {
-    if (isRecruiterPostedJob(job)) return recordApplication(job, btnElement);
+    if (isRecruiterPostedJob(job)) {
+        if (!currentSession) {
+            window.location.href = '/login.html';
+            return;
+        }
+        if (!isProfileComplete()) {
+            showRecruiterProfileWarningPopup(job, calculateProfileCompletion());
+            return;
+        }
+        return recordApplication(job, btnElement);
+    }
 
     if (!currentSession) {
         window.location.href = '/login.html';
@@ -163,6 +174,7 @@ function renderJobCard(job) {
     const isPopular = (job.application_count || 0) > 50;
     const buttonClass = isApplied ? 'applied' : '';
     const recruiterPosted = isRecruiterPostedJob(job);
+    const isExclusive = Boolean(job.is_exclusive || recruiterPosted);
     const applyLink = recruiterPosted ? '#' : getApplicationLink(job['Application ID']);
 
     const primaryDomain = job['Primary Domain'] || job.Category || 'N/A';
@@ -225,7 +237,7 @@ function renderJobCard(job) {
         </div>
         ${descriptionText ? `<p class="job-card-description">${descriptionText.slice(0, 120)}${descriptionText.length > 120 ? '…' : ''}</p>` : ''}
         <div class="job-card-actions">
-            <a href="${applyLink}" target="_blank" class="apply-now-card-btn primary ${buttonClass}">
+            <a href="${isExclusive && !isEnrolledSync(table) ? '#' : applyLink}" target="_blank" class="apply-now-card-btn primary ${buttonClass}">
                 <svg fill="currentColor" viewBox="0 0 24 24" width="13" height="13"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg>
                 Apply Now
             </a>
@@ -237,6 +249,11 @@ function renderJobCard(job) {
     if (applyBtn) {
         applyBtn.addEventListener('click', (e) => {
             e.stopPropagation();
+            if (isExclusive && !isEnrolledSync(table)) {
+                e.preventDefault();
+                showEnrollmentRequiredPopup();
+                return;
+            }
             if (recruiterPosted) {
                 e.preventDefault();
                 handleApplyClick(job, applyBtn);
@@ -376,6 +393,10 @@ async function recordApplication(job, btnElement) {
     }
 
     const recruiterPosted = isRecruiterPostedJob(job);
+    if (recruiterPosted && !isProfileComplete()) {
+        showRecruiterProfileWarningPopup(job, calculateProfileCompletion());
+        return false;
+    }
     const applicationKey = `${job.source_table || state.portalType}:${job.id}`;
     if (recruiterPosted && (pendingRecruiterApplications.has(applicationKey) || completedRecruiterApplications.has(applicationKey) || appliedJobIds.has(job.id))) {
         return false;
@@ -440,6 +461,12 @@ function showModal(job) {
     const postedDate = isExpired ? 'Expired' : (job.Created_At ? getDaysAgo(job.Created_At) : 'N/A');
     const applyCount = job.application_count || 0;
     const recruiterPosted = isRecruiterPostedJob(job);
+    const table = job.source_table || state.portalType;
+    const isExclusive = Boolean(job.is_exclusive || recruiterPosted);
+    if (isExclusive && !isEnrolledSync(table)) {
+        showEnrollmentRequiredPopup();
+        return;
+    }
     const applyLink = getApplicationLink(job['Application ID'], job.Company);
     const isMailto = !recruiterPosted && applyLink.startsWith('mailto:');
     const isApplied = appliedJobIds.has(job.id);
@@ -1360,7 +1387,7 @@ function showRecruiterProfileRequiredPopup(job) {
     });
 }
 
-function showRecruiterProfileWarningPopup(job, percent, onProceedCallback) {
+function showRecruiterProfileWarningPopup(job, percent) {
     const existing = document.querySelector('.recruiter-gate-popup-overlay');
     if (existing) existing.remove();
 
@@ -1372,14 +1399,14 @@ function showRecruiterProfileWarningPopup(job, percent, onProceedCallback) {
                 </div>
                 <h3 style="font-size: 1.2rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">Profile Incomplete (${percent}%)</h3>
                 <p style="font-size: 0.88rem; color: #475569; line-height: 1.5; margin-bottom: 1.5rem;">
-                    Your profile is only <strong>${percent}% complete</strong>. Verified recruiters heavily prioritize candidates with complete profiles and uploaded CVs.
+                    Your profile is only <strong>${percent}% complete</strong>. Easy Apply is available only when your profile is 100% complete.
                 </p>
                 <div class="cv-popup-btns" style="display: flex; gap: 0.75rem;">
                     <a href="/profile.html?redirect=${encodeURIComponent(window.location.href)}" class="cv-popup-btn-primary" style="flex: 1; text-align: center; text-decoration: none; padding: 0.75rem;">
                         <i class="fas fa-user-pen"></i> Complete Profile
                     </a>
-                    <button type="button" class="cv-popup-btn-secondary" id="applyAnywayBtn" style="flex: 1; padding: 0.75rem; font-weight: 600;">
-                        Apply Anyway
+                    <button type="button" class="cv-popup-btn-secondary" id="closeRecruiterGateBtn" style="flex: 1; padding: 0.75rem; font-weight: 600;">
+                        Maybe Later
                     </button>
                 </div>
             </div>
@@ -1390,16 +1417,13 @@ function showRecruiterProfileWarningPopup(job, percent, onProceedCallback) {
     const overlay = document.querySelector('.recruiter-gate-popup-overlay');
     setTimeout(() => overlay.classList.add('show'), 10);
 
-    const applyAnywayBtn = document.getElementById('applyAnywayBtn');
+    const closeBtn = document.getElementById('closeRecruiterGateBtn');
     const closePopup = () => {
         overlay.classList.remove('show');
         setTimeout(() => overlay.remove(), 300);
     };
 
-    applyAnywayBtn.addEventListener('click', () => {
-        closePopup();
-        if (typeof onProceedCallback === 'function') onProceedCallback();
-    });
+    closeBtn.addEventListener('click', closePopup);
 
     overlay.addEventListener('click', (e) => {
         if (e.target === overlay) closePopup();
@@ -1457,24 +1481,12 @@ async function handleApplyClick(job, buttonElement, isAiApply = false) {
         }
 
         const percent = calculateProfileCompletion();
-
-        // 1. If 0% (No profile created)
-        if (percent === 0) {
-            showRecruiterProfileRequiredPopup(job);
+        if (percent < 100) {
+            showRecruiterProfileWarningPopup(job, percent);
             return;
         }
 
-        // 2. If < 50%
-        if (percent < 50) {
-            showRecruiterProfileWarningPopup(job, percent, () => {
-                executeActualApply(job, buttonElement, isAiApply);
-            });
-            return;
-        }
-
-        // 3. If >= 50%
         executeActualApply(job, buttonElement, isAiApply);
-        showPortalToast("Application submitted! We recommend completing your profile to 100% for maximum recruiter response.");
         return;
     }
 
@@ -1484,6 +1496,8 @@ async function handleApplyClick(job, buttonElement, isAiApply = false) {
 
 async function executeActualApply(job, buttonElement, isAiApply = false) {
     if (isRecruiterPostedJob(job)) return recordApplication(job, buttonElement);
+    if (!currentSession) { window.location.href = '/login.html'; return false; }
+    if (isAiApply && !isProfileComplete()) { showCvUploadPopup(); return false; }
     markJobAsApplied(job);
     if (!isAiApply) {
         const applyLink = getApplicationLink(job['Application ID']);
@@ -1491,8 +1505,6 @@ async function executeActualApply(job, buttonElement, isAiApply = false) {
         else if (applyLink && applyLink !== '#') window.open(applyLink, '_blank');
         return true;
     }
-    if (!currentSession) { window.location.href = '/login.html'; return false; }
-    if (!isProfileComplete()) { showCvUploadPopup(); return false; }
     const emailBody = await generateEmailBody(job, state.portalType, supabaseClient, currentSession.user);
     openMailtoLink(constructMailto(job, emailBody));
     return true;
@@ -2901,38 +2913,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function calculateProfileCompletion() {
-    const cachedProfile = localStorage.getItem('userProfileData');
-    const hasResume = localStorage.getItem('userCVText') || localStorage.getItem('userCVPdf');
-
-    let profile = null;
-    if (cachedProfile) {
-        try { profile = JSON.parse(cachedProfile); } catch (e) { }
-    }
-
     if (!currentSession) return 0;
-    if (!profile && !hasResume) return 10;
-
-    let score = 0;
-
-    if (hasResume) {
-        score += 40;
-    }
-
-    if (profile) {
-        if (profile.full_name || profile.name) score += 10;
-        if (profile.mobile || profile.phone || profile.phone_number) score += 10;
-        if (profile.city || profile.location) score += 10;
-    }
-
-    if (profile && (profile.looking_for || profile.job_preference)) {
-        score += 15;
-    }
-
-    if (profile && (profile.key_skills || profile.skills || profile.emp_skills_hidden)) {
-        score += 15;
-    }
-
-    return Math.min(100, score);
+    return calculateSharedProfileCompletion(readCachedProfile(localStorage), localStorage);
 }
 
 function renderProfileCompletionBanner() {
@@ -2946,14 +2928,6 @@ function renderProfileCompletionBanner() {
 
     const percent = currentSession ? calculateProfileCompletion() : 0;
 
-    if (percent === 100) {
-        document.body.classList.remove('with-completion-banner');
-        document.body.style.paddingTop = '';
-        const header = document.querySelector('.site-header, .floating-header');
-        if (header) header.style.top = '';
-        return;
-    }
-
     const banner = document.createElement('div');
     banner.id = 'profile-completion-banner';
     banner.className = 'profile-completion-banner';
@@ -2963,10 +2937,10 @@ function renderProfileCompletionBanner() {
     banner.classList.toggle('profile-onboarding-reminder', !!dismissedOnboarding);
     banner.innerHTML = `
         <div class="banner-text">
-            <span>${dismissedOnboarding ? '🔎 Let recruiters find you — complete your Profile' : '🎯 Complete your Profile'} to get 5x higher interview opportunities.</span>
+            <span>${percent === 100 ? '✅ Your profile is complete — you can use Easy Apply.' : `${dismissedOnboarding ? '🔎 Let recruiters find you — complete your Profile' : '🎯 Complete your Profile'} to get 5x higher interview opportunities.`}</span>
             <span class="completion-badge">Profile Completion: ${percent}%</span>
         </div>
-        <a href="/profile.html" class="banner-btn">Complete Profile</a>
+        <a href="/profile.html" class="banner-btn">${percent === 100 ? 'View Profile' : 'Complete Profile'}</a>
     `;
 
     document.body.insertBefore(banner, document.body.firstChild);

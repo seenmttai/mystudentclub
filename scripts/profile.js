@@ -1,3 +1,5 @@
+import { calculateProfileCompletion, getProfileCompletionItems, hasResumeEvidence } from './profile-completion.js';
+
 const supabaseUrl = 'https://auth.mystudentclub.com';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 const supabaseClient = window.supabaseClient || (typeof supabase !== 'undefined' ? supabase.createClient(supabaseUrl, supabaseKey) : null);
@@ -3057,6 +3059,16 @@ async function handleFile(file, type) {
         localStorage.setItem(config.storageKeyText, textContent);
         localStorage.setItem(config.storageKeyName, file.name);
         showFileDisplay(type, file.name);
+        if (type === 'resume') {
+            try {
+                // Persist the autofilled form immediately so navigation/reload
+                // cannot restore the previous profile snapshot.
+                await persistCurrentProfileSnapshot();
+            } catch (saveError) {
+                console.error('Failed to persist autofilled profile:', saveError);
+                showToast('Resume processed, but profile details could not be saved. Please click Save Profile and try again.', 'warning', 9000);
+            }
+        }
         refreshHeader();
     } catch (error) {
         console.error(error);
@@ -3544,60 +3556,8 @@ function refreshHeader() {
     }
 
     // ---- Completeness calc ----
-    const pref = d.job_preference || '';
-    const needsCTC = ['fresher_experienced', 'semi_experienced'].includes(pref);
-    const hasEducation = !!(
-        (d.ca_final_course || '').trim() ||
-        (d.ca_inter_course || '').trim() ||
-        (d.ca_found_course || '').trim() ||
-        (d.grad_degree || '').trim() ||
-        (d.class12_board || '').trim() ||
-        (d.class10_board || '').trim() ||
-        (d.other_edu_course || '').trim() ||
-        (d.other_edu_level || '').trim()
-    );
-    const hasExperience = !!(
-        (d.total_experience || '').trim() ||
-        (d.emp_company_name || '').trim() ||
-        (d.emp_job_title || '').trim() ||
-        (d.emp_exp_years || '').trim() ||
-        (d.emp_exp_months || '').trim() ||
-        (d.articleship_firm_name || '').trim() ||
-        ((d.articleship_firm_type || '').trim() && (d.articleship_firm_type || '').trim() !== 'None') ||
-        (d.industrial_training_company || '').trim()
-    );
-    const hasCurrentOrg = !!(
-        (d.emp_company_name || '').trim() ||
-        (d.articleship_firm_name || '').trim() ||
-        (d.industrial_training_company || '').trim()
-    );
-
-    const hasSkills = !!(d.key_skills || '').trim() || !!(d.emp_skills_hidden || '').trim();
-    const hasCerts = !!(d.cert_name || '').trim();
-
-    // Define tracked items — weights sum to 100
-    const items = [
-        { label: 'Add full name', icon: 'fa-user', filled: !!nameVal, boost: 14, section: 'sec-personal', form: 'sec-personal-form' },
-        { label: 'Add mobile number', icon: 'fa-phone-alt', filled: !!(d.contact_number || '').trim(), boost: 10, section: 'sec-personal', form: 'sec-personal-form' },
-        { label: 'Add location', icon: 'fa-map-marker-alt', filled: !!(d.current_city || d.current_location || '').trim(), boost: 3, section: 'sec-personal', form: 'sec-personal-form' },
-        { label: 'Add resume', icon: 'fa-file-alt', filled: !!localStorage.getItem('userCVText'), boost: 14, section: 'sec-resume', form: '' },
-        { label: 'Add profile summary', icon: 'fa-heading', filled: !!((d.profile_summary || d.headline || '').trim()), boost: 10, section: 'sec-headline', form: 'sec-headline-form' },
-        { label: 'Add CA education', icon: 'fa-graduation-cap', filled: hasEducation, boost: 12, section: 'sec-ca-education', form: '' },
-        { label: 'Add experience', icon: 'fa-briefcase', filled: hasExperience, boost: 12, section: 'sec-employment', form: 'sec-experience-form' },
-        { label: 'Add notice period', icon: 'fa-calendar-check', filled: !!(d.notice_period || '').trim(), boost: 7, section: 'sec-availability', form: 'sec-availability-form' },
-        { label: 'Add current organization', icon: 'fa-building', filled: hasCurrentOrg, boost: 7, section: 'sec-employment', form: 'sec-experience-form' },
-        { label: 'Add job preference', icon: 'fa-bullseye', filled: !!pref, boost: 7, section: 'sec-career', form: 'sec-career-form' },
-        { label: 'Add key skills', icon: 'fa-tools', filled: hasSkills, boost: 2, section: 'sec-skills', form: 'sec-skills-form' },
-        { label: 'Add a certification', icon: 'fa-certificate', filled: hasCerts, boost: 2, section: 'sec-certification', form: 'sec-certification-form' },
-    ];
-
-    if (needsCTC) {
-        items.push({ label: 'Add current CTC', icon: 'fa-wallet', filled: !!(d.emp_current_salary || '').trim(), boost: 3, section: 'sec-availability', form: 'sec-availability-form' });
-    }
-
-    const totalBoost = items.reduce((s, i) => s + i.boost, 0);
-    const filledBoost = items.filter(i => i.filled).reduce((s, i) => s + i.boost, 0);
-    const pct = Math.round((filledBoost / totalBoost) * 100);
+    const items = getProfileCompletionItems(d, localStorage);
+    const pct = calculateProfileCompletion(d, localStorage);
     const missing = items.filter(i => !i.filled);
 
     // Progress ring
@@ -3642,7 +3602,7 @@ function refreshHeader() {
         const actionSpan = link.querySelector('.p2-ql-action');
         if (!actionSpan) return;
         let filled = false;
-        if (hrefTarget === '#sec-resume') filled = !!localStorage.getItem('userCVText');
+        if (hrefTarget === '#sec-resume') filled = hasResumeEvidence(d, localStorage);
         else if (hrefTarget === '#sec-headline') filled = !!((d.profile_summary || d.headline || '').trim());
         else if (hrefTarget === '#sec-ca-education') filled = !!((d.ca_final_course || '') + (d.ca_inter_course || '') + (d.ca_found_course || '') + (d.grad_degree || '') + (d.class12_board || '') + (d.class10_board || '') + (d.other_edu_course || '')).trim();
         else if (hrefTarget === '#sec-experience') filled = !!(

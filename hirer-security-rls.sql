@@ -13,19 +13,23 @@
 -- ------------------------------------------------------------------------------
 ALTER TABLE IF EXISTS public."Industrial Training Job Portal"
 ADD COLUMN IF NOT EXISTS posted_by uuid REFERENCES auth.users(id),
-ADD COLUMN IF NOT EXISTS hirer_email text;
+ADD COLUMN IF NOT EXISTS hirer_email text,
+ADD COLUMN IF NOT EXISTS is_exclusive boolean DEFAULT false;
 
 ALTER TABLE IF EXISTS public."Fresher Jobs"
 ADD COLUMN IF NOT EXISTS posted_by uuid REFERENCES auth.users(id),
-ADD COLUMN IF NOT EXISTS hirer_email text;
+ADD COLUMN IF NOT EXISTS hirer_email text,
+ADD COLUMN IF NOT EXISTS is_exclusive boolean DEFAULT false;
 
 ALTER TABLE IF EXISTS public."Semi Qualified Jobs"
 ADD COLUMN IF NOT EXISTS posted_by uuid REFERENCES auth.users(id),
-ADD COLUMN IF NOT EXISTS hirer_email text;
+ADD COLUMN IF NOT EXISTS hirer_email text,
+ADD COLUMN IF NOT EXISTS is_exclusive boolean DEFAULT false;
 
 ALTER TABLE IF EXISTS public."Articleship Jobs"
 ADD COLUMN IF NOT EXISTS posted_by uuid REFERENCES auth.users(id),
-ADD COLUMN IF NOT EXISTS hirer_email text;
+ADD COLUMN IF NOT EXISTS hirer_email text,
+ADD COLUMN IF NOT EXISTS is_exclusive boolean DEFAULT false;
 
 -- Add `status` and `notes` to job_applications
 ALTER TABLE IF EXISTS public.job_applications
