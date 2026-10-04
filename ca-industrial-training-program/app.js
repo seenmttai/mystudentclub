@@ -122,556 +122,50 @@ const generateData = () => {
   return { students };
 };
 
-const getCompanyLogoSVG = (company) => {
-  const comp = (company || '').trim().toLowerCase();
-
-  if (comp.includes('amazon')) {
-    return `<svg viewBox="0 0 95 28" class="company-logo-svg" fill="none">
-      <text x="2" y="19" font-family="'Inter', -apple-system, sans-serif" font-size="18" font-weight="900" fill="#111827" letter-spacing="-0.5px">amazon</text>
-      <path d="M12 23 C 32 30, 56 28, 72 21" stroke="#FF9900" stroke-width="2.6" stroke-linecap="round" fill="none"/>
-      <polygon points="70,18 78,21 72,25" fill="#FF9900"/>
-    </svg>`;
-  }
-  if (comp.includes('flipkart')) {
-    return `<svg viewBox="0 0 100 28" class="company-logo-svg" fill="none">
-      <g transform="translate(2, 4)">
-        <rect x="0" y="4" width="16" height="15" rx="3" fill="#2874F0"/>
-        <path d="M4 4 C4 0 12 0 12 4" stroke="#FFE11B" stroke-width="2" fill="none"/>
-        <path d="M7 8 L10 8 M7 11 L10 11 M7 8 L7 15" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round"/>
-      </g>
-      <text x="23" y="19" font-family="'Inter', -apple-system, sans-serif" font-size="16" font-weight="900" font-style="italic" fill="#2874F0" letter-spacing="-0.3px">Flipkart</text>
-      <polygon points="87,7 93,12 87,17" fill="#FFE11B"/>
-    </svg>`;
-  }
-  if (comp.includes('ubs')) {
-    return `<svg viewBox="0 0 85 28" class="company-logo-svg" fill="none">
-      <g transform="translate(2, 5)" stroke="#111827" stroke-width="1.4" fill="none">
-        <circle cx="5" cy="5" r="3.5"/>
-        <line x1="8" y1="5" x2="20" y2="5"/>
-        <line x1="16" y1="5" x2="16" y2="8"/>
-        <line x1="19" y1="5" x2="19" y2="8"/>
-        <line x1="5" y1="8" x2="16" y2="15"/>
-        <line x1="5" y1="2" x2="16" y2="-5"/>
-      </g>
-      <text x="28" y="20" font-family="'Inter', sans-serif" font-size="19" font-weight="900" fill="#E60000" letter-spacing="1.2px">UBS</text>
-    </svg>`;
-  }
-  if (comp.includes('deutsche')) {
-    return `<svg viewBox="0 0 120 28" class="company-logo-svg" fill="none">
-      <rect x="2" y="3" width="22" height="22" rx="3" stroke="#0018A8" stroke-width="2.5" fill="none"/>
-      <line x1="6" y1="21" x2="20" y2="7" stroke="#0018A8" stroke-width="2.8" stroke-linecap="round"/>
-      <text x="30" y="18" font-family="'Inter', sans-serif" font-size="11.5" font-weight="800" fill="#0018A8" letter-spacing="-0.2px">Deutsche Bank</text>
-    </svg>`;
-  }
-  if (comp.includes('shaw')) {
-    return `<svg viewBox="0 0 120 28" class="company-logo-svg" fill="none">
-      <text x="2" y="19" font-family="'Georgia', 'Times New Roman', serif" font-size="14.5" font-weight="bold" fill="#002D62" letter-spacing="0.3px">D. E. Shaw &amp; Co.</text>
-    </svg>`;
-  }
-  if (comp.includes('morgan') || comp.includes('stanley')) {
-    return `<svg viewBox="0 0 125 28" class="company-logo-svg" fill="none">
-      <text x="2" y="19" font-family="'Inter', 'Helvetica Neue', sans-serif" font-size="13" font-weight="800" fill="#111827" letter-spacing="0.2px">Morgan Stanley</text>
-    </svg>`;
-  }
-  if (comp.includes('goldman') || comp.includes('sachs')) {
-    return `<svg viewBox="0 0 115 28" class="company-logo-svg" fill="none">
-      <rect x="2" y="3" width="22" height="22" rx="3" fill="#7399C6"/>
-      <text x="6" y="14" font-family="'Inter', sans-serif" font-size="9" font-weight="900" fill="#FFFFFF">G</text>
-      <text x="13" y="21" font-family="'Inter', sans-serif" font-size="9" font-weight="900" fill="#FFFFFF">S</text>
-      <text x="29" y="13" font-family="'Georgia', serif" font-size="10.5" font-weight="bold" fill="#111827">Goldman</text>
-      <text x="29" y="23" font-family="'Georgia', serif" font-size="10.5" font-weight="bold" fill="#111827">Sachs</text>
-    </svg>`;
-  }
-  if (comp.includes('unilever')) {
-    return `<svg viewBox="0 0 95 28" class="company-logo-svg" fill="none">
-      <g transform="translate(2, 3)">
-        <path d="M4 2 C4 14, 18 14, 18 2 M6 4 C6 12, 16 12, 16 4" stroke="#1F36C7" stroke-width="2" fill="none" stroke-linecap="round"/>
-        <circle cx="4" cy="2" r="1.5" fill="#1F36C7"/>
-        <circle cx="18" cy="2" r="1.5" fill="#1F36C7"/>
-        <circle cx="11" cy="9" r="1.2" fill="#1F36C7"/>
-      </g>
-      <text x="26" y="19" font-family="'Inter', sans-serif" font-size="15" font-weight="900" fill="#1F36C7" letter-spacing="-0.3px">Unilever</text>
-    </svg>`;
-  }
-  if (comp.includes('hdfc')) {
-    return `<svg viewBox="0 0 115 28" class="company-logo-svg" fill="none">
-      <g transform="translate(2, 4)">
-        <rect x="0" y="0" width="20" height="20" rx="3" fill="#004C8F"/>
-        <rect x="4" y="4" width="12" height="12" fill="#FFFFFF"/>
-        <rect x="6" y="6" width="8" height="8" fill="#ED232A"/>
-      </g>
-      <text x="27" y="18" font-family="'Inter', sans-serif" font-size="12" font-weight="900" fill="#004C8F" letter-spacing="0.2px">HDFC BANK</text>
-    </svg>`;
-  }
-  if (comp.includes('barclays')) {
-    return `<svg viewBox="0 0 110 28" class="company-logo-svg" fill="none">
-      <g transform="translate(2, 4)" fill="#00AEEF">
-        <path d="M10 2 L12 6 L18 4 L15 10 L19 13 L14 14 L15 19 L10 16 L5 19 L6 14 L1 13 L5 10 L2 4 L8 6 Z"/>
-      </g>
-      <text x="25" y="18" font-family="'Inter', sans-serif" font-size="13" font-weight="900" fill="#00395D" letter-spacing="0.8px">BARCLAYS</text>
-    </svg>`;
-  }
-  if (comp.includes('birla') || comp.includes('grasim')) {
-    return `<svg viewBox="0 0 130 28" class="company-logo-svg" fill="none">
-      <g transform="translate(2, 4)">
-        <path d="M2 18 C2 9, 9 2, 18 2 C18 9, 12 18, 2 18 Z" fill="#D32F2F"/>
-        <path d="M6 18 C6 11, 11 6, 18 6 C18 11, 14 18, 6 18 Z" fill="#E65100"/>
-        <path d="M10 18 C10 13, 14 10, 18 10 C18 14, 15 18, 10 18 Z" fill="#FBC02D"/>
-      </g>
-      <text x="25" y="13" font-family="'Inter', sans-serif" font-size="9" font-weight="900" fill="#D32F2F" letter-spacing="0.5px">ADITYA BIRLA</text>
-      <text x="25" y="22" font-family="'Inter', sans-serif" font-size="7.5" font-weight="700" fill="#64748B" letter-spacing="1px">GROUP</text>
-    </svg>`;
-  }
-  if (comp.includes('itc')) {
-    return `<svg viewBox="0 0 85 28" class="company-logo-svg" fill="none">
-      <g transform="translate(2, 2)">
-        <polygon points="12,1 23,22 1,22" fill="#002E6E" stroke="#002E6E" stroke-width="1"/>
-        <text x="12" y="18" font-family="'Georgia', serif" font-size="9.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">ITC</text>
-      </g>
-      <text x="28" y="19" font-family="'Georgia', serif" font-size="15" font-weight="bold" fill="#002E6E" letter-spacing="1px">ITC</text>
-    </svg>`;
-  }
-  if (comp.includes('kotak')) {
-    return `<svg viewBox="0 0 95 28" class="company-logo-svg" fill="none">
-      <g transform="translate(2, 4)">
-        <rect x="0" y="0" width="20" height="20" rx="4" fill="#ED1B24"/>
-        <path d="M6 10 C4 8, 4 12, 6 10 C8 8, 12 12, 14 10 C16 8, 16 12, 14 10 C12 8, 8 12, 6 10 Z" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" fill="none"/>
-      </g>
-      <text x="27" y="18" font-family="'Inter', sans-serif" font-size="14.5" font-weight="900" fill="#ED1B24" letter-spacing="-0.3px">kotak</text>
-    </svg>`;
-  }
-  if (comp.includes('cipla')) {
-    return `<svg viewBox="0 0 85 28" class="company-logo-svg" fill="none">
-      <g transform="translate(2, 5)">
-        <circle cx="8" cy="8" r="7" stroke="#003865" stroke-width="2.5" fill="none"/>
-        <path d="M8 1 A7 7 0 0 1 15 8 L8 8 Z" fill="#ED1C24"/>
-      </g>
-      <text x="22" y="19" font-family="'Inter', sans-serif" font-size="16" font-weight="900" fill="#003865" letter-spacing="-0.3px">Cipla</text>
-    </svg>`;
-  }
-  if (comp.includes('hsbc')) {
-    return `<svg viewBox="0 0 90 28" class="company-logo-svg" fill="none">
-      <g transform="translate(2, 4)">
-        <polygon points="10,10 2,2 18,2" fill="#DB0011"/>
-        <polygon points="10,10 2,18 18,18" fill="#DB0011"/>
-        <polygon points="10,10 2,2 2,18" fill="#DB0011"/>
-        <polygon points="10,10 18,2 18,18" fill="#DB0011"/>
-      </g>
-      <text x="26" y="19" font-family="'Inter', sans-serif" font-size="15" font-weight="900" fill="#111827" letter-spacing="0.5px">HSBC</text>
-    </svg>`;
-  }
-  if (comp.includes('reliance')) {
-    return `<svg viewBox="0 0 105 28" class="company-logo-svg" fill="none">
-      <g transform="translate(2, 4)">
-        <ellipse cx="10" cy="10" rx="9" ry="8" stroke="#004C97" stroke-width="2" fill="none"/>
-        <path d="M10 4 C7 7, 7 11, 10 14 C13 11, 13 7, 10 4 Z" fill="#ED1C24"/>
-      </g>
-      <text x="25" y="18" font-family="'Inter', sans-serif" font-size="14.5" font-weight="900" fill="#004C97" letter-spacing="-0.2px">Reliance</text>
-    </svg>`;
-  }
-  if (comp.includes('cummins')) {
-    return `<svg viewBox="0 0 88 26" class="company-logo-svg" fill="none">
-      <rect x="2" y="4" width="16" height="16" fill="#D32F2F" rx="2"/>
-      <text x="6" y="16" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="900" fill="#fff">C</text>
-      <text x="22" y="17" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="800" fill="#111827">Cummins</text>
-    </svg>`;
-  }
-  if (comp.includes('bpcl') || comp.includes('bharat petroleum')) {
-    return `<svg viewBox="0 0 85 26" class="company-logo-svg" fill="none">
-      <circle cx="10" cy="13" r="8" fill="#FFCC00"/>
-      <circle cx="10" cy="13" r="4" fill="#003399"/>
-      <text x="24" y="18" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="900" fill="#003399">BPCL</text>
-    </svg>`;
-  }
-  if (comp.includes('pepsico') || comp.includes('pepsi')) {
-    return `<svg viewBox="0 0 95 26" class="company-logo-svg" fill="none">
-      <circle cx="10" cy="13" r="8" fill="#004B93"/>
-      <path d="M3 13 C 7 9, 13 17, 17 13 A 8 8 0 0 0 3 13 Z" fill="#E32934"/>
-      <text x="24" y="18" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="900" fill="#004B93" letter-spacing="0.5px">PEPSICO</text>
-    </svg>`;
-  }
-  if (comp.includes('dlf')) {
-    return `<svg viewBox="0 0 70 26" class="company-logo-svg" fill="none">
-      <g transform="translate(2, 4)" fill="#003399">
-        <polygon points="6,0 12,12 0,12"/>
-      </g>
-      <text x="18" y="18" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="15" font-weight="900" fill="#003399">DLF</text>
-    </svg>`;
-  }
-  if (comp.includes('deloitte')) {
-    return `<svg viewBox="0 0 110 26" class="company-logo-svg" fill="none">
-      <text x="2" y="20" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="20" font-weight="900" fill="#000000" letter-spacing="-0.5px">Deloitte<tspan fill="#86BC25">.</tspan></text>
-    </svg>`;
-  }
-  if (comp === 'ey' || comp.includes('ernst') || comp.includes('young')) {
-    return `<svg viewBox="0 0 56 26" class="company-logo-svg" fill="none">
-      <text x="6" y="20" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="22" font-weight="900" fill="#111827">EY</text>
-      <path d="M20 22 L44 22 L40 25 L16 25 Z" fill="#FFE600"/>
-    </svg>`;
-  }
-  if (comp.includes('kpmg')) {
-    return `<svg viewBox="0 0 76 28" class="company-logo-svg" fill="none">
-      <g stroke="#00338D" stroke-width="1.2" fill="none" opacity="0.85">
-        <rect x="3" y="1" width="14" height="9" rx="1.5"/>
-        <rect x="21" y="1" width="14" height="9" rx="1.5"/>
-        <rect x="39" y="1" width="14" height="9" rx="1.5"/>
-        <rect x="57" y="1" width="14" height="9" rx="1.5"/>
-      </g>
-      <text x="2" y="24" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="16" font-weight="900" font-style="italic" fill="#00338D" letter-spacing="1px">KPMG</text>
-    </svg>`;
-  }
-  if (comp.includes('pwc') || comp.includes('pricewaterhouse')) {
-    return `<svg viewBox="0 0 66 30" class="company-logo-svg" fill="none">
-      <rect x="26" y="1" width="7" height="7" fill="#DC6900"/>
-      <rect x="33" y="1" width="7" height="7" fill="#EB8C00"/>
-      <rect x="29" y="7" width="8" height="7" fill="#E0301E"/>
-      <rect x="22" y="7" width="7" height="7" fill="#FFB600"/>
-      <text x="8" y="26" font-family="'Georgia', serif" font-size="18" font-weight="bold" fill="#000000" letter-spacing="-0.5px">pwc</text>
-    </svg>`;
-  }
-  if (comp.includes('godrej')) {
-    return `<svg viewBox="0 0 90 26" class="company-logo-svg" fill="none">
-      <text x="2" y="18" font-family="'Brush Script MT', 'Lucida Calligraphy', cursive, sans-serif" font-size="19" font-weight="bold" fill="#0d9488">Godrej</text>
-      <text x="48" y="18" font-family="'Inter', sans-serif" font-size="10" font-weight="700" fill="#64748b">Agrovet</text>
-    </svg>`;
-  }
-  if (comp.includes('adani')) {
-    return `<svg viewBox="0 0 75 26" class="company-logo-svg" fill="none"><text x="2" y="19" font-family="'Inter', sans-serif" font-size="15" font-weight="900" fill="#205493">adani</text></svg>`;
-  }
-  if (comp.includes('hindalco') || comp.includes('eternia')) {
-    return `<svg viewBox="0 0 95 26" class="company-logo-svg" fill="none"><text x="2" y="18" font-family="'Inter', sans-serif" font-size="13" font-weight="800" fill="#D32F2F">HINDALCO</text></svg>`;
-  }
-
-  return `<span style="font-weight:700; color:var(--primary-blue); font-size:13px;">${company}</span>`;
-};
-
 const initializeCarousel = () => {
   const { students } = generateData();
   const carousel = document.getElementById('studentCarousel');
-  const carouselContainer = document.getElementById('studentCarouselContainer');
-  const prevBtn = document.getElementById('studentCarouselPrev');
-  const nextBtn = document.getElementById('studentCarouselNext');
 
-  if (!carousel) return;
-  carousel.innerHTML = '';
+  const getCardWidth = () => (window.innerWidth < 768 ? 250 : 300);
 
   students.forEach(student => {
     if (!student.image) return;
     const card = document.createElement('div');
     card.className = 'student-card';
     card.innerHTML = `
-      <div class="student-avatar-ring">
-        <img src="${student.image}" alt="${student.name}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='/assets/icon-70x70.png';" />
+      <div class="student-image">
+        <img src="${student.image}" alt="${student.name}" loading="lazy">
       </div>
-      <h3 class="student-name" title="${student.name}">${student.name}</h3>
-      <div class="student-firm-label">Placed at</div>
-      <div class="student-company-logo">
-        ${getCompanyLogoSVG(student.company)}
-      </div>
-      ${student.linkedin && student.linkedin !== 'N/A' ? `
-      <a href="${student.linkedin}" class="linkedin-pill-btn" target="_blank" rel="noopener noreferrer">
-        <svg viewBox="0 0 24 24" class="linkedin-pill-icon" fill="currentColor">
-          <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+      <h3>${student.name}</h3>
+      <p class="company-info">Placed at:<br><strong>${student.company}</strong></p>
+      ${student.linkedin && student.linkedin !== 'N/A' ? `<a href="${student.linkedin}" class="linkedin-button" target="_blank">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="linkedin-icon">
+          <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"></path>
         </svg>
-        <span>View Profile</span>
+        View Profile
       </a>` : ''}
     `;
     carousel.appendChild(card);
   });
 
-  // Duplicate cards for seamless continuous scrolling
-  const originalCards = [...carousel.children];
-  originalCards.forEach(card => {
-    const clone = card.cloneNode(true);
-    carousel.appendChild(clone);
-  });
-
-  const cardWidth = 242; // 224px width + 18px gap
-  const halfLength = originalCards.length * cardWidth;
-
-  let position = 0;
-  const speed = 1.0;
-  let animationId = null;
-  let lastTime = 0;
-  let onScreen = true;
-  let isPaused = false;
-  let dragging = false;
-  let startX = 0;
-  let dragStartPosition = 0;
-
-  // Arrow Navigation Controls
-  if (prevBtn) {
-    prevBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      position += cardWidth * 1.5;
-      if (position > 0) {
-        position = -halfLength;
-      }
-      carousel.style.transform = `translateX(${position}px)`;
-    });
-  }
-
-  if (nextBtn) {
-    nextBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      position -= cardWidth * 1.5;
-      if (Math.abs(position) >= halfLength) {
-        position = 0;
-      }
-      carousel.style.transform = `translateX(${position}px)`;
-    });
-  }
-
-  // Hover to pause
-  if (carouselContainer) {
-    carouselContainer.addEventListener('mouseenter', () => { isPaused = true; });
-    carouselContainer.addEventListener('mouseleave', () => { isPaused = false; });
-  }
-
-  function animate(currentTime) {
-    if (!onScreen) {
-      animationId = null;
-      return;
-    }
-    if (!lastTime) lastTime = currentTime;
-    const delta = currentTime - lastTime;
-
-    if (!isPaused && !dragging) {
-      position -= speed * (delta / 16);
-      if (Math.abs(position) >= halfLength) {
-        position = 0;
-      }
-      carousel.style.transform = `translateX(${position}px)`;
-    }
-
-    lastTime = currentTime;
-    animationId = requestAnimationFrame(animate);
-  }
-
-  // Pause when offscreen
-  if ('IntersectionObserver' in window && carouselContainer) {
-    new IntersectionObserver(entries => {
-      onScreen = entries[0].isIntersecting;
-      if (onScreen && !dragging && animationId === null) {
-        lastTime = 0;
-        animationId = requestAnimationFrame(animate);
-      }
-    }, { threshold: 0.05 }).observe(carouselContainer);
-  }
-
-  carousel.addEventListener('mousedown', (e) => {
-    dragging = true;
-    startX = e.pageX - carousel.offsetLeft;
-    dragStartPosition = position;
-    carousel.style.cursor = 'grabbing';
-    if (animationId) cancelAnimationFrame(animationId);
-  });
-
-  carousel.addEventListener('mousemove', (e) => {
-    if (!dragging) return;
-    e.preventDefault();
-    const x = e.pageX - carousel.offsetLeft;
-    const walk = (x - startX) * 1.5;
-    position = dragStartPosition + walk;
-    carousel.style.transform = `translateX(${position}px)`;
-  });
-
-  carousel.addEventListener('touchstart', (e) => {
-    dragging = true;
-    startX = e.touches[0].pageX - carousel.offsetLeft;
-    dragStartPosition = position;
-    if (animationId) cancelAnimationFrame(animationId);
-  }, { passive: true });
-
-  carousel.addEventListener('touchmove', (e) => {
-    if (!dragging) return;
-    const x = e.touches[0].pageX - carousel.offsetLeft;
-    const walk = (x - startX) * 1.5;
-    position = dragStartPosition + walk;
-    carousel.style.transform = `translateX(${position}px)`;
-  }, { passive: true });
-
-  function endDrag() {
-    if (!dragging) return;
-    dragging = false;
-    carousel.style.cursor = 'grab';
-    lastTime = 0;
-    animationId = requestAnimationFrame(animate);
-  }
-
-  carousel.addEventListener('mouseup', endDrag);
-  carousel.addEventListener('mouseleave', endDrag);
-  carousel.addEventListener('touchend', endDrag);
-  carousel.addEventListener('touchcancel', endDrag);
-
-  animationId = requestAnimationFrame(animate);
-};
-
-
-
-const initializeLinkedInPosts = () => {
-  const linkedInPosts = [
-    {
-      name: "Khushi Gandhi",
-      company: "Morgan Stanley",
-      role: "CA Finalist",
-      avatar: "https://www.mystudentclub.com/assets/khushi.jpg",
-      headline: "Joined Morgan Stanley as an Industrial Trainee in the Financial Control Group — Product Control Dept! 🌟",
-      highlight: "I'm sincerely thankful to <strong>CA Padam Bhansali & My Student Club</strong> for their guidance and reassurance throughout the interview & acceptance phase! 🥳",
-      reactions: 691,
-      linkedinUrl: "https://www.linkedin.com/in/khushi-gandhi-40a37a242/"
-    },
-    {
-      name: "Priyanka Sharma",
-      company: "Grasim Industries (Aditya Birla)",
-      role: "CA Finalist",
-      avatar: "https://www.mystudentclub.com/assets/priyanka-sharma.png",
-      headline: "Begun my CA Industrial Training at GRASIM INDUSTRIES LIMITED (ADITYA BIRLA GROUP) 💫",
-      highlight: "Grateful to my mentor <strong>CA Padam Bhansali</strong> for his guidance and trust 🤝 his support has been truly instrumental in reaching this milestone.",
-      reactions: 216,
-      linkedinUrl: "https://www.linkedin.com/in/priyanka-sharma-s6/"
-    },
-    {
-      name: "Vedang Sawant",
-      company: "Flipkart",
-      role: "CA Industrial Trainee",
-      avatar: "https://www.mystudentclub.com/assets/vedang.jpg",
-      headline: "Excited to announce the beginning of my Industrial Training journey with Flipkart! 🚀",
-      highlight: "Special gratitude to <strong>CA Padam Bhansali</strong> for his unwavering mentorship, mock prep, and motivation at every step of this journey.",
-      reactions: 383,
-      linkedinUrl: "https://www.linkedin.com/in/vedangsawant/"
-    },
-    {
-      name: "Tamanna Gaur",
-      company: "HCL Technologies",
-      role: "CA Industrial Trainee",
-      avatar: "https://www.mystudentclub.com/assets/tamanna-gaur.jpg",
-      headline: "Started my journey as a CA Industrial Trainee at HCL Technologies! ✨",
-      highlight: "Deeply thankful to <strong>CA Padam Bhansali</strong> for the timely guidance, CV strategy, and mentorship that made this step possible. 🤍💫",
-      reactions: 161,
-      linkedinUrl: "https://www.linkedin.com/in/tamanna-gaur/"
-    },
-    {
-      name: "Rupesh Machha",
-      company: "Cipla",
-      role: "CA Industrial Trainee",
-      avatar: "https://www.mystudentclub.com/assets/rupesh-machha.jpg",
-      headline: "Pleased to share that I've joined Cipla in the Business Finance Department! 📈",
-      highlight: "A special mention to <strong>CA Padam Bhansali</strong> for pushing me to give my best efforts. It wouldn't have been possible without MSC mentorship!",
-      reactions: 784,
-      linkedinUrl: "https://www.linkedin.com/in/ca-rupesh-machha-/"
-    },
-    {
-      name: "Siddhant Pandey",
-      company: "UBS",
-      role: "CA Industrial Trainee",
-      avatar: "https://www.mystudentclub.com/assets/sidhant-pandey.jpg",
-      headline: "Begun a new chapter at UBS as an Industrial Trainee in the Liquidity & Funding domain. 🎯",
-      highlight: "A special note of thanks to <strong>CA Padam Bhansali</strong>, whose constant guidance and support throughout my hunt made this journey possible.",
-      reactions: 330,
-      linkedinUrl: "https://www.linkedin.com/in/siddhant-pandeyy/"
-    },
-    {
-      name: "Sanyam Khatter",
-      company: "CARS24",
-      role: "CA Industrial Trainee",
-      avatar: "https://www.mystudentclub.com/assets/sanyam-khatter.png",
-      headline: "Joined CARS24 as a CA Industrial Trainee in a fast-paced finance environment! 🏎️",
-      highlight: "Special thanks to <strong>CA Padam Bhansali</strong> for the resume strategy and interview guidance during this transition — truly appreciated!",
-      reactions: 360,
-      linkedinUrl: "https://www.linkedin.com/in/sanyam-khatter/"
-    },
-    {
-      name: "Surbhi Priya",
-      company: "Kotak Mahindra Bank",
-      role: "CA Industrial Trainee",
-      avatar: "https://www.mystudentclub.com/assets/surbhi-priya.png",
-      headline: "Delighted to share that I have joined Kotak Mahindra Bank as an Industrial Trainee! 🏦",
-      highlight: "Deeply grateful to <strong>My Student Club and CA Padam Bhansali</strong> for continuous guidance, encouragement, and unwavering support throughout.",
-      reactions: 232,
-      linkedinUrl: "https://www.linkedin.com/in/surbhipriya1/"
-    }
-  ];
-
-  const carousel = document.getElementById('linkedinCarousel');
-
-  if (!carousel) return;
-
-  const getCardWidth = () => {
-    if (window.innerWidth < 480) return 310 + 14;
-    if (window.innerWidth < 768) return 330 + 16;
-    return 380 + 16;
-  };
-
-  const createCardElement = (post) => {
-    const card = document.createElement('div');
-    card.className = 'linkedin-card';
-    card.innerHTML = `
-      <div class="linkedin-card-header">
-        <div class="linkedin-author">
-          <img src="${post.avatar}" alt="${post.name}" class="linkedin-avatar" loading="lazy" decoding="async" onerror="this.src='https://via.placeholder.com/48'">
-          <div class="linkedin-user-info">
-            <div class="linkedin-user-name-row">
-              <span class="linkedin-user-name">${post.name}</span>
-              <i class="fab fa-linkedin-in linkedin-in-badge"></i>
-            </div>
-            <p class="linkedin-user-title">${post.role} • <strong>${post.company}</strong></p>
-          </div>
-        </div>
-      </div>
-      <div class="linkedin-card-body">
-        <p class="linkedin-post-headline">${post.headline}</p>
-        <div class="linkedin-mentor-quote">
-          <svg class="quote-icon" viewBox="0 0 24 24" width="13" height="13" fill="currentColor">
-            <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
-          </svg>
-          <span>${post.highlight}</span>
-        </div>
-      </div>
-      <div class="linkedin-card-footer">
-        <div class="linkedin-reactions">
-          <div class="linkedin-reaction-icons">
-            <span class="linkedin-reaction-icon like">👍</span>
-            <span class="linkedin-reaction-icon celebrate">🎉</span>
-            <span class="linkedin-reaction-icon love">❤️</span>
-          </div>
-          <span>${post.reactions}</span>
-        </div>
-        <a href="${post.linkedinUrl}" target="_blank" rel="noopener noreferrer" class="linkedin-view-post-link">
-          <span>View Post</span>
-          <i class="fas fa-external-link-alt" style="font-size: 10px;"></i>
-        </a>
-      </div>
-    `;
-    return card;
-  };
-
-  linkedInPosts.forEach(post => {
-    carousel.appendChild(createCardElement(post));
-  });
-
-  const cards = [...carousel.children];
+  const cards =[...carousel.children];
   cards.forEach(card => {
     const clone = card.cloneNode(true);
     carousel.appendChild(clone);
   });
 
   let position = 0;
-  let speed = 0.85;
+  let speed = 2;
   let animationId;
   let lastTime = 0;
-  let isPaused = false;
-
-  carousel.addEventListener('mouseenter', () => { isPaused = true; });
-  carousel.addEventListener('mouseleave', () => { isPaused = false; });
 
   function animate(currentTime) {
     if (!lastTime) lastTime = currentTime;
     const delta = currentTime - lastTime;
 
-    if (!isPaused && !dragging) {
+    if (true) {
       position -= speed * (delta / 16);
-      if (Math.abs(position) >= (getCardWidth() * cards.length)) {
+      if (position <= -(getCardWidth() * cards.length / 2)) {
         position = 0;
       }
       carousel.style.transform = `translateX(${position}px)`;
@@ -683,6 +177,7 @@ const initializeLinkedInPosts = () => {
 
   let dragging = false;
   let startX = 0;
+  let scrollLeft = 0;
   let dragStartPosition = 0;
 
   carousel.addEventListener('mousedown', (e) => {
@@ -701,21 +196,6 @@ const initializeLinkedInPosts = () => {
     position = dragStartPosition + walk;
     carousel.style.transform = `translateX(${position}px)`;
   });
-
-  carousel.addEventListener('touchstart', (e) => {
-    dragging = true;
-    startX = e.touches[0].pageX - carousel.offsetLeft;
-    dragStartPosition = position;
-    cancelAnimationFrame(animationId);
-  }, { passive: true });
-
-  carousel.addEventListener('touchmove', (e) => {
-    if (!dragging) return;
-    const x = e.touches[0].pageX - carousel.offsetLeft;
-    const walk = (x - startX) * 1.5;
-    position = dragStartPosition + walk;
-    carousel.style.transform = `translateX(${position}px)`;
-  }, { passive: true });
 
   function endDrag() {
     dragging = false;
@@ -726,8 +206,206 @@ const initializeLinkedInPosts = () => {
 
   carousel.addEventListener('mouseup', endDrag);
   carousel.addEventListener('mouseleave', endDrag);
-  carousel.addEventListener('touchend', endDrag);
-  carousel.addEventListener('touchcancel', endDrag);
+
+  animate(performance.now());
+};
+
+
+
+const initializeLinkedInPosts = () => {
+  const linkedInPosts = [
+    {
+      name: "Priyanka Sharma",
+      title: "CA Finalist at Grasim Industries Ltd.",
+      avatar: "https://www.mystudentclub.com/assets/priyanka-sharma.png",
+      content: "Excited to share that I’ve begun my CA Industrial Training at GRASIM INDUSTRIES LIMITED ( ADITYA BIRLA GROUP) 💫\n\nAn important milestone where learning shifts from theory to real business impact. This phase is about responsibility, perspective, and building the mindset required to perform in the corporate world.\n\n<mark style='background-color: #e8f5e9; color: #2e7d32; border-radius: 4px; padding: 2px 4px; font-weight: 500;'>Grateful to my mentor CA Padam Bhansali for their guidance and trust 🤝 their support has been instrumental in reaching this step.</mark>\n\nLooking ahead with focus, confidence, and a strong intent to learn and deliver ✨",
+      reactions: 216,
+      linkedinUrl: "https://www.linkedin.com/in/priyanka-sharma-s6/"
+    },
+    {
+      name: "Khushi Gandhi",
+      title: "CA Finalist at Morgan Stanley",
+      avatar: "https://www.mystudentclub.com/assets/khushi.jpg",
+      content: "✨ Sometimes, you know exactly where you want to begin - and where you want to stay ✨\n\nI'm happy to share that I've joined Morgan Stanley as an Industrial Trainee in the Financial control group - Product Control Department 🌟\n\nWhile many around me went through multiple interviews and acceptance cycles, my journey was quite the opposite. When the opportunity at Morgan Stanley opened up, it became the first interview I appeared for, and I genuinely hoped it would also be my last. Grateful that it turned out to be exactly that 💫\n\n<mark style='background-color: #e8f5e9; color: #2e7d32; border-radius: 4px; padding: 2px 4px; font-weight: 500;'>I'm sincerely thankful to CA Padam Bhansali and My Student Club for their guidance and reassurance, especially during the Interview and acceptance phase 😇</mark>",
+      reactions: 691,
+      linkedinUrl: "https://www.linkedin.com/in/khushi-gandhi-40a37a242/"
+    },
+    {
+      name: "Tamanna Gaur",
+      title: "CA Industrial Trainee at HCL Technologies",
+      avatar: "https://www.mystudentclub.com/assets/tamanna-gaur.jpg",
+      content: "Excited to share that I've started my journey as a CA Industrial Trainee at HCL Technologies✨\n\nGrateful to Lakshya Bansal for genuinely helping me through the process.\n\n<mark style='background-color: #e8f5e9; color: #2e7d32; border-radius: 4px; padding: 2px 4px; font-weight: 500;'>Also thankful to CA Padam Bhansali for the guidance and help that made this step possible.</mark>\n\nLooking forward to learning and growing in this new phase🤍💫",
+      reactions: 161,
+      linkedinUrl: "https://www.linkedin.com/in/tamanna-gaur/"
+    },
+    {
+      name: "Rupesh Machha",
+      title: "CA Industrial Trainee at Cipla",
+      avatar: "https://www.mystudentclub.com/assets/rupesh-machha.jpg",
+      content: "I'm pleased to share that I've joined Cipla as a CA Industrial Trainee in the Business Finance Department.\n\nLooking forward to strengthening my finance skill set while sharpening my soft skills and interpersonal capabilities through real-world exposure.\n\nGrateful for the opportunity. Onward and upward.\n\n<mark style='background-color: #e8f5e9; color: #2e7d32; border-radius: 4px; padding: 2px 4px; font-weight: 500;'>A Special Mention To CA Padam Bhansali for pushing me to give my best of the efforts. It Won't Have Been Possible Without Him.</mark>",
+      reactions: 784,
+      linkedinUrl: "https://www.linkedin.com/in/ca-rupesh-machha-/"
+    },
+    {
+      name: "Siddhant Pandey",
+      title: "CA Industrial Trainee at UBS",
+      avatar: "https://www.mystudentclub.com/assets/sidhant-pandey.jpg",
+      content: "Excited to share that I've begun a new chapter at UBS as an Industrial Trainee in the Liquidity and Funding domain. This opportunity represents a meaningful step in my professional journey.\n\nI'm grateful for the chance to learn in a global, fast-paced environment and to work alongside experienced professionals who bring deep expertise to the table.\n\n<mark style='background-color: #e8f5e9; color: #2e7d32; border-radius: 4px; padding: 2px 4px; font-weight: 500;'>A special note of thanks to CA Padam Bhansali, whose constant guidance and support throughout my IT hunt made this journey possible.</mark>",
+      reactions: 330,
+      linkedinUrl: "https://www.linkedin.com/in/siddhant-pandeyy/"
+    },
+    {
+      name: "Sanyam Khatter",
+      title: "CA Industrial Trainee at CARS24",
+      avatar: "https://www.mystudentclub.com/assets/sanyam-khatter.png",
+      content: "Kicking off the New Year with an exciting new professional journey.\n\nI'm pleased to share that I have joined CARS24 as a CA Industrial Trainee. This marks an important step in my CA journey, and I'm looking forward to gaining hands-on exposure in a fast-paced, tech-driven environment.\n\nAfter completing a valuable one-year Articleship at BDO India, I'm eager to apply the learning gained while further developing my understanding of finance operations, business processes, and decision-making at scale.\n\n<mark style='background-color: #e8f5e9; color: #2e7d32; border-radius: 4px; padding: 2px 4px; font-weight: 500;'>Special thanks to CA Padam Bhansali for the guidance and support during this transition — truly appreciated.</mark>\n\nGrateful for the opportunity and looking forward to learning, contributing, and growing along the way.\n\nThankful to everyone who has guided and supported me throughout this journey.",
+      reactions: 360,
+      linkedinUrl: "https://www.linkedin.com/in/sanyam-khatter/"
+    },
+    {
+      name: "Surbhi Priya",
+      title: "CA Industrial Trainee at Kotak Mahindra Bank",
+      avatar: "https://www.mystudentclub.com/assets/surbhi-priya.png",
+      content: "I am delighted to share an important milestone in my professional journey — I have joined Kotak Mahindra Bank as an Industrial Trainee.\n\nI would like to express my sincere gratitude to Rahul ranjan Sir and Priyank sinha Sir for giving me this valuable opportunity and for placing their trust in me. I am also thankful to Lekhram Vishwakarma for ensuring a smooth and seamless onboarding experience.\n\nI extend my heartfelt thanks to MGC Global Risk Advisory LLP and KB Chandna & Co. for providing me with a strong professional foundation and valuable exposure during my articleship, which has played a crucial role in shaping my learning and growth.\n\n<mark style='background-color: #e8f5e9; color: #2e7d32; border-radius: 4px; padding: 2px 4px; font-weight: 500;'>I am deeply grateful to My Student Club and CA Padam Bhansali for their continuous guidance, encouragement, and unwavering support throughout this journey.</mark>\n\nAnother special thanks to my friend and senior Shivam for all the encouragement and support to uplift me throughout the process.",
+      reactions: 232,
+      linkedinUrl: "https://www.linkedin.com/in/surbhipriya1/"
+    },
+    {
+      name: "Vedang Sawant",
+      title: "CA Industrial Trainee at Flipkart",
+      avatar: "https://www.mystudentclub.com/assets/vedang.jpg",
+      content: "I am excited to announce the beginning of my Industrial Training journey with Flipkart!\n\nThis opportunity has been made possible by the continuous support and guidance from Pratik Verma, Sidddharth Awasthi, and Shivaang Mishra. Thank you for believing in me and assisting me throughout this process.\n\n<mark style='background-color: #e8f5e9; color: #2e7d32; border-radius: 4px; padding: 2px 4px; font-weight: 500;'>I would also like to express my gratitude to CA Padam Bhansali for his unwavering support, mentorship, and motivation at every step. Your guidance has really made a significant impact.</mark>\n\nAs I embark on this new role, I look forward to a year filled with learning, growth, meaningful challenges, creative problem-solving, and engaging brainstorming sessions. I am eager to learn, contribute, and grow in this dynamic environment.",
+      reactions: 383,
+      linkedinUrl: "https://www.linkedin.com/in/vedangsawant/"
+    }
+  ];
+
+  const carousel = document.getElementById('linkedinCarousel');
+
+  if (!carousel) return;
+
+  const getCardWidth = () => {
+    if (window.innerWidth < 480) return 304;
+    if (window.innerWidth < 768) return 324;
+    return 384;
+  };
+
+  linkedInPosts.forEach(post => {
+    const card = document.createElement('div');
+    card.className = 'linkedin-card';
+    card.innerHTML = `
+      <div class="linkedin-card-header">
+        <img src="${post.avatar}" alt="${post.name}" class="linkedin-avatar" onerror="this.src='https://via.placeholder.com/48'">
+        <div class="linkedin-user-info">
+          <p class="linkedin-user-name">${post.name}</p>
+          <p class="linkedin-user-title">${post.title}</p>
+        </div>
+      </div>
+      <div class="linkedin-card-content" style="overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none;">
+        <style>.linkedin-card-content::-webkit-scrollbar { display: none; }</style>
+        ${post.content.replace(/\n/g, '<br>')}
+      </div>
+      <div class="linkedin-reactions">
+        <div class="linkedin-reaction-icons">
+          <span class="linkedin-reaction-icon like">👍</span>
+          <span class="linkedin-reaction-icon celebrate">🎉</span>
+          <span class="linkedin-reaction-icon love">❤️</span>
+        </div>
+        <span>${post.reactions}</span>
+      </div>
+      <div class="linkedin-actions">
+        <button class="linkedin-action-btn" onclick="window.open('${post.linkedinUrl}', '_blank')">
+          <svg viewBox="0 0 24 24"><path d="M19.46 11l-3.91-3.91a7 7 0 01-1.69-2.74l-.49-1.47A2.76 2.76 0 0010.76 1 2.75 2.75 0 008 3.74v1.12a9.19 9.19 0 00.46 2.85L8.89 9H4.12A2.12 2.12 0 002 11.12a2.16 2.16 0 00.92 1.76A2.11 2.11 0 002 14.62a2.14 2.14 0 001.28 2 2 2 0 00-.28 1 2.12 2.12 0 002 2.12v.14A2.12 2.12 0 007.12 22h7.49a8.08 8.08 0 003.58-.84l.31-.16H21V11zM19 19h-1l-.73.37a6.14 6.14 0 01-2.69.63H7.72a1 1 0 01-.72-.31.38.38 0 010-.06l.35-.34-.34-.34a.38.38 0 010-.06 1 1 0 01.72-.31.75.75 0 000-1.5 1 1 0 01-.72-.31.38.38 0 010-.06l.35-.34-.34-.34a.38.38 0 010-.06 1 1 0 01.72-.31.75.75 0 000-1.5A1.12 1.12 0 017 12.62a.38.38 0 010-.06l.35-.34-.35-.34A1.13 1.13 0 018.12 10H9a.75.75 0 00.71-.51l-.53-1.59a7.66 7.66 0 01-.38-2.37V3.74a1.25 1.25 0 011.26-1.24 1.26 1.26 0 011.19.89l.49 1.47a8.48 8.48 0 002.06 3.33L17.71 12H19z"/></svg>
+          Like
+        </button>
+        <button class="linkedin-action-btn" onclick="window.open('${post.linkedinUrl}', '_blank')">
+          <svg viewBox="0 0 24 24"><path d="M7 9h10v1H7zm0 3h7v1H7zm16-8v13c0 1.1-.9 2-2 2H7l-5 5V4c0-1.1.9-2 2-2h17c1.1 0 2 .9 2 2zm-2 0H4v14l2-2h15V4z"/></svg>
+          Comment
+        </button>
+        <button class="linkedin-action-btn" onclick="window.open('${post.linkedinUrl}', '_blank')">
+          <svg viewBox="0 0 24 24"><path d="M21 3L3 10.53v.98l6.84 2.65L12.48 21h.98L21 3z"/></svg>
+          Share
+        </button>
+      </div>
+    `;
+    carousel.appendChild(card);
+
+    // Auto-scroll logic: Wait for the DOM to render the card content, then scroll down to the highlighted <mark>
+    setTimeout(() => {
+      const contentDiv = card.querySelector('.linkedin-card-content');
+      const markElement = contentDiv.querySelector('mark');
+      if (contentDiv && markElement) {
+        contentDiv.scrollTop = markElement.offsetTop - 50;
+      }
+    }, 100);
+  });
+
+  const cards = [...carousel.children];
+  cards.forEach(card => {
+    const clone = card.cloneNode(true);
+    carousel.appendChild(clone);
+
+    // Auto-scroll the clone too
+    setTimeout(() => {
+      const contentDiv = clone.querySelector('.linkedin-card-content');
+      const markElement = clone.querySelector('mark');
+      if (contentDiv && markElement) {
+        contentDiv.scrollTop = markElement.offsetTop - 50;
+      }
+    }, 100);
+  });
+
+  let position = 0;
+  let speed = 2;
+  let animationId;
+  let lastTime = 0;
+
+  function animate(currentTime) {
+    if (!lastTime) lastTime = currentTime;
+    const delta = currentTime - lastTime;
+
+    if (true) {
+      position -= speed * (delta / 16);
+      if (position <= -(getCardWidth() * cards.length)) {
+        position = 0;
+      }
+      carousel.style.transform = `translateX(${position}px)`;
+    }
+
+    lastTime = currentTime;
+    animationId = requestAnimationFrame(animate);
+  }
+
+  let dragging = false;
+  let startX = 0;
+  let dragStartPosition = 0;
+
+  carousel.addEventListener('mousedown', (e) => {
+    dragging = true;
+    startX = e.pageX - carousel.offsetLeft;
+    dragStartPosition = position;
+    carousel.style.cursor = 'grabbing';
+    cancelAnimationFrame(animationId);
+  });
+
+  carousel.addEventListener('mousemove', (e) => {
+    if (!dragging) return;
+    e.preventDefault();
+    const x = e.pageX - carousel.offsetLeft;
+    const walk = (x - startX) * 1.5;
+    position = dragStartPosition + walk;
+    carousel.style.transform = `translateX(${position}px)`;
+  });
+
+  function endDrag() {
+    dragging = false;
+    carousel.style.cursor = 'grab';
+    lastTime = 0;
+    animate(performance.now());
+  }
+
+  carousel.addEventListener('mouseup', endDrag);
+  carousel.addEventListener('mouseleave', endDrag);
 
   animate(performance.now());
 };
@@ -743,12 +421,12 @@ const initializeCertificate = () => {
         const x = e.clientX - rect.left - rect.width / 2;
         const y = e.clientY - rect.top - rect.height / 2;
 
-        const factorX = 25;
-        const factorY = 35;
+        const factorX = 20;
+        const factorY = 30;
 
-        const baseRotateY = -14;
-        const baseRotateX = 4;
-        const baseRotateZ = -1;
+        const baseRotateY = -30;
+        const baseRotateX = 5;
+        const baseRotateZ = -2;
 
         certificate.style.transform = `
           rotateY(${baseRotateY + (x / factorX)}deg)
@@ -761,7 +439,7 @@ const initializeCertificate = () => {
 
     container.addEventListener('mouseleave', () => {
       if (certificate.classList.contains('rotated')) {
-        certificate.style.transform = 'rotateY(-14deg) rotateX(4deg) rotateZ(-1deg)';
+        certificate.style.transform = 'rotateY(-30deg) rotateX(5deg) rotateZ(-2deg)';
       }
     });
   }
@@ -795,18 +473,8 @@ function initializeCurriculumCenter() {
 }
 
 
-const initializeCompaniesTicker = () => {
-  const track = document.getElementById('companiesTickerTrack');
-  if (!track) return;
-  const items = [...track.children];
-  items.forEach(item => {
-    track.appendChild(item.cloneNode(true));
-  });
-};
-
 document.addEventListener('DOMContentLoaded', () => {
   safe(initializeLinkedInPosts, 'linkedinPosts');
-  safe(initializeCompaniesTicker, 'companiesTicker');
   safe(initializeCarousel, 'carousel');
   safe(initializeCertificate, 'certificate');
 

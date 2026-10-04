@@ -1,1444 +1,739 @@
-<!DOCTYPE html>
-<html lang="en">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>MSC CA Industrial Training Program</title>
+<link rel="icon" type="image/png" href="https://mystudentclub.pages.dev/assets/icon-70x70.png">
+<link rel="stylesheet" href="/ca-industrial-training-program/style.css">
+<link rel="stylesheet" href="/ca-industrial-training-program/sections.css">
+<link rel="stylesheet" href="/ca-industrial-training-program/footer.css">
+<link
+  href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Noto+Sans:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap"
+  rel="stylesheet">
+<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="/scripts/portal-style.css">
+<script src="/scripts/supabase.js"></script>
+<script src="/scripts/supabase-init.js"></script>
+<script src="/scripts/error-reporter.js"></script>
+<!-- Firebase for push notifications -->
+<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging-compat.js"></script>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>MSC CA Industrial Training Program | My Student Club</title>
-  <meta name="description"
-    content="Land your dream CA Industrial Training at top MNCs & investment firms. 1:1 CV review, mock interviews, 1,500+ HR contacts & stipends up to ₹1.25L.">
 
-  <!-- Favicons -->
-  <link rel="icon" type="image/png" href="https://mystudentclub.pages.dev/assets/icon-70x70.png">
-  <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
-  <link rel="apple-touch-icon" href="/assets/icon-70x70.png">
 
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Noto+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap"
-    rel="stylesheet">
+<header class="site-header">
+  <div class="header-container">
+    <a href="/" class="brand-link">
+      <img src="/assets/logo.png" alt="My Student Club" class="brand-logo">
+    </a>
+    <div class="header-actions">
+      <div class="auth-buttons-container"></div>
+      <button class="menu-button-style" aria-label="Open menu" id="menuButton">
+        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
 
-  <!-- Icons & Animations -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css">
-  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+<div class="expanded-menu" id="expandedMenu">
+  <button class="menu-close-btn" id="menuCloseBtn">
+    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+    </svg>
+  </button>
+  <div class="menu-items">
+    <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My Courses</a>
 
-  <!-- Site Styles -->
-  <link rel="stylesheet" href="sections.css?v=20261004.industrial37">
-  <link rel="stylesheet" href="footer.css?v=20261004.industrial37">
+    <a href="/ca-industrial-training-program/" class="menu-item">MSC Industrial Training Program</a>
+    <a href="/articleship-program/" class="menu-item">MSC Articleship Program</a>
+    <a href="/msc-ca-fresher-program/" class="menu-item">MSC CA Freshers Program</a>
 
-  <!-- Supabase & Firebase -->
-  <script src="/scripts/supabase.js"></script>
-  <script src="/scripts/supabase-init.js"></script>
-  <script src="/scripts/error-reporter.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging-compat.js"></script>
-</head>
+    <div class="menu-item-dropdown">
+      <button class="menu-item" style="width: 100%; justify-content: space-between;">
+        Free Resources
+        <svg class="dropdown-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
+      </button>
+      <div class="dropdown-content" style="display: none; padding-left: 1.5rem;">
+        <a href="/ca-fresher-training-resources.html" class="menu-item">CA Fresher</a>
+        <a href="/ca-industrial-training-resources.html" class="menu-item">Industrial Training</a>
+        <a href="/ca-articleship-opportunities" class="menu-item">Articleship</a>
+      </div>
+    </div>
 
-<body>
 
-  <!-- ─── TOP SITE HEADER ─── -->
-  <header class="site-header">
-    <div class="header-container">
-      <a href="/" class="brand-link" aria-label="My Student Club Homepage">
-        <img src="/assets/logo.png" alt="My Student Club" class="brand-logo">
-      </a>
+    <a href="/contact.html" class="menu-item">Contact Us</a>
+  </div>
+</div>
 
-      <!-- Desktop Section Navigation Links -->
-      <nav class="header-nav" aria-label="Page Sections">
-        <a href="#placed-section" class="header-nav-link">Placements</a>
-        <a href="#struggles-benefits" class="header-nav-link">Why MSC</a>
-        <a href="#curriculum-section" class="header-nav-link">Curriculum</a>
-        <a href="#certified-section" class="header-nav-link">Certificate</a>
-        <a href="#mentor-section" class="header-nav-link">Mentor</a>
-        <a href="#enrollment" class="header-nav-link">Pricing</a>
-      </nav>
+<div class="hero">
+  <div class="parallax" aria-hidden="true">
+    <span class="layer l1" data-depth="0.03"></span>
+    <span class="layer l2" data-depth="0.06"></span>
+    <span class="layer l3" data-depth="0.10"></span>
+  </div>
 
-      <div class="header-actions">
-        <a href="#enrollment" class="header-enroll-btn">
-          <span>Register Now</span>
-          <i class="fas fa-arrow-right"></i>
+  <div class="hero-container">
+    <div class="hero-content" data-aos="fade-right">
+      <h1 class="hero-title">MSC <span class="highlight-blue">Industrial Training Program</span></h1>
+      <p class="hero-subtitle">For students completing their First Year between 1st Oct and 31st December.</p>
+
+      <div class="hero-cta-group">
+        <a href="https://payu.in/web/7E80331D7E5F8BB45DA0DE0AA870BB70" class="notify-me-btn pulse-btn hero-cta" style="text-decoration: none;">
+          <span class="notify-btn-icon">⚡</span>
+          <span class="notify-btn-text">Register Now</span>
         </a>
-        <div class="auth-buttons-container"></div>
-        <button class="menu-button-style" aria-label="Open menu" id="menuButton">
-          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-          </svg>
-        </button>
+        <a href="#curriculum-section" class="btn-secondary">
+          <i class="far fa-file-alt"></i> View Curriculum
+        </a>
+      </div>
+
+      <div class="hero-rating">
+        <span class="stars">★★★★★</span>
+        <span class="rating-text">4.9 / 5 rated by 1000's of CA students</span>
       </div>
     </div>
-  </header>
 
-  <!-- ─── SLIDE-OUT DRAWER NAVIGATION ─── -->
-  <div class="menu-backdrop" id="menuBackdrop"></div>
-  <div class="expanded-menu" id="expandedMenu">
-    <button class="menu-close-btn" id="menuCloseBtn" aria-label="Close menu">
-      <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-      </svg>
-    </button>
-    <div class="menu-items">
-      <div class="drawer-nav-group-title">Page Navigation</div>
-      <a href="#placed-section" class="menu-item page-jump-link">
-        <i class="fas fa-user-graduate drawer-icon"></i>
-        <span>Placements</span>
-      </a>
-      <a href="#struggles-benefits" class="menu-item page-jump-link">
-        <i class="fas fa-bolt drawer-icon"></i>
-        <span>Why MSC</span>
-      </a>
-      <a href="#curriculum-section" class="menu-item page-jump-link">
-        <i class="fas fa-book-open drawer-icon"></i>
-        <span>Curriculum</span>
-      </a>
-      <a href="#certified-section" class="menu-item page-jump-link">
-        <i class="fas fa-certificate drawer-icon"></i>
-        <span>Certificate</span>
-      </a>
-      <a href="#mentor-section" class="menu-item page-jump-link">
-        <i class="fas fa-chalkboard-teacher drawer-icon"></i>
-        <span>Meet Mentor</span>
-      </a>
-      <a href="#enrollment" class="menu-item page-jump-link highlight-pricing-link">
-        <i class="fas fa-tag drawer-icon"></i>
-        <span>Pricing &amp; Enroll</span>
-      </a>
-
-      <div class="drawer-divider"></div>
-      <div class="drawer-nav-group-title">MSC Programs &amp; Portals</div>
-      <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My Courses</a>
-      <a href="/ca-industrial-training-program/" class="menu-item active">MSC Industrial Training Program</a>
-      <a href="/articleship-program/" class="menu-item">MSC Articleship Program</a>
-      <a href="/msc-ca-fresher-program/" class="menu-item">MSC CA Freshers Program</a>
-      <div class="menu-item-dropdown">
-        <button class="menu-item"
-          style="width: 100%; justify-content: space-between; background: none; border: none; font-size: inherit; cursor: pointer; display: flex; align-items: center;"
-          id="freeResourcesDropdownBtn">
-          <span>Free Resources</span>
-          <svg class="dropdown-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-          </svg>
-        </button>
-        <div class="dropdown-content" id="freeResourcesDropdownContent" style="display: none; padding-left: 1.5rem;">
-          <a href="/ca-fresher-training-resources.html" class="menu-item">CA Fresher</a>
-          <a href="/ca-industrial-training-resources.html" class="menu-item">Industrial Training</a>
-          <a href="/ca-articleship-opportunities" class="menu-item">Articleship</a>
+    <div class="hero-visual" data-aos="zoom-in" data-aos-delay="200">
+      <div class="linkedin-carousel-container" style="margin: 0; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);">
+        <div class="linkedin-carousel" id="linkedinCarousel">
+          <!-- Cards will be populated by JavaScript -->
         </div>
       </div>
-      <a href="/sessions/" class="menu-item">Events &amp; Live Sessions</a>
-      <a href="/contact.html" class="menu-item">Contact Us</a>
     </div>
   </div>
 
-  <main>
-    <!-- ─── HERO SECTION ─── -->
-    <section class="hero-section" id="hero">
-      <div class="hero-wrapper">
-        <!-- Hero Left Column -->
-        <div class="hero-left">
-          <div class="eyebrow-pill">
-            <span class="eyebrow-dot"></span>
-            <span>REGISTRATION LIVE • LIMITED SEATS</span>
-          </div>
+  <div class="stats-banner" data-aos="fade-up" data-aos-delay="300">
+    <div class="stat-col">
+      <div class="stat-num">1000's of</div>
+      <div class="stat-lbl">Students Placed</div>
+    </div>
+    <div class="stat-col">
+      <div class="stat-num">₹1.25L</div>
+      <div class="stat-lbl">Highest Stipend</div>
+    </div>
+    <div class="stat-col">
+      <div class="stat-num">500+</div>
+      <div class="stat-lbl">Recruiting Orgs</div>
+    </div>
+    <div class="stat-col">
+      <div class="stat-num">₹40k</div>
+      <div class="stat-lbl">Average Stipend</div>
+    </div>
+  </div>
+</div>
 
-          <h1 class="hero-heading">
-            MSC <span class="highlight-blue">Industrial Training</span><br>
-            Program
-          </h1>
+<section class="success-stories">
+  <h2>Our <span class="dynamic-batch-month-long">December</span> batch <span class="highlight">Students</span> placed
+    in Top Companies</h2>
+  <div class="carousel-container">
+    <div class="carousel" id="studentCarousel"></div>
+  </div>
+</section>
 
-          <p class="hero-description">
-            For students completing their First Year between 1st Oct and 31st December. Land your dream corporate finance &amp; industrial role with stipends up to ₹1.25L.
-          </p>
-
-          <div class="hero-cta-group">
-            <a href="https://payu.in/web/7E80331D7E5F8BB45DA0DE0AA870BB70" class="btn-blue-primary" id="heroPrimaryCta">
-              <span>Register Now • ₹2499</span>
-              <i class="fas fa-arrow-right"></i>
-            </a>
-            <a href="#curriculum-section" class="btn-outline-secondary">
-              <i class="far fa-file-alt"></i>
-              <span>View 6-Day Curriculum</span>
-            </a>
-          </div>
-
-          <div class="hero-social-proof">
-            <div class="avatar-stack">
-              <img src="/assets/vedang.jpg" alt="Vedang Sawant" loading="lazy">
-              <img src="/assets/gaurav.jpg" alt="Gaurav Jaat" loading="lazy">
-              <img src="/assets/kanchan.jpg" alt="Kanchan Kulhria" loading="lazy">
-              <img src="/assets/khushi.jpg" alt="Khushi Gandhi" loading="lazy">
-            </div>
-            <span class="social-proof-text">1,000's of CA Students Guided</span>
-            <div class="rating-pill-badge">
-              <span>★★★★★ 4.9/5 Rating</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Hero Right Column: Preserved LinkedIn Placement Carousel Inside Elevated Frame -->
-        <div class="hero-right">
-          <div class="hero-linkedin-wrapper">
-            <div class="hero-linkedin-glow"></div>
-
-            <div class="linkedin-header-pill">
-              <div class="linkedin-header-left">
-                <i class="fab fa-linkedin"></i>
-                <span>Real Students. Real Placements.</span>
-              </div>
-              <div class="linkedin-verified-tag">
-                <i class="fas fa-check-circle"></i>
-                <span>Verified Posts</span>
-              </div>
-            </div>
-
-            <!-- Existing Carousel Container for app.js -->
-            <div class="linkedin-carousel-container" style="margin: 0;">
-              <div class="linkedin-carousel" id="linkedinCarousel">
-                <!-- Cards populated dynamically by app.js -->
-              </div>
-            </div>
-
-            <div class="hero-linkedin-float-pill">
-              <span class="float-stipend-badge">
-                <i class="fas fa-rupee-sign" style="font-size: 11px;"></i> Up to ₹1.25L Stipend
-              </span>
-              <span class="float-stipend-sub">Flipkart, Morgan Stanley, DE Shaw &amp; more</span>
-            </div>
-          </div>
-        </div>
+<section class="struggles-benefits-section" id="struggles-benefits">
+  <div class="bento-container">
+    <!-- Left Bento Pane: Pain Points / Struggles -->
+    <div class="bento-pane struggles-pane">
+      <h2 class="pane-title">Are you too <span class="highlight-red">Struggling?</span></h2>
+      <ul class="struggles-list">
+        <li>
+          <span class="status-icon status-warning">✕</span>
+          <span class="struggle-text">No Interview Calls for Industrial Training?</span>
+        </li>
+        <li>
+          <span class="status-icon status-warning">✕</span>
+          <span class="struggle-text">Unsure how to stand out from 1000s of applicants?</span>
+        </li>
+        <li>
+          <span class="status-icon status-warning">✕</span>
+          <span class="struggle-text">Struggling to find verified HR vacancies & emails?</span>
+        </li>
+        <li>
+          <span class="status-icon status-warning">✕</span>
+          <span class="struggle-text">Afraid of losing post-qualification brand opportunities?</span>
+        </li>
+      </ul>
+      <div class="struggle-illustration">
+        <img src="/assets/successfulperson.svg" alt="Frustrated Student" class="illustration-img large-img">
       </div>
+    </div>
 
-      <!-- ─── FLOATING METRICS STRIP (INSIDE HERO) ─── -->
-      <div class="metrics-container">
-        <div class="metrics-card">
-          <div class="metric-item">
-            <div class="metric-icon-wrap">
-              <i class="fas fa-graduation-cap"></i>
-            </div>
-            <div class="metric-info">
-              <span class="metric-value">1,000's of</span>
-              <span class="metric-label">Students Placed</span>
-            </div>
-          </div>
-
-          <div class="metric-item">
-            <div class="metric-icon-wrap green">
-              <i class="fas fa-wallet"></i>
-            </div>
-            <div class="metric-info">
-              <span class="metric-value">₹1.25L</span>
-              <span class="metric-label">Highest Stipend</span>
-            </div>
-          </div>
-
-          <div class="metric-item">
-            <div class="metric-icon-wrap">
-              <i class="fas fa-building"></i>
-            </div>
-            <div class="metric-info">
-              <span class="metric-value">500+</span>
-              <span class="metric-label">Recruiting Orgs</span>
-            </div>
-          </div>
-
-          <div class="metric-item">
-            <div class="metric-icon-wrap amber">
-              <i class="fas fa-chart-line"></i>
-            </div>
-            <div class="metric-info">
-              <span class="metric-value">₹40,000</span>
-              <span class="metric-label">Average Stipend</span>
-            </div>
-          </div>
-        </div>
+    <!-- Right Bento Pane: Why Enroll -->
+    <div class="bento-pane benefits-pane">
+      <div class="rotated-badge">
+        <span>That's why WE BUILT THIS</span>
       </div>
-    </section>
+      <h2 class="pane-title">Why <span class="highlight-green">Enroll?</span></h2>
+      <p class="pane-sub">6 Days of Recorded Sessions. Get direct access to everything you need to break through
+        the competition.</p>
 
-    <!-- ─── SUCCESS STORIES / PLACED STUDENTS SECTION ─── -->
-    <section class="success-stories" id="placed-section">
-      <div class="success-stories-inner">
-        <h2 class="placed-section-title">
-          Our <span class="dynamic-batch-month-long">December</span> Batch <span class="highlight-blue">Students</span> placed in Top Companies
-        </h2>
-
-        <!-- Top Company Logos Bar (Continuous Marquee Ticker) -->
-        <div class="companies-ticker-wrapper" data-aos="fade-up">
-          <div class="companies-ticker-track" id="companiesTickerTrack">
-            <!-- Group 1 -->
-            <div class="companies-ticker-group">
-              <div class="company-logo-card" title="Amazon">
-                <svg viewBox="0 0 95 28" class="brand-bar-logo" fill="none">
-                  <text x="2" y="19" font-family="'Inter', -apple-system, sans-serif" font-size="18" font-weight="900" fill="#111827" letter-spacing="-0.5px">amazon</text>
-                  <path d="M12 23 C 32 30, 56 28, 72 21" stroke="#FF9900" stroke-width="2.6" stroke-linecap="round" fill="none"/>
-                  <polygon points="70,18 78,21 72,25" fill="#FF9900"/>
-                </svg>
-              </div>
-              <div class="company-logo-card" title="Flipkart">
-                <svg viewBox="0 0 100 28" class="brand-bar-logo" fill="none">
-                  <g transform="translate(2, 4)">
-                    <rect x="0" y="4" width="16" height="15" rx="3" fill="#2874F0"/>
-                    <path d="M4 4 C4 0 12 0 12 4" stroke="#FFE11B" stroke-width="2" fill="none"/>
-                    <path d="M7 8 L10 8 M7 11 L10 11 M7 8 L7 15" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round"/>
-                  </g>
-                  <text x="23" y="19" font-family="'Inter', -apple-system, sans-serif" font-size="16" font-weight="900" font-style="italic" fill="#2874F0" letter-spacing="-0.3px">Flipkart</text>
-                  <polygon points="87,7 93,12 87,17" fill="#FFE11B"/>
-                </svg>
-              </div>
-              <div class="company-logo-card" title="D. E. Shaw & Co.">
-                <svg viewBox="0 0 120 28" class="brand-bar-logo" fill="none">
-                  <text x="2" y="19" font-family="'Georgia', 'Times New Roman', serif" font-size="14.5" font-weight="bold" fill="#002D62" letter-spacing="0.3px">D. E. Shaw &amp; Co.</text>
-                </svg>
-              </div>
-              <div class="company-logo-card" title="Morgan Stanley">
-                <svg viewBox="0 0 125 28" class="brand-bar-logo" fill="none">
-                  <text x="2" y="19" font-family="'Inter', 'Helvetica Neue', sans-serif" font-size="13" font-weight="800" fill="#111827" letter-spacing="0.2px">Morgan Stanley</text>
-                </svg>
-              </div>
-              <div class="company-logo-card" title="Goldman Sachs">
-                <svg viewBox="0 0 115 28" class="brand-bar-logo" fill="none">
-                  <rect x="2" y="3" width="22" height="22" rx="3" fill="#7399C6"/>
-                  <text x="6" y="14" font-family="'Inter', sans-serif" font-size="9" font-weight="900" fill="#FFFFFF">G</text>
-                  <text x="13" y="21" font-family="'Inter', sans-serif" font-size="9" font-weight="900" fill="#FFFFFF">S</text>
-                  <text x="29" y="13" font-family="'Georgia', serif" font-size="10.5" font-weight="bold" fill="#111827">Goldman</text>
-                  <text x="29" y="23" font-family="'Georgia', serif" font-size="10.5" font-weight="bold" fill="#111827">Sachs</text>
-                </svg>
-              </div>
-              <div class="company-logo-card" title="UBS">
-                <svg viewBox="0 0 85 28" class="brand-bar-logo" fill="none">
-                  <g transform="translate(2, 5)" stroke="#111827" stroke-width="1.4" fill="none">
-                    <circle cx="5" cy="5" r="3.5"/>
-                    <line x1="8" y1="5" x2="20" y2="5"/>
-                    <line x1="16" y1="5" x2="16" y2="8"/>
-                    <line x1="19" y1="5" x2="19" y2="8"/>
-                    <line x1="5" y1="8" x2="16" y2="15"/>
-                    <line x1="5" y1="2" x2="16" y2="-5"/>
-                  </g>
-                  <text x="28" y="20" font-family="'Inter', sans-serif" font-size="19" font-weight="900" fill="#E60000" letter-spacing="1.2px">UBS</text>
-                </svg>
-              </div>
-              <div class="company-logo-card" title="Deutsche Bank">
-                <svg viewBox="0 0 120 28" class="brand-bar-logo" fill="none">
-                  <rect x="2" y="3" width="22" height="22" rx="3" stroke="#0018A8" stroke-width="2.5" fill="none"/>
-                  <line x1="6" y1="21" x2="20" y2="7" stroke="#0018A8" stroke-width="2.8" stroke-linecap="round"/>
-                  <text x="30" y="18" font-family="'Inter', sans-serif" font-size="11.5" font-weight="800" fill="#0018A8" letter-spacing="-0.2px">Deutsche Bank</text>
-                </svg>
-              </div>
-              <div class="company-logo-card" title="Unilever">
-                <svg viewBox="0 0 95 28" class="brand-bar-logo" fill="none">
-                  <g transform="translate(2, 3)">
-                    <path d="M4 2 C4 14, 18 14, 18 2 M6 4 C6 12, 16 12, 16 4" stroke="#1F36C7" stroke-width="2" fill="none" stroke-linecap="round"/>
-                    <circle cx="4" cy="2" r="1.5" fill="#1F36C7"/>
-                    <circle cx="18" cy="2" r="1.5" fill="#1F36C7"/>
-                    <circle cx="11" cy="9" r="1.2" fill="#1F36C7"/>
-                  </g>
-                  <text x="26" y="19" font-family="'Inter', sans-serif" font-size="15" font-weight="900" fill="#1F36C7" letter-spacing="-0.3px">Unilever</text>
-                </svg>
-              </div>
-              <div class="company-logo-card" title="HDFC Bank">
-                <svg viewBox="0 0 115 28" class="brand-bar-logo" fill="none">
-                  <g transform="translate(2, 4)">
-                    <rect x="0" y="0" width="20" height="20" rx="3" fill="#004C8F"/>
-                    <rect x="4" y="4" width="12" height="12" fill="#FFFFFF"/>
-                    <rect x="6" y="6" width="8" height="8" fill="#ED232A"/>
-                  </g>
-                  <text x="27" y="18" font-family="'Inter', sans-serif" font-size="12" font-weight="900" fill="#004C8F" letter-spacing="0.2px">HDFC BANK</text>
-                </svg>
-              </div>
-              <div class="company-logo-card" title="Barclays">
-                <svg viewBox="0 0 110 28" class="brand-bar-logo" fill="none">
-                  <g transform="translate(2, 4)" fill="#00AEEF">
-                    <path d="M10 2 L12 6 L18 4 L15 10 L19 13 L14 14 L15 19 L10 16 L5 19 L6 14 L1 13 L5 10 L2 4 L8 6 Z"/>
-                  </g>
-                  <text x="25" y="18" font-family="'Inter', sans-serif" font-size="13" font-weight="900" fill="#00395D" letter-spacing="0.8px">BARCLAYS</text>
-                </svg>
-              </div>
-              <div class="company-logo-card" title="Aditya Birla Group">
-                <svg viewBox="0 0 130 28" class="brand-bar-logo" fill="none">
-                  <g transform="translate(2, 4)">
-                    <path d="M2 18 C2 9, 9 2, 18 2 C18 9, 12 18, 2 18 Z" fill="#D32F2F"/>
-                    <path d="M6 18 C6 11, 11 6, 18 6 C18 11, 14 18, 6 18 Z" fill="#E65100"/>
-                    <path d="M10 18 C10 13, 14 10, 18 10 C18 14, 15 18, 10 18 Z" fill="#FBC02D"/>
-                  </g>
-                  <text x="25" y="13" font-family="'Inter', sans-serif" font-size="9" font-weight="900" fill="#D32F2F" letter-spacing="0.5px">ADITYA BIRLA</text>
-                  <text x="25" y="22" font-family="'Inter', sans-serif" font-size="7.5" font-weight="700" fill="#64748B" letter-spacing="1px">GROUP</text>
-                </svg>
-              </div>
-              <div class="company-logo-card" title="ITC Limited">
-                <svg viewBox="0 0 85 28" class="brand-bar-logo" fill="none">
-                  <g transform="translate(2, 2)">
-                    <polygon points="12,1 23,22 1,22" fill="#002E6E" stroke="#002E6E" stroke-width="1"/>
-                    <text x="12" y="18" font-family="'Georgia', serif" font-size="9.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">ITC</text>
-                  </g>
-                  <text x="28" y="19" font-family="'Georgia', serif" font-size="15" font-weight="bold" fill="#002E6E" letter-spacing="1px">ITC</text>
-                </svg>
-              </div>
-              <div class="company-logo-card" title="Kotak Mahindra Bank">
-                <svg viewBox="0 0 95 28" class="brand-bar-logo" fill="none">
-                  <g transform="translate(2, 4)">
-                    <rect x="0" y="0" width="20" height="20" rx="4" fill="#ED1B24"/>
-                    <path d="M6 10 C4 8, 4 12, 6 10 C8 8, 12 12, 14 10 C16 8, 16 12, 14 10 C12 8, 8 12, 6 10 Z" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" fill="none"/>
-                  </g>
-                  <text x="27" y="18" font-family="'Inter', sans-serif" font-size="14.5" font-weight="900" fill="#ED1B24" letter-spacing="-0.3px">kotak</text>
-                </svg>
-              </div>
-              <div class="company-logo-card" title="Cipla">
-                <svg viewBox="0 0 85 28" class="brand-bar-logo" fill="none">
-                  <g transform="translate(2, 5)">
-                    <circle cx="8" cy="8" r="7" stroke="#003865" stroke-width="2.5" fill="none"/>
-                    <path d="M8 1 A7 7 0 0 1 15 8 L8 8 Z" fill="#ED1C24"/>
-                  </g>
-                  <text x="22" y="19" font-family="'Inter', sans-serif" font-size="16" font-weight="900" fill="#003865" letter-spacing="-0.3px">Cipla</text>
-                </svg>
-              </div>
-              <div class="company-logo-card" title="HSBC">
-                <svg viewBox="0 0 90 28" class="brand-bar-logo" fill="none">
-                  <g transform="translate(2, 4)">
-                    <polygon points="10,10 2,2 18,2" fill="#DB0011"/>
-                    <polygon points="10,10 2,18 18,18" fill="#DB0011"/>
-                    <polygon points="10,10 2,2 2,18" fill="#DB0011"/>
-                    <polygon points="10,10 18,2 18,18" fill="#DB0011"/>
-                  </g>
-                  <text x="26" y="19" font-family="'Inter', sans-serif" font-size="15" font-weight="900" fill="#111827" letter-spacing="0.5px">HSBC</text>
-                </svg>
-              </div>
-              <div class="company-logo-card" title="Reliance">
-                <svg viewBox="0 0 105 28" class="brand-bar-logo" fill="none">
-                  <g transform="translate(2, 4)">
-                    <ellipse cx="10" cy="10" rx="9" ry="8" stroke="#004C97" stroke-width="2" fill="none"/>
-                    <path d="M10 4 C7 7, 7 11, 10 14 C13 11, 13 7, 10 4 Z" fill="#ED1C24"/>
-                  </g>
-                  <text x="25" y="18" font-family="'Inter', sans-serif" font-size="14.5" font-weight="900" fill="#004C97" letter-spacing="-0.2px">Reliance</text>
-                </svg>
-              </div>
-            </div>
-
-            <!-- Group 2 (Duplicate for Seamless Continuous Loop) -->
-            <div class="companies-ticker-group" aria-hidden="true">
-              <div class="company-logo-card" title="Amazon">
-                <svg viewBox="0 0 95 28" class="brand-bar-logo" fill="none">
-                  <text x="2" y="19" font-family="'Inter', -apple-system, sans-serif" font-size="18" font-weight="900" fill="#111827" letter-spacing="-0.5px">amazon</text>
-                  <path d="M12 23 C 32 30, 56 28, 72 21" stroke="#FF9900" stroke-width="2.6" stroke-linecap="round" fill="none"/>
-                  <polygon points="70,18 78,21 72,25" fill="#FF9900"/>
-                </svg>
-              </div>
-              <div class="company-logo-card" title="Flipkart">
-                <svg viewBox="0 0 100 28" class="brand-bar-logo" fill="none">
-                  <g transform="translate(2, 4)">
-                    <rect x="0" y="4" width="16" height="15" rx="3" fill="#2874F0"/>
-                    <path d="M4 4 C4 0 12 0 12 4" stroke="#FFE11B" stroke-width="2" fill="none"/>
-                    <path d="M7 8 L10 8 M7 11 L10 11 M7 8 L7 15" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round"/>
-                  </g>
-                  <text x="23" y="19" font-family="'Inter', -apple-system, sans-serif" font-size="16" font-weight="900" font-style="italic" fill="#2874F0" letter-spacing="-0.3px">Flipkart</text>
-                  <polygon points="87,7 93,12 87,17" fill="#FFE11B"/>
-                </svg>
-              </div>
-              <div class="company-logo-card" title="D. E. Shaw & Co.">
-                <svg viewBox="0 0 120 28" class="brand-bar-logo" fill="none">
-                  <text x="2" y="19" font-family="'Georgia', 'Times New Roman', serif" font-size="14.5" font-weight="bold" fill="#002D62" letter-spacing="0.3px">D. E. Shaw &amp; Co.</text>
-                </svg>
-              </div>
-              <div class="company-logo-card" title="Morgan Stanley">
-                <svg viewBox="0 0 125 28" class="brand-bar-logo" fill="none">
-                  <text x="2" y="19" font-family="'Inter', 'Helvetica Neue', sans-serif" font-size="13" font-weight="800" fill="#111827" letter-spacing="0.2px">Morgan Stanley</text>
-                </svg>
-              </div>
-              <div class="company-logo-card" title="Goldman Sachs">
-                <svg viewBox="0 0 115 28" class="brand-bar-logo" fill="none">
-                  <rect x="2" y="3" width="22" height="22" rx="3" fill="#7399C6"/>
-                  <text x="6" y="14" font-family="'Inter', sans-serif" font-size="9" font-weight="900" fill="#FFFFFF">G</text>
-                  <text x="13" y="21" font-family="'Inter', sans-serif" font-size="9" font-weight="900" fill="#FFFFFF">S</text>
-                  <text x="29" y="13" font-family="'Georgia', serif" font-size="10.5" font-weight="bold" fill="#111827">Goldman</text>
-                  <text x="29" y="23" font-family="'Georgia', serif" font-size="10.5" font-weight="bold" fill="#111827">Sachs</text>
-                </svg>
-              </div>
-              <div class="company-logo-card" title="UBS">
-                <svg viewBox="0 0 85 28" class="brand-bar-logo" fill="none">
-                  <g transform="translate(2, 5)" stroke="#111827" stroke-width="1.4" fill="none">
-                    <circle cx="5" cy="5" r="3.5"/>
-                    <line x1="8" y1="5" x2="20" y2="5"/>
-                    <line x1="16" y1="5" x2="16" y2="8"/>
-                    <line x1="19" y1="5" x2="19" y2="8"/>
-                    <line x1="5" y1="8" x2="16" y2="15"/>
-                    <line x1="5" y1="2" x2="16" y2="-5"/>
-                  </g>
-                  <text x="28" y="20" font-family="'Inter', sans-serif" font-size="19" font-weight="900" fill="#E60000" letter-spacing="1.2px">UBS</text>
-                </svg>
-              </div>
-              <div class="company-logo-card" title="Deutsche Bank">
-                <svg viewBox="0 0 120 28" class="brand-bar-logo" fill="none">
-                  <rect x="2" y="3" width="22" height="22" rx="3" stroke="#0018A8" stroke-width="2.5" fill="none"/>
-                  <line x1="6" y1="21" x2="20" y2="7" stroke="#0018A8" stroke-width="2.8" stroke-linecap="round"/>
-                  <text x="30" y="18" font-family="'Inter', sans-serif" font-size="11.5" font-weight="800" fill="#0018A8" letter-spacing="-0.2px">Deutsche Bank</text>
-                </svg>
-              </div>
-              <div class="company-logo-card" title="Unilever">
-                <svg viewBox="0 0 95 28" class="brand-bar-logo" fill="none">
-                  <g transform="translate(2, 3)">
-                    <path d="M4 2 C4 14, 18 14, 18 2 M6 4 C6 12, 16 12, 16 4" stroke="#1F36C7" stroke-width="2" fill="none" stroke-linecap="round"/>
-                    <circle cx="4" cy="2" r="1.5" fill="#1F36C7"/>
-                    <circle cx="18" cy="2" r="1.5" fill="#1F36C7"/>
-                    <circle cx="11" cy="9" r="1.2" fill="#1F36C7"/>
-                  </g>
-                  <text x="26" y="19" font-family="'Inter', sans-serif" font-size="15" font-weight="900" fill="#1F36C7" letter-spacing="-0.3px">Unilever</text>
-                </svg>
-              </div>
-              <div class="company-logo-card" title="HDFC Bank">
-                <svg viewBox="0 0 115 28" class="brand-bar-logo" fill="none">
-                  <g transform="translate(2, 4)">
-                    <rect x="0" y="0" width="20" height="20" rx="3" fill="#004C8F"/>
-                    <rect x="4" y="4" width="12" height="12" fill="#FFFFFF"/>
-                    <rect x="6" y="6" width="8" height="8" fill="#ED232A"/>
-                  </g>
-                  <text x="27" y="18" font-family="'Inter', sans-serif" font-size="12" font-weight="900" fill="#004C8F" letter-spacing="0.2px">HDFC BANK</text>
-                </svg>
-              </div>
-              <div class="company-logo-card" title="Barclays">
-                <svg viewBox="0 0 110 28" class="brand-bar-logo" fill="none">
-                  <g transform="translate(2, 4)" fill="#00AEEF">
-                    <path d="M10 2 L12 6 L18 4 L15 10 L19 13 L14 14 L15 19 L10 16 L5 19 L6 14 L1 13 L5 10 L2 4 L8 6 Z"/>
-                  </g>
-                  <text x="25" y="18" font-family="'Inter', sans-serif" font-size="13" font-weight="900" fill="#00395D" letter-spacing="0.8px">BARCLAYS</text>
-                </svg>
-              </div>
-              <div class="company-logo-card" title="Aditya Birla Group">
-                <svg viewBox="0 0 130 28" class="brand-bar-logo" fill="none">
-                  <g transform="translate(2, 4)">
-                    <path d="M2 18 C2 9, 9 2, 18 2 C18 9, 12 18, 2 18 Z" fill="#D32F2F"/>
-                    <path d="M6 18 C6 11, 11 6, 18 6 C18 11, 14 18, 6 18 Z" fill="#E65100"/>
-                    <path d="M10 18 C10 13, 14 10, 18 10 C18 14, 15 18, 10 18 Z" fill="#FBC02D"/>
-                  </g>
-                  <text x="25" y="13" font-family="'Inter', sans-serif" font-size="9" font-weight="900" fill="#D32F2F" letter-spacing="0.5px">ADITYA BIRLA</text>
-                  <text x="25" y="22" font-family="'Inter', sans-serif" font-size="7.5" font-weight="700" fill="#64748B" letter-spacing="1px">GROUP</text>
-                </svg>
-              </div>
-              <div class="company-logo-card" title="ITC Limited">
-                <svg viewBox="0 0 85 28" class="brand-bar-logo" fill="none">
-                  <g transform="translate(2, 2)">
-                    <polygon points="12,1 23,22 1,22" fill="#002E6E" stroke="#002E6E" stroke-width="1"/>
-                    <text x="12" y="18" font-family="'Georgia', serif" font-size="9.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">ITC</text>
-                  </g>
-                  <text x="28" y="19" font-family="'Georgia', serif" font-size="15" font-weight="bold" fill="#002E6E" letter-spacing="1px">ITC</text>
-                </svg>
-              </div>
-              <div class="company-logo-card" title="Kotak Mahindra Bank">
-                <svg viewBox="0 0 95 28" class="brand-bar-logo" fill="none">
-                  <g transform="translate(2, 4)">
-                    <rect x="0" y="0" width="20" height="20" rx="4" fill="#ED1B24"/>
-                    <path d="M6 10 C4 8, 4 12, 6 10 C8 8, 12 12, 14 10 C16 8, 16 12, 14 10 C12 8, 8 12, 6 10 Z" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" fill="none"/>
-                  </g>
-                  <text x="27" y="18" font-family="'Inter', sans-serif" font-size="14.5" font-weight="900" fill="#ED1B24" letter-spacing="-0.3px">kotak</text>
-                </svg>
-              </div>
-              <div class="company-logo-card" title="Cipla">
-                <svg viewBox="0 0 85 28" class="brand-bar-logo" fill="none">
-                  <g transform="translate(2, 5)">
-                    <circle cx="8" cy="8" r="7" stroke="#003865" stroke-width="2.5" fill="none"/>
-                    <path d="M8 1 A7 7 0 0 1 15 8 L8 8 Z" fill="#ED1C24"/>
-                  </g>
-                  <text x="22" y="19" font-family="'Inter', sans-serif" font-size="16" font-weight="900" fill="#003865" letter-spacing="-0.3px">Cipla</text>
-                </svg>
-              </div>
-              <div class="company-logo-card" title="HSBC">
-                <svg viewBox="0 0 90 28" class="brand-bar-logo" fill="none">
-                  <g transform="translate(2, 4)">
-                    <polygon points="10,10 2,2 18,2" fill="#DB0011"/>
-                    <polygon points="10,10 2,18 18,18" fill="#DB0011"/>
-                    <polygon points="10,10 2,2 2,18" fill="#DB0011"/>
-                    <polygon points="10,10 18,2 18,18" fill="#DB0011"/>
-                  </g>
-                  <text x="26" y="19" font-family="'Inter', sans-serif" font-size="15" font-weight="900" fill="#111827" letter-spacing="0.5px">HSBC</text>
-                </svg>
-              </div>
-              <div class="company-logo-card" title="Reliance">
-                <svg viewBox="0 0 105 28" class="brand-bar-logo" fill="none">
-                  <g transform="translate(2, 4)">
-                    <ellipse cx="10" cy="10" rx="9" ry="8" stroke="#004C97" stroke-width="2" fill="none"/>
-                    <path d="M10 4 C7 7, 7 11, 10 14 C13 11, 13 7, 10 4 Z" fill="#ED1C24"/>
-                  </g>
-                  <text x="25" y="18" font-family="'Inter', sans-serif" font-size="14.5" font-weight="900" fill="#004C97" letter-spacing="-0.2px">Reliance</text>
-                </svg>
-              </div>
-            </div>
+      <div class="benefits-grid-savvy">
+        <div class="benefit-item-savvy">
+          <img src="/assets/collaboration.svg" alt="Collaboration" class="benefit-icon medium-img">
+          <div class="benefit-info-savvy">
+            <h4>100+ Exclusive Vacancies & Referrals</h4>
+            <p>Direct entry and referrals to top corporate and business finance departments.</p>
           </div>
         </div>
 
-        <!-- Student Cards Carousel with Navigation Arrows -->
-        <div class="carousel-wrapper" data-aos="fade-up">
-          <button class="carousel-nav-btn prev" id="studentCarouselPrev" aria-label="Previous Student">
-            <i class="fas fa-chevron-left"></i>
-          </button>
-
-          <div class="carousel-container" id="studentCarouselContainer">
-            <div class="carousel" id="studentCarousel"></div>
-          </div>
-
-          <button class="carousel-nav-btn next" id="studentCarouselNext" aria-label="Next Student">
-            <i class="fas fa-chevron-right"></i>
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <!-- ─── THE INDUSTRIAL BREAKTHROUGH / BEFORE VS AFTER MSC ─── -->
-    <section class="challenge-section" id="struggles-benefits">
-      <div class="section-header-centered" data-aos="fade-up">
-        <div class="eyebrow-pill">
-          <span class="eyebrow-dot"></span>
-          <span>THE INDUSTRIAL TRAINING ADVANTAGE</span>
-        </div>
-        <h2 class="section-title">
-          Stop Struggling. <span class="highlight-blue">Start Landing.</span>
-        </h2>
-        <p class="section-subtitle">
-          Breaking into top corporate finance, FMCG, and Investment Banking roles requires an entirely different strategy than traditional articleship.
-        </p>
-      </div>
-
-      <div class="transformation-matrix" data-aos="fade-up" data-aos-delay="100">
-        <!-- The Unassisted Path -->
-        <div class="matrix-column struggle-column">
-          <div class="matrix-column-header">
-            <div class="matrix-header-top">
-              <span class="matrix-badge struggle-badge">
-                <i class="fas fa-times-circle"></i> The Unassisted Path
-              </span>
-              <span class="matrix-stat-pill red-stat">90% Rejection Rate</span>
-            </div>
-            <h3 class="matrix-col-title">Applying Without Strategy</h3>
-            <p class="matrix-col-desc">How most CA students get stuck in the traditional application black hole.</p>
-          </div>
-
-          <div class="matrix-items-list">
-            <div class="matrix-item struggle-item">
-              <div class="matrix-icon-box red-icon">
-                <i class="fas fa-inbox"></i>
-              </div>
-              <div class="matrix-item-content">
-                <h4>Cold Portal Blackhole</h4>
-                <p>Applying blindly on generic MNC careers portals with zero recruiter visibility or feedback.</p>
-              </div>
-            </div>
-
-            <div class="matrix-item struggle-item">
-              <div class="matrix-icon-box red-icon">
-                <i class="fas fa-file-invoice"></i>
-              </div>
-              <div class="matrix-item-content">
-                <h4>Articleship-Style Audit CV</h4>
-                <p>Resumes formatted for statutory compliance instead of corporate finance, modeling & metrics.</p>
-              </div>
-            </div>
-
-            <div class="matrix-item struggle-item">
-              <div class="matrix-icon-box red-icon">
-                <i class="fas fa-user-slash"></i>
-              </div>
-              <div class="matrix-item-content">
-                <h4>Zero Direct HR Access</h4>
-                <p>Missing verified contacts of talent acquisition heads and internal corporate referral alumni.</p>
-              </div>
-            </div>
-
-            <div class="matrix-item struggle-item">
-              <div class="matrix-icon-box red-icon">
-                <i class="fas fa-question-circle"></i>
-              </div>
-              <div class="matrix-item-content">
-                <h4>Unprepared for Technical IB Rounds</h4>
-                <p>Getting stumped by case studies, DCF models, and unexpected competency questions.</p>
-              </div>
-            </div>
-
-            <div class="matrix-item struggle-item">
-              <div class="matrix-icon-box red-icon">
-                <i class="fas fa-file-signature"></i>
-              </div>
-              <div class="matrix-item-content">
-                <h4>Principal NOC & Form 109 Fear</h4>
-                <p>Unsure how to approach the partner or navigate ICAI transfer rules without conflict.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Center Catalyst Arrow / VS Badge -->
-        <div class="matrix-catalyst">
-          <div class="catalyst-glow"></div>
-          <div class="catalyst-circle">
-            <i class="fas fa-bolt"></i>
-            <span>MSC FLIP</span>
-          </div>
-        </div>
-
-        <!-- The MSC Accelerated Path -->
-        <div class="matrix-column msc-column">
-          <div class="matrix-column-header">
-            <div class="matrix-header-top">
-              <span class="matrix-badge msc-badge">
-                <i class="fas fa-check-circle"></i> The MSC Blueprint
-              </span>
-              <span class="matrix-stat-pill green-stat">Up to ₹1.25L/mo Stipend</span>
-            </div>
-            <h3 class="matrix-col-title">Direct Corporate Fast-Track</h3>
-            <p class="matrix-col-desc">A proven, mentorship-backed playbook that turns applications into offer letters.</p>
-          </div>
-
-          <div class="matrix-items-list">
-            <div class="matrix-item msc-item">
-              <div class="matrix-icon-box blue-icon">
-                <i class="fas fa-paper-plane"></i>
-              </div>
-              <div class="matrix-item-content">
-                <h4>100+ Exclusive Vacancies & Referrals</h4>
-                <p>Direct internal introductions at Flipkart, Morgan Stanley, DE Shaw, UBS & marquee brands.</p>
-              </div>
-            </div>
-
-            <div class="matrix-item msc-item">
-              <div class="matrix-icon-box blue-icon">
-                <i class="fas fa-edit"></i>
-              </div>
-              <div class="matrix-item-content">
-                <h4>1:1 Live CV Rebuild by CA Padam Bhansali</h4>
-                <p>Transforming your experience into a quantifiable, high-impact corporate finance resume.</p>
-              </div>
-            </div>
-
-            <div class="matrix-item msc-item">
-              <div class="matrix-icon-box blue-icon">
-                <i class="fas fa-address-book"></i>
-              </div>
-              <div class="matrix-item-content">
-                <h4>1,500+ Verified Industrial HR Database</h4>
-                <p>Direct email & phone contacts of decision-making talent acquisition leaders across India.</p>
-              </div>
-            </div>
-
-            <div class="matrix-item msc-item">
-              <div class="matrix-icon-box blue-icon">
-                <i class="fas fa-comments"></i>
-              </div>
-              <div class="matrix-item-content">
-                <h4>Domain Mock Drills & Question Banks</h4>
-                <p>1:1 mock drills for FP&A, Treasury, Investment Banking & Product Control domains.</p>
-              </div>
-            </div>
-
-            <div class="matrix-item msc-item">
-              <div class="matrix-icon-box blue-icon">
-                <i class="fas fa-shield-alt"></i>
-              </div>
-              <div class="matrix-item-content">
-                <h4>Form 109 & Transfer Guidance</h4>
-                <p>Step-by-step guidance & scripts to smoothly secure your partner's consent and ICAI compliance.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Bottom Outcome Stats Ribbon -->
-      <div class="transformation-ribbon" data-aos="fade-up" data-aos-delay="200">
-        <div class="ribbon-card">
-          <div class="ribbon-icon"><i class="fas fa-chart-line"></i></div>
-          <div class="ribbon-text">
-            <strong>₹40k - ₹1.25L/mo</strong>
-            <span>Highest Industry Stipends</span>
-          </div>
-        </div>
-        <div class="ribbon-divider"></div>
-        <div class="ribbon-card">
-          <div class="ribbon-icon"><i class="fas fa-bullseye"></i></div>
-          <div class="ribbon-text">
-            <strong>4.8x Higher</strong>
-            <span>Shortlisting & Conversion Rate</span>
-          </div>
-        </div>
-        <div class="ribbon-divider"></div>
-        <div class="ribbon-card">
-          <div class="ribbon-icon"><i class="fas fa-user-tie"></i></div>
-          <div class="ribbon-text">
-            <strong>1:1 Founder Mentorship</strong>
-            <span>Directly by CA Padam Bhansali</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ─── 6-DAY CURRICULUM SECTION (CARD GRID) ─── -->
-    <section class="journey-section" id="curriculum-section">
-      <div class="section-header-centered" data-aos="fade-up">
-        <div class="eyebrow-pill">
-          <span class="eyebrow-dot"></span>
-          <span>CURRICULUM</span>
-        </div>
-        <h2 class="section-title">
-          What will you <span class="highlight-blue">Learn?</span>
-        </h2>
-        <p class="section-subtitle">
-          Complete 6-day recorded masterclass designed to take you step-by-step from applicant to offer letter.
-        </p>
-      </div>
-
-      <div class="journey-steps-grid">
-        <!-- Day 1 -->
-        <div class="journey-step-card step-blue" data-aos="fade-up" data-aos-delay="50">
-          <div class="step-header-row">
-            <span class="step-number-badge">Day 1</span>
-            <span class="step-badge-tag">Foundation</span>
-          </div>
-          <div class="step-hero-row">
-            <div class="step-icon-wrap">
-              <i class="far fa-compass"></i>
-            </div>
-            <div class="step-heading-group">
-              <h3 class="step-title">Roles in Industrial Training</h3>
-              <p class="step-description">Understanding core domains and identifying your ideal corporate fit.</p>
-            </div>
-          </div>
-          <ul class="step-points-list">
-            <li><span class="step-dot"></span> Corporate Finance, FP&amp;A, Treasury &amp; Internal Audit</li>
-            <li><span class="step-dot"></span> Big 4 vs Industry: How to choose your best fit</li>
-            <li><span class="step-dot"></span> Mapping companies actively recruiting for each domain</li>
-          </ul>
-        </div>
-
-        <!-- Day 2 -->
-        <div class="journey-step-card step-purple" data-aos="fade-up" data-aos-delay="100">
-          <div class="step-header-row">
-            <span class="step-number-badge">Day 2</span>
-            <span class="step-badge-tag">CV Mastery</span>
-          </div>
-          <div class="step-hero-row">
-            <div class="step-icon-wrap">
-              <i class="far fa-file-alt"></i>
-            </div>
-            <div class="step-heading-group">
-              <h3 class="step-title">Crafting Perfect CV</h3>
-              <p class="step-description">ATS-proof templates and 1:1 CV review by CA Padam Bhansali.</p>
-            </div>
-          </div>
-          <ul class="step-points-list">
-            <li><span class="step-dot"></span> Choosing ATS templates tailored for MNCs &amp; IB</li>
-            <li><span class="step-dot"></span> Bullet points that highlight 1st-year impact with metrics</li>
-            <li><span class="step-dot"></span> Access to MSC AI CV Builder &amp; Automated Reviewer</li>
-          </ul>
-        </div>
-
-        <!-- Day 3 -->
-        <div class="journey-step-card step-indigo" data-aos="fade-up" data-aos-delay="150">
-          <div class="step-header-row">
-            <span class="step-number-badge">Day 3</span>
-            <span class="step-badge-tag">Networking</span>
-          </div>
-          <div class="step-hero-row">
-            <div class="step-icon-wrap">
-              <i class="fab fa-linkedin-in"></i>
-            </div>
-            <div class="step-heading-group">
-              <h3 class="step-title">Application Hacks &amp; LinkedIn</h3>
-              <p class="step-description">Profile optimization, finding hidden roles and executive referrals.</p>
-            </div>
-          </div>
-          <ul class="step-points-list">
-            <li><span class="step-dot"></span> Discovering hidden unlisted corporate vacancies</li>
-            <li><span class="step-dot"></span> LinkedIn profile optimization for finance recruiters</li>
-            <li><span class="step-dot"></span> High-conversion connection notes to senior directors</li>
-          </ul>
-        </div>
-
-        <!-- Day 4 -->
-        <div class="journey-step-card step-amber" data-aos="fade-up" data-aos-delay="200">
-          <div class="step-header-row">
-            <span class="step-number-badge">Day 4</span>
-            <span class="step-badge-tag">1500+ HR IDs</span>
-          </div>
-          <div class="step-hero-row">
-            <div class="step-icon-wrap">
-              <i class="far fa-envelope-open"></i>
-            </div>
-            <div class="step-heading-group">
-              <h3 class="step-title">Let's Cold Mail &amp; Outreach</h3>
-              <p class="step-description">Unknown delivery hacks and access to verified recruiter database.</p>
-            </div>
-          </div>
-          <ul class="step-points-list">
-            <li><span class="step-dot"></span> Gmail &amp; Outlook delivery tricks that beat spam filters</li>
-            <li><span class="step-dot"></span> 1,500+ Verified Industrial Training HR Email IDs</li>
-            <li><span class="step-dot"></span> MSCIT Mail &amp; outreach automation templates</li>
-          </ul>
-        </div>
-
-        <!-- Day 5 -->
-        <div class="journey-step-card step-green" data-aos="fade-up" data-aos-delay="250">
-          <div class="step-header-row">
-            <span class="step-number-badge">Day 5</span>
-            <span class="step-badge-tag">1:1 Mock</span>
-          </div>
-          <div class="step-hero-row">
-            <div class="step-icon-wrap">
-              <i class="fas fa-handshake"></i>
-            </div>
-            <div class="step-heading-group">
-              <h3 class="step-title">Cracking Corporate Interviews</h3>
-              <p class="step-description">Interview guidebooks, technical question banks &amp; 1:1 mocks.</p>
-            </div>
-          </div>
-          <ul class="step-points-list">
-            <li><span class="step-dot"></span> Technical and behavioral question banks for top MNCs</li>
-            <li><span class="step-dot"></span> 1:1 Personal Mock Interview with constructive feedback</li>
-            <li><span class="step-dot"></span> Answering principal transfer and attempt questions</li>
-          </ul>
-        </div>
-
-        <!-- Day 6 -->
-        <div class="journey-step-card step-teal" data-aos="fade-up" data-aos-delay="300">
-          <div class="step-header-row">
-            <span class="step-number-badge">Day 6</span>
-            <span class="step-badge-tag">ICAI Transfer</span>
-          </div>
-          <div class="step-hero-row">
-            <div class="step-icon-wrap">
-              <i class="fas fa-road"></i>
-            </div>
-            <div class="step-heading-group">
-              <h3 class="step-title">ICAI Formalities &amp; Roadmap</h3>
-              <p class="step-description">Form 109 &amp; 104 guidelines, principal scripts &amp; long-term roadmap.</p>
-            </div>
-          </div>
-          <ul class="step-points-list">
-            <li><span class="step-dot"></span> Form 109 &amp; Form 104: Complete filing guide &amp; avoid errors</li>
-            <li><span class="step-dot"></span> Professional scripts to convince your Principal for NOC</li>
-            <li><span class="step-dot"></span> 90-day execution roadmap for your training period</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <!-- ─── GET CERTIFIED SECTION ─── -->
-    <section class="certified-section" id="certified-section">
-      <div class="certified-wrapper">
-        <div class="certified-left" data-aos="fade-right">
-          <div class="eyebrow-pill">
-            <span class="eyebrow-dot"></span>
-            <span>GET RECOGNISED</span>
-          </div>
-          <h2 class="section-title">Get <span class="highlight-green">Certified</span></h2>
-          <p class="section-subtitle">
-            Stand out to corporate recruiters with MSC's industry-recognized certificate of completion.
-          </p>
-          <ul class="certified-checklist">
-            <li>
-              <span class="cert-check-badge"><i class="fas fa-check"></i></span>
-              <span>Validates corporate finance skills and preparation</span>
-            </li>
-            <li>
-              <span class="cert-check-badge"><i class="fas fa-check"></i></span>
-              <span>Showcase prominently on LinkedIn and your CV</span>
-            </li>
-            <li>
-              <span class="cert-check-badge"><i class="fas fa-check"></i></span>
-              <span>Recognised by top MNCs, FMCG &amp; investment firms</span>
-            </li>
-            <li>
-              <span class="cert-check-badge"><i class="fas fa-check"></i></span>
-              <span>Lifetime access to program materials &amp; alumni network</span>
-            </li>
-          </ul>
-          <a href="#enrollment" class="btn-navy-sample">
-            <span>Enroll to Get Certified</span>
-            <i class="fas fa-arrow-right" style="font-size: 11px;"></i>
-          </a>
-        </div>
-
-        <div class="certified-preview-frame" data-aos="fade-left">
-          <!-- Sparkle SVGs -->
-          <svg class="cert-sparkle cert-sparkle-tl" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M4 12C8 12 12 8 12 4C12 8 16 12 20 12C16 12 12 16 12 20C12 16 8 12 4 12Z" stroke="#1E40AF"
-              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-          <svg class="cert-sparkle cert-sparkle-br" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M5 12C8.5 12 12 8.5 12 5C12 8.5 15.5 12 19 12C15.5 12 12 15.5 12 19C12 15.5 8.5 12 5 12Z"
-              stroke="#1E40AF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-
-          <div class="certificate-container">
-            <div class="certificate-frame rotated">
-              <div class="certificate-shadow"></div>
-              <div class="certificate-frame-border"></div>
-              <div class="certificate-back"></div>
-              <div class="certificate-glass">
-                <div class="certificate-content">
-                  <img src="/assets/certificate_padam.webp"
-                    alt="MSC Certificate of Completion - Padam Bhansali" class="certificate-image" loading="lazy"
-                    onerror="this.src='/assets/certificate_padam.png'">
-                  <div class="certificate-overlay"></div>
-                  <div class="shine-effect"></div>
-                  <div class="certificate-ribbon-badge">
-                    <i class="fas fa-graduation-cap"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ─── MEET YOUR MENTOR SECTION ─── -->
-    <section class="mentor-section" id="mentor-section">
-      <div class="section-header-centered" data-aos="fade-up">
-        <div class="eyebrow-pill">
-          <span class="eyebrow-dot"></span>
-          <span>LEARN FROM THE BEST</span>
-        </div>
-        <h2 class="section-title">
-          Meet Your <span class="highlight-blue">Mentor</span>
-        </h2>
-        <p class="section-subtitle">
-          Direct 1:1 mentorship, interview frameworks, and recruiter access from someone who cracked Flipkart Industrial Training.
-        </p>
-      </div>
-
-      <div class="mentor-showcase-container" data-aos="fade-up" data-aos-delay="100">
-        <div class="mentor-master-card">
-          <!-- Left: Portrait Pane with Ambient Glow & Badges -->
-          <div class="mentor-portrait-pane">
-            <div class="mentor-portrait-glow"></div>
-            <div class="mentor-image-frame">
-              <img src="/assets/mentornew.png" alt="CA Padam Bhansali" class="mentor-portrait-img" onerror="this.src='/assets/Mentor-HeroSection-transparent.png'">
-              
-              <!-- Floating Top Badge -->
-              <div class="mentor-float-badge top-badge">
-                <i class="fas fa-check-circle"></i>
-                <span>Lead Instructor</span>
-              </div>
-
-              <!-- Floating Bottom Experience Pill -->
-              <div class="mentor-float-badge bottom-badge">
-                <div class="badge-icon-flipkart">
-                  <svg viewBox="0 0 100 28" fill="none" style="height: 14px; width: auto; display: block;">
-                    <g transform="translate(2, 4)">
-                      <rect x="0" y="4" width="16" height="15" rx="3" fill="#2874F0"/>
-                      <path d="M4 4 C4 0 12 0 12 4" stroke="#FFE11B" stroke-width="2" fill="none"/>
-                      <path d="M7 8 L10 8 M7 11 L10 11 M7 8 L7 15" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round"/>
-                    </g>
-                    <text x="23" y="19" font-family="'Inter', sans-serif" font-size="16" font-weight="900" font-style="italic" fill="#2874F0">Flipkart</text>
-                  </svg>
-                </div>
-                <span>Ex-Business Finance</span>
-              </div>
-            </div>
-            
-            <!-- Underneath Social Proof Pill -->
-            <div class="mentor-portrait-sub-badge">
-              <i class="fas fa-users" style="color: var(--primary-blue);"></i>
-              <span>50,000+ Students Mentored</span>
-            </div>
-          </div>
-
-          <!-- Right: Details, Highlights & Quote -->
-          <div class="mentor-details-pane">
-            <div class="mentor-details-header">
-              <div class="mentor-title-block">
-                <div class="mentor-badge-label">FOUNDER &amp; LEAD TRAINER</div>
-                <div class="mentor-name-heading-row">
-                  <h3 class="mentor-name-title">CA Padam Bhansali</h3>
-                  <a href="https://www.linkedin.com/in/padam-bhansali/" target="_blank" rel="noopener noreferrer" class="mentor-linkedin-link" title="View LinkedIn Profile">
-                    <i class="fab fa-linkedin"></i>
-                    <span>Connect</span>
-                  </a>
-                </div>
-                <div class="mentor-tagline">Founder, My Student Club • Ex-Flipkart Business Finance</div>
-              </div>
-            </div>
-
-            <!-- 4 Quick Key Metrics Bento Grid -->
-            <div class="mentor-highlights-grid">
-              <div class="mentor-highlight-item">
-                <div class="highlight-icon-box blue">
-                  <i class="fas fa-briefcase"></i>
-                </div>
-                <div class="highlight-content">
-                  <span class="highlight-val">Ex-Flipkart</span>
-                  <span class="highlight-lbl">Business Finance</span>
-                </div>
-              </div>
-
-              <div class="mentor-highlight-item">
-                <div class="highlight-icon-box green">
-                  <i class="fas fa-user-graduate"></i>
-                </div>
-                <div class="highlight-content">
-                  <span class="highlight-val">1,000's</span>
-                  <span class="highlight-lbl">Placed Students</span>
-                </div>
-              </div>
-
-              <div class="mentor-highlight-item">
-                <div class="highlight-icon-box purple">
-                  <i class="fas fa-building"></i>
-                </div>
-                <div class="highlight-content">
-                  <span class="highlight-val">100+</span>
-                  <span class="highlight-lbl">Orgs Coached</span>
-                </div>
-              </div>
-
-              <div class="mentor-highlight-item">
-                <div class="highlight-icon-box amber">
-                  <i class="fas fa-star"></i>
-                </div>
-                <div class="highlight-content">
-                  <span class="highlight-val">4.9 / 5.0</span>
-                  <span class="highlight-lbl">Student Rating</span>
-                </div>
-              </div>
-            </div>
-
-            <p class="mentor-bio-text">
-              CA Padam Bhansali completed his own Industrial Training at Flipkart in Business Finance. Having cracked the exact recruitment process himself, he designed this practical 6-day accelerator to equip CA students with corporate finance modeling, interview readiness, and direct HR networks.
-            </p>
-
-            <!-- Styled Quote Box -->
-            <div class="mentor-quote-card">
-              <div class="quote-symbol">
-                <i class="fas fa-quote-left"></i>
-              </div>
-              <div class="quote-text-body">
-                “Corporate industrial training changes the trajectory of your entire CA career. My goal is to give you the exact playbook, contacts, and confidence to crack top firms.”
-              </div>
-            </div>
-
-            <!-- Bottom Career Tags -->
-            <div class="mentor-credentials-bar">
-              <span class="cred-pill"><i class="fas fa-check-circle"></i> 1:1 CV Review</span>
-              <span class="cred-pill"><i class="fas fa-check-circle"></i> Technical Mock Interviews</span>
-              <span class="cred-pill"><i class="fas fa-check-circle"></i> 1,500+ Direct HR Network</span>
-              <span class="cred-pill"><i class="fas fa-check-circle"></i> 50k+ Community</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ─── LIVE PRICING & ENROLLMENT SECTION (WIDE 100VH 2-COLUMN LAYOUT) ─── -->
-    <section class="enrollment-section" id="enrollment">
-      <div class="pricing-container-wide" data-aos="fade-up">
-        <div class="pricing-card-split">
-          
-          <!-- Top Accent Most Popular Ribbon -->
-          <div class="pricing-split-ribbon">
-            <i class="fas fa-crown" style="font-size: 10px; margin-right: 5px;"></i>
-            <span>MOST POPULAR • 50% LIMITED DISCOUNT</span>
-          </div>
-
-          <!-- Left Column: Deliverables & Value -->
-          <div class="pricing-split-left">
-            <div class="pricing-split-header">
-              <div class="limited-seats-badge">
-                <span class="badge-pulse-dot"></span>
-                <span>LIMITED SEATS FOR NEXT BATCH</span>
-              </div>
-              <h2 class="pricing-split-title">
-                MSC CA Industrial <span class="highlight-blue">Training Program</span>
-              </h2>
-              <p class="pricing-split-subtitle">
-                Complete 6-Day Masterclass (Recorded Sessions), 1,500+ Recruiter Database, 1-on-1 Mentorship &amp; AI Tools Suite
-              </p>
-            </div>
-
-            <div class="pricing-features-grid">
-              <div class="pricing-feature-item">
-                <span class="check-icon"><i class="fas fa-check"></i></span>
-                <span>6 Days Comprehensive Masterclass Sessions</span>
-              </div>
-              <div class="pricing-feature-item">
-                <span class="check-icon"><i class="fas fa-check"></i></span>
-                <span>1,500+ Verified Recruiter &amp; HR Contacts</span>
-              </div>
-              <div class="pricing-feature-item">
-                <span class="check-icon"><i class="fas fa-check"></i></span>
-                <span>Full Lifetime MSC LMS &amp; Resource Vault</span>
-              </div>
-              <div class="pricing-feature-item">
-                <span class="check-icon"><i class="fas fa-check"></i></span>
-                <span>Personal 1-on-1 CV Review with CA Padam</span>
-              </div>
-              <div class="pricing-feature-item">
-                <span class="check-icon"><i class="fas fa-check"></i></span>
-                <span>Personal Mock Interview &amp; Scorecard</span>
-              </div>
-              <div class="pricing-feature-item">
-                <span class="check-icon"><i class="fas fa-check"></i></span>
-                <span>Exclusive Vacancies &amp; Corporate Referrals</span>
-              </div>
-              <div class="pricing-feature-item">
-                <span class="check-icon"><i class="fas fa-check"></i></span>
-                <span>ICAI Form 109 &amp; 104 Transfer NOC Kit</span>
-              </div>
-              <div class="pricing-feature-item">
-                <span class="check-icon"><i class="fas fa-check"></i></span>
-                <span>MSC AI Tools: CV Builder &amp; Reviewer</span>
-              </div>
-            </div>
-
-            <div class="pricing-trust-inline">
-              <div class="trust-inline-item">
-                <i class="fas fa-lock" style="color: #10B981;"></i>
-                <span>256-Bit Encrypted PayU</span>
-              </div>
-              <div class="trust-inline-item">
-                <i class="fas fa-bolt" style="color: #F59E0B;"></i>
-                <span>Instant LMS Access</span>
-              </div>
-              <div class="trust-inline-item">
-                <i class="fas fa-user-check" style="color: var(--primary-blue);"></i>
-                <span>Padam Bhansali Mentorship</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Right Column: Pricing Box & CTA -->
-          <div class="pricing-split-right">
-            <div class="pricing-action-box">
-              <div class="pricing-box-top">
-                <span class="pricing-box-tag">ALL-IN-ONE ACCESS</span>
-                <div class="pricing-amount-row">
-                  <span class="currency">₹</span>
-                  <span class="price-discounted">2499</span>
-                  <div class="price-meta-col">
-                    <span class="price-original">₹4999</span>
-                    <span class="discount-badge-pill">50% OFF</span>
-                  </div>
-                </div>
-                <p class="pricing-tenure-note">One-Time Investment • Lifetime Program Access</p>
-              </div>
-
-              <div class="pricing-cta-wrap">
-                <a href="https://payu.in/web/7E80331D7E5F8BB45DA0DE0AA870BB70" id="registerButtonWorkshop" class="btn-blue-primary btn-split-cta">
-                  <span>Register Now • ₹2499</span>
-                  <i class="fas fa-arrow-right"></i>
-                </a>
-              </div>
-
-              <div class="pricing-payment-methods">
-                <span class="pay-method-pill">UPI</span>
-                <span class="pay-method-pill">Google Pay</span>
-                <span class="pay-method-pill">PhonePe</span>
-                <span class="pay-method-pill">Cards</span>
-                <span class="pay-method-pill">NetBanking</span>
-              </div>
-
-              <div class="pricing-guarantee-micro">
-                <i class="fas fa-shield-alt" style="color: var(--primary-blue);"></i>
-                <span>Trusted by 1,000s of CA Students for Top MNC Placements</span>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </section>
-
-    <!-- ─── MODERN MASTERCLASS PAGE FOOTER ─── -->
-    <footer class="page-footer">
-      <div class="footer-container">
-        <div class="footer-grid">
-          <!-- Column 1: Brand & Mission -->
-          <div class="footer-brand-col">
-            <a href="/" class="footer-logo-link" title="My Student Club">
-              <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club" class="footer-logo-img">
-            </a>
-            <p class="footer-brand-desc">
-              Empowering CA students with industry-proven frameworks, 1:1 mentorship, and direct access to top MNC and investment corporate finance roles.
-            </p>
-            <div class="footer-social-row">
-              <a href="https://www.linkedin.com/company/mystudentclub" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="LinkedIn">
-                <i class="fab fa-linkedin-in"></i>
-              </a>
-              <a href="https://www.youtube.com/@capadambhansali" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="YouTube">
-                <i class="fab fa-youtube"></i>
-              </a>
-              <a href="https://www.instagram.com/my_student_club/" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="Instagram">
-                <i class="fab fa-instagram"></i>
-              </a>
-            </div>
-            <div class="footer-trust-badge">
-              <i class="fas fa-shield-alt"></i>
-              <span>100% Verified CA Accelerator</span>
-            </div>
-          </div>
-
-          <!-- Column 2: Flagship Programs -->
-          <div class="footer-nav-col">
-            <h4 class="footer-col-title">Programs</h4>
-            <ul class="footer-col-list">
+        <div class="benefit-item-savvy">
+          <img src="/assets/offerletters.svg" alt="Offer Letters" class="benefit-icon medium-img">
+          <div class="benefit-info-savvy">
+            <h4>Premium Industrial Training Resources & Tools</h4>
+            <ul class="benefit-resources-list">
               <li>
-                <a href="/ca-industrial-training-program/" class="footer-nav-link active-link">
-                  <span>Industrial Training</span>
-                  <span class="footer-badge-mini">LIVE</span>
-                </a>
+                <span class="check-emoji">✅</span>
+                <span>40+ CV & Cover Letter Templates</span>
               </li>
-              <li><a href="/articleship-program/" class="footer-nav-link">Articleship Program</a></li>
-              <li><a href="/msc-ca-fresher-program/" class="footer-nav-link">CA Freshers Program</a></li>
-              <li><a href="/ai-interview.html" class="footer-nav-link">AI Mock Interviews</a></li>
-              <li><a href="/learning-management-system/" class="footer-nav-link">My Courses (LMS)</a></li>
-            </ul>
-          </div>
-
-          <!-- Column 3: Free Resources -->
-          <div class="footer-nav-col">
-            <h4 class="footer-col-title">Free Resources</h4>
-            <ul class="footer-col-list">
-              <li><a href="/ca-industrial-training-resources.html" class="footer-nav-link">Industrial Guidebook</a></li>
-              <li><a href="/ca-articleship-opportunities" class="footer-nav-link">Articleship Openings</a></li>
-              <li><a href="/ca-fresher-training-resources.html" class="footer-nav-link">Fresher Resources</a></li>
-              <li><a href="/cv-builder" class="footer-nav-link">AI CV Builder</a></li>
-              <li><a href="/sessions/" class="footer-nav-link">Workshops &amp; Events</a></li>
-            </ul>
-          </div>
-
-          <!-- Column 4: Support & Legal -->
-          <div class="footer-nav-col">
-            <h4 class="footer-col-title">Support &amp; Legal</h4>
-            <ul class="footer-col-list">
-              <li><a href="mailto:padam@mystudentclub.com" class="footer-nav-link"><i class="far fa-envelope"></i> padam@mystudentclub.com</a></li>
-              <li><a href="/contact.html" class="footer-nav-link">Contact Support</a></li>
-              <li><a href="/ca-industrial-training-program/privacy-policy.html" class="footer-nav-link">Privacy Policy</a></li>
-              <li><a href="/ca-industrial-training-program/terms-and-conditions.html" class="footer-nav-link">Terms &amp; Conditions</a></li>
+              <li>
+                <span class="check-emoji">✅</span>
+                <span>1,500+ Verified Cold Mailing IDs</span>
+              </li>
+              <li>
+                <span class="check-emoji">✅</span>
+                <span>Company-Specific & Domain-Specific Interview Prep Booklets</span>
+              </li>
+              <li>
+                <span class="check-emoji">✅</span>
+                <span>Personal CV Reviews & Feedback</span>
+              </li>
+              <li>
+                <span class="check-emoji">✅</span>
+                <span>Mock Interviews</span>
+              </li>
+              <li>
+                <span class="check-emoji">✅</span>
+                <span>Exclusive AI Tools like MSC CV Builder, CV Reviewer, Mock Interview Bot</span>
+              </li>
+              <li>
+                <span class="check-emoji">✅</span>
+                <span>Automation Resources & Productivity Tools</span>
+              </li>
+              <li>
+                <span class="check-emoji">✅</span>
+                <span>Plus Many More Premium Resources</span>
+              </li>
             </ul>
           </div>
         </div>
 
-        <!-- Footer Bottom Bar -->
-        <div class="footer-bottom-bar">
-          <p class="footer-copyright-text">&copy; 2026 My Student Club. All rights reserved.</p>
-          <p class="footer-bottom-tagline">
-            <span>Built with</span>
-            <i class="fas fa-heart" style="color: #EF4444; font-size: 11px;"></i>
-            <span>for CA Aspirants across India</span>
-          </p>
+        <div class="benefit-item-savvy flex-row-layout">
+          <div class="benefit-subitem">
+            <span class="checkmark-circle">✓</span>
+            <span>MSC Industrial Training Guidebook</span>
+          </div>
+          <div class="benefit-subitem">
+            <span class="checkmark-circle">✓</span>
+            <span>Exclusive Vacancies & Referrals</span>
+          </div>
+          <div class="benefit-subitem">
+            <span class="checkmark-circle">✓</span>
+            <span>MSC Learning Management System Access</span>
+          </div>
+          <div class="benefit-subitem">
+            <span class="checkmark-circle">✓</span>
+            <span>Daily Doubt Solving Sessions with CA Padam Bhansali</span>
+          </div>
         </div>
       </div>
-    </footer>
-  </main>
-
-  <!-- ─── FIXED BOTTOM CTA BAR (LIVE REGISTRATION) ─── -->
-  <div class="fixed-cta" id="cta-footer">
-    <div class="timer-container">
-      <span class="status-live-text">
-        <span class="status-live-dot"></span>
-        <span>REGISTRATION LIVE • LIMITED SEATS</span>
-      </span>
-    </div>
-    <div class="fixed-cta-right">
-      <div class="price-container">
-        <span class="original">₹4999</span>
-        <span class="discounted">₹2499</span>
-      </div>
-      <a href="https://payu.in/web/7E80331D7E5F8BB45DA0DE0AA870BB70" id="notifyMeFooterBtn" class="fixed-cta-btn">
-        <span>Register Now</span>
-        <i class="fas fa-arrow-right"></i>
-      </a>
     </div>
   </div>
+</section>
 
-  <!-- Scripts -->
-  <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
-  <script src="app.js?v=20261004.industrial23" type="module"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', async () => {
-      // Menu Toggle & Backdrop
-      const menuButton = document.getElementById('menuButton');
-      const expandedMenu = document.getElementById('expandedMenu');
-      const menuCloseBtn = document.getElementById('menuCloseBtn');
-      const menuBackdrop = document.getElementById('menuBackdrop');
+<section class="curriculum" id="curriculum-section">
+  <h2>What will you <span class="highlight">Learn?</span></h2>
 
-      const openMenu = () => {
-        if (expandedMenu) expandedMenu.classList.add('active');
-        if (menuBackdrop) menuBackdrop.classList.add('active');
-        document.body.style.overflow = 'hidden';
-      };
+  <div class="timeline-container">
+    <div class="timeline-line"></div>
 
-      const closeMenu = () => {
-        if (expandedMenu) expandedMenu.classList.remove('active');
-        if (menuBackdrop) menuBackdrop.classList.remove('active');
-        document.body.style.overflow = '';
-      };
+    <!-- Day 1 -->
+    <div class="timeline-item" data-aos="fade-up">
+      <div class="timeline-dot">
+        <img src="/assets/suitcase.svg" alt="Day 1 Icon" class="timeline-icon-img">
+      </div>
+      <div class="timeline-content-card">
+        <div class="day-number">Day 1</div>
+        <h3>Roles in IT</h3>
+        <ul>
+          <li>Understanding what different roles are</li>
+          <li>Finding what suits you</li>
+          <li>Finding companies hiring for that role</li>
+        </ul>
+      </div>
+    </div>
 
-      if (menuButton) menuButton.addEventListener('click', openMenu);
-      if (menuCloseBtn) menuCloseBtn.addEventListener('click', closeMenu);
-      if (menuBackdrop) menuBackdrop.addEventListener('click', closeMenu);
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && expandedMenu?.classList.contains('active')) {
-          closeMenu();
+    <!-- Day 2 -->
+    <div class="timeline-item" data-aos="fade-up">
+      <div class="timeline-dot">
+        <img src="/assets/cvscanned.svg" alt="Day 2 Icon" class="timeline-icon-img">
+      </div>
+      <div class="timeline-content-card">
+        <div class="day-number">Day 2</div>
+        <h3>Crafting Perfect CV</h3>
+        <ul>
+          <li>Choosing the Right Template as per target company</li>
+          <li>Crafting the Perfect CV</li>
+          <li>Access to Exclusive MSC Tools like CV Builder, AI CV Reviewer</li>
+          <li>Personal CV Review with CA Padam Bhansali</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Day 3 -->
+    <div class="timeline-item" data-aos="fade-up">
+      <div class="timeline-dot">
+        <img src="/assets/laptop.svg" alt="Day 3 Icon" class="timeline-icon-img">
+      </div>
+      <div class="timeline-content-card">
+        <div class="day-number">Day 3</div>
+        <h3>Application Hacks</h3>
+        <ul>
+          <li>Finding Hidden Vacancies</li>
+          <li>Figuring Out LinkedIn</li>
+          <li>Getting Direct References</li>
+          <li>Applying the Right Way: Maximizing Shortlisting and Interview Calls</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Day 4 -->
+    <div class="timeline-item" data-aos="fade-up">
+      <div class="timeline-dot">
+        <img src="/assets/offerletters.svg" alt="Day 4 Icon" class="timeline-icon-img">
+      </div>
+      <div class="timeline-content-card">
+        <div class="day-number">Day 4</div>
+        <h3>Let's Cold Mail</h3>
+        <ul>
+          <li>Unknown Gmail Tips & Tricks</li>
+          <li>Access to 1000+ Industrial Training HR Mail IDs</li>
+          <li>MSCIT Mail & LinkedIn Automation Tool</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Day 5 -->
+    <div class="timeline-item" data-aos="fade-up">
+      <div class="timeline-dot">
+        <img src="/assets/doubts.svg" alt="Day 5 Icon" class="timeline-icon-img">
+      </div>
+      <div class="timeline-content-card">
+        <div class="day-number">Day 5</div>
+        <h3>Cracking Interviews</h3>
+        <ul>
+          <li>How to prepare for Interviews</li>
+          <li>Tips, Tricks and Hacks</li>
+          <li>Personal Mock Interview & Feedback</li>
+          <li>Access to Company Specific & Domain Specific Interview Prep Material</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Day 6 -->
+    <div class="timeline-item" data-aos="fade-up">
+      <div class="timeline-dot">
+        <img src="/assets/lms.svg" alt="Day 6 Icon" class="timeline-icon-img">
+      </div>
+      <div class="timeline-content-card">
+        <div class="day-number">Day 6</div>
+        <h3>ICAI Formalities, Roadmap Ahead & Success Stories</h3>
+        <ul>
+          <li>Form 109 & Form 104 – Complete Guidance and Common Mistakes to Avoid</li>
+          <li>Convincing Principal for Industrial Training Transfer</li>
+          <li>Real Success Stories from Students with Challenging Backgrounds</li>
+          <li>Step-by-Step Roadmap for the Coming Days and Months</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="certified-mentor-section" id="certified-mentor">
+  <div class="split-container">
+    <!-- Left Column: Certificate -->
+    <div class="split-pane cert-pane" data-aos="fade-right">
+      <h2 class="pane-title">Get <span class="highlight">Certified</span></h2>
+      <p class="pane-subtitle">Level up your career with MSC's industry-recognized, premium certificate.</p>
+
+      <div class="certificate-container">
+        <div class="certificate-frame rotated">
+          <div class="certificate-back"></div>
+          <div class="certificate-frame-border"></div>
+          <div class="certificate-glass">
+            <div class="certificate-content">
+              <img class="certificate-image" src="https://mystudentclub.pages.dev/assets/certificate.webp"
+                alt="MSC Certificate">
+              <div class="certificate-overlay"></div>
+              <div class="shine-effect"></div>
+            </div>
+            <div class="certificate-corner corner-tl"></div>
+            <div class="certificate-corner corner-tr"></div>
+            <div class="certificate-corner corner-bl"></div>
+            <div class="certificate-corner corner-br"></div>
+            <div class="floating-emblem">
+              <svg class="award-icon" viewBox="0 0 24 24">
+                <path
+                  d="M12 2L8 6H3v5l-2 4 2 4v5h5l4 2 4-2h5v-5l2-4-2-4V6h-5L12 2zm0 3l2.5 2.5H15v3l1.5 3-1.5 3v3h-3l-3 1.5L6 17H3v-3L1.5 11 3 8V5h3l3-2.5L12 5z">
+                </path>
+              </svg>
+            </div>
+          </div>
+          <div class="certificate-shadow"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Mentor -->
+    <div class="split-pane mentor-pane" data-aos="fade-left">
+      <h2 class="pane-title">Meet your <span class="highlight">Mentor</span></h2>
+
+      <div class="mentor-card-savvy">
+        <div class="mentor-profile-header">
+          <div class="mentor-avatar-frame">
+            <img src="https://mystudentclub.pages.dev/assets/mentornew.png" alt="CA Padam Bhansali"
+              class="mentor-img-savvy">
+          </div>
+          <div class="mentor-profile-title">
+            <h3>CA Padam Bhansali</h3>
+            <p class="mentor-subtitle-text">Founder, My Student Club</p>
+          </div>
+        </div>
+
+        <p class="mentor-description-savvy">
+          CA Padam Bhansali has helped thousands of CA students secure their dream Industrial Training roles in top
+          organizations with stipends up to ₹1.25L!
+          He did his own Industrial Training at Flipkart in Business Finance and has conducted 100+ guidance sessions
+          impacting 35,000+ students.
+        </p>
+
+        <div class="mentor-achievements-row">
+          <div class="achievement-pill">
+            <span class="achieve-num">100+</span>
+            <span class="achieve-text">Orgs Helped</span>
+          </div>
+          <div class="achievement-pill">
+            <span class="achieve-num">1000's of</span>
+            <span class="achieve-text">Placed Students</span>
+          </div>
+          <div class="achievement-pill">
+            <span class="achieve-num">50k+</span>
+            <span class="achieve-text">Followers</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Dedicated Complete Workshop Card -->
+<section class="enrollment-section" id="enrollment">
+  <div class="section-bg-savvy"></div>
+  <div class="pricing-container-savvy" data-aos="zoom-in">
+    <div class="pricing-card-savvy">
+      <!-- Limited Seats badge -->
+      <div class="limited-seats-badge">
+        <span>LIMITED SEATS</span>
+      </div>
+
+      <div class="pricing-header">
+        <span class="tagline">All In One Program</span>
+        <h2>MSC CA Industrial Training Program</h2>
+        <p class="subtitle">Complete 6 Day Masterclass (6 Days of Recorded Sessions), Exclusive Resources &
+          Vacancies</p>
+      </div>
+
+      <div class="pricing-amount">
+        <span class="currency">₹</span>
+        <span class="price-discounted">2499</span>
+        <span class="price-original">₹4999</span>
+      </div>
+
+      <div class="pricing-features-list">
+        <ul>
+          <li>
+            <span class="check-icon">✓</span>
+            <span>6 Days of Recorded Sessions</span>
+          </li>
+          <li>
+            <span class="check-icon">✓</span>
+            <span>Full MSC LMS Access</span>
+          </li>
+          <li>
+            <span class="check-icon">✓</span>
+            <span>Access to Exclusive Resources to make your hunt simpler</span>
+          </li>
+          <li>
+            <span class="check-icon">✓</span>
+            <span>1000+ HR Cold Emailing List</span>
+          </li>
+          <li>
+            <span class="check-icon">✓</span>
+            <span>Access to MSC Industrial Training Guidebook</span>
+          </li>
+          <li>
+            <span class="check-icon">✓</span>
+            <span>Exclusive Vacancies</span>
+          </li>
+          <li>
+            <span class="check-icon">✓</span>
+            <span>Personal 1-on-1 CV Review, Mock Interview & much much more</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="pricing-cta">
+        <a href="https://payu.in/web/7E80331D7E5F8BB45DA0DE0AA870BB70" id="registerButtonWorkshop" class="notify-me-btn pulse-btn" style="text-decoration: none; width: 100%; justify-content: center;">
+          <span class="notify-btn-icon">⚡</span>
+          <span class="notify-btn-text">Register Now</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Beautiful Floating status alerts placeholder -->
+<div id="notifyStatus" class="notify-status"></div>
+
+<div class="fixed-cta" id="cta-footer">
+  <div class="price-container">
+    <span class="price-label">Program Fee</span>
+    <div class="price">
+      <span class="discounted">₹2499</span>
+      <span class="original">₹4999</span>
+    </div>
+  </div>
+  <a href="https://payu.in/web/7E80331D7E5F8BB45DA0DE0AA870BB70" id="notifyMeFooterBtn" class="notify-me-footer-btn" style="margin-left: auto; text-decoration: none;">
+    <span class="notify-footer-icon">⚡</span>
+    <span class="notify-footer-text">Register Now</span>
+  </a>
+</div>
+
+<!-- Registration Announcement Modal removed -->
+
+<script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+<script src="app.js" type="module"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    // Registration Announcement Modal logic removed
+
+    // Menu Toggle
+    const menuButton = document.getElementById('menuButton');
+    const expandedMenu = document.getElementById('expandedMenu');
+    const menuCloseBtn = document.getElementById('menuCloseBtn');
+
+    if (menuButton && expandedMenu) {
+      menuButton.addEventListener('click', () => expandedMenu.classList.add('active'));
+    }
+    if (menuCloseBtn && expandedMenu) {
+      menuCloseBtn.addEventListener('click', () => expandedMenu.classList.remove('active'));
+    }
+
+    // Dropdowns
+    const dropdowns = document.querySelectorAll('.menu-item-dropdown button');
+    dropdowns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const content = btn.nextElementSibling;
+        if (content) {
+          content.style.display = content.style.display === 'block' ? 'none' : 'block';
+          btn.classList.toggle('active');
         }
       });
-
-      // Smooth close menu on page section jump link click
-      document.querySelectorAll('.page-jump-link').forEach((link) => {
-        link.addEventListener('click', () => {
-          closeMenu();
-        });
-      });
-
-      // Free Resources Dropdown
-      const freeResBtn = document.getElementById('freeResourcesDropdownBtn');
-      const freeResContent = document.getElementById('freeResourcesDropdownContent');
-      if (freeResBtn && freeResContent) {
-        freeResBtn.addEventListener('click', () => {
-          freeResContent.style.display = freeResContent.style.display === 'block' ? 'none' : 'block';
-        });
-      }
-
-      // Supabase Client & Auth Check
-      let sb = window.supabaseClient;
-      if (sb) {
-        try {
-          const { data } = await sb.auth.getSession();
-          const session = data?.session;
-          const authContainer = document.querySelector('.auth-buttons-container');
-          const lmsLink = document.getElementById('lms-nav-link');
-
-          if (authContainer) {
-            if (session) {
-              authContainer.innerHTML = '<a href="/profile.html" class="auth-icon-btn" aria-label="Profile"><i class="fas fa-user"></i></a>';
-              if (lmsLink) lmsLink.style.display = 'flex';
-            } else {
-              authContainer.innerHTML = '<a href="/login.html" class="auth-icon-btn" aria-label="Login"><i class="fas fa-sign-in-alt"></i></a>';
-            }
-          }
-        } catch (_) { }
-      }
-
-      // Dynamic Batch Month Calculation (-2 months)
-      const d = new Date();
-      d.setMonth(d.getMonth() - 2);
-      const monthShort = d.toLocaleString('en-US', { month: 'short' });
-      const monthLong = d.toLocaleString('en-US', { month: 'long' });
-      const yearShort = d.getFullYear().toString().slice(-2);
-
-      const batchFormat1 = `${monthShort}'${yearShort}`;
-      const batchFormat2 = `${monthLong}`;
-      const batchFormat3 = `${monthShort} '${yearShort}`;
-
-      document.querySelectorAll('.dynamic-batch-month').forEach(el => el.textContent = batchFormat1);
-      document.querySelectorAll('.dynamic-batch-month-long').forEach(el => el.textContent = batchFormat2);
-      document.querySelectorAll('.dynamic-batch-month-space').forEach(el => el.textContent = batchFormat3);
     });
-  </script>
 
-  <!-- Google Analytics -->
-  <script src="https://www.googletagmanager.com/gtag/js?id=G-1450NCVE65" async></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-    gtag('config', 'G-1450NCVE65');
-  </script>
-</body>
+    // Supabase Client
+    let sb = window.supabaseClient;
 
-</html>
+    // Auth Check
+    let session = null;
+    if (sb) {
+      const { data } = await sb.auth.getSession();
+      session = data?.session;
+      const authContainer = document.querySelector('.auth-buttons-container');
+      const lmsLink = document.getElementById('lms-nav-link');
+
+      if (authContainer) {
+        if (session) {
+          authContainer.innerHTML = '<a href="/profile.html" class="auth-icon-btn"><i class="fas fa-user"></i></a>';
+          if (lmsLink) lmsLink.style.display = 'flex';
+        } else {
+          authContainer.innerHTML = '<a href="/login.html" class="auth-icon-btn"><i class="fas fa-sign-in-alt"></i></a>';
+        }
+      }
+    }
+
+    // Dynamic Batch Month Calculation (-2 months)
+    const d = new Date();
+    d.setMonth(d.getMonth() - 2);
+    const monthShort = d.toLocaleString('en-US', { month: 'short' });
+    const monthLong = d.toLocaleString('en-US', { month: 'long' });
+    const yearShort = d.getFullYear().toString().slice(-2);
+
+    const batchFormat1 = `${monthShort}'${yearShort}`; // Dec'25
+    const batchFormat2 = `${monthLong}`; // December
+    const batchFormat3 = `${monthShort} '${yearShort}`; // Dec '25
+
+    document.querySelectorAll('.dynamic-batch-month').forEach(el => el.textContent = batchFormat1);
+    document.querySelectorAll('.dynamic-batch-month-long').forEach(el => el.textContent = batchFormat2);
+    document.querySelectorAll('.dynamic-batch-month-space').forEach(el => el.textContent = batchFormat3);
+
+    // ==========================================
+    // NOTIFY ME PUSH NOTIFICATIONS FLOW
+    // ==========================================
+    const NOTIFY_FIREBASE_CONFIG = {
+      apiKey: "AIzaSyBTIXRJbaZy_3ulG0C8zSI_irZI7Ht2Y-8",
+      authDomain: "msc-notif.firebaseapp.com",
+      projectId: "msc-notif",
+      storageBucket: "msc-notif.appspot.com",
+      messagingSenderId: "228639798414",
+      appId: "1:228639798414:web:b8b3c96b15da5b770a45df",
+      measurementId: "G-X4M23TB936"
+    };
+    const NOTIFY_VAPID_KEY = "BGlNz4fQGzftJPr2U860MsoIo0dgNcqb2y2jAEbwJzjmj8CbDwJy_kD4eRAcruV6kNRs6Kz-mh9rdC37tVgeI5I";
+    const NOTIFY_TOPIC = "industrial-training-october-batch-notify";
+    const MANAGE_TOPIC_URL = "https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription";
+
+    function getOrCreateDeviceKey() {
+      let key = localStorage.getItem('msc_device_key');
+      if (!key) {
+        key = 'dk_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 9);
+        localStorage.setItem('msc_device_key', key);
+      }
+      return key;
+    }
+
+    function setNotifyStatus(msg, type) {
+      const el = document.getElementById('notifyStatus');
+      if (!el) return;
+      el.textContent = msg;
+      el.className = 'notify-status show notify-status--' + type;
+      if (type !== 'error') setTimeout(() => el.className = 'notify-status', 4000);
+    }
+
+    async function saveToNotifiable(fcmToken) {
+      if (!sb) return;
+      const deviceKey = getOrCreateDeviceKey();
+      const email = session?.user?.email || null;
+      await sb
+        .from('notifiable')
+        .insert({ key: deviceKey, email, topic: 'industrial-training-october-batch' })
+        .throwOnError();
+    }
+
+    async function initNotifyMe() {
+      const btn = document.getElementById('notifyMeBtn');
+      const programBtn = document.getElementById('notifyMeProgramBtn');
+      const footerBtn = document.getElementById('notifyMeFooterBtn');
+      const allBtns = [btn, programBtn, footerBtn];
+
+      function syncButtonStates(subscribed) {
+        if (btn) {
+          btn.querySelector('.notify-btn-text').textContent = subscribed ? 'You Will Be Notified!' : 'Notify Me When Open';
+          btn.querySelector('.notify-btn-icon').textContent = subscribed ? '✅' : '🔔';
+          btn.classList.toggle('subscribed', subscribed);
+        }
+        if (programBtn) {
+          programBtn.querySelector('.notify-btn-text').textContent = subscribed ? 'You Will Be Notified!' : 'Notify Me When Open';
+          programBtn.querySelector('.notify-btn-icon').textContent = subscribed ? '✅' : '🔔';
+          programBtn.classList.toggle('subscribed', subscribed);
+        }
+        if (footerBtn) {
+          footerBtn.querySelector('.notify-footer-text').textContent = subscribed ? 'Notified' : 'Notify Me';
+          footerBtn.querySelector('.notify-footer-icon').textContent = subscribed ? '✅' : '🔔';
+          footerBtn.classList.toggle('subscribed', subscribed);
+        }
+      }
+
+      const isSubscribed = localStorage.getItem('notif_industrial_training_october_batch') === '1';
+      syncButtonStates(isSubscribed);
+
+      async function handleNotifyClick() {
+        if (this.disabled) return;
+        allBtns.forEach(b => b && (b.disabled = true));
+
+        // Already subscribed — unsubscribe
+        if (localStorage.getItem('notif_industrial_training_october_batch') === '1') {
+          const token = localStorage.getItem('notif_fcm_token_it_october');
+          if (token) {
+            try {
+              await fetch(MANAGE_TOPIC_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token, topic: NOTIFY_TOPIC, action: 'unsubscribe' })
+              });
+            } catch (_) { }
+          }
+          localStorage.removeItem('notif_industrial_training_october_batch');
+          localStorage.removeItem('notif_fcm_token_it_october');
+          syncButtonStates(false);
+          setNotifyStatus('Unsubscribed.', 'info');
+          allBtns.forEach(b => b && (b.disabled = false));
+          return;
+        }
+
+        // Request notification permission
+        setNotifyStatus('Requesting permission…', 'info');
+        let permission;
+        try { permission = await Notification.requestPermission(); } catch (e) { permission = 'denied'; }
+
+        if (permission !== 'granted') {
+          setNotifyStatus('Please allow notifications in your browser settings.', 'error');
+          allBtns.forEach(b => b && (b.disabled = false));
+          return;
+        }
+
+        // Initialize Firebase & get FCM token
+        setNotifyStatus('Setting up…', 'info');
+        try {
+          if (!firebase.apps.length) firebase.initializeApp(NOTIFY_FIREBASE_CONFIG);
+          const messaging = firebase.messaging();
+          if ('serviceWorker' in navigator) {
+            await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+          }
+          const fcmToken = await messaging.getToken({ vapidKey: NOTIFY_VAPID_KEY });
+          if (!fcmToken) throw new Error('No FCM token');
+
+          // Subscribe to FCM topic
+          setNotifyStatus('Subscribing…', 'info');
+          const res = await fetch(MANAGE_TOPIC_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: fcmToken, topic: NOTIFY_TOPIC, action: 'subscribe' })
+          });
+          const data = await res.json();
+          if (!data.success) throw new Error(data.error || 'Subscription failed');
+
+          // Save to Supabase notifiable table
+          try { await saveToNotifiable(fcmToken); } catch (_) {/* ignore duplicate key */ }
+
+          localStorage.setItem('notif_industrial_training_october_batch', '1');
+          localStorage.setItem('notif_fcm_token_it_october', fcmToken);
+          syncButtonStates(true);
+          setNotifyStatus("You're on the list! We'll notify you when the program opens.", 'success');
+        } catch (err) {
+          console.error('NotifyMe error:', err);
+          setNotifyStatus('Something went wrong. Please try again.', 'error');
+        }
+
+        allBtns.forEach(b => b && (b.disabled = false));
+      }
+
+      allBtns.forEach(btn => {
+        if (btn) btn.addEventListener('click', handleNotifyClick);
+      });
+    }
+
+    // initNotifyMe();
+  });
+</script>
+<!-- Google Analytics -->
+<script src="https://www.googletagmanager.com/gtag/js?id=G-1450NCVE65" async></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag('js', new Date());
+  gtag('config', 'G-1450NCVE65');
+</script>
