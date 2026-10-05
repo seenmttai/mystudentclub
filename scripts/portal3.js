@@ -109,7 +109,10 @@ const TABLE_SLUG_MAP = {
 };
 
 function getPublicJobSelectColumns(tableName) {
-    let columns = 'id, Company, Location, Salary, Description, Created_At, Category, application_count, posts_link, "Primary Domain"';
+    // Keep recruiter metadata available for shared /job.html links.  The
+    // Application ID remains protected, but without these fields a shared
+    // Easy Apply vacancy is incorrectly rendered as an ordinary vacancy.
+    let columns = 'id, Company, Location, Salary, Description, Created_At, Category, application_count, posts_link, "Primary Domain", posted_by, hirer_email';
     if (tableName === 'Fresher Jobs') {
         columns += ', Experience, yoe, "Secondary Domain", Tags, "Company Type", "Industry Type", "CTC Range"';
     } else if (tableName === 'Semi Qualified Jobs') {
@@ -2625,7 +2628,14 @@ function showEnrollmentRequiredPopup() {
 
 // Profile Check & Gating for Recruiter Jobs (posted via post-a-job)
 function isRecruiterPostedJob(job) {
-    return Boolean(job && (job.posted_by || job.hirer_email || job['posted_by'] || job['hirer_email']));
+    const applicationId = String(job?.['Application ID'] || '').trim().toLowerCase();
+    return Boolean(job && (
+        job.posted_by ||
+        job.hirer_email ||
+        job['posted_by'] ||
+        job['hirer_email'] ||
+        applicationId === 'recruit@mystudentclub.com'
+    ));
 }
 
 function showRecruiterProfileRequiredPopup(job) {

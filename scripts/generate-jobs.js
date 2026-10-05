@@ -105,6 +105,17 @@ function getApplicationLink(id) {
     };
 }
 
+function isRecruiterPostedJob(job) {
+    const applicationId = String(job?.['Application ID'] || '').trim().toLowerCase();
+    return Boolean(job && (
+        job.posted_by ||
+        job.hirer_email ||
+        job['posted_by'] ||
+        job['hirer_email'] ||
+        applicationId === 'recruit@mystudentclub.com'
+    ));
+}
+
 function constructMailto(job, tableName) {
     const rawLink = job['Application ID'];
     if (!rawLink) return '#';
@@ -173,7 +184,7 @@ const htmlTemplate = (job, jsonLd, categorySlug, jobId, tableName) => {
     const category = job.Category || 'General';
     const descriptionHtml = renderMarkdown(job.Description);
     const applyInfo = getApplicationLink(job['Application ID']);
-    const recruiterPosted = Boolean(job.posted_by || job.hirer_email || job['posted_by'] || job['hirer_email']);
+    const recruiterPosted = isRecruiterPostedJob(job);
 
     // Connect Link Logic
     let connectLink = job.connect_link || job['connect_link'];

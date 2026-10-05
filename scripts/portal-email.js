@@ -1342,7 +1342,14 @@ function showEnrollmentRequiredPopup() {
 
 // Profile Check & Gating for Recruiter Jobs (posted via post-a-job)
 function isRecruiterPostedJob(job) {
-    return Boolean(job && (job.posted_by || job.hirer_email || job['posted_by'] || job['hirer_email']));
+    const applicationId = String(job?.['Application ID'] || '').trim().toLowerCase();
+    return Boolean(job && (
+        job.posted_by ||
+        job.hirer_email ||
+        job['posted_by'] ||
+        job['hirer_email'] ||
+        applicationId === 'recruit@mystudentclub.com'
+    ));
 }
 
 function showRecruiterProfileRequiredPopup(job) {
