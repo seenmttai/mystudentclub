@@ -296,7 +296,7 @@ h1 {
   padding: 12px 30px;
   padding-bottom: calc(12px + env(safe-area-inset-bottom));
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
   box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.3);
   z-index: 9999;
@@ -311,8 +311,9 @@ h1 {
 
 .price-container {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 8px;
 }
 
 .price-label {
@@ -1852,33 +1853,34 @@ h1 {
 
 /* Footer Notify Button */
 .notify-me-footer-btn, button.notify-me-footer-btn, #notifyMeFooterBtn {
-  background: linear-gradient(135deg, #0ea5e9 0%, #22c55e 100%) !important;
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%) !important;
   color: #ffffff !important;
   border: none !important;
   font-family: 'Noto Sans', 'Outfit', sans-serif !important;
-  font-size: 14px !important;
+  font-size: 14.5px !important;
   font-weight: 700 !important;
-  padding: 12px 24px !important;
-  border-radius: 8px !important;
+  padding: 10px 24px !important;
+  border-radius: 50px !important;
   cursor: pointer !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
   gap: 8px !important;
   transition: all 0.3s ease !important;
-  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.2) !important;
-  margin-left: auto !important;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.45) !important;
+  margin-left: 0 !important;
   outline: none !important;
   text-decoration: none !important;
   -webkit-appearance: none !important;
   -moz-appearance: none !important;
   appearance: none !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
 }
 
 .notify-me-footer-btn:hover, button.notify-me-footer-btn:hover, #notifyMeFooterBtn:hover {
   transform: translateY(-2px) scale(1.03) !important;
-  box-shadow: 0 8px 20px rgba(14, 165, 233, 0.4) !important;
-  background: linear-gradient(135deg, #0284c7 0%, #16a34a 100%) !important;
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.6) !important;
 }
 
 .notify-me-footer-btn:active, button.notify-me-footer-btn:active, #notifyMeFooterBtn:active {

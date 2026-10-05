@@ -123,50 +123,167 @@ const generateData = () => {
   return { students };
 };
 
+const getCompanyLogoSVG = (company) => {
+  if (!company) return `<span class="company-fallback-badge">Top Firm</span>`;
+  const comp = company.toLowerCase();
+
+  if (comp.includes('amazon')) {
+    return `<svg viewBox="0 0 95 26" class="company-logo-svg" fill="none">
+      <text x="2" y="17" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="17" font-weight="900" fill="#111827" letter-spacing="-0.3px">amazon</text>
+      <path d="M14 21 C 34 27, 58 26, 74 20" stroke="#FF9900" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <polygon points="74,18 80,20 75,23" fill="#FF9900"/>
+    </svg>`;
+  }
+
+  if (comp.includes('flipkart')) {
+    return `<svg viewBox="0 0 95 26" class="company-logo-svg" fill="none">
+      <text x="2" y="18" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="16" font-weight="900" font-style="italic" fill="#2874F0">Flipkart</text>
+      <polygon points="76,8 81,13 76,18" fill="#FFE500"/>
+    </svg>`;
+  }
+
+  if (comp.includes('de shaw') || comp.includes('deshaw')) {
+    return `<svg viewBox="0 0 100 26" class="company-logo-svg" fill="none">
+      <text x="2" y="18" font-family="'Georgia', serif" font-size="14" font-weight="bold" fill="#002D62">DE Shaw &amp; Co</text>
+    </svg>`;
+  }
+
+  if (comp.includes('morgan stanley')) {
+    return `<svg viewBox="0 0 110 26" class="company-logo-svg" fill="none">
+      <text x="2" y="17" font-family="'Georgia', serif" font-size="12" font-weight="bold" fill="#111827">Morgan Stanley</text>
+    </svg>`;
+  }
+
+  if (comp.includes('goldman') || comp.includes('sachs')) {
+    return `<svg viewBox="0 0 95 26" class="company-logo-svg" fill="none">
+      <text x="2" y="11" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="800" fill="#111827">Goldman</text>
+      <text x="2" y="22" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="800" fill="#111827">Sachs</text>
+    </svg>`;
+  }
+
+  if (comp.includes('ubs')) {
+    return `<svg viewBox="0 0 65 26" class="company-logo-svg" fill="none">
+      <text x="2" y="19" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="19" font-weight="900" fill="#E60000" letter-spacing="1.5px">UBS</text>
+    </svg>`;
+  }
+
+  if (comp.includes('deutsche')) {
+    return `<svg viewBox="0 0 105 26" class="company-logo-svg" fill="none">
+      <rect x="2" y="4" width="17" height="17" stroke="#0018A8" stroke-width="2" fill="none"/>
+      <line x1="5" y1="18" x2="16" y2="7" stroke="#0018A8" stroke-width="2.2"/>
+      <text x="24" y="17" font-family="'Inter', sans-serif" font-size="11" font-weight="700" fill="#0018A8">Deutsche Bank</text>
+    </svg>`;
+  }
+
+  if (comp.includes('unilever')) {
+    return `<svg viewBox="0 0 85 26" class="company-logo-svg" fill="none">
+      <text x="2" y="18" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="16" font-weight="800" fill="#1F36C7">Unilever</text>
+    </svg>`;
+  }
+
+  if (comp.includes('hdfc')) {
+    return `<svg viewBox="0 0 95 26" class="company-logo-svg" fill="none">
+      <rect x="2" y="4" width="17" height="17" fill="#004C8F" rx="2"/>
+      <rect x="6" y="8" width="9" height="9" fill="#ED232A"/>
+      <text x="23" y="17" font-family="'Inter', sans-serif" font-size="11.5" font-weight="800" fill="#004C8F">HDFC BANK</text>
+    </svg>`;
+  }
+
+  if (comp.includes('hsbc')) {
+    return `<svg viewBox="0 0 75 26" class="company-logo-svg" fill="none">
+      <polygon points="8,13 2,7 14,7" fill="#DB0011"/>
+      <polygon points="8,13 2,19 14,19" fill="#DB0011"/>
+      <polygon points="8,13 14,7 14,19" fill="#DB0011"/>
+      <text x="20" y="18" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="800" fill="#111827">HSBC</text>
+    </svg>`;
+  }
+
+  if (comp.includes('barclays')) {
+    return `<svg viewBox="0 0 85 26" class="company-logo-svg" fill="none">
+      <text x="2" y="18" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="800" fill="#00AEEF">BARCLAYS</text>
+    </svg>`;
+  }
+
+  if (comp.includes('pepsico') || comp.includes('pepsi')) {
+    return `<svg viewBox="0 0 85 26" class="company-logo-svg" fill="none">
+      <text x="2" y="18" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="800" fill="#004B93">PEPSICO</text>
+    </svg>`;
+  }
+
+  return `<span class="company-fallback-badge" style="font-family:'Outfit',sans-serif; font-weight:700; color:#1E293B; font-size:13px;">${company}</span>`;
+};
+
 const initializeCarousel = () => {
   const { students } = generateData();
   const carousel = document.getElementById('studentCarousel');
+  const carouselContainer = document.getElementById('studentCarouselContainer');
 
-  const getCardWidth = () => (window.innerWidth < 768 ? 250 : 300);
+  if (!carousel) return;
+  carousel.innerHTML = '';
 
   students.forEach(student => {
     if (!student.image) return;
     const card = document.createElement('div');
     card.className = 'student-card';
     card.innerHTML = `
-      <div class="student-image">
-        <img src="${student.image}" alt="${student.name}" loading="lazy" />
+      <div class="student-avatar-ring">
+        <img src="${student.image}" alt="${student.name}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='https://www.mystudentclub.com/assets/icon-70x70.png';" />
       </div>
-      <h3>${student.name}</h3>
-      <p class="company-info">Placed at:<br><strong>${student.company}</strong></p>
-      ${student.linkedin && student.linkedin !== 'N/A' ? `<a href="${student.linkedin}" class="linkedin-button" target="_blank">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="linkedin-icon">
+      <h3 class="student-name" title="${student.name}">${student.name}</h3>
+      <div class="student-firm-text">${student.company}</div>
+      <div class="student-company-logo">
+        ${getCompanyLogoSVG(student.company)}
+      </div>
+      ${student.linkedin && student.linkedin !== 'N/A' ? `<a href="${student.linkedin}" class="linkedin-pill-btn" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" class="linkedin-pill-icon" style="width: 14px; height: 14px; max-width: 14px; max-height: 14px; display: inline-block; fill: #FFFFFF; flex-shrink: 0;" fill="currentColor">
           <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
         </svg>
-        View Profile
+        <span>View Profile</span>
       </a>` : ''}
     `;
     carousel.appendChild(card);
   });
 
-  const cards = [...carousel.children];
-  cards.forEach(card => {
+  // Duplicate cards for seamless continuous scrolling
+  const originalCards = [...carousel.children];
+  originalCards.forEach(card => {
     const clone = card.cloneNode(true);
     carousel.appendChild(clone);
   });
 
+  let halfLength = carousel.scrollWidth / 2 || 2000;
+  function updateHalfLength() {
+    halfLength = carousel.scrollWidth / 2 || 2000;
+  }
+  window.addEventListener('resize', updateHalfLength);
+  setTimeout(updateHalfLength, 100);
+
   let position = 0;
-  let speed = 2;
-  let animationId;
+  const speed = 0.9;
+  let animationId = null;
   let lastTime = 0;
+  let onScreen = true;
+  let isPaused = false;
+  let dragging = false;
+  let startX = 0;
+  let dragStartPosition = 0;
+
+  if (carouselContainer) {
+    carouselContainer.addEventListener('mouseenter', () => { isPaused = true; });
+    carouselContainer.addEventListener('mouseleave', () => { isPaused = false; });
+  }
 
   function animate(currentTime) {
+    if (!onScreen) {
+      animationId = null;
+      return;
+    }
     if (!lastTime) lastTime = currentTime;
     const delta = currentTime - lastTime;
 
-    if (true) {
+    if (!isPaused && !dragging) {
       position -= speed * (delta / 16);
-      if (position <= -(getCardWidth() * cards.length / 2)) {
+      if (Math.abs(position) >= halfLength) {
         position = 0;
       }
       carousel.style.transform = `translateX(${position}px)`;
@@ -176,37 +293,64 @@ const initializeCarousel = () => {
     animationId = requestAnimationFrame(animate);
   }
 
-  let dragging = false;
-  let startX = 0;
-  let scrollLeft = 0;
-  let dragStartPosition = 0;
+  if ('IntersectionObserver' in window && carouselContainer) {
+    new IntersectionObserver(entries => {
+      onScreen = entries[0].isIntersecting;
+      if (onScreen && !dragging && animationId === null) {
+        lastTime = 0;
+        animationId = requestAnimationFrame(animate);
+      }
+    }).observe(carouselContainer);
+  }
 
   carousel.addEventListener('mousedown', (e) => {
     dragging = true;
-    startX = e.pageX - carousel.offsetLeft;
+    startX = e.pageX;
     dragStartPosition = position;
     carousel.style.cursor = 'grabbing';
-    cancelAnimationFrame(animationId);
   });
 
-  carousel.addEventListener('mousemove', (e) => {
+  window.addEventListener('mousemove', (e) => {
     if (!dragging) return;
-    e.preventDefault();
-    const x = e.pageX - carousel.offsetLeft;
-    const walk = (x - startX) * 1.5;
+    const x = e.pageX;
+    const walk = (x - startX) * 1.2;
     position = dragStartPosition + walk;
+    if (position > 0) position = -halfLength;
+    if (Math.abs(position) >= halfLength) position = 0;
     carousel.style.transform = `translateX(${position}px)`;
   });
 
+  carousel.addEventListener('touchstart', (e) => {
+    dragging = true;
+    isPaused = true;
+    startX = e.touches[0].pageX;
+    dragStartPosition = position;
+  }, { passive: true });
+
+  carousel.addEventListener('touchmove', (e) => {
+    if (!dragging) return;
+    const x = e.touches[0].pageX;
+    const walk = (x - startX) * 1.2;
+    position = dragStartPosition + walk;
+    if (position > 0) position = -halfLength;
+    if (Math.abs(position) >= halfLength) position = 0;
+    carousel.style.transform = `translateX(${position}px)`;
+  }, { passive: true });
+
   function endDrag() {
+    if (!dragging) return;
     dragging = false;
+    isPaused = false;
     carousel.style.cursor = 'grab';
     lastTime = 0;
-    animate(performance.now());
+    if (onScreen && animationId === null) {
+      animationId = requestAnimationFrame(animate);
+    }
   }
 
-  carousel.addEventListener('mouseup', endDrag);
-  carousel.addEventListener('mouseleave', endDrag);
+  window.addEventListener('mouseup', endDrag);
+  carousel.addEventListener('touchend', endDrag);
+  carousel.addEventListener('touchcancel', endDrag);
 
   animate(performance.now());
 };
