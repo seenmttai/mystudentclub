@@ -11,13 +11,11 @@ const generateData = () => {
     { name: "Ishaan Isham", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/ishaanisham/", image: baseURL + "ishaan.jpg", company: "UBS" },
     { name: "Simran Singh", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/simransingh-ca-aspirant/", image: baseURL + "simran.jpg", company: "Amazon" },
     { name: "Ananya Gupta", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/ananyagupta-ca", image: baseURL + "ananya.jpg", company: "Amazon" },
-    { name: "Virali Doshi", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/virali-doshi1905", image: baseURL + "virali.jpg", company: "Deutsche Bank" },
     { name: "Anisha Mehta", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/anisha-mehta1/", image: baseURL + "anisha_mehta.jpeg", company: "Adani" },
     { name: "Aarushi Agarwal", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/aarushi-agarwal003/", image: baseURL + "Aarushi.jpeg", company: "Mizuho Bank" },
     { name: "Vindhya Gupta", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/vindhya-gupta/", image: baseURL + "vindhya.jpeg", company: "Hindustan Times" },
     { name: "Vishal Sharma", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/vishal-sharma057/", image: baseURL + "vishal.jpeg", company: "Bajaj Finance" },
     { name: "Chery Lunia", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/cheryluniya/", image: baseURL + "Chery.jpeg", company: "Goldman Sachs" },
-    { name: "Prabhjyot Singh", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/prabhjyotsinghca/", image: baseURL + "prabhjyot.jpeg", company: "Unilever" },
     { name: "Chandini Meher", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/chandini-meher/", image: baseURL + "Chandini.jpeg", company: "HDFC Bank" },
     { name: "Kirti Yadav", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/kirtiyadav07/", image: baseURL + "Kirti.jpeg", company: "DLF" },
     { name: "Raunaq Verma", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/raunaqverma17662/", image: baseURL + "Raunaq.jpeg", company: "HDFC Bank" },
@@ -27,7 +25,6 @@ const generateData = () => {
     { name: "Sakshi Suryavanshi", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/sakshiasuryavanshi/", image: baseURL + "sakshi.jpeg", company: "ZF" },
     { name: "Deepanshu Jain", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/deepanshu-jain-23078822a/", image: baseURL + "deepanshu.jpeg", company: "Henkel" },
     { name: "Chandra Lekha", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/chandralekhauckoo", image: baseURL + "Chandra.jpeg", company: "ITC" },
-    { name: "Sakshi Sipholya", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/sakshisipolya/", image: baseURL + "sipholya.jpeg", company: "Deutsche Bank" },
     { name: "Rahul Koli", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/rahulkoli15/", image: baseURL + "koli.jpeg", company: "Morgan Stanley" },
     { name: "Anisha Shah", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/anisha-shah25/", image: baseURL + "Anisha.jpeg", company: "UBS" },
     { name: "Arbaz Jakate", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/arbaz-jakate/", image: baseURL + "Arbaz.jpeg", company: "Mondelez" },
@@ -65,7 +62,6 @@ const generateData = () => {
     { name: "Aditi Tagalpallewar", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/aditi-tagalpallewar/", image: baseURL + "Aditi-Tagalwellakar.jpg", company: "UBS" },
     { name: "Shubham Kumar", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/shubham-kumar-ca10/", image: baseURL + "kumar.jpg", company: "Reliance" },
     { name: "Kamini Jha", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/jha-kamini/", image: baseURL + "kamini.jpg", company: "HSBC" },
-    { name: "Arjun Vasistha", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/arjun-vasistha/", image: baseURL + "vasistha.jpg", company: "Unilever" },
     { name: "Tanya Bhojwani", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/tanya-bhojwani/", image: baseURL + "bhojwani.jpg", company: "Hindalco Eternia" }
   ];
 
@@ -80,7 +76,6 @@ const generateData = () => {
     { name: "Ishaan Isham", company: "UBS" },
     { name: "Simran Singh", company: "Amazon" },
     { name: "Ananya Gupta", company: "Amazon" },
-    { name: "Virali Doshi", company: "Deutsche Bank" },
     { name: "Viddhi S Mittal", company: "Amazon" },
     { name: "Priya Jain", company: "Amazon" },
     { name: "Charu Kewalramani", company: "DE Shaw" },
@@ -92,7 +87,6 @@ const generateData = () => {
     { name: "Sajal Mittal", company: "PepsiCo" },
     { name: "shubham Kumar", company: "Reliance" },
     { name: "kamini Jha", company: "HSBC" },
-    { name: "Arjun Vasistha", company: "Unilever" },
     { name: "Tanya Bhojwani", company: "Hindalco Eternia" },
   ];
 
@@ -123,50 +117,178 @@ const generateData = () => {
   return { students };
 };
 
+const getCompanyLogoSVG = (company) => {
+  if (!company) return `<span class="company-fallback-badge">Top Firm</span>`;
+  const comp = company.toLowerCase().trim();
+
+  const officialLogos = {
+    'de shaw': '/assets/company-logos/deshaw.svg',
+    'deshaw': '/assets/company-logos/deshaw.svg',
+    'amazon': '/assets/company-logos/amazon.svg',
+    'morgan stanley': '/assets/company-logos/morgan_stanley.svg',
+    'flipkart': '/assets/company-logos/flipkart.svg',
+    'ubs': '/assets/company-logos/ubs.svg',
+    'goldman': '/assets/company-logos/goldman_sachs.svg',
+    'sachs': '/assets/company-logos/goldman_sachs.svg',
+    'hdfc': '/assets/company-logos/hdfc.svg',
+    'hsbc': '/assets/company-logos/hsbc.svg',
+    'reliance': '/assets/company-logos/reliance.svg',
+    'barclays': '/assets/company-logos/barclays.svg',
+    'aditya birla': '/assets/company-logos/aditya_birla.svg',
+    'itc': '/assets/company-logos/itc.svg',
+    'kotak': '/assets/company-logos/kotak.svg',
+    'cipla': '/assets/company-logos/cipla.svg',
+    'ey': '/assets/company-logos/ey.svg',
+    'deloitte': '/assets/company-logos/deloitte.svg',
+    'kpmg': '/assets/company-logos/kpmg.svg',
+    'pwc': '/assets/company-logos/pwc.svg',
+    'grant thornton': '/assets/company-logos/grant_thornton.svg',
+    'bdo': '/assets/company-logos/bdo.svg'
+  };
+
+  for (const [key, path] of Object.entries(officialLogos)) {
+    if (comp.includes(key)) {
+      return `<img src="${path}" alt="${company}" class="company-logo-svg" style="height:22px; max-height:22px; max-width:110px; object-fit:contain; display:block;" loading="lazy">`;
+    }
+  }
+
+  if (comp.includes('pepsico') || comp.includes('pepsi')) {
+    return `<svg viewBox="0 0 85 26" class="company-logo-svg" fill="none">
+      <text x="2" y="18" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="800" fill="#004B93">PEPSICO</text>
+    </svg>`;
+  }
+
+  if (comp.includes('bpcl')) {
+    return `<svg viewBox="0 0 75 26" class="company-logo-svg" fill="none">
+      <circle cx="10" cy="13" r="8" fill="#FFCC00"/>
+      <circle cx="10" cy="13" r="4" fill="#003399"/>
+      <text x="24" y="18" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="900" fill="#003399">BPCL</text>
+    </svg>`;
+  }
+
+  if (comp.includes('dlf')) {
+    return `<svg viewBox="0 0 65 26" class="company-logo-svg" fill="none">
+      <text x="2" y="18" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="16" font-weight="900" fill="#003399">DLF</text>
+    </svg>`;
+  }
+
+  if (comp.includes('godrej')) {
+    return `<svg viewBox="0 0 90 26" class="company-logo-svg" fill="none">
+      <text x="2" y="18" font-family="'Brush Script MT', 'Lucida Calligraphy', cursive, sans-serif" font-size="19" font-weight="bold" fill="#0d9488">Godrej</text>
+      <text x="48" y="18" font-family="'Inter', sans-serif" font-size="10" font-weight="700" fill="#64748b">Agrovet</text>
+    </svg>`;
+  }
+
+  if (comp.includes('cummins')) {
+    return `<svg viewBox="0 0 78 26" class="company-logo-svg" fill="none">
+      <rect x="2" y="4" width="16" height="16" fill="#D32F2F" rx="2"/>
+      <text x="6" y="16" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="900" fill="#fff">C</text>
+      <text x="22" y="17" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="800" fill="#111827">Cummins</text>
+    </svg>`;
+  }
+
+  return `<span class="company-fallback-badge" style="font-family:'Outfit',sans-serif; font-weight:700; color:#1E293B; font-size:13px;">${company}</span>`;
+};
+
 const initializeCarousel = () => {
   const { students } = generateData();
   const carousel = document.getElementById('studentCarousel');
+  const carouselContainer = document.getElementById('studentCarouselContainer');
 
-  const getCardWidth = () => (window.innerWidth < 768 ? 250 : 300);
+  if (!carousel) return;
+  carousel.innerHTML = '';
 
   students.forEach(student => {
     if (!student.image) return;
     const card = document.createElement('div');
     card.className = 'student-card';
     card.innerHTML = `
-      <div class="student-image">
-        <img src="${student.image}" alt="${student.name}" loading="lazy" />
+      <div class="student-avatar-ring">
+        <img src="${student.image}" alt="${student.name}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='https://www.mystudentclub.com/assets/icon-70x70.png';" />
       </div>
-      <h3>${student.name}</h3>
-      <p class="company-info">Placed at:<br><strong>${student.company}</strong></p>
-      ${student.linkedin && student.linkedin !== 'N/A' ? `<a href="${student.linkedin}" class="linkedin-button" target="_blank">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="linkedin-icon">
+      <h3 class="student-name" title="${student.name}">${student.name}</h3>
+      <div class="student-firm-text">${student.company}</div>
+      <div class="student-company-logo">
+        ${getCompanyLogoSVG(student.company)}
+      </div>
+      ${student.linkedin && student.linkedin !== 'N/A' ? `<a href="${student.linkedin}" class="linkedin-pill-btn" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" class="linkedin-pill-icon" style="width: 14px; height: 14px; max-width: 14px; max-height: 14px; display: inline-block; fill: #FFFFFF; flex-shrink: 0;" fill="currentColor">
           <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
         </svg>
-        View Profile
+        <span>View Profile</span>
       </a>` : ''}
     `;
     carousel.appendChild(card);
   });
 
-  const cards = [...carousel.children];
-  cards.forEach(card => {
+  // Duplicate cards for seamless continuous scrolling
+  const originalCards = [...carousel.children];
+  originalCards.forEach(card => {
     const clone = card.cloneNode(true);
     carousel.appendChild(clone);
   });
 
+  let halfLength = carousel.scrollWidth / 2 || 2000;
+  function updateHalfLength() {
+    halfLength = carousel.scrollWidth / 2 || 2000;
+  }
+  window.addEventListener('resize', updateHalfLength);
+  setTimeout(updateHalfLength, 100);
+
   let position = 0;
-  let speed = 2;
-  let animationId;
+  const speed = 0.9;
+  let animationId = null;
   let lastTime = 0;
+  let onScreen = true;
+  let isPaused = false;
+  let dragging = false;
+  let startX = 0;
+  let dragStartPosition = 0;
+
+  const prevBtn = document.getElementById('studentCarouselPrev');
+  const nextBtn = document.getElementById('studentCarouselNext');
+
+  // Arrow Navigation Controls
+  if (prevBtn) {
+    prevBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const step = window.innerWidth <= 768 ? 200 : 242;
+      position += step * 1.5;
+      if (position > 0) {
+        position = -halfLength;
+      }
+      carousel.style.transform = `translateX(${position}px)`;
+    });
+  }
+
+  if (nextBtn) {
+    nextBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const step = window.innerWidth <= 768 ? 200 : 242;
+      position -= step * 1.5;
+      if (Math.abs(position) >= halfLength) {
+        position = 0;
+      }
+      carousel.style.transform = `translateX(${position}px)`;
+    });
+  }
+
+  if (carouselContainer) {
+    carouselContainer.addEventListener('mouseenter', () => { isPaused = true; });
+    carouselContainer.addEventListener('mouseleave', () => { isPaused = false; });
+  }
 
   function animate(currentTime) {
+    if (!onScreen) {
+      animationId = null;
+      return;
+    }
     if (!lastTime) lastTime = currentTime;
     const delta = currentTime - lastTime;
 
-    if (true) {
+    if (!isPaused && !dragging) {
       position -= speed * (delta / 16);
-      if (position <= -(getCardWidth() * cards.length / 2)) {
+      if (Math.abs(position) >= halfLength) {
         position = 0;
       }
       carousel.style.transform = `translateX(${position}px)`;
@@ -176,37 +298,64 @@ const initializeCarousel = () => {
     animationId = requestAnimationFrame(animate);
   }
 
-  let dragging = false;
-  let startX = 0;
-  let scrollLeft = 0;
-  let dragStartPosition = 0;
+  if ('IntersectionObserver' in window && carouselContainer) {
+    new IntersectionObserver(entries => {
+      onScreen = entries[0].isIntersecting;
+      if (onScreen && !dragging && animationId === null) {
+        lastTime = 0;
+        animationId = requestAnimationFrame(animate);
+      }
+    }).observe(carouselContainer);
+  }
 
   carousel.addEventListener('mousedown', (e) => {
     dragging = true;
-    startX = e.pageX - carousel.offsetLeft;
+    startX = e.pageX;
     dragStartPosition = position;
     carousel.style.cursor = 'grabbing';
-    cancelAnimationFrame(animationId);
   });
 
-  carousel.addEventListener('mousemove', (e) => {
+  window.addEventListener('mousemove', (e) => {
     if (!dragging) return;
-    e.preventDefault();
-    const x = e.pageX - carousel.offsetLeft;
-    const walk = (x - startX) * 1.5;
+    const x = e.pageX;
+    const walk = (x - startX) * 1.2;
     position = dragStartPosition + walk;
+    if (position > 0) position = -halfLength;
+    if (Math.abs(position) >= halfLength) position = 0;
     carousel.style.transform = `translateX(${position}px)`;
   });
 
+  carousel.addEventListener('touchstart', (e) => {
+    dragging = true;
+    isPaused = true;
+    startX = e.touches[0].pageX;
+    dragStartPosition = position;
+  }, { passive: true });
+
+  carousel.addEventListener('touchmove', (e) => {
+    if (!dragging) return;
+    const x = e.touches[0].pageX;
+    const walk = (x - startX) * 1.2;
+    position = dragStartPosition + walk;
+    if (position > 0) position = -halfLength;
+    if (Math.abs(position) >= halfLength) position = 0;
+    carousel.style.transform = `translateX(${position}px)`;
+  }, { passive: true });
+
   function endDrag() {
+    if (!dragging) return;
     dragging = false;
+    isPaused = false;
     carousel.style.cursor = 'grab';
     lastTime = 0;
-    animate(performance.now());
+    if (onScreen && animationId === null) {
+      animationId = requestAnimationFrame(animate);
+    }
   }
 
-  carousel.addEventListener('mouseup', endDrag);
-  carousel.addEventListener('mouseleave', endDrag);
+  window.addEventListener('mouseup', endDrag);
+  carousel.addEventListener('touchend', endDrag);
+  carousel.addEventListener('touchcancel', endDrag);
 
   animate(performance.now());
 };

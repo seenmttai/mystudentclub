@@ -27,7 +27,8 @@
 
   <!-- Site Styles -->
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="sections.css?v=20261003.stories2">
+  <link rel="stylesheet" href="sections.css?v=20261006.nav1">
+  <link rel="stylesheet" href="footer.css?v=20261006.1">
   <link rel="stylesheet" href="../scripts/portal-style.css">
 
   <!-- Supabase & Firebase -->
@@ -46,6 +47,18 @@
       <a href="/" class="brand-link" aria-label="My Student Club Homepage">
         <img src="../assets/logo.png" alt="My Student Club" class="brand-logo">
       </a>
+
+      <!-- Desktop Section Navigation Links -->
+      <nav class="header-nav" aria-label="Page Sections">
+        <a href="#hero" class="header-nav-link">Hero</a>
+        <a href="#placed-section" class="header-nav-link">Placements</a>
+        <a href="#challenge-section" class="header-nav-link">Why MSC</a>
+        <a href="#curriculum-section" class="header-nav-link">Curriculum</a>
+        <a href="#certified-section" class="header-nav-link">Certificate</a>
+        <a href="#mentor-section" class="header-nav-link">Mentor</a>
+        <a href="#waitlist-section" class="header-nav-link">Waitlist</a>
+      </nav>
+
       <div class="header-actions">
         <div class="auth-buttons-container">
           <a href="/login.html" class="auth-icon-btn" aria-label="Login">
@@ -316,152 +329,92 @@
             <!-- Group 1 -->
             <div class="placed-companies-group">
               <div class="company-logo-card" title="Amazon">
-                <svg viewBox="0 0 95 30" class="brand-bar-logo" fill="none">
-                  <text x="2" y="19" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="20"
-                    font-weight="900" fill="#111827" letter-spacing="-0.3px">amazon</text>
-                  <path d="M14 24 C 34 30, 58 29, 74 23" stroke="#FF9900" stroke-width="2.5" fill="none"
-                    stroke-linecap="round" />
-                  <polygon points="74,21 80,23 75,26" fill="#FF9900" />
-                </svg>
+                <img src="/assets/company-logos/amazon.svg" alt="Amazon" class="brand-bar-logo" loading="lazy">
               </div>
-
               <div class="company-logo-card" title="Flipkart">
-                <svg viewBox="0 0 95 30" class="brand-bar-logo" fill="none">
-                  <text x="2" y="21" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="19"
-                    font-weight="900" font-style="italic" fill="#2874F0">Flipkart</text>
-                  <polygon points="78,10 83,15 78,20" fill="#FFE500" />
-                </svg>
+                <img src="/assets/company-logos/flipkart.svg" alt="Flipkart" class="brand-bar-logo" loading="lazy">
               </div>
-
-              <div class="company-logo-card" title="DE Shaw">
-                <svg viewBox="0 0 115 30" class="brand-bar-logo" fill="none">
-                  <text x="2" y="21" font-family="'Georgia', serif" font-size="16" font-weight="bold" fill="#002D62"
-                    letter-spacing="0.5px">DE Shaw &amp; Co</text>
-                </svg>
+              <div class="company-logo-card" title="D. E. Shaw &amp; Co.">
+                <img src="/assets/company-logos/deshaw.svg" alt="D. E. Shaw &amp; Co." class="brand-bar-logo" loading="lazy">
               </div>
-
               <div class="company-logo-card" title="Morgan Stanley">
-                <svg viewBox="0 0 125 30" class="brand-bar-logo" fill="none">
-                  <text x="2" y="20" font-family="'Georgia', serif" font-size="14" font-weight="bold" fill="#111827"
-                    letter-spacing="0.5px">Morgan Stanley</text>
-                </svg>
+                <img src="/assets/company-logos/morgan_stanley.svg" alt="Morgan Stanley" class="brand-bar-logo" loading="lazy">
               </div>
-
               <div class="company-logo-card" title="Goldman Sachs">
-                <svg viewBox="0 0 115 30" class="brand-bar-logo" fill="none">
-                  <text x="2" y="13" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="12"
-                    font-weight="800" fill="#111827">Goldman</text>
-                  <text x="2" y="26" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="12"
-                    font-weight="800" fill="#111827">Sachs</text>
-                </svg>
+                <img src="/assets/company-logos/goldman_sachs.svg" alt="Goldman Sachs" class="brand-bar-logo" loading="lazy">
               </div>
-
               <div class="company-logo-card" title="UBS">
-                <svg viewBox="0 0 75 30" class="brand-bar-logo" fill="none">
-                  <text x="6" y="22" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="22"
-                    font-weight="900" fill="#E60000" letter-spacing="2px">UBS</text>
-                </svg>
+                <img src="/assets/company-logos/ubs.svg" alt="UBS" class="brand-bar-logo" loading="lazy">
               </div>
-
-              <div class="company-logo-card" title="Deutsche Bank">
-                <svg viewBox="0 0 120 30" class="brand-bar-logo" fill="none">
-                  <rect x="2" y="5" width="20" height="20" stroke="#0018A8" stroke-width="2.2" fill="none" />
-                  <line x1="6" y1="21" x2="18" y2="9" stroke="#0018A8" stroke-width="2.5" />
-                  <text x="28" y="20" font-family="'Inter', sans-serif" font-size="12" font-weight="700"
-                    fill="#0018A8">Deutsche Bank</text>
-                </svg>
-              </div>
-
-              <div class="company-logo-card" title="Unilever">
-                <svg viewBox="0 0 95 30" class="brand-bar-logo" fill="none">
-                  <text x="2" y="21" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="19"
-                    font-weight="800" fill="#1F36C7">Unilever</text>
-                </svg>
-              </div>
-
               <div class="company-logo-card" title="HDFC Bank">
-                <svg viewBox="0 0 110 30" class="brand-bar-logo" fill="none">
-                  <rect x="2" y="5" width="19" height="19" fill="#004C8F" rx="2" />
-                  <rect x="6.5" y="9.5" width="10" height="10" fill="#ED232A" />
-                  <text x="26" y="20" font-family="'Inter', sans-serif" font-size="13" font-weight="800" fill="#004C8F">HDFC
-                    BANK</text>
-                </svg>
+                <img src="/assets/company-logos/hdfc.svg" alt="HDFC Bank" class="brand-bar-logo" loading="lazy">
+              </div>
+              <div class="company-logo-card" title="Barclays">
+                <img src="/assets/company-logos/barclays.svg" alt="Barclays" class="brand-bar-logo" loading="lazy">
+              </div>
+              <div class="company-logo-card" title="Aditya Birla Group">
+                <img src="/assets/company-logos/aditya_birla.svg" alt="Aditya Birla Group" class="brand-bar-logo" loading="lazy">
+              </div>
+              <div class="company-logo-card" title="ITC Limited">
+                <img src="/assets/company-logos/itc.svg" alt="ITC Limited" class="brand-bar-logo" loading="lazy">
+              </div>
+              <div class="company-logo-card" title="Kotak Mahindra Bank">
+                <img src="/assets/company-logos/kotak.svg" alt="Kotak Mahindra Bank" class="brand-bar-logo" loading="lazy">
+              </div>
+              <div class="company-logo-card" title="Cipla">
+                <img src="/assets/company-logos/cipla.svg" alt="Cipla" class="brand-bar-logo" loading="lazy">
+              </div>
+              <div class="company-logo-card" title="HSBC">
+                <img src="/assets/company-logos/hsbc.svg" alt="HSBC" class="brand-bar-logo" loading="lazy">
+              </div>
+              <div class="company-logo-card" title="Reliance">
+                <img src="/assets/company-logos/reliance.svg" alt="Reliance" class="brand-bar-logo" loading="lazy">
               </div>
             </div>
 
             <!-- Group 2 (Duplicate for Seamless Loop) -->
             <div class="placed-companies-group" aria-hidden="true">
               <div class="company-logo-card" title="Amazon">
-                <svg viewBox="0 0 95 30" class="brand-bar-logo" fill="none">
-                  <text x="2" y="19" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="20"
-                    font-weight="900" fill="#111827" letter-spacing="-0.3px">amazon</text>
-                  <path d="M14 24 C 34 30, 58 29, 74 23" stroke="#FF9900" stroke-width="2.5" fill="none"
-                    stroke-linecap="round" />
-                  <polygon points="74,21 80,23 75,26" fill="#FF9900" />
-                </svg>
+                <img src="/assets/company-logos/amazon.svg" alt="Amazon" class="brand-bar-logo" loading="lazy">
               </div>
-
               <div class="company-logo-card" title="Flipkart">
-                <svg viewBox="0 0 95 30" class="brand-bar-logo" fill="none">
-                  <text x="2" y="21" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="19"
-                    font-weight="900" font-style="italic" fill="#2874F0">Flipkart</text>
-                  <polygon points="78,10 83,15 78,20" fill="#FFE500" />
-                </svg>
+                <img src="/assets/company-logos/flipkart.svg" alt="Flipkart" class="brand-bar-logo" loading="lazy">
               </div>
-
-              <div class="company-logo-card" title="DE Shaw">
-                <svg viewBox="0 0 115 30" class="brand-bar-logo" fill="none">
-                  <text x="2" y="21" font-family="'Georgia', serif" font-size="16" font-weight="bold" fill="#002D62"
-                    letter-spacing="0.5px">DE Shaw &amp; Co</text>
-                </svg>
+              <div class="company-logo-card" title="D. E. Shaw &amp; Co.">
+                <img src="/assets/company-logos/deshaw.svg" alt="D. E. Shaw &amp; Co." class="brand-bar-logo" loading="lazy">
               </div>
-
               <div class="company-logo-card" title="Morgan Stanley">
-                <svg viewBox="0 0 125 30" class="brand-bar-logo" fill="none">
-                  <text x="2" y="20" font-family="'Georgia', serif" font-size="14" font-weight="bold" fill="#111827"
-                    letter-spacing="0.5px">Morgan Stanley</text>
-                </svg>
+                <img src="/assets/company-logos/morgan_stanley.svg" alt="Morgan Stanley" class="brand-bar-logo" loading="lazy">
               </div>
-
               <div class="company-logo-card" title="Goldman Sachs">
-                <svg viewBox="0 0 115 30" class="brand-bar-logo" fill="none">
-                  <text x="2" y="13" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="12"
-                    font-weight="800" fill="#111827">Goldman</text>
-                  <text x="2" y="26" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="12"
-                    font-weight="800" fill="#111827">Sachs</text>
-                </svg>
+                <img src="/assets/company-logos/goldman_sachs.svg" alt="Goldman Sachs" class="brand-bar-logo" loading="lazy">
               </div>
-
               <div class="company-logo-card" title="UBS">
-                <svg viewBox="0 0 75 30" class="brand-bar-logo" fill="none">
-                  <text x="6" y="22" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="22"
-                    font-weight="900" fill="#E60000" letter-spacing="2px">UBS</text>
-                </svg>
+                <img src="/assets/company-logos/ubs.svg" alt="UBS" class="brand-bar-logo" loading="lazy">
               </div>
-
-              <div class="company-logo-card" title="Deutsche Bank">
-                <svg viewBox="0 0 120 30" class="brand-bar-logo" fill="none">
-                  <rect x="2" y="5" width="20" height="20" stroke="#0018A8" stroke-width="2.2" fill="none" />
-                  <line x1="6" y1="21" x2="18" y2="9" stroke="#0018A8" stroke-width="2.5" />
-                  <text x="28" y="20" font-family="'Inter', sans-serif" font-size="12" font-weight="700"
-                    fill="#0018A8">Deutsche Bank</text>
-                </svg>
-              </div>
-
-              <div class="company-logo-card" title="Unilever">
-                <svg viewBox="0 0 95 30" class="brand-bar-logo" fill="none">
-                  <text x="2" y="21" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="19"
-                    font-weight="800" fill="#1F36C7">Unilever</text>
-                </svg>
-              </div>
-
               <div class="company-logo-card" title="HDFC Bank">
-                <svg viewBox="0 0 110 30" class="brand-bar-logo" fill="none">
-                  <rect x="2" y="5" width="19" height="19" fill="#004C8F" rx="2" />
-                  <rect x="6.5" y="9.5" width="10" height="10" fill="#ED232A" />
-                  <text x="26" y="20" font-family="'Inter', sans-serif" font-size="13" font-weight="800" fill="#004C8F">HDFC
-                    BANK</text>
-                </svg>
+                <img src="/assets/company-logos/hdfc.svg" alt="HDFC Bank" class="brand-bar-logo" loading="lazy">
+              </div>
+              <div class="company-logo-card" title="Barclays">
+                <img src="/assets/company-logos/barclays.svg" alt="Barclays" class="brand-bar-logo" loading="lazy">
+              </div>
+              <div class="company-logo-card" title="Aditya Birla Group">
+                <img src="/assets/company-logos/aditya_birla.svg" alt="Aditya Birla Group" class="brand-bar-logo" loading="lazy">
+              </div>
+              <div class="company-logo-card" title="ITC Limited">
+                <img src="/assets/company-logos/itc.svg" alt="ITC Limited" class="brand-bar-logo" loading="lazy">
+              </div>
+              <div class="company-logo-card" title="Kotak Mahindra Bank">
+                <img src="/assets/company-logos/kotak.svg" alt="Kotak Mahindra Bank" class="brand-bar-logo" loading="lazy">
+              </div>
+              <div class="company-logo-card" title="Cipla">
+                <img src="/assets/company-logos/cipla.svg" alt="Cipla" class="brand-bar-logo" loading="lazy">
+              </div>
+              <div class="company-logo-card" title="HSBC">
+                <img src="/assets/company-logos/hsbc.svg" alt="HSBC" class="brand-bar-logo" loading="lazy">
+              </div>
+              <div class="company-logo-card" title="Reliance">
+                <img src="/assets/company-logos/reliance.svg" alt="Reliance" class="brand-bar-logo" loading="lazy">
               </div>
             </div>
           </div>
@@ -566,76 +519,111 @@
       <div class="journey-steps-grid">
         <!-- Day 1 -->
         <div class="journey-step-card step-blue" data-aos="fade-up" data-aos-delay="50">
-          <span class="step-number-badge">Day-1</span>
-          <div class="step-icon-wrap">
-            <i class="far fa-compass"></i>
+          <div class="step-header-row">
+            <span class="step-number-badge">Day 1</span>
+            <span class="step-badge-tag">Role Discovery</span>
           </div>
-          <h3 class="step-title">Roles in Articleship</h3>
-          <p class="step-description">Understanding roles and finding your ideal fit.</p>
+          <div class="step-hero-row">
+            <div class="step-icon-wrap">
+              <i class="far fa-compass"></i>
+            </div>
+            <div class="step-heading-group">
+              <h3 class="step-title">Roles in Articleship</h3>
+              <p class="step-description">Understanding roles &amp; finding your ideal fit.</p>
+            </div>
+          </div>
           <ul class="step-points-list">
-            <li><span class="step-dot"></span> Understanding what different roles are</li>
-            <li><span class="step-dot"></span> Finding what suits you</li>
-            <li><span class="step-dot"></span> Finding Firms* hiring for that role</li>
+            <li><span class="step-check-icon"><i class="fas fa-check"></i></span><span>Understanding what different roles are</span></li>
+            <li><span class="step-check-icon"><i class="fas fa-check"></i></span><span>Finding what suits you best</span></li>
+            <li><span class="step-check-icon"><i class="fas fa-check"></i></span><span>Finding Firms hiring for that role</span></li>
           </ul>
         </div>
 
         <!-- Day 2 -->
         <div class="journey-step-card step-purple" data-aos="fade-up" data-aos-delay="100">
-          <span class="step-number-badge">Day-2</span>
-          <div class="step-icon-wrap">
-            <i class="far fa-file-alt"></i>
+          <div class="step-header-row">
+            <span class="step-number-badge">Day 2</span>
+            <span class="step-badge-tag">Resume Mastery</span>
           </div>
-          <h3 class="step-title">Crafting Perfect CV</h3>
-          <p class="step-description">Personal CV review and AI tools.</p>
+          <div class="step-hero-row">
+            <div class="step-icon-wrap">
+              <i class="far fa-file-alt"></i>
+            </div>
+            <div class="step-heading-group">
+              <h3 class="step-title">Crafting Perfect CV</h3>
+              <p class="step-description">Personal CV review and AI tools.</p>
+            </div>
+          </div>
           <ul class="step-points-list">
-            <li><span class="step-dot"></span> Making the Perfect CV</li>
-            <li><span class="step-dot"></span> Personal CV Review</li>
-            <li><span class="step-dot"></span> MSC AI CV Reviewer</li>
+            <li><span class="step-check-icon"><i class="fas fa-check"></i></span><span>Making the Perfect CV format</span></li>
+            <li><span class="step-check-icon"><i class="fas fa-check"></i></span><span>1:1 Personal CV Review</span></li>
+            <li><span class="step-check-icon"><i class="fas fa-check"></i></span><span>MSC AI CV Reviewer access</span></li>
           </ul>
         </div>
 
         <!-- Day 3 -->
         <div class="journey-step-card step-coral" data-aos="fade-up" data-aos-delay="150">
-          <span class="step-number-badge">Day-3</span>
-          <div class="step-icon-wrap">
-            <i class="fab fa-linkedin-in"></i>
+          <div class="step-header-row">
+            <span class="step-number-badge">Day 3</span>
+            <span class="step-badge-tag">Networking</span>
           </div>
-          <h3 class="step-title">Building LinkedIn</h3>
-          <p class="step-description">Profile optimisation &amp; networking hacks.</p>
+          <div class="step-hero-row">
+            <div class="step-icon-wrap">
+              <i class="fab fa-linkedin-in"></i>
+            </div>
+            <div class="step-heading-group">
+              <h3 class="step-title">Building LinkedIn</h3>
+              <p class="step-description">Profile optimisation &amp; networking hacks.</p>
+            </div>
+          </div>
           <ul class="step-points-list">
-            <li><span class="step-dot"></span> LinkedIn Profile Optimisation</li>
-            <li><span class="step-dot"></span> Using Connection Notes</li>
-            <li><span class="step-dot"></span> Other LinkedIn Hacks</li>
+            <li><span class="step-check-icon"><i class="fas fa-check"></i></span><span>LinkedIn profile optimisation</span></li>
+            <li><span class="step-check-icon"><i class="fas fa-check"></i></span><span>Using high-impact connection notes</span></li>
+            <li><span class="step-check-icon"><i class="fas fa-check"></i></span><span>Algorithm &amp; networking hacks</span></li>
           </ul>
         </div>
 
         <!-- Day 4 -->
         <div class="journey-step-card step-amber" data-aos="fade-up" data-aos-delay="200">
-          <span class="step-number-badge">Day-4</span>
-          <div class="step-icon-wrap">
-            <i class="far fa-paper-plane"></i>
+          <div class="step-header-row">
+            <span class="step-number-badge">Day 4</span>
+            <span class="step-badge-tag">Application Hacks</span>
           </div>
-          <h3 class="step-title">Application Hacks</h3>
-          <p class="step-description">Right application strategies &amp; follow-ups.</p>
+          <div class="step-hero-row">
+            <div class="step-icon-wrap">
+              <i class="far fa-paper-plane"></i>
+            </div>
+            <div class="step-heading-group">
+              <h3 class="step-title">Application Hacks</h3>
+              <p class="step-description">Right application strategies &amp; follow-ups.</p>
+            </div>
+          </div>
           <ul class="step-points-list">
-            <li><span class="step-dot"></span> Right way to Apply</li>
-            <li><span class="step-dot"></span> Using Job Portals</li>
-            <li><span class="step-dot"></span> Getting References &amp; Following Up</li>
+            <li><span class="step-check-icon"><i class="fas fa-check"></i></span><span>The right way to apply to top firms</span></li>
+            <li><span class="step-check-icon"><i class="fas fa-check"></i></span><span>Using job portals effectively</span></li>
+            <li><span class="step-check-icon"><i class="fas fa-check"></i></span><span>Getting references &amp; following up</span></li>
           </ul>
         </div>
 
         <!-- Day 5 -->
         <div class="journey-step-card step-green" data-aos="fade-up" data-aos-delay="250">
-          <span class="step-number-badge">Day-5</span>
-          <div class="step-icon-wrap">
-            <i class="fas fa-handshake"></i>
+          <div class="step-header-row">
+            <span class="step-number-badge">Day 5</span>
+            <span class="step-badge-tag">Conversion</span>
           </div>
-          <h3 class="step-title">Cracking Interviews</h3>
-          <p class="step-description">Interview guidebook &amp; mock prep.</p>
+          <div class="step-hero-row">
+            <div class="step-icon-wrap">
+              <i class="fas fa-handshake"></i>
+            </div>
+            <div class="step-heading-group">
+              <h3 class="step-title">Cracking Interviews</h3>
+              <p class="step-description">Interview guidebook &amp; mock prep.</p>
+            </div>
+          </div>
           <ul class="step-points-list">
-            <li><span class="step-dot"></span> Interview Guidebook</li>
-            <li><span class="step-dot"></span> Staying Confident</li>
-            <li><span class="step-dot"></span> MSC LMS Access</li>
+            <li><span class="step-check-icon"><i class="fas fa-check"></i></span><span>Articleship interview guidebook</span></li>
+            <li><span class="step-check-icon"><i class="fas fa-check"></i></span><span>Staying confident &amp; prepared</span></li>
+            <li><span class="step-check-icon"><i class="fas fa-check"></i></span><span>Lifetime MSC LMS resource access</span></li>
           </ul>
         </div>
       </div>
@@ -1151,7 +1139,7 @@
             <span>GET RECOGNISED</span>
           </div>
           <h2 class="section-title">Get <span class="highlight-green">Certified</span></h2>
-          <p class="section-subtitle">
+          <p class="section-subtitle" style="text-align: left; margin: 0 0 28px 0;">
             Level up your career with MSC's industry recognised certificate.
           </p>
           <ul class="certified-checklist">
@@ -1173,7 +1161,7 @@
             </li>
           </ul>
           <a href="#waitlist-section" class="btn-navy-sample">
-            <span>View Sample Certificate</span>
+            <span>Get Certificate</span>
             <i class="fas fa-arrow-right" style="font-size: 11px;"></i>
           </a>
         </div>
@@ -1211,120 +1199,302 @@
       </div>
     </section>
 
-    <!-- ─── MEET YOUR MENTOR (MATCHING SCREENSHOT DESIGN) ─── -->
+    <!-- ─── MEET YOUR MENTOR (SPLIT BENTO SHOWCASE) ─── -->
     <section class="mentor-section" id="mentor-section">
       <div class="mentor-container" data-aos="fade-up">
-        <!-- Section Header (Appears first above photo and card) -->
+        <!-- Section Header -->
         <div class="mentor-header-group">
           <div class="eyebrow-pill">
             <span class="eyebrow-dot"></span>
             <span>LEARN FROM THE BEST</span>
           </div>
           <h2 class="mentor-section-heading">Meet Your <span class="highlight-coral">Mentor</span></h2>
+          <p class="mentor-section-sub">
+            Structured frameworks, interview preparation, and recruiter networks from someone who cracked Flipkart &amp; mentored 1,000+ CA students.
+          </p>
         </div>
 
-        <div class="mentor-body-grid">
-          <!-- Column 1: Circular Photo & Pill -->
-          <div class="mentor-avatar-column">
-            <div class="mentor-circle-wrap">
-              <img src="../assets/Mentor-HeroSection-transparent.png" alt="CA Padam Bhansali - Founder & Mentor"
-                class="mentor-avatar-img">
+        <div class="mentor-master-card">
+          <!-- Left: Portrait Pane with Ambient Glow & Badges -->
+          <div class="mentor-portrait-pane">
+            <div class="mentor-portrait-glow"></div>
+            <div class="mentor-image-frame">
+              <img src="/assets/mentornew.png" alt="CA Padam Bhansali" class="mentor-portrait-img" onerror="this.src='/assets/Mentor-HeroSection-transparent.png'">
+              
+              <!-- Floating Top Badge -->
+              <div class="mentor-float-badge top-badge">
+                <i class="fas fa-check-circle"></i>
+                <span>Lead Instructor</span>
+              </div>
+
+              <!-- Floating Bottom Experience Pill -->
+              <div class="mentor-float-badge bottom-badge">
+                <div class="badge-icon-flipkart">
+                  <img src="/assets/company-logos/flipkart.svg" alt="Flipkart" style="height: 14px; width: auto; display: block;">
+                </div>
+                <span>Ex-Business Finance</span>
+              </div>
             </div>
-            <div class="mentor-guided-pill">
-              <span>1000+ Students Guided</span>
+            
+            <!-- Underneath Social Proof Pill -->
+            <div class="mentor-portrait-sub-badge">
+              <i class="fas fa-user-graduate" style="color: var(--primary-coral);"></i>
+              <span>1,000+ Students Guided</span>
             </div>
           </div>
 
-          <!-- Column 2: White Card -->
-          <div class="mentor-content-column">
-            <div class="mentor-card">
-              <div class="mentor-card-top">
-                <div class="mentor-name-row">
-                  <h3 class="mentor-name">CA Padam Bhansali</h3>
-                  <a href="https://www.linkedin.com/in/padam-bhansali/" target="_blank" rel="noopener noreferrer"
-                    class="mentor-linkedin-badge" aria-label="LinkedIn Profile">
-                    <i class="fab fa-linkedin-in"></i>
+          <!-- Right: Details, Highlights & Quote -->
+          <div class="mentor-details-pane">
+            <div class="mentor-details-header">
+              <div class="mentor-title-block">
+                <div class="mentor-badge-label">FOUNDER &amp; LEAD TRAINER</div>
+                <div class="mentor-name-heading-row">
+                  <h3 class="mentor-name-title">CA Padam Bhansali</h3>
+                  <a href="https://www.linkedin.com/in/ca-padam-bhansali/" target="_blank" rel="noopener noreferrer" class="mentor-linkedin-link" title="View LinkedIn Profile">
+                    <i class="fab fa-linkedin"></i>
+                    <span>Connect</span>
                   </a>
                 </div>
-                <div class="mentor-role">Mentor, My Student Club</div>
+                <div class="mentor-tagline">Founder, My Student Club • Ex-Flipkart Business Finance</div>
               </div>
+            </div>
 
-              <p class="mentor-bio">
-                A qualified Chartered Accountant with extensive experience in training and mentoring CA students for
-                articleship and career growth.
-              </p>
-
-              <div class="mentor-quote-box">
-                <div class="mentor-quote-icon">
-                  <i class="fas fa-quote-left"></i>
+            <!-- 4 Quick Key Metrics Bento Grid -->
+            <div class="mentor-highlights-grid">
+              <div class="mentor-highlight-item">
+                <div class="highlight-icon-box blue">
+                  <i class="fas fa-briefcase"></i>
                 </div>
-                <p class="mentor-quote-text">
-                  “My goal is to help every CA student get the right guidance, exposure and confidence to start their
-                  career with the best opportunities.”
-                </p>
+                <div class="highlight-content">
+                  <span class="highlight-val">Ex-Flipkart</span>
+                  <span class="highlight-lbl">Business Finance</span>
+                </div>
               </div>
+
+              <div class="mentor-highlight-item">
+                <div class="highlight-icon-box coral">
+                  <i class="fas fa-user-graduate"></i>
+                </div>
+                <div class="highlight-content">
+                  <span class="highlight-val">1,000's</span>
+                  <span class="highlight-lbl">Students Guided</span>
+                </div>
+              </div>
+
+              <div class="mentor-highlight-item">
+                <div class="highlight-icon-box purple">
+                  <i class="fas fa-building"></i>
+                </div>
+                <div class="highlight-content">
+                  <span class="highlight-val">Big 4 &amp; Top Orgs</span>
+                  <span class="highlight-lbl">Firms Covered</span>
+                </div>
+              </div>
+
+              <div class="mentor-highlight-item">
+                <div class="highlight-icon-box amber">
+                  <i class="fas fa-star"></i>
+                </div>
+                <div class="highlight-content">
+                  <span class="highlight-val">4.9 / 5.0</span>
+                  <span class="highlight-lbl">Student Rating</span>
+                </div>
+              </div>
+            </div>
+
+            <p class="mentor-bio-text">
+              A qualified Chartered Accountant with extensive experience in training and mentoring CA students for articleship and career growth. Having cracked top-tier recruitment himself at Flipkart, CA Padam Bhansali designed this structured program to equip aspirants with ATS-compliant CV mastery, Big 4 interview strategies, and direct firm outreach.
+            </p>
+
+            <!-- Styled Quote Box -->
+            <div class="mentor-quote-card">
+              <div class="quote-symbol">
+                <i class="fas fa-quote-left"></i>
+              </div>
+              <div class="quote-text-body">
+                “My goal is to help every CA student get the right guidance, exposure and confidence to start their career with the best opportunities.”
+              </div>
+            </div>
+
+            <!-- Bottom Career Tags -->
+            <div class="mentor-credentials-bar">
+              <span class="cred-pill"><i class="fas fa-check-circle"></i> Big 4 &amp; Mid-Size Guidance</span>
+              <span class="cred-pill"><i class="fas fa-check-circle"></i> ATS CV Frameworks</span>
+              <span class="cred-pill"><i class="fas fa-check-circle"></i> Articleship Interview Prep</span>
+              <span class="cred-pill"><i class="fas fa-check-circle"></i> 50k+ CA Community</span>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ─── NOTIFY ME SECTION (CENTERED BELL, HEADING & STATS) ─── -->
+    <!-- ─── NOTIFY ME SECTION (COMPACT 2-COLUMN LANDSCAPE LAYOUT) ─── -->
     <section class="notify-section" id="waitlist-section" data-aos="fade-up">
       <div class="notify-section-inner">
-        <!-- Registration Closed Badge -->
-        <div class="notify-closed-badge">
-          <span class="badge-dot"></span>
-          Registration Closed
-        </div>
-
-        <!-- Animated Swinging Bell Icon (Centered in Middle) -->
-        <div class="notify-icon-wrap">🔔</div>
-
-        <!-- Heading Text -->
-        <h2 class="notify-heading">
-          Program <span class="hl-red">Currently Closed.</span><br>
-          <span class="hl-gr">Be First</span> When We Reopen.
-        </h2>
-
-        <!-- Subtitle -->
-        <p class="notify-sub">
-          Over 1,000 students have already secured top articleships through this program.
-          Don't miss the next batch &mdash; get notified the moment seats open.
-        </p>
-
-        <!-- Stats Row -->
-        <div class="notify-stats-row">
-          <div class="notify-stat">
-            <div class="notify-stat-num">1000+</div>
-            <div class="notify-stat-lbl">Students Placed</div>
+        <!-- Left Column: Copy & Value Proposition -->
+        <div class="notify-left">
+          <div class="notify-closed-badge">
+            <span class="badge-dot"></span>
+            Registration Closed
           </div>
-          <div class="notify-stat-divider"></div>
-          <div class="notify-stat">
-            <div class="notify-stat-num">Big 4</div>
-            <div class="notify-stat-lbl">Firms Covered</div>
-          </div>
-          <div class="notify-stat-divider"></div>
-          <div class="notify-stat">
-            <div class="notify-stat-num">100+</div>
-            <div class="notify-stat-lbl">Vacancies</div>
+
+          <h2 class="notify-heading">
+            Program <span class="hl-red">Currently Closed.</span><br>
+            <span class="hl-gr">Be First</span> When We Reopen.
+          </h2>
+
+          <p class="notify-sub">
+            Over 1,000 students have already secured top articleships through this program.
+            Don't miss the next batch &mdash; get notified the moment seats open.
+          </p>
+
+          <div class="notify-perks-row">
+            <div class="notify-perk-item">
+              <span class="notify-perk-icon"><i class="fas fa-bolt" style="color: #FBBF24;"></i></span>
+              <span>Instant Launch Alert</span>
+            </div>
+            <div class="notify-perk-item">
+              <span class="notify-perk-icon"><i class="fas fa-shield-alt" style="color: #60A5FA;"></i></span>
+              <span>Zero Spam Guarantee</span>
+            </div>
+            <div class="notify-perk-item">
+              <span class="notify-perk-icon"><i class="fas fa-check-circle" style="color: #34D399;"></i></span>
+              <span>100% Free Priority Access</span>
+            </div>
           </div>
         </div>
 
-        <!-- Action CTA Button -->
-        <div class="notify-action">
-          <button id="notifyMeBtn" class="notify-me-btn">
-            <span class="notify-btn-icon">🔔</span>
-            <span class="notify-btn-text">Notify Me When Open</span>
-          </button>
-          <p id="notifyStatus" class="notify-status"></p>
-        </div>
+        <!-- Right Column: Interactive Waitlist Action Card -->
+        <div class="notify-right">
+          <div class="notify-action-card">
+            <div class="notify-card-header">
+              <div class="notify-icon-wrap">🔔</div>
+              <div class="notify-card-title-group">
+                <span class="notify-card-badge">NEXT COHORT</span>
+                <h4 class="notify-card-title">Priority Waitlist</h4>
+              </div>
+            </div>
 
-        <!-- Trust Line -->
-        <div class="notify-trust-line">No spam &bull; Instant notification &bull; Free to join</div>
+            <!-- Stats Row -->
+            <div class="notify-stats-row">
+              <div class="notify-stat">
+                <div class="notify-stat-num">1000+</div>
+                <div class="notify-stat-lbl">Students Placed</div>
+              </div>
+              <div class="notify-stat-divider"></div>
+              <div class="notify-stat">
+                <div class="notify-stat-num">Big 4</div>
+                <div class="notify-stat-lbl">Firms Covered</div>
+              </div>
+              <div class="notify-stat-divider"></div>
+              <div class="notify-stat">
+                <div class="notify-stat-num">100+</div>
+                <div class="notify-stat-lbl">Vacancies</div>
+              </div>
+            </div>
+
+            <!-- Action CTA Button -->
+            <div class="notify-action">
+              <button id="notifyMeBtn" class="notify-me-btn js-notify-btn" type="button">
+                <span class="notify-btn-icon">🔔</span>
+                <span class="notify-btn-text">Notify Me When Open</span>
+              </button>
+              <p id="notifyStatus" class="notify-status"></p>
+            </div>
+
+            <!-- Trust Line -->
+            <div class="notify-trust-line">No spam &bull; Instant notification &bull; Free to join</div>
+          </div>
+        </div>
       </div>
     </section>
   </main>
+
+  <!-- ─── MODERN MASTERCLASS PAGE FOOTER ─── -->
+  <footer class="page-footer">
+    <div class="footer-container">
+      <div class="footer-grid">
+        <!-- Column 1: Brand & Mission -->
+        <div class="footer-brand-col">
+          <a href="/" class="footer-logo-link" title="My Student Club">
+            <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club" class="footer-logo-img">
+          </a>
+          <p class="footer-brand-desc">
+            Empowering CA students with industry-proven frameworks, 1:1 mentorship, and direct access to top MNC and investment corporate finance roles.
+          </p>
+          <div class="footer-social-row">
+            <a href="https://www.linkedin.com/in/ca-padam-bhansali/" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="LinkedIn">
+              <i class="fab fa-linkedin-in"></i>
+            </a>
+            <a href="https://www.youtube.com/@capadambhansali" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="YouTube">
+              <i class="fab fa-youtube"></i>
+            </a>
+            <a href="https://www.instagram.com/ca_padam_bhansali/" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="Instagram">
+              <i class="fab fa-instagram"></i>
+            </a>
+          </div>
+          <div class="footer-trust-badge">
+            <i class="fas fa-shield-alt"></i>
+            <span>100% Verified CA Accelerator</span>
+          </div>
+        </div>
+
+        <!-- Column 2: Flagship Programs -->
+        <div class="footer-nav-col">
+          <h4 class="footer-col-title">Programs</h4>
+          <ul class="footer-col-list">
+            <li>
+              <a href="/ca-industrial-training-program/" class="footer-nav-link">
+                <span>Industrial Training</span>
+                <span class="footer-badge-mini">LIVE</span>
+              </a>
+            </li>
+            <li>
+              <a href="/articleship-program/" class="footer-nav-link active-link">
+                <span>Articleship Program</span>
+              </a>
+            </li>
+            <li><a href="/msc-ca-fresher-program/" class="footer-nav-link">CA Freshers Program</a></li>
+            <li><a href="/ai-interview.html" class="footer-nav-link">AI Mock Interviews</a></li>
+            <li><a href="/learning-management-system/" class="footer-nav-link">My Courses (LMS)</a></li>
+          </ul>
+        </div>
+
+        <!-- Column 3: Free Resources -->
+        <div class="footer-nav-col">
+          <h4 class="footer-col-title">Free Resources</h4>
+          <ul class="footer-col-list">
+            <li><a href="/ca-industrial-training-resources.html" class="footer-nav-link">Industrial Guidebook</a></li>
+            <li><a href="/ca-articleship-opportunities" class="footer-nav-link">Articleship Openings</a></li>
+            <li><a href="/ca-fresher-training-resources.html" class="footer-nav-link">Fresher Resources</a></li>
+            <li><a href="/cv-builder" class="footer-nav-link">AI CV Builder</a></li>
+            <li><a href="/sessions/" class="footer-nav-link">Workshops &amp; Events</a></li>
+          </ul>
+        </div>
+
+        <!-- Column 4: Support & Legal -->
+        <div class="footer-nav-col">
+          <h4 class="footer-col-title">Support &amp; Legal</h4>
+          <ul class="footer-col-list">
+            <li><a href="mailto:padam@mystudentclub.com" class="footer-nav-link"><i class="far fa-envelope"></i> padam@mystudentclub.com</a></li>
+            <li><a href="/contact.html" class="footer-nav-link">Contact Support</a></li>
+            <li><a href="/privacy-policy.html" class="footer-nav-link">Privacy Policy</a></li>
+            <li><a href="/terms-and-conditions.html" class="footer-nav-link">Terms &amp; Conditions</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Footer Bottom Bar -->
+      <div class="footer-bottom-bar">
+        <p class="footer-copyright-text">&copy; 2026 My Student Club. All rights reserved.</p>
+        <p class="footer-bottom-tagline">
+          <span>Built with</span>
+          <i class="fas fa-heart" style="color: #EF4444; font-size: 11px;"></i>
+          <span>for CA Aspirants across India</span>
+        </p>
+      </div>
+    </div>
+  </footer>
 
   <!-- ─── FIXED BOTTOM CTA BAR (EXACT DESIGN MATCHING SCREENSHOT) ─── -->
   <div class="fixed-cta" id="cta-footer">
@@ -1332,13 +1502,13 @@
       <span class="status-closed-text">REGISTRATION CLOSED</span>
     </div>
     <div class="price-container">
-      <span class="original">₹2999</span>
-      <span class="discounted">₹1499</span>
+      <span class="original">₹3999</span>
+      <span class="discounted">₹1999</span>
     </div>
-    <a href="#waitlist-section" id="notifyMeFooterBtn" class="notify-me-footer-btn">
+    <button type="button" id="notifyMeFooterBtn" class="notify-me-footer-btn js-notify-btn">
       <span class="notify-footer-icon">🔔</span>
       <span class="notify-footer-text">Notify Me</span>
-    </a>
+    </button>
   </div>
 
   <!-- Scripts -->
@@ -1392,57 +1562,94 @@
       const NOTIFY_TOPIC = "articleship-program-notify";
       const MANAGE_TOPIC_URL = "https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription";
 
-      const btn = document.getElementById('notifyMeBtn');
-      const emailInput = document.getElementById('waitlistEmailInput');
-      const statusEl = document.getElementById('notifyStatus');
-
-      if (btn) {
-        btn.addEventListener('click', async () => {
-          const email = emailInput ? emailInput.value.trim() : '';
-          if (statusEl) {
-            statusEl.textContent = "Setting up notification...";
-            statusEl.style.color = "#93C5FD";
-          }
-
-          try {
-            if (typeof Notification !== 'undefined') {
-              const permission = await Notification.requestPermission();
-              if (permission === 'granted' && typeof firebase !== 'undefined') {
-                if (!firebase.apps.length) firebase.initializeApp(NOTIFY_FIREBASE_CONFIG);
-                const messaging = firebase.messaging();
-                if ('serviceWorker' in navigator) {
-                  await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-                }
-                const fcmToken = await messaging.getToken({ vapidKey: NOTIFY_VAPID_KEY });
-                if (fcmToken) {
-                  await fetch(MANAGE_TOPIC_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token: fcmToken, topic: NOTIFY_TOPIC, action: 'subscribe' })
-                  });
-                }
-              }
-            }
-
-            if (statusEl) {
-              statusEl.textContent = "You're on the list! We'll notify you when seats open.";
-              statusEl.style.color = "#86EFAC";
-            }
-            btn.textContent = "Added to Waitlist ✓";
-            btn.style.background = "#10B981";
-            btn.disabled = true;
-          } catch (err) {
-            console.error(err);
-            if (statusEl) {
-              statusEl.textContent = "You're on the list! We'll notify you soon.";
-              statusEl.style.color = "#86EFAC";
-            }
-            btn.textContent = "Added to Waitlist ✓";
-            btn.style.background = "#10B981";
-            btn.disabled = true;
+      function updateAllArticleshipNotifyBtns(text = 'Added to Waitlist ✓', isSuccess = true) {
+        const allBtns = document.querySelectorAll('.js-notify-btn, #notifyMeBtn, #notifyMeFooterBtn');
+        allBtns.forEach(b => {
+          b.innerHTML = `<span>${text}</span>`;
+          if (isSuccess) {
+            b.style.setProperty('background', '#10B981', 'important');
+            b.style.setProperty('border-color', '#10B981', 'important');
+            b.style.setProperty('color', '#FFFFFF', 'important');
+            b.disabled = true;
+            b.style.pointerEvents = 'none';
           }
         });
       }
+
+      // Check localStorage for prior subscription
+      try {
+        if (localStorage.getItem('msc_waitlist_' + NOTIFY_TOPIC) === 'true') {
+          updateAllArticleshipNotifyBtns('Added to Waitlist ✓', true);
+          const statusEl = document.getElementById('notifyStatus');
+          if (statusEl) {
+            statusEl.textContent = "You're on the list! We'll notify you when seats open.";
+            statusEl.style.color = "#86EFAC";
+          }
+        }
+      } catch (e) {}
+
+      async function subscribeArticleshipWaitlist(triggerBtn) {
+        const emailInput = document.getElementById('waitlistEmailInput');
+        const statusEl = document.getElementById('notifyStatus');
+        if (statusEl) {
+          statusEl.textContent = "Setting up notification...";
+          statusEl.style.color = "#93C5FD";
+        }
+        if (triggerBtn) {
+          triggerBtn.innerHTML = '<span>Enabling...</span>';
+        }
+
+        try {
+          if (typeof Notification !== 'undefined') {
+            const permission = await Notification.requestPermission();
+            if (permission === 'granted' && typeof firebase !== 'undefined') {
+              if (!firebase.apps.length) firebase.initializeApp(NOTIFY_FIREBASE_CONFIG);
+              const messaging = firebase.messaging();
+              if ('serviceWorker' in navigator) {
+                await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+              }
+              const fcmToken = await messaging.getToken({ vapidKey: NOTIFY_VAPID_KEY });
+              if (fcmToken) {
+                await fetch(MANAGE_TOPIC_URL, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ token: fcmToken, topic: NOTIFY_TOPIC, action: 'subscribe' })
+                });
+              }
+            }
+          }
+
+          try {
+            localStorage.setItem('msc_waitlist_' + NOTIFY_TOPIC, 'true');
+          } catch (e) {}
+
+          updateAllArticleshipNotifyBtns('Added to Waitlist ✓', true);
+          if (statusEl) {
+            statusEl.textContent = "You're on the list! We'll notify you when seats open.";
+            statusEl.style.color = "#86EFAC";
+          }
+        } catch (err) {
+          console.error(err);
+          try {
+            localStorage.setItem('msc_waitlist_' + NOTIFY_TOPIC, 'true');
+          } catch (e) {}
+          updateAllArticleshipNotifyBtns('Added to Waitlist ✓', true);
+          if (statusEl) {
+            statusEl.textContent = "You're on the list! We'll notify you soon.";
+            statusEl.style.color = "#86EFAC";
+          }
+        }
+      }
+
+      const articleshipNotifyTriggers = document.querySelectorAll('.js-notify-btn, #notifyMeBtn, #notifyMeFooterBtn');
+      articleshipNotifyTriggers.forEach(el => {
+        el.removeAttribute('onclick');
+        el.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          subscribeArticleshipWaitlist(el);
+        });
+      });
 
       // Expanded Menu Drawer Toggle
       const menuButton = document.getElementById('menuButton');

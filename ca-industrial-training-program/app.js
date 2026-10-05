@@ -11,13 +11,11 @@ const generateData = () => {
     { name: "Ishaan Isham", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/ishaanisham/", image: baseURL + "ishaan.jpg", company: "UBS" },
     { name: "Simran Singh", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/simransingh-ca-aspirant/", image: baseURL + "simran.jpg", company: "Amazon" },
     { name: "Ananya Gupta", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/ananyagupta-ca", image: baseURL + "ananya.jpg", company: "Amazon" },
-    { name: "Virali Doshi", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/virali-doshi1905", image: baseURL + "virali.jpg", company: "Deutsche Bank" },
     { name: "Anisha Mehta", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/anisha-mehta1/", image: baseURL + "anisha_mehta.jpeg", company: "Adani" },
     { name: "Aarushi Agarwal", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/aarushi-agarwal003/", image: baseURL + "Aarushi.jpeg", company: "Mizuho Bank" },
     { name: "Vindhya Gupta", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/vindhya-gupta/", image: baseURL + "vindhya.jpeg", company: "Hindustan Times" },
     { name: "Vishal Sharma", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/vishal-sharma057/", image: baseURL + "vishal.jpeg", company: "Bajaj Finance" },
     { name: "Chery Lunia", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/cheryluniya/", image: baseURL + "Chery.jpeg", company: "Goldman Sachs" },
-    { name: "Prabhjyot Singh", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/prabhjyotsinghca/", image: baseURL + "prabhjyot.jpeg", company: "Unilever" },
     { name: "Chandini Meher", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/chandini-meher/", image: baseURL + "Chandini.jpeg", company: "HDFC Bank" },
     { name: "Kirti Yadav", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/kirtiyadav07/", image: baseURL + "Kirti.jpeg", company: "DLF" },
     { name: "Raunaq Verma", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/raunaqverma17662/", image: baseURL + "Raunaq.jpeg", company: "HDFC Bank" },
@@ -27,7 +25,6 @@ const generateData = () => {
     { name: "Sakshi Suryavanshi", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/sakshiasuryavanshi/", image: baseURL + "sakshi.jpeg", company: "ZF" },
     { name: "Deepanshu Jain", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/deepanshu-jain-23078822a/", image: baseURL + "deepanshu.jpeg", company: "Henkel" },
     { name: "Chandra Lekha", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/chandralekhauckoo", image: baseURL + "Chandra.jpeg", company: "ITC" },
-    { name: "Sakshi Sipholya", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/sakshisipolya/", image: baseURL + "sipholya.jpeg", company: "Deutsche Bank" },
     { name: "Rahul Koli", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/rahulkoli15/", image: baseURL + "koli.jpeg", company: "Morgan Stanley" },
     { name: "Anisha Shah", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/anisha-shah25/", image: baseURL + "Anisha.jpeg", company: "UBS" },
     { name: "Arbaz Jakate", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/arbaz-jakate/", image: baseURL + "Arbaz.jpeg", company: "Mondelez" },
@@ -65,7 +62,6 @@ const generateData = () => {
     { name: "Aditi Tagalpallewar", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/aditi-tagalpallewar/", image: baseURL + "Aditi-Tagalwellakar.jpg", company: "UBS" },
     { name: "Shubham Kumar", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/shubham-kumar-ca10/", image: baseURL + "kumar.jpg", company: "Reliance" },
     { name: "Kamini Jha", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/jha-kamini/", image: baseURL + "kamini.jpg", company: "HSBC" },
-    { name: "Arjun Vasistha", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/arjun-vasistha/", image: baseURL + "vasistha.jpg", company: "Unilever" },
     { name: "Tanya Bhojwani", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/tanya-bhojwani/", image: baseURL + "bhojwani.jpg", company: "Hindalco Eternia" }
   ];
 
@@ -79,7 +75,6 @@ const generateData = () => {
     { name: "Ishaan Isham", company: "UBS" },
     { name: "Simran Singh", company: "Amazon" },
     { name: "Ananya Gupta", company: "Amazon" },
-    { name: "Virali Doshi", company: "Deutsche Bank" },
     { name: "Viddhi S Mittal", company: "Amazon" },
     { name: "Priya Jain", company: "Amazon" },
     { name: "Charu Kewalramani", company: "DE Shaw" },
@@ -91,7 +86,6 @@ const generateData = () => {
     { name: "Sajal Mittal", company: "PepsiCo" },
     { name: "shubham Kumar", company: "Reliance" },
     { name: "kamini Jha", company: "HSBC" },
-    { name: "Arjun Vasistha", company: "Unilever" },
     { name: "Tanya Bhojwani", company: "Hindalco Eternia" },
   ];
 
@@ -125,149 +119,32 @@ const generateData = () => {
 const getCompanyLogoSVG = (company) => {
   const comp = (company || '').trim().toLowerCase();
 
-  if (comp.includes('amazon')) {
-    return `<svg viewBox="0 0 95 28" class="company-logo-svg" fill="none">
-      <text x="2" y="19" font-family="'Inter', -apple-system, sans-serif" font-size="18" font-weight="900" fill="#111827" letter-spacing="-0.5px">amazon</text>
-      <path d="M12 23 C 32 30, 56 28, 72 21" stroke="#FF9900" stroke-width="2.6" stroke-linecap="round" fill="none"/>
-      <polygon points="70,18 78,21 72,25" fill="#FF9900"/>
-    </svg>`;
-  }
-  if (comp.includes('flipkart')) {
-    return `<svg viewBox="0 0 100 28" class="company-logo-svg" fill="none">
-      <g transform="translate(2, 4)">
-        <rect x="0" y="4" width="16" height="15" rx="3" fill="#2874F0"/>
-        <path d="M4 4 C4 0 12 0 12 4" stroke="#FFE11B" stroke-width="2" fill="none"/>
-        <path d="M7 8 L10 8 M7 11 L10 11 M7 8 L7 15" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round"/>
-      </g>
-      <text x="23" y="19" font-family="'Inter', -apple-system, sans-serif" font-size="16" font-weight="900" font-style="italic" fill="#2874F0" letter-spacing="-0.3px">Flipkart</text>
-      <polygon points="87,7 93,12 87,17" fill="#FFE11B"/>
-    </svg>`;
-  }
-  if (comp.includes('ubs')) {
-    return `<svg viewBox="0 0 85 28" class="company-logo-svg" fill="none">
-      <g transform="translate(2, 5)" stroke="#111827" stroke-width="1.4" fill="none">
-        <circle cx="5" cy="5" r="3.5"/>
-        <line x1="8" y1="5" x2="20" y2="5"/>
-        <line x1="16" y1="5" x2="16" y2="8"/>
-        <line x1="19" y1="5" x2="19" y2="8"/>
-        <line x1="5" y1="8" x2="16" y2="15"/>
-        <line x1="5" y1="2" x2="16" y2="-5"/>
-      </g>
-      <text x="28" y="20" font-family="'Inter', sans-serif" font-size="19" font-weight="900" fill="#E60000" letter-spacing="1.2px">UBS</text>
-    </svg>`;
-  }
-  if (comp.includes('deutsche')) {
-    return `<svg viewBox="0 0 120 28" class="company-logo-svg" fill="none">
-      <rect x="2" y="3" width="22" height="22" rx="3" stroke="#0018A8" stroke-width="2.5" fill="none"/>
-      <line x1="6" y1="21" x2="20" y2="7" stroke="#0018A8" stroke-width="2.8" stroke-linecap="round"/>
-      <text x="30" y="18" font-family="'Inter', sans-serif" font-size="11.5" font-weight="800" fill="#0018A8" letter-spacing="-0.2px">Deutsche Bank</text>
-    </svg>`;
-  }
-  if (comp.includes('shaw')) {
-    return `<svg viewBox="0 0 120 28" class="company-logo-svg" fill="none">
-      <text x="2" y="19" font-family="'Georgia', 'Times New Roman', serif" font-size="14.5" font-weight="bold" fill="#002D62" letter-spacing="0.3px">D. E. Shaw &amp; Co.</text>
-    </svg>`;
-  }
-  if (comp.includes('morgan') || comp.includes('stanley')) {
-    return `<svg viewBox="0 0 125 28" class="company-logo-svg" fill="none">
-      <text x="2" y="19" font-family="'Inter', 'Helvetica Neue', sans-serif" font-size="13" font-weight="800" fill="#111827" letter-spacing="0.2px">Morgan Stanley</text>
-    </svg>`;
-  }
-  if (comp.includes('goldman') || comp.includes('sachs')) {
-    return `<svg viewBox="0 0 115 28" class="company-logo-svg" fill="none">
-      <rect x="2" y="3" width="22" height="22" rx="3" fill="#7399C6"/>
-      <text x="6" y="14" font-family="'Inter', sans-serif" font-size="9" font-weight="900" fill="#FFFFFF">G</text>
-      <text x="13" y="21" font-family="'Inter', sans-serif" font-size="9" font-weight="900" fill="#FFFFFF">S</text>
-      <text x="29" y="13" font-family="'Georgia', serif" font-size="10.5" font-weight="bold" fill="#111827">Goldman</text>
-      <text x="29" y="23" font-family="'Georgia', serif" font-size="10.5" font-weight="bold" fill="#111827">Sachs</text>
-    </svg>`;
-  }
-  if (comp.includes('unilever')) {
-    return `<svg viewBox="0 0 95 28" class="company-logo-svg" fill="none">
-      <g transform="translate(2, 3)">
-        <path d="M4 2 C4 14, 18 14, 18 2 M6 4 C6 12, 16 12, 16 4" stroke="#1F36C7" stroke-width="2" fill="none" stroke-linecap="round"/>
-        <circle cx="4" cy="2" r="1.5" fill="#1F36C7"/>
-        <circle cx="18" cy="2" r="1.5" fill="#1F36C7"/>
-        <circle cx="11" cy="9" r="1.2" fill="#1F36C7"/>
-      </g>
-      <text x="26" y="19" font-family="'Inter', sans-serif" font-size="15" font-weight="900" fill="#1F36C7" letter-spacing="-0.3px">Unilever</text>
-    </svg>`;
-  }
-  if (comp.includes('hdfc')) {
-    return `<svg viewBox="0 0 115 28" class="company-logo-svg" fill="none">
-      <g transform="translate(2, 4)">
-        <rect x="0" y="0" width="20" height="20" rx="3" fill="#004C8F"/>
-        <rect x="4" y="4" width="12" height="12" fill="#FFFFFF"/>
-        <rect x="6" y="6" width="8" height="8" fill="#ED232A"/>
-      </g>
-      <text x="27" y="18" font-family="'Inter', sans-serif" font-size="12" font-weight="900" fill="#004C8F" letter-spacing="0.2px">HDFC BANK</text>
-    </svg>`;
-  }
-  if (comp.includes('barclays')) {
-    return `<svg viewBox="0 0 110 28" class="company-logo-svg" fill="none">
-      <g transform="translate(2, 4)" fill="#00AEEF">
-        <path d="M10 2 L12 6 L18 4 L15 10 L19 13 L14 14 L15 19 L10 16 L5 19 L6 14 L1 13 L5 10 L2 4 L8 6 Z"/>
-      </g>
-      <text x="25" y="18" font-family="'Inter', sans-serif" font-size="13" font-weight="900" fill="#00395D" letter-spacing="0.8px">BARCLAYS</text>
-    </svg>`;
-  }
-  if (comp.includes('birla') || comp.includes('grasim')) {
-    return `<svg viewBox="0 0 130 28" class="company-logo-svg" fill="none">
-      <g transform="translate(2, 4)">
-        <path d="M2 18 C2 9, 9 2, 18 2 C18 9, 12 18, 2 18 Z" fill="#D32F2F"/>
-        <path d="M6 18 C6 11, 11 6, 18 6 C18 11, 14 18, 6 18 Z" fill="#E65100"/>
-        <path d="M10 18 C10 13, 14 10, 18 10 C18 14, 15 18, 10 18 Z" fill="#FBC02D"/>
-      </g>
-      <text x="25" y="13" font-family="'Inter', sans-serif" font-size="9" font-weight="900" fill="#D32F2F" letter-spacing="0.5px">ADITYA BIRLA</text>
-      <text x="25" y="22" font-family="'Inter', sans-serif" font-size="7.5" font-weight="700" fill="#64748B" letter-spacing="1px">GROUP</text>
-    </svg>`;
-  }
-  if (comp.includes('itc')) {
-    return `<svg viewBox="0 0 85 28" class="company-logo-svg" fill="none">
-      <g transform="translate(2, 2)">
-        <polygon points="12,1 23,22 1,22" fill="#002E6E" stroke="#002E6E" stroke-width="1"/>
-        <text x="12" y="18" font-family="'Georgia', serif" font-size="9.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle">ITC</text>
-      </g>
-      <text x="28" y="19" font-family="'Georgia', serif" font-size="15" font-weight="bold" fill="#002E6E" letter-spacing="1px">ITC</text>
-    </svg>`;
-  }
-  if (comp.includes('kotak')) {
-    return `<svg viewBox="0 0 95 28" class="company-logo-svg" fill="none">
-      <g transform="translate(2, 4)">
-        <rect x="0" y="0" width="20" height="20" rx="4" fill="#ED1B24"/>
-        <path d="M6 10 C4 8, 4 12, 6 10 C8 8, 12 12, 14 10 C16 8, 16 12, 14 10 C12 8, 8 12, 6 10 Z" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" fill="none"/>
-      </g>
-      <text x="27" y="18" font-family="'Inter', sans-serif" font-size="14.5" font-weight="900" fill="#ED1B24" letter-spacing="-0.3px">kotak</text>
-    </svg>`;
-  }
-  if (comp.includes('cipla')) {
-    return `<svg viewBox="0 0 85 28" class="company-logo-svg" fill="none">
-      <g transform="translate(2, 5)">
-        <circle cx="8" cy="8" r="7" stroke="#003865" stroke-width="2.5" fill="none"/>
-        <path d="M8 1 A7 7 0 0 1 15 8 L8 8 Z" fill="#ED1C24"/>
-      </g>
-      <text x="22" y="19" font-family="'Inter', sans-serif" font-size="16" font-weight="900" fill="#003865" letter-spacing="-0.3px">Cipla</text>
-    </svg>`;
-  }
-  if (comp.includes('hsbc')) {
-    return `<svg viewBox="0 0 90 28" class="company-logo-svg" fill="none">
-      <g transform="translate(2, 4)">
-        <polygon points="10,10 2,2 18,2" fill="#DB0011"/>
-        <polygon points="10,10 2,18 18,18" fill="#DB0011"/>
-        <polygon points="10,10 2,2 2,18" fill="#DB0011"/>
-        <polygon points="10,10 18,2 18,18" fill="#DB0011"/>
-      </g>
-      <text x="26" y="19" font-family="'Inter', sans-serif" font-size="15" font-weight="900" fill="#111827" letter-spacing="0.5px">HSBC</text>
-    </svg>`;
-  }
-  if (comp.includes('reliance')) {
-    return `<svg viewBox="0 0 105 28" class="company-logo-svg" fill="none">
-      <g transform="translate(2, 4)">
-        <ellipse cx="10" cy="10" rx="9" ry="8" stroke="#004C97" stroke-width="2" fill="none"/>
-        <path d="M10 4 C7 7, 7 11, 10 14 C13 11, 13 7, 10 4 Z" fill="#ED1C24"/>
-      </g>
-      <text x="25" y="18" font-family="'Inter', sans-serif" font-size="14.5" font-weight="900" fill="#004C97" letter-spacing="-0.2px">Reliance</text>
-    </svg>`;
+  const officialLogos = {
+    'amazon': 'amazon.svg',
+    'flipkart': 'flipkart.svg',
+    'ubs': 'ubs.svg',
+    'deutsche': 'deutsche_bank.svg',
+    'shaw': 'deshaw.svg',
+    'morgan': 'morgan_stanley.svg',
+    'stanley': 'morgan_stanley.svg',
+    'goldman': 'goldman_sachs.svg',
+    'sachs': 'goldman_sachs.svg',
+    'unilever': 'unilever.svg',
+    'hdfc': 'hdfc.svg',
+    'barclays': 'barclays.svg',
+    'birla': 'aditya_birla.svg',
+    'grasim': 'aditya_birla.svg',
+    'itc': 'itc.svg',
+    'kotak': 'kotak.svg',
+    'cipla': 'cipla.svg',
+    'hsbc': 'hsbc.svg',
+    'reliance': 'reliance.svg'
+  };
+
+  for (const [key, filename] of Object.entries(officialLogos)) {
+    if (comp.includes(key)) {
+      return `<img src="/assets/company-logos/${filename}" alt="${company}" class="company-logo-svg" loading="lazy">`;
+    }
   }
   if (comp.includes('cummins')) {
     return `<svg viewBox="0 0 88 26" class="company-logo-svg" fill="none">

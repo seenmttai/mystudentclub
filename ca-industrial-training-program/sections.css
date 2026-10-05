@@ -429,7 +429,7 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 14.5px;
   line-height: 1.5;
   color: var(--navy-sub);
-  max-width: 500px;
+  max-width: 600px;
   margin-bottom: 16px;
 }
 
@@ -1178,6 +1178,7 @@ h1, h2, h3, h4, h5, h6 {
   max-height: 26px;
   max-width: 125px;
   width: auto;
+  object-fit: contain;
   display: block;
 }
 

@@ -9,3 +9,4 @@ jobs-builder/.astro/
 jobs-builder/node_modules/
 sample-job-test.html
 context/
+docs/
