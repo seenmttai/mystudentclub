@@ -1244,64 +1244,81 @@ section[id] {
 .comparison-grid {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
-  gap: 22px;
+  gap: 20px;
   align-items: stretch;
   width: 100%;
+  position: relative;
 }
 
 .comparison-card {
   background: #FFFFFF;
-  border-radius: var(--card-radius);
-  padding: 30px 28px;
-  box-shadow: var(--shadow-soft);
-  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 28px 26px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05), 0 2px 6px rgba(15, 23, 42, 0.02);
+  border: 1px solid rgba(226, 232, 240, 0.95);
   display: flex;
   flex-direction: column;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.comparison-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
 }
 
 .comparison-card.struggles {
-  border-top: 4px solid var(--primary-coral);
+  border-top: 4px solid #EF4444;
+  background: linear-gradient(180deg, #FFFFFF 0%, #FEF8F8 100%);
 }
 
 .comparison-card.solutions {
-  border-top: 4px solid #4CAF50;
-  background: #FCFDFD;
+  border-top: 4px solid #10B981;
+  background: linear-gradient(180deg, #FFFFFF 0%, #F5FDF9 100%);
 }
 
 .comparison-card-header {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   margin-bottom: 20px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
 }
 
 .comp-header-icon {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 800;
+  flex-shrink: 0;
 }
 
 .struggles .comp-header-icon {
-  background: var(--coral-light);
-  color: var(--primary-coral);
+  background: #FEE2E2;
+  color: #EF4444;
+  border: 1px solid #FECACA;
 }
 
 .solutions .comp-header-icon {
-  background: var(--green-light);
-  color: #388E3C;
+  background: #DCFCE7;
+  color: #10B981;
+  border: 1px solid #BBF7D0;
 }
 
 .comp-header-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--navy-dark);
+  font-family: 'Outfit', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  color: #0F172A;
+  letter-spacing: -0.01em;
+  margin: 0;
+  line-height: 1.25;
 }
 
 .comp-list {
@@ -1310,42 +1327,84 @@ section[id] {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
 }
 
 .comp-list li {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 12px;
+  font-family: 'Noto Sans', sans-serif;
   font-size: 13.5px;
+  font-weight: 500;
   line-height: 1.5;
-  color: var(--navy-sub);
+  color: #334155;
+  padding: 8px 10px;
+  border-radius: 10px;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.struggles .comp-list li:hover {
+  background: rgba(254, 226, 226, 0.4);
+  transform: translateX(3px);
+}
+
+.solutions .comp-list li:hover {
+  background: rgba(220, 252, 231, 0.45);
+  transform: translateX(3px);
 }
 
 .comp-list .x-mark {
-  color: var(--primary-coral);
-  font-weight: 700;
-  font-size: 13px;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: #FEE2E2;
+  color: #EF4444;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 800;
+  flex-shrink: 0;
+  margin-top: 1.5px;
 }
 
 .comp-list .check-mark {
-  color: #388E3C;
-  font-weight: 700;
-  font-size: 13px;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: #DCFCE7;
+  color: #10B981;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 800;
+  flex-shrink: 0;
+  margin-top: 1.5px;
 }
 
 .comparison-connector {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: #FFFFFF;
-  border: 1px solid var(--border-color);
-  color: var(--primary-coral);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  font-size: 14px;
+  border: 1.5px solid #E2E8F0;
+  color: #EF4444;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08), 0 2px 4px rgba(15, 23, 42, 0.04);
+  font-size: 15px;
+  align-self: center;
+  margin: auto 0;
+  z-index: 2;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.comparison-connector:hover {
+  transform: scale(1.12);
+  box-shadow: 0 8px 24px rgba(239, 68, 68, 0.2);
 }
 
 /* ─── 5-DAY CURRICULUM JOURNEY SECTION ─── */
