@@ -1803,7 +1803,7 @@ async function manageTopicSubscription(topic, action) {
         }
         else if (window.flutter_app.isReady) {
         } else {
-            if (Notification.permission === 'granted') {
+            if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
                 showNotifStatus('Connecting to notification service...', 'info');
                 await requestTokenAndSync();
             } else {
@@ -1856,6 +1856,15 @@ function updatePermissionStatusUI() {
         return;
     }
 
+    if (typeof Notification === 'undefined') {
+        if (dom.enableNotificationsBtn) dom.enableNotificationsBtn.style.display = 'none';
+        if (dom.topicSelectionArea) dom.topicSelectionArea.style.display = 'none';
+        dom.permissionStatusDiv.textContent = 'Notifications are not supported on this browser.';
+        dom.permissionStatusDiv.className = 'notification-status status-info';
+        dom.permissionStatusDiv.style.display = 'block';
+        return;
+    }
+
     const permission = Notification.permission;
     dom.enableNotificationsBtn.style.display = permission === 'default' ? 'block' : 'none';
     dom.topicSelectionArea.style.display = permission === 'granted' ? 'block' : 'none';
@@ -1885,7 +1894,7 @@ async function initializeFCM() {
         firebaseMessaging = firebase.messaging();
         firebaseMessaging.onMessage(payload => { });
         if ('serviceWorker' in navigator) await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-        if (Notification.permission === 'granted') await requestTokenAndSync();
+        if (typeof Notification !== 'undefined' && Notification.permission === 'granted') await requestTokenAndSync();
     } catch (err) { }
 }
 
@@ -2074,7 +2083,8 @@ function setupEventListeners() {
         e.stopPropagation(); dom.notificationPopup.style.display = dom.notificationPopup.style.display === 'flex' ? 'none' : 'flex';
         if (dom.notificationPopup.style.display === 'flex') {
             updatePermissionStatusUI();
-            if (window.flutter_app.isReady || Notification.permission === 'granted') {
+            const notifGranted = typeof Notification !== 'undefined' && Notification.permission === 'granted';
+            if (window.flutter_app.isReady || notifGranted) {
                 if (!firebaseMessaging && !window.flutter_app.isReady) initializeFCM().then(renderSubscribedTopics);
                 else renderSubscribedTopics();
             } else {
@@ -2084,7 +2094,17 @@ function setupEventListeners() {
     });
 
     if (dom.closeNotificationPopup) dom.closeNotificationPopup.addEventListener('click', () => dom.notificationPopup.style.display = 'none');
-    if (dom.enableNotificationsBtn) dom.enableNotificationsBtn.addEventListener('click', async () => { try { const permission = await Notification.requestPermission(); updatePermissionStatusUI(); if (permission === 'granted') await initializeFCM(); } catch (err) { } });
+    if (dom.enableNotificationsBtn) dom.enableNotificationsBtn.addEventListener('click', async () => {
+        if (typeof Notification === 'undefined') {
+            showNotifStatus('Notifications are not supported on this browser.', 'error');
+            return;
+        }
+        try {
+            const permission = await Notification.requestPermission();
+            updatePermissionStatusUI();
+            if (permission === 'granted') await initializeFCM();
+        } catch (err) { }
+    });
     if (dom.topicAllCheckbox) {
         dom.topicAllCheckbox.addEventListener('change', async (e) => {
             const isChecked = e.target.checked;
@@ -2414,7 +2434,9 @@ async function initializePage() {
 
     populateNotificationDropdowns();
     updateNotificationBadge();
-    if (Notification.permission === 'granted' || window.flutter_app.isReady) {
+    const isNotifGranted = typeof Notification !== 'undefined' && Notification.permission === 'granted';
+    const isFlutterReady = Boolean(window.flutter_app && window.flutter_app.isReady);
+    if (isNotifGranted || isFlutterReady) {
         initializeFCM();
     }
     renderProfileCompletionBanner();
