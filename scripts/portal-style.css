@@ -259,7 +259,8 @@ body {
     color var(--transition-fast);
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 10px;
   background: none;
   border: none;
   width: 100%;
@@ -269,9 +270,31 @@ body {
   text-align: left;
 }
 
+.menu-item-dropdown button.menu-item,
+.menu-item-dropdown .menu-item {
+  justify-content: space-between;
+}
+
 .menu-item:hover {
   background-color: rgba(0, 0, 0, 0.05);
   color: var(--primary-brand);
+}
+
+.menu-item.active,
+.expanded-menu .menu-item.active {
+  background: #EFF6FF !important;
+  color: #1D4ED8 !important;
+  font-weight: 700 !important;
+  border-left: 4px solid #2563EB !important;
+  padding-left: calc(1rem - 4px) !important;
+  box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.15) !important;
+  border-radius: 8px !important;
+}
+
+.menu-item.active:hover,
+.expanded-menu .menu-item.active:hover {
+  background: #DBEAFE !important;
+  color: #1E40AF !important;
 }
 
 /* Heading style for always-open sections */

@@ -1867,29 +1867,29 @@ button.notify-me-btn.subscribed,
 .notify-me-footer-btn,
 button.notify-me-footer-btn,
 #notifyMeFooterBtn {
-  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%) !important;
-  color: #ffffff !important;
-  border: none !important;
-  font-family: 'Noto Sans', 'Outfit', sans-serif !important;
-  font-size: 14.5px !important;
-  font-weight: 700 !important;
-  padding: 10px 24px !important;
-  border-radius: 50px !important;
-  cursor: pointer !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 8px !important;
-  transition: all 0.3s ease !important;
-  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.45) !important;
-  margin-left: 0 !important;
-  outline: none !important;
-  text-decoration: none !important;
-  -webkit-appearance: none !important;
-  -moz-appearance: none !important;
-  appearance: none !important;
-  white-space: nowrap !important;
-  flex-shrink: 0 !important;
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  color: #ffffff;
+  border: none;
+  font-family: 'Noto Sans', 'Outfit', sans-serif;
+  font-size: 14.5px;
+  font-weight: 700;
+  padding: 10px 24px;
+  border-radius: 50px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.45);
+  margin-left: 0;
+  outline: none;
+  text-decoration: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .notify-me-footer-btn:hover,
