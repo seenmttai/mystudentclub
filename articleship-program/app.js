@@ -1,6 +1,32 @@
 const getCompanyLogoSVG = (company) => {
   const comp = (company || '').trim().toLowerCase();
 
+  const officialLogos = {
+    'amazon': 'amazon.svg',
+    'flipkart': 'flipkart.svg',
+    'ubs': 'ubs.svg',
+    'shaw': 'deshaw.svg',
+    'morgan': 'morgan_stanley.svg',
+    'stanley': 'morgan_stanley.svg',
+    'goldman': 'goldman_sachs.svg',
+    'sachs': 'goldman_sachs.svg',
+    'hdfc': 'hdfc.svg',
+    'barclays': 'barclays.svg',
+    'birla': 'aditya_birla.svg',
+    'grasim': 'aditya_birla.svg',
+    'itc': 'itc.svg',
+    'kotak': 'kotak.svg',
+    'cipla': 'cipla.svg',
+    'hsbc': 'hsbc.svg',
+    'reliance': 'reliance.svg'
+  };
+
+  for (const [key, filename] of Object.entries(officialLogos)) {
+    if (comp.includes(key)) {
+      return `<img src="/assets/company-logos/${filename}" alt="${company}" class="company-logo-svg" loading="lazy">`;
+    }
+  }
+
   if (comp.includes('deloitte')) {
     return `<svg viewBox="0 0 110 26" class="company-logo-svg" fill="none">
       <text x="2" y="20" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="20" font-weight="900" fill="#000000" letter-spacing="-0.5px">Deloitte<tspan fill="#86BC25">.</tspan></text>
@@ -194,10 +220,8 @@ const generateData = () => {
     { name: "Vedang Sawant", course: "CA Articleship Training Program", linkedin: "https://www.linkedin.com/in/vedangsawant/", image: "../assets/vedang.jpg", fallback: "vedang.jpg", company: "Flipkart" },
     { name: "Ishaan Isham", course: "CA Articleship Training Program", linkedin: "https://www.linkedin.com/in/ishaanisham/", image: "../assets/ishaan.jpg", fallback: "ishaan.jpg", company: "UBS" },
     { name: "Simran Singh", course: "CA Articleship Training Program", linkedin: "https://www.linkedin.com/in/simransingh-ca-aspirant/", image: "../assets/simran.jpg", fallback: "simran.jpg", company: "Amazon" },
-    { name: "Virali Doshi", course: "CA Articleship Training Program", linkedin: "https://www.linkedin.com/in/virali-doshi1905", image: "../assets/virali.jpg", fallback: "virali.jpg", company: "Deutsche Bank" },
     { name: "Chery Lunia", course: "CA Articleship Training Program", linkedin: "https://www.linkedin.com/in/cheryluniya/", image: "../assets/Chery.jpeg", fallback: "Chery.jpeg", company: "Goldman Sachs" },
     { name: "Ananya Gupta", course: "CA Articleship Training Program", linkedin: "https://www.linkedin.com/in/ananyagupta-ca", image: "../assets/ananya.jpg", fallback: "ananya.jpg", company: "Amazon" },
-    { name: "Prabhjyot Singh", course: "CA Articleship Training Program", linkedin: "https://www.linkedin.com/in/prabhjyotsinghca/", image: "../assets/prabhjyot.jpeg", fallback: "prabhjyot.jpeg", company: "Unilever" },
     { name: "Chandini Meher", course: "CA Articleship Training Program", linkedin: "https://www.linkedin.com/in/chandini-meher/", image: "../assets/Chandini.jpeg", fallback: "Chandini.jpeg", company: "HDFC Bank" },
     { name: "Charu Kewalramani", course: "CA Articleship Training Program", linkedin: "https://www.linkedin.com/in/charu-kewalramani-40a55930b/", image: "../assets/Charu.jpg", fallback: "Charu.jpg", company: "DE Shaw" },
     { name: "Pooja Kedia", course: "CA Articleship Training Program", linkedin: "https://www.linkedin.com/in/pooja-kedia-2578a1214/", image: "../assets/Pooja.jpg", fallback: "Pooja.jpg", company: "HSBC" },
