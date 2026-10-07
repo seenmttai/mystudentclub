@@ -21,10 +21,10 @@
   <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
 
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="style.css?v=20261006.11">
-  <link rel="stylesheet" href="sections.css?v=20261006.18">
+  <link rel="stylesheet" href="style.css?v=20261008.1">
+  <link rel="stylesheet" href="sections.css?v=20261008.21">
   <link rel="stylesheet" href="footer.css?v=20261006.16">
-  <link rel="stylesheet" href="../scripts/portal-style.css">
+  <link rel="stylesheet" href="../scripts/portal-style.css?v=20261008.1">
 
   <!-- Scripts for Auth & Firebase -->
   <script src="/scripts/supabase.js"></script>
@@ -64,7 +64,8 @@
     </div>
   </header>
 
-  <!-- Expanded Mobile Drawer Menu -->
+  <!-- ─── SLIDE-OUT DRAWER NAVIGATION ─── -->
+  <div class="menu-backdrop" id="menuBackdrop"></div>
   <div class="expanded-menu" id="expandedMenu">
     <button class="menu-close-btn" id="menuCloseBtn" aria-label="Close menu">
       <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -72,18 +73,22 @@
       </svg>
     </button>
     <div class="menu-items">
+      <div class="drawer-nav-group-title">MSC Programs &amp; Portals</div>
+      <a href="/" class="menu-item">Job Portal</a>
       <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My Courses</a>
       <a href="/ca-industrial-training-program/" class="menu-item">MSC Industrial Training Program</a>
       <a href="/articleship-program/" class="menu-item">MSC Articleship Program</a>
-      <a href="/msc-ca-fresher-program/" class="menu-item">MSC CA Freshers Program</a>
+      <a href="/msc-ca-fresher-program/" class="menu-item active">MSC CA Freshers Program</a>
       <div class="menu-item-dropdown">
-        <button class="menu-item" style="width: 100%; justify-content: space-between;">
-          Free Resources
+        <button class="menu-item"
+          style="width: 100%; justify-content: space-between; background: none; border: none; font-size: inherit; cursor: pointer; display: flex; align-items: center;"
+          id="freeResourcesDropdownBtn">
+          <span>Free Resources</span>
           <svg class="dropdown-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
         </button>
-        <div class="dropdown-content" style="display: none; padding-left: 1.5rem;">
+        <div class="dropdown-content" id="freeResourcesDropdownContent" style="display: none; padding-left: 1.5rem;">
           <a href="/ca-fresher-training-resources.html" class="menu-item">CA Fresher</a>
           <a href="/ca-industrial-training-resources.html" class="menu-item">Industrial Training</a>
           <a href="/ca-articleship-opportunities" class="menu-item">Articleship</a>
@@ -1058,12 +1063,37 @@
       const menuBtn = document.getElementById('menuButton');
       const expandedMenu = document.getElementById('expandedMenu');
       const menuCloseBtn = document.getElementById('menuCloseBtn');
+      const menuBackdrop = document.getElementById('menuBackdrop');
+      const dropdownBtn = document.getElementById('freeResourcesDropdownBtn');
+      const dropdownContent = document.getElementById('freeResourcesDropdownContent');
 
-      if (menuBtn && expandedMenu) {
-        menuBtn.addEventListener('click', () => expandedMenu.classList.add('active'));
-      }
-      if (menuCloseBtn && expandedMenu) {
-        menuCloseBtn.addEventListener('click', () => expandedMenu.classList.remove('active'));
+      const openMenu = () => {
+        if (expandedMenu) expandedMenu.classList.add('active');
+        if (menuBackdrop) menuBackdrop.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      };
+
+      const closeMenu = () => {
+        if (expandedMenu) expandedMenu.classList.remove('active');
+        if (menuBackdrop) menuBackdrop.classList.remove('active');
+        document.body.style.overflow = '';
+      };
+
+      if (menuBtn) menuBtn.addEventListener('click', openMenu);
+      if (menuCloseBtn) menuCloseBtn.addEventListener('click', closeMenu);
+      if (menuBackdrop) menuBackdrop.addEventListener('click', closeMenu);
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && expandedMenu?.classList.contains('active')) {
+          closeMenu();
+        }
+      });
+
+      if (dropdownBtn && dropdownContent) {
+        dropdownBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const isHidden = dropdownContent.style.display === 'none' || !dropdownContent.style.display;
+          dropdownContent.style.display = isHidden ? 'block' : 'none';
+        });
       }
 
       // Supabase Auth Check

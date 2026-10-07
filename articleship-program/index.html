@@ -27,9 +27,9 @@
 
   <!-- Site Styles -->
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="sections.css?v=20261006.comp1">
+  <link rel="stylesheet" href="sections.css?v=20261008.comp4">
   <link rel="stylesheet" href="footer.css?v=20261006.1">
-  <link rel="stylesheet" href="../scripts/portal-style.css">
+  <link rel="stylesheet" href="../scripts/portal-style.css?v=20261008.1">
 
   <!-- Supabase & Firebase -->
   <script src="../scripts/supabase.js"></script>
@@ -79,7 +79,8 @@
     </div>
   </header>
 
-  <!-- Slide-out Drawer Navigation -->
+  <!-- ─── SLIDE-OUT DRAWER NAVIGATION ─── -->
+  <div class="menu-backdrop" id="menuBackdrop"></div>
   <div class="expanded-menu" id="expandedMenu">
     <button class="menu-close-btn" id="menuCloseBtn" aria-label="Close menu">
       <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -87,6 +88,8 @@
       </svg>
     </button>
     <div class="menu-items">
+      <div class="drawer-nav-group-title">MSC Programs &amp; Portals</div>
+      <a href="/" class="menu-item">Job Portal</a>
       <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My Courses</a>
       <a href="/ca-industrial-training-program/" class="menu-item">MSC Industrial Training Program</a>
       <a href="/articleship-program/" class="menu-item active">MSC Articleship Program</a>
@@ -1655,15 +1658,31 @@
       const menuButton = document.getElementById('menuButton');
       const menuCloseBtn = document.getElementById('menuCloseBtn');
       const expandedMenu = document.getElementById('expandedMenu');
+      const menuBackdrop = document.getElementById('menuBackdrop');
       const dropdownBtn = document.getElementById('freeResourcesDropdownBtn');
       const dropdownContent = document.getElementById('freeResourcesDropdownContent');
 
-      if (menuButton && expandedMenu) {
-        menuButton.addEventListener('click', () => expandedMenu.classList.add('active'));
-      }
-      if (menuCloseBtn && expandedMenu) {
-        menuCloseBtn.addEventListener('click', () => expandedMenu.classList.remove('active'));
-      }
+      const openMenu = () => {
+        if (expandedMenu) expandedMenu.classList.add('active');
+        if (menuBackdrop) menuBackdrop.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      };
+
+      const closeMenu = () => {
+        if (expandedMenu) expandedMenu.classList.remove('active');
+        if (menuBackdrop) menuBackdrop.classList.remove('active');
+        document.body.style.overflow = '';
+      };
+
+      if (menuButton) menuButton.addEventListener('click', openMenu);
+      if (menuCloseBtn) menuCloseBtn.addEventListener('click', closeMenu);
+      if (menuBackdrop) menuBackdrop.addEventListener('click', closeMenu);
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && expandedMenu?.classList.contains('active')) {
+          closeMenu();
+        }
+      });
+
       if (dropdownBtn && dropdownContent) {
         dropdownBtn.addEventListener('click', (e) => {
           e.preventDefault();
