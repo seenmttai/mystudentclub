@@ -43,5 +43,11 @@ test('job.html keeps its canonical redirect behavior', () => {
 
   assert.match(source, /window\.location\.href = `\$\{portalPages\[rawJobType\]\}\?id=/);
   assert.match(source, /window\.location\.href = `\/\?id=\$\{encodeURIComponent\(jobId\)\}&type=industrial`;/);
+  assert.match(source, /'semi-qualified': '\/semi-qualified-ca-jobs'/);
   assert.doesNotMatch(source, /mystudentclub\.com\/links/);
+});
+
+test('generated recruiter job pages route Easy Apply through the gated portal', () => {
+  const source = fs.readFileSync(path.join(root, 'scripts', 'generate-jobs.js'), 'utf8');
+  assert.match(source, /href="\/job\.html\?id=\$\{encodeURIComponent\(jobId\)\}&type=\$\{encodeURIComponent\(categorySlug\)\}"/);
 });

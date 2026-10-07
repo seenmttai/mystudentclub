@@ -69,8 +69,10 @@ export function getProfileCompletionItems(profile = {}, storage = globalThis.loc
         { label: 'Add notice period', icon: 'fa-calendar-check', filled: textValue(d.notice_period), boost: 7, section: 'sec-availability', form: 'sec-availability-form' },
         { label: 'Add current organization', icon: 'fa-building', filled: hasCurrentOrg, boost: 7, section: 'sec-employment', form: 'sec-experience-form' },
         { label: 'Add job preference', icon: 'fa-bullseye', filled: textValue(pref), boost: 7, section: 'sec-career', form: 'sec-career-form' },
-        { label: 'Add key skills', icon: 'fa-tools', filled: textValue(d.key_skills, d.skills, d.emp_skills_hidden), boost: 2, section: 'sec-skills', form: 'sec-skills-form' },
-        { label: 'Add a certification', icon: 'fa-certificate', filled: textValue(d.cert_name), boost: 2, section: 'sec-certification', form: 'sec-certification-form' },
+        // Certifications are optional profile enrichment and must not affect
+        // completion or Easy Apply eligibility. The former 2% certification
+        // weight is assigned to Key Skills instead.
+        { label: 'Add key skills', icon: 'fa-tools', filled: textValue(d.key_skills, d.skills, d.emp_skills_hidden), boost: 4, section: 'sec-skills', form: 'sec-skills-form' },
     ];
 
     if (needsCTC) {

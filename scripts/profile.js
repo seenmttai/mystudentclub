@@ -1322,9 +1322,8 @@ const WZ = (() => {
         const tips = [];
         if (!getFormValue('profile_summary') && !st.answers['missing_profile_summary']) tips.push('+8% Add Profile Summary');
         if (!getFormValue('linkedin_url') && !st.answers['missing_linkedin_url']) tips.push('+5% Add LinkedIn Profile');
-        if (!getFormValue('key_skills') && !getFormValue('emp_skills_hidden')) tips.push('+5% Add Key Skills');
+        if (!getFormValue('key_skills') && !getFormValue('emp_skills_hidden')) tips.push('+8% Add Key Skills');
         if (!getFormValue('articleship_client_industries')) tips.push('+6% Add Client Industry Exposure');
-        if (!getFormValue('cert_name')) tips.push('+3% Add a Certification');
         if (!getFormValue('preferred_domains') && !st.answers['preferred_domains']) tips.push('+6% Add Preferred Domains');
         if (!tips.length) return '';
         return `<div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:8px;padding:12px 14px;max-width:360px;margin:0 auto 1rem;text-align:left;">
@@ -2452,8 +2451,10 @@ const WZ = (() => {
         if (st.answers['preferred_industries'] || getFormValue('preferred_industries')) score += 5;
         if (st.programType || getFormValue('job_preference')) score += 5;
         if (getFormValue('articleship_client_industries')) score += 6;
-        if (getFormValue('cert_name')) score += 3;
-        if (getFormValue('key_skills') || getFormValue('emp_skills_hidden')) score += 5;
+        // Certification is optional and is intentionally excluded from
+        // completion. Keep the wizard total at 100 by assigning its former
+        // 3% weight to Key Skills.
+        if (getFormValue('key_skills') || getFormValue('emp_skills_hidden')) score += 8;
         if (getFormValue('grad_degree')) score += 2;
         return Math.min(score, 100);
     }

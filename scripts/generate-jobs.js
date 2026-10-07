@@ -198,9 +198,9 @@ const htmlTemplate = (job, jsonLd, categorySlug, jobId, tableName) => {
     let applyButtonsHtml = '';
     if (recruiterPosted) {
         applyButtonsHtml = `
-            <button class="btn-large btn-primary-large" id="simpleApplyBtn" type="button">
+            <a href="/job.html?id=${encodeURIComponent(jobId)}&type=${encodeURIComponent(categorySlug)}" class="btn-large btn-primary-large">
                 <i class="fas fa-paper-plane"></i> Apply Now
-            </button>
+            </a>
         `;
     } else if (applyInfo.isEmail) {
         const simpleMailto = constructMailto(job, tableName);

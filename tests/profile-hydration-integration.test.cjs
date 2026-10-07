@@ -44,6 +44,20 @@ test('portal renders the account widget after profile hydration', () => {
   assert.ok(headerRender > hydrationWait);
 });
 
+test('email portal and standalone job details gate Easy Apply on hydrated completion', () => {
+  const emailPortal = read('scripts/portal-email.js');
+  const emailHydrationWait = emailPortal.indexOf('await profileHydrationPromise');
+  const emailHeaderRender = emailPortal.indexOf('updateHeaderAuth(session)', emailHydrationWait);
+  assert.ok(emailHydrationWait >= 0);
+  assert.ok(emailHeaderRender > emailHydrationWait);
+
+  const jobDetails = read('scripts/job-details.js');
+  assert.match(jobDetails, /await hydrateProfileForCompletion\(\)/);
+  assert.match(jobDetails, /if \(!isProfileComplete\(\)\) \{[\s\S]*?showResumeRedirectModal\(\)/);
+  assert.match(jobDetails, /'semi-qualified': \{ url: '\/semi-qualified-ca-jobs'/);
+  assert.match(read('jobs.html'), /profile-state\.js[\s\S]*job-details\.js/);
+});
+
 test('all profile-dependent pages load the shared state helper before their module', () => {
   assert.match(read('profile.html'), /profile-state\.js[\s\S]*profile\.js/);
   assert.match(read('index.html'), /profile-state\.js[\s\S]*portal3\.js/);

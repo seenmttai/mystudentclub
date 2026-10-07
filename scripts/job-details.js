@@ -23,6 +23,7 @@ const TABLE_MAP = {
     "industrial": "Industrial Training Job Portal",
     "fresher": "Fresher Jobs",
     "semi": "Semi Qualified Jobs",
+    "semi-qualified": "Semi Qualified Jobs",
     "articleship": "Articleship Jobs"
 };
 
@@ -45,6 +46,10 @@ async function recordRecruiterApplication(job, buttonElement, tableName) {
     if (!currentSession) {
         window.location.href = `/login.html?redirect=${encodeURIComponent(window.location.href)}`;
         return;
+    }
+    if (!isProfileComplete()) {
+        showResumeRedirectModal();
+        return false;
     }
     const applicationKey = `${tableName}:${job.id}`;
     if (pendingApplications.has(applicationKey) || completedApplications.has(applicationKey)) {
@@ -79,6 +84,7 @@ async function recordRecruiterApplication(job, buttonElement, tableName) {
 async function init() {
     currentSession = await getCurrentSession();
     if (currentSession && currentSession.user) {
+        await hydrateProfileForCompletion();
         prefetchEnrollmentStatus(currentSession.user.id);
     }
     const params = new URLSearchParams(window.location.search);
@@ -107,6 +113,23 @@ async function init() {
     }
 }
 
+async function hydrateProfileForCompletion() {
+    const profileState = window.MSCProfileState;
+    if (!profileState || !currentSession?.user?.id) return;
+
+    try {
+        profileState.prepareUserCache(currentSession.user.id);
+        const hydrated = await profileState.hydrateProfileFromSupabase(supabaseClient, currentSession.user);
+        if (hydrated?.data?.ocr_cv) {
+            localStorage.setItem('userCVText', hydrated.data.ocr_cv);
+        }
+    } catch (error) {
+        // A cached profile can still be used by the shared checker when the
+        // network is unavailable, so do not make the job page fail to render.
+        console.warn('Could not refresh profile before Easy Apply:', error);
+    }
+}
+
 function setBackLink(type) {
     const backLink = document.getElementById('backLink');
     const backLinkText = document.getElementById('backLinkText');
@@ -117,6 +140,7 @@ function setBackLink(type) {
         'industrial': { url: '/', label: 'Industrial Training' },
         'fresher': { url: '/ca-fresher-jobs', label: 'Fresher Jobs' },
         'semi': { url: '/semi-qualified-ca-jobs', label: 'Semi Qualified' },
+        'semi-qualified': { url: '/semi-qualified-ca-jobs', label: 'Semi Qualified' },
         'articleship': { url: '/ca-articleship-opportunities', label: 'Articleship' }
     };
 
