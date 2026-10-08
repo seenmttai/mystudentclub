@@ -27,10 +27,41 @@ export function hasResumeEvidence(profile = {}, storage = globalThis.localStorag
     ));
 }
 
+const EMPLOYMENT_PORTALS = ['fresher_experienced', 'semi_experienced', 'articleship'];
+const CA_FINAL_PORTALS = ['fresher_fresher', 'fresher_experienced'];
+const CA_INTER_PORTALS = ['industrial', 'articleship', 'semi_fresher', 'semi_experienced'];
+
+function educationRoute(portal) {
+    if (CA_FINAL_PORTALS.includes(portal)) {
+        return { section: 'sec-ca-education', form: 'sec-ca-final-form' };
+    }
+    if (CA_INTER_PORTALS.includes(portal)) {
+        return { section: 'sec-ca-education', form: 'sec-ca-inter-form' };
+    }
+    return { section: 'sec-ca-education', form: '' };
+}
+
+function experienceRoute(portal) {
+    if (EMPLOYMENT_PORTALS.includes(portal)) {
+        return { section: 'sec-employment', form: 'sec-experience-form' };
+    }
+    return { section: 'sec-articleship', form: 'sec-art-form' };
+}
+
+function organizationRoute(portal) {
+    if (EMPLOYMENT_PORTALS.includes(portal)) {
+        return { section: 'sec-employment', form: 'sec-experience-form' };
+    }
+    return { section: 'sec-articleship', form: 'sec-it-form' };
+}
+
 export function getProfileCompletionItems(profile = {}, storage = globalThis.localStorage) {
     const d = profile || {};
     const pref = String(d.job_preference || d.looking_for || '').trim();
     const needsCTC = ['fresher_experienced', 'semi_experienced'].includes(pref);
+    const educationTarget = educationRoute(pref);
+    const experienceTarget = experienceRoute(pref);
+    const organizationTarget = organizationRoute(pref);
 
     const hasEducation = textValue(
         d.ca_final_course,
@@ -64,10 +95,10 @@ export function getProfileCompletionItems(profile = {}, storage = globalThis.loc
         { label: 'Add location', icon: 'fa-map-marker-alt', filled: textValue(d.current_city, d.current_location, d.city, d.location), boost: 3, section: 'sec-personal', form: 'sec-personal-form' },
         { label: 'Add resume', icon: 'fa-file-alt', filled: hasResumeEvidence(d, storage), boost: 14, section: 'sec-resume', form: '' },
         { label: 'Add profile summary', icon: 'fa-heading', filled: textValue(d.profile_summary, d.headline), boost: 10, section: 'sec-headline', form: 'sec-headline-form' },
-        { label: 'Add CA education', icon: 'fa-graduation-cap', filled: hasEducation, boost: 12, section: 'sec-ca-education', form: '' },
-        { label: 'Add experience', icon: 'fa-briefcase', filled: hasExperience, boost: 12, section: 'sec-employment', form: 'sec-experience-form' },
+        { label: 'Add CA education', icon: 'fa-graduation-cap', filled: hasEducation, boost: 12, ...educationTarget },
+        { label: 'Add experience', icon: 'fa-briefcase', filled: hasExperience, boost: 12, ...experienceTarget },
         { label: 'Add notice period', icon: 'fa-calendar-check', filled: textValue(d.notice_period), boost: 7, section: 'sec-availability', form: 'sec-availability-form' },
-        { label: 'Add current organization', icon: 'fa-building', filled: hasCurrentOrg, boost: 7, section: 'sec-employment', form: 'sec-experience-form' },
+        { label: pref === 'articleship' ? 'Add prior work experience' : 'Add current organization', icon: 'fa-building', filled: hasCurrentOrg, boost: 7, ...organizationTarget },
         { label: 'Add job preference', icon: 'fa-bullseye', filled: textValue(pref), boost: 7, section: 'sec-career', form: 'sec-career-form' },
         // Certifications are optional profile enrichment and must not affect
         // completion or Easy Apply eligibility. The former 2% certification

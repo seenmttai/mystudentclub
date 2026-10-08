@@ -1,4 +1,4 @@
-import { calculateProfileCompletion, getProfileCompletionItems, hasResumeEvidence } from './profile-completion.js';
+import { calculateProfileCompletion, getProfileCompletionItems, hasResumeEvidence } from './profile-completion.js?v=20261008_1';
 
 const supabaseUrl = 'https://auth.mystudentclub.com';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
@@ -3582,9 +3582,15 @@ function refreshHeader() {
     // Missing card
     const missingList = document.getElementById('missingList');
     const missingCard = document.getElementById('missingCard');
+    const missingCta = document.getElementById('missingCta');
 
     if (missing.length === 0) {
         missingCard.style.display = 'none';
+        if (missingCta) {
+            missingCta.href = '#sec-personal';
+            missingCta.removeAttribute('data-section');
+            missingCta.removeAttribute('data-form');
+        }
     } else {
         missingCard.style.display = 'flex';
         missingList.innerHTML = missing.slice(0, 4).map(m =>
@@ -3595,7 +3601,27 @@ function refreshHeader() {
             </div>`
         ).join('');
         document.getElementById('missingCount').textContent = missing.length;
+        if (missingCta) {
+            const firstMissing = missing[0];
+            const firstSection = firstMissing.section || 'sec-personal';
+            missingCta.href = `#${firstSection}`;
+            missingCta.dataset.section = firstSection;
+            missingCta.dataset.form = firstMissing.form || '';
+        }
     }
+
+    // Point the Experience quick link at the section that is visible for this portal.
+    // Industrial/articleship/fresher portals use the Articleship & Industrial section;
+    // experienced employment portals use the Employment section.
+    const portalType = (d.job_preference || '').trim();
+    const experienceLinkTarget = ['fresher_experienced', 'semi_experienced'].includes(portalType)
+        ? 'sec-employment'
+        : ['industrial', 'articleship', 'fresher_fresher', 'semi_fresher'].includes(portalType)
+            ? 'sec-articleship'
+            : 'sec-employment';
+    document.querySelectorAll('.p2-ql[data-route="experience"]').forEach(link => {
+        link.setAttribute('href', `#${experienceLinkTarget}`);
+    });
 
     // Update quick-link actions
     document.querySelectorAll('.p2-ql').forEach(link => {
@@ -3606,12 +3632,17 @@ function refreshHeader() {
         if (hrefTarget === '#sec-resume') filled = hasResumeEvidence(d, localStorage);
         else if (hrefTarget === '#sec-headline') filled = !!((d.profile_summary || d.headline || '').trim());
         else if (hrefTarget === '#sec-ca-education') filled = !!((d.ca_final_course || '') + (d.ca_inter_course || '') + (d.ca_found_course || '') + (d.grad_degree || '') + (d.class12_board || '') + (d.class10_board || '') + (d.other_edu_course || '')).trim();
-        else if (hrefTarget === '#sec-experience') filled = !!(
+        else if (hrefTarget === '#sec-employment') filled = !!(
             (d.total_experience || '').trim() ||
             (d.emp_company_name || '').trim() ||
             (d.emp_job_title || '').trim() ||
             (d.emp_exp_years || '').trim() ||
             (d.emp_exp_months || '').trim() ||
+            (d.articleship_firm_name || '').trim() ||
+            ((d.articleship_firm_type || '').trim() && (d.articleship_firm_type || '').trim() !== 'None') ||
+            (d.industrial_training_company || '').trim()
+        );
+        else if (hrefTarget === '#sec-articleship') filled = !!(
             (d.articleship_firm_name || '').trim() ||
             ((d.articleship_firm_type || '').trim() && (d.articleship_firm_type || '').trim() !== 'None') ||
             (d.industrial_training_company || '').trim()
@@ -4802,21 +4833,51 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    function isHiddenByAncestor(element) {
+        if (!element) return true;
+        for (let node = element; node && node !== document.documentElement; node = node.parentElement) {
+            const style = window.getComputedStyle(node);
+            if (style.display === 'none' || style.visibility === 'hidden') return true;
+        }
+        return false;
+    }
+
+    function navigateToMissingDetail(sectionId, formId) {
+        const sectionEl = sectionId ? document.getElementById(sectionId) : null;
+        if (!sectionEl || isHiddenByAncestor(sectionEl)) return;
+
+        const formEl = formId ? document.getElementById(formId) : null;
+        const formSection = formEl?.closest('section');
+        const canOpenForm = Boolean(
+            formEl &&
+            formSection === sectionEl &&
+            formEl.style.display !== 'none'
+        );
+
+        if (canOpenForm) openFormIfCollapsed(formId);
+        window.history.replaceState(null, '', `#${sectionId}`);
+        window.setTimeout(() => {
+            sectionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, canOpenForm ? 120 : 0);
+    }
+
     // Delegated click on missing-item rows — navigate to the relevant section/form
     const missingListEl = document.getElementById('missingList');
     if (missingListEl) {
         missingListEl.addEventListener('click', e => {
             const row = e.target.closest('.p2-missing-row');
             if (!row) return;
-            const formId = row.dataset.form;
-            const sectionId = row.dataset.section;
-            if (formId) openFormIfCollapsed(formId);
-            if (sectionId) {
-                setTimeout(() => {
-                    const sectionEl = document.getElementById(sectionId);
-                    if (sectionEl) sectionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, formId ? 120 : 0);
-            }
+            navigateToMissingDetail(row.dataset.section, row.dataset.form);
+        });
+    }
+
+    const missingCtaEl = document.getElementById('missingCta');
+    if (missingCtaEl) {
+        missingCtaEl.addEventListener('click', e => {
+            const sectionId = missingCtaEl.dataset.section;
+            if (!sectionId) return;
+            e.preventDefault();
+            navigateToMissingDetail(sectionId, missingCtaEl.dataset.form || '');
         });
     }
 

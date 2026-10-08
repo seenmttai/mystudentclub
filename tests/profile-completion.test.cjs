@@ -55,3 +55,65 @@ test('adding a certification does not change the completion percentage', () => {
   assert.equal(completion.calculateProfileCompletion(withoutCertification, localStorage), 100);
   assert.equal(completion.calculateProfileCompletion(withCertification, localStorage), 100);
 });
+
+test('missing-detail routes match the form available to each portal', () => {
+  const expected = {
+    industrial: {
+      'Add CA education': ['sec-ca-education', 'sec-ca-inter-form'],
+      'Add experience': ['sec-articleship', 'sec-art-form'],
+      'Add current organization': ['sec-articleship', 'sec-it-form'],
+    },
+    articleship: {
+      'Add CA education': ['sec-ca-education', 'sec-ca-inter-form'],
+      'Add experience': ['sec-employment', 'sec-experience-form'],
+      'Add prior work experience': ['sec-employment', 'sec-experience-form'],
+    },
+    fresher_fresher: {
+      'Add CA education': ['sec-ca-education', 'sec-ca-final-form'],
+      'Add experience': ['sec-articleship', 'sec-art-form'],
+      'Add current organization': ['sec-articleship', 'sec-it-form'],
+    },
+    fresher_experienced: {
+      'Add CA education': ['sec-ca-education', 'sec-ca-final-form'],
+      'Add experience': ['sec-employment', 'sec-experience-form'],
+      'Add current organization': ['sec-employment', 'sec-experience-form'],
+    },
+    semi_fresher: {
+      'Add CA education': ['sec-ca-education', 'sec-ca-inter-form'],
+      'Add experience': ['sec-articleship', 'sec-art-form'],
+      'Add current organization': ['sec-articleship', 'sec-it-form'],
+    },
+    semi_experienced: {
+      'Add CA education': ['sec-ca-education', 'sec-ca-inter-form'],
+      'Add experience': ['sec-employment', 'sec-experience-form'],
+      'Add current organization': ['sec-employment', 'sec-experience-form'],
+    },
+  };
+
+  for (const [portal, routes] of Object.entries(expected)) {
+    const { completion, localStorage } = loadCompletion();
+    const items = completion.getProfileCompletionItems({ job_preference: portal }, localStorage);
+    for (const [label, [section, form]] of Object.entries(routes)) {
+      const item = items.find(candidate => candidate.label === label);
+      assert.ok(item, `${portal}: missing completion item ${label}`);
+      assert.equal(item.section, section, `${portal}: ${label} section`);
+      assert.equal(item.form, form, `${portal}: ${label} form`);
+    }
+
+    const notice = items.find(item => item.label === 'Add notice period');
+    assert.deepEqual(
+      [notice.section, notice.form],
+      ['sec-availability', 'sec-availability-form'],
+      `${portal}: notice period route`
+    );
+  }
+});
+
+test('missing-detail CTA is retargeted instead of staying on Personal Details', () => {
+  const profileHtml = fs.readFileSync(path.join(root, 'profile.html'), 'utf8');
+  const profileSource = fs.readFileSync(path.join(root, 'scripts', 'profile.js'), 'utf8');
+
+  assert.match(profileHtml, /id="missingCta"/);
+  assert.match(profileSource, /missingCta\.dataset\.section/);
+  assert.match(profileSource, /navigateToMissingDetail\(sectionId, missingCtaEl\.dataset\.form \|\| ''\)/);
+});
