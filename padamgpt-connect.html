@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Opening PadamGPT… | My Student Club</title>
+  <script src="/scripts/supabase.js"></script>
+  <script src="/scripts/supabase-init.js"></script>
+  <style>
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: #0b1220; color: #e6edf7; }
+    p { margin: 0; font-size: 15px; } a { color: #6ea8ff; }
+  </style>
+</head>
+<body>
+  <!-- PadamGPT sign-in handoff: sends the signed-in MSC session to chat.mystudentclub.com (which checks the student's
+       enrolment). Not signed in yet → MSC's normal login (password or Google), which returns here. -->
+  <p id="msg">Opening PadamGPT…</p>
+  <script>
+    (async function () {
+      var TARGET = "https://chat.mystudentclub.com/auth/msc";
+      var msg = document.getElementById("msg");
+      try {
+        var client = window.supabaseClient || (typeof getSupabaseClient === "function" ? getSupabaseClient() : null);
+        if (!client) throw new Error("no client");
+        var res = await client.auth.getSession();
+        var session = res && res.data && res.data.session;
+        if (session && session.access_token) {
+          location.replace(TARGET + "#access_token=" + encodeURIComponent(session.access_token));
+        } else {
+          location.replace("/login.html?redirect=" + encodeURIComponent("/padamgpt-connect.html"));
+        }
+      } catch (e) {
+        msg.innerHTML = 'Couldn\'t open MSC sign-in. <a href="/padamgpt-connect.html">Try again</a>.';
+      }
+    })();
+  </script>
+</body>
+</html>
