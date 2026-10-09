@@ -2774,7 +2774,31 @@ section[id] {
   }
 
   .mentor-highlights-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    width: 100%;
+    margin: 12px 0;
+  }
+
+  .mentor-highlight-item {
+    padding: 8px 10px;
+    gap: 8px;
+    border-radius: 10px;
+  }
+
+  .highlight-icon-box {
+    width: 30px;
+    height: 30px;
+    font-size: 13px;
+    border-radius: 8px;
+  }
+
+  .highlight-val {
+    font-size: 13px;
+  }
+
+  .highlight-lbl {
+    font-size: 10.5px;
   }
 
   .mentor-bio-text {

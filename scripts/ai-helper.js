@@ -5,7 +5,7 @@ import { calculateProfileCompletion, readCachedProfile } from './profile-complet
 const AI_WORKER_URL = 'https://emailgenerator.bhansalimanan55.workers.dev/';
 
 /**
- * Checks if the user has completed their profile (mainly uploaded a resume).
+ * Checks whether the user has completed the shared 100% profile checklist.
  * @returns {boolean} True if profile is considered complete.
  */
 export function isProfileComplete() {
@@ -262,7 +262,7 @@ export function showResumeRedirectModal() {
                     <i class="fas fa-file-pdf" style="font-size: 3rem; color: #ef4444; margin-bottom: 1rem;"></i>
                     <h3>Your profile is incomplete</h3>
                     <p style="margin: 1rem 0; color: #6b7280;">
-                        Please upload your CV to PDF to use <strong>AI Powered Apply</strong>.
+                        Please complete your profile, including your CV, to use <strong>AI Powered Apply</strong>.
                     </p>
                     <a href="/profile.html?redirect=${encodeURIComponent(window.location.href)}" class="btn btn-primary" style="width: 100%;">
                         Go to Profile

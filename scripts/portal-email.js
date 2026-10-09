@@ -2389,6 +2389,11 @@ async function initializePage() {
     initCustomSelects();
 
     const session = await checkAuth();
+    // Easy Apply and the completion banner must use the server-backed
+    // profile, not a stale profile from a previous visit.
+    if (session && profileHydrationPromise) {
+        await profileHydrationPromise;
+    }
     updateHeaderAuth(session);
 
     if (session) {

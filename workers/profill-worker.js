@@ -194,13 +194,17 @@ Return STRICT JSON only — no markdown, no \`\`\`json wrappers.
 45. **class12_board**: "CBSE", "ICSE / ISC", "State Board", etc.
 46. **class12_school**: School name.
 47. **class12_year**: Passing year.
-48. **class12_percentage**: Percentage.
+48. **class12_score_type**: "percentage" or "cgpa" when provided.
+49. **class12_percentage**: Numeric score; preserve the value exactly as written.
+50. **class12_cgpa_scale**: "4", "5", or "10" when class12_score_type is "cgpa".
 
 ### Class X:
-49. **class10_board**: "CBSE", "ICSE", "State Board", etc.
-50. **class10_school**: School name.
-51. **class10_year**: Passing year.
-52. **class10_percentage**: Percentage.
+51. **class10_board**: "CBSE", "ICSE", "State Board", etc.
+52. **class10_school**: School name.
+53. **class10_year**: Passing year.
+54. **class10_score_type**: "percentage" or "cgpa" when provided.
+55. **class10_percentage**: Numeric score; preserve the value exactly as written.
+56. **class10_cgpa_scale**: "4", "5", or "10" when class10_score_type is "cgpa".
 
 ### Other Education (MBA, LLB, Diploma, Post-Graduation — any qualification beyond CA and graduation):
 53. **other_edu_level**: "Post Graduation", "Diploma", "Certification", or "Other" — only if a second degree/diploma (beyond CA and B.Com/graduation) is mentioned. Return empty string if none.

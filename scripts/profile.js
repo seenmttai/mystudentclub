@@ -1,4 +1,4 @@
-import { calculateProfileCompletion, getProfileCompletionItems, hasResumeEvidence } from './profile-completion.js';
+import { calculateProfileCompletion, getProfileCompletionItems, hasResumeEvidence, formatSchoolScore, isSchoolEducationComplete, normalizeSchoolScoreType, normalizeSchoolScoreValue } from './profile-completion.js?v=20261009_1';
 
 const supabaseUrl = 'https://auth.mystudentclub.com';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
@@ -178,8 +178,8 @@ const ENTRY_CLEAR_MAP = {
     'edu-inter-display': ['ca_inter_course', 'ca_inter_attempts_type', 'ca_inter_attempts', 'ca_inter_clear_month', 'ca_inter_clear_year', 'ca_inter_air'],
     'edu-found-display': ['ca_found_course', 'ca_found_attempts_type', 'ca_found_attempts', 'ca_found_clear_month', 'ca_found_clear_year'],
     'edu-grad-display': ['grad_degree', 'grad_university', 'grad_year', 'grad_percentage'],
-    'edu-12-display': ['class12_board', 'class12_school', 'class12_year', 'class12_percentage'],
-    'edu-10-display': ['class10_board', 'class10_school', 'class10_year', 'class10_percentage'],
+    'edu-12-display': ['class12_board', 'class12_school', 'class12_year', 'class12_percentage', 'class12_score_type', 'class12_cgpa_scale', 'class12_remarks'],
+    'edu-10-display': ['class10_board', 'class10_school', 'class10_year', 'class10_percentage', 'class10_score_type', 'class10_cgpa_scale', 'class10_remarks'],
     'edu-other-display': ['other_edu_level', 'other_edu_course', 'other_edu_institute', 'other_edu_year', 'other_edu_score'],
     'emp-org-display': ['is_current_employment', 'employment_type', 'emp_exp_years', 'emp_exp_months', 'emp_company_name', 'emp_job_title', 'emp_join_year', 'emp_join_month', 'emp_salary_currency', 'emp_current_salary', 'emp_salary_breakdown', 'emp_skills_hidden', 'emp_job_profile', 'emp_notice_period'],
     'emp-art-display': ['articleship_firm_type', 'articleship_firm_name', 'articleship_domain', 'articleship_domain_other', 'articleship_start_year', 'articleship_start_month', 'articleship_end_year', 'articleship_end_month', 'articleship_client_industries', 'articleship_responsibilities'],
@@ -1357,9 +1357,8 @@ const WZ = (() => {
         const tips = [];
         if (!getFormValue('profile_summary') && !st.answers['missing_profile_summary']) tips.push('+8% Add Profile Summary');
         if (!getFormValue('linkedin_url') && !st.answers['missing_linkedin_url']) tips.push('+5% Add LinkedIn Profile');
-        if (!getFormValue('key_skills') && !getFormValue('emp_skills_hidden')) tips.push('+5% Add Key Skills');
+        if (!getFormValue('key_skills') && !getFormValue('emp_skills_hidden')) tips.push('+8% Add Key Skills');
         if (!getFormValue('articleship_client_industries')) tips.push('+6% Add Client Industry Exposure');
-        if (!getFormValue('cert_name')) tips.push('+3% Add a Certification');
         if (!getFormValue('preferred_domains') && !st.answers['preferred_domains']) tips.push('+6% Add Preferred Domains');
         if (!tips.length) return '';
         return `<div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:8px;padding:12px 14px;max-width:360px;margin:0 auto 1rem;text-align:left;">
@@ -1780,9 +1779,13 @@ const WZ = (() => {
                 { key: 'grad_year', label: 'Graduation Year', value: fv('grad_year') },
                 { key: 'grad_percentage', label: 'Graduation %/CGPA', value: fv('grad_percentage') },
                 { key: 'class12_school', label: 'Class XII School', value: fv('class12_school') },
-                { key: 'class12_percentage', label: 'Class XII %', value: fv('class12_percentage') },
+                { key: 'class12_score_type', label: 'Class XII Score Type', value: fv('class12_score_type') },
+                { key: 'class12_percentage', label: 'Class XII Score', value: fv('class12_percentage') },
+                { key: 'class12_cgpa_scale', label: 'Class XII CGPA Scale', value: fv('class12_cgpa_scale') },
                 { key: 'class10_school', label: 'Class X School', value: fv('class10_school') },
-                { key: 'class10_percentage', label: 'Class X %', value: fv('class10_percentage') },
+                { key: 'class10_score_type', label: 'Class X Score Type', value: fv('class10_score_type') },
+                { key: 'class10_percentage', label: 'Class X Score', value: fv('class10_percentage') },
+                { key: 'class10_cgpa_scale', label: 'Class X CGPA Scale', value: fv('class10_cgpa_scale') },
             ]
         };
 
@@ -2426,7 +2429,7 @@ const WZ = (() => {
     function _doSaveProgress() {
         if (!currentUser) return;
         applyAnswersToForm();
-        const profileData = buildProfileFromForm();
+        const profileData = normalizeSchoolEducationProfile(buildProfileFromForm());
         profileData.cv_cloud_synced = isCloudSynced();
         if (currentUser?.email) profileData.email = currentUser.email;
         // Wizard preference fields
@@ -2487,8 +2490,10 @@ const WZ = (() => {
         if (st.answers['preferred_industries'] || getFormValue('preferred_industries')) score += 5;
         if (st.programType || getFormValue('job_preference')) score += 5;
         if (getFormValue('articleship_client_industries')) score += 6;
-        if (getFormValue('cert_name')) score += 3;
-        if (getFormValue('key_skills') || getFormValue('emp_skills_hidden')) score += 5;
+        // Certification is optional and is intentionally excluded from
+        // completion. Keep the wizard total at 100 by assigning its former
+        // 3% weight to Key Skills.
+        if (getFormValue('key_skills') || getFormValue('emp_skills_hidden')) score += 8;
         if (getFormValue('grad_degree')) score += 2;
         return Math.min(score, 100);
     }
@@ -3326,10 +3331,55 @@ async function persistProfileRecord(profileData, ocrText) {
     if (error) throw error;
 }
 
+function normalizeSchoolEducationProfile(profileData) {
+    ['class10', 'class12'].forEach(prefix => {
+        const typeKey = `${prefix}_score_type`;
+        const scoreKey = `${prefix}_percentage`;
+        const scaleKey = `${prefix}_cgpa_scale`;
+        if (profileData[typeKey] !== undefined) profileData[typeKey] = normalizeSchoolScoreType(profileData[typeKey]);
+        if (profileData[scoreKey] !== undefined) profileData[scoreKey] = normalizeSchoolScoreValue(profileData[scoreKey]);
+        if (profileData[typeKey] !== 'cgpa') profileData[scaleKey] = '';
+    });
+    return profileData;
+}
+
+function validateSchoolEducationForm(form) {
+    const prefix = form?.id === 'sec-12-form' ? 'class12' : form?.id === 'sec-10-form' ? 'class10' : '';
+    if (!prefix) return null;
+    const profile = {};
+    ['board', 'school', 'year', 'percentage', 'score_type', 'cgpa_scale'].forEach(suffix => {
+        const field = document.getElementById(`${prefix}_${suffix}`);
+        profile[`${prefix}_${suffix}`] = field?.value || '';
+    });
+    const board = String(profile[`${prefix}_board`]).trim();
+    const school = String(profile[`${prefix}_school`]).trim();
+    const year = Number(profile[`${prefix}_year`]);
+    const type = normalizeSchoolScoreType(profile[`${prefix}_score_type`]);
+    const score = normalizeSchoolScoreValue(profile[`${prefix}_percentage`]);
+    const scale = String(profile[`${prefix}_cgpa_scale`] || '').trim();
+    const currentYear = new Date().getFullYear();
+    let message = '';
+    let invalidId = '';
+    if (!board) { message = 'Select the board.'; invalidId = `${prefix}_board`; }
+    else if (!school) { message = 'Enter the school name.'; invalidId = `${prefix}_school`; }
+    else if (!Number.isInteger(year) || year < 1900 || year > currentYear) { message = `Enter a passing year from 1900 to ${currentYear}.`; invalidId = `${prefix}_year`; }
+    else if (!/^\d+(?:\.\d{1,2})?$/.test(score)) { message = 'Enter a valid score with up to two decimal places.'; invalidId = `${prefix}_percentage`; }
+    else if (type === 'cgpa' && !['4', '5', '10'].includes(scale)) { message = 'Select a CGPA scale.'; invalidId = `${prefix}_cgpa_scale`; }
+    else if (type === 'cgpa' && Number(score) > Number(scale)) { message = `CGPA cannot exceed ${scale}.`; invalidId = `${prefix}_percentage`; }
+    else if (type === 'percentage' && Number(score) > 100) { message = 'Percentage cannot exceed 100.'; invalidId = `${prefix}_percentage`; }
+    if (message) {
+        const invalid = document.getElementById(invalidId);
+        invalid?.focus();
+        showToast(message, 'warning');
+        return message;
+    }
+    return null;
+}
+
 async function persistCurrentProfileSnapshot() {
     if (!currentUser || !profileForm) return;
 
-    const profileData = preserveCareerProfileFields(Object.fromEntries(new FormData(profileForm).entries()));
+    const profileData = preserveCareerProfileFields(normalizeSchoolEducationProfile(Object.fromEntries(new FormData(profileForm).entries())));
     delete profileData.resume;
     delete profileData.cover_letter;
     const cvFileName = localStorage.getItem('userCVFileName');
@@ -3383,7 +3433,7 @@ async function handleSave(e) {
     saveBtn.disabled = true;
 
     const formData = new FormData(profileForm);
-    const profileData = preserveCareerProfileFields(Object.fromEntries(formData.entries()));
+    const profileData = preserveCareerProfileFields(normalizeSchoolEducationProfile(Object.fromEntries(formData.entries())));
     delete profileData.resume;
     delete profileData.cover_letter;
     // Persist the CV filename so the resume display survives localStorage wipes
@@ -3623,9 +3673,15 @@ function refreshHeader() {
     // Missing card
     const missingList = document.getElementById('missingList');
     const missingCard = document.getElementById('missingCard');
+    const missingCta = document.getElementById('missingCta');
 
     if (missing.length === 0) {
         missingCard.style.display = 'none';
+        if (missingCta) {
+            missingCta.href = '#sec-personal';
+            missingCta.removeAttribute('data-section');
+            missingCta.removeAttribute('data-form');
+        }
     } else {
         missingCard.style.display = 'flex';
         missingList.innerHTML = missing.slice(0, 4).map(m =>
@@ -3636,7 +3692,27 @@ function refreshHeader() {
             </div>`
         ).join('');
         document.getElementById('missingCount').textContent = missing.length;
+        if (missingCta) {
+            const firstMissing = missing[0];
+            const firstSection = firstMissing.section || 'sec-personal';
+            missingCta.href = `#${firstSection}`;
+            missingCta.dataset.section = firstSection;
+            missingCta.dataset.form = firstMissing.form || '';
+        }
     }
+
+    // Point the Experience quick link at the section that is visible for this portal.
+    // Industrial/articleship/fresher portals use the Articleship & Industrial section;
+    // experienced employment portals use the Employment section.
+    const portalType = (d.job_preference || '').trim();
+    const experienceLinkTarget = ['fresher_experienced', 'semi_experienced'].includes(portalType)
+        ? 'sec-employment'
+        : ['industrial', 'articleship', 'fresher_fresher', 'semi_fresher'].includes(portalType)
+            ? 'sec-articleship'
+            : 'sec-employment';
+    document.querySelectorAll('.p2-ql[data-route="experience"]').forEach(link => {
+        link.setAttribute('href', `#${experienceLinkTarget}`);
+    });
 
     // Update quick-link actions
     document.querySelectorAll('.p2-ql').forEach(link => {
@@ -3647,12 +3723,17 @@ function refreshHeader() {
         if (hrefTarget === '#sec-resume') filled = hasResumeEvidence(d, localStorage);
         else if (hrefTarget === '#sec-headline') filled = !!((d.profile_summary || d.headline || '').trim());
         else if (hrefTarget === '#sec-ca-education') filled = !!((d.ca_final_course || '') + (d.ca_inter_course || '') + (d.ca_found_course || '') + (d.grad_degree || '') + (d.class12_board || '') + (d.class10_board || '') + (d.other_edu_course || '')).trim();
-        else if (hrefTarget === '#sec-experience') filled = !!(
+        else if (hrefTarget === '#sec-employment') filled = !!(
             (d.total_experience || '').trim() ||
             (d.emp_company_name || '').trim() ||
             (d.emp_job_title || '').trim() ||
             (d.emp_exp_years || '').trim() ||
             (d.emp_exp_months || '').trim() ||
+            (d.articleship_firm_name || '').trim() ||
+            ((d.articleship_firm_type || '').trim() && (d.articleship_firm_type || '').trim() !== 'None') ||
+            (d.industrial_training_company || '').trim()
+        );
+        else if (hrefTarget === '#sec-articleship') filled = !!(
             (d.articleship_firm_name || '').trim() ||
             ((d.articleship_firm_type || '').trim() && (d.articleship_firm_type || '').trim() !== 'None') ||
             (d.industrial_training_company || '').trim()
@@ -3930,37 +4011,37 @@ function refreshSavedDisplays(d) {
     const c12Board = (d.class12_board || '').trim();
     const c12Display = document.getElementById('edu-12-display');
     const addClass12Link = document.getElementById('addClass12Link');
-    if (c12Board) {
-        c12Display.style.display = 'block';
-        document.getElementById('edu-12-title').textContent = `Class XII — ${c12Board}`;
-        let metaParts = [];
-        if ((d.class12_school || '').trim()) metaParts.push(d.class12_school.trim());
-        if ((d.class12_year || '').trim()) metaParts.push(d.class12_year);
-        if ((d.class12_percentage || '').trim()) metaParts.push(d.class12_percentage.trim());
-        document.getElementById('edu-12-meta').textContent = metaParts.join(' · ');
-        if (addClass12Link) addClass12Link.style.display = 'none';
-    } else {
-        c12Display.style.display = 'none';
-        if (addClass12Link) addClass12Link.style.display = 'flex';
-    }
+    const c12Complete = isSchoolEducationComplete(d, 'class12');
+    c12Display.style.display = 'block';
+    document.getElementById('edu-12-title').textContent = c12Board ? `Class XII — ${c12Board}` : 'Class XII';
+    let c12Meta = [];
+    if ((d.class12_school || '').trim()) c12Meta.push(d.class12_school.trim());
+    if ((d.class12_year || '').trim()) c12Meta.push(d.class12_year);
+    const c12Score = formatSchoolScore(d, 'class12');
+    if (c12Score) c12Meta.push(c12Score);
+    document.getElementById('edu-12-meta').textContent = c12Meta.join(' · ') || 'Add board, school, passing year, and score';
+    const c12Status = document.getElementById('edu-12-status');
+    if (c12Status) c12Status.textContent = c12Complete ? 'Complete' : 'Required for Easy Apply';
+    c12Display.classList.toggle('is-complete', c12Complete);
+    if (addClass12Link) addClass12Link.style.display = c12Complete ? 'none' : 'flex';
 
     // Class X display
     const c10Board = (d.class10_board || '').trim();
     const c10Display = document.getElementById('edu-10-display');
     const addClass10Link = document.getElementById('addClass10Link');
-    if (c10Board) {
-        c10Display.style.display = 'block';
-        document.getElementById('edu-10-title').textContent = `Class X — ${c10Board}`;
-        let metaParts = [];
-        if ((d.class10_school || '').trim()) metaParts.push(d.class10_school.trim());
-        if ((d.class10_year || '').trim()) metaParts.push(d.class10_year);
-        if ((d.class10_percentage || '').trim()) metaParts.push(d.class10_percentage.trim());
-        document.getElementById('edu-10-meta').textContent = metaParts.join(' · ');
-        if (addClass10Link) addClass10Link.style.display = 'none';
-    } else {
-        c10Display.style.display = 'none';
-        if (addClass10Link) addClass10Link.style.display = 'flex';
-    }
+    const c10Complete = isSchoolEducationComplete(d, 'class10');
+    c10Display.style.display = 'block';
+    document.getElementById('edu-10-title').textContent = c10Board ? `Class X — ${c10Board}` : 'Class X';
+    let c10Meta = [];
+    if ((d.class10_school || '').trim()) c10Meta.push(d.class10_school.trim());
+    if ((d.class10_year || '').trim()) c10Meta.push(d.class10_year);
+    const c10Score = formatSchoolScore(d, 'class10');
+    if (c10Score) c10Meta.push(c10Score);
+    document.getElementById('edu-10-meta').textContent = c10Meta.join(' · ') || 'Add board, school, passing year, and score';
+    const c10Status = document.getElementById('edu-10-status');
+    if (c10Status) c10Status.textContent = c10Complete ? 'Complete' : 'Required for Easy Apply';
+    c10Display.classList.toggle('is-complete', c10Complete);
+    if (addClass10Link) addClass10Link.style.display = c10Complete ? 'none' : 'flex';
 
     // Other education display
     const otherEduCourse = (d.other_edu_course || '').trim();
@@ -3984,7 +4065,7 @@ function refreshSavedDisplays(d) {
 
     // Update Education boost badge
     const eduBoost = document.getElementById('eduBoost');
-    const hasEducation = !!(finalCourse || interCourse || foundCourse || gradDegree || c12Board || c10Board || otherEduCourse || otherEduLevel);
+    const hasEducation = !!(finalCourse || interCourse || foundCourse || gradDegree || otherEduCourse || otherEduLevel || c12Complete || c10Complete);
     if (hasEducation) {
         eduBoost.style.display = 'none';
     } else {
@@ -4843,21 +4924,51 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    function isHiddenByAncestor(element) {
+        if (!element) return true;
+        for (let node = element; node && node !== document.documentElement; node = node.parentElement) {
+            const style = window.getComputedStyle(node);
+            if (style.display === 'none' || style.visibility === 'hidden') return true;
+        }
+        return false;
+    }
+
+    function navigateToMissingDetail(sectionId, formId) {
+        const sectionEl = sectionId ? document.getElementById(sectionId) : null;
+        if (!sectionEl || isHiddenByAncestor(sectionEl)) return;
+
+        const formEl = formId ? document.getElementById(formId) : null;
+        const formSection = formEl?.closest('section');
+        const canOpenForm = Boolean(
+            formEl &&
+            formSection === sectionEl &&
+            formEl.style.display !== 'none'
+        );
+
+        if (canOpenForm) openFormIfCollapsed(formId);
+        window.history.replaceState(null, '', `#${sectionId}`);
+        window.setTimeout(() => {
+            sectionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, canOpenForm ? 120 : 0);
+    }
+
     // Delegated click on missing-item rows — navigate to the relevant section/form
     const missingListEl = document.getElementById('missingList');
     if (missingListEl) {
         missingListEl.addEventListener('click', e => {
             const row = e.target.closest('.p2-missing-row');
             if (!row) return;
-            const formId = row.dataset.form;
-            const sectionId = row.dataset.section;
-            if (formId) openFormIfCollapsed(formId);
-            if (sectionId) {
-                setTimeout(() => {
-                    const sectionEl = document.getElementById(sectionId);
-                    if (sectionEl) sectionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, formId ? 120 : 0);
-            }
+            navigateToMissingDetail(row.dataset.section, row.dataset.form);
+        });
+    }
+
+    const missingCtaEl = document.getElementById('missingCta');
+    if (missingCtaEl) {
+        missingCtaEl.addEventListener('click', e => {
+            const sectionId = missingCtaEl.dataset.section;
+            if (!sectionId) return;
+            e.preventDefault();
+            navigateToMissingDetail(sectionId, missingCtaEl.dataset.form || '');
         });
     }
 
@@ -4987,6 +5098,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const targetId = saveActionBtn.getAttribute('data-save');
         const target = document.getElementById(targetId);
 
+        if (validateSchoolEducationForm(target)) return;
+
         saveActionBtn.disabled = true;
         try {
             await persistCurrentProfileSnapshot();
@@ -5017,6 +5130,24 @@ document.addEventListener('DOMContentLoaded', async () => {
             refreshHeader();
         });
     }
+
+    document.querySelectorAll('#class10_score_type, #class12_score_type').forEach(select => {
+        select.addEventListener('change', () => {
+            const prefix = select.id.startsWith('class12') ? 'class12' : 'class10';
+            const scaleRow = document.getElementById(`${prefix}_cgpa_scale_row`);
+            const scale = document.getElementById(`${prefix}_cgpa_scale`);
+            const isCgpa = select.value === 'cgpa';
+            if (scaleRow) scaleRow.style.display = isCgpa ? '' : 'none';
+            if (scale) {
+                scale.required = isCgpa;
+                if (isCgpa && !scale.value) scale.value = '10';
+                if (!isCgpa) scale.value = '';
+            }
+            const score = document.getElementById(`${prefix}_percentage`);
+            if (score) score.placeholder = isCgpa ? 'e.g., 8.6' : 'e.g., 92';
+        });
+        select.dispatchEvent(new Event('change'));
+    });
 
     // ----- Save -----
     profileForm.addEventListener('submit', async (e) => {

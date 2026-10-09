@@ -161,7 +161,7 @@
                     <a href="#sec-skills" class="p2-ql">Key Skills <span class="p2-ql-action">Add</span></a>
                     <a href="#sec-certification" class="p2-ql">Certification <span class="p2-ql-action">Add</span></a>
                     <a href="#sec-ca-education" class="p2-ql">CA Education <span class="p2-ql-action">Add</span></a>
-                    <a href="#sec-experience" class="p2-ql">Experience <span class="p2-ql-action">Add</span></a>
+                    <a href="#sec-employment" class="p2-ql" data-route="experience">Experience <span class="p2-ql-action">Add</span></a>
                     <a href="#sec-projects" class="p2-ql">Projects <span class="p2-ql-action">Add</span></a>
                     <a href="#sec-career" class="p2-ql">Career Profile <span class="p2-ql-action">Add</span></a>
                     <a href="#sec-placed" class="p2-ql">Got placed? <span class="p2-ql-share">Share</span></a>
@@ -189,7 +189,7 @@
 
                     <section class="p2-card" id="sec-resume">
                         <div class="p2-card-header">
-                            <h2>Resume <span class="p2-boost" id="resumeBoost">Add 10%</span></h2>
+                            <h2>Resume <span class="p2-boost" id="resumeBoost">Add 14%</span></h2>
                         </div>
                         <p class="p2-card-sub">70% of recruiters discover candidates through their resume</p>
                         <div id="resume-upload-area">
@@ -230,7 +230,7 @@
 
                     <section class="p2-card" id="sec-headline">
                         <div class="p2-card-header">
-                            <h2>Profile Summary <span class="p2-boost" id="summaryBoost">Add 8%</span></h2>
+                            <h2>Profile Summary <span class="p2-boost" id="summaryBoost">Add 10%</span></h2>
                             <a href="javascript:void(0)" class="p2-card-action" id="summaryEditToggle" data-toggle="sec-headline-form">Add profile summary</a>
                         </div>
                         <p class="p2-card-sub">Give recruiters a brief overview of your career highlights, achievements, and career goals.</p>
@@ -264,7 +264,7 @@
 
                     <section class="p2-card" id="sec-skills">
                         <div class="p2-card-header">
-                            <h2>Key Skills <span class="p2-boost" id="skillsBoost">Add 5%</span></h2>
+                            <h2>Key Skills <span class="p2-boost" id="skillsBoost">Add 4%</span></h2>
                             <a href="javascript:void(0)" class="p2-card-action" id="keySkillsEditToggle" data-toggle="sec-skills-form">Add key skills</a>
                         </div>
                         <p class="p2-card-sub">Add skills like Excel, PowerBI, Tally, Auditing, etc. to make your profile stand out.</p>
@@ -350,7 +350,7 @@
                     <!-- ===== EDUCATION ===== -->
                     <section class="p2-card" id="sec-ca-education">
                         <div class="p2-card-header">
-                            <h2>Education <span class="p2-boost" id="eduBoost">Add 10%</span></h2>
+                            <h2>Education <span class="p2-boost" id="eduBoost">Add 12%</span></h2>
                             <a href="javascript:void(0)" class="p2-card-action" id="eduEditToggle" data-toggle="sec-other-edu-form">Add education</a>
                         </div>
                         <p class="p2-card-sub">Your qualifications help employers know your educational background</p>
@@ -397,21 +397,23 @@
                                 </div>
                             </div>
                             <!-- Class XII -->
-                            <div class="p2-saved-entry" id="edu-12-display" style="display:none;">
+                            <div class="p2-saved-entry p2-school-entry" id="edu-12-display">
                                 <div class="p2-saved-entry-header">
                                     <div>
                                         <div class="p2-saved-title" id="edu-12-title">Class XII</div>
                                         <div class="p2-saved-meta" id="edu-12-meta"></div>
+                                        <div class="p2-school-status" id="edu-12-status">Required for Easy Apply</div>
                                     </div>
                                     <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-12-form"><i class="fas fa-pencil-alt"></i></a>
                                 </div>
                             </div>
                             <!-- Class X -->
-                            <div class="p2-saved-entry" id="edu-10-display" style="display:none;">
+                            <div class="p2-saved-entry p2-school-entry" id="edu-10-display">
                                 <div class="p2-saved-entry-header">
                                     <div>
                                         <div class="p2-saved-title" id="edu-10-title">Class X</div>
                                         <div class="p2-saved-meta" id="edu-10-meta"></div>
+                                        <div class="p2-school-status" id="edu-10-status">Required for Easy Apply</div>
                                     </div>
                                     <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-10-form"><i class="fas fa-pencil-alt"></i></a>
                                 </div>
@@ -803,16 +805,32 @@
                                     </select>
                                 </div>
                                 <div class="p2-form-row">
-                                    <label for="class12_school">School Name</label>
+                                    <label for="class12_school">School Name *</label>
                                     <input type="text" id="class12_school" name="class12_school" placeholder="e.g., DPS, Kendriya Vidyalaya">
                                 </div>
                                 <div class="p2-form-row">
-                                    <label for="class12_year">Passing Year</label>
-                                    <input type="number" id="class12_year" name="class12_year" min="2000" max="2035" placeholder="e.g., 2020">
+                                    <label for="class12_year">Passing Year *</label>
+                                    <input type="number" id="class12_year" name="class12_year" min="1900" max="2035" placeholder="e.g., 2020">
                                 </div>
                                 <div class="p2-form-row">
-                                    <label for="class12_percentage">Percentage</label>
-                                    <input type="text" id="class12_percentage" name="class12_percentage" placeholder="e.g., 92%">
+                                    <label for="class12_score_type">Score type *</label>
+                                    <select id="class12_score_type" name="class12_score_type">
+                                        <option value="percentage">Percentage</option>
+                                        <option value="cgpa">CGPA</option>
+                                    </select>
+                                </div>
+                                <div class="p2-form-row">
+                                    <label for="class12_percentage">Score *</label>
+                                    <input type="text" id="class12_percentage" name="class12_percentage" inputmode="decimal" placeholder="e.g., 92 or 8.6">
+                                </div>
+                                <div class="p2-form-row" id="class12_cgpa_scale_row" style="display:none;">
+                                    <label for="class12_cgpa_scale">CGPA scale *</label>
+                                    <select id="class12_cgpa_scale" name="class12_cgpa_scale">
+                                        <option value="">Select scale</option>
+                                        <option value="4">4-point</option>
+                                        <option value="5">5-point</option>
+                                        <option value="10">10-point</option>
+                                    </select>
                                 </div>
                                 <div class="p2-form-row p2-full-width">
                                     <label for="class12_remarks">Remarks</label>
@@ -842,16 +860,32 @@
                                     </select>
                                 </div>
                                 <div class="p2-form-row">
-                                    <label for="class10_school">School Name</label>
+                                    <label for="class10_school">School Name *</label>
                                     <input type="text" id="class10_school" name="class10_school" placeholder="e.g., DPS">
                                 </div>
                                 <div class="p2-form-row">
-                                    <label for="class10_year">Passing Year</label>
-                                    <input type="number" id="class10_year" name="class10_year" min="2000" max="2035" placeholder="e.g., 2018">
+                                    <label for="class10_year">Passing Year *</label>
+                                    <input type="number" id="class10_year" name="class10_year" min="1900" max="2035" placeholder="e.g., 2018">
                                 </div>
                                 <div class="p2-form-row">
-                                    <label for="class10_percentage">Percentage</label>
-                                    <input type="text" id="class10_percentage" name="class10_percentage" placeholder="e.g., 95%">
+                                    <label for="class10_score_type">Score type *</label>
+                                    <select id="class10_score_type" name="class10_score_type">
+                                        <option value="percentage">Percentage</option>
+                                        <option value="cgpa">CGPA</option>
+                                    </select>
+                                </div>
+                                <div class="p2-form-row">
+                                    <label for="class10_percentage">Score *</label>
+                                    <input type="text" id="class10_percentage" name="class10_percentage" inputmode="decimal" placeholder="e.g., 95 or 8.6">
+                                </div>
+                                <div class="p2-form-row" id="class10_cgpa_scale_row" style="display:none;">
+                                    <label for="class10_cgpa_scale">CGPA scale *</label>
+                                    <select id="class10_cgpa_scale" name="class10_cgpa_scale">
+                                        <option value="">Select scale</option>
+                                        <option value="4">4-point</option>
+                                        <option value="5">5-point</option>
+                                        <option value="10">10-point</option>
+                                    </select>
                                 </div>
                                 <div class="p2-form-row p2-full-width">
                                     <label for="class10_remarks">Remarks</label>
@@ -908,7 +942,7 @@
                     <!-- ===== ARTICLESHIP & TRAINING ===== -->
                     <section class="p2-card" id="sec-articleship" data-portal="industrial,fresher_fresher,fresher_experienced,semi_fresher,semi_experienced">
                         <div class="p2-card-header">
-                            <h2>Articleship &amp; Industrial Training <span class="p2-boost" id="empBoost">Add 10%</span></h2>
+                            <h2>Articleship &amp; Industrial Training <span class="p2-boost" id="empBoost">Add 12%</span></h2>
                         </div>
                         <p class="p2-card-sub">Your articleship and training details help recruiters understand your practical experience</p>
 
@@ -2026,7 +2060,7 @@
 
 
     <script src="/scripts/profile-state.js"></script>
-    <script type="module" src="scripts/profile.js?v=20261003_1"></script>
+    <script type="module" src="scripts/profile.js?v=20261009_1"></script>
     <script src="/scripts/placed-card.js" defer></script>
 
 </body>

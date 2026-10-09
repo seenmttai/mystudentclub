@@ -245,7 +245,7 @@ test('profile saves retain intake fields without restoring removed files or anot
   dom.window.MSCProfileState.cacheProfile({name:'Old Name',career_intake:{stage:'industrial-training'},marketing_email_consent:true,industrial_training_eligibility_date:'2027-05-01',cv_filename:'Removed.pdf'},'profile-a');
   const updated=dom.window.preserveCareerProfileFields({name:'New Name'});assert.equal(updated.name,'New Name');assert.equal(updated.career_intake.stage,'industrial-training');assert.equal(updated.industrial_training_eligibility_date,'2027-05-01');assert.equal(updated.marketing_email_consent,true);assert.equal(updated.cv_filename,undefined);
   dom.window.currentUser={id:'profile-b'};assert.equal(dom.window.readOwnProfileCache(),null);assert.equal(dom.window.preserveCareerProfileFields({name:'B'}).career_intake,undefined);
-  assert.match(profileSource,/const profileData = preserveCareerProfileFields\(Object\.fromEntries\(formData\.entries\(\)\)\)/);assert.match(profileSource,/return preserveCareerProfileFields\(obj\)/);dom.window.close();
+  assert.match(profileSource,/const profileData = preserveCareerProfileFields\(normalizeSchoolEducationProfile\(Object\.fromEntries\(formData\.entries\(\)\)\)\)/);assert.match(profileSource,/return preserveCareerProfileFields\(obj\)/);dom.window.close();
 });
 
 async function authPageHarness(file) {
