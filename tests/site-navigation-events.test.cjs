@@ -13,7 +13,7 @@ const DESKTOP_RESOURCES_EVENTS = '<a href="/sessions/" class="dv2-dropdown-item"
 // Every tracked page (outside the generated job pages) that carries the shared ☰ menu.
 function menuPages() {
   const out = execFileSync('git', ['ls-files', '*.html'], { cwd: root, encoding: 'utf8' });
-  return out.split('\n').filter((f) => f && !f.startsWith('jobs/') && read(f).includes(MENU_CONTACT));
+  return out.split('\n').filter((f) => f && !f.startsWith('jobs/') && fs.existsSync(path.join(root, f)) && read(f).includes(MENU_CONTACT));
 }
 
 test('every shared menu lists Events right before Contact Us', () => {

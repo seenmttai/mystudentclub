@@ -93,13 +93,16 @@ test('each post ends with its two call-to-action links', () => {
   }
 });
 
-test('blog-sitemap.xml lists every post once and keeps the existing entry', () => {
+test('blog-sitemap.xml lists only the published guides and retires the placeholder URL', () => {
   const xml = read('blog-sitemap.xml');
+  const redirects = read('_redirects');
   assert.match(xml, /^<\?xml version="1\.0" encoding="UTF-8"\?>\s*<urlset xmlns="http:\/\/www\.sitemaps\.org\/schemas\/sitemap\/0\.9">/);
   assert.match(xml, /<\/urlset>\s*$/);
   assert.equal(xml.split('<url>').length, xml.split('</url>').length);
-  assert.ok(xml.includes(`<loc>${SITE}/blog/test.html</loc>`));
+  assert.ok(!xml.includes('/blog/test'), 'placeholder must not be indexed');
+  assert.match(redirects, /^\/blog\/test(?:\.html)? \/blog\/ 301$/m);
   for (const slug of POSTS) {
     assert.equal(xml.split(`<loc>${SITE}/blog/${slug}</loc>`).length - 1, 1, slug);
   }
+  assert.equal(xml.split('<url>').length - 1, POSTS.length);
 });
