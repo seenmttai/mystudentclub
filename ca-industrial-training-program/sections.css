@@ -2900,16 +2900,25 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
 }
 
-.fixed-cta .status-closed-text {
+.fixed-cta .status-live-text {
   font-family: 'Outfit', sans-serif;
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.08em;
-  color: #FCA5A5;
+  color: #10B981;
   text-transform: uppercase;
   display: inline-flex;
   align-items: center;
   gap: 8px;
+}
+
+.fixed-cta .status-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #10B981;
+  box-shadow: 0 0 10px #10B981;
+  animation: pulse-dot 1.8s infinite;
 }
 
 .fixed-cta-right {
@@ -2961,45 +2970,11 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0 6px 20px rgba(30, 64, 175, 0.45);
 }
 
-/* Program waitlist buttons and feedback */
-button.header-enroll-btn,
-button.fixed-cta-btn {
-  border: none;
-  cursor: pointer;
-}
-
-.js-notify-btn:disabled {
-  cursor: default;
-  transform: none;
-}
-
-.js-notify-btn.subscribed {
-  background: var(--accent-green);
-  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
-}
-
-.js-notify-btn:focus-visible {
-  outline: 3px solid var(--accent-cyan);
-  outline-offset: 3px;
-}
-
-.waitlist-status {
-  margin: 12px 0 10px;
-  font-size: 12px;
-  line-height: 1.5;
-  color: var(--text-muted);
-}
-
-.waitlist-status--success { color: var(--accent-green-dark); }
-.waitlist-status--error { color: #B91C1C; }
-.waitlist-status--info { color: var(--primary-blue); }
-
 /* Toast Floating Status Alerts */
 .notify-status {
   position: fixed;
   bottom: 80px;
   left: 24px;
-  max-width: calc(100% - 48px);
   background: #FFFFFF;
   border: 1px solid var(--border-color);
   color: var(--navy-dark);
