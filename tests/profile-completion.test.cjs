@@ -32,6 +32,16 @@ function completeProfile() {
     notice_period: '30 days',
     job_preference: 'industrial',
     key_skills: 'Excel, GST',
+    class12_board: 'CBSE',
+    class12_school: 'Example Senior Secondary School',
+    class12_year: '2020',
+    class12_score_type: 'percentage',
+    class12_percentage: '92',
+    class10_board: 'CBSE',
+    class10_school: 'Example Public School',
+    class10_year: '2018',
+    class10_score_type: 'percentage',
+    class10_percentage: '95',
   };
 }
 
@@ -54,6 +64,17 @@ test('adding a certification does not change the completion percentage', () => {
 
   assert.equal(completion.calculateProfileCompletion(withoutCertification, localStorage), 100);
   assert.equal(completion.calculateProfileCompletion(withCertification, localStorage), 100);
+});
+
+test('class X and XII each require board, school, year and a valid score', () => {
+  const { completion, localStorage } = loadCompletion({ userCVText: 'resume text' });
+  const complete = completeProfile();
+  const missingClass12School = { ...complete, class12_school: '' };
+  const cgpaProfile = { ...complete, class10_score_type: 'cgpa', class10_cgpa_scale: '10', class10_percentage: '8.6' };
+
+  assert.equal(completion.calculateProfileCompletion(complete, localStorage), 100);
+  assert.equal(completion.calculateProfileCompletion(missingClass12School, localStorage), 96);
+  assert.equal(completion.calculateProfileCompletion(cgpaProfile, localStorage), 100);
 });
 
 test('missing-detail routes match the form available to each portal', () => {

@@ -397,21 +397,23 @@
                                 </div>
                             </div>
                             <!-- Class XII -->
-                            <div class="p2-saved-entry" id="edu-12-display" style="display:none;">
+                            <div class="p2-saved-entry p2-school-entry" id="edu-12-display">
                                 <div class="p2-saved-entry-header">
                                     <div>
                                         <div class="p2-saved-title" id="edu-12-title">Class XII</div>
                                         <div class="p2-saved-meta" id="edu-12-meta"></div>
+                                        <div class="p2-school-status" id="edu-12-status">Required for Easy Apply</div>
                                     </div>
                                     <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-12-form"><i class="fas fa-pencil-alt"></i></a>
                                 </div>
                             </div>
                             <!-- Class X -->
-                            <div class="p2-saved-entry" id="edu-10-display" style="display:none;">
+                            <div class="p2-saved-entry p2-school-entry" id="edu-10-display">
                                 <div class="p2-saved-entry-header">
                                     <div>
                                         <div class="p2-saved-title" id="edu-10-title">Class X</div>
                                         <div class="p2-saved-meta" id="edu-10-meta"></div>
+                                        <div class="p2-school-status" id="edu-10-status">Required for Easy Apply</div>
                                     </div>
                                     <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-10-form"><i class="fas fa-pencil-alt"></i></a>
                                 </div>
@@ -803,16 +805,32 @@
                                     </select>
                                 </div>
                                 <div class="p2-form-row">
-                                    <label for="class12_school">School Name</label>
+                                    <label for="class12_school">School Name *</label>
                                     <input type="text" id="class12_school" name="class12_school" placeholder="e.g., DPS, Kendriya Vidyalaya">
                                 </div>
                                 <div class="p2-form-row">
-                                    <label for="class12_year">Passing Year</label>
-                                    <input type="number" id="class12_year" name="class12_year" min="2000" max="2035" placeholder="e.g., 2020">
+                                    <label for="class12_year">Passing Year *</label>
+                                    <input type="number" id="class12_year" name="class12_year" min="1900" max="2035" placeholder="e.g., 2020">
                                 </div>
                                 <div class="p2-form-row">
-                                    <label for="class12_percentage">Percentage</label>
-                                    <input type="text" id="class12_percentage" name="class12_percentage" placeholder="e.g., 92%">
+                                    <label for="class12_score_type">Score type *</label>
+                                    <select id="class12_score_type" name="class12_score_type">
+                                        <option value="percentage">Percentage</option>
+                                        <option value="cgpa">CGPA</option>
+                                    </select>
+                                </div>
+                                <div class="p2-form-row">
+                                    <label for="class12_percentage">Score *</label>
+                                    <input type="text" id="class12_percentage" name="class12_percentage" inputmode="decimal" placeholder="e.g., 92 or 8.6">
+                                </div>
+                                <div class="p2-form-row" id="class12_cgpa_scale_row" style="display:none;">
+                                    <label for="class12_cgpa_scale">CGPA scale *</label>
+                                    <select id="class12_cgpa_scale" name="class12_cgpa_scale">
+                                        <option value="">Select scale</option>
+                                        <option value="4">4-point</option>
+                                        <option value="5">5-point</option>
+                                        <option value="10">10-point</option>
+                                    </select>
                                 </div>
                                 <div class="p2-form-row p2-full-width">
                                     <label for="class12_remarks">Remarks</label>
@@ -842,16 +860,32 @@
                                     </select>
                                 </div>
                                 <div class="p2-form-row">
-                                    <label for="class10_school">School Name</label>
+                                    <label for="class10_school">School Name *</label>
                                     <input type="text" id="class10_school" name="class10_school" placeholder="e.g., DPS">
                                 </div>
                                 <div class="p2-form-row">
-                                    <label for="class10_year">Passing Year</label>
-                                    <input type="number" id="class10_year" name="class10_year" min="2000" max="2035" placeholder="e.g., 2018">
+                                    <label for="class10_year">Passing Year *</label>
+                                    <input type="number" id="class10_year" name="class10_year" min="1900" max="2035" placeholder="e.g., 2018">
                                 </div>
                                 <div class="p2-form-row">
-                                    <label for="class10_percentage">Percentage</label>
-                                    <input type="text" id="class10_percentage" name="class10_percentage" placeholder="e.g., 95%">
+                                    <label for="class10_score_type">Score type *</label>
+                                    <select id="class10_score_type" name="class10_score_type">
+                                        <option value="percentage">Percentage</option>
+                                        <option value="cgpa">CGPA</option>
+                                    </select>
+                                </div>
+                                <div class="p2-form-row">
+                                    <label for="class10_percentage">Score *</label>
+                                    <input type="text" id="class10_percentage" name="class10_percentage" inputmode="decimal" placeholder="e.g., 95 or 8.6">
+                                </div>
+                                <div class="p2-form-row" id="class10_cgpa_scale_row" style="display:none;">
+                                    <label for="class10_cgpa_scale">CGPA scale *</label>
+                                    <select id="class10_cgpa_scale" name="class10_cgpa_scale">
+                                        <option value="">Select scale</option>
+                                        <option value="4">4-point</option>
+                                        <option value="5">5-point</option>
+                                        <option value="10">10-point</option>
+                                    </select>
                                 </div>
                                 <div class="p2-form-row p2-full-width">
                                     <label for="class10_remarks">Remarks</label>
@@ -2026,7 +2060,7 @@
 
 
     <script src="/scripts/profile-state.js"></script>
-    <script type="module" src="scripts/profile.js?v=20261008_1"></script>
+    <script type="module" src="scripts/profile.js?v=20261009_1"></script>
     <script src="/scripts/placed-card.js" defer></script>
 
 </body>

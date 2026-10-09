@@ -1122,6 +1122,29 @@ body {
     line-height: 1.5;
 }
 
+.p2-school-entry {
+    background: #FAFCFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    margin-top: 0.75rem;
+}
+
+.p2-school-entry + .p2-school-entry {
+    margin-top: 0.75rem;
+}
+
+.p2-school-status {
+    color: #B45309;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-top: 0.35rem;
+}
+
+.p2-school-entry.is-complete .p2-school-status {
+    color: #15803D;
+}
+
 .p2-entry-edit {
     color: var(--p2-text-muted);
     font-size: 0.82rem;
