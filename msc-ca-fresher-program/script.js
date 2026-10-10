@@ -207,7 +207,7 @@ const initializeCarousel = () => {
         <img src="${student.image}" alt="${student.name}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='https://www.mystudentclub.com/assets/icon-70x70.png';" />
       </div>
       <h3 class="student-name" title="${student.name}">${student.name}</h3>
-      <div class="student-firm-text">${student.company}</div>
+      <div class="student-firm-label">Placed at</div>
       <div class="student-company-logo">
         ${getCompanyLogoSVG(student.company)}
       </div>

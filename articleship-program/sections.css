@@ -1155,13 +1155,14 @@ section[id] {
   max-width: 100%;
 }
 
-/* Placed Firm Text */
-.student-firm-text {
-  font-size: 13px;
-  font-weight: 500;
-  color: #64748b;
-  margin: 0 0 4px;
-  white-space: nowrap;
+/* Placed Firm Label (Matching Industrial Training) */
+.student-firm-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #94A3B8;
+  margin: 2px 0 4px;
 }
 
 /* Company Logo Container */
@@ -1558,54 +1559,91 @@ section[id] {
   box-shadow: 0 8px 24px rgba(239, 68, 68, 0.2);
 }
 
-/* ─── 5-DAY CURRICULUM JOURNEY SECTION ─── */
+/* ─── 5-DAY CURRICULUM JOURNEY SECTION (1300PX GRID) ─── */
 .journey-section {
-  padding: 56px clamp(16px, 3vw, 40px) 48px;
-  background: #FFFFFF;
+  padding: 68px 24px 60px;
+  background: #F8FAFC;
+  position: relative;
 }
 
 .journey-steps-grid {
-  max-width: 1200px;
+  max-width: 1300px;
+  width: 100%;
   margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 16px;
   position: relative;
+  box-sizing: border-box;
+  align-items: stretch;
 }
 
 .journey-step-card {
   background: #FFFFFF;
-  border-radius: 16px;
+  border-radius: 18px;
   border: 1px solid #E2E8F0;
-  padding: 20px 18px 18px;
-  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04);
+  padding: 24px 18px 20px;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.02);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   text-align: left;
   position: relative;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.28s ease, border-color 0.28s ease;
   width: 100%;
   box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* Subtle ambient gradient wash per day accent */
+.journey-step-card.step-blue {
+  background: linear-gradient(180deg, #F8FAFD 0%, #FFFFFF 36%);
+}
+.journey-step-card.step-purple {
+  background: linear-gradient(180deg, #FAF7FD 0%, #FFFFFF 36%);
+}
+.journey-step-card.step-coral {
+  background: linear-gradient(180deg, #FEF7F7 0%, #FFFFFF 36%);
+}
+.journey-step-card.step-amber {
+  background: linear-gradient(180deg, #FDF9F3 0%, #FFFFFF 36%);
+}
+.journey-step-card.step-green {
+  background: linear-gradient(180deg, #F4FAF7 0%, #FFFFFF 36%);
 }
 
 .journey-step-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
+  transform: translateY(-6px);
+  box-shadow: 0 20px 35px -8px rgba(15, 23, 42, 0.09), 0 6px 14px -2px rgba(15, 23, 42, 0.04);
 }
 
-/* Card color border accents */
-.journey-step-card.step-blue { border-top: 3.5px solid #2563EB; }
-.journey-step-card.step-purple { border-top: 3.5px solid #9333EA; }
-.journey-step-card.step-coral { border-top: 3.5px solid #EF4444; }
-.journey-step-card.step-amber { border-top: 3.5px solid #F59E0B; }
-.journey-step-card.step-green { border-top: 3.5px solid #10B981; }
+/* Card color border accents with smooth top highlight */
+.journey-step-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  border-radius: 20px 20px 0 0;
+  transition: height 0.2s ease;
+}
 
-.journey-step-card.step-blue:hover { border-color: rgba(37, 99, 235, 0.35); border-top-color: #2563EB; }
-.journey-step-card.step-purple:hover { border-color: rgba(147, 51, 234, 0.35); border-top-color: #9333EA; }
-.journey-step-card.step-coral:hover { border-color: rgba(239, 68, 68, 0.35); border-top-color: #EF4444; }
-.journey-step-card.step-amber:hover { border-color: rgba(245, 158, 11, 0.35); border-top-color: #F59E0B; }
-.journey-step-card.step-green:hover { border-color: rgba(16, 185, 129, 0.35); border-top-color: #10B981; }
+.journey-step-card.step-blue::before { background: linear-gradient(90deg, #2563EB, #3B82F6); }
+.journey-step-card.step-purple::before { background: linear-gradient(90deg, #7C3AED, #9333EA); }
+.journey-step-card.step-coral::before { background: linear-gradient(90deg, #DC2626, #EF4444); }
+.journey-step-card.step-amber::before { background: linear-gradient(90deg, #D97706, #F59E0B); }
+.journey-step-card.step-green::before { background: linear-gradient(90deg, #059669, #10B981); }
+
+.journey-step-card:hover::before {
+  height: 5px;
+}
+
+.journey-step-card.step-blue:hover { border-color: rgba(37, 99, 235, 0.4); }
+.journey-step-card.step-purple:hover { border-color: rgba(147, 51, 234, 0.4); }
+.journey-step-card.step-coral:hover { border-color: rgba(239, 68, 68, 0.4); }
+.journey-step-card.step-amber:hover { border-color: rgba(245, 158, 11, 0.4); }
+.journey-step-card.step-green:hover { border-color: rgba(16, 185, 129, 0.4); }
 
 /* Header Row */
 .step-header-row {
@@ -1613,34 +1651,36 @@ section[id] {
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  margin-bottom: 14px;
+  margin-bottom: 18px;
 }
 
 .step-number-badge {
   font-family: 'Outfit', sans-serif;
   font-size: 11px;
   font-weight: 800;
-  letter-spacing: 0.03em;
-  padding: 3px 9px;
-  border-radius: 50px;
+  letter-spacing: 0.06em;
+  padding: 4px 10px;
+  border-radius: 6px;
+  text-transform: uppercase;
 }
 
-.step-blue .step-number-badge { background: #EFF6FF; color: #2563EB; border: 1px solid #DBEAFE; }
-.step-purple .step-number-badge { background: #FAF5FF; color: #9333EA; border: 1px solid #F3E8FF; }
-.step-coral .step-number-badge { background: #FFF1F2; color: #EF4444; border: 1px solid #FFE4E6; }
-.step-amber .step-number-badge { background: #FFFBEB; color: #D97706; border: 1px solid #FEF3C7; }
-.step-green .step-number-badge { background: #F0FDF4; color: #16A34A; border: 1px solid #DCFCE7; }
+.step-blue .step-number-badge { background: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; }
+.step-purple .step-number-badge { background: #FAF5FF; color: #7E22CE; border: 1px solid #DDD6FE; }
+.step-coral .step-number-badge { background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; }
+.step-amber .step-number-badge { background: #FFFBEB; color: #B45309; border: 1px solid #FDE68A; }
+.step-green .step-number-badge { background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; }
 
 .step-badge-tag {
   font-family: 'Outfit', sans-serif;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
-  color: #64748B;
-  background: #F8FAFC;
+  color: #475569;
+  background: #F1F5F9;
   border: 1px solid #E2E8F0;
-  padding: 2.5px 7.5px;
-  border-radius: 6px;
+  padding: 3.5px 9px;
+  border-radius: 20px;
   letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
 /* Hero Row (Icon + Titles) */
@@ -1648,98 +1688,120 @@ section[id] {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 10px;
+  gap: 12px;
   width: 100%;
-  margin-bottom: 14px;
+  margin-bottom: 0;
 }
 
 .step-icon-wrap {
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  font-size: 20px;
   flex-shrink: 0;
-  transition: transform 0.25s ease;
+  transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .journey-step-card:hover .step-icon-wrap {
-  transform: scale(1.08);
+  transform: scale(1.08) rotate(-3deg);
 }
 
-.step-blue .step-icon-wrap { background: #EFF6FF; color: #2563EB; border: 1px solid #DBEAFE; }
-.step-purple .step-icon-wrap { background: #FAF5FF; color: #9333EA; border: 1px solid #F3E8FF; }
-.step-coral .step-icon-wrap { background: #FFF1F2; color: #EF4444; border: 1px solid #FFE4E6; }
-.step-amber .step-icon-wrap { background: #FFFBEB; color: #D97706; border: 1px solid #FEF3C7; }
-.step-green .step-icon-wrap { background: #F0FDF4; color: #16A34A; border: 1px solid #DCFCE7; }
+.step-blue .step-icon-wrap { background: #EFF6FF; color: #2563EB; border: 1px solid #BFDBFE; box-shadow: 0 4px 12px -2px rgba(37, 99, 235, 0.16); }
+.step-purple .step-icon-wrap { background: #FAF5FF; color: #9333EA; border: 1px solid #DDD6FE; box-shadow: 0 4px 12px -2px rgba(147, 51, 234, 0.16); }
+.step-coral .step-icon-wrap { background: #FEF2F2; color: #EF4444; border: 1px solid #FECACA; box-shadow: 0 4px 12px -2px rgba(239, 68, 68, 0.16); }
+.step-amber .step-icon-wrap { background: #FFFBEB; color: #D97706; border: 1px solid #FEF3C7; box-shadow: 0 4px 12px -2px rgba(217, 119, 6, 0.16); }
+.step-green .step-icon-wrap { background: #ECFDF5; color: #10B981; border: 1px solid #D1FAE5; box-shadow: 0 4px 12px -2px rgba(16, 185, 129, 0.16); }
 
 .step-heading-group {
   display: flex;
   flex-direction: column;
   text-align: left;
   width: 100%;
+  min-height: 72px;
 }
 
 .step-title {
   font-family: 'Outfit', sans-serif;
-  font-size: 15.5px;
-  font-weight: 750;
+  font-size: 16.5px;
+  font-weight: 800;
   color: #0F172A;
-  margin: 0 0 4px 0;
+  margin: 0 0 5px 0;
   line-height: 1.25;
+  letter-spacing: -0.01em;
 }
 
 .step-description {
-  font-size: 12px;
+  font-size: 12.5px;
   color: #64748B;
   line-height: 1.45;
   margin: 0;
-  min-height: 34px;
 }
 
 /* Points list */
 .step-points-list {
   list-style: none;
-  margin: 0;
-  padding: 12px 0 0;
+  margin: 15px 0 0;
+  padding: 15px 0 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 9px;
   width: 100%;
   text-align: left;
-  border-top: 1px dashed #E2E8F0;
+  border-top: 1px solid #F1F5F9;
   box-sizing: border-box;
+  flex: 1;
 }
 
 .step-points-list li {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
-  font-size: 11.5px;
-  font-weight: 600;
+  gap: 8.5px;
+  font-size: 12px;
+  font-weight: 500;
   color: #334155;
-  line-height: 1.4;
+  line-height: 1.42;
 }
 
 .step-check-icon {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 8px;
+  font-size: 9px;
+  font-weight: 900;
   flex-shrink: 0;
-  margin-top: 2px;
+  margin-top: 1.5px;
 }
 
 .step-blue .step-check-icon { background: #EFF6FF; color: #2563EB; }
 .step-purple .step-check-icon { background: #FAF5FF; color: #9333EA; }
-.step-coral .step-check-icon { background: #FFF1F2; color: #EF4444; }
+.step-coral .step-check-icon { background: #FEF2F2; color: #EF4444; }
 .step-amber .step-check-icon { background: #FFFBEB; color: #D97706; }
-.step-green .step-check-icon { background: #F0FDF4; color: #16A34A; }
+.step-green .step-check-icon { background: #ECFDF5; color: #10B981; }
+
+@media (max-width: 1180px) and (min-width: 881px) {
+  .journey-steps-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px;
+    max-width: 980px;
+  }
+  .journey-step-card:nth-child(1),
+  .journey-step-card:nth-child(2),
+  .journey-step-card:nth-child(3) {
+    grid-column: span 2;
+  }
+  .journey-step-card:nth-child(4) {
+    grid-column: 2 / span 2;
+  }
+  .journey-step-card:nth-child(5) {
+    grid-column: 4 / span 2;
+  }
+}
 
 /* ─── STUDENT STORIES / WHAT OUR STUDENTS SAY SECTION (FULL-WIDTH MOVING FORMAT) ─── */
 .student-stories-section {
@@ -3476,6 +3538,9 @@ section[id] {
     gap: 12px;
     margin-bottom: 12px;
   }
+  .step-heading-group {
+    min-height: auto;
+  }
   .step-description {
     min-height: auto;
   }
@@ -3641,6 +3706,9 @@ section[id] {
   .step-title {
     font-size: 15px;
     margin-bottom: 2px;
+  }
+  .step-heading-group {
+    min-height: auto;
   }
   .step-description {
     font-size: 11.5px;
