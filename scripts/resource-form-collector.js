@@ -707,8 +707,8 @@ class ResourceFormCollector {
         const isPdf = lowerUrl.endsWith('.pdf') || (lowerUrl.includes('.pdf') && !lowerUrl.includes('drive.google.com'));
 
         if (isPdf) {
-            // Redirect to dedicated viewer (use relative path for better compatibility)
-            const viewerUrl = `ca-resource/index.html?pdf=${encodeURIComponent(url)}`;
+            // Redirect to dedicated viewer at /ca-resource/
+            const viewerUrl = `/ca-resource/index.html?pdf=${encodeURIComponent(url)}`;
             window.open(viewerUrl, '_blank', 'noopener,noreferrer');
         } else {
             // Open directly

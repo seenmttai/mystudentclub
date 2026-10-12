@@ -5,7 +5,9 @@
   "main": "firebase-messaging-sw.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "generate-jobs": "node scripts/generate-jobs.js"
+    "generate-jobs": "node scripts/generate-jobs.js",
+    "dev": "python dev-server.py",
+    "serve": "npx serve -l 8787"
   },
   "repository": {
     "type": "git",

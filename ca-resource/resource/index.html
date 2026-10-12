@@ -332,11 +332,71 @@
             }
         }
 
+        // Known aliases mapping each program to its enrolled course slugs
+        const PROGRAM_COURSES = {
+            'industrial-training': [
+                'industrial-training-mastery',
+                'industrial-training',
+                'ca-industrial-training',
+                'msc-industrial-training-program',
+                'industrial-training-program',
+                'msc-ca-industrial-training'
+            ],
+            'ca-fresher': [
+                'msc-ca-freshers-program',
+                'ca-freshers',
+                'freshers',
+                'ca-freshers-program',
+                'msc-ca-freshers',
+                'msc-ca-fresher-program'
+            ],
+            'semi-qualified': [
+                'msc-ca-freshers-program',
+                'ca-freshers',
+                'freshers',
+                'ca-freshers-program',
+                'msc-ca-freshers',
+                'msc-ca-fresher-program'
+            ],
+            'articleship': [
+                'msc-articleship-program',
+                'articleship-program',
+                'articleship',
+                'articleship-mastery',
+                'msc-articleship-mastery'
+            ]
+        };
+
+        // Standalone guidebooks and booklets mapped to their required program
+        const STANDALONE_RESOURCES = {
+            'mscit guidebook-3.pdf': 'industrial-training',
+            'msc ca freshers guidebook.pdf': 'ca-fresher',
+            'ubs hiring logic.pdf': 'industrial-training',
+            'gs hiring logic.pdf': 'industrial-training',
+            'db hiring logic.pdf': 'industrial-training',
+            'finance interview booklet.pdf': 'industrial-training',
+            'fp&a interview booklet.pdf': 'industrial-training',
+            'internal audit interview booklet.pdf': 'industrial-training',
+            'indirect tax interview booklet.pdf': 'industrial-training',
+            'direct tax interview booklet.pdf': 'industrial-training',
+            'investment banking interview booklet.pdf': 'industrial-training'
+        };
+
+        function normalizeProgram(value) {
+            const str = String(value || '').trim().toLowerCase();
+            if (str.includes('industrial') || str.includes('mscit')) return 'industrial-training';
+            if (str.includes('articleship')) return 'articleship';
+            if (str.includes('semi')) return 'semi-qualified';
+            if (str.includes('fresher') || str.includes('fresh')) return 'ca-fresher';
+            return null;
+        }
+
         async function init() {
             try {
-                // Get URL parameter for the resource path/name
+                // Get URL parameters for the resource path/name and program
                 const urlParams = new URLSearchParams(window.location.search);
                 const resourceName = urlParams.get('name');
+                const requestedProgram = normalizeProgram(urlParams.get('program') || urlParams.get('course'));
 
                 if (!resourceName || resourceName.trim() === '') {
                     showAccessRestricted("Please specify a valid resource name in the 'name' parameter.", false);
@@ -353,10 +413,115 @@
                     return;
                 }
 
+                // Verify student enrollment access
+                const { data: enrollments, error: enrollError } = await supabaseClient
+                    .from('enrollment')
+                    .select('course')
+                    .eq('uuid', session.user.id);
+
+                if (enrollError || !enrollments || enrollments.length === 0) {
+                    showAccessRestricted("Access Restricted: You are not enrolled in the program required to access this resource.", false);
+                    return;
+                }
+
+                const userCourses = enrollments.map(e => String(e.course || '').trim().toLowerCase());
+
+                function isUserEnrolledIn(programKey) {
+                    if (!programKey) return false;
+                    const allowedCourses = PROGRAM_COURSES[programKey];
+                    if (!allowedCourses) return false;
+                    return userCourses.some(c => allowedCourses.includes(c));
+                }
+
+                // 1. If program/course parameter was provided, strictly enforce enrollment in that particular program
+                if (requestedProgram && !isUserEnrolledIn(requestedProgram)) {
+                    showAccessRestricted("Access Restricted: You are not enrolled in the program required to access this resource.", false);
+                    return;
+                }
+
+                // 2. If resource is a known standalone guidebook or booklet, check required course
+                const normalizedName = resourceName.trim().toLowerCase();
+                if (STANDALONE_RESOURCES[normalizedName]) {
+                    const requiredProgram = STANDALONE_RESOURCES[normalizedName];
+                    if (!isUserEnrolledIn(requiredProgram)) {
+                        showAccessRestricted("Access Restricted: You are not enrolled in the program required to access this resource.", false);
+                        return;
+                    }
+                }
+
+                let targetStoragePath = resourceName;
+                const targetBucket = 'industrial-training-mastery-resources';
+
+                // 3. Check videos catalog for resource ownership and file path
+                try {
+                    const { data: videos } = await supabaseClient
+                        .from('videos')
+                        .select('course, resources');
+
+                    if (videos && Array.isArray(videos)) {
+                        let matchedResource = null;
+                        let matchedCourse = null;
+
+                        for (const video of videos) {
+                            let resList = video.resources;
+                            if (typeof resList === 'string') {
+                                try { resList = JSON.parse(resList); } catch (_) { resList = []; }
+                            }
+                            if (Array.isArray(resList)) {
+                                const found = resList.find(r => {
+                                    const rTitle = String(r.title || '').trim().toLowerCase();
+                                    const rView = String(r.view_storage_path || '').trim().toLowerCase();
+                                    const rDl = String(r.download_storage_path || '').trim().toLowerCase();
+                                    const target = normalizedName;
+                                    return rTitle === target || rView === target || rDl === target ||
+                                           rView.endsWith('/' + target) || rDl.endsWith('/' + target) ||
+                                           rTitle === target.replace(/\.[^/.]+$/, '');
+                                });
+                                if (found) {
+                                    matchedResource = found;
+                                    matchedCourse = video.course;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (matchedCourse) {
+                            const courseProgram = normalizeProgram(matchedCourse);
+                            if (courseProgram && !isUserEnrolledIn(courseProgram)) {
+                                showAccessRestricted("Access Restricted: You are not enrolled in the program required to access this resource.", false);
+                                return;
+                            }
+
+                            if (matchedResource.view_storage_path && matchedResource.view_storage_path !== 'None') {
+                                targetStoragePath = matchedResource.view_storage_path;
+                            } else if (matchedResource.download_storage_path && matchedResource.download_storage_path !== 'None') {
+                                targetStoragePath = matchedResource.download_storage_path;
+                            } else if (matchedResource.url) {
+                                window.location.replace(matchedResource.url);
+                                return;
+                            }
+                        }
+                    }
+                } catch (videoErr) {
+                    console.warn("Catalog lookup failed, continuing with direct access:", videoErr);
+                }
+
                 // Attempt to generate signed URLs from the bucket
-                const { data: viewData, error: viewError } = await supabaseClient.storage
-                    .from('industrial-training-mastery-resources')
-                    .createSignedUrl(resourceName, 300);
+                let { data: viewData, error: viewError } = await supabaseClient.storage
+                    .from(targetBucket)
+                    .createSignedUrl(targetStoragePath, 300);
+
+                if (viewError || !viewData || !viewData.signedUrl) {
+                    if (targetStoragePath !== resourceName) {
+                        const fb = await supabaseClient.storage
+                            .from(targetBucket)
+                            .createSignedUrl(resourceName, 300);
+                        if (!fb.error && fb.data?.signedUrl) {
+                            viewData = fb.data;
+                            viewError = null;
+                        }
+                    }
+                }
 
                 if (viewError || !viewData || !viewData.signedUrl) {
                     console.error("Storage View Error:", viewError);
@@ -369,8 +534,8 @@
 
                 try {
                     const { data: dlData, error: dlError } = await supabaseClient.storage
-                        .from('industrial-training-mastery-resources')
-                        .createSignedUrl(resourceName, 300, { download: true });
+                        .from(targetBucket)
+                        .createSignedUrl(targetStoragePath, 300, { download: true });
 
                     if (!dlError && dlData?.signedUrl) {
                         targetUrl += `&dl=${encodeURIComponent(dlData.signedUrl)}`;

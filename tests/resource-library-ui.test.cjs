@@ -225,7 +225,7 @@ test('free download/preview actions still pass original title and correct file t
         card.querySelectorAll('button')[1].click(); await tick();
         assert.deepEqual(calls,[{title:'CV Template 1',url:'/assets/ca-fresher-resources/CV Template-1.docx'},{title:'CV Template 1',url:'/assets/ca-fresher-resources/CV Template-1.pdf'}]);
         assert.deepEqual(downloads,[{name:'CV Template-1.docx',href:'blob:resource-test'}]);
-        assert.equal(opens.length,1); assert.match(opens[0][0],/CV%20Template-1\.pdf$/);
+        assert.equal(opens.length,1); assert.match(opens[0][0],/\/ca-resource\/index\.html\?pdf=.*CV%2520Template-1\.pdf/);
     } finally { dom.window.close(); }
 });
 
