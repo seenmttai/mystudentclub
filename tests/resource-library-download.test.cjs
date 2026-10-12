@@ -56,7 +56,7 @@ test('a guest who completed intake previews the public PDF without entering the 
     dom.window.document.querySelector('button[aria-label="Preview: CV Template 3"]').click();
     await tick(); await tick();
     assert.equal(intakeCalls, 1);
-    assert.deepEqual(previews, [{ url: 'https://mystudentclub.com/assets/ca-industrial-resources/Industrial_Training_CV_Template_1.pdf', target: '_blank', features: 'noopener,noreferrer' }]);
+    assert.deepEqual(previews, [{ url: '/ca-resource/index.html?pdf=' + encodeURIComponent('https://mystudentclub.com/assets/ca-industrial-resources/Industrial_Training_CV_Template_1.pdf'), target: '_blank', features: 'noopener,noreferrer' }]);
     dom.window.close();
 });
 

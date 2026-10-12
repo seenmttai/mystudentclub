@@ -160,7 +160,7 @@
     global.MSCResourceLibrary = exports;
     if (typeof document === 'undefined') return;
 
-    let config, stage, premiumRows = [], returnFocus, catalogueLoaded = false, catalogueError = false;
+    let config, stage, premiumRows = [], returnFocus, catalogueLoaded = false, catalogueError = false, userCourses = [];
     let premiumQuery = '', selectedDay = 'all';
     const expandedGroups = new Set();
     const GROUP_PREVIEW_SIZE = 3;
@@ -204,9 +204,13 @@
             document.body.appendChild(link); link.click(); link.remove();
             if (objectUrl) setTimeout(() => URL.revokeObjectURL(objectUrl), 60000);
         } else {
-            // These are public free files. The protected LMS viewer requires a login
-            // and would block guests even after they completed the resource intake.
-            global.open(url.href, '_blank', 'noopener,noreferrer');
+            // Public free resources: open PDFs in the ca-resource reader viewer
+            const isPdf = /\.pdf$/i.test(url.pathname) || (url.href.toLowerCase().includes('.pdf') && !url.href.includes('drive.google.com'));
+            if (isPdf) {
+                global.open('/ca-resource/index.html?pdf=' + encodeURIComponent(url.href), '_blank', 'noopener,noreferrer');
+            } else {
+                global.open(url.href, '_blank', 'noopener,noreferrer');
+            }
         }
     }
     async function freeAction(resource, download) {
@@ -218,14 +222,28 @@
             await collector.checkAndAccess(resource.title, download ? resource.downloadUrl : resource.viewUrl, () => openFree(resource, download));
         } catch (_) { showError('We could not open this resource. Please try again.'); }
     }
-    function showEnrollment(resource, trigger) {
+    function showEnrollment(resource, trigger, access) {
         const program = programs[resource.program];
         const modal = document.getElementById('resource-enroll-dialog');
         document.getElementById('resource-enroll-title').textContent = 'Enroll in ' + program.title + ' to Access the Premium Resources';
         document.getElementById('resource-enroll-resource').textContent = resource.title;
         document.getElementById('resource-enroll-link').href = program.url;
+        const signInBtn = modal.querySelector('a[href*="/login"]');
+        if (signInBtn) {
+            signInBtn.hidden = Boolean(access?.loggedIn || access?.user);
+        }
         returnFocus = trigger;
         modal.showModal();
+    }
+    async function checkUserAccess() {
+        try {
+            if (!global.MSCProgramAccess) return;
+            const access = await global.MSCProgramAccess.getAccess();
+            if (access && access.courses && access.courses.length > 0) {
+                userCourses = access.courses;
+                renderPremiumResults();
+            }
+        } catch (_) { /* ignore */ }
     }
     async function premiumAction(resource, trigger) {
         trigger.disabled = true;
@@ -233,16 +251,24 @@
             if (!global.MSCProgramAccess) throw new Error('Access check unavailable');
             const access = await global.MSCProgramAccess.getAccess();
             if (access.error) throw access.error;
+            if (access.courses) userCourses = access.courses;
             const isEnrolled = hasProgramEnrollment(access?.courses, resource.program, global.MSCProgramAccess.canonicalCourse);
             if (isEnrolled) {
-                global.location.href = '/learning-management-system/lms-resources.html';
-            } else showEnrollment(resource, trigger);
+                if (resource.viewUrl || resource.url) {
+                    const target = resource.viewUrl || resource.url;
+                    global.location.href = '/ca-resource/index.html?pdf=' + encodeURIComponent(target);
+                } else if (resource.fileName) {
+                    global.location.href = '/ca-resource/resource/?name=' + encodeURIComponent(resource.fileName) + '&program=' + encodeURIComponent(resource.program || '');
+                } else {
+                    global.location.href = '/ca-resource/resource/?name=' + encodeURIComponent(resource.title) + '&program=' + encodeURIComponent(resource.program || '');
+                }
+            } else showEnrollment(resource, trigger, access);
         } catch (_) { showError('We could not check your program access. Please try again.'); }
         finally { trigger.disabled = false; }
     }
     function icon(name) {
         const paths = {
-            lock: '<rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',
+            lock: '<path fill="currentColor" fill-rule="evenodd" d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5zm-3 5a3 3 0 0 1 6 0v3H9V7zm3 6a1.75 1.75 0 0 1 1.75 1.75c0 .64-.34 1.2-.85 1.51l.6 2.24a.5.5 0 0 1-.48.63h-2.04a.5.5 0 0 1-.48-.63l.6-2.24A1.75 1.75 0 0 1 12 13z" clip-rule="evenodd"/>',
             download: '<path d="M12 3v12m-5-5 5 5 5-5M5 16v4h14v-4"/>',
             file: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 13h8m-8 4h5"/>',
             search: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/>'
@@ -256,34 +282,80 @@
         const card = element('article', 'resource-card' + (resource.premium ? ' resource-premium' : ''));
         const top = element('div', 'resource-card-top');
         if (resource.premium) {
-            const badge = element('span', 'resource-badge');
-            badge.append(icon('lock'), document.createTextNode('Premium'));
-            top.append(badge);
+            const groupType = inferResourceGroup(resource);
+            const iconClass = /cv|resume/i.test(groupType) ? 'icon-blue' : /cover/i.test(groupType) ? 'icon-amber' : /excel/i.test(groupType) ? 'icon-green' : /interview/i.test(groupType) ? 'icon-purple' : 'icon-indigo';
+            const iconBox = element('div', 'resource-premium-icon ' + iconClass);
+            iconBox.append(icon('file'));
+            const headerText = element('div', 'resource-premium-header-text');
+            headerText.append(element(headingLevel, 'resource-title', resource.title), element('span', 'resource-subtitle', 'Included with Program'));
+            top.append(iconBox, headerText);
+            card.append(top);
+
+            const programDisplayName = (resource.program || '').toLowerCase().includes('articleship')
+                ? 'Articleship Program'
+                : (resource.program || '').toLowerCase().includes('semi')
+                ? 'Semi Qualified CA Program'
+                : (resource.program || '').toLowerCase().includes('fresher')
+                ? 'CA Fresher Program'
+                : 'Industrial Training Program';
+
+            const isEnrolled = hasProgramEnrollment(userCourses, resource.program, global.MSCProgramAccess?.canonicalCourse);
+
+            const previewBox = element('div', 'premium-card-preview');
+            const previewLines = element('div', 'preview-mock-lines');
+            previewLines.innerHTML = '<div class="mock-grid-row"><div class="mock-card-item mock-card-teal"><div class="mock-badge mock-badge-teal"></div><div class="mock-item-body"><div class="mock-avatar"></div><div class="mock-lines"><span></span><span></span></div></div></div><div class="mock-card-item mock-card-doc"><div class="mock-doc-header"><span class="mock-purple-icon"></span><span class="mock-doc-title"></span></div><div class="mock-doc-lines"><span></span><span></span></div></div></div><div class="mock-grid-row"><div class="mock-card-item mock-card-amber"><div class="mock-badge mock-badge-amber"></div><div class="mock-item-body"><div class="mock-avatar amber"></div><div class="mock-lines"><span></span><span></span></div></div></div><div class="mock-card-item mock-card-doc"><div class="mock-doc-lines"><span></span><span></span></div></div></div>';
+            const lockOverlay = element('div', 'preview-lock-overlay');
+
+            const actions = element('div', 'resource-actions');
+            (resource.downloadUnavailable ? [false] : [true, false]).forEach(download => {
+                const label = download ? 'Download Now' : 'Buy Course';
+                const visibleLabel = download ? 'Download' : 'View';
+                const button = element('button', 'resource-action' + (download ? ' premium-action-download' : ' secondary premium-action-view'));
+                if (download) button.append(icon('download'));
+                button.append(document.createTextNode(visibleLabel));
+                button.type = 'button';
+                button.setAttribute('aria-label', label + ': ' + resource.title + ' (premium resource)');
+                button.addEventListener('click', () => premiumAction(resource, button));
+                actions.append(button);
+            });
+
+            if (isEnrolled) {
+                card.classList.add('premium-unlocked');
+                lockOverlay.append(actions);
+            } else {
+                const lockIconBadge = element('div', 'lock-icon-circle');
+                lockIconBadge.append(icon('lock'));
+                const lockText = element('div', 'lock-notice-text');
+                lockText.innerHTML = '<span>Available with</span><strong>' + programDisplayName + '</strong>';
+                lockOverlay.append(lockIconBadge, lockText, actions);
+            }
+            previewBox.append(previewLines, lockOverlay);
+            card.append(previewBox);
         } else {
             const file = element('div', 'resource-file-icon');
             file.append(icon('file'));
             top.append(file, element('span', 'resource-format', resource.downloadUnavailable ? 'GOOGLE SHEET' : resource.format === 'DOCX' ? 'EDITABLE WORD' : resource.format));
+            card.append(top, element(headingLevel, 'resource-title', resource.title));
+            card.append(element('p', 'resource-description', resource.description));
+            const actions = element('div', 'resource-actions');
+            (resource.downloadUnavailable ? [false] : [true, false]).forEach(download => {
+                const label = resource.downloadUnavailable ? 'Open Google Sheet' : download ? 'Download ' + resource.format : 'Preview';
+                const visibleLabel = resource.downloadUnavailable ? 'Open Google Sheet' : download ? 'Download' : 'Preview';
+                const button = element('button', 'resource-action' + ((!resource.downloadUnavailable && !download) ? ' secondary' : ''));
+                if (download) button.append(icon('download'));
+                button.append(document.createTextNode(visibleLabel));
+                button.type = 'button';
+                button.setAttribute('aria-label', label + ': ' + resource.title);
+                button.addEventListener('click', () => freeAction(resource, download));
+                actions.append(button);
+            });
+            card.append(actions);
         }
-        card.append(top, element(headingLevel, 'resource-title', resource.title));
-        if (!resource.premium) card.append(element('p', 'resource-description', resource.description));
-        const actions = element('div', 'resource-actions');
-        (resource.downloadUnavailable ? [false] : resource.premium ? [false, true] : [true, false]).forEach(download => {
-            const label = resource.downloadUnavailable ? 'Open Google Sheet' : download ? (resource.premium ? 'Download Now' : 'Download ' + resource.format) : (resource.premium ? 'View Now' : 'Preview');
-            const visibleLabel = resource.downloadUnavailable ? 'Open Google Sheet' : resource.premium ? (download ? 'Download' : 'View') : (download ? 'Download ' + resource.format : 'Preview');
-            const button = element('button', 'resource-action' + ((!resource.downloadUnavailable && (!download || resource.premium)) ? ' secondary' : ''));
-            if (resource.premium || download) button.append(icon(resource.premium ? 'lock' : 'download'));
-            button.append(document.createTextNode(visibleLabel));
-            button.type = 'button';
-            button.setAttribute('aria-label', label + ': ' + resource.title + (resource.premium ? ' (premium resource)' : ''));
-            button.addEventListener('click', () => resource.premium ? premiumAction(resource, button) : freeAction(resource, download));
-            actions.append(button);
-        });
-        card.append(actions);
         return card;
     }
     function sectionHeader(id, title, count, description) {
         const header = element('div', 'resource-section-header');
-        const copy = element('div');
+        const copy = element('div', 'resource-section-copy');
         const titleRow = element('div', 'resource-section-title');
         const heading = element('h2', '', title);
         heading.id = 'resource-' + id;
@@ -293,6 +365,9 @@
         titleRow.append(heading, badge);
         copy.append(titleRow, element('p', 'resource-section-intro', description));
         header.append(copy);
+        const viewAll = element('a', 'hub-view-link', 'View all →');
+        viewAll.href = '#' + (id === 'free' ? 'resource-free' : 'resource-premium');
+        header.append(viewAll);
         return header;
     }
     function renderPremiumResults(focusGroup) {
@@ -452,6 +527,7 @@
         modal.addEventListener('click', e => { if (e.target === modal) { const rect = modal.getBoundingClientRect(); if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) modal.close(); } });
         modal.addEventListener('close', () => returnFocus?.focus());
         loadCatalogue();
+        checkUserAccess();
         // A fresh visit/focus picks up materials added in the existing LMS admin.
         let lastRefresh = Date.now();
         global.addEventListener('focus', () => { if (!modal.open && Date.now() - lastRefresh > 60000) { lastRefresh = Date.now(); loadCatalogue(); } });

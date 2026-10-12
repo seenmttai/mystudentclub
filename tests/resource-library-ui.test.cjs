@@ -225,7 +225,7 @@ test('free download/preview actions still pass original title and correct file t
         card.querySelectorAll('button')[1].click(); await tick();
         assert.deepEqual(calls,[{title:'CV Template 1',url:'/assets/ca-fresher-resources/CV Template-1.docx'},{title:'CV Template 1',url:'/assets/ca-fresher-resources/CV Template-1.pdf'}]);
         assert.deepEqual(downloads,[{name:'CV Template-1.docx',href:'blob:resource-test'}]);
-        assert.equal(opens.length,1); assert.match(opens[0][0],/CV%20Template-1\.pdf$/);
+        assert.equal(opens.length,1); assert.match(opens[0][0],/\/ca-resource\/index\.html\?pdf=.*CV%2520Template-1\.pdf/);
     } finally { dom.window.close(); }
 });
 
@@ -253,8 +253,23 @@ test('premium actions in expanded groups recheck enrollment and retain dialog la
             doc.querySelector('.dialog-close').click();
             assert.equal(doc.activeElement,button,'closing enrollment dialog restores the originating action');
         }
-        assert.equal(accessCalls,2,'both View and Download require fresh access checks');
+        assert.equal(accessCalls,3,'page load checks the visual state, then View and Download each recheck access');
         assert.ok(!doc.body.innerHTML.includes('PRIVATE-URL'));
+    } finally { dom.window.close(); }
+});
+
+test('an enrolled student sees premium resources as unlocked on page load', async () => {
+    const dom = await render('ca-industrial-training-resources', async () => ({data:rowsForTemplates(1)}), window => {
+        window.MSCProgramAccess = {
+            getAccess: async () => ({user:{id:'student-1'},loggedIn:true,hasAccess:true,courses:['industrial-training-mastery'],error:null}),
+            canonicalCourse: course => course
+        };
+    });
+    try {
+        const card = dom.window.document.querySelector('.premium-resources-list .resource-card');
+        assert.ok(card, 'the catalogue renders the resource');
+        assert.ok(card.classList.contains('premium-unlocked'), 'the enrolled student sees it unlocked before clicking');
+        assert.equal(card.querySelector('.lock-notice-text'), null);
     } finally { dom.window.close(); }
 });
 

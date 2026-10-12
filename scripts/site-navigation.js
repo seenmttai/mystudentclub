@@ -10,23 +10,94 @@
   ];
   const menus = [];
   const make = (tag, className, text) => { const node=document.createElement(tag);if(className)node.className=className;if(text)node.textContent=text;return node; };
+  const makeChevron = () => {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('class', 'msc-native-chevron');
+    svg.setAttribute('width', '11');
+    svg.setAttribute('height', '11');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('fill', 'none');
+    svg.setAttribute('stroke', 'currentColor');
+    svg.setAttribute('stroke-width', '2.5');
+    svg.setAttribute('stroke-linecap', 'round');
+    svg.setAttribute('stroke-linejoin', 'round');
+    const polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+    polyline.setAttribute('points', '6 9 12 15 18 9');
+    svg.append(polyline);
+    return svg;
+  };
   function link(label,url,className) {const node=make('a',className,label);node.href=url;return node;}
   function group(label, links, desktop) {
     const node=make('details','msc-native-group');
     const summary=make('summary',desktop ? 'dv2-nav-link msc-native-link' : 'menu-item msc-native-link',label);
-    summary.append(make('span','msc-native-chevron','⌄'));
+    summary.append(makeChevron());
     const items=make('div','msc-native-dropdown');
     links.forEach(([name,url])=>items.append(link(name,url,'msc-native-item')));
-    node.append(summary,items);return node;
+    node.append(summary,items);
+    if(desktop) {
+      let closeTimeout;
+      node.addEventListener('mouseenter',()=>{
+        clearTimeout(closeTimeout);
+        document.querySelectorAll('.msc-native-desktop .msc-native-group[open]').forEach(other=>{if(other!==node)other.open=false;});
+        node.open=true;
+      });
+      node.addEventListener('mouseleave',()=>{
+        closeTimeout=setTimeout(()=>{node.open=false;},120);
+      });
+    }
+    return node;
   }
   function navigation(desktop=false, nativeAccount=false) {
     const nav=make('nav',desktop ? 'msc-native-nav msc-native-desktop' : 'msc-native-nav msc-native-drawer');
     nav.setAttribute('aria-label','Main navigation');
     const cls=desktop ? 'dv2-nav-link msc-native-link' : 'menu-item msc-native-link';
-    nav.append(link('Jobs','/',cls));
-    groups.forEach(([name,items])=>nav.append(group(name,items,desktop)));
-    nav.append(link('For Recruiters','https://hire.mystudentclub.com',cls));
-    const courses=link('My Courses','/learning-management-system/',cls+' msc-native-member');courses.hidden=true;nav.append(courses);
+    if (desktop) {
+      const currentPath = location.pathname.replace(/\/$/, '') || '/';
+      const jobsLink = link('Jobs','/',cls);
+      if (currentPath === '/' || currentPath === '/index.html') jobsLink.classList.add('active');
+      nav.append(jobsLink);
+
+      const appLink = link('Applications','/history.html',cls);
+      if (currentPath.includes('history')) appLink.classList.add('active');
+      nav.append(appLink);
+
+      nav.append(group('Programs', [
+        ['MSC Industrial Training Program', '/ca-industrial-training-program/'],
+        ['MSC Articleship Program', '/articleship-program/'],
+        ['MSC CA Freshers Program', '/msc-ca-fresher-program/']
+      ], true));
+
+      const coursesLink = link('My Courses','/learning-management-system/',cls);
+      if (currentPath.includes('learning-management-system')) coursesLink.classList.add('active');
+      nav.append(coursesLink);
+
+      const cvLink = link('CV Reviewer','/cv-reviewer/',cls);
+      if (currentPath.includes('cv-reviewer')) cvLink.classList.add('active');
+      nav.append(cvLink);
+
+      nav.append(group('Resources', [
+        ['Industrial Training Resources', '/ca-industrial-training-resources'],
+        ['Articleship Resources', '/articleship-resources'],
+        ['CA Fresher Resources', '/ca-fresher-training-resources'],
+        ['Semi-Qualified CA Resources', '/semi-qualified-ca-resources'],
+        ['Events', '/sessions/'],
+        ['Career Guides', '/blog/']
+      ], true));
+
+      const contactLink = link('Contact','/contact.html',cls);
+      if (currentPath.includes('contact')) contactLink.classList.add('active');
+      nav.append(contactLink);
+
+      const toolsFallback = make('div', 'msc-native-tools-routes');
+      toolsFallback.hidden = true;
+      toolsFallback.append(link('CV Builder', '/cv-builder/', cls), link('AI Interview Bot', '/ai-interview', cls));
+      nav.append(toolsFallback);
+    } else {
+      nav.append(link('Jobs','/',cls));
+      groups.forEach(([name,items])=>nav.append(group(name,items,desktop)));
+      nav.append(link('For Recruiters','https://hire.mystudentclub.com',cls));
+      const courses=link('My Courses','/learning-management-system/',cls+' msc-native-member');courses.hidden=true;nav.append(courses);
+    }
     if (!desktop || !nativeAccount) {
       const account=group('My Account',[['My Profile','/profile.html'],['My Applications','/history.html'],['Complete Profile','/profile.html?onboarding=1']],desktop);
       account.classList.add('msc-native-member');account.hidden=true;
@@ -41,7 +112,7 @@
     if(!host)return;
     const details=make('details','msc-native-compact');
     const trigger=make('summary','msc-native-compact-trigger','Menu');
-    trigger.append(make('span','msc-native-chevron','⌄'));
+    trigger.append(makeChevron());
     details.append(trigger,navigation());host.append(details);
   }
   function enhance() {
