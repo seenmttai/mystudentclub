@@ -36,9 +36,10 @@
         }
     ];
     const programs = {
-        'industrial-training': { title: 'MSC Industrial Training Program', url: '/ca-industrial-training-program/', courses: ['industrial-training-mastery', 'industrial-training', 'msc-industrial-training-program'] },
-        'ca-fresher': { title: 'MSC CA Fresher Program', url: '/msc-ca-fresher-program/', courses: ['msc-ca-freshers-program', 'msc-ca-fresher-program', 'ca-freshers'] },
-        'articleship': { title: 'MSC Articleship Program', url: '/articleship-program/', courses: ['msc-articleship-program', 'articleship-program', 'articleship', 'articleship-mastery', 'msc-articleship-mastery'] }
+        'industrial-training': { title: 'MSC Industrial Training Program', url: '/ca-industrial-training-program/', courses: ['industrial-training-mastery', 'industrial-training', 'msc-industrial-training-program', 'ca-industrial-training', 'industrial-training-program', 'msc-ca-industrial-training', 'ca-industrial'] },
+        'ca-fresher': { title: 'MSC CA Fresher Program', url: '/msc-ca-fresher-program/', courses: ['msc-ca-freshers-program', 'msc-ca-fresher-program', 'ca-freshers', 'freshers', 'ca-freshers-program', 'msc-ca-freshers'] },
+        'articleship': { title: 'MSC Articleship Program', url: '/articleship-program/', courses: ['msc-articleship-program', 'articleship-program', 'articleship', 'articleship-mastery', 'msc-articleship-mastery'] },
+        'semi-qualified': { title: 'MSC Industrial Training Program', url: '/ca-industrial-training-program/', courses: ['industrial-training-mastery', 'industrial-training', 'msc-industrial-training-program', 'ca-industrial-training', 'industrial-training-program', 'msc-ca-industrial-training', 'ca-industrial', 'msc-ca-freshers-program', 'msc-ca-fresher-program', 'ca-freshers'] }
     };
     function hasProgramEnrollment(courses, programId, canonicalCourse) {
         const program = programs[programId];
@@ -53,7 +54,7 @@
         'industrial-training': { resources: industrialResources, premiumProgram: 'industrial-training' },
         'ca-fresher': { resources: fresherResources, premiumProgram: 'ca-fresher' },
         'articleship': { resources: fresherResources.filter(r => r.category === 'cv-prep').map(r => ({ ...r, title: r.title === 'Cover Letter CA Fresher' ? 'Cover Letter' : r.title })), premiumProgram: 'articleship' },
-        'semi-qualified': { resources: fresherResources.map(r => ({ ...r, title: r.title === 'Cover Letter CA Fresher' ? 'Cover Letter' : r.title })), premiumProgram: 'ca-fresher' },
+        'semi-qualified': { resources: fresherResources.map(r => ({ ...r, title: r.title === 'Cover Letter CA Fresher' ? 'Cover Letter' : r.title })), premiumProgram: 'industrial-training' },
         'domain-wise-companies': {
             resources: industrialResources.filter(r => r.category === 'application-tricks').map(r => ({
                 ...r, title: 'Hiring Companies List',
@@ -214,6 +215,18 @@
         }
     }
     async function freeAction(resource, download) {
+        if (userCourses && userCourses.length > 0) {
+            return openFree(resource, download);
+        }
+        if (global.MSCProgramAccess) {
+            try {
+                const access = await global.MSCProgramAccess.getAccess();
+                if (access?.hasAccess || (access?.courses && access.courses.length > 0)) {
+                    if (access.courses) userCourses = access.courses;
+                    return openFree(resource, download);
+                }
+            } catch (_) { /* ignore and fallback to collector */ }
+        }
         const collector = global.resourceFormCollector;
         if (!collector || typeof collector.checkAndAccess !== 'function') {
             showError('The access form is still loading. Please try again in a moment.'); return;
@@ -223,7 +236,8 @@
         } catch (_) { showError('We could not open this resource. Please try again.'); }
     }
     function showEnrollment(resource, trigger, access) {
-        const program = programs[resource.program];
+        const programId = stage === 'semi-qualified' ? 'industrial-training' : (resource.program || config.premiumProgram);
+        const program = programs[programId] || programs['industrial-training'];
         const modal = document.getElementById('resource-enroll-dialog');
         document.getElementById('resource-enroll-title').textContent = 'Enroll in ' + program.title + ' to Access the Premium Resources';
         document.getElementById('resource-enroll-resource').textContent = resource.title;
@@ -245,22 +259,36 @@
             }
         } catch (_) { /* ignore */ }
     }
-    async function premiumAction(resource, trigger) {
+    async function premiumAction(resource, trigger, download = false) {
         trigger.disabled = true;
         try {
             if (!global.MSCProgramAccess) throw new Error('Access check unavailable');
             const access = await global.MSCProgramAccess.getAccess();
             if (access.error) throw access.error;
             if (access.courses) userCourses = access.courses;
-            const isEnrolled = hasProgramEnrollment(access?.courses, resource.program, global.MSCProgramAccess.canonicalCourse);
+            const isEnrolled = hasProgramEnrollment(access?.courses, resource.program, global.MSCProgramAccess.canonicalCourse) ||
+                (stage === 'semi-qualified' && (hasProgramEnrollment(access?.courses, 'industrial-training', global.MSCProgramAccess.canonicalCourse) || hasProgramEnrollment(access?.courses, 'ca-fresher', global.MSCProgramAccess.canonicalCourse)));
             if (isEnrolled) {
+                const actionParam = download ? '&action=download' : '';
                 if (resource.viewUrl || resource.url) {
-                    const target = resource.viewUrl || resource.url;
-                    global.location.href = '/ca-resource/index.html?pdf=' + encodeURIComponent(target);
+                    const target = (download && resource.downloadUrl) ? resource.downloadUrl : (resource.viewUrl || resource.url);
+                    if (download) {
+                        const link = element('a');
+                        link.href = target;
+                        link.download = cleanFileName(resource.fileName || resource.title);
+                        link.dataset.noIntercept = 'true';
+                        link.rel = 'noopener noreferrer';
+                        link.hidden = true;
+                        document.body.appendChild(link);
+                        link.click();
+                        link.remove();
+                    } else {
+                        global.location.href = '/ca-resource/index.html?pdf=' + encodeURIComponent(target);
+                    }
                 } else if (resource.fileName) {
-                    global.location.href = '/ca-resource/resource/?name=' + encodeURIComponent(resource.fileName) + '&program=' + encodeURIComponent(resource.program || '');
+                    global.location.href = '/ca-resource/resource/?name=' + encodeURIComponent(resource.fileName) + '&program=' + encodeURIComponent(resource.program || '') + actionParam;
                 } else {
-                    global.location.href = '/ca-resource/resource/?name=' + encodeURIComponent(resource.title) + '&program=' + encodeURIComponent(resource.program || '');
+                    global.location.href = '/ca-resource/resource/?name=' + encodeURIComponent(resource.title) + '&program=' + encodeURIComponent(resource.program || '') + actionParam;
                 }
             } else showEnrollment(resource, trigger, access);
         } catch (_) { showError('We could not check your program access. Please try again.'); }
@@ -291,15 +319,18 @@
             top.append(iconBox, headerText);
             card.append(top);
 
-            const programDisplayName = (resource.program || '').toLowerCase().includes('articleship')
+            const programDisplayName = stage === 'semi-qualified'
+                ? 'Industrial Training Program'
+                : (resource.program || '').toLowerCase().includes('articleship')
                 ? 'Articleship Program'
                 : (resource.program || '').toLowerCase().includes('semi')
-                ? 'Semi Qualified CA Program'
+                ? 'Industrial Training Program'
                 : (resource.program || '').toLowerCase().includes('fresher')
                 ? 'CA Fresher Program'
                 : 'Industrial Training Program';
 
-            const isEnrolled = hasProgramEnrollment(userCourses, resource.program, global.MSCProgramAccess?.canonicalCourse);
+            const isEnrolled = hasProgramEnrollment(userCourses, resource.program, global.MSCProgramAccess?.canonicalCourse) ||
+                (stage === 'semi-qualified' && (hasProgramEnrollment(userCourses, 'industrial-training', global.MSCProgramAccess?.canonicalCourse) || hasProgramEnrollment(userCourses, 'ca-fresher', global.MSCProgramAccess?.canonicalCourse)));
 
             const previewBox = element('div', 'premium-card-preview');
             const previewLines = element('div', 'preview-mock-lines');
@@ -315,7 +346,7 @@
                 button.append(document.createTextNode(visibleLabel));
                 button.type = 'button';
                 button.setAttribute('aria-label', label + ': ' + resource.title + ' (premium resource)');
-                button.addEventListener('click', () => premiumAction(resource, button));
+                button.addEventListener('click', () => premiumAction(resource, button, download));
                 actions.append(button);
             });
 
@@ -365,9 +396,11 @@
         titleRow.append(heading, badge);
         copy.append(titleRow, element('p', 'resource-section-intro', description));
         header.append(copy);
+        const actions = element('div', 'resource-section-actions');
         const viewAll = element('a', 'hub-view-link', 'View all →');
         viewAll.href = '#' + (id === 'free' ? 'resource-free' : 'resource-premium');
-        header.append(viewAll);
+        actions.append(viewAll);
+        header.append(actions);
         return header;
     }
     function renderPremiumResults(focusGroup) {
@@ -459,7 +492,12 @@
         const header = sectionHeader('premium', 'Premium Resources', 0, 'Included with the ' + program.title + '. Enroll to view and download.');
         const enroll = element('a', 'resource-program-link', 'Explore Program →');
         enroll.href = program.url;
-        header.append(enroll);
+        const actions = header.querySelector('.resource-section-actions');
+        if (actions) {
+            actions.append(enroll);
+        } else {
+            header.append(enroll);
+        }
         premium.append(header);
         const toolbar = element('div', 'resource-search-toolbar');
         const searchLabel = element('label', 'resource-search');

@@ -72,6 +72,17 @@ class ResourceFormCollector {
             return true;
         }
 
+        if (window.MSCProgramAccess) {
+            try {
+                const access = await window.MSCProgramAccess.getAccess();
+                if (access?.hasAccess || (access?.courses && access.courses.length > 0)) {
+                    this.formSubmitted.add(url);
+                    await successCallback();
+                    return true;
+                }
+            } catch (_) { /* continue */ }
+        }
+
         if (window.MSCCareerProfile?.ensureForResource) {
             try {
                 const ok = await window.MSCCareerProfile.ensureForResource(this.programType, title, url);

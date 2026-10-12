@@ -203,6 +203,8 @@ test('premium resources require the matching program, including canonical aliase
     assert.equal(library.hasProgramEnrollment(['ca-industrial-training'],'industrial-training',canonical), true);
     assert.equal(library.hasProgramEnrollment(['msc-articleship-program'],'articleship',canonical), true);
     assert.equal(library.hasProgramEnrollment(['msc-ca-freshers-program'],'ca-fresher',canonical), true);
+    assert.equal(library.hasProgramEnrollment(['ca-industrial-training'],'semi-qualified',canonical), true);
+    assert.equal(library.hasProgramEnrollment(['industrial-training-mastery'],'semi-qualified',canonical), true);
     assert.equal(library.hasProgramEnrollment(['unknown-course'],'articleship',canonical), false);
     assert.equal(library.hasProgramEnrollment([], 'articleship', canonical), false);
 });

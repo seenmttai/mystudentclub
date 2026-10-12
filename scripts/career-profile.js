@@ -219,6 +219,7 @@
   }
   async function ensureForResource(stage, title, url) {
     const user = await currentUser();
+    if (await hasEnrollment(user)) return true;
     const saved = await existingDetails(user,stage);
     if (saved) return true;
     return Boolean(await formModal({ stage,source:{kind:'resource',title,url},submitLabel:'Access Resource' },user));

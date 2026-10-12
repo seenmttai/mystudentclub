@@ -60,6 +60,19 @@ test('all four pages retain Free/Premium top-level sections, unchanged free reso
                 assert.equal(sheet.querySelector('button').textContent, 'Open Google Sheet');
                 assert.match(sheet.textContent, /Download availability is managed by the sheet owner/);
             }
+            const freeHeader = doc.querySelector('.resource-free-section .resource-section-header');
+            assert.equal(freeHeader.children.length, 2, 'free section header has copy and actions');
+            assert.ok(freeHeader.querySelector('.resource-section-actions .hub-view-link'));
+
+            const premiumHeader = doc.querySelector('.resource-premium-section .resource-section-header');
+            assert.equal(premiumHeader.children.length, 2, 'premium section header has copy and actions');
+            const premiumActions = premiumHeader.querySelector('.resource-section-actions');
+            assert.ok(premiumActions, 'premium header actions container exists');
+            assert.deepEqual(
+                [...premiumActions.children].map(node => node.textContent),
+                ['View all →', 'Explore Program →'],
+                'View all and Explore Program are grouped together in actions container'
+            );
             assertReferenceTargets(doc);
         } finally { dom.window.close(); }
     }
@@ -273,6 +286,43 @@ test('an enrolled student sees premium resources as unlocked on page load', asyn
     } finally { dom.window.close(); }
 });
 
+test('on semi-qualified page, cards and header display Industrial Training, and students with CA Industrial have access', async () => {
+    const domGuest = await render('semi-qualified-ca-resources', async () => ({data:rowsForTemplates(1)}), window => {
+        mockDialog(window);
+    });
+    try {
+        const doc = domGuest.window.document;
+        const headerIntro = doc.querySelector('.resource-premium-section .resource-section-intro');
+        assert.match(headerIntro.textContent, /MSC Industrial Training Program/);
+        assert.ok(!headerIntro.textContent.includes('Fresher'), 'header text does not mention Fresher');
+        const enrollLink = doc.querySelector('.resource-premium-section .resource-program-link');
+        assert.equal(enrollLink.getAttribute('href'), '/ca-industrial-training-program/');
+
+        const card = doc.querySelector('.premium-resources-list .resource-card');
+        assert.ok(card);
+        assert.ok(!card.classList.contains('premium-unlocked'));
+        const lockText = card.querySelector('.lock-notice-text');
+        assert.ok(lockText);
+        assert.match(lockText.textContent, /Industrial Training Program/);
+        assert.ok(!lockText.textContent.includes('Fresher'), 'lock overlay shows Industrial not Fresher');
+    } finally { domGuest.window.close(); }
+
+    const domEnrolled = await render('semi-qualified-ca-resources', async () => ({data:rowsForTemplates(1)}), window => {
+        mockDialog(window);
+        window.MSCProgramAccess = {
+            getAccess: async () => ({user:{id:'student-it'},loggedIn:true,hasAccess:true,courses:['ca-industrial-training'],error:null}),
+            canonicalCourse: course => course === 'ca-industrial-training' ? 'industrial-training-mastery' : course
+        };
+    });
+    try {
+        const doc = domEnrolled.window.document;
+        const card = doc.querySelector('.premium-resources-list .resource-card');
+        assert.ok(card);
+        assert.ok(card.classList.contains('premium-unlocked'), 'CA Industrial student sees semi-qualified premium resource unlocked');
+        assert.equal(card.querySelector('.lock-notice-text'), null);
+    } finally { domEnrolled.window.close(); }
+});
+
 test('refresh keeps an existing selected day and group state, then resets to All days if that day is removed', async () => {
     let rows = sequencedRows(); let now = 0;
     const dom = await render('ca-industrial-training-resources', async()=>({data:rows}), window=>{window.Date.now=()=>now;});
@@ -288,5 +338,35 @@ test('refresh keeps an existing selected day and group state, then resets to All
         assert.equal(doc.querySelector('[data-day="all"]').getAttribute('aria-pressed'),'true');
         assert.deepEqual([...doc.querySelectorAll('.premium-day h3')].map(n=>n.textContent),['Day 0','Day 10','More resources']);
         assert.equal(doc.querySelector('#resource-premium-count').textContent,'3');
+    } finally { dom.window.close(); }
+});
+
+test('an enrolled student bypasses the lead form when accessing free resources', async () => {
+    let collectorOpened = false;
+    const dom = await render('ca-industrial-training-resources', async () => ({data:[]}), window => {
+        window.MSCProgramAccess = {
+            getAccess: async () => ({user:{id:'student-1'},loggedIn:true,hasAccess:true,courses:['industrial-training-mastery'],error:null}),
+            canonicalCourse: course => course
+        };
+        window.fetch = async () => ({ ok: true, headers: { get: () => 'application/octet-stream' }, blob: async () => new window.Blob(['content']) });
+        window.open = () => {};
+        window.URL.createObjectURL = () => 'blob:test';
+        window.URL.revokeObjectURL = () => {};
+        window.resourceFormCollector = {
+            checkAndAccess: async () => { collectorOpened = true; }
+        };
+    });
+    try {
+        const doc = dom.window.document;
+        const freeCard = doc.querySelector('.resource-free-section .resource-card');
+        const buttons = freeCard.querySelectorAll('button');
+        // Click download
+        buttons[0].click();
+        await tick();
+        assert.equal(collectorOpened, false, 'enrolled student downloads free resource without opening lead form');
+        // Click preview
+        buttons[1].click();
+        await tick();
+        assert.equal(collectorOpened, false, 'enrolled student previews free resource without opening lead form');
     } finally { dom.window.close(); }
 });
