@@ -187,7 +187,7 @@
         }
 
         .app-logo img {
-            height: 30px;
+            height: 33px;
             width: auto;
             max-width: 220px;
             display: block;
@@ -3742,7 +3742,7 @@
                 height: 24px;
             }
             .app-logo img {
-                height: 34px;
+                height: 37px;
                 width: auto;
                 max-width: 190px;
             }
@@ -4023,7 +4023,7 @@
                 height: 20px;
             }
             .app-logo img {
-                height: 28px;
+                height: 29px;
                 width: auto;
                 max-width: 160px;
             }
@@ -4402,7 +4402,7 @@
     }
 
     .app-logo img {
-        height: 28px;
+        height: 29px;
         width: auto;
         max-width: 155px;
         object-fit: contain;
@@ -5238,7 +5238,7 @@
 
 @media (max-width: 380px) {
     .app-logo img {
-        height: 24px;
+        height: 26px;
         max-width: 135px;
     }
 
@@ -5321,3 +5321,8 @@
 }
 @keyframes cursor-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 @keyframes pulse-green { 0% { transform: scale(0.95); opacity: 0.7; } 50% { transform: scale(1.2); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.7; } }
+
+/* The editor header turns dark only at 768px and below: use the light logo there. */
+@media (max-width: 768px) {
+    [data-theme="dark"] .app-logo img { content: url("https://www.mystudentclub.com/assets/logo-dark.png"); }
+}

@@ -54,7 +54,7 @@
 .wz-brand-logo {
   display: block;
   width: auto;
-  height: 28px;
+  height: 31px;
   flex-shrink: 0;
 }
 
@@ -671,3 +671,9 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* The wizard top bar turns dark in dark mode: use the light logo there. */
+[data-theme="dark"] .wz-brand-logo { content: url("https://www.mystudentclub.com/assets/logo-dark.png"); }
+
+/* The logo artwork reaches the edges of its image: never round or clip its corners. */
+img[src*="/assets/logo"] { border-radius: 0 !important; }
