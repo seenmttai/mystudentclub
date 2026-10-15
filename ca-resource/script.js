@@ -1,16 +1,37 @@
+// ─── Supabase Client & Authentication State ───
+const supabaseUrl = 'https://auth.mystudentclub.com';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+const supabaseClient = window.supabase ? window.supabase.createClient(supabaseUrl, supabaseKey, { auth: { storageKey: 'sb-izsggdtdiacxdsjjncdq-auth-token' } }) : null;
+
+let userEmail = '';
+
+// Try parsing userEmail from localStorage immediately as a fast synchronous fallback
+try {
+    const sbKey = 'sb-izsggdtdiacxdsjjncdq-auth-token';
+    const sbData = localStorage.getItem(sbKey);
+    if (sbData) {
+        const parsed = JSON.parse(sbData);
+        if (parsed && parsed.user && parsed.user.email) {
+            userEmail = parsed.user.email;
+        }
+    }
+} catch (e) {
+    console.warn('Failed to parse synchronous session fallback:', e);
+}
+
 // ─── State ───
 const urlParams = new URLSearchParams(window.location.search);
 const paramPdf = urlParams.get('pdf');
 const paramDl = urlParams.get('dl');
 const previewMode = urlParams.get('preview');
 const PDF_URL = paramPdf ? paramPdf : 'https://www.mystudentclub.com/assets/doc.pdf';
+const PDF_FETCH_URL = window.resolvePdfFetchUrl ? window.resolvePdfFetchUrl(PDF_URL) : PDF_URL;
 
 let pdfDoc = null;
 let totalPages = 0;
 let sidebarOpen = false;
 let flipbookReady = false;
 let viewMode = 'single';  // 'single' | 'double'
-const DEFAULT_INITIAL_ZOOM = 1;
 const MAX_RENDER_OUTPUT_SCALE = 3.4;
 const MIN_RENDER_OUTPUT_SCALE = 2;
 
@@ -76,6 +97,13 @@ function calcPageSize(pdfPageViewport) {
         pageW = pageH * pdfRatio;
     }
 
+    // Secure zoom constraint: enforce a minimum page height of 1.25x viewport height
+    const minSecureHeight = Math.round(availH * 1.25);
+    if (pageH < minSecureHeight) {
+        pageH = minSecureHeight;
+        pageW = pageH * pdfRatio;
+    }
+
     return { pageW: Math.floor(pageW), pageH: Math.floor(pageH) };
 }
 
@@ -100,7 +128,7 @@ async function renderPageToCanvas(pageNum, width, height) {
     const ctx = canvas.getContext('2d', { alpha: false });
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
-    
+
     // Render the PDF content
     await page.render({
         canvasContext: ctx,
@@ -108,12 +136,49 @@ async function renderPageToCanvas(pageNum, width, height) {
         transform: outputScale === 1 ? null : [outputScale, 0, 0, outputScale, 0, 0]
     }).promise;
 
+    // Draw the secure email watermark
+    if (userEmail) {
+        drawWatermarkOnCanvas(ctx, canvas.width, canvas.height, outputScale, userEmail);
+    }
+
     // Apply highlights if searching
     if (currentSearchTerm) {
         await drawHighlightsOnCanvas(ctx, page, viewport, outputScale);
     }
 
     return { canvas, page, viewport };
+}
+
+function drawWatermarkOnCanvas(ctx, canvasWidth, canvasHeight, outputScale, email) {
+    ctx.save();
+
+    // Set font style
+    const fontSize = Math.max(10, Math.round(14 * outputScale));
+    ctx.font = `bold ${fontSize}px 'Inter', sans-serif`;
+    ctx.fillStyle = 'rgba(128, 128, 128, 0.14)'; // light gray with transparency
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    // Calculate diagonal steps to cover the canvas with a grid of watermarks
+    const angle = -30 * Math.PI / 180;
+    ctx.rotate(angle);
+
+    const stepX = 250 * outputScale;
+    const stepY = 180 * outputScale;
+
+    // Cover rotated canvas bounds
+    const startX = -canvasWidth;
+    const endX = canvasWidth * 2;
+    const startY = -canvasHeight;
+    const endY = canvasHeight * 2;
+
+    for (let x = startX; x < endX; x += stepX) {
+        for (let y = startY; y < endY; y += stepY) {
+            ctx.fillText(email, x, y);
+        }
+    }
+
+    ctx.restore();
 }
 
 // ─── Render Annotations Layer (Links) ───
@@ -188,14 +253,14 @@ async function drawHighlightsOnCanvas(ctx, page, viewport, outputScale) {
             if (!item.str) return;
             const str = item.str.toLowerCase();
             let idx = -1;
-            
+
             while ((idx = str.indexOf(term, idx + 1)) !== -1) {
                 // Determine if this is the "active" match
-                const isCurrentMatch = searchIndex >= 0 && 
-                                     searchMatches[searchIndex] &&
-                                     searchMatches[searchIndex].page === page.pageNumber &&
-                                     searchMatches[searchIndex].itemIdx === itemIdx &&
-                                     searchMatches[searchIndex].charOffset === idx;
+                const isCurrentMatch = searchIndex >= 0 &&
+                    searchMatches[searchIndex] &&
+                    searchMatches[searchIndex].page === page.pageNumber &&
+                    searchMatches[searchIndex].itemIdx === itemIdx &&
+                    searchMatches[searchIndex].charOffset === idx;
 
                 drawMatchHighlight(ctx, item, viewport, idx, term.length, isCurrentMatch);
             }
@@ -210,16 +275,16 @@ function drawMatchHighlight(ctx, item, viewport, charOffset, len, isCurrent) {
     // The item.transform is [scaleX, skewX, skewY, scaleY, tx, ty]
     // PDF.js coordinates have origin at bottom-left.
     const tx = pdfjsLib.Util.transform(viewport.transform, item.transform);
-    
+
     // fontHeight is approximately the scaleY of the combined transform
     const fontHeight = Math.sqrt(tx[2] * tx[2] + tx[3] * tx[3]);
     const fontWidth = Math.sqrt(tx[0] * tx[0] + tx[1] * tx[1]);
-    
+
     // Estimate width per character if we don't have individual glyph widths
     // PDF.js items have 'width' which is the total width of the string in PDF units
     const totalWidth = item.width * (fontWidth / (item.transform[0] || fontWidth));
     const charWidth = totalWidth / item.str.length;
-    
+
     const x = tx[4] + (charOffset * charWidth);
     const y = tx[5] - fontHeight; // text baseline is at tx[5], move up to top of font
     const rectWidth = len * charWidth;
@@ -227,7 +292,7 @@ function drawMatchHighlight(ctx, item, viewport, charOffset, len, isCurrent) {
 
     ctx.fillStyle = isCurrent ? 'rgba(255, 150, 0, 0.6)' : 'rgba(255, 255, 0, 0.4)';
     ctx.fillRect(x, y, rectWidth, rectHeight);
-    
+
     // Add a small border to current match
     if (isCurrent) {
         ctx.strokeStyle = 'rgba(255, 100, 0, 0.9)';
@@ -249,13 +314,13 @@ async function buildFlipbook() {
         const pageDiv = document.createElement('div');
         pageDiv.className = 'flipbook-page';
         pageDiv.dataset.page = i;
-        
+
         // Loading placeholder
         const placeholder = document.createElement('div');
         placeholder.className = 'page-loading';
         placeholder.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
         pageDiv.appendChild(placeholder);
-        
+
         flipbookEl.appendChild(pageDiv);
     }
 
@@ -272,7 +337,7 @@ async function buildFlipbook() {
         elevation: 50,
         duration: 1000,
         when: {
-            turning: function(event, page, view) {
+            turning: function (event, page, view) {
                 updatePageDisplay(page);
                 const size = $(flipbookEl).turn('size');
                 const pW = viewMode === 'single' ? size.width : size.width / 2;
@@ -280,7 +345,7 @@ async function buildFlipbook() {
                 // Pre-render adjacent pages
                 view.forEach(p => { if (p) renderFlipbookPage(p, pW, pH); });
             },
-            turned: function(event, page, view) {
+            turned: function (event, page, view) {
                 updatePageDisplay(page);
                 updateThumbActive(page);
                 const size = $(flipbookEl).turn('size');
@@ -434,13 +499,13 @@ async function renderFlipbookPage(pageNum, pageW, pageH) {
 async function goToPage(num) {
     if (!flipbookReady) return;
     num = Math.max(1, Math.min(num, totalPages));
-    
+
     // Pre-render the target page and its neighbors before jumping
     // so it doesn't get stuck on the loading spinner
     const size = $(flipbookEl).turn('size');
     const pW = viewMode === 'single' ? size.width : size.width / 2;
     const pH = size.height;
-    
+
     const promises = [];
     for (let p = Math.max(1, num - 1); p <= Math.min(totalPages, num + 2); p++) {
         promises.push(renderFlipbookPage(p, pW, pH));
@@ -586,11 +651,11 @@ function checkOverflow() {
     }
 }
 
-// Touch panning is handled by the existing touch gestures below.
+// Touch panning is handled by the mobile gesture listeners below.
 let activePanPointerId = null;
 let panStartX = 0, panStartY = 0, scrollStartLeft = 0, scrollStartTop = 0;
 
-viewerArea.addEventListener('pointerdown', (e) => {
+viewerArea.addEventListener('pointerdown', e => {
     if (activePanPointerId !== null || !isZoomedIn || e.pointerType === 'touch' || e.button !== 0) return;
     if (e.target.closest('button, input, a, .toolbar-btn')) return;
     panStartX = e.clientX;
@@ -602,13 +667,13 @@ viewerArea.addEventListener('pointerdown', (e) => {
     viewerArea.style.cursor = 'grabbing';
 });
 
-viewerArea.addEventListener('pointermove', (e) => {
+viewerArea.addEventListener('pointermove', e => {
     if (e.pointerId !== activePanPointerId || !isZoomedIn) return;
     viewerArea.scrollLeft = scrollStartLeft - (e.clientX - panStartX);
     viewerArea.scrollTop = scrollStartTop - (e.clientY - panStartY);
 });
 
-const stopPan = (e) => {
+const stopPan = e => {
     if (e.pointerId !== activePanPointerId) return;
     if (viewerArea.hasPointerCapture(activePanPointerId)) viewerArea.releasePointerCapture(activePanPointerId);
     activePanPointerId = null;
@@ -631,9 +696,17 @@ function fitToWidth() {
 
     pdfDoc.getPage(1).then(page => {
         const vp = page.getViewport({ scale: 1 });
-        const { availW } = getFlipbookDimensions();
-        const pageW = viewMode === 'single' ? Math.floor(availW * 0.9) : Math.floor(availW / 2 * 0.95);
-        const pageH = Math.floor(pageW / (vp.width / vp.height));
+        const { availW, availH } = getFlipbookDimensions();
+        let pageW = viewMode === 'single' ? Math.floor(availW * 0.9) : Math.floor(availW / 2 * 0.95);
+        let pageH = Math.floor(pageW / (vp.width / vp.height));
+
+        // Secure zoom constraint: enforce a minimum page height of 1.25x viewport height
+        const minSecureHeight = Math.round(availH * 1.25);
+        if (pageH < minSecureHeight) {
+            pageH = minSecureHeight;
+            pageW = Math.round(pageH * (vp.width / vp.height));
+        }
+
         const bookW = viewMode === 'single' ? pageW : pageW * 2;
         $(flipbookEl).turn('size', bookW, pageH);
         renderedPages.clear();
@@ -703,7 +776,7 @@ async function generateThumbnails() {
             thumbCanvas.height = thumbVP.height;
             const ctx = thumbCanvas.getContext('2d');
             await page.render({ canvasContext: ctx, viewport: thumbVP }).promise;
-        } catch (e) {}
+        } catch (e) { }
     }
 }
 
@@ -726,7 +799,7 @@ async function searchDocument(term) {
     currentSearchTerm = term;
     searchMatches = [];
     searchIndex = -1;
-    
+
     if (!pdfDoc || !term) {
         updateSearchControls();
         if (oldTerm) {
@@ -743,7 +816,7 @@ async function searchDocument(term) {
         try {
             const page = await pdfDoc.getPage(i);
             const textContent = await page.getTextContent();
-            
+
             textContent.items.forEach((item, itemIdx) => {
                 if (!item.str) return;
                 const str = item.str.toLowerCase();
@@ -763,8 +836,8 @@ async function searchDocument(term) {
 
     if (searchMatches.length === 0) {
         searchInfo.textContent = 'No results';
-        setTimeout(() => { 
-            if (currentSearchTerm === term) searchInfo.textContent = ''; 
+        setTimeout(() => {
+            if (currentSearchTerm === term) searchInfo.textContent = '';
         }, 2000);
         updateSearchControls();
         return;
@@ -773,9 +846,9 @@ async function searchDocument(term) {
     searchIndex = 0;
     updateSearchControls();
     updateSearchInfo();
-    
+
     // Jump to first match and force re-render
-    renderedPages.clear(); 
+    renderedPages.clear();
     goToPage(searchMatches[0].page);
     refreshFlipbookView();
 }
@@ -785,9 +858,9 @@ function onSearchNext() {
     const oldPage = searchMatches[searchIndex].page;
     searchIndex = (searchIndex + 1) % searchMatches.length;
     const newMatch = searchMatches[searchIndex];
-    
+
     updateSearchInfo();
-    
+
     if (newMatch.page !== oldPage) {
         goToPage(newMatch.page);
     } else {
@@ -809,9 +882,9 @@ function onSearchPrev() {
     const oldPage = searchMatches[searchIndex].page;
     searchIndex = (searchIndex - 1 + searchMatches.length) % searchMatches.length;
     const newMatch = searchMatches[searchIndex];
-    
+
     updateSearchInfo();
-    
+
     if (newMatch.page !== oldPage) {
         goToPage(newMatch.page);
     } else {
@@ -1109,10 +1182,6 @@ if (backBtn) {
     });
 }
 
-// ─── Supabase In-Place Loader (Single Loading Step) ───
-const supabaseUrl = 'https://auth.mystudentclub.com';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-const supabaseClient = window.supabase ? window.supabase.createClient(supabaseUrl, supabaseKey, { auth: { storageKey: 'sb-izsggdtdiacxdsjjncdq-auth-token' } }) : null;
 
 async function loadResourceByName(resourceName) {
     loadingOverlay.classList.remove('hidden');
@@ -1146,11 +1215,156 @@ async function loadResourceByName(resourceName) {
 // ─── Init ───
 updateSearchControls();
 
-const paramName = urlParams.get('name');
-if (paramName) {
-    loadResourceByName(paramName);
-} else {
-    loadPdf(PDF_URL);
+// Initialize security overlay & event listeners
+setupSecurityListeners();
+
+// Verify user session before loading the PDF
+checkAuthAndLoad();
+
+function setupSecurityListeners() {
+    // Check if security-blur-overlay already exists
+    if (document.getElementById('security-blur-overlay')) return;
+
+    const blurOverlay = document.createElement('div');
+    blurOverlay.id = 'security-blur-overlay';
+    blurOverlay.style.position = 'fixed';
+    blurOverlay.style.inset = '0';
+    blurOverlay.style.zIndex = '99999';
+    blurOverlay.style.background = 'rgba(15, 23, 42, 0.9)';
+    blurOverlay.style.backdropFilter = 'blur(30px)';
+    blurOverlay.style.webkitBackdropFilter = 'blur(30px)';
+    blurOverlay.style.display = 'none';
+    blurOverlay.style.flexDirection = 'column';
+    blurOverlay.style.alignItems = 'center';
+    blurOverlay.style.justifyContent = 'center';
+    blurOverlay.style.color = '#f1f5f9';
+    blurOverlay.style.fontFamily = "'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
+    blurOverlay.style.cursor = 'pointer';
+
+    blurOverlay.innerHTML = `
+        <div style="text-align: center; padding: 32px; max-width: 400px; background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);">
+            <i class="fas fa-eye-slash" style="font-size: 54px; color: #818cf8; margin-bottom: 20px; animation: pulse-glow 2s infinite;"></i>
+            <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 10px; letter-spacing: -0.01em;">Content Protected</h2>
+            <p style="font-size: 14px; color: #94a3b8; line-height: 1.5; margin-bottom: 0;">Click here or inside the window to resume reading.</p>
+        </div>
+        <style>
+            @keyframes pulse-glow {
+                0% { opacity: 0.7; transform: scale(1); }
+                50% { opacity: 1; transform: scale(1.05); }
+                100% { opacity: 0.7; transform: scale(1); }
+            }
+        </style>
+    `;
+
+    document.body.appendChild(blurOverlay);
+
+    const showBlur = () => {
+        blurOverlay.style.display = 'flex';
+        document.body.classList.add('blurred');
+    };
+
+    const hideBlur = () => {
+        blurOverlay.style.display = 'none';
+        document.body.classList.remove('blurred');
+    };
+
+    // Fast blurring on focus loss
+    window.addEventListener('blur', showBlur);
+    window.addEventListener('focus', hideBlur);
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            showBlur();
+        } else {
+            hideBlur();
+        }
+    });
+
+    // Dismiss blur overlay when clicked
+    blurOverlay.addEventListener('click', () => {
+        window.focus();
+        hideBlur();
+    });
+
+    // Event listeners to capture Print Screen and Win + Shift + S
+    window.addEventListener('keyup', (e) => {
+        if (e.key === 'PrintScreen' || e.code === 'PrintScreen') {
+            showBlur();
+            navigator.clipboard.writeText('Screenshots are disabled for this protected content.').catch(() => { });
+        }
+    });
+
+    window.addEventListener('keydown', (e) => {
+        // PrintScreen Key
+        if (e.key === 'PrintScreen' || e.code === 'PrintScreen') {
+            showBlur();
+        }
+        // Win + Shift + S (Meta + Shift + S) or Cmd + Shift + S
+        if ((e.metaKey || e.ctrlKey) && e.shiftKey && (e.key === 's' || e.key === 'S' || e.code === 'KeyS')) {
+            showBlur();
+            e.preventDefault();
+        }
+    });
+}
+
+async function checkAuthAndLoad() {
+    if (!supabaseClient) {
+        showAccessRestrictedOverlay("Authentication library not loaded.");
+        return;
+    }
+
+    try {
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
+
+        if (error || !session || !session.user || !session.user.email) {
+            showAccessRestrictedOverlay("You must be logged in to access this resource.");
+            return;
+        }
+
+        // Successfully authenticated
+        userEmail = session.user.email;
+        loadPdf(PDF_FETCH_URL);
+    } catch (err) {
+        console.error('Session verification failed:', err);
+        showAccessRestrictedOverlay("An error occurred during authentication verification.");
+    }
+}
+
+function showAccessRestrictedOverlay(message) {
+    loadingOverlay.classList.remove('hidden');
+    loadingOverlay.innerHTML = `
+        <div style="text-align: center; padding: 32px; max-width: 440px; background: rgba(30, 41, 59, 0.85); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 20px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5); font-family: 'Inter', -apple-system, sans-serif; color: #f8fafc;">
+            <div style="width: 72px; height: 72px; border-radius: 50%; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25); color: #ef4444; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 24px; box-shadow: 0 0 20px rgba(239, 68, 68, 0.15); animation: pulse-red 2s infinite;">
+                <i class="fas fa-shield-halved"></i>
+            </div>
+            <h2 style="font-size: 22px; font-weight: 700; color: #f8fafc; margin-bottom: 12px; letter-spacing: -0.02em;">Access Restricted</h2>
+            <p style="font-size: 14px; color: #cbd5e1; line-height: 1.6; margin-bottom: 32px;">${message}</p>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <a href="https://mystudentclub.com/login" style="
+                    display: inline-flex; align-items: center; justify-content: center;
+                    padding: 12px 24px; font-size: 15px; font-weight: 600; border-radius: 10px;
+                    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: #ffffff;
+                    text-decoration: none; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); border: none; outline: none; cursor: pointer; transition: all 0.2s ease;
+                " onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 6px 16px rgba(79, 70, 229, 0.45)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 12px rgba(79, 70, 229, 0.3)';">
+                    <i class="fas fa-sign-in-alt" style="margin-right: 8px;"></i> Login to My Student Club
+                </a>
+                <a href="https://mystudentclub.com/learning-management-system/" style="
+                    display: inline-flex; align-items: center; justify-content: center;
+                    padding: 12px 24px; font-size: 15px; font-weight: 600; border-radius: 10px;
+                    background: rgba(255, 255, 255, 0.06); color: #e2e8f0; border: 1px solid rgba(255, 255, 255, 0.08);
+                    text-decoration: none; cursor: pointer; transition: all 0.2s ease;
+                " onmouseover="this.style.background='rgba(255, 255, 255, 0.12)'; this.style.color='#ffffff';" onmouseout="this.style.background='rgba(255, 255, 255, 0.06)'; this.style.color='#e2e8f0';">
+                    <i class="fas fa-graduation-cap" style="margin-right: 8px;"></i> Go to Dashboard
+                </a>
+            </div>
+        </div>
+        <style>
+            @keyframes pulse-red {
+                0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+                70% { box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
+                100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+            }
+        </style>
+    `;
 }
 
 if (previewModeChip && previewMode === 'docx') {

@@ -11,17 +11,35 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        // Resolve a resource URL to the fetchable URL: bare Supabase URLs are
+        // routed through the pdf-proxy-viewer worker (direct fetch fails due to
+        // CORS/range limits); already-proxied or local URLs pass through as-is.
+        window.resolvePdfFetchUrl = function(pdf) {
+            if (!pdf) return pdf;
+            if (pdf.indexOf('pdf-proxy-viewer.') !== -1) return pdf;
+            if (pdf.indexOf('.supabase.co/') !== -1) {
+                return 'https://pdf-proxy-viewer.bhansalimanan55.workers.dev/?url=' + encodeURIComponent(pdf);
+            }
+            return pdf;
+        };
+
         // Pre-fetch the PDF binary while the page is loading
         (function() {
             var params = new URLSearchParams(window.location.search);
             var pdfUrl = params.get('pdf');
             if (pdfUrl) {
-                window.__pdfPreFetch = fetch(pdfUrl)
+                window.__pdfPreFetch = fetch(window.resolvePdfFetchUrl(pdfUrl))
                     .then(function(r) { return r.arrayBuffer(); })
                     .catch(function() { return null; });
             }
         })();
     </script>
+  <!-- Standard Favicon -->
+<!-- Fallback Shortcut Icon -->
+  <!-- Standard Favicon -->
+  <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
+  <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
+  <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
 </head>
 <body>
     <div id="pdf-app">
@@ -33,7 +51,7 @@
                 </button>
                 <div class="toolbar-separator"></div>
                 <a href="https://mystudentclub.com" class="toolbar-logo" title="My Student Club">
-                    <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club">
+                    <img src="https://www.mystudentclub.com/assets/logo-dark.png" alt="My Student Club">
                 </a>
                 <div class="toolbar-separator"></div>
                 <button id="sidebar-toggle" class="toolbar-btn" title="Toggle Pages Panel">
@@ -73,10 +91,6 @@
                 </button>
                 <div class="toolbar-separator"></div>
                 <span id="preview-mode-chip" class="preview-mode-chip" style="display:none;"></span>
-                <button id="viewer-dl-btn" class="toolbar-btn" style="display:none;" title="Download Original Document">
-                    <i class="fas fa-download"></i>
-                </button>
-                <div class="toolbar-separator" id="viewer-dl-separator" style="display:none;"></div>
                 <button id="view-single" class="toolbar-btn active" title="Single Page">
                     <i class="fas fa-file"></i>
                 </button>
@@ -122,6 +136,8 @@
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
     </script>
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="script.js"></script>
 </body>
 </html>

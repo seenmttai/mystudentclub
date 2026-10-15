@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +11,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        *, *::before, *::after {
+        *,
+        *::before,
+        *::after {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
@@ -63,8 +66,13 @@
         }
 
         @keyframes float-slow {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(40px, 40px) scale(1.1); }
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            100% {
+                transform: translate(40px, 40px) scale(1.1);
+            }
         }
 
         .container {
@@ -116,13 +124,26 @@
             border-color: #818cf8 transparent transparent transparent;
         }
 
-        .spinner-ring div:nth-child(1) { animation-delay: -0.45s; }
-        .spinner-ring div:nth-child(2) { animation-delay: -0.3s; }
-        .spinner-ring div:nth-child(3) { animation-delay: -0.15s; }
+        .spinner-ring div:nth-child(1) {
+            animation-delay: -0.45s;
+        }
+
+        .spinner-ring div:nth-child(2) {
+            animation-delay: -0.3s;
+        }
+
+        .spinner-ring div:nth-child(3) {
+            animation-delay: -0.15s;
+        }
 
         @keyframes spinner-ring {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         .status-title {
@@ -171,9 +192,17 @@
         }
 
         @keyframes pulse-red {
-            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-            70% { box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+            0% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 12px rgba(239, 68, 68, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+            }
         }
 
         .error-title {
@@ -235,7 +264,14 @@
             color: #ffffff;
         }
     </style>
+    <!-- Standard Favicon -->
+    <!-- Fallback Shortcut Icon -->
+    <!-- Standard Favicon -->
+    <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
+    <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
+    <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
 </head>
+
 <body>
     <div class="ambient-bg">
         <div class="ambient-circle-1"></div>
@@ -246,7 +282,10 @@
         <!-- Loading Card -->
         <div id="loading-card" class="card loading-view">
             <div class="spinner-ring">
-                <div></div><div></div><div></div><div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
             </div>
             <h2 class="status-title">Verifying Permissions</h2>
             <p class="status-text" id="loading-message">Retrieving resource and signing URL...</p>
@@ -258,13 +297,31 @@
                 <i class="fas fa-shield-halved"></i>
             </div>
             <h2 class="error-title">Access Restricted</h2>
-            <p class="error-text" id="error-message">You do not have active permission to view this resource. Please make sure you are enrolled in the corresponding program.</p>
+            <p class="error-text" id="error-message">You do not have active permission to view this resource. Please
+                make sure you are enrolled in the corresponding program.</p>
             <div class="actions">
                 <a href="https://mystudentclub.com/login" id="action-login-btn" class="btn btn-primary">
                     <i class="fas fa-sign-in-alt"></i> Login to My Student Club
                 </a>
                 <a href="https://mystudentclub.com/learning-management-system/" class="btn btn-secondary">
                     <i class="fas fa-graduation-cap"></i> Go to My Dashboard
+                </a>
+            </div>
+        </div>
+
+        <!-- Download Ready Card -->
+        <div id="download-card" class="card restricted-view">
+            <div class="lock-icon-container" style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.25); color: #10b981; animation: none;">
+                <i class="fas fa-file-arrow-down"></i>
+            </div>
+            <h2 class="error-title" style="color: #f8fafc;">Downloading Resource</h2>
+            <p class="error-text" id="download-message">Your download should begin automatically. If it doesn't, click below.</p>
+            <div class="actions">
+                <a href="#" id="direct-download-link" class="btn btn-primary">
+                    <i class="fas fa-download"></i> Click here if download didn't start
+                </a>
+                <a href="javascript:history.back()" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Return to Resources
                 </a>
             </div>
         </div>
@@ -279,11 +336,11 @@
             document.getElementById('loading-card').style.display = 'none';
             const restrictedCard = document.getElementById('restricted-card');
             restrictedCard.classList.add('active');
-            
+
             if (message) {
                 document.getElementById('error-message').textContent = message;
             }
-            
+
             const loginBtn = document.getElementById('action-login-btn');
             if (showLogin) {
                 loginBtn.style.display = 'inline-flex';
@@ -292,18 +349,87 @@
             }
         }
 
+        // Known aliases mapping each program to its enrolled course slugs
+        const PROGRAM_COURSES = {
+            'industrial-training': [
+                'industrial-training-mastery',
+                'industrial-training',
+                'ca-industrial-training',
+                'msc-industrial-training-program',
+                'industrial-training-program',
+                'msc-ca-industrial-training'
+            ],
+            'ca-fresher': [
+                'msc-ca-freshers-program',
+                'ca-freshers',
+                'freshers',
+                'ca-freshers-program',
+                'msc-ca-freshers',
+                'msc-ca-fresher-program'
+            ],
+            'semi-qualified': [
+                'industrial-training-mastery',
+                'industrial-training',
+                'ca-industrial-training',
+                'msc-industrial-training-program',
+                'industrial-training-program',
+                'msc-ca-industrial-training',
+                'msc-ca-freshers-program',
+                'ca-freshers',
+                'freshers',
+                'ca-freshers-program',
+                'msc-ca-freshers',
+                'msc-ca-fresher-program'
+            ],
+            'articleship': [
+                'msc-articleship-program',
+                'articleship-program',
+                'articleship',
+                'articleship-mastery',
+                'msc-articleship-mastery'
+            ]
+        };
+
+        // Standalone guidebooks and booklets mapped to their required program
+        const STANDALONE_RESOURCES = {
+            'mscit guidebook-3.pdf': 'industrial-training',
+            'msc ca freshers guidebook.pdf': 'ca-fresher',
+            'ubs hiring logic.pdf': 'industrial-training',
+            'gs hiring logic.pdf': 'industrial-training',
+            'db hiring logic.pdf': 'industrial-training',
+            'finance interview booklet.pdf': 'industrial-training',
+            'fp&a interview booklet.pdf': 'industrial-training',
+            'internal audit interview booklet.pdf': 'industrial-training',
+            'indirect tax interview booklet.pdf': 'industrial-training',
+            'direct tax interview booklet.pdf': 'industrial-training',
+            'investment banking interview booklet.pdf': 'industrial-training'
+        };
+
+        function normalizeProgram(value) {
+            const str = String(value || '').trim().toLowerCase();
+            if (str.includes('industrial') || str.includes('mscit')) return 'industrial-training';
+            if (str.includes('articleship')) return 'articleship';
+            if (str.includes('semi')) return 'semi-qualified';
+            if (str.includes('fresher') || str.includes('fresh')) return 'ca-fresher';
+            return null;
+        }
+
         async function init() {
             try {
-                // Get URL parameter for the resource path/name
+                // Get URL parameters for the resource path/name and program
                 const urlParams = new URLSearchParams(window.location.search);
                 const resourceName = urlParams.get('name');
+                const requestedProgram = normalizeProgram(urlParams.get('program') || urlParams.get('course'));
+                const isDownload = urlParams.get('action') === 'download' || urlParams.get('download') === '1' || urlParams.get('download') === 'true';
 
                 if (!resourceName || resourceName.trim() === '') {
                     showAccessRestricted("Please specify a valid resource name in the 'name' parameter.", false);
                     return;
                 }
 
-                document.getElementById('loading-message').textContent = `Requesting secure access for: ${resourceName}`;
+                document.getElementById('loading-message').textContent = isDownload
+                    ? `Preparing download for: ${resourceName}`
+                    : `Requesting secure access for: ${resourceName}`;
 
                 // Check active authentication session
                 const { data: { session }, error: authError } = await supabaseClient.auth.getSession();
@@ -313,10 +439,121 @@
                     return;
                 }
 
+                // Verify student enrollment access
+                const { data: enrollments, error: enrollError } = await supabaseClient
+                    .from('enrollment')
+                    .select('course')
+                    .eq('uuid', session.user.id);
+
+                if (enrollError || !enrollments || enrollments.length === 0) {
+                    showAccessRestricted("Access Restricted: You are not enrolled in the program required to access this resource.", false);
+                    return;
+                }
+
+                const userCourses = enrollments.map(e => String(e.course || '').trim().toLowerCase());
+
+                function isUserEnrolledIn(programKey) {
+                    if (!programKey) return false;
+                    const allowedCourses = PROGRAM_COURSES[programKey];
+                    if (!allowedCourses) return false;
+                    return userCourses.some(c => allowedCourses.includes(c));
+                }
+
+                const hasIndustrialAccess = isUserEnrolledIn('industrial-training');
+
+                // 1. If program/course parameter was provided, strictly enforce enrollment in that particular program
+                if (requestedProgram && !isUserEnrolledIn(requestedProgram)) {
+                    if (!(requestedProgram === 'semi-qualified' && hasIndustrialAccess)) {
+                        showAccessRestricted("Access Restricted: You are not enrolled in the program required to access this resource.", false);
+                        return;
+                    }
+                }
+
+                // 2. If resource is a known standalone guidebook or booklet, check required course
+                const normalizedName = resourceName.trim().toLowerCase();
+                if (STANDALONE_RESOURCES[normalizedName]) {
+                    const requiredProgram = STANDALONE_RESOURCES[normalizedName];
+                    if (!isUserEnrolledIn(requiredProgram)) {
+                        showAccessRestricted("Access Restricted: You are not enrolled in the program required to access this resource.", false);
+                        return;
+                    }
+                }
+
+                let targetStoragePath = resourceName;
+                const targetBucket = 'industrial-training-mastery-resources';
+
+                // 3. Check videos catalog for resource ownership and file path
+                try {
+                    const { data: videos } = await supabaseClient
+                        .from('videos')
+                        .select('course, resources');
+
+                    if (videos && Array.isArray(videos)) {
+                        let matchedResource = null;
+                        let matchedCourse = null;
+
+                        for (const video of videos) {
+                            let resList = video.resources;
+                            if (typeof resList === 'string') {
+                                try { resList = JSON.parse(resList); } catch (_) { resList = []; }
+                            }
+                            if (Array.isArray(resList)) {
+                                const found = resList.find(r => {
+                                    const rTitle = String(r.title || '').trim().toLowerCase();
+                                    const rView = String(r.view_storage_path || '').trim().toLowerCase();
+                                    const rDl = String(r.download_storage_path || '').trim().toLowerCase();
+                                    const target = normalizedName;
+                                    return rTitle === target || rView === target || rDl === target ||
+                                           rView.endsWith('/' + target) || rDl.endsWith('/' + target) ||
+                                           rTitle === target.replace(/\.[^/.]+$/, '');
+                                });
+                                if (found) {
+                                    matchedResource = found;
+                                    matchedCourse = video.course;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (matchedCourse) {
+                            const courseProgram = normalizeProgram(matchedCourse);
+                            if (courseProgram && !isUserEnrolledIn(courseProgram)) {
+                                if (!(requestedProgram === 'semi-qualified' && hasIndustrialAccess)) {
+                                    showAccessRestricted("Access Restricted: You are not enrolled in the program required to access this resource.", false);
+                                    return;
+                                }
+                            }
+
+                            if (matchedResource.view_storage_path && matchedResource.view_storage_path !== 'None') {
+                                targetStoragePath = matchedResource.view_storage_path;
+                            } else if (matchedResource.download_storage_path && matchedResource.download_storage_path !== 'None') {
+                                targetStoragePath = matchedResource.download_storage_path;
+                            } else if (matchedResource.url) {
+                                window.location.replace(matchedResource.url);
+                                return;
+                            }
+                        }
+                    }
+                } catch (videoErr) {
+                    console.warn("Catalog lookup failed, continuing with direct access:", videoErr);
+                }
+
                 // Attempt to generate signed URLs from the bucket
-                const { data: viewData, error: viewError } = await supabaseClient.storage
-                    .from('industrial-training-mastery-resources')
-                    .createSignedUrl(resourceName, 300);
+                let { data: viewData, error: viewError } = await supabaseClient.storage
+                    .from(targetBucket)
+                    .createSignedUrl(targetStoragePath, 300);
+
+                if (viewError || !viewData || !viewData.signedUrl) {
+                    if (targetStoragePath !== resourceName) {
+                        const fb = await supabaseClient.storage
+                            .from(targetBucket)
+                            .createSignedUrl(resourceName, 300);
+                        if (!fb.error && fb.data?.signedUrl) {
+                            viewData = fb.data;
+                            viewError = null;
+                        }
+                    }
+                }
 
                 if (viewError || !viewData || !viewData.signedUrl) {
                     console.error("Storage View Error:", viewError);
@@ -325,18 +562,44 @@
                 }
 
                 // Optionally, attempt to generate the download URL as well
-                let targetUrl = `/ca-resource/?pdf=${encodeURIComponent(`https://pdf-proxy-viewer.bhansalimanan55.workers.dev/?url=${encodeURIComponent(viewData.signedUrl)}`)}`;
-                
+                let downloadSignedUrl = null;
                 try {
                     const { data: dlData, error: dlError } = await supabaseClient.storage
-                        .from('industrial-training-mastery-resources')
-                        .createSignedUrl(resourceName, 300, { download: true });
-                    
+                        .from(targetBucket)
+                        .createSignedUrl(targetStoragePath, 300, { download: true });
+
                     if (!dlError && dlData?.signedUrl) {
-                        targetUrl += `&dl=${encodeURIComponent(dlData.signedUrl)}`;
+                        downloadSignedUrl = dlData.signedUrl;
                     }
                 } catch (dlErr) {
                     console.warn("Failed to generate download URL:", dlErr);
+                }
+
+                if (isDownload) {
+                    const downloadUrl = downloadSignedUrl || viewData.signedUrl;
+                    document.getElementById('loading-card').style.display = 'none';
+                    const dlCard = document.getElementById('download-card');
+                    if (dlCard) {
+                        dlCard.classList.add('active');
+                        const dlLink = document.getElementById('direct-download-link');
+                        if (dlLink) {
+                            dlLink.href = downloadUrl;
+                            dlLink.setAttribute('download', resourceName);
+                        }
+                    }
+                    const trigger = document.createElement('a');
+                    trigger.href = downloadUrl;
+                    trigger.setAttribute('download', resourceName);
+                    trigger.style.display = 'none';
+                    document.body.appendChild(trigger);
+                    trigger.click();
+                    setTimeout(() => trigger.remove(), 1000);
+                    return;
+                }
+
+                let targetUrl = `/ca-resource/?pdf=${encodeURIComponent(viewData.signedUrl)}`;
+                if (downloadSignedUrl) {
+                    targetUrl += `&dl=${encodeURIComponent(downloadSignedUrl)}`;
                 }
 
                 if (document.referrer && !document.referrer.includes('ca-resource')) {
@@ -375,4 +638,5 @@
         }
     </script>
 </body>
+
 </html>

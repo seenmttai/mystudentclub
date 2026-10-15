@@ -470,3 +470,8 @@ body:has(.expanded-menu.active) .expanded-menu-backdrop {
     font-size: 15px;
   }
 }
+
+/* Horizontal brand logo (assets/logo.png is 2048x404). Fixed height, auto width keeps aspect ratio; header tokens/tap targets unchanged. */
+img.header-logo { height: 24px; width: auto; max-width: 42vw; object-fit: contain; flex-shrink: 0; display: block; border-radius: 0; }
+[data-theme="dark"] img.header-logo { content: url("/assets/logo-dark.png"); }
+@media (max-width: 360px) { img.header-logo { height: 20px; } }

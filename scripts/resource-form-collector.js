@@ -6,14 +6,17 @@
 const supabaseUrl = 'https://auth.mystudentclub.com';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 // Configure Supabase client to avoid storage warnings (no auth session needed for anonymous inserts)
-const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey, {
-    auth: {
-        storageKey: 'sb-izsggdtdiacxdsjjncdq-auth-token',
-        persistSession: false,
-        autoRefreshToken: false,
-        detectSessionInUrl: false
-    }
-});
+const supabaseFactory = window.supabase || (typeof supabase !== 'undefined' ? supabase : null);
+const supabaseClient = window.supabaseClient || (supabaseFactory?.createClient
+    ? supabaseFactory.createClient(supabaseUrl, supabaseKey, {
+        auth: {
+            storageKey: 'sb-izsggdtdiacxdsjjncdq-auth-token',
+            persistSession: false,
+            autoRefreshToken: false,
+            detectSessionInUrl: false
+        }
+    })
+    : null);
 
 class ResourceFormCollector {
     constructor(programType) {
@@ -33,10 +36,15 @@ class ResourceFormCollector {
      * Detect program type from page URL or title
      */
     static detectProgramType() {
+        const declaredStage = document.body?.dataset?.resourceStage;
+        if (['industrial-training', 'ca-fresher', 'articleship', 'semi-qualified'].includes(declaredStage)) {
+            return declaredStage;
+        }
         const path = window.location.pathname.toLowerCase();
-        const title = document.title.toLowerCase();
 
-        if (path.includes('ca-fresher') || path.includes('fresher-training-resources') ||
+        if (path.includes('semi-qualified')) {
+            return 'semi-qualified';
+        } else if (path.includes('ca-fresher') || path.includes('fresher-training-resources') ||
             (path.includes('fresher') && !path.includes('semi'))) {
             return 'ca-fresher';
         } else if (path.includes('industrial-training') || path.includes('industrial-training-resources')) {
@@ -53,13 +61,56 @@ class ResourceFormCollector {
      * @param {string} url - Resource URL or Identifier
      * @param {Function} successCallback - Function to run on successful access/submission
      */
-    checkAndAccess(title, url, successCallback) {
+    async checkAndAccess(title, url, successCallback) {
         if (this.isGlobalSubmitted || this.formSubmitted.has(url)) {
-            successCallback();
-        } else {
-            this.pendingCallback = successCallback;
-            this.showForm(title, url, null);
+            await successCallback();
+            const ensure = window.MSCCareerProfile?.ensureForResource;
+            if (typeof ensure === 'function') {
+                Promise.resolve().then(() => ensure(this.programType, title, url)).catch(error => {
+                    console.warn('Optional career details could not be collected:', error.message);
+                });
+            }
+            return true;
         }
+
+        if (window.MSCProgramAccess) {
+            try {
+                const access = await window.MSCProgramAccess.getAccess();
+                if (access?.hasAccess || (access?.courses && access.courses.length > 0)) {
+                    this.formSubmitted.add(url);
+                    await successCallback();
+                    return true;
+                }
+            } catch (_) { /* continue */ }
+        }
+
+        if (window.MSCCareerProfile?.ensureForResource) {
+            try {
+                const ok = await window.MSCCareerProfile.ensureForResource(this.programType, title, url);
+                if (ok) {
+                    await successCallback();
+                    return true;
+                }
+            } catch (error) {
+                this.showError(error.message || 'Unable to access this resource. Please try again.');
+            }
+            return false;
+        }
+
+        this.pendingCallback = successCallback;
+        this.showForm(title, url, null);
+        return false;
+    }
+
+    showError(message) {
+        let notice = document.getElementById('resource-access-error');
+        if (!notice) {
+            notice = document.createElement('p');
+            notice.id = 'resource-access-error';
+            notice.setAttribute('role', 'alert');
+            document.body.appendChild(notice);
+        }
+        notice.textContent = message;
     }
 
     /**
@@ -87,6 +138,13 @@ class ResourceFormCollector {
                         <div class="form-group">
                             <label for="studentPhone">Phone Number <span class="required">*</span></label>
                             <input type="tel" id="studentPhone" name="phone" required placeholder="Enter your phone number" pattern="[0-9]{10}">
+                        </div>
+                        <div class="form-group">
+                            <label for="studentStage">Your Stage</label>
+                            <select id="studentStage" name="stage">
+                                ${this.stageOptionsHtml()}
+                            </select>
+                            <small class="form-hint">So we send you what fits your stage.</small>
                         </div>
                         <div class="form-group">
                             <label for="studentProgram">Program Type</label>
@@ -216,7 +274,8 @@ class ResourceFormCollector {
                 .form-group .required {
                     color: #ef4444;
                 }
-                .form-group input {
+                .form-group input,
+                .form-group select {
                     width: 100%;
                     padding: 0.75rem;
                     border: 2px solid #e5e7eb;
@@ -225,7 +284,8 @@ class ResourceFormCollector {
                     transition: all 0.2s;
                     box-sizing: border-box;
                 }
-                .form-group input:focus {
+                .form-group input:focus,
+                .form-group select:focus {
                     outline: none;
                     border-color: #4f46e5;
                     box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
@@ -234,6 +294,12 @@ class ResourceFormCollector {
                     background: #f9fafb;
                     color: #6b7280;
                     cursor: not-allowed;
+                }
+                .form-group .form-hint {
+                    display: block;
+                    margin-top: 0.35rem;
+                    color: #6b7280;
+                    font-size: 0.8rem;
                 }
                 .form-actions {
                     margin-top: 1.5rem;
@@ -277,6 +343,82 @@ class ResourceFormCollector {
             </style>
         `;
         document.head.insertAdjacentHTML('beforeend', styles);
+    }
+
+    /**
+     * Stage options for the lead form. Keys are the same as career_intakes.stage and the Events page,
+     * so the mail system files the lead under the right stage.
+     */
+    static get STAGE_STORAGE_KEY() {
+        return 'msc_audience';
+    }
+
+    static get STAGES() {
+        return [
+            ['industrial-training', 'CA Industrial Training'],
+            ['articleship', 'CA Articleship'],
+            ['ca-fresher', 'CA Fresher'],
+            ['semi-qualified', 'Semi-Qualified CA'],
+            ['experienced-ca', 'Experienced CA'],
+            ['other', 'Others']
+        ];
+    }
+
+    static normalizeStage(value) {
+        const v = String(value || '').trim().toLowerCase();
+        return ResourceFormCollector.STAGES.some(([key]) => key === v) ? v : '';
+    }
+
+    /**
+     * Preselected stage: what this browser chose before (here or on /sessions), else the page's program.
+     * Optional: an empty choice never blocks the resource.
+     */
+    defaultStage() {
+        let stored = '';
+        try {
+            stored = localStorage.getItem(ResourceFormCollector.STAGE_STORAGE_KEY) || '';
+        } catch (e) {
+            stored = '';
+        }
+        return ResourceFormCollector.normalizeStage(stored) || ResourceFormCollector.normalizeStage(this.programType);
+    }
+
+    stageOptionsHtml() {
+        const selected = this.defaultStage();
+        const options = ResourceFormCollector.STAGES.map(([key, label]) =>
+            `<option value="${key}"${key === selected ? ' selected' : ''}>${label}</option>`);
+        return [`<option value=""${selected ? '' : ' selected'}>Select your stage</option>`, ...options].join('');
+    }
+
+    static rememberStage(stage) {
+        if (!stage) return;
+        try {
+            localStorage.setItem(ResourceFormCollector.STAGE_STORAGE_KEY, stage);
+        } catch (e) {
+            // private mode or blocked storage: nothing to remember
+        }
+    }
+
+    /** True when PostgREST/Postgres says the column does not exist (the stage column may not be added yet). */
+    static isMissingColumn(error, column) {
+        if (!error) return false;
+        if (error.code === 'PGRST204' || error.code === '42703') return true;
+        const text = `${error.message || ''} ${error.details || ''}`;
+        return /column/i.test(text) && new RegExp(`\\b${column}\\b`).test(text);
+    }
+
+    /**
+     * Saves the lead. If resource_access_logs has no stage column yet, saves it again without the stage,
+     * so the lead is never lost.
+     */
+    async saveLead(data) {
+        let { error } = await supabaseClient.from('resource_access_logs').insert([data]);
+        if (error && Object.prototype.hasOwnProperty.call(data, 'stage') && ResourceFormCollector.isMissingColumn(error, 'stage')) {
+            const withoutStage = Object.assign({}, data);
+            delete withoutStage.stage;
+            ({ error } = await supabaseClient.from('resource_access_logs').insert([withoutStage]));
+        }
+        return { error };
     }
 
     /**
@@ -492,6 +634,11 @@ class ResourceFormCollector {
             resource_url: resourceUrl,
             accessed_at: new Date().toISOString()
         };
+        const stage = ResourceFormCollector.normalizeStage(formData.get('stage'));
+        if (stage) {
+            data.stage = stage;
+            ResourceFormCollector.rememberStage(stage);
+        }
 
         // Disable submit button
         if (submitBtn) {
@@ -501,9 +648,7 @@ class ResourceFormCollector {
 
         try {
             // Save to Supabase
-            const { data: insertData, error } = await supabaseClient
-                .from('resource_access_logs')
-                .insert([data]);
+            const { error } = await this.saveLead(data);
 
             if (error) {
                 console.error('Error saving resource access:', error);
@@ -511,8 +656,6 @@ class ResourceFormCollector {
                 if (error.message && error.message.includes('does not exist')) {
                     // console.warn('Table "resource_access_logs" does not exist. Please run the SQL script in Supabase.');
                 }
-            } else {
-                // console.log('Resource access logged successfully:', insertData);
             }
 
             // Mark as submitted
@@ -560,7 +703,9 @@ class ResourceFormCollector {
             // and bypassing our own interception.
             const link = document.createElement('a');
             link.href = url;
-            link.download = url.split('/').pop();
+            let filename = new URL(url, window.location.origin).pathname.split('/').pop() || 'Resource';
+            try { filename = decodeURIComponent(filename); } catch (_) { /* keep the original name */ }
+            link.download = filename;
             link.dataset.noIntercept = 'true';
             link.style.display = 'none';
             document.body.appendChild(link);
@@ -574,8 +719,8 @@ class ResourceFormCollector {
         const isPdf = lowerUrl.endsWith('.pdf') || (lowerUrl.includes('.pdf') && !lowerUrl.includes('drive.google.com'));
 
         if (isPdf) {
-            // Redirect to dedicated viewer (use relative path for better compatibility)
-            const viewerUrl = `ca-resource/index.html?pdf=${encodeURIComponent(url)}`;
+            // Redirect to dedicated viewer at /ca-resource/
+            const viewerUrl = `/ca-resource/index.html?pdf=${encodeURIComponent(url)}`;
             window.open(viewerUrl, '_blank', 'noopener,noreferrer');
         } else {
             // Open directly
@@ -583,6 +728,8 @@ class ResourceFormCollector {
         }
     }
 }
+
+window.ResourceFormCollector = ResourceFormCollector;
 
 // Auto-initialize when DOM is ready
 if (document.readyState === 'loading') {
