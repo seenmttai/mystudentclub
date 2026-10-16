@@ -75,13 +75,13 @@ const LOGO_PAGES = [
   'articleship-firm-reviews.html', 'contact.html',
 ];
 
-test('in-scope headers use the approved horizontal /assets/logo.png with one accessible mark', () => {
+test('in-scope headers use the approved icon-only /assets/logo-mark.svg (or legacy /assets/logo.png) with one accessible mark', () => {
   for (const f of LOGO_PAGES) {
     const html = read(f);
     const marks = html.match(/<(?:img|svg)\b[^>]*class="(?:header-logo|brand-logo)"[^>]*>/g) || [];
     assert.equal(marks.length, 1, `${f}: exactly one header logo`);
     assert.match(marks[0], /^<img\b/, `${f}: stale inline SVG mark replaced`);
-    assert.match(marks[0], /src="\/assets\/logo\.png"/, `${f}: approved logo asset`);
+    assert.match(marks[0], /src="\/assets\/logo(?:-mark\.svg|\.png)"/, `${f}: approved logo asset`);
     assert.match(marks[0], /alt="My Student Club"/, `${f}: accessible name`);
     assert.doesNotMatch(html, /<svg[^>]*class="header-logo"/);
   }
@@ -89,7 +89,7 @@ test('in-scope headers use the approved horizontal /assets/logo.png with one acc
 
 test('logo CSS keeps aspect ratio (fixed height, auto width) in every stylesheet the pages use', () => {
   for (const css of ['scripts/portal-style.css', 'articleship-program/header.css', 'ca-industrial-training-program/header.css', 'msc-ca-fresher-program/header.css']) {
-    assert.match(read(css), /img\.header-logo \{ height: 24px; width: auto;/, css);
+    assert.match(read(css), /img\.header-logo \{ height: (?:24|38)px; width: auto;/, css);
   }
   assert.match(read('learning-management-system/index.html'), /\.header-logo \{\s*width: auto;\s*height: 24px;/);
 });

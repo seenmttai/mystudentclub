@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>PDF Reader | My Student Club</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -50,6 +50,7 @@
                     <i class="fas fa-arrow-left"></i>
                 </button>
                 <div class="toolbar-separator"></div>
+                <span class="toolbar-mark" aria-hidden="true"><img src="/assets/logo-mark-dark.svg" alt=""></span>
                 <a href="https://mystudentclub.com" class="toolbar-logo" title="My Student Club">
                     <img src="https://www.mystudentclub.com/assets/logo-dark.png" alt="My Student Club">
                 </a>
@@ -69,6 +70,7 @@
                 <button id="next-page" class="toolbar-btn" title="Next Page">
                     <i class="fas fa-chevron-right"></i>
                 </button>
+                <span id="doc-title" class="doc-title" aria-live="polite">PDF Reader</span>
             </div>
 
             <div class="toolbar-center">

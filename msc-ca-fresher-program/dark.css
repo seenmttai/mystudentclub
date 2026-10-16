@@ -1,0 +1,735 @@
+/* AUTO-GENERATED dark-mode layer (scripts: scratchpad/gendark.py) - maps the master light palette in
+   sections.css/footer.css/style.css to dark equivalents under the app-wide [data-theme="dark"] switch. Do not edit by hand;
+   hand-written exceptions live in /scripts/program-mobile.css. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg-subtle: #121a2c;
+  --border-color: #27324a;
+  --blue-light: #14223d;
+  --blue-border: #2a4a7d;
+  --green-light: #0f2a24;
+  --green-border: #1d5a48;
+  --coral-light: #2d1618;
+  --coral-border: #5b2a2e;
+  --amber-light: #2c2410;
+  --purple-light: #231b3a;
+  --cyan-light: #0e2530;
+  --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --shadow-elevated: 0 20px 40px rgba(0, 0, 0, 0.45);
+}
+/* ── from style.css ── */
+:root[data-theme="dark"] body {
+  background: radial-gradient(1000px 600px at 80% -10%,
+      rgba(14, 165, 233, 0.08),
+      transparent 60%),
+    radial-gradient(900px 500px at -10% 20%,
+      rgba(76, 175, 80, 0.08),
+      transparent 60%),
+    #1a202e;
+  color: #e5e5e5;
+}
+:root[data-theme="dark"] .hero {
+  background: #1a202e;
+  border: 1px solid #27313e;
+}
+:root[data-theme="dark"] h1 {
+  color: #e5e5e5;
+}
+:root[data-theme="dark"] .batch-info {
+  color: #cccccc;
+}
+:root[data-theme="dark"] .eligibility-info,
+:root[data-theme="dark"] .access-info {
+  color: #cccccc;
+}
+:root[data-theme="dark"] .subtitle {
+  color: #8989b9;
+}
+:root[data-theme="dark"] .feature {
+  background: #1a202e;
+  color: #b9b9e0;
+}
+:root[data-theme="dark"] .feature.rating {
+  background: #1a202e;
+  color: #b9b9e0;
+}
+:root[data-theme="dark"] .feature.placement-rate {
+  background: #1a202e;
+  color: #b9b9e0;
+}
+:root[data-theme="dark"] .feature .stars {
+  color: #e9bc37;
+}
+:root[data-theme="dark"] .feature .checkmark {
+  fill: #72b675;
+}
+:root[data-theme="dark"] .stat {
+  background: #1a202e;
+}
+:root[data-theme="dark"] .stat .number {
+  color: #b9b9e0;
+}
+:root[data-theme="dark"] .stat .label {
+  color: #8989b9;
+}
+:root[data-theme="dark"] .cta {
+  background: #1a202e;
+}
+:root[data-theme="dark"] .price .discounted {
+  color: #72b675;
+}
+:root[data-theme="dark"] .fixed-cta .price .discounted {
+  color: #72b675;
+}
+:root[data-theme="dark"] .fixed-cta .register-btn {
+  background: #1a202e;
+  color: #b9b9e0;
+}
+:root[data-theme="dark"] .student-card .company-info {
+  color: #b2b2b2;
+}
+:root[data-theme="dark"] .mentor-description {
+  color: #8989b9;
+}
+@media (max-width: 500px) {
+:root[data-theme="dark"] .mobile-testimonial-title {
+  color: #b9b9e0;
+}
+}
+:root[data-theme="dark"] .prev-button,
+:root[data-theme="dark"] .next-button {
+  background: #1a202e;
+}
+:root[data-theme="dark"] .prev-button svg,
+:root[data-theme="dark"] .next-button svg {
+  fill: #b9b9e0;
+}
+:root[data-theme="dark"] .get-certified {
+  background: #1a202e;
+}
+:root[data-theme="dark"] .get-certified h2 {
+  color: #b9b9e0;
+}
+:root[data-theme="dark"] .get-certified p {
+  color: #8989b9;
+}
+:root[data-theme="dark"] .certificate-glass::before {
+  background: radial-gradient(circle,
+      #3643634c 0%,
+      transparent 70%);
+}
+:root[data-theme="dark"] .shine-effect {
+  background: linear-gradient(120deg,
+      rgba(255, 255, 255, 0) 0%,
+      #1a202e80 50%,
+      rgba(255, 255, 255, 0) 100%);
+}
+:root[data-theme="dark"] .certificate-corner {
+  background: #1a202ecc;
+}
+:root[data-theme="dark"] .eligibility-info-new {
+  color: #d9d9d9;
+  border: 1px solid #313131;
+  background: #181d2a;
+}
+:root[data-theme="dark"] .modal-content {
+  background: linear-gradient(135deg, #1a202e 0%, #171d2a 100%);
+}
+:root[data-theme="dark"] .close:hover,
+:root[data-theme="dark"] .close:focus {
+  color: #cccccc;
+}
+:root[data-theme="dark"] .modal-content h2 {
+  color: #b9b9e0;
+}
+:root[data-theme="dark"] .modal-content p {
+  color: #8989b9;
+}
+:root[data-theme="dark"] .date-input {
+  border: 2px solid #2b2b2b;
+}
+:root[data-theme="dark"] .result-message.eligible {
+  background: linear-gradient(135deg, #0e1410 0%, #c3e6cb 100%);
+  color: #b0e4bc;
+}
+:root[data-theme="dark"] .result-message.ineligible {
+  background: linear-gradient(135deg, #1c1011 0%, #f5c6cb 100%);
+  color: #dd9da3;
+}
+:root[data-theme="dark"] .result-message.future {
+  background: linear-gradient(135deg, #1c190d 0%, #ffeaa7 100%);
+  color: #efd68f;
+}
+:root[data-theme="dark"] .result-message.error {
+  background: linear-gradient(135deg, #1c1011 0%, #f5c6cb 100%);
+  color: #dd9da3;
+}
+:root[data-theme="dark"] .eligibility-criteria {
+  color: #b9b9e0;
+}
+:root[data-theme="dark"] .eligibility-criteria strong {
+  color: #72b675;
+}
+:root[data-theme="dark"] .modern-hero {
+  background: #1a202e !important;
+  border-bottom: 1px solid #253444 !important;
+}
+:root[data-theme="dark"] .hero-badge .stars {
+  color: #e9bc37;
+}
+:root[data-theme="dark"] .hero-badge .badge-text {
+  color: #96cf99;
+}
+:root[data-theme="dark"] .hero-title {
+  color: #d0d8ea !important;
+}
+:root[data-theme="dark"] .text-gradient {
+  background: linear-gradient(135deg, #62c2ed 0%, #77e19e 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+:root[data-theme="dark"] .hero-subtitle {
+  color: #a4aebc;
+}
+:root[data-theme="dark"] .secondary-btn {
+  background: #1a202e;
+  color: #d0d8ea;
+  border: 2px solid #212e3e;
+}
+:root[data-theme="dark"] .secondary-btn:hover {
+  border-color: #1c2530;
+  background: #1c2126;
+}
+:root[data-theme="dark"] .hero-stats-strip {
+  border-top: 1px solid #212e3e;
+}
+:root[data-theme="dark"] .hero-stat-number {
+  color: #d0d8ea;
+}
+:root[data-theme="dark"] .hero-stat-label {
+  color: #8b96a6;
+}
+:root[data-theme="dark"] .hero-stat-divider {
+  background: #141619;
+}
+:root[data-theme="dark"] .glass-card {
+  background: #1a202eb2;
+}
+:root[data-theme="dark"] .card-header h3 {
+  color: #8b96a6;
+}
+:root[data-theme="dark"] .huge-number {
+  color: #d0d8ea;
+}
+:root[data-theme="dark"] .huge-number .unit {
+  color: #64d48d;
+}
+:root[data-theme="dark"] .stat-bar-chart {
+  border-bottom: 1px solid #263646;
+}
+:root[data-theme="dark"] .bar {
+  background: #141619;
+}
+:root[data-theme="dark"] .bar-col span {
+  color: #8b96a6;
+}
+/* ── from sections.css ── */
+:root[data-theme="dark"] body {
+  color: #e8eefb;
+  background-color: #1c2126;
+}
+:root[data-theme="dark"] main {
+  background-color: #1c2126;
+}
+:root[data-theme="dark"] h1,
+:root[data-theme="dark"] h2,
+:root[data-theme="dark"] h3,
+:root[data-theme="dark"] h4,
+:root[data-theme="dark"] h5,
+:root[data-theme="dark"] h6 {
+  color: #e8eefb;
+}
+:root[data-theme="dark"] .drawer-divider {
+  background: #191e23;
+}
+:root[data-theme="dark"] .drawer-icon {
+  color: #4070d9;
+}
+:root[data-theme="dark"] .hero-section {
+  background: radial-gradient(circle at 80% 20%, #141f2b 0%, #1a202e 60%);
+}
+:root[data-theme="dark"] .eyebrow-pill {
+  background: #14271e;
+}
+:root[data-theme="dark"] .hero-heading {
+  color: #d0d8ea;
+}
+:root[data-theme="dark"] .hero-heading .highlight-blue {
+  color: #7db0ff;
+}
+:root[data-theme="dark"] .hero-promo-banner {
+  background: linear-gradient(90deg, #292413 0%, #19170c 100%);
+}
+:root[data-theme="dark"] .hero-promo-text {
+  color: #e8a36f;
+}
+:root[data-theme="dark"] .hero-description {
+  color: #aab6cf;
+}
+:root[data-theme="dark"] .btn-outline-secondary {
+  background: #191e23;
+  color: #b2bdcc !important;
+}
+:root[data-theme="dark"] .metrics-card {
+  background: #1a202e;
+}
+:root[data-theme="dark"] .metric-item {
+  border-right: 1px solid #263646;
+}
+:root[data-theme="dark"] .metric-value {
+  color: #d0d8ea;
+}
+:root[data-theme="dark"] .metric-label {
+  color: #8d9ab6;
+}
+:root[data-theme="dark"] .placements-container-section {
+  background: #1c2126;
+}
+:root[data-theme="dark"] .company-logos-card-wrapper {
+  background: #1a202e;
+  border: 1px solid #212e3e;
+}
+:root[data-theme="dark"] .company-logos-card-title {
+  color: #d0d8ea;
+}
+:root[data-theme="dark"] .company-logo-card {
+  background: #1a202e;
+  border: 1px solid #253444;
+}
+:root[data-theme="dark"] .company-logo-card:hover {
+  border-color: #1c2530;
+}
+:root[data-theme="dark"] .carousel-nav-btn {
+  background: #1a202e;
+  border: 1px solid #212e3e;
+  color: #83edcc;
+}
+:root[data-theme="dark"] .student-card {
+  background: #1a202e;
+  border: 1px solid #253444;
+}
+:root[data-theme="dark"] .student-card:hover {
+  border-color: #182c22;
+}
+:root[data-theme="dark"] .student-avatar-ring {
+  background: #1a202e;
+}
+:root[data-theme="dark"] .student-name {
+  color: #d0d8ea;
+}
+:root[data-theme="dark"] .struggles-benefits-section {
+  background: #1c2126;
+}
+:root[data-theme="dark"] .problem-master-card {
+  background: #1a202e;
+}
+:root[data-theme="dark"] .reality-eyebrow {
+  background: #2b1515;
+  border: 1px solid #3b2020;
+  color: #d15252;
+}
+:root[data-theme="dark"] .struggles-title {
+  color: #d0d8ea;
+}
+:root[data-theme="dark"] .highlight-coral {
+  background: linear-gradient(135deg, #EF4444 0%, #e06a6a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+:root[data-theme="dark"] .struggles-subtitle {
+  color: #8b96a6;
+}
+:root[data-theme="dark"] .struggle-card-item {
+  background: #1c2126;
+  border: 1px solid #212e3e;
+}
+:root[data-theme="dark"] .struggle-card-item:hover {
+  background: #1a202e;
+  border-color: #3b2020;
+}
+:root[data-theme="dark"] .struggle-card-icon.coral {
+  background: #251111;
+}
+:root[data-theme="dark"] .struggle-card-icon.amber {
+  background: #19170c;
+  color: #e8a456;
+}
+:root[data-theme="dark"] .struggle-card-icon.purple {
+  background: #1d1328;
+  color: #9c5dd3;
+}
+:root[data-theme="dark"] .struggle-card-icon.blue {
+  background: #141e2a;
+  color: #4070d9;
+}
+:root[data-theme="dark"] .struggle-card-icon.red {
+  background: #261213;
+  color: #d6506e;
+}
+:root[data-theme="dark"] .struggle-card-title {
+  color: #d0d8ea;
+}
+:root[data-theme="dark"] .struggle-card-desc {
+  color: #8b96a6;
+}
+:root[data-theme="dark"] .struggles-img-frame {
+  background: radial-gradient(circle at 50% 50%, rgba(239, 68, 68, 0.05) 0%, #14192a99 60%, #1f4d7a59 100%);
+}
+:root[data-theme="dark"] .reality-float-badge {
+  background: #1a202ef5;
+}
+:root[data-theme="dark"] .badge-icon-box.amber {
+  background: #19170c;
+  color: #e8a456;
+}
+:root[data-theme="dark"] .badge-icon-box.coral {
+  background: #251111;
+}
+:root[data-theme="dark"] .badge-headline {
+  color: #d0d8ea;
+}
+:root[data-theme="dark"] .badge-caption {
+  color: #8b96a6;
+}
+:root[data-theme="dark"] .struggles-solution-bridge {
+  background: linear-gradient(135deg, #14271ef2 0%, #152824e6 100%);
+}
+:root[data-theme="dark"] .solution-bridge-heading {
+  color: #a9f0dc;
+}
+:root[data-theme="dark"] .solution-bridge-desc {
+  color: #97f0d7;
+}
+:root[data-theme="dark"] .simplicity-section {
+  background: #1c2126;
+}
+:root[data-theme="dark"] .simplicity-card-container {
+  background: #1a202e;
+  border: 1px solid #212e3e;
+}
+:root[data-theme="dark"] .simplicity-heading {
+  color: #d0d8ea;
+}
+:root[data-theme="dark"] .simplicity-heading .highlight-blue {
+  color: #7db0ff;
+}
+:root[data-theme="dark"] .simplicity-step-item {
+  border-right: 1px solid #263646;
+}
+:root[data-theme="dark"] .simplicity-icon-circle {
+  background: #14271e;
+}
+:root[data-theme="dark"] .simplicity-step-title {
+  color: #d0d8ea;
+}
+:root[data-theme="dark"] .why-enroll-section {
+  background: #1c2126;
+}
+:root[data-theme="dark"] .section-title {
+  color: #d0d8ea;
+}
+:root[data-theme="dark"] .section-title .highlight-blue {
+  color: #7db0ff;
+}
+:root[data-theme="dark"] .benefit-card-modern {
+  background: #1a202e;
+  border: 1px solid #212e3e;
+}
+:root[data-theme="dark"] .benefit-card-modern:hover {
+  border-color: #1c2530;
+}
+:root[data-theme="dark"] .benefit-icon-box {
+  background: #141e2a;
+  color: #7db0ff;
+}
+:root[data-theme="dark"] .benefit-card-title {
+  color: #d0d8ea;
+}
+:root[data-theme="dark"] .benefit-card-desc {
+  color: #aab6cf;
+}
+:root[data-theme="dark"] .curriculum-section {
+  background: #1c2126;
+}
+:root[data-theme="dark"] .journey-step-card {
+  background: #1a202e;
+}
+:root[data-theme="dark"] .step-blue .step-number-badge {
+  color: #738ad8;
+  background: #141e2a;
+  border: 1px solid #1e2937;
+}
+:root[data-theme="dark"] .step-purple .step-number-badge {
+  background: #21152d;
+  border: 1px solid #27223f;
+}
+:root[data-theme="dark"] .step-indigo .step-number-badge {
+  color: #665fc4;
+  background: #14192a;
+  border: 1px solid #1f243a;
+}
+:root[data-theme="dark"] .step-amber .step-number-badge {
+  color: #e8a36f;
+  background: #292413;
+}
+:root[data-theme="dark"] .step-green .step-number-badge {
+  color: #97f0d7;
+  background: #14271e;
+  border: 1px solid #182c22;
+}
+:root[data-theme="dark"] .step-teal .step-number-badge {
+  color: #9ae7e1;
+  background: #152824;
+  border: 1px solid #162825;
+}
+:root[data-theme="dark"] .step-rose .step-number-badge {
+  color: #e06886;
+  background: #2b1416;
+  border: 1px solid #3c2024;
+}
+:root[data-theme="dark"] .step-gold .step-number-badge {
+  color: #e8a36f;
+  background: #19170c;
+}
+:root[data-theme="dark"] .step-badge-tag {
+  color: #6ce2bb;
+  background: #14271e;
+}
+:root[data-theme="dark"] .step-blue .step-icon-wrap {
+  background: #141e2a;
+  color: #738ad8;
+}
+:root[data-theme="dark"] .step-purple .step-icon-wrap {
+  background: #21152d;
+}
+:root[data-theme="dark"] .step-indigo .step-icon-wrap {
+  background: #14192a;
+}
+:root[data-theme="dark"] .step-amber .step-icon-wrap {
+  background: #292413;
+  color: #e8a456;
+}
+:root[data-theme="dark"] .step-green .step-icon-wrap {
+  background: #14271e;
+  color: #83edcc;
+}
+:root[data-theme="dark"] .step-teal .step-icon-wrap {
+  background: #152824;
+  color: #85e7de;
+}
+:root[data-theme="dark"] .step-rose .step-icon-wrap {
+  background: #2b1416;
+  color: #d6506e;
+}
+:root[data-theme="dark"] .step-gold .step-icon-wrap {
+  background: #19170c;
+  color: #e8a456;
+}
+:root[data-theme="dark"] .step-title {
+  color: #d0d8ea;
+}
+:root[data-theme="dark"] .step-description {
+  color: #8b96a6;
+}
+:root[data-theme="dark"] .step-points-list li {
+  color: #b2bdcc;
+}
+:root[data-theme="dark"] .get-certified {
+  background: #1c2126;
+}
+:root[data-theme="dark"] .certificate-card-wrapper {
+  background: #1a202e;
+}
+:root[data-theme="dark"] .certificate-info-column .eyebrow-pill {
+  background: #141e2a;
+  border: 1px solid #232f40;
+  color: #5678d6;
+}
+:root[data-theme="dark"] .certificate-title {
+  color: #d0d8ea;
+}
+:root[data-theme="dark"] .certificate-title .highlight-green,
+:root[data-theme="dark"] .highlight-green {
+  color: #6defc4 !important;
+}
+:root[data-theme="dark"] .certificate-subtitle {
+  color: #a4aebc;
+}
+:root[data-theme="dark"] .certificate-checklist li {
+  color: #b2bdcc;
+}
+:root[data-theme="dark"] .cert-check-icon {
+  color: #83edcc;
+}
+:root[data-theme="dark"] .certificate-glass::before {
+  background: radial-gradient(circle, #3643634c 0%, transparent 70%);
+}
+:root[data-theme="dark"] .shine-effect {
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0) 0%, #1a202e80 50%, #1a202e);
+}
+:root[data-theme="dark"] .final-cta-section {
+  background: #1c2126;
+}
+:root[data-theme="dark"] .mentor-section {
+  background: #1c2126;
+}
+:root[data-theme="dark"] .mentor-master-card {
+  background: #1a202e;
+}
+:root[data-theme="dark"] .mentor-image-frame {
+  background: radial-gradient(circle at 50% 30%, #14271e 0%, #0e1b14 65%, #1f7a5059 100%);
+  border: 3.5px solid #3b3b3b;
+}
+:root[data-theme="dark"] .mentor-float-badge.top-badge {
+  background: #1a202ef2;
+  color: #83edcc;
+}
+:root[data-theme="dark"] .mentor-float-badge.bottom-badge {
+  background: #1a202ef5;
+  color: #d0d8ea;
+}
+:root[data-theme="dark"] .mentor-portrait-sub-badge {
+  background: #191e23;
+  color: #b2bdcc;
+  border: 1px solid #212e3e;
+}
+:root[data-theme="dark"] .mentor-name-title {
+  color: #d0d8ea;
+}
+:root[data-theme="dark"] .mentor-tagline {
+  color: #8b96a6;
+}
+:root[data-theme="dark"] .mentor-highlight-item {
+  background: #1c2126;
+  border: 1px solid #253444;
+}
+:root[data-theme="dark"] .mentor-highlight-item:hover {
+  background: #1a202e;
+}
+:root[data-theme="dark"] .highlight-icon-box.blue {
+  background: #141e2a;
+  color: #4070d9;
+}
+:root[data-theme="dark"] .highlight-icon-box.green {
+  background: #14271e;
+  color: #83edcc;
+}
+:root[data-theme="dark"] .highlight-icon-box.purple {
+  background: #1d1328;
+  color: #9c5dd3;
+}
+:root[data-theme="dark"] .highlight-icon-box.amber {
+  background: #292413;
+  color: #e8a456;
+}
+:root[data-theme="dark"] .highlight-val {
+  color: #d0d8ea;
+}
+:root[data-theme="dark"] .highlight-lbl {
+  color: #8b96a6;
+}
+:root[data-theme="dark"] .mentor-bio-text {
+  color: #a4aebc;
+}
+:root[data-theme="dark"] .mentor-quote-card {
+  background: linear-gradient(135deg, #14271ed9 0%, #1c2126f2 100%);
+}
+:root[data-theme="dark"] .quote-text-body {
+  color: #b2bdcc;
+}
+:root[data-theme="dark"] .cred-pill {
+  background: #191e23;
+  color: #b2bdcc;
+  border: 1px solid #212e3e;
+}
+:root[data-theme="dark"] .cred-pill:hover {
+  background: #14271e;
+}
+:root[data-theme="dark"] .enrollment-section {
+  background: #1a202e;
+}
+:root[data-theme="dark"] .pricing-card-split {
+  background: #1a202e;
+  border: 2px solid #232f40;
+}
+:root[data-theme="dark"] .pricing-split-header .limited-seats-badge {
+  background: #2b1515;
+  border: 1px solid #422424;
+}
+:root[data-theme="dark"] .pricing-split-title {
+  color: #d0d8ea;
+}
+:root[data-theme="dark"] .pricing-split-subtitle {
+  color: #8b96a6;
+}
+:root[data-theme="dark"] .pricing-feature-item {
+  color: #c5cedd;
+}
+:root[data-theme="dark"] .pricing-feature-item .check-icon {
+  background: #141e2a;
+  color: #4070d9;
+}
+:root[data-theme="dark"] .pricing-trust-inline {
+  border-top: 1px solid #263646;
+}
+:root[data-theme="dark"] .trust-inline-item {
+  color: #8b96a6;
+}
+:root[data-theme="dark"] .pricing-action-box {
+  background: radial-gradient(circle at 50% 20%, #141f2b 0%, #1a202e 85%);
+  border: 1.5px solid #232f40;
+}
+:root[data-theme="dark"] .pricing-box-tag {
+  color: #4070d9;
+}
+:root[data-theme="dark"] .pricing-amount-row .currency {
+  color: #d0d8ea;
+}
+:root[data-theme="dark"] .pricing-amount-row .price-discounted {
+  color: #d0d8ea;
+}
+:root[data-theme="dark"] .price-meta-col .discount-badge-pill {
+  background: #14271e;
+  color: #83edcc;
+}
+:root[data-theme="dark"] .pricing-tenure-note {
+  color: #8b96a6;
+}
+:root[data-theme="dark"] .pay-method-pill {
+  color: #8b96a6;
+  background: #1a202e;
+  border: 1px solid #212e3e;
+}
+:root[data-theme="dark"] .pricing-guarantee-micro {
+  color: #8b96a6;
+}
+@media (max-width: 992px) {
+:root[data-theme="dark"] .simplicity-step-item {
+  border-bottom: 1px solid #263646;
+}
+}
+:root[data-theme="dark"] .footer-trust-badge {
+  color: #56c99f;
+}
+:root[data-theme="dark"] .footer-copyright-text {
+  color: #8b96a6;
+}
+/* ── from footer.css ── */
+:root[data-theme="dark"] .footer-trust-badge {
+  color: #56c99f;
+}
+:root[data-theme="dark"] .footer-copyright-text {
+  color: #8b96a6;
+}

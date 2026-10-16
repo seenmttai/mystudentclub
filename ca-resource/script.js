@@ -80,7 +80,7 @@ function calcPageSize(pdfPageViewport) {
     let maxPageW, maxPageH;
     if (viewMode === 'single') {
         // Single mode: one page fills the available width
-        maxPageW = availW * 0.85;
+        maxPageW = availW * (availW <= 768 ? 0.98 : 0.85);
         maxPageH = availH * 0.92;
     } else {
         // Double mode: each page is half the book width
@@ -97,9 +97,11 @@ function calcPageSize(pdfPageViewport) {
         pageW = pageH * pdfRatio;
     }
 
-    // Secure zoom constraint: enforce a minimum page height of 1.25x viewport height
+    // Secure zoom constraint: enforce a minimum page height of 1.25x viewport height,
+    // but only when that still fits the width (on a portrait phone it cannot: the page
+    // would be wider than the screen and open off-screen/clipped, so fit the width).
     const minSecureHeight = Math.round(availH * 1.25);
-    if (pageH < minSecureHeight) {
+    if (pageH < minSecureHeight && minSecureHeight * pdfRatio <= availW) {
         pageH = minSecureHeight;
         pageW = pageH * pdfRatio;
     }
@@ -307,6 +309,7 @@ async function buildFlipbook() {
 
     const firstPage = await pdfDoc.getPage(1);
     const rawVP = firstPage.getViewport({ scale: 1 });
+    basePageVP = rawVP;
     const { pageW: initialPageW, pageH: initialPageH } = calcPageSize(rawVP);
 
     // Create page divs
@@ -555,14 +558,20 @@ function clampPageWidth(pageW, baseViewport) {
     return Math.max(bounds.minPageW, Math.min(bounds.maxPageW, Math.round(pageW)));
 }
 
+let basePageVP = null;
 function resizeFlipbookToPageWidth(targetPageW, options = {}) {
     if (!pdfDoc || !flipbookReady) return Promise.resolve();
 
+    // Anchor = point (viewer-area coords) of the page that must stay under the
+    // fingers; focus = where that point should end up (defaults to the anchor).
     const anchorX = options.anchorX ?? viewerArea.clientWidth / 2;
     const anchorY = options.anchorY ?? viewerArea.clientHeight / 2;
+    const focusX = options.focusX ?? anchorX;
+    const focusY = options.focusY ?? anchorY;
 
-    return pdfDoc.getPage(1).then(page => {
-        const vp = page.getViewport({ scale: 1 });
+    const vpPromise = basePageVP ? Promise.resolve(basePageVP)
+        : pdfDoc.getPage(1).then(page => (basePageVP = page.getViewport({ scale: 1 })));
+    return vpPromise.then(vp => {
         const pdfRatio = vp.width / vp.height;
         const nextPageW = clampPageWidth(targetPageW, vp);
         const nextPageH = Math.round(nextPageW / pdfRatio);
@@ -571,10 +580,11 @@ function resizeFlipbookToPageWidth(targetPageW, options = {}) {
         const currentSize = $(flipbookEl).turn('size');
         const oldBookW = currentSize.width || nextBookW;
         const oldBookH = currentSize.height || nextPageH;
-        const oldScrollLeft = viewerArea.scrollLeft;
-        const oldScrollTop = viewerArea.scrollTop;
-        const oldAnchorX = oldScrollLeft + anchorX;
-        const oldAnchorY = oldScrollTop + anchorY;
+        // Anchor in flipbook-local coordinates (before resizing).
+        const vRect = viewerArea.getBoundingClientRect();
+        const fRect = flipbookEl.getBoundingClientRect();
+        const localX = vRect.left + anchorX - fRect.left;
+        const localY = vRect.top + anchorY - fRect.top;
 
         $(flipbookEl).turn('size', nextBookW, nextPageH);
 
@@ -588,10 +598,12 @@ function resizeFlipbookToPageWidth(targetPageW, options = {}) {
 
         checkOverflow();
 
-        const widthRatio = oldBookW ? nextBookW / oldBookW : 1;
-        const heightRatio = oldBookH ? nextPageH / oldBookH : 1;
-        viewerArea.scrollLeft = Math.max(0, Math.round(oldAnchorX * widthRatio - anchorX));
-        viewerArea.scrollTop = Math.max(0, Math.round(oldAnchorY * heightRatio - anchorY));
+        // Scroll so the anchored page point lands on the focus point.
+        const nRect = flipbookEl.getBoundingClientRect();
+        const wantX = nRect.left + localX * (nextBookW / oldBookW);
+        const wantY = nRect.top + localY * (nextPageH / oldBookH);
+        viewerArea.scrollLeft += Math.round(wantX - (vRect.left + focusX));
+        viewerArea.scrollTop += Math.round(wantY - (vRect.top + focusY));
 
         return { pageW: nextPageW, pageH: nextPageH };
     });
@@ -629,7 +641,7 @@ function checkOverflow() {
         // Disable turn.js mouse/touch drag
         $(flipbookEl).turn('disable', true);
         // Allow viewer to scroll
-        flipbookEl.style.touchAction = 'pan-x pan-y';
+        flipbookEl.style.touchAction = 'none';
         flipbookEl.style.margin = '20px auto';
         viewerArea.style.overflow = 'auto';
         viewerArea.style.alignItems = 'flex-start';
@@ -640,7 +652,7 @@ function checkOverflow() {
         // Re-enable turn.js drag
         $(flipbookEl).turn('disable', false);
         // Reset scroll
-        flipbookEl.style.touchAction = 'pan-x pan-y';
+        flipbookEl.style.touchAction = 'none';
         flipbookEl.style.margin = 'auto';
         viewerArea.style.overflow = 'auto';
         viewerArea.style.alignItems = 'center';
@@ -702,7 +714,7 @@ function fitToWidth() {
 
         // Secure zoom constraint: enforce a minimum page height of 1.25x viewport height
         const minSecureHeight = Math.round(availH * 1.25);
-        if (pageH < minSecureHeight) {
+        if (pageH < minSecureHeight && minSecureHeight * (vp.width / vp.height) <= availW) {
             pageH = minSecureHeight;
             pageW = Math.round(pageH * (vp.width / vp.height));
         }
@@ -908,6 +920,31 @@ function updateSearchInfo() {
     }
 }
 
+// ─── Document title (header) ───
+function guessTitleFromUrl(u) {
+    try {
+        let url = new URL(u, window.location.href);
+        const inner = url.searchParams.get('url');
+        if (inner) url = new URL(inner, window.location.href);
+        const name = decodeURIComponent(url.pathname.split('/').pop() || '');
+        return name.replace(/\.(pdf|docx?)$/i, '').replace(/[_-]+/g, ' ').trim();
+    } catch (_) { return ''; }
+}
+function setDocumentTitle(pdf) {
+    const el = _$('doc-title');
+    const apply = t => {
+        t = (t || '').trim();
+        if (el && t) { el.textContent = t; el.title = t; }
+    };
+    apply(guessTitleFromUrl(PDF_URL));
+    if (pdf && pdf.getMetadata) {
+        pdf.getMetadata().then(m => {
+            const t = m && m.info && m.info.Title;
+            if (t && !/^(untitled|microsoft word)/i.test(t)) apply(t);
+        }).catch(() => {});
+    }
+}
+
 // ─── PDF Loading ───
 function loadPdf(url) {
     loadingOverlay.classList.remove('hidden');
@@ -919,6 +956,7 @@ function loadPdf(url) {
             pageCountEl.textContent = totalPages;
             pageInput.max = totalPages;
             pageInput.value = 1;
+            setDocumentTitle(pdf);
             buildFlipbook();
         }).catch(err => {
             console.error('PDF load error:', err);
@@ -1014,137 +1052,193 @@ window.addEventListener('resize', () => {
 });
 
 // ─── Touch Gestures (Mobile) ───
-let touchStartX = 0;
-let touchStartY = 0;
-let initialPinchDist = 0;
-let isPinching = false;
-let isTouchPanning = false;
-let lastPanX = 0;
-let lastPanY = 0;
-let touchMoved = false;
-let pinchStartPageW = 0;
-let pinchAnchorX = 0;
-let pinchAnchorY = 0;
+// #viewer-area uses touch-action:none, so every touch gesture is handled here
+// (identical on Android WebView and iOS WKWebView, no native/page zoom):
+//   1 finger   -> pan the zoomed page (with momentum); a horizontal swipe flips
+//                 the page when there is no horizontal overflow to pan into
+//   2 fingers  -> live pinch zoom (CSS transform follows the fingers, the page is
+//                 re-rendered sharp on release) + two-finger pan
+//   double tap -> toggle zoom
+let gesture = null;     // { mode: 'pan' | 'pinch' | 'ignore', ... }
+let momentumRaf = 0;
+let lastTapTime = 0, lastTapX = 0, lastTapY = 0;
 
-function getTouchDist(touches) {
-    const dx = touches[0].clientX - touches[1].clientX;
-    const dy = touches[0].clientY - touches[1].clientY;
-    return Math.sqrt(dx * dx + dy * dy);
+function stopMomentum() {
+    if (momentumRaf) { cancelAnimationFrame(momentumRaf); momentumRaf = 0; }
 }
 
-function getTouchAnchor(touches) {
-    const rect = viewerArea.getBoundingClientRect();
-    const centerX = (touches[0].clientX + touches[1].clientX) / 2;
-    const centerY = (touches[0].clientY + touches[1].clientY) / 2;
-    return {
-        x: centerX - rect.left,
-        y: centerY - rect.top
+function touchCenter(t) {
+    return { x: (t[0].clientX + t[1].clientX) / 2, y: (t[0].clientY + t[1].clientY) / 2 };
+}
+function touchDist(t) {
+    return Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+}
+function canPanHorizontally() {
+    return viewerArea.scrollWidth > viewerArea.clientWidth + 2;
+}
+
+function beginPinch(e) {
+    stopMomentum();
+    const pageW = getCurrentPageWidth();
+    if (!pageW) { gesture = { mode: 'ignore' }; return; }
+    const c = touchCenter(e.touches);
+    const vRect = viewerArea.getBoundingClientRect();
+    const fRect = flipbookEl.getBoundingClientRect();
+    gesture = {
+        mode: 'pinch',
+        startDist: Math.max(touchDist(e.touches), 1),
+        startPageW: pageW,
+        startCx: c.x, startCy: c.y,
+        cx: c.x, cy: c.y,
+        scale: 1,
+        vLeft: vRect.left, vTop: vRect.top
     };
+    // transform origin = page point under the initial finger centre
+    flipbookEl.style.transformOrigin = (c.x - fRect.left) + 'px ' + (c.y - fRect.top) + 'px';
+    flipbookEl.style.willChange = 'transform';
+}
+
+function pinchScaleBounds(g) {
+    if (!basePageVP) return { min: 0.2, max: 6 };
+    const b = getZoomBounds(basePageVP);
+    return { min: b.minPageW / g.startPageW, max: b.maxPageW / g.startPageW };
+}
+
+function updatePinch(e) {
+    const g = gesture;
+    const c = touchCenter(e.touches);
+    const bounds = pinchScaleBounds(g);
+    // small rubber-band beyond the limits, clamped on release
+    const s = Math.max(bounds.min * 0.85, Math.min(bounds.max * 1.15, touchDist(e.touches) / g.startDist));
+    g.scale = s; g.cx = c.x; g.cy = c.y;
+    flipbookEl.style.transform =
+        'translate(' + (c.x - g.startCx) + 'px,' + (c.y - g.startCy) + 'px) scale(' + s + ')';
+}
+
+function endPinch() {
+    const g = gesture;
+    gesture = null;
+    flipbookEl.style.transform = '';
+    flipbookEl.style.transformOrigin = '';
+    flipbookEl.style.willChange = '';
+    if (!g || g.mode !== 'pinch') return;
+    const bounds = pinchScaleBounds(g);
+    const s = Math.max(bounds.min, Math.min(bounds.max, g.scale));
+    if (Math.abs(s - 1) < 0.02) return;
+    resizeFlipbookToPageWidth(g.startPageW * s, {
+        anchorX: g.startCx - g.vLeft,
+        anchorY: g.startCy - g.vTop,
+        focusX: g.cx - g.vLeft,
+        focusY: g.cy - g.vTop
+    });
+}
+
+function toggleDoubleTapZoom(x, y) {
+    if (!flipbookReady || !pdfDoc || !basePageVP) return;
+    const vRect = viewerArea.getBoundingClientRect();
+    const b = getZoomBounds(basePageVP);
+    const target = getCurrentPageWidth() > b.minPageW * 1.15
+        ? b.minPageW
+        : Math.min(b.maxPageW, b.minPageW * 2);
+    resizeFlipbookToPageWidth(target, { anchorX: x - vRect.left, anchorY: y - vRect.top });
+}
+
+function startMomentum(vx, vy) {
+    let last = performance.now();
+    const step = now => {
+        const dt = Math.min(now - last, 40);
+        last = now;
+        const decay = Math.pow(0.95, dt / 16);
+        vx *= decay; vy *= decay;
+        const bl = viewerArea.scrollLeft, bt = viewerArea.scrollTop;
+        viewerArea.scrollLeft = bl - vx * dt;
+        viewerArea.scrollTop = bt - vy * dt;
+        const blocked = viewerArea.scrollLeft === bl && viewerArea.scrollTop === bt;
+        if (blocked || (Math.abs(vx) < 0.02 && Math.abs(vy) < 0.02)) { momentumRaf = 0; return; }
+        momentumRaf = requestAnimationFrame(step);
+    };
+    momentumRaf = requestAnimationFrame(step);
 }
 
 viewerArea.addEventListener('touchstart', e => {
-    if (e.touches.length === 2) {
-        isPinching = true;
-        isTouchPanning = false;
-        initialPinchDist = getTouchDist(e.touches);
-        pinchStartPageW = getCurrentPageWidth();
-        const anchor = getTouchAnchor(e.touches);
-        pinchAnchorX = anchor.x;
-        pinchAnchorY = anchor.y;
+    if (e.touches.length >= 2) {
+        beginPinch(e);
         e.preventDefault();
-    } else if (e.touches.length === 1) {
-        isPinching = false;
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
-        lastPanX = touchStartX;
-        lastPanY = touchStartY;
-        touchMoved = false;
-        isTouchPanning = isZoomedIn;
-        if (isTouchPanning) {
-            e.preventDefault();
-        }
+        return;
+    }
+    if (e.touches.length === 1) {
+        stopMomentum();
+        const t = e.touches[0];
+        gesture = {
+            mode: 'pan', startX: t.clientX, startY: t.clientY, lastX: t.clientX, lastY: t.clientY,
+            lastT: e.timeStamp, vx: 0, vy: 0, moved: false, canFlipH: !canPanHorizontally()
+        };
     }
 }, { passive: false });
 
 viewerArea.addEventListener('touchmove', e => {
-    if (isPinching && e.touches.length === 2) {
-        touchMoved = true;
+    if (!gesture) return;
+    if (gesture.mode === 'pinch') {
+        if (e.touches.length >= 2) updatePinch(e);
         e.preventDefault();
         return;
     }
-
-    if (isTouchPanning && e.touches.length === 1) {
-        const touch = e.touches[0];
-        const dx = touch.clientX - lastPanX;
-        const dy = touch.clientY - lastPanY;
-
-        viewerArea.scrollLeft -= dx;
-        viewerArea.scrollTop -= dy;
-
-        lastPanX = touch.clientX;
-        lastPanY = touch.clientY;
-        touchMoved = true;
-        e.preventDefault();
-    }
+    if (gesture.mode !== 'pan' || e.touches.length !== 1) return;
+    const g = gesture, t = e.touches[0];
+    if (!g.moved && Math.hypot(t.clientX - g.startX, t.clientY - g.startY) < 6) return;
+    g.moved = true;
+    const dx = t.clientX - g.lastX, dy = t.clientY - g.lastY;
+    const dt = Math.max(e.timeStamp - g.lastT, 1);
+    g.vx = 0.8 * (dx / dt) + 0.2 * g.vx;
+    g.vy = 0.8 * (dy / dt) + 0.2 * g.vy;
+    g.lastX = t.clientX; g.lastY = t.clientY; g.lastT = e.timeStamp;
+    viewerArea.scrollLeft -= dx;
+    viewerArea.scrollTop -= dy;
+    e.preventDefault();
 }, { passive: false });
 
 viewerArea.addEventListener('touchend', e => {
-    if (isPinching && e.touches.length < 2) {
-        // Pinch ended — calculate zoom factor
-        if (e.changedTouches.length > 0 && initialPinchDist > 0) {
-            // Reconstruct final distance from remaining + changed touches
-            const allTouches = [...e.touches, ...e.changedTouches];
-            if (allTouches.length >= 2) {
-                const finalDist = getTouchDist(allTouches);
-                const ratio = finalDist / initialPinchDist;
-                if (Math.abs(ratio - 1) > 0.05 && pinchStartPageW > 0) {
-                    resizeFlipbookToPageWidth(pinchStartPageW * ratio, {
-                        anchorX: pinchAnchorX,
-                        anchorY: pinchAnchorY
-                    });
-                }
-            }
+    const g = gesture;
+    if (!g) return;
+    if (g.mode === 'pinch') {
+        if (e.touches.length < 2) {
+            endPinch();
+            // a remaining finger must not start a pan/tap mid-gesture
+            if (e.touches.length === 1) gesture = { mode: 'ignore' };
         }
-        isPinching = false;
-        initialPinchDist = 0;
-        pinchStartPageW = 0;
-        touchMoved = false;
         return;
     }
-
-    // Swipe detection (single finger) — only when not zoomed in
-    if (isTouchPanning) {
-        isTouchPanning = false;
-        touchMoved = false;
+    if (g.mode === 'ignore') { if (e.touches.length === 0) gesture = null; return; }
+    gesture = null;
+    if (e.touches.length) return;
+    const t = e.changedTouches[0];
+    if (g.moved) {
+        const dx = t.clientX - g.startX, dy = t.clientY - g.startY;
+        if (g.canFlipH && Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+            if (dx < 0) nextPage(); else prevPage();
+        } else if (e.timeStamp - g.lastT < 80 && (Math.abs(g.vx) > 0.05 || Math.abs(g.vy) > 0.05)) {
+            startMomentum(g.vx, g.vy);
+        }
         return;
     }
-
-    if (e.changedTouches.length === 1 && !isPinching && !isZoomedIn) {
-        const touchEndX = e.changedTouches[0].clientX;
-        const touchEndY = e.changedTouches[0].clientY;
-        const dx = touchEndX - touchStartX;
-        const dy = touchEndY - touchStartY;
-
-        // Only trigger if horizontal swipe is dominant and long enough
-        if (!touchMoved && Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
-            if (dx < 0) {
-                nextPage(); // Swipe left = next page
-            } else {
-                prevPage(); // Swipe right = prev page
-            }
-        }
+    // tap / double tap (single taps still reach links in the annotation layer)
+    if (e.timeStamp - lastTapTime < 300 && Math.hypot(t.clientX - lastTapX, t.clientY - lastTapY) < 30) {
+        lastTapTime = 0;
+        if (!(e.target.closest && e.target.closest('a'))) toggleDoubleTapZoom(t.clientX, t.clientY);
+    } else {
+        lastTapTime = e.timeStamp; lastTapX = t.clientX; lastTapY = t.clientY;
     }
-
-    touchMoved = false;
 });
 
 viewerArea.addEventListener('touchcancel', () => {
-    isPinching = false;
-    isTouchPanning = false;
-    initialPinchDist = 0;
-    pinchStartPageW = 0;
-    touchMoved = false;
+    if (gesture && gesture.mode === 'pinch') endPinch();
+    gesture = null;
 });
+
+// Block WebView/page-level pinch gestures (iOS) so the header never gets zoomed
+// or panned out of view.
+['gesturestart', 'gesturechange', 'gestureend'].forEach(ev =>
+    document.addEventListener(ev, e => e.preventDefault(), { passive: false }));
 
 // Content protection
 document.addEventListener('contextmenu', e => e.preventDefault());

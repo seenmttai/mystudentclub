@@ -21,6 +21,8 @@
         if (menu.classList.contains('active') && !menu.contains(e.target) && !menuBtn.contains(e.target)) closeMenu();
       });
     }
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && menu && menu.classList.contains('active')) closeMenu(); });
+    window.addEventListener('pageshow', function () { if (menu && !menu.classList.contains('active')) document.body.style.overflow = ''; });
     var theme = $('themeToggleBtn');
     theme && theme.addEventListener('click', function () {
       var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
