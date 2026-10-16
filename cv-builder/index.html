@@ -7,7 +7,7 @@
     <title>My Student Club CV Builder</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Apply saved Airy Flow theme before paint to avoid flash -->
     <script>
         (function () {
@@ -731,6 +731,16 @@
                 </div>
 
                 <p id="embeddedLoadingProgressText">Hang tight as we evaluate your CV with AI precision!</p>
+                <div class="ai-stream-terminal" id="aiStreamTerminal">
+                    <div class="ai-stream-header">
+                        <span class="ai-stream-pulse"></span>
+                        <span class="ai-stream-badge">LIVE AI AUDIT REASONING</span>
+                    </div>
+                    <div class="ai-stream-body">
+                        <span class="ai-stream-output" id="aiStreamOutput"></span>
+                        <span class="ai-stream-cursor">▊</span>
+                    </div>
+                </div>
             </div>
 
             <!-- Error / Empty State Section (Prevents Blank Screen on Any Error) -->
@@ -1047,24 +1057,6 @@
         <div class="template-sidebar-header">
             <h3>Choose Template</h3>
             <button class="template-sidebar-close" onclick="toggleTemplateSidebar(false)">×</button>
-        </div>
-        <div class="template-theme-panel">
-            <div class="template-theme-head">
-                <div>
-                    <div class="template-theme-title">Color Theme</div>
-                    <div class="template-theme-subtitle">Use presets or pick any accent color</div>
-                </div>
-                <button type="button" class="template-theme-reset" onclick="resetThemeAccent()">Default</button>
-            </div>
-            <div class="template-theme-swatches" id="template-theme-swatches"></div>
-            <div class="template-theme-custom">
-                <label for="theme-accent-picker">Custom RGB</label>
-                <div class="template-theme-custom-row">
-                    <input type="color" id="theme-accent-picker" onchange="updateThemeAccent(this.value)">
-                    <input type="text" id="theme-accent-value" class="form-control" placeholder="#2F557F" oninput="updateThemeAccentFromText(this.value)">
-                    <div class="template-theme-chip" id="theme-accent-chip">Accent</div>
-                </div>
-            </div>
         </div>
         <div class="template-grid" id="template-grid">
             <!-- Cards injected by JS -->

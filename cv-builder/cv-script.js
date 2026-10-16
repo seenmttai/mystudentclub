@@ -3926,7 +3926,7 @@ async function deliverDownloadedBlob(blob, filename) {
             const isMobile = window.innerWidth <= 768;
             
             // Build steps dynamically based on device
-            const steps = [
+            let steps = [
                 {
                     popover: {
                         title: '👋 Welcome!',

@@ -155,6 +155,57 @@ function updateLoadingChecklist(stage) {
     }
 }
 
+// ── Live AI Streaming Console ──────────────────────────────────────
+const AI_STREAM_PHRASES = [
+    "Analyzing document hierarchy, formatting balance, and section headers...",
+    "Extracting CA credentials: CA Final, Inter status, attempt counts, and rank...",
+    "Auditing articleship exposure: Statutory Audit, Transfer Pricing, Internal Controls...",
+    "Evaluating action-verb density and quantitative metrics across work experience...",
+    "Cross-referencing Big 4 & Investment Banking shortlisting thresholds...",
+    "Scanning ATS compliance index and font structure readability...",
+    "Synthesizing section-by-section strengths, improvements, and personalized career score..."
+];
+
+let _streamTimer = null;
+let _streamCharIdx = 0;
+let _streamPhraseIdx = 0;
+
+function startLiveStreamingConsole() {
+    stopLiveStreamingConsole();
+    const outputEl = document.getElementById('aiStreamOutput');
+    if (!outputEl) return;
+    _streamPhraseIdx = 0;
+    _streamCharIdx = 0;
+
+    function typeNextChar() {
+        const phrase = AI_STREAM_PHRASES[_streamPhraseIdx % AI_STREAM_PHRASES.length];
+        if (_streamCharIdx < phrase.length) {
+            outputEl.textContent += phrase[_streamCharIdx];
+            _streamCharIdx++;
+            _streamTimer = setTimeout(typeNextChar, 28 + Math.random() * 20);
+        } else {
+            // Pause at end of phrase, then clear and move to next
+            _streamTimer = setTimeout(() => {
+                outputEl.textContent = '';
+                _streamCharIdx = 0;
+                _streamPhraseIdx++;
+                typeNextChar();
+            }, 1800);
+        }
+    }
+    typeNextChar();
+}
+
+function stopLiveStreamingConsole() {
+    if (_streamTimer !== null) {
+        clearTimeout(_streamTimer);
+        _streamTimer = null;
+    }
+    const outputEl = document.getElementById('aiStreamOutput');
+    if (outputEl) outputEl.textContent = '';
+}
+// ───────────────────────────────────────────────────────────────────
+
 function startLoadingAnimation() {
     stopLoadingAnimation();
     resetLoadingChecklist();
@@ -172,6 +223,7 @@ function startLoadingAnimation() {
         "Finalizing results..."
     ];
 
+    startLiveStreamingConsole();
     const progressText = document.getElementById('embeddedLoadingProgressText');
     if (progressText) progressText.textContent = stages[0];
     updateLoadingChecklist(0);
@@ -184,6 +236,7 @@ function startLoadingAnimation() {
 }
 
 function stopLoadingAnimation() {
+    stopLiveStreamingConsole();
     if (currentProgressInterval) {
         clearInterval(currentProgressInterval);
         currentProgressInterval = null;

@@ -2,194 +2,28 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <title>CA Industrial Training Resources — My Student Club</title>
-
-    <!-- Fonts -->
+    <meta name="description" content="Everything you need to prepare, apply and crack your Industrial Training: templates, interview prep and company lists." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-
-    <!-- Shared design system + favicon -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="stylesheet" href="/scripts/portal-style.css" />
-    <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png" />
-
-    <!-- Supabase (local vendor copy, used for logout) -->
-    <script src="/scripts/vendor/supabase.js"></script>
-    <script>
-      (function () {
-        // Apply saved theme before paint to avoid a flash
-        const savedTheme = localStorage.getItem("msc-theme");
-        if (savedTheme)
-          document.documentElement.setAttribute("data-theme", savedTheme);
-
-        // Init Supabase client for logout
-        const supabaseUrl = "https://auth.mystudentclub.com";
-        const supabaseKey =
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0";
-        if (window.supabase)
-          window._mscSupabaseClient = window.supabase.createClient(
-            supabaseUrl,
-            supabaseKey, { auth: { storageKey: 'sb-izsggdtdiacxdsjjncdq-auth-token' } }
-          );
-      })();
-    </script>
-
-    <!-- Page-specific styles: resource hero + resource cards -->
-    <style>
-      /* Hero: back link, page title, subtitle */
-      .resource-hero {
-        padding: 20px 20px 4px;
-      }
-
-      .resource-back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 13px;
-        font-weight: 600;
-        color: var(--brand);
-        text-decoration: none;
-        margin-bottom: 14px;
-      }
-      .resource-back-link svg {
-        width: 15px;
-        height: 15px;
-      }
-
-      .resource-page-title {
-        font-size: 22px;
-        font-weight: 800;
-        color: var(--text);
-        letter-spacing: -0.03em;
-        line-height: 1.25;
-        margin: 0 0 6px;
-      }
-      .resource-page-subtitle {
-        font-size: 13px;
-        color: var(--sub);
-        margin: 0 0 4px;
-        line-height: 1.5;
-      }
-
-      /* Responsive grid of resource cards */
-      .resource-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-        gap: 14px;
-        padding: 18px 20px 40px;
-      }
-
-      /* Single resource card */
-      .resource-card {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-radius: 16px;
-        padding: 18px;
-        display: flex;
-        flex-direction: column;
-        gap: 14px;
-      }
-      .resource-card-top {
-        display: flex;
-        align-items: flex-start;
-        gap: 12px;
-      }
-
-      /* File-type icon chip */
-      .resource-card-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 12px;
-        background: var(--chip);
-        flex-shrink: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--brand);
-      }
-      .resource-card-icon svg {
-        width: 20px;
-        height: 20px;
-      }
-
-      .resource-card-info {
-        flex: 1;
-        min-width: 0;
-      }
-      .resource-card-title {
-        font-size: 14px;
-        font-weight: 700;
-        color: var(--text);
-        line-height: 1.4;
-        margin: 0 0 4px;
-      }
-
-      /* File-type pill (PDF, Google Sheet, etc.) */
-      .resource-type-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        padding: 2px 8px;
-        border-radius: 20px;
-        background: var(--chip);
-        font-size: 11px;
-        font-weight: 600;
-        color: var(--sub);
-      }
-
-      /* Open / Download action buttons */
-      .resource-actions {
-        display: flex;
-        gap: 8px;
-      }
-      .resource-btn {
-        flex: 1;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        padding: 10px 12px;
-        border-radius: 12px;
-        font-size: 12px;
-        font-weight: 700;
-        font-family: "Poppins", sans-serif;
-        text-decoration: none;
-        border: none;
-        cursor: pointer;
-        transition: opacity 0.15s;
-        line-height: 1;
-      }
-      .resource-btn svg {
-        width: 13px;
-        height: 13px;
-        flex-shrink: 0;
-      }
-      .resource-btn:hover {
-        opacity: 0.82;
-      }
-      .resource-btn--primary {
-        background: var(--brand);
-        color: #fff;
-      }
-      .resource-btn--secondary {
-        background: var(--chip);
-        color: var(--brand);
-        border: 1.5px solid var(--line);
-      }
-    </style>
+    <link rel="stylesheet" href="/scripts/resource-library.css?v=20261015.1" />
+    <script src="/scripts/resource-page-chrome.js?v=20261015.1"></script>
+    <script src="/scripts/vendor/supabase.js" defer></script>
+    <script src="/scripts/supabase-init.js?v=20261015.1" defer></script>
+    <script src="/scripts/program-access.js?v=20260927.9" defer></script>
+    <script src="/scripts/career-profile.js?v=20260927.9" defer></script>
+    <script src="/scripts/resource-form-collector.js?v=20261015.1" defer></script>
+    <script src="/scripts/resource-library.js?v=20261015.1" defer></script>
   </head>
-  <body>
+  <body data-resource-stage="industrial-training">
     <!-- ============================= HEADER ============================= -->
     <header class="app-header" id="appHeader">
       <div class="header-left">
-        <svg class="header-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750.00 886.43" role="img" aria-label="My Student Club"><style>[data-theme="dark"] .header-logo .msc-n{fill:#FFFFFF}[data-theme="dark"] .header-logo .msc-b{fill:#4A8BFF}</style><g transform="translate(0.00 0.00) scale(1.00000) translate(-255.00 -95.57)"><path class="msc-b" fill="#0057FF" d="M255 982L255 392.57A95 95 0 0 1 413.57 321.97L733.99 610.48A8 8 0 0 1 733.99 622.37L648.74 699.13A28 28 0 0 1 611.26 699.13L453.06 556.68A24 24 0 0 0 413 574.52L413 830C413 890 312.06 963.46 255 982Z"/><path class="msc-n" fill="#06152F" d="M1005 982L1005 392.57A95 95 0 0 0 846.43 321.97L648.56 500.14A8 8 0 0 0 648.56 512.03L747.19 600.84A8 8 0 0 0 757.9 600.84L806.94 556.68A24 24 0 0 1 847 574.52L847 830C847 890 947.94 963.46 1005 982Z"/><circle class="msc-b" fill="#0057FF" cx="350.00" cy="185.57" r="90.0"/><circle class="msc-n" fill="#06152F" cx="910.00" cy="185.57" r="90.0"/></g></svg>
+        <img class="header-logo" src="/assets/logo-mark.svg" alt="My Student Club" width="32" height="38" decoding="async" />
         <div class="header-greeting">
           <div class="greeting-sub" id="greetingText">Free Resources</div>
           <div class="greeting-name" id="greetingName">Industrial Training</div>
@@ -343,17 +177,12 @@
             </svg>
           </button>
           <div class="dropdown-content active" id="resourcesDropdown">
-            <a href="/ca-fresher-training-resources.html" class="dropdown-item"
-              >CA Fresher</a
-            >
-            <a
-              href="/ca-industrial-training-resources.html"
-              class="dropdown-item active"
-              >Industrial Training</a
-            >
-            <a href="/ca-articleship-jobs.html" class="dropdown-item"
-              >Articleship</a
-            >
+            <a href="/ca-fresher-training-resources.html" class="dropdown-item">CA Fresher</a>
+            <a href="/ca-industrial-training-resources.html" class="dropdown-item active" aria-current="page">Industrial Training</a>
+            <a href="/ca-articleship-jobs.html" class="dropdown-item">Articleship</a>
+            <a href="/articleship-resources.html" class="dropdown-item" data-gated-resource hidden>Articleship Resources</a>
+            <a href="/semi-qualified-ca-resources.html" class="dropdown-item" data-gated-resource hidden>Semi-Qualified CA</a>
+            <a href="/domain-wise-hiring-companies.html" class="dropdown-item" data-gated-resource hidden>Domain-wise Hiring Companies</a>
           </div>
         </div>
         <a href="/profile.html" class="menu-item" id="profile-nav-link">
@@ -392,213 +221,30 @@
     <div class="expanded-menu-backdrop" id="menuBackdrop" onclick="document.getElementById('expandedMenu')?.classList.remove('active'); this.classList.remove('active');"></div>
 
     <!-- ============================== MAIN ============================== -->
-    <main class="app-main">
-      <div class="resource-hero">
-        <a href="javascript:history.back()" class="resource-back-link">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="M19 12H5M12 5l-7 7 7 7" />
-          </svg>
-          Back
-        </a>
-        <h1 class="resource-page-title">CA Industrial Training Resources</h1>
-        <p class="resource-page-subtitle">
-          Free resources to help you prepare for your Industrial Training
-          journey
-        </p>
-      </div>
-      <!-- Cards injected by renderResources() -->
-      <div class="resource-grid" id="resourcesContainer"></div>
+    <main class="app-main resource-main" id="main-content">
+      <section class="rh-hero" aria-labelledby="resource-page-title">
+        <a href="javascript:history.back()" class="rh-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7" /></svg>Back</a>
+        <p class="resource-eyebrow">CA Industrial Training</p>
+        <h1 id="resource-page-title">CA Industrial Training Resources</h1>
+        <p class="rh-desc">Everything you need to prepare, apply and crack your Industrial Training: templates, interview prep and company lists.</p>
+        <div class="rh-pills"><span class="rh-pill">Free & Premium</span><span class="rh-pill">Editable Word templates</span><span class="rh-pill">Company list</span></div>
+      </section>
+      <div id="resources-container" aria-label="Resource library"></div>
+      <p id="resource-catalog-status" class="resource-catalog-status" role="status"></p>
+      <noscript><p>Please enable JavaScript to browse the resource library and access forms.</p></noscript>
     </main>
 
-    <script>
-      // Resource list for this page (title + file URL)
-      const RESOURCES = [
-        {
-          title: "Cover Letter 1",
-          url: "/assets/ca-industrial-resources/Coverletter.pdf",
-        },
-        {
-          title: "CV Template 2",
-          url: "/assets/ca-industrial-resources/Industrial_Training_CV_Template_2.pdf",
-        },
-        {
-          title: "CV Template 3",
-          url: "/assets/ca-industrial-resources/Industrial_Training_CV_Template_1.pdf",
-        },
-        {
-          title: "Interview Syllabus",
-          url: "/assets/ca-industrial-resources/Syllabus.pdf",
-        },
-        {
-          title: "Industrial Training Hiring Companies List",
-          url: "https://docs.google.com/spreadsheets/d/1yDCBRaadD_qddFyKYRpesyL8h_E91X1dlzA0PfoEdKM/edit?gid=0#gid=0",
-        },
-        {
-          title: "Finance Interview Questions",
-          url: "/assets/ca-industrial-resources/Finance-interview.pdf",
-        },
-      ];
-
-      // Derive a human-readable file type from the URL
-      function getFileType(url) {
-        const u = url.toLowerCase();
-        if (u.includes("docs.google.com/spreadsheets")) return "Google Sheet";
-        if (u.includes("docs.google.com/document")) return "Google Doc";
-        if (u.includes("docs.google.com/presentation")) return "Slides";
-        if (u.endsWith(".pdf") || u.includes("drive.google.com/file"))
-          return "PDF";
-        return "Resource";
-      }
-
-      // Pick an icon matching the file type
-      function getTypeIcon(type) {
-        if (type === "PDF")
-          return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>`;
-        if (type === "Google Sheet")
-          return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>`;
-        if (type === "Google Doc")
-          return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`;
-        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>`;
-      }
-
-      // Render all resource cards into the grid
-      function renderResources() {
-        const container = document.getElementById("resourcesContainer");
-        if (!RESOURCES.length) {
-          container.innerHTML =
-            '<p style="color:var(--sub);padding:20px 0;">No resources available at the moment.</p>';
-          return;
-        }
-        container.innerHTML = RESOURCES.map((r) => {
-          const type = getFileType(r.url);
-          return `
-          <div class="resource-card">
-            <div class="resource-card-top">
-              <div class="resource-card-icon">${getTypeIcon(type)}</div>
-              <div class="resource-card-info">
-                <div class="resource-card-title">${r.title}</div>
-                <span class="resource-type-badge">${type}</span>
-              </div>
-            </div>
-            <div class="resource-actions">
-              <a href="${r.url}" target="_blank" rel="noopener noreferrer" class="resource-btn resource-btn--primary">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                Open
-              </a>
-              <a href="${r.url}" download target="_blank" rel="noopener noreferrer" class="resource-btn resource-btn--secondary">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                Download
-              </a>
-            </div>
-          </div>`;
-        }).join("");
-      }
-
-      // Personalize greeting + reveal auth-only links from stored profile/session
-      function updateHeader() {
-        try {
-          const profile = JSON.parse(
-            localStorage.getItem("userProfileData") || "{}",
-          );
-          const name = profile.name?.trim();
-          if (name) {
-            document.getElementById("greetingText").textContent = "Hello,";
-            document.getElementById("greetingName").textContent =
-              name.split(" ")[0];
-          }
-          const authKey = Object.keys(localStorage).find((k) =>
-            k.includes("auth-token"),
-          );
-          if (authKey) {
-            const session = JSON.parse(localStorage.getItem(authKey) || "null");
-            if (session?.access_token)
-              document.getElementById("history-nav-link").style.display = "";
-          }
-        } catch (_) {}
-      }
-
-      // --- Theme toggle ---
-      document
-        .getElementById("themeToggleBtn")
-        .addEventListener("click", () => {
-          const next =
-            document.documentElement.getAttribute("data-theme") === "dark"
-              ? "light"
-              : "dark";
-          document.documentElement.setAttribute("data-theme", next);
-          localStorage.setItem("msc-theme", next);
-        });
-
-      // --- Side menu ---
-      const menuBtn = document.getElementById("menuButton");
-      const sideMenu = document.getElementById("expandedMenu");
-      const closeBtn = document.getElementById("menuCloseBtn");
-      const dropBtn = document.getElementById("resourcesDropdownBtn");
-      const dropIcon = dropBtn.querySelector(".dropdown-icon");
-      const dropContent = document.getElementById("resourcesDropdown");
-
-      const backdrop = document.getElementById("menuBackdrop");
-
-      function openMenu() {
-        sideMenu.classList.add("active");
-        backdrop?.classList.add("active");
-        document.body.style.overflow = "hidden";
-      }
-      function closeMenu() {
-        sideMenu.classList.remove("active");
-        backdrop?.classList.remove("active");
-        document.body.style.overflow = "";
-      }
-
-      menuBtn.addEventListener("click", openMenu);
-      closeBtn.addEventListener("click", closeMenu);
-      if (backdrop) backdrop.addEventListener("click", closeMenu);
-
-      if (sideMenu && backdrop && window.MutationObserver) {
-        new MutationObserver(() => {
-          backdrop.classList.toggle("active", sideMenu.classList.contains("active"));
-        }).observe(sideMenu, { attributes: true, attributeFilter: ["class"] });
-      }
-
-      // Close when clicking outside the open menu
-      document.addEventListener("click", (e) => {
-        if (
-          sideMenu.classList.contains("active") &&
-          !sideMenu.contains(e.target) &&
-          !menuBtn.contains(e.target)
-        )
-          closeMenu();
-      });
-
-      // Toggle the Resources sub-list
-      dropBtn.addEventListener("click", () => {
-        const open = dropContent.classList.toggle("active");
-        dropIcon.classList.toggle("open", open);
-      });
-
-      // --- Logout: end session, clear storage, return to login ---
-      document
-        .getElementById("logoutMenuBtn")
-        .addEventListener("click", async () => {
-          try {
-            if (window._mscSupabaseClient)
-              await window._mscSupabaseClient.auth.signOut();
-          } catch (_) {}
-          localStorage.clear();
-          window.location.href = "/login.html";
-        });
-
-      document.addEventListener("DOMContentLoaded", () => {
-        renderResources();
-        updateHeader();
-      });
-    </script>
+    <dialog class="resource-enroll-dialog" id="resource-enroll-dialog" aria-labelledby="resource-enroll-title" aria-describedby="resource-enroll-description">
+      <button type="button" class="dialog-close" aria-label="Close enrollment information">×</button>
+      <p class="resource-eyebrow">Premium resource</p>
+      <h2 id="resource-enroll-title">Access premium resources</h2>
+      <p id="resource-enroll-resource"></p>
+      <p id="resource-enroll-description">This resource is included with the program. Enroll to view and download it from My Courses.</p>
+      <div class="dialog-actions">
+        <a class="resource-action" id="resource-enroll-link" href="/ca-industrial-training-program/">Explore Program →</a>
+        <a class="resource-action secondary" href="/login.html?redirect=/learning-management-system/lms-resources.html">Already enrolled? Sign in</a>
+      </div>
+    </dialog>
+    <div id="resource-access-error" class="resource-access-error" role="alert"></div>
   </body>
 </html>

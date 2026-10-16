@@ -43,7 +43,7 @@ a {
   --r-card: 20px;
   --r-sheet: 24px;
   --r-chip: 40px;
-  --header-h: calc(54px + env(safe-area-inset-top, 0px));
+  --header-h: calc(54px + max(env(safe-area-inset-top, 0px), var(--safe-area-inset-top, 0px)));
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   font-family:
     "Poppins",
@@ -99,7 +99,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 0 18px;
-  padding-top: env(safe-area-inset-top, 0px);
+  padding-top: max(env(safe-area-inset-top, 0px), var(--safe-area-inset-top, 0px));
 }
 .header-left {
   display: flex;
@@ -373,7 +373,7 @@ body:has(.expanded-menu.active) .expanded-menu-backdrop {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: max(env(safe-area-inset-top, 0px) + 16px, 20px) 20px 16px 20px;
+  padding: max(max(env(safe-area-inset-top, 0px), var(--safe-area-inset-top, 0px)) + 16px, 20px) 20px 16px 20px;
   border-bottom: 1px solid var(--line, #f1f5f9);
   background: var(--card, #ffffff);
   position: sticky;
@@ -3563,6 +3563,11 @@ body:has(.expanded-menu.active) .expanded-menu-backdrop {
   }
 }
 
+
+/* Icon-only brand mark in headers (assets/logo-mark*.svg), same as the existing Airy Flow header. */
+img.header-logo { height: 38px; width: auto; max-width: none; object-fit: contain; flex-shrink: 0; display: block; border-radius: 0; }
+[data-theme="dark"] img.header-logo { content: url("/assets/logo-mark-dark.svg"); }
+@media (max-width: 360px) { img.header-logo { height: 34px; } }
 
 /* Header logo image on pages that use assets/logo.png (the rule was missing, so it rendered at 2048px). */
 .brand-logo { height: 33px; width: auto; max-width: 100%; display: block; }

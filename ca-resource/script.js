@@ -1,16 +1,37 @@
+// ─── Supabase Client & Authentication State ───
+const supabaseUrl = 'https://auth.mystudentclub.com';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+const supabaseClient = window.supabase ? window.supabase.createClient(supabaseUrl, supabaseKey, { auth: { storageKey: 'sb-izsggdtdiacxdsjjncdq-auth-token' } }) : null;
+
+let userEmail = '';
+
+// Try parsing userEmail from localStorage immediately as a fast synchronous fallback
+try {
+    const sbKey = 'sb-izsggdtdiacxdsjjncdq-auth-token';
+    const sbData = localStorage.getItem(sbKey);
+    if (sbData) {
+        const parsed = JSON.parse(sbData);
+        if (parsed && parsed.user && parsed.user.email) {
+            userEmail = parsed.user.email;
+        }
+    }
+} catch (e) {
+    console.warn('Failed to parse synchronous session fallback:', e);
+}
+
 // ─── State ───
 const urlParams = new URLSearchParams(window.location.search);
 const paramPdf = urlParams.get('pdf');
 const paramDl = urlParams.get('dl');
 const previewMode = urlParams.get('preview');
 const PDF_URL = paramPdf ? paramPdf : 'https://www.mystudentclub.com/assets/doc.pdf';
+const PDF_FETCH_URL = window.resolvePdfFetchUrl ? window.resolvePdfFetchUrl(PDF_URL) : PDF_URL;
 
 let pdfDoc = null;
 let totalPages = 0;
 let sidebarOpen = false;
 let flipbookReady = false;
 let viewMode = 'single';  // 'single' | 'double'
-const DEFAULT_INITIAL_ZOOM = 1;
 const MAX_RENDER_OUTPUT_SCALE = 3.4;
 const MIN_RENDER_OUTPUT_SCALE = 2;
 
@@ -59,7 +80,7 @@ function calcPageSize(pdfPageViewport) {
     let maxPageW, maxPageH;
     if (viewMode === 'single') {
         // Single mode: one page fills the available width
-        maxPageW = availW * 0.85;
+        maxPageW = availW * (availW <= 768 ? 0.98 : 0.85);
         maxPageH = availH * 0.92;
     } else {
         // Double mode: each page is half the book width
@@ -73,6 +94,15 @@ function calcPageSize(pdfPageViewport) {
         pageH = pageW / pdfRatio;
     } else {
         pageH = maxPageH;
+        pageW = pageH * pdfRatio;
+    }
+
+    // Secure zoom constraint: enforce a minimum page height of 1.25x viewport height,
+    // but only when that still fits the width (on a portrait phone it cannot: the page
+    // would be wider than the screen and open off-screen/clipped, so fit the width).
+    const minSecureHeight = Math.round(availH * 1.25);
+    if (pageH < minSecureHeight && minSecureHeight * pdfRatio <= availW) {
+        pageH = minSecureHeight;
         pageW = pageH * pdfRatio;
     }
 
@@ -100,7 +130,7 @@ async function renderPageToCanvas(pageNum, width, height) {
     const ctx = canvas.getContext('2d', { alpha: false });
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
-    
+
     // Render the PDF content
     await page.render({
         canvasContext: ctx,
@@ -108,12 +138,49 @@ async function renderPageToCanvas(pageNum, width, height) {
         transform: outputScale === 1 ? null : [outputScale, 0, 0, outputScale, 0, 0]
     }).promise;
 
+    // Draw the secure email watermark
+    if (userEmail) {
+        drawWatermarkOnCanvas(ctx, canvas.width, canvas.height, outputScale, userEmail);
+    }
+
     // Apply highlights if searching
     if (currentSearchTerm) {
         await drawHighlightsOnCanvas(ctx, page, viewport, outputScale);
     }
 
     return { canvas, page, viewport };
+}
+
+function drawWatermarkOnCanvas(ctx, canvasWidth, canvasHeight, outputScale, email) {
+    ctx.save();
+
+    // Set font style
+    const fontSize = Math.max(10, Math.round(14 * outputScale));
+    ctx.font = `bold ${fontSize}px 'Inter', sans-serif`;
+    ctx.fillStyle = 'rgba(128, 128, 128, 0.14)'; // light gray with transparency
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    // Calculate diagonal steps to cover the canvas with a grid of watermarks
+    const angle = -30 * Math.PI / 180;
+    ctx.rotate(angle);
+
+    const stepX = 250 * outputScale;
+    const stepY = 180 * outputScale;
+
+    // Cover rotated canvas bounds
+    const startX = -canvasWidth;
+    const endX = canvasWidth * 2;
+    const startY = -canvasHeight;
+    const endY = canvasHeight * 2;
+
+    for (let x = startX; x < endX; x += stepX) {
+        for (let y = startY; y < endY; y += stepY) {
+            ctx.fillText(email, x, y);
+        }
+    }
+
+    ctx.restore();
 }
 
 // ─── Render Annotations Layer (Links) ───
@@ -188,14 +255,14 @@ async function drawHighlightsOnCanvas(ctx, page, viewport, outputScale) {
             if (!item.str) return;
             const str = item.str.toLowerCase();
             let idx = -1;
-            
+
             while ((idx = str.indexOf(term, idx + 1)) !== -1) {
                 // Determine if this is the "active" match
-                const isCurrentMatch = searchIndex >= 0 && 
-                                     searchMatches[searchIndex] &&
-                                     searchMatches[searchIndex].page === page.pageNumber &&
-                                     searchMatches[searchIndex].itemIdx === itemIdx &&
-                                     searchMatches[searchIndex].charOffset === idx;
+                const isCurrentMatch = searchIndex >= 0 &&
+                    searchMatches[searchIndex] &&
+                    searchMatches[searchIndex].page === page.pageNumber &&
+                    searchMatches[searchIndex].itemIdx === itemIdx &&
+                    searchMatches[searchIndex].charOffset === idx;
 
                 drawMatchHighlight(ctx, item, viewport, idx, term.length, isCurrentMatch);
             }
@@ -210,16 +277,16 @@ function drawMatchHighlight(ctx, item, viewport, charOffset, len, isCurrent) {
     // The item.transform is [scaleX, skewX, skewY, scaleY, tx, ty]
     // PDF.js coordinates have origin at bottom-left.
     const tx = pdfjsLib.Util.transform(viewport.transform, item.transform);
-    
+
     // fontHeight is approximately the scaleY of the combined transform
     const fontHeight = Math.sqrt(tx[2] * tx[2] + tx[3] * tx[3]);
     const fontWidth = Math.sqrt(tx[0] * tx[0] + tx[1] * tx[1]);
-    
+
     // Estimate width per character if we don't have individual glyph widths
     // PDF.js items have 'width' which is the total width of the string in PDF units
     const totalWidth = item.width * (fontWidth / (item.transform[0] || fontWidth));
     const charWidth = totalWidth / item.str.length;
-    
+
     const x = tx[4] + (charOffset * charWidth);
     const y = tx[5] - fontHeight; // text baseline is at tx[5], move up to top of font
     const rectWidth = len * charWidth;
@@ -227,7 +294,7 @@ function drawMatchHighlight(ctx, item, viewport, charOffset, len, isCurrent) {
 
     ctx.fillStyle = isCurrent ? 'rgba(255, 150, 0, 0.6)' : 'rgba(255, 255, 0, 0.4)';
     ctx.fillRect(x, y, rectWidth, rectHeight);
-    
+
     // Add a small border to current match
     if (isCurrent) {
         ctx.strokeStyle = 'rgba(255, 100, 0, 0.9)';
@@ -242,22 +309,21 @@ async function buildFlipbook() {
 
     const firstPage = await pdfDoc.getPage(1);
     const rawVP = firstPage.getViewport({ scale: 1 });
-    const { pageW, pageH } = calcPageSize(rawVP);
-    const initialPageW = clampPageWidth(rawVP.width * DEFAULT_INITIAL_ZOOM, rawVP);
-    const initialPageH = Math.floor(initialPageW / (rawVP.width / rawVP.height));
+    basePageVP = rawVP;
+    const { pageW: initialPageW, pageH: initialPageH } = calcPageSize(rawVP);
 
     // Create page divs
     for (let i = 1; i <= totalPages; i++) {
         const pageDiv = document.createElement('div');
         pageDiv.className = 'flipbook-page';
         pageDiv.dataset.page = i;
-        
+
         // Loading placeholder
         const placeholder = document.createElement('div');
         placeholder.className = 'page-loading';
         placeholder.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
         pageDiv.appendChild(placeholder);
-        
+
         flipbookEl.appendChild(pageDiv);
     }
 
@@ -274,7 +340,7 @@ async function buildFlipbook() {
         elevation: 50,
         duration: 1000,
         when: {
-            turning: function(event, page, view) {
+            turning: function (event, page, view) {
                 updatePageDisplay(page);
                 const size = $(flipbookEl).turn('size');
                 const pW = viewMode === 'single' ? size.width : size.width / 2;
@@ -282,7 +348,7 @@ async function buildFlipbook() {
                 // Pre-render adjacent pages
                 view.forEach(p => { if (p) renderFlipbookPage(p, pW, pH); });
             },
-            turned: function(event, page, view) {
+            turned: function (event, page, view) {
                 updatePageDisplay(page);
                 updateThumbActive(page);
                 const size = $(flipbookEl).turn('size');
@@ -436,13 +502,13 @@ async function renderFlipbookPage(pageNum, pageW, pageH) {
 async function goToPage(num) {
     if (!flipbookReady) return;
     num = Math.max(1, Math.min(num, totalPages));
-    
+
     // Pre-render the target page and its neighbors before jumping
     // so it doesn't get stuck on the loading spinner
     const size = $(flipbookEl).turn('size');
     const pW = viewMode === 'single' ? size.width : size.width / 2;
     const pH = size.height;
-    
+
     const promises = [];
     for (let p = Math.max(1, num - 1); p <= Math.min(totalPages, num + 2); p++) {
         promises.push(renderFlipbookPage(p, pW, pH));
@@ -492,14 +558,20 @@ function clampPageWidth(pageW, baseViewport) {
     return Math.max(bounds.minPageW, Math.min(bounds.maxPageW, Math.round(pageW)));
 }
 
+let basePageVP = null;
 function resizeFlipbookToPageWidth(targetPageW, options = {}) {
     if (!pdfDoc || !flipbookReady) return Promise.resolve();
 
+    // Anchor = point (viewer-area coords) of the page that must stay under the
+    // fingers; focus = where that point should end up (defaults to the anchor).
     const anchorX = options.anchorX ?? viewerArea.clientWidth / 2;
     const anchorY = options.anchorY ?? viewerArea.clientHeight / 2;
+    const focusX = options.focusX ?? anchorX;
+    const focusY = options.focusY ?? anchorY;
 
-    return pdfDoc.getPage(1).then(page => {
-        const vp = page.getViewport({ scale: 1 });
+    const vpPromise = basePageVP ? Promise.resolve(basePageVP)
+        : pdfDoc.getPage(1).then(page => (basePageVP = page.getViewport({ scale: 1 })));
+    return vpPromise.then(vp => {
         const pdfRatio = vp.width / vp.height;
         const nextPageW = clampPageWidth(targetPageW, vp);
         const nextPageH = Math.round(nextPageW / pdfRatio);
@@ -508,10 +580,11 @@ function resizeFlipbookToPageWidth(targetPageW, options = {}) {
         const currentSize = $(flipbookEl).turn('size');
         const oldBookW = currentSize.width || nextBookW;
         const oldBookH = currentSize.height || nextPageH;
-        const oldScrollLeft = viewerArea.scrollLeft;
-        const oldScrollTop = viewerArea.scrollTop;
-        const oldAnchorX = oldScrollLeft + anchorX;
-        const oldAnchorY = oldScrollTop + anchorY;
+        // Anchor in flipbook-local coordinates (before resizing).
+        const vRect = viewerArea.getBoundingClientRect();
+        const fRect = flipbookEl.getBoundingClientRect();
+        const localX = vRect.left + anchorX - fRect.left;
+        const localY = vRect.top + anchorY - fRect.top;
 
         $(flipbookEl).turn('size', nextBookW, nextPageH);
 
@@ -525,10 +598,12 @@ function resizeFlipbookToPageWidth(targetPageW, options = {}) {
 
         checkOverflow();
 
-        const widthRatio = oldBookW ? nextBookW / oldBookW : 1;
-        const heightRatio = oldBookH ? nextPageH / oldBookH : 1;
-        viewerArea.scrollLeft = Math.max(0, Math.round(oldAnchorX * widthRatio - anchorX));
-        viewerArea.scrollTop = Math.max(0, Math.round(oldAnchorY * heightRatio - anchorY));
+        // Scroll so the anchored page point lands on the focus point.
+        const nRect = flipbookEl.getBoundingClientRect();
+        const wantX = nRect.left + localX * (nextBookW / oldBookW);
+        const wantY = nRect.top + localY * (nextPageH / oldBookH);
+        viewerArea.scrollLeft += Math.round(wantX - (vRect.left + focusX));
+        viewerArea.scrollTop += Math.round(wantY - (vRect.top + focusY));
 
         return { pageW: nextPageW, pageH: nextPageH };
     });
@@ -566,21 +641,58 @@ function checkOverflow() {
         // Disable turn.js mouse/touch drag
         $(flipbookEl).turn('disable', true);
         // Allow viewer to scroll
+        flipbookEl.style.touchAction = 'none';
+        flipbookEl.style.margin = '20px auto';
         viewerArea.style.overflow = 'auto';
         viewerArea.style.alignItems = 'flex-start';
         viewerArea.style.justifyContent = 'flex-start';
+        viewerArea.style.cursor = 'grab';
     } else if (!overflows && isZoomedIn) {
         isZoomedIn = false;
         // Re-enable turn.js drag
         $(flipbookEl).turn('disable', false);
         // Reset scroll
+        flipbookEl.style.touchAction = 'none';
+        flipbookEl.style.margin = 'auto';
         viewerArea.style.overflow = 'auto';
         viewerArea.style.alignItems = 'center';
         viewerArea.style.justifyContent = 'center';
+        viewerArea.style.cursor = 'default';
         viewerArea.scrollTop = 0;
         viewerArea.scrollLeft = 0;
     }
 }
+
+// Touch panning is handled by the mobile gesture listeners below.
+let activePanPointerId = null;
+let panStartX = 0, panStartY = 0, scrollStartLeft = 0, scrollStartTop = 0;
+
+viewerArea.addEventListener('pointerdown', e => {
+    if (activePanPointerId !== null || !isZoomedIn || e.pointerType === 'touch' || e.button !== 0) return;
+    if (e.target.closest('button, input, a, .toolbar-btn')) return;
+    panStartX = e.clientX;
+    panStartY = e.clientY;
+    scrollStartLeft = viewerArea.scrollLeft;
+    scrollStartTop = viewerArea.scrollTop;
+    viewerArea.setPointerCapture(e.pointerId);
+    activePanPointerId = e.pointerId;
+    viewerArea.style.cursor = 'grabbing';
+});
+
+viewerArea.addEventListener('pointermove', e => {
+    if (e.pointerId !== activePanPointerId || !isZoomedIn) return;
+    viewerArea.scrollLeft = scrollStartLeft - (e.clientX - panStartX);
+    viewerArea.scrollTop = scrollStartTop - (e.clientY - panStartY);
+});
+
+const stopPan = e => {
+    if (e.pointerId !== activePanPointerId) return;
+    if (viewerArea.hasPointerCapture(activePanPointerId)) viewerArea.releasePointerCapture(activePanPointerId);
+    activePanPointerId = null;
+    viewerArea.style.cursor = isZoomedIn ? 'grab' : 'default';
+};
+viewerArea.addEventListener('pointerup', stopPan);
+viewerArea.addEventListener('pointercancel', stopPan);
 
 function fitToPage() {
     if (!flipbookReady || !pdfDoc) return;
@@ -596,9 +708,17 @@ function fitToWidth() {
 
     pdfDoc.getPage(1).then(page => {
         const vp = page.getViewport({ scale: 1 });
-        const { availW } = getFlipbookDimensions();
-        const pageW = viewMode === 'single' ? Math.floor(availW * 0.9) : Math.floor(availW / 2 * 0.95);
-        const pageH = Math.floor(pageW / (vp.width / vp.height));
+        const { availW, availH } = getFlipbookDimensions();
+        let pageW = viewMode === 'single' ? Math.floor(availW * 0.9) : Math.floor(availW / 2 * 0.95);
+        let pageH = Math.floor(pageW / (vp.width / vp.height));
+
+        // Secure zoom constraint: enforce a minimum page height of 1.25x viewport height
+        const minSecureHeight = Math.round(availH * 1.25);
+        if (pageH < minSecureHeight && minSecureHeight * (vp.width / vp.height) <= availW) {
+            pageH = minSecureHeight;
+            pageW = Math.round(pageH * (vp.width / vp.height));
+        }
+
         const bookW = viewMode === 'single' ? pageW : pageW * 2;
         $(flipbookEl).turn('size', bookW, pageH);
         renderedPages.clear();
@@ -668,7 +788,7 @@ async function generateThumbnails() {
             thumbCanvas.height = thumbVP.height;
             const ctx = thumbCanvas.getContext('2d');
             await page.render({ canvasContext: ctx, viewport: thumbVP }).promise;
-        } catch (e) {}
+        } catch (e) { }
     }
 }
 
@@ -691,7 +811,7 @@ async function searchDocument(term) {
     currentSearchTerm = term;
     searchMatches = [];
     searchIndex = -1;
-    
+
     if (!pdfDoc || !term) {
         updateSearchControls();
         if (oldTerm) {
@@ -708,7 +828,7 @@ async function searchDocument(term) {
         try {
             const page = await pdfDoc.getPage(i);
             const textContent = await page.getTextContent();
-            
+
             textContent.items.forEach((item, itemIdx) => {
                 if (!item.str) return;
                 const str = item.str.toLowerCase();
@@ -728,8 +848,8 @@ async function searchDocument(term) {
 
     if (searchMatches.length === 0) {
         searchInfo.textContent = 'No results';
-        setTimeout(() => { 
-            if (currentSearchTerm === term) searchInfo.textContent = ''; 
+        setTimeout(() => {
+            if (currentSearchTerm === term) searchInfo.textContent = '';
         }, 2000);
         updateSearchControls();
         return;
@@ -738,9 +858,9 @@ async function searchDocument(term) {
     searchIndex = 0;
     updateSearchControls();
     updateSearchInfo();
-    
+
     // Jump to first match and force re-render
-    renderedPages.clear(); 
+    renderedPages.clear();
     goToPage(searchMatches[0].page);
     refreshFlipbookView();
 }
@@ -750,9 +870,9 @@ function onSearchNext() {
     const oldPage = searchMatches[searchIndex].page;
     searchIndex = (searchIndex + 1) % searchMatches.length;
     const newMatch = searchMatches[searchIndex];
-    
+
     updateSearchInfo();
-    
+
     if (newMatch.page !== oldPage) {
         goToPage(newMatch.page);
     } else {
@@ -774,9 +894,9 @@ function onSearchPrev() {
     const oldPage = searchMatches[searchIndex].page;
     searchIndex = (searchIndex - 1 + searchMatches.length) % searchMatches.length;
     const newMatch = searchMatches[searchIndex];
-    
+
     updateSearchInfo();
-    
+
     if (newMatch.page !== oldPage) {
         goToPage(newMatch.page);
     } else {
@@ -800,6 +920,31 @@ function updateSearchInfo() {
     }
 }
 
+// ─── Document title (header) ───
+function guessTitleFromUrl(u) {
+    try {
+        let url = new URL(u, window.location.href);
+        const inner = url.searchParams.get('url');
+        if (inner) url = new URL(inner, window.location.href);
+        const name = decodeURIComponent(url.pathname.split('/').pop() || '');
+        return name.replace(/\.(pdf|docx?)$/i, '').replace(/[_-]+/g, ' ').trim();
+    } catch (_) { return ''; }
+}
+function setDocumentTitle(pdf) {
+    const el = _$('doc-title');
+    const apply = t => {
+        t = (t || '').trim();
+        if (el && t) { el.textContent = t; el.title = t; }
+    };
+    apply(guessTitleFromUrl(PDF_URL));
+    if (pdf && pdf.getMetadata) {
+        pdf.getMetadata().then(m => {
+            const t = m && m.info && m.info.Title;
+            if (t && !/^(untitled|microsoft word)/i.test(t)) apply(t);
+        }).catch(() => {});
+    }
+}
+
 // ─── PDF Loading ───
 function loadPdf(url) {
     loadingOverlay.classList.remove('hidden');
@@ -811,6 +956,7 @@ function loadPdf(url) {
             pageCountEl.textContent = totalPages;
             pageInput.max = totalPages;
             pageInput.value = 1;
+            setDocumentTitle(pdf);
             buildFlipbook();
         }).catch(err => {
             console.error('PDF load error:', err);
@@ -906,137 +1052,193 @@ window.addEventListener('resize', () => {
 });
 
 // ─── Touch Gestures (Mobile) ───
-let touchStartX = 0;
-let touchStartY = 0;
-let initialPinchDist = 0;
-let isPinching = false;
-let isTouchPanning = false;
-let lastPanX = 0;
-let lastPanY = 0;
-let touchMoved = false;
-let pinchStartPageW = 0;
-let pinchAnchorX = 0;
-let pinchAnchorY = 0;
+// #viewer-area uses touch-action:none, so every touch gesture is handled here
+// (identical on Android WebView and iOS WKWebView, no native/page zoom):
+//   1 finger   -> pan the zoomed page (with momentum); a horizontal swipe flips
+//                 the page when there is no horizontal overflow to pan into
+//   2 fingers  -> live pinch zoom (CSS transform follows the fingers, the page is
+//                 re-rendered sharp on release) + two-finger pan
+//   double tap -> toggle zoom
+let gesture = null;     // { mode: 'pan' | 'pinch' | 'ignore', ... }
+let momentumRaf = 0;
+let lastTapTime = 0, lastTapX = 0, lastTapY = 0;
 
-function getTouchDist(touches) {
-    const dx = touches[0].clientX - touches[1].clientX;
-    const dy = touches[0].clientY - touches[1].clientY;
-    return Math.sqrt(dx * dx + dy * dy);
+function stopMomentum() {
+    if (momentumRaf) { cancelAnimationFrame(momentumRaf); momentumRaf = 0; }
 }
 
-function getTouchAnchor(touches) {
-    const rect = viewerArea.getBoundingClientRect();
-    const centerX = (touches[0].clientX + touches[1].clientX) / 2;
-    const centerY = (touches[0].clientY + touches[1].clientY) / 2;
-    return {
-        x: centerX - rect.left,
-        y: centerY - rect.top
+function touchCenter(t) {
+    return { x: (t[0].clientX + t[1].clientX) / 2, y: (t[0].clientY + t[1].clientY) / 2 };
+}
+function touchDist(t) {
+    return Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+}
+function canPanHorizontally() {
+    return viewerArea.scrollWidth > viewerArea.clientWidth + 2;
+}
+
+function beginPinch(e) {
+    stopMomentum();
+    const pageW = getCurrentPageWidth();
+    if (!pageW) { gesture = { mode: 'ignore' }; return; }
+    const c = touchCenter(e.touches);
+    const vRect = viewerArea.getBoundingClientRect();
+    const fRect = flipbookEl.getBoundingClientRect();
+    gesture = {
+        mode: 'pinch',
+        startDist: Math.max(touchDist(e.touches), 1),
+        startPageW: pageW,
+        startCx: c.x, startCy: c.y,
+        cx: c.x, cy: c.y,
+        scale: 1,
+        vLeft: vRect.left, vTop: vRect.top
     };
+    // transform origin = page point under the initial finger centre
+    flipbookEl.style.transformOrigin = (c.x - fRect.left) + 'px ' + (c.y - fRect.top) + 'px';
+    flipbookEl.style.willChange = 'transform';
+}
+
+function pinchScaleBounds(g) {
+    if (!basePageVP) return { min: 0.2, max: 6 };
+    const b = getZoomBounds(basePageVP);
+    return { min: b.minPageW / g.startPageW, max: b.maxPageW / g.startPageW };
+}
+
+function updatePinch(e) {
+    const g = gesture;
+    const c = touchCenter(e.touches);
+    const bounds = pinchScaleBounds(g);
+    // small rubber-band beyond the limits, clamped on release
+    const s = Math.max(bounds.min * 0.85, Math.min(bounds.max * 1.15, touchDist(e.touches) / g.startDist));
+    g.scale = s; g.cx = c.x; g.cy = c.y;
+    flipbookEl.style.transform =
+        'translate(' + (c.x - g.startCx) + 'px,' + (c.y - g.startCy) + 'px) scale(' + s + ')';
+}
+
+function endPinch() {
+    const g = gesture;
+    gesture = null;
+    flipbookEl.style.transform = '';
+    flipbookEl.style.transformOrigin = '';
+    flipbookEl.style.willChange = '';
+    if (!g || g.mode !== 'pinch') return;
+    const bounds = pinchScaleBounds(g);
+    const s = Math.max(bounds.min, Math.min(bounds.max, g.scale));
+    if (Math.abs(s - 1) < 0.02) return;
+    resizeFlipbookToPageWidth(g.startPageW * s, {
+        anchorX: g.startCx - g.vLeft,
+        anchorY: g.startCy - g.vTop,
+        focusX: g.cx - g.vLeft,
+        focusY: g.cy - g.vTop
+    });
+}
+
+function toggleDoubleTapZoom(x, y) {
+    if (!flipbookReady || !pdfDoc || !basePageVP) return;
+    const vRect = viewerArea.getBoundingClientRect();
+    const b = getZoomBounds(basePageVP);
+    const target = getCurrentPageWidth() > b.minPageW * 1.15
+        ? b.minPageW
+        : Math.min(b.maxPageW, b.minPageW * 2);
+    resizeFlipbookToPageWidth(target, { anchorX: x - vRect.left, anchorY: y - vRect.top });
+}
+
+function startMomentum(vx, vy) {
+    let last = performance.now();
+    const step = now => {
+        const dt = Math.min(now - last, 40);
+        last = now;
+        const decay = Math.pow(0.95, dt / 16);
+        vx *= decay; vy *= decay;
+        const bl = viewerArea.scrollLeft, bt = viewerArea.scrollTop;
+        viewerArea.scrollLeft = bl - vx * dt;
+        viewerArea.scrollTop = bt - vy * dt;
+        const blocked = viewerArea.scrollLeft === bl && viewerArea.scrollTop === bt;
+        if (blocked || (Math.abs(vx) < 0.02 && Math.abs(vy) < 0.02)) { momentumRaf = 0; return; }
+        momentumRaf = requestAnimationFrame(step);
+    };
+    momentumRaf = requestAnimationFrame(step);
 }
 
 viewerArea.addEventListener('touchstart', e => {
-    if (e.touches.length === 2) {
-        isPinching = true;
-        isTouchPanning = false;
-        initialPinchDist = getTouchDist(e.touches);
-        pinchStartPageW = getCurrentPageWidth();
-        const anchor = getTouchAnchor(e.touches);
-        pinchAnchorX = anchor.x;
-        pinchAnchorY = anchor.y;
+    if (e.touches.length >= 2) {
+        beginPinch(e);
         e.preventDefault();
-    } else if (e.touches.length === 1) {
-        isPinching = false;
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
-        lastPanX = touchStartX;
-        lastPanY = touchStartY;
-        touchMoved = false;
-        isTouchPanning = isZoomedIn;
-        if (isTouchPanning) {
-            e.preventDefault();
-        }
+        return;
+    }
+    if (e.touches.length === 1) {
+        stopMomentum();
+        const t = e.touches[0];
+        gesture = {
+            mode: 'pan', startX: t.clientX, startY: t.clientY, lastX: t.clientX, lastY: t.clientY,
+            lastT: e.timeStamp, vx: 0, vy: 0, moved: false, canFlipH: !canPanHorizontally()
+        };
     }
 }, { passive: false });
 
 viewerArea.addEventListener('touchmove', e => {
-    if (isPinching && e.touches.length === 2) {
-        touchMoved = true;
+    if (!gesture) return;
+    if (gesture.mode === 'pinch') {
+        if (e.touches.length >= 2) updatePinch(e);
         e.preventDefault();
         return;
     }
-
-    if (isTouchPanning && e.touches.length === 1) {
-        const touch = e.touches[0];
-        const dx = touch.clientX - lastPanX;
-        const dy = touch.clientY - lastPanY;
-
-        viewerArea.scrollLeft -= dx;
-        viewerArea.scrollTop -= dy;
-
-        lastPanX = touch.clientX;
-        lastPanY = touch.clientY;
-        touchMoved = true;
-        e.preventDefault();
-    }
+    if (gesture.mode !== 'pan' || e.touches.length !== 1) return;
+    const g = gesture, t = e.touches[0];
+    if (!g.moved && Math.hypot(t.clientX - g.startX, t.clientY - g.startY) < 6) return;
+    g.moved = true;
+    const dx = t.clientX - g.lastX, dy = t.clientY - g.lastY;
+    const dt = Math.max(e.timeStamp - g.lastT, 1);
+    g.vx = 0.8 * (dx / dt) + 0.2 * g.vx;
+    g.vy = 0.8 * (dy / dt) + 0.2 * g.vy;
+    g.lastX = t.clientX; g.lastY = t.clientY; g.lastT = e.timeStamp;
+    viewerArea.scrollLeft -= dx;
+    viewerArea.scrollTop -= dy;
+    e.preventDefault();
 }, { passive: false });
 
 viewerArea.addEventListener('touchend', e => {
-    if (isPinching && e.touches.length < 2) {
-        // Pinch ended — calculate zoom factor
-        if (e.changedTouches.length > 0 && initialPinchDist > 0) {
-            // Reconstruct final distance from remaining + changed touches
-            const allTouches = [...e.touches, ...e.changedTouches];
-            if (allTouches.length >= 2) {
-                const finalDist = getTouchDist(allTouches);
-                const ratio = finalDist / initialPinchDist;
-                if (Math.abs(ratio - 1) > 0.05 && pinchStartPageW > 0) {
-                    resizeFlipbookToPageWidth(pinchStartPageW * ratio, {
-                        anchorX: pinchAnchorX,
-                        anchorY: pinchAnchorY
-                    });
-                }
-            }
+    const g = gesture;
+    if (!g) return;
+    if (g.mode === 'pinch') {
+        if (e.touches.length < 2) {
+            endPinch();
+            // a remaining finger must not start a pan/tap mid-gesture
+            if (e.touches.length === 1) gesture = { mode: 'ignore' };
         }
-        isPinching = false;
-        initialPinchDist = 0;
-        pinchStartPageW = 0;
-        touchMoved = false;
         return;
     }
-
-    // Swipe detection (single finger) — only when not zoomed in
-    if (isTouchPanning) {
-        isTouchPanning = false;
-        touchMoved = false;
+    if (g.mode === 'ignore') { if (e.touches.length === 0) gesture = null; return; }
+    gesture = null;
+    if (e.touches.length) return;
+    const t = e.changedTouches[0];
+    if (g.moved) {
+        const dx = t.clientX - g.startX, dy = t.clientY - g.startY;
+        if (g.canFlipH && Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+            if (dx < 0) nextPage(); else prevPage();
+        } else if (e.timeStamp - g.lastT < 80 && (Math.abs(g.vx) > 0.05 || Math.abs(g.vy) > 0.05)) {
+            startMomentum(g.vx, g.vy);
+        }
         return;
     }
-
-    if (e.changedTouches.length === 1 && !isPinching && !isZoomedIn) {
-        const touchEndX = e.changedTouches[0].clientX;
-        const touchEndY = e.changedTouches[0].clientY;
-        const dx = touchEndX - touchStartX;
-        const dy = touchEndY - touchStartY;
-
-        // Only trigger if horizontal swipe is dominant and long enough
-        if (!touchMoved && Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
-            if (dx < 0) {
-                nextPage(); // Swipe left = next page
-            } else {
-                prevPage(); // Swipe right = prev page
-            }
-        }
+    // tap / double tap (single taps still reach links in the annotation layer)
+    if (e.timeStamp - lastTapTime < 300 && Math.hypot(t.clientX - lastTapX, t.clientY - lastTapY) < 30) {
+        lastTapTime = 0;
+        if (!(e.target.closest && e.target.closest('a'))) toggleDoubleTapZoom(t.clientX, t.clientY);
+    } else {
+        lastTapTime = e.timeStamp; lastTapX = t.clientX; lastTapY = t.clientY;
     }
-
-    touchMoved = false;
 });
 
 viewerArea.addEventListener('touchcancel', () => {
-    isPinching = false;
-    isTouchPanning = false;
-    initialPinchDist = 0;
-    pinchStartPageW = 0;
-    touchMoved = false;
+    if (gesture && gesture.mode === 'pinch') endPinch();
+    gesture = null;
 });
+
+// Block WebView/page-level pinch gestures (iOS) so the header never gets zoomed
+// or panned out of view.
+['gesturestart', 'gesturechange', 'gestureend'].forEach(ev =>
+    document.addEventListener(ev, e => e.preventDefault(), { passive: false }));
 
 // Content protection
 document.addEventListener('contextmenu', e => e.preventDefault());
@@ -1074,10 +1276,6 @@ if (backBtn) {
     });
 }
 
-// ─── Supabase In-Place Loader (Single Loading Step) ───
-const supabaseUrl = 'https://auth.mystudentclub.com';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-const supabaseClient = window.supabase ? window.supabase.createClient(supabaseUrl, supabaseKey, { auth: { storageKey: 'sb-izsggdtdiacxdsjjncdq-auth-token' } }) : null;
 
 async function loadResourceByName(resourceName) {
     loadingOverlay.classList.remove('hidden');
@@ -1111,11 +1309,156 @@ async function loadResourceByName(resourceName) {
 // ─── Init ───
 updateSearchControls();
 
-const paramName = urlParams.get('name');
-if (paramName) {
-    loadResourceByName(paramName);
-} else {
-    loadPdf(PDF_URL);
+// Initialize security overlay & event listeners
+setupSecurityListeners();
+
+// Verify user session before loading the PDF
+checkAuthAndLoad();
+
+function setupSecurityListeners() {
+    // Check if security-blur-overlay already exists
+    if (document.getElementById('security-blur-overlay')) return;
+
+    const blurOverlay = document.createElement('div');
+    blurOverlay.id = 'security-blur-overlay';
+    blurOverlay.style.position = 'fixed';
+    blurOverlay.style.inset = '0';
+    blurOverlay.style.zIndex = '99999';
+    blurOverlay.style.background = 'rgba(15, 23, 42, 0.9)';
+    blurOverlay.style.backdropFilter = 'blur(30px)';
+    blurOverlay.style.webkitBackdropFilter = 'blur(30px)';
+    blurOverlay.style.display = 'none';
+    blurOverlay.style.flexDirection = 'column';
+    blurOverlay.style.alignItems = 'center';
+    blurOverlay.style.justifyContent = 'center';
+    blurOverlay.style.color = '#f1f5f9';
+    blurOverlay.style.fontFamily = "'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
+    blurOverlay.style.cursor = 'pointer';
+
+    blurOverlay.innerHTML = `
+        <div style="text-align: center; padding: 32px; max-width: 400px; background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);">
+            <i class="fas fa-eye-slash" style="font-size: 54px; color: #818cf8; margin-bottom: 20px; animation: pulse-glow 2s infinite;"></i>
+            <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 10px; letter-spacing: -0.01em;">Content Protected</h2>
+            <p style="font-size: 14px; color: #94a3b8; line-height: 1.5; margin-bottom: 0;">Click here or inside the window to resume reading.</p>
+        </div>
+        <style>
+            @keyframes pulse-glow {
+                0% { opacity: 0.7; transform: scale(1); }
+                50% { opacity: 1; transform: scale(1.05); }
+                100% { opacity: 0.7; transform: scale(1); }
+            }
+        </style>
+    `;
+
+    document.body.appendChild(blurOverlay);
+
+    const showBlur = () => {
+        blurOverlay.style.display = 'flex';
+        document.body.classList.add('blurred');
+    };
+
+    const hideBlur = () => {
+        blurOverlay.style.display = 'none';
+        document.body.classList.remove('blurred');
+    };
+
+    // Fast blurring on focus loss
+    window.addEventListener('blur', showBlur);
+    window.addEventListener('focus', hideBlur);
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            showBlur();
+        } else {
+            hideBlur();
+        }
+    });
+
+    // Dismiss blur overlay when clicked
+    blurOverlay.addEventListener('click', () => {
+        window.focus();
+        hideBlur();
+    });
+
+    // Event listeners to capture Print Screen and Win + Shift + S
+    window.addEventListener('keyup', (e) => {
+        if (e.key === 'PrintScreen' || e.code === 'PrintScreen') {
+            showBlur();
+            navigator.clipboard.writeText('Screenshots are disabled for this protected content.').catch(() => { });
+        }
+    });
+
+    window.addEventListener('keydown', (e) => {
+        // PrintScreen Key
+        if (e.key === 'PrintScreen' || e.code === 'PrintScreen') {
+            showBlur();
+        }
+        // Win + Shift + S (Meta + Shift + S) or Cmd + Shift + S
+        if ((e.metaKey || e.ctrlKey) && e.shiftKey && (e.key === 's' || e.key === 'S' || e.code === 'KeyS')) {
+            showBlur();
+            e.preventDefault();
+        }
+    });
+}
+
+async function checkAuthAndLoad() {
+    if (!supabaseClient) {
+        showAccessRestrictedOverlay("Authentication library not loaded.");
+        return;
+    }
+
+    try {
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
+
+        if (error || !session || !session.user || !session.user.email) {
+            showAccessRestrictedOverlay("You must be logged in to access this resource.");
+            return;
+        }
+
+        // Successfully authenticated
+        userEmail = session.user.email;
+        loadPdf(PDF_FETCH_URL);
+    } catch (err) {
+        console.error('Session verification failed:', err);
+        showAccessRestrictedOverlay("An error occurred during authentication verification.");
+    }
+}
+
+function showAccessRestrictedOverlay(message) {
+    loadingOverlay.classList.remove('hidden');
+    loadingOverlay.innerHTML = `
+        <div style="text-align: center; padding: 32px; max-width: 440px; background: rgba(30, 41, 59, 0.85); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 20px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5); font-family: 'Inter', -apple-system, sans-serif; color: #f8fafc;">
+            <div style="width: 72px; height: 72px; border-radius: 50%; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25); color: #ef4444; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 24px; box-shadow: 0 0 20px rgba(239, 68, 68, 0.15); animation: pulse-red 2s infinite;">
+                <i class="fas fa-shield-halved"></i>
+            </div>
+            <h2 style="font-size: 22px; font-weight: 700; color: #f8fafc; margin-bottom: 12px; letter-spacing: -0.02em;">Access Restricted</h2>
+            <p style="font-size: 14px; color: #cbd5e1; line-height: 1.6; margin-bottom: 32px;">${message}</p>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <a href="https://mystudentclub.com/login" style="
+                    display: inline-flex; align-items: center; justify-content: center;
+                    padding: 12px 24px; font-size: 15px; font-weight: 600; border-radius: 10px;
+                    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: #ffffff;
+                    text-decoration: none; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); border: none; outline: none; cursor: pointer; transition: all 0.2s ease;
+                " onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 6px 16px rgba(79, 70, 229, 0.45)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 12px rgba(79, 70, 229, 0.3)';">
+                    <i class="fas fa-sign-in-alt" style="margin-right: 8px;"></i> Login to My Student Club
+                </a>
+                <a href="https://mystudentclub.com/learning-management-system/" style="
+                    display: inline-flex; align-items: center; justify-content: center;
+                    padding: 12px 24px; font-size: 15px; font-weight: 600; border-radius: 10px;
+                    background: rgba(255, 255, 255, 0.06); color: #e2e8f0; border: 1px solid rgba(255, 255, 255, 0.08);
+                    text-decoration: none; cursor: pointer; transition: all 0.2s ease;
+                " onmouseover="this.style.background='rgba(255, 255, 255, 0.12)'; this.style.color='#ffffff';" onmouseout="this.style.background='rgba(255, 255, 255, 0.06)'; this.style.color='#e2e8f0';">
+                    <i class="fas fa-graduation-cap" style="margin-right: 8px;"></i> Go to Dashboard
+                </a>
+            </div>
+        </div>
+        <style>
+            @keyframes pulse-red {
+                0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+                70% { box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
+                100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+            }
+        </style>
+    `;
 }
 
 if (previewModeChip && previewMode === 'docx') {

@@ -1,0 +1,111 @@
+/* Mobile WebView layer shared by the three program pages (Industrial / Articleship / Freshers).
+   Loaded after each page's master sections.css + header.css + dark.css. Targets 320-430px: no horizontal scroll,
+   wrapping text, clamp() type, 44px tap targets, safe-area insets, light + dark via [data-theme].
+   Master's own sections.css stays untouched so it can be re-synced; everything mobile-specific lives here. */
+
+/* Page chrome ------------------------------------------------------------------ */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body.program-page {
+  padding-bottom: 0;
+  overflow-x: clip;
+  -webkit-tap-highlight-color: transparent;
+}
+.program-page img, .program-page video, .program-page svg { max-width: 100%; }
+.program-page h1, .program-page h2, .program-page h3, .program-page p, .program-page li { overflow-wrap: anywhere; }
+.program-page .page-footer { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+:root[data-theme="dark"] body.program-page,
+:root[data-theme="dark"] .program-page main { background-color: #0b1020; }
+
+/* Master's desktop shell leaks: its stacking values would put the page above the Airy Flow drawer. */
+.app-header { z-index: 1000; }
+.expanded-menu { z-index: 10001 !important; }
+.expanded-menu-backdrop { z-index: 10000; }
+.fixed-cta { z-index: 900 !important; }
+#notifyStatusToast { z-index: 10002; }
+html { scroll-padding-top: calc(var(--af-header-h, 58px) + max(env(safe-area-inset-top, 0px), var(--safe-area-inset-top, 0px)) + 12px); }
+
+/* Hero: the fixed app header already reserves the top space (master padded for its own 72px header) */
+.program-page .hero-section { padding-top: clamp(20px, 6vw, 36px); }
+.program-page .hero-heading,
+.program-page .hero-title { font-size: clamp(1.75rem, 8vw, 2.6rem); line-height: 1.12; }
+
+/* Tap targets (>= 44px) --------------------------------------------------------- */
+.program-page .notify-me-btn,
+.program-page .btn-blue-primary,
+.program-page .btn-emerald-primary,
+.program-page .btn-coral-primary,
+.program-page .btn-outline-secondary,
+.program-page .btn-secondary,
+.program-page .btn-navy-sample,
+.program-page .notify-banner-btn,
+.program-page .fixed-cta-btn,
+.program-page .notify-me-footer-btn,
+.program-page .linkedin-pill-btn,
+.program-page .mentor-linkedin-link {
+  min-height: 44px;
+  touch-action: manipulation;
+}
+.program-page .carousel-nav-btn { width: 44px; height: 44px; }
+.program-page .footer-social-btn { width: 44px; height: 44px; }
+.program-page .footer-nav-link { min-height: 44px; padding: 6px 0; }
+.program-page .notify-me-btn[disabled],
+.program-page .js-notify-btn[disabled] { opacity: 0.7; cursor: progress; }
+.program-page .js-notify-btn.subscribed { box-shadow: none; }
+
+/* Fixed CTA bar: readable text, 44px button, notch / home-indicator safe ---------- */
+.fixed-cta {
+  padding-left: max(12px, env(safe-area-inset-left, 0px)) !important;
+  padding-right: max(12px, env(safe-area-inset-right, 0px)) !important;
+  padding-top: 8px !important;
+  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px)) !important;
+  gap: 8px !important;
+}
+.fixed-cta .status-closed-text {
+  font-size: clamp(10px, 2.9vw, 12px) !important;
+  letter-spacing: 0.03em !important;
+  line-height: 1.2 !important;
+  white-space: normal !important;
+  max-width: 7.2em;
+}
+.fixed-cta .price-container { gap: 6px !important; }
+.fixed-cta .price-container .original { font-size: 12px !important; }
+.fixed-cta .price-container .discounted { font-size: clamp(16px, 5vw, 20px) !important; }
+.fixed-cta .notify-me-footer-btn,
+.fixed-cta .fixed-cta-btn,
+.fixed-cta .js-notify-btn,
+.fixed-cta #notifyMeFooterBtn {
+  min-height: 44px !important;
+  padding: 0 clamp(12px, 4vw, 20px) !important;
+  font-size: clamp(12.5px, 3.6vw, 14px) !important;
+  gap: 6px !important;
+  flex-shrink: 0 !important;
+  white-space: nowrap !important;
+  justify-content: center;
+}
+@media (max-width: 360px) {
+  .fixed-cta .price-container .original { display: none !important; }
+}
+
+/* Floating notify status toast sits above the CTA bar */
+.notify-status.show { bottom: calc(84px + env(safe-area-inset-bottom, 0px)); }
+.notify-status { max-width: calc(100vw - 24px); }
+.program-page [data-state="error"].waitlist-status,
+.program-page [data-state="error"].notify-status-msg { color: #ef4444; }
+
+/* Freshers hero metrics: 2x2 instead of master's single column on phones */
+@media (max-width: 600px) {
+  .program-page .metrics-card { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 12px; padding: 16px; }
+  .program-page .metric-item { border-right: none; padding-right: 0; }
+  .program-page .metric-item:nth-child(odd) { border-right: 1px solid var(--border-color, #E2E8F0); padding-right: 10px; }
+  .program-page .metric-value { font-size: clamp(18px, 5.6vw, 22px); }
+}
+
+/* Let mentor highlight tiles wrap instead of truncating ("Business Finan...") */
+.program-page .highlight-val,
+.program-page .highlight-lbl { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; }
+
+/* Final-CTA / banner buttons: master scales the label up on phones and it wraps */
+.program-page .notify-banner-btn { font-size: clamp(14px, 4.2vw, 16px); width: auto; max-width: 100%; justify-content: center; }
+.program-page .btn-emerald-primary,
+.program-page .btn-blue-primary,
+.program-page .btn-coral-primary { max-width: 100%; }

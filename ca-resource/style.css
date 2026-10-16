@@ -265,8 +265,10 @@ body {
         radial-gradient(circle at 80% 20%, rgba(56,189,248,0.03) 0%, transparent 50%);
     position: relative;
     padding: 20px;
-    overscroll-behavior: contain;
+    overscroll-behavior: none;
     -webkit-overflow-scrolling: touch;
+    /* all touch gestures (pan / pinch / swipe) are handled in script.js */
+    touch-action: none;
 }
 
 #viewer-area::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -278,6 +280,7 @@ body {
 #flipbook {
     margin: auto;
     touch-action: none;
+    flex-shrink: 0;
 }
 
 #flipbook .flipbook-page {
@@ -368,13 +371,13 @@ body {
 /* ──────── Responsive: Tablet & Mobile ──────── */
 @media (max-width: 768px) {
     #toolbar {
-        padding-top: max(calc(env(safe-area-inset-top, 0px) + 12px), 36px);
+        padding-top: max(calc(max(env(safe-area-inset-top, 0px), var(--safe-area-inset-top, 0px)) + 12px), 36px);
         padding-bottom: 8px;
         padding-left: 8px;
         padding-right: 8px;
         gap: 6px;
         flex-wrap: nowrap;
-        min-height: calc(env(safe-area-inset-top, 0px) + 52px);
+        min-height: calc(max(env(safe-area-inset-top, 0px), var(--safe-area-inset-top, 0px)) + 52px);
     }
 
     .toolbar-left {
@@ -428,7 +431,7 @@ body {
 /* ──────── Responsive: Phone ──────── */
 @media (max-width: 480px) {
     #toolbar {
-        padding-top: max(calc(env(safe-area-inset-top, 0px) + 14px), 40px);
+        padding-top: max(calc(max(env(safe-area-inset-top, 0px), var(--safe-area-inset-top, 0px)) + 14px), 40px);
         padding-bottom: 6px;
         padding-left: 6px;
         padding-right: 6px;
@@ -471,4 +474,93 @@ body {
 .pdf-annotation-layer a:hover {
     background: rgba(56, 189, 248, 0.15); /* Modern light-blue glow */
     border-color: rgba(56, 189, 248, 0.4);
+}
+
+/* ──────── Security & Focus Loss Blur ──────── */
+body.blurred #pdf-app {
+    filter: blur(25px);
+    pointer-events: none;
+    user-select: none;
+}
+
+#security-blur-overlay {
+    transition: opacity 0.1s ease-out;
+}
+
+
+/* ──────── Mobile / WebView hardening ──────── */
+html { -webkit-text-size-adjust: 100%; }
+body, #pdf-app { height: 100vh; height: 100dvh; max-width: 100%; }
+body, #pdf-app { width: 100%; }
+#loading-overlay > div { width: calc(100% - 32px); max-width: 440px; box-sizing: border-box; }
+#loading-overlay > div a { min-height: 44px; box-sizing: border-box; text-align: center; }
+#loading-overlay { padding: 0 max(16px, env(safe-area-inset-right)) env(safe-area-inset-bottom, 0px) max(16px, env(safe-area-inset-left)); overflow-y: auto; }
+@media (max-width: 768px) {
+    #toolbar { padding-left: max(8px, env(safe-area-inset-left)); padding-right: max(8px, env(safe-area-inset-right)); min-width: 0; }
+    .toolbar-left, .toolbar-right { min-width: 0; }
+    .toolbar-btn { width: 44px; height: 44px; font-size: 14px; flex: 0 0 auto; }
+    .toolbar-btn-sm { width: 36px; height: 36px; }
+    #viewer-dl-btn { width: auto; min-width: 44px; padding: 0 10px; }
+    .page-indicator input { width: 42px; height: 36px; font-size: 16px; }
+    .preview-mode-chip { max-width: 40vw; overflow: hidden; text-overflow: ellipsis; height: 36px; }
+    #viewer-area { padding-bottom: max(6px, env(safe-area-inset-bottom)); }
+    #loading-overlay > div { padding: 24px 20px !important; }
+}
+@media (max-width: 380px) {
+    .toolbar-btn { width: 40px; }
+    .toolbar-left, .toolbar-right { gap: 0; }
+    .page-indicator input { width: 38px; }
+}
+
+
+/* ──────── Header: always visible, never scrolls, phone-compact ──────── */
+html { overscroll-behavior: none; }
+body { position: fixed; inset: 0; overscroll-behavior: none; }
+#toolbar { position: relative; touch-action: manipulation; }
+.toolbar-mark { display: none; align-items: center; flex: 0 0 auto; height: 28px; }
+.toolbar-mark img { height: 26px; width: auto; display: block; }
+.doc-title {
+    display: none;
+    min-width: 0;
+    max-width: 260px;
+    margin-left: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #e2e8f0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+@media (min-width: 769px) { .doc-title { display: block; } }
+@media (max-width: 768px) {
+    #toolbar {
+        /* below the status bar: Flutter injects --safe-area-inset-top (env() is 0 on Android WebView) */
+        padding-top: calc(max(env(safe-area-inset-top, 0px), var(--safe-area-inset-top, 0px)) + 6px);
+        padding-bottom: 6px;
+        min-height: calc(max(env(safe-area-inset-top, 0px), var(--safe-area-inset-top, 0px)) + 56px);
+        gap: 4px;
+    }
+    /* fallback when no inset is available at all: keep clear of a status bar */
+    @supports (padding-top: max(1px, 2px)) {
+        #toolbar { padding-top: max(calc(max(env(safe-area-inset-top, 0px), var(--safe-area-inset-top, 0px)) + 6px), 28px); }
+    }
+    .toolbar-left { flex: 1 1 auto; min-width: 0; gap: 2px; }
+    .toolbar-right { flex: 0 0 auto; gap: 2px; }
+    .toolbar-mark { display: flex; margin: 0 4px 0 2px; }
+    .toolbar-logo { display: none !important; }
+    .doc-title { display: block; flex: 1 1 0; min-width: 0; }
+    .toolbar-btn { width: 40px; height: 40px; }
+    .page-indicator { flex: 0 0 auto; }
+    .page-indicator input { width: 38px; height: 34px; }
+}
+@media (max-width: 520px) {
+    .doc-title { display: none; }
+    .toolbar-left { flex: 0 1 auto; }
+    .toolbar-right { margin-left: auto; }
+}
+@media (max-width: 380px) {
+    .toolbar-btn { width: 36px; height: 40px; }
+    .toolbar-mark { margin: 0 2px; }
+    .toolbar-mark img { height: 22px; }
+    .page-indicator input { width: 34px; }
 }

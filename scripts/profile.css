@@ -1690,3 +1690,21 @@ body.p2-modal-open {
     }
 }
 
+
+/* ===== Got placed? card (scripts/placed-card.js) - Airy Flow tokens ===== */
+.p2-placed-card { border-left: 4px solid var(--brand); }
+.p2-placed-row { display: flex; align-items: center; gap: 1rem; }
+.p2-placed-icon { width: 44px; height: 44px; flex-shrink: 0; border-radius: 50%; background: var(--chip); color: var(--brand); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+.p2-placed-text { flex: 1; min-width: 0; }
+.p2-placed-text h2 { font-size: 1.05rem; font-weight: 700; margin: 0 0 0.25rem; }
+.p2-placed-text .p2-card-sub { margin: 0; }
+.p2-placed-btn { flex-shrink: 0; display: inline-flex; align-items: center; gap: 0.5rem; background: linear-gradient(135deg, var(--brand) 0%, var(--brand2) 100%); color: #fff; border: none; border-radius: 12px; padding: 0.7rem 1.4rem; font-family: inherit; font-size: 0.95rem; font-weight: 600; cursor: pointer; }
+.p2-placed-btn:focus-visible { outline: 3px solid var(--chip); outline-offset: 2px; }
+.p2-placed-btn:disabled { opacity: 0.6; pointer-events: none; }
+.p2-placed-btn [hidden] { display: none; }
+.p2-placed-status:empty { display: none; }
+.p2-placed-status { margin: 0.75rem 0 0; font-size: 0.85rem; color: var(--p2-red); }
+@media (max-width: 600px) {
+  .p2-placed-row { flex-wrap: wrap; }
+  .p2-placed-btn { width: 100%; justify-content: center; }
+}

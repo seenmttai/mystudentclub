@@ -1723,3 +1723,49 @@
 [data-theme="dark"] .lock-overlay p {
   color: #94a3b8;
 }
+
+.ai-stream-terminal {
+    margin-top: 18px;
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 12px;
+    padding: 14px 16px;
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace, sans-serif;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.ai-stream-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+.ai-stream-pulse {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #10B981;
+    box-shadow: 0 0 10px #10B981;
+    animation: pulse-green 1.5s infinite;
+}
+.ai-stream-badge {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #93C5FD;
+}
+.ai-stream-body {
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: #E2E8F0;
+    min-height: 48px;
+}
+.ai-stream-cursor {
+    color: #3B82F6;
+    animation: cursor-blink 0.8s infinite;
+}
+@keyframes cursor-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+@keyframes pulse-green { 0% { transform: scale(0.95); opacity: 0.7; } 50% { transform: scale(1.2); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.7; } }
