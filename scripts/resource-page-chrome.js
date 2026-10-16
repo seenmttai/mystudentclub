@@ -1,6 +1,6 @@
 /* Airy Flow chrome for the resource hub pages: theme toggle, side menu, resources dropdown, greeting, logout.
-   New hub links (data-gated-resource) stay hidden until the backend/route checklist passes; QA can reveal them with
-   localStorage.setItem('msc-enable-new-resources', '1'). */
+   The new hub links are live (no longer gated); the legacy QA flag below only un-hides any element still marked
+   [data-gated-resource], so it is a harmless no-op. */
 (function () {
   'use strict';
   var $ = function (id) { return document.getElementById(id); };
@@ -8,6 +8,56 @@
     var saved = localStorage.getItem('msc-theme');
     if (saved) document.documentElement.setAttribute('data-theme', saved);
   } catch (_) {}
+
+  /* Back navigation that also works when the page is the FIRST entry of the app WebView (history.back() is a silent no-op there).
+     Order: a real previous entry -> history.back(); else the Flutter shell -> native 'closeWebView' handler (pops the WebView route);
+     else the home page. Any element with [data-rh-back] is wired by the delegated listener below (no javascript: URLs). */
+  function hasBackTarget() {
+    var h = window.history;
+    if (!h || !(h.length > 1)) return false;
+    var nav = window.navigation;
+    if (nav && typeof nav.canGoBack === 'boolean') {
+      if (nav.canGoBack) return true; // the Navigation API only lists same-origin entries
+      try { var ref = document.referrer; return !!ref && new URL(ref).origin !== window.location.origin; } catch (_) { return false; }
+    }
+    return true; // older engines: trust history.length (guarded by the timeout in goBack)
+  }
+  function goHome() {
+    try { window.location.assign('/'); } catch (_) { window.location.href = '/'; }
+    return 'home';
+  }
+  function leaveShell() {
+    var bridge = window.flutter_inappwebview;
+    if (bridge && typeof bridge.callHandler === 'function') {
+      try {
+        var pending = bridge.callHandler('closeWebView');
+        if (pending && typeof pending.then === 'function') pending.then(null, goHome);
+        return 'flutter';
+      } catch (_) { /* fall through to the web fallback */ }
+    }
+    return goHome();
+  }
+  function goBack() {
+    if (!hasBackTarget()) return leaveShell();
+    var nav = window.navigation, left = false;
+    var mark = function () { left = true; };
+    window.addEventListener('pagehide', mark);
+    window.history.back();
+    if (!(nav && typeof nav.canGoBack === 'boolean')) {
+      // No Navigation API: back may still be a no-op (e.g. only forward entries). If this page is still here, leave the shell instead.
+      setTimeout(function () { window.removeEventListener('pagehide', mark); if (!left) leaveShell(); }, 1500);
+    }
+    return 'history';
+  }
+  window.MSCNav = window.MSCNav || {};
+  window.MSCNav.goBack = goBack;
+  window.MSCNav.hasBackTarget = hasBackTarget;
+  document.addEventListener('click', function (e) {
+    var link = e.target && e.target.closest ? e.target.closest('[data-rh-back]') : null;
+    if (!link) return;
+    e.preventDefault();
+    goBack();
+  });
 
   function init() {
     var menu = $('expandedMenu'), backdrop = $('menuBackdrop'), menuBtn = $('menuButton'), closeBtn = $('menuCloseBtn');

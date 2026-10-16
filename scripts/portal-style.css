@@ -43,7 +43,10 @@ a {
   --r-card: 20px;
   --r-sheet: 24px;
   --r-chip: 40px;
-  --header-h: calc(54px + max(env(safe-area-inset-top, 0px), var(--safe-area-inset-top, 0px)));
+  /* Status-bar height: native env() when the WebView supplies it, else the value the Flutter app injects.
+     max() (never a sum) so the two sources can't stack. Shared by the header and the side drawer. */
+  --msc-sai-top: max(env(safe-area-inset-top, 0px), var(--safe-area-inset-top, 0px));
+  --header-h: calc(54px + var(--msc-sai-top));
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   font-family:
     "Poppins",
@@ -343,12 +346,14 @@ body:has(.expanded-menu.active) .expanded-menu-backdrop {
 
 .expanded-menu {
   position: fixed;
-  top: 0;
+  /* The drawer itself starts BELOW the status bar (rounded corner visible, no dead strip),
+     so the header row inside needs only a normal gap - never the inset again. */
+  top: var(--msc-sai-top, 0px);
   right: 0;
   bottom: 0;
   width: min(320px, 86vw);
-  height: 100vh;
-  height: 100dvh;
+  height: calc(100vh - var(--msc-sai-top, 0px));
+  height: calc(100dvh - var(--msc-sai-top, 0px));
   background: var(--card, #ffffff);
   box-shadow: -10px 0 40px rgba(15, 23, 42, 0.22);
   z-index: 10000;
@@ -373,7 +378,7 @@ body:has(.expanded-menu.active) .expanded-menu-backdrop {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: max(max(env(safe-area-inset-top, 0px), var(--safe-area-inset-top, 0px)) + 16px, 20px) 20px 16px 20px;
+  padding: 14px 20px 12px 20px;
   border-bottom: 1px solid var(--line, #f1f5f9);
   background: var(--card, #ffffff);
   position: sticky;
@@ -412,6 +417,12 @@ body:has(.expanded-menu.active) .expanded-menu-backdrop {
   background: #fee2e2;
   color: #ef4444;
   transform: scale(1.05);
+}
+/* Older pages put the close button straight into the drawer (no header row): same compact gap */
+.expanded-menu > .menu-close-btn {
+  align-self: flex-end;
+  flex-shrink: 0;
+  margin: 14px 20px 0 0;
 }
 
 /* Menu items list */
@@ -493,7 +504,10 @@ body:has(.expanded-menu.active) .expanded-menu-backdrop {
   width: calc(100% - 20px) !important;
   box-sizing: border-box !important;
 }
+/* .open / .show: older inline page scripts toggle those names instead of .active */
 .dropdown-content.active,
+.dropdown-content.open,
+.dropdown-content.show,
 .dropdown-content[style*="display: block"] {
   display: flex !important;
   flex-direction: column !important;
@@ -604,6 +618,23 @@ body:has(.expanded-menu.active) .expanded-menu-backdrop {
   background: rgba(239, 68, 68, 0.26) !important;
   color: #fca5a5 !important;
   border-color: rgba(239, 68, 68, 0.5) !important;
+}
+
+/* Current page in the drawer (class="active" / aria-current="page"), same look as the program pages' drawer */
+.expanded-menu .menu-item.active,
+.expanded-menu .dropdown-item.active,
+.expanded-menu .dropdown-item[aria-current="page"] {
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-weight: 700;
+  box-shadow: inset 3px 0 0 #2563eb;
+}
+[data-theme="dark"] .expanded-menu .menu-item.active,
+[data-theme="dark"] .expanded-menu .dropdown-item.active,
+[data-theme="dark"] .expanded-menu .dropdown-item[aria-current="page"] {
+  background: rgba(79, 138, 255, 0.16);
+  color: #7db0ff;
+  box-shadow: inset 3px 0 0 #4f8aff;
 }
 
 /* ============================================================

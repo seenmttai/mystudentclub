@@ -10,14 +10,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="stylesheet" href="/scripts/portal-style.css" />
-    <link rel="stylesheet" href="/scripts/resource-library.css?v=20261015.1" />
-    <script src="/scripts/resource-page-chrome.js?v=20261015.1"></script>
+    <link rel="stylesheet" href="/scripts/resource-library.css?v=20261017.1" />
+    <script src="/scripts/resource-page-chrome.js?v=20261017.1"></script>
     <script src="/scripts/vendor/supabase.js" defer></script>
     <script src="/scripts/supabase-init.js?v=20261015.1" defer></script>
     <script src="/scripts/program-access.js?v=20260927.9" defer></script>
     <script src="/scripts/career-profile.js?v=20260927.9" defer></script>
     <script src="/scripts/resource-form-collector.js?v=20261015.1" defer></script>
-    <script src="/scripts/resource-library.js?v=20261015.1" defer></script>
+    <script src="/scripts/resource-library.js?v=20261017.1" defer></script>
   </head>
   <body data-resource-stage="articleship">
     <!-- ============================= HEADER ============================= -->
@@ -177,12 +177,13 @@
             </svg>
           </button>
           <div class="dropdown-content active" id="resourcesDropdown">
-            <a href="/ca-fresher-training-resources.html" class="dropdown-item">CA Fresher</a>
-            <a href="/ca-industrial-training-resources.html" class="dropdown-item">Industrial Training</a>
-            <a href="/ca-articleship-jobs.html" class="dropdown-item">Articleship</a>
-            <a href="/articleship-resources.html" class="dropdown-item active" data-gated-resource hidden aria-current="page">Articleship Resources</a>
-            <a href="/semi-qualified-ca-resources.html" class="dropdown-item" data-gated-resource hidden>Semi-Qualified CA</a>
-            <a href="/domain-wise-hiring-companies.html" class="dropdown-item" data-gated-resource hidden>Domain-wise Hiring Companies</a>
+            <a href="/ca-industrial-training-resources.html" class="dropdown-item">Industrial Training Resources</a>
+            <a href="/articleship-resources.html" class="dropdown-item active" aria-current="page">Articleship Resources</a>
+            <a href="/ca-fresher-training-resources.html" class="dropdown-item">CA Fresher Resources</a>
+            <a href="/semi-qualified-ca-resources.html" class="dropdown-item">Semi-Qualified CA Resources</a>
+            <a href="/domain-wise-hiring-companies.html" class="dropdown-item">Domain-wise Hiring Companies</a>
+            <a href="https://www.mystudentclub.com/blog/" class="dropdown-item">Career Guides</a>
+            <a href="https://www.mystudentclub.com/sessions/" class="dropdown-item">Events &amp; Live Sessions</a>
           </div>
         </div>
         <a href="/profile.html" class="menu-item" id="profile-nav-link">
@@ -223,11 +224,14 @@
     <!-- ============================== MAIN ============================== -->
     <main class="app-main resource-main" id="main-content">
       <section class="rh-hero" aria-labelledby="resource-page-title">
-        <a href="javascript:history.back()" class="rh-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7" /></svg>Back</a>
-        <p class="resource-eyebrow">Articleship</p>
-        <h1 id="resource-page-title">Articleship Resources</h1>
-        <p class="rh-desc">Start your articleship search with a stronger CV and a clear next step: templates, guides and interview prep.</p>
-        <div class="rh-pills"><span class="rh-pill">Free & Premium</span><span class="rh-pill">CV & cover letter</span></div>
+        <a href="/" class="rh-back" data-rh-back><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7" /></svg>Back</a>
+        <div class="rh-card">
+          <p class="resource-eyebrow">Articleship</p>
+          <h1 id="resource-page-title">Articleship Resources</h1>
+          <p class="rh-desc">Templates, guides and interview prep for a stronger articleship search.</p>
+          <div class="rh-pills"><span class="rh-pill">CV & cover letter</span><span class="rh-pill">Interview prep</span></div>
+          <div class="rh-stats" id="rh-stats" hidden><div class="rh-stat"><strong data-stat="free">-</strong><span>Free resources</span></div><div class="rh-stat"><strong data-stat="premium">-</strong><span>Premium resources</span></div></div>
+        </div>
       </section>
       <div id="resources-container" aria-label="Resource library"></div>
       <p id="resource-catalog-status" class="resource-catalog-status" role="status"></p>

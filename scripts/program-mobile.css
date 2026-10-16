@@ -20,6 +20,32 @@ body.program-page {
 .app-header { z-index: 1000; }
 .expanded-menu { z-index: 10001 !important; }
 .expanded-menu-backdrop { z-index: 10000; }
+/* Side drawer: master's sections.css pads the drawer 68px and absolutely positions the close button; stacked on
+   header.css's header row (which used to add the status-bar inset again) that put "Navigation" ~120px down.
+   Make it the same compact drawer as every portal page: drawer starts below the status bar, one 36px-close + title row. */
+.expanded-menu {
+  top: var(--msc-sai-top, 0px) !important;
+  height: calc(100vh - var(--msc-sai-top, 0px)) !important;
+  height: calc(100dvh - var(--msc-sai-top, 0px)) !important;
+  width: min(320px, 86vw) !important;
+  max-width: none !important;
+  padding: 0 !important;
+}
+.expanded-menu .menu-close-btn {
+  position: relative !important;
+  top: auto !important;
+  right: auto !important;
+  width: 36px !important;
+  height: 36px !important;
+  border: none !important;
+  border-radius: 50% !important;
+  background: var(--af-chip, #f1f5f9) !important;
+  color: #475569 !important;
+  box-shadow: none !important;
+  flex-shrink: 0;
+}
+.expanded-menu .menu-close-btn svg { width: 20px !important; height: 20px !important; stroke: currentColor !important; }
+:root[data-theme="dark"] .expanded-menu .menu-close-btn { color: #c3cde2 !important; }
 .fixed-cta { z-index: 900 !important; }
 #notifyStatusToast { z-index: 10002; }
 html { scroll-padding-top: calc(var(--af-header-h, 58px) + max(env(safe-area-inset-top, 0px), var(--safe-area-inset-top, 0px)) + 12px); }

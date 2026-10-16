@@ -165,6 +165,7 @@
     let premiumQuery = '', selectedDay = 'all';
     const expandedGroups = new Set();
     const GROUP_PREVIEW_SIZE = 3;
+    const FREE_PREVIEW_NARROW = 3, FREE_PREVIEW_WIDE = 4;
     const element = (tag, className, text) => {
         const node = document.createElement(tag);
         if (className) node.className = className;
@@ -316,7 +317,8 @@
             lock: '<path fill="currentColor" fill-rule="evenodd" d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5zm-3 5a3 3 0 0 1 6 0v3H9V7zm3 6a1.75 1.75 0 0 1 1.75 1.75c0 .64-.34 1.2-.85 1.51l.6 2.24a.5.5 0 0 1-.48.63h-2.04a.5.5 0 0 1-.48-.63l.6-2.24A1.75 1.75 0 0 1 12 13z" clip-rule="evenodd"/>',
             download: '<path d="M12 3v12m-5-5 5 5 5-5M5 16v4h14v-4"/>',
             file: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 13h8m-8 4h5"/>',
-            search: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/>'
+            search: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/>',
+            chevron: '<path d="m6 9 6 6 6-6"/>'
         };
         const node = element('span', 'resource-icon');
         node.setAttribute('aria-hidden', 'true');
@@ -403,7 +405,6 @@
     }
     function sectionHeader(id, title, count, description) {
         const header = element('div', 'resource-section-header');
-        const copy = element('div', 'resource-section-copy');
         const titleRow = element('div', 'resource-section-title');
         const heading = element('h2', '', title);
         heading.id = 'resource-' + id;
@@ -411,14 +412,43 @@
         badge.id = 'resource-' + id + '-count';
         badge.setAttribute('aria-label', count + ' resources');
         titleRow.append(heading, badge);
-        copy.append(titleRow, element('p', 'resource-section-intro', description));
-        header.append(copy);
-        const actions = element('div', 'resource-section-actions');
-        const viewAll = element('a', 'hub-view-link', 'View all →');
-        viewAll.href = '#' + (id === 'free' ? 'resource-free' : 'resource-premium');
-        actions.append(viewAll);
-        header.append(actions);
+        // Title + count on one line, optional action (View all / Explore Program) to the right, short description below.
+        header.append(titleRow, element('div', 'resource-section-actions'), element('p', 'resource-section-intro', description));
         return header;
+    }
+    // Free list: first few resources, with a real View all / Show less toggle (the old "View all" only jumped to its own heading).
+    function setupFreeToggle(cards, list, actions) {
+        const viewAll = element('button', 'resource-view-all');
+        viewAll.type = 'button';
+        viewAll.setAttribute('aria-controls', list.id);
+        const label = element('span');
+        viewAll.append(label, icon('chevron'));
+        actions.append(viewAll);
+        const wide = global.matchMedia ? global.matchMedia('(min-width: 600px)') : null;
+        let expanded = false;
+        const sync = () => {
+            const max = wide && wide.matches ? FREE_PREVIEW_WIDE : FREE_PREVIEW_NARROW;
+            const overflow = cards.length > max;
+            cards.forEach((card, index) => { card.hidden = overflow && !expanded && index >= max; });
+            viewAll.hidden = !overflow;
+            label.textContent = expanded ? 'Show less' : 'View all ' + cards.length;
+            viewAll.setAttribute('aria-expanded', String(expanded));
+            viewAll.setAttribute('aria-label', (expanded ? 'Show fewer' : 'View all ' + cards.length) + ' free resources');
+        };
+        viewAll.addEventListener('click', () => { expanded = !expanded; sync(); });
+        if (wide) (wide.addEventListener ? wide.addEventListener('change', sync) : wide.addListener && wide.addListener(sync));
+        sync();
+    }
+    // Compact hero stats: free count is known up front; premium count appears once the catalogue has loaded.
+    function updateHeroStats() {
+        const stats = document.getElementById('rh-stats');
+        if (!stats || !config) return;
+        const free = stats.querySelector('[data-stat="free"]'), premium = stats.querySelector('[data-stat="premium"]');
+        if (free) free.textContent = String(config.resources.length);
+        const premiumStat = premium && premium.closest('.rh-stat');
+        if (premium) premium.textContent = catalogueLoaded ? String(premiumRows.length) : '–';
+        if (premiumStat) premiumStat.hidden = catalogueError || (catalogueLoaded && premiumRows.length === 0);
+        stats.hidden = false;
     }
     function renderPremiumResults(focusGroup) {
         const grid = document.getElementById('premium-resources-list');
@@ -442,6 +472,7 @@
         const count = document.getElementById('resource-premium-count');
         count.textContent = catalogueLoaded ? String(premiumRows.length) : '—';
         count.setAttribute('aria-label', catalogueLoaded ? premiumRows.length + ' resources' : (catalogueError ? 'Resource count unavailable' : 'Resource count loading'));
+        updateHeroStats();
         grid.replaceChildren();
         const searching = Boolean(premiumQuery.trim());
         let matches = 0, collectionCount = 0;
@@ -498,15 +529,19 @@
         container.replaceChildren();
         const free = element('section', 'resource-section resource-free-section');
         free.setAttribute('aria-labelledby', 'resource-free');
-        free.append(sectionHeader('free', 'Free Resources', config.resources.length, 'Make them yours. Preview a resource or download it to get started.'));
+        const freeHeader = sectionHeader('free', 'Free Resources', config.resources.length, config.freeIntro || 'Preview online or download to make it yours.');
+        free.append(freeHeader);
         const freeGrid = element('div', 'resources-list');
-        organizeResources(config.resources, []).free.forEach(resource => freeGrid.append(renderCard(resource)));
+        freeGrid.id = 'resources-free-list';
+        const freeCards = organizeResources(config.resources, []).free.map(resource => renderCard(resource));
+        freeCards.forEach(card => freeGrid.append(card));
         free.append(freeGrid);
+        setupFreeToggle(freeCards, freeGrid, freeHeader.querySelector('.resource-section-actions'));
 
         const premium = element('section', 'resource-section resource-premium-section');
         premium.setAttribute('aria-labelledby', 'resource-premium');
         const program = programs[config.premiumProgram];
-        const header = sectionHeader('premium', 'Premium Resources', 0, 'Included with the ' + program.title + '. Enroll to view and download.');
+        const header = sectionHeader('premium', 'Premium Resources', 0, 'Included with the ' + program.title + '. Enroll to unlock.');
         const enroll = element('a', 'resource-program-link', 'Explore Program →');
         enroll.href = program.url;
         const actions = header.querySelector('.resource-section-actions');
@@ -523,7 +558,7 @@
         const input = element('input');
         input.id = 'premium-resource-search';
         input.type = 'search';
-        input.placeholder = 'Search templates, topics or resources';
+        input.placeholder = 'Search resources';
         input.autocomplete = 'off';
         input.addEventListener('input', () => {
             premiumQuery = input.value;

@@ -679,29 +679,32 @@ button, a, input { font: inherit; }
 .resource-jump-nav a:hover { text-decoration: underline; }
 
 /* ─── FREE RESOURCES SECTION ─── */
-.resource-section { margin-top: 28px; }
+.resource-section { margin-top: 24px; }
+/* Header: title + count on one line, optional action pill to the right, short description underneath. */
 .resource-section-header {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "title actions" "intro intro";
   align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  margin-bottom: 20px;
-}
-.resource-section-actions {
-  display: inline-flex;
-  align-items: center;
-  gap: 16px;
-  flex-shrink: 0;
-  margin-left: auto;
-}
-.resource-section-header .hub-view-link {
-  margin-left: auto;
+  gap: 4px 12px;
+  margin-bottom: 16px;
 }
 .resource-section-title {
+  grid-area: title;
   display: flex;
   align-items: center;
-  gap: 10px;
+  flex-wrap: nowrap;
+  gap: 8px;
+  min-width: 0;
 }
+.resource-section-actions {
+  grid-area: actions;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.resource-section-actions:empty { display: none; }
 .resource-section h2 {
   font-size: 22px;
   font-weight: 700;
@@ -730,9 +733,15 @@ h2#resource-premium::before {
   font-weight: 700;
 }
 .resource-section-intro {
-  font-size: 13.5px;
+  grid-area: intro;
+  font-size: 13px;
+  line-height: 1.5;
   color: var(--rl-muted);
-  margin: 4px 0 0;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
 
 /* ─── RESOURCE CARDS GRID (3 COLUMNS FOR PREMIUM, 6 COLUMNS FOR FREE) ─── */
@@ -1782,17 +1791,6 @@ h2#resource-premium::before {
 }
 
 @media (max-width: 640px) {
-  .resource-section-header {
-    flex-wrap: wrap;
-    align-items: flex-start;
-    gap: 12px;
-  }
-  .resource-section-actions {
-    margin-left: 0;
-    width: 100%;
-    justify-content: flex-start;
-    gap: 14px;
-  }
   .hub-categories-grid {
     grid-template-columns: 1fr;
     gap: 10px;
@@ -1928,14 +1926,40 @@ h2#resource-premium::before {
 
 /* ─── Airy Flow mobile page shell ─── */
 .resource-main { max-width: 720px; padding: 8px 16px calc(32px + var(--safe-bottom)); min-height: 0; }
-.rh-hero { padding: 16px 4px 8px; }
-.rh-back { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--brand); text-decoration: none; margin-bottom: 12px; background: none; border: 0; padding: 0; }
-.rh-back svg { width: 15px; height: 15px; }
-.rh-hero .resource-eyebrow { margin: 0 0 4px; }
-.rh-hero h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.25; color: var(--text); margin: 0 0 6px; }
-.rh-hero p.rh-desc { font-size: 13px; color: var(--sub); line-height: 1.5; margin: 0; }
-.rh-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
-.rh-pill { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: var(--r-chip); background: var(--chip); color: var(--sub); }
+/* Resource hub hero: compact Airy Flow banner. Spacing scale: 12 (inside blocks) / 16 (card padding, groups) / 24 (between blocks). */
+.rh-hero { padding: 0; margin: 0 0 24px; }
+.rh-back { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin: 0 0 4px; padding: 0 12px 0 0; font-size: 14px; font-weight: 600; color: var(--text); text-decoration: none; background: none; border: 0; -webkit-tap-highlight-color: transparent; }
+.rh-back svg { width: 32px; height: 32px; padding: 8px; box-sizing: border-box; flex: none; border-radius: 50%; background: var(--card); border: 1px solid var(--line); color: var(--brand); box-shadow: var(--shadow2); }
+.rh-back:active svg { background: var(--chip); }
+.rh-back:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; border-radius: 22px; }
+.rh-card {
+  position: relative; isolation: isolate; overflow: hidden;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 12px;
+  padding: 20px 16px 16px; box-sizing: border-box; max-width: 100%;
+  border-radius: var(--r-card, 20px);
+  border: 1px solid color-mix(in srgb, var(--brand) 16%, var(--line));
+  background: linear-gradient(145deg, color-mix(in srgb, var(--brand) 11%, var(--card)) 0%, var(--card) 62%);
+  box-shadow: var(--shadow2);
+}
+.rh-card::before { content: ''; position: absolute; z-index: -1; right: -56px; top: -64px; width: 190px; height: 190px; border-radius: 50%; background: radial-gradient(circle, color-mix(in srgb, var(--brand) 20%, transparent) 0%, transparent 70%); pointer-events: none; }
+[data-theme="dark"] .rh-card { border-color: color-mix(in srgb, var(--brand) 26%, var(--line)); background: linear-gradient(145deg, color-mix(in srgb, var(--brand) 18%, var(--card)) 0%, var(--card) 62%); }
+[data-theme="dark"] .rh-card::before { background: radial-gradient(circle, color-mix(in srgb, var(--brand) 28%, transparent) 0%, transparent 70%); }
+.rh-card .resource-eyebrow { display: inline-flex; align-items: center; gap: 6px; margin: 0; padding: 5px 12px; border-radius: var(--r-chip, 40px); background: color-mix(in srgb, var(--brand) 12%, var(--card)); color: var(--brand); font-size: 11px; font-weight: 700; line-height: 1.2; letter-spacing: .08em; text-transform: uppercase; }
+.rh-card .resource-eyebrow::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex: none; }
+.rh-hero h1 { margin: 0; max-width: 100%; font-size: clamp(22px, 6.6vw, 28px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.2; color: var(--text); text-wrap: balance; overflow-wrap: break-word; }
+.rh-hero p.rh-desc { margin: 0; max-width: 46ch; font-size: clamp(13px, 3.7vw, 14.5px); line-height: 1.5; color: var(--sub); text-wrap: pretty; }
+/* Chips: one tidy scrolling row (bleeds to the card edges, soft fade at both ends) instead of loose wrapping pills. */
+.rh-pills { align-self: stretch; display: flex; flex-wrap: nowrap; gap: 6px; margin: 0 -16px; padding: 0 16px; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; -webkit-overflow-scrolling: touch; scroll-snap-type: x proximity; scroll-padding-inline: 16px; -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 16px, #000 calc(100% - 16px), transparent 100%); mask-image: linear-gradient(90deg, transparent 0, #000 16px, #000 calc(100% - 16px), transparent 100%); }
+.rh-pills::-webkit-scrollbar { display: none; }
+.rh-pill { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; box-sizing: border-box; scroll-snap-align: start; white-space: nowrap; font-size: 12px; font-weight: 500; line-height: 1; color: var(--text); border-radius: var(--r-chip, 40px); background: color-mix(in srgb, var(--brand) 8%, var(--card)); border: 1px solid color-mix(in srgb, var(--brand) 16%, var(--line)); }
+.rh-pill::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--brand); flex: none; }
+.rh-stats { align-self: stretch; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); margin-top: 4px; padding-top: 16px; border-top: 1px solid color-mix(in srgb, var(--brand) 16%, var(--line)); }
+.rh-stat { display: flex; flex-direction: column; gap: 2px; padding: 0 16px; }
+.rh-stat:first-child { padding-left: 0; }
+.rh-stat + .rh-stat { border-left: 1px solid color-mix(in srgb, var(--brand) 16%, var(--line)); }
+.rh-stat strong { font-size: 22px; line-height: 1.1; font-weight: 800; letter-spacing: -0.02em; color: var(--brand); }
+.rh-stat span { font-size: 12px; line-height: 1.3; font-weight: 500; color: var(--sub); white-space: nowrap; }
+@media (max-width: 359px) { .rh-stat { padding: 0 12px; } .rh-stat span { font-size: 11.5px; } }
 [data-theme="dark"] .resource-enroll-dialog { background: var(--card); color: var(--text); }
 [data-theme="dark"] .resource-access-error { color: #fecaca; }
 
@@ -1950,19 +1974,36 @@ html, body { max-width: 100%; overflow-x: clip; }
 }
 .resource-main *, .resource-main *::before, .resource-main *::after { min-width: 0; }
 .resource-main img, .resource-main svg, .resource-main video { max-width: 100%; }
-.rh-hero { padding: 12px 0 8px; }
-.rh-hero .resource-eyebrow, .resource-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--brand); margin: 0 0 4px; }
-.rh-hero h1 { font-size: clamp(22px, 6.4vw, 28px); overflow-wrap: anywhere; }
-.rh-hero p.rh-desc { font-size: clamp(13px, 3.7vw, 14.5px); }
+.resource-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--brand); margin: 0 0 4px; }
+.rh-hero + #resources-container > .resource-section:first-child { margin-top: 0; }
 .resource-section, .resource-premium-section { scroll-margin-top: calc(var(--header-h) + 12px); }
 .resource-section h2, #community-heading { scroll-margin-top: calc(var(--header-h) + 12px); }
-.resource-section-header { flex-wrap: wrap; gap: 8px 12px; }
-.resource-section-copy { flex: 1 1 100%; }
-.resource-section-title { flex-wrap: wrap; }
-.resource-section h2 { font-size: clamp(19px, 5.6vw, 22px); overflow-wrap: anywhere; }
-.resource-section-actions { flex-wrap: wrap; margin-left: 0; width: 100%; gap: 8px 12px; justify-content: space-between; flex-shrink: 1; }
-.hub-view-link, .resource-program-link { display: inline-flex; align-items: center; min-height: 44px; box-sizing: border-box; }
-.resource-program-link { padding: 6px 16px; white-space: normal; text-align: center; justify-content: center; }
+.resource-section h2 { min-width: 0; font-size: clamp(18px, 5.2vw, 22px); line-height: 1.25; overflow-wrap: break-word; }
+.resource-count { flex: none; }
+.hub-view-link { display: inline-flex; align-items: center; min-height: 44px; box-sizing: border-box; }
+/* Section action pills (View all toggle, Explore Program): 44px tall, clearly tappable, same tinted style in light and dark. */
+.resource-view-all, .resource-program-link { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 0 16px; box-sizing: border-box; border-radius: var(--r-chip, 40px); border: 1px solid color-mix(in srgb, var(--brand) 28%, var(--line)); background: color-mix(in srgb, var(--brand) 8%, var(--card)); color: var(--brand); font-size: 13.5px; font-weight: 600; line-height: 1.2; white-space: nowrap; text-decoration: none; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background .15s ease, transform .1s ease; }
+.resource-view-all:hover, .resource-program-link:hover { background: color-mix(in srgb, var(--brand) 14%, var(--card)); color: var(--brand); }
+.resource-view-all:active, .resource-program-link:active { transform: scale(.98); }
+.resource-view-all:focus-visible, .resource-program-link:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.resource-view-all .resource-icon { display: inline-flex; flex: none; }
+.resource-view-all .resource-icon svg { width: 16px; height: 16px; transition: transform .2s ease; }
+.resource-view-all[aria-expanded="true"] .resource-icon svg { transform: rotate(180deg); }
+/* Premium header: on phones the CTA sits full-width under the description; from 520px it moves to the right of the title. */
+.resource-premium-section .resource-section-header { grid-template-columns: minmax(0, 1fr); grid-template-areas: "title" "intro" "actions"; }
+.resource-premium-section .resource-section-actions { justify-content: stretch; margin-top: 8px; }
+.resource-premium-section .resource-program-link { flex: 1 1 auto; }
+/* Very narrow phones (320): the free-section pill no longer fits beside the title, so it drops full-width under the description. */
+@media (max-width: 349px) {
+  .resource-free-section .resource-section-header { grid-template-columns: minmax(0, 1fr); grid-template-areas: "title" "intro" "actions"; }
+  .resource-free-section .resource-section-actions { justify-content: stretch; margin-top: 8px; }
+  .resource-free-section .resource-view-all { flex: 1 1 auto; }
+}
+@media (min-width: 520px) {
+  .resource-premium-section .resource-section-header { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "title actions" "intro intro"; }
+  .resource-premium-section .resource-section-actions { justify-content: flex-end; margin-top: 0; }
+  .resource-premium-section .resource-program-link { flex: none; }
+}
 .resource-free-section .resources-list, .resource-premium-grid, .premium-collection-list, .resource-premium-section .resources-list { grid-template-columns: minmax(0, 1fr); gap: 12px; }
 .resource-card, .premium-collection, .premium-day { max-width: 100%; box-sizing: border-box; }
 .resource-card:not(.resource-premium) { min-height: 0; }
@@ -1975,9 +2016,9 @@ html, body { max-width: 100%; overflow-x: clip; }
 .resource-file-icon { background: var(--chip); color: var(--brand); }
 .resource-format, .premium-day-heading p, .premium-collection-copy p, .resource-premium .resource-subtitle, .resource-search-results { color: var(--sub); }
 .premium-day-heading h3 { color: var(--text); }
-.resource-jump-nav { flex-wrap: nowrap; overflow-x: auto; gap: 8px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.resource-jump-nav { flex-wrap: nowrap; overflow-x: auto; gap: 8px; margin: 0; padding: 0; border-bottom: 0; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
 .resource-jump-nav::-webkit-scrollbar { display: none; }
-.resource-jump-nav a { flex: 0 0 auto; min-height: 44px; padding: 0 6px; color: var(--sub); white-space: nowrap; }
+.resource-jump-nav a { flex: 1 0 auto; justify-content: center; min-height: 44px; padding: 0 16px; box-sizing: border-box; border-radius: var(--r-chip, 40px); border: 1px solid color-mix(in srgb, var(--brand) 28%, var(--line)); background: color-mix(in srgb, var(--brand) 8%, var(--card)); color: var(--brand); text-decoration: none; white-space: nowrap; }
 .resource-jump-nav a:first-child { color: var(--brand); }
 .resource-premium-section {
   margin-top: 28px; padding: 18px 14px; border-radius: 18px; box-sizing: border-box; max-width: 100%;
@@ -1996,7 +2037,7 @@ html, body { max-width: 100%; overflow-x: clip; }
 .premium-collection { padding: 14px; }
 .premium-collection-header { flex-wrap: wrap; gap: 8px 12px; border-bottom-color: var(--line); }
 .premium-collection-copy { flex: 1 1 140px; }
-.premium-group-toggle { min-height: 44px; background: var(--chip); border-color: var(--line); color: var(--brand); }
+.premium-group-toggle { min-height: 44px; padding: 0 16px; border-radius: var(--r-chip, 40px); white-space: nowrap; background: color-mix(in srgb, var(--brand) 8%, var(--card)); border-color: color-mix(in srgb, var(--brand) 28%, var(--line)); color: var(--brand); }
 .resource-card.resource-premium { padding: 14px 12px 14px; }
 .resource-premium .resource-title { min-height: 0; color: var(--text); }
 .premium-card-preview { padding: 14px 10px 12px; min-height: 150px; box-sizing: border-box; max-width: 100%; overflow: hidden; }
@@ -2008,7 +2049,6 @@ html, body { max-width: 100%; overflow-x: clip; }
 [data-theme="dark"] .resource-action.secondary { background: transparent; color: var(--text); border-color: #3a4054; }
 [data-theme="dark"] .resource-action.secondary:hover { background: var(--chip); color: var(--brand2); }
 [data-theme="dark"] .premium-day-filter, [data-theme="dark"] .premium-group-toggle, [data-theme="dark"] .resource-search { border-color: #3a4054; }
-[data-theme="dark"] .resource-program-link { background: var(--chip); border-color: #3a4054; color: var(--brand2); }
 [data-theme="dark"] .resource-premium-icon { background: var(--chip) !important; }
 [data-theme="dark"] .resource-empty { border-color: #3a4054; }
 [data-theme="dark"] .resource-premium-unlocked-badge { background: rgba(16,185,129,.12); border-color: rgba(16,185,129,.35); color: #6ee7b7; }
@@ -2031,8 +2071,6 @@ html, body { max-width: 100%; overflow-x: clip; }
   .resource-free-section .resources-list, .premium-collection-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 .premium-day-heading { flex-direction: column; align-items: flex-start; gap: 2px; margin-bottom: 12px; }
-.resource-section-header { gap: 0 12px; margin-bottom: 14px; }
-.resource-section-actions { margin-top: 4px; }
 .resource-count { min-width: 28px; height: 28px; }
 .expanded-menu { padding-bottom: var(--safe-bottom); max-width: 100vw; }
 .expanded-menu .menu-item, .expanded-menu .dropdown-item { min-height: 44px; }

@@ -83,17 +83,18 @@ test('every free local resource file referenced by the library exists', () => {
   for (const u of urls) assert.ok(exists(decodeURI(u).slice(1)), `missing static file ${u}`);
 });
 
-test('new resource links stay hidden behind the gate until the backend checklist passes', () => {
+test('the new hubs are live: listed in every hub menu and no longer gated or hidden', () => {
   for (const p of PAGES) {
     const html = read(p.file);
+    assert.doesNotMatch(html, /data-gated-resource/, `${p.file}: no gated menu links any more`);
     for (const href of NEW_HUBS) {
       const tag = html.match(new RegExp(`<a href="${href.replace(/\./g, '\\.')}"[^>]*>`));
       assert.ok(tag, `${p.file} menu lists ${href}`);
-      assert.match(tag[0], /data-gated-resource hidden/, `${p.file}: ${href} must be gated`);
+      assert.doesNotMatch(tag[0], /\bhidden\b|data-gated-resource/, `${p.file}: ${href} must be visible`);
     }
   }
+  // the QA flag script stays harmless: it only un-hides [data-gated-resource] elements, of which there are none now
   assert.match(read('scripts/resource-page-chrome.js'), /msc-enable-new-resources/);
-  assert.match(read('scripts/resource-library.css'), /\[hidden\] \{ display: none !important; \}/);
 });
 
 test('web menu links only to routes that exist, as .html (no extensionless fallbacks)', () => {

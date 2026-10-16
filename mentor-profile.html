@@ -253,16 +253,20 @@
             <a href="/" class="menu-item">Discussion Forum</a>
 
             <div class="menu-item-dropdown">
-                <button class="menu-item" id="resourcesDropdownBtn">
+                <button class="menu-item" id="resourcesDropdownBtn" onclick="var d=document.getElementById('resourcesDropdown'); if(d) d.classList.toggle('active'); var i=this.querySelector('.dropdown-icon'); if(i) i.classList.toggle('open');">
                     Resources
                     <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
                 </button>
                 <div class="dropdown-content" id="resourcesDropdown">
-                    <a href="/ca-fresher-jobs" class="dropdown-item">CA Freshers</a>
-                    <a href="/ca-industrial-training-resources.html" class="dropdown-item">CA Industrial Training</a>
-                    <a href="/ca-articleship-jobs" class="dropdown-item">Articleship</a>
+                  <a href="/ca-industrial-training-resources.html" class="dropdown-item">Industrial Training Resources</a>
+                  <a href="/articleship-resources.html" class="dropdown-item">Articleship Resources</a>
+                  <a href="/ca-fresher-training-resources.html" class="dropdown-item">CA Fresher Resources</a>
+                  <a href="/semi-qualified-ca-resources.html" class="dropdown-item">Semi-Qualified CA Resources</a>
+                  <a href="/domain-wise-hiring-companies.html" class="dropdown-item">Domain-wise Hiring Companies</a>
+                  <a href="https://www.mystudentclub.com/blog/" class="dropdown-item">Career Guides</a>
+                  <a href="https://www.mystudentclub.com/sessions/" class="dropdown-item">Events &amp; Live Sessions</a>
                 </div>
             </div>
         </div>

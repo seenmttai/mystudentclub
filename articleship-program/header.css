@@ -20,6 +20,8 @@
   --af-chip: #eef2f9;
   --af-brand: #2563eb;
   --af-header-h: 64px;
+  /* Status-bar height: native env() or the Flutter-injected var, max() (never a sum) so they can't stack */
+  --msc-sai-top: max(env(safe-area-inset-top, 0px), var(--safe-area-inset-top, 0px));
 }
 
 body.program-page {
@@ -190,12 +192,13 @@ body:has(.expanded-menu.active) .expanded-menu-backdrop {
 
 .expanded-menu {
   position: fixed;
-  top: 0;
+  /* drawer starts BELOW the status bar; header row inside needs only a normal gap */
+  top: var(--msc-sai-top, 0px);
   right: 0;
   bottom: 0;
   width: min(320px, 86vw);
-  height: 100vh;
-  height: 100dvh;
+  height: calc(100vh - var(--msc-sai-top, 0px));
+  height: calc(100dvh - var(--msc-sai-top, 0px));
   background: var(--surface-bg, #ffffff);
   box-shadow: -10px 0 40px rgba(15, 23, 42, 0.22);
   z-index: 10000;
@@ -221,7 +224,7 @@ body:has(.expanded-menu.active) .expanded-menu-backdrop {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: max(max(env(safe-area-inset-top, 0px), var(--safe-area-inset-top, 0px)) + 16px, 20px) 20px 16px 20px;
+  padding: 14px 20px 12px 20px;
   border-bottom: 1px solid var(--line, var(--af-border, #f1f5f9));
   background: var(--surface-bg, #ffffff);
   position: sticky;
