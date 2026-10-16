@@ -6,13 +6,16 @@
 const supabaseUrl = 'https://auth.mystudentclub.com';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 // Configure Supabase client to avoid storage warnings (no auth session needed for anonymous inserts)
-const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey, {
-    auth: {
-        persistSession: false,
-        autoRefreshToken: false,
-        detectSessionInUrl: false
-    }
-});
+const supabaseFactory = window.supabase || (typeof supabase !== 'undefined' ? supabase : null);
+const supabaseClient = window.supabaseClient || (supabaseFactory?.createClient
+    ? supabaseFactory.createClient(supabaseUrl, supabaseKey, {
+        auth: {
+            persistSession: false,
+            autoRefreshToken: false,
+            detectSessionInUrl: false
+        }
+    })
+    : null);
 
 class ResourceFormCollector {
     constructor(programType) {
@@ -32,10 +35,15 @@ class ResourceFormCollector {
      * Detect program type from page URL or title
      */
     static detectProgramType() {
+        const declaredStage = document.body?.dataset?.resourceStage;
+        if (['industrial-training', 'ca-fresher', 'articleship', 'semi-qualified'].includes(declaredStage)) {
+            return declaredStage;
+        }
         const path = window.location.pathname.toLowerCase();
-        const title = document.title.toLowerCase();
 
-        if (path.includes('ca-fresher') || path.includes('fresher-training-resources') ||
+        if (path.includes('semi-qualified')) {
+            return 'semi-qualified';
+        } else if (path.includes('ca-fresher') || path.includes('fresher-training-resources') ||
             (path.includes('fresher') && !path.includes('semi'))) {
             return 'ca-fresher';
         } else if (path.includes('industrial-training') || path.includes('industrial-training-resources')) {
@@ -52,13 +60,56 @@ class ResourceFormCollector {
      * @param {string} url - Resource URL or Identifier
      * @param {Function} successCallback - Function to run on successful access/submission
      */
-    checkAndAccess(title, url, successCallback) {
+    async checkAndAccess(title, url, successCallback) {
         if (this.isGlobalSubmitted || this.formSubmitted.has(url)) {
-            successCallback();
-        } else {
-            this.pendingCallback = successCallback;
-            this.showForm(title, url, null);
+            await successCallback();
+            const ensure = window.MSCCareerProfile?.ensureForResource;
+            if (typeof ensure === 'function') {
+                Promise.resolve().then(() => ensure(this.programType, title, url)).catch(error => {
+                    console.warn('Optional career details could not be collected:', error.message);
+                });
+            }
+            return true;
         }
+
+        if (window.MSCProgramAccess) {
+            try {
+                const access = await window.MSCProgramAccess.getAccess();
+                if (access?.hasAccess || (access?.courses && access.courses.length > 0)) {
+                    this.formSubmitted.add(url);
+                    await successCallback();
+                    return true;
+                }
+            } catch (_) { /* continue */ }
+        }
+
+        if (window.MSCCareerProfile?.ensureForResource) {
+            try {
+                const ok = await window.MSCCareerProfile.ensureForResource(this.programType, title, url);
+                if (ok) {
+                    await successCallback();
+                    return true;
+                }
+            } catch (error) {
+                this.showError(error.message || 'Unable to access this resource. Please try again.');
+            }
+            return false;
+        }
+
+        this.pendingCallback = successCallback;
+        this.showForm(title, url, null);
+        return false;
+    }
+
+    showError(message) {
+        let notice = document.getElementById('resource-access-error');
+        if (!notice) {
+            notice = document.createElement('p');
+            notice.id = 'resource-access-error';
+            notice.setAttribute('role', 'alert');
+            document.body.appendChild(notice);
+        }
+        notice.textContent = message;
     }
 
     /**
@@ -651,7 +702,9 @@ class ResourceFormCollector {
             // and bypassing our own interception.
             const link = document.createElement('a');
             link.href = url;
-            link.download = url.split('/').pop();
+            let filename = new URL(url, window.location.origin).pathname.split('/').pop() || 'Resource';
+            try { filename = decodeURIComponent(filename); } catch (_) { /* keep the original name */ }
+            link.download = filename;
             link.dataset.noIntercept = 'true';
             link.style.display = 'none';
             document.body.appendChild(link);
@@ -665,8 +718,8 @@ class ResourceFormCollector {
         const isPdf = lowerUrl.endsWith('.pdf') || (lowerUrl.includes('.pdf') && !lowerUrl.includes('drive.google.com'));
 
         if (isPdf) {
-            // Redirect to dedicated viewer (use relative path for better compatibility)
-            const viewerUrl = `ca-resource/index.html?pdf=${encodeURIComponent(url)}`;
+            // Redirect to dedicated viewer at /ca-resource/
+            const viewerUrl = `/ca-resource/index.html?pdf=${encodeURIComponent(url)}`;
             window.open(viewerUrl, '_blank', 'noopener,noreferrer');
         } else {
             // Open directly
@@ -674,6 +727,8 @@ class ResourceFormCollector {
         }
     }
 }
+
+window.ResourceFormCollector = ResourceFormCollector;
 
 // Auto-initialize when DOM is ready
 if (document.readyState === 'loading') {

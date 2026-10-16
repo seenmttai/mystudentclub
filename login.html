@@ -10,6 +10,7 @@
   <script src="/scripts/supabase.js"></script>
   <script src="/scripts/supabase-init.js"></script>
   <script src="/scripts/profile-state.js"></script>
+  <script src="/scripts/career-profile.js?v=20260927.9"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * {
@@ -991,6 +992,10 @@
                 </button>
               </div>
             </div>
+            <div class="form-group">
+              <input type="tel" id="signup-phone" class="form-input" placeholder="Phone number (optional)"
+                autocomplete="tel" pattern="[+]?[0-9]{10,15}" maxlength="16">
+            </div>
             <div class="form-group" style="margin-top: 1rem; margin-bottom: 1.25rem;">
               <label
                 style="display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.75rem; color: #6b7280; cursor: pointer; user-select: none;">
@@ -1231,13 +1236,23 @@
       // Reuse shared Supabase client
       const supabaseClient = window.supabaseClient || (typeof getSupabaseClient === 'function' ? getSupabaseClient() : null);
 
-      const redirectUrl = new URLSearchParams(window.location.search).get('redirect');
+      const requestedRedirect = new URLSearchParams(window.location.search).get('redirect') || sessionStorage.getItem('msc_career_auth_redirect');
+      const redirectUrl = requestedRedirect ? MSCCareerProfile.safeRedirect(requestedRedirect) : '';
+      async function completeAuthentication(user) {
+        try { return await MSCCareerProfile.finishAuth(user, redirectUrl); }
+        catch (error) {
+          const panel = document.getElementById('authContainer')?.classList.contains('signup-active') ? 'signup-error' : 'login-error';
+          const element = document.getElementById(panel);
+          if (element) { element.textContent = error.message; element.classList.add('show'); }
+          return false;
+        }
+      }
 
       // Check if already logged in
       window.addEventListener('DOMContentLoaded', async () => {
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (session) {
-          window.location.href = redirectUrl || '/';
+          await completeAuthentication(session.user);
         }
 
         // Animated Counter for Stats
@@ -1431,7 +1446,9 @@
               data: {
                 first_name: firstName,
                 last_name: lastName,
-                full_name: `${firstName} ${lastName}`.trim()
+                full_name: `${firstName} ${lastName}`.trim(),
+                msc_auth_redirect: MSCCareerProfile.safeRedirect(redirectUrl || '/'),
+                phone: document.getElementById('signup-phone')?.value.trim() || ''
               }
             }
           });
@@ -1448,6 +1465,7 @@
             showLoginSignupOnboarding();
           } else if (data.session) {
             showLoginSignupOnboarding();
+            await completeAuthentication(data.user);
           }
 
         } catch (error) {

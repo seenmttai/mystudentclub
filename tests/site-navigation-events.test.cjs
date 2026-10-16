@@ -13,7 +13,7 @@ const DESKTOP_RESOURCES_EVENTS = '<a href="/sessions/" class="dv2-dropdown-item"
 // Every tracked page (outside the generated job pages) that carries the shared ☰ menu.
 function menuPages() {
   const out = execFileSync('git', ['ls-files', '*.html'], { cwd: root, encoding: 'utf8' });
-  return out.split('\n').filter((f) => f && !f.startsWith('jobs/') && read(f).includes(MENU_CONTACT));
+  return out.split('\n').filter((f) => f && !f.startsWith('jobs/') && fs.existsSync(path.join(root, f)) && read(f).includes(MENU_CONTACT));
 }
 
 test('every shared menu lists Events right before Contact Us', () => {
@@ -31,7 +31,7 @@ test('the desktop header nav links Resources dropdown between CV Reviewer and Co
   for (const page of pages) {
     const html = read(page);
     assert.equal(html.split(DESKTOP_RESOURCES_EVENTS).length - 1, 1, `${page}: one desktop Resources Events link`);
-    assert.match(html, /CV Reviewer<\/a>\r?\n[ \t]*<div class="dv2-nav-dropdown">\r?\n[ \t]*<a href="#" class="dv2-nav-link dv2-dropdown-trigger"[^>]*>\r?\n[ \t]*Resources <i class="fas fa-chevron-down"[^>]*><\/i>\r?\n[ \t]*<\/a>\r?\n[ \t]*<div class="dv2-dropdown-menu">\r?\n[ \t]*<a href="\/ca-industrial-training-resources\.html" class="dv2-dropdown-item">Industrial Training Resources<\/a>\r?\n[ \t]*<a href="\/ca-fresher-training-resources\.html" class="dv2-dropdown-item">CA Fresher Resources<\/a>\r?\n[ \t]*<a href="\/sessions\/" class="dv2-dropdown-item">Events<\/a>\r?\n[ \t]*<a href="\/blog\/" class="dv2-dropdown-item">Career Guides<\/a>\r?\n[ \t]*<\/div>\r?\n[ \t]*<\/div>\r?\n[ \t]*<a href="\/contact\.html" class="dv2-nav-link">Contact<\/a>/, page);
+    assert.match(html, /CV Reviewer<\/a>\r?\n[ \t]*<div class="dv2-nav-dropdown">\r?\n[ \t]*<a href="#" class="dv2-nav-link dv2-dropdown-trigger"[^>]*>\r?\n[ \t]*Resources <i class="fas fa-chevron-down"[^>]*><\/i>\r?\n[ \t]*<\/a>\r?\n[ \t]*<div class="dv2-dropdown-menu">\r?\n[ \t]*<a href="\/ca-industrial-training-resources\.html" class="dv2-dropdown-item">Industrial Training Resources<\/a>\r?\n[ \t]*<a href="\/articleship-resources\.html" class="dv2-dropdown-item">Articleship Resources<\/a>\r?\n[ \t]*<a href="\/ca-fresher-training-resources\.html" class="dv2-dropdown-item">CA Fresher Resources<\/a>\r?\n[ \t]*<a href="\/semi-qualified-ca-resources\.html" class="dv2-dropdown-item">Semi-Qualified CA Resources<\/a>\r?\n[ \t]*<a href="\/sessions\/" class="dv2-dropdown-item">Events<\/a>\r?\n[ \t]*<a href="\/blog\/" class="dv2-dropdown-item">Career Guides<\/a>\r?\n[ \t]*<\/div>\r?\n[ \t]*<\/div>\r?\n[ \t]*<a href="\/contact\.html" class="dv2-nav-link">Contact<\/a>/, page);
   }
 });
 
