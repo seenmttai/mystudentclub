@@ -62,6 +62,7 @@ const app = {
     lastFocus: null,
     consent: null,
     refocusChip: null,
+    focusNewCards: false,
     passthrough: {}
 };
 
@@ -189,7 +190,6 @@ function syncSavedButtons(job) {
         button.classList.toggle('is-on', saved);
         const label = button.querySelector('.pp-save-label');
         if (label) label.textContent = saved ? 'Saved' : 'Save';
-        button.setAttribute('aria-label', `${saved ? 'Remove' : 'Save'} ${job.Company || 'listing'} ${saved ? 'from saved' : 'for later'}`);
     });
 }
 
@@ -297,6 +297,16 @@ async function freshProfile() {
 
 // Same checklist as the CA portal minus "job preference", whose options are all
 // CA lanes; requiring it would push CS/CMA students into CA redirects.
+// Marks a button busy without the disabled property, so keyboard focus stays
+// on it (and inside the detail sheet) while the request runs.
+function setBusy(button, busy, html) {
+    button.setAttribute('aria-disabled', String(busy));
+    button.classList.toggle('is-busy', busy);
+    if (html !== undefined) button.innerHTML = html;
+}
+
+const isBusy = button => button.getAttribute('aria-disabled') === 'true';
+
 function profileCompletion(profile) {
     const items = getProfileCompletionItems(profile, localStorage).filter(item => item.label !== 'Add job preference');
     const total = items.reduce((sum, item) => sum + item.boost, 0);
@@ -316,9 +326,9 @@ async function easyApply(job, button) {
         toast('Tick the consent box to share your profile with this recruiter.', 'error');
         return;
     }
+    if (isBusy(button)) return;
     const original = button.innerHTML;
-    button.disabled = true;
-    button.innerHTML = '<span class="pp-spinner" aria-hidden="true"></span> Checking your profile…';
+    setBusy(button, true, '<span class="pp-spinner" aria-hidden="true"></span> Checking your profile…');
     try {
         const percent = profileCompletion(await freshProfile());
         if (percent < 100) {
@@ -327,8 +337,11 @@ async function easyApply(job, button) {
                 status.classList.add('is-warn');
             }
             toast(`Complete your profile (${percent}%) to use Easy Apply.`, 'error');
-            button.disabled = false;
-            button.innerHTML = original;
+            setBusy(button, false, original);
+            if (status) {
+                status.setAttribute('tabindex', '-1');
+                status.focus();
+            }
             return;
         }
         if (app.consent !== true) await recordConsent();
@@ -338,10 +351,7 @@ async function easyApply(job, button) {
         if (app.activeKey === jobKey(job.__table, job.id)) renderDetail(job);
     } catch (error) {
         console.error('[pro-portal] easy apply failed', error);
-        if (button.isConnected) {
-            button.disabled = false;
-            button.innerHTML = original;
-        }
+        if (button.isConnected) setBusy(button, false, original);
         toast(error?.message || 'Could not send your application. Please try again.', 'error');
     }
 }
@@ -575,6 +585,7 @@ function paintLaneCounts(counts) {
             el.hidden = typeof count !== 'number';
         });
     }
+    revealCurrentLane();
 }
 
 // ---------------------------------------------------------------- rendering: header
@@ -599,14 +610,17 @@ function bindMenu() {
     const toggle = $('#ppMenuToggle');
     const menu = $('#ppMenu');
     if (!toggle || !menu) return;
+    // The menu scrolls inside the viewport; the page behind it stays put.
     const close = () => {
         menu.hidden = true;
         toggle.setAttribute('aria-expanded', 'false');
+        document.documentElement.classList.remove('pp-menu-open');
     };
     toggle.addEventListener('click', () => {
         const open = menu.hidden;
         menu.hidden = !open;
         toggle.setAttribute('aria-expanded', String(open));
+        document.documentElement.classList.toggle('pp-menu-open', open);
         if (open) menu.querySelector('a')?.focus();
     });
     document.addEventListener('keydown', event => {
@@ -670,7 +684,7 @@ function cardHtml(job) {
             </div>
             <div class="pp-card-side">
                 ${pay ? `<span class="pp-card-pay">${escapeHtml(pay)}</span>` : `<span class="pp-card-pay is-muted">${lane.pay === 'stipend' ? 'Stipend not stated' : 'Salary not stated'}</span>`}
-                <button type="button" class="pp-icon-btn${saved ? ' is-on' : ''}" data-save="${key}" aria-pressed="${saved}" aria-label="${saved ? 'Remove' : 'Save'} ${escapeHtml(job.Company || 'listing')} ${saved ? 'from saved' : 'for later'}">${icon('bookmark')}</button>
+                <button type="button" class="pp-icon-btn${saved ? ' is-on' : ''}" data-save="${key}" aria-pressed="${saved}" aria-label="Save ${escapeHtml(job.Company || 'listing')}">${icon('bookmark')}</button>
             </div>
         </article>`;
 }
@@ -701,7 +715,7 @@ function renderListStatus() {
     }
     if (more) {
         more.hidden = !(app.hasMore || (app.loading && app.page > 0));
-        more.disabled = app.loading;
+        setBusy(more, app.loading);
         more.textContent = app.loading && app.page > 0 ? 'Loading…' : 'Show more listings';
     }
 }
@@ -731,7 +745,12 @@ function renderJobs({ reset, added }) {
         bindEmptyState(list);
     } else {
         list.insertAdjacentHTML('beforeend', added.map(cardHtml).join(''));
+        if (!reset && app.focusNewCards) {
+            const first = added[0] && $(`[data-card="${CSS.escape(jobKey(added[0].__table, added[0].id))}"] [data-open]`);
+            if (first) first.focus();
+        }
     }
+    app.focusNewCards = false;
     renderSummary();
     renderListStatus();
     renderActiveChips();
@@ -955,7 +974,9 @@ function bindListControls() {
         commitFilters();
     });
     $('#ppMore')?.addEventListener('click', () => {
-        if (!app.loading && app.hasMore) fetchPage({ reset: false });
+        if (app.loading || !app.hasMore) return;
+        app.focusNewCards = true;
+        fetchPage({ reset: false });
     });
     const sentinel = $('#ppSentinel');
     if (sentinel && 'IntersectionObserver' in window) {
@@ -989,14 +1010,24 @@ function bindFilterDrawer() {
     if (!drawer || !openBtn) return;
     const closeBtns = $$('[data-close-drawer]', drawer);
     const mq = window.matchMedia('(max-width: 1199px)');
+    const panel = drawer.querySelector('.pp-drawer-panel');
+    const syncDialog = () => {
+        if (!panel) return;
+        if (mq.matches) {
+            panel.setAttribute('role', 'dialog');
+            panel.setAttribute('aria-modal', 'true');
+            panel.setAttribute('aria-labelledby', 'ppDrawerTitle');
+        } else {
+            panel.removeAttribute('role');
+            panel.removeAttribute('aria-modal');
+            panel.removeAttribute('aria-labelledby');
+        }
+    };
     const setOpen = open => {
         drawer.classList.toggle('is-open', open);
         document.documentElement.classList.toggle('pp-lock', open && mq.matches);
         openBtn.setAttribute('aria-expanded', String(open));
-        if (mq.matches) {
-            drawer.setAttribute('role', 'dialog');
-            drawer.setAttribute('aria-modal', 'true');
-        }
+        syncDialog();
         if (open) {
             drawer.querySelector('[data-close-drawer]')?.focus();
         } else {
@@ -1005,19 +1036,20 @@ function bindFilterDrawer() {
     };
     openBtn.addEventListener('click', () => setOpen(true));
     closeBtns.forEach(btn => btn.addEventListener('click', () => setOpen(false)));
-    drawer.addEventListener('keydown', event => {
+    document.addEventListener('keydown', event => {
+        if (!drawer.classList.contains('is-open') || !mq.matches) return;
         if (event.key === 'Escape') setOpen(false);
-        if (event.key === 'Tab' && mq.matches) trapFocus(event, drawer.querySelector('.pp-drawer-panel'));
+        if (event.key === 'Tab') trapFocus(event, panel);
     });
     drawer.addEventListener('click', event => {
         if (event.target === drawer) setOpen(false);
     });
     mq.addEventListener?.('change', () => {
+        syncDialog();
         if (!mq.matches) {
             drawer.classList.remove('is-open');
-            drawer.removeAttribute('role');
-            drawer.removeAttribute('aria-modal');
-            document.documentElement.classList.remove('pp-lock');
+            openBtn.setAttribute('aria-expanded', 'false');
+            if (!(isSheet() && app.activeKey)) document.documentElement.classList.remove('pp-lock');
         }
     });
 }
@@ -1029,10 +1061,14 @@ function trapFocus(event, container) {
     if (!focusable.length) return;
     const first = focusable[0];
     const last = focusable[focusable.length - 1];
-    if (event.shiftKey && document.activeElement === first) {
+    const active = document.activeElement;
+    if (!container.contains(active) || active === container) {
+        event.preventDefault();
+        (event.shiftKey ? last : first).focus();
+    } else if (event.shiftKey && active === first) {
         event.preventDefault();
         last.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
+    } else if (!event.shiftKey && active === last) {
         event.preventDefault();
         first.focus();
     }
@@ -1041,6 +1077,22 @@ function trapFocus(event, container) {
 // ---------------------------------------------------------------- detail panel
 
 const isSheet = () => window.matchMedia('(max-width: 899px)').matches;
+
+// The detail panel is a modal sheet below 900px and a side panel above it.
+function syncSheetMode() {
+    const panel = $('#ppDetail');
+    if (!panel) return;
+    const modal = isSheet() && Boolean(app.activeKey);
+    if (modal) {
+        panel.setAttribute('role', 'dialog');
+        panel.setAttribute('aria-modal', 'true');
+        document.documentElement.classList.add('pp-lock');
+        return;
+    }
+    panel.removeAttribute('role');
+    panel.removeAttribute('aria-modal');
+    if (!$('#ppDrawer')?.classList.contains('is-open')) document.documentElement.classList.remove('pp-lock');
+}
 
 async function openJob(key, { push = false, trigger = null } = {}) {
     const panel = $('#ppDetail');
@@ -1052,11 +1104,7 @@ async function openJob(key, { push = false, trigger = null } = {}) {
     $(`[data-card="${CSS.escape(key)}"]`)?.classList.add('is-active');
     panel.classList.add('is-open');
     panel.innerHTML = `<div class="pp-detail-inner"><div class="pp-detail-loading">${renderSkeleton(1)}</div></div>`;
-    if (isSheet()) {
-        panel.setAttribute('role', 'dialog');
-        panel.setAttribute('aria-modal', 'true');
-        document.documentElement.classList.add('pp-lock');
-    }
+    syncSheetMode();
     // `pushed` marks entries this page added, so Close can safely go back.
     // Switching listings replaces that entry, so Close always means close.
     if (push && previousKey !== key) {
@@ -1088,15 +1136,24 @@ async function openJob(key, { push = false, trigger = null } = {}) {
 function closeJob({ pop = false } = {}) {
     const panel = $('#ppDetail');
     if (!panel || !app.activeKey) return;
+    const key = app.activeKey;
     app.activeKey = null;
     panel.classList.remove('is-open');
-    panel.removeAttribute('role');
-    panel.removeAttribute('aria-modal');
-    document.documentElement.classList.remove('pp-lock');
+    syncSheetMode();
     panel.innerHTML = detailPlaceholderHtml();
     $$('.pp-card.is-active').forEach(card => card.classList.remove('is-active'));
     if (!pop) history.replaceState({ job: null }, '', currentUrl({ job: null }));
-    if (app.lastFocus && document.contains(app.lastFocus)) app.lastFocus.focus();
+    // The list may have re-rendered (filters changed on Back); fall back to
+    // the same listing's new card. On Back, wait a tick: returning to a
+    // #fragment entry (the skip link) resets focus after popstate.
+    const restore = () => {
+        const target = app.lastFocus && document.contains(app.lastFocus)
+            ? app.lastFocus
+            : $(`[data-card="${CSS.escape(key)}"] [data-open]`);
+        target?.focus();
+    };
+    if (pop) setTimeout(restore, 0);
+    else restore();
 }
 
 // Leaving a listing opened from the list goes back one entry; a listing that
@@ -1234,7 +1291,7 @@ function ctaHtml(job, state) {
             : `<button type="button" class="pp-btn pp-btn-done" disabled>No application details</button>`;
     }
     return `<div class="pp-detail-cta">
-            <button type="button" class="pp-icon-btn pp-cta-save${saved ? ' is-on' : ''}" data-save="${key}" aria-pressed="${saved}" aria-label="${saved ? 'Remove' : 'Save'} ${escapeHtml(job.Company || 'listing')} ${saved ? 'from saved' : 'for later'}">${icon('bookmark')}</button>
+            <button type="button" class="pp-icon-btn pp-cta-save${saved ? ' is-on' : ''}" data-save="${key}" aria-pressed="${saved}" aria-label="Save ${escapeHtml(job.Company || 'listing')}">${icon('bookmark')}</button>
             ${primary}
         </div>`;
 }
@@ -1298,10 +1355,10 @@ function renderDetail(job, unlocked = null) {
                 ${descriptionHtml(description, { masked: !unlocked && !(isRecruiterPosted(job) && app.session) })}
                 ${!unlocked && !(isRecruiterPosted(job) && app.session) ? '<p class="pp-hint">Contact details appear after you log in and choose to apply.</p>' : ''}
             </section>
-            <aside class="pp-safety">
+            <div class="pp-safety" role="note">
                 ${icon('shield')}
                 <p><strong>Never pay for a training seat or job.</strong> My Student Club does not charge students to apply. If anyone asks for a fee or deposit, <a href="/contact.html">report this listing</a>.</p>
-            </aside>
+            </div>
             ${ctaHtml(job, state)}
         </div>`;
     bindDetail(panel, job);
@@ -1336,9 +1393,9 @@ async function applyToJob(job, button) {
         window.location.href = loginUrl();
         return;
     }
+    if (isBusy(button)) return;
     const original = button.innerHTML;
-    button.disabled = true;
-    button.innerHTML = '<span class="pp-spinner" aria-hidden="true"></span> Getting details…';
+    setBusy(button, true, '<span class="pp-spinner" aria-hidden="true"></span> Getting details…');
     try {
         const key = jobKey(job.__table, job.id);
         const unlocked = await unlockJobDetails(job, job.__table, app.session, { endpoint: BROWSER_GUARD_WORKER_URL });
@@ -1355,10 +1412,7 @@ async function applyToJob(job, button) {
         if (target.type === 'email') toast('Email draft ready. Attach your CV before sending.', 'success');
     } catch (error) {
         console.error('[pro-portal] unlock failed', error);
-        if (button.isConnected) {
-            button.disabled = false;
-            button.innerHTML = original;
-        }
+        if (button.isConnected) setBusy(button, false, original);
         toast(error?.status === 401 ? 'Your session expired. Please log in again.' : (error?.message || 'Could not load application details. Please try again.'), 'error');
     }
 }
@@ -1387,10 +1441,15 @@ async function shareJob(job) {
 function bindDetailKeys() {
     const panel = $('#ppDetail');
     if (!panel) return;
-    panel.addEventListener('keydown', event => {
-        if (event.key === 'Escape' && app.activeKey) dismissJob();
-        if (event.key === 'Tab' && isSheet() && app.activeKey) trapFocus(event, panel);
+    // On document, so Esc and the focus trap still work after a click on
+    // plain text or a busy button. On desktop, Esc closes only from the panel.
+    document.addEventListener('keydown', event => {
+        if (!app.activeKey || $('#ppDrawer')?.classList.contains('is-open')) return;
+        const sheet = isSheet();
+        if (event.key === 'Escape' && (sheet || panel.contains(document.activeElement))) dismissJob();
+        if (event.key === 'Tab' && sheet) trapFocus(event, panel);
     });
+    window.matchMedia('(max-width: 899px)').addEventListener?.('change', syncSheetMode);
     window.addEventListener('popstate', () => {
         const params = new URLSearchParams(window.location.search);
         const key = params.get('job');
@@ -1413,6 +1472,16 @@ function filterOptions() {
         categoryKeys: app.course.categories.map(category => category.key),
         payOptions: PAY_OPTIONS[app.lane?.pay] || []
     };
+}
+
+// The lane strip scrolls sideways on small screens; start with the current
+// lane in view instead of off to the right.
+function revealCurrentLane() {
+    const strip = $('.pp-lanes');
+    const current = strip?.querySelector('[aria-current]');
+    if (!strip || !current || strip.scrollWidth <= strip.clientWidth) return;
+    const offset = current.getBoundingClientRect().left - strip.getBoundingClientRect().left;
+    strip.scrollLeft += offset - (strip.clientWidth - current.offsetWidth) / 2;
 }
 
 async function initLane() {
@@ -1484,6 +1553,8 @@ async function init() {
     app.lane = laneByKey(app.course, body.dataset.lane);
     app.client = window.supabaseClient || (typeof window.getSupabaseClient === 'function' ? window.getSupabaseClient() : null);
     bindMenu();
+    revealCurrentLane();
+    document.fonts?.ready.then(revealCurrentLane);
     // Rule callouts start collapsed so phones see listings first.
     if (window.matchMedia('(min-width: 900px)').matches) $$('[data-callout]').forEach(details => { details.open = true; });
     if (!app.client) {

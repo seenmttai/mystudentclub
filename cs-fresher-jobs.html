@@ -27,7 +27,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://auth.mystudentclub.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&amp;display=swap">
-  <link rel="stylesheet" href="/scripts/pro-portal/portal.css?v=5d21bec7ae">
+  <link rel="stylesheet" href="/scripts/pro-portal/portal.css?v=097a53e55a">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.mystudentclub.com/"},{"@type":"ListItem","position":2,"name":"CS jobs","item":"https://www.mystudentclub.com/cs-jobs"},{"@type":"ListItem","position":3,"name":"CS freshers","item":"https://www.mystudentclub.com/cs-fresher-jobs"}]}</script>
 </head>
 <body class="pp" data-course="cs" data-lane="fresher" style="--pp-course: #0f766e; --pp-course-soft: #effcf9;">
@@ -107,9 +107,9 @@
   
   <div class="pp-layout pp-wrap">
     <div id="ppDrawer" class="pp-drawer">
-      <div class="pp-drawer-panel">
+      <div class="pp-drawer-panel" tabindex="-1">
         <div class="pp-drawer-head">
-          <h2>Filters</h2>
+          <h2 id="ppDrawerTitle">Filters</h2>
           <button type="button" class="pp-icon-btn" data-close-drawer aria-label="Close filters"><svg class="pp-icon " aria-hidden="true" focusable="false"><use href="#i-x"></use></svg></button>
         </div>
         <form id="ppFilters" aria-label="Filter listings"></form>
@@ -138,7 +138,7 @@
       <button type="button" id="ppMore" class="pp-btn pp-btn-ghost pp-more" hidden>Show more listings</button>
       <p id="ppLive" class="pp-sr" aria-live="polite"></p>
     </section>
-    <aside id="ppDetail" class="pp-detail" aria-label="Listing details" tabindex="-1"></aside>
+    <section id="ppDetail" class="pp-detail" aria-label="Listing details" tabindex="-1"></section>
   </div>
   <section class="pp-seo pp-wrap" aria-labelledby="ppAboutTitle">
     <div class="pp-seo-grid">
@@ -175,7 +175,7 @@
 <script defer src="/scripts/supabase.js"></script>
 <script defer src="/scripts/supabase-init.js"></script>
 <script defer src="/scripts/profile-state.js"></script>
-<script type="module" src="/scripts/pro-portal/portal.js?v=5d21bec7ae"></script>
+<script type="module" src="/scripts/pro-portal/portal.js?v=097a53e55a"></script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-1450NCVE65"></script>
 <script>
   window.dataLayer = window.dataLayer || [];

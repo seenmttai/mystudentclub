@@ -42,7 +42,9 @@ html {
 }
 
 html.pp-lock,
-html.pp-lock body {
+html.pp-lock body,
+html.pp-menu-open,
+html.pp-menu-open body {
   overflow: hidden;
 }
 
@@ -75,7 +77,7 @@ body.pp {
 }
 
 .pp :focus-visible {
-  outline: 3px solid #93c5fd;
+  outline: 3px solid var(--pp-brand);
   outline-offset: 2px;
   border-radius: 6px;
 }
@@ -196,7 +198,8 @@ body.pp {
   width: 100%;
 }
 
-.pp-btn[disabled] {
+.pp-btn[disabled],
+.pp-btn[aria-disabled="true"] {
   opacity: 0.7;
   cursor: progress;
 }
@@ -317,6 +320,10 @@ body.pp {
 }
 
 .pp-menu {
+  max-height: calc(100vh - var(--pp-header-h));
+  max-height: calc(100dvh - var(--pp-header-h));
+  overflow-y: auto;
+  overscroll-behavior: contain;
   border-top: 1px solid var(--pp-line);
   background: var(--pp-surface);
   box-shadow: var(--pp-shadow-lg);
@@ -563,12 +570,18 @@ body.pp {
   margin-bottom: 4px;
   overflow-x: auto;
   scroll-snap-type: x proximity;
-  scrollbar-width: none;
-  padding-bottom: 2px;
+  scroll-padding-inline: 16px;
+  scrollbar-width: thin;
+  padding-bottom: 6px;
 }
 
 .pp-lanes::-webkit-scrollbar {
-  display: none;
+  height: 4px;
+}
+
+.pp-lanes::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: var(--pp-line);
 }
 
 .pp-lanes a {
@@ -616,8 +629,8 @@ body.pp {
 }
 
 .pp-lanes a[aria-current] .pp-count {
-  background: rgba(255, 255, 255, 0.22);
-  color: #fff;
+  background: #fff;
+  color: var(--pp-course);
 }
 
 /* ------------------------------------------------------------ layout */
@@ -863,7 +876,7 @@ body.pp {
 }
 
 .pp-segment input:focus-visible + span {
-  outline: 3px solid #93c5fd;
+  outline: 3px solid var(--pp-brand);
 }
 
 /* ------------------------------------------------------------ cards */
@@ -943,7 +956,7 @@ body.pp {
 }
 
 .pp-card-title a:focus-visible::after {
-  outline: 3px solid #93c5fd;
+  outline: 3px solid var(--pp-brand);
   outline-offset: 2px;
 }
 
@@ -2006,4 +2019,13 @@ body.pp {
 
 .pp-eligibility-quals {
   margin-top: 10px !important;
+}
+
+/* iOS Safari zooms into form controls under 16px; keep them at 16px on
+   phones and tablets. */
+@media (max-width: 899px) {
+  .pp-search input,
+  .pp-sort select {
+    font-size: 16px;
+  }
 }

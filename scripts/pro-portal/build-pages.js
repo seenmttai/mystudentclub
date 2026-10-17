@@ -271,9 +271,9 @@ ${courseBar(course, lane)}
   ${callout(lane)}
   <div class="pp-layout pp-wrap">
     <div id="ppDrawer" class="pp-drawer">
-      <div class="pp-drawer-panel">
+      <div class="pp-drawer-panel" tabindex="-1">
         <div class="pp-drawer-head">
-          <h2>Filters</h2>
+          <h2 id="ppDrawerTitle">Filters</h2>
           <button type="button" class="pp-icon-btn" data-close-drawer aria-label="Close filters">${icon('x')}</button>
         </div>
         <form id="ppFilters" aria-label="Filter listings"></form>
@@ -302,7 +302,7 @@ ${courseBar(course, lane)}
       <button type="button" id="ppMore" class="pp-btn pp-btn-ghost pp-more" hidden>Show more listings</button>
       <p id="ppLive" class="pp-sr" aria-live="polite"></p>
     </section>
-    <aside id="ppDetail" class="pp-detail" aria-label="Listing details" tabindex="-1"></aside>
+    <section id="ppDetail" class="pp-detail" aria-label="Listing details" tabindex="-1"></section>
   </div>
   <section class="pp-seo pp-wrap" aria-labelledby="ppAboutTitle">
     <div class="pp-seo-grid">
