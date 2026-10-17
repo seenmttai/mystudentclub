@@ -946,6 +946,13 @@ body {
   font-weight: 600;
 }
 
+/* On its own line, so the note keeps its height when the web font swaps in
+   (otherwise the list below jumps). */
+.lane-note .lane-note-rule {
+  display: block;
+  width: max-content;
+}
+
 .lane-note-icon {
   margin-top: 0.2rem;
   color: #b45309;

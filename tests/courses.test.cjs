@@ -255,3 +255,52 @@ test('lane scope filters CS/CMA lanes on the server and leaves CA alone before t
   applyLaneScope(r.q, laneById('cma-industrial'), { mode: 'tagged', now });
   assert.deepEqual(r.calls, [['contains', 'eligible_courses', ['CMA']], ['or', 'is_exclusive.is.null,is_exclusive.eq.false,posted_by.not.is.null']]);
 });
+
+test('narrow exclusions drop the CA-only listings found in review and keep genuine ones', async () => {
+  const { courseMatches } = await load('match.js');
+  const { QUALIFICATIONS } = await load('courses.js');
+  const cs = QUALIFICATIONS.cs.match;
+  const cma = QUALIFICATIONS.cma.match;
+  // Live false positives (review, 2026-10-17).
+  for (const text of [
+    'Qualification: CA (CA Inter / CMA candidates not considered as fully qualified roles; CA preferred)',
+    'Experience in CMA / working capital analysis. CA / Chartered Accountant qualification is required',
+    'NDM Advisors, a firm comprising Chartered Accountants, Company Secretaries, and Cost Accountants. This opportunity is exclusively for candidates seeking mandatory CA training.',
+    'Work on CMA & MCA Compliances. Eligibility: CA Inter cleared',
+    'Preparation of Bank CMA and project reports. Hiring CA articles.',
+    'Our team has 2 CMA Partners. Opening: CA Articles'
+  ]) assert.ok(!courseMatches(text, cma), `CMA: ${text}`);
+  assert.ok(!courseMatches('Chartered Accountant (CA) and Company Secretary (CS) qualification mandatory for this role', cs));
+  // Genuine listings the broader patterns would have dropped.
+  for (const text of ['CS / CMA Articleship: Candidates eligible', 'Hiring CMA Trainees for costing', 'CA Inter or CMA Inter cleared']) {
+    assert.ok(courseMatches(text, cma), `CMA keeps: ${text}`);
+  }
+  assert.ok(courseMatches('CS / CMA Articleship: Candidates eligible', cs));
+});
+
+test('the quote is cut at word boundaries and keeps the match', async () => {
+  const { matchContext } = await load('match.js');
+  const { QUALIFICATIONS } = await load('courses.js');
+  const text = 'Background in Accounting, Commerce, Finance, or related field. Eligibility: CA / CS Executive passed candidates may apply. Strong written communication skills are needed for this role.';
+  const quote = matchContext(text, QUALIFICATIONS.cs.match.pos, 40);
+  assert.match(quote, /CS Executive/);
+  const inner = quote.replace(/^…/, '').replace(/…$/, '');
+  assert.ok(text.includes(inner), 'quote is a slice of the text');
+  const startIdx = text.indexOf(inner);
+  assert.ok(startIdx === 0 || text[startIdx - 1] === ' ', `starts on a word: ${quote}`);
+  const endIdx = startIdx + inner.length;
+  assert.ok(endIdx === text.length || text[endIdx] === ' ', `ends on a word: ${quote}`);
+});
+
+test('the quote never cuts a bracketed mask token', async () => {
+  const { matchContext } = await load('match.js');
+  const { QUALIFICATIONS } = await load('courses.js');
+  const text = 'Eligibility: CA Dropout, CMA, ACCA, IPCC Both Groups Cleared, Transfer Cases. Send your updated CV to [email hidden] today please.';
+  for (const radius of [60, 70, 75, 80, 85, 90]) {
+    const quote = matchContext(text, QUALIFICATIONS.cma.match.pos, radius);
+    assert.match(quote, /CMA/);
+    const opens = (quote.match(/\[/g) || []).length;
+    const closes = (quote.match(/\]/g) || []).length;
+    assert.equal(opens, closes, `radius ${radius}: ${quote}`);
+  }
+});

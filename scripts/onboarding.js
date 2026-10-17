@@ -97,10 +97,13 @@ export function onboardingPlan({ qualification, stage, values = {}, existingProf
         const columns = { ...data };
         delete columns.profile;
         delete columns.updated_at;
+        // Semi: the years answer picks the Freshers or Experienced filter, as
+        // it does for CS / CMA (more than a year is experienced).
+        const preference = stage === 'semi' && stageFromYears(values.years) === 'experienced' ? 'semi_experienced' : def.preference;
         return {
             qualification,
-            preference: def.preference,
-            lane: laneForPreference(def.preference),
+            preference,
+            lane: laneForPreference(preference),
             lookingFor: def.lookingFor,
             write: { mode: 'update', data },
             lookingForWrite: null,

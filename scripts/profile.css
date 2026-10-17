@@ -2198,6 +2198,12 @@ body.p2-modal-open {
 }
 .wz-type-card:hover { border-color: var(--p2-blue); background: var(--p2-blue-light); box-shadow: 0 2px 12px rgba(69,126,255,0.10); }
 .wz-type-card.wz-selected { border-color: var(--p2-blue); background: var(--p2-blue-light); }
+/* The cards are buttons, so keyboard and screen-reader users can choose. */
+button.wz-type-card { display: block; width: 100%; background: transparent; color: inherit; font: inherit; }
+.wz-type-card:focus-visible { outline: 3px solid var(--p2-blue); outline-offset: 2px; }
+.wz-type-card .wz-type-icon,
+.wz-type-card .wz-type-label,
+.wz-type-card .wz-type-sub { display: block; }
 
 .wz-type-icon { font-size: 2rem; margin-bottom: 8px; }
 .wz-type-label { font-size: 0.95rem; font-weight: 600; color: var(--p2-text); }

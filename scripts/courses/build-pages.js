@@ -142,10 +142,12 @@ function lanesRegion(lane, indent) {
 
 function laneNoteRegion(lane, indent) {
     if (!lane.note) return '';
+    const also = (lane.note.links || []).map(link => `<a href="${esc(link.href)}">${esc(link.label)}</a>`);
+    const alsoText = also.length ? ` See ${also.join(' and ')} instead.` : '';
     return indentLines([
         '<aside class="lane-note" role="note">',
         '    <i class="fas fa-circle-info lane-note-icon" aria-hidden="true"></i>',
-        `    <p><strong>${esc(lane.note.title)}:</strong> ${esc(lane.note.body)} <a href="${esc(lane.note.source)}" target="_blank" rel="noopener">Read the rule</a></p>`,
+        `    <p><strong>${esc(lane.note.title)}:</strong> ${esc(lane.note.body)}${alsoText} <a class="lane-note-rule" href="${esc(lane.note.source)}" target="_blank" rel="noopener">Read the rule</a></p>`,
         '</aside>'
     ], indent);
 }

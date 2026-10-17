@@ -671,10 +671,11 @@ function setQualification(value) {
     }
     const educationLink = document.getElementById('qlEducationLabel');
     if (educationLink) educationLink.textContent = `${QUALIFICATIONS[qualification].code} Education`;
-    const airField = document.getElementById('achievement_air');
-    if (airField) {
-        if (!airField.dataset.caPlaceholder) airField.dataset.caPlaceholder = airField.placeholder;
-        airField.placeholder = COURSE_AIR_PLACEHOLDERS[qualification] || airField.dataset.caPlaceholder;
+    for (const [id, placeholders] of [['achievement_air', COURSE_AIR_PLACEHOLDERS], ['headline', COURSE_HEADLINE_PLACEHOLDERS]]) {
+        const field = document.getElementById(id);
+        if (!field) continue;
+        if (!field.dataset.caPlaceholder) field.dataset.caPlaceholder = field.placeholder;
+        field.placeholder = placeholders[qualification] || field.dataset.caPlaceholder;
     }
     return qualification;
 }
@@ -682,6 +683,11 @@ function setQualification(value) {
 const COURSE_AIR_PLACEHOLDERS = {
     cs: 'e.g., CS Professional AIR 12, rank in CS Executive',
     cma: 'e.g., CMA Final AIR 20, rank in CMA Intermediate'
+};
+
+const COURSE_HEADLINE_PLACEHOLDERS = {
+    cs: 'e.g. CS Executive | Secretarial Compliance | ROC Filings',
+    cma: 'e.g. CMA Inter | Cost Accounting | Internal Audit'
 };
 
 // "Default portal" text for a job_preference value (CA keeps its own map).
@@ -1021,6 +1027,8 @@ const WZ = (() => {
             if (el && el.tagName === 'TEXTAREA') return;
             if (el && el.id === 'wz-custom-chip-input') return;
             e.preventDefault();
+            // Enter on a choice card picks it, then continues.
+            if (el && el.classList?.contains('wz-type-card')) el.click();
             dom.nextBtn.click();
         });
 
@@ -1283,11 +1291,11 @@ const WZ = (() => {
         const cards = QUALIFICATION_ORDER.map(key => {
             const course = QUALIFICATIONS[key];
             const sel = st.qualificationKnown && st.qualification === key ? ' wz-selected' : '';
-            return `<div class="wz-type-card${sel}" data-q="${key}">
-                    <div class="wz-type-icon">${icons[key]}</div>
-                    <div class="wz-type-label">${escHtml(course.student)}</div>
-                    <div class="wz-type-sub">${escHtml(course.name)} · ${escHtml(course.institute)}</div>
-                </div>`;
+            return `<button type="button" class="wz-type-card${sel}" data-q="${key}" aria-pressed="${sel ? 'true' : 'false'}">
+                    <span class="wz-type-icon">${icons[key]}</span>
+                    <span class="wz-type-label">${escHtml(course.student)}</span>
+                    <span class="wz-type-sub">${escHtml(course.name)} · ${escHtml(course.institute)}</span>
+                </button>`;
         }).join('');
         return `<div class="wz-inner">
             <div class="wz-q-icon">🎓</div>
@@ -1329,11 +1337,11 @@ const WZ = (() => {
             <div class="wz-q-icon">🎓</div>
             <h2 class="wz-q-title">Choose Your Career Path</h2>
             <div class="wz-type-grid" id="wz-type-grid">
-                ${cards.map(card => `<div class="wz-type-card" data-type="${card.type}">
-                    <div class="wz-type-icon">${card.icon}</div>
-                    <div class="wz-type-label">${escHtml(card.label)}</div>
-                    <div class="wz-type-sub">${escHtml(subs[card.type])}</div>
-                </div>`).join('')}
+                ${cards.map(card => `<button type="button" class="wz-type-card" data-type="${card.type}" aria-pressed="false">
+                    <span class="wz-type-icon">${card.icon}</span>
+                    <span class="wz-type-label">${escHtml(card.label)}</span>
+                    <span class="wz-type-sub">${escHtml(subs[card.type])}</span>
+                </button>`).join('')}
             </div>
         </div>`;
         }
@@ -1341,22 +1349,22 @@ const WZ = (() => {
             <div class="wz-q-icon">🎓</div>
             <h2 class="wz-q-title">Choose Your Career Path</h2>
             <div class="wz-type-grid" id="wz-type-grid">
-                <div class="wz-type-card" data-type="industrial">
-                    <div class="wz-type-icon">🏭</div>
-                    <div class="wz-type-label">CA Industrial Training</div>
-                </div>
-                <div class="wz-type-card" data-type="articleship">
-                    <div class="wz-type-icon">📜</div>
-                    <div class="wz-type-label">Articleship</div>
-                </div>
-                <div class="wz-type-card" data-type="fresher">
-                    <div class="wz-type-icon">🎓</div>
-                    <div class="wz-type-label">CA Jobs</div>
-                </div>
-                <div class="wz-type-card" data-type="semi">
-                    <div class="wz-type-icon">📊</div>
-                    <div class="wz-type-label">Semi Qualified CA Opportunities</div>
-                </div>
+                <button type="button" class="wz-type-card" data-type="industrial" aria-pressed="false">
+                    <span class="wz-type-icon">🏭</span>
+                    <span class="wz-type-label">CA Industrial Training</span>
+                </button>
+                <button type="button" class="wz-type-card" data-type="articleship" aria-pressed="false">
+                    <span class="wz-type-icon">📜</span>
+                    <span class="wz-type-label">Articleship</span>
+                </button>
+                <button type="button" class="wz-type-card" data-type="fresher" aria-pressed="false">
+                    <span class="wz-type-icon">🎓</span>
+                    <span class="wz-type-label">CA Jobs</span>
+                </button>
+                <button type="button" class="wz-type-card" data-type="semi" aria-pressed="false">
+                    <span class="wz-type-icon">📊</span>
+                    <span class="wz-type-label">Semi Qualified CA Opportunities</span>
+                </button>
             </div>
         </div>`;
     }
@@ -1671,8 +1679,9 @@ const WZ = (() => {
         st._pendingQualification = st.qualificationKnown ? st.qualification : null;
         el.querySelectorAll('.wz-type-card[data-q]').forEach(card => {
             card.addEventListener('click', () => {
-                el.querySelectorAll('.wz-type-card[data-q]').forEach(c => c.classList.remove('wz-selected'));
+                el.querySelectorAll('.wz-type-card[data-q]').forEach(c => { c.classList.remove('wz-selected'); c.setAttribute('aria-pressed', 'false'); });
                 card.classList.add('wz-selected');
+                card.setAttribute('aria-pressed', 'true');
                 st._pendingQualification = card.getAttribute('data-q');
             });
         });
@@ -1681,8 +1690,9 @@ const WZ = (() => {
     function mountType(el) {
         el.querySelectorAll('.wz-type-card').forEach(card => {
             card.addEventListener('click', () => {
-                el.querySelectorAll('.wz-type-card').forEach(c => c.classList.remove('wz-selected'));
+                el.querySelectorAll('.wz-type-card').forEach(c => { c.classList.remove('wz-selected'); c.setAttribute('aria-pressed', 'false'); });
                 card.classList.add('wz-selected');
+                card.setAttribute('aria-pressed', 'true');
                 st._pendingType = card.getAttribute('data-type');
             });
         });

@@ -63,6 +63,10 @@ test('CA onboarding writes the same columns as the old form, plus profile.qualif
     years_of_experience: null
   });
   assert.equal(semi.preference, 'semi_fresher');
+  const experienced = onboardingPlan({ qualification: 'ca', stage: 'semi', values: { years: '4' }, existingProfile: EXISTING, now: NOW });
+  assert.equal(experienced.preference, 'semi_experienced', 'more than a year of experience picks the Experienced filter');
+  assert.equal(experienced.write.data.looking_for, 'Semi Qualified CA', 'CA still writes the same looking_for label');
+  assert.equal(experienced.lane.id, 'ca-semi');
   assert.equal(semi.cachePatch.looking_for, 'Semi Qualified CA');
   assert.equal(semi.cachePatch.qualification, 'ca');
   assert.equal(semi.cachePatch.name, 'Asha');

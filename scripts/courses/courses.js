@@ -9,9 +9,12 @@
 //   pre - cheap token gate (any CS / CMA-like word at all)
 //   pos - the course is named as an accepted qualification
 //   neg - the listing turns the course away, only wants it on top of a
-//         mandatory CA, or means US CMA (IMA) / CGMA
+//         mandatory CA, means US CMA (IMA) / CGMA, or uses "CMA" for a bank's
+//         Credit Monitoring Arrangement
 // Labelled against every CS match and a sample of CMA matches from the last
-// 60 days on 2026-10-17: about 99% precise for both. After cs-cma-portal.sql
+// 60 days on 2026-10-17: about 99% precise for both. Older listings (the
+// 180-day regex window) are noisier; team-composition posts ("a firm of CAs,
+// CSs and Cost Accountants") need eligible_courses to be corrected by hand. After cs-cma-portal.sql
 // runs, lanes filter on the indexed eligible_courses column instead.
 
 export const SITE = 'https://www.mystudentclub.com';
@@ -19,13 +22,13 @@ export const SITE = 'https://www.mystudentclub.com';
 const CS_MATCH = {
     pre: String.raw`(\mcs\M|company\s+secretar|icsi|\macs\M)`,
     pos: String.raw`((\mca|\mcma|\micwai?|\mcwa|\mmba|\mllb|\mcfa|\mcpa|\macca|\mcia|\mm\.?\s?com|\mb\.?\s?com|\mbba|\mbaf|\mgraduates?|\minter|\mipcc|\mfrm)\M\s*\)?\s*(,\s*or\s|,\s*and\s|/|,|&|\||\sor\s|\sand\s|and\s*/\s*or)\s*(semi[\s-]*qualified\s+)?\ma?cs\M(?!\s*(firms?|partners|consultants)\M)|\ma?cs\M(?!\s*(firms?|partners|consultants)\M)\s*(\(\s*[a-z]+\s*\))?\s*(/|,|&|\||\sor\s|\sand\s)\s*(ca|cma|icwai?|cwa|mba|llb|law|cfa|cpa|acca|m\.?\s?com|b\.?\s?com)\M|\ma?cs\M(?!\s*(firms?|partners|consultants)\M)\s*[-–(]?\s*(executive|professional|inter|intermediate|final|foundation|qualified|semi|trainee|student|aspirant|fresher|dropout|drop\s*out|article|pursuing|cleared|appeared|member|candidate|course)|(qualified|pursuing|\minter|fresher|aspiring)\s+(ca\s*/\s*)?\ma?cs\M(?!\s*(firms?|partners|consultants)\M)|(qualified|fresher|practi[sc]ing|aspiring|trainee)\s+(ca\s*/\s*)?company\s+secretar|company\s+secretar(y|ies)\s*[-–(:]*\s*(trainee|fresher|intern|executive|professional|cs\M|qualified|\d)|(accountant|\mca|\mcma|\micwa)\M\s*(\([a-z]+\))?\s*(/|,|\sor\s)\s*(cost\s*(&|and)?\s*(management|works)?\s*accountant\s*(/|,|\sor\s)\s*)?company\s+secretary\M|(hiring|looking\s+for|inviting|applications\s+from|openings?\s+for)[a-z\s-]*company\s+secretar|\micsi\M(?!\s+invoic))`,
-    neg: String.raw`(not\s+eligible[^.\n]*\ma?cs\M|((\mca\M|chartered\s+accountant)[^.\n•]*(mandatory|required|is\s+a\s+must)|must\s+be\s+(an?\s+)?(qualified\s+)?(\mca\M|chartered\s+accountant))[^.\n•]*\ma?cs\M[^.\n•]*(advantage|plus|preferable|good\s+to\s+have|in\s+addition)|\mca\s*\+\s*cs\M|required:?\s*(qualified\s+)?ca\s*(&|and)\s*cs\M)`
+    neg: String.raw`(not\s+eligible[^.\n]*\ma?cs\M|((\mca\M|chartered\s+accountant)[^.\n•]*(mandatory|required|is\s+a\s+must)|must\s+be\s+(an?\s+)?(qualified\s+)?(\mca\M|chartered\s+accountant))[^.\n•]*\ma?cs\M[^.\n•]*(advantage|plus|preferable|good\s+to\s+have|in\s+addition)|\mca\s*\+\s*cs\M|required:?\s*(qualified\s+)?ca\s*(&|and)\s*cs\M|(\mca\M|chartered\s+accountant)\s*(\(ca\))?\s*(&|and|with)\s*(company\s+secretary|\mcs\M)\s*(\(cs\))?\s*(qualification|mandatory))`
 };
 
 const CMA_MATCH = {
     pre: String.raw`(\mcmas?\M|icwa|\mcwa\M|icmai?|cost\s*(and|&)?\s*(management|works)?\s*accountan|\macma\M)`,
     pos: String.raw`((?<!us\s)\mcmas?\M(?!\s*[-–:(]?\s*(data|prep|report|credit|statement|projection|format|study|working|project\s+fin|\(?\s*(us|usa|u\.s|ima)\M))|\micwai?s?\M|\maicwa|\mcwa\M|\micmai?\M|cost\s*(and|&)?\s*(management|works)?\s*accountan|\macma\M)`,
-    neg: String.raw`(not\s+eligible[^.\n]*(\mcma\M|icwa)|\mcma\M[^.\n]*(not\s+eligible|should\s+not\s+apply|need\s+not\s+apply)|\mno\s+cma\M|❌[^.\n]*\mcma\M|((\mca\M|chartered\s+accountant)[^.\n•]*(mandatory|required|is\s+a\s+must)|must\s+be\s+(an?\s+)?(qualified\s+)?(\mca\M|chartered\s+accountant))[^.\n•]*(\mcma\M|icwa)[^.\n•]*(advantage|plus|preferable|good\s+to\s+have|in\s+addition)|\mus\s+cpa\s*/\s*cma\M|certified\s+management\s+accountant|\mcgma\M)`
+    neg: String.raw`(not\s+eligible[^.\n]*(\mcma\M|icwa)|\mcma\M[^.\n]*(not\s+eligible|should\s+not\s+apply|need\s+not\s+apply)|\mno\s+cma\M|❌[^.\n]*\mcma\M|((\mca\M|chartered\s+accountant)[^.\n•]*(mandatory|required|is\s+a\s+must)|must\s+be\s+(an?\s+)?(qualified\s+)?(\mca\M|chartered\s+accountant))[^.\n•]*(\mcma\M|icwa)[^.\n•]*(advantage|plus|preferable|good\s+to\s+have|in\s+addition)|\mus\s+cpa\s*/\s*cma\M|certified\s+management\s+accountant|\mcgma\M|\mcma\M[^.\n;]{0,40}not\s+considered|exclusively\s+for[^.\n]{0,40}\mca\s+(training|articleship)|\mbank\s+cma\M|\mcma\s*(/|&|and)\s*(working|lender|mca\M)|\m\d+\s+cma\s+partners)`
 };
 
 // Firm-training lanes read the CA articleship table, so most posts come from
@@ -196,7 +199,7 @@ export const LANES = [
     {
         id: 'cs-industrial', qualification: 'cs', slot: 'industrial', table: IND, experience: null,
         path: '/cs-training-in-companies', file: 'cs-training-in-companies.html', source: 'index.html',
-        navLabel: 'Company Training', roleLabel: 'CS Management Trainee',
+        navLabel: 'Company Training', roleLabel: 'Trainee',
         emailSubject: 'Application for CS Management Trainee', aiTitle: 'CS Management Trainee',
         shareType: 'cs-industrial', bannerType: 'CS',
         preferences: ['cs_industrial'], lookingFor: 'CS Industrial Training',
@@ -208,9 +211,13 @@ export const LANES = [
         description: 'CS management trainee openings in companies, banks and PSUs for CS Executive and Professional passed students, when companies post them here.',
         keywords: 'CS management trainee, CS training in company, company secretary trainee',
         note: {
-            title: 'Good to know',
-            body: 'A company can train CS students only if it employs a whole-time Company Secretary and meets ICSI\'s size rules.',
-            source: 'https://www.icsi.edu/long-term-training'
+            title: 'Few openings here',
+            body: 'Companies rarely post CS training seats, and a company can train CS students only if it employs a whole-time Company Secretary.',
+            source: 'https://www.icsi.edu/long-term-training',
+            links: [
+                { label: 'CS articleship', href: '/cs-articleship' },
+                { label: 'semi-qualified CS jobs', href: '/semi-qualified-cs-jobs' }
+            ]
         }
     },
     {

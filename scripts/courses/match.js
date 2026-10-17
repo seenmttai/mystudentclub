@@ -110,8 +110,25 @@ export function matchContext(text, pattern, radius = 90) {
     const source = String(text ?? '');
     const match = re && re.exec(source);
     if (!match) return '';
-    const start = Math.max(0, match.index - radius);
-    const end = Math.min(source.length, match.index + match[0].length + radius);
+    let start = Math.max(0, match.index - radius);
+    let end = Math.min(source.length, match.index + match[0].length + radius);
+    // Snap inwards to whole words, never past the match itself.
+    if (start > 0) {
+        const space = source.indexOf(' ', start);
+        if (space !== -1 && space < match.index) start = space + 1;
+    }
+    if (end < source.length) {
+        const space = source.lastIndexOf(' ', end);
+        if (space > match.index + match[0].length) end = space;
+        // Never end inside a bracketed mask token such as "[email hidden]".
+        const open = source.lastIndexOf('[', end);
+        if (open > match.index + match[0].length && source.indexOf(']', open) >= end) end = open;
+    }
+    if (start > 0) {
+        const close = source.indexOf(']', start);
+        const open = source.lastIndexOf('[', start);
+        if (open !== -1 && open < start && close !== -1 && close < match.index) start = close + 1;
+    }
     const snippet = source.slice(start, end).replace(/\s+/g, ' ').trim();
     return `${start > 0 ? '…' : ''}${snippet}${end < source.length ? '…' : ''}`;
 }

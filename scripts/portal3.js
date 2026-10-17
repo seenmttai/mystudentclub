@@ -7,7 +7,7 @@ import {
     preferenceForLookingFor, splitPreference, qualificationOf, preferredLaneOf, laneForShareType,
     applyLaneScope, detectEligibilityMode
 } from './courses/courses.js';
-import { sanitizeTerm, termOrFilter, locationOrFilter, trainerStatus, matchContext } from './courses/match.js';
+import { sanitizeTerm, termOrFilter, locationOrFilter, trainerStatus, matchContext, courseMatches } from './courses/match.js';
 import { openOnboarding, onboardingDismissedThisSession } from './onboarding.js';
 
 // Listing fields come from the database, including posts by self-registered
@@ -649,7 +649,7 @@ function laneContextHtml(job, description) {
         parts.push(`<p class="modal-lane-note"><i class="fas fa-triangle-exclamation" aria-hidden="true"></i><span><strong>${escapeHtml(flag.badge)}.</strong> ${escapeHtml(flag.note)}</span></p>`);
     }
     const qualification = QUALIFICATIONS[currentLane.qualification];
-    const quote = qualification.match ? matchContext(listingSnippetText(description), qualification.match.pos) : '';
+    const quote = qualification.match ? matchContext(maskContactDetails(listingSnippetText(description)), qualification.match.pos) : '';
     if (quote) {
         parts.push(`<p class="modal-lane-eligibility"><i class="fas fa-circle-check" aria-hidden="true"></i><span>Listed for ${escapeHtml(qualification.label)} students because it says: “${escapeHtml(maskContactDetails(quote))}”</span></p>`);
     }
@@ -724,7 +724,12 @@ function shareJob(job, btnElement) {
     const jobType = currentLane.shareType;
     const jobUrl = `${window.location.origin}/job.html?id=${job.id}&type=${jobType}`;
 
-    const shareText = `Check out this job at *${job.Company}* for *${job.Location}*
+    // CS / CMA lanes have no job alerts yet, so their copy does not promise them.
+    const shareText = isCourseLane ? `Check out this job at *${job.Company}* for *${job.Location}*
+URL - ${jobUrl}
+
+Join the WhatsApp group below for more openings
+mystudentclub.com/links` : `Check out this job at *${job.Company}* for *${job.Location}*
 URL - ${jobUrl}
 
 Do turn on notifications to stay updated with all such opportunites and ensure joining the whatsapp group below
@@ -1201,6 +1206,10 @@ function showModal(job) {
             ${descContentHtml}
         </div>
         <div class="modal-footer" style="text-align: center; padding: 1rem; border-top: 1px solid #e5e7eb; margin-top: 5rem;">
+            <p style="color: #92400e; font-size: 0.9rem; margin-bottom: 0.5rem;">
+                <i class="fas fa-shield-halved" aria-hidden="true"></i>
+                Never pay a fee for a training seat or a job. My Student Club does not charge students to apply.
+            </p>
             <p style="color: #6b7280; font-size: 0.9rem;">
                 Found an issue with job posting? 
                 <a href="/contact.html" style="color: #2563eb; text-decoration: none; font-weight: 500;">Report it</a>
@@ -1813,6 +1822,12 @@ async function fetchJobs() {
                         <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; color: #1f2937;">Site Under Maintenance</h3>
                         <p style="color: #6b7280;">We will be back online in 30 minutes.</p>
                     </div>`;
+            } else if (eligibilityMode === 'tagged' && (error.code === '42703' || /eligible_courses/.test(error.message || ''))) {
+                // The cached probe answer is stale (column missing): fall
+                // back to the Description patterns and try once more.
+                try { sessionStorage.removeItem('msc_eligibility_mode_v1'); } catch (_) { /* storage blocked */ }
+                eligibilityMode = 'regex';
+                resetAndFetch();
             } else {
                 dom.jobsContainer.innerHTML = `<p class="no-jobs-found" style="color:red;">Failed to load jobs: ${escapeHtml(error.message)}</p>`;
             }
@@ -2635,19 +2650,31 @@ function isEnrolledSync(tableName) {
     return enrollmentStatusCache.any;
 }
 
+// The gate follows the student, not only the page: a known CA student keeps
+// the CA gate for this table on a CS / CMA lane, so switching course cannot
+// unlock CA-only recruiter posts or programme perks.
+function gateLane() {
+    if (!isCourseLane) return currentLane;
+    return qualificationOf(readCachedProfile(localStorage)) === 'ca' ? equivalentLane(currentLane, 'ca') : currentLane;
+}
+
 // Premium buttons and locked listings follow the lane's gate: CA Industrial
 // needs the Industrial Training programme, every other lane any enrolment
 // (the same split isEnrolledSync makes by table for CA).
-function hasPremiumAccess(lane = currentLane) {
+function hasPremiumAccess(lane = gateLane()) {
     if (!enrollmentStatusCache) return false;
     return lane.gate.premium === 'industrialTraining' ? enrollmentStatusCache.industrialTraining : enrollmentStatusCache.any;
 }
 
-// Recruiter Easy Apply posts are locked only where the lane says so (CA);
-// admin-curated exclusives stay programme-only everywhere.
+// Admin-curated exclusives stay tied to their table's programme on every
+// lane; recruiter Easy Apply posts are locked only where the gate lane says
+// so (CA).
 function isJobLocked(job) {
-    if (hasPremiumAccess()) return false;
-    return isRecruiterPostedJob(job) ? currentLane.gate.recruiterLocked : Boolean(job.is_exclusive);
+    const recruiterPosted = isRecruiterPostedJob(job);
+    if (!recruiterPosted && job.is_exclusive) return !isEnrolledSync(currentTable);
+    const lane = gateLane();
+    if (hasPremiumAccess(lane)) return false;
+    return recruiterPosted ? lane.gate.recruiterLocked : false;
 }
 
 async function getUserEnrollments(userId) {
@@ -3892,7 +3919,11 @@ async function initializePage() {
     }
 
     await fetchFilterOptions();
-    eligibilityMode = await eligibilityModePromise;
+    // CA lanes need the probe only after the migration: they use a cached
+    // answer if there is one and never wait for it.
+    let cachedMode = null;
+    try { cachedMode = sessionStore?.getItem('msc_eligibility_mode_v1'); } catch (_) { /* storage blocked */ }
+    eligibilityMode = isCourseLane ? await eligibilityModePromise : (cachedMode === 'tagged' ? 'tagged' : 'regex');
 
     populateSalaryFilter();
     setupEventListeners();
@@ -3948,6 +3979,12 @@ async function fetchSharedJob(jobId) {
             .maybeSingle();
 
         if (!error && data) {
+            if (isCourseLane && !listedOnCurrentLane(data)) {
+                // Not a CS / CMA listing: show it on the CA lane for this
+                // table, where its own gates apply.
+                window.location.replace(`${equivalentLane(currentLane, 'ca').path}?id=${encodeURIComponent(jobId)}`);
+                return;
+            }
             setTimeout(() => showModal(data), 300);
         }
     } catch (err) {
@@ -3955,16 +3992,27 @@ async function fetchSharedJob(jobId) {
     }
 }
 
+// Would this CS / CMA lane list the row? Same course test and curated-
+// exclusive rule as the list query (applyLaneScope).
+function listedOnCurrentLane(job) {
+    const match = QUALIFICATIONS[currentLane.qualification].match;
+    if (match && !courseMatches(job.Description || '', match)) return false;
+    return !(currentLane.hideCuratedExclusive && job.is_exclusive && !job.posted_by);
+}
+
 document.addEventListener('DOMContentLoaded', initializePage);
 
 // Handle explicit portal nav navigation flag: a student who picks a lane
-// (lane tabs, the CA | CS | CMA switcher, the header Jobs menu, the logo) is
-// never redirected away from it for the rest of the session.
+// (lane tabs, the CA | CS | CMA switcher, a named course item in the header
+// or menu) is never redirected away from it for the rest of the session.
+// The logo and the generic "Jobs" trigger are not a choice: they lead home,
+// and home sends CS / CMA students to their own lane.
 document.addEventListener('DOMContentLoaded', () => {
     const handlePortalClick = (e) => {
         const tabLink = e.target.closest('.portal-nav-bar .footer-tab, .site-footer-nav .footer-tab, .portal-course-switch .course-chip');
         const navLink = tabLink || e.target.closest('.site-header a[href], .expanded-menu a[href]');
         if (!navLink) return;
+        if (!tabLink && navLink.matches('.brand-link, .dv2-dropdown-trigger')) return;
         let toLane = Boolean(tabLink);
         if (!toLane) {
             try {
@@ -4378,7 +4426,11 @@ function redirectToPreferredPortal(preference) {
 // ever redirects them because of their course.
 function laneForCourseStudent(profile, qualification) {
     const preferred = preferredLaneOf(profile);
-    if (preferred && preferred.qualification === qualification) return preferred;
+    // A thin lane (CS training in companies) is never an automatic
+    // destination: the course's home lane is.
+    if (preferred && preferred.qualification === qualification) {
+        return preferred.thin ? resolveLane(QUALIFICATIONS[qualification].homePath) : preferred;
+    }
     return equivalentLane(preferred || currentLane, qualification);
 }
 
@@ -4414,7 +4466,8 @@ function personalizeForStudent(profile) {
     }
 
     const preference = getJobPreference() || profile.job_preference || preferenceForLookingFor(profile.looking_for);
-    if (!courseStudent && preference && redirectToPreferredPortal(preference)) return true;
+    // CA: as before, only students whose looking_for is set are redirected.
+    if (!courseStudent && profile.looking_for && preference && redirectToPreferredPortal(preference)) return true;
 
     applyPreferredExperience(preference);
     return false;
