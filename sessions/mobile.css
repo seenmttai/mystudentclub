@@ -1,0 +1,86 @@
+/* Mobile WebView layer for Events & Live Sessions (/sessions/).
+   Loaded after the page's inline styles + /scripts/airy-header.css. Master's inline CSS and sessions.js stay untouched
+   so they can be re-synced; everything mobile-specific (fixed Airy Flow header offset, 320-430px, dark theme) lives here. */
+
+/* Page chrome ------------------------------------------------------------------ */
+html { scroll-padding-top: calc(var(--af-header-h, 58px) + var(--msc-sai-top, 0px) + 12px); }
+body { overflow-x: clip; -webkit-tap-highlight-color: transparent; }
+main { overflow-x: clip; }
+.skip-link:focus { top: calc(var(--af-header-h, 58px) + var(--msc-sai-top, 0px) + 8px); }
+.events-hero-title, .session-title, .deck-heading, .desc, .state-title, .state-text, .events-hero-sub { overflow-wrap: anywhere; }
+.events-hero-title { font-size: clamp(1.55rem, 7vw, 2.1rem); }
+.filters { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; max-width: 100%; padding-bottom: 2px; }
+.filters::-webkit-scrollbar { display: none; }
+.filter { flex: 0 0 auto; min-height: 40px; touch-action: manipulation; }
+.btn, .events-hero-btn, .footer-links a { min-height: 44px; touch-action: manipulation; }
+@media (max-width: 480px) {
+  .events-hero-inner { padding: 0 16px; }
+  .events-body-wrapper { padding: 0 16px 3rem; }
+  .session { padding: 1.25rem; }
+  .events-command-deck { padding: 1.1rem 1rem; }
+  .hero-advantage-item { padding: 0.75rem; }
+  .footer-container { padding-left: 16px; padding-right: 16px; }
+}
+
+/* Dark theme (app-wide [data-theme] switch, key 'msc-theme') ----------------------- */
+:root[data-theme="dark"] {
+  --bg: #0b1020;
+  --card: #111a2e;
+  --text: #c3cde2;
+  --heading: #e8eefb;
+  --muted: #8d9ab6;
+  --border: #27324a;
+  --input-border: #3b4a6b;
+  --accent: #7db0ff;
+  --accent-hover: #a3c6ff;
+  --accent-tint: rgba(125, 176, 255, 0.14);
+  --ring: 0 0 0 3px rgba(125, 176, 255, 0.3);
+  --ok: #34d399;
+  --ok-bg: rgba(16, 185, 129, 0.12);
+  --err: #f87171;
+  --err-bg: rgba(220, 38, 38, 0.14);
+  --shadow-sm: none;
+  --shadow: none;
+  --shadow-lg: none;
+}
+:root[data-theme="dark"] body { background: var(--bg); color: var(--text); }
+:root[data-theme="dark"] .events-hero { border-bottom-color: #27324a; }
+:root[data-theme="dark"] .events-command-deck { background: #111a2e; border-color: #27324a; box-shadow: none; }
+:root[data-theme="dark"] .deck-heading { color: #e8eefb; }
+:root[data-theme="dark"] .deck-heading i { color: #7db0ff; }
+:root[data-theme="dark"] .deck-live-badge { background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.3); color: #34d399; }
+:root[data-theme="dark"] .deck-desc { color: #8d9ab6; }
+:root[data-theme="dark"] .deck-filters-bar { border-top-color: #27324a; }
+:root[data-theme="dark"] .filter { background: #0f1729; border-color: #27324a; color: #c3cde2; }
+:root[data-theme="dark"] .filter:hover { background: #17223a; border-color: #3b5a93; color: #7db0ff; }
+:root[data-theme="dark"] .filter[aria-current="true"] { background: #2563eb; color: #fff; box-shadow: none; }
+:root[data-theme="dark"] .session:hover { border-color: #3b5a93; }
+:root[data-theme="dark"] .badge { color: #9fc3ff; }
+:root[data-theme="dark"] .badge-articleship { background: rgba(45, 212, 191, 0.14); color: #5eead4; }
+:root[data-theme="dark"] .badge-ca-fresher { background: rgba(251, 191, 36, 0.14); color: #fcd34d; }
+:root[data-theme="dark"] .badge-semi-qualified { background: rgba(192, 132, 252, 0.14); color: #d8b4fe; }
+:root[data-theme="dark"] .badge-experienced-ca { background: rgba(56, 189, 248, 0.14); color: #7dd3fc; }
+:root[data-theme="dark"] .badge-other, :root[data-theme="dark"] .badge-everyone { background: #1a2338; color: #c3cde2; }
+:root[data-theme="dark"] .chip { background: rgba(251, 146, 60, 0.14); color: #fdba74; }
+:root[data-theme="dark"] .chip-live { background: rgba(248, 113, 113, 0.16); color: #fca5a5; }
+:root[data-theme="dark"] .kind { background: #17223a; color: #a5b4fc; }
+:root[data-theme="dark"] .desc { color: #aab6cf; }
+:root[data-theme="dark"] .day { background: #0f1729; border-color: #27324a; }
+:root[data-theme="dark"] .day-n { background: #17223a; color: #9fc3ff; border-color: #3b5a93; }
+:root[data-theme="dark"] .seats-full { background: #1a2338; }
+:root[data-theme="dark"] .btn-secondary { background: #17223a; color: #e8eefb; border-color: #3b4a6b; }
+:root[data-theme="dark"] .btn-secondary:hover { background: #1c2a49; color: #fff; border-color: #3b5a93; }
+:root[data-theme="dark"] .btn-youtube { background: #17223a; color: #e8eefb; border-color: #3b4a6b; }
+:root[data-theme="dark"] .btn-youtube:hover { background: #2a1417; border-color: #4a1f24; color: #fca5a5; }
+:root[data-theme="dark"] .field input, :root[data-theme="dark"] .field select { background: #0f1729; color: #e8eefb; }
+:root[data-theme="dark"] .state { background: #111a2e; background-image: none; border-color: #27324a; box-shadow: none; }
+:root[data-theme="dark"] .state-icon-wrap { background: #17223a; border-color: #3b5a93; color: #7db0ff; box-shadow: none; }
+:root[data-theme="dark"] .state-icon-wrap.state-icon-empty { background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.3); color: #34d399; }
+:root[data-theme="dark"] .state-badge { background: #1a2338; color: #c3cde2; border-color: #27324a; }
+:root[data-theme="dark"] .state-badge-sync { background: rgba(251, 191, 36, 0.12); color: #fcd34d; border-color: rgba(251, 191, 36, 0.3); }
+:root[data-theme="dark"] .state-title, :root[data-theme="dark"] .state-text strong { color: #e8eefb; }
+:root[data-theme="dark"] .state-text, :root[data-theme="dark"] .state-footer-note { color: #8d9ab6; }
+:root[data-theme="dark"] .state-text a { color: #7db0ff; }
+:root[data-theme="dark"] .state-footer-note { border-top-color: #27324a; }
+:root[data-theme="dark"] .skeleton div { background: linear-gradient(90deg, #111a2e 25%, #17223a 50%, #111a2e 75%); background-size: 200% 100%; }
+:root[data-theme="dark"] .page-footer { border-top-color: #27324a; }

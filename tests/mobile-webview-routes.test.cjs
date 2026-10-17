@@ -29,6 +29,9 @@ const ROUTES = [
   { route: '/ca-industrial-training-program/', file: 'ca-industrial-training-program/index.html', title: 'MSC CA Industrial Training Program' },
   { route: '/articleship-program/', file: 'articleship-program/index.html', title: 'MSC Articleship Program' },
   { route: '/msc-ca-fresher-program/', file: 'msc-ca-fresher-program/index.html', title: 'MSC CA Freshers Program' },
+  // Ported from master 129251eab on 2026-10-17 with the Airy Flow chrome (side-menu "Career Guides" / "Events & Live Sessions").
+  { route: '/blog/', file: 'blog/index.html', title: 'Career Guides' },
+  { route: '/sessions/', file: 'sessions/index.html', title: 'Live Sessions' },
 ];
 
 const REMOVED_ROUTES = [{ route: '/domain-wise-hiring-companies.html', file: 'domain-wise-hiring-companies.html' }];
@@ -81,7 +84,7 @@ test('Airy Flow chrome is kept: no embed/no-chrome mode on resource, program or 
 const LOGO_PAGES = [
   'learning-management-system/index.html', 'ca-fresher-training-resources.html', 'ca-industrial-training-resources.html',
   'articleship-program/index.html', 'ca-industrial-training-program/index.html', 'msc-ca-fresher-program/index.html',
-  'articleship-firm-reviews.html', 'contact.html',
+  'articleship-firm-reviews.html', 'contact.html', 'blog/index.html', 'sessions/index.html',
 ];
 
 test('in-scope headers use the approved icon-only /assets/logo-mark.svg (or legacy /assets/logo.png) with one accessible mark', () => {
@@ -97,7 +100,7 @@ test('in-scope headers use the approved icon-only /assets/logo-mark.svg (or lega
 });
 
 test('logo CSS keeps aspect ratio (fixed height, auto width) in every stylesheet the pages use', () => {
-  for (const css of ['scripts/portal-style.css', 'articleship-program/header.css', 'ca-industrial-training-program/header.css', 'msc-ca-fresher-program/header.css']) {
+  for (const css of ['scripts/portal-style.css', 'scripts/airy-header.css', 'articleship-program/header.css', 'ca-industrial-training-program/header.css', 'msc-ca-fresher-program/header.css']) {
     assert.match(read(css), /img\.header-logo \{ height: (?:24|38)px; width: auto;/, css);
   }
   assert.match(read('learning-management-system/index.html'), /\.header-logo \{\s*width: auto;\s*height: 24px;/);

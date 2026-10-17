@@ -20,15 +20,19 @@ const REMOVED_RESOURCE_HREF = '/domain-wise-hiring-companies.html';
 const PROGRAM_PAGES = ['ca-industrial-training-program/index.html', 'articleship-program/index.html', 'msc-ca-fresher-program/index.html'];
 
 // Canonical list (master's labels): destination + label, in menu order.
-// /blog/ and /sessions/ are served only by www (the mobile host answers them with its root fallback page), so they are absolute.
+// /blog/ and /sessions/ are served by the mobile host since 2026-10-17 (blog/index.html, sessions/index.html ported from
+// master with the Airy Flow chrome), so every destination is a relative route.
 const FREE_RESOURCES = [
   ['/ca-industrial-training-resources.html', 'Industrial Training Resources'],
   ['/articleship-resources.html', 'Articleship Resources'],
   ['/ca-fresher-training-resources.html', 'CA Fresher Resources'],
   ['/semi-qualified-ca-resources.html', 'Semi-Qualified CA Resources'],
-  ['https://www.mystudentclub.com/blog/', 'Career Guides'],
-  ['https://www.mystudentclub.com/sessions/', 'Events &amp; Live Sessions'],
+  ['/blog/', 'Career Guides'],
+  ['/sessions/', 'Events &amp; Live Sessions'],
 ];
+// Pages ported from master that carry the same drawer: the hub, every article, and the sessions page.
+const BLOG_PAGES = fs.readdirSync(path.join(root, 'blog')).filter((f) => f.endsWith('.html') && f !== 'test.html').map((f) => `blog/${f}`);
+const PORTED_PAGES = [...BLOG_PAGES, 'sessions/index.html'];
 
 // The Free Resources list: id="resourcesDropdown" (the forum/mentor pages label the entry just "Resources"), else the first
 // dropdown list after the "Free Resources" label (the oldest pages have no id).
@@ -88,14 +92,41 @@ test('every web page with the drawer uses that exact list (jobs/** pages are gen
   assert.ok(!exists(REMOVED_RESOURCE_HREF.slice(1)), `${REMOVED_RESOURCE_HREF} must stay deleted`);
 });
 
-test('local destinations exist; blog and sessions are absolute www URLs (no relative routes the mobile host cannot serve)', () => {
+test('every destination is served by the mobile host: a file, or a folder index for /blog/ and /sessions/', () => {
   for (const [href] of FREE_RESOURCES) {
-    if (href.startsWith('/')) assert.ok(exists(href.slice(1)), `${href} has a file`);
-    else assert.match(href, /^https:\/\/www\.mystudentclub\.com\/(blog|sessions)\/$/);
+    assert.match(href, /^\//, `${href} must be relative to the mobile host`);
+    const file = href.endsWith('/') ? `${href.slice(1)}index.html` : href.slice(1);
+    assert.ok(exists(file), `${href} is served from ${file}`);
   }
-  for (const file of [...RESOURCE_PAGES, ...PROGRAM_PAGES]) {
-    assert.doesNotMatch(read(file), /href="\/(blog|sessions)\//, `${file}: relative /blog/ or /sessions/ link`);
+  for (const file of menuPages()) {
+    assert.doesNotMatch(read(file), /href="https:\/\/www\.mystudentclub\.com\/(blog|sessions)\/"/, `${file}: still sends Career Guides / Events to www`);
   }
+});
+
+test('blog and sessions pages carry the Airy Flow mobile header + drawer instead of master\'s desktop site header', () => {
+  assert.equal(BLOG_PAGES.length, 9, 'hub + 8 articles');
+  for (const file of PORTED_PAGES) {
+    const html = read(file);
+    const title = file.startsWith('blog/') ? 'Blogs' : 'Sessions';
+    assert.doesNotMatch(html, /<header class="(floating-header|site-header)"/, `${file}: master desktop header must be gone`);
+    assert.match(html, /<header class="app-header" id="appHeader">/, `${file}: Airy Flow header`);
+    assert.match(html, /<img class="header-logo" src="\/assets\/logo-mark\.svg" alt="My Student Club"/, `${file}: icon-only logo mark`);
+    assert.match(html, new RegExp(`<div class="greeting-sub">MSC</div>\\s*<div class="greeting-name">${title}</div>`), `${file}: greeting "${title}"`);
+    for (const id of ['themeToggleBtn', 'menuButton', 'expandedMenu', 'menuCloseBtn', 'menuBackdrop', 'resourcesDropdownBtn', 'resourcesDropdown', 'logoutMenuBtn']) {
+      assert.ok(html.includes(`id="${id}"`), `${file}: #${id}`);
+    }
+    assert.ok(html.includes('/scripts/airy-header.css'), `${file}: shared header stylesheet`);
+    assert.ok(html.includes('/scripts/program-chrome.js'), `${file}: shared chrome script`);
+    assert.match(html, /<body class="airy-page">/, `${file}: body reserves the fixed header`);
+    assert.match(html, /viewport-fit=cover/, `${file}: viewport-fit=cover so env(safe-area-inset-top) is set`);
+    const own = freeResourcesAnchors(html).filter((a) => a.href === (file.startsWith('blog/') ? '/blog/' : '/sessions/'));
+    assert.equal(own.length, 1);
+    assert.match(own[0].attrs, /class="dropdown-item active"/, `${file}: current entry active`);
+    assert.match(own[0].attrs, /aria-current="page"/, `${file}: aria-current`);
+  }
+  // Article pages' breadcrumb "Guides" goes back to the hub on this host, not to the www links page.
+  assert.ok(read('blog/blog.js').includes('<a href="/blog/">Guides</a>'), 'blog.js breadcrumb back link');
+  assert.ok(!read('blog/blog.js').includes('<a href="/links/">Guides</a>'));
 });
 
 test('each resource hub marks its own entry as the current page (active + aria-current)', () => {
@@ -122,7 +153,7 @@ test('program footers list the same resource hubs and no broken relative routes'
 });
 
 // ── status-bar offset ───────────────────────────────────────────────────────────────────────
-const DRAWER_CSS = ['scripts/portal-style.css', ...PROGRAM_PAGES.map((p) => p.replace('/index.html', '/header.css'))];
+const DRAWER_CSS = ['scripts/portal-style.css', 'scripts/airy-header.css', ...PROGRAM_PAGES.map((p) => p.replace('/index.html', '/header.css'))];
 // All declarations of every top-level `selector { ... }` rule, joined (a selector can appear in several rules).
 const block = (css, selector) => {
   const re = new RegExp(`(?:^|\\n)${selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*\\{([^}]*)\\}`, 'g');
