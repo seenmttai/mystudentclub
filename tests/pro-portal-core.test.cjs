@@ -71,28 +71,35 @@ test('listings that turn a course away are excluded', async () => {
   assert.ok(courseMatches('CA / CS Articleship Opportunity in Noida', cs));
 });
 
-test('firm-training lanes flag CA firms that name no CS / CMA trainer', async () => {
-  const { isCaFirmOnly } = await load('core.js');
+test('firm-training lanes tell a CA firm or an unnamed trainer from a PCS / Cost Accountant', async () => {
+  const { trainerStatus } = await load('core.js');
   const { COURSES } = await load('config.js');
   const cs = COURSES.cs.lanes.find((l) => l.key === 'firm-training').trainerCheck;
   const cma = COURSES.cma.lanes.find((l) => l.key === 'firm-training').trainerCheck;
-  assert.ok(isCaFirmOnly('J. Singh & Associates, Chartered Accountants\nHiring CA/CS articles', cs));
-  assert.ok(isCaFirmOnly('Mid-Size CA Firm in Delhi – CA/CMA/ACCA Articleship', cma));
-  assert.ok(isCaFirmOnly('Enrollment in CA/CMA articleship as per ICAI guidelines', cma));
-  assert.ok(isCaFirmOnly('A Arora & Co., a Chartered Accountancy firm based in Delhi. Position: CA / CMA Article Trainee', cma));
-  assert.ok(isCaFirmOnly('Role: CA / CMA Articled Assistants', cma));
-  assert.ok(isCaFirmOnly('Position: CA / CS Article Trainee', cs));
-  assert.ok(isCaFirmOnly('is a professional accounting and audit firm. Support senior auditors in statutory and internal audits', cs));
-  assert.ok(isCaFirmOnly('The firm provides statutory and risk-based audits, forensic audits and valuations', cma));
-  assert.ok(!isCaFirmOnly('Multi-disciplinary firm of Chartered Accountants and Practising Company Secretaries', cs));
-  assert.ok(!isCaFirmOnly('NDM Advisors LLP, Chartered Accountants and Cost Accountants firm', cma));
-  assert.ok(!isCaFirmOnly('PCS firm in Mumbai hiring CS Executive trainees', cs));
-  assert.ok(!isCaFirmOnly('Hiring CS trainees for secretarial work', cs));
-  assert.ok(isCaFirmOnly('Hiring CA/CMA articles', cma));
-  assert.ok(!isCaFirmOnly('Hiring CMA trainees for costing and cost records work', cma));
+  const caFirm = [
+    ['J. Singh & Associates, Chartered Accountants\nHiring CA/CS articles', cs],
+    ['Mid-Size CA Firm in Delhi – CA/CMA/ACCA Articleship', cma],
+    ['Enrollment in CA/CMA articleship as per ICAI guidelines', cma],
+    ['A Arora & Co., a Chartered Accountancy firm based in Delhi. Position: CA / CMA Article Trainee', cma],
+    ['Role: CA / CMA Articled Assistants', cma],
+    ['Position: CA / CS Article Trainee', cs],
+    ['is a professional accounting and audit firm. Support senior auditors in statutory and internal audits', cs],
+    ['The firm provides statutory and risk-based audits, forensic audits and valuations', cma],
+    ['Hiring CA/CMA articles', cma],
+    ['Candidates who have completed ICITSS may apply', cma]
+  ];
+  for (const [text, check] of caFirm) assert.equal(trainerStatus(text, check), 'ca-firm', text);
+  assert.equal(trainerStatus('Multi-disciplinary firm of Chartered Accountants and Practising Company Secretaries', cs), 'trainer');
+  assert.equal(trainerStatus('NDM Advisors LLP, Chartered Accountants and Cost Accountants firm', cma), 'trainer');
+  assert.equal(trainerStatus('PCS firm in Mumbai hiring CS Executive trainees', cs), 'trainer');
+  assert.equal(trainerStatus('Hiring CS trainees for secretarial work', cs), 'unnamed');
+  assert.equal(trainerStatus('Articleship Trainee (CMA Students) for costing work', cma), 'unnamed');
   for (const course of Object.values(COURSES)) {
     for (const lane of course.lanes) {
       assert.equal(Boolean(lane.trainerCheck), lane.key === 'firm-training', `${course.key}/${lane.key}: trainerCheck only on firm lanes`);
+      if (lane.trainerCheck) {
+        for (const status of ['ca-firm', 'unnamed']) assert.ok(lane.trainerCheck[status]?.badge && lane.trainerCheck[status]?.note, `${course.key}: ${status} copy`);
+      }
     }
   }
 });

@@ -69,7 +69,7 @@ const category = (key, label, pattern) => ({ key, label, pattern });
 // training at a CA firm, so the browser flags a post that names a CA firm and
 // no CS / CMA trainer (company name + description, browser only).
 // Statutory audit is reserved for CAs, so an audit firm here is a CA firm.
-const CA_FIRM = String.raw`chartered\s+accountan|\mca(\s*/\s*(cs|cma|acca))*\s+(firm|articles?|articled|articleship)\M|\micai\M|\maudit\s+firm|audit\s+and\s+[a-z]+\s+firm|accounting\s+(and|&)\s+audit\s+firm|statutory\s+(and\s+[a-z-]+\s+)?audits?\M`;
+const CA_FIRM = String.raw`chartered\s+accountan|\micitss\M|\mca(\s*/\s*(cs|cma|acca))*\s+(firm|articles?|articled|articleship)\M|\micai\M|\maudit\s+firm|audit\s+and\s+[a-z]+\s+firm|accounting\s+(and|&)\s+audit\s+firm|statutory\s+(and\s+[a-z-]+\s+)?audits?\M`;
 
 // ---------------------------------------------------------------- CS (ICSI)
 
@@ -133,7 +133,7 @@ const CS = {
             h1: 'CS articleship and training at firms',
             title: 'CS Articleship & Trainee Openings at Firms | My Student Club',
             description: 'CS articleship and trainee openings at firms that invite CS students. We flag CA firms, where you must confirm ICSI will count your 21-month training.',
-            lede: 'Trainee openings at firms that invite CS students. Most come from CA firms, and ICSI counts the 21 months only under a registered trainer such as a Practising Company Secretary, so we flag every CA-firm listing.',
+            lede: 'Trainee openings at firms that invite CS students. Most come from CA firms, and ICSI counts the 21 months only under a registered trainer such as a Practising Company Secretary, so we flag listings that look like CA firms or name no PCS.',
             callout: {
                 tone: 'warn',
                 title: 'Check before you join',
@@ -144,8 +144,14 @@ const CS = {
             trainerCheck: {
                 trainer: String.raw`practi[sc]ing\s+company\s+secretar|\mpcs\M|firm\s+of\s+(practi[sc]ing\s+)?company\s+secretar|company\s+secretar(y|ies)\s+firm|\mcs\s+firm|(&|and)\s*(co|associates)\.?,?\s+company\s+secretaries`,
                 caFirm: CA_FIRM,
-                badge: 'CA firm: check ICSI registration',
-                note: 'This listing looks like a CA firm. ICSI generally does not count training at CA firms, so before you join, ask whether a Practising Company Secretary will register your 21-month training with ICSI.'
+                'ca-firm': {
+                    badge: 'CA firm: check ICSI registration',
+                    note: 'This listing looks like a CA firm. ICSI generally does not count training at CA firms, so before you join, ask whether a Practising Company Secretary will register your 21-month training with ICSI.'
+                },
+                unnamed: {
+                    badge: 'No PCS named: check ICSI registration',
+                    note: 'This listing does not name a Practising Company Secretary. Before you join, ask who will register your 21-month training with ICSI.'
+                }
             },
             applySubject: 'Application for CS Training (Articleship)',
             applyNoun: 'CS training',
@@ -207,9 +213,9 @@ const CS = {
             title: 'Semi-Qualified CS Jobs for CS Executive & Professional Passed | My Student Club',
             description: 'Jobs that accept semi-qualified CS (Executive or Professional passed): accounts, audit, tax, compliance and secretarial roles at firms and companies.',
             lede: 'Paid roles open to students who have passed CS Executive or Professional but are not yet ICSI members. Many are accounts, audit and tax roles that also take CS; filter by work area to find secretarial and compliance work.',
-            applyPitch: 'I have passed CS [Executive / Professional] with ICSI and want to build hands-on experience in secretarial compliance, corporate law and governance.',
-            applySubject: 'Application for Secretarial / Compliance Executive Role',
-            applyNoun: 'secretarial role',
+            applyPitch: 'I have passed CS [Executive / Professional] with ICSI and am keen to contribute to your [accounts / compliance / secretarial] work.',
+            applySubject: 'Job Application (Semi-qualified CS)',
+            applyNoun: 'role',
             emptyTitle: 'No semi-qualified CS jobs right now',
             emptyHint: 'Widen the date range or browse the training sections.',
             tipsTitle: 'Standing out as a semi-qualified CS',
@@ -340,7 +346,7 @@ const CMA = {
             h1: 'CMA articleship and training at firms',
             title: 'CMA Articleship & Trainee Openings at Firms | My Student Club',
             description: 'CMA articleship and trainee openings at firms that invite CMA students. We flag CA firms: ICMAI counts firm training only under a Practising Cost Accountant.',
-            lede: 'Trainee openings at firms that invite CMA students. Most come from CA firms, and CA articleship does not count for CMA, so we flag every CA-firm listing. ICMAI calls this practical training; most students say CMA articleship.',
+            lede: 'Trainee openings at firms that invite CMA students. Most come from CA firms, and CA articleship does not count for CMA, so we flag listings that look like CA firms or name no Cost Accountant. ICMAI calls this practical training; most students say CMA articleship.',
             callout: {
                 tone: 'warn',
                 title: 'Check before you join',
@@ -351,8 +357,14 @@ const CMA = {
             trainerCheck: {
                 trainer: String.raw`practi[sc]ing\s+cost\s+accountant|firm\s+of\s+cost\s+accountant|cost\s+accountants?\s+firm|(&|and)\s*(co|associates)\.?,?\s+cost\s+accountants|,\s*cost\s+accountants\M|\mcma\s+firm`,
                 caFirm: CA_FIRM,
-                badge: 'CA firm: check Form T-1',
-                note: 'This listing looks like a CA firm. CA articleship does not count for CMA: the months count only if a Practising Cost Accountant signs your Form T-1, so ask before you join.'
+                'ca-firm': {
+                    badge: 'CA firm: check Form T-1',
+                    note: 'This listing looks like a CA firm. CA articleship does not count for CMA: the months count only if a Practising Cost Accountant signs your Form T-1, so ask before you join.'
+                },
+                unnamed: {
+                    badge: 'No Cost Accountant named: check Form T-1',
+                    note: 'This listing does not name a Practising Cost Accountant. Firm training counts for CMA only if one signs your Form T-1, so ask before you join.'
+                }
             },
             applySubject: 'Application for CMA Practical Training (Articleship)',
             applyNoun: 'CMA practical training',
@@ -392,7 +404,7 @@ const CMA = {
             emptyHint: 'Company openings are fewer than firm openings. Widen the date range or check CMA Inter jobs.',
             tipsTitle: 'Getting industrial training',
             tips: [
-                'Some PSUs run Industrial Trainee (Finance) schemes for CA / CMA Inter passed students, usually with an age limit. Watch their career pages.',
+                'PSU and large-company finance teams also take CMA trainees. Watch their career pages as well as this list.',
                 'Manufacturing companies value costing and plant-accounting exposure. Say what you have studied.',
                 'Confirm the company qualifies as a recognised organisation for Form T-4.'
             ]

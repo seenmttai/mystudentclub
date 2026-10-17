@@ -8,7 +8,7 @@ import {
     detectQualifications, matchesPattern, maskContacts, stripMarkdown, truncate, formatPay,
     timeAgo, isLikelyClosed, isoDaysAgo, parseApplyTarget, buildMailto, jobKey, parseJobKey,
     decodeFilters, encodeFilters, countActiveFilters, defaultFilters, WINDOW_OPTIONS, DEFAULT_WINDOW,
-    applicationRow, appliedKeyFromRow, matchContext, isValidJobId, MAX_PLAUSIBLE_PAY, repostSignature, isCaFirmOnly
+    applicationRow, appliedKeyFromRow, matchContext, isValidJobId, MAX_PLAUSIBLE_PAY, repostSignature, trainerStatus
 } from './core.js';
 import { unlockJobDetails, getCachedUnlockedJob } from '../browser-guard.js';
 import { getProfileCompletionItems, readCachedProfile } from '../profile-completion.js';
@@ -672,10 +672,13 @@ function qualificationBadges(job, { compact = false } = {}) {
     return `<span class="pp-quals" title="Qualifications this listing mentions">${compact ? '' : '<span class="pp-quals-label">Open to</span>'}${items}</span>`;
 }
 
+// Firm-training lanes flag posts that do not name a trainer the institute
+// accepts: { badge, note } for a CA firm or for no trainer named, else null.
 function caFirmFlag(job, lane = laneForJob(job)) {
-    return lane.trainerCheck && isCaFirmOnly(`${job.Company || ''}\n${job.Description || ''}`, lane.trainerCheck)
-        ? lane.trainerCheck
-        : null;
+    const check = lane.trainerCheck;
+    if (!check) return null;
+    const status = trainerStatus(`${job.Company || ''}\n${job.Description || ''}`, check);
+    return status === 'trainer' ? null : check[status];
 }
 
 function cardHtml(job) {

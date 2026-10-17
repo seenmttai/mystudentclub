@@ -98,7 +98,7 @@ export const CONTENT = {
             },
             {
                 q: 'Is there a separate industrial training phase in CMA?',
-                a: 'No. Unlike CA, CMA has no separate industrial phase: all 15 months can be done in a recognised organisation (Form T-4), such as a company, bank or PSU. Some PSUs also run Industrial Trainee (Finance) schemes for CA / CMA Inter passed candidates, usually with an age limit, so watch their notifications.',
+                a: 'No. Unlike CA, CMA has no separate industrial phase: all 15 months can be done in a recognised organisation (Form T-4), such as a company, bank or PSU.',
                 source: 'https://www.icmai.co.in/upload/Training/FAQ.pdf'
             },
             {

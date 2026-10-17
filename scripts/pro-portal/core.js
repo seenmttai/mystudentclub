@@ -128,11 +128,14 @@ export function courseMatches(text, match) {
     return !(m.neg && matchesPattern(text, m.neg));
 }
 
-// Firm-training lanes: does the post name a CA firm and no CS / CMA trainer?
-// `check` is a lane's trainerCheck from config ({ trainer, caFirm }).
-export function isCaFirmOnly(text, check) {
-    if (!check?.caFirm || !matchesPattern(text, check.caFirm)) return false;
-    return !(check.trainer && matchesPattern(text, check.trainer));
+// Firm-training lanes: who would sign the student's training? `check` is a
+// lane's trainerCheck from config ({ trainer, caFirm }). Returns 'trainer'
+// (a PCS / Cost Accountant is named), 'ca-firm' (a CA firm and no such
+// trainer), or 'unnamed' (neither).
+export function trainerStatus(text, check) {
+    if (check?.trainer && matchesPattern(text, check.trainer)) return 'trainer';
+    if (check?.caFirm && matchesPattern(text, check.caFirm)) return 'ca-firm';
+    return 'unnamed';
 }
 
 // Which qualifications does a listing say it is open to?
