@@ -984,7 +984,8 @@ async function openJob(key, { push = false, trigger = null } = {}) {
         panel.setAttribute('aria-modal', 'true');
         document.documentElement.classList.add('pp-lock');
     }
-    if (push) history.pushState({ job: key }, '', currentUrl({ job: key }));
+    // `pushed` marks entries this page added, so Close can safely go back.
+    if (push) history.pushState({ job: key, pushed: true }, '', currentUrl({ job: key }));
     const job = await fetchJobByKey(key);
     if (app.activeKey !== key) return;
     if (!job) {
@@ -1012,8 +1013,15 @@ function closeJob({ pop = false } = {}) {
     document.documentElement.classList.remove('pp-lock');
     panel.innerHTML = detailPlaceholderHtml();
     $$('.pp-card.is-active').forEach(card => card.classList.remove('is-active'));
-    if (!pop) history.pushState({ job: null }, '', currentUrl({ job: null }));
+    if (!pop) history.replaceState({ job: null }, '', currentUrl({ job: null }));
     if (app.lastFocus && document.contains(app.lastFocus)) app.lastFocus.focus();
+}
+
+// Leaving a listing opened from the list goes back one entry; a listing that
+// was the landing page (shared link) just closes, so we never leave the site.
+function dismissJob() {
+    if (history.state?.pushed) history.back();
+    else closeJob();
 }
 
 function detailPlaceholderHtml() {
@@ -1219,10 +1227,7 @@ function renderDetail(job, unlocked = null) {
 }
 
 function bindDetail(panel, job) {
-    panel.querySelectorAll('[data-close-detail]').forEach(btn => btn.addEventListener('click', () => {
-        if (history.state && history.state.job) history.back();
-        else closeJob();
-    }));
+    panel.querySelectorAll('[data-close-detail]').forEach(btn => btn.addEventListener('click', dismissJob));
     if (!job) return;
     panel.querySelector('[data-save]')?.addEventListener('click', () => toggleSaved(job));
     panel.querySelector('[data-share]')?.addEventListener('click', () => shareJob(job));
@@ -1291,10 +1296,7 @@ function bindDetailKeys() {
     const panel = $('#ppDetail');
     if (!panel) return;
     panel.addEventListener('keydown', event => {
-        if (event.key === 'Escape' && app.activeKey) {
-            if (history.state && history.state.job) history.back();
-            else closeJob();
-        }
+        if (event.key === 'Escape' && app.activeKey) dismissJob();
         if (event.key === 'Tab' && isSheet() && app.activeKey) trapFocus(event, panel);
     });
     window.addEventListener('popstate', () => {
