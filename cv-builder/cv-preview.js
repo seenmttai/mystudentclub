@@ -202,16 +202,57 @@
     }
 
     function moveIntoSheet(node) {
+        if (!node) return false;
         placeholder = document.createComment('Preview control home');
         node.before(placeholder);
         movedNode = node;
         content.append(node);
+        return true;
+    }
+
+    function showUnavailable(message) {
+        const note = document.createElement('p');
+        note.className = 'preview-sheet-empty';
+        note.textContent = message;
+        content.append(note);
+    }
+
+    // showModal() can throw (already open non-modally, detached, or missing in old WebViews).
+    // Fall back to the plain `open` attribute with our own backdrop so the sheet still appears.
+    let fallbackBackdrop = null;
+    function openSheet() {
+        if (sheet.open) return;
+        try {
+            if (typeof sheet.showModal !== 'function') throw new Error('showModal unsupported');
+            sheet.showModal();
+        } catch (error) {
+            console.warn('preview-sheet: showModal failed, using fallback', error);
+            if (!fallbackBackdrop) {
+                fallbackBackdrop = document.createElement('div');
+                fallbackBackdrop.className = 'preview-sheet-backdrop';
+                fallbackBackdrop.addEventListener('click', () => closePreviewSheet());
+            }
+            sheet.before(fallbackBackdrop);
+            sheet.classList.add('is-fallback');
+            sheet.setAttribute('open', '');
+        }
     }
 
     window.closePreviewSheet = () => {
-        if (sheet.open) sheet.close();
+        if (sheet.classList.contains('is-fallback')) {
+            sheet.classList.remove('is-fallback');
+            fallbackBackdrop?.remove();
+            sheet.removeAttribute('open');
+        } else if (sheet.open && typeof sheet.close === 'function') {
+            sheet.close();
+        } else {
+            sheet.removeAttribute('open');
+        }
         restoreContent();
     };
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && sheet.classList.contains('is-fallback')) closePreviewSheet();
+    });
     sheet.addEventListener('close', () => {
         // A new panel may have opened before the queued close event arrives.
         if (!sheet.open) restoreContent();
@@ -379,10 +420,10 @@
             if (resetBtn) resetBtn.style.display = 'none';
             if (kind === 'template') {
                 renderTemplateCards();
-                moveIntoSheet(document.getElementById('template-grid'));
+                if (!moveIntoSheet(document.getElementById('template-grid'))) showUnavailable('Template options are unavailable right now.');
             } else if (kind === 'color') {
                 renderThemeControls();
-                moveIntoSheet(document.querySelector('.template-theme-panel'));
+                if (!moveIntoSheet(document.querySelector('.template-theme-panel'))) showUnavailable('Color options are unavailable right now.');
             } else if (kind === 'download') {
                 for (const [format, label, description] of [
                     ['pdf', 'Export as PDF', 'Ready to share and apply'],
@@ -401,7 +442,7 @@
             }
         }
         syncPreviewControls();
-        if (!sheet.open) sheet.showModal();
+        openSheet();
         content.scrollTop = 0;
     };
 

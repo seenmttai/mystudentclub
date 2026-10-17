@@ -1365,6 +1365,15 @@
             opacity: 1;
         }
 
+        .speech-status.conduct {
+            background: rgba(245, 158, 11, 0.92);
+            color: #1f1300;
+            font-weight: 600;
+            white-space: normal;
+            max-width: min(92vw, 420px);
+            text-align: center;
+        }
+
 
         .interview-footer {
             background: rgba(0, 0, 0, 0.9);
@@ -2430,6 +2439,7 @@
     </div>
 
     <script src="https://unpkg.com/markdown-pdfjs@1.0.1/dist/markdown-pdf.umd.js"></script>
+    <script src="scripts/interview-conduct.js"></script>
     <script type="module">
         import { LipsyncEn } from 'lipsync-en';
 
@@ -2637,6 +2647,9 @@
         const INTERVIEW_REQUEST_TIMEOUT_MS = 45000;
         const INTERVIEW_REQUEST_MAX_RETRIES = 1;
         const INTERVIEW_SERVICE_FAILURES_BEFORE_END = 3;
+        // Conduct guardrails (see scripts/interview-conduct.js)
+        let conductTracker = null, interviewEndCode = null, silenceWatchTimer = null, conductToastTimer = null;
+        const SILENCE_WATCH_MS = 45000; // no candidate turn for this long → nudge → warning → end (unresponsive)
 
         const EMOJI_CHAR = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u;
         const FINAL_REPORT_BLOCK_REGEX = /<<<FINAL_INTERVIEW_REPORT>>>[\s\S]*?<<<END_FINAL_INTERVIEW_REPORT>>>/g;
@@ -2756,9 +2769,11 @@
                     setListeningUI(true);
                 } catch (e) { /* ignore already started errors */ }
             }
+            armSilenceWatch();
         };
 
         window.stopListening = function () {
+            clearSilenceWatch();
             if (myvad) {
                 try { myvad.pause(); } catch (e) { }
             }
@@ -3231,7 +3246,9 @@
                     companyType: interviewConfig.companyType,
                     interviewDomain: interviewConfig.interviewDomain,
                     toughness: interviewConfig.toughness,
-                    interviewer: AI_INTERVIEWER_NAME
+                    interviewer: AI_INTERVIEWER_NAME,
+                    endReason: interviewEndCode || 'manual',
+                    endedEarly: InterviewConduct.isEarlyEndReason(interviewEndCode)
                 },
                 messages,
                 transcript: getTranscriptText(),
@@ -3292,7 +3309,8 @@
                 ['Toughness', interviewConfig.toughness || 'N/A'],
                 ['Interviewer', AI_INTERVIEWER_NAME],
                 ['Started At', formatDateTime(interviewStartedAt)],
-                ['Ended At', formatDateTime(finalInterviewReport?.generatedAt || new Date().toISOString())]
+                ['Ended At', formatDateTime(finalInterviewReport?.generatedAt || new Date().toISOString())],
+                ...(InterviewConduct.isEarlyEndReason(interviewEndCode) ? [['Ended Early', InterviewConduct.endReasonMessage(interviewEndCode)]] : [])
             ];
         }
 
@@ -3495,7 +3513,10 @@
                 setFinalInterviewReport(reportText, 'fallback');
             }
 
-            reportSubtitle.textContent = getUiReportSubtitleText();
+            const endedEarly = InterviewConduct.isEarlyEndReason(interviewEndCode);
+            const reportKicker = document.querySelector('#report-screen .report-kicker');
+            if (reportKicker) reportKicker.textContent = endedEarly ? 'Interview Ended Early' : 'Interview Complete';
+            reportSubtitle.textContent = (endedEarly || interviewEndCode === 'completed') ? InterviewConduct.endReasonMessage(interviewEndCode) : getUiReportSubtitleText();
             reportBody.innerHTML = formatAssessmentHtml(reportText);
             reportTranscript.textContent = getTranscriptText() || 'No transcript available.';
             reportMeta.innerHTML = `
@@ -3521,6 +3542,11 @@
                 </div>
             `;
 
+            const candidateTurns = messages.filter(msg => msg.role === 'user').length;
+            if (endedEarly && candidateTurns < 3) {
+                setAnalysisFallbackState(`${InterviewConduct.endReasonMessage(interviewEndCode)} Detailed analysis was skipped because the interview ended early.`);
+                return;
+            }
             setAnalysisLoadingState();
             requestDetailedInterviewAnalysis();
         }
@@ -3635,6 +3661,86 @@
             };
         })();
 
+        // --- CONDUCT GUARDRAILS (client-side, deterministic; independent of the model) ---
+        function clearSilenceWatch() {
+            if (silenceWatchTimer) {
+                clearTimeout(silenceWatchTimer);
+                silenceWatchTimer = null;
+            }
+        }
+
+        function armSilenceWatch() {
+            clearSilenceWatch();
+            if (!conductTracker || interviewTerminalState || isWaitingForAIResponse) return;
+            if (interviewScreen.classList.contains('hidden')) return;
+            silenceWatchTimer = setTimeout(handleSilenceTimeout, SILENCE_WATCH_MS);
+        }
+
+        function handleSilenceTimeout() {
+            silenceWatchTimer = null;
+            if (!conductTracker || interviewTerminalState || isWaitingForAIResponse) return;
+            // Candidate is mid-sentence (live transcript visible) or the interviewer is still talking: wait another window.
+            if ((avatar && avatar.isSpeaking) || liveUserMessageEl) { armSilenceWatch(); return; }
+
+            const decision = conductTracker.recordSilence();
+            console.info('[conduct] silence', decision.action, conductTracker.state.silenceStreak);
+            if (decision.action === 'none') { armSilenceWatch(); return; }
+            window.stopListening();
+            if (decision.action === 'end') {
+                endInterviewForConduct(decision);
+                return;
+            }
+            if (decision.action === 'warn') showConductToast(InterviewConduct.LINES.respondToast);
+            speakConductLine(decision.line); // when speech finishes, finishSpeaking → startListening re-arms the watch
+        }
+
+        function showConductToast(text) {
+            if (!text || !speechStatus) return;
+            if (conductToastTimer) clearTimeout(conductToastTimer);
+            speechStatus.classList.add('conduct');
+            updateSpeechStatus(text, true);
+            conductToastTimer = setTimeout(() => {
+                conductToastTimer = null;
+                speechStatus.classList.remove('conduct');
+                if (speechStatus.textContent === text) updateSpeechStatus('', false);
+            }, 5000);
+        }
+
+        // Speaks a client-decided interviewer line and records it in the transcript.
+        function speakConductLine(text) {
+            const safe = sanitizeTranscriptText(text);
+            if (!safe) return false;
+            messages.push({ role: 'assistant', content: safe });
+            addLiveAIChatMessage(AI_INTERVIEWER_NAME);
+            if (avatar && isModelLoaded) {
+                avatar.speakText(safe);
+                return true;
+            }
+            window.handleAISpeechFallback(safe);
+            return false;
+        }
+
+        function endInterviewForConduct(decision) {
+            const reason = decision.reason || 'misconduct';
+            const message = InterviewConduct.endReasonMessage(reason);
+            showConductToast(message);
+            const willSpeak = speakConductLine(decision.line || message);
+            scheduleInterviewAutoEnd(message, 1200, willSpeak, reason);
+        }
+
+        // Runs the deterministic strike logic on one candidate turn (typed or transcribed).
+        function evaluateCandidateTurn(text) {
+            if (!conductTracker) return { action: 'none', reason: null };
+            const decision = conductTracker.recordUserTurn(text);
+            if (decision.action !== 'none') {
+                console.info('[conduct] turn', decision.action, decision.reason, conductTracker.state);
+                const note = InterviewConduct.buildModelNote(decision);
+                if (note) messages.push({ role: 'system', content: note });
+                if (decision.action === 'warn') showConductToast(decision.toast);
+            }
+            return decision;
+        }
+
         function clearInterviewAutoEnd() {
             if (interviewAutoEndTimer) {
                 clearTimeout(interviewAutoEndTimer);
@@ -3670,11 +3776,13 @@
             return endings.some(phrase => normalized.includes(phrase));
         }
 
-        function scheduleInterviewAutoEnd(reason, delayMs = 1200, waitForSpeech = false) {
+        function scheduleInterviewAutoEnd(reason, delayMs = 1200, waitForSpeech = false, endCode = null) {
             if (interviewAutoEndTimer) {
                 clearTimeout(interviewAutoEndTimer);
                 interviewAutoEndTimer = null;
             }
+            if (endCode) interviewEndCode = endCode;
+            clearSilenceWatch();
             interviewTerminalState = true;
             window.stopListening();
             setAIAvatarSpeaking(false);
@@ -3837,7 +3945,9 @@
                     - Easy: Be supportive, encouraging, and ask basic conceptual questions. Help the candidate if they struggle.
                     - Medium: Be a standard professional interviewer. Ask a mix of technical and behavioral questions.
                     - Hard: Be critical, deep-dive into technical details, and challenge their answers.
-                    - Brutal: Be aggressive, use stress-interview tactics, interrupt occasionally, and ask extremely complex technical questions.`
+                    - Brutal: Be aggressive, use stress-interview tactics, interrupt occasionally, and ask extremely complex technical questions.
+
+                    ${InterviewConduct.CONDUCT_PROMPT}`
                 }
             ];
             
@@ -3846,6 +3956,9 @@
             consecutiveInterviewServiceFailures = 0;
             interviewTerminalState = false;
             clearInterviewAutoEnd();
+            clearSilenceWatch();
+            conductTracker = InterviewConduct.createTracker();
+            interviewEndCode = null;
             finalInterviewReport = null;
             detailedInterviewAnalysis = null;
             analysisRequestToken += 1;
@@ -3927,6 +4040,7 @@
             };
 
             mobileSendBtn.addEventListener('click', sendMobileMessage);
+            mobileChatInput.addEventListener('input', () => { if (silenceWatchTimer) armSilenceWatch(); });
             mobileChatInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
                     e.preventDefault();
@@ -4076,10 +4190,19 @@
         async function sendToAI(message, base64Audio = null) {
             if (isWaitingForAIResponse || interviewTerminalState) return;
             isWaitingForAIResponse = true;
+            clearSilenceWatch();
             let responseWillSpeak = false;
+            let conductDecision = null;
             try {
                 if (message) {
                     messages.push({ role: 'user', content: message });
+                    conductDecision = evaluateCandidateTurn(message);
+                    if (conductDecision.action === 'end') {
+                        // Second strike on a typed message: do not consult the model, close the call.
+                        endInterviewForConduct(conductDecision);
+                        responseWillSpeak = true;
+                        return;
+                    }
                 }
 
                 if (base64Audio && !liveUserMessageEl) {
@@ -4115,6 +4238,7 @@
                     const text = data.transcription;
                     if (text.length >= 3 || ['no', 'yes', 'ok'].includes(text.toLowerCase())) {
                         messages.push({ role: 'user', content: text });
+                        conductDecision = evaluateCandidateTurn(text);
                         if (liveUserMessageEl) {
                             const contentEl = liveUserMessageEl.querySelector('.message-content');
                             if (contentEl) contentEl.textContent = text;
@@ -4142,8 +4266,33 @@
                     interviewPlan = data.interviewPlan;
                 }
 
-                let aiMessage = data.response;
-                const { clean, emojis, report } = extractEmojisAndSanitize(aiMessage);
+                if (conductDecision && conductDecision.action === 'end') {
+                    // Second strike detected on the transcribed turn: drop the model's reply and close the call.
+                    endInterviewForConduct(conductDecision);
+                    responseWillSpeak = true;
+                    return;
+                }
+
+                // Model-signalled termination: [[END_INTERVIEW:misconduct|unresponsive|completed]] (stripped before display/TTS/transcript).
+                // A "completed" marker is only honoured once the completion floor (candidate turns + elapsed time) is met.
+                const completionContext = {
+                    candidateTurns: messages.filter(msg => msg.role === 'user').length,
+                    elapsedMs: interviewStartedAt ? Date.now() - new Date(interviewStartedAt).getTime() : 0
+                };
+                if (typeof data.response !== 'string') throw new Error('Empty response from interview service.');
+                const endMarker = InterviewConduct.resolveEndMarker(data.response, completionContext);
+                if (endMarker.suppressed) {
+                    console.info('[conduct] premature completed marker ignored', completionContext);
+                    messages.push({ role: 'system', content: InterviewConduct.LINES.continueNote });
+                }
+                let aiMessage = endMarker.text;
+                const { clean: cleanFromModel, emojis, report } = extractEmojisAndSanitize(aiMessage);
+                let clean = cleanFromModel;
+                if (conductDecision && conductDecision.action === 'warn' && !endMarker.end && !InterviewConduct.aiTextAlreadyWarns(clean)) {
+                    // Deterministic warning even if the model ignored the conduct note.
+                    clean = `${clean} ${InterviewConduct.LINES.warning}`.trim();
+                }
+                const endCodeFromModel = endMarker.end ? endMarker.reason : null;
 
                 if (report) {
                     setFinalInterviewReport(report, 'ai');
@@ -4159,7 +4308,7 @@
                             window.handleAISpeechFallback(clean);
                         }
                     }
-                    scheduleInterviewAutoEnd('Interview completed. Ending call...', 1200, responseWillSpeak);
+                    scheduleInterviewAutoEnd('Interview completed. Ending call...', 1200, responseWillSpeak, endCodeFromModel || 'completed');
                 } else {
                     const transcriptSafeAssistantText = sanitizeTranscriptText(clean || aiMessage);
                     if (transcriptSafeAssistantText) messages.push({ role: 'assistant', content: transcriptSafeAssistantText });
@@ -4172,8 +4321,14 @@
                         window.handleAISpeechFallback(clean);
                     }
 
-                    if (data.endInterview || isInterviewEndingMessage(clean)) {
-                        scheduleInterviewAutoEnd('Interview completed. Ending call...', 1200, responseWillSpeak);
+                    if (endMarker.end) {
+                        scheduleInterviewAutoEnd(InterviewConduct.endReasonMessage(endMarker.reason), 1200, responseWillSpeak, endMarker.reason);
+                    } else if (data.endInterview || (isInterviewEndingMessage(clean) && InterviewConduct.meetsCompletionFloor(completionContext))) {
+                        scheduleInterviewAutoEnd('Interview completed. Ending call...', 1200, responseWillSpeak, 'completed');
+                    } else if (isInterviewEndingMessage(clean)) {
+                        // Wrap-up phrasing before the completion floor: keep the interview going.
+                        console.info('[conduct] premature wrap-up phrasing ignored', completionContext);
+                        messages.push({ role: 'system', content: InterviewConduct.LINES.continueNote });
                     }
                 }
             } catch (error) {
@@ -4238,6 +4393,8 @@
             const shouldEnd = options.skipConfirm || confirm('End interview?');
             if (!shouldEnd) return;
             clearInterviewAutoEnd();
+            clearSilenceWatch();
+            if (options.endCode) interviewEndCode = options.endCode;
             interviewTerminalState = true;
             if (userStream) userStream.getTracks().forEach(t => t.stop());
             if (avatar) avatar.stopSpeaking();

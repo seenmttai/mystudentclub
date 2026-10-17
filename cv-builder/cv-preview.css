@@ -10,6 +10,7 @@
 .preview-sheet {
     box-sizing: border-box;
     width: min(560px, calc(100% - 32px));
+    max-height: 85vh;
     max-height: 85dvh;
     margin: auto;
     padding: 24px;
@@ -20,6 +21,14 @@
     box-shadow: var(--shadow-float);
 }
 .preview-sheet::backdrop { background: #0f172a66; backdrop-filter: blur(5px); }
+/* Keep the heading pinned and let only the content scroll when the sheet is taller than the viewport. */
+.preview-sheet[open] { display: flex; flex-direction: column; }
+.preview-sheet-handle, .preview-sheet-heading { flex-shrink: 0; }
+#preview-sheet-content { flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+.preview-sheet-empty { margin: 8px 0 0; padding: 14px; border: 1px dashed var(--control-border); border-radius: 14px; color: var(--text-muted); font-size: 13px; text-align: center; }
+/* Fallback when dialog.showModal() is unavailable or throws: emulate the top layer. */
+.preview-sheet.is-fallback { position: fixed; inset: 0; z-index: 3001; height: fit-content; }
+.preview-sheet-backdrop { position: fixed; inset: 0; z-index: 3000; background: #0f172a66; backdrop-filter: blur(5px); }
 .preview-sheet-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
 .preview-sheet-title-group { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .preview-sheet-heading h2 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.025em; color: var(--text-main); line-height: 1.2; }
@@ -117,6 +126,9 @@
 .preview-sheet .template-theme-title, .preview-sheet .template-theme-custom label { color: var(--text-main); }
 .preview-sheet .template-theme-subtitle { color: var(--text-muted); }
 .preview-sheet .template-theme-reset, .preview-sheet input { background: var(--surface-soft); color: var(--text-main); border-color: var(--control-border); }
+[data-theme="dark"] .preview-sheet #theme-accent-picker, [data-theme="dark"] .preview-sheet .template-theme-chip { background: var(--surface-soft) !important; border-color: var(--control-border) !important; }
+/* The sidebar copy of the panel keeps its light card look, so its inputs stay light in dark mode too. */
+[data-theme="dark"] .template-sidebar .template-theme-panel input { background: #ffffff; color: #0f172a; border-color: #dbe3ef; }
 .preview-sheet .template-grid { display: grid; overflow: visible; padding: 4px; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .preview-sheet .template-card { min-height: 0; background: var(--surface-soft); border-color: var(--control-border); }
 .preview-sheet .template-card-name { position: static; color: var(--text-main); background: var(--surface-soft); font-size: 12px; }
@@ -201,8 +213,8 @@
         background: linear-gradient(135deg, #3987ff, #2563eb); box-shadow: 0 6px 20px #2563eb40;
     }
     .cv-preview-actions .mobile-download-fab .ui-icon { width: 20px; height: 20px; }
-    .preview-sheet {
-        inset: auto 0 0; width: 100%; max-width: none; max-height: 85dvh; margin: 0;
+    .preview-sheet, .preview-sheet.is-fallback {
+        inset: auto 0 0; width: 100%; max-width: none; max-height: 85vh; max-height: 85dvh; margin: 0;
         padding: 12px 20px calc(24px + env(safe-area-inset-bottom, 0px));
         border-radius: 24px 24px 0 0;
     }

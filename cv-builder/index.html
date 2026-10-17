@@ -20,7 +20,7 @@
     <script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css">
     <link rel="stylesheet" href="cv-styles.css?v=20260912_5">
-    <link rel="stylesheet" href="cv-preview.css?v=20260912_1">
+    <link rel="stylesheet" href="cv-preview.css?v=20261017_1">
     <link rel="stylesheet" href="cv-reviewer-embedded.css?v=20260921_1">
     <!-- Old image-based PDF libs (replaced by Cloudflare Worker + Puppeteer for ATS-friendly PDFs) -->
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script> -->
@@ -1058,6 +1058,25 @@
             <h3>Choose Template</h3>
             <button class="template-sidebar-close" onclick="toggleTemplateSidebar(false)">×</button>
         </div>
+        <!-- Accent colour controls. Rendered by renderThemeControls(); the preview "Color" sheet moves this panel into #preview-sheet-content. -->
+        <section class="template-theme-panel" aria-labelledby="template-theme-title">
+            <div class="template-theme-head">
+                <div>
+                    <div class="template-theme-title" id="template-theme-title">Accent color</div>
+                    <div class="template-theme-subtitle">Pick a preset or enter a custom hex color for headings and highlights.</div>
+                </div>
+                <button type="button" class="template-theme-reset" onclick="resetThemeAccent()">Reset</button>
+            </div>
+            <div class="template-theme-swatches" id="template-theme-swatches"></div>
+            <div class="template-theme-custom">
+                <label for="theme-accent-value">Custom color</label>
+                <div class="template-theme-custom-row">
+                    <input type="color" id="theme-accent-picker" value="#2F557F" aria-label="Pick a custom accent color" oninput="updateThemeAccent(this.value)">
+                    <input type="text" id="theme-accent-value" placeholder="#2F557F" maxlength="7" autocomplete="off" spellcheck="false" aria-label="Accent color hex value" oninput="updateThemeAccentFromText(this.value)">
+                    <span class="template-theme-chip" id="theme-accent-chip">Accent</span>
+                </div>
+            </div>
+        </section>
         <div class="template-grid" id="template-grid">
             <!-- Cards injected by JS -->
         </div>
@@ -1182,7 +1201,7 @@
 <script src="cv-template-catalog.js?v=20260912_1"></script>
 <script src="cv-script.js?v=20260912_7"></script>
 <script src="cv-preview-zoom.js?v=20260912_1"></script>
-<script src="cv-preview.js?v=20260912_2"></script>
+<script src="cv-preview.js?v=20261017_1"></script>
 <script src="https://unpkg.com/markdown-pdfjs@1.0.1/dist/markdown-pdf.umd.js"></script>
 <script type="module" src="cv-reviewer-embedded.js?v=20260921_1"></script>
 
