@@ -54,15 +54,7 @@
         'industrial-training': { resources: industrialResources, premiumProgram: 'industrial-training' },
         'ca-fresher': { resources: fresherResources, premiumProgram: 'ca-fresher' },
         'articleship': { resources: fresherResources.filter(r => r.category === 'cv-prep').map(r => ({ ...r, title: r.title === 'Cover Letter CA Fresher' ? 'Cover Letter' : r.title })), premiumProgram: 'articleship' },
-        'semi-qualified': { resources: fresherResources.map(r => ({ ...r, title: r.title === 'Cover Letter CA Fresher' ? 'Cover Letter' : r.title })), premiumProgram: 'industrial-training' },
-        'domain-wise-companies': {
-            resources: industrialResources.filter(r => r.category === 'application-tricks').map(r => ({
-                ...r, title: 'Hiring Companies List',
-                description: 'Companies hiring CA Industrial Trainees, with location and stipend where shared.'
-            })),
-            premiumProgram: 'industrial-training',
-            freeIntro: 'Open the list, shortlist companies in your domain and start applying.'
-        }
+        'semi-qualified': { resources: fresherResources.map(r => ({ ...r, title: r.title === 'Cover Letter CA Fresher' ? 'Cover Letter' : r.title })), premiumProgram: 'industrial-training' }
     };
     const categories = ['cv-prep', 'interview-guidance', 'application-tricks'];
     const titleCollator = new Intl.Collator('en', { numeric: true, sensitivity: 'base' });

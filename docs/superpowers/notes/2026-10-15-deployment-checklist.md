@@ -50,6 +50,8 @@ node --test tests/mobile-webview-routes.test.cjs tests/mobile-program-pages.test
 5. Only after 1-4: remove the `hidden`/`data-gated-resource` gate (menus in the five resource pages: `/articleship-resources.html`, `/semi-qualified-ca-resources.html`, `/domain-wise-hiring-companies.html`) and then ship the Flutter links (separate msc-app plan).
 6. Promote production. Rollback: restore the recorded previous deploy; if backend cannot be reversed, hide new links and forward-fix.
 
+> Update 2026-10-17: the Domain-wise Hiring Companies page (`/domain-wise-hiring-companies.html`) and its menu/footer links were removed from the mobile site at the user's request; the resource matrix above is now four stage routes and the Free Resources menu has six entries.
+
 ## 5. Known open items found in this port
 - Industrial Training live-registration (master `adc53b657` payu CTA) is NOT ported in this tree (see report); `tests/mobile-program-pages.test.cjs` carries a `todo` for it.
 - Premium file download on `/ca-resource/resource/?action=download` uses an anchor with a signed URL; the free path uses the native blob bridge. Confirm premium download on iPhone; if it fails, route it through the blob bridge too.

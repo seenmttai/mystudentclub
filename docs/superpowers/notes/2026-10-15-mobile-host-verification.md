@@ -47,6 +47,8 @@ Cloudflare headers: `Server: cloudflare`, `Cache-Control: public, max-age=0, mus
 
 Implication for tests: `.html` URLs are 308-redirected to extensionless on the host; the deployed smoke (`MOBILE_SITE_ORIGIN`) follows redirects and asserts title + body hash != `/`.
 
+> Update 2026-10-17: `/domain-wise-hiring-companies.html` was removed from the mobile site at the user's request; it is no longer a route under test.
+
 ## Other probes relevant to release gates
 - Supabase PostgREST (`auth.mystudentclub.com`, anon, read-only POST of public RPCs): `get_public_resource_catalog_v2` -> **404 PGRST202 (function not in schema cache; hint suggests `get_public_resource_catalog`)**; `get_public_resource_catalog` -> **200**, names/metadata only (`resource_key, program_type, title, category, sort_order`, no file URLs). So v2 SQL is not deployed; `resource-library.js` falls back to v1 on PGRST202 (verified in code). `submit_career_intake` was NOT probed (it is a write); OpenAPI schema is not readable with the anon key (401), so `career_intakes`, `resource_access_logs`, RLS and the storage bucket remain unverified.
 - Notify Worker (`https://notify.mystudentclub.com/placed/start`): unauthenticated POST -> 401 (route exists). CORS preflight with `Origin: https://www.mystudentclub.com` -> 204 with `Access-Control-Allow-Origin: https://www.mystudentclub.com`; **preflight with `Origin: https://mobile.mystudentclub.com` -> 403**. The hosted Got Placed card on the mobile origin will therefore fail in a browser/WebView until the Worker (external repo) allow-lists the mobile origin. Release blocker for Task 8.

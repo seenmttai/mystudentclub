@@ -14,9 +14,10 @@ const PAGES = [
   { file: 'ca-industrial-training-resources.html', stage: 'industrial-training', h1: 'CA Industrial Training Resources', premium: 'industrial-training' },
   { file: 'articleship-resources.html', stage: 'articleship', h1: 'Articleship Resources', premium: 'articleship' },
   { file: 'semi-qualified-ca-resources.html', stage: 'semi-qualified', h1: 'Semi-Qualified CA Resources', premium: 'industrial-training' },
-  { file: 'domain-wise-hiring-companies.html', stage: 'domain-wise-companies', h1: 'Domain-wise Hiring Companies', premium: 'industrial-training' },
 ];
-const NEW_HUBS = ['/articleship-resources.html', '/semi-qualified-ca-resources.html', '/domain-wise-hiring-companies.html'];
+// Domain-wise Hiring Companies was removed from the mobile site on 2026-10-17; it must not come back as a route or a menu link.
+const REMOVED_HUBS = ['/domain-wise-hiring-companies.html'];
+const NEW_HUBS = ['/articleship-resources.html', '/semi-qualified-ca-resources.html'];
 
 test('each hub has its own stage, title and hero', () => {
   const seen = { stage: new Set(), title: new Set(), h1: new Set() };
@@ -49,29 +50,21 @@ test('each hub loads the shared library, its CSS and the session/intake scripts 
   }
 });
 
-test('stage pages use the right collector; the domain page uses the industrial intake', () => {
+test('stage pages use the shared form collector', () => {
   for (const p of PAGES) {
-    const html = read(p.file);
-    if (p.stage === 'domain-wise-companies') {
-      assert.match(html, /ensureForResource\('industrial-training'/);
-      assert.doesNotMatch(html, /resource-form-collector\.js/);
-    } else {
-      assert.match(html, /resource-form-collector\.js/);
-    }
+    assert.match(read(p.file), /resource-form-collector\.js/);
   }
 });
 
-test('library config: premium program and free resources per stage', () => {
+test('library config: premium program and free resources per stage; no removed stages', () => {
   for (const p of PAGES) {
     const cfg = library.pages[p.stage];
     assert.ok(cfg, p.stage);
     assert.equal(cfg.premiumProgram, p.premium, p.stage);
     assert.ok(cfg.resources.length > 0, p.stage);
   }
-  const domain = library.pages['domain-wise-companies'];
-  assert.equal(domain.resources.length, 1);
-  assert.equal(domain.resources[0].title, 'Hiring Companies List');
-  assert.match(domain.resources[0].viewUrl, /^https:\/\/docs\.google\.com\/spreadsheets\//);
+  assert.deepEqual(Object.keys(library.pages).sort(), PAGES.map((p) => p.stage).sort(), 'one library stage per hub page');
+  assert.equal(library.pages['domain-wise-companies'], undefined, 'the removed domain-wise stage has no config');
 });
 
 test('every free local resource file referenced by the library exists', () => {
@@ -92,7 +85,9 @@ test('the new hubs are live: listed in every hub menu and no longer gated or hid
       assert.ok(tag, `${p.file} menu lists ${href}`);
       assert.doesNotMatch(tag[0], /\bhidden\b|data-gated-resource/, `${p.file}: ${href} must be visible`);
     }
+    for (const href of REMOVED_HUBS) assert.ok(!html.includes(`href="${href}"`), `${p.file} must not link to the removed ${href}`);
   }
+  for (const href of REMOVED_HUBS) assert.ok(!exists(href.slice(1)), `${href} was removed and must not exist`);
   // the QA flag script stays harmless: it only un-hides [data-gated-resource] elements, of which there are none now
   assert.match(read('scripts/resource-page-chrome.js'), /msc-enable-new-resources/);
 });

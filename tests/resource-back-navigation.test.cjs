@@ -14,7 +14,6 @@ const PAGES = [
   'ca-industrial-training-resources.html',
   'articleship-resources.html',
   'semi-qualified-ca-resources.html',
-  'domain-wise-hiring-companies.html',
 ];
 
 /** Runs resource-page-chrome.js against a minimal fake browser and returns what it did. */

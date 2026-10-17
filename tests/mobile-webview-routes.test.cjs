@@ -25,11 +25,20 @@ const ROUTES = [
   { route: '/ca-industrial-training-resources.html', file: 'ca-industrial-training-resources.html', title: 'CA Industrial Training Resources' },
   { route: '/articleship-resources.html', file: 'articleship-resources.html', title: 'Articleship Resources' },
   { route: '/semi-qualified-ca-resources.html', file: 'semi-qualified-ca-resources.html', title: 'Semi-Qualified CA Resources' },
-  { route: '/domain-wise-hiring-companies.html', file: 'domain-wise-hiring-companies.html', title: 'Domain-wise Hiring Companies' },
+  // /domain-wise-hiring-companies.html was removed from the mobile site on 2026-10-17 (see REMOVED_ROUTES).
   { route: '/ca-industrial-training-program/', file: 'ca-industrial-training-program/index.html', title: 'MSC CA Industrial Training Program' },
   { route: '/articleship-program/', file: 'articleship-program/index.html', title: 'MSC Articleship Program' },
   { route: '/msc-ca-fresher-program/', file: 'msc-ca-fresher-program/index.html', title: 'MSC CA Freshers Program' },
 ];
+
+const REMOVED_ROUTES = [{ route: '/domain-wise-hiring-companies.html', file: 'domain-wise-hiring-companies.html' }];
+
+test('removed routes have no file and are not linked from any planned route', () => {
+  for (const removed of REMOVED_ROUTES) {
+    assert.ok(!exists(removed.file), `${removed.route}: ${removed.file} must stay deleted`);
+    for (const r of ROUTES) assert.ok(!read(r.file).includes(`href="${removed.route}"`), `${r.route} must not link to ${removed.route}`);
+  }
+});
 
 test('every planned route has its own file with its own title (distinct from the root index)', () => {
   const rootIndex = read('index.html');

@@ -14,8 +14,9 @@ const RESOURCE_PAGES = [
   'articleship-resources.html',
   'ca-fresher-training-resources.html',
   'semi-qualified-ca-resources.html',
-  'domain-wise-hiring-companies.html',
 ];
+// Removed from the mobile site on 2026-10-17 at the user's request: no page may link to it and the file must not exist.
+const REMOVED_RESOURCE_HREF = '/domain-wise-hiring-companies.html';
 const PROGRAM_PAGES = ['ca-industrial-training-program/index.html', 'articleship-program/index.html', 'msc-ca-fresher-program/index.html'];
 
 // Canonical list (master's labels): destination + label, in menu order.
@@ -25,7 +26,6 @@ const FREE_RESOURCES = [
   ['/articleship-resources.html', 'Articleship Resources'],
   ['/ca-fresher-training-resources.html', 'CA Fresher Resources'],
   ['/semi-qualified-ca-resources.html', 'Semi-Qualified CA Resources'],
-  ['/domain-wise-hiring-companies.html', 'Domain-wise Hiring Companies'],
   ['https://www.mystudentclub.com/blog/', 'Career Guides'],
   ['https://www.mystudentclub.com/sessions/', 'Events &amp; Live Sessions'],
 ];
@@ -65,7 +65,8 @@ function menuPages() {
   return out;
 }
 
-test('the 5 resource pages and 3 program pages list the same Free Resources destinations, none hidden', () => {
+test('the 4 resource pages and 3 program pages list the same 6 Free Resources destinations, none hidden', () => {
+  assert.equal(FREE_RESOURCES.length, 6);
   for (const file of [...RESOURCE_PAGES, ...PROGRAM_PAGES]) {
     const anchors = freeResourcesAnchors(read(file));
     assert.deepEqual(anchors.map((a) => [a.href, a.label]), FREE_RESOURCES, `${file}: Free Resources list`);
@@ -77,12 +78,14 @@ test('the 5 resource pages and 3 program pages list the same Free Resources dest
 
 test('every web page with the drawer uses that exact list (jobs/** pages are generated and excluded)', () => {
   const pages = menuPages();
-  assert.ok(pages.length >= 39, `found ${pages.length} pages with a Free Resources menu`);
+  assert.ok(pages.length >= 38, `found ${pages.length} pages with a Free Resources menu`);
   for (const file of pages) {
     const anchors = freeResourcesAnchors(read(file));
     assert.deepEqual(anchors.map((a) => a.href), FREE_RESOURCES.map((r) => r[0]), `${file}: Free Resources destinations`);
     for (const a of anchors) assert.doesNotMatch(a.attrs, /\bhidden\b|data-gated-resource/, `${file}: ${a.href} hidden`);
+    assert.ok(!read(file).includes(`href="${REMOVED_RESOURCE_HREF}"`), `${file}: still links to the removed ${REMOVED_RESOURCE_HREF}`);
   }
+  assert.ok(!exists(REMOVED_RESOURCE_HREF.slice(1)), `${REMOVED_RESOURCE_HREF} must stay deleted`);
 });
 
 test('local destinations exist; blog and sessions are absolute www URLs (no relative routes the mobile host cannot serve)', () => {
@@ -113,6 +116,7 @@ test('program footers list the same resource hubs and no broken relative routes'
     assert.ok(col, `${file}: footer column`);
     const hrefs = [...col[1].matchAll(/href="([^"]*)"/g)].map((m) => m[1]);
     for (const [href] of FREE_RESOURCES) assert.ok(hrefs.includes(href), `${file}: footer lists ${href}`);
+    assert.ok(!hrefs.includes(REMOVED_RESOURCE_HREF), `${file}: footer must not list the removed ${REMOVED_RESOURCE_HREF}`);
     assert.ok(!hrefs.includes('/ca-articleship-opportunities'), `${file}: footer must not use the unserved /ca-articleship-opportunities`);
   }
 });
