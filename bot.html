@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MSC-JobsBot | My Student Club</title>
+    <meta name="description" content="MSC-JobsBot is My Student Club's job-listing crawler. What it reads, how it behaves, and how to opt out.">
+    <link rel="canonical" href="https://www.mystudentclub.com/bot">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.mystudentclub.com/bot">
+    <meta property="og:title" content="MSC-JobsBot | My Student Club">
+    <meta property="og:description" content="What My Student Club's job crawler reads, how it behaves, and how to opt out.">
+    <meta property="og:site_name" content="My Student Club">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1e3a5f;
+            --secondary-color: #2563eb;
+            --text-color: #334155;
+            --text-secondary: #64748b;
+            --background-color: #f8fafc;
+            --surface-color: #ffffff;
+            --border-color: #e2e8f0;
+            --code-bg: #f1f5f9;
+            --radius: 12px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --primary-color: #cfe0f5;
+                --secondary-color: #7aa7f7;
+                --text-color: #dbe3ee;
+                --text-secondary: #9aa8ba;
+                --background-color: #0f1722;
+                --surface-color: #162131;
+                --border-color: #26354a;
+                --code-bg: #1d2b3e;
+            }
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', system-ui, sans-serif;
+            background: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.65;
+            font-size: 16px;
+        }
+
+        header {
+            border-bottom: 1px solid var(--border-color);
+            background: var(--surface-color);
+        }
+
+        header .inner, main {
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+
+        header a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        main { padding-top: 32px; padding-bottom: 64px; }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 1.9rem;
+            line-height: 1.25;
+            margin-bottom: 8px;
+        }
+
+        .lead { color: var(--text-secondary); margin-bottom: 28px; }
+
+        section {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 20px 22px;
+            margin-bottom: 18px;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 1.15rem;
+            margin-bottom: 10px;
+        }
+
+        p + p, p + ul, ul + p, p + pre, pre + p { margin-top: 10px; }
+
+        ul { padding-left: 20px; }
+        li + li { margin-top: 6px; }
+
+        code, pre {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 0.9rem;
+            background: var(--code-bg);
+            border-radius: 6px;
+        }
+
+        code { padding: 1px 6px; overflow-wrap: anywhere; }
+        pre { padding: 12px 14px; overflow-x: auto; }
+
+        a { color: var(--secondary-color); }
+
+        .contact {
+            font-size: 1.05rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="inner"><a href="/">My Student Club</a></div>
+    </header>
+    <main>
+        <h1>MSC-JobsBot</h1>
+        <p class="lead">MSC-JobsBot is the job-listing crawler of My Student Club, a community for Chartered Accountancy,
+            Company Secretary and Cost &amp; Management Accountancy students and professionals in India.</p>
+
+        <section>
+            <h2>How to recognise it</h2>
+            <p>Every request carries this user-agent:</p>
+            <pre>MSC-JobsBot/1.0 (+https://www.mystudentclub.com/bot)</pre>
+        </section>
+
+        <section>
+            <h2>What it does</h2>
+            <p>It reads public job openings on employers' own career pages and on the public job pages of their
+                applicant-tracking systems. It keeps openings in India that CA, CS and CMA students or members can apply
+                for and lists them on My Student Club with a link back to the employer's own job page. Applications
+                always happen on the employer's site.</p>
+        </section>
+
+        <section>
+            <h2>How it behaves</h2>
+            <ul>
+                <li>It obeys <code>robots.txt</code> (RFC 9309) and re-reads it every 24 hours.</li>
+                <li>It honours <code>Crawl-delay</code> and otherwise makes no more than about one or two requests a
+                    second to a site.</li>
+                <li>It never logs in, never solves CAPTCHAs, never uses proxies to change its address and never
+                    disguises itself as a browser user.</li>
+                <li>If a site answers with a rate limit, a firewall block or a challenge page, it stops and tries again
+                    another day.</li>
+                <li>It does not crawl sites whose terms prohibit automated access.</li>
+                <li>It fetches a job's full description only when the job is new or has changed.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Opting out</h2>
+            <p>Add a rule for the token <code>MSC-JobsBot</code> to your <code>robots.txt</code>. To exclude the whole
+                site:</p>
+            <pre>User-agent: MSC-JobsBot
+Disallow: /</pre>
+            <p>Or email us with the domain you want excluded:</p>
+            <p class="contact"><a href="mailto:bot@mystudentclub.com?subject=MSC-JobsBot%20opt-out">bot@mystudentclub.com</a></p>
+            <p>We add it to our exclusion list and stop crawling it within 24 hours, and we remove its listings from
+                My Student Club.</p>
+        </section>
+    </main>
+</body>
+
+</html>
