@@ -42,16 +42,42 @@ function escapeHtml(value) {
         .replace(/'/g, '&#39;');
 }
 
+// Some listings store simple HTML (<b>, <br>, &amp;). Turn breaks into
+// newlines and decode common entities before escaping, so they read as text.
+function normalizeListingText(value) {
+    return String(value ?? '')
+        .replace(/<br\s*\/?>/gi, '\n')
+        .replace(/<\/p>\s*<p[^>]*>/gi, '\n\n')
+        .replace(/<\/?p[^>]*>/gi, '\n')
+        .replace(/&nbsp;/gi, ' ')
+        .replace(/&quot;/gi, '"')
+        .replace(/&#39;|&apos;/gi, "'")
+        .replace(/&lt;/gi, '<')
+        .replace(/&gt;/gi, '>')
+        .replace(/&amp;/gi, '&');
+}
+
+// After escaping, bring back bare bold / italic tags (no attributes).
+function restoreBasicTags(html) {
+    return html.replace(/&lt;(\/?)(b|strong|i|em|u)&gt;/gi, '<$1$2>');
+}
+
+// Plain text for card snippets: no tags, no markdown markers.
+function listingSnippetText(value) {
+    return normalizeListingText(value).replace(/<[^>]+>/g, ' ').replace(/[#*_`\[\]]/g, '').replace(/\s+/g, ' ').trim();
+}
+
 // Applications and saves made on the CS / CMA portal (scripts/pro-portal) use
 // the same tables; that portal records the course and section here so this page
 // can label them and link back to the right page.
 const PRO_PORTAL_JOBS_KEY = 'msc_pro_portal_jobs';
 const PRO_PORTAL_PATH = /^\/[a-z0-9-]+\?job=[a-z-]+(%3A|:)[0-9a-f-]+$/i;
 
-function proPortalRef(table, id) {
+function proPortalRef(table, id, { saved = false } = {}) {
     try {
         const ref = JSON.parse(localStorage.getItem(PRO_PORTAL_JOBS_KEY) || '{}')[`${table}:${id}`];
         if (!ref || !PRO_PORTAL_PATH.test(String(ref.path || ''))) return null;
+        if (!(saved ? ref.saved : ref.applied)) return null;
         const label = String(ref.label || '').replace(/[<>&"']/g, '');
         return label ? { label, path: ref.path } : null;
     } catch (e) {
@@ -334,7 +360,7 @@ function renderApplicationCard(application) {
     if (application.job_table === 'Fresher Jobs' && job.Experience === 'Experienced') {
         portalName = 'Experienced CA';
     }
-    const proRef = proPortalRef(application.job_table, application.job_id);
+    const proRef = proPortalRef(application.job_table, application.job_id, { saved: application.isSaved });
     if (proRef) portalName = proRef.label;
 
     const isExclusive = !!job.is_exclusive;
@@ -353,7 +379,7 @@ function renderApplicationCard(application) {
 
     const roleLabel = job.Role || (application.job_table === 'Industrial Training Job Portal' ? 'Industrial Trainee' : application.job_table === 'Articleship Jobs' ? 'Articleship' : 'Professional');
     const compText = job.Salary ? `${job.Salary}` : '';
-    const descriptionText = job.Description ? job.Description.replace(/[#*_`\[\]]/g, '').trim() : '';
+    const descriptionText = job.Description ? listingSnippetText(job.Description) : '';
     const snippet = descriptionText ? `${descriptionText.slice(0, 110)}${descriptionText.length > 110 ? '...' : ''}` : 'No description available.';
 
     const statusText = application.isSaved ? 'Saved' : 'Applied';
@@ -517,12 +543,12 @@ function showJobModal(application) {
     const companyName = (job.Company || '').trim();
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
     const appliedDate = application.applied_at ? getDaysAgo(application.applied_at) : 'N/A';
-    const proRef = proPortalRef(application.job_table, application.job_id);
+    const proRef = proPortalRef(application.job_table, application.job_id, { saved: application.isSaved });
     const portalName = proRef ? proRef.label : (PORTAL_DISPLAY_NAMES[application.job_table] || application.job_table);
 
     const renderMarkdown = (text) => {
         if (!text) return 'No description available.';
-        let html = escapeHtml(text)
+        let html = restoreBasicTags(escapeHtml(normalizeListingText(text)))
             .replace(/^### (.*$)/gim, '<h3>$1</h3>')
             .replace(/^## (.*$)/gim, '<h2>$1</h2>')
             .replace(/^# (.*$)/gim, '<h1>$1</h1>')

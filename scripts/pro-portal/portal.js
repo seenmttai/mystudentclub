@@ -170,10 +170,12 @@ function toggleSaved(job) {
     const index = refs.findIndex(ref => String(ref.id) === String(job.id) && ref.table === job.__table);
     if (index >= 0) {
         refs.splice(index, 1);
+        forgetCourseRef(job, 'saved');
         toast('Removed from saved listings.');
     } else {
         refs.push({ id: job.id, table: job.__table, savedAt: new Date().toISOString() });
-        rememberCourseRef(job);
+        rememberCourseRef(job, 'saved');
+        rememberCourse();
         toast('Saved. Find it any time under Applications → Saved.', 'success');
         track('pp_save', { job: jobKey(job.__table, job.id) });
     }
@@ -200,16 +202,42 @@ function updateSavedCount() {
 
 // Tells the Applications page (history.js) which course and section a saved or
 // applied listing came from, since the job tables themselves are shared with CA.
-function rememberCourseRef(job) {
+// history.js labels an entry as CS / CMA only for what happened here:
+// `how` is 'saved' or 'applied'.
+function rememberCourseRef(job, how) {
     const lane = laneForJob(job);
     if (!lane) return;
     const refs = storageGet(localStorage, PRO_JOBS_KEY, {});
     const key = `${job.__table}:${job.id}`;
+    const previous = refs[key] || {};
     delete refs[key];
-    refs[key] = { label: `${app.course.name} · ${lane.tab}`, path: `${lane.path}?job=${encodeURIComponent(jobKey(job.__table, job.id))}` };
+    refs[key] = {
+        label: `${app.course.name} · ${lane.tab}`,
+        path: `${lane.path}?job=${encodeURIComponent(jobKey(job.__table, job.id))}`,
+        saved: Boolean(previous.saved),
+        applied: Boolean(previous.applied),
+        [how]: true
+    };
     const keys = Object.keys(refs);
     keys.slice(0, Math.max(0, keys.length - PRO_JOBS_LIMIT)).forEach(old => delete refs[old]);
     storageSet(localStorage, PRO_JOBS_KEY, refs);
+}
+
+function forgetCourseRef(job, how) {
+    const refs = storageGet(localStorage, PRO_JOBS_KEY, {});
+    const key = `${job.__table}:${job.id}`;
+    if (!refs[key]) return;
+    refs[key][how] = false;
+    if (!refs[key].saved && !refs[key].applied) delete refs[key];
+    storageSet(localStorage, PRO_JOBS_KEY, refs);
+}
+
+// The CA homepage skips its CA-only onboarding for CS / CMA students. Record
+// the course only when someone acts here (save or apply), not on a visit.
+function rememberCourse() {
+    try {
+        localStorage.setItem('msc_course', app.course.key);
+    } catch (_) { /* ignore */ }
 }
 
 function isApplied(job) {
@@ -242,7 +270,8 @@ async function recordApplication(job) {
         console.warn('[pro-portal] could not record application', error);
         return false;
     }
-    rememberCourseRef(job);
+    rememberCourseRef(job, 'applied');
+    rememberCourse();
     $$(`[data-card="${key}"]`).forEach(card => card.classList.add('is-applied'));
     $$(`[data-card="${key}"] .pp-applied-flag`).forEach(flag => { flag.hidden = false; });
     return true;
@@ -1568,9 +1597,6 @@ async function init() {
         app.session = null;
     }
     renderAuth();
-    try {
-        localStorage.setItem('msc_course', app.course.key);
-    } catch (_) { /* ignore */ }
     if (app.lane) await initLane();
     else await initHub();
 }

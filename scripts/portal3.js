@@ -20,6 +20,31 @@ function safeHref(value) {
     return /^https?:\/\//i.test(raw) ? escapeHtml(raw) : '#';
 }
 
+// Some listings store simple HTML (<b>, <br>, &amp;). Turn breaks into
+// newlines and decode common entities before escaping, so they read as text.
+function normalizeListingText(value) {
+    return String(value ?? '')
+        .replace(/<br\s*\/?>/gi, '\n')
+        .replace(/<\/p>\s*<p[^>]*>/gi, '\n\n')
+        .replace(/<\/?p[^>]*>/gi, '\n')
+        .replace(/&nbsp;/gi, ' ')
+        .replace(/&quot;/gi, '"')
+        .replace(/&#39;|&apos;/gi, "'")
+        .replace(/&lt;/gi, '<')
+        .replace(/&gt;/gi, '>')
+        .replace(/&amp;/gi, '&');
+}
+
+// After escaping, bring back bare bold / italic tags (no attributes).
+function restoreBasicTags(html) {
+    return html.replace(/&lt;(\/?)(b|strong|i|em|u)&gt;/gi, '<$1$2>');
+}
+
+// Plain text for card snippets: no tags, no markdown markers.
+function listingSnippetText(value) {
+    return normalizeListingText(value).replace(/<[^>]+>/g, ' ').replace(/[#*_`\[\]]/g, '').replace(/\s+/g, ' ').trim();
+}
+
 function isSalaryDisclosed(val) {
     if (!val) return false;
     const clean = val.toString().replace(/[₹\s\-\.]/g, '').toLowerCase();
@@ -487,7 +512,7 @@ function renderJobCard(job) {
                 <span class="job-info-value">${escapeHtml(job.Location)}</span>
             </div>`);
     const infoRowHtml = infoRowItems.length ? `<div class="job-card-info-row">${infoRowItems.join('')}</div>` : '';
-    const descriptionText = job.Description ? job.Description.replace(/[#*_`\[\]]/g, '').trim() : '';
+    const descriptionText = job.Description ? listingSnippetText(job.Description) : '';
     const isLocked = isExclusive && !isEnrolledSync(currentTable);
     let applyButtonHtml = '';
     if (isLocked) {
@@ -610,7 +635,7 @@ function getTruncatedDescription(desc, maxLength = 260) {
 function renderMarkdown(text) {
     if (!text) return 'No description available.';
 
-    let html = escapeHtml(text)
+    let html = restoreBasicTags(escapeHtml(normalizeListingText(text)))
         // Headers
         .replace(/^### (.*$)/gim, '<h3>$1</h3>')
         .replace(/^## (.*$)/gim, '<h2>$1</h2>')
@@ -3770,7 +3795,8 @@ async function initializePage() {
         // CS / CMA portal (scripts/pro-portal sets msc_course).
         let proPortalCourse = null;
         try { proPortalCourse = localStorage.getItem('msc_course'); } catch (e) { }
-        if ((!profile || !profile.looking_for) && proPortalCourse !== 'cs' && proPortalCourse !== 'cma') {
+        const lookingFor = profile?.looking_for;
+        if (!lookingFor && proPortalCourse !== 'cs' && proPortalCourse !== 'cma') {
             const path = window.location.pathname;
             if (path === '/' || path === '/index.html') {
                 setTimeout(() => {
@@ -3785,7 +3811,7 @@ async function initializePage() {
                 'CA Fresher': 'fresher_fresher',
                 'Semi Qualified CA': 'semi_fresher'
             };
-            const pref = getJobPreference() || lookingForToPreference[profile.looking_for];
+            const pref = getJobPreference() || lookingForToPreference[lookingFor];
             if (pref) {
                 redirectToPreferredPortal(pref);
             }
@@ -4691,6 +4717,7 @@ function initOnboardingSegmentForm() {
                 .eq('uuid', currentSession.user.id);
 
             if (error) throw error;
+            try { localStorage.removeItem('msc_course'); } catch (_) { }
 
             // Sync with local cached object in localStorage
             const cached = localStorage.getItem('userProfileData');

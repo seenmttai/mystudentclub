@@ -3692,6 +3692,21 @@ body:has(.portal-nav-bar) {
     padding: 0.5rem 0.55rem;
     font-size: 0.85rem;
   }
+
+  /* The first item (Jobs) sits next to the logo: drop its chevron so the
+     nav fits, and open its menu rightwards so it stays on screen. */
+  .dv2-header-nav > .dv2-nav-dropdown:first-child .dv2-dropdown-trigger i {
+    display: none;
+  }
+
+  .dv2-header-nav > .dv2-nav-dropdown:first-child .dv2-dropdown-menu {
+    left: 0;
+    transform: none;
+  }
+
+  .dv2-header-nav > .dv2-nav-dropdown:first-child .dv2-dropdown-menu::before {
+    left: 1.5rem;
+  }
 }
 
 @media (min-width: 1024px) and (max-width: 1179px) {
