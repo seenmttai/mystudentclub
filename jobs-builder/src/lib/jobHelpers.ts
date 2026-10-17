@@ -147,12 +147,24 @@ export function generateJobSlug(job: any): string {
     return parts.filter(Boolean).join('-');
 }
 
+// Same masking as the visible page body: recruiter contacts are only revealed
+// through the signed-in unlock flow, so they must not leak via structured data.
+function maskContacts(text: string): string {
+    return text
+        .replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/gi, '[email protected]')
+        .replace(/https?:\/\/[^\s\)]+/gi, '[link protected]')
+        .replace(/(?:\+?91[\s-]?)?[6-9]\d{9}/g, '[phone protected]');
+}
+
 export function generateJsonLd(job: any, slug: string, categorySlug: any): any {
     const DOMAIN = 'https://www.mystudentclub.com';
     const datePosted = formatDate(job.Created_At);
     const description = job.Description
-        ? String(job.Description).trim()
+        ? maskContacts(String(job.Description).trim())
         : 'No description available';
+    const salary = parseInt(String(job.Salary || '0').replace(/[^0-9]/g, '')) || 0;
+    // Fresher and semi-qualified rows store annual CTC; training rows store a monthly stipend.
+    const salaryUnit = categorySlug === 'fresher' || categorySlug === 'semi-qualified' ? 'YEAR' : 'MONTH';
 
     return {
         "@context": "https://schema.org/",
@@ -185,15 +197,17 @@ export function generateJsonLd(job: any, slug: string, categorySlug: any): any {
                 "postalCode": (job.Location && job.Location.match(/\b\d{6}\b/) ? job.Location.match(/\b\d{6}\b/)[0] : undefined)
             }
         },
-        "baseSalary": {
-            "@type": "MonetaryAmount",
-            "currency": "INR",
-            "value": {
-                "@type": "QuantitativeValue",
-                "value": parseInt(String(job.Salary || '0').replace(/[^0-9]/g, '')) || 0,
-                "unitText": "MONTH"
+        ...(salary > 0 ? {
+            "baseSalary": {
+                "@type": "MonetaryAmount",
+                "currency": "INR",
+                "value": {
+                    "@type": "QuantitativeValue",
+                    "value": salary,
+                    "unitText": salaryUnit
+                }
             }
-        }
+        } : {})
     };
 }
 

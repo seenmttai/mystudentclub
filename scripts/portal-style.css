@@ -3620,7 +3620,8 @@ body:has(.portal-nav-bar) {
     height: 0.5rem;
   }
 
-  .dv2-nav-dropdown:hover .dv2-dropdown-menu {
+  .dv2-nav-dropdown:hover .dv2-dropdown-menu,
+  .dv2-nav-dropdown:focus-within .dv2-dropdown-menu {
     display: block;
   }
 
