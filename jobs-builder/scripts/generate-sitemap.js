@@ -50,39 +50,27 @@ for (const category of CATEGORIES) {
         
         try {
             const content = fs.readFileSync(filePath, 'utf8');
-            
-            // Extract datePosted from JSON-LD
+
+            // Expired pages are marked noindex by expire-old-jobs.js; listing them
+            // only fills Search Console with "submitted URL marked noindex".
+            if (/<meta[^>]+name=["']robots["'][^>]+noindex/i.test(content)) continue;
+
+            // Use the posting date from the JSON-LD. File times are no signal:
+            // CI checks every file out fresh, so they all look new.
             const dateMatch = content.match(/"datePosted":\s*"(\d{4}-\d{2}-\d{2})/);
-            
-            if (dateMatch && dateMatch[1]) {
-                const jobDate = new Date(dateMatch[1]);
-                
-                // Only include fresh jobs
-                if (jobDate > cutoffDate) {
-                    const url = `${DOMAIN}/jobs/${category}/${file}`;
-                    sitemapContent += `   <url>
+            if (!dateMatch) continue;
+
+            const jobDate = new Date(dateMatch[1]);
+            if (jobDate > cutoffDate) {
+                const url = `${DOMAIN}/jobs/${category}/${file}`;
+                sitemapContent += `   <url>
       <loc>${url}</loc>
-      <lastmod>${today}</lastmod>
+      <lastmod>${dateMatch[1]}</lastmod>
       <changefreq>daily</changefreq>
       <priority>0.7</priority>
    </url>
 `;
-                    addedCount++;
-                }
-            } else {
-                // No JSON-LD found, check file modification time as fallback
-                const stats = fs.statSync(filePath);
-                if (stats.mtime > cutoffDate) {
-                    const url = `${DOMAIN}/jobs/${category}/${file}`;
-                    sitemapContent += `   <url>
-      <loc>${url}</loc>
-      <lastmod>${today}</lastmod>
-      <changefreq>daily</changefreq>
-      <priority>0.7</priority>
-   </url>
-`;
-                    addedCount++;
-                }
+                addedCount++;
             }
         } catch (err) {
             console.error(`  Error processing ${file}:`, err.message);
