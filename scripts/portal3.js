@@ -3744,8 +3744,12 @@ async function initializePage() {
             profile = await fetchAndCacheProfileData();
         }
 
-        // Show onboarding segment modal if looking_for is not set on the homepage
-        if (!profile || !profile.looking_for) {
+        // Show onboarding segment modal if looking_for is not set on the homepage.
+        // Its options are CA-only, so skip it for people who came through the
+        // CS / CMA portal (scripts/pro-portal sets msc_course).
+        let proPortalCourse = null;
+        try { proPortalCourse = localStorage.getItem('msc_course'); } catch (e) { }
+        if ((!profile || !profile.looking_for) && proPortalCourse !== 'cs' && proPortalCourse !== 'cma') {
             const path = window.location.pathname;
             if (path === '/' || path === '/index.html') {
                 setTimeout(() => {

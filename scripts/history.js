@@ -31,6 +31,23 @@ const PORTAL_DISPLAY_NAMES = {
     'Experienced CA Jobs': 'Experienced CA'
 };
 
+// Applications and saves made on the CS / CMA portal (scripts/pro-portal) use
+// the same tables; that portal records the course and section here so this page
+// can label them and link back to the right page.
+const PRO_PORTAL_JOBS_KEY = 'msc_pro_portal_jobs';
+const PRO_PORTAL_PATH = /^\/[a-z0-9-]+\?job=[a-z-]+(%3A|:)[0-9a-f-]+$/i;
+
+function proPortalRef(table, id) {
+    try {
+        const ref = JSON.parse(localStorage.getItem(PRO_PORTAL_JOBS_KEY) || '{}')[`${table}:${id}`];
+        if (!ref || !PRO_PORTAL_PATH.test(String(ref.path || ''))) return null;
+        const label = String(ref.label || '').replace(/[<>&"']/g, '');
+        return label ? { label, path: ref.path } : null;
+    } catch (e) {
+        return null;
+    }
+}
+
 const dom = {
     loader: null,
     historyContent: null,
@@ -306,6 +323,8 @@ function renderApplicationCard(application) {
     if (application.job_table === 'Fresher Jobs' && job.Experience === 'Experienced') {
         portalName = 'Experienced CA';
     }
+    const proRef = proPortalRef(application.job_table, application.job_id);
+    if (proRef) portalName = proRef.label;
 
     const isExclusive = !!job.is_exclusive;
     const isLocked = isExclusive && !isEnrolledSync('Industrial Training Job Portal');
@@ -487,7 +506,8 @@ function showJobModal(application) {
     const companyName = (job.Company || '').trim();
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
     const appliedDate = application.applied_at ? getDaysAgo(application.applied_at) : 'N/A';
-    const portalName = PORTAL_DISPLAY_NAMES[application.job_table] || application.job_table;
+    const proRef = proPortalRef(application.job_table, application.job_id);
+    const portalName = proRef ? proRef.label : (PORTAL_DISPLAY_NAMES[application.job_table] || application.job_table);
 
     const renderMarkdown = (text) => {
         if (!text) return 'No description available.';
@@ -534,7 +554,7 @@ function showJobModal(application) {
                     <p style="margin: 0 0 0.25rem; font-size: 0.85rem; font-weight: 600; color: #1e40af;">Recruiter contact verified &amp; protected</p>
                     <p style="margin: 0; font-size: 0.78rem; color: #3b82f6;">Open the job portal to unlock application details instantly.</p>
                 </div>
-                <a href="${portalUrl}?id=${jobId}&type=${jobType}" target="_blank" style="flex-shrink: 0; padding: 0.5rem 0.9rem; background: linear-gradient(135deg, #3b82f6, #6366f1); color: white; border-radius: 8px; font-size: 0.8rem; font-weight: 600; text-decoration: none; white-space: nowrap;">
+                <a href="${proRef ? proRef.path : `${portalUrl}?id=${jobId}&type=${jobType}`}" target="_blank" style="flex-shrink: 0; padding: 0.5rem 0.9rem; background: linear-gradient(135deg, #3b82f6, #6366f1); color: white; border-radius: 8px; font-size: 0.8rem; font-weight: 600; text-decoration: none; white-space: nowrap;">
                     View &amp; Unlock
                 </a>
             </div>

@@ -1600,10 +1600,10 @@
 
       grid.innerHTML = candidates.map(c => {
         const p = c.profile || {};
-        const name = p.full_name || p.name || 'CA Candidate';
+        const name = p.full_name || p.name || 'Candidate';
         const initial = name.charAt(0).toUpperCase();
         const city = p.current_city || p.city || 'Location N/A';
-        const caAttempts = p.ca_inter_attempts ? `Inter: ${p.ca_inter_attempts} att` : (p.ca_final_attempts ? `Final: ${p.ca_final_attempts} att` : 'CA Inter');
+        const caAttempts = p.ca_inter_attempts ? `Inter: ${p.ca_inter_attempts} att` : (p.ca_final_attempts ? `Final: ${p.ca_final_attempts} att` : 'Not provided');
         const articleship = p.articleship_firm_name ? `${p.articleship_firm_name}` : (p.industrial_training_company || 'Articleship');
         const notice = p.notice_period || 'Immediate';
         const email = p.email || c.user_id;
@@ -1678,14 +1678,14 @@
       document.getElementById('modalCandNotice').textContent = p.notice_period || 'Immediate';
 
       // Populate Academics
-      document.getElementById('modalCaFinal').textContent = p.ca_final_attempts ? `${p.ca_final_attempts} Attempts (${p.ca_final_clear_year || 'Cleared'})` : 'CA Inter Qualified';
-      document.getElementById('modalCaInter').textContent = p.ca_inter_attempts ? `${p.ca_inter_attempts} Attempts` : 'Both Groups Cleared';
-      document.getElementById('modalGraduation').textContent = p.grad_degree ? `${p.grad_degree} (${p.grad_percentage || '—'}%)` : 'B.Com';
+      document.getElementById('modalCaFinal').textContent = p.ca_final_attempts ? `${p.ca_final_attempts} Attempts (${p.ca_final_clear_year || 'Cleared'})` : 'Not provided';
+      document.getElementById('modalCaInter').textContent = p.ca_inter_attempts ? `${p.ca_inter_attempts} Attempts` : 'Not provided';
+      document.getElementById('modalGraduation').textContent = p.grad_degree ? `${p.grad_degree} (${p.grad_percentage || '—'}%)` : 'Not provided';
       document.getElementById('modalAirRank').textContent = p.ca_final_air || p.ca_inter_air || 'None';
 
       // Populate Experience
       document.getElementById('modalArticleshipFirm').textContent = p.articleship_firm_name || '—';
-      document.getElementById('modalArticleshipDomain').textContent = p.articleship_domain || p.articleship_client_industries || 'Statutory & Tax Audit';
+      document.getElementById('modalArticleshipDomain').textContent = p.articleship_domain || p.articleship_client_industries || 'Not provided';
       document.getElementById('modalItCompany').textContent = p.industrial_training_company || 'None';
       document.getElementById('modalKeySkills').textContent = p.key_skills || 'Financial Analysis, GST, Ind AS, Auditing';
       document.getElementById('modalProfileSummary').textContent = p.profile_summary || p.headline || 'Detailed CA profile submitted for recruiter review.';

@@ -726,13 +726,25 @@
       }
     });
 
+    // Return to the page that sent the student here (e.g. a CS/CMA listing).
+    // Same-site paths only, so this can never become an open redirect.
+    const signupRedirect = (() => {
+      const value = new URLSearchParams(window.location.search).get('redirect') || '';
+      return /^\/(?![\/\\])[^\s]*$/.test(value) ? value : '';
+    })();
+    if (signupRedirect) {
+      document.querySelectorAll('a[href="/login.html"]').forEach(link => {
+        link.href = `/login.html?redirect=${encodeURIComponent(signupRedirect)}`;
+      });
+    }
+
     googleSignInButton.addEventListener('click', async () => {
       errorMessage.classList.remove('show');
       successMessage.classList.remove('show');
       try {
         const { data, error } = await supabaseClient.auth.signInWithOAuth({
           provider: 'google',
-          options: {}
+          options: signupRedirect ? { redirectTo: `${window.location.origin}${signupRedirect}` } : {}
         });
         if (error) {
           throw error;
@@ -759,7 +771,7 @@
           console.error('Supabase sign-in with Google token failed:', error.message);
           alert('Could not complete Google Sign-In: ' + error.message);
         } else {
-          window.location.href = '/';
+          window.location.href = signupRedirect || '/';
         }
       } catch (e) {
         console.error("An unexpected error occurred during Google Sign-In:", e);

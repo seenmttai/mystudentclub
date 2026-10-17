@@ -11,11 +11,13 @@ import {
     applicationRow, appliedKeyFromRow, matchContext, isValidJobId, MAX_PLAUSIBLE_PAY, repostSignature
 } from './core.js';
 import { unlockJobDetails, getCachedUnlockedJob } from '../browser-guard.js';
-import { calculateProfileCompletion, readCachedProfile } from '../profile-completion.js';
+import { getProfileCompletionItems, readCachedProfile } from '../profile-completion.js';
 
 const PAGE_SIZE = 20;
 const MAX_WINDOW_DAYS = Math.max(...WINDOW_OPTIONS);
 const SAVED_JOBS_KEY = 'msc_saved_jobs'; // shared with the CA portal and history.html
+const PRO_JOBS_KEY = 'msc_pro_portal_jobs'; // read by scripts/history.js to label CS/CMA entries
+const PRO_JOBS_LIMIT = 300;
 const MODE_KEY = 'pp_source_mode_v1';
 const COUNT_CACHE_KEY = 'pp_lane_counts_v1';
 const COUNT_TTL_MS = 10 * 60 * 1000;
@@ -103,6 +105,10 @@ function loginUrl() {
     return `/login.html?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`;
 }
 
+function signupUrl() {
+    return `/sign-up.html?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+}
+
 function laneByKey(course, key) {
     return course.lanes.find(lane => lane.key === key) || null;
 }
@@ -164,6 +170,7 @@ function toggleSaved(job) {
         toast('Removed from saved listings.');
     } else {
         refs.push({ id: job.id, table: job.__table, savedAt: new Date().toISOString() });
+        rememberCourseRef(job);
         toast('Saved. Find it any time under Applications → Saved.', 'success');
         track('pp_save', { job: jobKey(job.__table, job.id) });
     }
@@ -189,6 +196,20 @@ function updateSavedCount() {
     if (!el || !app.lane) return;
     const count = savedRefs().filter(ref => ref.table === app.lane.table).length;
     el.textContent = count ? `(${count})` : '';
+}
+
+// Tells the Applications page (history.js) which course and section a saved or
+// applied listing came from, since the job tables themselves are shared with CA.
+function rememberCourseRef(job) {
+    const lane = laneForJob(job);
+    if (!lane) return;
+    const refs = storageGet(localStorage, PRO_JOBS_KEY, {});
+    const key = `${job.__table}:${job.id}`;
+    delete refs[key];
+    refs[key] = { label: `${app.course.name} · ${lane.tab}`, path: `${lane.path}?job=${encodeURIComponent(jobKey(job.__table, job.id))}` };
+    const keys = Object.keys(refs);
+    keys.slice(0, Math.max(0, keys.length - PRO_JOBS_LIMIT)).forEach(old => delete refs[old]);
+    storageSet(localStorage, PRO_JOBS_KEY, refs);
 }
 
 function isApplied(job) {
@@ -221,6 +242,7 @@ async function recordApplication(job) {
         console.warn('[pro-portal] could not record application', error);
         return false;
     }
+    rememberCourseRef(job);
     $$(`[data-card="${key}"]`).forEach(card => card.classList.add('is-applied'));
     $$(`[data-card="${key}"] .pp-applied-flag`).forEach(flag => { flag.hidden = false; });
     return true;
@@ -273,6 +295,15 @@ async function freshProfile() {
     return readCachedProfile(localStorage);
 }
 
+// Same checklist as the CA portal minus "job preference", whose options are all
+// CA lanes; requiring it would push CS/CMA students into CA redirects.
+function profileCompletion(profile) {
+    const items = getProfileCompletionItems(profile, localStorage).filter(item => item.label !== 'Add job preference');
+    const total = items.reduce((sum, item) => sum + item.boost, 0);
+    const filled = items.filter(item => item.filled).reduce((sum, item) => sum + item.boost, 0);
+    return total ? Math.round((filled / total) * 100) : 0;
+}
+
 async function easyApply(job, button) {
     if (!app.session) {
         window.location.href = loginUrl();
@@ -289,7 +320,7 @@ async function easyApply(job, button) {
     button.disabled = true;
     button.innerHTML = '<span class="pp-spinner" aria-hidden="true"></span> Checking your profile…';
     try {
-        const percent = calculateProfileCompletion(await freshProfile(), localStorage);
+        const percent = profileCompletion(await freshProfile());
         if (percent < 100) {
             if (status) {
                 status.innerHTML = `Your profile is ${percent}% complete. Recruiters receive your full profile and CV, so finish it first. <a href="/profile.html?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}">Complete my profile</a>`;
@@ -536,7 +567,7 @@ function renderAuth() {
     } else {
         slot.innerHTML = `
             <a class="pp-btn pp-btn-ghost" href="${escapeHtml(loginUrl())}">Log in</a>
-            <a class="pp-btn pp-btn-primary pp-hide-sm" href="/sign-up.html">Sign up free</a>`;
+            <a class="pp-btn pp-btn-primary pp-hide-sm" href="${escapeHtml(signupUrl())}">Sign up free</a>`;
     }
 }
 
@@ -1102,7 +1133,7 @@ function howToApplyHtml(job, state) {
     } else if (state.mode === 'login') {
         body = `
             <p class="pp-apply-lead">${icon('lock')}<span>Log in to see the recruiter's email or application link. It's free.</span></p>
-            <p class="pp-apply-sub">New here? <a href="/sign-up.html">Create a free account</a></p>`;
+            <p class="pp-apply-sub">New here? <a href="${escapeHtml(signupUrl())}">Create a free account</a></p>`;
     } else if (state.mode === 'locked') {
         body = `
             ${state.applied ? `<p class="pp-apply-lead is-done">${icon('check-circle')}<span>You applied to this listing.</span></p>` : ''}

@@ -1231,7 +1231,18 @@
       // Reuse shared Supabase client
       const supabaseClient = window.supabaseClient || (typeof getSupabaseClient === 'function' ? getSupabaseClient() : null);
 
-      const redirectUrl = new URLSearchParams(window.location.search).get('redirect');
+      // Only same-site destinations: anything else (another domain, javascript:)
+      // falls back to the home page. Callers pass either a path or a full URL.
+      const redirectUrl = (() => {
+        const value = new URLSearchParams(window.location.search).get('redirect');
+        if (!value) return null;
+        try {
+          const url = new URL(value, window.location.origin);
+          return url.origin === window.location.origin ? url.pathname + url.search + url.hash : null;
+        } catch (e) {
+          return null;
+        }
+      })();
 
       // Check if already logged in
       window.addEventListener('DOMContentLoaded', async () => {
