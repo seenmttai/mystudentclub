@@ -352,7 +352,16 @@
         <img src="/assets/logo.png" alt="My Student Club" class="brand-logo">
       </a>
       <nav class="dv2-header-nav" aria-label="Primary">
-        <a href="/" class="dv2-nav-link active">Jobs</a>
+        <div class="dv2-nav-dropdown">
+          <a href="/" class="dv2-nav-link active dv2-dropdown-trigger">
+            Jobs <i class="fas fa-chevron-down" style="font-size: 0.75rem; margin-left: 0.25rem;"></i>
+          </a>
+          <div class="dv2-dropdown-menu">
+            <a href="/" class="dv2-dropdown-item">CA Jobs &amp; Training</a>
+            <a href="/cs-jobs" class="dv2-dropdown-item">CS Jobs &amp; Training&nbsp;<span class="dv2-badge-new">New</span></a>
+            <a href="/cma-jobs" class="dv2-dropdown-item">CMA Jobs &amp; Training&nbsp;<span class="dv2-badge-new">New</span></a>
+          </div>
+        </div>
         <a href="/history.html" class="dv2-nav-link">Applications</a>
         <div class="dv2-nav-dropdown">
           <a href="#" class="dv2-nav-link dv2-dropdown-trigger" onclick="event.preventDefault();">
@@ -414,6 +423,8 @@
       <a href="/ca-industrial-training-program/" class="menu-item">MSC Industrial Training Program</a>
       <a href="/articleship-program/" class="menu-item">MSC Articleship Program</a>
       <a href="/msc-ca-fresher-program/" class="menu-item">MSC CA Freshers Program</a>
+      <a href="/cs-jobs" class="menu-item">CS Jobs &amp; Training <span class="dv2-badge-new">New</span></a>
+      <a href="/cma-jobs" class="menu-item">CMA Jobs &amp; Training <span class="dv2-badge-new">New</span></a>
 
       <div class="menu-item-dropdown">
         <button class="menu-item" id="resourcesDropdownBtn">

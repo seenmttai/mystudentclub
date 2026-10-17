@@ -5,7 +5,10 @@
   "main": "firebase-messaging-sw.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "generate-jobs": "node scripts/generate-jobs.js"
+    "generate-jobs": "node scripts/generate-jobs.js",
+    "build:pro-portal": "node scripts/pro-portal/build-pages.js",
+    "check:pro-portal": "node scripts/pro-portal/build-pages.js --check",
+    "test:pro-portal": "node --test tests/pro-portal-core.test.cjs tests/pro-portal-pages.test.cjs"
   },
   "repository": {
     "type": "git",
