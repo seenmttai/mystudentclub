@@ -63,6 +63,7 @@ const app = {
     consent: null,
     refocusChip: null,
     focusNewCards: false,
+    focusResults: false,
     passthrough: {}
 };
 
@@ -786,6 +787,10 @@ function renderJobs({ reset, added }) {
     renderSummary();
     renderListStatus();
     renderActiveChips();
+    if (reset && app.focusResults) {
+        app.focusResults = false;
+        ($('#ppList [data-open]') || $('#ppList [data-empty]') || $('#ppSearch'))?.focus();
+    }
     if (reset) {
         const live = $('#ppLive');
         if (live) live.textContent = app.total === null ? '' : `${app.total} ${app.lane.noun || 'listings'} found`;
@@ -812,13 +817,16 @@ function emptyStateHtml() {
 }
 
 function bindEmptyState(root) {
+    // These buttons vanish when the list reloads; renderJobs moves focus on.
     root.querySelector('[data-empty="clear"]')?.addEventListener('click', () => {
         app.filters = defaultFilters();
+        app.focusResults = true;
         syncControls();
         commitFilters();
     });
     root.querySelector('[data-empty="widen"]')?.addEventListener('click', () => {
         app.filters.days = MAX_WINDOW_DAYS;
+        app.focusResults = true;
         syncControls();
         commitFilters();
     });
@@ -1140,7 +1148,8 @@ async function openJob(key, { push = false, trigger = null } = {}) {
     // `pushed` marks entries this page added, so Close can safely go back.
     // Switching listings replaces that entry, so Close always means close.
     if (push && previousKey !== key) {
-        if (previousKey && history.state?.pushed) history.replaceState({ job: key, pushed: true }, '', currentUrl({ job: key }));
+        // A shared link's landing entry stays unpushed, so Close closes in place.
+        if (previousKey) history.replaceState({ job: key, pushed: Boolean(history.state?.pushed) }, '', currentUrl({ job: key }));
         else history.pushState({ job: key, pushed: true }, '', currentUrl({ job: key }));
     }
     const { job, blocked, table, id } = await fetchJobByKey(key);
