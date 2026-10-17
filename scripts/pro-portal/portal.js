@@ -22,7 +22,7 @@ const MODE_KEY = 'pp_source_mode_v1';
 const COUNT_CACHE_KEY = 'pp_lane_counts_v1';
 const COUNT_TTL_MS = 10 * 60 * 1000;
 
-const BASE_COLUMNS = 'id, Company, Location, Salary, Description, Created_At, Category, application_count, posts_link, "Primary Domain", posted_by, hirer_email';
+const BASE_COLUMNS = 'id, Company, Location, Salary, Description, Created_At, Category, application_count, posts_link, "Primary Domain", posted_by';
 const TABLE_COLUMNS = {
     'Fresher Jobs': ', Experience, yoe, "Secondary Domain", Tags, "Company Type", "Industry Type", "CTC Range"',
     'Semi Qualified Jobs': ', Experience, "Secondary Domain", Tags, "Company Type", "Industry Type"',
@@ -120,7 +120,7 @@ function laneForJob(job) {
 }
 
 function isRecruiterPosted(job) {
-    return Boolean(job?.posted_by || job?.hirer_email);
+    return Boolean(job?.posted_by);
 }
 
 function companyInitial(job) {
@@ -367,7 +367,7 @@ async function detectMode() {
 }
 
 function applyCourseFilter(query, course, lane, days) {
-    query = query.gte('Created_At', isoDaysAgo(Math.min(days || DEFAULT_WINDOW, MAX_WINDOW_DAYS)));
+    if (days) query = query.gte('Created_At', isoDaysAgo(Math.min(days, MAX_WINDOW_DAYS)));
     if (app.mode === 'tagged') {
         query = query.contains('eligible_courses', [course.code]);
     } else {
@@ -380,8 +380,10 @@ function applyCourseFilter(query, course, lane, days) {
     }
     if (lane.experience) query = query.eq('Experience', lane.experience);
     if (lane.table === 'Industrial Training Job Portal') {
-        // Exclusive vacancies belong to the paid CA programme.
-        query = query.or('is_exclusive.is.null,is_exclusive.eq.false');
+        // Vacancies MSC curates as exclusive belong to the paid CA programme.
+        // Recruiter posts are flagged exclusive by post-a-job too, but there is
+        // no CS/CMA programme, so those stay visible with Easy Apply.
+        query = query.or('is_exclusive.is.null,is_exclusive.eq.false,posted_by.not.is.null');
     }
     return query;
 }
@@ -435,7 +437,7 @@ async function fetchPage({ reset }) {
     renderListStatus();
 
     let query = app.client.from(lane.table).select(columnsFor(lane.table), reset ? { count: 'exact' } : undefined);
-    query = applyCourseFilter(query, app.course, lane, app.filters.days);
+    query = applyCourseFilter(query, app.course, lane, app.filters.days || DEFAULT_WINDOW);
     query = applyUserFilters(query, lane, app.filters);
 
     if (app.filters.sort === 'pay') {
@@ -498,25 +500,28 @@ async function fetchPage({ reset }) {
     }
 }
 
+// Deep links (?job=) obey the same rules as the list, minus the date window:
+// the listing must be open to this course and not a programme exclusive.
+// Returns { job } or { blocked: true, table, id } for a listing that exists
+// elsewhere on the site but not on this course's pages.
 async function fetchJobByKey(key) {
     const parsed = parseJobKey(key);
-    if (!parsed) return null;
-    if (app.jobsByKey.has(key)) return app.jobsByKey.get(key);
-    const lane = app.course.lanes.find(l => l.table === parsed.table && (!app.lane || l.key === app.lane.key))
+    if (!parsed) return { job: null };
+    if (app.jobsByKey.has(key)) return { job: app.jobsByKey.get(key) };
+    const lane = (app.lane && app.lane.table === parsed.table ? app.lane : null)
         || app.course.lanes.find(l => l.table === parsed.table);
-    if (!lane) return null;
+    if (!lane) return { job: null };
     try {
-        const { data, error } = await app.client
-            .from(parsed.table)
-            .select(columnsFor(parsed.table))
-            .eq('id', parsed.id)
-            .maybeSingle();
-        if (error || !data) return null;
-        const job = tagJob(data, app.lane && app.lane.table === parsed.table ? app.lane : lane);
+        let query = app.client.from(parsed.table).select(columnsFor(parsed.table));
+        query = applyCourseFilter(query, app.course, lane, 0).eq('id', parsed.id);
+        const { data, error } = await query.maybeSingle();
+        if (error) return { job: null };
+        if (!data) return { blocked: true, table: parsed.table, id: parsed.id };
+        const job = tagJob(data, lane);
         app.jobsByKey.set(key, job);
-        return job;
+        return { job };
     } catch (_) {
-        return null;
+        return { job: null };
     }
 }
 
@@ -1017,13 +1022,18 @@ async function openJob(key, { push = false, trigger = null } = {}) {
     }
     // `pushed` marks entries this page added, so Close can safely go back.
     if (push) history.pushState({ job: key, pushed: true }, '', currentUrl({ job: key }));
-    const job = await fetchJobByKey(key);
+    const { job, blocked, table, id } = await fetchJobByKey(key);
     if (app.activeKey !== key) return;
     if (!job) {
+        const caType = { 'Industrial Training Job Portal': 'industrial', 'Articleship Jobs': 'articleship', 'Semi Qualified Jobs': 'semi', 'Fresher Jobs': 'fresher' }[table];
         panel.innerHTML = `
             <div class="pp-detail-inner">
-                <div class="pp-detail-top"><button type="button" class="pp-icon-btn" data-close-detail aria-label="Close">${icon('x')}</button></div>
-                <div class="pp-empty"><h3>This listing is no longer available</h3><p>It may have been filled or removed.</p></div>
+                <div class="pp-detail-top"><span></span><button type="button" class="pp-icon-btn" data-close-detail aria-label="Close">${icon('x')}</button></div>
+                <div class="pp-empty">
+                    <h3>${blocked ? `This listing is not open to ${escapeHtml(app.course.name)} students` : 'This listing is no longer available'}</h3>
+                    <p>${blocked ? 'It does not mention ' + escapeHtml(app.course.name) + ' candidates, or it is reserved for MSC programme members.' : 'It may have been filled or removed.'}</p>
+                    ${blocked && caType ? `<div class="pp-empty-actions"><a class="pp-btn pp-btn-ghost" href="/job.html?id=${encodeURIComponent(id)}&type=${caType}">View it on the CA portal</a></div>` : ''}
+                </div>
             </div>`;
         bindDetail(panel, null);
         return;
@@ -1242,8 +1252,8 @@ function renderDetail(job, unlocked = null) {
             ${howToApplyHtml(job, state)}
             <section class="pp-description" aria-label="Full description">
                 <h3>About this opening</h3>
-                ${descriptionHtml(description, { masked: !unlocked && !isRecruiterPosted(job) })}
-                ${!unlocked && !isRecruiterPosted(job) ? '<p class="pp-hint">Contact details are hidden until you choose to apply.</p>' : ''}
+                ${descriptionHtml(description, { masked: !unlocked && !(isRecruiterPosted(job) && app.session) })}
+                ${!unlocked && !(isRecruiterPosted(job) && app.session) ? '<p class="pp-hint">Contact details appear after you log in and choose to apply.</p>' : ''}
             </section>
             <aside class="pp-safety">
                 ${icon('shield')}

@@ -729,12 +729,19 @@
     // Return to the page that sent the student here (e.g. a CS/CMA listing).
     // Same-site paths only, so this can never become an open redirect.
     const signupRedirect = (() => {
-      const value = new URLSearchParams(window.location.search).get('redirect') || '';
-      return /^\/(?![\/\\])[^\s]*$/.test(value) ? value : '';
+      const value = new URLSearchParams(window.location.search).get('redirect');
+      if (!value) return '';
+      try {
+        const url = new URL(value, window.location.origin);
+        return url.origin === window.location.origin ? url.href : '';
+      } catch (e) {
+        return '';
+      }
     })();
     if (signupRedirect) {
+      const back = new URL(signupRedirect);
       document.querySelectorAll('a[href="/login.html"]').forEach(link => {
-        link.href = `/login.html?redirect=${encodeURIComponent(signupRedirect)}`;
+        link.href = `/login.html?redirect=${encodeURIComponent(back.pathname.replace(/^\/+/, '/') + back.search)}`;
       });
     }
 
@@ -744,7 +751,7 @@
       try {
         const { data, error } = await supabaseClient.auth.signInWithOAuth({
           provider: 'google',
-          options: signupRedirect ? { redirectTo: `${window.location.origin}${signupRedirect}` } : {}
+          options: signupRedirect ? { redirectTo: signupRedirect } : {}
         });
         if (error) {
           throw error;

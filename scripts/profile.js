@@ -3521,8 +3521,14 @@ async function handleSave(e) {
 
         showToast('Profile saved successfully!', 'success', 8000);
 
+        // Same-site destinations only (blocks javascript: and other domains).
         const redirectUrl = new URLSearchParams(window.location.search).get('redirect');
-        if (redirectUrl) window.location.href = decodeURIComponent(redirectUrl);
+        if (redirectUrl) {
+            try {
+                const target = new URL(redirectUrl, window.location.origin);
+                if (target.origin === window.location.origin) window.location.href = target.href;
+            } catch (e) { /* ignore malformed redirect */ }
+        }
     } catch (e) {
         console.error(e);
         showToast('Profile saved to your browser, but failed to sync to the server. You can continue using the site.', 'warning', 10000);

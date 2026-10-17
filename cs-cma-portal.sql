@@ -49,6 +49,7 @@ CREATE OR REPLACE FUNCTION public.msc_detect_courses(description text)
 RETURNS text[]
 LANGUAGE sql
 IMMUTABLE
+SET search_path = pg_catalog, public
 AS $fn$
     SELECT array_remove(ARRAY[
         'CA',
@@ -64,9 +65,13 @@ AS $fn$
 $fn$;
 
 -- 3. Auto-tag trigger ------------------------------------------------------------------
+-- SECURITY DEFINER so the trigger can call the detector even though website
+-- roles may not (see the REVOKE below), whoever inserts the row.
 CREATE OR REPLACE FUNCTION public.msc_tag_eligible_courses()
 RETURNS trigger
 LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, public
 AS $fn$
 BEGIN
     IF NOT coalesce(NEW.eligible_courses_manual, false) THEN
@@ -92,6 +97,10 @@ DROP TRIGGER IF EXISTS msc_tag_eligible_courses ON public."Fresher Jobs";
 CREATE TRIGGER msc_tag_eligible_courses
     BEFORE INSERT OR UPDATE OF "Description", eligible_courses_manual ON public."Fresher Jobs"
     FOR EACH ROW EXECUTE FUNCTION public.msc_tag_eligible_courses();
+
+-- Keep both functions out of the public API (/rest/v1/rpc).
+REVOKE EXECUTE ON FUNCTION public.msc_detect_courses(text) FROM PUBLIC, anon, authenticated;
+REVOKE EXECUTE ON FUNCTION public.msc_tag_eligible_courses() FROM PUBLIC, anon, authenticated;
 
 -- 4. Backfill recent rows, index, and allow the website to read the column ---------
 UPDATE public."Industrial Training Job Portal"
