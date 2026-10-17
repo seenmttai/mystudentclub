@@ -870,6 +870,118 @@ body {
   background-color: #f0f7ff;
 }
 
+/* ---- Course switcher (CA | CS | CMA) above the lane tabs ----
+   Written by scripts/courses/build-pages.js. Styled with aria-current, not
+   .active: setActivePortalTab adds .active to every link to the page. */
+.portal-course-switch {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0 0 0.6rem;
+}
+
+.portal-course-switch-label {
+  margin-right: 0.15rem;
+  color: #475569;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.portal-course-switch .course-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3.25rem;
+  min-height: 32px;
+  padding: 0.3rem 0.9rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #334155;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+}
+
+.portal-course-switch .course-chip:hover {
+  border-color: #bfdbfe;
+  background: #f0f7ff;
+  color: #1d4ed8;
+}
+
+.portal-course-switch .course-chip[aria-current="true"] {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.portal-course-switch .course-chip:focus-visible {
+  outline: 3px solid #1d4ed8;
+  outline-offset: 2px;
+}
+
+/* ---- Rule note on CS / CMA training lanes ---- */
+.lane-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin: 0 0 1rem;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid #fde68a;
+  border-radius: 10px;
+  background: #fffbeb;
+  color: #78350f;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.lane-note p {
+  margin: 0;
+}
+
+.lane-note a {
+  color: #92400e;
+  font-weight: 600;
+}
+
+.lane-note-icon {
+  margin-top: 0.2rem;
+  color: #b45309;
+}
+
+/* ---- Right-rail rule summary on CS / CMA lanes ---- */
+.dv2-rail-rules-list {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0.35rem 0 0.7rem;
+  padding-left: 1.1rem;
+  color: #334155;
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.dv2-rail-rules .dv2-rail-sub a {
+  color: #1d4ed8;
+}
+
+@media (max-width: 768px) {
+  .portal-course-switch {
+    margin: 0.25rem 0 0;
+  }
+
+  .portal-course-switch .course-chip {
+    flex: 1;
+    min-height: 36px;
+  }
+
+  .lane-note {
+    margin: 0 0 0.75rem;
+    font-size: 0.78rem;
+  }
+}
+
 /* Scoped "New" badge inside portal nav tab */
 .portal-nav-bar .footer-tab .dv2-badge-new {
   font-size: 0.55rem;

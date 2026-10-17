@@ -43,6 +43,8 @@
   ],
   "redirects": [
     { "source": "/events", "destination": "/sessions/", "type": 301 },
-    { "source": "/events/", "destination": "/sessions/", "type": 301 }
+    { "source": "/events/", "destination": "/sessions/", "type": 301 },
+    { "source": "/cs-jobs", "destination": "/cs-articleship", "type": 301 },
+    { "source": "/cma-jobs", "destination": "/cma-articleship", "type": 301 }
   ]
 }

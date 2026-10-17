@@ -28,7 +28,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/scripts/portal-style.css?v=2.1">
+    <link rel="stylesheet" href="/scripts/portal-style.css?v=fd0ee9ac03">
 <link rel="canonical" href="https://www.mystudentclub.com/ca-articleship-opportunities" />
     <meta name="robots" content="index, follow">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -40,9 +40,12 @@
   <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
   <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
   <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
+<!-- msc:importmap -->
+<script type="importmap">{"imports":{"/scripts/ai-helper.js":"/scripts/ai-helper.js?v=78b3dfa8cb","/scripts/browser-guard.js":"/scripts/browser-guard.js?v=ad5d6ba221","/scripts/date-utils.js":"/scripts/date-utils.js?v=6866dc99e2","/scripts/profile-completion.js":"/scripts/profile-completion.js?v=d3538df761"}}</script>
+<!-- /msc:importmap -->
 </head>
 
-<body>
+<body data-qualification="ca" data-lane="ca-articleship">
 
     <header class="site-header">
         <div class="header-container">
@@ -56,8 +59,8 @@
                     </a>
                     <div class="dv2-dropdown-menu">
                         <a href="/" class="dv2-dropdown-item">CA Jobs &amp; Training</a>
-                        <a href="/cs-jobs" class="dv2-dropdown-item">CS Jobs &amp; Training&nbsp;<span class="dv2-badge-new">New</span></a>
-                        <a href="/cma-jobs" class="dv2-dropdown-item">CMA Jobs &amp; Training&nbsp;<span class="dv2-badge-new">New</span></a>
+                        <a href="/cs-articleship" class="dv2-dropdown-item">CS Jobs &amp; Training&nbsp;<span class="dv2-badge-new">New</span></a>
+                        <a href="/cma-articleship" class="dv2-dropdown-item">CMA Jobs &amp; Training&nbsp;<span class="dv2-badge-new">New</span></a>
                     </div>
                 </div>
                 <a href="/history.html" class="dv2-nav-link">Applications</a>
@@ -124,8 +127,8 @@
             <a href="/ca-industrial-training-program/" class="menu-item">MSC Industrial Training Program</a>
             <a href="/articleship-program/" class="menu-item">MSC Articleship Program</a>
             <a href="/msc-ca-fresher-program/" class="menu-item">MSC CA Freshers Program</a>
-            <a href="/cs-jobs" class="menu-item">CS Jobs &amp; Training <span class="dv2-badge-new">New</span></a>
-            <a href="/cma-jobs" class="menu-item">CMA Jobs &amp; Training <span class="dv2-badge-new">New</span></a>
+            <a href="/cs-articleship" class="menu-item">CS Jobs &amp; Training <span class="dv2-badge-new">New</span></a>
+            <a href="/cma-articleship" class="menu-item">CMA Jobs &amp; Training <span class="dv2-badge-new">New</span></a>
 
             <div class="menu-item-dropdown">
                 <button class="menu-item" id="resourcesDropdownBtn">
@@ -181,28 +184,38 @@
 
     <main class="main-content-area">
 
-        <nav class="portal-nav-bar">
+        <!-- msc:lanes -->
+        <nav class="portal-course-switch" aria-label="Choose your course">
+            <span class="portal-course-switch-label">Jobs for</span>
+            <a href="/ca-articleship-opportunities" class="course-chip" data-qualification="ca" title="Chartered Accountancy jobs" aria-current="true">CA</a>
+            <a href="/cs-articleship" class="course-chip" data-qualification="cs" title="Company Secretary jobs">CS</a>
+            <a href="/cma-articleship" class="course-chip" data-qualification="cma" title="Cost and Management Accountant jobs">CMA</a>
+        </nav>
+        <nav class="portal-nav-bar" aria-label="CA job sections">
             <a href="/" class="footer-tab">
-                <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                 <span>Industrial Training</span>
             </a>
-            <a href="/ca-articleship-opportunities" class="footer-tab active">
-                <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <a href="/ca-articleship-opportunities" class="footer-tab active" aria-current="page">
+                <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                 <span>Articleship</span>
             </a>
             <a href="/semi-qualified-ca-jobs" class="footer-tab">
-                <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
+                <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
                 <span>Semi Qualified</span>
             </a>
             <a href="/ca-fresher-jobs" class="footer-tab">
-                <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
                 <span>CA Freshers</span>
             </a>
             <a href="/experienced-ca-jobs" class="footer-tab">
-                <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                 <span>Experienced CA</span>
             </a>
         </nav>
+        <!-- /msc:lanes -->
+        <!-- msc:lane-note -->
+        <!-- /msc:lane-note -->
 
         <div class="job-portal-layout dv2-has-rail">
             <aside class="filter-sidebar">
@@ -313,6 +326,7 @@
             </div>
 
             <aside class="dv2-right-rail">
+                <!-- msc:rail-programs -->
                 <div class="dv2-rail-card">
                     <h3>Career Programs</h3>
                     <p class="dv2-rail-sub">Explore MSC programs to accelerate your CA career</p>
@@ -332,12 +346,14 @@
                         <i class="fas fa-chevron-right dv2-rail-arrow" aria-hidden="true"></i>
                     </a>
                 </div>
+                <!-- /msc:rail-programs -->
 
                 <div class="dv2-rail-card" id="dv2TrendingCard" style="display: none;">
                     <h3>Trending Jobs</h3>
                     <div id="dv2TrendingList"></div>
                 </div>
 
+                <!-- msc:rail-resources -->
                 <div class="dv2-rail-card">
                     <h3>Career Resources</h3>
                     <a href="/ca-fresher-training-resources.html" class="dv2-rail-link">
@@ -356,6 +372,7 @@
                         <i class="fas fa-chevron-right dv2-rail-arrow" aria-hidden="true"></i>
                     </a>
                 </div>
+                <!-- /msc:rail-resources -->
             </aside>
         </div>
     </main>
@@ -566,9 +583,9 @@
         </div>
     </div>
 
-    <script src="/scripts/profile-state.js?v=1"></script>
-    <script type="module" src="/scripts/portal3.js?v=2.3"></script>
-    <script type="module" src="/scripts/date-utils.js"></script>
+    <script src="/scripts/profile-state.js?v=d830f45387"></script>
+    <script type="module" src="/scripts/portal3.js?v=f5bac1ad08"></script>
+    <script type="module" src="/scripts/date-utils.js?v=6866dc99e2"></script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-1450NCVE65"></script>
     <script>
         window.dataLayer = window.dataLayer || [];

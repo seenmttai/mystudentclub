@@ -66,11 +66,6 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.mystudentclub.com/cs-jobs</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
     <loc>https://www.mystudentclub.com/cs-articleship</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
@@ -89,11 +84,6 @@
     <loc>https://www.mystudentclub.com/experienced-cs-jobs</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.mystudentclub.com/cma-jobs</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://www.mystudentclub.com/cma-articleship</loc>

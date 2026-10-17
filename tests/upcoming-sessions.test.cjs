@@ -104,5 +104,6 @@ test('the homepage rail has the static card and loads the module', () => {
   const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   assert.match(html, /<div class="dv2-rail-card" id="dv2SessionsCard">\s*<h3>Upcoming Live Sessions<\/h3>/);
   assert.match(html, /<div id="dv2SessionsList" hidden><\/div>\s*<a href="\/sessions\/" class="dv2-rail-link">/);
-  assert.match(html, /<script type="module" src="\/scripts\/upcoming-sessions\.js"><\/script>/);
+  // Lane pages carry a content hash on local assets (scripts/courses/build-pages.js).
+  assert.match(html, /<script type="module" src="\/scripts\/upcoming-sessions\.js(\?v=[0-9a-f]{10})?"><\/script>/);
 });
