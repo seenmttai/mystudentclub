@@ -245,24 +245,40 @@ function updateCategoryOptions(table) {
     });
 }
 
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function safeHttpHref(value) {
+    const url = String(value ?? '').trim();
+    return /^https?:\/\//i.test(url) ? url : '';
+}
+
 function showModal(job) {
     const modalContent = document.getElementById('modal-content');
     modalContent.innerHTML = `
-        <h2 class="text-2xl font-bold mb-2">${job.Company}</h2>
-        <p class="text-gray-600 mb-4">${job.Location}</p>
-        ${job.Salary ? `<p class="text-lg font-semibold text-green-600 mb-4">₹${job.Salary}</p>` : ''}
+        <h2 class="text-2xl font-bold mb-2">${escapeHtml(job.Company)}</h2>
+        <p class="text-gray-600 mb-4">${escapeHtml(job.Location)}</p>
+        ${job.Salary ? `<p class="text-lg font-semibold text-green-600 mb-4">₹${escapeHtml(job.Salary)}</p>` : ''}
         <div class="mb-4">
             <h3 class="font-bold text-gray-800 mb-2">Description:</h3>
-            <div class="text-gray-700 whitespace-pre-line">${job.Description}</div>
+            <div class="text-gray-700 whitespace-pre-line">${escapeHtml(job.Description)}</div>
         </div>
         <div>
             <h3 class="font-bold text-gray-800 mb-2">Application Details:</h3>
-            <p class="text-gray-700">${job['Application ID']}</p>
+            <p class="text-gray-700">${escapeHtml(job['Application ID'])}</p>
         </div>
         ${job.connect_link ? `
         <div class="mt-4">
             <h3 class="font-bold text-gray-800 mb-2">Peer Connection:</h3>
-            <a href="${job.connect_link}" target="_blank" class="text-blue-600 hover:underline">${job.connect_link}</a>
+            ${safeHttpHref(job.connect_link)
+                ? `<a href="${escapeHtml(safeHttpHref(job.connect_link))}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">${escapeHtml(job.connect_link)}</a>`
+                : `<span class="text-gray-700">${escapeHtml(job.connect_link)}</span>`}
         </div>` : ''}
     `;
     document.getElementById('modal').style.display = 'flex';
@@ -357,10 +373,10 @@ function renderJobCard(job, table) {
             <button class="icon-btn delete-icon-btn" data-action="delete" title="Delete Job"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
         </div>
         <div class="job-info">
-            <h2 class="job-company">${job.Company || 'N/A'}</h2>
+            <h2 class="job-company">${escapeHtml(job.Company || 'N/A')}</h2>
             <div class="job-meta">
-                <span class="job-tag location-tag"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>${job.Location || 'N/A'}</span>
-                ${job.Salary ? `<span class="job-tag salary-tag"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>₹${job.Salary}</span>` : ''}
+                <span class="job-tag location-tag"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>${escapeHtml(job.Location || 'N/A')}</span>
+                ${job.Salary ? `<span class="job-tag salary-tag"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>₹${escapeHtml(job.Salary)}</span>` : ''}
             </div>
         </div>`;
     return jobCard;

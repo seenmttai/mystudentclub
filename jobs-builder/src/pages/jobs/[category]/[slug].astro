@@ -108,8 +108,9 @@ function getSafePublicDescription(desc: any, maxLength = 300): { html: string; i
 const { html: descriptionHtml, isTruncated: isDescTruncated } = getSafePublicDescription(job.Description);
 
 // Connect Link
-let connectLink = job.connect_link || job['connect_link'];
-if (!connectLink || String(connectLink).trim() === '') {
+let connectLink = String(job.connect_link || job['connect_link'] || '').trim();
+// Only http(s) links from the listing; anything else falls back to the LinkedIn search.
+if (!/^https?:\/\//i.test(connectLink)) {
   const query = `${companyName} ${location}`;
   const searchKeywordSuffix = (JOB_TITLE_MAP as any)[tableName] || "Chartered Accountant";
   const encodedQuery = encodeURIComponent(`${query} ${searchKeywordSuffix}`);
