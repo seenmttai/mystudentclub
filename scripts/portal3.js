@@ -1845,17 +1845,21 @@ function getSalaryConfig() {
             ]
         };
     } else if (currentTable === "Semi Qualified Jobs") {
+        // Semi Qualified rows store annual CTC (median about ₹6 LPA), so the
+        // presets are in LPA like Fresher Jobs. Monthly presets matched almost
+        // every row under "Above ₹50k" and almost none elsewhere.
         return {
             label: 'Salary',
             minBound: 0,
-            maxBound: 100000,
-            step: 2500,
+            maxBound: 2000000,
+            step: 50000,
             presets: [
                 { value: '', label: 'Any Salary', min: null, max: null },
-                { value: '0-25000', label: 'Below ₹25k', min: null, max: 25000 },
-                { value: '25000-35000', label: '₹25k - ₹35k', min: 25000, max: 35000 },
-                { value: '35000-50000', label: '₹35k - ₹50k', min: 35000, max: 50000 },
-                { value: '50000+', label: 'Above ₹50k', min: 50000, max: null }
+                { value: '0-300000', label: 'Below ₹3 LPA', min: null, max: 300000 },
+                { value: '300000-500000', label: '₹3-5 LPA', min: 300000, max: 500000 },
+                { value: '500000-800000', label: '₹5-8 LPA', min: 500000, max: 800000 },
+                { value: '800000-1200000', label: '₹8-12 LPA', min: 800000, max: 1200000 },
+                { value: '1200000+', label: '₹12+ LPA', min: 1200000, max: null }
             ]
         };
     } else if (currentTable === "Fresher Jobs") {
