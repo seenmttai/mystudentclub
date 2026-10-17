@@ -37,6 +37,13 @@ test('every page has one h1, matching canonical/og:url, and parseable JSON-LD', 
     assert.equal(html.split('<h1').length - 1, 1, `${file}: one h1`);
     assert.match(html, /<body class="pp" data-course="(cs|cma)"/, file);
     assert.match(html, /<script type="module" src="\/scripts\/pro-portal\/portal\.js\?v=[0-9a-f]{10}"><\/script>/, file);
+    const importMap = JSON.parse(attr(html, /<script type="importmap">([^<]+)<\/script>/));
+    for (const [url, versioned] of Object.entries(importMap.imports)) {
+      assert.equal(versioned, `${url}?v=${versioned.split('?v=')[1]}`, `${file}: ${url}`);
+      assert.match(versioned, /\?v=[0-9a-f]{10}$/, `${file}: ${url}`);
+      assert.ok(resolvesOnSite(url), `${file}: import map entry ${url}`);
+    }
+    assert.ok(html.indexOf('type="importmap"') < html.indexOf('type="module"'), `${file}: import map before the module`);
     for (const block of html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g) || []) {
       assert.doesNotThrow(() => JSON.parse(block.replace(/^<script[^>]*>|<\/script>$/g, '')), file);
     }

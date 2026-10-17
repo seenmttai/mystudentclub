@@ -22,7 +22,10 @@ from `Semi Qualified Jobs`, freshers and experienced from `Fresher Jobs`
 - `portal.js`: the browser engine. `portal.css`: styles.
 - `build-pages.js`: writes the 12 pages at the repo root and `cs-cma-portal.sql`.
 
-The pages are generated. Edit `config.js` or `content.js`, then run:
+The pages are generated. Edit `config.js` or `content.js`, then run the
+commands below. Rebuild after changing `portal.js`, `portal.css`, `core.js`,
+`scripts/browser-guard.js` or `scripts/profile-completion.js` too: the pages
+carry a content hash for each, so browsers never mix old and new files.
 
 ```sh
 npm run build:pro-portal   # regenerate pages + SQL

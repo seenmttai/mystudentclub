@@ -25,10 +25,23 @@ const jsonLd = data => `<script type="application/ld+json">${JSON.stringify(data
 
 // One version for every asset, derived from their contents, so a deploy
 // always busts caches without anyone editing ?v= by hand.
-const ASSET_VERSION = createHash('sha1')
-    .update(['portal.css', 'portal.js', 'core.js', 'config.js'].map(file => readFileSync(join(here, file), 'utf8')).join('\n'))
-    .digest('hex')
-    .slice(0, 10);
+const hashOf = text => createHash('sha1').update(text).digest('hex').slice(0, 10);
+
+// portal.js imports these without a version, and the site caches scripts for
+// hours. The import map gives each one a content hash, so a release never runs
+// a new portal.js against modules cached from the previous one.
+const MODULES = {
+    '/scripts/pro-portal/config.js': join(here, 'config.js'),
+    '/scripts/pro-portal/core.js': join(here, 'core.js'),
+    '/scripts/browser-guard.js': join(here, '..', 'browser-guard.js'),
+    '/scripts/profile-completion.js': join(here, '..', 'profile-completion.js')
+};
+const IMPORT_MAP = JSON.stringify({
+    imports: Object.fromEntries(Object.entries(MODULES).map(([url, file]) => [url, `${url}?v=${hashOf(readFileSync(file, 'utf8'))}`]))
+});
+
+const ASSET_VERSION = hashOf([join(here, 'portal.css'), join(here, 'portal.js'), ...Object.values(MODULES)]
+    .map(file => readFileSync(file, 'utf8')).join('\n'));
 
 const ICONS = {
     search: '<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>',
@@ -202,6 +215,7 @@ function scripts() {
     return `<script defer src="/scripts/supabase.js"></script>
 <script defer src="/scripts/supabase-init.js"></script>
 <script defer src="/scripts/profile-state.js"></script>
+<script type="importmap">${IMPORT_MAP}</script>
 <script type="module" src="/scripts/pro-portal/portal.js?v=${ASSET_VERSION}"></script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-1450NCVE65"></script>
 <script>
