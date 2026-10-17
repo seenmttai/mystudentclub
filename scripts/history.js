@@ -31,6 +31,17 @@ const PORTAL_DISPLAY_NAMES = {
     'Experienced CA Jobs': 'Experienced CA'
 };
 
+// Job fields come from the database (including posts by self-registered
+// hirers), so escape them before they go into innerHTML.
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 // Applications and saves made on the CS / CMA portal (scripts/pro-portal) use
 // the same tables; that portal records the course and section here so this page
 // can label them and link back to the right page.
@@ -350,10 +361,10 @@ function renderApplicationCard(application) {
 
     card.innerHTML = `
         <div class="job-card-top-row">
-            <div class="job-card-logo">${companyInitial}</div>
+            <div class="job-card-logo">${escapeHtml(companyInitial)}</div>
             <div class="job-card-header">
-                <h3 class="job-card-role-title" style="margin-bottom: 0.15rem;">${roleLabel}</h3>
-                <h4 class="job-card-company" style="font-size: 0.9rem; font-weight: 500; color: #475569; margin-bottom: 0.25rem;">${job.Company || 'N/A'}</h4>
+                <h3 class="job-card-role-title" style="margin-bottom: 0.15rem;">${escapeHtml(roleLabel)}</h3>
+                <h4 class="job-card-company" style="font-size: 0.9rem; font-weight: 500; color: #475569; margin-bottom: 0.25rem;">${escapeHtml(job.Company || 'N/A')}</h4>
                 <p class="job-card-posted old" style="font-size: 0.72rem; color: #94a3b8; font-weight: 500;">
                     ${statusText} ${appliedDate}
                 </p>
@@ -369,12 +380,12 @@ function renderApplicationCard(application) {
             ${job.Location ? `
                 <span class="job-tag">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="11" height="11"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                    ${job.Location}
+                    ${escapeHtml(job.Location)}
                 </span>` : ''}
-            ${isSalaryDisclosed(compText) ? `<span class="job-tag" style="background-color: #ecfdf5; color: #065f46; border-color: #a7f3d0;">₹${compText}</span>` : ''}
-            ${job.Category ? `<span class="job-tag">${job.Category}</span>` : ''}
+            ${isSalaryDisclosed(compText) ? `<span class="job-tag" style="background-color: #ecfdf5; color: #065f46; border-color: #a7f3d0;">₹${escapeHtml(compText)}</span>` : ''}
+            ${job.Category ? `<span class="job-tag">${escapeHtml(job.Category)}</span>` : ''}
         </div>
-        <p class="job-card-description" style="margin-bottom: 0.85rem;">${snippet}</p>
+        <p class="job-card-description" style="margin-bottom: 0.85rem;">${escapeHtml(snippet)}</p>
         <div class="job-card-actions" style="display: grid; grid-template-columns: ${application.isSaved ? '1fr 1fr' : '1fr 1.5fr'}; gap: 0.5rem; margin-top: auto; width: 100%;">
              ${application.isSaved
             ? `<button class="unsave-btn" type="button" style="padding: 0.65rem 1rem; background: #fff; color: #ef4444; border: 1.5px solid #fee2e2; border-radius: 12px; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">Remove</button>`
@@ -410,10 +421,10 @@ function showExclusiveLockedModal(job) {
 
     dom.modalBody.innerHTML = `
         <div class="modal-header">
-            <div class="modal-logo">${companyInitial}</div>
+            <div class="modal-logo">${escapeHtml(companyInitial)}</div>
             <div class="modal-title-group">
-                <h2>${job.Company || 'Company'}</h2>
-                <p>${job.Location || ''}</p>
+                <h2>${escapeHtml(job.Company || 'Company')}</h2>
+                <p>${escapeHtml(job.Location || '')}</p>
             </div>
         </div>
         <div style="
@@ -511,7 +522,7 @@ function showJobModal(application) {
 
     const renderMarkdown = (text) => {
         if (!text) return 'No description available.';
-        let html = text
+        let html = escapeHtml(text)
             .replace(/^### (.*$)/gim, '<h3>$1</h3>')
             .replace(/^## (.*$)/gim, '<h2>$1</h2>')
             .replace(/^# (.*$)/gim, '<h1>$1</h1>')
@@ -519,7 +530,7 @@ function showJobModal(application) {
             .replace(/__(.+?)__/g, '<strong>$1</strong>')
             .replace(/\*(.+?)\*/g, '<em>$1</em>')
             .replace(/_(.+?)_/g, '<em>$1</em>')
-            .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
+            .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, label, url) => (/^https?:\/\//i.test(url) ? `<a href="${url}" target="_blank" rel="noopener noreferrer">${label}</a>` : label))
             .replace(/\n\n/g, '</p><p>')
             .replace(/\n/g, '<br>');
         return '<p>' + html + '</p>';
@@ -565,10 +576,10 @@ function showJobModal(application) {
 
     dom.modalBody.innerHTML = `
         <div class="modal-header">
-            <div class="modal-logo">${companyInitial}</div>
+            <div class="modal-logo">${escapeHtml(companyInitial)}</div>
             <div class="modal-title-group">
-                <h2>${job.Company}</h2>
-                <p>${job.Location}</p>
+                <h2>${escapeHtml(job.Company)}</h2>
+                <p>${escapeHtml(job.Location)}</p>
             </div>
         </div>
 
@@ -581,19 +592,19 @@ function showJobModal(application) {
                 Applied ${appliedDate}
             </span>`}
             <span class="job-tag" style="background-color: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; font-weight: 600;">${portalName}</span>
-            ${isSalaryDisclosed(job.Salary) ? `<span class="job-tag">${application.job_table.includes('Semi Qualified') || application.job_table.includes('Fresher') ? 'Salary' : 'Stipend'}: ₹${job.Salary}</span>` : ''}
-            ${job.Category ? `<span class="job-tag">Category: ${job.Category}</span>` : ''}
+            ${isSalaryDisclosed(job.Salary) ? `<span class="job-tag">${application.job_table.includes('Semi Qualified') || application.job_table.includes('Fresher') ? 'Salary' : 'Stipend'}: ₹${escapeHtml(job.Salary)}</span>` : ''}
+            ${job.Category ? `<span class="job-tag">Category: ${escapeHtml(job.Category)}</span>` : ''}
         </div>
 
         ${application.isSaved ? `
         <div style="display: flex; gap: 0.65rem; flex-wrap: wrap;">
-            <a id="modalApplyNowBtn" href="${({
+            <a id="modalApplyNowBtn" href="${proRef ? proRef.path : `${({
                 'Industrial Training Job Portal': '/',
                 'Fresher Jobs': '/ca-fresher-jobs.html',
                 'Semi Qualified Jobs': '/semi-qualified-ca-jobs.html',
                 'Articleship Jobs': '/ca-articleship-opportunities.html',
                 'Experienced CA Jobs': '/experienced-ca-jobs.html'
-            })[application.job_table] || '/'}?id=${application.job_id}&type=${{ 'Industrial Training Job Portal': 'industrial', 'Fresher Jobs': 'fresher', 'Semi Qualified Jobs': 'semi', 'Articleship Jobs': 'articleship', 'Experienced CA Jobs': 'experienced' }[application.job_table] || 'industrial'}" target="_blank" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.7rem 1.25rem; background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); color: #fff; border-radius: 12px; font-size: 0.88rem; font-weight: 700; text-decoration: none; box-shadow: 0 4px 12px rgba(59,130,246,0.25);">
+            })[application.job_table] || '/'}?id=${application.job_id}&type=${{ 'Industrial Training Job Portal': 'industrial', 'Fresher Jobs': 'fresher', 'Semi Qualified Jobs': 'semi', 'Articleship Jobs': 'articleship', 'Experienced CA Jobs': 'experienced' }[application.job_table] || 'industrial'}`}" target="_blank" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.7rem 1.25rem; background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); color: #fff; border-radius: 12px; font-size: 0.88rem; font-weight: 700; text-decoration: none; box-shadow: 0 4px 12px rgba(59,130,246,0.25);">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                 View &amp; Unlock Contact
             </a>

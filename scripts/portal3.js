@@ -3,6 +3,23 @@ import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResume
 import { unlockJobDetails, getCachedUnlockedJob } from './browser-guard.js';
 import { calculateProfileCompletion as calculateSharedProfileCompletion, readCachedProfile } from './profile-completion.js';
 
+// Listing fields come from the database, including posts by self-registered
+// hirers, so escape them before they go into innerHTML.
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+// Only http(s) links from listings may become hrefs.
+function safeHref(value) {
+    const raw = String(value ?? '').trim();
+    return /^https?:\/\//i.test(raw) ? escapeHtml(raw) : '#';
+}
+
 function isSalaryDisclosed(val) {
     if (!val) return false;
     const clean = val.toString().replace(/[₹\s\-\.]/g, '').toLowerCase();
@@ -457,17 +474,17 @@ function renderJobCard(job) {
     if (industryType) infoRowItems.push(`
             <div class="job-info-item">
                 <span class="job-info-label"><i class="fas fa-chart-line"></i> Industry</span>
-                <span class="job-info-value">${industryType}</span>
+                <span class="job-info-value">${escapeHtml(industryType)}</span>
             </div>`);
     if (isSalaryDisclosed(compText)) infoRowItems.push(`
             <div class="job-info-item">
                 <span class="job-info-label">${compLabel}</span>
-                <span class="job-info-value">${compText}</span>
+                <span class="job-info-value">${escapeHtml(compText)}</span>
             </div>`);
     if (job.Location) infoRowItems.push(`
             <div class="job-info-item">
                 <span class="job-info-label"><i class="fas fa-map-marker-alt"></i> Location</span>
-                <span class="job-info-value">${job.Location}</span>
+                <span class="job-info-value">${escapeHtml(job.Location)}</span>
             </div>`);
     const infoRowHtml = infoRowItems.length ? `<div class="job-card-info-row">${infoRowItems.join('')}</div>` : '';
     const descriptionText = job.Description ? job.Description.replace(/[#*_`\[\]]/g, '').trim() : '';
@@ -495,10 +512,10 @@ function renderJobCard(job) {
     jobCard.classList.toggle('job-card-expired', isExpired);
     jobCard.innerHTML = `
         <div class="job-card-top-row">
-            <div class="job-card-logo">${companyInitial}</div>
+            <div class="job-card-logo">${escapeHtml(companyInitial)}</div>
             <div class="job-card-header">
-                <h3 class="job-card-role-title">${roleLabel} <span class="job-card-role-posted ${postedClass}" style="color: var(--text-muted); font-weight: 400; margin-left: 4px;">| ${isExpired ? 'Expired' : `Posted ${postedDate}`}</span></h3>
-                <h3 class="job-card-company" style="display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap;"><span>${job.Company || "N/A"}</span>${ratingHtml}</h3>
+                <h3 class="job-card-role-title">${escapeHtml(roleLabel)} <span class="job-card-role-posted ${postedClass}" style="color: var(--text-muted); font-weight: 400; margin-left: 4px;">| ${isExpired ? 'Expired' : `Posted ${postedDate}`}</span></h3>
+                <h3 class="job-card-company" style="display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap;"><span>${escapeHtml(job.Company || "N/A")}</span>${ratingHtml}</h3>
                 <p class="job-card-posted ${postedClass}">${isExpired ? 'Expired' : `Posted ${postedDate}`}</p>
             </div>
             <button class="job-card-bookmark" title="Save job" aria-label="Bookmark job">
@@ -506,7 +523,7 @@ function renderJobCard(job) {
             </button>
         </div>
         <div class="job-card-side">
-            ${isSalaryDisclosed(compText) ? `<span class="job-card-side-comp">${/^\d/.test(compText.trim()) ? "₹" + compText.trim() : compText}</span>` : ''}
+            ${isSalaryDisclosed(compText) ? `<span class="job-card-side-comp">${escapeHtml(/^\d/.test(compText.trim()) ? "₹" + compText.trim() : compText)}</span>` : ''}
         </div>
         <div class="job-card-tags">
             ${isExpired ? `<span class="job-tag tag-expired"><i class="fas fa-hourglass-end"></i> Expired</span>` : ""}
@@ -514,17 +531,17 @@ function renderJobCard(job) {
             ${isPopular ? `<span class="job-tag tag-popular"><i class="fas fa-fire"></i> Popular</span>` : ""}
             <span class="job-tag job-tag-location">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="11" height="11"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                ${job.Location || "N/A"}
+                ${escapeHtml(job.Location || "N/A")}
             </span>
-            ${job.Experience ? `<span class="job-tag job-tag-exp"><i class="far fa-clock"></i> ${job.Experience}</span>` : ""}
-            <span class="job-tag tag-primary"><i class="fas fa-briefcase"></i> ${primaryDomain}</span>
-            ${companyType ? `<span class="job-tag"><i class="fas fa-building"></i> ${companyType}</span>` : ""}
-            ${firmType ? `<span class="job-tag"><i class="fas fa-file-alt"></i> ${firmType}</span>` : ""}
-            ${industryType ? `<span class="job-tag job-tag-industry"><i class="fas fa-chart-line"></i> ${industryType}</span>` : ""}
-            ${secondaryDomain ? `<span class="job-tag tag-secondary">${secondaryDomain}</span>` : ""}
+            ${job.Experience ? `<span class="job-tag job-tag-exp"><i class="far fa-clock"></i> ${escapeHtml(job.Experience)}</span>` : ""}
+            <span class="job-tag tag-primary"><i class="fas fa-briefcase"></i> ${escapeHtml(primaryDomain)}</span>
+            ${companyType ? `<span class="job-tag"><i class="fas fa-building"></i> ${escapeHtml(companyType)}</span>` : ""}
+            ${firmType ? `<span class="job-tag"><i class="fas fa-file-alt"></i> ${escapeHtml(firmType)}</span>` : ""}
+            ${industryType ? `<span class="job-tag job-tag-industry"><i class="fas fa-chart-line"></i> ${escapeHtml(industryType)}</span>` : ""}
+            ${secondaryDomain ? `<span class="job-tag tag-secondary">${escapeHtml(secondaryDomain)}</span>` : ""}
         </div>
         ${infoRowHtml}
-        ${descriptionText ? `<p class="job-card-description">${descriptionText.slice(0, 120)}${descriptionText.length > 120 ? "…" : ""}</p>` : ""}
+        ${descriptionText ? `<p class="job-card-description">${escapeHtml(descriptionText.slice(0, 120))}${descriptionText.length > 120 ? "…" : ""}</p>` : ""}
         <div class="job-card-actions">
             ${applyButtonHtml}
             <a href="/jobs/${jobCategorySlug}/${jobSlug}.html" class="view-details-card-btn secondary" onclick="event.preventDefault();">View Details ›</a>
@@ -593,7 +610,7 @@ function getTruncatedDescription(desc, maxLength = 260) {
 function renderMarkdown(text) {
     if (!text) return 'No description available.';
 
-    let html = text
+    let html = escapeHtml(text)
         // Headers
         .replace(/^### (.*$)/gim, '<h3>$1</h3>')
         .replace(/^## (.*$)/gim, '<h2>$1</h2>')
@@ -605,7 +622,7 @@ function renderMarkdown(text) {
         .replace(/\*(.+?)\*/g, '<em>$1</em>')
         .replace(/_(.+?)_/g, '<em>$1</em>')
         // Links
-        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
+        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, label, url) => (/^https?:\/\//i.test(url) ? `<a href="${url}" target="_blank" rel="noopener noreferrer">${label}</a>` : label))
         // Line breaks
         .replace(/\n\n/g, '</p><p>')
         .replace(/\n/g, '<br>');
@@ -635,8 +652,8 @@ function generateApplicationLinks(applicationId) {
     // Generate HTML for each link with copy button
     return links.map((link, index) => `
         <div style="display: flex; align-items: center; gap: 0.75rem; background: #f8fafc; padding: 0.4rem; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: ${index < links.length - 1 ? '0.75rem' : '0'};">
-            <p class="modal-description" style="flex: 1; margin: 0; word-break: break-all; font-size: 0.95rem;">${link}</p>
-            <button class="modal-copy-btn" data-copy-text="${link.replace(/"/g, '&quot;')}" style="background: #2563eb; color: white; border: none; border-radius: 6px; padding: 0.6rem 0.8rem; cursor: pointer; transition: all 0.2s; flex-shrink: 0; min-width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;" title="Copy to clipboard">
+            <p class="modal-description" style="flex: 1; margin: 0; word-break: break-all; font-size: 0.95rem;">${escapeHtml(link)}</p>
+            <button class="modal-copy-btn" data-copy-text="${escapeHtml(link)}" style="background: #2563eb; color: white; border: none; border-radius: 6px; padding: 0.6rem 0.8rem; cursor: pointer; transition: all 0.2s; flex-shrink: 0; min-width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;" title="Copy to clipboard">
                 <i class="fas fa-copy" style="font-size: 1rem;"></i>
             </button>
         </div>
@@ -788,10 +805,10 @@ function showExclusiveLockedModal(job) {
 
     dom.modalBody.innerHTML = `
         <div class="modal-header">
-            <div class="modal-logo">${companyInitial}</div>
+            <div class="modal-logo">${escapeHtml(companyInitial)}</div>
             <div class="modal-title-group">
-                <h2>${job.Company || 'Company'}</h2>
-                <p>${job.Location || ''}</p>
+                <h2>${escapeHtml(job.Company || 'Company')}</h2>
+                <p>${escapeHtml(job.Location || '')}</p>
             </div>
         </div>
         <div style="
@@ -944,7 +961,7 @@ function showModal(job) {
 
     if (job.posts_link) {
         const originalPostHtml = `
-            <a href="${job.posts_link}" id="modalOriginalPostBtn" target="_blank" class="btn btn-secondary btn-modal-secondary" style="border-color: #0a66c2; color: #0a66c2;">
+            <a href="${safeHref(job.posts_link)}" id="modalOriginalPostBtn" target="_blank" class="btn btn-secondary btn-modal-secondary" style="border-color: #0a66c2; color: #0a66c2;">
                 <i class="fab fa-linkedin"></i>
                 Original Post
             </a>`;
@@ -1014,7 +1031,7 @@ function showModal(job) {
             <div class="modal-section" style="margin-top: 1rem;">
                 <h3 style="font-size: 1rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">${title}</h3>
                 <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                    ${tags.map(t => `<span class="modal-pill" style="font-size: 0.85rem; padding: 0.3rem 0.75rem; background-color: ${bgColor}; color: ${textColor}; border: 1px solid ${borderColor}; border-radius: 9999px; font-weight: 500;">${t}</span>`).join('')}
+                    ${tags.map(t => `<span class="modal-pill" style="font-size: 0.85rem; padding: 0.3rem 0.75rem; background-color: ${bgColor}; color: ${textColor}; border: 1px solid ${borderColor}; border-radius: 9999px; font-weight: 500;">${escapeHtml(t)}</span>`).join('')}
                 </div>
             </div>`;
     };
@@ -1080,22 +1097,22 @@ function showModal(job) {
 
     dom.modalBody.innerHTML = `
         <div class="modal-header">
-            <div class="modal-logo">${companyInitial}</div>
+            <div class="modal-logo">${escapeHtml(companyInitial)}</div>
             <div class="modal-title-group">
-                <h2>${job.Company}</h2>
+                <h2>${escapeHtml(job.Company)}</h2>
                 ${modalRatingHtml}
-                <p>${job.Location}</p>
+                <p>${escapeHtml(job.Location)}</p>
             </div>
         </div>
         <div class="modal-meta-tags" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
             ${isExpired ? '<span class="job-tag tag-expired"><i class="fas fa-hourglass-end"></i> Expired</span>' : ''}
-            ${isSalaryDisclosed(compDisplay) ? `<span class="job-tag">${compLabel}: ${compDisplay}</span>` : ''}
+            ${isSalaryDisclosed(compDisplay) ? `<span class="job-tag">${compLabel}: ${escapeHtml(compDisplay)}</span>` : ''}
             <span class="job-tag">Posted: ${postedDate}</span>
-            <span class="job-tag" style="background-color: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; font-weight: 600;">Category: ${primaryDomain}</span>
-            ${job['Secondary Domain'] ? `<span class="job-tag" style="background-color: #e0f2fe; color: #0369a1; border-color: #bae6fd;">Secondary: ${job['Secondary Domain']}</span>` : ''}
-            ${job['Company Type'] ? `<span class="job-tag"><i class="fas fa-building" style="margin-right: 4px;"></i>${job['Company Type']}</span>` : ''}
-            ${job['Firm Type'] ? `<span class="job-tag"><i class="fas fa-briefcase" style="margin-right: 4px;"></i>${job['Firm Type']}</span>` : ''}
-            ${job['Industry Type'] ? `<span class="job-tag"><i class="fas fa-industry" style="margin-right: 4px;"></i>${job['Industry Type']}</span>` : ''}
+            <span class="job-tag" style="background-color: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; font-weight: 600;">Category: ${escapeHtml(primaryDomain)}</span>
+            ${job['Secondary Domain'] ? `<span class="job-tag" style="background-color: #e0f2fe; color: #0369a1; border-color: #bae6fd;">Secondary: ${escapeHtml(job['Secondary Domain'])}</span>` : ''}
+            ${job['Company Type'] ? `<span class="job-tag"><i class="fas fa-building" style="margin-right: 4px;"></i>${escapeHtml(job['Company Type'])}</span>` : ''}
+            ${job['Firm Type'] ? `<span class="job-tag"><i class="fas fa-briefcase" style="margin-right: 4px;"></i>${escapeHtml(job['Firm Type'])}</span>` : ''}
+            ${job['Industry Type'] ? `<span class="job-tag"><i class="fas fa-industry" style="margin-right: 4px;"></i>${escapeHtml(job['Industry Type'])}</span>` : ''}
         </div>
         <div id="modalPrimaryActionsContainer">
             ${primaryActionsHtml}
@@ -4866,10 +4883,10 @@ async function dv2PopulateTrending() {
             const stipend = isSalaryDisclosed(rawStipend) ? rawStipend : '';
             const domain = job['Primary Domain'] || job.Category || '';
             item.innerHTML = `
-                <span class="dv2-trending-logo">${initial}</span>
+                <span class="dv2-trending-logo">${escapeHtml(initial)}</span>
                 <span class="dv2-trending-info">
-                    <strong>${job.Company || 'N/A'}</strong>
-                    <small>${domain}${stipend ? ' · ' + stipend : ''}</small>
+                    <strong>${escapeHtml(job.Company || 'N/A')}</strong>
+                    <small>${escapeHtml(domain)}${stipend ? ' · ' + escapeHtml(stipend) : ''}</small>
                 </span>`;
             item.addEventListener('click', () => showModal(job));
             list.appendChild(item);
