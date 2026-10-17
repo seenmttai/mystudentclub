@@ -2,47 +2,42 @@
 // engine (portal.js) and by the page generator (build-pages.js), so page copy,
 // filters and queries always agree.
 //
-// Patterns are written in the subset of regex syntax shared by JavaScript and
-// PostgreSQL (POSIX ARE, case-insensitive): no \b, no \m; word edges are
-// spelled out as (^|[^a-z0-9]) ... ([^a-z0-9]|$). They were checked against
-// live listings on 2026-10-17 (see cs-cma-portal.sql for the same patterns).
+// Eligibility patterns are PostgreSQL regexes (ARE, case-insensitive), because
+// the database filters with them. core.js converts the PostgreSQL-only word
+// boundaries (\m, \M) for the browser. Each course has three parts, applied
+// in this order so PostgREST stays well inside the 3 s anon statement timeout:
+//   pre - cheap token gate (any CS / CMA-like word at all)
+//   pos - the course is named as an accepted qualification
+//   neg - the listing turns the course away, or only wants it on top of a
+//         mandatory CA, or means US CMA
+// Labelled against every CS match and a sample of CMA matches from the last
+// 60 days on 2026-10-17: about 99% precise for both.
 
 export const SITE = 'https://www.mystudentclub.com';
 export const BROWSER_GUARD_WORKER_URL = 'https://browser-guard-unlock.bhansalimanan55.workers.dev';
 
+const CS_MATCH = {
+    pre: String.raw`(\mcs\M|company\s+secretar|icsi|\macs\M)`,
+    pos: String.raw`((\mca|\mcma|\micwai?|\mcwa|\mmba|\mllb|\mcfa|\mcpa|\macca|\mcia|\mm\.?\s?com|\mb\.?\s?com|\mbba|\mbaf|\mgraduates?|\minter|\mipcc|\mfrm)\M\s*\)?\s*(,\s*or\s|,\s*and\s|/|,|&|\||\sor\s|\sand\s|and\s*/\s*or)\s*(semi[\s-]*qualified\s+)?\ma?cs\M(?!\s*(firms?|partners|consultants)\M)|\ma?cs\M(?!\s*(firms?|partners|consultants)\M)\s*(\(\s*[a-z]+\s*\))?\s*(/|,|&|\||\sor\s|\sand\s)\s*(ca|cma|icwai?|cwa|mba|llb|law|cfa|cpa|acca|m\.?\s?com|b\.?\s?com)\M|\ma?cs\M(?!\s*(firms?|partners|consultants)\M)\s*[-–(]?\s*(executive|professional|inter|intermediate|final|foundation|qualified|semi|trainee|student|aspirant|fresher|dropout|drop\s*out|article|pursuing|cleared|appeared|member|candidate|course)|(qualified|pursuing|\minter|fresher|aspiring)\s+(ca\s*/\s*)?\ma?cs\M(?!\s*(firms?|partners|consultants)\M)|(qualified|fresher|practi[sc]ing|aspiring|trainee)\s+(ca\s*/\s*)?company\s+secretar|company\s+secretar(y|ies)\s*[-–(:]*\s*(trainee|fresher|intern|executive|professional|cs\M|qualified|\d)|(accountant|\mca|\mcma|\micwa)\M\s*(\([a-z]+\))?\s*(/|,|\sor\s)\s*(cost\s*(&|and)?\s*(management|works)?\s*accountant\s*(/|,|\sor\s)\s*)?company\s+secretary\M|(hiring|looking\s+for|inviting|applications\s+from|openings?\s+for)[a-z\s-]*company\s+secretar|\micsi\M(?!\s+invoic))`,
+    neg: String.raw`(not\s+eligible[^.\n]*\ma?cs\M|((\mca\M|chartered\s+accountant)[^.\n•]*(mandatory|required|is\s+a\s+must)|must\s+be\s+(an?\s+)?(qualified\s+)?(\mca\M|chartered\s+accountant))[^.\n•]*\ma?cs\M[^.\n•]*(advantage|plus|preferable|good\s+to\s+have|in\s+addition)|\mca\s*\+\s*cs\M|required:?\s*(qualified\s+)?ca\s*(&|and)\s*cs\M)`
+};
+
+const CMA_MATCH = {
+    pre: String.raw`(\mcmas?\M|icwa|\mcwa\M|icmai?|cost\s*(and|&)?\s*(management|works)?\s*accountan|\macma\M)`,
+    pos: String.raw`((?<!us\s)\mcmas?\M(?!\s*[-–:(]?\s*(data|prep|report|credit|statement|projection|format|study|working|project\s+fin|\(?\s*(us|usa|u\.s|ima)\M))|\micwai?s?\M|\maicwa|\mcwa\M|\micmai?\M|cost\s*(and|&)?\s*(management|works)?\s*accountan|\macma\M)`,
+    neg: String.raw`(not\s+eligible[^.\n]*(\mcma\M|icwa)|\mcma\M[^.\n]*(not\s+eligible|should\s+not\s+apply|need\s+not\s+apply)|\mno\s+cma\M|❌[^.\n]*\mcma\M|((\mca\M|chartered\s+accountant)[^.\n•]*(mandatory|required|is\s+a\s+must)|must\s+be\s+(an?\s+)?(qualified\s+)?(\mca\M|chartered\s+accountant))[^.\n•]*(\mcma\M|icwa)[^.\n•]*(advantage|plus|preferable|good\s+to\s+have|in\s+addition)|\mus\s+cpa\s*/\s*cma\M)`
+};
+
+// Simpler patterns for categories, stages and the CA badge only run in the
+// browser or as an extra filter, so they stay in the JS/PostgreSQL subset.
 const L = '(^|[^a-z0-9])';
 const R = '([^a-z0-9]|$)';
-const SEP = String.raw`(\s*[/,&|]\s*|\s+(or|and)\s+)`;
-const STAGE_WORDS = '(executive|professional|inter|intermediate|final|foundation|qualified|freshers?|trainees?|interns?|students?|candidates?|aspirants?|pursuing)';
-const NEGATION = String.raw`(not\s+(be\s+)?eligible|should\s+not\s+apply|need\s+not\s+apply|ineligible|are\s+not\s+considered)`;
-
-const CS_PATTERN = [
-    `${L}(ca|cma|icwa|icwai)${SEP}cs${R}`,
-    `${L}cs${SEP}(ca|cma|icwa|llb)${R}`,
-    String.raw`${L}cs\s*[-(]?\s*${STAGE_WORDS}${R}`,
-    String.raw`${L}(qualified|semi[- ]?qualified|pursuing|associate|practi[cs]ing)\s+(cs|company\s+secretar(y|ies))${R}`,
-    `${L}(icsi|acs|fcs)${R}`,
-    String.raw`company\s+secretar(y|ies)\s*(trainee|intern|cum)`,
-    String.raw`(hiring|seeking|looking\s+for|requires?|wanted|position|opening|vacancy)[^.\n]{0,30}company\s+secretar`,
-    String.raw`secretarial\s+(intern|trainee|assistant|executive|officer)`,
-    String.raw`${L}pcs\s+firm`
-].join('|');
-
-const CMA_PATTERN = [
-    // "CA/CMA", "CS or CMA", but not "CA/CMA (US)"
-    String.raw`${L}(ca|cs)${SEP}cma(?!\s*[-(]?\s*(us|usa)${R})${R}`,
-    `${L}cma${SEP}(ca|cs)${R}`,
-    String.raw`${L}cma\s*[-(]?\s*${STAGE_WORDS}${R}`,
-    String.raw`${L}(qualified|semi[- ]?qualified|pursuing)\s+cma${R}`,
-    `${L}(icmai|icwai|icwa|aicwa|cwa)${R}`,
-    String.raw`cost\s+(and|&)\s+management\s+accountan`,
-    String.raw`cost\s+accountan`
-].join('|');
+const SEP = String.raw`(\s*[/,&]\s*|\s+or\s+|\s+and\s+)`;
 
 export const QUAL_PATTERNS = {
-    CA: String.raw`${L}(ca|icai|aca|fca)${R}|chartered\s+accountan`,
-    CS: CS_PATTERN,
-    CMA: CMA_PATTERN
+    CA: { pos: String.raw`${L}(ca|icai|aca|fca)${R}|chartered\s+accountan` },
+    CS: CS_MATCH,
+    CMA: CMA_MATCH
 };
 
 export const PAY_OPTIONS = {
@@ -82,13 +77,14 @@ const CS = {
     accent: '#0f766e',
     accentSoft: '#effcf9',
     hubPath: '/cs-jobs',
-    pattern: CS_PATTERN,
-    excludePattern: String.raw`${L}cs${R}[^.\n]{0,50}${NEGATION}|(not\s+eligible|should\s+not\s+apply|ineligible)[^.\n]{0,60}${L}cs${R}`,
+    match: CS_MATCH,
     applyPitch: 'I am pursuing the Company Secretary course with ICSI and want to build hands-on experience in secretarial compliance, corporate law and governance.',
+    // Stage hints shown in the listing detail (browser only).
     stages: [
-        { label: 'CS Executive', pattern: String.raw`${L}cs\s*[-(]?\s*executive|executive\s+(programme|program|level)` },
-        { label: 'CS Professional', pattern: String.raw`${L}cs\s*[-(]?\s*professional` },
-        { label: 'Qualified CS (ACS)', pattern: String.raw`(qualified|associate|member)\s+(cs|company\s+secretar)|${L}(acs|fcs)${R}|${L}cs\s*[-(]?\s*qualified` }
+        { label: 'CS Executive', pattern: String.raw`\mcs\s*[-(]?\s*(executive|inter(mediate)?\M)|executive\s+(level|programme|program)|\minter(mediate)?\s+(ca(\s*[/,&]\s*|\s+or\s+|\s+and\s+))?(cma(\s*[/,&]\s*|\s+or\s+|\s+and\s+))?cs\M|\mca(\s*[/,&]\s*|\s+or\s+|\s+and\s+)(cma(\s*[/,&]\s*|\s+or\s+|\s+and\s+))?cs\s*\(?\s*inter` },
+        { label: 'CS Professional', pattern: String.raw`\mcs\s*[-(]?\s*(professional\s+(student|pursuing|programme|program|level|cleared|appeared|module|group|course)|final(ist)?\M)|pursuing\s+cs\s+professional|professional\s+programme` },
+        { label: 'Semi-qualified CS', pattern: String.raw`semi[\s-]*qualified\s+(ca(\s*[/,&]\s*|\s+or\s+|\s+and\s+))?(cma(\s*[/,&]\s*|\s+or\s+|\s+and\s+))?(cs\M|company\s+secretar)|\mcs\s+semi[\s-]*qualified|\mcs\s*(/\s*\w+\s*)*drop\s*-?\s*outs?|(ca|cma)\s*/\s*(cma\s*/\s*)?cs\s+drop\s*-?\s*outs?` },
+        { label: 'Qualified CS', pattern: String.raw`(?<!semi[\s-])(?<!semi)qualified\s+(ca(\s*[/,&]\s*|\s+or\s+|\s+and\s+))?(cma(\s*[/,&]\s*|\s+or\s+|\s+and\s+))?(cs\M|company\s+secretar)|\mcs\s+qualified|\macs\M|company\s+secretar(y|ies)\s*\(cs\)|\mcs\s*\(\s*qualified` }
     ],
     categories: [
         category('secretarial', 'Secretarial & ROC filings', String.raw`secretarial|${L}roc${R}|mca\s*(21|v3|filing|portal|compliance)|annual\s+return|board\s+meeting|${L}agm${R}|minutes|statutory\s+registers|incorporation|e-?forms?`),
@@ -273,13 +269,15 @@ const CMA = {
     accent: '#6d28d9',
     accentSoft: '#f5f3ff',
     hubPath: '/cma-jobs',
-    pattern: CMA_PATTERN,
-    excludePattern: String.raw`(cma|icwa|cost\s+accountant)[^.\n]{0,50}${NEGATION}|(not\s+eligible|should\s+not\s+apply|ineligible)[^.\n]{0,60}(cma|icwa)`,
+    match: CMA_MATCH,
     applyPitch: 'I am a CMA student with ICMAI and want hands-on experience in costing, cost audit and management accounting.',
+    // Stage hints shown in the listing detail (browser only).
     stages: [
-        { label: 'CMA Inter', pattern: String.raw`${L}cma\s*[-(]?\s*inter(mediate)?|${L}icwa\s*[-(]?\s*inter` },
-        { label: 'CMA Final', pattern: String.raw`${L}cma\s*[-(]?\s*final` },
-        { label: 'Qualified CMA', pattern: String.raw`(qualified|newly\s+qualified)\s+(cma|cost\s+accountant)|${L}cma\s*[-(]?\s*qualified|${L}(acma|fcma)${R}` }
+        { label: 'CMA Inter', pattern: String.raw`\mcma\s*[-(]?\s*(inter(mediate)?\M|\(i\))|\minter(mediate)?\s+(ca(\s*[/,&]\s*|\s+or\s+|\s+and\s+))?(cma|icwai?|cwa)\M|\micwai?\s*[-(]?\s*inter|\mcwa\s*[-(]?\s*(inter|\(i\))|\mca(\s*[/,&]\s*|\s+or\s+|\s+and\s+)cma\s*((\s*[/,&]\s*|\s+or\s+|\s+and\s+)cs)?\s*\(?\s*inter` },
+        { label: 'CMA Final', pattern: String.raw`\mcma\s*[-(]?\s*final(ist)?\M|\mfinal\s+cma|\micwai?\s+final|\mca(\s*[/,&]\s*|\s+or\s+|\s+and\s+)cma\s*((\s*[/,&]\s*|\s+or\s+|\s+and\s+)cs)?\s+final(ist)?` },
+        { label: 'Semi-qualified CMA', pattern: String.raw`semi[\s-]*qualified\s+(ca(\s*[/,&]\s*|\s+or\s+|\s+and\s+))?(cma|icwa|cwa)|\mcma\s+semi|\m(cma|icwa|cwa)\s*(/\s*\w+\s*)*drop\s*-?\s*outs?|\mca\s*/\s*cma\s*(/\s*cs)?\s*(drop\s*-?\s*outs?|dropouts?|\(discontinued\))|discontinued\s+ca\s*/\s*cma` },
+        { label: 'Qualified CMA', pattern: String.raw`(?<!semi[\s-])(?<!semi)qualified\s+(ca(\s*[/,&]\s*|\s+or\s+|\s+and\s+))?(cma|icwa|cwa|cost\s+accountant)|\mcma\s+qualified|\macma\M|qualified\s+cost\s+(and\s+|&\s*)?(management\s+|works\s+)?accountant|\m(ca|cma)\s*/\s*cma\s+qualified` },
+        { label: 'Pursuing CMA', pattern: String.raw`pursuing\s+(ca(\s*[/,&]\s*|\s+or\s+|\s+and\s+))?cma|\mcma\s+(pursuing|aspirants?|students?)|\mca\s*(/|&|and|or)\s*cma\s+(pursuing|aspirants?|students?)` }
     ],
     categories: [
         category('costing', 'Costing & cost control', String.raw`cost\s+(accounting|control|reduction|analysis|sheet|centre|center)|costing|standard\s+cost|product\s+cost`),

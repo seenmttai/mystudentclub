@@ -8,7 +8,7 @@ import {
     detectQualifications, matchesPattern, maskContacts, stripMarkdown, truncate, formatPay,
     timeAgo, isLikelyClosed, isoDaysAgo, parseApplyTarget, buildMailto, jobKey, parseJobKey,
     decodeFilters, encodeFilters, countActiveFilters, defaultFilters, WINDOW_OPTIONS, DEFAULT_WINDOW,
-    applicationRow, appliedKeyFromRow, matchContext, isValidJobId, MAX_PLAUSIBLE_PAY
+    applicationRow, appliedKeyFromRow, matchContext, isValidJobId, MAX_PLAUSIBLE_PAY, repostSignature
 } from './core.js';
 import { unlockJobDetails, getCachedUnlockedJob } from '../browser-guard.js';
 import { calculateProfileCompletion, readCachedProfile } from '../profile-completion.js';
@@ -48,6 +48,7 @@ const app = {
     filters: defaultFilters(),
     jobs: [],
     jobsByKey: new Map(),
+    signatures: new Map(),
     applied: new Set(),
     cursor: null,
     page: 0,
@@ -339,9 +340,12 @@ function applyCourseFilter(query, course, lane, days) {
     if (app.mode === 'tagged') {
         query = query.contains('eligible_courses', [course.code]);
     } else {
-        query = query.filter('Description', 'imatch', course.pattern);
-        // Drop listings that explicitly turn the course away ("CMA not eligible").
-        if (course.excludePattern) query = query.not('Description', 'imatch', course.excludePattern);
+        // Order matters: PostgREST keeps it, and the cheap gate lets Postgres
+        // skip most rows before the expensive patterns run.
+        query = query
+            .filter('Description', 'imatch', course.match.pre)
+            .filter('Description', 'imatch', course.match.pos)
+            .not('Description', 'imatch', course.match.neg);
     }
     if (lane.experience) query = query.eq('Experience', lane.experience);
     if (lane.table === 'Industrial Training Job Portal') {
@@ -426,21 +430,35 @@ async function fetchPage({ reset }) {
         if (reset) {
             app.jobs = [];
             app.jobsByKey.clear();
+            app.signatures.clear();
             if (typeof count === 'number') app.total = count;
         }
+        const added = [];
+        const reposted = new Set();
         for (const job of rows) {
             const key = jobKey(job.__table, job.id);
-            if (!app.jobsByKey.has(key)) {
-                app.jobs.push(job);
-                app.jobsByKey.set(key, job);
+            if (app.jobsByKey.has(key)) continue;
+            app.jobsByKey.set(key, job);
+            // Newest copy wins; older reposts only bump its counter.
+            const signature = repostSignature(job, { byCompany: lane.key.endsWith('training') });
+            const original = app.signatures.get(signature);
+            if (original) {
+                original.__reposts = (original.__reposts || 0) + 1;
+                reposted.add(original);
+                continue;
             }
+            app.signatures.set(signature, job);
+            app.jobs.push(job);
+            added.push(job);
         }
         const last = rows[rows.length - 1];
         if (last) app.cursor = { createdAt: last.Created_At, id: last.id };
         app.page += 1;
         app.hasMore = rows.length === PAGE_SIZE;
         app.loading = false;
-        renderJobs({ reset, added: rows });
+        renderJobs({ reset, added });
+        reposted.forEach(paintRepostCount);
+        if (reposted.size) renderSummary();
     } catch (error) {
         if (requestId !== app.requestId) return;
         app.loading = false;
@@ -584,6 +602,7 @@ function cardHtml(job) {
                     ${qualificationBadges(job)}
                     <span class="pp-card-time${closed ? ' is-closed' : ''}">${closed ? `${icon('alert')}Posted ${escapeHtml(days)} · may be filled` : `${fresh ? '<span class="pp-dot" aria-hidden="true"></span>' : ''}Posted ${escapeHtml(days)}`}</span>
                     <span class="pp-applied-flag" ${applied ? '' : 'hidden'}>${icon('check')}Applied</span>
+                    <span class="pp-repost" data-repost ${job.__reposts ? '' : 'hidden'}>${job.__reposts ? `Reposted ${job.__reposts + 1}×` : ''}</span>
                 </div>
             </div>
             <div class="pp-card-side">
@@ -591,6 +610,14 @@ function cardHtml(job) {
                 <button type="button" class="pp-icon-btn${saved ? ' is-on' : ''}" data-save="${key}" aria-pressed="${saved}" aria-label="${saved ? 'Remove' : 'Save'} ${escapeHtml(job.Company || 'listing')} ${saved ? 'from saved' : 'for later'}">${icon('bookmark')}</button>
             </div>
         </article>`;
+}
+
+function paintRepostCount(job) {
+    const badge = $(`[data-card="${jobKey(job.__table, job.id)}"] [data-repost]`);
+    if (!badge) return;
+    badge.hidden = false;
+    badge.textContent = `Reposted ${job.__reposts + 1}×`;
+    badge.title = 'The same opening was posted more than once. We show the newest copy.';
 }
 
 function renderSkeleton(count = 4) {
@@ -625,9 +652,10 @@ function renderSummary() {
         return;
     }
     const noun = app.lane.noun || 'listings';
+    const merged = app.jobs.reduce((sum, job) => sum + (job.__reposts || 0), 0);
     el.innerHTML = app.total === 0
         ? `No ${escapeHtml(noun)} ${windowText}`
-        : `<strong>${app.total.toLocaleString('en-IN')}</strong> ${escapeHtml(noun)} ${windowText}`;
+        : `<strong>${app.total.toLocaleString('en-IN')}</strong> ${escapeHtml(noun)} ${windowText}${merged ? ` <span class="pp-muted">· ${merged} repost${merged > 1 ? 's' : ''} merged</span>` : ''}`;
 }
 
 function renderJobs({ reset, added }) {
@@ -1019,7 +1047,7 @@ function eligibilityHtml(job) {
     const quals = qualificationsFor(job);
     const stages = stageMentions(job);
     const forCourse = quals.includes(app.course.code);
-    const context = forCourse ? matchContext(stripMarkdown(job.Description || ''), app.course.pattern) : '';
+    const context = forCourse ? matchContext(stripMarkdown(job.Description || ''), app.course.match.pos) : '';
     return `
         <section class="pp-eligibility${forCourse ? '' : ' is-unclear'}" aria-label="Who can apply">
             <h3>${icon(forCourse ? 'check-circle' : 'alert')}Who can apply</h3>
@@ -1328,8 +1356,10 @@ async function initHub() {
             if (error) throw error;
             return (data || []).map(job => tagJob(job, lane));
         }));
+        const seen = new Set();
         const latest = perLane.flat()
             .sort((a, b) => new Date(b.Created_At) - new Date(a.Created_At))
+            .filter(job => !seen.has(repostSignature(job)) && seen.add(repostSignature(job)))
             .slice(0, 6);
         latest.forEach(job => app.jobsByKey.set(jobKey(job.__table, job.id), job));
         list.innerHTML = latest.length

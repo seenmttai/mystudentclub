@@ -92,19 +92,24 @@ export function locationOrFilter(locations, aliases = {}) {
     return Array.from(terms).map(term => `Location.ilike."*${term}*"`).join(',');
 }
 
-// Joins regex alternatives into one pattern understood by both JavaScript and
-// PostgreSQL (POSIX ARE), so the same string drives the server-side filter and
-// the "Open to" badges in the browser.
+// Joins regex alternatives into one alternation.
 export function anyOf(patterns) {
     const list = (patterns || []).filter(Boolean);
     if (list.length === 0) return '';
     return list.length === 1 ? list[0] : `(${list.join('|')})`;
 }
 
+// Patterns are written for PostgreSQL (ARE). The only PostgreSQL-specific
+// escapes they use are word boundaries: \m (start of word), \M (end of word)
+// and \y (either). Everything else means the same in JavaScript.
+export function pgToJs(pattern) {
+    return String(pattern).replace(/\\([mMy])/g, (_, kind) => (kind === 'm' ? '\\b(?=\\w)' : kind === 'M' ? '\\b(?<=\\w)' : '\\b'));
+}
+
 const regexCache = new Map();
 export function toRegExp(pattern) {
     if (!pattern) return null;
-    if (!regexCache.has(pattern)) regexCache.set(pattern, new RegExp(pattern, 'i'));
+    if (!regexCache.has(pattern)) regexCache.set(pattern, new RegExp(pgToJs(pattern), 'is'));
     return regexCache.get(pattern);
 }
 
@@ -113,14 +118,20 @@ export function matchesPattern(text, pattern) {
     return Boolean(re && re.test(String(text ?? '')));
 }
 
+// A course match is { pre, pos, neg }: the gate and the positive pattern must
+// match and the negative must not. A plain string is treated as { pos }.
+export function courseMatches(text, match) {
+    const m = typeof match === 'string' ? { pos: match } : (match || {});
+    if (!m.pos) return false;
+    if (m.pre && !matchesPattern(text, m.pre)) return false;
+    if (!matchesPattern(text, m.pos)) return false;
+    return !(m.neg && matchesPattern(text, m.neg));
+}
+
 // Which qualifications does a listing say it is open to?
-// `patterns` is { CA: '...', CS: '...', CMA: '...' } from config.
+// `patterns` is QUAL_PATTERNS from config: { CA: {...}, CS: {...}, CMA: {...} }.
 export function detectQualifications(text, patterns) {
-    const found = [];
-    for (const [code, pattern] of Object.entries(patterns || {})) {
-        if (matchesPattern(text, pattern)) found.push(code);
-    }
-    return found;
+    return Object.entries(patterns || {}).filter(([, match]) => courseMatches(text, match)).map(([code]) => code);
 }
 
 // Hides contact details in public descriptions; the full text is unlocked by
@@ -221,6 +232,22 @@ export function parseApplyTarget(applicationId) {
 
 export function buildMailto(email, subject, body) {
     return `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
+// Firms often repost the same ad. In training sections one firm is almost
+// always one opening, so group by firm; in job sections a company can have many
+// roles, so group only identical opening text from the same company.
+const COMPANY_NOISE = /\b(llp|pvt|private|ltd|limited|co|company|and|the|chartered|accountants?|associates)\b/g;
+
+export function normalizeCompany(name) {
+    return String(name ?? '').toLowerCase().replace(/&/g, ' ').replace(/[^a-z0-9]+/g, ' ').replace(COMPANY_NOISE, ' ').replace(/\s+/g, ' ').trim();
+}
+
+export function repostSignature(job, { byCompany = false } = {}) {
+    const company = normalizeCompany(job?.Company);
+    if (byCompany && company) return company;
+    const text = String(stripMarkdown(job?.Description) ?? '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+    return `${company}|${text.slice(0, 160)}`;
 }
 
 export function jobKey(table, id) {

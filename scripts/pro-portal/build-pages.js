@@ -439,11 +439,13 @@ IMMUTABLE
 AS $fn$
     SELECT array_remove(ARRAY[
         'CA',
-        CASE WHEN coalesce(description, '') ~* ${q(cs.pattern)}
-              AND coalesce(description, '') !~* ${q(cs.excludePattern)}
+        CASE WHEN coalesce(description, '') ~* ${q(cs.match.pre)}
+              AND coalesce(description, '') ~* ${q(cs.match.pos)}
+              AND coalesce(description, '') !~* ${q(cs.match.neg)}
              THEN 'CS' END,
-        CASE WHEN coalesce(description, '') ~* ${q(cma.pattern)}
-              AND coalesce(description, '') !~* ${q(cma.excludePattern)}
+        CASE WHEN coalesce(description, '') ~* ${q(cma.match.pre)}
+              AND coalesce(description, '') ~* ${q(cma.match.pos)}
+              AND coalesce(description, '') !~* ${q(cma.match.neg)}
              THEN 'CMA' END
     ], NULL);
 $fn$;

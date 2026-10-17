@@ -34,13 +34,18 @@ const CASES = [
   ['Qualifications: CA/CMA/CS or MBA in Finance from a top-tier institute.', ['CA', 'CS', 'CMA']],
   ['Semi-Qualified CA / CS / ICWA / CMA / M.Com / B.Com (Hons.) / LLB', ['CA', 'CS', 'CMA']],
   ['Eligibility: CA Inter / CMA Inter completed', ['CA', 'CMA']],
-  ['Chartered Accountant, Company Secretary, Cost Accountant, Law Graduate', ['CA', 'CMA']],
+  ['Eligibility: Chartered Accountant, Company Secretary, Cost Accountant, Law Graduate', ['CA', 'CS', 'CMA']],
   ['🎓 CS Executive / CS Professional students', ['CS']],
   ['Qualification: CA / ICWA. Experience: 7–10 years in Manufacturing', ['CA', 'CMA']],
+  ['Qualification: MBA/CMA with 3 years in costing', ['CMA']],
+  ['Hiring Semi-Qualified CMAs for our plant team', ['CMA']],
   ['Open to CA / CMA (US) candidates with SAP experience', ['CA']],
   ['Preparation of CMA data and project reports for bank loans', []],
   ['Work closely with the Company Secretary and Compliance Officer on board meetings', []],
-  ['Customer support (CS) executives for our call centre', []]
+  ['Our firm comprising Chartered Accountants, Company Secretaries, and lawyers', ['CA']],
+  ['Must be a qualified CA (ICWA/CS in addition will be an added advantage)', ['CA']],
+  ['Customer support (CS) executives for our call centre', []],
+  ['Handling SOW approvals and ICSI invoicing where applicable', []]
 ];
 
 test('qualification patterns tag real listings correctly', async () => {
@@ -52,30 +57,44 @@ test('qualification patterns tag real listings correctly', async () => {
 });
 
 test('listings that turn a course away are excluded', async () => {
-  const { matchesPattern } = await load('core.js');
+  const { courseMatches } = await load('core.js');
   const { COURSES } = await load('config.js');
-  const cma = COURSES.cma.excludePattern;
-  const cs = COURSES.cs.excludePattern;
-  assert.ok(matchesPattern('This is a CA Article Trainee position (CMA candidates not eligible), offering', cma));
-  assert.ok(matchesPattern('❌ Note: ACCA/CMA pursuing candidates should not apply.', cma));
-  assert.ok(matchesPattern('Not eligible: Outstation candidates, CS/CMA interns, Accounting Assistants', cs));
-  assert.ok(!matchesPattern('Hiring CA/CMA freshers. Outstation candidates should not apply.', cma));
-  assert.ok(!matchesPattern('CA / CS Articleship Opportunity in Noida', cs));
+  const cma = COURSES.cma.match;
+  const cs = COURSES.cs.match;
+  assert.ok(!courseMatches('This is a CA Article Trainee position (CMA candidates not eligible), offering', cma));
+  assert.ok(!courseMatches('❌ Note: ACCA/CMA pursuing candidates should not apply.', cma));
+  assert.ok(!courseMatches('Not eligible: Outstation candidates, CS/CMA interns, Accounting Assistants', cs));
+  assert.ok(!courseMatches('CA preferred, or US CPA/CMA', cma));
+  assert.ok(courseMatches('Hiring CA/CMA freshers. Outstation candidates should not apply.', cma));
+  assert.ok(courseMatches('CA / CS Articleship Opportunity in Noida', cs));
 });
 
-test('every pattern in config compiles and stays inside the JS/PostgreSQL shared subset', async () => {
+test('PostgreSQL word boundaries convert to JavaScript and every pattern compiles', async () => {
+  const { pgToJs, toRegExp } = await load('core.js');
   const { COURSES, QUAL_PATTERNS } = await load('config.js');
-  const patterns = [...Object.values(QUAL_PATTERNS)];
+  assert.equal(pgToJs(String.raw`\mcs\M|\yx\y`), String.raw`\b(?=\w)cs\b(?<=\w)|\bx\b`);
+  assert.ok(toRegExp(String.raw`\mcs\M`).test('CS Trainee') && !toRegExp(String.raw`\mcs\M`).test('Analytics'));
+  const patterns = [];
+  for (const match of Object.values(QUAL_PATTERNS)) patterns.push(...Object.values(match));
   for (const course of Object.values(COURSES)) {
-    patterns.push(course.pattern, course.excludePattern);
     course.stages.forEach((s) => patterns.push(s.pattern));
     course.categories.forEach((c) => patterns.push(c.pattern));
   }
   for (const pattern of patterns) {
-    assert.doesNotThrow(() => new RegExp(pattern, 'i'), pattern);
-    // \b and \m mean different things in JS and PostgreSQL; neither may appear.
-    assert.doesNotMatch(pattern, /\\[bBmMyY<>]/, pattern);
+    assert.doesNotThrow(() => toRegExp(pattern), pattern);
+    // \b is a backspace in PostgreSQL, so word edges must be written as \m / \M.
+    assert.doesNotMatch(pattern, /\\b/, pattern);
   }
+});
+
+test('stage hints pick out the stage a listing asks for', async () => {
+  const { matchesPattern } = await load('core.js');
+  const { COURSES } = await load('config.js');
+  const stage = (course, label) => COURSES[course].stages.find((s) => s.label === label).pattern;
+  assert.ok(matchesPattern('CS Executive / CS Professional students', stage('cs', 'CS Executive')));
+  assert.ok(matchesPattern('Hiring a Semi-Qualified CS for ROC work', stage('cs', 'Semi-qualified CS')));
+  assert.ok(!matchesPattern('Hiring a Semi-Qualified CS for ROC work', stage('cs', 'Qualified CS')));
+  assert.ok(matchesPattern('Eligibility: CA Inter / CMA Inter completed', stage('cma', 'CMA Inter')));
 });
 
 test('contacts are masked in public descriptions', async () => {
@@ -169,4 +188,14 @@ test('every lane maps to a known table and has the copy the pages need', async (
     // CS uses "CS Executive" for the exam stage only, never as a job title.
     if (course.key === 'cs') assert.ok(course.lanes.every((lane) => !/CS Executive jobs/i.test(lane.tab + lane.h1)));
   }
+});
+
+test('reposts collapse by firm in training sections and by text in job sections', async () => {
+  const { repostSignature, normalizeCompany } = await load('core.js');
+  assert.equal(normalizeCompany('Mehra Goel & Co. LLP'), normalizeCompany('Mehra Goel & Co.'));
+  const a = { Company: 'Mehra Goel & Co.', Description: 'We are hiring CA Articles & CS Trainees!' };
+  const b = { Company: 'Mehra Goel & Co. LLP', Description: 'Hiring CA Articles & CS Trainees at Mehra Goel. Apply now.' };
+  assert.equal(repostSignature(a, { byCompany: true }), repostSignature(b, { byCompany: true }));
+  assert.notEqual(repostSignature(a), repostSignature(b));
+  assert.equal(repostSignature(a), repostSignature({ ...a, Description: '**We are hiring CA Articles & CS Trainees!**' }));
 });

@@ -18,7 +18,7 @@ export const CONTENT = {
             'To become an Associate member (ACS) you need CS Professional, the training (or an exemption), the EDP, the 30-day CLDP and a Training Clearance Certificate.'
         ],
         rulesSource: { label: 'ICSI: long-term training', url: 'https://www.icsi.edu/long-term-training' },
-        howWeList: 'We show vacancies whose description says Company Secretary candidates can apply (for example "CA/CS", "CS Executive passed" or "Company Secretary trainee"), and hide ones that say CS candidates are not eligible. Each listing quotes the line that matched so you can judge for yourself.',
+        howWeList: 'We show vacancies whose description says Company Secretary candidates can apply (for example "CA/CS", "CS Executive passed" or "Company Secretary trainee"), and hide ones that say CS candidates are not eligible or only want CS on top of a mandatory CA. Each listing quotes the line that matched so you can judge for yourself.',
         faq: [
             {
                 q: 'Is CS training the same as CS articleship?',
@@ -64,7 +64,7 @@ export const CONTENT = {
             'Report your training to ICMAI within 30 days of joining. You can change your trainer at most three times.'
         ],
         rulesSource: { label: 'ICMAI: Practical Training Scheme 2020', url: 'https://icmai.in/Home/NewPracticalTrainingScheme2020' },
-        howWeList: 'We show vacancies whose description says CMA (ICMAI) candidates can apply (for example "CA/CMA", "CMA Inter", "ICWA" or "Cost Accountant"). We leave out US CMA roles, "CMA data" (a bank loan report, not the qualification), and listings that say CMA candidates are not eligible. Each listing quotes the line that matched so you can judge for yourself.',
+        howWeList: 'We show vacancies whose description says CMA (ICMAI) candidates can apply (for example "CA/CMA", "CMA Inter", "ICWA" or "Cost Accountant"). We leave out US CMA roles, "CMA data" (a bank loan report, not the qualification), and listings that say CMA candidates are not eligible or only want CMA on top of a mandatory CA. Each listing quotes the line that matched so you can judge for yourself.',
         faq: [
             {
                 q: 'Is CMA articleship the same as CMA practical training?',

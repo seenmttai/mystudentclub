@@ -1019,6 +1019,14 @@ body.pp {
   display: none;
 }
 
+.pp-repost {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #f3f4f6;
+  color: var(--pp-ink-2);
+  font-weight: 500;
+}
+
 .pp-card-side {
   grid-column: 2;
   display: flex;
