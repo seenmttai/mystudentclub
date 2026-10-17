@@ -6,14 +6,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Post a Job - My Student Club</title>
   <meta name="description"
-    content="Post CA Industrial Training, CA Fresher, Semi-Qualified, and CA Articleship job vacancies to 50,000+ top finance talent on My Student Club.">
+    content="Post Industrial Training, Fresher, Semi-Qualified and Articleship vacancies for CA, CS and CMA candidates to 50,000+ top finance talent on My Student Club.">
   
   <!-- Fonts & Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <!-- Supabase -->
-  <script src="/scripts/supabase.js"></script>
+  <script src="/scripts/supabase.js?v=3340dea380"></script>
 
   <!-- Favicons -->
   <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
@@ -494,6 +494,84 @@
     .portal-card-text p {
       font-size: 0.72rem;
       color: var(--gray-500);
+    }
+
+    /* Who can apply? (CA / CS / CMA) */
+    .eligibility-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .eligibility-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+
+    .eligibility-pill {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .eligibility-pill input {
+      position: absolute;
+      opacity: 0;
+      width: 1px;
+      height: 1px;
+    }
+
+    .eligibility-pill span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.5rem 0.9rem;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--gray-300);
+      background: var(--gray-50);
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--gray-700);
+      transition: all 0.2s;
+      user-select: none;
+    }
+
+    .eligibility-pill span i {
+      font-size: 0.75rem;
+      color: var(--gray-300);
+    }
+
+    .eligibility-pill small {
+      font-size: 0.72rem;
+      color: var(--gray-500);
+      font-weight: 400;
+    }
+
+    .eligibility-pill input:checked + span {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .eligibility-pill input:checked + span i {
+      color: var(--primary);
+    }
+
+    .eligibility-pill input:focus-visible + span {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+
+    .eligibility-hint,
+    .field-hint {
+      font-size: 0.75rem;
+      color: var(--gray-500);
+      line-height: 1.45;
+    }
+
+    .eligibility-hint.error {
+      color: var(--danger);
     }
 
     /* Description Markdown Helper Buttons */
@@ -1042,6 +1120,9 @@
       .recruiter-name { max-width: 70px; }
     }
   </style>
+<!-- msc:importmap -->
+<script type="importmap">{"imports":{"/scripts/courses/applications.js":"/scripts/courses/applications.js?v=a80bcad170","/scripts/courses/courses.js":"/scripts/courses/courses.js?v=c74dfb52a7","/scripts/courses/match.js":"/scripts/courses/match.js?v=8b17489b7a","/scripts/courses/profile-fields.js":"/scripts/courses/profile-fields.js?v=eb1909a23c","/scripts/pay-parse.js":"/scripts/pay-parse.js?v=33764e15ae"}}</script>
+<!-- /msc:importmap -->
 </head>
 
 <body>
@@ -1075,7 +1156,7 @@
     <div class="page-title-banner">
       <div class="page-title-text">
         <h1>Post a <span>Job Vacancy</span></h1>
-        <p>Publish openings for Industrial Trainees, CA Freshers, Articleship & Semi-Qualified CAs directly to 50,000+ candidates.</p>
+        <p>Publish industrial training, articleship, semi-qualified and fresher openings for CA, CS and CMA candidates, straight to 50,000+ job seekers.</p>
       </div>
     </div>
 
@@ -1114,8 +1195,8 @@
               <input type="radio" name="portalRadio" value="Industrial Training Job Portal" checked>
               <div class="portal-card-icon"><i class="fas fa-industry"></i></div>
               <div class="portal-card-text">
-                <h4>CA Industrial Training</h4>
-                <p>9-18 months industry trainees</p>
+                <h4>Industrial Training</h4>
+                <p>Trainees placed in your company</p>
               </div>
             </label>
 
@@ -1123,8 +1204,8 @@
               <input type="radio" name="portalRadio" value="Fresher Jobs">
               <div class="portal-card-icon"><i class="fas fa-graduation-cap"></i></div>
               <div class="portal-card-text">
-                <h4>CA Fresher Jobs</h4>
-                <p>Newly qualified Chartered Accountants</p>
+                <h4>Fresher Jobs</h4>
+                <p>Newly qualified CA, CS and CMA</p>
               </div>
             </label>
 
@@ -1132,8 +1213,8 @@
               <input type="radio" name="portalRadio" value="Semi Qualified Jobs">
               <div class="portal-card-icon"><i class="fas fa-user-check"></i></div>
               <div class="portal-card-text">
-                <h4>Semi-Qualified CA</h4>
-                <p>CA Inter cleared / Finalist candidates</p>
+                <h4>Semi-Qualified</h4>
+                <p>CA Inter, CS Executive or CMA Inter cleared</p>
               </div>
             </label>
 
@@ -1141,10 +1222,34 @@
               <input type="radio" name="portalRadio" value="Articleship Jobs">
               <div class="portal-card-icon"><i class="fas fa-book-reader"></i></div>
               <div class="portal-card-text">
-                <h4>CA Articleship</h4>
-                <p>Articleship trainees for CA firms</p>
+                <h4>Articleship</h4>
+                <p>Trainees for CA, CS and CMA firms</p>
               </div>
             </label>
+          </div>
+
+          <!-- Who can apply? The job tables have no eligibility column yet, so a
+               post open to CS or CMA says so in its description (see submit). -->
+          <div class="eligibility-group" role="group" aria-labelledby="eligibilityLabel" aria-describedby="eligibilityHint">
+            <div class="form-label" id="eligibilityLabel">
+              <span>Who can apply? <span class="req">*</span></span>
+              <span class="helper">Tick every course you accept</span>
+            </div>
+            <div class="eligibility-options">
+              <label class="eligibility-pill">
+                <input type="checkbox" name="eligibleCourse" value="CA" checked>
+                <span><i class="fas fa-circle-check"></i> CA <small>Chartered Accountancy</small></span>
+              </label>
+              <label class="eligibility-pill">
+                <input type="checkbox" name="eligibleCourse" value="CS">
+                <span><i class="fas fa-circle-check"></i> CS <small>Company Secretary</small></span>
+              </label>
+              <label class="eligibility-pill">
+                <input type="checkbox" name="eligibleCourse" value="CMA">
+                <span><i class="fas fa-circle-check"></i> CMA <small>Cost &amp; Management Accountant</small></span>
+              </label>
+            </div>
+            <p class="eligibility-hint" id="eligibilityHint">CA students see every vacancy. Tick CS or CMA to also show it on their job pages.</p>
           </div>
 
           <div class="section-divider"></div>
@@ -1157,7 +1262,7 @@
           <div class="form-row">
             <!-- Company / Firm Name -->
             <div class="form-group">
-              <label class="form-label" for="company">Company / CA Firm Name <span class="req">*</span></label>
+              <label class="form-label" for="company">Company / Firm Name <span class="req">*</span></label>
               <div class="input-icon-wrap">
                 <i class="fas fa-building"></i>
                 <input type="text" id="company" class="form-control" placeholder="e.g. KPMG, Reliance, ABC & Co" required>
@@ -1210,8 +1315,9 @@
               </label>
               <div class="input-icon-wrap">
                 <i class="fas fa-indian-rupee-sign"></i>
-                <input type="text" id="salary" class="form-control" placeholder="e.g. 50000 per month or 1200000">
+                <input type="text" id="salary" class="form-control" placeholder="e.g. 50000 per month or 1200000" aria-describedby="salaryHint">
               </div>
+              <span class="field-hint" id="salaryHint" aria-live="polite"></span>
             </div>
           </div>
 
@@ -1344,7 +1450,7 @@
             <i class="fas fa-shield-halved" style="color: var(--primary);"></i> Recruiter Guarantee
           </h4>
           <p style="font-size: 0.8rem; color: var(--gray-600); line-height: 1.4;">
-            Your vacancy will be immediately visible across all student feeds, mobile notifications, and weekly email digests to active CA candidates.
+            Your vacancy will be immediately visible across all student feeds, mobile notifications, and weekly email digests to active candidates.
           </p>
         </div>
       </div>
@@ -1402,6 +1508,26 @@
     let categoriesData = {};
     let currentSelectedPortal = 'Industrial Training Job Portal';
 
+    // Pay parsing ("₹3.5 - 4.5 LPA" -> 350000) and the "Open to: CA / CS
+    // students" line live in ES modules; this script is a classic one.
+    let postingHelpers = null;
+    const postingHelpersReady = Promise.all([
+      import('/scripts/pay-parse.js'),
+      import('/scripts/courses/applications.js')
+    ]).then(([pay, applications]) => {
+      postingHelpers = {
+        payMinimum: pay.payMinimum,
+        openToLine: applications.openToLine,
+        withOpenToLine: applications.withOpenToLine
+      };
+      updateEligibilityUI();
+      updateLivePreview();
+      return postingHelpers;
+    }).catch(err => {
+      console.error('Could not load the posting helpers:', err);
+      return null;
+    });
+
     // DOM Elements
     const form = document.getElementById('postJobForm');
     const publishBtn = document.getElementById('publishBtn');
@@ -1425,6 +1551,54 @@
     const prevPortalTag = document.getElementById('prevPortalTag').querySelector('span');
     const prevDesc = document.getElementById('prevDesc');
     const prevApplyBtn = document.getElementById('prevApplyBtn');
+    const eligibilityHint = document.getElementById('eligibilityHint');
+    const salaryHint = document.getElementById('salaryHint');
+
+    // Who can apply? -> ['CA', 'CS', ...] in CA, CS, CMA order.
+    function getEligibleCourses() {
+      return Array.from(document.querySelectorAll('input[name="eligibleCourse"]:checked')).map(input => input.value);
+    }
+
+    function updateEligibilityUI() {
+      const courses = getEligibleCourses();
+      eligibilityHint.classList.toggle('error', courses.length === 0);
+      if (courses.length === 0) {
+        eligibilityHint.textContent = 'Tick at least one course.';
+      } else if (postingHelpers && postingHelpers.openToLine(courses)) {
+        eligibilityHint.textContent = `We add "${postingHelpers.openToLine(courses)}" to your description so these students find it on their job pages.`;
+      } else if (courses.includes('CA')) {
+        eligibilityHint.textContent = 'CA students see every vacancy. Tick CS or CMA to also show it on their job pages.';
+      }
+      updatePortalTag();
+    }
+
+    // Live preview tag: the lane, led by the courses when CS / CMA can apply.
+    function updatePortalTag() {
+      const portalLabels = {
+        'Industrial Training Job Portal': 'Industrial Training',
+        'Fresher Jobs': 'CA Fresher',
+        'Semi Qualified Jobs': 'Semi-Qualified CA',
+        'Articleship Jobs': 'CA Articleship'
+      };
+      const laneNames = {
+        'Industrial Training Job Portal': 'Industrial Training',
+        'Fresher Jobs': 'Fresher',
+        'Semi Qualified Jobs': 'Semi-Qualified',
+        'Articleship Jobs': 'Articleship'
+      };
+      const courses = getEligibleCourses();
+      const caOnly = courses.length === 0 || (courses.length === 1 && courses[0] === 'CA');
+      prevPortalTag.textContent = caOnly
+        ? (portalLabels[currentSelectedPortal] || 'Job Opening')
+        : `${courses.join(' / ')} ${laneNames[currentSelectedPortal] || 'Job Opening'}`;
+    }
+
+    document.querySelectorAll('input[name="eligibleCourse"]').forEach(input => {
+      input.addEventListener('change', () => {
+        updateEligibilityUI();
+        updateLivePreview();
+      });
+    });
 
     // Status Alert Helper
     function showStatus(msg, type = 'error') {
@@ -1506,13 +1680,7 @@
         }
 
         // Update live preview portal tag
-        const portalLabels = {
-          'Industrial Training Job Portal': 'Industrial Training',
-          'Fresher Jobs': 'CA Fresher',
-          'Semi Qualified Jobs': 'Semi-Qualified CA',
-          'Articleship Jobs': 'CA Articleship'
-        };
-        prevPortalTag.textContent = portalLabels[currentSelectedPortal] || 'Job Opening';
+        updatePortalTag();
       });
     });
 
@@ -1535,9 +1703,14 @@
         return;
       }
 
+      // Requirement lines for each course that can apply.
+      const courses = getEligibleCourses().length ? getEligibleCourses() : ['CA'];
+      const caOnly = courses.length === 1 && courses[0] === 'CA';
+      const requirements = (lines) => courses.map(code => lines[code]).filter(Boolean).join('\n');
+
       const templates = {
         'Industrial Training Job Portal': `### About the Role & Team
-We are looking for an ambitious CA Industrial Trainee to join our Finance & Corporate Accounts team. This role provides end-to-end exposure to business finance, financial reporting, and FP&A.
+We are looking for an ambitious ${caOnly ? 'CA Industrial Trainee' : 'Industrial Trainee'} to join our Finance & Corporate Accounts team. This role provides end-to-end exposure to business finance, financial reporting, and FP&A.
 
 ### Key Responsibilities:
 • Assist in monthly/quarterly financial closing and Ind AS compliance.
@@ -1546,12 +1719,15 @@ We are looking for an ambitious CA Industrial Trainee to join our Finance & Corp
 • Work alongside senior finance leadership on strategic corporate projects.
 
 ### Candidate Requirements:
-• CA Inter (Both Groups) cleared in early attempts.
-• Eligible for 9 to 18 months of Industrial Training under ICAI guidelines.
+${requirements({
+  CA: '• CA Inter (Both Groups) cleared in early attempts.\n• Eligible for 9 to 18 months of Industrial Training under ICAI guidelines.',
+  CS: '• CS Executive passed, looking for management training in a company under ICSI guidelines.',
+  CMA: '• CMA Intermediate passed, looking for practical training in a company (Form T-4).'
+})}
 • Strong proficiency in MS Excel / Financial Modelling.`,
 
         'Fresher Jobs': `### Opportunity Overview
-We are hiring a newly qualified Chartered Accountant (CA Fresher) for our Core Financial Advisory & Audit practice.
+We are hiring a newly qualified ${caOnly ? 'Chartered Accountant (CA Fresher)' : 'professional'} for our Core Financial Advisory & Audit practice.
 
 ### Key Responsibilities:
 • Lead audit engagements, internal control reviews (IFC/SOX), and statutory reporting.
@@ -1560,11 +1736,31 @@ We are hiring a newly qualified Chartered Accountant (CA Fresher) for our Core F
 • Coordinate directly with client CFOs and leadership teams.
 
 ### Candidate Profile:
-• Qualified Chartered Accountant (May/Nov attempt).
+${requirements({
+  CA: '• Qualified Chartered Accountant (May/Nov attempt).',
+  CS: '• Qualified Company Secretary (ACS), recently qualified.',
+  CMA: '• Qualified Cost and Management Accountant (CMA Final cleared).'
+})}
 • Strong communication, analytical, and interpersonal skills.`,
 
-        'Articleship Jobs': `### CA Articleship Vacancy
-Reputed Chartered Accountancy firm invites applications from CA Inter cleared students for Articleship training.
+        'Semi Qualified Jobs': `### Opportunity Overview
+We are hiring semi-qualified candidates for our Accounts & Compliance team.
+
+### Key Responsibilities:
+• Bookkeeping, GST and TDS returns, and month-end closing.
+• Support statutory, tax and internal audits.
+• Prepare MIS reports and reconciliations.
+
+### Candidate Requirements:
+${requirements({
+  CA: '• CA Inter (one or both groups) cleared.',
+  CS: '• CS Executive passed.',
+  CMA: '• CMA Intermediate passed.'
+})}
+• Good command over MS Excel and Tally / SAP.`,
+
+        'Articleship Jobs': `### ${courses.join(' / ')} Articleship Vacancy
+${caOnly ? 'Reputed Chartered Accountancy firm invites applications from CA Inter cleared students for Articleship training.' : 'Our firm invites applications for articleship training.'}
 
 ### Areas of Exposure:
 • Statutory & Tax Audits of corporate clients.
@@ -1573,7 +1769,11 @@ Reputed Chartered Accountancy firm invites applications from CA Inter cleared st
 • Accounting & Bookkeeping on SAP / Tally.
 
 ### Prerequisites:
-• CA Inter (Group 1 or Both Groups cleared).
+${requirements({
+  CA: '• CA Inter (Group 1 or Both Groups cleared).',
+  CS: '• CS Executive passed (training to be registered with ICSI).',
+  CMA: '• CMA Intermediate passed (training to be registered with ICMAI).'
+})}
 • Strong eagerness to learn with good command over accounting principles.`
       };
 
@@ -1594,7 +1794,16 @@ Reputed Chartered Accountancy firm invites applications from CA Inter cleared st
       prevCategory.textContent = categoryVal || 'Select Category';
       prevLocation.textContent = locationVal || 'City, Location';
       prevSalary.textContent = salaryVal ? salaryVal : 'Best in Industry';
-      prevDesc.textContent = descVal || 'Job description preview will appear here as you type. Responsibilities and requirements will be formatted nicely for candidates.';
+      const openTo = postingHelpers ? postingHelpers.openToLine(getEligibleCourses()) : '';
+      prevDesc.textContent = descVal
+        ? (postingHelpers ? postingHelpers.withOpenToLine(descVal, getEligibleCourses()) : descVal)
+        : (openTo || 'Job description preview will appear here as you type. Responsibilities and requirements will be formatted nicely for candidates.');
+
+      // The portal stores one number (the low end) so students can filter by pay.
+      const payMin = salaryVal && postingHelpers ? postingHelpers.payMinimum(salaryVal) : '';
+      salaryHint.textContent = payMin === ''
+        ? (salaryVal && postingHelpers ? 'No amount found: listed as Not Disclosed.' : '')
+        : `Listed as ₹${Number(payMin).toLocaleString('en-IN')}${/[-–—]|\bto\b/i.test(salaryVal) ? ' (the lower end)' : ''}.`;
 
       prevApplyBtn.innerHTML = '<i class="fas fa-bolt"></i> Apply Directly';
     }
@@ -1701,16 +1910,36 @@ Reputed Chartered Accountancy firm invites applications from CA Inter cleared st
         return;
       }
 
+      const eligibleCourses = getEligibleCourses();
+      if (eligibleCourses.length === 0) {
+        updateEligibilityUI();
+        showStatus("Please tick at least one course under \"Who can apply?\".", "error");
+        return;
+      }
+
+      // Locked before waiting on the helper modules, so a slow load cannot
+      // let a second click post the vacancy twice.
       publishBtn.disabled = true;
       publishBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting & Verifying Vacancy...';
+
+      // If the helpers failed to load, a CA-only post goes out as before
+      // (description unchanged). A CS / CMA post needs the "Open to" line.
+      const helpers = await postingHelpersReady;
+      if (!helpers && eligibleCourses.some(code => code !== 'CA')) {
+        showStatus("Could not load the posting form. Please refresh the page and try again.", "error");
+        resetPublishButton();
+        return;
+      }
 
       const jobPayload = {
         table: currentSelectedPortal,
         company: company,
         category: category,
         location: location,
-        salary: salary ? salary.replace(/[^0-9.]/g, '') : null,
-        description: description,
+        // Rupees, low end of a range: "10000-25000" -> "10000", "12 LPA" -> "1200000".
+        salary: salary ? String(helpers ? helpers.payMinimum(salary) : fallbackPayMinimum(salary)) : null,
+        // CS / CMA lanes find posts open to them through this line.
+        description: helpers ? helpers.withOpenToLine(description, eligibleCourses) : description,
         connect_link: connectLink || null,
         is_exclusive: true,
         experience: (currentSelectedPortal === 'Fresher Jobs' || currentSelectedPortal === 'Semi Qualified Jobs') ? experience : null
@@ -1753,10 +1982,22 @@ Reputed Chartered Accountancy firm invites applications from CA Inter cleared st
         console.error("Job posting error:", err);
         showStatus(`Error submitting job: ${err.message}`, "error");
       } finally {
-        publishBtn.disabled = false;
-        publishBtn.innerHTML = '<i class="fas fa-paper-plane"></i> <span>Publish Vacancy to My Student Club</span>';
+        resetPublishButton();
       }
     });
+
+    function resetPublishButton() {
+      publishBtn.disabled = false;
+      publishBtn.innerHTML = '<i class="fas fa-paper-plane"></i> <span>Publish Vacancy to My Student Club</span>';
+    }
+
+    // Only if pay-parse.js failed to load: the first plain number, or nothing
+    // when the amount carries a unit ("12 LPA", "50k") that this cannot apply.
+    function fallbackPayMinimum(text) {
+      if (/\d\s*(lpa|lakh|lac|l\b|k\b|cr|thousand)/i.test(text)) return '';
+      const match = text.replace(/,/g, '').match(/\d+(?:\.\d+)?/);
+      return match ? match[0] : '';
+    }
 
     function openSuccessModal(jobData) {
       successModal.classList.add('show');
@@ -1766,7 +2007,6 @@ Reputed Chartered Accountancy firm invites applications from CA Inter cleared st
       successModal.classList.remove('show');
       if (resetForm) {
         document.getElementById('description').value = '';
-        document.getElementById('applicationId').value = '';
         document.getElementById('salary').value = '';
         updateLivePreview();
         window.scrollTo({ top: 0, behavior: 'smooth' });

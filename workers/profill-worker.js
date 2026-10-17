@@ -69,6 +69,80 @@ Extract prev_emp_company_name, prev_emp_job_title, prev_emp_job_profile (ALL bul
     },
 };
 
+// CS (ICSI) and CMA (ICMAI) students: portal_type is the CA stage key with a
+// cs_ / cma_ prefix (scripts/courses/courses.js). They fill the course's own
+// profile keys (scripts/courses/profile-fields.js) and leave the CA ones empty.
+const COURSE_PROMPTS = {
+    cs: {
+        persona: 'The user is a Company Secretary (CS) or CS student registered with ICSI.',
+        stages: {
+            articleship: ['CS student seeking long-term training at a firm (articleship)', 'CS Executive is passed or being completed. The candidate wants training with a Practising Company Secretary or a firm.'],
+            industrial: ['CS student seeking training in a company', 'CS Executive is passed or being completed. The candidate wants management-trainee training in a company.'],
+            semi_fresher: ['Semi-qualified CS (no or limited work experience)', 'CS Executive is passed; CS Professional is pursuing or partly passed.'],
+            semi_experienced: ['Semi-qualified CS (with work experience)', 'CS Executive is passed; CS Professional is pursuing or partly passed. The candidate has work experience.'],
+            fresher_fresher: ['Newly qualified Company Secretary (no post-qualification work experience)', 'CS Professional is passed; the candidate may hold an ACS membership number.'],
+            fresher_experienced: ['Qualified Company Secretary (with post-qualification work experience)', 'CS Professional is passed; the candidate may hold an ACS membership number and has post-qualification work experience.']
+        },
+        fields: `### CS Details (ICSI) — use these keys for this candidate:
+- **cs_icsi_reg_no**: ICSI student registration number.
+- **cs_exec_status**: One of "pursuing", "module1" (Module 1 passed), "module2" (Module 2 passed), "both" (CS Executive passed).
+- **cs_exec_attempts**: Integer number of CS Executive attempts.
+- **cs_exec_clear_month**: Two-digit month ("01"–"12") CS Executive was passed.
+- **cs_exec_clear_year**: 4-digit year CS Executive was passed.
+- **cs_edp_done**: "yes" if the Executive Development Programme (EDP) is completed, "no" if not mentioned as done.
+- **cs_prof_status**: One of "not_started", "pursuing", "partial" (some modules passed), "passed" (all modules passed).
+- **cs_prof_clear_month** / **cs_prof_clear_year**: Two-digit month and 4-digit year CS Professional was passed.
+- **cs_acs_no**: ACS membership number, only if stated.
+- **cs_training_type**: "pcs" for training with a Practising Company Secretary or firm, "company" for training in a company.
+- **cs_training_org**: Name of the training firm or company.
+- **cs_training_start_month** / **cs_training_start_year**, **cs_training_end_month** / **cs_training_end_year**: Two-digit month and 4-digit year.
+- **cs_training_is_current**: "yes" if the candidate is still in training, else "".`
+    },
+    cma: {
+        persona: 'The user is a Cost and Management Accountant (CMA) or CMA student registered with ICMAI.',
+        stages: {
+            articleship: ['CMA student seeking practical training at a firm (articleship)', 'CMA Intermediate is passed or being completed. The candidate wants practical training under a Practising Cost Accountant (Form T-1).'],
+            industrial: ['CMA student seeking practical training in a company', 'CMA Intermediate is passed or being completed. The candidate wants practical training in a recognised organisation (Form T-4).'],
+            semi_fresher: ['Semi-qualified CMA (no or limited work experience)', 'CMA Intermediate is passed; CMA Final is pursuing or partly passed.'],
+            semi_experienced: ['Semi-qualified CMA (with work experience)', 'CMA Intermediate is passed; CMA Final is pursuing or partly passed. The candidate has work experience.'],
+            fresher_fresher: ['Newly qualified CMA (no post-qualification work experience)', 'CMA Final is passed; the candidate may hold an ACMA membership number.'],
+            fresher_experienced: ['Qualified CMA (with post-qualification work experience)', 'CMA Final is passed; the candidate may hold an ACMA membership number and has post-qualification work experience.']
+        },
+        fields: `### CMA Details (ICMAI) — use these keys for this candidate:
+- **cma_icmai_reg_no**: ICMAI student registration number.
+- **cma_inter_status**: One of "pursuing", "group1" (Group I passed), "group2" (Group II passed), "both" (CMA Intermediate passed).
+- **cma_inter_attempts**: Integer number of CMA Intermediate attempts.
+- **cma_inter_clear_month** / **cma_inter_clear_year**: Two-digit month ("01"–"12") and 4-digit year CMA Intermediate was passed.
+- **cma_final_status**: One of "not_started", "pursuing", "group3" (Group III passed), "group4" (Group IV passed), "both" (CMA Final passed).
+- **cma_final_clear_month** / **cma_final_clear_year**: Two-digit month and 4-digit year CMA Final was passed.
+- **cma_acma_no**: ACMA membership number, only if stated.
+- **cma_training_type**: "t1" for training under a Practising Cost Accountant (Form T-1), "t4" for training in a recognised organisation (Form T-4).
+- **cma_training_org**: Name of the training firm or organisation.
+- **cma_training_start_month** / **cma_training_start_year**, **cma_training_end_month** / **cma_training_end_year**: Two-digit month and 4-digit year.
+- **cma_training_is_current**: "yes" if the candidate is still in training, else "".`
+    }
+};
+
+const EMPLOYMENT_RULE = {
+    articleship: 'Do NOT extract emp_company_name/emp_job_title/emp_job_profile/emp_current_salary — no post-qualification employment.',
+    industrial: 'Do NOT extract emp_company_name/emp_job_title/emp_job_profile/emp_current_salary — no post-qualification employment.',
+    fresher_fresher: 'Do NOT extract emp_company_name/emp_job_title/emp_job_profile/emp_current_salary — no post-qualification employment.'
+};
+
+for (const [course, config] of Object.entries(COURSE_PROMPTS)) {
+    for (const [stage, [label, situation]] of Object.entries(config.stages)) {
+        PORTAL_CONTEXTS[`${course}_${stage}`] = {
+            course,
+            label,
+            focus: `${situation}
+Fill the ${course.toUpperCase()} fields listed under "${course.toUpperCase()} Details" below. Leave every ca_* field, the articleship_* fields, industrial_training_company and the it_* fields empty: this candidate's profile has no CA sections. Put the candidate's ${course.toUpperCase()} training in ${course}_training_* instead.
+${EMPLOYMENT_RULE[stage] || 'Extract current/most recent employment, or any other job, internship or part-time role that is not the ' + course.toUpperCase() + ' training, into emp_company_name, emp_job_title, emp_job_profile (ALL bullet points verbatim), emp_join_year, emp_join_month and emp_current_salary (only if explicitly stated), and a previous one into prev_emp_* fields.'}
+In additional_qualifications, "CA" is also allowed for this candidate; do not list "${course.toUpperCase()}" itself.`,
+            skipFields: []
+        };
+    }
+}
+
 export default {
     async fetch(request, env, ctx) {
         const addCorsHeaders = (response) => {
@@ -119,6 +193,8 @@ export default {
 
 async function processCV(images, pdfText, portalType, env) {
     const ctx = PORTAL_CONTEXTS[portalType] || PORTAL_CONTEXTS.fresher_fresher;
+    const course = ctx.course ? COURSE_PROMPTS[ctx.course] : null;
+    const persona = course ? course.persona : 'The user is a Chartered Accountant (CA) or CA student.';
 
     const portalBlock = `## PORTAL CONTEXT
 You are extracting a resume for a **${ctx.label}** on the My Student Club job portal.
@@ -129,7 +205,7 @@ ${ctx.focus}
 ---
 `;
 
-    const systemPrompt = portalBlock + `You are an intelligent Resume Parser and Data Extraction assistant. Your task is to extract structured information from a resume to auto-fill a user profile on "My Student Club" job portal. The user is a Chartered Accountant (CA) or CA student.
+    const systemPrompt = portalBlock + `You are an intelligent Resume Parser and Data Extraction assistant. Your task is to extract structured information from a resume to auto-fill a user profile on "My Student Club" job portal. ${persona}
 
 Return STRICT JSON only — no markdown, no \`\`\`json wrappers.
 
@@ -298,7 +374,10 @@ Return STRICT JSON only — no markdown, no \`\`\`json wrappers.
 - **Follow portal context rules above** — skip fields listed as not relevant for this portal type.
 - Return all numeric fields (attempts, AIR) as integers, not strings.
 - Return empty string "" for fields not found — do not omit keys.
-`;
+` + (course ? `
+${course.fields}
+For this candidate the ${ctx.course.toUpperCase()} fields above replace the CA ones: the ca_*, articleship_*, industrial_training_company and it_* fields stay "", whatever the general rules above say.
+` : '');
 
     // Updated model as per the interactions API
     const primaryModel = "gemini-3.1-flash-lite";

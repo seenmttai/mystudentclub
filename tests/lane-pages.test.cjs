@@ -100,3 +100,20 @@ test('the sitemap lists indexable lanes at their canonical URL and skips the res
   assert.match(read('_redirects'), /^\/cs-jobs \/cs-articleship 301$/m);
   assert.match(read('_redirects'), /^\/cma-jobs \/cma-articleship 301$/m);
 });
+
+test('other pages that load course modules get one hashed import map too', async () => {
+  const { MODULE_PAGES } = await load('build-pages.js');
+  for (const file of MODULE_PAGES) {
+    const html = read(file);
+    assert.equal((html.match(/<script type="importmap">/g) || []).length, 1, `${file}: one import map`);
+    const map = JSON.parse(attr(html, /<script type="importmap">([^<]+)<\/script>/));
+    assert.ok(Object.keys(map.imports).some((url) => url.startsWith('/scripts/courses/')), `${file}: maps the course modules`);
+    for (const [url, versioned] of Object.entries(map.imports)) {
+      assert.match(versioned, /\?v=[0-9a-f]{10}$/, `${file}: ${url}`);
+      assert.ok(resolvesOnSite(url), `${file}: ${url} exists`);
+    }
+    for (const [, src] of html.matchAll(/<script\b[^>]*type="module"[^>]*src="([^"]+)"/g)) {
+      assert.match(src, /^\/scripts\/[^?]+\?v=[0-9a-f]{10}$/, `${file}: module ${src} is hashed`);
+    }
+  }
+});

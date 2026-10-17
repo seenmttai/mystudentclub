@@ -4853,3 +4853,540 @@ body:has(.portal-nav-bar) {
 
 /* The logo artwork reaches the edges of its image: never round or clip its corners. */
 img[src*="/assets/logo"] { border-radius: 0 !important; }
+
+/* ---- course-aware portal additions (portal3.js / onboarding.js) ---- */
+
+/* Onboarding modal (scripts/onboarding.js renders it on any lane page).
+   Moved from index.html's inline <style>; scoped to the modal so its generic
+   class names cannot touch other parts of the page. */
+#onboardingSegmentModal [hidden] {
+  display: none !important;
+}
+
+#onboardingSegmentModal .onboarding-modal-dialog {
+  max-width: 480px !important;
+  max-height: 90vh !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+  border-radius: 24px !important;
+  padding: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden;
+  transform: scale(0.95);
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#onboardingSegmentModal .onboarding-modal-dialog::-webkit-scrollbar {
+  width: 6px;
+}
+
+#onboardingSegmentModal .onboarding-modal-dialog::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#onboardingSegmentModal .onboarding-modal-dialog::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.3);
+  border-radius: 99px;
+}
+
+#onboardingSegmentModal .onboarding-modal-dialog::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.5);
+}
+
+#onboardingSegmentModal.show-modal .onboarding-modal-dialog {
+  transform: scale(1);
+  opacity: 1;
+}
+
+#onboardingSegmentModal .onboarding-modal-card {
+  padding: 2.25rem 2rem;
+}
+
+#onboardingSegmentModal .onboarding-modal-header {
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+#onboardingSegmentModal .onboarding-brand-logo {
+  width: 140px;
+  height: auto;
+  margin: 0 auto 0.75rem;
+  display: block;
+}
+
+#onboardingSegmentModal .onboarding-modal-header h3 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+#onboardingSegmentModal .onboarding-modal-header h3:focus {
+  outline: none;
+}
+
+#onboardingSegmentModal .onboarding-modal-header p {
+  font-size: 0.85rem;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+#onboardingSegmentModal .form-group-custom {
+  margin: 0 0 1.5rem;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+#onboardingSegmentModal .input-label-custom {
+  display: block;
+  padding: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.75rem;
+}
+
+#onboardingSegmentModal .input-label-custom .help-text {
+  font-weight: 400;
+  color: #8b5cf6;
+  font-size: 0.8rem;
+}
+
+#onboardingSegmentModal .onboarding-options-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+#onboardingSegmentModal .onboarding-option-card {
+  position: relative;
+  border: 2px solid #f3f4f6;
+  border-radius: 16px;
+  padding: 0.875rem;
+  background: white;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+  text-align: center;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+#onboardingSegmentModal .onboarding-option-card:hover {
+  border-color: #cbd5e1;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+#onboardingSegmentModal .onboarding-option-card.active {
+  border-color: #4f46e5;
+  background: rgba(79, 70, 229, 0.03);
+  box-shadow: 0 8px 16px rgba(79, 70, 229, 0.08);
+}
+
+/* Stage cards are radio buttons: the input stays focusable for the keyboard. */
+#onboardingSegmentModal .onboarding-option-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+#onboardingSegmentModal .onboarding-option-card:focus-within {
+  outline: 3px solid #4338ca;
+  outline-offset: 2px;
+}
+
+#onboardingSegmentModal .option-icon-box {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.1rem;
+}
+
+#onboardingSegmentModal .pink-gradient {
+  background: linear-gradient(135deg, #ec4899, #f43f5e);
+}
+
+#onboardingSegmentModal .orange-gradient {
+  background: linear-gradient(135deg, #f97316, #f59e0b);
+}
+
+#onboardingSegmentModal .purple-gradient {
+  background: linear-gradient(135deg, #8b5cf6, #a855f7);
+}
+
+#onboardingSegmentModal .blue-gradient {
+  background: linear-gradient(135deg, #3b82f6, #06b6d4);
+}
+
+#onboardingSegmentModal .option-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+#onboardingSegmentModal .onboarding-option-card.active .option-title {
+  color: #4f46e5;
+}
+
+#onboardingSegmentModal .dynamic-question-container {
+  background: #f9fafb;
+  border-radius: 16px;
+  padding: 1.25rem;
+  margin-bottom: 1.75rem;
+  border: 1px solid #f3f4f6;
+  min-height: 94px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#onboardingSegmentModal .onboarding-conditional-field {
+  display: none;
+  animation: onboardingFieldIn 0.3s ease forwards;
+}
+
+#onboardingSegmentModal .onboarding-conditional-field.active {
+  display: block;
+}
+
+@keyframes onboardingFieldIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#onboardingSegmentModal .onboarding-field-gap {
+  margin-top: 1rem;
+}
+
+#onboardingSegmentModal .input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+#onboardingSegmentModal .input-with-icon i {
+  position: absolute;
+  left: 1rem;
+  color: #9ca3af;
+  font-size: 1rem;
+  pointer-events: none;
+}
+
+#onboardingSegmentModal input[type="date"] {
+  color-scheme: light;
+}
+
+#onboardingSegmentModal .attempt-picker-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+#onboardingSegmentModal .attempt-picker-row .form-input-custom {
+  padding-left: 1rem;
+}
+
+#onboardingSegmentModal .cleared-check-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+  font-size: 0.85rem;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+#onboardingSegmentModal .cleared-check-label input[type="checkbox"] {
+  accent-color: #4f46e5;
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
+}
+
+#onboardingSegmentModal .form-input-custom {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: #1f2937;
+  background: white;
+  transition: all 0.2s;
+}
+
+#onboardingSegmentModal .form-input-custom:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+}
+
+#onboardingSegmentModal .select-custom {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239ca3af'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1rem;
+  padding-right: 2.5rem;
+}
+
+#onboardingSegmentModal .onboarding-submit-btn {
+  width: 100%;
+  padding: 0.875rem;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+  color: white;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+}
+
+#onboardingSegmentModal .onboarding-submit-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.35);
+  background: linear-gradient(135deg, #4338ca 0%, #4f46e5 100%);
+}
+
+#onboardingSegmentModal .onboarding-submit-btn:active {
+  transform: translateY(1px);
+}
+
+#onboardingSegmentModal .onboarding-submit-btn:focus-visible,
+#onboardingSegmentModal .onboarding-back-btn:focus-visible,
+#onboardingSegmentModal .onboarding-close-btn:focus-visible {
+  outline: 3px solid #4338ca;
+  outline-offset: 2px;
+}
+
+/* Step 1: course cards (real buttons) */
+#onboardingSegmentModal .onboarding-course-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+#onboardingSegmentModal .onboarding-course-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 132px;
+  padding: 1rem 0.5rem;
+  border: 2px solid #f3f4f6;
+  border-radius: 16px;
+  background: #ffffff;
+  color: #374151;
+  font-family: inherit;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  transition: all 0.25s ease;
+}
+
+#onboardingSegmentModal .onboarding-course-card:hover {
+  border-color: #c7d2fe;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+#onboardingSegmentModal .onboarding-course-card:focus-visible {
+  outline: 3px solid #4338ca;
+  outline-offset: 2px;
+  border-color: #4f46e5;
+}
+
+#onboardingSegmentModal .onboarding-course-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 0.2rem;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: #ffffff;
+  font-size: 1rem;
+}
+
+#onboardingSegmentModal .onboarding-course-code {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+#onboardingSegmentModal .onboarding-course-name {
+  font-size: 0.72rem;
+  line-height: 1.3;
+  color: #4b5563;
+}
+
+#onboardingSegmentModal .onboarding-course-inst {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+#onboardingSegmentModal .onboarding-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 1rem;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #4338ca;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#onboardingSegmentModal .onboarding-back-btn:hover {
+  background: #eef2ff;
+}
+
+#onboardingSegmentModal .onboarding-close-btn {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(243, 244, 246, 0.9);
+  color: #4b5563;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+#onboardingSegmentModal .onboarding-close-btn:hover {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+@media (max-width: 480px) {
+  #onboardingSegmentModal .onboarding-modal-card {
+    padding: 1.75rem 1.1rem 1.5rem;
+  }
+
+  #onboardingSegmentModal .onboarding-course-grid {
+    gap: 0.5rem;
+  }
+
+  #onboardingSegmentModal .onboarding-course-card {
+    min-height: 120px;
+    padding: 0.85rem 0.35rem;
+  }
+}
+
+/* CS / CMA firm-training cards: "CA firm: check ICSI registration" */
+.job-tag.tag-trainer-check {
+  max-width: 100%;
+  white-space: normal;
+  background-color: #fff7ed;
+  color: #9a3412;
+  border-color: #fed7aa;
+  font-weight: 600;
+}
+
+.job-tag.tag-trainer-check i {
+  opacity: 1;
+}
+
+/* Job modal on CS / CMA lanes: trainer note and why the listing is shown */
+.modal-lane-context {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+}
+
+.modal-lane-context[hidden] {
+  display: none;
+}
+
+.modal-lane-context p {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0.6rem 0.8rem;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.modal-lane-context p i {
+  margin-top: 0.2rem;
+  flex-shrink: 0;
+}
+
+.modal-lane-note {
+  border: 1px solid #fed7aa;
+  background: #fff7ed;
+  color: #7c2d12;
+}
+
+.modal-lane-note i {
+  color: #c2410c;
+}
+
+.modal-lane-eligibility {
+  border: 1px solid #bbf7d0;
+  background: #f0fdf4;
+  color: #14532d;
+}
+
+.modal-lane-eligibility i {
+  color: #15803d;
+}
+
+/* Notification popup on CS / CMA lanes (no course alert topics yet) */
+.lane-alerts-note {
+  margin: 0;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: #1e3a8a;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}

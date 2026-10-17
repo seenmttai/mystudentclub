@@ -2,6 +2,13 @@ import { getDaysAgo, isJobExpired } from './date-utils.js';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 import { unlockJobDetails, getCachedUnlockedJob } from './browser-guard.js';
 import { calculateProfileCompletion as calculateSharedProfileCompletion, readCachedProfile } from './profile-completion.js';
+import {
+    LANES, QUALIFICATIONS, LOCATION_ALIASES, resolveLane, normalizePath, equivalentLane, laneForPreference,
+    preferenceForLookingFor, splitPreference, qualificationOf, preferredLaneOf, laneForShareType,
+    applyLaneScope, detectEligibilityMode
+} from './courses/courses.js';
+import { sanitizeTerm, termOrFilter, locationOrFilter, trainerStatus, matchContext } from './courses/match.js';
+import { openOnboarding, onboardingDismissedThisSession } from './onboarding.js';
 
 // Listing fields come from the database, including posts by self-registered
 // hirers, so escape them before they go into innerHTML.
@@ -54,7 +61,7 @@ function isSalaryDisclosed(val) {
 async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) {
     if (isRecruiterPostedJob(job)) {
         if (!currentSession) {
-            window.location.href = '/login.html';
+            window.location.href = loginHref();
             return;
         }
         if (!isProfileComplete()) {
@@ -65,7 +72,7 @@ async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) 
     }
 
     if (!currentSession) {
-        window.location.href = '/login.html';
+        window.location.href = loginHref();
         return;
     }
 
@@ -86,7 +93,7 @@ async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) 
     btnElement.style.pointerEvents = 'none';
 
     try {
-        const emailBody = await generateEmailBody(job, tableName, supabaseClient, currentSession?.user);
+        const emailBody = await generateEmailBody(job, tableName, supabaseClient, currentSession?.user, currentLane);
         const rawLink = job['Application ID'];
         const emailMatch = rawLink.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
         const email = emailMatch ? emailMatch[0] : '';
@@ -140,7 +147,29 @@ let isFetching = false;
 let page = 0;
 const limit = 15;
 let hasMoreData = true;
-let currentTable = 'Industrial Training Job Portal';
+// The page's lane (scripts/courses/courses.js): which course, which table,
+// which copy. Generated pages name it on <body data-lane>; the path is the
+// fallback. currentTable is always the lane's physical table: job_applications,
+// the unlock worker and hirer RLS match it exactly.
+const currentLane = resolveLane(window.location.pathname, document.body?.dataset);
+let currentTable = currentLane.table;
+const isCourseLane = currentLane.qualification !== 'ca';
+// 'regex' until cs-cma-portal.sql has run, then 'tagged' (detected at startup).
+let eligibilityMode = 'regex';
+const ELIGIBILITY_PROBE_TIMEOUT_MS = 2000;
+
+const LANE_PATHS = new Set(LANES.flatMap(lane => [lane.path, ...(lane.aliases || [])].map(normalizePath)));
+
+function isLanePath(pathname) {
+    return LANE_PATHS.has(normalizePath(pathname));
+}
+
+// Login links on CS / CMA lanes bring the student back to the same page
+// (login.html only follows same-origin redirects); CA keeps its plain link.
+function loginHref() {
+    if (!isCourseLane) return '/login.html';
+    return `/login.html?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+}
 
 // SEO: Maps table names to URL slugs used in /jobs/{category}/{slug}.html
 const TABLE_SLUG_MAP = {
@@ -241,66 +270,24 @@ const state = {
 
 const dom = {};
 
-const JOB_TITLE_MAP = {
-    "Industrial Training Job Portal": "Industrial Training",
-    "Fresher Jobs": "CA Fresher",
-    "Semi Qualified Jobs": "CA Semi Qualified",
-    "Articleship Jobs": "Articleship Trainee"
-};
-
-const EMAIL_SUBJECT_MAP = {
-    "Industrial Training Job Portal": "Application for CA Industrial Training",
-    "Fresher Jobs": "Application for CA Fresher Position",
-    "Semi Qualified Jobs": "Application for Semi Qualified CA Position",
-    "Articleship Jobs": "Application for CA Articleship"
-};
-
-function isExperiencedFresherPortal() {
-    const path = window.location.pathname.toLowerCase();
-    return path.includes('/experienced-ca-jobs');
-}
-
-function isFresherPortal() {
-    const path = window.location.pathname.toLowerCase();
-    return path.includes('/ca-fresher-jobs');
-}
-
 function setActivePortalTab() {
-    const path = window.location.pathname;
-    document.querySelectorAll('.portal-nav-bar .footer-tab, .site-footer-nav .footer-tab').forEach(tab => tab.classList.remove('active'));
+    const navTabs = document.querySelectorAll('.portal-nav-bar .footer-tab');
+    navTabs.forEach(tab => tab.classList.remove('active'));
 
-    let activeSelector;
-    const experienceFilterGroups = document.querySelectorAll('.experience-filter-group');
-
-    experienceFilterGroups.forEach(el => el.style.display = 'none');
-
-    if (path.includes('/ca-articleship-opportunities') || path.includes('/jobs/articleship/')) {
-        currentTable = 'Articleship Jobs';
-        activeSelector = 'a[href="/ca-articleship-opportunities"]';
-    } else if (path.includes('/semi-qualified-ca-jobs') || path.includes('/jobs/semi-qualified/')) {
-        currentTable = 'Semi Qualified Jobs';
-        activeSelector = 'a[href="/semi-qualified-ca-jobs"]';
-        experienceFilterGroups.forEach(el => el.style.display = 'block');
-    } else if (path.toLowerCase().includes('/experienced-ca-jobs') || path.includes('/jobs/experienced/')) {
-        currentTable = 'Fresher Jobs';
-        activeSelector = 'a[href="/experienced-ca-jobs"]';
-        state.experience = 'Experienced';
-        experienceFilterGroups.forEach(el => el.style.display = 'none');
-    } else if (path.includes('/ca-fresher-jobs') || path.includes('/jobs/fresher/')) {
-        currentTable = 'Fresher Jobs';
-        activeSelector = 'a[href="/ca-fresher-jobs"]';
-        state.experience = 'Freshers';
-        experienceFilterGroups.forEach(el => el.style.display = 'none');
-    } else {
-        currentTable = 'Industrial Training Job Portal';
-        activeSelector = 'a[href="/"]';
-    }
+    // Fresher Jobs lanes are locked to one experience level; Semi lanes (any
+    // course) offer the Freshers / Experienced filter.
+    if (currentLane.experience) state.experience = currentLane.experience;
+    document.querySelectorAll('.experience-filter-group').forEach(el => {
+        el.style.display = currentLane.slot === 'semi' ? 'block' : 'none';
+    });
 
     if (currentTable === 'Industrial Training Job Portal') {
         state.companyType = '';
     }
 
-    document.querySelectorAll(activeSelector).forEach(el => el.classList.add('active'));
+    navTabs.forEach(tab => {
+        if (normalizePath(tab.getAttribute('href')) === normalizePath(currentLane.path)) tab.classList.add('active');
+    });
 
     // Update cache when table changes (categories are table-specific)
     if (allLocations.length > 0 || Object.keys(allCategories).length > 0) {
@@ -405,6 +392,8 @@ function getSavedJobs() {
     }
 }
 
+// A saved vacancy is the same row whichever lane it was saved from, so entries
+// match on id + table; `lane` (newer entries only) says where to reopen it.
 function isJobSaved(jobId, table) {
     return getSavedJobs().some(s => String(s.id) === String(jobId) && s.table === table);
 }
@@ -418,7 +407,7 @@ function toggleSaveJob(job, btnElement) {
         btnElement.title = 'Save job';
         if (typeof showToast === 'function') showToast('Job removed from saved.', 'info');
     } else {
-        saved.push({ id: job.id, table: currentTable, savedAt: new Date().toISOString() });
+        saved.push({ id: job.id, table: currentTable, lane: currentLane.id, savedAt: new Date().toISOString() });
         btnElement.classList.add('saved');
         btnElement.title = 'Remove from saved';
         if (typeof showToast === 'function') showToast('Job saved! Find it under My Applications → Saved Jobs.', 'success');
@@ -481,7 +470,8 @@ function renderJobCard(job) {
     const firmType = job['Firm Type'];
     const industryType = job['Industry Type'];
     const compLabel = (currentTable === 'Semi Qualified Jobs' || currentTable === 'Fresher Jobs') ? 'Salary' : 'Stipend';
-    const roleLabel = job.Role || (currentTable === 'Industrial Training Job Portal' ? 'Industrial Trainee' : currentTable === 'Articleship Jobs' ? 'Articleship' : 'Professional');
+    const roleLabel = job.Role || currentLane.roleLabel;
+    const trainerFlag = trainerFlagFor(job);
 
     let compText = '';
     if (currentTable === 'Fresher Jobs') {
@@ -513,7 +503,7 @@ function renderJobCard(job) {
             </div>`);
     const infoRowHtml = infoRowItems.length ? `<div class="job-card-info-row">${infoRowItems.join('')}</div>` : '';
     const descriptionText = job.Description ? listingSnippetText(job.Description) : '';
-    const isLocked = isExclusive && !isEnrolledSync(currentTable);
+    const isLocked = isJobLocked(job);
     let applyButtonHtml = '';
     if (isLocked) {
         applyButtonHtml = `
@@ -553,6 +543,7 @@ function renderJobCard(job) {
         <div class="job-card-tags">
             ${isExpired ? `<span class="job-tag tag-expired"><i class="fas fa-hourglass-end"></i> Expired</span>` : ""}
             ${isExclusive ? `<span class="job-tag tag-exclusive"><i class="fas fa-star"></i> Exclusive</span>` : ""}
+            ${trainerFlag ? `<span class="job-tag tag-trainer-check" title="${escapeHtml(trainerFlag.note)}"><i class="fas fa-triangle-exclamation" aria-hidden="true"></i> ${escapeHtml(trainerFlag.badge)}</span>` : ""}
             ${isPopular ? `<span class="job-tag tag-popular"><i class="fas fa-fire"></i> Popular</span>` : ""}
             <span class="job-tag job-tag-location">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="11" height="11"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -607,17 +598,21 @@ function renderJobCard(job) {
     return jobCard;
 }
 
+// Contact details pasted into a description stay hidden until it is unlocked.
+function maskContactDetails(text) {
+    return String(text)
+        // Mask emails that might have been pasted into the description
+        .replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/gi, '[email protected]')
+        // Mask URLs
+        .replace(/https?:\/\/[^\s\)]+/gi, '[link protected]')
+        // Mask phone numbers
+        .replace(/(?:\+?91[\s-]?)?[6-9]\d{9}/g, '[phone protected]');
+}
+
 // Truncate job description and mask potential contact details for unverified users
 function getTruncatedDescription(desc, maxLength = 260) {
     if (!desc) return 'No description available.';
-    let clean = String(desc).trim();
-
-    // Mask emails that might have been pasted into the description
-    clean = clean.replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/gi, '[email protected]');
-    // Mask URLs
-    clean = clean.replace(/https?:\/\/[^\s\)]+/gi, '[link protected]');
-    // Mask phone numbers
-    clean = clean.replace(/(?:\+?91[\s-]?)?[6-9]\d{9}/g, '[phone protected]');
+    const clean = maskContactDetails(String(desc).trim());
 
     if (clean.length <= maxLength) {
         return clean;
@@ -629,6 +624,43 @@ function getTruncatedDescription(desc, maxLength = 260) {
         cut = cut.slice(0, lastSpace);
     }
     return cut + '...';
+}
+
+// ---- CS / CMA trust notes ----
+// Firm-training lanes read the CA articleship table, so cards flag posts that
+// name a CA firm, or no trainer ICSI / ICMAI accepts. The list query brings
+// the description as desc_hint (not Description) so CA-style card snippets
+// stay off.
+function trainerFlagFor(job, description = null) {
+    const check = currentLane.trainerCheck;
+    const text = description || job?.desc_hint || job?.Description;
+    if (!check || !text) return null;
+    const status = trainerStatus(`${job.Company || ''}\n${normalizeListingText(text)}`, check);
+    return status === 'trainer' ? null : check[status] || null;
+}
+
+// The modal's "why is this here" block on CS / CMA lanes: the trainer note
+// (firm-training lanes) and the sentence that made the listing match.
+function laneContextHtml(job, description) {
+    if (!isCourseLane || !description) return '';
+    const parts = [];
+    const flag = trainerFlagFor(job, description);
+    if (flag) {
+        parts.push(`<p class="modal-lane-note"><i class="fas fa-triangle-exclamation" aria-hidden="true"></i><span><strong>${escapeHtml(flag.badge)}.</strong> ${escapeHtml(flag.note)}</span></p>`);
+    }
+    const qualification = QUALIFICATIONS[currentLane.qualification];
+    const quote = qualification.match ? matchContext(listingSnippetText(description), qualification.match.pos) : '';
+    if (quote) {
+        parts.push(`<p class="modal-lane-eligibility"><i class="fas fa-circle-check" aria-hidden="true"></i><span>Listed for ${escapeHtml(qualification.label)} students because it says: “${escapeHtml(maskContactDetails(quote))}”</span></p>`);
+    }
+    return parts.join('');
+}
+
+function updateModalLaneContext(job, description) {
+    const el = document.getElementById('modalLaneContext');
+    if (!el) return;
+    el.innerHTML = laneContextHtml(job, description);
+    el.hidden = !el.innerHTML;
 }
 
 // Simple markdown renderer for job descriptions
@@ -687,9 +719,9 @@ function generateApplicationLinks(applicationId) {
 
 // Share job using Web Share API or fallback to copy link
 function shareJob(job, btnElement) {
-    const jobType = currentTable === 'Industrial Training Job Portal' ? 'industrial' :
-        currentTable === 'Fresher Jobs' ? 'fresher' :
-            currentTable === 'Semi Qualified Jobs' ? 'semi' : 'articleship';
+    // CA lanes keep industrial / articleship / semi / fresher; CS and CMA
+    // lanes have their own (cs-semi, cma-fresher ...), which job.html maps.
+    const jobType = currentLane.shareType;
     const jobUrl = `${window.location.origin}/job.html?id=${job.id}&type=${jobType}`;
 
     const shareText = `Check out this job at *${job.Company}* for *${job.Location}*
@@ -866,6 +898,10 @@ function showExclusiveLockedModal(job) {
             <h3 style="font-size: 1.15rem; font-weight: 700; color: #92400e; margin-bottom: 0.6rem;">
                 MSC Program Members Only
             </h3>
+            ${isCourseLane ? `
+            <p style="color: #78350f; font-size: 0.9rem; line-height: 1.6; margin-bottom: 0.5rem; max-width: 320px; margin-left: auto; margin-right: auto;">
+                This vacancy is open only to students enrolled in an MSC program. Every other listing on this page is open to you.
+            </p>` : `
             <p style="color: #78350f; font-size: 0.9rem; line-height: 1.6; margin-bottom: 1.5rem; max-width: 320px; margin-left: auto; margin-right: auto;">
                 This vacancy is exclusively available to students enrolled in the <strong>MSC CA Industrial Training Program</strong>. Enroll to unlock full details and apply directly.
             </p>
@@ -880,16 +916,16 @@ function showExclusiveLockedModal(job) {
             " onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(245,158,11,0.5)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 14px rgba(245,158,11,0.4)'">
                 <i class="fas fa-graduation-cap"></i>
                 Enroll in MSC Program
-            </a>
+            </a>`}
             ${!currentSession ? `
             <p style="margin-top: 1rem; font-size: 0.82rem; color: #92400e;">
-                Already enrolled? <a href="/login.html" style="color: #d97706; font-weight: 600; text-decoration: underline;">Sign in</a> to access.
+                Already enrolled? <a href="${loginHref()}" style="color: #d97706; font-weight: 600; text-decoration: underline;">Sign in</a> to access.
             </p>` : ''}
         </div>
         <div class="modal-footer" style="text-align: center; padding: 1rem; border-top: 1px solid #e5e7eb; margin-top: 1rem;">
             <p style="color: #6b7280; font-size: 0.85rem;">
                 <i class="fas fa-shield-alt" style="color: #f59e0b; margin-right: 4px;"></i>
-                Exclusive vacancies are MSCIT program enrolled students only.
+                ${isCourseLane ? 'Exclusive vacancies are for MSC program students only.' : 'Exclusive vacancies are MSCIT program enrolled students only.'}
             </p>
         </div>`;
 
@@ -899,10 +935,9 @@ function showExclusiveLockedModal(job) {
 
 function showModal(job) {
     const recruiterPosted = isRecruiterPostedJob(job);
-    const isExclusive = Boolean(job.is_exclusive || recruiterPosted);
 
     // --- Exclusive vacancy gate ---
-    if (isExclusive && !isEnrolledSync(currentTable)) {
+    if (isJobLocked(job)) {
         showExclusiveLockedModal(job);
         return;
     }
@@ -920,6 +955,9 @@ function showModal(job) {
     const isMailto = !recruiterPosted && applyLink.startsWith('mailto:');
     const isApplied = appliedJobIds.has(job.id);
     const buttonClass = isApplied ? 'applied' : '';
+    // CS / CMA lanes have no programme to sell yet: premium buttons (AI Apply,
+    // Connect to Peers, Original Post) are hidden, not upsold, without access.
+    const hidePremium = isCourseLane && !hasPremiumAccess();
 
     // Connect to Peers Logic
     let connectLink = checkConnectLink(job);
@@ -928,7 +966,11 @@ function showModal(job) {
         let cleanedCompany = companyName.replace(suffixPattern, '').replace(/[.,&\-]+/g, ' ').replace(/\s+/g, ' ').trim();
         const companyWords = cleanedCompany.split(/\s+/).filter(w => w.length > 1).slice(0, 3).join(' ') || companyName.split(/\s+/).slice(0, 2).join(' ');
         const encodedCompany = encodeURIComponent(`"${companyWords}"`);
-        if (currentTable === 'Articleship Jobs') {
+        if (isCourseLane) {
+            // No ICAI school filter: CS / CMA peers studied with ICSI / ICMAI.
+            const peers = encodeURIComponent(QUALIFICATIONS[currentLane.qualification].peersKeywords);
+            connectLink = `https://www.linkedin.com/search/results/people/?keywords=${encodedCompany}%20AND%20${peers}&origin=GLOBAL_SEARCH_HEADER`;
+        } else if (currentTable === 'Articleship Jobs') {
             connectLink = `https://www.linkedin.com/search/results/people/?keywords=${encodedCompany}%20AND%20%22CA%20Finalist%22&origin=FACETED_SEARCH&schoolFilter=%5B%221968486%22%2C%22272365%22%5D&sid=Chv`;
         } else if (currentTable === 'Fresher Jobs' || currentTable === 'Semi Qualified Jobs') {
             connectLink = `https://www.linkedin.com/search/results/people/?keywords=${encodedCompany}%20AND%20(%22CA%22%20OR%20%22Chartered%20Accountant%22)&origin=GLOBAL_SEARCH_HEADER&schoolFilter=%5B%221968486%22%2C%22272365%22%5D&sid=%3Avx`;
@@ -973,7 +1015,7 @@ function showModal(job) {
 
     // Build the bottom action link row with View Original Post if available
     let secondaryActionsHtml = '';
-    const connectButtonHtml = `
+    const connectButtonHtml = hidePremium ? '' : `
         <a href="${connectLink}" id="modalConnectPeersBtn" target="_blank" class="btn btn-secondary btn-modal-secondary">
             <i class="fab fa-linkedin"></i>
             Connect to Peers
@@ -984,7 +1026,7 @@ function showModal(job) {
             Share this job
         </button>`;
 
-    if (job.posts_link) {
+    if (job.posts_link && !hidePremium) {
         const originalPostHtml = `
             <a href="${safeHref(job.posts_link)}" id="modalOriginalPostBtn" target="_blank" class="btn btn-secondary btn-modal-secondary" style="border-color: #0a66c2; color: #0a66c2;">
                 <i class="fab fa-linkedin"></i>
@@ -1024,11 +1066,11 @@ function showModal(job) {
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                     <span>${simpleApplyText}</span>
                 </button>
-                <button id="modalAiApplyBtn" class="btn btn-primary btn-modal-primary ${buttonClass}">
+                ${hidePremium ? '' : `<button id="modalAiApplyBtn" class="btn btn-primary btn-modal-primary ${buttonClass}">
                     <svg fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                     <span class="btn-text">${aiApplyText}</span>
                     <i class="fas fa-spinner fa-spin"></i>
-                </button>
+                </button>`}
             </div>`;
     } else {
         const applyText = 'Apply Now';
@@ -1093,6 +1135,7 @@ function showModal(job) {
                         const updatedEffective = (currentSession ? getCachedUnlockedJob(job.id, currentTable, currentSession)?.description : null) || job.Description;
                         const finalRaw = isApplicationUnlocked ? updatedEffective : getTruncatedDescription(updatedEffective, 260);
                         descEl.innerHTML = renderMarkdown(finalRaw);
+                        updateModalLaneContext(job, job.Description);
                     }
                 }
             })
@@ -1100,6 +1143,8 @@ function showModal(job) {
                 job.__fetchingDesc = false;
             });
     }
+
+    const laneContext = laneContextHtml(job, effectiveDescription || job.desc_hint || '');
 
     const applicationContentHtml = recruiterPosted
         ? '<p class="modal-description">Easy Apply is enabled. Click Apply Now to send your profile and CV to the hirer dashboard.</p>'
@@ -1110,7 +1155,7 @@ function showModal(job) {
                 <div class="apply-prompt-box">
                     <i class="fas fa-lock"></i>
                     <p>Login to view Application Details and Apply</p>
-                    <a href="/login.html" class="btn btn-primary">Login / Sign Up Free</a>
+                    <a href="${loginHref()}" class="btn btn-primary">Login / Sign Up Free</a>
                 </div>`
             : `
                 <div class="apply-prompt-box" id="applyPromptBox">
@@ -1139,6 +1184,7 @@ function showModal(job) {
             ${job['Firm Type'] ? `<span class="job-tag"><i class="fas fa-briefcase" style="margin-right: 4px;"></i>${escapeHtml(job['Firm Type'])}</span>` : ''}
             ${job['Industry Type'] ? `<span class="job-tag"><i class="fas fa-industry" style="margin-right: 4px;"></i>${escapeHtml(job['Industry Type'])}</span>` : ''}
         </div>
+        ${isCourseLane ? `<div class="modal-lane-context" id="modalLaneContext"${laneContext ? '' : ' hidden'}>${laneContext}</div>` : ''}
         <div id="modalPrimaryActionsContainer">
             ${primaryActionsHtml}
         </div>
@@ -1167,7 +1213,7 @@ function showModal(job) {
     // Handler to unlock via BrowserGuard and optionally redirect immediately
     const handleUnlockAndApply = async (btnElement, autoRedirect = true) => {
         if (!currentSession) {
-            window.location.href = '/login.html';
+            window.location.href = loginHref();
             return;
         }
 
@@ -1273,10 +1319,10 @@ function showModal(job) {
             modalAiApplyBtn.addEventListener('click', async (e) => {
                 e.preventDefault();
                 if (!currentSession) {
-                    window.location.href = '/login.html';
+                    window.location.href = loginHref();
                     return;
                 }
-                if (isEnrolledSync(currentTable)) {
+                if (hasPremiumAccess()) {
                     await handleAiApplyClick(job, e.currentTarget, currentTable, applyLink);
                 } else {
                     showEnrollmentRequiredPopup();
@@ -1303,10 +1349,10 @@ function showModal(job) {
         modalConnectPeersBtn.addEventListener('click', (e) => {
             if (!currentSession) {
                 e.preventDefault();
-                window.location.href = '/login.html';
+                window.location.href = loginHref();
                 return;
             }
-            if (!isEnrolledSync(currentTable)) {
+            if (!hasPremiumAccess()) {
                 e.preventDefault();
                 showEnrollmentRequiredPopup();
             }
@@ -1318,10 +1364,10 @@ function showModal(job) {
         modalOriginalPostBtn.addEventListener('click', (e) => {
             if (!currentSession) {
                 e.preventDefault();
-                window.location.href = '/login.html';
+                window.location.href = loginHref();
                 return;
             }
-            if (!isEnrolledSync(currentTable)) {
+            if (!hasPremiumAccess()) {
                 e.preventDefault();
                 showEnrollmentRequiredPopup();
             }
@@ -1474,6 +1520,7 @@ async function fetchFilterOptions() {
 
 function getFilterFingerprint() {
     return JSON.stringify({
+        lane: currentLane.id,
         currentTable,
         keywords: state.keywords,
         locations: state.locations,
@@ -1490,8 +1537,47 @@ function getFilterFingerprint() {
     });
 }
 
+// Columns a typed keyword is matched against (ilike), plus array tag columns
+// matched by exact element, as before.
+const SEARCH_TEXT_COLUMNS = ['Company', 'Description', 'Category', 'Location', 'Primary Domain'];
+const SEARCH_TABLE_COLUMNS = {
+    'Fresher Jobs': { text: ['Secondary Domain'], tags: ['Tags'] },
+    'Semi Qualified Jobs': { text: ['Secondary Domain'], tags: ['Tags'] },
+    'Industrial Training Job Portal': { text: [], tags: ['Functional Tags', 'Technology Tags'] },
+    'Articleship Jobs': { text: [], tags: ['Exposure Tags', 'Client Exposure Tags'] }
+};
+
+// One or() group per keyword, so several keywords must all match (AND).
+// sanitizeTerm drops anything that could change the filter's shape.
+function keywordOrFilter(keyword) {
+    const term = sanitizeTerm(keyword);
+    if (!term) return '';
+    const extra = SEARCH_TABLE_COLUMNS[currentTable] || { text: [], tags: [] };
+    const tagFilters = extra.tags.map(col => `${col.includes(' ') ? `"${col}"` : col}.cs.{"${term}"}`);
+    return [termOrFilter(term, [...SEARCH_TEXT_COLUMNS, ...extra.text]), ...tagFilters].filter(Boolean).join(',');
+}
+
+// Fresher Jobs lanes are locked to the lane's experience level (the list and
+// the trending rail alike); freshers also exclude listings asking for >1 year.
+function applyExperienceLock(query) {
+    if (currentTable !== 'Fresher Jobs') return query;
+    const level = currentLane.experience === 'Experienced' ? 'Experienced' : 'Freshers';
+    let q = query;
+    if (level === 'Freshers') q = q.or('yoe.is.null,yoe.lte.1');
+    return q.eq('Experience', level);
+}
+
+let fetchGeneration = 0;
+
 async function fetchJobs() {
-    if (isFetching) return;
+    if (isFetching) {
+        // A new first page (a filter change) supersedes the request still in
+        // flight; a scroll-triggered "load more" while one runs is dropped.
+        if (page !== 0 || !currentJobFetchController) return;
+        currentJobFetchController.abort();
+        currentJobFetchController = null;
+        isFetching = false;
+    }
 
     // Preserve in-memory response if filters have not changed on first page
     const currentFingerprint = getFilterFingerprint();
@@ -1512,11 +1598,7 @@ async function fetchJobs() {
     }
 
     isFetching = true;
-
-    // Cancel any superseded job search request
-    if (currentJobFetchController) {
-        currentJobFetchController.abort();
-    }
+    const generation = ++fetchGeneration;
     currentJobFetchController = new AbortController();
 
     // Only show the main full-screen loader if it's the first page load
@@ -1541,51 +1623,25 @@ async function fetchJobs() {
         } else if (currentTable === "Articleship Jobs") {
             selectColumns += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range"';
         }
+        if (currentLane.trainerCheck) {
+            // For the CA-firm flag only; aliased so cards show no snippet.
+            selectColumns += ', desc_hint:Description';
+        }
 
         const buildQuery = (cols) => {
             let q = supabaseClient.from(currentTable).select(cols);
+            // CS / CMA lanes: only listings that accept the course (and no
+            // admin-curated programme exclusives on company-training lanes).
+            q = applyLaneScope(q, currentLane, { mode: eligibilityMode });
 
-            // Optimize keyword query building - pre-process terms once
-            if (state.keywords.length > 0) {
-                const keywordOrs = [];
-                for (let i = 0; i < state.keywords.length; i++) {
-                    const keyword = state.keywords[i].trim();
-                    // wildcard matching for spaces to find "PhonePe" from "Phone Pe"
-                    const flexibleTerm = keyword.replace(/\s+/g, '%');
-
-                    const cols = [
-                        `Company.ilike.%${flexibleTerm}%`,
-                        `Description.ilike.%${flexibleTerm}%`,
-                        `Category.ilike.%${flexibleTerm}%`,
-                        `Location.ilike.%${flexibleTerm}%`,
-                        `"Primary Domain".ilike.%${flexibleTerm}%`
-                    ];
-
-                    if (currentTable === "Fresher Jobs") {
-                        cols.push(`"Secondary Domain".ilike.%${flexibleTerm}%`);
-                        cols.push(`Tags.cs.{"${keyword}"}`);
-                    } else if (currentTable === "Semi Qualified Jobs") {
-                        cols.push(`"Secondary Domain".ilike.%${flexibleTerm}%`);
-                        cols.push(`Tags.cs.{"${keyword}"}`);
-                    } else if (currentTable === "Industrial Training Job Portal") {
-                        cols.push(`"Functional Tags".cs.{"${keyword}"}`);
-                        cols.push(`"Technology Tags".cs.{"${keyword}"}`);
-                    } else if (currentTable === "Articleship Jobs") {
-                        cols.push(`"Exposure Tags".cs.{"${keyword}"}`);
-                        cols.push(`"Client Exposure Tags".cs.{"${keyword}"}`);
-                    }
-
-                    keywordOrs.push(...cols);
-                }
-                q = q.or(keywordOrs.join(','));
+            for (const keyword of state.keywords) {
+                const group = keywordOrFilter(keyword);
+                if (group) q = q.or(group);
             }
 
             if (state.locations.length > 0) {
-                const locationOr = [];
-                for (let i = 0; i < state.locations.length; i++) {
-                    locationOr.push(`Location.ilike."%${state.locations[i]}%"`);
-                }
-                q = q.or(locationOr.join(','));
+                const locationOr = locationOrFilter(state.locations, LOCATION_ALIASES);
+                if (locationOr) q = q.or(locationOr);
             }
 
             if (state.categories.length > 0) {
@@ -1625,15 +1681,9 @@ async function fetchJobs() {
                 }
             }
 
-            if (currentTable === 'Fresher Jobs' && !isExperiencedFresherPortal()) {
-                q = q.or('yoe.is.null,yoe.lte.1');
-            }
-
-            // Experience filter
-            if (currentTable === "Fresher Jobs") {
-                const lockedValue = isExperiencedFresherPortal() ? 'Experienced' : 'Freshers';
-                q = q.eq('Experience', lockedValue);
-            } else if (state.experience && currentTable === "Semi Qualified Jobs") {
+            // Experience: locked on Fresher Jobs lanes, a filter on Semi lanes
+            q = applyExperienceLock(q);
+            if (state.experience && currentTable === "Semi Qualified Jobs") {
                 q = q.eq('Experience', state.experience);
             }
 
@@ -1683,7 +1733,7 @@ async function fetchJobs() {
         let { data, error } = await query;
 
         // Failsafe Fallback: If is_exclusive does not exist yet on the table, strip it and retry.
-        if (error && error.message && error.message.includes('is_exclusive') && selectColumns.includes('is_exclusive')) {
+        if (generation === fetchGeneration && error && error.message && error.message.includes('is_exclusive') && selectColumns.includes('is_exclusive')) {
             console.warn('is_exclusive column does not exist on Supabase yet. Falling back to default query.');
             selectColumns = selectColumns.replace(', is_exclusive', '');
             query = buildQuery(selectColumns);
@@ -1692,49 +1742,19 @@ async function fetchJobs() {
             error = fallbackResult.error;
         }
 
-        if (!error && data && state.sortBy === 'popular') {
-            data.sort((a, b) => (b.application_count || 0) - (a.application_count || 0));
-        }
-
-        if (!error && data && state.keywords.length > 0) {
-            data = data.filter(job => {
-                return state.keywords.every(kw => {
-                    const kwClean = kw.toLowerCase().trim();
-                    const kwNoSpace = kwClean.replace(/\s+/g, '');
-
-                    const company = (job.Company || '').toLowerCase();
-                    const role = (job.Role || '').toLowerCase();
-                    const category = (job.Category || '').toLowerCase();
-                    const location = (job.Location || '').toLowerCase();
-                    const primaryDomain = (job['Primary Domain'] || '').toLowerCase();
-                    const secondaryDomain = (job['Secondary Domain'] || '').toLowerCase();
-                    const companyType = (job['Company Type'] || '').toLowerCase();
-                    const industryType = (job['Industry Type'] || '').toLowerCase();
-                    const tags = (Array.isArray(job.Tags) ? job.Tags.join(' ') : (job.Tags || '')).toLowerCase();
-                    const funcTags = (Array.isArray(job['Functional Tags']) ? job['Functional Tags'].join(' ') : (job['Functional Tags'] || '')).toLowerCase();
-                    const techTags = (Array.isArray(job['Technology Tags']) ? job['Technology Tags'].join(' ') : (job['Technology Tags'] || '')).toLowerCase();
-
-                    const structuredText = `${company} ${role} ${category} ${location} ${primaryDomain} ${secondaryDomain} ${companyType} ${industryType} ${tags} ${funcTags} ${techTags}`;
-
-                    // Direct match in structured fields (Company, Role, Category, Location, Domain, Tags)
-                    if (structuredText.includes(kwClean) || (kwNoSpace && structuredText.includes(kwNoSpace))) {
-                        return true;
-                    }
-
-                    // Description fallback: Do not match if the search term is a company name and the job belongs to a different company
-                    const description = (job.Description || '').toLowerCase();
-                    if (description.includes(kwClean) || (kwNoSpace && description.includes(kwNoSpace))) {
-                        // Check if the keyword matches Company, Role, Category, or Tags of any other job (e.g. "Amazon")
-                        // If it's a description-only match for a completely different company (like YesMadam), exclude it
-                        return false;
-                    }
-
-                    return false;
-                });
-            });
-        }
+        // A newer request (filters changed meanwhile) owns the list now.
+        if (generation !== fetchGeneration) return;
 
         if (error) throw error;
+
+        // The server already applied every filter, so the page is complete:
+        // its raw length says whether there is more, its last row is the cursor.
+        const pageLength = data ? data.length : 0;
+        const cursorRow = pageLength > 0 ? data[pageLength - 1] : null;
+
+        if (data && state.sortBy === 'popular') {
+            data.sort((a, b) => (b.application_count || 0) - (a.application_count || 0));
+        }
 
         if (data && data.length > 0) {
             // Batch DOM operations using DocumentFragment for better performance
@@ -1759,13 +1779,12 @@ async function fetchJobs() {
                 lastJobListCache = data;
             }
 
-            const lastItem = data[data.length - 1];
-            if (lastItem) {
-                lastCursor = { createdAt: lastItem.Created_At, id: lastItem.id };
+            if (cursorRow) {
+                lastCursor = { createdAt: cursorRow.Created_At, id: cursorRow.id };
             }
 
             page++;
-            hasMoreData = data.length === limit;
+            hasMoreData = pageLength === limit;
 
             if (currentTable === 'Articleship Jobs') {
                 fetchFirmRatingsForVisibleJobs(data);
@@ -1778,7 +1797,7 @@ async function fetchJobs() {
         }
     } catch (error) {
         // Silently ignore superseded aborted queries
-        if (error && (error.name === 'AbortError' || error.message?.includes('aborted') || error.code === '20')) {
+        if (generation !== fetchGeneration || (error && (error.name === 'AbortError' || error.message?.includes('aborted') || error.code === '20'))) {
             return;
         }
         if (dom.jobsContainer) {
@@ -1795,27 +1814,35 @@ async function fetchJobs() {
                         <p style="color: #6b7280;">We will be back online in 30 minutes.</p>
                     </div>`;
             } else {
-                dom.jobsContainer.innerHTML = `<p class="no-jobs-found" style="color:red;">Failed to load jobs: ${error.message}</p>`;
+                dom.jobsContainer.innerHTML = `<p class="no-jobs-found" style="color:red;">Failed to load jobs: ${escapeHtml(error.message)}</p>`;
             }
         }
     } finally {
-        isFetching = false;
-        if (dom.loader) dom.loader.style.display = 'none';
-
-        // Hide sentinel spinner
-        if (sentinelSpinner) sentinelSpinner.style.display = 'none';
-
-        // Defer UI updates to avoid blocking render
-        const updateUI = () => {
-            renderActiveFilterPills();
-            syncFiltersUI();
-        };
-        if (typeof requestAnimationFrame !== 'undefined') {
-            requestAnimationFrame(updateUI);
-        } else {
-            // Fallback for very old browsers
-            setTimeout(updateUI, 0);
+        // A superseded request leaves the loader and flags to its successor.
+        if (generation === fetchGeneration) {
+            finishFetch(sentinelSpinner);
         }
+    }
+}
+
+function finishFetch(sentinelSpinner) {
+    isFetching = false;
+    currentJobFetchController = null;
+    if (dom.loader) dom.loader.style.display = 'none';
+
+    // Hide sentinel spinner
+    if (sentinelSpinner) sentinelSpinner.style.display = 'none';
+
+    // Defer UI updates to avoid blocking render
+    const updateUI = () => {
+        renderActiveFilterPills();
+        syncFiltersUI();
+    };
+    if (typeof requestAnimationFrame !== 'undefined') {
+        requestAnimationFrame(updateUI);
+    } else {
+        // Fallback for very old browsers
+        setTimeout(updateUI, 0);
     }
 }
 
@@ -2509,7 +2536,7 @@ function updateHeaderAuth(session) {
         dom.authButtonsContainer.querySelector('#logoutBtn').addEventListener('click', handleLogout);
         checkUserEnrollment();
     } else {
-        dom.authButtonsContainer.innerHTML = `<a href="/login.html" class="icon-button" aria-label="Login"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg></a>`;
+        dom.authButtonsContainer.innerHTML = `<a href="${loginHref()}" class="icon-button" aria-label="Login"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg></a>`;
     }
 }
 
@@ -2606,6 +2633,21 @@ function isEnrolledSync(tableName) {
     if (!enrollmentStatusCache) return false;
     if (tableName === 'Industrial Training Job Portal') return enrollmentStatusCache.industrialTraining;
     return enrollmentStatusCache.any;
+}
+
+// Premium buttons and locked listings follow the lane's gate: CA Industrial
+// needs the Industrial Training programme, every other lane any enrolment
+// (the same split isEnrolledSync makes by table for CA).
+function hasPremiumAccess(lane = currentLane) {
+    if (!enrollmentStatusCache) return false;
+    return lane.gate.premium === 'industrialTraining' ? enrollmentStatusCache.industrialTraining : enrollmentStatusCache.any;
+}
+
+// Recruiter Easy Apply posts are locked only where the lane says so (CA);
+// admin-curated exclusives stay programme-only everywhere.
+function isJobLocked(job) {
+    if (hasPremiumAccess()) return false;
+    return isRecruiterPostedJob(job) ? currentLane.gate.recruiterLocked : Boolean(job.is_exclusive);
 }
 
 async function getUserEnrollments(userId) {
@@ -2835,16 +2877,16 @@ async function handleApplyClick(job, buttonElement, isAiApply = false) {
 
 async function executeActualApply(job, buttonElement, isAiApply = false) {
     if (isRecruiterPostedJob(job)) return recordApplication(job, buttonElement);
-    if (!currentSession) { window.location.href = '/login.html'; return false; }
+    if (!currentSession) { window.location.href = loginHref(); return false; }
     if (isAiApply && !isProfileComplete()) { showCvUploadPopup(); return false; }
     markJobAsApplied(job);
     if (!isAiApply) {
         const applyLink = getApplicationLink(job['Application ID']);
-        if (applyLink.startsWith('mailto:')) openMailtoLink(constructMailto(job, generateFallbackEmail(job, currentTable)));
+        if (applyLink.startsWith('mailto:')) openMailtoLink(constructMailto(job, generateFallbackEmail(job, currentTable, currentLane)));
         else if (applyLink && applyLink !== '#') window.open(applyLink, '_blank');
         return true;
     }
-    const emailBody = await generateEmailBody(job, currentTable, supabaseClient, currentSession.user);
+    const emailBody = await generateEmailBody(job, currentTable, supabaseClient, currentSession.user, currentLane);
     openMailtoLink(constructMailto(job, emailBody));
     return true;
 }
@@ -2905,7 +2947,7 @@ function constructMailto(job, body = "") {
     const emailMatch = rawLink.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
     if (!emailMatch) return '#';
     const email = emailMatch[0];
-    const subjectBase = EMAIL_SUBJECT_MAP[currentTable] || `Application for the role`;
+    const subjectBase = currentLane.emailSubject || `Application for the role`;
     const subject = `${subjectBase} at ${job.Company} (Ref: My Student Club)`;
     return `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
@@ -3022,7 +3064,7 @@ async function loadBanners() {
         if (error) throw error;
         const banners = data;
         carousel.innerHTML = '';
-        const currentType = currentTable === "Semi Qualified Jobs" ? "Semi-Qualified" : currentTable === "Fresher Jobs" ? "Freshers" : currentTable.split(' ')[0];
+        const currentType = currentLane.bannerType;
 
         // Determine if current user is enrolled in any course
         let isEnrolled = false;
@@ -3032,7 +3074,9 @@ async function loadBanners() {
         }
 
         const relevantBanners = banners.filter(b => {
-            const matchesType = b.Type === 'All' || b.Type === currentType;
+            // 'All' banners date from the CA-only portal (programme promos), so
+            // CS / CMA lanes show only banners typed for their course.
+            const matchesType = b.Type === currentType || (b.Type === 'All' && !isCourseLane);
             const matchesEnrollment = b.visible_to_unenrolled === null ||
                 b.visible_to_unenrolled === undefined ||
                 (b.visible_to_unenrolled === true && !isEnrolled) ||
@@ -3098,11 +3142,13 @@ async function saveSubscribedTopics(topics) {
     // Also save to Supabase profile if logged in
     if (currentSession?.user?.id) {
         try {
-            const { data: existingProfile } = await supabaseClient
+            const { data: existingProfile, error: readError } = await supabaseClient
                 .from('profiles')
                 .select('profile')
                 .eq('uuid', currentSession.user.id)
                 .maybeSingle();
+            // A failed read must not overwrite the stored profile.
+            if (readError) throw readError;
 
             const profileData = existingProfile?.profile || {};
             profileData.notification_subscriptions = topics;
@@ -3161,7 +3207,25 @@ function formatTopicForDisplay(topic) {
     return { location: location.charAt(0).toUpperCase() + location.slice(1), jobType };
 }
 
-function updateSpecificTopicAreaVisibility() { if (dom.specificSubscriptionForm) dom.specificSubscriptionForm.style.display = dom.topicAllCheckbox.checked ? 'none' : 'block'; }
+function updateSpecificTopicAreaVisibility() {
+    if (!dom.specificSubscriptionForm) return;
+    if (isCourseLane) { dom.specificSubscriptionForm.style.display = 'none'; return; }
+    dom.specificSubscriptionForm.style.display = dom.topicAllCheckbox.checked ? 'none' : 'block';
+}
+
+// Push topics exist for CA job types only. On CS / CMA lanes, offer none of
+// them as if they were course alerts; existing subscriptions stay listed so
+// they can still be removed.
+function scopeJobAlertsToLane() {
+    if (!isCourseLane || !dom.notificationPopup) return;
+    dom.notificationPopup.querySelectorAll('.all-topic-section, #specific-subscription-form').forEach(el => { el.style.display = 'none'; });
+    if (!dom.notificationPopup.querySelector('.lane-alerts-note')) {
+        const note = document.createElement('p');
+        note.className = 'lane-alerts-note';
+        note.textContent = `${QUALIFICATIONS[currentLane.qualification].label} job alerts are coming soon. Until then, check this page for new openings.`;
+        dom.notificationPopup.querySelector('.notification-popup-header')?.insertAdjacentElement('afterend', note);
+    }
+}
 async function manageTopicSubscription(topic, action) {
     // Actively try to get token if missing
     if (!currentFcmToken) {
@@ -3401,8 +3465,8 @@ function setupEventListeners() {
             state.industryType = '';
             state.firmType = '';
             if (dom.searchInputMobile) dom.searchInputMobile.value = '';
-            if (currentTable === 'Fresher Jobs') {
-                state.experience = isExperiencedFresherPortal() ? 'Experienced' : 'Freshers';
+            if (currentLane.experience) {
+                state.experience = currentLane.experience;
             }
             if (dom.searchInputDesktop) dom.searchInputDesktop.value = '';
             syncAndFetch();
@@ -3765,8 +3829,26 @@ async function initializePage() {
     dom.subscribeBtnEl = document.getElementById('subscribeBtn');
     dom.specificSubscriptionForm = document.getElementById('specific-subscription-form');
 
+    // A shared link for another table opens on its own lane page.
+    if (redirectSharedLinkToItsLane()) return;
+
     setActivePortalTab();
     initCustomSelects();
+    scopeJobAlertsToLane();
+    if (isCourseLane) {
+        document.querySelectorAll('a[href="/login.html"]').forEach(link => { link.href = loginHref(); });
+    }
+
+    // Which CS / CMA filter the server can run (one probe per session).
+    // A slow probe must not hold up the list: after a short wait this load
+    // falls back to regex (no filter on CA lanes, as before) and the probe
+    // still caches its answer for the next page.
+    let sessionStore = null;
+    try { sessionStore = window.sessionStorage; } catch (_) { /* storage blocked */ }
+    const eligibilityModePromise = Promise.race([
+        detectEligibilityMode(supabaseClient, sessionStore).catch(() => 'regex'),
+        new Promise(resolve => setTimeout(() => resolve('regex'), ELIGIBILITY_PROBE_TIMEOUT_MS))
+    ]);
 
     const session = await checkAuth();
     // Wait for the server-backed profile cache before rendering the account
@@ -3790,32 +3872,8 @@ async function initializePage() {
             profile = await fetchAndCacheProfileData();
         }
 
-        // Show onboarding segment modal if looking_for is not set on the homepage.
-        // Its options are CA-only, so skip it for people who came through the
-        // CS / CMA portal (scripts/pro-portal sets msc_course).
-        let proPortalCourse = null;
-        try { proPortalCourse = localStorage.getItem('msc_course'); } catch (e) { }
-        const lookingFor = profile?.looking_for;
-        if (!lookingFor && proPortalCourse !== 'cs' && proPortalCourse !== 'cma') {
-            const path = window.location.pathname;
-            if (path === '/' || path === '/index.html') {
-                setTimeout(() => {
-                    showOnboardingSegmentModal();
-                }, 800); // Small pleasant delay after load
-            }
-        } else {
-            // User has a default portal set — redirect if arriving from an external link/bookmark
-            const lookingForToPreference = {
-                'CA Industrial Training Default': 'industrial',
-                'CA Articleship': 'articleship',
-                'CA Fresher': 'fresher_fresher',
-                'Semi Qualified CA': 'semi_fresher'
-            };
-            const pref = getJobPreference() || lookingForToPreference[lookingFor];
-            if (pref) {
-                redirectToPreferredPortal(pref);
-            }
-        }
+        // Send the student to their lane, or ask their course and stage.
+        if (personalizeForStudent(profile)) return;
     } else {
         // Track visits for unlogged users
         let visitCount = parseInt(localStorage.getItem('portalVisitCount') || '0');
@@ -3833,11 +3891,8 @@ async function initializePage() {
         }
     }
 
-    if (currentTable === 'Fresher Jobs') {
-        state.experience = 'Freshers';
-    }
-
     await fetchFilterOptions();
+    eligibilityMode = await eligibilityModePromise;
 
     populateSalaryFilter();
     setupEventListeners();
@@ -3858,22 +3913,24 @@ async function initializePage() {
     dv2Init();
 }
 
+// ?id=&type= from job.html and shared links. A type whose lane reads another
+// table is opened on that lane's page, so the list, saves and applications
+// there all use the right table. Returns true when the page is navigating.
+function redirectSharedLinkToItsLane() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (!urlParams.get('id')) return false;
+    const lane = laneForShareType(urlParams.get('type'));
+    if (!lane || lane.table === currentLane.table) return false;
+    window.location.replace(lane.path + window.location.search);
+    return true;
+}
+
 function checkAndOpenSharedJob() {
     const urlParams = new URLSearchParams(window.location.search);
     const jobId = urlParams.get('id');
-    const jobType = urlParams.get('type');
 
     if (jobId) {
-        // Set proper table based on type
-        if (jobType) {
-            const cleanType = jobType.toLowerCase();
-            if (cleanType === 'semi') currentTable = 'Semi Qualified Jobs';
-            else if (cleanType === 'fresher') currentTable = 'Fresher Jobs';
-            else if (cleanType === 'articleship') currentTable = 'Articleship Jobs';
-            else if (cleanType === 'industrial') currentTable = 'Industrial Training Job Portal';
-        }
-
-        // Fetch and open the specific job
+        // Fetch and open the specific job (its table is this lane's table)
         fetchSharedJob(jobId);
 
         // Clean URL without reloading
@@ -3900,12 +3957,23 @@ async function fetchSharedJob(jobId) {
 
 document.addEventListener('DOMContentLoaded', initializePage);
 
-// Handle explicit portal nav navigation flag
+// Handle explicit portal nav navigation flag: a student who picks a lane
+// (lane tabs, the CA | CS | CMA switcher, the header Jobs menu, the logo) is
+// never redirected away from it for the rest of the session.
 document.addEventListener('DOMContentLoaded', () => {
     const handlePortalClick = (e) => {
-        const tabLink = e.target.closest('.portal-nav-bar .footer-tab, .site-footer-nav .footer-tab');
-        if (tabLink) {
-            sessionStorage.setItem('explicitPortalNav', 'true');
+        const tabLink = e.target.closest('.portal-nav-bar .footer-tab, .site-footer-nav .footer-tab, .portal-course-switch .course-chip');
+        const navLink = tabLink || e.target.closest('.site-header a[href], .expanded-menu a[href]');
+        if (!navLink) return;
+        let toLane = Boolean(tabLink);
+        if (!toLane) {
+            try {
+                const url = new URL(navLink.getAttribute('href'), window.location.href);
+                toLane = url.origin === window.location.origin && isLanePath(url.pathname);
+            } catch (_) { /* not a link to a page */ }
+        }
+        if (toLane) {
+            try { sessionStorage.setItem('explicitPortalNav', 'true'); } catch (_) { /* storage blocked */ }
         }
     };
     document.addEventListener('click', handlePortalClick);
@@ -3932,6 +4000,25 @@ document.addEventListener('DOMContentLoaded', () => {
     updateMask();
 });
 
+// Who recruiters on each lane hire, for the resume prompt.
+const RESUME_PROMPT_AUDIENCE = {
+    'ca-industrial': 'Industrial Trainees',
+    'ca-articleship': 'Article Assistants',
+    'ca-semi': 'Semi Qualified CA',
+    'ca-fresher': 'CA Freshers',
+    'ca-experienced': 'Experienced CA',
+    'cs-articleship': 'CS Trainees',
+    'cs-industrial': 'CS Management Trainees',
+    'cs-semi': 'Semi Qualified CS',
+    'cs-fresher': 'Company Secretary Freshers',
+    'cs-experienced': 'Experienced Company Secretaries',
+    'cma-articleship': 'CMA Trainees',
+    'cma-industrial': 'CMA Industrial Trainees',
+    'cma-semi': 'CMA Inter (Semi Qualified)',
+    'cma-fresher': 'CMA Freshers',
+    'cma-experienced': 'Experienced CMAs'
+};
+
 // Check for new user signup and show resume prompt
 document.addEventListener('DOMContentLoaded', async () => {
     const isNewUser = localStorage.getItem('newUserSignup');
@@ -3946,35 +4033,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             setTimeout(() => {
                 const modal = document.getElementById('resumePromptModal');
                 if (modal) {
-                    let roleType = 'Industrial Trainees/Article Assistants/CA Freshers/Experienced CA/Semi Qualified CA';
                     const cachedProfile = localStorage.getItem('userProfileData');
                     let profile = null;
                     if (cachedProfile) {
                         try { profile = JSON.parse(cachedProfile); } catch (e) { }
                     }
+                    // The student's lane (saved preference, looking_for, then
+                    // their course), else the page they are on.
                     const jobPref = localStorage.getItem('userJobPreference');
-                    const lookingFor = profile?.looking_for;
-
-                    if (jobPref === 'industrial' || lookingFor === 'CA Industrial Training Default') {
-                        roleType = 'Industrial Trainees';
-                    } else if (jobPref === 'articleship' || lookingFor === 'CA Articleship') {
-                        roleType = 'Article Assistants';
-                    } else if (jobPref === 'fresher_fresher') {
-                        roleType = 'CA Freshers';
-                    } else if (jobPref === 'fresher_experienced') {
-                        roleType = 'Experienced CA';
-                    } else if (lookingFor === 'CA Fresher') {
-                        roleType = 'CA Freshers';
-                    } else if (jobPref === 'semi_fresher' || jobPref === 'semi_experienced' || lookingFor === 'Semi Qualified CA') {
-                        roleType = 'Semi Qualified CA';
-                    } else {
-                        const path = window.location.pathname;
-                        if (path.includes('/articleship')) roleType = 'Article Assistants';
-                        else if (path.toLowerCase().includes('/experienced-ca')) roleType = 'Experienced CA';
-                        else if (path.includes('/fresher')) roleType = 'CA Freshers';
-                        else if (path.includes('/semi-qualified')) roleType = 'Semi Qualified CA';
-                        else roleType = 'Industrial Trainees';
-                    }
+                    const lane = laneForPreference(jobPref) || preferredLaneOf(profile) || currentLane;
+                    const roleType = RESUME_PROMPT_AUDIENCE[lane.id] || RESUME_PROMPT_AUDIENCE['ca-industrial'];
 
                     const titleEl = document.getElementById('resumePromptTitle');
                     const descEl = document.getElementById('resumePromptDesc');
@@ -4143,8 +4211,8 @@ async function checkAndPromptConsent() {
         // Only prompt if no record exists in consentform table (data is null)
         // If data exists (whether cv_sharing_consent is true or false), the user has already responded/consented/declined.
         if (!data) {
-            const path = window.location.pathname;
-            if (path === '/' || path === '/index.html' || path.includes('/articleship') || path.includes('/fresher') || path.includes('/semi-qualified') || path.includes('/experienced')) {
+            // Every lane page, CA, CS and CMA alike.
+            if (document.body?.dataset?.lane || isLanePath(window.location.pathname)) {
                 setTimeout(() => {
                     const modal = getOrInjectConsentModal();
                     if (modal) modal.style.display = 'flex';
@@ -4164,25 +4232,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const JOB_PREFERENCE_KEY = 'userJobPreference';
 
-// Map preference values to redirect URLs
-const PREFERENCE_REDIRECT_MAP = {
-    'industrial': '/',
-    'articleship': '/ca-articleship-opportunities',
-    'fresher_fresher': '/ca-fresher-jobs',
-    'fresher_experienced': '/experienced-ca-jobs',
-    'semi_fresher': '/semi-qualified-ca-jobs',
-    'semi_experienced': '/semi-qualified-ca-jobs'
-};
-
-function getCurrentPagePreference() {
-    const path = window.location.pathname;
-    if (path.includes('/articleship')) return 'articleship';
-    if (path.toLowerCase().includes('/experienced-ca')) return 'fresher_experienced';
-    if (path.includes('/fresher')) return 'fresher_fresher';
-    if (path.includes('/semi-qualified')) return state.experience === 'Experienced' ? 'semi_experienced' : 'semi_fresher';
-    return 'industrial';
-}
-
 // Get saved job preference
 function getJobPreference() {
     return localStorage.getItem(JOB_PREFERENCE_KEY);
@@ -4195,11 +4244,13 @@ async function saveJobPreference(preference) {
     // Also save to Supabase profile if logged in
     if (currentSession?.user?.id) {
         try {
-            const { data: existingProfile } = await supabaseClient
+            const { data: existingProfile, error: readError } = await supabaseClient
                 .from('profiles')
                 .select('profile')
                 .eq('uuid', currentSession.user.id)
                 .maybeSingle();
+            // A failed read must not overwrite the stored profile.
+            if (readError) throw readError;
 
             const profileData = existingProfile?.profile || {};
             profileData.job_preference = preference;
@@ -4270,47 +4321,40 @@ async function fetchAndCacheProfileData() {
     return null;
 }
 
-// Load job preference from profile if not in localStorage
-async function loadJobPreferenceFromProfile() {
-    if (getJobPreference()) return getJobPreference();
-
-    if (currentSession?.user?.id) {
-        try {
-            const cachedProfile = localStorage.getItem('userProfileData');
-            if (cachedProfile) {
-                const profile = JSON.parse(cachedProfile);
-                if (profile.job_preference) {
-                    localStorage.setItem(JOB_PREFERENCE_KEY, profile.job_preference);
-                    return profile.job_preference;
-                }
-            }
-
-            const profile = await fetchAndCacheProfileData();
-            if (profile?.job_preference) {
-                return profile.job_preference;
-            }
-        } catch (e) {
-            console.log('Could not load preference from profile:', e);
-        }
+// ---- Personalisation: which lane a signed-in student sees ----
+//
+// Never auto-redirect a shared job (?id), inside the Flutter app, or after the
+// student picked a lane themselves this session (explicitPortalNav).
+function autoRedirectBlocked() {
+    if (new URLSearchParams(window.location.search).has('id')) return true;
+    if (window.flutter_app?.isReady) return true;
+    try {
+        return sessionStorage.getItem('explicitPortalNav') === 'true';
+    } catch (_) {
+        return false;
     }
-    return null;
 }
 
-// Redirect to preferred portal if not already on it
+// A semi preference picks the Freshers / Experienced filter on its own lane.
+function applyPreferredExperience(preference) {
+    const lane = laneForPreference(preference);
+    if (!lane || lane.id !== currentLane.id || lane.slot !== 'semi') return false;
+    const { stage } = splitPreference(preference);
+    state.experience = stage === 'semi_experienced' ? 'Experienced' : 'Freshers';
+    return true;
+}
+
+// CA students: as before, a visit from outside the site (bookmark, search,
+// another domain) goes to the CA lane of their saved preference. Only CA
+// pages redirect, and only to CA lanes.
 function redirectToPreferredPortal(preference) {
-    if (sessionStorage.getItem('explicitPortalNav') === 'true') {
-        return false;
-    }
+    if (autoRedirectBlocked()) return false;
 
-    const currentPref = getCurrentPagePreference();
-    const targetUrl = PREFERENCE_REDIRECT_MAP[preference];
-
-    if (currentPref === preference) return false;
-
-    // Skip auto-redirect when running inside Flutter WebView app
-    if (window.flutter_app?.isReady) {
-        return false;
-    }
+    const target = laneForPreference(preference);
+    if (!target || target.qualification !== 'ca' || isCourseLane) return false;
+    if (target.id === currentLane.id) return false;
+    // As before, /experienced-ca-jobs keeps a CA Fresher student on the page.
+    if (currentLane.id === 'ca-experienced' && target.id === 'ca-fresher') return false;
 
     const referrer = document.referrer;
     if (referrer) {
@@ -4325,37 +4369,78 @@ function redirectToPreferredPortal(preference) {
         }
     }
 
-    // For fresher variants, check if we're on fresher page
-    if ((preference === 'fresher_fresher' || preference === 'fresher_experienced') &&
-        (currentPref === 'fresher_fresher' || currentPref === 'fresher_experienced')) {
-        // We're on fresher page, just need to set experience filter
-        if (preference === 'fresher_experienced') {
-            state.experience = 'Experienced';
-        } else {
-            state.experience = 'Freshers';
+    window.location.href = target.path;
+    return true;
+}
+
+// CS / CMA students who land on "/" (CA Industrial Training, where every
+// login lands) go to their own lane, whatever the referrer. No other page
+// ever redirects them because of their course.
+function laneForCourseStudent(profile, qualification) {
+    const preferred = preferredLaneOf(profile);
+    if (preferred && preferred.qualification === qualification) return preferred;
+    return equivalentLane(preferred || currentLane, qualification);
+}
+
+// Onboarding asks for the stage, so it shows until one is known. A course
+// alone (the profile page saves one by default) is not enough; it only
+// skips the course step.
+function needsOnboarding(profile) {
+    if (!profile || typeof profile !== 'object') return true;
+    return !profile.job_preference && !profile.looking_for;
+}
+
+// Runs once per load for a signed-in student, before the first fetch.
+// Returns true when the page is navigating away.
+function personalizeForStudent(profile) {
+    // CS / CMA students leave "/" first, even before they pick a stage, so
+    // onboarding (if needed) asks it over their own lane, not a CA one.
+    const qualification = qualificationOf(profile);
+    const courseStudent = qualification === 'cs' || qualification === 'cma';
+    if (courseStudent && currentLane.id === 'ca-industrial' && !autoRedirectBlocked()) {
+        const target = laneForCourseStudent(profile, qualification);
+        if (target && target.id !== currentLane.id) {
+            // replace(): Back must not return to "/" and bounce again.
+            window.location.replace(target.path + window.location.search);
+            return true;
         }
-        syncFiltersUI();
-        resetAndFetch();
+    }
+
+    if (needsOnboarding(profile)) {
+        if (!onboardingDismissedThisSession() && !new URLSearchParams(window.location.search).has('id')) {
+            setTimeout(showOnboardingSegmentModal, 800); // Small pleasant delay after load
+        }
         return false;
     }
 
-    if ((preference === 'semi_fresher' || preference === 'semi_experienced') &&
-        (currentPref === 'semi_fresher' || currentPref === 'semi_experienced')) {
-        if (preference === 'semi_experienced') {
-            state.experience = 'Experienced';
-        } else {
-            state.experience = 'Freshers';
-        }
-        syncFiltersUI();
-        resetAndFetch();
-        return false;
-    }
+    const preference = getJobPreference() || profile.job_preference || preferenceForLookingFor(profile.looking_for);
+    if (!courseStudent && preference && redirectToPreferredPortal(preference)) return true;
 
-    if (targetUrl) {
-        window.location.href = targetUrl;
-        return true;
-    }
+    applyPreferredExperience(preference);
     return false;
+}
+
+// Onboarding (scripts/onboarding.js) on any lane page.
+function showOnboardingSegmentModal() {
+    if (!currentSession?.user?.id) return;
+    openOnboarding({
+        client: supabaseClient,
+        user: currentSession.user,
+        lane: currentLane,
+        qualification: qualificationOf(readCachedProfile(localStorage)),
+        savePreference: saveJobPreference,
+        toast: showToast,
+        onSaved: (plan) => {
+            renderProfileCompletionBanner();
+            if (!plan.lane) return;
+            if (plan.lane.id === currentLane.id) {
+                if (applyPreferredExperience(plan.preference)) syncAndFetch();
+                return;
+            }
+            // Their chosen lane, whatever the referrer.
+            setTimeout(() => window.location.assign(plan.lane.path), 800);
+        }
+    });
 }
 
 
@@ -4476,295 +4561,6 @@ async function checkAndSyncCVBackground() {
     }
 }
 
-
-// Skip button handler - set industrial as default and redirect
-
-
-// Check and handle job preference on page load
-document.addEventListener('DOMContentLoaded', async () => {
-    setTimeout(async () => {
-        const preference = await loadJobPreferenceFromProfile();
-
-        if (currentSession && preference) {
-            if (preference === 'fresher_experienced' && currentTable === 'Fresher Jobs') {
-                state.experience = 'Experienced';
-                syncFiltersUI();
-            } else if (preference === 'fresher_fresher' && currentTable === 'Fresher Jobs') {
-                state.experience = 'Freshers';
-                syncFiltersUI();
-            } else if (preference === 'semi_experienced' && currentTable === 'Semi Qualified Jobs') {
-                state.experience = 'Experienced';
-                syncFiltersUI();
-            } else if (preference === 'semi_fresher' && currentTable === 'Semi Qualified Jobs') {
-                state.experience = 'Freshers';
-                syncFiltersUI();
-            }
-
-            // redirectToPreferredPortal(preference);
-        }
-
-        initOnboardingSegmentForm();
-    }, 500);
-});
-
-// ==========================================
-// ONBOARDING QUESTIONNAIRE SEGMENT MODAL
-// ==========================================
-
-// Show Onboarding Segment Modal with premium transition
-function showOnboardingSegmentModal() {
-    const modal = document.getElementById('onboardingSegmentModal');
-    if (modal) {
-        modal.style.display = 'flex';
-        // Trigger reflow for animation
-        modal.offsetHeight;
-        modal.classList.add('show-modal');
-    }
-}
-
-// Hide Onboarding Segment Modal with premium transition
-function hideOnboardingSegmentModal() {
-    const modal = document.getElementById('onboardingSegmentModal');
-    if (modal) {
-        modal.classList.remove('show-modal');
-        setTimeout(() => {
-            modal.style.display = 'none';
-        }, 400);
-    }
-}
-
-// Initialize Onboarding Segment form and interactive elements
-function initOnboardingSegmentForm() {
-    const form = document.getElementById('onboardingSegmentForm');
-    if (!form) return;
-
-    const cards = document.querySelectorAll('.onboarding-option-card');
-    const selectedInput = document.getElementById('selectedLookingFor');
-
-    const fields = {
-        'CA Industrial Training Default': { element: document.getElementById('field-industrial') },
-        'CA Articleship': { element: document.getElementById('field-articleship') },
-        'CA Fresher': { element: document.getElementById('field-fresher') },
-        'Semi Qualified CA': { element: document.getElementById('field-semi') }
-    };
-
-    function setFieldActive(key, isActive) {
-        const { element } = fields[key];
-        if (!element) return;
-        element.classList.toggle('active', isActive);
-        element.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"]), select').forEach(el => {
-            el.disabled = !isActive;
-        });
-    }
-
-    // Initialise state
-    const defaultVal = selectedInput.value;
-    Object.keys(fields).forEach(key => setFieldActive(key, key === defaultVal));
-
-    // Card Selection Click Handlers
-    cards.forEach(card => {
-        card.addEventListener('click', () => {
-            const value = card.getAttribute('data-value');
-            if (!value) return;
-            cards.forEach(c => c.classList.remove('active'));
-            card.classList.add('active');
-            selectedInput.value = value;
-            Object.keys(fields).forEach(key => setFieldActive(key, key === value));
-        });
-    });
-
-    // Sync month+year selects → hidden attempt inputs
-    function syncAttempt(monthId, yearId, clearedId, hiddenId, pickerRowId) {
-        const monthEl = document.getElementById(monthId);
-        const yearEl = document.getElementById(yearId);
-        const clearedEl = document.getElementById(clearedId);
-        const hiddenEl = document.getElementById(hiddenId);
-        const rowEl = document.getElementById(pickerRowId);
-        if (!monthEl || !yearEl || !clearedEl || !hiddenEl) return;
-
-        function update() {
-            const hasDate = monthEl.value && yearEl.value;
-            if (clearedEl.checked) {
-                rowEl.classList.add('cleared-active');
-                const clearedLabel = clearedId === 'ca_inter_cleared' ? 'Cleared Both Groups' : 'Cleared';
-                hiddenEl.value = hasDate ? `${monthEl.value} ${yearEl.value} (${clearedLabel})` : clearedLabel;
-            } else {
-                rowEl.classList.remove('cleared-active');
-                hiddenEl.value = hasDate ? `${monthEl.value} ${yearEl.value}` : '';
-            }
-        }
-
-        monthEl.addEventListener('change', update);
-        yearEl.addEventListener('change', update);
-        clearedEl.addEventListener('change', update);
-    }
-
-    syncAttempt('ca_final_attempt_month', 'ca_final_attempt_year', 'ca_final_cleared', 'ca_final_attempt', 'final-attempt-picker');
-
-    // Date input validation helpers
-    const dateInput = document.getElementById('articleship_1yr_end_date');
-
-    function daysInMonth(month, year) {
-        return new Date(year, month, 0).getDate();
-    }
-
-    function validateDateParts(d, m, y) {
-        if (m < 1 || m > 12) return 'Month must be between 01 and 12.';
-        if (d < 1 || d > daysInMonth(m, y)) return `Day must be between 01 and ${daysInMonth(m, y)} for that month.`;
-        if (y < 2000 || y > 2100) return 'Year must be between 2000 and 2100.';
-        return null;
-    }
-
-    if (dateInput) {
-        dateInput.addEventListener('change', () => dateInput.setCustomValidity(''));
-    }
-
-    // Form submission sync to database
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        if (!currentSession?.user?.id) {
-            hideOnboardingSegmentModal();
-            return;
-        }
-
-        const lookingFor = selectedInput.value;
-        // type="date" value is YYYY-MM-DD or empty
-        const articleshipDateRaw = document.getElementById('articleship_1yr_end_date').value;
-
-        if (lookingFor === 'CA Industrial Training Default') {
-            if (!articleshipDateRaw) {
-                dateInput.setCustomValidity('Please select a date.');
-                dateInput.reportValidity();
-                dateInput.addEventListener('change', () => dateInput.setCustomValidity(''), { once: true });
-                return;
-            }
-            const [yyyy, mm, dd] = articleshipDateRaw.split('-').map(Number);
-            const dateErr = validateDateParts(dd, mm, yyyy);
-            if (dateErr) {
-                dateInput.setCustomValidity(dateErr);
-                dateInput.reportValidity();
-                dateInput.addEventListener('change', () => dateInput.setCustomValidity(''), { once: true });
-                return;
-            }
-        }
-
-        // Keep as YYYY-MM-DD for the database
-        const articleshipDate = articleshipDateRaw || '';
-
-        const earliestJoiningRaw = document.getElementById('articleship_earliest_joining')?.value || '';
-        if (lookingFor === 'CA Articleship') {
-            const joiningEl = document.getElementById('articleship_earliest_joining');
-            if (!earliestJoiningRaw) {
-                joiningEl.setCustomValidity('Please select your earliest joining date.');
-                joiningEl.reportValidity();
-                joiningEl.addEventListener('change', () => joiningEl.setCustomValidity(''), { once: true });
-                return;
-            }
-            const [yyyy, mm, dd] = earliestJoiningRaw.split('-').map(Number);
-            const joiningErr = validateDateParts(dd, mm, yyyy);
-            if (joiningErr) {
-                joiningEl.setCustomValidity(joiningErr);
-                joiningEl.reportValidity();
-                joiningEl.addEventListener('change', () => joiningEl.setCustomValidity(''), { once: true });
-                return;
-            }
-        }
-
-        const caFinalAttempt = document.getElementById('ca_final_attempt').value;
-        const yearsOfExp = document.getElementById('years_of_experience').value;
-
-        if (lookingFor === 'CA Fresher' && !caFinalAttempt) {
-            const monthEl = document.getElementById('ca_final_attempt_month');
-            monthEl.setCustomValidity('Please select both month and year, or tick Already Cleared.');
-            monthEl.reportValidity();
-            monthEl.addEventListener('change', () => monthEl.setCustomValidity(''), { once: true });
-            return;
-        }
-
-        // Fetch current profile JSONB so we can merge without overwriting other fields
-        const { data: existingRow } = await supabaseClient
-            .from('profiles')
-            .select('profile')
-            .eq('uuid', currentSession.user.id)
-            .maybeSingle();
-        const mergedProfile = existingRow?.profile || {};
-        if (lookingFor === 'CA Articleship') mergedProfile.articleship_earliest_joining_date = earliestJoiningRaw;
-        if (lookingFor === 'CA Fresher') mergedProfile.fresher_years_of_experience = document.getElementById('fresher_years_of_experience').value;
-
-        // Construct update object — only write the field for the chosen stage.
-        // Do NOT null out other stages' fields; the user may switch stages later
-        // and their previously saved data must be preserved.
-        const updateData = {
-            looking_for: lookingFor,
-            profile: mergedProfile,
-            updated_at: new Date().toISOString()
-        };
-        if (lookingFor === 'CA Industrial Training Default') updateData.articleship_1yr_end_date = articleshipDate || null;
-        if (lookingFor === 'CA Fresher') updateData.ca_final_attempt = caFinalAttempt || null;
-        if (lookingFor === 'Semi Qualified CA') updateData.years_of_experience = yearsOfExp || null;
-        // ca_inter_attempt is managed by career-profile.js, never wiped here.
-
-        const submitBtn = form.querySelector('.onboarding-submit-btn');
-        const originalBtnText = submitBtn.innerHTML;
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span>Saving preferences...</span><i class="fas fa-spinner fa-spin"></i>';
-
-        try {
-            const { error } = await supabaseClient
-                .from('profiles')
-                .update(updateData)
-                .eq('uuid', currentSession.user.id);
-
-            if (error) throw error;
-            try { localStorage.removeItem('msc_course'); } catch (_) { }
-
-            // Sync with local cached object in localStorage
-            const cached = localStorage.getItem('userProfileData');
-            let profileObj = {};
-            if (cached) {
-                try { profileObj = JSON.parse(cached); } catch (_) { }
-            }
-
-            // Merge properties locally
-            Object.assign(profileObj, updateData);
-            localStorage.setItem('userProfileData', JSON.stringify(profileObj));
-
-            // Hide the modal beautifully
-            hideOnboardingSegmentModal();
-
-            // Notify user
-            if (typeof showToast === 'function') {
-                showToast("Personalization complete! Enjoy your personalized feed.", "success");
-            }
-
-            // Map and trigger portal redirect for seamless preference alignment
-            let prefMapping = {
-                'CA Industrial Training Default': 'industrial',
-                'CA Articleship': 'articleship',
-                'CA Fresher': 'fresher_fresher',
-                'Semi Qualified CA': 'semi_fresher'
-            };
-            const mappedPref = prefMapping[lookingFor];
-            if (mappedPref) {
-                await saveJobPreference(mappedPref);
-                setTimeout(() => {
-                    redirectToPreferredPortal(mappedPref);
-                }, 1000);
-            }
-
-        } catch (err) {
-            console.error("Failed to submit onboarding answers:", err);
-            if (typeof showToast === 'function') {
-                showToast("Failed to save preferences. Please try again.", "error");
-            } else {
-                alert("Failed to save preferences. Please try again.");
-            }
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = originalBtnText;
-        }
-    });
-}
 
 function calculateProfileCompletion() {
     if (!currentSession) return 0;
@@ -4897,9 +4693,12 @@ async function dv2PopulateTrending() {
     const list = document.getElementById('dv2TrendingList');
     if (!card || !list) return;
     try {
-        const { data, error } = await supabaseClient
+        // Same lane scope and experience lock as the main list.
+        let query = supabaseClient
             .from(currentTable)
-            .select(getPublicJobSelectColumns(currentTable))
+            .select(getPublicJobSelectColumns(currentTable));
+        query = applyExperienceLock(applyLaneScope(query, currentLane, { mode: eligibilityMode }));
+        const { data, error } = await query
             .order('Created_At', { ascending: false, nullsFirst: false })
             .limit(5);
         if (error || !data || data.length === 0) return;

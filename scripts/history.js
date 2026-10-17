@@ -1,4 +1,6 @@
 import { getDaysAgo } from './date-utils.js';
+import { QUALIFICATIONS, qualificationOf } from './courses/courses.js';
+import { laneChipLabel, laneForApplication, laneForSaved, laneJobLink, normalizeTable } from './courses/applications.js';
 
 function isSalaryDisclosed(val) {
     if (!val) return false;
@@ -23,13 +25,20 @@ let currentSort = 'newest';
 
 const SAVED_JOBS_KEY = 'msc_saved_jobs';
 
-const PORTAL_DISPLAY_NAMES = {
-    'Industrial Training Job Portal': 'Industrial Training',
-    'Articleship Jobs': 'Articleship',
-    'Semi Qualified Jobs': 'Semi Qualified',
-    'Fresher Jobs': 'CA Freshers',
-    'Experienced CA Jobs': 'Experienced CA'
-};
+// The student's course (CA / CS / CMA) from the profile cached by the portal
+// pages. CS / CMA students see course-neutral tab names, and their
+// applications to listings that name their course are labelled with it.
+function readStudentQualification() {
+    try {
+        return qualificationOf(JSON.parse(localStorage.getItem('userProfileData') || '{}'));
+    } catch (e) {
+        return null;
+    }
+}
+const studentQualification = readStudentQualification();
+const isCourseStudent = studentQualification === 'cs' || studentQualification === 'cma';
+// Empty states send CS / CMA students to their own lanes.
+const browseJobsHref = isCourseStudent ? QUALIFICATIONS[studentQualification].homePath : '/';
 
 // Job fields come from the database (including posts by self-registered
 // hirers), so escape them before they go into innerHTML.
@@ -65,24 +74,6 @@ function restoreBasicTags(html) {
 // Plain text for card snippets: no tags, no markdown markers.
 function listingSnippetText(value) {
     return normalizeListingText(value).replace(/<[^>]+>/g, ' ').replace(/[#*_`\[\]]/g, '').replace(/\s+/g, ' ').trim();
-}
-
-// Applications and saves made on the CS / CMA portal (scripts/pro-portal) use
-// the same tables; that portal records the course and section here so this page
-// can label them and link back to the right page.
-const PRO_PORTAL_JOBS_KEY = 'msc_pro_portal_jobs';
-const PRO_PORTAL_PATH = /^\/[a-z0-9-]+\?job=[a-z-]+(%3A|:)[0-9a-f-]+$/i;
-
-function proPortalRef(table, id, { saved = false } = {}) {
-    try {
-        const ref = JSON.parse(localStorage.getItem(PRO_PORTAL_JOBS_KEY) || '{}')[`${table}:${id}`];
-        if (!ref || !PRO_PORTAL_PATH.test(String(ref.path || ''))) return null;
-        if (!(saved ? ref.saved : ref.applied)) return null;
-        const label = String(ref.label || '').replace(/[<>&"']/g, '');
-        return label ? { label, path: ref.path } : null;
-    } catch (e) {
-        return null;
-    }
 }
 
 const dom = {
@@ -204,17 +195,11 @@ async function fetchApplications() {
                         targetJobId = parts[1]; // This is the UUID
                     }
 
-                    const TABLE_NAME_ALIASES = {
-                        'industrial': 'Industrial Training Job Portal',
-                        'industrial-training': 'Industrial Training Job Portal',
-                        'fresher': 'Fresher Jobs',
-                        'freshers': 'Fresher Jobs',
-                        'semi': 'Semi Qualified Jobs',
-                        'semi-qualified': 'Semi Qualified Jobs',
-                        'articleship': 'Articleship Jobs',
-                        'experienced': 'Experienced CA Jobs'
-                    };
-                    targetTable = TABLE_NAME_ALIASES[targetTable] || targetTable;
+                    // Older rows stored a word ('fresher', 'semi-qualified', ...)
+                    // instead of the table name. The lane reads the word too:
+                    // 'experienced' is the experienced side of Fresher Jobs.
+                    const storedTable = targetTable;
+                    targetTable = normalizeTable(targetTable);
 
                     // "Application ID" is intentionally excluded — it is protected by
                     // column-level RLS and served only through the BrowserGuard unlock flow.
@@ -249,6 +234,7 @@ async function fetchApplications() {
                             ...app,
                             job_table: targetTable,
                             job_id: targetJobId,
+                            lane: laneForApplication(storedTable, null, null),
                             job: {
                                 id: targetJobId,
                                 Company: 'Unknown Company',
@@ -265,12 +251,14 @@ async function fetchApplications() {
                         ...app,
                         job_table: targetTable,
                         job_id: targetJobId,
+                        lane: laneForApplication(storedTable, jobData, studentQualification),
                         job: jobData
                     };
                 } catch (err) {
                     console.error('Error fetching job details:', err);
                     return {
                         ...app,
+                        lane: laneForApplication(String(app.job_table || '').split('|')[0], null, null),
                         job: {
                             id: app.job_id,
                             Company: 'Error Loading',
@@ -332,6 +320,7 @@ async function fetchSavedJobs() {
                 applied_at: ref.savedAt,
                 job_table: ref.table,
                 job_id: ref.id,
+                lane: laneForSaved(ref, data),
                 job: data
             };
         } catch (e) {
@@ -356,12 +345,7 @@ function renderApplicationCard(application) {
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
     const appliedDate = application.applied_at ? getDaysAgo(application.applied_at) : 'N/A';
 
-    let portalName = PORTAL_DISPLAY_NAMES[application.job_table] || application.job_table;
-    if (application.job_table === 'Fresher Jobs' && job.Experience === 'Experienced') {
-        portalName = 'Experienced CA';
-    }
-    const proRef = proPortalRef(application.job_table, application.job_id, { saved: application.isSaved });
-    if (proRef) portalName = proRef.label;
+    const portalName = laneChipLabel(application.lane) || application.job_table;
 
     const isExclusive = !!job.is_exclusive;
     const isLocked = isExclusive && !isEnrolledSync('Industrial Training Job Portal');
@@ -370,14 +354,10 @@ function renderApplicationCard(application) {
     card.className = 'job-card' + (isExclusive ? ' job-card-exclusive' : ''); // Reuse portal card styles from portal-style.css
     card.dataset.applicationId = application.id;
     card.dataset.jobId = application.job_id;
+    card.dataset.jobTable = application.job_table;
+    if (application.lane) card.dataset.lane = application.lane.id;
 
-    if (application.job_table === 'Fresher Jobs' && job.Experience === 'Experienced') {
-        card.dataset.jobTable = 'Experienced CA Jobs';
-    } else {
-        card.dataset.jobTable = application.job_table;
-    }
-
-    const roleLabel = job.Role || (application.job_table === 'Industrial Training Job Portal' ? 'Industrial Trainee' : application.job_table === 'Articleship Jobs' ? 'Articleship' : 'Professional');
+    const roleLabel = job.Role || application.lane?.roleLabel || 'Professional';
     const compText = job.Salary ? `${job.Salary}` : '';
     const descriptionText = job.Description ? listingSnippetText(job.Description) : '';
     const snippet = descriptionText ? `${descriptionText.slice(0, 110)}${descriptionText.length > 110 ? '...' : ''}` : 'No description available.';
@@ -402,7 +382,7 @@ function renderApplicationCard(application) {
         <div class="job-card-tags" style="margin-bottom: 0.75rem;">
             ${isExclusive ? `<span class="job-tag tag-exclusive"><i class="fas fa-star"></i> Exclusive</span>` : ""}
             ${isPopular ? `<span class="job-tag tag-popular"><i class="fas fa-fire"></i> Popular</span>` : ''}
-            <span class="job-tag tag-primary">${portalName}</span>
+            <span class="job-tag tag-primary">${escapeHtml(portalName)}</span>
             ${job.Location ? `
                 <span class="job-tag">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="11" height="11"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -543,8 +523,9 @@ function showJobModal(application) {
     const companyName = (job.Company || '').trim();
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
     const appliedDate = application.applied_at ? getDaysAgo(application.applied_at) : 'N/A';
-    const proRef = proPortalRef(application.job_table, application.job_id, { saved: application.isSaved });
-    const portalName = proRef ? proRef.label : (PORTAL_DISPLAY_NAMES[application.job_table] || application.job_table);
+    const portalName = laneChipLabel(application.lane) || application.job_table;
+    // The lane page unlocks the recruiter's contact and applies as usual.
+    const laneUrl = laneJobLink(application.lane, application.job_id);
 
     const renderMarkdown = (text) => {
         if (!text) return 'No description available.';
@@ -565,23 +546,6 @@ function showJobModal(application) {
     const generateApplicationLinks = (_applicationId) => {
         // Application ID is protected by BrowserGuard — direct users to the job portal
         // to unlock recruiter details through the verified unlock flow.
-        const portalMap = {
-            'Industrial Training Job Portal': '/',
-            'Fresher Jobs': '/ca-fresher-jobs.html',
-            'Semi Qualified Jobs': '/semi-qualified-ca-jobs.html',
-            'Articleship Jobs': '/ca-articleship-opportunities.html',
-            'Experienced CA Jobs': '/experienced-ca-jobs.html'
-        };
-        const typeMap = {
-            'Industrial Training Job Portal': 'industrial',
-            'Fresher Jobs': 'fresher',
-            'Semi Qualified Jobs': 'semi',
-            'Articleship Jobs': 'articleship',
-            'Experienced CA Jobs': 'experienced'
-        };
-        const portalUrl = portalMap[application.job_table] || '/';
-        const jobId = application.job_id;
-        const jobType = typeMap[application.job_table] || 'industrial';
         return `
             <div style="background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 10px; padding: 1rem; display: flex; align-items: center; gap: 0.75rem;">
                 <div style="flex-shrink: 0; width: 36px; height: 36px; background: linear-gradient(135deg, #3b82f6, #6366f1); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
@@ -591,7 +555,7 @@ function showJobModal(application) {
                     <p style="margin: 0 0 0.25rem; font-size: 0.85rem; font-weight: 600; color: #1e40af;">Recruiter contact verified &amp; protected</p>
                     <p style="margin: 0; font-size: 0.78rem; color: #3b82f6;">Open the job portal to unlock application details instantly.</p>
                 </div>
-                <a href="${proRef ? proRef.path : `${portalUrl}?id=${jobId}&type=${jobType}`}" target="_blank" style="flex-shrink: 0; padding: 0.5rem 0.9rem; background: linear-gradient(135deg, #3b82f6, #6366f1); color: white; border-radius: 8px; font-size: 0.8rem; font-weight: 600; text-decoration: none; white-space: nowrap;">
+                <a href="${escapeHtml(laneUrl)}" target="_blank" style="flex-shrink: 0; padding: 0.5rem 0.9rem; background: linear-gradient(135deg, #3b82f6, #6366f1); color: white; border-radius: 8px; font-size: 0.8rem; font-weight: 600; text-decoration: none; white-space: nowrap;">
                     View &amp; Unlock
                 </a>
             </div>
@@ -617,20 +581,14 @@ function showJobModal(application) {
                 <svg fill="currentColor" viewBox="0 0 24 24" style="width: 12px; height: 12px; margin-right: 4px;"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
                 Applied ${appliedDate}
             </span>`}
-            <span class="job-tag" style="background-color: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; font-weight: 600;">${portalName}</span>
+            <span class="job-tag" style="background-color: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; font-weight: 600;">${escapeHtml(portalName)}</span>
             ${isSalaryDisclosed(job.Salary) ? `<span class="job-tag">${application.job_table.includes('Semi Qualified') || application.job_table.includes('Fresher') ? 'Salary' : 'Stipend'}: ₹${escapeHtml(job.Salary)}</span>` : ''}
             ${job.Category ? `<span class="job-tag">Category: ${escapeHtml(job.Category)}</span>` : ''}
         </div>
 
         ${application.isSaved ? `
         <div style="display: flex; gap: 0.65rem; flex-wrap: wrap;">
-            <a id="modalApplyNowBtn" href="${proRef ? proRef.path : `${({
-                'Industrial Training Job Portal': '/',
-                'Fresher Jobs': '/ca-fresher-jobs.html',
-                'Semi Qualified Jobs': '/semi-qualified-ca-jobs.html',
-                'Articleship Jobs': '/ca-articleship-opportunities.html',
-                'Experienced CA Jobs': '/experienced-ca-jobs.html'
-            })[application.job_table] || '/'}?id=${application.job_id}&type=${{ 'Industrial Training Job Portal': 'industrial', 'Fresher Jobs': 'fresher', 'Semi Qualified Jobs': 'semi', 'Articleship Jobs': 'articleship', 'Experienced CA Jobs': 'experienced' }[application.job_table] || 'industrial'}`}" target="_blank" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.7rem 1.25rem; background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); color: #fff; border-radius: 12px; font-size: 0.88rem; font-weight: 700; text-decoration: none; box-shadow: 0 4px 12px rgba(59,130,246,0.25);">
+            <a id="modalApplyNowBtn" href="${escapeHtml(laneUrl)}" target="_blank" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.7rem 1.25rem; background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); color: #fff; border-radius: 12px; font-size: 0.88rem; font-weight: 700; text-decoration: none; box-shadow: 0 4px 12px rgba(59,130,246,0.25);">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                 View &amp; Unlock Contact
             </a>
@@ -755,15 +713,10 @@ function closeModal() {
 function filterAndSortApplications() {
     let filtered = currentViewMode === 'saved' ? savedJobsList : allApplications;
 
-    // Apply portal filters in applied view
+    // Apply portal filters in applied view. Tabs are lane kinds (industrial,
+    // articleship, semi, fresher, experienced) shared by CA, CS and CMA.
     if (currentViewMode === 'applied' && currentPortalFilter !== 'all') {
-        if (currentPortalFilter === 'Experienced CA Jobs') {
-            filtered = filtered.filter(app => app.job_table === 'Fresher Jobs' && app.job?.Experience === 'Experienced');
-        } else if (currentPortalFilter === 'Fresher Jobs') {
-            filtered = filtered.filter(app => app.job_table === 'Fresher Jobs' && app.job?.Experience !== 'Experienced');
-        } else {
-            filtered = filtered.filter(app => app.job_table === currentPortalFilter);
-        }
+        filtered = filtered.filter(app => app.lane?.slot === currentPortalFilter);
     }
 
     // Apply search filter (Company, Location)
@@ -808,19 +761,16 @@ function updateCounts() {
     // Portal pill count tags
     const portalCounts = {
         'all': allApplications.length,
-        'Industrial Training Job Portal': 0,
-        'Articleship Jobs': 0,
-        'Semi Qualified Jobs': 0,
-        'Fresher Jobs': 0,
-        'Experienced CA Jobs': 0
+        'industrial': 0,
+        'articleship': 0,
+        'semi': 0,
+        'fresher': 0,
+        'experienced': 0
     };
 
     allApplications.forEach(app => {
-        let key = app.job_table;
-        if (app.job_table === 'Fresher Jobs' && app.job?.Experience === 'Experienced') {
-            key = 'Experienced CA Jobs';
-        }
-        if (portalCounts.hasOwnProperty(key)) {
+        const key = app.lane?.slot;
+        if (key && portalCounts.hasOwnProperty(key)) {
             portalCounts[key]++;
         }
     });
@@ -846,7 +796,7 @@ function renderApplications() {
                     </svg>
                     <h3>No saved jobs found</h3>
                     <p>Bookmarks help you remember interesting jobs. Tap the bookmark icon on any portal card to save jobs here.</p>
-                    <a href="/" class="empty-state-cta">Browse Portals</a>
+                    <a href="${browseJobsHref}" class="empty-state-cta">Browse Portals</a>
                 </div>
             `;
             return;
@@ -859,7 +809,7 @@ function renderApplications() {
                 </svg>
                 <h3>No applications found</h3>
                 <p>Track your recruitment process easily here. Tap applied links in any portal to see items list here.</p>
-                <a href="/" class="empty-state-cta">Browse Jobs</a>
+                <a href="${browseJobsHref}" class="empty-state-cta">Browse Jobs</a>
             </div>
         `;
         return;
@@ -872,9 +822,34 @@ function renderApplications() {
     });
 }
 
+// CS / CMA students' tabs drop the "CA" of "CA Freshers" / "Experienced CA".
+// Each tab groups one kind of lane across all three courses (a CS student's
+// application to a CA-only listing sits there with its CA chip), so a tab
+// named after the student's course would mislabel those entries.
+function applyCourseTabLabels() {
+    if (!isCourseStudent) return;
+    const labels = {
+        fresher: { desktop: 'Freshers', mobile: 'Freshers' },
+        experienced: { desktop: 'Experienced', mobile: 'Experienced' }
+    };
+    // CS calls industrial training "training in companies" (its lane bar says
+    // Company Training); CA industrial training is in a company too.
+    if (studentQualification === 'cs') labels.industrial = { desktop: 'Company Training', mobile: 'Training' };
+    for (const [slot, label] of Object.entries(labels)) {
+        const tab = dom.portalFilters?.querySelector(`.footer-tab[data-portal="${slot}"]`);
+        const desktopLabel = tab?.querySelector('.desktop-tab-label');
+        const mobileLabel = tab?.querySelector('.mobile-tab-label');
+        if (desktopLabel) desktopLabel.textContent = label.desktop;
+        if (mobileLabel) mobileLabel.textContent = label.mobile;
+        const option = dom.portalSelectMobile?.querySelector(`option[value="${slot}"]`);
+        if (option) option.textContent = label.desktop;
+    }
+}
+
 // Initialize Page Controller
 async function initializePage() {
     initializeDOM();
+    applyCourseTabLabels();
 
     const isAuthenticated = await checkAuth();
     if (!isAuthenticated) return;
@@ -957,7 +932,7 @@ function setupEventListeners() {
             currentPortalFilter = e.target.value;
 
             if (dom.portalFilters) {
-                const pills = dom.portalFilters.querySelectorAll('.portal-pill');
+                const pills = dom.portalFilters.querySelectorAll('.footer-tab');
                 pills.forEach(p => {
                     if (p.dataset.portal === currentPortalFilter) {
                         p.classList.add('active');

@@ -1,6 +1,7 @@
 
 // ai-helper.js - Encapsulates AI Apply logic and UI helpers
 import { calculateProfileCompletion, readCachedProfile } from './profile-completion.js';
+import { QUALIFICATIONS, qualificationOf } from './courses/courses.js';
 
 const AI_WORKER_URL = 'https://emailgenerator.bhansalimanan55.workers.dev/';
 
@@ -20,8 +21,11 @@ export function isProfileComplete() {
  * Details from job object needed for the AI worker
  * @param {Object} job 
  * @param {string} tableName 
+ * @param {Object|null} lane - lane from scripts/courses/courses.js. With a
+ *   lane, the title is the lane's (CA lanes use the same titles as the map
+ *   below) and the worker also learns the lane and the student's course.
  */
-export function getJobPayload(job, tableName) {
+export function getJobPayload(job, tableName, lane = null) {
     const JOB_TITLE_MAP = {
         "Industrial Training Job Portal": "Industrial Trainee",
         "Fresher Jobs": "CA Fresher",
@@ -29,12 +33,21 @@ export function getJobPayload(job, tableName) {
         "Articleship Jobs": "Articleship Trainee"
     };
 
-    return {
+    const payload = {
         company_name: job.Company,
         job_description: job.Description,
         job_location: job.Location,
-        job_title: JOB_TITLE_MAP[tableName] || job.Category || 'the role'
+        job_title: lane?.aiTitle ?? (JOB_TITLE_MAP[tableName] || job.Category || 'the role')
     };
+
+    if (lane) {
+        // 'CA' | 'CS' | 'CMA': the profile's course, else the lane's.
+        const qualification = qualificationOf(readCachedProfile(localStorage)) || lane.qualification;
+        payload.candidate_qualification = QUALIFICATIONS[qualification]?.code || null;
+        payload.lane_id = lane.id;
+    }
+
+    return payload;
 }
 
 
@@ -44,9 +57,10 @@ export function getJobPayload(job, tableName) {
  * @param {string} tableName 
  * @param {Object} supabaseClient - Supabase client instance
  * @param {Object} user - Current user object
+ * @param {Object|null} lane - the page's lane (see getJobPayload)
  * @returns {Promise<string>} The generated email body.
  */
-export async function generateEmailBody(job, tableName, supabaseClient, user) {
+export async function generateEmailBody(job, tableName, supabaseClient, user, lane = null) {
     const profileData = JSON.parse(localStorage.getItem('userProfileData') || '{}');
     let cvText = localStorage.getItem('userCVText') || '';
 
@@ -71,7 +85,7 @@ export async function generateEmailBody(job, tableName, supabaseClient, user) {
     // 2. Decide payload
     const payload = {
         profile_data: profileData,
-        job_details: getJobPayload(job, tableName)
+        job_details: getJobPayload(job, tableName, lane)
     };
 
     if (cvText && cvText.trim().length > 0) {
@@ -129,10 +143,13 @@ export async function generateEmailBody(job, tableName, supabaseClient, user) {
  * Generates the fallback email body (simple template).
  * @param {Object} job 
  * @param {string} tableName 
+ * @param {Object|null} lane - on CS / CMA lanes a listing without a category
+ *   names the lane's role ("CS Trainee (Articleship)"); CA is unchanged.
  * @returns {string}
  */
-export function generateFallbackEmail(job, tableName) {
-    const category = job.Category || 'the role';
+export function generateFallbackEmail(job, tableName, lane = null) {
+    const laneRole = lane && lane.qualification !== 'ca' ? lane.aiTitle : null;
+    const category = job.Category || laneRole || 'the role';
     return `Dear Hiring Manager,
 
 I am writing to express my interest in the ${category} position at ${job.Company}.

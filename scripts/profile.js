@@ -1,4 +1,6 @@
-import { calculateProfileCompletion, getProfileCompletionItems, hasResumeEvidence, formatSchoolScore, isSchoolEducationComplete, normalizeSchoolScoreType, normalizeSchoolScoreValue } from './profile-completion.js?v=20261009_1';
+import { calculateProfileCompletion, getProfileCompletionItems, hasResumeEvidence, formatSchoolScore, isSchoolEducationComplete, normalizeSchoolScoreType, normalizeSchoolScoreValue } from './profile-completion.js';
+import { QUALIFICATIONS, QUALIFICATION_ORDER, joinPreference, laneForPreference, lanesFor, lookingForOf, normalizeQualification, preferenceForLookingFor, qualificationOf, splitPreference } from './courses/courses.js';
+import { PROFILE_FIELDS, fieldLabel, fieldValueLabel, hasCourseEducation, hasCourseTraining } from './courses/profile-fields.js';
 
 const supabaseUrl = 'https://auth.mystudentclub.com';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
@@ -15,6 +17,7 @@ const saveBtn = document.getElementById('saveBtn');
 let currentUser = null;
 let lastUpdatedISO = null;
 let currentLookingFor = null;
+let lookingForPreference = null; // the job_preference looking_for was last matched to (or loaded with)
 
 // =================== TOAST NOTIFICATIONS ===================
 function showToast(message, type = 'info', duration = 6000) {
@@ -142,6 +145,10 @@ const ENTRY_CLEAR_MAP = {
     'edu-final-display': ['ca_final_course', 'ca_final_attempts_type', 'ca_final_attempts', 'ca_final_clear_month', 'ca_final_clear_year', 'ca_final_app_month', 'ca_final_app_year', 'ca_final_air'],
     'edu-inter-display': ['ca_inter_course', 'ca_inter_attempts_type', 'ca_inter_attempts', 'ca_inter_clear_month', 'ca_inter_clear_year', 'ca_inter_air'],
     'edu-found-display': ['ca_found_course', 'ca_found_attempts_type', 'ca_found_attempts', 'ca_found_clear_month', 'ca_found_clear_year'],
+    'edu-cs-exec-display': ['cs_icsi_reg_no', 'cs_exec_status', 'cs_exec_attempts', 'cs_exec_clear_month', 'cs_exec_clear_year', 'cs_edp_done'],
+    'edu-cs-prof-display': ['cs_prof_status', 'cs_prof_clear_month', 'cs_prof_clear_year', 'cs_acs_no'],
+    'edu-cma-inter-display': ['cma_icmai_reg_no', 'cma_inter_status', 'cma_inter_attempts', 'cma_inter_clear_month', 'cma_inter_clear_year'],
+    'edu-cma-final-display': ['cma_final_status', 'cma_final_clear_month', 'cma_final_clear_year', 'cma_acma_no'],
     'edu-grad-display': ['grad_degree', 'grad_university', 'grad_year', 'grad_percentage'],
     'edu-12-display': ['class12_board', 'class12_school', 'class12_year', 'class12_percentage', 'class12_score_type', 'class12_cgpa_scale', 'class12_remarks'],
     'edu-10-display': ['class10_board', 'class10_school', 'class10_year', 'class10_percentage', 'class10_score_type', 'class10_cgpa_scale', 'class10_remarks'],
@@ -149,6 +156,8 @@ const ENTRY_CLEAR_MAP = {
     'emp-org-display': ['is_current_employment', 'employment_type', 'emp_exp_years', 'emp_exp_months', 'emp_company_name', 'emp_job_title', 'emp_join_year', 'emp_join_month', 'emp_salary_currency', 'emp_current_salary', 'emp_salary_breakdown', 'emp_skills_hidden', 'emp_job_profile', 'emp_notice_period'],
     'emp-art-display': ['articleship_firm_type', 'articleship_firm_name', 'articleship_domain', 'articleship_domain_other', 'articleship_start_year', 'articleship_start_month', 'articleship_end_year', 'articleship_end_month', 'articleship_client_industries', 'articleship_responsibilities'],
     'emp-it-display': ['industrial_training_company', 'it_industry', 'it_start_year', 'it_start_month', 'it_end_year', 'it_end_month', 'it_responsibilities'],
+    'train-cs-display': ['cs_training_type', 'cs_training_org', 'cs_training_start_year', 'cs_training_start_month', 'cs_training_end_year', 'cs_training_end_month', 'cs_training_is_current'],
+    'train-cma-display': ['cma_training_type', 'cma_training_org', 'cma_training_start_year', 'cma_training_start_month', 'cma_training_end_year', 'cma_training_end_month', 'cma_training_is_current'],
     'project-entry-display': ['project_title', 'project_tag', 'project_client', 'project_status', 'project_worked_from_year', 'project_worked_from_month', 'project_details', 'project_domain', 'project_skills', 'project_attachment_name', 'project_drive_link'],
     'key-skills-entry-display': ['key_skills']
 };
@@ -465,6 +474,17 @@ const WZ_ROLE_QUESTIONS = {
     'semi_experienced': ['gender', 'yoe_semi', 'preferred_locations', 'joining_date', 'expected_ctc_semi', 'preferred_domains', 'preferred_industries', 'employment_status', 'notice_period'],
 };
 
+// CA firm types and the CA domain lists; CS / CMA students get the same
+// questions for their stage without these.
+const WZ_CA_ONLY_QUESTIONS = ['preferred_firm_type', 'preferred_domains', 'preferred_domains_industrial'];
+
+function wzRoleQuestions(programType) {
+    const { qualification, stage } = splitPreference(programType);
+    const questions = WZ_ROLE_QUESTIONS[stage] || WZ_ROLE_QUESTIONS['fresher_fresher'];
+    if (!qualification || qualification === 'ca') return questions;
+    return questions.filter(id => !WZ_CA_ONLY_QUESTIONS.includes(id));
+}
+
 // Master list of fields to check after AI extraction — portal-specific
 function getWzMissingFields(portalType) {
     const f = (id, label, icon, type, optional, placeholder, hint, options) => ({ id, label, icon, type, inputName: id, profileKey: id, required: !optional, optional: !!optional, placeholder: placeholder || '', hint: hint || '', options: options || null });
@@ -515,6 +535,49 @@ function getWzMissingFields(portalType) {
     const noticePeriodField = f('notice_period', 'Notice Period', '📋', 'radio', true, '', 'What is your current notice period?', ['Immediate Joiner', '15 Days or less', '1 Month', '2 Months', '3 Months']);
     const numPartnersField = f('articleship_num_partners', 'Number of Partners', '👥', 'number', true, 'e.g., 3', 'Number of partners in the firm');
 
+    // CS / CMA: their own stage fields (labels and options from
+    // scripts/courses/profile-fields.js) instead of CA attempts, firm types
+    // and domains.
+    const { qualification, stage } = splitPreference(portalType);
+    if (qualification === 'cs' || qualification === 'cma') {
+        const cf = (key, icon, type, placeholder) => {
+            const field = PROFILE_FIELDS[qualification].find(entry => entry.key === key);
+            const options = field.options && field.options !== 'month'
+                ? Object.entries(field.options).map(([value, label]) => ({ value, label }))
+                : null;
+            return f(key, fieldLabel(key), icon, type, true, placeholder, '', options);
+        };
+        const ownCode = QUALIFICATIONS[qualification].code;
+        const otherQualifications = ['CA', 'CFA', 'CS', 'CMA', 'ACCA', 'CPA', 'FRM', 'MBA', 'LLB', 'DISA', 'CISA', 'Financial Modelling', 'Other'].filter(q => q !== ownCode);
+        const addlQualField = f('additional_qualifications', 'Additional Qualifications', '🎓', 'chips', true, '', 'Select all that apply', otherQualifications);
+        const keySkillsField = f('key_skills', 'Your Skills', '🛠️', 'text', true,
+            'e.g., Companies Act, SEBI LODR, Secretarial Audit, Cost Audit, GST, Advanced Excel, SAP',
+            'List your technical and professional skills separated by commas.');
+        const isQualified = stage === 'fresher_fresher' || stage === 'fresher_experienced';
+        const isSemi = stage === 'semi_fresher' || stage === 'semi_experienced';
+        let courseFields;
+        if (qualification === 'cs') {
+            const training = [cf('cs_training_type', '🏢', 'radio'), cf('cs_training_org', '🏢', 'text', 'e.g., ABC & Associates, Company Secretaries')];
+            courseFields = isQualified
+                ? [cf('cs_acs_no', '🪪', 'text', 'e.g., A12345'), cf('cs_prof_clear_year', '🏆', 'number', 'e.g., 2025'), ...training]
+                : [cf('cs_icsi_reg_no', '🪪', 'text'), cf('cs_exec_status', '📚', 'radio'),
+                    ...(isSemi ? [cf('cs_prof_status', '🏆', 'radio'), ...training] : [cf('cs_edp_done', '📚', 'radio'), cf('cs_prof_status', '🏆', 'radio')])];
+        } else {
+            const training = [cf('cma_training_type', '🏢', 'radio'), cf('cma_training_org', '🏢', 'text', 'e.g., XYZ & Co., Cost Accountants')];
+            courseFields = isQualified
+                ? [cf('cma_acma_no', '🪪', 'text'), cf('cma_final_clear_year', '🏆', 'number', 'e.g., 2025'), ...training]
+                : [cf('cma_icmai_reg_no', '🪪', 'text'), cf('cma_inter_status', '📚', 'radio'), cf('cma_final_status', '🏆', 'radio'),
+                    ...(isSemi ? training : [])];
+        }
+        courseFields.push(addlQualField);
+        if (stage === 'articleship') return [...common, ...courseFields];
+        if (stage === 'industrial') return [...common, ...courseFields, keySkillsField];
+        if (stage === 'semi_fresher') return [...common, ...courseFields, currentIndustryField];
+        if (stage === 'semi_experienced') return [...common, ...courseFields, ...empFields, currentSalaryField, currentIndustryField];
+        if (stage === 'fresher_experienced') return [...common, ...courseFields, ...empFields, currentIndustryField];
+        return [...common, ...courseFields, noticePeriodField]; // fresher_fresher
+    }
+
     if (portalType === 'industrial') return [
         ...common, ...caInterFields,
         f('articleship_responsibilities', 'Key Responsibilities', '📝', 'textarea', true, 'Describe your key responsibilities and work done during articleship...', 'Describe your key responsibilities and work done during articleship'),
@@ -538,12 +601,142 @@ function getWzMissingFields(portalType) {
 
 
 // =================== PORTAL SECTIONS ===================
+// data-portal lists stages (the CA job_preference keys). CS / CMA preferences
+// are the same stages with a prefix (cs_articleship), so match on the stage.
 function applyPortalSections(type) {
     if (!type) return;
+    const stage = splitPreference(type).stage || type;
     document.querySelectorAll('[data-portal]').forEach(el => {
         const portals = el.dataset.portal.split(',').map(s => s.trim());
-        el.style.display = portals.includes(type) ? '' : 'none';
+        el.style.display = portals.includes(stage) ? '' : 'none';
     });
+}
+
+// =================== COURSE (CA / CS / CMA) ===================
+// The student's course lives in profile.qualification (the #qualification
+// select at the top of Education). <body data-qualification> mirrors it, and a
+// rule in profile.html hides every [data-qualification] block of the other
+// courses. Hidden controls stay enabled: every save replaces the whole jsonb.
+
+// CS / CMA job_preference option labels by stage. CA keeps the six options
+// profile.html ships with, restored as they are.
+const COURSE_STAGE_LABELS = {
+    articleship: 'Training at firms (articleship)',
+    industrial: 'Training in companies',
+    semi_fresher: 'Semi-qualified – fresher',
+    semi_experienced: 'Semi-qualified – experienced',
+    fresher_fresher: 'Newly qualified (0–1 year)',
+    fresher_experienced: 'Experienced'
+};
+
+let caJobPreferenceOptions = null;
+
+function currentQualification() {
+    return normalizeQualification(document.getElementById('qualification')?.value) || 'ca';
+}
+
+// Rebuilds the job_preference options for a course; false when they already
+// match. The caller restores the value.
+function renderJobPreferenceOptions(select, qualification) {
+    if (caJobPreferenceOptions === null) caJobPreferenceOptions = select.innerHTML;
+    const current = select.dataset.optionsFor || 'ca';
+    select.dataset.optionsFor = qualification;
+    if (current === qualification) return false;
+    if (qualification === 'ca') {
+        select.innerHTML = caJobPreferenceOptions;
+        return true;
+    }
+    const course = QUALIFICATIONS[qualification];
+    const options = lanesFor(qualification)
+        .flatMap(lane => lane.preferences)
+        .map(pref => `<option value="${pref}">${COURSE_STAGE_LABELS[splitPreference(pref).stage]}</option>`)
+        .join('');
+    select.innerHTML = `<option value="">Select Preference</option><optgroup label="${course.name} (${course.institute})">${options}</optgroup>`;
+    return true;
+}
+
+// Switches the page to a course. A saved preference keeps its stage
+// (articleship -> cs_articleship) so the default portal follows the course.
+function setQualification(value) {
+    const qualification = normalizeQualification(value) || 'ca';
+    const select = document.getElementById('qualification');
+    if (select && select.value !== qualification) select.value = qualification;
+    document.body.dataset.qualification = qualification;
+    const jobPref = document.getElementById('job_preference');
+    if (jobPref) {
+        const { stage } = splitPreference(jobPref.value);
+        if (renderJobPreferenceOptions(jobPref, qualification)) {
+            jobPref.value = stage ? joinPreference(qualification, stage) : '';
+        }
+    }
+    const educationLink = document.getElementById('qlEducationLabel');
+    if (educationLink) educationLink.textContent = `${QUALIFICATIONS[qualification].code} Education`;
+    const airField = document.getElementById('achievement_air');
+    if (airField) {
+        if (!airField.dataset.caPlaceholder) airField.dataset.caPlaceholder = airField.placeholder;
+        airField.placeholder = COURSE_AIR_PLACEHOLDERS[qualification] || airField.dataset.caPlaceholder;
+    }
+    return qualification;
+}
+
+const COURSE_AIR_PLACEHOLDERS = {
+    cs: 'e.g., CS Professional AIR 12, rank in CS Executive',
+    cma: 'e.g., CMA Final AIR 20, rank in CMA Intermediate'
+};
+
+// "Default portal" text for a job_preference value (CA keeps its own map).
+function coursePreferenceLabel(pref) {
+    const { qualification, stage } = splitPreference(pref);
+    if (!qualification || qualification === 'ca') return '';
+    return `${QUALIFICATIONS[qualification].code} · ${COURSE_STAGE_LABELS[stage]}`;
+}
+
+// '03', '2025' -> 'Mar 2025'.
+function courseMonthYear(month, year) {
+    const name = QUAL_MONTHS[parseInt(month, 10) - 1] || '';
+    return [name, String(year || '').trim()].filter(Boolean).join(' ');
+}
+
+// The CS / CMA controls are on the page for every student. Saves leave out
+// the other courses' empty keys, so a CA profile keeps the shape it had.
+function omitEmptyCourseFields(profileData) {
+    const own = normalizeQualification(profileData.qualification) || 'ca';
+    Object.entries(PROFILE_FIELDS).forEach(([course, fields]) => {
+        if (course === own) return;
+        fields.forEach(({ key }) => {
+            if (profileData[key] === '') delete profileData[key];
+        });
+    });
+    return profileData;
+}
+
+// A form key whose control sits in another course's block (a [data-qualification]
+// that does not list this course). Those controls are hidden but still saved,
+// so a resume extraction must not fill them.
+function isOtherCourseField(key, qualification) {
+    const field = profileForm && profileForm.elements[key];
+    const control = field && (typeof field.closest === 'function' ? field : field[0]);
+    const block = control && control.closest('[data-qualification]');
+    if (!block || block === document.body) return false;
+    return !block.dataset.qualification.split(/\s+/).includes(qualification);
+}
+
+function dropOtherCourseFields(data, qualification) {
+    const kept = {};
+    for (const key in data) {
+        if (!isOtherCourseField(key, qualification)) kept[key] = data[key];
+    }
+    return kept;
+}
+
+// "Currently in training" ticks hide the end date (the controls stay enabled).
+function syncTrainingCurrent(prefix) {
+    const hidden = document.getElementById(`${prefix}_is_current`);
+    const chk = document.getElementById(`${prefix}_current_chk`);
+    const wrap = document.getElementById(`${prefix}_end_wrap`);
+    const isCurrent = !!hidden && hidden.value === 'yes';
+    if (chk) chk.checked = isCurrent;
+    if (wrap) wrap.style.display = isCurrent ? 'none' : 'flex';
 }
 
 // =================== CHIP MULTI-SELECT HELPERS ===================
@@ -574,6 +767,7 @@ function restoreChipMultiSelect(containerSelector, hiddenId) {
 
 // =================== ADDITIONAL QUALIFICATIONS DETAILS ===================
 const QUAL_STAGES = {
+    'CA': ['Foundation', 'Intermediate', 'Final', 'Qualified'],
     'CFA': ['Level I', 'Level II', 'Level III', 'Charterholder'],
     'CS': ['CSEET', 'Executive', 'Professional', 'Qualified'],
     'CMA': ['Foundation', 'Intermediate', 'Final', 'Qualified'],
@@ -756,6 +950,8 @@ const WZ = (() => {
     const st = {
         phase: 'cv',
         programType: null,
+        qualification: 'ca',      // ca | cs | cma (programType carries its prefix)
+        qualificationKnown: false,
         profileData: {},
         answers: {},
         prefQueue: [],
@@ -767,6 +963,10 @@ const WZ = (() => {
         currentSlot: 'a',
         aiStatus: 'idle',
         aiData: null,
+        aiFilled: [],             // [form key, value] pairs the resume answer filled
+        profillSeq: 0,
+        profillCourse: null,      // the course whose context the last profill call used
+        cvRejected: false,        // profill said the file is not a resume
         storerDone: false,
     };
 
@@ -776,9 +976,18 @@ const WZ = (() => {
     // ------ Init ------
     function init(profileData, lookingFor) {
         st.profileData = profileData || {};
+        const knownQualification = qualificationOf({ ...st.profileData, looking_for: lookingFor });
+        st.qualification = knownQualification || 'ca';
+        st.qualificationKnown = !!knownQualification;
         localStorage.removeItem('wz_skipped_fields');
         const isNewUser = !profileData || !profileData.name;
-        const hasType = !!lookingFor;
+        // A CS / CMA looking_for label may be refused by an older CHECK
+        // constraint (it is written separately), so their saved preference
+        // also counts as a type.
+        const coursePref = st.qualification !== 'ca' && splitPreference(st.profileData.job_preference).stage
+            ? st.profileData.job_preference
+            : null;
+        const hasType = !!lookingFor || !!coursePref;
         if (!isNewUser && hasType) {
             showMain();
             return;
@@ -793,8 +1002,11 @@ const WZ = (() => {
         dom.nextBtn = document.getElementById('wz-next-btn');
         dom.skipBtn = document.getElementById('wz-skip-btn');
 
-        if (lookingFor) {
-            st.programType = resolveSubtype(mapLookingForToType(lookingFor), profileData);
+        const knownType = (lookingFor && mapLookingForToType(lookingFor)) || coursePref;
+        if (knownType) {
+            // An explicit course wins over an older looking_for label.
+            const type = joinPreference(st.qualification, splitPreference(knownType).stage);
+            st.programType = resolveSubtype(type, profileData);
         }
 
         dom.wizard.style.display = 'flex';
@@ -826,26 +1038,25 @@ const WZ = (() => {
 
     // Resolve fresher/semi subtype from YOE in profileData; null means "ask wizard"
     function resolveSubtype(type, profileData) {
-        if (type !== 'fresher_fresher' && type !== 'semi_fresher') return type;
+        const { stage } = splitPreference(type);
+        if (stage !== 'fresher_fresher' && stage !== 'semi_fresher') return type;
         const yoeRaw = profileData ? (profileData.emp_exp_years != null ? profileData.emp_exp_years : profileData.yoe_years) : null;
         const yoe = parseInt(yoeRaw || '', 10);
         if (isNaN(yoe) || yoeRaw == null) return null; // unknown — ask in wizard
         return type; // respect user's chosen subtype regardless of YOE
     }
 
+    // Every looking_for label the site has written, CA and CS / CMA alike
+    // (including 'CA Fresher' from the portal onboarding).
     function mapLookingForToType(lf) {
-        const map = {
-            'CA Industrial Training Default': 'industrial',
-            'CA Articleship': 'articleship',
-            'CA Freshers': 'fresher_fresher',
-            'CA Fresher (Fresher)': 'fresher_fresher',
-            'CA Fresher (Experienced)': 'fresher_experienced',
-            'Semi Qualified CA': 'semi_fresher',
-        };
-        return map[lf] || null;
+        return preferenceForLookingFor(lf);
     }
 
-    function typeToLookingFor(type) {
+    // CA keeps the labels this wizard has always written. CS / CMA labels come
+    // from the registry and never fall back to a CA label.
+    function typeToLookingFor(type, qualification = st.qualification) {
+        const course = splitPreference(type).qualification || qualification;
+        if (course !== 'ca') return lookingForOf(type);
         const map = {
             'industrial': 'CA Industrial Training Default',
             'articleship': 'CA Articleship',
@@ -859,9 +1070,9 @@ const WZ = (() => {
 
     // ------ Progress ------
     function updateProgress() {
-        // Fixed early phases: photo=1, cv=2, type=3, subtype=4
+        // Fixed early phases: cv=1, photo=2, qualification=3, type=4, subtype=5
         // Then each pref question, then each missing question, then review, preview, publish
-        const FIXED_START = 4; // photo, cv, type, subtype
+        const FIXED_START = 5; // cv, photo, qualification, type, subtype
         const FIXED_END = 3;   // review, preview, publish
         const nPrefs = st.prefQueue.length || 0;
         const nMissing = st.missingQueue.length || 0;
@@ -870,8 +1081,9 @@ const WZ = (() => {
         let current;
         if (st.phase === 'cv') current = 1;
         else if (st.phase === 'photo') current = 2;
-        else if (st.phase === 'type') current = 3;
-        else if (st.phase === 'subtype') current = 4;
+        else if (st.phase === 'qualification') current = 3;
+        else if (st.phase === 'type') current = 4;
+        else if (st.phase === 'subtype') current = 5;
         else if (st.phase === 'prefs') current = FIXED_START + st.prefIdx + 1;
         else if (st.phase === 'missing') current = FIXED_START + nPrefs + st.missingIdx + 1;
         else if (st.phase === 'review') current = FIXED_START + nPrefs + nMissing + 1;
@@ -931,6 +1143,7 @@ const WZ = (() => {
         switch (phase) {
             case 'photo': return buildPhoto();
             case 'cv': return buildCV();
+            case 'qualification': return buildQualification();
             case 'type': return buildType();
             case 'subtype': return buildSubtype();
             case 'prefs': return buildQuestion(WZ_QUESTION_CONFIGS[st.prefQueue[st.prefIdx]]);
@@ -1065,7 +1278,65 @@ const WZ = (() => {
         </div>`;
     }
 
+    function buildQualification() {
+        const icons = { ca: '🧮', cs: '⚖️', cma: '📈' };
+        const cards = QUALIFICATION_ORDER.map(key => {
+            const course = QUALIFICATIONS[key];
+            const sel = st.qualificationKnown && st.qualification === key ? ' wz-selected' : '';
+            return `<div class="wz-type-card${sel}" data-q="${key}">
+                    <div class="wz-type-icon">${icons[key]}</div>
+                    <div class="wz-type-label">${escHtml(course.student)}</div>
+                    <div class="wz-type-sub">${escHtml(course.name)} · ${escHtml(course.institute)}</div>
+                </div>`;
+        }).join('');
+        return `<div class="wz-inner">
+            <div class="wz-q-icon">🎓</div>
+            <h2 class="wz-q-title">Which course are you pursuing?</h2>
+            <p class="wz-q-hint">We show the jobs, training and profile sections for your course.</p>
+            <div class="wz-type-grid" id="wz-qualification-grid" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr));">
+                ${cards}
+            </div>
+        </div>`;
+    }
+
+    // CS / CMA career-path cards: the CA stages, labelled for the course.
+    const COURSE_TYPE_SUBS = {
+        cs: {
+            articleship: 'With a Practising Company Secretary',
+            industrial: 'Management trainee in a company',
+            semi: 'CS Executive or Professional passed',
+            fresher: 'Qualified Company Secretary (ACS)'
+        },
+        cma: {
+            articleship: 'Under a Practising Cost Accountant (Form T-1)',
+            industrial: 'In a recognised organisation (Form T-4)',
+            semi: 'CMA Intermediate passed',
+            fresher: 'CMA Final qualified'
+        }
+    };
+
     function buildType() {
+        if (st.qualification !== 'ca') {
+            const course = QUALIFICATIONS[st.qualification];
+            const subs = COURSE_TYPE_SUBS[st.qualification];
+            const cards = [
+                { type: 'articleship', icon: '📜', label: COURSE_STAGE_LABELS.articleship },
+                { type: 'industrial', icon: '🏭', label: COURSE_STAGE_LABELS.industrial },
+                { type: 'semi', icon: '📊', label: `Semi-qualified ${course.code} jobs` },
+                { type: 'fresher', icon: '🎓', label: `Qualified ${course.code} jobs` }
+            ];
+            return `<div class="wz-inner">
+            <div class="wz-q-icon">🎓</div>
+            <h2 class="wz-q-title">Choose Your Career Path</h2>
+            <div class="wz-type-grid" id="wz-type-grid">
+                ${cards.map(card => `<div class="wz-type-card" data-type="${card.type}">
+                    <div class="wz-type-icon">${card.icon}</div>
+                    <div class="wz-type-label">${escHtml(card.label)}</div>
+                    <div class="wz-type-sub">${escHtml(subs[card.type])}</div>
+                </div>`).join('')}
+            </div>
+        </div>`;
+        }
         return `<div class="wz-inner">
             <div class="wz-q-icon">🎓</div>
             <h2 class="wz-q-title">Choose Your Career Path</h2>
@@ -1117,7 +1388,7 @@ const WZ = (() => {
         return `<div class="wz-inner">
             <div class="wz-q-icon">💼</div>
             <h2 class="wz-q-title">Are you a fresher or experienced?</h2>
-            <p class="wz-q-hint">As a qualified CA, let us know your experience level.</p>
+            <p class="wz-q-hint">As a qualified ${escHtml(QUALIFICATIONS[st.qualification].code)}, let us know your experience level.</p>
             <div class="wz-radio-grid" id="wz-subtype-grid">
                 <div class="wz-radio-card" data-sub="fresher_fresher">
                     <div class="wz-radio-dot"></div>
@@ -1209,8 +1480,10 @@ const WZ = (() => {
         } else if (field.type === 'radio' && field.options) {
             inputHtml = `<div class="wz-radio-grid" id="wz-missing-radio">` +
                 field.options.map(o => {
-                    const sel = saved === o ? ' wz-selected' : '';
-                    return `<div class="wz-radio-card${sel}" data-val="${escHtml(o)}"><div class="wz-radio-dot"></div><div class="wz-radio-label">${escHtml(o)}</div></div>`;
+                    const val = typeof o === 'object' ? o.value : o;
+                    const lbl = typeof o === 'object' ? o.label : o;
+                    const sel = saved === val ? ' wz-selected' : '';
+                    return `<div class="wz-radio-card${sel}" data-val="${escHtml(val)}"><div class="wz-radio-dot"></div><div class="wz-radio-label">${escHtml(lbl)}</div></div>`;
                 }).join('') + `</div>`;
         } else if (field.type === 'chips' && field.options) {
             const savedArr = saved ? saved.split(',').map(s => s.trim()).filter(Boolean) : [];
@@ -1323,7 +1596,8 @@ const WZ = (() => {
         if (!getFormValue('profile_summary') && !st.answers['missing_profile_summary']) tips.push('+8% Add Profile Summary');
         if (!getFormValue('linkedin_url') && !st.answers['missing_linkedin_url']) tips.push('+5% Add LinkedIn Profile');
         if (!getFormValue('key_skills') && !getFormValue('emp_skills_hidden')) tips.push('+8% Add Key Skills');
-        if (!getFormValue('articleship_client_industries')) tips.push('+6% Add Client Industry Exposure');
+        if (st.qualification === 'ca' && !getFormValue('articleship_client_industries')) tips.push('+6% Add Client Industry Exposure');
+        if (st.qualification !== 'ca' && !getFormValue(`${st.qualification}_training_org`)) tips.push('+6% Add training details');
         if (!getFormValue('preferred_domains') && !st.answers['preferred_domains']) tips.push('+6% Add Preferred Domains');
         if (!tips.length) return '';
         return `<div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:8px;padding:12px 14px;max-width:360px;margin:0 auto 1rem;text-align:left;">
@@ -1338,6 +1612,7 @@ const WZ = (() => {
         switch (phase) {
             case 'photo': mountPhoto(activeEl); break;
             case 'cv': mountCV(activeEl); break;
+            case 'qualification': mountQualification(activeEl); break;
             case 'type': mountType(activeEl); break;
             case 'subtype': mountSubtype(activeEl); break;
             case 'prefs': mountQuestion(activeEl); break;
@@ -1390,6 +1665,17 @@ const WZ = (() => {
                 goTo('photo', 'forward');
             });
         }
+    }
+
+    function mountQualification(el) {
+        st._pendingQualification = st.qualificationKnown ? st.qualification : null;
+        el.querySelectorAll('.wz-type-card[data-q]').forEach(card => {
+            card.addEventListener('click', () => {
+                el.querySelectorAll('.wz-type-card[data-q]').forEach(c => c.classList.remove('wz-selected'));
+                card.classList.add('wz-selected');
+                st._pendingQualification = card.getAttribute('data-q');
+            });
+        });
     }
 
     function mountType(el) {
@@ -1502,6 +1788,13 @@ const WZ = (() => {
             goTo('photo', 'forward');
         } else if (phase === 'photo') {
             proceedAfterCV();
+        } else if (phase === 'qualification') {
+            if (!st._pendingQualification) { showToast('Please select your course.', 'warning'); return; }
+            st.qualification = normalizeQualification(st._pendingQualification) || 'ca';
+            st.qualificationKnown = true;
+            refireProfillForCourse();
+            st.history.push({ phase: 'qualification' });
+            goTo('type', 'forward');
         } else if (phase === 'type') {
             if (!st._pendingType) { showToast('Please select what you are looking for.', 'warning'); return; }
             const t = st._pendingType;
@@ -1512,14 +1805,14 @@ const WZ = (() => {
                 st.history.push({ phase: 'type' });
                 goTo('subtype', 'forward');
             } else {
-                st.programType = t;
+                st.programType = joinPreference(st.qualification, t);
                 buildPrefQueue();
                 st.history.push({ phase: 'type' });
                 goTo('prefs', 'forward');
             }
         } else if (phase === 'subtype') {
             if (!st._pendingSubtype) { showToast('Please select your experience level.', 'warning'); return; }
-            st.programType = st._pendingSubtype;
+            st.programType = joinPreference(st.qualification, st._pendingSubtype);
             buildPrefQueue();
             st.history.push({ phase: 'subtype' });
             goTo('prefs', 'forward');
@@ -1567,16 +1860,17 @@ const WZ = (() => {
     function proceedAfterCV() {
         if (!st.programType) {
             st.history.push({ phase: 'photo' });
-            goTo('type', 'forward');
+            goTo('qualification', 'forward');
             return;
         }
         // For fresher/semi from DB, subtype may still be unresolved if YOE was absent
-        if (st.programType === 'fresher_fresher' || st.programType === 'semi_fresher') {
+        const stage = splitPreference(st.programType).stage;
+        if (stage === 'fresher_fresher' || stage === 'semi_fresher') {
             const yoeRaw = getFormValue('emp_exp_years') || (st.profileData ? st.profileData.emp_exp_years : null);
             const yoe = parseInt(yoeRaw || '', 10);
             if (isNaN(yoe) || yoeRaw == null) {
                 // YOE unknown — show subtype screen so user can choose
-                st._pendingType = st.programType === 'fresher_fresher' ? 'fresher' : 'semi';
+                st._pendingType = stage === 'fresher_fresher' ? 'fresher' : 'semi';
                 st.history.push({ phase: 'photo' });
                 goTo('subtype', 'forward');
                 return;
@@ -1589,7 +1883,7 @@ const WZ = (() => {
 
     // ------ Preferences phase ------
     function buildPrefQueue() {
-        st.prefQueue = WZ_ROLE_QUESTIONS[st.programType] || WZ_ROLE_QUESTIONS['fresher_fresher'];
+        st.prefQueue = wzRoleQuestions(st.programType);
         st.prefIdx = 0;
     }
 
@@ -1766,6 +2060,51 @@ const WZ = (() => {
                 { key: 'achievement_extracurricular', label: 'Extracurricular', value: fv('achievement_extracurricular'), wide: true },
             ]
         };
+
+        // CS / CMA: the course journey and training instead of the CA groups.
+        // Status fields are selects on the page, so only free-text and year
+        // fields are offered for review here.
+        if (st.qualification !== 'ca') {
+            const q = st.qualification;
+            const { stage } = splitPreference(type);
+            const field = key => ({ key, label: fieldLabel(key), value: fv(key) });
+            const journeyKeys = q === 'cs'
+                ? ['cs_icsi_reg_no', 'cs_exec_attempts', 'cs_exec_clear_year', 'cs_prof_clear_year', 'cs_acs_no']
+                : ['cma_icmai_reg_no', 'cma_inter_attempts', 'cma_inter_clear_year', 'cma_final_clear_year', 'cma_acma_no'];
+            const groups = [
+                personalGroup,
+                { label: `${QUALIFICATIONS[q].code} Journey`, fields: journeyKeys.map(field) },
+                educationGroup,
+                {
+                    label: q === 'cs' ? 'CS Training' : 'Practical Training',
+                    fields: [
+                        { ...field(`${q}_training_org`), wide: true },
+                        field(`${q}_training_start_year`),
+                        field(`${q}_training_end_year`),
+                    ]
+                },
+            ];
+            if (stage !== 'industrial' && stage !== 'articleship') {
+                groups.push({
+                    label: 'Employment',
+                    fields: [
+                        { key: 'emp_company_name', label: 'Company', value: fv('emp_company_name') },
+                        { key: 'emp_job_title', label: 'Designation', value: fv('emp_job_title') },
+                        { key: 'emp_job_profile', label: 'Job Profile', value: fv('emp_job_profile'), wide: true, textarea: true },
+                    ]
+                });
+            }
+            groups.push({
+                label: 'Certification',
+                fields: [
+                    { key: 'cert_name', label: 'Certification Name', value: fv('cert_name'), wide: true },
+                    { key: 'cert_issuer', label: 'Issuing Organization', value: fv('cert_issuer') },
+                    { key: 'cert_month', label: 'Month', value: fv('cert_month') },
+                    { key: 'cert_year', label: 'Year', value: fv('cert_year') },
+                ]
+            }, achievementsGroup);
+            return groups;
+        }
 
         if (type === 'industrial' || type === 'articleship') {
             const caJourneyGroup = {
@@ -1980,11 +2319,15 @@ const WZ = (() => {
     }
 
     // ------ Fire storer + profill in parallel, no await — user never waits ------
-    function fireStorerAndProfill() {
+    function wzResumeImages() {
         // Prefer in-memory (survives localStorage quota failures), fall back to localStorage
-        const images = window._wzCVImages?.length
+        return window._wzCVImages?.length
             ? window._wzCVImages
             : (() => { try { return JSON.parse(localStorage.getItem('userCVImages') || '[]'); } catch { return []; } })();
+    }
+
+    function fireStorerAndProfill() {
+        const images = wzResumeImages();
         if (!images.length) return; // no resume uploaded, nothing to do
 
         const base64Pdf = window._wzCVPdf || localStorage.getItem('userCVPdf') || '';
@@ -2010,17 +2353,31 @@ const WZ = (() => {
             })
             .catch(() => { });
 
-        // ── Profill: needs only images + portal type so it extracts the right fields ──
+        fireProfill(images, base64Pdf);
+    }
+
+    // ── Profill: needs only images + portal type so it extracts the right fields ──
+    // A new student picks the course after the CV step, so this first runs with
+    // the CA context. Picking CS / CMA runs it again for that course
+    // (refireProfillForCourse); an answer for a course no longer chosen is
+    // dropped, and what it already filled into that course's fields is undone.
+    function fireProfill(images, base64Pdf) {
+        const seq = ++st.profillSeq;
+        const portalType = st.programType || joinPreference(st.qualification, 'fresher_fresher');
+        st.profillCourse = splitPreference(portalType).qualification;
+        st.aiStatus = 'loading';
         fetch(WORKER_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user_id: userId, images, pdf_text: '', pdf: base64Pdf, portal_type: st.programType || 'fresher_fresher' })
+            body: JSON.stringify({ user_id: currentUser?.id, images, pdf_text: '', pdf: base64Pdf, portal_type: portalType })
         })
             .then(r => r.json())
             .then(data => {
+                if (seq !== st.profillSeq) return; // superseded by a call for another course
                 if (!data.ok) { st.aiStatus = 'failed'; return; }
                 if (data.is_cv === false) {
                     st.aiStatus = 'failed';
+                    st.cvRejected = true;
                     showToast('The uploaded file does not appear to be a valid resume.', 'warning', 6000);
                     return;
                 }
@@ -2028,13 +2385,17 @@ const WZ = (() => {
                 if (!parsed) { st.aiStatus = 'failed'; return; }
                 if (parsed.is_valid_cv === false) {
                     st.aiStatus = 'failed';
+                    st.cvRejected = true;
                     showToast('The uploaded file does not appear to be a valid resume.', 'warning', 6000);
                     return;
                 }
-                st.aiData = parsed;
+                // Another course's keys (hidden for this student) are never filled.
+                st.aiData = dropOtherCourseFields(parsed, st.profillCourse);
                 st.aiStatus = 'done';
                 // Only fill form fields that are still empty — never override what user typed
-                populateFormSafe(parsed);
+                st.aiFilled = st.aiFilled.concat(populateFormSafe(st.aiData));
+                syncTrainingCurrent('cs_training');
+                syncTrainingCurrent('cma_training');
                 // Trigger change on attempts dropdowns so hidden count inputs become visible
                 ['ca_final_attempts_type', 'ca_inter_attempts_type', 'ca_found_attempts_type'].forEach(id => {
                     const el = document.getElementById(id);
@@ -2110,7 +2471,34 @@ const WZ = (() => {
                     }
                 }
             })
-            .catch(() => { st.aiStatus = 'failed'; });
+            .catch(() => { if (seq === st.profillSeq) st.aiStatus = 'failed'; });
+    }
+
+    // After the course step: when the resume was read for another course, read
+    // it again for this one and clear the fields of the other course that the
+    // earlier answer filled (only where they still hold its value).
+    function refireProfillForCourse() {
+        if (!st.profillCourse || st.profillCourse === st.qualification || st.cvRejected) return;
+        const images = wzResumeImages();
+        if (!images.length) return;
+        st.aiFilled = st.aiFilled.filter(([key, value]) => {
+            if (!isOtherCourseField(key, st.qualification)) return true;
+            const field = profileForm.elements[key];
+            if (field && field.value === value) {
+                field.value = '';
+                // Chip groups mirror their hidden input in the same row.
+                if (field.type === 'hidden') field.parentElement?.querySelectorAll('.p2-chip-group .p2-chip').forEach(chip => {
+                    chip.classList.remove('selected');
+                    const chk = chip.querySelector('input[type="checkbox"]');
+                    if (chk) chk.checked = false;
+                });
+            }
+            return false;
+        });
+        syncTrainingCurrent('cs_training');
+        syncTrainingCurrent('cma_training');
+        st.aiData = st.aiData ? dropOtherCourseFields(st.aiData, st.qualification) : null;
+        fireProfill(images, window._wzCVPdf || localStorage.getItem('userCVPdf') || '');
     }
 
     async function saveConsentFromWizard() {
@@ -2209,18 +2597,28 @@ const WZ = (() => {
 
             // Set job_preference to match programType
             if (st.programType) profileData.job_preference = st.programType;
+            profileData.qualification = st.qualification;
 
+            // CA writes looking_for with the profile, as it always has. CS /
+            // CMA labels go in a separate, error-tolerant update afterwards.
+            const isCA = st.qualification === 'ca';
             const lookingForVal = typeToLookingFor(st.programType);
-
-            const { error } = await supabaseClient.from('profiles').upsert({
+            const record = {
                 uuid: currentUser.id,
                 profile: profileData,
                 ocr_cv: localStorage.getItem('userCVText') || '',
-                looking_for: lookingForVal,
                 updated_at: new Date().toISOString()
-            });
+            };
+            if (isCA) record.looking_for = lookingForVal;
+
+            const { error } = await supabaseClient.from('profiles').upsert(record);
             if (error) throw error;
-            currentLookingFor = lookingForVal;
+            if (isCA) {
+                currentLookingFor = lookingForVal;
+                lookingForPreference = profileData.job_preference;
+            } else {
+                await syncLookingFor(profileData, false);
+            }
             localStorage.setItem('userProfileData', JSON.stringify(profileData));
         } catch (e) {
             console.error(e);
@@ -2344,6 +2742,8 @@ const WZ = (() => {
             if (el) el.value = st.answers['missing_current_industry'];
         }
 
+        // The course first: it decides which job_preference options exist.
+        setQualification(st.qualification);
         if (st.programType) {
             const jp = document.getElementById('job_preference');
             if (jp) jp.value = st.programType;
@@ -2366,8 +2766,10 @@ const WZ = (() => {
     const AI_TO_FORM_ALIASES = { current_location: 'current_city' };
 
     // ------ populateFormSafe: like populateForm but never overwrites existing values ------
+    // Returns the [form key, value] pairs it filled.
     function populateFormSafe(profileData) {
-        if (!profileForm || !profileData) return;
+        const filled = [];
+        if (!profileForm || !profileData) return filled;
         for (const key in profileData) {
             if (key === 'resume' || key === 'cover_letter' || key === 'project_attachment') continue;
             const val = profileData[key];
@@ -2377,12 +2779,14 @@ const WZ = (() => {
             if (!field) continue;
             if (field.value && field.value.trim()) continue; // user already filled this — skip
             field.value = val;
+            filled.push([formKey, field.value]);
         }
         // Also sync email from auth in case it was cleared
         const emailField = document.getElementById('email');
         if (emailField && !emailField.value && currentUser?.email) {
             emailField.value = currentUser.email;
         }
+        return filled;
     }
 
     // ------ Progressive save: debounced upsert — prevents concurrent 409s on rapid clicks ------
@@ -2413,15 +2817,21 @@ const WZ = (() => {
         if (st.answers['missing_it_industry']) profileData.it_industry = st.answers['missing_it_industry'];
         if (st.answers['missing_current_industry']) profileData.current_industry = st.answers['missing_current_industry'];
         if (st.programType) profileData.job_preference = st.programType;
+        profileData.qualification = st.qualification;
 
+        // CS / CMA looking_for is written on its own (see finishWizard).
+        const isCA = st.qualification === 'ca';
         const lookingForVal = st.programType ? typeToLookingFor(st.programType) : undefined;
 
         const upsertData = { uuid: currentUser.id, profile: profileData, updated_at: new Date().toISOString() };
-        if (lookingForVal) upsertData.looking_for = lookingForVal;
+        if (isCA && lookingForVal) upsertData.looking_for = lookingForVal;
 
         supabaseClient.from('profiles').upsert(upsertData).then(({ error }) => {
             if (error) console.warn('Progress save failed:', error.message);
-            else localStorage.setItem('userProfileData', JSON.stringify(profileData));
+            else {
+                localStorage.setItem('userProfileData', JSON.stringify(profileData));
+                if (!isCA) syncLookingFor(profileData, false);
+            }
         });
     }
 
@@ -2454,7 +2864,7 @@ const WZ = (() => {
         if (st.answers['preferred_domains'] || getFormValue('preferred_domains')) score += 6;
         if (st.answers['preferred_industries'] || getFormValue('preferred_industries')) score += 5;
         if (st.programType || getFormValue('job_preference')) score += 5;
-        if (getFormValue('articleship_client_industries')) score += 6;
+        if (getFormValue(st.qualification === 'ca' ? 'articleship_client_industries' : `${st.qualification}_training_org`)) score += 6;
         // Certification is optional and is intentionally excluded from
         // completion. Keep the wizard total at 100 by assigning its former
         // 3% weight to Key Skills.
@@ -2577,17 +2987,33 @@ async function loadProfile() {
         setTimeout(() => refreshHeader(), 150);
         return profileObj;
     } finally {
+        lookingForPreference = (profileObj && profileObj.job_preference) || null;
         showLoading(false);
     }
 }
 
 // =================== POPULATE FORM ===================
 function populateForm(profileData) {
+    // The course decides which job_preference options exist, so it goes first.
+    // Data without a course (a resume autofill) leaves the page's course alone.
+    const qualification = qualificationOf(profileData);
+    if (qualification) setQualification(qualification);
+
     for (const key in profileData) {
         if (key === 'resume' || key === 'cover_letter' || key === 'project_attachment') continue;
         const field = profileForm.elements[key];
         if (field) field.value = profileData[key];
     }
+
+    if (qualification) {
+        setQualification(qualification);
+        // A preference saved under another course keeps its stage.
+        const jobPrefField = document.getElementById('job_preference');
+        const { stage } = splitPreference(profileData.job_preference);
+        if (jobPrefField && !jobPrefField.value && stage) jobPrefField.value = joinPreference(qualification, stage);
+    }
+    syncTrainingCurrent('cs_training');
+    syncTrainingCurrent('cma_training');
 
     const emailField = document.getElementById('email');
     if (emailField && !emailField.value && currentUser?.email) {
@@ -2953,6 +3379,9 @@ function clearEntryData(entryId) {
         renderKeySkills();
     }
 
+    if (entryId === 'train-cs-display') syncTrainingCurrent('cs_training');
+    if (entryId === 'train-cma-display') syncTrainingCurrent('cma_training');
+
     refreshHeader();
 }
 
@@ -3050,7 +3479,9 @@ async function handleFile(file, type) {
                         hideFileDisplay('resume');
                         return;
                     } else if (extractResult && extractResult.data) {
-                        populateForm(extractResult.data);
+                        // A CS / CMA extraction never fills the hidden CA fields.
+                        const qualification = currentQualification();
+                        populateForm(qualification === 'ca' ? extractResult.data : dropOtherCourseFields(extractResult.data, qualification));
                         refreshHeader();
                         showToast('Profile auto-filled from your resume! Please review the details.', 'success', 8000);
                     }
@@ -3113,6 +3544,13 @@ async function extractProfileData(images, text, pdfBase64 = null) {
         const pdf = pdfBase64 || localStorage.getItem('userCVPdf');
         if (pdf) {
             payload.pdf = pdf;
+        }
+        // CS / CMA students get their course's extraction (CA keeps the
+        // worker's default, as before).
+        const qualification = currentQualification();
+        if (qualification !== 'ca') {
+            const jobPref = document.getElementById('job_preference')?.value;
+            payload.portal_type = splitPreference(jobPref).qualification === qualification ? jobPref : joinPreference(qualification, 'fresher_fresher');
         }
         const response = await fetch(WORKER_URL, {
             method: 'POST',
@@ -3287,6 +3725,44 @@ async function persistProfileRecord(profileData, ocrText) {
         updated_at: new Date().toISOString()
     });
     if (error) throw error;
+    await syncLookingFor(profileData);
+}
+
+// profiles.looking_for follows job_preference (the portal onboarding and
+// redirects read it). A profile save writes it only when the student has moved
+// to another lane since the page loaded, so saving an unchanged profile writes
+// no looking_for, as before; the wizard passes changedOnly = false, as its CA
+// path has always written looking_for. It is written in its own update after the profile and
+// its error is ignored: the column may carry a CHECK constraint older than the
+// CS / CMA labels, and that must never cost the profile save. An older label
+// for the same lane ('CA Freshers', 'Semi Qualified CA') is left as it is.
+let lookingForRefused = null; // a label the database refused on this visit
+async function syncLookingFor(profileData, changedOnly = true) {
+    const pref = profileData && profileData.job_preference;
+    const lane = laneForPreference(pref);
+    if (!lane || !currentUser) return;
+    if (changedOnly && lane === laneForPreference(lookingForPreference)) return;
+    const next = lookingForOf(pref);
+    if (!next || next === lookingForRefused) return;
+    // Labels that read as the same lane ('CA Fresher' for fresher_experienced
+    // reads back as fresher_fresher) would change nothing.
+    const laneOfLabel = label => laneForPreference(preferenceForLookingFor(label));
+    if (next === currentLookingFor || laneOfLabel(next) === laneOfLabel(currentLookingFor)) {
+        lookingForPreference = pref;
+        return;
+    }
+    try {
+        const { error } = await supabaseClient.from('profiles').update({ looking_for: next }).eq('uuid', currentUser.id);
+        if (error) {
+            lookingForRefused = next;
+            console.warn('looking_for not updated:', error.message);
+        } else {
+            currentLookingFor = next;
+            lookingForPreference = pref;
+        }
+    } catch (e) {
+        console.warn('looking_for not updated:', e);
+    }
 }
 
 function normalizeSchoolEducationProfile(profileData) {
@@ -3337,7 +3813,7 @@ function validateSchoolEducationForm(form) {
 async function persistCurrentProfileSnapshot() {
     if (!currentUser || !profileForm) return;
 
-    const profileData = normalizeSchoolEducationProfile(Object.fromEntries(new FormData(profileForm).entries()));
+    const profileData = omitEmptyCourseFields(normalizeSchoolEducationProfile(Object.fromEntries(new FormData(profileForm).entries())));
     delete profileData.resume;
     delete profileData.cover_letter;
     const cvFileName = localStorage.getItem('userCVFileName');
@@ -3391,7 +3867,7 @@ async function handleSave(e) {
     saveBtn.disabled = true;
 
     const formData = new FormData(profileForm);
-    const profileData = normalizeSchoolEducationProfile(Object.fromEntries(formData.entries()));
+    const profileData = omitEmptyCourseFields(normalizeSchoolEducationProfile(Object.fromEntries(formData.entries())));
     delete profileData.resume;
     delete profileData.cover_letter;
     // Persist the CV filename so the resume display survives localStorage wipes
@@ -3561,9 +4037,11 @@ function refreshHeader() {
     document.getElementById('hdLocation').textContent = d.current_city || d.current_location || 'Add location';
     document.getElementById('hdPhone').textContent = d.contact_number || 'Add mobile number';
     const _jobPref = (d.job_preference || '').trim();
+    const _jobStage = splitPreference(_jobPref).stage || _jobPref;
+    const _qualification = normalizeQualification(d.qualification) || 'ca';
     const _expY = (d.emp_exp_years || '').trim();
     const _expM = (d.emp_exp_months || '').trim();
-    const _isExperienced = _jobPref === 'fresher_experienced' || _jobPref === 'semi_experienced';
+    const _isExperienced = _jobStage === 'fresher_experienced' || _jobStage === 'semi_experienced';
     let _expDisplay;
     if (_isExperienced) {
         const _yoeParts = [_expY && _expY !== '0 Years' ? _expY : '', _expM && _expM !== '0 Months' ? _expM : ''].filter(Boolean);
@@ -3666,13 +4144,14 @@ function refreshHeader() {
     }
 
     // Point the Experience quick link at the section that is visible for this portal.
-    // Industrial/articleship/fresher portals use the Articleship & Industrial section;
-    // experienced employment portals use the Employment section.
-    const portalType = (d.job_preference || '').trim();
+    // Industrial/articleship/fresher portals use the Articleship & Industrial section
+    // (CS / CMA: their training section); experienced employment portals use the
+    // Employment section.
+    const portalType = _jobStage;
     const experienceLinkTarget = ['fresher_experienced', 'semi_experienced'].includes(portalType)
         ? 'sec-employment'
         : ['industrial', 'articleship', 'fresher_fresher', 'semi_fresher'].includes(portalType)
-            ? 'sec-articleship'
+            ? (_qualification === 'ca' ? 'sec-articleship' : 'sec-pro-training')
             : 'sec-employment';
     document.querySelectorAll('.p2-ql[data-route="experience"]').forEach(link => {
         link.setAttribute('href', `#${experienceLinkTarget}`);
@@ -3686,7 +4165,7 @@ function refreshHeader() {
         let filled = false;
         if (hrefTarget === '#sec-resume') filled = hasResumeEvidence(d, localStorage);
         else if (hrefTarget === '#sec-headline') filled = !!((d.profile_summary || d.headline || '').trim());
-        else if (hrefTarget === '#sec-ca-education') filled = !!((d.ca_final_course || '') + (d.ca_inter_course || '') + (d.ca_found_course || '') + (d.grad_degree || '') + (d.class12_board || '') + (d.class10_board || '') + (d.other_edu_course || '')).trim();
+        else if (hrefTarget === '#sec-ca-education') filled = hasCourseEducation(_qualification, d) || !!((d.ca_final_course || '') + (d.ca_inter_course || '') + (d.ca_found_course || '') + (d.grad_degree || '') + (d.class12_board || '') + (d.class10_board || '') + (d.other_edu_course || '')).trim();
         else if (hrefTarget === '#sec-employment') filled = !!(
             (d.total_experience || '').trim() ||
             (d.emp_company_name || '').trim() ||
@@ -3695,8 +4174,10 @@ function refreshHeader() {
             (d.emp_exp_months || '').trim() ||
             (d.articleship_firm_name || '').trim() ||
             ((d.articleship_firm_type || '').trim() && (d.articleship_firm_type || '').trim() !== 'None') ||
-            (d.industrial_training_company || '').trim()
+            (d.industrial_training_company || '').trim() ||
+            hasCourseTraining(_qualification, d)
         );
+        else if (hrefTarget === '#sec-pro-training') filled = hasCourseTraining(_qualification, d);
         else if (hrefTarget === '#sec-articleship') filled = !!(
             (d.articleship_firm_name || '').trim() ||
             ((d.articleship_firm_type || '').trim() && (d.articleship_firm_type || '').trim() !== 'None') ||
@@ -3953,6 +4434,50 @@ function refreshSavedDisplays(d) {
         if (addFoundLink) addFoundLink.style.display = 'flex';
     }
 
+    // CS / CMA education displays (data-qualification hides the other course's)
+    const qualification = normalizeQualification(d.qualification) || 'ca';
+    const value = key => (d[key] || '').toString().trim();
+    const attempts = key => (value(key) ? `${value(key)} attempt(s)` : '');
+    const passed = prefix => {
+        const when = courseMonthYear(value(`${prefix}_month`), value(`${prefix}_year`));
+        return when ? `Passed: ${when}` : '';
+    };
+    const setCourseEntry = (id, linkId, filled, title, metaParts) => {
+        const display = document.getElementById(`${id}-display`);
+        const link = document.getElementById(linkId);
+        if (display) display.style.display = filled ? 'block' : 'none';
+        if (filled) {
+            const titleEl = document.getElementById(`${id}-title`);
+            const metaEl = document.getElementById(`${id}-meta`);
+            if (titleEl) titleEl.textContent = title;
+            if (metaEl) metaEl.textContent = metaParts.filter(Boolean).join(' · ');
+        }
+        if (link) link.style.display = filled ? 'none' : 'flex';
+    };
+    setCourseEntry('edu-cs-prof', 'addCsProfLink', !!(value('cs_prof_status') || value('cs_acs_no')), 'CS Professional', [
+        fieldValueLabel('cs_prof_status', value('cs_prof_status')),
+        passed('cs_prof_clear'),
+        value('cs_acs_no') ? `ACS ${value('cs_acs_no')}` : ''
+    ]);
+    setCourseEntry('edu-cs-exec', 'addCsExecLink', !!(value('cs_exec_status') || value('cs_icsi_reg_no')), 'CS Executive', [
+        fieldValueLabel('cs_exec_status', value('cs_exec_status')),
+        attempts('cs_exec_attempts'),
+        passed('cs_exec_clear'),
+        value('cs_edp_done') ? `EDP: ${fieldValueLabel('cs_edp_done', value('cs_edp_done'))}` : '',
+        value('cs_icsi_reg_no') ? `ICSI reg. ${value('cs_icsi_reg_no')}` : ''
+    ]);
+    setCourseEntry('edu-cma-final', 'addCmaFinalLink', !!(value('cma_final_status') || value('cma_acma_no')), 'CMA Final', [
+        fieldValueLabel('cma_final_status', value('cma_final_status')),
+        passed('cma_final_clear'),
+        value('cma_acma_no') ? `ACMA ${value('cma_acma_no')}` : ''
+    ]);
+    setCourseEntry('edu-cma-inter', 'addCmaInterLink', !!(value('cma_inter_status') || value('cma_icmai_reg_no')), 'CMA Intermediate', [
+        fieldValueLabel('cma_inter_status', value('cma_inter_status')),
+        attempts('cma_inter_attempts'),
+        passed('cma_inter_clear'),
+        value('cma_icmai_reg_no') ? `ICMAI reg. ${value('cma_icmai_reg_no')}` : ''
+    ]);
+
     // Graduation display
     const gradDegree = (d.grad_degree || '').trim();
     const gradDisplay = document.getElementById('edu-grad-display');
@@ -4029,7 +4554,8 @@ function refreshSavedDisplays(d) {
 
     // Update Education boost badge
     const eduBoost = document.getElementById('eduBoost');
-    const hasEducation = !!(finalCourse || interCourse || foundCourse || gradDegree || otherEduCourse || otherEduLevel || c12Complete || c10Complete);
+    const hasCAEducation = qualification === 'ca' && !!(finalCourse || interCourse || foundCourse);
+    const hasEducation = !!(hasCAEducation || hasCourseEducation(qualification, d) || gradDegree || otherEduCourse || otherEduLevel || c12Complete || c10Complete);
     if (hasEducation) {
         eduBoost.style.display = 'none';
     } else {
@@ -4113,6 +4639,23 @@ function refreshSavedDisplays(d) {
         itDisplay.style.display = 'none';
         if (addITLink) addITLink.style.display = 'flex';
     }
+
+    // CS / CMA practical training displays
+    ['cs', 'cma'].forEach(course => {
+        const p = `${course}_training`;
+        const org = value(`${p}_org`);
+        const type = value(`${p}_type`);
+        const start = courseMonthYear(value(`${p}_start_month`), value(`${p}_start_year`));
+        const end = value(`${p}_is_current`) === 'yes' ? 'Present' : courseMonthYear(value(`${p}_end_month`), value(`${p}_end_year`));
+        const period = start || end ? `${start || '…'} – ${end || '…'}` : '';
+        const linkId = course === 'cs' ? 'addCsTrainingLink' : 'addCmaTrainingLink';
+        setCourseEntry(`train-${course}`, linkId, !!(org || type), org || (course === 'cs' ? 'CS Training' : 'CMA Practical Training'), [
+            fieldValueLabel(`${p}_type`, type),
+            period
+        ]);
+    });
+    const trainingBoost = document.getElementById('trainingBoost');
+    if (trainingBoost) trainingBoost.style.display = hasCourseTraining(qualification, d) ? 'none' : 'inline-block';
 
     // Update Articleship boost badge
     const empBoost = document.getElementById('empBoost');
@@ -4199,7 +4742,7 @@ function refreshSavedDisplays(d) {
         'semi_experienced': 'Semi Qualified (Experienced)'
     };
     const jobPrefValue = (d.job_preference || '').trim();
-    const jobPortalDisplay = jobPortalMap[jobPrefValue] || '';
+    const jobPortalDisplay = jobPortalMap[jobPrefValue] || coursePreferenceLabel(jobPrefValue);
     setCareerValue('career-job-portal', jobPortalDisplay, 'Add default portal');
 
     setCareerValue('career-preferred-location', d.preferred_locations, 'Add preferred locations');
@@ -4282,16 +4825,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     // CA Final Groups handling
     function handleJobPrefChange() {
         const v = jobPrefSelect.value;
+        const { qualification: prefQualification, stage } = splitPreference(v);
         applyPortalSections(v);
         if (artCompGroup) artCompGroup.style.display = 'none';
         if (ctcGroup) ctcGroup.style.display = 'none';
 
+        // CA industrial training only (the CA articleship completion date)
         if (v === 'industrial') {
             if (artCompGroup) artCompGroup.style.display = 'block';
         }
-        if (['fresher_experienced', 'semi_experienced'].includes(v)) {
+        if (['fresher_experienced', 'semi_experienced'].includes(stage)) {
             if (ctcGroup) ctcGroup.style.display = 'block';
         }
+
+        // CA Final fields exist only for CA; CS / CMA preferences stop here.
+        if (prefQualification && prefQualification !== 'ca') return;
 
         // Apply CA Final logic based on job preference
         const isAppearingStudent = ['articleship', 'industrial', 'semi_fresher', 'semi_experienced'].includes(v);
@@ -4312,6 +4860,33 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
     if (jobPrefSelect) jobPrefSelect.addEventListener('change', handleJobPrefChange);
+
+    // ----- Course (CA / CS / CMA) -----
+    const qualificationSelect = document.getElementById('qualification');
+    setQualification(currentQualification());
+    if (qualificationSelect) {
+        qualificationSelect.addEventListener('change', () => {
+            setQualification(qualificationSelect.value);
+            if (jobPrefSelect) jobPrefSelect.dispatchEvent(new Event('change'));
+            refreshHeader();
+        });
+    }
+
+    // ----- CS / CMA "Currently in training" -----
+    document.querySelectorAll('.training-current-chk').forEach(chk => {
+        chk.addEventListener('change', () => {
+            const prefix = chk.dataset.prefix;
+            const hidden = document.getElementById(`${prefix}_is_current`);
+            if (hidden) hidden.value = chk.checked ? 'yes' : '';
+            if (chk.checked) {
+                ['end_year', 'end_month'].forEach(suffix => {
+                    const field = document.getElementById(`${prefix}_${suffix}`);
+                    if (field) field.value = '';
+                });
+            }
+            syncTrainingCurrent(prefix);
+        });
+    });
 
     // ----- Notice Period Logic -----
     const noticeSelect = document.getElementById('notice_period');
@@ -4372,6 +4947,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
     document.querySelectorAll('.populate-future-years').forEach(sel => {
         for (let y = currentYear; y <= currentYear + 10; y++) {
+            const opt = document.createElement('option');
+            opt.value = opt.textContent = y;
+            sel.appendChild(opt);
+        }
+    });
+    // CS / CMA training end: up to three years ahead (still in training)
+    document.querySelectorAll('.populate-training-years').forEach(sel => {
+        for (let y = currentYear + 3; y >= 1990; y--) {
             const opt = document.createElement('option');
             opt.value = opt.textContent = y;
             sel.appendChild(opt);

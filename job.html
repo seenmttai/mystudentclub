@@ -11,16 +11,20 @@
   <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
   <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
   <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
+<!-- msc:importmap -->
+<script type="importmap">{"imports":{"/scripts/courses/courses.js":"/scripts/courses/courses.js?v=c74dfb52a7"}}</script>
+<!-- /msc:importmap -->
 </head>
 
 <body>
-    <script>
+    <script type="module">
         // Extract parameters
         const urlParams = new URLSearchParams(window.location.search);
         const jobId = urlParams.get('id');
         const rawJobType = (urlParams.get('type') || '').toLowerCase().trim();
 
-        // Map job type to portal page
+        // Map job type to portal page. These CA types are on thousands of
+        // static job pages; they redirect without loading anything else.
         const portalPages = {
             'industrial': '/',
             'fresher': '/ca-fresher-jobs',
@@ -29,14 +33,32 @@
             'articleship': '/ca-articleship-opportunities'
         };
 
-        // Redirect to appropriate portal with parameters
-        if (jobId && portalPages[rawJobType]) {
-            window.location.href = `${portalPages[rawJobType]}?id=${encodeURIComponent(jobId)}&type=${encodeURIComponent(rawJobType)}`;
-        } else if (jobId) {
-            window.location.href = `/?id=${encodeURIComponent(jobId)}&type=industrial`;
+        function redirect() {
+            // Redirect to appropriate portal with parameters
+            if (jobId && portalPages[rawJobType]) {
+                window.location.href = `${portalPages[rawJobType]}?id=${encodeURIComponent(jobId)}&type=${encodeURIComponent(rawJobType)}`;
+            } else if (jobId) {
+                window.location.href = `/?id=${encodeURIComponent(jobId)}&type=industrial`;
+            } else {
+                // Default to home if parameters missing
+                window.location.href = '/';
+            }
+        }
+
+        // The CS / CMA types (cs-fresher, cma-articleship, ...) come from the
+        // lane registry. Every other type, including CA words the registry
+        // knows but this page never mapped ("experienced"), and any type when
+        // the registry cannot load, falls back to industrial as before.
+        if (jobId && rawJobType && !portalPages[rawJobType]) {
+            import('/scripts/courses/courses.js')
+                .then(({ laneForShareType }) => {
+                    const lane = laneForShareType(rawJobType);
+                    if (lane && lane.qualification !== 'ca') portalPages[rawJobType] = lane.path;
+                })
+                .catch(() => { /* registry unavailable */ })
+                .then(redirect);
         } else {
-            // Default to home if parameters missing
-            window.location.href = '/';
+            redirect();
         }
     </script>
     <p style="text-align: center; padding: 2rem;">My Student Club</p>

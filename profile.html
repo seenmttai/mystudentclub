@@ -8,21 +8,36 @@
     <meta name="description" content="Manage your professional profile on My Student Club. Keep your details updated for better job matches.">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/scripts/portal-style.css">
-    <link rel="stylesheet" href="/scripts/profile.css">
-<script src="scripts/vendor/pdf.min.js"></script>
-    <script src="/scripts/supabase.js"></script>
-    <script src="/scripts/supabase-init.js"></script>
-    <script src="/scripts/error-reporter.js"></script>
+    <link rel="stylesheet" href="/scripts/portal-style.css?v=980eab9d8d">
+    <link rel="stylesheet" href="/scripts/profile.css?v=22cf196442">
+    <style>
+        /* CA / CS / CMA blocks. scripts/profile.js keeps <body data-qualification>
+           on the student's course; !important beats the inline display that
+           applyPortalSections and refreshSavedDisplays set. */
+        body[data-qualification="ca"] [data-qualification]:not([data-qualification~="ca"]),
+        body[data-qualification="cs"] [data-qualification]:not([data-qualification~="cs"]),
+        body[data-qualification="cma"] [data-qualification]:not([data-qualification~="cma"]) { display: none !important; }
+        .p2-course-picker { padding: 0.85rem 1rem; margin: 0 0 1rem; background: var(--p2-blue-light); border-radius: var(--p2-radius-sm); }
+        .p2-form-row.p2-course-picker label { color: var(--p2-text); font-size: 0.85rem; }
+        .p2-course-picker select { max-width: 420px; }
+        .p2-course-picker-hint { margin: 0.4rem 0 0; font-size: 0.78rem; color: var(--p2-text-secondary); }
+    </style>
+<script src="/scripts/vendor/pdf.min.js?v=a4641a2626"></script>
+    <script src="/scripts/supabase.js?v=3340dea380"></script>
+    <script src="/scripts/supabase-init.js?v=3db3329018"></script>
+    <script src="/scripts/error-reporter.js?v=cddd98dbec"></script>
   <!-- Standard Favicon -->
 <!-- Fallback Shortcut Icon -->
   <!-- Standard Favicon -->
   <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
   <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
   <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
+<!-- msc:importmap -->
+<script type="importmap">{"imports":{"/scripts/courses/courses.js":"/scripts/courses/courses.js?v=c74dfb52a7","/scripts/courses/profile-fields.js":"/scripts/courses/profile-fields.js?v=eb1909a23c","/scripts/profile-completion.js":"/scripts/profile-completion.js?v=10203e96ac","/scripts/profile.js":"/scripts/profile.js?v=4d49e481f1"}}</script>
+<!-- /msc:importmap -->
 </head>
 
-<body>
+<body data-qualification="ca">
     <!-- ========== SITE HEADER ========== -->
     <header class="site-header">
         <div class="header-container">
@@ -160,7 +175,7 @@
                     <a href="#sec-headline" class="p2-ql">Profile Summary <span class="p2-ql-action">Add</span></a>
                     <a href="#sec-skills" class="p2-ql">Key Skills <span class="p2-ql-action">Add</span></a>
                     <a href="#sec-certification" class="p2-ql">Certification <span class="p2-ql-action">Add</span></a>
-                    <a href="#sec-ca-education" class="p2-ql">CA Education <span class="p2-ql-action">Add</span></a>
+                    <a href="#sec-ca-education" class="p2-ql"><span id="qlEducationLabel">CA Education</span> <span class="p2-ql-action">Add</span></a>
                     <a href="#sec-employment" class="p2-ql" data-route="experience">Experience <span class="p2-ql-action">Add</span></a>
                     <a href="#sec-projects" class="p2-ql">Projects <span class="p2-ql-action">Add</span></a>
                     <a href="#sec-career" class="p2-ql">Career Profile <span class="p2-ql-action">Add</span></a>
@@ -355,9 +370,20 @@
                         </div>
                         <p class="p2-card-sub">Your qualifications help employers know your educational background</p>
 
+                        <!-- Course: switches the education, training and job portal sections -->
+                        <div class="p2-form-row p2-course-picker">
+                            <label for="qualification">I am a</label>
+                            <select id="qualification" name="qualification">
+                                <option value="ca">CA student (ICAI)</option>
+                                <option value="cs">CS student (ICSI)</option>
+                                <option value="cma">CMA student (ICMAI)</option>
+                            </select>
+                            <p class="p2-course-picker-hint">Your education, training and job portal sections follow this.</p>
+                        </div>
+
                         <div class="p2-saved-display" id="edu-display">
                             <!-- CA Final -->
-                            <div class="p2-saved-entry" id="edu-final-display" style="display:none;" data-portal="fresher_fresher,fresher_experienced,semi_fresher,semi_experienced">
+                            <div class="p2-saved-entry" id="edu-final-display" style="display:none;" data-qualification="ca" data-portal="fresher_fresher,fresher_experienced,semi_fresher,semi_experienced">
                                 <div class="p2-saved-entry-header">
                                     <div>
                                         <div class="p2-saved-title" id="edu-final-title">CA Final</div>
@@ -367,7 +393,7 @@
                                 </div>
                             </div>
                             <!-- CA Inter -->
-                            <div class="p2-saved-entry" id="edu-inter-display" style="display:none;">
+                            <div class="p2-saved-entry" id="edu-inter-display" style="display:none;" data-qualification="ca">
                                 <div class="p2-saved-entry-header">
                                     <div>
                                         <div class="p2-saved-title" id="edu-inter-title">CA Inter</div>
@@ -377,13 +403,53 @@
                                 </div>
                             </div>
                             <!-- CA Foundation -->
-                            <div class="p2-saved-entry" id="edu-found-display" style="display:none;">
+                            <div class="p2-saved-entry" id="edu-found-display" style="display:none;" data-qualification="ca">
                                 <div class="p2-saved-entry-header">
                                     <div>
                                         <div class="p2-saved-title" id="edu-found-title">CA Foundation</div>
                                         <div class="p2-saved-meta" id="edu-found-meta"></div>
                                     </div>
                                     <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-ca-foundation-form"><i class="fas fa-pencil-alt"></i></a>
+                                </div>
+                            </div>
+                            <!-- CS Professional -->
+                            <div class="p2-saved-entry" id="edu-cs-prof-display" style="display:none;" data-qualification="cs">
+                                <div class="p2-saved-entry-header">
+                                    <div>
+                                        <div class="p2-saved-title" id="edu-cs-prof-title">CS Professional</div>
+                                        <div class="p2-saved-meta" id="edu-cs-prof-meta"></div>
+                                    </div>
+                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-cs-prof-form"><i class="fas fa-pencil-alt"></i></a>
+                                </div>
+                            </div>
+                            <!-- CS Executive -->
+                            <div class="p2-saved-entry" id="edu-cs-exec-display" style="display:none;" data-qualification="cs">
+                                <div class="p2-saved-entry-header">
+                                    <div>
+                                        <div class="p2-saved-title" id="edu-cs-exec-title">CS Executive</div>
+                                        <div class="p2-saved-meta" id="edu-cs-exec-meta"></div>
+                                    </div>
+                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-cs-exec-form"><i class="fas fa-pencil-alt"></i></a>
+                                </div>
+                            </div>
+                            <!-- CMA Final -->
+                            <div class="p2-saved-entry" id="edu-cma-final-display" style="display:none;" data-qualification="cma">
+                                <div class="p2-saved-entry-header">
+                                    <div>
+                                        <div class="p2-saved-title" id="edu-cma-final-title">CMA Final</div>
+                                        <div class="p2-saved-meta" id="edu-cma-final-meta"></div>
+                                    </div>
+                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-cma-final-form"><i class="fas fa-pencil-alt"></i></a>
+                                </div>
+                            </div>
+                            <!-- CMA Intermediate -->
+                            <div class="p2-saved-entry" id="edu-cma-inter-display" style="display:none;" data-qualification="cma">
+                                <div class="p2-saved-entry-header">
+                                    <div>
+                                        <div class="p2-saved-title" id="edu-cma-inter-title">CMA Intermediate</div>
+                                        <div class="p2-saved-meta" id="edu-cma-inter-meta"></div>
+                                    </div>
+                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-cma-inter-form"><i class="fas fa-pencil-alt"></i></a>
                                 </div>
                             </div>
                             <!-- Graduation -->
@@ -432,14 +498,18 @@
 
                         <!-- Add-more links (Naukri style) -->
                         <div class="p2-add-links" id="edu-add-links">
-                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-ca-final-form" id="addFinalLink"><i class="fas fa-plus-circle"></i> Add CA Final details</a>
-                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-ca-inter-form" id="addInterLink"><i class="fas fa-plus-circle"></i> Add CA Inter details</a>
-                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-ca-foundation-form" id="addFoundLink"><i class="fas fa-plus-circle"></i> Add CA Foundation details</a>
+                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-ca-final-form" id="addFinalLink" data-qualification="ca"><i class="fas fa-plus-circle"></i> Add CA Final details</a>
+                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-ca-inter-form" id="addInterLink" data-qualification="ca"><i class="fas fa-plus-circle"></i> Add CA Inter details</a>
+                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-ca-foundation-form" id="addFoundLink" data-qualification="ca"><i class="fas fa-plus-circle"></i> Add CA Foundation details</a>
+                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-cs-prof-form" id="addCsProfLink" data-qualification="cs"><i class="fas fa-plus-circle"></i> Add CS Professional details</a>
+                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-cs-exec-form" id="addCsExecLink" data-qualification="cs"><i class="fas fa-plus-circle"></i> Add CS Executive details</a>
+                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-cma-final-form" id="addCmaFinalLink" data-qualification="cma"><i class="fas fa-plus-circle"></i> Add CMA Final details</a>
+                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-cma-inter-form" id="addCmaInterLink" data-qualification="cma"><i class="fas fa-plus-circle"></i> Add CMA Intermediate details</a>
                             <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-grad-form" id="addGradLink"><i class="fas fa-plus-circle"></i> Add B.Com / Graduation (Optional)</a>
                             <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-12-form" id="addClass12Link"><i class="fas fa-plus-circle"></i> Add Class XII details</a>
                             <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-10-form" id="addClass10Link"><i class="fas fa-plus-circle"></i> Add Class X details</a>
                             <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-other-edu-form" id="addOtherEduLink"><i class="fas fa-plus-circle"></i> Add other education details</a>
-                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-addl-qual-form" id="addAddlQualLink"><i class="fas fa-plus-circle"></i> Add additional qualifications (CFA, CS, CMA...)</a>
+                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-addl-qual-form" id="addAddlQualLink"><i class="fas fa-plus-circle"></i> <span>Add additional qualifications (CFA, <span data-qualification="ca">CS, CMA</span><span data-qualification="cs">CA, CMA</span><span data-qualification="cma">CA, CS</span>...)</span></a>
                         </div>
 
                         <!-- Additional Qualifications Form -->
@@ -449,9 +519,10 @@
                                 <div class="p2-form-row p2-full-width">
                                     <label>Select all that apply</label>
                                     <div class="p2-chip-group" id="addl_qual_chips" style="flex-wrap:wrap; gap:0.4rem;">
+                                        <label class="p2-chip" data-qualification="cs cma"><input type="checkbox" value="CA" style="display:none;"> CA</label>
                                         <label class="p2-chip"><input type="checkbox" value="CFA" style="display:none;"> CFA</label>
-                                        <label class="p2-chip"><input type="checkbox" value="CS" style="display:none;"> CS</label>
-                                        <label class="p2-chip"><input type="checkbox" value="CMA" style="display:none;"> CMA</label>
+                                        <label class="p2-chip" data-qualification="ca cma"><input type="checkbox" value="CS" style="display:none;"> CS</label>
+                                        <label class="p2-chip" data-qualification="ca cs"><input type="checkbox" value="CMA" style="display:none;"> CMA</label>
                                         <label class="p2-chip"><input type="checkbox" value="ACCA" style="display:none;"> ACCA</label>
                                         <label class="p2-chip"><input type="checkbox" value="CPA" style="display:none;"> CPA</label>
                                         <label class="p2-chip"><input type="checkbox" value="FRM" style="display:none;"> FRM</label>
@@ -474,7 +545,7 @@
                         </div>
 
                         <!-- CA Final Form -->
-                        <div class="p2-card-form collapsed" id="sec-ca-final-form" data-portal="fresher_fresher,fresher_experienced,semi_fresher,semi_experienced">
+                        <div class="p2-card-form collapsed" id="sec-ca-final-form" data-qualification="ca" data-portal="fresher_fresher,fresher_experienced,semi_fresher,semi_experienced">
                             <div class="p2-inline-form-title">CA Final</div>
                             <div class="p2-form-grid">
                                 <div class="p2-form-row" data-portal="semi_fresher,semi_experienced">
@@ -587,7 +658,7 @@
                         </div>
 
                         <!-- CA Inter Form -->
-                        <div class="p2-card-form collapsed" id="sec-ca-inter-form">
+                        <div class="p2-card-form collapsed" id="sec-ca-inter-form" data-qualification="ca">
                             <div class="p2-inline-form-title">CA Inter</div>
                             <div class="p2-form-grid">
                                 <div class="p2-form-row">
@@ -670,7 +741,7 @@
                         </div>
 
                         <!-- CA Foundation Form -->
-                        <div class="p2-card-form collapsed" id="sec-ca-foundation-form">
+                        <div class="p2-card-form collapsed" id="sec-ca-foundation-form" data-qualification="ca">
                             <div class="p2-inline-form-title">CA Foundation</div>
                             <div class="p2-form-grid">
                                 <div class="p2-form-row">
@@ -733,6 +804,159 @@
                             </div>
                             <div class="p2-inline-actions">
                                 <button type="button" class="p2-inline-cancel" data-close="sec-ca-foundation-form">Cancel</button>
+                            </div>
+                        </div>
+
+                        <!-- CS Executive Form -->
+                        <div class="p2-card-form collapsed" id="sec-cs-exec-form" data-qualification="cs">
+                            <div class="p2-inline-form-title">CS Executive</div>
+                            <div class="p2-form-grid">
+                                <div class="p2-form-row">
+                                    <label for="cs_icsi_reg_no">ICSI registration no.</label>
+                                    <input type="text" id="cs_icsi_reg_no" name="cs_icsi_reg_no" placeholder="e.g., 221234567">
+                                </div>
+                                <div class="p2-form-row">
+                                    <label for="cs_exec_status">CS Executive status</label>
+                                    <select id="cs_exec_status" name="cs_exec_status">
+                                        <option value="">Select Status</option>
+                                        <option value="pursuing">Pursuing</option>
+                                        <option value="module1">Module 1 passed</option>
+                                        <option value="module2">Module 2 passed</option>
+                                        <option value="both">Both modules passed</option>
+                                    </select>
+                                </div>
+                                <div class="p2-form-row">
+                                    <label for="cs_exec_attempts">CS Executive attempts</label>
+                                    <input type="number" id="cs_exec_attempts" name="cs_exec_attempts" min="1" placeholder="e.g., 1">
+                                </div>
+                                <div class="p2-form-row">
+                                    <label>When did you pass</label>
+                                    <div style="display:flex; gap:0.5rem;">
+                                        <select id="cs_exec_clear_month" name="cs_exec_clear_month" style="flex:1;">
+                                            <option value="">Month</option>
+                                            <option value="01">Jan</option><option value="02">Feb</option><option value="03">Mar</option><option value="04">Apr</option><option value="05">May</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Aug</option><option value="09">Sep</option><option value="10">Oct</option><option value="11">Nov</option><option value="12">Dec</option>
+                                        </select>
+                                        <select id="cs_exec_clear_year" name="cs_exec_clear_year" class="populate-past-years" style="flex:1;"><option value="">Year</option></select>
+                                    </div>
+                                </div>
+                                <div class="p2-form-row">
+                                    <label for="cs_edp_done">Executive Development Programme (EDP)</label>
+                                    <select id="cs_edp_done" name="cs_edp_done">
+                                        <option value="">Select</option>
+                                        <option value="yes">Completed</option>
+                                        <option value="no">Not yet</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="p2-inline-actions">
+                                <button type="button" class="p2-inline-cancel" data-close="sec-cs-exec-form">Cancel</button>
+                            </div>
+                        </div>
+
+                        <!-- CS Professional Form -->
+                        <div class="p2-card-form collapsed" id="sec-cs-prof-form" data-qualification="cs">
+                            <div class="p2-inline-form-title">CS Professional</div>
+                            <div class="p2-form-grid">
+                                <div class="p2-form-row">
+                                    <label for="cs_prof_status">CS Professional status</label>
+                                    <select id="cs_prof_status" name="cs_prof_status">
+                                        <option value="">Select Status</option>
+                                        <option value="not_started">Not started</option>
+                                        <option value="pursuing">Pursuing</option>
+                                        <option value="partial">Some modules passed</option>
+                                        <option value="passed">All modules passed</option>
+                                    </select>
+                                </div>
+                                <div class="p2-form-row">
+                                    <label>When did you pass</label>
+                                    <div style="display:flex; gap:0.5rem;">
+                                        <select id="cs_prof_clear_month" name="cs_prof_clear_month" style="flex:1;">
+                                            <option value="">Month</option>
+                                            <option value="01">Jan</option><option value="02">Feb</option><option value="03">Mar</option><option value="04">Apr</option><option value="05">May</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Aug</option><option value="09">Sep</option><option value="10">Oct</option><option value="11">Nov</option><option value="12">Dec</option>
+                                        </select>
+                                        <select id="cs_prof_clear_year" name="cs_prof_clear_year" class="populate-past-years" style="flex:1;"><option value="">Year</option></select>
+                                    </div>
+                                </div>
+                                <div class="p2-form-row">
+                                    <label for="cs_acs_no">ACS membership no.</label>
+                                    <input type="text" id="cs_acs_no" name="cs_acs_no" placeholder="e.g., A12345">
+                                </div>
+                            </div>
+                            <div class="p2-inline-actions">
+                                <button type="button" class="p2-inline-cancel" data-close="sec-cs-prof-form">Cancel</button>
+                            </div>
+                        </div>
+
+                        <!-- CMA Intermediate Form -->
+                        <div class="p2-card-form collapsed" id="sec-cma-inter-form" data-qualification="cma">
+                            <div class="p2-inline-form-title">CMA Intermediate</div>
+                            <div class="p2-form-grid">
+                                <div class="p2-form-row">
+                                    <label for="cma_icmai_reg_no">ICMAI registration no.</label>
+                                    <input type="text" id="cma_icmai_reg_no" name="cma_icmai_reg_no" placeholder="e.g., 12345678">
+                                </div>
+                                <div class="p2-form-row">
+                                    <label for="cma_inter_status">CMA Intermediate status</label>
+                                    <select id="cma_inter_status" name="cma_inter_status">
+                                        <option value="">Select Status</option>
+                                        <option value="pursuing">Pursuing</option>
+                                        <option value="group1">Group I passed</option>
+                                        <option value="group2">Group II passed</option>
+                                        <option value="both">Both groups passed</option>
+                                    </select>
+                                </div>
+                                <div class="p2-form-row">
+                                    <label for="cma_inter_attempts">CMA Intermediate attempts</label>
+                                    <input type="number" id="cma_inter_attempts" name="cma_inter_attempts" min="1" placeholder="e.g., 1">
+                                </div>
+                                <div class="p2-form-row">
+                                    <label>When did you pass</label>
+                                    <div style="display:flex; gap:0.5rem;">
+                                        <select id="cma_inter_clear_month" name="cma_inter_clear_month" style="flex:1;">
+                                            <option value="">Month</option>
+                                            <option value="01">Jan</option><option value="02">Feb</option><option value="03">Mar</option><option value="04">Apr</option><option value="05">May</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Aug</option><option value="09">Sep</option><option value="10">Oct</option><option value="11">Nov</option><option value="12">Dec</option>
+                                        </select>
+                                        <select id="cma_inter_clear_year" name="cma_inter_clear_year" class="populate-past-years" style="flex:1;"><option value="">Year</option></select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p2-inline-actions">
+                                <button type="button" class="p2-inline-cancel" data-close="sec-cma-inter-form">Cancel</button>
+                            </div>
+                        </div>
+
+                        <!-- CMA Final Form -->
+                        <div class="p2-card-form collapsed" id="sec-cma-final-form" data-qualification="cma">
+                            <div class="p2-inline-form-title">CMA Final</div>
+                            <div class="p2-form-grid">
+                                <div class="p2-form-row">
+                                    <label for="cma_final_status">CMA Final status</label>
+                                    <select id="cma_final_status" name="cma_final_status">
+                                        <option value="">Select Status</option>
+                                        <option value="not_started">Not started</option>
+                                        <option value="pursuing">Pursuing</option>
+                                        <option value="group3">Group III passed</option>
+                                        <option value="group4">Group IV passed</option>
+                                        <option value="both">Both groups passed</option>
+                                    </select>
+                                </div>
+                                <div class="p2-form-row">
+                                    <label>When did you pass</label>
+                                    <div style="display:flex; gap:0.5rem;">
+                                        <select id="cma_final_clear_month" name="cma_final_clear_month" style="flex:1;">
+                                            <option value="">Month</option>
+                                            <option value="01">Jan</option><option value="02">Feb</option><option value="03">Mar</option><option value="04">Apr</option><option value="05">May</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Aug</option><option value="09">Sep</option><option value="10">Oct</option><option value="11">Nov</option><option value="12">Dec</option>
+                                        </select>
+                                        <select id="cma_final_clear_year" name="cma_final_clear_year" class="populate-past-years" style="flex:1;"><option value="">Year</option></select>
+                                    </div>
+                                </div>
+                                <div class="p2-form-row">
+                                    <label for="cma_acma_no">ACMA membership no.</label>
+                                    <input type="text" id="cma_acma_no" name="cma_acma_no" placeholder="e.g., 45678">
+                                </div>
+                            </div>
+                            <div class="p2-inline-actions">
+                                <button type="button" class="p2-inline-cancel" data-close="sec-cma-final-form">Cancel</button>
                             </div>
                         </div>
 
@@ -940,7 +1164,7 @@
 
                     <!-- ===== EMPLOYMENT ===== -->
                     <!-- ===== ARTICLESHIP & TRAINING ===== -->
-                    <section class="p2-card" id="sec-articleship" data-portal="industrial,fresher_fresher,fresher_experienced,semi_fresher,semi_experienced">
+                    <section class="p2-card" id="sec-articleship" data-qualification="ca" data-portal="industrial,fresher_fresher,fresher_experienced,semi_fresher,semi_experienced">
                         <div class="p2-card-header">
                             <h2>Articleship &amp; Industrial Training <span class="p2-boost" id="empBoost">Add 12%</span></h2>
                         </div>
@@ -1125,6 +1349,135 @@
                             </div>
                             <div class="p2-inline-actions">
                                 <button type="button" class="p2-inline-cancel" data-close="sec-it-form">Cancel</button>
+                                <button type="button" class="p2-btn-save">Save</button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ===== CS / CMA PRACTICAL TRAINING ===== -->
+                    <section class="p2-card" id="sec-pro-training" data-qualification="cs cma">
+                        <div class="p2-card-header">
+                            <h2><span data-qualification="cs">CS Training</span><span data-qualification="cma">CMA Practical Training</span> <span class="p2-boost" id="trainingBoost">Add 12%</span></h2>
+                        </div>
+                        <p class="p2-card-sub" data-qualification="cs">Your ICSI training with a Practising Company Secretary or a company helps recruiters understand your practical experience</p>
+                        <p class="p2-card-sub" data-qualification="cma">Your ICMAI practical training under a Practising Cost Accountant (Form T-1) or in an organisation (Form T-4) helps recruiters understand your practical experience</p>
+
+                        <div class="p2-saved-display">
+                            <div class="p2-saved-entry" id="train-cs-display" style="display:none;" data-qualification="cs">
+                                <div class="p2-saved-entry-header">
+                                    <div>
+                                        <div class="p2-saved-title" id="train-cs-title">CS Training</div>
+                                        <div class="p2-saved-meta" id="train-cs-meta"></div>
+                                    </div>
+                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-cs-training-form"><i class="fas fa-pencil-alt"></i></a>
+                                </div>
+                            </div>
+                            <div class="p2-saved-entry" id="train-cma-display" style="display:none;" data-qualification="cma">
+                                <div class="p2-saved-entry-header">
+                                    <div>
+                                        <div class="p2-saved-title" id="train-cma-title">CMA Practical Training</div>
+                                        <div class="p2-saved-meta" id="train-cma-meta"></div>
+                                    </div>
+                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-cma-training-form"><i class="fas fa-pencil-alt"></i></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p2-add-links">
+                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-cs-training-form" id="addCsTrainingLink" data-qualification="cs"><i class="fas fa-plus-circle"></i> Add CS training details</a>
+                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-cma-training-form" id="addCmaTrainingLink" data-qualification="cma"><i class="fas fa-plus-circle"></i> Add practical training details</a>
+                        </div>
+
+                        <!-- CS Training Form -->
+                        <div class="p2-card-form collapsed" id="sec-cs-training-form" data-qualification="cs">
+                            <div class="p2-inline-form-title">CS Training</div>
+                            <div class="p2-form-grid">
+                                <div class="p2-form-row">
+                                    <label for="cs_training_type">Training with</label>
+                                    <select id="cs_training_type" name="cs_training_type">
+                                        <option value="">Select</option>
+                                        <option value="pcs">Practising Company Secretary (firm)</option>
+                                        <option value="company">Company</option>
+                                    </select>
+                                </div>
+                                <div class="p2-form-row">
+                                    <label for="cs_training_org">Training organisation</label>
+                                    <input type="text" id="cs_training_org" name="cs_training_org" placeholder="e.g., ABC &amp; Associates, Company Secretaries">
+                                </div>
+                                <div class="p2-form-row">
+                                    <label>Start Date</label>
+                                    <div style="display:flex; gap:0.5rem;">
+                                        <select id="cs_training_start_year" name="cs_training_start_year" class="populate-past-years" style="flex:1;"><option value="">Year</option></select>
+                                        <select id="cs_training_start_month" name="cs_training_start_month" style="flex:1;">
+                                            <option value="">Month</option>
+                                            <option value="01">Jan</option><option value="02">Feb</option><option value="03">Mar</option><option value="04">Apr</option><option value="05">May</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Aug</option><option value="09">Sep</option><option value="10">Oct</option><option value="11">Nov</option><option value="12">Dec</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="p2-form-row">
+                                    <label>Completion Date</label>
+                                    <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.85rem;font-weight:normal;margin-bottom:0.5rem;cursor:pointer;">
+                                        <input type="checkbox" id="cs_training_current_chk" class="training-current-chk" data-prefix="cs_training" style="cursor:pointer;"> Currently in training
+                                    </label>
+                                    <div id="cs_training_end_wrap" style="display:flex; gap:0.5rem;">
+                                        <select id="cs_training_end_year" name="cs_training_end_year" class="populate-training-years" style="flex:1;"><option value="">Year</option></select>
+                                        <select id="cs_training_end_month" name="cs_training_end_month" style="flex:1;">
+                                            <option value="">Month</option>
+                                            <option value="01">Jan</option><option value="02">Feb</option><option value="03">Mar</option><option value="04">Apr</option><option value="05">May</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Aug</option><option value="09">Sep</option><option value="10">Oct</option><option value="11">Nov</option><option value="12">Dec</option>
+                                        </select>
+                                    </div>
+                                    <input type="hidden" id="cs_training_is_current" name="cs_training_is_current" value="">
+                                </div>
+                            </div>
+                            <div class="p2-inline-actions">
+                                <button type="button" class="p2-inline-cancel" data-close="sec-cs-training-form">Cancel</button>
+                                <button type="button" class="p2-btn-save">Save</button>
+                            </div>
+                        </div>
+
+                        <!-- CMA Practical Training Form -->
+                        <div class="p2-card-form collapsed" id="sec-cma-training-form" data-qualification="cma">
+                            <div class="p2-inline-form-title">CMA Practical Training</div>
+                            <div class="p2-form-grid">
+                                <div class="p2-form-row">
+                                    <label for="cma_training_type">Training with</label>
+                                    <select id="cma_training_type" name="cma_training_type">
+                                        <option value="">Select</option>
+                                        <option value="t1">Practising Cost Accountant (Form T-1)</option>
+                                        <option value="t4">Recognised organisation (Form T-4)</option>
+                                    </select>
+                                </div>
+                                <div class="p2-form-row">
+                                    <label for="cma_training_org">Training organisation</label>
+                                    <input type="text" id="cma_training_org" name="cma_training_org" placeholder="e.g., XYZ &amp; Co., Cost Accountants">
+                                </div>
+                                <div class="p2-form-row">
+                                    <label>Start Date</label>
+                                    <div style="display:flex; gap:0.5rem;">
+                                        <select id="cma_training_start_year" name="cma_training_start_year" class="populate-past-years" style="flex:1;"><option value="">Year</option></select>
+                                        <select id="cma_training_start_month" name="cma_training_start_month" style="flex:1;">
+                                            <option value="">Month</option>
+                                            <option value="01">Jan</option><option value="02">Feb</option><option value="03">Mar</option><option value="04">Apr</option><option value="05">May</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Aug</option><option value="09">Sep</option><option value="10">Oct</option><option value="11">Nov</option><option value="12">Dec</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="p2-form-row">
+                                    <label>Completion Date</label>
+                                    <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.85rem;font-weight:normal;margin-bottom:0.5rem;cursor:pointer;">
+                                        <input type="checkbox" id="cma_training_current_chk" class="training-current-chk" data-prefix="cma_training" style="cursor:pointer;"> Currently in training
+                                    </label>
+                                    <div id="cma_training_end_wrap" style="display:flex; gap:0.5rem;">
+                                        <select id="cma_training_end_year" name="cma_training_end_year" class="populate-training-years" style="flex:1;"><option value="">Year</option></select>
+                                        <select id="cma_training_end_month" name="cma_training_end_month" style="flex:1;">
+                                            <option value="">Month</option>
+                                            <option value="01">Jan</option><option value="02">Feb</option><option value="03">Mar</option><option value="04">Apr</option><option value="05">May</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Aug</option><option value="09">Sep</option><option value="10">Oct</option><option value="11">Nov</option><option value="12">Dec</option>
+                                        </select>
+                                    </div>
+                                    <input type="hidden" id="cma_training_is_current" name="cma_training_is_current" value="">
+                                </div>
+                            </div>
+                            <div class="p2-inline-actions">
+                                <button type="button" class="p2-inline-cancel" data-close="sec-cma-training-form">Cancel</button>
                                 <button type="button" class="p2-btn-save">Save</button>
                             </div>
                         </div>
@@ -1725,7 +2078,7 @@
                                     </div>
                                 </div>
                                 <input type="hidden" id="preferred_industries" name="preferred_industries">
-                                <div class="p2-form-row p2-full-width" data-portal="articleship,industrial">
+                                <div class="p2-form-row p2-full-width" data-portal="articleship,industrial" data-qualification="ca">
                                     <label>Preferred Firm Type (select all that apply)</label>
                                     <div class="p2-chip-group" id="preferred_firm_type_chips" style="flex-wrap:wrap; gap:0.4rem;">
                                         <label class="p2-chip"><input type="checkbox" value="Big 4" style="display:none;"> Big 4</label>
@@ -2059,9 +2412,9 @@
     </div>
 
 
-    <script src="/scripts/profile-state.js"></script>
-    <script type="module" src="scripts/profile.js?v=20261009_1"></script>
-    <script src="/scripts/placed-card.js" defer></script>
+    <script src="/scripts/profile-state.js?v=d830f45387"></script>
+    <script type="module" src="/scripts/profile.js?v=4d49e481f1"></script>
+    <script src="/scripts/placed-card.js?v=c493f6c4b4" defer></script>
 
 </body>
 

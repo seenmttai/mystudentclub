@@ -6,16 +6,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Applications - My Student Club</title>
   <meta name="description"
-    content="Track all your job applications across Industrial Training, Articleship, and CA jobs at My Student Club.">
-  <meta name="keywords" content="job applications, application history, CA jobs tracker">
+    content="Track all your job applications across Industrial Training, Articleship, and CA, CS and CMA jobs at My Student Club.">
+  <meta name="keywords" content="job applications, application history, CA jobs tracker, CS jobs tracker, CMA jobs tracker">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="/scripts/portal-style.css?v=2.1">
-  <link rel="stylesheet" href="/scripts/history-style.css?v=2.1">
+  <link rel="stylesheet" href="/scripts/portal-style.css?v=980eab9d8d">
+  <link rel="stylesheet" href="/scripts/history-style.css?v=4ec44f49d1">
 <link rel="canonical" href="https://www.mystudentclub.com/history.html" />
   <meta name="robots" content="noindex, follow">
-  <script src="scripts/vendor/supabase.js"></script>
+  <script src="/scripts/vendor/supabase.js?v=3340dea380"></script>
   <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging-compat.js"></script>
   <!-- Standard Favicon -->
@@ -24,6 +24,9 @@
   <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
   <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
   <link rel="apple-touch-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
+<!-- msc:importmap -->
+<script type="importmap">{"imports":{"/scripts/courses/applications.js":"/scripts/courses/applications.js?v=a80bcad170","/scripts/courses/courses.js":"/scripts/courses/courses.js?v=c74dfb52a7","/scripts/courses/match.js":"/scripts/courses/match.js?v=8b17489b7a","/scripts/courses/profile-fields.js":"/scripts/courses/profile-fields.js?v=eb1909a23c","/scripts/date-utils.js":"/scripts/date-utils.js?v=6866dc99e2","/scripts/history.js":"/scripts/history.js?v=e31ffca08b"}}</script>
+<!-- /msc:importmap -->
 </head>
 
 <body>
@@ -126,35 +129,35 @@
         <span class="mobile-tab-label">All</span>
         <span class="pill-count" data-count="all">0</span>
       </button>
-      <button class="footer-tab" data-portal="Industrial Training Job Portal" type="button">
+      <button class="footer-tab" data-portal="industrial" type="button">
         <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16" style="stroke-width: 1.8;"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
         <span class="desktop-tab-label">Industrial Training</span>
         <span class="mobile-tab-label">Industrial</span>
-        <span class="pill-count" data-count="Industrial Training Job Portal">0</span>
+        <span class="pill-count" data-count="industrial">0</span>
       </button>
-      <button class="footer-tab" data-portal="Articleship Jobs" type="button">
+      <button class="footer-tab" data-portal="articleship" type="button">
         <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16" style="stroke-width: 1.8;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
         <span class="desktop-tab-label">Articleship</span>
         <span class="mobile-tab-label">Articleship</span>
-        <span class="pill-count" data-count="Articleship Jobs">0</span>
+        <span class="pill-count" data-count="articleship">0</span>
       </button>
-      <button class="footer-tab" data-portal="Semi Qualified Jobs" type="button">
+      <button class="footer-tab" data-portal="semi" type="button">
         <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16" style="stroke-width: 1.8;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
         <span class="desktop-tab-label">Semi Qualified</span>
         <span class="mobile-tab-label">Semi Qualified</span>
-        <span class="pill-count" data-count="Semi Qualified Jobs">0</span>
+        <span class="pill-count" data-count="semi">0</span>
       </button>
-      <button class="footer-tab" data-portal="Fresher Jobs" type="button">
+      <button class="footer-tab" data-portal="fresher" type="button">
         <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16" style="stroke-width: 1.8;"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
         <span class="desktop-tab-label">CA Freshers</span>
         <span class="mobile-tab-label">CA Freshers</span>
-        <span class="pill-count" data-count="Fresher Jobs">0</span>
+        <span class="pill-count" data-count="fresher">0</span>
       </button>
-      <button class="footer-tab" data-portal="Experienced CA Jobs" type="button">
+      <button class="footer-tab" data-portal="experienced" type="button">
         <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16" style="stroke-width: 1.8;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
         <span class="desktop-tab-label">Experienced CA</span>
         <span class="mobile-tab-label">Experienced CA</span>
-        <span class="pill-count" data-count="Experienced CA Jobs">0</span>
+        <span class="pill-count" data-count="experienced">0</span>
       </button>
     </nav>
 
@@ -191,11 +194,11 @@
           <label for="portalSelectMobile">Jobs Portal</label>
           <select id="portalSelectMobile" class="filter-control">
             <option value="all">All Jobs</option>
-            <option value="Industrial Training Job Portal">Industrial Training</option>
-            <option value="Articleship Jobs">Articleship</option>
-            <option value="Semi Qualified Jobs">Semi Qualified</option>
-            <option value="Fresher Jobs">CA Freshers</option>
-            <option value="Experienced CA Jobs">Experienced CA</option>
+            <option value="industrial">Industrial Training</option>
+            <option value="articleship">Articleship</option>
+            <option value="semi">Semi Qualified</option>
+            <option value="fresher">CA Freshers</option>
+            <option value="experienced">Experienced CA</option>
           </select>
         </div>
         <div class="filter-group">
@@ -253,8 +256,8 @@
     </div>
   </div>
 
-  <script type="module" src="/scripts/history.js?v=2.3"></script>
-  <script type="module" src="/scripts/date-utils.js"></script>
+  <script type="module" src="/scripts/history.js?v=e31ffca08b"></script>
+  <script type="module" src="/scripts/date-utils.js?v=6866dc99e2"></script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-1450NCVE65"></script>
   <script>
     window.dataLayer = window.dataLayer || [];

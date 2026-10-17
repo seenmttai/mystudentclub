@@ -12,9 +12,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <!-- Supabase -->
-  <script src="/scripts/supabase.js"></script>
-  <script src="/scripts/supabase-init.js"></script>
-  <script src="/scripts/error-reporter.js"></script>
+  <script src="/scripts/supabase.js?v=3340dea380"></script>
+  <script src="/scripts/supabase-init.js?v=3db3329018"></script>
+  <script src="/scripts/error-reporter.js?v=cddd98dbec"></script>
 
   <!-- Favicons -->
   <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
@@ -651,6 +651,7 @@
     .cand-chip.ca-badge { background: #e0e7ff; color: #4338ca; }
     .cand-chip.loc-badge { background: #f1f5f9; color: #475569; }
     .cand-chip.np-badge { background: #fef3c7; color: #b45309; }
+    .cand-chip.course-badge { background: #4338ca; color: #fff; font-weight: 700; }
 
     .candidate-card-actions {
       border-top: 1px solid var(--gray-100);
@@ -950,6 +951,9 @@
       }
     }
   </style>
+<!-- msc:importmap -->
+<script type="importmap">{"imports":{"/scripts/courses/applications.js":"/scripts/courses/applications.js?v=a80bcad170","/scripts/courses/courses.js":"/scripts/courses/courses.js?v=c74dfb52a7","/scripts/courses/match.js":"/scripts/courses/match.js?v=8b17489b7a","/scripts/courses/profile-fields.js":"/scripts/courses/profile-fields.js?v=eb1909a23c"}}</script>
+<!-- /msc:importmap -->
 </head>
 
 <body>
@@ -1162,8 +1166,8 @@
             </table>
           </div>
 
-          <!-- CA Credentials & Academics -->
-          <div class="profile-card-block">
+          <!-- CA Credentials & Academics (CS / CMA candidates get their own rows) -->
+          <div class="profile-card-block" id="modalAcademicsBlock">
             <h4><i class="fas fa-graduation-cap"></i> CA Status & Academics</h4>
             <table class="profile-info-table">
               <tr>
@@ -1186,7 +1190,7 @@
           </div>
 
           <!-- Articleship & Experience -->
-          <div class="profile-card-block full-width">
+          <div class="profile-card-block full-width" id="modalExperienceBlock">
             <h4><i class="fas fa-building"></i> Articleship & Work Experience</h4>
             <table class="profile-info-table">
               <tr>
@@ -1257,6 +1261,49 @@
     let activeSelectedJob = null;
     let currentActiveCandidate = null;
     let currentStatusFilter = 'all';
+
+    // Course helpers (ES modules; this script is a classic one): a candidate's
+    // qualification (CA / CS / CMA), their CS / CMA rows, and pairing an
+    // application with its job. If they fail to load, every candidate shows
+    // the CA layout and applications pair with jobs by id as before.
+    let courseHelpers = null;
+    const courseHelpersReady = Promise.all([
+      import('/scripts/courses/courses.js'),
+      import('/scripts/courses/applications.js')
+    ]).then(([courses, applications]) => {
+      courseHelpers = {
+        qualificationOf: courses.qualificationOf,
+        applicationRef: applications.applicationRef,
+        applicationMatchesJob: applications.applicationMatchesJob,
+        candidateDetails: applications.candidateDetails
+      };
+      return courseHelpers;
+    }).catch(err => {
+      console.error('Could not load course helpers:', err);
+      return null;
+    });
+
+    // Does this job_applications row belong to this job? Job ids repeat across
+    // the four tables, so the table has to agree as well.
+    function appMatchesJob(app, job) {
+      if (!app || !job) return false;
+      if (courseHelpers) return courseHelpers.applicationMatchesJob(app, job);
+      return app.job_id?.toString() === job.id?.toString() || app.job_table?.includes(job.id?.toString());
+    }
+
+    // { table, id } of the job a (job id, table) pair names. The table may be
+    // a legacy word ("semi") or "Table|uuid", where the uuid is the job's id
+    // and the job id passed in is a placeholder.
+    function jobRef(jobId, tableName) {
+      const raw = tableName && tableName !== 'undefined' && tableName !== 'null' ? String(tableName) : '';
+      if (courseHelpers) return courseHelpers.applicationRef({ job_id: jobId, job_table: raw });
+      const bar = raw.indexOf('|');
+      return bar >= 0 ? { table: raw.slice(0, bar), id: raw.slice(bar + 1) } : { table: raw, id: String(jobId ?? '') };
+    }
+
+    function jobRowId(tableName, jobId) {
+      return `jobRow_${String(tableName || '').split('|')[0].replace(/[^a-z0-9]/gi, '')}_${String(jobId).replace(/[^a-z0-9-]/gi, '')}`;
+    }
 
     // Check Recruiter Authentication
     async function initDashboard() {
@@ -1357,6 +1404,7 @@
 
         // Fetch application counts across all jobs
         const allJobIds = jobs.map(j => j.id);
+        await courseHelpersReady;
         if (allJobIds.length > 0) {
           const { data: appsData } = await supabaseClient
             .from('job_applications')
@@ -1365,10 +1413,7 @@
 
           if (appsData) {
             // Match applications belonging to this recruiter's jobs
-            applications = appsData.filter(app => {
-              const targetJobId = app.job_id?.toString();
-              return jobs.some(j => j.id?.toString() === targetJobId || app.job_table?.includes(j.id?.toString()));
-            });
+            applications = appsData.filter(app => jobs.some(j => appMatchesJob(app, j)));
           }
         }
 
@@ -1396,7 +1441,7 @@
 
     function getPortalBadgeClass(portal) {
       if (portal?.includes('Industrial')) return { cls: 'portal-badge-it', label: 'Industrial Training' };
-      if (portal?.includes('Fresher')) return { cls: 'portal-badge-fresher', label: 'CA Fresher' };
+      if (portal?.includes('Fresher')) return { cls: 'portal-badge-fresher', label: 'Fresher' };
       if (portal?.includes('Semi')) return { cls: 'portal-badge-semi', label: 'Semi-Qualified' };
       return { cls: 'portal-badge-art', label: 'Articleship' };
     }
@@ -1409,7 +1454,7 @@
           <div class="empty-state-box">
             <i class="fas fa-folder-open empty-state-icon"></i>
             <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--dark); margin-bottom: 0.4rem;">No Vacancies Posted Yet</h3>
-            <p style="font-size: 0.85rem; max-width: 380px; margin: 0 auto 1.25rem;">Publish your CA Industrial Training, Fresher, or Articleship openings to receive candidate applications.</p>
+            <p style="font-size: 0.85rem; max-width: 380px; margin: 0 auto 1.25rem;">Publish your Industrial Training, Fresher, or Articleship openings for CA, CS and CMA candidates to receive applications.</p>
             <a href="/post-a-job.html" class="nav-btn nav-btn-primary"><i class="fas fa-plus"></i> Post a Vacancy</a>
           </div>
         `;
@@ -1418,25 +1463,25 @@
 
       container.innerHTML = jobs.map(job => {
         const portalInfo = getPortalBadgeClass(job.table_name);
-        const jobApps = applications.filter(a => a.job_id?.toString() === job.id?.toString() || a.job_table?.includes(job.id?.toString()));
+        const jobApps = applications.filter(a => appMatchesJob(a, job));
         const appCount = jobApps.length;
         const dateStr = job.Created_At ? new Date(job.Created_At).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) : 'Recent';
 
         return `
-          <div class="job-row" id="jobRow_${job.id}">
+          <div class="job-row" id="${jobRowId(job.table_name, job.id)}">
             <div class="job-main-info">
               <div class="job-title-row">
                 <span class="job-portal-badge ${portalInfo.cls}">${portalInfo.label}</span>
-                <span class="job-company-title">${job.Company || 'Company Opening'}</span>
+                <span class="job-company-title">${escapeText(job.Company || 'Company Opening')}</span>
               </div>
               <div class="job-meta-row">
-                <span class="job-meta-item"><i class="fas fa-tag"></i> ${job.Category || 'Finance'}</span>
-                <span class="job-meta-item"><i class="fas fa-map-marker-alt"></i> ${job.Location || 'City'}</span>
+                <span class="job-meta-item"><i class="fas fa-tag"></i> ${escapeText(job.Category || 'Finance')}</span>
+                <span class="job-meta-item"><i class="fas fa-map-marker-alt"></i> ${escapeText(job.Location || 'City')}</span>
                 <span class="job-meta-item"><i class="fas fa-calendar-alt"></i> Posted ${dateStr}</span>
               </div>
             </div>
             <div class="job-action-area">
-              <button type="button" class="applicant-counter-btn" onclick="openJobApplicants('${job.id}', '${job.table_name}')">
+              <button type="button" class="applicant-counter-btn" data-job-id="${escapeText(job.id)}" data-job-table="${escapeText(job.table_name)}">
                 <i class="fas fa-users-viewfinder"></i> View Applicants
                 <span class="count-badge">${appCount}</span>
               </button>
@@ -1482,16 +1527,18 @@
         const profile = profilesMap[app.user_id] || {};
         const candName = profile.full_name || profile.name || 'Candidate ' + app.user_id.substring(0, 5);
         const initial = candName.charAt(0).toUpperCase();
-        const matchingJob = jobs.find(j => j.id?.toString() === app.job_id?.toString() || app.job_table?.includes(j.id?.toString()));
+        const matchingJob = jobs.find(j => appMatchesJob(app, j));
         const jobTitle = matchingJob ? `${matchingJob.Category} at ${matchingJob.Company}` : 'Job Vacancy';
         const timeAgo = formatTimeAgo(app.applied_at);
 
+        // Profile and job fields are typed by students and hirers: escape them,
+        // and pass ids through data- attributes rather than inline handlers.
         return `
-          <div class="recent-applicant-item" onclick="openCandidateModalById('${app.user_id}', '${app.job_id}', '${app.job_table}')">
-            <div class="applicant-avatar-sm">${initial}</div>
+          <div class="recent-applicant-item" data-user-id="${escapeText(app.user_id)}" data-job-id="${escapeText(app.job_id)}" data-job-table="${escapeText(app.job_table)}">
+            <div class="applicant-avatar-sm">${escapeText(initial)}</div>
             <div class="recent-app-details">
-              <div class="recent-app-name">${candName}</div>
-              <div class="recent-app-job">${jobTitle}</div>
+              <div class="recent-app-name">${escapeText(candName)}</div>
+              <div class="recent-app-job">${escapeText(jobTitle)}</div>
               <div class="recent-app-time"><i class="fas fa-clock"></i> Applied ${timeAgo}</div>
             </div>
             <i class="fas fa-chevron-right" style="color: var(--gray-300); font-size: 0.8rem;"></i>
@@ -1510,15 +1557,20 @@
 
     // Open Applicants View for a specific job
     async function openJobApplicants(jobId, tableName) {
-      const job = recruiterJobs.find(j => j.id?.toString() === jobId?.toString());
-      activeSelectedJob = job || { id: jobId, table_name: tableName, Company: 'Job' };
+      // Resolve the job the way applications are paired with jobs: a recent
+      // applicant's row may say "semi" or carry "Table|uuid".
+      await courseHelpersReady;
+      const ref = jobRef(jobId, tableName);
+      const table = ref.table;
+      const job = recruiterJobs.find(j => j.id?.toString() === ref.id && (!table || !j.table_name || j.table_name === table));
+      activeSelectedJob = job || { id: ref.id, table_name: table, Company: 'Job' };
 
       document.querySelectorAll('.job-row').forEach(r => r.classList.remove('active-selected'));
-      const activeRow = document.getElementById(`jobRow_${jobId}`);
+      const activeRow = document.getElementById(jobRowId(activeSelectedJob.table_name || table, activeSelectedJob.id));
       if (activeRow) activeRow.classList.add('active-selected');
 
-      document.getElementById('activeJobTitleDisplay').textContent = `Applicants for ${job.Category || 'Role'} (${job.Company || 'Company'})`;
-      document.getElementById('activeJobMetaDisplay').textContent = `${job.Location || 'City'} • ${job.table_name || tableName}`;
+      document.getElementById('activeJobTitleDisplay').textContent = `Applicants for ${activeSelectedJob.Category || 'Role'} (${activeSelectedJob.Company || 'Company'})`;
+      document.getElementById('activeJobMetaDisplay').textContent = `${activeSelectedJob.Location || 'City'} • ${activeSelectedJob.table_name || table}`;
 
       const section = document.getElementById('applicantsSection');
       section.classList.add('show');
@@ -1528,7 +1580,7 @@
       const grid = document.getElementById('applicantCardsGrid');
       grid.innerHTML = '<div class="empty-state-box" style="grid-column: 1/-1;"><i class="fas fa-spinner fa-spin empty-state-icon"></i><p>Loading candidate profiles...</p></div>';
 
-      const jobApps = allApplicantsData.filter(a => a.job_id?.toString() === jobId?.toString() || a.job_table?.includes(jobId?.toString()));
+      const jobApps = allApplicantsData.filter(a => appMatchesJob(a, activeSelectedJob));
       const userIds = jobApps.map(a => a.user_id).filter(Boolean);
 
       let profilesList = [];
@@ -1547,11 +1599,16 @@
         return {
           application_id: app.id,
           user_id: app.user_id,
-          job_id: jobId,
-          job_table: tableName,
+          job_id: activeSelectedJob.id,
+          job_table: table,
+          // The row as stored, so a status change updates only this application.
+          app_job_id: app.job_id,
+          app_job_table: app.job_table,
           applied_at: app.applied_at,
           status: app.status || 'new',
           notes: app.notes || '',
+          // Profiles without a course are CA, as before.
+          qualification: (pObj && courseHelpers ? courseHelpers.qualificationOf(pObj) : null) || 'ca',
           profile: pObj?.profile || {},
           ocr_cv: pObj?.ocr_cv || ''
         };
@@ -1607,37 +1664,45 @@
         const articleship = p.articleship_firm_name ? `${p.articleship_firm_name}` : (p.industrial_training_company || 'Not provided');
         const notice = p.notice_period || 'Not provided';
         const email = p.email || c.user_id;
-        const phone = p.contact_number || p.phone || '';
+        const phone = String(p.contact_number || p.phone || '');
+        // CS / CMA candidates: course chip, exam stage and training instead of CA attempts.
+        const course = c.qualification !== 'ca' && courseHelpers ? courseHelpers.candidateDetails(c.qualification, p) : null;
+        const academicChips = course
+          ? `<span class="cand-chip course-badge">${escapeText(course.chip)}</span>
+                <span class="cand-chip ca-badge"><i class="fas fa-graduation-cap"></i> ${escapeText(course.stage || 'Not provided')}</span>
+                <span class="cand-chip loc-badge"><i class="fas fa-building"></i> ${escapeText(course.training || p.articleship_firm_name || p.industrial_training_company || 'Not provided')}</span>`
+          : `<span class="cand-chip ca-badge"><i class="fas fa-graduation-cap"></i> ${escapeText(caAttempts)}</span>
+                <span class="cand-chip loc-badge"><i class="fas fa-building"></i> ${escapeText(articleship)}</span>`;
+        const mailSubject = encodeURIComponent(`Application for ${activeSelectedJob?.Category || 'Role'}`);
 
         return `
           <div class="candidate-card">
             <div>
               <div class="candidate-card-top">
-                <div class="candidate-avatar-large">${initial}</div>
+                <div class="candidate-avatar-large">${escapeText(initial)}</div>
                 <div class="candidate-title-info">
-                  <h3>${name}</h3>
-                  <div class="candidate-contact-preview"><i class="fas fa-envelope"></i> ${email}</div>
+                  <h3>${escapeText(name)}</h3>
+                  <div class="candidate-contact-preview"><i class="fas fa-envelope"></i> ${escapeText(email)}</div>
                   <div class="candidate-contact-preview"><i class="fas fa-clock"></i> Applied ${formatTimeAgo(c.applied_at)}</div>
                 </div>
               </div>
 
               <div class="candidate-chips">
-                <span class="cand-chip ca-badge"><i class="fas fa-graduation-cap"></i> ${caAttempts}</span>
-                <span class="cand-chip loc-badge"><i class="fas fa-building"></i> ${articleship}</span>
-                <span class="cand-chip loc-badge"><i class="fas fa-location-dot"></i> ${city}</span>
-                <span class="cand-chip np-badge"><i class="fas fa-calendar-check"></i> ${notice}</span>
+                ${academicChips}
+                <span class="cand-chip loc-badge"><i class="fas fa-location-dot"></i> ${escapeText(city)}</span>
+                <span class="cand-chip np-badge"><i class="fas fa-calendar-check"></i> ${escapeText(notice)}</span>
               </div>
             </div>
 
             <div class="candidate-card-actions">
-              <button type="button" class="view-cv-btn" onclick="openCandidateFullModal('${c.user_id}')">
+              <button type="button" class="view-cv-btn" data-user-id="${escapeText(c.user_id)}">
                 <i class="fas fa-file-pdf"></i> View Profile & CV
               </button>
 
-              ${email ? `<a href="mailto:${email}?subject=Application for ${activeSelectedJob?.Category || 'Role'}" class="quick-contact-btn" title="Email Candidate"><i class="fas fa-envelope"></i></a>` : ''}
+              ${email ? `<a href="mailto:${encodeURIComponent(email).replace(/%40/g, '@')}?subject=${mailSubject}" class="quick-contact-btn" title="Email Candidate"><i class="fas fa-envelope"></i></a>` : ''}
               ${phone ? `<a href="https://wa.me/${phone.replace(/[^0-9]/g,'')}" target="_blank" class="quick-contact-btn" title="WhatsApp Candidate" style="color: #10b981;"><i class="fab fa-whatsapp"></i></a>` : ''}
 
-              <select class="status-select-sm" onchange="changeCandidateStatus('${c.user_id}', this.value)">
+              <select class="status-select-sm" data-user-id="${escapeText(c.user_id)}">
                 <option value="new" ${c.status === 'new' ? 'selected' : ''}>New</option>
                 <option value="shortlisted" ${c.status === 'shortlisted' ? 'selected' : ''}>Shortlisted</option>
                 <option value="interviewed" ${c.status === 'interviewed' ? 'selected' : ''}>Interview</option>
@@ -1667,7 +1732,8 @@
 
       document.getElementById('modalCandidateAvatar').textContent = initial;
       document.getElementById('modalCandidateName').textContent = name;
-      document.getElementById('modalCandidateSubtext').textContent = `Applied for ${activeSelectedJob?.Category || 'Job'} • ${formatTimeAgo(candidate.applied_at)}`;
+      const course = candidate.qualification !== 'ca' && courseHelpers ? courseHelpers.candidateDetails(candidate.qualification, p) : null;
+      document.getElementById('modalCandidateSubtext').textContent = `${course ? `${course.chip} candidate • ` : ''}Applied for ${activeSelectedJob?.Category || 'Job'} • ${formatTimeAgo(candidate.applied_at)}`;
       document.getElementById('modalStatusSelect').value = candidate.status || 'new';
 
       // Populate Contact details
@@ -1677,6 +1743,42 @@
       document.getElementById('modalCandCity').textContent = p.current_city || p.city || '—';
       document.getElementById('modalCandNotice').textContent = p.notice_period || 'Not provided';
 
+      // Academics & experience: CA rows, or the candidate's CS / CMA rows.
+      modalAcademicsBlock.innerHTML = caAcademicsBlockHtml;
+      modalExperienceBlock.innerHTML = caExperienceBlockHtml;
+      if (course) {
+        renderDetailBlock(modalAcademicsBlock, 'fa-graduation-cap', course.academics);
+        renderDetailBlock(modalExperienceBlock, 'fa-building', course.experience);
+      } else {
+        fillCaDetails(p);
+      }
+      document.getElementById('modalProfileSummary').textContent = p.profile_summary || p.headline || 'Not provided';
+
+      // Setup CV tab
+      renderCandidateCvView(candidate);
+
+      switchModalTab('profile');
+      document.getElementById('candidateProfileModal').classList.add('show');
+    }
+
+    // The modal's CA blocks as written in the page, restored for every CA candidate.
+    const modalAcademicsBlock = document.getElementById('modalAcademicsBlock');
+    const modalExperienceBlock = document.getElementById('modalExperienceBlock');
+    const caAcademicsBlockHtml = modalAcademicsBlock.innerHTML;
+    const caExperienceBlockHtml = modalExperienceBlock.innerHTML;
+
+    function renderDetailBlock(block, icon, section) {
+      block.innerHTML = `
+            <h4><i class="fas ${icon}"></i> ${escapeText(section.title)}</h4>
+            <table class="profile-info-table">
+              ${section.rows.map(([label, value]) => `<tr>
+                <td class="label">${escapeText(label)}:</td>
+                <td class="value">${escapeText(value || 'Not provided')}</td>
+              </tr>`).join('')}
+            </table>`;
+    }
+
+    function fillCaDetails(p) {
       // Populate Academics
       document.getElementById('modalCaFinal').textContent = p.ca_final_attempts ? `${p.ca_final_attempts} Attempts (${p.ca_final_clear_year || 'Cleared'})` : 'Not provided';
       document.getElementById('modalCaInter').textContent = p.ca_inter_attempts ? `${p.ca_inter_attempts} Attempts` : 'Not provided';
@@ -1688,13 +1790,6 @@
       document.getElementById('modalArticleshipDomain').textContent = p.articleship_domain || p.articleship_client_industries || 'Not provided';
       document.getElementById('modalItCompany').textContent = p.industrial_training_company || 'None';
       document.getElementById('modalKeySkills').textContent = p.key_skills || 'Not provided';
-      document.getElementById('modalProfileSummary').textContent = p.profile_summary || p.headline || 'Not provided';
-
-      // Setup CV tab
-      renderCandidateCvView(candidate);
-
-      switchModalTab('profile');
-      document.getElementById('candidateProfileModal').classList.add('show');
     }
 
     async function openCandidateModalById(userId, jobId, tableName) {
@@ -1726,7 +1821,7 @@
         renderBox.innerHTML = `
           <div class="empty-state-box">
             <i class="fas fa-file-pdf empty-state-icon" style="color: var(--primary);"></i>
-            <h4 style="font-size: 1rem; font-weight: 700; color: var(--dark); margin-bottom: 0.3rem;">${filename}</h4>
+            <h4 style="font-size: 1rem; font-weight: 700; color: var(--dark); margin-bottom: 0.3rem;">${escapeText(filename)}</h4>
             <p style="font-size: 0.85rem; margin-bottom: 1.25rem;">Candidate resume is available for review and download.</p>
             <button type="button" class="nav-btn nav-btn-primary" onclick="downloadCandidateCv()"><i class="fas fa-download"></i> Download Resume</button>
           </div>
@@ -1737,6 +1832,10 @@
     function escapeHtml(text) {
       const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
       return text.replace(/[&<>"']/g, m => map[m]);
+    }
+
+    function escapeText(value) {
+      return escapeHtml(String(value ?? ''));
     }
 
     function downloadCandidateCv() {
@@ -1767,10 +1866,13 @@
 
       try {
         // Update in Supabase
+        // Match the stored row exactly: the same job id can exist in another table.
+        const rowMatch = { user_id: userId, job_id: candidate.app_job_id ?? candidate.job_id };
+        if (candidate.app_job_table) rowMatch.job_table = candidate.app_job_table;
         await supabaseClient
           .from('job_applications')
           .update({ status: newStatus })
-          .match({ user_id: userId, job_id: candidate.job_id });
+          .match(rowMatch);
 
         updateStatusTabCounts(window._currentJobCandidates || []);
       } catch (err) {
@@ -1790,6 +1892,25 @@
     // Close modal on click outside
     document.getElementById('candidateProfileModal').addEventListener('click', (e) => {
       if (e.target.id === 'candidateProfileModal') closeCandidateModal();
+    });
+
+    // Rendered rows carry their ids in data- attributes (the values come from
+    // the database, so they never go into inline handlers).
+    document.getElementById('jobListContainer').addEventListener('click', (e) => {
+      const btn = e.target.closest('.applicant-counter-btn');
+      if (btn) openJobApplicants(btn.dataset.jobId, btn.dataset.jobTable);
+    });
+    document.getElementById('recentApplicantsContainer').addEventListener('click', (e) => {
+      const item = e.target.closest('.recent-applicant-item');
+      if (item) openCandidateModalById(item.dataset.userId, item.dataset.jobId, item.dataset.jobTable);
+    });
+    document.getElementById('applicantCardsGrid').addEventListener('click', (e) => {
+      const btn = e.target.closest('.view-cv-btn');
+      if (btn) openCandidateFullModal(btn.dataset.userId);
+    });
+    document.getElementById('applicantCardsGrid').addEventListener('change', (e) => {
+      const select = e.target.closest('.status-select-sm');
+      if (select) changeCandidateStatus(select.dataset.userId, select.value);
     });
 
     window.addEventListener('DOMContentLoaded', initDashboard);

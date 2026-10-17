@@ -3,7 +3,7 @@
 // The five CA lane pages (index.html, ca-*.html, semi-qualified-ca-jobs.html,
 // experienced-ca-jobs.html) are hand-written. This script owns only marked
 // regions inside them:
-//   <!-- msc:importmap -->       versions every module portal3.js imports
+//   <!-- msc:importmap -->       versions every module the page imports
 //   <!-- msc:lanes -->           the CA | CS | CMA switcher and the lane tabs
 //   <!-- msc:lane-note -->       a rule note on CS/CMA training lanes
 //   <!-- msc:rail-programs -->   right-rail card (CA programmes on CA pages)
@@ -14,7 +14,8 @@
 // Each CS / CMA lane page is a copy of the CA page that reads the same table,
 // with its own title and meta tags and its own regions, so it looks and
 // behaves exactly like the CA page. The SQL migration (cs-cma-portal.sql) is
-// generated from the same patterns.
+// generated from the same patterns, and the other pages that load the course
+// modules (MODULE_PAGES) get the same import map and asset hashes.
 //
 //   node scripts/courses/build-pages.js          write everything
 //   node scripts/courses/build-pages.js --check  exit 1 if anything is stale
@@ -42,35 +43,52 @@ export const REGIONS = ['importmap', 'lanes', 'lane-note', 'rail-programs', 'rai
 
 // ------------------------------------------------------------------ assets
 
-// Every module reachable from portal3.js through relative static imports.
-function moduleGraph(entry) {
+// Import specifiers in a module or inline script: static imports, re-exports
+// and dynamic import('...'), relative or site-absolute, without any ?query.
+const SPECIFIER_PATTERNS = [
+    /^\s*import\s[^'"]*?from\s*['"]([^'"]+)['"]/gm,
+    /^\s*import\s*['"]([^'"]+)['"]/gm,
+    /^\s*export\s[^'"]*?from\s*['"]([^'"]+)['"]/gm,
+    /\bimport\(\s*['"]([^'"]+)['"]\s*\)/g
+];
+
+function specifiersIn(source) {
+    return SPECIFIER_PATTERNS.flatMap(pattern => [...source.matchAll(pattern)].map(match => match[1].split('?')[0]))
+        .filter(spec => spec.startsWith('/') || spec.startsWith('./') || spec.startsWith('../'));
+}
+
+const fileFor = (spec, fromFile) => (spec.startsWith('/') ? join(ROOT, spec) : resolve(dirname(fromFile), spec));
+
+// Every local module reachable from the entry files.
+function moduleGraph(entries) {
     const seen = new Map();
     const visit = file => {
-        if (seen.has(file)) return;
+        if (seen.has(file) || !existsSync(file)) return;
         const source = readFileSync(file, 'utf8');
         seen.set(file, source);
-        const specifiers = [
-            ...source.matchAll(/^\s*import\s[^'"]*?from\s*['"](\.{1,2}\/[^'"]+)['"]/gm),
-            ...source.matchAll(/^\s*import\s*['"](\.{1,2}\/[^'"]+)['"]/gm),
-            ...source.matchAll(/^\s*export\s[^'"]*?from\s*['"](\.{1,2}\/[^'"]+)['"]/gm)
-        ].map(match => match[1]);
-        for (const specifier of specifiers) {
-            const target = resolve(dirname(file), specifier);
-            if (existsSync(target)) visit(target);
-        }
+        for (const spec of specifiersIn(source)) visit(fileFor(spec, file));
     };
-    visit(entry);
+    entries.forEach(visit);
     return seen;
 }
 
 const siteUrl = file => `/${relative(ROOT, file).split(sep).join('/')}`;
 
-function assetVersions() {
-    const graph = moduleGraph(join(ROOT, 'scripts', 'portal3.js'));
+// Module entry points of a page: module <script src> tags and the specifiers
+// its inline scripts import.
+function pageModuleEntries(html, pageFile) {
+    const entries = [...html.matchAll(/<script\b[^>]*type="module"[^>]*src="([^"?#]+)[^"]*"/g)].map(match => match[1]);
+    for (const [, body] of html.matchAll(/<script\b(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)) entries.push(...specifiersIn(body));
+    return entries
+        .filter(spec => !/^https?:/.test(spec) && spec.endsWith('.js'))
+        .map(spec => fileFor(spec.startsWith('/') || spec.startsWith('.') ? spec : `/${spec}`, join(ROOT, pageFile)));
+}
+
+function assetVersions(html, pageFile) {
     const imports = {};
-    for (const [file, source] of graph) {
+    for (const [file, source] of moduleGraph(pageModuleEntries(html, pageFile))) {
         const url = siteUrl(file);
-        if (url !== '/scripts/portal3.js') imports[url] = `${url}?v=${hashOf(source)}`;
+        imports[url] = `${url}?v=${hashOf(source)}`;
     }
     return { importMap: JSON.stringify({ imports: Object.fromEntries(Object.entries(imports).sort()) }), imports };
 }
@@ -79,7 +97,8 @@ function assetVersions() {
 // new page with files cached from the last one. Modules in the import map use
 // the same URL as the map, so a module is never loaded twice.
 function versionAssets(html, imports) {
-    return html.replace(/((?:src|href)=")(\/scripts\/[^"?#]+\.(?:js|css))(?:\?v=[^"]*)?"/g, (whole, attr, url) => {
+    return html.replace(/((?:src|href)=")(\/?scripts\/[^"?#]+\.(?:js|css))(?:\?v=[^"]*)?"/g, (whole, attr, rawUrl) => {
+        const url = rawUrl.startsWith('/') ? rawUrl : `/${rawUrl}`;
         if (imports[url]) return `${attr}${imports[url]}"`;
         const file = join(ROOT, url);
         return existsSync(file) ? `${attr}${url}?v=${hashOf(readFileSync(file, 'utf8'))}"` : whole;
@@ -239,18 +258,40 @@ function setHead(html, lane) {
 
 // ------------------------------------------------------------------ pages
 
-function buildLanePage(sourceHtml, lane, assets, { keepRails }) {
+function setImportMap(html, assets) {
+    return setRegion(html, 'importmap', `${lineIndent(html, html.indexOf(open('importmap')))}<script type="importmap">${assets.importMap}</script>`);
+}
+
+function buildLanePage(sourceHtml, lane, { keepRails }) {
     let html = sourceHtml;
     if (lane.qualification !== 'ca') html = setHead(html, lane);
     html = setBody(html, lane);
-    html = setRegion(html, 'importmap', `${lineIndent(html, html.indexOf(open('importmap')))}<script type="importmap">${assets.importMap}</script>`);
     html = setRegion(html, 'lanes', lanesRegion(lane, lineIndent(html, html.indexOf(open('lanes')))));
     html = setRegion(html, 'lane-note', laneNoteRegion(lane, lineIndent(html, html.indexOf(open('lane-note')))));
     if (!keepRails) {
         html = setRegion(html, 'rail-programs', railRulesRegion(lane, lineIndent(html, html.indexOf(open('rail-programs')))));
         html = setRegion(html, 'rail-resources', '');
     }
-    return versionAssets(html, assets.imports);
+    const assets = assetVersions(html, lane.file);
+    return versionAssets(setImportMap(html, assets), assets.imports);
+}
+
+// Other pages that load the course modules get the same treatment: one
+// import map (replacing any hand-written one) and hashed local assets.
+export const MODULE_PAGES = ['profile.html', 'history.html', 'post-a-job.html', 'hirer-dashboard.html', 'job.html'];
+
+function ensureImportMapRegion(html, file) {
+    if (html.includes(open('importmap'))) return html;
+    let out = html.replace(/\n?[ \t]*<script type="importmap">[\s\S]*?<\/script>/g, '');
+    out = out.replace(/(\n)([ \t]*)<\/head>/, (_, nl, indent) => `${nl}${indent}${open('importmap')}\n${indent}${close('importmap')}\n${indent}</head>`);
+    if (!out.includes(open('importmap'))) throw new Error(`${file}: no </head> for the import map`);
+    return out;
+}
+
+function buildModulePage(file) {
+    const html = ensureImportMapRegion(read(file), file);
+    const assets = assetVersions(html, file);
+    return versionAssets(setImportMap(html, assets), assets.imports);
 }
 
 const JOB_TABLES = ['Industrial Training Job Portal', 'Articleship Jobs', 'Semi Qualified Jobs', 'Fresher Jobs'];
@@ -365,19 +406,19 @@ COMMIT;
 
 // Returns [{ file, html, lane? }] for every page this script owns.
 export function buildAll() {
-    const assets = assetVersions();
     const outputs = [];
     const marked = new Map();
     for (const lane of LANES.filter(l => l.qualification === 'ca')) {
         const html = ensureMarkers(read(lane.file), lane.file);
         marked.set(lane.file, html);
-        outputs.push({ file: lane.file, lane, html: buildLanePage(html, lane, assets, { keepRails: true }) });
+        outputs.push({ file: lane.file, lane, html: buildLanePage(html, lane, { keepRails: true }) });
     }
     for (const lane of LANES.filter(l => l.qualification !== 'ca')) {
         const source = marked.get(lane.source);
         if (!source) throw new Error(`${lane.id}: unknown source page ${lane.source}`);
-        outputs.push({ file: lane.file, lane, html: buildLanePage(source, lane, assets, { keepRails: false }) });
+        outputs.push({ file: lane.file, lane, html: buildLanePage(source, lane, { keepRails: false }) });
     }
+    for (const file of MODULE_PAGES) outputs.push({ file, html: buildModulePage(file) });
     outputs.push({ file: 'cs-cma-portal.sql', html: migrationSql() });
     return outputs;
 }
