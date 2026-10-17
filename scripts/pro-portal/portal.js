@@ -8,7 +8,7 @@ import {
     detectQualifications, matchesPattern, maskContacts, stripMarkdown, truncate, formatPay,
     timeAgo, isLikelyClosed, isoDaysAgo, parseApplyTarget, buildMailto, jobKey, parseJobKey,
     decodeFilters, encodeFilters, countActiveFilters, defaultFilters, WINDOW_OPTIONS, DEFAULT_WINDOW,
-    applicationRow, appliedKeyFromRow, matchContext, isValidJobId, MAX_PLAUSIBLE_PAY, repostSignature
+    applicationRow, appliedKeyFromRow, matchContext, isValidJobId, MAX_PLAUSIBLE_PAY, repostSignature, isCaFirmOnly
 } from './core.js';
 import { unlockJobDetails, getCachedUnlockedJob } from '../browser-guard.js';
 import { getProfileCompletionItems, readCachedProfile } from '../profile-completion.js';
@@ -629,9 +629,16 @@ function qualificationBadges(job, { compact = false } = {}) {
     return `<span class="pp-quals" title="Qualifications this listing mentions">${compact ? '' : '<span class="pp-quals-label">Open to</span>'}${items}</span>`;
 }
 
+function caFirmFlag(job, lane = laneForJob(job)) {
+    return lane.trainerCheck && isCaFirmOnly(`${job.Company || ''}\n${job.Description || ''}`, lane.trainerCheck)
+        ? lane.trainerCheck
+        : null;
+}
+
 function cardHtml(job) {
     const key = jobKey(job.__table, job.id);
     const lane = laneForJob(job);
+    const firmFlag = caFirmFlag(job, lane);
     const pay = payText(job);
     const domain = domainText(job);
     const closed = isLikelyClosed(job.Created_At);
@@ -655,6 +662,7 @@ function cardHtml(job) {
                 ${snippet ? `<p class="pp-card-snippet">${escapeHtml(snippet)}</p>` : ''}
                 <div class="pp-card-foot">
                     ${qualificationBadges(job)}
+                    ${firmFlag ? `<span class="pp-firm-flag" title="${escapeHtml(firmFlag.note)}">${icon('alert')}${escapeHtml(firmFlag.badge)}</span>` : ''}
                     <span class="pp-card-time${closed ? ' is-closed' : ''}">${closed ? `${icon('alert')}Posted ${escapeHtml(days)} · may be filled` : `${fresh ? '<span class="pp-dot" aria-hidden="true"></span>' : ''}Posted ${escapeHtml(days)}`}</span>
                     <span class="pp-applied-flag" ${applied ? '' : 'hidden'}>${icon('check')}Applied</span>
                     <span class="pp-repost" data-repost ${job.__reposts ? '' : 'hidden'}>${job.__reposts ? `Reposted ${job.__reposts + 1}×` : ''}</span>
@@ -1248,7 +1256,7 @@ function emailBody(job) {
         '',
         'Regards,',
         name,
-        `[Phone] | ${app.course.institute} registration no.: [your number]`
+        `[Phone] | ${lane.idLabel || `${app.course.institute} registration no.`}: [your number]`
     ].join('\n');
 }
 
@@ -1262,6 +1270,7 @@ function renderDetail(job, unlocked = null) {
     const description = unlocked?.description || job.Description || '';
     const postUrl = safeHttpUrl(job.posts_link);
     const closed = isLikelyClosed(job.Created_At);
+    const firmFlag = caFirmFlag(job, lane);
     panel.innerHTML = `
         <div class="pp-detail-inner">
             <div class="pp-detail-top">
@@ -1280,6 +1289,7 @@ function renderDetail(job, unlocked = null) {
                 ${postUrl ? `<a class="pp-btn pp-btn-ghost pp-btn-sm" href="${escapeHtml(postUrl)}" target="_blank" rel="noopener noreferrer nofollow">${icon('external')}Original post</a>` : ''}
             </div>
             ${closed ? `<p class="pp-warning" role="note">${icon('alert')}Posted ${escapeHtml(timeAgo(job.Created_At))}. Listings older than two weeks are often filled, so apply soon or check the original post.</p>` : ''}
+            ${firmFlag ? `<p class="pp-warning" role="note">${icon('alert')}${escapeHtml(firmFlag.note)}</p>` : ''}
             ${factsHtml(job)}
             ${eligibilityHtml(job)}
             ${howToApplyHtml(job, state)}

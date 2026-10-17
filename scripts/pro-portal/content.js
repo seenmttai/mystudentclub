@@ -1,8 +1,10 @@
 // Long-form copy for the CS / CMA pages: rule summaries and FAQs. Used only
 // by build-pages.js, so it never ships inside the browser bundle.
 //
-// Every rule below was checked against ICSI / ICMAI sources on 2026-10-17.
-// When a rule changes, update it here and run `npm run build:pro-portal`.
+// Rules were summarised on 2026-10-17 from ICSI / ICMAI pages and, where the
+// institute PDFs could not be fetched (several ICSI training rules), from
+// secondary summaries; the page lists those sources too. When a rule changes,
+// update it here and run `npm run build:pro-portal`.
 
 export const AS_OF = 'October 2026';
 
@@ -11,13 +13,18 @@ export const CONTENT = {
         rulesTitle: 'How CS training works',
         rules: [
             'ICSI calls it long-term practical training. It lasts 21 months and is whole-time.',
-            'You can start after passing both groups of CS Executive and completing the one-month Executive Development Programme (EDP), or after passing CS Professional.',
+            'You can start after passing CS Executive (both groups) or CS Professional. Either way, complete the one-month Executive Development Programme (EDP) first.',
             'Training must be with an ICSI-registered trainer: a Practising Company Secretary with at least one year of practice, a company that employs a whole-time CS and meets ICSI\'s size rules, an eligible LLP, or a body such as MCA, SEBI, the stock exchanges, RBI, a PSU or a bank.',
-            'Register the training with ICSI within 30 days of joining. The first two months are probation.',
+            'Register the training with ICSI soon after joining (the current guidelines allow 30 days). The first two months are probation.',
             'The minimum stipend is ₹5,000 a month nationwide for training registered on or after 1 August 2023. On ICSI\'s own placement portal in October 2026, the typical offer was about ₹10,000.',
             'To become an Associate member (ACS) you need CS Professional, the training (or an exemption), the EDP, the 30-day CLDP and a Training Clearance Certificate.'
         ],
-        rulesSource: { label: 'ICSI: long-term training', url: 'https://www.icsi.edu/long-term-training' },
+        rulesSources: [
+            { label: 'ICSI: long-term training', url: 'https://www.icsi.edu/long-term-training' },
+            { label: 'ICSI placement portal (stipend offers)', url: 'https://placement.icsi.edu/PlacementApp/training' },
+            { label: 'Taxguru: ICSI minimum stipend', url: 'https://taxguru.in/chartered-accountant/icsi-approves-minimum-stipend-of-rs-5000-per-month.html' },
+            { label: 'Taxguru: ICSI trainer entitlement', url: 'https://taxguru.in/chartered-accountant/icsi-revises-training-entitlement-cs-trainers-firms.html' }
+        ],
         howWeList: 'We show vacancies whose description says Company Secretary candidates can apply (for example "CA/CS", "CS Executive passed" or "Company Secretary trainee"), and hide ones that say CS candidates are not eligible or only want CS on top of a mandatory CA. Each listing quotes the line that matched so you can judge for yourself.',
         faq: [
             {
@@ -27,7 +34,7 @@ export const CONTENT = {
             },
             {
                 q: 'When can I start CS training?',
-                a: 'After you pass both groups of CS Executive and complete the one-month EDP, or after you pass CS Professional. Passing one Executive group is not enough.',
+                a: 'After you pass CS Executive (both groups) or CS Professional, and complete the one-month EDP either way. Generally, passing only one Executive group is not enough.',
                 source: 'https://taxguru.in/chartered-accountant/important-announcement-related-completion-one-month-edp-icsi.html'
             },
             {
@@ -63,8 +70,11 @@ export const CONTENT = {
             'Minimum stipend: ₹2,000 a month in year one under a Practising Cost Accountant. In companies (from 1 August 2024), ₹15,000 to ₹20,000 a month in year one for Intermediate students and ₹20,000 to ₹25,000 for Final students, depending on the city.',
             'Report your training to ICMAI within 30 days of joining. You can change your trainer at most three times.'
         ],
-        rulesSource: { label: 'ICMAI: Practical Training Scheme 2020', url: 'https://icmai.in/Home/NewPracticalTrainingScheme2020' },
-        howWeList: 'We show vacancies whose description says CMA (ICMAI) candidates can apply (for example "CA/CMA", "CMA Inter", "ICWA" or "Cost Accountant"). We leave out US CMA roles, "CMA data" (a bank loan report, not the qualification), and listings that say CMA candidates are not eligible or only want CMA on top of a mandatory CA. Each listing quotes the line that matched so you can judge for yourself.',
+        rulesSources: [
+            { label: 'ICMAI: Practical Training Scheme 2020', url: 'https://icmai.in/Home/NewPracticalTrainingScheme2020' },
+            { label: 'ICMAI: practical training FAQ', url: 'https://www.icmai.co.in/upload/Training/FAQ.pdf' }
+        ],
+        howWeList: 'We show vacancies whose description says CMA (ICMAI) candidates can apply (for example "CA/CMA", "CMA Inter", "ICWA" or "Cost Accountant"). We try to leave out US CMA roles (Certified Management Accountant, from the US-based IMA), "CMA data" (a bank loan report, not the qualification), and listings that say CMA candidates are not eligible or only want CMA on top of a mandatory CA. Each listing quotes the line that matched so you can judge for yourself.',
         faq: [
             {
                 q: 'Is CMA articleship the same as CMA practical training?',
@@ -88,8 +98,8 @@ export const CONTENT = {
             },
             {
                 q: 'Is there a separate industrial training phase in CMA?',
-                a: 'No. Unlike CA, CMA has no separate industrial phase: all 15 months can be done in a recognised organisation. PSUs such as Coal India, NLC India and BEL also run Industrial Trainee (Finance) schemes for CMA Inter passed candidates, usually with an age limit.',
-                source: 'https://icmai.in/Home/NewPracticalTrainingScheme2020'
+                a: 'No. Unlike CA, CMA has no separate industrial phase: all 15 months can be done in a recognised organisation (Form T-4), such as a company, bank or PSU. Some PSUs also run Industrial Trainee (Finance) schemes for CA / CMA Inter passed candidates, usually with an age limit, so watch their notifications.',
+                source: 'https://www.icmai.co.in/upload/Training/FAQ.pdf'
             },
             {
                 q: 'A job mentions "CMA data". Is it meant for CMA students?',
@@ -98,8 +108,8 @@ export const CONTENT = {
             },
             {
                 q: 'Is CMA India the same as US CMA?',
-                a: 'No. CMA India is ICMAI\'s statutory qualification and carries rights such as cost audit. US CMA is a separate credential from the US-based IMA. We leave out listings that ask only for US CMA.',
-                source: 'https://icmai.in/'
+                a: 'No. CMA India is ICMAI\'s statutory qualification and carries rights such as cost audit. US CMA (Certified Management Accountant) is a separate credential from the US-based Institute of Management Accountants (IMA). We try to leave out listings that ask only for US CMA.',
+                source: 'https://www.imanet.org/'
             }
         ]
     }

@@ -128,6 +128,13 @@ export function courseMatches(text, match) {
     return !(m.neg && matchesPattern(text, m.neg));
 }
 
+// Firm-training lanes: does the post name a CA firm and no CS / CMA trainer?
+// `check` is a lane's trainerCheck from config ({ trainer, caFirm }).
+export function isCaFirmOnly(text, check) {
+    if (!check?.caFirm || !matchesPattern(text, check.caFirm)) return false;
+    return !(check.trainer && matchesPattern(text, check.trainer));
+}
+
 // Which qualifications does a listing say it is open to?
 // `patterns` is QUAL_PATTERNS from config: { CA: {...}, CS: {...}, CMA: {...} }.
 export function detectQualifications(text, patterns) {

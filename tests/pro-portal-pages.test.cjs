@@ -52,12 +52,16 @@ test('every internal link on the generated pages resolves to a file', async () =
   }
 });
 
-test('the sitemap lists every CS/CMA page and the CA pages link to both hubs', async () => {
+test('the sitemap lists every indexable CS/CMA page and the CA pages link to both hubs', async () => {
   const { COURSES } = await load('config.js');
   const sitemap = read('main-sitemap.xml');
   for (const course of Object.values(COURSES)) {
-    for (const route of [course.hubPath, ...course.lanes.map((l) => l.path)]) {
+    for (const route of [course.hubPath, ...course.lanes.filter((l) => !l.noindex).map((l) => l.path)]) {
       assert.ok(sitemap.includes(`<loc>${SITE}${route}</loc>`), `sitemap: ${route}`);
+    }
+    for (const lane of course.lanes.filter((l) => l.noindex)) {
+      assert.ok(!sitemap.includes(`<loc>${SITE}${lane.path}</loc>`), `sitemap must skip noindex ${lane.path}`);
+      assert.match(read(`${lane.path.slice(1)}.html`), /<meta name="robots" content="noindex, follow">/, lane.path);
     }
   }
   for (const page of ['index.html', 'ca-articleship-opportunities.html', 'semi-qualified-ca-jobs.html', 'ca-fresher-jobs.html', 'experienced-ca-jobs.html']) {

@@ -9,7 +9,7 @@
 //   pre - cheap token gate (any CS / CMA-like word at all)
 //   pos - the course is named as an accepted qualification
 //   neg - the listing turns the course away, or only wants it on top of a
-//         mandatory CA, or means US CMA
+//         mandatory CA, or means US CMA (IMA) / CGMA
 // Labelled against every CS match and a sample of CMA matches from the last
 // 60 days on 2026-10-17: about 99% precise for both.
 
@@ -25,7 +25,7 @@ const CS_MATCH = {
 const CMA_MATCH = {
     pre: String.raw`(\mcmas?\M|icwa|\mcwa\M|icmai?|cost\s*(and|&)?\s*(management|works)?\s*accountan|\macma\M)`,
     pos: String.raw`((?<!us\s)\mcmas?\M(?!\s*[-–:(]?\s*(data|prep|report|credit|statement|projection|format|study|working|project\s+fin|\(?\s*(us|usa|u\.s|ima)\M))|\micwai?s?\M|\maicwa|\mcwa\M|\micmai?\M|cost\s*(and|&)?\s*(management|works)?\s*accountan|\macma\M)`,
-    neg: String.raw`(not\s+eligible[^.\n]*(\mcma\M|icwa)|\mcma\M[^.\n]*(not\s+eligible|should\s+not\s+apply|need\s+not\s+apply)|\mno\s+cma\M|❌[^.\n]*\mcma\M|((\mca\M|chartered\s+accountant)[^.\n•]*(mandatory|required|is\s+a\s+must)|must\s+be\s+(an?\s+)?(qualified\s+)?(\mca\M|chartered\s+accountant))[^.\n•]*(\mcma\M|icwa)[^.\n•]*(advantage|plus|preferable|good\s+to\s+have|in\s+addition)|\mus\s+cpa\s*/\s*cma\M)`
+    neg: String.raw`(not\s+eligible[^.\n]*(\mcma\M|icwa)|\mcma\M[^.\n]*(not\s+eligible|should\s+not\s+apply|need\s+not\s+apply)|\mno\s+cma\M|❌[^.\n]*\mcma\M|((\mca\M|chartered\s+accountant)[^.\n•]*(mandatory|required|is\s+a\s+must)|must\s+be\s+(an?\s+)?(qualified\s+)?(\mca\M|chartered\s+accountant))[^.\n•]*(\mcma\M|icwa)[^.\n•]*(advantage|plus|preferable|good\s+to\s+have|in\s+addition)|\mus\s+cpa\s*/\s*cma\M|certified\s+management\s+accountant|\mcgma\M)`
 };
 
 // Simpler patterns for categories, stages and the CA badge only run in the
@@ -63,6 +63,13 @@ export const LOCATION_ALIASES = {
 };
 
 const category = (key, label, pattern) => ({ key, label, pattern });
+
+// Firm-training lanes read the CA articleship table, so most posts come from
+// CA firms that also invite CS / CMA students. Neither ICSI nor ICMAI counts
+// training at a CA firm, so the browser flags a post that names a CA firm and
+// no CS / CMA trainer (company name + description, browser only).
+// Statutory audit is reserved for CAs, so an audit firm here is a CA firm.
+const CA_FIRM = String.raw`chartered\s+accountan|\mca(\s*/\s*(cs|cma|acca))*\s+(firm|articles?|articled|articleship)\M|\micai\M|\maudit\s+firm|audit\s+and\s+[a-z]+\s+firm|accounting\s+(and|&)\s+audit\s+firm|statutory\s+(and\s+[a-z-]+\s+)?audits?\M`;
 
 // ---------------------------------------------------------------- CS (ICSI)
 
@@ -105,11 +112,11 @@ const CS = {
     ],
     hub: {
         path: '/cs-jobs',
-        title: 'CS Jobs, Internships & Training for Company Secretary Students | My Student Club',
-        description: 'Find CS internships at PCS firms and companies, CS Executive and Professional jobs, and roles for newly qualified and experienced Company Secretaries, updated daily.',
-        h1: 'CS jobs and internships',
+        title: 'CS Jobs & Training (Articleship) for Company Secretary Students | My Student Club',
+        description: 'Find CS training (articleship) openings, jobs for CS Executive and Professional passed students, and roles for newly qualified and experienced Company Secretaries, updated daily.',
+        h1: 'CS jobs and training',
         eyebrow: 'For ICSI students and Company Secretaries',
-        lede: 'Internships at PCS firms and companies, jobs for CS Executive and Professional students, and roles for qualified Company Secretaries. Every listing says CS candidates can apply.',
+        lede: 'Training (articleship) openings, jobs for CS Executive and Professional passed students, and roles for qualified Company Secretaries. Every listing says CS candidates can apply.',
         stageTitle: 'Where are you in CS?'
     },
     lanes: [
@@ -118,29 +125,35 @@ const CS = {
             path: '/cs-articleship',
             table: 'Articleship Jobs',
             pay: 'stipend',
-            tab: 'Training at PCS firms',
+            tab: 'Training at firms',
             aka: 'CS articleship',
-            stage: 'CS Executive passed with EDP, or Professional passed',
+            stage: 'CS Executive or Professional passed, EDP done',
             icon: 'building',
             noun: 'training openings',
-            h1: 'CS training at PCS firms (CS articleship)',
-            title: 'CS Articleship & 21-Month Training at PCS Firms | My Student Club',
-            description: 'CS articleship openings: 21-month ICSI practical training at Practising Company Secretary firms for CS Executive and Professional passed students. Stipend, city and how to apply.',
-            lede: 'Openings for the 21-month practical training at Practising Company Secretary (PCS) and other firms that welcome CS trainees. ICSI calls it long-term practical training; most students say CS articleship.',
+            h1: 'CS articleship and training at firms',
+            title: 'CS Articleship & Trainee Openings at Firms | My Student Club',
+            description: 'CS articleship and trainee openings at firms that invite CS students. We flag CA firms, where you must confirm ICSI will count your 21-month training.',
+            lede: 'Trainee openings at firms that invite CS students. Most come from CA firms, and ICSI counts the 21 months only under a registered trainer such as a Practising Company Secretary, so we flag every CA-firm listing.',
             callout: {
                 tone: 'warn',
                 title: 'Check before you join',
-                summary: 'Train only with an ICSI-registered trainer, usually a Practising Company Secretary.',
-                body: 'ICSI counts the 21 months only with an ICSI-registered trainer, such as a Practising Company Secretary with at least one year of practice. CA and CMA firms are generally not eligible trainers, and many firms here are CA firms that also invite CS students, so ask whether a PCS will register your training. It must be registered with ICSI within 30 days of joining.',
+                summary: 'Most listings here are CA firms. Confirm a Practising Company Secretary will register your training.',
+                body: 'ICSI counts the 21 months only with an ICSI-registered trainer, such as a Practising Company Secretary with at least one year of practice. CA and CMA firms are generally not eligible trainers. Most listings here come from CA firms that also invite CS students, and we mark them "CA firm". Before you accept, ask whether a PCS will register your training, then register it with ICSI soon after joining.',
                 source: 'https://www.icsi.edu/long-term-training'
+            },
+            trainerCheck: {
+                trainer: String.raw`practi[sc]ing\s+company\s+secretar|\mpcs\M|firm\s+of\s+(practi[sc]ing\s+)?company\s+secretar|company\s+secretar(y|ies)\s+firm|\mcs\s+firm|(&|and)\s*(co|associates)\.?,?\s+company\s+secretaries`,
+                caFirm: CA_FIRM,
+                badge: 'CA firm: check ICSI registration',
+                note: 'This listing looks like a CA firm. ICSI generally does not count training at CA firms, so before you join, ask whether a Practising Company Secretary will register your 21-month training with ICSI.'
             },
             applySubject: 'Application for CS Training (Articleship)',
             applyNoun: 'CS training',
-            emptyTitle: 'No PCS firm openings for CS right now',
-            emptyHint: 'Firms post through the day. Try a wider date range or check training in companies.',
+            emptyTitle: 'No firm training openings for CS right now',
+            emptyHint: 'Firms post through the day. Try a wider date range or check semi-qualified CS jobs.',
             tipsTitle: 'Before you accept a training seat',
             tips: [
-                'You can start after passing both groups of CS Executive and the one-month EDP, or after CS Professional.',
+                'You can start after passing CS Executive (both groups) or CS Professional. Either way, finish the one-month EDP first.',
                 'ICSI\'s minimum stipend is ₹5,000 a month with no city tiers. Many PCS firms pay ₹8,000 to ₹15,000.',
                 'Short 3 to 6 month internships do not count towards the 21 months.'
             ]
@@ -152,12 +165,15 @@ const CS = {
             pay: 'stipend',
             tab: 'Training in companies',
             aka: 'CS management trainee',
-            stage: 'CS Executive passed with EDP, or Professional passed',
+            stage: 'CS Executive or Professional passed, EDP done',
             icon: 'factory',
             noun: 'training openings',
             h1: 'CS training in companies (CS management trainee)',
             title: 'CS Management Trainee & Training in Companies | My Student Club',
-            description: 'CS management trainee and 21-month training openings in listed companies, NBFCs, banks and PSUs for CS Executive and Professional passed students. Filter by city and stipend.',
+            // The CA industrial-training table rarely names CS, so this lane is
+            // often empty: keep it out of search results until it has listings.
+            noindex: true,
+            description: 'CS management trainee openings in companies, banks and PSUs for CS Executive and Professional passed students, when companies post them here.',
             lede: 'Training openings in the secretarial and legal teams of companies, banks and PSUs, usually titled CS management trainee. Some students call this CS industrial training.',
             callout: {
                 tone: 'info',
@@ -169,12 +185,12 @@ const CS = {
             applySubject: 'Application for CS Management Trainee',
             applyNoun: 'CS management trainee',
             emptyTitle: 'No company training openings for CS right now',
-            emptyHint: 'Companies post fewer CS training seats than firms. Check training at PCS firms, or widen the date range.',
+            emptyHint: 'Companies rarely post CS training seats here. Check training at firms or semi-qualified CS jobs, or widen the date range.',
             tipsTitle: 'Getting a company training seat',
             tips: [
                 'Listed companies, NBFCs and PSUs run the biggest secretarial teams. Target them first.',
                 'Ask whether the company employs a whole-time CS who can register your training.',
-                'The first two months are probation. After that, changing trainer needs an NOC and 60 days\' notice.'
+                'The first two months are probation. After that, ICSI allows a change of trainer only in exceptional cases, with an NOC and 60 days\' notice. Check the current ICSI training guidelines.'
             ]
         },
         {
@@ -189,8 +205,9 @@ const CS = {
             noun: 'jobs',
             h1: 'Semi-qualified CS jobs',
             title: 'Semi-Qualified CS Jobs for CS Executive & Professional Passed | My Student Club',
-            description: 'Jobs for semi-qualified Company Secretaries who have passed CS Executive or Professional: secretarial executive, compliance executive and legal roles at firms and companies.',
-            lede: 'Paid roles for students who have passed CS Executive or Professional but are not yet ICSI members: secretarial executive, compliance executive and legal associate.',
+            description: 'Jobs that accept semi-qualified CS (Executive or Professional passed): accounts, audit, tax, compliance and secretarial roles at firms and companies.',
+            lede: 'Paid roles open to students who have passed CS Executive or Professional but are not yet ICSI members. Many are accounts, audit and tax roles that also take CS; filter by work area to find secretarial and compliance work.',
+            applyPitch: 'I have passed CS [Executive / Professional] with ICSI and want to build hands-on experience in secretarial compliance, corporate law and governance.',
             applySubject: 'Application for Secretarial / Compliance Executive Role',
             applyNoun: 'secretarial role',
             emptyTitle: 'No semi-qualified CS jobs right now',
@@ -217,6 +234,8 @@ const CS = {
             title: 'Company Secretary Fresher Jobs for Newly Qualified CS | My Student Club',
             description: 'Company Secretary fresher jobs for newly qualified ACS: assistant company secretary, compliance officer and secretarial roles. Updated daily with salary and city.',
             lede: 'Roles for newly qualified Company Secretaries (ACS) with up to one year of experience: assistant company secretary, compliance officer and secretarial officer.',
+            applyPitch: 'I am a newly qualified Company Secretary (ACS) and want to start my career in secretarial compliance, corporate law and governance.',
+            idLabel: 'ICSI membership no.',
             applySubject: 'Application for Company Secretary (Fresher) Role',
             applyNoun: 'Company Secretary role',
             emptyTitle: 'No CS fresher jobs right now',
@@ -243,6 +262,8 @@ const CS = {
             title: 'Experienced Company Secretary Jobs & Compliance Roles | My Student Club',
             description: 'Company Secretary and compliance officer roles for experienced ACS and FCS at listed companies, NBFCs and firms. Filter by city, work area and salary.',
             lede: 'Company Secretary, compliance officer and legal roles for ACS and FCS with one or more years of post-qualification experience.',
+            applyPitch: 'I am a qualified Company Secretary with [N] years of post-qualification experience in secretarial compliance, corporate law and governance.',
+            idLabel: 'ICSI membership no.',
             applySubject: 'Application for Company Secretary Role',
             applyNoun: 'Company Secretary role',
             emptyTitle: 'No experienced CS roles right now',
@@ -299,7 +320,7 @@ const CMA = {
     hub: {
         path: '/cma-jobs',
         title: 'CMA Jobs, Articleship & Industrial Training for ICMAI Students | My Student Club',
-        description: 'Find CMA articleship (practical training), industrial training in companies and PSUs, CMA Inter jobs and roles for newly qualified and experienced Cost Accountants, updated daily.',
+        description: 'Find CMA articleship (practical training), industrial training in companies and PSUs, CMA Inter jobs, and roles for CMA Final qualified freshers and experienced Cost Accountants, updated daily.',
         h1: 'CMA jobs, articleship and training',
         eyebrow: 'For ICMAI students and Cost Accountants',
         lede: 'Practical training at firms and companies, jobs for CMA Inter students, and roles for qualified Cost and Management Accountants. Every listing says CMA candidates can apply.',
@@ -311,21 +332,27 @@ const CMA = {
             path: '/cma-articleship',
             table: 'Articleship Jobs',
             pay: 'stipend',
-            tab: 'Articleship (firms)',
-            aka: 'Practical training at firms',
+            tab: 'Training at firms',
+            aka: 'CMA articleship',
             stage: 'Registered for CMA Intermediate or later',
             icon: 'building',
             noun: 'training openings',
-            h1: 'CMA articleship and practical training at firms',
-            title: 'CMA Articleship & Practical Training Openings at Firms | My Student Club',
-            description: 'CMA articleship (ICMAI practical training) openings at Cost Accountant and professional firms for students registered in CMA Intermediate. Stipend, city and how to apply.',
-            lede: 'Practical training openings at firms that invite CMA students. ICMAI calls this practical training; most students call it CMA articleship.',
+            h1: 'CMA articleship and training at firms',
+            title: 'CMA Articleship & Trainee Openings at Firms | My Student Club',
+            description: 'CMA articleship and trainee openings at firms that invite CMA students. We flag CA firms: ICMAI counts firm training only under a Practising Cost Accountant.',
+            lede: 'Trainee openings at firms that invite CMA students. Most come from CA firms, and CA articleship does not count for CMA, so we flag every CA-firm listing. ICMAI calls this practical training; most students say CMA articleship.',
             callout: {
                 tone: 'warn',
                 title: 'Check before you join',
-                summary: 'CA or CS articleship does not count for CMA. Ask who will sign your Form T-1.',
-                body: 'ICMAI counts practical training done under a Practising Cost Accountant or a firm of Cost Accountants (Form T-1), or in a recognised organisation (Form T-4). Articleship registered with ICAI or ICSI does not count. Many firms here are CA firms that also invite CMA students, so ask who will sign your Form T-1 before you accept.',
+                summary: 'Most listings here are CA firms. Only a Practising Cost Accountant can sign your Form T-1.',
+                body: 'ICMAI counts practical training done under a Practising Cost Accountant or a firm of Cost Accountants (Form T-1), or in a recognised organisation (Form T-4). Articleship registered with ICAI or ICSI does not count. Most listings here come from CA firms that also invite CMA students, and we mark them "CA firm". Unless a Practising Cost Accountant there will sign your Form T-1, the months will not count.',
                 source: 'https://www.icmai.co.in/upload/Training/FAQ.pdf'
+            },
+            trainerCheck: {
+                trainer: String.raw`practi[sc]ing\s+cost\s+accountant|firm\s+of\s+cost\s+accountant|cost\s+accountants?\s+firm|(&|and)\s*(co|associates)\.?,?\s+cost\s+accountants|,\s*cost\s+accountants\M|\mcma\s+firm`,
+                caFirm: CA_FIRM,
+                badge: 'CA firm: check Form T-1',
+                note: 'This listing looks like a CA firm. CA articleship does not count for CMA: the months count only if a Practising Cost Accountant signs your Form T-1, so ask before you join.'
             },
             applySubject: 'Application for CMA Practical Training (Articleship)',
             applyNoun: 'CMA practical training',
@@ -365,7 +392,7 @@ const CMA = {
             emptyHint: 'Company openings are fewer than firm openings. Widen the date range or check CMA Inter jobs.',
             tipsTitle: 'Getting industrial training',
             tips: [
-                'PSUs (Coal India, NLC, BEL and others) run Industrial Trainee (Finance) schemes for CMA Inter passed students, often with an age limit of 28.',
+                'Some PSUs run Industrial Trainee (Finance) schemes for CA / CMA Inter passed students, usually with an age limit. Watch their career pages.',
                 'Manufacturing companies value costing and plant-accounting exposure. Say what you have studied.',
                 'Confirm the company qualifies as a recognised organisation for Form T-4.'
             ]
@@ -384,6 +411,7 @@ const CMA = {
             title: 'CMA Inter Jobs for Semi-Qualified CMA Students | My Student Club',
             description: 'Jobs for CMA Intermediate passed students: costing executive, accounts, MIS, GST and internal audit roles at companies and firms. Filter by city and salary.',
             lede: 'Paid roles for students who have passed CMA Intermediate: costing executive, accounts, MIS, GST and internal audit. Employers often call this semi-qualified CMA.',
+            applyPitch: 'I have passed CMA Intermediate with ICMAI and want hands-on experience in costing, accounts and management accounting.',
             applySubject: 'Application for Costing / Accounts Role (CMA Inter)',
             applyNoun: 'role',
             emptyTitle: 'No CMA Inter jobs right now',
@@ -406,9 +434,11 @@ const CMA = {
             icon: 'sparkles',
             noun: 'fresher jobs',
             h1: 'Jobs for newly qualified CMAs',
-            title: 'CMA Fresher Jobs for Newly Qualified Cost Accountants | My Student Club',
+            title: 'CMA Fresher Jobs for CMA Final Qualified Candidates | My Student Club',
             description: 'Jobs for CMA Final qualified freshers: cost accountant, FP&A, controllership, internal audit and PSU finance roles. Updated daily with salary and city.',
             lede: 'Roles for CMA Final qualified candidates with up to one year of experience: cost accountant, FP&A analyst, internal auditor and PSU finance officer.',
+            applyPitch: 'I have recently qualified CMA Final with ICMAI and want to start my career in costing, cost audit and management accounting.',
+            idLabel: 'ICMAI registration / membership no.',
             applySubject: 'Application for Cost Accountant (Fresher) Role',
             applyNoun: 'Cost Accountant role',
             emptyTitle: 'No CMA fresher jobs right now',
@@ -434,6 +464,8 @@ const CMA = {
             title: 'Experienced CMA & Cost Accountant Jobs | My Student Club',
             description: 'Cost controller, plant finance, FP&A, internal audit and PSU finance roles for experienced Cost and Management Accountants. Filter by city, work area and salary.',
             lede: 'Cost controller, plant finance, FP&A and internal audit roles for Cost and Management Accountants with one or more years of experience.',
+            applyPitch: 'I am a qualified Cost and Management Accountant with [N] years of experience in costing, cost audit and management accounting.',
+            idLabel: 'ICMAI membership no.',
             applySubject: 'Application for Cost & Management Accountant Role',
             applyNoun: 'Cost & Management Accountant role',
             emptyTitle: 'No experienced CMA roles right now',

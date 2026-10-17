@@ -1019,6 +1019,17 @@ body.pp {
   display: none;
 }
 
+.pp-firm-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--pp-warn-soft);
+  color: var(--pp-warn);
+  font-weight: 600;
+}
+
 .pp-repost {
   padding: 2px 8px;
   border-radius: 999px;

@@ -66,7 +66,7 @@ const icon = (name, cls = '') => `<svg class="pp-icon ${cls}" aria-hidden="true"
 
 const fileFor = path => `${path.replace(/^\//, '')}.html`;
 
-function head({ title, description, path, course, jsonLdBlocks }) {
+function head({ title, description, path, course, jsonLdBlocks, noindex = false }) {
     const url = `${SITE}${path}`;
     return `<!DOCTYPE html>
 <html lang="en-IN">
@@ -76,7 +76,7 @@ function head({ title, description, path, course, jsonLdBlocks }) {
   <title>${esc(title)}</title>
   <meta name="description" content="${esc(description)}">
   <link rel="canonical" href="${esc(url)}">
-  <meta name="robots" content="index, follow">
+  <meta name="robots" content="${noindex ? 'noindex, follow' : 'index, follow'}">
   <meta name="theme-color" content="${esc(course.accent)}">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="My Student Club">
@@ -233,7 +233,8 @@ function rulesBlock(course, content) {
     return `<div class="pp-prose">
         <h2>${esc(content.rulesTitle)}</h2>
         <ul>${content.rules.map(rule => `<li>${esc(rule)}</li>`).join('')}</ul>
-        <p class="pp-source">Summary as of ${esc(AS_OF)}. Source: <a href="${esc(content.rulesSource.url)}" target="_blank" rel="noopener">${esc(content.rulesSource.label)}</a>. Rules change, so confirm on the <a href="${esc(course.instituteUrl)}" target="_blank" rel="noopener">${esc(course.institute)} website</a>.</p>
+        <p class="pp-source">Summary as of ${esc(AS_OF)}. ${content.rulesSources.length > 1 ? 'Sources' : 'Source'}: ${content.rulesSources
+            .map(source => `<a href="${esc(source.url)}" target="_blank" rel="noopener">${esc(source.label)}</a>`).join(' · ')}. Rules change, so confirm on the <a href="${esc(course.instituteUrl)}" target="_blank" rel="noopener">${esc(course.institute)} website</a>.</p>
       </div>`;
 }
 
@@ -248,7 +249,7 @@ function lanePage(course, lane) {
         <ul>${lane.tips.map(tip => `<li>${esc(tip)}</li>`).join('')}</ul>
         <p class="pp-source">Questions about ${esc(course.institute)} rules? Read the <a href="${course.hubPath}#faq">${esc(course.name)} FAQ</a>.</p>
       </div>`;
-    return `${head({ title: lane.title, description: lane.description, path: lane.path, course, jsonLdBlocks: [breadcrumbLd(course, lane)] })}
+    return `${head({ title: lane.title, description: lane.description, path: lane.path, course, jsonLdBlocks: [breadcrumbLd(course, lane)], noindex: lane.noindex })}
 ${bodyOpen(course, lane.key)}
 ${header(course, lane)}
 ${courseBar(course, lane)}

@@ -59,7 +59,7 @@ AS $fn$
              THEN 'CS' END,
         CASE WHEN coalesce(description, '') ~* $re$(\mcmas?\M|icwa|\mcwa\M|icmai?|cost\s*(and|&)?\s*(management|works)?\s*accountan|\macma\M)$re$
               AND coalesce(description, '') ~* $re$((?<!us\s)\mcmas?\M(?!\s*[-–:(]?\s*(data|prep|report|credit|statement|projection|format|study|working|project\s+fin|\(?\s*(us|usa|u\.s|ima)\M))|\micwai?s?\M|\maicwa|\mcwa\M|\micmai?\M|cost\s*(and|&)?\s*(management|works)?\s*accountan|\macma\M)$re$
-              AND coalesce(description, '') !~* $re$(not\s+eligible[^.\n]*(\mcma\M|icwa)|\mcma\M[^.\n]*(not\s+eligible|should\s+not\s+apply|need\s+not\s+apply)|\mno\s+cma\M|❌[^.\n]*\mcma\M|((\mca\M|chartered\s+accountant)[^.\n•]*(mandatory|required|is\s+a\s+must)|must\s+be\s+(an?\s+)?(qualified\s+)?(\mca\M|chartered\s+accountant))[^.\n•]*(\mcma\M|icwa)[^.\n•]*(advantage|plus|preferable|good\s+to\s+have|in\s+addition)|\mus\s+cpa\s*/\s*cma\M)$re$
+              AND coalesce(description, '') !~* $re$(not\s+eligible[^.\n]*(\mcma\M|icwa)|\mcma\M[^.\n]*(not\s+eligible|should\s+not\s+apply|need\s+not\s+apply)|\mno\s+cma\M|❌[^.\n]*\mcma\M|((\mca\M|chartered\s+accountant)[^.\n•]*(mandatory|required|is\s+a\s+must)|must\s+be\s+(an?\s+)?(qualified\s+)?(\mca\M|chartered\s+accountant))[^.\n•]*(\mcma\M|icwa)[^.\n•]*(advantage|plus|preferable|good\s+to\s+have|in\s+addition)|\mus\s+cpa\s*/\s*cma\M|certified\s+management\s+accountant|\mcgma\M)$re$
              THEN 'CMA' END
     ], NULL);
 $fn$;

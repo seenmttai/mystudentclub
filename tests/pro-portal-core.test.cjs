@@ -65,8 +65,48 @@ test('listings that turn a course away are excluded', async () => {
   assert.ok(!courseMatches('❌ Note: ACCA/CMA pursuing candidates should not apply.', cma));
   assert.ok(!courseMatches('Not eligible: Outstation candidates, CS/CMA interns, Accounting Assistants', cs));
   assert.ok(!courseMatches('CA preferred, or US CPA/CMA', cma));
+  assert.ok(!courseMatches('Qualified Chartered Accountant (CA) or Certified Management Accountant (CMA) • 15+ years in fund accounting', cma));
+  assert.ok(!courseMatches('Food/CPG manufacturing background, CMA or CGMA preferred', cma));
   assert.ok(courseMatches('Hiring CA/CMA freshers. Outstation candidates should not apply.', cma));
   assert.ok(courseMatches('CA / CS Articleship Opportunity in Noida', cs));
+});
+
+test('firm-training lanes flag CA firms that name no CS / CMA trainer', async () => {
+  const { isCaFirmOnly } = await load('core.js');
+  const { COURSES } = await load('config.js');
+  const cs = COURSES.cs.lanes.find((l) => l.key === 'firm-training').trainerCheck;
+  const cma = COURSES.cma.lanes.find((l) => l.key === 'firm-training').trainerCheck;
+  assert.ok(isCaFirmOnly('J. Singh & Associates, Chartered Accountants\nHiring CA/CS articles', cs));
+  assert.ok(isCaFirmOnly('Mid-Size CA Firm in Delhi – CA/CMA/ACCA Articleship', cma));
+  assert.ok(isCaFirmOnly('Enrollment in CA/CMA articleship as per ICAI guidelines', cma));
+  assert.ok(isCaFirmOnly('A Arora & Co., a Chartered Accountancy firm based in Delhi. Position: CA / CMA Article Trainee', cma));
+  assert.ok(isCaFirmOnly('Role: CA / CMA Articled Assistants', cma));
+  assert.ok(isCaFirmOnly('Position: CA / CS Article Trainee', cs));
+  assert.ok(isCaFirmOnly('is a professional accounting and audit firm. Support senior auditors in statutory and internal audits', cs));
+  assert.ok(isCaFirmOnly('The firm provides statutory and risk-based audits, forensic audits and valuations', cma));
+  assert.ok(!isCaFirmOnly('Multi-disciplinary firm of Chartered Accountants and Practising Company Secretaries', cs));
+  assert.ok(!isCaFirmOnly('NDM Advisors LLP, Chartered Accountants and Cost Accountants firm', cma));
+  assert.ok(!isCaFirmOnly('PCS firm in Mumbai hiring CS Executive trainees', cs));
+  assert.ok(!isCaFirmOnly('Hiring CS trainees for secretarial work', cs));
+  assert.ok(isCaFirmOnly('Hiring CA/CMA articles', cma));
+  assert.ok(!isCaFirmOnly('Hiring CMA trainees for costing and cost records work', cma));
+  for (const course of Object.values(COURSES)) {
+    for (const lane of course.lanes) {
+      assert.equal(Boolean(lane.trainerCheck), lane.key === 'firm-training', `${course.key}/${lane.key}: trainerCheck only on firm lanes`);
+    }
+  }
+});
+
+test('qualified-candidate lanes do not draft the email as a student', async () => {
+  const { COURSES } = await load('config.js');
+  for (const course of Object.values(COURSES)) {
+    for (const lane of course.lanes.filter((l) => ['fresher', 'experienced', 'semi-qualified'].includes(l.key))) {
+      assert.ok(lane.applyPitch && !/\bstudent\b|pursuing/i.test(lane.applyPitch), `${course.key}/${lane.key}`);
+    }
+    for (const lane of course.lanes.filter((l) => ['fresher', 'experienced'].includes(l.key))) {
+      assert.match(lane.idLabel || '', /membership/i, `${course.key}/${lane.key}: idLabel`);
+    }
+  }
 });
 
 test('PostgreSQL word boundaries convert to JavaScript and every pattern compiles', async () => {
@@ -79,6 +119,7 @@ test('PostgreSQL word boundaries convert to JavaScript and every pattern compile
   for (const course of Object.values(COURSES)) {
     course.stages.forEach((s) => patterns.push(s.pattern));
     course.categories.forEach((c) => patterns.push(c.pattern));
+    course.lanes.filter((l) => l.trainerCheck).forEach((l) => patterns.push(l.trainerCheck.trainer, l.trainerCheck.caFirm));
   }
   for (const pattern of patterns) {
     assert.doesNotThrow(() => toRegExp(pattern), pattern);
