@@ -60,7 +60,9 @@ const app = {
     total: null,
     activeKey: null,
     lastFocus: null,
-    consent: null
+    consent: null,
+    refocusChip: null,
+    passthrough: {}
 };
 
 // ---------------------------------------------------------------- utilities
@@ -192,10 +194,8 @@ function syncSavedButtons(job) {
 }
 
 function updateSavedCount() {
-    const el = $('#ppSavedCount');
-    if (!el || !app.lane) return;
-    const count = savedRefs().filter(ref => ref.table === app.lane.table).length;
-    el.textContent = count ? `(${count})` : '';
+    // Saved listings show under "Saved only"; a raw count would include saves
+    // from other sections that share the table, so none is shown.
 }
 
 // Tells the Applications page (history.js) which course and section a saved or
@@ -333,13 +333,15 @@ async function easyApply(job, button) {
         }
         if (app.consent !== true) await recordConsent();
         if (!(await recordApplication(job))) throw new Error('Could not send your application. Please try again.');
-        toast('Application sent to the recruiter.', 'success');
+        toast(`Application sent to ${job.Company || 'the recruiter'}.`, 'success');
         track('pp_easy_apply', { job: jobKey(job.__table, job.id) });
-        renderDetail(job);
+        if (app.activeKey === jobKey(job.__table, job.id)) renderDetail(job);
     } catch (error) {
         console.error('[pro-portal] easy apply failed', error);
-        button.disabled = false;
-        button.innerHTML = original;
+        if (button.isConnected) {
+            button.disabled = false;
+            button.innerHTML = original;
+        }
         toast(error?.message || 'Could not send your application. Please try again.', 'error');
     }
 }
@@ -441,7 +443,6 @@ async function fetchPage({ reset }) {
     query = applyUserFilters(query, lane, app.filters);
 
     if (app.filters.sort === 'pay') {
-        if (!app.filters.payMin) query = query.or(`Salary.is.null,Salary.lte.${MAX_PLAUSIBLE_PAY[lane.pay]}`);
         query = query.order('Salary', { ascending: false, nullsFirst: false })
             .order('Created_At', { ascending: false })
             .order('id', { ascending: false })
@@ -459,7 +460,13 @@ async function fetchPage({ reset }) {
         const { data, error, count } = await query;
         if (requestId !== app.requestId) return; // a newer search replaced this one
         if (error) throw error;
-        const rows = (data || []).map(job => tagJob(job, lane));
+        let rows = (data || []).map(job => tagJob(job, lane));
+        if (app.filters.sort === 'pay') {
+            // Junk Salary values (a typed range glued into one number) sort to the
+            // top server-side; keep them in the results but after real pay.
+            const plausible = job => Number(job.Salary) > 0 && Number(job.Salary) <= MAX_PLAUSIBLE_PAY[lane.pay];
+            rows = [...rows.filter(plausible), ...rows.filter(job => !plausible(job))];
+        }
         if (reset) {
             app.jobs = [];
             app.jobsByKey.clear();
@@ -484,7 +491,7 @@ async function fetchPage({ reset }) {
             app.jobs.push(job);
             added.push(job);
         }
-        const last = rows[rows.length - 1];
+        const last = (data || [])[(data || []).length - 1];
         if (last) app.cursor = { createdAt: last.Created_At, id: last.id };
         app.page += 1;
         app.hasMore = rows.length === PAGE_SIZE;
@@ -496,7 +503,19 @@ async function fetchPage({ reset }) {
         if (requestId !== app.requestId) return;
         app.loading = false;
         console.error('[pro-portal] listing query failed', error);
-        renderListError(error);
+        if (reset) {
+            renderListError(error);
+            return;
+        }
+        // Keep the listings already on screen; the cursor is unchanged, so the
+        // button simply retries.
+        renderListStatus();
+        const more = $('#ppMore');
+        if (more) {
+            more.hidden = false;
+            more.textContent = 'Could not load more. Try again';
+        }
+        toast('Could not load more listings. Check your connection and try again.', 'error');
     }
 }
 
@@ -785,8 +804,15 @@ function renderActiveChips() {
     wrap.innerHTML = chips.map((chip, i) => `<button type="button" class="pp-chip" data-chip="${i}">${escapeHtml(chip.label)}${icon('x')}<span class="pp-sr">Remove filter</span></button>`).join('')
         + (chips.length > 1 ? '<button type="button" class="pp-chip-clear" data-chip="all">Clear all</button>' : '');
     wrap.hidden = chips.length === 0;
+    if (app.refocusChip !== null && app.refocusChip !== undefined) {
+        const buttons = wrap.querySelectorAll('[data-chip]');
+        const target = buttons[Math.min(app.refocusChip, buttons.length - 1)] || $('#ppSearch');
+        app.refocusChip = null;
+        target?.focus();
+    }
     wrap.querySelectorAll('[data-chip]').forEach(button => {
         button.addEventListener('click', () => {
+            app.refocusChip = button.dataset.chip === 'all' ? 0 : Number(button.dataset.chip);
             if (button.dataset.chip === 'all') {
                 app.filters = { ...defaultFilters(), sort: app.filters.sort };
             } else {
@@ -842,7 +868,7 @@ function buildFilterControls() {
         </fieldset>
         <fieldset class="pp-fieldset">
             <legend>My listings</legend>
-            <label class="pp-check"><input type="checkbox" name="saved"><span>Saved only <span id="ppSavedCount" class="pp-muted"></span></span></label>
+            <label class="pp-check"><input type="checkbox" name="saved"><span>Saved only</span></label>
             <label class="pp-check${app.session ? '' : ' is-disabled'}"><input type="checkbox" name="hideApplied" ${app.session ? '' : 'disabled'}><span>Hide ones I applied to${app.session ? '' : ' (log in)'}</span></label>
         </fieldset>`;
     form.addEventListener('change', () => {
@@ -883,8 +909,10 @@ function readControls() {
     f.hideApplied = Boolean($('input[name="hideApplied"]', form)?.checked);
 }
 
+const OWN_PARAMS = new Set(['q', 'loc', 'cat', 'pay', 'days', 'sort', 'saved', 'hide_applied', 'job', 'source']);
+
 function currentUrl({ job = app.activeKey } = {}) {
-    return `${window.location.pathname}${encodeFilters(app.filters, { job })}`;
+    return `${window.location.pathname}${encodeFilters(app.filters, { ...app.passthrough, job })}`;
 }
 
 function commitFilters() {
@@ -1009,6 +1037,7 @@ const isSheet = () => window.matchMedia('(max-width: 899px)').matches;
 async function openJob(key, { push = false, trigger = null } = {}) {
     const panel = $('#ppDetail');
     if (!panel) return;
+    const previousKey = app.activeKey;
     app.lastFocus = trigger || document.activeElement;
     app.activeKey = key;
     $$('.pp-card.is-active').forEach(card => card.classList.remove('is-active'));
@@ -1021,7 +1050,11 @@ async function openJob(key, { push = false, trigger = null } = {}) {
         document.documentElement.classList.add('pp-lock');
     }
     // `pushed` marks entries this page added, so Close can safely go back.
-    if (push) history.pushState({ job: key, pushed: true }, '', currentUrl({ job: key }));
+    // Switching listings replaces that entry, so Close always means close.
+    if (push && previousKey !== key) {
+        if (previousKey && history.state?.pushed) history.replaceState({ job: key, pushed: true }, '', currentUrl({ job: key }));
+        else history.pushState({ job: key, pushed: true }, '', currentUrl({ job: key }));
+    }
     const { job, blocked, table, id } = await fetchJobByKey(key);
     if (app.activeKey !== key) return;
     if (!job) {
@@ -1297,8 +1330,14 @@ async function applyToJob(job, button) {
     button.disabled = true;
     button.innerHTML = '<span class="pp-spinner" aria-hidden="true"></span> Getting details…';
     try {
+        const key = jobKey(job.__table, job.id);
         const unlocked = await unlockJobDetails(job, job.__table, app.session, { endpoint: BROWSER_GUARD_WORKER_URL });
         await recordApplication(job);
+        if (app.activeKey !== key) {
+            // The student moved on; the details are cached for when they come back.
+            toast(`Application details for ${job.Company || 'that listing'} are ready. Open it again to apply.`, 'success');
+            return;
+        }
         renderDetail(job, unlocked);
         track('pp_apply_unlock', { job: jobKey(job.__table, job.id) });
         const target = parseApplyTarget(unlocked.applicationId);
@@ -1306,8 +1345,10 @@ async function applyToJob(job, button) {
         if (target.type === 'email') toast('Email draft ready. Attach your CV before sending.', 'success');
     } catch (error) {
         console.error('[pro-portal] unlock failed', error);
-        button.disabled = false;
-        button.innerHTML = original;
+        if (button.isConnected) {
+            button.disabled = false;
+            button.innerHTML = original;
+        }
         toast(error?.status === 401 ? 'Your session expired. Please log in again.' : (error?.message || 'Could not load application details. Please try again.'), 'error');
     }
 }
@@ -1365,6 +1406,10 @@ function filterOptions() {
 }
 
 async function initLane() {
+    // Campaign tags (utm_*, gclid) stay in the URL for analytics.
+    for (const [name, value] of new URLSearchParams(window.location.search)) {
+        if (!OWN_PARAMS.has(name)) app.passthrough[name] = value;
+    }
     app.filters = decodeFilters(window.location.search, filterOptions());
     buildFilterControls();
     syncControls();

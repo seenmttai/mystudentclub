@@ -111,6 +111,10 @@ test('pay keeps the unit straight for stipends and salaries', async () => {
   assert.equal(formatPay({ Salary: 720000 }, 'salary'), '₹7.2 LPA');
   assert.equal(formatPay({ Salary: 1200000 }, 'salary'), '₹12 LPA');
   assert.equal(formatPay({ 'CTC Range': '60,000–80,000/month' }, 'salary'), '₹60,000–80,000/month');
+  // Text that only starts with a digit keeps its own wording.
+  assert.equal(formatPay({ 'Stipend Range': '1st year: 10000, 2nd year: 12000' }, 'stipend'), '1st year: 10000, 2nd year: 12000');
+  assert.equal(formatPay({ 'Stipend Range': '1st Year – ₹10,000 per month' }, 'stipend'), '1st Year – ₹10,000 per month');
+  assert.equal(formatPay({ 'CTC Range': '6 LPA' }, 'salary'), '₹6 LPA');
   assert.equal(formatPay({ 'CTC Range': 'Not disclosed', Salary: null }, 'salary'), null);
   // A typed range glued into one number by the hirer form is not shown as pay.
   assert.equal(formatPay({ Salary: 1000025000 }, 'stipend'), null);
@@ -200,5 +204,7 @@ test('reposts collapse by firm in training sections and by text in job sections'
   const b = { Company: 'Mehra Goel & Co. LLP', Description: 'Hiring CA Articles & CS Trainees at Mehra Goel. Apply now.' };
   assert.equal(repostSignature(a, { byCompany: true }), repostSignature(b, { byCompany: true }));
   assert.notEqual(repostSignature(a), repostSignature(b));
+  // The same firm in another city is a different opening.
+  assert.notEqual(repostSignature({ ...a, Location: 'Hyderabad' }, { byCompany: true }), repostSignature({ ...a, Location: 'Visakhapatnam' }, { byCompany: true }));
   assert.equal(repostSignature(a), repostSignature({ ...a, Description: '**We are hiring CA Articles & CS Trainees!**' }));
 });

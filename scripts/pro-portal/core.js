@@ -183,7 +183,10 @@ export function formatPay(job, payKind) {
     const range = job?.[rangeColumn];
     if (isPayDisclosed(range)) {
         const text = String(range).trim();
-        return /^\d/.test(text) ? `₹${text}` : text;
+        // Prefix ₹ only on a bare amount or range ("5,000 - 8,000", "6 LPA"),
+        // not on text that merely starts with a digit ("1st year: 10000").
+        const bare = /^\d[\d,.\s]*(k|l|lpa|lakhs?)?(\s*(-|–|to)\s*\d[\d,.\s]*(k|l|lpa|lakhs?)?)?(\s*(\/|per)\s*(month|annum|year|m|yr))?$/i;
+        return bare.test(text) ? `₹${text}` : text;
     }
     const amount = Number(job?.Salary);
     if (!Number.isFinite(amount) || amount <= 0) return null;
@@ -247,7 +250,9 @@ export function normalizeCompany(name) {
 
 export function repostSignature(job, { byCompany = false } = {}) {
     const company = normalizeCompany(job?.Company);
-    if (byCompany && company) return company;
+    // Same firm, same city = repost; the same firm in another city is a separate opening.
+    const city = String(job?.Location ?? '').split(',')[0].toLowerCase().replace(/[^a-z]+/g, ' ').trim();
+    if (byCompany && company) return `${company}|${city}`;
     const text = String(stripMarkdown(job?.Description) ?? '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
     return `${company}|${text.slice(0, 160)}`;
 }
