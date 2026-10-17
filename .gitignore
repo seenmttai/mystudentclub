@@ -10,3 +10,6 @@ jobs-builder/node_modules/
 sample-job-test.html
 context/
 docs/
+
+# Feature handover zips and folders (travel to the maintainer by hand, never via git)
+handover/
