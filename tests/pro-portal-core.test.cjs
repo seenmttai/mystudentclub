@@ -93,6 +93,9 @@ test('pay keeps the unit straight for stipends and salaries', async () => {
   assert.equal(formatPay({ Salary: 1200000 }, 'salary'), '₹12 LPA');
   assert.equal(formatPay({ 'CTC Range': '60,000–80,000/month' }, 'salary'), '₹60,000–80,000/month');
   assert.equal(formatPay({ 'CTC Range': 'Not disclosed', Salary: null }, 'salary'), null);
+  // A typed range glued into one number by the hirer form is not shown as pay.
+  assert.equal(formatPay({ Salary: 1000025000 }, 'stipend'), null);
+  assert.equal(formatPay({ Salary: 1000025000 }, 'salary'), null);
 });
 
 test('application targets only ever produce safe links', async () => {

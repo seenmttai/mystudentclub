@@ -201,6 +201,7 @@ function footer(course) {
 function scripts() {
     return `<script defer src="/scripts/supabase.js"></script>
 <script defer src="/scripts/supabase-init.js"></script>
+<script defer src="/scripts/profile-state.js"></script>
 <script type="module" src="/scripts/pro-portal/portal.js?v=${ASSET_VERSION}"></script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-1450NCVE65"></script>
 <script>

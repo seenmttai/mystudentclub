@@ -8,9 +8,10 @@ import {
     detectQualifications, matchesPattern, maskContacts, stripMarkdown, truncate, formatPay,
     timeAgo, isLikelyClosed, isoDaysAgo, parseApplyTarget, buildMailto, jobKey, parseJobKey,
     decodeFilters, encodeFilters, countActiveFilters, defaultFilters, WINDOW_OPTIONS, DEFAULT_WINDOW,
-    applicationRow, appliedKeyFromRow, matchContext, isValidJobId
+    applicationRow, appliedKeyFromRow, matchContext, isValidJobId, MAX_PLAUSIBLE_PAY
 } from './core.js';
 import { unlockJobDetails, getCachedUnlockedJob } from '../browser-guard.js';
+import { calculateProfileCompletion, readCachedProfile } from '../profile-completion.js';
 
 const PAGE_SIZE = 20;
 const MAX_WINDOW_DAYS = Math.max(...WINDOW_OPTIONS);
@@ -32,14 +33,8 @@ const SEARCH_COLUMNS = {
     'Industrial Training Job Portal': ['Company', 'Description', 'Primary Domain', 'Category', 'Location'],
     'Articleship Jobs': ['Company', 'Description', 'Primary Domain', 'Category', 'Location']
 };
-// Where recruiter-posted vacancies are applied to: the CA portal owns the
-// Easy Apply flow (profile check, DPDP consent, hirer dashboard).
-const CA_EASY_APPLY = {
-    'Industrial Training Job Portal': { path: '/', type: 'industrial' },
-    'Articleship Jobs': { path: '/ca-articleship-opportunities', type: 'articleship' },
-    'Semi Qualified Jobs': { path: '/semi-qualified-ca-jobs', type: 'semi' },
-    'Fresher Jobs': { path: '/ca-fresher-jobs', type: 'fresher' }
-};
+// Same wording the CA portal records in consentform (scripts/portal3.js).
+const DPDP_CONSENT_TEXT = 'I consent to My Student Club sharing my CV and complete profile details with potential companies and recruiters for job-matching purposes.';
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
@@ -61,7 +56,8 @@ const app = {
     requestId: 0,
     total: null,
     activeKey: null,
-    lastFocus: null
+    lastFocus: null,
+    consent: null
 };
 
 // ---------------------------------------------------------------- utilities
@@ -215,12 +211,105 @@ async function loadApplied() {
 
 async function recordApplication(job) {
     const key = jobKey(job.__table, job.id);
-    if (!app.session || app.applied.has(key)) return;
+    if (!app.session) return false;
+    if (app.applied.has(key)) return true;
     app.applied.add(key);
     const { error } = await app.client.from('job_applications').insert(applicationRow(app.session.user.id, job.__table, job.id));
-    if (error && error.code !== '23505') console.warn('[pro-portal] could not record application', error);
+    if (error && error.code !== '23505') {
+        app.applied.delete(key);
+        console.warn('[pro-portal] could not record application', error);
+        return false;
+    }
     $$(`[data-card="${key}"]`).forEach(card => card.classList.add('is-applied'));
     $$(`[data-card="${key}"] .pp-applied-flag`).forEach(flag => { flag.hidden = false; });
+    return true;
+}
+
+// ---------------------------------------------------------------- Easy Apply (recruiter-posted)
+
+async function loadConsent() {
+    if (!app.session || app.consent !== null) return app.consent;
+    try {
+        const { data } = await app.client
+            .from('consentform')
+            .select('cv_sharing_consent')
+            .eq('user_id', app.session.user.id)
+            .maybeSingle();
+        app.consent = Boolean(data?.cv_sharing_consent);
+    } catch (_) {
+        app.consent = false;
+    }
+    return app.consent;
+}
+
+async function recordConsent() {
+    const now = new Date().toISOString();
+    const { error } = await app.client.from('consentform').upsert({
+        user_id: app.session.user.id,
+        cv_sharing_consent: true,
+        consent_text: DPDP_CONSENT_TEXT,
+        consented_at: now,
+        withdrawn_at: null,
+        user_agent: navigator.userAgent,
+        updated_at: now
+    }, { onConflict: 'user_id' });
+    if (error) throw error;
+    app.consent = true;
+}
+
+// The profile cache can be stale on these pages, so refresh it the same way
+// the CA portal does before checking completeness.
+async function freshProfile() {
+    if (app.session && window.MSCProfileState?.hydrateProfileFromSupabase) {
+        try {
+            const hydrated = await window.MSCProfileState.hydrateProfileFromSupabase(app.client, app.session.user);
+            if (hydrated?.data?.ocr_cv) localStorage.setItem('userCVText', hydrated.data.ocr_cv);
+            if (hydrated?.profile) return { ...hydrated.profile, looking_for: hydrated.data?.looking_for };
+        } catch (error) {
+            console.warn('[pro-portal] profile refresh failed', error);
+        }
+    }
+    return readCachedProfile(localStorage);
+}
+
+async function easyApply(job, button) {
+    if (!app.session) {
+        window.location.href = loginUrl();
+        return;
+    }
+    const consent = $('#ppConsent');
+    const status = $('#ppEasyStatus');
+    if (consent && !consent.checked) {
+        consent.focus();
+        toast('Tick the consent box to share your profile with this recruiter.', 'error');
+        return;
+    }
+    const original = button.innerHTML;
+    button.disabled = true;
+    button.innerHTML = '<span class="pp-spinner" aria-hidden="true"></span> Checking your profile…';
+    try {
+        const percent = calculateProfileCompletion(await freshProfile(), localStorage);
+        if (percent < 100) {
+            if (status) {
+                status.innerHTML = `Your profile is ${percent}% complete. Recruiters receive your full profile and CV, so finish it first. <a href="/profile.html?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}">Complete my profile</a>`;
+                status.classList.add('is-warn');
+            }
+            toast(`Complete your profile (${percent}%) to use Easy Apply.`, 'error');
+            button.disabled = false;
+            button.innerHTML = original;
+            return;
+        }
+        if (app.consent !== true) await recordConsent();
+        if (!(await recordApplication(job))) throw new Error('Could not send your application. Please try again.');
+        toast('Application sent to the recruiter.', 'success');
+        track('pp_easy_apply', { job: jobKey(job.__table, job.id) });
+        renderDetail(job);
+    } catch (error) {
+        console.error('[pro-portal] easy apply failed', error);
+        button.disabled = false;
+        button.innerHTML = original;
+        toast(error?.message || 'Could not send your application. Please try again.', 'error');
+    }
 }
 
 // ---------------------------------------------------------------- data source
@@ -273,7 +362,7 @@ function applyUserFilters(query, lane, filters) {
         .filter(category => filters.categories.includes(category.key))
         .map(category => category.pattern));
     if (categoryPattern) query = query.filter('Description', 'imatch', categoryPattern);
-    if (filters.payMin) query = query.gte('Salary', filters.payMin);
+    if (filters.payMin) query = query.gte('Salary', filters.payMin).lte('Salary', MAX_PLAUSIBLE_PAY[lane.pay]);
     if (filters.savedOnly) {
         const ids = savedRefs().filter(ref => ref.table === lane.table).map(ref => String(ref.id)).filter(isValidJobId);
         query = query.in('id', ids); // an empty list matches nothing
@@ -315,6 +404,7 @@ async function fetchPage({ reset }) {
     query = applyUserFilters(query, lane, app.filters);
 
     if (app.filters.sort === 'pay') {
+        if (!app.filters.payMin) query = query.or(`Salary.is.null,Salary.lte.${MAX_PLAUSIBLE_PAY[lane.pay]}`);
         query = query.order('Salary', { ascending: false, nullsFirst: false })
             .order('Created_At', { ascending: false })
             .order('id', { ascending: false })
@@ -878,6 +968,8 @@ async function openJob(key, { push = false, trigger = null } = {}) {
         bindDetail(panel, null);
         return;
     }
+    if (isRecruiterPosted(job)) await loadConsent();
+    if (app.activeKey !== key) return;
     renderDetail(job);
     track('pp_view_job', { job: key });
 }
@@ -945,57 +1037,87 @@ function descriptionHtml(text, { masked }) {
     return clean.split(/\n{2,}/).map(block => `<p>${escapeHtml(block).replace(/\n/g, '<br>')}</p>`).join('');
 }
 
-function applyBoxHtml(job, unlocked) {
+function applyState(job, unlocked) {
+    if (isRecruiterPosted(job)) return { mode: 'easy', applied: isApplied(job) };
+    if (!app.session) return { mode: 'login' };
+    if (unlocked) return { mode: 'unlocked', target: parseApplyTarget(unlocked.applicationId) };
+    return { mode: 'locked', applied: isApplied(job) };
+}
+
+function emailSubject(job) {
+    return `${laneForJob(job).applySubject} at ${job.Company || 'your organisation'} (Ref: My Student Club)`;
+}
+
+// "How to apply": explains the method. The single primary button lives in
+// the sticky bar (ctaHtml) so there is never more than one Apply button.
+function howToApplyHtml(job, state) {
+    let body = '';
+    if (state.mode === 'easy') {
+        if (!app.session) {
+            body = `<p class="pp-apply-lead">${icon('bolt')}<span>Posted directly by the recruiter. Log in and apply with your My Student Club profile and CV in one tap.</span></p>`;
+        } else if (state.applied) {
+            body = `<p class="pp-apply-lead is-done">${icon('check-circle')}<span>Application sent. The recruiter sees your profile and CV in their dashboard.</span></p>`;
+        } else {
+            body = `
+                <p class="pp-apply-lead">${icon('bolt')}<span>Posted directly by the recruiter. Easy Apply sends them your My Student Club profile and CV.</span></p>
+                <label class="pp-consent"><input type="checkbox" id="ppConsent"${app.consent ? ' checked' : ''}><span>${escapeHtml(DPDP_CONSENT_TEXT)} <a href="/privacy-policy.html" target="_blank" rel="noopener">Privacy policy</a></span></label>
+                <p id="ppEasyStatus" class="pp-apply-sub" aria-live="polite"></p>`;
+        }
+    } else if (state.mode === 'login') {
+        body = `
+            <p class="pp-apply-lead">${icon('lock')}<span>Log in to see the recruiter's email or application link. It's free.</span></p>
+            <p class="pp-apply-sub">New here? <a href="/sign-up.html">Create a free account</a></p>`;
+    } else if (state.mode === 'locked') {
+        body = `
+            ${state.applied ? `<p class="pp-apply-lead is-done">${icon('check-circle')}<span>You applied to this listing.</span></p>` : ''}
+            <p class="pp-apply-lead">${icon('mail')}<span>Tap <strong>${state.applied ? 'Show application details' : 'Apply now'}</strong> to see the recruiter's email or link. We'll add it to your Applications.</span></p>`;
+    } else if (state.target.type === 'email') {
+        body = `
+            <p class="pp-apply-lead">${icon('mail')}<span>Apply by email. A draft opens with the subject filled in; attach your CV before sending.</span></p>
+            <div class="pp-copy">
+                <code>${escapeHtml(state.target.email)}</code>
+                <button type="button" class="pp-btn pp-btn-ghost pp-btn-sm" data-copy="${escapeHtml(state.target.email)}">${icon('copy')}Copy</button>
+            </div>
+            <p class="pp-apply-sub">No email app? Copy the address and use the subject: <em>${escapeHtml(emailSubject(job))}</em></p>`;
+    } else if (state.target.type === 'url') {
+        body = `<p class="pp-apply-lead">${icon('external')}<span>Apply on the recruiter's page at <strong>${escapeHtml(new URL(state.target.url).hostname)}</strong>.</span></p>`;
+    } else if (state.target.type === 'search') {
+        body = `<p class="pp-apply-lead">${icon('external')}<span>The recruiter did not share a link. Search their careers page.</span></p>`;
+    } else {
+        body = `<p class="pp-apply-lead">${icon('alert')}<span>This listing has no application details. Check the original post.</span></p>`;
+    }
+    const unlocked = state.mode === 'unlocked' && state.target.type !== 'none';
+    return `<section class="pp-apply${unlocked ? ' is-unlocked' : ''}" aria-labelledby="ppApplyTitle">
+            <h3 id="ppApplyTitle">How to apply</h3>
+            ${body}
+        </section>`;
+}
+
+function ctaHtml(job, state) {
     const key = jobKey(job.__table, job.id);
-    const applied = isApplied(job);
-    if (isRecruiterPosted(job)) {
-        const target = CA_EASY_APPLY[job.__table];
-        const href = `${target.path}?id=${encodeURIComponent(job.id)}&type=${target.type}`;
-        return `
-            <div class="pp-apply">
-                <p class="pp-apply-lead">${icon('bolt')}Posted directly by the recruiter on My Student Club. Apply with your MSC profile.</p>
-                <a class="pp-btn pp-btn-primary pp-btn-block" href="${escapeHtml(href)}">${applied ? 'View your application' : 'Easy Apply with my profile'}</a>
-            </div>`;
+    const saved = isSaved(job);
+    let primary;
+    if (state.mode === 'easy') {
+        if (!app.session) primary = `<a class="pp-btn pp-btn-primary" href="${escapeHtml(loginUrl())}">Log in to Easy Apply</a>`;
+        else if (state.applied) primary = `<button type="button" class="pp-btn pp-btn-done" disabled>${icon('check')}Applied</button>`;
+        else primary = `<button type="button" class="pp-btn pp-btn-primary" data-easy-apply>${icon('bolt')}Send my application</button>`;
+    } else if (state.mode === 'login') {
+        primary = `<a class="pp-btn pp-btn-primary" href="${escapeHtml(loginUrl())}">Log in to apply</a>`;
+    } else if (state.mode === 'locked') {
+        primary = `<button type="button" class="pp-btn pp-btn-primary" data-apply>${state.applied ? 'Show application details' : 'Apply now'}</button>`;
+    } else if (state.target.type === 'email') {
+        primary = `<a class="pp-btn pp-btn-primary" href="${escapeHtml(buildMailto(state.target.email, emailSubject(job), emailBody(job)))}" data-apply-mail>${icon('mail')}Open email draft</a>`;
+    } else if (state.target.type === 'url' || state.target.type === 'search') {
+        primary = `<a class="pp-btn pp-btn-primary" href="${escapeHtml(state.target.url)}" target="_blank" rel="noopener noreferrer" data-apply-link>${state.target.type === 'url' ? 'Open application page' : 'Search careers page'}${icon('external')}</a>`;
+    } else {
+        const postUrl = safeHttpUrl(job.posts_link);
+        primary = postUrl
+            ? `<a class="pp-btn pp-btn-primary" href="${escapeHtml(postUrl)}" target="_blank" rel="noopener noreferrer nofollow">Open original post${icon('external')}</a>`
+            : `<button type="button" class="pp-btn pp-btn-done" disabled>No application details</button>`;
     }
-    if (!app.session) {
-        return `
-            <div class="pp-apply">
-                <p class="pp-apply-lead">${icon('lock')}Log in to see the recruiter's email or application link. It's free.</p>
-                <a class="pp-btn pp-btn-primary pp-btn-block" href="${escapeHtml(loginUrl())}">Log in to apply</a>
-                <p class="pp-apply-sub">New here? <a href="/sign-up.html">Create a free account</a></p>
-            </div>`;
-    }
-    if (unlocked) {
-        const target = parseApplyTarget(unlocked.applicationId);
-        if (target.type === 'email') {
-            const lane = laneForJob(job);
-            const subject = `${lane.applySubject} at ${job.Company || 'your organisation'} (Ref: My Student Club)`;
-            const mailto = buildMailto(target.email, subject, emailBody(job));
-            return `
-                <div class="pp-apply is-unlocked">
-                    <p class="pp-apply-lead">${icon('mail')}Apply by email. Attach your CV before sending.</p>
-                    <a class="pp-btn pp-btn-primary pp-btn-block" href="${escapeHtml(mailto)}" data-apply-mail="${key}">Open email draft</a>
-                    <div class="pp-copy">
-                        <code>${escapeHtml(target.email)}</code>
-                        <button type="button" class="pp-btn pp-btn-ghost pp-btn-sm" data-copy="${escapeHtml(target.email)}">${icon('copy')}Copy</button>
-                    </div>
-                    <p class="pp-apply-sub">No email app? Copy the address and the subject: <em>${escapeHtml(subject)}</em></p>
-                </div>`;
-        }
-        if (target.type === 'url' || target.type === 'search') {
-            return `
-                <div class="pp-apply is-unlocked">
-                    <p class="pp-apply-lead">${icon('external')}${target.type === 'url' ? 'Apply on the recruiter\'s page.' : 'The recruiter did not share a link. Search their careers page.'}</p>
-                    <a class="pp-btn pp-btn-primary pp-btn-block" href="${escapeHtml(target.url)}" target="_blank" rel="noopener noreferrer" data-apply-link="${key}">${target.type === 'url' ? 'Open application page' : 'Search careers page'}${icon('external')}</a>
-                </div>`;
-        }
-        return `<div class="pp-apply"><p class="pp-apply-lead">${icon('alert')}This listing has no application details. Check the original post.</p></div>`;
-    }
-    return `
-        <div class="pp-apply">
-            ${applied ? `<p class="pp-apply-lead is-done">${icon('check-circle')}You applied to this listing.</p>` : ''}
-            <button type="button" class="pp-btn pp-btn-primary pp-btn-block" data-apply="${key}">${applied ? 'Show application details again' : 'Apply now'}</button>
-            <p class="pp-apply-sub">We'll show the recruiter's email or link and add this to your Applications.</p>
+    return `<div class="pp-detail-cta">
+            <button type="button" class="pp-icon-btn pp-cta-save${saved ? ' is-on' : ''}" data-save="${key}" aria-pressed="${saved}" aria-label="${saved ? 'Remove' : 'Save'} ${escapeHtml(job.Company || 'listing')} ${saved ? 'from saved' : 'for later'}">${icon('bookmark')}</button>
+            ${primary}
         </div>`;
 }
 
@@ -1026,10 +1148,10 @@ function renderDetail(job, unlocked = null) {
     const lane = laneForJob(job);
     const cached = app.session ? getCachedUnlockedJob(job.id, job.__table, app.session) : null;
     unlocked = unlocked || cached;
+    const state = applyState(job, unlocked);
     const description = unlocked?.description || job.Description || '';
     const postUrl = safeHttpUrl(job.posts_link);
     const closed = isLikelyClosed(job.Created_At);
-    const saved = isSaved(job);
     panel.innerHTML = `
         <div class="pp-detail-inner">
             <div class="pp-detail-top">
@@ -1043,29 +1165,29 @@ function renderDetail(job, unlocked = null) {
                     <p class="pp-muted">${escapeHtml([domainText(job), job.Location].filter(Boolean).join(' · '))}</p>
                 </div>
             </header>
-            ${closed ? `<p class="pp-warning" role="note">${icon('alert')}Posted ${escapeHtml(timeAgo(job.Created_At))}. Listings older than two weeks are often filled, so apply soon or check the original post.</p>` : ''}
-            ${applyBoxHtml(job, unlocked)}
             <div class="pp-detail-actions">
-                <button type="button" class="pp-btn pp-btn-ghost pp-btn-sm${saved ? ' is-on' : ''}" data-save="${key}" aria-pressed="${saved}">${icon('bookmark')}<span class="pp-save-label">${saved ? 'Saved' : 'Save'}</span></button>
                 <button type="button" class="pp-btn pp-btn-ghost pp-btn-sm" data-share="${key}">${icon('share')}Share</button>
                 ${postUrl ? `<a class="pp-btn pp-btn-ghost pp-btn-sm" href="${escapeHtml(postUrl)}" target="_blank" rel="noopener noreferrer nofollow">${icon('external')}Original post</a>` : ''}
             </div>
+            ${closed ? `<p class="pp-warning" role="note">${icon('alert')}Posted ${escapeHtml(timeAgo(job.Created_At))}. Listings older than two weeks are often filled, so apply soon or check the original post.</p>` : ''}
             ${factsHtml(job)}
             ${eligibilityHtml(job)}
+            ${howToApplyHtml(job, state)}
             <section class="pp-description" aria-label="Full description">
                 <h3>About this opening</h3>
-                ${descriptionHtml(description, { masked: !unlocked })}
+                ${descriptionHtml(description, { masked: !unlocked && !isRecruiterPosted(job) })}
                 ${!unlocked && !isRecruiterPosted(job) ? '<p class="pp-hint">Contact details are hidden until you choose to apply.</p>' : ''}
             </section>
             <aside class="pp-safety">
                 ${icon('shield')}
                 <p><strong>Never pay for a training seat or job.</strong> My Student Club does not charge students to apply. If anyone asks for a fee or deposit, <a href="/contact.html">report this listing</a>.</p>
             </aside>
+            ${ctaHtml(job, state)}
         </div>`;
     bindDetail(panel, job);
     const heading = $('#ppDetailTitle');
     if (heading && (isSheet() || document.activeElement === document.body || app.lastFocus?.dataset?.open)) heading.focus({ preventScroll: !isSheet() });
-    if (!isSheet()) panel.scrollTop = 0;
+    if (!unlocked) panel.scrollTop = 0;
 }
 
 function bindDetail(panel, job) {
@@ -1077,6 +1199,7 @@ function bindDetail(panel, job) {
     panel.querySelector('[data-save]')?.addEventListener('click', () => toggleSaved(job));
     panel.querySelector('[data-share]')?.addEventListener('click', () => shareJob(job));
     panel.querySelector('[data-apply]')?.addEventListener('click', event => applyToJob(job, event.currentTarget));
+    panel.querySelector('[data-easy-apply]')?.addEventListener('click', event => easyApply(job, event.currentTarget));
     panel.querySelector('[data-copy]')?.addEventListener('click', async event => {
         try {
             await navigator.clipboard.writeText(event.currentTarget.dataset.copy);
@@ -1098,15 +1221,14 @@ async function applyToJob(job, button) {
     }
     const original = button.innerHTML;
     button.disabled = true;
-    button.innerHTML = '<span class="pp-spinner" aria-hidden="true"></span> Getting application details…';
+    button.innerHTML = '<span class="pp-spinner" aria-hidden="true"></span> Getting details…';
     try {
         const unlocked = await unlockJobDetails(job, job.__table, app.session, { endpoint: BROWSER_GUARD_WORKER_URL });
         await recordApplication(job);
         renderDetail(job, unlocked);
         track('pp_apply_unlock', { job: jobKey(job.__table, job.id) });
         const target = parseApplyTarget(unlocked.applicationId);
-        const primary = $('#ppDetail [data-apply-mail], #ppDetail [data-apply-link]');
-        primary?.focus();
+        $('#ppDetail [data-apply-mail], #ppDetail [data-apply-link]')?.focus();
         if (target.type === 'email') toast('Email draft ready. Attach your CV before sending.', 'success');
     } catch (error) {
         console.error('[pro-portal] unlock failed', error);

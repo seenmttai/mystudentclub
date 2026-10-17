@@ -160,6 +160,11 @@ function formatLpa(amount) {
     return `₹${text} LPA`;
 }
 
+// Upper bounds for a believable Salary value. Hirer posts sometimes store a
+// typed range as one number ("10000-25000" -> 1000025000), so anything above
+// these is treated as "not stated" and kept out of pay filters and sorting.
+export const MAX_PLAUSIBLE_PAY = { stipend: 200000, salary: 50000000 };
+
 // Training lanes store a monthly stipend in Salary; job lanes store annual CTC.
 // The free-text range columns win when present because they carry the unit.
 export function formatPay(job, payKind) {
@@ -171,6 +176,7 @@ export function formatPay(job, payKind) {
     }
     const amount = Number(job?.Salary);
     if (!Number.isFinite(amount) || amount <= 0) return null;
+    if (amount > (MAX_PLAUSIBLE_PAY[payKind] || MAX_PLAUSIBLE_PAY.salary)) return null;
     if (payKind === 'stipend') {
         return amount >= 100000 ? `${formatLpa(amount)}` : `${formatRupees(amount)} / month`;
     }

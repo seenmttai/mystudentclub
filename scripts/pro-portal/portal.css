@@ -1209,7 +1209,7 @@ body.pp {
 }
 
 .pp-detail-inner {
-  padding: 12px 20px calc(28px + env(safe-area-inset-bottom));
+  padding: 12px 20px 0;
 }
 
 .pp-detail-top {
@@ -1279,6 +1279,7 @@ body.pp {
 }
 
 .pp-apply {
+  margin-top: 16px;
   padding: 16px;
   border-radius: var(--pp-radius);
   background: #f8fafc;
@@ -1288,6 +1289,11 @@ body.pp {
 .pp-apply.is-unlocked {
   background: var(--pp-success-soft);
   border-color: #a7f3d0;
+}
+
+.pp-apply h3 {
+  font-size: 14.5px;
+  margin-bottom: 8px;
 }
 
 .pp-apply-lead {
@@ -1317,6 +1323,69 @@ body.pp {
   margin-top: 10px !important;
   font-size: 12.5px;
   color: var(--pp-muted);
+}
+
+.pp-apply-sub.is-warn {
+  color: var(--pp-warn);
+  font-weight: 500;
+}
+
+.pp-consent {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border-radius: var(--pp-radius-sm);
+  background: var(--pp-surface);
+  border: 1px solid var(--pp-line);
+  font-size: 13px;
+  color: var(--pp-ink-2);
+  cursor: pointer;
+}
+
+.pp-consent input {
+  width: 18px;
+  height: 18px;
+  margin: 1px 0 0;
+  flex: none;
+  accent-color: var(--pp-brand);
+}
+
+.pp-detail-cta {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin: 20px -20px 0;
+  padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, 0.97);
+  border-top: 1px solid var(--pp-line);
+}
+
+.pp-detail-cta .pp-btn {
+  flex: 1;
+  min-height: 46px;
+  font-size: 15px;
+}
+
+.pp-cta-save {
+  flex: none;
+  border-color: var(--pp-line-strong);
+  width: 46px;
+  height: 46px;
+}
+
+.pp-btn-done {
+  background: var(--pp-success-soft);
+  color: var(--pp-success) !important;
+  border-color: #a7f3d0;
+}
+
+.pp-btn-done[disabled] {
+  opacity: 1;
+  cursor: default;
 }
 
 .pp-copy {
