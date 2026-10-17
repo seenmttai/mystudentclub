@@ -115,6 +115,9 @@ test('pay keeps the unit straight for stipends and salaries', async () => {
   // A typed range glued into one number by the hirer form is not shown as pay.
   assert.equal(formatPay({ Salary: 1000025000 }, 'stipend'), null);
   assert.equal(formatPay({ Salary: 1000025000 }, 'salary'), null);
+  // "12 LPA" typed into the hirer form is stored as 12.
+  assert.equal(formatPay({ Salary: 12 }, 'salary'), '₹12 LPA');
+  assert.equal(formatPay({ Salary: 12 }, 'stipend'), null);
 });
 
 test('application targets only ever produce safe links', async () => {

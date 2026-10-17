@@ -188,6 +188,8 @@ export function formatPay(job, payKind) {
     const amount = Number(job?.Salary);
     if (!Number.isFinite(amount) || amount <= 0) return null;
     if (amount > (MAX_PLAUSIBLE_PAY[payKind] || MAX_PLAUSIBLE_PAY.salary)) return null;
+    // Hirers sometimes type "12 LPA", which the form stores as 12.
+    if (amount <= 200) return payKind === 'stipend' ? null : `₹${amount} LPA`;
     if (payKind === 'stipend') {
         return amount >= 100000 ? `${formatLpa(amount)}` : `${formatRupees(amount)} / month`;
     }
