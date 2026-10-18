@@ -37,6 +37,11 @@ document.addEventListener('DOMContentLoaded', () => {
             title: 'MSC CA Freshers Program',
             description: 'A comprehensive program for CA freshers to kickstart their career.',
             thumbnail: '../assets/courseimg-fresher.png'
+        },
+        'msc-articleship-program': {
+            title: 'MSC Articleship Program',
+            description: 'Build your CV, apply to firms, prepare for interviews and start your articleship.',
+            thumbnail: '../assets/articleship-course-main.png'
         }
     };
 
@@ -625,7 +630,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             hlsPath = tsPath;
                         }
 
-                        const day = meta.day_number || 1;
+                        const day = meta.day_number ?? 1;
                         let parsedResources = [];
                         if (meta.resources) {
                             if (typeof meta.resources === 'string') {
@@ -652,7 +657,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const mainVideo = dayVideos[0] || {};
                 return {
                     day_number: parseInt(dayNum), title: mainVideo.title || `Day ${dayNum}`,
-                    expanded: parseInt(dayNum) === 1, videos: dayVideos, mainVideo: mainVideo
+                    expanded: parseInt(dayNum) === 0 || parseInt(dayNum) === 1, videos: dayVideos, mainVideo: mainVideo
                 };
             }).sort((a, b) => a.day_number - b.day_number);
 
@@ -1391,9 +1396,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (section) {
             const currentVideoIndex = section.videos.findIndex(v => String(v.id) === String(state.currentVideoId)) + 1;
             const sessionText = section.videos.length > 1 ? ` - Session ${currentVideoIndex}/${section.videos.length}` : '';
+            const totalDays = state.courseSections.filter(s => s.day_number > 0).length;
             DOMElements.videoCounter.textContent = section.day_number === 0 
                 ? `Day 0${sessionText}` 
-                : `Day ${section.day_number} of ${state.courseSections.length}${sessionText}`;
+                : `Day ${section.day_number} of ${totalDays}${sessionText}`;
             DOMElements.videoCounter.style.display = 'inline-block';
         } else {
             DOMElements.videoCounter.style.display = 'none';
