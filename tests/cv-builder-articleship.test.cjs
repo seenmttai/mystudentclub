@@ -92,6 +92,37 @@ test('the firm-info layout asks for the target firm without inventing past emplo
     assert.ok(starter.sectionOrder.indexOf(firm.id) < starter.sectionOrder.indexOf('education'));
 });
 
+test('the two-column gallery keeps one native custom-section title', () => {
+    const source = fs.readFileSync(path.join(__dirname, '../cv-builder/dual-columns.html'), 'utf8');
+    const start = source.indexOf('function fixUniversalAndCustomSectionHeaders');
+    const end = source.indexOf('function moveCertificationsUnderProjects', start);
+    let removed = 0;
+    let hasNativeTitle = true;
+    const list = { classList: { remove() {}, contains: () => true } };
+    const wrapper = {
+        querySelector(selector) {
+            if (selector === '[data-list]') return list;
+            if (selector === ':scope > .section-head') return {};
+            if (selector === ':scope > .section-head > .section-title') return hasNativeTitle ? {} : null;
+            return null;
+        },
+        querySelectorAll: () => [{ remove() { removed += 1; } }]
+    };
+    const sandbox = {
+        document: { querySelector: selector => selector.includes('data-custom-section-root') ? wrapper : null }
+    };
+    vm.runInNewContext(source.slice(start, end), sandbox);
+    const data = { articleshipGallery: true, customSections: [{ id: 'icitss', title: 'ICITSS' }] };
+    sandbox.fixUniversalAndCustomSectionHeaders(data);
+    assert.equal(removed, 1);
+    removed = 0;
+    sandbox.fixUniversalAndCustomSectionHeaders({ ...data, articleshipGallery: false });
+    assert.equal(removed, 0, 'the existing general CV rendering is unchanged');
+    hasNativeTitle = false;
+    sandbox.fixUniversalAndCustomSectionHeaders(data);
+    assert.equal(removed, 0, 'a generic title stays until its native replacement exists');
+});
+
 test('layouts without result columns still show the supplied Inter marks and attempt', () => {
     const appended = [];
     const fields = { marks: [], remarks: [] };

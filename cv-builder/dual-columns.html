@@ -713,6 +713,9 @@
                 const wrapper = document.querySelector(`[data-custom-section-root="${section.id}"]`);
                 if (!wrapper) return;
                 wrapInSectionHead(wrapper, section.title || 'Custom Section');
+                if (data.articleshipGallery && wrapper.querySelector(':scope > .section-head > .section-title')) {
+                    wrapper.querySelectorAll(':scope > .section-header').forEach(header => header.remove());
+                }
             });
         }
 
