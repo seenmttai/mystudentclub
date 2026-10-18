@@ -502,6 +502,8 @@ function renderArticleshipBranding(data) {
                 width:1000px!important;min-width:1000px!important;height:1414px!important;
                 min-height:1414px!important;max-height:1414px!important;position:relative!important;
                 transform:none!important;zoom:.7937!important;margin:0!important;box-shadow:none!important;
+                padding-top:var(--msc-pad-top)!important;padding-bottom:var(--msc-pad-bottom)!important;
+                padding-left:var(--msc-pad-left)!important;padding-right:var(--msc-pad-right)!important;
             }
         }`;
         document.head.appendChild(style);
@@ -520,10 +522,15 @@ function renderArticleshipBranding(data) {
         page.__mscBrandPadding = {
             inlineTop: page.style.paddingTop, inlineBottom: page.style.paddingBottom,
             top: parseFloat(style.paddingTop) || 0, bottom: parseFloat(style.paddingBottom) || 0,
-            left: parseFloat(style.paddingLeft) || 24, right: parseFloat(style.paddingRight) || 24
+            left: parseFloat(style.paddingLeft) || 24, right: parseFloat(style.paddingRight) || 24,
+            padLeft: parseFloat(style.paddingLeft) || 0, padRight: parseFloat(style.paddingRight) || 0
         };
     }
     const inset = page.__mscBrandPadding;
+    page.style.setProperty('--msc-pad-top', `${inset.top + 18}px`);
+    page.style.setProperty('--msc-pad-bottom', `${inset.bottom + 18}px`);
+    page.style.setProperty('--msc-pad-left', `${inset.padLeft}px`);
+    page.style.setProperty('--msc-pad-right', `${inset.padRight}px`);
     page.style.paddingTop = `${inset.top + 18}px`;
     page.style.paddingBottom = `${inset.bottom + 18}px`;
     const makeLine = (text, position) => {
