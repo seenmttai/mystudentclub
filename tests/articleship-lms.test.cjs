@@ -40,6 +40,9 @@ function loadDashboard(enrollments) {
 }
 
 function courseFunction(name, sandbox) {
+    const catalogStart = courseScript.indexOf('    const courses =');
+    const catalogEnd = courseScript.indexOf('\n    const DOMElements', catalogStart);
+    vm.runInNewContext(courseScript.slice(catalogStart, catalogEnd), sandbox);
     const start = courseScript.indexOf(`    const ${name} =`);
     const end = courseScript.indexOf('\n    const ', start + 1);
     assert.ok(start >= 0 && end > start, `${name} exists in course-script.js`);
@@ -67,10 +70,13 @@ test('the Articleship catalog entry does not grant access without enrollment', a
     assert.equal(dashboard.loading, false);
 });
 
-test('mobile LMS loads onboarding as Day 0 separately from Days 1 to 6', async () => {
+test('mobile LMS keeps Day 0 and two Day 1 sessions under their programme day titles', async () => {
     const rows = Array.from({ length: 7 }, (_, day) => ({
-        day_number: day, video_number: day + 1, title: `Day ${day}`, resources: [], industrial_training_path: null
+        day_number: day, video_number: day + 1, title: `First session ${day}`, resources: [], industrial_training_path: null
     }));
+    rows[0].title = 'Your guidebook';
+    rows[1].title = 'Your articleship CV';
+    rows.push({ day_number: 1, video_number: 8, title: 'Building your profile fast', resources: [], industrial_training_path: null });
     const query = {
         select() { return this; }, eq() { return this; }, order() { return this; },
         then(resolve) { return Promise.resolve({ data: rows, error: null }).then(resolve); }
@@ -88,7 +94,10 @@ test('mobile LMS loads onboarding as Day 0 separately from Days 1 to 6', async (
     assert.deepEqual(Array.from(state.courseSections, section => section.day_number), [0, 1, 2, 3, 4, 5, 6]);
     assert.equal(state.courseSections[0].expanded, true);
     assert.equal(state.courseSections[1].expanded, true);
-    assert.equal(DOMElements.totalVideosCount.textContent, '7 Sessions');
+    assert.equal(state.courseSections[0].title, 'Day 0 · Start here');
+    assert.equal(state.courseSections[1].title, 'Day 1 · Crafting the Perfect CV');
+    assert.deepEqual(Array.from(state.courseSections[1].videos, video => video.title), ['Your articleship CV', 'Building your profile fast']);
+    assert.equal(DOMElements.totalVideosCount.textContent, '8 Sessions');
 });
 
 test('the mobile session counter shows Day 0 and counts the six teaching days', () => {
@@ -103,4 +112,8 @@ test('the mobile session counter shows Day 0 and counts the six teaching days', 
     state.currentVideoId = 7;
     updateCounter();
     assert.equal(DOMElements.videoCounter.textContent, 'Day 6 of 6');
+    state.courseSections[1].videos.push({ id: 8 });
+    state.currentVideoId = 8;
+    updateCounter();
+    assert.equal(DOMElements.videoCounter.textContent, 'Day 1 of 6 - Session 2/2');
 });
