@@ -3573,6 +3573,9 @@
                 ? window.MSCArticleship.createStarter(templateFile, getDefaultTableSettings())
                 : ((useDemoFallback && !hasDraft) ? DEMO_PREVIEW_DATA : cvData);
             const payload = JSON.parse(JSON.stringify(source));
+            const articleshipTemplate = window.MSCArticleship?.getTemplate(templateFile);
+            payload.articleshipGallery = articleshipTemplate?.kind === 'gallery';
+            payload.articleshipLayoutName = payload.articleshipGallery ? articleshipTemplate.name : '';
             if (!payload.sectionOrder || !payload.sectionOrder.length) payload.sectionOrder = [...BASE_SECTION_ORDER];
             if (!payload.personal) payload.personal = { name: "", tagline: "", contact: "", phone: "", email: "", linkedin: "", location: "", socialLinks: [] };
             if (!payload.personal.socialLinks) payload.personal.socialLinks = [];
@@ -3652,7 +3655,7 @@
         }
 
         function updateTemplateSpecificPanels() {
-            const file = getSelectedTemplateFile();
+            const file = getTemplateRenderFile(getSelectedTemplateFile());
             const panel = document.getElementById('highlights-panel');
             if (panel) panel.style.display = file === 'clean-ledger.html' ? '' : 'none';
         }

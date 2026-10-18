@@ -403,6 +403,8 @@ function renderCV(data) {
 
     // 13. Configurable section titles (rename section headings, or fall back to template default)
     applySectionTitles(data.sectionTitles || {});
+    renderArticleshipAcademicResults(data);
+    renderArticleshipBranding(data);
 
     // 14. Recalculate Layout (Scale/Shrink)
     // These functions exist in the templates script block
@@ -422,6 +424,73 @@ function renderCV(data) {
             window.__clContactFix(data);
         }
     });
+}
+
+function renderArticleshipAcademicResults(data) {
+    document.querySelectorAll('[data-msc-academic-results]').forEach(element => element.remove());
+    if (!data.articleshipGallery) return;
+    const education = document.querySelector('.sortable-section[data-section-id="education"]');
+    if (!education) return;
+    education.querySelectorAll('th').forEach(header => {
+        const text = header.textContent.trim();
+        if (/^(percentage|marks|score|marks\s*\/\s*score)$/i.test(text)) header.textContent = 'Marks / score';
+        if (/^remarks$/i.test(text)) header.textContent = 'Attempt';
+    });
+    education.querySelectorAll('table').forEach(table => {
+        const template = table.querySelector('tbody tr');
+        if (!template) return;
+        const fields = ['marks', 'remarks'];
+        fields.forEach(field => {
+            const host = template.querySelector(`[data-field="${field}"]`);
+            const cell = host?.closest('td');
+            if (!cell) return;
+            const index = Array.from(cell.parentElement.children).indexOf(cell);
+            const header = table.querySelectorAll('thead th')[index];
+            if (header && /^result$/i.test(header.textContent.trim())) header.textContent = field === 'remarks' ? 'Attempt' : 'Marks / score';
+        });
+    });
+    const text = value => stripTags(String(value || '')).replace(/\s+/g, ' ').trim();
+    const visibleValue = (field, value) => Array.from(education.querySelectorAll(`[data-field="${field}"]`))
+        .some(element => element.getClientRects().length > 0 && text(element.textContent) === text(value));
+    const lines = [];
+    (data.education || []).filter(item => /CA Intermediate/i.test(text(item.degree))).forEach(item => {
+        const marks = item.marks || item.score || item.result || item.percentage || item.gpa || '';
+        const attempt = item.remarks || '';
+        const missing = [];
+        if (text(marks) && !visibleValue('marks', marks)) missing.push(`Marks: ${text(marks)}`);
+        if (text(attempt) && !visibleValue('remarks', attempt)) missing.push(`Attempt: ${text(attempt)}`);
+        if (missing.length) lines.push(`${text(item.degree)} | ${missing.join(' | ')}`);
+    });
+    if (!lines.length) return;
+    const block = document.createElement('div');
+    block.setAttribute('data-msc-academic-results', '');
+    block.style.cssText = 'font-size:.9em;line-height:1.35;margin-top:6px;';
+    lines.forEach(line => {
+        const row = document.createElement('div');
+        row.textContent = line;
+        block.appendChild(row);
+    });
+    education.appendChild(block);
+}
+
+function renderArticleshipBranding(data) {
+    document.querySelectorAll('[data-msc-program-brand]').forEach(element => element.remove());
+    if (!data.articleshipGallery) return;
+    const page = getPageContainer();
+    if (!page) return;
+    const makeLine = (text, position) => {
+        const line = document.createElement('div');
+        line.setAttribute('data-msc-program-brand', position);
+        line.textContent = text;
+        line.style.cssText = 'font:10px Arial,sans-serif;color:#475569;line-height:1.4;flex:0 0 auto;clear:both;';
+        return line;
+    };
+    const heading = makeLine(`MSC Articleship Program | ${data.articleshipLayoutName || 'CV template'}`, 'header');
+    heading.style.marginBottom = '8px';
+    page.prepend(heading);
+    const footer = makeLine('CA Padam Bhansali | My Student Club', 'footer');
+    footer.style.marginTop = '10px';
+    page.appendChild(footer);
 }
 
 function syncDocumentTitle(data) {
