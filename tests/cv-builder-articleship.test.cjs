@@ -34,20 +34,34 @@ function loadStarterHelpers(data) {
 test('six J1 applicant formats reuse the existing MSC layouts', () => {
     assert.deepEqual(catalog.templates.map(template => template.name), [
         'Classic Academic', 'Statutory Audit Foundations', 'Direct Tax Practice',
-        'GST Reconciliation', 'Minimal Split', 'Leadership Split'
+        'GST Reconciliation', 'Academic Highlights', 'Campus Leadership'
     ]);
     for (const template of catalog.templates) {
         const starter = catalog.createStarter(template.file);
         assert.ok(fs.existsSync(path.join(__dirname, '../cv-builder', catalog.resolveRenderFile(template.file))));
-        assert.match(template.sourceFile, /^day-1\/cv-templates\/.+\.docx$/);
+        assert.equal(template.sourceFile, `day-1/cv-templates/${template.name}.docx`);
         assert.deepEqual(starter.experience, []);
-        assert.equal(starter.personal.name, '[YOUR NAME]');
-        assert.equal(starter.personal.phone, '[Mobile]');
+        assert.equal(starter.summary, '');
+        assert.equal(starter.personal.name, '[First name]');
+        assert.equal(starter.personal.phone, '');
         assert.ok(starter.education.some(entry => /CA Intermediate/.test(entry.degree)));
         assert.ok(starter.customSections.some(section => section.title === 'ICITSS'));
         assert.ok(catalog.hasUnchangedStarterContent(starter));
     }
     assert.equal(catalog.resolveRenderFile('classic.html'), 'classic.html');
+});
+
+test('renamed J1 formats retain saved template selections', () => {
+    assert.equal(catalog.getTemplate('articleship-minimal-split').name, 'Academic Highlights');
+    assert.equal(catalog.getTemplate('articleship-leadership-split').name, 'Campus Leadership');
+    const starter = catalog.createStarter('articleship-leadership-split');
+    starter.summary = 'My saved objective from an earlier draft.';
+    starter.personal.name = 'Your edited name';
+    const { sandbox, select } = loadStarterHelpers(starter);
+    const before = JSON.stringify(sandbox.cvData);
+    sandbox.initializeArticleshipTemplates();
+    assert.ok(select.options.some(option => option.value === starter.templateFile));
+    assert.equal(JSON.stringify(sandbox.cvData), before);
 });
 
 test('the Articleship link starts a fresh applicant CV and leaves existing drafts intact', () => {
@@ -66,13 +80,13 @@ test('the Articleship link starts a fresh applicant CV and leaves existing draft
 test('changing an untouched starter keeps personal edits and loads the chosen domain', () => {
     const starter = catalog.createStarter(catalog.templates[0].file);
     starter.personal.name = 'Your edited name';
-    // Quill wraps a plain objective in a paragraph as soon as the editor loads.
+    // Quill normalizes an empty objective as soon as the editor loads.
     starter.summary = `<p>${starter.summary}</p>`;
     const { sandbox } = loadStarterHelpers(starter);
     const target = catalog.templates.find(template => template.name === 'Direct Tax Practice');
     assert.equal(sandbox.applyArticleshipStarter(target.file), true);
     assert.equal(sandbox.cvData.personal.name, 'Your edited name');
-    assert.match(sandbox.cvData.summary, /direct tax articleship/);
+    assert.equal(sandbox.cvData.projects[0].title, '[Income-tax computation case]');
 });
 
 test('opening Articleship templates preserves a draft with only personal details', () => {
