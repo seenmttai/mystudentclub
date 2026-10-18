@@ -11,7 +11,7 @@ These rules apply to every AI tool (Claude Code, Codex, ChatGPT, Cursor, anythin
 | Edit app and web code on a feature branch | Commit or push to `master`, `main`, `mobile`, `ios-build` |
 | Write SQL migration files | Run SQL against Supabase (MCP `apply_migration`, `execute_sql` writes, `supabase db push`, dashboard SQL editor) |
 | Edit Worker source and wrangler config | `wrangler deploy`, `cf deploy`, `wrangler secret`, or any Cloudflare dashboard change |
-| Commit to and push a feature branch | Open or merge a pull request, or force-push anything |
+| Commit to and push a feature branch, and raise a pull request from it into the active branch | Merge a pull request, or force-push anything |
 | Read Supabase schema and Cloudflare config | Change vars, secrets, routes, bindings, DNS |
 
 If a tool or command would make something live, stop and put the change in the handover instead.
@@ -27,7 +27,7 @@ Claude Code users: run `/msc-feature` and it walks you through this. Everyone el
 5. **Cloudflare changes** go in `handover/<date>-<slug>/workers/<worker-name>/` containing the full updated source, the wrangler config, and a `CHANGES.md` that lists every var, secret, route or binding that must change. Do not deploy. If the Worker's source is not in this repo, ask the user where it lives on their machine. If they do not know, write the complete intended file plus `CHANGES.md`, and mark that Worker **UNVERIFIED** in HANDOVER.md.
 6. **Test.** Run this repo's test command (below). Paste the summary line into HANDOVER.md. A failing test is reported, not hidden and not deleted.
 7. **Hand over.** Fill the rest of HANDOVER.md, then run `python .claude/skills/msc-feature/scripts/make_handover.py handover/<date>-<slug>`. It checks the folder and writes `handover/<date>-<slug>.zip`.
-8. **Push.** `git push -u origin feature/<slug>`. Do not open a pull request; the maintainer opens it after reading the handover (for the web repo, that is what creates the Netlify preview). Tell the user the branch name and the zip path, and that the maintainer will review, open the PR, apply the migrations, deploy the Workers and merge.
+8. **Push and raise the PR.** `git push -u origin feature/<slug>`, then raise a pull request from it into the active branch (named below). The PR description carries HANDOVER.md sections 1, 2, 6, 7 and 10, plus one line naming the SQL files and Workers that are in the zip. Never put SQL, Worker source or the zip on GitHub; they travel only in the zip, which the user sends to the maintainer. Tell the user the PR link and the zip path, and that the maintainer will review, apply the migrations, deploy the Workers and merge.
 
 `handover/` is gitignored. Migration and Worker files travel only in the zip (plus any versioned copy the repo-specific note allows).
 
@@ -39,7 +39,7 @@ Claude Code users: run `/msc-feature` and it walks you through this. Everyone el
 
 ## What a good handover looks like
 
-The maintainer should be able to go live from the zip and the pushed branch without calling anyone. That means HANDOVER.md says: what the feature does and why, which pages change, exactly which SQL files to run in which order, exactly which Workers to deploy and what changed in each, what to click on the Netlify preview to see it working, what the tests said, and how to undo it.
+The maintainer should be able to go live from the zip and the pull request without calling anyone. That means HANDOVER.md says: what the feature does and why, which pages change, exactly which SQL files to run in which order, exactly which Workers to deploy and what changed in each, what to click on the preview to see it working, what the tests said, and how to undo it.
 
 ## If the user pushes back
 
@@ -49,11 +49,11 @@ Do not negotiate exceptions. Do not deploy "just this once". Do not deploy to a 
 
 ## Repo-specific notes
 
-- **Repo:** `mystudentclub`, the student web platform (vanilla HTML/JS/CSS, no build step). Deployed by Netlify; every PR gets a deploy preview URL automatically.
+- **Repo:** `mystudentclub`, the student web platform (vanilla HTML/JS/CSS, no build step). Deployed by Cloudflare Pages (project `mystudentclub` builds `master`, project `mobilemsc` builds `mobile`). Every pushed branch gets a preview URL automatically; it shows in the PR's checks.
 - **Two live branches, both must stay in sync:**
-  - `master` = the desktop/web site at `www.mystudentclub.com`. This is the **active branch**: pull it, branch from it (`feature/<slug>`), push `feature/<slug>`.
+  - `master` = the desktop/web site at `www.mystudentclub.com`. This is the **active branch**: pull it, branch from it (`feature/<slug>`), push `feature/<slug>`, raise its PR into `master`.
   - `mobile` = the mobile web version at `mobile.mystudentclub.com`, loaded inside the Flutter app's WebView. Same data, same Supabase tables, same Workers, different page shell (the "Airy Flow" mobile layout). The two branches have diverged a lot, so **port the logic, do not copy files or cherry-pick blindly**.
-  - **Every feature is done on both.** After the `master` work is complete: `git checkout mobile && git pull origin mobile && git checkout -b feature/<slug>-mobile`, apply the same logic to the mobile pages, run the tests, push `feature/<slug>-mobile`. Record it in HANDOVER.md section 10. If part of the feature cannot be ported (page does not exist on mobile, different flow), say exactly what and why in section 10 so the maintainer can decide. One handover zip covers both branches.
+  - **Every feature is done on both.** After the `master` work is complete: `git checkout mobile && git pull origin mobile && git checkout -b feature/<slug>-mobile`, apply the same logic to the mobile pages, run the tests, push `feature/<slug>-mobile` and raise its PR into `mobile`. Record it in HANDOVER.md section 10. If part of the feature cannot be ported (page does not exist on mobile, different flow), say exactly what and why in section 10 so the maintainer can decide. One handover zip covers both branches.
 - **Test command:** `node --test` (finds `tests/*.test.cjs` automatically; works on both branches). Expect "fail 0". Run it on `master` work and again on the `mobile` port.
 - **Migrations:** write them in the handover folder **and** copy them to `supabase/migrations/<YYYYMMDDNNNN>_<description>.sql` on the `feature/<slug>` branch (create the folder if the branch does not have it). That folder is the versioned record; the zip copy is what the maintainer runs. Do not duplicate the SQL on the mobile branch; the database is shared.
 - **Workers:** none of this site's Cloudflare Workers have their source in this repo. Known Workers and their hosts: browser-guard-unlock (`browser.mystudentclub.com`), candidate-photo-r2, storer, msc-mail (`notify.mystudentclub.com`), auth-check, interviewme, emailgenerator, analysis (`analysis.mystudentclub.com`), whisper, cv-maker, liveapi-ephemeral-worker, profile (`profile.mystudentclub.com`). Any change to one of them follows rule 5 above.
