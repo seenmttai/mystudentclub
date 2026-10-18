@@ -8,12 +8,12 @@
     // Adapted from the completed J1 Day 1 CV pack; renderer files stay shared with the existing builder.
     const baseStarter = {
         "personal": {
-            "name": "[YOUR NAME]",
+            "name": "[First name]",
             "tagline": "CA Intermediate | Both groups cleared",
             "contact": "",
-            "phone": "[Mobile]",
-            "email": "[Email]",
-            "linkedin": "[LinkedIn URL]",
+            "phone": "",
+            "email": "",
+            "linkedin": "",
             "location": "[City]",
             "socialLinks": []
         },
@@ -77,8 +77,7 @@
                 "id": "custom_articleship_availability",
                 "title": "Availability",
                 "items": [
-                    "Available from [date]",
-                    "Preferred location: [city]"
+                    "Available from [date]"
                 ]
             }
         ],
@@ -96,7 +95,6 @@
             "interests"
         ],
         "sectionTitles": {
-            "summary": "Objective",
             "education": "Education & Qualifications",
             "leadership": "Extracurriculars",
             "certifications": "Certifications",
@@ -122,11 +120,10 @@
             "style": "sans",
             "collection": "articleship",
             "sourceFile": "day-1/cv-templates/Classic Academic.docx",
-            "summary": "CA Intermediate cleared; seeking articleship in [audit / tax] in [city].",
             "skills": "<p><strong>Excel</strong>: [functions and tasks you can demonstrate]</p><p><strong>Accounting</strong>: [topics you can explain with an example]</p><p><strong>Communication</strong>: [languages used confidently]</p>",
             "leadership": [
                 "[Activity / society] | [Role] | [Month year]",
-                "Contributed to [activity] by [your specific task].",
+                "Coordinated [activity] for [number of participants]; handled [specific task].",
                 "[Achievement or responsibility] at [school / college / community]."
             ]
         },
@@ -138,7 +135,6 @@
             "style": "sans",
             "collection": "articleship",
             "sourceFile": "day-1/cv-templates/Statutory Audit Foundations.docx",
-            "summary": "Seeking statutory audit articleship; interested in financial statements and audit evidence.",
             "skills": "<p><strong>Audit knowledge</strong>: [assertions / evidence / documentation topics studied]</p><p><strong>Excel</strong>: [sorting, filters, lookups or PivotTables practised]</p>",
             "leadership": [
                 "[Activity / organisation] | [Role] | [Dates]",
@@ -150,8 +146,8 @@
                     "title": "[Audit practice case]",
                     "description": "Self-directed practice | [Month year]",
                     "bullets": [
-                        "Matched [sample entries] to supporting documents in a practice dataset.",
-                        "Prepared [workpaper] recording the procedure, evidence and exceptions."
+                        "Matched [number of entries] to supporting documents in an audit practice file.",
+                        "Prepared [audit-area workpaper] recording [procedure], evidence and [number of exceptions]."
                     ]
                 }
             ]
@@ -164,7 +160,6 @@
             "style": "sans",
             "collection": "articleship",
             "sourceFile": "day-1/cv-templates/Direct Tax Practice.docx",
-            "summary": "Seeking direct tax articleship; keen to learn computation, research and compliance work.",
             "skills": "<p><strong>Tax knowledge</strong>: [income heads / deductions / TDS topics studied]</p><p><strong>Excel</strong>: [computation and checking functions used]</p>",
             "leadership": [
                 "[Study group / activity] | [Role] | [Dates]",
@@ -176,7 +171,7 @@
                     "title": "[Income-tax computation case]",
                     "description": "Academic practice | [Month year]",
                     "bullets": [
-                        "Prepared [computation] for a fictional [taxpayer type] for [assessment year].",
+                        "Prepared [computation] for a practice [taxpayer type] for [assessment year].",
                         "Documented [assumptions] and checked [calculation] against the case facts."
                     ]
                 }
@@ -190,7 +185,6 @@
             "style": "sans",
             "collection": "articleship",
             "sourceFile": "day-1/cv-templates/GST Reconciliation.docx",
-            "summary": "Seeking indirect tax articleship; interested in GST data checks and reconciliations.",
             "skills": "<p><strong>GST knowledge</strong>: [supply / input tax credit / return concepts studied]</p><p><strong>Excel</strong>: [lookups / SUMIFS / text cleaning practised]</p>",
             "leadership": [
                 "[Organisation / activity] | [Role] | [Dates]",
@@ -202,74 +196,79 @@
                     "title": "[GST reconciliation case]",
                     "description": "Self-directed practice | [Month year]",
                     "bullets": [
-                        "Compared [two practice registers] using [matching fields].",
-                        "Listed [unmatched items] and documented possible reasons for review."
+                        "Matched [number of invoices] across two practice registers using [matching fields].",
+                        "Listed [number of unmatched items] and explained [main difference] for review."
                     ]
                 }
             ]
         },
         {
+            // Keep saved template IDs stable when a J1 format is renamed.
             "file": "articleship-minimal-split",
-            "name": "Minimal Split",
+            "name": "Academic Highlights",
             "renderFile": "modern-split.html",
             "accent": "#28535e",
             "style": "split",
             "collection": "articleship",
-            "sourceFile": "day-1/cv-templates/Minimal Split.docx",
-            "summary": "CA Intermediate cleared; seeking articleship in [audit / tax] in [city].",
-            "skills": "<p><strong>Excel</strong>: [tasks you can demonstrate]</p><p><strong>Accounting</strong>: [topics studied]</p>",
+            "sourceFile": "day-1/cv-templates/Academic Highlights.docx",
+            "skills": "<p><strong>Technical knowledge</strong>: [relevant topics studied]</p><p><strong>Tools</strong>: [Excel tasks / other tools practised]</p>",
             "leadership": [
-                "[Activity / organisation] | [Role] | [Dates]",
-                "Contributed [specific task] to [activity].",
-                "Participated in [competition / event] at [level]."
+                "[Activity] | [Organisation] | [Dates]",
+                "Represented [school / college / club] in [activity].",
+                "Contributed [specific task] to [event / initiative]."
             ],
             "achievements": [
-                "[Verified achievement / relevant subject result] | [Exam / institution] | [Year]."
+                "[Verified rank / subject score / scholarship] | [Exam / institution] | [Year].",
+                "[Academic award] for [specific achievement] | [Year]."
+            ],
+            "sectionOrder": [
+                "education", "achievements", "skills", "leadership", "certifications",
+                "custom_articleship_icitss", "custom_articleship_availability",
+                "summary", "experience", "projects", "interests"
             ]
         },
         {
             "file": "articleship-leadership-split",
-            "name": "Leadership Split",
+            "name": "Campus Leadership",
             "renderFile": "modern-split.html",
             "accent": "#28535e",
             "style": "split",
             "collection": "articleship",
-            "sourceFile": "day-1/cv-templates/Leadership Split.docx",
-            "summary": "Seeking [domain] articleship; available in [city] from [date].",
-            "skills": "<p><strong>Excel</strong>: [tasks practised]</p><p><strong>Technical knowledge</strong>: [relevant topics studied]</p>",
+            "sourceFile": "day-1/cv-templates/Campus Leadership.docx",
+            "skills": "<p><strong>Tools</strong>: [Excel / presentation tasks practised]</p><p><strong>Technical knowledge</strong>: [relevant accounting / audit / tax topics]</p>",
             "leadership": [
-                "[Club / class role] | [Organisation] | [Dates]",
-                "Coordinated [activity] and divided [tasks] across [team].",
-                "Resolved [specific issue] through [action]."
-            ],
-            "achievements": [
-                "[Verified achievement / relevant subject result] | [Exam / institution] | [Year]."
+                "[Class representative / club role] | [Organisation] | [Dates]",
+                "Managed a [₹ budget] across [number of events] with [number of team members].",
+                "Resolved [issue] by [action] and delivered [outcome]."
             ],
             "interests": [
                 "[Activity / competition] | [Dates]",
-                "Achieved [result] or delivered [specific contribution]."
+                "[Result / contribution] in [activity], supported by [record / certificate]."
             ],
-            "leadershipTitle": "Positions of Responsibility"
+            "leadershipTitle": "Positions of Responsibility",
+            "interestsTitle": "Extracurricular Achievements",
+            "sectionOrder": [
+                "education", "leadership", "interests", "skills", "certifications",
+                "custom_articleship_icitss", "custom_articleship_availability",
+                "summary", "experience", "projects", "achievements"
+            ]
         }
     ];
 
     const profiles = definitions.map(definition => {
-        const { summary, skills, leadership, projects = [], achievements = [], interests = [], leadershipTitle, ...template } = definition;
+        const { summary = '', skills, leadership, projects = [], achievements = [], interests = [], leadershipTitle, interestsTitle, sectionOrder, ...template } = definition;
         const starter = JSON.parse(JSON.stringify(baseStarter));
         Object.assign(starter, { summary, skills, leadership, projects, achievements, interests });
-        if (template.renderFile === 'modern-split.html') {
-            starter.sectionTitles.achievements = 'Academic Highlights';
-            starter.customSections.push({ id: 'custom_articleship_languages', title: 'Languages', items: ['[Languages used confidently]'] });
-            starter.sectionOrder.splice(starter.sectionOrder.indexOf('custom_articleship_availability'), 0, 'custom_articleship_languages');
-        }
+        if (achievements.length) starter.sectionTitles.achievements = 'Academic Highlights';
         if (leadershipTitle) {
             starter.sectionTitles.leadership = leadershipTitle;
             starter.sectionLabels.leadership.text = leadershipTitle;
-            starter.sectionTitles.interests = 'Extracurriculars';
-            starter.sectionLabels.interests = { text: 'Extracurriculars', visible: true };
-            starter.sectionOrder = starter.sectionOrder.filter(key => key !== 'interests');
-            starter.sectionOrder.splice(starter.sectionOrder.indexOf('leadership') + 1, 0, 'interests');
         }
+        if (interestsTitle) {
+            starter.sectionTitles.interests = interestsTitle;
+            starter.sectionLabels.interests = { text: interestsTitle, visible: true };
+        }
+        if (sectionOrder) starter.sectionOrder = [...sectionOrder];
         return { ...template, starter };
     });
     const clone = value => JSON.parse(JSON.stringify(value));
