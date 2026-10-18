@@ -499,8 +499,8 @@ function renderArticleshipBranding(data) {
                 margin:0!important;padding:0!important;display:block!important;overflow:hidden!important;
             }
             #cv-page.msc-articleship-template {
-                width:1000px!important;min-width:1000px!important;height:1414px!important;
-                min-height:1414px!important;max-height:1414px!important;position:relative!important;
+                width:1000px!important;min-width:1000px!important;height:1412px!important;
+                min-height:1412px!important;max-height:1412px!important;position:relative!important;
                 transform:none!important;zoom:.7937!important;margin:0!important;box-shadow:none!important;
                 padding-top:var(--msc-pad-top)!important;padding-bottom:var(--msc-pad-bottom)!important;
                 padding-left:var(--msc-pad-left)!important;padding-right:var(--msc-pad-right)!important;
