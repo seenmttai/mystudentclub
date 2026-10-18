@@ -4,7 +4,7 @@
   "description": "",
   "main": "firebase-messaging-sw.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --test",
     "generate-jobs": "node scripts/generate-jobs.js"
   },
   "repository": {
