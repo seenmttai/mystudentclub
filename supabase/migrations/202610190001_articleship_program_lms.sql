@@ -229,6 +229,12 @@ WITH incoming AS (
         "view_storage_path": "articleship-program-v2/day-1/selected-cvs-anonymised.pdf"
       },
       {
+        "title": "Day 0 and Day 1 kit",
+        "type": "zip",
+        "group": "Checklists",
+        "download_storage_path": "articleship-program-v2/day-1/MSC Articleship Day 0 and Day 1.zip"
+      },
+      {
         "title": "CV checklist",
         "type": "docx",
         "group": "Checklists",
@@ -252,7 +258,13 @@ WITH incoming AS (
         "title": "MSC CV Reviewer",
         "type": "external_link",
         "group": "Tools",
-        "url": "https://www.mystudentclub.com/cv-reviewer/"
+        "url": "https://www.mystudentclub.com/cv-reviewer/#uploadSection"
+      },
+      {
+        "title": "Personal CV review",
+        "type": "external_link",
+        "group": "Tools",
+        "url": "https://wa.me/917228881182?text=Hello%20Sir%2C%20please%20review%20my%20articleship%20CV."
       }
     ],
     "industrial_training_path": null

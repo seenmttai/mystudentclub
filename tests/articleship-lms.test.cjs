@@ -74,6 +74,10 @@ test('the Articleship migration has eight distinct sessions and only student res
     assert.equal(new Set(rows.map(row => row.video_number)).size, 8);
     assert.deepEqual([...new Set(rows.map(row => row.day_number))], [0, 1, 2, 3, 4, 5, 6]);
     assert.deepEqual(rows.filter(row => row.day_number === 1).map(row => row.title), ['Your articleship CV', 'Building your profile fast']);
+    assert.ok(rows.every(row => row.resources.length > 0), 'every programme session has usable resources');
+    const cvResources = rows.find(row => row.title === 'Your articleship CV').resources;
+    assert.ok(cvResources.some(resource => resource.title === 'Personal CV review' && resource.type === 'external_link'));
+    assert.ok(cvResources.some(resource => resource.download_storage_path?.endsWith('MSC Articleship Day 0 and Day 1.zip')));
     for (const row of rows) {
         assert.equal(row.course, 'msc-articleship-program');
         assert.equal(row.industrial_training_path, null);
