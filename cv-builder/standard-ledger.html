@@ -459,9 +459,9 @@
 
                     const colDefs = [
                         { key: 'degree', label: 'Degree/Examination', value: (item) => rich(item.degree), align: 'left', cls: 'qd' },
-                        { key: 'year', label: 'Year', value: (item) => rich(item.year), align: 'center', cls: 'qdc' },
+                        { key: 'year', label: data.articleshipGallery ? 'Session' : 'Year', value: (item) => rich(item.year), align: 'center', cls: 'qdc' },
                         { key: 'institution', label: 'Board/Institute', value: (item) => rich(item.institute || item.institution), align: 'left', cls: 'qd' },
-                        { key: 'marks', label: data.articleshipGallery ? 'Marks / score' : 'Marks/Percentage', value: (item) => rich(item.marks), align: 'center', cls: 'qdc' },
+                        { key: 'marks', label: data.articleshipGallery ? 'Marks' : 'Marks/Percentage', value: (item) => rich(item.marks), align: 'center', cls: 'qdc' },
                         { key: 'remarks', label: data.articleshipGallery ? 'Attempt' : 'Remarks', value: (item) => rich(item.remarks), align: 'left', cls: 'qd' }
                     ];
 

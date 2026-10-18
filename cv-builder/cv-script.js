@@ -93,6 +93,7 @@
             const active = isArticleshipTemplate();
             const experience = document.querySelector('details[data-section="experience"]');
             if (experience && active && !hasContentInList(cvData.experience)) experience.open = false;
+            document.body.classList.toggle('articleship-mode', active || templateCollection === 'articleship');
             const tagline = document.getElementById('inp-tagline');
             if (tagline) tagline.placeholder = active ? 'CA Intermediate | Both groups cleared' : 'e.g. CA Final | Flipkart';
         }
@@ -135,13 +136,13 @@
 
         const DEMO_PREVIEW_DATA = {
             personal: {
-                name: "Padam Bhansali",
+                name: "[Your name]",
                 tagline: "CA Intermediate",
                 contact: "",
-                phone: "+91 7228881182",
-                email: "capadambhansali@gmail.com",
-                linkedin: "linkedin.com/in/ca-padam-bhansali",
-                location: "Kandivali West, Mumbai",
+                phone: "",
+                email: "",
+                linkedin: "",
+                location: "[City]",
                 socialLinks: []
             },
             summary: "Detail-oriented articled trainee with strong exposure to GST compliance, internal controls, and audit support. Looking to contribute in a high-impact finance and compliance role.",
@@ -3114,7 +3115,7 @@
             if (grid && grid.children.length) renderTemplateCards();
 
             // On landing, invite logged-out users to sign in (dismissible).
-            if (!templateAccess.loggedIn && !landingLoginPromptShown) {
+            if (!templateAccess.loggedIn && !landingLoginPromptShown && templateCollection !== 'articleship') {
                 landingLoginPromptShown = true;
                 openTemplateLoginModal({
                     title: 'Welcome to the MSC CV Builder',
@@ -3137,7 +3138,7 @@
         }
 
         const TPL_LOGIN_DEFAULTS = {
-            title: 'Log in to unlock premium templates',
+            title: 'Log in for premium templates',
             text: "This template is part of MSC's premium collection. Sign in to your MSC account to continue."
         };
         function openTemplateLoginModal(opts = {}) {
@@ -3430,7 +3431,7 @@
                             PREMIUM
                         </div>` : ''}
                     </div>
-                    <div class="template-card-name">${t.name}</div>
+                    <div class="template-card-name">${t.name}${t.file === 'articleship-classic-academic' ? ' <span class="articleship-pick">My pick</span>' : ''}</div>
                 </div>`;
             }).join('');
             
@@ -3574,8 +3575,9 @@
                 : ((useDemoFallback && !hasDraft) ? DEMO_PREVIEW_DATA : cvData);
             const payload = JSON.parse(JSON.stringify(source));
             const articleshipTemplate = window.MSCArticleship?.getTemplate(templateFile);
+            payload.articleshipApplicant = Boolean(articleshipTemplate);
             payload.articleshipGallery = articleshipTemplate?.kind === 'gallery';
-            payload.articleshipLayoutName = payload.articleshipGallery ? articleshipTemplate.name : '';
+            payload.articleshipLayoutName = articleshipTemplate?.name || '';
             if (!payload.sectionOrder || !payload.sectionOrder.length) payload.sectionOrder = [...BASE_SECTION_ORDER];
             if (!payload.personal) payload.personal = { name: "", tagline: "", contact: "", phone: "", email: "", linkedin: "", location: "", socialLinks: [] };
             if (!payload.personal.socialLinks) payload.personal.socialLinks = [];
@@ -4999,7 +5001,7 @@ async function downloadCvFile(format = 'pdf') {
             setTimeout(() => {
                 // Don't collide with the landing login prompt shown to logged-out users.
                 const loginOpen = document.getElementById('template-login-overlay')?.classList.contains('active');
-                if (!localStorage.getItem('cv_tour_completed') && !loginOpen) {
+                if (!localStorage.getItem('cv_tour_completed') && !loginOpen && templateCollection !== 'articleship') {
                     startTour();
                 }
             }, 1200); // Delay to ensure page is fully loaded

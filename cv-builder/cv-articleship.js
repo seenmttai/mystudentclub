@@ -174,7 +174,7 @@
                     "title": "[Income-tax computation case]",
                     "description": "Academic practice | [Month year]",
                     "bullets": [
-                        "Prepared [computation] for a practice [taxpayer type] for [assessment year].",
+                        "Prepared [computation] for a practice [taxpayer type] for [tax year / assessment year].",
                         "Documented [assumptions] and checked [calculation] against the case facts."
                     ]
                 }
@@ -481,8 +481,9 @@
         if (!profile) return null;
         const starter = clone(profile.starter);
         starter.templateFile = file;
+        starter.articleshipApplicant = true;
         starter.articleshipGallery = profile.kind === 'gallery';
-        starter.articleshipLayoutName = starter.articleshipGallery ? profile.name : '';
+        starter.articleshipLayoutName = profile.name;
         starter.articleshipStarter = file;
         starter.tableSettings = clone(tableSettings || {});
         return starter;

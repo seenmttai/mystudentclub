@@ -428,25 +428,31 @@ function renderCV(data) {
 
 function renderArticleshipAcademicResults(data) {
     document.querySelectorAll('[data-msc-academic-results]').forEach(element => element.remove());
-    if (!data.articleshipGallery) return;
+    if (!data.articleshipApplicant && !data.articleshipGallery) return;
     const education = document.querySelector('.sortable-section[data-section-id="education"]');
     if (!education) return;
     education.querySelectorAll('th').forEach(header => {
         const text = header.textContent.trim();
-        if (/^(percentage|marks|score|marks\s*\/\s*score)$/i.test(text)) header.textContent = 'Marks / score';
-        if (/^remarks$/i.test(text)) header.textContent = 'Attempt';
+        if (/^(?:%\/?CGPA|marks(?:\s*\/\s*(?:score|CGPA|percentage))?|percentage(?:\s*\/\s*CGPA)?|score(?:\s*\(%\)|\s*\/\s*result)?|performance|grade|results?)$/i.test(text)) header.textContent = 'Marks';
+        if (/^(?:year(?: of passing)?|session \/ year)$/i.test(text)) header.textContent = 'Session';
+        if (/^remarks?$/i.test(text)) header.textContent = 'Attempt';
     });
     education.querySelectorAll('table').forEach(table => {
         const template = table.querySelector('tbody tr');
         if (!template) return;
-        const fields = ['marks', 'remarks'];
-        fields.forEach(field => {
+        const labels = { marks: 'Marks', remarks: 'Attempt', year: 'Session', degree: 'Course', institute: 'Institute' };
+        const columns = new Map();
+        Object.keys(labels).forEach(field => {
             const host = template.querySelector(`[data-field="${field}"]`);
             const cell = host?.closest('td');
             if (!cell) return;
             const index = Array.from(cell.parentElement.children).indexOf(cell);
+            if (!columns.has(index)) columns.set(index, []);
+            columns.get(index).push(labels[field]);
+        });
+        columns.forEach((labels, index) => {
             const header = table.querySelectorAll('thead th')[index];
-            if (header && /^result$/i.test(header.textContent.trim())) header.textContent = field === 'remarks' ? 'Attempt' : 'Marks / score';
+            if (header) header.textContent = labels.join(' / ');
         });
     });
     const text = value => stripTags(String(value || '')).replace(/\s+/g, ' ').trim();
@@ -475,21 +481,63 @@ function renderArticleshipAcademicResults(data) {
 
 function renderArticleshipBranding(data) {
     document.querySelectorAll('[data-msc-program-brand]').forEach(element => element.remove());
-    if (!data.articleshipGallery) return;
     const page = getPageContainer();
     if (!page) return;
+    const active = Boolean(data.articleshipApplicant || data.articleshipGallery);
+    page.classList.toggle('msc-articleship-template', active);
+    document.body.classList.toggle('msc-articleship-print', active);
+    if (active && !document.getElementById('msc-articleship-print-style')) {
+        const style = document.createElement('style');
+        style.id = 'msc-articleship-print-style';
+        style.textContent = `@media print {
+            html:has(body.msc-articleship-print), body.msc-articleship-print {
+                width:210mm!important;height:297mm!important;min-height:0!important;
+                margin:0!important;padding:0!important;overflow:hidden!important;background:#fff!important;
+            }
+            body.msc-articleship-print #zoom-wrapper {
+                width:210mm!important;height:297mm!important;min-height:0!important;
+                margin:0!important;padding:0!important;display:block!important;overflow:hidden!important;
+            }
+            #cv-page.msc-articleship-template {
+                width:1000px!important;min-width:1000px!important;height:1414px!important;
+                min-height:1414px!important;max-height:1414px!important;position:relative!important;
+                transform:none!important;zoom:.7937!important;margin:0!important;box-shadow:none!important;
+            }
+        }`;
+        document.head.appendChild(style);
+    }
+    if (!active) {
+        if (page.__mscBrandPadding) {
+            page.style.paddingTop = page.__mscBrandPadding.inlineTop;
+            page.style.paddingBottom = page.__mscBrandPadding.inlineBottom;
+            delete page.__mscBrandPadding;
+        }
+        return;
+    }
+    // Keep the brand lines out of row-based CV layouts; extra flex items squeeze their columns.
+    if (!page.__mscBrandPadding) {
+        const style = getComputedStyle(page);
+        page.__mscBrandPadding = {
+            inlineTop: page.style.paddingTop, inlineBottom: page.style.paddingBottom,
+            top: parseFloat(style.paddingTop) || 0, bottom: parseFloat(style.paddingBottom) || 0,
+            left: parseFloat(style.paddingLeft) || 24, right: parseFloat(style.paddingRight) || 24
+        };
+    }
+    const inset = page.__mscBrandPadding;
+    page.style.paddingTop = `${inset.top + 18}px`;
+    page.style.paddingBottom = `${inset.bottom + 18}px`;
     const makeLine = (text, position) => {
         const line = document.createElement('div');
         line.setAttribute('data-msc-program-brand', position);
         line.textContent = text;
-        line.style.cssText = 'font:10px Arial,sans-serif;color:#475569;line-height:1.4;flex:0 0 auto;clear:both;';
+        line.style.cssText = `position:absolute;left:${inset.left}px;right:${inset.right}px;font:10px Arial,sans-serif;color:#475569;background:#fff;line-height:1.4;height:14px;z-index:1;`;
         return line;
     };
     const heading = makeLine(`MSC Articleship Program | ${data.articleshipLayoutName || 'CV template'}`, 'header');
-    heading.style.marginBottom = '8px';
+    heading.style.top = `${inset.top}px`;
     page.prepend(heading);
     const footer = makeLine('CA Padam Bhansali | My Student Club', 'footer');
-    footer.style.marginTop = '10px';
+    footer.style.bottom = `${inset.bottom}px`;
     page.appendChild(footer);
 }
 
