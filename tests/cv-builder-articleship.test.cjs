@@ -22,7 +22,7 @@ function loadStarterHelpers(data) {
         hasUserEnteredData: value => Boolean(value.personal?.name || value.summary || value.education?.length),
         isArticleshipTemplate: file => Boolean(catalog.getTemplate(file))
     };
-    const start = builder.indexOf('function initializeArticleshipTemplates');
+    const start = builder.indexOf('function hasArticleshipDraftData');
     const end = builder.indexOf('function updateArticleshipEditor', start);
     vm.runInNewContext(builder.slice(start, end), sandbox);
     return { sandbox, select, collection };
@@ -70,6 +70,74 @@ test('changing an untouched starter keeps personal edits and loads the chosen do
     assert.equal(sandbox.applyArticleshipStarter(target.file), true);
     assert.equal(sandbox.cvData.personal.name, 'Your edited name');
     assert.match(sandbox.cvData.summary, /direct tax articleship/);
+});
+
+test('Articleship seeding preserves drafts with only a location, highlight or other personal field', () => {
+    for (const personal of [
+        { location: 'Your city' },
+        { highlight1: 'Your academic result' },
+        { highlight2: 'Your project' },
+        { highlight3: 'Your activity' },
+        { socialLinks: [{ label: 'Your portfolio', url: '' }] },
+        { preferredLocation: 'Your preferred city' }
+    ]) {
+        const draft = { personal, templateFile: 'classic.html' };
+        const { sandbox } = loadStarterHelpers(draft);
+        const before = JSON.stringify(sandbox.cvData);
+        sandbox.initializeArticleshipTemplates();
+        assert.equal(JSON.stringify(sandbox.cvData), before);
+        assert.equal(sandbox.applyArticleshipStarter(catalog.templates[0].file), false);
+        assert.equal(JSON.stringify(sandbox.cvData), before);
+    }
+});
+
+test('closing and reopening the mobile template sheet restores both moved controls', () => {
+    class Node {
+        constructor(name) { this.name = name; this.children = []; this.parentElement = null; }
+        append(node) {
+            node.remove();
+            this.children.push(node);
+            node.parentElement = this;
+        }
+        remove() {
+            if (!this.parentElement) return;
+            const siblings = this.parentElement.children;
+            siblings.splice(siblings.indexOf(this), 1);
+            this.parentElement = null;
+        }
+        before(node) {
+            node.remove();
+            const parent = this.parentElement;
+            parent.children.splice(parent.children.indexOf(this), 0, node);
+            node.parentElement = parent;
+        }
+        replaceWith(node) { this.before(node); this.remove(); }
+        replaceChildren() { for (const child of [...this.children]) child.remove(); }
+    }
+    const home = new Node('sidebar');
+    const controls = new Node('collection');
+    const color = new Node('color');
+    const grid = new Node('grid');
+    for (const node of [controls, color, grid]) home.append(node);
+    const content = new Node('sheet content');
+    const sandbox = {
+        content,
+        sheet: { dataset: {} },
+        document: { createComment: () => new Node('placeholder'), getElementById: () => null }
+    };
+    const preview = fs.readFileSync(path.join(__dirname, '../cv-builder/cv-preview.js'), 'utf8');
+    const start = preview.indexOf('let lastPanPoint = null;');
+    const end = preview.indexOf('function showUnavailable', start);
+    assert.ok(start >= 0 && end > start);
+    vm.runInNewContext(preview.slice(start, end), sandbox);
+    for (let cycle = 0; cycle < 2; cycle++) {
+        assert.equal(sandbox.moveIntoSheet(controls), true);
+        assert.equal(sandbox.moveIntoSheet(grid), true);
+        assert.deepEqual(content.children.map(node => node.name), ['collection', 'grid']);
+        sandbox.restoreContent();
+        assert.deepEqual(home.children.map(node => node.name), ['collection', 'color', 'grid']);
+        assert.deepEqual(content.children, []);
+    }
 });
 
 test('changing the layout preserves a CV after the student edits its content', () => {
