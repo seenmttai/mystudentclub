@@ -15,7 +15,15 @@ WITH incoming AS (
     "title": "The MSC Articleship Guidebook",
     "description": "Read the guidebook and join the group.",
     "day_number": 0,
-    "resources": [],
+    "resources": [
+      {
+        "title": "MSC Articleship Guidebook",
+        "type": "docx",
+        "group": "Checklists",
+        "download_storage_path": "articleship-program-v2/day-0/guidebook/MSC Articleship Guidebook.docx",
+        "view_storage_path": "articleship-program-v2/day-0/guidebook/MSC Articleship Guidebook.pdf"
+      }
+    ],
     "industrial_training_path": null
   },
   {
@@ -103,6 +111,13 @@ WITH incoming AS (
         "view_storage_path": "articleship-program-v2/day-1/cv-templates/Accounting Practice.pdf"
       },
       {
+        "title": "Audit & Tax",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-templates/Audit & Tax.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-templates/Audit & Tax.pdf"
+      },
+      {
         "title": "Campus Leadership",
         "type": "docx",
         "group": "Templates",
@@ -150,6 +165,13 @@ WITH incoming AS (
         "group": "Templates",
         "download_storage_path": "articleship-program-v2/day-1/cv-templates/Excel First.docx",
         "view_storage_path": "articleship-program-v2/day-1/cv-templates/Excel First.pdf"
+      },
+      {
+        "title": "Financial Analysis",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-templates/Financial Analysis.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-templates/Financial Analysis.pdf"
       },
       {
         "title": "GST Reconciliation",
@@ -422,6 +444,19 @@ WITH incoming AS (
     "day_number": 5,
     "resources": [
       {
+        "title": "Domain firm shortlist",
+        "type": "xlsx",
+        "group": "Checklists",
+        "download_storage_path": "articleship-program-v2/day-5/domain-firms/Domain firm shortlist.xlsx"
+      },
+      {
+        "title": "Domain certifications",
+        "type": "docx",
+        "group": "Checklists",
+        "download_storage_path": "articleship-program-v2/day-5/domain-roadmaps/Domain certifications.docx",
+        "view_storage_path": "articleship-program-v2/day-5/domain-roadmaps/Domain certifications.pdf"
+      },
+      {
         "title": "MSC Domain Roadmaps",
         "type": "docx",
         "group": "Checklists",
@@ -437,7 +472,36 @@ WITH incoming AS (
     "title": "Register your articleship",
     "description": "Complete your registration and plan your studies.",
     "day_number": 6,
-    "resources": [],
+    "resources": [
+      {
+        "title": "Articleship registration process",
+        "type": "docx",
+        "group": "Checklists",
+        "download_storage_path": "articleship-program-v2/day-6/articleship-registration-process.docx",
+        "view_storage_path": "articleship-program-v2/day-6/articleship-registration-process.pdf"
+      },
+      {
+        "title": "Articleship transfer guidelines",
+        "type": "docx",
+        "group": "Checklists",
+        "download_storage_path": "articleship-program-v2/day-6/articleship-transfer-guidelines.docx",
+        "view_storage_path": "articleship-program-v2/day-6/articleship-transfer-guidelines.pdf"
+      },
+      {
+        "title": "Ca final study guidelines",
+        "type": "docx",
+        "group": "Checklists",
+        "download_storage_path": "articleship-program-v2/day-6/ca-final-study-guidelines.docx",
+        "view_storage_path": "articleship-program-v2/day-6/ca-final-study-guidelines.pdf"
+      },
+      {
+        "title": "Industrial training policy",
+        "type": "docx",
+        "group": "Checklists",
+        "download_storage_path": "articleship-program-v2/day-6/industrial-training-policy.docx",
+        "view_storage_path": "articleship-program-v2/day-6/industrial-training-policy.pdf"
+      }
+    ],
     "industrial_training_path": null
   }
 ]'::json)
