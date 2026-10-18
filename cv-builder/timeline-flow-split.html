@@ -124,6 +124,11 @@ body {
   position: relative;
 }
 
+/* Reserve the kit lines without forcing the shrink loop to reduce every font. */
+#cv-page.msc-articleship-template .main-content {
+  min-height: calc(1413.94px - (160px * var(--cs)) - var(--msc-pad-top, 0px) - var(--msc-pad-bottom, 0px));
+}
+
 /* Sidebar Section Titles */
 .left-panel .section-title {
   font-family: var(--font-heading);
