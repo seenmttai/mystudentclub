@@ -3302,6 +3302,7 @@
     </div>
 
     <script src="https://unpkg.com/markdown-pdfjs@1.0.1/dist/markdown-pdf.umd.js"></script>
+    <script src="/scripts/articleship-interview.js"></script>
     <script type="module">
         import { LipsyncEn } from 'lipsync-en';
 
@@ -4469,7 +4470,7 @@
             btn.disabled = true;
             btn.innerHTML = '<span class="loading-spinner" style="width:16px;height:16px;border-width:2px;"></span> Initializing...';
 
-            interviewConfig = {
+            interviewConfig = window.MSCArticleshipInterview.normalizeConfig({
                 positionApplied: document.getElementById('positionApplied').value,
                 experienceLevel: document.getElementById('experienceLevel').value,
                 companyName: document.getElementById('companyName').value,
@@ -4479,7 +4480,7 @@
                 jobDescription: document.getElementById('jobDescription').value,
                 specialization: document.getElementById('positionApplied').value,
                 duration: 30 // Default duration
-            };
+            });
 
             // Process PDF if exists
             const fileInput = document.getElementById('cvFile');
@@ -4544,13 +4545,27 @@
         const posSelect = document.getElementById('positionApplied');
         const expGroup = document.getElementById('exp-group');
         if (posSelect && expGroup) {
-            posSelect.addEventListener('change', () => {
-                if (posSelect.value === 'CA Articleship') {
-                    expGroup.classList.add('hidden');
-                } else {
-                    expGroup.classList.remove('hidden');
+            const companyTypeSelect = document.getElementById('companyType');
+            const domainSelect = document.getElementById('interviewDomain');
+            let previousSetup = null;
+            const updateArticleshipSetup = () => {
+                const isArticleship = posSelect.value === window.MSCArticleshipInterview.ROLE;
+                expGroup.classList.toggle('hidden', isArticleship);
+                if (isArticleship && !previousSetup) {
+                    previousSetup = { companyType: companyTypeSelect.value, domain: domainSelect.value };
+                    companyTypeSelect.value = 'Mid-Size';
+                    domainSelect.value = 'Statutory Audit';
+                } else if (!isArticleship && previousSetup) {
+                    companyTypeSelect.value = previousSetup.companyType;
+                    domainSelect.value = previousSetup.domain;
+                    previousSetup = null;
                 }
-            });
+            };
+            posSelect.addEventListener('change', updateArticleshipSetup);
+            if (new URLSearchParams(window.location.search).get('mode') === 'articleship') {
+                posSelect.value = window.MSCArticleshipInterview.ROLE;
+            }
+            updateArticleshipSetup();
         }
 
         // CV Upload Preview
@@ -4588,7 +4603,7 @@
                     - Easy: Be supportive, encouraging, and ask basic conceptual questions. Help the candidate if they struggle.
                     - Medium: Be a standard professional interviewer. Ask a mix of technical and behavioral questions.
                     - Hard: Be critical, deep-dive into technical details, and challenge their answers.
-                    - Brutal: Be aggressive, use stress-interview tactics, interrupt occasionally, and ask extremely complex technical questions.`
+                    - Brutal: Be aggressive, use stress-interview tactics, interrupt occasionally, and ask extremely complex technical questions.${window.MSCArticleshipInterview.getInstructions(interviewConfig)}`
                 }
             ];
 
