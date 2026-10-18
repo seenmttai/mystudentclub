@@ -51,6 +51,16 @@
             renderTemplateCards();
         }
 
+        function hasArticleshipDraftData(data) {
+            function hasValue(value) {
+                if (typeof value === 'string') return Boolean(value.trim());
+                if (Array.isArray(value)) return value.some(hasValue);
+                if (value && typeof value === 'object') return Object.values(value).some(hasValue);
+                return false;
+            }
+            return hasValue(data?.personal) || hasUserEnteredData(data);
+        }
+
         function initializeArticleshipTemplates() {
             const catalog = window.MSCArticleship;
             const select = document.getElementById('template-select');
@@ -64,7 +74,7 @@
             const collectionSelect = document.getElementById('template-collection');
             if (isArticleshipTemplate(cvData.templateFile)) templateCollection = 'articleship';
             if (collectionSelect) collectionSelect.value = templateCollection;
-            if (templateCollection === 'articleship' && !hasUserEnteredData(cvData)) {
+            if (templateCollection === 'articleship' && !hasArticleshipDraftData(cvData)) {
                 cvData = catalog.createStarter(catalog.templates[0].file, getDefaultTableSettings());
             }
         }
@@ -72,8 +82,8 @@
         function applyArticleshipStarter(file) {
             const catalog = window.MSCArticleship;
             if (!catalog?.getTemplate(file)) return false;
-            if (hasUserEnteredData(cvData) && !catalog.hasUnchangedStarterContent(cvData)) return false;
-            const personal = hasUserEnteredData(cvData) ? { ...cvData.personal } : null;
+            if (hasArticleshipDraftData(cvData) && !catalog.hasUnchangedStarterContent(cvData)) return false;
+            const personal = hasArticleshipDraftData(cvData) ? { ...cvData.personal } : null;
             cvData = catalog.createStarter(file, getDefaultTableSettings());
             if (personal) cvData.personal = personal;
             return true;
@@ -3556,11 +3566,12 @@
             const useDemoFallback = !!options.useDemoFallback;
             normalizeSectionOrder();
             const templateFile = options.templateFile || getSelectedTemplateFile();
+            const hasDraft = isArticleshipTemplate(templateFile) ? hasArticleshipDraftData(cvData) : hasUserEnteredData(cvData);
             const useArticleshipDemo = useDemoFallback && isArticleshipTemplate(templateFile)
-                && (!hasUserEnteredData(cvData) || window.MSCArticleship.hasUnchangedStarterContent(cvData));
+                && (!hasDraft || window.MSCArticleship.hasUnchangedStarterContent(cvData));
             const source = useArticleshipDemo
                 ? window.MSCArticleship.createStarter(templateFile, getDefaultTableSettings())
-                : ((useDemoFallback && !hasUserEnteredData(cvData)) ? DEMO_PREVIEW_DATA : cvData);
+                : ((useDemoFallback && !hasDraft) ? DEMO_PREVIEW_DATA : cvData);
             const payload = JSON.parse(JSON.stringify(source));
             if (!payload.sectionOrder || !payload.sectionOrder.length) payload.sectionOrder = [...BASE_SECTION_ORDER];
             if (!payload.personal) payload.personal = { name: "", tagline: "", contact: "", phone: "", email: "", linkedin: "", location: "", socialLinks: [] };

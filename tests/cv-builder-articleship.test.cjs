@@ -19,10 +19,13 @@ function loadStarterHelpers(data) {
         cvData: structuredClone(data),
         templateCollection: 'articleship',
         getDefaultTableSettings: () => ({}),
-        hasUserEnteredData: value => Boolean(value.personal?.name || value.summary || value.education?.length),
+        getPlainTextFromHTML: value => String(value || '').replace(/<[^>]*>/g, ''),
         isArticleshipTemplate: file => Boolean(catalog.getTemplate(file))
     };
-    const start = builder.indexOf('function initializeArticleshipTemplates');
+    const detectionStart = builder.indexOf('function isRealPhoneValue');
+    const detectionEnd = builder.indexOf('function applyFormattedContact', detectionStart);
+    vm.runInNewContext(builder.slice(detectionStart, detectionEnd), sandbox);
+    const start = builder.indexOf('function hasArticleshipDraftData');
     const end = builder.indexOf('function updateArticleshipEditor', start);
     vm.runInNewContext(builder.slice(start, end), sandbox);
     return { sandbox, select, collection };
@@ -70,6 +73,51 @@ test('changing an untouched starter keeps personal edits and loads the chosen do
     assert.equal(sandbox.applyArticleshipStarter(target.file), true);
     assert.equal(sandbox.cvData.personal.name, 'Your edited name');
     assert.match(sandbox.cvData.summary, /direct tax articleship/);
+});
+
+test('opening Articleship templates preserves a draft with only personal details', () => {
+    for (const personal of [
+        { location: 'Your city' },
+        { highlight1: 'Your academic result' },
+        { highlight2: 'Your project' },
+        { highlight3: 'Your activity' },
+        { phone: '9' },
+        { socialLinks: [{ label: 'Your portfolio', url: '' }] },
+        { preferredLocation: 'Your preferred city' }
+    ]) {
+        const draft = { personal, templateFile: 'classic.html' };
+        const { sandbox } = loadStarterHelpers(draft);
+        const before = JSON.stringify(sandbox.cvData);
+        sandbox.initializeArticleshipTemplates();
+        assert.equal(JSON.stringify(sandbox.cvData), before);
+        assert.equal(sandbox.applyArticleshipStarter(catalog.templates[0].file), false);
+        assert.equal(JSON.stringify(sandbox.cvData), before);
+    }
+});
+
+test('Articleship thumbnails show a personal-only draft without replacing it with sample content', () => {
+    const draft = {
+        personal: { preferredLocation: 'Your preferred city' },
+        education: [],
+        templateFile: 'classic.html'
+    };
+    const { sandbox } = loadStarterHelpers(draft);
+    Object.assign(sandbox, {
+        normalizeSectionOrder() {},
+        getSelectedTemplateFile: () => sandbox.cvData.templateFile,
+        BASE_SECTION_ORDER: ['education'],
+        normalizeHexColor: value => value,
+        applyFormattedContact() {},
+        DEMO_PREVIEW_DATA: { personal: { name: 'Sample CV' } }
+    });
+    const start = builder.indexOf('function buildPreviewPayload');
+    const end = builder.indexOf('function injectPreviewData', start);
+    vm.runInNewContext(builder.slice(start, end), sandbox);
+    const before = JSON.stringify(sandbox.cvData);
+    const payload = sandbox.buildPreviewPayload({ useDemoFallback: true, templateFile: catalog.templates[0].file });
+    assert.equal(payload.personal.preferredLocation, draft.personal.preferredLocation);
+    assert.equal(payload.personal.name, undefined);
+    assert.equal(JSON.stringify(sandbox.cvData), before);
 });
 
 test('changing the layout preserves a CV after the student edits its content', () => {
