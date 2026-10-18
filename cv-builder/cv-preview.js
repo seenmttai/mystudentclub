@@ -420,6 +420,7 @@
             if (resetBtn) resetBtn.style.display = 'none';
             if (kind === 'template') {
                 renderTemplateCards();
+                moveIntoSheet(document.getElementById('template-collection-controls'));
                 if (!moveIntoSheet(document.getElementById('template-grid'))) showUnavailable('Template options are unavailable right now.');
             } else if (kind === 'color') {
                 renderThemeControls();
@@ -462,7 +463,8 @@
 
     function syncEnlargedPreview() {
         if (!zoomViewer.open) return;
-        const template = document.getElementById('template-select').value;
+        const selectedTemplate = document.getElementById('template-select').value;
+        const template = typeof getTemplateRenderFile === 'function' ? getTemplateRenderFile(selectedTemplate) : selectedTemplate;
         if (zoomFrame.getAttribute('src') !== template) zoomFrame.src = template;
         else sendEnlargedPreviewData();
     }
@@ -491,7 +493,8 @@
     }
 
     window.openEnlargedPreview = () => {
-        const template = document.getElementById('template-select').value;
+        const selectedTemplate = document.getElementById('template-select').value;
+        const template = typeof getTemplateRenderFile === 'function' ? getTemplateRenderFile(selectedTemplate) : selectedTemplate;
         zoomFrame.onload = () => setTimeout(sendEnlargedPreviewData, 80);
         if (zoomFrame.getAttribute('src') !== template) zoomFrame.src = template;
         if (!zoomViewer.open) zoomViewer.showModal();

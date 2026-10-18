@@ -22,6 +22,60 @@
             skills: 'Skills'
         };
 
+        let templateCollection = new URLSearchParams(window.location.search).get('stage') === 'articleship' ? 'articleship' : 'all';
+
+        function getTemplateRenderFile(file) {
+            return window.MSCArticleship?.resolveRenderFile(file) || file;
+        }
+
+        function isArticleshipTemplate(file = getSelectedTemplateFile()) {
+            return !!window.MSCArticleship?.getTemplate(file);
+        }
+
+        function setTemplateCollection(collection) {
+            templateCollection = collection === 'articleship' ? 'articleship' : 'all';
+            const select = document.getElementById('template-collection');
+            if (select) select.value = templateCollection;
+            renderTemplateCards();
+        }
+
+        function initializeArticleshipTemplates() {
+            const catalog = window.MSCArticleship;
+            const select = document.getElementById('template-select');
+            if (!catalog?.templates.length || !select) return;
+            catalog.templates.forEach(template => {
+                if (Array.from(select.options).some(option => option.value === template.file)) return;
+                const option = document.createElement('option');
+                option.value = template.file;
+                option.textContent = template.name;
+                select.appendChild(option);
+            });
+            const collectionSelect = document.getElementById('template-collection');
+            if (isArticleshipTemplate(cvData.templateFile)) templateCollection = 'articleship';
+            if (collectionSelect) collectionSelect.value = templateCollection;
+            if (templateCollection === 'articleship' && !hasUserEnteredData(cvData)) {
+                cvData = catalog.createStarter(catalog.templates[0].file, getDefaultTableSettings());
+            }
+        }
+
+        function applyArticleshipStarter(file) {
+            const catalog = window.MSCArticleship;
+            if (!catalog?.getTemplate(file)) return false;
+            if (hasUserEnteredData(cvData) && !catalog.hasUnchangedStarterContent(cvData)) return false;
+            const personal = hasUserEnteredData(cvData) ? { ...cvData.personal } : null;
+            cvData = catalog.createStarter(file, getDefaultTableSettings());
+            if (personal) cvData.personal = personal;
+            return true;
+        }
+
+        function updateArticleshipEditor() {
+            const active = isArticleshipTemplate();
+            const experience = document.querySelector('details[data-section="experience"]');
+            if (experience && active && !hasContentInList(cvData.experience)) experience.open = false;
+            const tagline = document.getElementById('inp-tagline');
+            if (tagline) tagline.placeholder = active ? 'CA Intermediate | Both groups cleared' : 'e.g. CA Final | Flipkart';
+        }
+
         function getDefaultTableSettings() {
             return {
                 education: {
@@ -157,6 +211,15 @@
                 }
                 catch (e) { console.error('Load failed', e); }
             }
+            initializeArticleshipTemplates();
+            const initialSelect = document.getElementById('template-select');
+            const rawInitialTemplate = cvData.templateFile || initialSelect?.value || 'classic.html';
+            const initialTemplate = window.resolveTemplateFile ? window.resolveTemplateFile(rawInitialTemplate) : rawInitialTemplate;
+            cvData.templateFile = Array.from(initialSelect?.options || []).some(option => option.value === initialTemplate) ? initialTemplate : 'classic.html';
+            if (initialSelect) initialSelect.value = cvData.templateFile;
+            const initialFrame = document.getElementById('cv-frame');
+            if (initialFrame) initialFrame.src = getTemplateRenderFile(cvData.templateFile);
+            syncCurrentTemplateName();
             ensureCvDataShape();
             normalizeSectionOrder();
             loadHistory();
@@ -168,6 +231,7 @@
             initSummaryEditor();
             initSkillsEditor();
             renderEditor();
+            updateArticleshipEditor();
             renderCustomSectionEditors();
             updateProgress();
             initializeUndoRedoHistory();
@@ -1454,10 +1518,13 @@
             setEditorScrollTop(preservedScrollTop);
 
             const frame = document.getElementById('cv-frame');
-            if (frame && frame.getAttribute('src') !== targetTemplate) {
+            const renderFile = getTemplateRenderFile(targetTemplate);
+            cvData.templateFile = targetTemplate;
+            updateArticleshipEditor();
+            if (frame && frame.getAttribute('src') !== renderFile) {
                 const overlay = document.querySelector('.loading-overlay');
                 if (overlay) overlay.classList.add('active');
-                frame.src = targetTemplate;
+                frame.src = renderFile;
                 frame.onload = () => {
                     setTimeout(() => {
                         postToFrame({ skipHistory: true });
@@ -2488,7 +2555,7 @@
         }
 
         // Template Sidebar Logic
-        const TEMPLATES = window.CV_TEMPLATE_CATALOG || [];
+        const TEMPLATES = [...(window.CV_TEMPLATE_CATALOG || []), ...(window.MSCArticleship?.templates || [])];
         const templateSelect = document.getElementById('template-select');
         if (templateSelect && TEMPLATES.length) {
             const rawTemplate = templateSelect.value || 'classic.html';
@@ -2582,10 +2649,11 @@
             const grid = document.getElementById('template-grid');
             const currentTemplate = document.getElementById('template-select').value;
             
-            grid.innerHTML = TEMPLATES.map(t => `
+            const templates = templateCollection === 'articleship' ? TEMPLATES.filter(t => isArticleshipTemplate(t.file)) : TEMPLATES;
+            grid.innerHTML = templates.map(t => `
                 <div class="template-card ${t.file === currentTemplate ? 'active' : ''}" onclick="selectTemplate('${t.file}', '${t.name}')">
                     <div class="template-card-preview">
-                        <iframe data-src="${t.file}" data-template="${t.file}"></iframe>
+                        <iframe data-src="${getTemplateRenderFile(t.file)}" data-template="${t.file}"></iframe>
                         <div class="template-loading" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:12px;color:#9ca3af;">Loading...</div>
                     </div>
                     <div class="template-card-name">${t.name}</div>
@@ -2701,16 +2769,21 @@
         function buildPreviewPayload(options = {}) {
             const useDemoFallback = !!options.useDemoFallback;
             normalizeSectionOrder();
-            const source = (useDemoFallback && !hasUserEnteredData(cvData)) ? DEMO_PREVIEW_DATA : cvData;
+            const templateFile = options.templateFile || getSelectedTemplateFile();
+            const useArticleshipDemo = useDemoFallback && isArticleshipTemplate(templateFile)
+                && (!hasUserEnteredData(cvData) || window.MSCArticleship.hasUnchangedStarterContent(cvData));
+            const source = useArticleshipDemo
+                ? window.MSCArticleship.createStarter(templateFile, getDefaultTableSettings())
+                : ((useDemoFallback && !hasUserEnteredData(cvData)) ? DEMO_PREVIEW_DATA : cvData);
             const payload = JSON.parse(JSON.stringify(source));
             if (!payload.sectionOrder || !payload.sectionOrder.length) payload.sectionOrder = [...BASE_SECTION_ORDER];
             if (!payload.personal) payload.personal = { name: "", tagline: "", contact: "", phone: "", email: "", linkedin: "", location: "", socialLinks: [] };
             if (!payload.personal.socialLinks) payload.personal.socialLinks = [];
             payload.themeAccent = normalizeHexColor(payload.themeAccent || cvData.themeAccent || '');
             payload.themeFont = String(payload.themeFont || cvData.themeFont || '').trim();
-            payload.sectionTitles = cvData.sectionTitles || {};
-            payload.sectionGroups = cvData.sectionGroups || {};
-            payload.sectionLabels = cvData.sectionLabels || {};
+            payload.sectionTitles = useArticleshipDemo ? (source.sectionTitles || {}) : (cvData.sectionTitles || {});
+            payload.sectionGroups = useArticleshipDemo ? (source.sectionGroups || {}) : (cvData.sectionGroups || {});
+            payload.sectionLabels = useArticleshipDemo ? (source.sectionLabels || {}) : (cvData.sectionLabels || {});
             applyFormattedContact(payload);
             return payload;
         }
@@ -2718,7 +2791,7 @@
         function injectPreviewData(iframe) {
             try {
                 if (iframe.contentWindow) {
-                    const payload = buildPreviewPayload({ useDemoFallback: true });
+                    const payload = buildPreviewPayload({ useDemoFallback: true, templateFile: iframe.dataset.template });
                     iframe.contentWindow.postMessage({ type: 'update-cv', payload }, '*');
                 }
             } catch (e) {
@@ -2732,7 +2805,12 @@
             
             select.value = file;
             if (nameSpan) nameSpan.textContent = name;
-            
+            if (applyArticleshipStarter(file)) {
+                ensureCvDataShape();
+                normalizeSectionOrder();
+                renderEditor();
+                updateProgress();
+            }
             changeTemplate();
             toggleTemplateSidebar(false);
         }
@@ -2760,8 +2838,10 @@
             const frame = document.getElementById('cv-frame');
             const skipHistory = !!options.skipHistory;
 
+            cvData.templateFile = select.value || 'classic.html';
+            updateArticleshipEditor();
             document.querySelector('.loading-overlay').classList.add('active');
-            frame.src = select.value;
+            frame.src = getTemplateRenderFile(select.value);
             syncCurrentTemplateName();
             frame.onload = () => {
                 setTimeout(() => {
@@ -2779,7 +2859,9 @@
             if (getPlainTextFromHTML(cvData.skills || '')) filled++;
             if (cvData.education.length) filled += 1.5;
             if (cvData.experience.length) filled += 1.5;
-            const pct = Math.min((filled / total) * 100, 100);
+            const pct = isArticleshipTemplate()
+                ? window.MSCArticleship.getProgress(cvData)
+                : Math.min((filled / total) * 100, 100);
             document.getElementById('progress-fill').style.width = pct + '%';
             const percentEl = document.getElementById('progress-percent');
             if (percentEl) percentEl.textContent = `${Math.round(pct)}%`;
@@ -2799,7 +2881,10 @@
             setTimeout(() => t.classList.remove('show'), 2000);
         }
 
-        function saveLocal() { localStorage.setItem('cv_maker_data', JSON.stringify(cvData)); }
+        function saveLocal() {
+            cvData.templateFile = getSelectedTemplateFile();
+            localStorage.setItem('cv_maker_data', JSON.stringify(cvData));
+        }
 
         function manualSave() {
             saveLocal();
@@ -3045,12 +3130,16 @@ async function deliverDownloadedBlob(blob, filename) {
             if (!trimmed) throw new Error('Nothing to refine');
 
             const templateFile = document.getElementById('template-select')?.value || 'classic.html';
-            const templateId = 'template_' + templateFile.replace('cv', '').replace('-', '').replace('.html', '');
+            const renderFile = getTemplateRenderFile(templateFile);
+            const templateId = 'template_' + renderFile.replace('cv', '').replace('-', '').replace('.html', '');
+            const prompt = isArticleshipTemplate(templateFile)
+                ? window.MSCArticleship.buildAiPrompt(customPrompt)
+                : (customPrompt || '');
 
             const response = await fetch(`${WORKER_URL}/refine-section`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text: trimmed, field_type: fieldType, template_id: templateId, custom_prompt: customPrompt || '' })
+                body: JSON.stringify({ text: trimmed, field_type: fieldType, template_id: templateId, custom_prompt: prompt })
             });
             const res = await response.json();
             if (!res.ok || !res.refined_text) {
