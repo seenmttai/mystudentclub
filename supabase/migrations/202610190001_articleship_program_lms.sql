@@ -97,6 +97,440 @@ WITH incoming AS (
         "view_storage_path": "articleship-program-v2/day-1/cover-letters/Valuation and FDD Cover Letter.pdf"
       },
       {
+        "title": "01 classic",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/01-classic.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/01-classic.pdf"
+      },
+      {
+        "title": "02 ledger layout",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/02-ledger-layout.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/02-ledger-layout.pdf"
+      },
+      {
+        "title": "03 structured grid",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/03-structured-grid.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/03-structured-grid.pdf"
+      },
+      {
+        "title": "04 pill corporate",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/04-pill-corporate.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/04-pill-corporate.pdf"
+      },
+      {
+        "title": "05 hybrid grid",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/05-hybrid-grid.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/05-hybrid-grid.pdf"
+      },
+      {
+        "title": "06 corporate box",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/06-corporate-box.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/06-corporate-box.pdf"
+      },
+      {
+        "title": "07 bordered grid",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/07-bordered-grid.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/07-bordered-grid.pdf"
+      },
+      {
+        "title": "08 split ledger",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/08-split-ledger.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/08-split-ledger.pdf"
+      },
+      {
+        "title": "09 academic ledger",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/09-academic-ledger.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/09-academic-ledger.pdf"
+      },
+      {
+        "title": "10 firm info",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/10-firm-info.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/10-firm-info.pdf"
+      },
+      {
+        "title": "11 grid layout",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/11-grid-layout.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/11-grid-layout.pdf"
+      },
+      {
+        "title": "12 professional",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/12-professional.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/12-professional.pdf"
+      },
+      {
+        "title": "13 corporate",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/13-corporate.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/13-corporate.pdf"
+      },
+      {
+        "title": "14 minimalist",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/14-minimalist.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/14-minimalist.pdf"
+      },
+      {
+        "title": "15 bold modern",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/15-bold-modern.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/15-bold-modern.pdf"
+      },
+      {
+        "title": "16 refined classic",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/16-refined-classic.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/16-refined-classic.pdf"
+      },
+      {
+        "title": "17 modern bold",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/17-modern-bold.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/17-modern-bold.pdf"
+      },
+      {
+        "title": "18 executive",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/18-executive.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/18-executive.pdf"
+      },
+      {
+        "title": "19 merit layout",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/19-merit-layout.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/19-merit-layout.pdf"
+      },
+      {
+        "title": "20 clean ledger",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/20-clean-ledger.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/20-clean-ledger.pdf"
+      },
+      {
+        "title": "21 modern split",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/21-modern-split.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/21-modern-split.pdf"
+      },
+      {
+        "title": "22 horizon split",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/22-horizon-split.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/22-horizon-split.pdf"
+      },
+      {
+        "title": "23 professional banner",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/23-professional-banner.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/23-professional-banner.pdf"
+      },
+      {
+        "title": "24 executive professional",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/24-executive-professional.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/24-executive-professional.pdf"
+      },
+      {
+        "title": "25 corporate grid",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/25-corporate-grid.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/25-corporate-grid.pdf"
+      },
+      {
+        "title": "26 banner resume",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/26-banner-resume.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/26-banner-resume.pdf"
+      },
+      {
+        "title": "27 elegant grid",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/27-elegant-grid.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/27-elegant-grid.pdf"
+      },
+      {
+        "title": "28 structured ledger",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/28-structured-ledger.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/28-structured-ledger.pdf"
+      },
+      {
+        "title": "29 classic ledger",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/29-classic-ledger.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/29-classic-ledger.pdf"
+      },
+      {
+        "title": "30 formal ledger",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/30-formal-ledger.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/30-formal-ledger.pdf"
+      },
+      {
+        "title": "31 smart ledger",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/31-smart-ledger.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/31-smart-ledger.pdf"
+      },
+      {
+        "title": "32 modern ledger",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/32-modern-ledger.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/32-modern-ledger.pdf"
+      },
+      {
+        "title": "33 standard ledger",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/33-standard-ledger.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/33-standard-ledger.pdf"
+      },
+      {
+        "title": "34 classic grid",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/34-classic-grid.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/34-classic-grid.pdf"
+      },
+      {
+        "title": "35 profile sidebar",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/35-profile-sidebar.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/35-profile-sidebar.pdf"
+      },
+      {
+        "title": "36 compact banner",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/36-compact-banner.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/36-compact-banner.pdf"
+      },
+      {
+        "title": "37 dual columns",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/37-dual-columns.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/37-dual-columns.pdf"
+      },
+      {
+        "title": "38 inset frame",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/38-inset-frame.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/38-inset-frame.pdf"
+      },
+      {
+        "title": "39 clean rule",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/39-clean-rule.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/39-clean-rule.pdf"
+      },
+      {
+        "title": "40 continuous outline",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/40-continuous-outline.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/40-continuous-outline.pdf"
+      },
+      {
+        "title": "41 formal docket",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/41-formal-docket.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/41-formal-docket.pdf"
+      },
+      {
+        "title": "42 open panel",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/42-open-panel.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/42-open-panel.pdf"
+      },
+      {
+        "title": "43 executive docket",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/43-executive-docket.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/43-executive-docket.pdf"
+      },
+      {
+        "title": "44 tabular ledger",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/44-tabular-ledger.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/44-tabular-ledger.pdf"
+      },
+      {
+        "title": "45 grid docket",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/45-grid-docket.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/45-grid-docket.pdf"
+      },
+      {
+        "title": "46 split banner",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/46-split-banner.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/46-split-banner.pdf"
+      },
+      {
+        "title": "47 wave grid",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/47-wave-grid.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/47-wave-grid.pdf"
+      },
+      {
+        "title": "48 side panel",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/48-side-panel.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/48-side-panel.pdf"
+      },
+      {
+        "title": "49 classic docket",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/49-classic-docket.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/49-classic-docket.pdf"
+      },
+      {
+        "title": "50 composite ledger",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/50-composite-ledger.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/50-composite-ledger.pdf"
+      },
+      {
+        "title": "51 dotted split",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/51-dotted-split.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/51-dotted-split.pdf"
+      },
+      {
+        "title": "52 pill header split",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/52-pill-header-split.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/52-pill-header-split.pdf"
+      },
+      {
+        "title": "53 banner executive split",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/53-banner-executive-split.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/53-banner-executive-split.pdf"
+      },
+      {
+        "title": "54 sidebar panel split",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/54-sidebar-panel-split.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/54-sidebar-panel-split.pdf"
+      },
+      {
+        "title": "55 timeline flow split",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/55-timeline-flow-split.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/55-timeline-flow-split.pdf"
+      },
+      {
+        "title": "56 executive header split",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/56-executive-header-split.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/56-executive-header-split.pdf"
+      },
+      {
+        "title": "57 bordered box ledger",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/57-bordered-box-ledger.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/57-bordered-box-ledger.pdf"
+      },
+      {
+        "title": "58 matrix grid ledger",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/58-matrix-grid-ledger.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/58-matrix-grid-ledger.pdf"
+      },
+      {
+        "title": "59 clean line executive",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/59-clean-line-executive.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/59-clean-line-executive.pdf"
+      },
+      {
+        "title": "60 minimalist executive",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/60-minimalist-executive.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/60-minimalist-executive.pdf"
+      },
+      {
+        "title": "61 accent split summary",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/61-accent-split-summary.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/61-accent-split-summary.pdf"
+      },
+      {
+        "title": "62 plain ats",
+        "type": "docx",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/cv-gallery/62-plain-ats.docx",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/62-plain-ats.pdf"
+      },
+      {
         "title": "Academic Highlights",
         "type": "docx",
         "group": "Templates",
@@ -221,6 +655,13 @@ WITH incoming AS (
         "group": "Templates",
         "download_storage_path": "articleship-program-v2/day-1/cv-templates/Writing & Communication.docx",
         "view_storage_path": "articleship-program-v2/day-1/cv-templates/Writing & Communication.pdf"
+      },
+      {
+        "title": "62-CV gallery",
+        "type": "zip",
+        "group": "Templates",
+        "download_storage_path": "articleship-program-v2/day-1/CV gallery.zip",
+        "view_storage_path": "articleship-program-v2/day-1/cv-gallery/Choose your layout.pdf"
       },
       {
         "title": "Selected cvs anonymised",
@@ -474,6 +915,12 @@ WITH incoming AS (
         "group": "Checklists",
         "download_storage_path": "articleship-program-v2/day-5/domain-roadmaps/MSC-Domain-Roadmaps.docx",
         "view_storage_path": "articleship-program-v2/day-5/domain-roadmaps/MSC-Domain-Roadmaps.pdf"
+      },
+      {
+        "title": "Experience explorer (download and open)",
+        "type": "html",
+        "group": "Tools",
+        "download_storage_path": "articleship-program-v2/day-5/Experience explorer.html"
       }
     ],
     "industrial_training_path": null

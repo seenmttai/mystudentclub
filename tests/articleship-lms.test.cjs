@@ -78,13 +78,26 @@ test('the Articleship migration has eight distinct sessions and only student res
     const cvResources = rows.find(row => row.title === 'Your articleship CV').resources;
     assert.ok(cvResources.some(resource => resource.title === 'Personal CV review' && resource.type === 'external_link'));
     assert.ok(cvResources.some(resource => resource.download_storage_path?.endsWith('MSC Articleship Day 0 and Day 1.zip')));
+    const gallery = cvResources.find(resource => resource.title === '62-CV gallery');
+    assert.ok(gallery, 'Day 1 includes the complete CV gallery');
+    assert.equal(gallery.download_storage_path, 'articleship-program-v2/day-1/CV gallery.zip');
+    assert.equal(gallery.view_storage_path, 'articleship-program-v2/day-1/cv-gallery/Choose your layout.pdf');
+    assert.equal(cvResources.filter(resource => /\/cv-gallery\/\d{2}-.*\.docx$/.test(resource.download_storage_path || '')).length, 62);
+    const explorer = rows.find(row => row.day_number === 5).resources
+        .find(resource => resource.title === 'Experience explorer (download and open)');
+    assert.ok(explorer, 'Day 5 includes the experience explorer');
+    assert.equal(explorer.type, 'html');
+    assert.equal(explorer.download_storage_path, 'articleship-program-v2/day-5/Experience explorer.html');
+    assert.equal(explorer.view_storage_path, undefined, 'HTML is downloaded and opened, rather than sent to the PDF viewer');
     for (const row of rows) {
         assert.equal(row.course, 'msc-articleship-program');
         assert.equal(row.industrial_training_path, null);
         for (const resource of row.resources) {
             assert.ok(['Templates', 'Examples', 'Checklists', 'Tools', 'Slides'].includes(resource.group));
+            assert.ok(!/\/index\.html$/.test(resource.download_storage_path || ''), 'multi-file tool entry pages are not standalone downloads');
             for (const key of ['view_storage_path', 'download_storage_path']) {
                 if (resource[key]) assert.ok(resource[key].startsWith('articleship-program-v2/day-'));
+                assert.ok(!resource[key]?.includes('/automail/'), 'Automail installation source stays internal until a student Sheet link exists');
             }
             if (/selected-(?:industrial-training-)?cvs/.test(resource.view_storage_path || '')) {
                 assert.ok(resource.view_storage_path.endsWith('.pdf'));
