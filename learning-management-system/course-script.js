@@ -41,7 +41,9 @@ document.addEventListener('DOMContentLoaded', () => {
         'msc-articleship-program': {
             title: 'MSC Articleship Program',
             description: 'Build your CV, apply to firms, prepare for interviews and start your articleship.',
-            thumbnail: '/assets/articleship-course-main.png'
+            thumbnail: '/assets/articleship-course-main.png',
+            dayTitles: ['Start here', 'Crafting the Perfect CV', 'Applying the Right Way', 'Using LinkedIn',
+                'Cracking Interviews', 'Domain Guidance', 'Registration Formalities']
         }
     };
 
@@ -727,7 +729,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const mainVideo = dayVideos[0] || {};
                 const parsedDay = parseInt(dayNum);
                 return {
-                    day_number: parsedDay, title: mainVideo.title || (parsedDay === 0 ? 'Day 0' : `Day ${parsedDay}`),
+                    day_number: parsedDay,
+                    title: courses[state.courseSlug]?.dayTitles?.[parsedDay]
+                        ? `Day ${parsedDay} · ${courses[state.courseSlug].dayTitles[parsedDay]}`
+                        : mainVideo.title || (parsedDay === 0 ? 'Day 0' : `Day ${parsedDay}`),
                     expanded: parsedDay === 1 || parsedDay === 0, videos: dayVideos, mainVideo: mainVideo
                 };
             }).sort((a, b) => a.day_number - b.day_number);
