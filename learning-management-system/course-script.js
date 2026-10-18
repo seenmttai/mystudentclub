@@ -37,6 +37,11 @@ document.addEventListener('DOMContentLoaded', () => {
             title: 'MSC CA Freshers Program',
             description: 'A comprehensive program for CA freshers to kickstart their career.',
             thumbnail: '/assets/courseimg-fresher.png'
+        },
+        'msc-articleship-program': {
+            title: 'MSC Articleship Program',
+            description: 'Build your CV, apply to firms, prepare for interviews and start your articleship.',
+            thumbnail: '/assets/articleship-course-main.png'
         }
     };
 
