@@ -300,6 +300,9 @@
             <p class="error-text" id="error-message">You do not have active permission to view this resource. Please
                 make sure you are enrolled in the corresponding program.</p>
             <div class="actions">
+                <a href="https://www.mystudentclub.com/ca-industrial-training-program/" id="action-enroll-btn" class="btn btn-primary" style="display: none;">
+                    <i class="fas fa-unlock"></i> Explore the Industrial Training Program
+                </a>
                 <a href="https://mystudentclub.com/login" id="action-login-btn" class="btn btn-primary">
                     <i class="fas fa-sign-in-alt"></i> Login to My Student Club
                 </a>
@@ -315,7 +318,7 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
         const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        function showAccessRestricted(message, showLogin = false) {
+        function showAccessRestricted(message, showLogin = false, showEnroll = false) {
             document.getElementById('loading-card').style.display = 'none';
             const restrictedCard = document.getElementById('restricted-card');
             restrictedCard.classList.add('active');
@@ -323,6 +326,8 @@
             if (message) {
                 document.getElementById('error-message').textContent = message;
             }
+
+            document.getElementById('action-enroll-btn').style.display = showEnroll ? 'inline-flex' : 'none';
 
             const loginBtn = document.getElementById('action-login-btn');
             if (showLogin) {
@@ -350,6 +355,19 @@
 
                 if (authError || !session) {
                     showAccessRestricted("You must be logged in to access this resource.", true);
+                    return;
+                }
+
+                // Paid resources: only students enrolled in the Industrial Training Program get a signed link
+                // (same rule as the guidebook and interview-booklet pages).
+                const { data: enrollments, error: enrollError } = await supabaseClient
+                    .from('enrollment')
+                    .select('course')
+                    .eq('uuid', session.user.id)
+                    .eq('course', 'industrial-training-mastery');
+
+                if (enrollError || !enrollments || enrollments.length === 0) {
+                    showAccessRestricted("This resource is for students enrolled in the MSC Industrial Training Program.", false, true);
                     return;
                 }
 
