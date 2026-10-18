@@ -120,8 +120,12 @@ test('layouts without result columns still show the supplied Inter marks and att
         articleshipGallery: true,
         education: [{ degree: 'CA Intermediate — both groups', marks: '412 / 600', remarks: '2' }]
     };
-    sandbox.renderArticleshipAcademicResults(data);
-    assert.equal(appended[0].children[0].textContent, 'CA Intermediate — both groups | Marks: 412 / 600 | Attempt: 2');
+    for (const degree of ['CA Intermediate — both groups', 'CA Inter — both groups']) {
+        appended.length = 0;
+        data.education[0].degree = degree;
+        sandbox.renderArticleshipAcademicResults(data);
+        assert.equal(appended[0].children[0].textContent, `${degree} | Marks: 412 / 600 | Attempt: 2`);
+    }
 
     appended.length = 0;
     fields.marks.push({ textContent: '412 / 600', getClientRects: () => [{}] });

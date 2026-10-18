@@ -453,7 +453,7 @@ function renderArticleshipAcademicResults(data) {
     const visibleValue = (field, value) => Array.from(education.querySelectorAll(`[data-field="${field}"]`))
         .some(element => element.getClientRects().length > 0 && text(element.textContent) === text(value));
     const lines = [];
-    (data.education || []).filter(item => /CA Intermediate/i.test(text(item.degree))).forEach(item => {
+    (data.education || []).filter(item => /\bCA\s+Inter(?:mediate)?\b/i.test(text(item.degree))).forEach(item => {
         const marks = item.marks || item.score || item.result || item.percentage || item.gpa || '';
         const attempt = item.remarks || '';
         const missing = [];
