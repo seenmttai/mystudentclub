@@ -18,12 +18,14 @@ test('the CA resource viewer never falls back to a public PDF', () => {
   assert.match(read('ca-resource/index.html'), /\/ca-resource\/resource\/\?name=doc\.pdf/);
 });
 
-test('the resource page checks Industrial Training enrolment before signing a link', () => {
+test('the resource page treats the interview guides and the guidebook as Industrial Training resources', () => {
   const html = read('ca-resource/resource/index.html');
-  const enrol = html.indexOf(".eq('course', 'industrial-training-mastery')");
-  const sign = html.indexOf(".createSignedUrl(resourceName, 300)");
-  assert.ok(enrol > 0, 'enrolment check present');
-  assert.ok(sign > enrol, 'signed link only after the enrolment check');
+  for (const name of ['mscit guidebook-3.pdf', 'doc.pdf', 'doc2.pdf']) {
+    assert.match(html, new RegExp(`'${name.replace('.', '\\.')}': 'industrial-training'`));
+  }
+  const check = html.indexOf('STANDALONE_RESOURCES[normalizedName]');
+  const sign = html.indexOf('.createSignedUrl(');
+  assert.ok(check > 0 && sign > check, 'enrolment check runs before any signed link');
   assert.match(html, /id="action-enroll-btn"/);
 });
 

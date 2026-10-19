@@ -1088,6 +1088,23 @@
       .events-hero {
         padding: 1.5rem 0 3.25rem;
       }
+      .hero-live-badge {
+        font-size: 0.6rem;
+        letter-spacing: 0.04em;
+        padding: 0.28rem 0.65rem;
+        gap: 0.4rem;
+        max-width: 100%;
+        white-space: nowrap;
+        box-sizing: border-box;
+      }
+      .badge-tag {
+        white-space: nowrap;
+      }
+      .badge-info {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
       .events-hero-inner {
         padding: 0 16px;
         gap: 1.5rem;
@@ -1099,14 +1116,7 @@
         grid-template-columns: 1fr;
       }
       .events-hero-side-container {
-        flex-direction: column;
-        align-items: stretch;
-      }
-      .events-fc.card-2 {
-        margin-left: 0;
-      }
-      .events-hero-side {
-        width: 100%;
+        display: none !important;
       }
       .events-body-wrapper {
         margin-top: -1.25rem;
@@ -1116,6 +1126,17 @@
         padding: 1.25rem 1.15rem;
       }
       .grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 480px) {
+      .hero-live-badge {
+        font-size: 0.58rem;
+        letter-spacing: 0.04em;
+        padding: 0.25rem 0.55rem;
+      }
+      .badge-info,
+      .badge-sep {
+        display: none;
+      }
     }
     @media (max-width: 640px) {
       .header-container {

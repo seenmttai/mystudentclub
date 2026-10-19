@@ -277,7 +277,7 @@ body {
 /* ──────── Flipbook ──────── */
 #flipbook {
     margin: auto;
-    touch-action: none;
+    touch-action: pan-x pan-y;
 }
 
 #flipbook .flipbook-page {

@@ -219,6 +219,7 @@
   }
   async function ensureForResource(stage, title, url) {
     const user = await currentUser();
+    if (await hasEnrollment(user)) return true;
     const saved = await existingDetails(user,stage);
     if (saved) return true;
     return Boolean(await formModal({ stage,source:{kind:'resource',title,url},submitLabel:'Access Resource' },user));
@@ -247,19 +248,17 @@
     if (!authenticated || (user && user.id !== authenticated.id)) return false;
     user = authenticated;
     redirect = safeRedirect(redirect || user.user_metadata?.msc_auth_redirect || '/');
-    let hasIntake = false;
     const metadata = user.user_metadata || {};
     if (metadata.msc_career_intake?.sharing_consent) {
-      const stage = metadata.msc_career_intake.stage;
-      hasIntake = Boolean(await existingDetails(user,stage));
-      if (!hasIntake) { await persist({...metadata.msc_career_intake,name:metadata.full_name || metadata.name || metadata.msc_career_intake.name,email:user.email},{kind:'signup',title:'Account signup',url:'/login.html'},user); hasIntake = true; }
-    } else {
-      const {data,error} = await client().from('career_intakes').select('stage').eq('user_id',user.id).eq('consent_version',VERSION).limit(1);
-      if (error) throw new Error('Unable to load your signup details. Please try again.');
-      hasIntake = Boolean(data?.length);
-      if (!hasIntake) hasIntake = Boolean(await formModal({title:'Complete your signup',subtitle:'Tell us what opportunity you are looking for.',required:true,source:{kind:'signup',title:'Account signup',url:'/login.html'},submitLabel:'Save and Continue'},user));
+      try {
+        const stage = metadata.msc_career_intake.stage;
+        if (!(await existingDetails(user,stage))) {
+          await persist({...metadata.msc_career_intake,name:metadata.full_name || metadata.name || metadata.msc_career_intake.name,email:user.email},{kind:'signup',title:'Account signup',url:'/login.html'},user);
+        }
+      } catch (error) {
+        console.warn('Optional career details could not be saved:',error.message);
+      }
     }
-    if (!hasIntake) return false;
     if (!metadata.msc_onboarding_seen) {
       const completeProfile = await showOnboarding();
       if (completeProfile === null || (await currentUser())?.id !== user.id) return false;
