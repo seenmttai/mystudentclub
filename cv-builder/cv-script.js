@@ -340,10 +340,6 @@
         async function handleReviewerImport() {
             const storedImages = localStorage.getItem('import_cv_images');
             if (!storedImages) return;
-            if (!window.MscAiConsent || !await window.MscAiConsent.request({
-                feature: 'AI CV Import',
-                data: 'your CV pages'
-            })) return;
 
             showImportLoadingOverlay();
 
@@ -1194,7 +1190,7 @@
             const trimmed = normalizeImportedString(text);
             if (!trimmed) return null;
             try {
-                return await refineSection(fieldType, trimmed, customPrompt, true);
+                return await refineSection(fieldType, trimmed, customPrompt);
             } catch (error) {
                 console.warn(`Refine failed for ${fieldType}:`, error);
                 return null;
@@ -3864,17 +3860,13 @@ async function downloadCvFile(format = 'pdf') {
 }
 
         // AI & Import Logic
-        async function refineSection(fieldType, text, customPrompt = '', approvedBatch = false) {
+        async function refineSection(fieldType, text, customPrompt = '') {
             const trimmed = (text || '').trim();
             if (!trimmed) throw new Error('Nothing to refine');
 
             const templateFile = document.getElementById('template-select')?.value || 'classic.html';
             const templateId = 'template_' + templateFile.replace('cv', '').replace('-', '').replace('.html', '');
 
-            if (!approvedBatch && (!window.MscAiConsent || !await window.MscAiConsent.request({
-                feature: 'AI Writing Assistant',
-                data: 'the CV section you selected'
-            }))) throw new Error('AI processing permission was not granted.');
             const response = await fetch(`${WORKER_URL}/refine-section`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -4433,15 +4425,11 @@ async function downloadCvFile(format = 'pdf') {
             if (!cvData.personal.name && !getPlainTextFromHTML(cvData.summary || '')) return alert("Please fill basic info first.");
 
             const overlay = document.querySelector('.loading-overlay');
+            overlay.classList.add('active');
 
             try {
                 const customPrompt = await getCustomPrompt('AI Enhance');
                 if (customPrompt === null) return;
-                if (!window.MscAiConsent || !await window.MscAiConsent.request({
-                    feature: 'AI CV Enhancement',
-                    data: 'all filled sections of your CV'
-                })) return;
-                overlay.classList.add('active');
 
                 const next = JSON.parse(JSON.stringify(cvData));
                 const beforePreview = buildAiEnhancePreview(cvData);
@@ -4586,10 +4574,6 @@ async function downloadCvFile(format = 'pdf') {
                     images.push(base64);
                 }
 
-                if (!window.MscAiConsent || !await window.MscAiConsent.request({
-                    feature: 'AI CV Import',
-                    data: 'your CV pages'
-                })) return;
                 const response = await fetch(`${WORKER_URL}/convert`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },

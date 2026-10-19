@@ -3302,7 +3302,6 @@
     </div>
 
     <script src="https://unpkg.com/markdown-pdfjs@1.0.1/dist/markdown-pdf.umd.js"></script>
-    <script src="scripts/ai-processing-consent.js"></script>
     <script type="module">
         import { LipsyncEn } from 'lipsync-en';
 
@@ -4069,13 +4068,6 @@
                 return;
             }
 
-            if (!window.MscAiConsent || !await window.MscAiConsent.request({
-                feature: 'AI Interview Analysis',
-                data: 'your interview transcript, answers and role details'
-            })) {
-                setAnalysisFallbackState('Detailed analysis was not requested.');
-                return;
-            }
             const requestToken = ++analysisRequestToken;
             setAnalysisLoadingState();
 
@@ -4471,11 +4463,6 @@
 
         async function handleSetupSubmit(e) {
             e.preventDefault();
-            const allowed = window.MscAiConsent && await window.MscAiConsent.request({
-                feature: 'AI Interview',
-                data: 'your selected CV pages, role and company details, job description, interview audio and transcript'
-            });
-            if (!allowed) return;
 
             const btn = e.submitter;
             const originalBtnText = btn.innerHTML;
