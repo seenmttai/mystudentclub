@@ -742,6 +742,15 @@ export async function runReviewEvaluation(force = false) {
     }
 
     if (isEvaluating) return;
+    if (!window.MscAiConsent || !await window.MscAiConsent.request({
+        feature: 'AI CV Review',
+        data: 'your CV preview'
+    })) {
+        window.switchTab?.('editor');
+        showNoticeModal('AI review not started',
+            'No CV content was sent. You can edit your CV and try again later.', false);
+        return;
+    }
     isEvaluating = true;
 
     showLoadingView();

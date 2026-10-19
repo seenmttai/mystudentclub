@@ -27,6 +27,11 @@
         (function() {
             var params = new URLSearchParams(window.location.search);
             var pdfUrl = params.get('pdf');
+            if (!pdfUrl) {
+                // No signed link passed: go to the gated resource page (sign-in + enrolment), never a public copy.
+                window.location.replace('/ca-resource/resource/?name=doc.pdf');
+                return;
+            }
             if (pdfUrl) {
                 window.__pdfPreFetch = fetch(window.resolvePdfFetchUrl(pdfUrl))
                     .then(function(r) { return r.arrayBuffer(); })

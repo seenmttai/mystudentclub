@@ -210,7 +210,7 @@ test('AI Enhance retains the Worker contract with applicant context', async () =
     const template = catalog.templates.find(template => template.name === 'GST Reconciliation');
     let request;
     const sandbox = {
-        window: { MSCArticleship: catalog },
+        window: { MSCArticleship: catalog, MscAiConsent: { request: async () => true } },
         document: { getElementById: () => ({ value: template.file }) },
         WORKER_URL: 'https://example.invalid',
         getTemplateRenderFile: file => catalog.resolveRenderFile(file),
