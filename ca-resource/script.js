@@ -24,7 +24,10 @@ const urlParams = new URLSearchParams(window.location.search);
 const paramPdf = urlParams.get('pdf');
 const paramDl = urlParams.get('dl');
 const previewMode = urlParams.get('preview');
-const PDF_URL = paramPdf ? paramPdf : 'https://www.mystudentclub.com/assets/doc.pdf';
+// No ?pdf= means no signed link was passed: send the reader to the gated resource page (sign-in + enrolment)
+// rather than to any public copy. index.html already does this before this script loads; this is the backstop.
+if (!paramPdf) window.location.replace('/ca-resource/resource/?name=doc.pdf');
+const PDF_URL = paramPdf || '';
 const PDF_FETCH_URL = window.resolvePdfFetchUrl ? window.resolvePdfFetchUrl(PDF_URL) : PDF_URL;
 
 let pdfDoc = null;
@@ -32,7 +35,6 @@ let totalPages = 0;
 let sidebarOpen = false;
 let flipbookReady = false;
 let viewMode = 'single';  // 'single' | 'double'
-const DEFAULT_INITIAL_ZOOM = 1;
 const MAX_RENDER_OUTPUT_SCALE = 3.4;
 const MIN_RENDER_OUTPUT_SCALE = 2;
 
@@ -308,9 +310,7 @@ async function buildFlipbook() {
 
     const firstPage = await pdfDoc.getPage(1);
     const rawVP = firstPage.getViewport({ scale: 1 });
-    const { pageW, pageH } = calcPageSize(rawVP);
-    const initialPageW = clampPageWidth(rawVP.width * DEFAULT_INITIAL_ZOOM, rawVP);
-    const initialPageH = Math.floor(initialPageW / (rawVP.width / rawVP.height));
+    const { pageW: initialPageW, pageH: initialPageH } = calcPageSize(rawVP);
 
     // Create page divs
     for (let i = 1; i <= totalPages; i++) {
@@ -632,21 +632,58 @@ function checkOverflow() {
         // Disable turn.js mouse/touch drag
         $(flipbookEl).turn('disable', true);
         // Allow viewer to scroll
+        flipbookEl.style.touchAction = 'pan-x pan-y';
+        flipbookEl.style.margin = '20px auto';
         viewerArea.style.overflow = 'auto';
         viewerArea.style.alignItems = 'flex-start';
         viewerArea.style.justifyContent = 'flex-start';
+        viewerArea.style.cursor = 'grab';
     } else if (!overflows && isZoomedIn) {
         isZoomedIn = false;
         // Re-enable turn.js drag
         $(flipbookEl).turn('disable', false);
         // Reset scroll
+        flipbookEl.style.touchAction = 'pan-x pan-y';
+        flipbookEl.style.margin = 'auto';
         viewerArea.style.overflow = 'auto';
         viewerArea.style.alignItems = 'center';
         viewerArea.style.justifyContent = 'center';
+        viewerArea.style.cursor = 'default';
         viewerArea.scrollTop = 0;
         viewerArea.scrollLeft = 0;
     }
 }
+
+// Touch panning is handled by the mobile gesture listeners below.
+let activePanPointerId = null;
+let panStartX = 0, panStartY = 0, scrollStartLeft = 0, scrollStartTop = 0;
+
+viewerArea.addEventListener('pointerdown', e => {
+    if (activePanPointerId !== null || !isZoomedIn || e.pointerType === 'touch' || e.button !== 0) return;
+    if (e.target.closest('button, input, a, .toolbar-btn')) return;
+    panStartX = e.clientX;
+    panStartY = e.clientY;
+    scrollStartLeft = viewerArea.scrollLeft;
+    scrollStartTop = viewerArea.scrollTop;
+    viewerArea.setPointerCapture(e.pointerId);
+    activePanPointerId = e.pointerId;
+    viewerArea.style.cursor = 'grabbing';
+});
+
+viewerArea.addEventListener('pointermove', e => {
+    if (e.pointerId !== activePanPointerId || !isZoomedIn) return;
+    viewerArea.scrollLeft = scrollStartLeft - (e.clientX - panStartX);
+    viewerArea.scrollTop = scrollStartTop - (e.clientY - panStartY);
+});
+
+const stopPan = e => {
+    if (e.pointerId !== activePanPointerId) return;
+    if (viewerArea.hasPointerCapture(activePanPointerId)) viewerArea.releasePointerCapture(activePanPointerId);
+    activePanPointerId = null;
+    viewerArea.style.cursor = isZoomedIn ? 'grab' : 'default';
+};
+viewerArea.addEventListener('pointerup', stopPan);
+viewerArea.addEventListener('pointercancel', stopPan);
 
 function fitToPage() {
     if (!flipbookReady || !pdfDoc) return;
@@ -1233,7 +1270,7 @@ async function checkAuthAndLoad() {
 
         // Successfully authenticated
         userEmail = session.user.email;
-        loadPdf(PDF_FETCH_URL);
+        if (PDF_URL) loadPdf(PDF_FETCH_URL);
     } catch (err) {
         console.error('Session verification failed:', err);
         showAccessRestrictedOverlay("An error occurred during authentication verification.");

@@ -58,7 +58,11 @@ document.addEventListener('DOMContentLoaded', () => {
         'ca-freshers': 'msc-ca-freshers-program',
         'freshers': 'msc-ca-freshers-program',
         'ca-freshers-program': 'msc-ca-freshers-program',
-        'msc-ca-freshers': 'msc-ca-freshers-program'
+        'msc-ca-freshers': 'msc-ca-freshers-program',
+        'articleship': 'msc-articleship-program',
+        'articleship-program': 'msc-articleship-program',
+        'articleship-mastery': 'msc-articleship-program',
+        'msc-articleship-mastery': 'msc-articleship-program'
     };
 
     const DOMElements = {

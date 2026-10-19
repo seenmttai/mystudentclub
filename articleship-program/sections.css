@@ -25,6 +25,7 @@ html {
   scroll-behavior: smooth;
   overflow-x: clip;
   background-color: #0a0d2e;
+  font-size: 110%;
 }
 
 body {
@@ -65,9 +66,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .header-container {
-  max-width: 1440px;
+  max-width: 1600px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 28px;
   height: 100%;
   display: flex;
   align-items: center;
@@ -342,7 +343,7 @@ section[id] {
 }
 
 .hero-wrapper {
-  max-width: 1280px;
+  max-width: 1400px;
   margin: 0 auto 12px;
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -863,7 +864,7 @@ section[id] {
 
 /* ─── METRICS BAR (INTEGRATED INTO HERO) ─── */
 .metrics-container {
-  max-width: 1140px;
+  max-width: 1260px;
   margin: 10px auto 0;
   position: relative;
   z-index: 10;
@@ -1356,7 +1357,7 @@ section[id] {
 }
 
 .challenge-wrapper {
-  max-width: 1200px;
+  max-width: 1320px;
   margin: 0 auto;
   display: grid;
   grid-template-columns: minmax(380px, 440px) 1fr;
@@ -1567,8 +1568,7 @@ section[id] {
 }
 
 .journey-steps-grid {
-  max-width: 1300px;
-  width: 100%;
+  max-width: 1320px;
   margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -2093,7 +2093,7 @@ section[id] {
 }
 
 .certified-wrapper {
-  max-width: 1200px;
+  max-width: 1320px;
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1.05fr 1fr;
@@ -2417,7 +2417,7 @@ section[id] {
 }
 
 .mentor-container {
-  max-width: 1100px;
+  max-width: 1210px;
   width: 100%;
   margin: 0 auto;
   box-sizing: border-box;
@@ -2898,7 +2898,7 @@ section[id] {
 .notify-section-inner {
   position: relative;
   z-index: 2;
-  max-width: 1180px;
+  max-width: 1300px;
   width: 100%;
   margin: 0 auto;
   display: grid;

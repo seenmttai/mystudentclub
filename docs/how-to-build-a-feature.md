@@ -30,14 +30,14 @@ Claude will refuse to deploy or run SQL even when asked. That is on purpose. If 
 
 ## What comes out at the end
 
-1. A branch pushed to GitHub, named like `feature/linkedin-url`. The maintainer opens the pull request from it, which creates a Netlify preview link (for the web site) where the feature can be clicked through before it goes live.
+1. A pull request on GitHub from a branch named like `feature/linkedin-url`, raised by Claude. For the web site, Cloudflare Pages adds a preview link to it, where the feature can be clicked through before it goes live.
 2. A zip file in the `handover/` folder of the repo, named like `2026-10-18-linkedin-url.zip`. It contains the handover document, any SQL files, and any Worker files.
 
-Send the maintainer the branch name and the zip. That is all they need.
+Send the maintainer the zip. The pull request is already waiting on GitHub. The zip never goes on GitHub, because it can hold SQL and Worker code.
 
 ## What the maintainer does
 
-Reads the handover, opens the pull request, tests on the preview, runs the SQL, deploys the Workers, merges. Anything unclear gets asked on the pull request. Target: live within 24 hours of receiving it.
+Reads the handover and the pull request, tests on the preview, runs the SQL, deploys the Workers, merges. Anything unclear gets asked on the pull request. Target: live within 24 hours of receiving it.
 
 ## One-time setup on the developer's machine
 

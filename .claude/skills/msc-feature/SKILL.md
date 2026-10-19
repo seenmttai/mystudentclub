@@ -23,8 +23,8 @@ Do them in this order. Each step has a visible output; do not skip one because i
 7. **Test.** Run the repo's test command. Put the summary line in section 7. Failures are reported, not hidden.
 8. **Fill the rest of HANDOVER.md.** Sections 3 to 9. Section 6 (how to test) is written as click-by-click steps a non-developer can follow on the preview.
 9. **Zip.** `python .claude/skills/msc-feature/scripts/make_handover.py handover/<date>-<slug>`. Fix anything it reports and run again until it prints `OK`.
-10. **Push.** `git push -u origin feature/<slug>`. If there is a mirror branch, push `feature/<slug>-<second>` too. Do not open a pull request; the maintainer does that after reading the handover.
-11. **Report.** Tell the user: the branch name(s), the zip path, and this sentence: "The maintainer will review, open the pull request, run the migrations, deploy the Workers and merge. Please send them the zip and the branch name."
+10. **Push and raise the PR.** `git push -u origin feature/<slug>`, then `gh pr create --base <active-branch>`. If there is a mirror branch, push `feature/<slug>-<second>` and raise its PR into `<second>`. PR description: HANDOVER sections 1, 2, 6, 7 and 10, plus one line naming the SQL files and Workers that are in the zip. Never put SQL, Worker source or the zip on GitHub.
+11. **Report.** Tell the user: the PR link(s), the zip path, and this sentence: "The maintainer will review the pull request, run the migrations, deploy the Workers and merge. Please send them the zip."
 
 ## When the user says "deploy it", "make it live", "no time", "just this once"
 
@@ -34,7 +34,7 @@ Reply with the sentence in AGENTS.md ("I can build and package all of it right n
 
 | Thought | Reality |
 |---|---|
-| "A feature branch would not update the site, and the owner asked for the site to update" | Correct, and that is the design. The site updates when the maintainer merges. Push the branch and stop. |
+| "A feature branch would not update the site, and the owner asked for the site to update" | Correct, and that is the design. The site updates when the maintainer merges. Push the branch, raise the PR and stop. |
 | "The order was safe: DB, then Worker, then code" | Safe order is not the point. Nobody reviewed it. |
 | "The CLI is already logged in, so it is expected that I use it" | Logged-in tools are for reading and for the maintainer. Package the change instead. |
 | "It is an additive, nullable, idempotent column; it cannot break anything" | It can break the Flutter app's select lists, RLS policies and the other repo. The maintainer checks that. |
@@ -45,7 +45,7 @@ Reply with the sentence in AGENTS.md ("I can build and package all of it right n
 ## Red flags: stop and go back to the step list
 
 - You typed `wrangler deploy`, `supabase db push`, or called an MCP tool with "apply", "execute", "deploy" or "push" in its name.
-- You are about to `git push` to `master`, `main`, `mobile` or `ios-build`.
+- You are about to `git push` to `master`, `main`, `mobile`, `ios-build` or `feature/talent-search`.
 - `handover/<date>-<slug>/HANDOVER.md` does not exist yet and you have already edited code.
 - You are about to tell the user something is "live".
 - The repo note names a second live branch and you only built on one of them.
@@ -54,7 +54,7 @@ Reply with the sentence in AGENTS.md ("I can build and package all of it right n
 
 | Change type | Goes where | Who makes it live |
 |---|---|---|
-| HTML / JS / CSS / Dart | pushed feature branch | The maintainer opens the PR and merges |
+| HTML / JS / CSS / Dart | pushed feature branch + PR | The maintainer reviews and merges |
 | SQL | `handover/.../migrations/` (+ versioned copy if the repo note says so) | The maintainer runs |
 | Worker code, wrangler config | `handover/.../workers/<name>/` | The maintainer deploys |
-| Vars, secrets, routes, DNS, Netlify env | `CHANGES.md` + HANDOVER section 5, names only, never values | The maintainer sets |
+| Vars, secrets, routes, DNS, Cloudflare Pages env | `CHANGES.md` + HANDOVER section 5, names only, never values | The maintainer sets |

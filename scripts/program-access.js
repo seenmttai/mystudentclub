@@ -19,7 +19,11 @@
         'freshers': 'msc-ca-freshers-program',
         'ca-freshers-program': 'msc-ca-freshers-program',
         'msc-ca-freshers': 'msc-ca-freshers-program',
-        'msc-ca-fresher-program': 'msc-ca-freshers-program'
+        'msc-ca-fresher-program': 'msc-ca-freshers-program',
+        'articleship': 'msc-articleship-program',
+        'articleship-program': 'msc-articleship-program',
+        'articleship-mastery': 'msc-articleship-program',
+        'msc-articleship-mastery': 'msc-articleship-program'
     });
     function canonicalCourse(course) {
         const value = String(course || '').trim().toLowerCase();

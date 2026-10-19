@@ -1,7 +1,7 @@
 # Handover: <feature name>
 
 Date: <YYYY-MM-DD>
-Repo: <repo name> · Branch: `feature/<slug>` (pushed; the maintainer opens the pull request)
+Repo: <repo name> · Branch: `feature/<slug>` (pushed; pull request raised into the active branch)
 Built by: <person> with <tool>
 
 ## 1. Scope
@@ -49,13 +49,13 @@ Write "None" if there are none.
 
 ## 5. Other things that must be done by hand
 
-Dashboard settings, DNS, Netlify env vars, app store config, third-party keys. Write "None" if none.
+Dashboard settings, DNS, Cloudflare Pages env vars, app store config, third-party keys. Write "None" if none.
 - <...>
 
 ## 6. How to test on the preview
 
 Step by step, as a person would click. Include a test login if one is needed.
-1. Open the Netlify preview URL (the maintainer gets it when they open the pull request for the branch).
+1. Open the preview. Web site: the Cloudflare Pages preview link in the pull request's checks. hire.msc and the app have no previews, so write the local steps instead.
 2. <...>
 3. Expected result: <...>
 
