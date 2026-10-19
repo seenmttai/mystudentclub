@@ -105,13 +105,13 @@ test('mobile LMS keeps all 13 sessions under their programme day titles', async 
     assert.equal(DOMElements.totalVideosCount.textContent, '13 Sessions');
 });
 
-test('the mobile session counter shows Day 0 and counts the six teaching days', () => {
+test('other mobile courses keep Day 0 and six-teaching-day counters', () => {
     const state = {
         currentVideoId: 1,
         courseSections: Array.from({ length: 7 }, (_, day) => ({ day_number: day, videos: [{ id: day + 1 }] }))
     };
     const DOMElements = { videoCounter: { style: {} } };
-    const updateCounter = courseFunction('updateVideoCounter', { state, DOMElements });
+    const updateCounter = courseFunction('updateVideoCounter', { state, DOMElements, isCompactResourceCourse: () => false });
     updateCounter();
     assert.equal(DOMElements.videoCounter.textContent, 'Day 0');
     state.currentVideoId = 7;
@@ -299,4 +299,39 @@ test('view-only Slides and external links omit dead download actions on mobile',
     run();
     assert.ok(!DOMElements.tabContents.resources.innerHTML.includes('resource-btn-download disabled'));
     assert.equal((DOMElements.tabContents.resources.innerHTML.match(/<button class="resource-btn resource-btn-download"/g) || []).length, 1);
+});
+
+
+test('compact mobile course names the active Day and session', () => {
+    const title = { textContent: '', hidden: true };
+    const counter = { textContent: '', style: {} };
+    const run = courseFunction('updateVideoCounter', {
+        state: { currentVideoId: 12, courseSections: [{ day_number: 5, title: 'Day 5 · Domain Guidance', videos: [{ id: 6, title: 'Choosing your domain' }, { id: 12, title: 'Finding firms in your domain' }] }] },
+        DOMElements: { sessionTitle: title, videoCounter: counter }, isCompactResourceCourse: () => true
+    });
+    run();
+    assert.equal(counter.textContent, 'Day 5 · Domain Guidance');
+    assert.equal(title.textContent, 'Finding firms in your domain');
+    assert.equal(title.hidden, false);
+});
+
+test('mobile ZIP downloads explain that the gallery is for a laptop', () => {
+    const run = courseFunction('getResourceDownloadLabel', { isDocxPreviewResource: () => false });
+    assert.equal(run({ type: 'zip', download_storage_path: 'gallery.zip' }), 'Download ZIP (for laptop)');
+});
+
+test('mobile follow-up template rows open their first follow-up page', async () => {
+    const calls = [];
+    const run = courseFunction('handleResourceClick', {
+        state: { courseSlug: 'msc-articleship-program' },
+        openResourceViewer: async (...args) => calls.push(args)
+    });
+    const resource = { title: 'Follow-up, thank-you and back-out mails', type: 'docx', group: 'Templates',
+        view_storage_path: 'articleship-program-v2/day-2/Articleship Mail Templates.pdf', page: 3 };
+    await run(resource);
+    assert.equal(calls[0][0], resource);
+    assert.equal(calls[0][1], 'pdf');
+    assert.equal(calls[0][2], 3);
+    await run({ ...resource, page: '3' });
+    assert.equal(calls[1][2], 1);
 });
