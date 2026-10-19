@@ -120,18 +120,27 @@ test('the Articleship migration has one session per guidebook chapter and only s
             }
         }
     }
-    // Every chapter opens on its own non-overlapping slide segment; Day 0 also has the guidebook/free live.
+    // Each Day lists its complete final deck once; Day 0 also has the guidebook/free live.
     const slidePaths = [];
     for (const row of rows) {
         const slides = row.resources.filter(resource => resource.group === 'Slides');
-        assert.equal(row.resources[0].group, 'Slides', `${row.title} opens on slides`);
-        assert.equal(slides.length, row.day_number === 0 ? 3 : 1);
         assert.ok(slides.every(resource => resource.view_storage_path?.endsWith('.pdf')));
         assert.ok(slides.every(resource => resource.title === 'MSC Articleship Guidebook' || !resource.download_storage_path));
-        if (row.day_number > 0) assert.equal(slides[0].title, `${row.title} slides`);
         slidePaths.push(...slides.map(resource => resource.view_storage_path));
     }
     assert.equal(new Set(slidePaths).size, slidePaths.length, 'each slide resource appears once');
+    assert.equal(slidePaths.length, 9, 'seven complete Day decks, the guidebook and free live');
+    for (let day = 0; day <= 6; day++) {
+        const sessions = rows.filter(row => row.day_number === day);
+        const decks = sessions.flatMap(row => row.resources).filter(resource => resource.title === `Day ${day} slides`);
+        assert.equal(decks.length, 1, `Day ${day} has its deck once`);
+        assert.ok(sessions[0].resources.includes(decks[0]), 'Day deck belongs to the first session');
+        assert.equal(sessions[0].resources[0].group, 'Slides');
+        assert.deepEqual(decks[0], { title: `Day ${day} slides`, type: 'pdf',
+            view_storage_path: `articleship-program-v2/day-${day}/slides/Day ${day} slides.pdf`, group: 'Slides' });
+        assert.ok(sessions.slice(1).every(row => row.resources.every(resource => resource.group !== 'Slides')),
+            'obsolete chapter extracts are not listed');
+    }
     const dayZero = rows[0];
     assert.equal(dayZero.description, 'Read the guidebook and join the MSC WhatsApp channel.');
     assert.deepEqual(dayZero.resources.map(resource => resource.title),
@@ -154,7 +163,7 @@ test('the Articleship migration has one session per guidebook chapter and only s
     assert.deepEqual(cv.filter(resource => resource.group === 'Tools').map(resource => resource.title), ['CV Builder', 'CV Reviewer', 'Personal CV review']);
     assert.ok(cv.some(resource => resource.title === 'Personal CV review' && resource.url.startsWith(WHATSAPP_PADAM)));
     assert.deepEqual(rows.find(row => row.title === 'Building your profile fast').resources.map(resource => resource.title),
-        ['Building your profile fast slides', 'Industrial Training students’ CVs', 'Strengthen your CV', 'CV ahead']);
+        ['Industrial Training students’ CVs', 'Strengthen your CV', 'CV ahead']);
 
     const applying = rows.find(row => row.title === 'Applying the right way').resources;
     const automail = applying.find(resource => resource.title === 'Articleship Automail');
@@ -174,7 +183,7 @@ test('the Articleship migration has one session per guidebook chapter and only s
     const [explorerRow, explorer] = explorers[0];
     assert.equal(explorerRow.day_number, 5);
     assert.equal(explorerRow.video_number, 12);
-    assert.deepEqual(explorerRow.resources.map(item => item.title), ['Finding firms in your domain slides',
+    assert.deepEqual(explorerRow.resources.map(item => item.title), [
         'Domain firm shortlist', 'MSC Domain Roadmaps', 'Domain certifications', 'Firm notes', 'Experience Explorer']);
     assert.equal(explorerRow.resources.find(item => item.title === 'Firm notes').group, 'Examples');
     assert.deepEqual(explorer, { title: 'Experience Explorer', type: 'external_link', url: EXPLORER_URL, group: 'Tools' });

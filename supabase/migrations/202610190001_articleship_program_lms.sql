@@ -26,7 +26,7 @@ WITH incoming AS (
       {
         "title": "Day 0 slides",
         "type": "pdf",
-        "view_storage_path": "articleship-program-v2/day-0/slides/Start here.pdf",
+        "view_storage_path": "articleship-program-v2/day-0/slides/Day 0 slides.pdf",
         "group": "Slides"
       },
       {
@@ -58,9 +58,9 @@ WITH incoming AS (
     "day_number": 1,
     "resources": [
       {
-        "title": "Your articleship CV slides",
+        "title": "Day 1 slides",
         "type": "pdf",
-        "view_storage_path": "articleship-program-v2/day-1/slides/Your articleship CV.pdf",
+        "view_storage_path": "articleship-program-v2/day-1/slides/Day 1 slides.pdf",
         "group": "Slides"
       },
       {
@@ -308,12 +308,6 @@ WITH incoming AS (
     "day_number": 1,
     "resources": [
       {
-        "title": "Building your profile fast slides",
-        "type": "pdf",
-        "view_storage_path": "articleship-program-v2/day-1/slides/Building your profile fast.pdf",
-        "group": "Slides"
-      },
-      {
         "title": "Industrial Training students’ CVs",
         "type": "pdf",
         "view_storage_path": "articleship-program-v2/day-1/selected-industrial-training-cvs.pdf",
@@ -344,9 +338,9 @@ WITH incoming AS (
     "day_number": 2,
     "resources": [
       {
-        "title": "Applying the right way slides",
+        "title": "Day 2 slides",
         "type": "pdf",
-        "view_storage_path": "articleship-program-v2/day-2/slides/Applying the right way.pdf",
+        "view_storage_path": "articleship-program-v2/day-2/slides/Day 2 slides.pdf",
         "group": "Slides"
       },
       {
@@ -400,12 +394,6 @@ WITH incoming AS (
     "day_number": 2,
     "resources": [
       {
-        "title": "Follow-ups, offers and your weekly routine slides",
-        "type": "pdf",
-        "view_storage_path": "articleship-program-v2/day-2/slides/Follow-ups, offers and your weekly routine.pdf",
-        "group": "Slides"
-      },
-      {
         "title": "Articleship Mail Templates",
         "type": "docx",
         "download_storage_path": "articleship-program-v2/day-2/Articleship Mail Templates.docx",
@@ -423,9 +411,9 @@ WITH incoming AS (
     "day_number": 3,
     "resources": [
       {
-        "title": "Using LinkedIn slides",
+        "title": "Day 3 slides",
         "type": "pdf",
-        "view_storage_path": "articleship-program-v2/day-3/slides/Using LinkedIn.pdf",
+        "view_storage_path": "articleship-program-v2/day-3/slides/Day 3 slides.pdf",
         "group": "Slides"
       },
       {
@@ -460,12 +448,6 @@ WITH incoming AS (
     "day_number": 3,
     "resources": [
       {
-        "title": "Connections and referrals slides",
-        "type": "pdf",
-        "view_storage_path": "articleship-program-v2/day-3/slides/Connections and referrals.pdf",
-        "group": "Slides"
-      },
-      {
         "title": "LinkedIn connection and follow-up messages",
         "type": "docx",
         "download_storage_path": "articleship-program-v2/day-3/LinkedIn Connection and Follow-up Messages.docx",
@@ -483,9 +465,9 @@ WITH incoming AS (
     "day_number": 4,
     "resources": [
       {
-        "title": "Cracking interviews slides",
+        "title": "Day 4 slides",
         "type": "pdf",
-        "view_storage_path": "articleship-program-v2/day-4/slides/Cracking interviews.pdf",
+        "view_storage_path": "articleship-program-v2/day-4/slides/Day 4 slides.pdf",
         "group": "Slides"
       },
       {
@@ -519,12 +501,6 @@ WITH incoming AS (
     "description": "Revise your domain and practise the Excel test.",
     "day_number": 4,
     "resources": [
-      {
-        "title": "Practising audit, tax and Excel slides",
-        "type": "pdf",
-        "view_storage_path": "articleship-program-v2/day-4/slides/Practising audit, tax and Excel.pdf",
-        "group": "Slides"
-      },
       {
         "title": "Statutory audit interview booklet",
         "type": "docx",
@@ -584,9 +560,9 @@ WITH incoming AS (
     "day_number": 5,
     "resources": [
       {
-        "title": "Choosing your domain slides",
+        "title": "Day 5 slides",
         "type": "pdf",
-        "view_storage_path": "articleship-program-v2/day-5/slides/Choosing your domain.pdf",
+        "view_storage_path": "articleship-program-v2/day-5/slides/Day 5 slides.pdf",
         "group": "Slides"
       }
     ],
@@ -599,12 +575,6 @@ WITH incoming AS (
     "description": "Shortlist firms in your domain and learn before you apply.",
     "day_number": 5,
     "resources": [
-      {
-        "title": "Finding firms in your domain slides",
-        "type": "pdf",
-        "view_storage_path": "articleship-program-v2/day-5/slides/Finding firms in your domain.pdf",
-        "group": "Slides"
-      },
       {
         "title": "Domain firm shortlist",
         "type": "xlsx",
@@ -650,9 +620,9 @@ WITH incoming AS (
     "day_number": 6,
     "resources": [
       {
-        "title": "Registering your articleship slides",
+        "title": "Day 6 slides",
         "type": "pdf",
-        "view_storage_path": "articleship-program-v2/day-6/slides/Registering your articleship.pdf",
+        "view_storage_path": "articleship-program-v2/day-6/slides/Day 6 slides.pdf",
         "group": "Slides"
       },
       {
@@ -672,12 +642,6 @@ WITH incoming AS (
     "description": "Plan transfer, industrial training and your CA Final studies.",
     "day_number": 6,
     "resources": [
-      {
-        "title": "Transfer, industrial training and CA Final slides",
-        "type": "pdf",
-        "view_storage_path": "articleship-program-v2/day-6/slides/Transfer, industrial training and CA Final.pdf",
-        "group": "Slides"
-      },
       {
         "title": "Form 109 Letter Templates",
         "type": "docx",
