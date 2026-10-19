@@ -916,7 +916,7 @@
             const trimmed = normalizeImportedString(text);
             if (!trimmed) return null;
             try {
-                return await refineSection(fieldType, trimmed, customPrompt);
+                return await refineSection(fieldType, trimmed, customPrompt, true);
             } catch (error) {
                 console.warn(`Refine failed for ${fieldType}:`, error);
                 return null;
@@ -3040,13 +3040,17 @@ async function deliverDownloadedBlob(blob, filename) {
 }
 
         // AI & Import Logic
-        async function refineSection(fieldType, text, customPrompt = '') {
+        async function refineSection(fieldType, text, customPrompt = '', approvedBatch = false) {
             const trimmed = (text || '').trim();
             if (!trimmed) throw new Error('Nothing to refine');
 
             const templateFile = document.getElementById('template-select')?.value || 'classic.html';
             const templateId = 'template_' + templateFile.replace('cv', '').replace('-', '').replace('.html', '');
 
+            if (!approvedBatch && (!window.MscAiConsent || !await window.MscAiConsent.request({
+                feature: 'AI Writing Assistant',
+                data: 'the CV section you selected'
+            }))) throw new Error('AI processing permission was not granted.');
             const response = await fetch(`${WORKER_URL}/refine-section`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -3588,12 +3592,16 @@ async function deliverDownloadedBlob(blob, filename) {
             if (!cvData.personal.name && !getPlainTextFromHTML(cvData.summary || '')) return alert("Please fill basic info first.");
 
             const overlay = document.querySelector('.loading-overlay');
-            if (overlay) overlay.classList.add('active');
-            showEditorLoader(true, "AI Enhancing CV...", "Analyzing and optimizing your resume sections...");
 
             try {
                 const customPrompt = await getCustomPrompt('AI Enhance');
                 if (customPrompt === null) return;
+                if (!window.MscAiConsent || !await window.MscAiConsent.request({
+                    feature: 'AI CV Enhancement',
+                    data: 'all filled sections of your CV'
+                })) return;
+                if (overlay) overlay.classList.add('active');
+                showEditorLoader(true, "AI Enhancing CV...", "Analyzing and optimizing your resume sections...");
 
                 const next = JSON.parse(JSON.stringify(cvData));
                 const beforePreview = buildAiEnhancePreview(cvData);
@@ -3742,6 +3750,10 @@ async function deliverDownloadedBlob(blob, filename) {
                     images.push(base64);
                 }
 
+                if (!window.MscAiConsent || !await window.MscAiConsent.request({
+                    feature: 'AI CV Import',
+                    data: 'your CV pages'
+                })) return;
                 showEditorLoader(true, "AI Parsing in Progress...", "Extracting your experience, education, and skills with AI...");
 
                 const response = await fetch(`${WORKER_URL}/convert`, {
@@ -4143,6 +4155,10 @@ async function deliverDownloadedBlob(blob, filename) {
         async function handleReviewerImport() {
             const storedImages = localStorage.getItem('import_cv_images');
             if (!storedImages) return;
+            if (!window.MscAiConsent || !await window.MscAiConsent.request({
+                feature: 'AI CV Import',
+                data: 'your CV pages'
+            })) return;
 
             showImportLoadingOverlay();
 
