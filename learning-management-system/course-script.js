@@ -43,7 +43,9 @@ document.addEventListener('DOMContentLoaded', () => {
             description: 'Build your CV, apply to firms, prepare for interviews and start your articleship.',
             thumbnail: '/assets/articleship-course-main.png',
             dayTitles: ['Start here', 'Crafting the Perfect CV', 'Applying the Right Way', 'Using LinkedIn',
-                'Cracking Interviews', 'Domain Guidance', 'Registration Formalities']
+                'Cracking Interviews', 'Domain Guidance', 'Registration Formalities'],
+            // Phone-first rows: no repeated format notes, and links open without a dead Download button.
+            compactResources: true
         }
     };
 
@@ -207,7 +209,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return (type === 'csv' || viewPath.endsWith('.csv')) && hasPreview && hasDownload;
     };
 
+    const isCompactResourceCourse = () => Boolean(courses[state.courseSlug]?.compactResources);
+
     const getResourceViewLabel = (resource) => {
+        if (resource?.type === 'external_link' && isCompactResourceCourse()) return 'Open';
         if (isGoogleSheetResource(resource)) return 'View Sheet';
         if (isDocxPreviewResource(resource)) return 'Preview PDF';
         if (isCsvPreviewResource(resource)) return 'Preview CSV';
@@ -230,6 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const getResourceFormatNote = (resource) => {
+        if (isCompactResourceCourse()) return '';
         if (isGoogleSheetResource(resource)) {
             return 'Opens Google Sheet. Download exports as Excel (.xlsx).';
         }
@@ -653,6 +659,24 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
+    // Resolve a title from enrolled course rows; query strings never supply a bucket path or PDF URL.
+    const getArticleshipResourceTarget = () => {
+        if (state.courseSlug !== 'msc-articleship-program' || !state.user || !state.isEnrolled) return null;
+        const params = new URLSearchParams(window.location.search);
+        const rawSession = params.get('session') || '';
+        if (!/^[1-9]\d{0,5}$/.test(rawSession)) return null;
+        const video = findVideoById(Number(rawSession));
+        if (!video) return null;
+        const title = params.get('resource');
+        const resource = title ? video.resources?.find(item => item.title === title &&
+            String(item.view_storage_path || '').startsWith('articleship-program-v2/day-') &&
+            String(item.view_storage_path || '').toLowerCase().endsWith('.pdf')) : null;
+        if (title && !resource) return null;
+        const rawPage = params.get('page') || '1';
+        const page = /^[1-9]\d{0,5}$/.test(rawPage) ? Number(rawPage) : 1;
+        return { video, resource, page };
+    };
+
     const loadVideoProgress = async () => {
         const savedVideos = localStorage.getItem(`courseVideos_${state.courseSlug}`);
         if (savedVideos) {
@@ -670,6 +694,15 @@ document.addEventListener('DOMContentLoaded', () => {
         // Fetch cloud watch-time data before selecting first video
         await fetchWatchTimeForCourse();
 
+        const target = getArticleshipResourceTarget();
+        if (target) {
+            await selectVideo(target.video.id);
+            if (state.user && state.isEnrolled) {
+                setActiveTab('resources');
+                if (target.resource) await openResourceViewer(target.resource, 'pdf', target.page);
+            }
+            return;
+        }
         const lastVideoId = localStorage.getItem(`lastVideoId_${state.courseSlug}`);
         if (lastVideoId && findVideoById(parseInt(lastVideoId))) {
             selectVideo(parseInt(lastVideoId));
@@ -742,7 +775,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 DOMElements.totalVideosCount.textContent = `${totalVideos} Sessions`;
                 DOMElements.totalVideosMeta.style.display = 'flex';
             }
-            loadVideoProgress();
+            await loadVideoProgress();
             renderCourseModules();
         } catch (error) {
             logFrontendError(error.message, error.stack, 'loadCourseVideos');
@@ -1588,10 +1621,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } else {
             DOMElements.videoPlayerContainer.style.display = 'none';
-            DOMElements.noVideoMessagePlayer.style.display = 'block';
+            DOMElements.noVideoMessagePlayer.style.display = isCompactResourceCourse() ? 'none' : 'block';
+            DOMElements.videoLoadingOverlay.style.display = 'none';
         }
 
-        setActiveTab('overview');
+        const resourceSession = isCompactResourceCourse() && currentVideo?.resources?.length &&
+            !currentVideo.hlsPath && !currentVideo.fileName;
+        setActiveTab(resourceSession ? 'resources' : 'overview');
         renderTabsAndContent();
 
         if (window.innerWidth < 768) {
@@ -1661,7 +1697,8 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <button class="resource-btn resource-btn-view" data-resource="${safeResourceStr}"><i class="fas fa-eye"></i> ${viewLabel}</button>
                                 ${(resource.download_storage_path && resource.download_storage_path !== 'None' && String(resource.download_storage_path).trim() !== '') ?
                             `<button class="resource-btn resource-btn-download" data-resource="${safeResourceStr}"><i class="fas fa-download"></i> ${downloadLabel}</button>` :
-                            `<span class="resource-btn resource-btn-download disabled"><i class="fas fa-download"></i> ${downloadLabel}</span>`
+                            (isCompactResourceCourse() ? '' :
+                            `<span class="resource-btn resource-btn-download disabled"><i class="fas fa-download"></i> ${downloadLabel}</span>`)
                         }
                             </div>
                         </li>`;
@@ -2141,7 +2178,8 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     };
 
-    const openResourceViewer = async (resource, type) => {
+    const openResourceViewer = async (resource, type, initialPage = 1) => {
+        if (state.courseSlug === 'msc-articleship-program' && (!state.user || !state.isEnrolled)) return;
         state.pdfDoc = null; state.csvData = null; state.pdfCurrentPage = 1; state.pdfTotalPages = 1;
         const ctx = DOMElements.pdfCanvas.getContext('2d');
         ctx.clearRect(0, 0, DOMElements.pdfCanvas.width, DOMElements.pdfCanvas.height);
@@ -2227,7 +2265,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 state.pdfDoc = await pdfjsLib.getDocument(pdfData).promise;
                 state.pdfTotalPages = state.pdfDoc.numPages;
                 DOMElements.pdfViewerContainer.style.display = 'block';
-                await renderPdfPage(1);
+                const requestedPage = Number.isSafeInteger(initialPage) ? initialPage : 1;
+                await renderPdfPage(Math.max(1, Math.min(state.pdfTotalPages, requestedPage)));
             } else if (type === 'csv') {
                 const csvText = await response.text();
                 // Reset search input and info bar before rendering
