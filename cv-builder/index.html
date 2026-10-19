@@ -1141,6 +1141,10 @@
 
         async function analyzeCv() {
             if (!pdfImages.length) return;
+            if (!window.MscAiConsent || !await window.MscAiConsent.request({
+                feature: 'AI CV Review',
+                data: 'your CV pages'
+            })) return;
             els.heroSection.style.display = 'none';
             els.uploadSection.style.display = 'none';
             els.previewArea.style.display = 'none';
@@ -1659,6 +1663,7 @@
     </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
+<script src="/scripts/ai-processing-consent.js"></script>
 <script src="cv-script.js?v=2.7"></script>
 
 </html>

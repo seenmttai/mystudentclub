@@ -67,7 +67,12 @@ function makeHarness(options = {}) {
     const context = vm.createContext({
         ...elements,
         document: { getElementById: id => elements[id] || null },
-        window: { location: { origin: 'https://www.mystudentclub.com' } },
+        window: {
+            location: { origin: 'https://www.mystudentclub.com' },
+            MscAiConsent: {
+                async request() { return options.aiConsent !== false; }
+            }
+        },
         selectedFile: pdf,
         pdfImages: images,
         analysisResultText: null,
@@ -136,6 +141,14 @@ function makeHarness(options = {}) {
     ].join('\n'), context);
     return { context, elements, calls, stored, pdf, images, options };
 }
+
+test('declining AI processing sends no CV to the review Worker', async () => {
+    const harness = makeHarness({ aiConsent: false });
+    await harness.context.analyzeCv();
+    assert.equal(harness.calls.fetch.length, 0);
+    assert.equal(harness.calls.saved.length, 0);
+    assertReady(harness);
+});
 
 function assertBusy(harness) {
     const { elements } = harness;

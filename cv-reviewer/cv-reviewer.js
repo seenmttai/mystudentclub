@@ -922,6 +922,15 @@ async function analyzeCv() {
         const domainHeader = 'Financing';
         const specializationHeader = 'Accounting';
 
+        if (!window.MscAiConsent || !await window.MscAiConsent.request({
+            feature: 'AI CV Review',
+            data: 'your CV pages'
+        })) {
+            stopLoadingAnimation();
+            loadingSection.style.display = 'none';
+            landingSection.style.display = 'block';
+            return;
+        }
         const { data: sessionData } = await supabase.auth.getSession();
         const accessToken = sessionData?.session?.access_token || null;
 
