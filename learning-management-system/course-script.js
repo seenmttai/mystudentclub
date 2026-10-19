@@ -99,6 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
         prevVideoBtn: document.getElementById('prev-video-btn'),
         nextVideoBtn: document.getElementById('next-video-btn'),
         videoCounter: document.getElementById('video-counter'),
+        sessionTitle: document.getElementById('session-title'),
         prevVideoBtn: document.getElementById('prev-video-btn'),
         nextVideoBtn: document.getElementById('next-video-btn'),
         videoCounter: document.getElementById('video-counter'),
@@ -224,6 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isDocxPreviewResource(resource)) return 'Download DOCX';
         const dlPath = String(resource?.download_storage_path || '').toLowerCase();
         if (dlPath.endsWith('.xlsx') || dlPath.endsWith('.xls')) return 'Download Excel';
+        if (dlPath.endsWith('.zip') || resource?.type === 'zip') return 'Download ZIP (for laptop)';
         if (dlPath.endsWith('.csv') || resource?.type === 'csv') return 'Download CSV';
         return 'Download';
     };
@@ -1649,7 +1651,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tabs.forEach(tabId => {
             const btn = document.createElement('button');
             btn.className = 'tab-btn';
-            btn.textContent = tabId === 'report' ? 'Report an Issue' : tabId.charAt(0).toUpperCase() + tabId.slice(1);
+            btn.textContent = tabId === 'report' ? (isCompactResourceCourse() ? 'Report issue' : 'Report an Issue') : tabId.charAt(0).toUpperCase() + tabId.slice(1);
             btn.dataset.tab = tabId;
 
             if (tabId === 'resources' && (!currentVideo.resources || currentVideo.resources.length === 0)) {
@@ -1676,8 +1678,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let resourcesHTML = '';
             for (const groupName in groups) {
-                resourcesHTML += `<div class="resource-group">`;
-                if (groupName !== 'General Resources' || Object.keys(groups).length > 1) {
+                const collapsible = isCompactResourceCourse() && groupName === 'Templates' && groups[groupName].length > 12;
+                resourcesHTML += collapsible ? `<details class="resource-group resource-template-group"><summary class="resource-group-title">Templates (${groups[groupName].length})</summary>` : `<div class="resource-group">`;
+                if (!collapsible && (groupName !== 'General Resources' || Object.keys(groups).length > 1)) {
                     resourcesHTML += `<h4 class="resource-group-title">${groupName}</h4>`;
                 }
                 resourcesHTML += `<ul class="resource-list">`;
@@ -1703,7 +1706,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
                         </li>`;
                 });
-                resourcesHTML += `</ul></div>`;
+                resourcesHTML += collapsible ? `</ul></details>` : `</ul></div>`;
             }
             DOMElements.tabContents.resources.innerHTML = resourcesHTML;
 
@@ -1747,6 +1750,10 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const updateNavButtons = () => {
+        if (isCompactResourceCourse()) {
+            DOMElements.prevVideoBtn.querySelector('span').textContent = 'Previous session';
+            DOMElements.nextVideoBtn.querySelector('span').textContent = 'Next session';
+        }
         DOMElements.prevVideoBtn.disabled = getAdjacentVideo('previous') === null;
         DOMElements.nextVideoBtn.disabled = getAdjacentVideo('next') === null;
     };
@@ -1762,7 +1769,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const currentVideoIndex = section.videos.findIndex(v => v.id === state.currentVideoId) + 1;
             const sessionText = section.videos.length > 1 ? ` - Session ${currentVideoIndex}/${section.videos.length}` : '';
             const totalDays = state.courseSections.filter(s => s.day_number > 0).length;
-            DOMElements.videoCounter.textContent = section.day_number === 0
+            const compact = isCompactResourceCourse();
+            if (DOMElements.sessionTitle) {
+                DOMElements.sessionTitle.textContent = compact ? section.videos[currentVideoIndex - 1].title : '';
+                DOMElements.sessionTitle.hidden = !compact;
+            }
+            DOMElements.videoCounter.textContent = compact ? section.title : section.day_number === 0
                 ? `Day 0${sessionText}`
                 : `Day ${section.day_number} of ${totalDays}${sessionText}`;
             DOMElements.videoCounter.style.display = 'inline-block';
@@ -1806,7 +1818,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 await openResourceViewer(resource, 'csv');
             } else if (resource.group && resource.group.toLowerCase().includes('template')) {
                 // Templates (CV, Cover Letter, etc.) use the inline modal viewer
-                await openResourceViewer(resource, 'pdf');
+                await openResourceViewer(resource, 'pdf', Number.isSafeInteger(resource.page) ? resource.page : 1);
             } else {
                 // All other PDFs open in the ca-resource flipbook viewer
                 // Pre-open window synchronously to prevent Safari/iOS popup blocker
@@ -2681,6 +2693,7 @@ document.addEventListener('DOMContentLoaded', () => {
             rawSlug = slugAliases[rawSlug];
         }
         state.courseSlug = rawSlug;
+        document.body.classList.toggle('articleship-course', isCompactResourceCourse());
         if (!state.courseSlug || !courses[state.courseSlug]) {
             window.location.href = '/learning-management-system/';
             return;
