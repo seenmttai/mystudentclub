@@ -1,7 +1,7 @@
 /**
  * MSC Articleship Program: CV Recommender (Day 1 · Choose your CV, row 1.2).
  *
- * Nine taps → one of the situations A–H, its section order (personalised to the student's ranking and proof), the
+ * Nine questions → one of the situations A–H, its section order (personalised to the student's ranking and proof), the
  * lines to add, a suggested design and "See this order" (its page in Choose your CV, or The Nothing CV for H).
  * Deterministic rules only, no AI. The pick is saved to the shared setting so the CV Builder opens with it.
  *
@@ -254,9 +254,16 @@
 
     // ---------- Rules (first match wins) ----------
 
+    /** Both Inter groups together at the first try (cleared or awaited): the case the Academics order is made for. */
+    function bothGroupsFirstTime(a) {
+        return a.inter === 'first' || a.inter === 'both-awaited';
+    }
+
     /**
-     * 1. Graduate through direct entry → G.
-     * 2. No work and no project, and the top strength is Work done or Projects → H (The Nothing CV).
+     * 1. Graduate through direct entry → G (no Foundation row; the Nothing CV pointer still shows when proof is thin).
+     * 2. "None" on both work and projects → H (The Nothing CV, §3.2), except Academics ranked first with both groups
+     *    together at the first try: that is A, "a rank or strong marks, and little else yet" (Choose your CV p3), and
+     *    A shows the "Thin on proof?" pointer to The Nothing CV.
      * 3. Walk the ranking: Academics → A (both groups together: first attempt or both awaited) or B (any other way);
      *    Work done → C if any work; Projects → D if any project; Roles → E; Skills → F. A strength with no proof is
      *    skipped and the next one is tried.
@@ -264,22 +271,15 @@
     function chooseSituation(answers) {
         const a = ruleAnswers(answers);
         if (a.graduation === 'direct-entry') return 'G';
-        const top = a.rank[0];
-        if (proofCount(a) === 0 && (top === 'work' || top === 'projects')) return 'H';
+        if (proofCount(a) === 0) return a.rank[0] === 'academics' && bothGroupsFirstTime(a) ? 'A' : 'H';
         for (const strength of a.rank) {
-            if (strength === 'academics') return a.inter === 'first' || a.inter === 'both-awaited' ? 'A' : 'B';
+            if (strength === 'academics') return bothGroupsFirstTime(a) ? 'A' : 'B';
             if (strength === 'work' && a.work.length) return 'C';
             if (strength === 'projects' && a.projects.length) return 'D';
             if (strength === 'roles') return 'E';
             if (strength === 'skills') return 'F';
         }
         return 'H';
-    }
-
-    /** Marks ranked 4th or 5th: one proof block goes above the education table (H keeps Padam's fixed order). */
-    function marksRankedLow(code, answers) {
-        const a = ruleAnswers(answers);
-        return code !== 'H' && a.rank.indexOf('academics') >= 3;
     }
 
     /** The situation's blocks, minus the ones the student has nothing for, plus their work or own projects. */
@@ -293,10 +293,10 @@
     }
 
     /**
-     * The student's order. Header and objective first; then education with the situation's lead block right after it
-     * (or above it when marks are ranked 4th or 5th); then the other proof blocks in the student's own ranking, so
-     * their number 5 goes last; Interests closes. H (The Nothing CV) keeps its fixed order.
-     * → { order, lead, last: [the number 5's first block], marksLow }
+     * The student's order. Header and objective first; then education, always (Choose your CV p2: "your number 1 comes
+     * right after the education table"), with the situation's lead block right after it; then the other proof blocks
+     * in the student's own ranking, so their number 5 goes last; Interests closes. H (The Nothing CV) keeps its fixed
+     * order. → { order, lead, last: [the number 5's first block] }
      */
     function planOrder(situation, answers) {
         const a = ruleAnswers(answers);
@@ -307,7 +307,7 @@
             const strength = STRENGTH_OF[situation.lead];
             lead = blocks.find(id => id !== 'education' && strength && STRENGTH_OF[id] === strength) || 'education';
         }
-        if (situation.fixed) return { order: blocks, lead, last: [], marksLow: false };
+        if (situation.fixed) return { order: blocks, lead, last: [] };
 
         const leadStrength = lead === 'education' ? null : STRENGTH_OF[lead];
         const key = id => (STRENGTH_OF[id] === leadStrength ? -1 : a.rank.indexOf(STRENGTH_OF[id]));
@@ -316,18 +316,12 @@
             .sort((x, y) => key(x) - key(y) || GROUP_ORDER.indexOf(x) - GROUP_ORDER.indexOf(y));
         const top = ['header', 'summary'].filter(id => blocks.includes(id));
         const tail = blocks.filter(id => !STRENGTH_OF[id] && !top.includes(id));
-        const marksLow = a.rank.indexOf('academics') >= 3;
-        let order;
-        if (marksLow) {
-            if (lead === 'education' && others.length) lead = others.shift();
-            order = top.concat(lead === 'education' ? [] : [lead], ['education'], others, tail);
-        } else {
-            order = top.concat(['education'], lead === 'education' ? [] : [lead], others, tail);
-        }
+        const order = top.concat(['education'], lead === 'education' ? [] : [lead], others, tail);
         const fifth = a.rank[DEFAULT_RANK.length - 1];
-        // The note sits once, on the first block of the number 5 (the rest of its group follows it).
+        // The note sits once, on the first block of the number 5 (the rest of its group follows it). Marks ranked 5th:
+        // the education table still comes first, so there is no note.
         const last = fifth === 'academics' ? [] : order.filter(id => id !== lead && STRENGTH_OF[id] === fifth).slice(0, 1);
-        return { order, lead, last, marksLow };
+        return { order, lead, last };
     }
 
     /** The order alone (the shared CV pick and the CV Builder take this). */
@@ -373,6 +367,42 @@
         return (sections[id] && sections[id].example) || '';
     }
 
+    /**
+     * The lines built from this student's own taps, block by block: every work they tapped (strongest first), every own
+     * project, and their simulations (the Work Simulation line for their domain, a job simulation line).
+     * → { experience: [...], projects: [...], certifications: [...] } (only blocks with a line).
+     */
+    function ownLinesByBlock(a, data) {
+        const byAnswer = (data && data.answerExamples) || {};
+        const out = {};
+        const work = WORK_PRIORITY.filter(k => a.work.includes(k)).map(k => byAnswer.work && byAnswer.work[k]).filter(Boolean);
+        if (work.length) out.experience = work;
+        const projects = OWN_PROJECTS.filter(k => a.projects.includes(k)).map(k => byAnswer.projects && byAnswer.projects[k]).filter(Boolean);
+        if (projects.length) out.projects = projects;
+        const sims = [];
+        const ws = data && data.workSimulation && data.workSimulation[lineDomain(a, data)];
+        if (a.projects.includes('work-simulation') && ws) sims.push(ws);
+        const job = byAnswer.certifications && byAnswer.certifications['job-simulation'];
+        if (a.projects.includes('job-simulation') && job) sims.push(job);
+        if (sims.length) out.certifications = sims;
+        return out;
+    }
+
+    /** "Add these lines" cards for the student's own lines, in the order their blocks sit on the CV. */
+    function ownLinesFor(order, a, data) {
+        const defs = (data && data.ownLines) || {};
+        const byBlock = ownLinesByBlock(a, data);
+        const sections = (data && data.sections) || {};
+        return (order || []).filter(id => byBlock[id]).map(id => ({
+            id: 'own-' + id,
+            block: id,
+            label: (defs[id] && defs[id].label) || (sections[id] && sections[id].label) || id,
+            note: (defs[id] && defs[id].note) || null,
+            lines: byBlock[id].slice(),
+            ask: null
+        }));
+    }
+
     function variantIdsFor(answers) {
         const a = ruleAnswers(answers);
         const ids = [];
@@ -389,7 +419,6 @@
         if (a.course === 'cs' || a.course === 'cma') ids.push('cs-cma');
         if (a.course === 'cfa' || a.course === 'degree') ids.push('other-course');
         if (a.gap && a.gap !== 'none') ids.push('gap');
-        if (marksRankedLow(chooseSituation(a), a)) ids.push('marks-low');
         return ids;
     }
 
@@ -427,10 +456,20 @@
         return (data && data.resources && data.resources[key]) || fallback;
     }
 
-    /** The Work Simulation page once it is on the site; until then its Day in the course, where its row sits. */
+    /** The Work Simulation page once it is on the site; until then its own row in Day 1 (the course opens the row). */
     function workSimulationLink(data) {
         const direct = data && data.links && data.links.workSimulation;
-        return { label: 'Work Simulation', href: direct || link((data && data.day) || 1) };
+        const title = resourceTitle(data, 'workSimulation', 'Work Simulation');
+        return { label: 'Work Simulation', href: direct || link((data && data.day) || 1, title) };
+    }
+
+    /** The Domain roadmaps page; without a page link, its own row in Day 5 (Domain guidance). */
+    function domainRoadmapsLink(data) {
+        const unsure = (data && data.unsure) || {};
+        const label = unsure.linkLabel || 'Domain roadmaps';
+        const direct = data && data.links && data.links.domainRoadmaps;
+        if (direct) return { label, href: direct };
+        return { label, href: link(unsure.day || 5, unsure.row || 'Domain roadmaps') };
     }
 
     function thinProofFor(code, answers, data) {
@@ -447,7 +486,7 @@
         const hasSimulation = a.projects.includes('work-simulation');
         const links = [];
         if (!hasSimulation) links.push(ws);
-        links.push({ label: 'The Nothing CV', href: link(day, resourceTitle(data, 'nothing', 'The Nothing CV'), def.page || 3) });
+        links.push({ label: 'The Nothing CV', href: link(day, resourceTitle(data, 'nothing', 'The Nothing CV'), def.page || 4) });
         return {
             label: def.label || 'Thin on proof?',
             text: hasSimulation ? (def.textHasSimulation || def.text) : def.text,
@@ -470,17 +509,22 @@
         return out;
     }
 
-    /** designs.json in any reasonable shape → [{ number, id, name, tag, portalSafe, bestFor, page, line }], by number. */
+    /**
+     * designs.json in any reasonable shape → [{ number, id, name, tag, portalSafe, screen, bestFor, page, line }], by
+     * number. The tag is read exactly as the CV Builder reads it: 'Portal-safe', 'Screen' (made to be sent as a PDF) or
+     * 'Print' (the default), so both tools always show the same tag.
+     */
     function normaliseDesigns(raw) {
         const list = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.designs) ? raw.designs : (raw && Array.isArray(raw.kept) ? raw.kept : []));
         const out = [];
         list.forEach((item, index) => {
-            if (!item || typeof item !== 'object') return;
+            if (!item || typeof item !== 'object' || item.kept === false || item.drop === true) return;
             const number = Number(item.number !== undefined ? item.number : (item.no !== undefined ? item.no : (item.n !== undefined ? item.n : index + 1)));
             const name = String(item.name || item.title || '').trim();
             if (!Number.isInteger(number) || number < 1 || !name) return;
-            const tags = [].concat(item.tags || [], item.tag || [], item.label || []).map(String);
-            const portalSafe = item.portalSafe === true || item.portal_safe === true || tags.some(tag => /portal/i.test(tag));
+            const tags = [].concat(item.tag || [], item.tags || [], item.label || []).map(tag => String(tag).trim()).filter(Boolean);
+            const portalSafe = item.portalSafe === true || item.portal_safe === true || tags.some(tag => /portal|ats/i.test(tag));
+            const screen = !portalSafe && !tags.some(tag => /print/i.test(tag)) && tags.some(tag => /screen|pdf/i.test(tag));
             let bestFor = letterList(item.bestFor || item.best_for || item.situations || item.for);
             if (!bestFor.length && /^[A-H]$/i.test(String(item.persona || ''))) bestFor = [String(item.persona).toUpperCase()];
             const page = Number(item.page || item.lookbookPage || item.lookbook_page);
@@ -489,8 +533,9 @@
                 number,
                 id: String(item.id || item.slug || item.key || item.file || name).trim(),
                 name,
-                tag: portalSafe ? 'Portal-safe' : (tags.find(tag => /print/i.test(tag)) ? 'Print' : (tags[0] || '')),
+                tag: portalSafe ? 'Portal-safe' : (screen ? 'Screen' : 'Print'),
                 portalSafe,
+                screen,
                 bestFor,
                 page: Number.isInteger(page) && page > 0 ? page : number + 1,
                 line: lineText ? String(lineText) : ''
@@ -530,11 +575,14 @@
         if (!situation) throw new Error('Situation ' + code + ' missing from the data');
         const sections = data.sections || {};
         const plan = planOrder(situation, a);
+        const own = ownLinesFor(plan.order, a, data);
         const blocks = plan.order.map(id => ({
             id,
             label: (situation.labels && situation.labels[id]) || (sections[id] && sections[id].label) || id,
             example: exampleFor(id, situation, a, data, code),
             lead: id === plan.lead,
+            // The example comes from the student's own taps (their work, project or simulation), not a sample.
+            own: own.some(card => card.block === id),
             note: plan.last.includes(id) ? (data.lastNote || 'your no. 5 goes last') : null
         }));
         const variants = variantsFor(a, data);
@@ -550,7 +598,23 @@
         const unsure = a.domain === 'unsure' && data.unsure ? {
             label: data.unsure.label,
             text: data.unsure.text,
-            link: data.links && data.links.domainRoadmaps ? { label: 'Domain roadmaps', href: data.links.domainRoadmaps } : null
+            link: domainRoadmapsLink(data)
+        } : null;
+        const builder = designs.length > 0;
+        const nextDef = data.next || {};
+        const nextText = (builder ? nextDef.text : nextDef.textNoDesign) || nextDef.text || '';
+        const next = nextText ? {
+            text: nextText,
+            link: { label: nextDef.dayLabel || ('Day ' + day), href: link(day) }
+        } : null;
+        const msc = data.mscLine || {};
+        const mscLine = msc.line ? {
+            id: 'msc-line',
+            label: msc.label,
+            note: msc.note || null,
+            lines: [msc.line],
+            later: msc.later && msc.later.line ? { label: msc.later.label || 'Once you finish the programme', line: msc.later.line } : null,
+            ask: null
         } : null;
         const heading = situation.heading && situation.heading.mark
             ? { before: situation.heading.before || '', mark: situation.heading.mark, after: situation.heading.after || '' }
@@ -560,14 +624,13 @@
             name: situation.name,
             heading,
             leadNote: situation.leadNote || 'your strength',
-            reason: situation.reason,
+            reason: (situation.reasonByInter && situation.reasonByInter[a.inter]) || situation.reason,
             order: plan.order,
             lead: plan.lead,
             blocks,
             variants,
-            mscLine: data.mscLine && data.mscLine.line
-                ? { id: 'msc-line', label: data.mscLine.label, note: data.mscLine.note || null, lines: [data.mscLine.line], ask: null }
-                : null,
+            ownLines: own,
+            mscLine,
             thinProof: thinProofFor(code, a, data),
             design,
             designLink: design ? link(day, resourceTitle(data, 'templates', 'CV templates'), design.page) : null,
@@ -575,7 +638,8 @@
                 ? { design: portal, text: fill(data.portal, { design: portal.name + ' (No. ' + portal.number + ')' }) }
                 : null,
             // The CV Builder reads the same designs file, so a loaded list means it can open with this pick.
-            builder: designs.length > 0,
+            builder,
+            next,
             seeIt,
             domain: a.domain && a.domain !== 'unsure' ? a.domain : null,
             unsure
@@ -859,8 +923,14 @@
             }
         }
 
+        /**
+         * The CV picture. On a phone the example lines show on the first three blocks, the lead block and every block
+         * whose line comes from the student's own taps; the rest open with one tap (CSS shows them all from 900 px).
+         */
         function paper(result) {
-            const blocks = result.blocks.map((b, i) => h('li', { class: 'cvr-block' + (b.lead ? ' is-lead' : '') + (b.note ? ' is-last' : '') + (b.id === 'header' ? ' is-header' : '') }, [
+            const listId = 'cvr-paper-' + (++uid);
+            const brief = (b, i) => (i > 2 && !b.lead && !b.own ? ' is-brief' : '');
+            const blocks = result.blocks.map((b, i) => h('li', { class: 'cvr-block' + (b.lead ? ' is-lead' : '') + (b.own ? ' is-own' : '') + (b.note ? ' is-last' : '') + (b.id === 'header' ? ' is-header' : '') + brief(b, i) }, [
                 h('span', { class: 'cvr-pen', 'aria-hidden': 'true', text: String(i + 1) }),
                 h('div', { class: 'cvr-block-body' }, [
                     h('span', { class: 'cvr-block-head' }, [
@@ -872,15 +942,28 @@
                     h('span', { class: 'cvr-lines', 'aria-hidden': 'true' }, [h('i'), h('i')])
                 ])
             ]));
-            return h('figure', { class: 'cvr-paper' }, [
-                h('ol', { class: 'cvr-blocks', 'aria-label': 'Your CV, section by section' }, blocks),
+            const hidden = result.blocks.filter((b, i) => brief(b, i)).length;
+            const figure = h('figure', { class: 'cvr-paper' });
+            const more = hidden ? h('button', {
+                type: 'button', class: 'cvr-more', 'aria-expanded': 'false', 'aria-controls': listId,
+                onclick: () => {
+                    const open = !figure.classList.contains('is-open');
+                    figure.classList.toggle('is-open', open);
+                    more.setAttribute('aria-expanded', open ? 'true' : 'false');
+                    more.textContent = open ? 'Fewer example lines' : 'An example line for every block';
+                }
+            }, 'An example line for every block') : null;
+            figure.append(...[
+                h('ol', { class: 'cvr-blocks', id: listId, 'aria-label': 'Your CV, section by section' }, blocks),
+                more,
                 h('figcaption', { class: 'cvr-caption', text: 'One page. A block with nothing true in it is dropped, never filled.' })
-            ]);
+            ].filter(Boolean));
+            return figure;
         }
 
         function copyButton(label, text) {
             return h('button', {
-                type: 'button', class: 'cvr-copy', 'aria-label': 'Copy: ' + label,
+                type: 'button', class: 'cvr-copy', 'aria-label': 'Copy: ' + label, 'data-copy': text,
                 onclick: event => {
                     const btn = event.currentTarget;
                     copyText(win, text).then(ok => {
@@ -900,8 +983,16 @@
         function variantCard(v) {
             const text = v.lines.join('\n');
             const id = 'cvr-v-' + (++uid);
+            const later = v.later ? h('div', { class: 'cvr-later' }, [
+                h('div', { class: 'cvr-later-head' }, [
+                    h('span', { class: 'cvr-later-label', text: v.later.label }),
+                    copyButton(v.label + ', ' + v.later.label.toLowerCase(), v.later.line)
+                ]),
+                h('code', { class: 'cvr-line', text: v.later.line })
+            ]) : null;
             const body = h('div', { class: 'cvr-variant-body', id, hidden: true }, [
                 v.lines.length ? h('code', { class: 'cvr-line', text }) : null,
+                later,
                 v.note ? h('p', { class: 'cvr-variant-note', text: v.note }) : null,
                 v.ask ? h('p', { class: 'cvr-ask' }, [h('span', { text: 'If asked: ' }), v.ask]) : null
             ]);
@@ -913,7 +1004,7 @@
                     body.hidden = !open;
                 }
             }, [h('span', { class: 'cvr-variant-label', text: v.label }), h('span', { class: 'cvr-chev', 'aria-hidden': 'true' })]);
-            return h('li', { class: 'cvr-variant' + (v.id === 'msc-line' ? ' is-msc' : '') }, [
+            return h('li', { class: 'cvr-variant' + (v.id === 'msc-line' ? ' is-msc' : '') + (v.block ? ' is-own' : '') }, [
                 h('div', { class: 'cvr-variant-row' }, [toggle, v.lines.length ? copyButton(v.label, text) : null]),
                 body
             ]);
@@ -941,31 +1032,40 @@
         function renderResult(focus) {
             const result = recommend(state.answers, data);
             const title = h('h1', { class: 'cvr-result-title', tabindex: '-1' }, [
-                h('span', { class: 'cvr-badge', text: result.situation }),
-                h('span', {}, [result.heading.before, h('span', { class: 'ap-mark', text: result.heading.mark }), result.heading.after])
+                result.heading.before, h('span', { class: 'ap-mark', text: result.heading.mark }), result.heading.after
             ]);
             const design = result.design ? h('div', { class: 'cvr-design' }, [
                 h('span', { class: 'cvr-kicker', text: 'Suggested design' }),
                 h('p', { class: 'cvr-design-name' }, [
                     h('span', { class: 'cvr-design-no', text: 'No. ' + result.design.number }),
                     ' ' + result.design.name,
-                    result.design.tag ? h('span', { class: 'cvr-tag' + (result.design.portalSafe ? ' is-portal' : ''), text: result.design.tag }) : null
+                    result.design.tag ? h('span', {
+                        class: 'cvr-tag' + (result.design.portalSafe ? ' is-portal' : '') + (result.design.screen ? ' is-screen' : ''),
+                        text: result.design.tag + (result.design.screen ? ': send as a PDF' : '')
+                    }) : null
                 ]),
                 result.design.line ? h('p', { class: 'cvr-design-line', text: result.design.line }) : null,
                 safeHref(result.designLink) ? h('a', { class: 'ap-link cvr-design-link', href: result.designLink }, 'See it in CV templates') : null,
                 result.portal ? h('p', { class: 'cvr-portal', text: result.portal.text }) : null
             ]) : null;
+            const nextParts = result.next ? result.next.text.split('{day}') : [];
+            const next = result.next ? h('p', { class: 'cvr-next' }, nextParts.reduce((out, part, i) => {
+                if (i > 0) out.push(safeHref(result.next.link.href) ? h('a', { class: 'ap-link', href: result.next.link.href }, result.next.link.label) : result.next.link.label);
+                if (part) out.push(part);
+                return out;
+            }, [])) : null;
             const pick = h('section', { class: 'cvr-pick ap-card', 'aria-label': 'Your order and design' }, [
                 safeHref(result.seeIt.href) ? h('a', { class: 'ap-btn is-block', href: result.seeIt.href }, result.seeIt.label) : null,
-                result.builder ? h('p', { class: 'cvr-saved', text: 'The CV Builder opens with this order and design.' }) : null,
+                next,
                 design
             ]);
-            const cards = [result.mscLine].concat(result.variants).filter(Boolean);
+            // The student's own lines first (their work, projects, simulations), then the MSC line, then the variants.
+            const cards = result.ownLines.concat([result.mscLine], result.variants).filter(Boolean);
             const lines = cards.length ? h('section', { class: 'cvr-variants-wrap' }, [
                 h('h2', { class: 'ap-h2', text: 'Add these lines' }),
                 h('ul', { class: 'cvr-variants' }, cards.map(variantCard))
             ]) : null;
-            const thin = result.thinProof ? h('div', { class: 'cvr-note is-thin' }, [
+            const thin = result.thinProof ? h('div', { class: 'cvr-note ' + (result.situation === 'H' ? 'is-next' : 'is-thin') }, [
                 h('strong', { text: result.thinProof.label }), ' ' + result.thinProof.text + ' ',
                 h('span', { class: 'cvr-note-links' }, linkList(result.thinProof.links))
             ]) : null;
@@ -979,10 +1079,11 @@
                     title,
                     h('p', { class: 'cvr-reason', text: result.reason })
                 ]),
-                h('div', { class: 'cvr-result-grid' }, [
+                h('div', { class: 'cvr-result-grid' + (thin ? ' has-notes' : '') }, [
                     pick,
+                    thin ? h('div', { class: 'cvr-col-notes' }, [thin]) : null,
                     h('div', { class: 'cvr-col-paper' }, [paper(result)]),
-                    h('div', { class: 'cvr-col-side' }, [thin, unsure, lines, answerSummary()])
+                    h('div', { class: 'cvr-col-side' }, [unsure, lines, answerSummary()])
                 ])
             ]);
             view.replaceChildren(out);
@@ -1025,7 +1126,7 @@
     return Object.freeze({
         TOOL, SITUATION_CODES, STRENGTHS, QUESTIONS, OWN_PROJECTS, STRENGTH_OF, DESIGNS_URL,
         cleanAnswers, ruleAnswers, isAnswered, firstUnanswered, isComplete, proofCount, tap, optionsFor, answerChips,
-        chooseSituation, planOrder, personaliseOrder, marksRankedLow, variantIdsFor, variantsFor, thinProofFor, exampleFor,
+        chooseSituation, planOrder, personaliseOrder, variantIdsFor, variantsFor, ownLinesFor, thinProofFor, exampleFor,
         normaliseDesigns, suggestDesign, portalDesign, recommend, toCvPick, mount
     });
 });

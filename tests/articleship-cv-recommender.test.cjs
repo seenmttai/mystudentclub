@@ -12,7 +12,20 @@ const SITUATIONS = JSON.parse(fs.readFileSync(path.join(TOOL_DIR, 'situations.js
 // The one design list, read by this tool and the CV Builder alike.
 const BUILDER_DESIGNS = path.join(ROOT, 'articleship-program/cv-builder/designs.json');
 const DESIGNS = JSON.parse(fs.readFileSync(BUILDER_DESIGNS, 'utf8'));
+// Padam's exact wording (B7) once the programme is done; "(ongoing)" until then, as The Nothing CV p3 shows it.
 const MSC_LINE = 'Completed MSC Articleship Program — foundational understanding of work and tasks across all domains';
+const MSC_ONGOING = 'MSC Articleship Program (ongoing)';
+const DESIGN_LIST = R.normaliseDesigns(DESIGNS);
+
+// The design a situation is given, worked out from the shared designs.json (never a literal number, so these tests
+// follow the CV templates look-book whenever row 1.4 changes it): the lowest-numbered design whose bestFor names the
+// situation, or, when one of those also names a variant of the student's, that one.
+function designFor(code, variantIds) {
+    const ids = variantIds || [];
+    const named = DESIGN_LIST.filter(d => d.bestFor.includes(code));
+    assert.ok(named.length, 'designs.json has a design whose bestFor names ' + code);
+    return named.find(d => d.bestFor.some(tag => ids.includes(tag))) || named[0];
+}
 
 function data(designs) {
     return Object.assign(JSON.parse(JSON.stringify(SITUATIONS)), { designs: designs === undefined ? DESIGNS : designs });
@@ -114,7 +127,7 @@ test('every variant the rules can produce has its copy in situations.json', () =
     assert.deepEqual([...seen].sort(), Object.keys(SITUATIONS.variants).sort(), 'no unused variant copy');
     combos.slice(0, 400).forEach(c => R.variantsFor(answers(c), SITUATIONS).forEach(v => {
         assert.doesNotMatch(JSON.stringify(v), /\{\w+\}/, 'no unfilled placeholder in ' + v.id);
-        assert.ok(v.lines.length || v.id === 'marks-low', v.id + ' has a line to copy');
+        assert.ok(v.lines.length, v.id + ' has a line to copy');
     }));
 });
 
@@ -129,18 +142,28 @@ test('situation A: academics first, both groups in the first attempt', () => {
     assert.match(r.reason, /marks are your loudest proof/);
     assert.deepEqual(r.order, ['header', 'summary', 'education', 'experience', 'certifications', 'leadership', 'skills', 'interests']);
     assert.equal(r.blocks.find(b => b.lead).id, 'education');
-    assert.equal(r.design.number, 1);
+    assert.equal(r.design.number, designFor('A').number);
     assert.equal(r.seeIt.label, 'See this order');
     assert.match(r.seeIt.href, /resource=Choose\+your\+CV&page=3$/);
     assert.equal(R.recommend(answers({ inter: 'both-awaited' }), data()).situation, 'A', 'both awaited: nothing separate to show');
+    // Choose your CV p3 (where "See this order" opens): "a rank or strong school marks, and you have little else yet".
+    const marksOnly = R.recommend(answers(), data());
+    assert.equal(marksOnly.situation, 'A', 'a first-attempt student with marks and nothing else is A');
+    assert.match(SITUATIONS.situations.A.useIf, /little else yet/);
+    assert.deepEqual(marksOnly.thinProof.links.map(l => l.label), ['Work Simulation', 'The Nothing CV'], 'and is pointed to The Nothing CV');
 });
 
-test('situation B: academics first, Inter in more than one sitting', () => {
+test('situation B: academics first, Inter in more than one sitting; one group awaited has its own reason', () => {
     for (const inter of ['later', 'separate', 'one-awaited']) {
         const r = R.recommend(answers({ inter, projects: ['work-simulation'] }), data());
         assert.equal(r.situation, 'B', inter);
-        assert.match(r.reason, /more than one sitting/);
-        assert.equal(r.design.number, 5);
+        if (inter === 'one-awaited') {
+            assert.match(r.reason, /^One group is cleared and one is awaited\./);
+            assert.doesNotMatch(r.reason, /more than one sitting|improvement/);
+        } else {
+            assert.match(r.reason, /more than one sitting/);
+        }
+        assert.equal(r.design.number, designFor('B').number);
         assert.match(r.seeIt.href, /page=4$/);
     }
 });
@@ -150,7 +173,7 @@ test('situation C: work done first and some work to show', () => {
     assert.equal(r.situation, 'C');
     assert.deepEqual(r.order, ['header', 'summary', 'education', 'experience', 'certifications', 'leadership', 'skills', 'interests']);
     assert.equal(r.blocks.find(b => b.lead).id, 'experience');
-    assert.equal(r.design.number, 3);
+    assert.equal(r.design.number, designFor('C').number);
     assert.equal(r.thinProof, null, 'two pieces of proof is not thin');
     assert.match(r.seeIt.href, /page=5$/);
 });
@@ -160,7 +183,7 @@ test('situation D: projects first; own projects lead, simulations alone put Cert
     assert.equal(own.situation, 'D');
     assert.deepEqual(own.order, ['header', 'summary', 'education', 'projects', 'certifications', 'leadership', 'skills', 'interests']);
     assert.equal(own.blocks.find(b => b.lead).id, 'projects');
-    assert.equal(own.design.number, 4);
+    assert.equal(own.design.number, designFor('D').number);
     const sims = R.recommend(answers({ rank: ['projects', 'work', 'academics', 'roles', 'skills'], projects: ['work-simulation', 'job-simulation'], work: ['company'] }), data());
     assert.equal(sims.situation, 'D');
     assert.deepEqual(sims.order, ['header', 'summary', 'education', 'certifications', 'experience', 'leadership', 'skills', 'interests'],
@@ -174,7 +197,7 @@ test('situation E: roles and activities first', () => {
     assert.equal(r.situation, 'E');
     assert.deepEqual(r.order, ['header', 'summary', 'education', 'leadership', 'achievements', 'projects', 'certifications', 'skills', 'interests']);
     assert.equal(r.blocks.find(b => b.id === 'leadership').label, 'Positions of responsibility');
-    assert.equal(r.design.number, 6);
+    assert.equal(r.design.number, designFor('E').number);
     assert.match(r.seeIt.href, /page=7$/);
 });
 
@@ -182,7 +205,19 @@ test('situation F: skills with proof first', () => {
     const r = R.recommend(answers({ rank: ['skills', 'projects', 'academics', 'work', 'roles'], projects: ['model'], work: ['part-time'] }), data());
     assert.equal(r.situation, 'F');
     assert.deepEqual(r.order, ['header', 'summary', 'education', 'skills', 'projects', 'certifications', 'experience', 'leadership', 'interests']);
-    assert.equal(r.design.number, 7);
+    assert.equal(r.design.number, designFor('F').number);
+    // One proof, said once: the Skills line points at a different piece of work from the Projects line.
+    const skills = r.blocks.find(b => b.id === 'skills').example;
+    const project = r.blocks.find(b => b.id === 'projects').example;
+    assert.match(project, /debtors-ageing/);
+    assert.doesNotMatch(skills, /debtors|ageing|dashboard/);
+    // Nor any line the student's own taps can add (work, projects, simulations in every domain).
+    const own = [].concat(Object.values(SITUATIONS.answerExamples.work), Object.values(SITUATIONS.answerExamples.projects),
+        Object.values(SITUATIONS.workSimulation), Object.values(SITUATIONS.answerExamples.certifications));
+    const proof = skills.split(';').slice(1).join(';').trim();
+    assert.ok(proof, 'the Skills line names its proof');
+    own.forEach(line => proof.split(/\W+/).filter(w => w.length > 5 && !/^(proficient|PivotTables|XLOOKUP|SUMIFS)$/.test(w))
+        .forEach(word => assert.ok(!line.includes(word), 'F skills proof "' + word + '" also in: ' + line.slice(0, 50))));
     const noProjects = R.recommend(answers({ rank: ['skills', 'academics', 'work', 'projects', 'roles'], work: ['tuition'] }), data());
     assert.deepEqual(noProjects.order, ['header', 'summary', 'education', 'skills', 'experience', 'certifications', 'leadership', 'interests']);
     assert.match(r.seeIt.href, /page=8$/);
@@ -192,14 +227,16 @@ test('situation G: a direct-entry graduate, whatever the ranking', () => {
     const r = R.recommend(answers({ graduation: 'direct-entry', rank: ['work', 'projects', 'academics', 'roles', 'skills'] }), data());
     assert.equal(r.situation, 'G');
     assert.match(r.reason, /No Foundation row/);
-    assert.equal(r.design.number, 2);
-    assert.equal(r.portal, null, 'no portal line when the suggested design is the portal one');
+    const g = designFor('G');
+    assert.equal(r.design.number, g.number);
+    if (g.portalSafe) assert.equal(r.portal, null, 'no portal line when the suggested design is the portal one');
+    else assert.match(r.portal.text, /^Applying on a firm's portal\? Use Portal plain \(No\. \d+\) with the same order\.$/);
     assert.match(r.seeIt.href, /page=9$/);
     assert.ok(r.thinProof, 'no proof at all → the Nothing CV pointer still shows');
 });
 
-test('situation H: work or projects ranked first with nothing to show → The Nothing CV, its order fixed', () => {
-    for (const top of ['work', 'projects']) {
+test('situation H: no work and no project → The Nothing CV, its order fixed', () => {
+    for (const top of ['work', 'projects', 'roles', 'skills']) {
         const rank = [top].concat(['academics', 'work', 'projects', 'roles', 'skills'].filter(id => id !== top));
         const r = R.recommend(answers({ rank }), data());
         assert.equal(r.situation, 'H', top);
@@ -209,7 +246,9 @@ test('situation H: work or projects ranked first with nothing to show → The No
         assert.equal(r.leadNote, 'start here');
         assert.equal(r.thinProof.label, 'Then');
         assert.match(r.thinProof.text, /^do one Work Simulation level/, 'reads on from "Then"');
-        assert.equal(r.design.number, 2, 'the Nothing CV is shown in Portal plain');
+        assert.equal(r.design.number, designFor('H').number);
+        assert.match(r.design.name, /Portal plain/, 'the Nothing CV is shown in Portal plain');
+        assert.equal(r.portal, null, 'no second portal line when the design already is the portal one');
         assert.deepEqual(r.order, ['header', 'summary', 'education', 'certifications', 'leadership', 'skills']);
         assert.ok(!r.blocks.some(b => b.note), 'no "number 5" note on the fixed order');
     }
@@ -217,14 +256,21 @@ test('situation H: work or projects ranked first with nothing to show → The No
     assert.equal(lowMarks.situation, 'H');
     assert.deepEqual(lowMarks.order, ['header', 'summary', 'education', 'certifications', 'leadership', 'skills'], 'marks ranked last: still the fixed order');
     assert.ok(!lowMarks.variants.some(v => v.id === 'marks-low'));
+    const separate = R.recommend(answers({ inter: 'separate' }), data());
+    assert.equal(separate.situation, 'H', 'academics first, groups separately, nothing else: The Nothing CV');
+    assert.ok(separate.variants.some(v => v.id === 'groups-separately'), 'with the groups-separately rows still to add');
 });
 
 // ---------- Rule order ----------
 
-test('rules: G wins over H; academics first with no proof is A, not H; a strength with no proof is skipped', () => {
+test('rules: G wins over H; no proof is H except academics first at the first try (A); a strength with no proof is skipped', () => {
     assert.equal(R.chooseSituation(answers({ graduation: 'direct-entry', rank: ['work', 'academics', 'projects', 'roles', 'skills'] })), 'G');
     assert.equal(R.chooseSituation(answers()), 'A');
-    assert.equal(R.chooseSituation(answers({ rank: ['roles', 'work', 'projects', 'academics', 'skills'] })), 'E', 'roles need no tap of their own');
+    assert.equal(R.chooseSituation(answers({ inter: 'both-awaited' })), 'A');
+    for (const inter of ['later', 'separate', 'one-awaited']) assert.equal(R.chooseSituation(answers({ inter })), 'H', inter);
+    assert.equal(R.chooseSituation(answers({ rank: ['work', 'academics', 'projects', 'roles', 'skills'] })), 'H', 'academics 2nd: H');
+    assert.equal(R.chooseSituation(answers({ rank: ['roles', 'work', 'projects', 'academics', 'skills'] })), 'H', 'roles first, no work, no project');
+    assert.equal(R.chooseSituation(answers({ rank: ['roles', 'work', 'projects', 'academics', 'skills'], work: ['tuition'] })), 'E', 'roles need no tap of their own');
     assert.equal(R.chooseSituation(answers({ rank: ['work', 'projects', 'skills', 'academics', 'roles'], projects: ['model'] })), 'D', 'work ranked 1 but none → next strength');
     assert.equal(R.chooseSituation(answers({ rank: ['projects', 'work', 'skills', 'academics', 'roles'], work: ['family'] })), 'C');
     assert.equal(R.chooseSituation(answers({ rank: ['work', 'skills', 'projects', 'academics', 'roles'], projects: ['model'] })), 'F');
@@ -250,41 +296,36 @@ test('rank 2-5: after the lead block the proof blocks follow the student\'s own 
         const last = r.blocks.filter(b => b.note).map(b => r.order.indexOf(b.id));
         assert.deepEqual(last, [r.order.length - 2]);
     });
-    const e = R.recommend(answers({ rank: ['skills', 'academics', 'work', 'projects', 'roles'] }), data());
+    const e = R.recommend(answers({ rank: ['skills', 'academics', 'work', 'projects', 'roles'], work: ['tuition'] }), data());
     assert.equal(e.situation, 'F');
     assert.deepEqual(e.order.slice(-3), ['certifications', 'leadership', 'interests'], 'roles ranked 5th: their block is the last');
     assert.equal(e.blocks.find(b => b.id === 'leadership').note, 'your no. 5 goes last');
     const group = R.recommend(answers({ rank: ['roles', 'academics', 'skills', 'work', 'projects'], work: ['tuition'], projects: ['model'] }), data());
     assert.deepEqual(group.order.slice(-3), ['projects', 'certifications', 'interests'], 'a number 5 with two blocks: both last');
     assert.deepEqual(group.blocks.filter(b => b.note).map(b => b.id), ['projects'], 'the note once, on its first block');
-    const lead = R.recommend(answers({ rank: ['roles', 'skills', 'academics', 'work', 'projects'] }), data());
-    assert.deepEqual(lead.order, ['header', 'summary', 'education', 'leadership', 'achievements', 'skills', 'certifications', 'interests'],
+    const lead = R.recommend(answers({ rank: ['roles', 'skills', 'academics', 'work', 'projects'], work: ['tuition'] }), data());
+    assert.equal(lead.situation, 'E');
+    assert.deepEqual(lead.order, ['header', 'summary', 'education', 'leadership', 'achievements', 'skills', 'experience', 'certifications', 'interests'],
         'the lead block keeps its sibling (Achievements) beside it');
 });
 
-test('marks ranked 4th or 5th: one proof block moves above education, with the variant note; never for H', () => {
+test('marks ranked 4th or 5th: the education table still comes right after the objective (Choose your CV p2)', () => {
     const weak = R.recommend(answers({ rank: ['work', 'skills', 'roles', 'projects', 'academics'], work: ['family'] }), data());
     const strong = R.recommend(answers({ rank: ['work', 'academics', 'projects', 'roles', 'skills'], work: ['family'] }), data());
     assert.equal(weak.situation, 'C');
     assert.equal(strong.situation, 'C');
-    assert.deepEqual(weak.order, ['header', 'summary', 'experience', 'education', 'skills', 'leadership', 'certifications', 'interests']);
-    assert.notDeepEqual(weak.order, strong.order, 'the two rankings in the review now give different orders');
-    assert.equal(weak.blocks.find(b => b.lead).id, 'experience');
-    assert.ok(!weak.blocks.some(b => b.id === 'education' && b.note), 'education is never dropped');
-    const note = weak.variants.find(v => v.id === 'marks-low');
-    assert.ok(note, 'the variant note shows');
-    assert.match(note.note, /Keep the table/);
-    assert.deepEqual(note.lines, []);
-    const fourth = R.recommend(answers({ rank: ['roles', 'skills', 'work', 'academics', 'projects'] }), data());
+    assert.deepEqual(weak.order, ['header', 'summary', 'education', 'experience', 'skills', 'leadership', 'certifications', 'interests']);
+    assert.notDeepEqual(weak.order, strong.order, 'ranks 2-5 still change the order');
+    assert.equal(weak.blocks.find(b => b.lead).id, 'experience', 'the number 1 right after the education table');
+    assert.ok(!weak.blocks.some(b => b.note), 'marks ranked 5th: the table stays on top, so no "goes last" note');
+    const fourth = R.recommend(answers({ rank: ['roles', 'skills', 'work', 'academics', 'projects'], work: ['tuition'] }), data());
     assert.equal(fourth.situation, 'E');
-    assert.deepEqual(fourth.order.slice(0, 5), ['header', 'summary', 'leadership', 'education', 'achievements'], 'one block moves, not the whole group');
-    assert.ok(fourth.variants.some(v => v.id === 'marks-low'));
+    assert.deepEqual(fourth.order.slice(0, 4), ['header', 'summary', 'education', 'leadership']);
     const g = R.recommend(answers({ graduation: 'direct-entry', rank: ['roles', 'skills', 'work', 'projects', 'academics'], work: ['tuition'] }), data());
     assert.equal(g.situation, 'G');
-    assert.deepEqual(g.order.slice(0, 4), ['header', 'summary', 'leadership', 'education'], 'G: the top-ranked proof block moves up');
-    assert.equal(g.blocks.find(b => b.lead).id, 'leadership');
-    assert.equal(R.recommend(answers({ rank: ['academics', 'work', 'projects', 'roles', 'skills'] }), data()).variants.some(v => v.id === 'marks-low'), false);
-    assert.equal(R.recommend(answers({ rank: ['work', 'roles', 'projects', 'academics', 'skills'], work: ['tuition'] }), data()).order[2], 'experience', 'academics 4th counts too');
+    assert.deepEqual(g.order.slice(0, 3), ['header', 'summary', 'education']);
+    [weak, fourth, g].forEach(r => assert.ok(!r.variants.some(v => v.id === 'marks-low'), 'no marks-low line'));
+    assert.equal(SITUATIONS.variants['marks-low'], undefined, 'no marks-low copy left in the data');
 });
 
 test('order: work and own projects join their strength\'s place, never twice', () => {
@@ -324,8 +365,8 @@ test('examples: the work and project lines follow what was tapped; the certifica
     assert.match(ex({ domain: 'gst' }, 'certifications'), /four quick certificates/);
     P.DOMAINS.forEach(d => assert.match(SITUATIONS.workSimulation[d.slug] || '', / Work Simulation, MSC Articleship Program \| \[Month Year\]: /, d.slug));
     assert.equal(ex({ inter: 'both-awaited' }, 'education'), 'CA Intermediate (both groups) | [Year] | ICAI | Result awaited', 'no marks before the result');
-    assert.match(ex({ inter: 'one-awaited' }, 'education'), /Group II \| \[Year\] \| Result awaited/);
-    assert.match(ex({ inter: 'later' }, 'education'), /\[Best paper score\]$/);
+    assert.match(ex({ inter: 'one-awaited', work: ['tuition'] }, 'education'), /Group II \| \[Year\] \| Result awaited/);
+    assert.match(ex({ inter: 'later', work: ['tuition'] }, 'education'), /\[Best paper score\]$/);
     assert.match(ex({ inter: 'first' }, 'education'), /First attempt/);
     assert.match(ex({ graduation: 'direct-entry', inter: 'both-awaited' }, 'education'), /^B\.Com/, 'G keeps its graduation row');
     const years = JSON.stringify([SITUATIONS.sections, SITUATIONS.situations, SITUATIONS.answerExamples]);
@@ -339,15 +380,16 @@ function variant(over, id) {
     return r.variants.find(v => v.id === id);
 }
 
-test('the MSC line: Padam\'s exact wording on every result, outside the four-certificate count', () => {
+test('the MSC line: "(ongoing)" now, then Padam\'s exact wording once done, on every result, outside the four-certificate count', () => {
     const results = [
-        answers(), answers({ inter: 'separate' }), answers({ rank: ['work', 'academics', 'projects', 'roles', 'skills'], work: ['ca-firm'] }),
-        answers({ rank: ['projects', 'academics', 'work', 'roles', 'skills'], projects: ['model'] }), answers({ rank: ['roles', 'academics', 'work', 'projects', 'skills'] }),
-        answers({ rank: ['skills', 'academics', 'work', 'projects', 'roles'] }), answers({ graduation: 'direct-entry' }), answers({ rank: ['work', 'academics', 'projects', 'roles', 'skills'] })
+        answers(), answers({ inter: 'separate', projects: ['job-simulation'] }), answers({ rank: ['work', 'academics', 'projects', 'roles', 'skills'], work: ['ca-firm'] }),
+        answers({ rank: ['projects', 'academics', 'work', 'roles', 'skills'], projects: ['model'] }), answers({ rank: ['roles', 'academics', 'work', 'projects', 'skills'], work: ['tuition'] }),
+        answers({ rank: ['skills', 'academics', 'work', 'projects', 'roles'], work: ['tuition'] }), answers({ graduation: 'direct-entry' }), answers({ rank: ['work', 'academics', 'projects', 'roles', 'skills'] })
     ].map(a => R.recommend(a, data()));
     assert.deepEqual(results.map(r => r.situation), ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']);
     results.forEach(r => {
-        assert.deepEqual(r.mscLine.lines, [MSC_LINE], r.situation);
+        assert.deepEqual(r.mscLine.lines, [MSC_ONGOING], r.situation);
+        assert.deepEqual(r.mscLine.later, { label: 'Once you finish the programme', line: MSC_LINE }, r.situation);
         assert.match(r.mscLine.note, /not one of the four outside certificates/);
         assert.ok(!r.variants.some(v => v.id === 'msc-line'), 'not a variant');
     });
@@ -442,13 +484,37 @@ test('variant: another course (CFA, another degree)', () => {
     assert.equal(variant({ course: 'none' }, 'other-course'), undefined);
 });
 
+test('own lines: the student\'s work, projects and simulations become lines to copy, in CV order, first under "Add these lines"', () => {
+    const r = R.recommend(answers({
+        rank: ['skills', 'academics', 'work', 'projects', 'roles'],
+        work: ['tuition', 'ca-firm'], projects: ['model', 'annual-report', 'work-simulation', 'job-simulation'], domain: 'gst'
+    }), data());
+    assert.equal(r.situation, 'F');
+    assert.deepEqual(r.ownLines.map(c => c.block), ['experience', 'projects', 'certifications'], 'work ranked above projects');
+    assert.deepEqual(r.ownLines.map(c => c.block), r.order.filter(id => ['experience', 'projects', 'certifications'].includes(id)), 'the order the blocks sit on the CV');
+    const by = Object.fromEntries(r.ownLines.map(c => [c.block, c]));
+    assert.deepEqual(by.experience.lines, [SITUATIONS.answerExamples.work['ca-firm'], SITUATIONS.answerExamples.work.tuition], 'every work tapped, strongest first');
+    assert.deepEqual(by.projects.lines, [SITUATIONS.answerExamples.projects.model, SITUATIONS.answerExamples.projects['annual-report']]);
+    assert.deepEqual(by.certifications.lines, [SITUATIONS.workSimulation.gst, SITUATIONS.answerExamples.certifications['job-simulation']]);
+    assert.equal(by.experience.label, 'Your work experience');
+    assert.equal(by.certifications.label, 'Your simulations');
+    assert.match(by.certifications.note, /never in Experience/);
+    r.ownLines.forEach(c => assert.equal(r.blocks.find(b => b.id === c.block).example, c.lines[0], c.block + ': the CV picture shows the first of them'));
+    assert.deepEqual(r.blocks.filter(b => b.own).map(b => b.id).sort(), ['certifications', 'experience', 'projects']);
+    const none = R.recommend(answers(), data());
+    assert.deepEqual(none.ownLines, [], 'nothing tapped: no own lines');
+    assert.ok(!none.blocks.some(b => b.own), 'the four-certificates sample is not the student\'s own line');
+    const job = R.recommend(answers({ rank: ['projects', 'academics', 'work', 'roles', 'skills'], projects: ['job-simulation'] }), data());
+    assert.deepEqual(job.ownLines.map(c => c.lines), [[SITUATIONS.answerExamples.certifications['job-simulation']]], 'a job simulation alone: its line only');
+});
+
 // ---------- Thin proof, domain, links ----------
 
 test('thin proof: one piece or none (A only when none); no Work Simulation link when one is done', () => {
     const one = R.recommend(answers({ rank: ['roles', 'academics', 'work', 'projects', 'skills'], work: ['tuition'] }), data());
     assert.ok(one.thinProof);
     assert.deepEqual(one.thinProof.links.map(l => l.label), ['Work Simulation', 'The Nothing CV']);
-    assert.match(one.thinProof.links[1].href, /resource=The\+Nothing\+CV&page=3$/);
+    assert.match(one.thinProof.links[1].href, /resource=The\+Nothing\+CV&page=4$/, 'The Nothing CV p4: the four certificates');
     assert.equal(R.recommend(answers({ work: ['tuition'] }), data()).thinProof, null, 'A with one piece of proof is fine');
     assert.ok(R.recommend(answers(), data()).thinProof, 'A with nothing at all still gets the pointer');
     const hasWs = R.recommend(answers({ rank: ['projects', 'academics', 'work', 'roles', 'skills'], projects: ['work-simulation'] }), data());
@@ -456,11 +522,13 @@ test('thin proof: one piece or none (A only when none); no Work Simulation link 
     assert.deepEqual(hasWs.thinProof.links.map(l => l.label), ['The Nothing CV']);
 });
 
-test('links: the Work Simulation opens its Day until its page is on the site; every page linked exists in this repo', () => {
+test('links: the Work Simulation opens its own Day 1 row until its page is on the site; every page linked exists in this repo', () => {
     const h = R.recommend(answers({ rank: ['work', 'academics', 'projects', 'roles', 'skills'] }), data());
     const ws = SITUATIONS.links.workSimulation;
     if (ws) assert.equal(h.thinProof.links[0].href, ws);
-    else assert.equal(h.thinProof.links[0].href, '/learning-management-system/course?course=msc-articleship-program&session=2');
+    else assert.equal(h.thinProof.links[0].href, '/learning-management-system/course?course=msc-articleship-program&session=2&resource=Work+Simulation');
+    if (!ws) assert.ok(!fs.existsSync(path.join(ROOT, 'articleship-program/work-simulation/index.html')),
+        'the Work Simulation page is on the branch now: set links.workSimulation to /articleship-program/work-simulation/');
     const wired = data();
     wired.links.workSimulation = '/articleship-program/work-simulation/';
     assert.equal(R.recommend(answers({ rank: ['work', 'academics', 'projects', 'roles', 'skills'] }), wired).thinProof.links[0].href, '/articleship-program/work-simulation/');
@@ -473,11 +541,16 @@ test('links: every PDF this tool opens is a Day 1 row of the v3 course, so "See 
     const sql = fs.readFileSync(path.join(ROOT, 'supabase/migrations/202610200002_articleship_program_v3_lms.sql'), 'utf8');
     const rows = JSON.parse(sql.match(/json_populate_recordset\(NULL::public\.videos, '([\s\S]*?)'::json\)/)[1].replaceAll("''", "'"));
     const day1 = rows.find(row => row.video_number === SITUATIONS.day + 1);
-    for (const title of Object.values(SITUATIONS.resources)) {
+    for (const key of ['choose', 'nothing', 'templates']) {
+        const title = SITUATIONS.resources[key];
         const row = day1.resources.find(item => item.title === title);
         assert.ok(row, title + ' is a row of session ' + (SITUATIONS.day + 1));
         assert.match(String(row.view_storage_path), /^articleship-program-v\d+\/day-1\/.+\.pdf$/i, title + ' opens as a programme PDF');
     }
+    assert.ok(day1.resources.some(item => item.title === SITUATIONS.resources.workSimulation), 'Work Simulation is a Day 1 row');
+    assert.ok(day1.resources.some(item => item.title === 'CV Builder'), '"Next" points at the Day that holds the CV Builder');
+    const day5 = rows.find(row => row.video_number === SITUATIONS.unsure.day + 1);
+    assert.ok(day5.resources.some(item => item.title === SITUATIONS.unsure.row), 'Domain roadmaps is a Day 5 row');
 });
 
 test('domain: a pick is passed on; "Not sure yet" sends no domain and shows the one answer', () => {
@@ -487,7 +560,12 @@ test('domain: a pick is passed on; "Not sure yet" sends no domain and shows the 
     const unsure = R.recommend(answers({ domain: 'unsure' }), data());
     assert.equal(unsure.domain, null);
     assert.match(unsure.unsure.text, /statutory audit and some tax/);
-    assert.equal(unsure.unsure.link.href, '/articleship-program/domain-roadmaps/');
+    assert.deepEqual(unsure.unsure.link, { label: 'Domain roadmaps', href: '/articleship-program/domain-roadmaps/' });
+    assert.ok(fs.existsSync(path.join(ROOT, 'articleship-program/domain-roadmaps/index.html')), 'the Domain roadmaps page is on this branch');
+    const noPage = data();
+    noPage.links.domainRoadmaps = null;
+    assert.equal(R.recommend(answers({ domain: 'unsure' }), noPage).unsure.link.href,
+        '/learning-management-system/course?course=msc-articleship-program&session=6&resource=Domain+roadmaps', 'without the page: its own Day 5 row');
 });
 
 // ---------- Designs ----------
@@ -509,7 +587,7 @@ test('designs: one list for both tools (the CV Builder\'s), no second copy here'
     assert.deepEqual(list.map(d => [d.number, d.name, d.tag]), raw.map(d => [Number(d.number), d.name, d.tag]).sort((x, y) => x[0] - y[0]),
         'number, name and tag exactly as the CV Builder shows them');
     assert.deepEqual(list.map(d => d.number), list.map((d, i) => i + 1), 'numbered 1… as in the look-book');
-    list.forEach(d => assert.ok(['Print', 'Portal-safe'].includes(d.tag), d.name + ' tag'));
+    list.forEach(d => assert.ok(['Print', 'Portal-safe', 'Screen'].includes(d.tag), d.name + ' tag'));
     ['A', 'B', 'C', 'D', 'E', 'F', 'G'].forEach(code => assert.ok(list.some(d => d.bestFor.includes(code)), code + ' has a design made for it'));
     assert.ok(list.some(d => d.portalSafe && /portal plain/i.test(d.name)), 'one Portal plain design for portals');
     R.SITUATION_CODES.forEach(code => {
@@ -552,20 +630,21 @@ test('designs: situation match first, a variant match breaks ties, then the lowe
     assert.equal(none.builder, false, 'no design list → no "the CV Builder opens with this" promise');
     assert.equal(R.toCvPick(none).design, null);
     assert.equal(R.recommend(answers(), data()).builder, true);
-    assert.equal(R.recommend(answers({ course: 'cma', rank: ['skills', 'academics', 'work', 'projects', 'roles'] }), data()).design.number, 7,
-        'the situation still decides when a design is made for it');
+    assert.equal(R.recommend(answers({ course: 'cma', rank: ['skills', 'academics', 'work', 'projects', 'roles'], work: ['tuition'] }), data()).design.number,
+        designFor('F', ['cs-cma']).number, 'the situation still decides when a design is made for it');
 });
 
 // ---------- Saving the pick ----------
 
 test('toCvPick: valid for the shared setting; saved for the CV Builder; my domain set', () => {
-    const r = R.recommend(answers({ inter: 'separate', icitss: 'ongoing', domain: 'direct-tax' }), data());
+    const r = R.recommend(answers({ inter: 'separate', icitss: 'ongoing', domain: 'direct-tax', projects: ['job-simulation'] }), data());
     const pick = R.toCvPick(r);
-    assert.deepEqual(pick, { situation: 'B', order: r.order, design: 5, variants: ['groups-separately', 'icitss-ongoing'], domain: 'direct-tax', source: 'cv-recommender' });
+    const b = designFor('B').number;
+    assert.deepEqual(pick, { situation: 'B', order: r.order, design: b, variants: ['groups-separately', 'icitss-ongoing'], domain: 'direct-tax', source: 'cv-recommender' });
     const progress = fakeProgress();
     const saved = progress.setCvPick(pick);
     assert.equal(saved.situation, 'B');
-    assert.equal(progress.getCvPick().design, 5);
+    assert.equal(progress.getCvPick().design, b);
     assert.equal(progress.getMyDomain(), 'direct-tax');
 });
 
@@ -647,19 +726,24 @@ test('page: nine taps to a result; the pick and my domain are saved; a reload op
         'ranking work > academics > projects > skills > roles');
     assert.match(p.doc.querySelector('.cvr-block.is-lead').textContent, /Accounts, family business/, 'the example follows the work tapped');
     const cards = [...p.doc.querySelectorAll('.cvr-variant-label')].map(n => n.textContent);
-    assert.deepEqual(cards, ['MSC Articleship Program', 'Groups in different sittings', 'ICITSS ongoing', 'Distance or evening B.Com', 'CA with CMA', 'A gap']);
+    assert.deepEqual(cards, ['Your work experience', 'MSC Articleship Program', 'Groups in different sittings', 'ICITSS ongoing', 'Distance or evening B.Com', 'CA with CMA', 'A gap'],
+        'the student\'s own line first');
     const seeIt = [...p.doc.querySelectorAll('a.ap-btn')].find(a => a.textContent === 'See this order');
     assert.equal(seeIt.getAttribute('href'), '/learning-management-system/course?course=msc-articleship-program&session=2&resource=Choose+your+CV&page=5');
     const pick = p.doc.querySelector('.cvr-pick');
     assert.equal(pick.previousElementSibling, null, 'the button and the design come first, straight under the reason');
-    assert.match(pick.textContent, /No\. 3 Sidebar/);
-    assert.match(pick.textContent, /The CV Builder opens with this order and design\./);
+    const c = designFor('C', ['cs-cma']);
+    assert.match(pick.textContent, new RegExp('No\\. ' + c.number + ' ' + c.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+    const next = pick.querySelector('.cvr-next');
+    assert.equal(next.textContent, 'Next: open the CV Builder in Day 1. It opens with this order and design.');
+    assert.equal(next.querySelector('a').getAttribute('href'), '/learning-management-system/course?course=msc-articleship-program&session=2');
+    assert.doesNotMatch(p.app.textContent, /CV Builder row/, 'no course jargon');
     assert.match(p.app.textContent, /Thin on proof\?/);
     assert.ok(!/build/i.test([...p.doc.querySelectorAll('a, button')].map(n => n.textContent).join(' ')), 'no build button of its own');
 
     const pickSaved = progress.getCvPick();
     assert.equal(pickSaved.situation, 'C');
-    assert.equal(pickSaved.design, 3);
+    assert.equal(pickSaved.design, c.number);
     assert.deepEqual(pickSaved.variants, ['groups-separately', 'icitss-ongoing', 'distance', 'cs-cma', 'gap']);
     assert.equal(progress.getMyDomain(), 'gst');
     assert.equal(store.get().done, true);
@@ -690,14 +774,17 @@ test('page: a line card shows its label and Copy; the line, note and "If asked" 
     const msc = p.doc.querySelector('.cvr-variant.is-msc .cvr-copy');
     assert.equal(msc.getAttribute('aria-label'), 'Copy: MSC Articleship Program');
     msc.dispatchEvent(new p.dom.window.MouseEvent('click', { bubbles: true }));
+    const later = p.doc.querySelector('.cvr-variant.is-msc .cvr-later .cvr-copy');
+    assert.equal(later.getAttribute('aria-label'), 'Copy: MSC Articleship Program, once you finish the programme');
+    later.dispatchEvent(new p.dom.window.MouseEvent('click', { bubbles: true }));
     await sleep(10);
-    assert.deepEqual(copied, ['[Month Year]–[Month Year] | [What you did: family business accounts / a course / ICITSS]', MSC_LINE]);
+    assert.deepEqual(copied, ['[Month Year]–[Month Year] | [What you did: family business accounts / a course / ICITSS]', MSC_ONGOING, MSC_LINE]);
 });
 
 test('page: tap an answer chip to change one question, then straight back to the result', async () => {
     const progress = fakeProgress();
     const store = memoryStore('cv-recommender', { answers: null, step: 0, done: false });
-    store.set({ answers: answers(), step: 8, done: true });
+    store.set({ answers: answers({ work: ['tuition'] }), step: 8, done: true });
     const p = page();
     R.mount(p.app, { data: data(), store, progress, heroEl: p.hero, mainEl: p.main });
     assert.match(p.app.textContent, /Use the Academics order/);
@@ -741,10 +828,51 @@ test('page: the screen reader hears each step once; the card is not a live regio
     assert.equal(p.doc.querySelectorAll('[aria-live]').length, 1);
     assert.equal(ui.state().step, 1);
     const css = fs.readFileSync(path.join(TOOL_DIR, 'cv-recommender.css'), 'utf8');
-    for (const selector of ['.cvr-reset', '.cvr-copy', '.cvr-chip', '.cvr-design-link']) {
-        const rule = css.match(new RegExp(selector.replace('.', '\\.') + '\\s*\\{([^}]*)\\}'));
+    for (const selector of ['.cvr-reset', '.cvr-copy', '.cvr-chip', '.cvr-design-link', '.cvr-more', '.cvr-note-links .ap-link']) {
+        const rule = css.match(new RegExp('(?:^|\\n)' + selector.replace(/\./g, '\\.') + '\\s*\\{([^}]*)\\}'));
         assert.ok(rule && /min-height:\s*44px/.test(rule[1]), selector + ' is at least 44 px tall');
     }
+    // The inline "Day 1" link in the Next line: 20 px of text plus 12 px above and below.
+    assert.match(css, /\.cvr-next \.ap-link \{[^}]*padding: 12px 0;[^}]*margin: -12px 0;/);
+});
+
+test('page: on a phone the student\'s own lines always show; the rest open with one tap; from 900 px and in print every line shows', async () => {
+    const store = memoryStore('cv-recommender', { answers: null, step: 0, done: false });
+    store.set({ answers: answers({ rank: ['skills', 'academics', 'roles', 'projects', 'work'], work: ['tuition'], projects: ['work-simulation'], domain: 'gst' }), step: 8, done: true });
+    const copied = [];
+    const p = page();
+    p.dom.window.navigator.clipboard = { writeText: text => { copied.push(text); return Promise.resolve(); } };
+    R.mount(p.app, { data: data(), store, progress: fakeProgress() });
+    const block = label => [...p.doc.querySelectorAll('.cvr-block')].find(li => li.querySelector('.cvr-block-label').textContent === label);
+    const work = block('Work experience');
+    const sims = block('Certifications and job simulations');
+    assert.ok(work.classList.contains('is-own') && !work.classList.contains('is-brief'), 'the tuition line shows without a tap');
+    assert.match(work.textContent, /Tutor, Class XI–XII Accountancy/);
+    assert.ok(sims.classList.contains('is-own') && !sims.classList.contains('is-brief'), 'the GST Work Simulation line shows without a tap');
+    assert.match(sims.textContent, /^.*GST Work Simulation, MSC Articleship Program/);
+    const brief = [...p.doc.querySelectorAll('.cvr-block.is-brief')].map(li => li.querySelector('.cvr-block-label').textContent);
+    assert.deepEqual(brief, ['Roles and achievements', 'Interests'], 'only sample lines wait behind the tap');
+    const more = p.doc.querySelector('.cvr-more');
+    assert.equal(more.getAttribute('aria-controls'), p.doc.querySelector('.cvr-blocks').id);
+    more.dispatchEvent(new p.dom.window.MouseEvent('click', { bubbles: true }));
+    assert.ok(p.doc.querySelector('.cvr-paper').classList.contains('is-open'));
+    assert.equal(more.getAttribute('aria-expanded'), 'true');
+
+    const own = [...p.doc.querySelectorAll('.cvr-variant.is-own')];
+    assert.deepEqual(own.map(li => li.querySelector('.cvr-variant-label').textContent), ['Your simulations', 'Your work experience']);
+    own[0].querySelector('.cvr-copy').dispatchEvent(new p.dom.window.MouseEvent('click', { bubbles: true }));
+    await sleep(10);
+    assert.deepEqual(copied, [SITUATIONS.workSimulation.gst]);
+
+    // The phone-only hide rules live inside a screen, below-900 px block, so a laptop (and a print) never hides a line.
+    const css = fs.readFileSync(path.join(TOOL_DIR, 'cv-recommender.css'), 'utf8');
+    const hides = css.match(/[^{}\n]*\.is-brief[^{}]*\{[^}]*display:\s*none[^}]*\}/g) || [];
+    assert.equal(hides.length, 2, 'two hide rules: the example line and the short grey line');
+    const phone = css.match(/@media screen and \(max-width: 899px\) \{([\s\S]*?)\n\}/);
+    assert.ok(phone, 'a phone-only block');
+    hides.forEach(rule => assert.ok(phone[1].includes(rule.trim()), 'phone only: ' + rule.trim()));
+    assert.match(css, /@media \(min-width: 900px\) \{[\s\S]*?\.cvr-more \{ display: none; \}/, 'no toggle where every line already shows');
+    assert.doesNotMatch(css, /\.is-header \.cvr-block-label \{[^}]*text-transform:\s*none/, '"Name and contact" in capitals like every block label');
 });
 
 test('page: answers synced from the account show up while untouched; ignored once the student taps', () => {
@@ -755,7 +883,7 @@ test('page: answers synced from the account show up while untouched; ignored onc
     assert.match(p.app.textContent, /1 of 9/);
     // Another tab (or the account pull) saved a finished result.
     const other = memoryStore('cv-recommender', { answers: null, step: 0, done: false }, storage);
-    other.set({ answers: answers({ rank: ['roles', 'academics', 'work', 'projects', 'skills'] }), step: 8, done: true });
+    other.set({ answers: answers({ rank: ['roles', 'academics', 'work', 'projects', 'skills'], work: ['tuition'] }), step: 8, done: true });
     store._onStorageEvent({ key: store.key, newValue: storage.getItem(store.key) });
     assert.match(p.app.textContent, /Use the Extra-curriculars order/, 'the synced result replaces the empty quiz');
 

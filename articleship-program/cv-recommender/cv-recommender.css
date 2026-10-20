@@ -3,6 +3,8 @@
  * Phone first (390 px); the result splits into the CV picture and the details from 900 px.
  */
 .cvr-main { transition: max-width 0.2s ease; }
+/* The logo is the way back to the programme: a 44 px tap target like every other control. */
+.ap-topbar .ap-brand { min-height: 44px; }
 .cvr-loading { display: grid; place-items: center; min-height: 240px; }
 .cvr-error p { margin: 0 0 12px; }
 .cvr-sr {
@@ -122,9 +124,6 @@
 .cvr-result-head { margin: 4px 0 14px; }
 .cvr-kicker { display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ap-muted); }
 .cvr-result-title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
     margin: 4px 0 6px;
     font-family: var(--ap-hand);
     font-weight: 700;
@@ -137,23 +136,12 @@
     background: linear-gradient(transparent 58%, color-mix(in srgb, var(--ap-accent) 30%, transparent) 58%);
     padding: 0 2px;
 }
-.cvr-badge {
-    flex: 0 0 auto;
-    display: grid;
-    place-items: center;
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    background: var(--ap-accent);
-    color: #fff;
-    font-family: var(--ap-hand);
-    font-size: 30px;
-    transform: rotate(-4deg);
-}
 .cvr-reason { margin: 0; font-size: 16px; color: var(--ap-ink); }
 
 .cvr-result-grid { display: grid; gap: 16px; grid-template-areas: 'pick' 'paper' 'side'; }
+.cvr-result-grid.has-notes { grid-template-areas: 'pick' 'notes' 'paper' 'side'; }
 .cvr-pick { grid-area: pick; display: grid; gap: 10px; padding: 14px; }
+.cvr-col-notes { grid-area: notes; }
 .cvr-col-paper { grid-area: paper; }
 .cvr-col-side { grid-area: side; display: grid; gap: 14px; align-content: start; }
 
@@ -188,7 +176,6 @@
 }
 .cvr-block-body { position: relative; flex: 1 1 auto; min-width: 0; display: grid; gap: 2px; }
 .cvr-block-label { font-size: 12.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ap-navy); }
-.cvr-block.is-header .cvr-block-label { text-transform: none; letter-spacing: 0; font-size: 16px; }
 .cvr-block-example { font-size: 13px; line-height: 1.4; color: #475569; overflow-wrap: anywhere; }
 .cvr-block-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0 10px; }
 .cvr-lead-note {
@@ -206,8 +193,30 @@
 .cvr-lines i:last-child { width: 62%; }
 .cvr-block.is-header .cvr-lines { display: none; }
 .cvr-caption { margin: 10px 2px 0; font-family: var(--ap-hand); font-size: 18px; line-height: 1.2; color: #C83A3A; }
+/*
+ * Phone: example lines on the first three blocks, the lead and every block built from the student's own taps; one tap
+ * opens the rest. Screen only and below 900 px, so a laptop and a print always show every line.
+ */
+@media screen and (max-width: 899px) {
+    .cvr-paper:not(.is-open) .cvr-block.is-brief .cvr-block-example { display: none; }
+    .cvr-paper:not(.is-open) .cvr-block.is-brief .cvr-lines i:last-child { display: none; }
+}
+.cvr-more {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    margin: 4px 0 0 46px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--ap-primary);
+    font: 600 14px/1.2 var(--ap-sans);
+    cursor: pointer;
+}
+.cvr-more:focus-visible { outline: 3px solid color-mix(in srgb, var(--ap-primary) 40%, transparent); outline-offset: 2px; }
 
-.cvr-saved { margin: -2px 0 0; font-size: 13px; color: var(--ap-muted); text-align: center; }
+.cvr-next { margin: -2px 0 0; font-size: 14px; line-height: 1.45; color: #3b4a5e; }
+.cvr-next .ap-link { display: inline-block; padding: 12px 0; margin: -12px 0; white-space: nowrap; }
 
 .cvr-design { display: grid; gap: 4px; padding-top: 10px; border-top: 1px solid var(--ap-border); }
 .cvr-design-link { display: inline-flex; align-items: center; min-height: 44px; justify-self: start; }
@@ -215,6 +224,7 @@
 .cvr-design-no { font-family: var(--ap-hand); font-size: 24px; color: var(--ap-primary); }
 .cvr-tag { padding: 2px 8px; border-radius: 999px; background: #eef2f7; font-size: 12px; font-weight: 600; color: #334155; }
 .cvr-tag.is-portal { background: var(--ap-success-light); color: var(--ap-success); }
+.cvr-tag.is-screen { background: #fdf0e1; color: #9a4f08; }
 .cvr-design-line { margin: 0; font-size: 14px; color: #475569; }
 .cvr-portal { margin: 6px 0 0; padding-top: 8px; border-top: 1px dashed var(--ap-border-dark); font-size: 13.5px; color: var(--ap-muted); }
 
@@ -224,15 +234,17 @@
     background: #E3EDFF;
     font-size: 14px;
 }
-.cvr-note.is-thin { background: #FFE4EC; }
+.cvr-note.is-thin { background: var(--ap-sticky); }
+.cvr-note.is-next { background: var(--ap-success-light); }
 .cvr-note strong { font-family: var(--ap-hand); font-size: 19px; color: var(--ap-navy); margin-right: 4px; }
 .cvr-note-links { display: inline-flex; flex-wrap: wrap; gap: 0 16px; }
-.cvr-note-links .ap-link { display: inline-flex; align-items: center; min-height: 36px; }
+.cvr-note-links .ap-link { display: inline-flex; align-items: center; min-height: 44px; }
 
 .cvr-variants-wrap .ap-h2, .cvr-answers .ap-h2 { margin: 4px 0 8px; }
 .cvr-variants { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
 .cvr-variant { border: 1px solid var(--ap-border); border-radius: 12px; background: var(--ap-panel); }
 .cvr-variant.is-msc { border-color: color-mix(in srgb, var(--ap-accent) 55%, var(--ap-border)); background: #fff8f1; }
+.cvr-variant.is-own { border-color: color-mix(in srgb, var(--ap-primary) 35%, var(--ap-border)); background: #f6f9ff; }
 .cvr-variant-row { display: flex; align-items: center; gap: 6px; padding: 0 8px 0 0; }
 .cvr-variant-toggle {
     flex: 1 1 auto;
@@ -281,6 +293,9 @@
     overflow-wrap: anywhere;
 }
 .cvr-variant-note { margin: 0; font-size: 14px; color: #3b4a5e; }
+.cvr-later { display: grid; gap: 6px; }
+.cvr-later-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.cvr-later-label { font-size: 14px; font-weight: 700; color: var(--ap-navy); }
 .cvr-copy {
     flex: 0 0 auto;
     min-height: 44px;
@@ -318,7 +333,6 @@
     .cvr-q { font-size: 34px; }
     .cvr-options.is-grid { grid-template-columns: 1fr 1fr 1fr; }
     .cvr-result-title { font-size: 44px; }
-    .cvr-badge { width: 52px; height: 52px; font-size: 36px; }
 }
 
 @media (min-width: 900px) {
@@ -329,8 +343,10 @@
         gap: 16px 24px;
         align-items: start;
     }
+    .cvr-result-grid.has-notes { grid-template-areas: 'paper pick' 'paper notes' 'paper side'; grid-template-rows: auto auto 1fr; }
     .cvr-col-paper { position: sticky; top: 80px; }
     .cvr-paper { padding: 22px 22px 16px 18px; }
+    .cvr-more { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -338,7 +354,7 @@
 }
 
 @media print {
-    .cvr-pick .ap-btn, .cvr-copy, .cvr-answers { display: none; }
+    .cvr-pick .ap-btn, .cvr-copy, .cvr-answers, .cvr-more { display: none; }
     .cvr-variant-body[hidden] { display: grid; }
     .cvr-col-paper { position: static; }
 }

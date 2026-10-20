@@ -4,7 +4,8 @@
   "resources": {
     "choose": "Choose your CV",
     "nothing": "The Nothing CV",
-    "templates": "CV templates"
+    "templates": "CV templates",
+    "workSimulation": "Work Simulation"
   },
   "links": {
     "workSimulation": null,
@@ -77,6 +78,9 @@
       "name": "Groups separately",
       "useIf": "Your Inter groups came in different sittings, or a level took more than one attempt.",
       "reason": "Your Inter took more than one sitting. Show each result clearly and put your proof of improvement right under the table.",
+      "reasonByInter": {
+        "one-awaited": "One group is cleared and one is awaited. Give each its own row: the cleared group with its marks, the other as Result awaited."
+      },
       "rule": "Each group gets its own row with its own year and marks. A year-only column is fine.",
       "page": 4,
       "lead": "education",
@@ -171,7 +175,7 @@
         "interests"
       ],
       "examples": {
-        "skills": "Excel (proficient): XLOOKUP, PivotTables, SUMIFS; built a debtors-ageing sheet of 400 entries"
+        "skills": "Excel (proficient): XLOOKUP, PivotTables, SUMIFS; built an EMI schedule for [3] loans with the interest split"
       }
     },
     "G": {
@@ -246,6 +250,20 @@
       "later": "CA Intermediate (both groups) | [Year] | ICAI | [Marks] | [Best paper score]"
     }
   },
+  "ownLines": {
+    "experience": {
+      "label": "Your work experience",
+      "note": "Change the numbers and the brackets to what you really did."
+    },
+    "projects": {
+      "label": "Your projects",
+      "note": "Change the numbers and the brackets to what you really did."
+    },
+    "certifications": {
+      "label": "Your simulations",
+      "note": "Goes in Certifications and job simulations, never in Experience. Put in your own counts."
+    }
+  },
   "defaultDomain": "statutory-audit",
   "workSimulation": {
     "statutory-audit": "Statutory Audit Work Simulation, MSC Articleship Program | [Month Year]: vouched 20 purchase bills against orders, receipt notes and ledgers and flagged [count] cut-off, approval and GST exceptions",
@@ -264,7 +282,11 @@
   },
   "mscLine": {
     "label": "MSC Articleship Program",
-    "line": "Completed MSC Articleship Program — foundational understanding of work and tasks across all domains",
+    "line": "MSC Articleship Program (ongoing)",
+    "later": {
+      "label": "Once you finish the programme",
+      "line": "Completed MSC Articleship Program — foundational understanding of work and tasks across all domains"
+    },
     "note": "Goes in Certifications and job simulations. It is not one of the four outside certificates."
   },
   "lastNote": "your no. 5 goes last",
@@ -400,10 +422,6 @@
           "line": "[LL.B.] | [University] | Pursuing"
         }
       }
-    },
-    "marks-low": {
-      "label": "Marks ranked low",
-      "note": "Your best proof now sits above the education table. Keep the table, with every Remark filled: firms look for it."
     }
   },
   "thinProof": {
@@ -412,11 +430,19 @@
     "textHasSimulation": "Add the four quick certificates.",
     "labelNothing": "Then",
     "textNothing": "do one Work Simulation level. It gives you a line you earned, with your own numbers.",
-    "page": 3
+    "page": 4
   },
   "unsure": {
     "label": "Domain not decided?",
-    "text": "Start with statutory audit and some tax."
+    "text": "Start with statutory audit and some tax.",
+    "linkLabel": "Domain roadmaps",
+    "day": 5,
+    "row": "Domain roadmaps"
   },
-  "portal": "Applying on a firm's portal? Use {design} with the same order."
+  "portal": "Applying on a firm's portal? Use {design} with the same order.",
+  "next": {
+    "text": "Next: open the CV Builder in {day}. It opens with this order and design.",
+    "textNoDesign": "Next: pick a design in CV templates, then open the CV Builder in {day}.",
+    "dayLabel": "Day 1"
+  }
 }
