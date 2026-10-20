@@ -688,11 +688,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!video) return null;
         const title = params.get('resource');
         // Only a programme PDF (articleship-program-v<N>/day-<d>/…) of an enrolled row; never a path from the URL.
+        // A title that matches no such row (not uploaded yet, renamed, or a tool row) still opens its Day's session.
         const resource = title ? video.resources?.find(item => item.title === title &&
             /^articleship-program-v\d+\/day-[0-6]\//.test(String(item.view_storage_path || '')) &&
             !String(item.view_storage_path || '').includes('..') &&
-            String(item.view_storage_path || '').toLowerCase().endsWith('.pdf')) : null;
-        if (title && !resource) return null;
+            String(item.view_storage_path || '').toLowerCase().endsWith('.pdf')) || null : null;
         const rawPage = params.get('page') || '1';
         const page = /^[1-9]\d{0,5}$/.test(rawPage) ? Number(rawPage) : 1;
         return { video, resource, page };

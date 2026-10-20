@@ -213,10 +213,16 @@ test('deep links select only an enrolled Articleship session and a programme PDF
     assert.equal(target().resource.view_storage_path, 'articleship-program-v3/day-4/Statutory audit booklet.pdf');
     window.location.search = '?session=2';
     assert.equal(target().resource, null, 'session only');
-    for (const query of ['?session=999&resource=Choose%20your%20CV', '?session=2&resource=https://evil.test/a.pdf',
-        '?session=2.5&resource=Choose%20your%20CV', '?session=-2&resource=Choose%20your%20CV', '?session=2&resource=CV%20Builder']) {
+    for (const query of ['?session=999&resource=Choose%20your%20CV', '?session=2.5&resource=Choose%20your%20CV', '?session=-2&resource=Choose%20your%20CV']) {
         window.location.search = query;
         assert.equal(target(), null, query);
+    }
+    // A title with no programme PDF behind it opens the Day itself ("a wrong title just opens the Day"), never a URL.
+    for (const query of ['?session=2&resource=https://evil.test/a.pdf', '?session=2&resource=CV%20Builder', '?session=2&resource=Not%20uploaded%20yet&page=4']) {
+        window.location.search = query;
+        const result = target();
+        assert.equal(result.video.video_number, 2, query);
+        assert.equal(result.resource, null, query);
     }
     window.location.search = '?session=2&resource=Choose%20your%20CV&page=-4';
     assert.equal(target().page, 1);
@@ -234,7 +240,7 @@ test('deep links select only an enrolled Articleship session and a programme PDF
     window.location.search = '?session=6&resource=Old';
     assert.equal(v2().resource.title, 'Old');
     window.location.search = '?session=6&resource=Climb';
-    assert.equal(v2(), null);
+    assert.equal(v2().resource, null, 'a path that climbs out never opens');
 });
 
 test('a deep link to a copyable row opens the reader in place; other PDFs open at their page', async () => {
