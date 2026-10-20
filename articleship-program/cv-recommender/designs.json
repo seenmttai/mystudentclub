@@ -1,0 +1,13 @@
+{
+  "sample": true,
+  "designs": [
+    { "number": 1, "id": "classic-table", "name": "Classic table", "tag": "Print", "bestFor": ["A"], "persona": "A", "renderFile": "classic.html", "page": 2, "line": "Education grid with a Remarks column. The commonest on selected CVs." },
+    { "number": 2, "id": "portal-plain", "name": "Portal plain", "tag": "Portal-safe", "bestFor": ["G", "H"], "persona": "G", "renderFile": "plain-ats.html", "page": 3, "line": "One column, no tables or icons. Safe for any firm's portal." },
+    { "number": 3, "id": "sidebar", "name": "Sidebar", "tag": "Print", "bestFor": ["C"], "persona": "C", "renderFile": "profile-sidebar.html", "page": 4, "line": "Skills and contact in a side column, work in the main column." },
+    { "number": 4, "id": "banner-header", "name": "Banner header", "tag": "Print", "bestFor": ["D"], "persona": "D", "renderFile": "banner-executive-split.html", "page": 5, "line": "A strong name band on top; room for project lines." },
+    { "number": 5, "id": "serif-classic", "name": "Serif classic", "tag": "Portal-safe", "bestFor": ["B"], "persona": "B", "renderFile": "clean-rule.html", "page": 6, "line": "Quiet serif type; group-wise rows read cleanly." },
+    { "number": 6, "id": "bordered-grid", "name": "Bordered grid", "tag": "Print", "bestFor": ["E"], "persona": "E", "renderFile": "bordered-grid.html", "page": 7, "line": "Boxed sections that keep many short role lines tidy." },
+    { "number": 7, "id": "timeline", "name": "Timeline", "tag": "Print", "bestFor": ["F"], "persona": "F", "renderFile": "timeline-flow-split.html", "page": 8, "line": "A dated line down the side; skills and proof side by side." },
+    { "number": 8, "id": "bold-modern", "name": "Bold modern", "tag": "Portal-safe", "bestFor": ["cs-cma"], "persona": "I", "renderFile": "bold-modern.html", "page": 9, "line": "Clear headings for two courses in one education table." }
+  ]
+}
