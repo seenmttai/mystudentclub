@@ -1,7 +1,7 @@
 {
   "tool": "cv-checklist",
   "title": "CV checklist",
-  "intro": "22 checks, in the order you build a CV. Tick each one as your CV passes it.",
+  "intro": "{n} checks, in the order you build a CV. Tick each one as your CV passes it.",
   "items": [
     {
       "id": "built-in-builder",
@@ -9,8 +9,7 @@
       "check": "Built in the CV Builder, from your order and design, in one font",
       "example": [
         "Order from Choose your CV (or the CV Recommender), design from CV templates.",
-        "One font for the whole page: Arial, Calibri, Cambria, Georgia or Times New Roman.",
-        "❌ Headings in one font, the body in another: the fix reviewers make most."
+        "One font for the whole page: Arial, Calibri, Cambria, Georgia or Times New Roman."
       ],
       "fix": {
         "label": "Open the CV Builder",
@@ -85,12 +84,12 @@
       "check": "A three-line objective that names your domain, or none at all",
       "example": [
         "❌ To work in a reputed organisation where I can utilise my skills and grow with the organisation.",
-        "✅ CA Intermediate cleared ([Month Year], first attempt); ICITSS completed. Kept my family shop’s books in Tally Prime for a year. Seeking articleship in GST, to learn monthly returns and ITC matching.",
-        "Five-second test: leave your CV for a day, then look at it for five seconds. Your Inter result, your best proof and your domain should show in the top third. If not, move them up."
+        "✅ CA Intermediate cleared ([Month Year], first attempt); ICITSS completed. Kept my family shop’s books in Tally Prime for a year. Seeking articleship in GST, to learn monthly returns and ITC matching."
       ],
       "fix": {
-        "label": "The Nothing CV, page 2",
-        "href": "/learning-management-system/course?course=msc-articleship-program&session=2&resource=The+Nothing+CV&page=2"
+        "label": "Objective examples",
+        "href": "/learning-management-system/course?course=msc-articleship-program&session=2&resource=The+Nothing+CV&page=2",
+        "find": "Career objective"
       }
     },
     {
@@ -102,21 +101,28 @@
         "ICAI levels as marks out of the maximum, CGPA as CGPA, school as a percentage, with the same decimals everywhere.",
         "Year only is fine. Show a month in one row and you show it in every row.",
         "Short names (“ICAI”), so no row is taller than the rest."
-      ]
+      ],
+      "fix": {
+        "label": "Your education table",
+        "href": "/learning-management-system/course?course=msc-articleship-program&session=2&resource=Choose+your+CV&page=11",
+        "find": "Your education table"
+      }
     },
     {
       "id": "remarks",
       "section": "Education",
       "check": "A remark on every row, and only what a marksheet or certificate proves",
       "example": [
-        "✅ First attempt · 74 in Taxation · 98 in Accountancy",
+        "✅ CA Intermediate row: First attempt · 74 in Taxation",
+        "✅ Class XII row: 98 in Accountancy",
         "✅ AIR 34: only an all-India rank ICAI gave you",
         "✅ Exemption in [paper]: only where the marksheet shows it; otherwise write the score",
         "❌ A blank cell · “City rank 2” · “Topper” with no certificate"
       ],
       "fix": {
-        "label": "Choose your CV, page 3",
-        "href": "/learning-management-system/course?course=msc-articleship-program&session=2&resource=Choose+your+CV&page=3"
+        "label": "What to write in Remarks",
+        "href": "/learning-management-system/course?course=msc-articleship-program&session=2&resource=Choose+your+CV&page=11",
+        "find": "Your education table"
       }
     },
     {
@@ -129,8 +135,9 @@
         "Result not out yet: “Result awaited”. Never a score before the result."
       ],
       "fix": {
-        "label": "Choose your CV, page 4",
-        "href": "/learning-management-system/course?course=msc-articleship-program&session=2&resource=Choose+your+CV&page=4"
+        "label": "Results, sittings and gaps",
+        "href": "/learning-management-system/course?course=msc-articleship-program&session=2&resource=Choose+your+CV&page=12",
+        "find": "Results, sittings and gaps"
       }
     },
     {
@@ -142,7 +149,12 @@
         "✅ Ongoing, completes [Month Year]",
         "✅ Batch from [Month Year]",
         "❌ “Completed” while it is pending. Firms check, and one false line makes them doubt every true one."
-      ]
+      ],
+      "fix": {
+        "label": "ICITSS: what to write",
+        "href": "/learning-management-system/course?course=msc-articleship-program&session=2&resource=Choose+your+CV&page=13",
+        "find": "ICITSS, degrees and other courses"
+      }
     },
     {
       "id": "line-formula",
@@ -151,11 +163,12 @@
       "example": [
         "❌ Responsible for my father’s shop accounts.",
         "✅ Recorded 1,400 sales and purchase vouchers in Tally Prime for my father’s paint shop over 10 months; reconciled the bank every month.",
-        "Past tense, no “I”, one or two lines. No record, no number."
+        "Past tense, no “I”, one or two lines. Every number must be one you can show a record for."
       ],
       "fix": {
-        "label": "Keywords by domain, last page",
-        "href": "/learning-management-system/course?course=msc-articleship-program&session=2&resource=Keywords+by+domain&page=15"
+        "label": "How to write a line",
+        "href": "/learning-management-system/course?course=msc-articleship-program&session=2&resource=Keywords+by+domain&page=15",
+        "find": "How to write a line"
       }
     },
     {
@@ -168,8 +181,9 @@
         "Pick a verb one step too high and the interviewer walks you down in two questions."
       ],
       "fix": {
-        "label": "The verb ladder",
-        "href": "/learning-management-system/course?course=msc-articleship-program&session=2&resource=Keywords+by+domain&page=15"
+        "label": "Words a trainee never writes",
+        "href": "/learning-management-system/course?course=msc-articleship-program&session=2&resource=Keywords+by+domain&page=17",
+        "find": "Words a trainee never writes"
       }
     },
     {
@@ -179,11 +193,13 @@
       "example": [
         "Never under Experience or Internship, and never “virtual intern”.",
         "Your MSC Work Simulation lines and the MSC Articleship Program line don’t count in the four. ICITSS stays in the education table.",
-        "Not finished yet? “In progress, completes [Month Year]”."
+        "Not finished yet? “Ongoing, completes [Month Year]”, until the certificate is in your inbox.",
+        "This programme: “MSC Articleship Program (ongoing)”; once done, “Completed MSC Articleship Program — foundational understanding of work and tasks across all domains”."
       ],
       "fix": {
         "label": "Guidebook, chapter 3",
-        "href": "/learning-management-system/course?course=msc-articleship-program&session=1&resource=MSC+Articleship+Guidebook&page=33"
+        "href": "/learning-management-system/course?course=msc-articleship-program&session=1&resource=MSC+Articleship+Guidebook&page=33",
+        "find": "Where do job simulations and certificates go?"
       }
     },
     {
@@ -222,8 +238,11 @@
     {
       "id": "bold-and-even",
       "section": "Finish",
-      "check": "Bold only the key result in a line, and the page even",
+      "check": "Bold only the key result; fonts, spacing and dates even",
       "example": [
+        "✅ Reconciled **₹4.2 lakh** of vendor balances for 60 suppliers in Tally Prime",
+        "❌ **Reconciled ₹4.2 lakh of vendor balances for 60 suppliers in Tally Prime**",
+        "Bold the result, never the whole line or a whole section.",
         "The ten fixes reviewers make most:",
         "1. Sections in different fonts",
         "2. Uneven space under headings",
@@ -252,22 +271,13 @@
       }
     },
     {
-      "id": "phone-check",
+      "id": "phone-and-print",
       "section": "Finish",
-      "check": "Opened on your phone: readable without zooming",
+      "check": "Opened on your phone and printed once on A4: readable without zooming, clear in black and white",
       "example": [
-        "Mail the PDF to yourself and open it from the mail on your phone.",
-        "Have to pinch to read a line? Fix the design or cut the line; never shrink the font."
-      ]
-    },
-    {
-      "id": "a4-print",
-      "section": "Finish",
-      "check": "Printed once on A4: one page, clear in black and white",
-      "example": [
-        "Grey text, thin lines and coloured headings must still read on a black-and-white print.",
-        "Before you read your own, read five classmates’ CVs: your own mistakes jump out after that.",
-        "Then read yours once from the bottom line up, with a pen."
+        "Mail the PDF to yourself and open it from the mail on your phone. Have to pinch to read a line? Fix the design or cut the line; never shrink the font.",
+        "Print it once: grey text, thin lines and coloured headings must still read in black and white.",
+        "Read the print once from the bottom line up, with a pen: a spelling or full-stop slip shows up that way."
       ]
     },
     {
@@ -281,11 +291,20 @@
         "label": "LinkedIn profile checklist",
         "href": "/articleship-program/linkedin-checklist/"
       }
+    },
+    {
+      "id": "before-you-send",
+      "section": "Finish",
+      "check": "Before you send: the five-second test, after reading five classmates’ CVs",
+      "example": [
+        "Read five classmates’ CVs first: after that, your own mistakes jump out.",
+        "Then leave yours for a day and look at it for five seconds only. Your Inter result, your best proof and your domain should show in the top third. If not, move them up."
+      ]
     }
   ],
   "done": {
     "title": "Your CV is ready",
-    "text": "Run the CV Reviewer on your PDF. Then send it for a personal review, with your target domain and the one question you want answered.",
+    "text": "Run the CV Reviewer on your PDF first. Then tap Personal CV review: type your one question, attach the PDF and send.",
     "links": [
       {
         "label": "Run CV Reviewer",

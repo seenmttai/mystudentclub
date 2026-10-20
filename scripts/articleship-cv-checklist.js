@@ -6,7 +6,8 @@
  *
  * Built on the shared checklist engine (scripts/articleship-checklist.js). This file adds the page around it: the
  * content load, a "Jump to N" button for the next unticked check, a section list on wide screens, the closing card
- * (always visible, green at 100%) and "Untick all".
+ * (always visible, green at 100%; the one-per-student personal review opens only at 100%), "Untick all", and the
+ * shared "my domain" in the file-name example and the review message.
  *
  * Browser: window.MSCArticleshipCvChecklist (boot() is called by the page). Node (tests): require('./scripts/articleship-cv-checklist.js').
  */
@@ -20,6 +21,15 @@
 
     const TOOL = 'cv-checklist';
     const CONTENT_URL = '/articleship-program/cv-checklist/cv-checklist.json';
+    const INTRO = '{n} checks, in the order you build a CV. Tick each one as your CV passes it.';
+
+    // "my domain" as it goes in a file name: "Riya Sharma - Articleship CV - GST.pdf".
+    const FILE_DOMAIN = Object.freeze({
+        'statutory-audit': 'Audit', 'internal-audit': 'Internal Audit', 'direct-tax': 'Direct Tax', 'gst': 'GST',
+        'bank-audit': 'Bank Audit', 'transfer-pricing': 'Transfer Pricing', 'ma-tax': 'M and A Tax', 'valuation': 'Valuation',
+        'fdd': 'Due Diligence', 'forensic': 'Forensic', 'consulting': 'Consulting', 'accounting': 'Accounting',
+        'ib-er': 'Equity Research'
+    });
 
     function checklistEngine(options) {
         if (options && options.Checklist) return options.Checklist;
@@ -33,6 +43,44 @@
         if (className) node.className = className;
         if (content !== undefined) node.textContent = content;
         return node;
+    }
+
+    /** The intro with the real count, so it never goes stale when the content changes ("{n} checks, …"). */
+    function introText(intro, total) {
+        const textValue = String(intro || '').trim() || INTRO;
+        return textValue.replace(/\{n\}/g, String(total)).replace(/^\d+(?= checks?\b)/, String(total));
+    }
+
+    /** The personal review link: the closing card's WhatsApp (or other non-MSC) link, or one labelled as the review. */
+    function isReviewLink(link) {
+        return Boolean(link) && (/^https:\/\/wa\.me\//i.test(link.href) || /personal/i.test(link.label || ''));
+    }
+
+    /** What the student sends for the personal review; they type the question and attach the PDF before sending. */
+    function reviewMessage(state) {
+        const s = state || {};
+        const count = s.total ? ' (' + (s.done === undefined ? s.total : s.done) + ' of ' + s.total + ')' : '';
+        return [
+            'Hi, my CV checklist is done' + count + '. Please review my articleship CV.',
+            'Domain: ' + (s.domain || ''),
+            'My question: ',
+            'CV PDF attached'
+        ].join('\n');
+    }
+
+    /** The review link with the message as its preset text (wa.me reads `text`; spaces as %20, never "+"). */
+    function reviewHref(base, message) {
+        const href = String(base || '');
+        if (!/^https:\/\/wa\.me\//i.test(href)) return href;
+        return href.split('?')[0] + '?text=' + encodeURIComponent(message);
+    }
+
+    /** "Your Name - Articleship CV - GST.pdf" lines for the student's domain and backup (none when no domain is set). */
+    function fileNames(domains) {
+        const d = domains || {};
+        return [d.main, d.backup].filter(Boolean).filter((slug, i, all) => all.indexOf(slug) === i)
+            .map(slug => FILE_DOMAIN[slug]).filter(Boolean)
+            .map(name => 'Your Name - Articleship CV - ' + name + '.pdf');
     }
 
     /** The content without its closing card: this page draws that card itself, so it can show before 100% too. */
@@ -58,7 +106,7 @@
         return {
             complete: false,
             title: 'Then, two reviews',
-            text: 'Once all ' + summary.total + ' are ticked, run the CV Reviewer on your PDF, then send it for a personal review.',
+            text: 'Run the CV Reviewer on your PDF. You get one personal review, so it opens once all ' + summary.total + ' are ticked.',
             links
         };
     }
@@ -96,10 +144,22 @@
         });
     }
 
+    /** "reconciled **₹4.2 lakh** of …" → [{ text, bold }]: how a bold example shows bold. Plain text, never HTML. */
+    function boldParts(text) {
+        const parts = [];
+        String(text || '').split(/\*\*(.+?)\*\*/).forEach((part, i) => {
+            if (part) parts.push({ text: part, bold: i % 2 === 1 });
+        });
+        return parts;
+    }
+
+    function appendText(doc, node, text) {
+        boldParts(text).forEach(part => node.appendChild(part.bold ? el(doc, 'strong', 'cvc-ex-bold', part.text) : doc.createTextNode(part.text)));
+    }
+
     function renderExamples(container, doc) {
         container.querySelectorAll('.ap-cl-example > p').forEach(p => {
             const lines = exampleLines(p.textContent);
-            if (lines.length < 2 && !(lines[0] && lines[0].lead)) return;
             const box = el(doc, 'div', 'cvc-ex');
             lines.forEach(line => {
                 const row = el(doc, 'p', line.lead ? 'cvc-ex-pair' : '');
@@ -107,7 +167,7 @@
                     row.appendChild(el(doc, 'strong', '', line.lead));
                     row.appendChild(doc.createTextNode(' → '));
                 }
-                row.appendChild(doc.createTextNode(line.rest));
+                appendText(doc, row, line.rest);
                 box.appendChild(row);
             });
             p.replaceWith(box);
@@ -128,8 +188,9 @@
 
     /**
      * Mount the checklist and the page parts around it.
-     * options: { container, nav, end, lede, content, store, Checklist, confirm(message) => boolean }
-     * Returns { list, model, summary(), jump(id), reset(), destroy() }.
+     * options: { container, nav, end, lede, content, store, Checklist, confirm(message) => boolean,
+     *            domains() => { main, backup } (slugs of the shared "my domain"), domainLabel(slug) => label, now() }
+     * Returns { list, model, summary(), jump(id), reset(), refreshDomain(), destroy() }.
      */
     function start(options) {
         const opts = options || {};
@@ -140,21 +201,44 @@
         const content = opts.content;
         const full = C.normalise(content);
         const store = opts.store || null;
+        const now = typeof opts.now === 'function' ? opts.now : () => Date.now();
         const ask = opts.confirm || (message => (typeof root.confirm === 'function' ? root.confirm(message) : true));
+        const readDomains = () => {
+            try { return (typeof opts.domains === 'function' && opts.domains()) || {}; } catch (_) { return {}; }
+        };
+        const labelOf = slug => {
+            if (!slug) return '';
+            try { return (typeof opts.domainLabel === 'function' && opts.domainLabel(slug)) || FILE_DOMAIN[slug] || ''; } catch (_) { return FILE_DOMAIN[slug] || ''; }
+        };
 
-        if (opts.lede && full.intro) opts.lede.textContent = full.intro;
+        if (opts.lede) opts.lede.textContent = introText(full.intro, full.total);
 
         const list = C.mount(container, withoutDone(content), {
             store,
+            now,
             onChange: summary => paint(summary)
         });
         const model = list.model;
         renderExamples(container, doc);
 
-        // Anchors for the side list.
+        // Anchors for the side list; each "Example" names its check for screen readers.
         container.querySelectorAll('.ap-cl-section').forEach(section => {
             section.id = 'cvc-' + section.dataset.section;
         });
+        model.items.forEach(item => {
+            const summaryEl = container.querySelector('.ap-cl-item[data-id="' + item.id + '"] .ap-cl-example > summary');
+            if (summaryEl) summaryEl.setAttribute('aria-label', 'Example for check ' + item.no);
+        });
+
+        // Only the count is announced; the "Jump to N" button beside it stays out of the live region.
+        const progress = container.querySelector('.ap-progress');
+        const countEl = container.querySelector('.ap-progress-count');
+        if (progress && countEl) {
+            progress.removeAttribute('role');
+            progress.removeAttribute('aria-live');
+            countEl.setAttribute('role', 'status');
+            countEl.setAttribute('aria-live', 'polite');
+        }
 
         // "Jump to N" in the sticky progress row.
         const progressText = container.querySelector('.ap-progress-text');
@@ -178,6 +262,27 @@
         resetRow.appendChild(reset);
         container.appendChild(resetRow);
 
+        // The student's own file name(s) under the file-name example, from the shared "my domain".
+        const fileItem = model.items.find(item => item.id === 'file-name') ||
+            model.items.find(item => /Articleship CV - /.test(item.example));
+        const fileBox = fileItem ? container.querySelector('.ap-cl-item[data-id="' + fileItem.id + '"] .cvc-ex') : null;
+        let fileLines = [];
+        function refreshDomain() {
+            fileLines.forEach(node => node.remove());
+            fileLines = [];
+            if (!fileBox) return;
+            const names = fileNames(readDomains());
+            names.forEach((name, i) => {
+                const row = el(doc, 'p', 'cvc-ex-mine');
+                row.appendChild(el(doc, 'strong', '', i ? 'Your backup: ' : 'Yours: '));
+                row.appendChild(doc.createTextNode(name));
+                fileBox.insertBefore(row, fileBox.children[1] || null);
+                fileLines.push(row);
+            });
+            // Two lines read top to bottom: main, then backup.
+            if (fileLines.length === 2) fileBox.insertBefore(fileLines[0], fileLines[1]);
+        }
+
         // Side list of sections (shown on wide screens).
         const navLinks = new Map();
         if (opts.nav) {
@@ -200,6 +305,7 @@
         }
 
         // Closing card: always there, so the next step is never hidden; it turns green at 100%.
+        // The personal review (one per student) opens only at 100%, with its message built when it is tapped.
         let endParts = null;
         if (opts.end) {
             opts.end.textContent = '';
@@ -207,17 +313,54 @@
             const title = el(doc, 'h2', 'cvc-end-title');
             const text = el(doc, 'p', 'cvc-end-text');
             const links = el(doc, 'div', 'cvc-end-links');
+            let review = null;
             (full.done ? full.done.links : []).forEach((target, i) => {
                 const a = el(doc, 'a', 'ap-btn is-block' + (i ? ' is-secondary' : ''), target.label);
                 a.href = target.href;
                 if (target.external) { a.target = '_blank'; a.rel = 'noopener noreferrer'; }
+                if (!review && isReviewLink(target)) {
+                    review = { a, target };
+                    a.classList.add('cvc-review');
+                    a.addEventListener('click', event => {
+                        if (!list.summary().complete) { event.preventDefault(); return; }
+                        a.href = reviewLink();
+                    });
+                }
                 links.appendChild(a);
             });
             card.appendChild(title);
             card.appendChild(text);
             card.appendChild(links);
             opts.end.appendChild(card);
-            endParts = { card, title, text };
+            endParts = { card, title, text, review };
+        }
+
+        function reviewLink() {
+            const summary = list.summary();
+            const message = reviewMessage({ done: summary.done, total: summary.total, domain: labelOf(readDomains().main) });
+            return reviewHref(endParts.review.target.href, message);
+        }
+
+        function paintReview(summary) {
+            const review = endParts && endParts.review;
+            if (!review) return;
+            const a = review.a;
+            if (summary.complete) {
+                a.textContent = review.target.label;
+                a.href = reviewLink();
+                a.removeAttribute('aria-disabled');
+                a.removeAttribute('role');
+                a.classList.remove('is-disabled');
+                if (review.target.external) { a.target = '_blank'; a.rel = 'noopener noreferrer'; }
+            } else {
+                a.textContent = review.target.label + ' ';
+                a.appendChild(el(doc, 'span', 'cvc-after', '(after all ' + summary.total + ')'));
+                a.removeAttribute('href');
+                a.removeAttribute('target');
+                a.setAttribute('role', 'link');
+                a.setAttribute('aria-disabled', 'true');
+                a.classList.add('is-disabled');
+            }
         }
 
         function paint(summary) {
@@ -238,6 +381,7 @@
                 endParts.card.classList.toggle('is-complete', state.complete);
                 endParts.title.textContent = state.title;
                 endParts.text.textContent = state.text;
+                paintReview(summary);
             }
             return summary;
         }
@@ -258,11 +402,20 @@
         }
 
         function resetTicks() {
-            if (store) store.update(data => { data.ticks = {}; return data; });
-            else model.items.forEach(item => list.tick(item.id, false));
+            if (store) {
+                // Each untick is stamped, so another device's older ticks do not come back in a merge.
+                store.update(data => {
+                    const off = {};
+                    Object.keys((data && data.ticks) || {}).forEach(id => { off[id] = false; });
+                    return C.applyTicks ? Object.assign(C.applyTicks(data, off, now()), { ticks: {} }) : Object.assign(data, { ticks: {} });
+                });
+            } else {
+                model.items.forEach(item => list.tick(item.id, false));
+            }
             return list.summary();
         }
 
+        refreshDomain();
         paint(list.summary());
         return {
             list,
@@ -270,6 +423,7 @@
             summary: () => list.summary(),
             jump,
             reset: resetTicks,
+            refreshDomain() { refreshDomain(); paint(list.summary()); },
             destroy() { list.destroy(); }
         };
     }
@@ -291,28 +445,52 @@
         const opts = options || {};
         const doc = opts.document || root.document;
         const container = doc.getElementById('app');
-        const gate = opts.Gate || root.MSCArticleshipGate;
-        const Progress = opts.Progress || root.MSCArticleshipProgress;
-        const C = checklistEngine(opts);
-        const allowed = gate ? gate.protect() : Promise.resolve({ state: 'allow' });
+        const gate = opts.Gate === undefined ? root.MSCArticleshipGate : opts.Gate;
+        const Progress = opts.Progress === undefined ? root.MSCArticleshipProgress : opts.Progress;
+        // Without the gate (its script failed to load) or after an error, never leave the page hidden behind
+        // html.ap-gated; a gate card that is showing keeps it.
+        const unhide = () => {
+            if (!doc.getElementById('ap-gate')) doc.documentElement.classList.remove('ap-gated');
+        };
+        let C;
+        let allowed;
+        try {
+            C = checklistEngine(opts);
+            allowed = gate && typeof gate.protect === 'function' ? gate.protect() : Promise.resolve({ state: 'allow' });
+        } catch (error) {
+            allowed = Promise.reject(error);
+        }
+        if (!gate) unhide();
         const content = loadContent(opts.url || CONTENT_URL, opts.fetch);
         return Promise.all([allowed, content]).then(([, data]) => {
             const store = Progress ? Progress.open(TOOL, { defaults: { ticks: {} }, merge: C.mergeTicks }) : null;
-            return start({
+            const page = start({
                 container,
                 nav: doc.getElementById('cvc-nav'),
                 end: doc.getElementById('cvc-end'),
                 lede: doc.getElementById('cvc-lede'),
                 content: data,
                 store,
-                Checklist: C
+                Checklist: C,
+                domains: () => (Progress && typeof Progress.getMyDomain === 'function'
+                    ? { main: Progress.getMyDomain(), backup: typeof Progress.getBackupDomain === 'function' ? Progress.getBackupDomain() : null }
+                    : {}),
+                domainLabel: slug => (Progress && typeof Progress.domainLabel === 'function' ? Progress.domainLabel(slug) : '')
             });
+            if (Progress && typeof Progress.onSettingsChange === 'function') {
+                try { Progress.onSettingsChange(() => page.refreshDomain()); } catch (_) { /* the domain line is optional */ }
+            }
+            return page;
         }).catch(error => {
             if (root.console) root.console.error(error);
+            unhide();
             if (container) showError(container, () => root.location.reload());
             return null;
         });
     }
 
-    return Object.freeze({ TOOL, CONTENT_URL, withoutDone, endState, navItems, nextItem, exampleLines, loadContent, start, boot });
+    return Object.freeze({
+        TOOL, CONTENT_URL, FILE_DOMAIN, introText, isReviewLink, reviewMessage, reviewHref, fileNames, withoutDone, endState,
+        navItems, nextItem, exampleLines, boldParts, loadContent, start, boot
+    });
 });

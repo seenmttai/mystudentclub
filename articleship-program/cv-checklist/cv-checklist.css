@@ -2,15 +2,21 @@
  * CV checklist (row 1.8): the page around the shared checklist engine.
  * Base look: /articleship-program/shared/articleship-tools.css. Phone first; a section list beside the checks from 1024 px.
  */
-.cvc-hero { margin-bottom: 12px; }
-.cvc-day {
-    margin: 0 0 4px;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+.cvc-hero { margin: 0 0 12px; }
+/* "‹ Day 1": the visible way back, above the title */
+.cvc-back {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    margin: 0 0 2px -2px;
+    padding: 2px;
+    font-size: 14px;
+    font-weight: 600;
     color: color-mix(in srgb, var(--ap-accent) 82%, #000);
+    text-decoration: none;
 }
+.cvc-back:hover { text-decoration: underline; text-underline-offset: 3px; }
+.cvc-back:focus-visible { outline: 3px solid color-mix(in srgb, var(--ap-primary) 40%, transparent); outline-offset: 2px; border-radius: 4px; }
 
 /* Jump to the next unticked check, in the sticky progress row */
 .cvc-next {
@@ -70,6 +76,15 @@
 }
 .ap-cl-example .cvc-ex p:last-child { margin-bottom: 0; }
 .ap-cl-example .cvc-ex strong { font-weight: 700; color: var(--ap-navy); }
+/* Bold inside an example shows what bold looks like on a CV: plain ink, not the navy lead-in */
+.ap-cl-example .cvc-ex strong.cvc-ex-bold { color: var(--ap-ink); }
+/* The student's own file name, from "my domain" */
+.ap-cl-example .cvc-ex p.cvc-ex-mine {
+    padding: 6px 8px;
+    background: #fff;
+    border-radius: 6px;
+    overflow-wrap: anywhere;
+}
 
 /* Untick all */
 .cvc-reset-row { display: flex; justify-content: flex-end; margin: 4px 0 0; }
@@ -107,6 +122,17 @@
 .cvc-end-text { margin: 0 0 14px; color: var(--ap-muted); font-size: 14px; }
 .cvc-end-links { display: grid; gap: 8px; }
 .cvc-end-card .ap-btn.is-secondary { color: var(--ap-navy); }
+/* Personal review before 100%: shown, not tappable */
+.cvc-end-card .ap-btn.is-disabled,
+.cvc-end-card .ap-btn.is-disabled:hover {
+    background: var(--ap-panel);
+    color: var(--ap-muted);
+    border-color: var(--ap-border);
+    border-style: dashed;
+    cursor: not-allowed;
+}
+.cvc-end-card .ap-btn.is-disabled { flex-direction: column; gap: 0; line-height: 1.25; }
+.cvc-end-card .cvc-after { display: block; font-size: 12px; font-weight: 500; }
 .cvc-end-card.is-complete { background: var(--ap-success-light); border-color: #bfe6cd; }
 .cvc-end-card.is-complete .cvc-end-title { color: var(--ap-success); font-size: 30px; }
 .cvc-end-card.is-complete .cvc-end-text { color: var(--ap-ink); }

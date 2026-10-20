@@ -2,6 +2,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
+const { spawnSync } = require('node:child_process');
 const { JSDOM } = require('jsdom');
 const CV = require('../scripts/articleship-cv-checklist.js');
 const C = require('../scripts/articleship-checklist.js');
@@ -49,7 +50,7 @@ test('content: 22 checks in build order, every one with an example, links that r
     const ids = model.items.map(item => item.id);
     ['built-in-builder', 'one-page', 'file-name', 'name-email-phone', 'linkedin', 'city-only', 'nothing-personal', 'objective',
         'education-order', 'remarks', 'groups-attempts', 'icitss', 'line-formula', 'assisted', 'certifications', 'no-client-names',
-        'two-questions', 'bold-and-even', 'pdf-links', 'phone-check', 'a4-print', 'same-story']
+        'two-questions', 'bold-and-even', 'pdf-links', 'phone-and-print', 'same-story', 'before-you-send']
         .forEach(id => assert.ok(ids.includes(id), 'check ' + id));
     const byId = Object.fromEntries(model.items.map(item => [item.id, item]));
     assert.match(byId['one-page'].check, /never shrunk/);
@@ -62,10 +63,37 @@ test('content: 22 checks in build order, every one with an example, links that r
     // The claim → question drill, every ready example (skills, simulations, hobbies, roles).
     ['Excel', 'Tally Prime', 'SAP', 'ICITSS', 'CARO', 'job simulation', 'Work Simulation', 'Reading', 'Trekking', 'Captain', 'Volunteer teacher', 'Last read']
         .forEach(claim => assert.ok(byId['two-questions'].example.includes(claim), 'two-question example: ' + claim));
-    assert.match(byId['objective'].example, /five seconds/, 'the quick-look test');
-    assert.match(byId['a4-print'].example, /five classmates’ CVs/, 'the peer read');
-    // The ten fixes reviewers make most, all ten.
-    assert.equal((byId['bold-and-even'].example.match(/^\d+\. /gm) || []).length, 10);
+    // The quick-look test and the peer read: one "before you send" check, last in Finish.
+    const last = model.items[model.items.length - 1];
+    assert.equal(last.id, 'before-you-send');
+    assert.match(last.check, /^Before you send/);
+    assert.match(last.example, /five seconds/, 'the quick-look test');
+    assert.match(last.example, /five classmates’ CVs/, 'the peer read');
+    assert.doesNotMatch(byId['objective'].example, /five seconds/);
+    assert.doesNotMatch(byId['phone-and-print'].example, /classmates/);
+    // The ten fixes reviewers make most, all ten, with a bold example that shows how bold is used.
+    const bold = byId['bold-and-even'];
+    assert.equal(bold.check, 'Bold only the key result; fonts, spacing and dates even');
+    assert.equal((bold.example.match(/^\d+\. /gm) || []).length, 10);
+    assert.match(bold.example, /^✅ [^*\n]+\*\*[^*\n]+\*\*[^*\n]+$/m, '✅ only the result in bold');
+    assert.match(bold.example, /^❌ \*\*[^*\n]+\*\*$/m, '❌ a whole line in bold');
+    // Each point in one place: mixed fonts is fix no. 1, not repeated in check 1.
+    assert.doesNotMatch(byId['built-in-builder'].example, /font, the body in another|fix reviewers make most/);
+    // Remarks: one row per example (an Inter paper and a Class XII subject never share a remark).
+    const remarkLines = byId['remarks'].example.split('\n');
+    assert.ok(remarkLines.some(l => /^✅ CA Intermediate row: /.test(l) && !/Accountancy/.test(l)));
+    assert.ok(remarkLines.some(l => /^✅ Class XII row: /.test(l) && !/Taxation/.test(l)));
+    assert.match(byId['line-formula'].example, /Every number must be one you can show a record for\./);
+    assert.doesNotMatch(CONTENT_TEXT, /No record, no number/);
+    // One wording for anything unfinished.
+    assert.doesNotMatch(CONTENT_TEXT, /In progress/i);
+    assert.match(byId['icitss'].example, /Ongoing, completes \[Month Year\]/);
+    assert.match(byId['certifications'].example, /Ongoing, completes \[Month Year\]/);
+    assert.match(byId['certifications'].example, /“MSC Articleship Program \(ongoing\)”/);
+    assert.ok(byId['certifications'].example.includes('“Completed MSC Articleship Program — foundational understanding of work and tasks across all domains”'),
+        'the MSC line in Padam’s exact words');
+    // The intro never carries a hard count.
+    assert.doesNotMatch(CONTENT.intro, /\d/);
 });
 
 test('content: closing card runs CV Reviewer, then the Personal CV review row (same link as the LMS)', () => {
@@ -102,9 +130,17 @@ test('content: every programme deep link names a real row of the right Day; tool
     assert.ok(deep >= 5);
     // The deep links are exactly what MSCArticleshipLms.resourceLink builds.
     const L = require('../scripts/articleship-lms.js');
+    // (Page numbers come from the built PDFs: wire_pages.mjs writes them and the "fix-it pages" test checks them.)
+    const pageOf = href => Number(new URLSearchParams(href.split('?')[1]).get('page'));
     const keywords = CONTENT.items.find(item => item.id === 'line-formula').fix.href;
-    assert.equal(keywords, L.resourceLink(1, 'Keywords by domain', 15), 'Keywords by domain, last page');
-    assert.equal(CONTENT.items.find(item => item.id === 'objective').fix.href, L.resourceLink(1, 'The Nothing CV', 2));
+    assert.equal(keywords, L.resourceLink(1, 'Keywords by domain', pageOf(keywords)), 'Keywords by domain, "How to write a line"');
+    const verbs = CONTENT.items.find(item => item.id === 'assisted').fix.href;
+    assert.equal(verbs, L.resourceLink(1, 'Keywords by domain', pageOf(verbs)));
+    // Every deep link names the heading its page carries (the wiring step and the PDF test below use it).
+    CONTENT.items.filter(item => item.fix && item.fix.href.startsWith('/learning-management-system/'))
+        .forEach(item => assert.ok(String(item.fix.find || '').length >= 6, 'find text for ' + item.id));
+    const objective = CONTENT.items.find(item => item.id === 'objective').fix.href;
+    assert.equal(objective, L.resourceLink(1, 'The Nothing CV', pageOf(objective)));
 });
 
 test('content and page: nothing a student must never see', () => {
@@ -165,7 +201,7 @@ test('start: ticks save, "14 of 22 done", jump to the next check, section counts
     const { doc, container, nav, end, lede } = pageDom();
     const store = memoryStore({ ticks: {} });
     const page = CV.start({ container, nav, end, lede, content: CONTENT, store });
-    assert.equal(lede.textContent, CONTENT.intro);
+    assert.equal(lede.textContent, '22 checks, in the order you build a CV. Tick each one as your CV passes it.');
     assert.equal(doc.querySelectorAll('.ap-cl-item').length, 22);
     assert.equal(doc.querySelector('.ap-progress-count').textContent, '0 of 22 done');
     const next = doc.querySelector('.cvc-next');
@@ -268,4 +304,254 @@ test('boot: gate, content and store; a failed load shows "Try again" instead of 
     }
     assert.match(failed.doc.querySelector('.cvc-error').textContent, /Try again/);
     await assert.rejects(() => CV.loadContent('/x.json', async () => ({ ok: false, status: 500 })), /did not load \(500\)/);
+});
+
+function tickAll(doc) {
+    [...doc.querySelectorAll('.ap-cl-check input')].forEach(input => {
+        if (input.checked) return;
+        input.checked = true;
+        input.dispatchEvent(new doc.defaultView.Event('change'));
+    });
+}
+
+test('personal review: one per student, so it opens only at 100%, with domain, question and PDF lines', () => {
+    const { doc, container, nav, end } = pageDom();
+    const store = memoryStore({ ticks: {} });
+    let domains = { main: 'gst', backup: null };
+    CV.start({ container, nav, end, content: CONTENT, store, domains: () => domains, domainLabel: slug => P.domainLabel(slug) });
+    const review = doc.querySelector('.cvc-end-links .cvc-review');
+    assert.ok(review, 'the review button is the WhatsApp link');
+    assert.equal(review.textContent, 'Personal CV review (after all 22)');
+    assert.equal(review.hasAttribute('href'), false, 'not tappable at 0 of 22');
+    assert.equal(review.getAttribute('aria-disabled'), 'true');
+    const reviewer = doc.querySelector('.cvc-end-links a');
+    assert.equal(reviewer.getAttribute('href'), '/cv-reviewer/', 'the CV Reviewer is open at any time');
+    assert.match(doc.querySelector('.cvc-end-text').textContent, /one personal review/);
+
+    // 21 of 22: still closed.
+    const inputs = [...doc.querySelectorAll('.ap-cl-check input')];
+    inputs.slice(0, 21).forEach(input => { input.checked = true; input.dispatchEvent(new doc.defaultView.Event('change')); });
+    assert.equal(review.hasAttribute('href'), false);
+    const blocked = new doc.defaultView.MouseEvent('click', { cancelable: true });
+    review.dispatchEvent(blocked);
+    assert.equal(blocked.defaultPrevented, true);
+
+    tickAll(doc);
+    assert.equal(review.textContent, 'Personal CV review');
+    assert.equal(review.getAttribute('aria-disabled'), null);
+    const href = review.getAttribute('href');
+    assert.ok(href.startsWith('https://wa.me/917228881182?text='));
+    assert.ok(!href.includes('+'), 'spaces as %20');
+    const text = decodeURIComponent(href.split('?text=')[1]);
+    assert.equal(text, 'Hi, my CV checklist is done (22 of 22). Please review my articleship CV.\nDomain: GST\nMy question: \nCV PDF attached');
+    // Built when tapped: a domain changed since the page opened is the one sent.
+    domains = { main: 'direct-tax' };
+    review.dispatchEvent(new doc.defaultView.MouseEvent('click', { cancelable: true }));
+    assert.match(decodeURIComponent(review.getAttribute('href')), /Domain: Direct tax\n/);
+    // No domain set: the line is there to fill in.
+    assert.equal(CV.reviewMessage({ done: 22, total: 22, domain: '' }).split('\n')[1], 'Domain: ');
+    assert.equal(CV.reviewHref('/not-whatsapp/', 'x'), '/not-whatsapp/');
+});
+
+test('intro is built from the real count, so a different content file never shows a stale number', () => {
+    assert.equal(CV.introText('{n} checks, in the order you build a CV.', 25), '25 checks, in the order you build a CV.');
+    assert.equal(CV.introText('22 checks, in the order you build a CV.', 19), '19 checks, in the order you build a CV.');
+    assert.equal(CV.introText('', 3), '3 checks, in the order you build a CV. Tick each one as your CV passes it.');
+    const small = pageDom();
+    CV.start({ container: small.container, lede: small.lede, content: { intro: '22 checks, in the order you build a CV.', items: ['a', 'b', 'c'] } });
+    assert.equal(small.lede.textContent, '3 checks, in the order you build a CV.');
+});
+
+test('examples: bold shows as bold (text only, never HTML); the file name follows "my domain"', () => {
+    assert.deepEqual(CV.boldParts('reconciled **₹4.2 lakh** of vendor balances'),
+        [{ text: 'reconciled ', bold: false }, { text: '₹4.2 lakh', bold: true }, { text: ' of vendor balances', bold: false }]);
+    const { doc, container } = pageDom();
+    let domains = {};
+    const page = CV.start({ container, content: CONTENT, domains: () => domains });
+    const boldBox = doc.querySelector('.ap-cl-item[data-id="bold-and-even"] .cvc-ex');
+    assert.deepEqual([...boldBox.querySelectorAll('strong.cvc-ex-bold')].map(b => b.textContent),
+        ['₹4.2 lakh', 'Reconciled ₹4.2 lakh of vendor balances for 60 suppliers in Tally Prime']);
+    assert.ok(!boldBox.textContent.includes('**'));
+    const injected = pageDom();
+    CV.start({ container: injected.container, content: { items: [{ check: 'x', example: '**<img src=x onerror=alert(1)>**' }] } });
+    assert.equal(injected.doc.querySelectorAll('img').length, 0);
+    assert.equal(injected.doc.querySelector('.cvc-ex-bold').textContent, '<img src=x onerror=alert(1)>');
+
+    const fileBox = () => doc.querySelector('.ap-cl-item[data-id="file-name"] .cvc-ex');
+    assert.equal(fileBox().querySelectorAll('.cvc-ex-mine').length, 0, 'no domain set: the example only');
+    domains = { main: 'gst', backup: 'direct-tax' };
+    page.refreshDomain();
+    assert.deepEqual([...fileBox().querySelectorAll('.cvc-ex-mine')].map(p => p.textContent),
+        ['Yours: Your Name - Articleship CV - GST.pdf', 'Your backup: Your Name - Articleship CV - Direct Tax.pdf']);
+    assert.match(fileBox().children[0].textContent, /^✅ Riya Sharma/, 'the model example stays first');
+    domains = { main: 'statutory-audit' };
+    page.refreshDomain();
+    assert.deepEqual([...fileBox().querySelectorAll('.cvc-ex-mine')].map(p => p.textContent), ['Yours: Your Name - Articleship CV - Audit.pdf']);
+    // Every one of the 13 domains has a file-name word.
+    P.DOMAINS.forEach(domain => assert.ok(CV.FILE_DOMAIN[domain.slug], domain.slug));
+});
+
+test('screen readers: only the count is live (not "Jump to N"); every Example names its check', () => {
+    const { doc, container } = pageDom();
+    CV.start({ container, content: CONTENT, store: memoryStore({ ticks: {} }) });
+    assert.equal(doc.querySelectorAll('[aria-live]').length, 1);
+    const live = doc.querySelector('[aria-live]');
+    assert.ok(live.classList.contains('ap-progress-count'));
+    assert.equal(live.getAttribute('role'), 'status');
+    assert.equal(doc.querySelector('.cvc-next').closest('[aria-live]'), null);
+    const labels = [...doc.querySelectorAll('.ap-cl-example > summary')].map(s => s.getAttribute('aria-label'));
+    assert.equal(labels.length, 22);
+    assert.deepEqual(labels, CONTENT.items.map((_, i) => 'Example for check ' + (i + 1)));
+});
+
+test('untick all stamps each untick, so the other device’s older ticks do not come back', () => {
+    let t = 1000;
+    const { doc, container } = pageDom();
+    const store = memoryStore({ ticks: {} });
+    const page = CV.start({ container, content: CONTENT, store, confirm: () => true, now: () => t });
+    t = 2000; page.list.tick('one-page', true);
+    t = 3000; page.list.tick('file-name', true);
+    const before = store.get();
+    assert.deepEqual(before.at, { 'one-page': 2000, 'file-name': 3000 });
+    t = 5000;
+    doc.querySelector('.cvc-reset').click();
+    const after = store.get();
+    assert.deepEqual(after.ticks, {});
+    assert.deepEqual(after.at, { 'one-page': 5000, 'file-name': 5000 });
+    // The other device still has the old ticks and has since ticked one more check.
+    const other = C.applyTicks(before, { 'linkedin': true }, 4000);
+    assert.deepEqual(C.mergeTicks(after, other).ticks, { linkedin: true });
+    assert.deepEqual(C.mergeTicks(other, after).ticks, { linkedin: true });
+});
+
+test('boot: without the gate script, or after a failure, the page is never left hidden', async () => {
+    const quiet = async fn => { const orig = console.error; console.error = () => {}; try { return await fn(); } finally { console.error = orig; } };
+    const okFetch = async () => ({ ok: true, status: 200, json: async () => JSON.parse(CONTENT_TEXT) });
+
+    // Gate script missing: the checklist shows.
+    const a = pageDom();
+    a.doc.documentElement.classList.add('ap-gated');
+    const page = await CV.boot({ document: a.doc, Gate: null, Progress: null, fetch: okFetch });
+    assert.ok(page);
+    assert.equal(a.doc.documentElement.classList.contains('ap-gated'), false);
+
+    // Gate script missing and the content fails: the "Try again" card is visible, not hidden.
+    const b = pageDom();
+    b.doc.documentElement.classList.add('ap-gated');
+    await quiet(() => CV.boot({ document: b.doc, Gate: null, Progress: null, fetch: async () => ({ ok: false, status: 503 }) }));
+    assert.equal(b.doc.documentElement.classList.contains('ap-gated'), false);
+    assert.match(b.doc.querySelector('.cvc-error').textContent, /Try again/);
+
+    // A gate card is showing (log in / enrol): it stays in charge of the page.
+    const c = pageDom();
+    c.doc.documentElement.classList.add('ap-gated');
+    const card = c.doc.createElement('div');
+    card.id = 'ap-gate';
+    c.doc.body.appendChild(card);
+    await quiet(() => CV.boot({ document: c.doc, Gate: { protect: () => new Promise(() => {}) }, Progress: null, fetch: async () => ({ ok: false, status: 503 }) }));
+    assert.equal(c.doc.documentElement.classList.contains('ap-gated'), true);
+});
+
+test('page: a visible "‹ Day 1" link back, and the title said once', () => {
+    const doc = new JSDOM(PAGE).window.document;
+    const back = doc.querySelector('.cvc-hero a.cvc-back');
+    assert.ok(back);
+    assert.equal(back.textContent.trim(), '‹ Day 1');
+    assert.equal(back.getAttribute('href'), '/learning-management-system/course?course=msc-articleship-program&session=2');
+    const hero = doc.querySelector('.cvc-hero').textContent;
+    assert.equal((hero.match(/check your cv/gi) || []).length, 1, 'no eyebrow repeating the title');
+});
+
+// ---------- Every link leads somewhere real ----------
+
+/** A same-origin URL → the repo file that serves it (Cloudflare Pages: /x/ = x/index.html, /x = x.html). */
+function servedFile(href) {
+    const clean = decodeURIComponent(href.split(/[?#]/)[0]).replace(/^\//, '');
+    const candidates = clean === '' || clean.endsWith('/')
+        ? [clean + 'index.html']
+        : [clean, clean + '.html', clean + '/index.html'];
+    return candidates.find(rel => fs.existsSync(path.join(ROOT, rel)) && fs.statSync(path.join(ROOT, rel)).isFile()) || null;
+}
+
+function gitTracked(rel) {
+    const result = spawnSync('git', ['ls-files', '--error-unmatch', '--', rel], { cwd: ROOT, encoding: 'utf8' });
+    if (result.error) return null;
+    return result.status === 0;
+}
+
+test('links: every same-site fix and closing-card link is a page this branch ships (tracked in git)', t => {
+    const links = [...CONTENT.items.filter(item => item.fix).map(item => item.fix.href), ...CONTENT.done.links.map(link => link.href)];
+    const local = [...new Set(links.filter(href => href.startsWith('/')))];
+    assert.ok(local.length >= 4);
+    const untracked = [];
+    local.forEach(href => {
+        const file = servedFile(href);
+        assert.ok(file, href + ' resolves to a file in the repo');
+        const tracked = gitTracked(file);
+        if (tracked === false) untracked.push(file);
+    });
+    // A file only in this working copy would be a dead link once the branch is pushed.
+    assert.deepEqual(untracked, [], 'not committed yet: ' + untracked.join(', '));
+    if (gitTracked('index.html') === null) t.diagnostic('git not available: checked the files on disk only');
+});
+
+// ---------- Fix-it pages: the page a link opens carries the heading it promises ----------
+
+const CONTENT_BUILD = process.env.MSC_ARTICLESHIP_BUILD || path.join(ROOT, '..', 'msc-content', 'articleship-program', 'v3', 'build');
+
+function normaliseText(text) {
+    return String(text || '').toLowerCase().replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/­/g, '').replace(/\s+/g, ' ').trim();
+}
+
+/** The built PDF for an LMS row title, from the uploads manifest (null until the content build has made it). */
+function rowPdf(title) {
+    const manifest = path.join(CONTENT_BUILD, 'lms', 'uploads-manifest.csv');
+    if (!fs.existsSync(manifest)) return null;
+    const row = fs.readFileSync(manifest, 'utf8').split('\n').slice(1).map(line => line.split(','))
+        .find(cells => cells[2] === title && /\.pdf$/i.test(cells[0]));
+    if (!row) return null;
+    const dir = path.join(CONTENT_BUILD, row[3]);
+    if (!fs.existsSync(dir)) return null;
+    const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const pdfs = fs.readdirSync(dir).filter(name => /\.pdf$/i.test(name) && !/print/i.test(name));
+    const pick = (row[4] && pdfs.includes(row[4]) && row[4]) || pdfs.find(name => name === title + '.pdf') ||
+        pdfs.find(name => name.toLowerCase().replace(/\.pdf$/, '') === slug) || (pdfs.length === 1 ? pdfs[0] : null);
+    return pick ? path.join(dir, pick) : null;
+}
+
+/** Every page's text, read once per PDF (pdftotext ends each page with a form feed); null if unreadable. */
+const pdfCache = new Map();
+function pdfPages(file) {
+    if (pdfCache.has(file)) return pdfCache.get(file);
+    const result = spawnSync('pdftotext', ['-enc', 'UTF-8', file, '-'], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+    // Unreadable, for example while the content build is re-rendering it.
+    const pages = result.error || result.status !== 0 ? null : result.stdout.split('\f').slice(0, -1);
+    pdfCache.set(file, pages && pages.length ? pages : null);
+    return pdfCache.get(file);
+}
+
+test('fix-it pages: each deep link opens the page that carries its heading (checked once the PDF is built)', t => {
+    if (!fs.existsSync(CONTENT_BUILD)) { t.skip('content build folder not on this machine'); return; }
+    if (spawnSync('pdftotext', ['-v']).error) { t.skip('pdftotext (poppler) not installed'); return; }
+    const deep = CONTENT.items.filter(item => item.fix && item.fix.href.startsWith('/learning-management-system/'));
+    const waiting = [];
+    let checked = 0;
+    deep.forEach(item => {
+        const params = new URLSearchParams(item.fix.href.split('?')[1]);
+        const title = params.get('resource');
+        const page = Number(params.get('page'));
+        const file = rowPdf(title);
+        if (!file) { waiting.push(title); return; }
+        const wanted = normaliseText(item.fix.find);
+        const texts = pdfPages(file);
+        if (!texts) { waiting.push(title + ' (unreadable)'); return; }
+        const at = texts.map(text => normaliseText(text).indexOf(wanted));
+        const fix = 'Run build/tools/cv-checklist/wire_pages.mjs to take the page from the PDF.';
+        assert.ok(at[page - 1] >= 0, item.id + ': "' + title + '" page ' + page + ' does not carry "' + item.fix.find + '". ' + fix);
+        // Its heading, not a mention: no other page carries the text much earlier on the page (same rule as wire_pages.mjs).
+        const best = Math.min(...at.filter(i => i >= 0));
+        assert.ok(at[page - 1] <= best + 150, item.id + ': "' + item.fix.find + '" heads page ' + (at.indexOf(best) + 1) + ', not ' + page + '. ' + fix);
+        checked += 1;
+    });
+    t.diagnostic('checked ' + checked + ' fix-it pages; PDFs not built yet: ' + ([...new Set(waiting)].join(', ') || 'none'));
 });

@@ -63,6 +63,109 @@ test('merge on a two-device conflict keeps every tick', () => {
     assert.deepEqual(C.mergeTicks({ ticks: { a: true } }, { ticks: { b: true, c: false } }), { ticks: { a: true, b: true } });
 });
 
+test('merge: per check the later change wins, so an untick on one device is not undone by the other', () => {
+    // A unticked "a" at 300; B still has the tick from 100 and ticked "b" at 200.
+    const a = { ticks: { c: true }, at: { a: 300, c: 100 } };
+    const b = { ticks: { a: true, b: true, c: true }, at: { a: 100, b: 200, c: 100 } };
+    assert.deepEqual(C.mergeTicks(a, b), { ticks: { b: true, c: true }, at: { a: 300, b: 200, c: 100 } });
+    assert.deepEqual(C.mergeTicks(b, a).ticks, { b: true, c: true }, 'same answer whichever device merges');
+    // A change with a time beats a tick saved before times were kept; ticks with no time on either side are kept.
+    assert.deepEqual(C.mergeTicks({ ticks: {}, at: { a: 5 } }, { ticks: { a: true, d: true } }).ticks, { d: true });
+    // applyTicks stamps ticks and unticks alike and leaves the input alone.
+    const data = { ticks: { a: true }, other: 1 };
+    assert.deepEqual(C.applyTicks(data, { a: false, b: true }, 42), { ticks: { b: true }, at: { a: 42, b: 42 }, other: 1 });
+    assert.deepEqual(data, { ticks: { a: true }, other: 1 });
+});
+
+/** One account row per tool, shared by two devices (enough of the Supabase client for the progress engine). */
+function sharedAccount() {
+    const rows = new Map();
+    let clock = Date.parse('2026-01-01T00:00:00Z');
+    return {
+        online: true,
+        rows,
+        client() {
+            const account = this;
+            return {
+                auth: { getSession: async () => ({ data: { session: { user: { id: 'u1' } } } }) },
+                from() {
+                    const ctx = {};
+                    const builder = {
+                        select() { return builder; },
+                        eq(column, value) { ctx.tool = value; return builder; },
+                        upsert(payload) { ctx.upsert = payload; return builder; },
+                        async maybeSingle() {
+                            if (!account.online) throw new TypeError('offline');
+                            const row = rows.get(ctx.tool);
+                            return { data: row ? JSON.parse(JSON.stringify(row)) : null, error: null };
+                        },
+                        async single() {
+                            if (!account.online) throw new TypeError('offline');
+                            clock += 1000;
+                            const row = { data: JSON.parse(JSON.stringify(ctx.upsert.data)), updated_at: new Date(clock).toISOString() };
+                            rows.set(ctx.upsert.tool, row);
+                            return { data: { updated_at: row.updated_at }, error: null };
+                        }
+                    };
+                    return builder;
+                }
+            };
+        }
+    };
+}
+
+function device(account, clock) {
+    const map = new Map();
+    const storage = { getItem: k => (map.has(k) ? map.get(k) : null), setItem: (k, v) => map.set(k, v), removeItem: k => map.delete(k) };
+    const open = () => P.createStore('cv-checklist', {
+        storage, client: account.client(), sessionFlags: null, debounceMs: 0, userId: () => 'u1',
+        defaults: { ticks: {} }, merge: C.mergeTicks, now: () => clock.t
+    });
+    const mountOn = store => C.mount(new JSDOM('<!doctype html><div id="l"></div>').window.document.getElementById('l'), SAMPLE, { store, now: () => clock.t });
+    return { open, mountOn };
+}
+
+test('two devices, both changed since the last sync: untick on A, tick on B, the untick stays', async () => {
+    const account = sharedAccount();
+    const clock = { t: Date.parse('2026-01-01T00:00:00Z') };
+    const A = device(account, clock);
+    const B = device(account, clock);
+
+    // Both devices in step: "one-page" ticked on A, synced, seen on B.
+    const storeA = A.open();
+    await storeA.ready;
+    const listA = A.mountOn(storeA);
+    clock.t += 1000; listA.tick('one-page', true);
+    await storeA.flush();
+    const storeB = B.open();
+    await storeB.ready;
+    const listB = B.mountOn(storeB);
+    assert.equal(listB.summary().done, 1);
+
+    // A goes offline and unticks it; B (online) ticks another check.
+    account.online = false;
+    clock.t += 1000; listA.tick('one-page', false);
+    await storeA.flush();
+    assert.equal(storeA.status().dirty, true, 'A has an unsynced change');
+    account.online = true;
+    clock.t += 1000; listB.tick('font', true);
+    await storeB.flush();
+
+    // A comes back: both changed since A's last sync, so the merge decides, check by check.
+    const back = A.open();
+    assert.equal(await back.ready, 'merge');
+    assert.deepEqual(back.get().ticks, { font: true }, 'the untick on A is kept, the tick on B is added');
+    assert.deepEqual(account.rows.get('cv-checklist').data.ticks, { font: true }, 'and that is what the account holds');
+});
+
+test('untick all on one device while the other ticks: only the newer tick survives the merge', () => {
+    const t0 = { ticks: { a: true, b: true }, at: { a: 10, b: 10 } };
+    const reset = C.applyTicks(t0, { a: false, b: false }, 50);
+    const other = C.applyTicks(t0, { c: true }, 60);
+    assert.deepEqual(C.mergeTicks(reset, other).ticks, { c: true });
+    assert.deepEqual(C.mergeTicks(other, reset).ticks, { c: true });
+});
+
 test('mount: renders, ticks save through the progress store, progress and done card update, reload restores', () => {
     const dom = new JSDOM('<!doctype html><main id="list"></main>');
     const doc = dom.window.document;

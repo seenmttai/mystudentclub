@@ -156,14 +156,46 @@
         };
     }
 
-    /** Merge used when two devices both changed the ticks: keep every tick from both. */
+    /**
+     * Tick or untick ids in stored checklist data and stamp each change's time in `at` ({ <id>: ms }), so a two-device
+     * merge can tell a later untick from an older tick. Returns a new data object; `data` is not changed.
+     */
+    function applyTicks(data, changes, time) {
+        const base = data || {};
+        const ticks = Object.assign({}, base.ticks || {});
+        const at = Object.assign({}, base.at || {});
+        const when = Number(time) || Date.now();
+        Object.keys(changes || {}).forEach(id => {
+            if (changes[id]) ticks[id] = true; else delete ticks[id];
+            at[id] = when;
+        });
+        return Object.assign({}, base, { ticks, at });
+    }
+
+    /**
+     * Merge used when two devices both changed the ticks since the last sync: per check, the later change wins (a tick
+     * or an untick, from `at`). Checks neither side has a time for (data saved before `at` existed) keep any tick.
+     */
     function mergeTicks(localData, remoteData) {
         const local = (localData && localData.ticks) || {};
         const remote = (remoteData && remoteData.ticks) || {};
+        const localAt = (localData && localData.at) || {};
+        const remoteAt = (remoteData && remoteData.at) || {};
+        const ids = new Set([...Object.keys(local), ...Object.keys(remote), ...Object.keys(localAt), ...Object.keys(remoteAt)]);
         const ticks = {};
-        Object.keys(remote).forEach(id => { if (remote[id] === true) ticks[id] = true; });
-        Object.keys(local).forEach(id => { if (local[id] === true) ticks[id] = true; });
-        return Object.assign({}, remoteData, localData, { ticks });
+        const at = {};
+        ids.forEach(id => {
+            const lAt = Number(localAt[id]) || 0;
+            const rAt = Number(remoteAt[id]) || 0;
+            const on = lAt || rAt
+                ? (lAt >= rAt ? local[id] === true : remote[id] === true)
+                : (local[id] === true || remote[id] === true);
+            if (on) ticks[id] = true;
+            if (lAt || rAt) at[id] = Math.max(lAt, rAt);
+        });
+        const merged = Object.assign({}, remoteData, localData, { ticks });
+        if (Object.keys(at).length) merged.at = at;
+        return merged;
     }
 
     // ---------- DOM ----------
@@ -183,7 +215,7 @@
 
     /**
      * Render the checklist into `container` and keep it in step with `store` (an MSCArticleshipProgress store).
-     * options: { store, numbers (default true), progress (default true), labels: { example }, onChange(summary) }
+     * options: { store, numbers (default true), progress (default true), labels: { example }, onChange(summary), now() }
      * Returns { model, summary(), refresh(), destroy() }.
      */
     function mount(container, content, options) {
@@ -193,6 +225,7 @@
         const store = opts.store;
         const labels = Object.assign({ example: 'Example' }, opts.labels || {});
         const numbers = opts.numbers !== false;
+        const now = typeof opts.now === 'function' ? opts.now : () => Date.now();
         let ticks = Object.assign({}, (store && store.get().ticks) || {});
 
         container.textContent = '';
@@ -306,7 +339,7 @@
             if (on) next[id] = true; else delete next[id];
             if (store) {
                 // The store tells every subscriber (this list included), so the page repaints once.
-                store.update(data => { data.ticks = next; return data; });
+                store.update(data => Object.assign(applyTicks(data, { [id]: on }, now()), { ticks: next }));
                 return summarise(model, ticks);
             }
             ticks = next;
@@ -328,5 +361,5 @@
         };
     }
 
-    return Object.freeze({ normalise, summarise, progressLabel, mergeTicks, safeHref, mount });
+    return Object.freeze({ normalise, summarise, progressLabel, applyTicks, mergeTicks, safeHref, mount });
 });
