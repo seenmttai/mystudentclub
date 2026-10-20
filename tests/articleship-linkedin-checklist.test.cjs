@@ -71,27 +71,30 @@ test('content: the 12 profile checks in the row order, each with an example and 
     assert.deepEqual(prepared.model.sections.map(s => [s.title, s.items.length]), [['First look', 4], ['Your proof', 5], ['Open the door', 3]]);
 });
 
-test('content: house rules (headline formula, no CA prefix, all members, no salary, simulations not experience)', () => {
+test('content: house rules (headline formula, no CA prefix, all members, simulations not experience, one home each)', () => {
     const all = studentText(CONTENT);
     const headline = L.prepare(CONTENT).copies.get('headline').text;
     assert.equal(headline, 'CA Inter cleared ([Month Year]) | Seeking articleship in [domain] | [City] | [one proof]');
     assert.match(all, /All LinkedIn members/);
-    assert.match(all, /Expected salary: leave it blank/);
-    assert.match(all, /never under Experience or Internship/);
+    assert.doesNotMatch(all, /salary/i, 'Open to Work has no salary field to talk about (FACTS: titles, locations, start date, notice period)');
     assert.match(all, /❌ CA Riya Sharma/);
     assert.match(all, /linkedin\.com\/in\/riya-sharma\b/, 'the same persona as the CV checklist');
     assert.doesNotMatch(all, /Ananya|Iyer/, 'one persona across the CV and LinkedIn checklists');
     assert.match(all, /SEBI Investor Awareness Test \(Level 1\)/, 'the SEBI test by its exact name');
     assert.match(all, /Expiry: only if your certificate shows one/, 'the SEBI certificate has a validity, so no blanket "no expiry"');
     assert.match(all, /ICITSS completed/, 'ICITSS sits in Education (same as the CV and Guidebook ch 6)');
-    assert.match(all, /AIR\) goes in only with your rank letter/, 'ranks only with proof (house rule 1)');
+    assert.match(all, /A rank \(AIR\) only with your rank letter/, 'ranks only with proof (house rule 1)');
     assert.doesNotMatch(all, /\b20\d\d\b/, 'no years: the programme is recorded once and used by later batches');
     assert.doesNotMatch(all, /Articled Assistant/, 'only the title value already in use (Article Assistant)');
     assert.match(all, /Job title: Article Assistant\./);
     const certs = CONTENT.items.find(i => i.id === 'certifications').example;
     assert.equal(certs[0], '✅ Completed MSC Articleship Program — foundational understanding of work and tasks across all domains · issuer My Student Club',
         'the MSC programme line first, in Padam\'s exact wording (same as every CV Builder example)');
-    assert.ok(certs.some(line => /Experience or Internship/.test(line)), 'the "not under Experience" line sits in the certifications tick too');
+    assert.ok(certs.includes('❌ Under Experience or Internship: a simulation is not a job.'), 'the "not under Experience" line sits in the certifications tick');
+    assert.ok(!certs.some(line => /ICITSS/.test(line)), 'ICITSS lives in Education (CV, Guidebook ch 6), not under Licenses');
+    const education = CONTENT.items.find(i => i.id === 'education').example.join('\n');
+    assert.match(education, /ICITSS completed/);
+    assert.match(CONTENT.items.find(i => i.id === 'featured').example.join('\n'), /under Projects/, 'a project with no certificate has a home');
     assert.match(L.prepare(CONTENT).copies.get('featured').text, /^Cleared CA Intermediate \(\[Month Year\]\)/);
     assert.doesNotMatch(all, /₹|\bstipend\b|\bsalary of\b/i, 'no money figures');
     assert.doesNotMatch(all, /\b(?:\+?91[ -]?)?[6-9]\d{9}\b/, 'no phone numbers');
@@ -148,6 +151,8 @@ test('also: a second link on one check (for the Work Simulation work sample once
     assert.equal(also[0].target, '');
     assert.ok(also[0].closest('.ap-cl-item[data-id="featured"] .ap-cl-extra'));
     assert.equal(CONTENT.items.some(i => i.also), false, 'not shipped until the Work Simulation page is on the branch (WIRING.md)');
+    assert.equal(fs.existsSync(path.join(ROOT, 'articleship-program/work-simulation/index.html')), false,
+        'the Work Simulation page is on the branch now: add `also` to the featured check (WIRING.md) and drop these two lines');
 });
 
 test('examples: lines, labels, ✅/❌ and "> " sample text become separate blocks (text only)', () => {
@@ -180,7 +185,8 @@ test('page: boot renders the open card, 12 checks, copy boxes, notes; ticks save
     assert.equal(doc.querySelectorAll('.ap-cl-item').length, 12);
     assert.equal(doc.querySelector('.ap-progress-count').textContent, '0 of 12 done');
     assert.equal(doc.querySelectorAll('.ap-cl-example summary')[0].textContent, 'Examples');
-    assert.equal(doc.querySelector('.ap-cl-item[data-id="headline"] summary').textContent, 'Formula and examples');
+    assert.deepEqual([...doc.querySelectorAll('.ap-cl-example summary')].map(x => x.textContent).filter(t => t !== 'Examples'),
+        ['Formula', 'Template', 'Result post', 'Request'], 'one-word fold-out names: the toggle and "Open my profile" share a row at 390 px');
     assert.doesNotMatch([...doc.querySelectorAll('.ap-cl-example summary')].map(x => x.textContent).join('|'), /\+/, 'no "+" in a toggle that already ends in +');
     assert.equal(doc.querySelectorAll('.ap-cl-fix').length, 12);
     assert.equal([...doc.querySelectorAll('.ap-cl-fix')].filter(a => a.textContent === 'Open my profile').length, 10);
@@ -223,7 +229,14 @@ test('page: boot renders the open card, 12 checks, copy boxes, notes; ticks save
     assert.equal(cvLink.getAttribute('href'), '/cv-builder/?stage=articleship');
     assert.equal(cvLink.target, '', 'the CV Builder opens in the same tab');
     assert.equal(doc.querySelectorAll('#lc-notes .lc-note-link').length, 1);
-    assert.equal(doc.getElementById('lc-lede').textContent, CONTENT.intro);
+    assert.equal(doc.querySelector('#lc-lede .lc-on-wide').textContent, CONTENT.intro);
+    assert.equal(doc.querySelector('#lc-lede .lc-on-phone').textContent, CONTENT.intro_phone);
+    assert.doesNotMatch(CONTENT.intro_phone, /next to this page/, 'a phone cannot put the profile next to the page');
+
+    // the number is a visual cue: each checkbox is named by its check alone
+    const numbers = doc.querySelectorAll('.ap-cl-item .ap-cl-no');
+    assert.equal(numbers.length, 12);
+    numbers.forEach(no => assert.equal(no.getAttribute('aria-hidden'), 'true'));
 
     const box = doc.querySelector('.ap-cl-item[data-id="headline"] input');
     box.checked = true;
@@ -283,7 +296,11 @@ test('domain: the shared "my domain" fills the Copy boxes and the examples, and 
     assert.match(doc.querySelector('.ap-cl-item[data-id="about"] .lc-copy-text').textContent, /looking for articleship in GST in \[City\]/);
     assert.match(doc.querySelector('.ap-cl-item[data-id="featured"] .lc-copy-text').textContent, /Next: articleship in GST in \[City\]\.$/);
     assert.match(doc.querySelector('.ap-cl-item[data-id="recommendation"] .lc-copy-text').textContent, /applying for articleship in GST and/);
-    assert.match(doc.querySelector('.ap-cl-item[data-id="about"] .lc-sample').textContent, /statutory audit in Pune/, 'the worked About example stays one coherent person');
+    const aboutSample = () => doc.querySelector('.ap-cl-item[data-id="about"] .lc-sample').textContent;
+    assert.match(aboutSample(), /articleship in GST in Pune/, 'the worked About example follows my domain');
+    assert.match(aboutSample(), /In my GST Work Simulation I prepared GSTR-1 and GSTR-3B workings/, 'with that domain\'s own proof');
+    assert.doesNotMatch(aboutSample(), /statutory audit|Statutory Audit|vouched/i, 'one domain on the card');
+    assert.match(doc.querySelector('.ap-cl-item[data-id="certifications"] .lc-example').textContent, /✅ GST Work Simulation, MSC Articleship Program/);
 
     // Copy takes the filled text, and still asks for the other brackets
     const btn = doc.querySelector('.ap-cl-item[data-id="headline"] .lc-copy-btn');
@@ -299,10 +316,16 @@ test('domain: the shared "my domain" fills the Copy boxes and the examples, and 
     listeners[0]({});
     assert.equal(headlineCopy(), 'CA Inter cleared ([Month Year]) | Seeking articleship in direct tax | [City] | [one proof]');
     assert.match(pick(), /Seeking articleship in direct tax \| Pune/);
+    assert.match(aboutSample(), /articleship in direct tax in Pune\.\s*In my Direct Tax Work Simulation I checked/);
+    assert.doesNotMatch(aboutSample(), /GST|statutory audit/i);
+    domain = 'new-domain'; // no name anywhere: every token shows its default, the About example included
+    listeners[0]({});
+    assert.match(aboutSample(), /statutory audit in Pune\.\s*In my Statutory Audit Work Simulation I vouched/);
     domain = null;
     listeners[0]({});
     assert.match(headlineCopy(), /Seeking articleship in \[domain\]/);
     assert.match(pick(), /Seeking articleship in statutory audit \| Pune/);
+    assert.match(aboutSample(), /statutory audit in Pune\.\s*In my Statutory Audit Work Simulation I vouched 20 purchase bills/, 'no domain: the statutory audit example');
     assert.ok(page && page.list);
 
     // a settings store that throws (storage blocked) leaves the placeholders
@@ -367,6 +390,64 @@ test('copy button: copies the template and says to fill the brackets; falls back
     assert.equal(await L.copyText('x', doc), true);
     doc.execCommand = () => { throw new Error('no'); };
     assert.equal(await L.copyText('x', doc), false);
+
+    // both refused → the text is selected on the page, so press-and-hold → Copy is one step
+    const headlineBtn = doc.querySelector('.ap-cl-item[data-id="headline"] .lc-copy-btn');
+    headlineBtn.dispatchEvent(new dom.window.Event('click'));
+    await new Promise(r => setTimeout(r, 0));
+    await new Promise(r => setTimeout(r, 0));
+    assert.equal(headlineBtn.textContent, 'Copy');
+    assert.equal(doc.querySelector('.ap-cl-item[data-id="headline"] .lc-copy-status').textContent, 'It’s selected: press and hold it, then tap Copy.');
+    assert.equal(dom.window.getSelection().toString(), doc.querySelector('.ap-cl-item[data-id="headline"] .lc-copy-text').textContent);
+});
+
+test('proofs: every domain has its own About line, matching its Work Simulation line in the CV Recommender', () => {
+    const prepared = L.prepare(CONTENT);
+    P.DOMAINS.forEach(d => {
+        const line = prepared.proofs[d.slug];
+        assert.ok(line, 'proof for ' + d.slug);
+        assert.ok(line.startsWith('In my ' + L.SIM_NAME[d.slug] + ' Work Simulation I '), d.slug + ': ' + line);
+        assert.ok(line.endsWith('.'));
+    });
+    assert.deepEqual(Object.keys(prepared.proofs).sort(), P.DOMAINS.map(d => d.slug).sort(), 'no proof for a domain that does not exist');
+    assert.equal(L.proofFor(null, prepared.proofs), prepared.proofs[L.DEFAULT_DOMAIN]);
+    assert.equal(L.proofFor('new-domain', prepared.proofs, () => 'Climate audit'), 'In my Climate audit Work Simulation I [one task you did, with a number].');
+    assert.equal(L.fillDomain('> {proof}', {}), '> [One thing you have actually done, with a number.]');
+
+    // The CV Recommender writes each domain's Work Simulation line for the CV; the About line says the same work.
+    const situations = path.join(ROOT, 'articleship-program/cv-recommender/situations.json');
+    if (!fs.existsSync(situations)) return;
+    const cvLines = JSON.parse(fs.readFileSync(situations, 'utf8')).workSimulation || {};
+    P.DOMAINS.forEach(d => {
+        const cv = cvLines[d.slug];
+        if (!cv) return;
+        const m = /^(.+) Work Simulation, MSC Articleship Program \| \[Month Year\]: (.+)$/.exec(cv);
+        assert.ok(m, 'CV line shape for ' + d.slug);
+        assert.equal(m[1], L.SIM_NAME[d.slug], 'SIM_NAME matches the CV line for ' + d.slug);
+        const task = m[2].replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\\\[count\\\]/g, '\\d+').replace(/'/g, '[\'’]');
+        assert.match(prepared.proofs[d.slug], new RegExp('Work Simulation I ' + task + '\\.$'), 'same work as the CV line: ' + d.slug);
+    });
+});
+
+test('content: phone length (each fold-out about 80 words: the rest lives in Guidebook ch 6)', () => {
+    const prepared = L.prepare(CONTENT);
+    const words = value => value.split(/\s+/).filter(w => w && !/^[✅❌>←|·→—]$/.test(w)).length;
+    CONTENT.items.forEach(item => {
+        P.DOMAINS.forEach(d => {
+            const lines = L.fillDomain(L.joinLines(item.example), L.domainFill(d.slug, null, prepared.proofs));
+            assert.ok(words(lines) <= 90, item.id + ' (' + d.slug + '): ' + words(lines) + ' words');
+        });
+    });
+});
+
+test('page CSS: repeats hidden beside the sidebar, solid top bar, phone and laptop ledes, no bleed around the progress card', () => {
+    const css = fs.readFileSync(path.join(ROOT, 'articleship-program/linkedin-checklist/linkedin-checklist.css'), 'utf8');
+    const wide = css.slice(css.indexOf('@media (min-width: 960px)'));
+    assert.match(wide, /\.lc-list \.lc-fix-profile \{ display: none; \}/);
+    assert.match(wide, /\.lc-on-phone \{ display: none; \}/);
+    assert.match(css, /\.lc-on-wide \{ display: none; \}/);
+    assert.match(css, /body\.ap-page \.ap-topbar \{ background: var\(--ap-panel\); \}/);
+    assert.match(css, /\.lc-list \.ap-progress::before \{/);
 });
 
 test('page file: gate, noindex, logo, Day 3 colour, shared engine scripts in order', () => {

@@ -10,6 +10,12 @@
     letter-spacing: 0.02em;
 }
 
+/* The top bar is solid on this page: the list scrolls under it (the shared bar is 96% white, so text showed through). */
+body.ap-page .ap-topbar { background: var(--ap-panel); }
+
+/* The lede has a phone line and a laptop line (a phone can't put the profile next to this page). */
+.lc-on-wide { display: none; }
+
 /* Phone: open card, then the list, then the notes. */
 .lc-layout {
     display: grid;
@@ -182,9 +188,25 @@
     .lc-list .ap-cl-extra { margin-top: 2px; }
 }
 
-/* Wider screens: the bar sits a little below the top bar; fill that strip so the list doesn't show through it. */
+/*
+ * Wider screens: the progress card sits a little below the top bar with rounded corners. A background-coloured ring
+ * covers the four corner notches, and square strips above (up to the top bar) and below square the ring off, so no
+ * list text shows around the card and the list slides under a straight edge.
+ */
 @media (min-width: 768px) {
-    .lc-list .ap-progress { box-shadow: 0 -16px 0 var(--ap-bg); }
+    .lc-list .ap-progress { box-shadow: 0 0 0 12px var(--ap-bg); }
+    .lc-list .ap-progress::before,
+    .lc-list .ap-progress::after {
+        content: '';
+        position: absolute;
+        /* Measured from the padding box: 1 px of border, then the 12 px ring. */
+        left: -13px;
+        right: -13px;
+        background: var(--ap-bg);
+        pointer-events: none;
+    }
+    .lc-list .ap-progress::before { bottom: calc(100% + 1px); height: 16px; }
+    .lc-list .ap-progress::after { top: calc(100% + 1px); height: 12px; }
 }
 
 @media (min-width: 960px) {
@@ -205,6 +227,10 @@
     /* No app on a laptop, so no app hint. */
     .lc-open-hint { display: none; }
     .lc-list .ap-progress { top: 72px; }
+    /* The sidebar's "Open my profile" is always in view here, so the repeats on each check go. */
+    .lc-list .lc-fix-profile { display: none; }
+    .lc-on-wide { display: inline; }
+    .lc-on-phone { display: none; }
 }
 
 @media print {
