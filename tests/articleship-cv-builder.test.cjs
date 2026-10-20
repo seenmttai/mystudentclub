@@ -1,0 +1,562 @@
+// MSC Articleship Program: the CV Builder's articleship stage (row 1.5): logic, sample content and the stage panel.
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const test = require('node:test');
+const vm = require('node:vm');
+const { JSDOM } = require('jsdom');
+
+const B = require('../scripts/articleship-cv-builder.js');
+const catalog = require('../cv-builder/cv-articleship.js');
+
+const ROOT = path.join(__dirname, '..');
+const readJson = rel => JSON.parse(fs.readFileSync(path.join(ROOT, rel), 'utf8'));
+const DESIGNS_JSON = readJson('articleship-program/cv-builder/designs.json');
+const EXAMPLES_JSON = readJson('articleship-program/cv-builder/examples.json');
+const RECOMMENDER_SITUATIONS = path.join(ROOT, 'articleship-program/cv-recommender/situations.json');
+const GALLERY = catalog.templates.filter(template => template.kind === 'gallery');
+const DESIGNS = B.normaliseDesigns(DESIGNS_JSON, GALLERY);
+const EXAMPLES = B.normaliseExamples(EXAMPLES_JSON);
+const clone = value => JSON.parse(JSON.stringify(value));
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+function studentCv(extra) {
+    return Object.assign({
+        personal: { name: 'Riya Shah', tagline: '', phone: '+91 98XXXXXXXX', email: 'riya.shah@email.com', linkedin: '', location: 'Surat', socialLinks: [] },
+        summary: '<p>CA Intermediate cleared (both groups, [Month Year]). Seeking articleship in GST.</p>',
+        education: [{ degree: 'CA Intermediate (both groups)', year: '[Month Year]', institute: 'ICAI', marks: '371/600', remarks: 'First attempt' }],
+        experience: [], projects: [], skills: '', certifications: [], achievements: [], leadership: [], interests: [], customSections: [],
+        sectionOrder: B.BUILDER_SECTIONS.slice(), sectionTitles: {}, sectionLabels: {},
+        templateFile: 'articleship-layout-bold-modern', themeAccent: '#123456', themeFont: 'georgia',
+        tableSettings: { education: { columns: { degree: { visible: true, width: 30 } } } }
+    }, extra || {});
+}
+
+const keepsDesign = (before, after) => {
+    assert.equal(after.templateFile, before.templateFile, 'design kept');
+    assert.equal(after.themeAccent, before.themeAccent, 'colour kept');
+    assert.equal(after.themeFont, before.themeFont, 'font kept');
+    assert.deepEqual(after.tableSettings, before.tableSettings, 'table settings kept');
+};
+
+// ---------- Structures (A–H) ----------
+
+test('eight structures A–H; names and orders follow the CV Recommender\'s shared situations', () => {
+    assert.deepEqual(B.SITUATIONS.map(s => s.id), ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']);
+    B.SITUATIONS.forEach(s => assert.deepEqual([...s.order].sort(), [...B.BUILDER_SECTIONS].sort(), `${s.id} orders every section`));
+    if (!fs.existsSync(RECOMMENDER_SITUATIONS)) return;
+    const shared = JSON.parse(fs.readFileSync(RECOMMENDER_SITUATIONS, 'utf8'));
+    const merged = B.mergeSituations(shared);
+    merged.forEach(s => {
+        assert.equal(s.name, shared.situations[s.id].name, `${s.id} uses the Recommender's name`);
+        const lead = B.toBuilderOrder(shared.situations[s.id].order);
+        assert.deepEqual(s.order.slice(0, lead.length), lead, `${s.id} uses the Recommender's order`);
+    });
+});
+
+test('a structure changes the order and titles only: design, colours, table settings and text are kept', () => {
+    const before = studentCv({ customSections: [{ id: 'custom_x', title: 'Languages', items: ['English'] }] });
+    const after = B.applyStructure(before, 'C');
+    keepsDesign(before, after);
+    assert.deepEqual(after.education, before.education);
+    assert.equal(after.summary, before.summary);
+    assert.deepEqual(after.sectionOrder.slice(0, 3), ['summary', 'education', 'experience']);
+    assert.equal(after.sectionOrder.at(-1), 'custom_x', 'custom sections kept at the end');
+    assert.equal(after.sectionTitles.certifications, B.CERT_TITLE);
+    assert.equal(after.articleshipStructure, 'C');
+    const own = B.applyStructure(Object.assign(clone(before), { sectionTitles: { leadership: 'My clubs' } }), 'E');
+    assert.equal(own.sectionTitles.leadership, 'My clubs', 'a title the student wrote is kept');
+    const recOrder = ['header', 'summary', 'education', 'projects', 'certifications', 'skills', 'leadership', 'interests'];
+    assert.deepEqual(B.applyStructure(before, 'D', { order: recOrder }).sectionOrder.slice(0, 6),
+        ['summary', 'education', 'projects', 'certifications', 'skills', 'leadership']);
+});
+
+test('the CV Recommender\'s pick is applied once per pick, with its design by look-book number', () => {
+    const pick = { situation: 'B', order: ['header', 'summary', 'education', 'certifications'], design: 5, savedAt: '2026-10-20T06:00:00.000Z' };
+    const plan = B.planPick(pick, DESIGNS, studentCv());
+    assert.equal(plan.apply, true);
+    assert.equal(plan.situation, 'B');
+    assert.equal(plan.design.number, 5);
+    assert.equal(B.planPick(pick, DESIGNS, studentCv({ articleshipPickApplied: plan.key })).apply, false, 'not re-applied after the student changes things');
+    assert.equal(B.planPick(Object.assign({}, pick, { savedAt: '2026-10-21T06:00:00.000Z' }), DESIGNS, studentCv({ articleshipPickApplied: plan.key })).apply, true, 'a new pick applies');
+    assert.equal(B.planPick(Object.assign({}, pick, { design: 99 }), DESIGNS, studentCv()).design, null);
+    assert.equal(B.planPick({ situation: 'Z' }, DESIGNS, studentCv()), null);
+    assert.equal(B.planPick(null, DESIGNS, studentCv()), null);
+});
+
+// ---------- Designs (look-book numbers; all 62 under "All") ----------
+
+test('designs: numbered as in the look-book, each one of the 62 layouts, Portal-safe or Print', () => {
+    assert.ok(DESIGNS.length >= 1);
+    assert.equal(GALLERY.length, 62, 'all 62 layouts stay available under "All"');
+    const numbers = DESIGNS.map(d => d.number);
+    assert.deepEqual(numbers, [...numbers].sort((a, b) => a - b));
+    assert.equal(new Set(numbers).size, numbers.length);
+    DESIGNS.forEach(design => {
+        assert.ok(GALLERY.some(g => g.file === design.file && g.renderFile === design.renderFile), `${design.name} is one of the 62`);
+        assert.ok(fs.existsSync(path.join(ROOT, 'cv-builder', design.renderFile)));
+        assert.ok(['Portal-safe', 'Print'].includes(design.tag));
+        assert.ok(/^[A-I]$/.test(B.personaFor(design)), `${design.name} has an applicant`);
+    });
+    assert.ok(DESIGNS.some(d => d.portalSafe), 'at least one portal-safe design');
+});
+
+test('designs.json in other shapes: gallery numbers, kept flags, inline applicants, unknown layouts dropped', () => {
+    const list = B.normaliseDesigns({ kept: [
+        { no: 2, name: 'Sidebar', gallery: 35, tags: ['print'], situations: ['C'] },
+        { number: 1, name: 'Plain', layout: 'plain-ats', tag: 'Portal-safe (ATS)', persona: 'g', example: { personal: { name: 'X Y' } } },
+        { number: 3, name: 'Gone', renderFile: 'nope.html' },
+        { number: 4, name: 'Dropped', gallery: 7, kept: false }
+    ] }, GALLERY);
+    assert.deepEqual(list.map(d => [d.number, d.renderFile, d.tag, B.personaFor(d)]),
+        [[1, 'plain-ats.html', 'Portal-safe', 'G'], [2, 'profile-sidebar.html', 'Print', 'C']]);
+    assert.equal(list[0].example.personal.name, 'X Y');
+    assert.equal(B.resolveDesign(list, 'Design 2').name, 'Sidebar');
+    assert.equal(B.resolveDesign(list, 'articleship-layout-plain-ats').number, 1);
+    assert.equal(B.resolveDesign(list, 'plain').number, 1);
+});
+
+test('one designs.json for both tools: the CV Recommender reads the same numbers, names and tags', () => {
+    const recPath = path.join(ROOT, 'scripts/articleship-cv-recommender.js');
+    if (!fs.existsSync(recPath)) return;
+    const R = require(recPath);
+    if (R.DESIGNS_URL) assert.equal(R.DESIGNS_URL, '/articleship-program/cv-builder/designs.json');
+    const rec = R.normaliseDesigns(DESIGNS_JSON);
+    assert.deepEqual(rec.map(d => [d.number, d.name, d.tag]), DESIGNS.map(d => [d.number, d.name, d.tag]));
+});
+
+test('each kept design is set in one STYLE CV font, unless the student picks their own', () => {
+    DESIGNS.forEach(design => assert.ok(B.CV_FONTS.includes(design.font), `${design.name}: ${design.font}`));
+    const sidebar = B.resolveDesign(DESIGNS, 3);
+    assert.deepEqual(B.fontFor({ themeFont: '' }, sidebar), { font: sidebar.font });
+    assert.equal(B.fontFor({ themeFont: sidebar.font, articleshipFontAuto: sidebar.font }, sidebar), null, 'already set');
+    assert.deepEqual(B.fontFor({ themeFont: 'Arial', articleshipFontAuto: 'Arial' }, B.resolveDesign(DESIGNS, 1)), { font: 'Times New Roman' }, 'follows the design while automatic');
+    assert.deepEqual(B.fontFor({ themeFont: 'Arial', articleshipFontAuto: 'Arial' }, null), { font: '' }, 'back to the layout\'s own font outside the kept designs');
+    assert.equal(B.fontFor({ themeFont: 'Georgia', articleshipFontAuto: 'Arial' }, sidebar), null, 'the student\'s own choice wins');
+    assert.equal(B.normaliseDesigns([{ number: 1, renderFile: 'classic.html', font: 'Comic Sans MS' }], GALLERY)[0].font, '');
+    assert.equal(B.cvFont('times'), 'Times New Roman');
+    assert.ok(B.checkCv(studentCv({ themeFont: 'Poppins' })).some(f => f.id === 'font'));
+    assert.ok(!B.checkCv(studentCv({ themeFont: 'Cambria' })).some(f => f.id === 'font'));
+});
+
+// ---------- Starters ----------
+
+test('the blank CV: articleship shape, ICITSS in the education table, every gap a [bracket]', () => {
+    const before = studentCv();
+    const blank = B.createBlank(before, { structure: 'A' });
+    keepsDesign(before, blank);
+    assert.equal(blank.articleshipStarter, 'blank');
+    assert.equal(B.untouchedStarter(blank, EXAMPLES, DESIGNS), 'blank');
+    assert.ok(blank.education.some(row => /ICITSS/.test(row.degree)), 'ICITSS is an education row');
+    assert.deepEqual(blank.experience, [], 'no invented work');
+    const counts = B.countCertificates(blank.certifications);
+    assert.equal(counts.outside, 0);
+    assert.equal(counts.placeholder, 2);
+    assert.match(B.checkCv(blank).map(f => f.text).join(' '), /Fill or delete \d+ \[bracket\]s/);
+    const edited = clone(blank);
+    edited.personal.name = 'Riya Shah';
+    assert.equal(B.untouchedStarter(edited, EXAMPLES, DESIGNS), null, 'one edit and it is the student\'s');
+});
+
+test('"Start from the example" and "The Nothing CV": the applicant\'s text on the student\'s design', () => {
+    const before = studentCv();
+    const example = B.createExample(EXAMPLES, 'C', before, { structure: 'C' });
+    keepsDesign(before, example);
+    assert.equal(example.personal.name, EXAMPLES.C.personal.name);
+    assert.equal(example.articleshipStarter, 'example:C');
+    assert.equal(B.untouchedStarter(example, EXAMPLES, DESIGNS), 'example');
+    assert.notEqual(example.summary, '', 'pre-filled, not blank');
+    const flags = B.checkCv(example, { examples: EXAMPLES }).map(f => f.id);
+    assert.ok(flags.includes('example-details') && flags.includes('example-lines'), 'the example\'s details are flagged until replaced');
+
+    const nothing = B.createNothingCv(EXAMPLES, before);
+    keepsDesign(before, nothing);
+    assert.equal(nothing.articleshipStructure, 'H');
+    assert.equal(nothing.articleshipStarter, 'nothing');
+    assert.equal(B.untouchedStarter(nothing, EXAMPLES, DESIGNS), 'nothing');
+    assert.equal(B.countCertificates(nothing.certifications).outside, B.OUTSIDE_CAP, 'the weekend stack is exactly the four');
+
+    const inline = B.createExample(EXAMPLES, 'A', before, { design: { example: { personal: { name: 'Inline Person' }, summary: 'x' } } });
+    assert.equal(inline.personal.name, 'Inline Person', 'a look-book design\'s own applicant wins');
+    assert.equal(B.createExample(EXAMPLES, 'Z', before), null);
+});
+
+test('sample applicants keep the house rules (fictional, honest, rule-2 lines, the cap, the programme line)', () => {
+    assert.deepEqual(Object.keys(EXAMPLES).sort(), ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']);
+    const banned = /ca ?monk|thinking ?bridge|umbrella|NEEDS-CHECK|\bwave\b|drop [abc]\b|live week|coming soon/i;
+    Object.entries(EXAMPLES).forEach(([id, cv]) => {
+        const text = JSON.stringify(cv);
+        assert.doesNotMatch(text, banned, `${id}: no banned strings`);
+        assert.match(cv.personal.phone, /98XXXXXXXX/, `${id}: phone masked`);
+        assert.match(cv.personal.email, /^[a-z]+\.[a-z]+@email\.com$/, `${id}: firstname.lastname@email.com`);
+        const inter = cv.education.filter(row => /CA Intermediate/.test(row.degree));
+        assert.ok(inter.length && inter.every(row => row.year === '[Month Year]'), `${id}: Inter session as [Month Year]`);
+        assert.ok(cv.education.some(row => /ICITSS/.test(row.degree)), `${id}: ICITSS row in education`);
+        (cv.experience || []).forEach(entry => assert.doesNotMatch(JSON.stringify(entry), /simulation|forage/i, `${id}: no simulation under experience`));
+        const counts = B.countCertificates(cv.certifications);
+        assert.ok(counts.outside <= B.OUTSIDE_CAP, `${id}: at most four outside certificates`);
+        assert.equal(counts.icitss, 0, `${id}: ICITSS not in certifications`);
+        assert.ok(counts.mscProgram <= 1);
+        cv.certifications.forEach(item => {
+            const line = B.plainText(item.name);
+            const kind = B.classifyCertification(item);
+            if (kind === 'msc-simulation') assert.match(line, /^[A-Z][A-Za-z& ]+ Work Simulation, MSC Articleship Program \| \[Month Year\]: /, `${id}: ${line}`);
+            if (kind === 'msc-program') assert.equal(line, B.PROGRAM_LINE_DONE, `${id}: Padam's exact programme line`);
+            if (kind === 'outside') assert.match(line, /(Job Simulation \(Forage\)|Test, Level 1 \(NISM\)) \| \[Month Year\]: /, `${id}: ${line}`);
+        });
+        const flags = B.checkCv(cv).map(f => f.id).filter(flagId => !['brackets', 'months'].includes(flagId));
+        assert.deepEqual(flags, [], `${id}: the example itself passes the checks`);
+    });
+});
+
+// ---------- Certifications and job simulations ----------
+
+test('house rule 2: four outside certificates; MSC lines and ICITSS are not counted', () => {
+    const list = [
+        { name: 'PwC US Audit Job Simulation (Forage) | Mar 2026: built a risk-control matrix.' },
+        { name: 'PwC US Tax Job Simulation (Forage) | Mar 2026: mapped a chart of accounts.' },
+        { name: 'Goldman Sachs Excel Skills for Business Job Simulation (Forage) | Mar 2026: five tasks.' },
+        { name: 'SEBI Investor Awareness Test, Level 1 (NISM) | Mar 2026: passed.' },
+        { name: 'GST Work Simulation, MSC Articleship Program | Mar 2026: matched 2B.' },
+        { name: B.PROGRAM_LINE_DONE },
+        { name: 'MSC Articleship Program (ongoing)' },
+        { name: '[Company] [Simulation] Job Simulation (Forage) | [Month Year]: [what you did]' }
+    ];
+    const counts = B.countCertificates(list);
+    assert.equal(counts.outside, 4);
+    assert.equal(counts.mscSimulation, 1);
+    assert.equal(counts.mscProgram, 2);
+    assert.equal(counts.placeholder, 1);
+    assert.equal(counts.over, false);
+    assert.equal(counts.label, '4 of 4 outside certificates');
+    const five = B.countCertificates([...list, { name: 'Power BI course, Coursera | Apr 2026' }]);
+    assert.equal(five.over, true);
+    const flags = B.checkCv(studentCv({ certifications: [...list, { name: 'Power BI course | Apr 2026' }, { name: 'ICITSS (OC + ITT) completed' }] })).map(f => f.id);
+    assert.ok(flags.includes('cap'), 'a fifth outside certificate is flagged');
+    assert.ok(flags.includes('icitss-cert'), 'ICITSS belongs in the education table');
+});
+
+test('earned Work Simulation lines: read in any saved shape, imported once into "Certifications and job simulations"', () => {
+    const saved = {
+        earned: [{ id: 'gst-1', domain: 'gst', line: 'GST Work Simulation, MSC Articleship Program | Mar 2026: matched 64 invoices with GSTR-2B.' }],
+        levels: { 'sa-1': { domain: 'statutory-audit', title: 'Vouching', done: true, earnedLine: { domain: 'statutory-audit', did: 'vouched 25 purchase bills', month: 'Mar 2026' } },
+            'sa-2': { domain: 'statutory-audit', done: false, earnedLine: 'Statutory audit Work Simulation, MSC Articleship Program | x: y' } },
+        cvQueue: [{ domain: 'gst', line: 'GST Work Simulation, MSC Articleship Program | Mar 2026: matched 64 invoices with GSTR-2B.' }]
+    };
+    const lines = B.readEarnedLines(saved);
+    assert.deepEqual(lines.map(l => l.line), [
+        'GST Work Simulation, MSC Articleship Program | Mar 2026: matched 64 invoices with GSTR-2B.',
+        'Statutory audit Work Simulation, MSC Articleship Program | Mar 2026: vouched 25 purchase bills'
+    ]);
+    assert.deepEqual(B.readEarnedLines(null), []);
+    assert.deepEqual(B.readEarnedLines({ earned: [{ line: 'Not a simulation line' }] }), []);
+
+    const before = studentCv({
+        certifications: [{ name: '[Domain] Work Simulation, MSC Articleship Program | [Month Year]: [what you did, with your counts]', issuer: '' },
+            { name: 'PwC US Audit Job Simulation (Forage) | Mar 2026: built a risk-control matrix.', issuer: '' }],
+        sectionOrder: ['summary', 'education', 'skills']
+    });
+    const result = B.importEarnedLines(before, lines);
+    keepsDesign(before, result.cv);
+    assert.equal(result.added, 2);
+    assert.deepEqual(result.cv.certifications.map(c => B.classifyCertification(c)), ['msc-simulation', 'msc-simulation', 'outside'], 'placeholder gone, MSC lines first');
+    assert.equal(result.counts.outside, 1);
+    assert.ok(result.cv.sectionOrder.includes('certifications'));
+    assert.equal(result.cv.sectionTitles.certifications, B.CERT_TITLE);
+    assert.deepEqual(result.cv.education, before.education, 'other sections untouched');
+    const quoted = B.importEarnedLines(studentCv(), ['Internal audit Work Simulation, MSC Articleship Program | Mar 2026: wrote 2 "observations".']);
+    assert.equal(quoted.cv.certifications[0].name, 'Internal audit Work Simulation, MSC Articleship Program | Mar 2026: wrote 2 \u201Cobservations\u201D.');
+    const again = B.importEarnedLines(result.cv, lines);
+    assert.equal(again.added, 0);
+    assert.equal(again.skipped, 2);
+});
+
+test('the programme line: "(ongoing)" swaps to Padam\'s completed line', () => {
+    const cv = studentCv({ certifications: [{ name: 'MSC Articleship Program (ongoing)', issuer: '' }] });
+    assert.equal(B.programLine(cv), 'ongoing');
+    const done = B.useCompletedLine(cv);
+    assert.equal(B.programLine(done), 'done');
+    assert.equal(done.certifications.length, 1);
+    assert.equal(done.certifications[0].name, B.PROGRAM_LINE_DONE);
+    assert.equal(B.programLine(studentCv()), null);
+});
+
+// ---------- Live checks ----------
+
+test('live checks flag what a firm would notice, and stay quiet on a clean CV', () => {
+    const clean = studentCv({
+        summary: '<p>CA Intermediate cleared (both groups, Mar 2026). Seeking articleship in GST.</p>',
+        education: [{ degree: 'CA Intermediate (both groups)', year: 'Mar 2026', institute: 'ICAI', marks: '371/600', remarks: 'First attempt' }],
+        leadership: ['Treasurer, Commerce Society 2024–25: kept the accounts of 9 events.']
+    });
+    assert.deepEqual(B.checkCv(clean), []);
+    const messy = studentCv({
+        summary: '<p>I am a hard working student.</p>',
+        education: [{ degree: 'CA Intermediate Group II', year: 'Result awaited', marks: '180/300', institute: 'ICAI', remarks: '' }],
+        experience: [{ role: 'Virtual intern', company: 'Forage', bullets: ['Responsible for audit tasks', 'Led the statutory audit of a client', ''] }],
+        projects: [{ title: 'Accounts', bullets: ['Prepared final accounts of an audit client'] }],
+        leadership: ['Participated in a quiz', 'Joined in March 2025', 'Left on 03/2026']
+    });
+    const ids = B.checkCv(messy).map(f => f.id);
+    ['simulation-experience', 'responsible', 'first-person', 'awaited-score', 'empty-bullet', 'participated', 'months', 'red-led-the-audit']
+        .forEach(id => assert.ok(ids.includes(id), `flags ${id} (got ${ids.join(', ')})`));
+    assert.equal(B.checkCv(clean, { overflow: true })[0].id, 'one-page');
+});
+
+// ---------- The stage page (jsdom) ----------
+
+function fakeStore(initial) {
+    let data = clone(initial || {});
+    const listeners = new Set();
+    return {
+        get: () => clone(data),
+        set(next) { data = clone(next); listeners.forEach(fn => fn(clone(data), { source: 'local' })); },
+        subscribe(fn) { listeners.add(fn); return () => listeners.delete(fn); },
+        pull: () => Promise.resolve('local')
+    };
+}
+
+async function stage(options) {
+    const opts = options || {};
+    const dom = new JSDOM(`<!doctype html><body>
+        <div class="editor-content"><details data-section="certifications"><summary><span>Certifications</span></summary>
+        <input id="inp-title-certifications"></details></div>
+        <span id="current-template-name">Classic</span><select id="template-select"></select>
+        <div id="template-sidebar"><div class="template-sidebar-header"><h3>Choose Template</h3></div>
+        <div><select id="template-collection"></select></div><div id="template-grid"></div></div></body>`,
+    { url: 'http://127.0.0.1/cv-builder/?stage=articleship', runScripts: 'outside-only' });
+    const win = dom.window;
+    GALLERY.forEach(g => { const o = win.document.createElement('option'); o.value = g.file; o.textContent = g.name; win.document.getElementById('template-select').appendChild(o); });
+    const files = {
+        '/articleship-program/cv-builder/designs.json': DESIGNS_JSON,
+        '/articleship-program/cv-builder/examples.json': EXAMPLES_JSON,
+        '/articleship-program/cv-recommender/situations.json': fs.existsSync(RECOMMENDER_SITUATIONS) ? JSON.parse(fs.readFileSync(RECOMMENDER_SITUATIONS, 'utf8')) : null
+    };
+    win.fetch = url => Promise.resolve({ ok: Boolean(files[new URL(url, 'http://127.0.0.1').pathname]), json: () => Promise.resolve(clone(files[new URL(url, 'http://127.0.0.1').pathname])) });
+    win.confirm = () => opts.confirm !== false;
+    const workSim = fakeStore(opts.workSimulation || {});
+    let pick = opts.pick || null;
+    const settingsListeners = new Set();
+    win.MSCArticleshipProgress = {
+        getCvPick: () => (pick ? clone(pick) : null),
+        open: () => workSim,
+        settings: () => ({ pull: () => Promise.resolve('local') }),
+        onSettingsChange: fn => { settingsListeners.add(fn); return () => settingsListeners.delete(fn); }
+    };
+    win.MSCArticleshipCvBuilder = B;
+    const calls = { useTemplate: [], toasts: [], choose: [], renderCards: 0, open: 0 };
+    let cvData = opts.cv || null;
+    let templateFile = (opts.cv && opts.cv.templateFile) || 'articleship-layout-classic';
+    let accessChecked = opts.accessChecked !== false;
+    const locked = new Set(opts.locked || []);
+    win.eval(fs.readFileSync(path.join(ROOT, 'articleship-program/cv-builder/stage.js'), 'utf8'));
+    const S = win.MSCArticleshipStage;
+    if (!cvData) cvData = S.blankCv({ tableSettings: {} }, { education: {} });
+    templateFile = cvData.templateFile || templateFile;
+    const host = {
+        getCv: () => cvData,
+        setCv(next, o) { cvData = clone(next); if (o && o.templateFile) { templateFile = o.templateFile; cvData.templateFile = templateFile; } },
+        templateFile: () => templateFile,
+        useTemplate(file) { calls.useTemplate.push(file); templateFile = file; cvData.templateFile = file; },
+        choose(file, name) { calls.choose.push([file, name]); },
+        isLocked: file => locked.has(file) || (!accessChecked && file !== 'articleship-layout-classic'),
+        accessChecked: () => accessChecked,
+        gallery: () => GALLERY,
+        collection: () => 'articleship',
+        openTemplates() { calls.open += 1; },
+        closeTemplates() {},
+        renderCards() { calls.renderCards += 1; S.renderTemplateCards(win.document.getElementById('template-grid'), templateFile); },
+        syncName() {},
+        setFont(key) { cvData.themeFont = key; S.onChange(); },
+        toast: message => calls.toasts.push(message)
+    };
+    S.init(host);
+    await sleep(opts.wait || 60);
+    return {
+        win, doc: win.document, S, host, calls, workSim,
+        get cv() { return cvData; },
+        setAccess(value) { accessChecked = value; },
+        setPick(next) { pick = next; settingsListeners.forEach(fn => fn()); },
+        panel: () => win.document.getElementById('articleship-stage'),
+        click(selector) {
+            const el = win.document.querySelector(selector);
+            assert.ok(el, `${selector} on screen`);
+            el.dispatchEvent(new win.MouseEvent('click', { bubbles: true }));
+        }
+    };
+}
+
+test('stage: a new student opens on the blank CV with both starters, the count and the checks', async () => {
+    const s = await stage();
+    const panel = s.panel();
+    assert.ok(panel, 'panel on top of the form');
+    assert.equal(s.doc.querySelector('.editor-content').firstElementChild, panel);
+    assert.match(panel.textContent, /Your articleship CV/);
+    assert.match(panel.textContent, /Not sure which order\? CV Recommender/);
+    assert.match(panel.textContent, /No\. 1 · Classic table/);
+    assert.match(panel.textContent, /0 of 4 outside certificates/);
+    assert.match(panel.textContent, /Fill or delete \d+ \[bracket\]s/);
+    assert.ok(panel.querySelector('[data-action=example]') && panel.querySelector('[data-action=nothing]'));
+    assert.equal(s.doc.querySelector('details[data-section=certifications] summary span').textContent, B.CERT_TITLE);
+    assert.equal(s.doc.querySelector('#template-select option[value="articleship-layout-classic"]').textContent, 'No. 1 Classic table');
+    assert.doesNotMatch(panel.textContent, /saved on this device|coming soon|wave|NEEDS-CHECK/i);
+});
+
+test('stage: opens with the Recommender pick (order now, design once the builder knows access)', async () => {
+    const pick = { situation: 'D', order: ['header', 'summary', 'education', 'projects', 'certifications', 'skills'], design: 4, savedAt: 'k1' };
+    const s = await stage({ pick, accessChecked: false, wait: 80 });
+    assert.equal(s.cv.articleshipStructure, 'D');
+    assert.deepEqual(s.cv.sectionOrder.slice(0, 3), ['summary', 'education', 'projects']);
+    assert.equal(s.cv.articleshipPickApplied, 'k1');
+    assert.deepEqual(s.calls.useTemplate, [], 'waits while access is unknown');
+    s.setAccess(true);
+    await sleep(400);
+    assert.deepEqual(s.calls.useTemplate, ['articleship-layout-banner-executive-split']);
+    assert.equal(s.cv.themeFont, 'Calibri', 'the design\'s STYLE font');
+    assert.ok(s.calls.toasts.includes('Opened with your CV Recommender pick.'));
+    assert.match(s.panel().textContent, /From your CV Recommender: order D, design 4/);
+
+    const locked = await stage({ pick, locked: ['articleship-layout-banner-executive-split'], wait: 120 });
+    assert.deepEqual(locked.calls.useTemplate, [], 'a locked design is never forced on');
+
+    const again = await stage({ pick, cv: Object.assign(B.createBlank({ templateFile: 'articleship-layout-plain-ats' }, { structure: 'A' }), { articleshipPickApplied: 'k1' }), wait: 120 });
+    assert.equal(again.cv.articleshipStructure, 'A', 'an applied pick does not undo the student\'s own order');
+    assert.deepEqual(again.calls.useTemplate, []);
+});
+
+test('stage: order chips change the structure only; starters keep the design', async () => {
+    const s = await stage({ cv: Object.assign(B.createBlank({ templateFile: 'articleship-layout-clean-rule', themeAccent: '#0a0a0a' }, { structure: 'A' }), { templateFile: 'articleship-layout-clean-rule' }) });
+    s.click('[data-row=order]');
+    const chips = [...s.doc.querySelectorAll('.asb-order')];
+    assert.equal(chips.length, 8);
+    chips.find(chip => chip.textContent.startsWith('E')).dispatchEvent(new s.win.MouseEvent('click', { bubbles: true }));
+    assert.equal(s.cv.articleshipStructure, 'E');
+    assert.equal(s.cv.templateFile, 'articleship-layout-clean-rule');
+    assert.equal(s.cv.themeAccent, '#0a0a0a');
+    assert.match(s.calls.toasts.at(-1), /Order E on\. Your design and text are unchanged\./);
+
+    s.click('[data-action=example]');
+    assert.equal(s.cv.personal.name, EXAMPLES.B.personal.name, 'design 5\'s applicant');
+    assert.equal(s.cv.templateFile, 'articleship-layout-clean-rule');
+    assert.equal(s.cv.articleshipStructure, 'E', 'the student\'s order is kept');
+    assert.match(s.panel().textContent, /Put your own name/);
+
+    s.click('[data-action=nothing]');
+    assert.equal(s.cv.articleshipStarter, 'nothing');
+    assert.equal(s.cv.templateFile, 'articleship-layout-clean-rule');
+
+    const own = clone(s.cv);
+    own.personal.name = 'Riya Shah';
+    const kept = await stage({ cv: own, confirm: false });
+    assert.match(kept.panel().textContent, /Start again: the example · The Nothing CV/);
+    kept.click('[data-action=example]');
+    assert.equal(kept.cv.personal.name, 'Riya Shah', 'nothing is replaced without a yes');
+});
+
+test('stage: earned lines are offered, queued ones arrive by themselves, each only once', async () => {
+    const line = 'GST Work Simulation, MSC Articleship Program | Mar 2026: matched 64 invoices with GSTR-2B.';
+    const queued = 'Statutory audit Work Simulation, MSC Articleship Program | Mar 2026: vouched 25 purchase bills.';
+    const s = await stage({ workSimulation: { earned: [{ domain: 'gst', line }, { domain: 'statutory-audit', line: queued }], cvQueue: [{ line: queued }] } });
+    assert.ok(s.cv.certifications.some(c => c.name === queued), 'the queued line arrived');
+    assert.ok(s.cv.articleshipImported.includes(queued));
+    assert.match(s.panel().textContent, /Add 1 Work Simulation line/);
+    s.click('[data-action=add-lines]');
+    assert.ok(s.cv.certifications.some(c => c.name === line));
+    assert.match(s.calls.toasts.at(-1), /Added 1 Work Simulation line to "Certifications and job simulations"\./);
+    assert.equal(s.panel().querySelector('[data-action=add-lines]'), null);
+    // Deleted by the student: not offered again.
+    const cv = clone(s.cv);
+    cv.certifications = cv.certifications.filter(c => c.name !== line);
+    const later = await stage({ cv, workSimulation: { earned: [{ line }], cvQueue: [{ line: queued }] } });
+    assert.equal(later.panel().querySelector('[data-action=add-lines]'), null);
+    assert.ok(!later.cv.certifications.some(c => c.name === line));
+
+    const none = await stage();
+    assert.match(none.panel().textContent, /Earn a line with your own counts in Work Simulation/);
+    assert.equal(none.panel().querySelector('a[href="/articleship-program/work-simulation/"]').textContent, 'Work Simulation');
+});
+
+test('stage: the design picker shows the look-book designs by number and all 62 under "All"', async () => {
+    const pick = { situation: 'C', order: [], design: 3, savedAt: 'k3' };
+    const s = await stage({ pick, wait: 150 });
+    s.host.renderCards();
+    const grid = s.doc.getElementById('template-grid');
+    assert.equal(grid.querySelectorAll('.template-card').length, DESIGNS.length);
+    assert.match(grid.textContent, /No\. 1Classic table/);
+    assert.ok(grid.querySelector('.asb-tag.is-portal'), 'Portal-safe tag');
+    assert.match(grid.querySelector('[data-file="articleship-layout-profile-sidebar"]').textContent, /Your pick/);
+    assert.equal(s.doc.getElementById('template-collection').parentElement.hidden, true);
+    s.doc.querySelectorAll('.asb-tab')[1].dispatchEvent(new s.win.MouseEvent('click', { bubbles: true }));
+    assert.equal(grid.querySelectorAll('.template-card').length, 62);
+    grid.querySelector('[data-file="articleship-layout-clean-rule"]').dispatchEvent(new s.win.MouseEvent('click', { bubbles: true }));
+    assert.equal(s.cv.templateFile, 'articleship-layout-clean-rule');
+    assert.equal(s.cv.articleshipStructure, 'C', 'a design never resets the order');
+    grid.querySelector('[data-file="articleship-layout-wave-grid"]').dispatchEvent(new s.win.MouseEvent('click', { bubbles: true }));
+    assert.deepEqual(s.calls.choose.at(-1), ['articleship-layout-wave-grid', 'Wave Grid'], 'other layouts go through the builder\'s own picker');
+});
+
+test('stage: thumbnails show each design\'s applicant while the CV is blank; export drops the programme lines', async () => {
+    const s = await stage();
+    const preview = s.S.previewSource('articleship-layout-profile-sidebar');
+    assert.equal(preview.personal.name, EXAMPLES.C.personal.name);
+    assert.equal(preview.templateFile, 'articleship-layout-profile-sidebar');
+    assert.equal(s.S.layoutName('articleship-layout-profile-sidebar'), 'Design 3 · Sidebar');
+    assert.equal(s.S.layoutName('articleship-layout-wave-grid'), null);
+    s.click('[data-action=example]');
+    assert.equal(s.S.previewSource('articleship-layout-profile-sidebar'), null, 'once a starter is chosen, thumbnails show the student\'s CV');
+
+    const frame = new JSDOM('<!doctype html><body><div id="cv-page"><div data-msc-program-brand="header">MSC Articleship Program | Design 1</div><h1>Riya Shah</h1><div data-msc-program-brand="footer">CA Padam Bhansali | My Student Club</div></div></body>').window.document;
+    const html = s.S.exportHtml(frame);
+    assert.doesNotMatch(html, /data-msc-program-brand|CA Padam Bhansali/);
+    assert.match(html, /Riya Shah/);
+    assert.equal(frame.querySelectorAll('[data-msc-program-brand]').length, 2, 'the preview keeps them');
+    assert.equal(s.S.exportHtml(new JSDOM('<p>plain</p>').window.document), null, 'other CVs export exactly as before');
+});
+
+// ---------- The CV Builder page wiring ----------
+
+test('the CV Builder page loads the stage and calls every hook behind optional chaining', () => {
+    const html = fs.readFileSync(path.join(ROOT, 'cv-builder/index.html'), 'utf8');
+    const order = ['/scripts/articleship-progress.js', '/scripts/articleship-cv-builder.js', 'cv-script.js', '/articleship-program/cv-builder/stage.js']
+        .map(src => html.indexOf(`src="${src}`));
+    assert.ok(order.every(index => index > 0), 'all four scripts');
+    assert.deepEqual([...order].sort((a, b) => a - b), order, 'in order');
+    assert.match(html, /family=Caveat/);
+    assert.match(html, /\/articleship-program\/cv-builder\/stage\.css/);
+    const script = fs.readFileSync(path.join(ROOT, 'cv-builder/cv-script.js'), 'utf8');
+    ['blankCv', 'init', 'renderTemplateCards', 'previewSource', 'layoutName', 'onChange', 'exportHtml']
+        .forEach(hook => assert.match(script, new RegExp(`MSCArticleshipStage\\?\\.${hook}\\?\\.\\(`), hook));
+});
+
+test('the builder\'s articleship start uses the v3 blank CV when the stage is loaded (v2 starter otherwise)', () => {
+    const builder = fs.readFileSync(path.join(ROOT, 'cv-builder/cv-script.js'), 'utf8');
+    const start = builder.indexOf('function hasArticleshipDraftData');
+    const end = builder.indexOf('function articleshipStageHost', start);
+    const run = stageApi => {
+        const select = { options: [], appendChild(option) { this.options.push(option); } };
+        const sandbox = {
+            window: { MSCArticleship: catalog, MSCArticleshipStage: stageApi },
+            document: { getElementById: id => (id === 'template-select' ? select : {}), createElement: () => ({}) },
+            cvData: { personal: {}, education: [] },
+            templateCollection: 'articleship',
+            getDefaultTableSettings: () => ({ education: {} }),
+            hasUserEnteredData: () => false,
+            isArticleshipTemplate: file => Boolean(catalog.getTemplate(file))
+        };
+        vm.runInNewContext(builder.slice(start, end), sandbox);
+        sandbox.initializeArticleshipTemplates();
+        return sandbox.cvData;
+    };
+    const v3 = run({ blankCv: (cv, table) => Object.assign(B.createBlank(cv, { structure: 'A' }), { templateFile: 'articleship-layout-classic', tableSettings: table }) });
+    assert.equal(v3.articleshipStarter, 'blank');
+    assert.equal(v3.templateFile, 'articleship-layout-classic');
+    assert.ok(v3.education.some(row => /ICITSS/.test(row.degree)));
+    const v2 = run(undefined);
+    assert.equal(v2.templateFile, catalog.templates[0].file);
+});
+
+test('the stage tool page redirects to the one way in: /cv-builder/?stage=articleship', () => {
+    const page = fs.readFileSync(path.join(ROOT, 'articleship-program/cv-builder/index.html'), 'utf8');
+    assert.match(page, /\/cv-builder\/\?stage=articleship/);
+    assert.match(page, /name="robots" content="noindex"/);
+});

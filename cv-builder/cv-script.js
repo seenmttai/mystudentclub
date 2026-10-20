@@ -75,8 +75,63 @@
             if (isArticleshipTemplate(cvData.templateFile)) templateCollection = 'articleship';
             if (collectionSelect) collectionSelect.value = templateCollection;
             if (templateCollection === 'articleship' && !hasArticleshipDraftData(cvData)) {
-                cvData = catalog.createStarter(catalog.templates[0].file, getDefaultTableSettings());
+                cvData = window.MSCArticleshipStage?.blankCv?.(cvData, getDefaultTableSettings())
+                    || catalog.createStarter(catalog.templates[0].file, getDefaultTableSettings());
             }
+        }
+
+        // The articleship stage's panel (articleship-program/cv-builder/stage.js) works on the CV through this host.
+        function articleshipStageHost() {
+            return {
+                getCv: () => cvData,
+                setCv(next, options = {}) {
+                    cvData = next;
+                    ensureCvDataShape();
+                    normalizeSectionOrder();
+                    renderEditor();
+                    updateProgress();
+                    const select = document.getElementById('template-select');
+                    if (options.templateFile && select && options.templateFile !== select.value) {
+                        select.value = options.templateFile;
+                        changeTemplate();
+                    } else {
+                        updateArticleshipEditor();
+                        postToFrame();
+                    }
+                },
+                templateFile: () => getSelectedTemplateFile(),
+                useTemplate(file) {
+                    const select = document.getElementById('template-select');
+                    if (!select || select.value === file) return;
+                    select.value = file;
+                    changeTemplate();
+                },
+                choose: (file, name) => selectTemplate(file, name),
+                isLocked: file => isTemplateLocked(file),
+                accessChecked: () => Boolean(templateAccess.checked),
+                gallery: () => (window.MSCArticleship?.templates || []).filter(template => template.kind === 'gallery'),
+                collection: () => templateCollection,
+                openTemplates: () => toggleTemplateSidebar(true),
+                closeTemplates: () => toggleTemplateSidebar(false),
+                renderCards: () => renderTemplateCards(),
+                syncName: () => syncCurrentTemplateName(),
+                setFont: key => updateThemeFont(key),
+                // True when the CV no longer fits one A4 page at its own size: the layout has shrunk its text to fit
+                // (--content-scale under 0.92), or the page runs past the A4 ratio.
+                overflow() {
+                    try {
+                        const doc = document.getElementById('cv-frame')?.contentDocument;
+                        const page = doc?.getElementById('cv-page');
+                        if (!page || !page.offsetWidth) return false;
+                        const scale = parseFloat(doc.documentElement.style.getPropertyValue('--content-scale'));
+                        if (Number.isFinite(scale) && scale < 0.92) return true;
+                        return page.scrollHeight / page.offsetWidth > 1.4142 * 1.02;
+                    } catch (_) {
+                        return false;
+                    }
+                },
+                toast: message => showToast(message)
+            };
         }
 
         function applyArticleshipStarter(file) {
@@ -334,6 +389,7 @@
             initResizeHandle();
             resetEditorScrollToTop();
             requestAnimationFrame(() => resetEditorScrollToTop());
+            window.MSCArticleshipStage?.init?.(articleshipStageHost());
         };
 
         function showNoticeModal(title, message, isError = true, onDismiss = null) {
@@ -3412,6 +3468,10 @@
         function renderTemplateCards() {
             const grid = document.getElementById('template-grid');
             const currentTemplate = document.getElementById('template-select').value;
+            if (templateCollection === 'articleship' && window.MSCArticleshipStage?.renderTemplateCards?.(grid, currentTemplate)) {
+                initLazyLoading();
+                return;
+            }
             
             const templates = templateCollection === 'articleship' ? TEMPLATES.filter(t => isArticleshipTemplate(t.file)) : TEMPLATES;
             grid.innerHTML = templates.map(t => {
@@ -3570,20 +3630,22 @@
             const hasDraft = isArticleshipTemplate(templateFile) ? hasArticleshipDraftData(cvData) : hasUserEnteredData(cvData);
             const useArticleshipDemo = useDemoFallback && isArticleshipTemplate(templateFile)
                 && (!hasDraft || window.MSCArticleship.hasUnchangedStarterContent(cvData));
-            const source = useArticleshipDemo
+            const stageSource = useDemoFallback && templateCollection === 'articleship'
+                ? window.MSCArticleshipStage?.previewSource?.(templateFile) : null;
+            const source = stageSource || (useArticleshipDemo
                 ? window.MSCArticleship.createStarter(templateFile, getDefaultTableSettings())
-                : ((useDemoFallback && !hasDraft) ? DEMO_PREVIEW_DATA : cvData);
+                : ((useDemoFallback && !hasDraft) ? DEMO_PREVIEW_DATA : cvData));
             const payload = JSON.parse(JSON.stringify(source));
             const articleshipTemplate = window.MSCArticleship?.getTemplate(templateFile);
             payload.articleshipApplicant = Boolean(articleshipTemplate);
             payload.articleshipGallery = articleshipTemplate?.kind === 'gallery';
-            payload.articleshipLayoutName = articleshipTemplate?.name || '';
+            payload.articleshipLayoutName = window.MSCArticleshipStage?.layoutName?.(templateFile) || articleshipTemplate?.name || '';
             if (!payload.sectionOrder || !payload.sectionOrder.length) payload.sectionOrder = [...BASE_SECTION_ORDER];
             if (!payload.personal) payload.personal = { name: "", tagline: "", contact: "", phone: "", email: "", linkedin: "", location: "", socialLinks: [] };
             if (!payload.personal.socialLinks) payload.personal.socialLinks = [];
             payload.themeAccent = normalizeHexColor(payload.themeAccent || cvData.themeAccent || '');
             payload.themeFont = String(payload.themeFont || cvData.themeFont || '').trim();
-            payload.sectionTitles = useArticleshipDemo ? (source.sectionTitles || {}) : (cvData.sectionTitles || {});
+            payload.sectionTitles = (stageSource || useArticleshipDemo) ? (source.sectionTitles || {}) : (cvData.sectionTitles || {});
             applyFormattedContact(payload);
             return payload;
         }
@@ -3654,6 +3716,7 @@
             if (!skipSave) saveLocal();
             if (!skipHistory) pushUndoStateFromCurrent();
             updateUndoRedoControls();
+            window.MSCArticleshipStage?.onChange?.();
         }
 
         function updateTemplateSpecificPanels() {
@@ -3882,7 +3945,7 @@ async function downloadCvFile(format = 'pdf') {
         // We grab the entire <html>...</html> including <head> (styles/fonts)
         // and <body> (content). This way the Worker's Chromium renders it
         // with the exact same styling the user sees in the preview.
-        const fullHTML = '<!DOCTYPE html>' + doc.documentElement.outerHTML;
+        const fullHTML = '<!DOCTYPE html>' + (window.MSCArticleshipStage?.exportHtml?.(doc) || doc.documentElement.outerHTML);
 
         // ── Step 2: POST the HTML to our Cloudflare Worker ───────────
         // Includes a retry mechanism to gracefully handle high traffic (429 errors).

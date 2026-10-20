@@ -434,13 +434,14 @@ function renderArticleshipAcademicResults(data) {
     education.querySelectorAll('th').forEach(header => {
         const text = header.textContent.trim();
         if (/^(?:%\/?CGPA|marks(?:\s*\/\s*(?:score|CGPA|percentage))?|percentage(?:\s*\/\s*CGPA)?|score(?:\s*\(%\)|\s*\/\s*result)?|performance|grade|results?)$/i.test(text)) header.textContent = 'Marks';
-        if (/^(?:year(?: of passing)?|session \/ year)$/i.test(text)) header.textContent = 'Session';
-        if (/^remarks?$/i.test(text)) header.textContent = 'Attempt';
+        // The Guidebook's columns (ch 3): Qualification · Year · Institute · Marks · Remarks.
+        if (/^(?:year(?: of passing)?|session \/ year|session)$/i.test(text)) header.textContent = 'Year';
+        if (/^(?:remarks?|attempt)$/i.test(text)) header.textContent = 'Remarks';
     });
     education.querySelectorAll('table').forEach(table => {
         const template = table.querySelector('tbody tr');
         if (!template) return;
-        const labels = { marks: 'Marks', remarks: 'Attempt', year: 'Session', degree: 'Course', institute: 'Institute' };
+        const labels = { marks: 'Marks', remarks: 'Remarks', year: 'Year', degree: 'Qualification', institute: 'Institute' };
         const columns = new Map();
         Object.keys(labels).forEach(field => {
             const host = template.querySelector(`[data-field="${field}"]`);
@@ -464,7 +465,7 @@ function renderArticleshipAcademicResults(data) {
         const attempt = item.remarks || '';
         const missing = [];
         if (text(marks) && !visibleValue('marks', marks)) missing.push(`Marks: ${text(marks)}`);
-        if (text(attempt) && !visibleValue('remarks', attempt)) missing.push(`Attempt: ${text(attempt)}`);
+        if (text(attempt) && !visibleValue('remarks', attempt)) missing.push(`Remarks: ${text(attempt)}`);
         if (missing.length) lines.push(`${text(item.degree)} | ${missing.join(' | ')}`);
     });
     if (!lines.length) return;

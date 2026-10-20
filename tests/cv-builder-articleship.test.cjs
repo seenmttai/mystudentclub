@@ -155,7 +155,7 @@ test('layouts without result columns still show the supplied Inter marks and att
         appended.length = 0;
         data.education[0].degree = degree;
         sandbox.renderArticleshipAcademicResults(data);
-        assert.equal(appended[0].children[0].textContent, `${degree} | Marks: 412 / 600 | Attempt: 2`);
+        assert.equal(appended[0].children[0].textContent, `${degree} | Marks: 412 / 600 | Remarks: 2`);
     }
 
     appended.length = 0;

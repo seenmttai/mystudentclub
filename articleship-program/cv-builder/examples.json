@@ -1,0 +1,944 @@
+{
+ "note": "Fictional applicants for 'Start from the example' (A–G, I) and 'The Nothing CV' (H). Sample until the content build's look-book applicants are wired (build/tools/WIRING.md). Inter sessions stay as [Month Year] (FACTS 'Example CV exam line'); the programme line is Padam's exact wording (PADAM-20OCT-B, B7).",
+ "personas": {
+  "A": {
+   "personal": {
+    "name": "Ishita Menon",
+    "tagline": "CA Intermediate, both groups, first attempt",
+    "contact": "",
+    "phone": "+91 98XXXXXXXX",
+    "email": "ishita.menon@email.com",
+    "linkedin": "linkedin.com/in/ishita-menon",
+    "location": "Pune",
+    "socialLinks": []
+   },
+   "summary": "<p>CA Intermediate cleared (both groups, first attempt, [Month Year]); ICITSS completed. Completed the PwC US Audit Job Simulation and MSC's statutory audit Work Simulation. Seeking articleship in statutory audit, to learn how balances and controls are tested on real clients.</p>",
+   "education": [
+    {
+     "degree": "CA Intermediate (both groups)",
+     "year": "[Month Year]",
+     "institute": "ICAI",
+     "marks": "402/600",
+     "remarks": "First attempt; 74 in Taxation",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "ICITSS (OC + ITT)",
+     "year": "[Month Year]",
+     "institute": "ICAI",
+     "marks": "Completed",
+     "remarks": "Best presentation, OC batch of 60",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "CA Foundation",
+     "year": "2023",
+     "institute": "ICAI",
+     "marks": "268/400",
+     "remarks": "First attempt",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "B.Com",
+     "year": "2025",
+     "institute": "Savitribai Phule Pune University",
+     "marks": "8.2 CGPA",
+     "remarks": "82 in Financial Accounting",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "Class XII (CBSE)",
+     "year": "2022",
+     "institute": "Kendriya Vidyalaya, Pune",
+     "marks": "94.2%",
+     "remarks": "98 in Accountancy",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "Class X (CBSE)",
+     "year": "2020",
+     "institute": "Kendriya Vidyalaya, Pune",
+     "marks": "95.0%",
+     "remarks": "School rank 3 of 140",
+     "mergedWithPrevious": false
+    }
+   ],
+   "experience": [],
+   "projects": [],
+   "skills": "<p><strong>Excel (proficient)</strong>: XLOOKUP, PivotTables, SUMIFS</p><p><strong>Tally Prime (working knowledge)</strong>: purchase and sales vouchers with GST</p><p><strong>Languages</strong>: English, Hindi, Marathi, Malayalam</p>",
+   "certifications": [
+    {
+     "name": "Statutory Audit Work Simulation, MSC Articleship Program | [Month Year]: vouched 20 purchase bills against PO, GRN and ledger; flagged 3 cut-off and approval exceptions.",
+     "issuer": ""
+    },
+    {
+     "name": "PwC US Audit Job Simulation (Forage) | [Month Year]: walked through a purchasing process, identified its controls and built a risk-control matrix.",
+     "issuer": ""
+    },
+    {
+     "name": "SEBI Investor Awareness Test, Level 1 (NISM) | [Month Year]: passed the 60-minute test.",
+     "issuer": ""
+    },
+    {
+     "name": "Completed MSC Articleship Program — foundational understanding of work and tasks across all domains",
+     "issuer": ""
+    }
+   ],
+   "achievements": [
+    "Finalist (top 6 of 40 teams), inter-college commerce quiz, 2024."
+   ],
+   "leadership": [
+    "Treasurer, Commerce Society 2024–25: kept the accounts of 9 events; every payment backed by a bill."
+   ],
+   "interests": [
+    "Badminton: college doubles team, 2024–25."
+   ],
+   "customSections": [],
+   "sectionTitles": {},
+   "sectionLabels": {},
+   "sectionGroups": {},
+   "themeAccent": "",
+   "themeFont": "",
+   "situation": "A"
+  },
+  "B": {
+   "personal": {
+    "name": "Mohit Jain",
+    "tagline": "CA Intermediate, both groups cleared",
+    "contact": "",
+    "phone": "+91 98XXXXXXXX",
+    "email": "mohit.jain@email.com",
+    "linkedin": "linkedin.com/in/mohit-jain",
+    "location": "Jaipur",
+    "socialLinks": []
+   },
+   "summary": "<p>CA Intermediate cleared (Group II [Month Year], Group I [Month Year]); ICITSS completed. Vouched purchase invoices in MSC's statutory audit Work Simulation and keep my family shop's books in Tally Prime. Seeking articleship in statutory audit and direct tax.</p>",
+   "education": [
+    {
+     "degree": "CA Intermediate Group II",
+     "year": "[Month Year]",
+     "institute": "ICAI",
+     "marks": "188/300",
+     "remarks": "72 in Auditing and Ethics",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "CA Intermediate Group I",
+     "year": "[Month Year]",
+     "institute": "ICAI",
+     "marks": "171/300",
+     "remarks": "68 in Corporate and Other Laws",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "ICITSS (OC + ITT)",
+     "year": "[Month Year]",
+     "institute": "ICAI",
+     "marks": "Completed",
+     "remarks": "ITT group project: a debtors-ageing sheet",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "CA Foundation",
+     "year": "2022",
+     "institute": "ICAI",
+     "marks": "236/400",
+     "remarks": "Cleared",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "B.Com",
+     "year": "2024",
+     "institute": "University of Rajasthan",
+     "marks": "64%",
+     "remarks": "Completed (regular)",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "Class XII (RBSE)",
+     "year": "2021",
+     "institute": "Government Senior Secondary School, Jaipur",
+     "marks": "88.4%",
+     "remarks": "95 in Accountancy",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "Class X (RBSE)",
+     "year": "2019",
+     "institute": "Government Senior Secondary School, Jaipur",
+     "marks": "86.2%",
+     "remarks": "92 in Mathematics",
+     "mergedWithPrevious": false
+    }
+   ],
+   "experience": [
+    {
+     "role": "Accounts support, family business",
+     "company": "Hardware shop, Jaipur",
+     "dates": "Jun 2024 – present",
+     "intro": "",
+     "category": "",
+     "bullets": [
+      "Kept the shop's books in Tally Prime for 14 months; reconciled 2 bank accounts every month.",
+      "Found ₹23,000 of expenses entered twice and corrected the entries."
+     ]
+    }
+   ],
+   "projects": [],
+   "skills": "<p><strong>Excel (working knowledge)</strong>: SUMIFS, XLOOKUP, an ageing schedule</p><p><strong>Tally Prime (working knowledge)</strong>: GST vouchers, bank reconciliation</p>",
+   "certifications": [
+    {
+     "name": "Statutory Audit Work Simulation, MSC Articleship Program | [Month Year]: vouched 40 purchase invoices against POs and GRNs; flagged 3 cut-off errors.",
+     "issuer": ""
+    },
+    {
+     "name": "Goldman Sachs Excel Skills for Business Job Simulation (Forage) | [Month Year]: completed all five tasks, starting with basic Excel skills.",
+     "issuer": ""
+    },
+    {
+     "name": "Completed MSC Articleship Program — foundational understanding of work and tasks across all domains",
+     "issuer": ""
+    }
+   ],
+   "achievements": [],
+   "leadership": [
+    "Volunteer, registration desk, CA students' convention in Jaipur, 2024 (300 delegates)."
+   ],
+   "interests": [
+    "Cricket: opening batter for my colony team for three seasons."
+   ],
+   "customSections": [],
+   "sectionTitles": {},
+   "sectionLabels": {},
+   "sectionGroups": {},
+   "themeAccent": "",
+   "themeFont": "",
+   "situation": "B"
+  },
+  "C": {
+   "personal": {
+    "name": "Nikhil Verma",
+    "tagline": "CA Intermediate | Internship in audit and tax",
+    "contact": "",
+    "phone": "+91 98XXXXXXXX",
+    "email": "nikhil.verma@email.com",
+    "linkedin": "linkedin.com/in/nikhil-verma",
+    "location": "Indore",
+    "socialLinks": []
+   },
+   "summary": "<p>CA Intermediate cleared (both groups, [Month Year]); ICITSS completed. Three months as an intern in a 12-person CA firm: vouching, GSTR-1 data and a stock count. Seeking articleship in GST, with audit exposure.</p>",
+   "education": [
+    {
+     "degree": "CA Intermediate (both groups)",
+     "year": "[Month Year]",
+     "institute": "ICAI",
+     "marks": "355/600",
+     "remarks": "71 in Taxation",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "ICITSS (OC + ITT)",
+     "year": "[Month Year]",
+     "institute": "ICAI",
+     "marks": "Completed",
+     "remarks": "Group lead, OC case presentation",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "CA Foundation",
+     "year": "2022",
+     "institute": "ICAI",
+     "marks": "245/400",
+     "remarks": "First attempt",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "B.Com",
+     "year": "2023–26",
+     "institute": "Devi Ahilya Vishwavidyalaya",
+     "marks": "7.6 CGPA",
+     "remarks": "Pursuing (Sem 5)",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "Class XII (MP Board)",
+     "year": "2021",
+     "institute": "Higher Secondary School, Indore",
+     "marks": "84.0%",
+     "remarks": "93 in Accountancy",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "Class X (MP Board)",
+     "year": "2019",
+     "institute": "Higher Secondary School, Indore",
+     "marks": "88.0%",
+     "remarks": "95 in Mathematics",
+     "mergedWithPrevious": false
+    }
+   ],
+   "experience": [
+    {
+     "role": "Intern",
+     "company": "CA firm, Indore (12 people, audit and tax)",
+     "dates": "Jun 2025 – Aug 2025",
+     "intro": "",
+     "category": "",
+     "bullets": [
+      "Vouched 120 purchase bills against goods receipt notes for two trading clients.",
+      "Prepared GSTR-1 data for 6 clients from their sales registers in Excel.",
+      "Assisted in the physical verification of 240 stock items at a client's warehouse."
+     ]
+    },
+    {
+     "role": "Bookkeeping, family business",
+     "company": "Textile shop, Indore",
+     "dates": "Apr 2023 – May 2025",
+     "intro": "",
+     "category": "",
+     "bullets": [
+      "Kept the books in Tally Prime; reconciled 2 bank accounts every month."
+     ]
+    }
+   ],
+   "projects": [],
+   "skills": "<p><strong>Excel (proficient)</strong>: SUMIFS, XLOOKUP, PivotTables</p><p><strong>Tally Prime (working knowledge)</strong>: GST vouchers, bank reconciliation</p>",
+   "certifications": [
+    {
+     "name": "GST Work Simulation, MSC Articleship Program | [Month Year]: put a month's sales into GSTR-1 tables and a GSTR-3B summary; matched the credit claimed with GSTR-2B.",
+     "issuer": ""
+    },
+    {
+     "name": "PwC US Tax Job Simulation (Forage) | [Month Year]: mapped a client's chart of accounts to its tax treatment.",
+     "issuer": ""
+    },
+    {
+     "name": "Completed MSC Articleship Program — foundational understanding of work and tasks across all domains",
+     "issuer": ""
+    }
+   ],
+   "achievements": [],
+   "leadership": [
+    "Class representative, B.Com Year 2 (80 students), 2024–25."
+   ],
+   "interests": [
+    "Table tennis: college team, 2024–25."
+   ],
+   "customSections": [],
+   "sectionTitles": {},
+   "sectionLabels": {},
+   "sectionGroups": {},
+   "themeAccent": "",
+   "themeFont": "",
+   "situation": "C"
+  },
+  "D": {
+   "personal": {
+    "name": "Priya Nair",
+    "tagline": "CA Intermediate | Projects in audit and valuation",
+    "contact": "",
+    "phone": "+91 98XXXXXXXX",
+    "email": "priya.nair@email.com",
+    "linkedin": "linkedin.com/in/priya-nair",
+    "location": "Bengaluru",
+    "socialLinks": []
+   },
+   "summary": "<p>CA Intermediate cleared (both groups, first attempt, [Month Year]); ICITSS ongoing, completes [Month Year]. Built a DCF of a listed company and finished MSC's valuation and statutory audit Work Simulation levels. Seeking articleship in a valuation team.</p>",
+   "education": [
+    {
+     "degree": "CA Intermediate (both groups)",
+     "year": "[Month Year]",
+     "institute": "ICAI",
+     "marks": "389/600",
+     "remarks": "First attempt; 78 in FM and SM",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "ICITSS (OC + ITT)",
+     "year": "[Month Year]",
+     "institute": "ICAI",
+     "marks": "Ongoing",
+     "remarks": "Completes [Month Year]",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "CA Foundation",
+     "year": "2023",
+     "institute": "ICAI",
+     "marks": "259/400",
+     "remarks": "First attempt",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "B.Com",
+     "year": "2022–25",
+     "institute": "Bangalore University",
+     "marks": "8.0 CGPA",
+     "remarks": "Completed 2025",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "Class XII (Karnataka PUC)",
+     "year": "2022",
+     "institute": "PU College, Bengaluru",
+     "marks": "93.0%",
+     "remarks": "97 in Accountancy",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "Class X (ICSE)",
+     "year": "2020",
+     "institute": "High School, Bengaluru",
+     "marks": "91.0%",
+     "remarks": "96 in Mathematics",
+     "mergedWithPrevious": false
+    }
+   ],
+   "experience": [],
+   "projects": [
+    {
+     "title": "DCF of a listed FMCG company",
+     "description": "Self-directed project | 2025",
+     "bullets": [
+      "Built a 5-year DCF from its annual report; cross-checked the value with the EV/EBITDA of 4 peers."
+     ]
+    },
+    {
+     "title": "Annual-report project: key audit matters",
+     "description": "Self-directed project | 2025",
+     "bullets": [
+      "Read a listed paint maker's annual report; summarised its 3 key audit matters and the auditor's response."
+     ]
+    }
+   ],
+   "skills": "<p><strong>Excel (proficient)</strong>: XLOOKUP, INDEX-MATCH, data tables for sensitivity</p><p><strong>PowerPoint</strong>: a 10-slide project summary</p>",
+   "certifications": [
+    {
+     "name": "Valuation Work Simulation, MSC Articleship Program | [Month Year]: cleaned a 3-year P&L to EBITDA; built a simple DCF with one sensitivity.",
+     "issuer": ""
+    },
+    {
+     "name": "Statutory Audit Work Simulation, MSC Articleship Program | [Month Year]: counted a 60-item stock sheet against the register; traced 4 differences.",
+     "issuer": ""
+    },
+    {
+     "name": "Completed MSC Articleship Program — foundational understanding of work and tasks across all domains",
+     "issuer": ""
+    }
+   ],
+   "achievements": [],
+   "leadership": [
+    "Editor, college finance club newsletter, 2024–25: 6 issues with 4 contributors."
+   ],
+   "interests": [
+    "Running: two 10 km runs in 2025."
+   ],
+   "customSections": [],
+   "sectionTitles": {},
+   "sectionLabels": {},
+   "sectionGroups": {},
+   "themeAccent": "",
+   "themeFont": "",
+   "situation": "D"
+  },
+  "E": {
+   "personal": {
+    "name": "Aditya Singh",
+    "tagline": "CA Intermediate | Captain, college football team",
+    "contact": "",
+    "phone": "+91 98XXXXXXXX",
+    "email": "aditya.singh@email.com",
+    "linkedin": "linkedin.com/in/aditya-singh",
+    "location": "Lucknow",
+    "socialLinks": []
+   },
+   "summary": "<p>CA Intermediate cleared (both groups, [Month Year]); ICITSS completed. Captained my college football team and hold the NCC 'B' certificate. Seeking articleship in internal audit, to learn how processes and controls are tested.</p>",
+   "education": [
+    {
+     "degree": "CA Intermediate (both groups)",
+     "year": "[Month Year]",
+     "institute": "ICAI",
+     "marks": "348/600",
+     "remarks": "65 in Auditing and Ethics",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "ICITSS (OC + ITT)",
+     "year": "[Month Year]",
+     "institute": "ICAI",
+     "marks": "Completed",
+     "remarks": "Presented the group case, OC batch of 55",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "CA Foundation",
+     "year": "2022",
+     "institute": "ICAI",
+     "marks": "232/400",
+     "remarks": "Cleared",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "B.Com",
+     "year": "2024",
+     "institute": "University of Lucknow",
+     "marks": "68%",
+     "remarks": "Completed (regular)",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "Class XII (CBSE)",
+     "year": "2021",
+     "institute": "Senior Secondary School, Lucknow",
+     "marks": "85.6%",
+     "remarks": "91 in Accountancy",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "Class X (CBSE)",
+     "year": "2019",
+     "institute": "Senior Secondary School, Lucknow",
+     "marks": "89.0%",
+     "remarks": "House captain",
+     "mergedWithPrevious": false
+    }
+   ],
+   "experience": [],
+   "projects": [],
+   "skills": "<p><strong>Excel (working knowledge)</strong>: filters, SUMIFS, PivotTables</p><p><strong>Languages</strong>: English, Hindi</p>",
+   "certifications": [
+    {
+     "name": "Internal Audit Work Simulation, MSC Articleship Program | [Month Year]: walked one purchase end to end; tested approval and three-way match on 15 purchases; wrote 2 observations.",
+     "issuer": ""
+    },
+    {
+     "name": "PwC US Audit Job Simulation (Forage) | [Month Year]: walked through a purchasing process, identified its controls and built a risk-control matrix.",
+     "issuer": ""
+    },
+    {
+     "name": "Completed MSC Articleship Program — foundational understanding of work and tasks across all domains",
+     "issuer": ""
+    }
+   ],
+   "achievements": [
+    "NCC 'B' certificate, 2023.",
+    "Runner-up, inter-college debate (24 teams), 2024."
+   ],
+   "leadership": [
+    "Captain, college football team 2023–24: 18 players; reached the zonal final.",
+    "Volunteer teacher, Saturday maths class, 6 months: taught 12 Class VIII students."
+   ],
+   "interests": [
+    "Football: Sunday league with my old college team."
+   ],
+   "customSections": [],
+   "sectionTitles": {},
+   "sectionLabels": {},
+   "sectionGroups": {},
+   "themeAccent": "",
+   "themeFont": "",
+   "situation": "E"
+  },
+  "F": {
+   "personal": {
+    "name": "Harsh Patel",
+    "tagline": "CA Intermediate | Excel and Power BI",
+    "contact": "",
+    "phone": "+91 98XXXXXXXX",
+    "email": "harsh.patel@email.com",
+    "linkedin": "linkedin.com/in/harsh-patel",
+    "location": "Ahmedabad",
+    "socialLinks": []
+   },
+   "summary": "<p>CA Intermediate cleared (both groups, first attempt, [Month Year]); ICITSS completed. Build Excel and Power BI reports I can rebuild live, from a raw export to a dashboard. Seeking articleship in statutory audit, where sampling and data checks are daily work.</p>",
+   "education": [
+    {
+     "degree": "CA Intermediate (both groups)",
+     "year": "[Month Year]",
+     "institute": "ICAI",
+     "marks": "371/600",
+     "remarks": "First attempt",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "ICITSS (OC + ITT)",
+     "year": "[Month Year]",
+     "institute": "ICAI",
+     "marks": "Completed",
+     "remarks": "ITT group project: a GST summary in Excel",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "CA Foundation",
+     "year": "2023",
+     "institute": "ICAI",
+     "marks": "251/400",
+     "remarks": "First attempt",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "B.Com",
+     "year": "2023–26",
+     "institute": "Gujarat University",
+     "marks": "7.8 CGPA",
+     "remarks": "Pursuing (Sem 5)",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "Class XII (GSEB)",
+     "year": "2022",
+     "institute": "Higher Secondary School, Ahmedabad",
+     "marks": "89.0%",
+     "remarks": "96 in Accountancy",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "Class X (GSEB)",
+     "year": "2020",
+     "institute": "Higher Secondary School, Ahmedabad",
+     "marks": "92.0%",
+     "remarks": "98 in Mathematics",
+     "mergedWithPrevious": false
+    }
+   ],
+   "experience": [],
+   "projects": [
+    {
+     "title": "Debtors-ageing tracker",
+     "description": "Self-directed practice | 2025",
+     "bullets": [
+      "Built a debtors-ageing sheet for a practice ledger of 400 entries with XLOOKUP and a PivotTable."
+     ]
+    }
+   ],
+   "skills": "<p><strong>Excel (proficient)</strong>: XLOOKUP, PivotTables, SUMIFS, Power Query; built a sales dashboard from a public dataset of 5,000 rows</p><p><strong>Power BI (working knowledge)</strong>: one published practice report</p><p><strong>Tally Prime (working knowledge)</strong>: GST vouchers, bank reconciliation</p>",
+   "certifications": [
+    {
+     "name": "Goldman Sachs Excel Skills for Business Job Simulation (Forage) | [Month Year]: completed all five tasks, starting with basic Excel skills.",
+     "issuer": ""
+    },
+    {
+     "name": "Statutory Audit Work Simulation, MSC Articleship Program | [Month Year]: vouched 20 purchase bills against PO, GRN and ledger; flagged 3 exceptions.",
+     "issuer": ""
+    },
+    {
+     "name": "Completed MSC Articleship Program — foundational understanding of work and tasks across all domains",
+     "issuer": ""
+    }
+   ],
+   "achievements": [],
+   "leadership": [
+    "Ran the Excel help desk for my B.Com batch (60 students), 2024."
+   ],
+   "interests": [
+    "Cycling: 50 km weekend rides."
+   ],
+   "customSections": [],
+   "sectionTitles": {},
+   "sectionLabels": {},
+   "sectionGroups": {},
+   "themeAccent": "",
+   "themeFont": "",
+   "situation": "F"
+  },
+  "G": {
+   "personal": {
+    "name": "Deepa Raman",
+    "tagline": "CA Intermediate | B.Com (Hons), first class",
+    "contact": "",
+    "phone": "+91 98XXXXXXXX",
+    "email": "deepa.raman@email.com",
+    "linkedin": "linkedin.com/in/deepa-raman",
+    "location": "Chennai",
+    "socialLinks": []
+   },
+   "summary": "<p>CA Intermediate cleared (both groups, [Month Year]) through direct entry after B.Com (Hons); ICITSS completed. Checked tax-audit items in MSC's direct tax Work Simulation. Seeking articleship in direct tax.</p>",
+   "education": [
+    {
+     "degree": "CA Intermediate (both groups)",
+     "year": "[Month Year]",
+     "institute": "ICAI",
+     "marks": "361/600",
+     "remarks": "Direct entry after graduation",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "ICITSS (OC + ITT)",
+     "year": "[Month Year]",
+     "institute": "ICAI",
+     "marks": "Completed",
+     "remarks": "Completed",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "B.Com (Hons)",
+     "year": "2024",
+     "institute": "University of Madras",
+     "marks": "8.1 CGPA",
+     "remarks": "First class",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "Class XII (State Board)",
+     "year": "2021",
+     "institute": "Higher Secondary School, Chennai",
+     "marks": "92.0%",
+     "remarks": "97 in Accountancy",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "Class X (State Board)",
+     "year": "2019",
+     "institute": "Higher Secondary School, Chennai",
+     "marks": "90.0%",
+     "remarks": "95 in Mathematics",
+     "mergedWithPrevious": false
+    }
+   ],
+   "experience": [],
+   "projects": [
+    {
+     "title": "Working capital of two listed retailers",
+     "description": "B.Com final-year project | 2024",
+     "bullets": [
+      "Compared 3 years of receivable, inventory and payable days; explained why one retailer's cash cycle was 20 days longer."
+     ]
+    }
+   ],
+   "skills": "<p><strong>Excel (working knowledge)</strong>: SUMIFS, PivotTables</p><p><strong>Languages</strong>: English, Tamil, Hindi</p>",
+   "certifications": [
+    {
+     "name": "Direct Tax Work Simulation, MSC Articleship Program | [Month Year]: checked 8 tax-audit items against the books (cash payments, TDS, late statutory dues, depreciation) and drafted the notes.",
+     "issuer": ""
+    },
+    {
+     "name": "PwC US Tax Job Simulation (Forage) | [Month Year]: mapped a client's chart of accounts to its tax treatment.",
+     "issuer": ""
+    },
+    {
+     "name": "Completed MSC Articleship Program — foundational understanding of work and tasks across all domains",
+     "issuer": ""
+    }
+   ],
+   "achievements": [],
+   "leadership": [
+    "Secretary, Commerce Association 2023–24: ran 5 guest lectures for 200 students."
+   ],
+   "interests": [
+    "Carnatic vocal: 5 graded exams over 6 years."
+   ],
+   "customSections": [],
+   "sectionTitles": {},
+   "sectionLabels": {},
+   "sectionGroups": {},
+   "themeAccent": "",
+   "themeFont": "",
+   "situation": "G"
+  },
+  "H": {
+   "personal": {
+    "name": "Tanvi Deshmukh",
+    "tagline": "CA Intermediate, first attempt",
+    "contact": "",
+    "phone": "+91 98XXXXXXXX",
+    "email": "tanvi.deshmukh@email.com",
+    "linkedin": "linkedin.com/in/tanvi-deshmukh",
+    "location": "Nagpur",
+    "socialLinks": []
+   },
+   "summary": "<p>CA Intermediate cleared ([Month Year]), first attempt; ICITSS completed. Comfortable in Excel (XLOOKUP, PivotTables) and Tally Prime. Looking for articleship with audit and tax exposure, to choose my domain from real work.</p>",
+   "education": [
+    {
+     "degree": "CA Intermediate (both groups)",
+     "year": "[Month Year]",
+     "institute": "ICAI",
+     "marks": "338/600",
+     "remarks": "First attempt; 70 in Taxation",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "ICITSS (OC + ITT)",
+     "year": "[Month Year]",
+     "institute": "ICAI",
+     "marks": "Completed",
+     "remarks": "Presented my group's case, OC batch of 60",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "CA Foundation",
+     "year": "2023",
+     "institute": "ICAI",
+     "marks": "238/400",
+     "remarks": "First attempt",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "B.Com",
+     "year": "2023–26",
+     "institute": "RTM Nagpur University",
+     "marks": "7.2 CGPA",
+     "remarks": "Pursuing (Sem 4)",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "Class XII (Maharashtra Board)",
+     "year": "2022",
+     "institute": "Junior College, Nagpur",
+     "marks": "86.0%",
+     "remarks": "94 in Book-keeping and Accountancy",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "Class X (Maharashtra Board)",
+     "year": "2020",
+     "institute": "High School, Nagpur",
+     "marks": "88.0%",
+     "remarks": "School rank 3 of 120",
+     "mergedWithPrevious": false
+    }
+   ],
+   "experience": [],
+   "projects": [],
+   "skills": "<p><strong>Excel (working knowledge)</strong>: XLOOKUP, PivotTables, SUMIFS</p><p><strong>Tally Prime (working knowledge)</strong>: purchase and sales vouchers</p>",
+   "certifications": [
+    {
+     "name": "PwC US Audit Job Simulation (Forage) | [Month Year]: walked through a purchasing process, identified its controls and built a risk-control matrix.",
+     "issuer": ""
+    },
+    {
+     "name": "PwC US Tax Job Simulation (Forage) | [Month Year]: mapped a client's chart of accounts to its tax treatment.",
+     "issuer": ""
+    },
+    {
+     "name": "Goldman Sachs Excel Skills for Business Job Simulation (Forage) | [Month Year]: completed all five tasks, starting with basic Excel skills.",
+     "issuer": ""
+    },
+    {
+     "name": "SEBI Investor Awareness Test, Level 1 (NISM) | [Month Year]: passed the 60-minute test.",
+     "issuer": ""
+    },
+    {
+     "name": "Completed MSC Articleship Program — foundational understanding of work and tasks across all domains",
+     "issuer": ""
+    }
+   ],
+   "achievements": [],
+   "leadership": [
+    "Anchored the college annual day for 600 people, 2024.",
+    "Home tutor: taught Accounts to 3 Class XI students for a year."
+   ],
+   "interests": [
+    "Badminton: weekend doubles at the district club."
+   ],
+   "customSections": [],
+   "sectionTitles": {},
+   "sectionLabels": {},
+   "sectionGroups": {},
+   "themeAccent": "",
+   "themeFont": "",
+   "situation": "H"
+  },
+  "I": {
+   "personal": {
+    "name": "Sourav Das",
+    "tagline": "CA Intermediate and CS Executive (Module 1)",
+    "contact": "",
+    "phone": "+91 98XXXXXXXX",
+    "email": "sourav.das@email.com",
+    "linkedin": "linkedin.com/in/sourav-das",
+    "location": "Kolkata",
+    "socialLinks": []
+   },
+   "summary": "<p>CA Intermediate cleared (both groups, first attempt, [Month Year]) alongside CS Executive Module 1; ICITSS completed. Seeking articleship in statutory audit with company-law work, where both courses meet.</p>",
+   "education": [
+    {
+     "degree": "CA Intermediate (both groups)",
+     "year": "[Month Year]",
+     "institute": "ICAI",
+     "marks": "352/600",
+     "remarks": "First attempt",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "CS Executive",
+     "year": "[Month Year]",
+     "institute": "ICSI",
+     "marks": "Module 1 cleared",
+     "remarks": "Module 2 pursuing",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "ICITSS (OC + ITT)",
+     "year": "[Month Year]",
+     "institute": "ICAI",
+     "marks": "Completed",
+     "remarks": "Completed",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "CA Foundation",
+     "year": "2022",
+     "institute": "ICAI",
+     "marks": "243/400",
+     "remarks": "First attempt",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "B.Com",
+     "year": "2022–25",
+     "institute": "University of Calcutta",
+     "marks": "62%",
+     "remarks": "Completed 2025",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "Class XII (WBCHSE)",
+     "year": "2021",
+     "institute": "Higher Secondary School, Kolkata",
+     "marks": "87.0%",
+     "remarks": "94 in Accountancy",
+     "mergedWithPrevious": false
+    },
+    {
+     "degree": "Class X (WBBSE)",
+     "year": "2019",
+     "institute": "High School, Kolkata",
+     "marks": "85.0%",
+     "remarks": "90 in Mathematics",
+     "mergedWithPrevious": false
+    }
+   ],
+   "experience": [],
+   "projects": [],
+   "skills": "<p><strong>Excel (working knowledge)</strong>: SUMIFS, PivotTables</p><p><strong>Tally Prime (working knowledge)</strong>: vouchers, bank reconciliation</p>",
+   "certifications": [
+    {
+     "name": "Statutory Audit Work Simulation, MSC Articleship Program | [Month Year]: checked capitalisation dates and recomputed depreciation on 12 assets; found a capital item booked as repairs.",
+     "issuer": ""
+    },
+    {
+     "name": "PwC US Audit Job Simulation (Forage) | [Month Year]: walked through a purchasing process, identified its controls and built a risk-control matrix.",
+     "issuer": ""
+    },
+    {
+     "name": "Completed MSC Articleship Program — foundational understanding of work and tasks across all domains",
+     "issuer": ""
+    }
+   ],
+   "achievements": [],
+   "leadership": [
+    "Organised a company-law quiz for 3 colleges (45 teams) with my college's CS study circle, 2024."
+   ],
+   "interests": [
+    "Rabindra Sangeet: 4 years of training."
+   ],
+   "customSections": [],
+   "sectionTitles": {},
+   "sectionLabels": {},
+   "sectionGroups": {},
+   "themeAccent": "",
+   "themeFont": "",
+   "situation": "A"
+  }
+ }
+}
