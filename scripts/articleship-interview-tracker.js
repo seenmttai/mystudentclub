@@ -57,7 +57,23 @@
     const WAITS = Object.freeze(['Same day', 'Within a week', '1 to 2 weeks', 'Over 2 weeks']);
     const DAY_MODES = Object.freeze({ 'in-person': 'In person', online: 'Online' });
     const PARTS = Object.freeze(['core', 'domain', 'after']);
-    const DEFAULTS = Object.freeze({ interviewDate: '', status: {}, dates: {}, notes: {}, dayTicks: {}, dayMode: '', log: [], logDeleted: {} });
+    /**
+     * Saved shape. Every per-topic map has a twin "<map>At" ({ key: ms }) and the two single values carry "<value>At",
+     * so two devices merge key by key: the newer change wins and keys a device never touched are left alone.
+     * missedDone: { "<entry id>:<line hash>": true } = a "Questions you couldn't answer" line ticked "Got it now".
+     */
+    const DEFAULTS = Object.freeze({
+        interviewDate: '', interviewDateAt: 0, status: {}, statusAt: {}, dates: {}, datesAt: {}, notes: {}, notesAt: {},
+        dayTicks: {}, dayTicksAt: {}, dayMode: '', dayModeAt: 0, missedDone: {}, missedDoneAt: {}, log: [], logDeleted: {}
+    });
+    const KEYED = Object.freeze(['status', 'dates', 'notes', 'dayTicks', 'missedDone']);
+    /** A deleted interview is remembered this long so another device cannot bring it back; then it is forgotten. */
+    const DELETED_KEEP_DAYS = 180;
+    /** A long section opens with this many topics still to do, and a "Show all" for the rest. */
+    const PREVIEW_TOPICS = 5;
+    /** Practise your interview (row 4.13); presets: round=full|technical|hr|call, domain=<slug>, firm=<name>. */
+    const MOCK_PAGE = '/ai-interview.html';
+    const SECTION_ROUNDS = Object.freeze({ hr: 'hr' });
     const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const MONTHS_LONG = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
         'October', 'November', 'December'];
@@ -211,8 +227,9 @@
             },
             interviewDay: {
                 sections: Array.isArray(day.sections) ? day.sections : [],
-                notes: (Array.isArray(day.notes) ? day.notes : []).map(n => ({ title: text(n.title), text: text(n.text), link: normaliseLink(n.link) }))
-                    .filter(n => n.title || n.text)
+                notes: (Array.isArray(day.notes) ? day.notes : []).map(n => ({
+                    title: text(n.title), text: text(n.text), link: normaliseLink(n.link), mode: DAY_MODES[text(n.mode)] ? text(n.mode) : ''
+                })).filter(n => n.title || n.text)
             }
         };
     }
@@ -266,6 +283,36 @@
     /** The button's word: "Practise" for a practice page (written test, AI interview), "Read" for a booklet. */
     function readText(read) {
         return read && read.href && /^\/(?:articleship-program\/written-test\/|ai-interview)/.test(read.href) ? 'Practise' : 'Read';
+    }
+
+    /**
+     * A set mock in Practise your interview: { round, domain, firm } → /ai-interview.html?mode=articleship&round=…
+     * Given `href` (an /ai-interview.html link from the content), its own parameters stay and only missing ones are added.
+     */
+    function mockHref(preset, href) {
+        const p = preset || {};
+        const base = text(href) && text(href).split(/[?#]/)[0] === MOCK_PAGE ? text(href) : MOCK_PAGE + '?mode=articleship';
+        const [path, query] = base.split('#')[0].split('?');
+        const params = new URLSearchParams(query || '');
+        if (!params.has('mode')) params.set('mode', 'articleship');
+        [['round', p.round], ['domain', p.domain], ['firm', clip(p.firm, 120)]].forEach(([key, value]) => {
+            if (text(value) && !params.has(key)) params.set(key, text(value));
+        });
+        return path + '?' + params.toString();
+    }
+
+    function isMockHref(href) {
+        return text(href).split(/[?#]/)[0] === MOCK_PAGE;
+    }
+
+    /** "Practise a GST mock", "Practise an M&A tax mock": the domain's name in a sentence. */
+    function mockLabel(domainTitle) {
+        const name = text(domainTitle);
+        const first = name.split(/\s/)[0] || '';
+        const acronym = first.length > 1 && first === first.toUpperCase();
+        const shown = acronym ? name : name.charAt(0).toLowerCase() + name.slice(1);
+        const an = /^[aeiou]/i.test(name) || (acronym && /^[AEFHILMNORSX]/.test(first));
+        return 'Practise ' + (an ? 'an ' : 'a ') + shown + ' mock';
     }
 
     // ---------- dates ----------
@@ -430,11 +477,36 @@
             (b.date || '').localeCompare(a.date || '') || (b.createdAt || 0) - (a.createdAt || 0));
     }
 
-    /** Questions the student could not answer, newest first: they go to the night-before view. */
-    function missedQuestions(log) {
+    /** A short, stable id for one line of text (the "Got it now" tick of a missed question). */
+    function lineHash(value) {
+        let h = 5381;
+        const s = text(value).toLowerCase().replace(/\s+/g, ' ');
+        for (let i = 0; i < s.length; i += 1) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0;
+        return h.toString(36);
+    }
+
+    function missedKey(entryId, line) {
+        return text(entryId) + ':' + lineHash(line);
+    }
+
+    /**
+     * Questions the student could not answer, newest first: they go to the night-before view.
+     * With `done` ({ key: true }), lines ticked "Got it now" are left out.
+     */
+    function missedQuestions(log, done) {
         const out = [];
-        sortedLog(log).forEach(entry => lines(entry.missed).forEach(q => out.push({ text: q, firm: entryName(entry), date: entry.date })));
+        const ticked = isPlainObject(done) ? done : {};
+        sortedLog(log).forEach(entry => lines(entry.missed).forEach(q => {
+            const key = missedKey(entry.id, q);
+            if (ticked[key] !== true) out.push({ key, text: q, firm: entryName(entry), date: entry.date, entryId: entry.id });
+        }));
         return out;
+    }
+
+    /** True when an interview dated on or after `iso` is already logged (the "Log this interview" nudge then hides). */
+    function loggedSince(log, iso) {
+        if (!isISODate(iso)) return false;
+        return (Array.isArray(log) ? log : []).some(entry => entry && isISODate(text(entry.date)) && entry.date >= iso);
     }
 
     /** Strip anything that could identify a person before a log leaves the device. */
@@ -481,6 +553,17 @@
         return list.filter(section => !other.test(text(section && section.title)));
     }
 
+    /** The interview-day notes for one mode, by the same rule: a note marked (or titled) for the other mode drops out. */
+    function dayNotes(notes, mode) {
+        const list = Array.isArray(notes) ? notes : [];
+        if (!DAY_MODES[mode]) return list;
+        return list.filter(note => {
+            const own = note && DAY_MODES[note.mode] ? note.mode : '';
+            if (own) return own === mode;
+            return daySections([note], mode).length === 1;
+        });
+    }
+
     function shareEnabled(config) {
         const cfg = config || SHARE_FORM;
         return /^https:\/\/docs\.google\.com\/forms\/d\/e\/[A-Za-z0-9_-]+\/formResponse$/.test(text(cfg.action)) &&
@@ -499,11 +582,63 @@
     }
 
     // ---------- merge (two devices changed it since the last sync) ----------
-    function mergeData(localData, remoteData) {
+    /** Tombstones older than DELETED_KEEP_DAYS are dropped (they would otherwise grow forever). */
+    function pruneDeleted(deleted, nowMs) {
+        const cutoff = (typeof nowMs === 'number' ? nowMs : Date.now()) - DELETED_KEEP_DAYS * 86400000;
+        const out = {};
+        Object.entries(isPlainObject(deleted) ? deleted : {}).forEach(([id, at]) => {
+            const t = Number(at) || 0;
+            // A tombstone without a usable time is kept once more with today's time, so it ages out like the rest.
+            out[id] = t > 0 ? t : (typeof nowMs === 'number' ? nowMs : Date.now());
+            if (t > 0 && t < cutoff) delete out[id];
+        });
+        return out;
+    }
+
+    /**
+     * One per-key map (status, dates, notes, dayTicks, missedDone) with its "<field>At" times: per key the newer change
+     * wins; a key only one side has is kept; with no times (data saved before times existed) this device wins, as before.
+     */
+    function mergeKeyed(local, remote, field) {
+        const lv = isPlainObject(local[field]) ? local[field] : {};
+        const rv = isPlainObject(remote[field]) ? remote[field] : {};
+        const la = isPlainObject(local[field + 'At']) ? local[field + 'At'] : {};
+        const ra = isPlainObject(remote[field + 'At']) ? remote[field + 'At'] : {};
+        const values = {};
+        const at = {};
+        const has = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key);
+        new Set([...Object.keys(rv), ...Object.keys(lv), ...Object.keys(ra), ...Object.keys(la)]).forEach(key => {
+            const lt = Number(la[key]) || 0;
+            const rt = Number(ra[key]) || 0;
+            const useRemote = has(rv, key) && (!has(lv, key) || rt > lt);
+            if (useRemote) values[key] = rv[key];
+            else if (has(lv, key)) values[key] = lv[key];
+            if (Math.max(lt, rt) > 0) at[key] = Math.max(lt, rt);
+        });
+        return { values, at };
+    }
+
+    /** A single value (interviewDate, dayMode) with its "<field>At" time: the newer wins; no times = the old rule. */
+    function mergeValue(local, remote, field, fallback) {
+        const lt = Number(local[field + 'At']) || 0;
+        const rt = Number(remote[field + 'At']) || 0;
+        if (rt > lt) return { value: remote[field], at: rt };
+        if (lt > rt) return { value: local[field], at: lt };
+        return { value: fallback(local[field], remote[field]), at: lt };
+    }
+
+    /**
+     * mergeData(local, remote[, now]): the store calls it when two devices both changed the data since the last sync.
+     * Per key by time (see mergeKeyed); the log by each entry's updatedAt; a deletion wins and is kept DELETED_KEEP_DAYS.
+     */
+    function mergeData(localData, remoteData, nowMs) {
         const local = Object.assign({}, DEFAULTS, localData || {});
         const remote = Object.assign({}, DEFAULTS, remoteData || {});
-        const both = key => Object.assign({}, remote[key] || {}, local[key] || {});
-        const deleted = both('logDeleted');
+        const allDeleted = {};
+        [remote.logDeleted, local.logDeleted].forEach(map => Object.entries(isPlainObject(map) ? map : {}).forEach(([id, t]) => {
+            allDeleted[id] = Math.max(Number(allDeleted[id]) || 0, Number(t) || 0);
+        }));
+        const deleted = pruneDeleted(allDeleted, nowMs);
         const byId = new Map();
         (Array.isArray(remote.log) ? remote.log : []).forEach(entry => { if (entry && entry.id) byId.set(entry.id, entry); });
         (Array.isArray(local.log) ? local.log : []).forEach(entry => {
@@ -511,16 +646,28 @@
             const other = byId.get(entry.id);
             if (!other || (Number(entry.updatedAt) || 0) >= (Number(other.updatedAt) || 0)) byId.set(entry.id, entry);
         });
-        const log = sortedLog([...byId.values()].filter(entry => !deleted[entry.id])).slice(0, LOG_MAX);
-        return Object.assign({}, remote, local, {
-            interviewDate: local.interviewDate || remote.interviewDate || '',
-            status: both('status'),
-            dates: both('dates'),
-            notes: both('notes'),
-            dayTicks: both('dayTicks'),
-            logDeleted: deleted,
-            log
+        const log = sortedLog([...byId.values()].filter(entry => !Object.prototype.hasOwnProperty.call(allDeleted, entry.id))).slice(0, LOG_MAX);
+        const out = Object.assign({}, remote, local, { logDeleted: deleted, log });
+        KEYED.forEach(field => {
+            const merged = mergeKeyed(local, remote, field);
+            out[field] = merged.values;
+            out[field + 'At'] = merged.at;
         });
+        const date = mergeValue(local, remote, 'interviewDate', (l, r) => l || r || '');
+        out.interviewDate = date.value || '';
+        out.interviewDateAt = date.at;
+        const mode = mergeValue(local, remote, 'dayMode', l => l);
+        out.dayMode = mode.value || '';
+        out.dayModeAt = mode.at;
+        return out;
+    }
+
+    /** How big the saved data is, against the account's limit: { bytes, max, state: 'ok' | 'near' | 'too-large' }. */
+    function sizeState(data, max) {
+        const limit = Number(max) > 0 ? Number(max) : 250000;
+        let bytes = 0;
+        try { bytes = JSON.stringify(data || {}).length; } catch (_) { bytes = 0; }
+        return { bytes, max: limit, state: bytes > limit ? 'too-large' : bytes > limit * 0.85 ? 'near' : 'ok' };
     }
 
     // ---------- DOM ----------
@@ -589,7 +736,8 @@
 
         let data = Object.assign({}, DEFAULTS, store.get());
         const ui = { tab: 'syllabus', open: new Set(), plan: new Set(), editing: null, formOpen: false, sharing: null, shareFirm: true,
-            confirmDelete: null, before: new Map() };
+            confirmDelete: null, confirmClear: false, before: new Map(), showAll: new Set(), logDate: '' };
+        const maxBytes = (progress && Number(progress.MAX_BYTES)) || 250000;
 
         container.textContent = '';
         container.classList.add('it-app');
@@ -636,9 +784,12 @@
         overallBox.setAttribute('role', 'status');
         overallBox.setAttribute('aria-live', 'polite');
         const nudge = el(doc, 'a', 'ap-btn is-block it-nudge ap-hidden');
+        // The account copy has a size limit; past it nothing syncs, so the student is told (and what to do).
+        const sizeNote = el(doc, 'p', 'it-size ap-hidden');
+        sizeNote.setAttribute('role', 'status');
         const setupTop = el(doc, 'div', 'it-setup-top');
         setupTop.append(count, fields);
-        setup.append(setupTop, overallBox, nudge);
+        setup.append(setupTop, overallBox, nudge, sizeNote);
         container.appendChild(setup);
 
         // ----- tabs -----
@@ -684,11 +835,18 @@
                 change(next);
                 return next;
             }));
+            paintSize();
+        }
+
+        /** Set one key of a per-key map and stamp its time (mergeData keeps the newer change per key). */
+        function put(d, field, key, value) {
+            d[field] = Object.assign({}, d[field], { [key]: value });
+            d[field + 'At'] = Object.assign({}, d[field + 'At'], { [key]: now() });
         }
 
         function setStatus(id, value) {
             if (!model.byId.has(id) || !STATUSES.includes(value)) return;
-            save(d => { d.status = Object.assign({}, d.status, { [id]: value }); });
+            save(d => { put(d, 'status', id, value); });
             syncTopicNodes(id);
             paintCounts();
         }
@@ -740,7 +898,7 @@
                 by.value = data.dates[topic.id] || '';
                 by.addEventListener('change', () => {
                     const value = isISODate(by.value) ? by.value : '';
-                    save(d => { d.dates = Object.assign({}, d.dates, { [topic.id]: value }); });
+                    save(d => { put(d, 'dates', topic.id, value); });
                     paintChip(topic.id, chip);
                 });
                 byWrap.appendChild(by);
@@ -752,7 +910,7 @@
                 note.placeholder = 'What to revise';
                 note.value = data.notes[topic.id] || '';
                 note.addEventListener('change', () => {
-                    save(d => { d.notes = Object.assign({}, d.notes, { [topic.id]: clip(note.value, 300) }); });
+                    save(d => { put(d, 'notes', topic.id, clip(note.value, 300)); });
                     paintChip(topic.id, chip);
                 });
                 noteWrap.appendChild(note);
@@ -845,6 +1003,16 @@
             return { bar: b, ready: r, learning: l };
         }
 
+        /** Topic ids a long section keeps folded until "Show all": every topic after the first few still to do. */
+        function previewHidden(section) {
+            const out = new Set();
+            if (ui.showAll.has(section.id) || section.topics.length <= PREVIEW_TOPICS + 2) return out;
+            const open = section.topics.filter(topic => statusOf(data, topic.id) !== 'ready');
+            const shown = new Set((open.length ? open : section.topics).slice(0, PREVIEW_TOPICS).map(topic => topic.id));
+            section.topics.forEach(topic => { if (!shown.has(topic.id)) out.add(topic.id); });
+            return out;
+        }
+
         function sectionBlock(section, tag) {
             const details = el(doc, 'details', 'it-section');
             details.dataset.section = section.id;
@@ -861,12 +1029,38 @@
             summary.append(titleRow, meta, meter.bar);
             details.appendChild(summary);
             const list = el(doc, 'ol', 'it-topics');
-            section.topics.forEach(topic => list.appendChild(topicItem(topic, false)));
+            // A long section opens with its first PREVIEW_TOPICS topics not Ready yet; "Show all" brings the rest.
+            const hidden = previewHidden(section);
+            section.topics.forEach(topic => {
+                const li = topicItem(topic, false);
+                if (hidden.has(topic.id)) li.hidden = true;
+                list.appendChild(li);
+            });
             details.appendChild(list);
+            if (hidden.size) {
+                const more = el(doc, 'button', 'it-show-all', 'Show all ' + section.topics.length + ' topics');
+                more.type = 'button';
+                more.setAttribute('aria-label', 'Show all ' + section.topics.length + ' topics: ' + section.title);
+                more.addEventListener('click', () => {
+                    ui.showAll.add(section.id);
+                    list.querySelectorAll('.it-topic[hidden]').forEach(li => { li.hidden = false; });
+                    const next = list.querySelector('.it-topic[data-id="' + [...hidden][0] + '"] .it-seg input, .it-topic[data-id="' + [...hidden][0] + '"] .it-read');
+                    more.remove();
+                    if (next && next.focus) next.focus({ preventScroll: true });
+                });
+                details.appendChild(more);
+            }
             const foot = el(doc, 'div', 'it-section-foot');
-            const practise = linkHref(section.practise, model, lms);
+            const practiseLink = linkHref(section.practise, model, lms);
+            const practise = isMockHref(practiseLink)
+                ? mockHref({ round: SECTION_ROUNDS[section.id] || (section.part === 'domain' ? 'technical' : 'full'), domain: section.domain }, practiseLink)
+                : practiseLink;
             if (practise) foot.appendChild(anchor(doc, 'it-foot-link', section.practise.label, practise));
             if (section.part === 'domain') {
+                if (!isMockHref(practiseLink)) {
+                    foot.appendChild(anchor(doc, 'it-foot-link', mockLabel(domainLabel(section.domain) || section.title),
+                        mockHref({ round: 'technical', domain: section.domain })));
+                }
                 foot.appendChild(anchor(doc, 'it-foot-link', 'Domain roadmap', '/articleship-program/domain-roadmaps/#' + section.domain));
             }
             if (foot.childNodes.length) details.appendChild(foot);
@@ -978,13 +1172,30 @@
                 if (href) details.appendChild(anchor(doc, 'it-foot-link', practise.practise.label, href));
                 panel.appendChild(details);
             }
-            const missed = missedQuestions(data.log).slice(0, 30);
+            // Lines ticked "Got it now" leave the list the next time it is drawn (a second tap before that undoes it).
+            const missed = missedQuestions(data.log, data.missedDone).slice(0, 30);
             if (missed.length) {
                 panel.appendChild(el(doc, 'h3', 'it-group-title', 'Questions you couldn\'t answer'));
                 const ul = el(doc, 'ul', 'it-missed ap-card');
                 missed.forEach(q => {
-                    const li = el(doc, 'li', '', q.text);
-                    li.appendChild(el(doc, 'span', 'it-missed-src', q.firm));
+                    const li = el(doc, 'li', 'it-missed-item');
+                    li.dataset.key = q.key;
+                    const body = el(doc, 'div', 'it-missed-text');
+                    body.appendChild(el(doc, 'span', 'it-missed-q', q.text));
+                    body.appendChild(el(doc, 'span', 'it-missed-src', q.firm));
+                    const got = el(doc, 'button', 'it-ready-btn it-got');
+                    got.type = 'button';
+                    got.appendChild(el(doc, 'span', 'it-ready-tick'));
+                    got.appendChild(el(doc, 'span', '', 'Got it now'));
+                    got.setAttribute('aria-pressed', 'false');
+                    got.setAttribute('aria-label', 'Got it now: ' + q.text);
+                    got.addEventListener('click', () => {
+                        const on = !(data.missedDone && data.missedDone[q.key] === true);
+                        save(d => { put(d, 'missedDone', q.key, on); });
+                        got.setAttribute('aria-pressed', String(on));
+                        li.classList.toggle('is-done', on);
+                    });
+                    li.append(body, got);
                     ul.appendChild(li);
                 });
                 panel.appendChild(ul);
@@ -1022,7 +1233,7 @@
                     b.dataset.mode = value;
                     b.setAttribute('aria-pressed', String(mode === value));
                     b.addEventListener('click', () => {
-                        save(d => { d.dayMode = d.dayMode === value ? '' : value; });
+                        save(d => { d.dayMode = d.dayMode === value ? '' : value; d.dayModeAt = now(); });
                         renderDay();
                     });
                     switcher.appendChild(b);
@@ -1043,8 +1254,11 @@
                         const nextTicks = result.ticks || {};
                         const merged = {};
                         new Set([...Object.keys(before), ...Object.keys(nextTicks)]).forEach(id => { merged[id] = nextTicks[id] === true; });
-                        save(d => { d.dayTicks = merged; });
+                        save(d => {
+                            Object.keys(merged).forEach(id => { if ((before[id] === true) !== merged[id]) put(d, 'dayTicks', id, merged[id]); });
+                        });
                         listeners.forEach(listener => listener(adapter.get(), { source: 'local' }));
+                        paintFresh();
                         return adapter.get();
                     },
                     subscribe(listener) { listeners.add(listener); return () => listeners.delete(listener); }
@@ -1055,7 +1269,7 @@
                     store: adapter, numbers: false
                 });
             }
-            model.interviewDay.notes.forEach(note => {
+            dayNotes(model.interviewDay.notes, mode).forEach(note => {
                 const box = el(doc, 'div', 'ap-sticky it-note');
                 if (note.title) box.appendChild(el(doc, 'strong', '', note.title));
                 if (note.text) box.appendChild(el(doc, 'p', '', note.text));
@@ -1065,17 +1279,39 @@
             });
             const fresh = el(doc, 'button', 'ap-btn is-secondary is-block it-fresh', 'Clear ticks for the next interview');
             fresh.type = 'button';
+            freshBtn = fresh;
+            ui.confirmClear = false;
+            // One tap arms it, a second tap within 4 seconds clears every tick (as Delete does in My interviews).
             fresh.addEventListener('click', () => {
+                if (!ui.confirmClear) {
+                    ui.confirmClear = true;
+                    fresh.textContent = 'Tap again to clear every tick';
+                    fresh.classList.add('is-armed');
+                    win.setTimeout(() => { if (ui.confirmClear && freshBtn === fresh) { ui.confirmClear = false; paintFresh(); } }, 4000);
+                    return;
+                }
+                ui.confirmClear = false;
                 save(d => {
-                    const cleared = {};
-                    Object.keys(d.dayTicks || {}).forEach(id => { cleared[id] = false; });
-                    d.dayTicks = cleared;
+                    Object.keys(d.dayTicks || {}).forEach(id => { if (d.dayTicks[id] === true) put(d, 'dayTicks', id, false); });
                 });
                 if (dayAdapterListeners) dayAdapterListeners.forEach(listener => listener({ ticks: {} }, { source: 'local' }));
+                paintFresh();
             });
             panel.appendChild(fresh);
+            paintFresh();
         }
         let dayAdapterListeners = null;
+        let freshBtn = null;
+
+        function paintFresh() {
+            if (!freshBtn) return;
+            const any = Object.values(data.dayTicks || {}).some(v => v === true);
+            if (!ui.confirmClear) {
+                freshBtn.textContent = 'Clear ticks for the next interview';
+                freshBtn.classList.remove('is-armed');
+            }
+            freshBtn.disabled = !any;
+        }
 
         // ----- My interviews -----
         function selectField(label, name, list, value, emptyLabel) {
@@ -1118,12 +1354,13 @@
             grid.appendChild(inputField('Firm', 'firm', e.firm, { max: 120 }));
             grid.appendChild(selectField('Firm type', 'type', FIRM_TYPES, e.type || '', 'Choose'));
             grid.appendChild(inputField('City', 'city', e.city, { max: 80 }));
-            grid.appendChild(inputField('Date', 'date', e.date || todayISO(now()), { type: 'date' }));
+            // Opened from the "Log this interview" nudge: the interview's own date, not today.
+            grid.appendChild(inputField('Date', 'date', e.date || (isISODate(ui.logDate) ? ui.logDate : todayISO(now())), { type: 'date' }));
             grid.appendChild(selectField('Domain', 'domain', domains.map(d => ({ label: d.label, value: d.slug })), e.domain || myDomain() || '', 'Choose'));
             grid.appendChild(selectField('Round', 'round', ROUNDS, e.round || 'Technical'));
             grid.appendChild(selectField('Mode', 'mode', MODES, e.mode || '', 'Choose'));
             grid.appendChild(selectField('Outcome', 'outcome', OUTCOMES, e.outcome || 'Waiting'));
-            grid.appendChild(inputField('Questions asked', 'questions', e.questions, { multiline: true, wide: true, max: TEXT_MAX, rows: 5, placeholder: 'One question a line' }));
+            grid.appendChild(inputField('Questions asked', 'questions', e.questions, { multiline: true, wide: true, max: TEXT_MAX, rows: 5, placeholder: 'One question a line. Leave out people\'s names.' }));
             grid.appendChild(inputField('Couldn\'t answer', 'missed', e.missed, { multiline: true, wide: true, max: TEXT_MAX, rows: 3, placeholder: 'One a line. They show up in Night before.' }));
             form.appendChild(grid);
             const more = el(doc, 'details', 'it-more');
@@ -1137,7 +1374,7 @@
             moreGrid.appendChild(selectField('How you got the call', 'how', HOW_CALLED, e.how || '', 'Choose'));
             moreGrid.appendChild(selectField('Result came', 'wait', WAITS, e.wait || '', 'Not yet'));
             moreGrid.appendChild(inputField('Test or Excel task', 'task', e.task, { wide: true, max: 600, placeholder: 'What was asked, time given' }));
-            moreGrid.appendChild(inputField('Tip for the next student', 'tip', e.tip, { wide: true, max: 400 }));
+            moreGrid.appendChild(inputField('Tip for the next student', 'tip', e.tip, { wide: true, max: 400, placeholder: 'Leave out people\'s names' }));
             more.appendChild(moreGrid);
             form.appendChild(more);
             const error = el(doc, 'p', 'it-error ap-hidden', 'Add the firm\'s name or pick its type.');
@@ -1150,7 +1387,7 @@
             if (entry || data.log.length) {
                 const cancel = el(doc, 'button', 'ap-btn is-secondary', 'Cancel');
                 cancel.type = 'button';
-                cancel.addEventListener('click', () => { ui.editing = null; ui.formOpen = false; renderLog(); });
+                cancel.addEventListener('click', () => { ui.editing = null; ui.formOpen = false; ui.logDate = ''; renderLog(); });
                 actions.appendChild(cancel);
             }
             form.appendChild(actions);
@@ -1182,8 +1419,10 @@
                 });
                 ui.editing = null;
                 ui.formOpen = false;
+                ui.logDate = '';
                 renderLog();
                 renderNight();
+                paintSetup();
                 const card = panels.get('log').querySelector('[data-entry="' + clean.id + '"]');
                 if (card && card.scrollIntoView) card.scrollIntoView({ block: 'nearest' });
             });
@@ -1237,12 +1476,23 @@
                 ui.confirmDelete = null;
                 save(d => {
                     d.log = (d.log || []).filter(item => item.id !== entry.id);
-                    d.logDeleted = Object.assign({}, d.logDeleted, { [entry.id]: now() });
+                    d.logDeleted = pruneDeleted(Object.assign({}, d.logDeleted, { [entry.id]: now() }), now());
+                    const prefix = entry.id + ':';
+                    ['missedDone', 'missedDoneAt'].forEach(field => {
+                        d[field] = Object.fromEntries(Object.entries(d[field] || {}).filter(([key]) => !key.startsWith(prefix)));
+                    });
                 });
                 renderLog();
                 renderNight();
+                paintSetup();
             });
             actions.append(edit, del);
+            if (entry.firm) {
+                const mock = anchor(doc, 'it-text-btn it-mock', 'Mock this firm again',
+                    mockHref({ round: 'full', firm: entry.firm, domain: entry.domain || '' }));
+                mock.setAttribute('aria-label', 'Mock this firm again: ' + entry.firm);
+                actions.appendChild(mock);
+            }
             if (shareEnabled(shareForm)) {
                 if (entry.sharedAt) {
                     actions.appendChild(el(doc, 'span', 'it-shared', 'Shared with MSC'));
@@ -1260,7 +1510,7 @@
 
         function sharePanel(entry) {
             const box = el(doc, 'div', 'it-share-box');
-            box.appendChild(el(doc, 'p', 'it-share-lede', 'This goes to MSC, exactly as below, to help the next student prepare.'));
+            box.appendChild(el(doc, 'p', 'it-share-lede', 'This goes to MSC, exactly as below, to help the next student prepare. Leave out people\'s names: if it has any, tap Edit first.'));
             if (entry.firm) {
                 const keep = el(doc, 'label', 'it-share-firm');
                 const keepName = el(doc, 'input');
@@ -1339,6 +1589,7 @@
                 add.addEventListener('click', () => {
                     ui.formOpen = true;
                     ui.editing = null;
+                    ui.logDate = '';
                     renderLog();
                     const first = panel.querySelector('input[name="firm"]');
                     if (first) first.focus();
@@ -1359,7 +1610,8 @@
             backupSelect.value = backup || '';
             backupSelect.disabled = !mine;
             Array.from(backupSelect.options).forEach(option => { option.disabled = Boolean(option.value) && option.value === mine; });
-            dateInput.value = data.interviewDate || '';
+            if (doc.activeElement !== dateInput) dateInput.value = data.interviewDate || '';
+            paintSize();
             const cd = countdown(data.interviewDate, todayISO(now()));
             count.className = 'it-count is-' + cd.state;
             countBig.textContent = cd.big;
@@ -1369,7 +1621,7 @@
                 today: { label: 'Open the interview-day checklist', tab: 'day' },
                 past: { label: 'Log this interview', tab: 'log' }
             };
-            const n = nudges[cd.state];
+            const n = cd.state === 'past' && loggedSince(data.log, data.interviewDate) ? null : nudges[cd.state];
             nudge.classList.toggle('ap-hidden', !n || (n && ui.tab === n.tab));
             if (n) {
                 nudge.textContent = n.label;
@@ -1378,10 +1630,22 @@
             }
         }
 
+        function paintSize() {
+            const size = sizeState(data, maxBytes);
+            let remote = '';
+            try { remote = store.status ? (store.status() || {}).remote : ''; } catch (_) { remote = ''; }
+            const state = remote === 'too-large' ? 'too-large' : size.state;
+            sizeNote.classList.toggle('ap-hidden', state === 'ok');
+            sizeNote.classList.toggle('is-over', state === 'too-large');
+            sizeNote.textContent = state === 'too-large'
+                ? 'Your interview log is too long to save to your account, so changes stay on this phone or laptop only. Delete old interviews or shorten long answers in My interviews.'
+                : state === 'near' ? 'Your interview log is nearly too long to save to your account. Shorten long answers or delete old interviews in My interviews.' : '';
+        }
+
         nudge.addEventListener('click', event => {
             event.preventDefault();
             const tab = nudge.dataset.tab;
-            if (tab === 'log') { ui.formOpen = true; ui.editing = null; }
+            if (tab === 'log') { ui.formOpen = true; ui.editing = null; ui.logDate = data.interviewDate || ''; }
             showTab(tab, true);
         });
 
@@ -1401,7 +1665,7 @@
         });
         dateInput.addEventListener('change', () => {
             const value = isISODate(dateInput.value) ? dateInput.value : '';
-            save(d => { d.interviewDate = value; });
+            save(d => { d.interviewDate = value; d.interviewDateAt = now(); });
             paintSetup();
         });
 
@@ -1422,10 +1686,24 @@
                 try { hist.replaceState(null, '', tab === 'syllabus' ? (loc.pathname || '') + (loc.search || '') : '#' + tab); } catch (_) { /* file:// */ }
             }
             paintSetup();
-            if (push && win.scrollTo) {
-                const top = setup.getBoundingClientRect ? setup.getBoundingClientRect().bottom + (win.pageYOffset || 0) - 64 : 0;
-                if ((win.pageYOffset || 0) > top) win.scrollTo(0, Math.max(0, top));
-            }
+            if (push) scrollToPanel(panels.get(tab));
+        }
+
+        /**
+         * After a tab switch from further down, bring the new panel's start to just under the stuck tab bar. Measured
+         * from the panel itself (never the setup card, which is a sticky column on desktop); no scroll when it is in view.
+         */
+        function scrollToPanel(panel) {
+            if (!panel || !win.scrollTo || !panel.getBoundingClientRect) return;
+            const y = win.pageYOffset || win.scrollY || 0;
+            let stuckTop = 56;
+            try {
+                const top = parseFloat(win.getComputedStyle(tabbar).top);
+                if (Number.isFinite(top)) stuckTop = top;
+            } catch (_) { /* no layout */ }
+            const tabHeight = tabbar.getBoundingClientRect ? tabbar.getBoundingClientRect().height || 0 : 0;
+            const target = Math.max(0, Math.round(panel.getBoundingClientRect().top + y - stuckTop - tabHeight - 8));
+            if (y > target) win.scrollTo(0, target);
         }
 
         tabbar.addEventListener('keydown', event => {
@@ -1478,6 +1756,18 @@
             if (TABS.some(t => t.id === tab) && tab !== ui.tab) showTab(tab, false);
         };
         if (win.addEventListener) win.addEventListener('hashchange', onHash);
+        // A tab left open (a phone, a second laptop tab) picks up the account copy when the student comes back to it,
+        // before they change anything, so their next tap builds on the other device's work instead of an old copy.
+        let lastPull = 0;
+        const onReturn = () => {
+            if (doc.visibilityState === 'hidden' || typeof store.pull !== 'function') return;
+            const t = Date.now();
+            if (t - lastPull < 15000) return;
+            lastPull = t;
+            Promise.resolve().then(() => store.pull()).catch(() => { /* offline: the device copy stays */ });
+        };
+        if (doc.addEventListener) doc.addEventListener('visibilitychange', onReturn);
+        if (win.addEventListener) win.addEventListener('focus', onReturn);
 
         firstOpenSection();
         const hashTab = String(loc.hash || '').replace('#', '');
@@ -1499,6 +1789,8 @@
                 if (unsubscribeStore) unsubscribeStore();
                 if (unsubscribeSettings) unsubscribeSettings();
                 if (win.removeEventListener) win.removeEventListener('hashchange', onHash);
+                if (win.removeEventListener) win.removeEventListener('focus', onReturn);
+                if (doc.removeEventListener) doc.removeEventListener('visibilitychange', onReturn);
                 if (checklist) checklist.destroy();
             }
         };
@@ -1538,7 +1830,8 @@
         normaliseContent, resolvePages, readHref, linkHref, readLabel, readText, safeHref,
         isISODate, todayISO, daysLeft, countdown, shortDate, monthOf,
         statusOf, summarise, visibleSections, overall, nightBefore,
-        lines, cleanEntry, sortedLog, missedQuestions, redact, sharePayload, shareEnabled, shareBody, mergeData,
+        lines, cleanEntry, sortedLog, missedQuestions, missedKey, loggedSince, redact, sharePayload, shareEnabled, shareBody,
+        mergeData, pruneDeleted, sizeState, dayNotes, mockHref, mockLabel, DELETED_KEEP_DAYS, PREVIEW_TOPICS,
         mount, start
     });
 });

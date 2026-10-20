@@ -7,6 +7,7 @@ const T = require('../scripts/articleship-interview-tracker.js');
 const C = require('../scripts/articleship-checklist.js');
 const P = require('../scripts/articleship-progress.js');
 const Lms = require('../scripts/articleship-lms.js');
+const Interview = require('../scripts/articleship-interview.js');
 
 const ROOT = path.join(__dirname, '..');
 const PAGE = path.join(ROOT, 'articleship-program/interview-tracker/index.html');
@@ -312,6 +313,182 @@ test('merge: two devices keep both logs, deletions win, status per topic', () =>
     assert.equal(merged.interviewDate, '2026-11-09');
 });
 
+test('merge: a stale phone tab never undoes the laptop\'s newer work (per-key times)', () => {
+    // The phone saw x as Learning at t=100 and the old date; the laptop then marked x Ready and moved the date (t=200);
+    // then the phone, still on its old copy, edits only topic y (t=300).
+    const base = { status: { x: 'learning' }, statusAt: { x: 100 }, interviewDate: '2026-11-09', interviewDateAt: 100,
+        notes: { x: 'old note' }, notesAt: { x: 100 }, dates: {}, datesAt: {}, dayTicks: { a: true }, dayTicksAt: { a: 100 }, dayMode: 'online', dayModeAt: 100 };
+    const laptop = Object.assign({}, base, {
+        status: { x: 'ready' }, statusAt: { x: 200 }, interviewDate: '2026-11-12', interviewDateAt: 200,
+        notes: { x: 'new note' }, notesAt: { x: 200 }, dayTicks: { a: false }, dayTicksAt: { a: 200 }, dayMode: 'in-person', dayModeAt: 200
+    });
+    const phone = Object.assign({}, base, { status: { x: 'learning', y: 'ready' }, statusAt: { x: 100, y: 300 } });
+    const merged = T.mergeData(phone, laptop);
+    assert.deepEqual(merged.status, { x: 'ready', y: 'ready' }, 'x keeps the laptop\'s newer Ready; y keeps the phone\'s edit');
+    assert.deepEqual(merged.statusAt, { x: 200, y: 300 });
+    assert.equal(merged.interviewDate, '2026-11-12', 'the laptop\'s newer date stays');
+    assert.equal(merged.notes.x, 'new note');
+    assert.equal(merged.dayTicks.a, false, 'an untick is a change too');
+    assert.equal(merged.dayMode, 'in-person');
+    // The other way round (the laptop merges the phone's copy) gives the same answer.
+    const back = T.mergeData(laptop, phone);
+    assert.deepEqual([back.status, back.interviewDate, back.notes.x, back.dayMode], [merged.status, merged.interviewDate, 'new note', 'in-person']);
+    // A newer local change still wins over an older remote one.
+    const mine = T.mergeData(Object.assign({}, laptop, { status: { x: 'not-started' }, statusAt: { x: 400 } }), laptop);
+    assert.equal(mine.status.x, 'not-started');
+});
+
+test('merge: data saved before times existed keeps the old rule; old tombstones are pruned', () => {
+    const legacy = T.mergeData({ status: { x: 'ready' }, interviewDate: '' }, { status: { x: 'learning', y: 'learning' }, interviewDate: '2026-11-09' });
+    assert.deepEqual(legacy.status, { x: 'ready', y: 'learning' }, 'no times: this device wins on its own keys');
+    assert.equal(legacy.interviewDate, '2026-11-09');
+    const stamped = T.mergeData({ status: { x: 'ready' } }, { status: { x: 'learning' }, statusAt: { x: 5 } });
+    assert.equal(stamped.status.x, 'learning', 'a timed change beats an untimed one');
+    const day = 86400000;
+    const old = NOW - (T.DELETED_KEEP_DAYS + 1) * day;
+    const recent = NOW - 10 * day;
+    const merged = T.mergeData({ logDeleted: { 'iv-old': old, 'iv-new': recent }, log: [{ id: 'iv-new', firm: 'B', date: '2026-10-01', updatedAt: 1 }] },
+        { logDeleted: {}, log: [{ id: 'iv-old', firm: 'A', date: '2026-01-01', updatedAt: 1 }] }, NOW);
+    assert.deepEqual(Object.keys(merged.logDeleted), ['iv-new'], 'a tombstone older than ' + T.DELETED_KEEP_DAYS + ' days is dropped');
+    assert.deepEqual(merged.log, [], 'both deleted entries stay gone in this merge');
+    assert.deepEqual(Object.keys(T.pruneDeleted({ a: old, b: recent, c: 0 }, NOW)).sort(), ['b', 'c'], 'an untimed tombstone ages from now');
+});
+
+test('size: a notice before and after the account limit, so sync never stops silently', () => {
+    assert.equal(T.sizeState({ log: [] }, 1000).state, 'ok');
+    assert.equal(T.sizeState({ text: 'x'.repeat(900) }, 1000).state, 'near');
+    assert.equal(T.sizeState({ text: 'x'.repeat(1200) }, 1000).state, 'too-large');
+    const store = memoryStore();
+    const long = 'Q'.repeat(1990);
+    const log = Array.from({ length: 70 }, (_, i) => T.cleanEntry({ id: 'iv-' + String(1000 + i), firm: 'Firm ' + i, questions: long, missed: long }, { now: NOW }));
+    store.set(Object.assign({}, T.DEFAULTS, { log }));
+    const { doc } = mountTracker({ store });
+    const note = doc.querySelector('.it-size');
+    assert.equal(note.classList.contains('ap-hidden'), false);
+    assert.match(note.textContent, /too long to save to your account/);
+    const small = mountTracker({});
+    assert.equal(small.doc.querySelector('.it-size').classList.contains('ap-hidden'), true);
+});
+
+test('tabs: switching from far down lands the new panel just under the stuck tab bar (desktop sticky setup card)', () => {
+    const { dom, doc } = mountTracker({ mine: 'gst' });
+    const win = dom.window;
+    const calls = [];
+    let y = 2500;
+    Object.defineProperty(win, 'pageYOffset', { configurable: true, get: () => y });
+    Object.defineProperty(win, 'scrollY', { configurable: true, get: () => y });
+    win.scrollTo = (x, top) => { calls.push(top); y = top; };
+    // Desktop: the setup card is a sticky left column (its box stays on screen); the panels start at y=400 in the page.
+    doc.querySelector('.it-setup').getBoundingClientRect = () => ({ top: 80, bottom: 700, height: 620 });
+    doc.querySelector('.it-tabs').getBoundingClientRect = () => ({ top: 56, bottom: 116, height: 60 });
+    ['syllabus', 'night', 'day', 'log'].forEach(id => {
+        doc.getElementById('it-panel-' + id).getBoundingClientRect = () => ({ top: 400 - y, bottom: 900 - y, height: 500 });
+    });
+    doc.getElementById('it-tab-day').click();
+    assert.deepEqual(calls, [400 - 56 - 60 - 8], 'panel top − topbar − tab bar − 8 px');
+    doc.getElementById('it-tab-syllabus').click();
+    assert.equal(calls.length, 1, 'already in view: no jump');
+    y = 3000;
+    doc.getElementById('it-tab-syllabus').click();
+    assert.deepEqual(calls, [276, 276], 'the Syllabus tab scrolls back too');
+});
+
+test('mock links: HR round, a set mock per domain, "Mock this firm again" on a logged interview', () => {
+    const { dom, doc } = mountTracker({ mine: 'gst', backup: 'ma-tax', hash: '#syllabus' });
+    const hrLink = [...doc.querySelectorAll('.it-section[data-section="hr"] .it-section-foot a')].find(a => /Practise/.test(a.textContent));
+    assert.equal(hrLink.getAttribute('href'), '/ai-interview.html?mode=articleship&round=hr');
+    const gst = [...doc.querySelectorAll('.it-section[data-section="gst"] .it-section-foot a')].map(a => [a.textContent, a.getAttribute('href')]);
+    assert.deepEqual(gst, [['Practise a GST mock', '/ai-interview.html?mode=articleship&round=technical&domain=gst'],
+        ['Domain roadmap', '/articleship-program/domain-roadmaps/#gst']]);
+    assert.equal(doc.querySelector('.it-section[data-section="ma-tax"] .it-section-foot a').textContent, 'Practise an M&A tax mock');
+    assert.deepEqual(Interview.presetFromQuery('?' + gst[0][1].split('?')[1]), { round: 'technical', domain: 'gst' }, 'the mock page reads the preset');
+    assert.deepEqual(P.DOMAINS.map(d => T.mockLabel(d.label)), ['Practise a statutory audit mock', 'Practise an internal audit, risk & IFC mock',
+        'Practise a direct tax mock', 'Practise a GST mock', 'Practise a bank audit mock', 'Practise a transfer pricing mock', 'Practise an M&A tax mock',
+        'Practise a valuation mock', 'Practise a financial due diligence mock', 'Practise a forensic mock', 'Practise a consulting & risk advisory mock',
+        'Practise an accounting, MIS & company law mock', 'Practise an IB & equity research mock']);
+    doc.getElementById('it-tab-log').click();
+    const form = doc.querySelector('.it-log-form');
+    form.elements.firm.value = 'Example Audit & Co';
+    form.dispatchEvent(new dom.window.Event('submit', { cancelable: true }));
+    const mock = doc.querySelector('.it-entry .it-mock');
+    assert.equal(mock.textContent, 'Mock this firm again');
+    assert.deepEqual(Interview.presetFromQuery('?' + mock.getAttribute('href').split('?')[1]), { round: 'full', domain: 'gst', firm: 'Example Audit & Co' });
+    assert.equal(T.mockHref({ round: 'hr' }, '/ai-interview.html?mode=articleship&round=call'), '/ai-interview.html?mode=articleship&round=call', 'a preset in the content wins');
+});
+
+test('nudge: "Log this interview" hides once that interview is logged; from the nudge the form takes its date', () => {
+    const store = memoryStore();
+    store.set(Object.assign({}, T.DEFAULTS, { interviewDate: '2026-10-29' }));
+    const { dom, doc } = mountTracker({ store });
+    const nudge = doc.querySelector('.it-nudge');
+    assert.equal(nudge.classList.contains('ap-hidden'), false);
+    assert.equal(nudge.textContent, 'Log this interview');
+    nudge.click();
+    const form = doc.querySelector('.it-log-form');
+    assert.equal(form.elements.date.value, '2026-10-29', 'the interview\'s date, not today');
+    form.elements.firm.value = 'Firm A';
+    form.dispatchEvent(new dom.window.Event('submit', { cancelable: true }));
+    assert.equal(store.get().log[0].date, '2026-10-29');
+    doc.getElementById('it-tab-syllabus').click();
+    assert.equal(nudge.classList.contains('ap-hidden'), true, 'logged: no nudge on the next visit');
+    assert.equal(T.loggedSince([{ date: '2026-10-28' }], '2026-10-29'), false, 'an older interview does not count');
+    assert.equal(T.loggedSince([{ date: '2026-10-30' }], '2026-10-29'), true);
+    doc.querySelector('.it-add').click();
+    assert.equal(doc.querySelector('.it-log-form').elements.date.value, T.todayISO(NOW), '"Log an interview" starts from today');
+});
+
+test('night before: "Got it now" takes a missed question off the list, saved by entry and line', () => {
+    const store = memoryStore();
+    const entry = T.cleanEntry({ id: 'iv-abc12', firm: 'Firm A', date: '2026-10-30', missed: 'Place of supply\nRCM on GTA' }, { now: NOW });
+    store.set(Object.assign({}, T.DEFAULTS, { log: [entry] }));
+    const { doc } = mountTracker({ store, hash: '#night' });
+    const items = () => [...doc.querySelectorAll('#it-panel-night .it-missed-item')];
+    assert.equal(items().length, 2);
+    const first = items()[0];
+    const key = T.missedKey('iv-abc12', 'Place of supply');
+    assert.equal(first.dataset.key, key);
+    first.querySelector('.it-got').click();
+    assert.equal(store.get().missedDone[key], true);
+    assert.equal(store.get().missedDoneAt[key], NOW);
+    assert.equal(first.classList.contains('is-done'), true, 'stays in view (a second tap undoes it) until the list is drawn again');
+    doc.getElementById('it-tab-syllabus').click();
+    doc.getElementById('it-tab-night').click();
+    assert.deepEqual(items().map(li => li.querySelector('.it-missed-q').textContent), ['RCM on GTA']);
+    assert.equal(T.missedQuestions([entry], { [key]: true }).length, 1);
+    assert.notEqual(T.missedKey('iv-abc12', 'RCM on GTA'), key);
+});
+
+test('interview day: the notes follow the mode too ("Walk in like this" is for in person)', () => {
+    const model = T.normaliseContent(CONTENT);
+    const titles = mode => T.dayNotes(model.interviewDay.notes, mode).map(n => n.title);
+    assert.deepEqual(titles(''), ['If the call drops', 'Walk in like this', 'After']);
+    assert.deepEqual(titles('online'), ['If the call drops', 'After']);
+    assert.deepEqual(titles('in-person'), ['Walk in like this', 'After']);
+    assert.deepEqual(T.dayNotes([{ title: 'Online: test the link' }, { title: 'After' }], 'in-person').map(n => n.title), ['After'], 'a title naming the mode counts as its mode');
+    const { doc, store } = mountTracker({ hash: '#day' });
+    doc.querySelector('.it-mode-btn[data-mode="online"]').click();
+    assert.doesNotMatch(doc.getElementById('it-panel-day').textContent, /Walk in like this/);
+    assert.equal(store.get().dayModeAt, NOW);
+});
+
+test('syllabus: a long section opens with its first 5 topics to do and "Show all"', () => {
+    const store = memoryStore();
+    store.set(Object.assign({}, T.DEFAULTS, { status: { 'hr-intro': 'ready' } }));
+    const { doc } = mountTracker({ store });
+    const hr = doc.querySelector('.it-section[data-section="hr"]');
+    assert.equal(hr.open, true, 'the first section still to do is open');
+    const shown = [...hr.querySelectorAll('.it-topic')].filter(li => !li.hidden);
+    assert.equal(shown.length, T.PREVIEW_TOPICS);
+    assert.equal(shown.some(li => li.dataset.id === 'hr-intro'), false, 'a Ready topic waits behind "Show all"');
+    const more = hr.querySelector('.it-show-all');
+    assert.equal(more.textContent, 'Show all 15 topics');
+    more.click();
+    assert.equal([...hr.querySelectorAll('.it-topic')].filter(li => li.hidden).length, 0);
+    assert.equal(hr.querySelector('.it-show-all'), null);
+    const short = doc.querySelector('.it-section[data-section="audit-basics"]');
+    assert.equal(short.querySelector('.it-show-all'), null, 'a 7-topic section shows in full');
+});
+
 // ---------- the page ----------
 test('page: noindex, MSC logo, Caveat + Inter, platform scripts in order, Day 4 back link', () => {
     const html = fs.readFileSync(PAGE, 'utf8');
@@ -320,6 +497,7 @@ test('page: noindex, MSC logo, Caveat + Inter, platform scripts in order, Day 4 
     assert.match(html, /shared\/msc-logo\.svg/);
     assert.match(html, /family=Caveat/);
     assert.match(html, /course\?course=msc-articleship-program&amp;session=5/);
+    assert.match(html, /<span class="ap-topbar-title">Interview syllabus tracker<\/span>/, 'Padam\'s name for the tool (V3-STRUCTURE Appendix E)');
     const scripts = [...html.matchAll(/<script src="([^"]+)"/g)].map(m => m[1]);
     assert.deepEqual(scripts, ['/scripts/supabase.js', '/scripts/supabase-init.js', '/scripts/articleship-gate.js', '/scripts/articleship-progress.js',
         '/scripts/articleship-checklist.js', '/scripts/articleship-lms.js', '/scripts/articleship-interview-tracker.js']);
@@ -363,10 +541,12 @@ test('mount: domain, date and status save; % and days left follow', () => {
     assert.equal(store.get().interviewDate, '2026-11-09');
     assert.equal(doc.querySelector('.it-count-big').textContent, '7');
     assert.equal(doc.querySelector('.it-count-label').textContent, 'days left');
+    assert.equal(store.get().interviewDateAt, NOW, 'the date carries its time for the merge');
     const radio = doc.querySelector('.it-topic[data-id="hr-intro"] input[value="ready"]');
     radio.checked = true;
     radio.dispatchEvent(new win.Event('change'));
     assert.equal(store.get().status['hr-intro'], 'ready');
+    assert.equal(store.get().statusAt['hr-intro'], NOW);
     assert.equal(doc.querySelector('.it-overall-count').textContent, '1 of 75 ready');
     assert.match(doc.querySelector('.it-section[data-section="hr"] .it-section-meta').textContent, /^1\/15 ready · 7%$/);
     // a date and a note per topic
@@ -376,6 +556,7 @@ test('mount: domain, date and status save; % and days left follow', () => {
     note.value = 'Read the team page'; note.dispatchEvent(new win.Event('change'));
     assert.equal(store.get().dates['hr-why'], '2026-11-05');
     assert.equal(store.get().notes['hr-why'], 'Read the team page');
+    assert.deepEqual([store.get().datesAt['hr-why'], store.get().notesAt['hr-why']], [NOW, NOW]);
     // night before drops what is Ready
     doc.getElementById('it-tab-night').click();
     const night = doc.getElementById('it-panel-night');
@@ -435,9 +616,16 @@ test('mount: the day checklist ticks save and clear for the next interview', () 
     box.dispatchEvent(new dom.window.Event('change'));
     const ticked = Object.entries(store.get().dayTicks).filter(([, v]) => v).map(([k]) => k);
     assert.deepEqual(ticked, ['day-cv-twice']);
-    doc.querySelector('.it-fresh').click();
+    assert.equal(store.get().dayTicksAt['day-cv-twice'], NOW, 'each tick carries its time for the merge');
+    const fresh = doc.querySelector('.it-fresh');
+    fresh.click();
+    assert.deepEqual(Object.entries(store.get().dayTicks).filter(([, v]) => v).map(([k]) => k), ['day-cv-twice'], 'one tap only arms it');
+    assert.match(fresh.textContent, /Tap again to clear every tick/);
+    fresh.click();
     assert.deepEqual(Object.values(store.get().dayTicks).filter(Boolean), []);
     assert.equal(doc.querySelector('#it-panel-day input[type="checkbox"]').checked, false);
+    assert.equal(fresh.disabled, true, 'nothing left to clear');
+    assert.equal(fresh.textContent, 'Clear ticks for the next interview');
 });
 
 test('mount: log an interview; missed questions reach the night before; Share posts once to the form', async () => {
@@ -451,6 +639,8 @@ test('mount: log an interview; missed questions reach the night before; Share po
     form.elements.round.value = 'Partner';
     form.elements.questions.value = 'Tell me about yourself\nWhat is RCM?';
     form.elements.missed.value = 'Place of supply for services';
+    assert.match(form.elements.questions.placeholder, /Leave out people's names/);
+    assert.match(form.elements.tip.placeholder, /Leave out people's names/);
     form.dispatchEvent(new win.Event('submit', { cancelable: true }));
     const log = store.get().log;
     assert.equal(log.length, 1);
@@ -462,6 +652,7 @@ test('mount: log an interview; missed questions reach the night before; Share po
     card.querySelector('.it-share').click();
     const preview = doc.querySelector('.it-share-box');
     assert.match(preview.textContent, /November 2026/);
+    assert.match(preview.querySelector('.it-share-lede').textContent, /Leave out people's names/);
     assert.doesNotMatch(preview.textContent, /2 Nov 2026/);
     [...preview.querySelectorAll('button')].find(b => b.textContent === 'Send to MSC').click();
     await new Promise(r => setTimeout(r, 0));

@@ -23,7 +23,7 @@
 .it-app > .it-loading { grid-column: 1 / -1; }
 
 /* ---------- Setup card: days left, domain, date, overall % ---------- */
-.it-setup { display: grid; gap: 14px; padding: 16px; }
+.it-setup { display: grid; gap: 14px; padding: 16px; scroll-margin-top: 72px; }
 .it-setup-top { display: grid; gap: 14px; }
 .it-count {
     display: flex;
@@ -87,6 +87,17 @@ textarea.it-input { min-height: 88px; resize: vertical; line-height: 1.45; }
 .it-legend i.is-ready { background: var(--it-ready); }
 .it-legend i.is-learning { background: var(--it-learning); }
 .it-nudge { margin-top: -2px; }
+.it-size {
+    margin: 0;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: var(--ap-sticky);
+    color: var(--ap-navy);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.45;
+}
+.it-size.is-over { background: #fdeaea; color: #7a2a2a; }
 
 /* Ready + learning bar */
 .it-bar { display: flex; height: 6px; border-radius: 999px; background: #e7edf5; overflow: hidden; }
@@ -196,6 +207,20 @@ textarea.it-input { min-height: 88px; resize: vertical; line-height: 1.45; }
 .it-section.is-complete .it-section-meta { color: var(--ap-success); }
 .it-section-head .it-bar { grid-area: bar; }
 .it-section-foot { display: flex; flex-wrap: wrap; gap: 6px 18px; padding: 4px 16px 14px; }
+.it-show-all {
+    display: block;
+    width: calc(100% - 20px);
+    min-height: 44px;
+    margin: 0 10px 10px;
+    border: 1px dashed var(--ap-border-dark);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--ap-primary);
+    font: 600 14px/1 var(--ap-sans);
+    cursor: pointer;
+}
+.it-show-all:hover { background: var(--ap-primary-light); border-color: var(--ap-primary); }
+.it-show-all:focus-visible { outline: 3px solid color-mix(in srgb, var(--ap-primary) 40%, transparent); outline-offset: 2px; }
 .it-foot-link {
     display: inline-flex;
     align-items: center;
@@ -310,9 +335,13 @@ textarea.it-input { min-height: 88px; resize: vertical; line-height: 1.45; }
 .it-compact-title { margin: 16px 0 6px; font-size: 13px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ap-muted); }
 .it-topics.is-compact { padding: 0; }
 .it-topics.is-compact .it-topic { padding: 8px 12px 10px; }
-.it-missed { margin: 0; padding: 12px 14px 12px 32px; display: grid; gap: 8px; }
-.it-missed li { line-height: 1.4; }
+.it-missed { margin: 0; padding: 6px 14px; list-style: none; display: grid; }
+.it-missed-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 0; line-height: 1.4; }
+.it-missed-item + .it-missed-item { border-top: 1px solid var(--ap-border); }
+.it-missed-text { min-width: 0; overflow-wrap: anywhere; }
+.it-missed-item.is-done .it-missed-q { color: var(--ap-muted); text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--ap-muted) 60%, transparent); }
 .it-missed-src { display: block; color: var(--ap-muted); font-size: 12px; font-weight: 600; }
+.it-got { flex: 0 0 auto; white-space: nowrap; }
 .it-steps { margin-top: 18px; }
 .it-card-title { margin: 0 0 8px; font-family: var(--ap-hand); font-weight: 700; font-size: 25px; line-height: 1.1; color: var(--ap-navy); }
 .it-step-list { margin: 0; padding: 0; list-style: none; counter-reset: it-step; display: grid; gap: 8px; }
@@ -345,6 +374,8 @@ textarea.it-input { min-height: 88px; resize: vertical; line-height: 1.45; }
 .it-note p { margin: 2px 0 0; }
 .it-note .it-foot-link { margin-top: 4px; }
 .it-fresh { margin-top: 18px; }
+.it-fresh:disabled { opacity: 0.55; cursor: default; }
+.it-fresh.is-armed { border-color: var(--ap-danger); color: var(--ap-danger); }
 
 /* ---------- My interviews ---------- */
 .it-add { margin-bottom: 12px; }
@@ -398,6 +429,7 @@ textarea.it-input { min-height: 88px; resize: vertical; line-height: 1.45; }
 }
 .it-text-btn:hover { background: var(--ap-hover); }
 .it-text-btn.is-danger { color: var(--ap-danger); }
+a.it-text-btn { display: inline-flex; align-items: center; text-decoration: none; }
 .it-share { margin-left: auto; min-height: 40px; padding: 8px 14px; font-size: 14px; }
 .it-shared { margin-left: auto; color: var(--ap-success); font-size: 13px; font-weight: 700; }
 .it-shared::before { content: '\2713'; margin-right: 5px; }
@@ -443,13 +475,25 @@ textarea.it-input { min-height: 88px; resize: vertical; line-height: 1.45; }
     .it-panel { grid-row: 2; }
 }
 
+/* Narrow phones (320 px): the date takes its own row so "dd/mm/yyyy" is never cut. */
+@media (max-width: 359px) {
+    .it-fields { grid-template-columns: minmax(0, 1fr); }
+    .it-plan { grid-template-columns: minmax(0, 1fr); }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .it-bar > span, .it-seg span, .it-section-head::after { transition: none; }
 }
 
 @media print {
-    .it-tabs, .it-plan-btn, .it-entry-actions, .it-fresh, .it-nudge { display: none !important; }
+    .it-tabs, .it-plan-btn, .it-entry-actions, .it-fresh, .it-nudge, .it-show-all, .it-got { display: none !important; }
     .it-setup { position: static; }
+    .it-app .it-topics .it-topic[hidden] { display: block !important; }
+}
+
+/* The full name ("Interview syllabus tracker") on a narrow phone: two short lines beside the logo, never cut. */
+@media (max-width: 420px) {
+    .ap-topbar-title { white-space: normal; text-align: right; font-size: 20px; line-height: 0.95; overflow: visible; }
 }
 
 /* ---------- Night before: one Ready tap per topic ---------- */
