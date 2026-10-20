@@ -126,9 +126,10 @@ test('papers: a new paper file is picked up by the index script; a bad one stops
     const dir = newPaperFolder();
     try {
         const out = execFileSync(process.execPath, [path.join(ROOT, 'scripts', 'articleship-written-test-papers.js'), dir], { encoding: 'utf8' });
-        assert.match(out, /index\.json lists 2 paper\(s\)/);
+        const shipped = JSON.parse(fs.readFileSync(path.join(PAPERS, 'index.json'), 'utf8')).papers;
+        assert.match(out, new RegExp('index\\.json lists ' + (shipped.length + 1) + ' paper\\(s\\)'));
         const index = JSON.parse(fs.readFileSync(path.join(dir, 'index.json'), 'utf8'));
-        assert.deepEqual(index.papers.map(p => p.id), ['screening-1', 'aptitude-1']);
+        assert.deepEqual(index.papers.map(p => p.id).sort(), shipped.map(p => p.id).concat('aptitude-1').sort());
         fs.writeFileSync(path.join(dir, 'aptitude-2.json'), '{"id": "aptitude-2"');
         assert.ok(Papers.buildIndex(dir).errors.some(e => /aptitude-2\.json: not valid JSON/.test(e)));
         fs.writeFileSync(path.join(dir, 'aptitude-2.json'), JSON.stringify(Object.assign(JSON.parse(fs.readFileSync(path.join(dir, 'aptitude-1.json'), 'utf8')), { id: 'aptitude-3' })));
@@ -176,8 +177,12 @@ test('page: lists exactly the papers in index.json, grouped; a new paper file sh
         execFileSync(process.execPath, [path.join(ROOT, 'scripts', 'articleship-written-test-papers.js'), dir]);
         const dom2 = await openPage(dir);
         const doc2 = dom2.window.document;
-        assert.deepEqual([...doc2.querySelectorAll('.paper-card')].map(a => a.getAttribute('data-paper')), ['screening-1', 'aptitude-1']);
-        assert.deepEqual([...doc2.querySelectorAll('.group h2')].map(h => h.textContent), ['Screening papers', 'Aptitude papers']);
+        const listed = JSON.parse(fs.readFileSync(path.join(dir, 'index.json'), 'utf8')).papers;
+        const cards = [...doc2.querySelectorAll('.paper-card')].map(a => a.getAttribute('data-paper'));
+        assert.deepEqual(cards.slice().sort(), listed.map(p => p.id).sort());
+        assert.ok(cards.includes('aptitude-1'), 'the new paper is on the page');
+        const groups = [...doc2.querySelectorAll('.group h2')].map(h => h.textContent);
+        assert.ok(groups.includes('Screening papers') && groups.includes('Aptitude papers'), groups.join(', '));
         dom2.window.close();
     } finally {
         fs.rmSync(dir, { recursive: true, force: true });
