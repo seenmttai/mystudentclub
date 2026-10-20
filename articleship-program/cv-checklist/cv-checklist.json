@@ -88,7 +88,7 @@
       "check": "A three-line objective that names your domain, or none at all",
       "example": [
         "❌ To work in a reputed organisation where I can utilise my skills and grow with the organisation.",
-        "✅ CA Intermediate cleared ([Month Year], first attempt); ICITSS completed. Kept my family shop’s books in Tally Prime for a year. Seeking articleship in GST, to learn monthly returns and ITC matching."
+        "✅ CA Intermediate cleared ([Month Year], first attempt); ICITSS completed. Kept the family shop’s books in Tally Prime for a year. Seeking articleship in GST, to learn monthly returns and ITC matching."
       ],
       "fix": {
         "label": "Objective examples",
@@ -168,7 +168,7 @@
       "check": "Every line written the Keywords way: verb, what, how many, with what",
       "example": [
         "❌ Responsible for my father’s shop accounts.",
-        "✅ Recorded 1,400 sales and purchase vouchers in Tally Prime for my father’s paint shop over 10 months; reconciled the bank every month.",
+        "✅ Recorded 1,400 sales and purchase vouchers in Tally Prime for the family paint shop over 10 months; reconciled the bank every month.",
         "Bullets, never a paragraph. Past tense, no “I”, one or two lines each, and no two bullets starting with the same verb.",
         "Every number must be one you can show a record for."
       ],
@@ -198,6 +198,9 @@
       "section": "Proof",
       "check": "Simulations and courses under “Certifications and job simulations”, four outside certificates at most",
       "example": [
+        "Job simulation: [Company] [Simulation] Job Simulation (Forage) | [Month Year]: [what you did]",
+        "Work Simulation: [Domain] Work Simulation, MSC Articleship Program | [Month Year]: [what you did]",
+        "✅ PwC US Audit Job Simulation (Forage) | [Month Year]: built a risk and control matrix for a client’s purchasing process",
         "Never under Experience or Internship, and never “virtual intern”.",
         "Your MSC Work Simulation lines and the MSC Articleship Program line don’t count in the four. ICITSS stays in the education table.",
         "Not finished yet? “Ongoing, completes [Month Year]”, until the certificate is in your inbox.",
@@ -205,7 +208,7 @@
       ],
       "fix": {
         "label": "Guidebook, chapter 3",
-        "href": "/learning-management-system/course?course=msc-articleship-program&session=1&resource=MSC+Articleship+Guidebook&page=35",
+        "href": "/learning-management-system/course?course=msc-articleship-program&session=1&resource=MSC+Articleship+Guidebook&page=33",
         "find": "Where do job simulations and certificates go?"
       }
     },
@@ -228,21 +231,23 @@
         "Read each line aloud, write the two questions it invites, and answer them.",
         "Excel: XLOOKUP, PivotTables → “Share your screen and make a PivotTable of this.” “XLOOKUP or VLOOKUP, and why?”",
         "Tally Prime → “Pass a purchase entry with GST.” “How do you reconcile the bank in Tally?”",
+        "Statutory audit Work Simulation: flagged 3 cut-off errors → “What is cut-off?” “What would you do next with those errors?”",
+        "Can’t answer both? Change the line, or learn it before you send the CV.",
+        "▸ More questions",
         "SAP → “Which module?” “Name one transaction you used.”",
         "ICITSS completed → “What did you make in ITT?” “Which Excel tools did it use?”",
         "CARO 2020 → “Which companies does it not apply to?” “Name two things it asks the auditor to report.”",
         "PwC US Audit Job Simulation → “What is a risk-control matrix?” “Which control did you test?”",
-        "Statutory audit Work Simulation: flagged 3 cut-off errors → “What is cut-off?” “What would you do next with those errors?”",
         "Reading → “What did you read last?” “What was its main idea?”",
         "Trekking → “Which trek, and how high?” “What went wrong?”",
         "Captain, cricket team → “How did you pick the eleven?” “Tell me about a time you dropped someone.”",
         "Volunteer teacher → “What did you teach?” “How did you know it worked?”",
+        "Every job simulation and Work Simulation level on your CV: be ready to talk about each task for two minutes.",
+        "▸ Skills and interests that survive",
         "❌ Skills: Advanced Excel, Taxation, Communication",
         "✅ Excel (proficient): XLOOKUP, PivotTables, SUMIFS",
         "❌ Interests: reading, music, travelling",
-        "✅ Reading business biographies. Last read: [title]",
-        "Every job simulation and Work Simulation level on your CV: be ready to talk about each task for two minutes.",
-        "Can’t answer both? Change the line, or learn it before you send the CV."
+        "✅ Reading business biographies. Last read: [title]"
       ],
       "fix": {
         "label": "Practise your interview with this CV",
@@ -257,7 +262,7 @@
         "✅ Reconciled **₹4.2 lakh** of vendor balances for 60 suppliers in Tally Prime",
         "❌ **Reconciled ₹4.2 lakh of vendor balances for 60 suppliers in Tally Prime**",
         "Bold a number or a result: never the verb, never a whole line or section. Text left-aligned, never justified.",
-        "The ten fixes reviewers make most:",
+        "▸ Ten fixes reviewers make most",
         "1. Sections in different fonts → One font for the whole page",
         "2. Uneven space under headings → The same gap under every heading",
         "3. A table running past the margin → Narrower columns or shorter words",
@@ -288,11 +293,11 @@
     {
       "id": "phone-and-print",
       "section": "Finish",
-      "check": "Opened on your phone and printed once on A4: readable without zooming, clear in black and white",
+      "check": "Opened on your phone from your mail: still one page, nothing cut off or overlapping, links open. Printed once on A4: clear in black and white",
       "example": [
-        "Mail the PDF to yourself and open it from the mail on your phone. Have to pinch to read a line? Fix the design or cut the line; never shrink the font.",
-        "Print it once: grey text, thin lines and coloured headings must still read in black and white.",
-        "Read the print once from the bottom line up, with a pen: a spelling or full-stop slip shows up that way."
+        "Mail the PDF to yourself and open it from that mail on your phone. Small text is normal on a phone screen; a second page, a cut-off line or text over text is not.",
+        "Something wrong? Fix it in the CV Builder and download the PDF again. Never shrink the font.",
+        "Print it once: grey text, thin lines and coloured headings must still read in black and white."
       ]
     },
     {
@@ -324,7 +329,7 @@
   ],
   "done": {
     "title": "Your CV is ready",
-    "text": "Run the CV Reviewer on your PDF first. Then tap Personal CV review and send three things: the PDF, your target domain and the one question you want answered.",
+    "text": "Run the CV Reviewer on your PDF first. Then send it for Personal CV review with your target domain and the one question you want answered, and attach the PDF in the chat.",
     "links": [
       {
         "label": "Run CV Reviewer",

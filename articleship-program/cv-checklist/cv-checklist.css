@@ -35,6 +35,13 @@
 .cvc-next:hover { background: color-mix(in srgb, var(--ap-accent) 18%, #fff); }
 .cvc-next:focus-visible { outline: 3px solid color-mix(in srgb, var(--ap-primary) 40%, transparent); outline-offset: 2px; }
 .cvc-next[hidden] { display: none; }
+/* All ticked: the button leads on to the two reviews */
+.cvc-next.is-end {
+    border-color: color-mix(in srgb, var(--ap-success) 45%, transparent);
+    background: var(--ap-success-light);
+    color: var(--ap-success);
+}
+.cvc-next.is-end:hover { background: color-mix(in srgb, var(--ap-success) 16%, #fff); }
 .ap-progress-text { align-items: center; min-height: 32px; }
 .cvc-list .ap-progress { background: var(--ap-bg); }
 @media (min-width: 768px) {
@@ -94,6 +101,9 @@
 .ap-cl-example .cvc-ex strong { font-weight: 700; color: var(--ap-navy); }
 /* Bold inside an example shows what bold looks like on a CV: plain ink, not the navy lead-in */
 .ap-cl-example .cvc-ex strong.cvc-ex-bold { color: var(--ap-ink); }
+/* A fold of its own next to "Example" (an example line "▸ More questions" starts one) */
+.ap-cl-example.cvc-fold summary { color: var(--ap-navy); }
+.ap-cl-example.cvc-fold summary::after { color: var(--ap-primary); }
 /* The student's own file name, from "my domain" */
 .ap-cl-example .cvc-ex p.cvc-ex-mine {
     padding: 6px 8px;
@@ -117,6 +127,94 @@
 }
 .cvc-reset:hover { color: var(--ap-ink); }
 .cvc-reset[hidden] { display: none; }
+.cvc-confirm {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 6px 0;
+}
+.cvc-confirm[hidden] { display: none; }
+.cvc-confirm-q { font-size: 14px; font-weight: 600; color: var(--ap-ink); }
+.cvc-confirm button {
+    min-height: 40px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font: 600 14px/1.2 var(--ap-sans);
+    cursor: pointer;
+}
+.cvc-confirm-yes { border: 1px solid var(--ap-danger); background: #fff; color: var(--ap-danger); }
+.cvc-confirm-yes:hover { background: color-mix(in srgb, var(--ap-danger) 8%, #fff); }
+.cvc-confirm-no { border: 1px solid var(--ap-border-dark); background: var(--ap-panel); color: var(--ap-navy); }
+.cvc-confirm-no:hover { background: var(--ap-hover); }
+.cvc-reset:focus-visible, .cvc-confirm button:focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--ap-primary) 40%, transparent);
+    outline-offset: 2px;
+}
+
+/* Two domains, two CVs: "Checking: GST CV / Direct Tax CV" */
+.cvc-cvs { margin: 10px 0 0; }
+.cvc-cvs[hidden] { display: none; }
+.cvc-cvs-set {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 8px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+}
+/* The legend on its own line (float makes a legend take part in the flex row), the two CVs side by side under it */
+.cvc-cvs-legend { float: left; width: 100%; margin: 0 0 2px; padding: 0; font-size: 14px; font-weight: 600; color: var(--ap-muted); }
+.cvc-cv {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1 1 140px;
+    justify-content: space-between;
+    min-height: 44px;
+    padding: 6px 14px;
+    border: 1px solid var(--ap-border-dark);
+    border-radius: 12px;
+    background: var(--ap-panel);
+    color: var(--ap-navy);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+.cvc-cv input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+.cvc-cv-count { color: var(--ap-muted); font-size: 13px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.cvc-cv.is-current {
+    border-color: var(--ap-accent);
+    background: color-mix(in srgb, var(--ap-accent) 12%, #fff);
+    box-shadow: inset 0 0 0 1px var(--ap-accent);
+}
+.cvc-cv.is-current .cvc-cv-count { color: var(--ap-navy); }
+.cvc-cv:has(input:focus-visible) { outline: 3px solid color-mix(in srgb, var(--ap-primary) 40%, transparent); outline-offset: 2px; }
+@media (min-width: 640px) {
+    .cvc-cv { flex: 0 1 auto; min-width: 190px; gap: 14px; }
+}
+/* One domain so far: "Applying in two domains? [Add a second CV]" */
+.cvc-add { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: 14px; }
+.cvc-add-label { color: var(--ap-muted); font-weight: 500; }
+.cvc-add-select {
+    min-height: 40px;
+    max-width: 100%;
+    padding: 6px 34px 6px 14px;
+    border: 1px dashed var(--ap-border-dark);
+    border-radius: 12px;
+    background: var(--ap-panel) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%2306152F' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center;
+    color: var(--ap-navy);
+    font: 600 14px/1.2 var(--ap-sans);
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+}
+.cvc-add-select:focus-visible { outline: 3px solid color-mix(in srgb, var(--ap-primary) 40%, transparent); outline-offset: 2px; }
 
 /* Closing card: CV Reviewer, then the personal review */
 .cvc-end { margin-top: 12px; }
@@ -138,17 +236,27 @@
 .cvc-end-text { margin: 0 0 14px; color: var(--ap-muted); font-size: 14px; }
 .cvc-end-links { display: grid; gap: 8px; }
 .cvc-end-card .ap-btn.is-secondary { color: var(--ap-navy); }
-/* Personal review before 100%: shown, not tappable */
-.cvc-end-card .ap-btn.is-disabled,
-.cvc-end-card .ap-btn.is-disabled:hover {
-    background: var(--ap-panel);
-    color: var(--ap-muted);
-    border-color: var(--ap-border);
-    border-style: dashed;
-    cursor: not-allowed;
+.cvc-end-card { scroll-margin-top: 80px; }
+.cvc-end-card:focus { outline: none; }
+.cvc-end-card.cvc-flash { animation: cvc-flash 1.4s ease; }
+/* The one question for the personal review, typed here so the message never goes bare */
+.cvc-ask { display: grid; gap: 4px; margin: 6px 0 0; }
+.cvc-ask-label { font-size: 14px; font-weight: 600; color: var(--ap-navy); }
+.cvc-ask-field {
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 64px;
+    padding: 10px 12px;
+    border: 1px solid var(--ap-border-dark);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--ap-ink);
+    font: 400 16px/1.4 var(--ap-sans);
+    resize: vertical;
 }
-.cvc-end-card .ap-btn.is-disabled { flex-direction: column; gap: 0; line-height: 1.25; }
-.cvc-end-card .cvc-after { display: block; font-size: 12px; font-weight: 500; }
+.cvc-ask-field:focus-visible { outline: 3px solid color-mix(in srgb, var(--ap-primary) 40%, transparent); outline-offset: 1px; border-color: var(--ap-primary); }
+.cvc-ask-hint { margin: 0; min-height: 0; font-size: 13px; font-weight: 600; color: var(--ap-danger); }
+.cvc-ask-hint:empty { display: none; }
 .cvc-end-card.is-complete { background: var(--ap-success-light); border-color: #bfe6cd; }
 .cvc-end-card.is-complete .cvc-end-title { color: var(--ap-success); font-size: 30px; }
 .cvc-end-card.is-complete .cvc-end-text { color: var(--ap-ink); }
@@ -207,12 +315,13 @@
 
 @media (prefers-reduced-motion: reduce) {
     .ap-cl-item.cvc-flash { animation: none; border-color: var(--ap-accent); }
+    .cvc-end-card.cvc-flash { animation: none; }
     .cvc-list .ap-progress { transition: none; }
 }
 
 @media print {
     .ap-cl-example .cvc-ex { background: none; border: 1px solid #ccc; }
-    .cvc-next, .cvc-reset-row, .cvc-nav { display: none !important; }
+    .cvc-next, .cvc-reset-row, .cvc-nav, .cvc-cvs, .cvc-ask { display: none !important; }
     .cvc-layout { display: block; }
     .cvc-side { position: static; }
 }
