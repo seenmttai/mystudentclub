@@ -3,7 +3,8 @@
   "title": "Domain roadmaps",
   "links": {
     "workSimulation": null,
-    "firms": null
+    "firms": null,
+    "practise": "/ai-interview.html?mode=articleship"
   },
   "resources": {
     "workSimulation": {
@@ -15,6 +16,68 @@
       "title": "Firms by domain"
     }
   },
+  "unbuilt": [
+    {
+      "row": "4.4",
+      "day": 4,
+      "title": "HR round and GD booklet"
+    },
+    {
+      "row": "4.5",
+      "day": 4,
+      "title": "Core accounting booklet"
+    },
+    {
+      "row": "4.6",
+      "day": 4,
+      "title": "Statutory audit booklet"
+    },
+    {
+      "row": "4.7",
+      "day": 4,
+      "title": "Internal audit booklet"
+    },
+    {
+      "row": "4.8",
+      "day": 4,
+      "title": "Direct tax booklet"
+    },
+    {
+      "row": "4.9",
+      "day": 4,
+      "title": "GST booklet"
+    },
+    {
+      "row": "4.10",
+      "day": 4,
+      "title": "Specialist teams booklet"
+    }
+  ],
+  "groups": [
+    {
+      "title": "Where most articles work",
+      "domains": [
+        "statutory-audit",
+        "direct-tax",
+        "internal-audit",
+        "gst",
+        "accounting",
+        "bank-audit"
+      ]
+    },
+    {
+      "title": "Specialist teams, fewer seats",
+      "domains": [
+        "transfer-pricing",
+        "valuation",
+        "fdd",
+        "forensic",
+        "ma-tax",
+        "consulting",
+        "ib-er"
+      ]
+    }
+  ],
   "rule": [
     {
       "if": "Sure of a domain?",
@@ -29,13 +92,16 @@
       "then": "Interview for both, one domain per firm at a time."
     }
   ],
-  "rule_note": "Pick one now and keep one backup. Your real interest shows after a few months of work, and that is normal.",
-  "intro": "An interviewer checks three things: what your domain is, what an article does there in a normal week, and why this firm's team. Each card answers the first two. The third is your homework: read the firm's service page and one recent piece of its work before you apply.",
+  "rule_note": "Most students settle on one domain and keep a backup. Your real interest shows after a few months of work, and that is normal.",
+  "intro_title": "What an interviewer checks",
+  "intro": "Three things: what your domain is, what an article does there in a normal week, and why this firm's team. Each card answers the first two. The third is yours: read the firm's service page and one recent piece of its work before you apply.",
   "intro_link": {
     "label": "How to research a firm",
     "resource": {
       "day": 4,
-      "title": "HR round and GD booklet"
+      "title": "HR round and GD booklet",
+      "page": null,
+      "find": "Research the firm"
     }
   },
   "domains": [
@@ -71,7 +137,6 @@
         "New industries keep it fresh: listed and unlisted, Ind AS and AS, manufacturing and services."
       ],
       "cons": [
-        "Season peaks with late evenings.",
         "Documentation is a large part of the job.",
         "Travel to client sites and stock counts.",
         "The first months can feel like admin."
@@ -84,7 +149,7 @@
         "internal-audit",
         "direct-tax"
       ],
-      "season": "Peaks after the books close on 31 March: year-end audits, then tax audits. Listed clients add a review every quarter.",
+      "season": "The months after the books close on 31 March: year-end audits first, then tax audits, with late evenings at the peak. Listed clients add a limited review every quarter.",
       "questions": [
         "Walk me through how a statutory audit runs.",
         "What is materiality? Why is performance materiality set lower?",
@@ -130,11 +195,13 @@
       "picks": [
         {
           "label": "PwC US audit simulation",
+          "kind": "simulation",
           "href": "https://www.theforage.com/simulations/pwc-us/audit-w3fr",
           "note": "Free, about 3–4 hours, certificate. Purchasing process, walkthrough and RCM tasks."
         },
         {
           "label": "KPMG Canada audit simulation",
+          "kind": "simulation",
           "href": "https://www.theforage.com/simulations/kpmg-ca/audit-assurance-el6n",
           "note": "Free, certificate. Excel, controls and substantive testing."
         }
@@ -203,7 +270,7 @@
         "statutory-audit",
         "forensic"
       ],
-      "season": "Spread through the year: many assignments are quarterly or continuous. Peaks follow your clients' plans.",
+      "season": "Usually spread through the year: many assignments run quarterly or all year, so the busy weeks follow each client's audit plan.",
       "questions": [
         "Statutory audit or internal audit: what is the difference?",
         "Explain purchase-to-pay in a minute. Name one risk and its control.",
@@ -229,11 +296,13 @@
       "picks": [
         {
           "label": "PwC US audit simulation",
+          "kind": "simulation",
           "href": "https://www.theforage.com/simulations/pwc-us/audit-w3fr",
           "note": "Free, certificate. Purchasing process, walkthrough and RCM tasks."
         },
         {
           "label": "Deloitte Australia data simulation",
+          "kind": "simulation",
           "href": "https://www.theforage.com/simulations/deloitte-au/data-analytics-s5zy",
           "note": "Free. Data analysis and dashboards for the analytics side."
         }
@@ -282,7 +351,6 @@
       ],
       "cons": [
         "Compliance-heavy at the start.",
-        "Deadline crunch in return and tax-audit season.",
         "Fewer exits outside tax.",
         "Moving to statutory audit later is harder than the reverse."
       ],
@@ -295,7 +363,7 @@
         "gst",
         "ma-tax"
       ],
-      "season": "The four advance-tax months (June, September, December, March), quarterly TDS returns, and return and tax-audit season after the audits.",
+      "season": "Advance-tax instalments in June, September, December and March; TDS statements every quarter, due by the end of July, October, January and May; then returns and tax audits once the year’s audits are done.",
       "questions": [
         "What changed from 1 April 2026, when the Income-tax Act, 2025 started to apply?",
         "What is TDS, and when is it deducted?",
@@ -329,11 +397,13 @@
       "picks": [
         {
           "label": "PwC US Tax simulation",
+          "kind": "simulation",
           "href": "https://www.theforage.com/simulations/pwc-us/tax-l9rj",
           "note": "Free, about 3–4 hours, certificate. Book-to-tax differences for a client."
         },
         {
           "label": "Income Tax portal videos",
+          "kind": "videos",
           "href": "https://www.incometax.gov.in/iec/foportal/help/all-topics/videos",
           "note": "Free official videos on return preparation and tax credits."
         }
@@ -373,7 +443,7 @@
         "Industry tax teams hire GST people."
       ],
       "cons": [
-        "Two or three intense days every month around return dates.",
+        "The same monthly cycle can feel repetitive at the start.",
         "A firm that only files returns teaches little. Ask about notices, advisory and customs before you accept.",
         "Fewer exits outside tax."
       ],
@@ -384,7 +454,7 @@
       "pairs": [
         "direct-tax"
       ],
-      "season": "A few intense days every month around return dates; annual returns once the year's accounts are final.",
+      "season": "Every month around the return dates: GSTR-1 by the 11th and GSTR-3B by the 20th for monthly filers (smaller taxpayers can file both quarterly). Annual returns follow once the year’s accounts are final.",
       "questions": [
         "When do CGST and SGST apply, and when IGST?",
         "Can a business take input tax credit just because it booked the purchase?",
@@ -414,11 +484,13 @@
       "picks": [
         {
           "label": "GSTR-1 tutorial (GST portal)",
+          "kind": "tutorial",
           "href": "https://tutorial.gst.gov.in/userguide/returns/GSTR_1.htm",
           "note": "Free official walkthrough of the outward-supply return."
         },
         {
           "label": "GSTR-2B tutorial (GST portal)",
+          "kind": "tutorial",
           "href": "https://tutorial.gst.gov.in/userguide/returns/FAQ_gstr2b.htm",
           "note": "Free. A mismatch needs a reason before you decide the credit."
         }
@@ -455,7 +527,6 @@
         "Concurrent audit adds year-round work at some firms."
       ],
       "cons": [
-        "Very seasonal.",
         "Heavy checklists.",
         "Travel to branches.",
         "Rarely a full domain on its own."
@@ -467,7 +538,7 @@
       "pairs": [
         "statutory-audit"
       ],
-      "season": "Short and intense: year-end branch audits right after 31 March. Concurrent audits run every month.",
+      "season": "Short and intense: branch audits in the weeks after the bank's year closes on 31 March. Concurrent audit checks transactions as they happen, so at banks that use it, it runs all year.",
       "questions": [
         "When does a loan become a non-performing asset?",
         "Sanction, drawing power and outstanding: is this cash-credit account within its limit?",
@@ -489,7 +560,14 @@
       "cv_line": "Bank Audit Work Simulation, MSC Articleship Program | [Month Year]: recomputed drawing power for [count] cash-credit accounts and classified [count] accounts by days overdue.",
       "picks": [
         {
+          "label": "KPMG Canada audit simulation",
+          "kind": "simulation",
+          "href": "https://www.theforage.com/simulations/kpmg-ca/audit-assurance-el6n",
+          "note": "Free, certificate. Controls and substantive testing in Excel, the checking a branch audit runs on."
+        },
+        {
           "label": "ICAI recorded classes",
+          "kind": "classes",
           "href": "https://boslive.icai.org/",
           "note": "Free. Pick Intermediate, then the audit lectures on banks."
         }
@@ -538,7 +616,7 @@
       "pairs": [
         "direct-tax"
       ],
-      "season": "The months before TP reports and returns are due; documentation work runs all year.",
+      "season": "Usually the months before the transfer pricing report and the return are due, once the year’s accounts close. Documentation and benchmarking run all year.",
       "questions": [
         "What is transfer pricing, and why does the law care?",
         "What is an associated enterprise?",
@@ -560,7 +638,14 @@
       "cv_line": "Transfer Pricing Work Simulation, MSC Articleship Program | [Month Year]: screened [count] comparables, computed margins and the range, and tested the client's margin.",
       "picks": [
         {
+          "label": "Goldman Sachs Excel simulation",
+          "kind": "simulation",
+          "href": "https://www.theforage.com/simulations/goldman-sachs/excel-skills-oi3f",
+          "note": "Free, about 3–4 hours, certificate. The Excel that benchmarking needs: margins, ranges, clean tables."
+        },
+        {
           "label": "ICAI recorded classes",
+          "kind": "classes",
           "href": "https://boslive.icai.org/",
           "note": "Free. TP interviews test tax: revise Intermediate income tax first."
         }
@@ -609,7 +694,7 @@
       "pairs": [
         "direct-tax"
       ],
-      "season": "Around deal closing dates, and after the Budget when tax rules change.",
+      "season": "No fixed season: work follows deal closing dates, and picks up after a Budget changes the tax rules.",
       "questions": [
         "What is a capital asset? Is stock-in-trade one? What if stock is converted into a capital asset?",
         "What is a slump sale, and how is the gain worked out, broadly?",
@@ -632,17 +717,19 @@
       "picks": [
         {
           "label": "ICAI recorded classes",
+          "kind": "classes",
           "href": "https://boslive.icai.org/",
           "note": "Free. Capital gains and TDS come first in these interviews."
         },
         {
           "label": "PwC US Tax simulation",
+          "kind": "simulation",
           "href": "https://www.theforage.com/simulations/pwc-us/tax-l9rj",
           "note": "Free, certificate. Book-to-tax thinking."
         }
       ],
       "extra": [
-        "As a fresher, do not claim M&A tax keywords you cannot defend. Show the interest honestly: the Work Simulation line, what you have read, a strong tax score, and a specific objective."
+        "As a fresher, do not claim M&A tax keywords you cannot defend. Show the interest honestly: what you have read, one piece of work you can explain, a strong tax score and a specific objective."
       ],
       "firms_filter": "Audit and tax",
       "linkedin": {
@@ -656,7 +743,7 @@
       "enjoy": "FM and SFM were your favourite, and Excel models excite you.",
       "what": {
         "first": [
-          "Pull a few months of daily share prices to work out a stock's beta.",
+          "Pull a year or two of share prices against the index to work out a stock's beta.",
           "Gather comparable listed companies and their multiples.",
           "Look up cost-of-capital inputs on the firm's databases.",
           "Tidy three to five years of financials into a model's input sheet."
@@ -690,7 +777,7 @@
       "pairs": [
         "fdd"
       ],
-      "season": "Follows clients' deals and fund-raises rather than a calendar.",
+      "season": "No fixed season: the work follows clients' deals and fund-raises.",
       "questions": [
         "How do you value a business?",
         "What is WACC, and how do you get the cost of equity?",
@@ -713,11 +800,13 @@
       "picks": [
         {
           "label": "Damodaran's valuation classes",
+          "kind": "classes",
           "href": "https://pages.stern.nyu.edu/~adamodar/New_Home_Page/webcastvalonline.htm",
           "note": "Free webcasts, slides and tests. Free learning, no certificate: your model is the proof."
         },
         {
           "label": "Bank of America IB simulation",
+          "kind": "simulation",
           "href": "https://www.theforage.com/simulations/bank-of-america/investment-banking-bwp7",
           "note": "Free, certificate. Company analysis, screening, modelling and valuation."
         }
@@ -780,7 +869,6 @@
       ],
       "cons": [
         "Very few article seats.",
-        "Deal deadlines mean long hours.",
         "Most teams want a statutory-audit base, so the usual route is statutory audit first."
       ],
       "leads": {
@@ -791,7 +879,7 @@
         "valuation",
         "statutory-audit"
       ],
-      "season": "Deal deadlines set the pace: long days close to signing.",
+      "season": "No calendar: each deal's timetable sets the pace, with the longest days just before signing.",
       "questions": [
         "What is quality of earnings?",
         "What is a working-capital peg?",
@@ -814,11 +902,13 @@
       "picks": [
         {
           "label": "Damodaran's accounting classes",
+          "kind": "classes",
           "href": "https://pages.stern.nyu.edu/adamodar/New_Home_Page/webcastacctg.htm",
           "note": "Free webcasts: income statement, cash flows and ratios, read the way an analyst reads them."
         },
         {
           "label": "Goldman Sachs Excel simulation",
+          "kind": "simulation",
           "href": "https://www.theforage.com/simulations/goldman-sachs/excel-skills-oi3f",
           "note": "Free, about 3–4 hours, certificate. Excel Skills for Business."
         }
@@ -880,7 +970,7 @@
       "pairs": [
         "internal-audit"
       ],
-      "season": "Driven by cases, not a calendar.",
+      "season": "No calendar: cases set the pace.",
       "questions": [
         "Why do people commit fraud?",
         "What types of fraud are there?",
@@ -903,11 +993,13 @@
       "picks": [
         {
           "label": "Deloitte Australia data simulation",
+          "kind": "simulation",
           "href": "https://www.theforage.com/simulations/deloitte-au/data-analytics-s5zy",
           "note": "Free. Data analysis and dashboards in a forensic setting."
         },
         {
           "label": "Goldman Sachs Excel simulation",
+          "kind": "simulation",
           "href": "https://www.theforage.com/simulations/goldman-sachs/excel-skills-oi3f",
           "note": "Free, certificate. The Excel your data checks need."
         }
@@ -962,7 +1054,7 @@
       "pairs": [
         "internal-audit"
       ],
-      "season": "Project deadlines, not a calendar.",
+      "season": "No calendar: project deadlines set the pace.",
       "questions": [
         {
           "q": "How would you break down \"profit fell this year\"?",
@@ -996,11 +1088,13 @@
       "picks": [
         {
           "label": "BCG Introduction to Data for Decision Makers",
+          "kind": "simulation",
           "href": "https://www.theforage.com/simulations/bcg/data-for-decision-makers-tod0",
           "note": "Free, about 1–2 hours, certificate. Read campaign data, find the pattern, recommend a move."
         },
         {
           "label": "BCG strategy simulation",
+          "kind": "simulation",
           "href": "https://www.theforage.com/simulations/bcg/strategy-consulting-jk76",
           "note": "Free. List both under Certifications and job simulations, never as work experience."
         }
@@ -1061,7 +1155,7 @@
       "pairs": [
         "statutory-audit"
       ],
-      "season": "Month-end closes, the year-end close before the audit, and annual company filings.",
+      "season": "Usually month-end closes, the year-end close before the audit, and the annual company filings after the accounts are approved.",
       "questions": [
         "Pass the entry: professional fees of ₹80,000 with 10% TDS, not yet paid.",
         "Does a trial balance that agrees prove the books are right?",
@@ -1091,11 +1185,13 @@
       "picks": [
         {
           "label": "Goldman Sachs Excel simulation",
+          "kind": "simulation",
           "href": "https://www.theforage.com/simulations/goldman-sachs/excel-skills-oi3f",
           "note": "Free, about 3–4 hours, certificate. Excel Skills for Business."
         },
         {
           "label": "Power BI introduction",
+          "kind": "module",
           "href": "https://learn.microsoft.com/en-us/training/modules/get-started-with-power-bi/",
           "note": "Free Microsoft Learn module, useful for MIS."
         }
@@ -1149,7 +1245,7 @@
         "valuation",
         "fdd"
       ],
-      "season": "Results season every quarter for research; deal timelines for IB.",
+      "season": "Research: results season every quarter, when listed companies publish their numbers. IB: each deal’s timetable.",
       "questions": [
         {
           "q": "Walk me through a DCF.",
@@ -1187,11 +1283,13 @@
       "picks": [
         {
           "label": "Bank of America IB simulation",
+          "kind": "simulation",
           "href": "https://www.theforage.com/simulations/bank-of-america/investment-banking-bwp7",
           "note": "Free, certificate. Company analysis, M&A screening, modelling and valuation."
         },
         {
           "label": "Varsity: Fundamental Analysis",
+          "kind": "module",
           "href": "https://zerodha.com/varsity/module/fundamental-analysis/",
           "note": "Free module: reading an annual report, equity research, a DCF primer."
         }
@@ -1225,7 +1323,7 @@
           }
         }
       ],
-      "firms_filter": "Investment banking or Equity research",
+      "firms_filter": "IB and ER",
       "linkedin": {
         "keywords": "\"equity research\" OR \"investment banking\""
       }

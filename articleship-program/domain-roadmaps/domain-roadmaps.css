@@ -1,7 +1,8 @@
 /*
  * Domain roadmaps (row 5.1): the page around scripts/articleship-domain-roadmaps.js.
  * Base look: /articleship-program/shared/articleship-tools.css (CV Builder base + Caveat headings, Day 5 accent).
- * Phone first: the rule and the 13 domain tiles, then one card at a time (#<slug>). From 960 px: tiles left, card right.
+ * Phone first: the rule and the 13 domain tiles (the first ones on the first screen), then one card at a time (#<slug>).
+ * From 960 px: tiles left, card right. Every tap target is at least 44 px high.
  */
 .dr-main { padding-bottom: 56px; }
 .dr-day {
@@ -16,7 +17,7 @@
 .dr-error { display: grid; gap: 12px; justify-items: start; }
 .dr-error p { margin: 0; }
 
-/* ---------- Top: my rule, the intro line, my domain ---------- */
+/* ---------- Top: my rule, my domain ---------- */
 .dr-top { display: grid; gap: 10px; margin: 0 0 16px; }
 .dr-rule { padding: 12px 14px 10px; }
 .dr-rule-label { display: block; margin: 0 0 4px; }
@@ -25,10 +26,13 @@
 .dr-rule-row dt { font-weight: 700; color: var(--ap-navy); }
 .dr-rule-row dd { margin: 0; }
 .dr-rule-note { margin: 8px 0 0; font-size: 14px; color: var(--ap-ink); }
-.dr-intro { margin: 0; color: var(--ap-muted); font-size: 14px; }
 .dr-mine-line {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
     margin: 0;
-    padding: 8px 12px;
+    padding: 2px 4px 2px 12px;
     border: 1px solid color-mix(in srgb, var(--ap-accent) 40%, transparent);
     border-radius: 10px;
     background: color-mix(in srgb, var(--ap-accent) 8%, #fff);
@@ -36,8 +40,24 @@
     font-weight: 600;
     color: var(--ap-navy);
 }
+.dr-mine-words { margin: 0; padding: 8px 0; min-width: 0; }
 .dr-mine-line .ap-link { color: var(--ap-primary); }
-.dr-intro .dr-inline { white-space: normal; }
+.dr-clear {
+    flex: 0 0 auto;
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0 10px;
+    border: 0;
+    border-radius: 8px;
+    background: none;
+    color: var(--ap-muted);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.dr-clear:hover { color: var(--ap-navy); background: color-mix(in srgb, var(--ap-accent) 12%, #fff); }
+.dr-clear:focus-visible { outline: 3px solid color-mix(in srgb, var(--ap-primary) 40%, transparent); outline-offset: 2px; }
 
 /* ---------- Domain tiles ---------- */
 .dr-nav-title {
@@ -48,6 +68,15 @@
     line-height: 1.1;
     color: var(--ap-navy);
 }
+.dr-group-title {
+    margin: 14px 0 6px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--ap-accent) 82%, #000);
+}
+.dr-nav-title + .dr-group-title { margin-top: 0; }
 .dr-tiles { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
 .dr-tile {
     position: relative;
@@ -109,8 +138,8 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    min-height: 40px;
-    margin: -6px 0 6px;
+    min-height: 44px;
+    margin: -8px 0 4px;
     color: var(--ap-primary);
     font-size: 14px;
     font-weight: 600;
@@ -131,7 +160,7 @@
 }
 .dr-enjoy { margin: 4px 0 0; color: var(--ap-muted); font-size: 14px; }
 .dr-mine { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 12px 0 0; }
-.dr-mine .ap-btn { min-height: 40px; padding: 8px 11px; font-size: 13.5px; }
+.dr-mine .ap-btn { min-height: 44px; padding: 8px 12px; font-size: 13.5px; }
 .dr-pill {
     display: inline-flex;
     align-items: center;
@@ -150,8 +179,8 @@
 .dr-quick-link {
     display: inline-flex;
     align-items: center;
-    min-height: 36px;
-    padding: 6px 12px;
+    min-height: 44px;
+    padding: 6px 14px;
     border-radius: 999px;
     border: 1px solid color-mix(in srgb, var(--ap-accent) 45%, transparent);
     background: color-mix(in srgb, var(--ap-accent) 7%, #fff);
@@ -225,7 +254,7 @@
 .dr-chip {
     display: inline-flex;
     align-items: center;
-    min-height: 32px;
+    min-height: 44px;
     padding: 4px 12px;
     border-radius: 999px;
     border: 1px solid var(--ap-border-dark);
@@ -255,7 +284,8 @@
 .dr-answer summary {
     cursor: pointer;
     list-style: none;
-    min-height: 28px;
+    min-height: 44px;
+    padding: 2px 0 8px;
 }
 .dr-answer summary::-webkit-details-marker { display: none; }
 .dr-answer summary::after {
@@ -275,10 +305,11 @@
     background: var(--ap-sticky);
     font-size: 14px;
 }
+.dr-gos { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; margin-top: 6px; }
 .dr-go {
     display: inline-flex;
     align-items: center;
-    min-height: 40px;
+    min-height: 44px;
     margin-top: 6px;
     color: var(--ap-navy);
     font-size: 14px;
@@ -287,6 +318,8 @@
     border-bottom: 2px solid color-mix(in srgb, var(--ap-accent) 55%, transparent);
 }
 .dr-go::after { content: '\2192'; margin-left: 6px; }
+.dr-go[target="_blank"]::after { content: '\2197'; }
+.dr-go.dr-go-tight { margin-top: 0; }
 
 /* Work Simulation levels and the line they earn */
 .dr-levels { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
@@ -336,25 +369,30 @@
     color: var(--ap-navy);
 }
 .dr-cvline p { margin: 0; font-size: 14px; }
+.dr-cvline .dr-cvline-hint { margin-top: 6px; font-size: 13px; color: var(--ap-muted); }
 
 /* Free picks and the paid option */
 .dr-picks { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
 .dr-pick {
     display: grid;
     gap: 2px;
+    min-height: 44px;
     padding: 10px 12px;
     border-radius: 10px;
     background: var(--ap-bg);
     border: 1px solid var(--ap-border);
+    color: var(--ap-ink);
+    text-decoration: none;
 }
 .dr-pick-no { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ap-muted); }
 .dr-pick-name { font-weight: 700; color: var(--ap-navy); }
-a.dr-pick-name { color: var(--ap-primary); text-decoration: none; }
-a.dr-pick-name:hover { text-decoration: underline; }
-a.dr-pick-name[target="_blank"]::after { content: '\2197'; margin-left: 4px; font-size: 12px; }
+.dr-pick.is-link { -webkit-tap-highlight-color: transparent; transition: border-color 0.15s ease, background 0.15s ease; }
+.dr-pick.is-link .dr-pick-name { color: var(--ap-primary); }
+.dr-pick.is-link:hover { border-color: var(--ap-primary); background: var(--ap-primary-light); }
+.dr-pick.is-link:hover .dr-pick-name { text-decoration: underline; }
+.dr-pick.is-link:focus-visible { outline: 3px solid color-mix(in srgb, var(--ap-primary) 40%, transparent); outline-offset: 2px; }
+.dr-pick.is-link[target="_blank"] .dr-pick-name::after { content: '\2197'; margin-left: 4px; font-size: 12px; }
 .dr-pick-note { font-size: 14px; color: var(--ap-muted); }
-.dr-inline { color: var(--ap-primary); font-weight: 600; text-decoration: none; white-space: nowrap; }
-.dr-inline::after { content: '\2192'; margin-left: 4px; }
 
 /* Go further: Explorer, firms, LinkedIn */
 .dr-action-grid { display: grid; gap: 8px; }
@@ -407,8 +445,24 @@ a.dr-pick-name[target="_blank"]::after { content: '\2197'; margin-left: 4px; fon
 .dr-next { margin-left: auto; text-align: right; }
 .dr-next::after { content: '\2192'; }
 
-/* ---------- Bottom: team names, not locked in, glossary ---------- */
+/* ---------- Bottom: what an interviewer checks, team names, not locked in, glossary ---------- */
 .dr-more { display: grid; gap: 10px; margin: 24px 0 0; }
+.dr-intro {
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--ap-panel);
+    border: 1px solid var(--ap-border);
+}
+.dr-intro-title {
+    margin: 0 0 4px;
+    font-family: var(--ap-hand);
+    font-weight: 700;
+    font-size: 23px;
+    line-height: 1.1;
+    color: var(--ap-navy);
+}
+.dr-intro-text { margin: 0; font-size: 14px; color: var(--ap-ink); }
+
 .dr-fold {
     background: var(--ap-panel);
     border: 1px solid var(--ap-border);
@@ -445,7 +499,12 @@ a.dr-pick-name[target="_blank"]::after { content: '\2197'; margin-left: 4px; fon
 }
 .dr-team-label { font-weight: 700; color: var(--ap-navy); font-size: 14px; }
 .dr-team-text { grid-column: 1; font-size: 13px; color: var(--ap-muted); }
-.dr-team .dr-chip { grid-column: 2; grid-row: 1 / span 2; font-size: 12px; min-height: 30px; padding: 3px 10px; }
+.dr-team .dr-chip { grid-column: 2; grid-row: 1 / span 2; font-size: 12px; padding: 3px 12px; }
+/* Phone: the chip on its own row, so a long domain name never squeezes the team name. */
+@media (max-width: 599.98px) {
+    .dr-team { grid-template-columns: minmax(0, 1fr); }
+    .dr-team .dr-chip { grid-column: 1; grid-row: auto; justify-self: start; margin-top: 4px; }
+}
 .dr-lockin {
     padding: 12px 14px;
     border-radius: 12px;
@@ -472,6 +531,7 @@ a.dr-pick-name[target="_blank"]::after { content: '\2197'; margin-left: 4px; fon
 @media (min-width: 600px) {
     .dr-pc { grid-template-columns: 1fr 1fr; }
     .dr-action-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .dr-action-grid.is-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .dr-facts { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 12px 18px; }
     .dr-card { padding: 22px 22px 14px; }
     .dr-prevnext { margin: 20px -22px -14px; padding: 4px 22px; }
@@ -480,10 +540,9 @@ a.dr-pick-name[target="_blank"]::after { content: '\2197'; margin-left: 4px; fon
 
 /* ---------- Wide: tiles left, card right ---------- */
 @media (min-width: 960px) {
-    .dr-top { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto 1fr; align-items: start; gap: 10px 20px; }
-    .dr-top .dr-rule { grid-row: 1 / span 2; }
-    .dr-rule-row { grid-template-columns: 10.5em minmax(0, 1fr); }
-    .dr-intro { padding-top: 12px; font-size: 15px; }
+    /* The rule as one band: three if/then pairs side by side. */
+    .dr-rule-rows { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px 20px; }
+    .dr-rule-row { grid-template-columns: minmax(0, 1fr); gap: 2px; align-content: start; }
     .dr-layout { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 20px; align-items: start; }
     .dr-nav {
         position: sticky;
@@ -493,7 +552,8 @@ a.dr-pick-name[target="_blank"]::after { content: '\2197'; margin-left: 4px; fon
         padding: 2px 6px 8px 2px;
         overscroll-behavior: contain;
     }
-    .dr-tiles { gap: 5px; padding-top: 8px; }
+    .dr-tiles { gap: 5px; padding-top: 4px; }
+    .dr-group-title { margin: 10px 0 2px; }
     /* All 13 tiles fit beside the card on a 900 px-tall screen: one line each for the name and the tagline. */
     .dr-tile { min-height: 48px; padding: 6px 30px 6px 10px; gap: 10px; }
     .dr-tile .dr-ico { flex-basis: 30px; width: 30px; height: 30px; }
@@ -502,6 +562,7 @@ a.dr-pick-name[target="_blank"]::after { content: '\2197'; margin-left: 4px; fon
     .dr-tile-tag { font-size: 12px; }
     .dr-back { display: none; }
     .dr-more { margin-left: 340px; }
+    .dr-more .dr-intro { order: -2; }
     .dr-more .dr-lockin { order: -1; }
     .dr-glossary { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 24px; }
 }
@@ -511,6 +572,8 @@ a.dr-pick-name[target="_blank"]::after { content: '\2197'; margin-left: 4px; fon
     .dr-tile { min-height: 40px; }
     .dr-tile .dr-ico { flex-basis: 26px; width: 26px; height: 26px; }
     .dr-tile-tag { display: none; }
+    .dr-nav-title { margin-bottom: 4px; }
+    .dr-group-title { margin: 8px 0 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {

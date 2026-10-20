@@ -10,15 +10,27 @@ const ROOT = path.join(__dirname, '..');
 const TOOL_DIR = path.join(ROOT, 'articleship-program/domain-roadmaps');
 const CONTENT = JSON.parse(fs.readFileSync(path.join(TOOL_DIR, 'roadmaps.json'), 'utf8'));
 const PAGE = fs.readFileSync(path.join(TOOL_DIR, 'index.html'), 'utf8');
+const CSS = fs.readFileSync(path.join(TOOL_DIR, 'domain-roadmaps.css'), 'utf8');
+// The content build lives in the content repo (msc-content), not here. Point MSC_CONTENT_BUILD at its v3/build folder,
+// or keep the two repos side by side (../msc-content); without it the "built rows" check is skipped.
+const CONTENT_BUILD = process.env.MSC_CONTENT_BUILD || path.join(ROOT, '..', 'msc-content/articleship-program/v3/build');
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 function copy(value) { return JSON.parse(JSON.stringify(value)); }
+/** The content with every course row treated as built (what the page shows once every file is in the course). */
+function allBuilt() { return Object.assign(copy(CONTENT), { unbuilt: [] }); }
 
 /** Change the anchor and wait for the page's own hashchange handler (jsdom fires it asynchronously). */
 function go(win, hash) {
-    return new Promise(resolve => {
-        win.addEventListener('hashchange', () => setTimeout(resolve, 0), { once: true });
-        win.location.hash = hash;
+    if (win.location.hash === hash) return Promise.reject(new Error('already at ' + hash + ': no hashchange would fire'));
+    const done = nextHashchange(win);
+    win.location.hash = hash;
+    return done;
+}
+function nextHashchange(win) {
+    return new Promise((resolve, reject) => {
+        const timer = setTimeout(() => reject(new Error('no hashchange')), 2000);
+        win.addEventListener('hashchange', () => { clearTimeout(timer); setTimeout(resolve, 0); }, { once: true });
     });
 }
 
@@ -42,14 +54,15 @@ function memorySettings() {
     });
 }
 
-function page(hash, content, settings) {
+function page(hash, content, settings, extra) {
     const dom = new JSDOM('<!doctype html><body><div id="app"></div></body>', {
         url: 'http://127.0.0.1/articleship-program/domain-roadmaps/' + (hash || ''), pretendToBeVisual: true
     });
     const win = dom.window;
     win.scrollTo = () => {};
     const store = settings || memorySettings();
-    const app = R.mount(win.document.getElementById('app'), content || CONTENT, { settings: store, location: win.location, history: win.history });
+    const app = R.mount(win.document.getElementById('app'), content || CONTENT,
+        Object.assign({ settings: store, location: win.location, history: win.history }, extra || {}));
     const $ = sel => win.document.querySelector(sel);
     const $$ = sel => [...win.document.querySelectorAll(sel)];
     return { dom, win, app, store, $, $$ };
@@ -63,18 +76,35 @@ function strings(value, out = []) {
     return out;
 }
 
+const ORDER = ['statutory-audit', 'direct-tax', 'internal-audit', 'gst', 'accounting', 'bank-audit',
+    'transfer-pricing', 'valuation', 'fdd', 'forensic', 'ma-tax', 'consulting', 'ib-er'];
+
 // ---------- Content ----------
 
-test('content: validates with no problems; 13 cards in the programme order, one per shared domain', () => {
+test('content: validates with no problems; 13 cards, one per shared domain, in the content\'s group order', () => {
     assert.deepEqual(R.validate(CONTENT), []);
     const model = R.normalise(CONTENT);
     assert.deepEqual(model.warnings, []);
-    assert.deepEqual(model.domains.map(c => c.slug), P.DOMAINS.map(d => d.slug));
-    assert.deepEqual(model.domains.map(c => c.label), P.DOMAINS.map(d => d.label));
+    assert.deepEqual(model.domains.map(c => c.slug), ORDER);
+    assert.deepEqual([...model.domains.map(c => c.slug)].sort(), P.DOMAINS.map(d => d.slug).sort());
+    const labels = Object.fromEntries(P.DOMAINS.map(d => [d.slug, d.label]));
+    for (const card of model.domains) assert.equal(card.label, labels[card.slug]);
+    assert.deepEqual(model.groups.map(g => g.title), ['Where most articles work', 'Specialist teams, fewer seats']);
+});
+
+test('content: the first group is where most articles work, by MSC\'s own experience data (most first)', () => {
+    const data = JSON.parse(fs.readFileSync(path.join(ROOT, 'articleship-program/experience-explorer/experiences.json'), 'utf8'));
+    const counts = Object.fromEntries(P.DOMAINS.map(d => [d.slug, 0]));
+    for (const record of data.records) for (const d of new Set(record.domains || [])) if (d in counts) counts[d] += 1;
+    const [common, specialist] = R.normalise(CONTENT).groups;
+    const byCount = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
+    assert.deepEqual(common.slugs, byCount.slice(0, common.slugs.length), 'the most common domains, most first: ' + JSON.stringify(counts));
+    const smallest = Math.min(...common.slugs.map(s => counts[s]));
+    for (const slug of specialist.slugs) assert.ok(counts[slug] < smallest, slug + ' has fewer experiences than every common domain');
 });
 
 test('content: every card has MSCIT\'s Domain.docx pattern in full, then the rest of row 5.1', () => {
-    const model = R.normalise(CONTENT);
+    const model = R.normalise(allBuilt());
     for (const card of model.domains) {
         const at = card.slug + ': ';
         assert.ok(card.what.first.length >= 2, at + 'what an article does first');
@@ -88,10 +118,56 @@ test('content: every card has MSCIT\'s Domain.docx pattern in full, then the res
         assert.equal(card.questions.length, 5, at + 'five likely questions');
         assert.ok(card.booklet || card.questions.every(q => q.a), at + 'a booklet, or answer outlines on the card');
         assert.ok(card.levels.length >= 1, at + 'Work Simulation levels');
-        assert.ok(card.picks.length >= 1, at + 'a free pick');
+        assert.equal(card.picks.length, 2, at + 'a first and a second free pick');
+        assert.ok(card.picks.every(p => p.kind), at + 'every pick says what it is');
+        assert.ok(card.picks.some(p => p.kind === 'simulation' || p.kind === 'tutorial'), at + 'at least one hands-on pick');
         assert.ok(card.tagline, at + 'tagline');
-        assert.ok(card.linkedin && card.explorer && card.firms.href, at + 'the three jumps');
+        assert.ok(card.linkedin && card.explorer && card.firms && card.firms.href, at + 'the three jumps');
+        assert.match(card.practise, new RegExp('^/ai-interview\\.html\\?mode=articleship&round=technical&domain=' + card.slug + '$'));
     }
+});
+
+test('content: Bank audit and Transfer pricing lead with a real simulation; recorded classes are labelled as classes', () => {
+    const model = R.normalise(CONTENT);
+    for (const slug of ['bank-audit', 'transfer-pricing']) {
+        const [first, second] = model.bySlug[slug].picks;
+        assert.equal(first.kind, 'simulation', slug);
+        assert.match(first.href, /^https:\/\/www\.theforage\.com\/simulations\//);
+        assert.equal(second.label, 'ICAI recorded classes');
+        assert.equal(second.kind, 'classes');
+    }
+    for (const card of model.domains) {
+        for (const p of card.picks) {
+            if (/classes/i.test(p.label)) assert.equal(p.kind, 'classes', card.slug + ': ' + p.label + ' is classes, not a simulation');
+            if (/simulation/i.test(p.label)) assert.equal(p.kind, 'simulation', card.slug + ': ' + p.label);
+        }
+    }
+});
+
+test('content: busy season adds to the card, never repeats Cons; traced dates only', () => {
+    const model = R.normalise(CONTENT);
+    const words = s => s.toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').split(/\s+/).filter(Boolean);
+    const grams = s => { const w = words(s); return new Set(w.slice(0, -3).map((_, i) => w.slice(i, i + 4).join(' '))); };
+    for (const card of model.domains) {
+        const season = grams(card.season);
+        for (const con of card.cons) {
+            const shared = [...grams(con)].filter(g => season.has(g));
+            assert.deepEqual(shared, [], card.slug + ': Cons "' + con + '" repeats the season line');
+        }
+        assert.doesNotMatch(card.cons.join(' '), /\bseason\b|return dates|deadline/i, card.slug + ': no season detail in Cons');
+    }
+    // The dates the cards name are the traced ones (FACTS / NEW-FACTS): advance tax, TDS statements, GST returns, 31 March.
+    assert.match(model.bySlug['direct-tax'].season, /June, September, December and March/);
+    assert.match(model.bySlug['direct-tax'].season, /end of July, October, January and May/);
+    assert.match(model.bySlug.gst.season, /GSTR-1 by the 11th and GSTR-3B by the 20th/);
+    assert.match(model.bySlug['statutory-audit'].season, /31 March/);
+    assert.match(model.bySlug['bank-audit'].season, /31 March/);
+    assert.doesNotMatch(JSON.stringify(CONTENT), /3CEB|tax audit report (is )?due|due by 30 September|31 October/i, 'no tax-audit or TP due date');
+});
+
+test('content: valuation beta line is precise', () => {
+    const val = R.normalise(CONTENT).bySlug.valuation;
+    assert.equal(val.what.first[0], "Pull a year or two of share prices against the index to work out a stock's beta.");
 });
 
 test('content: the pairings that fit articleship (G2) are on the cards', () => {
@@ -127,7 +203,7 @@ test('CV lines: house rule 2\'s MSC format, and the same lines the CV Recommende
 });
 
 test('row 5.1 specifics: IB & ER registration line once, BCG Data for Decision Makers on Consulting, Varsity Certified only on valuation and IB & ER', () => {
-    const model = R.normalise(CONTENT);
+    const model = R.normalise(allBuilt());
     const ib = model.bySlug['ib-er'];
     assert.match(ib.note, /cannot register articles/);
     assert.match(ib.note, /practising CA/);
@@ -147,14 +223,16 @@ test('row 5.1 specifics: IB & ER registration line once, BCG Data for Decision M
     }
 });
 
-test('row 5.1 top and bottom: the rule (house rule 10), the three-things line, team names, not locked in, glossary', () => {
-    const model = R.normalise(CONTENT);
+test('row 5.1 top and bottom: the rule (house rule 10) as information, the three-things block, team names, not locked in, glossary', () => {
+    const model = R.normalise(allBuilt());
     assert.deepEqual(model.rule.map(r => r.if), ['Sure of a domain?', 'Unsure?', 'Torn between two?']);
     assert.match(model.rule[0].then, /That domain, even at a smaller firm/);
     assert.match(model.rule[1].then, /Statutory audit with some tax, at the biggest firm that says yes/);
-    assert.match(model.ruleNote, /backup/);
-    assert.match(model.intro, /three things/);
-    assert.match(model.intro, /The third is your homework/);
+    assert.match(model.ruleNote, /^Most students settle on one domain and keep a backup\./, 'information, not a task (B2)');
+    assert.equal(model.introTitle, 'What an interviewer checks');
+    assert.match(model.intro, /^Three things/);
+    assert.match(model.intro, /The third is yours/);
+    assert.equal(model.introLink.label, 'How to research a firm (Research the firm part)');
     assert.equal(model.introLink.href, '/learning-management-system/course?course=msc-articleship-program&session=5&resource=HR+round+and+GD+booklet');
     assert.ok(model.teams.rows.length >= 15);
     assert.match(model.teams.intro, /two preferences/);
@@ -165,12 +243,13 @@ test('row 5.1 top and bottom: the rule (house rule 10), the three-things line, t
     }
 });
 
-test('text: nothing a student must not see (competitors, internal codes, waves, dates of this build, pay, coming soon)', () => {
+test('text: nothing a student must not see (competitors, internal codes, waves, dates of this build, pay, homework, coming soon)', () => {
     const all = strings(CONTENT).join('\n') + '\n' + PAGE;
     assert.doesNotMatch(all, /ca ?monk|thinking ?bridge|umbrella|NEEDS-CHECK|\bwaves?\b|drop [abc]\b|live week|coming soon|batch 1/i);
     assert.doesNotMatch(all, /\b(P[1-7]|D[0-6]-\d+|MS-\d+|V2-\d+|C[123]-\d+|WB-\d+|TL-M\d+|H\d+)\b/, 'no internal codes');
     assert.doesNotMatch(all, /saved on this device|source:|disclaimer|guarantee/i);
     assert.doesNotMatch(all, /stipend|salary|salaries|package|\bLPA\b|lakh a year|per month/i, 'no pay');
+    assert.doesNotMatch(all, /homework|pick one now/i, 'domain guidance is information, not a task (B2)');
     // The only years are the law's own: the Income-tax Act, 2025 and its start on 1 April 2026.
     const years = all.replace(/Income-tax Act, 2025/g, '').replace(/1 April 2026/g, '').match(/\b20\d\d\b/g);
     assert.equal(years, null, 'no other year: ' + years);
@@ -192,7 +271,7 @@ test('links: every outside link is https on an official or provider site, never 
 });
 
 test('links: Explorer ?domain=, LinkedIn people search with India preloaded, Firms by domain and booklets as course rows', () => {
-    const model = R.normalise(CONTENT);
+    const model = R.normalise(allBuilt());
     for (const card of model.domains) {
         assert.equal(card.explorer, '/articleship-program/experience-explorer/?domain=' + card.slug);
         const li = new URL(card.linkedin);
@@ -202,6 +281,7 @@ test('links: Explorer ?domain=, LinkedIn people search with India preloaded, Fir
         assert.equal(card.firms.href, '/learning-management-system/course?course=msc-articleship-program&session=6&resource=Firms+by+domain');
         assert.ok(card.firms.hint, card.slug + ': which tab or filter to use');
         if (card.booklet) {
+            assert.equal(card.booklet.live, true);
             assert.equal(card.booklet.href, '/learning-management-system/course?course=msc-articleship-program&session=5&resource=' +
                 encodeURIComponent(card.booklet.title).replace(/%20/g, '+') + (card.booklet.page > 1 ? '&page=' + card.booklet.page : ''));
         }
@@ -212,8 +292,31 @@ test('links: Explorer ?domain=, LinkedIn people search with India preloaded, Fir
     assert.equal(model.bySlug['ib-er'].booklet.find, 'Investment banking');
 });
 
-test('links: every course row this tool opens exists in the v3 LMS rows on its Day', () => {
+test('links: a course row listed in `unbuilt` is never linked (booklets, Firms, the intro link); one data change brings each back', () => {
     const model = R.normalise(CONTENT);
+    const unbuilt = new Set(CONTENT.unbuilt.map(r => r.day + '|' + r.title));
+    for (const card of model.domains) {
+        if (card.booklet) assert.equal(card.booklet.live, !unbuilt.has('4|' + card.booklet.title), card.slug + ' booklet');
+        assert.equal(Boolean(card.firms), !unbuilt.has('5|Firms by domain'), card.slug + ' firms');
+        for (const e of card.extra) if (e.link && e.link.row) assert.ok(!unbuilt.has(e.link.row.day + '|' + e.link.row.title));
+    }
+    assert.equal(Boolean(model.introLink), !unbuilt.has('4|HR round and GD booklet'));
+
+    // Rendered: no link to an unbuilt row on any card or on the index.
+    const { $$, win } = page('', CONTENT);
+    const hrefs = () => $$('a').map(a => decodeURIComponent(a.getAttribute('href') || '').replace(/\+/g, ' '));
+    const unbuiltLinked = list => list.filter(h => [...unbuilt].some(key => h.includes('session=' + (Number(key.split('|')[0]) + 1) + '&resource=' + key.split('|')[1])));
+    assert.deepEqual(unbuiltLinked(hrefs()), []);
+    return (async () => {
+        for (const card of model.domains) {
+            await go(win, '#' + card.slug);
+            assert.deepEqual(unbuiltLinked(hrefs()), [], card.slug + ' links an unbuilt row');
+        }
+    })();
+});
+
+test('links: every course row this tool opens exists in the v3 LMS rows on its Day', () => {
+    const model = R.normalise(allBuilt());
     const booklets = [...new Set(model.domains.filter(c => c.booklet).map(c => c.booklet.title))];
     assert.deepEqual(booklets.sort(), ['Core accounting booklet', 'Direct tax booklet', 'GST booklet', 'Internal audit booklet',
         'Specialist teams booklet', 'Statutory audit booklet']);
@@ -228,25 +331,87 @@ test('links: every course row this tool opens exists in the v3 LMS rows on its D
     assert.equal(lmsRow(1, 'Work Simulation').url, R.PATHS.workSimulation, 'Work Simulation is a Day 1 row at the path levels open');
     assert.match(String(lmsRow(1, 'The Nothing CV').view_storage_path), /day-1\/.+\.pdf$/);
     assert.match(String(lmsRow(6, 'Industrial training guide').view_storage_path), /day-6\/.+\.pdf$/);
+    for (const row of CONTENT.unbuilt) assert.ok(lmsRow(row.day, row.title), row.title + ' (unbuilt) names a real course row');
 });
 
-test('links: the Work Simulation opens its Day until its page is on the branch, then each level opens itself', () => {
+test('links: `unbuilt` matches the content build (a row with its file is linked, a row without one is not)', t => {
+    const rowsFile = path.join(CONTENT_BUILD, 'lms/lms-rows.json');
+    if (!fs.existsSync(rowsFile)) { t.skip('content build not on this machine'); return; }
+    const rows = JSON.parse(fs.readFileSync(rowsFile, 'utf8')).days.flatMap(day => day.groups.flatMap(g => g.rows.map(r => Object.assign({ day: day.day }, r))));
+    const has = (dir, ext) => fs.existsSync(dir) && fs.readdirSync(dir).some(name => path.extname(name).toLowerCase() === ext);
+    function built(row) {
+        if (row.type === 'external_link') {
+            const url = String(row.url || '');
+            if (!url.startsWith('/')) return true;
+            const file = path.join(ROOT, url.split('?')[0]);
+            return fs.existsSync(url.endsWith('/') ? path.join(file, 'index.html') : file);
+        }
+        const dir = row.source ? path.join(CONTENT_BUILD, row.source) : null;
+        if (row.type === 'sheet') return Boolean(row.url) || has(dir, '.csv') || has(dir, '.xlsx');
+        return has(dir, path.extname(String(row.file || '.pdf')).toLowerCase() || '.pdf');
+    }
+    // Every course row the page can link to, before any is hidden.
+    const model = R.normalise(allBuilt(), { workSimulationLive: R.WORK_SIMULATION_LIVE });
+    const linked = new Map();
+    const add = (day, title) => linked.set(day + '|' + title, { day, title });
+    model.domains.forEach(card => {
+        if (card.booklet) add(4, card.booklet.title);
+        card.extra.forEach(e => e.link && e.link.row && add(e.link.row.day, e.link.row.title));
+    });
+    if (model.introLink && model.introLink.row) add(model.introLink.row.day, model.introLink.row.title);
+    if (!CONTENT.links.firms) add(5, 'Firms by domain');
+    const unbuilt = new Set(CONTENT.unbuilt.map(r => r.day + '|' + r.title));
+    const problems = [];
+    for (const [key, { day, title }] of linked) {
+        const row = rows.find(r => r.day === day && r.title === title);
+        if (!row) { problems.push(title + ': no such course row'); continue; }
+        const isBuilt = built(row);
+        if (isBuilt && unbuilt.has(key)) problems.push(row.row + ' ' + title + ' is built now: remove it from `unbuilt` in roadmaps.json');
+        if (!isBuilt && !unbuilt.has(key)) problems.push(row.row + ' ' + title + ' has no file yet: add it to `unbuilt` in roadmaps.json');
+    }
+    assert.deepEqual(problems, []);
+});
+
+test('Work Simulation: hidden in release 1 (WORK_SIMULATION_LIVE false), every part back with one flag', async () => {
+    assert.equal(R.WORK_SIMULATION_LIVE, false, 'release 1 ships without the Work Simulation');
+    const off = page('');
+    for (const card of R.normalise(CONTENT).domains) {
+        await go(off.win, '#' + card.slug);
+        const text = off.$('.dr-card').textContent;
+        assert.doesNotMatch(text, /Work Simulation|Earn the CV line|A line you can earn/, card.slug + ' mentions the Work Simulation');
+    }
+    assert.doesNotMatch(off.$('.dr').textContent, /Work Simulation/, 'nowhere on the page');
+
+    const on = page('#statutory-audit', CONTENT, null, { workSimulationLive: true });
+    assert.ok(on.$$('.dr-card .dr-h3').some(h => h.textContent === 'Earn the CV line'));
+    assert.equal(on.$$('.dr-level.is-plain').length, 7);
+    const open = on.$$('.dr-card .dr-go').find(a => a.textContent === 'Open the Work Simulation');
+    assert.equal(open.getAttribute('href'), '/learning-management-system/course?course=msc-articleship-program&session=2&resource=Work+Simulation');
+    assert.match(on.$('.dr-cvline').textContent, /Statutory Audit Work Simulation, MSC Articleship Program \| \[Month Year\]/);
+    assert.equal(on.$('.dr-cvline-hint').textContent, 'Your own counts and month fill in when you finish the level.');
+});
+
+test('links: a wired Work Simulation page turns every level into its own link', () => {
     const wsPage = fs.existsSync(path.join(ROOT, 'articleship-program/work-simulation/index.html'));
     const wired = CONTENT.links && CONTENT.links.workSimulation;
-    if (wsPage) assert.ok(wired, 'the Work Simulation page is on the branch: set links.workSimulation in roadmaps.json');
     if (wired) assert.ok(wsPage, 'links.workSimulation points at a page this branch has');
 
-    const off = R.normalise(Object.assign(copy(CONTENT), { links: { workSimulation: null } }));
+    const off = R.normalise(Object.assign(copy(CONTENT), { links: { workSimulation: null } }), { workSimulationLive: true });
     assert.equal(off.workSimulation.wired, false);
-    assert.equal(off.workSimulation.href, '/learning-management-system/course?course=msc-articleship-program&session=2&resource=Work+Simulation');
     assert.ok(off.domains.every(c => c.levels.every(l => l.href === '')), 'no dead level links');
 
-    const on = R.normalise(Object.assign(copy(CONTENT), { links: { workSimulation: '/articleship-program/work-simulation/' } }));
+    const on = R.normalise(Object.assign(copy(CONTENT), { links: { workSimulation: '/articleship-program/work-simulation/' } }), { workSimulationLive: true });
     assert.equal(on.workSimulation.wired, true);
     assert.equal(on.bySlug.gst.levels[1].href, '/articleship-program/work-simulation/?domain=gst&level=gst-2');
+    const content = Object.assign(copy(CONTENT), { links: { workSimulation: '/articleship-program/work-simulation/' } });
+    const { $$ } = page('#statutory-audit', content, null, { workSimulationLive: true });
+    const levels = $$('a.dr-level');
+    assert.equal(levels.length, 7);
+    assert.equal(levels[0].getAttribute('href'), '/articleship-program/work-simulation/?domain=statutory-audit&level=statutory-audit-1');
+    assert.ok(!$$('.dr-go').some(a => a.textContent === 'Open the Work Simulation'));
 });
 
-test('links: Firms by domain switches to the Sheet with one data change', () => {
+test('links: Firms by domain switches to the Sheet with one data change (even while its course row is unbuilt)', () => {
     const sheet = 'https://docs.google.com/spreadsheets/d/abc123/edit?usp=sharing';
     const model = R.normalise(Object.assign(copy(CONTENT), { links: { workSimulation: null, firms: sheet } }));
     assert.equal(model.bySlug.valuation.firms.href, sheet);
@@ -254,10 +419,10 @@ test('links: Firms by domain switches to the Sheet with one data change', () => 
     assert.equal(model.bySlug.valuation.firms.hint, 'Valuation');
 });
 
-test('normalise: unsafe links dropped, unknown domains warned, cards keep the programme order, text never HTML', () => {
+test('normalise: unsafe links dropped, unknown domains warned, groups and programme order, text never HTML', () => {
     const model = R.normalise({
         domains: [
-            { slug: 'gst', questions: ['Q?'], picks: [{ label: 'Bad', href: 'javascript:alert(1)' }, { label: 'Http', href: 'http://x.com' }] },
+            { slug: 'gst', questions: ['Q?'], picks: [{ label: 'Bad', href: 'javascript:alert(1)' }, { label: 'Http', href: 'http://x.com', kind: 'nonsense' }] },
             { slug: 'nonsense' },
             { slug: 'Statutory audit', label: '<img src=x onerror=alert(1)>' },
             { slug: 'gst' }
@@ -269,10 +434,25 @@ test('normalise: unsafe links dropped, unknown domains warned, cards keep the pr
     assert.ok(model.warnings.some(w => w === 'Missing domain: valuation'));
     assert.equal(model.bySlug.gst.picks[0].href, '');
     assert.equal(model.bySlug.gst.picks[1].href, '');
+    assert.equal(model.bySlug.gst.picks[1].kind, '');
     assert.throws(() => R.normalise({ domains: [] }), /no domain cards/);
     const problems = R.validate({ rule: [], domains: [{ slug: 'gst' }] });
     assert.ok(problems.includes('gst: no pros'));
     assert.ok(problems.includes('no 20-minute rule line'));
+
+    const grouped = R.normalise({
+        groups: [{ title: 'A', domains: ['gst', 'nonsense', 'Statutory audit'] }, { title: 'B', domains: ['gst'] }],
+        domains: [{ slug: 'statutory-audit' }, { slug: 'gst' }, { slug: 'valuation' }]
+    });
+    assert.deepEqual(grouped.groups, [{ title: 'A', slugs: ['gst', 'statutory-audit', 'valuation'] }]);
+    assert.ok(grouped.warnings.includes('Not in a group: valuation'));
+    assert.deepEqual(grouped.domains.map(c => c.index), [0, 1, 2]);
+});
+
+test('practiseHref: a technical-round mock on the domain in Practise your interview', () => {
+    assert.equal(R.practiseHref('gst'), '/ai-interview.html?mode=articleship&round=technical&domain=gst');
+    assert.equal(R.practiseHref('fdd', '/articleship-program/ai-interview/'), '/articleship-program/ai-interview/?mode=articleship&round=technical&domain=fdd');
+    assert.equal(R.practiseHref('gst', 'javascript:alert(1)'), '/ai-interview.html?mode=articleship&round=technical&domain=gst');
 });
 
 test('slugFromLocation: anchors, aliases and ?domain=', () => {
@@ -285,56 +465,61 @@ test('slugFromLocation: anchors, aliases and ?domain=', () => {
 
 // ---------- Page ----------
 
-test('page: phone index shows the rule, 13 tiles with anchors, team names, glossary; no card until one is opened', () => {
+test('page: phone index shows the rule, then the 13 tiles in two groups; the three-things block, team names and glossary below', () => {
     const { $, $$, app } = page('');
     assert.equal($('.dr').dataset.view, 'index');
     assert.equal(app.current(), null);
     assert.match($('.dr-rule').textContent, /My rule.*Sure of a domain\?/s);
-    assert.match($('.dr-rule-note').textContent, /backup/);
-    assert.equal($('.dr-intro a').textContent, 'How to research a firm');
+    assert.match($('.dr-rule-note').textContent, /keep a backup/);
+    assert.equal($('.dr-top .dr-intro'), null, 'the top stays short: no intro above the tiles');
+    assert.equal($('.dr-nav-title').textContent, 'The 13 domains');
+    assert.deepEqual($$('.dr-group-title').map(h => h.textContent), ['Where most articles work', 'Specialist teams, fewer seats']);
     const tiles = $$('.dr-tile');
     assert.equal(tiles.length, 13);
-    assert.deepEqual(tiles.map(t => t.getAttribute('href')), P.DOMAINS.map(d => '#' + d.slug));
-    assert.match($('.dr-nav-title').textContent, /13 domains, most common first/);
+    assert.deepEqual(tiles.map(t => t.getAttribute('href')), ORDER.map(slug => '#' + slug));
+    assert.deepEqual($$('.dr-tiles').map(ol => ol.children.length), [6, 7]);
+    assert.equal($('.dr-more .dr-intro-title').textContent, 'What an interviewer checks');
+    assert.match($('.dr-more .dr-intro-text').textContent, /^Three things/);
     assert.equal($$('.dr-fold').length, 2);
     assert.ok($('.dr-lockin'));
     assert.ok($$('.dr-term').length >= 25);
 });
 
-test('page: a card opens from its anchor with every part, the three jumps at the top and the bottom', async () => {
+test('page: a card opens from its anchor with every part; jumps to unbuilt rows are left out', async () => {
     const { $, $$, win } = page('#valuation');
     assert.equal($('.dr').dataset.view, 'card');
     assert.equal($('.dr-card-title').textContent, 'Valuation');
     assert.equal(win.document.title, 'Valuation | Domain roadmaps | My Student Club');
+    assert.equal($('#dr-card').getAttribute('aria-live'), null, 'no aria-live: focus moves to the name instead');
     const heads = $$('.dr-card .dr-h3').map(h => h.textContent);
     assert.deepEqual(heads, ['What an article does', 'Who it suits', 'Pros', 'Cons', 'Where it leads', 'How you are tested',
-        'Earn the CV line', 'Practise free', 'Good to know', 'Go further']);
+        'Practise free', 'Good to know', 'Go further']);
+    const firmsLive = !CONTENT.unbuilt.some(r => r.title === 'Firms by domain');
     const quick = $$('.dr-quick a');
-    assert.deepEqual(quick.map(a => a.textContent), ['Experiences', 'Firms', 'LinkedIn']);
+    assert.deepEqual(quick.map(a => a.textContent), firmsLive ? ['Experiences', 'Firms', 'LinkedIn'] : ['Experiences', 'LinkedIn']);
     assert.equal(quick[0].getAttribute('href'), '/articleship-program/experience-explorer/?domain=valuation');
-    assert.equal(quick[2].target, '_blank');
-    assert.equal(quick[2].rel, 'noopener noreferrer');
+    assert.equal(quick[quick.length - 1].target, '_blank');
+    assert.equal(quick[quick.length - 1].rel, 'noopener noreferrer');
     const actions = $$('.dr-action');
-    assert.equal(actions.length, 3);
+    assert.equal(actions.length, firmsLive ? 3 : 2);
+    assert.ok($('.dr-action-grid').classList.contains('is-' + actions.length));
     assert.equal(actions[0].getAttribute('href'), '/articleship-program/experience-explorer/?domain=valuation');
-    assert.match(actions[1].textContent, /Firms by domain · Valuation/);
-    assert.match(actions[2].getAttribute('href'), /^https:\/\/www\.linkedin\.com\/search\/results\/people\//);
+    assert.match(actions[actions.length - 1].getAttribute('href'), /^https:\/\/www\.linkedin\.com\/search\/results\/people\//);
     assert.equal($$('.dr-questions li').length, 5);
-    assert.equal($('.dr-card .dr-go').textContent, 'Answers in the Specialist teams booklet, Valuation part');
-    // Levels are listed, one link opens the Work Simulation's Day (no dead links before its page exists).
-    if (!CONTENT.links.workSimulation) {
-        assert.equal($$('.dr-level.is-plain').length, 1);
-        const open = $$('.dr-card .dr-go').find(a => a.textContent === 'Open the Work Simulation');
-        assert.equal(open.getAttribute('href'), '/learning-management-system/course?course=msc-articleship-program&session=2&resource=Work+Simulation');
-    }
-    assert.match($('.dr-cvline').textContent, /Valuation Work Simulation, MSC Articleship Program \| \[Month Year\]/);
-    assert.deepEqual($$('.dr-pick-no').map(n => n.textContent), ['First pick', 'Second pick']);
-    assert.ok($$('.dr-pick-name').every(a => a.tagName !== 'A' || a.target === '_blank'), 'outside picks open in a new tab');
-    assert.equal($('.dr-prev').getAttribute('href'), '#ma-tax');
+    const practise = $('.dr-go-practise');
+    assert.equal(practise.textContent, 'Practise them in a mock interview');
+    assert.equal(practise.getAttribute('href'), '/ai-interview.html?mode=articleship&round=technical&domain=valuation');
+    const bookletLive = !CONTENT.unbuilt.some(r => r.title === 'Specialist teams booklet');
+    assert.equal($$('.dr-card .dr-go').some(a => /booklet/.test(a.textContent)), bookletLive);
+    // The whole pick is the link, and says what it is.
+    const picks = $$('.dr-picks')[0].querySelectorAll('.dr-pick');
+    assert.equal(picks.length, 2);
+    assert.equal(picks[0].tagName, 'A');
+    assert.equal(picks[0].target, '_blank');
+    assert.deepEqual([...picks].map(p => p.querySelector('.dr-pick-no').textContent), ['First pick · Free classes', 'Second pick · Simulation']);
+    assert.equal($('.dr-prev').getAttribute('href'), '#transfer-pricing');
     assert.equal($('.dr-next').getAttribute('href'), '#fdd');
 
-    await go(win, '#all');
-    assert.equal($('.dr').dataset.view, 'index');
     await go(win, '#consulting');
     assert.equal($('.dr-card-title').textContent, 'Consulting & risk advisory');
     assert.equal($$('.dr-answer').length, 5, 'Consulting carries its answer outlines');
@@ -342,7 +527,18 @@ test('page: a card opens from its anchor with every part, the three jumps at the
     assert.equal($('.dr-pick-name').textContent, 'BCG Introduction to Data for Decision Makers');
     await go(win, '#ib-er');
     assert.match($('.dr-note').textContent, /Before you apply.*cannot register articles/s);
+    assert.equal($('.dr-next'), null, 'IB & ER is the last card');
+});
+
+test('page: with every row built, the booklet, Firms and intro links all show', async () => {
+    const { $, $$, win } = page('#valuation', allBuilt());
+    assert.deepEqual($$('.dr-quick a').map(a => a.textContent), ['Experiences', 'Firms', 'LinkedIn']);
+    assert.match($$('.dr-action')[1].textContent, /Firms by domain · Valuation/);
+    assert.equal($('.dr-card .dr-go').textContent, 'Answers in the Specialist teams booklet, Valuation part');
+    await go(win, '#ib-er');
     assert.match($$('.dr-card .dr-go')[0].textContent, /^More in the Specialist teams booklet, Investment banking part$/);
+    await go(win, '#all');
+    assert.equal($('.dr-more .dr-intro a').textContent, 'How to research a firm (Research the firm part)');
 });
 
 test('page: ?domain= and aliases become the shareable anchor; an unknown anchor shows the index', () => {
@@ -355,10 +551,35 @@ test('page: ?domain= and aliases become the shareable anchor; an unknown anchor 
     assert.equal(two.$('.dr').dataset.view, 'index');
 });
 
-test('page: "Make this my domain" and "Make it my backup" save the shared setting every tool reads', async () => {
+test('page: "All domains" steps back to the index it came from, or swaps the entry, never adding one', async () => {
+    const a = page('');
+    await go(a.win, '#gst');
+    assert.equal(a.app.current(), 'gst');
+    const length = a.win.history.length;
+    const back = nextHashchange(a.win);
+    a.$('.dr-back').click();
+    await back;
+    assert.equal(a.app.current(), null);
+    assert.equal(a.$('.dr').dataset.view, 'index');
+    assert.equal(a.win.history.length, length, 'no new entry');
+    assert.equal(a.win.location.hash, '');
+
+    // Opened straight from a link: the card's entry becomes the index (Back then leaves the page, as expected).
+    const b = page('#direct-tax');
+    const before = b.win.history.length;
+    b.$('.dr-back').click();
+    await sleep(10);
+    assert.equal(b.app.current(), null);
+    assert.equal(b.$('.dr').dataset.view, 'index');
+    assert.equal(b.win.history.length, before);
+    assert.equal(b.win.location.hash, '');
+});
+
+test('page: my domain and backup: make, back up, swap, drop the backup, clear', async () => {
     const settings = memorySettings();
     const { $, $$, win } = page('#gst', CONTENT, settings);
     assert.equal($('.dr-make-backup'), null, 'no backup button before a domain is picked');
+    assert.ok($('.dr-mine-line').classList.contains('ap-hidden'));
     $('.dr-make').click();
     await sleep(10);
     assert.equal(P.getMyDomain(settings), 'gst');
@@ -374,11 +595,31 @@ test('page: "Make this my domain" and "Make it my backup" save the shared settin
     assert.match($('.dr-mine-line').textContent, /Backup: Direct tax/);
     assert.equal($('.dr-pill.is-backup').textContent, 'My backup');
 
-    // Picking the backup as "my domain" clears it as backup.
+    // Promoting the backup swaps the two: the old "my domain" becomes the backup, nothing is lost.
     $('.dr-make').click();
     await sleep(10);
     assert.equal(P.getMyDomain(settings), 'direct-tax');
+    assert.equal(P.getBackupDomain(settings), 'gst');
+
+    await go(win, '#gst');
+    assert.equal($('.dr-pill.is-backup').textContent, 'My backup');
+    $('.dr-unbackup').click();
+    await sleep(10);
+    assert.equal(P.getMyDomain(settings), 'direct-tax');
     assert.equal(P.getBackupDomain(settings), null);
+
+    $('.dr-make-backup').click();
+    await sleep(10);
+    assert.equal(P.getBackupDomain(settings), 'gst');
+    const clear = $('.dr-mine-line .dr-clear');
+    assert.equal(clear.textContent, 'Clear');
+    assert.equal(clear.getAttribute('aria-label'), 'Clear my domain and backup');
+    clear.click();
+    await sleep(10);
+    assert.equal(P.getMyDomain(settings), null);
+    assert.equal(P.getBackupDomain(settings), null);
+    assert.ok($('.dr-mine-line').classList.contains('ap-hidden'));
+    assert.equal($$('.dr-badge:not(.ap-hidden)').length, 0);
 });
 
 test('page: with no anchor, a wide screen shows my domain\'s card beside the tiles', () => {
@@ -392,15 +633,6 @@ test('page: with no anchor, a wide screen shows my domain\'s card beside the til
     assert.equal(doc.querySelector('.dr').dataset.view, 'index');
     assert.equal(doc.querySelector('.dr-card-title').textContent, 'Forensic');
     assert.ok(doc.querySelector('#tile-forensic').classList.contains('is-active'));
-});
-
-test('page: a wired Work Simulation turns every level into its own link', () => {
-    const content = Object.assign(copy(CONTENT), { links: { workSimulation: '/articleship-program/work-simulation/' } });
-    const { $$ } = page('#statutory-audit', content);
-    const levels = $$('a.dr-level');
-    assert.equal(levels.length, 7);
-    assert.equal(levels[0].getAttribute('href'), '/articleship-program/work-simulation/?domain=statutory-audit&level=statutory-audit-1');
-    assert.ok(!$$('.dr-go').some(a => a.textContent === 'Open the Work Simulation'));
 });
 
 test('page: content text is never parsed as HTML', () => {
@@ -434,6 +666,18 @@ test('page: start() shows a retry card when the content does not load, then moun
     } finally {
         console.error = quiet;
     }
+});
+
+test('css: every tap target is at least 44 px; the team chip gets its own row on a phone', () => {
+    const rule = sel => {
+        const m = CSS.match(new RegExp('(^|\\n)' + sel.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ' \\{([^}]*)\\}'));
+        return m ? m[2] : '';
+    };
+    for (const sel of ['.dr-quick-link', '.dr-chip', '.dr-back', '.dr-go', '.dr-pick', '.dr-clear', '.dr-level', '.dr-answer summary']) {
+        assert.match(rule(sel), /min-height: (4[4-9]|[5-9]\d)px/, sel + ' is at least 44 px high');
+    }
+    assert.match(CSS, /\.dr-mine \.ap-btn \{ min-height: 44px/);
+    assert.match(CSS, /@media \(max-width: 599\.98px\) \{\s*\.dr-team \{ grid-template-columns: minmax\(0, 1fr\); \}\s*\.dr-team \.dr-chip \{ grid-column: 1; grid-row: auto; justify-self: start;/);
 });
 
 test('index.html: programme page skeleton (noindex, logo back to Day 5, gate, one shared client, Day 5 colour)', () => {

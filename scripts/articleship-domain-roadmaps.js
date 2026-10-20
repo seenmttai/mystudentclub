@@ -1,11 +1,12 @@
 /**
  * MSC Articleship Program: Domain roadmaps (Day 5, row 5.1).
  *
- * One card per domain (the 13 in MSCArticleshipProgress.DOMAINS, most common first), in MSCIT's Domain.docx pattern:
- * what an article does (first three months, later) · who it suits · pros · cons · where it leads, then pairs well with,
- * busy season, five likely questions (→ the booklet), Work Simulation levels and the line they earn, free picks, the paid
- * option for later, and three jumps: Experience Explorer (?domain=), Firms by domain and a LinkedIn people search.
- * The same three jumps sit in one line under the card's name, so a student who already knows the domain needs no scroll.
+ * One card per domain (the 13 in MSCArticleshipProgress.DOMAINS), in MSCIT's Domain.docx pattern: what an article does
+ * (first three months, later) · who it suits · pros · cons · where it leads, then pairs well with, busy season, five
+ * likely questions (→ the booklet, and a mock interview on them), Work Simulation levels and the line they earn, free
+ * picks, the paid option for later, and three jumps: Experience Explorer (?domain=), Firms by domain and a LinkedIn
+ * people search. The same jumps sit in one line under the card's name, so a student who knows the domain needs no scroll.
+ * Tiles follow the content's `groups` (where most articles work, then the specialist teams; MSC's experience data).
  *
  * Anchors: /articleship-program/domain-roadmaps/#<slug> (also ?domain=<slug or alias>). "My domain" and the backup are
  * the shared setting every programme tool reads (MSCArticleshipProgress.setMyDomain).
@@ -13,10 +14,15 @@
  * Content: articleship-program/domain-roadmaps/roadmaps.json. normalise() accepts the field names a content build is
  * likely to use (see the alias lists below), drops unsafe links and never renders text as HTML.
  *
- * Wiring (data only, no code change): `links.workSimulation` = the Work Simulation page once it is on the site (each
- * level then opens itself: ?domain=<slug>&level=<id>); while it is null the levels are listed and one link opens Day 1,
- * where its row sits. `links.firms` = the Firms by domain Sheet's view link once it exists; while null, Day 5's row.
- * `booklet.page` = the page where the card's questions start in its Day 4 booklet (`booklet.find` names that heading).
+ * Release flag: WORK_SIMULATION_LIVE (below). While false (release 1), nothing on the page points at the Work Simulation:
+ * the "Earn the CV line" part (levels, the line, the link) stays hidden. Flip it to true when the Work Simulation ships.
+ *
+ * Wiring (data only, no code change): `unbuilt` = the course rows whose file is not uploaded yet; every jump to one of
+ * them is hidden (never a dead link, never "coming soon"). Remove a row from it once its file is in the course.
+ * `links.workSimulation` = the Work Simulation page once it is on the site (each level then opens itself:
+ * ?domain=<slug>&level=<id>); while it is null one link opens Day 1, where its row sits. `links.firms` = the Firms by
+ * domain Sheet's view link once it exists; while null, Day 5's row. `booklet.page` = the page where the card's questions
+ * start in its Day 4 booklet (`booklet.find` names that heading; the intro link has the same two fields).
  *
  * Browser: window.MSCArticleshipRoadmaps. Node (tests): require('./scripts/articleship-domain-roadmaps.js').
  */
@@ -33,7 +39,17 @@
         content: '/articleship-program/domain-roadmaps/roadmaps.json',
         icons: '/articleship-program/domain-roadmaps/icons/',
         explorer: '/articleship-program/experience-explorer/',
-        workSimulation: '/articleship-program/work-simulation/'
+        workSimulation: '/articleship-program/work-simulation/',
+        practise: '/ai-interview.html?mode=articleship'
+    });
+
+    // Release 1 ships without the Work Simulation (Padam, 20 Oct): its part of every card stays hidden until this is true.
+    const WORK_SIMULATION_LIVE = false;
+
+    // What each free pick is, said plainly beside "First pick" / "Second pick".
+    const PICK_KINDS = Object.freeze({
+        simulation: 'Simulation', classes: 'Free classes', tutorial: 'Official tutorial', videos: 'Official videos',
+        module: 'Free module', reading: 'Free reading'
     });
 
     // Fallbacks used when the content file leaves a field out.
@@ -184,6 +200,17 @@
         return (safeHref(base) || PATHS.workSimulation) + '?' + params.toString();
     }
 
+    /** A technical-round mock on this domain in Practise your interview (`base` = links.practise). */
+    function practiseHref(slug, base) {
+        const href = safeHref(base) || PATHS.practise;
+        const [path, query] = href.split('?');
+        const params = new URLSearchParams(query || '');
+        if (!params.has('mode')) params.set('mode', 'articleship');
+        params.set('round', 'technical');
+        if (slug) params.set('domain', slug);
+        return path + '?' + params.toString();
+    }
+
     function linkedinHref(keywords) {
         const words = text(keywords);
         const query = words ? '(' + ARTICLE_TITLES + ') AND (' + words + ')' : ARTICLE_TITLES;
@@ -198,15 +225,35 @@
         }
         if (typeof raw !== 'object') return null;
         let href = '';
+        let row = null;
         const resource = raw.resource;
         if (resource && typeof resource === 'object' && Number.isInteger(Number(resource.day))) {
             const day = Number(resource.day);
-            if (day >= 0 && day <= 6) href = resourceHref(day, text(resource.title), resource.page);
+            if (day >= 0 && day <= 6) {
+                const page = Math.max(1, Math.floor(Number(resource.page)) || 1);
+                row = { day, title: text(resource.title), page, find: text(pick(resource, ['find', 'part', 'section'])) };
+                href = resourceHref(day, row.title, page);
+            }
         }
         if (!href) href = safeHref(pick(raw, ['href', 'url', 'link']));
         if (!href) return null;
         const label = text(pick(raw, ['label', 'title', 'name', 'text'])) || fallbackLabel || href;
-        return { label, href, external: isExternal(href) };
+        return { label, href, external: isExternal(href), row };
+    }
+
+    /** "4|GST booklet" for a course row; the `unbuilt` list is a Set of these. */
+    function rowKey(day, title) { return Number(day) + '|' + text(title).toLowerCase(); }
+
+    /** Content `unbuilt` (rows whose file is not in the course yet) → Set of row keys. */
+    function unbuiltRows(raw) {
+        const keys = new Set();
+        (Array.isArray(raw) ? raw : []).forEach(item => {
+            if (!item || typeof item !== 'object') return;
+            const day = Number(item.day);
+            const title = text(pick(item, ['title', 'resource', 'name']));
+            if (Number.isInteger(day) && day >= 0 && day <= 6 && title) keys.add(rowKey(day, title));
+        });
+        return keys;
     }
 
     // ---------- normalise ----------
@@ -256,17 +303,24 @@
             const label = text(pick(item, ['label', 'name', 'title']));
             if (!label) return null;
             const href = safeHref(pick(item, ['href', 'url', 'link']));
-            return { label, href, external: href ? isExternal(href) : false, note: text(pick(item, ['note', 'why', 'text', 'what'])) };
+            const kind = slugify(pick(item, ['kind', 'type']));
+            return {
+                label, href, external: href ? isExternal(href) : false,
+                kind: PICK_KINDS[kind] ? kind : '',
+                note: text(pick(item, ['note', 'why', 'text', 'what']))
+            };
         }).filter(Boolean);
     }
 
-    function normaliseExtra(raw) {
+    /** Extra lines; a link to a course row not in the course yet is dropped (the line itself stays). */
+    function normaliseExtra(raw, isLive) {
         return (Array.isArray(raw) ? raw : (raw ? [raw] : [])).map(item => {
             if (typeof item === 'string') return text(item) ? { text: text(item), link: null } : null;
             if (!item || typeof item !== 'object') return null;
             const body = text(pick(item, ['text', 'line', 'note']));
             if (!body) return null;
-            return { text: body, link: linkFrom(item.link || null) };
+            const link = linkFrom(item.link || null);
+            return { text: body, link: link && isLive(link) ? link : null };
         }).filter(Boolean);
     }
 
@@ -285,8 +339,10 @@
         const bookletPage = bookletRaw && typeof bookletRaw === 'object' ? Math.max(1, Math.floor(Number(bookletRaw.page)) || 1) : 1;
         const bookletFind = bookletRaw && typeof bookletRaw === 'object' ? text(pick(bookletRaw, ['find', 'part', 'section'])) : '';
 
+        // Firms: the card's own link, else the page-wide one; none while that course row is not in the course yet.
         const firmsRaw = pick(raw, ['firms', 'firms_link']);
-        const firmsHref = (firmsRaw && linkFrom(firmsRaw, FIRMS_TITLE)) || defaults.firms;
+        const firmsOwn = firmsRaw ? linkFrom(firmsRaw, FIRMS_TITLE) : null;
+        const firmsHref = firmsOwn && defaults.isLive(firmsOwn) ? firmsOwn : (firmsOwn ? null : defaults.firms);
         const firmsHint = text(pick(raw, ['firms_filter', 'firms_tab', 'firms_hint'])) ||
             (firmsRaw && typeof firmsRaw === 'object' ? text(pick(firmsRaw, ['hint', 'filter', 'tab'])) : '');
 
@@ -327,16 +383,20 @@
             season: text(pick(raw, ['season', 'busy_season', 'busySeason'])),
             questions: (function (q) { return (Array.isArray(q) ? q : (q ? [q] : [])).map(normaliseQuestion).filter(Boolean); })(
                 pick(raw, ['questions', 'how_you_are_tested', 'howYouAreTested', 'interview_questions'])),
+            // `live` = false while the booklet is not in the course yet: the questions show, the link does not.
             booklet: bookletTitle ? {
                 title: bookletTitle, page: bookletPage, find: bookletFind,
-                href: resourceHref(BOOKLET_DAY, bookletTitle, bookletPage)
+                href: resourceHref(BOOKLET_DAY, bookletTitle, bookletPage),
+                live: defaults.isLive({ row: { day: BOOKLET_DAY, title: bookletTitle } })
             } : null,
+            practise: practiseHref(slug, defaults.practise),
             levels: normaliseLevels(pick(raw, ['levels', 'work_simulation', 'workSimulation', 'simulation_levels']), slug, defaults.workSimulation),
             cvLine: Array.isArray(cvLines) ? list(cvLines)[0] || '' : text(cvLines),
             picks: normalisePicks(pick(raw, ['picks', 'free_picks', 'freePicks', 'simulations', 'free'])),
             paid: normalisePicks(pick(raw, ['paid', 'paid_option', 'paidOption', 'paid_later', 'later_paid'])),
-            extra: normaliseExtra(pick(raw, ['extra', 'good_to_know', 'goodToKnow', 'notes'])),
-            firms: { href: firmsHref.href, external: firmsHref.external, hint: firmsHint },
+            extra: normaliseExtra(pick(raw, ['extra', 'good_to_know', 'goodToKnow', 'notes']), defaults.isLive),
+            // null while Firms by domain is not in the course yet (the Firms jumps are then left out).
+            firms: firmsHref ? { href: firmsHref.href, external: firmsHref.external, hint: firmsHint } : null,
             explorer,
             linkedin
         };
@@ -381,12 +441,39 @@
     }
 
     /**
-     * Content JSON → the model the page renders. Throws only when no domain card can be read.
-     * Cards come out in the programme's order (most common first), whatever order the file uses; a duplicate slug keeps
-     * the first card. `warnings` lists what was skipped, for tests and the review stage.
+     * Content `groups` ([{ title, domains: [slug…] }]) → [{ title, slugs }] over the cards that exist, each card once.
+     * Cards no group names join the last group; with no groups, one untitled group in the programme's order.
      */
-    function normalise(content) {
+    function normaliseGroups(raw, present, warnings) {
+        const used = new Set();
+        const groups = (Array.isArray(raw) ? raw : []).map(group => {
+            if (!group || typeof group !== 'object') return null;
+            const slugs = list(pick(group, ['domains', 'slugs', 'cards']), item => toSlug(item) || '')
+                .filter(slug => present.has(slug) && !used.has(slug));
+            slugs.forEach(slug => used.add(slug));
+            return slugs.length ? { title: text(pick(group, ['title', 'label', 'name'])), slugs } : null;
+        }).filter(Boolean);
+        const rest = domains().map(d => d.slug).filter(slug => present.has(slug) && !used.has(slug));
+        if (rest.length) {
+            if (groups.length) {
+                warnings.push('Not in a group: ' + rest.join(', '));
+                groups[groups.length - 1].slugs.push(...rest);
+            } else {
+                groups.push({ title: '', slugs: rest });
+            }
+        }
+        return groups;
+    }
+
+    /**
+     * Content JSON → the model the page renders. Throws only when no domain card can be read.
+     * Cards come out in the content's group order (else the programme's), whatever order the file lists them in; a
+     * duplicate slug keeps the first card. `warnings` lists what was skipped, for tests and the review stage.
+     * options: { workSimulationLive } (default WORK_SIMULATION_LIVE; tests set it).
+     */
+    function normalise(content, options) {
         if (!content || typeof content !== 'object') throw new TypeError('Roadmaps content must be an object');
+        const opts = options || {};
         const warnings = [];
         let rawDomains = pick(content, ['domains', 'cards', 'roadmaps']);
         if (rawDomains && !Array.isArray(rawDomains) && typeof rawDomains === 'object') {
@@ -399,37 +486,50 @@
             const d = Number.isInteger(Number(r.day)) && Number(r.day) >= 0 && Number(r.day) <= 6 ? Number(r.day) : day;
             return { day: d, title: text(r.title) || title };
         };
+        // A jump to a course row whose file is not in the course yet is never shown.
+        const unbuilt = unbuiltRows(pick(content, ['unbuilt', 'not_built', 'hidden_rows']));
+        const isLive = link => !(link && link.row && unbuilt.has(rowKey(link.row.day, link.row.title)));
         const firmsRow = rowOf('firms', FIRMS_DAY, FIRMS_TITLE);
-        const firmsDefault = linkFrom(links.firms || pick(content, ['firms_href', 'firmsHref', 'firms_url']), FIRMS_TITLE) ||
-            { label: FIRMS_TITLE, href: resourceHref(firmsRow.day, firmsRow.title), external: false };
-        // The Work Simulation page once it is on the site; until then its row's Day in the course.
+        const firmsLink = linkFrom(links.firms || pick(content, ['firms_href', 'firmsHref', 'firms_url']), FIRMS_TITLE) ||
+            { label: FIRMS_TITLE, href: resourceHref(firmsRow.day, firmsRow.title), external: false, row: firmsRow };
+        const firmsDefault = isLive(firmsLink) ? firmsLink : null;
+        // The Work Simulation: shown only once it is released; its page once on the site, else its row's Day.
+        const wsLive = opts.workSimulationLive === undefined ? WORK_SIMULATION_LIVE : Boolean(opts.workSimulationLive);
         const wsBase = safeHref(links.workSimulation);
         const wsRow = rowOf('workSimulation', WORK_SIMULATION_DAY, WORK_SIMULATION_TITLE);
         const workSimulation = wsBase
-            ? { href: wsBase, wired: true, external: isExternal(wsBase) }
-            : { href: resourceHref(wsRow.day, wsRow.title), wired: false, external: false };
+            ? { href: wsBase, wired: true, external: isExternal(wsBase), live: wsLive }
+            : { href: resourceHref(wsRow.day, wsRow.title), wired: false, external: false, live: wsLive && isLive({ row: wsRow }) };
+        const practise = safeHref(links.practise) || PATHS.practise;
         const seen = new Map();
         for (const raw of Array.isArray(rawDomains) ? rawDomains : []) {
             if (!raw || typeof raw !== 'object') continue;
-            const card = normaliseDomainCard(raw, { firms: firmsDefault, workSimulation: wsBase }, warnings);
+            const card = normaliseDomainCard(raw, { firms: firmsDefault, workSimulation: wsBase, practise, isLive }, warnings);
             if (!card) continue;
             if (seen.has(card.slug)) { warnings.push('Duplicate domain: ' + card.slug); continue; }
             seen.set(card.slug, card);
         }
         if (!seen.size) throw new Error('Roadmaps content has no domain cards');
-        const order = domains().map(d => d.slug);
-        const cards = order.filter(slug => seen.has(slug)).map(slug => seen.get(slug));
+        const groups = normaliseGroups(pick(content, ['groups', 'order']), new Set(seen.keys()), warnings);
+        const cards = groups.flatMap(group => group.slugs).map(slug => seen.get(slug));
         cards.forEach((card, index) => { card.index = index; });
         // Pairs only point at cards that exist on this page.
         cards.forEach(card => { card.pairs = card.pairs.filter(other => seen.has(other)); });
-        order.filter(slug => !seen.has(slug)).forEach(slug => warnings.push('Missing domain: ' + slug));
+        domains().map(d => d.slug).filter(slug => !seen.has(slug)).forEach(slug => warnings.push('Missing domain: ' + slug));
+        const introLink = linkFrom(pick(content, ['intro_link', 'introLink']) || null);
+        if (introLink && introLink.row && introLink.row.find && introLink.row.page === 1) {
+            introLink.label += ' (' + introLink.row.find + ' part)';
+        }
         return {
             title: text(content.title) || 'Domain roadmaps',
             rule: normaliseRule(pick(content, ['rule', 'the_rule', 'pick_rule'])),
             ruleNote: text(pick(content, ['rule_note', 'ruleNote'])),
+            introTitle: text(pick(content, ['intro_title', 'introTitle'])) || 'What an interviewer checks',
             intro: text(pick(content, ['intro', 'lede', 'top_line'])),
-            introLink: linkFrom(pick(content, ['intro_link', 'introLink']) || null),
+            introLink: introLink && isLive(introLink) ? introLink : null,
             workSimulation,
+            groups,
+            unbuilt: [...unbuilt],
             domains: cards,
             bySlug: Object.fromEntries(cards.map(card => [card.slug, card])),
             teams: normaliseTeams(pick(content, ['teams', 'team_names', 'teamNames'])),
@@ -534,13 +634,14 @@
 
     /**
      * Render the roadmaps into `container`. options: { settings (an MSCArticleshipProgress settings store), location,
-     * history, wideQuery (default '(min-width: 960px)'), onOpen(slug) }. Returns { model, open(slug), showIndex(), destroy() }.
+     * history, wideQuery (default '(min-width: 960px)'), onOpen(slug), workSimulationLive }.
+     * Returns { model, open(slug), showIndex(), destroy() }.
      */
     function mount(container, content, options) {
         const opts = options || {};
         const doc = container.ownerDocument || root.document;
         const win = doc.defaultView || root;
-        const model = content && content.domains && content.bySlug ? content : normalise(content);
+        const model = content && content.domains && content.bySlug ? content : normalise(content, opts);
         const P = progressApi();
         const store = opts.settings || (P && typeof P.settings === 'function' ? P.settings() : null);
         const loc = opts.location || win.location;
@@ -558,7 +659,8 @@
         const app = el(doc, 'div', 'dr');
         app.dataset.view = 'index';
 
-        // Top: the rule (yellow: the key line), the three-things line, my domain.
+        // Top: the rule (yellow: the key line) and my domain, short enough that the first tiles show on a phone's first
+        // screen. The three-things line sits under the tiles.
         const top = el(doc, 'section', 'dr-top');
         if (model.rule.length) {
             const rule = el(doc, 'div', 'ap-sticky dr-rule');
@@ -574,50 +676,55 @@
             if (model.ruleNote) rule.appendChild(el(doc, 'p', 'dr-rule-note', model.ruleNote));
             top.appendChild(rule);
         }
-        if (model.intro) {
-            const intro = el(doc, 'p', 'dr-intro', model.intro);
-            if (model.introLink) {
-                intro.appendChild(doc.createTextNode(' '));
-                intro.appendChild(anchor(doc, 'dr-inline', model.introLink.href, model.introLink.label, model.introLink.external));
-            }
-            top.appendChild(intro);
-        }
-        const mineLine = el(doc, 'p', 'dr-mine-line');
+        const mineLine = el(doc, 'div', 'dr-mine-line');
         top.appendChild(mineLine);
         app.appendChild(top);
 
         const layout = el(doc, 'div', 'dr-layout');
         const nav = el(doc, 'nav', 'dr-nav');
         nav.setAttribute('aria-label', 'Domains');
-        nav.appendChild(el(doc, 'h2', 'dr-nav-title', model.domains.length + ' domains, most common first'));
-        const tiles = el(doc, 'ol', 'dr-tiles');
+        nav.appendChild(el(doc, 'h2', 'dr-nav-title', 'The ' + model.domains.length + ' domains'));
         const tileBySlug = {};
-        model.domains.forEach(card => {
-            const li = el(doc, 'li', 'dr-tile-item');
-            const a = anchor(doc, 'dr-tile', '#' + card.slug);
-            a.id = 'tile-' + card.slug;
-            a.appendChild(icon(doc, card, 36));
-            const words = el(doc, 'span', 'dr-tile-words');
-            words.appendChild(el(doc, 'span', 'dr-tile-label', card.label));
-            if (card.tagline) words.appendChild(el(doc, 'span', 'dr-tile-tag', card.tagline));
-            a.appendChild(words);
-            const badge = el(doc, 'span', 'dr-badge ap-hidden');
-            a.appendChild(badge);
-            li.appendChild(a);
-            tiles.appendChild(li);
-            tileBySlug[card.slug] = { a, badge };
+        model.groups.forEach(group => {
+            if (group.title) nav.appendChild(el(doc, 'h3', 'dr-group-title', group.title));
+            const tiles = el(doc, 'ol', 'dr-tiles');
+            group.slugs.forEach(slug => {
+                const card = model.bySlug[slug];
+                const li = el(doc, 'li', 'dr-tile-item');
+                const a = anchor(doc, 'dr-tile', '#' + card.slug);
+                a.id = 'tile-' + card.slug;
+                a.appendChild(icon(doc, card, 36));
+                const words = el(doc, 'span', 'dr-tile-words');
+                words.appendChild(el(doc, 'span', 'dr-tile-label', card.label));
+                if (card.tagline) words.appendChild(el(doc, 'span', 'dr-tile-tag', card.tagline));
+                a.appendChild(words);
+                const badge = el(doc, 'span', 'dr-badge ap-hidden');
+                a.appendChild(badge);
+                li.appendChild(a);
+                tiles.appendChild(li);
+                tileBySlug[card.slug] = { a, badge };
+            });
+            nav.appendChild(tiles);
         });
-        nav.appendChild(tiles);
         layout.appendChild(nav);
 
+        // No aria-live: the whole card re-renders on every switch, and focus already moves to its name.
         const cardBox = el(doc, 'article', 'dr-card ap-card');
         cardBox.id = 'dr-card';
-        cardBox.setAttribute('aria-live', 'polite');
         layout.appendChild(cardBox);
         app.appendChild(layout);
 
-        // Bottom: team names on forms, the lock-in line, glossary.
+        // Bottom: what an interviewer checks, team names on forms, the lock-in line, glossary.
         const more = el(doc, 'section', 'dr-more');
+        if (model.intro) {
+            const box = el(doc, 'div', 'dr-intro');
+            box.appendChild(el(doc, 'h2', 'dr-intro-title', model.introTitle));
+            box.appendChild(el(doc, 'p', 'dr-intro-text', model.intro));
+            if (model.introLink) {
+                box.appendChild(anchor(doc, 'dr-go dr-go-tight', model.introLink.href, model.introLink.label, model.introLink.external));
+            }
+            more.appendChild(box);
+        }
         if (model.teams) {
             const details = el(doc, 'details', 'dr-fold');
             details.appendChild(el(doc, 'summary', 'dr-fold-title', model.teams.title));
@@ -669,29 +776,52 @@
             });
             mineLine.textContent = '';
             if (my && model.bySlug[my]) {
-                mineLine.appendChild(doc.createTextNode('My domain: '));
-                mineLine.appendChild(anchor(doc, 'ap-link', '#' + my, model.bySlug[my].label));
+                const words = el(doc, 'p', 'dr-mine-words');
+                words.appendChild(doc.createTextNode('My domain: '));
+                words.appendChild(anchor(doc, 'ap-link', '#' + my, model.bySlug[my].label));
                 if (backup && model.bySlug[backup]) {
-                    mineLine.appendChild(doc.createTextNode(' · Backup: '));
-                    mineLine.appendChild(anchor(doc, 'ap-link', '#' + backup, model.bySlug[backup].label));
+                    words.appendChild(doc.createTextNode(' · Backup: '));
+                    words.appendChild(anchor(doc, 'ap-link', '#' + backup, model.bySlug[backup].label));
                 }
+                mineLine.appendChild(words);
+                const clear = el(doc, 'button', 'dr-clear', 'Clear');
+                clear.type = 'button';
+                clear.setAttribute('aria-label', backup ? 'Clear my domain and backup' : 'Clear my domain');
+                clear.addEventListener('click', () => setMine(null, 'clear'));
+                mineLine.appendChild(clear);
             }
             mineLine.classList.toggle('ap-hidden', !my);
         }
 
-        function setMine(slug, asBackup) {
+        /**
+         * how: 'mine' (make `slug` my domain; promoting the backup swaps the two), 'backup' (make `slug` the backup),
+         * 'unbackup' (drop the backup), 'clear' (drop both).
+         */
+        function setMine(slug, how) {
             if (!store) return;
             const current = mine();
+            if (how === 'clear' || how === 'unbackup') {
+                store.update(data => {
+                    if (how === 'clear') data.myDomain = null;
+                    data.backupDomain = null;
+                    return data;
+                });
+                return;
+            }
+            let next;
+            if (how === 'backup') {
+                if (!current.my || current.my === slug) return;
+                next = { my: current.my, backup: slug };
+            } else {
+                // The backup made "my domain": the old one becomes the backup, so nothing is lost.
+                next = { my: slug, backup: current.backup === slug ? current.my : current.backup };
+            }
             if (P && typeof P.setMyDomain === 'function') {
-                if (asBackup) {
-                    if (current.my && current.my !== slug) P.setMyDomain(current.my, { backup: slug }, store);
-                } else {
-                    P.setMyDomain(slug, current.backup === slug ? { backup: null } : undefined, store);
-                }
+                P.setMyDomain(next.my, { backup: next.backup || null }, store);
             } else {
                 store.update(data => {
-                    if (asBackup) data.backupDomain = slug;
-                    else { data.myDomain = slug; if (data.backupDomain === slug) data.backupDomain = null; }
+                    data.myDomain = next.my;
+                    data.backupDomain = next.backup && next.backup !== next.my ? next.backup : null;
                     return data;
                 });
             }
@@ -700,21 +830,21 @@
         function mineControls(card) {
             const { my, backup } = mine();
             const box = el(doc, 'div', 'dr-mine');
+            const button = (label, className, how) => {
+                const b = el(doc, 'button', 'ap-btn ' + className, label);
+                b.type = 'button';
+                b.addEventListener('click', () => setMine(card.slug, how));
+                box.appendChild(b);
+            };
             if (card.slug === my) {
                 box.appendChild(el(doc, 'span', 'dr-pill is-mine', 'My domain'));
+            } else if (card.slug === backup) {
+                box.appendChild(el(doc, 'span', 'dr-pill is-backup', 'My backup'));
+                button('Make this my domain', 'dr-make', 'mine');
+                button('Not my backup', 'is-secondary dr-unbackup', 'unbackup');
             } else {
-                const make = el(doc, 'button', 'ap-btn dr-make', 'Make this my domain');
-                make.type = 'button';
-                make.addEventListener('click', () => setMine(card.slug, false));
-                box.appendChild(make);
-                if (card.slug === backup) {
-                    box.appendChild(el(doc, 'span', 'dr-pill is-backup', 'My backup'));
-                } else if (my) {
-                    const backupBtn = el(doc, 'button', 'ap-btn is-secondary dr-make-backup', 'Make it my backup');
-                    backupBtn.type = 'button';
-                    backupBtn.addEventListener('click', () => setMine(card.slug, true));
-                    box.appendChild(backupBtn);
-                }
+                button('Make this my domain', 'dr-make', 'mine');
+                if (my) button('Make it my backup', 'is-secondary dr-make-backup', 'backup');
             }
             return box;
         }
@@ -724,6 +854,7 @@
             cardBox.dataset.domain = card.slug;
 
             const back = anchor(doc, 'dr-back', '#all', 'All domains');
+            back.addEventListener('click', backToIndex);
             cardBox.appendChild(back);
 
             const head = el(doc, 'header', 'dr-card-head');
@@ -746,7 +877,7 @@
             const quick = el(doc, 'nav', 'dr-quick');
             quick.setAttribute('aria-label', card.label + ': open');
             quick.appendChild(anchor(doc, 'dr-quick-link', card.explorer, 'Experiences'));
-            quick.appendChild(anchor(doc, 'dr-quick-link', card.firms.href, 'Firms', card.firms.external));
+            if (card.firms) quick.appendChild(anchor(doc, 'dr-quick-link', card.firms.href, 'Firms', card.firms.external));
             quick.appendChild(anchor(doc, 'dr-quick-link', card.linkedin, 'LinkedIn', true));
             cardBox.appendChild(quick);
 
@@ -836,14 +967,19 @@
                     ol.appendChild(li);
                 });
                 tested.appendChild(ol);
-                if (card.booklet) {
+                const goes = el(doc, 'div', 'dr-gos');
+                if (card.booklet && card.booklet.live) {
                     const label = (card.questions.some(q => q.a) ? 'More in the ' : 'Answers in the ') + card.booklet.title +
                         (card.booklet.find ? ', ' + card.booklet.find + ' part' : '');
-                    tested.appendChild(anchor(doc, 'dr-go', card.booklet.href, label));
+                    goes.appendChild(anchor(doc, 'dr-go', card.booklet.href, label));
                 }
+                if (card.practise) goes.appendChild(anchor(doc, 'dr-go dr-go-practise', card.practise, 'Practise them in a mock interview'));
+                if (goes.childNodes.length) tested.appendChild(goes);
                 cardBox.appendChild(tested);
             }
-            if (card.levels.length || card.cvLine) {
+            // The Work Simulation part shows only once it is released (WORK_SIMULATION_LIVE): never a promise of a page
+            // that is not there.
+            if (model.workSimulation.live && (card.levels.length || card.cvLine)) {
                 const earn = section(doc, 'Earn the CV line');
                 if (card.levels.length) {
                     const wired = card.levels.some(level => level.href);
@@ -863,19 +999,26 @@
                     const line = el(doc, 'figure', 'dr-cvline');
                     line.appendChild(el(doc, 'figcaption', '', 'A line you can earn'));
                     line.appendChild(el(doc, 'p', '', card.cvLine));
+                    if (/\[[^\]]+\]/.test(card.cvLine)) {
+                        line.appendChild(el(doc, 'p', 'dr-cvline-hint', 'Your own counts and month fill in when you finish the level.'));
+                    }
                     earn.appendChild(line);
                 }
                 cardBox.appendChild(earn);
             }
             if (card.picks.length || card.paid.length) {
                 const practise = section(doc, 'Practise free');
+                // The whole pick is the link (one big tap target); its kind says plainly what it is.
                 const picksList = (items, labels) => {
                     const ul = el(doc, 'ul', 'dr-picks');
                     items.forEach((item, i) => {
-                        const li = el(doc, 'li', 'dr-pick');
-                        if (labels && labels[i]) li.appendChild(el(doc, 'span', 'dr-pick-no', labels[i]));
-                        li.appendChild(item.href ? anchor(doc, 'dr-pick-name', item.href, item.label, item.external) : el(doc, 'span', 'dr-pick-name', item.label));
-                        if (item.note) li.appendChild(el(doc, 'span', 'dr-pick-note', item.note));
+                        const li = el(doc, 'li', 'dr-pick-item');
+                        const box = item.href ? anchor(doc, 'dr-pick is-link', item.href, null, item.external) : el(doc, 'div', 'dr-pick');
+                        const tag = [labels && labels[i], PICK_KINDS[item.kind]].filter(Boolean).join(' · ');
+                        if (tag) box.appendChild(el(doc, 'span', 'dr-pick-no', tag));
+                        box.appendChild(el(doc, 'span', 'dr-pick-name', item.label));
+                        if (item.note) box.appendChild(el(doc, 'span', 'dr-pick-note', item.note));
+                        li.appendChild(box);
                         ul.appendChild(li);
                     });
                     return ul;
@@ -892,9 +1035,10 @@
                 const ul = el(doc, 'ul', 'dr-list');
                 card.extra.forEach(item => {
                     const li = el(doc, 'li', '', item.text);
+                    // The link on its own line: a full-size tap target, not a word inside the sentence.
                     if (item.link) {
-                        li.appendChild(doc.createTextNode(' '));
-                        li.appendChild(anchor(doc, 'dr-inline', item.link.href, item.link.label, item.link.external));
+                        li.appendChild(doc.createElement('br'));
+                        li.appendChild(anchor(doc, 'dr-go dr-go-tight', item.link.href, item.link.label, item.link.external));
                     }
                     ul.appendChild(li);
                 });
@@ -905,10 +1049,13 @@
             const actions = section(doc, 'Go further', 'dr-actions');
             const grid = el(doc, 'div', 'dr-action-grid');
             grid.appendChild(actionRow(doc, card.explorer, 'See real experiences', 'Experience Explorer', false, 'explorer'));
-            grid.appendChild(actionRow(doc, card.firms.href, 'Firms for this domain',
-                card.firms.hint ? 'Firms by domain · ' + card.firms.hint : 'Firms by domain', card.firms.external, 'firms'));
+            if (card.firms) {
+                grid.appendChild(actionRow(doc, card.firms.href, 'Firms for this domain',
+                    card.firms.hint ? 'Firms by domain · ' + card.firms.hint : 'Firms by domain', card.firms.external, 'firms'));
+            }
             grid.appendChild(actionRow(doc, card.linkedin, 'Articles in it on LinkedIn',
                 'Swap India for your city under Locations', true, 'linkedin'));
+            grid.classList.add('is-' + grid.childNodes.length);
             actions.appendChild(grid);
             cardBox.appendChild(actions);
 
@@ -959,12 +1106,30 @@
         function route(how) {
             const hash = String(loc.hash || '').replace(/^#/, '');
             const slug = slugFromLocation(loc);
+            const fromIndex = app.dataset.view === 'index';
+            const canReplace = hist && typeof hist.replaceState === 'function';
             // Aliases and ?domain= become the canonical anchor, so the address can be shared.
-            if (slug && hash !== slug && hist && typeof hist.replaceState === 'function') {
+            if (slug && hash !== slug && canReplace) {
                 const search = String(loc.search || '').replace(/([?&])domain=[^&]*&?/, '$1').replace(/[?&]$/, '');
                 try { hist.replaceState(hist.state, '', String(loc.pathname || '') + search + '#' + slug); } catch (_) { /* ignore */ }
             }
+            // A card opened from the index remembers it, so "All domains" can step back instead of adding an entry.
+            if (how === 'nav' && slug && model.bySlug[slug] && fromIndex && canReplace) {
+                const entry = Object.assign({}, hist.state && typeof hist.state === 'object' ? hist.state : {}, { drFromIndex: true });
+                try { hist.replaceState(entry, ''); } catch (_) { /* ignore */ }
+            }
             show(slug, how);
+        }
+
+        /** "All domains": back to the index entry when the card came from it; otherwise swap this entry for the index. */
+        function backToIndex(event) {
+            if (event && typeof event.preventDefault === 'function') event.preventDefault();
+            const fromIndex = hist && hist.state && typeof hist.state === 'object' && hist.state.drFromIndex;
+            if (fromIndex && typeof hist.back === 'function') { hist.back(); return; }
+            if (hist && typeof hist.replaceState === 'function') {
+                try { hist.replaceState(null, '', String(loc.pathname || '') + String(loc.search || '')); } catch (_) { /* ignore */ }
+            }
+            show(null, 'nav');
         }
 
         const onHash = () => route('nav');
@@ -989,7 +1154,7 @@
         return {
             model,
             open(slug) { const s = toSlug(slug); if (s) loc.hash = '#' + s; },
-            showIndex() { loc.hash = '#all'; },
+            showIndex() { backToIndex(); },
             current() { return state.current; },
             destroy() {
                 win.removeEventListener('hashchange', onHash);
@@ -1044,8 +1209,8 @@
     }
 
     return Object.freeze({
-        PATHS, DEFAULT_BOOKLETS, DEFAULT_LINKEDIN, DEFAULT_ICONS,
-        normalise, validate, safeHref, isExternal, explorerHref, levelHref, linkedinHref, resourceHref,
+        PATHS, DEFAULT_BOOKLETS, DEFAULT_LINKEDIN, DEFAULT_ICONS, WORK_SIMULATION_LIVE, PICK_KINDS,
+        normalise, validate, safeHref, isExternal, explorerHref, levelHref, linkedinHref, practiseHref, resourceHref,
         slugFromLocation, enjoyLine, mount, start, boot
     });
 });
