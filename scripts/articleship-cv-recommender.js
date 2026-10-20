@@ -1,12 +1,13 @@
 /**
  * MSC Articleship Program: CV Recommender (Day 1 · Choose your CV, row 1.2).
  *
- * Nine taps → one of the situations A–H, its section order (personalised to the proof the student has), the variant
- * lines to add, a suggested design and "See it" (its page in Choose your CV, or The Nothing CV for H).
+ * Nine taps → one of the situations A–H, its section order (personalised to the student's ranking and proof), the
+ * lines to add, a suggested design and "See this order" (its page in Choose your CV, or The Nothing CV for H).
  * Deterministic rules only, no AI. The pick is saved to the shared setting so the CV Builder opens with it.
  *
  * Content: /articleship-program/cv-recommender/situations.json (the one situation list shared by Choose your CV, this
- * tool and the CV Builder) and designs.json (the CV templates look-book's designs, numbered as in the look-book).
+ * tool and the CV Builder) and the CV Builder's designs.json (/articleship-program/cv-builder/designs.json, the one
+ * design list, numbered as in the CV templates look-book).
  *
  * Browser: window.MSCCvRecommender. Node (tests): require('./scripts/articleship-cv-recommender.js').
  */
@@ -22,6 +23,18 @@
     const SITUATION_CODES = Object.freeze(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']);
     const OWN_PROJECTS = Object.freeze(['model', 'annual-report']);
     const DEFAULT_RANK = Object.freeze(['academics', 'work', 'projects', 'roles', 'skills']);
+    /** The design list both tools read (one file, so the Recommender and the CV Builder never disagree). */
+    const DESIGNS_URL = '/articleship-program/cv-builder/designs.json';
+
+    /** Which strength each CV block shows. Simulations live in Certifications and job simulations (house rule 2). */
+    const STRENGTH_OF = Object.freeze({
+        education: 'academics', experience: 'work', projects: 'projects', certifications: 'projects',
+        leadership: 'roles', achievements: 'roles', skills: 'skills'
+    });
+    /** Order inside one strength's group (own projects before simulations, roles before achievements). */
+    const GROUP_ORDER = Object.freeze(['experience', 'projects', 'certifications', 'leadership', 'achievements', 'skills']);
+    /** Which work example the Work experience block shows when several are tapped (strongest first). */
+    const WORK_PRIORITY = Object.freeze(['ca-firm', 'company', 'part-time', 'family', 'tuition']);
 
     const STRENGTHS = Object.freeze([
         { id: 'academics', label: 'Academics', hint: 'Marks, first attempt, a rank' },
@@ -60,75 +73,78 @@
         return progress && Array.isArray(progress.DOMAINS) && progress.DOMAINS.length ? progress.DOMAINS : FALLBACK_DOMAINS;
     }
 
+    // Labels: 1–3 words (STYLE "Tool"). `chip` is the answer as the result's summary shows it.
+    // Graduation comes before the gap, so a direct-entry graduate never sees "After Foundation".
     function buildQuestions() {
         return [
-            { id: 'rank', type: 'rank', title: 'Rank your strengths', hint: 'Tap them from strongest to weakest.' },
+            { id: 'rank', type: 'rank', title: 'Rank your strengths', short: 'Strengths', hint: 'Tap them from strongest to weakest.' },
             {
-                id: 'inter', type: 'single', title: 'How did you clear Inter?', options: [
-                    { id: 'first', label: 'Both groups, first attempt' },
-                    { id: 'later', label: 'Both groups, a later attempt' },
-                    { id: 'separate', label: 'Groups in different sittings' },
-                    { id: 'one-awaited', label: 'One group cleared, one awaited' },
-                    { id: 'both-awaited', label: 'Both groups, result awaited' }
+                id: 'inter', type: 'single', title: 'How did you clear Inter?', short: 'Inter', options: [
+                    { id: 'first', label: 'Both, first attempt', hint: 'Both groups together' },
+                    { id: 'later', label: 'Both, later attempt', hint: 'Both groups together' },
+                    { id: 'separate', label: 'Different sittings', hint: 'Groups cleared separately', chip: 'Groups in different sittings' },
+                    { id: 'one-awaited', label: 'One group awaited' },
+                    { id: 'both-awaited', label: 'Both awaited', hint: 'Result not out yet', chip: 'Inter result awaited' }
                 ]
             },
             {
-                id: 'gap', type: 'single', title: 'Any gap?', options: [
-                    { id: 'none', label: 'None' },
-                    { id: 'after-foundation', label: 'After Foundation' },
-                    { id: 'after-inter', label: 'After Inter' },
-                    { id: 'missed-sitting', label: 'A missed or skipped sitting' },
-                    { id: 'year-out', label: 'A year out' }
+                id: 'graduation', type: 'single', title: 'Your graduation', short: 'Graduation', options: [
+                    { id: 'regular', label: 'Pursuing, regular', chip: 'Graduation: regular' },
+                    { id: 'distance', label: 'Distance or evening', chip: 'Graduation: distance' },
+                    { id: 'completed', label: 'Completed', chip: 'Graduation completed' },
+                    { id: 'direct-entry', label: 'Direct entry', hint: 'Graduated first; no Foundation', chip: 'Direct entry graduate' },
+                    { id: 'stopped', label: 'Started, then stopped', chip: 'Degree stopped' },
+                    { id: 'none', label: 'Not pursuing', chip: 'No degree' }
                 ]
             },
             {
-                id: 'graduation', type: 'single', title: 'Your graduation', options: [
-                    { id: 'regular', label: 'Pursuing, regular college' },
-                    { id: 'distance', label: 'Pursuing, distance or evening' },
-                    { id: 'completed', label: 'Completed' },
-                    { id: 'direct-entry', label: 'Graduate, direct entry', hint: 'No Foundation row' },
-                    { id: 'stopped', label: 'Started, then stopped' },
-                    { id: 'none', label: 'Not pursuing' }
+                id: 'gap', type: 'single', title: 'Any gap?', short: 'Gap', options: [
+                    { id: 'none', label: 'None', chip: 'No gap' },
+                    { id: 'after-foundation', label: 'After Foundation', chip: 'Gap after Foundation', notWith: { graduation: ['direct-entry'] } },
+                    { id: 'after-inter', label: 'After Inter', chip: 'Gap after Inter' },
+                    { id: 'missed-sitting', label: 'Skipped a sitting', hint: 'Missed or skipped' },
+                    { id: 'year-out', label: 'A year out', chip: 'A year out' }
                 ]
             },
             {
-                id: 'icitss', type: 'single', title: 'Your ICITSS', hint: 'Orientation Course + IT Training', options: [
-                    { id: 'done', label: 'Completed' },
-                    { id: 'ongoing', label: 'Ongoing' },
-                    { id: 'pending', label: 'Not started' }
+                id: 'icitss', type: 'single', title: 'Your ICITSS', short: 'ICITSS', hint: 'Orientation Course + IT Training', options: [
+                    { id: 'done', label: 'Completed', chip: 'ICITSS done' },
+                    { id: 'ongoing', label: 'Ongoing', chip: 'ICITSS ongoing' },
+                    { id: 'pending', label: 'Not started', chip: 'ICITSS not started' }
                 ]
             },
             {
-                id: 'work', type: 'multi', title: 'Work you have done', hint: 'Tap all that apply.', options: [
+                id: 'work', type: 'multi', title: 'Work you have done', short: 'Work', hint: 'Tap all that apply.', options: [
                     { id: 'ca-firm', label: 'CA firm internship' },
-                    { id: 'company', label: 'Company or start-up internship' },
+                    { id: 'company', label: 'Company internship', hint: 'Or a start-up' },
                     { id: 'family', label: 'Family business books' },
                     { id: 'tuition', label: 'Tuition' },
-                    { id: 'part-time', label: 'Part-time or freelance accounts' },
-                    { id: 'none', label: 'None yet', exclusive: true }
+                    { id: 'part-time', label: 'Part-time accounts', hint: 'Or freelance' },
+                    { id: 'none', label: 'None yet', exclusive: true, chip: 'No work yet' }
                 ]
             },
             {
-                id: 'projects', type: 'multi', title: 'Projects you have done', hint: 'Tap all that apply.', options: [
+                id: 'projects', type: 'multi', title: 'Projects you have done', short: 'Projects', hint: 'Tap all that apply.', options: [
                     { id: 'work-simulation', label: 'Work Simulation level' },
-                    { id: 'job-simulation', label: 'A job simulation', hint: 'Forage or similar' },
-                    { id: 'model', label: 'Excel model or dashboard' },
+                    { id: 'job-simulation', label: 'Job simulation', hint: 'Forage or similar' },
+                    { id: 'model', label: 'Excel model', hint: 'Or a dashboard' },
                     { id: 'annual-report', label: 'Annual-report project' },
-                    { id: 'none', label: 'None yet', exclusive: true }
+                    { id: 'none', label: 'None yet', exclusive: true, chip: 'No projects yet' }
                 ]
             },
             {
-                id: 'course', type: 'single', title: 'Another course alongside?', options: [
-                    { id: 'none', label: 'None' },
-                    { id: 'cs', label: 'CS' },
-                    { id: 'cma', label: 'CMA' },
-                    { id: 'cfa', label: 'CFA' },
-                    { id: 'degree', label: 'Another degree', hint: 'LL.B. or similar' }
+                id: 'course', type: 'single', title: 'Another course alongside?', short: 'Course', options: [
+                    { id: 'none', label: 'None', chip: 'No other course' },
+                    { id: 'cs', label: 'CS', chip: 'CS alongside' },
+                    { id: 'cma', label: 'CMA', chip: 'CMA alongside' },
+                    { id: 'cfa', label: 'CFA', chip: 'CFA alongside' },
+                    { id: 'degree', label: 'Another degree', hint: 'LL.B. or similar', chip: 'Another degree' }
                 ]
             },
             {
-                id: 'domain', type: 'single', title: 'Your target domain', grid: true,
-                options: domainList().map(d => ({ id: d.slug, label: d.label })).concat([{ id: 'unsure', label: 'Not sure yet' }])
+                id: 'domain', type: 'single', title: 'Your target domain', short: 'Domain', grid: true,
+                options: domainList().map(d => ({ id: d.slug, label: d.label }))
+                    .concat([{ id: 'unsure', label: 'Not sure yet', chip: 'Domain not decided' }])
             }
         ];
     }
@@ -142,6 +158,16 @@
     function optionIds(id) {
         const q = question(id);
         return q && q.options ? q.options.map(o => o.id) : [];
+    }
+
+    function hiddenFor(option, answers) {
+        return Boolean(option.notWith && Object.entries(option.notWith).some(([key, values]) => values.includes(answers && answers[key])));
+    }
+
+    /** The options a question shows for these answers ("After Foundation" is not offered to a direct-entry graduate). */
+    function optionsFor(questionId, answers) {
+        const q = question(questionId);
+        return q && q.options ? q.options.filter(o => !hiddenFor(o, answers)) : [];
     }
 
     // ---------- Answers ----------
@@ -174,7 +200,7 @@
     /** Raw stored answers → a clean copy (unknown values dropped). Multi answers keep 'none' as an explicit answer. */
     function cleanAnswers(raw) {
         const a = raw && typeof raw === 'object' ? raw : {};
-        return {
+        const out = {
             rank: cleanRank(a.rank),
             inter: cleanSingle('inter', a.inter),
             gap: cleanSingle('gap', a.gap),
@@ -185,6 +211,13 @@
             course: cleanSingle('course', a.course),
             domain: cleanSingle('domain', a.domain)
         };
+        // An answer the student can no longer see (gap after Foundation for a direct-entry graduate) is asked again.
+        QUESTIONS.forEach(q => {
+            if (q.type !== 'single' || !out[q.id]) return;
+            const option = q.options.find(o => o.id === out[q.id]);
+            if (option && hiddenFor(option, out)) out[q.id] = null;
+        });
+        return out;
     }
 
     function isAnswered(id, answers) {
@@ -243,32 +276,101 @@
         return 'H';
     }
 
-    /** The situation's order, minus blocks the student has nothing for, plus their work or own projects. */
-    function personaliseOrder(situation, answers) {
+    /** Marks ranked 4th or 5th: one proof block goes above the education table (H keeps Padam's fixed order). */
+    function marksRankedLow(code, answers) {
         const a = ruleAnswers(answers);
-        const hasWork = a.work.length > 0;
-        const hasOwnProjects = a.projects.some(id => OWN_PROJECTS.includes(id));
-        const order = (situation.order || []).filter(id => (id !== 'experience' || hasWork) && (id !== 'projects' || hasOwnProjects));
-        const add = [];
-        if (hasWork && !order.includes('experience')) add.push('experience');
-        if (hasOwnProjects && !order.includes('projects')) add.push('projects');
-        if (add.length) {
-            const anchor = (situation.insertAfter || []).find(id => order.includes(id)) || 'education';
-            let index = order.indexOf(anchor);
-            if (index === -1) index = Math.max(order.indexOf('education'), 0);
-            order.splice(index + 1, 0, ...add);
-        }
-        return order;
+        return code !== 'H' && a.rank.indexOf('academics') >= 3;
     }
 
-    function leadBlock(situation, order) {
-        if (situation.lead && order.includes(situation.lead)) return situation.lead;
-        const edu = order.indexOf('education');
-        return edu !== -1 && order[edu + 1] ? order[edu + 1] : 'education';
+    /** The situation's blocks, minus the ones the student has nothing for, plus their work or own projects. */
+    function situationBlocks(situation, a) {
+        const hasWork = a.work.length > 0;
+        const hasOwnProjects = a.projects.some(id => OWN_PROJECTS.includes(id));
+        const list = (situation.order || []).filter(id => (id !== 'experience' || hasWork) && (id !== 'projects' || hasOwnProjects));
+        if (hasWork && !list.includes('experience')) list.push('experience');
+        if (hasOwnProjects && !list.includes('projects')) list.push('projects');
+        return list;
+    }
+
+    /**
+     * The student's order. Header and objective first; then education with the situation's lead block right after it
+     * (or above it when marks are ranked 4th or 5th); then the other proof blocks in the student's own ranking, so
+     * their number 5 goes last; Interests closes. H (The Nothing CV) keeps its fixed order.
+     * → { order, lead, last: [the number 5's first block], marksLow }
+     */
+    function planOrder(situation, answers) {
+        const a = ruleAnswers(answers);
+        const blocks = situationBlocks(situation, a);
+        let lead = situation.lead && blocks.includes(situation.lead) ? situation.lead : null;
+        if (!lead) {
+            // D with simulations only: the Projects block is dropped, so its strength's other block leads.
+            const strength = STRENGTH_OF[situation.lead];
+            lead = blocks.find(id => id !== 'education' && strength && STRENGTH_OF[id] === strength) || 'education';
+        }
+        if (situation.fixed) return { order: blocks, lead, last: [], marksLow: false };
+
+        const leadStrength = lead === 'education' ? null : STRENGTH_OF[lead];
+        const key = id => (STRENGTH_OF[id] === leadStrength ? -1 : a.rank.indexOf(STRENGTH_OF[id]));
+        const others = blocks
+            .filter(id => STRENGTH_OF[id] && id !== 'education' && id !== lead)
+            .sort((x, y) => key(x) - key(y) || GROUP_ORDER.indexOf(x) - GROUP_ORDER.indexOf(y));
+        const top = ['header', 'summary'].filter(id => blocks.includes(id));
+        const tail = blocks.filter(id => !STRENGTH_OF[id] && !top.includes(id));
+        const marksLow = a.rank.indexOf('academics') >= 3;
+        let order;
+        if (marksLow) {
+            if (lead === 'education' && others.length) lead = others.shift();
+            order = top.concat(lead === 'education' ? [] : [lead], ['education'], others, tail);
+        } else {
+            order = top.concat(['education'], lead === 'education' ? [] : [lead], others, tail);
+        }
+        const fifth = a.rank[DEFAULT_RANK.length - 1];
+        // The note sits once, on the first block of the number 5 (the rest of its group follows it).
+        const last = fifth === 'academics' ? [] : order.filter(id => id !== lead && STRENGTH_OF[id] === fifth).slice(0, 1);
+        return { order, lead, last, marksLow };
+    }
+
+    /** The order alone (the shared CV pick and the CV Builder take this). */
+    function personaliseOrder(situation, answers) {
+        return planOrder(situation, answers).order;
     }
 
     function fill(text, values) {
         return String(text || '').replace(/\{(\w+)\}/g, (match, key) => (values && values[key] !== undefined ? values[key] : match));
+    }
+
+    /** The domain a Work Simulation line is written for: the target domain, or statutory audit when not decided. */
+    function lineDomain(a, data) {
+        const lines = (data && data.workSimulation) || {};
+        if (a.domain && a.domain !== 'unsure' && lines[a.domain]) return a.domain;
+        return (data && data.defaultDomain) || 'statutory-audit';
+    }
+
+    /** One example line per block, from this student's answers where they change it. */
+    function exampleFor(id, situation, a, data, code) {
+        const byAnswer = (data && data.answerExamples) || {};
+        // A and B lead with the Inter row, so it shows the way this student cleared it (awaited, a later attempt).
+        const interRow = byAnswer.educationByInter && byAnswer.educationByInter[a.inter];
+        if (id === 'education' && (code === 'A' || code === 'B') && interRow) return interRow;
+        const own = situation.examples && situation.examples[id];
+        if (own) return own;
+        if (id === 'experience' && byAnswer.work) {
+            const kind = WORK_PRIORITY.find(k => a.work.includes(k));
+            if (kind && byAnswer.work[kind]) return byAnswer.work[kind];
+        }
+        if (id === 'projects' && byAnswer.projects) {
+            const kind = OWN_PROJECTS.find(k => a.projects.includes(k));
+            if (kind && byAnswer.projects[kind]) return byAnswer.projects[kind];
+        }
+        if (id === 'certifications') {
+            const ws = data && data.workSimulation && data.workSimulation[lineDomain(a, data)];
+            if (a.projects.includes('work-simulation') && ws) return ws;
+            const certs = byAnswer.certifications || {};
+            if (a.projects.includes('job-simulation') && certs['job-simulation']) return certs['job-simulation'];
+            if (certs.none) return certs.none;
+        }
+        const sections = (data && data.sections) || {};
+        return (sections[id] && sections[id].example) || '';
     }
 
     function variantIdsFor(answers) {
@@ -278,6 +380,7 @@
         if (a.inter === 'both-awaited') ids.push('result-awaited');
         if (a.inter === 'separate') ids.push('groups-separately');
         if (a.inter === 'later') ids.push('more-attempts');
+        if (a.icitss === 'done') ids.push('icitss-done');
         if (a.icitss === 'ongoing') ids.push('icitss-ongoing');
         if (a.icitss === 'pending') ids.push('icitss-pending');
         if (a.graduation === 'regular') ids.push('pursuing');
@@ -286,6 +389,7 @@
         if (a.course === 'cs' || a.course === 'cma') ids.push('cs-cma');
         if (a.course === 'cfa' || a.course === 'degree') ids.push('other-course');
         if (a.gap && a.gap !== 'none') ids.push('gap');
+        if (marksRankedLow(chooseSituation(a), a)) ids.push('marks-low');
         return ids;
     }
 
@@ -297,12 +401,14 @@
             const def = defs[id];
             const course = def.courses && def.courses[a.course] ? def.courses[a.course] : null;
             const values = course ? { course: course.course, line: course.line } : {};
-            const ask = id === 'gap' && def.asks && def.asks[a.gap] ? def.asks[a.gap] : def.ask;
+            const byGap = id === 'gap' && a.gap ? a.gap : null;
+            const ask = byGap && def.asks && def.asks[byGap] ? def.asks[byGap] : def.ask;
+            const lines = byGap && def.linesByKind && def.linesByKind[byGap] ? def.linesByKind[byGap] : (def.lines || []);
             return {
                 id,
                 label: fill(def.label, values),
                 note: fill((course && course.note) || def.note || '', values) || null,
-                lines: (def.lines || []).map(line => fill(line, values)).filter(Boolean),
+                lines: lines.map(line => fill(line, values)).filter(Boolean),
                 ask: ask ? fill(ask, values) : null
             };
         });
@@ -321,12 +427,18 @@
         return (data && data.resources && data.resources[key]) || fallback;
     }
 
+    /** The Work Simulation page once it is on the site; until then its Day in the course, where its row sits. */
+    function workSimulationLink(data) {
+        const direct = data && data.links && data.links.workSimulation;
+        return { label: 'Work Simulation', href: direct || link((data && data.day) || 1) };
+    }
+
     function thinProofFor(code, answers, data) {
         const def = (data && data.thinProof) || {};
-        const ws = data && data.links && data.links.workSimulation;
+        const ws = workSimulationLink(data);
         if (code === 'H') {
             // The Nothing CV is the main answer; the Work Simulation is the step after it.
-            return ws && def.textNothing ? { label: def.labelNothing || def.label || 'Then', text: def.textNothing, links: [{ label: 'Work Simulation', href: ws }] } : null;
+            return def.textNothing ? { label: def.labelNothing || def.label || 'Then', text: def.textNothing, links: [ws] } : null;
         }
         const a = ruleAnswers(answers);
         const count = a.work.length + a.projects.length;
@@ -334,7 +446,7 @@
         const day = (data && data.day) || 1;
         const hasSimulation = a.projects.includes('work-simulation');
         const links = [];
-        if (!hasSimulation && ws) links.push({ label: 'Work Simulation', href: ws });
+        if (!hasSimulation) links.push(ws);
         links.push({ label: 'The Nothing CV', href: link(day, resourceTitle(data, 'nothing', 'The Nothing CV'), def.page || 3) });
         return {
             label: def.label || 'Thin on proof?',
@@ -417,13 +529,13 @@
         const situation = data.situations[code];
         if (!situation) throw new Error('Situation ' + code + ' missing from the data');
         const sections = data.sections || {};
-        const order = personaliseOrder(situation, a);
-        const lead = leadBlock(situation, order);
-        const blocks = order.map(id => ({
+        const plan = planOrder(situation, a);
+        const blocks = plan.order.map(id => ({
             id,
             label: (situation.labels && situation.labels[id]) || (sections[id] && sections[id].label) || id,
-            example: (situation.examples && situation.examples[id]) || (sections[id] && sections[id].example) || '',
-            lead: id === lead
+            example: exampleFor(id, situation, a, data, code),
+            lead: id === plan.lead,
+            note: plan.last.includes(id) ? (data.lastNote || 'your no. 5 goes last') : null
         }));
         const variants = variantsFor(a, data);
         const designs = normaliseDesigns(data.designs);
@@ -432,7 +544,7 @@
         const day = data.day || 1;
         const isNothing = situation.resource === 'nothing';
         const seeIt = {
-            label: 'See it',
+            label: situation.seeLabel || 'See this order',
             href: link(day, resourceTitle(data, isNothing ? 'nothing' : 'choose', isNothing ? 'The Nothing CV' : 'Choose your CV'), situation.page || 1)
         };
         const unsure = a.domain === 'unsure' && data.unsure ? {
@@ -449,15 +561,21 @@
             heading,
             leadNote: situation.leadNote || 'your strength',
             reason: situation.reason,
-            order,
+            order: plan.order,
+            lead: plan.lead,
             blocks,
             variants,
+            mscLine: data.mscLine && data.mscLine.line
+                ? { id: 'msc-line', label: data.mscLine.label, note: data.mscLine.note || null, lines: [data.mscLine.line], ask: null }
+                : null,
             thinProof: thinProofFor(code, a, data),
             design,
             designLink: design ? link(day, resourceTitle(data, 'templates', 'CV templates'), design.page) : null,
             portal: portal && (!design || portal.number !== design.number) && data.portal
                 ? { design: portal, text: fill(data.portal, { design: portal.name + ' (No. ' + portal.number + ')' }) }
                 : null,
+            // The CV Builder reads the same designs file, so a loaded list means it can open with this pick.
+            builder: designs.length > 0,
             seeIt,
             domain: a.domain && a.domain !== 'unsure' ? a.domain : null,
             unsure
@@ -476,6 +594,26 @@
         };
     }
 
+    /** The answers as short chips for the result (each one reopens its question). → [{ step, id, title, text }] */
+    function answerChips(answers) {
+        const a = cleanAnswers(answers);
+        const strength = id => (STRENGTHS.find(s => s.id === id) || {}).label || id;
+        return QUESTIONS.map((q, step) => {
+            let text = '';
+            if (q.type === 'rank') {
+                text = a.rank.length ? strength(a.rank[0]) + ' first' : '';
+            } else if (q.type === 'multi') {
+                const picked = a[q.id].map(id => q.options.find(o => o.id === id)).filter(Boolean);
+                if (picked.length === 1) text = picked[0].chip || picked[0].label;
+                else if (picked.length > 1) text = picked[0].label + ' +' + (picked.length - 1);
+            } else {
+                const option = q.options.find(o => o.id === a[q.id]);
+                text = option ? (option.chip || option.label) : '';
+            }
+            return { step, id: q.id, title: q.title, text };
+        }).filter(chip => chip.text);
+    }
+
     /** Applies one tap to the answers and returns the new answers (pure). */
     function tap(answers, questionId, optionId) {
         const a = cleanAnswers(answers);
@@ -489,7 +627,7 @@
             if (a.rank.length === DEFAULT_RANK.length - 1) a.rank = a.rank.concat(DEFAULT_RANK.filter(id => !a.rank.includes(id)));
             return a;
         }
-        if (!optionIds(questionId).includes(optionId)) return a;
+        if (!optionsFor(questionId, a).some(o => o.id === optionId)) return a;
         if (q.type === 'multi') {
             const option = q.options.find(o => o.id === optionId);
             let list = a[questionId].slice();
@@ -500,7 +638,7 @@
             return a;
         }
         a[questionId] = optionId;
-        return a;
+        return cleanAnswers(a);
     }
 
     // ---------- Page (browser only) ----------
@@ -568,9 +706,14 @@
         const data = opts.data;
         const store = opts.store;
         const progress = opts.progress || progressApi();
-        const state = { step: 0, answers: cleanAnswers(null), view: 'quiz' };
+        const state = { step: 0, answers: cleanAnswers(null), view: 'quiz', editing: false };
         let touched = false;
         let advanceTimer = null;
+        let uid = 0;
+        // One quiet announcement per screen; the card itself is re-drawn, so it never carries aria-live.
+        const live = h('p', { class: 'cvr-sr', role: 'status', 'aria-live': 'polite' });
+        const view = h('div', { class: 'cvr-view' });
+        el.replaceChildren(live, view);
 
         function loadFromStore() {
             const saved = store ? store.get() : {};
@@ -581,6 +724,7 @@
             }
             const complete = isComplete(state.answers);
             state.view = saved.done && complete ? 'result' : 'quiz';
+            state.editing = false;
             state.step = Math.min(Number.isInteger(saved.step) ? saved.step : firstUnanswered(saved.answers), QUESTIONS.length - 1);
             if (state.step > firstUnanswered(state.answers)) state.step = Math.min(firstUnanswered(state.answers), QUESTIONS.length - 1);
         }
@@ -599,12 +743,19 @@
             render(true);
         }
 
+        /** From the result: open one question, then come straight back to the result. */
+        function edit(step) {
+            state.editing = true;
+            go(step);
+        }
+
         function finish() {
             touched = true;
             win.clearTimeout(advanceTimer);
             if (!isComplete(state.answers)) { go(firstUnanswered(state.answers)); return; }
             const result = recommend(state.answers, data);
             state.view = 'result';
+            state.editing = false;
             persist({ done: true, situation: result.situation, savedAt: new Date().toISOString() });
             if (progress) {
                 try {
@@ -619,18 +770,15 @@
             touched = true;
             state.answers = tap(state.answers, q.id, optionId);
             persist();
-            if (q.type === 'single') {
-                render(false);
-                win.clearTimeout(advanceTimer);
-                const from = state.step;
-                advanceTimer = win.setTimeout(() => {
-                    if (state.view !== 'quiz' || state.step !== from) return;
-                    if (from === QUESTIONS.length - 1) finish();
-                    else go(from + 1);
-                }, 160);
-            } else {
-                render(false);
-            }
+            render(false);
+            if (q.type !== 'single') return;
+            win.clearTimeout(advanceTimer);
+            const from = state.step;
+            advanceTimer = win.setTimeout(() => {
+                if (state.view !== 'quiz' || state.step !== from) return;
+                if (state.editing || from === QUESTIONS.length - 1) finish();
+                else go(from + 1);
+            }, 160);
         }
 
         function stepBar() {
@@ -665,7 +813,7 @@
         function optionList(q) {
             const value = state.answers[q.id];
             const multi = q.type === 'multi';
-            const items = q.options.map(o => {
+            const items = optionsFor(q.id, state.answers).map(o => {
                 const on = multi ? value.includes(o.id) : value === o.id;
                 return h('button', {
                     type: 'button',
@@ -684,9 +832,10 @@
             const q = QUESTIONS[state.step];
             const answered = isAnswered(q.id, state.answers);
             const last = state.step === QUESTIONS.length - 1;
+            const toResult = last || state.editing;
             const showNext = q.type !== 'single' || answered;
             const heading = h('h2', { class: 'cvr-q', tabindex: '-1', text: q.title });
-            const card = h('section', { class: 'cvr-card ap-card', 'aria-live': 'polite' }, [
+            const card = h('section', { class: 'cvr-card ap-card', 'aria-label': 'Question ' + (state.step + 1) + ' of ' + QUESTIONS.length }, [
                 stepBar(),
                 heading,
                 q.hint ? h('p', { class: 'cvr-hint', text: q.hint }) : null,
@@ -698,24 +847,26 @@
                     state.step > 0 ? h('button', { type: 'button', class: 'ap-btn is-secondary', onclick: () => go(state.step - 1) }, 'Back') : h('span'),
                     showNext ? h('button', {
                         type: 'button', class: 'ap-btn', disabled: answered ? null : true,
-                        onclick: () => (last ? finish() : go(state.step + 1))
-                    }, last ? 'Show my CV' : 'Next') : null
+                        onclick: () => (toResult ? finish() : go(state.step + 1))
+                    }, toResult ? 'Show my CV' : 'Next') : null
                 ])
             ]);
-            el.replaceChildren(card);
+            view.replaceChildren(card);
             if (focus) {
+                live.textContent = 'Question ' + (state.step + 1) + ' of ' + QUESTIONS.length + ': ' + q.title;
                 try { heading.focus({ preventScroll: true }); } catch (_) { heading.focus(); }
-                if (win.scrollTo) { try { win.scrollTo({ top: 0, behavior: 'auto' }); } catch (_) { /* jsdom */ } }
+                if (win.scrollTo) { try { win.scrollTo({ top: 0, behavior: 'auto' }); } catch (_) { /* old browsers */ } }
             }
         }
 
         function paper(result) {
-            const blocks = result.blocks.map((b, i) => h('li', { class: 'cvr-block' + (b.lead ? ' is-lead' : '') + (b.id === 'header' ? ' is-header' : '') }, [
+            const blocks = result.blocks.map((b, i) => h('li', { class: 'cvr-block' + (b.lead ? ' is-lead' : '') + (b.note ? ' is-last' : '') + (b.id === 'header' ? ' is-header' : '') }, [
                 h('span', { class: 'cvr-pen', 'aria-hidden': 'true', text: String(i + 1) }),
                 h('div', { class: 'cvr-block-body' }, [
                     h('span', { class: 'cvr-block-head' }, [
                         h('span', { class: 'cvr-block-label', text: b.label }),
-                        b.lead ? h('span', { class: 'cvr-lead-note', text: result.leadNote }) : null
+                        b.lead ? h('span', { class: 'cvr-lead-note', text: result.leadNote }) : null,
+                        b.note ? h('span', { class: 'cvr-lead-note is-last', text: b.note }) : null
                     ]),
                     h('span', { class: 'cvr-block-example', text: b.example }),
                     h('span', { class: 'cvr-lines', 'aria-hidden': 'true' }, [h('i'), h('i')])
@@ -727,23 +878,44 @@
             ]);
         }
 
-        function variantCard(v) {
-            const text = v.lines.join('\n');
-            const copyBtn = v.lines.length ? h('button', {
-                type: 'button', class: 'cvr-copy',
+        function copyButton(label, text) {
+            return h('button', {
+                type: 'button', class: 'cvr-copy', 'aria-label': 'Copy: ' + label,
                 onclick: event => {
                     const btn = event.currentTarget;
                     copyText(win, text).then(ok => {
                         btn.textContent = ok ? 'Copied' : 'Select and copy';
+                        if (!ok) {
+                            const body = btn.closest('.cvr-variant').querySelector('.cvr-variant-body');
+                            const toggle = btn.closest('.cvr-variant').querySelector('.cvr-variant-toggle');
+                            if (body && toggle) { body.hidden = false; toggle.setAttribute('aria-expanded', 'true'); }
+                        }
                         win.setTimeout(() => { btn.textContent = 'Copy'; }, 1600);
                     });
                 }
-            }, 'Copy') : null;
-            return h('li', { class: 'cvr-variant ap-sticky' }, [
-                h('strong', { text: v.label }),
+            }, 'Copy');
+        }
+
+        /** One line to add: its label and Copy on one row; the line, its note and "If asked" open on a tap. */
+        function variantCard(v) {
+            const text = v.lines.join('\n');
+            const id = 'cvr-v-' + (++uid);
+            const body = h('div', { class: 'cvr-variant-body', id, hidden: true }, [
+                v.lines.length ? h('code', { class: 'cvr-line', text }) : null,
                 v.note ? h('p', { class: 'cvr-variant-note', text: v.note }) : null,
-                v.lines.length ? h('div', { class: 'cvr-line' }, [h('code', { text: text }), copyBtn]) : null,
                 v.ask ? h('p', { class: 'cvr-ask' }, [h('span', { text: 'If asked: ' }), v.ask]) : null
+            ]);
+            const toggle = h('button', {
+                type: 'button', class: 'cvr-variant-toggle', 'aria-expanded': 'false', 'aria-controls': id,
+                onclick: () => {
+                    const open = toggle.getAttribute('aria-expanded') !== 'true';
+                    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+                    body.hidden = !open;
+                }
+            }, [h('span', { class: 'cvr-variant-label', text: v.label }), h('span', { class: 'cvr-chev', 'aria-hidden': 'true' })]);
+            return h('li', { class: 'cvr-variant' + (v.id === 'msc-line' ? ' is-msc' : '') }, [
+                h('div', { class: 'cvr-variant-row' }, [toggle, v.lines.length ? copyButton(v.label, text) : null]),
+                body
             ]);
         }
 
@@ -754,13 +926,25 @@
             });
         }
 
+        function answerSummary() {
+            const chips = answerChips(state.answers).map(chip => h('button', {
+                type: 'button', class: 'cvr-chip', 'aria-label': 'Change: ' + chip.title + ' (now ' + chip.text + ')',
+                onclick: () => edit(chip.step)
+            }, chip.text));
+            return h('section', { class: 'cvr-answers', 'aria-label': 'Your answers' }, [
+                h('h2', { class: 'ap-h2', text: 'Your answers' }),
+                h('p', { class: 'cvr-hint', text: 'Tap one to change it.' }),
+                h('div', { class: 'cvr-chips' }, chips)
+            ]);
+        }
+
         function renderResult(focus) {
             const result = recommend(state.answers, data);
             const title = h('h1', { class: 'cvr-result-title', tabindex: '-1' }, [
                 h('span', { class: 'cvr-badge', text: result.situation }),
                 h('span', {}, [result.heading.before, h('span', { class: 'ap-mark', text: result.heading.mark }), result.heading.after])
             ]);
-            const designCard = result.design ? h('div', { class: 'cvr-design ap-card' }, [
+            const design = result.design ? h('div', { class: 'cvr-design' }, [
                 h('span', { class: 'cvr-kicker', text: 'Suggested design' }),
                 h('p', { class: 'cvr-design-name' }, [
                     h('span', { class: 'cvr-design-no', text: 'No. ' + result.design.number }),
@@ -768,12 +952,18 @@
                     result.design.tag ? h('span', { class: 'cvr-tag' + (result.design.portalSafe ? ' is-portal' : ''), text: result.design.tag }) : null
                 ]),
                 result.design.line ? h('p', { class: 'cvr-design-line', text: result.design.line }) : null,
-                safeHref(result.designLink) ? h('a', { class: 'ap-link', href: result.designLink }, 'See it in CV templates') : null,
+                safeHref(result.designLink) ? h('a', { class: 'ap-link cvr-design-link', href: result.designLink }, 'See it in CV templates') : null,
                 result.portal ? h('p', { class: 'cvr-portal', text: result.portal.text }) : null
             ]) : null;
-            const lines = result.variants.length ? h('section', { class: 'cvr-variants-wrap' }, [
+            const pick = h('section', { class: 'cvr-pick ap-card', 'aria-label': 'Your order and design' }, [
+                safeHref(result.seeIt.href) ? h('a', { class: 'ap-btn is-block', href: result.seeIt.href }, result.seeIt.label) : null,
+                result.builder ? h('p', { class: 'cvr-saved', text: 'The CV Builder opens with this order and design.' }) : null,
+                design
+            ]);
+            const cards = [result.mscLine].concat(result.variants).filter(Boolean);
+            const lines = cards.length ? h('section', { class: 'cvr-variants-wrap' }, [
                 h('h2', { class: 'ap-h2', text: 'Add these lines' }),
-                h('ul', { class: 'cvr-variants' }, result.variants.map(variantCard))
+                h('ul', { class: 'cvr-variants' }, cards.map(variantCard))
             ]) : null;
             const thin = result.thinProof ? h('div', { class: 'cvr-note is-thin' }, [
                 h('strong', { text: result.thinProof.label }), ' ' + result.thinProof.text + ' ',
@@ -783,38 +973,29 @@
                 h('strong', { text: result.unsure.label }), ' ' + result.unsure.text + ' ',
                 result.unsure.link ? h('span', { class: 'cvr-note-links' }, linkList([result.unsure.link])) : null
             ]) : null;
-            const actions = h('div', { class: 'cvr-actions' }, [
-                safeHref(result.seeIt.href) ? h('a', { class: 'ap-btn is-block', href: result.seeIt.href }, result.seeIt.label) : null,
-                h('p', { class: 'cvr-saved', text: 'The CV Builder opens with this order and design.' })
-            ]);
-            const view = h('div', { class: 'cvr-result' }, [
+            const out = h('div', { class: 'cvr-result' }, [
                 h('header', { class: 'cvr-result-head' }, [
                     h('span', { class: 'cvr-kicker', text: 'Your CV order' }),
                     title,
                     h('p', { class: 'cvr-reason', text: result.reason })
                 ]),
                 h('div', { class: 'cvr-result-grid' }, [
+                    pick,
                     h('div', { class: 'cvr-col-paper' }, [paper(result)]),
-                    h('div', { class: 'cvr-col-side' }, [
-                        actions,
-                        designCard,
-                        thin,
-                        unsure,
-                        lines,
-                        h('button', { type: 'button', class: 'ap-btn is-secondary is-block cvr-change', onclick: () => go(0) }, 'Change my answers')
-                    ])
+                    h('div', { class: 'cvr-col-side' }, [thin, unsure, lines, answerSummary()])
                 ])
             ]);
-            el.replaceChildren(view);
+            view.replaceChildren(out);
             if (focus) {
+                live.textContent = 'Your CV order: ' + result.heading.before + result.heading.mark + result.heading.after;
                 try { title.focus({ preventScroll: true }); } catch (_) { title.focus(); }
-                if (win.scrollTo) { try { win.scrollTo({ top: 0, behavior: 'auto' }); } catch (_) { /* jsdom */ } }
+                if (win.scrollTo) { try { win.scrollTo({ top: 0, behavior: 'auto' }); } catch (_) { /* old browsers */ } }
             }
         }
 
         function render(focus) {
             const quiz = state.view === 'quiz';
-            if (opts.heroEl) opts.heroEl.classList.toggle('ap-hidden', !(quiz && state.step === 0));
+            if (opts.heroEl) opts.heroEl.classList.toggle('ap-hidden', !(quiz && state.step === 0 && !state.editing));
             if (opts.mainEl) opts.mainEl.classList.toggle('is-wide', !quiz);
             if (quiz) renderQuiz(focus);
             else renderResult(focus);
@@ -823,6 +1004,8 @@
         loadFromStore();
         render(false);
         if (store && store.subscribe) {
+            // Answers synced from the account (or another tab) arrive after the first paint: show them unless the
+            // student has already started tapping here.
             store.subscribe((value, meta) => {
                 const source = meta && meta.source;
                 if (touched || source === 'local') return;
@@ -834,14 +1017,15 @@
             state: () => JSON.parse(JSON.stringify(state)),
             render,
             go,
+            edit,
             finish
         };
     }
 
     return Object.freeze({
-        TOOL, SITUATION_CODES, STRENGTHS, QUESTIONS, OWN_PROJECTS,
-        cleanAnswers, ruleAnswers, isAnswered, firstUnanswered, isComplete, proofCount, tap,
-        chooseSituation, personaliseOrder, leadBlock, variantIdsFor, variantsFor, thinProofFor,
+        TOOL, SITUATION_CODES, STRENGTHS, QUESTIONS, OWN_PROJECTS, STRENGTH_OF, DESIGNS_URL,
+        cleanAnswers, ruleAnswers, isAnswered, firstUnanswered, isComplete, proofCount, tap, optionsFor, answerChips,
+        chooseSituation, planOrder, personaliseOrder, marksRankedLow, variantIdsFor, variantsFor, thinProofFor, exampleFor,
         normaliseDesigns, suggestDesign, portalDesign, recommend, toCvPick, mount
     });
 });

@@ -39,9 +39,9 @@
     var BASE = '/articleship-program/cv-recommender/';
     var app = document.getElementById('app');
 
-    function getJson(path) {
-        return fetch(BASE + path, { cache: 'no-cache' }).then(function (res) {
-            if (!res.ok) throw new Error(path + ' ' + res.status);
+    function getJson(url) {
+        return fetch(url, { cache: 'no-cache' }).then(function (res) {
+            if (!res.ok) throw new Error(url + ' ' + res.status);
             return res.json();
         });
     }
@@ -62,7 +62,8 @@
     }
 
     function start() {
-        Promise.all([getJson('situations.json'), getJson('designs.json').catch(function () { return { designs: [] }; })])
+        // One design list for both tools: the CV Builder's (numbered as in the CV templates look-book).
+        Promise.all([getJson(BASE + 'situations.json'), getJson(MSCCvRecommender.DESIGNS_URL).catch(function () { return { designs: [] }; })])
             .then(function (parts) {
                 var data = parts[0];
                 data.designs = parts[1];
