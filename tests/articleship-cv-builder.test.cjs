@@ -262,7 +262,9 @@ test('sample applicants keep the house rules (fictional, honest, rule-2 lines, t
             const line = B.plainText(item.name);
             const kind = B.classifyCertification(item);
             if (kind === 'msc-simulation') assert.match(line, /^[A-Z][A-Za-z& ]+ Work Simulation, MSC Articleship Program \| \[Month Year\]: /, `${id}: ${line}`);
-            if (kind === 'msc-program') assert.equal(line, B.PROGRAM_LINE_DONE, `${id}: Padam's exact programme line`);
+            // The Nothing CV (H) shows the line a student writes while still in the programme, "MSC Articleship Program (ongoing)";
+            // Padam's completed line (B7) replaces it once they finish (WIRING.md, cv-recommender / cv-builder, 21 Oct).
+            if (kind === 'msc-program') assert.ok([B.PROGRAM_LINE_ONGOING, B.PROGRAM_LINE_DONE].includes(line), `${id}: the ongoing line or Padam's exact completed line: ${line}`);
             if (kind === 'outside') assert.match(line, /(\(Forage\)|Test, Level 1 \(NISM\)) \| \[Month Year\]: /, `${id}: ${line}`);
         });
         const flags = B.checkCv(cv).map(f => f.id).filter(flagId => !['brackets', 'months'].includes(flagId));
