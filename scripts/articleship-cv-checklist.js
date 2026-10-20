@@ -65,7 +65,26 @@
     function releaseContent(content, live) {
         const progress = progressApi();
         if (!content || !progress || typeof progress.releaseContent !== 'function') return content;
-        return progress.releaseContent(content, { workSimulationLive: typeof live === 'boolean' ? live : WORK_SIMULATION_LIVE });
+        const on = typeof live === 'boolean' ? live : WORK_SIMULATION_LIVE;
+        return progress.releaseContent(on ? withWorkSimulationLines(content) : content, { workSimulationLive: on });
+    }
+
+    /**
+     * Release 2: a check's "work_simulation": { "replace": { release-1 line: release-2 line } } swaps that example line
+     * (the PDF and sheet twins of row 1.8 do the same). Release 1 never calls this; its work_simulation keys are dropped
+     * by the shared release filter.
+     */
+    function withWorkSimulationLines(content) {
+        if (!content || !Array.isArray(content.items)) return content;
+        const copy = clone(content);
+        copy.items.forEach(item => {
+            const swap = item && item.work_simulation && item.work_simulation.replace;
+            if (!swap || typeof swap !== 'object') return;
+            const swapLine = line => (typeof line === 'string' && Object.prototype.hasOwnProperty.call(swap, line)) ? String(swap[line]) : line;
+            if (Array.isArray(item.example)) item.example = item.example.map(swapLine);
+            else if (typeof item.example === 'string') item.example = item.example.split('\n').map(swapLine).join('\n');
+        });
+        return copy;
     }
 
     function checklistEngine(options) {

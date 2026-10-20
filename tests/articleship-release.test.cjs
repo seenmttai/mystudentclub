@@ -286,7 +286,14 @@ test('release 2 (flag flipped): every Work Simulation part is back in every tool
     assert.match(prompt, /Vouched 25 purchase bills/, 'earned lines are probed');
 
     const C = RELEASE_2.checklist;
-    assert.deepEqual(C.releaseContent(CONTENT.checklist), CONTENT.checklist, 'every check as written');
+    // Release 2 draws every check as written, with each work_simulation.replace line swapped in (as the PDF's -ws twin).
+    const swapped = JSON.parse(JSON.stringify(CONTENT.checklist));
+    swapped.items.forEach(item => {
+        const swap = (item.work_simulation || {}).replace || {};
+        if (Array.isArray(item.example)) item.example = item.example.map(line => (line in swap ? swap[line] : line));
+    });
+    assert.deepEqual(C.releaseContent(CONTENT.checklist), swapped, 'every check as written');
+    assert.match(JSON.stringify(C.releaseContent(CONTENT.checklist)), /Statutory audit Work Simulation: flagged 3 cut-off errors/);
 });
 
 test('release 2 (flag flipped): the LinkedIn checklist follows the same flag', { skip: !('WORK_SIMULATION_LIVE' in SHIPPED.linkedin) && 'its release build is not committed yet' }, () => {

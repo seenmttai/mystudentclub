@@ -47,6 +47,7 @@ const SPEC_ORDER = ['Set-up', 'Header', 'Education', 'Proof', 'Finish'];
 
 test('content: 22 checks in build order, every one with an example, links that render', () => {
     const model = C.normalise(CONTENT);
+    const raw0 = id => CONTENT.items.find(item => item.id === id);
     assert.equal(model.total, 22, '"14 of 22 done": the MSCIT-parity count');
     assert.deepEqual(model.sections.map(s => s.title), SPEC_ORDER, 'set-up → header → education → proof → finish');
     model.items.forEach(item => assert.ok(item.example.length > 20, 'example for ' + item.id));
@@ -62,13 +63,15 @@ test('content: 22 checks in build order, every one with an example, links that r
     const byId = Object.fromEntries(model.items.map(item => [item.id, item]));
     assert.match(byId['one-page'].check, /never shrunk/);
     assert.match(byId['file-name'].example, /Riya Sharma - Articleship CV - Audit\.pdf/, 'same file-name pattern as Guidebook ch 3 and Automail');
-    assert.match(byId['nothing-personal'].check, /photo.*date of birth.*father’s name.*Declaration/);
+    assert.match(byId['nothing-personal'].check, /photo.*date of birth.*parents’ names.*Declaration/);
     assert.match(byId['groups-attempts'].example, /Result awaited/);
-    assert.match(byId['certifications'].check, /Certifications and job simulations”, four outside certificates at most/);
+    assert.match(byId['certifications'].check, /in their own section, four at most/);
+    assert.match(byId['certifications'].example, /Heading “Certifications and job simulations”/);
+    assert.match(byId['certifications'].example, /MSC Articleship Program line isn’t one of them/, 'house rule 2: the programme line is not one of the four');
     assert.match(byId['assisted'].check, /Assisted/);
     assert.match(byId['two-questions'].check, /two questions/);
     // The claim → question drill, every ready example (skills, simulations, hobbies, roles): the full harvest list.
-    ['Excel', 'Tally Prime', 'SAP', 'ICITSS', 'CARO 2020', 'PwC US Audit Job Simulation', 'Work Simulation', 'Reading', 'Trekking',
+    ['Excel', 'Tally Prime', 'SAP', 'ICITSS', 'CARO 2020', 'PwC US Audit Job Simulation', 'Reading', 'Trekking',
         'Captain, cricket team', 'Volunteer teacher', 'Last read']
         .forEach(claim => assert.ok(byId['two-questions'].example.includes(claim), 'two-question example: ' + claim));
     const probes = byId['two-questions'].example.split('\n').filter(line => line.includes(' → '));
@@ -92,7 +95,7 @@ test('content: 22 checks in build order, every one with an example, links that r
     // The ten fixes reviewers make most, all ten, with a bold example that shows how bold is used.
     const bold = byId['bold-and-even'];
     assert.equal(bold.check, 'Bold only the key result; fonts, spacing and dates even');
-    assert.equal((bold.example.match(/^\d+\. /gm) || []).length, 10);
+    assert.equal((bold.example.match(/^\d+\. /gm) || []).length, 6);
     assert.match(bold.example, /^✅ [^*\n]+\*\*[^*\n]+\*\*[^*\n]+$/m, '✅ only the result in bold');
     assert.match(bold.example, /^❌ \*\*[^*\n]+\*\*$/m, '❌ a whole line in bold');
     // Each point in one place: mixed fonts is fix no. 1, not repeated in check 1.
@@ -101,15 +104,14 @@ test('content: 22 checks in build order, every one with an example, links that r
     const remarkLines = byId['remarks'].example.split('\n');
     assert.ok(remarkLines.some(l => /^✅ CA Intermediate row: /.test(l) && !/Accountancy/.test(l)));
     assert.ok(remarkLines.some(l => /^✅ Class XII row: /.test(l) && !/Taxation/.test(l)));
-    assert.match(byId['line-formula'].example, /Every number must be one you can show a record for\./);
+    assert.match(byId['line-formula'].example, /cleared ₹38,000 of unmatched entries/, 'a line ends on what came of it');
     assert.doesNotMatch(CONTENT_TEXT, /No record, no number/);
     // One wording for anything unfinished.
     assert.doesNotMatch(CONTENT_TEXT, /In progress/i);
     assert.match(byId['icitss'].example, /Ongoing, completes \[Month Year\]/);
-    assert.match(byId['certifications'].example, /Ongoing, completes \[Month Year\]/);
-    assert.match(byId['certifications'].example, /“MSC Articleship Program \(ongoing\)”/);
-    assert.ok(byId['certifications'].example.includes('“Completed MSC Articleship Program — foundational understanding of work and tasks across all domains”'),
-        'the MSC line in Padam’s exact words');
+    // Line formats for simulations, courses and the MSC line live in Guidebook ch 3 q19 (one home); the check links there.
+    assert.match(raw0('certifications').fix.href, /resource=MSC\+Articleship\+Guidebook&page=\d+/);
+    assert.equal(raw0('certifications').fix.find, 'Where do job simulations and certificates go?');
     // The intro never carries a hard count.
     assert.doesNotMatch(CONTENT.intro, /\d/);
 
@@ -120,26 +122,28 @@ test('content: 22 checks in build order, every one with an example, links that r
     assert.ok(frontProbes.length >= 3 && frontProbes.length <= 4, '3-4 probes before the fold: ' + frontProbes.length);
     assert.deepEqual(groups.folds.map(f => f.title), ['More questions', 'Skills and interests that survive']);
     assert.ok(groups.main.length <= 6, 'check 17 shows at most 6 lines before its folds');
-    assert.deepEqual(groups.folds[1].lines.map(line => line.split(' ')[0]), ['❌', '✅', '❌', '✅'], 'the skills and interests pairs, together');
-    assert.match(groups.main[groups.main.length - 1], /^Can’t answer both\?/);
+    assert.deepEqual(groups.folds[1].lines.map(line => line.split(' ')[0]), ['❌', '✅', '❌', '✅', 'Keep'], 'the skills and interests pairs, together, then the interests rule');
+    assert.doesNotMatch(byId['two-questions'].example, /Can’t answer both/, 'the rule lives in the sticky and the table lead');
+    assert.match(groups.folds[1].lines.join('\n') + '\n' + groups.main.join('\n') + '\n' + byId['two-questions'].example, /Keep an interest only if you still do it/);
     const tenFixes = CV.exampleGroups(byId['bold-and-even'].example);
-    assert.deepEqual(tenFixes.folds.map(f => [f.title, f.lines.length]), [['Ten fixes reviewers make most', 10]]);
-    assert.ok(tenFixes.main.length <= 3, 'the bold lesson stays short');
+    assert.deepEqual(tenFixes.folds.map(f => [f.title, f.lines.length]), [['Six more fixes reviewers make', 6]]);
+    assert.ok(tenFixes.main.length <= 4, 'the bold lesson stays short');
+    // Check 18's own rule: full stops on every fix or on none (none).
+    tenFixes.folds[0].lines.forEach(line => assert.doesNotMatch(line, /\.$/, line));
+    assert.match(byId['bold-and-even'].example, /Dates on one tab stop at the right edge, in one format everywhere/);
     // Each fold marker is a line of its own in the JSON (the sheet generator leaves it out of the sheet).
     CONTENT.items.forEach(item => item.example.filter(line => line.includes(CV.FOLD_MARK)).forEach(line => assert.ok(line.startsWith(CV.FOLD_MARK), line)));
-    // Read it from the bottom line up: said once (fix 10), not again in the phone-and-print check.
+    // Read it from the bottom line up: said once, in the phone-and-print check.
     assert.equal((CONTENT_TEXT.match(/bottom line up/g) || []).length, 1);
-    assert.match(tenFixes.folds[0].lines[9], /^10\. One spelling or full-stop slip → Read it once from the bottom line up, on paper$/);
     // A check every correct CV can pass: an A4 page never reads "without zooming" on a phone.
     const phone = byId['phone-and-print'];
-    assert.equal(phone.check, 'Opened on your phone from your mail: still one page, nothing cut off or overlapping, links open. Printed once on A4: clear in black and white');
+    assert.equal(phone.check, 'Phone and printout: still one page, nothing cut off');
     assert.doesNotMatch(CONTENT_TEXT, /without zoom|pinch/i);
-    assert.match(phone.example, /Never shrink the font/);
-    // House rule 2's two line formats, where the student writes the line.
-    const certs = raw['certifications'].example;
-    assert.ok(certs.includes('Job simulation: [Company] [Simulation] Job Simulation (Forage) | [Month Year]: [what you did]'));
-    assert.ok(certs.includes('Work Simulation: [Domain] Work Simulation, MSC Articleship Program | [Month Year]: [what you did]'));
-    assert.ok(certs.some(line => /^✅ PwC US Audit Job Simulation \(Forage\) \| \[Month Year\]: /.test(line)));
+    assert.match(phone.example, /black and white/);
+    // Never shrink the font: said once, in check 2 (its home), not again in check 20.
+    assert.doesNotMatch(phone.example, /shrink/);
+    // House rule 2: four outside certificates at most, the MSC programme line not one of them.
+    assert.ok(raw['certifications'].example.some(line => /Four outside certificates at most; the MSC Articleship Program line isn’t one of them\./.test(line)));
     // No first person on a CV line or an objective.
     assert.doesNotMatch(byId['objective'].example, /✅[^\n]*\b(?:my|I)\b/);
     assert.doesNotMatch(byId['line-formula'].example, /✅[^\n]*\b(?:my|I)\b/);
@@ -243,7 +247,7 @@ test('helpers: closing card, section list, next check', () => {
     assert.equal(before.links.length, 2, 'the next step shows before 100% too');
     const all = Object.fromEntries(model.items.map(i => [i.id, true]));
     const after = CV.endState(C.summarise(model, all), model.done);
-    assert.deepEqual([after.complete, after.title], [true, 'Your CV is ready']);
+    assert.deepEqual([after.complete, after.title], [true, 'All 22 ticked? Your CV is ready']);
     const nav = CV.navItems(model, C.summarise(model, { 'built-in-builder': true, 'one-page': true, 'file-name': true }));
     assert.deepEqual(nav.map(n => [n.title, n.count, n.complete]),
         [['Set-up', '3/3', true], ['Header', '0/5', false], ['Education', '0/4', false], ['Proof', '0/5', false], ['Finish', '0/5', false]]);
@@ -262,7 +266,7 @@ test('start: ticks save, "14 of 22 done", jump to the next check, section counts
     const store = memoryStore({ ticks: {} });
     // The full content (release 2 draws every line); release 1's Work Simulation cut has its own test below.
     const page = CV.start({ container, nav, end, lede, content: CONTENT, store, workSimulationLive: true });
-    assert.equal(lede.textContent, '22 checks, in the order you build a CV. Tick a check only when your PDF passes it.');
+    assert.equal(lede.textContent, 'These are the 22 things I look at on every CV that reaches me, in the order you build one. Tick a check only when the PDF you will send passes it.');
     assert.equal(doc.querySelectorAll('.ap-cl-item').length, 22);
     assert.equal(doc.querySelector('.ap-progress-count').textContent, '0 of 22 done');
     const next = doc.querySelector('.cvc-next');
@@ -275,7 +279,7 @@ test('start: ticks save, "14 of 22 done", jump to the next check, section counts
 
     // Examples read line by line; the claim of a "claim → question" line is bold; text stays text.
     const probe = doc.querySelector('.ap-cl-item[data-id="two-questions"] .cvc-ex');
-    assert.equal(probe.querySelectorAll('p').length, 5, 'the method, three probes and the rule; the rest in folds');
+    assert.equal(probe.querySelectorAll('p').length, 4, 'the method and three probes; the rest in folds (the rule lives in the sticky and the table lead)');
     assert.equal(probe.querySelector('.cvc-ex-pair strong').textContent, 'Excel: XLOOKUP, PivotTables');
     [...doc.querySelectorAll('.ap-cl-example > p')].forEach(p => assert.ok(!p.textContent.includes('\n'), 'every multi-line example is split'));
     const injected = pageDom();
@@ -314,10 +318,10 @@ test('start: ticks save, "14 of 22 done", jump to the next check, section counts
     const card = doc.querySelector('.cvc-end-card');
     assert.ok(card.classList.contains('cvc-flash'));
     assert.equal(doc.activeElement, card.querySelector('a'), 'focus lands on Run CV Reviewer');
-    assert.equal(doc.activeElement.textContent, 'Run CV Reviewer');
+    assert.equal(doc.activeElement.textContent, 'Run the CV Reviewer');
     assert.ok(doc.querySelector('.cvc-end-card').classList.contains('is-complete'));
-    assert.equal(doc.querySelector('.cvc-end-title').textContent, 'Your CV is ready');
-    assert.equal(second.doc.querySelector('.cvc-end-title').textContent, 'Your CV is ready', 'other open copies follow');
+    assert.equal(doc.querySelector('.cvc-end-title').textContent, 'All 22 ticked? Your CV is ready');
+    assert.equal(second.doc.querySelector('.cvc-end-title').textContent, 'All 22 ticked? Your CV is ready', 'other open copies follow');
     page.destroy();
 });
 
@@ -480,7 +484,7 @@ test('examples: bold shows as bold (text only, never HTML); the file name follow
     const page = CV.start({ container, content: CONTENT, domains: () => domains });
     const boldBox = doc.querySelector('.ap-cl-item[data-id="bold-and-even"] .cvc-ex');
     assert.deepEqual([...boldBox.querySelectorAll('strong.cvc-ex-bold')].map(b => b.textContent),
-        ['₹4.2 lakh', 'Reconciled ₹4.2 lakh of vendor balances for 60 suppliers in Tally Prime']);
+        ['₹4.2 lakh', 'Reconciled ₹4.2 lakh of vendor balances for 60 suppliers']);
     assert.ok(!boldBox.textContent.includes('**'));
     const injected = pageDom();
     CV.start({ container: injected.container, content: { items: [{ check: 'x', example: '**<img src=x onerror=alert(1)>**' }] } });
@@ -515,7 +519,7 @@ test('screen readers: only the count is live (not "Jump to N"); every Example na
     assert.equal(labels.length, 22);
     assert.deepEqual(labels, CONTENT.items.map((_, i) => 'Example for check ' + (i + 1)));
     assert.deepEqual([...doc.querySelectorAll('.cvc-fold > summary')].map(s => s.getAttribute('aria-label')),
-        ['More questions, check 17', 'Skills and interests that survive, check 17', 'Ten fixes reviewers make most, check 18']);
+        ['More questions, check 17', 'Skills and interests that survive, check 17', 'Six more fixes reviewers make, check 18']);
 });
 
 test('untick all stamps each untick, so the other device’s older ticks do not come back', () => {
@@ -780,15 +784,15 @@ test('examples: "▸ Title" lines become folds of their own next to "Example", c
     assert.equal(more.querySelector('summary').textContent, 'More questions');
     assert.equal(more.open, false);
     const moreClaims = [...more.querySelectorAll('.cvc-ex-pair > strong')].map(b => b.textContent);
-    assert.deepEqual(moreClaims, ['SAP', 'ICITSS completed', 'CARO 2020', 'PwC US Audit Job Simulation', 'Reading', 'Trekking', 'Captain, cricket team', 'Volunteer teacher']);
+    assert.deepEqual(moreClaims, ['SAP', 'ICITSS completed', 'CARO 2020', 'PwC US Audit Job Simulation (Forage)', 'Reading', 'Trekking', 'Captain, cricket team', 'Volunteer teacher']);
     const main = two.querySelector('.ap-cl-example:not(.cvc-fold) .cvc-ex');
     assert.equal(main.querySelectorAll('.cvc-ex-pair').length, 3, 'three probes before the fold');
     assert.ok(!two.textContent.includes('▸'), 'the marker never shows');
     const bold = doc.querySelector('.ap-cl-item[data-id="bold-and-even"]');
     const ten = bold.querySelector('.cvc-fold');
-    assert.equal(ten.querySelector('summary').textContent, 'Ten fixes reviewers make most');
-    assert.equal(ten.querySelectorAll('.cvc-ex p').length, 10);
-    assert.equal(bold.querySelector('.ap-cl-example:not(.cvc-fold) .cvc-ex').querySelectorAll('p').length, 3);
+    assert.equal(ten.querySelector('summary').textContent, 'Six more fixes reviewers make');
+    assert.equal(ten.querySelectorAll('.cvc-ex p').length, 6);
+    assert.equal(bold.querySelector('.ap-cl-example:not(.cvc-fold) .cvc-ex').querySelectorAll('p').length, 4, '✅, ❌, the bold rule, the dates rule');
     const injected = pageDom();
     CV.start({ container: injected.container, content: { items: [{ check: 'x', example: ['a', '▸ <img src=x onerror=alert(1)>', '<b>y</b>'] }] } });
     assert.equal(injected.doc.querySelectorAll('img, b').length, 0);
@@ -806,19 +810,17 @@ test('release 1 (Work Simulation not out): every check, fold and link, with no W
     assert.equal(off.doc.querySelector('.ap-progress-count').textContent, '0 of 22 done');
     const two = off.doc.querySelector('.ap-cl-item[data-id="two-questions"]');
     const main = two.querySelector('.ap-cl-example:not(.cvc-fold) .cvc-ex');
-    assert.deepEqual([...main.querySelectorAll('.cvc-ex-pair > strong')].map(b => b.textContent), ['Excel: XLOOKUP, PivotTables', 'Tally Prime'],
-        'the two other probes before the fold');
+    assert.deepEqual([...main.querySelectorAll('.cvc-ex-pair > strong')].map(b => b.textContent), ['Excel: XLOOKUP, PivotTables', 'Tally Prime', 'Family shop GST: matched 40 purchase invoices to GSTR-2B'],
+        'release 1 swaps the Work Simulation probe for the family-shop GST probe');
     assert.match(main.textContent, /Read each line aloud/, 'the method stays');
-    assert.match(main.textContent, /Can’t answer both\?/, 'the rule stays');
-    assert.match(two.textContent, /Every job simulation on your CV: be ready to talk about each task for two minutes\./, 'the mixed line keeps its other half');
+    assert.match(two.textContent, /Keep an interest only if you still do it/, 'the interests rule stays');
     const certs = off.doc.querySelector('.ap-cl-item[data-id="certifications"]');
-    assert.match(certs.textContent, /Job simulation: \[Company\] \[Simulation\] Job Simulation \(Forage\)/);
-    assert.match(certs.textContent, /ICITSS stays in the education table\./);
+    assert.match(certs.textContent, /Heading “Certifications and job simulations”/);
+    assert.match(certs.textContent, /ICITSS stays in education\./);
 
     const on = pageDom();
     CV.start({ container: on.container, content: CONTENT, store: memoryStore({ ticks: {} }), workSimulationLive: true });
     assert.match(on.doc.body.textContent, /Statutory audit Work Simulation: flagged 3 cut-off errors/);
-    assert.match(on.doc.body.textContent, /\[Domain\] Work Simulation, MSC Articleship Program/);
     // With no option, the page draws the shared switch.
     const shipped = pageDom();
     CV.start({ container: shipped.container, content: CONTENT, store: memoryStore({ ticks: {} }) });
