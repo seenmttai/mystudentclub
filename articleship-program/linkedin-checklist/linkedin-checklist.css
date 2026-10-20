@@ -1,0 +1,153 @@
+/*
+ * LinkedIn profile checklist (row 3.1): the page around the shared checklist engine.
+ * Base look: /articleship-program/shared/articleship-tools.css. Phone first; two columns from 960 px.
+ */
+.lc-day {
+    margin: 0 0 2px;
+    color: var(--ap-accent);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+/* Phone: open card, then the list, then the notes. */
+.lc-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "open" "list" "notes";
+    gap: 14px;
+}
+.lc-side { display: contents; }
+.lc-open { grid-area: open; }
+.lc-list { grid-area: list; min-width: 0; }
+.lc-notes { grid-area: notes; display: grid; gap: 12px; }
+
+.lc-open {
+    display: grid;
+    gap: 8px;
+    padding: 14px;
+}
+.lc-open-btn { gap: 10px; }
+.lc-open-btn::before {
+    content: 'in';
+    display: inline-grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
+    background: #fff;
+    color: var(--ap-primary);
+    font: 800 13px/1 var(--ap-sans);
+    letter-spacing: -0.02em;
+}
+.lc-open-btn::after { content: '\2197'; font-weight: 700; }
+.lc-open-hint { margin: 0; color: var(--ap-muted); font-size: 13px; line-height: 1.45; text-align: center; }
+
+/* External fix links say they leave the page. */
+.lc-list .ap-cl-fix[target="_blank"]::after { content: '\2197'; }
+
+/* Copy boxes inside the examples: white, so they read as "the text you take away". */
+.lc-copy {
+    margin: 8px 0 6px;
+    background: var(--ap-panel);
+    border: 1px solid var(--ap-border-dark);
+    border-radius: 10px;
+    padding: 10px 12px 8px;
+}
+.lc-copy-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
+.lc-copy-label { font-family: var(--ap-hand); font-weight: 700; font-size: 20px; line-height: 1.1; color: var(--ap-navy); }
+.lc-copy-btn {
+    flex: 0 0 auto;
+    min-height: 36px;
+    min-width: 76px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--ap-primary);
+    background: var(--ap-primary-light);
+    color: var(--ap-primary);
+    font: 600 14px/1 var(--ap-sans);
+    cursor: pointer;
+}
+.lc-copy-btn:hover { background: #dbe7ff; }
+.lc-copy-btn:focus-visible { outline: 3px solid color-mix(in srgb, var(--ap-primary) 40%, transparent); outline-offset: 2px; }
+.lc-copy-btn.is-done { background: var(--ap-success-light); border-color: var(--ap-success); color: var(--ap-success); }
+.ap-cl-example .lc-copy-text,
+.lc-copy-text {
+    margin: 0;
+    padding: 0;
+    background: none;
+    border-radius: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--ap-ink);
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}
+.ap-cl-example .lc-copy-status,
+.lc-copy-status { margin: 2px 0 0; padding: 0; background: none; min-height: 0; font-size: 12.5px; color: var(--ap-success); }
+.lc-copy-status:empty { display: none; }
+
+/* Examples, line by line, on the yellow sticky (the engine's single paragraph is redrawn by the page script). */
+.lc-example {
+    margin: 4px 0 6px;
+    padding: 12px 12px 10px;
+    background: var(--ap-sticky);
+    border-radius: 4px 4px 10px 4px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--ap-ink);
+}
+.ap-cl-example .lc-example p {
+    margin: 0;
+    padding: 0;
+    background: none;
+    border-radius: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+/* :is(p, blockquote) keeps these above the margin reset just above. */
+.ap-cl-example .lc-example > :is(p, blockquote) + :is(p, blockquote) { margin-top: 8px; }
+.ap-cl-example .lc-example > .has-gap { margin-top: 16px; }
+.lc-example strong { font-weight: 700; color: var(--ap-navy); }
+.lc-example .lc-line.is-good,
+.lc-example .lc-line.is-bad { padding-left: 1.6em; text-indent: -1.6em; }
+.lc-sample {
+    margin: 0;
+    padding: 10px 12px;
+    background: var(--ap-panel);
+    border-left: 3px solid var(--ap-accent);
+    border-radius: 2px 8px 8px 2px;
+}
+.ap-cl-example .lc-sample p + p { margin-top: 4px; }
+
+/* Examples hold LinkedIn addresses and headlines: let them wrap on a phone. */
+.lc-list .ap-cl-example p { overflow-wrap: anywhere; }
+
+.lc-note p { margin: 4px 0 0; }
+.lc-error { display: grid; gap: 12px; justify-items: start; }
+.lc-error p { margin: 0; }
+
+@media (min-width: 960px) {
+    .lc-layout {
+        grid-template-columns: minmax(0, 1fr) 300px;
+        grid-template-areas: "list side";
+        gap: 28px;
+        align-items: start;
+    }
+    .lc-side {
+        display: grid;
+        gap: 14px;
+        grid-area: side;
+        position: sticky;
+        top: 84px;
+    }
+    .lc-open, .lc-notes { grid-area: auto; }
+    .lc-list .ap-progress { top: 72px; }
+}
+
+@media print {
+    .lc-open, .lc-copy-btn { display: none; }
+    .lc-example { background: none; border: 1px solid #ccc; }
+    .ap-cl-example .lc-example p { border: 0; }
+    .lc-side { position: static; }
+}
