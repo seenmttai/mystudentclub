@@ -798,15 +798,14 @@
      "issuer": ""
     },
     {
-     "name": "MSC Articleship Program (ongoing)",
+     "name": "Completed MSC Articleship Program — foundational understanding of work and tasks across all domains",
      "issuer": ""
     }
    ],
-   "achievements": [
-    "Runner-up, inter-college commerce quiz (24 teams), [Year]."
-   ],
+   "achievements": [],
    "leadership": [
     "Presented our group’s case study to an Orientation Course batch of 60 (ICAI, [Month Year]).",
+    "Runner-up, inter-college commerce quiz (24 teams), [Year].",
     "Anchored my college’s annual day for 600 people and co-wrote the script, [Year].",
     "Home tutor: taught Accounts to 3 Class XI students for a year; all three scored above 80."
    ],
@@ -815,15 +814,22 @@
     "Reading business memoirs; last read: Shoe Dog"
    ],
    "customSections": [],
-   "sectionTitles": {},
-   "sectionLabels": {},
+   "sectionTitles": {
+    "leadership": "Extra-curriculars and Achievements"
+   },
+   "sectionLabels": {
+    "leadership": {
+     "text": "Extra-curriculars and Achievements",
+     "visible": true
+    }
+   },
    "sectionGroups": {},
    "themeAccent": "",
    "themeFont": "",
    "situation": "H",
    "work_simulation": {
     "summary": "<p>CA Intermediate cleared ([Month Year]), both groups in the first attempt; ICITSS completed. Completed PwC’s US audit and tax job simulations and vouched 20 purchase bills in MSC’s statutory audit Work Simulation. Looking for articleship with audit and tax exposure, to choose my domain from real work.</p>",
-    "certifications_insert_before": "MSC Articleship Program (ongoing)",
+    "certifications_insert_before": "Completed MSC Articleship Program — foundational understanding of work and tasks across all domains",
     "certifications": [
      {
       "name": "Statutory audit Work Simulation, MSC Articleship Program | [Month Year]: Vouched 20 purchase bills against PO, GRN and ledger around 31 March; flagged 3 cut-off and approval exceptions.",
