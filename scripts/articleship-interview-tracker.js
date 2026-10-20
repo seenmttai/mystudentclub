@@ -9,6 +9,11 @@
  * Progress: MSCArticleshipProgress store "interview-tracker" (device at once, account when the table exists).
  * "My domain" and the second choice are the programme's shared setting.
  *
+ * Release switch: MSCArticleshipProgress.WORK_SIMULATION_LIVE (the one flag in scripts/articleship-progress.js, read
+ * here as WORK_SIMULATION_LIVE). While false (release 1), the syllabus is drawn without the Work Simulation: a topic
+ * that is about it goes, and any other line loses the sentence that names it (MSCArticleshipProgress.releaseContent).
+ * Release 2 flips the shared flag and those lines are back.
+ *
  * Browser: window.MSCInterviewTracker. Node (tests): require('./scripts/articleship-interview-tracker.js').
  */
 (function (root, factory) {
@@ -21,6 +26,19 @@
 
     const TOOL = 'interview-tracker';
     const DAY = 4;
+
+    function progressApi() {
+        if (root && root.MSCArticleshipProgress) return root.MSCArticleshipProgress;
+        if (typeof require === 'function') {
+            try { return require('./articleship-progress.js'); } catch (_) { /* optional */ }
+        }
+        return null;
+    }
+    // Release 1 ships without the Work Simulation (row 1.6): no topic names it until the shared switch is true.
+    const WORK_SIMULATION_LIVE = (() => {
+        const progress = progressApi();
+        return Boolean(progress && progress.WORK_SIMULATION_LIVE === true);
+    })();
     const CONTENT_URL = '/articleship-program/interview-tracker/syllabus.json';
 
     /**
@@ -182,10 +200,14 @@
 
     /**
      * { sections: [{ id, part: core|domain|after, domain?, title, practise?, topics: [{ id, topic, know, most, read }] }],
-     *   ready, order, booklets: { row: title }, nightBefore, interviewDay } → a checked model.
+     *   ready, order, booklets: { row: title }, nightBefore, interviewDay } → a checked model, drawn for the release
+     *   (options.workSimulationLive, else the shared switch).
      */
-    function normaliseContent(content) {
-        const source = content || {};
+    function normaliseContent(content, options) {
+        const opts = options || {};
+        const live = typeof opts.workSimulationLive === 'boolean' ? opts.workSimulationLive : WORK_SIMULATION_LIVE;
+        const P = progressApi();
+        const source = (P && typeof P.releaseContent === 'function' ? P.releaseContent(content || {}, { workSimulationLive: live }) : content) || {};
         const booklets = isPlainObject(source.booklets) ? Object.assign({}, source.booklets) : {};
         const ids = new Set();
         const sections = (Array.isArray(source.sections) ? source.sections : []).map((raw, si) => {
@@ -708,13 +730,14 @@
     /**
      * Render the tracker into `container`.
      * options: { store, settings: { getMyDomain, getBackupDomain, setMyDomain, subscribe }, lms, now(), fetch,
-     *            shareForm, domains: [{ slug, label }], location, history }
+     *            shareForm, domains: [{ slug, label }], location, history, workSimulationLive }
      */
     function mount(container, content, options) {
         const opts = options || {};
         const doc = container.ownerDocument || root.document;
         const win = doc.defaultView || root;
-        const model = content && content.sections instanceof Array && content.byId instanceof Map ? content : normaliseContent(content);
+        const model = content && content.sections instanceof Array && content.byId instanceof Map ? content
+            : normaliseContent(content, { workSimulationLive: opts.workSimulationLive });
         const progress = root.MSCArticleshipProgress;
         const store = opts.store || progress.open(TOOL, { defaults: DEFAULTS, merge: mergeData });
         const settings = opts.settings || {
@@ -1825,7 +1848,7 @@
     }
 
     return Object.freeze({
-        TOOL, DAY, CONTENT_URL, SHARE_FORM, PAGE_ROWS, pageHref, STATUSES, STATUS_LABELS, ROUNDS, MODES, HOW_CALLED, OUTCOMES, DEFAULTS,
+        TOOL, DAY, CONTENT_URL, WORK_SIMULATION_LIVE, SHARE_FORM, PAGE_ROWS, pageHref, STATUSES, STATUS_LABELS, ROUNDS, MODES, HOW_CALLED, OUTCOMES, DEFAULTS,
         FIRM_TYPES, RESULT_STAGES, LENGTHS, WAITS, DAY_MODES, daySections, entryName,
         normaliseContent, resolvePages, readHref, linkHref, readLabel, readText, safeHref,
         isISODate, todayISO, daysLeft, countdown, shortDate, monthOf,

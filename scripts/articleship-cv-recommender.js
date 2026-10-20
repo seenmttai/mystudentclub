@@ -9,10 +9,11 @@
  * tool and the CV Builder) and the CV Builder's designs.json (/articleship-program/cv-builder/designs.json, the one
  * design list, numbered as in the CV templates look-book).
  *
- * Release flag: WORK_SIMULATION_LIVE (below). While false (release 1), nothing here offers, links or promises the Work
- * Simulation: no "Work Simulation level" tap, no Work Simulation link or line; thin proof points at The Nothing CV's
- * four certificates and its "one more true line" page instead. Flip it to true when the Work Simulation ships, and set
- * situations.json `links.workSimulation` to its page (each link then opens the student's domain: ?domain=<slug>).
+ * Release switch: MSCArticleshipProgress.WORK_SIMULATION_LIVE (the one flag in scripts/articleship-progress.js, read
+ * here as WORK_SIMULATION_LIVE). While false (release 1), nothing here offers, links or promises the Work Simulation:
+ * no "Work Simulation level" tap, no Work Simulation link or line; thin proof points at The Nothing CV's four
+ * certificates and its "one more true line" page instead. Release 2 flips the shared flag; also set situations.json
+ * `links.workSimulation` to its page (each link then opens the student's domain: ?domain=<slug>).
  *
  * Browser: window.MSCCvRecommender. Node (tests): require('./scripts/articleship-cv-recommender.js');
  * `.withConfig({ workSimulationLive })` gives an instance with the flag set.
@@ -26,8 +27,8 @@
     'use strict';
 
     const TOOL = 'cv-recommender';
-    // Release 1 ships without the Work Simulation (row 1.6): nothing here points at it until this is true.
-    const WORK_SIMULATION_LIVE = false;
+    // Release 1 ships without the Work Simulation (row 1.6): nothing here points at it until the shared switch is true.
+    const WORK_SIMULATION_LIVE = platformWorkSimulationLive();
     /** A single-choice tap moves on after this long, so the student sees their tick first. */
     const ADVANCE_MS = 280;
     /** Taps are ignored this long after a new question appears, so a quick double tap never answers it too. */
@@ -72,6 +73,12 @@
         return null;
     }
 
+    /** The release switch every tool reads (MSCArticleshipProgress.WORK_SIMULATION_LIVE); false without the platform. */
+    function platformWorkSimulationLive() {
+        const progress = progressApi();
+        return Boolean(progress && progress.WORK_SIMULATION_LIVE === true);
+    }
+
     function lmsApi() {
         if (root.MSCArticleshipLms) return root.MSCArticleshipLms;
         if (typeof require === 'function') {
@@ -87,7 +94,7 @@
 
     /**
      * One instance of the tool. `config.workSimulationLive` overrides the release flag (the tests use it; release 2
-     * flips WORK_SIMULATION_LIVE instead).
+     * flips the shared MSCArticleshipProgress.WORK_SIMULATION_LIVE instead).
      */
     function create(config) {
         const wsLive = config && typeof config.workSimulationLive === 'boolean' ? config.workSimulationLive : WORK_SIMULATION_LIVE;

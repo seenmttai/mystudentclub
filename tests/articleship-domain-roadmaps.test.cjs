@@ -194,7 +194,8 @@ test('Work Simulation: every one of the 27 levels is on its card (all built, no 
 
 test('CV lines: house rule 2\'s MSC format, and the same lines the CV Recommender shows', () => {
     const recommender = JSON.parse(fs.readFileSync(path.join(ROOT, 'articleship-program/cv-recommender/situations.json'), 'utf8'));
-    const model = R.normalise(CONTENT);
+    // The CV line is a Work Simulation part: drawn once it is out (release 1 has none, see the release test).
+    const model = R.normalise(CONTENT, { workSimulationLive: true });
     for (const card of model.domains) {
         assert.match(card.cvLine, /^[A-Z][A-Za-z&]*( [A-Za-z&]+)* Work Simulation, MSC Articleship Program \| \[Month Year\]: [a-z]/, card.slug);
         assert.doesNotMatch(card.cvLine, /experience|internship/i, card.slug + ': never as experience');

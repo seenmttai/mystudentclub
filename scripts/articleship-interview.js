@@ -4,6 +4,11 @@
  * cross-questions, Core accounts, the domain booklet questions, workplace situations, the HR-call scenario set),
  * probes the student's own CV lines, renders the interviewer's instructions and reads the 1-4 scorecard back.
  * UMD: window.MSCArticleshipInterview in the page, require() in node --test.
+ *
+ * Release switch: MSCArticleshipProgress.WORK_SIMULATION_LIVE (the one flag in scripts/articleship-progress.js, read
+ * here as WORK_SIMULATION_LIVE; options.workSimulationLive overrides it). While false (release 1), the interviewer never
+ * hears of the Work Simulation: no question or listen-for line about its levels (MSCArticleshipProgress.releaseContent),
+ * no earned lines read or probed, no "+ N Work Simulation lines" on the setup. Release 2 flips the shared flag.
  */
 (function (root, factory) {
     const articleshipInterview = factory(root);
@@ -99,6 +104,31 @@
     // The Work Simulation's progress store: the lines a student earned there are probed even before they reach the CV.
     const SIMULATION_TOOL = 'work-simulation';
     const MAX_EARNED = 6;
+
+    function progressApi() {
+        if (root && root.MSCArticleshipProgress) return root.MSCArticleshipProgress;
+        if (typeof require === 'function') {
+            try { return require('./articleship-progress.js'); } catch (_) { /* optional */ }
+        }
+        return null;
+    }
+    // Release 1 ships without the Work Simulation (row 1.6): the interviewer never names it until the shared switch is true.
+    const WORK_SIMULATION_LIVE = (() => {
+        const progress = progressApi();
+        return Boolean(progress && progress.WORK_SIMULATION_LIVE === true);
+    })();
+
+    /** The release one call draws: options.workSimulationLive (true or false) wins, else the shared switch. */
+    function workSimulationLive(options) {
+        return options && typeof options.workSimulationLive === 'boolean' ? options.workSimulationLive : WORK_SIMULATION_LIVE;
+    }
+
+    /** The content as this release draws it (release 1: no question, cue or line about the Work Simulation). */
+    function releaseFor(content, live) {
+        const progress = progressApi();
+        if (!content || !progress || typeof progress.releaseContent !== 'function') return content;
+        return progress.releaseContent(content, { workSimulationLive: live }) || {};
+    }
 
     // Words that tie an MSC Work Simulation line to its domain (the line starts "<Domain> Work Simulation, MSC Articleship Program").
     const DOMAIN_WORDS = Object.freeze([
@@ -540,13 +570,15 @@
     /**
      * The interviewer's plan. options: { round, domain, firm, firmType, toughness, coach, cvLines, earnedLines, cvText,
      * cvAsImages, asked, retry, seed }.
-     * earnedLines (Work Simulation lines) join the CV lines unless the CV already carries them. cvAsImages: the CV went
+     * earnedLines (Work Simulation lines) join the CV lines unless the CV already carries them (only once the Work
+     * Simulation is out: options.workSimulationLive, else the shared switch). cvAsImages: the CV went
      * to the interviewer as page images (a scanned PDF with no text layer), so the prompt says it is attached.
      * Returns { round, minutes, domain, firm, firmType, toughness, coach, opening, sections: [{ id, title, items }], rubric, ... }.
      */
     function buildPlan(content, options) {
         const opts = options || {};
-        const data = content || {};
+        const live = workSimulationLive(opts);
+        const data = releaseFor(content || {}, live);
         const round = roundInfo(data, opts.round);
         const shape = ROUND_SHAPES[round.id] || ROUND_SHAPES.full;
         const slug = normaliseDomain(opts.domain) || DEFAULT_DOMAIN;
@@ -564,7 +596,7 @@
         };
         const sections = [];
         const add = (id, title, items, note) => { if (items.length) sections.push({ id, title, note: note || '', items }); };
-        const cvLines = mergeCvLines(list(opts.cvLines).map(cleanLine).filter(keepLine).slice(0, 80), opts.earnedLines).filter(keepLine);
+        const cvLines = mergeCvLines(list(opts.cvLines).map(cleanLine).filter(keepLine).slice(0, 80), live ? opts.earnedLines : []).filter(keepLine);
         const retry = list(opts.retry).map(str).map(s => s.trim()).filter(Boolean).slice(0, 3);
 
         const cvAsImages = !cvLines.length && !!opts.cvAsImages;
@@ -1246,7 +1278,8 @@
 
     /**
      * Mount the articleship setup into `container`. options: { content, store, progress, cvSources, fromDropdown,
-     * otherRolesHref, onStart(setup) -> Promise }. cvSources: [{ kind: 'builder'|'profile', label, detail, lines }].
+     * otherRolesHref, onStart(setup) -> Promise, workSimulationLive }. cvSources: [{ kind: 'builder'|'profile', label,
+     * detail, lines }].
      */
     function mountSetup(container, options) {
         const opts = options || {};
@@ -1265,7 +1298,9 @@
         const lastDomain = normaliseDomain(last.domain);
         const domainDefault = normaliseDomain(preset.domain)
             || ((myDomain && (!lastDomain || last.myDomain !== myDomain)) ? myDomain : (lastDomain || myDomain || DEFAULT_DOMAIN));
-        const earnedLines = () => (Array.isArray(opts.earnedLines) ? earnedLinesFrom({ lines: opts.earnedLines }) : readEarned(progress));
+        // Release 1: no Work Simulation, so no earned lines to read, show or probe.
+        const live = workSimulationLive(opts);
+        const earnedLines = () => (!live ? [] : Array.isArray(opts.earnedLines) ? earnedLinesFrom({ lines: opts.earnedLines }) : readEarned(progress));
         const cvSources = list(opts.cvSources).filter(source => source && list(source.lines).length >= 3);
         const retry = list(saved.retry).filter(Boolean);
         // Retry questions from a screening call go to a call; those from an interview go to an interview.
@@ -1364,7 +1399,7 @@
         });
         showCvNote();
         // Lines earned on another device arrive with the account copy of the Work Simulation's progress.
-        if (!Array.isArray(opts.earnedLines) && progress && typeof progress.open === 'function') {
+        if (live && !Array.isArray(opts.earnedLines) && progress && typeof progress.open === 'function') {
             try {
                 const simulation = progress.open(SIMULATION_TOOL, { defaults: {} });
                 if (simulation && typeof simulation.subscribe === 'function') simulation.subscribe(showEarned);
@@ -1492,7 +1527,7 @@
         ROLE, TOOL, CONTENT_URL, BACK_URL, ROUNDS, DOMAINS, FIRM_TYPES, TOUGHNESS, ROUND_SHAPES,
         normalizeConfig, getInstructions, normaliseDomain, firmTypeInfo, toughnessInfo, roundInfo, domainInfo,
         cvLinesFromText, cvLinesFromPdfItems, cvLinesFromBuilder, builderName, matchCvProbes, pickCvProbes, simulationDomain,
-        earnedLinesFrom, mergeCvLines, presetFromQuery, SIMULATION_TOOL,
+        earnedLinesFrom, mergeCvLines, presetFromQuery, SIMULATION_TOOL, WORK_SIMULATION_LIVE, workSimulationLive,
         buildPlan, renderPrompt, welcomeLine, planQuestionIds, markAsked, questionsReached, recordMock, mockSummary,
         parseScorecard, stripScorecard, findScorecard, splitUnmarkedReport, cleanFirm, domainCount,
         cvSourcesAllowed, claimCv, otherStudentHere, CV_GUARD_KEY, REPORT_START, REPORT_END,

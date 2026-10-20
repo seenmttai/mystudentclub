@@ -260,7 +260,8 @@ test('helpers: closing card, section list, next check', () => {
 test('start: ticks save, "14 of 22 done", jump to the next check, section counts, closing card, reload keeps ticks', () => {
     const { doc, container, nav, end, lede } = pageDom();
     const store = memoryStore({ ticks: {} });
-    const page = CV.start({ container, nav, end, lede, content: CONTENT, store });
+    // The full content (release 2 draws every line); release 1's Work Simulation cut has its own test below.
+    const page = CV.start({ container, nav, end, lede, content: CONTENT, store, workSimulationLive: true });
     assert.equal(lede.textContent, '22 checks, in the order you build a CV. Tick a check only when your PDF passes it.');
     assert.equal(doc.querySelectorAll('.ap-cl-item').length, 22);
     assert.equal(doc.querySelector('.ap-progress-count').textContent, '0 of 22 done');
@@ -770,7 +771,7 @@ test('examples: "▸ Title" lines become folds of their own next to "Example", c
     assert.deepEqual(CV.exampleGroups('a\n▸ More\nb → “q”\nc\n▸ Empty\n▸ Last\nd'),
         { main: ['a'], folds: [{ title: 'More', lines: ['b → “q”', 'c'] }, { title: 'Last', lines: ['d'] }] });
     const { doc, container } = pageDom();
-    CV.start({ container, content: CONTENT, store: memoryStore({ ticks: {} }) });
+    CV.start({ container, content: CONTENT, store: memoryStore({ ticks: {} }), workSimulationLive: true });
     const two = doc.querySelector('.ap-cl-item[data-id="two-questions"]');
     const extra = [...two.querySelector('.ap-cl-extra').children];
     assert.deepEqual(extra.map(node => node.tagName + (node.classList.contains('cvc-fold') ? '.fold' : '')), ['DETAILS', 'DETAILS.fold', 'DETAILS.fold', 'A'],
@@ -792,6 +793,37 @@ test('examples: "▸ Title" lines become folds of their own next to "Example", c
     CV.start({ container: injected.container, content: { items: [{ check: 'x', example: ['a', '▸ <img src=x onerror=alert(1)>', '<b>y</b>'] }] } });
     assert.equal(injected.doc.querySelectorAll('img, b').length, 0);
     assert.equal(injected.doc.querySelector('.cvc-fold > summary').textContent, '<img src=x onerror=alert(1)>');
+});
+
+test('release 1 (Work Simulation not out): every check, fold and link, with no Work Simulation line; the switch brings it back', () => {
+    const ws = /work[\s-]?simulation/i;
+    assert.match(CONTENT_TEXT, ws, 'the content carries the Work Simulation lines for release 2');
+    const off = pageDom();
+    CV.start({ container: off.container, nav: off.nav, end: off.end, lede: off.lede, content: CONTENT, store: memoryStore({ ticks: {} }), workSimulationLive: false });
+    assert.doesNotMatch(off.doc.body.textContent, ws, 'nowhere on the page');
+    assert.ok(![...off.doc.querySelectorAll('a')].some(a => P.isWorkSimulationLink(a.getAttribute('href'))), 'no link to it');
+    assert.equal(off.doc.querySelectorAll('.ap-cl-item').length, 22, 'every check stays');
+    assert.equal(off.doc.querySelector('.ap-progress-count').textContent, '0 of 22 done');
+    const two = off.doc.querySelector('.ap-cl-item[data-id="two-questions"]');
+    const main = two.querySelector('.ap-cl-example:not(.cvc-fold) .cvc-ex');
+    assert.deepEqual([...main.querySelectorAll('.cvc-ex-pair > strong')].map(b => b.textContent), ['Excel: XLOOKUP, PivotTables', 'Tally Prime'],
+        'the two other probes before the fold');
+    assert.match(main.textContent, /Read each line aloud/, 'the method stays');
+    assert.match(main.textContent, /Can’t answer both\?/, 'the rule stays');
+    assert.match(two.textContent, /Every job simulation on your CV: be ready to talk about each task for two minutes\./, 'the mixed line keeps its other half');
+    const certs = off.doc.querySelector('.ap-cl-item[data-id="certifications"]');
+    assert.match(certs.textContent, /Job simulation: \[Company\] \[Simulation\] Job Simulation \(Forage\)/);
+    assert.match(certs.textContent, /ICITSS stays in the education table\./);
+
+    const on = pageDom();
+    CV.start({ container: on.container, content: CONTENT, store: memoryStore({ ticks: {} }), workSimulationLive: true });
+    assert.match(on.doc.body.textContent, /Statutory audit Work Simulation: flagged 3 cut-off errors/);
+    assert.match(on.doc.body.textContent, /\[Domain\] Work Simulation, MSC Articleship Program/);
+    // With no option, the page draws the shared switch.
+    const shipped = pageDom();
+    CV.start({ container: shipped.container, content: CONTENT, store: memoryStore({ ticks: {} }) });
+    assert.equal(ws.test(shipped.doc.body.textContent), P.WORK_SIMULATION_LIVE);
+    assert.equal(CV.WORK_SIMULATION_LIVE, P.WORK_SIMULATION_LIVE, 'the one shared flag');
 });
 
 test('helpers: the button offers the next check, then the two reviews', () => {

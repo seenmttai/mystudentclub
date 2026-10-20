@@ -8,6 +8,7 @@ const { JSDOM } = require('jsdom');
 const { spawnSync } = require('node:child_process');
 
 const B = require('../scripts/articleship-cv-builder.js');
+const P = require('../scripts/articleship-progress.js');
 const catalog = require('../cv-builder/cv-articleship.js');
 
 const ROOT = path.join(__dirname, '..');
@@ -188,7 +189,9 @@ test('the blank CV: articleship shape, ICITSS in the education table, every gap 
     assert.deepEqual(blank.experience, [], 'no invented work');
     const counts = B.countCertificates(blank.certifications);
     assert.equal(counts.outside, 0);
-    assert.equal(counts.placeholder, 2);
+    assert.equal(counts.placeholder, B.WORK_SIMULATION_LIVE ? 2 : 1, 'the Work Simulation gap only once it is out');
+    assert.equal(B.countCertificates(B.createBlank(before, { structure: 'A', workSimulationLive: true }).certifications).placeholder, 2);
+    assert.equal(B.countCertificates(B.createBlank(before, { structure: 'A', workSimulationLive: false }).certifications).placeholder, 1);
     assert.match(B.checkCv(blank).map(f => f.text).join(' '), /Fill or delete \d+ \[bracket\]s/);
     const edited = clone(blank);
     edited.personal.name = 'Riya Shah';
@@ -399,6 +402,8 @@ async function stage(options) {
     let pick = opts.pick || null;
     const settingsListeners = new Set();
     win.MSCArticleshipProgress = {
+        // The shared release switch: the shipped value unless a test draws the other release.
+        WORK_SIMULATION_LIVE: typeof opts.workSimulationLive === 'boolean' ? opts.workSimulationLive : P.WORK_SIMULATION_LIVE,
         getCvPick: () => (pick ? clone(pick) : null),
         open: () => workSim,
         settings: () => ({ pull: () => Promise.resolve('local') }),
@@ -559,10 +564,10 @@ test('stage: order chips change the structure only; starters keep the design', a
     assert.equal(kept.cv.personal.name, 'Riya Shah', 'nothing is replaced without a yes');
 });
 
-test('stage: earned lines are offered, queued ones arrive by themselves, each only once', async () => {
+test('stage (Work Simulation out): earned lines are offered, queued ones arrive by themselves, each only once', async () => {
     const line = 'GST Work Simulation, MSC Articleship Program | Mar 2026: matched 64 invoices with GSTR-2B.';
     const queued = 'Statutory audit Work Simulation, MSC Articleship Program | Mar 2026: vouched 25 purchase bills.';
-    const s = await stage({ workSimulation: { earned: [{ domain: 'gst', line }, { domain: 'statutory-audit', line: queued }], cvQueue: [{ line: queued }] } });
+    const s = await stage({ workSimulationLive: true, workSimulation: { earned: [{ domain: 'gst', line }, { domain: 'statutory-audit', line: queued }], cvQueue: [{ line: queued }] } });
     assert.ok(s.cv.certifications.some(c => c.name === queued), 'the queued line arrived');
     assert.ok(s.cv.articleshipImported.includes(queued));
     assert.match(s.panel().textContent, /Add 1 Work Simulation line/);
@@ -573,15 +578,76 @@ test('stage: earned lines are offered, queued ones arrive by themselves, each on
     // Deleted by the student: not offered again.
     const cv = clone(s.cv);
     cv.certifications = cv.certifications.filter(c => c.name !== line);
-    const later = await stage({ cv, workSimulation: { earned: [{ line }], cvQueue: [{ line: queued }] } });
+    const later = await stage({ cv, workSimulationLive: true, workSimulation: { earned: [{ line }], cvQueue: [{ line: queued }] } });
     assert.equal(later.panel().querySelector('[data-action=add-lines]'), null);
     assert.ok(!later.cv.certifications.some(c => c.name === line));
 
-    const none = await stage();
+    const none = await stage({ workSimulationLive: true });
     assert.match(none.panel().textContent, /Earn a line with your own counts in Work Simulation/);
     const ws = [...none.panel().querySelectorAll('a')].find(a => a.textContent === 'Work Simulation');
     assert.equal(ws.getAttribute('href'), '/learning-management-system/course?course=msc-articleship-program&session=2',
         'its Day in the course until the shared situations list names the page');
+});
+
+test('stage (release 1, Work Simulation not out): nothing read, offered, linked or pre-filled; the switch brings it all back', async () => {
+    const line = 'GST Work Simulation, MSC Articleship Program | Mar 2026: matched 64 invoices with GSTR-2B.';
+    const saved = { earned: [{ domain: 'gst', line }], cvQueue: [{ line }] };
+    const off = await stage({ workSimulationLive: false, workSimulation: saved });
+    const ws = /work[\s-]?simulation/i;
+    assert.doesNotMatch(JSON.stringify(off.cv), ws, 'the blank CV has no Work Simulation gap, and a queued line never arrives');
+    assert.equal(off.panel().querySelector('[data-action=add-lines]'), null, 'no "Add N Work Simulation lines"');
+    assert.doesNotMatch(off.panel().textContent, ws, 'no "Earn a line" link');
+    assert.equal(off.S._state.earned.length, 0, 'saved lines are not even read');
+    // Thumbnails: every design's own applicant, without its Work Simulation line or sentence.
+    DESIGNS.forEach(d => {
+        const preview = off.S.previewSource(d.file);
+        assert.ok(preview && preview.personal.name, `design ${d.number}: its applicant`);
+        assert.doesNotMatch(JSON.stringify(preview), ws, `design ${d.number}: no Work Simulation`);
+        assert.ok(B.plainText(preview.summary).length > 40, `design ${d.number}: the summary still reads`);
+    });
+    // The starters.
+    off.click('[data-action=example]');
+    assert.doesNotMatch(JSON.stringify(off.cv), ws, '"Start from the example" without it');
+    assert.equal(off.cv.articleshipStarter.startsWith('example:'), true);
+    assert.equal(B.untouchedStarter(off.cv, off.S._state.examples, off.S._state.designs), 'example', 'still recognised as the untouched example');
+    off.click('[data-action=nothing]');
+    assert.doesNotMatch(JSON.stringify(off.cv), ws, 'The Nothing CV without it');
+    assert.equal(B.countCertificates(off.cv.certifications).outside, B.OUTSIDE_CAP, 'The Nothing CV keeps its four certificates');
+    assert.equal(B.programLine(off.cv), B.programLine(EXAMPLES.H), 'and its programme line');
+    assert.doesNotMatch(off.panel().textContent, ws);
+
+    // Release 2: the same saved lines arrive, the blank has its gap, the applicants carry their lines again.
+    const on = await stage({ workSimulationLive: true, workSimulation: saved });
+    assert.ok(on.cv.certifications.some(c => c.name === line), 'the queued line arrives');
+    const blank = await stage({ workSimulationLive: true });
+    assert.match(JSON.stringify(blank.cv.certifications), /\[Domain\] Work Simulation/, 'the blank CV\'s Work Simulation gap');
+    const withLine = DESIGNS.find(d => ws.test(JSON.stringify(EXAMPLES_JSON.designs[String(d.number)])));
+    assert.match(JSON.stringify(blank.S.previewSource(withLine.file)), ws, 'the applicant\'s Work Simulation line is back');
+    assert.match(blank.panel().textContent, /Earn a line with your own counts in Work Simulation/, 'and its link');
+});
+
+test('releaseExamples: every applicant reads well without the Work Simulation; with it, nothing changes', () => {
+    const ws = /work[\s-]?simulation/i;
+    const off = B.releaseExamples(EXAMPLES_JSON, { workSimulationLive: false });
+    assert.doesNotMatch(JSON.stringify(off), ws);
+    assert.deepEqual(B.releaseExamples(EXAMPLES_JSON, { workSimulationLive: true }), EXAMPLES_JSON);
+    assert.match(JSON.stringify(EXAMPLES_JSON), ws, 'the content itself is untouched (release 2 shows it)');
+    const all = Object.entries(B.allApplicants(B.normaliseExamples(off), B.attachApplicants(B.normaliseDesigns(DESIGNS_JSON, GALLERY), off)));
+    assert.equal(all.length, Object.keys(EXAMPLES).length + DESIGNS.length);
+    all.forEach(([id, cv]) => {
+        const summary = B.plainText(cv.summary);
+        assert.match(summary, /^CA Intermediate|^B\.Com/, `${id}: the summary still starts with the result`);
+        assert.match(summary, /\.$/, `${id}: ends on a full stop`);
+        assert.doesNotMatch(summary, /\s{2}|\.\s*\.|,\s*\./, `${id}: no gaps left where a sentence went`);
+        assert.match(summary, /Seeking|Looking for/, `${id}: still says what the applicant wants`);
+        const flags = B.checkCv(cv).map(f => f.id).filter(flagId => !['brackets', 'months'].includes(flagId));
+        assert.deepEqual(flags, [], `${id}: still passes the checks`);
+    });
+    // One applicant's lines, sentence by sentence (the rules in MSCArticleshipProgress.releaseText).
+    assert.equal(B.plainText(off.personas.A.summary), 'CA Intermediate cleared in the first attempt (both groups, 412/600); ICITSS completed. '
+        + 'Completed the PwC US Audit Job Simulation. Seeking articleship in statutory audit, to learn how balances and controls are tested on real clients.');
+    assert.ok(!off.personas.A.certifications.some(c => ws.test(c.name)), 'its Work Simulation line is gone');
+    assert.equal(off.personas.A.certifications.length, EXAMPLES_JSON.personas.A.certifications.length - 1, 'only that line');
 });
 
 test('stage: the design picker shows the look-book designs by number and all 62 under "All"', async () => {

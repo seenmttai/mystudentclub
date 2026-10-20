@@ -14,8 +14,10 @@
  * Content: articleship-program/domain-roadmaps/roadmaps.json. normalise() accepts the field names a content build is
  * likely to use (see the alias lists below), drops unsafe links and never renders text as HTML.
  *
- * Release flag: WORK_SIMULATION_LIVE (below). While false (release 1), nothing on the page points at the Work Simulation:
- * the "Earn the CV line" part (levels, the line, the link) stays hidden. Flip it to true when the Work Simulation ships.
+ * Release switch: MSCArticleshipProgress.WORK_SIMULATION_LIVE (the one flag in scripts/articleship-progress.js, read
+ * here as WORK_SIMULATION_LIVE). While false (release 1), nothing on the page points at the Work Simulation: the "Earn
+ * the CV line" part (levels, the line, the link) stays hidden, and any other line of the content that names it loses
+ * that sentence (MSCArticleshipProgress.releaseContent). Release 2 flips the shared flag.
  *
  * Wiring (data only, no code change): `unbuilt` = the course rows whose file is not uploaded yet; every jump to one of
  * them is hidden (never a dead link, never "coming soon"). Remove a row from it once its file is in the course.
@@ -43,8 +45,9 @@
         practise: '/ai-interview.html?mode=articleship'
     });
 
-    // Release 1 ships without the Work Simulation (Padam, 20 Oct): its part of every card stays hidden until this is true.
-    const WORK_SIMULATION_LIVE = false;
+    // Release 1 ships without the Work Simulation (Padam, 20 Oct): its part of every card stays hidden until the shared
+    // switch (MSCArticleshipProgress.WORK_SIMULATION_LIVE) is true.
+    const WORK_SIMULATION_LIVE = platformWorkSimulationLive();
 
     // What each free pick is, said plainly beside "First pick" / "Second pick".
     const PICK_KINDS = Object.freeze({
@@ -99,6 +102,11 @@
     }
     function progressApi() { return dependency('MSCArticleshipProgress', './articleship-progress.js'); }
     function lmsApi() { return dependency('MSCArticleshipLms', './articleship-lms.js'); }
+    /** The release switch every tool reads; false without the platform script. */
+    function platformWorkSimulationLive() {
+        const progress = progressApi();
+        return Boolean(progress && progress.WORK_SIMULATION_LIVE === true);
+    }
 
     const FALLBACK_DOMAINS = Object.freeze([
         ['statutory-audit', 'Statutory audit'], ['internal-audit', 'Internal audit, risk & IFC'], ['direct-tax', 'Direct tax'],
@@ -474,6 +482,11 @@
     function normalise(content, options) {
         if (!content || typeof content !== 'object') throw new TypeError('Roadmaps content must be an object');
         const opts = options || {};
+        // The Work Simulation: shown only once it is released (its part of each card below); before that, no other line
+        // of the content names it either.
+        const wsLive = opts.workSimulationLive === undefined ? WORK_SIMULATION_LIVE : Boolean(opts.workSimulationLive);
+        const P = progressApi();
+        if (P && typeof P.releaseContent === 'function') content = P.releaseContent(content, { workSimulationLive: wsLive }) || {};
         const warnings = [];
         let rawDomains = pick(content, ['domains', 'cards', 'roadmaps']);
         if (rawDomains && !Array.isArray(rawDomains) && typeof rawDomains === 'object') {
@@ -493,8 +506,7 @@
         const firmsLink = linkFrom(links.firms || pick(content, ['firms_href', 'firmsHref', 'firms_url']), FIRMS_TITLE) ||
             { label: FIRMS_TITLE, href: resourceHref(firmsRow.day, firmsRow.title), external: false, row: firmsRow };
         const firmsDefault = isLive(firmsLink) ? firmsLink : null;
-        // The Work Simulation: shown only once it is released; its page once on the site, else its row's Day.
-        const wsLive = opts.workSimulationLive === undefined ? WORK_SIMULATION_LIVE : Boolean(opts.workSimulationLive);
+        // The Work Simulation's link: its page once on the site, else its row's Day.
         const wsBase = safeHref(links.workSimulation);
         const wsRow = rowOf('workSimulation', WORK_SIMULATION_DAY, WORK_SIMULATION_TITLE);
         const workSimulation = wsBase

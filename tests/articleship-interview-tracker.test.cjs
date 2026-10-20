@@ -154,6 +154,29 @@ test('content and page: nothing a student must not see', () => {
     assert.doesNotMatch(shown, banned);
 });
 
+test('release 1 (Work Simulation not out): no topic, line or link names it; the shared switch brings the line back', () => {
+    const ws = /work[\s-]?simulation/i;
+    assert.match(studentText(CONTENT), ws, 'the syllabus carries it for release 2');
+    assert.equal(T.WORK_SIMULATION_LIVE, P.WORK_SIMULATION_LIVE, 'the one shared flag');
+    const off = T.normaliseContent(CONTENT, { workSimulationLive: false });
+    const on = T.normaliseContent(CONTENT, { workSimulationLive: true });
+    assert.equal(off.total, on.total, 'every topic stays');
+    assert.equal(off.byId.get('hr-cv-lines').know, 'Each line is a question: what you did, how many, what you found, what you learnt.');
+    assert.match(on.byId.get('hr-cv-lines').know, /Work Simulation lines too\.$/);
+    off.byId.forEach(topic => assert.doesNotMatch(topic.topic + ' ' + topic.know, ws, topic.id));
+    // The page, every section opened.
+    const dom = pageDom();
+    const doc = dom.window.document;
+    T.mount(doc.getElementById('app'), CONTENT, {
+        store: memoryStore(), settings: fakeSettings('statutory-audit', 'gst'), lms: Lms, checklist: C, domains: P.DOMAINS,
+        now: () => NOW, location: dom.window.location, history: dom.window.history, workSimulationLive: false
+    });
+    doc.querySelectorAll('details').forEach(d => { d.open = true; });
+    doc.querySelectorAll('button').forEach(b => { if (/show all/i.test(b.textContent)) b.click(); });
+    assert.match(doc.body.textContent, /Every line on your CV/, 'the topic is there');
+    assert.doesNotMatch(doc.body.textContent, ws, 'nowhere on the page');
+});
+
 // ---------- dates, counts, views ----------
 test('days left: countdown states from the interview date', () => {
     assert.equal(T.daysLeft('2026-11-09', TODAY), 7);

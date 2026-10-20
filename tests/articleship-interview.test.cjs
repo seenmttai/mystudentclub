@@ -563,12 +563,16 @@ test('the articleship glue runs: setup, CV sources, interview config and the rep
     assert.equal(context.currentRoleSpan.textContent, 'Technical round · Direct tax');
     assert.match(articleship.getInstructions(config), /THE PLAN/);
 
-    // The setup's Work Simulation lines reach the interviewer through the page's own buildPlan call.
+    // The setup's Work Simulation lines reach the interviewer through the page's own buildPlan call (once the Work
+    // Simulation is out; release 1 never reads or sends them).
     const earned = 'Direct tax Work Simulation, MSC Articleship Program: Checked 8 tax-audit items against the books';
-    await api.startArticleshipInterview({ round: 'technical', domain: 'direct-tax', firm: '', firmType: 'small', toughness: 'Medium', coach: false, retry: [], earnedLines: [earned], cv: { kind: 'builder', lines: ['Reading, cricket and chess', 'Advanced Excel: VLOOKUP and pivot tables', 'Summer internship at a trading company, accounts team'] } });
+    const setupWith = live => ({ round: 'technical', domain: 'direct-tax', firm: '', firmType: 'small', toughness: 'Medium', coach: false, retry: [], earnedLines: [earned], workSimulationLive: live, cv: { kind: 'builder', lines: ['Reading, cricket and chess', 'Advanced Excel: VLOOKUP and pivot tables', 'Summer internship at a trading company, accounts team'] } });
+    await api.startArticleshipInterview(setupWith(true));
     const withEarned = api.getConfig();
     assert.equal(withEarned.articleshipPlan.sections.find(s => s.id === 'cv').items[0].cvLine, earned);
     assert.match(articleship.getInstructions(withEarned), /Checked 8 tax-audit items/);
+    await api.startArticleshipInterview(setupWith(false));
+    assert.doesNotMatch(articleship.getInstructions(api.getConfig()), /Work Simulation/, 'release 1: never sent');
 
     assert.equal(doc.title, 'Practise your interview | My Student Club');
 
@@ -685,15 +689,19 @@ test('Work Simulation lines: read from its progress data in every saved shape, d
 test('earned Work Simulation lines are probed even when the CV does not carry them yet', () => {
     const earned = ['Statutory audit Work Simulation, MSC Articleship Program: Vouched 25 purchase bills and flagged 4 exceptions'];
     const cvOnly = ['Advanced Excel: VLOOKUP, XLOOKUP and pivot tables', 'Reading, cricket and chess'];
-    const plan = articleship.buildPlan(content, { round: 'technical', domain: 'statutory-audit', seed: 2, cvLines: cvOnly, earnedLines: earned });
+    const plan = articleship.buildPlan(content, { round: 'technical', domain: 'statutory-audit', seed: 2, cvLines: cvOnly, earnedLines: earned, workSimulationLive: true });
     const cvItems = plan.sections.find(s => s.id === 'cv').items;
     assert.equal(cvItems[0].cvLine, earned[0], 'the Work Simulation line is asked first');
     for (const q of content.domains['statutory-audit'].simulation) assert.ok(cvItems[0].cross.includes(q), 'with its two interview questions');
     assert.match(plan.cvText, /Vouched 25 purchase bills/);
-    const again = articleship.buildPlan(content, { round: 'technical', domain: 'statutory-audit', seed: 2, cvLines: cvOnly.concat(earned), earnedLines: earned });
+    const again = articleship.buildPlan(content, { round: 'technical', domain: 'statutory-audit', seed: 2, cvLines: cvOnly.concat(earned), earnedLines: earned, workSimulationLive: true });
     assert.equal(again.cvText.split('\n').filter(line => /Vouched 25/.test(line)).length, 1, 'never twice');
     const noCv = articleship.buildPlan(content, { round: 'full', domain: 'gst', seed: 2, cvLines: [], earnedLines: [] });
     assert.equal(noCv.hasCv, false);
+    // Release 1: the same earned lines are never added or probed.
+    const off = articleship.buildPlan(content, { round: 'technical', domain: 'statutory-audit', seed: 2, cvLines: cvOnly, earnedLines: earned, workSimulationLive: false });
+    assert.doesNotMatch(off.cvText, /Vouched 25 purchase bills/);
+    assert.doesNotMatch(articleship.renderPrompt(off), /Work Simulation/);
 });
 
 test('setup screen: "+ N Work Simulation lines" for lines the chosen CV lacks; none with No CV', async () => {
@@ -707,7 +715,7 @@ test('setup screen: "+ N Work Simulation lines" for lines the chosen CV lacks; n
     const doc = dom.window.document;
     let started = null;
     articleship.mountSetup(doc.getElementById('root'), {
-        content, store: memoryStore('ai-interview', { last: null, asked: {}, retry: [] }), progress,
+        content, store: memoryStore('ai-interview', { last: null, asked: {}, retry: [] }), progress, workSimulationLive: true,
         cvSources: [{ kind: 'builder', label: 'CV Builder', detail: 'Riya Sharma', lines: [gst, 'Reading, cricket and chess', 'Advanced Excel: VLOOKUP and pivot tables'] }],
         onStart: setup => { started = setup; }
     });
@@ -729,7 +737,7 @@ test('setup screen: "+ N Work Simulation lines" for lines the chosen CV lacks; n
     doc.querySelector('form').dispatchEvent(new dom.window.Event('submit', { cancelable: true }));
     await new Promise(r => setTimeout(r, 0));
     assert.deepEqual(started.earnedLines, [gst, audit]);
-    const plan = articleship.buildPlan(content, { ...started, cvLines: started.cv.lines, seed: 1 });
+    const plan = articleship.buildPlan(content, { ...started, cvLines: started.cv.lines, seed: 1, workSimulationLive: true });
     assert.equal(plan.cvText.split('\n').filter(line => /Work Simulation/.test(line)).length, 2);
 
     // A level finished on another device arrives with the account copy and the note follows.

@@ -12,6 +12,11 @@
  * - the export: the programme's header and footer lines stay on the preview, never on the CV a firm receives
  *   (V3-STRUCTURE decision 2).
  * Pure logic: scripts/articleship-cv-builder.js. cv-script.js calls window.MSCArticleshipStage.* behind optional chaining.
+ *
+ * Release switch: MSCArticleshipProgress.WORK_SIMULATION_LIVE (the one flag every tool reads). While false (release 1),
+ * nothing here names or offers the Work Simulation: no earned lines read, queued or offered, no "Earn a line" link, no
+ * Work Simulation gap on the blank CV, and the applicants (starters, thumbnails) come without their Work Simulation
+ * lines. Release 2 flips the shared flag and every part is back.
  */
 (function () {
     'use strict';
@@ -19,6 +24,9 @@
     const logic = window.MSCArticleshipCvBuilder;
     const progress = window.MSCArticleshipProgress;
     if (!logic) return;
+    // The shared release switch (articleship-progress.js); the logic module's copy when the platform is missing.
+    const WS_LIVE = progress ? progress.WORK_SIMULATION_LIVE === true : logic.WORK_SIMULATION_LIVE === true;
+    const RELEASE = Object.freeze({ workSimulationLive: WS_LIVE });
 
     const BASE = '/articleship-program/cv-builder/';
     const LINKS = {
@@ -95,7 +103,7 @@
     function blankCv(current, tableSettings) {
         state.freshBlank = true;
         const p = pick();
-        const out = logic.createBlank(current, { structure: (p && p.situation) || 'A', order: p && p.order, situations: state.situations });
+        const out = logic.createBlank(current, { structure: (p && p.situation) || 'A', order: p && p.order, situations: state.situations, workSimulationLive: WS_LIVE });
         out.templateFile = 'articleship-layout-classic';
         out.tableSettings = JSON.parse(JSON.stringify(tableSettings || {}));
         return out;
@@ -178,7 +186,7 @@
 
     /** An order on the CV; a blank CV still untouched is redrawn for it (its lead block shown), the design kept. */
     function withOrder(data, situationId, order) {
-        const options = { order, situations: state.situations };
+        const options = { order, situations: state.situations, workSimulationLive: WS_LIVE };
         if (logic.untouchedStarter(data, state.examples, state.designs) === 'blank') {
             return logic.createBlank(data, Object.assign({ structure: situationId }, options));
         }
@@ -260,7 +268,7 @@
     // ---------- Work Simulation lines ----------
 
     function readEarned() {
-        if (!progress || !progress.open) return [];
+        if (!WS_LIVE || !progress || !progress.open) return [];
         try {
             const store = progress.open('work-simulation', { defaults: {} });
             return logic.readEarnedLines(store.get());
@@ -271,7 +279,7 @@
 
     /** Lines the student sent with "Add to my CV" arrive by themselves, once each. */
     function importQueued() {
-        if (!progress || !progress.open) return;
+        if (!WS_LIVE || !progress || !progress.open) return;
         let queued = [];
         try {
             const data = progress.open('work-simulation', { defaults: {} }).get();
@@ -347,7 +355,7 @@
             box.appendChild(h('button', {
                 type: 'button', class: 'asb-btn is-secondary is-block', 'data-action': 'add-lines', onclick: () => addLines(newLines())
             }, `Add ${lines.length} Work Simulation line${lines.length === 1 ? '' : 's'}`));
-        } else if (!counts.mscSimulation) {
+        } else if (WS_LIVE && !counts.mscSimulation) {
             box.appendChild(h('p', { class: 'asb-note' }, ['Earn a line with your own counts in ',
                 h('a', { href: LINKS.workSimulation, class: 'asb-link', text: 'Work Simulation' }), '.']));
         }
@@ -359,7 +367,7 @@
     }
 
     function renderChecks(data) {
-        const flags = logic.checkCv(data, { examples: state.applicants, overflow: state.host.overflow && state.host.overflow() });
+        const flags = logic.checkCv(data, { examples: state.applicants, overflow: state.host.overflow && state.host.overflow(), workSimulationLive: WS_LIVE });
         const wrap = h('div', { class: 'asb-checks' });
         if (!flags.length) {
             wrap.appendChild(h('p', { class: 'asb-ok' }, ['No flags. Next: ',
@@ -435,7 +443,7 @@
             ])
         ]);
         if (collapsed) {
-            const flags = logic.checkCv(data, { examples: state.applicants });
+            const flags = logic.checkCv(data, { examples: state.applicants, workSimulationLive: WS_LIVE });
             el.classList.add('is-folded');
             el.replaceChildren(head, h('p', { class: 'asb-note asb-folded-line', text:
                 `Order ${structure ? structure.id : '–'} · ${designText}${flags.length ? ` · ${flags.length} to fix` : ''}` }));
@@ -604,6 +612,7 @@
         const pullAll = () => {
             if (!progress || !progress.open) return;
             try { progress.settings().pull().then(scheduleRender, () => {}); } catch (_) { /* local only */ }
+            if (!WS_LIVE) return;
             try { progress.open('work-simulation', { defaults: {} }).pull().then(() => { state.earned = readEarned(); importQueued(); scheduleRender(); }, () => {}); } catch (_) { /* local only */ }
         };
         if (window.mscSupabase) pullAll();
@@ -631,7 +640,9 @@
         state.host = host;
         if (!isActive()) return;
         document.body.classList.add('asb-on');
-        const [designsJson, examplesJson, situationsJson] = await dataReady;
+        const [designsJson, examplesRaw, situationsJson] = await dataReady;
+        // The applicants as this release shows them (release 1: without their Work Simulation lines).
+        const examplesJson = logic.releaseExamples ? logic.releaseExamples(examplesRaw, RELEASE) : examplesRaw;
         state.situations = situationsJson ? logic.mergeSituations(situationsJson) : logic.SITUATIONS;
         if (situationsJson && situationsJson.links && typeof situationsJson.links.workSimulation === 'string'
             && situationsJson.links.workSimulation.startsWith('/')) LINKS.workSimulation = situationsJson.links.workSimulation;
@@ -659,9 +670,11 @@
         if (design) openOnDesign(design, state.host.templateFile());
 
         if (progress && progress.onSettingsChange) progress.onSettingsChange(() => scheduleRender());
-        try {
-            progress.open('work-simulation', { defaults: {} }).subscribe(() => { state.earned = readEarned(); scheduleRender(); });
-        } catch (_) { /* no Work Simulation data on this device */ }
+        if (WS_LIVE) {
+            try {
+                progress.open('work-simulation', { defaults: {} }).subscribe(() => { state.earned = readEarned(); scheduleRender(); });
+            } catch (_) { /* no Work Simulation data on this device */ }
+        }
     }
 
     window.MSCArticleshipStage = Object.freeze({

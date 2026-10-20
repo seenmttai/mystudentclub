@@ -11,15 +11,39 @@
  *   certificates (house rule 2: four at most; MSC lines and ICITSS are not counted);
  * - the live, non-blocking checks of the articleship stage.
  *
+ * Release switch: MSCArticleshipProgress.WORK_SIMULATION_LIVE (the one flag in scripts/articleship-progress.js, read
+ * here as WORK_SIMULATION_LIVE; options.workSimulationLive overrides it per call). While false (release 1), the blank CV
+ * has no Work Simulation line, releaseExamples() takes every Work Simulation line and sentence out of the applicants
+ * (starters and thumbnails), and the checks never name it; the stage also stops reading and offering earned lines.
+ *
  * Browser: window.MSCArticleshipCvBuilder. Node (tests): require('./scripts/articleship-cv-builder.js').
  */
 (function (root, factory) {
     'use strict';
-    const api = factory();
+    const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
     if (root) root.MSCArticleshipCvBuilder = api;
-})(typeof self !== 'undefined' ? self : globalThis, function () {
+})(typeof self !== 'undefined' ? self : globalThis, function (root) {
     'use strict';
+
+    // ---------- Release switch (shared: MSCArticleshipProgress.WORK_SIMULATION_LIVE) ----------
+    function progressApi() {
+        if (root && root.MSCArticleshipProgress) return root.MSCArticleshipProgress;
+        if (typeof require === 'function') {
+            try { return require('./articleship-progress.js'); } catch (_) { /* optional */ }
+        }
+        return null;
+    }
+    // Release 1 ships without the Work Simulation (row 1.6): nothing here offers it until the shared switch is true.
+    const WORK_SIMULATION_LIVE = (() => {
+        const progress = progressApi();
+        return Boolean(progress && progress.WORK_SIMULATION_LIVE === true);
+    })();
+
+    /** The release one call draws: options.workSimulationLive (true or false) wins, else the shared switch. */
+    function workSimulationLive(options) {
+        return options && typeof options.workSimulationLive === 'boolean' ? options.workSimulationLive : WORK_SIMULATION_LIVE;
+    }
 
     const CERT_TITLE = 'Certifications and job simulations';
     const OUTSIDE_CAP = 4;
@@ -529,9 +553,10 @@
     /**
      * The blank articleship CV a new student opens: every row in the articleship shape, every gap a [bracket], the
      * certifications section titled per house rule 2 with the programme line. ICITSS is a row of the education table
-     * (house rule 2). With an order (A–H), the block it leads with is shown even when empty.
+     * (house rule 2). With an order (A–H), the block it leads with is shown even when empty. The Work Simulation's line
+     * is one of the gaps only once it is out (options.workSimulationLive, else the shared switch).
      */
-    function blankContent(structureId) {
+    function blankContent(structureId, options) {
         const content = {
             personal: {
                 name: '[Your name]', tagline: 'CA Intermediate cleared ([Month Year]) | Seeking articleship in [domain]', contact: '',
@@ -550,10 +575,12 @@
             projects: [],
             skills: '<p><strong>Excel ([level])</strong>: [functions you can show, e.g. XLOOKUP, PivotTables]</p><p><strong>Tally Prime ([level])</strong>: [what you can do in it]</p>',
             certifications: [
-                { name: '[Domain] Work Simulation, MSC Articleship Program | [Month Year]: [what you did, with your counts]', issuer: '' },
+                workSimulationLive(options)
+                    ? { name: '[Domain] Work Simulation, MSC Articleship Program | [Month Year]: [what you did, with your counts]', issuer: '' }
+                    : null,
                 { name: '[Company] [Simulation] Job Simulation (Forage) | [Month Year]: [what you did]', issuer: '' },
                 { name: PROGRAM_LINE_ONGOING, issuer: '' }
-            ],
+            ].filter(Boolean),
             achievements: [],
             leadership: ['[Role], [society or event], [Year]: [what you did, with a number]'],
             interests: [],
@@ -564,15 +591,17 @@
         return content;
     }
 
-    /** Is this content one of the blank CVs (any order's)? */
+    /** Is this content one of the blank CVs (any order's, either release's)? */
     function isBlankContent(cvData) {
-        return [''].concat(Object.keys(LEAD_BLOCK)).some(letter => sameContent(cvData, blankContent(letter)));
+        return [false, true].some(live => [''].concat(Object.keys(LEAD_BLOCK))
+            .some(letter => sameContent(cvData, blankContent(letter, { workSimulationLive: live }))));
     }
 
+    /** opts: { structure, order, situations, workSimulationLive }. */
     function createBlank(cvData, opts) {
         const options = opts || {};
         const structure = options.structure || 'A';
-        let cv = withContent(cvData, blankContent(structure));
+        let cv = withContent(cvData, blankContent(structure, options));
         cv = applyStructure(cv, structure, { order: options.order, situations: options.situations });
         cv.articleshipApplicant = true;
         cv.articleshipStarter = 'blank';
@@ -642,6 +671,17 @@
         const names = Object.values(examples || {}).map(example => plainText(example && example.personal && example.personal.name).toLowerCase()).filter(Boolean);
         const name = plainText(cv.personal && cv.personal.name).toLowerCase();
         return { lines: count, name: Boolean(name && names.includes(name)) };
+    }
+
+    /**
+     * examples.json (or any applicant CV) for this release: before the Work Simulation is out, every applicant (the
+     * letter personas and each design's own) without its Work Simulation lines, and without the sentences, clauses or
+     * list items that name it (MSCArticleshipProgress.releaseContent). A copy; options: { workSimulationLive }.
+     */
+    function releaseExamples(json, options) {
+        const progress = progressApi();
+        if (!json || typeof json !== 'object' || !progress || typeof progress.releaseContent !== 'function') return json;
+        return progress.releaseContent(json, { workSimulationLive: workSimulationLive(options) }) || {};
     }
 
     // ---------- Certifications and job simulations ----------
@@ -843,7 +883,10 @@
     // "May" is the same written either way, so it never decides the style.
     const MONTHS_LONG = 'january|february|march|april|june|july|august|september|october|november|december';
 
-    /** Non-blocking flags (row 1.5): [{ id, text }], most useful first. Text is short and says the fix. */
+    /**
+     * Non-blocking flags (row 1.5): [{ id, text }], most useful first. Text is short and says the fix.
+     * options: { examples, overflow, workSimulationLive }.
+     */
     function checkCv(cvData, options) {
         const cv = cvData || {};
         const opts = options || {};
@@ -869,7 +912,9 @@
         const counts = countCertificates(cv.certifications);
         if (counts.over) add('cap', `${counts.outside} outside certificates: keep your best ${OUTSIDE_CAP}. MSC lines don't count.`);
         if (counts.icitss) add('icitss-cert', 'ICITSS goes in your education table, not in certifications.');
-        if (Object.values(counts.simulationDomains).some(count => count > 1)) add('one-per-domain', 'One Work Simulation line per domain: keep your best.');
+        if (workSimulationLive(opts) && Object.values(counts.simulationDomains).some(count => count > 1)) {
+            add('one-per-domain', 'One Work Simulation line per domain: keep your best.');
+        }
 
         (cv.experience || []).forEach(entry => {
             if (!isObject(entry)) return;
@@ -951,7 +996,7 @@
 
     return Object.freeze({
         CERT_TITLE, OUTSIDE_CAP, PROGRAM_LINE_ONGOING, PROGRAM_LINE_DONE, BUILDER_SECTIONS, DEFAULT_TITLES, CONTENT_KEYS,
-        SITUATIONS, VARIANTS, AI_GUARD,
+        SITUATIONS, VARIANTS, AI_GUARD, WORK_SIMULATION_LIVE, workSimulationLive, releaseExamples,
         plainText, toSectionKey, toBuilderOrder, getSituation, mergeSituations, orderFor, applyStructure, applyTitles,
         variantsFor, planPick,
         normaliseDesigns, resolveDesign, designForFile, designsFor, bestForLabel, personaFor, CV_FONTS, cvFont, themeFor,
