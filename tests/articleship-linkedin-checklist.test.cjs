@@ -151,7 +151,8 @@ test('also: a second link on one check (for the Work Simulation work sample once
     assert.equal(featuredAlso.getAttribute('href'), '/articleship-program/work-simulation/');
     assert.equal(featuredAlso.target, '');
     assert.equal(doc.querySelector('.ap-cl-item[data-id="skills"] .lc-also'), null, 'unsafe link dropped');
-    assert.equal(also.length, 3, 'featured + the two CV checklist links (certifications, Open to Work)');
+    assert.equal(also.length, 4, 'featured + the three CV checklist links (custom URL, certifications, Open to Work)');
+    assert.equal(doc.querySelector('.ap-cl-item[data-id="custom-url"] .lc-also').getAttribute('href'), '/articleship-program/cv-checklist/');
     assert.equal(doc.querySelector('.ap-cl-item[data-id="certifications"] .lc-also').getAttribute('href'), '/articleship-program/cv-checklist/');
 
     // As shipped: the featured Work Simulation link is release 2 only (ws: true).

@@ -1,8 +1,8 @@
 {
   "tool": "linkedin-checklist",
   "title": "LinkedIn profile checklist",
-  "intro": "12 checks. Fix photo, name and headline first: they are all a partner sees before opening your profile.",
-  "intro_phone": "12 checks. Fix photo, name and headline first: open your profile, fix one check, come back and tick it.",
+  "intro": "12 checks. Fix photo, name and headline first: they are all a partner sees before opening your profile. I’d do all 12 in one sitting, laptop open, before you send a single request.",
+  "intro_phone": "12 checks. Fix photo, name and headline first: open your profile, fix one check, come back and tick it. I’d do all 12 in one sitting, before you send a single request.",
   "open": {
     "label": "Open my profile",
     "href": "https://www.linkedin.com/in/me/",
@@ -46,14 +46,14 @@
         "Your headline sits under your name everywhere: in search results, in their invitations list, under every comment you make. From this one line a partner decides whether to open your profile.",
         "Location (same screen): the city you want articleship in. A search filtered to Pune finds only profiles that say Pune.",
         "Open to two cities? Location is the one you’d pick first; put both at the end of your headline: … | Pune or Mumbai.",
-        "✅ **My pick, if you cleared in one go:** CA Inter cleared ([Month Year]), first attempt | Seeking articleship in {domain|statutory audit} | Pune",
+        "✅ **My pick, if you cleared in one go:** CA Inter cleared ([Month Year]) | First attempt | Seeking articleship in {domain|statutory audit} | Pune",
         "✅ CA Inter cleared (Group I [Month Year], Group II [Month Year]) | Seeking articleship in {domain|audit} | Delhi NCR",
         "✅ CA Inter result awaited ([Month Year]) | ICITSS done | Seeking articleship in {domain|audit} | Kolkata",
         "❌ Aspiring CA | Finance enthusiast | Learner: nothing anyone searches for.",
-        "❌ CA Finalist || Hardworking || Dedicated: a search word, not your title, and words nobody types.",
+        "❌ CA Finalist || Hardworking || Dedicated: a title you don’t hold yet, and words nobody types.",
         "{ws}One proof, right after your stage: something a partner can check. A Work Simulation you finished, “ICITSS done, can join from [Month]”, a first attempt, your college. A rank (AIR) only with your rank letter. Nothing yet? Leave it out.",
         "{no-ws}One proof, right after your stage: something a partner can check. A job simulation you finished, “ICITSS done, can join from [Month]”, a first attempt, your college. A rank (AIR) only with your rank letter. Nothing yet? Leave it out.",
-        "Keep “CA Inter” and the exam month in: they are the words people search for. Test it: search “articleship {domain|statutory audit} Pune” › People. Are you there? What do the headlines around you say?",
+        "Keep “CA Inter” and the exam month in: they are the words people search for. Test it: search “articleship {domain|statutory audit} Pune” › People. Are you there? Read the top five results: yours should be the clearest of them.",
         "Change it the day your status changes: result, ICITSS, selection."
       ],
       "copy_label": "Your headline",
@@ -70,11 +70,16 @@
         "✅ linkedin.com/in/riya-sharma",
         "Taken? Add an initial or your city: riya-k-sharma, riya-sharma-pune.",
         "❌ The default with random characters (riya-sharma-4b7a91203), a nickname, your birth year.",
-        "Put it on your CV and Gmail signature behind the word LinkedIn, and test it once from your CV PDF on your phone."
+        "Put it on your CV and Gmail signature, as in the CV checklist."
       ],
       "fix": {
         "label": "Edit my URL",
         "href": "https://www.linkedin.com/public-profile/settings"
+      },
+      "also": {
+        "label": "CV checklist",
+        "href": "/articleship-program/cv-checklist/",
+        "at": "Put it on your CV"
       }
     },
     {
@@ -94,7 +99,7 @@
         "Open to two cities, or moving? Say so in line 1: “… articleship in statutory audit in Pune or Mumbai.”",
         "Below them, if you like: how you used your exam break, one college role, a line of search words (Statutory audit · Vouching · Excel · Tally Prime), and once your joining date is fixed, “I can join from [Month Year].”",
         "❌ “Passionate, hardworking, dedicated professional”, copied hobbies, one long paragraph, “he” or “she”.",
-        "Write in “I”, one line for each part, a blank line between them.",
+        "Write in “I”, one line for each part.",
         "Only lines you can talk about for two minutes in an interview. Read it on your phone before saving."
       ],
       "copy_label": "Your opening lines",
@@ -111,7 +116,7 @@
       "how": "Add profile section › Core › Education › type “The Institute of Chartered Accountants of India” and pick it from the list.",
       "example": [
         "Why: people who search by school (ICAI, your college) find you.",
-        "Two entries come up? Pick the one with ICAI’s logo.",
+        "Two entries come up? Pick the one with ICAI’s logo and the most members.",
         "Degree: CA Intermediate. Description: “Both groups cleared ([Month Year]) · ICITSS completed”, or one line per group with its month and year.",
         "Add your college the same way: B.Com, years, “pursuing” if you haven’t finished. CA Foundation as a second ICAI entry if you like.",
         "Marks: the same figures as your CV, never rounded up, or leave them out.",
@@ -129,7 +134,7 @@
         "✅ Goldman Sachs Excel Skills for Business Job Simulation · issuer Forage",
         "✅ SEBI Investor Awareness Test (Level 1) · issuer National Institute of Securities Markets (NISM)",
         "Issue date: the month you finished. Expiry: only if your certificate shows one. Credential ID and URL if it has them (on a Forage certificate, the verification code and certificate link at its foot), and the PDF as media.",
-        "Only what you’ve finished, with the same names and months as your CV. Different months become an interview question.",
+        "Only what you’ve finished, with the same names and months as your CV.",
         "The MSC Articleship Program line goes on your CV, not here.",
         "❌ Under Experience or Internship. A simulation is not a job.",
         "Experience: only real work. No work yet? Leave it empty. Helped in a CA office or a family business? Add it with what you did and how much: “Matched 120 purchase invoices with GSTR-2B for six clients; flagged 9 mismatches.”"
@@ -182,7 +187,7 @@
       "example": [
         "Job titles: Article Assistant, and Articled Assistant if the list offers it. Locations: only cities you can reach for an interview.",
         "Employment types: Full-time, plus Internship if the list offers it. Location types: On-site.",
-        "Start date (and Notice period, if your form shows it): when you can really join. Once it’s fixed, put your joining month in About too.",
+        "Start date: the option closest to when you can really join (Notice period too, if your form shows it).",
         "Who can see it: All LinkedIn members. “Recruiters only” hides you from partners and seniors who post openings themselves. The #OpenToWork frame is fine.",
         "While you’re there: Jobs › Preferences › Resumes and application data › upload the same CV PDF you mail firms, named as in the CV checklist, for LinkedIn applications. Don’t add your CV to your profile itself: anyone in your network can download it."
       ],
@@ -198,7 +203,7 @@
       "check": "Email in Contact info, a plain banner, your phone number nowhere public",
       "how": "Your profile › Contact info › the pencil.",
       "example": [
-        "Contact info: your name-based email, e.g. riya.sharma@email.com. Your connections see it. Leave the phone field empty.",
+        "Contact info: your name-based email, e.g. riya.sharma@email.com. Only your connections see it: a partner who hasn’t accepted yet finds it on your CV. Leave the phone field empty.",
         "Banner: a plain colour, one simple line such as “Statutory audit · Excel · Pune”, or a real photo of you presenting. Keep the left third empty: your photo sits on it.",
         "❌ Your phone number on the banner or in About: anyone can see it, and scam calls follow. HR who want to call will ask, or take it from your CV.",
         "❌ Quotes, city skylines, logos of firms you don’t work at."
@@ -215,8 +220,7 @@
         "Position at the time: no job yet? Pick your ICAI or college entry if the list shows it.",
         "❌ “I’ll write one if you write one”, or writing it for them to paste.",
         "Give them the facts and make “no” easy. The request below does both.",
-        "For [what you did with them], e.g. “I presented in your ICITSS batch” or “I matched your clients’ purchase invoices for two months”.",
-        "Writing to a woman? Ma’am in place of Sir, in the request and in your thanks.",
+        "For [what you did with them], e.g. “I presented in your ICITSS batch” or “I matched your clients’ purchase invoices for two months”. Ma’am for a woman, here and in your thanks.",
         "When it’s up: “Thank you, Sir. I’ve added it, and I’ll tell you where I join.”"
       ],
       "copy_label": "Your request",
@@ -233,7 +237,7 @@
   "notes": [
     {
       "title": "Same story as your CV",
-      "text": "On a laptop: your profile › More › Save to PDF. HR can save your profile the same way. Put it next to your CV and read line by line: result month and groups, marks, certificate months, projects, city. A date that doesn’t match becomes the first interview question.",
+      "text": "On a laptop: your profile › More › Save to PDF. HR can save your profile the same way. Put it next to your CV and read line by line: result month and groups, marks, certificate months, projects, city.",
       "link": {
         "label": "Open my CV",
         "href": "/cv-builder/?stage=articleship"
