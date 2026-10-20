@@ -1,0 +1,300 @@
+{
+  "tool": "cv-checklist",
+  "title": "CV checklist",
+  "intro": "22 checks, in the order you build a CV. Tick each one as your CV passes it.",
+  "items": [
+    {
+      "id": "built-in-builder",
+      "section": "Set-up",
+      "check": "Built in the CV Builder, from your order and design, in one font",
+      "example": [
+        "Order from Choose your CV (or the CV Recommender), design from CV templates.",
+        "One font for the whole page: Arial, Calibri, Cambria, Georgia or Times New Roman.",
+        "❌ Headings in one font, the body in another: the fix reviewers make most."
+      ],
+      "fix": {
+        "label": "Open the CV Builder",
+        "href": "/cv-builder/?stage=articleship"
+      }
+    },
+    {
+      "id": "one-page",
+      "section": "Set-up",
+      "check": "One A4 page, and the font never shrunk to fit it",
+      "example": [
+        "Body text 10 pt or more, your name 16 to 18 pt.",
+        "Too long? Cut the weakest line, never the font size: an old school activity, a hobby you can’t talk about for a minute, a fifth certificate."
+      ]
+    },
+    {
+      "id": "file-name",
+      "section": "Set-up",
+      "check": "File named “Your Name - Articleship CV - Domain.pdf”",
+      "example": [
+        "✅ Riya Sharma - Articleship CV - Audit.pdf",
+        "❌ resume final (2).pdf · CV_v3.pdf · Riya copy.pdf",
+        "Choosing between two domains? Two files, one per domain. Automail sends each firm the one for its domain."
+      ]
+    },
+    {
+      "id": "name-email-phone",
+      "section": "Header",
+      "check": "Your name as on your ICAI record, a name-based email and a phone you answer",
+      "example": [
+        "✅ Riya Sharma · riya.sharma@email.com · 98XXXXXXXX",
+        "❌ CA Riya Sharma · rockstar.riya99@email.com",
+        "No “CA” before your name until you are one. Keep the phone on ring while you apply."
+      ]
+    },
+    {
+      "id": "linkedin",
+      "section": "Header",
+      "check": "LinkedIn hyperlinked, with a custom URL that opens",
+      "example": [
+        "✅ The word “LinkedIn”, linked to linkedin.com/in/riya-sharma",
+        "❌ linkedin.com/in/riya-sharma-4b7a91203 typed out as plain text",
+        "Tap it in your PDF: it must open your profile."
+      ],
+      "fix": {
+        "label": "LinkedIn profile checklist",
+        "href": "/articleship-program/linkedin-checklist/"
+      }
+    },
+    {
+      "id": "city-only",
+      "section": "Header",
+      "check": "Your city only, not your address",
+      "example": [
+        "✅ Pune",
+        "✅ Pune (open to relocate to Mumbai)",
+        "❌ Flat 12, Shanti Apartments, Kothrud, Pune 411038"
+      ]
+    },
+    {
+      "id": "nothing-personal",
+      "section": "Header",
+      "check": "No photo, date of birth, father’s name, Declaration or signature",
+      "example": [
+        "Also out: age, religion, marital status, Aadhaar, your ICAI registration number, and a “Resume” or “CV” heading. Your name is the heading.",
+        "A firm that needs these asks for them on its own form. The space goes to a proof line."
+      ]
+    },
+    {
+      "id": "objective",
+      "section": "Header",
+      "check": "A three-line objective that names your domain, or none at all",
+      "example": [
+        "❌ To work in a reputed organisation where I can utilise my skills and grow with the organisation.",
+        "✅ CA Intermediate cleared ([Month Year], first attempt); ICITSS completed. Kept my family shop’s books in Tally Prime for a year. Seeking articleship in GST, to learn monthly returns and ITC matching.",
+        "Five-second test: leave your CV for a day, then look at it for five seconds. Your Inter result, your best proof and your domain should show in the top third. If not, move them up."
+      ],
+      "fix": {
+        "label": "The Nothing CV, page 2",
+        "href": "/learning-management-system/course?course=msc-articleship-program&session=2&resource=The+Nothing+CV&page=2"
+      }
+    },
+    {
+      "id": "education-order",
+      "section": "Education",
+      "check": "Education newest first, nothing below Class X, one marks format per kind of row",
+      "example": [
+        "Columns: Year · Qualification · Institute or board · Marks · Remarks.",
+        "ICAI levels as marks out of the maximum, CGPA as CGPA, school as a percentage, with the same decimals everywhere.",
+        "Year only is fine. Show a month in one row and you show it in every row.",
+        "Short names (“ICAI”), so no row is taller than the rest."
+      ]
+    },
+    {
+      "id": "remarks",
+      "section": "Education",
+      "check": "A remark on every row, and only what a marksheet or certificate proves",
+      "example": [
+        "✅ First attempt · 74 in Taxation · 98 in Accountancy",
+        "✅ AIR 34: only an all-India rank ICAI gave you",
+        "✅ Exemption in [paper]: only where the marksheet shows it; otherwise write the score",
+        "❌ A blank cell · “City rank 2” · “Topper” with no certificate"
+      ],
+      "fix": {
+        "label": "Choose your CV, page 3",
+        "href": "/learning-management-system/course?course=msc-articleship-program&session=2&resource=Choose+your+CV&page=3"
+      }
+    },
+    {
+      "id": "groups-attempts",
+      "section": "Education",
+      "check": "Groups, attempts and results shown exactly as they are",
+      "example": [
+        "Groups cleared in different sittings: one row each, with its own month, year and marks.",
+        "More than one attempt: a year-only column is fine. If asked, give the true count in one line and what changed.",
+        "Result not out yet: “Result awaited”. Never a score before the result."
+      ],
+      "fix": {
+        "label": "Choose your CV, page 4",
+        "href": "/learning-management-system/course?course=msc-articleship-program&session=2&resource=Choose+your+CV&page=4"
+      }
+    },
+    {
+      "id": "icitss",
+      "section": "Education",
+      "check": "ICITSS in its own education row, with its true status",
+      "example": [
+        "✅ ICITSS (OC + ITT) · Completed [Month Year]",
+        "✅ Ongoing, completes [Month Year]",
+        "✅ Batch from [Month Year]",
+        "❌ “Completed” while it is pending. Firms check, and one false line makes them doubt every true one."
+      ]
+    },
+    {
+      "id": "line-formula",
+      "section": "Proof",
+      "check": "Every line written the Keywords way: verb, what, how many, with what",
+      "example": [
+        "❌ Responsible for my father’s shop accounts.",
+        "✅ Recorded 1,400 sales and purchase vouchers in Tally Prime for my father’s paint shop over 10 months; reconciled the bank every month.",
+        "Past tense, no “I”, one or two lines. No record, no number."
+      ],
+      "fix": {
+        "label": "Keywords by domain, last page",
+        "href": "/learning-management-system/course?course=msc-articleship-program&session=2&resource=Keywords+by+domain&page=15"
+      }
+    },
+    {
+      "id": "assisted",
+      "section": "Proof",
+      "check": "“Assisted” wherever the work was shared, and no verb above a trainee’s level",
+      "example": [
+        "✅ Assisted the audit team in checking 45 fixed-asset additions against invoices",
+        "❌ Led the statutory audit · Approved · Certified · Signed · Spearheaded",
+        "Pick a verb one step too high and the interviewer walks you down in two questions."
+      ],
+      "fix": {
+        "label": "The verb ladder",
+        "href": "/learning-management-system/course?course=msc-articleship-program&session=2&resource=Keywords+by+domain&page=15"
+      }
+    },
+    {
+      "id": "certifications",
+      "section": "Proof",
+      "check": "Simulations and courses under “Certifications and job simulations”, four outside certificates at most",
+      "example": [
+        "Never under Experience or Internship, and never “virtual intern”.",
+        "Your MSC Work Simulation lines and the MSC Articleship Program line don’t count in the four. ICITSS stays in the education table.",
+        "Not finished yet? “In progress, completes [Month Year]”."
+      ],
+      "fix": {
+        "label": "Guidebook, chapter 3",
+        "href": "/learning-management-system/course?course=msc-articleship-program&session=1&resource=MSC+Articleship+Guidebook&page=33"
+      }
+    },
+    {
+      "id": "no-client-names",
+      "section": "Proof",
+      "check": "No client names: the industry and size instead",
+      "example": [
+        "✅ a ₹60 crore pharma distributor in Indore",
+        "❌ The client’s name, even a famous one",
+        "The same goes for anything you attach or show: a work sample, a screenshot, an Excel file."
+      ]
+    },
+    {
+      "id": "two-questions",
+      "section": "Proof",
+      "check": "Every line, skill and hobby survives two questions",
+      "example": [
+        "Read each line aloud, write the two questions it invites, and answer them.",
+        "Excel: XLOOKUP, PivotTables → “Share your screen and make a PivotTable of this.” “XLOOKUP or VLOOKUP, and why?”",
+        "Tally Prime → “Pass a purchase entry with GST.” “How do you reconcile the bank in Tally?”",
+        "SAP → “Which module? Name one transaction you used.”",
+        "ICITSS completed → “What did you make in ITT?”",
+        "CARO 2020 → “Which companies does it not apply to?”",
+        "Audit job simulation → “What is a risk-control matrix? Which control did you test?”",
+        "Work Simulation: flagged 3 cut-off errors → “What is cut-off? What would you do next with those errors?”",
+        "Reading → “What did you read last? What was its main idea?”",
+        "Trekking → “Which trek, how high, what went wrong?”",
+        "Captain, cricket team → “How did you pick the eleven? A time you dropped someone?”",
+        "Volunteer teacher → “What did you teach, and how did you know it worked?”",
+        "❌ Advanced Excel ✅ Excel (proficient): XLOOKUP, PivotTables, SUMIFS",
+        "Hobbies: specific and current, and one minute on each.",
+        "❌ Reading, music, travelling ✅ Last read: [title]",
+        "Can’t answer both? Change the line, or learn it before you send the CV."
+      ]
+    },
+    {
+      "id": "bold-and-even",
+      "section": "Finish",
+      "check": "Bold only the key result in a line, and the page even",
+      "example": [
+        "The ten fixes reviewers make most:",
+        "1. Sections in different fonts",
+        "2. Uneven space under headings",
+        "3. A table running past the margin",
+        "4. One table row taller than the rest",
+        "5. Achievements numbered 1, 2, 3 (use bullets)",
+        "6. CGPA in one row, % in the next, with no label",
+        "7. A line ending in one word on its own",
+        "8. An employer nobody knows, with no line on what it is (“a 12-person CA firm in Indore, audit and tax”)",
+        "9. Dates in different formats, not lined up on the right",
+        "10. One spelling or full-stop slip"
+      ]
+    },
+    {
+      "id": "pdf-links",
+      "section": "Finish",
+      "check": "Saved as a PDF and opened: one page, every link works",
+      "example": [
+        "From the CV Builder, download the PDF. From Word: File → Save As → PDF. Never a photo or a scan.",
+        "Open the PDF and tap your LinkedIn link and your email.",
+        "Copy one line into a notes app: if it pastes as text, in the right order, a firm’s portal can read it too."
+      ],
+      "fix": {
+        "label": "Open the CV Builder",
+        "href": "/cv-builder/?stage=articleship"
+      }
+    },
+    {
+      "id": "phone-check",
+      "section": "Finish",
+      "check": "Opened on your phone: readable without zooming",
+      "example": [
+        "Mail the PDF to yourself and open it from the mail on your phone.",
+        "Have to pinch to read a line? Fix the design or cut the line; never shrink the font."
+      ]
+    },
+    {
+      "id": "a4-print",
+      "section": "Finish",
+      "check": "Printed once on A4: one page, clear in black and white",
+      "example": [
+        "Grey text, thin lines and coloured headings must still read on a black-and-white print.",
+        "Before you read your own, read five classmates’ CVs: your own mistakes jump out after that.",
+        "Then read yours once from the bottom line up, with a pen."
+      ]
+    },
+    {
+      "id": "same-story",
+      "section": "Finish",
+      "check": "Same story on LinkedIn and in your introduction: marks, dates, titles and numbers match",
+      "example": [
+        "Two CVs for two domains? Only the objective, the order of your proof and the order of your skills change. Marks, dates and numbers stay identical."
+      ],
+      "fix": {
+        "label": "LinkedIn profile checklist",
+        "href": "/articleship-program/linkedin-checklist/"
+      }
+    }
+  ],
+  "done": {
+    "title": "Your CV is ready",
+    "text": "Run the CV Reviewer on your PDF. Then send it for a personal review, with your target domain and the one question you want answered.",
+    "links": [
+      {
+        "label": "Run CV Reviewer",
+        "href": "/cv-reviewer/"
+      },
+      {
+        "label": "Personal CV review",
+        "href": "https://wa.me/917228881182?text=Hi%2C%20my%20CV%20checklist%20is%20done.%20Please%20review%20my%20articleship%20CV."
+      }
+    ]
+  }
+}

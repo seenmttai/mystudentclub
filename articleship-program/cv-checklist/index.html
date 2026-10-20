@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en" class="ap-gated">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>CV checklist | My Student Club</title>
+<meta name="description" content="Check your articleship CV, one tick at a time.">
+<meta name="theme-color" content="#ffffff">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/articleship-program/shared/articleship-tools.css">
+<link rel="stylesheet" href="/articleship-program/cv-checklist/cv-checklist.css">
+<link rel="icon" href="/articleship-program/shared/msc-symbol.svg" type="image/svg+xml">
+</head>
+<body class="ap-page ap-day-1">
+<header class="ap-topbar">
+  <a class="ap-brand" href="/learning-management-system/course?course=msc-articleship-program&amp;session=2" aria-label="Back to Day 1">
+    <img src="/articleship-program/shared/msc-logo.svg" alt="My Student Club" width="132" height="26"></a>
+  <span class="ap-topbar-title">CV checklist</span>
+</header>
+<main class="ap-main is-wide cvc-main">
+  <div class="ap-hero cvc-hero">
+    <p class="cvc-day">Day 1 · Check your CV</p>
+    <h1 class="ap-title">Check your <span class="ap-mark">CV</span></h1>
+    <p class="ap-lede" id="cvc-lede">Tick each check as your CV passes it.</p>
+  </div>
+  <div class="cvc-layout">
+    <div id="app" class="cvc-list"></div>
+    <aside class="cvc-side" aria-label="Your progress">
+      <nav class="cvc-nav" id="cvc-nav" aria-label="Sections"></nav>
+      <div class="cvc-end" id="cvc-end"></div>
+    </aside>
+  </div>
+</main>
+<script src="/scripts/supabase.js"></script>
+<script src="/scripts/supabase-init.js"></script>
+<script src="/scripts/articleship-gate.js"></script>
+<script src="/scripts/articleship-progress.js"></script>
+<script src="/scripts/articleship-checklist.js"></script>
+<script src="/scripts/articleship-cv-checklist.js"></script>
+<script>
+MSCArticleshipCvChecklist.boot();
+</script>
+</body>
+</html>
