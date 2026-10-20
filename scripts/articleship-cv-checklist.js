@@ -6,8 +6,9 @@
  *
  * Built on the shared checklist engine (scripts/articleship-checklist.js). This file adds the page around it: the
  * content load, a "Jump to N" button for the next unticked check, a section list on wide screens, the closing card
- * (always visible, green at 100%; the one-per-student personal review opens only at 100%), "Untick all", and the
- * shared "my domain" in the file-name example and the review message.
+ * (always visible, green at 100%; the one-per-student personal review is sent once all checks are ticked, so its
+ * button here is live at 100%), "Untick all", the shared "my domain" in the file-name example and the review message,
+ * and a slimmer progress row on phones once the student scrolls past the title.
  *
  * Browser: window.MSCArticleshipCvChecklist (boot() is called by the page). Node (tests): require('./scripts/articleship-cv-checklist.js').
  */
@@ -21,7 +22,7 @@
 
     const TOOL = 'cv-checklist';
     const CONTENT_URL = '/articleship-program/cv-checklist/cv-checklist.json';
-    const INTRO = '{n} checks, in the order you build a CV. Tick each one as your CV passes it.';
+    const INTRO = '{n} checks, in the order you build a CV. Tick a check only when your PDF passes it.';
 
     // "my domain" as it goes in a file name: "Riya Sharma - Articleship CV - GST.pdf".
     const FILE_DOMAIN = Object.freeze({
@@ -106,7 +107,7 @@
         return {
             complete: false,
             title: 'Then, two reviews',
-            text: 'Run the CV Reviewer on your PDF. You get one personal review, so it opens once all ' + summary.total + ' are ticked.',
+            text: 'Run the CV Reviewer on your PDF. Then send it for your one personal review, once all ' + summary.total + ' are ticked.',
             links
         };
     }
@@ -428,6 +429,22 @@
         };
     }
 
+    /**
+     * Phones: the sticky progress row slims down once the title has scrolled away, and grows back at the top.
+     * options: { target (the title block), progress (.ap-progress), Observer (IntersectionObserver) }. Returns stop().
+     */
+    function watchCompact(options) {
+        const o = options || {};
+        const Observer = o.Observer || root.IntersectionObserver;
+        if (!o.target || !o.progress || typeof Observer !== 'function') return () => {};
+        const observer = new Observer(entries => {
+            const entry = entries[entries.length - 1];
+            if (entry) o.progress.classList.toggle('cvc-compact', !entry.isIntersecting);
+        }, { rootMargin: '-56px 0px 0px 0px' });
+        observer.observe(o.target);
+        return () => { observer.disconnect(); o.progress.classList.remove('cvc-compact'); };
+    }
+
     function showError(container, retry) {
         const doc = container.ownerDocument || root.document;
         container.textContent = '';
@@ -477,6 +494,7 @@
                     : {}),
                 domainLabel: slug => (Progress && typeof Progress.domainLabel === 'function' ? Progress.domainLabel(slug) : '')
             });
+            watchCompact({ target: doc.querySelector('.cvc-hero'), progress: container.querySelector('.ap-progress') });
             if (Progress && typeof Progress.onSettingsChange === 'function') {
                 try { Progress.onSettingsChange(() => page.refreshDomain()); } catch (_) { /* the domain line is optional */ }
             }
@@ -491,6 +509,6 @@
 
     return Object.freeze({
         TOOL, CONTENT_URL, FILE_DOMAIN, introText, isReviewLink, reviewMessage, reviewHref, fileNames, withoutDone, endState,
-        navItems, nextItem, exampleLines, boldParts, loadContent, start, boot
+        navItems, nextItem, exampleLines, boldParts, loadContent, watchCompact, start, boot
     });
 });

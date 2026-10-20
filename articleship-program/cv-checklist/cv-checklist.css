@@ -50,6 +50,22 @@
     }
 }
 
+/* Phones: once the title has scrolled away the progress row slims down (scripts: watchCompact) */
+@media (max-width: 767px) {
+    .cvc-list .ap-progress { transition: padding 0.15s ease; }
+    .cvc-list .ap-progress.cvc-compact { padding-top: 6px; padding-bottom: 8px; }
+    .cvc-list .ap-progress.cvc-compact .ap-progress-text { min-height: 28px; margin-bottom: 4px; }
+    .cvc-list .ap-progress.cvc-compact .ap-progress-count { font-size: 21px; }
+    .cvc-list .ap-progress.cvc-compact .ap-progress-bar { height: 6px; }
+    .cvc-list .ap-progress.cvc-compact .cvc-next { min-height: 28px; padding: 3px 10px; }
+}
+
+/* Narrow phones: "Example +" and the fix link always on their own lines, so every card has the same shape */
+@media (max-width: 419px) {
+    .cvc-list .ap-cl-extra { flex-direction: column; align-items: flex-start; gap: 2px; }
+    .cvc-list .ap-cl-extra > .ap-cl-example { align-self: stretch; }
+}
+
 /* Sticky top bar + progress row stay clear of a jumped-to check */
 .ap-cl-item, .ap-cl-section { scroll-margin-top: 132px; }
 .ap-cl-item.cvc-flash { animation: cvc-flash 1.4s ease; }
@@ -191,6 +207,7 @@
 
 @media (prefers-reduced-motion: reduce) {
     .ap-cl-item.cvc-flash { animation: none; border-color: var(--ap-accent); }
+    .cvc-list .ap-progress { transition: none; }
 }
 
 @media print {

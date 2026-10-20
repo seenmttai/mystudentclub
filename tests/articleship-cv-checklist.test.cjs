@@ -60,15 +60,26 @@ test('content: 22 checks in build order, every one with an example, links that r
     assert.match(byId['certifications'].check, /Certifications and job simulations”, four outside certificates at most/);
     assert.match(byId['assisted'].check, /Assisted/);
     assert.match(byId['two-questions'].check, /two questions/);
-    // The claim → question drill, every ready example (skills, simulations, hobbies, roles).
-    ['Excel', 'Tally Prime', 'SAP', 'ICITSS', 'CARO', 'job simulation', 'Work Simulation', 'Reading', 'Trekking', 'Captain', 'Volunteer teacher', 'Last read']
+    // The claim → question drill, every ready example (skills, simulations, hobbies, roles): the full harvest list.
+    ['Excel', 'Tally Prime', 'SAP', 'ICITSS', 'CARO 2020', 'PwC US Audit Job Simulation', 'Work Simulation', 'Reading', 'Trekking',
+        'Captain, cricket team', 'Volunteer teacher', 'Last read']
         .forEach(claim => assert.ok(byId['two-questions'].example.includes(claim), 'two-question example: ' + claim));
+    const probes = byId['two-questions'].example.split('\n').filter(line => line.includes(' → '));
+    assert.ok(probes.length >= 11, 'eleven claim → question pairs');
+    probes.forEach(line => assert.ok((line.split(' → ')[1].match(/“[^”]+”/g) || []).length >= 2, 'two questions for ' + line.split(' → ')[0]));
+    // Skills and interests as ❌/✅ pairs: named so they can be tested.
+    ['❌ Skills: Advanced Excel, Taxation, Communication', '✅ Excel (proficient): XLOOKUP, PivotTables, SUMIFS', '❌ Interests: reading, music, travelling', '✅ Reading business biographies. Last read: [title]']
+        .forEach(line => assert.ok(byId['two-questions'].example.split('\n').includes(line), line));
     // The quick-look test and the peer read: one "before you send" check, last in Finish.
     const last = model.items[model.items.length - 1];
     assert.equal(last.id, 'before-you-send');
     assert.match(last.check, /^Before you send/);
     assert.match(last.example, /five seconds/, 'the quick-look test');
     assert.match(last.example, /five classmates’ CVs/, 'the peer read');
+    // No classmates' CVs to hand: the look-book's filled-in CVs (made-up applicants), never Day 6's industrial-training CVs.
+    assert.match(last.example, /filled-in CVs in CV templates/);
+    assert.match(last.fix.href, /resource=CV\+templates/);
+    assert.doesNotMatch(CONTENT_TEXT, /Post Articleship CVs/);
     assert.doesNotMatch(byId['objective'].example, /five seconds/);
     assert.doesNotMatch(byId['phone-and-print'].example, /classmates/);
     // The ten fixes reviewers make most, all ten, with a bold example that shows how bold is used.
@@ -122,7 +133,12 @@ test('content: every programme deep link names a real row of the right Day; tool
             const row = session.resources.find(r => r.title === params.get('resource'));
             assert.ok(row, '"' + params.get('resource') + '" is a row of Day ' + session.day_number);
             assert.equal(row.type, 'pdf');
-            assert.ok(Number(params.get('page')) >= 1);
+            // A page link names the heading on that page; page 1 (or the whole file) is written as no page at all.
+            const item = CONTENT.items.find(entry => entry.fix && entry.fix.href === href);
+            if (params.has('page')) assert.ok(Number(params.get('page')) >= 2, 'page 1 is written as no page: ' + href);
+            if (!item.fix.find) assert.equal(params.has('page'), false, 'a link without a heading to find opens the whole file: ' + href);
+            const L = require('../scripts/articleship-lms.js');
+            assert.equal(href, L.resourceLink(session.day_number, row.title, Number(params.get('page')) || 1), 'built as resourceLink builds it');
         } else {
             assert.ok(allUrls.includes(href), href + ' is a programme row');
         }
@@ -136,8 +152,8 @@ test('content: every programme deep link names a real row of the right Day; tool
     assert.equal(keywords, L.resourceLink(1, 'Keywords by domain', pageOf(keywords)), 'Keywords by domain, "How to write a line"');
     const verbs = CONTENT.items.find(item => item.id === 'assisted').fix.href;
     assert.equal(verbs, L.resourceLink(1, 'Keywords by domain', pageOf(verbs)));
-    // Every deep link names the heading its page carries (the wiring step and the PDF test below use it).
-    CONTENT.items.filter(item => item.fix && item.fix.href.startsWith('/learning-management-system/'))
+    // Every deep link to a page names the heading that page carries (the wiring step and the PDF test below use it).
+    CONTENT.items.filter(item => item.fix && item.fix.href.startsWith('/learning-management-system/') && /[?&]page=/.test(item.fix.href))
         .forEach(item => assert.ok(String(item.fix.find || '').length >= 6, 'find text for ' + item.id));
     const objective = CONTENT.items.find(item => item.id === 'objective').fix.href;
     assert.equal(objective, L.resourceLink(1, 'The Nothing CV', pageOf(objective)));
@@ -180,6 +196,10 @@ test('helpers: closing card, section list, next check', () => {
     const before = CV.endState(none, model.done);
     assert.equal(before.complete, false);
     assert.match(before.text, /all 22 are ticked/);
+    // Row 1.10 ("send your finished CV once the checklist is done") is a plain link in the LMS: the card says when to send,
+    // never that the review itself "opens" only here.
+    assert.match(before.text, /^Run the CV Reviewer on your PDF\. Then send it for your one personal review, once all 22 are ticked\.$/);
+    assert.doesNotMatch(before.text, /opens/);
     assert.equal(before.links.length, 2, 'the next step shows before 100% too');
     const all = Object.fromEntries(model.items.map(i => [i.id, true]));
     const after = CV.endState(C.summarise(model, all), model.done);
@@ -201,7 +221,7 @@ test('start: ticks save, "14 of 22 done", jump to the next check, section counts
     const { doc, container, nav, end, lede } = pageDom();
     const store = memoryStore({ ticks: {} });
     const page = CV.start({ container, nav, end, lede, content: CONTENT, store });
-    assert.equal(lede.textContent, '22 checks, in the order you build a CV. Tick each one as your CV passes it.');
+    assert.equal(lede.textContent, '22 checks, in the order you build a CV. Tick a check only when your PDF passes it.');
     assert.equal(doc.querySelectorAll('.ap-cl-item').length, 22);
     assert.equal(doc.querySelector('.ap-progress-count').textContent, '0 of 22 done');
     const next = doc.querySelector('.cvc-next');
@@ -356,7 +376,7 @@ test('personal review: one per student, so it opens only at 100%, with domain, q
 test('intro is built from the real count, so a different content file never shows a stale number', () => {
     assert.equal(CV.introText('{n} checks, in the order you build a CV.', 25), '25 checks, in the order you build a CV.');
     assert.equal(CV.introText('22 checks, in the order you build a CV.', 19), '19 checks, in the order you build a CV.');
-    assert.equal(CV.introText('', 3), '3 checks, in the order you build a CV. Tick each one as your CV passes it.');
+    assert.equal(CV.introText('', 3), '3 checks, in the order you build a CV. Tick a check only when your PDF passes it.');
     const small = pageDom();
     CV.start({ container: small.container, lede: small.lede, content: { intro: '22 checks, in the order you build a CV.', items: ['a', 'b', 'c'] } });
     assert.equal(small.lede.textContent, '3 checks, in the order you build a CV.');
@@ -519,6 +539,19 @@ function rowPdf(title) {
     return pick ? path.join(dir, pick) : null;
 }
 
+/**
+ * Where a page carries a heading: its first occurrence that is not a contents-list entry (one right after "–", "•" or
+ * "→"), or -1. Same rule as build/tools/cv-checklist/wire_pages.mjs: a day divider lists the Guidebook's questions near
+ * its top, while the question itself starts lower down on its own page.
+ */
+function headingAt(pageText, wanted) {
+    const text = normaliseText(pageText);
+    for (let at = text.indexOf(wanted); at >= 0; at = text.indexOf(wanted, at + 1)) {
+        if (!/[–—•→-]\s?$/.test(text.slice(Math.max(0, at - 3), at))) return at;
+    }
+    return -1;
+}
+
 /** Every page's text, read once per PDF (pdftotext ends each page with a form feed); null if unreadable. */
 const pdfCache = new Map();
 function pdfPages(file) {
@@ -533,19 +566,20 @@ function pdfPages(file) {
 test('fix-it pages: each deep link opens the page that carries its heading (checked once the PDF is built)', t => {
     if (!fs.existsSync(CONTENT_BUILD)) { t.skip('content build folder not on this machine'); return; }
     if (spawnSync('pdftotext', ['-v']).error) { t.skip('pdftotext (poppler) not installed'); return; }
-    const deep = CONTENT.items.filter(item => item.fix && item.fix.href.startsWith('/learning-management-system/'));
+    // Links that open a whole file (no page, no heading) have nothing to check.
+    const deep = CONTENT.items.filter(item => item.fix && item.fix.href.startsWith('/learning-management-system/') && item.fix.find);
     const waiting = [];
     let checked = 0;
     deep.forEach(item => {
         const params = new URLSearchParams(item.fix.href.split('?')[1]);
         const title = params.get('resource');
-        const page = Number(params.get('page'));
+        const page = Number(params.get('page')) || 1;
         const file = rowPdf(title);
         if (!file) { waiting.push(title); return; }
         const wanted = normaliseText(item.fix.find);
         const texts = pdfPages(file);
         if (!texts) { waiting.push(title + ' (unreadable)'); return; }
-        const at = texts.map(text => normaliseText(text).indexOf(wanted));
+        const at = texts.map(text => headingAt(text, wanted));
         const fix = 'Run build/tools/cv-checklist/wire_pages.mjs to take the page from the PDF.';
         assert.ok(at[page - 1] >= 0, item.id + ': "' + title + '" page ' + page + ' does not carry "' + item.fix.find + '". ' + fix);
         // Its heading, not a mention: no other page carries the text much earlier on the page (same rule as wire_pages.mjs).
@@ -554,4 +588,79 @@ test('fix-it pages: each deep link opens the page that carries its heading (chec
         checked += 1;
     });
     t.diagnostic('checked ' + checked + ' fix-it pages; PDFs not built yet: ' + ([...new Set(waiting)].join(', ') || 'none'));
+});
+
+// ---------- One content file, one sheet fallback ----------
+
+test('content: the website copy is the content build’s file, byte for byte (checked on the machine that has the build)', t => {
+    const built = path.join(CONTENT_BUILD, 'day-1', '1.8', 'cv-checklist.json');
+    if (!fs.existsSync(built)) { t.skip('content build not on this machine'); return; }
+    assert.equal(CONTENT_TEXT, fs.readFileSync(built, 'utf8'),
+        'copy build/day-1/1.8/cv-checklist.json over articleship-program/cv-checklist/cv-checklist.json (or the reverse) and rerun wire_pages.mjs');
+});
+
+/** RFC 4180 rows (quoted fields may hold commas, quotes and line breaks). */
+function csvRows(text) {
+    const rows = [];
+    let row = [];
+    let field = '';
+    let quoted = false;
+    for (let i = 0; i < text.length; i += 1) {
+        const ch = text[i];
+        if (quoted) {
+            if (ch === '"' && text[i + 1] === '"') { field += '"'; i += 1; } else if (ch === '"') quoted = false; else field += ch;
+        } else if (ch === '"') quoted = true;
+        else if (ch === ',') { row.push(field); field = ''; } else if (ch === '\n' || ch === '\r') {
+            if (ch === '\r' && text[i + 1] === '\n') i += 1;
+            row.push(field); rows.push(row); row = []; field = '';
+        } else field += ch;
+    }
+    if (field || row.length) { row.push(field); rows.push(row); }
+    return rows;
+}
+
+test('sheet fallback: the one generated sheet (build/day-1/1.8/out) carries every check, example and fix link of this JSON', t => {
+    const csvPath = path.join(CONTENT_BUILD, 'day-1', '1.8', 'out', 'CV checklist.csv');
+    if (!fs.existsSync(csvPath)) { t.skip('content build not on this machine'); return; }
+    assert.ok(fs.existsSync(path.join(CONTENT_BUILD, 'day-1', '1.8', 'out', 'CV checklist.xlsx')));
+    assert.equal(fs.existsSync(path.join(CONTENT_BUILD, 'tools', 'cv-checklist', 'out')), false, 'one sheet only: the old tools/cv-checklist/out copy is gone');
+    const rows = csvRows(fs.readFileSync(csvPath, 'utf8').replace(/^﻿/, '')).slice(1);
+    const stale = 'stale: run python3 src/build.py in build/day-1/1.8';
+    assert.equal(rows.length, CONTENT.items.length, stale);
+    CONTENT.items.forEach((item, i) => {
+        const example = (Array.isArray(item.example) ? item.example.join('\n') : item.example).replace(/\*\*/g, '');
+        const link = item.fix ? (item.fix.href.startsWith('/') ? 'https://www.mystudentclub.com' + item.fix.href : item.fix.href) : '';
+        assert.deepEqual(rows[i], [String(i + 1), item.section, item.check, example, item.fix ? item.fix.label : '', link, 'FALSE'], stale + ' (check ' + (i + 1) + ')');
+    });
+});
+
+test('phones: the progress row slims down once the title scrolls away, and grows back', () => {
+    const { doc, container } = pageDom();
+    CV.start({ container, content: CONTENT, store: memoryStore({ ticks: {} }) });
+    const hero = doc.createElement('div');
+    doc.body.prepend(hero);
+    const progress = container.querySelector('.ap-progress');
+    let observer = null;
+    class FakeObserver {
+        constructor(callback, options) { this.callback = callback; this.options = options; this.targets = []; observer = this; }
+        observe(target) { this.targets.push(target); }
+        disconnect() { this.targets = []; }
+    }
+    const stop = CV.watchCompact({ target: hero, progress, Observer: FakeObserver });
+    assert.deepEqual(observer.targets, [hero]);
+    assert.equal(observer.options.rootMargin, '-56px 0px 0px 0px', 'the title counts as gone once it is under the top bar');
+    observer.callback([{ isIntersecting: false }]);
+    assert.ok(progress.classList.contains('cvc-compact'));
+    observer.callback([{ isIntersecting: true }]);
+    assert.equal(progress.classList.contains('cvc-compact'), false);
+    observer.callback([{ isIntersecting: false }]);
+    stop();
+    assert.equal(progress.classList.contains('cvc-compact'), false);
+    assert.deepEqual(observer.targets, []);
+    // No IntersectionObserver (old browser, tests): nothing happens and nothing breaks.
+    assert.equal(typeof CV.watchCompact({ target: hero, progress, Observer: null }), 'function');
+    const css = fs.readFileSync(path.join(TOOL_DIR, 'cv-checklist.css'), 'utf8');
+    assert.match(css, /@media \(max-width: 767px\)[\s\S]*\.ap-progress\.cvc-compact/);
+    // Narrow phones: "Example +" and the fix link each on their own line, on every card.
+    assert.match(css, /@media \(max-width: 419px\) \{\s*\.cvc-list \.ap-cl-extra \{ flex-direction: column;/);
 });
