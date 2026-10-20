@@ -265,7 +265,7 @@
         "✅ Reconciled **₹4.2 lakh** of vendor balances for 60 suppliers",
         "❌ **Reconciled ₹4.2 lakh of vendor balances for 60 suppliers**",
         "Bold a number or a result: never the verb, never a whole line or section. Text left-aligned, never justified. Full stops at the end of every bullet, or on none.",
-        "Dates on one tab stop at the right edge, in one format everywhere: “Mar [Year]” in every row, never “03/[YY]” in one and “March [Year]” in another.",
+        "Dates on one tab stop at the right edge, in one format everywhere: never “03/25” in one row and “March” spelt out in the next.",
         "▸ Six more fixes reviewers make",
         "1. Uneven space under headings → Set one Space After for every heading (Word: Paragraph, then Spacing)",
         "2. A table past the margin → Narrower columns or shorter words",
