@@ -174,6 +174,15 @@ test('CV probes: each kind of line gets its own probe; a Work Simulation line br
     assert.equal(edu[0].type, 'achievement', 'an exemption is an achievement, not a course ("sitting" is not ITT)');
     assert.equal(edu.length, 2, 'a plain degree row is not probed as a course');
     assert.equal(edu[1].type, 'role', '"committee" is not ITT');
+    const did = articleship.matchCvProbes([
+        'Three months as an intern in a 12-person CA firm: vouching, GSTR-1 data and a stock count.',
+        'Prepared GSTR-1 data for 6 clients from their sales registers in Excel.',
+        'Prepared TDS working for 10 salaried clients',
+        'Read SA 500 and SA 230 before my internship interview',
+        'ICITSS (OC + ITT) | ICAI | Completed | Group lead, OC case presentation'
+    ], content);
+    assert.deepEqual(did.map(m => m.type), ['work', 'project', 'project', 'standard', 'course'],
+        'a line that reports work done is probed as work, not as "explain the standard"');
 
     assert.equal(articleship.simulationDomain(SAMPLE_CV[3]), 'gst');
     assert.equal(articleship.simulationDomain('Statutory audit Work Simulation, MSC Articleship Program | Vouched 20 bills'), 'statutory-audit');
@@ -186,6 +195,8 @@ test('CV probes: each kind of line gets its own probe; a Work Simulation line br
     assert.ok(!forage.cross.some(q => content.domains.gst.simulation.includes(q)), 'outside simulations get only the general cross-questions');
     const hr = articleship.pickCvProbes(matches, 'hr', 2, content);
     assert.deepEqual(hr.map(p => p.type), ['role', 'achievement']);
+    const full = articleship.pickCvProbes(matches, 'full', 3, content);
+    assert.deepEqual(full.map(p => p.type), ['simulation', 'work', 'programme'], 'a full interview asks about the internship early');
     assert.deepEqual(articleship.pickCvProbes(matches, 'call', 3, content), []);
 });
 
@@ -212,9 +223,9 @@ test('full interview: intro, CV lines, HR, core, the domain, a situation, then q
     assert.equal(items('opening')[0].id, 'intro');
     assert.equal(items('cv').length, 3);
     assert.deepEqual(items('hr').map(i => i.id).filter(id => ['why-domain', 'why-firm', 'attempts'].includes(id)), ['why-domain', 'why-firm', 'attempts']);
-    assert.equal(items('core').length, 4);
-    assert.equal(new Set(items('core').map(i => content.core.find(c => c.id === i.id).topic)).size, 4, 'core questions span four topics');
-    assert.equal(items('domain').length, 4);
+    assert.equal(items('core').length, 5, 'five Core questions');
+    assert.equal(new Set(items('core').map(i => content.core.find(c => c.id === i.id).topic)).size, 5, 'core questions span five topics');
+    assert.equal(items('domain').length, 5, 'five from the domain booklet');
     assert.ok(items('domain').every(i => content.domains.gst.questions.some(q => q.id === i.id)));
     assert.equal(items('close')[0].id, 'questions-for-us');
     const whyDomain = items('hr').find(i => i.id === 'why-domain');
@@ -268,7 +279,7 @@ test('questions rotate: the next practice prefers questions not asked before', (
     const second = articleship.buildPlan(content, { round: 'full', domain: 'internal-audit', seed: 11, asked: data.asked });
     const domainIds = plan => plan.sections.find(s => s.id === 'domain').items.map(i => i.id);
     const overlap = domainIds(second).filter(id => domainIds(first).includes(id));
-    assert.equal(overlap.length, 0, 'eleven internal-audit questions: four new ones next time');
+    assert.equal(overlap.length, 0, 'eleven internal-audit questions: five new ones next time');
     const again = articleship.buildPlan(content, { round: 'full', domain: 'internal-audit', seed: 11 });
     assert.deepEqual(allItems(again).map(i => i.id), allItems(first).map(i => i.id), 'same seed, same plan');
 });

@@ -69,7 +69,7 @@
 
     // How many of each kind a round asks (the plan is longer than the time on purpose: the interviewer trims from the end of a section).
     const ROUND_SHAPES = Object.freeze({
-        full: { cv: 3, ladderFixed: ['why-domain', 'why-firm', 'attempts'], ladderExtra: 1, core: 4, domain: 4, situations: 1 },
+        full: { cv: 3, ladderFixed: ['why-domain', 'why-firm', 'attempts'], ladderExtra: 1, core: 5, domain: 5, situations: 1 },
         technical: { cv: 4, ladderFixed: ['why-domain'], ladderExtra: 0, core: 4, domain: 6, situations: 1, technicalSituations: true },
         hr: { cv: 2, ladderAll: true, core: 0, domain: 0, situations: 2 },
         call: { cv: 0, call: true }
@@ -77,7 +77,7 @@
 
     // Which CV lines each round probes first.
     const CV_PREFERENCE = Object.freeze({
-        full: ['simulation', 'programme', 'standard', 'tool', 'project', 'work', 'course', 'achievement', 'role', 'hobby'],
+        full: ['simulation', 'work', 'programme', 'project', 'standard', 'tool', 'course', 'achievement', 'role', 'hobby'],
         technical: ['simulation', 'standard', 'tool', 'project', 'course', 'programme', 'work'],
         hr: ['role', 'achievement', 'hobby', 'work', 'programme', 'course', 'project'],
         call: []
@@ -306,6 +306,12 @@
     // An education row (CA Inter marks, B.Com, college) is never "a course you took" or "a project".
     const EDUCATION_ROW = /\b(ca (inter(mediate)?|foundation|final)|b\.? ?com|m\.? ?com|bba|bms|class (x|xii|10|12)|hsc|ssc|cbse|icse|university|college|school)\b/i;
     const NOT_FOR_EDUCATION = ['course', 'project', 'work'];
+    // "Explain the standard" and "what did you learn in the course" suit a line that names a standard or a course, not
+    // a line that reports work done ("Prepared GSTR-1 data for 6 clients", "Three months as an intern: vouching, TDS").
+    const KNOWLEDGE_PROBES = ['standard', 'course'];
+    const WORK_LINE = /\b(intern(ship)?s?|worked|family business|freelanc\w*|articled)\b/i;
+    const NAMES_STANDARD = /\b(ind ?as|as|sa|sqc)[ -]?\d{1,3}\b|accounting standard|standards? on auditing|schedule iii|caro\b/i;
+    const DID_LINE = /^(prepared|vouched|reconciled|computed|calculated|reviewed|verified|audited|assisted|analy[sz]ed|kept|filed|maintained|handled|tested|matched|mapped|drafted|checked|recorded|posted|traced|compared|summari[sz]ed|scrutini[sz]ed|tallied|booked|entered|processed|supported|helped)\b/i;
 
     function compileProbes(content) {
         return list(content && content.cv_probes).map(probe => {
@@ -336,6 +342,11 @@
             if (simulation && /work simulation|job simulation/i.test(text)) probe = simulation;
             const education = EDUCATION_ROW.test(text);
             if (!probe) probe = probes.find(candidate => candidate.pattern.test(text) && !(education && NOT_FOR_EDUCATION.includes(candidate.type))) || null;
+            if (probe && KNOWLEDGE_PROBES.includes(probe.type) && !education && !(probe.type === 'standard' && NAMES_STANDARD.test(text))) {
+                const reported = DID_LINE.test(text) ? 'project' : WORK_LINE.test(text) ? 'work' : null;
+                const better = reported && probes.find(candidate => candidate.type === reported);
+                if (better) probe = better;
+            }
             return probe ? { line: text, type: probe.type, label: probe.label, ask: probe.ask, cross: list(probe.cross) } : null;
         }).filter(Boolean);
     }
