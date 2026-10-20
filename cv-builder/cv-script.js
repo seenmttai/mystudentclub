@@ -117,7 +117,8 @@
                 syncName: () => syncCurrentTemplateName(),
                 setFont: key => updateThemeFont(key),
                 // True when the CV no longer fits one A4 page at its own size: the layout has shrunk its text to fit
-                // (--content-scale under 0.92), or the page runs past the A4 ratio.
+                // (--content-scale under 0.92), or the page runs past A4 (every layout is 1414 px high, whatever its
+                // width).
                 overflow() {
                     try {
                         const doc = document.getElementById('cv-frame')?.contentDocument;
@@ -125,7 +126,7 @@
                         if (!page || !page.offsetWidth) return false;
                         const scale = parseFloat(doc.documentElement.style.getPropertyValue('--content-scale'));
                         if (Number.isFinite(scale) && scale < 0.92) return true;
-                        return page.scrollHeight / page.offsetWidth > 1.4142 * 1.02;
+                        return Math.max(page.scrollHeight, page.offsetHeight) > 1414 * 1.02;
                     } catch (_) {
                         return false;
                     }
@@ -3645,6 +3646,7 @@
             if (!payload.personal.socialLinks) payload.personal.socialLinks = [];
             payload.themeAccent = normalizeHexColor(payload.themeAccent || cvData.themeAccent || '');
             payload.themeFont = String(payload.themeFont || cvData.themeFont || '').trim();
+            window.MSCArticleshipStage?.theme?.(templateFile, payload);
             payload.sectionTitles = (stageSource || useArticleshipDemo) ? (source.sectionTitles || {}) : (cvData.sectionTitles || {});
             applyFormattedContact(payload);
             return payload;

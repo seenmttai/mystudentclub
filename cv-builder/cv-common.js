@@ -515,6 +515,11 @@ function renderArticleshipBranding(data) {
             page.style.paddingBottom = page.__mscBrandPadding.inlineBottom;
             delete page.__mscBrandPadding;
         }
+        Array.from(page.children).forEach(child => {
+            if (!child.__mscMinHeight) return;
+            child.style.minHeight = child.__mscMinHeight.inline;
+            delete child.__mscMinHeight;
+        });
         return;
     }
     // Keep the brand lines out of row-based CV layouts; extra flex items squeeze their columns.
@@ -534,6 +539,17 @@ function renderArticleshipBranding(data) {
     page.style.setProperty('--msc-pad-right', `${inset.padRight}px`);
     page.style.paddingTop = `${inset.top + 18}px`;
     page.style.paddingBottom = `${inset.bottom + 18}px`;
+    // A block sized to fill the page inside its own padding (a framed sheet) gives the brand lines their room, or the
+    // page runs past A4 and the layout shrinks its text to the floor.
+    Array.from(page.children).forEach(child => {
+        if (child.hasAttribute('data-msc-program-brand')) return;
+        if (!child.__mscMinHeight) {
+            const value = parseFloat(getComputedStyle(child).minHeight) || 0;
+            if (value < 900) return;
+            child.__mscMinHeight = { inline: child.style.minHeight, value };
+        }
+        child.style.minHeight = `${child.__mscMinHeight.value - 36}px`;
+    });
     const makeLine = (text, position) => {
         const line = document.createElement('div');
         line.setAttribute('data-msc-program-brand', position);
@@ -543,10 +559,10 @@ function renderArticleshipBranding(data) {
     };
     const heading = makeLine(`MSC Articleship Program | ${data.articleshipLayoutName || 'CV template'}`, 'header');
     heading.style.top = `${inset.top}px`;
-    page.prepend(heading);
     const footer = makeLine('CA Padam Bhansali | My Student Club', 'footer');
     footer.style.bottom = `${inset.bottom}px`;
-    page.appendChild(footer);
+    // Both lines go first: layouts that fit the page by measuring their last block must never measure the footer.
+    page.prepend(heading, footer);
 }
 
 function syncDocumentTitle(data) {

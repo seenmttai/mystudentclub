@@ -135,6 +135,7 @@
 }
 .asb-tag { background: #eef2f7; color: #334155; }
 .asb-tag.is-portal { background: var(--asb-green-light, #e3f6ea); color: var(--asb-green, #168048); }
+.asb-tag.is-screen { background: #fdf0e1; color: #9a4f08; }
 .asb-badge { background: var(--primary-light, #eff6ff); color: var(--primary, #3b82f6); }
 
 /* Starters */
@@ -273,7 +274,68 @@ body.asb-on .template-sidebar-header h3 { font-family: 'Caveat', cursive; font-s
 }
 .asb-card:has(.asb-card-line) .asb-card-name { bottom: 44px; }
 .asb-card:has(.asb-card-line) .template-card-preview { height: calc(100% - 44px); }
+.asb-card-for { color: #06152F; font-weight: 600; }
+.asb-card-for::after { content: ': '; }
 .asb-loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 12px; color: #9ca3af; }
+
+/* Filter chips and the tag legend over the Designs tab */
+.asb-filters { flex: none; padding: 10px 20px 2px; border-bottom: 1px solid #eef2f7; }
+.asb-filters[hidden] { display: none; }
+.asb-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.asb-chip {
+    min-height: 36px;
+    padding: 0 12px;
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-radius: 999px;
+    background: #fff;
+    color: #334155;
+    font: 600 13px/1 'Inter', sans-serif;
+    cursor: pointer;
+}
+.asb-chip.is-on { background: var(--primary-light, #eff6ff); border-color: var(--primary, #3b82f6); color: #1d4ed8; }
+.asb-chip:focus-visible { outline: 2px solid var(--primary, #3b82f6); outline-offset: 2px; }
+.asb-chip-n { margin-left: 6px; font-weight: 500; color: #64748b; }
+.asb-legend { margin: 8px 0 8px; color: #64748b; font-size: 12px; line-height: 2; }
+.asb-legend .asb-tag { margin-right: 1px; }
+
+/* Phones: the look-book's designs two to a row, each with its number, tag and what it is best for */
+@media (max-width: 768px) {
+    body.asb-on .template-grid.asb-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-auto-rows: max-content; /* auto rows shrink to fit the scroll box otherwise */
+        align-content: start;
+        gap: 10px;
+        padding: 12px;
+        scroll-snap-type: none;
+    }
+    .asb-grid .template-card.asb-card {
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        border-width: 2px;
+        scroll-snap-align: none;
+    }
+    .asb-grid .asb-card .template-card-preview,
+    .asb-grid .asb-card:has(.asb-card-line) .template-card-preview { flex: none; height: auto; aspect-ratio: 210 / 250; }
+    .asb-grid .asb-card .template-card-preview iframe { width: 300%; height: 300%; transform: scale(0.3333); }
+    .asb-grid .asb-card .asb-card-name,
+    .asb-grid .asb-card:has(.asb-card-line) .asb-card-name {
+        position: static;
+        justify-content: flex-start;
+        gap: 2px 5px;
+        padding: 7px 8px 2px;
+        background: #fff;
+        font-size: 13px;
+        line-height: 1.2;
+    }
+    .asb-grid .asb-no { font-size: 19px; }
+    .asb-grid .asb-card-line { position: static; padding: 0 8px 9px; text-align: left; font-size: 12px; }
+    .asb-grid .asb-card-for::after { content: none; }
+    .asb-grid .asb-card-for + .asb-card-rest { display: none; }
+    .asb-grid .template-premium-badge { top: 6px; right: 6px; padding: 3px 7px; font-size: 9px; }
+    .asb-filters { padding: 10px 12px 0; }
+}
 
 @media (max-width: 380px) {
     .asb { padding: 12px; }

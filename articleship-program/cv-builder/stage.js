@@ -5,8 +5,10 @@
  * - the panel on top of the form: order (structure A–H) and design chosen separately, both from the CV Recommender's
  *   pick on open; "Start from the example" and "The Nothing CV"; the certificate count and the earned Work Simulation
  *   lines; the live checks;
- * - the design picker: the look-book's designs by number ("Designs") and all 62 layouts ("All");
- * - the thumbnails: an untouched CV shows each design with its own fictional applicant;
+ * - the design picker: the look-book's designs by number ("Designs", filtered by order or Portal-safe) and all 62
+ *   layouts ("All");
+ * - the thumbnails: an untouched CV shows each design with its own fictional applicant; a kept design brings its own
+ *   font and colour unless the student picked theirs;
  * - the export: the programme's header and footer lines stay on the preview, never on the CV a firm receives
  *   (V3-STRUCTURE decision 2).
  * Pure logic: scripts/articleship-cv-builder.js. cv-script.js calls window.MSCArticleshipStage.* behind optional chaining.
@@ -21,17 +23,21 @@
     const BASE = '/articleship-program/cv-builder/';
     const LINKS = {
         recommender: '/articleship-program/cv-recommender/',
-        workSimulation: '/articleship-program/work-simulation/',
+        // The Work Simulation page once the shared situations list names it; until then its Day in the course (row 1.6).
+        workSimulation: '/learning-management-system/course?course=msc-articleship-program&session=2',
         checklist: '/articleship-program/cv-checklist/',
-        programme: '/learning-management-system/course?course=msc-articleship-program'
+        // Day 1 in the course, where the CV Builder's row (1.5) sits.
+        programme: '/learning-management-system/course?course=msc-articleship-program&session=2'
     };
     const params = new URLSearchParams(window.location.search);
     const state = {
         host: null,
         designs: [],
         examples: {},
+        applicants: {},
         situations: logic.SITUATIONS,
         tab: 'designs',
+        filter: 'all',
         panelOpen: null,
         showAllChecks: false,
         earned: [],
@@ -88,7 +94,8 @@
     /** A new student's first CV: the blank articleship CV (every gap a [bracket]) on the first design. */
     function blankCv(current, tableSettings) {
         state.freshBlank = true;
-        const out = logic.createBlank(current, { structure: (pick() && pick().situation) || 'A', order: pick() && pick().order });
+        const p = pick();
+        const out = logic.createBlank(current, { structure: (p && p.situation) || 'A', order: p && p.order, situations: state.situations });
         out.templateFile = 'articleship-layout-classic';
         out.tableSettings = JSON.parse(JSON.stringify(tableSettings || {}));
         return out;
@@ -107,6 +114,16 @@
         return example;
     }
 
+    /** A kept design's own font and colour on the page and in the export, unless the student picked theirs. */
+    function theme(templateFile, payload) {
+        if (!isActive() || !payload) return;
+        const design = logic.designForFile(state.designs, templateFile);
+        if (!design) return;
+        const set = logic.themeFor(cv(), design);
+        payload.themeFont = set.font;
+        payload.themeAccent = set.accent;
+    }
+
     function layoutName(templateFile) {
         const design = logic.designForFile(state.designs, templateFile);
         return design ? `Design ${design.number} · ${design.name}` : null;
@@ -123,9 +140,31 @@
     // ---------- applying things to the CV ----------
 
     function commit(next, message, templateFile) {
+        const keep = keepPlace();
         state.host.setCv(next, { templateFile });
         if (message) state.host.toast(message);
         render();
+        keep();
+    }
+
+    /**
+     * Redrawing the form puts new text into its rich-text boxes, which takes the focus and scrolls the page to the last
+     * one. Keep the student where they tapped: same scroll position, no box focused that they did not focus.
+     */
+    function keepPlace() {
+        const saved = [];
+        for (let el = panel && panel.parentElement; el; el = el.parentElement) saved.push([el, el.scrollTop]);
+        if (document.scrollingElement) saved.push([document.scrollingElement, document.scrollingElement.scrollTop]);
+        const focused = document.activeElement;
+        const restore = () => {
+            saved.forEach(([el, top]) => { if (el.scrollTop !== top) el.scrollTop = top; });
+            const now = document.activeElement;
+            if (now && now !== focused && now.closest && now.closest('.ql-editor')) now.blur();
+        };
+        return () => {
+            restore();
+            [60, 200, 450].forEach(ms => setTimeout(restore, ms));
+        };
     }
 
     function useDesign(design, quiet) {
@@ -137,12 +176,19 @@
         render();
     }
 
+    /** An order on the CV; a blank CV still untouched is redrawn for it (its lead block shown), the design kept. */
+    function withOrder(data, situationId, order) {
+        const options = { order, situations: state.situations };
+        if (logic.untouchedStarter(data, state.examples, state.designs) === 'blank') {
+            return logic.createBlank(data, Object.assign({ structure: situationId }, options));
+        }
+        return logic.applyStructure(data, situationId, options);
+    }
+
     function applyOrder(situationId) {
         const p = pick();
-        const next = logic.applyStructure(cv(), situationId, {
-            order: p && p.situation === situationId ? p.order : null,
-            situations: state.situations
-        });
+        const next = withOrder(cv(), situationId, p && p.situation === situationId ? p.order : null);
+        next.articleshipOrderSet = true;
         state.panelOpen = null;
         commit(next, `Order ${situationId} on. Your design and text are unchanged.`);
     }
@@ -156,13 +202,18 @@
         return window.confirm(`Replace what you have written with ${what}? Undo brings it back.`);
     }
 
+    /**
+     * The design's applicant. Set in the student's order once they have one (the Recommender's pick or a tap on an
+     * order); otherwise in the applicant's own order, as the look-book shows it.
+     */
     function startExample() {
         const design = currentDesign();
-        const structure = currentStructure();
+        const data = cv();
+        const structure = data.articleshipOrderSet || data.articleshipPickApplied ? currentStructure() : null;
         const letter = logic.personaFor(design, structure ? structure.id : 'A');
         if (!confirmReplace('the example')) return;
         const p = pick();
-        const next = logic.createExample(state.examples, letter, cv(), {
+        const next = logic.createExample(state.examples, letter, data, {
             design,
             structure: structure ? structure.id : undefined,
             order: p && structure && p.situation === structure.id ? p.order : null,
@@ -308,7 +359,7 @@
     }
 
     function renderChecks(data) {
-        const flags = logic.checkCv(data, { examples: state.examples, overflow: state.host.overflow && state.host.overflow() });
+        const flags = logic.checkCv(data, { examples: state.applicants, overflow: state.host.overflow && state.host.overflow() });
         const wrap = h('div', { class: 'asb-checks' });
         if (!flags.length) {
             wrap.appendChild(h('p', { class: 'asb-ok' }, ['No flags. Next: ',
@@ -370,12 +421,6 @@
         const exampleLetter = logic.personaFor(design, structure ? structure.id : 'A');
         const exampleSource = (design && design.example) || state.examples[exampleLetter];
         const exampleName = exampleSource && exampleSource.personal ? logic.plainText(exampleSource.personal.name) : '';
-        // A kept design is set in its STYLE CV font unless the student picked one in the font menu.
-        const fontPlan = logic.fontFor(data, design);
-        if (fontPlan && state.host.setFont) {
-            data.articleshipFontAuto = fontPlan.font;
-            state.host.setFont(fontPlan.font);
-        }
         const collapsed = isCollapsed();
         const designText = design ? `No. ${design.number} · ${design.name}` : (templateName || 'Choose one');
 
@@ -390,7 +435,7 @@
             ])
         ]);
         if (collapsed) {
-            const flags = logic.checkCv(data, { examples: state.examples });
+            const flags = logic.checkCv(data, { examples: state.applicants });
             el.classList.add('is-folded');
             el.replaceChildren(head, h('p', { class: 'asb-note asb-folded-line', text:
                 `Order ${structure ? structure.id : '–'} · ${designText}${flags.length ? ` · ${flags.length} to fix` : ''}` }));
@@ -407,7 +452,7 @@
                         () => { state.panelOpen = state.panelOpen === 'order' ? null : 'order'; render(); }, state.panelOpen === 'order'),
                     state.panelOpen === 'order' ? renderOrders(structure, p) : null,
                     row('design', 'Design', designText,
-                        design && design.tag ? h('span', { class: 'asb-tag' + (design.portalSafe ? ' is-portal' : ''), text: design.tag }) : null,
+                        design && design.tag ? tagEl(design) : null,
                         () => { state.tab = 'designs'; state.host.openTemplates(); })
                 ]),
                 renderStarters(untouched, exampleName),
@@ -428,6 +473,22 @@
 
     // ---------- the design picker ----------
 
+    function tagEl(design) {
+        return h('span', { class: 'asb-tag' + (design.portalSafe ? ' is-portal' : '') + (design.screen ? ' is-screen' : ''), text: design.tag });
+    }
+
+    /** The chips over the Designs tab: every design, the ones for the student's order, the Portal-safe ones. */
+    function designFilters(structure) {
+        const forOrder = structure ? logic.designsFor(state.designs, structure.id) : [];
+        const portal = state.designs.filter(design => design.portalSafe);
+        const chips = [{ id: 'all', label: `All ${state.designs.length}` }];
+        if (forOrder.length) chips.push({ id: 'order', label: `For order ${structure.id}`, count: forOrder.length });
+        if (portal.length) chips.push({ id: 'portal', label: 'Portal-safe', count: portal.length });
+        if (!chips.some(chip => chip.id === state.filter)) state.filter = 'all';
+        const items = state.filter === 'order' ? forOrder : (state.filter === 'portal' ? portal : state.designs);
+        return { chips, items };
+    }
+
     function renderTemplateCards(grid, currentTemplate) {
         if (!isActive() || !state.designs.length) return false;
         const sidebar = document.getElementById('template-sidebar');
@@ -437,6 +498,11 @@
         if (!tabs && sidebar) {
             tabs = h('div', { id: 'asb-tabs', class: 'asb-tabs', role: 'tablist' });
             sidebar.insertBefore(tabs, grid);
+        }
+        let filters = document.getElementById('asb-filters');
+        if (!filters && sidebar) {
+            filters = h('div', { id: 'asb-filters', class: 'asb-filters' });
+            sidebar.insertBefore(filters, grid);
         }
         const all = galleryLayouts();
         const header = sidebar && sidebar.querySelector('.template-sidebar-header h3');
@@ -449,6 +515,21 @@
                     onclick: () => { state.tab = 'all'; state.host.renderCards(); } }, `All ${all.length}`)
             );
         }
+        const view = designFilters(currentStructure());
+        if (filters) {
+            filters.hidden = state.tab !== 'designs';
+            filters.replaceChildren(
+                h('div', { class: 'asb-chips', role: 'group', 'aria-label': 'Show' }, view.chips.map(chip => h('button', {
+                    type: 'button', class: 'asb-chip' + (state.filter === chip.id ? ' is-on' : ''), 'aria-pressed': String(state.filter === chip.id),
+                    'data-filter': chip.id, onclick: () => { state.filter = chip.id; state.host.renderCards(); }
+                }, [chip.label, chip.count ? h('span', { class: 'asb-chip-n', text: String(chip.count) }) : null]))),
+                h('p', { class: 'asb-legend' }, [
+                    h('span', { class: 'asb-tag', text: 'Print' }), ' mail and walk-ins ',
+                    h('span', { class: 'asb-tag is-portal', text: 'Portal-safe' }), ' careers portals ',
+                    h('span', { class: 'asb-tag is-screen', text: 'Screen' }), ' send as a PDF'
+                ])
+            );
+        }
         const p = pick();
         const pickDesign = p ? logic.resolveDesign(state.designs, p.design) : null;
         const items = state.tab === 'all'
@@ -456,14 +537,16 @@
                 const kept = logic.designForFile(state.designs, layout.file);
                 return { file: layout.file, renderFile: layout.renderFile, title: kept ? kept.name : layout.name, design: kept };
             })
-            : state.designs.map(design => ({ file: design.file, renderFile: design.renderFile, title: design.name, design }));
+            : view.items.map(design => ({ file: design.file, renderFile: design.renderFile, title: design.name, design }));
+        grid.classList.toggle('asb-grid', state.tab === 'designs');
         grid.replaceChildren(...items.map(item => {
             const locked = state.host.isLocked(item.file);
             const design = item.design;
+            const label = design ? logic.bestForLabel(design) : '';
             const card = h('div', {
                 class: 'template-card asb-card' + (item.file === currentTemplate ? ' active' : '') + (locked ? ' locked' : ''),
-                role: 'button', tabindex: '0', 'data-file': item.file,
-                'aria-label': design ? `Design ${design.number}, ${design.name}` : item.title
+                role: 'button', tabindex: '0', 'data-file': item.file, 'data-number': design ? String(design.number) : null,
+                'aria-label': design ? `Design ${design.number}, ${design.name}, ${design.tag}` : item.title
             }, [
                 h('div', { class: 'template-card-preview' }, [
                     h('iframe', { 'data-src': item.renderFile, 'data-template': item.file, title: item.title, tabindex: '-1' }),
@@ -474,10 +557,13 @@
                 h('div', { class: 'template-card-name asb-card-name' }, [
                     design ? h('span', { class: 'asb-no', text: `No. ${design.number}` }) : null,
                     h('span', { class: 'asb-card-title', text: item.title }),
-                    design && design.tag ? h('span', { class: 'asb-tag' + (design.portalSafe ? ' is-portal' : ''), text: design.tag }) : null,
+                    design && design.tag ? tagEl(design) : null,
                     pickDesign && design && pickDesign.number === design.number ? h('span', { class: 'asb-badge', text: 'Your pick' }) : null
                 ]),
-                state.tab === 'designs' && design && design.line ? h('p', { class: 'asb-card-line', text: design.line }) : null
+                state.tab === 'designs' && design && design.line ? h('p', { class: 'asb-card-line' }, [
+                    label ? h('span', { class: 'asb-card-for', text: label }) : null,
+                    h('span', { class: 'asb-card-rest', text: label ? design.line.slice(label.length + 1).trim() : design.line })
+                ]) : null
             ]);
             const choose = () => {
                 if (design && !locked) { useDesign(design); state.host.closeTemplates(); return; }
@@ -530,7 +616,10 @@
      */
     async function openOnDesign(design, startFile) {
         const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-        for (let waited = 0; state.host.isLocked(design.file) && !state.host.accessChecked() && waited < 10000; waited += 250) {
+        // The builder marks access "checked" as soon as it sees a session, before the enrolment lookup answers, so wait
+        // for the lock itself to lift (or give up after a while: a student without access keeps the free design).
+        for (let waited = 0; state.host.isLocked(design.file) && waited < 15000; waited += 250) {
+            if (state.host.templateFile() !== startFile) return;
             await sleep(250);
         }
         if (state.host.isLocked(design.file) || state.host.templateFile() !== startFile) return;
@@ -544,8 +633,11 @@
         document.body.classList.add('asb-on');
         const [designsJson, examplesJson, situationsJson] = await dataReady;
         state.situations = situationsJson ? logic.mergeSituations(situationsJson) : logic.SITUATIONS;
-        state.designs = logic.normaliseDesigns(designsJson, galleryLayouts());
+        if (situationsJson && situationsJson.links && typeof situationsJson.links.workSimulation === 'string'
+            && situationsJson.links.workSimulation.startsWith('/')) LINKS.workSimulation = situationsJson.links.workSimulation;
+        state.designs = logic.attachApplicants(logic.normaliseDesigns(designsJson, galleryLayouts()), examplesJson);
         state.examples = logic.normaliseExamples(examplesJson);
+        state.applicants = logic.allApplicants(state.examples, state.designs);
         state.earned = readEarned();
         relabelOptions();
 
@@ -553,7 +645,7 @@
         const plan = logic.planPick(p, state.designs, cv());
         let design = null;
         if (plan && plan.apply) {
-            const next = logic.applyStructure(cv(), plan.situation, { order: plan.order, situations: state.situations });
+            const next = withOrder(cv(), plan.situation, plan.order);
             next.articleshipPickApplied = plan.key;
             state.host.setCv(next);
             state.host.toast('Opened with your CV Recommender pick.');
@@ -577,6 +669,7 @@
         init: host => { init(host).catch(error => { if (window.console) window.console.error(error); }); },
         blankCv,
         previewSource,
+        theme,
         layoutName,
         exportHtml,
         renderTemplateCards,

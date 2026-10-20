@@ -4,8 +4,9 @@
  * Pure logic shared by /cv-builder/?stage=articleship and its tests:
  * - the eight situations (A–H) as section orders, applied without touching the design or the content;
  * - the CV Recommender's pick (shared setting) read into a structure + a design;
- * - the designs kept for the look-book (numbered as in the look-book; all 62 layouts stay under "All");
- * - "Start from the example" (each design's fictional applicant) and "The Nothing CV" starters;
+ * - the designs kept for the look-book (numbered as in the look-book; all 62 layouts stay under "All"), each set in its
+ *   own font and colour unless the student picks their own;
+ * - "Start from the example" (each design's own fictional applicant) and "The Nothing CV" starters;
  * - earned Work Simulation lines imported into "Certifications and job simulations", with the count of outside
  *   certificates (house rule 2: four at most; MSC lines and ICITSS are not counted);
  * - the live, non-blocking checks of the articleship stage.
@@ -280,16 +281,20 @@
     }
 
     /**
-     * The font a kept design sets (designs.json "font"), unless the student chose their own in the font menu.
-     * → { font } to apply ('' = the layout's own font) or null when nothing should change.
+     * How a kept design is set on the page and in the exported file: its look-book font and colour (designs.json "font",
+     * "accent"), unless the student picked their own in the font or colour menu. Nothing is stored on the CV, so every
+     * thumbnail shows its own design's look and a change of design brings that design's font and colour with it.
+     * → { font, accent } ('' = the layout's own).
      */
-    function fontFor(cvData, design) {
+    function themeFor(cvData, design) {
         const cv = cvData || {};
-        const current = String(cv.themeFont || '').trim();
-        const auto = String(cv.articleshipFontAuto || '').trim();
-        if (current && current !== auto) return null;
-        const want = design && design.font ? design.font : '';
-        return want === current ? null : { font: want };
+        const ownFont = String(cv.themeFont || '').trim();
+        const autoFont = String(cv.articleshipFontAuto || '').trim(); // set by an earlier build of this stage
+        const ownAccent = hexColour(cv.themeAccent);
+        return {
+            font: ownFont && ownFont !== autoFont ? ownFont : ((design && design.font) || ''),
+            accent: ownAccent || ((design && design.accent) || '')
+        };
     }
 
     function letters(value) {
@@ -297,10 +302,32 @@
             .filter(item => /^[A-I]$/.test(item));
     }
 
+    function hexColour(value) {
+        const text = String(value || '').trim().replace(/^#/, '');
+        return /^[0-9a-f]{6}$/i.test(text) ? `#${text.toUpperCase()}` : '';
+    }
+
+    /** "Strong marks: the education grid…" → "Strong marks" (the best-for words a small card shows). */
+    function bestForLabel(design) {
+        const line = design && design.line ? String(design.line) : '';
+        const head = line.split(/:\s/)[0];
+        return head && head.length < line.length && head.length <= 40 ? head : '';
+    }
+
+    /** The designs that suit an order: the ones made for it first, then the ones that also suit it, by number. */
+    function designsFor(designs, situationId) {
+        const letter = String(situationId || '').trim().toUpperCase().charAt(0);
+        const list = Array.isArray(designs) ? designs : [];
+        if (!letter) return [];
+        return list.filter(design => design.situations.includes(letter))
+            .concat(list.filter(design => !design.situations.includes(letter) && (design.also || []).includes(letter)));
+    }
+
     /**
-     * designs.json (row 1.4, the look-book's kept designs) → [{ number, id, name, file, renderFile, gallery, tag,
-     * portalSafe, line, situations, persona, example }], by look-book number. Accepts { designs | kept | items: [] } or
-     * an array; a design names its layout by renderFile / layout / file stem, or by its v2 gallery number (1–62).
+     * designs.json (row 1.4, the look-book's kept designs) → [{ number, id, name, file, renderFile, gallery, tag ('Print',
+     * 'Portal-safe' or 'Screen'), portalSafe, screen, line, situations (the orders it is the pick for), also, persona,
+     * example, font, accent }], by look-book number. Accepts { designs | kept | items: [] } or an array; a design names
+     * its layout by renderFile / layout / file stem, or by its v2 gallery number (1–62).
      * galleryFiles: the 62 gallery layouts in gallery order ([{ file, renderFile, name }]).
      */
     function normaliseDesigns(json, galleryFiles) {
@@ -324,7 +351,9 @@
                 .map(tag => String(tag).trim())
                 .filter(Boolean);
             const portalSafe = raw.portalSafe === true || raw.portal_safe === true || tags.some(tag => /portal|ats/i.test(tag));
+            const screen = !portalSafe && !tags.some(tag => /print/i.test(tag)) && tags.some(tag => /screen|pdf/i.test(tag));
             const situations = letters(raw.situations || raw.for || (Array.isArray(raw.bestFor) ? raw.bestFor : []));
+            const also = letters(raw.also || raw.alsoFor || raw.also_for).filter(letter => !situations.includes(letter));
             const persona = letters(raw.persona || raw.applicant || raw.situation)[0] || situations[0] || null;
             const lineText = raw.line || raw.bestForLine || raw.best_for_line || raw.best || raw.best_for
                 || (typeof raw.bestFor === 'string' ? raw.bestFor : '') || raw.reason || '';
@@ -336,13 +365,16 @@
                 file: (fromGallery && fromGallery.file) || `articleship-layout-${stemOf(renderFile)}`,
                 renderFile,
                 gallery: galleryNo || (fromGallery ? gallery.indexOf(fromGallery) + 1 : null),
-                tag: portalSafe ? 'Portal-safe' : (tags.find(tag => /print/i.test(tag)) ? 'Print' : (tags[0] || 'Print')),
+                tag: portalSafe ? 'Portal-safe' : (screen ? 'Screen' : 'Print'),
                 portalSafe,
+                screen,
                 line: plainText(lineText),
                 situations,
+                also,
                 persona,
                 example,
-                font: cvFont(raw.font || raw.cvFont || raw.typeface)
+                font: cvFont(raw.font || raw.cvFont || raw.typeface),
+                accent: hexColour(raw.accent || raw.acc || raw.colour || raw.color)
             };
             if (!out.some(item => item.file === design.file || item.number === design.number)) out.push(design);
         });
@@ -367,6 +399,37 @@
 
     // ---------- Starters ----------
 
+    /**
+     * Each look-book design's own applicant (examples.json "designs": { "<number>": cv }) put on the design as its
+     * example, unless designs.json already carries one inline. Returns the same designs.
+     */
+    function attachApplicants(designs, json) {
+        const byDesign = json && (isObject(json.designs) ? json.designs : (isObject(json.byDesign) ? json.byDesign : null));
+        (Array.isArray(designs) ? designs : []).forEach(design => {
+            const cv = byDesign && byDesign[String(design.number)];
+            if (!design.example && isObject(cv) && isObject(cv.personal)) design.example = cv;
+            const letter = design.example && letters(design.example.situation)[0];
+            if (letter) design.persona = letter;
+        });
+        return designs;
+    }
+
+    /** Every applicant (the letter personas and each design's own), for spotting lines still copied from one. */
+    function allApplicants(examples, designs) {
+        const out = Object.assign({}, examples || {});
+        (Array.isArray(designs) ? designs : []).forEach(design => {
+            if (design.example) out[`design-${design.number}`] = design.example;
+        });
+        return out;
+    }
+
+    /** The order an applicant's CV is set in: its situation; I (CA with CS or CMA) uses the Academics order. */
+    function structureOf(letter) {
+        const id = String(letter || '').trim().toUpperCase().charAt(0);
+        if (id === 'I') return 'A';
+        return getSituation(id) ? id : 'A';
+    }
+
     /** examples.json → { A: cv, … }. Accepts { personas: { A: … } }, { A: … } or [{ id: 'A', cv: … }]. */
     function normaliseExamples(json) {
         const out = {};
@@ -383,7 +446,7 @@
 
     const META_KEYS = ['id', 'persona', 'situation', 'design', 'note', 'cv', 'data', 'templateFile', 'articleshipStarter',
         'articleshipExample', 'articleshipNothingCv', 'articleshipPickApplied', 'articleshipStructure', 'articleshipImported',
-        'articleshipLayoutName', 'articleshipGallery', 'articleshipApplicant'];
+        'articleshipLayoutName', 'articleshipGallery', 'articleshipApplicant', 'articleshipOrderSet'];
 
     function stripMeta(cv) {
         const out = clone(cv);
@@ -415,6 +478,8 @@
 
     /** The persona a design shows in the look-book (its own applicant, else the first situation it is made for). */
     function personaFor(design, fallback) {
+        const own = design && design.example && letters(design.example.situation)[0];
+        if (own) return own;
         if (design && design.persona) return design.persona;
         if (design && design.situations && design.situations[0]) return design.situations[0];
         return fallback || 'A';
@@ -429,7 +494,7 @@
         const letter = String(personaId || '').trim().toUpperCase().charAt(0);
         const source = (options.design && options.design.example) || (examples && examples[letter]);
         if (!source) return null;
-        const structure = options.structure || source.situation || (letter === 'I' ? 'A' : letter);
+        const structure = options.structure || structureOf(source.situation || letter);
         let cv = withContent(cvData, stripMeta(source));
         cv = applyStructure(cv, structure, { order: options.order, situations: options.situations });
         cv.articleshipApplicant = true;
@@ -448,12 +513,26 @@
         return cv;
     }
 
+    // The empty block a blank CV still shows when its order leads with it (C work, D and F projects, E achievements), so
+    // the student sees the order's shape at once (every gap a [bracket], to fill or delete). Fixed per letter, so a blank
+    // is recognised whichever situations list is loaded.
+    const LEAD_BLOCK = { C: 'experience', D: 'projects', E: 'achievements', F: 'projects' };
+    const LEAD_PLACEHOLDERS = {
+        experience: () => [{
+            role: '[Role]', company: '[Firm or business], [City]', dates: '[Month Year] – [Month Year]', intro: '', category: '',
+            bullets: ['[What you did, with a number]'], mergedWithPrevious: false, titleMergedWithPrevious: false
+        }],
+        projects: () => [{ title: '[Project]', description: '[For whom or where] | [Month Year]', bullets: ['[What you did, with a number]'] }],
+        achievements: () => ['[Rank, prize or scholarship], [Year]: [out of how many]']
+    };
+
     /**
      * The blank articleship CV a new student opens: every row in the articleship shape, every gap a [bracket], the
-     * certifications section titled per house rule 2. ICITSS is a row of the education table (house rule 2).
+     * certifications section titled per house rule 2 with the programme line. ICITSS is a row of the education table
+     * (house rule 2). With an order (A–H), the block it leads with is shown even when empty.
      */
-    function blankContent() {
-        return {
+    function blankContent(structureId) {
+        const content = {
             personal: {
                 name: '[Your name]', tagline: 'CA Intermediate cleared ([Month Year]) | Seeking articleship in [domain]', contact: '',
                 phone: '', email: '', linkedin: '', location: '[City]', socialLinks: []
@@ -472,19 +551,29 @@
             skills: '<p><strong>Excel ([level])</strong>: [functions you can show, e.g. XLOOKUP, PivotTables]</p><p><strong>Tally Prime ([level])</strong>: [what you can do in it]</p>',
             certifications: [
                 { name: '[Domain] Work Simulation, MSC Articleship Program | [Month Year]: [what you did, with your counts]', issuer: '' },
-                { name: '[Company] [Simulation] Job Simulation (Forage) | [Month Year]: [what you did]', issuer: '' }
+                { name: '[Company] [Simulation] Job Simulation (Forage) | [Month Year]: [what you did]', issuer: '' },
+                { name: PROGRAM_LINE_ONGOING, issuer: '' }
             ],
             achievements: [],
             leadership: ['[Role], [society or event], [Year]: [what you did, with a number]'],
             interests: [],
             customSections: []
         };
+        const lead = LEAD_BLOCK[String(structureId || '').trim().toUpperCase().charAt(0)];
+        if (lead) content[lead] = LEAD_PLACEHOLDERS[lead]();
+        return content;
+    }
+
+    /** Is this content one of the blank CVs (any order's)? */
+    function isBlankContent(cvData) {
+        return [''].concat(Object.keys(LEAD_BLOCK)).some(letter => sameContent(cvData, blankContent(letter)));
     }
 
     function createBlank(cvData, opts) {
         const options = opts || {};
-        let cv = withContent(cvData, blankContent());
-        cv = applyStructure(cv, options.structure || 'A', { order: options.order, situations: options.situations });
+        const structure = options.structure || 'A';
+        let cv = withContent(cvData, blankContent(structure));
+        cv = applyStructure(cv, structure, { order: options.order, situations: options.situations });
         cv.articleshipApplicant = true;
         cv.articleshipStarter = 'blank';
         delete cv.articleshipExample;
@@ -522,7 +611,7 @@
             return Array.isArray(text) ? text.length : (isObject(text) ? Object.keys(text).length : Boolean(text));
         })) return 'blank';
         const kind = String(cv.articleshipStarter || '');
-        if (kind === 'blank' && sameContent(cv, blankContent())) return 'blank';
+        if (kind === 'blank' && isBlankContent(cv)) return 'blank';
         if (kind === 'nothing' && examples && examples.H && sameContent(cv, stripMeta(examples.H))) return 'nothing';
         const letter = (kind.match(/^example:([A-I])$/) || [])[1];
         if (letter) {
@@ -865,8 +954,9 @@
         SITUATIONS, VARIANTS, AI_GUARD,
         plainText, toSectionKey, toBuilderOrder, getSituation, mergeSituations, orderFor, applyStructure, applyTitles,
         variantsFor, planPick,
-        normaliseDesigns, resolveDesign, designForFile, personaFor, CV_FONTS, cvFont, fontFor,
-        normaliseExamples, createExample, createNothingCv, createBlank, blankContent, withContent, untouchedStarter,
+        normaliseDesigns, resolveDesign, designForFile, designsFor, bestForLabel, personaFor, CV_FONTS, cvFont, themeFor,
+        normaliseExamples, attachApplicants, allApplicants, structureOf,
+        createExample, createNothingCv, createBlank, blankContent, isBlankContent, withContent, untouchedStarter,
         exampleLeftovers,
         classifyCertification, countCertificates, formatEarnedLine, readEarnedLines, importEarnedLines, domainLabel,
         programLine, useCompletedLine,

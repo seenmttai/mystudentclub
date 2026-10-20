@@ -5,6 +5,7 @@ const path = require('node:path');
 const test = require('node:test');
 const vm = require('node:vm');
 const { JSDOM } = require('jsdom');
+const { spawnSync } = require('node:child_process');
 
 const B = require('../scripts/articleship-cv-builder.js');
 const catalog = require('../cv-builder/cv-articleship.js');
@@ -15,8 +16,13 @@ const DESIGNS_JSON = readJson('articleship-program/cv-builder/designs.json');
 const EXAMPLES_JSON = readJson('articleship-program/cv-builder/examples.json');
 const RECOMMENDER_SITUATIONS = path.join(ROOT, 'articleship-program/cv-recommender/situations.json');
 const GALLERY = catalog.templates.filter(template => template.kind === 'gallery');
-const DESIGNS = B.normaliseDesigns(DESIGNS_JSON, GALLERY);
+const DESIGNS = B.attachApplicants(B.normaliseDesigns(DESIGNS_JSON, GALLERY), EXAMPLES_JSON);
 const EXAMPLES = B.normaliseExamples(EXAMPLES_JSON);
+const design = number => DESIGNS.find(d => d.number === number);
+// The generator that writes designs.json + examples.json from the content build (row 1.4 kept designs and applicants,
+// row 1.3's Nothing CV). Found beside this repo on the builder's Mac, or through MSC_CVB_GENERATOR; skipped elsewhere.
+const GENERATOR = process.env.MSC_CVB_GENERATOR
+    || path.join(ROOT, '..', 'msc-content', 'articleship-program', 'v3', 'build', 'tools', 'cv-builder', 'make_data.py');
 const clone = value => JSON.parse(JSON.stringify(value));
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -86,30 +92,56 @@ test('the CV Recommender\'s pick is applied once per pick, with its design by lo
 
 // ---------- Designs (look-book numbers; all 62 under "All") ----------
 
-test('designs: numbered as in the look-book, each one of the 62 layouts, Portal-safe or Print', () => {
-    assert.ok(DESIGNS.length >= 1);
+test('designs: every kept look-book design, numbered 1…n as in the look-book, each one of the 62 layouts', () => {
+    assert.ok(DESIGNS.length > 8, 'every genuinely different design (B3), not eight');
     assert.equal(GALLERY.length, 62, 'all 62 layouts stay available under "All"');
-    const numbers = DESIGNS.map(d => d.number);
-    assert.deepEqual(numbers, [...numbers].sort((a, b) => a - b));
-    assert.equal(new Set(numbers).size, numbers.length);
-    DESIGNS.forEach(design => {
-        assert.ok(GALLERY.some(g => g.file === design.file && g.renderFile === design.renderFile), `${design.name} is one of the 62`);
-        assert.ok(fs.existsSync(path.join(ROOT, 'cv-builder', design.renderFile)));
-        assert.ok(['Portal-safe', 'Print'].includes(design.tag));
-        assert.ok(/^[A-I]$/.test(B.personaFor(design)), `${design.name} has an applicant`);
+    assert.deepEqual(DESIGNS.map(d => d.number), DESIGNS.map((d, i) => i + 1), 'numbered 1…n with no gap');
+    assert.equal(new Set(DESIGNS.map(d => d.file)).size, DESIGNS.length, 'no layout kept twice');
+    assert.equal(DESIGNS.length, (DESIGNS_JSON.designs || DESIGNS_JSON).length, 'nothing in designs.json dropped');
+    DESIGNS.forEach(d => {
+        assert.ok(GALLERY.some(g => g.file === d.file && g.renderFile === d.renderFile), `${d.name} is one of the 62`);
+        assert.ok(fs.existsSync(path.join(ROOT, 'cv-builder', d.renderFile)));
+        assert.ok(['Portal-safe', 'Print', 'Screen'].includes(d.tag), `${d.name}: ${d.tag}`);
+        assert.equal(d.portalSafe, d.tag === 'Portal-safe');
+        assert.equal(d.screen, d.tag === 'Screen');
+        assert.ok(d.line.length > 20, `${d.name} says what it is best for`);
+        assert.ok(d.example && d.example.personal.name, `${d.name} has its own applicant`);
+        assert.equal(B.personaFor(d), d.example.situation, `${d.name}: its applicant's situation`);
     });
-    assert.ok(DESIGNS.some(d => d.portalSafe), 'at least one portal-safe design');
+    const names = DESIGNS.map(d => d.example.personal.name);
+    assert.equal(new Set(names).size, names.length, 'one applicant per design');
+    assert.ok(DESIGNS.some(d => d.portalSafe && /portal plain/i.test(d.name)), 'Portal plain for careers portals');
+    ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].forEach(id => {
+        const made = DESIGNS.filter(d => d.situations.includes(id));
+        assert.equal(made.length, 1, `one design is the pick for order ${id}`);
+        assert.notEqual(made[0].tag, 'Screen', `order ${id}'s pick prints well`);
+        assert.equal(B.designsFor(DESIGNS, id)[0], made[0], 'the pick first in "For order"');
+    });
+    assert.ok(DESIGNS.some(d => (DESIGNS_JSON.designs.find(r => r.number === d.number).bestFor || []).includes('cs-cma')), 'a pick for CA with CS or CMA');
+});
+
+test('designs.json and examples.json are what the content build kept (row 1.4 designs and applicants, row 1.3 Nothing CV)', t => {
+    if (!fs.existsSync(GENERATOR)) { t.skip('content build not beside this repo'); return; }
+    const run = spawnSync('python3', ['-I', GENERATOR, '--check', '--site', ROOT], { encoding: 'utf8' });
+    if (run.error) { t.skip('python3 not available'); return; }
+    assert.equal(run.status, 0, `${run.stdout}${run.stderr} (re-run ${GENERATOR})`);
 });
 
 test('designs.json in other shapes: gallery numbers, kept flags, inline applicants, unknown layouts dropped', () => {
     const list = B.normaliseDesigns({ kept: [
-        { no: 2, name: 'Sidebar', gallery: 35, tags: ['print'], situations: ['C'] },
+        { no: 2, name: 'Sidebar', gallery: 35, tags: ['print'], situations: ['C'], also: ['C', 'f'], acc: '2e3156' },
         { number: 1, name: 'Plain', layout: 'plain-ats', tag: 'Portal-safe (ATS)', persona: 'g', example: { personal: { name: 'X Y' } } },
         { number: 3, name: 'Gone', renderFile: 'nope.html' },
-        { number: 4, name: 'Dropped', gallery: 7, kept: false }
+        { number: 4, name: 'Dropped', gallery: 7, kept: false },
+        { number: 5, name: 'Panel', gallery: 48, tag: 'Screen', accent: 'navy' }
     ] }, GALLERY);
     assert.deepEqual(list.map(d => [d.number, d.renderFile, d.tag, B.personaFor(d)]),
-        [[1, 'plain-ats.html', 'Portal-safe', 'G'], [2, 'profile-sidebar.html', 'Print', 'C']]);
+        [[1, 'plain-ats.html', 'Portal-safe', 'G'], [2, 'profile-sidebar.html', 'Print', 'C'], [5, 'side-panel.html', 'Screen', 'A']]);
+    assert.deepEqual(list[1].also, ['F'], '"also" never repeats the orders it is the pick for');
+    assert.equal(list[1].accent, '#2E3156');
+    assert.equal(list[2].accent, '', 'only a hex colour is used');
+    assert.equal(B.bestForLabel({ line: 'Strong marks: the education grid is read first.' }), 'Strong marks');
+    assert.equal(B.bestForLabel({ line: 'A line with no lead words.' }), '');
     assert.equal(list[0].example.personal.name, 'X Y');
     assert.equal(B.resolveDesign(list, 'Design 2').name, 'Sidebar');
     assert.equal(B.resolveDesign(list, 'articleship-layout-plain-ats').number, 1);
@@ -125,14 +157,19 @@ test('one designs.json for both tools: the CV Recommender reads the same numbers
     assert.deepEqual(rec.map(d => [d.number, d.name, d.tag]), DESIGNS.map(d => [d.number, d.name, d.tag]));
 });
 
-test('each kept design is set in one STYLE CV font, unless the student picks their own', () => {
-    DESIGNS.forEach(design => assert.ok(B.CV_FONTS.includes(design.font), `${design.name}: ${design.font}`));
+test('each kept design is set in its look-book font and colour, unless the student picks their own', () => {
+    DESIGNS.forEach(d => {
+        assert.ok(B.CV_FONTS.includes(d.font), `${d.name}: ${d.font}`);
+        assert.match(d.accent, /^#[0-9A-F]{6}$/, `${d.name}: its colour`);
+    });
     const sidebar = B.resolveDesign(DESIGNS, 3);
-    assert.deepEqual(B.fontFor({ themeFont: '' }, sidebar), { font: sidebar.font });
-    assert.equal(B.fontFor({ themeFont: sidebar.font, articleshipFontAuto: sidebar.font }, sidebar), null, 'already set');
-    assert.deepEqual(B.fontFor({ themeFont: 'Arial', articleshipFontAuto: 'Arial' }, B.resolveDesign(DESIGNS, 1)), { font: 'Times New Roman' }, 'follows the design while automatic');
-    assert.deepEqual(B.fontFor({ themeFont: 'Arial', articleshipFontAuto: 'Arial' }, null), { font: '' }, 'back to the layout\'s own font outside the kept designs');
-    assert.equal(B.fontFor({ themeFont: 'Georgia', articleshipFontAuto: 'Arial' }, sidebar), null, 'the student\'s own choice wins');
+    assert.deepEqual(B.themeFor({ themeFont: '', themeAccent: '' }, sidebar), { font: sidebar.font, accent: sidebar.accent });
+    assert.deepEqual(B.themeFor({ themeFont: 'Georgia', themeAccent: '#123456' }, sidebar), { font: 'Georgia', accent: '#123456' }, 'the student\'s own choice wins');
+    assert.equal(B.themeFor({ themeFont: 'Arial', articleshipFontAuto: 'Arial' }, B.resolveDesign(DESIGNS, 1)).font, 'Times New Roman', 'an automatic font follows the design');
+    assert.deepEqual(B.themeFor({}, null), { font: '', accent: '' }, 'outside the kept designs: the layout\'s own');
+    const before = studentCv({ themeFont: '', themeAccent: '' });
+    B.themeFor(before, sidebar);
+    assert.equal(before.themeFont, '', 'nothing is stored on the CV');
     assert.equal(B.normaliseDesigns([{ number: 1, renderFile: 'classic.html', font: 'Comic Sans MS' }], GALLERY)[0].font, '');
     assert.equal(B.cvFont('times'), 'Times New Roman');
     assert.ok(B.checkCv(studentCv({ themeFont: 'Poppins' })).some(f => f.id === 'font'));
@@ -156,6 +193,25 @@ test('the blank CV: articleship shape, ICITSS in the education table, every gap 
     const edited = clone(blank);
     edited.personal.name = 'Riya Shah';
     assert.equal(B.untouchedStarter(edited, EXAMPLES, DESIGNS), null, 'one edit and it is the student\'s');
+});
+
+test('the blank CV shows the block its order leads with, as [brackets]; any order\'s blank counts as blank', () => {
+    const strings = value => (typeof value === 'string' ? [value] : (value && typeof value === 'object' ? Object.values(value).flatMap(strings) : []));
+    const lead = { C: 'experience', D: 'projects', E: 'achievements', F: 'projects' };
+    ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].forEach(id => {
+        const blank = B.createBlank(studentCv(), { structure: id });
+        ['experience', 'projects', 'achievements'].forEach(key => {
+            assert.equal(blank[key].length, key === lead[id] ? 1 : 0, `order ${id}: ${key}`);
+        });
+        if (lead[id]) {
+            strings(blank[lead[id]]).filter(Boolean).forEach(text => assert.match(text, /\[[^\]]+\]/, `order ${id}: "${text}" is a gap to fill`));
+        }
+        assert.equal(B.untouchedStarter(blank, EXAMPLES, DESIGNS), 'blank', `order ${id}: still a blank`);
+        assert.equal(B.programLine(blank), 'ongoing', 'the programme line, ongoing until the student finishes');
+        assert.equal(B.countCertificates(blank.certifications).outside, 0);
+    });
+    const swapped = B.applyStructure(B.createBlank(studentCv(), { structure: 'C' }), 'A');
+    assert.equal(B.untouchedStarter(swapped, EXAMPLES, DESIGNS), 'blank', 'a blank whose order changed is still a blank');
 });
 
 test('"Start from the example" and "The Nothing CV": the applicant\'s text on the student\'s design', () => {
@@ -184,7 +240,8 @@ test('"Start from the example" and "The Nothing CV": the applicant\'s text on th
 test('sample applicants keep the house rules (fictional, honest, rule-2 lines, the cap, the programme line)', () => {
     assert.deepEqual(Object.keys(EXAMPLES).sort(), ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']);
     const banned = /ca ?monk|thinking ?bridge|umbrella|NEEDS-CHECK|\bwave\b|drop [abc]\b|live week|coming soon/i;
-    Object.entries(EXAMPLES).forEach(([id, cv]) => {
+    assert.equal(Object.keys(EXAMPLES_JSON.designs).length, DESIGNS.length, 'one applicant for every design');
+    Object.entries(B.allApplicants(EXAMPLES, DESIGNS)).forEach(([id, cv]) => {
         const text = JSON.stringify(cv);
         assert.doesNotMatch(text, banned, `${id}: no banned strings`);
         assert.match(cv.personal.phone, /98XXXXXXXX/, `${id}: phone masked`);
@@ -207,6 +264,10 @@ test('sample applicants keep the house rules (fictional, honest, rule-2 lines, t
         const flags = B.checkCv(cv).map(f => f.id).filter(flagId => !['brackets', 'months'].includes(flagId));
         assert.deepEqual(flags, [], `${id}: the example itself passes the checks`);
     });
+    const nothing = EXAMPLES.H;
+    assert.equal(nothing.situation, 'H');
+    assert.equal(B.countCertificates(nothing.certifications).outside, B.OUTSIDE_CAP, 'The Nothing CV: the weekend stack, exactly four');
+    ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'I'].forEach(id => assert.equal(EXAMPLES[id].situation, id, `${id}: an applicant of that situation`));
 });
 
 // ---------- Certifications and job simulations ----------
@@ -376,6 +437,7 @@ async function stage(options) {
         win, doc: win.document, S, host, calls, workSim,
         get cv() { return cvData; },
         setAccess(value) { accessChecked = value; },
+        unlock(file) { locked.delete(file); },
         setPick(next) { pick = next; settingsListeners.forEach(fn => fn()); },
         panel: () => win.document.getElementById('articleship-stage'),
         click(selector) {
@@ -412,7 +474,12 @@ test('stage: opens with the Recommender pick (order now, design once the builder
     s.setAccess(true);
     await sleep(400);
     assert.deepEqual(s.calls.useTemplate, ['articleship-layout-banner-executive-split']);
-    assert.equal(s.cv.themeFont, 'Calibri', 'the design\'s STYLE font');
+    const payload = { themeFont: '', themeAccent: '' };
+    s.S.theme('articleship-layout-banner-executive-split', payload);
+    assert.deepEqual([payload.themeFont, payload.themeAccent], [design(4).font, design(4).accent], 'the design\'s look-book font and colour');
+    const other = { themeFont: '', themeAccent: '' };
+    s.S.theme('articleship-layout-structured-grid', other);
+    assert.deepEqual(other, { themeFont: '', themeAccent: '' }, 'a layout outside the kept designs keeps its own');
     assert.ok(s.calls.toasts.includes('Opened with your CV Recommender pick.'));
     assert.match(s.panel().textContent, /From your CV Recommender: order D, design 4/);
 
@@ -422,6 +489,45 @@ test('stage: opens with the Recommender pick (order now, design once the builder
     const again = await stage({ pick, cv: Object.assign(B.createBlank({ templateFile: 'articleship-layout-plain-ats' }, { structure: 'A' }), { articleshipPickApplied: 'k1' }), wait: 120 });
     assert.equal(again.cv.articleshipStructure, 'A', 'an applied pick does not undo the student\'s own order');
     assert.deepEqual(again.calls.useTemplate, []);
+});
+
+test('stage: the pick\'s design goes on when the enrolment lookup unlocks it, though access was marked checked first', async () => {
+    const pickDesign = B.designsFor(DESIGNS, 'C')[0];
+    const pick = { situation: 'C', order: [], design: pickDesign.number, savedAt: 'k2' };
+    const s = await stage({ pick, locked: [pickDesign.file], wait: 80 });
+    assert.deepEqual(s.calls.useTemplate, [], 'still locked: the free design stays');
+    s.unlock(pickDesign.file);
+    await sleep(400);
+    assert.deepEqual(s.calls.useTemplate, [pickDesign.file]);
+    assert.equal(s.cv.experience.length, 1, 'the blank shows order C\'s work block');
+});
+
+test('stage: an untouched blank is redrawn for a new order; a CV the student wrote only changes order', async () => {
+    const tap = (s, id) => {
+        s.click('[data-row=order]');
+        [...s.doc.querySelectorAll('.asb-order')].find(chip => chip.textContent.startsWith(id)).dispatchEvent(new s.win.MouseEvent('click', { bubbles: true }));
+    };
+    const blank = await stage({ cv: Object.assign(B.createBlank({ templateFile: 'articleship-layout-clean-rule', themeAccent: '#0a0a0a' }, { structure: 'A' }), { templateFile: 'articleship-layout-clean-rule' }) });
+    tap(blank, 'D');
+    assert.equal(blank.cv.articleshipStructure, 'D');
+    assert.equal(blank.cv.projects.length, 1, 'order D shows its projects block');
+    assert.equal(blank.cv.templateFile, 'articleship-layout-clean-rule', 'design kept');
+    assert.equal(blank.cv.themeAccent, '#0a0a0a', 'colour kept');
+    tap(blank, 'C');
+    assert.deepEqual([blank.cv.experience.length, blank.cv.projects.length], [1, 0], 'order C swaps it for the work block');
+    const own = await stage({ cv: studentCv() });
+    tap(own, 'C');
+    assert.equal(own.cv.articleshipStructure, 'C');
+    assert.deepEqual(own.cv.experience, [], 'nothing added to the student\'s own CV');
+    assert.equal(own.cv.personal.name, 'Riya Shah');
+});
+
+test('phones: the Designs grid is two to a row and its rows take each card\'s height', () => {
+    const css = fs.readFileSync(path.join(ROOT, 'articleship-program/cv-builder/stage.css'), 'utf8');
+    const block = css.match(/body\.asb-on \.template-grid\.asb-grid \{[^}]*\}/);
+    assert.ok(block, 'phone grid rule');
+    assert.match(block[0], /grid-template-columns: repeat\(2, minmax\(0, 1fr\)\)/);
+    assert.match(block[0], /grid-auto-rows: max-content/, 'rows never squashed to fit the scroll box');
 });
 
 test('stage: order chips change the structure only; starters keep the design', async () => {
@@ -436,7 +542,7 @@ test('stage: order chips change the structure only; starters keep the design', a
     assert.match(s.calls.toasts.at(-1), /Order E on\. Your design and text are unchanged\./);
 
     s.click('[data-action=example]');
-    assert.equal(s.cv.personal.name, EXAMPLES.B.personal.name, 'design 5\'s applicant');
+    assert.equal(s.cv.personal.name, design(5).example.personal.name, 'design 5\'s own applicant');
     assert.equal(s.cv.templateFile, 'articleship-layout-clean-rule');
     assert.equal(s.cv.articleshipStructure, 'E', 'the student\'s order is kept');
     assert.match(s.panel().textContent, /Put your own name/);
@@ -473,7 +579,9 @@ test('stage: earned lines are offered, queued ones arrive by themselves, each on
 
     const none = await stage();
     assert.match(none.panel().textContent, /Earn a line with your own counts in Work Simulation/);
-    assert.equal(none.panel().querySelector('a[href="/articleship-program/work-simulation/"]').textContent, 'Work Simulation');
+    const ws = [...none.panel().querySelectorAll('a')].find(a => a.textContent === 'Work Simulation');
+    assert.equal(ws.getAttribute('href'), '/learning-management-system/course?course=msc-articleship-program&session=2',
+        'its Day in the course until the shared situations list names the page');
 });
 
 test('stage: the design picker shows the look-book designs by number and all 62 under "All"', async () => {
@@ -482,26 +590,39 @@ test('stage: the design picker shows the look-book designs by number and all 62 
     s.host.renderCards();
     const grid = s.doc.getElementById('template-grid');
     assert.equal(grid.querySelectorAll('.template-card').length, DESIGNS.length);
+    assert.match(s.doc.querySelector('.asb-tab').textContent, new RegExp(`Designs \\(${DESIGNS.length}\\)`));
     assert.match(grid.textContent, /No\. 1Classic table/);
     assert.ok(grid.querySelector('.asb-tag.is-portal'), 'Portal-safe tag');
+    assert.equal(grid.querySelector('[data-number="3"] .asb-tag').textContent, 'Screen');
     assert.match(grid.querySelector('[data-file="articleship-layout-profile-sidebar"]').textContent, /Your pick/);
+    assert.equal(grid.querySelector('[data-number="1"] .asb-card-for').textContent, B.bestForLabel(design(1)));
     assert.equal(s.doc.getElementById('template-collection').parentElement.hidden, true);
+    assert.match(s.doc.querySelector('.asb-legend').textContent, /Print.*Portal-safe.*Screen/);
+    const chips = [...s.doc.querySelectorAll('.asb-chip')];
+    assert.deepEqual(chips.map(c => c.dataset.filter), ['all', 'order', 'portal']);
+    chips[1].dispatchEvent(new s.win.MouseEvent('click', { bubbles: true }));
+    assert.deepEqual([...grid.querySelectorAll('.template-card')].map(c => Number(c.dataset.number)), B.designsFor(DESIGNS, 'C').map(d => d.number),
+        'For order C: the pick, then the ones that also suit it');
+    s.doc.querySelector('[data-filter=portal]').dispatchEvent(new s.win.MouseEvent('click', { bubbles: true }));
+    assert.ok([...grid.querySelectorAll('.template-card')].every(c => design(Number(c.dataset.number)).portalSafe));
+    s.doc.querySelector('[data-filter=all]').dispatchEvent(new s.win.MouseEvent('click', { bubbles: true }));
     s.doc.querySelectorAll('.asb-tab')[1].dispatchEvent(new s.win.MouseEvent('click', { bubbles: true }));
     assert.equal(grid.querySelectorAll('.template-card').length, 62);
     grid.querySelector('[data-file="articleship-layout-clean-rule"]').dispatchEvent(new s.win.MouseEvent('click', { bubbles: true }));
     assert.equal(s.cv.templateFile, 'articleship-layout-clean-rule');
     assert.equal(s.cv.articleshipStructure, 'C', 'a design never resets the order');
-    grid.querySelector('[data-file="articleship-layout-wave-grid"]').dispatchEvent(new s.win.MouseEvent('click', { bubbles: true }));
-    assert.deepEqual(s.calls.choose.at(-1), ['articleship-layout-wave-grid', 'Wave Grid'], 'other layouts go through the builder\'s own picker');
+    assert.equal(s.doc.getElementById('asb-filters').hidden, true, 'no design chips on "All"');
+    grid.querySelector('[data-file="articleship-layout-structured-grid"]').dispatchEvent(new s.win.MouseEvent('click', { bubbles: true }));
+    assert.deepEqual(s.calls.choose.at(-1), ['articleship-layout-structured-grid', 'Structured Grid'], 'other layouts go through the builder\'s own picker');
 });
 
 test('stage: thumbnails show each design\'s applicant while the CV is blank; export drops the programme lines', async () => {
     const s = await stage();
     const preview = s.S.previewSource('articleship-layout-profile-sidebar');
-    assert.equal(preview.personal.name, EXAMPLES.C.personal.name);
+    assert.equal(preview.personal.name, design(3).example.personal.name, 'design 3\'s own applicant');
     assert.equal(preview.templateFile, 'articleship-layout-profile-sidebar');
-    assert.equal(s.S.layoutName('articleship-layout-profile-sidebar'), 'Design 3 · Sidebar');
-    assert.equal(s.S.layoutName('articleship-layout-wave-grid'), null);
+    assert.equal(s.S.layoutName('articleship-layout-profile-sidebar'), `Design 3 · ${design(3).name}`);
+    assert.equal(s.S.layoutName('articleship-layout-structured-grid'), null);
     s.click('[data-action=example]');
     assert.equal(s.S.previewSource('articleship-layout-profile-sidebar'), null, 'once a starter is chosen, thumbnails show the student\'s CV');
 
@@ -524,7 +645,7 @@ test('the CV Builder page loads the stage and calls every hook behind optional c
     assert.match(html, /family=Caveat/);
     assert.match(html, /\/articleship-program\/cv-builder\/stage\.css/);
     const script = fs.readFileSync(path.join(ROOT, 'cv-builder/cv-script.js'), 'utf8');
-    ['blankCv', 'init', 'renderTemplateCards', 'previewSource', 'layoutName', 'onChange', 'exportHtml']
+    ['blankCv', 'init', 'renderTemplateCards', 'previewSource', 'theme', 'layoutName', 'onChange', 'exportHtml']
         .forEach(hook => assert.match(script, new RegExp(`MSCArticleshipStage\\?\\.${hook}\\?\\.\\(`), hook));
 });
 
