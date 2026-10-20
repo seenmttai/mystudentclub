@@ -47,9 +47,7 @@
       "check": "Your name as on your ICAI record, a name-based email and a phone you answer",
       "example": [
         "✅ Riya Sharma · riya.sharma@email.com · 98XXXXXXXX",
-        "❌ CA Riya Sharma · rockstar.riya99@email.com",
-        "Keep it on ring, not silent: HR calls from unknown numbers.",
-        "No “CA” before your name until you are one."
+        "❌ CA Riya Sharma · rockstar.riya99@email.com"
       ]
     },
     {
@@ -91,8 +89,9 @@
       "section": "Header",
       "check": "A three-line objective naming your domain, never a generic one",
       "example": [
+        "✅ CA Intermediate cleared ([Month Year], first attempt); ICITSS completed. Kept the family shop’s books in Tally Prime for 10 months. Seeking articleship in GST, to learn monthly returns and ITC matching.",
         "❌ To work in a reputed organisation where I can utilise my skills and grow with the organisation.",
-        "✅ CA Intermediate cleared ([Month Year], first attempt); ICITSS completed. Kept the family shop’s books in Tally Prime for a year. Seeking articleship in GST, to learn monthly returns and ITC matching."
+        "Nothing true to say yet? Leave it out: no objective beats a generic one."
       ],
       "fix": {
         "label": "Objective examples",
@@ -123,7 +122,8 @@
         "✅ CA Intermediate row: First attempt · 74 in Taxation",
         "✅ Class XII row: 98 in Accountancy",
         "✅ AIR 34: only an all-India rank ICAI gave you",
-        "✅ Exemption in [paper]: only if your marksheet shows one (an Inter group passed later). One sitting, or Foundation? Write the score.",
+        "✅ Exemption in [paper]: only if your marksheet shows one.",
+        "Both groups in one sitting, or a Foundation row? Write the score, not an exemption.",
         "✅ School rank 3 of 140: only with a certificate or letter",
         "❌ A blank cell · “City rank 2” · “Topper” with nothing to prove it"
       ],
@@ -181,9 +181,9 @@
       "section": "Proof",
       "check": "Every line: verb, what, how many, with what, what came of it",
       "example": [
-        "❌ Responsible for my father’s shop accounts.",
         "✅ Recorded 1,400 sales and purchase vouchers in Tally Prime for the family paint shop over 10 months; reconciled the bank every month and cleared ₹38,000 of unmatched entries before the GST filing.",
-        "Past tense, one or two lines, no “I” or “my”, no two bullets on the same verb."
+        "❌ Responsible for my father’s shop accounts.",
+        "Past tense, one or two lines, no “I” or “my”, no two bullets on one verb."
       ],
       "fix": {
         "label": "How to write a line",
@@ -194,11 +194,12 @@
     {
       "id": "assisted",
       "section": "Proof",
-      "check": "“Assisted” for shared work; no verb above a trainee’s level",
+      "check": "The true verb: observed, assisted, prepared or led; nothing above a trainee’s level",
       "example": [
         "✅ Assisted in checking 45 fixed-asset additions against invoices",
         "❌ Led the statutory audit",
-        "Pick a verb one step too high and the interviewer walks you down."
+        "Pick the step you actually did; shared work is “Assisted”.",
+        "One step too high and the interviewer walks you down."
       ],
       "fix": {
         "label": "Words a trainee never writes",
@@ -211,8 +212,9 @@
       "section": "Proof",
       "check": "Certificates and simulations in their own section, four outside certificates at most",
       "example": [
-        "Heading “Certifications and job simulations”; never Experience, Internship or “virtual intern”.",
-        "ICITSS stays in education, and the MSC Articleship Program line isn’t one of the four."
+        "Heading “Certifications and job simulations”; never Experience, Internship or “virtual work experience”.",
+        "ICITSS and the MSC Articleship Program line aren’t among the four.",
+        "Unfinished? “Ongoing, completes [Month Year]”, as for ICITSS."
       ],
       "fix": {
         "label": "Guidebook, chapter 3",
@@ -244,7 +246,7 @@
         "SAP → “Which module?” “Name one transaction you used.”",
         "ICITSS completed → “What did you make in ITT?” “Which Excel tools did it use?”",
         "CARO 2020 → “Which companies does it not apply to?” “Name two things it asks the auditor to report.”",
-        "PwC US Audit Job Simulation (Forage) → “What is a risk-control matrix?” “Which control did you test?”",
+        "PwC US Audit job simulation (Forage) → “What is a risk-control matrix?” “Which control did you test?”",
         "Reading → “What did you read last?” “What was its main idea?”",
         "Trekking → “Which trek, and how high?” “What went wrong?”",
         "Captain, cricket team → “How did you pick the eleven?” “Tell me about a time you dropped someone.”",
@@ -329,7 +331,8 @@
       "check": "Before you send: the five-second test, after reading five classmates’ CVs",
       "example": [
         "Read five classmates’ CVs first: after that, your own mistakes jump out.",
-        "Then leave yours for a day and look at it for five seconds only. Your Inter result, your best proof and your domain should show in the top third. If not, move them up."
+        "Then leave yours for a day and look at it for five seconds only. Your Inter result, your best proof and your domain should show in the top third. If not, move them up.",
+        "Run spell check, then read every line aloud once. Firm names, ICAI terms (CARO, GSTR-2B, ITC) and your own name spelt exactly right."
       ],
       "fix": {
         "label": "Five filled-in CVs: CV templates",
@@ -340,7 +343,7 @@
   ],
   "done": {
     "title": "All 22 ticked? Your CV is ready",
-    "text": "Run the CV Reviewer on your PDF first. Then send it for Personal CV review on WhatsApp (+91 72288 81182) with your target domain and the one question you want answered, and attach the PDF. Fix what comes back, then run this list once more.",
+    "text": "Run the CV Reviewer on your PDF. Then send it for Personal CV review on WhatsApp (+91 72288 81182) with your target domain and the one question you want answered, and attach the PDF. Fix what comes back, then run this list once more.",
     "links": [
       {
         "label": "Run the CV Reviewer",
