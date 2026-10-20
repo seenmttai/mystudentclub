@@ -1,0 +1,58 @@
+{
+ "papers": [
+  {
+   "id": "screening-1",
+   "title": "Screening paper 1",
+   "kind": "screening",
+   "order": 1,
+   "questions": 54,
+   "scored": 54,
+   "minutes": 20,
+   "guide_minutes": 20,
+   "marking": {
+    "correct": 1,
+    "wrong": 0,
+    "blank": 0
+   },
+   "sections": [
+    {
+     "id": "english",
+     "title": "English",
+     "questions": 10,
+     "budget_minutes": 3
+    },
+    {
+     "id": "numbers",
+     "title": "Numbers",
+     "questions": 10,
+     "budget_minutes": 4
+    },
+    {
+     "id": "reasoning",
+     "title": "Reasoning",
+     "questions": 10,
+     "budget_minutes": 4
+    },
+    {
+     "id": "accounts",
+     "title": "Accounts, audit and tax",
+     "questions": 15,
+     "budget_minutes": 5
+    },
+    {
+     "id": "judgement",
+     "title": "Workplace judgement",
+     "questions": 8,
+     "budget_minutes": 3
+    },
+    {
+     "id": "awareness",
+     "title": "Business awareness",
+     "questions": 1,
+     "budget_minutes": 1
+    }
+   ],
+   "rev": "29d994f146"
+  }
+ ]
+}

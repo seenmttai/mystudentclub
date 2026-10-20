@@ -1,0 +1,608 @@
+{
+ "id": "fixture-all",
+ "kind": "screening",
+ "title": "Fixture paper: every type",
+ "order": 90,
+ "minutes": 15,
+ "marking": {
+  "correct": 3,
+  "wrong": -2,
+  "blank": 0
+ },
+ "intro": "One question of every kind. Sit it in one go, then read every reason.",
+ "sections": [
+  {
+   "id": "english",
+   "title": "English",
+   "budget_minutes": 5
+  },
+  {
+   "id": "numbers",
+   "title": "Numbers",
+   "budget_minutes": 5
+  },
+  {
+   "id": "reasoning",
+   "title": "Reasoning",
+   "budget_minutes": 3
+  },
+  {
+   "id": "accounts",
+   "title": "Accounts, audit and tax",
+   "budget_minutes": 2
+  }
+ ],
+ "stimuli": [
+  {
+   "id": "st1",
+   "type": "passage",
+   "title": "Kaveri Textiles",
+   "text": "Kaveri Textiles Pvt Ltd sold 18% more cloth this year than last year. To win new dealers, it gave them 90 days to pay instead of 45.\n\nIts bank balance at the year-end was the lowest in five years, and the finance team has asked two dealers to clear their overdue bills."
+  },
+  {
+   "id": "st2",
+   "type": "table",
+   "title": "Sahyadri Traders: monthly sales",
+   "columns": [
+    "Month",
+    "Sales (₹ lakh)",
+    "Returns (₹ lakh)"
+   ],
+   "rows": [
+    [
+     "April",
+     "42",
+     "3"
+    ],
+    [
+     "May",
+     "38",
+     "2"
+    ],
+    [
+     "June",
+     "51",
+     "6"
+    ],
+    [
+     "July",
+     "47",
+     "4"
+    ]
+   ]
+  },
+  {
+   "id": "st3",
+   "type": "chart",
+   "title": "Fees billed by team",
+   "chart": {
+    "kind": "bar",
+    "unit": "₹ lakh",
+    "categories": [
+     "Audit",
+     "Tax",
+     "Advisory"
+    ],
+    "series": [
+     {
+      "name": "2024–25",
+      "values": [
+       120,
+       80,
+       45
+      ]
+     },
+     {
+      "name": "2025–26",
+      "values": [
+       132,
+       92,
+       40
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "st4",
+   "type": "chart",
+   "title": "Closing cash balance",
+   "chart": {
+    "kind": "line",
+    "unit": "₹ lakh",
+    "categories": [
+     "Jan",
+     "Feb",
+     "Mar",
+     "Apr",
+     "May",
+     "Jun"
+    ],
+    "series": [
+     {
+      "name": "Cash",
+      "values": [
+       24,
+       18,
+       21,
+       15,
+       19,
+       27
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "st5",
+   "type": "chart",
+   "title": "How a ₹40 lakh budget is spent",
+   "chart": {
+    "kind": "pie",
+    "unit": "₹ lakh",
+    "categories": [
+     "Salaries",
+     "Rent",
+     "Travel",
+     "Software",
+     "Other"
+    ],
+    "series": [
+     {
+      "name": "Budget",
+      "values": [
+       22,
+       8,
+       4,
+       3,
+       3
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "st6",
+   "type": "puzzle",
+   "title": "Five interns in a row",
+   "text": "Five interns, Asha, Bhavin, Chitra, Esha and Farhan, sit in a row facing north.\n1. Chitra sits in the middle.\n2. Farhan sits at the right end.\n3. Asha sits immediately to the left of Chitra.\n4. Esha does not sit next to Farhan."
+  }
+ ],
+ "questions": [
+  {
+   "id": "fixture-all-q01",
+   "n": 1,
+   "section": "english",
+   "topic": "Subject–verb agreement",
+   "difficulty": "easy",
+   "type": "single",
+   "stem": "Choose the correct sentence.",
+   "options": [
+    {
+     "id": "a",
+     "text": "The bundle of signed vouchers is on your desk."
+    },
+    {
+     "id": "b",
+     "text": "The bundle of signed vouchers are on your desk."
+    },
+    {
+     "id": "c",
+     "text": "The bundles of signed voucher is on your desk."
+    },
+    {
+     "id": "d",
+     "text": "The bundle of signed vouchers were on your desk."
+    }
+   ],
+   "answer": "a",
+   "reason": "The subject is ‘bundle’, which is singular, so the verb is ‘is’. ‘Of signed vouchers’ only describes the bundle."
+  },
+  {
+   "id": "fixture-all-q02",
+   "n": 2,
+   "section": "english",
+   "topic": "Reading: cause",
+   "difficulty": "medium",
+   "type": "single",
+   "stimulus": "st1",
+   "stem": "What best explains the fall in the bank balance?",
+   "options": [
+    {
+     "id": "a",
+     "text": "The company sold less cloth this year."
+    },
+    {
+     "id": "b",
+     "text": "The finance team stopped chasing overdue bills."
+    },
+    {
+     "id": "c",
+     "text": "Dealers now take longer to pay for what they buy."
+    },
+    {
+     "id": "d",
+     "text": "Dealers returned most of the extra cloth."
+    }
+   ],
+   "answer": "c",
+   "reason": "Sales rose, but dealers now get 90 days instead of 45, so more money is still with them. ‘Sold less’ contradicts the passage."
+  },
+  {
+   "id": "fixture-all-q03",
+   "n": 3,
+   "section": "english",
+   "topic": "Reading: inference",
+   "difficulty": "medium",
+   "type": "single",
+   "stimulus": "st1",
+   "stem": "Which statement can you conclude from the passage?",
+   "options": [
+    {
+     "id": "a",
+     "text": "The company’s profit fell this year."
+    },
+    {
+     "id": "b",
+     "text": "Some dealers have not paid on time."
+    },
+    {
+     "id": "c",
+     "text": "The company will cut the credit period next year."
+    },
+    {
+     "id": "d",
+     "text": "All dealers pay within 45 days."
+    }
+   ],
+   "answer": "b",
+   "reason": "The finance team is chasing two dealers for overdue bills. Profit and next year’s policy are not mentioned."
+  },
+  {
+   "id": "fixture-all-q04",
+   "n": 4,
+   "section": "english",
+   "topic": "Plurals",
+   "difficulty": "easy",
+   "type": "text",
+   "stem": "Type the plural of ‘criterion’.",
+   "answer": {
+    "accept": [
+     "criteria"
+    ]
+   },
+   "reason": "‘Criterion’ is singular; its plural is ‘criteria’, never ‘criterions’."
+  },
+  {
+   "id": "fixture-all-q05",
+   "n": 5,
+   "section": "english",
+   "topic": "Dictation",
+   "difficulty": "easy",
+   "type": "dictation",
+   "stem": "Listen and type the sentence exactly as you hear it.",
+   "say": "Please send the signed bank statement before the review meeting.",
+   "answer": {
+    "text": "Please send the signed bank statement before the review meeting."
+   },
+   "reason": "Every word counts. Listen for the small words, such as ‘the’ and ‘before’."
+  },
+  {
+   "id": "fixture-all-q06",
+   "n": 6,
+   "section": "english",
+   "topic": "Short answer",
+   "difficulty": "medium",
+   "type": "speak",
+   "stem": "Listen to the question, then answer it aloud in about 40 seconds.",
+   "say": "Tell me about a time you had to finish work under a tight deadline.",
+   "seconds": 40,
+   "answer": {
+    "model": "During my Inter preparation, our college fest ended two weeks before my exams. As treasurer, I had three days to close the fest accounts. I listed every bill, chased the four vendors who had not sent invoices and finished the statement a day early. The teacher in charge used my sheet for the audit. I learnt to break a deadline into daily targets.",
+    "checklist": [
+     "You answered the question that was asked",
+     "You gave one real example",
+     "You said what you did and how it ended",
+     "You spoke for about 40 seconds without long pauses"
+    ]
+   },
+   "reason": "A strong answer gives one real example: the deadline, what you did, and the result."
+  },
+  {
+   "id": "fixture-all-q07",
+   "n": 7,
+   "section": "english",
+   "topic": "Email at work",
+   "difficulty": "medium",
+   "type": "write",
+   "stem": "Your senior wants the bank reconciliation by 4 pm, but the March bank statement has not reached you. Write a short email to your senior in 60 to 80 words.",
+   "seconds": 300,
+   "answer": {
+    "model": "Subject: March bank reconciliation: statement awaited\n\nDear Rohan Sir,\n\nThe March bank statement for Kaveri Textiles has not reached me yet, so I cannot finish the reconciliation by 4 pm. I have matched every entry up to 28 February and listed the March cheques from the cash book. I have asked the client’s accountant to email the statement today. Once it arrives, I can send you the reconciliation within two hours.\n\nRegards,\nNeha",
+    "checklist": [
+     "The subject line says what the mail is about",
+     "The first line states the problem",
+     "You say what you have done and what you need",
+     "You give a new time",
+     "A polite close with your name"
+    ]
+   },
+   "reason": "Senior readers want the problem, what you have done and the new time, in that order."
+  },
+  {
+   "id": "fixture-all-q08",
+   "n": 8,
+   "section": "numbers",
+   "topic": "Successive discounts",
+   "difficulty": "easy",
+   "type": "numeric",
+   "stem": "A laptop listed at ₹60,000 is sold at a 15% discount, and then a further 5% off the discounted price. How much does the buyer pay?",
+   "answer": {
+    "value": 48450,
+    "tolerance": 0,
+    "unit": "₹"
+   },
+   "working": "₹60,000 × 0.85 = ₹51,000. Then ₹51,000 × 0.95 = ₹48,450.",
+   "reason": "Successive discounts multiply. Adding them to 20% gives ₹48,000, which is the trap."
+  },
+  {
+   "id": "fixture-all-q09",
+   "n": 9,
+   "section": "numbers",
+   "topic": "Table reading",
+   "difficulty": "easy",
+   "type": "single",
+   "stimulus": "st2",
+   "stem": "In which month were net sales (sales minus returns) the highest?",
+   "options": [
+    {
+     "id": "a",
+     "text": "April"
+    },
+    {
+     "id": "b",
+     "text": "May"
+    },
+    {
+     "id": "c",
+     "text": "June"
+    },
+    {
+     "id": "d",
+     "text": "July"
+    }
+   ],
+   "answer": "c",
+   "working": "Net sales: April 39, May 36, June 45, July 43 (₹ lakh).",
+   "reason": "June has the highest net sales, ₹45 lakh, even after the largest returns."
+  },
+  {
+   "id": "fixture-all-q10",
+   "n": 10,
+   "section": "numbers",
+   "topic": "Bar chart: growth rate",
+   "difficulty": "medium",
+   "type": "single",
+   "stimulus": "st3",
+   "stem": "Which team’s fees grew the fastest in percentage terms?",
+   "options": [
+    {
+     "id": "a",
+     "text": "Audit"
+    },
+    {
+     "id": "b",
+     "text": "Tax"
+    },
+    {
+     "id": "c",
+     "text": "Advisory"
+    },
+    {
+     "id": "d",
+     "text": "Audit and Tax equally"
+    }
+   ],
+   "answer": "b",
+   "working": "Audit: 12 ÷ 120 = 10%. Tax: 12 ÷ 80 = 15%. Advisory fell by 5 ÷ 45, about 11%.",
+   "reason": "Audit and Tax both grew by ₹12 lakh, but Tax grew from a smaller base, so its rate is higher."
+  },
+  {
+   "id": "fixture-all-q11",
+   "n": 11,
+   "section": "numbers",
+   "topic": "Line chart: changes",
+   "difficulty": "easy",
+   "type": "single",
+   "stimulus": "st4",
+   "stem": "In how many months did the cash balance fall compared with the month before?",
+   "options": [
+    {
+     "id": "a",
+     "text": "1"
+    },
+    {
+     "id": "b",
+     "text": "2"
+    },
+    {
+     "id": "c",
+     "text": "3"
+    },
+    {
+     "id": "d",
+     "text": "4"
+    }
+   ],
+   "answer": "b",
+   "working": "Falls: February (24 to 18) and April (21 to 15). March, May and June rose.",
+   "reason": "Only February and April are lower than the month before."
+  },
+  {
+   "id": "fixture-all-q12",
+   "n": 12,
+   "section": "numbers",
+   "topic": "Pie chart: share",
+   "difficulty": "easy",
+   "type": "numeric",
+   "stimulus": "st5",
+   "stem": "What percentage of the budget goes on rent?",
+   "answer": {
+    "value": 20,
+    "tolerance": 0,
+    "unit": "%"
+   },
+   "working": "Rent is ₹8 lakh of ₹40 lakh: 8 ÷ 40 × 100 = 20%.",
+   "reason": "Share = part ÷ whole × 100, using the ₹40 lakh total."
+  },
+  {
+   "id": "fixture-all-q13",
+   "n": 13,
+   "section": "reasoning",
+   "topic": "Seating in a row",
+   "difficulty": "medium",
+   "type": "single",
+   "stimulus": "st6",
+   "stem": "Who sits next to Farhan?",
+   "options": [
+    {
+     "id": "a",
+     "text": "Esha"
+    },
+    {
+     "id": "b",
+     "text": "Asha"
+    },
+    {
+     "id": "c",
+     "text": "Bhavin"
+    },
+    {
+     "id": "d",
+     "text": "Chitra"
+    }
+   ],
+   "answer": "c",
+   "working": "From the left: Chitra is 3rd, Farhan 5th, Asha 2nd. Esha cannot be 4th (next to Farhan), so Esha is 1st and Bhavin 4th.",
+   "reason": "Bhavin is 4th, next to Farhan. Esha is ruled out by clue 4."
+  },
+  {
+   "id": "fixture-all-q14",
+   "n": 14,
+   "section": "reasoning",
+   "topic": "Data sufficiency",
+   "difficulty": "medium",
+   "type": "single",
+   "stem": "What is the price of one pen?\nI. Three pens and two pencils together cost ₹50.\nII. One pen costs ₹10 more than one pencil.",
+   "options": [
+    {
+     "id": "a",
+     "text": "I alone is enough"
+    },
+    {
+     "id": "b",
+     "text": "II alone is enough"
+    },
+    {
+     "id": "c",
+     "text": "Either I or II alone is enough"
+    },
+    {
+     "id": "d",
+     "text": "I and II together are enough, but neither alone"
+    },
+    {
+     "id": "e",
+     "text": "Even I and II together are not enough"
+    }
+   ],
+   "answer": "d",
+   "working": "Together: 3(q + 10) + 2q = 50, so q = ₹4 and a pen costs ₹14. Each statement alone has two unknowns.",
+   "reason": "Each statement alone leaves two unknowns; together they fix both prices."
+  },
+  {
+   "id": "fixture-all-q15",
+   "n": 15,
+   "section": "reasoning",
+   "topic": "Syllogism",
+   "difficulty": "medium",
+   "type": "single",
+   "stem": "All audit files are in the cupboard. Some files in the cupboard are tax files.\nIs this conclusion true: “Some audit files are tax files”?",
+   "options": [
+    {
+     "id": "a",
+     "text": "Definitely true"
+    },
+    {
+     "id": "b",
+     "text": "Definitely false"
+    },
+    {
+     "id": "c",
+     "text": "Can’t say"
+    }
+   ],
+   "answer": "c",
+   "reason": "The tax files in the cupboard may or may not be audit files, so the statements neither prove nor rule out the conclusion."
+  },
+  {
+   "id": "fixture-all-q16",
+   "n": 16,
+   "section": "accounts",
+   "topic": "Vouching: missing approval",
+   "difficulty": "easy",
+   "type": "single",
+   "stem": "While vouching, you find a ₹48,000 purchase bill with no approval signature. What should you do first?",
+   "options": [
+    {
+     "id": "a",
+     "text": "Sign the bill yourself so the file is complete before the review."
+    },
+    {
+     "id": "b",
+     "text": "Ignore it, because ₹48,000 is below the materiality you were told."
+    },
+    {
+     "id": "c",
+     "text": "Ask the client’s accountant to sign it as the approver today."
+    },
+    {
+     "id": "d",
+     "text": "Note it as an exception in your working paper and tell your senior."
+    }
+   ],
+   "answer": "d",
+   "reason": "A missing approval is an exception to record and report. Signing it yourself or getting a back-dated signature hides the gap."
+  },
+  {
+   "id": "fixture-all-q17",
+   "n": 17,
+   "section": "accounts",
+   "topic": "Prepaid expenses",
+   "difficulty": "easy",
+   "type": "single",
+   "stem": "On 20 December 2025 a company pays ₹1,20,000 for a one-year insurance policy from 1 January 2026. Its books close on 31 March 2026. How much is prepaid on that date?",
+   "options": [
+    {
+     "id": "a",
+     "text": "₹30,000"
+    },
+    {
+     "id": "b",
+     "text": "₹90,000"
+    },
+    {
+     "id": "c",
+     "text": "₹1,20,000"
+    },
+    {
+     "id": "d",
+     "text": "Nil"
+    }
+   ],
+   "answer": "b",
+   "working": "Unexpired: April to December 2026 = 9 months. ₹1,20,000 × 9 ÷ 12 = ₹90,000.",
+   "reason": "Prepaid is the unexpired part, 9 of 12 months. ₹30,000 is the part already used up."
+  }
+ ]
+}

@@ -42,7 +42,7 @@
      * to true once the page is committed; tests/articleship-interview-tracker.test.cjs checks the two agree.
      */
     const PAGE_ROWS = Object.freeze({
-        '/articleship-program/written-test/': Object.freeze({ day: 4, title: 'Written test practice', live: false })
+        '/articleship-program/written-test/': Object.freeze({ day: 4, title: 'Written test practice', live: true })
     });
 
     const STATUSES = Object.freeze(['not-started', 'learning', 'ready']);

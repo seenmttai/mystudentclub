@@ -523,7 +523,10 @@ test('mount: opens on the syllabus with Core, asks for the domain, and hides Sha
     assert.match(read.getAttribute('aria-label'), /^Read in HR round and GD booklet: /);
     const written = [...doc.querySelectorAll('.it-section[data-section="written-test"] .it-read')];
     assert.ok(written.some(a => a.textContent === 'Practise'));
-    written.forEach(a => assert.doesNotMatch(a.getAttribute('href'), /^\/articleship-program\/written-test\//, 'no link to a page not on the branch'));
+    const writtenLive = fs.existsSync(path.join(ROOT, 'articleship-program/written-test/index.html'));
+    const toPage = written.filter(a => /^\/articleship-program\/written-test\//.test(a.getAttribute('href')));
+    if (writtenLive) assert.ok(toPage.length && toPage.every(a => a.textContent === 'Practise'), 'the written-test page is on the branch: Practise opens it');
+    else assert.equal(toPage.length, 0, 'no link to a page not on the branch');
 });
 
 test('mount: domain, date and status save; % and days left follow', () => {
