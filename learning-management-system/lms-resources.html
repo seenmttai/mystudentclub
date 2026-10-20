@@ -32,6 +32,7 @@
     <script src="/scripts/supabase.js"></script>
     <script src="/scripts/supabase-init.js"></script>
     <script src="/scripts/error-reporter.js"></script>
+    <script src="/scripts/articleship-lms.js?v=1"></script>
     <script type="importmap">
     {
         "imports": {
@@ -1370,6 +1371,8 @@
                 },
                 getSheetPreviewUrl(url) {
                     if (!url) return url;
+                    // A "/copy" link must reach Google untouched so it opens "Make a copy?".
+                    if (/docs\.google\.com\/spreadsheets\/d\/[A-Za-z0-9_-]+\/copy\b/.test(url)) return url;
                     const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
                     if (!match) return url;
                     const sheetId = match[1];
@@ -1406,6 +1409,25 @@
                 },
 
                 async openViewer(resource, type) {
+                    // Rows flagged `copy` (Articleship v3) open in the copyable reader before any group-name rule.
+                    const articleshipLms = window.MSCArticleshipLms;
+                    if (type === 'pdf' && articleshipLms && articleshipLms.copyMode(resource)) {
+                        const copyWindow = window.open('', '_blank');
+                        if (copyWindow) {
+                            copyWindow.document.write('<p style="font-family: sans-serif; text-align: center; margin-top: 20%; color: #64748b;">Opening…</p>');
+                        }
+                        try {
+                            const { data, error } = await supabase.storage.from('industrial-training-mastery-resources').createSignedUrl(resource.view_storage_path, 300);
+                            if (error) throw error;
+                            const target = articleshipLms.copyTarget(resource, data.signedUrl, 1);
+                            if (copyWindow) copyWindow.location.href = target; else window.open(target, '_blank');
+                        } catch (err) {
+                            console.error("Viewer error", err);
+                            if (copyWindow) copyWindow.close();
+                            alert("Could not load resource.");
+                        }
+                        return;
+                    }
                     // Non-template PDFs open in the ca-resource flipbook viewer
                     const isTemplate = resource.group && resource.group.toLowerCase().includes('template');
                     if (type === 'pdf' && !isTemplate) {

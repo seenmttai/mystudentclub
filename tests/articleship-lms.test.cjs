@@ -3,12 +3,16 @@ const fs = require('node:fs');
 const path = require('node:path');
 const test = require('node:test');
 const vm = require('node:vm');
+const { PGlite } = require('@electric-sql/pglite');
+const LMS = require('../scripts/articleship-lms.js');
 
 const root = path.resolve(__dirname, '..');
 const courseScript = fs.readFileSync(path.join(root, 'learning-management-system/course-script.js'), 'utf8');
 const html = fs.readFileSync(path.join(root, 'learning-management-system/index.html'), 'utf8');
 const dashboardScript = html.match(/<script type="module">([\s\S]*?)<\/script>/)[1]
     .replace(/import \{ createApp \} from 'vue';/, '');
+const V3_SQL = path.join(root, 'supabase/migrations/202610200002_articleship_program_v3_lms.sql');
+const V2_SQL = path.join(root, 'supabase/migrations/202610190001_articleship_program_lms.sql');
 
 function loadDashboard(enrollments) {
     const queries = [];
@@ -44,10 +48,36 @@ function loadDashboard(enrollments) {
     return { dashboard, queries, window };
 }
 
+function migrationRows(file = V3_SQL) {
+    const sql = fs.readFileSync(file, 'utf8');
+    const encoded = sql.match(/json_populate_recordset\(NULL::public\.videos, '([\s\S]*?)'::json\)/);
+    assert.ok(encoded, 'migration contains its row payload');
+    return JSON.parse(encoded[1].replaceAll("''", "'"));
+}
+
+function courseFunction(name, sandbox) {
+    const catalogStart = courseScript.indexOf('    const courses =');
+    const catalogEnd = courseScript.indexOf('\n    const DOMElements', catalogStart);
+    vm.runInNewContext(courseScript.slice(catalogStart, catalogEnd), sandbox);
+    const start = courseScript.indexOf(`    const ${name} =`);
+    const end = courseScript.indexOf('\n    const ', start + 1);
+    assert.ok(start >= 0 && end > start, `${name} exists in course-script.js`);
+    vm.runInNewContext(`${courseScript.slice(start, end)}\nthis.run = ${name};`, sandbox);
+    return sandbox.run;
+}
+
+const WHATSAPP_GROUP = 'https://chat.whatsapp.com/Fk7FnQiktc4KubrNzFPgya';
+const DAY_TITLES = ['Start here', 'Crafting the Perfect CV', 'Applying the Right Way', 'Using LinkedIn',
+    'Cracking Interviews', 'Domain Guidance', 'Registration Formalities'];
+// V3-STRUCTURE §0.3: the rows that open in the copyable reader.
+const COPY_ROWS = ['MSC Articleship Guidebook', 'Choose your CV', 'The Nothing CV', 'CV templates', 'Keywords by domain',
+    'Cover letters', 'Big 10 articleship routes', 'Application templates', 'Follow-up templates', 'Back-out templates',
+    'LinkedIn search links', 'Connection notes', 'First message after the request is accepted', 'Follow-up messages',
+    'HR round and GD booklet'];
+
 test('an Articleship enrollment appears on the LMS dashboard and opens its course', async () => {
     const { dashboard, queries, window } = loadDashboard([{ course: 'msc-articleship-program' }]);
     await dashboard.fetchUserEnrollments();
-
     assert.equal(dashboard.loading, false);
     assert.equal(dashboard.enrolledCourses.length, 1);
     const course = dashboard.enrolledCourses[0];
@@ -65,149 +95,82 @@ test('the Articleship catalog entry does not grant access without enrollment', a
     assert.equal(dashboard.loading, false);
 });
 
-function migrationRows() {
-    const sql = fs.readFileSync(path.join(root, 'supabase/migrations/202610190001_articleship_program_lms.sql'), 'utf8');
-    const encoded = sql.match(/json_populate_recordset\(NULL::public\.videos, '([\s\S]*?)'::json\)/);
-    assert.ok(encoded, 'migration contains its row payload');
-    return JSON.parse(encoded[1].replaceAll("''", "'"));
-}
-
-const GUIDEBOOK_SESSIONS = [
-    [0, 1, 'The MSC Articleship Guidebook'],
-    [1, 2, 'Your articleship CV'], [1, 8, 'Building your profile fast'],
-    [2, 3, 'Applying the right way'], [2, 9, 'Follow-ups, offers and your weekly routine'],
-    [3, 4, 'Using LinkedIn'], [3, 10, 'Connections and referrals'],
-    [4, 5, 'Cracking interviews'], [4, 11, 'Practising audit, tax and Excel'],
-    [5, 6, 'Choosing your domain'], [5, 12, 'Finding firms in your domain'],
-    [6, 7, 'Registering your articleship'], [6, 13, 'Transfer, industrial training and CA Final']
-];
-const WHATSAPP_PADAM = 'https://wa.me/917228881182';
-const MSC_CHANNEL = 'https://whatsapp.com/channel/0029Vb8XM5GDzgT6YyWk4x0F';
-const EXPLORER_URL = 'https://www.mystudentclub.com/articleship-program/experience-explorer/';
-
-test('the dashboard progress estimate counts every Articleship session', async () => {
+test('the dashboard progress estimate counts one session per Day', async () => {
     const { dashboard } = loadDashboard([{ course: 'msc-articleship-program' }]);
     await dashboard.fetchUserEnrollments();
-    assert.equal(dashboard.enrolledCourses[0].videoCountEstimate, migrationRows().length);
+    assert.equal(dashboard.enrolledCourses[0].videoCountEstimate, 7);
+    assert.equal(migrationRows().length, 7);
 });
 
-test('the Articleship migration has one session per guidebook chapter and only student resource groups', () => {
+test('v3 rows: one session per Day, headings are actions, 45 rows, nothing a student should not see', () => {
     const rows = migrationRows();
-    assert.deepEqual(rows.map(row => [row.day_number, row.video_number, row.title]), GUIDEBOOK_SESSIONS);
-    assert.ok(rows.every(row => row.resources.length > 0), 'every programme session has usable resources');
+    assert.deepEqual(rows.map(row => [row.day_number, row.video_number, row.title]), DAY_TITLES.map((title, day) => [day, day + 1, title]));
+    assert.equal(rows.flatMap(row => row.resources).length, 45);
+    const banned = /ca ?monk|thinking ?bridge|umbrella|needs-check|\bwaves?\b|live week|coming soon|\b202[5-9]\b|slides|example cvs|vacancy alerts|form 109/i;
     for (const row of rows) {
         assert.equal(row.course, 'msc-articleship-program');
         assert.equal(row.industrial_training_path, null);
-        const seen = new Set();
+        assert.ok(!banned.test(row.title + row.description), `Day ${row.day_number} text`);
+        assert.match(row.description, /Done when:/);
+        const titles = new Set();
         for (const resource of row.resources) {
-            assert.ok(['Guidebook', 'Slides', 'Templates', 'Examples', 'Checklists', 'Tools'].includes(resource.group));
-            assert.ok(!/^[a-z]|\bcvs\b|^Ca |\(download|^\d{2} /.test(resource.title), `student title: ${resource.title}`);
-            const id = resource.url || resource.download_storage_path || resource.view_storage_path;
-            assert.ok(!seen.has(id), `${resource.title} is listed once in ${row.title}`);
-            seen.add(id);
-            assert.ok(!/\/index\.html$/.test(resource.download_storage_path || ''), 'multi-file tool entry pages are not standalone downloads');
-            assert.ok(!/\.zip$/.test(resource.download_storage_path || '') || resource.title === 'CV gallery', `${resource.title} is not a repeat kit`);
+            assert.ok(!titles.has(resource.title), `${resource.title} listed once`);
+            titles.add(resource.title);
+            assert.ok(resource.group && !/template/i.test(resource.group), `heading "${resource.group}" never triggers the canvas viewer`);
+            assert.ok(!banned.test(resource.title), resource.title);
+            assert.ok(!('row' in resource) && !('source' in resource), 'internal fields stay out of the rows');
             for (const key of ['view_storage_path', 'download_storage_path']) {
-                if (resource[key]) assert.ok(resource[key].startsWith('articleship-program-v2/day-'));
-                assert.ok(!resource[key]?.includes('/automail/'), 'Automail installation source stays internal');
-                assert.ok(!/\/cv-gallery\/\d{2}-/.test(resource[key] || ''), 'gallery layouts travel in the gallery ZIP');
+                if (resource[key]) assert.match(resource[key], /^articleship-program-v3\/day-[0-6]\/[^/]+\.(pdf|docx|xlsx|csv)$/);
             }
-            if (resource.type === 'xlsx') assert.ok(resource.view_storage_path?.endsWith('.pdf'), `${resource.title} opens as a PDF on a phone`);
-            if (resource.type === 'external_link') assert.match(resource.url, /^https:\/\//);
-            if (/selected-(?:industrial-training-)?cvs/.test(resource.view_storage_path || '')) {
-                assert.ok(resource.view_storage_path.endsWith('.pdf'));
-                assert.equal(resource.download_storage_path, undefined);
+            if (resource.type === 'external_link') {
+                assert.ok(/^\/(?!\/)/.test(resource.url) || /^https:\/\/(chat\.whatsapp\.com|wa\.me)\//.test(resource.url), `${resource.title}: MSC tools use relative links`);
+                assert.ok(!/docs\.google\.com\/spreadsheets\/d\/[^/]+\/copy/.test(resource.url), 'no Sheet /copy link in a row');
             }
+            assert.ok(!/\.zip$/i.test(resource.download_storage_path || ''), 'no ZIPs');
         }
     }
-    // Each Day lists its complete final deck once; Day 0 also has the guidebook/free live.
-    const slidePaths = [];
-    for (const row of rows) {
-        const slides = row.resources.filter(resource => resource.group === 'Slides');
-        assert.ok(slides.every(resource => resource.view_storage_path?.endsWith('.pdf')));
-        assert.ok(slides.every(resource => resource.title === 'MSC Articleship Guidebook' || !resource.download_storage_path));
-        slidePaths.push(...slides.map(resource => resource.view_storage_path));
-    }
-    assert.equal(new Set(slidePaths).size, slidePaths.length, 'each slide resource appears once');
-    assert.equal(slidePaths.length, 8, 'seven complete Day decks and free live');
-    for (let day = 0; day <= 6; day++) {
-        const sessions = rows.filter(row => row.day_number === day);
-        const decks = sessions.flatMap(row => row.resources).filter(resource => resource.title === `Day ${day} slides`);
-        assert.equal(decks.length, 1, `Day ${day} has its deck once`);
-        assert.ok(sessions[0].resources.includes(decks[0]), 'Day deck belongs to the first session');
-        assert.equal(sessions[0].resources[0].group, day === 0 ? 'Guidebook' : 'Slides');
-        assert.deepEqual(decks[0], { title: `Day ${day} slides`, type: 'pdf',
-            view_storage_path: `articleship-program-v2/day-${day}/slides/Day ${day} slides.pdf`, group: 'Slides' });
-        assert.ok(sessions.slice(1).every(row => row.resources.every(resource => resource.group !== 'Slides')),
-            'obsolete chapter extracts are not listed');
-    }
-    const dayZero = rows[0];
-    assert.match(dayZero.description, /Join the channel today/);
-    assert.equal(dayZero.resources[0].group, 'Guidebook');
-    assert.deepEqual(dayZero.resources.map(resource => resource.title),
-        ['MSC Articleship Guidebook', 'Day 0 slides', 'Free live session slides', 'MSC WhatsApp channel', 'WhatsApp Padam']);
-    assert.ok(dayZero.resources.some(resource => resource.url === MSC_CHANNEL && resource.group === 'Tools'));
-    assert.ok(dayZero.resources.some(resource => resource.url === WHATSAPP_PADAM && resource.group === 'Tools'));
-    assert.ok(rows.every(row => row.resources.every(resource => !/welcome|onboarding/i.test(resource.title))));
-
-    const cv = rows.find(row => row.title === 'Your articleship CV').resources;
-    const templates = cv.filter(resource => resource.group === 'Templates').map(resource => resource.title);
-    assert.equal(templates[0], 'Choose your CV');
-    assert.equal(templates[1], 'Classic Academic CV', "the guidebook's pick comes first after the chooser");
-    assert.equal(templates.length, 1 + 18 + 1 + 9, '18 CV templates, the gallery and nine cover-letter files');
-    assert.equal(templates.indexOf('CV gallery'), 19);
-    assert.deepEqual(templates.slice(20, 22), ['Choose your cover letter', 'Statutory Audit Cover Letter']);
-    const gallery = cv.find(resource => resource.title === 'CV gallery');
-    assert.equal(gallery.download_storage_path, 'articleship-program-v2/day-1/CV gallery.zip');
-    assert.equal(gallery.view_storage_path, 'articleship-program-v2/day-1/cv-gallery/Choose your layout.pdf');
-    assert.ok(!cv.some(resource => /Day 0 and Day 1/.test(resource.title + (resource.download_storage_path || ''))), 'no repeat kit');
-    assert.deepEqual(cv.filter(resource => resource.group === 'Examples').map(resource => resource.title), ['Classic Academic, filled in', 'Big 4 and other firms’ CVs']);
-    assert.deepEqual(cv.filter(resource => resource.group === 'Tools').map(resource => resource.title), ['CV Builder', 'CV Reviewer', 'Personal CV review']);
-    assert.ok(cv.some(resource => resource.title === 'Personal CV review' && resource.url.startsWith(WHATSAPP_PADAM)));
-    assert.deepEqual(rows.find(row => row.title === 'Building your profile fast').resources.map(resource => resource.title),
-        ['Industrial Training students’ CVs', 'Strengthen your CV', 'CV ahead']);
-
-    const applying = rows.find(row => row.title === 'Applying the right way').resources;
-    const automail = applying.find(resource => resource.title === 'Get your Automail sheet');
-    assert.ok(automail, 'Day 2 lists Articleship Automail');
-    assert.equal(automail.group, 'Tools');
-    assert.equal(automail.type, 'external_link');
-    assert.ok(automail.url.startsWith(`${WHATSAPP_PADAM}?text=`), 'students ask Padam for their sheet; no invented Sheet link');
-    assert.ok(!applying.some(resource => resource.url === MSC_CHANNEL), 'channel is listed once in Day 0');
-
-    const practising = rows.find(row => row.title === 'Practising audit, tax and Excel').resources;
-    assert.equal(practising.find(resource => resource.title === 'Articleship Excel test').group, 'Tools');
-    assert.equal(practising.find(resource => resource.title === 'Articleship Excel solution').group, 'Tools');
-
-    const explorers = rows.flatMap(row => row.resources.map(resource => [row, resource]))
-        .filter(([, resource]) => resource.title === 'Experience Explorer');
-    assert.equal(explorers.length, 1, 'the Experience Explorer is listed once');
-    const [explorerRow, explorer] = explorers[0];
-    assert.equal(explorerRow.day_number, 5);
-    assert.equal(explorerRow.video_number, 6);
-    assert.deepEqual(explorerRow.resources.map(item => item.title), ['Day 5 slides', 'Experience Explorer']);
-    const firms = rows.find(row => row.video_number === 12).resources;
-    assert.equal(firms[0].title, 'Firm notes');
-    assert.equal(firms[0].group, 'Examples');
-    assert.deepEqual(explorer, { title: 'Experience Explorer', type: 'external_link', url: EXPLORER_URL, group: 'Tools' });
-    const hosted = fs.readFileSync(path.join(root, 'articleship-program/experience-explorer/index.html'), 'utf8');
-    assert.match(hosted, /<meta name="robots" content="noindex">/);
-    assert.match(hosted, /<script type="application\/json" id="msc-experience-data">/);
-    assert.ok(!/\bfetch\s*\(/.test(hosted), 'the hosted Explorer needs no sibling files');
+    const all = rows.flatMap(row => row.resources);
+    assert.deepEqual(all.filter(r => r.copy === true).map(r => r.title).sort(), [...COPY_ROWS].sort(), 'exactly the §0.3 rows are copyable');
+    assert.deepEqual(rows[0].resources.map(r => r.title), ['MSC Articleship Guidebook', 'Join the MSC Articleship WhatsApp group']);
+    assert.equal(rows[0].resources[1].url, WHATSAPP_GROUP);
+    assert.ok(!/one domain, one backup|cities written down/i.test(rows[0].description), 'no Day 0 domain task (B2)');
+    const dayOne = rows[1].resources;
+    assert.deepEqual([...new Set(dayOne.map(r => r.group))], ['Choose your CV', 'Pick your design', 'Work Simulation', 'Check your CV', 'Cover letters']);
+    assert.equal(dayOne.find(r => r.title === 'CV Builder').url, '/cv-builder/?stage=articleship');
+    const cover = dayOne.find(r => r.title === 'Cover letters');
+    assert.ok(cover.copy && cover.view_storage_path.endsWith('.pdf') && cover.download_storage_path.endsWith('.docx'), 'Word on the same row');
+    const dayFour = rows[4].resources;
+    const syllabus = dayFour.find(r => r.title === 'Interview syllabus');
+    assert.equal(syllabus.copy, undefined, 'the syllabus opens in the normal reader');
+    assert.ok(syllabus.download_storage_path.endsWith('.pdf'), 'row-level download to print');
+    assert.equal(dayFour.find(r => r.title === 'Master Excel test').download_storage_path, 'articleship-program-v3/day-4/Master Excel test.xlsx');
+    assert.deepEqual(rows[2].resources.filter(r => r.group === 'Automail').map(r => r.url), ['/articleship-program/automail/']);
+    assert.deepEqual(rows[3].resources.map(r => r.title).slice(0, 2), ['LinkedIn profile checklist', 'LinkedIn search links'], 'checklist first (D3-1)');
 });
 
-function courseFunction(name, sandbox) {
-    const catalogStart = courseScript.indexOf('    const courses =');
-    const catalogEnd = courseScript.indexOf('\n    const DOMElements', catalogStart);
-    vm.runInNewContext(courseScript.slice(catalogStart, catalogEnd), sandbox);
-    const start = courseScript.indexOf(`    const ${name} =`);
-    const end = courseScript.indexOf('\n    const ', start + 1);
-    assert.ok(start >= 0 && end > start, `${name} exists in course-script.js`);
-    vm.runInNewContext(`${courseScript.slice(start, end)}\nthis.run = ${name};`, sandbox);
-    return sandbox.run;
-}
+test('the v3 migration runs on top of v2: seven sessions remain, recordings untouched, safe to run twice', async () => {
+    const db = new PGlite();
+    try {
+        await db.exec(`create table public.videos (course text, video_number int, title text, description text, day_number int,
+            resources jsonb, industrial_training_path text, primary key (course, video_number));
+            insert into public.videos values ('industrial-training-mastery', 1, 'Other course', '', 1, '[]', 'it/path');`);
+        await db.exec(fs.readFileSync(V2_SQL, 'utf8'));
+        await db.query("update public.videos set industrial_training_path = 'rec/day1' where course = 'msc-articleship-program' and video_number = 2");
+        assert.equal((await db.query("select count(*)::int n from public.videos where course = 'msc-articleship-program'")).rows[0].n, 13);
+        const v3 = fs.readFileSync(V3_SQL, 'utf8');
+        await db.exec(v3);
+        await db.exec(v3);
+        const rows = (await db.query("select day_number, video_number, title, industrial_training_path, resources from public.videos where course = 'msc-articleship-program' order by video_number")).rows;
+        assert.deepEqual(rows.map(r => [r.day_number, r.video_number, r.title]), DAY_TITLES.map((t, d) => [d, d + 1, t]));
+        assert.equal(rows[1].industrial_training_path, 'rec/day1', 'a recording added later is kept');
+        assert.equal(rows[1].resources[0].title, 'Choose your CV');
+        assert.equal((await db.query("select count(*)::int n from public.videos where course = 'industrial-training-mastery'")).rows[0].n, 1, 'other courses untouched');
+    } finally {
+        await db.close();
+    }
+});
 
-test('LMS shows every guidebook chapter session under its programme day title', async () => {
+test('LMS shows the seven Days, one session each, under their Day titles', async () => {
     const rows = migrationRows();
     const query = {
         select() { return this; }, eq() { return this; }, order() { return this; },
@@ -223,16 +186,9 @@ test('LMS shows every guidebook chapter session under its programme day title', 
         logFrontendError(message) { throw new Error(message); }
     });
     await loadCourseVideos();
-    assert.deepEqual(Array.from(state.courseSections, section => section.day_number), [0, 1, 2, 3, 4, 5, 6]);
-    assert.equal(state.courseSections[0].expanded, true);
-    assert.equal(state.courseSections[1].expanded, true);
-    assert.deepEqual(Array.from(state.courseSections, section => section.title), [
-        'Day 0 · Start here', 'Day 1 · Crafting the Perfect CV', 'Day 2 · Applying the Right Way', 'Day 3 · Using LinkedIn',
-        'Day 4 · Cracking Interviews', 'Day 5 · Domain Guidance', 'Day 6 · Registration Formalities']);
-    assert.deepEqual(Array.from(state.courseSections, section => section.videos.length), [1, 2, 2, 2, 2, 2, 2]);
-    assert.deepEqual(Array.from(state.courseSections[1].videos, video => video.title), ['Your articleship CV', 'Building your profile fast']);
-    assert.deepEqual(Array.from(state.courseSections[2].videos, video => video.title), ['Applying the right way', 'Follow-ups, offers and your weekly routine']);
-    assert.equal(DOMElements.totalVideosCount.textContent, '13 Sessions');
+    assert.deepEqual(Array.from(state.courseSections, section => section.title), DAY_TITLES.map((t, d) => `Day ${d} · ${t}`));
+    assert.deepEqual(Array.from(state.courseSections, section => section.videos.length), [1, 1, 1, 1, 1, 1, 1]);
+    assert.equal(DOMElements.totalVideosCount.textContent, '7 Sessions');
 });
 
 test('Articleship resource rows stay compact on a phone without changing other courses', () => {
@@ -242,28 +198,27 @@ test('Articleship resource rows stay compact on a phone without changing other c
     assert.equal(compact('msc-ca-freshers-program'), false);
 });
 
-test('Explorer links select only an enrolled Articleship session and its named PDF preview', () => {
+test('deep links select only an enrolled Articleship session and a programme PDF on it', () => {
     const rows = migrationRows();
     const state = { courseSlug: 'msc-articleship-program', user: { id: 'student' }, isEnrolled: true };
     const window = { location: { search: '' } };
     const target = courseFunction('getArticleshipResourceTarget', { state, window, URLSearchParams,
         findVideoById: id => rows.find(row => row.video_number === id) });
-    for (const page of [7, 8, 10]) {
-        window.location.search = `?course=msc-articleship-program&session=12&resource=MSC%20domain%20roadmaps&page=${page}`;
-        const result = target();
-        assert.equal(result.video.video_number, 12);
-        assert.equal(result.resource.title, 'MSC domain roadmaps');
-        assert.equal(result.page, page);
-    }
-    window.location.search = '?session=12&resource=Domain%20firm%20shortlist';
-    assert.equal(target().resource.title, 'Domain firm shortlist');
-    assert.equal(target().page, 1);
-    for (const query of ['?session=999&resource=MSC%20domain%20roadmaps', '?session=12&resource=https://evil.test/a.pdf',
-        '?session=12.5&resource=MSC%20domain%20roadmaps', '?session=-12&resource=MSC%20domain%20roadmaps']) {
+    window.location.search = '?course=msc-articleship-program&session=2&resource=Choose%20your%20CV&page=5';
+    let result = target();
+    assert.equal(result.video.video_number, 2);
+    assert.equal(result.resource.title, 'Choose your CV');
+    assert.equal(result.page, 5);
+    window.location.search = '?session=5&resource=Statutory%20audit%20booklet&page=12';
+    assert.equal(target().resource.view_storage_path, 'articleship-program-v3/day-4/Statutory audit booklet.pdf');
+    window.location.search = '?session=2';
+    assert.equal(target().resource, null, 'session only');
+    for (const query of ['?session=999&resource=Choose%20your%20CV', '?session=2&resource=https://evil.test/a.pdf',
+        '?session=2.5&resource=Choose%20your%20CV', '?session=-2&resource=Choose%20your%20CV', '?session=2&resource=CV%20Builder']) {
         window.location.search = query;
-        assert.equal(target(), null);
+        assert.equal(target(), null, query);
     }
-    window.location.search = '?session=12&resource=MSC%20domain%20roadmaps&page=-4';
+    window.location.search = '?session=2&resource=Choose%20your%20CV&page=-4';
     assert.equal(target().page, 1);
     state.isEnrolled = false;
     assert.equal(target(), null);
@@ -271,60 +226,134 @@ test('Explorer links select only an enrolled Articleship session and its named P
     assert.equal(target(), null);
     state.user = { id: 'student' }; state.courseSlug = 'industrial-training-mastery';
     assert.equal(target(), null);
+    // v2 paths (rows not yet replaced) still pass; a path that climbs out never does
+    state.courseSlug = 'msc-articleship-program';
+    const v2 = courseFunction('getArticleshipResourceTarget', { state, window, URLSearchParams, findVideoById: () => ({ id: 6, resources: [
+        { title: 'Old', view_storage_path: 'articleship-program-v2/day-5/domain-roadmaps/MSC Domain Roadmaps.pdf' },
+        { title: 'Climb', view_storage_path: 'articleship-program-v3/day-1/../../secret.pdf' }] }) });
+    window.location.search = '?session=6&resource=Old';
+    assert.equal(v2().resource.title, 'Old');
+    window.location.search = '?session=6&resource=Climb';
+    assert.equal(v2(), null);
 });
 
-test('an authorised resource link overrides the last session and opens its requested page', async () => {
-    const calls = [];
-    const resource = { title: 'MSC domain roadmaps', view_storage_path: 'articleship-program-v2/day-5/domain-roadmaps/MSC Domain Roadmaps.pdf' };
-    const state = { courseSlug: 'msc-articleship-program', user: { id: 'student' }, isEnrolled: true, courseSections: [] };
-    const run = courseFunction('loadVideoProgress', { state, console,
-        localStorage: { getItem: key => key.startsWith('courseVideos_') ? null : '2' },
-        updateCourseProgress() {}, fetchWatchTimeForCourse: async () => {},
-        getArticleshipResourceTarget: () => ({ video: { id: 12 }, resource, page: 8 }),
-        selectVideo: async id => calls.push(['session', id]), setActiveTab: tab => calls.push(['tab', tab]),
-        openResourceViewer: async (...args) => calls.push(['viewer', ...args]) });
-    await run();
-    assert.equal(calls[0][0], 'session');
-    assert.equal(calls[0][1], 12);
-    assert.deepEqual(calls[1], ['tab', 'resources']);
-    assert.equal(calls[2][1], resource);
-    assert.equal(calls[2][2], 'pdf');
-    assert.equal(calls[2][3], 8);
+test('a deep link to a copyable row opens the reader in place; other PDFs open at their page', async () => {
+    for (const [resource, expected] of [
+        [{ title: 'Choose your CV', copy: true, view_storage_path: 'articleship-program-v3/day-1/Choose your CV.pdf' }, 'copy'],
+        [{ title: 'Statutory audit booklet', view_storage_path: 'articleship-program-v3/day-4/Statutory audit booklet.pdf' }, 'viewer']
+    ]) {
+        const calls = [];
+        const state = { courseSlug: 'msc-articleship-program', user: { id: 'student' }, isEnrolled: true, courseSections: [] };
+        const run = courseFunction('loadVideoProgress', { state, console,
+            localStorage: { getItem: key => key.startsWith('courseVideos_') ? null : '2' },
+            updateCourseProgress() {}, fetchWatchTimeForCourse: async () => {},
+            getArticleshipResourceTarget: () => ({ video: { id: 2 }, resource, page: 8 }),
+            articleshipLms: () => LMS,
+            selectVideo: async id => calls.push(['session', id]), setActiveTab: tab => calls.push(['tab', tab]),
+            openCopyResource: async (...args) => calls.push(['copy', ...args]),
+            openResourceViewer: async (...args) => calls.push(['viewer', ...args]) });
+        await run();
+        assert.deepEqual(calls.slice(0, 2), [['session', 2], ['tab', 'resources']]);
+        assert.equal(calls[2][0], expected);
+        assert.equal(calls[2][1], resource);
+        if (expected === 'copy') assert.equal(JSON.stringify([calls[2][2], calls[2][3]]), JSON.stringify([8, { deepLink: true }]));
+        else assert.deepEqual([calls[2][2], calls[2][3]], ['pdf', 8]);
+    }
 });
 
-test('PDF deep links use signed storage and clamp the requested page after loading', async () => {
-    const state = { courseSlug: 'msc-articleship-program', user: { id: 'student' }, isEnrolled: true };
+function copySandbox(signedUrl = 'https://auth.mystudentclub.com/storage/v1/object/sign/b/x.pdf?token=t') {
     const calls = [];
-    const element = () => ({ style: {}, classList: { add() {} }, querySelector: () => element() });
-    const DOMElements = Object.fromEntries(['viewerLoadingScreen', 'resourceViewerModal', 'resourceViewerTitle',
-        'pdfViewerContainer', 'csvViewerContainer', 'iframeViewerContainer', 'viewerOpenExternalBtn',
-        'viewerHeaderDownloadBtn', 'viewerHeaderDownloadText', 'viewerDownloadBtn'].map(key => [key, element()]));
-    DOMElements.pdfCanvas = { width: 0, height: 0, getContext: () => ({ clearRect() {} }) };
-    const run = courseFunction('openResourceViewer', { state, DOMElements,
-        document: { getElementById: () => element() },
-        getResourceViewerSubtitle: () => '', getResourceDownloadLabel: () => 'Download',
-        supabase: { storage: { from: bucket => ({ createSignedUrl: async (path, ttl) => {
-            calls.push(['signed', bucket, path, ttl]); return { data: { signedUrl: 'https://signed.test/private.pdf' }, error: null };
-        } }) } },
-        fetch: async url => { calls.push(['fetch', url]); return { ok: true, arrayBuffer: async () => new ArrayBuffer(0) }; },
-        pdfjsLib: { getDocument: () => ({ promise: Promise.resolve({ numPages: 11 }) }) },
-        renderPdfPage: async page => calls.push(['page', page]),
-        alert(message) { throw new Error(message); }, closeResourceViewer() { throw new Error('Viewer failed'); } });
-    const resource = { title: 'MSC domain roadmaps', view_storage_path: 'articleship-program-v2/day-5/domain-roadmaps/MSC Domain Roadmaps.pdf' };
-    await run(resource, 'pdf', 8);
-    assert.equal(calls.find(call => call[0] === 'signed')[2], resource.view_storage_path);
-    assert.deepEqual(calls.at(-1), ['page', 8]);
-    await run(resource, 'pdf', 999);
-    assert.deepEqual(calls.at(-1), ['page', 11]);
-    await run(resource, 'pdf', -5);
-    assert.deepEqual(calls.at(-1), ['page', 1]);
-    const count = calls.length;
-    state.isEnrolled = false;
-    await run(resource, 'pdf', 8);
-    assert.equal(calls.length, count, 'unenrolled link never requests a signed URL');
-    state.isEnrolled = true; state.user = null;
-    await run(resource, 'pdf', 8);
-    assert.equal(calls.length, count, 'unauthenticated link never requests a signed URL');
+    const opened = { document: { write: text => calls.push(['write', text]) }, location: { href: '' }, close: () => calls.push(['close']) };
+    const sandbox = {
+        calls, opened, console, articleshipLms: () => LMS,
+        alert: message => calls.push(['alert', message]),
+        supabase: { storage: { from: bucket => ({ createSignedUrl: async (p, ttl) => { calls.push(['sign', bucket, p, ttl]); return { data: { signedUrl }, error: null }; } }) } },
+        window: { open: (url, target) => { calls.push(['open', url, target]); return opened; }, location: { replace: url => calls.push(['replace', url]) } }
+    };
+    return sandbox;
+}
+
+test('a copyable row opens the copyable reader in a new tab (browser viewer when flagged), signed for 5 minutes', async () => {
+    const sandbox = copySandbox();
+    const open = courseFunction('openCopyResource', sandbox);
+    const resource = { title: 'Application templates', copy: true, view_storage_path: 'articleship-program-v3/day-2/Application templates.pdf', group: 'Write your mails' };
+    await open(resource, 1);
+    assert.deepEqual(sandbox.calls[0], ['open', '', '_blank'], 'tab opened before any await (popup blockers)');
+    assert.deepEqual(sandbox.calls.find(c => c[0] === 'sign'), ['sign', 'industrial-training-mastery-resources', resource.view_storage_path, 300]);
+    const href = new URL(sandbox.opened.location.href, 'https://www.mystudentclub.com');
+    assert.equal(href.pathname, '/ca-resource/read/');
+    assert.equal(href.searchParams.get('pdf'), 'https://auth.mystudentclub.com/storage/v1/object/sign/b/x.pdf?token=t');
+    assert.equal(href.searchParams.get('title'), 'Application templates');
+
+    const browser = copySandbox();
+    await courseFunction('openCopyResource', browser)({ ...resource, copy: 'browser' }, 3);
+    assert.equal(browser.opened.location.href, 'https://auth.mystudentclub.com/storage/v1/object/sign/b/x.pdf?token=t#page=3');
+
+    const deep = copySandbox();
+    await courseFunction('openCopyResource', deep)(resource, 4, { deepLink: true });
+    assert.ok(!deep.calls.some(c => c[0] === 'open'), 'a deep link opens no new tab');
+    assert.match(deep.calls.find(c => c[0] === 'replace')[1], /^\/ca-resource\/read\/\?pdf=.*&page=4&title=Application\+templates$/);
+
+    const failing = copySandbox();
+    failing.console = { error() {} };
+    failing.supabase.storage.from = () => ({ createSignedUrl: async () => ({ data: null, error: new Error('denied') }) });
+    await courseFunction('openCopyResource', failing)(resource, 1);
+    assert.ok(failing.calls.some(c => c[0] === 'close') && failing.calls.some(c => c[0] === 'alert'));
+});
+
+test('row clicks: copy flag first, "Templates" canvas rule off for this course only', async () => {
+    const run = (slug, resource) => {
+        const calls = [];
+        const click = courseFunction('handleResourceClick', {
+            state: { courseSlug: slug }, articleshipLms: () => LMS, isGoogleSheetResource: () => false,
+            openCopyResource: async (...args) => calls.push(['copy', ...args]),
+            openResourceViewer: async (...args) => calls.push(['canvas', ...args]),
+            supabase: { storage: { from: () => ({ createSignedUrl: async () => ({ data: { signedUrl: 'https://s/x.pdf' }, error: null }) }) } },
+            window: { open: (url) => { calls.push(['open', url]); return { document: { write() {} }, location: { set href(v) { calls.push(['flipbook', v]); } } }; } },
+            isDocxPreviewResource: () => false, downloadResource: () => calls.push(['download']), console, alert() {}
+        });
+        return click(resource).then(() => calls);
+    };
+    const copyRow = { title: 'Application templates', type: 'pdf', copy: true, view_storage_path: 'articleship-program-v3/day-2/Application templates.pdf', group: 'Write your mails' };
+    assert.equal((await run('msc-articleship-program', copyRow))[0][0], 'copy');
+    const oldTemplate = { title: 'Follow-up mails', type: 'pdf', view_storage_path: 'a/mails.pdf', group: 'Templates', page: 3 };
+    assert.deepEqual((await run('industrial-training-mastery', oldTemplate))[0], ['canvas', oldTemplate, 'pdf', 3], 'other courses keep their viewer');
+    const articleshipTemplate = await run('msc-articleship-program', oldTemplate);
+    assert.ok(articleshipTemplate.some(c => c[0] === 'flipbook'), 'no canvas viewer for the Articleship course');
+    const tool = await run('msc-articleship-program', { title: 'CV checklist', type: 'external_link', url: '/articleship-program/cv-checklist/' });
+    assert.deepEqual(tool[0], ['open', '/articleship-program/cv-checklist/']);
+});
+
+test('download labels say what the file is; other courses keep theirs', () => {
+    const label = (slug, resource) => courseFunction('getResourceDownloadLabel', {
+        state: { courseSlug: slug }, articleshipLms: () => LMS,
+        isCompactResourceCourse: () => slug === 'msc-articleship-program',
+        isGoogleSheetResource: () => false, isDocxPreviewResource: () => false
+    })(resource);
+    assert.equal(label('msc-articleship-program', { download_storage_path: 'articleship-program-v3/day-1/Cover letters.docx' }), 'Download Word');
+    assert.equal(label('msc-articleship-program', { download_storage_path: 'x.pdf', download_label: 'Download to print' }), 'Download to print');
+    assert.equal(label('msc-articleship-program', { download_storage_path: 'articleship-program-v3/day-4/Master Excel test.xlsx' }), 'Download Excel');
+    assert.equal(label('msc-articleship-program', { type: 'zip', download_storage_path: 'gallery.zip' }), 'Download ZIP (for laptop)');
+    assert.equal(label('industrial-training-mastery', { download_storage_path: 'x.pdf' }), 'Download');
+});
+
+test('a Google Sheet /copy link is never rewritten to /edit', () => {
+    const preview = courseFunction('getSheetPreviewUrl', {});
+    assert.equal(preview('https://docs.google.com/spreadsheets/d/AbC_123/copy'), 'https://docs.google.com/spreadsheets/d/AbC_123/copy');
+    assert.equal(preview('https://docs.google.com/spreadsheets/d/AbC_123/view#gid=4'), 'https://docs.google.com/spreadsheets/d/AbC_123/edit#gid=4');
+    const hub = fs.readFileSync(path.join(root, 'learning-management-system/lms-resources.html'), 'utf8');
+    assert.match(hub, /spreadsheets\\\/d\\\/\[A-Za-z0-9_-\]\+\\\/copy/);
+    assert.match(hub, /src="\/scripts\/articleship-lms\.js/);
+    assert.match(hub, /articleshipLms\.copyMode\(resource\)/, 'the resource hub routes copy rows the same way');
+});
+
+test('both course pages load the routing module before the course script', () => {
+    for (const file of ['learning-management-system/course.html', 'learning-management-system/course/index.html']) {
+        const page = fs.readFileSync(path.join(root, file), 'utf8');
+        const lms = page.indexOf('/scripts/articleship-lms.js');
+        const course = page.indexOf('/learning-management-system/course-script.js');
+        assert.ok(lms > 0 && lms < course, file);
+    }
 });
 
 test('Articleship sessions without recordings open resources without the empty video card', async () => {
@@ -332,7 +361,7 @@ test('Articleship sessions without recordings open resources without the empty v
         ['msc-articleship-program', 'resources', 'none'], ['industrial-training-mastery', 'overview', 'block']
     ]) {
         const state = { courseSlug: slug, watchData: {}, currentVideoId: null, plyrPlayer: null, hlsInstance: null };
-        const video = { id: 12, fileName: null, hlsPath: null, resources: [{ title: 'Slides' }] };
+        const video = { id: 2, fileName: null, hlsPath: null, resources: [{ title: 'Choose your CV' }] };
         const element = () => ({ style: {}, classList: { remove() {} } });
         const DOMElements = Object.fromEntries(['videoLoadingOverlay', 'noVideoSelectedPlaceholder', 'videoSectionContainer',
             'watchTimeBadge', 'videoPlayerContainer', 'noVideoMessagePlayer', 'courseSidebar'].map(key => [key, element()]));
@@ -345,47 +374,45 @@ test('Articleship sessions without recordings open resources without the empty v
             setActiveTab: tab => tabs.push(tab), renderTabsAndContent() {},
             window: { innerWidth: 390 }, localStorage: { setItem() {} }, fetchComments() {},
             updateNavButtons() {}, updateVideoCounter() {}, renderCourseModules() {} });
-        await run(12);
+        await run(2);
         assert.equal(tabs[0], expectedTab);
         assert.equal(DOMElements.noVideoMessagePlayer.style.display, expectedEmpty);
         assert.equal(DOMElements.videoPlayerContainer.style.display, 'none');
     }
 });
 
-
-test('long Articleship template lists fold so tools stay reachable on a phone', () => {
-    assert.match(courseScript, /groupName === 'Templates' && groups\[groupName\]\.length > 12/);
-    assert.match(courseScript, /<details class="resource-group resource-template-group">/);
+test('compact course names the Day once; a second session title shows only when it differs', () => {
+    const run = (sessions, currentVideoId) => {
+        const title = { textContent: '', hidden: true };
+        const counter = { textContent: '', style: {} };
+        courseFunction('updateVideoCounter', {
+            state: { currentVideoId, courseSections: [{ day_number: 1, title: 'Day 1 · Crafting the Perfect CV', videos: sessions }] },
+            DOMElements: { sessionTitle: title, videoCounter: counter }, isCompactResourceCourse: () => true
+        })();
+        return { title, counter };
+    };
+    const one = run([{ id: 2, title: 'Crafting the Perfect CV' }], 2);
+    assert.equal(one.counter.textContent, 'Day 1 · Crafting the Perfect CV');
+    assert.equal(one.title.hidden, true, 'not repeated under the Day title');
+    const two = run([{ id: 2, title: 'Crafting the Perfect CV' }, { id: 20, title: 'Live recording' }], 20);
+    assert.equal(two.title.textContent, 'Live recording');
+    assert.equal(two.title.hidden, false);
 });
 
-test('ZIP downloads say that the gallery is for a laptop', () => {
-    const run = courseFunction('getResourceDownloadLabel', {
-        isGoogleSheetResource: () => false, isDocxPreviewResource: () => false
-    });
-    assert.equal(run({ type: 'zip', download_storage_path: 'gallery.zip' }), 'Download ZIP (for laptop)');
+test('download-only rows show one button on a phone', () => {
+    const start = courseScript.indexOf('    const renderTabsAndContent =');
+    const body = courseScript.slice(start, courseScript.indexOf('\n    const setActiveTab', start));
+    assert.match(body, /const showView = hasViewTarget \|\| !isCompactResourceCourse\(\);/);
 });
 
-test('compact course names the active day and session in the main pane', () => {
-    const title = { textContent: '', hidden: true };
-    const counter = { textContent: '', style: {} };
-    const run = courseFunction('updateVideoCounter', {
-        state: { currentVideoId: 12, courseSections: [{ day_number: 5, title: 'Day 5 · Domain Guidance', videos: [{ id: 6, title: 'Choosing your domain' }, { id: 12, title: 'Finding firms in your domain' }] }] },
-        DOMElements: { sessionTitle: title, videoCounter: counter }, isCompactResourceCourse: () => true
+test('the sidebar names a one-session Day by its action, not the Day title again', () => {
+    const container = { innerHTML: '', appendChild(node) { this.nodes = (this.nodes || []).concat(node); }, querySelectorAll: () => [] };
+    const run = courseFunction('renderCourseModules', {
+        state: { courseSlug: 'msc-articleship-program', currentVideoId: 2, courseSections: [
+            { day_number: 1, title: 'Day 1 · Crafting the Perfect CV', expanded: true, videos: [{ id: 2, title: 'Crafting the Perfect CV', resources: [] }] }] },
+        DOMElements: { courseModulesContainer: container }, isCompactResourceCourse: () => true, getResourceIcon: () => '',
+        document: { createElement: () => ({ className: '', innerHTML: '' }) }, selectVideo() {}, handleResourceClick() {}, getResourceFromElement() {}
     });
     run();
-    assert.equal(counter.textContent, 'Day 5 · Domain Guidance');
-    assert.equal(title.textContent, 'Finding firms in your domain');
-    assert.equal(title.hidden, false);
-});
-
-
-test('follow-up mail row opens at its first follow-up rather than restarting applications', async () => {
-    let opened;
-    const run = courseFunction('handleResourceClick', {
-        isGoogleSheetResource: () => false,
-        openResourceViewer: async (...args) => { opened = args; }
-    });
-    const resource = { title: 'Follow-up, thank-you and back-out mails', group: 'Templates', type: 'docx', view_storage_path: 'mails.pdf', page: 3 };
-    await run(resource);
-    assert.deepEqual(opened, [resource, 'pdf', 3]);
+    assert.match(container.nodes[0].innerHTML, /<span>Open Day 1<\/span>/);
 });

@@ -45,7 +45,9 @@ document.addEventListener('DOMContentLoaded', () => {
             dayTitles: ['Start here', 'Crafting the Perfect CV', 'Applying the Right Way', 'Using LinkedIn',
                 'Cracking Interviews', 'Domain Guidance', 'Registration Formalities'],
             // Phone-first rows: no repeated format notes, and links open without a dead Download button.
-            compactResources: true
+            compactResources: true,
+            // v3: rows flagged `copy` open in the copyable reader; no "Templates" group opens the canvas viewer.
+            templateCanvas: false
         }
     };
 
@@ -191,6 +193,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const getSheetPreviewUrl = (url) => {
         if (!url) return url;
+        // A "/copy" link opens Google's "Make a copy?" prompt; rewriting it to /edit would open the master instead.
+        if (/docs\.google\.com\/spreadsheets\/d\/[A-Za-z0-9_-]+\/copy\b/.test(url)) return url;
         const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
         if (!match) return url;
         const sheetId = match[1];
@@ -224,7 +228,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return 'View';
     };
 
+    const articleshipLms = () => (typeof window !== 'undefined' && window.MSCArticleshipLms) || null;
+
     const getResourceDownloadLabel = (resource) => {
+        if (isCompactResourceCourse() && articleshipLms() && !isGoogleSheetResource(resource) &&
+            !/\.zip$/i.test(String(resource?.download_storage_path || '')) && resource?.type !== 'zip') {
+            return articleshipLms().downloadLabel(resource);
+        }
         if (isGoogleSheetResource(resource)) return 'Download Excel';
         if (isDocxPreviewResource(resource)) return 'Download DOCX';
         const dlPath = String(resource?.download_storage_path || '').toLowerCase();
@@ -608,11 +618,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     resourcesHTML += '</div>';
                 }
 
+                // One session per Day: a session named like its Day reads as an action instead of repeating the title.
+                const sessionLabel = isCompactResourceCourse() && (day.title === video.title || String(day.title).endsWith(' · ' + video.title))
+                    ? `Open Day ${day.day_number}` : video.title;
                 sessionsHTML += `
                     <div class="sub-video-item ${isVideoSelected ? 'active' : ''} ${isVideoCompleted ? 'completed' : ''}" data-video-id="${video.id}">
                         <div class="sub-video-header">
                             <i class="fas ${isVideoCompleted ? 'fa-check-circle' : 'fa-play-circle'}"></i>
-                            <span>${video.title}</span>
+                            <span>${sessionLabel}</span>
                         </div>
                     </div>
                     ${resourcesHTML}
@@ -674,8 +687,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const video = findVideoById(Number(rawSession));
         if (!video) return null;
         const title = params.get('resource');
+        // Only a programme PDF (articleship-program-v<N>/day-<d>/…) of an enrolled row; never a path from the URL.
         const resource = title ? video.resources?.find(item => item.title === title &&
-            String(item.view_storage_path || '').startsWith('articleship-program-v2/day-') &&
+            /^articleship-program-v\d+\/day-[0-6]\//.test(String(item.view_storage_path || '')) &&
+            !String(item.view_storage_path || '').includes('..') &&
             String(item.view_storage_path || '').toLowerCase().endsWith('.pdf')) : null;
         if (title && !resource) return null;
         const rawPage = params.get('page') || '1';
@@ -705,7 +720,12 @@ document.addEventListener('DOMContentLoaded', () => {
             await selectVideo(target.video.id);
             if (state.user && state.isEnrolled) {
                 setActiveTab('resources');
-                if (target.resource) await openResourceViewer(target.resource, 'pdf', target.page);
+                if (target.resource && articleshipLms()?.copyMode(target.resource)) {
+                    // A copyable row opens in the reader in place of this page, so Back returns to the tool that linked here.
+                    await openCopyResource(target.resource, target.page, { deepLink: true });
+                } else if (target.resource) {
+                    await openResourceViewer(target.resource, 'pdf', target.page);
+                }
             }
             return;
         }
@@ -1693,6 +1713,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     const downloadLabel = getResourceDownloadLabel(resource);
                     const formatNote = getResourceFormatNote(resource);
                     const safeResourceStr = encodeURIComponent(JSON.stringify(resource));
+                    const hasViewTarget = Boolean(resource.url) || resource.type === 'external_link' ||
+                        Boolean(resource.view_storage_path && resource.view_storage_path !== 'None' && String(resource.view_storage_path).trim() !== '');
+                    // Compact rows with only a file to download (e.g. the Excel test) show just the Download button.
+                    const showView = hasViewTarget || !isCompactResourceCourse();
                     resourcesHTML += `
                         <li class="resource-item">
                             <span class="resource-icon"><i class="${getResourceIcon(resource.type)}"></i></span>
@@ -1701,7 +1725,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 ${formatNote ? `<span class="resource-format-note">${formatNote}</span>` : ''}
                             </div>
                             <div class="resource-actions">
-                                <button class="resource-btn resource-btn-view" data-resource="${safeResourceStr}"><i class="fas fa-eye"></i> ${viewLabel}</button>
+                                ${showView ? `<button class="resource-btn resource-btn-view" data-resource="${safeResourceStr}"><i class="fas fa-eye"></i> ${viewLabel}</button>` : ''}
                                 ${(resource.download_storage_path && resource.download_storage_path !== 'None' && String(resource.download_storage_path).trim() !== '') ?
                             `<button class="resource-btn resource-btn-download" data-resource="${safeResourceStr}"><i class="fas fa-download"></i> ${downloadLabel}</button>` :
                             (isCompactResourceCourse() ? '' :
@@ -1775,8 +1799,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const totalDays = state.courseSections.filter(s => s.day_number > 0).length;
             const compact = isCompactResourceCourse();
             if (DOMElements.sessionTitle) {
-                DOMElements.sessionTitle.textContent = compact ? section.videos[currentVideoIndex - 1].title : '';
-                DOMElements.sessionTitle.hidden = !compact;
+                const sessionName = section.videos[currentVideoIndex - 1].title;
+                // One session per Day: a session named like its Day is not repeated under the Day title.
+                const repeatsDay = section.title === sessionName || String(section.title).endsWith(' · ' + sessionName);
+                DOMElements.sessionTitle.textContent = compact && !repeatsDay ? sessionName : '';
+                DOMElements.sessionTitle.hidden = !compact || repeatsDay;
             }
             DOMElements.videoCounter.textContent = compact ? section.title : section.day_number === 0
                 ? `Day 0${sessionText}`
@@ -1801,7 +1828,39 @@ document.addEventListener('DOMContentLoaded', () => {
         return false;
     };
 
+    // Copyable rows (V3 §0.3, P6): the copyable reader, or the browser's own PDF viewer when the row says "browser".
+    const openCopyResource = async (resource, page = 1, { deepLink = false } = {}) => {
+        const lms = articleshipLms();
+        // A click pre-opens the tab synchronously (Safari/iOS popup blocker); a deep link replaces the course page.
+        const newWindow = deepLink ? null : window.open('', '_blank');
+        if (newWindow) {
+            newWindow.document.write('<p style="font-family: sans-serif; text-align: center; margin-top: 20%; color: #64748b;">Opening…</p>');
+        }
+        try {
+            const { data, error } = await supabase.storage
+                .from('industrial-training-mastery-resources')
+                .createSignedUrl(resource.view_storage_path, 300);
+            if (error) throw error;
+            const target = lms.copyTarget(resource, data.signedUrl, page);
+            if (deepLink) {
+                window.location.replace(target);
+            } else if (newWindow) {
+                newWindow.location.href = target;
+            } else {
+                window.open(target, '_blank');
+            }
+        } catch (err) {
+            console.error('Error opening copyable resource:', err);
+            if (newWindow) newWindow.close();
+            alert('Could not open the resource. Please try again.');
+        }
+    };
+
     const handleResourceClick = async (resource) => {
+        if (articleshipLms()?.copyMode(resource)) {
+            await openCopyResource(resource, Number.isSafeInteger(resource.page) ? resource.page : 1);
+            return;
+        }
         if (isGoogleSheetResource(resource)) {
             const redirectUrl = getSheetPreviewUrl(resource.url || resource.view_storage_path) || resource.url;
             if (redirectUrl) {
@@ -1820,8 +1879,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const path = resource.view_storage_path.toLowerCase();
             if (path.endsWith('.csv')) {
                 await openResourceViewer(resource, 'csv');
-            } else if (resource.group && resource.group.toLowerCase().includes('template')) {
-                // Templates (CV, Cover Letter, etc.) use the inline modal viewer
+            } else if (resource.group && resource.group.toLowerCase().includes('template') &&
+                courses[state.courseSlug]?.templateCanvas !== false) {
+                // Templates (CV, Cover Letter, etc.) use the inline modal viewer (switched off for the Articleship course)
                 await openResourceViewer(resource, 'pdf', Number.isSafeInteger(resource.page) ? resource.page : 1);
             } else {
                 // All other PDFs open in the ca-resource flipbook viewer
