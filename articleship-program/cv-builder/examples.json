@@ -262,7 +262,7 @@
      "year": "2021",
      "institute": "MSBSHSE",
      "marks": "83.0%",
-     "remarks": "90 in Book-keeping",
+     "remarks": "90 in Book-Keeping and Accountancy",
      "mergedWithPrevious": false
     }
    ],
@@ -293,7 +293,15 @@
      "titleMergedWithPrevious": false
     }
    ],
-   "projects": [],
+   "projects": [
+    {
+     "title": "Old or new tax regime: 20 salary cases",
+     "description": "Self-directed project | 2025",
+     "bullets": [
+      "Built an Excel sheet that works out an employee's tax under both regimes; ran it on 20 practice cases and showed which regime cost less in each."
+     ]
+    }
+   ],
    "skills": "<p><strong>Excel (working knowledge)</strong>: SUMIFS, IF, data validation</p><p><strong>Tally Prime (working knowledge)</strong>: purchases, sales, bank reconciliation</p><p><strong>Languages</strong>: Urdu, Hindi, Marathi, English</p>",
    "certifications": [
     {
@@ -368,7 +376,7 @@
     {
      "degree": "Class XII (II PUC)",
      "year": "2022",
-     "institute": "PUE Karnataka",
+     "institute": "KSEAB",
      "marks": "93.0%",
      "remarks": "96 in Accountancy",
      "mergedWithPrevious": false
@@ -399,7 +407,7 @@
      "issuer": ""
     },
     {
-     "name": "Goldman Sachs Excel Skills for Business Job Simulation (Forage) | [Month Year]: forecast a company's P&L and cash flows from its operating assumptions in Excel",
+     "name": "Goldman Sachs Excel Skills for Business Job Simulation (Forage) | [Month Year]: built a financial forecast and a cash-flow model in Excel from set assumptions",
      "issuer": ""
     },
     {
@@ -1214,7 +1222,7 @@
      "issuer": ""
     },
     {
-     "name": "Goldman Sachs Excel Skills for Business Job Simulation (Forage) | [Month Year]: forecast a company's P&L and cash flows from its operating assumptions in Excel",
+     "name": "Goldman Sachs Excel Skills for Business Job Simulation (Forage) | [Month Year]: built a financial forecast and a cash-flow model in Excel from set assumptions",
      "issuer": ""
     },
     {
@@ -1287,7 +1295,7 @@
     {
      "degree": "Class XII (II PUC)",
      "year": "2022",
-     "institute": "PUE Karnataka",
+     "institute": "KSEAB",
      "marks": "93.0%",
      "remarks": "96 in Accountancy",
      "mergedWithPrevious": false
@@ -1318,7 +1326,7 @@
      "issuer": ""
     },
     {
-     "name": "Goldman Sachs Excel Skills for Business Job Simulation (Forage) | [Month Year]: forecast a company's P&L and cash flows from its operating assumptions in Excel",
+     "name": "Goldman Sachs Excel Skills for Business Job Simulation (Forage) | [Month Year]: built a financial forecast and a cash-flow model in Excel from set assumptions",
      "issuer": ""
     },
     {
@@ -1631,7 +1639,7 @@
      "issuer": ""
     },
     {
-     "name": "Goldman Sachs Excel Skills for Business Job Simulation (Forage) | [Month Year]: forecast a company's P&L and cash flows from its operating assumptions in Excel",
+     "name": "Goldman Sachs Excel Skills for Business Job Simulation (Forage) | [Month Year]: built a financial forecast and a cash-flow model in Excel from set assumptions",
      "issuer": ""
     },
     {
@@ -1800,7 +1808,7 @@
     {
      "degree": "Class XII",
      "year": "2022",
-     "institute": "TSBIE",
+     "institute": "CBSE",
      "marks": "96.8%",
      "remarks": "99 in Accountancy",
      "mergedWithPrevious": false
@@ -1933,7 +1941,7 @@
      "issuer": ""
     },
     {
-     "name": "Goldman Sachs Excel Skills for Business Job Simulation (Forage) | [Month Year]: forecast a company's P&L and cash flows from its operating assumptions in Excel",
+     "name": "Goldman Sachs Excel Skills for Business Job Simulation (Forage) | [Month Year]: built a financial forecast and a cash-flow model in Excel from set assumptions",
      "issuer": ""
     },
     {
@@ -2006,7 +2014,7 @@
      "year": "2021",
      "institute": "MSBSHSE",
      "marks": "85.5%",
-     "remarks": "92 in Book-keeping",
+     "remarks": "92 in Book-Keeping and Accountancy",
      "mergedWithPrevious": false
     },
     {
@@ -2150,7 +2158,7 @@
      "issuer": ""
     },
     {
-     "name": "Goldman Sachs Excel Skills for Business Job Simulation (Forage) | [Month Year]: forecast a company's P&L and cash flows from its operating assumptions in Excel",
+     "name": "Goldman Sachs Excel Skills for Business Job Simulation (Forage) | [Month Year]: built a financial forecast and a cash-flow model in Excel from set assumptions",
      "issuer": ""
     },
     {
@@ -2516,7 +2524,16 @@
     }
    ],
    "experience": [],
-   "projects": [],
+   "projects": [
+    {
+     "title": "Bad loans at 5 listed public-sector banks",
+     "description": "B.Com final-year project | 2025",
+     "bullets": [
+      "Compared 3 years of gross and net NPA ratios and provision cover from the banks' annual reports.",
+      "Ranked the 5 banks by asset quality and presented the findings to the commerce department."
+     ]
+    }
+   ],
    "skills": "<p><strong>Excel (proficient)</strong>: XLOOKUP, PivotTables</p><p><strong>Languages</strong>: Odia, English, Hindi</p>",
    "certifications": [
     {
@@ -2536,7 +2553,8 @@
     "College merit scholarship for B.Com Part I results, 2023."
    ],
    "leadership": [
-    "Volunteer, financial literacy camp, 2024: explained savings and UPI safety to 50 women in a self-help group."
+    "Volunteer, financial literacy camp, 2024: explained savings and UPI safety to 50 women in a self-help group.",
+    "Secretary, college commerce society, 2024–25: ran 6 guest sessions on banking careers for 120 students."
    ],
    "interests": [
     "Odissi dance: 8 years of training."
@@ -3028,7 +3046,7 @@
      "issuer": ""
     },
     {
-     "name": "Goldman Sachs Excel Skills for Business Job Simulation (Forage) | [Month Year]: forecast a company's P&L and cash flows from its operating assumptions in Excel",
+     "name": "Goldman Sachs Excel Skills for Business Job Simulation (Forage) | [Month Year]: built a financial forecast and a cash-flow model in Excel from set assumptions",
      "issuer": ""
     },
     {
@@ -3068,7 +3086,7 @@
     "location": "Coimbatore",
     "socialLinks": []
    },
-   "summary": "<p>B.Com graduate who joined CA through direct entry; CA Intermediate cleared (both groups, 357/600) and ICITSS completed. Traced bank reconciliation items and drafted debtor confirmations in MSC's statutory audit Work Simulation. Seeking articleship in statutory audit in Coimbatore, Chennai or Bengaluru, to learn how receivables are verified.</p>",
+   "summary": "<p>B.Com graduate who joined CA through direct entry; CA Intermediate cleared (both groups, 357/600); ICITSS ongoing, completes [Month Year]. Traced bank reconciliation items and drafted debtor confirmations in MSC's statutory audit Work Simulation. Seeking articleship in statutory audit in Coimbatore, Chennai or Bengaluru, to learn how receivables are verified.</p>",
    "education": [
     {
      "degree": "CA Intermediate (both groups)",
@@ -3080,10 +3098,10 @@
     },
     {
      "degree": "ICITSS (OC + ITT)",
-     "year": "2025",
+     "year": "[Year]",
      "institute": "ICAI",
-     "marks": "Completed",
-     "remarks": "OC and ITT certificates",
+     "marks": "Ongoing",
+     "remarks": "Completes [Month Year]",
      "mergedWithPrevious": false
     },
     {
@@ -3289,7 +3307,7 @@
     {
      "degree": "Class XII (II PUC)",
      "year": "2022",
-     "institute": "PUE Karnataka",
+     "institute": "KSEAB",
      "marks": "96.3%",
      "remarks": "99 in Accountancy",
      "mergedWithPrevious": false
@@ -3312,7 +3330,7 @@
      "issuer": ""
     },
     {
-     "name": "Goldman Sachs Excel Skills for Business Job Simulation (Forage) | [Month Year]: forecast a company's P&L and cash flows from its operating assumptions in Excel",
+     "name": "Goldman Sachs Excel Skills for Business Job Simulation (Forage) | [Month Year]: built a financial forecast and a cash-flow model in Excel from set assumptions",
      "issuer": ""
     },
     {
@@ -3434,7 +3452,7 @@
      "issuer": ""
     },
     {
-     "name": "Goldman Sachs Excel Skills for Business Job Simulation (Forage) | [Month Year]: forecast a company's P&L and cash flows from its operating assumptions in Excel",
+     "name": "Goldman Sachs Excel Skills for Business Job Simulation (Forage) | [Month Year]: built a financial forecast and a cash-flow model in Excel from set assumptions",
      "issuer": ""
     },
     {
@@ -3509,7 +3527,7 @@
      "year": "2021",
      "institute": "MSBSHSE",
      "marks": "83.0%",
-     "remarks": "90 in Book-keeping",
+     "remarks": "90 in Book-Keeping and Accountancy",
      "mergedWithPrevious": false
     }
    ],
@@ -3540,7 +3558,15 @@
      "titleMergedWithPrevious": false
     }
    ],
-   "projects": [],
+   "projects": [
+    {
+     "title": "Old or new tax regime: 20 salary cases",
+     "description": "Self-directed project | 2025",
+     "bullets": [
+      "Built an Excel sheet that works out an employee's tax under both regimes; ran it on 20 practice cases and showed which regime cost less in each."
+     ]
+    }
+   ],
    "skills": "<p><strong>Excel (working knowledge)</strong>: SUMIFS, IF, data validation</p><p><strong>Tally Prime (working knowledge)</strong>: purchases, sales, bank reconciliation</p><p><strong>Languages</strong>: Urdu, Hindi, Marathi, English</p>",
    "certifications": [
     {
@@ -3636,6 +3662,13 @@
      "bullets": [
       "Traced the red flags in a listed company's accounts from its auditor's report and a public SEBI order; summarised them in one page."
      ]
+    },
+    {
+     "title": "Duplicate-bill check",
+     "description": "College canteen accounts | 2024",
+     "bullets": [
+      "Sorted a year's 1,100 canteen purchase bills in Excel by vendor, amount and date; found 7 entered twice."
+     ]
     }
    ],
    "skills": "<p><strong>Excel (proficient)</strong>: COUNTIFS, PivotTables, conditional formatting</p><p><strong>Languages</strong>: Hindi, English</p>",
@@ -3653,7 +3686,9 @@
      "issuer": ""
     }
    ],
-   "achievements": [],
+   "achievements": [
+    "Second place, inter-college case-study contest, 24 teams, 2024."
+   ],
    "leadership": [
     "Coordinator, college quiz club, 2024–25: ran 8 quizzes for 150 students."
    ],
@@ -3916,7 +3951,7 @@
      "year": "2022",
      "institute": "MSBSHSE",
      "marks": "90.0%",
-     "remarks": "95 in Book-keeping",
+     "remarks": "95 in Book-Keeping and Accountancy",
      "mergedWithPrevious": false
     }
    ],
