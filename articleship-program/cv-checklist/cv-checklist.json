@@ -36,10 +36,9 @@
       "section": "Set-up",
       "check": "File named “Your Name - Articleship CV - Domain.pdf”",
       "example": [
-        "✅ Riya Sharma - Articleship CV - Audit.pdf",
+        "✅ One domain: Riya Sharma - Articleship CV - Audit.pdf",
         "❌ resume final (2).pdf · CV_v3.pdf · Riya copy.pdf",
-        "✅ Two domains, two files: Riya Sharma - Articleship CV - Audit.pdf",
-        "✅ Riya Sharma - Articleship CV - GST.pdf"
+        "✅ Two domains, two files: Riya Sharma - Articleship CV - Audit.pdf and Riya Sharma - Articleship CV - GST.pdf"
       ]
     },
     {
@@ -61,7 +60,7 @@
         "✅ The word “LinkedIn”, linked to linkedin.com/in/firstname-lastname",
         "❌ linkedin.com/in/firstname-lastname-4b7a91203 as plain text",
         "In Word: select it, press Ctrl+K (Cmd+K on a Mac), paste your link.",
-        "Click it in your PDF: it must open your profile."
+        "Click it and your email in your PDF: both must open."
       ],
       "fix": {
         "label": "LinkedIn profile checklist",
@@ -81,7 +80,7 @@
     {
       "id": "nothing-personal",
       "section": "Header",
-      "check": "No photo, date of birth, parents’ names, Declaration or signature",
+      "check": "No photo, date of birth, parents’ names, a declaration or a signature",
       "example": [
         "Also out: age, gender, religion, marital status, Aadhaar, your ICAI registration number, and a “Resume” or “CV” heading. Your name is the heading.",
         "A firm that needs these asks on its own form; the space goes to proof."
@@ -124,7 +123,7 @@
         "✅ CA Intermediate row: First attempt · 74 in Taxation",
         "✅ Class XII row: 98 in Accountancy",
         "✅ AIR 34: only an all-India rank ICAI gave you",
-        "✅ Exemption in [paper]: only for a CA Intermediate group you passed in a later sitting, as your marksheet shows. Foundation has no exemptions; write the score.",
+        "✅ Exemption in [paper]: only if your marksheet shows one (an Inter group passed later). One sitting, or Foundation? Write the score.",
         "✅ School rank 3 of 140: only with a certificate or letter",
         "❌ A blank cell · “City rank 2” · “Topper” with nothing to prove it"
       ],
@@ -140,9 +139,19 @@
       "check": "Groups, attempts and results shown exactly as they are",
       "example": [
         "Groups cleared in different sittings: one row each, with its own month, year and marks, so every row shows a month.",
-        "More than one attempt: a year-only column is fine; the attempts answer is in HR round and GD booklet – Day 4.",
+        "Both groups passed together, but not on the first try: one row, year only is fine; the attempts answer is in HR round and GD booklet – Day 4.",
         "Result not out yet: “Result awaited”. Never a score before the result.",
         "A gap: no CV line unless you did real work in it; keep one true sentence ready (Guidebook ch 3, q11)."
+      ],
+      "also": [
+        {
+          "label": "HR round and GD booklet – Day 4",
+          "href": "/learning-management-system/course?course=msc-articleship-program&session=5&resource=HR+round+and+GD+booklet"
+        },
+        {
+          "label": "Guidebook ch 3, q11",
+          "href": "/learning-management-system/course?course=msc-articleship-program&session=1&resource=MSC+Articleship+Guidebook&page=28"
+        }
       ],
       "fix": {
         "label": "Results, sittings and gaps",
@@ -200,14 +209,14 @@
     {
       "id": "certifications",
       "section": "Proof",
-      "check": "Simulations and courses in their own section, four at most",
+      "check": "Certificates and simulations in their own section, four outside certificates at most",
       "example": [
         "Heading “Certifications and job simulations”; never Experience, Internship or “virtual intern”.",
-        "ICITSS stays in education. Four outside certificates at most; the MSC Articleship Program line isn’t one of them."
+        "ICITSS stays in education, and the MSC Articleship Program line isn’t one of the four."
       ],
       "fix": {
         "label": "Guidebook, chapter 3",
-        "href": "/learning-management-system/course?course=msc-articleship-program&session=1&resource=MSC+Articleship+Guidebook&page=31",
+        "href": "/learning-management-system/course?course=msc-articleship-program&session=1&resource=MSC+Articleship+Guidebook&page=30",
         "find": "Where do job simulations and certificates go?"
       }
     },
@@ -282,26 +291,20 @@
     {
       "id": "pdf-links",
       "section": "Finish",
-      "check": "Saved as a PDF: one page, links work, no “[” left",
+      "check": "Saved as a real PDF: text that copies, no “[” left",
       "example": [
         "Download the PDF from the CV Builder. From Word: Save As, then choose PDF. Never a photo or a scan.",
-        "Open the PDF and tap your LinkedIn link and your email.",
         "Search it for “[”: no fill-in and no line of the example applicant left.",
         "Copy one line into a notes app: if it pastes as text, in the right order, a firm’s portal can read it too."
-      ],
-      "fix": {
-        "label": "Open the CV Builder",
-        "href": "/cv-builder/?stage=articleship"
-      }
+      ]
     },
     {
       "id": "phone-and-print",
       "section": "Finish",
-      "check": "Phone and printout: still one page, nothing cut off",
+      "check": "Phone and printout: nothing cut off, nothing faded",
       "example": [
-        "Mail the PDF to yourself and open it from that mail on your phone. Small text is normal on a phone screen; a second page, a cut-off line, text over text or a link that won’t open is not.",
-        "Something wrong? Fix it in the CV Builder and download the PDF again.",
-        "Print it once: grey text, thin lines and coloured headings must still read in black and white. Then read the printout from the bottom line up: spelling and full-stop slips show when you can’t follow the story."
+        "Mail the PDF to yourself and open it from that mail on your phone. Small text is normal on a phone screen; a second page, a cut-off line or text over text is not.",
+        "Print it once: grey text, thin lines and coloured headings must still read in black and white. Read the printout from the bottom line up: slips show when you can’t follow the story."
       ],
       "fix": {
         "label": "Open the CV Builder",
@@ -325,7 +328,7 @@
       "section": "Finish",
       "check": "Before you send: the five-second test, after reading five classmates’ CVs",
       "example": [
-        "Read five classmates’ CVs first: after that, your own mistakes jump out. No classmates’ CVs to hand? Read five of the filled-in CVs in CV templates.",
+        "Read five classmates’ CVs first: after that, your own mistakes jump out.",
         "Then leave yours for a day and look at it for five seconds only. Your Inter result, your best proof and your domain should show in the top third. If not, move them up."
       ],
       "fix": {

@@ -219,3 +219,21 @@ test('content text is never parsed as HTML', () => {
     assert.ok(doc.getElementById('list').classList.contains('no-numbers'));
     assert.equal(doc.querySelector('.ap-progress'), null);
 });
+
+test('"also" links render after the fix link, with the same safe-link rule', () => {
+    const data = {
+        title: 'CV checklist',
+        items: [{ id: 'groups', check: 'Groups shown as they are', example: 'One row per sitting.',
+            fix: { label: 'Results, sittings and gaps', href: '/lms?page=12' },
+            also: [{ label: 'HR round and GD booklet', href: '/lms?session=5' }, { label: 'Bad', href: 'javascript:alert(1)' },
+                { label: 'Guidebook ch 3, q11', href: '/lms?page=28' }] }]
+    };
+    const model = C.normalise(data);
+    assert.deepEqual(model.items[0].also.map(l => l.label), ['HR round and GD booklet', 'Guidebook ch 3, q11']);
+    const dom = new JSDOM('<!doctype html><main id="list"></main>');
+    const doc = dom.window.document;
+    C.mount(doc.getElementById('list'), data, { store: memoryStore({ ticks: {} }) });
+    const links = [...doc.querySelectorAll('.ap-cl-extra a')].map(a => a.textContent);
+    assert.deepEqual(links, ['Results, sittings and gaps', 'HR round and GD booklet', 'Guidebook ch 3, q11']);
+    assert.equal(doc.querySelectorAll('a[href^="javascript"]').length, 0);
+});

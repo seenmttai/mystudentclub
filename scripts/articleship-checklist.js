@@ -57,6 +57,14 @@
         return { href, label: label || 'Fix it', external: isExternal(href) };
     }
 
+    /** "also": more named resources a check points to, [{ label, href }]; the same safe-link rule as fix. */
+    function normaliseAlso(item) {
+        return (Array.isArray(item.also) ? item.also : [])
+            .map(link => ({ label: text(link && (link.label || link.text)), href: safeHref(link && (link.href || link.url)) }))
+            .filter(link => link.label && link.href)
+            .map(link => Object.assign(link, { external: isExternal(link.href) }));
+    }
+
     function normaliseItem(raw, index) {
         const item = typeof raw === 'string' ? { check: raw } : (raw || {});
         const check = text(pickFirst(item, ['check', 'text', 'title', 'label', 'item']));
@@ -68,6 +76,7 @@
             why: text(pickFirst(item, ['why', 'note'])),
             example: Array.isArray(example) ? example.map(text).filter(Boolean).join('\n') : text(example),
             fix: normaliseFix(item),
+            also: normaliseAlso(item),
             section: text(pickFirst(item, ['section', 'group', 'stage']))
         };
     }
@@ -275,7 +284,7 @@
                 label.appendChild(el(doc, 'span', 'ap-cl-text', item.check));
                 li.appendChild(label);
                 if (item.why) li.appendChild(el(doc, 'p', 'ap-cl-why', item.why));
-                if (item.example || item.fix) {
+                if (item.example || item.fix || item.also.length) {
                     const extra = el(doc, 'div', 'ap-cl-extra');
                     if (item.example) {
                         const details = el(doc, 'details', 'ap-cl-example');
@@ -284,6 +293,7 @@
                         extra.appendChild(details);
                     }
                     if (item.fix) extra.appendChild(link(doc, 'ap-cl-fix', item.fix));
+                    item.also.forEach(target => extra.appendChild(link(doc, 'ap-cl-fix ap-cl-also', target)));
                     li.appendChild(extra);
                 }
                 inputs.set(item.id, { input, li });

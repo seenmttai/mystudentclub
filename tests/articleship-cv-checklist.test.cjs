@@ -63,11 +63,11 @@ test('content: 22 checks in build order, every one with an example, links that r
     const byId = Object.fromEntries(model.items.map(item => [item.id, item]));
     assert.match(byId['one-page'].check, /never shrunk/);
     assert.match(byId['file-name'].example, /Riya Sharma - Articleship CV - Audit\.pdf/, 'same file-name pattern as Guidebook ch 3 and Automail');
-    assert.match(byId['nothing-personal'].check, /photo.*date of birth.*parents’ names.*Declaration/);
+    assert.match(byId['nothing-personal'].check, /photo.*date of birth.*parents’ names.*a declaration.*a signature/);
     assert.match(byId['groups-attempts'].example, /Result awaited/);
-    assert.match(byId['certifications'].check, /in their own section, four at most/);
+    assert.match(byId['certifications'].check, /in their own section, four outside certificates at most/);
     assert.match(byId['certifications'].example, /Heading “Certifications and job simulations”/);
-    assert.match(byId['certifications'].example, /MSC Articleship Program line isn’t one of them/, 'house rule 2: the programme line is not one of the four');
+    assert.match(byId['certifications'].example, /MSC Articleship Program line isn’t one of the four/, 'house rule 2: the programme line is not one of the four');
     assert.match(byId['assisted'].check, /Assisted/);
     assert.match(byId['two-questions'].check, /two questions/);
     // The claim → question drill, every ready example (skills, simulations, hobbies, roles): the full harvest list.
@@ -87,7 +87,7 @@ test('content: 22 checks in build order, every one with an example, links that r
     assert.match(last.example, /five seconds/, 'the quick-look test');
     assert.match(last.example, /five classmates’ CVs/, 'the peer read');
     // No classmates' CVs to hand: the look-book's filled-in CVs (made-up applicants), never Day 6's industrial-training CVs.
-    assert.match(last.example, /filled-in CVs in CV templates/);
+    assert.match(last.fix.label, /Five filled-in CVs: CV templates/, "no classmates to hand: the fix link opens five filled-in CVs");
     assert.match(last.fix.href, /resource=CV\+templates/);
     assert.doesNotMatch(CONTENT_TEXT, /Post Articleship CVs/);
     assert.doesNotMatch(byId['objective'].example, /five seconds/);
@@ -137,13 +137,15 @@ test('content: 22 checks in build order, every one with an example, links that r
     assert.equal((CONTENT_TEXT.match(/bottom line up/g) || []).length, 1);
     // A check every correct CV can pass: an A4 page never reads "without zooming" on a phone.
     const phone = byId['phone-and-print'];
-    assert.equal(phone.check, 'Phone and printout: still one page, nothing cut off');
+    assert.equal(phone.check, 'Phone and printout: nothing cut off, nothing faded');
+    assert.match(phone.example, /a second page/, 'still one page on a phone');
     assert.doesNotMatch(CONTENT_TEXT, /without zoom|pinch/i);
     assert.match(phone.example, /black and white/);
     // Never shrink the font: said once, in check 2 (its home), not again in check 20.
     assert.doesNotMatch(phone.example, /shrink/);
     // House rule 2: four outside certificates at most, the MSC programme line not one of them.
-    assert.ok(raw['certifications'].example.some(line => /Four outside certificates at most; the MSC Articleship Program line isn’t one of them\./.test(line)));
+    assert.match(raw['certifications'].check, /four outside certificates at most/);
+    assert.ok(raw['certifications'].example.some(line => /the MSC Articleship Program line isn’t one of the four\./.test(line)));
     // No first person on a CV line or an objective.
     assert.doesNotMatch(byId['objective'].example, /✅[^\n]*\b(?:my|I)\b/);
     assert.doesNotMatch(byId['line-formula'].example, /✅[^\n]*\b(?:my|I)\b/);
@@ -497,7 +499,7 @@ test('examples: bold shows as bold (text only, never HTML); the file name follow
     page.refreshDomain();
     assert.deepEqual([...fileBox().querySelectorAll('.cvc-ex-mine')].map(p => p.textContent),
         ['For your domain: Your Name - Articleship CV - GST.pdf', 'For your backup domain: Your Name - Articleship CV - Direct Tax.pdf']);
-    assert.match(fileBox().children[0].textContent, /^✅ Riya Sharma/, 'the model example stays first');
+    assert.match(fileBox().children[0].textContent, /^✅ One domain: Riya Sharma/, 'the model example stays first');
     domains = { main: 'statutory-audit' };
     page.refreshDomain();
     assert.deepEqual([...fileBox().querySelectorAll('.cvc-ex-mine')].map(p => p.textContent), ['For your domain: Your Name - Articleship CV - Audit.pdf']);
@@ -732,7 +734,16 @@ test('sheet fallback: the one generated sheet (build/day-1/1.8/out) carries ever
     const stale = 'stale: run python3 src/build.py in build/day-1/1.8';
     assert.equal(rows.length, CONTENT.items.length, stale);
     CONTENT.items.forEach((item, i) => {
-        const example = (Array.isArray(item.example) ? item.example.join('\n') : item.example).replace(/\*\*/g, '');
+        // a CSV has no bold: a line with bold says in words where the bold goes
+        const plain = line => {
+            if (!line.includes('**')) return line;
+            const body = /^[✅❌] /.test(line) ? line.slice(2) : line;
+            const parts = [...body.matchAll(/\*\*(.+?)\*\*/g)].map(m => m[1]);
+            const note = parts.length === 1 && body.trim() === '**' + parts[0] + '**' ? ' (whole line in bold)'
+                : ' (only ' + parts.map(p => '“' + p + '”').join(' and ') + ' in bold)';
+            return line.replace(/\*\*/g, '') + note;
+        };
+        const example = (Array.isArray(item.example) ? item.example : item.example.split('\n')).map(plain).join('\n');
         const link = item.fix ? (item.fix.href.startsWith('/') ? 'https://www.mystudentclub.com' + item.fix.href : item.fix.href) : '';
         assert.deepEqual(rows[i], [String(i + 1), item.section, item.check, example, item.fix ? item.fix.label : '', link, 'FALSE'], stale + ' (check ' + (i + 1) + ')');
     });
@@ -816,7 +827,7 @@ test('release 1 (Work Simulation not out): every check, fold and link, with no W
     assert.match(two.textContent, /Keep an interest only if you still do it/, 'the interests rule stays');
     const certs = off.doc.querySelector('.ap-cl-item[data-id="certifications"]');
     assert.match(certs.textContent, /Heading “Certifications and job simulations”/);
-    assert.match(certs.textContent, /ICITSS stays in education\./);
+    assert.match(certs.textContent, /ICITSS stays in education, and the MSC Articleship Program line isn’t one of the four\./);
 
     const on = pageDom();
     CV.start({ container: on.container, content: CONTENT, store: memoryStore({ ticks: {} }), workSimulationLive: true });
