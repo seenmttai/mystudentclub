@@ -137,7 +137,7 @@
    "font": "Times New Roman",
    "accent": "#0D465F",
    "page": 10,
-   "line": "Strong marks with a formal look: a centred header and every date in the left column.",
+   "line": "Strong marks, formal firms: the grid of design 1 under a centred, letterhead-style name.",
    "bestFor": [],
    "also": [
     "A"
@@ -251,7 +251,7 @@
    "font": "Cambria",
    "accent": "#28535E",
    "page": 17,
-   "line": "Academics with extras: a banner on top and a side column that holds skills, roles and certificates.",
+   "line": "Academics with extras: a banner on top and a side column that holds skills, roles and interests.",
    "bestFor": [],
    "also": []
   },
@@ -259,7 +259,7 @@
    "number": 17,
    "id": "tinted-ledger",
    "name": "Tinted ledger",
-   "tag": "Print",
+   "tag": "Screen",
    "gallery": 24,
    "renderFile": "executive-professional.html",
    "font": "Calibri",
@@ -275,17 +275,17 @@
    "number": 18,
    "id": "tinted-header",
    "name": "Tinted header",
-   "tag": "Print",
+   "tag": "Screen",
    "gallery": 26,
    "renderFile": "banner-resume.html",
    "font": "Arial",
    "accent": "#1F487C",
    "page": 19,
    "line": "Work you have done: a soft centred header and roomy bars for experience entries.",
-   "bestFor": [
+   "bestFor": [],
+   "also": [
     "C"
-   ],
-   "also": []
+   ]
   },
   {
    "number": 19,
@@ -407,11 +407,11 @@
    "font": "Arial",
    "accent": "#1D4E5F",
    "page": 27,
-   "line": "Work you have done: dashed rules and two columns that give each job its own space.",
-   "bestFor": [],
-   "also": [
+   "line": "Work you have done: dashed rules; the jobs get the wide left column, skills and the rest sit beside them.",
+   "bestFor": [
     "C"
-   ]
+   ],
+   "also": []
   },
   {
    "number": 27,
@@ -431,7 +431,7 @@
    "number": 28,
    "id": "framed-tinted-ledger",
    "name": "Framed tinted ledger",
-   "tag": "Print",
+   "tag": "Screen",
    "gallery": 58,
    "renderFile": "matrix-grid-ledger.html",
    "font": "Times New Roman",

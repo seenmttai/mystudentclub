@@ -250,7 +250,8 @@ test('sample applicants keep the house rules (fictional, honest, rule-2 lines, t
         assert.match(cv.personal.phone, /98XXXXXXXX/, `${id}: phone masked`);
         assert.match(cv.personal.email, /^[a-z]+\.[a-z]+@email\.com$/, `${id}: firstname.lastname@email.com`);
         const inter = cv.education.filter(row => /CA Intermediate/.test(row.degree));
-        assert.ok(inter.length && inter.every(row => row.year === '[Month Year]'), `${id}: Inter session as [Month Year]`);
+        // Year cell as Choose your CV (1.1) and CV templates (1.4) write it since 20 Oct: [Year] (older data: [Month Year])
+        assert.ok(inter.length && inter.every(row => /^\[(Month )?Year\]$/.test(row.year)), `${id}: Inter session as [Year]`);
         assert.ok(cv.education.some(row => /ICITSS/.test(row.degree)), `${id}: ICITSS row in education`);
         (cv.experience || []).forEach(entry => assert.doesNotMatch(JSON.stringify(entry), /simulation|forage/i, `${id}: no simulation under experience`));
         const counts = B.countCertificates(cv.certifications);
