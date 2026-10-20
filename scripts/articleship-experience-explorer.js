@@ -4,14 +4,18 @@
  * Anonymous articleship experiences, searchable by firm, city, domain and task. Every card shows: there is no
  * experience-length filter and no "N months" line (the generator drops the field). Filters live in the URL:
  *   /articleship-program/experience-explorer/?domain=gst&city=mumbai&q=bdo
- * `domain` takes any of the programme's 13 slugs, labels or aliases (MSCArticleshipProgress.normaliseDomain), or `all`;
- * `city` takes a city or a common old name (Bombay, Gurgaon…), Delhi NCR as one; `nocity=1` adds the cards that name no
- * city; `q` is the search text. On a bare open (no `domain`, `city` or `q` in the URL) the student's shared "my domain"
- * is the default, and typing a search looks across every domain (with a "Show <my domain> only" offer).
+ *   /articleship-program/experience-explorer/?firm=Kirtane+%26+Pandit+LLP
+ * `firm` is one firm exactly, as the cards name it (a card's firm name and the "Firms here" chips use it; `q` stays free
+ * text). `domain` takes any of the programme's 13 slugs, labels or aliases (MSCArticleshipProgress.normaliseDomain), or `all`;
+ * `city` takes a city or a common old name (Bombay, Gurgaon…), Delhi NCR as one (a city no card names is dropped, with a
+ * one-line note); `nocity=1` adds the cards that name no city; `q` is the search text. On a bare open (no `domain`,
+ * `city`, `firm` or `q` in the URL) the student's shared "my domain" is the default, read from this device at once and
+ * from the account once it loads; typing a search looks across every domain (with a "Show <my domain> only" offer).
  *
  * Order: cards that answer the search best come first (the words as one phrase in a work line, then all the words in
- * one line, then spread over the card); in a domain view, cards with more of that domain's work lines come first; then
- * the most specific work; then one card per firm in turn. Each card lists its matching lines first, marked.
+ * one line, then spread over the card); a firm or city with a domain name ("BDO Mumbai stat audit") also finds that
+ * firm's cards in the domain; in a domain view, cards with more of that domain's work lines come first; then the most
+ * specific work, one card per firm in turn. Each card lists its matching lines first, marked.
  *
  * Data: ./experiences.json (version 5: one domain bitmask per work line), built by
  * msc-content/articleship-program/v3/build/day-5/5.2/build_explorer.mjs.
@@ -33,6 +37,12 @@
     const COURSE_PAGE = '/learning-management-system/course?course=msc-articleship-program';
     const PROGRAMME_PAGE = '/articleship-program/';
     const COMMON_LINES = 6;
+    const THIN = 8;
+    const BIG_FIRM = 20; // a firm with this many cards or more is spread out, so smaller firms are seen too
+    const GLANCE_AFTER = 3;
+    const PHONE = '(max-width: 599px)';
+    const FIRMS_RESOURCE = 'Firms by domain';
+    const ACCOUNT_SCRIPTS = ['/scripts/supabase.js', '/scripts/supabase-init.js'];
     const FIRM_CHIPS = 10;
     const FIRM_FILL = 6;
 
@@ -42,6 +52,19 @@
         const found = DOMAINS.find(domain => domain.slug === slug);
         return found ? found.label : slug;
     };
+    // The nearest domains, as the Domain roadmaps pair them: offered when a domain view has only a few cards.
+    const RELATED = {
+        'statutory-audit': ['internal-audit', 'direct-tax'], 'internal-audit': ['statutory-audit', 'forensic'],
+        'direct-tax': ['statutory-audit', 'gst', 'ma-tax'], 'gst': ['direct-tax'], 'bank-audit': ['statutory-audit'],
+        'transfer-pricing': ['direct-tax'], 'ma-tax': ['direct-tax'], 'valuation': ['fdd'], 'fdd': ['valuation', 'statutory-audit'],
+        'forensic': ['internal-audit'], 'consulting': ['internal-audit'], 'accounting': ['statutory-audit'], 'ib-er': ['valuation', 'fdd']
+    };
+    /** A Day's row in the course page (the same link the LMS builds: session = Day + 1). */
+    function courseHref(day, title) {
+        const params = new URLSearchParams({ course: 'msc-articleship-program', session: String(day + 1) });
+        if (title) params.set('resource', title);
+        return `/learning-management-system/course?${params.toString()}`;
+    }
 
     // ---------- Text normalising (the same rules for the cards and the query) ----------
     const FIRM_ALIASES = [
@@ -93,6 +116,7 @@
         'Company law': 'roc secretarial',
         'Financial analysis': 'mis budgets projections'
     };
+    const LABEL_DOMAIN = { 'International tax': 'direct-tax', 'Company law': 'accounting', 'Financial analysis': 'accounting' };
     const STOP_WORDS = new Set(['and', 'the', 'of', 'at', 'in', 'for', 'a', 'an', 'co', 'llp', 'ca', 'chartered', 'accountants', 'firm', 'firms', 'work']);
     // Words too broad to suggest one domain from the search box.
     const BROAD_WORDS = new Set(['audit', 'tax', 'risk', 'bank', 'banking', 'assurance', 'statutory', 'accounts', 'ia', 'dt', 'er']);
@@ -113,6 +137,8 @@
             .replace(/\bfinancial due diligence\b/g, 'fdd').replace(/\bdue diligence\b/g, 'diligence')
             .replace(/\btransfer pricing\b/g, 'tp').replace(/\bindirect tax\b/g, 'gst')
             .replace(/\bdirect tax\b/g, 'income tax').replace(/\b(?:igst|cgst|sgst)\b/g, 'gst')
+            .replace(/\bitrs?\b/g, 'income tax return').replace(/\bit returns?\b/g, 'income tax return')
+            .replace(/\bfil(?:ed|ing|es)\b/g, 'file')
             .replace(/\s+/g, ' ').trim();
         if (canonicalFirms !== false) {
             for (const [brand, pattern] of FIRM_ALIASES) text = text.replace(pattern, ` ${brand.toLowerCase()} `);
@@ -127,6 +153,8 @@
     // A token of one or two letters ('it', 'gt', 'tp') matches a whole word only; a longer one matches a word start
     // ('audit' finds 'audits'). Every indexed text starts and ends with a space.
     const hasToken = (text, token) => text.includes(token.length <= 2 ? ` ${token} ` : ` ${token}`);
+    // The firm and city line answers whole words only: 'bank' is not the firm 'Banka & Banka'.
+    const inHead = (card, token) => card.head.includes(` ${token} `);
 
     // ---------- Cities: Delhi NCR is one choice; each card still shows its own city ----------
     const DELHI_NCR = new Set(['New Delhi', 'Gurugram', 'Noida', 'Greater Noida', 'Ghaziabad', 'Faridabad']);
@@ -150,16 +178,26 @@
         return Progress && Progress.normaliseDomain ? Progress.normaliseDomain(text) : (DOMAINS.some(d => d.slug === text) ? text : null);
     }
 
-    /** A city from the URL → the name used on the cards (Delhi NCR grouped), or a tidy version of an unknown one. */
+    const tidyCity = key => key.split('-').filter(Boolean).slice(0, 4).map(word => word[0].toUpperCase() + word.slice(1)).join(' ').slice(0, 40);
+
+    /**
+     * A city from the URL → the name used on the cards (Delhi NCR grouped). With a model, a city no card names gives ''
+     * (the page says so once); without one, a tidy version of the text.
+     */
     function resolveCity(value, model) {
         const key = slug(value);
         if (!key) return '';
-        const known = model && model.cityNames ? model.cityNames : [];
         const aliased = CITY_ALIASES[key];
         if (aliased) return aliased;
-        const found = known.find(name => slug(name) === key);
-        if (found) return found;
-        return key.split('-').filter(Boolean).slice(0, 4).map(word => word[0].toUpperCase() + word.slice(1)).join(' ').slice(0, 40);
+        if (!model || !model.cityNames) return tidyCity(key);
+        return model.cityNames.find(name => slug(name) === key) || '';
+    }
+
+    /** A firm from the URL → the firm exactly as the cards name it (case and punctuation forgiven), or the text itself. */
+    function resolveFirm(value, model) {
+        const text = String(value == null ? '' : value).replace(/\s+/g, ' ').trim().slice(0, 120);
+        if (!text || !model || !model.firmBySlug) return text;
+        return model.firmBySlug.get(slug(text)) || text;
     }
 
     /** The search box text names a domain ("consulting", "equity research", "GST") → its slug. */
@@ -250,8 +288,15 @@
         }
         // Task groups for "Most common work here".
         const { task, taskText } = taskGroups(lineCount);
+        const firmBySlug = new Map();
+        const firmCards = new Map();
+        for (const record of records) {
+            if (!firmBySlug.has(slug(record.firm))) firmBySlug.set(slug(record.firm), record.firm);
+            firmCards.set(record.firm, (firmCards.get(record.firm) || 0) + 1);
+        }
+        const bigFirms = new Set([...firmCards].filter(([, n]) => n >= BIG_FIRM).map(([firm]) => firm));
         return {
-            records, specific, sameWork, bit, task, taskText,
+            records, specific, sameWork, bit, task, taskText, firmBySlug, bigFirms,
             cityNames: [...cityCount.keys()],
             cards: records.length,
             firms: new Set(records.map(record => record.firm)).size,
@@ -309,11 +354,15 @@
     }
 
     // ---------- URL state ----------
-    /** URL query → { q, domain ('' = all), city ('' = all), nocity, from: 'url' | 'mine' | null }. */
+    /**
+     * URL query → { q, firm ('' = every firm), domain ('' = all), city ('' = all), nocity, from: 'url' | 'mine' | null },
+     * plus `badCity` when ?city= names a city no card has.
+     */
     function readState(search, options) {
         const opts = options || {};
         const params = new URLSearchParams(typeof search === 'string' ? search : '');
         const q = (params.get('q') || '').slice(0, 120);
+        const firm = resolveFirm(params.get('firm'), opts.model);
         const rawDomain = params.get('domain');
         let domain = '';
         let from = null;
@@ -323,27 +372,32 @@
             else if (resolved === 'all') from = 'url';
         }
         // "My domain" fills a bare open only: a deep link (?q=, ?city=) shows exactly what it names.
-        const deepLink = ['q', 'city'].some(key => (params.get(key) || '').trim() !== '');
+        const deepLink = ['q', 'city', 'firm'].some(key => (params.get(key) || '').trim() !== '');
         if (!from && !deepLink && opts.myDomain) {
             const mine = resolveDomain(opts.myDomain);
             if (mine && mine !== 'all') { domain = mine; from = 'mine'; }
         }
-        const city = resolveCity(params.get('city'), opts.model);
+        const rawCity = params.get('city');
+        const city = resolveCity(rawCity, opts.model);
         const nocity = Boolean(city) && params.get('nocity') === '1';
-        return { q, domain, city, nocity, from };
+        const state = { q, firm, domain, city, nocity, from };
+        if (!city && slug(rawCity)) state.badCity = tidyCity(slug(rawCity));
+        return state;
     }
 
     /**
-     * State → '?q=…&domain=…&city=…&nocity=1' ('' when nothing is set). `domain=all` only on a bare page that would
-     * otherwise open on "my domain" (a link with q or city is never narrowed by it).
+     * State → '?q=…&firm=…&domain=…&city=…&nocity=1' ('' when nothing is set). `domain=all` only on a bare page that
+     * would otherwise open on "my domain" (a link with q, firm or city is never narrowed by it).
      */
     function writeSearch(state, options) {
         const opts = options || {};
         const params = new URLSearchParams();
         const q = String(state.q || '').trim();
+        const firm = String(state.firm || '').trim();
         if (q) params.set('q', q);
+        if (firm) params.set('firm', firm);
         if (state.domain) params.set('domain', state.domain);
-        else if (opts.myDomain && !q && !state.city) params.set('domain', 'all');
+        else if (opts.myDomain && !q && !state.city && !firm) params.set('domain', 'all');
         if (state.city) params.set('city', slug(state.city));
         if (state.city && state.nocity) params.set('nocity', '1');
         const text = params.toString();
@@ -353,35 +407,68 @@
     // ---------- Querying ----------
     /**
      * How well a card answers the search: 3 = the words as one phrase in one work line (or a firm/city search the card
-     * fully answers), 2 = all the words in one work line, 1 = the words spread over the card.
-     * Words found in the firm or city line are not looked for in the work.
+     * fully answers), 2 = all the words in one work line, 1 = the words spread over the card, 0 = no match.
+     * Words found (whole) in the firm or city line are not looked for in the work.
+     * When the other words name a domain ("bank audit", "BDO Mumbai stat audit"), 2 goes to the cards with that domain's
+     * work instead (plus a tenth for each of its lines, up to 3), the words found elsewhere get 1, and a search that also
+     * names the firm or city finds that firm's domain cards even when no line says the words.
      */
     function workTokens(card, queryTokens) {
-        return queryTokens.filter(token => !hasToken(card.head, token));
+        return queryTokens.filter(token => !inHead(card, token));
     }
 
-    function scoreCard(card, queryTokens) {
+    function scoreCard(model, id, card, queryTokens, memo) {
+        const textual = queryTokens.every(token => hasToken(card.all, token));
         const work = workTokens(card, queryTokens);
-        if (!work.length) return 3;
+        if (!work.length) return textual ? 3 : 0;
         const last = work[work.length - 1];
         const phrase = ` ${work.join(' ')}${last.length <= 2 ? ' ' : ''}`;
-        let best = 1;
-        for (const line of card.lines) {
-            if (line.includes(phrase)) return 3;
-            if (best < 2 && work.every(token => hasToken(line, token))) best = 2;
+        if (textual && card.lines.some(line => line.includes(phrase))) return 3;
+        const named = namedDomain(work, memo);
+        if (named) {
+            const record = model.records[id];
+            const bit = model.bit[named] || 0;
+            const lines = record.masks.reduce((n, mask) => n + ((mask & bit) ? 1 : 0), 0);
+            // Found on its domain alone, a card must carry the domain the filter uses too (its lines rank it).
+            if (textual ? lines > 0 || record.domains.includes(named) : work.length < queryTokens.length && record.domains.includes(named)) {
+                return 2 + Math.min(3, lines) / 10;
+            }
+            return textual ? 1 : 0;
         }
-        return best;
+        if (!textual) return 0;
+        return card.lines.some(line => work.every(token => hasToken(line, token))) ? 2 : 1;
+    }
+
+    /** The search words left after the firm and city, when they name a domain ("statutory audit", "GST"): its slug. */
+    function namedDomain(work, memo) {
+        if (!work.length) return null;
+        const key = work.join(' ');
+        if (!memo) return detectDomain(key);
+        if (!memo.has(key)) memo.set(key, detectDomain(key));
+        return memo.get(key);
+    }
+
+    // The domains whose names and synonyms hold every word (a search that found nothing in the cards' own text).
+    function broadDomains(model, queryTokens) {
+        const ix = ensureIndex(model);
+        return DOMAINS.map(d => d.slug).filter(d => {
+            const labels = Object.keys(LABEL_DOMAIN).filter(label => LABEL_DOMAIN[label] === d);
+            const text = ` ${[domainLabel(d), DOMAIN_WORDS[d] || '', ...labels, ...labels.map(label => LABEL_WORDS[label] || '')].map(ix.norm).join(' ')} `;
+            return queryTokens.every(token => hasToken(text, token));
+        });
     }
 
     function match(model, queryTokens) {
         const ix = ensureIndex(model);
         const ids = [];
         const scores = new Map();
+        const memo = new Map();
         for (let id = 0; id < model.records.length; id++) {
-            const card = ix.cards[id];
-            if (queryTokens.every(token => hasToken(card.all, token))) { ids.push(id); scores.set(id, scoreCard(card, queryTokens)); }
+            const score = scoreCard(model, id, ix.cards[id], queryTokens, memo);
+            if (score) { ids.push(id); scores.set(id, score); }
         }
         let broad = false;
+        let via = [];
         if (!ids.length) {
             // Nothing in the work, firm, city or skills: let the domain names and their synonyms answer.
             broad = true;
@@ -389,8 +476,9 @@
                 const card = ix.cards[id];
                 if (queryTokens.every(token => hasToken(card.all, token) || hasToken(card.extra, token))) { ids.push(id); scores.set(id, 1); }
             }
+            via = ids.length ? broadDomains(model, queryTokens) : [];
         }
-        return { ids, scores, broad };
+        return { ids, scores, broad, via };
     }
 
     /** How many of a card's work lines belong to `domain` (0 when no domain is chosen). */
@@ -400,7 +488,24 @@
         return model.records[id].masks.reduce((sum, m) => sum + ((m & mask) ? 1 : 0), 0);
     }
 
-    // Firms with more cards first, one card per firm in turn, so the first page shows many firms.
+    // In one round, the cards of the largest firms (BIG_FIRM cards or more) take at most one place in three while other
+    // firms' cards last, so a student aiming at a mid-size firm sees mid-size firms from the first card.
+    function spread(model, ids) {
+        const big = [];
+        const other = [];
+        for (const id of ids) (model.bigFirms && model.bigFirms.has(model.records[id].firm) ? big : other).push(id);
+        if (!big.length || !other.length) return ids;
+        const out = [];
+        for (let b = 0, o = 0; b < big.length || o < other.length;) {
+            if (o < other.length) out.push(other[o++]);
+            if (b < big.length) out.push(big[b++]);
+            if (o < other.length) out.push(other[o++]);
+        }
+        return out;
+    }
+
+    // One card per firm in turn, each firm where its most specific card stands (`ids` come most specific first), so the
+    // first page shows many firms and a firm with many cards is not put first for that alone.
     function interleave(model, ids) {
         const groups = new Map();
         for (const id of ids) {
@@ -408,12 +513,11 @@
             if (!groups.has(key)) groups.set(key, []);
             groups.get(key).push(id);
         }
-        const ordered = [...groups.values()].sort((a, b) => b.length - a.length ||
-            model.records[a[0]].firm.localeCompare(model.records[b[0]].firm));
+        const ordered = [...groups.values()];
         const total = ordered.reduce((sum, group) => sum + group.length, 0);
         const out = [];
         for (let round = 0; out.length < total; round++) {
-            for (const group of ordered) if (round < group.length) out.push(group[round]);
+            out.push(...spread(model, ordered.filter(group => round < group.length).map(group => group[round])));
         }
         return out;
     }
@@ -421,7 +525,7 @@
     /**
      * Display order. When the cards with no city are included, the chosen city's own cards all come first. Then tiers:
      * how well a card answers the search, then how many of its lines are the chosen domain's work (counted up to 3);
-     * inside a tier the most specific work first, one card per firm in turn. A card whose tasks repeat, word for word,
+     * inside a tier the most specific work first, one card per firm in turn (in the order of each firm's best card). A card whose tasks repeat, word for word,
      * a card already listed moves to the end (of its city group), so a page never shows the same work twice while every
      * card stays counted and reachable.
      */
@@ -436,7 +540,7 @@
         const tier = new Map();
         for (const id of ids) {
             const score = opts.scores ? opts.scores.get(id) || 0 : 0;
-            tier.set(id, score * 10 + Math.min(3, domainLines(model, id, opts.domain)));
+            tier.set(id, Math.round(score * 10) + Math.min(3, domainLines(model, id, opts.domain)));
         }
         const sorted = [...ids].sort((a, b) => tier.get(b) - tier.get(a) || model.specific[b] - model.specific[a] || a - b);
         const seen = new Set();
@@ -493,7 +597,9 @@
     function run(model, state) {
         const queryTokens = tokens(state.q);
         const searched = queryTokens.length ? match(model, queryTokens) : null;
-        const found = searched ? searched.ids : model.records.map((_, id) => id);
+        const firm = state.firm || '';
+        let found = searched ? searched.ids : model.records.map((_, id) => id);
+        if (firm) found = found.filter(id => model.records[id].firm === firm);
         const domain = state.domain || '';
         const city = state.city || '';
         const nocity = Boolean(city && state.nocity);
@@ -519,13 +625,16 @@
             }
             if (inDomain && inCity) ids.push(id);
         }
-        const ordered = arrange(model, ids, { scores: searched ? searched.scores : null, domain, nocity });
+        // A search answered by a domain's synonyms ranks the cards by that domain's lines.
+        const via = searched && searched.broad && searched.via.length === 1 ? searched.via[0] : '';
+        const ordered = arrange(model, ids, { scores: searched ? searched.scores : null, domain: domain || via, nocity });
         const browsing = !queryTokens.length;
         return {
-            ids: ordered, total: ids.length, found: found.length, tokens: queryTokens, broad: searched ? searched.broad : false,
+            ids: ordered, total: ids.length, found: found.length, tokens: queryTokens,
+            broad: searched ? searched.broad : false, via: searched ? searched.via : [],
             domainCounts, domainTotal, cityCounts, cityTotal, noCity,
-            common: browsing && ids.length >= 8 ? commonWork(model, ids, domain) : [],
-            firms: browsing ? topFirms(model, ids) : []
+            common: browsing && ids.length >= THIN ? commonWork(model, ids, domain) : [],
+            firms: browsing && !firm ? topFirms(model, ids) : []
         };
     }
 
@@ -533,7 +642,8 @@
     const MARK_WORDS = {
         tp: 'transfer[- ]pricing|TP', ifc: 'internal financial controls?|ICFR|IFCR|IFC', fdd: 'financial due diligence|FDD',
         gst: 'GST[A-Za-z0-9-]*|IGST|CGST|SGST|indirect tax', statutory: 'statutory|stat(?![A-Za-z])', modelling: 'modell?ing',
-        diligence: 'due diligence|diligence', big4: 'big ?(?:4|four)', tax: 'tax(?:ation)?'
+        diligence: 'due diligence|diligence', big4: 'big ?(?:4|four)', tax: 'tax(?:ation)?',
+        income: 'income|ITRs?', return: 'returns?|ITRs?', file: 'fil(?:e|ed|es|ing)'
     };
     const escapeRe = text => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
@@ -553,7 +663,9 @@
         const work = card ? workTokens(card, ctx.tokens) : [];
         const last = work[work.length - 1] || '';
         const phrase = work.length ? ` ${work.join(' ')}${last.length <= 2 ? ' ' : ''}` : '';
-        const mask = ctx.domain ? model.bit[ctx.domain] || 0 : 0;
+        // "BDO Mumbai stat audit": the statutory audit lines come next when no line says the words.
+        const named = namedDomain(work);
+        const mask = (ctx.domain ? model.bit[ctx.domain] || 0 : 0) | (named ? model.bit[named] || 0 : 0);
         const pattern = markPattern(work);
         const ranks = record.bullets.map((text, i) => {
             let rank = 4;
@@ -561,7 +673,8 @@
                 const line = card.lines[i];
                 if (line.includes(phrase)) rank = 0;
                 else if (work.every(token => hasToken(line, token))) rank = 1;
-                else if (work.some(token => hasToken(line, token))) rank = 2;
+                // one word of a domain's name ("statutory dues" for "stat audit") is not a match
+                else if (!named && work.some(token => hasToken(line, token))) rank = 2;
             }
             if (rank === 4 && mask && (record.masks[i] & mask)) rank = 3;
             return rank;
@@ -610,9 +723,9 @@
 
     /**
      * Mount the Explorer into `container`.
-     * options: { location, history, myDomain, pageSize, debounceMs, inputDelayMs, idle (null = no idle indexing), model
-     *   (an already prepared model), onStats(model) }
-     * Returns { state(), result(), set(partial), flush(), model, destroy() }.
+     * options: { location, history, myDomain, signedIn, pageSize, debounceMs, inputDelayMs, idle (null = no idle
+     *   indexing), model (an already prepared model), onStats(model), matchMedia (default window.matchMedia) }
+     * Returns { state(), result(), set(partial), setMyDomain(slug), flush(), model, destroy() }.
      */
     function mount(container, data, options) {
         const opts = options || {};
@@ -624,8 +737,13 @@
         const debounceMs = opts.debounceMs === undefined ? 250 : opts.debounceMs;
         const model = opts.model || prepare(data);
         const myDomain = opts.myDomain ? resolveDomain(opts.myDomain) : null;
-        const mine = myDomain && myDomain !== 'all' ? myDomain : null;
+        let mine = myDomain && myDomain !== 'all' ? myDomain : null;
         let state = readState(loc && loc.search ? loc.search : '', { model, myDomain: mine });
+        // A ?city= that no card names: said once, then forgotten.
+        let badCity = state.badCity || '';
+        delete state.badCity;
+        const media = opts.matchMedia !== undefined ? opts.matchMedia : (typeof win.matchMedia === 'function' ? q => win.matchMedia(q) : null);
+        const phone = media ? media(PHONE) : null;
         let result = null;
         let limit = pageSize;
         let urlTimer = null;
@@ -676,9 +794,11 @@
         countWrap.append(count, noCityButton);
         const actions = el(doc, 'div', 'xp-actions');
         const roadmap = el(doc, 'a', 'xp-roadmap');
+        const allFirms = el(doc, 'button', 'xp-allfirms', 'All firms');
+        allFirms.type = 'button';
         const clear = el(doc, 'button', 'xp-clear', 'Clear all');
         clear.type = 'button';
-        actions.append(roadmap, clear);
+        actions.append(roadmap, allFirms, clear);
         status.append(countWrap, actions);
         const hint = el(doc, 'div', 'xp-hint');
         const glance = el(doc, 'section', 'xp-glance');
@@ -690,9 +810,12 @@
         const more = el(doc, 'button', 'ap-btn is-secondary', 'Show more');
         more.type = 'button';
         moreWrap.append(more);
-        container.replaceChildren(form, status, hint, glance, empty, results, moreWrap);
+        // The way on: a nearby domain when this one is thin, then the roadmap, the firms to apply to and Day 5.
+        const next = el(doc, 'section', 'xp-next');
+        next.setAttribute('aria-label', 'What next');
+        container.replaceChildren(form, status, hint, glance, empty, results, moreWrap, next);
 
-        const hrefFor = next => `${loc && loc.pathname ? loc.pathname : ''}${writeSearch(next, { myDomain: mine }) || '?'}`;
+        const hrefFor = target => `${loc && loc.pathname ? loc.pathname : ''}${writeSearch(target, { myDomain: mine }) || '?'}`;
 
         function fillDomains() {
             const options = [el(doc, 'option', '', 'All domains')];
@@ -724,11 +847,14 @@
             const record = model.records[id];
             const node = el(doc, 'article', 'xp-card');
             const heading = el(doc, 'h2', 'xp-firm');
-            const firmLink = el(doc, 'a', 'xp-firm-link', record.firm);
-            firmLink.href = hrefFor({ q: record.firm, domain: '', city: '', nocity: false });
-            firmLink.dataset.firm = record.firm;
-            firmLink.title = `Every experience at ${record.firm}`;
-            heading.append(firmLink);
+            if (state.firm === record.firm) heading.textContent = record.firm;
+            else {
+                const firmLink = el(doc, 'a', 'xp-firm-link', record.firm);
+                firmLink.href = hrefFor({ q: '', firm: record.firm, domain: '', city: '', nocity: false });
+                firmLink.dataset.firm = record.firm;
+                firmLink.title = `Every experience at ${record.firm}`;
+                heading.append(firmLink);
+            }
             node.append(heading);
             if (record.city) node.append(el(doc, 'p', 'xp-city', record.city));
             else if (state.city && state.nocity) node.append(el(doc, 'p', 'xp-city is-unknown', 'City not given'));
@@ -747,7 +873,7 @@
             }
             if (record.bullets.length) {
                 const list = el(doc, 'ul', 'xp-work');
-                for (const line of cardLines(model, id, { tokens: result.tokens, domain: state.domain })) {
+                for (const line of cardLines(model, id, { tokens: result.tokens, domain: state.domain || (result.broad && result.via.length === 1 ? result.via[0] : '') })) {
                     const item = el(doc, 'li', line.rank <= 2 ? 'is-match' : line.rank === 3 ? 'is-domain' : '');
                     let at = 0;
                     for (const [start, end] of line.marked) {
@@ -773,18 +899,34 @@
             const left = result.total - Math.min(limit, result.total);
             more.textContent = left > pageSize ? `Show more · ${number(left)} left` : `Show ${number(left)} more`;
             moreWrap.hidden = left <= 0;
+            placeGlance();
+        }
+
+        // On a phone the at-a-glance block sits after the first cards, so the first screen shows real work.
+        function placeGlance() {
+            const cards = results.querySelectorAll('.xp-card');
+            const inline = Boolean(phone && phone.matches) && !glance.hidden && cards.length > GLANCE_AFTER;
+            if (inline) {
+                if (glance.parentNode !== results || glance.previousElementSibling !== cards[GLANCE_AFTER - 1]) results.insertBefore(glance, cards[GLANCE_AFTER]);
+            } else if (glance.parentNode !== container || glance.nextSibling !== empty) {
+                container.insertBefore(glance, empty);
+            }
+            glance.classList.toggle('is-inline', inline);
         }
 
         function emptyTitle() {
             const q = state.q.trim();
-            if (state.domain && !q) return `No ${domainLabel(state.domain)} experiences${state.city ? ` in ${state.city}` : ''}.`;
-            if (q) return `Nothing matches “${q}”${state.domain || state.city ? ' with these filters' : ''}.`;
+            const where = state.city ? ` in ${state.city}` : '';
+            if (q) return `Nothing matches “${q}”${state.domain || state.city || state.firm ? ' with these filters' : ''}.`;
+            if (state.firm) return `No ${state.domain ? `${domainLabel(state.domain)} ` : ''}experiences at ${state.firm}${where}.`;
+            if (state.domain) return `No ${domainLabel(state.domain)} experiences${where}.`;
             return `No experiences in ${state.city}.`;
         }
 
         function renderStatus() {
             const where = [state.domain ? domainLabel(state.domain) : '', state.city].filter(Boolean).join(' · ');
             let text = `${number(result.total)} ${result.total === 1 ? 'experience' : 'experiences'}`;
+            if (state.firm) text += ` at ${state.firm}`;
             if (where) text += ` · ${where}`;
             if (state.city && state.nocity) text += ' + city not given';
             if (state.domain && state.from === 'mine') text += ' (your domain)';
@@ -804,7 +946,8 @@
                 roadmap.href = roadmapHref(state.domain);
                 roadmap.textContent = `${domainLabel(state.domain)} roadmap`;
             }
-            clear.hidden = !(state.q.trim() || state.domain || state.city);
+            allFirms.hidden = !state.firm;
+            clear.hidden = !(state.q.trim() || state.domain || state.city || state.firm);
         }
 
         function hintButton(domain, n, keepQuery) {
@@ -815,9 +958,25 @@
             return button;
         }
 
+        function domainCount(domain) {
+            return run(model, Object.assign({}, state, { domain })).total;
+        }
+
         function renderHint() {
             hint.replaceChildren();
             const q = state.q.trim();
+            if (badCity) hint.append(el(doc, 'p', 'xp-note', `No experience names a city called “${badCity}”, so every city is shown.`));
+            if (q && result.broad && result.total) {
+                // Nothing says the words: say so, and name the domain these cards come from.
+                const via = result.via.length === 1 ? result.via[0] : '';
+                hint.append(el(doc, 'p', 'xp-note', via
+                    ? `No card says “${q}”. These are ${domainLabel(via)} experiences that cover it.`
+                    : `No card says “${q}”. These experiences are the closest.`));
+                if (via && !state.domain) {
+                    const n = run(model, Object.assign({}, state, { q: '', domain: via })).total;
+                    if (n > result.total) hint.append(hintButton(via, n, false));
+                }
+            }
             if (!state.domain && q) {
                 // The search box names a domain: offer that domain (the box is cleared, the domain filter takes over).
                 const suggested = detectDomain(q);
@@ -826,13 +985,14 @@
                         (record.domains.includes(suggested) && (!state.city || cityGroup(record.city) === state.city ||
                             (state.nocity && !record.city)) ? 1 : 0), 0);
                     // Only when it changes what the student sees (not when the search already shows exactly that domain).
-                    if (n && !(n === result.total && result.ids.every(id => model.records[id].domains.includes(suggested)))) {
+                    if (n && !(n === result.total && result.ids.every(id => model.records[id].domains.includes(suggested))) &&
+                        !hint.querySelector(`[data-domain="${suggested}"]`)) {
                         hint.append(hintButton(suggested, n, false));
                     }
                 }
                 // A search looks across every domain; the student's own domain is one tap away (the search is kept).
                 if (mine && mine !== suggested && result.total) {
-                    const n = run(model, Object.assign({}, state, { domain: mine })).total;
+                    const n = domainCount(mine);
                     if (n && n < result.total) hint.append(hintButton(mine, n, true));
                 }
             }
@@ -857,7 +1017,7 @@
                 const chips = el(doc, 'div', 'xp-firm-chips');
                 for (const item of firms) {
                     const chip = el(doc, 'a', 'xp-firm-chip');
-                    chip.href = hrefFor(Object.assign({}, state, { q: item.firm }));
+                    chip.href = hrefFor(Object.assign({}, state, { q: '', firm: item.firm }));
                     chip.dataset.firm = item.firm;
                     chip.dataset.keep = 'filters';
                     chip.append(el(doc, 'span', 'xp-firm-chip-name', item.firm), el(doc, 'span', 'xp-firm-chip-n', number(item.n)));
@@ -879,7 +1039,8 @@
             empty.append(el(doc, 'h2', 'xp-empty-title', emptyTitle()));
             const tip = state.domain
                 ? 'Its roadmap shows the work and the firms.'
-                : 'Try a firm, a city or one task, such as GST or stock audit.';
+                : state.firm && !q && !state.city ? 'Check the spelling, or search for the name.'
+                    : 'Try a firm, a city or one task, such as GST or stock audit.';
             empty.append(el(doc, 'p', '', tip));
             // The nearest search that does show cards comes first: every city, then every domain.
             const buttons = [];
@@ -887,9 +1048,13 @@
                 const n = run(model, Object.assign({}, state, { city: '', nocity: false })).total;
                 if (n) buttons.push({ action: 'clear-city', label: `Show every city · ${number(n)}` });
             }
-            if (!buttons.length && state.domain && (q || state.city)) {
+            if (!buttons.length && state.domain && (q || state.city || state.firm)) {
                 const n = run(model, Object.assign({}, state, { domain: '' })).total;
                 if (n) buttons.push({ action: 'clear-domain', label: `Show all domains · ${number(n)}` });
+            }
+            if (!buttons.length && state.firm) {
+                const n = run(model, Object.assign({}, state, { firm: '', q: state.firm, domain: '', city: '', nocity: false })).total;
+                if (n) buttons.push({ action: 'firm-to-q', label: `Search “${state.firm}” · ${number(n)}` });
             }
             const row = el(doc, 'div', 'xp-empty-actions');
             for (const item of buttons) {
@@ -903,7 +1068,7 @@
                 link.href = roadmapHref(state.domain);
                 row.append(link);
             }
-            if (!buttons.length && (q || state.domain || state.city)) {
+            if (!buttons.length && (q || state.domain || state.city || state.firm)) {
                 const reset = el(doc, 'button', 'ap-btn is-secondary', 'Clear all');
                 reset.type = 'button';
                 reset.dataset.action = 'clear-all';
@@ -940,6 +1105,39 @@
             else urlTimer = setTimeout(apply, debounceMs);
         }
 
+        function renderNext() {
+            next.replaceChildren();
+            next.hidden = result.total === 0;
+            if (next.hidden) return;
+            // A thin view: the nearest domain, as the roadmaps pair them, with its count here.
+            if (state.domain && result.total < THIN) {
+                for (const related of RELATED[state.domain] || []) {
+                    const n = domainCount(related);
+                    if (n <= result.total) continue;
+                    const box = el(doc, 'div', 'xp-related');
+                    box.append(el(doc, 'p', '', `${result.total === 1 ? 'Only one experience' : `Only ${number(result.total)} experiences`} here. The nearest domain:`));
+                    const button = el(doc, 'button', 'xp-hint-btn', `${domainLabel(related)} · ${number(n)}`);
+                    button.type = 'button';
+                    button.dataset.domain = related;
+                    box.append(button);
+                    next.append(box);
+                    break;
+                }
+            }
+            const box = el(doc, 'div', 'xp-next-box');
+            box.append(el(doc, 'h2', 'xp-next-title', 'Decided on a domain?'));
+            const row = el(doc, 'div', 'xp-next-links');
+            const confirm = el(doc, 'a', 'ap-btn', 'Confirm it in Domain roadmaps');
+            confirm.href = state.domain ? roadmapHref(state.domain) : ROADMAPS;
+            const firms = el(doc, 'a', 'ap-btn is-secondary', 'Find firms to apply to');
+            firms.href = courseHref(5, FIRMS_RESOURCE);
+            row.append(confirm, firms);
+            const back = el(doc, 'a', 'xp-back', opts.signedIn === false ? 'About the programme' : 'Back to Day 5');
+            back.href = opts.signedIn === false ? PROGRAMME_PAGE : courseHref(5);
+            box.append(row, back);
+            next.append(box);
+        }
+
         function render() {
             fillDomains();
             fillCities();
@@ -948,22 +1146,25 @@
             renderGlance();
             renderEmpty();
             renderCards();
+            renderNext();
         }
 
         // how: 'initial' | 'typing' | 'push' (a new history entry) | 'restore' (from history; `keep` = the saved depth)
         function update(partial, how, keep) {
             const p = partial || {};
             const has = key => Object.prototype.hasOwnProperty.call(p, key);
-            const next = Object.assign({}, state, p);
-            if (has('domain')) next.from = 'user';
+            const target = Object.assign({}, state, p);
+            if (how === 'mine') target.from = target.domain ? 'mine' : null;
+            else if (has('domain')) target.from = 'user';
             else if (has('q') && mine) {
                 // "My domain" never silently narrows a search: typing looks across every domain, clearing the box returns.
-                const typed = String(next.q || '').trim();
-                if (typed && state.from === 'mine' && state.domain === mine) { next.domain = ''; next.from = 'mine-off'; }
-                else if (!typed && state.from === 'mine-off' && !state.domain) { next.domain = mine; next.from = 'mine'; }
+                const typed = String(target.q || '').trim();
+                if (typed && state.from === 'mine' && state.domain === mine) { target.domain = ''; target.from = 'mine-off'; }
+                else if (!typed && state.from === 'mine-off' && !state.domain) { target.domain = mine; target.from = 'mine'; }
             }
-            if (!next.city) next.nocity = false;
-            state = next;
+            if (!target.city) target.nocity = false;
+            if (how !== 'initial' && how !== 'mine') badCity = '';
+            state = target;
             result = run(model, state);
             limit = how === 'restore' && keep ? Math.max(pageSize, Number(keep) || pageSize) : pageSize;
             render();
@@ -971,7 +1172,7 @@
                 if (urlTimer) { clearTimeout(urlTimer); urlTimer = null; }
                 const search = writeSearch(state, { myDomain: mine });
                 try { hist.pushState({ xp: { search, limit, y: 0 } }, '', `${loc.pathname}${search}`); } catch (_) { writeUrl(true); }
-            } else if (how !== 'initial' && how !== 'restore') writeUrl(how !== 'typing');
+            } else if (how !== 'initial' && how !== 'restore' && how !== 'mine') writeUrl(how !== 'typing');
         }
 
         function scrollToStatus() {
@@ -982,12 +1183,13 @@
             }
         }
 
+        // A firm's name or chip: exactly that firm's cards (a chip keeps the domain and city it was shown for).
         function showFirm(firm, keepFilters) {
-            const next = keepFilters ? { q: firm, domain: state.domain } : { q: firm, domain: '', city: '', nocity: false };
-            input.value = firm;
+            const target = keepFilters ? { q: '', firm, domain: state.domain } : { q: '', firm, domain: '', city: '', nocity: false };
+            input.value = '';
             if (urlTimer) { clearTimeout(urlTimer); writeUrl(true); }
             saveView();
-            update(next, 'push');
+            update(target, 'push');
             scrollToStatus();
         }
 
@@ -1007,9 +1209,10 @@
         noCityButton.addEventListener('click', () => update({ nocity: !state.nocity }));
         clear.addEventListener('click', () => {
             input.value = '';
-            update({ q: '', domain: '', city: '', nocity: false });
+            update({ q: '', firm: '', domain: '', city: '', nocity: false });
             input.focus();
         });
+        allFirms.addEventListener('click', () => update({ firm: '' }));
         hint.addEventListener('click', event => {
             const button = event.target.closest('[data-domain]');
             if (!button) return;
@@ -1028,7 +1231,8 @@
             const action = button.dataset.action;
             if (action === 'clear-city') update({ city: '', nocity: false });
             else if (action === 'clear-domain') update({ domain: '' });
-            else { input.value = ''; update({ q: '', domain: '', city: '', nocity: false }); }
+            else if (action === 'firm-to-q') { input.value = state.firm; update({ q: state.firm, firm: '', domain: '', city: '', nocity: false }); }
+            else { input.value = ''; update({ q: '', firm: '', domain: '', city: '', nocity: false }); }
         });
         results.addEventListener('click', event => {
             const firm = event.target.closest('a[data-firm]');
@@ -1044,12 +1248,19 @@
             update({ domain: tag.dataset.domain === state.domain ? '' : tag.dataset.domain });
             scrollToStatus();
         });
+        next.addEventListener('click', event => {
+            const button = event.target.closest('button[data-domain]');
+            if (!button) return;
+            update({ domain: button.dataset.domain });
+            scrollToStatus();
+        });
         more.addEventListener('click', () => {
             const firstNew = Math.min(limit, result.total);
             limit += pageSize;
             renderCards();
             saveView();
-            const heading = results.children[firstNew] && results.children[firstNew].querySelector('h2');
+            const newCard = results.querySelectorAll('.xp-card')[firstNew];
+            const heading = newCard && newCard.querySelector('h2');
             if (heading) {
                 heading.tabIndex = -1;
                 heading.focus({ preventScroll: true });
@@ -1061,6 +1272,7 @@
             const saved = event && event.state && event.state.xp;
             const same = saved && saved.search === (loc.search || '');
             state = readState(loc.search, { model, myDomain: mine });
+            delete state.badCity;
             input.value = state.q;
             update({}, 'restore', same ? saved.limit : 0);
             if (same && typeof win.scrollTo === 'function') win.scrollTo(0, Number(saved.y) || 0);
@@ -1070,6 +1282,8 @@
         win.addEventListener('popstate', onPopState);
         win.addEventListener('pagehide', onLeave);
         doc.addEventListener('visibilitychange', onVisibility);
+        const onPhoneChange = () => placeGlance();
+        if (phone && typeof phone.addEventListener === 'function') phone.addEventListener('change', onPhoneChange);
 
         // First page now; the search index in idle time (a search before it is done finishes it at once).
         const saved = hist && hist.state && hist.state.xp;
@@ -1106,6 +1320,21 @@
                 if (partial && Object.prototype.hasOwnProperty.call(partial, 'q')) input.value = partial.q;
                 update(partial);
             },
+            /**
+             * "My domain" arrived late (the account loaded after the first page): a page still on its bare open, or on
+             * the old "my domain", follows it; anything the student or the link chose stays.
+             */
+            setMyDomain: value => {
+                const resolved = value ? resolveDomain(value) : null;
+                const nextMine = resolved && resolved !== 'all' ? resolved : null;
+                if (nextMine === mine) return;
+                const bare = state.from === null && !state.q.trim() && !state.firm && !state.city && !state.domain &&
+                    !(loc && loc.search && new URLSearchParams(loc.search).get('domain'));
+                const following = state.from === 'mine';
+                mine = nextMine;
+                if (bare || following) update({ domain: mine || '' }, 'mine');
+                else renderHint();
+            },
             flush: () => { if (urlTimer) { clearTimeout(urlTimer); writeUrl(true); } },
             destroy: () => {
                 if (urlTimer) clearTimeout(urlTimer);
@@ -1114,6 +1343,7 @@
                 win.removeEventListener('popstate', onPopState);
                 win.removeEventListener('pagehide', onLeave);
                 doc.removeEventListener('visibilitychange', onVisibility);
+                if (phone && typeof phone.removeEventListener === 'function') phone.removeEventListener('change', onPhoneChange);
                 container.replaceChildren();
             }
         };
@@ -1124,7 +1354,44 @@
         return signedIn ? COURSE_PAGE : PROGRAMME_PAGE;
     }
 
-    /** Page start: load ./experiences.json, read "my domain", mount, fill the intro numbers. */
+    /**
+     * A signed-in student's "my domain" may live in the account (set on another device). The page never waits for it:
+     * the Supabase scripts load after the first page (only when a session is stored), then the settings are pulled and
+     * the page follows a changed "my domain" (setMyDomain). Resolves with the loaded settings store, or null.
+     */
+    function loadScripts(doc, sources) {
+        return new Promise((resolve, reject) => {
+            let last = null;
+            for (const src of sources) {
+                if (doc.querySelector(`script[src="${src}"]`)) continue;
+                const script = doc.createElement('script');
+                script.src = src;
+                script.async = false; // run in order: supabase.js, then supabase-init.js
+                (doc.head || doc.body).append(script);
+                last = script;
+            }
+            if (!last) { resolve(); return; }
+            last.addEventListener('load', () => resolve(), { once: true });
+            last.addEventListener('error', () => reject(new Error('Account scripts unavailable')), { once: true });
+        });
+    }
+
+    async function connectAccount(doc, controller, opts) {
+        if (!Progress || typeof Progress.settings !== 'function' || !controller) return null;
+        try {
+            const hasClient = Boolean(root.supabaseClient || typeof root.getSupabaseClient === 'function');
+            if (!hasClient) await (opts.loadScripts || loadScripts)(doc, ACCOUNT_SCRIPTS);
+            const store = opts.settings || Progress.settings();
+            store.subscribe(() => controller.setMyDomain(Progress.getMyDomain(store)));
+            await store.pull();
+            controller.setMyDomain(Progress.getMyDomain(store));
+            return store;
+        } catch (_) {
+            return null; // the device's own setting stays
+        }
+    }
+
+    /** Page start: load ./experiences.json, read "my domain", mount, fill the intro numbers, then sync the account. */
     async function start(options) {
         const opts = options || {};
         const doc = opts.document || root.document;
@@ -1160,16 +1427,17 @@
         if (myDomain === undefined) {
             try { myDomain = Progress && Progress.getMyDomain ? Progress.getMyDomain() : null; } catch (_) { myDomain = null; }
         }
-        const controller = mount(container, data, Object.assign({}, opts, { model, myDomain, inputDelayMs: opts.inputDelayMs === undefined ? 90 : opts.inputDelayMs }));
+        const controller = mount(container, data, Object.assign({}, opts, { model, myDomain, signedIn, inputDelayMs: opts.inputDelayMs === undefined ? 90 : opts.inputDelayMs }));
         for (const node of doc.querySelectorAll('[data-xp="cards"]')) node.textContent = number(controller.model.cards);
         for (const node of doc.querySelectorAll('[data-xp="firms"]')) node.textContent = number(controller.model.firms);
+        if (signedIn && opts.account !== false) controller.account = connectAccount(doc, controller, opts);
         return controller;
     }
 
     return Object.freeze({
         DATA_VERSION, PAGE_SIZE, ROADMAPS, COURSE_PAGE, PROGRAMME_PAGE,
-        normalise, tokens, hasToken, cityGroup, resolveDomain, resolveCity, detectDomain, taskKey,
+        normalise, tokens, hasToken, cityGroup, resolveDomain, resolveCity, resolveFirm, detectDomain, taskKey,
         prepare, ensureIndex, readState, writeSearch, run, arrange, cardLines, commonWork, topFirms,
-        roadmapHref, logoHref, mount, start
+        roadmapHref, courseHref, logoHref, mount, start, connectAccount
     });
 });

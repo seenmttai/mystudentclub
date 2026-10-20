@@ -50,8 +50,8 @@ test('data: version 5, every card kept, no experience length anywhere', () => {
     assert.equal(DATA.version, 5);
     assert.equal(DATA.records.length, 1787);
     assert.equal(DATA.cards, 1787);
-    assert.equal(DATA.firms, 956);
-    assert.equal(MODEL.firms, 956);
+    assert.equal(DATA.firms, 951);
+    assert.equal(MODEL.firms, 951);
     assert.ok(!RAW.includes('"months"'), 'months dropped from the data');
     assert.ok(!/months at this firm|first 12 months|\b\d+\s+months?\b/i.test(RAW));
     for (const record of DATA.records) {
@@ -104,17 +104,55 @@ test('data: all 13 domains have cards, in the programme vocabulary', () => {
 test('data: domains read from the work never mislabel transfer pricing or debt work', () => {
     const tagged = slug => DATA.records.filter(record => record.domains.includes(slug));
     for (const record of tagged('consulting')) {
-        assert.ok(record.bullets.some(b => /capital project advisory|feasibility|business plans?|market research|process improvement/i.test(b) &&
-            !/transfer pricing|functions-assets-risks/i.test(b)), record.bullets.join(' / '));
+        assert.ok(record.bullets.some(b => (/capital project advisory|feasibility|business plans?|market research|process improvement|risk[- ]and[- ]control matri|risk-control matri|walkthroughs?/i.test(b) || /\bSOX\b|\bRCMs?\b/.test(b)) &&
+            !/transfer pricing|functions-assets-risks|vouching|substantive|statutory audits?|physical stock/i.test(b)), record.bullets.join(' / '));
     }
     for (const record of tagged('ma-tax')) {
-        assert.ok(record.bullets.some(b => !/transfer pricing/i.test(b) && /acquisition structure|buy-?back|(?:merger|amalgamation|demerger|restructuring)[\s\S]*\btax\b|\btax\b[\s\S]*(?:merger|amalgamation|demerger|restructuring)/i.test(b)));
+        assert.ok(record.bullets.some(b => !/transfer pricing|indirect/i.test(b) && /acquisition structure|buy-?back|restructuring|\btax due diligence|(?:merger|amalgamation|demerger)[\s\S]*\btax\b|\btax\b[\s\S]*(?:merger|amalgamation|demerger)/i.test(b)));
     }
     for (const slug of ['consulting', 'ma-tax', 'ib-er']) {
         for (const record of tagged(slug)) assert.ok(record.tags.some(mask => mask & domainBit(slug)), `${slug} card without a ${slug} line`);
     }
     const tpOperatingModel = DATA.records.find(record => record.bullets.some(b => /operating model reviews through value chain/i.test(b)));
     assert.ok(tpOperatingModel && !tpOperatingModel.domains.includes('consulting') && tpOperatingModel.domains.includes('transfer-pricing'));
+});
+
+test('data: risk advisory work counts for consulting, deal restructuring for M&A tax (no near-empty roadmap link)', () => {
+    const tagsOf = line => {
+        for (const record of DATA.records) {
+            const i = record.bullets.indexOf(line);
+            if (i >= 0) return SLUGS.filter(slug => record.tags[i] & domainBit(slug));
+        }
+        return null;
+    };
+    assert.deepEqual(tagsOf('Documented process walkthroughs.'), ['internal-audit', 'consulting']);
+    assert.deepEqual(tagsOf('Prepared risk and control matrices.'), ['internal-audit', 'consulting']);
+    assert.ok(tagsOf('Tested SOX controls across global entities covering financial close, revenue, payroll, fixed assets and procurement.').includes('consulting'));
+    assert.ok(!tagsOf('Performed walkthroughs, vouching and substantive testing for statutory audits.').includes('consulting'), 'audit walkthroughs stay audit');
+    assert.ok(tagsOf('Analysed debt financing and restructuring transactions, agreements and capital structures.').includes('ma-tax'));
+    assert.ok(tagsOf('Performed buy-side and sell-side direct tax due diligence across several sectors.').includes('ma-tax'));
+    assert.ok(!tagsOf('Supported indirect-tax due diligence by reviewing returns, disputes and tax exposures.').includes('ma-tax'));
+    assert.ok(!tagsOf('Supported transfer pricing advisory work on business restructuring and cross-border arrangements.').includes('ma-tax'));
+    const count = slug => DATA.records.filter(record => record.domains.includes(slug)).length;
+    assert.ok(count('consulting') >= 150, `consulting ${count('consulting')}`);
+    assert.ok(count('ma-tax') >= 5);
+});
+
+test('data: one firm, one name (look-alike pairs merged unless they are different firms)', () => {
+    const key = name => name.toLowerCase().replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, ' ')
+        .replace(/\b(?:and|co|company|llp|associates|chartered|accountants|the|india|pvt|ltd|private|limited)\b/g, ' ').replace(/\s+/g, '');
+    const byKey = new Map();
+    for (const firm of new Set(DATA.records.map(record => record.firm))) {
+        if (!byKey.has(key(firm))) byKey.set(key(firm), []);
+        byKey.get(key(firm)).push(firm);
+    }
+    const pairs = [...byKey].filter(([, names]) => names.length > 1).map(([k]) => k).sort();
+    assert.deepEqual(pairs, ['skumargupta', 'suresh'], 'only the two kept-apart pairs (common names, different suffix)');
+    const firms = new Set(DATA.records.map(record => record.firm));
+    for (const gone of ['Kirtane & Pandit Co. LLP', 'Sudit K Parekh LLP', 'E.A. Patil LLP', 'S Jaykishan & Associates', 'PAMS & Associates']) {
+        assert.ok(!firms.has(gone), `${gone} merged`);
+    }
+    assert.equal(DATA.records.filter(record => record.firm === 'Kirtane & Pandit LLP').length, 14);
 });
 
 test('data: no contact details, no client that could be named, no banned strings', () => {
@@ -279,9 +317,86 @@ test('detectDomain: names a domain from the search box, never from broad words',
     assert.equal(X.detectDomain('BDO Mumbai'), null);
 });
 
+test('run: "ITR", "itr filing" and "IT return" find the income tax return cards, marked', () => {
+    const says = DATA.records.filter(record => record.bullets.some(b => /income[- ]tax returns?|\bITRs?\b|\bIT returns?\b/i.test(b))).length;
+    for (const q of ['ITR', 'itr', 'IT return', 'IT returns']) {
+        const r = X.run(MODEL, { q, domain: '', city: '' });
+        assert.ok(r.total >= says * 0.9 && r.total > 300, `${q}: ${r.total} of ${says}`);
+        for (const id of r.ids.slice(0, 12)) {
+            const line = X.cardLines(MODEL, id, { tokens: r.tokens })[0];
+            assert.equal(line.rank, 0, `${q}: ${line.text}`);
+            assert.ok(line.marked.length > 0);
+        }
+    }
+    const filing = X.run(MODEL, { q: 'itr filing', domain: '', city: '' });
+    assert.ok(filing.total > 100, `itr filing: ${filing.total}`);
+    const first = X.cardLines(MODEL, filing.ids[0], { tokens: filing.tokens })[0];
+    assert.match(first.text, /filed .*income[- ]tax returns/i);
+    assert.ok(X.run(MODEL, { q: 'gst filing', domain: '', city: '' }).total > 100, 'filing finds "Filed GSTR-1…"');
+});
+
+test('run: a firm name never outranks the work ("bank audit" is not Banka & Banka)', () => {
+    const r = X.run(MODEL, { q: 'bank audit', domain: '', city: '' });
+    const first = r.ids.slice(0, 12);
+    assert.ok(!first.some(id => /banka/i.test(MODEL.records[id].firm)), 'Banka & Banka is not on the first page');
+    for (const id of first) {
+        assert.ok(MODEL.records[id].domains.includes('bank-audit'), `${MODEL.records[id].firm} is bank audit work`);
+        assert.ok(X.cardLines(MODEL, id, { tokens: r.tokens })[0].rank <= 1);
+    }
+    // A partly typed firm name still finds the firm.
+    const kirt = X.run(MODEL, { q: 'Kirt', domain: '', city: '' });
+    assert.ok(kirt.total >= 14 && kirt.ids.every(id => /kirtane/i.test(MODEL.records[id].firm)));
+});
+
+test('run: a firm or city with a domain name finds that domain\'s cards ("BDO Mumbai stat audit")', () => {
+    const tagged = DATA.records.filter(r => r.firm === 'BDO' && r.city === 'Mumbai' && r.domains.includes('statutory-audit')).length;
+    assert.ok(tagged >= 26);
+    const r = X.run(MODEL, { q: 'BDO Mumbai stat audit', domain: '', city: '' });
+    assert.equal(r.total, tagged);
+    assert.ok(r.ids.every(id => MODEL.records[id].firm === 'BDO' && MODEL.records[id].city === 'Mumbai'));
+    const saysIt = id => MODEL.records[id].bullets.some(b => /statutory audit/i.test(b));
+    const firstTagOnly = r.ids.findIndex(id => !saysIt(id));
+    assert.ok(firstTagOnly > 0 && r.ids.slice(firstTagOnly).every(id => !saysIt(id)), 'the cards that say it come first');
+    const lines = X.cardLines(MODEL, r.ids[firstTagOnly], { tokens: r.tokens });
+    const record = MODEL.records[r.ids[firstTagOnly]];
+    assert.ok(record.masks[record.bullets.indexOf(lines[0].text)] & MODEL.bit['statutory-audit'], 'a statutory audit line first');
+    assert.ok(!lines.some(line => line.rank <= 2 && line.marked.length), 'no half-word marks ("statutory dues")');
+    const ahmedabad = X.run(MODEL, { q: 'Ahmedabad stat audit', domain: '', city: '' });
+    assert.ok(ahmedabad.total >= DATA.records.filter(rec => rec.city === 'Ahmedabad' && rec.domains.includes('statutory-audit')).length);
+    assert.ok(ahmedabad.ids.every(id => MODEL.records[id].city === 'Ahmedabad' &&
+        (MODEL.records[id].domains.includes('statutory-audit') || MODEL.records[id].bullets.some(b => /statutory audit/i.test(b)))));
+    // A domain word alone still lists the cards that say it (the domain is one tap away).
+    const forensic = X.run(MODEL, { q: 'forensic', domain: '', city: '' });
+    assert.ok(forensic.ids.every(id => MODEL.records[id].bullets.some(b => /forensic/i.test(b)) || MODEL.records[id].skills.some(b => /forensic/i.test(b))));
+});
+
+test('run: a word no card says is answered by its domain, and says so', () => {
+    const r = X.run(MODEL, { q: 'secretarial', domain: '', city: '' });
+    assert.ok(r.broad && r.total > 0);
+    assert.deepEqual(r.via, ['accounting']);
+    const { $ } = page('?q=secretarial');
+    const note = $('.xp-hint .xp-note');
+    assert.equal(note.textContent, 'No card says “secretarial”. These are Accounting, MIS & company law experiences that cover it.');
+    const button = $('.xp-hint-btn[data-domain="accounting"]');
+    assert.ok(button && /^Show Accounting, MIS & company law only · [\d,]+$/.test(button.textContent));
+    const first = $('.xp-card .xp-work li');
+    assert.equal(first.className, 'is-domain', 'its accounting lines first');
+});
+
+test('run: the largest firms take at most one place in three on a first page', () => {
+    for (const domain of ['', 'gst', 'statutory-audit', 'direct-tax']) {
+        const r = X.run(MODEL, { q: '', domain, city: '' });
+        const firms = r.ids.slice(0, 12).map(id => MODEL.records[id].firm);
+        assert.ok(!MODEL.bigFirms.has(firms[0]), `${domain || 'all'}: starts with ${firms[0]}`);
+        assert.ok(firms.filter(firm => MODEL.bigFirms.has(firm)).length <= 4, `${domain || 'all'}: ${firms.join(', ')}`);
+        assert.equal(new Set(firms).size, 12);
+    }
+    assert.deepEqual([...MODEL.bigFirms].sort(), ['BDO', 'Deloitte', 'EY', 'Grant Thornton', 'KPMG', 'PwC', 'RSM', 'S S Kothari Mehta & Co. LLP', 'T R Chadha & Co. LLP']);
+});
+
 // ---------- URL state ----------
 test('readState: ?domain= takes slugs, labels and aliases; ?city= takes old names; ?q= is the search', () => {
-    assert.deepEqual(X.readState('?domain=gst&city=mumbai&q=BDO', { model: MODEL }), { q: 'BDO', domain: 'gst', city: 'Mumbai', nocity: false, from: 'url' });
+    assert.deepEqual(X.readState('?domain=gst&city=mumbai&q=BDO', { model: MODEL }), { q: 'BDO', firm: '', domain: 'gst', city: 'Mumbai', nocity: false, from: 'url' });
     assert.equal(X.readState('?domain=Indirect%20tax', { model: MODEL }).domain, 'gst');
     assert.equal(X.readState('?domain=Statutory+audit', { model: MODEL }).domain, 'statutory-audit');
     assert.equal(X.readState('?domain=ib', { model: MODEL }).domain, 'ib-er');
@@ -289,18 +404,22 @@ test('readState: ?domain= takes slugs, labels and aliases; ?city= takes old name
     assert.equal(X.readState('?city=gurgaon', { model: MODEL }).city, 'Delhi NCR');
     assert.equal(X.readState('?city=delhi-ncr', { model: MODEL }).city, 'Delhi NCR');
     assert.equal(X.readState('?city=Chhatrapati%20Sambhajinagar', { model: MODEL }).city, 'Chhatrapati Sambhajinagar');
-    assert.equal(X.readState('?city=atlantis', { model: MODEL }).city, 'Atlantis');
+    assert.equal(X.readState('?city=atlantis', { model: MODEL }).city, '', 'a city no card names is dropped');
+    assert.equal(X.readState('?city=atlantis', { model: MODEL }).badCity, 'Atlantis');
+    assert.equal(X.readState('?city=%3Cscript%3E', { model: MODEL }).city, '');
+    assert.equal(X.readState('?city=atlantis').city, 'Atlantis', 'without the cards, a tidy name');
     assert.equal(X.readState('?city=pune&nocity=1', { model: MODEL }).nocity, true);
     assert.equal(X.readState('?nocity=1', { model: MODEL }).nocity, false, 'no city chosen, nothing to add');
-    assert.deepEqual(X.readState('?domain=nonsense', { model: MODEL }), { q: '', domain: '', city: '', nocity: false, from: null });
+    assert.deepEqual(X.readState('?domain=nonsense', { model: MODEL }), { q: '', firm: '', domain: '', city: '', nocity: false, from: null });
 });
 
 test('readState: "my domain" fills a bare open only; a deep link shows exactly what it names', () => {
-    assert.deepEqual(X.readState('', { model: MODEL, myDomain: 'gst' }), { q: '', domain: 'gst', city: '', nocity: false, from: 'mine' });
+    assert.deepEqual(X.readState('', { model: MODEL, myDomain: 'gst' }), { q: '', firm: '', domain: 'gst', city: '', nocity: false, from: 'mine' });
     assert.equal(X.readState('?domain=valuation', { model: MODEL, myDomain: 'gst' }).domain, 'valuation');
-    assert.deepEqual(X.readState('?domain=all', { model: MODEL, myDomain: 'gst' }), { q: '', domain: '', city: '', nocity: false, from: 'url' });
-    assert.deepEqual(X.readState('?q=equity+research', { model: MODEL, myDomain: 'gst' }), { q: 'equity research', domain: '', city: '', nocity: false, from: null });
-    assert.deepEqual(X.readState('?city=pune', { model: MODEL, myDomain: 'gst' }), { q: '', domain: '', city: 'Pune', nocity: false, from: null });
+    assert.deepEqual(X.readState('?domain=all', { model: MODEL, myDomain: 'gst' }), { q: '', firm: '', domain: '', city: '', nocity: false, from: 'url' });
+    assert.deepEqual(X.readState('?q=equity+research', { model: MODEL, myDomain: 'gst' }), { q: 'equity research', firm: '', domain: '', city: '', nocity: false, from: null });
+    assert.deepEqual(X.readState('?city=pune', { model: MODEL, myDomain: 'gst' }), { q: '', firm: '', domain: '', city: 'Pune', nocity: false, from: null });
+    assert.deepEqual(X.readState('?firm=bdo', { model: MODEL, myDomain: 'gst' }), { q: '', firm: 'BDO', domain: '', city: '', nocity: false, from: null }, 'a firm link is a deep link');
     assert.equal(X.readState('?q=&city=', { model: MODEL, myDomain: 'gst' }).domain, 'gst', 'empty params are a bare open');
 });
 
@@ -310,9 +429,10 @@ test('writeSearch: short, stable and round-trips', () => {
     assert.equal(X.writeSearch({ q: '', domain: '', city: '' }, { myDomain: 'gst' }), '?domain=all');
     assert.equal(X.writeSearch({ q: 'BDO', domain: '', city: '' }, { myDomain: 'gst' }), '?q=BDO', 'a search link is never narrowed anyway');
     assert.equal(X.writeSearch({ q: '', domain: '', city: 'Pune', nocity: true }), '?city=pune&nocity=1');
-    const state = { q: 'stock audit', domain: 'statutory-audit', city: 'Chhatrapati Sambhajinagar', nocity: true };
+    assert.equal(X.writeSearch({ q: '', firm: 'Kirtane & Pandit LLP', domain: '', city: '' }, { myDomain: 'gst' }), '?firm=Kirtane+%26+Pandit+LLP');
+    const state = { q: 'stock audit', firm: 'Kirtane & Pandit LLP', domain: 'statutory-audit', city: 'Chhatrapati Sambhajinagar', nocity: true };
     const back = X.readState(X.writeSearch(state), { model: MODEL });
-    assert.deepEqual({ q: back.q, domain: back.domain, city: back.city, nocity: back.nocity }, state);
+    assert.deepEqual({ q: back.q, firm: back.firm, domain: back.domain, city: back.city, nocity: back.nocity }, state);
     assert.equal(X.roadmapHref('ib-er'), '/articleship-program/domain-roadmaps/#ib-er');
 });
 
@@ -423,7 +543,7 @@ test('page: a city choice says how many cards name no city, and adds them on a t
     assert.equal(page('').$('.xp-nocity').hidden, true, 'no city chosen, no switch');
 });
 
-test('page: at a glance above the cards; a firm chip searches that firm within the filter', () => {
+test('page: at a glance above the cards; a firm chip opens exactly that firm within the filter', () => {
     const { $, $$, window } = page('?domain=gst&city=mumbai');
     const glance = $('.xp-glance');
     assert.equal(glance.hidden, false);
@@ -436,32 +556,184 @@ test('page: at a glance above the cards; a firm chip searches that firm within t
     const chip = chips[0];
     const firm = chip.dataset.firm;
     const n = Number(chip.querySelector('.xp-firm-chip-n').textContent);
-    assert.equal(chip.getAttribute('href'), `/articleship-program/experience-explorer/?q=${encodeURIComponent(firm).replace(/%20/g, '+')}&domain=gst&city=mumbai`);
+    assert.equal(chip.getAttribute('href'), `/articleship-program/experience-explorer/?firm=${encodeURIComponent(firm).replace(/%20/g, '+')}&domain=gst&city=mumbai`);
     const depth = window.history.length;
     chip.dispatchEvent(new window.MouseEvent('click', { bubbles: true, cancelable: true, button: 0 }));
-    assert.equal($('#xp-q').value, firm);
+    assert.equal($('#xp-q').value, '', 'the search box stays free');
     assert.equal(total($), n, 'the chip count is what opens');
+    assert.ok($$('.xp-card').every(card => card.querySelector('.xp-firm').textContent === firm), 'that firm only');
+    assert.match($('#xp-count').textContent, new RegExp(` at ${firm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')} · GST · Mumbai$`));
     assert.equal(window.history.length, depth + 1, 'a new history entry, so Back returns');
     // The whole programme view has a glance too; a firm with one card never gets a chip of its own list.
     assert.equal(page('').$('.xp-common-list li').textContent, 'Prepared tax audit reports in Form 3CD.');
 });
 
-test('page: a firm name opens every experience at that firm; Back returns to the list', async () => {
+test('page: a firm name opens every experience at that firm and no other; Back returns to the list', async () => {
     const { $, $$, window } = page('?domain=gst&city=mumbai');
     const link = $('.xp-card .xp-firm-link');
     const firm = link.dataset.firm;
     assert.equal(link.textContent, firm);
-    assert.equal(link.getAttribute('href'), `/articleship-program/experience-explorer/?q=${encodeURIComponent(firm).replace(/%20/g, '+')}`);
+    assert.equal(link.getAttribute('href'), `/articleship-program/experience-explorer/?firm=${encodeURIComponent(firm).replace(/%20/g, '+')}`);
     link.dispatchEvent(new window.MouseEvent('click', { bubbles: true, cancelable: true, button: 0 }));
     assert.equal($('#xp-domain').value, '');
     assert.equal($('#xp-city').value, '');
-    assert.ok($$('.xp-card').every(card => card.querySelector('.xp-firm-link').dataset.firm === firm || X.tokens(firm).every(t => card.textContent.toLowerCase().includes(t))));
+    assert.equal($('#xp-q').value, '');
+    assert.equal(total($), DATA.records.filter(record => record.firm === firm).length, 'every card at the firm');
+    assert.ok($$('.xp-card').every(card => card.querySelector('.xp-firm').textContent === firm), 'no other firm mixed in');
+    assert.equal($('.xp-allfirms').hidden, false);
     const popped = new Promise(resolve => window.addEventListener('popstate', resolve, { once: true }));
     window.history.back();
     await popped;
     assert.equal($('#xp-domain').value, 'gst');
     assert.equal($('#xp-city').value, 'Mumbai');
     assert.equal($('#xp-q').value, '');
+});
+
+test('page: ?firm= is exact: an alias or a shared word never mixes in another firm', () => {
+    for (const firm of ['Chokshi & Chokshi LLP', 'S A S & Co.', 'Suresh & Co.', 'BDO', 'Kirtane & Pandit LLP']) {
+        const n = DATA.records.filter(record => record.firm === firm).length;
+        assert.ok(n > 0, firm);
+        const r = X.run(MODEL, { q: '', firm, domain: '', city: '' });
+        assert.equal(r.total, n, `${firm}: ${r.total} cards`);
+        assert.ok(r.ids.every(id => MODEL.records[id].firm === firm));
+        const { $, $$ } = page(`?firm=${encodeURIComponent(firm)}`);
+        assert.equal(total($), n);
+        assert.ok($$('.xp-card .xp-firm').every(h => h.textContent === firm));
+        assert.equal($$('.xp-card .xp-firm-link').length, 0, 'no link to the page already open');
+        assert.equal($('.xp-firms-here'), null, 'no "Firms here" for one firm');
+    }
+    assert.equal(X.resolveFirm('chokshi-and-chokshi-llp', MODEL), 'Chokshi & Chokshi LLP', 'case and punctuation forgiven');
+    assert.equal(X.resolveFirm('kirtane & pandit llp', MODEL), 'Kirtane & Pandit LLP');
+});
+
+test('page: a firm view keeps the domain and city filters, "All firms" and "Clear all" leave it', () => {
+    const { $, window } = page('?firm=Kirtane+%26+Pandit+LLP');
+    assert.equal($('#xp-count').textContent, '14 experiences at Kirtane & Pandit LLP');
+    change(window, $('#xp-domain'), 'gst');
+    assert.equal(window.location.search, '?firm=Kirtane+%26+Pandit+LLP&domain=gst');
+    assert.match($('#xp-count').textContent, /^\d+ experiences? at Kirtane & Pandit LLP · GST$/);
+    $('.xp-allfirms').click();
+    assert.equal(window.location.search, '?domain=gst');
+    assert.equal($('.xp-allfirms').hidden, true);
+    const again = page('?firm=Kirtane+%26+Pandit+LLP&city=pune');
+    again.$('.xp-clear').click();
+    assert.equal(again.window.location.search, '');
+    assert.equal(total(again.$), 1787);
+});
+
+test('page: a firm no card names says so and offers a search for the name', () => {
+    const { $ } = page('?firm=Kirtane');
+    assert.match($('.xp-empty').textContent, /No experiences at Kirtane\./);
+    const search = $('.xp-empty [data-action="firm-to-q"]');
+    assert.equal(search.textContent, 'Search “Kirtane” · 14');
+    search.click();
+    assert.equal($('#xp-q').value, 'Kirtane');
+    assert.equal(total($), 14);
+});
+
+test('page: a city no card names is dropped once, with one line; never an option', () => {
+    const { $, window } = page('?city=%3Cscript%3E');
+    assert.equal($('#xp-city').value, '');
+    assert.ok(![...$('#xp-city').options].some(o => /script/i.test(o.textContent)), 'not offered as a city');
+    assert.equal($('.xp-hint .xp-note').textContent, 'No experience names a city called “Script”, so every city is shown.');
+    assert.equal(total($), 1787);
+    change(window, $('#xp-domain'), 'gst');
+    assert.equal($('.xp-hint .xp-note'), null, 'said once');
+});
+
+test('page: a thin domain offers the nearest domain with its count; every view ends with the way on', () => {
+    const { $, $$, window } = page('?domain=ib-er');
+    assert.equal(total($), 13);
+    assert.equal($('.xp-related'), null, '13 is not thin');
+    const thin = page('?domain=ma-tax');
+    assert.equal(total(thin.$), 5);
+    const offer = thin.$('.xp-related .xp-hint-btn');
+    const n = DATA.records.filter(r => r.domains.includes('direct-tax')).length;
+    assert.equal(thin.$('.xp-related p').textContent, 'Only 5 experiences here. The nearest domain:');
+    assert.equal(offer.textContent, `Direct tax · ${n.toLocaleString('en-IN')}`);
+    offer.click();
+    assert.equal(thin.window.location.search, '?domain=direct-tax');
+    assert.equal(total(thin.$), n);
+    const ib = page('?domain=ib-er&city=mumbai');
+    assert.equal(total(ib.$), 2);
+    assert.match(ib.$('.xp-related .xp-hint-btn').textContent, /^Valuation · \d+$/, 'counted in the chosen city');
+    // The closing row: roadmap (this domain), firms to apply to (Day 5), back to Day 5.
+    const links = $$('.xp-next a').map(a => [a.textContent, a.getAttribute('href')]);
+    assert.deepEqual(links, [
+        ['Confirm it in Domain roadmaps', '/articleship-program/domain-roadmaps/#ib-er'],
+        ['Find firms to apply to', '/learning-management-system/course?course=msc-articleship-program&session=6&resource=Firms+by+domain'],
+        ['Back to Day 5', '/learning-management-system/course?course=msc-articleship-program&session=6']
+    ]);
+    assert.equal($('.xp-next-title').textContent, 'Decided on a domain?');
+    assert.equal(page('').$('.xp-next a').getAttribute('href'), '/articleship-program/domain-roadmaps/');
+    const visitor = page('', { signedIn: false });
+    assert.deepEqual(visitor.$$('.xp-next a').slice(-1).map(a => [a.textContent, a.getAttribute('href')]), [['About the programme', '/articleship-program/']]);
+    assert.equal(window.document.querySelector('.xp-next').previousElementSibling.className, 'xp-more', 'after Show more');
+});
+
+test('page: on a phone the at-a-glance block sits after the third card', () => {
+    const listeners = [];
+    const query = { matches: true, addEventListener: (type, fn) => listeners.push(fn), removeEventListener() {} };
+    const { $, container } = page('?domain=gst', { matchMedia: () => query });
+    const results = $('.xp-results');
+    const kids = [...results.children];
+    assert.equal(kids[3].classList.contains('xp-glance'), true, 'after three cards');
+    assert.ok(kids.slice(0, 3).every(node => node.classList.contains('xp-card')));
+    assert.equal(results.querySelectorAll('.xp-card').length, 12, 'still 12 cards');
+    $('.xp-more button').click();
+    assert.equal(results.querySelectorAll('.xp-card').length, 24);
+    assert.equal(results.children[3].classList.contains('xp-glance'), true, 'kept in place after Show more');
+    query.matches = false;
+    listeners.forEach(fn => fn());
+    assert.equal($('.xp-glance').parentNode, container, 'wider: back above the cards');
+    assert.equal(page('?domain=gst').$('.xp-glance').parentNode.id, 'explorer', 'no matchMedia: above the cards');
+});
+
+test('page: "my domain" that arrives from the account later is followed by a bare page only', () => {
+    const bare = page('', { myDomain: null });
+    assert.equal(total(bare.$), 1787);
+    bare.controller.setMyDomain('gst');
+    assert.equal(bare.$('#xp-domain').value, 'gst');
+    assert.equal(bare.$('#xp-count').textContent, '518 experiences · GST (your domain)');
+    assert.equal(bare.window.location.search, '', 'nothing written');
+    bare.controller.setMyDomain('valuation');
+    assert.equal(bare.$('#xp-domain').value, 'valuation', 'follows a change while still on "my domain"');
+    const linked = page('?domain=forensic', { myDomain: null });
+    linked.controller.setMyDomain('gst');
+    assert.equal(linked.$('#xp-domain').value, 'forensic', 'a link keeps what it names');
+    const chosen = page('', { myDomain: null });
+    change(chosen.window, chosen.$('#xp-domain'), 'fdd');
+    chosen.controller.setMyDomain('gst');
+    assert.equal(chosen.$('#xp-domain').value, 'fdd', 'the student\'s own choice stays');
+});
+
+test('start: a signed-in student\'s account loads after the first page and its "my domain" is used', async () => {
+    const html = fs.readFileSync(path.join(DIR, 'index.html'), 'utf8').replace(/<script[\s\S]*?<\/script>/g, '');
+    assert.ok(!/supabase/.test(fs.readFileSync(path.join(DIR, 'index.html'), 'utf8')), 'no blocking account scripts in the page');
+    const dom = new JSDOM(html, { url: 'http://127.0.0.1/articleship-program/experience-explorer/' });
+    const listeners = [];
+    let saved = { myDomain: null };
+    const store = { subscribe: fn => listeners.push(fn), pull: async () => { saved = { myDomain: 'transfer-pricing' }; listeners.forEach(fn => fn(saved)); return 'pull'; }, get: () => saved };
+    const loaded = [];
+    let release;
+    const gate = new Promise(resolve => { release = resolve; });
+    const controller = await X.start({ document: dom.window.document, location: dom.window.location, history: dom.window.history,
+        myDomain: null, signedIn: true, idle: null, settings: store, loadScripts: async (doc, sources) => { loaded.push(...sources); await gate; },
+        fetch: async () => ({ ok: true, json: async () => DATA }) });
+    assert.equal(dom.window.document.querySelector('#xp-domain').value, '', 'the first page does not wait for the account');
+    assert.equal(dom.window.document.querySelectorAll('.xp-card').length, 12);
+    release();
+    await controller.account;
+    assert.deepEqual(loaded, ['/scripts/supabase.js', '/scripts/supabase-init.js']);
+    assert.equal(dom.window.document.querySelector('#xp-domain').value, 'transfer-pricing');
+    // A visitor never loads them.
+    const visitor = new JSDOM(html, { url: 'http://127.0.0.1/articleship-program/experience-explorer/' });
+    const none = [];
+    const v = await X.start({ document: visitor.window.document, location: visitor.window.location, history: visitor.window.history,
+        myDomain: null, signedIn: false, idle: null, loadScripts: async (doc, sources) => { none.push(...sources); },
+        fetch: async () => ({ ok: true, json: async () => DATA }) });
+    assert.equal(v.account, undefined);
+    assert.deepEqual(none, []);
 });
 
 test('page: Show more depth survives Back (kept in history.state)', () => {
@@ -483,21 +755,22 @@ test('page: Show more depth survives Back (kept in history.state)', () => {
 });
 
 test('page: an empty domain + city offers the nearest search that has cards, then the roadmap; the title is announced', () => {
-    const { $, $$ } = page('?domain=consulting&city=pune');
+    const { $, $$ } = page('?domain=ma-tax&city=pune');
     const empty = $('.xp-empty');
     assert.equal(empty.hidden, false);
-    assert.match(empty.textContent, /No Consulting & risk advisory experiences in Pune\./);
+    assert.match(empty.textContent, /No M&A tax experiences in Pune\./);
     const live = $('#xp-count');
     assert.equal(live.getAttribute('role'), 'status');
     assert.equal(live.closest('[hidden]'), null, 'the live region stays in the page');
-    assert.equal(live.textContent, 'No Consulting & risk advisory experiences in Pune.');
+    assert.equal(live.textContent, 'No M&A tax experiences in Pune.');
     assert.ok(live.classList.contains('xp-sr'));
+    assert.equal($('.xp-next').hidden, true, 'the empty state carries the way on');
     const first = empty.querySelector('[data-action="clear-city"]');
-    assert.equal(first.textContent, 'Show every city · 2');
-    assert.equal(empty.querySelector('a').getAttribute('href'), '/articleship-program/domain-roadmaps/#consulting');
+    assert.equal(first.textContent, 'Show every city · 5');
+    assert.equal(empty.querySelector('a').getAttribute('href'), '/articleship-program/domain-roadmaps/#ma-tax');
     first.click();
     assert.equal($('#xp-city').value, '');
-    assert.equal($$('.xp-card').length, 2);
+    assert.equal($$('.xp-card').length, 5);
     assert.ok(!live.classList.contains('xp-sr'));
 });
 
@@ -514,7 +787,7 @@ test('page: a search that names a domain offers that domain, with its own count'
     const { $, window } = page('?q=consulting');
     const button = $('.xp-hint-btn');
     assert.ok(button, 'hint shown');
-    assert.equal(button.textContent, 'Show Consulting & risk advisory only · 2');
+    assert.equal(button.textContent, `Show Consulting & risk advisory only · ${DATA.records.filter(r => r.domains.includes('consulting')).length}`);
     button.click();
     assert.equal(window.location.search, '?domain=consulting');
     assert.equal($('#xp-q').value, '');
@@ -561,7 +834,7 @@ test('start: loads the data, fills the intro numbers; a failed load offers Try a
         signedIn: false, idle: null, fetch: async () => ({ ok: true, json: async () => DATA }) });
     assert.ok(controller);
     assert.equal(dom.window.document.querySelector('[data-xp="cards"]').textContent, '1,787');
-    assert.equal(dom.window.document.querySelector('[data-xp="firms"]').textContent, '956');
+    assert.equal(dom.window.document.querySelector('[data-xp="firms"]').textContent, '951');
     assert.equal(dom.window.document.querySelector('#xp-city').value, 'Pune');
     assert.equal(dom.window.document.querySelector('.ap-brand').getAttribute('href'), '/articleship-program/', 'a visitor goes to the public programme page');
     const enrolled = new JSDOM(html, { url: 'http://127.0.0.1/articleship-program/experience-explorer/' });
@@ -598,6 +871,7 @@ test('index.html: public and noindex (decision 10), the v3 look, the new intro l
     assert.match(html, /\/scripts\/articleship-progress\.js/);
     assert.match(html, /\/scripts\/articleship-experience-explorer\.js/);
     assert.match(html, /Real articleship work, firm by firm/);
+    assert.match(html, /<span class="xp-lede-short">real <\/span>experiences at <span data-xp="firms">951<\/span> firms\./);
     assert.match(html, /class="ap-page ap-day-5"/);
     assert.match(html, /<span class="xp-title-long">Experience <\/span>Explorer/, 'a short title on narrow phones');
     const css = fs.readFileSync(path.join(DIR, 'explorer.css'), 'utf8');
@@ -628,4 +902,19 @@ test('explorer.css: every color-mix() has a plain colour before it (old Android 
     assert.ok(mixes >= 10);
     assert.match(css, /\.xp-roadmap \{ display: inline;/);
     assert.match(css, /\.xp-roadmap::after \{ content: '\\00a0\\2192'; \}/);
+});
+
+test('explorer.css: a tap scrolls the status clear of the sticky bar; tap targets are 44 px', () => {
+    const css = fs.readFileSync(path.join(DIR, 'explorer.css'), 'utf8');
+    assert.match(css, /\.xp-status, \.xp-empty \{ scroll-margin-top: 64px; \}/);
+    const rule = selector => {
+        const found = css.match(new RegExp(`(?:^|\\n)${selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')} \\{([^}]*)\\}`));
+        assert.ok(found, selector);
+        return found[1];
+    };
+    assert.match(rule('.xp-tag'), /min-height: 36px/);
+    assert.match(rule('.xp-tag::after'), /top: -4px; bottom: -4px/, '36 + 4 + 4 = 44');
+    assert.match(rule('.xp-firm-link'), /padding: 11px 0/);
+    for (const selector of ['.xp-firm-chip', '.xp-nocity', '.xp-hint-btn']) assert.match(rule(selector), /min-height: 44px/, selector);
+    assert.match(css, /\.xp-lede-long \{ display: none; \}/, 'a short intro on phones');
 });
