@@ -11,8 +11,13 @@ const courseScript = fs.readFileSync(path.join(root, 'learning-management-system
 const html = fs.readFileSync(path.join(root, 'learning-management-system/index.html'), 'utf8');
 const dashboardScript = html.match(/<script type="module">([\s\S]*?)<\/script>/)[1]
     .replace(/import \{ createApp \} from 'vue';/, '');
+// 002 = release 1 (the rows ready at handover), 003 = the full course (a later row shows once its files are uploaded),
+// 004 = 003 plus the Automail row. Built by msc-content/articleship-program/v3/build/lms/build_lms_sql.mjs.
 const V3_SQL = path.join(root, 'supabase/migrations/202610200002_articleship_program_v3_lms.sql');
+const V3_LATER_SQL = path.join(root, 'supabase/migrations/202610200003_articleship_program_v3_later_rows.sql');
+const V3_AUTOMAIL_SQL = path.join(root, 'supabase/migrations/202610200004_articleship_automail_row.sql');
 const V2_SQL = path.join(root, 'supabase/migrations/202610190001_articleship_program_lms.sql');
+const BUCKET = 'industrial-training-mastery-resources';
 
 function loadDashboard(enrollments) {
     const queries = [];
@@ -54,6 +59,18 @@ function migrationRows(file = V3_SQL) {
     assert.ok(encoded, 'migration contains its row payload');
     return JSON.parse(encoded[1].replaceAll("''", "'"));
 }
+
+/** The full v3 course (every row of V3-STRUCTURE §2 + B9 minus 1.6), as 003 carries it: each row under "resource". */
+function fullCourse(file = V3_LATER_SQL) {
+    const sql = fs.readFileSync(file, 'utf8');
+    const encoded = sql.match(/jsonb_array_elements\('([\s\S]*?)'::jsonb\)/);
+    assert.ok(encoded, '003 contains the full course');
+    return JSON.parse(encoded[1].replaceAll("''", "'")).map(session => Object.assign({}, session, {
+        gates: session.resources, resources: session.resources.map(item => item.resource)
+    }));
+}
+
+const filesOf = resource => [resource.view_storage_path, resource.download_storage_path].filter(Boolean);
 
 function courseFunction(name, sandbox) {
     const catalogStart = courseScript.indexOf('    const courses =');
@@ -102,23 +119,23 @@ test('the dashboard progress estimate counts one session per Day', async () => {
     assert.equal(migrationRows().length, 7);
 });
 
-test('v3 rows: one session per Day, headings are actions, 45 rows, nothing a student should not see', () => {
-    const rows = migrationRows();
+test('v3 rows: one session per Day, headings are actions, 47 rows (45 + B9 sheets - Work Simulation), nothing a student should not see', () => {
+    const rows = fullCourse();
     assert.deepEqual(rows.map(row => [row.day_number, row.video_number, row.title]), DAY_TITLES.map((title, day) => [day, day + 1, title]));
-    assert.equal(rows.flatMap(row => row.resources).length, 45);
-    const banned = /ca ?monk|thinking ?bridge|umbrella|needs-check|\bwaves?\b|live week|coming soon|\b202[5-9]\b|slides|example cvs|vacancy alerts|form 109/i;
+    assert.equal(rows.flatMap(row => row.resources).length, 47);
+    const banned = /ca ?monk|thinking ?bridge|umbrella|needs-check|\bwaves?\b|live week|coming soon|\b202[5-9]\b|slides|example cvs|vacancy alerts|form 109|work simulation/i;
     for (const row of rows) {
         assert.equal(row.course, 'msc-articleship-program');
-        assert.equal(row.industrial_training_path, null);
-        assert.ok(!banned.test(row.title + row.description), `Day ${row.day_number} text`);
+        for (const text of [row.title, row.description, row.description_partial]) assert.ok(!banned.test(text), `Day ${row.day_number} text`);
         assert.match(row.description, /Done when:/);
+        assert.match(row.description_partial, /Done when:/);
         const titles = new Set();
         for (const resource of row.resources) {
             assert.ok(!titles.has(resource.title), `${resource.title} listed once`);
             titles.add(resource.title);
             assert.ok(resource.group && !/template/i.test(resource.group), `heading "${resource.group}" never triggers the canvas viewer`);
             assert.ok(!banned.test(resource.title), resource.title);
-            assert.ok(!('row' in resource) && !('source' in resource), 'internal fields stay out of the rows');
+            assert.ok(!('row' in resource) && !('source' in resource) && !('from' in resource), 'internal fields stay out of the rows');
             for (const key of ['view_storage_path', 'download_storage_path']) {
                 if (resource[key]) assert.match(resource[key], /^articleship-program-v3\/day-[0-6]\/[^/]+\.(pdf|docx|xlsx|csv)$/);
             }
@@ -128,6 +145,12 @@ test('v3 rows: one session per Day, headings are actions, 45 rows, nothing a stu
             }
             assert.ok(!/\.zip$/i.test(resource.download_storage_path || ''), 'no ZIPs');
         }
+        // Every file row waits for its files in the bucket; only link rows are always there (Automail: 004).
+        for (const item of row.gates) {
+            const files = filesOf(item.resource);
+            if (files.length) assert.deepEqual({ gate: item.gate, files: item.files }, { gate: 'uploaded', files }, item.resource.title);
+            else assert.equal(item.gate, item.resource.title === 'Automail' ? 'kept' : 'always', item.resource.title);
+        }
     }
     const all = rows.flatMap(row => row.resources);
     assert.deepEqual(all.filter(r => r.copy === true).map(r => r.title).sort(), [...COPY_ROWS].sort(), 'exactly the §0.3 rows are copyable');
@@ -135,10 +158,22 @@ test('v3 rows: one session per Day, headings are actions, 45 rows, nothing a stu
     assert.equal(rows[0].resources[1].url, WHATSAPP_GROUP);
     assert.ok(!/one domain, one backup|cities written down/i.test(rows[0].description), 'no Day 0 domain task (B2)');
     const dayOne = rows[1].resources;
-    assert.deepEqual([...new Set(dayOne.map(r => r.group))], ['Choose your CV', 'Pick your design', 'Work Simulation', 'Check your CV', 'Cover letters']);
+    assert.deepEqual([...new Set(dayOne.map(r => r.group))], ['Choose your CV', 'Pick your design', 'Check your CV', 'Cover letters'], 'no Work Simulation heading in release 1');
+    assert.ok(!all.some(r => /work simulation/i.test(r.title) || /work-simulation/.test(r.url || '')), 'row 1.6 is release 2');
     assert.equal(dayOne.find(r => r.title === 'CV Builder').url, '/cv-builder/?stage=articleship');
     const cover = dayOne.find(r => r.title === 'Cover letters');
     assert.ok(cover.copy && cover.view_storage_path.endsWith('.pdf') && cover.download_storage_path.endsWith('.docx'), 'Word on the same row');
+    // B9: Padam's sheets, in his rows; the cold mailing list and Firms by domain are replaced.
+    assert.deepEqual(rows[2].resources.filter(r => r.group === 'Where to apply').map(r => r.title),
+        ['Big 10 articleship routes', 'Big 10 Mail IDs', 'Citywise Firm Email IDs', 'Articleship Cold Mailing List - All Emails']);
+    assert.deepEqual(rows[3].resources.filter(r => r.group === 'Find the right people').map(r => r.title), ['LinkedIn search links', 'Career Portal Links']);
+    assert.deepEqual(rows[5].resources.map(r => r.title), ['Domain roadmaps', 'Experience Explorer', 'Top 100 Articleship Firms']);
+    assert.ok(!all.some(r => r.title === 'Cold mailing list' || r.title === 'Firms by domain'), 'replaced by B9');
+    for (const title of ['Big 10 Mail IDs', 'Citywise Firm Email IDs', 'Articleship Cold Mailing List - All Emails', 'Career Portal Links', 'Top 100 Articleship Firms']) {
+        const sheet = all.find(r => r.title === title);
+        assert.equal(sheet.type, 'xlsx', title);
+        assert.ok(sheet.download_storage_path.endsWith('/' + title + '.xlsx') && !sheet.view_storage_path, title + ': his file, as it is');
+    }
     const dayFour = rows[4].resources;
     const syllabus = dayFour.find(r => r.title === 'Interview syllabus');
     assert.equal(syllabus.copy, undefined, 'the syllabus opens in the normal reader');
@@ -148,22 +183,70 @@ test('v3 rows: one session per Day, headings are actions, 45 rows, nothing a stu
     assert.deepEqual(rows[3].resources.map(r => r.title).slice(0, 2), ['LinkedIn profile checklist', 'LinkedIn search links'], 'checklist first (D3-1)');
 });
 
-test('the v3 migration runs on top of v2: seven sessions remain, recordings untouched, safe to run twice', async () => {
+test('release 1 (002): the full course\'s rows in its order, a short description where a later row is missing', () => {
+    const full = fullCourse();
+    const release = migrationRows();
+    assert.deepEqual(release.map(r => r.video_number), [1, 2, 3, 4, 5, 6, 7]);
+    for (const [index, session] of release.entries()) {
+        const all = full[index];
+        assert.equal(session.title, all.title);
+        const order = all.resources.map(r => r.title);
+        const titles = session.resources.map(r => r.title);
+        assert.deepEqual(titles, order.filter(t => titles.includes(t)), `Day ${session.day_number}: same order as the full course`);
+        session.resources.forEach(r => assert.deepEqual(r, all.resources.find(x => x.title === r.title)));
+        const complete = titles.length === order.length;
+        assert.equal(session.description, complete ? all.description : all.description_partial, `Day ${session.day_number} description`);
+        // A description never names a row that is not in this session.
+        for (const title of order.filter(t => !titles.includes(t))) {
+            assert.ok(!session.description.includes(title), `Day ${session.day_number} names "${title}", which is not in release 1`);
+        }
+    }
+    assert.ok(!release.some(s => s.resources.some(r => r.title === 'Automail')), 'Automail waits for its master Sheet (004)');
+    // 002 refuses to run until every one of its files is in the bucket, and names them.
+    const sql = fs.readFileSync(V3_SQL, 'utf8');
+    for (const file of release.flatMap(s => s.resources.flatMap(filesOf))) assert.ok(sql.includes(`'${file.replaceAll("'", "''")}'`), file);
+});
+
+test('the v3 migrations run on top of v2: 002 waits for its uploads, 003 adds later rows as files arrive, 004 adds Automail', async () => {
     const db = new PGlite();
+    const course = async () => (await db.query("select day_number, video_number, title, description, industrial_training_path, resources from public.videos where course = 'msc-articleship-program' order by video_number")).rows;
+    const upload = async files => { for (const f of files) await db.query('insert into storage.objects (bucket_id, name) values ($1, $2)', [BUCKET, f]); };
     try {
-        await db.exec(`create table public.videos (course text, video_number int, title text, description text, day_number int,
+        await db.exec(`create schema storage; create table storage.objects (bucket_id text, name text);
+            create table public.videos (course text, video_number int, title text, description text, day_number int,
             resources jsonb, industrial_training_path text, primary key (course, video_number));
             insert into public.videos values ('industrial-training-mastery', 1, 'Other course', '', 1, '[]', 'it/path');`);
         await db.exec(fs.readFileSync(V2_SQL, 'utf8'));
         await db.query("update public.videos set industrial_training_path = 'rec/day1' where course = 'msc-articleship-program' and video_number = 2");
         assert.equal((await db.query("select count(*)::int n from public.videos where course = 'msc-articleship-program'")).rows[0].n, 13);
         const v3 = fs.readFileSync(V3_SQL, 'utf8');
+        const later = fs.readFileSync(V3_LATER_SQL, 'utf8');
+        // A failed file leaves its transaction open on this one connection (psql would end the session): roll it back.
+        await assert.rejects(db.exec(later), /Run 002_articleship_program_v3_lms\.sql first/, '003 before 002 stops');
+        await db.exec('rollback');
+        await assert.rejects(db.exec(v3), /Upload these files/, '002 before the uploads stops');
+        await db.exec('rollback');
+        assert.equal((await course()).length, 13, 'and changes nothing');
+        const release = migrationRows();
+        await upload(release.flatMap(s => s.resources.flatMap(filesOf)));
         await db.exec(v3);
         await db.exec(v3);
-        const rows = (await db.query("select day_number, video_number, title, industrial_training_path, resources from public.videos where course = 'msc-articleship-program' order by video_number")).rows;
+        let rows = await course();
         assert.deepEqual(rows.map(r => [r.day_number, r.video_number, r.title]), DAY_TITLES.map((t, d) => [d, d + 1, t]));
+        assert.deepEqual(rows.map(r => r.resources), release.map(s => s.resources));
         assert.equal(rows[1].industrial_training_path, 'rec/day1', 'a recording added later is kept');
-        assert.equal(rows[1].resources[0].title, 'Choose your CV');
+        await db.exec(later);
+        assert.deepEqual((await course()).map(r => r.resources), release.map(s => s.resources), '003 with nothing new changes nothing');
+        const full = fullCourse();
+        await upload(full.flatMap(s => s.resources.flatMap(filesOf)).filter(f => !release.some(s => s.resources.some(r => filesOf(r).includes(f)))));
+        await db.exec(later);
+        rows = await course();
+        assert.deepEqual(rows.map(r => r.resources), full.map(s => s.resources.filter(r => r.title !== 'Automail')), 'every later row, in order');
+        await db.exec(fs.readFileSync(V3_AUTOMAIL_SQL, 'utf8'));
+        await db.exec(later);
+        rows = await course();
+        assert.deepEqual(rows.map(r => r.resources), full.map(s => s.resources), 'the full course, Automail kept by 003');
+        assert.deepEqual(rows.map(r => r.description), full.map(s => s.description), 'complete Days get their full description');
         assert.equal((await db.query("select count(*)::int n from public.videos where course = 'industrial-training-mastery'")).rows[0].n, 1, 'other courses untouched');
     } finally {
         await db.close();
@@ -199,7 +282,7 @@ test('Articleship resource rows stay compact on a phone without changing other c
 });
 
 test('deep links select only an enrolled Articleship session and a programme PDF on it', () => {
-    const rows = migrationRows();
+    const rows = fullCourse();
     const state = { courseSlug: 'msc-articleship-program', user: { id: 'student' }, isEnrolled: true };
     const window = { location: { search: '' } };
     const target = courseFunction('getArticleshipResourceTarget', { state, window, URLSearchParams,

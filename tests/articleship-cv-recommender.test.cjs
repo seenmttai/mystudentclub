@@ -17,7 +17,7 @@ const BUILDER_DESIGNS = path.join(ROOT, 'articleship-program/cv-builder/designs.
 const ON_BRANCH = {
     designs: fs.existsSync(BUILDER_DESIGNS),
     builderStage: fs.existsSync(path.join(ROOT, 'articleship-program/cv-builder/stage.js')),
-    lmsSql: fs.existsSync(path.join(ROOT, 'supabase/migrations/202610200002_articleship_program_v3_lms.sql')),
+    lmsSql: fs.existsSync(path.join(ROOT, 'supabase/migrations/202610200003_articleship_program_v3_later_rows.sql')),
     roadmaps: fs.existsSync(path.join(ROOT, 'articleship-program/domain-roadmaps/roadmaps.json'))
 };
 const NOT_HERE = {
@@ -654,8 +654,10 @@ test('links: every page this tool links to is on this branch', { skip: missingPa
 });
 
 test('links: every PDF this tool opens is a Day 1 row of the v3 course, so "See this order" never misses', { skip: NOT_HERE.lmsSql }, () => {
-    const sql = fs.readFileSync(path.join(ROOT, 'supabase/migrations/202610200002_articleship_program_v3_lms.sql'), 'utf8');
-    const rows = JSON.parse(sql.match(/json_populate_recordset\(NULL::public\.videos, '([\s\S]*?)'::json\)/)[1].replaceAll("''", "'"));
+    // 003 holds the full course (002 is release 1: only the rows whose files were ready at handover).
+    const sql = fs.readFileSync(path.join(ROOT, 'supabase/migrations/202610200003_articleship_program_v3_later_rows.sql'), 'utf8');
+    const rows = JSON.parse(sql.match(/jsonb_array_elements\('([\s\S]*?)'::jsonb\)/)[1].replaceAll("''", "'"))
+        .map(s => Object.assign({}, s, { resources: s.resources.map(item => item.resource) }));
     const day1 = rows.find(row => row.video_number === SITUATIONS.day + 1);
     for (const key of ['choose', 'nothing', 'templates']) {
         const title = SITUATIONS.resources[key];
@@ -663,7 +665,9 @@ test('links: every PDF this tool opens is a Day 1 row of the v3 course, so "See 
         assert.ok(row, title + ' is a row of session ' + (SITUATIONS.day + 1));
         assert.match(String(row.view_storage_path), /^articleship-program-v\d+\/day-1\/.+\.pdf$/i, title + ' opens as a programme PDF');
     }
-    assert.ok(day1.resources.some(item => item.title === SITUATIONS.resources.workSimulation), 'Work Simulation is a Day 1 row');
+    // Row 1.6 is release 2: it is a Day 1 row exactly when the platform's WORK_SIMULATION_LIVE flag is on.
+    const wsLive = P.WORK_SIMULATION_LIVE === true;
+    assert.equal(day1.resources.some(item => item.title === SITUATIONS.resources.workSimulation), wsLive, 'Work Simulation row follows the release flag');
     assert.ok(day1.resources.some(item => item.title === 'CV Builder'), '"Next" points at the Day that holds the CV Builder');
     const day5 = rows.find(row => row.video_number === SITUATIONS.unsure.day + 1);
     assert.ok(day5.resources.some(item => item.title === SITUATIONS.unsure.row), 'Domain roadmaps is a Day 5 row');

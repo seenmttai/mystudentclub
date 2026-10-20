@@ -15,18 +15,18 @@ const CONTENT = JSON.parse(CONTENT_TEXT);
 const PAGE = fs.readFileSync(path.join(TOOL_DIR, 'index.html'), 'utf8');
 const CONTENT_BUILD = process.env.MSC_ARTICLESHIP_BUILD || path.join(ROOT, '..', 'msc-content', 'articleship-program', 'v3', 'build');
 
-// The LMS rows: the desktop branch carries the migration; the mobile branch does not (one shared database), so its
-// port reads the content build's copy of the same file, and skips these checks on a machine without it.
+// The LMS rows: the desktop branch carries the migrations; the mobile branch does not (one shared database), so its
+// port reads the content build's copy of the same file, and skips these checks on a machine without it. 003 holds the
+// full course (002 is release 1 only: the rows whose files were ready at handover).
 const LMS_SQL = [
-    path.join(ROOT, 'supabase', 'migrations', '202610200002_articleship_program_v3_lms.sql'),
-    path.join(CONTENT_BUILD, 'lms', '002_articleship_program_v3_lms.sql')
+    path.join(ROOT, 'supabase', 'migrations', '202610200003_articleship_program_v3_later_rows.sql'),
+    path.join(CONTENT_BUILD, 'lms', '003_articleship_program_v3_later_rows.sql')
 ].filter(file => fs.existsSync(file)).map(file => fs.readFileSync(file, 'utf8'))[0] || null;
 
-/** The v3 course rows as the LMS will hold them (sessions 1-7 = Day 0-6). */
+/** The full v3 course as the LMS will hold it once every file is uploaded (sessions 1-7 = Day 0-6). */
 function lmsSessions() {
-    const start = LMS_SQL.indexOf("json_populate_recordset(NULL::public.videos, '") + "json_populate_recordset(NULL::public.videos, '".length;
-    const end = LMS_SQL.indexOf("]'::json)", start) + 1;
-    return JSON.parse(LMS_SQL.slice(start, end).replace(/''/g, "'"));
+    const encoded = LMS_SQL.match(/jsonb_array_elements\('([\s\S]*?)'::jsonb\)/);
+    return JSON.parse(encoded[1].replace(/''/g, "'")).map(s => Object.assign({}, s, { resources: s.resources.map(item => item.resource) }));
 }
 
 function memoryStore(defaults) {

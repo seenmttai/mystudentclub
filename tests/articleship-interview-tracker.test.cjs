@@ -14,7 +14,8 @@ const PAGE = path.join(ROOT, 'articleship-program/interview-tracker/index.html')
 const CSS = path.join(ROOT, 'articleship-program/interview-tracker/interview-tracker.css');
 const CONTENT_FILE = path.join(ROOT, 'articleship-program/interview-tracker/syllabus.json');
 const CONTENT = JSON.parse(fs.readFileSync(CONTENT_FILE, 'utf8'));
-const LMS_SQL = path.join(ROOT, 'supabase/migrations/202610200002_articleship_program_v3_lms.sql');
+// 003 holds the full v3 course (002 is release 1: only the rows whose files were ready at handover).
+const LMS_SQL = path.join(ROOT, 'supabase/migrations/202610200003_articleship_program_v3_later_rows.sql');
 const BUILT = path.resolve(ROOT, '../msc-content/articleship-program/v3/build/day-4/4.1/syllabus.json');
 const TODAY = '2026-11-02';
 const NOW = Date.UTC(2026, 10, 2, 6, 30);

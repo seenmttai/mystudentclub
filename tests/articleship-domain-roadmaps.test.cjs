@@ -34,9 +34,11 @@ function nextHashchange(win) {
     });
 }
 
+/** The full v3 course (003: every row; 002 is release 1, only the rows whose files were ready at handover). */
 function lmsRows() {
-    const sql = fs.readFileSync(path.join(ROOT, 'supabase/migrations/202610200002_articleship_program_v3_lms.sql'), 'utf8');
-    return JSON.parse(sql.match(/json_populate_recordset\(NULL::public\.videos, '([\s\S]*?)'::json\)/)[1].replaceAll("''", "'"));
+    const sql = fs.readFileSync(path.join(ROOT, 'supabase/migrations/202610200003_articleship_program_v3_later_rows.sql'), 'utf8');
+    return JSON.parse(sql.match(/jsonb_array_elements\('([\s\S]*?)'::jsonb\)/)[1].replaceAll("''", "'"))
+        .map(s => Object.assign({}, s, { resources: s.resources.map(item => item.resource) }));
 }
 function lmsRow(day, title) {
     const session = lmsRows().find(row => row.video_number === day + 1);
@@ -329,28 +331,21 @@ test('links: every course row this tool opens exists in the v3 LMS rows on its D
     assert.ok(lmsRow(5, 'Firms by domain'), 'Firms by domain is a Day 5 row');
     assert.ok(lmsRow(5, 'Domain roadmaps'), 'this tool is a Day 5 row');
     assert.equal(lmsRow(5, 'Domain roadmaps').url, R.PATHS.page, 'the Day 5 row opens this page');
-    assert.equal(lmsRow(1, 'Work Simulation').url, R.PATHS.workSimulation, 'Work Simulation is a Day 1 row at the path levels open');
+    // Row 1.6 is release 2: a Day 1 row at the path levels open, exactly when the release flag is on.
+    if (R.WORK_SIMULATION_LIVE) assert.equal(lmsRow(1, 'Work Simulation').url, R.PATHS.workSimulation, 'Work Simulation is a Day 1 row at the path levels open');
+    else assert.equal(lmsRow(1, 'Work Simulation'), undefined, 'no Work Simulation row in release 1');
     assert.match(String(lmsRow(1, 'The Nothing CV').view_storage_path), /day-1\/.+\.pdf$/);
     assert.match(String(lmsRow(6, 'Industrial training guide').view_storage_path), /day-6\/.+\.pdf$/);
     for (const row of CONTENT.unbuilt) assert.ok(lmsRow(row.day, row.title), row.title + ' (unbuilt) names a real course row');
 });
 
 test('links: `unbuilt` matches the content build (a row with its file is linked, a row without one is not)', t => {
-    const rowsFile = path.join(CONTENT_BUILD, 'lms/lms-rows.json');
-    if (!fs.existsSync(rowsFile)) { t.skip('content build not on this machine'); return; }
-    const rows = JSON.parse(fs.readFileSync(rowsFile, 'utf8')).days.flatMap(day => day.groups.flatMap(g => g.rows.map(r => Object.assign({ day: day.day }, r))));
-    const has = (dir, ext) => fs.existsSync(dir) && fs.readdirSync(dir).some(name => path.extname(name).toLowerCase() === ext);
-    function built(row) {
-        if (row.type === 'external_link') {
-            const url = String(row.url || '');
-            if (!url.startsWith('/')) return true;
-            const file = path.join(ROOT, url.split('?')[0]);
-            return fs.existsSync(url.endsWith('/') ? path.join(file, 'index.html') : file);
-        }
-        const dir = row.source ? path.join(CONTENT_BUILD, row.source) : null;
-        if (row.type === 'sheet') return Boolean(row.url) || has(dir, '.csv') || has(dir, '.xlsx');
-        return has(dir, path.extname(String(row.file || '.pdf')).toLowerCase() || '.pdf');
-    }
+    // "Built" = in release 1 (002: the rows whose files were ready at handover), as the LMS build wrote it.
+    const releaseFile = path.join(CONTENT_BUILD, 'lms/rows-release-1.json');
+    if (!fs.existsSync(releaseFile)) { t.skip('content build not on this machine'); return; }
+    const release = JSON.parse(fs.readFileSync(releaseFile, 'utf8'));
+    const rows = lmsRows().flatMap(session => session.resources.map(r => Object.assign({ day: session.day_number, row: 'Day ' + session.day_number }, r)));
+    const built = row => release.some(s => s.day_number === row.day && s.resources.some(r => r.title === row.title));
     // Every course row the page can link to, before any is hidden.
     const model = R.normalise(allBuilt(), { workSimulationLive: R.WORK_SIMULATION_LIVE });
     const linked = new Map();
