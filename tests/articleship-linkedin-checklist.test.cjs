@@ -203,7 +203,8 @@ test('page: boot renders the open card, 12 checks, copy boxes, notes; ticks save
     assert.equal(open.getAttribute('href'), 'https://www.linkedin.com/in/me/');
     assert.equal(open.target, '_blank');
     assert.equal(open.rel, 'noopener noreferrer');
-    assert.match(doc.querySelector('.lc-open-hint').textContent, /tap your photo/);
+    assert.deepEqual([...doc.querySelectorAll('.lc-open-hint')].map(p => p.textContent.split(' ')[0]), ['Keep', 'Before', 'Link'], 'three short hint lines');
+    assert.match(doc.querySelectorAll('.lc-open-hint')[2].textContent, /tap your photo/);
 
     assert.equal(doc.querySelectorAll('.ap-cl-item').length, 12);
     assert.equal(doc.querySelector('.ap-progress-count').textContent, '0 of 12 done');
@@ -229,7 +230,7 @@ test('page: boot renders the open card, 12 checks, copy boxes, notes; ticks save
     assert.equal(doc.querySelectorAll('.ap-cl-example > p').length, 0);
     assert.equal(doc.querySelectorAll('.ap-cl-example .lc-example').length, 12);
     const aboutSample = doc.querySelector('.ap-cl-item[data-id="about"] .lc-sample');
-    assert.equal(aboutSample.querySelectorAll('p').length, 4);
+    assert.equal(aboutSample.querySelectorAll('p').length, 3, 'About: the first three lines');
     assert.match(aboutSample.textContent, /^I cleared CA Intermediate/);
     assert.equal(doc.querySelector('.ap-cl-item[data-id="open-to-work"] .lc-line strong').textContent, 'Job titles:');
     assert.ok(doc.querySelectorAll('.lc-line.is-bad').length >= 8);
@@ -413,7 +414,7 @@ test('copy button: copies the template and says to fill the brackets; falls back
     btn.dispatchEvent(new dom.window.Event('click'));
     await new Promise(r => setTimeout(r, 0));
     await new Promise(r => setTimeout(r, 0));
-    assert.match(written, /^\[Name\] Sir\/Ma’am,/);
+    assert.match(written, /^\[Name\] Sir,\n/);
     assert.equal(btn.textContent, 'Copied');
     assert.equal(doc.querySelector('.ap-cl-item[data-id="recommendation"] .lc-copy-status').textContent, 'Copied. Fill in the [brackets].');
 

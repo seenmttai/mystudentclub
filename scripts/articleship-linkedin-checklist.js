@@ -550,7 +550,8 @@
         const doc = node.ownerDocument;
         node.textContent = '';
         node.appendChild(externalLink(doc, 'ap-btn is-block lc-open-btn', open));
-        if (open.hint) node.appendChild(el(doc, 'p', 'lc-open-hint', open.hint));
+        // One line per job (keep it open, Share profile updates, the app fallback): the hint's \n splits them.
+        if (open.hint) open.hint.split('\n').map(t => t.trim()).filter(Boolean).forEach(t => node.appendChild(el(doc, 'p', 'lc-open-hint', t)));
     }
 
     /**
