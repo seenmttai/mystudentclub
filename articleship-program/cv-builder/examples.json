@@ -12,7 +12,7 @@
     "location": "Pune",
     "socialLinks": []
    },
-   "summary": "<p>CA Intermediate, both groups, 412/600; ICITSS completed. Vouched 20 purchase bills in MSC's statutory audit Work Simulation and completed the PwC US Audit Job Simulation. Seeking articleship in statutory audit, to learn how balances and controls are tested on real clients.</p>",
+   "summary": "<p>CA Intermediate, both groups, 412/600, with 81 in Advanced Accounting and 78 in Taxation; ICITSS completed. Vouched 20 purchase bills in MSC's statutory audit Work Simulation and completed the PwC US Audit Job Simulation. Seeking articleship in statutory audit, to learn how balances and controls are tested on real clients.</p>",
    "education": [
     {
      "degree": "CA Intermediate (both groups)",
@@ -72,7 +72,7 @@
      "issuer": ""
     },
     {
-     "name": "PwC US Audit Job Simulation (Forage) | [Month Year]: walked through a client's purchasing process, identified its controls and built a risk-control matrix",
+     "name": "PwC US Audit Job Simulation (Forage) | [Month Year]: walked through a client's purchasing process and built a risk-control matrix",
      "issuer": ""
     },
     {
@@ -189,7 +189,7 @@
      "issuer": ""
     },
     {
-     "name": "PwC US Audit Job Simulation (Forage) | [Month Year]: walked through a client's purchasing process, identified its controls and built a risk-control matrix",
+     "name": "PwC US Audit Job Simulation (Forage) | [Month Year]: walked through a client's purchasing process and built a risk-control matrix",
      "issuer": ""
     },
     {
@@ -360,7 +360,7 @@
     {
      "degree": "B.Com",
      "year": "2023–26",
-     "institute": "Bengaluru City University",
+     "institute": "BCU",
      "marks": "8.1 CGPA",
      "remarks": "91 in Corporate Accounting",
      "mergedWithPrevious": false
@@ -499,7 +499,7 @@
      "issuer": ""
     },
     {
-     "name": "PwC US Audit Job Simulation (Forage) | [Month Year]: walked through a client's purchasing process, identified its controls and built a risk-control matrix",
+     "name": "PwC US Audit Job Simulation (Forage) | [Month Year]: walked through a client's purchasing process and built a risk-control matrix",
      "issuer": ""
     },
     {
@@ -514,7 +514,7 @@
     "Treasurer, college cultural fest, 2024: ran a ₹1.2 lakh budget across 10 events; closed the accounts with every bill.",
     "Captain, college football team, 2023–25: led a 16-member squad; runner-up in the inter-college league, 2024.",
     "Cadet, NCC (Army wing), 2022–24: earned the NCC 'B' certificate.",
-    "Volunteer teacher, a municipal school's weekend class, 2023: taught Class VI maths to 18 children for 6 months."
+    "Volunteer teacher, a municipal school's weekend class, 2023: taught maths to 18 children for 6 months."
    ],
    "interests": [
     "Football: plays in a weekend league."
@@ -828,6 +828,7 @@
    "themeFont": "",
    "situation": "H",
    "work_simulation": {
+    "note": "Release flag (RELEASE-PLAN.md): the top-level fields are release 1 (matching img/nothing-cv.png). With WORK_SIMULATION_LIVE on, the CV Builder uses work_simulation.summary in place of summary and inserts work_simulation.certifications before the completed MSC Articleship Program entry (matching img/nothing-cv-ws.png).",
     "summary": "<p>CA Intermediate cleared ([Month Year]), both groups in the first attempt; ICITSS completed. Completed the PwC US Audit and US Tax job simulations (Forage) and vouched 20 purchase bills in MSC’s statutory audit Work Simulation. Looking for articleship with audit and tax exposure, to choose my domain from real work.</p>",
     "certifications_insert_before": "Completed MSC Articleship Program — foundational understanding of work and tasks across all domains",
     "certifications": [
@@ -841,7 +842,7 @@
   "I": {
    "personal": {
     "name": "Neha Chaturvedi",
-    "tagline": "CA Intermediate cleared | CMA Intermediate Group I cleared | Bhopal",
+    "tagline": "CA Intermediate cleared | CMA Intermediate Group I cleared with CA Inter | Bhopal",
     "contact": "",
     "phone": "+91 98XXXXXXXX",
     "email": "neha.chaturvedi@email.com",
@@ -864,7 +865,7 @@
      "year": "[Year]",
      "institute": "ICMAI",
      "marks": "Pursuing",
-     "remarks": "Group I cleared the same year as CA Inter",
+     "remarks": "Group I cleared with CA Inter",
      "mergedWithPrevious": false
     },
     {
@@ -909,7 +910,7 @@
      "issuer": ""
     },
     {
-     "name": "PwC US Tax Job Simulation (Forage) | [Month Year]: mapped a trial balance and worked out book-to-tax differences and taxable income for a simulated client",
+     "name": "PwC US Tax Job Simulation (Forage) | [Month Year]: mapped a trial balance; worked out book-to-tax differences and taxable income",
      "issuer": ""
     },
     {
@@ -947,7 +948,7 @@
     "location": "Pune",
     "socialLinks": []
    },
-   "summary": "<p>CA Intermediate, both groups, 412/600; ICITSS completed. Vouched 20 purchase bills in MSC's statutory audit Work Simulation and completed the PwC US Audit Job Simulation. Seeking articleship in statutory audit, to learn how balances and controls are tested on real clients.</p>",
+   "summary": "<p>CA Intermediate, both groups, 412/600, with 81 in Advanced Accounting and 78 in Taxation; ICITSS completed. Vouched 20 purchase bills in MSC's statutory audit Work Simulation and completed the PwC US Audit Job Simulation. Seeking articleship in statutory audit, to learn how balances and controls are tested on real clients.</p>",
    "education": [
     {
      "degree": "CA Intermediate (both groups)",
@@ -1007,7 +1008,7 @@
      "issuer": ""
     },
     {
-     "name": "PwC US Audit Job Simulation (Forage) | [Month Year]: walked through a client's purchasing process, identified its controls and built a risk-control matrix",
+     "name": "PwC US Audit Job Simulation (Forage) | [Month Year]: walked through a client's purchasing process and built a risk-control matrix",
      "issuer": ""
     },
     {
@@ -1072,7 +1073,7 @@
     {
      "degree": "Class XII",
      "year": "2021",
-     "institute": "Tamil Nadu Board",
+     "institute": "DGE Tamil Nadu",
      "marks": "91.5%",
      "remarks": "97 in Accountancy",
      "mergedWithPrevious": false
@@ -1080,7 +1081,7 @@
     {
      "degree": "Class X",
      "year": "2019",
-     "institute": "Tamil Nadu Board",
+     "institute": "DGE Tamil Nadu",
      "marks": "93.4%",
      "remarks": "96 in Mathematics",
      "mergedWithPrevious": false
@@ -1103,7 +1104,7 @@
      "issuer": ""
     },
     {
-     "name": "PwC US Tax Job Simulation (Forage) | [Month Year]: mapped a trial balance and worked out book-to-tax differences and taxable income for a simulated client",
+     "name": "PwC US Tax Job Simulation (Forage) | [Month Year]: mapped a trial balance; worked out book-to-tax differences and taxable income",
      "issuer": ""
     },
     {
@@ -1115,7 +1116,7 @@
     "Second prize, inter-college paper presentation on GST, 22 entries, 2023."
    ],
    "leadership": [
-    "Class representative, B.Com section of 70, 2022–23: collected and tracked fees for 2 industrial visits; filed every receipt."
+    "Class representative, B.Com section of 70, 2022–23: collected fees for 2 industrial visits."
    ],
    "interests": [
     "Carnatic music: 8 years of vocal training."
@@ -1285,7 +1286,7 @@
     {
      "degree": "B.Com",
      "year": "2023–26",
-     "institute": "Bengaluru City University",
+     "institute": "BCU",
      "marks": "8.1 CGPA",
      "remarks": "91 in Corporate Accounting",
      "mergedWithPrevious": false
@@ -1453,7 +1454,7 @@
      "issuer": ""
     },
     {
-     "name": "PwC US Audit Job Simulation (Forage) | [Month Year]: walked through a client's purchasing process, identified its controls and built a risk-control matrix",
+     "name": "PwC US Audit Job Simulation (Forage) | [Month Year]: walked through a client's purchasing process and built a risk-control matrix",
      "issuer": ""
     },
     {
@@ -1539,7 +1540,7 @@
      "issuer": ""
     },
     {
-     "name": "PwC US Audit Job Simulation (Forage) | [Month Year]: walked through a client's purchasing process, identified its controls and built a risk-control matrix",
+     "name": "PwC US Audit Job Simulation (Forage) | [Month Year]: walked through a client's purchasing process and built a risk-control matrix",
      "issuer": ""
     },
     {
@@ -1554,7 +1555,7 @@
     "Treasurer, college cultural fest, 2024: ran a ₹1.2 lakh budget across 10 events; closed the accounts with every bill.",
     "Captain, college football team, 2023–25: led a 16-member squad; runner-up in the inter-college league, 2024.",
     "Cadet, NCC (Army wing), 2022–24: earned the NCC 'B' certificate.",
-    "Volunteer teacher, a municipal school's weekend class, 2023: taught Class VI maths to 18 children for 6 months."
+    "Volunteer teacher, a municipal school's weekend class, 2023: taught maths to 18 children for 6 months."
    ],
    "interests": [
     "Football: plays in a weekend league."
@@ -1741,7 +1742,7 @@
      "issuer": ""
     },
     {
-     "name": "PwC US Audit Job Simulation (Forage) | [Month Year]: walked through a client's purchasing process, identified its controls and built a risk-control matrix",
+     "name": "PwC US Audit Job Simulation (Forage) | [Month Year]: walked through a client's purchasing process and built a risk-control matrix",
      "issuer": ""
     },
     {
@@ -1837,7 +1838,7 @@
      "issuer": ""
     },
     {
-     "name": "PwC US Tax Job Simulation (Forage) | [Month Year]: mapped a trial balance and worked out book-to-tax differences and taxable income for a simulated client",
+     "name": "PwC US Tax Job Simulation (Forage) | [Month Year]: mapped a trial balance; worked out book-to-tax differences and taxable income",
      "issuer": ""
     },
     {
@@ -1957,7 +1958,7 @@
    ],
    "achievements": [],
    "leadership": [
-    "Volunteer, college NSS unit, 2022–23: helped run a 2-day blood-donation camp with 10 volunteers; 110 donors came."
+    "Volunteer, college NSS unit, 2022–23: helped run a 2-day blood-donation camp; 110 donors came."
    ],
    "interests": [
     "Table tennis: inter-college singles, 2023."
@@ -2252,7 +2253,7 @@
      "issuer": ""
     },
     {
-     "name": "PwC US Audit Job Simulation (Forage) | [Month Year]: walked through a client's purchasing process, identified its controls and built a risk-control matrix",
+     "name": "PwC US Audit Job Simulation (Forage) | [Month Year]: walked through a client's purchasing process and built a risk-control matrix",
      "issuer": ""
     },
     {
@@ -2547,7 +2548,7 @@
      "issuer": ""
     },
     {
-     "name": "PwC US Audit Job Simulation (Forage) | [Month Year]: walked through a client's purchasing process, identified its controls and built a risk-control matrix",
+     "name": "PwC US Audit Job Simulation (Forage) | [Month Year]: walked through a client's purchasing process and built a risk-control matrix",
      "issuer": ""
     },
     {
@@ -2658,7 +2659,7 @@
      "issuer": ""
     },
     {
-     "name": "PwC US Tax Job Simulation (Forage) | [Month Year]: mapped a trial balance and worked out book-to-tax differences and taxable income for a simulated client",
+     "name": "PwC US Tax Job Simulation (Forage) | [Month Year]: mapped a trial balance; worked out book-to-tax differences and taxable income",
      "issuer": ""
     },
     {
@@ -2866,7 +2867,7 @@
      "issuer": ""
     },
     {
-     "name": "PwC US Tax Job Simulation (Forage) | [Month Year]: mapped a trial balance and worked out book-to-tax differences and taxable income for a simulated client",
+     "name": "PwC US Tax Job Simulation (Forage) | [Month Year]: mapped a trial balance; worked out book-to-tax differences and taxable income",
      "issuer": ""
     },
     {
@@ -2954,7 +2955,7 @@
      "issuer": ""
     },
     {
-     "name": "PwC US Audit Job Simulation (Forage) | [Month Year]: walked through a client's purchasing process, identified its controls and built a risk-control matrix",
+     "name": "PwC US Audit Job Simulation (Forage) | [Month Year]: walked through a client's purchasing process and built a risk-control matrix",
      "issuer": ""
     },
     {
@@ -3121,7 +3122,7 @@
     {
      "degree": "Class XII",
      "year": "2020",
-     "institute": "Tamil Nadu Board",
+     "institute": "DGE Tamil Nadu",
      "marks": "92.0%",
      "remarks": "98 in Accountancy",
      "mergedWithPrevious": false
@@ -3144,7 +3145,7 @@
      "issuer": ""
     },
     {
-     "name": "PwC US Audit Job Simulation (Forage) | [Month Year]: walked through a client's purchasing process, identified its controls and built a risk-control matrix",
+     "name": "PwC US Audit Job Simulation (Forage) | [Month Year]: walked through a client's purchasing process and built a risk-control matrix",
      "issuer": ""
     },
     {
@@ -3172,7 +3173,7 @@
   "23": {
    "personal": {
     "name": "Neha Chaturvedi",
-    "tagline": "CA Intermediate cleared | CMA Intermediate Group I cleared | Bhopal",
+    "tagline": "CA Intermediate cleared | CMA Intermediate Group I cleared with CA Inter | Bhopal",
     "contact": "",
     "phone": "+91 98XXXXXXXX",
     "email": "neha.chaturvedi@email.com",
@@ -3195,7 +3196,7 @@
      "year": "[Year]",
      "institute": "ICMAI",
      "marks": "Pursuing",
-     "remarks": "Group I cleared the same year as CA Inter",
+     "remarks": "Group I cleared with CA Inter",
      "mergedWithPrevious": false
     },
     {
@@ -3240,7 +3241,7 @@
      "issuer": ""
     },
     {
-     "name": "PwC US Tax Job Simulation (Forage) | [Month Year]: mapped a trial balance and worked out book-to-tax differences and taxable income for a simulated client",
+     "name": "PwC US Tax Job Simulation (Forage) | [Month Year]: mapped a trial balance; worked out book-to-tax differences and taxable income",
      "issuer": ""
     },
     {
@@ -3283,7 +3284,7 @@
      "year": "[Year]",
      "institute": "ICAI",
      "marks": "433/600",
-     "remarks": "First attempt; 88 in Advanced Accounting",
+     "remarks": "88 in Advanced Accounting",
      "mergedWithPrevious": false
     },
     {
@@ -3307,7 +3308,7 @@
      "year": "2024",
      "institute": "ICAI",
      "marks": "297/400",
-     "remarks": "First attempt; 94 in Quantitative Aptitude",
+     "remarks": "94 in Quantitative Aptitude",
      "mergedWithPrevious": false
     },
     {
@@ -3757,7 +3758,7 @@
     {
      "degree": "Class XII",
      "year": "2021",
-     "institute": "UP Board",
+     "institute": "UPMSP",
      "marks": "86.0%",
      "remarks": "92 in Accountancy",
      "mergedWithPrevious": false
@@ -3772,7 +3773,7 @@
      "issuer": ""
     },
     {
-     "name": "PwC US Audit Job Simulation (Forage) | [Month Year]: walked through a client's purchasing process, identified its controls and built a risk-control matrix",
+     "name": "PwC US Audit Job Simulation (Forage) | [Month Year]: walked through a client's purchasing process and built a risk-control matrix",
      "issuer": ""
     },
     {
@@ -3847,7 +3848,7 @@
     {
      "degree": "Class XII",
      "year": "2022",
-     "institute": "Kerala Board",
+     "institute": "DHSE Kerala",
      "marks": "95.0%",
      "remarks": "98 in Accountancy",
      "mergedWithPrevious": false
@@ -3870,7 +3871,7 @@
      "issuer": ""
     },
     {
-     "name": "PwC US Audit Job Simulation (Forage) | [Month Year]: walked through a client's purchasing process, identified its controls and built a risk-control matrix",
+     "name": "PwC US Audit Job Simulation (Forage) | [Month Year]: walked through a client's purchasing process and built a risk-control matrix",
      "issuer": ""
     },
     {
@@ -3970,7 +3971,7 @@
      "issuer": ""
     },
     {
-     "name": "PwC US Tax Job Simulation (Forage) | [Month Year]: mapped a trial balance and worked out book-to-tax differences and taxable income for a simulated client",
+     "name": "PwC US Tax Job Simulation (Forage) | [Month Year]: mapped a trial balance; worked out book-to-tax differences and taxable income",
      "issuer": ""
     },
     {

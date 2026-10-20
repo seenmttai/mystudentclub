@@ -165,8 +165,8 @@
   },
   {
    "number": 11,
-   "id": "centred-bars",
-   "name": "Centred bars",
+   "id": "centred-header",
+   "name": "Centred header",
    "tag": "Print",
    "gallery": 10,
    "renderFile": "modern-elegant.html",
