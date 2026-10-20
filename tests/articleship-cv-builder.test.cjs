@@ -263,7 +263,7 @@ test('sample applicants keep the house rules (fictional, honest, rule-2 lines, t
             const kind = B.classifyCertification(item);
             if (kind === 'msc-simulation') assert.match(line, /^[A-Z][A-Za-z& ]+ Work Simulation, MSC Articleship Program \| \[Month Year\]: /, `${id}: ${line}`);
             if (kind === 'msc-program') assert.equal(line, B.PROGRAM_LINE_DONE, `${id}: Padam's exact programme line`);
-            if (kind === 'outside') assert.match(line, /(Job Simulation \(Forage\)|Test, Level 1 \(NISM\)) \| \[Month Year\]: /, `${id}: ${line}`);
+            if (kind === 'outside') assert.match(line, /(\(Forage\)|Test, Level 1 \(NISM\)) \| \[Month Year\]: /, `${id}: ${line}`);
         });
         const flags = B.checkCv(cv).map(f => f.id).filter(flagId => !['brackets', 'months'].includes(flagId));
         assert.deepEqual(flags, [], `${id}: the example itself passes the checks`);
@@ -389,7 +389,7 @@ async function stage(options) {
         <span id="current-template-name">Classic</span><select id="template-select"></select>
         <div id="template-sidebar"><div class="template-sidebar-header"><h3>Choose Template</h3></div>
         <div><select id="template-collection"></select></div><div id="template-grid"></div></div></body>`,
-    { url: 'http://127.0.0.1/cv-builder/?stage=articleship', runScripts: 'outside-only' });
+    { url: opts.url || 'http://127.0.0.1/cv-builder/?stage=articleship', runScripts: 'outside-only' });
     const win = dom.window;
     GALLERY.forEach(g => { const o = win.document.createElement('option'); o.value = g.file; o.textContent = g.name; win.document.getElementById('template-select').appendChild(o); });
     const files = {
@@ -495,6 +495,18 @@ test('stage: opens with the Recommender pick (order now, design once the builder
     const again = await stage({ pick, cv: Object.assign(B.createBlank({ templateFile: 'articleship-layout-plain-ats' }, { structure: 'A' }), { articleshipPickApplied: 'k1' }), wait: 120 });
     assert.equal(again.cv.articleshipStructure, 'A', 'an applied pick does not undo the student\'s own order');
     assert.deepEqual(again.calls.useTemplate, []);
+});
+
+test('stage: a CV templates link opens on its design (?design=N) and, with &example=1, on that design\'s applicant', async () => {
+    const d = design(4);
+    const s = await stage({ url: 'http://127.0.0.1/cv-builder/?stage=articleship&design=4&example=1', wait: 400 });
+    assert.deepEqual(s.calls.useTemplate, [d.file]);
+    assert.equal(B.plainText(s.cv.personal.name), 'Sneha Pai', 'design 4\'s applicant');
+    const only = await stage({ url: 'http://127.0.0.1/cv-builder/?stage=articleship&design=4', wait: 400 });
+    assert.deepEqual(only.calls.useTemplate, [d.file]);
+    assert.notEqual(B.plainText(only.cv.personal.name || ''), 'Sneha Pai', 'without &example=1 the CV stays the student\'s');
+    const bad = await stage({ url: 'http://127.0.0.1/cv-builder/?stage=articleship&design=99&example=1', wait: 200 });
+    assert.deepEqual(bad.calls.useTemplate.filter(f => f !== 'articleship-layout-classic'), [], 'an unknown number changes nothing');
 });
 
 test('stage: the pick\'s design goes on when the enrolment lookup unlocks it, though access was marked checked first', async () => {

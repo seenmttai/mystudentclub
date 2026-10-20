@@ -3,7 +3,7 @@
  *
  * The page stays the CV Builder (form, preview, Word and PDF export). This file adds, for the articleship stage only:
  * - the panel on top of the form: order (structure A–H) and design chosen separately, both from the CV Recommender's
- *   pick on open; "Start from the example" and "The Nothing CV"; the certificate count and the earned Work Simulation
+ *   pick on open (or from ?design=N, with &example=1 for that design's filled-in applicant: CV templates links here); "Start from the example" and "The Nothing CV"; the certificate count and the earned Work Simulation
  *   lines; the live checks;
  * - the design picker: the look-book's designs by number ("Designs", filtered by order or Portal-safe) and all 62
  *   layouts ("All");
@@ -664,10 +664,18 @@
         } else if (state.freshBlank) {
             design = state.designs[0] || null;
         }
+        // A link from CV templates (row 1.4): ?design=N opens on that design; &example=1 also fills in its applicant,
+        // so a student on a phone sees the full-size CV the look-book shows in small.
+        const linked = logic.resolveDesign(state.designs, params.get('design'));
+        if (linked) design = linked;
         importQueued();
         render();
         useAccountClient();
-        if (design) openOnDesign(design, state.host.templateFile());
+        if (design) {
+            openOnDesign(design, state.host.templateFile()).then(() => {
+                if (linked && params.get('example') === '1' && currentDesign() === linked) startExample();
+            });
+        }
 
         if (progress && progress.onSettingsChange) progress.onSettingsChange(() => scheduleRender());
         if (WS_LIVE) {
