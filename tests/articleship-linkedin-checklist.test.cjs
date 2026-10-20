@@ -62,7 +62,7 @@ test('content: the 12 profile checks in the row order, each with an example; onl
     assert.equal(byId.recommendation.fix.label, 'My connections');
     assert.deepEqual([...prepared.copies.keys()], ['headline', 'about', 'featured', 'recommendation']);
     assert.deepEqual([...prepared.copies.values()].map(c => c.aria),
-        ['Copy headline formula', 'Copy About first three lines', 'Copy result post', 'Copy recommendation request']);
+        ['Copy headline formula', 'Copy About opening lines', 'Copy result post', 'Copy recommendation request']);
     prepared.model.items.forEach(item => {
         const how = (prepared.extras.get(item.id) || {}).how || '';
         assert.ok(how.length > 10 && how.length <= 160, item.id + ' has a short How path');
@@ -229,7 +229,7 @@ test('page: boot renders the open card, 12 checks, copy boxes, notes; ticks save
     assert.equal(doc.querySelectorAll('.ap-cl-example > p').length, 0);
     assert.equal(doc.querySelectorAll('.ap-cl-example .lc-example').length, 12);
     const aboutSample = doc.querySelector('.ap-cl-item[data-id="about"] .lc-sample');
-    assert.equal(aboutSample.querySelectorAll('p').length, 3);
+    assert.equal(aboutSample.querySelectorAll('p').length, 4);
     assert.match(aboutSample.textContent, /^I cleared CA Intermediate/);
     assert.equal(doc.querySelector('.ap-cl-item[data-id="open-to-work"] .lc-line strong').textContent, 'Job titles:');
     assert.ok(doc.querySelectorAll('.lc-line.is-bad').length >= 8);
@@ -243,7 +243,7 @@ test('page: boot renders the open card, 12 checks, copy boxes, notes; ticks save
         assert.ok(details.children[1].classList.contains('lc-copy'), id + ': the Copy box is the first thing in the fold-out');
     });
     assert.deepEqual([...doc.querySelectorAll('.lc-copy-btn')].map(b => b.getAttribute('aria-label')),
-        ['Copy headline formula', 'Copy About first three lines', 'Copy result post', 'Copy recommendation request']);
+        ['Copy headline formula', 'Copy About opening lines', 'Copy result post', 'Copy recommendation request']);
     assert.equal(doc.querySelector('.ap-cl-item[data-id="headline"] .lc-copy-text').textContent,
         'CA Inter cleared ([Month Year]) | [proof] | Seeking articleship in [domain] | [City]', 'no domain set: the placeholder stays');
     assert.match(doc.querySelector('.ap-cl-item[data-id="headline"] .lc-line.is-good').textContent, /Seeking articleship in statutory audit \| Pune/);
@@ -320,7 +320,7 @@ test('domain: the shared "my domain" fills the Copy boxes and the examples, and 
     assert.match(pick(), /Seeking articleship in GST \| Pune/);
     assert.match(doc.querySelector('.ap-cl-item[data-id="about"] .lc-copy-text').textContent, /looking for articleship in GST in \[City\]/);
     assert.match(doc.querySelector('.ap-cl-item[data-id="featured"] .lc-copy-text').textContent, /Next: articleship in GST in \[City\]\.$/);
-    assert.match(doc.querySelector('.ap-cl-item[data-id="recommendation"] .lc-copy-text').textContent, /applying for articleship in GST and/);
+    assert.match(doc.querySelector('.ap-cl-item[data-id="recommendation"] .lc-copy-text').textContent, /applying for articleship in GST\./);
     const aboutSample = () => doc.querySelector('.ap-cl-item[data-id="about"] .lc-sample').textContent;
     assert.match(aboutSample(), /articleship in GST in Pune/, 'the worked About example follows my domain');
     assert.match(aboutSample(), /In my GST Work Simulation I prepared GSTR-1 and GSTR-3B workings/, 'with that domain\'s own proof');
