@@ -11,7 +11,7 @@
    "font": "Times New Roman",
    "accent": "#1F3A8A",
    "page": 2,
-   "line": "Strong marks: the grid comes first, with your best subject mark in its Remarks column.",
+   "line": "Academics: the grid comes first, with your best subject mark in its Remarks column.",
    "bestFor": [
     "A"
    ],
@@ -45,9 +45,11 @@
    "font": "Calibri",
    "accent": "#2E3156",
    "page": 4,
-   "line": "Work you have done: it leads the main column, while skills and certificates sit in the dark side column.",
+   "line": "Work experience: it leads the main column, while skills and certificates sit in the dark side column.",
    "bestFor": [],
-   "also": []
+   "also": [
+    "C"
+   ]
   },
   {
    "number": 4,
@@ -75,7 +77,7 @@
    "font": "Cambria",
    "accent": "#1E4E8C",
    "page": 6,
-   "line": "Groups cleared separately: a quiet, formal page where each Inter row is easy to follow.",
+   "line": "Groups separately: a quiet, formal page where each Inter row is easy to follow.",
    "bestFor": [
     "B"
    ],
@@ -91,7 +93,7 @@
    "font": "Cambria",
    "accent": "#17365D",
    "page": 7,
-   "line": "Roles and activities: a framed page with centred bars that make each block easy to scan.",
+   "line": "Extra-curriculars: a framed page with centred bars that make each block easy to scan.",
    "bestFor": [
     "E"
    ],
@@ -109,7 +111,9 @@
    "page": 8,
    "line": "Skills with proof: education and skills sit in the grey side column; what you built fills the main one.",
    "bestFor": [],
-   "also": []
+   "also": [
+    "F"
+   ]
   },
   {
    "number": 8,
@@ -121,7 +125,7 @@
    "font": "Arial",
    "accent": "#A61B1B",
    "page": 9,
-   "line": "Portals, with colour: one column, one line for each education row, and bars a portal reads as headings.",
+   "line": "Portals, with colour: one column, one line for each education row, and plain-text headings in colour bars.",
    "bestFor": [],
    "also": [
     "I"
@@ -137,7 +141,7 @@
    "font": "Times New Roman",
    "accent": "#0D465F",
    "page": 10,
-   "line": "Strong marks, formal firms: the grid of design 1 under a centred, letterhead-style name.",
+   "line": "Academics, formal firms: the grid of design 1 under a centred, letterhead-style name.",
    "bestFor": [],
    "also": [
     "A"
@@ -153,7 +157,7 @@
    "font": "Calibri",
    "accent": "#2D5294",
    "page": 11,
-   "line": "Several kinds of proof: each block sits in its own box, so nothing runs into the next.",
+   "line": "Groups separately: each block sits in its own box, so your two Inter rows and your work never run together.",
    "bestFor": [],
    "also": [
     "B"
@@ -169,7 +173,7 @@
    "font": "Cambria",
    "accent": "#2F5F98",
    "page": 12,
-   "line": "Any situation: the same full-width bar opens every block, so your strongest one is easy to find.",
+   "line": "Work experience, or a page still filling up: one full-width bar opens every block, so even a short CV looks complete.",
    "bestFor": [],
    "also": [
     "A",
@@ -203,7 +207,7 @@
    "font": "Calibri",
    "accent": "#333333",
    "page": 14,
-   "line": "Roles and activities: roles follow education, each post with its dates and what you ran.",
+   "line": "Extra-curriculars: roles come straight after education, under a dark banner that gives a busy page a firm start.",
    "bestFor": [],
    "also": [
     "E"
@@ -235,7 +239,7 @@
    "font": "Times New Roman",
    "accent": "#111111",
    "page": 16,
-   "line": "Graduates and direct entry: black bars, contacts on the right and a light education table.",
+   "line": "Direct entry: black bars, contacts on the right and a light education table.",
    "bestFor": [
     "G"
    ],
@@ -253,7 +257,9 @@
    "page": 17,
    "line": "Academics with extras: marks lead the main column; skills, roles and certificates sit beside them.",
    "bestFor": [],
-   "also": []
+   "also": [
+    "A"
+   ]
   },
   {
    "number": 17,
@@ -265,7 +271,7 @@
    "font": "Calibri",
    "accent": "#1F4E79",
    "page": 18,
-   "line": "Groups cleared separately: each sitting on its own grid row, other dates in a left column below.",
+   "line": "Groups separately: each sitting on its own grid row, other dates in a left column below.",
    "bestFor": [],
    "also": [
     "B"
@@ -281,7 +287,7 @@
    "font": "Arial",
    "accent": "#1F487C",
    "page": 19,
-   "line": "Work you have done: experience follows education, each job with its dates and a bullet per task.",
+   "line": "Work experience: experience follows education, each job with its dates and a bullet per task.",
    "bestFor": [],
    "also": [
     "C"
@@ -313,7 +319,7 @@
    "font": "Times New Roman",
    "accent": "#45497D",
    "page": 21,
-   "line": "Roles and activities: each post leads in bold with its dates, and fine rules part the blocks.",
+   "line": "Extra-curriculars: a soft frame and fine rules let three or four roles sit under the grid without looking crowded.",
    "bestFor": [],
    "also": [
     "E"
@@ -377,7 +383,7 @@
    "font": "Arial",
    "accent": "#002060",
    "page": 25,
-   "line": "Academics: no bars at all, just coloured headings and two calm columns under the education table.",
+   "line": "Academics: no bars at all, so the education table is the strongest thing on the page; the rest sits in two columns below it.",
    "bestFor": [],
    "also": [
     "A"
@@ -393,9 +399,11 @@
    "font": "Calibri",
    "accent": "#3B2F4A",
    "page": 26,
-   "line": "Groups cleared separately: your education sits apart in the side panel, with your proof beside it.",
+   "line": "Groups separately: your education sits apart in the side panel, with your proof beside it.",
    "bestFor": [],
-   "also": []
+   "also": [
+    "B"
+   ]
   },
   {
    "number": 26,
@@ -407,7 +415,7 @@
    "font": "Arial",
    "accent": "#1D4E5F",
    "page": 27,
-   "line": "Work you have done: dashed rules; the jobs get the wide left column, skills and the rest sit beside them.",
+   "line": "Work experience: dashed rules; the jobs get the wide left column, skills and the rest sit beside them.",
    "bestFor": [
     "C"
    ],
@@ -425,7 +433,9 @@
    "page": 28,
    "line": "Projects: your name heads a grey side panel, and small pill headings keep the main column light.",
    "bestFor": [],
-   "also": []
+   "also": [
+    "D"
+   ]
   },
   {
    "number": 28,
@@ -437,7 +447,7 @@
    "font": "Times New Roman",
    "accent": "#14508C",
    "page": 29,
-   "line": "Roles and activities: a frame, a tinted name band and a left date column, for a formal look.",
+   "line": "Extra-curriculars: a frame, a tinted name band and a left date column, for a formal look.",
    "bestFor": [],
    "also": [
     "E"

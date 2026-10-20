@@ -659,7 +659,7 @@ test('releaseExamples: every applicant reads well without the Work Simulation; w
         assert.deepEqual(flags, [], `${id}: still passes the checks`);
     });
     // One applicant's lines, sentence by sentence (the rules in MSCArticleshipProgress.releaseText).
-    assert.equal(B.plainText(off.personas.A.summary), 'CA Intermediate cleared in the first attempt (both groups, 412/600); ICITSS completed. '
+    assert.equal(B.plainText(off.personas.A.summary), 'CA Intermediate, both groups, 412/600; ICITSS completed. '
         + 'Completed the PwC US Audit Job Simulation. Seeking articleship in statutory audit, to learn how balances and controls are tested on real clients.');
     assert.ok(!off.personas.A.certifications.some(c => ws.test(c.name)), 'its Work Simulation line is gone');
     assert.equal(off.personas.A.certifications.length, EXAMPLES_JSON.personas.A.certifications.length - 1, 'only that line');
