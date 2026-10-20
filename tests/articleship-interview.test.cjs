@@ -553,6 +553,13 @@ test('the articleship glue runs: setup, CV sources, interview config and the rep
     assert.equal(context.currentRoleSpan.textContent, 'Technical round · Direct tax');
     assert.match(articleship.getInstructions(config), /THE PLAN/);
 
+    // The setup's Work Simulation lines reach the interviewer through the page's own buildPlan call.
+    const earned = 'Direct tax Work Simulation, MSC Articleship Program: Checked 8 tax-audit items against the books';
+    await api.startArticleshipInterview({ round: 'technical', domain: 'direct-tax', firm: '', firmType: 'small', toughness: 'Medium', coach: false, retry: [], earnedLines: [earned], cv: { kind: 'builder', lines: ['Reading, cricket and chess', 'Advanced Excel: VLOOKUP and pivot tables', 'Summer internship at a trading company, accounts team'] } });
+    const withEarned = api.getConfig();
+    assert.equal(withEarned.articleshipPlan.sections.find(s => s.id === 'cv').items[0].cvLine, earned);
+    assert.match(articleship.getInstructions(withEarned), /Checked 8 tax-audit items/);
+
     context.interviewConfig = config;
     api.apRenderReport('1. Opening and introduction | 3/4 | Evidence: "x" | Fix: y | Retry: z\n2. Fit: why this firm and this domain | 2/4 | Evidence: "a" | Fix: b | Retry: c\n5. Technical accuracy | 1/4 | Evidence: "d" | Fix: e | Retry: f');
     assert.ok(!doc.getElementById('ap-scorecard').classList.contains('hidden'));
@@ -560,4 +567,117 @@ test('the articleship glue runs: setup, CV sources, interview config and the rep
     assert.match(doc.getElementById('report-meta').textContent, /Small firm/);
     api.apTrimAnalysis();
     assert.equal(doc.querySelector('.analysis-overview-label').textContent, 'Practice score');
+});
+
+// ---------- links from other tools and Work Simulation lines ----------
+test('a link can open a set mock: ?round=, ?domain= (slug, label or alias) and ?firm=', () => {
+    const preset = q => articleship.presetFromQuery(q, content);
+    assert.deepEqual(preset('?mode=articleship'), {});
+    assert.deepEqual(preset('?mode=articleship&round=technical&domain=gst&firm=Mehta%20%26%20Co'), { round: 'technical', domain: 'gst', firm: 'Mehta & Co' });
+    assert.equal(preset('?round=screening').round, 'call');
+    assert.equal(preset('?round=HR_round').round, 'hr');
+    assert.equal(preset('?round=interview').round, 'full');
+    assert.equal(preset('?round=group-discussion').round, undefined, 'an unknown round is ignored');
+    assert.equal(preset('?domain=forensic-audit').domain, 'forensic');
+    assert.equal(preset('?domain=Bank%20audit').domain, 'bank-audit');
+    assert.equal(preset('?domain=Indirect%20tax').domain, 'gst');
+    assert.equal(preset('?domain=transfer-pricing').domain, 'transfer-pricing');
+    assert.equal(preset('?domain=financial-due-diligence').domain, 'fdd');
+    assert.equal(preset('?domain=nonsense').domain, undefined);
+    assert.equal(preset('?firm=%3Cscript%3EA%22B').firm, 'scriptAB', 'the firm name is cleaned');
+    for (const domain of articleship.DOMAINS) {
+        assert.equal(preset('?domain=' + encodeURIComponent(domain.label)).domain, domain.slug, domain.label);
+        assert.equal(preset('?domain=' + domain.slug).domain, domain.slug, domain.slug);
+    }
+});
+
+test('setup screen: a link preset wins over the last practice and my domain', () => {
+    const store = memoryStore('ai-interview', { last: null, asked: {}, retry: [] });
+    store.update(d => { d.last = { round: 'hr', domain: 'statutory-audit', myDomain: 'gst', firm: 'Old & Co', firmType: 'small', toughness: 'Easy', coach: false }; return d; });
+    const dom = new JSDOM('<!doctype html><div id="root"></div>', { url: 'https://www.mystudentclub.com/ai-interview.html?mode=articleship&round=technical&domain=direct-tax&firm=Rao%20%26%20Associates' });
+    const doc = dom.window.document;
+    articleship.mountSetup(doc.getElementById('root'), { content, store, progress: { getMyDomain: () => 'gst' } });
+    assert.equal(doc.querySelector('input[name="aii-round"]:checked').value, 'technical');
+    assert.equal(doc.getElementById('aii-domain').value, 'direct-tax');
+    assert.equal(doc.getElementById('aii-firm').value, 'Rao & Associates');
+    assert.equal(doc.querySelector('input[name="aii-toughness"]:checked').value, 'Easy', 'what the link does not set comes from the last practice');
+
+    const plain = new JSDOM('<!doctype html><div id="root"></div>', { url: 'https://www.mystudentclub.com/ai-interview.html?mode=articleship' });
+    articleship.mountSetup(plain.window.document.getElementById('root'), { content, store, progress: { getMyDomain: () => 'gst' } });
+    assert.equal(plain.window.document.querySelector('input[name="aii-round"]:checked').value, 'hr');
+    assert.equal(plain.window.document.getElementById('aii-domain').value, 'statutory-audit');
+});
+
+test('Work Simulation lines: read from its progress data in every saved shape, deduplicated', () => {
+    const gst = 'GST Work Simulation, MSC Articleship Program | Nov 2026: Matched 3B credit to GSTR-2B for 40 invoices and explained 3 differences';
+    const audit = 'Statutory audit Work Simulation, MSC Articleship Program: Vouched 25 purchase bills and flagged 4 exceptions';
+    assert.deepEqual(articleship.earnedLinesFrom(null), []);
+    assert.deepEqual(articleship.earnedLinesFrom({ earned: [{ id: 'gst-1', domain: 'gst', level: 1, line: gst }, { line: gst }] }), [gst]);
+    assert.deepEqual(articleship.earnedLinesFrom({ cvQueue: [audit], earnedLines: { a: { line: gst } } }), [audit, gst]);
+    assert.deepEqual(articleship.earnedLinesFrom({ levels: { 'sa-1': { done: true, earnedLine: audit }, 'gst-1': { done: false, earnedLine: gst } } }), [audit]);
+    assert.deepEqual(articleship.earnedLinesFrom({ earned: [{ domain: 'direct-tax', did: 'Checked 8 tax-audit items against the books' }] }),
+        ['Direct tax Work Simulation, MSC Articleship Program: Checked 8 tax-audit items against the books']);
+    assert.deepEqual(articleship.earnedLinesFrom({ lines: ['Completed MSC Articleship Program', 'Forage job simulation'] }), [], 'only Work Simulation lines');
+
+    // The CV already carries a line (often without its month): it is not added twice.
+    const cv = ['GST Work Simulation, MSC Articleship Program', 'Matched 3B credit to GSTR-2B for 40 invoices and explained 3 differences', 'Reading, chess'];
+    assert.deepEqual(articleship.mergeCvLines(cv, [gst]), cv);
+    assert.deepEqual(articleship.mergeCvLines(['Reading, chess'], [gst, audit]), ['Reading, chess', gst, audit]);
+    assert.deepEqual(articleship.mergeCvLines([audit], [audit]), [audit]);
+});
+
+test('earned Work Simulation lines are probed even when the CV does not carry them yet', () => {
+    const earned = ['Statutory audit Work Simulation, MSC Articleship Program: Vouched 25 purchase bills and flagged 4 exceptions'];
+    const cvOnly = ['Advanced Excel: VLOOKUP, XLOOKUP and pivot tables', 'Reading, cricket and chess'];
+    const plan = articleship.buildPlan(content, { round: 'technical', domain: 'statutory-audit', seed: 2, cvLines: cvOnly, earnedLines: earned });
+    const cvItems = plan.sections.find(s => s.id === 'cv').items;
+    assert.equal(cvItems[0].cvLine, earned[0], 'the Work Simulation line is asked first');
+    for (const q of content.domains['statutory-audit'].simulation) assert.ok(cvItems[0].cross.includes(q), 'with its two interview questions');
+    assert.match(plan.cvText, /Vouched 25 purchase bills/);
+    const again = articleship.buildPlan(content, { round: 'technical', domain: 'statutory-audit', seed: 2, cvLines: cvOnly.concat(earned), earnedLines: earned });
+    assert.equal(again.cvText.split('\n').filter(line => /Vouched 25/.test(line)).length, 1, 'never twice');
+    const noCv = articleship.buildPlan(content, { round: 'full', domain: 'gst', seed: 2, cvLines: [], earnedLines: [] });
+    assert.equal(noCv.hasCv, false);
+});
+
+test('setup screen: "+ N Work Simulation lines" for lines the chosen CV lacks; none with No CV', async () => {
+    const gst = 'GST Work Simulation, MSC Articleship Program | Nov 2026: Matched 3B credit to GSTR-2B for 40 invoices';
+    const audit = 'Statutory audit Work Simulation, MSC Articleship Program: Vouched 25 purchase bills and flagged 4 exceptions';
+    const simulation = memoryStore('work-simulation', {});
+    simulation.update(d => { d.earned = [{ id: 'gst-1', domain: 'gst', line: gst }, { id: 'sa-1', domain: 'statutory-audit', line: audit }]; return d; });
+    const opened = [];
+    const progress = { getMyDomain: () => 'gst', open: (tool, opts) => { opened.push(tool); return tool === 'work-simulation' ? simulation : memoryStore(tool, opts && opts.defaults); } };
+    const dom = new JSDOM('<!doctype html><div id="root"></div>');
+    const doc = dom.window.document;
+    let started = null;
+    articleship.mountSetup(doc.getElementById('root'), {
+        content, store: memoryStore('ai-interview', { last: null, asked: {}, retry: [] }), progress,
+        cvSources: [{ kind: 'builder', label: 'CV Builder', detail: 'Riya Sharma', lines: [gst, 'Reading, cricket and chess', 'Advanced Excel: VLOOKUP and pivot tables'] }],
+        onStart: setup => { started = setup; }
+    });
+    assert.ok(opened.includes('work-simulation'));
+    assert.equal(doc.querySelector('.aii-earned').textContent, '+ 1 Work Simulation line', 'the GST line is already on the CV');
+    const pick = value => {
+        const input = doc.querySelector(`input[name="aii-cv"][value="${value}"]`);
+        input.checked = true;
+        input.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+    };
+    pick('pdf');
+    assert.equal(doc.querySelector('.aii-earned').textContent, '+ 2 Work Simulation lines');
+    pick('none');
+    assert.equal(doc.querySelector('.aii-earned').textContent, '');
+    doc.querySelector('form').dispatchEvent(new dom.window.Event('submit', { cancelable: true }));
+    await new Promise(r => setTimeout(r, 0));
+    assert.deepEqual(started.earnedLines, [], 'No CV means no CV lines at all');
+    pick('builder');
+    doc.querySelector('form').dispatchEvent(new dom.window.Event('submit', { cancelable: true }));
+    await new Promise(r => setTimeout(r, 0));
+    assert.deepEqual(started.earnedLines, [gst, audit]);
+    const plan = articleship.buildPlan(content, { ...started, cvLines: started.cv.lines, seed: 1 });
+    assert.equal(plan.cvText.split('\n').filter(line => /Work Simulation/.test(line)).length, 2);
+
+    // A level finished on another device arrives with the account copy and the note follows.
+    simulation.update(d => { d.earned.push({ id: 'dt-1', line: 'Direct tax Work Simulation, MSC Articleship Program: Checked 8 tax-audit items' }); return d; });
+    assert.equal(doc.querySelector('.aii-earned').textContent, '+ 2 Work Simulation lines');
+    assert.doesNotMatch(doc.getElementById('root').textContent, BANNED);
 });

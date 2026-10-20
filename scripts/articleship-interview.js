@@ -85,6 +85,18 @@
 
     const TECHNICAL_SITUATIONS = Object.freeze(['sit-fake-voucher', 'sit-round-sum', 'sit-untested', 'sit-ignore', 'sit-own-error', 'sit-data']);
 
+    // Links from other tools (tracker, roadmaps, Work Simulation) may open a set mock: ?round=…&domain=…&firm=…
+    const ROUND_ALIASES = Object.freeze({
+        interview: 'full', 'full-interview': 'full', mock: 'full',
+        tech: 'technical', 'technical-round': 'technical', domain: 'technical',
+        'hr-round': 'hr', behavioural: 'hr', behavioral: 'hr',
+        'hr-call': 'call', screening: 'call', phone: 'call', 'phone-call': 'call'
+    });
+
+    // The Work Simulation's progress store: the lines a student earned there are probed even before they reach the CV.
+    const SIMULATION_TOOL = 'work-simulation';
+    const MAX_EARNED = 6;
+
     // Words that tie an MSC Work Simulation line to its domain (the line starts "<Domain> Work Simulation, MSC Articleship Program").
     const DOMAIN_WORDS = Object.freeze([
         ['ma-tax', /m\s*&\s*a tax|buy-?back|capital reduction|demerger|slump sale/],
@@ -140,13 +152,24 @@
             if (slug && domainInfo(slug)) return slug;
         }
         const text = String(value).trim().toLowerCase();
-        const direct = DOMAINS.find(domain => domain.slug === text || domain.label.toLowerCase() === text || domain.spoken.toLowerCase() === text);
+        const spaced = text.replace(/[-_+]+/g, ' ').replace(/\s+/g, ' ');
+        const direct = DOMAINS.find(domain => domain.slug === text || [domain.label, domain.spoken].some(name => {
+            const lower = name.toLowerCase();
+            return lower === text || lower === spaced;
+        }));
         if (direct) return direct.slug;
         if (/indirect|gst/.test(text)) return 'gst';
-        if (/direct tax|income/.test(text)) return 'direct-tax';
+        if (/direct.tax|income/.test(text)) return 'direct-tax';
         if (/internal/.test(text)) return 'internal-audit';
+        if (/investment.bank|equity.research|\bib\b/.test(text)) return 'ib-er';
+        if (/m\s*(&|and)\s*a|merger/.test(text)) return 'ma-tax';
+        if (/consult|risk.advisory/.test(text)) return 'consulting';
+        if (/bank/.test(text)) return 'bank-audit';
+        if (/forensic/.test(text)) return 'forensic';
+        if (/transfer.pricing|\btp\b/.test(text)) return 'transfer-pricing';
+        if (/due.diligence|\bfdd\b/.test(text)) return 'fdd';
         if (/statutory|audit/.test(text)) return 'statutory-audit';
-        if (/ind ?as|financial reporting|accounting/.test(text)) return 'accounting';
+        if (/ind ?as|financial reporting|account|\bmis\b|company law/.test(text)) return 'accounting';
         if (/fp&a|corporate finance|valuation/.test(text)) return 'valuation';
         return null;
     }
@@ -302,6 +325,88 @@
         return /^\[.*\]$/.test(name) ? '' : name.slice(0, 60);
     }
 
+    // ---------- Work Simulation lines ----------
+    /**
+     * The Work Simulation's saved data (progress tool "work-simulation") to its earned CV lines, read the way the CV
+     * Builder reads them (articleship-cv-builder.js readEarnedLines): earned / earnedLines / lines / cvLines / cvQueue
+     * arrays or maps, or a levels map with earnedLine. Only lines that name a Work Simulation; duplicates dropped.
+     */
+    function earnedLinesFrom(data) {
+        if (!isObject(data)) return [];
+        const raw = [];
+        const take = item => {
+            if (typeof item === 'string') { raw.push(item); return; }
+            if (!isObject(item)) return;
+            const given = item.line || item.cvLine || item.cv_line || item.earnedLine || item.text;
+            if (typeof given === 'string') { raw.push(given); return; }
+            const did = str(item.did || item.what || item.summary).trim();
+            const domain = domainInfo(normaliseDomain(item.domain));
+            if (did && domain) raw.push(domain.label + ' Work Simulation, MSC Articleship Program: ' + did);
+        };
+        ['cvQueue', 'addToCv', 'earned', 'earnedLines', 'lines', 'cvLines'].forEach(key => {
+            const value = data[key];
+            if (Array.isArray(value)) value.forEach(take);
+            else if (isObject(value)) Object.values(value).forEach(take);
+        });
+        if (isObject(data.levels)) {
+            Object.values(data.levels).forEach(level => {
+                if (!isObject(level) || level.done === false) return;
+                const line = level.earnedLine || level.cvLine || level.line;
+                if (line) take(typeof line === 'string' ? line : Object.assign({ domain: level.domain }, line));
+            });
+        }
+        const seen = new Set();
+        return raw.map(cleanLine).filter(line => {
+            if (!line || !/work simulation/i.test(line)) return false;
+            const key = line.toLowerCase();
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+        }).slice(0, MAX_EARNED);
+    }
+
+    function lineKey(text) {
+        return str(text).toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+    }
+
+    /** CV lines plus the earned lines the CV does not carry yet (a CV often keeps the line without its month). */
+    function mergeCvLines(lines, extra) {
+        const out = list(lines).map(str).filter(Boolean);
+        const keys = out.map(lineKey);
+        list(extra).forEach(line => {
+            const text = cleanLine(line);
+            const key = lineKey(text);
+            if (!key) return;
+            const did = lineKey(text.split(/:\s+/).slice(1).join(' '));
+            const present = keys.some(k => k.includes(key) || (k.length > 30 && key.includes(k)) || (did.length > 20 && k.includes(did)));
+            if (present) return;
+            out.push(text);
+            keys.push(key);
+        });
+        return out;
+    }
+
+    function readEarned(progress) {
+        if (!progress || typeof progress.open !== 'function') return [];
+        try { return earnedLinesFrom(progress.open(SIMULATION_TOOL, { defaults: {} }).get()); } catch (_) { return []; }
+    }
+
+    /** ?round=, ?domain= and ?firm= from a link into this tool (aliases and domain labels accepted). */
+    function presetFromQuery(search, content) {
+        let params;
+        try { params = new URLSearchParams(str(search)); } catch (_) { return {}; }
+        const rounds = content && list(content.rounds).length ? content.rounds : ROUNDS;
+        const preset = {};
+        const asked = str(params.get('round')).trim().toLowerCase().replace(/[\s_]+/g, '-');
+        const round = ROUND_ALIASES[asked] || asked;
+        if (round && rounds.some(item => item.id === round)) preset.round = round;
+        const domain = normaliseDomain(params.get('domain'));
+        if (domain) preset.domain = domain;
+        const firm = cleanFirm(params.get('firm'));
+        if (firm) preset.firm = firm;
+        return preset;
+    }
+
     // ---------- CV probes ----------
     // An education row (CA Inter marks, B.Com, college) is never "a course you took" or "a project".
     const EDUCATION_ROW = /\b(ca (inter(mediate)?|foundation|final)|b\.? ?com|m\.? ?com|bba|bms|class (x|xii|10|12)|hsc|ssc|cbse|icse|university|college|school)\b/i;
@@ -416,7 +521,8 @@
     }
 
     /**
-     * The interviewer's plan. options: { round, domain, firm, firmType, toughness, coach, cvLines, cvText, asked, retry, seed }.
+     * The interviewer's plan. options: { round, domain, firm, firmType, toughness, coach, cvLines, earnedLines, cvText, asked, retry, seed }.
+     * earnedLines (Work Simulation lines) join the CV lines unless the CV already carries them.
      * Returns { round, minutes, domain, firm, firmType, toughness, coach, opening, sections: [{ id, title, items }], rubric, ... }.
      */
     function buildPlan(content, options) {
@@ -439,7 +545,7 @@
         };
         const sections = [];
         const add = (id, title, items, note) => { if (items.length) sections.push({ id, title, note: note || '', items }); };
-        const cvLines = list(opts.cvLines).map(cleanLine).filter(keepLine).slice(0, 80);
+        const cvLines = mergeCvLines(list(opts.cvLines).map(cleanLine).filter(keepLine).slice(0, 80), opts.earnedLines).filter(keepLine);
         const retry = list(opts.retry).map(str).map(s => s.trim()).filter(Boolean).slice(0, 3);
 
         if (shape.call) {
@@ -698,10 +804,15 @@
         const saved = store ? (store.get() || {}) : {};
         const last = isObject(saved.last) ? saved.last : {};
         const progress = opts.progress || null;
+        const view = doc.defaultView;
+        const preset = isObject(opts.preset) ? opts.preset
+            : presetFromQuery(opts.query !== undefined ? opts.query : (view && view.location ? view.location.search : ''), content);
         let myDomain = null;
         try { myDomain = progress && progress.getMyDomain ? progress.getMyDomain() : null; } catch (_) { myDomain = null; }
         const lastDomain = normaliseDomain(last.domain);
-        const domainDefault = (myDomain && (!lastDomain || last.myDomain !== myDomain)) ? myDomain : (lastDomain || myDomain || DEFAULT_DOMAIN);
+        const domainDefault = normaliseDomain(preset.domain)
+            || ((myDomain && (!lastDomain || last.myDomain !== myDomain)) ? myDomain : (lastDomain || myDomain || DEFAULT_DOMAIN));
+        const earnedLines = () => (Array.isArray(opts.earnedLines) ? earnedLinesFrom({ lines: opts.earnedLines }) : readEarned(progress));
         const cvSources = list(opts.cvSources).filter(source => source && list(source.lines).length >= 3);
         const retry = list(saved.retry).filter(Boolean);
         // Retry questions from a screening call go to a call; those from an interview go to an interview.
@@ -719,7 +830,8 @@
         const form = el(doc, 'form', { class: 'ap-card aii-form', novalidate: true });
         form.appendChild(radioGroup(doc, 'aii-round', 'Round', rounds.map(round => ({
             value: round.id, label: round.label, meta: round.minutes + ' min · ' + round.hint
-        })), rounds.some(round => round.id === last.round) ? last.round : rounds[0].id, 'is-rounds'));
+        })), rounds.some(round => round.id === preset.round) ? preset.round
+            : rounds.some(round => round.id === last.round) ? last.round : rounds[0].id, 'is-rounds'));
 
         const domainSelect = el(doc, 'select', { id: 'aii-domain', class: 'aii-input', name: 'aii-domain' });
         DOMAINS.forEach(domain => domainSelect.appendChild(el(doc, 'option', { value: domain.slug, text: domain.label })));
@@ -727,7 +839,7 @@
         form.appendChild(el(doc, 'div', { class: 'aii-field' }, [el(doc, 'label', { class: 'aii-label', for: 'aii-domain', text: 'Domain' }), domainSelect]));
 
         const firmInput = el(doc, 'input', { id: 'aii-firm', class: 'aii-input', type: 'text', maxlength: '80', autocomplete: 'off', placeholder: 'Firm name (optional)' });
-        firmInput.value = cleanFirm(last.firm);
+        firmInput.value = cleanFirm(preset.firm || last.firm);
         form.appendChild(el(doc, 'div', { class: 'aii-field' }, [el(doc, 'label', { class: 'aii-label', for: 'aii-firm', text: 'Firm' }), firmInput]));
         form.appendChild(radioGroup(doc, 'aii-firm-type', 'Firm size', FIRM_TYPES.map(type => ({ value: type.id, label: type.label })),
             FIRM_TYPES.some(type => type.id === last.firmType) ? last.firmType : 'mid', 'is-pills'));
@@ -740,11 +852,21 @@
         const cvGroup = radioGroup(doc, 'aii-cv', 'Your CV', cvOptions, cvDefault, 'is-pills');
         const fileInput = el(doc, 'input', { type: 'file', accept: 'application/pdf,.pdf', class: 'aii-file', id: 'aii-cv-file', 'aria-label': 'CV file (PDF)' });
         const fileNote = el(doc, 'p', { class: 'aii-note', 'aria-live': 'polite' });
+        const earnedNote = el(doc, 'p', { class: 'aii-note aii-earned' });
         cvGroup.appendChild(fileInput);
         cvGroup.appendChild(fileNote);
+        cvGroup.appendChild(earnedNote);
         form.appendChild(cvGroup);
 
         const pickFile = () => { if (typeof fileInput.click === 'function') fileInput.click(); };
+        // Work Simulation lines the chosen CV does not carry yet are probed too ("+ 2 Work Simulation lines").
+        const showEarned = () => {
+            const kind = checkedValue(form, 'aii-cv');
+            const source = cvSources.find(item => item.kind === kind);
+            const earned = kind === 'none' ? [] : earnedLines();
+            const fresh = source ? mergeCvLines(source.lines, earned).length - source.lines.length : earned.length;
+            earnedNote.textContent = fresh > 0 ? '+ ' + fresh + ' Work Simulation line' + (fresh > 1 ? 's' : '') : '';
+        };
         const showCvNote = () => {
             const kind = checkedValue(form, 'aii-cv');
             const source = cvSources.find(item => item.kind === kind);
@@ -753,6 +875,7 @@
             else if (kind === 'pdf' && file) fileNote.replaceChildren(file.name + ' ', el(doc, 'button', { type: 'button', class: 'aii-linkbtn', text: 'Change' }));
             else if (kind === 'pdf') fileNote.replaceChildren(el(doc, 'button', { type: 'button', class: 'ap-btn is-secondary aii-choose', text: 'Choose your CV (PDF)' }));
             else fileNote.replaceChildren();
+            showEarned();
         };
         fileNote.addEventListener('click', event => {
             if (event.target && event.target.tagName === 'BUTTON') pickFile();
@@ -772,8 +895,15 @@
             if (label && label.querySelector('input[value="pdf"]') && !(fileInput.files && fileInput.files[0])) pickFile();
         });
         showCvNote();
+        // Lines earned on another device arrive with the account copy of the Work Simulation's progress.
+        if (!Array.isArray(opts.earnedLines) && progress && typeof progress.open === 'function') {
+            try {
+                const simulation = progress.open(SIMULATION_TOOL, { defaults: {} });
+                if (simulation && typeof simulation.subscribe === 'function') simulation.subscribe(showEarned);
+            } catch (_) { /* local only */ }
+        }
 
-        const coach = el(doc, 'input', { type: 'checkbox', id: 'aii-coach', checked: !!last.coach });
+        const coach =el(doc, 'input', { type: 'checkbox', id: 'aii-coach', checked: !!last.coach });
         form.appendChild(el(doc, 'label', { class: 'aii-switch', for: 'aii-coach' }, [coach, el(doc, 'span', { class: 'aii-switch-track', 'aria-hidden': 'true' }), el(doc, 'span', { text: 'Coach me after each answer' })]));
 
         let retryBox = null;
@@ -812,6 +942,7 @@
                 toughness: checkedValue(form, 'aii-toughness') || 'Medium',
                 coach: !!coach.checked,
                 retry: retryBox && retryBox.checked && retryFits(round) ? retry.slice(0, 3) : [],
+                earnedLines: kind === 'none' ? [] : earnedLines(),
                 cv: source ? { kind, lines: source.lines.slice() }
                     : kind === 'pdf' ? { kind, file: fileInput.files && fileInput.files[0] ? fileInput.files[0] : null }
                         : { kind: 'none' }
@@ -885,6 +1016,7 @@
         ROLE, TOOL, CONTENT_URL, BACK_URL, ROUNDS, DOMAINS, FIRM_TYPES, TOUGHNESS, ROUND_SHAPES,
         normalizeConfig, getInstructions, normaliseDomain, firmTypeInfo, toughnessInfo, roundInfo, domainInfo,
         cvLinesFromText, cvLinesFromPdfItems, cvLinesFromBuilder, builderName, matchCvProbes, pickCvProbes, simulationDomain,
+        earnedLinesFrom, mergeCvLines, presetFromQuery, SIMULATION_TOOL,
         buildPlan, renderPrompt, welcomeLine, planQuestionIds, markAsked, parseScorecard,
         mountSetup, renderScorecard, rng
     });

@@ -208,3 +208,6 @@ body.aii-live .interview-header .pills { display: none; }
 @media (prefers-reduced-motion: reduce) {
     .aii-option-body, .aii-switch-track, .aii-switch-track::after { transition: none; }
 }
+
+/* "+ 2 Work Simulation lines": earned lines the chosen CV does not carry yet are probed too */
+.aii-earned { color: var(--ap-navy); font-weight: 600; }
