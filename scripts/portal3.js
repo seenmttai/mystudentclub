@@ -3208,7 +3208,7 @@ async function initializeFCM() {
         firebaseMessaging.onMessage(payload => { });
         if ('serviceWorker' in navigator) await navigator.serviceWorker.register('/firebase-messaging-sw.js');
         if (Notification.permission === 'granted') await requestTokenAndSync();
-    } catch (err) { }
+    } catch (err) { console.error('FCM init failed:', err); }
 }
 
 async function requestTokenAndSync() {
@@ -3218,6 +3218,7 @@ async function requestTokenAndSync() {
         const token = await firebaseMessaging.getToken({ vapidKey: VAPID_KEY });
         if (token) { currentFcmToken = token; await syncNotificationTopics(); }
     } catch (err) {
+        console.error('FCM token request failed:', err);
     }
 }
 function shouldSync() { const lastSync = localStorage.getItem('notificationSyncTimestamp'); if (!lastSync) return true; return new Date(parseInt(lastSync)).toDateString() !== new Date().toDateString(); }
