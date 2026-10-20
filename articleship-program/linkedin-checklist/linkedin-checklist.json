@@ -12,11 +12,12 @@
       "id": "photo",
       "section": "First look",
       "check": "A clear head-and-shoulders photo of you",
+      "how": "Your profile → tap your photo → upload the new one → Save photo.",
       "example": [
-        "✅ Face a window, plain light wall behind you, phone at eye level. Your face fills most of the square. Natural smile, eyes to the camera.",
-        "✅ A formal shirt, kurta or top is enough. You don’t need a blazer.",
-        "❌ Arm’s-length selfie, a wedding or function photo, a crop from a group picture, sunglasses, filters.",
-        "Cleaned up the background with an app? Fine. A changed face is not: it must look like you on interview day.",
+        "✅ Face a window, plain light wall behind you, phone at eye level. Your face fills most of the square. Natural smile.",
+        "✅ A formal shirt, kurta or top. You don’t need a blazer.",
+        "❌ Arm’s-length selfie, a function photo, a crop from a group picture, sunglasses, filters.",
+        "Background cleaned up with an app? Fine. A changed face is not: it must look like you on interview day.",
         "Test: shrink it to fingernail size. Still clearly you? That’s how it shows next to your request.",
         "Use the same photo on Gmail and WhatsApp, so HR knows the mail and the call are the same person."
       ]
@@ -25,42 +26,42 @@
       "id": "name",
       "section": "First look",
       "check": "Your name exactly as on your CV, with nothing before it",
+      "how": "Your profile → the pencil in your intro → First name, Last name.",
       "example": [
-        "✅ Ananya Iyer: the same spelling as your CV, SSP and Gmail.",
-        "❌ CA Ananya Iyer · Semi CA Ananya · Ananya Iyer (CA Finalist) · Aspiring CA",
+        "✅ Riya Sharma: the same spelling as your CV, SSP and Gmail.",
+        "❌ CA Riya Sharma · Semi CA Riya · Riya Sharma (CA Finalist) · Aspiring CA",
         "Only ICAI members may put “CA” before their name. A partner who sees it on a CA Inter profile stops reading.",
-        "Your stage goes in the headline: “CA Inter cleared”. “CA Finalist” is a word you search with, not a title for your profile."
+        "Your stage goes in the headline. “CA Finalist” is a word you search with, not a title for your profile."
       ]
     },
     {
       "id": "headline",
       "section": "First look",
       "check": "Headline: your stage, target, city and one proof",
+      "how": "Your profile → the pencil in your intro → Headline.",
+      "example_label": "Formula and examples",
       "example": [
-        "✅ CA Inter cleared (September 2026), first attempt | Seeking articleship in statutory audit | Pune  ← my pick, if it’s true",
-        "✅ CA Inter cleared (Group I May 2026, Group II September 2026) | Seeking articleship in audit | Delhi NCR",
-        "✅ CA Inter cleared (May 2026) | ICITSS done | Seeking articleship in GST | Ahmedabad or Vadodara | GST Work Simulation",
-        "✅ CA Inter cleared (September 2026) | B.Com, [College] | Seeking articleship in direct tax | Bengaluru",
-        "✅ CA Inter result awaited (September 2026) | ICITSS done | Seeking articleship in audit | Kolkata",
-        "✅ CA Inter cleared (September 2026), AIR [n] | Seeking articleship in audit | Chennai  ← only with your rank letter",
+        "✅ CA Inter cleared ([Month Year]), first attempt | Seeking articleship in {domain|statutory audit} | Pune  ← my pick, if it’s true",
+        "✅ CA Inter cleared (Group I [Month Year], Group II [Month Year]) | Seeking articleship in {domain|audit} | Delhi NCR",
+        "✅ CA Inter result awaited ([Month Year]) | ICITSS done | Seeking articleship in {domain|audit} | Kolkata",
         "❌ Aspiring CA | Finance enthusiast | Learner: nothing anyone searches for.",
-        "❌ CA Finalist || Hardworking || Dedicated: a title you don’t hold yet, and words nobody types.",
-        "Your headline sits under your name everywhere: search results, their invitations, every comment. A partner decides from this one line whether to open your profile. HR search in words like “CA Inter” and the exam month. Put those words in, and you show up.",
-        "Test: search your own words (articleship statutory audit Pune) → People. Are you there? What do the headlines around you say?",
-        "Change it the day your status changes: result, ICITSS, selection."
+        "Why: HR search with words like “CA Inter” and the exam month. Put them in and you show up.",
+        "Test: search your own words (articleship {domain|statutory audit} Pune) → People. Are you there?",
+        "A rank (AIR) goes in only with your rank letter. Change the headline the day your status changes: result, ICITSS, selection."
       ],
       "copy_label": "Formula",
+      "copy_aria": "Copy headline formula",
       "copy": "CA Inter cleared ([Month Year]) | Seeking articleship in [domain] | [City] | [one proof]"
     },
     {
       "id": "custom-url",
       "section": "First look",
       "check": "Your profile address is just your name",
+      "how": "Your profile → Public profile & URL → Edit your custom URL → Save.",
       "example": [
-        "✅ linkedin.com/in/ananya-iyer",
-        "Taken? Add an initial or your city: ananya-k-iyer, ananya-iyer-pune.",
-        "❌ The default with random characters (ananya-iyer-7b2c91a4), a nickname, your birth year.",
-        "How: your profile → Public profile & URL → edit your custom URL → Save.",
+        "✅ linkedin.com/in/riya-sharma",
+        "Taken? Add an initial or your city: riya-k-sharma, riya-sharma-pune.",
+        "❌ The default with random characters (riya-sharma-4b7a91203), a nickname, your birth year.",
         "Put it on your CV and in your Gmail signature behind the word “LinkedIn”. Then open it once from your CV on your phone."
       ],
       "fix": {
@@ -72,70 +73,76 @@
       "id": "about",
       "section": "Your proof",
       "check": "About: the first three lines say who you are, what you’ve done and what you want",
+      "how": "Your profile → Add profile section → Core → About (or the pencil on About).",
+      "example_label": "Template and example",
       "example": [
-        "> I cleared CA Intermediate in September 2026 and I’m looking for articleship in statutory audit in Pune.",
-        "> In my Statutory audit Work Simulation I vouched 20 purchase bills against the PO, GRN and ledger and flagged 3 exceptions.",
-        "> I want to learn working papers in a team where seniors review my work. Write to me at ananya.iyer@email.com.",
+        "Only these lines show before “…see more”, and most people never click it.",
+        "> I cleared CA Intermediate in [Month Year] and I’m looking for articleship in statutory audit in Pune.",
+        "> In my Statutory Audit Work Simulation I vouched 20 purchase bills against the PO, GRN and ledger and flagged 3 exceptions.",
+        "> I want to learn working papers in a team where seniors review my work. Write to me at riya.sharma@email.com.",
         "",
-        "Only these lines show before “…see more”, and most people never click it. Line 1: your stage and target. Line 2: one thing you have actually done. Line 3: what you want to learn, and your email.",
-        "Write in “I”: short lines, a blank line after every two or three.",
-        "Helped a CA office or a family business? That’s your line 2: “For two months I helped a CA office prepare GSTR-1 and match purchase invoices with GSTR-2B for six clients.”",
-        "Result awaited? Start with “I’ve written CA Intermediate (September 2026), result awaited, and finished ICITSS.” Then a project: “I built an Excel bank reconciliation for a practice company and found 4 unmatched entries.”",
-        "After the three lines, if you like: how you used your exam break, one college role, and a last line of search words (Statutory audit · Vouching · Excel · Tally Prime).",
-        "❌ “Passionate, hardworking, dedicated professional”, hobbies copied from a sample, one long paragraph, “he” or “she” about yourself.",
-        "Only lines you can talk about for two minutes in an interview. Read it on your phone before you save."
+        "Helped a CA office or a family business? That’s your line 2: “For two months I helped a CA office match purchase invoices with GSTR-2B for six clients.”",
+        "Result awaited? Line 1: “I’ve written CA Intermediate ([Month Year]), result awaited, and finished ICITSS.”",
+        "Below them, if you like: your exam break, one college role, a line of search words (Statutory audit · Vouching · Excel · Tally Prime).",
+        "❌ “Passionate, hardworking, dedicated professional”, copied hobbies, one long paragraph, “he” or “she”. Write in “I”, a blank line after every two or three lines.",
+        "Only lines you can talk about for two minutes in an interview. Read it on your phone before saving."
       ],
       "copy_label": "Your first three lines",
+      "copy_aria": "Copy About first three lines",
       "copy": "I cleared CA Intermediate in [Month Year] and I’m looking for articleship in [domain] in [City].\n[One thing you have actually done, with a number.]\nI want to learn [what you want to learn]. Write to me at [your email]."
     },
     {
       "id": "education",
       "section": "Your proof",
       "check": "ICAI and your college in Education, picked from the list so their logos show",
+      "how": "Add profile section → Core → Education → type “The Institute of Chartered Accountants of India” and pick it from the list.",
       "example": [
-        "How: Add profile section → Education → start typing “The Institute of Chartered Accountants of India” and pick it from the list. Don’t type it in full by hand.",
-        "Degree: CA Intermediate. Description: “Both groups cleared (September 2026) · ICITSS completed”, or one line per group with its month and year. Paper exemptions only if you got them.",
-        "Add CA Foundation as a second ICAI entry if you like. Add your college the same way: B.Com, years, “pursuing” if you haven’t finished.",
+        "Degree: CA Intermediate. Description: “Both groups cleared ([Month Year]) · ICITSS completed”, or one line per group with its month and year. Paper exemptions only if you got them.",
+        "Add your college the same way: B.Com, years, “pursuing” if you haven’t finished. CA Foundation as a second ICAI entry if you like.",
         "Marks: the same figures as your CV, or leave them out. Never rounded up.",
         "❌ ICAI under Experience. Studying at ICAI is not a job at ICAI.",
-        "Why: people who search by school (ICAI, your college) find you, and a logo makes the entry look real."
+        "Why: people who search by school (ICAI, your college) find you."
       ]
     },
     {
       "id": "certifications",
       "section": "Your proof",
       "check": "Every course and simulation you finished, under Licenses & certifications",
+      "how": "Add profile section → Recommended → Licenses & certifications. Pick the issuer from the list so its logo shows.",
       "example": [
-        "e.g. Statutory audit Work Simulation, MSC Articleship Program · issuer My Student Club · Oct 2026",
-        "e.g. PwC US Audit Job Simulation · issuer Forage · Oct 2026",
-        "e.g. SEBI Investor Awareness Test (Level 1) · issuer NISM · Sep 2026",
-        "How: Add profile section → Recommended → Add licenses & certifications. Pick the issuer from the list so its logo shows. Issue date: the month you finished. Expiry: only if your certificate shows one. Credential ID and URL if your certificate has them. Add the certificate PDF as media.",
-        "Same names and months as your CV. An interviewer who sees an Excel certificate dated February will ask why your CV says you learnt Excel after your exams.",
-        "Only what you finished. A course you started goes on the day you complete it."
+        "✅ Completed MSC Articleship Program — foundational understanding of work and tasks across all domains · issuer My Student Club",
+        "✅ Statutory Audit Work Simulation, MSC Articleship Program · issuer My Student Club",
+        "✅ PwC US Audit Job Simulation · issuer Forage",
+        "✅ SEBI Investor Awareness Test (Level 1) · issuer NISM",
+        "Issue date: the month you finished. Expiry: only if your certificate shows one. Credential ID and URL if it has them, and the PDF as media.",
+        "Same names and months as your CV. A month that doesn’t match becomes an interview question.",
+        "Only what you finished. A course you started goes on the day you complete it.",
+        "❌ Under Experience or Internship. Experience is only for real work."
       ]
     },
     {
       "id": "featured",
       "section": "Your proof",
       "check": "One piece of your own work pinned in Featured",
+      "how": "Add profile section → Recommended → Add featured → + → a document or a link.",
+      "example_label": "Result post and ideas",
       "example": [
-        "Best: your Work Simulation work sample (the vouching sheet with your findings), an Excel reconciliation you built, or a short post where you explain one idea in your own words.",
-        "How: Add profile section → Recommended → Add featured → + → a document or a link. A post must be published before you can pin it.",
-        "Nothing to show yet? Post your result (below), pin it, and swap it for a work sample later.",
+        "Best: your Work Simulation work sample (the vouching sheet with your findings), an Excel reconciliation you built, or a short post explaining one idea in your own words.",
+        "Nothing to show yet? Publish your result post, pin it, and swap it for a work sample later. A post must be published before you can pin it.",
         "Before you upload, delete your phone number, your address and any real person’s or client’s name.",
         "One strong item beats five weak ones. Not your CV: it carries your phone number."
       ],
       "copy_label": "Your result post",
+      "copy_aria": "Copy result post",
       "copy": "Cleared CA Intermediate ([Month Year]). Two things that worked for me: [one study habit] and [one revision habit]. Thank you, [teacher’s name], for [one specific thing]. Next: articleship in [domain] in [City]."
     },
     {
       "id": "skills",
       "section": "Your proof",
       "check": "Three skills you can prove, each linked to where you used it",
+      "how": "Add profile section → Core → Skills, then tick the simulation, course or project where you used each one.",
       "example": [
-        "Open one real articleship opening in your domain and note the skills it asks for.",
-        "Pick three you can actually show, e.g. Vouching · Microsoft Excel · GST returns.",
-        "How: Add profile section → Core → Add skills, then tick the simulation, course or project where you used each one.",
+        "Open one real articleship opening in your domain and note the skills it asks for. Pick three you can show, e.g. Vouching · Microsoft Excel · GST returns.",
         "Use the opening’s own words in your headline and About too: for an audit team, “statutory audit”, not just “finance”.",
         "❌ Teamwork, Communication, Leadership as your top three. Everyone has them; nobody searches for them."
       ]
@@ -144,24 +151,23 @@
       "id": "open-to-work",
       "section": "Open the door",
       "check": "Open to Work: articleship, your cities, your real start date, all members",
+      "how": "Your profile → Open to → Finding a new job.",
       "example": [
-        "How: your profile → Open to → Finding a new job.",
-        "Job titles: Article Assistant, Articled Assistant.",
-        "Locations: only cities you can reach for an interview.",
-        "Start date and availability: the real first day you can join. Never “immediately” unless it’s true.",
-        "Who can see it: All LinkedIn members. Partners and seniors who post openings don’t use LinkedIn’s recruiter tool, so “Recruiters only” hides you from the very people you’re writing to.",
-        "All members also puts the #OpenToWork frame on your photo. That’s fine: it tells a partner what you want before you say a word.",
+        "Job title: Article Assistant.",
+        "Locations: only cities you can reach for an interview. Start date: the real first day you can join, never “immediately” unless it’s true.",
+        "Who can see it: All LinkedIn members. Partners and seniors who post openings don’t use LinkedIn’s recruiter tool, so “Recruiters only” hides you from the very people you’re writing to. The #OpenToWork frame it adds is fine.",
         "Expected salary: leave it blank.",
-        "While you’re there: Jobs → Preferences → Resumes and application data → Upload your CV PDF. LinkedIn keeps it for when you apply through LinkedIn. Don’t add your CV to your profile itself: your network can download it, phone number and all."
+        "While you’re there: Jobs → Preferences → Resumes and application data → upload your CV PDF for LinkedIn applications. Don’t add your CV to your profile: your network can download it, phone number and all."
       ]
     },
     {
       "id": "contact",
       "section": "Open the door",
       "check": "Email in Contact info, a plain banner, your phone number nowhere public",
+      "how": "Your profile → Contact info → the pencil.",
       "example": [
-        "Contact info: your name-based Gmail, e.g. ananya.iyer@email.com. Your connections see it. Leave the phone field empty.",
-        "Banner: a plain colour, or one simple line such as “Statutory audit · Excel · Pune”. A real photo of you presenting (ICITSS, a college event) works too. Keep the left third empty: your photo sits on it.",
+        "Contact info: your name-based Gmail, e.g. riya.sharma@email.com. Your connections see it. Leave the phone field empty.",
+        "Banner: a plain colour, one simple line such as “Statutory audit · Excel · Pune”, or a real photo of you presenting. Keep the left third empty: your photo sits on it.",
         "❌ Your phone number on the banner or in About. Anyone can see it, and scam calls follow. HR who want to call will ask, or take it from your CV.",
         "❌ Quotes, city skylines, logos of firms you don’t work at."
       ]
@@ -170,15 +176,17 @@
       "id": "recommendation",
       "section": "Open the door",
       "check": "One recommendation from someone who has seen your work",
+      "how": "Connect first. Then their profile → More → Request a recommendation.",
+      "example_label": "Request and tips",
       "example": [
-        "Who: the ICITSS faculty member who saw your presentation, a coaching teacher, your college project guide, the CA or business owner you helped during a break. Not a friend, not a relative.",
-        "How: connect first. Then open their profile → More → Request a recommendation → how you know them and your role then → your message.",
-        "Give them the facts, so writing takes two minutes. Make “no” easy.",
+        "Who: the ICITSS faculty member who saw your presentation, a coaching teacher, your college project guide, the CA or business owner you helped. Not a friend, not a relative.",
+        "Give them the facts so writing takes two minutes, and make “no” easy. The request above does both.",
         "When it’s up: “Thank you so much, Sir/Ma’am. I’ve added it to my profile, and I’ll tell you where I join.”",
         "❌ “I’ll write one for you if you write one for me.”",
         "❌ Writing it yourself for them to paste."
       ],
       "copy_label": "Your request",
+      "copy_aria": "Copy recommendation request",
       "copy": "Hello Sir/Ma’am, I hope you’re well. I’m applying for articleship in [domain] and would be grateful for a short LinkedIn recommendation, if you’re comfortable writing one. In case it helps you recall: in [Month Year] I [presented the case on revenue recognition in your ICITSS batch]. Two or three lines are plenty. If you’re busy, no problem at all. Thank you, [Your name]",
       "fix": {
         "label": "Open my connections",
@@ -189,7 +197,11 @@
   "notes": [
     {
       "title": "Same story as your CV",
-      "text": "On a laptop: your profile → More → Save to PDF. Anyone can save your profile this way, HR included. Put it next to your CV and read line by line: result month and groups, marks, certificate months, projects, city. If your profile and your CV disagree, the interviewer believes neither."
+      "text": "On a laptop: your profile → More → Save to PDF. HR can save your profile the same way. Put it next to your CV and read line by line: result month and groups, marks, certificate months, projects, city. If the two disagree, the interviewer believes neither.",
+      "link": {
+        "label": "Open my CV",
+        "href": "/cv-builder/?stage=articleship"
+      }
     },
     {
       "title": "Experience: only real work",

@@ -3,13 +3,20 @@
  * Twelve profile checks on the shared checklist engine, each with a good example and a link that opens the student's
  * own LinkedIn profile (or the exact LinkedIn page for that check). Ticks save through the progress engine.
  *
- * This file adds the page around the engine: the content load, the "Open my profile" card, a default "Open my profile"
- * link on every check, examples drawn line by line ("> " lines = sample text in a white box; "How:"-style lead-ins in
- * bold), white Copy boxes (headline formula, About lines, result post, recommendation request) inside the examples,
- * and the notes after the last check.
+ * This file adds the page around the engine: the content load, the "Open my profile" card, a one-line "How:" click path
+ * under each check, a default "Open my profile" link on every check (lighter, so the repeats don't shout), examples
+ * drawn line by line ("> " lines = sample text in a white box; short "Label:" lead-ins in bold), white Copy boxes
+ * (headline formula, About lines, result post, recommendation request) at the top of their fold-outs, the shared
+ * "my domain" filled into the Copy boxes and examples, and the notes after the last check.
  *
  * Content JSON (articleship-program/linkedin-checklist/linkedin-checklist.json) = the engine's schema plus optional
- * `open` { label, href, hint }, per-item `copy` + `copy_label`, and `notes` [{ title, text }].
+ * `open` { label, href, hint }; per item `how` (one line), `example_label` (the fold-out's name), `copy` + `copy_label`
+ * + `copy_aria`, `also` { label, href } (a second link beside the fix link); `notes` [{ title, text, link: { label, href } }]. Domain: `[domain]` (Copy boxes) and
+ * `{domain|statutory audit}` (examples: the default until the student has set "my domain") are filled from
+ * MSCArticleshipProgress.getMyDomain() and refilled when it changes.
+ *
+ * Ticks: the progress engine's store with the checklist engine's mergeTicks: when two devices both changed ticks before
+ * a sync, the later change wins per check (a tick or an untick), so an untick on one device is not undone by the other.
  *
  * Browser: window.MSCArticleshipLinkedinChecklist (boot() is called by the page).
  * Node (tests): require('./scripts/articleship-linkedin-checklist.js').
@@ -31,6 +38,18 @@
         hint: 'Not opening in the app? In LinkedIn, tap your photo, then tap it again.'
     });
     const COPIED = 'Copied. Fill in the [brackets].';
+    const EXAMPLE_LABEL = 'Examples';
+
+    /**
+     * "My domain" as it reads in a headline or an About line ("Seeking articleship in statutory audit"): the words people
+     * search with (the roadmaps' LinkedIn keywords), not the long filter label.
+     */
+    const DOMAIN_PHRASE = Object.freeze({
+        'statutory-audit': 'statutory audit', 'internal-audit': 'internal audit', 'direct-tax': 'direct tax', 'gst': 'GST',
+        'bank-audit': 'bank audit', 'transfer-pricing': 'transfer pricing', 'ma-tax': 'M&A tax', 'valuation': 'valuation',
+        'fdd': 'due diligence', 'forensic': 'forensic audit', 'consulting': 'consulting', 'accounting': 'accounting & MIS',
+        'ib-er': 'equity research'
+    });
 
     function engine(name, options) {
         const key = name === 'checklist' ? 'Checklist' : 'Progress';
@@ -45,6 +64,28 @@
 
     function text(value) {
         return value === undefined || value === null ? '' : String(value).trim();
+    }
+
+    /** A domain slug (or label) → the words for a headline; '' when unknown. labelFn(slug) gives a label for new slugs. */
+    function domainPhrase(value, labelFn) {
+        const slug = text(value).toLowerCase();
+        if (!slug) return '';
+        if (DOMAIN_PHRASE[slug]) return DOMAIN_PHRASE[slug];
+        let label = '';
+        try { label = typeof labelFn === 'function' ? text(labelFn(slug)) : ''; } catch (_) { label = ''; }
+        // "Statutory audit" → "statutory audit"; acronyms ("GST", "IB & …") keep their capitals.
+        return label && /^[A-Z][a-z]/.test(label) ? label.charAt(0).toLowerCase() + label.slice(1) : label;
+    }
+
+    const DOMAIN_TOKEN = /\{domain(?:\|([^}]*))?\}/g;
+    const HAS_DOMAIN = /\{domain(?:\|[^}]*)?\}|\[domain\]/;
+
+    /** Fill "my domain": `{domain|default}` → the phrase (else the default); `[domain]` → the phrase (else kept). */
+    function fillDomain(value, phrase) {
+        const p = text(phrase);
+        return String(value === undefined || value === null ? '' : value)
+            .replace(DOMAIN_TOKEN, (_, fallback) => p || text(fallback) || '[domain]')
+            .replace(/\[domain\]/g, p ? p : '[domain]');
     }
 
     /** Lines → one string, keeping "" as a blank line (the engine drops empty array entries). */
@@ -88,6 +129,7 @@
         const open = openTarget(source, Checklist.safeHref);
         const fixDefault = { label: open.label, href: open.href };
         const copyById = new Map();
+        const extras = new Map();
         const mapItem = raw => {
             const item = typeof raw === 'string' ? { check: raw } : Object.assign({}, raw || {});
             if (Array.isArray(item.example)) item.example = joinLines(item.example);
@@ -111,12 +153,25 @@
             if (!match) return;
             used.add(match.id);
             const copy = joinLines(raw.copy);
-            if (copy) copyById.set(match.id, { label: text(raw.copy_label || raw.copyLabel) || 'Copy this', text: copy });
+            const label = text(raw.copy_label || raw.copyLabel) || 'Copy this';
+            if (copy) copyById.set(match.id, { label, text: copy, aria: text(raw.copy_aria || raw.copyAria) || 'Copy ' + label.toLowerCase() });
+            const how = text(raw.how);
+            const exampleLabel = text(raw.example_label || raw.exampleLabel);
+            const alsoRaw = raw.also && typeof raw.also === 'object' ? raw.also : {};
+            const alsoHref = Checklist.safeHref ? Checklist.safeHref(alsoRaw.href || alsoRaw.url) : text(alsoRaw.href || alsoRaw.url);
+            const also = alsoHref && text(alsoRaw.label) ? { label: text(alsoRaw.label), href: alsoHref } : null;
+            if (how || exampleLabel || also) extras.set(match.id, { how, exampleLabel, also });
         });
         const notes = (Array.isArray(source.notes) ? source.notes : [])
-            .map(note => (typeof note === 'string' ? { title: '', text: text(note) } : { title: text(note && note.title), text: joinLines(note && (note.text || note.body)) }))
+            .map(note => {
+                if (typeof note === 'string') return { title: '', text: text(note), link: null };
+                const raw = (note && note.link) || {};
+                const href = Checklist.safeHref ? Checklist.safeHref(raw.href || raw.url) : text(raw.href || raw.url);
+                const label = text(raw.label || raw.text);
+                return { title: text(note && note.title), text: joinLines(note && (note.text || note.body)), link: href && label ? { label, href } : null };
+            })
             .filter(note => note.text);
-        return { content: source, model, copies: copyById, notes, open };
+        return { content: source, model, copies: copyById, extras, notes, open };
     }
 
     function el(doc, tag, className, content) {
@@ -159,23 +214,40 @@
         return Promise.resolve(fallback());
     }
 
-    function copyBox(doc, copy) {
+    /** A text node that may carry "my domain": keeps its template so the domain can be refilled later. */
+    function setText(node, template, phrase) {
+        const value = String(template === undefined || template === null ? '' : template);
+        if (HAS_DOMAIN.test(value)) node.setAttribute('data-lc-tpl', value);
+        node.textContent = fillDomain(value, phrase);
+        return node;
+    }
+
+    /** Refill every domain-bearing text under `container` (after "my domain" changes). */
+    function applyDomain(container, phrase) {
+        if (!container) return;
+        container.querySelectorAll('[data-lc-tpl]').forEach(node => { node.textContent = fillDomain(node.getAttribute('data-lc-tpl'), phrase); });
+    }
+
+    function copyBox(doc, copy, phrase) {
         const box = el(doc, 'div', 'lc-copy');
         const head = el(doc, 'div', 'lc-copy-head');
         head.appendChild(el(doc, 'span', 'lc-copy-label', copy.label));
         const button = el(doc, 'button', 'lc-copy-btn', 'Copy');
         button.type = 'button';
+        button.setAttribute('aria-label', copy.aria || 'Copy ' + copy.label.toLowerCase());
         head.appendChild(button);
         box.appendChild(head);
-        box.appendChild(el(doc, 'p', 'lc-copy-text', copy.text));
+        const body = setText(el(doc, 'p', 'lc-copy-text'), copy.text, phrase);
+        box.appendChild(body);
         const status = el(doc, 'p', 'lc-copy-status');
         status.setAttribute('role', 'status');
         status.setAttribute('aria-live', 'polite');
         box.appendChild(status);
         let timer = null;
         button.addEventListener('click', () => {
-            Promise.resolve(copyText(copy.text, doc)).then(ok => {
-                status.textContent = ok ? (/\[[^\]]+\]/.test(copy.text) ? COPIED : 'Copied.') : 'Select the text and copy it.';
+            const value = body.textContent;
+            Promise.resolve(copyText(value, doc)).then(ok => {
+                status.textContent = ok ? (/\[[^\]]+\]/.test(value) ? COPIED : 'Copied.') : 'Select the text and copy it.';
                 button.textContent = ok ? 'Copied' : 'Copy';
                 button.classList.toggle('is-done', !!ok);
                 if (timer) clearTimeout(timer);
@@ -185,14 +257,54 @@
         return box;
     }
 
-    /** Put each item's Copy box at the end of its example fold-out (or under the item if it has no example). */
-    function addCopyBoxes(container, copies) {
+    /** Put each item's Copy box at the top of its fold-out, straight under the toggle (or under the item if it has none). */
+    function addCopyBoxes(container, copies, phrase) {
         const doc = container.ownerDocument;
         copies.forEach((copy, id) => {
             const li = container.querySelector('.ap-cl-item[data-id="' + id + '"]');
             if (!li) return;
-            const host = li.querySelector('.ap-cl-example') || li.querySelector('.ap-cl-extra') || li;
-            host.appendChild(copyBox(doc, copy));
+            const box = copyBox(doc, copy, phrase);
+            const details = li.querySelector('.ap-cl-example');
+            if (details) {
+                const summary = details.querySelector('summary');
+                details.insertBefore(box, summary ? summary.nextSibling : details.firstChild);
+            } else {
+                (li.querySelector('.ap-cl-extra') || li).appendChild(box);
+            }
+        });
+    }
+
+    /**
+     * Per check: the one-line "How:" click path under the check, the fold-out's own name, and a lighter style for the
+     * repeated default "Open my profile" links (the specific ones, such as "Edit my URL", keep the full style).
+     */
+    function decorateItems(container, extras, open, phrase) {
+        const doc = container.ownerDocument;
+        container.querySelectorAll('.ap-cl-item').forEach(li => {
+            const extra = extras.get(li.getAttribute('data-id')) || {};
+            if (extra.how) {
+                const how = el(doc, 'p', 'lc-how');
+                how.appendChild(el(doc, 'strong', '', 'How:'));
+                how.appendChild(doc.createTextNode(' '));
+                how.appendChild(setText(el(doc, 'span'), extra.how, phrase));
+                const check = li.querySelector('.ap-cl-check');
+                li.insertBefore(how, check ? check.nextSibling : li.firstChild);
+            }
+            const summary = li.querySelector('.ap-cl-example > summary');
+            if (summary && extra.exampleLabel) summary.textContent = extra.exampleLabel;
+            const fix = li.querySelector('.ap-cl-fix');
+            if (fix && fix.getAttribute('href') === open.href && fix.textContent === open.label) fix.classList.add('lc-fix-profile');
+            if (extra.also) {
+                // A second link on one check (e.g. Featured → the Work Simulation work sample). MSC pages stay in the tab.
+                const a = el(doc, 'a', 'ap-cl-fix lc-also', extra.also.label);
+                a.href = extra.also.href;
+                if (/^https:\/\//i.test(extra.also.href) && !/^https:\/\/(www\.|mobile\.)?mystudentclub\.com(\/|$)/i.test(extra.also.href)) {
+                    a.target = '_blank';
+                    a.rel = 'noopener noreferrer';
+                }
+                const row = li.querySelector('.ap-cl-extra');
+                if (row) row.appendChild(a); else li.appendChild(a);
+            }
         });
     }
 
@@ -229,7 +341,7 @@
     }
 
     /** Re-draw each example fold-out as separate lines (labels bold, sample text in a white box). Text only, never HTML. */
-    function formatExamples(container) {
+    function formatExamples(container, phrase) {
         const doc = container.ownerDocument;
         container.querySelectorAll('.ap-cl-example > p').forEach(p => {
             const box = el(doc, 'div', 'lc-example');
@@ -237,14 +349,15 @@
                 let node;
                 if (block.kind === 'sample') {
                     node = el(doc, 'blockquote', 'lc-sample');
-                    block.lines.forEach(text => node.appendChild(el(doc, 'p', '', text)));
+                    block.lines.forEach(line => node.appendChild(setText(el(doc, 'p'), line, phrase)));
                 } else {
                     node = el(doc, 'p', 'lc-line' + (block.kind === 'good' ? ' is-good' : block.kind === 'bad' ? ' is-bad' : ''));
                     if (block.label) {
                         node.appendChild(el(doc, 'strong', '', block.label + ':'));
-                        node.appendChild(doc.createTextNode(' ' + block.text));
+                        node.appendChild(doc.createTextNode(' '));
+                        node.appendChild(setText(el(doc, 'span'), block.text, phrase));
                     } else {
-                        node.textContent = block.text;
+                        setText(node, block.text, phrase);
                     }
                 }
                 if (block.gap) node.classList.add('has-gap');
@@ -262,14 +375,24 @@
         if (open.hint) node.appendChild(el(doc, 'p', 'lc-open-hint', open.hint));
     }
 
-    function renderNotes(node, notes) {
+    function renderNotes(node, notes, phrase) {
         if (!node) return;
         const doc = node.ownerDocument;
         node.textContent = '';
         notes.forEach(note => {
             const card = el(doc, 'div', 'ap-sticky lc-note');
             if (note.title) card.appendChild(el(doc, 'strong', '', note.title));
-            card.appendChild(el(doc, 'p', '', note.text));
+            card.appendChild(setText(el(doc, 'p'), note.text, phrase));
+            if (note.link) {
+                // Programme pages open in the same tab; anything outside MSC opens in a new one.
+                const a = el(doc, 'a', 'lc-note-link', note.link.label);
+                a.href = note.link.href;
+                if (/^https:\/\//i.test(note.link.href) && !/^https:\/\/(www\.|mobile\.)?mystudentclub\.com(\/|$)/i.test(note.link.href)) {
+                    a.target = '_blank';
+                    a.rel = 'noopener noreferrer';
+                }
+                card.appendChild(a);
+            }
             node.appendChild(card);
         });
         node.classList.toggle('ap-hidden', !notes.length);
@@ -277,23 +400,35 @@
 
     /**
      * Draw the tool. els: { app, open, notes, lede } (elements; open/notes/lede optional).
-     * options: { store, Checklist, onChange }. Returns { list, prepared }.
+     * options: { store, Checklist, onChange, domain (slug of "my domain"), domainLabel(slug) }.
+     * Returns { list, prepared, setDomain(slug) }.
      */
     function render(els, content, options) {
         const opts = options || {};
         const Checklist = engine('checklist', opts);
         const prepared = prepare(content, opts);
+        let phrase = domainPhrase(opts.domain, opts.domainLabel);
         if (els.lede && text(prepared.content.intro)) els.lede.textContent = text(prepared.content.intro);
         renderOpen(els.open, prepared.open);
         const list = Checklist.mount(els.app, prepared.content, {
             store: opts.store,
-            labels: { example: 'Good example' },
+            labels: { example: EXAMPLE_LABEL },
             onChange: opts.onChange
         });
-        formatExamples(els.app);
-        addCopyBoxes(els.app, prepared.copies);
-        renderNotes(els.notes, prepared.notes);
-        return { list, prepared };
+        formatExamples(els.app, phrase);
+        decorateItems(els.app, prepared.extras, prepared.open, phrase);
+        addCopyBoxes(els.app, prepared.copies, phrase);
+        renderNotes(els.notes, prepared.notes, phrase);
+        return {
+            list,
+            prepared,
+            setDomain(slug) {
+                phrase = domainPhrase(slug, opts.domainLabel);
+                applyDomain(els.app, phrase);
+                applyDomain(els.notes, phrase);
+                return phrase;
+            }
+        };
     }
 
     function showError(app, retry) {
@@ -315,7 +450,15 @@
         });
     }
 
-    /** Page start: gate, content, store, render. options (tests): { doc, fetch, store, Gate, Checklist, Progress, url }. */
+    /** The shared "my domain" slug, or null (no setting, or storage blocked). */
+    function readDomain(Progress) {
+        try { return Progress && typeof Progress.getMyDomain === 'function' ? Progress.getMyDomain() || null : null; } catch (_) { return null; }
+    }
+
+    /**
+     * Page start: gate, content, store, render, then keep "my domain" filled in.
+     * options (tests): { doc, fetch, store, Gate, Checklist, Progress, url }.
+     */
     function boot(options) {
         const opts = options || {};
         const doc = opts.doc || root.document;
@@ -327,16 +470,27 @@
         };
         const Gate = opts.Gate || root.MSCArticleshipGate;
         const fetchImpl = opts.fetch || (root.fetch ? root.fetch.bind(root) : null);
+        // "My domain" comes from the page's progress engine (or the test's); never opened just for this.
+        const Progress = opts.Progress || root.MSCArticleshipProgress || null;
+        const domainLabel = slug => (Progress && typeof Progress.domainLabel === 'function' ? Progress.domainLabel(slug) : '');
         // The open-profile link works before the content arrives.
         renderOpen(els.open, DEFAULT_OPEN);
+        let watching = false;
         const start = () => loadContent(fetchImpl, opts.url).then(content => {
             const Checklist = engine('checklist', opts);
             const store = opts.store || engine('progress', opts).open(TOOL, { defaults: { ticks: {} }, merge: Checklist.mergeTicks });
-            return render(els, content, { store, Checklist });
+            const page = render(els, content, { store, Checklist, domain: readDomain(Progress), domainLabel });
+            if (!watching && Progress && typeof Progress.onSettingsChange === 'function') {
+                try { Progress.onSettingsChange(() => page.setDomain(readDomain(Progress))); watching = true; } catch (_) { /* the domain fill is optional */ }
+            }
+            return page;
         }).catch(() => { showError(els.app, () => { start(); }); return null; });
         const gate = Gate && typeof Gate.protect === 'function' ? Gate.protect() : Promise.resolve({ state: 'allow' });
         return Promise.resolve(gate).then(start);
     }
 
-    return Object.freeze({ TOOL, CONTENT_URL, DEFAULT_OPEN, joinLines, openTarget, prepare, parseLine, exampleBlocks, copyText, render, boot });
+    return Object.freeze({
+        TOOL, CONTENT_URL, DEFAULT_OPEN, DOMAIN_PHRASE, joinLines, openTarget, prepare, parseLine, exampleBlocks,
+        domainPhrase, fillDomain, copyText, render, boot
+    });
 });
