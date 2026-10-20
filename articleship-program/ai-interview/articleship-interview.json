@@ -1,0 +1,671 @@
+{
+  "tool": "ai-interview",
+  "title": "Practise your interview",
+  "rounds": [
+    { "id": "full", "label": "Full interview", "minutes": 30, "hint": "Intro, your CV, HR, core and your domain" },
+    { "id": "technical", "label": "Technical round", "minutes": 20, "hint": "Your CV lines, core accounts and your domain" },
+    { "id": "hr", "label": "HR round", "minutes": 20, "hint": "The sixteen questions every firm asks" },
+    { "id": "call", "label": "HR call", "minutes": 10, "hint": "The screening call before the interview" }
+  ],
+  "ladder": [
+    {
+      "id": "intro",
+      "q": "Please introduce yourself.",
+      "tests": "Can they present themselves in a minute, strongest true facts first?",
+      "listen_for": [
+        "45 to 60 seconds: name and city, CA Inter result with month and year (groups together or separately), ICITSS status",
+        "One practical skill they can prove (Excel, a job simulation, a Work Simulation level, a project): the hook",
+        "Closes on why this team; family in one line at the end or left out; no life story"
+      ],
+      "cross": ["You mentioned {hook}. Tell me more about it.", "Tell me one thing about you that is not on your CV."]
+    },
+    {
+      "id": "why-ca",
+      "q": "Why did you choose CA?",
+      "tests": "Is the choice their own and thought through?",
+      "listen_for": [
+        "How the interest began, in one real line",
+        "What they like about the work now (numbers with judgement, law, many industries)",
+        "Does not run down CS, CMA or an MBA"
+      ],
+      "cross": ["Why not an MBA?", "You said you like numbers. Why not economics, then?"]
+    },
+    {
+      "id": "why-domain",
+      "q": "Why do you want to work in {domain}?",
+      "tests": "Do they know what the work actually is?",
+      "listen_for": [
+        "Names what an article really does in this team",
+        "A reason tied to their own interest, an Inter subject or something they practised",
+        "Does not disparage the other domain"
+      ],
+      "cross": ["Why {domain} and not {other_domain}?", "Will choosing {domain} limit you later?"]
+    },
+    {
+      "id": "why-firm",
+      "q": "Why do you want to join {firm}, and not another firm of our size?",
+      "tests": "Research and genuine preference.",
+      "listen_for": [
+        "Respect for the other firms in the same breath",
+        "Two checkable reasons: the team's work, its clients' industries from public facts, how articles are trained",
+        "A clear line that this firm is their first preference for the domain; nothing that sounds like they might back out"
+      ],
+      "cross": ["Which industries do our clients come from?", "What did you read about us before today?"]
+    },
+    {
+      "id": "strengths",
+      "q": "What are your strengths?",
+      "tests": "Do they know their real strengths and can they prove them?",
+      "listen_for": [
+        "One or two strengths, each with a short real example",
+        "Avoids 'hardworking' and 'fast learner' unless they prove them"
+      ],
+      "cross": ["Prove it. Give me one example.", "If you learn fast, why did Inter take more than one attempt? (ask only if it did)"]
+    },
+    {
+      "id": "weakness",
+      "q": "What is your biggest weakness?",
+      "tests": "Self-awareness, and whether they act on it.",
+      "listen_for": [
+        "A real weakness that does not defeat the job",
+        "What they are doing about it, and the progress so far",
+        "Not 'perfectionism', not 'no weakness', not missing deadlines"
+      ],
+      "cross": ["How exactly are you fixing it?", "When did it last show up?"]
+    },
+    {
+      "id": "hire-you",
+      "q": "Why should we hire you over the others we are meeting today?",
+      "tests": "Can they name qualities others may not have, with proof?",
+      "listen_for": [
+        "Announces the number ('Two reasons') and gives fact, then the quality, then how it helps an article",
+        "Sound Inter basics plus one skill usable from day one plus attitude",
+        "'First attempt' or 'interest in your firm' offered as facts, not as qualities"
+      ],
+      "cross": ["The last candidate said the same. What makes you different?"]
+    },
+    {
+      "id": "repetitive",
+      "q": "Articleship has a lot of repetitive work: vouching, ticking, data entry. Will you get bored?",
+      "tests": "Maturity about routine work.",
+      "listen_for": [
+        "Starts with 'not really' and gives a reason: speed, accuracy, expertise",
+        "Looks for a faster or better way next time (a template, a formula)",
+        "Honest that some part of every job is routine"
+      ],
+      "cross": ["Give me an example of a repeated task you made faster."]
+    },
+    {
+      "id": "difficult",
+      "q": "Tell me about a difficult situation you faced and how you handled it.",
+      "tests": "Maturity, and whether they act rather than only suffer.",
+      "listen_for": [
+        "One real, specific situation",
+        "What happened, what they did, the result (a number if possible), what they learned",
+        "Not a stock story, not 'nothing was difficult', nothing too personal"
+      ],
+      "cross": ["What exactly did you do?", "What would you do differently now?"]
+    },
+    {
+      "id": "five-years",
+      "q": "Where do you see yourself in five years?",
+      "tests": "A realistic plan in the field they are interviewing for.",
+      "listen_for": [
+        "Stages: learning the work, owning areas by the end of articleship, qualified and building depth in the domain",
+        "No 'in your chair', 'a partner here' or 'running your competitor'",
+        "If undecided between practice and a job, says so honestly"
+      ],
+      "cross": ["Practice or a job after you qualify?", "If you start a practice, will you take our clients?"]
+    },
+    {
+      "id": "long-hours",
+      "q": "In busy season we work late and sometimes on weekends. How do you feel about that?",
+      "tests": "A considered yes, not a casual one.",
+      "listen_for": [
+        "Yes, having thought about it: deadlines bring busy weeks and that is part of learning fast",
+        "Plans work so late evenings happen when needed, not every day",
+        "No jokes, no 'easily'"
+      ],
+      "cross": ["Then how will you prepare for CA Final?"]
+    },
+    {
+      "id": "fav-subject",
+      "q": "Which was your favourite subject at Inter, and why?",
+      "tests": "Depth. Expect a real question from the subject they name.",
+      "listen_for": [
+        "One subject that fits the team, with one reason",
+        "Honest about marks in it if they were low, and what went wrong in the paper"
+      ],
+      "cross": ["Why those marks in it?", "Then let me ask you one practical question from it."]
+    },
+    {
+      "id": "expectations",
+      "q": "What do you expect from your articleship with us?",
+      "tests": "Realistic expectations.",
+      "listen_for": [
+        "The most learning in two years; varied clients and work; feedback and guidance",
+        "Keeps it real; no stipend, leave or hours talk"
+      ],
+      "cross": ["And what will you give the team in return?"]
+    },
+    {
+      "id": "between-exams",
+      "q": "What did you do between your Inter exams and the result?",
+      "tests": "Initiative, and whether each claim holds.",
+      "listen_for": [
+        "Skills they can show: Excel, a job simulation, a Work Simulation level, a short course, a model",
+        "Can explain each item; dates match the CV",
+        "ICITSS alone does not stand out, since everyone does it"
+      ],
+      "cross": ["What did you actually learn in it?", "Show me: how would you do that in Excel?"]
+    },
+    {
+      "id": "attempts",
+      "q": "How many attempts did you take to clear Inter? Group-wise, please.",
+      "tests": "Honesty under a slightly uncomfortable question.",
+      "listen_for": [
+        "True facts, group by group, with months; a sitting not appeared in is not an attempt",
+        "One line on what changed (a plan, test series, more practice)",
+        "Closes forward with what they did since; no private medical or family detail needed"
+      ],
+      "cross": ["Why did it take more than one attempt? (ask only if it did)", "Is there a gap between Foundation and Inter? Why?"]
+    },
+    {
+      "id": "questions-for-us",
+      "q": "Do you have any questions for us?",
+      "tests": "Interest in the work.",
+      "listen_for": [
+        "Always yes: one or two real questions about the work in the first year, how work is reviewed, what to read before joining",
+        "Keeps stipend, leave, hours, Saturdays and industrial-training policy for HR after the offer"
+      ],
+      "cross": []
+    }
+  ],
+  "call": {
+    "role": "You are an HR executive at {firm} calling the candidate about their articleship application. This is a phone call, not an interview: short questions, brisk pace, about ten minutes.",
+    "questions": [
+      {
+        "id": "call-open",
+        "q": "Hello, I'm calling from {firm} about your articleship application. Is this a good time to talk for ten minutes?",
+        "listen_for": ["Greets and says their name", "If it is not a good time, asks to call back in a few minutes from a quiet place, and means it"],
+        "cross": []
+      },
+      {
+        "id": "call-intro",
+        "q": "Please introduce yourself briefly.",
+        "listen_for": ["About 30 seconds: name, city, CA Inter result with month and year, ICITSS status, the team applied for and one reason, one line of proof"],
+        "cross": []
+      },
+      {
+        "id": "call-attempts",
+        "q": "In how many attempts did you clear CA Inter? Group-wise, please.",
+        "listen_for": ["True facts group by group with months, no rounding", "One line on what changed"],
+        "cross": ["Why did it take more than one attempt? (ask only if it did)"]
+      },
+      {
+        "id": "call-icitss",
+        "q": "Have you completed ICITSS? When can you join?",
+        "listen_for": ["Exact status: completed, ongoing or pending", "Their real earliest joining date; never 'immediately' unless it is true"],
+        "cross": ["Can you join earlier?"]
+      },
+      {
+        "id": "call-relocate",
+        "q": "Are you willing to relocate? Which city do you prefer?",
+        "listen_for": ["Asks which offices have the opening", "Names real cities they can live and work in, with a practical reason"],
+        "cross": ["What if your family needs you back home after a year?"]
+      },
+      {
+        "id": "call-travel",
+        "q": "Are you ready to travel to client locations?",
+        "listen_for": ["Comfortable with client and plant visits", "States any real limit politely now; asks how often the team travels"],
+        "cross": []
+      },
+      {
+        "id": "call-course",
+        "q": "Are you pursuing any other course or exam?",
+        "listen_for": ["Discloses it", "How it fits around office hours; asks about the exam-day policy rather than promising no leave"],
+        "cross": ["How will you manage college and office?"]
+      },
+      {
+        "id": "call-applied",
+        "q": "Have you applied elsewhere? Do you hold any other offer?",
+        "listen_for": ["Honest: a few firms for the domain; names only if asked", "If an offer exists, says so with its real deadline", "Why this firm is the first preference"],
+        "cross": ["If you get both, which will you join?"]
+      },
+      {
+        "id": "call-stipend",
+        "q": "What stipend are you expecting?",
+        "listen_for": ["No figure: the work and learning come first, comfortable with the firm's standard stipend, details at the offer stage"],
+        "cross": []
+      },
+      {
+        "id": "call-other-domain",
+        "q": "We don't have an opening in {domain} right now, but we do in {other_domain}. Would you take it?",
+        "listen_for": ["States their preference and their openness", "Asks what the work in that team would be, and whether articles rotate"],
+        "cross": []
+      }
+    ],
+    "pressure": [
+      {
+        "id": "call-offer-deadline",
+        "q": "You said another firm is waiting for your answer. We can only confirm next week. What will you do?",
+        "listen_for": ["Stays honest about the deadline", "Asks whether the process can move faster, or what the next step and date are", "Does not bluff or make a promise they cannot keep"],
+        "cross": []
+      },
+      {
+        "id": "call-decide-now",
+        "q": "We need your answer right now. Yes or no?",
+        "listen_for": ["Stays calm", "Asks for the one detail they need (team, city, joining date)", "Gives a true answer, or a clear time by which they will answer"],
+        "cross": []
+      }
+    ],
+    "close": "Before you end the call, wait to see whether the candidate asks for the next step and by when they will hear. If they do not, end politely and note it in the report."
+  },
+  "core": [
+    {
+      "id": "entry-gst-sale", "topic": "entries",
+      "q": "Pass the entry: goods sold for ₹500 plus 18% GST, received in cash.",
+      "listen_for": ["Cash Dr 590; Sales Cr 500; output CGST 45 and SGST 45 within the state, or output IGST 90 between states", "GST collected is a liability, not income"],
+      "cross": ["What happens to that output tax after the month ends?"]
+    },
+    {
+      "id": "entry-tds-fees", "topic": "entries",
+      "q": "Professional fees of ₹80,000 are paid to a CA firm and TDS applies. Pass the entry.",
+      "listen_for": ["Professional fees Dr 80,000; TDS payable Cr 8,000 at 10%; bank or the firm Cr 72,000", "Then TDS payable Dr, bank Cr when deposited", "Asks whether the payee's total for the year crosses the threshold"],
+      "cross": ["What if the company forgets to deduct it?"]
+    },
+    {
+      "id": "entry-prepaid", "topic": "entries",
+      "q": "Insurance of ₹1,80,000 was paid on 1 October for one year. What is the position at 31 March?",
+      "listen_for": ["Asks or states the period covered", "₹90,000 expense and ₹90,000 prepaid (asset)", "If all of it was expensed: prepaid insurance Dr 90,000, insurance Cr 90,000"],
+      "cross": ["Which concept is this?"]
+    },
+    {
+      "id": "entry-advance", "topic": "entries",
+      "q": "A customer pays a ₹4 lakh advance in March for goods delivered in April. Pass the entry. When is it revenue?",
+      "listen_for": ["Bank Dr; advance from customer (a liability) Cr", "Revenue in April when risks and rewards pass (AS 9), or control (Ind AS 115)", "The invoice or cash date alone does not decide revenue"],
+      "cross": ["What if the invoice was raised in March?"]
+    },
+    {
+      "id": "entry-salary-accrual", "topic": "entries",
+      "q": "March salary of ₹2 lakh is paid on 5 April. What do you do at 31 March?",
+      "listen_for": ["Accrue it: salary Dr, salary payable Cr", "The expense belongs to March (accrual concept)"],
+      "cross": ["And the entry on 5 April?"]
+    },
+    {
+      "id": "tb-tallied", "topic": "entries",
+      "q": "Does a tallied trial balance prove the books are right?",
+      "listen_for": ["No: it only proves debits equal credits", "Errors of principle, omission, compensating errors and wrong-account postings still leave it tallied"],
+      "cross": ["Give me an example of an error of principle."]
+    },
+    {
+      "id": "capital-revenue", "topic": "entries",
+      "q": "Capital or revenue: a new machine, its freight and installation, and its annual servicing?",
+      "listen_for": ["Machine, freight and installation are capital", "Routine servicing is revenue", "Wrong classification misstates both profit and assets"],
+      "cross": ["The machine was booked under repairs and is ready on 8 April. What is the position at 31 March?"]
+    },
+    {
+      "id": "as2-nrv", "topic": "standards",
+      "q": "How is inventory valued under AS 2? Cost ₹600, expected selling price ₹560, cost to sell ₹30. What value do you use?",
+      "listen_for": ["Lower of cost and net realisable value, item by item", "NRV = 560 − 30 = 530; write down ₹70 a unit", "Cost includes purchase, conversion and costs to bring it to its location and condition; selling costs and abnormal waste are excluded"],
+      "cross": ["You can't estimate NRV easily. Can you just use cost?", "What does AS 2 ask you to disclose?"]
+    },
+    {
+      "id": "as9-revenue", "topic": "standards",
+      "q": "When is revenue from selling goods recognised under AS 9?",
+      "listen_for": ["When significant risks and rewards pass and there is no significant uncertainty about collection", "Services as performed; interest on a time basis; dividends when the right to receive is established"],
+      "cross": ["And under Ind AS 115? Give me the five steps."]
+    },
+    {
+      "id": "as10-ppe", "topic": "standards",
+      "q": "Under AS 10, what goes into the cost of a machine, and when does depreciation start?",
+      "listen_for": ["Purchase price, non-refundable taxes, directly attributable costs (installation, site preparation, testing), less trade discounts", "Depreciation starts when the asset is available for use, not when it is bought"],
+      "cross": ["A change in useful life: is that a change in policy or in estimate?"]
+    },
+    {
+      "id": "as29", "topic": "standards",
+      "q": "Provision, contingent liability or contingent asset: how do you tell them apart?",
+      "listen_for": ["Provision: present obligation from a past event, probable outflow, reliable estimate", "Contingent liability: possible obligation, or not probable or not measurable: disclose", "Contingent asset: not recognised"],
+      "cross": ["A customer claims ₹35 lakh, the lawyer says the loss is probable and can be estimated, and management says ignore it. What do you do?"]
+    },
+    {
+      "id": "as4", "topic": "standards",
+      "q": "Adjusting and non-adjusting events after the balance sheet date: give me one example of each.",
+      "listen_for": ["Adjusting: evidence about a condition that existed at year-end (a debtor's insolvency that was already coming, a court decision on a pending case)", "Non-adjusting: a new event (a fire in May): disclose if material"],
+      "cross": ["A debtor is declared insolvent in April. Adjust or disclose?"]
+    },
+    {
+      "id": "as22", "topic": "standards",
+      "q": "What creates a deferred tax liability? Give me an example with numbers.",
+      "listen_for": ["Timing differences between book profit and taxable profit that reverse later", "Tax depreciation higher than book depreciation gives a deferred tax liability", "A deferred tax asset needs reasonable certainty (virtual certainty where it comes from losses)"],
+      "cross": ["How is Ind AS 12 different?"]
+    },
+    {
+      "id": "fav-standard", "topic": "standards",
+      "q": "Which is your favourite accounting standard? Take me through it.",
+      "listen_for": ["Recognition, measurement and disclosures", "Can take two follow-ups on it; AS 1 alone is a weak pick"],
+      "cross": ["What are its disclosures?", "Give me a case where applying it changes the profit."]
+    },
+    {
+      "id": "three-statements", "topic": "statements",
+      "q": "Depreciation goes up by ₹200 and the tax rate is 25%. Walk me through the three statements.",
+      "listen_for": ["P&L: profit before tax −200, tax −50, net profit −150", "Cash flow: net profit −150, add back depreciation +200, cash +50 (the tax saved)", "Balance sheet: PPE −200, cash +50, retained earnings −150"],
+      "cross": ["And if there were no tax?"]
+    },
+    {
+      "id": "cash-flow-class", "topic": "statements",
+      "q": "Classify these in a cash flow statement: buying a machine, repaying a loan, paying suppliers.",
+      "listen_for": ["Machine: investing", "Loan repayment: financing", "Suppliers: operating"],
+      "cross": ["Why does a profitable company still need a cash flow statement?"]
+    },
+    {
+      "id": "ratios", "topic": "statements",
+      "q": "Revenue is up 15% but operating cash flow is down. What might be going on?",
+      "listen_for": ["Receivables growing faster than sales", "Stock building up", "Suppliers paid faster", "Looks at debtor days and inventory days first"],
+      "cross": ["How do you calculate debtor days?"]
+    },
+    {
+      "id": "schedule-iii", "topic": "statements",
+      "q": "Name the main line items in the Schedule III statement of profit and loss.",
+      "listen_for": ["Revenue from operations, other income, cost of materials, purchases of stock-in-trade, changes in inventories, employee benefits, finance costs, depreciation, other expenses, exceptional items, tax"],
+      "cross": ["Name one disclosure added to Schedule III in recent years."]
+    },
+    {
+      "id": "moa-aoa", "topic": "company-law",
+      "q": "What is the difference between the Memorandum and the Articles of Association?",
+      "listen_for": ["Memorandum: the charter (name, registered office state, objects, liability, capital)", "Articles: the internal rules for management"],
+      "cross": ["Who approves the financial statements before they are signed?"]
+    },
+    {
+      "id": "share-capital", "topic": "company-law",
+      "q": "Name the stages of share capital, and one difference between equity and preference shares.",
+      "listen_for": ["Authorised, issued, subscribed, called-up, paid-up", "Equity: variable dividend, paid last, full votes; preference: fixed dividend first, capital repaid before equity"],
+      "cross": ["What does separate legal entity mean?"]
+    },
+    {
+      "id": "excel-lookup", "topic": "excel",
+      "q": "VLOOKUP, XLOOKUP or INDEX-MATCH: when would you use which?",
+      "listen_for": ["VLOOKUP looks in the first column and returns to the right; exact match with 0 or FALSE; lock the range", "XLOOKUP works both ways, exact by default, has an if-not-found argument", "INDEX-MATCH returns from the left and works in every version"],
+      "cross": ["Here is a task: a sales register of 500 invoices and a customer list with GSTINs. How do you bring the GSTIN into the register and total sales by state?"]
+    },
+    {
+      "id": "excel-pivot", "topic": "excel",
+      "q": "What would you use a PivotTable for in an audit?",
+      "listen_for": ["Sales by customer and month, purchases by vendor, totals by GST rate, expense trends, value bands for sampling", "Double-click a total to see the rows behind it"],
+      "cross": ["How do you check the PivotTable total is right?"]
+    },
+    {
+      "id": "excel-sumifs", "topic": "excel",
+      "q": "How is SUMIFS different from SUMIF? And how would you pull the PAN out of a GSTIN with a formula?",
+      "listen_for": ["SUMIFS puts the sum range first, then pairs of range and criteria", "The PAN is characters 3 to 12 of the GSTIN: =MID(A2,3,10)", "Checks a formula against a filtered total"],
+      "cross": ["What does IFERROR do?"]
+    },
+    {
+      "id": "break-even", "topic": "finance",
+      "q": "Price ₹250, variable cost ₹150, fixed cost ₹5 lakh. What is the break-even point?",
+      "listen_for": ["Contribution ₹100 a unit; P/V ratio 40%", "Break-even 5,000 units, ₹12.5 lakh of sales"],
+      "cross": ["What is the margin of safety at 7,000 units?"]
+    }
+  ],
+  "domains": {
+    "statutory-audit": {
+      "booklet": "Statutory audit booklet",
+      "other": "internal audit",
+      "why": ["The widest base: how statements are built and tested, controls, some tax, many industries", "Keeps more doors open later; rests on Audit and Accounts, not on 'interest in processes'"],
+      "questions": [
+        { "id": "sa-conduct", "q": "What is a statutory audit, and how would you conduct one from start to finish?", "listen_for": ["Accept: integrity, independence, previous auditor, engagement letter", "Plan: understand the business, materiality, significant risks", "Controls: walkthrough and tests of controls", "Substantive work: tests of details and analytics", "Complete and report: subsequent events, going concern, representations, misstatements, opinion, CARO"], "cross": ["When is the engagement letter agreed, and who signs it?"] },
+        { "id": "sa-first-day", "q": "It's your first day at a new audit client. What do you ask for?", "listen_for": ["Last year's audited statements and report, this year's trial balance and drafts, last year's working papers", "Compares the two years and asks about big movements", "First-year audit: opening balances and the previous auditor"], "cross": ["What extra work does a first-year audit need?"] },
+        { "id": "sa-assertions", "q": "What are assertions? Which ones matter most for trade receivables?", "listen_for": ["Management's claims behind each figure: existence, completeness, accuracy, cut-off, classification, rights, valuation", "Receivables: existence and valuation most of all"], "cross": ["Existence or completeness: which direction do you test each?"] },
+        { "id": "sa-materiality", "q": "What is materiality, and which benchmark would you choose?", "listen_for": ["Overall, performance and clearly trivial", "A stable benchmark users care about: profit before tax; revenue when profit swings", "The percentage is judgement, lower for higher risk; no fixed rule"], "cross": ["Why does performance materiality exist?"] },
+        { "id": "sa-cash-bank", "q": "How would you audit cash and bank balances?", "listen_for": ["Count cash and get a cash certificate", "Bank confirmations sent and received directly by the auditor", "Test reconciliation items to the next month's statement; question old items", "Recompute FD interest and tie it to Form 26AS"], "cross": ["Why must the bank confirmation come directly to you?"] },
+        { "id": "sa-inventory", "q": "How would you audit inventory?", "listen_for": ["Attend the count; test counts sheet-to-floor and floor-to-sheet", "Cut-off of goods in and out", "Costing, and NRV against later selling prices", "Stock with third parties confirmed"], "cross": ["Which items would you pick for test counts?"] },
+        { "id": "sa-ppe", "q": "How would you audit fixed assets?", "listen_for": ["Register agreed to the ledger", "Additions vouched (invoice, approval, put-to-use date, capital or revenue); disposals", "Depreciation recomputed; physical verification of a sample; title deeds"], "cross": ["The fixed assets haven't been physically verified for three years. What now?"] },
+        { "id": "sa-revenue", "q": "How would you audit revenue and receivables?", "listen_for": ["Policy against AS 9 or Ind AS 115; sales reconciled with GST returns", "Vouch order to invoice to delivery to receipt; cut-off either side of 31 March", "Confirmations, ageing, receipts after year-end, provision for doubtful debts"], "cross": ["A customer confirms ₹18 lakh, your ledger says ₹22 lakh, and they say ₹4 lakh was paid on 28 March. What do you do?"] },
+        { "id": "sa-vouching", "q": "What is the difference between vouching and verification? What do you check when you vouch a purchase bill?", "listen_for": ["Vouching checks a transaction against documents; verification checks a balance at a date", "Bill in the company's name, approval, right head and period, amount, GST credit eligibility, TDS, payment to the right party"], "cross": ["What is cut-off, and how do you test it?"] },
+        { "id": "sa-payroll", "q": "How would you audit payroll, and how would you find a ghost employee?", "listen_for": ["Headcount reconciliation (opening, joiners, leavers); recompute a sample of salaries, PF and ESI", "Ghosts: no attendance, no PF or ESI, shared bank accounts, paid after the exit date"], "cross": ["Two employees share one bank account. What do you do?"] },
+        { "id": "sa-toc-tod", "q": "Test of controls, test of details, substantive analytical procedure: explain each with an example.", "listen_for": ["Test of controls: did a control work (approval on a sample through the year)", "Test of details: is this item right (vouch a bill)", "Analytics: an expectation compared with the actual (rent of ₹30,000 a month should total ₹3.6 lakh)"], "cross": ["If controls work well, what happens to your substantive testing?"] },
+        { "id": "sa-opinions", "q": "What are the types of audit opinion, and when is each given?", "listen_for": ["Unmodified; qualified (material, not pervasive); adverse (material and pervasive misstatement); disclaimer (cannot get enough evidence, material and pervasive)"], "cross": ["What is an emphasis of matter paragraph? Does it modify the opinion?"] },
+        { "id": "sa-going-concern", "q": "What are the warning signs of a going-concern problem, and what does the auditor do?", "listen_for": ["Negative net worth, loan defaults, repeated losses, negative operating cash flow, losing a key customer", "Assesses management's view for at least twelve months ahead", "Material uncertainty disclosed: separate section, opinion unmodified; not disclosed: qualified or adverse"], "cross": ["Does a loss alone make the opinion adverse?"] },
+        { "id": "sa-caro", "q": "What is CARO 2020? Name a few matters the auditor reports under it.", "listen_for": ["A separate report on specified matters, alongside the main report", "Fixed-asset records and physical verification; inventory verification and discrepancies of 10% or more in a class; statutory dues; loans; fraud"], "cross": ["Name a kind of company it does not apply to."] },
+        { "id": "sa-journals", "q": "Which journal entries would you treat as risky?", "listen_for": ["Manual and top-side entries, round sums, entries at year-end or weekends, by unusual users or without approval", "Unusual accounts (suspense, miscellaneous income), vague narrations, reversals just after year-end", "Management override is always a fraud risk"], "cross": ["A ₹40 lakh round-sum entry is posted late on 31 March and your senior says leave it. What do you do?"] }
+      ],
+      "simulation": ["How many items did you check, and what exceptions did you find?", "Which assertion was your test about?"]
+    },
+    "internal-audit": {
+      "booklet": "Internal audit booklet",
+      "other": "statutory audit",
+      "why": ["Likes understanding how a business runs process by process", "Wants to find why something went wrong and fix the process, across departments"],
+      "questions": [
+        { "id": "ia-vs-sa", "q": "How is internal audit different from statutory audit?", "listen_for": ["Statutory: required by law, independent, an opinion on the statements once a year", "Internal: set up by management (or required for some companies), reviews processes, risks and controls through the year, reports to management or the audit committee", "Same purchase, two lenses: recorded right, versus how an unauthorised purchase could get through"], "cross": ["Can the statutory auditor also be the internal auditor?"] },
+        { "id": "ia-p2p", "q": "Explain purchase-to-pay in a minute, then its risks and controls.", "listen_for": ["Requisition, quotations, PO, goods received, invoice, three-way match, booking, payment", "Risk-control pairs: unauthorised buying and an authority matrix; fake vendor and controlled onboarding; paying without receipt and the PO-GRN-invoice match; duplicate payment and a system check"], "cross": ["What is a three-way match?"] },
+        { "id": "ia-o2c", "q": "Explain order-to-cash and two of its key controls.", "listen_for": ["Credit check, sales order, dispatch, invoice, collection, follow-up", "Credit limits with a controlled override; approved price master; dispatch-to-invoice reconciliation; ageing review"], "cross": ["An online purchase: whose purchase-to-pay and whose order-to-cash is it?"] },
+        { "id": "ia-sod", "q": "What is segregation of duties? What if the team is too small to segregate?", "listen_for": ["Incompatible tasks with different people (creating a vendor and releasing its payment)", "Maker-checker", "A compensating control, such as the owner reviewing every vendor-master change monthly"], "cross": ["One person can create a vendor, change its bank details and pay it. What is the problem?"] },
+        { "id": "ia-rcm", "q": "What is a risk and control matrix? Name its main columns.", "listen_for": ["For each process step: what could go wrong, the control, how it is tested", "Columns: process, risk, control, key or non-key, manual or automated, preventive or detective, frequency, owner, test and result"], "cross": ["What is a process narrative, and how is it different from a walkthrough?"] },
+        { "id": "ia-exception", "q": "In a test of 25 purchases, 7 have no approval, but the invoices are genuine and the goods were received. What is your conclusion?", "listen_for": ["A 28% exception rate: the control failed, which is not proof of fraud", "Checks whether exceptions cluster by user, location or category; quantifies value", "Recommends a system block on releasing unapproved POs"], "cross": ["Is testing 25 items a walkthrough?"] },
+        { "id": "ia-observation", "q": "How would you write an audit observation?", "listen_for": ["Condition, criteria, root cause, risk or impact in rupees, recommendation, owner and target date"], "cross": ["Give me one observation from a purchase process you can imagine."] },
+        { "id": "ia-design-operating", "q": "Design effectiveness versus operating effectiveness: give me an example of each failing.", "listen_for": ["Design fails: one person raises, approves, records and pays", "Operation fails: segregation exists on paper but the approver never actually approves", "A walkthrough shows design; sample testing shows operation"], "cross": ["How do you test an automated control?"] },
+        { "id": "ia-master-data", "q": "What analytics would you run on vendor master data?", "listen_for": ["Duplicate vendors (same PAN, GSTIN, bank account or address)", "Vendors sharing bank details or addresses with employees", "Vendors created and paid within days; changes by unusual users or outside office hours"], "cross": ["How would you find the vendor-employee matches in Excel?"] },
+        { "id": "ia-rent", "q": "Rent is ₹40,000 a month with a 10% escalation from October. The ledger shows ₹5,16,000 for the year. What do you do?", "listen_for": ["Builds the expectation: 6 × 40,000 + 6 × 44,000 = ₹5,04,000", "₹12,000 higher: pulls an invoice after October", "Finds the cause (wrong escalation), recovers and corrects future billing"], "cross": ["The rent matches the agreement, but the landlord is a director's relative and the rate is far above nearby offices. Now what?"] },
+        { "id": "ia-ifc", "q": "What are internal financial controls, and how is ICFR different?", "listen_for": ["IFC: policies for orderly conduct of business, safeguarding assets, preventing fraud, accurate records, timely reporting", "ICFR: the part about reliable financial reporting", "IT general controls: access, change management, report reliability"], "cross": ["Who reports on internal financial controls in a company?"] }
+      ],
+      "simulation": ["How many purchases did you test, and what did the exceptions tell you?", "Read me one observation you wrote."]
+    },
+    "direct-tax": {
+      "booklet": "Direct tax booklet",
+      "other": "GST",
+      "why": ["Likes reading the law against facts and working out the tax effect", "Knows the three lanes: compliance first, then advisory and litigation"],
+      "questions": [
+        { "id": "dt-which-law", "q": "Which income-tax law applies to which year now?", "listen_for": ["The Income-tax Act, 2025 applies from 1 April 2026, tax year 2026–27", "FY 2025–26 and earlier returns, audits and assessments stay under the 1961 Act", "'Tax year' replaces the previous-year and assessment-year pair"], "cross": ["Tell me one change in the new Act you have read about."] },
+        { "id": "dt-article-work", "q": "What does an article do in a direct-tax team?", "listen_for": ["Computations and returns; TDS deposits, quarterly returns and certificates; advance-tax estimates", "Matching books with AIS and Form 26AS; tax audit schedules; replies to notices", "Three lanes: compliance, advisory, litigation"], "cross": ["Which of these would you expect to do in your first month?"] },
+        { "id": "dt-book-tax", "q": "Why does book profit differ from taxable income?", "listen_for": ["Tax depreciation versus book depreciation", "Expenses allowed only on payment; personal, capital or penal items disallowed; exempt income", "Bridge: start from profit before tax, add disallowances, deduct allowances and exempt income"], "cross": ["Give me one disallowance with numbers."] },
+        { "id": "dt-bank-credit", "q": "A ₹12 lakh credit appears in a client's bank statement. Is it income?", "listen_for": ["Not automatically: a sale, an advance, a loan, the owner's capital, a transfer between own accounts, an asset sale or a refund", "Finds the document behind it, then classifies"], "cross": ["Which document would you ask for first?"] },
+        { "id": "dt-tds", "q": "What is TDS, and when must it be deducted?", "listen_for": ["The payer deducts from specified payments, deposits it, files a quarterly return and issues a certificate; the payee claims credit", "Timing: usually the earlier of credit in the books or payment; salary on payment", "Classify the payment first; the rate follows; no PAN means a higher rate"], "cross": ["How is TCS different?"] },
+        { "id": "dt-tds-default", "q": "₹6 lakh of consultancy fees were paid in full because the consultant refused TDS. What follows?", "listen_for": ["The duty is the payer's, whatever the consultant says", "₹60,000 at 10% should have been deducted; the payer is in default with interest", "Part of the expense is disallowed until the TDS is paid; fix it by paying with interest and filing"], "cross": ["Can the payer recover it from the consultant?"] },
+        { "id": "dt-ais-books", "q": "The books show turnover of ₹2.40 crore, but AIS shows ₹2.58 crore. What do you do?", "listen_for": ["Books first, portal second", "Breaks the gap into explained items (GST included, advances, duplicates) and a small residue to investigate", "Never forces the return to match the portal"], "cross": ["What is the difference between Form 26AS and AIS?"] },
+        { "id": "dt-advance-tax", "q": "Who pays advance tax, and when?", "listen_for": ["When the year's tax after TDS crosses the limit", "Cumulative 15% by 15 June, 45% by 15 September, 75% by 15 December, 100% by 15 March", "Eligible presumptive taxpayers pay it all by 15 March; interest for late or short payment"], "cross": ["How would you estimate it for a client in December?"] },
+        { "id": "dt-tax-audit", "q": "What is a tax audit, and who needs one?", "listen_for": ["Business turnover above ₹1 crore, or ₹10 crore if cash receipts and cash payments are each within 5%", "Profession above ₹50 lakh", "FY 2025–26 in Form 3CA or 3CB with 3CD; from tax year 2026–27 the combined Form 26"], "cross": ["How does what the tax audit report says flow into the return?"] },
+        { "id": "dt-43b", "q": "Why are some expenses allowed only when they are actually paid?", "listen_for": ["Taxes and duties, employer's contributions, bonus, leave encashment, interest to banks, late payments to micro and small enterprises", "Stops deductions for amounts never paid", "Checks the exact rule for the year under the new Act"], "cross": ["A micro supplier is paid 60 days after the bill. What happens to the expense?"] },
+        { "id": "dt-heads", "q": "Name the five heads of income, and tell me how residential status is decided for an individual.", "listen_for": ["Salaries, house property, business or profession, capital gains, other sources", "182 days in India, or 60 days plus 365 days in the four years before, with exceptions", "Residents taxed on world income, non-residents on Indian income"], "cross": ["Which head does interest on a fixed deposit fall under?"] },
+        { "id": "dt-research", "q": "A client asks a tax question you have never seen. How would you research it?", "listen_for": ["Facts first; the section and rules; circulars and notifications; then case law", "Writes the conclusion with its reasoning in a working paper", "Checks which Act and year apply"], "cross": ["Where do you look for the latest circulars?"] }
+      ],
+      "simulation": ["How many items did you check against the books, and what did you find?", "Which item took you longest, and why?"]
+    },
+    "gst": {
+      "booklet": "GST booklet",
+      "other": "direct tax",
+      "why": ["Every transaction has a GST question: what, where, when, how much", "Reconciliations and credits are where real money is saved"],
+      "questions": [
+        { "id": "gst-golden", "q": "How do you approach any GST question?", "listen_for": ["Read GST from the transaction, not the return form", "What was supplied, by whom, to whom, from where to where, when tax arises, the value, the document that proves it", "Then the rate, the type of tax and the return follow"], "cross": ["Apply that to one sale you can think of."] },
+        { "id": "gst-supply", "q": "What is 'supply' under GST? Give an example of a supply without consideration.", "listen_for": ["Sale, transfer, barter, exchange, licence, rental, lease or disposal for consideration in the course of business", "Without consideration: stock sent to your own branch in another state; transfers between related persons", "Not a supply: an employee's services to the employer"], "cross": ["Is moving stock to a warehouse in the same state a supply?"] },
+        { "id": "gst-type", "q": "CGST and SGST, or IGST: how do you decide which applies?", "listen_for": ["Within a state: CGST and SGST; between states and on imports: IGST", "Place of supply decides, not the billing address alone", "The wrong type means paying again and claiming a refund"], "cross": ["What is the place of supply for goods?"] },
+        { "id": "gst-registration", "q": "When does a business need GST registration?", "listen_for": ["Above the threshold: generally ₹20 lakh for services, ₹40 lakh for goods-only suppliers in eligible states; lower in some states", "Compulsory regardless of turnover in some cases (inter-state goods supplies, reverse-charge payers, e-commerce operators)", "Registration is state-wise on one PAN"], "cross": ["Can one PAN have several GSTINs?"] },
+        { "id": "gst-itc-conditions", "q": "What are the conditions to claim input tax credit?", "listen_for": ["A valid tax invoice; goods or services received; the invoice appears in GSTR-2B; the supplier has paid the tax; your own return filed", "Within the time limit; supplier paid within 180 days or the credit reversed; not blocked", "Appearing in 2B is necessary, not sufficient"], "cross": ["Books show ₹6 lakh of credit; GSTR-2B shows ₹5.2 lakh. Do you claim all of it?"] },
+        { "id": "gst-blocked", "q": "Name a few blocked credits.", "listen_for": ["Motor vehicles for carrying people with seating up to 13 including the driver, with specified exceptions", "Food and beverages, club and gym memberships, personal consumption", "Construction of immovable property on own account; goods lost, stolen or given as free samples"], "cross": ["A director's car is repaired and the full credit is taken. Right?"] },
+        { "id": "gst-ims", "q": "What is the Invoice Management System, and how is GSTR-2A different from GSTR-2B?", "listen_for": ["IMS lets the buyer accept, reject or keep pending each supplier invoice, which affects GSTR-2B", "2A is a changing view of what suppliers report; 2B is the monthly statement used to claim credit"], "cross": ["A supplier hasn't filed. What do you do about that credit?"] },
+        { "id": "gst-rcm", "q": "What is reverse charge? Name two common cases.", "listen_for": ["For notified supplies the recipient pays the tax, in cash", "Examples: goods transport agency services, an advocate's legal services to a business, a non-employee director's services", "Reads the current notification, never the ledger name"], "cross": ["Pass the entries for reverse charge on legal fees."] },
+        { "id": "gst-recon", "q": "The sales register shows ₹4.1 crore, GSTR-1 ₹4.0 crore and GSTR-3B ₹4.2 crore. What do you do?", "listen_for": ["Reconciles invoice by invoice", "Finds the ₹10 lakh missing from GSTR-1 and corrects it; explains the extra in 3B (advances, an earlier period, an error)", "Fixes the cause; never forces totals to match"], "cross": ["Name the standard GST reconciliations you would run every month."] },
+        { "id": "gst-exempt-zero", "q": "Exempt, nil-rated, zero-rated and non-GST supplies: what is the difference for credit?", "listen_for": ["Exempt and nil-rated: no credit on related inputs", "Zero-rated (exports, supplies to SEZ units): credit allowed and refundable", "Non-GST (alcohol for drinking, certain petroleum products): outside GST"], "cross": ["How does an exporter get the credit back?"] },
+        { "id": "gst-returns", "q": "Which GST returns would you work on every month, and what goes in each?", "listen_for": ["GSTR-1: outward supplies invoice by invoice", "GSTR-3B: the summary return with payment of tax", "GSTR-2B: the auto-drafted credit statement checked before 3B"], "cross": ["What happens if GSTR-3B is filed late?"] },
+        { "id": "gst-why", "q": "Why did GST replace the older indirect taxes?", "listen_for": ["Removed tax on tax with credit across goods and services", "Replaced excise, service tax, VAT, CST and others; one national market", "Technology-based compliance: invoices, e-way bills, matched returns"], "cross": ["What is an e-way bill for?"] }
+      ],
+      "simulation": ["How did your GSTR-3B credit compare with GSTR-2B, and what explained the gap?", "Which difference was hardest to explain?"]
+    },
+    "bank-audit": {
+      "booklet": "Specialist teams booklet",
+      "other": "statutory audit",
+      "why": ["Wants to understand lending, security and the health of loan accounts", "Branch audits teach a lot in a short, intense season"],
+      "questions": [
+        { "id": "ba-work", "q": "What does an article do in a bank branch audit?", "listen_for": ["Checks advance files: sanction, documents, security, reviews", "Classifies accounts as standard or non-performing", "Verifies cash and securities; reviews suspense and sundry accounts; fills report checklists"], "cross": ["What would you look at first in a loan file?"] },
+        { "id": "ba-npa", "q": "When does a loan become a non-performing asset?", "listen_for": ["Term loan: interest or an instalment overdue for more than 90 days", "Cash credit: out of order for 90 days", "Interest on an NPA is recognised only when received"], "cross": ["What are special mention accounts?"] },
+        { "id": "ba-dp", "q": "Cash-credit limit ₹2 crore, drawing power ₹1.6 crore, outstanding ₹1.75 crore. What do you see?", "listen_for": ["Usable limit is the lower of limit and drawing power: ₹1.6 crore", "Over by ₹15 lakh", "Checks the stock statement behind drawing power and how long the excess has lasted"], "cross": ["How is drawing power calculated?"] },
+        { "id": "ba-70-days", "q": "A term-loan instalment is 70 days overdue and the branch says the account is standard. What do you do?", "listen_for": ["Not yet an NPA, but in the most stressed special-mention band (61 to 90 days)", "Verifies the day count and the history", "Checks whether later payments came from genuine sources, not fresh lending"], "cross": ["What is evergreening?"] },
+        { "id": "ba-concurrent", "q": "How is a concurrent audit different from a statutory bank audit?", "listen_for": ["Statutory: once a year, an opinion on the bank's statements", "Concurrent: ongoing through the year, appointed by management, catches errors early, monthly reports"], "cross": ["Small charges are repeatedly not collected from customers. How would you report it?"] },
+        { "id": "ba-five-cs", "q": "What are the five Cs of credit?", "listen_for": ["Character, capacity, capital, collateral, conditions", "Plus interest cover and debt service coverage"], "cross": ["How do you calculate interest cover?"] }
+      ],
+      "simulation": ["How many accounts did you classify, and how did you count the days overdue?", "Which is the usable limit, sanction or drawing power?"]
+    },
+    "transfer-pricing": {
+      "booklet": "Specialist teams booklet",
+      "other": "direct tax",
+      "why": ["Interested in how related companies across countries price their dealings", "Says where the interest came from (a senior, a webinar, a book)"],
+      "questions": [
+        { "id": "tp-what", "q": "What is transfer pricing, and why does it exist?", "listen_for": ["Prices between associated enterprises must be at arm's length, what unrelated parties would charge", "Stops profit being shifted to low-tax places", "A simple example with numbers"], "cross": ["Who is an associated enterprise?"] },
+        { "id": "tp-methods", "q": "Name the methods to find the arm's length price. Which is used most, and why?", "listen_for": ["Comparable uncontrolled price, resale price, cost plus, profit split, TNMM, other method", "TNMM is most used: exact price comparables are rare, net margins of comparable companies are available"], "cross": ["Which profit-level indicator would you use for a service provider?"] },
+        { "id": "tp-far", "q": "What is a FAR analysis?", "listen_for": ["Functions performed, assets used, risks assumed by each party", "It drives the choice of method and comparables"], "cross": ["Why would you reject a comparable?"] },
+        { "id": "tp-range", "q": "What happens when the client's price falls outside the arm's-length range?", "listen_for": ["Inside the range it is accepted", "Outside it is adjusted, typically towards the middle of the range", "Knows the exact rules depend on the number of comparables and should be checked"], "cross": ["What is a secondary adjustment?"] },
+        { "id": "tp-tools", "q": "How can a company avoid transfer-pricing disputes?", "listen_for": ["Advance pricing agreements, safe-harbour margins, mutual agreement procedure under treaties", "Good documentation every year"], "cross": ["What goes into transfer-pricing documentation?"] },
+        { "id": "tp-income-tax", "q": "Do you expect normal income-tax questions in a transfer-pricing interview?", "listen_for": ["Yes: transfer pricing sits inside the Income-tax Act", "Capital gains, TDS and business income basics"], "cross": ["Then tell me: what is TDS?"] }
+      ],
+      "simulation": ["How many comparables did you screen, and why did you reject one?", "Why TNMM rather than CUP in your case?"]
+    },
+    "ma-tax": {
+      "booklet": "Specialist teams booklet",
+      "other": "direct tax",
+      "why": ["Enjoys research and structuring: which route, what tax cost", "Wants to see deals from the tax side"],
+      "questions": [
+        { "id": "mat-what", "q": "What does an M&A tax team do?", "listen_for": ["Tax advice on mergers, demergers, slump sales, buy-backs, capital reduction and moving money in or out of India", "Which route, its tax cost, losses that carry over", "Articles research and model; seniors present"], "cross": ["What would your research note on a merger cover?"] },
+        { "id": "mat-structures", "q": "Merger, acquisition, demerger, slump sale: explain each in one line.", "listen_for": ["Merger: companies combine under a scheme approved by the tribunal", "Acquisition: buying control while the target stays separate", "Demerger: an undertaking moves to another company and shareholders get its shares", "Slump sale: a whole undertaking sold for a lump sum without values per asset"], "cross": ["Why would a group choose a demerger?"] },
+        { "id": "mat-cg", "q": "Which capital-gains topics would you revise for an M&A tax interview?", "listen_for": ["What a transfer is and the exemptions in reorganisations", "Slump sale; property received for inadequate consideration", "Buy-back taxation for the year; TDS on payments to non-residents; carry-forward of losses in amalgamations"], "cross": ["Short-term or long-term: how is the period of holding counted?"] },
+        { "id": "mat-cash-out", "q": "A group company wants to return cash to its shareholders. How would you compare a dividend, a buy-back and a capital reduction?", "listen_for": ["Looks at the tax for the company and for the shareholders, the approvals and the cash", "Checks the current law for the year before giving any treatment", "Ends with a recommendation and its reason"], "cross": ["What would change your recommendation?"] },
+        { "id": "mat-research", "q": "How would you research a tax question you have never seen?", "listen_for": ["Facts first, then the section and rules, circulars, case law", "Records the conclusion and reasoning in a working paper", "Checks which Act and year apply"], "cross": ["How do you know a judgment is still good law?"] }
+      ],
+      "simulation": ["Which option did your note prefer, and why?", "What would change your answer?"]
+    },
+    "valuation": {
+      "booklet": "Specialist teams booklet",
+      "other": "financial due diligence",
+      "why": ["Enjoyed financial management at Inter", "Wants to understand what a business is worth and what drives that value"],
+      "questions": [
+        { "id": "val-approaches", "q": "What is valuation, and what are the three approaches?", "listen_for": ["Estimating what a business, share or asset is worth for a purpose (a deal, fund-raising, ESOPs, tax, reporting)", "Income approach (DCF), market approach (multiples), asset approach (net asset value)"], "cross": ["Which approach would you use for a holding company?"] },
+        { "id": "val-ev-equity", "q": "What is the difference between enterprise value and equity value?", "listen_for": ["Enterprise value belongs to all capital providers", "Equity value plus debt, preference capital and minority interest, less cash"], "cross": ["Why do you subtract cash?"] },
+        { "id": "val-dcf", "q": "Walk me through a DCF.", "listen_for": ["Forecast revenue, costs, capex and working capital to free cash flow to the firm", "Discount at WACC; add the discounted terminal value", "Enterprise value, bridge to equity value, divide by shares", "Big judgements: growth, margins, discount rate"], "cross": ["What happens to value if growth drops by one point?"] },
+        { "id": "val-tv", "q": "How do you calculate terminal value?", "listen_for": ["Perpetuity growth: last free cash flow × (1 + g) ÷ (WACC − g)", "Exit multiple: final-year EBITDA × an EV/EBITDA multiple", "Discounted back; often most of the value, so test it"], "cross": ["What growth rate would you use, and why?"] },
+        { "id": "val-wacc", "q": "Explain WACC, CAPM and beta.", "listen_for": ["Cost of equity = risk-free rate + beta × equity risk premium", "Beta: how much the share moves with the market", "WACC weights cost of equity and post-tax cost of debt by market values"], "cross": ["Why is the cost of debt taken after tax?"] },
+        { "id": "val-fcff", "q": "FCFF or FCFE: what is the difference?", "listen_for": ["FCFF: cash for debt and equity holders, discounted at WACC, gives enterprise value", "FCFE: cash for shareholders after debt flows, discounted at the cost of equity, gives equity value"], "cross": ["When would you prefer FCFE?"] },
+        { "id": "val-startup", "q": "How would you value a loss-making start-up?", "listen_for": ["P/E fails without earnings; a normal DCF is very uncertain", "Revenue or user multiples of comparables, recent funding rounds, scenario-weighted DCF", "Cross-checks methods"], "cross": ["What is a discount for lack of marketability?"] },
+        { "id": "val-multiples", "q": "Which multiples would you use, and when?", "listen_for": ["EV/EBITDA (capital-structure neutral), EV/Revenue (loss-makers), P/E (equity), P/B (banks)", "PEG adjusts P/E for growth"], "cross": ["Why EV/EBITDA rather than P/E for comparing companies?"] }
+      ],
+      "simulation": ["Why did you choose that discount rate?", "What happened to value when you changed growth by one point?"]
+    },
+    "fdd": {
+      "booklet": "Specialist teams booklet",
+      "other": "valuation",
+      "why": ["Wants to see what a buyer really buys, beyond the audited numbers", "Enjoys analysis and finding the story behind the numbers"],
+      "questions": [
+        { "id": "fdd-vs-audit", "q": "What is financial due diligence, and how is it different from a statutory audit?", "listen_for": ["A review before a deal so the buyer knows what it is buying and at what price", "Quality of earnings, normal working capital, net debt, contingencies", "An audit gives an opinion on past statements under law; FDD looks at sustainable earnings and deal risks"], "cross": ["Who is the FDD report for?"] },
+        { "id": "fdd-normalised", "q": "What do you adjust to get normalised EBITDA?", "listen_for": ["One-offs (litigation, restructuring, asset-sale gains)", "Non-business income; owner or family costs not at market rates; related-party pricing", "Accounting errors and cut-off issues"], "cross": ["Name one adjustment and why it is not recurring."] },
+        { "id": "fdd-peg", "q": "What is a working-capital peg?", "listen_for": ["A normal level of working capital agreed by buyer and seller", "Below it at closing, the price falls; above it, the price rises", "Stops the seller pulling cash out just before closing"], "cross": ["How would a seller try to flatter working capital?"] },
+        { "id": "fdd-debt-like", "q": "What are debt-like items?", "listen_for": ["Obligations that reduce equity value though not called borrowings", "Unpaid statutory dues, overdue suppliers, gratuity and leave liabilities, deferred consideration, tax demands"], "cross": ["Is an unpaid GST liability debt-like?"] },
+        { "id": "fdd-cash", "q": "Why can a company with positive EBITDA still run out of cash?", "listen_for": ["EBITDA ignores capex, interest, debt repayments, working-capital needs and one-off outflows"], "cross": ["Which number would you look at instead?"] }
+      ],
+      "simulation": ["Name one adjustment you made and why it is not recurring.", "What is a working-capital peg, in your own words?"]
+    },
+    "forensic": {
+      "booklet": "Specialist teams booklet",
+      "other": "internal audit",
+      "why": ["Likes digging into data until the facts are clear", "Knows a red flag is a question, not proof"],
+      "questions": [
+        { "id": "for-what", "q": "What is a forensic audit, and how is it different from a statutory audit?", "listen_for": ["Investigation to establish and prove facts about suspected fraud, for legal or disciplinary use", "Digs fully into specific transactions instead of giving an opinion on samples", "Plan, collect evidence, analyse, report"], "cross": ["What kinds of evidence would you collect?"] },
+        { "id": "for-triangle", "q": "What is the fraud triangle? Name the main families of fraud.", "listen_for": ["Pressure, opportunity, rationalisation", "Asset misappropriation, financial-statement fraud, corruption"], "cross": ["Which corner of the triangle can a company control best?"] },
+        { "id": "for-benford", "q": "How can Benford's law help in screening?", "listen_for": ["In many natural sets of amounts, about 30% start with 1 and under 5% with 9", "Unusual first-digit patterns, or many amounts just under an approval limit, are flags, not proof"], "cross": ["Is a red flag proof of fraud?"] },
+        { "id": "for-shell", "q": "What are the signs of a shell vendor?", "listen_for": ["Recently created; shares address, phone or bank details with an employee", "No GST filing or web presence; round-sum invoices just under approval limits", "Paid very soon after onboarding; no delivery evidence"], "cross": ["How would you find the vendor-employee match in Excel?"] },
+        { "id": "for-ledger", "q": "You have a 500-row ledger. What tests would you run first?", "listen_for": ["Duplicates (same amount, date, vendor), round sums, weekend or holiday entries", "Entries just under approval limits; unusual users", "Documents each flag and follows it up"], "cross": ["How do you find duplicate payments quickly?"] }
+      ],
+      "simulation": ["How did you find the vendor-employee match?", "Which flag turned out to be innocent, and how did you know?"]
+    },
+    "consulting": {
+      "booklet": "Internal audit booklet",
+      "other": "internal audit",
+      "why": ["Likes structured problem-solving across businesses", "Knows risk advisory at most firms means internal audit, IFC and SOX work"],
+      "questions": [
+        { "id": "con-issue-tree", "q": "A client's profit fell this year. How would you break the problem down?", "listen_for": ["An issue tree: profit = revenue − costs; revenue = price × volume; costs = fixed + variable", "Goes down each branch with data", "Branches do not overlap and together cover everything"], "cross": ["What data would change your recommendation?"] },
+        { "id": "con-framework", "q": "Pick an industry you know and run Porter's five forces on it.", "listen_for": ["Rivalry, new entrants, substitutes, buyer power, supplier power", "Applies each to the industry with a real example"], "cross": ["How is SWOT different from PESTLE?"] },
+        { "id": "con-8020", "q": "What is the 80/20 idea, and how would you use it with a client?", "listen_for": ["A small share of causes often drives most of a result", "Find and fix those first (top customers, top cost lines, top defects)"], "cross": ["How would you find the top 20% in Excel?"] },
+        { "id": "con-guesstimate", "q": "Estimate how many cars are serviced in your city each month.", "listen_for": ["Shows the structure before the numbers", "States assumptions clearly and rounds sensibly", "Sanity-checks the answer"], "cross": ["Which assumption would change the answer most?"] },
+        { "id": "con-process", "q": "Explain process, risk and control using purchasing as the example.", "listen_for": ["Process: requisition to payment", "Risks: unauthorised buying, fake vendors, paying for goods not received", "Controls: authority matrix, vendor onboarding checks, three-way match, maker-checker"], "cross": ["What is a key control?"] }
+      ],
+      "simulation": ["Walk me through your issue tree.", "What data would change your recommendation?"]
+    },
+    "accounting": {
+      "booklet": "Core accounting booklet",
+      "other": "statutory audit",
+      "why": ["Likes building the books and seeing a client's whole compliance year", "The base for audit and tax, with responsibility early"],
+      "questions": [
+        { "id": "acc-brs", "q": "Why do you prepare a bank reconciliation, and what usually causes the differences?", "listen_for": ["Explains differences between the cash book and the bank statement and catches errors", "Cheques issued not presented, deposits not credited, bank charges and interest not booked"], "cross": ["A deposit in the reconciliation never clears in the next month. What do you do?"] },
+        { "id": "acc-month-end", "q": "What would you do to close a client's books at month-end?", "listen_for": ["All entries posted; accruals and prepayments; depreciation", "Bank, GST and TDS reconciliations; ledger scrutiny for wrong heads and duplicates", "Trial balance reviewed; MIS prepared"], "cross": ["What do you look for in ledger scrutiny?"] },
+        { "id": "acc-suspense", "q": "What is a suspense account for?", "listen_for": ["Holds an unexplained trial-balance difference for a short time while errors are traced", "Cleared by correcting entries; an unexplained balance at year-end is an audit finding"], "cross": ["Give me an error that a suspense account would not catch."] },
+        { "id": "acc-far", "q": "How do you maintain a fixed-asset register?", "listen_for": ["Each asset with its cost, date put to use, location, tag, useful life and depreciation", "Additions and disposals approved and recorded", "Agreed to the ledger and physically verified"], "cross": ["Depreciation versus amortisation: what is the difference?"] },
+        { "id": "acc-cash-flow-fix", "q": "₹50 crore of machine purchases were shown as an operating outflow. Fix it.", "listen_for": ["Move it to investing outflows", "Depreciation add-back does not change", "If the machine was wrongly expensed in the books, correct the ledger first"], "cross": ["Classify interest paid by a manufacturing company."] },
+        { "id": "acc-minutes", "q": "What are board minutes and statutory registers, and why do they matter?", "listen_for": ["Minutes record decisions and approvals of the Board and members", "Registers (members, charges, related-party contracts) are records the law requires", "Auditors and regulators rely on them as evidence"], "cross": ["Who approves the financial statements before they are signed?"] },
+        { "id": "acc-tally", "q": "Have you used Tally? Post a purchase with GST for me.", "listen_for": ["Only claims Tally if it is on the CV", "Purchase account Dr, input GST Dr, supplier Cr, with the right voucher type", "Knowing keys is not the same as using it"], "cross": ["Which voucher type for a contra entry?"] }
+      ],
+      "simulation": ["Does a balanced trial balance prove your books were right?", "Which reconciliation item took you longest?"]
+    },
+    "ib-er": {
+      "booklet": "Specialist teams booklet",
+      "other": "valuation",
+      "why": ["Markets and modelling are a real interest, with proof of work", "Knows that most IB teams cannot register articles and asks who would register them"],
+      "questions": [
+        { "id": "ib-dcf", "q": "Walk me through a DCF.", "listen_for": ["Forecast to free cash flow; discount at WACC; discounted terminal value; bridge to equity value"], "cross": ["Which assumption moves the value most?"] },
+        { "id": "ib-ev", "q": "Enterprise value versus equity value: what is the difference?", "listen_for": ["Enterprise value belongs to all capital providers; equity value plus debt and minority interest, less cash"], "cross": ["Two companies have the same EBITDA. Why could their P/E differ?"] },
+        { "id": "ib-multiple", "q": "Which multiple would you use for a loss-making start-up?", "listen_for": ["Revenue or user-based multiples, recent funding rounds, scenario DCFs", "Cross-checks methods"], "cross": ["How would you choose the comparable companies?"] },
+        { "id": "ib-ipo", "q": "Outline how a company goes for an IPO.", "listen_for": ["Draft offer document filed with the regulator, observations, final offer document with a price band", "Book-building, allotment, listing; merchant bankers run it"], "cross": ["What does an analyst do in IPO due diligence?"] },
+        { "id": "ib-ebitda", "q": "Why can a company with positive EBITDA still go bankrupt?", "listen_for": ["Capex, interest, debt repayments and working capital can exceed operating cash", "Refinancing risk"], "cross": ["Which statement would you read first to spot this?"] },
+        { "id": "ib-registration", "q": "Most investment banks are not CA firms. Who would register your articleship here?", "listen_for": ["Knows registration needs a practising CA as the principal", "Has asked, or will ask, which practising CA would register them", "Has a plan if none can: projects now, industrial training later"], "cross": ["What have you built to show your modelling skills?"] }
+      ],
+      "simulation": ["Which multiple did you use, and why?", "Walk me through your model's assumptions."]
+    }
+  },
+  "situations": [
+    { "id": "sit-client-delay", "q": "A client keeps delaying an important document you need. What do you do?", "listen_for": ["Stays polite; explains why it is needed; asks in writing with a clear date, copying the senior", "Follows up; tells the senior early if it still doesn't come", "Never assumes the number or skips the check"], "cross": ["What exactly would you write to them?"] },
+    { "id": "sit-fake-voucher", "q": "You suspect a voucher is fake. What do you do?", "listen_for": ["Does not accuse anyone or discuss it with client staff", "Keeps copies and records only facts", "Tells the senior or manager at once"], "cross": ["Would you tell the client's accountant?"] },
+    { "id": "sit-senior-disagrees", "q": "Your senior disagrees with your finding. What do you do?", "listen_for": ["Shows the evidence calmly and listens to their reasoning", "If still unsure, asks for it to be documented or discussed with the manager", "Never goes to the client, never changes the working paper quietly"], "cross": ["And if the manager also disagrees?"] },
+    { "id": "sit-own-error", "q": "You find an error in work you already submitted, and the deadline is close. What do you do?", "listen_for": ["Tells the senior now: what is wrong, the impact, a fix and a realistic time", "Corrects it openly, never overwrites reviewed work without a trace", "Fixes the cause (a checklist, smaller milestones)"], "cross": ["Why not fix it quietly?"] },
+    { "id": "sit-ignore", "q": "A client asks you to ignore a small non-compliance. What do you say?", "listen_for": ["Declines politely: an article cannot decide what to ignore", "Notes it in the working paper and tells the senior, who looks at materiality"], "cross": ["The client says your partner already agreed. Now what?"] },
+    { "id": "sit-three-tasks", "q": "You have three urgent tasks and one deadline. How do you handle it?", "listen_for": ["Lists tasks with deadlines and importance", "Agrees the order with the senior; flags the risk early"], "cross": ["And a task you have never done before?"] },
+    { "id": "sit-untested", "q": "You're asked to mark a control as tested when it wasn't, or to copy last year's file. What do you do?", "listen_for": ["This year's conclusion needs this year's evidence", "Uses last year's file as a guide and updates it", "Escalates if asked to record work that wasn't done"], "cross": ["What if the deadline is tonight?"] },
+    { "id": "sit-round-sum", "q": "A large round-sum journal is posted late on 31 March with a vague narration. Your senior says it's small, leave it. What do you do?", "listen_for": ["Asks for the business reason and the support; looks at who posted and approved it", "Size alone doesn't remove the risk; year-end entries are where override happens", "Records what they found"], "cross": ["Which standard deals with fraud risk?"] },
+    { "id": "sit-data", "q": "A teammate pastes client numbers into a public AI tool to save time. What do you do?", "listen_for": ["Stops further sharing if they can", "Raises it through the engagement or IT-security channel", "Client data stays on approved systems only"], "cross": ["A client sends payroll data to your personal email. What then?"] },
+    { "id": "sit-gift", "q": "A client offers you an expensive gift after the audit. What do you do?", "listen_for": ["Declines politely and follows the firm's gifts policy", "Tells the senior"], "cross": ["Your sibling works in the client's finance team. What should you do?"] }
+  ],
+  "cv_probes": [
+    { "type": "programme", "label": "MSC Articleship Program", "match": "msc articleship program", "ask": "You've completed the MSC Articleship Program. What did you practise in it, and which piece of work surprised you?", "cross": ["Take one task and walk me through it as you would at a client."] },
+    { "type": "simulation", "label": "Simulation", "match": "work simulation|job simulation|virtual (work |internship )?(experience|program|programme)|forage", "ask": "Walk me through this: what was the task, what did you check, and what did you find?", "cross": ["How many items did you check, and how did you choose them?", "What would you do differently at a real client?"] },
+    { "type": "standard", "label": "Standard or law", "match": "\\b(ind ?as|as|sa|sqc)[ -]?\\d{1,3}\\b|accounting standard|standards? on auditing|schedule iii|caro|form 26as|gstr|tds|section \\d", "ask": "You mention this on your CV. Explain it, and what it requires to be disclosed or reported.", "cross": ["Give me a case where it changes the numbers."] },
+    { "type": "tool", "label": "Excel or a tool", "match": "excel|vlookup|xlookup|pivot|power ?bi|tableau|tally|sap|sql|python|macro|dashboard|financial model", "ask": "Your CV says this. Give the candidate one small live task on it (for Excel: a lookup, SUMIFS or a PivotTable on a register) and ask them to talk you through the steps.", "cross": ["Rate yourself out of five on it. Why that number?"] },
+    { "type": "course", "label": "Course or certificate", "match": "certif|course|certificate|programme|program|nism|sebi|varsity|coursera|udemy|itt|icitss|orientation|workshop|training|module", "ask": "What did you actually learn in this course? Give me one thing you could use on your first day.", "cross": ["What was the hardest part of it?"] },
+    { "type": "project", "label": "Project", "match": "project|model|analys|research|report|reconcil|prepared|built|designed|computed|reviewed|vouched|verified|audited", "ask": "Walk me through this step by step: what you did, what you found, and where any number on the line comes from.", "cross": ["What would you do differently next time?"] },
+    { "type": "work", "label": "Work", "match": "intern|internship|worked|experience|family business|tuition|teaching|assistant|freelanc", "ask": "What exactly did you do there, day to day? Give me one example with numbers.", "cross": ["What did you learn there that will help you as an article?"] },
+    { "type": "role", "label": "Responsibility", "match": "co-?ordinator|head|lead|president|secretary|captain|organi[sz]|volunteer|member|representative|founder|mentor|tutor|anchor|host", "ask": "What did you actually do in this role? Tell me about one thing that went wrong and how you handled it.", "cross": ["What would your team say about you?"] },
+    { "type": "achievement", "label": "Achievement", "match": "rank|prize|award|won|winner|topper|merit|scholar|distinction|exemption|first place|medal|percentile|all india|air ", "ask": "How did you achieve this? What did you do differently from the others?", "cross": ["Do you have the certificate or mark sheet with you?"] },
+    { "type": "hobby", "label": "Interest", "match": "reading|books?\\b|cricket|football|chess|music|singing|guitar|dance|dancing|travel|trek|sketch|paint|yoga|gym|cooking|photograph|badminton|swimming|writing|blog|podcast|running|marathon|cycling|movies|gardening", "ask": "You list this as an interest. Ask two specific follow-ups that only someone who really does it can answer (for reading: the last book, its author and one lesson they applied; for a sport: the rules or a player's record; for travel or treks: the last one and where).", "cross": ["You won't have much time for this once you join. Is that fine?"] }
+  ],
+  "rubric": {
+    "default": [
+      { "id": "opening", "row": "Opening and introduction" },
+      { "id": "fit", "row": "Fit: why this firm and this domain" },
+      { "id": "truth", "row": "Attempts and facts told truthfully" },
+      { "id": "stories", "row": "Stories: situation, action, result" },
+      { "id": "technical", "row": "Technical accuracy" },
+      { "id": "dont-know", "row": "Handling \"I don't know\"" },
+      { "id": "communication", "row": "Communication: clarity, pace, English" },
+      { "id": "professionalism", "row": "Professionalism and questions asked" }
+    ],
+    "call": [
+      { "id": "truth", "row": "Truthful facts: attempts, ICITSS, joining date, other offers" },
+      { "id": "clarity", "row": "Clarity and length: 30 to 60 seconds an answer" },
+      { "id": "pressure", "row": "Handling pressure: offers, another domain, \"decide now\"" },
+      { "id": "communication", "row": "Communication: greeting, tone, English" },
+      { "id": "close", "row": "Closing: asked the next step and by when" }
+    ]
+  },
+  "interviewer_rules": [
+    "Never ask for, suggest or discuss a stipend figure. If the candidate asks, say it is discussed with HR at the offer stage.",
+    "If you ask about industrial-training plans, the best answer is true but not volunteered: a later decision taken with the principal's consent, and right now they want to learn the work here. Never reward denying a plan they have.",
+    "Never encourage the candidate to hide or round attempts, gaps or courses. Reward plain, true answers.",
+    "For topics beyond the Inter syllabus (Ind AS, the Income-tax Act, 2025), accept a clearly labelled 'I studied X; I've started reading Y' answer and do not go deeper.",
+    "Do not name clients, real people or other firms' staff. Speak of industries and public facts only.",
+    "Never tell the candidate whether they would be selected, and never predict an outcome."
+  ],
+  "coach": "Coaching is on. After each answer, before the next question, give three short lines: what they missed (the principle), one fix, and one note on their English (a grammar slip or filler words such as 'basically', 'actually', 'like', 'so'), then ask a fresh question on the same skill. At the end, ask them to give their weakest answer once more."
+}
