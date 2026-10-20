@@ -150,7 +150,7 @@
         },
         {
           "label": "Guidebook ch 3, q11",
-          "href": "/learning-management-system/course?course=msc-articleship-program&session=1&resource=MSC+Articleship+Guidebook&page=28"
+          "href": "/learning-management-system/course?course=msc-articleship-program&session=1&resource=MSC+Articleship+Guidebook&page=29"
         }
       ],
       "fix": {
@@ -218,7 +218,7 @@
       ],
       "fix": {
         "label": "Guidebook, chapter 3",
-        "href": "/learning-management-system/course?course=msc-articleship-program&session=1&resource=MSC+Articleship+Guidebook&page=30",
+        "href": "/learning-management-system/course?course=msc-articleship-program&session=1&resource=MSC+Articleship+Guidebook&page=32",
         "find": "Where do job simulations and certificates go?"
       }
     },
