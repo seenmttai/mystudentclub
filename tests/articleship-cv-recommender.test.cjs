@@ -11,7 +11,22 @@ const TOOL_DIR = path.join(ROOT, 'articleship-program/cv-recommender');
 const SITUATIONS = JSON.parse(fs.readFileSync(path.join(TOOL_DIR, 'situations.json'), 'utf8'));
 // The one design list, read by this tool and the CV Builder alike.
 const BUILDER_DESIGNS = path.join(ROOT, 'articleship-program/cv-builder/designs.json');
-const DESIGNS = JSON.parse(fs.readFileSync(BUILDER_DESIGNS, 'utf8'));
+// The same test file runs on both live branches (master and the mobile port). Files of other tools that a branch does
+// not carry yet are not faked: their checks are skipped with the reason, and the design checks expect "no design" (the
+// page then says "pick a design in CV templates").
+const ON_BRANCH = {
+    designs: fs.existsSync(BUILDER_DESIGNS),
+    builderStage: fs.existsSync(path.join(ROOT, 'articleship-program/cv-builder/stage.js')),
+    lmsSql: fs.existsSync(path.join(ROOT, 'supabase/migrations/202610200002_articleship_program_v3_lms.sql')),
+    roadmaps: fs.existsSync(path.join(ROOT, 'articleship-program/domain-roadmaps/roadmaps.json'))
+};
+const NOT_HERE = {
+    designs: !ON_BRANCH.designs && 'the CV Builder\'s designs.json is not on this branch yet',
+    builderStage: !(ON_BRANCH.designs && ON_BRANCH.builderStage) && 'the CV Builder (row 1.5) is not on this branch yet',
+    lmsSql: !ON_BRANCH.lmsSql && 'the v3 LMS migration lives on the desktop branch only (one shared database)',
+    roadmaps: !ON_BRANCH.roadmaps && 'Domain roadmaps (row 5.1) is not on this branch yet'
+};
+const DESIGNS = ON_BRANCH.designs ? JSON.parse(fs.readFileSync(BUILDER_DESIGNS, 'utf8')) : { designs: [] };
 // Padam's exact wording (B7) once the programme is done; "(ongoing)" until then, as The Nothing CV p3 shows it.
 const MSC_LINE = 'Completed MSC Articleship Program — foundational understanding of work and tasks across all domains';
 const MSC_ONGOING = 'MSC Articleship Program (ongoing)';
@@ -25,10 +40,16 @@ const FAST = { advanceMs: 20, tapGuardMs: 0 };
 // follow the CV templates look-book whenever row 1.4 changes it): the lowest-numbered design whose bestFor names the
 // situation, or, when one of those also names a variant of the student's, that one.
 function designFor(code, variantIds) {
+    if (!ON_BRANCH.designs) return null;
     const ids = variantIds || [];
     const named = DESIGN_LIST.filter(d => d.bestFor.includes(code));
     assert.ok(named.length, 'designs.json has a design whose bestFor names ' + code);
     return named.find(d => d.bestFor.some(tag => ids.includes(tag))) || named[0];
+}
+
+/** The result's design is the one designs.json gives (or none on a branch without the design list). */
+function sameDesign(result, design, message) {
+    assert.equal(result.design ? result.design.number : null, design ? design.number : null, message);
 }
 
 function data(designs) {
@@ -146,7 +167,7 @@ test('situation A: academics first, both groups in the first attempt', () => {
     assert.match(r.reason, /marks are your loudest proof/);
     assert.deepEqual(r.order, ['header', 'summary', 'education', 'experience', 'certifications', 'leadership', 'skills', 'interests']);
     assert.equal(r.blocks.find(b => b.lead).id, 'education');
-    assert.equal(r.design.number, designFor('A').number);
+    sameDesign(r, designFor('A'));
     assert.equal(r.seeIt.label, 'See this order');
     assert.match(r.seeIt.href, /resource=Choose\+your\+CV&page=3$/);
     assert.equal(R.recommend(answers({ inter: 'both-awaited' }), data()).situation, 'A', 'both awaited: nothing separate to show');
@@ -173,7 +194,7 @@ test('situation B: academics first, Inter in more than one sitting; one group aw
         } else {
             assert.match(r.reason, /more than one sitting/);
         }
-        assert.equal(r.design.number, designFor('B').number);
+        sameDesign(r, designFor('B'));
         assert.match(r.seeIt.href, /page=4$/);
     }
 });
@@ -183,7 +204,7 @@ test('situation C: work done first and some work to show', () => {
     assert.equal(r.situation, 'C');
     assert.deepEqual(r.order, ['header', 'summary', 'education', 'experience', 'certifications', 'leadership', 'skills', 'interests']);
     assert.equal(r.blocks.find(b => b.lead).id, 'experience');
-    assert.equal(r.design.number, designFor('C').number);
+    sameDesign(r, designFor('C'));
     assert.equal(r.thinProof, null, 'two pieces of proof is not thin');
     assert.match(r.seeIt.href, /page=5$/);
 });
@@ -193,7 +214,7 @@ test('situation D: projects first; own projects lead, simulations alone put Cert
     assert.equal(own.situation, 'D');
     assert.deepEqual(own.order, ['header', 'summary', 'education', 'projects', 'certifications', 'leadership', 'skills', 'interests']);
     assert.equal(own.blocks.find(b => b.lead).id, 'projects');
-    assert.equal(own.design.number, designFor('D').number);
+    sameDesign(own, designFor('D'));
     const sims = RL.recommend(answers({ rank: ['projects', 'work', 'academics', 'roles', 'skills'], projects: ['work-simulation', 'job-simulation'], work: ['company'] }), data());
     assert.equal(sims.situation, 'D');
     assert.deepEqual(sims.order, ['header', 'summary', 'education', 'certifications', 'experience', 'leadership', 'skills', 'interests'],
@@ -207,7 +228,7 @@ test('situation E: roles and activities first', () => {
     assert.equal(r.situation, 'E');
     assert.deepEqual(r.order, ['header', 'summary', 'education', 'leadership', 'achievements', 'projects', 'certifications', 'skills', 'interests']);
     assert.equal(r.blocks.find(b => b.id === 'leadership').label, 'Positions of responsibility');
-    assert.equal(r.design.number, designFor('E').number);
+    sameDesign(r, designFor('E'));
     assert.match(r.seeIt.href, /page=7$/);
 });
 
@@ -215,7 +236,7 @@ test('situation F: skills with proof first', () => {
     const r = R.recommend(answers({ rank: ['skills', 'projects', 'academics', 'work', 'roles'], projects: ['model'], work: ['part-time'] }), data());
     assert.equal(r.situation, 'F');
     assert.deepEqual(r.order, ['header', 'summary', 'education', 'skills', 'projects', 'certifications', 'experience', 'leadership', 'interests']);
-    assert.equal(r.design.number, designFor('F').number);
+    sameDesign(r, designFor('F'));
     // One proof, said once: the Skills line points at a different piece of work from the Projects line.
     const skills = r.blocks.find(b => b.id === 'skills').example;
     const project = r.blocks.find(b => b.id === 'projects').example;
@@ -238,8 +259,8 @@ test('situation G: a direct-entry graduate, whatever the ranking', () => {
     assert.equal(r.situation, 'G');
     assert.match(r.reason, /No Foundation row/);
     const g = designFor('G');
-    assert.equal(r.design.number, g.number);
-    if (g.portalSafe) assert.equal(r.portal, null, 'no portal line when the suggested design is the portal one');
+    sameDesign(r, g);
+    if (!g || g.portalSafe) assert.equal(r.portal, null, 'no portal line when the suggested design is the portal one');
     else assert.match(r.portal.text, /^Applying on a firm's portal\? Use Portal plain \(No\. \d+\) with the same order\.$/);
     assert.match(r.seeIt.href, /page=9$/);
     assert.ok(r.thinProof, 'no proof at all → the Nothing CV pointer still shows');
@@ -264,8 +285,8 @@ test('situation H: no work and no project, with work or projects ranked first �
         const live = RL.recommend(answers({ rank }), data());
         assert.match(live.thinProof.text, /^do one Work Simulation level/, 'once it is out, the Work Simulation is the step after');
         assert.deepEqual(live.thinProof.links.map(l => l.label), ['Work Simulation']);
-        assert.equal(r.design.number, designFor('H').number);
-        assert.match(r.design.name, /Portal plain/, 'the Nothing CV is shown in Portal plain');
+        sameDesign(r, designFor('H'));
+        if (ON_BRANCH.designs) assert.match(r.design.name, /Portal plain/, 'the Nothing CV is shown in Portal plain');
         assert.equal(r.portal, null, 'no second portal line when the design already is the portal one');
         assert.deepEqual(r.order, ['header', 'summary', 'education', 'certifications', 'leadership', 'skills']);
         assert.ok(!r.blocks.some(b => b.note), 'no "number 5" note on the fixed order');
@@ -621,12 +642,18 @@ test('links: once the Work Simulation is out it opens on my domain (its page, el
     wired.links.workSimulation = '/articleship-program/work-simulation/?from=cv';
     assert.equal(RL.recommend(answers({ rank, domain: 'ma-tax' }), wired).thinProof.links[0].href, '/articleship-program/work-simulation/?from=cv&domain=ma-tax');
     assert.equal(R.recommend(answers({ rank }), wired).thinProof.links.some(l => /work-simulation/.test(l.href)), false, 'never in release 1, even when wired');
+});
+
+// A page another tool owns may not be ported to this branch yet: the test then skips and names it (its link would
+// dead-end here until that tool is ported), rather than passing quietly.
+const missingPages = Object.values(SITUATIONS.links).filter(Boolean).filter(href => !fs.existsSync(path.join(ROOT, href, 'index.html')));
+test('links: every page this tool links to is on this branch', { skip: missingPages.length > 0 && 'not on this branch yet: ' + missingPages.join(', ') }, () => {
     for (const href of Object.values(SITUATIONS.links).filter(Boolean)) {
         assert.ok(fs.existsSync(path.join(ROOT, href, 'index.html')), href + ' is a page on this branch');
     }
 });
 
-test('links: every PDF this tool opens is a Day 1 row of the v3 course, so "See this order" never misses', () => {
+test('links: every PDF this tool opens is a Day 1 row of the v3 course, so "See this order" never misses', { skip: NOT_HERE.lmsSql }, () => {
     const sql = fs.readFileSync(path.join(ROOT, 'supabase/migrations/202610200002_articleship_program_v3_lms.sql'), 'utf8');
     const rows = JSON.parse(sql.match(/json_populate_recordset\(NULL::public\.videos, '([\s\S]*?)'::json\)/)[1].replaceAll("''", "'"));
     const day1 = rows.find(row => row.video_number === SITUATIONS.day + 1);
@@ -650,7 +677,6 @@ test('domain: a pick is passed on; "Not sure yet" sends no domain and shows the 
     assert.equal(unsure.domain, null);
     assert.match(unsure.unsure.text, /statutory audit and some tax/);
     assert.deepEqual(unsure.unsure.link, { label: 'Domain roadmaps', href: '/articleship-program/domain-roadmaps/' });
-    assert.ok(fs.existsSync(path.join(ROOT, 'articleship-program/domain-roadmaps/index.html')), 'the Domain roadmaps page is on this branch');
     const noPage = data();
     noPage.links.domainRoadmaps = null;
     assert.equal(R.recommend(answers({ domain: 'unsure' }), noPage).unsure.link.href,
@@ -659,7 +685,7 @@ test('domain: a pick is passed on; "Not sure yet" sends no domain and shows the 
 
 // ---------- Designs ----------
 
-test('designs: one list for both tools (the CV Builder\'s), no second copy here', () => {
+test('designs: one list for both tools (the CV Builder\'s), no second copy here', { skip: NOT_HERE.builderStage }, () => {
     assert.ok(!fs.existsSync(path.join(TOOL_DIR, 'designs.json')), 'no local copy of the design list');
     const page = fs.readFileSync(path.join(TOOL_DIR, 'index.html'), 'utf8');
     assert.match(page, /getJson\(MSCCvRecommender\.DESIGNS_URL\)/);
@@ -718,12 +744,12 @@ test('designs: situation match first, a variant match breaks ties, then the lowe
     assert.equal(none.portal, null);
     assert.equal(none.builder, false, 'no design list → no "the CV Builder opens with this" promise');
     assert.equal(R.toCvPick(none).design, null);
-    assert.equal(R.recommend(answers(), data()).builder, true);
-    assert.equal(R.recommend(answers({ course: 'cma', rank: ['skills', 'academics', 'work', 'projects', 'roles'], work: ['tuition'] }), data()).design.number,
-        designFor('F', ['cs-cma']).number, 'the situation still decides when a design is made for it');
+    assert.equal(R.recommend(answers(), data()).builder, ON_BRANCH.designs);
+    sameDesign(R.recommend(answers({ course: 'cma', rank: ['skills', 'academics', 'work', 'projects', 'roles'], work: ['tuition'] }), data()),
+        designFor('F', ['cs-cma']), 'the situation still decides when a design is made for it');
 });
 
-test('designs: a variant\'s own design (CA with CS or CMA) is offered as a second line when the situation\'s design wins', () => {
+test('designs: a variant\'s own design (CA with CS or CMA) is offered as a second line when the situation\'s design wins', { skip: NOT_HERE.designs }, () => {
     const csCma = DESIGN_LIST.filter(d => d.bestFor.includes('cs-cma'));
     assert.ok(csCma.length, 'designs.json names a design for CA with CS or CMA');
     for (const course of ['cs', 'cma']) {
@@ -743,7 +769,7 @@ test('designs: a variant\'s own design (CA with CS or CMA) is offered as a secon
     assert.equal(none.next.text, 'Next: pick a design in CV templates, then open the CV Builder in {link}.', 'no design list: no design named');
 });
 
-test('data: the 13 Work Simulation lines are Domain roadmaps\' cv_line, word for word (CV lines carry no closing full stop)', () => {
+test('data: the 13 Work Simulation lines are Domain roadmaps\' cv_line, word for word (CV lines carry no closing full stop)', { skip: NOT_HERE.roadmaps }, () => {
     const file = path.join(ROOT, 'articleship-program/domain-roadmaps/roadmaps.json');
     assert.ok(fs.existsSync(file), 'Domain roadmaps is on this branch');
     const roadmaps = JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -759,7 +785,7 @@ test('data: the 13 Work Simulation lines are Domain roadmaps\' cv_line, word for
 test('toCvPick: valid for the shared setting; saved for the CV Builder; my domain set', () => {
     const r = R.recommend(answers({ inter: 'separate', icitss: 'ongoing', domain: 'direct-tax', projects: ['job-simulation'] }), data());
     const pick = R.toCvPick(r);
-    const b = designFor('B').number;
+    const b = ON_BRANCH.designs ? designFor('B').number : null;
     assert.deepEqual(pick, { situation: 'B', order: r.order, design: b, variants: ['groups-separately', 'icitss-ongoing'], domain: 'direct-tax', source: 'cv-recommender' });
     const progress = fakeProgress();
     const saved = progress.setCvPick(pick);
@@ -853,10 +879,14 @@ test('page: nine taps to a result; the pick and my domain are saved; a reload op
     const pick = p.doc.querySelector('.cvr-pick');
     assert.equal(pick.previousElementSibling, null, 'the button and the design come first, straight under the reason');
     const c = designFor('C', ['cs-cma']);
-    assert.match(pick.textContent, new RegExp('No\\. ' + c.number + ' ' + c.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
     const next = pick.querySelector('.cvr-next');
-    assert.equal(next.textContent, 'Next: open the CV Builder in Day 1. It opens with this order; pick design No. ' + c.number + ' there.',
-        'the Builder takes the order; the design is named, not promised');
+    if (c) {
+        assert.match(pick.textContent, new RegExp('No\\. ' + c.number + ' ' + c.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+        assert.equal(next.textContent, 'Next: open the CV Builder in Day 1. It opens with this order; pick design No. ' + c.number + ' there.',
+            'the Builder takes the order; the design is named, not promised');
+    } else {
+        assert.equal(next.textContent, 'Next: pick a design in CV templates, then open the CV Builder in Day 1.', 'no design list on this branch');
+    }
     assert.equal(next.querySelector('a').textContent, 'Day 1');
     assert.equal(next.querySelector('a').getAttribute('href'), '/learning-management-system/course?course=msc-articleship-program&session=2&resource=CV+Builder',
         'the CV Builder\'s own row in Day 1, through the course');
@@ -866,7 +896,7 @@ test('page: nine taps to a result; the pick and my domain are saved; a reload op
 
     const pickSaved = progress.getCvPick();
     assert.equal(pickSaved.situation, 'C');
-    assert.equal(pickSaved.design, c.number);
+    assert.equal(pickSaved.design, c ? c.number : null);
     assert.deepEqual(pickSaved.variants, ['groups-separately', 'icitss-ongoing', 'distance', 'cs-cma', 'gap']);
     assert.equal(progress.getMyDomain(), 'gst');
     assert.equal(store.get().done, true);
@@ -1098,7 +1128,7 @@ test('page: a reload saves the pick again when today\'s designs give a different
     progress.setCvPick({ situation: 'C', order: ['header', 'summary', 'education', 'experience'], design: 99, variants: [], domain: 'statutory-audit' });
     R.mount(page().app, Object.assign({ data: data(), store, progress }, FAST));
     const saved = progress.getCvPick();
-    assert.equal(saved.design, designFor('C').number, 'the design shown is the design saved');
+    assert.equal(saved.design, ON_BRANCH.designs ? designFor('C').number : null, 'the design shown is the design saved');
     assert.deepEqual(saved.order, R.recommend(store.get().answers, data()).order);
     const before = progress.settings.get().cvPick.savedAt;
     R.mount(page().app, Object.assign({ data: data(), store, progress }, FAST));
