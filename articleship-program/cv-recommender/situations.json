@@ -34,7 +34,7 @@
     },
     "certifications": {
       "label": "Certifications and job simulations",
-      "example": "[Domain] Work Simulation, MSC Articleship Program | [Month Year]: [what you did]"
+      "example": "[Company] [Simulation] Job Simulation (Forage) | [Month Year]: [what you did]"
     },
     "leadership": {
       "label": "Roles and achievements",
@@ -58,6 +58,9 @@
       "name": "Academics",
       "useIf": "First attempt, an exemption, a rank or strong school marks, and little else yet.",
       "reason": "Your marks are your loudest proof, so they sit on top with every Remark filled.",
+      "reasonByInter": {
+        "both-awaited": "Your Inter result is not out yet, so your Foundation and school marks lead, with every Remark filled."
+      },
       "rule": "No Remarks cell is blank, and every remark is something a mark sheet or certificate shows.",
       "page": 3,
       "lead": "education",
@@ -201,7 +204,7 @@
     "H": {
       "name": "Nothing yet",
       "useIf": "Nothing on your CV yet beyond your marks.",
-      "reason": "One weekend gives you four certificates and a project line.",
+      "reason": "One weekend gives you the four quick certificates; one more true line takes a few weeks.",
       "rule": "Build it in this order: objective, education with ICITSS, the four quick certificates, the MSC line, extra-curriculars.",
       "resource": "nothing",
       "fixed": true,
@@ -261,7 +264,9 @@
     },
     "certifications": {
       "label": "Your simulations",
-      "note": "Goes in Certifications and job simulations, never in Experience. Put in your own counts."
+      "note": "Goes in Certifications and job simulations, never in Experience. Put in your own counts.",
+      "labelExample": "Your simulations (example)",
+      "noteExample": "This is the {domain} Work Simulation line, as an example. Copy the line your own level gave you, with your own counts. It goes in Certifications and job simulations, never in Experience."
     }
   },
   "defaultDomain": "statutory-audit",
@@ -428,9 +433,13 @@
     "label": "Thin on proof?",
     "text": "Add one Work Simulation level and the four quick certificates.",
     "textHasSimulation": "Add the four quick certificates.",
+    "textNoWs": "Add the four quick certificates, then one more true line.",
     "labelNothing": "Then",
     "textNothing": "do one Work Simulation level. It gives you a line you earned, with your own numbers.",
-    "page": 4
+    "textNothingNoWs": "earn one more true line in a few weeks, like an annual-report project.",
+    "moreLabel": "Earn one more line",
+    "page": 4,
+    "morePage": 5
   },
   "unsure": {
     "label": "Domain not decided?",
@@ -440,9 +449,13 @@
     "row": "Domain roadmaps"
   },
   "portal": "Applying on a firm's portal? Use {design} with the same order.",
+  "alsoFits": {
+    "cs-cma": "{label}? {design} fits it too."
+  },
   "next": {
-    "text": "Next: open the CV Builder in {day}. It opens with this order and design.",
-    "textNoDesign": "Next: pick a design in CV templates, then open the CV Builder in {day}.",
-    "dayLabel": "Day 1"
+    "text": "Next: open the CV Builder in {link}. It opens with this order; pick design No. {design} there.",
+    "textNoDesign": "Next: pick a design in CV templates, then open the CV Builder in {link}.",
+    "linkLabel": "Day 1",
+    "row": "CV Builder"
   }
 }

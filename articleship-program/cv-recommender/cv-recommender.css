@@ -227,6 +227,8 @@
 .cvr-tag.is-screen { background: #fdf0e1; color: #9a4f08; }
 .cvr-design-line { margin: 0; font-size: 14px; color: #475569; }
 .cvr-portal { margin: 6px 0 0; padding-top: 8px; border-top: 1px dashed var(--ap-border-dark); font-size: 13.5px; color: var(--ap-muted); }
+.cvr-portal + .cvr-also { margin-top: 2px; padding-top: 0; border-top: 0; }
+.cvr-also-link { display: inline-flex; align-items: center; min-height: 44px; vertical-align: middle; }
 
 .cvr-note {
     padding: 12px 14px;
@@ -237,7 +239,8 @@
 .cvr-note.is-thin { background: var(--ap-sticky); }
 .cvr-note.is-next { background: var(--ap-success-light); }
 .cvr-note strong { font-family: var(--ap-hand); font-size: 19px; color: var(--ap-navy); margin-right: 4px; }
-.cvr-note-links { display: inline-flex; flex-wrap: wrap; gap: 0 16px; }
+/* The links sit on their own row under the text, so their 44 px tap height never stretches a line of text. */
+.cvr-note-links { display: flex; flex-wrap: wrap; gap: 0 18px; margin-top: 4px; }
 .cvr-note-links .ap-link { display: inline-flex; align-items: center; min-height: 44px; }
 
 .cvr-variants-wrap .ap-h2, .cvr-answers .ap-h2 { margin: 4px 0 8px; }
@@ -263,7 +266,18 @@
     text-align: left;
     cursor: pointer;
 }
+.cvr-variant-head { flex: 1 1 auto; display: grid; gap: 2px; min-width: 0; }
 .cvr-variant-label { min-width: 0; }
+/* A closed card shows the start of its line, so Copy never copies something unseen; open, the full line shows below. */
+.cvr-variant-peek {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font: 500 12.5px/1.35 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    color: #5b6b80;
+}
+.cvr-variant-toggle[aria-expanded="true"] .cvr-variant-peek { display: none; }
 .cvr-chev {
     flex: 0 0 auto;
     width: 9px;

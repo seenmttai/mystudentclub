@@ -16,6 +16,10 @@ const DESIGNS = JSON.parse(fs.readFileSync(BUILDER_DESIGNS, 'utf8'));
 const MSC_LINE = 'Completed MSC Articleship Program — foundational understanding of work and tasks across all domains';
 const MSC_ONGOING = 'MSC Articleship Program (ongoing)';
 const DESIGN_LIST = R.normaliseDesigns(DESIGNS);
+// R is the tool as shipped (release 1: WORK_SIMULATION_LIVE false). RL is the same tool once the Work Simulation is out.
+const RL = R.withConfig({ workSimulationLive: true });
+// Page tests run with short timings; one test checks the real ones (280 ms advance, 250 ms double-tap guard).
+const FAST = { advanceMs: 20, tapGuardMs: 0 };
 
 // The design a situation is given, worked out from the shared designs.json (never a literal number, so these tests
 // follow the CV templates look-book whenever row 1.4 changes it): the lowest-numbered design whose bestFor names the
@@ -150,12 +154,18 @@ test('situation A: academics first, both groups in the first attempt', () => {
     const marksOnly = R.recommend(answers(), data());
     assert.equal(marksOnly.situation, 'A', 'a first-attempt student with marks and nothing else is A');
     assert.match(SITUATIONS.situations.A.useIf, /little else yet/);
-    assert.deepEqual(marksOnly.thinProof.links.map(l => l.label), ['Work Simulation', 'The Nothing CV'], 'and is pointed to The Nothing CV');
+    assert.deepEqual(marksOnly.thinProof.links.map(l => l.label), ['The Nothing CV', 'Earn one more line'], 'and is pointed to The Nothing CV');
+    assert.deepEqual(RL.recommend(answers(), data()).thinProof.links.map(l => l.label), ['Work Simulation', 'The Nothing CV'],
+        'once the Work Simulation is out: a level first');
+    // Inter not out yet: the marks that lead are Foundation and school, not Inter.
+    const awaited = R.recommend(answers({ inter: 'both-awaited' }), data());
+    assert.match(awaited.reason, /^Your Inter result is not out yet, so your Foundation and school marks lead/);
+    assert.doesNotMatch(awaited.reason, /loudest/);
 });
 
 test('situation B: academics first, Inter in more than one sitting; one group awaited has its own reason', () => {
     for (const inter of ['later', 'separate', 'one-awaited']) {
-        const r = R.recommend(answers({ inter, projects: ['work-simulation'] }), data());
+        const r = R.recommend(answers({ inter, projects: ['job-simulation'] }), data());
         assert.equal(r.situation, 'B', inter);
         if (inter === 'one-awaited') {
             assert.match(r.reason, /^One group is cleared and one is awaited\./);
@@ -184,7 +194,7 @@ test('situation D: projects first; own projects lead, simulations alone put Cert
     assert.deepEqual(own.order, ['header', 'summary', 'education', 'projects', 'certifications', 'leadership', 'skills', 'interests']);
     assert.equal(own.blocks.find(b => b.lead).id, 'projects');
     assert.equal(own.design.number, designFor('D').number);
-    const sims = R.recommend(answers({ rank: ['projects', 'work', 'academics', 'roles', 'skills'], projects: ['work-simulation', 'job-simulation'], work: ['company'] }), data());
+    const sims = RL.recommend(answers({ rank: ['projects', 'work', 'academics', 'roles', 'skills'], projects: ['work-simulation', 'job-simulation'], work: ['company'] }), data());
     assert.equal(sims.situation, 'D');
     assert.deepEqual(sims.order, ['header', 'summary', 'education', 'certifications', 'experience', 'leadership', 'skills', 'interests'],
         'simulations live in Certifications and job simulations, never Projects; work (number 2) follows them');
@@ -235,8 +245,8 @@ test('situation G: a direct-entry graduate, whatever the ranking', () => {
     assert.ok(r.thinProof, 'no proof at all → the Nothing CV pointer still shows');
 });
 
-test('situation H: no work and no project → The Nothing CV, its order fixed', () => {
-    for (const top of ['work', 'projects', 'roles', 'skills']) {
+test('situation H: no work and no project, with work or projects ranked first → The Nothing CV, its order fixed', () => {
+    for (const top of ['work', 'projects']) {
         const rank = [top].concat(['academics', 'work', 'projects', 'roles', 'skills'].filter(id => id !== top));
         const r = R.recommend(answers({ rank }), data());
         assert.equal(r.situation, 'H', top);
@@ -244,8 +254,16 @@ test('situation H: no work and no project → The Nothing CV, its order fixed', 
         assert.equal(r.seeIt.href, '/learning-management-system/course?course=msc-articleship-program&session=2&resource=The+Nothing+CV');
         assert.deepEqual(r.heading, { before: 'Start with ', mark: 'The Nothing CV', after: '' });
         assert.equal(r.leadNote, 'start here');
+        assert.equal(r.reason, 'One weekend gives you the four quick certificates; one more true line takes a few weeks.',
+            'the weekend is the four certificates (The Nothing CV p4); a project line is a few weeks (p5)');
         assert.equal(r.thinProof.label, 'Then');
-        assert.match(r.thinProof.text, /^do one Work Simulation level/, 'reads on from "Then"');
+        assert.match(r.thinProof.text, /^earn one more true line in a few weeks/, 'reads on from "Then"');
+        assert.deepEqual(r.thinProof.links.map(l => l.label), ['Earn one more line']);
+        assert.equal(r.thinProof.links[0].href, '/learning-management-system/course?course=msc-articleship-program&session=2&resource=The+Nothing+CV&page=5',
+            'The Nothing CV p5: "Earn one more true line"');
+        const live = RL.recommend(answers({ rank }), data());
+        assert.match(live.thinProof.text, /^do one Work Simulation level/, 'once it is out, the Work Simulation is the step after');
+        assert.deepEqual(live.thinProof.links.map(l => l.label), ['Work Simulation']);
         assert.equal(r.design.number, designFor('H').number);
         assert.match(r.design.name, /Portal plain/, 'the Nothing CV is shown in Portal plain');
         assert.equal(r.portal, null, 'no second portal line when the design already is the portal one');
@@ -256,20 +274,39 @@ test('situation H: no work and no project → The Nothing CV, its order fixed', 
     assert.equal(lowMarks.situation, 'H');
     assert.deepEqual(lowMarks.order, ['header', 'summary', 'education', 'certifications', 'leadership', 'skills'], 'marks ranked last: still the fixed order');
     assert.ok(!lowMarks.variants.some(v => v.id === 'marks-low'));
+});
+
+test('no proof yet, but marks, roles or skills ranked first: their own order, with "Thin on proof?" pointing at The Nothing CV', () => {
+    const cases = [
+        [['roles', 'academics', 'work', 'projects', 'skills'], {}, 'E', 'leadership'],
+        [['skills', 'academics', 'work', 'projects', 'roles'], {}, 'F', 'skills'],
+        [['academics', 'work', 'projects', 'roles', 'skills'], {}, 'A', 'education'],
+        [['academics', 'work', 'projects', 'roles', 'skills'], { inter: 'separate' }, 'B', 'education']
+    ];
+    for (const [rank, over, code, lead] of cases) {
+        const r = R.recommend(answers(Object.assign({ rank }, over)), data());
+        assert.equal(r.situation, code, rank[0] + ' first');
+        assert.equal(r.lead, lead);
+        assert.equal(r.thinProof.label, 'Thin on proof?');
+        assert.equal(r.thinProof.text, 'Add the four quick certificates, then one more true line.');
+        assert.match(r.thinProof.links[0].href, /resource=The\+Nothing\+CV&page=4$/, code + ': The Nothing CV p4, the four certificates');
+        assert.ok(!r.order.includes('experience') && !r.order.includes('projects'), 'no empty Work or Projects block');
+    }
     const separate = R.recommend(answers({ inter: 'separate' }), data());
-    assert.equal(separate.situation, 'H', 'academics first, groups separately, nothing else: The Nothing CV');
-    assert.ok(separate.variants.some(v => v.id === 'groups-separately'), 'with the groups-separately rows still to add');
+    assert.ok(separate.variants.some(v => v.id === 'groups-separately'), 'B keeps the groups-separately rows to add');
 });
 
 // ---------- Rule order ----------
 
-test('rules: G wins over H; no proof is H except academics first at the first try (A); a strength with no proof is skipped', () => {
+test('rules: G wins over H; no proof is H only with work or projects ranked first; a strength with no proof is skipped', () => {
     assert.equal(R.chooseSituation(answers({ graduation: 'direct-entry', rank: ['work', 'academics', 'projects', 'roles', 'skills'] })), 'G');
     assert.equal(R.chooseSituation(answers()), 'A');
     assert.equal(R.chooseSituation(answers({ inter: 'both-awaited' })), 'A');
-    for (const inter of ['later', 'separate', 'one-awaited']) assert.equal(R.chooseSituation(answers({ inter })), 'H', inter);
-    assert.equal(R.chooseSituation(answers({ rank: ['work', 'academics', 'projects', 'roles', 'skills'] })), 'H', 'academics 2nd: H');
-    assert.equal(R.chooseSituation(answers({ rank: ['roles', 'work', 'projects', 'academics', 'skills'] })), 'H', 'roles first, no work, no project');
+    for (const inter of ['later', 'separate', 'one-awaited']) assert.equal(R.chooseSituation(answers({ inter })), 'B', inter);
+    assert.equal(R.chooseSituation(answers({ rank: ['work', 'academics', 'projects', 'roles', 'skills'] })), 'H', 'work first, none: H');
+    assert.equal(R.chooseSituation(answers({ rank: ['projects', 'academics', 'work', 'roles', 'skills'] })), 'H', 'projects first, none: H');
+    assert.equal(R.chooseSituation(answers({ rank: ['roles', 'work', 'projects', 'academics', 'skills'] })), 'E', 'roles first, no work, no project: roles lead');
+    assert.equal(R.chooseSituation(answers({ rank: ['skills', 'work', 'projects', 'academics', 'roles'] })), 'F', 'skills first, no work, no project: skills lead');
     assert.equal(R.chooseSituation(answers({ rank: ['roles', 'work', 'projects', 'academics', 'skills'], work: ['tuition'] })), 'E', 'roles need no tap of their own');
     assert.equal(R.chooseSituation(answers({ rank: ['work', 'projects', 'skills', 'academics', 'roles'], projects: ['model'] })), 'D', 'work ranked 1 but none → next strength');
     assert.equal(R.chooseSituation(answers({ rank: ['projects', 'work', 'skills', 'academics', 'roles'], work: ['family'] })), 'C');
@@ -354,11 +391,12 @@ test('examples: the work and project lines follow what was tapped; the certifica
     assert.match(ex({ work: ['ca-firm'], projects: ['annual-report'] }, 'projects'), /annual report/);
 
     const D = { rank: ['projects', 'academics', 'work', 'roles', 'skills'] };
-    assert.match(ex(Object.assign({ projects: ['work-simulation'], domain: 'gst' }, D), 'certifications'),
+    const exL = (over, id) => RL.recommend(answers(over), data()).blocks.find(b => b.id === id).example;
+    assert.match(exL(Object.assign({ projects: ['work-simulation'], domain: 'gst' }, D), 'certifications'),
         /^GST Work Simulation, MSC Articleship Program \| \[Month Year\]: .*GSTR-2B/);
-    assert.match(ex(Object.assign({ projects: ['work-simulation'], domain: 'direct-tax' }, D), 'certifications'), /^Direct Tax Work Simulation/);
-    assert.match(ex(Object.assign({ projects: ['work-simulation'], domain: 'ib-er' }, D), 'certifications'), /^IB & ER Work Simulation/);
-    assert.match(ex(Object.assign({ projects: ['work-simulation'], domain: 'unsure' }, D), 'certifications'), /^Statutory Audit Work Simulation/,
+    assert.match(exL(Object.assign({ projects: ['work-simulation'], domain: 'direct-tax' }, D), 'certifications'), /^Direct Tax Work Simulation/);
+    assert.match(exL(Object.assign({ projects: ['work-simulation'], domain: 'ib-er' }, D), 'certifications'), /^IB & ER Work Simulation/);
+    assert.match(exL(Object.assign({ projects: ['work-simulation'], domain: 'unsure' }, D), 'certifications'), /^Statutory Audit Work Simulation/,
         'not sure yet: statutory audit (house rule 10)');
     assert.match(ex(Object.assign({ projects: ['job-simulation'], domain: 'gst' }, D), 'certifications'), /Job Simulation \(Forage\)/,
         'no Work Simulation level: no Work Simulation line');
@@ -485,7 +523,7 @@ test('variant: another course (CFA, another degree)', () => {
 });
 
 test('own lines: the student\'s work, projects and simulations become lines to copy, in CV order, first under "Add these lines"', () => {
-    const r = R.recommend(answers({
+    const r = RL.recommend(answers({
         rank: ['skills', 'academics', 'work', 'projects', 'roles'],
         work: ['tuition', 'ca-firm'], projects: ['model', 'annual-report', 'work-simulation', 'job-simulation'], domain: 'gst'
     }), data());
@@ -499,6 +537,12 @@ test('own lines: the student\'s work, projects and simulations become lines to c
     assert.equal(by.experience.label, 'Your work experience');
     assert.equal(by.certifications.label, 'Your simulations');
     assert.match(by.certifications.note, /never in Experience/);
+    // "Not sure yet": the Work Simulation line shown is statutory audit's, so it is labelled an example.
+    const unsure = RL.recommend(answers({ rank: ['projects', 'academics', 'work', 'roles', 'skills'], projects: ['work-simulation'], domain: 'unsure' }), data());
+    const sims = unsure.ownLines.find(c => c.block === 'certifications');
+    assert.equal(sims.label, 'Your simulations (example)');
+    assert.match(sims.note, /^This is the Statutory audit Work Simulation line, as an example\. Copy the line your own level gave you/);
+    assert.doesNotMatch(sims.note, /\{domain\}/);
     r.ownLines.forEach(c => assert.equal(r.blocks.find(b => b.id === c.block).example, c.lines[0], c.block + ': the CV picture shows the first of them'));
     assert.deepEqual(r.blocks.filter(b => b.own).map(b => b.id).sort(), ['certifications', 'experience', 'projects']);
     const none = R.recommend(answers(), data());
@@ -510,28 +554,73 @@ test('own lines: the student\'s work, projects and simulations become lines to c
 
 // ---------- Thin proof, domain, links ----------
 
-test('thin proof: one piece or none (A only when none); no Work Simulation link when one is done', () => {
-    const one = R.recommend(answers({ rank: ['roles', 'academics', 'work', 'projects', 'skills'], work: ['tuition'] }), data());
-    assert.ok(one.thinProof);
-    assert.deepEqual(one.thinProof.links.map(l => l.label), ['Work Simulation', 'The Nothing CV']);
-    assert.match(one.thinProof.links[1].href, /resource=The\+Nothing\+CV&page=4$/, 'The Nothing CV p4: the four certificates');
+test('thin proof: one piece or none (A only when none); The Nothing CV now, a Work Simulation level once it is out', () => {
+    const roles = { rank: ['roles', 'academics', 'work', 'projects', 'skills'], work: ['tuition'] };
+    const one = R.recommend(answers(roles), data());
+    assert.equal(one.thinProof.text, 'Add the four quick certificates, then one more true line.');
+    assert.deepEqual(one.thinProof.links.map(l => l.label), ['The Nothing CV', 'Earn one more line']);
+    assert.match(one.thinProof.links[0].href, /resource=The\+Nothing\+CV&page=4$/, 'The Nothing CV p4: the four certificates');
+    assert.match(one.thinProof.links[1].href, /resource=The\+Nothing\+CV&page=5$/, 'The Nothing CV p5: one more true line');
     assert.equal(R.recommend(answers({ work: ['tuition'] }), data()).thinProof, null, 'A with one piece of proof is fine');
     assert.ok(R.recommend(answers(), data()).thinProof, 'A with nothing at all still gets the pointer');
-    const hasWs = R.recommend(answers({ rank: ['projects', 'academics', 'work', 'roles', 'skills'], projects: ['work-simulation'] }), data());
+
+    const oneLive = RL.recommend(answers(roles), data());
+    assert.equal(oneLive.thinProof.text, 'Add one Work Simulation level and the four quick certificates.');
+    assert.deepEqual(oneLive.thinProof.links.map(l => l.label), ['Work Simulation', 'The Nothing CV']);
+    const hasWs = RL.recommend(answers({ rank: ['projects', 'academics', 'work', 'roles', 'skills'], projects: ['work-simulation'] }), data());
     assert.equal(hasWs.thinProof.text, 'Add the four quick certificates.');
-    assert.deepEqual(hasWs.thinProof.links.map(l => l.label), ['The Nothing CV']);
+    assert.deepEqual(hasWs.thinProof.links.map(l => l.label), ['The Nothing CV'], 'no Work Simulation link when a level is done');
 });
 
-test('links: the Work Simulation opens its own Day 1 row until its page is on the site; every page linked exists in this repo', () => {
-    const h = R.recommend(answers({ rank: ['work', 'academics', 'projects', 'roles', 'skills'] }), data());
+test('release 1: no Work Simulation tap, link, line or promise in any result or on the page', async () => {
+    assert.equal(R.WORK_SIMULATION_LIVE, false, 'release 1 ships without the Work Simulation');
+    assert.equal(R.workSimulationLive, false);
+    assert.equal(RL.workSimulationLive, true);
+    assert.ok(!R.QUESTIONS.find(q => q.id === 'projects').options.some(o => o.id === 'work-simulation'), 'no "Work Simulation level" tap');
+    assert.ok(RL.QUESTIONS.find(q => q.id === 'projects').options.some(o => o.id === 'work-simulation'), 'it comes back with the flag');
+    assert.deepEqual(R.cleanAnswers(answers({ projects: ['work-simulation'] })).projects, [], 'a stray answer is dropped');
+    const ranks = [['academics', 'work', 'projects', 'roles', 'skills'], ['work', 'academics', 'projects', 'roles', 'skills'],
+        ['projects', 'academics', 'work', 'roles', 'skills'], ['roles', 'academics', 'work', 'projects', 'skills'], ['skills', 'academics', 'work', 'projects', 'roles']];
+    const sets = [];
+    ranks.forEach(rank => [['none'], ['tuition'], ['ca-firm', 'family']].forEach(work => [['none'], ['job-simulation'], ['model']].forEach(projects =>
+        ['first', 'separate', 'both-awaited'].forEach(inter => ['statutory-audit', 'unsure'].forEach(domain =>
+            ['completed', 'direct-entry'].forEach(graduation => sets.push(answers({ rank, work, projects, inter, domain, graduation }))))))));
+    const seen = new Set();
+    sets.forEach(a => {
+        const r = R.recommend(a, data());
+        seen.add(r.situation);
+        assert.doesNotMatch(JSON.stringify(r), /work simulation|work-simulation/i, r.situation + ': nothing points at the Work Simulation');
+    });
+    assert.deepEqual([...seen].sort(), R.SITUATION_CODES.slice(), 'every situation was checked');
+    // The page too, on the result and on every question.
+    const p = page();
+    const store = memoryStore('cv-recommender', { answers: null, step: 0, done: false });
+    store.set({ answers: answers({ rank: ['work', 'academics', 'projects', 'roles', 'skills'] }), step: 8, done: true });
+    const ui = R.mount(p.app, Object.assign({ data: data(), store, progress: fakeProgress() }, FAST));
+    assert.match(p.app.textContent, /Start with The Nothing CV/);
+    assert.doesNotMatch(p.app.textContent, /Work Simulation/);
+    for (let step = 0; step < R.QUESTIONS.length; step++) {
+        ui.go(step);
+        assert.doesNotMatch(p.app.textContent, /Work Simulation/, 'question ' + (step + 1));
+    }
+});
+
+test('links: once the Work Simulation is out it opens on my domain (its page, else its Day 1 row); every page linked exists in this repo', () => {
+    const rank = ['work', 'academics', 'projects', 'roles', 'skills'];
+    const h = RL.recommend(answers({ rank }), data());
     const ws = SITUATIONS.links.workSimulation;
-    if (ws) assert.equal(h.thinProof.links[0].href, ws);
+    if (ws) assert.equal(h.thinProof.links[0].href, ws + '?domain=statutory-audit');
     else assert.equal(h.thinProof.links[0].href, '/learning-management-system/course?course=msc-articleship-program&session=2&resource=Work+Simulation');
     if (!ws) assert.ok(!fs.existsSync(path.join(ROOT, 'articleship-program/work-simulation/index.html')),
-        'the Work Simulation page is on the branch now: set links.workSimulation to /articleship-program/work-simulation/');
+        'the Work Simulation page is on the branch now: set links.workSimulation to /articleship-program/work-simulation/ and WORK_SIMULATION_LIVE to true');
     const wired = data();
     wired.links.workSimulation = '/articleship-program/work-simulation/';
-    assert.equal(R.recommend(answers({ rank: ['work', 'academics', 'projects', 'roles', 'skills'] }), wired).thinProof.links[0].href, '/articleship-program/work-simulation/');
+    assert.equal(RL.recommend(answers({ rank, domain: 'gst' }), wired).thinProof.links[0].href, '/articleship-program/work-simulation/?domain=gst',
+        'the student\'s own domain opens');
+    assert.equal(RL.recommend(answers({ rank, domain: 'unsure' }), wired).thinProof.links[0].href, '/articleship-program/work-simulation/', 'no domain yet: the page itself');
+    wired.links.workSimulation = '/articleship-program/work-simulation/?from=cv';
+    assert.equal(RL.recommend(answers({ rank, domain: 'ma-tax' }), wired).thinProof.links[0].href, '/articleship-program/work-simulation/?from=cv&domain=ma-tax');
+    assert.equal(R.recommend(answers({ rank }), wired).thinProof.links.some(l => /work-simulation/.test(l.href)), false, 'never in release 1, even when wired');
     for (const href of Object.values(SITUATIONS.links).filter(Boolean)) {
         assert.ok(fs.existsSync(path.join(ROOT, href, 'index.html')), href + ' is a page on this branch');
     }
@@ -634,6 +723,37 @@ test('designs: situation match first, a variant match breaks ties, then the lowe
         designFor('F', ['cs-cma']).number, 'the situation still decides when a design is made for it');
 });
 
+test('designs: a variant\'s own design (CA with CS or CMA) is offered as a second line when the situation\'s design wins', () => {
+    const csCma = DESIGN_LIST.filter(d => d.bestFor.includes('cs-cma'));
+    assert.ok(csCma.length, 'designs.json names a design for CA with CS or CMA');
+    for (const course of ['cs', 'cma']) {
+        const r = R.recommend(answers({ course, work: ['tuition'] }), data());
+        assert.equal(r.design.number, designFor('A', ['cs-cma']).number, 'the situation\'s design still leads');
+        assert.ok(r.also, course + ': a second line');
+        assert.equal(r.also.design.number, csCma[0].number);
+        assert.equal(r.also.text, 'CA with ' + course.toUpperCase() + '? No. ' + csCma[0].number + ' ' + csCma[0].name + ' fits it too.');
+        assert.match(r.also.href, new RegExp('resource=CV\\+templates&page=' + csCma[0].page + '$'), 'its look-book page');
+    }
+    assert.equal(R.recommend(answers({ course: 'none' }), data()).also, null, 'no course alongside: no second line');
+    assert.equal(R.recommend(answers({ course: 'cfa' }), data()).also, null);
+    const own = R.normaliseDesigns([{ number: 1, name: 'One', bestFor: ['A', 'cs-cma'] }, { number: 2, name: 'Two', bestFor: ['cs-cma'] }]);
+    assert.equal(R.variantDesign(own, ['cs-cma'], own[0]), null, 'nothing to add when the suggested design is made for it');
+    const none = R.recommend(answers(), data({ designs: [] }));
+    assert.equal(none.also, null);
+    assert.equal(none.next.text, 'Next: pick a design in CV templates, then open the CV Builder in {link}.', 'no design list: no design named');
+});
+
+test('data: the 13 Work Simulation lines are Domain roadmaps\' cv_line, word for word (CV lines carry no closing full stop)', () => {
+    const file = path.join(ROOT, 'articleship-program/domain-roadmaps/roadmaps.json');
+    assert.ok(fs.existsSync(file), 'Domain roadmaps is on this branch');
+    const roadmaps = JSON.parse(fs.readFileSync(file, 'utf8'));
+    const cards = Array.isArray(roadmaps.domains) ? roadmaps.domains : [];
+    assert.deepEqual(cards.map(c => c.slug).sort(), Object.keys(SITUATIONS.workSimulation).sort(), 'one line per domain card');
+    cards.forEach(card => assert.equal(SITUATIONS.workSimulation[card.slug], String(card.cv_line).replace(/\.$/, ''),
+        card.slug + ': change both files together (situations.json workSimulation and roadmaps.json cv_line)'));
+    assert.deepEqual(Object.keys(SITUATIONS.workSimulation).sort(), P.DOMAINS.map(d => d.slug).sort());
+});
+
 // ---------- Saving the pick ----------
 
 test('toCvPick: valid for the shared setting; saved for the CV Builder; my domain set', () => {
@@ -699,7 +819,7 @@ test('page: nine taps to a result; the pick and my domain are saved; a reload op
     const store = memoryStore('cv-recommender', { answers: null, step: 0, done: false }, storage);
     const progress = fakeProgress();
     const p = page();
-    R.mount(p.app, { data: data(), store, progress, heroEl: p.hero, mainEl: p.main });
+    R.mount(p.app, Object.assign({ data: data(), store, progress, heroEl: p.hero, mainEl: p.main }, FAST));
     assert.match(p.app.textContent, /1 of 9/);
     assert.match(p.app.textContent, /Rank your strengths/);
     ['Work done', 'Academics', 'Projects', 'Skills with proof'].forEach(label => click(p.doc, label));
@@ -707,17 +827,17 @@ test('page: nine taps to a result; the pick and my domain are saved; a reload op
     click(p.doc, 'Next');
     assert.match(p.app.textContent, /2 of 9/);
     assert.ok(p.hero.classList.contains('ap-hidden'), 'the intro shows on the first step only');
-    click(p.doc, 'Different sittings'); await sleep(200);
-    click(p.doc, 'Distance or evening'); await sleep(200);
-    click(p.doc, 'After Inter'); await sleep(200);
-    click(p.doc, 'Ongoing'); await sleep(200);
+    click(p.doc, 'Different sittings'); await sleep(100);
+    click(p.doc, 'Distance or evening'); await sleep(100);
+    click(p.doc, 'After Inter'); await sleep(100);
+    click(p.doc, 'Ongoing'); await sleep(100);
     assert.match(p.app.textContent, /6 of 9/);
     click(p.doc, 'Family business books');
     click(p.doc, 'Next');
     click(p.doc, 'None yet');
     click(p.doc, 'Next');
-    click(p.doc, 'CMA'); await sleep(200);
-    click(p.doc, 'GST'); await sleep(200);
+    click(p.doc, 'CMA'); await sleep(100);
+    click(p.doc, 'GST'); await sleep(100);
 
     assert.match(p.app.textContent, /Use the Work experience order/);
     assert.ok(p.main.classList.contains('is-wide'));
@@ -735,8 +855,11 @@ test('page: nine taps to a result; the pick and my domain are saved; a reload op
     const c = designFor('C', ['cs-cma']);
     assert.match(pick.textContent, new RegExp('No\\. ' + c.number + ' ' + c.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
     const next = pick.querySelector('.cvr-next');
-    assert.equal(next.textContent, 'Next: open the CV Builder in Day 1. It opens with this order and design.');
-    assert.equal(next.querySelector('a').getAttribute('href'), '/learning-management-system/course?course=msc-articleship-program&session=2');
+    assert.equal(next.textContent, 'Next: open the CV Builder in Day 1. It opens with this order; pick design No. ' + c.number + ' there.',
+        'the Builder takes the order; the design is named, not promised');
+    assert.equal(next.querySelector('a').textContent, 'Day 1');
+    assert.equal(next.querySelector('a').getAttribute('href'), '/learning-management-system/course?course=msc-articleship-program&session=2&resource=CV+Builder',
+        'the CV Builder\'s own row in Day 1, through the course');
     assert.doesNotMatch(p.app.textContent, /CV Builder row/, 'no course jargon');
     assert.match(p.app.textContent, /Thin on proof\?/);
     assert.ok(!/build/i.test([...p.doc.querySelectorAll('a, button')].map(n => n.textContent).join(' ')), 'no build button of its own');
@@ -749,7 +872,7 @@ test('page: nine taps to a result; the pick and my domain are saved; a reload op
     assert.equal(store.get().done, true);
 
     const again = page();
-    R.mount(again.app, { data: data(), store: memoryStore('cv-recommender', { answers: null, step: 0, done: false }, storage), progress, heroEl: again.hero, mainEl: again.main });
+    R.mount(again.app, Object.assign({ data: data(), store: memoryStore('cv-recommender', { answers: null, step: 0, done: false }, storage), progress, heroEl: again.hero, mainEl: again.main }, FAST));
     assert.match(again.app.textContent, /Use the Work experience order/, 'reload opens on the saved result');
     assert.equal(store.get().done, true, 'the other store copy is untouched until it changes');
 });
@@ -760,7 +883,7 @@ test('page: a line card shows its label and Copy; the line, note and "If asked" 
     store.set({ answers: answers({ gap: 'after-inter' }), step: 8, done: true });
     const copied = [];
     p.dom.window.navigator.clipboard = { writeText: text => { copied.push(text); return Promise.resolve(); } };
-    R.mount(p.app, { data: data(), store, progress: fakeProgress() });
+    R.mount(p.app, Object.assign({ data: data(), store, progress: fakeProgress() }, FAST));
     const gap = [...p.doc.querySelectorAll('.cvr-variant')].find(li => li.querySelector('.cvr-variant-label').textContent === 'A gap');
     const toggle = gap.querySelector('.cvr-variant-toggle');
     const body = gap.querySelector('.cvr-variant-body');
@@ -786,14 +909,14 @@ test('page: tap an answer chip to change one question, then straight back to the
     const store = memoryStore('cv-recommender', { answers: null, step: 0, done: false });
     store.set({ answers: answers({ work: ['tuition'] }), step: 8, done: true });
     const p = page();
-    R.mount(p.app, { data: data(), store, progress, heroEl: p.hero, mainEl: p.main });
+    R.mount(p.app, Object.assign({ data: data(), store, progress, heroEl: p.hero, mainEl: p.main }, FAST));
     assert.match(p.app.textContent, /Use the Academics order/);
     const chip = [...p.doc.querySelectorAll('.cvr-chip')].find(b => b.textContent === 'Statutory audit');
     assert.match(chip.getAttribute('aria-label'), /^Change: Your target domain/);
     chip.dispatchEvent(new p.dom.window.MouseEvent('click', { bubbles: true }));
     assert.match(p.app.textContent, /9 of 9/, 'opens the domain question itself, not question 1');
     assert.ok(p.hero.classList.contains('ap-hidden'));
-    click(p.doc, 'Valuation'); await sleep(200);
+    click(p.doc, 'Valuation'); await sleep(100);
     assert.match(p.app.textContent, /Use the Academics order/, 'one tap and the result is back');
     assert.equal(progress.getCvPick().domain, 'valuation');
 
@@ -801,24 +924,24 @@ test('page: tap an answer chip to change one question, then straight back to the
     inter.dispatchEvent(new p.dom.window.MouseEvent('click', { bubbles: true }));
     assert.match(p.app.textContent, /2 of 9/);
     assert.ok([...p.doc.querySelectorAll('button')].some(b => b.textContent === 'Show my CV'), 'the main button returns to the result');
-    click(p.doc, 'Different sittings'); await sleep(200);
+    click(p.doc, 'Different sittings'); await sleep(100);
     assert.match(p.app.textContent, /Show each result clearly/, 'B now');
 
     [...p.doc.querySelectorAll('.cvr-chip')].find(b => b.textContent === 'No gap').dispatchEvent(new p.dom.window.MouseEvent('click', { bubbles: true }));
-    click(p.doc, 'After Foundation'); await sleep(200);
+    click(p.doc, 'After Foundation'); await sleep(100);
     assert.ok([...p.doc.querySelectorAll('.cvr-chip')].some(b => b.textContent === 'Gap after Foundation'));
     [...p.doc.querySelectorAll('.cvr-chip')].find(b => b.textContent === 'Graduation completed').dispatchEvent(new p.dom.window.MouseEvent('click', { bubbles: true }));
-    click(p.doc, 'Direct entry'); await sleep(200);
+    click(p.doc, 'Direct entry'); await sleep(100);
     assert.match(p.app.textContent, /4 of 9/, 'a now-hidden gap answer is asked again before the result');
     assert.ok(![...p.doc.querySelectorAll('.cvr-opt')].some(b => /After Foundation/.test(b.textContent)), 'and not offered');
-    click(p.doc, 'A year out'); await sleep(200);
+    click(p.doc, 'A year out'); await sleep(100);
     assert.match(p.app.textContent, /Use the Direct entry order/);
 });
 
 test('page: the screen reader hears each step once; the card is not a live region; tap targets are 44 px in the CSS', () => {
     const store = memoryStore('cv-recommender', { answers: null, step: 0, done: false });
     const p = page();
-    const ui = R.mount(p.app, { data: data(), store, progress: fakeProgress() });
+    const ui = R.mount(p.app, Object.assign({ data: data(), store, progress: fakeProgress() }, FAST));
     assert.equal(p.doc.querySelectorAll('[aria-live]').length, 1);
     const live = p.doc.querySelector('[aria-live]');
     assert.ok(!live.closest('.cvr-card'), 'the live region sits outside the re-drawn card');
@@ -828,11 +951,13 @@ test('page: the screen reader hears each step once; the card is not a live regio
     assert.equal(p.doc.querySelectorAll('[aria-live]').length, 1);
     assert.equal(ui.state().step, 1);
     const css = fs.readFileSync(path.join(TOOL_DIR, 'cv-recommender.css'), 'utf8');
-    for (const selector of ['.cvr-reset', '.cvr-copy', '.cvr-chip', '.cvr-design-link', '.cvr-more', '.cvr-note-links .ap-link']) {
+    for (const selector of ['.cvr-reset', '.cvr-copy', '.cvr-chip', '.cvr-design-link', '.cvr-more', '.cvr-note-links .ap-link', '.cvr-also-link']) {
         const rule = css.match(new RegExp('(?:^|\\n)' + selector.replace(/\./g, '\\.') + '\\s*\\{([^}]*)\\}'));
         assert.ok(rule && /min-height:\s*44px/.test(rule[1]), selector + ' is at least 44 px tall');
     }
-    // The inline "Day 1" link in the Next line: 20 px of text plus 12 px above and below.
+    // The note links sit on their own row, so their 44 px never stretches a line of the note's text.
+    assert.match(css, /\.cvr-note-links \{[^}]*display: flex;[^}]*margin-top: 4px;/);
+    // The inline link in the Next line: 20 px of text plus 12 px above and below.
     assert.match(css, /\.cvr-next \.ap-link \{[^}]*padding: 12px 0;[^}]*margin: -12px 0;/);
 });
 
@@ -842,7 +967,7 @@ test('page: on a phone the student\'s own lines always show; the rest open with 
     const copied = [];
     const p = page();
     p.dom.window.navigator.clipboard = { writeText: text => { copied.push(text); return Promise.resolve(); } };
-    R.mount(p.app, { data: data(), store, progress: fakeProgress() });
+    RL.mount(p.app, Object.assign({ data: data(), store, progress: fakeProgress() }, FAST));
     const block = label => [...p.doc.querySelectorAll('.cvr-block')].find(li => li.querySelector('.cvr-block-label').textContent === label);
     const work = block('Work experience');
     const sims = block('Certifications and job simulations');
@@ -860,6 +985,17 @@ test('page: on a phone the student\'s own lines always show; the rest open with 
 
     const own = [...p.doc.querySelectorAll('.cvr-variant.is-own')];
     assert.deepEqual(own.map(li => li.querySelector('.cvr-variant-label').textContent), ['Your simulations', 'Your work experience']);
+    own.forEach(li => {
+        assert.equal(li.querySelector('.cvr-variant-toggle').getAttribute('aria-expanded'), 'true', 'the student\'s own lines open at once');
+        assert.equal(li.querySelector('.cvr-variant-body').hidden, false);
+    });
+    const others = [...p.doc.querySelectorAll('.cvr-variant:not(.is-own)')];
+    assert.ok(others.length > 0);
+    others.forEach(li => {
+        const peek = li.querySelector('.cvr-variant-peek');
+        assert.ok(peek && peek.textContent.length > 5, 'a closed card shows the start of its line');
+        assert.ok(li.querySelector('.cvr-variant-body .cvr-line').textContent.startsWith(peek.textContent), 'the same line Copy copies');
+    });
     own[0].querySelector('.cvr-copy').dispatchEvent(new p.dom.window.MouseEvent('click', { bubbles: true }));
     await sleep(10);
     assert.deepEqual(copied, [SITUATIONS.workSimulation.gst]);
@@ -879,7 +1015,7 @@ test('page: answers synced from the account show up while untouched; ignored onc
     const storage = memoryStorage();
     const store = memoryStore('cv-recommender', { answers: null, step: 0, done: false }, storage);
     const p = page();
-    R.mount(p.app, { data: data(), store, progress: fakeProgress() });
+    R.mount(p.app, Object.assign({ data: data(), store, progress: fakeProgress() }, FAST));
     assert.match(p.app.textContent, /1 of 9/);
     // Another tab (or the account pull) saved a finished result.
     const other = memoryStore('cv-recommender', { answers: null, step: 0, done: false }, storage);
@@ -889,7 +1025,7 @@ test('page: answers synced from the account show up while untouched; ignored onc
 
     const q = page();
     const store2 = memoryStore('cv-recommender', { answers: null, step: 0, done: false }, memoryStorage());
-    R.mount(q.app, { data: data(), store: store2, progress: fakeProgress() });
+    R.mount(q.app, Object.assign({ data: data(), store: store2, progress: fakeProgress() }, FAST));
     click(q.doc, 'Academics');
     const before = q.app.textContent;
     store2._onStorageEvent({ key: store2.key, newValue: JSON.stringify({ v: 1, data: { answers: answers(), step: 8, done: true }, updatedAt: Date.now() }) });
@@ -904,13 +1040,90 @@ test('page: "my domain" from another tool is pre-selected; text is never parsed 
     evil.situations.A.reason = '<img src=x onerror=alert(1)>';
     store.set({ answers: answers({ domain: null }), step: 8, done: false });
     const p = page();
-    R.mount(p.app, { data: evil, store, progress });
+    R.mount(p.app, Object.assign({ data: evil, store, progress }, FAST));
     assert.match(p.app.textContent, /9 of 9/);
     const on = p.doc.querySelector('.cvr-opt.is-on');
     assert.equal(on.textContent, 'Valuation');
     click(p.doc, 'Show my CV');
     assert.equal(p.doc.querySelector('img'), null);
     assert.match(p.app.textContent, /<img src=x/);
+});
+
+test('page: "my domain" changed in another tool after this result wins on reload; an old answer never overwrites it', () => {
+    const storage = memoryStorage();
+    const progress = fakeProgress();
+    const open = () => {
+        const p = page();
+        const store = memoryStore('cv-recommender', { answers: null, step: 0, done: false }, storage);
+        return { p, store, ui: R.mount(p.app, Object.assign({ data: data(), store, progress }, FAST)) };
+    };
+    const chip = (v, text) => [...v.p.doc.querySelectorAll('.cvr-chip')].find(b => b.textContent === text)
+        .dispatchEvent(new v.p.dom.window.MouseEvent('click', { bubbles: true }));
+    // Finished here with GST, tapped in this visit: GST becomes my domain.
+    memoryStore('cv-recommender', { answers: null, step: 0, done: false }, storage).set({ answers: answers({ domain: null }), step: 8, done: false });
+    let v = open();
+    click(v.p.doc, 'GST');
+    v.ui.finish();
+    assert.equal(progress.getMyDomain(), 'gst');
+    assert.equal(progress.getCvPick().domain, 'gst');
+    // Later, Domain roadmaps sets valuation. On reload the result follows it, and the pick is saved again.
+    progress.setMyDomain('valuation');
+    v = open();
+    assert.match(v.p.app.textContent, /Use the Academics order/);
+    assert.ok([...v.p.doc.querySelectorAll('.cvr-chip')].some(b => b.textContent === 'Valuation'), 'the domain chip shows the newer choice');
+    assert.equal(v.store.get().answers.domain, 'valuation');
+    assert.equal(progress.getCvPick().domain, 'valuation', 'the CV Builder\'s pick follows');
+    // Editing another chip (not the domain) leaves my domain alone.
+    chip(v, 'ICITSS done');
+    click(v.p.doc, 'Ongoing');
+    v.ui.finish();
+    assert.equal(progress.getMyDomain(), 'valuation');
+    // "Not sure yet" chosen here while my domain is set stays "Not sure yet" on reload, and never clears my domain.
+    chip(v, 'Valuation');
+    click(v.p.doc, 'Not sure yet');
+    v.ui.finish();
+    assert.equal(progress.getMyDomain(), 'valuation');
+    v = open();
+    assert.ok([...v.p.doc.querySelectorAll('.cvr-chip')].some(b => b.textContent === 'Domain not decided'));
+    // Older saves (no record of my domain at the time): the shared setting is the newer one.
+    memoryStore('cv-recommender', { answers: null, step: 0, done: false }, storage).set({ answers: answers({ domain: 'gst' }), step: 8, done: true });
+    v = open();
+    assert.equal(v.store.get().answers.domain, 'valuation');
+});
+
+test('page: a reload saves the pick again when today\'s designs give a different one; an unchanged pick is left alone', () => {
+    const progress = fakeProgress();
+    const store = memoryStore('cv-recommender', { answers: null, step: 0, done: false });
+    store.set({ answers: answers({ rank: ['work', 'academics', 'projects', 'roles', 'skills'], work: ['family'] }), step: 8, done: true });
+    progress.setCvPick({ situation: 'C', order: ['header', 'summary', 'education', 'experience'], design: 99, variants: [], domain: 'statutory-audit' });
+    R.mount(page().app, Object.assign({ data: data(), store, progress }, FAST));
+    const saved = progress.getCvPick();
+    assert.equal(saved.design, designFor('C').number, 'the design shown is the design saved');
+    assert.deepEqual(saved.order, R.recommend(store.get().answers, data()).order);
+    const before = progress.settings.get().cvPick.savedAt;
+    R.mount(page().app, Object.assign({ data: data(), store, progress }, FAST));
+    assert.equal(progress.settings.get().cvPick.savedAt, before, 'not written again');
+});
+
+test('page: a single tap moves on after 280 ms; a quick double tap never answers the next question', async () => {
+    assert.equal(R.ADVANCE_MS, 280);
+    assert.equal(R.TAP_GUARD_MS, 250);
+    const store = memoryStore('cv-recommender', { answers: null, step: 0, done: false });
+    store.set({ answers: answers({ inter: null, graduation: null, gap: null, icitss: null }), step: 1, done: false });
+    const p = page();
+    R.mount(p.app, { data: data(), store, progress: fakeProgress() });
+    assert.match(p.app.textContent, /2 of 9/);
+    // "Both, first attempt" and "Pursuing, regular" sit in the same place on screen.
+    click(p.doc, 'Both, first attempt');
+    await sleep(150);
+    assert.match(p.app.textContent, /2 of 9/, 'still showing the tick');
+    await sleep(250);
+    assert.match(p.app.textContent, /3 of 9/);
+    click(p.doc, 'Pursuing, regular');
+    assert.equal(store.get().answers.graduation, null, 'the second half of the double tap is ignored');
+    await sleep(300);
+    click(p.doc, 'Pursuing, regular');
+    assert.equal(store.get().answers.graduation, 'regular', 'a real tap a moment later counts');
 });
 
 test('student-facing text: no banned words, no dates, no "coming soon", no internal codes', () => {
