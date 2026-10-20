@@ -19,14 +19,17 @@
     const LOGO_URL = '/articleship-program/shared/msc-logo.svg';
     const DEFAULT_DOMAIN = 'statutory-audit';
     const MAX_CV_TEXT = 3500;
+    // The page reads the final report between these markers (ai-interview.html FINAL_REPORT_BLOCK_REGEX).
+    const REPORT_START = '<<<FINAL_INTERVIEW_REPORT>>>';
+    const REPORT_END = '<<<END_FINAL_INTERVIEW_REPORT>>>';
     const MAX_LINE = 200;
 
     // Shown before the content file arrives (and if it never does); the content file's rounds replace them.
     const ROUNDS = Object.freeze([
-        { id: 'full', label: 'Full interview', minutes: 30, hint: 'Intro, your CV, HR, core and your domain' },
-        { id: 'technical', label: 'Technical round', minutes: 20, hint: 'Your CV lines, core accounts and your domain' },
-        { id: 'hr', label: 'HR round', minutes: 20, hint: 'The sixteen questions every firm asks' },
-        { id: 'call', label: 'HR call', minutes: 10, hint: 'The screening call before the interview' }
+        { id: 'full', label: 'Full interview', minutes: 30, hint: 'Intro, CV, HR, core, domain' },
+        { id: 'technical', label: 'Technical round', minutes: 20, hint: 'CV, core, your domain' },
+        { id: 'hr', label: 'HR round', minutes: 20, hint: 'HR questions, situations' },
+        { id: 'call', label: 'HR call', minutes: 10, hint: 'The screening call' }
     ].map(Object.freeze));
 
     // The programme's 13 domains (same slugs and labels as MSCArticleshipProgress.DOMAINS) + how a sentence says them.
@@ -185,8 +188,14 @@
         return TOUGHNESS.find(level => level.id === id || level.label === id) || TOUGHNESS[1];
     }
 
+    // A firm name only: letters, digits, spaces and & . , ' ( ) -, at most 8 words. A shared ?firm= link cannot carry
+    // markup or an instruction into the interviewer's prompt.
+    const MAX_FIRM = 80;
+    const MAX_FIRM_WORDS = 8;
     function cleanFirm(value) {
-        return str(value).replace(/[<>{}\[\]"`]/g, '').replace(/\s+/g, ' ').trim().slice(0, 80);
+        const text = str(value).normalize('NFKC').replace(/[\u2018\u2019\u02bc]/g, "'").replace(/\s+/g, ' ')
+            .replace(/[^\p{L}\p{M}\p{N} &.,'()\-]/gu, '').replace(/\s+/g, ' ').trim();
+        return text.split(' ').slice(0, MAX_FIRM_WORDS).join(' ').slice(0, MAX_FIRM).trim();
     }
 
     function fill(text, vars) {
@@ -520,9 +529,19 @@
         };
     }
 
+    /** How many domain questions a practice asks: the round's number, but never the whole bank, so a retake rotates. */
+    function domainCount(shape, bank) {
+        const want = Number(shape && shape.domain) || 0;
+        const size = list(bank).length;
+        if (!want || !size) return 0;
+        return Math.min(want, Math.max(1, size - 2));
+    }
+
     /**
-     * The interviewer's plan. options: { round, domain, firm, firmType, toughness, coach, cvLines, earnedLines, cvText, asked, retry, seed }.
-     * earnedLines (Work Simulation lines) join the CV lines unless the CV already carries them.
+     * The interviewer's plan. options: { round, domain, firm, firmType, toughness, coach, cvLines, earnedLines, cvText,
+     * cvAsImages, asked, retry, seed }.
+     * earnedLines (Work Simulation lines) join the CV lines unless the CV already carries them. cvAsImages: the CV went
+     * to the interviewer as page images (a scanned PDF with no text layer), so the prompt says it is attached.
      * Returns { round, minutes, domain, firm, firmType, toughness, coach, opening, sections: [{ id, title, items }], rubric, ... }.
      */
     function buildPlan(content, options) {
@@ -548,10 +567,13 @@
         const cvLines = mergeCvLines(list(opts.cvLines).map(cleanLine).filter(keepLine).slice(0, 80), opts.earnedLines).filter(keepLine);
         const retry = list(opts.retry).map(str).map(s => s.trim()).filter(Boolean).slice(0, 3);
 
+        const cvAsImages = !cvLines.length && !!opts.cvAsImages;
+
         if (shape.call) {
             const call = data.call || {};
             const questions = list(call.questions);
-            add('call', 'The call', questions.map(q => asItem(q, vars)));
+            // The welcome line already asks the first call question ("Is this a good time to talk?"): never twice.
+            add('call', 'The call', questions.map((q, i) => asItem(q, vars, i === 0 ? { spoken: true } : null)));
             const pressure = rankFresh(list(call.pressure), asked, rand);
             const howMany = toughness.id === 'Hard' ? 2 : 1;
             add('pressure', 'Pressure moments', inOriginalOrder(pressure.slice(0, howMany), call.pressure).map(q => asItem(q, vars)),
@@ -562,7 +584,8 @@
             const byId = id => ladder.find(item => item.id === id);
             const intro = byId('intro');
             const close = byId('questions-for-us');
-            add('opening', 'Opening', intro ? [asItem(intro, vars)] : []);
+            // The welcome line already asks them to introduce themselves; the item keeps its Listen for and cross-questions.
+            add('opening', 'Opening', intro ? [asItem(intro, vars, { spoken: true })] : []);
             if (retry.length) add('retry', 'Retry questions from their last practice', retry.map((q, i) => ({ id: 'retry-' + (i + 1), q, listen_for: [], cross: [] })));
             const probes = pickCvProbes(matchCvProbes(cvLines, data), round.id, shape.cv, data);
             add('cv', 'Their CV lines', probes.map((probe, i) => ({
@@ -572,6 +595,14 @@
                 listen_for: [],
                 cross: probe.cross
             })), 'Quote the line, then ask. Probe only what the CV says.');
+            if (cvAsImages && shape.cv) {
+                add('cv', 'Their CV lines', [{
+                    id: 'cv-images',
+                    q: 'Pick ' + shape.cv + ' lines from the CV pages attached as images (work, projects, courses or simulations first). For each, quote the line, then ask what exactly they did, how, and what they learned.',
+                    listen_for: ['Their own part in it, with numbers or examples', 'The concept behind it, at CA Intermediate level'],
+                    cross: ['Walk me through one example step by step.', 'What would you do differently now?']
+                }], 'Probe only what the CV says.');
+            }
 
             let hr = [];
             if (shape.ladderAll) {
@@ -592,7 +623,7 @@
             const core = pickCore(list(data.core), shape.core, asked, rand);
             add('core', 'Core accounts', inOriginalOrder(core, data.core).map(item => asItem(item, vars)));
 
-            const domainQs = rankFresh(list(domainContent.questions), asked, rand).slice(0, shape.domain || 0);
+            const domainQs = rankFresh(list(domainContent.questions), asked, rand).slice(0, domainCount(shape, domainContent.questions));
             add('domain', domain.label, inOriginalOrder(domainQs, domainContent.questions).map(item => asItem(item, vars)));
 
             const pool = list(data.situations).filter(item => !shape.technicalSituations || TECHNICAL_SITUATIONS.includes(item.id));
@@ -614,7 +645,8 @@
             firmType: firmType.id,
             toughness: toughness.id,
             coach: !!opts.coach,
-            hasCv: cvLines.length > 0,
+            hasCv: cvLines.length > 0 || cvAsImages,
+            cvAsImages,
             cvText: cvTextForPrompt(cvLines, opts.cvText),
             callRole: shape.call && data.call ? fill(data.call.role, vars) : '',
             callClose: shape.call && data.call ? str(data.call.close) : '',
@@ -639,13 +671,175 @@
         return ids;
     }
 
-    /** Count each planned question once more in the store's data ({ asked: { id: n } }); keeps the map small. */
-    function markAsked(data, plan) {
+    /**
+     * Count questions once more in the store's data ({ asked: { id: n } }). ids: the questions the interview reached
+     * (questionsReached); without it, every planned question. A mock left after a minute moves only what was asked.
+     */
+    function markAsked(data, plan, ids) {
         const target = isObject(data) ? data : {};
         const asked = isObject(target.asked) ? target.asked : {};
-        planQuestionIds(plan).forEach(id => { asked[id] = (Number(asked[id]) || 0) + 1; });
+        const planned = new Set(planQuestionIds(plan));
+        (Array.isArray(ids) ? ids.filter(id => planned.has(id)) : Array.from(planned)).forEach(id => { asked[id] = (Number(asked[id]) || 0) + 1; });
         target.asked = asked;
         return target;
+    }
+
+    const STOP_WORDS = new Set(('what which when where your their them they this that with from have will would could should about ' +
+        'into than then there these those does done tell give explain please some just like also more most very each ' +
+        'other only been were being after before again your yours ours shall must').split(' '));
+
+    function keyWords(text) {
+        return Array.from(new Set((str(text).toLowerCase().match(/[a-z0-9]+/g) || [])
+            .filter(word => word.length >= 4 && !STOP_WORDS.has(word))
+            .map(word => word.slice(0, 6))));
+    }
+
+    /**
+     * The plan's question ids the interviewer actually reached: a question counts when one of the interviewer's messages
+     * carries at least half of its key words (two at least). The opening counts once the candidate has answered.
+     * said: the interviewer's messages (strings); answers: how many times the candidate spoke.
+     */
+    function questionsReached(plan, said, answers) {
+        const messages = list(said).map(text => new Set(keyWords(text)));
+        const reached = [];
+        list(plan && plan.sections).forEach(section => list(section.items).forEach(item => {
+            if (!item.id || /^(cv|retry)-/.test(item.id)) return;
+            if (item.spoken) { if (Number(answers) > 0) reached.push(item.id); return; }
+            const words = keyWords(item.q);
+            if (!words.length) return;
+            const need = Math.min(words.length, Math.max(2, Math.ceil(words.length / 2)));
+            if (messages.some(set => words.filter(word => set.has(word)).length >= need)) reached.push(item.id);
+        }));
+        return reached;
+    }
+
+    const MAX_HISTORY = 30;
+
+    /**
+     * Save one finished mock into the tool's progress data: the questions reached (rotation), the retry questions from
+     * the scorecard (the next practice offers them even if the student never taps "Practise my weak spots") and a
+     * history entry { round, domain, total, max, at } that the tracker and the setup read ("Mocks done: 2, last 18/28").
+     * mock: { plan, card, reached, answers, at }. A mock with no answer at all is not counted.
+     */
+    function recordMock(data, mock) {
+        const target = isObject(data) ? data : {};
+        const info = mock || {};
+        const plan = info.plan || {};
+        const answers = Number(info.answers) || 0;
+        if (plan.sections) markAsked(target, plan, Array.isArray(info.reached) ? info.reached : []);
+        const card = info.card || null;
+        if (card && list(card.retry).length) {
+            target.retry = card.retry.slice(0, 3);
+            target.retryCall = plan.round === 'call';
+        }
+        if (answers > 0 || card) {
+            const history = list(target.history).filter(isObject);
+            history.push({
+                round: plan.round || null,
+                domain: plan.domain || null,
+                total: card && card.max ? card.total : null,
+                max: card && card.max ? card.max : null,
+                at: info.at || new Date().toISOString()
+            });
+            target.history = history.slice(-MAX_HISTORY);
+        }
+        return target;
+    }
+
+    /** { done, last, text } from the tool's progress data: "Mocks done: 2, last 18/28" (or "Mocks done: 1"). */
+    function mockSummary(data) {
+        const history = list(isObject(data) ? data.history : null).filter(isObject);
+        if (!history.length) return { done: 0, last: null, text: '' };
+        const last = history[history.length - 1];
+        const scored = history.slice().reverse().find(entry => Number(entry.max) > 0) || null;
+        const text = 'Mocks done: ' + history.length + (scored ? ', last ' + scored.total + '/' + scored.max : '');
+        return { done: history.length, last, lastScored: scored, text };
+    }
+
+    // ---------- whose CV is on this browser ----------
+    // The CV Builder keeps its CV in localStorage (cv_maker_data) with no owner, and the profile's CV text (userCVText)
+    // survives some sign-outs. On a shared phone the next student must not be offered the previous student's CV.
+    const CV_GUARD_KEY = 'msc_ai_interview_cv_guard';
+    const PROGRESS_PREFIX = 'msc.articleship.';
+
+    function textSignature(text) {
+        const value = str(text);
+        let hash = 2166136261;
+        for (let i = 0; i < value.length; i += 1) { hash ^= value.charCodeAt(i); hash = Math.imul(hash, 16777619) >>> 0; }
+        return value.length + ':' + hash.toString(36);
+    }
+
+    function readStorage(storage, key) {
+        try { return storage && typeof storage.getItem === 'function' ? storage.getItem(key) : null; } catch (_) { return null; }
+    }
+
+    /** True when this browser holds programme progress or a profile cache owned by another account. */
+    function otherStudentHere(storage, userId) {
+        if (!storage || !userId) return false;
+        const profileOwner = readStorage(storage, 'userProfileDataUserId') || readStorage(storage, 'msc_profile_cache_owner');
+        if (profileOwner && profileOwner !== userId) return true;
+        try {
+            const count = Number(storage.length) || 0;
+            for (let i = 0; i < count; i += 1) {
+                const key = storage.key(i);
+                if (!key || key.indexOf(PROGRESS_PREFIX) !== 0) continue;
+                let envelope = null;
+                try { envelope = JSON.parse(storage.getItem(key)); } catch (_) { envelope = null; }
+                if (envelope && typeof envelope.owner === 'string' && envelope.owner && envelope.owner !== userId) return true;
+            }
+        } catch (_) { return false; }
+        return false;
+    }
+
+    function readGuard(storage) {
+        try {
+            const guard = JSON.parse(readStorage(storage, CV_GUARD_KEY) || '{}');
+            return isObject(guard) ? guard : {};
+        } catch (_) { return {}; }
+    }
+
+    function writeGuard(storage, guard) {
+        try { storage.setItem(CV_GUARD_KEY, JSON.stringify(guard)); } catch (_) { /* blocked storage: decided again next time */ }
+    }
+
+    /**
+     * Which saved CVs this student may be offered: { builder, profile }. Call it before any progress store is opened
+     * (opening one resets another account's progress). The first time a signed-in student meets another account's data
+     * on this browser, the CVs found then are taken as that other student's and stay hidden from this one until they
+     * change (the student edits the CV Builder CV) or this student has used that exact CV here before (claimCv).
+     */
+    function cvSourcesAllowed(storage, userId) {
+        const builderRaw = readStorage(storage, 'cv_maker_data') || '';
+        const profileRaw = readStorage(storage, 'userCVText') || '';
+        if (!userId) return { builder: !!builderRaw, profile: !!profileRaw };
+        const guard = readGuard(storage);
+        const sig = { builder: builderRaw ? textSignature(builderRaw) : '', profile: profileRaw ? textSignature(profileRaw) : '' };
+        if (otherStudentHere(storage, userId) && !(isObject(guard.hide) && guard.hide.user === userId)) {
+            guard.hide = { user: userId, builder: sig.builder, profile: sig.profile };
+            writeGuard(storage, guard);
+        }
+        const hide = isObject(guard.hide) && guard.hide.user === userId ? guard.hide : {};
+        const mine = isObject(guard.claims) && isObject(guard.claims[userId]) ? guard.claims[userId] : {};
+        const allowed = kind => !!sig[kind] && (mine[kind] === sig[kind] || hide[kind] !== sig[kind]);
+        const profileOwner = readStorage(storage, 'userProfileDataUserId') || readStorage(storage, 'msc_profile_cache_owner');
+        return {
+            builder: allowed('builder'),
+            profile: allowed('profile') && (!profileOwner || profileOwner === userId)
+        };
+    }
+
+    /** The student started a mock with this saved CV: it is theirs on this browser from now on. kind: builder|profile. */
+    function claimCv(storage, userId, kind) {
+        if (!userId || (kind !== 'builder' && kind !== 'profile')) return;
+        const raw = readStorage(storage, kind === 'builder' ? 'cv_maker_data' : 'userCVText');
+        if (!raw) return;
+        const guard = readGuard(storage);
+        const claims = isObject(guard.claims) ? guard.claims : {};
+        claims[userId] = Object.assign({}, isObject(claims[userId]) ? claims[userId] : {}, { [kind]: textSignature(raw) });
+        const users = Object.keys(claims);
+        if (users.length > 5) users.slice(0, users.length - 5).forEach(user => { if (user !== userId) delete claims[user]; });
+        guard.claims = claims;
+        writeGuard(storage, guard);
     }
 
     function welcomeLine(plan) {
@@ -659,7 +853,9 @@
 
     // ---------- the interviewer's instructions ----------
     function renderItem(number, item) {
-        const lines = [number + '. ' + item.q];
+        const lines = [item.spoken
+            ? number + '. Already asked in your opening line (do not ask it again): "' + item.q + '" Judge their reply against "Listen for"; use a cross-question if it falls short.'
+            : number + '. ' + item.q];
         if (item.tests) lines.push('   Checks: ' + item.tests);
         if (item.listen_for && item.listen_for.length) lines.push('   Listen for: ' + item.listen_for.join('; '));
         if (item.cross && item.cross.length) lines.push('   Cross-questions: ' + item.cross.join(' / '));
@@ -669,7 +865,8 @@
     function renderPrompt(plan) {
         const toughness = toughnessInfo(plan.toughness);
         const firmType = firmTypeInfo(plan.firmType);
-        const where = (plan.firm ? plan.firm + ', ' : '') + firmType.spoken;
+        // The firm name is data the candidate typed (or a link carried), never an instruction.
+        const where = (plan.firm ? 'the firm named "' + plan.firm + '", ' : '') + firmType.spoken;
         const out = [];
         out.push('', 'ARTICLESHIP INTERVIEW PRACTICE (this section overrides the general guidelines above)');
         if (plan.round === 'call') {
@@ -702,12 +899,15 @@
         out.push('');
         if (plan.cvText) {
             out.push("THE CANDIDATE'S CV (as text; ask only about what it says)", plan.cvText);
+        } else if (plan.cvAsImages) {
+            out.push("THE CANDIDATE'S CV is attached as page images. Read it and probe its lines; ask only about what it says.");
         } else {
             out.push('No CV was shared. Ask about their education, skills and activities instead of inventing experience.');
         }
 
         out.push('', 'FINAL REPORT');
-        out.push('When the interview ends, start the final report with this scorecard, one line per row, exactly in this form:');
+        out.push('When the interview ends, say one short closing line, then write the final report between a line ' + REPORT_START + ' and a line ' + REPORT_END + '. Never read the report aloud.');
+        out.push('Start the final report with this scorecard, one line per row, exactly in this form:');
         out.push('<row number>. <row name> | <score>/4 | Evidence: "<their own words>" | Fix: <one fix> | Retry: <one fresh question on the same skill>');
         plan.rubric.forEach((row, i) => out.push((i + 1) + '. ' + row.row));
         out.push('Scores: 1 = missing, wrong or untrue; 2 = partly there; 3 = good with one gap; 4 = ready for a real interview. Write n/a as the score for a row the interview did not cover.');
@@ -722,30 +922,246 @@
     }
 
     // ---------- reading the scorecard back ----------
+    // The interviewer is asked for "1. <row> | 3/4 | Evidence: … | Fix: … | Retry: …", but a model may answer with a
+    // markdown table, "| Score: 3/4 |", "### 1. Row | 3/4" headings, a heading with "Score:" / "Evidence:" lines under
+    // it, "3 out of 4" or prose ("Row: 3/4."). All of them are read; rows are matched by number or name prefix.
+    const SCORE_SLASH = /(?:^|[^\d.\/])([0-4](?:\.\d)?)\s*(?:\/|out of)\s*4(?!\d|\.\d)/i;
+    const SCORE_LABEL = /\b(?:score|rating|marks?)\s*[:=\-–]?\s*([0-4](?:\.\d)?)(?!\d|\.\d)(?!\s*(?:\/|out of)\s*[0-35-9])/i;
+    const SCORE_CELL = /^([0-4](?:\.\d)?)(?:\s*(?:\/|out of)\s*4)?$/i;
+    const NOT_SCORED = /^(?:score\s*[:=\-–]?\s*)?(?:n\/?a|-+|–|—|not (?:covered|asked|assessed|scored)|none|skipped)\.?$/i;
+    const NOT_SCORED_IN_LINE = /\b(?:score\s*[:=\-–]?\s*)?(?:n\/a|not covered|not asked|not assessed)\b/i;
+    const FIELD = /\b(evidence|fix|retry)(?:\s+question)?\s*(?:\([^)]*\))?\s*[:\-–]\s*/gi;
+    const EMPTY_FIELD = /^(-+|–|—|n\/?a|none|not covered|not asked|nil)\.?$/i;
+    const SCORECARD_HEADING = /^(?:your\s+|the\s+)?(?:interview\s+|practice\s+|final\s+)?(?:scorecard|score\s*card|scores)\s*:?$/i;
+
+    function plainLine(raw) {
+        return str(raw).replace(/\*\*|__/g, '').replace(/^\s*#{1,6}\s*/, '').replace(/^\s*(?:[-*•>]\s+)+/, '').trim();
+    }
+
+    function nameKey(text) {
+        return str(text).toLowerCase().replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, ' ').trim();
+    }
+
+    /** text -> rubric index by name: the full name's first 14 characters, the part before ":", or its first word. */
+    function rowMatcher(rows) {
+        const keys = rows.map(row => {
+            const full = nameKey(row.row);
+            const head = nameKey(str(row.row).split(':')[0]);
+            const first = full.split(' ')[0] || '';
+            return { prefix: full.slice(0, 14).trim(), head: head.length >= 3 ? head : '', first: first.length >= 3 ? first : '' };
+        });
+        const firstWords = keys.map(k => k.first);
+        return function (text) {
+            const key = nameKey(text);
+            if (!key) return -1;
+            let best = -1;
+            let bestLen = 0;
+            keys.forEach((k, i) => {
+                let len = 0;
+                if (k.prefix && key.startsWith(k.prefix)) len = 100 + k.prefix.length;
+                else if (k.head && (key === k.head || key.startsWith(k.head + ' '))) len = 50 + k.head.length;
+                else if (k.first && firstWords.filter(word => word === k.first).length === 1 && (key === k.first || key.startsWith(k.first + ' '))) len = k.first.length;
+                if (len > bestLen) { best = i; bestLen = len; }
+            });
+            return best;
+        };
+    }
+
+    function cleanField(value) {
+        const text = str(value).replace(/\s*\|+\s*$/, '').replace(/^[\s|:;,\-–]+/, '').trim()
+            .replace(/^["“‘'](.*?)["”’']\.?$/, '$1').trim();
+        return EMPTY_FIELD.test(text) ? '' : text;
+    }
+
+    /** "Evidence: … Fix: … Retry: …" inside one string -> { evidence, fix, retry }. */
+    function labelledFields(text) {
+        const out = {};
+        const source = str(text);
+        const marks = [];
+        let match;
+        FIELD.lastIndex = 0;
+        while ((match = FIELD.exec(source))) marks.push({ name: match[1].toLowerCase(), start: match.index, end: FIELD.lastIndex });
+        marks.forEach((mark, i) => {
+            if (out[mark.name] !== undefined) return;
+            out[mark.name] = cleanField(source.slice(mark.end, i + 1 < marks.length ? marks[i + 1].start : source.length));
+        });
+        return out;
+    }
+
+    /** A score in free text: "3/4", "3 out of 4", "Score: 3"; n/a -> NONE; nothing -> undefined. */
+    const NONE = 'none';
+    function scoreInText(text) {
+        const value = str(text);
+        let match = value.match(SCORE_SLASH) || value.match(SCORE_LABEL);
+        if (match) return Number(match[1]);
+        if (NOT_SCORED_IN_LINE.test(value)) return NONE;
+        return undefined;
+    }
+
+    function scoreInCell(cell) {
+        const value = str(cell).trim();
+        if (NOT_SCORED.test(value)) return NONE;
+        const match = value.match(SCORE_CELL);
+        if (match) return Number(match[1]);
+        const inText = value.match(SCORE_SLASH) || value.match(SCORE_LABEL);
+        return inText ? Number(inText[1]) : undefined;
+    }
+
+    function headerMap(cells) {
+        const map = {};
+        cells.forEach((cell, i) => {
+            const key = nameKey(cell);
+            if (/^(score|rating|marks?)( out of 4| 1 4| 4)?$/.test(key)) map.score = i;
+            else if (/^evidence/.test(key)) map.evidence = i;
+            else if (/^fix/.test(key)) map.fix = i;
+            else if (/^retry/.test(key)) map.retry = i;
+            else if (/^(row|area|skill|criteri|parameter|dimension|aspect|competenc)/.test(key)) map.name = i;
+            else if (/^(no|sr|s no|number)?$/.test(key) && i === 0) map.number = i;
+        });
+        return map.score !== undefined ? map : null;
+    }
+
     function parseScorecard(text, rubric) {
         const rows = list(rubric);
         if (!text || !rows.length) return null;
+        const matchRow = rowMatcher(rows);
         const found = new Map();
-        str(text).split(/\r?\n/).forEach(rawLine => {
-            const line = rawLine.replace(/\*\*/g, '').replace(/^\s*[-*•]\s*/, '').trim();
-            const match = line.match(/^(\d{1,2})[.)]\s*([^|]+?)\s*\|\s*([0-4](?:\.\d)?|n\/?a|-|–)\s*(?:\/\s*4)?\s*(?:\|(.*))?$/i);
-            if (!match) return;
-            let index = Number(match[1]) - 1;
-            const name = match[2].trim().toLowerCase();
-            const byName = rows.findIndex(row => row.row.toLowerCase().slice(0, 14) === name.slice(0, 14));
-            if (byName !== -1) index = byName;
-            if (index < 0 || index >= rows.length || found.has(index)) return;
-            const parts = str(match[4]).split('|').map(part => part.trim());
-            const field = label => {
-                const part = parts.find(p => p.toLowerCase().startsWith(label));
-                const value = part ? part.slice(label.length).replace(/^\s*:\s*/, '').replace(/^["\u201c](.*)["\u201d]$/, '$1').trim() : '';
-                return /^(-+|\u2013|\u2014|n\/?a|none|not covered|not asked)\.?$/i.test(value) ? '' : value;
-            };
-            const raw = match[3].toLowerCase();
-            const score = /^[0-4]/.test(raw) ? Math.max(0, Math.min(4, Math.round(Number(raw)))) : null;
-            found.set(index, { score, evidence: field('evidence'), fix: field('fix'), retry: field('retry') });
+        const consumed = new Set();
+        const lines = str(text).split(/\r?\n/);
+        let header = null;
+        let pending = null; // a row named on a heading line; its score and fields follow on the next lines
+        let last = null; // the row a "Evidence: …" / "Fix: …" / "Retry: …" line under it belongs to
+
+        const leadNumber = value => {
+            const match = value.match(/^(?:row\s*)?(\d{1,2})\s*(?:[.):\-–]\s*|\s+(?=[a-z]))/i);
+            return match ? { n: Number(match[1]), rest: value.slice(match[0].length).trim() } : { n: null, rest: value };
+        };
+        const indexFor = (n, name) => {
+            const byName = matchRow(name);
+            if (byName !== -1) return byName;
+            return n && n >= 1 && n <= rows.length ? n - 1 : -1;
+        };
+        const save = (index, score, fields, lineIndexes) => {
+            last = null;
+            if (index < 0 || index >= rows.length || found.has(index) || score === undefined) return false;
+            const value = score === NONE ? null : Math.max(0, Math.min(4, Math.round(Number(score))));
+            const row = { score: value, evidence: fields.evidence || '', fix: fields.fix || '', retry: fields.retry || '' };
+            found.set(index, row);
+            lineIndexes.forEach(i => consumed.add(i));
+            last = row;
+            return true;
+        };
+        const closePending = () => {
+            if (pending && pending.score !== undefined) save(pending.index, pending.score, pending.fields, pending.lines);
+            pending = null;
+        };
+
+        lines.forEach((raw, lineIndex) => {
+            const line = plainLine(raw);
+            if (!line) return;
+
+            // Markdown table rows.
+            if (/^\|.*\|$/.test(line) || (line.split('|').length >= 3 && /^\|/.test(line))) {
+                const cells = line.replace(/^\|/, '').replace(/\|$/, '').split('|').map(cell => plainLine(cell));
+                if (cells.every(cell => /^:?-{2,}:?$/.test(cell) || !cell)) { if (header) consumed.add(lineIndex); return; }
+                const map = headerMap(cells);
+                if (map && !cells.some(cell => SCORE_SLASH.test(cell))) { closePending(); header = map; consumed.add(lineIndex); return; }
+                closePending();
+                let n = null;
+                let nameAt = header && header.name !== undefined ? header.name : -1;
+                if (header && header.number !== undefined && /^\d{1,2}[.)]?$/.test(cells[header.number])) n = parseInt(cells[header.number], 10);
+                if (nameAt === -1) {
+                    nameAt = cells.findIndex(cell => /[a-z]{3}/i.test(cell) && !SCORE_SLASH.test(cell) && !NOT_SCORED.test(cell) && !/^(evidence|fix|retry)\b/i.test(cell));
+                    if (cells[0] && /^\d{1,2}[.)]?$/.test(cells[0])) n = parseInt(cells[0], 10);
+                }
+                if (nameAt === -1) return;
+                const lead = leadNumber(cells[nameAt]);
+                if (lead.n !== null && n === null) n = lead.n;
+                const index = indexFor(n, lead.rest);
+                if (index === -1) return;
+                let scoreAt = header ? header.score : -1;
+                let score = scoreAt >= 0 ? scoreInCell(cells[scoreAt]) : undefined;
+                if (score === undefined) {
+                    scoreAt = cells.findIndex((cell, i) => i !== nameAt && scoreInCell(cell) !== undefined && !/^(evidence|fix|retry)\b/i.test(cell));
+                    score = scoreAt >= 0 ? scoreInCell(cells[scoreAt]) : undefined;
+                }
+                if (score === undefined) score = scoreInText(cells[nameAt].slice(lead.rest.length ? cells[nameAt].indexOf(lead.rest) + lead.rest.length : 0));
+                const labelled = labelledFields(cells.filter((_, i) => i !== nameAt && i !== scoreAt).map(cell => /^(evidence|fix|retry)\b/i.test(cell) ? ' | ' + cell : ' | ' + cell).join(''));
+                const fields = {};
+                ['evidence', 'fix', 'retry'].forEach((name, order) => {
+                    if (header && header[name] !== undefined) fields[name] = cleanField(cells[header[name]]);
+                    else if (labelled[name] !== undefined) fields[name] = labelled[name];
+                    else if (!header && scoreAt >= 0) {
+                        const rest = cells.filter((cell, i) => i > Math.max(scoreAt, nameAt) && !/^(evidence|fix|retry)\b/i.test(cell));
+                        fields[name] = cleanField(rest[order]);
+                    }
+                });
+                save(index, score, fields, [lineIndex]);
+                return;
+            }
+
+            // "Evidence: …" lines under a row that already has its score ("### 1. Row | 3/4").
+            if (!pending && last && /^(evidence|fix|retry)(?:\s+question)?\b/i.test(line)) {
+                const extra = labelledFields(line);
+                Object.keys(extra).forEach(key => { if (!last[key]) last[key] = extra[key]; });
+                consumed.add(lineIndex);
+                return;
+            }
+
+            // "Score: 3/4", "Evidence: …" lines under a heading that named the row.
+            if (pending) {
+                const label = line.match(/^(score|rating|marks?|evidence|fix|retry)(?:\s+question)?\b/i);
+                if (label) {
+                    const kind = label[1].toLowerCase();
+                    if (/^(score|rating|mark)/.test(kind)) {
+                        const value = scoreInCell(line.replace(/^(score|rating|marks?)\s*[:=\-–]?\s*/i, '')) ;
+                        if (value !== undefined && pending.score === undefined) pending.score = value;
+                        const extra = labelledFields(line);
+                        Object.keys(extra).forEach(key => { if (!pending.fields[key]) pending.fields[key] = extra[key]; });
+                    } else {
+                        const extra = labelledFields(line);
+                        Object.keys(extra).forEach(key => { if (!pending.fields[key]) pending.fields[key] = extra[key]; });
+                    }
+                    pending.lines.push(lineIndex);
+                    return;
+                }
+            }
+
+            const lead = leadNumber(line);
+            const byName = matchRow(lead.rest);
+            if (byName === -1 && lead.n === null) { closePending(); last = null; return; }
+            const index = indexFor(lead.n, lead.rest);
+            if (index === -1) { closePending(); last = null; return; }
+            // The text after the row name: "| 3/4 | Evidence …", ": 3/4.", " - 3 out of 4", " (Score: 3)".
+            const lowerRest = lead.rest.toLowerCase();
+            const canonical = str(rows[index].row).toLowerCase();
+            let after = lowerRest.startsWith(canonical) ? lead.rest.slice(canonical.length) : lead.rest.replace(/^[^|:–—(]*?(?=\s*[|:–—(]|\s+-\s)/, '');
+            if (after === lead.rest && byName === -1) after = lead.rest;
+            let score = scoreInText(after);
+            if (score === undefined) {
+                const bare = after.match(/^\s*(?:[|:\-–—(]\s*)?([0-4](?:\.\d)?)(?:\s*points?)?\s*(?=[|.,;)]|$)/i);
+                if (bare) score = Number(bare[1]);
+            }
+            closePending();
+            const fields = labelledFields(after);
+            if (score !== undefined) {
+                save(index, score, fields, [lineIndex]);
+                return;
+            }
+            // A heading naming the row with nothing scored yet: the score may follow on the next lines.
+            if (lead.rest.length <= str(rows[index].row).length + 24) pending = { index, score: undefined, fields, lines: [lineIndex] };
         });
+        closePending();
+
         if (found.size < Math.min(3, rows.length)) return null;
+        // A "Scorecard" heading just above the first scored row goes with it.
+        const first = Math.min(...consumed);
+        for (let i = first - 1; i >= 0; i -= 1) {
+            const line = plainLine(lines[i]);
+            if (!line) continue;
+            if (SCORECARD_HEADING.test(line)) consumed.add(i);
+            break;
+        }
         const scored = rows.map((row, i) => ({ id: row.id, row: row.row, ...(found.get(i) || { score: null, evidence: '', fix: '', retry: '' }) }));
         const counted = scored.filter(row => row.score !== null);
         const total = counted.reduce((sum, row) => sum + row.score, 0);
@@ -755,8 +1171,45 @@
             total,
             max: counted.length * 4,
             weakest,
-            retry: weakest.map(row => row.retry).filter(Boolean).slice(0, 3)
+            retry: weakest.map(row => row.retry).filter(Boolean).slice(0, 3),
+            lines: Array.from(consumed).sort((a, b) => a - b)
         };
+    }
+
+    /** The report text without the scorecard lines parseScorecard read (the page shows those as the scorecard). */
+    function stripScorecard(text, card) {
+        if (!card || !Array.isArray(card.lines) || !card.lines.length) return str(text);
+        const drop = new Set(card.lines);
+        return str(text).split(/\r?\n/).filter((_, i) => !drop.has(i)).join('\n')
+            .replace(/\n{3,}/g, '\n\n').trim();
+    }
+
+    /**
+     * An interviewer message that carries the scorecard without the report markers: { spoken, report }, where spoken is
+     * what came before the scorecard (the closing line, read aloud) and report is the rest (shown, never read aloud).
+     * null when the message holds no scorecard.
+     */
+    function splitUnmarkedReport(text, rubric) {
+        const card = parseScorecard(text, rubric);
+        if (!card || !card.lines.length) return null;
+        const lines = str(text).split(/\r?\n/);
+        const first = card.lines[0];
+        return {
+            spoken: lines.slice(0, first).join(' ').replace(/\s+/g, ' ').trim(),
+            report: lines.slice(first).join('\n').trim()
+        };
+    }
+
+    /** The scorecard from the report, or else from the interviewer's last messages (a report sent without markers). */
+    function findScorecard(reportText, messages, rubric) {
+        const fromReport = parseScorecard(reportText, rubric);
+        if (fromReport) return { card: fromReport, text: str(reportText), source: 'report' };
+        const said = list(messages).filter(m => m && m.role === 'assistant').map(m => str(m.content)).slice(-4).reverse();
+        for (const message of said) {
+            const card = parseScorecard(message, rubric);
+            if (card) return { card, text: message, source: 'message' };
+        }
+        return null;
     }
 
     // ---------- the setup screen (articleship mode) ----------
@@ -826,6 +1279,8 @@
         ]);
         const title = el(doc, 'h1', { class: 'ap-title' }, ['Your mock ', el(doc, 'span', { class: 'ap-mark', text: 'interview' })]);
         const lede = el(doc, 'p', { class: 'ap-lede', text: 'Real articleship questions, follow-ups on your answers and your own CV lines. A scorecard at the end.' });
+        const summary = mockSummary(saved);
+        const done = summary.done ? el(doc, 'p', { class: 'aii-done', text: summary.text }) : null;
 
         const form = el(doc, 'form', { class: 'ap-card aii-form', novalidate: true });
         form.appendChild(radioGroup(doc, 'aii-round', 'Round', rounds.map(round => ({
@@ -841,10 +1296,23 @@
         const firmInput = el(doc, 'input', { id: 'aii-firm', class: 'aii-input', type: 'text', maxlength: '80', autocomplete: 'off', placeholder: 'Firm name (optional)' });
         firmInput.value = cleanFirm(preset.firm || last.firm);
         form.appendChild(el(doc, 'div', { class: 'aii-field' }, [el(doc, 'label', { class: 'aii-label', for: 'aii-firm', text: 'Firm' }), firmInput]));
-        form.appendChild(radioGroup(doc, 'aii-firm-type', 'Firm size', FIRM_TYPES.map(type => ({ value: type.id, label: type.label })),
-            FIRM_TYPES.some(type => type.id === last.firmType) ? last.firmType : 'mid', 'is-pills'));
-        form.appendChild(radioGroup(doc, 'aii-toughness', 'Toughness', TOUGHNESS.map(level => ({ value: level.id, label: level.label })),
-            toughnessInfo(last.toughness).id, 'is-pills'));
+        // Firm size and toughness fold under "More options", their current choice shown on the row.
+        const moreState = el(doc, 'span', { class: 'aii-more-state' });
+        const more = el(doc, 'details', { class: 'aii-more' }, [
+            el(doc, 'summary', { class: 'aii-more-summary' }, [el(doc, 'span', { class: 'aii-label', text: 'More options' }), moreState]),
+            el(doc, 'div', { class: 'aii-more-body' }, [
+                radioGroup(doc, 'aii-firm-type', 'Firm size', FIRM_TYPES.map(type => ({ value: type.id, label: type.label })),
+                    FIRM_TYPES.some(type => type.id === last.firmType) ? last.firmType : 'mid', 'is-pills'),
+                radioGroup(doc, 'aii-toughness', 'Toughness', TOUGHNESS.map(level => ({ value: level.id, label: level.label })),
+                    toughnessInfo(last.toughness).id, 'is-pills')
+            ])
+        ]);
+        form.appendChild(more);
+        const showMore = () => {
+            moreState.textContent = firmTypeInfo(checkedValue(form, 'aii-firm-type')).label + ' · ' + toughnessInfo(checkedValue(form, 'aii-toughness')).label;
+        };
+        more.addEventListener('change', showMore);
+        showMore();
 
         const cvOptions = cvSources.map(source => ({ value: source.kind, label: source.label }))
             .concat([{ value: 'pdf', label: 'Upload PDF' }, { value: 'none', label: 'No CV' }]);
@@ -921,13 +1389,13 @@
 
         const error = el(doc, 'p', { class: 'aii-error', role: 'alert', hidden: true });
         const button = el(doc, 'button', { type: 'submit', class: 'ap-btn is-block aii-start', text: 'Start interview' });
-        form.appendChild(error);
-        form.appendChild(button);
+        // On a phone the Start button stays in reach at the bottom of the screen.
+        form.appendChild(el(doc, 'div', { class: 'aii-actions' }, [error, button]));
         if (opts.fromDropdown && opts.otherRolesHref) {
             form.appendChild(el(doc, 'p', { class: 'aii-other' }, [el(doc, 'a', { class: 'ap-link', href: opts.otherRolesHref, text: 'Practising for another role?' })]));
         }
 
-        const main = el(doc, 'main', { class: 'ap-main aii-main' }, [el(doc, 'div', { class: 'ap-hero' }, [title, lede]), form]);
+        const main = el(doc, 'main', { class: 'ap-main aii-main' }, [el(doc, 'div', { class: 'ap-hero' }, [title, lede, done]), form]);
         container.replaceChildren(topbar, main);
 
         function readSetup() {
@@ -982,7 +1450,15 @@
     function renderScorecard(container, card, options) {
         const opts = options || {};
         const doc = container.ownerDocument;
-        if (!card) { container.replaceChildren(); return null; }
+        if (!card) {
+            // The report came back without a scorecard the page can read: one line, never a silent gap.
+            if (opts.fallback) {
+                container.replaceChildren(el(doc, 'p', { class: 'aii-sc-fallback', text: opts.fallback }));
+                return container;
+            }
+            container.replaceChildren();
+            return null;
+        }
         const head = el(doc, 'div', { class: 'aii-sc-head' }, [
             el(doc, 'h2', { class: 'aii-sc-title', text: 'Your scorecard' }),
             card.max ? el(doc, 'span', { class: 'aii-sc-total', text: card.total + ' / ' + card.max }) : null
@@ -1017,7 +1493,9 @@
         normalizeConfig, getInstructions, normaliseDomain, firmTypeInfo, toughnessInfo, roundInfo, domainInfo,
         cvLinesFromText, cvLinesFromPdfItems, cvLinesFromBuilder, builderName, matchCvProbes, pickCvProbes, simulationDomain,
         earnedLinesFrom, mergeCvLines, presetFromQuery, SIMULATION_TOOL,
-        buildPlan, renderPrompt, welcomeLine, planQuestionIds, markAsked, parseScorecard,
+        buildPlan, renderPrompt, welcomeLine, planQuestionIds, markAsked, questionsReached, recordMock, mockSummary,
+        parseScorecard, stripScorecard, findScorecard, splitUnmarkedReport, cleanFirm, domainCount,
+        cvSourcesAllowed, claimCv, otherStudentHere, CV_GUARD_KEY, REPORT_START, REPORT_END,
         mountSetup, renderScorecard, rng
     });
 });

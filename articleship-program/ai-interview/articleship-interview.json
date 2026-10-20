@@ -2,10 +2,10 @@
   "tool": "ai-interview",
   "title": "Practise your interview",
   "rounds": [
-    { "id": "full", "label": "Full interview", "minutes": 30, "hint": "Intro, your CV, HR, core and your domain" },
-    { "id": "technical", "label": "Technical round", "minutes": 20, "hint": "Your CV lines, core accounts and your domain" },
-    { "id": "hr", "label": "HR round", "minutes": 20, "hint": "The sixteen questions every firm asks" },
-    { "id": "call", "label": "HR call", "minutes": 10, "hint": "The screening call before the interview" }
+    { "id": "full", "label": "Full interview", "minutes": 30, "hint": "Intro, CV, HR, core, domain" },
+    { "id": "technical", "label": "Technical round", "minutes": 20, "hint": "CV, core, your domain" },
+    { "id": "hr", "label": "HR round", "minutes": 20, "hint": "HR questions, situations" },
+    { "id": "call", "label": "HR call", "minutes": 10, "hint": "The screening call" }
   ],
   "ladder": [
     {
