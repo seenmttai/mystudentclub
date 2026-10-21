@@ -82,6 +82,12 @@
     return { lo: lo, hi: hi, step: step, list: out };
   }
 
+  /* How many tick intervals a value axis of `plotH` can carry: the labels (0.9 of the font size) stand at least
+     one and a half label heights apart, so a chart drawn shorter for print never stacks them; five at most. */
+  function tickCount(plotH, fs) {
+    return Math.max(2, Math.min(5, Math.floor(plotH / (fs * 0.9 * 1.5))));
+  }
+
   function text(x, y, s, fs, o) {
     o = o || {};
     return '<text x="' + r1(x) + '" y="' + r1(y) + '" font-size="' + r1(fs) + '"' +
@@ -193,7 +199,8 @@
     var totals = cats.map(function (_, i) { return series.reduce(function (a, s) { return a + s.values[i]; }, 0); });
     var vmin = stacked ? 0 : Math.min.apply(null, all);
     var vmax = stacked ? Math.max.apply(null, totals) : Math.max.apply(null, all);
-    var tk = ticks(vmin, vmax, 5, false);
+    var plotH = o.plotRatio ? W * o.plotRatio : Math.max(fs * 9, Math.min(W * 0.5, fs * 17));
+    var tk = ticks(vmin, vmax, tickCount(plotH, fs), false);
     var tickW = Math.max.apply(null, tk.list.map(function (t) { return textWidth(fmt(t), fs * 0.9); }));
     var leg = series.length > 1 ? legend(series, 'bar', 0, 0, W, fs, o.surface) : { svg: '', height: 0 };
     var unitH = chart.unit ? fs * 1.5 : fs * 0.4;
@@ -219,11 +226,10 @@
     var catLines = cats.map(function (c) { return wrap2(c, groupW - 4, fs * 0.9); });
     var vertical = bw >= Math.max(10, fs * 0.6) && labelFits && catLines.every(function (l) { return l; }) &&
       !(o.horizontal === true);
-    if (!vertical) return hbar(chart, o, tk, leg, unitH, totals);
+    if (!vertical) return hbar(chart, o, ticks(vmin, vmax, 5, false), leg, unitH, totals);   // a value axis across the width
 
     var lines = Math.max.apply(null, catLines.map(function (l) { return l.length; }));
     var top = leg.height + unitH + (showValues ? fs * 1.3 : fs * 0.5);
-    var plotH = o.plotRatio ? W * o.plotRatio : Math.max(fs * 9, Math.min(W * 0.5, fs * 17));
     var bottom = fs * 0.6 + lines * fs * 1.15 + fs * 0.4;
     var H = top + plotH + bottom;
     var y = function (v) { return top + plotH - (v - tk.lo) / (tk.hi - tk.lo) * plotH; };
@@ -365,7 +371,8 @@
     var showValues = chart.labels !== 'none';
     var all = [];
     series.forEach(function (s) { all = all.concat(s.values); });
-    var tk = ticks(Math.min.apply(null, all), Math.max.apply(null, all), 5, true);
+    var plotH = o.plotRatio ? W * o.plotRatio : Math.max(fs * 9, Math.min(W * 0.48, fs * 16));
+    var tk = ticks(Math.min.apply(null, all), Math.max.apply(null, all), tickCount(plotH, fs), true);
     var tickW = Math.max.apply(null, tk.list.map(function (t) { return textWidth(fmt(t), fs * 0.9); }));
     var leg = series.length > 1 ? legend(series, 'line', 0, 0, W, fs, o.surface) : { svg: '', height: 0 };
     var unitH = chart.unit ? fs * 1.5 : fs * 0.4;
@@ -387,7 +394,6 @@
     var padR = 0;
     var x = function (i) { return cats.length === 1 ? (padL + W) / 2 : padL + insetL + i * step; };
     var top = leg.height + unitH + fs * 1.3;
-    var plotH = o.plotRatio ? W * o.plotRatio : Math.max(fs * 9, Math.min(W * 0.48, fs * 16));
     var bottom = rotate ? maxCat * 0.62 + fs * 1.4 : fs * 1.9;
     var H = top + plotH + bottom;
     var y = function (v) { return top + plotH - (v - tk.lo) / (tk.hi - tk.lo) * plotH; };

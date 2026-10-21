@@ -82,7 +82,10 @@ test('page: nothing a student reads carries internal notes, competitor names, da
     const dated = /\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]* 20\d\d\b/i;   // build dates; a question may name a month
     const code = [path.join(PAGE_DIR, 'index.html'), path.join(PAGE_DIR, 'written-test.css'),
         ...fs.readdirSync(path.join(PAGE_DIR, 'js')).map(f => path.join(PAGE_DIR, 'js', f))];
-    code.forEach(f => assert.doesNotMatch(fs.readFileSync(f, 'utf8'), new RegExp(banned.source + '|' + dated.source, 'i'), path.relative(ROOT, f)));
+    // Code comments are for developers (the engine's keep-together notes name example dates such as "March 2026").
+    const shown = f => { const text = fs.readFileSync(f, 'utf8'); return /\.html$/.test(f) ? text : text.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/(^|[^:'"\\])\/\/.*$/gm, '$1'); };
+    code.forEach(f => assert.doesNotMatch(fs.readFileSync(f, 'utf8'), banned, path.relative(ROOT, f)));
+    code.forEach(f => assert.doesNotMatch(shown(f), dated, path.relative(ROOT, f) + ' (outside comments)'));
     fs.readdirSync(PAPERS).map(f => path.join(PAPERS, f)).forEach(f => assert.doesNotMatch(fs.readFileSync(f, 'utf8'), banned, path.relative(ROOT, f)));
 });
 

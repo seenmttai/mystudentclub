@@ -109,13 +109,25 @@
     return entry.guide_minutes ? 'about ' + entry.guide_minutes + ' min' : 'self-paced';
   }
 
+  // The symbol replaces the full logo while sitting a paper, and on phones under 360 px, where the full logo leaves
+  // too little room for “Written test practice” (at 320 px it read “Written test pra…”).
+  var NARROW = window.matchMedia ? window.matchMedia('(max-width: 359px)') : null;
+  function setBarLogo() {
+    var mark = document.body.classList.contains('sitting') || !!(NARROW && NARROW.matches);
+    barLogo.querySelector('.logo-full').hidden = mark;
+    barLogo.querySelector('.logo-mark').hidden = !mark;
+  }
+  if (NARROW) {
+    if (NARROW.addEventListener) NARROW.addEventListener('change', setBarLogo);
+    else if (NARROW.addListener) NARROW.addListener(setBarLogo);
+  }
+
   function setBar(mode, extra) {
     barRight.innerHTML = '';
     var sit = mode === 'sit';
     document.body.classList.toggle('sitting', sit);
     barTool.hidden = sit;
-    barLogo.querySelector('.logo-full').hidden = sit;
-    barLogo.querySelector('.logo-mark').hidden = !sit;
+    setBarLogo();
     if (extra) add(barRight, extra);
   }
 
@@ -320,8 +332,10 @@
     return out;
   }
 
+  function marksWord(n) { return Math.abs(n) === 1 ? '1 mark' : score(Math.abs(n)) + ' marks'; }
+
   function markingWords(m) {
-    var pts = function (n) { return n === 1 ? '1 mark' : score(Math.abs(n)) + ' marks'; };
+    var pts = marksWord;
     var s = pts(m.correct) + ' for a right answer';
     s += m.wrong < 0 ? ', ' + pts(m.wrong) + ' off for a wrong one' : ', nothing lost for a wrong one';
     return s + '.';
@@ -346,10 +360,10 @@
         go('#/' + paper.id + '/sit');
       }).catch(renderError);
     });
+    // the marking is said once, in words under the tiles (a “+3 / −2” tile beside the same line said it twice)
     var facts = [
       ['Questions', String(paper.questions.length)],
-      ['Minutes', Core.isTimed(paper) ? String(paper.minutes) : Core.guideMinutes(paper) ? 'About ' + Core.guideMinutes(paper) : 'Self-paced'],
-      ['Marking', markingShort(paper.marking)]
+      ['Minutes', Core.isTimed(paper) ? String(paper.minutes) : Core.guideMinutes(paper) ? 'About ' + Core.guideMinutes(paper) : 'Self-paced']
     ];
     var kids = [
       h('a', { class: 'back-link', href: '#/' }, 'All papers'),
@@ -768,6 +782,19 @@
     ]);
     add(card, [head, h('div', { class: 'q-body' }, [stimEl, main])]);
     drawCharts(card);
+    fitOptions(card);
+  }
+
+  /* Short options: the widest option text, measured on one line, as --otext; the CSS puts the options two to a row
+   * only where that fits in half the card. Measured again once the web fonts have loaded. */
+  function fitOptions(scope) {
+    (scope || app).querySelectorAll('fieldset.options.grid').forEach(function (fs) {
+      fs.classList.add('measuring');
+      var w = 0;
+      fs.querySelectorAll('.otext').forEach(function (t) { w = Math.max(w, t.getBoundingClientRect().width); });
+      fs.classList.remove('measuring');
+      if (w) fs.style.setProperty('--otext', Math.ceil(w) + 'px');
+    });
   }
 
   function answerArea(s, q, a) {
@@ -775,11 +802,12 @@
     var editable = s.canEdit(q.id);
     if (q.type === 'single') {
       var longest = Math.max.apply(null, q.options.map(function (o) { return o.text.length; }));
-      var grid = q.options.length >= 4 ? (longest <= 12 ? ' grid grid-narrow' : longest <= 24 ? ' grid' : '') : '';
+      var grid = q.options.length >= 4 ? (longest <= 18 ? ' grid grid-narrow' : longest <= 30 ? ' grid' : '') : '';
       var fs = h('fieldset', { class: 'options' + grid, 'aria-labelledby': 'stem' }, [
         h('legend', { class: 'visually-hidden' }, 'Choose one')
       ]);
-      // the CSS puts options two to a row only where the longest fits on one line (CSSOM, so a strict CSP allows it)
+      // the CSS puts options two to a row only where the longest fits on one line: --olen is its length in characters
+      // until fitOptions() measures the real text (CSSOM, so a strict CSP allows it)
       if (grid) fs.style.setProperty('--olen', longest);
       q.options.forEach(function (o) {
         var input = h('input', { type: 'radio', name: 'opt-' + q.id, value: o.id, id: 'o-' + q.id + '-' + o.id, disabled: !editable });
@@ -1113,7 +1141,9 @@
       hasScore ? h('div', { class: 'score-card' }, [
         h('p', { class: 'sc-label' }, 'Your score'),
         h('p', { class: 'sc-big' }, [h('span', { class: 'sc-num' }, score(res.score)), h('span', { class: 'sc-max' }, ' / ' + score(res.max))]),
-        h('p', { class: 'sc-mark' }, markingWords(paper.marking))
+        h('p', { class: 'sc-mark' }, markingWords(paper.marking)),
+        paper.marking.wrong < 0 ? h('p', { class: 'sc-lost' + (res.wrong ? '' : ' none'), id: 'sc-lost' },
+          ['Lost to wrong answers: ', h('b', null, marksWord(res.wrong * Math.abs(paper.marking.wrong)))]) : null
       ]) : null,
       stats,
       hasScore ? h('h2', null, 'By section') : null,
@@ -1146,7 +1176,7 @@
       var st = Core.stimulusOf(paper, it.q);
       var stimEl = null;
       if (st) {
-        stimEl = renderStimulus(paper, st, { open: false });
+        stimEl = renderStimulus(paper, st, { open: it.status === 'wrong' });   // open where the student went wrong
         shownStim[st.id] = true;
       }
       return h('li', { class: 'rv rv-' + it.status, id: 'rv-' + it.n }, [
@@ -1278,6 +1308,7 @@
       if (sessions[id]) { sessions[id].reload(); if (parse().id === id || !parse().id) route(); }
       else if (!parse().id) route();
     });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { fitOptions(); });
     gate().then(function (ok) {
       if (!ok) return renderGate();
       loadManifest().then(function () {

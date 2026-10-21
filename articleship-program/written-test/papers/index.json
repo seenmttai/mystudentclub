@@ -43,16 +43,226 @@
      "id": "judgement",
      "title": "Workplace judgement",
      "questions": 8,
-     "budget_minutes": 3
+     "budget_minutes": 3.5
     },
     {
      "id": "awareness",
      "title": "Business awareness",
      "questions": 1,
-     "budget_minutes": 1
+     "budget_minutes": 0.5
     }
    ],
-   "rev": "29d994f146"
+   "rev": "7b4c182f3a"
+  },
+  {
+   "id": "screening-2",
+   "title": "Screening paper 2",
+   "kind": "screening",
+   "order": 2,
+   "questions": 54,
+   "scored": 54,
+   "minutes": 20,
+   "guide_minutes": 20,
+   "marking": {
+    "correct": 3,
+    "wrong": -2,
+    "blank": 0
+   },
+   "sections": [
+    {
+     "id": "english",
+     "title": "English",
+     "questions": 10,
+     "budget_minutes": 3
+    },
+    {
+     "id": "numbers",
+     "title": "Numbers",
+     "questions": 10,
+     "budget_minutes": 4
+    },
+    {
+     "id": "reasoning",
+     "title": "Reasoning",
+     "questions": 10,
+     "budget_minutes": 4
+    },
+    {
+     "id": "accounts",
+     "title": "Accounts, audit and tax",
+     "questions": 15,
+     "budget_minutes": 5
+    },
+    {
+     "id": "judgement",
+     "title": "Workplace judgement",
+     "questions": 8,
+     "budget_minutes": 3.5
+    },
+    {
+     "id": "awareness",
+     "title": "Business awareness",
+     "questions": 1,
+     "budget_minutes": 0.5
+    }
+   ],
+   "rev": "cd35c280b1"
+  },
+  {
+   "id": "screening-3",
+   "title": "Screening paper 3",
+   "kind": "screening",
+   "order": 3,
+   "questions": 50,
+   "scored": 50,
+   "minutes": 20,
+   "guide_minutes": 20,
+   "marking": {
+    "correct": 1,
+    "wrong": 0,
+    "blank": 0
+   },
+   "sections": [
+    {
+     "id": "english",
+     "title": "English",
+     "questions": 10,
+     "budget_minutes": 3
+    },
+    {
+     "id": "numbers",
+     "title": "Numbers",
+     "questions": 9,
+     "budget_minutes": 4
+    },
+    {
+     "id": "reasoning",
+     "title": "Reasoning",
+     "questions": 9,
+     "budget_minutes": 4
+    },
+    {
+     "id": "accounts",
+     "title": "Accounts, audit and tax",
+     "questions": 15,
+     "budget_minutes": 6
+    },
+    {
+     "id": "judgement",
+     "title": "Workplace judgement",
+     "questions": 7,
+     "budget_minutes": 3
+    }
+   ],
+   "rev": "70c20d5515"
+  },
+  {
+   "id": "screening-4",
+   "title": "Screening paper 4",
+   "kind": "screening",
+   "order": 4,
+   "questions": 54,
+   "scored": 54,
+   "minutes": 15,
+   "guide_minutes": 15,
+   "marking": {
+    "correct": 1,
+    "wrong": 0,
+    "blank": 0
+   },
+   "sections": [
+    {
+     "id": "english",
+     "title": "English",
+     "questions": 10,
+     "budget_minutes": 2.5
+    },
+    {
+     "id": "numbers",
+     "title": "Numbers",
+     "questions": 10,
+     "budget_minutes": 3
+    },
+    {
+     "id": "reasoning",
+     "title": "Reasoning",
+     "questions": 10,
+     "budget_minutes": 3
+    },
+    {
+     "id": "accounts",
+     "title": "Accounts, audit and tax",
+     "questions": 15,
+     "budget_minutes": 4
+    },
+    {
+     "id": "judgement",
+     "title": "Workplace judgement",
+     "questions": 8,
+     "budget_minutes": 2
+    },
+    {
+     "id": "awareness",
+     "title": "Business awareness",
+     "questions": 1,
+     "budget_minutes": 0.5
+    }
+   ],
+   "rev": "ee78b938fd"
+  },
+  {
+   "id": "screening-5",
+   "title": "Screening paper 5",
+   "kind": "screening",
+   "order": 5,
+   "questions": 54,
+   "scored": 54,
+   "minutes": 15,
+   "guide_minutes": 15,
+   "marking": {
+    "correct": 3,
+    "wrong": -2,
+    "blank": 0
+   },
+   "sections": [
+    {
+     "id": "english",
+     "title": "English",
+     "questions": 10,
+     "budget_minutes": 2
+    },
+    {
+     "id": "numbers",
+     "title": "Numbers",
+     "questions": 10,
+     "budget_minutes": 3
+    },
+    {
+     "id": "reasoning",
+     "title": "Reasoning",
+     "questions": 10,
+     "budget_minutes": 3
+    },
+    {
+     "id": "accounts",
+     "title": "Accounts, audit and tax",
+     "questions": 15,
+     "budget_minutes": 4
+    },
+    {
+     "id": "judgement",
+     "title": "Workplace judgement",
+     "questions": 8,
+     "budget_minutes": 2.5
+    },
+    {
+     "id": "awareness",
+     "title": "Business awareness",
+     "questions": 1,
+     "budget_minutes": 0.5
+    }
+   ],
+   "rev": "f73b285395"
   }
  ]
 }

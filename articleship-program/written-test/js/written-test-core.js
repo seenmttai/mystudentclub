@@ -121,17 +121,44 @@
     return t ? t.split(/\s+/).length : 0;
   }
 
-  /* Number–unit pairs that must never break across lines: a range (2025–26, 10–15 minutes), a number and its unit
-   * (₹7.2 lakh, 8 m, 48 km/h, 5 hours, 31 March, 4 pm), a ratio (7 : 5, 2 : 3 : 4) and a pair such as (4, 6) or
-   * (−2, 3.5), with a plain space or U+00A0 between. A longer list such as (7, 14, 28, 56) may still wrap. The PDF
-   * builder uses the same pattern; a test checks the two agree. Only features JavaScript and Python share: no
-   * lookbehind, ASCII digits. */
-  var KEEP_UNITS = 'lakh|crore|km\\/h|km|kg|m|h|days?|hours?|minutes?|min|seconds?|s|weeks?|months?|years?|litres?|' +
-    'am|pm|January|February|March|April|May|June|July|August|September|October|November|December';
+  /* Runs that must never break across lines, with a plain space or U+00A0 between (writers need no U+00A0):
+   *   a pair such as (4, 6) or (−2, 3.5), and a short sum in brackets: (4 + 8), (1.08 × 1.08);
+   *   a label and its number: AS 20, Ind AS 115, SA 500, Section 194, Form 3CD, Statement II; an Act and its year:
+   *   Act, 2025; a month and its year: March 2026; a word range: Jul–Sep, January–June;
+   *   a short expression: x + 5, 4 + 8, 3c + 4b, n² + 4; an operator and the value after it: = ₹4,100, × 2, − 3,
+   *   = 15 : 18 : 20, so a line never ends on “=” or inside a ratio and a long working still breaks between its steps;
+   *   a number and its unit, a range or a ratio: ₹7.2 lakh, 8 m, 48 km/h, 4 pm, 2025–26, 10–15 minutes, 7 : 5,
+   *   2 : 3 : 4; a full date: 20 May 2026;
+   *   a short hyphenated word (ten characters at most): cut-off, year-end, 50-litre.
+   * A longer list such as (7, 14, 28, 56) and a longer hyphenated word may still wrap. The PDF builder uses the same
+   * pattern; a test checks the two agree. Only features JavaScript and Python share: no lookbehind, ASCII digits. */
   var KEEP_NUM = '[0-9]+(?:[.,][0-9]+)*';
-  var KEEP_SOURCE = '\\(\\u2212?' + KEEP_NUM + ',[ \\u00a0]\\u2212?' + KEEP_NUM + '\\)' +
-    '|\\b' + KEEP_NUM + '(?:\\u2013' + KEEP_NUM + '(?:[ \\u00a0](?:' + KEEP_UNITS + ')\\b)?' +
-    '|[ \\u00a0](?:' + KEEP_UNITS + ')\\b|(?:[ \\u00a0]:[ \\u00a0]' + KEEP_NUM + ')+)';
+  var KEEP_SP = '[ \\u00a0]';
+  var KEEP_MONTHS = 'January|February|March|April|May|June|July|August|September|October|November|December';
+  var KEEP_UNITS = 'lakh|crore|km\\/h|km|kg|m|h|days?|hours?|minutes?|min|seconds?|s|weeks?|months?|years?|litres?|' +
+    'am|pm|' + KEEP_MONTHS;
+  var KEEP_YEAR = '(?:19|20)[0-9]{2}\\b';
+  var KEEP_OP = '[=+\\u00d7\\u00f7\\u2212\\u2264\\u2265]';
+  var KEEP_TERM = '(?:' + KEEP_NUM + '(?:\\/[0-9]+)?(?:[a-zA-Z]{1,2})?|[a-zA-Z][0-9]{0,2})[\\u00b2\\u00b3]?';
+  var KEEP_VAL = '(?:[+\\u2212]?\\u20b9?' + KEEP_NUM + '(?:\\/[0-9]+)?(?:%|' + KEEP_SP + '(?:' + KEEP_UNITS + ')\\b|' +
+    '[a-zA-Z]{1,2}(?![A-Za-z0-9]))?[\\u00b2\\u00b3]?(?:' + KEEP_SP + ':' + KEEP_SP + KEEP_NUM + ')*|' +
+    '[a-zA-Z][0-9]{0,2}[\\u00b2\\u00b3]?(?![A-Za-z0-9]))';
+  var KEEP_LABELS = 'Ind' + KEEP_SP + 'AS|AS|SA|SQC|CARO|Sections?|sections?|Form|Rule|Schedule|Clause|clause|Article|' +
+    'Para|Part|Chapter|Statement|Level|Step|Table|Question|No\\.';
+  var KEEP_SOURCE = [
+    '\\(\\u2212?' + KEEP_NUM + ',' + KEEP_SP + '\\u2212?' + KEEP_NUM + '\\)',
+    '\\(' + KEEP_TERM + KEEP_SP + KEEP_OP + KEEP_SP + KEEP_VAL + '\\)',
+    '\\b(?:' + KEEP_LABELS + ')' + KEEP_SP + '(?:[0-9]+[A-Z]{0,3}(?:\\([0-9a-z]{1,4}\\))*|[IVX]{1,4}(?![A-Za-z0-9]))',
+    '\\bAct,?' + KEEP_SP + KEEP_YEAR,
+    '\\b(?:' + KEEP_MONTHS + ')' + KEEP_SP + KEEP_YEAR,
+    '\\b[A-Za-z]+\\u2013[A-Za-z]+\\b',
+    '\\b' + KEEP_TERM + KEEP_SP + KEEP_OP + KEEP_SP + KEEP_VAL,
+    '\\b' + KEEP_NUM + '(?:' + KEEP_SP + '(?:' + KEEP_MONTHS + ')' + KEEP_SP + KEEP_YEAR +
+      '|\\u2013' + KEEP_NUM + '(?:' + KEEP_SP + '(?:' + KEEP_UNITS + ')\\b)?' +
+      '|' + KEEP_SP + '(?:' + KEEP_UNITS + ')\\b|(?:' + KEEP_SP + ':' + KEEP_SP + KEEP_NUM + ')+)',
+    '\\b(?=[A-Za-z0-9-]{3,10}(?![A-Za-z0-9-]))[A-Za-z0-9]+-[A-Za-z0-9]+\\b',
+    KEEP_OP + KEEP_SP + KEEP_VAL
+  ].join('|');
 
   /* Text cut into the runs to keep on one line and the rest: [{ text, keep }]. Joined, they give the text back. */
   function keepTogether(text) {
