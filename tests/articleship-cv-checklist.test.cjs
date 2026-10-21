@@ -714,11 +714,16 @@ test('fix-it pages: each deep link opens the page that carries its heading (chec
 
 // ---------- One content file, one sheet fallback ----------
 
-test('content: the website copy is the content build’s file, byte for byte (checked on the machine that has the build)', t => {
+test('content: the website copy is the content build’s file, byte for byte but for wired page numbers (checked on the machine that has the build)', t => {
     const built = path.join(CONTENT_BUILD, 'day-1', '1.8', 'cv-checklist.json');
     if (!fs.existsSync(built)) { t.skip('content build not on this machine'); return; }
-    assert.equal(CONTENT_TEXT, fs.readFileSync(built, 'utf8'),
-        'copy build/day-1/1.8/cv-checklist.json over articleship-program/cv-checklist/cv-checklist.json (or the reverse) and rerun wire_pages.mjs');
+    // Deep-link page numbers are wiring: build/release-1/wire_pages.mjs takes them from the PDFs the handover ships, and
+    // the fix-it pages test above checks each against its PDF. Everything else is the content build's, byte for byte.
+    const unwired = text => text.replace(/([?&]page=)\d+/g, '$1N');
+    const builtText = fs.readFileSync(built, 'utf8');
+    assert.equal(unwired(CONTENT_TEXT), unwired(builtText),
+        'copy build/day-1/1.8/cv-checklist.json over articleship-program/cv-checklist/cv-checklist.json (or the reverse) and rerun build/release-1/wire_pages.mjs cv-checklist');
+    if (CONTENT_TEXT !== builtText) t.diagnostic('page numbers re-wired to the shipped PDFs differ from the content build (the 1.8 owner takes them over)');
 });
 
 /** RFC 4180 rows (quoted fields may hold commas, quotes and line breaks). */
