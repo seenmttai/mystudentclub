@@ -798,7 +798,7 @@
      "issuer": ""
     },
     {
-     "name": "Completed MSC Articleship Program — foundational understanding of work and tasks across all domains",
+     "name": "MSC Articleship Program (ongoing)",
      "issuer": ""
     }
    ],
@@ -810,7 +810,7 @@
     "Home tutor: taught Accounts to 3 Class XI students for a year; all three scored above 80."
    ],
    "interests": [
-    "Badminton: weekend doubles since [Year]",
+    "Cycling: 40 km Sunday rides since [Year]",
     "Reading business memoirs; last read: Shoe Dog"
    ],
    "customSections": [],
@@ -828,9 +828,9 @@
    "themeFont": "",
    "situation": "H",
    "work_simulation": {
-    "note": "Release flag (RELEASE-PLAN.md): the top-level fields are release 1 (matching img/nothing-cv.png). With WORK_SIMULATION_LIVE on, the CV Builder uses work_simulation.summary in place of summary and inserts work_simulation.certifications before the completed MSC Articleship Program entry (matching img/nothing-cv-ws.png).",
+    "note": "Release flag (RELEASE-PLAN.md): the top-level fields are release 1 (matching img/nothing-cv.png). With WORK_SIMULATION_LIVE on, the CV Builder uses work_simulation.summary in place of summary and inserts work_simulation.certifications before the MSC Articleship Program entry (matching img/nothing-cv-ws.png).",
     "summary": "<p>CA Intermediate cleared ([Month Year]), both groups in the first attempt; ICITSS completed. Completed the PwC US Audit and US Tax job simulations (Forage) and vouched 20 purchase bills in MSC’s statutory audit Work Simulation. Looking for articleship with audit and tax exposure, to choose my domain from real work.</p>",
-    "certifications_insert_before": "Completed MSC Articleship Program — foundational understanding of work and tasks across all domains",
+    "certifications_insert_before": "MSC Articleship Program (ongoing)",
     "certifications": [
      {
       "name": "Statutory audit Work Simulation, MSC Articleship Program | [Month Year]: Vouched 20 purchase bills against PO, GRN and ledger around 31 March; flagged 3 cut-off and approval exceptions.",
