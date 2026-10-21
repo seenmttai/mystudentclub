@@ -235,7 +235,9 @@ test('rows not live: no programme tool draws a link or a pointer to one (CV chec
     assert.deepEqual(findLinks(checklist).filter(P.isNotLiveRowLink), []);
     assert.deepEqual(notLive.filter(row => JSON.stringify(checklist).includes(row.title + ' –')), []);
     const attempts = checklist.items.find(item => item.id === 'groups-attempts');
-    assert.ok(attempts.example.includes('Both groups passed together, but not on the first try: one row, year only is fine.'));
+    // Row 4.4 not live: the check keeps its release-1 line (Practise your interview); its "needs" swap waits for the row.
+    assert.ok(attempts.example.includes('Both groups passed together, but not on the first try: one row, year only is fine; practise the attempts answer in Practise your interview – Day 4.'));
+    assert.ok(!JSON.stringify(attempts).includes('HR round and GD booklet'));
     const syllabus = RELEASE_1.tracker.normaliseContent(CONTENT.syllabus);
     assert.deepEqual(Object.values(syllabus.booklets).filter(title => !P.isRowLive(title, 4)), []);
     const linkedin = path.join(ROOT, 'articleship-program/linkedin-checklist/linkedin-checklist.json');
@@ -351,6 +353,9 @@ test('release 2 (flag flipped): every Work Simulation part is back in every tool
     swapped.items.forEach(item => {
         const swap = (item.work_simulation || {}).replace || {};
         if (Array.isArray(item.example)) item.example = item.example.map(line => (line in swap ? swap[line] : line));
+        // A check's "needs" (rows not in the course yet) is read by the page, never drawn; the Day 4 booklets are
+        // still in ROWS_NOT_LIVE here, so their lines stay as they are.
+        delete item.needs;
     });
     // (A pointer to a row that is not in the course yet - a Day 4 booklet - stays out until that row ships: ROWS_NOT_LIVE.)
     assert.deepEqual(C.releaseContent(CONTENT.checklist), RELEASE_2.progress.releaseContent(swapped, { workSimulationLive: true }), 'every check as written');

@@ -43,13 +43,13 @@ function pageDom() {
     return { dom, doc, container: doc.getElementById('app'), nav: doc.getElementById('cvc-nav'), end: doc.getElementById('cvc-end'), lede: doc.getElementById('cvc-lede') };
 }
 
-const SPEC_ORDER = ['Set-up', 'Header', 'Education', 'Proof', 'Finish'];
+const SPEC_ORDER = ['Set-up', 'Top of the page', 'Education', 'Proof', 'Finish'];
 
 test('content: 22 checks in build order, every one with an example, links that render', () => {
     const model = C.normalise(CONTENT);
     const raw0 = id => CONTENT.items.find(item => item.id === id);
     assert.equal(model.total, 22, '"14 of 22 done": the MSCIT-parity count');
-    assert.deepEqual(model.sections.map(s => s.title), SPEC_ORDER, 'set-up → header → education → proof → finish');
+    assert.deepEqual(model.sections.map(s => s.title), SPEC_ORDER, 'set-up → top of the page → education → proof → finish');
     model.items.forEach(item => assert.ok(item.example.length > 20, 'example for ' + item.id));
     const rawFixes = CONTENT.items.filter(item => item.fix).length;
     assert.equal(model.items.filter(item => item.fix).length, rawFixes, 'every fix link passes the safe-link rule');
@@ -62,7 +62,7 @@ test('content: 22 checks in build order, every one with an example, links that r
         .forEach(id => assert.ok(ids.includes(id), 'check ' + id));
     const byId = Object.fromEntries(model.items.map(item => [item.id, item]));
     assert.match(byId['one-page'].check, /never shrunk/);
-    assert.match(byId['file-name'].example, /Riya Sharma - Articleship CV - Audit\.pdf/, 'same file-name pattern as Guidebook ch 3 and Automail');
+    assert.match(byId['file-name'].example, /Devika Joshi - Articleship CV - Audit\.pdf/, 'same file-name pattern as Guidebook ch 3 and Automail');
     assert.match(byId['nothing-personal'].check, /photo.*date of birth.*parents’ names.*a declaration.*a signature/);
     assert.match(byId['groups-attempts'].example, /Result awaited/);
     assert.match(byId['certifications'].check, /in their own section, four outside certificates at most/);
@@ -87,7 +87,7 @@ test('content: 22 checks in build order, every one with an example, links that r
     assert.match(last.example, /five seconds/, 'the quick-look test');
     assert.match(last.example, /five classmates’ CVs/, 'the peer read');
     // No classmates' CVs to hand: the look-book's filled-in CVs (made-up applicants), never Day 6's industrial-training CVs.
-    assert.match(last.fix.label, /Five filled-in CVs: CV templates/, "no classmates to hand: the fix link opens five filled-in CVs");
+    assert.match(last.fix.label, /Filled-in CVs to compare: CV templates/, "no classmates to hand: the fix link opens filled-in CVs");
     assert.match(last.fix.href, /resource=CV\+templates/);
     assert.doesNotMatch(CONTENT_TEXT, /Post Articleship CVs/);
     assert.doesNotMatch(byId['objective'].example, /five seconds/);
@@ -100,10 +100,11 @@ test('content: 22 checks in build order, every one with an example, links that r
     assert.match(bold.example, /^❌ \*\*[^*\n]+\*\*$/m, '❌ a whole line in bold');
     // Each point in one place: mixed fonts is fix no. 1, not repeated in check 1.
     assert.doesNotMatch(byId['built-in-builder'].example, /font, the body in another|fix reviewers make most/);
-    // Remarks: one row per example (an Inter paper and a Class XII subject never share a remark).
+    // Remarks: one ✅ and one ❌ here; the full remarks bank lives once, in Choose your CV (the check's Fix it link).
     const remarkLines = byId['remarks'].example.split('\n');
     assert.ok(remarkLines.some(l => /^✅ CA Intermediate row: /.test(l) && !/Accountancy/.test(l)));
-    assert.ok(remarkLines.some(l => /^✅ Class XII row: /.test(l) && !/Taxation/.test(l)));
+    assert.ok(remarkLines.some(l => /^❌ /.test(l)));
+    assert.match(raw0('remarks').fix.href, /resource=Choose\+your\+CV&page=\d+/);
     assert.match(byId['line-formula'].example, /cleared ₹38,000 of unmatched entries/, 'a line ends on what came of it');
     assert.doesNotMatch(CONTENT_TEXT, /No record, no number/);
     // One wording for anything unfinished.
@@ -252,12 +253,12 @@ test('helpers: closing card, section list, next check', () => {
     assert.deepEqual([after.complete, after.title], [true, 'All 22 ticked? Your CV is ready']);
     const nav = CV.navItems(model, C.summarise(model, { 'built-in-builder': true, 'one-page': true, 'file-name': true }));
     assert.deepEqual(nav.map(n => [n.title, n.count, n.complete]),
-        [['Set-up', '3/3', true], ['Header', '0/5', false], ['Education', '0/4', false], ['Proof', '0/5', false], ['Finish', '0/5', false]]);
+        [['Set-up', '3/3', true], ['Top of the page', '0/5', false], ['Education', '0/4', false], ['Proof', '0/5', false], ['Finish', '0/5', false]]);
     assert.equal(nav[0].anchor, 'cvc-set-up');
     assert.deepEqual(CV.nextItem(model, C.summarise(model, { 'built-in-builder': true })), { id: 'one-page', no: 2, label: 'Jump to 2' });
     assert.equal(CV.nextItem(model, C.summarise(model, all)), null);
-    assert.deepEqual(CV.exampleLines('Read it aloud.\nSAP → “Which module?”\n\n✅ Riya Sharma'),
-        [{ lead: '', rest: 'Read it aloud.' }, { lead: 'SAP', rest: '“Which module?”' }, { lead: '', rest: '✅ Riya Sharma' }]);
+    assert.deepEqual(CV.exampleLines('Read it aloud.\nSAP → “Which module?”\n\n✅ Devika Joshi'),
+        [{ lead: '', rest: 'Read it aloud.' }, { lead: 'SAP', rest: '“Which module?”' }, { lead: '', rest: '✅ Devika Joshi' }]);
     const stripped = CV.withoutDone(CONTENT);
     assert.equal(stripped.done, undefined);
     assert.ok(CONTENT.done, 'the original content is untouched');
@@ -277,12 +278,12 @@ test('start: ticks save, "14 of 22 done", jump to the next check, section counts
     assert.equal(doc.querySelector('.ap-cl-done'), null, 'the engine card is replaced by this page’s closing card');
     assert.equal(doc.querySelector('.cvc-end-title').textContent, 'Then, two reviews');
     assert.equal(doc.querySelectorAll('.cvc-end-links a').length, 2);
-    assert.equal(doc.querySelectorAll('#cvc-set-up, #cvc-header, #cvc-education, #cvc-proof, #cvc-finish').length, 5);
+    assert.equal(doc.querySelectorAll('#cvc-set-up, #cvc-top-of-the-page, #cvc-education, #cvc-proof, #cvc-finish').length, 5);
 
     // Examples read line by line; the claim of a "claim → question" line is bold; text stays text.
     const probe = doc.querySelector('.ap-cl-item[data-id="two-questions"] .cvc-ex');
     assert.equal(probe.querySelectorAll('p').length, 4, 'the method and three probes; the rest in folds (the rule lives in the sticky and the table lead)');
-    assert.equal(probe.querySelector('.cvc-ex-pair strong').textContent, 'Excel: XLOOKUP, PivotTables');
+    assert.equal(probe.querySelector('.cvc-ex-pair strong').textContent, 'Excel (proficient): XLOOKUP, PivotTables');
     [...doc.querySelectorAll('.ap-cl-example > p')].forEach(p => assert.ok(!p.textContent.includes('\n'), 'every multi-line example is split'));
     const injected = pageDom();
     CV.start({ container: injected.container, content: { items: [{ check: 'x', example: ['<img src=x onerror=alert(1)> → <b>y</b>', 'two'] }] } });
@@ -499,7 +500,7 @@ test('examples: bold shows as bold (text only, never HTML); the file name follow
     page.refreshDomain();
     assert.deepEqual([...fileBox().querySelectorAll('.cvc-ex-mine')].map(p => p.textContent),
         ['For your domain: Your Name - Articleship CV - GST.pdf', 'For your backup domain: Your Name - Articleship CV - Direct Tax.pdf']);
-    assert.match(fileBox().children[0].textContent, /^✅ One domain: Riya Sharma/, 'the model example stays first');
+    assert.match(fileBox().children[0].textContent, /^✅ One domain: Devika Joshi/, 'the model example stays first');
     domains = { main: 'statutory-audit' };
     page.refreshDomain();
     assert.deepEqual([...fileBox().querySelectorAll('.cvc-ex-mine')].map(p => p.textContent), ['For your domain: Your Name - Articleship CV - Audit.pdf']);
@@ -633,8 +634,18 @@ function normaliseText(text) {
 function rowPdf(title) {
     const manifest = path.join(CONTENT_BUILD, 'lms', 'uploads-manifest.csv');
     if (!fs.existsSync(manifest)) return null;
-    const row = fs.readFileSync(manifest, 'utf8').split('\n').slice(1).map(line => line.split(','))
-        .find(cells => cells[2] === title && /\.pdf$/i.test(cells[0]));
+    const [head, ...rows] = csvRows(fs.readFileSync(manifest, 'utf8'));
+    // Current manifest: release, storage_path, row, title, role, state, waiting_for, source (build/…/file.pdf), …
+    const col = name => (head || []).indexOf(name);
+    if (col('title') >= 0 && col('source') >= 0) {
+        const hit = rows.find(cells => cells[col('title')] === title && /\.pdf$/i.test(cells[col('storage_path')] || '') &&
+            /^build\//.test(cells[col('source')] || ''));
+        if (!hit) return null;
+        const file = path.join(CONTENT_BUILD, hit[col('source')].replace(/^build\//, ''));
+        return fs.existsSync(file) ? file : null;
+    }
+    // Earlier manifest: file, …, title, folder, file name.
+    const row = rows.find(cells => cells[2] === title && /\.pdf$/i.test(cells[0]));
     if (!row) return null;
     const dir = path.join(CONTENT_BUILD, row[3]);
     if (!fs.existsSync(dir)) return null;
@@ -673,7 +684,11 @@ test('fix-it pages: each deep link opens the page that carries its heading (chec
     if (!fs.existsSync(CONTENT_BUILD)) { t.skip('content build folder not on this machine'); return; }
     if (spawnSync('pdftotext', ['-v']).error) { t.skip('pdftotext (poppler) not installed'); return; }
     // Links that open a whole file (no page, no heading) have nothing to check.
-    const deep = CONTENT.items.filter(item => item.fix && item.fix.href.startsWith('/learning-management-system/') && item.fix.find);
+    // Every deep link a check draws: its Fix it and its "also" links (e.g. Guidebook ch 3, q11).
+    const deep = [];
+    CONTENT.items.forEach(item => [item.fix, ...(item.also || [])].forEach(link => {
+        if (link && link.href.startsWith('/learning-management-system/') && link.find) deep.push({ id: item.id, fix: link });
+    }));
     const waiting = [];
     let checked = 0;
     deep.forEach(item => {
@@ -821,7 +836,7 @@ test('release 1 (Work Simulation not out): every check, fold and link, with no W
     assert.equal(off.doc.querySelector('.ap-progress-count').textContent, '0 of 22 done');
     const two = off.doc.querySelector('.ap-cl-item[data-id="two-questions"]');
     const main = two.querySelector('.ap-cl-example:not(.cvc-fold) .cvc-ex');
-    assert.deepEqual([...main.querySelectorAll('.cvc-ex-pair > strong')].map(b => b.textContent), ['Excel: XLOOKUP, PivotTables', 'Tally Prime', 'Family shop GST: matched 40 purchase invoices to GSTR-2B'],
+    assert.deepEqual([...main.querySelectorAll('.cvc-ex-pair > strong')].map(b => b.textContent), ['Excel (proficient): XLOOKUP, PivotTables', 'Tally Prime', 'Family shop GST: matched 40 purchase invoices to GSTR-2B'],
         'release 1 swaps the Work Simulation probe for the family-shop GST probe');
     assert.match(main.textContent, /Read each line aloud/, 'the method stays');
     assert.match(two.textContent, /Keep an interest only if you still do it/, 'the interests rule stays');
@@ -964,4 +979,28 @@ test('two CVs: with one domain, "Add a second CV" sets the shared backup domain 
     assert.equal(doc.activeElement, switcher.querySelectorAll('input')[1], 'focus on the new CV');
     assert.equal(page.checking(), 'statutory-audit', 'still on the first CV until the student switches');
     assert.equal(page.summary().done, 1);
+});
+
+test('rows not live yet ("needs"): the check reads as it is until its row is in the course, then swaps the line and adds the link', () => {
+    const raw = CONTENT.items.find(item => item.id === 'groups-attempts');
+    assert.ok(raw.needs && raw.needs['4.4'], 'the content keeps the HR round and GD booklet line for when row 4.4 ships');
+    const notLive = CV.withLiveRowLines(CONTENT, () => false).items.find(item => item.id === 'groups-attempts');
+    assert.equal(notLive.needs, undefined, 'the needs key is never drawn');
+    assert.ok(notLive.example.some(line => /Practise your interview – Day 4/.test(line)));
+    assert.ok(!notLive.also.some(link => /HR\+round/.test(link.href)));
+    const live = CV.withLiveRowLines(CONTENT, row => row === '4.4').items.find(item => item.id === 'groups-attempts');
+    assert.ok(live.example.some(line => /the attempts answer is in HR round and GD booklet – Day 4\.$/.test(line)), 'line swapped');
+    assert.ok(!live.example.some(line => /practise the attempts answer/.test(line)));
+    assert.ok(live.also.some(link => /resource=HR\+round\+and\+GD\+booklet/.test(link.href)), 'the booklet link is added');
+    assert.equal(raw.needs['4.4'].replace !== undefined, true, 'the input is never changed');
+    // Shipped (row 4.4 in ROWS_NOT_LIVE): the page never names or links the booklet.
+    const { doc, container } = pageDom();
+    CV.start({ container, content: CONTENT, store: memoryStore({ ticks: {} }) });
+    const card = doc.querySelector('.ap-cl-item[data-id="groups-attempts"]');
+    assert.equal(P.ROWS_NOT_LIVE.some(row => row.row === '4.4'), !P.isRowLive('HR round and GD booklet', 4) || false);
+    if (!P.isRowLive('HR round and GD booklet', 4)) {
+        assert.doesNotMatch(card.textContent, /HR round and GD booklet/);
+        assert.ok(![...card.querySelectorAll('a')].some(a => /HR\+round/.test(a.getAttribute('href'))));
+        assert.match(card.textContent, /Practise your interview – Day 4/);
+    }
 });
