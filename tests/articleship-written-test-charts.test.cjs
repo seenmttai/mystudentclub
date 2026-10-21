@@ -76,3 +76,28 @@ test('Indian grouping and negative values', () => {
     { width: 358, fontSize: 14 });
   assert.ok(labels(r.svg).includes('−4'));
 });
+
+test('a chart drawn shorter for print keeps its axis labels apart (fewer ticks, never stacked)', () => {
+  // the y-axis labels: right-aligned text left of the plot, at 0.9 of the font size
+  const axis = (svg) => [...svg.matchAll(/<text x="[\d.]+" y="([\d.]+)" font-size="([\d.]+)" text-anchor="end" fill="[^"]*">([^<]*)<\/text>/g)]
+    .map((m) => ({ y: Number(m[1]), size: Number(m[2]), text: m[3] }));
+  const real = { kind: 'line', unit: '₹ lakh', categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+    series: [{ name: 'Collections', values: [16, 11, 21, 12, 15, 10] }] };
+  const vertical = charts.map((s) => s.chart).filter((c) => c.kind !== 'pie').concat([real, { ...real, kind: 'bar' }]);
+  for (const ch of vertical) {
+    for (const plotRatio of [undefined, 0.22, 0.17]) {
+      const opts = { ...Charts.PDF, ...(plotRatio ? { plotRatio } : {}) };
+      const r = Charts.render(ch, opts);
+      const ticks = axis(r.svg);
+      if (ticks.length < 2) continue;                       // a horizontal bar chart has its values across the width
+      for (let i = 1; i < ticks.length; i++) {
+        const gap = Math.abs(ticks[i].y - ticks[i - 1].y);
+        assert.ok(gap >= ticks[i].size * 1.5 - 0.01, `${ch.kind} at ${plotRatio || 'full'}: ${ticks[i - 1].text} and ${ticks[i].text} are ${gap} apart`);
+      }
+      if (!plotRatio) assert.ok(ticks.length >= 4, 'a full-size chart keeps its fuller scale');
+    }
+  }
+  // the shortest print of the line above: 0, 10, 20, 30 rather than six labels in a stack
+  assert.deepEqual(axis(Charts.render(real, { ...Charts.PDF, plotRatio: 0.17 }).svg).map((t) => t.text), ['0', '10', '20', '30']);
+  assert.equal(Charts.render(real, { ...Charts.PDF, plotRatio: 0.17 }).needsTable, false);
+});

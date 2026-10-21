@@ -14,6 +14,8 @@
 /* focus never lands under the sticky bar and tabs, or under the fixed action bar (WCAG 2.2 2.4.11) */
 html { scroll-padding-top: calc(var(--bar-h) + 72px); scroll-padding-bottom: calc(var(--action-h) + 16px + env(safe-area-inset-bottom)); }
 body { background: #fff; }
+/* no one-word last line in anything read at length (stems, options, reasons, rules) */
+p, li, dd, .otext { text-wrap: pretty; }
 .screen { min-height: calc(100vh - var(--bar-h)); }
 .screen:focus { outline: none; }
 #announce { top: 0; left: 0; }     /* the hidden live region after the screen: not one pixel of page scroll */
@@ -71,7 +73,7 @@ body.sitting .msc-bar .right { margin-left: 0; flex: 1; justify-content: space-b
 .pc-state.running::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); margin-right: 8px; vertical-align: 1px; }
 
 /* ---------- start ---------- */
-.facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 18px 0 10px; }
+.facts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 18px 0 10px; }
 .facts div { background: var(--soft); border-radius: 12px; padding: 10px 12px; }
 .facts dt { font-size: 13px; color: var(--pencil); font-weight: 700; }
 .facts dd { margin: 2px 0 0; font: 800 20px/1.2 "Inter", sans-serif; color: var(--navy); font-variant-numeric: tabular-nums; }
@@ -108,25 +110,39 @@ body.sitting .msc-bar .right { margin-left: 0; flex: 1; justify-content: space-b
 .qcard { padding: 16px 0 8px; }
 .qhead { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
 .qhead h2 { margin: 0; font: 700 32px/1 "Caveat", cursive; color: var(--navy); }
-.qhead h2:focus { outline: none; }
+/* the heading takes focus after Start, Next and a reload (screen readers start there); it is not a control, so
+   it never shows a ring, not even after a reload on a touch screen, where the browser counts the focus as visible */
+#qh:focus, #qh:focus-visible { outline: none; box-shadow: none; }
 .qhead .of { font: 700 15px/1 "Inter", sans-serif; color: var(--pencil); margin-left: 6px; }
 .qsec { font: 700 13px/1.3 "Inter", sans-serif; color: var(--navy); background: var(--accent-tape); border-radius: 4px; padding: 4px 8px; white-space: nowrap; }
-.stem { font-size: 17px; line-height: 1.55; color: var(--ink); margin: 6px 0 14px; }
+.stem { font-size: 17px; line-height: 1.55; color: var(--ink); margin: 6px 0 14px; text-wrap: pretty; }
 .stem-p { margin: 0 0 8px; }
 .options { border: 0; margin: 0; padding: 0; display: grid; gap: 10px; min-width: 0; }
-/* Short options sit two to a row only where the longest one fits on a single line: --olen is its length in characters
-   (set by the page), 105px the radio, letter, gaps, padding and border. Otherwise one to a row, so no amount or word
-   ever breaks across lines. */
-.options.grid-narrow { grid-template-columns: repeat(auto-fit, minmax(min(100%, max(calc(var(--olen, 12) * 1ch + 105px), calc(50% - 6px))), 1fr)); }
+/* Short options sit two to a row only where the widest one fits on a single line: --otext is its measured width
+   (set by the page; --olen, its length in characters, until it is measured) and --ochrome the radio, letter, gaps,
+   padding and border around it. Otherwise one to a row, so no amount or word ever breaks across lines. On a phone the
+   two-to-a-row cards are a little tighter, so options of ten characters or so still pair up and option D stays
+   clear of the action bar. */
+.options.grid { --ochrome: 105px; }
+.options.grid-narrow { --ochrome: 87px; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(min(100%, max(calc(var(--otext, calc(var(--olen, 12) * 1ch)) + var(--ochrome)), calc(50% - 4px))), 1fr)); }
+.options.grid-narrow .opt { gap: 8px; padding: 11px 10px; }
+.options.grid-narrow .opt:has(input:checked) { padding: 10.5px 9.5px; }
+.options.grid-narrow .opt .letter { width: 26px; height: 26px; }
 @media (min-width: 600px) {
-  .options.grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, max(calc(var(--olen, 24) * 1ch + 105px), calc(50% - 6px))), 1fr)); }
+  .options.grid, .options.grid-narrow { --ochrome: 105px; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, max(calc(var(--otext, calc(var(--olen, 24) * 1ch)) + var(--ochrome)), calc(50% - 5px))), 1fr)); }
+  .options.grid-narrow .opt { gap: 12px; padding: 11px 14px; }
+  .options.grid-narrow .opt:has(input:checked) { padding: 10.5px 13.5px; }
+  .options.grid-narrow .opt .letter { width: 28px; height: 28px; }
 }
+/* measuring: each option's text on one line at its natural width (the page reads it, then drops the class) */
+.options.measuring .otext { flex: none; white-space: nowrap; }
 .opt {
   display: flex; align-items: center; gap: 12px; min-height: 54px; padding: 11px 14px;
   border: 1.5px solid var(--border); border-radius: 12px; background: #fff; cursor: pointer;
   font-weight: 400; color: var(--ink); transition: border-color .12s ease, background-color .12s ease;
 }
 @media (hover: hover) { .opt:hover { border-color: var(--navy); } }
+.opt:active:not(:has(input:disabled)) { border-color: var(--navy); }      /* the press a tap shows (no tap highlight) */
 .opt input {
   appearance: none; -webkit-appearance: none; flex: none; width: 22px; height: 22px; margin: 0;
   border: 2px solid var(--field); border-radius: 50%; background: #fff; display: grid; place-content: center;
@@ -143,7 +159,7 @@ body.sitting .msc-bar .right { margin-left: 0; flex: 1; justify-content: space-b
   background: var(--soft); font: 800 14px/1 "Inter", sans-serif; color: var(--navy);
 }
 .opt:has(input:checked) .letter { background: var(--navy); color: #fff; }
-.opt .otext { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.opt .otext { flex: 1; min-width: 0; overflow-wrap: anywhere; text-wrap: pretty; }
 .qtools { display: flex; gap: 8px; margin-top: 14px; }
 .tool-btn {
   display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 8px 14px;
@@ -253,7 +269,7 @@ body.sitting .msc-bar .right { margin-left: 0; flex: 1; justify-content: space-b
 .chart { margin: 0; }
 .chart-box { width: 100%; }
 .chart-box svg { display: block; width: 100%; height: auto; }
-.chart-toggle { margin-top: 4px; }
+.chart-toggle { margin-top: 4px; min-height: 44px; }     /* a 44 px target like every other control */
 .chart-table { margin-top: 6px; }
 
 /* dialogs */
@@ -290,7 +306,10 @@ dialog.sheet { width: 100%; max-width: 560px; max-height: 82vh; overflow: auto; 
 .sc-big { margin: 2px 0; line-height: 1; }
 .sc-num { font: 800 56px/1 "Inter", sans-serif; color: var(--navy); letter-spacing: -1px; }
 .sc-max { font: 800 22px/1 "Inter", sans-serif; color: var(--pencil); }
-.sc-mark { margin: 6px 0 0; font-size: 14px; color: var(--pencil); }
+.sc-mark { margin: 6px 0 0; font-size: 14px; color: var(--pencil); text-wrap: balance; }
+.sc-lost { margin: 4px 0 0; font-size: 14px; color: var(--pencil); }
+.sc-lost b { font-weight: 800; color: var(--no-ink); }
+.sc-lost.none b { color: var(--navy); }
 .stats { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin: 0 0 6px; }
 .stats div { grid-column: span 2; }
 .stats div:nth-child(n+4) { grid-column: span 3; }

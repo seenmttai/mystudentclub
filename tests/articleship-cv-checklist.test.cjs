@@ -67,18 +67,18 @@ test('content: 22 checks in build order, every one with an example, links that r
     assert.match(byId['groups-attempts'].example, /Result awaited/);
     assert.match(byId['certifications'].check, /in their own section, four outside certificates at most/);
     assert.match(byId['certifications'].example, /Heading “Certifications and job simulations”/);
-    assert.match(byId['certifications'].example, /MSC Articleship Program line aren’t among the four/, 'house rule 2: the programme line is not one of the four');
+    assert.match(byId['certifications'].example, /the MSC Articleship Program line and ICITSS don’t count in the four/, 'house rule 2: the programme line is not one of the four');
     assert.match(byId['assisted'].check, /observed, assisted, prepared or led/);
     assert.match(byId['two-questions'].check, /two questions/);
     // The claim → question drill, every ready example (skills, simulations, hobbies, roles): the full harvest list.
-    ['Excel', 'Tally Prime', 'SAP', 'ICITSS', 'CARO 2020', 'PwC US Audit job simulation', 'Reading', 'Trekking',
+    ['Excel', 'Tally Prime', 'SAP', 'ICITSS', 'CARO 2020', 'PwC US Audit Job Simulation', 'Reading', 'Trekking',
         'Captain, cricket team', 'Volunteer teacher', 'Last read']
         .forEach(claim => assert.ok(byId['two-questions'].example.includes(claim), 'two-question example: ' + claim));
     const probes = byId['two-questions'].example.split('\n').filter(line => line.includes(' → '));
     assert.ok(probes.length >= 11, 'eleven claim → question pairs');
     probes.forEach(line => assert.ok((line.split(' → ')[1].match(/“[^”]+”/g) || []).length >= 2, 'two questions for ' + line.split(' → ')[0]));
-    // Skills and interests as ❌/✅ pairs: named so they can be tested.
-    ['❌ Skills: Advanced Excel, Taxation, Communication', '✅ Excel (proficient): XLOOKUP, PivotTables, SUMIFS', '❌ Interests: reading, music, travelling', '✅ Reading business biographies. Last read: [title]']
+    // Skills and interests: the skills rule (pointing to Keywords by domain) and the interests ❌/✅ pair, named so they can be tested.
+    ['Skills: name what you can do live, not adjectives (Skills and tools in Keywords by domain).', '❌ Interests: cricket, movies, travelling', '✅ Reading business biographies. Last read: [title]']
         .forEach(line => assert.ok(byId['two-questions'].example.split('\n').includes(line), line));
     // The quick-look test and the peer read: one "before you send" check, last in Finish.
     const last = model.items[model.items.length - 1];
@@ -109,7 +109,7 @@ test('content: 22 checks in build order, every one with an example, links that r
     assert.doesNotMatch(CONTENT_TEXT, /No record, no number/);
     // One wording for anything unfinished.
     assert.doesNotMatch(CONTENT_TEXT, /In progress/i);
-    assert.match(byId['icitss'].example, /Ongoing, completes \[Month Year\]/);
+    assert.match(byId['icitss'].example, /Marks “Ongoing” · Remarks “Completes \[Month Year\]”/, 'the CV’s Marks and Remarks columns, as the CV Recommender’s “Ongoing, completes [Month Year]”');
     // Line formats for simulations, courses and the MSC line live in Guidebook ch 3 q19 (one home); the check links there.
     assert.match(raw0('certifications').fix.href, /resource=MSC\+Articleship\+Guidebook&page=\d+/);
     assert.equal(raw0('certifications').fix.find, 'Where do job simulations and certificates go?');
@@ -123,7 +123,7 @@ test('content: 22 checks in build order, every one with an example, links that r
     assert.ok(frontProbes.length >= 3 && frontProbes.length <= 4, '3-4 probes before the fold: ' + frontProbes.length);
     assert.deepEqual(groups.folds.map(f => f.title), ['More questions', 'Skills and interests that survive']);
     assert.ok(groups.main.length <= 6, 'check 17 shows at most 6 lines before its folds');
-    assert.deepEqual(groups.folds[1].lines.map(line => line.split(' ')[0]), ['❌', '✅', '❌', '✅', 'Keep'], 'the skills and interests pairs, together, then the interests rule');
+    assert.deepEqual(groups.folds[1].lines.map(line => line.split(' ')[0]), ['Skills:', '❌', '✅', 'Keep'], 'the skills rule, the interests pair, then the interests rule');
     assert.doesNotMatch(byId['two-questions'].example, /Can’t answer both/, 'the rule lives in the sticky and the table lead');
     assert.match(groups.folds[1].lines.join('\n') + '\n' + groups.main.join('\n') + '\n' + byId['two-questions'].example, /Keep an interest only if you still do it/);
     const tenFixes = CV.exampleGroups(byId['bold-and-even'].example);
@@ -146,7 +146,7 @@ test('content: 22 checks in build order, every one with an example, links that r
     assert.doesNotMatch(phone.example, /shrink/);
     // House rule 2: four outside certificates at most, the MSC programme line not one of them.
     assert.match(raw['certifications'].check, /four outside certificates at most/);
-    assert.ok(raw['certifications'].example.some(line => /the MSC Articleship Program line aren’t among the four\./.test(line)));
+    assert.ok(raw['certifications'].example.some(line => /the MSC Articleship Program line and ICITSS don’t count in the four\./.test(line)));
     // No first person on a CV line or an objective.
     assert.doesNotMatch(byId['objective'].example, /✅[^\n]*\b(?:my|I)\b/);
     assert.doesNotMatch(byId['line-formula'].example, /✅[^\n]*\b(?:my|I)\b/);
@@ -210,7 +210,8 @@ test('content and page: nothing a student must never see', () => {
     const pageText = new JSDOM(PAGE).window.document.body.textContent;
     [CONTENT_TEXT, pageText].forEach(text => {
         assert.doesNotMatch(text, /ca ?monk|thinking ?bridge|umbrella|NEEDS-CHECK|\bwaves?\b|drop [abc]\b|live week|coming soon/i);
-        assert.doesNotMatch(text, /saved on this device|privacy|version|source:|disclaimer|guarantee/i);
+        // "version" as in a release number ("version 2", "v1.3", "latest version"), not plain English ("the “not sure yet” version").
+        assert.doesNotMatch(text, /saved on this device|privacy|\bversion\s*\d|\b(?:new|old|latest|app|beta) version\b|\bv\d+(?:\.\d+)+\b|source:|disclaimer|guarantee/i);
         assert.doesNotMatch(text, /\b(?:D\d-\d+|MS-\d+|TL-M\d+|V2-\d+|C\d-\d+|CV-\d+|WB-\d+|H-cv)\b/, 'no internal codes');
         assert.doesNotMatch(text, /\b20(?:2[4-9]|3\d)\b/, 'no dates of this build or of a batch');
         assert.doesNotMatch(text, /stipend|salary|₹\s?\d[\d,]*\s?(?:per month|\/month|pm)\b/i, 'no stipend figures');
@@ -804,13 +805,14 @@ test('examples: "▸ Title" lines become folds of their own next to "Example", c
     CV.start({ container, content: CONTENT, store: memoryStore({ ticks: {} }), workSimulationLive: true });
     const two = doc.querySelector('.ap-cl-item[data-id="two-questions"]');
     const extra = [...two.querySelector('.ap-cl-extra').children];
-    assert.deepEqual(extra.map(node => node.tagName + (node.classList.contains('cvc-fold') ? '.fold' : '')), ['DETAILS', 'DETAILS.fold', 'DETAILS.fold', 'A'],
-        'Example, More questions, Skills and interests, then the fix link');
+    assert.deepEqual(extra.map(node => node.tagName + (node.classList.contains('cvc-fold') ? '.fold' : '')), ['DETAILS', 'DETAILS.fold', 'DETAILS.fold', 'A', 'A'],
+        'Example, More questions, Skills and interests, then the fix link and the Keywords by domain link');
+    assert.deepEqual(extra.filter(node => node.tagName === 'A').map(a => a.textContent), ['Practise your interview with this CV – Day 4', 'Keywords by domain']);
     const more = two.querySelector('.cvc-fold');
     assert.equal(more.querySelector('summary').textContent, 'More questions');
     assert.equal(more.open, false);
     const moreClaims = [...more.querySelectorAll('.cvc-ex-pair > strong')].map(b => b.textContent);
-    assert.deepEqual(moreClaims, ['SAP', 'ICITSS completed', 'CARO 2020', 'PwC US Audit job simulation (Forage)', 'Reading', 'Trekking', 'Captain, cricket team', 'Volunteer teacher']);
+    assert.deepEqual(moreClaims, ['SAP', 'ICITSS completed', 'CARO 2020', 'PwC US Audit Job Simulation (Forage)', 'Reading', 'Trekking', 'Captain, cricket team', 'Volunteer teacher']);
     const main = two.querySelector('.ap-cl-example:not(.cvc-fold) .cvc-ex');
     assert.equal(main.querySelectorAll('.cvc-ex-pair').length, 3, 'three probes before the fold');
     assert.ok(!two.textContent.includes('▸'), 'the marker never shows');
@@ -842,7 +844,7 @@ test('release 1 (Work Simulation not out): every check, fold and link, with no W
     assert.match(two.textContent, /Keep an interest only if you still do it/, 'the interests rule stays');
     const certs = off.doc.querySelector('.ap-cl-item[data-id="certifications"]');
     assert.match(certs.textContent, /Heading “Certifications and job simulations”/);
-    assert.match(certs.textContent, /ICITSS and the MSC Articleship Program line aren’t among the four\./);
+    assert.match(certs.textContent, /the MSC Articleship Program line and ICITSS don’t count in the four\./);
 
     const on = pageDom();
     CV.start({ container: on.container, content: CONTENT, store: memoryStore({ ticks: {} }), workSimulationLive: true });
@@ -982,17 +984,25 @@ test('two CVs: with one domain, "Add a second CV" sets the shared backup domain 
 });
 
 test('rows not live yet ("needs"): the check reads as it is until its row is in the course, then swaps the line and adds the link', () => {
+    // The engine: a "replace" line swaps and "also" links are added once the row is live; the input is never changed.
+    const sample = { items: [{ id: 'x', check: 'X', example: ['now', 'stays'], also: [{ label: 'A', href: '/a' }],
+        needs: { _what: 'note', '4.4': { replace: { now: 'later' }, also: [{ label: 'B', href: '/b' }] } } }] };
+    const before = JSON.stringify(sample);
+    const sampleOff = CV.withLiveRowLines(sample, () => false).items[0];
+    assert.deepEqual([sampleOff.example, sampleOff.also.map(l => l.label), sampleOff.needs], [['now', 'stays'], ['A'], undefined]);
+    const sampleOn = CV.withLiveRowLines(sample, row => row === '4.4').items[0];
+    assert.deepEqual([sampleOn.example, sampleOn.also.map(l => l.label)], [['later', 'stays'], ['A', 'B']]);
+    assert.equal(JSON.stringify(sample), before, 'the input is never changed');
+    // Check 11 (content round 10): the attempts line points to Guidebook ch 7, q8 in both releases; row 4.4 adds the booklet link.
     const raw = CONTENT.items.find(item => item.id === 'groups-attempts');
-    assert.ok(raw.needs && raw.needs['4.4'], 'the content keeps the HR round and GD booklet line for when row 4.4 ships');
+    assert.ok(raw.needs && raw.needs['4.4'], 'the content keeps the HR round and GD booklet link for when row 4.4 ships');
     const notLive = CV.withLiveRowLines(CONTENT, () => false).items.find(item => item.id === 'groups-attempts');
     assert.equal(notLive.needs, undefined, 'the needs key is never drawn');
-    assert.ok(notLive.example.some(line => /Practise your interview – Day 4/.test(line)));
+    assert.ok(notLive.example.some(line => /your interview answer: Guidebook ch 7, q8\./.test(line)));
     assert.ok(!notLive.also.some(link => /HR\+round/.test(link.href)));
     const live = CV.withLiveRowLines(CONTENT, row => row === '4.4').items.find(item => item.id === 'groups-attempts');
-    assert.ok(live.example.some(line => /the attempts answer is in HR round and GD booklet – Day 4\.$/.test(line)), 'line swapped');
-    assert.ok(!live.example.some(line => /practise the attempts answer/.test(line)));
+    assert.deepEqual(live.example, notLive.example, 'no line swap for this check');
     assert.ok(live.also.some(link => /resource=HR\+round\+and\+GD\+booklet/.test(link.href)), 'the booklet link is added');
-    assert.equal(raw.needs['4.4'].replace !== undefined, true, 'the input is never changed');
     // Shipped (row 4.4 in ROWS_NOT_LIVE): the page never names or links the booklet.
     const { doc, container } = pageDom();
     CV.start({ container, content: CONTENT, store: memoryStore({ ticks: {} }) });
@@ -1001,6 +1011,6 @@ test('rows not live yet ("needs"): the check reads as it is until its row is in 
     if (!P.isRowLive('HR round and GD booklet', 4)) {
         assert.doesNotMatch(card.textContent, /HR round and GD booklet/);
         assert.ok(![...card.querySelectorAll('a')].some(a => /HR\+round/.test(a.getAttribute('href'))));
-        assert.match(card.textContent, /Practise your interview – Day 4/);
+        assert.match(card.textContent, /your interview answer: Guidebook ch 7, q8/);
     }
 });

@@ -78,7 +78,7 @@
       "section": "Top of the page",
       "check": "Your city only, not your address",
       "example": [
-        "✅ Pune",
+        "✅ CA Intermediate cleared | Pune (the one line under your name)",
         "✅ Pune (open to relocate to Mumbai)",
         "❌ Flat 12, Green Park Society, Kothrud, Pune 4110XX"
       ]
@@ -99,7 +99,7 @@
       "example": [
         "✅ CA Intermediate cleared ([Month Year], first attempt); ICITSS completed. Kept the family shop’s books in Tally Prime for 10 months. Seeking articleship in GST, to learn monthly returns and ITC matching.",
         "❌ To work in a reputed organisation where I can utilise my skills and grow with the organisation.",
-        "Nothing true to say yet? Leave it out: no objective beats a generic one."
+        "Not sure of your domain yet? Use the “not sure yet” version (Objective examples), never a generic one."
       ],
       "fix": {
         "label": "Objective examples",
@@ -136,9 +136,9 @@
       "section": "Education",
       "check": "Groups, attempts and results shown exactly as they are",
       "example": [
-        "Groups cleared in different sittings: one row each, with its own month, year and marks, so every row shows a month.",
-        "Both groups passed together, but not on the first try: one row, year only is fine; practise the attempts answer in Practise your interview – Day 4.",
-        "Result not out yet: “Result awaited”. Never a score before the result.",
+        "Groups cleared in different sittings: one row each, with its own month, year and marks (then every row shows a month: check 9).",
+        "Both groups together, not on the first try: one row for the sitting you cleared, with its month, year and marks; your interview answer: Guidebook ch 7, q8.",
+        "Result not out yet: Marks “–”, Remarks “Result awaited ([Month Year])”; never an expected score.",
         "A gap: no CV line unless you did real work in it; keep one true sentence ready (Guidebook ch 3, q11)."
       ],
       "also": [
@@ -150,14 +150,16 @@
           "label": "Guidebook ch 3, q11",
           "href": "/learning-management-system/course?course=msc-articleship-program&session=1&resource=MSC+Articleship+Guidebook&page=26",
           "find": "How do I show attempts, groups or a gap?"
+        },
+        {
+          "label": "Guidebook ch 7, q8",
+          "href": "/learning-management-system/course?course=msc-articleship-program&session=1&resource=MSC+Articleship+Guidebook&page=75",
+          "find": "How many attempts?"
         }
       ],
       "needs": {
-        "_what": "Rows not live yet (v3/build/release/live.json): while the row is not live the example line is used; once it is live, replace swaps the line and also adds these links.",
+        "_what": "Rows not live yet (v3/build/release/live.json): once the row is live, its also links are added (XLSX row under the check; web tool).",
         "4.4": {
-          "replace": {
-            "Both groups passed together, but not on the first try: one row, year only is fine; practise the attempts answer in Practise your interview – Day 4.": "Both groups passed together, but not on the first try: one row, year only is fine; the attempts answer is in HR round and GD booklet – Day 4."
-          },
           "also": [
             {
               "label": "HR round and GD booklet – Day 4",
@@ -175,12 +177,11 @@
     {
       "id": "icitss",
       "section": "Education",
-      "check": "ICITSS in its own education row, with its true status",
+      "check": "ICITSS (OC + ITT) in its own education row, with its true status",
       "example": [
-        "✅ ICITSS (OC + ITT) · Completed [Month Year]",
-        "✅ Ongoing, completes [Month Year]",
-        "✅ Batch from [Month Year]",
-        "Not booked yet? Book a batch and write its date: ICITSS must be done before your articleship starts.",
+        "✅ Done: Marks “Completed” · Remarks “OC and ITT certificates”",
+        "✅ Doing it: Marks “Ongoing” · Remarks “Completes [Month Year]”",
+        "✅ Booked: Marks “Booked” · Remarks “Batch from [Month Year]”",
         "❌ “Completed” while it is pending. Firms check, and one false line makes them doubt every true one."
       ],
       "fix": {
@@ -225,9 +226,7 @@
       "section": "Proof",
       "check": "Certificates and simulations in their own section, four outside certificates at most",
       "example": [
-        "Heading “Certifications and job simulations”; never Experience, Internship or “virtual work experience”.",
-        "ICITSS and the MSC Articleship Program line aren’t among the four.",
-        "Unfinished? “Ongoing, completes [Month Year]”, as for ICITSS."
+        "Heading “Certifications and job simulations”; the MSC Articleship Program line and ICITSS don’t count in the four."
       ],
       "fix": {
         "label": "Guidebook ch 3, q19",
@@ -259,15 +258,14 @@
         "SAP → “Which module?” “Name one transaction you used.”",
         "ICITSS completed → “What did you make in ITT?” “Which Excel tools did it use?”",
         "CARO 2020 → “Which companies does it not apply to?” “Name two things it asks the auditor to report.”",
-        "PwC US Audit job simulation (Forage) → “What is a risk-control matrix?” “Which control did you test?”",
+        "PwC US Audit Job Simulation (Forage) → “What is a risk-control matrix?” “Which control did you test?”",
         "Reading → “What did you read last?” “What was its main idea?”",
         "Trekking → “Where was your last trek?” “What did you plan yourself?”",
         "Captain, cricket team → “How did you pick the eleven?” “Tell me about a time you dropped someone.”",
         "Volunteer teacher → “What did you teach?” “How did you know it worked?”",
         "▸ Skills and interests that survive",
-        "❌ Skills: Advanced Excel, Taxation, Communication",
-        "✅ Excel (proficient): XLOOKUP, PivotTables, SUMIFS",
-        "❌ Interests: reading, music, travelling",
+        "Skills: name what you can do live, not adjectives (Skills and tools in Keywords by domain).",
+        "❌ Interests: cricket, movies, travelling",
         "✅ Reading business biographies. Last read: [title]",
         "Keep an interest only if you still do it and can talk a minute on it."
       ],
@@ -277,9 +275,19 @@
         }
       },
       "fix": {
-        "label": "Practise your interview with this CV",
+        "label": "Practise your interview with this CV – Day 4",
         "href": "/ai-interview.html?mode=articleship"
-      }
+      },
+      "links": {
+        "Keywords by domain": "/learning-management-system/course?course=msc-articleship-program&session=2&resource=Keywords+by+domain&page=18"
+      },
+      "also": [
+        {
+          "label": "Keywords by domain",
+          "href": "/learning-management-system/course?course=msc-articleship-program&session=2&resource=Keywords+by+domain&page=18",
+          "find": "Skills and tools"
+        }
+      ]
     },
     {
       "id": "bold-and-even",
@@ -319,7 +327,7 @@
       "check": "Phone and printout: nothing cut off, nothing faded",
       "example": [
         "Mail the PDF to yourself and open it from that mail on your phone. Small text is normal on a phone screen; a second page, a cut-off line or text over text is not.",
-        "Print it once: grey text, thin lines and coloured headings must still read in black and white. Then read the printout from the bottom line up: once you can’t follow the story, typos and slips stand out."
+        "Print it once: grey text, thin lines and coloured headings must still read in black and white. Then read the printout from the bottom line up: out of order you see each word, not the story, and typos stand out."
       ],
       "fix": {
         "label": "Open the CV Builder",
@@ -364,7 +372,7 @@
       },
       {
         "label": "Personal CV review",
-        "href": "https://wa.me/917228881182?text=Hi%2C%20my%20CV%20checklist%20is%20done.%20Please%20review%20my%20articleship%20CV."
+        "href": "https://wa.me/917228881182?text=Hi%2C%20my%20CV%20checklist%20is%20done.%20Please%20review%20my%20articleship%20CV.%20Target%20domain%3A%20%5B%20%5D%20%C2%B7%20My%20question%3A%20%5B%20%5D"
       }
     ]
   }

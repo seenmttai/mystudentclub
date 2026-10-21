@@ -493,27 +493,27 @@
    "topic": "Data sufficiency",
    "difficulty": "medium",
    "type": "single",
-   "stem": "What is the price of one pen?\nI. Three pens and two pencils together cost ₹50.\nII. One pen costs ₹10 more than one pencil.",
+   "stem": "What is the price of one pen?\nI. Three pens and two pencils together cost ₹50.\nII. One pen costs ₹10 more than one pencil.\nWhich statements, if any, are enough to answer the question?",
    "options": [
     {
      "id": "a",
-     "text": "I alone is enough"
+     "text": "Statement I alone is enough, but II alone is not"
     },
     {
      "id": "b",
-     "text": "II alone is enough"
+     "text": "Statement II alone is enough, but I alone is not"
     },
     {
      "id": "c",
-     "text": "Either I or II alone is enough"
+     "text": "Each statement alone is enough"
     },
     {
      "id": "d",
-     "text": "I and II together are enough, but neither alone"
+     "text": "Both statements together are enough, but neither alone is"
     },
     {
      "id": "e",
-     "text": "Even I and II together are not enough"
+     "text": "Even both statements together are not enough"
     }
    ],
    "answer": "d",

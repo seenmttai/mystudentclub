@@ -72,7 +72,7 @@ test('number–unit pairs are kept together, with a space or U+00A0, and the tex
   // an ordered pair stays whole (with either space, a decimal or a minus); a longer list may still wrap
   assert.deepEqual(kept('Totals: (4, 6), (6, 4); (7, 14, 28, 56)'), ['(4, 6)', '(6, 4)']);
   assert.deepEqual(kept('(5,\u00a06), (2.5, 3) and (\u22122, 7) but not (4,6)'), ['(5,\u00a06)', '(2.5, 3)', '(\u22122, 7)']);
-  assert.deepEqual(kept('(6, 6) = 6 rolls'), ['(6, 6)']);
+  assert.deepEqual(kept('(6, 6) = 6 rolls'), ['(6, 6)', '= 6']);
   // not pairs: a bare number, a number inside a word, a unit that only starts a word
   assert.deepEqual(kept('₹1,20,000 in Q31 m, 8 members and 3 smaller ones'), []);
   assert.deepEqual(C.keepTogether(''), []);

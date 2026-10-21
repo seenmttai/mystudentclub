@@ -56,9 +56,13 @@ test('links the reader follows: web, mail and phone only', () => {
 
 test('search finds words inside an item, across items and ignores curly quotes and case', () => {
     const pages = [['Respected Sir/Ma’am,', 'I have completed ', 'ICITSS', ' and can join'], [], ['Still doing ICITSS?']];
-    assert.deepEqual(core.findMatches(pages, 'icitss'), [{ page: 1, item: 2, last: 2 }, { page: 3, item: 0, last: 0 }]);
-    assert.deepEqual(core.findMatches(pages, "sir/ma'am"), [{ page: 1, item: 0, last: 0 }]);
-    assert.deepEqual(core.findMatches(pages, 'completed ICITSS and'), [{ page: 1, item: 1, last: 3 }]);
+    assert.deepEqual(core.findMatches(pages, 'icitss'), [{ page: 1, item: 2, last: 2, start: 0, end: 6 }, { page: 3, item: 0, last: 0, start: 12, end: 18 }]);
+    assert.deepEqual(core.findMatches(pages, "sir/ma'am"), [{ page: 1, item: 0, last: 0, start: 10, end: 19 }]);
+    assert.deepEqual(core.findMatches(pages, 'completed ICITSS and'), [{ page: 1, item: 1, last: 3, start: 7, end: 4 }]);
+    // Offsets are in the raw text, so the reader marks just the searched words (a run of spaces counts as one).
+    assert.deepEqual(core.findMatches([['Your  CV checklist and CV  templates']], 'cv'), [{ page: 1, item: 0, last: 0, start: 6, end: 8 }, { page: 1, item: 0, last: 0, start: 23, end: 25 }]);
+    assert.deepEqual(core.findMatches([['Two\u00a0words here']], 'words here'), [{ page: 1, item: 0, last: 0, start: 4, end: 14 }]);
+    assert.equal(core.rawIndex('a  b', 2), 3);
     assert.deepEqual(core.findMatches(pages, 'x'), [], 'one letter is not searched');
     assert.ok(core.searchPattern("ma'am").test('Ma’am'));
     assert.equal(core.searchPattern('a.b').test('axb'), false, 'search text is never a regular expression');

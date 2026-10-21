@@ -441,34 +441,49 @@
         });
     }
 
-    /** Wrap just the searched words when the match sits inside one text item; otherwise mark the whole items. */
-    function markWithin(node, current) {
-        const pattern = core.searchPattern(state.term);
+    /** Wrap [start, end) of a text div's text in a highlight; false when the div has no text node to wrap. */
+    function wrapPart(node, start, end, current) {
         const textNode = [...node.childNodes].find(child => child.nodeType === 3);
-        const found = pattern && textNode ? pattern.exec(textNode.data) : null;
-        if (!found) return false;
+        if (!textNode) return false;
+        const from = Math.max(0, Math.min(start, textNode.data.length));
+        const to = Math.max(from, Math.min(end, textNode.data.length));
+        if (to === from) return true;
         const range = document.createRange();
-        range.setStart(textNode, found.index);
-        range.setEnd(textNode, found.index + found[0].length);
+        range.setStart(textNode, from);
+        range.setEnd(textNode, to);
         const part = document.createElement('span');
         part.className = 'rd-hit-part' + (current ? ' is-current' : '');
         range.surroundContents(part);
         return true;
     }
 
+    /**
+     * Mark just the searched words: in the first item from where the match starts, in the last item up to where it
+     * stops, and the items in between whole. Each text div's stretches are wrapped from its end back, so the offsets of
+     * the earlier ones stay valid; a div with no text node gets the whole-item mark.
+     */
     function paintHits(n) {
         const entry = state.rendered.get(n);
         if (!entry || !entry.textDivs || !state.matches.length) return;
+        const parts = new Map();
         state.matches.forEach((match, index) => {
             if (match.page !== n) return;
             const current = index === state.matchIndex;
-            if (match.item === match.last && entry.textDivs[match.item] && markWithin(entry.textDivs[match.item], current)) return;
             for (let i = match.item; i <= match.last; i++) {
-                const node = entry.textDivs[i];
-                if (!node) continue;
-                node.classList.add('rd-hit');
-                node.classList.toggle('is-current', current);
+                if (!entry.textDivs[i]) continue;
+                const start = i === match.item && Number.isFinite(match.start) ? match.start : 0;
+                const end = i === match.last && Number.isFinite(match.end) ? match.end : Infinity;
+                if (!parts.has(i)) parts.set(i, []);
+                parts.get(i).push({ start, end, current });
             }
+        });
+        parts.forEach((list, i) => {
+            const node = entry.textDivs[i];
+            list.sort((a, b) => b.start - a.start).forEach(part => {
+                if (wrapPart(node, part.start, part.end, part.current)) return;
+                node.classList.add('rd-hit');
+                node.classList.toggle('is-current', part.current);
+            });
         });
     }
 

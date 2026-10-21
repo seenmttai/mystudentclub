@@ -139,6 +139,8 @@ test('the page says what the law asks, in its own words', () => {
     'Monday to Friday, 10 am to 6 pm, one mail every 10 minutes, even with your laptop off.',
     'First mails to new firms go Monday to Wednesday',
     'Three follow-ups, five working days apart, in the same thread.',
+    'Each follow-up waits for its New line', 'one true thing you have done since your last mail.',
+    'The monthly check-in is yours to send',
     'Any reply stops them; so does a bounce or an automatic reply.',
     'Stop Automail', 'See details', 'Remove access', 'Confirm', 'Access to your Google Account',
     'Google hasn’t verified this app', 'Go to Articleship Automail (unsafe)', 'Select all',
@@ -218,14 +220,15 @@ test('the pictures match the Automail the student copies (when its code is in th
     'Add the Big 10', 'Add firms from the cold mailing list', 'Start Automail', 'Send test mail', 'Continue',
     'Choose from Drive', 'Save and continue', 'Status board', 'Opening', 'Fully applied', 'Poster messaged',
     'Partner or director', 'Current article', 'Interview', 'Rejected', 'Offer', 'More', 'Help', 'Home', 'Mails', 'My details',
-    'Your applications, sent and followed up.', 'Each row with a mail gets it. Clear the mail on any firm you’d rather skip.',
+    'Your applications, sent and followed up.', 'Pick a mail on each firm you want to write to. A row with no mail is left alone.',
     'Start here: open the Automail menu at the top and click Start here.', 'If Google says it hasn’t verified this app, ',
     'click Advanced, then Go to Articleship Automail, tick Select all, Continue. Then click Start here again.',
-    'Big 10 in your cities', 'Cold mailing list',
-    'Pick the PDF for each domain. A cover letter is optional.', 'Add the firms. You choose who gets a mail on the Status board.',
-    'Back', 'Today', 'Sent today', 'Waiting', 'Followed up', 'Applied', 'Drafted', 'Reply', 'Change', 'Optional',
-    'Cover letter for ', 'CV for ', 'Each network’s inbox as a mail row, its portal as a portal row.',
-    'Published firm inboxes in your cities, for your domains.']) {
+    'Big 10 in your cities', 'Articleship Cold Mailing List - All Emails',
+    'Pick your CV and your cover letter for each domain. Each mail says both are attached.',
+    'Add the firms. You pick a mail on each one you want to write to, on the Status board.',
+    'Back', 'Today', 'Sent today', 'Waiting', 'Followed up', 'Applied', 'Drafted', 'Reply', 'Change', 'New line',
+    'Cover letter for ', 'CV for ', 'Each network’s inboxes for your cities as mail rows, its portal as a portal row.',
+    'Firms in your cities, for your domains, newest posts first.']) {
     assert.ok(code.includes(s), `the Apps Script never says “${s}”, but the install page shows it`);
   }
   // the mail names in the step 6 drawing are the Mail dropdown's own chips

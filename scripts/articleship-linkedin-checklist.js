@@ -157,7 +157,7 @@
         const key = text(slug).toLowerCase();
         if (key && text(map[key])) return text(map[key]);
         const sim = key ? simName(key, labelFn) : '';
-        if (sim) return 'In my ' + sim + ' Work Simulation I [one task you did, with a number].';
+        if (sim) return 'In my ' + sim + ' Work Simulation I [one task you did, in your CV’s words; a number if it has one].';
         return text(map[DEFAULT_DOMAIN]);
     }
 
@@ -588,7 +588,7 @@
         const doc = node.ownerDocument;
         node.textContent = '';
         node.appendChild(externalLink(doc, 'ap-btn is-block lc-open-btn', open));
-        // One line per job (keep it open, Share profile updates, the app fallback): the hint's \n splits them.
+        // One line per job (keep it open, the app fallback, Share profile updates): the hint's \n splits them.
         if (open.hint) open.hint.split('\n').map(t => t.trim()).filter(Boolean).forEach(t => node.appendChild(el(doc, 'p', 'lc-open-hint', t)));
     }
 
