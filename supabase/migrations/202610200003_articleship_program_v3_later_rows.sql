@@ -617,6 +617,7 @@ WITH plan AS (
           "title": "Industrial training guide",
           "type": "pdf",
           "view_storage_path": "articleship-program-v3/day-6/Industrial training guide.pdf",
+          "copy": true,
           "group": "During articleship"
         }
       },

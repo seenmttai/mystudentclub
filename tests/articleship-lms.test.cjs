@@ -95,7 +95,9 @@ const COPY_ROWS = ['MSC Articleship Guidebook', 'Choose your CV', 'The Nothing C
     'Articleship registration process',
     // Not in §0.3: their in-document "(question N)" links are PDF destinations, which only the copyable reader follows
     // (the /ca-resource/ viewer draws URL links only), 21 Oct.
-    'Articleship transfer guidelines', 'CA Final study guidelines'];
+    'Articleship transfer guidelines', 'CA Final study guidelines',
+    // Not in §0.3: page 2 carries the industrial-training notice mail to fill and copy (judge, 21 Oct).
+    'Industrial training guide'];
 
 test('an Articleship enrollment appears on the LMS dashboard and opens its course', async () => {
     const { dashboard, queries, window } = loadDashboard([{ course: 'msc-articleship-program' }]);
@@ -312,6 +314,14 @@ test('deep links select only an enrolled Articleship session and a programme PDF
         assert.equal(result.video.video_number, 2, query);
         assert.equal(result.resource, null, query);
     }
+    // A tool or download row of that Day (not a PDF) comes back as `row`, so the Day opens scrolled to it.
+    window.location.search = '?session=2&resource=CV%20checklist';
+    assert.equal(target().row.title, 'CV checklist');
+    assert.equal(target().resource, null);
+    window.location.search = '?session=2&resource=Not%20uploaded%20yet';
+    assert.equal(target().row, null, 'a title that is no row of the Day: just the Day');
+    window.location.search = '?session=2&resource=Choose%20your%20CV';
+    assert.equal(target().row, null, 'a PDF row opens the file, no scroll needed');
     window.location.search = '?session=2&resource=Choose%20your%20CV&page=-4';
     assert.equal(target().page, 1);
     state.isEnrolled = false;
@@ -353,6 +363,46 @@ test('a deep link to a copyable row opens the reader in place; other PDFs open a
         if (expected === 'copy') assert.equal(JSON.stringify([calls[2][2], calls[2][3]]), JSON.stringify([8, { deepLink: true }]));
         else assert.deepEqual([calls[2][2], calls[2][3]], ['pdf', 8]);
     }
+});
+
+test('a deep link to a tool or download row opens its Day on Resources, scrolled to that row and flashed', async () => {
+    const calls = [];
+    const state = { courseSlug: 'msc-articleship-program', user: { id: 'student' }, isEnrolled: true, courseSections: [] };
+    const run = courseFunction('loadVideoProgress', { state, console,
+        localStorage: { getItem: () => null },
+        updateCourseProgress() {}, fetchWatchTimeForCourse: async () => {},
+        getArticleshipResourceTarget: () => ({ video: { id: 4 }, resource: null, page: 1, row: { title: 'Career Portal Links' } }),
+        articleshipLms: () => LMS,
+        selectVideo: async id => calls.push(['session', id]), setActiveTab: tab => calls.push(['tab', tab]),
+        highlightResourceRow: title => calls.push(['row', title]),
+        openCopyResource: async () => calls.push(['copy']), openResourceViewer: async () => calls.push(['viewer']) });
+    await run();
+    assert.deepEqual(calls, [['session', 4], ['tab', 'resources'], ['row', 'Career Portal Links']]);
+
+    const { JSDOM } = require('jsdom');
+    const dom = new JSDOM(`<div id="res"><div class="resource-group"><ul class="resource-list">
+        <li class="resource-item"><div class="resource-meta"><span class="resource-title">LinkedIn search links</span></div></li>
+        <li class="resource-item"><div class="resource-meta"><span class="resource-title">Career Portal Links</span></div></li>
+        </ul></div></div>`, { pretendToBeVisual: true });
+    const win = dom.window;
+    const scrolled = [];
+    win.HTMLElement.prototype.scrollIntoView = function (options) { scrolled.push([this.textContent.trim(), options]); };
+    const timers = [];
+    const highlight = courseFunction('highlightResourceRow', { window: win, requestAnimationFrame: fn => fn(),
+        setTimeout: fn => timers.push(fn), DOMElements: { tabContents: { resources: win.document.getElementById('res') } } });
+    highlight('Career Portal Links');
+    const items = [...win.document.querySelectorAll('.resource-item')];
+    assert.equal(items[1].classList.contains('resource-item-target'), true, 'the row flashes');
+    assert.equal(items[0].classList.contains('resource-item-target'), false);
+    assert.deepEqual(scrolled.map(s => s[0]), ['Career Portal Links']);
+    assert.equal(scrolled[0][1].block, 'center');
+    timers.forEach(fn => fn());
+    assert.equal(items[1].classList.contains('resource-item-target'), false, 'the flash ends');
+    highlight('No such row');
+    assert.equal(scrolled.length, 1, 'an unknown title scrolls nowhere');
+    const css = fs.readFileSync(path.join(root, 'learning-management-system/course-styles.css'), 'utf8');
+    assert.match(css, /\.resource-item\.resource-item-target\s*\{[^}]*animation:/);
+    assert.match(css, /prefers-reduced-motion: reduce\)\s*\{\s*\.resource-item\.resource-item-target/);
 });
 
 function copySandbox(signedUrl = 'https://auth.mystudentclub.com/storage/v1/object/sign/b/x.pdf?token=t') {
