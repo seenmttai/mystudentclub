@@ -140,6 +140,21 @@
         return { row, page: Number.isSafeInteger(page) && page > 1 ? page : null, find: text(read.find) };
     }
 
+    const GUIDEBOOK_TITLE = 'MSC Articleship Guidebook';
+    const GUIDEBOOK_DAY = 0;
+
+    /**
+     * A topic whose booklet is not in the course yet (its row in ROWS_NOT_LIVE, so the release dropped its title from
+     * `booklets`) reads the Guidebook instead: `topic.guidebook = { page, find }` (pages wired to the shipped Guidebook
+     * by build/release-1/wire_pages.mjs). Once the booklet's row ships, its own Read button comes back by itself.
+     */
+    function withGuidebook(read, guidebook, booklets) {
+        if (!read || !read.row || booklets[read.row] || !isPlainObject(guidebook)) return read;
+        const page = Number(guidebook.page);
+        if (!Number.isSafeInteger(page) || page < 1) return read;
+        return { guidebook: true, row: read.row, page };
+    }
+
     /**
      * Build step (not used by the page; build/tools/interview-tracker/wire_pages.mjs runs it on the built booklets):
      * fill each topic's read.page from the booklets' text, one string per page:
@@ -221,7 +236,8 @@
                 let tid = slug(t.id) || slug(id + '-' + name);
                 if (ids.has(tid)) throw new Error('Duplicate topic id: ' + tid);
                 ids.add(tid);
-                return { id: tid, topic: name, know: text(t.know || t.what), most: t.most === true, read: normaliseRead(t.read), sectionId: id };
+                return { id: tid, topic: name, know: text(t.know || t.what), most: t.most === true,
+                    read: withGuidebook(normaliseRead(t.read), t.guidebook, booklets), sectionId: id };
             });
             if (!topics.length) throw new Error('Section ' + id + ' has no topics');
             return {
@@ -282,6 +298,7 @@
     function readHref(read, model, lms) {
         if (!read) return '';
         if (read.href) return pageHref(read.href, lms);
+        if (read.guidebook) return lmsLink(lms)(GUIDEBOOK_DAY, GUIDEBOOK_TITLE, read.page);
         const title = model.booklets[read.row];
         if (!title) return '';
         return lmsLink(lms)(DAY, title, read.page);
@@ -301,11 +318,13 @@
     function readLabel(read, model) {
         if (!read) return '';
         if (read.href) return readText(read);
+        if (read.guidebook) return 'Read in ' + GUIDEBOOK_TITLE + ', page ' + read.page;
         return model.booklets[read.row] ? 'Read in ' + model.booklets[read.row] : 'Read';
     }
 
     /** The button's word: "Practise" for a practice page (written test, AI interview), "Read" for a booklet. */
     function readText(read) {
+        if (read && read.guidebook) return 'Read: Guidebook, page ' + read.page;
         return read && read.href && /^\/(?:articleship-program\/written-test\/|ai-interview)/.test(read.href) ? 'Practise' : 'Read';
     }
 
@@ -892,8 +911,9 @@
             }
             head.appendChild(name);
             const href = readHref(topic.read, model, lms);
+            const guidebook = Boolean(href && topic.read.guidebook);
             const tools = el(doc, 'span', 'it-topic-tools');
-            if (href) {
+            if (href && !guidebook) {
                 const read = anchor(doc, 'it-read', readText(topic.read), href);
                 read.setAttribute('aria-label', readLabel(topic.read, model) + ': ' + topic.topic);
                 tools.appendChild(read);
@@ -945,6 +965,14 @@
             head.appendChild(tools);
             li.appendChild(head);
             if (topic.know) li.appendChild(el(doc, 'p', 'it-know', topic.know));
+            if (guidebook) {
+                // Release 1 (booklet not in the course yet): its own line under what to know, so the name keeps its width.
+                const line = el(doc, 'p', 'it-gb-line');
+                const link = anchor(doc, 'it-gb', readText(topic.read), href);
+                link.setAttribute('aria-label', readLabel(topic.read, model) + ': ' + topic.topic);
+                line.appendChild(link);
+                li.appendChild(line);
+            }
             if (chip) li.appendChild(chip);
             if (planBox) li.appendChild(planBox);
 
@@ -1852,7 +1880,7 @@
     return Object.freeze({
         TOOL, DAY, CONTENT_URL, WORK_SIMULATION_LIVE, SHARE_FORM, PAGE_ROWS, pageHref, STATUSES, STATUS_LABELS, ROUNDS, MODES, HOW_CALLED, OUTCOMES, DEFAULTS,
         FIRM_TYPES, RESULT_STAGES, LENGTHS, WAITS, DAY_MODES, daySections, entryName,
-        normaliseContent, resolvePages, readHref, linkHref, readLabel, readText, safeHref,
+        normaliseContent, resolvePages, readHref, linkHref, readLabel, readText, safeHref, GUIDEBOOK_TITLE,
         isISODate, todayISO, daysLeft, countdown, shortDate, monthOf,
         statusOf, summarise, visibleSections, overall, nightBefore,
         lines, cleanEntry, sortedLog, missedQuestions, missedKey, loggedSince, redact, sharePayload, shareEnabled, shareBody,

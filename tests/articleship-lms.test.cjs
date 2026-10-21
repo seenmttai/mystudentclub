@@ -157,6 +157,13 @@ test('deep links select only an enrolled Articleship session and a programme PDF
         assert.equal(target().video.video_number, 6);
         assert.equal(target().resource, null);
     }
+    // A tool or download row of that Day comes back as `row`, so the Day opens scrolled to it; other titles: just the Day.
+    window.location.search = '?session=6&resource=Domain%20roadmaps';
+    assert.equal(target().row.title, 'Domain roadmaps');
+    window.location.search = '?session=6&resource=GST%20booklet';
+    assert.equal(target().row, null);
+    window.location.search = '?session=6&resource=Industrial%20training%20guide';
+    assert.equal(target().row, null, 'a PDF row opens the file');
     for (const query of ['?session=999&resource=Industrial%20training%20guide', '?session=6.5&resource=Industrial%20training%20guide',
         '?session=-6&resource=Industrial%20training%20guide']) {
         window.location.search = query;
@@ -190,6 +197,46 @@ test('an authorised resource link overrides the last session and opens its reque
     assert.equal(calls[2][1], resource);
     assert.equal(calls[2][2], 'pdf');
     assert.equal(calls[2][3], 8);
+});
+
+test('a deep link to a tool or download row opens its Day on Resources, scrolled to that row and flashed', async () => {
+    const calls = [];
+    const state = { courseSlug: 'msc-articleship-program', user: { id: 'student' }, isEnrolled: true, courseSections: [] };
+    const run = courseFunction('loadVideoProgress', { state, console,
+        localStorage: { getItem: () => null },
+        updateCourseProgress() {}, fetchWatchTimeForCourse: async () => {},
+        getArticleshipResourceTarget: () => ({ video: { id: 4 }, resource: null, page: 1, row: { title: 'Career Portal Links' } }),
+        articleshipLms: () => Lms,
+        selectVideo: async id => calls.push(['session', id]), setActiveTab: tab => calls.push(['tab', tab]),
+        highlightResourceRow: title => calls.push(['row', title]),
+        openCopyResource: async () => calls.push(['copy']), openResourceViewer: async () => calls.push(['viewer']) });
+    await run();
+    assert.deepEqual(calls, [['session', 4], ['tab', 'resources'], ['row', 'Career Portal Links']]);
+
+    const { JSDOM } = require('jsdom');
+    const dom = new JSDOM(`<div id="res"><div class="resource-group"><ul class="resource-list">
+        <li class="resource-item"><div class="resource-meta"><span class="resource-title">LinkedIn search links</span></div></li>
+        <li class="resource-item"><div class="resource-meta"><span class="resource-title">Career Portal Links</span></div></li>
+        </ul></div></div>`, { pretendToBeVisual: true });
+    const win = dom.window;
+    const scrolled = [];
+    win.HTMLElement.prototype.scrollIntoView = function (options) { scrolled.push([this.textContent.trim(), options]); };
+    const timers = [];
+    const highlight = courseFunction('highlightResourceRow', { window: win, requestAnimationFrame: fn => fn(),
+        setTimeout: fn => timers.push(fn), DOMElements: { tabContents: { resources: win.document.getElementById('res') } } });
+    highlight('Career Portal Links');
+    const items = [...win.document.querySelectorAll('.resource-item')];
+    assert.equal(items[1].classList.contains('resource-item-target'), true, 'the row flashes');
+    assert.equal(items[0].classList.contains('resource-item-target'), false);
+    assert.deepEqual(scrolled.map(s => s[0]), ['Career Portal Links']);
+    assert.equal(scrolled[0][1].block, 'center');
+    timers.forEach(fn => fn());
+    assert.equal(items[1].classList.contains('resource-item-target'), false, 'the flash ends');
+    highlight('No such row');
+    assert.equal(scrolled.length, 1, 'an unknown title scrolls nowhere');
+    const css = fs.readFileSync(path.join(root, 'learning-management-system/course-styles.css'), 'utf8');
+    assert.match(css, /\.resource-item\.resource-item-target\s*\{[^}]*animation:/);
+    assert.match(css, /prefers-reduced-motion: reduce\)\s*\{\s*\.resource-item\.resource-item-target/);
 });
 
 test('PDF deep links use signed storage and clamp the requested page after loading', async () => {

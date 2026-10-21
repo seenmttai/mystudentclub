@@ -543,6 +543,21 @@
     background-color: rgba(30, 64, 175, 0.05);
 }
 
+/* A row opened by a deep link (…&resource=<title>) that is a tool or a download: scrolled to and flashed once. */
+.resource-item.resource-item-target {
+    animation: resource-item-flash 2.4s ease-out;
+    border-radius: 8px;
+}
+
+@keyframes resource-item-flash {
+    0%, 35% { background-color: rgba(250, 204, 21, 0.35); box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.55); }
+    100% { background-color: transparent; box-shadow: 0 0 0 3px rgba(234, 179, 8, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .resource-item.resource-item-target { animation: none; background-color: rgba(250, 204, 21, 0.3); }
+}
+
 .resource-icon {
     width: 24px;
     text-align: center;

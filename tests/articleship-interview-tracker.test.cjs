@@ -89,12 +89,18 @@ function studentText(content) {
 
 function withoutPages(content) {
     const copy = JSON.parse(JSON.stringify(content));
-    copy.sections.forEach(section => section.topics.forEach(topic => { if (topic.read) delete topic.read.page; }));
+    copy.sections.forEach(section => section.topics.forEach(topic => {
+        if (topic.read) delete topic.read.page;
+        delete topic.guidebook; // release-1 Guidebook fallback, wired by build/release-1/wire_pages.mjs
+    }));
     return copy;
 }
 
+const BOOKLET_ROWS = ['4.3', '4.4', '4.5', '4.6', '4.7', '4.8', '4.9', '4.10'];
+const GUIDEBOOK_LINK = /^\/learning-management-system\/course\?course=msc-articleship-program&session=1&resource=MSC\+Articleship\+Guidebook&page=(\d+)$/;
+
 // ---------- content ----------
-test('content: the website copy is the content build file (Read pages are the only addition)', t => {
+test('content: the website copy is the content build file (Read pages and Guidebook fallbacks are the only additions)', t => {
     if (!fs.existsSync(BUILT)) return t.skip('content build not on this machine');
     assert.deepEqual(withoutPages(CONTENT), withoutPages(JSON.parse(fs.readFileSync(BUILT, 'utf8'))),
         'copy build/day-4/4.1/syllabus.json over articleship-program/interview-tracker/syllabus.json, then run build/tools/interview-tracker/wire_pages.mjs');
@@ -240,6 +246,62 @@ test('release 1: no Read button or pointer opens a row that is not in the course
     assert.ok(model.sections.every(section => section.topics.every(topic => topic.know.length > 20)));
     const all = T.normaliseContent(CONTENT, { rows: 'all' });
     assert.equal(all.booklets['4.6'], 'Statutory audit booklet');
+});
+
+test('release 1: every topic whose booklet is not in the course reads the Guidebook page instead', () => {
+    // Content: each booklet topic carries its Guidebook fallback (page wired by build/release-1/wire_pages.mjs).
+    CONTENT.sections.forEach(section => section.topics.forEach(topic => {
+        if (!topic.read || !BOOKLET_ROWS.includes(String(topic.read.row))) return;
+        assert.ok(topic.guidebook && Number.isInteger(topic.guidebook.page) && topic.guidebook.page > 1, topic.id + ' has a Guidebook page');
+        assert.ok(String(topic.guidebook.find || '').length >= 4, topic.id + ' says what its Guidebook page shows (find)');
+    }));
+    const model = T.normaliseContent(CONTENT);
+    const gb = [];
+    model.sections.forEach(section => section.topics.forEach(topic => {
+        if (!topic.read.row || !BOOKLET_ROWS.includes(topic.read.row)) return;
+        const live = P.isRowLive(CONTENT.booklets[topic.read.row], 4);
+        if (live) { assert.ok(!topic.read.guidebook, topic.id + ': its booklet is in the course, so it reads the booklet'); return; }
+        assert.equal(topic.read.guidebook, true, topic.id + ' reads the Guidebook');
+        const href = T.readHref(topic.read, model, Lms);
+        assert.match(href, GUIDEBOOK_LINK, topic.id);
+        assert.equal(Number(href.match(GUIDEBOOK_LINK)[1]), topic.read.page);
+        assert.equal(T.readText(topic.read), 'Read: Guidebook, page ' + topic.read.page);
+        assert.equal(T.readLabel(topic.read, model), 'Read in MSC Articleship Guidebook, page ' + topic.read.page);
+        assert.equal(P.isNotLiveRowLink(href), false);
+        gb.push(topic.id);
+    }));
+    if (BOOKLET_ROWS.some(row => !P.isRowLive(CONTENT.booklets[row], 4))) assert.ok(gb.length > 60, 'the booklet topics read the Guidebook: ' + gb.length);
+    // Release 2 (every row in the course): the booklets' own Read buttons, never the Guidebook.
+    const all = T.normaliseContent(CONTENT, { rows: 'all' });
+    all.sections.forEach(section => section.topics.forEach(topic => assert.ok(!topic.read.guidebook, topic.id)));
+    assert.equal(all.byId.get('hr-intro').read.row, '4.4');
+    // A topic without a fallback keeps no link while its booklet is out (never a dead one).
+    const bare = T.normaliseContent({ sections: [{ id: 's', topics: [{ topic: 'A', know: 'x'.repeat(30), read: { row: '4.6', find: 'x' } }] }],
+        booklets: { '4.6': 'Statutory audit booklet' } });
+    if (!P.isRowLive('Statutory audit booklet', 4)) assert.equal(T.readHref(bare.sections[0].topics[0].read, bare, Lms), '');
+});
+
+test('release 1: the tracker draws "Read: Guidebook, page N" under what to know, as a course link that opens in place', () => {
+    const { doc } = mountTracker({ mine: 'statutory-audit' });
+    const intro = doc.querySelector('.it-topic[data-id="hr-intro"]');
+    const page = CONTENT.sections[0].topics.find(topic => topic.id === 'hr-intro').guidebook.page;
+    if (P.isRowLive('HR round and GD booklet', 4)) {
+        assert.equal(intro.querySelector('.it-gb'), null);
+        return;
+    }
+    const link = intro.querySelector('.it-gb-line > a.it-gb');
+    assert.ok(link, 'the Guidebook line is drawn');
+    assert.equal(link.textContent, 'Read: Guidebook, page ' + page);
+    assert.match(link.getAttribute('href'), GUIDEBOOK_LINK);
+    assert.equal(link.getAttribute('target'), null, 'opens in place: Back returns to the tracker');
+    assert.match(link.getAttribute('aria-label'), /^Read in MSC Articleship Guidebook, page \d+: Introduce yourself$/);
+    assert.equal(intro.querySelector('.it-topic-head .it-read'), null, 'no booklet button in the head');
+    assert.ok(intro.querySelector('.it-know').compareDocumentPosition(link) & 4, 'the line comes after what to know');
+    const sa = doc.querySelector('.it-topic[data-id="sa-walkthrough"] .it-gb');
+    assert.ok(sa, 'domain topics read their Guidebook primer');
+    const css = fs.readFileSync(CSS, 'utf8');
+    assert.match(css, /\.it-gb-line\s*\{/);
+    assert.match(css, /\.it-gb\s*\{[^}]*min-height:\s*32px/);
 });
 
 test('Read: the booklet page through the course deep link; the page number only when wired', () => {
@@ -570,6 +632,9 @@ test('mount: opens on the syllabus with Core, asks for the domain, and hides Sha
         assert.match(hrRead[0].getAttribute('aria-label'), /^Read in HR round and GD booklet: /);
     } else {
         assert.equal(hrRead.length, 0, 'no Read for a booklet not in the course');
+        const gbRead = [...doc.querySelectorAll('#it-panel-syllabus .it-section[data-section="hr"] .it-gb')];
+        assert.ok(gbRead.length >= 10, 'HR topics read the Guidebook instead');
+        assert.ok(gbRead.every(a => GUIDEBOOK_LINK.test(a.getAttribute('href'))));
     }
     const written = [...doc.querySelectorAll('.it-section[data-section="written-test"] .it-read')];
     assert.ok(written.some(a => a.textContent === 'Practise'));

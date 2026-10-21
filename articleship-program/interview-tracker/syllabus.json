@@ -32,6 +32,10 @@
           "read": {
             "row": "4.4",
             "find": "Tell me about yourself"
+          },
+          "guidebook": {
+            "page": 74,
+            "find": "“Tell me about yourself”: what do I say?"
           }
         },
         {
@@ -42,6 +46,10 @@
           "read": {
             "row": "4.4",
             "find": "attempts"
+          },
+          "guidebook": {
+            "page": 75,
+            "find": "“How many attempts?”: how do I answer?"
           }
         },
         {
@@ -52,6 +60,10 @@
           "read": {
             "row": "4.4",
             "find": "Why do you want to join us"
+          },
+          "guidebook": {
+            "page": 77,
+            "find": "“Why this firm?” and “Why not the other one?”"
           }
         },
         {
@@ -62,6 +74,10 @@
           "read": {
             "row": "4.4",
             "find": "Weaknesses"
+          },
+          "guidebook": {
+            "page": 78,
+            "find": "Strengths and a weakness: what works?"
           }
         },
         {
@@ -72,6 +88,10 @@
           "read": {
             "row": "4.4",
             "find": "Walk me through your CV"
+          },
+          "guidebook": {
+            "page": 84,
+            "find": "Will they really ask about every line on my CV?"
           }
         },
         {
@@ -81,6 +101,10 @@
           "read": {
             "row": "4.4",
             "find": "five years"
+          },
+          "guidebook": {
+            "page": 79,
+            "find": "Five years, motivation, expectations: what do I say?"
           }
         },
         {
@@ -90,6 +114,10 @@
           "read": {
             "row": "4.4",
             "find": "industrial training"
+          },
+          "guidebook": {
+            "page": 81,
+            "find": "“Will you do industrial training?”"
           }
         },
         {
@@ -99,6 +127,10 @@
           "read": {
             "row": "4.4",
             "find": "difficult situation"
+          },
+          "guidebook": {
+            "page": 80,
+            "find": "Tell us about a difficult situation."
           }
         },
         {
@@ -108,6 +140,10 @@
           "read": {
             "row": "4.4",
             "find": "A client keeps delaying"
+          },
+          "guidebook": {
+            "page": 81,
+            "find": "“What would you do if…?”"
           }
         },
         {
@@ -117,6 +153,10 @@
           "read": {
             "row": "4.4",
             "find": "When can you join"
+          },
+          "guidebook": {
+            "page": 72,
+            "find": "Which questions come on the call?"
           }
         },
         {
@@ -126,6 +166,10 @@
           "read": {
             "row": "4.4",
             "find": "HR call"
+          },
+          "guidebook": {
+            "page": 72,
+            "find": "HR is on the line. How do I handle the call?"
           }
         },
         {
@@ -136,6 +180,10 @@
           "read": {
             "row": "4.4",
             "find": "Research the firm"
+          },
+          "guidebook": {
+            "page": 76,
+            "find": "How do I research a firm before the interview?"
           }
         },
         {
@@ -144,6 +192,10 @@
           "know": "If your firm has a page: how it hires and what students were asked there. Answer each question aloud once.",
           "read": {
             "row": "4.3"
+          },
+          "guidebook": {
+            "page": 76,
+            "find": "How do I research a firm before the interview?"
           }
         },
         {
@@ -153,6 +205,10 @@
           "read": {
             "row": "4.4",
             "find": "questions for us"
+          },
+          "guidebook": {
+            "page": 82,
+            "find": "“Do you have any questions for us?”"
           }
         },
         {
@@ -162,6 +218,10 @@
           "read": {
             "row": "4.4",
             "find": "don't know"
+          },
+          "guidebook": {
+            "page": 84,
+            "find": "What if I don’t know the answer?"
           }
         }
       ]
@@ -179,6 +239,10 @@
           "read": {
             "row": "4.5",
             "find": "Pass the entry"
+          },
+          "guidebook": {
+            "page": 112,
+            "find": "Entries to say aloud, with amounts"
           }
         },
         {
@@ -189,6 +253,10 @@
           "read": {
             "row": "4.5",
             "find": "AS 2"
+          },
+          "guidebook": {
+            "page": 83,
+            "find": "Which standards should I know deeply?"
           }
         },
         {
@@ -199,6 +267,10 @@
           "read": {
             "row": "4.5",
             "find": "AS 9"
+          },
+          "guidebook": {
+            "page": 83,
+            "find": "Which standards should I know deeply?"
           }
         },
         {
@@ -209,6 +281,10 @@
           "read": {
             "row": "4.5",
             "find": "AS 10"
+          },
+          "guidebook": {
+            "page": 83,
+            "find": "Which standards should I know deeply?"
           }
         },
         {
@@ -219,6 +295,10 @@
           "read": {
             "row": "4.5",
             "find": "favourite accounting standard"
+          },
+          "guidebook": {
+            "page": 83,
+            "find": "Which standards should I know deeply?"
           }
         },
         {
@@ -229,6 +309,10 @@
           "read": {
             "row": "4.5",
             "find": "AS 29"
+          },
+          "guidebook": {
+            "page": 83,
+            "find": "Which standards should I know deeply?"
           }
         },
         {
@@ -238,6 +322,10 @@
           "read": {
             "row": "4.5",
             "find": "Ind AS 115"
+          },
+          "guidebook": {
+            "page": 116,
+            "find": "Which companies follow Ind AS, and how is it different from AS?"
           }
         },
         {
@@ -247,6 +335,10 @@
           "read": {
             "row": "4.5",
             "find": "three statements"
+          },
+          "guidebook": {
+            "page": 114,
+            "find": "How the three statements connect"
           }
         },
         {
@@ -256,6 +348,10 @@
           "read": {
             "row": "4.5",
             "find": "cash flows"
+          },
+          "guidebook": {
+            "page": 116,
+            "find": "Profit went up but cash went down. How?"
           }
         },
         {
@@ -265,6 +361,10 @@
           "read": {
             "row": "4.5",
             "find": "Ratios"
+          },
+          "guidebook": {
+            "page": 115,
+            "find": "Current ratio and quick ratio: what do they tell you?"
           }
         },
         {
@@ -274,6 +374,10 @@
           "read": {
             "row": "4.5",
             "find": "Schedule III"
+          },
+          "guidebook": {
+            "page": 112,
+            "find": "The work: record to report"
           }
         },
         {
@@ -283,6 +387,10 @@
           "read": {
             "row": "4.5",
             "find": "tallied trial balance"
+          },
+          "guidebook": {
+            "page": 113,
+            "find": "A tallied trial balance proves very little."
           }
         },
         {
@@ -292,6 +400,10 @@
           "read": {
             "row": "4.5",
             "find": "MoA vs AoA"
+          },
+          "guidebook": {
+            "page": 114,
+            "find": "Company law basics"
           }
         },
         {
@@ -301,6 +413,10 @@
           "read": {
             "row": "4.5",
             "find": "break-even"
+          },
+          "guidebook": {
+            "page": 117,
+            "find": "Contribution, P/V ratio and break-even?"
           }
         }
       ]
@@ -318,6 +434,10 @@
           "read": {
             "row": "4.6",
             "find": "how would you conduct one"
+          },
+          "guidebook": {
+            "page": 118,
+            "find": "The work: five stages"
           }
         },
         {
@@ -328,6 +448,10 @@
           "read": {
             "row": "4.6",
             "find": "assertions"
+          },
+          "guidebook": {
+            "page": 119,
+            "find": "Assertions: what management is claiming."
           }
         },
         {
@@ -338,6 +462,10 @@
           "read": {
             "row": "4.6",
             "find": "materiality"
+          },
+          "guidebook": {
+            "page": 119,
+            "find": "overall materiality"
           }
         },
         {
@@ -347,6 +475,10 @@
           "read": {
             "row": "4.6",
             "find": "Test of controls"
+          },
+          "guidebook": {
+            "page": 120,
+            "find": "Controls, then substance."
           }
         },
         {
@@ -357,6 +489,10 @@
           "read": {
             "row": "4.6",
             "find": "Types of audit opinion"
+          },
+          "guidebook": {
+            "page": 121,
+            "find": "How it ends: the report"
           }
         },
         {
@@ -366,6 +502,10 @@
           "read": {
             "row": "4.6",
             "find": "SA numbers"
+          },
+          "guidebook": {
+            "page": 122,
+            "find": "The standards in the order you meet them"
           }
         },
         {
@@ -376,6 +516,10 @@
           "read": {
             "row": "4.6",
             "find": "CARO"
+          },
+          "guidebook": {
+            "page": 122,
+            "find": "Companies that CARO covers"
           }
         }
       ]
@@ -393,6 +537,10 @@
           "read": {
             "row": "4.8",
             "find": "What is TDS"
+          },
+          "guidebook": {
+            "page": 128,
+            "find": "TDS in one breath."
           }
         },
         {
@@ -402,6 +550,10 @@
           "read": {
             "row": "4.8",
             "find": "TDS vs TCS"
+          },
+          "guidebook": {
+            "page": 127,
+            "find": "TDS and TCS: monthly deposits"
           }
         },
         {
@@ -411,6 +563,10 @@
           "read": {
             "row": "4.8",
             "find": "Which law applies"
+          },
+          "guidebook": {
+            "page": 127,
+            "find": "Which law, which year."
           }
         },
         {
@@ -421,6 +577,10 @@
           "read": {
             "row": "4.9",
             "find": "input tax credit"
+          },
+          "guidebook": {
+            "page": 131,
+            "find": "Input tax credit: a separate decision"
           }
         },
         {
@@ -431,6 +591,10 @@
           "read": {
             "row": "4.9",
             "find": "Reverse charge"
+          },
+          "guidebook": {
+            "page": 132,
+            "find": "Reverse charge:"
           }
         }
       ]
@@ -452,6 +616,10 @@
           "read": {
             "row": "4.5",
             "find": "XLOOKUP"
+          },
+          "guidebook": {
+            "page": 85,
+            "find": "What if they hand me an Excel sheet?"
           }
         },
         {
@@ -461,6 +629,10 @@
           "read": {
             "row": "4.5",
             "find": "SUMIFS"
+          },
+          "guidebook": {
+            "page": 85,
+            "find": "What if they hand me an Excel sheet?"
           }
         },
         {
@@ -471,6 +643,10 @@
           "read": {
             "row": "4.5",
             "find": "PivotTable"
+          },
+          "guidebook": {
+            "page": 85,
+            "find": "What if they hand me an Excel sheet?"
           }
         },
         {
@@ -480,6 +656,10 @@
           "read": {
             "row": "4.5",
             "find": "text functions"
+          },
+          "guidebook": {
+            "page": 85,
+            "find": "What if they hand me an Excel sheet?"
           }
         },
         {
@@ -489,6 +669,10 @@
           "read": {
             "row": "4.5",
             "find": "IFERROR"
+          },
+          "guidebook": {
+            "page": 85,
+            "find": "What if they hand me an Excel sheet?"
           }
         },
         {
@@ -498,6 +682,10 @@
           "read": {
             "row": "4.5",
             "find": "PivotTable"
+          },
+          "guidebook": {
+            "page": 85,
+            "find": "What if they hand me an Excel sheet?"
           }
         },
         {
@@ -507,6 +695,10 @@
           "read": {
             "row": "4.5",
             "find": "Excel"
+          },
+          "guidebook": {
+            "page": 85,
+            "find": "What if they hand me an Excel sheet?"
           }
         }
       ]
@@ -525,6 +717,10 @@
           "read": {
             "row": "4.6",
             "find": "five-stage"
+          },
+          "guidebook": {
+            "page": 118,
+            "find": "The work: five stages"
           }
         },
         {
@@ -534,6 +730,10 @@
           "read": {
             "row": "4.6",
             "find": "first day"
+          },
+          "guidebook": {
+            "page": 118,
+            "find": "4 Statutory audit"
           }
         },
         {
@@ -544,6 +744,10 @@
           "read": {
             "row": "4.6",
             "find": "audit revenue"
+          },
+          "guidebook": {
+            "page": 120,
+            "find": "Booked or proved: the same areas through two eyes"
           }
         },
         {
@@ -554,6 +758,10 @@
           "read": {
             "row": "4.6",
             "find": "audit inventory"
+          },
+          "guidebook": {
+            "page": 120,
+            "find": "Booked or proved: the same areas through two eyes"
           }
         },
         {
@@ -563,6 +771,10 @@
           "read": {
             "row": "4.6",
             "find": "audit PPE"
+          },
+          "guidebook": {
+            "page": 120,
+            "find": "Booked or proved: the same areas through two eyes"
           }
         },
         {
@@ -572,6 +784,10 @@
           "read": {
             "row": "4.6",
             "find": "cash and bank"
+          },
+          "guidebook": {
+            "page": 120,
+            "find": "Booked or proved: the same areas through two eyes"
           }
         },
         {
@@ -581,6 +797,10 @@
           "read": {
             "row": "4.6",
             "find": "payroll"
+          },
+          "guidebook": {
+            "page": 120,
+            "find": "Booked or proved: the same areas through two eyes"
           }
         },
         {
@@ -590,6 +810,10 @@
           "read": {
             "row": "4.6",
             "find": "cut-off"
+          },
+          "guidebook": {
+            "page": 120,
+            "find": "Booked or proved: the same areas through two eyes"
           }
         },
         {
@@ -599,6 +823,10 @@
           "read": {
             "row": "4.6",
             "find": "Going concern"
+          },
+          "guidebook": {
+            "page": 121,
+            "find": "going concern and the final analytics"
           }
         },
         {
@@ -609,6 +837,10 @@
           "read": {
             "row": "4.6",
             "find": "CARO 2020"
+          },
+          "guidebook": {
+            "page": 122,
+            "find": "Companies that CARO covers"
           }
         },
         {
@@ -618,6 +850,10 @@
           "read": {
             "row": "4.6",
             "find": "Limited review"
+          },
+          "guidebook": {
+            "page": 118,
+            "find": "4 Statutory audit"
           }
         },
         {
@@ -627,6 +863,10 @@
           "read": {
             "row": "4.6",
             "find": "s.139"
+          },
+          "guidebook": {
+            "page": 122,
+            "find": "The standards in the order you meet them"
           }
         }
       ]
@@ -645,6 +885,10 @@
           "read": {
             "row": "4.7",
             "find": "Statutory audit vs internal audit"
+          },
+          "guidebook": {
+            "page": 123,
+            "find": "5 Internal audit and IFC"
           }
         },
         {
@@ -655,6 +899,10 @@
           "read": {
             "row": "4.7",
             "find": "Process, risk, control"
+          },
+          "guidebook": {
+            "page": 124,
+            "find": "The core logic"
           }
         },
         {
@@ -664,6 +912,10 @@
           "read": {
             "row": "4.7",
             "find": "RCM"
+          },
+          "guidebook": {
+            "page": 124,
+            "find": "Its columns: process step, what can go wrong, the control"
           }
         },
         {
@@ -674,6 +926,10 @@
           "read": {
             "row": "4.7",
             "find": "P2P"
+          },
+          "guidebook": {
+            "page": 125,
+            "find": "Purchase to pay: risks and controls"
           }
         },
         {
@@ -683,6 +939,10 @@
           "read": {
             "row": "4.7",
             "find": "O2C"
+          },
+          "guidebook": {
+            "page": 125,
+            "find": "Order to cash:"
           }
         },
         {
@@ -692,6 +952,10 @@
           "read": {
             "row": "4.7",
             "find": "H2R"
+          },
+          "guidebook": {
+            "page": 125,
+            "find": "a joiner–leaver reconciliation"
           }
         },
         {
@@ -701,6 +965,10 @@
           "read": {
             "row": "4.7",
             "find": "Segregation of duties"
+          },
+          "guidebook": {
+            "page": 124,
+            "find": "Segregation of duties:"
           }
         },
         {
@@ -710,6 +978,10 @@
           "read": {
             "row": "4.7",
             "find": "Design vs operating effectiveness"
+          },
+          "guidebook": {
+            "page": 124,
+            "find": "only a sample tested across the period shows it ran"
           }
         },
         {
@@ -719,6 +991,10 @@
           "read": {
             "row": "4.7",
             "find": "IFC vs ICFR"
+          },
+          "guidebook": {
+            "page": 126,
+            "find": "IFC, SOX and IT controls"
           }
         },
         {
@@ -728,6 +1004,10 @@
           "read": {
             "row": "4.7",
             "find": "audit observation"
+          },
+          "guidebook": {
+            "page": 126,
+            "find": "Writing an observation"
           }
         }
       ]
@@ -746,6 +1026,10 @@
           "read": {
             "row": "4.8",
             "find": "Which law applies"
+          },
+          "guidebook": {
+            "page": 127,
+            "find": "Which law, which year."
           }
         },
         {
@@ -755,6 +1039,10 @@
           "read": {
             "row": "4.8",
             "find": "What does an article do"
+          },
+          "guidebook": {
+            "page": 127,
+            "find": "6 Direct tax"
           }
         },
         {
@@ -764,6 +1052,10 @@
           "read": {
             "row": "4.8",
             "find": "Five heads"
+          },
+          "guidebook": {
+            "page": 128,
+            "find": "Five heads:"
           }
         },
         {
@@ -774,6 +1066,10 @@
           "read": {
             "row": "4.8",
             "find": "book profit"
+          },
+          "guidebook": {
+            "page": 128,
+            "find": "Why book profit isn’t taxable income:"
           }
         },
         {
@@ -784,6 +1080,10 @@
           "read": {
             "row": "4.8",
             "find": "not deducting TDS"
+          },
+          "guidebook": {
+            "page": 128,
+            "find": "TDS in one breath."
           }
         },
         {
@@ -793,6 +1093,10 @@
           "read": {
             "row": "4.8",
             "find": "Advance tax"
+          },
+          "guidebook": {
+            "page": 128,
+            "find": "Advance tax:"
           }
         },
         {
@@ -802,6 +1106,10 @@
           "read": {
             "row": "4.8",
             "find": "AIS"
+          },
+          "guidebook": {
+            "page": 129,
+            "find": "Books first, portal second: a worked bridge"
           }
         },
         {
@@ -812,6 +1120,10 @@
           "read": {
             "row": "4.8",
             "find": "Tax audit"
+          },
+          "guidebook": {
+            "page": 129,
+            "find": "Tax audit is an evidence exercise"
           }
         },
         {
@@ -821,6 +1133,10 @@
           "read": {
             "row": "4.8",
             "find": "Presumptive"
+          },
+          "guidebook": {
+            "page": 127,
+            "find": "6 Direct tax"
           }
         },
         {
@@ -830,6 +1146,10 @@
           "read": {
             "row": "4.8",
             "find": "43B"
+          },
+          "guidebook": {
+            "page": 128,
+            "find": "certain dues count only when paid or deducted on time"
           }
         },
         {
@@ -839,6 +1159,10 @@
           "read": {
             "row": "4.8",
             "find": "Return types"
+          },
+          "guidebook": {
+            "page": 127,
+            "find": "6 Direct tax"
           }
         },
         {
@@ -848,6 +1172,10 @@
           "read": {
             "row": "4.8",
             "find": "Notices"
+          },
+          "guidebook": {
+            "page": 127,
+            "find": "replies to intimations and notices"
           }
         }
       ]
@@ -866,6 +1194,10 @@
           "read": {
             "row": "4.9",
             "find": "golden rule"
+          },
+          "guidebook": {
+            "page": 131,
+            "find": "Read GST from the transaction, not the form."
           }
         },
         {
@@ -875,6 +1207,10 @@
           "read": {
             "row": "4.9",
             "find": "Composite vs mixed"
+          },
+          "guidebook": {
+            "page": 131,
+            "find": "Supply quirks:"
           }
         },
         {
@@ -884,6 +1220,10 @@
           "read": {
             "row": "4.9",
             "find": "Place of supply"
+          },
+          "guidebook": {
+            "page": 131,
+            "find": "Read GST from the transaction, not the form."
           }
         },
         {
@@ -894,6 +1234,10 @@
           "read": {
             "row": "4.9",
             "find": "Conditions to claim"
+          },
+          "guidebook": {
+            "page": 131,
+            "find": "Input tax credit: a separate decision"
           }
         },
         {
@@ -904,6 +1248,10 @@
           "read": {
             "row": "4.9",
             "find": "IMS"
+          },
+          "guidebook": {
+            "page": 132,
+            "find": "The monthly cycle and five reconciliations"
           }
         },
         {
@@ -914,6 +1262,10 @@
           "read": {
             "row": "4.9",
             "find": "Reverse charge"
+          },
+          "guidebook": {
+            "page": 132,
+            "find": "Reverse charge:"
           }
         },
         {
@@ -923,6 +1275,10 @@
           "read": {
             "row": "4.9",
             "find": "Returns and due dates"
+          },
+          "guidebook": {
+            "page": 132,
+            "find": "The monthly cycle and five reconciliations"
           }
         },
         {
@@ -932,6 +1288,10 @@
           "read": {
             "row": "4.9",
             "find": "reconciliations"
+          },
+          "guidebook": {
+            "page": 132,
+            "find": "The monthly cycle and five reconciliations"
           }
         },
         {
@@ -941,6 +1301,10 @@
           "read": {
             "row": "4.9",
             "find": "Rate structure"
+          },
+          "guidebook": {
+            "page": 131,
+            "find": "Read GST from the transaction, not the form."
           }
         },
         {
@@ -950,6 +1314,10 @@
           "read": {
             "row": "4.9",
             "find": "Composition"
+          },
+          "guidebook": {
+            "page": 131,
+            "find": "Read GST from the transaction, not the form."
           }
         },
         {
@@ -959,6 +1327,10 @@
           "read": {
             "row": "4.9",
             "find": "zero-rated"
+          },
+          "guidebook": {
+            "page": 132,
+            "find": "Zero-rated or exempt:"
           }
         },
         {
@@ -968,6 +1340,10 @@
           "read": {
             "row": "4.9",
             "find": "e-way bill"
+          },
+          "guidebook": {
+            "page": 133,
+            "find": "A notice, in three steps"
           }
         }
       ]
@@ -985,6 +1361,10 @@
           "read": {
             "row": "4.10",
             "find": "bank branch audit"
+          },
+          "guidebook": {
+            "page": 133,
+            "find": "8 Bank audit"
           }
         },
         {
@@ -995,6 +1375,10 @@
           "read": {
             "row": "4.10",
             "find": "NPA"
+          },
+          "guidebook": {
+            "page": 134,
+            "find": "When a loan turns bad."
           }
         },
         {
@@ -1004,6 +1388,10 @@
           "read": {
             "row": "4.10",
             "find": "drawing power"
+          },
+          "guidebook": {
+            "page": 134,
+            "find": "Drawing power: a worked check"
           }
         },
         {
@@ -1013,6 +1401,10 @@
           "read": {
             "row": "4.10",
             "find": "concurrent"
+          },
+          "guidebook": {
+            "page": 135,
+            "find": "Statutory branch audit or concurrent audit"
           }
         },
         {
@@ -1022,6 +1414,10 @@
           "read": {
             "row": "4.10",
             "find": "Five Cs"
+          },
+          "guidebook": {
+            "page": 133,
+            "find": "8 Bank audit"
           }
         },
         {
@@ -1031,6 +1427,10 @@
           "read": {
             "row": "4.10",
             "find": "bank"
+          },
+          "guidebook": {
+            "page": 135,
+            "find": "Statutory branch audit or concurrent audit"
           }
         }
       ]
@@ -1049,6 +1449,10 @@
           "read": {
             "row": "4.10",
             "find": "transfer pricing"
+          },
+          "guidebook": {
+            "page": 136,
+            "find": "9 Transfer pricing"
           }
         },
         {
@@ -1058,6 +1462,10 @@
           "read": {
             "row": "4.10",
             "find": "methods"
+          },
+          "guidebook": {
+            "page": 136,
+            "find": "The methods the law lists:"
           }
         },
         {
@@ -1067,6 +1475,10 @@
           "read": {
             "row": "4.10",
             "find": "range"
+          },
+          "guidebook": {
+            "page": 137,
+            "find": "the comparables’ margins give a range"
           }
         },
         {
@@ -1076,6 +1488,10 @@
           "read": {
             "row": "4.10",
             "find": "FAR"
+          },
+          "guidebook": {
+            "page": 137,
+            "find": "the comparables’ margins give a range"
           }
         },
         {
@@ -1085,6 +1501,10 @@
           "read": {
             "row": "4.10",
             "find": "documentation"
+          },
+          "guidebook": {
+            "page": 138,
+            "find": "“What is in a transfer pricing study?”"
           }
         },
         {
@@ -1094,6 +1514,10 @@
           "read": {
             "row": "4.10",
             "find": "normal income tax"
+          },
+          "guidebook": {
+            "page": 136,
+            "find": "9 Transfer pricing"
           }
         }
       ]
@@ -1111,6 +1535,10 @@
           "read": {
             "row": "4.10",
             "find": "M&A tax team"
+          },
+          "guidebook": {
+            "page": 138,
+            "find": "10 M&A tax"
           }
         },
         {
@@ -1121,6 +1549,10 @@
           "read": {
             "row": "4.10",
             "find": "Capital gains"
+          },
+          "guidebook": {
+            "page": 139,
+            "find": "Topics to know cold"
           }
         },
         {
@@ -1130,6 +1562,10 @@
           "read": {
             "row": "4.10",
             "find": "slump sale"
+          },
+          "guidebook": {
+            "page": 139,
+            "find": "“Merger or demerger?”"
           }
         },
         {
@@ -1139,6 +1575,10 @@
           "read": {
             "row": "4.10",
             "find": "buyback"
+          },
+          "guidebook": {
+            "page": 139,
+            "find": "Topics to know cold"
           }
         },
         {
@@ -1148,6 +1588,10 @@
           "read": {
             "row": "4.10",
             "find": "TDS"
+          },
+          "guidebook": {
+            "page": 139,
+            "find": "Topics to know cold"
           }
         },
         {
@@ -1157,6 +1601,10 @@
           "read": {
             "row": "4.8",
             "find": "DTAA"
+          },
+          "guidebook": {
+            "page": 138,
+            "find": "10 M&A tax"
           }
         }
       ]
@@ -1174,6 +1622,10 @@
           "read": {
             "row": "4.10",
             "find": "Three approaches"
+          },
+          "guidebook": {
+            "page": 140,
+            "find": "Three approaches"
           }
         },
         {
@@ -1183,6 +1635,10 @@
           "read": {
             "row": "4.10",
             "find": "Enterprise value vs equity value"
+          },
+          "guidebook": {
+            "page": 141,
+            "find": "Formulas you’ll use every day"
           }
         },
         {
@@ -1193,6 +1649,10 @@
           "read": {
             "row": "4.10",
             "find": "Walk me through a DCF"
+          },
+          "guidebook": {
+            "page": 141,
+            "find": "Formulas you’ll use every day"
           }
         },
         {
@@ -1202,6 +1662,10 @@
           "read": {
             "row": "4.10",
             "find": "WACC"
+          },
+          "guidebook": {
+            "page": 141,
+            "find": "Formulas you’ll use every day"
           }
         },
         {
@@ -1211,6 +1675,10 @@
           "read": {
             "row": "4.10",
             "find": "Terminal value"
+          },
+          "guidebook": {
+            "page": 141,
+            "find": "Formulas you’ll use every day"
           }
         },
         {
@@ -1220,6 +1688,10 @@
           "read": {
             "row": "4.10",
             "find": "Multiples"
+          },
+          "guidebook": {
+            "page": 142,
+            "find": "Why compare companies on EV/EBITDA rather than P/E?"
           }
         }
       ]
@@ -1238,6 +1710,10 @@
           "read": {
             "row": "4.10",
             "find": "What is FDD"
+          },
+          "guidebook": {
+            "page": 142,
+            "find": "12 Financial due diligence"
           }
         },
         {
@@ -1247,6 +1723,10 @@
           "read": {
             "row": "4.10",
             "find": "Normalised EBITDA"
+          },
+          "guidebook": {
+            "page": 143,
+            "find": "A worked quality-of-earnings bridge"
           }
         },
         {
@@ -1256,6 +1736,10 @@
           "read": {
             "row": "4.10",
             "find": "Working-capital peg"
+          },
+          "guidebook": {
+            "page": 143,
+            "find": "A worked quality-of-earnings bridge"
           }
         },
         {
@@ -1265,6 +1749,10 @@
           "read": {
             "row": "4.10",
             "find": "Debt-like items"
+          },
+          "guidebook": {
+            "page": 144,
+            "find": "“What goes into net debt?”"
           }
         },
         {
@@ -1274,6 +1762,10 @@
           "read": {
             "row": "4.10",
             "find": "red flags"
+          },
+          "guidebook": {
+            "page": 144,
+            "find": "“What red flags do you look for in a databook?”"
           }
         },
         {
@@ -1283,6 +1775,10 @@
           "read": {
             "row": "4.10",
             "find": "FDD"
+          },
+          "guidebook": {
+            "page": 144,
+            "find": "“What red flags do you look for in a databook?”"
           }
         }
       ]
@@ -1301,6 +1797,10 @@
           "read": {
             "row": "4.10",
             "find": "forensic audit"
+          },
+          "guidebook": {
+            "page": 145,
+            "find": "13 Forensic"
           }
         },
         {
@@ -1310,6 +1810,10 @@
           "read": {
             "row": "4.10",
             "find": "Fraud triangle"
+          },
+          "guidebook": {
+            "page": 145,
+            "find": "The fraud triangle:"
           }
         },
         {
@@ -1319,6 +1823,10 @@
           "read": {
             "row": "4.10",
             "find": "red flags"
+          },
+          "guidebook": {
+            "page": 145,
+            "find": "Red flags you’ll learn to spot"
           }
         },
         {
@@ -1328,6 +1836,10 @@
           "read": {
             "row": "4.10",
             "find": "Benford"
+          },
+          "guidebook": {
+            "page": 145,
+            "find": "Benford’s law"
           }
         },
         {
@@ -1337,6 +1849,10 @@
           "read": {
             "row": "4.10",
             "find": "shell vendor"
+          },
+          "guidebook": {
+            "page": 145,
+            "find": "Shell vendors:"
           }
         },
         {
@@ -1346,6 +1862,10 @@
           "read": {
             "row": "4.10",
             "find": "forensic"
+          },
+          "guidebook": {
+            "page": 146,
+            "find": "“How do you handle digital evidence?”"
           }
         }
       ]
@@ -1363,6 +1883,10 @@
           "read": {
             "row": "4.7",
             "find": "Why does internal audit exist"
+          },
+          "guidebook": {
+            "page": 147,
+            "find": "14 Consulting and risk advisory"
           }
         },
         {
@@ -1373,6 +1897,10 @@
           "read": {
             "row": "4.7",
             "find": "Process, risk, control"
+          },
+          "guidebook": {
+            "page": 124,
+            "find": "The core logic"
           }
         },
         {
@@ -1382,6 +1910,10 @@
           "read": {
             "row": "4.7",
             "find": "Types of controls"
+          },
+          "guidebook": {
+            "page": 124,
+            "find": "Segregation of duties:"
           }
         },
         {
@@ -1407,6 +1939,10 @@
           "read": {
             "row": "4.5",
             "find": "PivotTable"
+          },
+          "guidebook": {
+            "page": 147,
+            "find": "14 Consulting and risk advisory"
           }
         }
       ]
@@ -1425,6 +1961,10 @@
           "read": {
             "row": "4.5",
             "find": "Schedule III"
+          },
+          "guidebook": {
+            "page": 112,
+            "find": "The work: record to report"
           }
         },
         {
@@ -1434,6 +1974,10 @@
           "read": {
             "row": "4.5",
             "find": "Pass the entry"
+          },
+          "guidebook": {
+            "page": 112,
+            "find": "Entries to say aloud, with amounts"
           }
         },
         {
@@ -1443,6 +1987,10 @@
           "read": {
             "row": "4.5",
             "find": "BRS"
+          },
+          "guidebook": {
+            "page": 114,
+            "find": "The papers behind each cycle"
           }
         },
         {
@@ -1460,6 +2008,10 @@
           "read": {
             "row": "4.5",
             "find": "MoA vs AoA"
+          },
+          "guidebook": {
+            "page": 114,
+            "find": "Company law basics"
           }
         },
         {
@@ -1469,6 +2021,10 @@
           "read": {
             "row": "4.5",
             "find": "Tally"
+          },
+          "guidebook": {
+            "page": 112,
+            "find": "The work: record to report"
           }
         }
       ]
@@ -1486,6 +2042,10 @@
           "read": {
             "row": "4.10",
             "find": "investment banking"
+          },
+          "guidebook": {
+            "page": 148,
+            "find": "15 Investment banking and equity research"
           }
         },
         {
@@ -1496,6 +2056,10 @@
           "read": {
             "row": "4.10",
             "find": "Walk me through a DCF"
+          },
+          "guidebook": {
+            "page": 141,
+            "find": "Formulas you’ll use every day"
           }
         },
         {
@@ -1505,6 +2069,10 @@
           "read": {
             "row": "4.10",
             "find": "Enterprise value vs equity value"
+          },
+          "guidebook": {
+            "page": 141,
+            "find": "Formulas you’ll use every day"
           }
         },
         {
@@ -1514,6 +2082,10 @@
           "read": {
             "row": "4.10",
             "find": "positive EBITDA"
+          },
+          "guidebook": {
+            "page": 148,
+            "find": "15 Investment banking and equity research"
           }
         },
         {
@@ -1598,6 +2170,10 @@
           "read": {
             "row": "4.4",
             "find": "on-the-spot email"
+          },
+          "guidebook": {
+            "page": 97,
+            "find": "What if they ask me to write an email on the spot?"
           }
         },
         {
@@ -1607,6 +2183,10 @@
           "read": {
             "row": "4.4",
             "find": "Spoken English"
+          },
+          "guidebook": {
+            "page": 97,
+            "find": "What if there is a spoken-English test?"
           }
         }
       ]
@@ -1623,6 +2203,10 @@
           "read": {
             "row": "4.4",
             "find": "What a GD is"
+          },
+          "guidebook": {
+            "page": 92,
+            "find": "Will there be a GD, and what do they judge?"
           }
         },
         {
@@ -1632,6 +2216,10 @@
           "read": {
             "row": "4.4",
             "find": "GD worksheet"
+          },
+          "guidebook": {
+            "page": 95,
+            "find": "How do I practise a GD?"
           }
         },
         {
@@ -1641,6 +2229,10 @@
           "read": {
             "row": "4.4",
             "find": "Five ways to open"
+          },
+          "guidebook": {
+            "page": 93,
+            "find": "Should I open, and how?"
           }
         },
         {
@@ -1650,6 +2242,10 @@
           "read": {
             "row": "4.4",
             "find": "Entering, building, disagreeing"
+          },
+          "guidebook": {
+            "page": 93,
+            "find": "How do I get in, agree and disagree?"
           }
         },
         {
@@ -1659,6 +2255,10 @@
           "read": {
             "row": "4.4",
             "find": "current affairs"
+          },
+          "guidebook": {
+            "page": 95,
+            "find": "What kinds of topics come?"
           }
         },
         {
@@ -1668,6 +2268,10 @@
           "read": {
             "row": "4.4",
             "find": "Before the GD"
+          },
+          "guidebook": {
+            "page": 92,
+            "find": "What do I do in the minute before it starts?"
           }
         },
         {
@@ -1677,6 +2281,10 @@
           "read": {
             "row": "4.4",
             "find": "practice GD"
+          },
+          "guidebook": {
+            "page": 95,
+            "find": "How do I practise a GD?"
           }
         }
       ]

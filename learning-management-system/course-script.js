@@ -587,7 +587,26 @@ document.addEventListener('DOMContentLoaded', () => {
             String(item.view_storage_path || '').toLowerCase().endsWith('.pdf')) || null : null;
         const rawPage = params.get('page') || '1';
         const page = /^[1-9]\d{0,5}$/.test(rawPage) ? Number(rawPage) : 1;
-        return { video, resource, page };
+        // A row of this Day that is not a programme PDF (a tool, an Excel sheet): the Day opens on its row, scrolled to.
+        const row = title && !resource ? video.resources?.find(item => item.title === title) || null : null;
+        return { video, resource, page, row };
+    };
+
+    // Scroll a deep-linked row (tool or download) into view on the Resources tab and flash it once.
+    const highlightResourceRow = (title) => {
+        const container = DOMElements.tabContents.resources;
+        if (!container || !title) return;
+        const item = [...container.querySelectorAll('.resource-item')]
+            .find(li => (li.querySelector('.resource-title')?.textContent || '').trim() === title);
+        if (!item) return;
+        const group = item.closest('details');
+        if (group) group.open = true;
+        const still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        item.classList.remove('resource-item-target');
+        void item.offsetWidth; // restart the flash on a second deep link to the same row
+        item.classList.add('resource-item-target');
+        requestAnimationFrame(() => item.scrollIntoView({ block: 'center', behavior: still ? 'auto' : 'smooth' }));
+        setTimeout(() => item.classList.remove('resource-item-target'), 2600);
     };
 
     const loadVideoProgress = async () => {
@@ -618,6 +637,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     await openCopyResource(target.resource, target.page, { deepLink: true });
                 } else if (target.resource) {
                     await openResourceViewer(target.resource, 'pdf', target.page);
+                } else if (target.row) {
+                    highlightResourceRow(target.row.title);
                 }
             }
             return;
