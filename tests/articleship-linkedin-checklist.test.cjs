@@ -79,8 +79,9 @@ test('content: house rules (headline formula, no CA prefix, all members, simulat
     assert.equal(headline, 'CA Inter cleared ([Month Year]) | [proof] | Seeking articleship in [domain] | [City]', 'one order: stage | proof | Seeking … | City (Guidebook ch 6, the PDF)');
     assert.match(all, /All LinkedIn members/);
     assert.doesNotMatch(all, /salary/i, 'Open to Work has no salary field to talk about (FACTS: titles, locations, start date, notice period)');
-    assert.match(all, /❌ CA Riya Sharma/);
-    assert.match(all, /linkedin\.com\/in\/riya-sharma\b/, 'the same persona as the CV checklist');
+    assert.match(all, /❌ CA Ishita Sharma/);
+    assert.match(all, /linkedin\.com\/in\/ishita-sharma\b/, 'one persona: a first name no competitor note uses (BUILD-BRIEF Example names)');
+    assert.doesNotMatch(all, /\bRiya\b/i);
     assert.doesNotMatch(all, /Ananya|Iyer/, 'one persona across the CV and LinkedIn checklists');
     assert.match(all, /SEBI Investor Awareness Test \(Level 1\)/, 'the SEBI test by its exact name');
     assert.match(all, /Expiry: only if your certificate shows one/, 'the SEBI certificate has a validity, so no blanket "no expiry"');
@@ -101,6 +102,20 @@ test('content: house rules (headline formula, no CA prefix, all members, simulat
     assert.doesNotMatch(all, /\b(?:\+?91[ -]?)?[6-9]\d{9}\b/, 'no phone numbers');
     const emails = all.match(/[\w.+-]+@[\w-]+(?:\.[\w-]+)+/g) || [];
     emails.forEach(e => assert.match(e, /^[a-z]+\.[a-z]+@email\.com$/, 'fictional firstname.lastname@email.com only: ' + e));
+});
+
+test('content: every Work Simulation field sits under the one work_simulation key', () => {
+    const rest = Object.assign({}, CONTENT);
+    delete rest.work_simulation;
+    const flat = JSON.stringify(rest);
+    assert.doesNotMatch(flat, /Work Simulation|\{sim\||\{ws\}|\{no-ws\}|copy_ws/);
+    const lifted = L.liftWorkSimulation(CONTENT);
+    Object.entries(CONTENT.work_simulation.items).forEach(([id, ws]) => {
+        const item = lifted.items.find(i => i.id === id);
+        (ws.swap || []).forEach(s => {
+            assert.ok(item.example.includes('{ws}' + s.line) && item.example.includes('{no-ws}' + s.for), id + ': swap applied');
+        });
+    });
 });
 
 test('content: nothing a student must never see', () => {
@@ -142,6 +157,7 @@ test('also: a second link on one check (for the Work Simulation work sample once
     const content = JSON.parse(JSON.stringify(CONTENT));
     const featured = content.items.find(i => i.id === 'featured');
     featured.also = { label: 'My work sample', href: '/articleship-program/work-simulation/' };
+    delete content.work_simulation.items.featured.also; // a plain item link, shown in every release
     content.items.find(i => i.id === 'skills').also = { label: 'Bad', href: 'javascript:alert(1)' };
     const dom = pageDom();
     const doc = dom.window.document;
@@ -156,8 +172,9 @@ test('also: a second link on one check (for the Work Simulation work sample once
     assert.equal(doc.querySelector('.ap-cl-item[data-id="certifications"] .lc-also').getAttribute('href'), '/articleship-program/cv-checklist/');
 
     // As shipped: the featured Work Simulation link is release 2 only (ws: true).
-    const shipped = CONTENT.items.find(i => i.id === 'featured').also;
-    assert.equal(shipped.ws, true);
+    const shipped = CONTENT.work_simulation.items.featured.also;
+    assert.equal(CONTENT.items.find(i => i.id === 'featured').also, undefined, 'the link lives under work_simulation');
+    assert.equal(L.liftWorkSimulation(CONTENT).items.find(i => i.id === 'featured').also.ws, true);
     const dom1 = pageDom();
     await L.boot({ doc: dom1.window.document, fetch: okFetch(CONTENT), store: memoryStore(), Gate: null, Checklist: C, workSimulationLive: false });
     assert.equal(dom1.window.document.querySelector('.ap-cl-item[data-id="featured"] .lc-also'), null, 'release 1: no Work Simulation link');
