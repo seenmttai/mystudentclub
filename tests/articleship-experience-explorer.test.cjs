@@ -98,7 +98,7 @@ test('data: all 13 domains have cards, in the programme vocabulary', () => {
     const r = X.run(MODEL, { q: '', domain: '', city: '' });
     for (const slug of SLUGS) assert.ok(r.domainCounts.get(slug) > 0, `${slug} has cards`);
     assert.equal(r.domainCounts.get('gst'), 518);
-    assert.equal(r.domainCounts.get('statutory-audit'), 1346);
+    assert.equal(r.domainCounts.get('statutory-audit'), 1330);
 });
 
 test('data: domains read from the work never mislabel transfer pricing or debt work', () => {
@@ -263,10 +263,17 @@ test('run: a domain view leads with that domain\'s work (all 13 domains, first p
             const index = record.bullets.indexOf(lines[0].text);
             assert.ok(record.masks[index] & MODEL.bit[slug], `${slug}: ${record.firm} leads with "${lines[0].text}"`);
         }
-        // Cards with more of the domain's lines come first (counted up to 3); repeated work sits after every new card.
+        // Cards with more of the domain's lines come first (counted up to 3); repeated work sits after every new card, and
+        // (once there is a common-work block) cards made only of stock lines sit after the cards with work of their own.
         const distinct = new Set(r.ids.map(id => MODEL.sameWork[id])).size;
-        const counts = r.ids.slice(0, Math.min(60, distinct)).map(id => Math.min(3, MODEL.records[id].masks.filter(m => m & MODEL.bit[slug]).length));
-        for (let i = 1; i < counts.length; i++) assert.ok(counts[i] <= counts[i - 1], `${slug}: order at ${i}`);
+        const head = r.ids.slice(0, Math.min(60, distinct));
+        const own = r.folded ? head.filter(id => !MODEL.stockOnly[id]) : head;
+        const stock = r.folded ? head.filter(id => MODEL.stockOnly[id]) : [];
+        assert.deepEqual(head, own.concat(stock), `${slug}: stock-only cards come last`);
+        for (const part of [own, stock]) {
+            const counts = part.map(id => Math.min(3, MODEL.records[id].masks.filter(m => m & MODEL.bit[slug]).length));
+            for (let i = 1; i < counts.length; i++) assert.ok(counts[i] <= counts[i - 1], `${slug}: order at ${i}`);
+        }
     }
 });
 
@@ -371,16 +378,24 @@ test('run: a firm or city with a domain name finds that domain\'s cards ("BDO Mu
 });
 
 test('run: a word no card says is answered by its domain, and says so', () => {
-    const r = X.run(MODEL, { q: 'secretarial', domain: '', city: '' });
+    const r = X.run(MODEL, { q: 'assurance', domain: '', city: '' });
     assert.ok(r.broad && r.total > 0);
-    assert.deepEqual(r.via, ['accounting']);
-    const { $ } = page('?q=secretarial');
+    assert.deepEqual(r.via, ['statutory-audit']);
+    const { $ } = page('?q=assurance');
     const note = $('.xp-hint .xp-note');
-    assert.equal(note.textContent, 'No card says “secretarial”. These are Accounting, MIS & company law experiences that cover it.');
-    const button = $('.xp-hint-btn[data-domain="accounting"]');
-    assert.ok(button && /^Show Accounting, MIS & company law only · [\d,]+$/.test(button.textContent));
+    assert.equal(note.textContent, 'No card says “assurance”. These are Statutory audit experiences that cover it.');
+    // Every Statutory audit card answers it, so there is no "Show Statutory audit only" offer (it would change nothing).
+    assert.equal(total($), r.total);
+    assert.equal(r.total, X.run(MODEL, { q: '', domain: 'statutory-audit', city: '' }).total);
+    assert.equal($('.xp-hint-btn[data-domain="statutory-audit"]'), null);
     const first = $('.xp-card .xp-work li');
-    assert.equal(first.className, 'is-domain', 'its accounting lines first');
+    assert.equal(first.className, 'is-domain', 'its audit lines first');
+    // A word a card label carries ("secretarial" is Company law's) lists that label's cards, ranked by its domain.
+    const label = X.run(MODEL, { q: 'secretarial', domain: '', city: '' });
+    assert.ok(!label.broad && label.total > 0);
+    assert.deepEqual(label.labels, ['Company law']);
+    assert.equal(label.focus, 'accounting');
+    assert.ok(label.ids.every(id => MODEL.records[id].labels.includes('Company law')));
 });
 
 test('run: the largest firms take at most one place in three on a first page', () => {
@@ -660,11 +675,11 @@ test('page: a thin domain offers the nearest domain with its count; every view e
     // The closing row: roadmap (this domain), firms to apply to (Day 5), back to Day 5.
     const links = $$('.xp-next a').map(a => [a.textContent, a.getAttribute('href')]);
     assert.deepEqual(links, [
-        ['Confirm it in Domain roadmaps', '/articleship-program/domain-roadmaps/#ib-er'],
-        ['Find firms to apply to', '/learning-management-system/course?course=msc-articleship-program&session=6&resource=Firms+by+domain'],
+        ['See the IB & equity research roadmap', '/articleship-program/domain-roadmaps/#ib-er'],
+        ['Find firms to apply to', '/learning-management-system/course?course=msc-articleship-program&session=6&resource=Top+100+Articleship+Firms'],
         ['Back to Day 5', '/learning-management-system/course?course=msc-articleship-program&session=6']
     ]);
-    assert.equal($('.xp-next-title').textContent, 'Decided on a domain?');
+    assert.equal($('.xp-next-title').textContent, 'What next?');
     assert.equal(page('').$('.xp-next a').getAttribute('href'), '/articleship-program/domain-roadmaps/');
     const visitor = page('', { signedIn: false });
     assert.deepEqual(visitor.$$('.xp-next a').slice(-1).map(a => [a.textContent, a.getAttribute('href')]), [['About the programme', '/articleship-program/']]);
