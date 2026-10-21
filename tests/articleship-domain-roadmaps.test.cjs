@@ -15,6 +15,11 @@ const CSS = fs.readFileSync(path.join(TOOL_DIR, 'domain-roadmaps.css'), 'utf8');
 // or keep the two repos side by side (../msc-content); without it the "built rows" check is skipped.
 const CONTENT_BUILD = process.env.MSC_CONTENT_BUILD || path.join(ROOT, '..', 'msc-content/articleship-program/v3/build');
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+// The full v3 course (003). The desktop branch keeps it in supabase/migrations/; the mobile branch shares the database
+// and has no SQL, so it reads the LMS build's copy (and skips these checks on a machine without either).
+const LATER_SQL = [path.join(ROOT, 'supabase/migrations/202610200003_articleship_program_v3_later_rows.sql'),
+    path.join(CONTENT_BUILD, 'lms/003_articleship_program_v3_later_rows.sql')].find(file => fs.existsSync(file));
+const NO_SQL = LATER_SQL ? false : 'no v3 LMS SQL on this machine (supabase/migrations or the content build)';
 
 // Tabs of Padam's "Top 100 Articleship Firms.xlsx" (build/padam-files, B9), in the workbook's order.
 const TOP_100_TABS = ['Top 100', 'FDD', 'Valuation', 'IB and M&A', 'Equity Research', 'Transfer Pricing', 'Forensic',
@@ -41,7 +46,7 @@ function nextHashchange(win) {
 
 /** The full v3 course (003: every row; 002 is release 1, only the rows whose files were ready at handover). */
 function lmsRows() {
-    const sql = fs.readFileSync(path.join(ROOT, 'supabase/migrations/202610200003_articleship_program_v3_later_rows.sql'), 'utf8');
+    const sql = fs.readFileSync(LATER_SQL, 'utf8');
     return JSON.parse(sql.match(/jsonb_array_elements\('([\s\S]*?)'::jsonb\)/)[1].replaceAll("''", "'"))
         .map(s => Object.assign({}, s, { resources: s.resources.map(item => item.resource) }));
 }
@@ -325,7 +330,7 @@ test('links: a course row listed in `unbuilt` is never linked (booklets, Firms, 
     })();
 });
 
-test('links: every course row this tool opens exists in the v3 LMS rows on its Day', () => {
+test('links: every course row this tool opens exists in the v3 LMS rows on its Day', { skip: NO_SQL }, () => {
     const model = R.normalise(allBuilt());
     const booklets = [...new Set(model.domains.filter(c => c.booklet).map(c => c.booklet.title))];
     assert.deepEqual(booklets.sort(), ['Core accounting booklet', 'Direct tax booklet', 'GST booklet', 'Internal audit booklet',
@@ -346,7 +351,7 @@ test('links: every course row this tool opens exists in the v3 LMS rows on its D
     for (const row of CONTENT.unbuilt) assert.ok(lmsRow(row.day, row.title), row.title + ' (unbuilt) names a real course row');
 });
 
-test('links: `unbuilt` matches the content build (a row with its file is linked, a row without one is not)', t => {
+test('links: `unbuilt` matches the content build (a row with its file is linked, a row without one is not)', { skip: NO_SQL }, t => {
     // "Built" = in release 1 (002: the rows whose files were ready at handover), as the LMS build wrote it.
     const releaseFile = path.join(CONTENT_BUILD, 'lms/rows-release-1.json');
     if (!fs.existsSync(releaseFile)) { t.skip('content build not on this machine'); return; }

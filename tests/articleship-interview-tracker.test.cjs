@@ -15,7 +15,11 @@ const CSS = path.join(ROOT, 'articleship-program/interview-tracker/interview-tra
 const CONTENT_FILE = path.join(ROOT, 'articleship-program/interview-tracker/syllabus.json');
 const CONTENT = JSON.parse(fs.readFileSync(CONTENT_FILE, 'utf8'));
 // 003 holds the full v3 course (002 is release 1: only the rows whose files were ready at handover).
-const LMS_SQL = path.join(ROOT, 'supabase/migrations/202610200003_articleship_program_v3_later_rows.sql');
+// The full v3 course (003): supabase/migrations/ on the desktop branch; the mobile branch (one shared database, no SQL)
+// reads the LMS build's copy, and these checks skip on a machine without either.
+const LMS_SQL = [path.join(ROOT, 'supabase/migrations/202610200003_articleship_program_v3_later_rows.sql'),
+    path.resolve(ROOT, '../msc-content/articleship-program/v3/build/lms/003_articleship_program_v3_later_rows.sql')].find(file => fs.existsSync(file));
+const NO_SQL = LMS_SQL ? false : 'no v3 LMS SQL on this machine';
 const BUILT = path.resolve(ROOT, '../msc-content/articleship-program/v3/build/day-4/4.1/syllabus.json');
 const TODAY = '2026-11-02';
 const NOW = Date.UTC(2026, 10, 2, 6, 30);
@@ -116,7 +120,7 @@ test('content: Core first, then all 13 domains, then the written test and GD; ev
     assert.match(model.ready, /^Ready = /);
 });
 
-test('content: Read rows are the Day 4 booklets, and every title is a Day 4 row of the v3 course', () => {
+test('content: Read rows are the Day 4 booklets, and every title is a Day 4 row of the v3 course', { skip: NO_SQL }, () => {
     // Every row as in the course (rows: 'all'); release 1 below.
     const model = T.normaliseContent(CONTENT, { rows: 'all' });
     const sql = fs.readFileSync(LMS_SQL, 'utf8');
@@ -250,7 +254,7 @@ test('Read: the booklet page through the course deep link; the page number only 
     assert.equal(T.readText({ row: '4.4' }), 'Read');
 });
 
-test('links: a programme page not on the branch yet opens its row\'s Day; PAGE_ROWS agrees with the branch', () => {
+test('links: a programme page not on the branch yet opens its row\'s Day; PAGE_ROWS agrees with the branch', { skip: NO_SQL }, () => {
     Object.entries(T.PAGE_ROWS).forEach(([href, row]) => {
         const onDisk = fs.existsSync(path.join(ROOT, href, 'index.html'));
         assert.equal(row.live, onDisk, href + ': set PAGE_ROWS live to ' + onDisk);

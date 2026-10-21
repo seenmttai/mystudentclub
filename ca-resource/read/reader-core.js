@@ -67,6 +67,25 @@
         return /^(https?:|mailto:|tel:)/i.test(String(url || '').trim());
     }
 
+    const SITE_HOSTS = ['www.mystudentclub.com', 'mystudentclub.com', 'mobile.mystudentclub.com'];
+
+    /**
+     * A link to MSC's own site (a course deep link, a tool) as a path on the site the reader is on, so the app's mobile
+     * site keeps the student inside it; null for any other link.
+     */
+    function siteLink(url, loc) {
+        let parsed;
+        try { parsed = new URL(String(url || '').trim()); } catch (_) { return null; }
+        if (parsed.protocol !== 'https:' || !SITE_HOSTS.includes(parsed.hostname)) return null;
+        if (loc && loc.hostname && !SITE_HOSTS.includes(String(loc.hostname).toLowerCase()) && !isLocalHost(loc.hostname)) return null;
+        return parsed.pathname + parsed.search + parsed.hash;
+    }
+
+    /** On the mobile site (the app's WebView) a link opens in place: there is no second tab to go to. */
+    function opensInPlace(loc, win) {
+        return /^mobile\./i.test(String(loc && loc.hostname || '')) || Boolean(win && win.flutter_inappwebview);
+    }
+
     function normaliseSearch(value) {
         return String(value || '')
             .replace(/[‘’‚′]/g, "'")
@@ -267,7 +286,7 @@
     }
 
     return Object.freeze({
-        PROXY, clampPage, parseQuery, isLocalHost, isAllowedPdfUrl, fetchUrlFor, proxyUrlFor, isSafeLink,
+        PROXY, clampPage, parseQuery, isLocalHost, isAllowedPdfUrl, fetchUrlFor, proxyUrlFor, isSafeLink, siteLink, opensInPlace,
         normaliseSearch, searchPattern, findMatches, copyBoxes, textInBox, _multiply: multiply
     });
 });

@@ -293,8 +293,12 @@
             a.style.height = Math.abs(rect[3] - rect[1]) + 'px';
             const url = annotation.url || annotation.unsafeUrl;
             if (url && core.isSafeLink(url)) {
-                a.href = url;
-                if (/^https?:/i.test(url)) { a.target = '_blank'; a.rel = 'noopener noreferrer'; }
+                // MSC's own links (course deep links, tools) stay on the site the reader is on; in the app they open in
+                // place, on the desktop site in a new tab as before.
+                const own = core.siteLink(url, window.location);
+                a.href = own || url;
+                const inPlace = own && core.opensInPlace(window.location, window);
+                if (/^https?:/i.test(url) && !inPlace) { a.target = '_blank'; a.rel = 'noopener noreferrer'; }
                 a.title = /^mailto:/i.test(url) ? 'Open in your mail app' : url;
             } else if (annotation.dest) {
                 a.href = '#';

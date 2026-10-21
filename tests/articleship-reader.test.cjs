@@ -41,6 +41,17 @@ test('Supabase project URLs go through the PDF proxy, the custom domain is fetch
 test('links the reader follows: web, mail and phone only', () => {
     for (const ok of ['https://a.b', 'http://a.b', 'mailto:?subject=x', 'tel:+9198']) assert.ok(core.isSafeLink(ok), ok);
     for (const bad of ['javascript:x', 'file:///etc', 'data:text/html,x', '']) assert.ok(!core.isSafeLink(bad), bad);
+    // MSC's own links stay on the site the reader is on (the app's mobile site keeps the student inside it).
+    const deep = 'https://www.mystudentclub.com/learning-management-system/course?course=msc-articleship-program&session=1&resource=MSC+Articleship+Guidebook&page=158';
+    assert.equal(core.siteLink(deep, { hostname: 'mobile.mystudentclub.com' }), '/learning-management-system/course?course=msc-articleship-program&session=1&resource=MSC+Articleship+Guidebook&page=158');
+    assert.equal(core.siteLink(deep, { hostname: 'www.mystudentclub.com' }).startsWith('/learning-management-system/course?'), true);
+    assert.equal(core.siteLink(deep, { hostname: '127.0.0.1' }).startsWith('/learning-management-system/'), true);
+    assert.equal(core.siteLink(deep, { hostname: 'preview.pages.dev' }), null, 'a Pages preview keeps the absolute link');
+    assert.equal(core.siteLink('https://www.icai.org/x', { hostname: 'mobile.mystudentclub.com' }), null);
+    assert.equal(core.siteLink('mailto:a@b.c', { hostname: 'mobile.mystudentclub.com' }), null);
+    assert.equal(core.opensInPlace({ hostname: 'mobile.mystudentclub.com' }, {}), true);
+    assert.equal(core.opensInPlace({ hostname: 'www.mystudentclub.com' }, {}), false);
+    assert.equal(core.opensInPlace({ hostname: 'www.mystudentclub.com' }, { flutter_inappwebview: {} }), true);
 });
 
 test('search finds words inside an item, across items and ignores curly quotes and case', () => {
