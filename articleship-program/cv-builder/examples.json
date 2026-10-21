@@ -726,7 +726,7 @@
     "location": "Nagpur",
     "socialLinks": []
    },
-   "summary": "<p>CA Intermediate cleared ([Month Year]), both groups in the first attempt; ICITSS completed. Completed the PwC US Audit and US Tax job simulations (Forage) and the SEBI Investor Awareness Test. Looking for articleship with audit and tax exposure, to choose my domain from real work.</p>",
+   "summary": "<p>CA Intermediate cleared ([Month Year]), both groups in the first attempt; ICITSS completed. Completed the PwC US Audit and US Tax job simulations (Forage) and an annual-report project on [Listed company]. Looking for articleship with audit and tax exposure, to choose my domain from real work.</p>",
    "education": [
     {
      "degree": "CA Intermediate (both groups)",
@@ -778,7 +778,15 @@
     }
    ],
    "experience": [],
-   "projects": [],
+   "projects": [
+    {
+     "title": "Annual-report project",
+     "description": "Self-directed project | [Year]",
+     "bullets": [
+      "Read [Listed company]’s [Year] annual report; summarised its 3 key audit matters and the auditor’s response to each."
+     ]
+    }
+   ],
    "skills": "<p><strong>Excel (working knowledge)</strong>: XLOOKUP, SUMIFS, PivotTables, charts</p><p><strong>Tally Prime (working knowledge)</strong>: purchase and sales vouchers, ledger reports</p><p><strong>Languages</strong>: English, Hindi, Marathi</p>",
    "certifications": [
     {
@@ -806,8 +814,7 @@
    "leadership": [
     "Gave a 10-minute presentation in my Orientation Course batch of 60 (ICAI, [Month Year]).",
     "Runner-up, inter-college commerce quiz (24 teams), [Year].",
-    "Anchored my college’s annual day for 600 people and co-wrote the script, [Year].",
-    "Home tutor: taught Accounts to 3 Class XI students for a year; all three scored above 80."
+    "Home tutor: taught Accounts to 3 Class XI students for a year, [Year]; all three scored above 80."
    ],
    "interests": [
     "Cycling: 40 km Sunday rides since [Year]",
