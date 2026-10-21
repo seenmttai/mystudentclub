@@ -252,6 +252,8 @@ html[data-mode="phone"] .am-laptop-only { display: none; }
 .md-hint { font-size: 11.5px; color: var(--pencil); margin-bottom: 4px; }
 .md-picked { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-size: 12px; overflow-wrap: anywhere; }
 .md-picked b { color: var(--ink); font-weight: 700; }
+/* a long file name wraps beside its tick, not under it */
+.md-picked .m-tick + b { flex: 1 1 10em; min-width: 0; }
 .md-link { color: var(--blue); font-weight: 700; text-decoration: underline; text-underline-offset: 2px; padding: 1px 2px; }
 .md-picked .ring { margin: 4px 8px 2px; }
 .md-pill { margin-left: 6px; padding: 0 7px; border-radius: 999px; background: #EEF0F4; color: var(--pencil); font-size: 10.5px; font-weight: 700; }
