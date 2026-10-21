@@ -221,8 +221,8 @@ test('page: boot renders the open card, 12 checks, copy boxes, notes; ticks save
     assert.equal(open.getAttribute('href'), 'https://www.linkedin.com/in/me/');
     assert.equal(open.target, '_blank');
     assert.equal(open.rel, 'noopener noreferrer');
-    assert.deepEqual([...doc.querySelectorAll('.lc-open-hint')].map(p => p.textContent.split(' ')[0]), ['Keep', 'Before', 'Link'], 'three short hint lines');
-    assert.match(doc.querySelectorAll('.lc-open-hint')[2].textContent, /tap your photo/);
+    assert.deepEqual([...doc.querySelectorAll('.lc-open-hint')].map(p => p.textContent.split(' ')[0]), ['Keep', 'Open', 'Before'], 'three short hint lines, the app fallback right under the button');
+    assert.match(doc.querySelectorAll('.lc-open-hint')[1].textContent, /tap your photo/);
 
     assert.equal(doc.querySelectorAll('.ap-cl-item').length, 12);
     assert.equal(doc.querySelector('.ap-progress-count').textContent, '0 of 12 done');
@@ -463,7 +463,7 @@ test('proofs: every domain has its own About line, matching its Work Simulation 
     });
     assert.deepEqual(Object.keys(prepared.proofs).sort(), P.DOMAINS.map(d => d.slug).sort(), 'no proof for a domain that does not exist');
     assert.equal(L.proofFor(null, prepared.proofs), prepared.proofs[L.DEFAULT_DOMAIN]);
-    assert.equal(L.proofFor('new-domain', prepared.proofs, () => 'Climate audit'), 'In my Climate audit Work Simulation I [one task you did, with a number].');
+    assert.equal(L.proofFor('new-domain', prepared.proofs, () => 'Climate audit'), 'In my Climate audit Work Simulation I [one task you did, in your CV’s words; a number if it has one].');
     assert.equal(L.fillDomain('> {proof}', {}), '> [One thing you have actually done, in your CV’s words; a number if it has one.]');
 
     // The CV Recommender writes each domain's Work Simulation line for the CV; the About line says the same work, with

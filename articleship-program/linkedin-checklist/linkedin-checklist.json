@@ -6,7 +6,7 @@
   "open": {
     "label": "Open my profile",
     "href": "https://www.linkedin.com/in/me/",
-    "hint": "Keep it beside this page and tick each check as you fix it.\nBefore your first edit: Settings & Privacy › Visibility › Visibility of your LinkedIn activity › Share profile updates off, so your network isn’t told about each change; on again when you’re done.\nLink opens the browser? In the LinkedIn app, tap your photo, then tap it again."
+    "hint": "Keep it beside this page and tick each check as you fix it.\nOpen my profile opened the browser, not the app? In the LinkedIn app, tap your photo, then tap it again to reach your profile.\nBefore your first edit: Settings & Privacy › Visibility › Visibility of your LinkedIn activity › Share profile updates off, so your network isn’t told about each change; on again when you’re done."
   },
   "items": [
     {
@@ -31,7 +31,6 @@
       "example": [
         "✅ Ishita Sharma: the same spelling as your CV, ICAI’s SSP portal and Gmail.",
         "❌ CA Ishita Sharma · Semi CA Ishita · Ishita Sharma (CA Finalist) · Aspiring CA",
-        "“CA Finalist” is a word you search with (LinkedIn search links), not one you write about yourself.",
         "Only ICAI members may put “CA” before their name; a partner who sees it on a CA Inter profile stops reading. Your stage goes in the headline."
       ]
     },
@@ -51,7 +50,7 @@
         "❌ Aspiring CA | Finance enthusiast | Learner: nothing anyone searches for.",
         "❌ CA Finalist || Hardworking || Dedicated: a title you don’t hold yet, and words nobody types.",
         "One proof, right after your stage: something a partner can check. A job simulation you finished, “ICITSS done, can join from [Month]”, a first attempt, your college. A rank (AIR) only with your rank letter. Nothing yet? Leave it out.",
-        "Keep “CA Inter” and the exam month in: they are the words people search for. Test it: search “articleship {domain|statutory audit} Pune” › People. Are you there? Read the top five results: yours should be the clearest of them.",
+        "Keep “CA Inter” in: it is the word people search for. The exam month tells a partner you’re current. Test it: search “articleship {domain|statutory audit} Pune” › People. Are you there? Read the top five results: yours should be the clearest of them.",
         "Change it the day your status changes: result, ICITSS, selection."
       ],
       "copy_label": "Your headline",
@@ -93,7 +92,7 @@
         "",
         "Helped a CA office or a family business? Put that in place of the [One thing…] line, with a number, only if you really did it.",
         "Result awaited? Replace the first two sentences with: “My CA Intermediate result ([Month Year]) is awaited; I’ve finished ICITSS and I’m looking for articleship in …”",
-        "Below them, if you like: how you used your exam break, one college role, a line of search words (Statutory audit · Vouching · Excel · Tally Prime), and once your joining date is fixed, “I can join from [Month Year].”",
+        "Below your opening lines, if you like: how you used your exam break, one college role, a line of search words (Statutory audit · Vouching · Excel · Tally Prime), and once your joining date is fixed, “I can join from [Month Year].”",
         "❌ “Passionate, hardworking, dedicated professional”, copied hobbies, one long paragraph, “he” or “she”.",
         "Write in “I”, one line for each part, and only lines you can talk about for two minutes in an interview. Read it on your phone before saving."
       ],
@@ -148,9 +147,9 @@
       "how": "Add profile section › Recommended › Add featured › + › a document or a link.",
       "example_label": "Result post",
       "example": [
-        "Best: the annual-report project summary (The Nothing CV p5 – Day 1), or a short post explaining one idea in your own words. **My pick:** the annual-report summary, as a one-page PDF marked practice.",
+        "**My pick:** the annual-report project summary (The Nothing CV p5 – Day 1), as a one-page PDF marked practice. Or a short post explaining one idea in your own words.",
         "No certificate for it? Add it under Projects too (Add profile section › Recommended › Projects), with the same PDF.",
-        "Before you upload: the proof rules on The Nothing CV p5 (no phone number, practice marked as practice, no client’s file). One strong item beats five weak ones. Not your CV: it carries your phone number.",
+        "Before you upload: the proof rules on The Nothing CV p5 (no phone number, practice marked as practice, no client’s file). No address or real names either. One strong item beats five weak ones.",
         "Nothing to show yet? Publish your result post, pin it, and swap it for a work sample later."
       ],
       "copy_label": "Your result post",
@@ -233,7 +232,7 @@
   ],
   "done": {
     "title": "All 12 ticked?",
-    "text": "Next, today: run the Posts search for your city, apply to anything that fits the same day, and note the partner or HR person behind each opening.",
+    "text": "Next, today: run the Posts search for your city, apply to anything that fits the same day, note the partner or HR person behind each opening, and send your first requests with notes to your top targets.",
     "links": [
       {
         "label": "LinkedIn search links",
@@ -259,13 +258,13 @@
         "copy": "CA Inter cleared ([Month Year]) | {sim} Work Simulation | Seeking articleship in [domain] | [City]"
       },
       "about": {
-        "copy": "I cleared CA Intermediate in [Month Year]. I’m looking for articleship in [domain] in [City].\nIn my {sim} Work Simulation I [one task you did, with a number].\nI want to learn [what you want to learn]. Write to me at [your email]."
+        "copy": "I cleared CA Intermediate in [Month Year]. I’m looking for articleship in [domain] in [City].\nIn my {sim} Work Simulation I [one task you did, in your CV’s words; a number if it has one].\nI want to learn [what you want to learn]. Write to me at [email]."
       },
       "featured": {
         "swap": [
           {
-            "for": "Best: the annual-report project summary (The Nothing CV p5 – Day 1), or a short post explaining one idea in your own words. **My pick:** the annual-report summary, as a one-page PDF marked practice.",
-            "line": "Best: your Work Simulation work sample (the vouching sheet with your findings), the annual-report project summary (The Nothing CV p5 – Day 1), or a short post explaining one idea in your own words. **My pick:** the work sample, as a one-page PDF."
+            "for": "**My pick:** the annual-report project summary (The Nothing CV p5 – Day 1), as a one-page PDF marked practice. Or a short post explaining one idea in your own words.",
+            "line": "**My pick:** your Work Simulation work sample (the vouching sheet with your findings), as a one-page PDF marked practice. Or the annual-report project summary (The Nothing CV p5 – Day 1), or a short post explaining one idea in your own words."
           }
         ],
         "also": {
