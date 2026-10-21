@@ -235,8 +235,8 @@ test('rows not live: no programme tool draws a link or a pointer to one (CV chec
     assert.deepEqual(findLinks(checklist).filter(P.isNotLiveRowLink), []);
     assert.deepEqual(notLive.filter(row => JSON.stringify(checklist).includes(row.title + ' –')), []);
     const attempts = checklist.items.find(item => item.id === 'groups-attempts');
-    // Row 4.4 not live: the check keeps its release-1 line (Practise your interview); its "needs" swap waits for the row.
-    assert.ok(attempts.example.includes('Both groups passed together, but not on the first try: one row, year only is fine; practise the attempts answer in Practise your interview – Day 4.'));
+    // Row 4.4 not live: the check keeps its line (the attempts answer in Guidebook ch 7, q8); the booklet link waits for the row.
+    assert.ok(attempts.example.some(line => /^Both groups together, not on the first try: .*Guidebook ch 7, q8\.$/.test(line)));
     assert.ok(!JSON.stringify(attempts).includes('HR round and GD booklet'));
     const syllabus = RELEASE_1.tracker.normaliseContent(CONTENT.syllabus);
     assert.deepEqual(Object.values(syllabus.booklets).filter(title => !P.isRowLive(title, 4)), []);
