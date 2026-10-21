@@ -3,6 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const test = require('node:test');
 const vm = require('node:vm');
+const Lms = require('../scripts/articleship-lms.js');
 
 const root = path.resolve(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'learning-management-system/index.html'), 'utf8');
@@ -57,7 +58,7 @@ test('an Articleship enrollment appears on the mobile dashboard and opens its co
     assert.equal(dashboard.enrolledCourses.length, 1);
     const course = dashboard.enrolledCourses[0];
     assert.equal(course.title, 'MSC Articleship Program');
-    assert.equal(course.videoCountEstimate, 13);
+    assert.equal(course.videoCountEstimate, 7, 'v3: one session per Day');
     assert.ok(fs.existsSync(path.resolve(root, 'learning-management-system', course.thumbnail)));
     assert.deepEqual(queries, [{ table: 'enrollment', columns: 'course', column: 'uuid', value: 'test-student' }]);
     dashboard.goToCourse(course.slug);
@@ -130,31 +131,38 @@ test('Articleship resource rows stay compact on a phone without changing other c
     assert.equal(compact('msc-ca-freshers-program'), false);
 });
 
-test('Explorer links select only an enrolled Articleship session and its named PDF preview', () => {
-    const rows = [{ video_number: 12, resources: [
-        { title: 'MSC Domain Roadmaps', view_storage_path: 'articleship-program-v2/day-5/domain-roadmaps/MSC Domain Roadmaps.pdf' },
-        { title: 'Domain firm shortlist', view_storage_path: 'articleship-program-v2/day-5/domain-firm-shortlist.pdf' }
+test('deep links select only an enrolled Articleship session and a programme PDF row; any other title opens its Day', () => {
+    const rows = [{ video_number: 6, resources: [
+        { title: 'Articleship registration process', view_storage_path: 'articleship-program-v3/day-6/Articleship registration process.pdf', copy: true },
+        { title: 'Industrial training guide', view_storage_path: 'articleship-program-v3/day-6/Industrial training guide.pdf' },
+        { title: 'Domain roadmaps', type: 'external_link', url: '/articleship-program/domain-roadmaps/' }
     ] }];
     const state = { courseSlug: 'msc-articleship-program', user: { id: 'student' }, isEnrolled: true };
     const window = { location: { search: '' } };
     const target = courseFunction('getArticleshipResourceTarget', { state, window, URLSearchParams,
         findVideoById: id => rows.find(row => row.video_number === id) });
-    for (const page of [7, 8, 10]) {
-        window.location.search = `?course=msc-articleship-program&session=12&resource=MSC%20Domain%20Roadmaps&page=${page}`;
+    for (const page of [2, 6, 9]) {
+        window.location.search = `?course=msc-articleship-program&session=6&resource=Articleship%20registration%20process&page=${page}`;
         const result = target();
-        assert.equal(result.video.video_number, 12);
-        assert.equal(result.resource.title, 'MSC Domain Roadmaps');
+        assert.equal(result.video.video_number, 6);
+        assert.equal(result.resource.title, 'Articleship registration process');
         assert.equal(result.page, page);
     }
-    window.location.search = '?session=12&resource=Domain%20firm%20shortlist';
-    assert.equal(target().resource.title, 'Domain firm shortlist');
+    window.location.search = '?session=6&resource=Industrial%20training%20guide';
+    assert.equal(target().resource.title, 'Industrial training guide');
     assert.equal(target().page, 1);
-    for (const query of ['?session=999&resource=MSC%20Domain%20Roadmaps', '?session=12&resource=https://evil.test/a.pdf',
-        '?session=12.5&resource=MSC%20Domain%20Roadmaps', '?session=-12&resource=MSC%20Domain%20Roadmaps']) {
+    // A title that is not a programme PDF of that session (a tool row, a row not in the course yet, a URL) opens the Day.
+    for (const query of ['?session=6&resource=Domain%20roadmaps', '?session=6&resource=GST%20booklet', '?session=6&resource=https://evil.test/a.pdf']) {
+        window.location.search = query;
+        assert.equal(target().video.video_number, 6);
+        assert.equal(target().resource, null);
+    }
+    for (const query of ['?session=999&resource=Industrial%20training%20guide', '?session=6.5&resource=Industrial%20training%20guide',
+        '?session=-6&resource=Industrial%20training%20guide']) {
         window.location.search = query;
         assert.equal(target(), null);
     }
-    window.location.search = '?session=12&resource=MSC%20Domain%20Roadmaps&page=-4';
+    window.location.search = '?session=6&resource=Industrial%20training%20guide&page=-4';
     assert.equal(target().page, 1);
     state.isEnrolled = false;
     assert.equal(target(), null);
@@ -173,6 +181,7 @@ test('an authorised resource link overrides the last session and opens its reque
         updateCourseProgress() {}, fetchWatchTimeForCourse: async () => {},
         getArticleshipResourceTarget: () => ({ video: { id: 12 }, resource, page: 8 }),
         selectVideo: async id => calls.push(['session', id]), setActiveTab: tab => calls.push(['tab', tab]),
+        articleshipLms: () => Lms, openCopyResource: async (...args) => calls.push(['copy', ...args]),
         openResourceViewer: async (...args) => calls.push(['viewer', ...args]) });
     await run();
     assert.equal(calls[0][0], 'session');
@@ -253,7 +262,7 @@ test('mobile Slides open the signed PDF in the MSC reader without requesting a d
             signed.push({ bucket, path, ttl });
             return { data: { signedUrl: 'https://signed.test/day-3.pdf' }, error: null };
         } }) } },
-        isDocxPreviewResource: () => false,
+        isDocxPreviewResource: () => false, articleshipLms: () => Lms,
         alert(message) { throw new Error(message); }
     });
     const resource = { title: 'Day 3 slides', type: 'pdf', group: 'Slides',
@@ -268,17 +277,56 @@ test('mobile Slides open the signed PDF in the MSC reader without requesting a d
     assert.equal(reader.searchParams.has('dl'), false);
 });
 
-test('the shared Experience Explorer link stays on mobile and its roadmap links return to the mobile LMS', async () => {
-    const window = { location: { href: '' }, open() { throw new Error('The Explorer must stay in this WebView'); } };
-    const run = courseFunction('handleResourceClick', { state: { courseSlug: 'msc-articleship-program' }, window });
-    await run({ title: 'Experience Explorer', type: 'external_link',
-        url: 'https://www.mystudentclub.com/articleship-program/experience-explorer/' });
-    assert.equal(window.location.href, '/articleship-program/experience-explorer/');
+test('programme tools (site paths, or the desktop host) open inside the WebView; other links leave it', async () => {
+    const opened = [];
+    const window = { location: { href: '' }, open(url) { opened.push(url); } };
+    const run = courseFunction('handleResourceClick', { state: { courseSlug: 'msc-articleship-program' }, window, articleshipLms: () => Lms });
+    for (const [url, expected] of [
+        ['/articleship-program/interview-tracker/', '/articleship-program/interview-tracker/'],
+        ['/ai-interview.html?mode=articleship', '/ai-interview.html?mode=articleship'],
+        ['/cv-builder/?stage=articleship', '/cv-builder/?stage=articleship'],
+        ['https://www.mystudentclub.com/articleship-program/experience-explorer/', '/articleship-program/experience-explorer/']
+    ]) {
+        window.location.href = '';
+        await run({ title: 'Tool', type: 'external_link', url });
+        assert.equal(window.location.href, expected, url);
+    }
+    assert.deepEqual(opened, []);
+    await run({ title: 'Join the MSC Articleship WhatsApp group', type: 'external_link', url: 'https://chat.whatsapp.com/abc' });
+    assert.deepEqual(opened, ['https://chat.whatsapp.com/abc'], 'WhatsApp and other sites go through the app');
+    // The v3 Explorer page loads its data and script from this branch and links back with site paths.
     const explorer = fs.readFileSync(path.join(root, 'articleship-program/experience-explorer/index.html'), 'utf8');
-    assert.match(explorer, /<meta name="viewport" content="width=device-width, initial-scale=1">/);
-    assert.match(explorer, /<script type="application\/json" id="msc-experience-data">/);
-    assert.match(explorer, /const course = '\/learning-management-system\/course\.html\?course=msc-articleship-program&session=12'/);
-    assert.ok(!/\bfetch\s*\(/.test(explorer), 'the hosted mobile Explorer has no missing sibling requests');
+    assert.match(explorer, /<meta name="viewport" content="width=device-width, initial-scale=1/);
+    assert.match(explorer, /\/scripts\/articleship-experience-explorer\.js/);
+    assert.ok(!/https:\/\/www\.mystudentclub\.com\/learning-management-system/.test(explorer));
+    assert.ok(fs.existsSync(path.join(root, 'articleship-program/experience-explorer/experiences.json')));
+});
+
+test('copy rows open the copyable reader in place (a click) or instead of the course page (a deep link)', async () => {
+    const signed = [];
+    const window = { location: { href: '', replace(url) { this.href = 'replaced:' + url; } }, open() { throw new Error('no second tab in the WebView'); } };
+    const supabase = { storage: { from: bucket => ({ createSignedUrl: async (path, ttl) => {
+        signed.push({ bucket, path, ttl });
+        return { data: { signedUrl: 'https://signed.test/application-templates.pdf' }, error: null };
+    } }) } };
+    const openCopy = courseFunction('openCopyResource', { window, supabase, articleshipLms: () => Lms, console, alert(message) { throw new Error(message); } });
+    const resource = { title: 'Application templates', copy: true, view_storage_path: 'articleship-program-v3/day-2/Application templates.pdf' };
+    await openCopy(resource, 8);
+    const reader = new URL(window.location.href, 'https://mobile.mystudentclub.com');
+    assert.equal(reader.pathname, '/ca-resource/read/');
+    assert.equal(reader.searchParams.get('pdf'), 'https://signed.test/application-templates.pdf');
+    assert.equal(reader.searchParams.get('page'), '8');
+    assert.equal(reader.searchParams.get('title'), 'Application templates');
+    await openCopy(resource, 1, { deepLink: true });
+    assert.match(window.location.href, /^replaced:\/ca-resource\/read\/\?pdf=/);
+    assert.equal(signed[0].bucket, 'industrial-training-mastery-resources');
+    assert.equal(signed[0].path, resource.view_storage_path);
+    // handleResourceClick routes a copy row there before any other rule.
+    const calls = [];
+    const click = courseFunction('handleResourceClick', { state: { courseSlug: 'msc-articleship-program' }, window, articleshipLms: () => Lms,
+        openCopyResource: async (...args) => calls.push(args) });
+    await click(resource);
+    assert.equal(calls[0][0], resource);
 });
 
 test('view-only Slides and external links omit dead download actions on mobile', () => {
@@ -316,22 +364,54 @@ test('compact mobile course names the active Day and session', () => {
 });
 
 test('mobile ZIP downloads explain that the gallery is for a laptop', () => {
-    const run = courseFunction('getResourceDownloadLabel', { isDocxPreviewResource: () => false });
+    const run = courseFunction('getResourceDownloadLabel', { isDocxPreviewResource: () => false, isCompactResourceCourse: () => true, articleshipLms: () => Lms });
     assert.equal(run({ type: 'zip', download_storage_path: 'gallery.zip' }), 'Download ZIP (for laptop)');
+    // Articleship v3 rows: the shared labels (Padam's sheets and the Master Excel test are Excel downloads).
+    assert.equal(run({ title: 'Top 100 Articleship Firms', type: 'xlsx', download_storage_path: 'articleship-program-v3/day-5/Top 100 Articleship Firms.xlsx' }), 'Download Excel');
+    assert.equal(run({ title: 'Post Articleship CVs', download_storage_path: 'a.pdf', download_label: 'Download to print' }), 'Download to print');
 });
 
-test('mobile follow-up template rows open their first follow-up page', async () => {
+test('template rows open the inline viewer at their page in other courses; the Articleship course never uses it', async () => {
     const calls = [];
-    const run = courseFunction('handleResourceClick', {
-        state: { courseSlug: 'msc-articleship-program' },
-        openResourceViewer: async (...args) => calls.push(args)
+    const window = { location: { href: '' }, open() { throw new Error('stay in the WebView'); } };
+    const make = slug => courseFunction('handleResourceClick', {
+        state: { courseSlug: slug }, window, articleshipLms: () => Lms, isDocxPreviewResource: () => false,
+        supabase: { storage: { from: () => ({ createSignedUrl: async () => ({ data: { signedUrl: 'https://signed.test/t.pdf' }, error: null }) }) } },
+        openResourceViewer: async (...args) => calls.push(args), alert(message) { throw new Error(message); }
     });
-    const resource = { title: 'Follow-up, thank-you and back-out mails', type: 'docx', group: 'Templates',
-        view_storage_path: 'articleship-program-v2/day-2/Articleship Mail Templates.pdf', page: 3 };
-    await run(resource);
+    const resource = { title: 'Follow-up mails', type: 'docx', group: 'Templates',
+        view_storage_path: 'industrial-training/Mail Templates.pdf', page: 3 };
+    await make('industrial-training-mastery')(resource);
     assert.equal(calls[0][0], resource);
     assert.equal(calls[0][1], 'pdf');
     assert.equal(calls[0][2], 3);
-    await run({ ...resource, page: '3' });
+    await make('industrial-training-mastery')({ ...resource, page: '3' });
     assert.equal(calls[1][2], 1);
+    await make('msc-articleship-program')({ ...resource, view_storage_path: 'articleship-program-v3/day-2/Back-out templates.pdf' });
+    assert.equal(calls.length, 2, 'no inline canvas viewer for the Articleship course');
+    assert.match(window.location.href, /^\/ca-resource\/\?pdf=/);
+});
+
+test('v3 rows: an Excel download-only row shows only its Download button, a tool row only Open', () => {
+    const resources = [
+        { title: 'Top 100 Articleship Firms', type: 'xlsx', group: 'Choose your domain', download_storage_path: 'articleship-program-v3/day-5/Top 100 Articleship Firms.xlsx' },
+        { title: 'Domain roadmaps', type: 'external_link', group: 'Choose your domain', url: '/articleship-program/domain-roadmaps/' }
+    ];
+    const DOMElements = { courseTabsContainer: { innerHTML: '', appendChild() {} }, tabContents: {
+        overview: {}, resources: { innerHTML: '', querySelectorAll: () => [] }
+    } };
+    const element = () => ({ style: {}, dataset: {}, classList: { add() {} }, addEventListener() {} });
+    const run = courseFunction('renderTabsAndContent', { state: { currentVideoId: 1 }, DOMElements,
+        document: { createElement: element }, findVideoById: () => ({ resources }),
+        isCompactResourceCourse: () => true, getResourceViewLabel: r => (r.type === 'external_link' ? 'Open' : 'View'),
+        getResourceDownloadLabel: () => 'Download Excel', getResourceFormatNote: () => '', getResourceIcon: () => ''
+    });
+    run();
+    const html = DOMElements.tabContents.resources.innerHTML;
+    const items = html.split('<li class="resource-item">').slice(1);
+    assert.equal(items.length, 2);
+    assert.ok(!/resource-btn-view/.test(items[0]), 'no View for an .xlsx (the PDF viewer cannot show it)');
+    assert.match(items[0], /resource-btn-download"[^>]*><i class="fas fa-download"><\/i> Download Excel/);
+    assert.match(items[1], /resource-btn-view[\s\S]*Open/);
+    assert.ok(!/resource-btn-download/.test(items[1]));
 });

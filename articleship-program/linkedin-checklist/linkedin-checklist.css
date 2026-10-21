@@ -179,6 +179,53 @@ body.ap-page .ap-topbar { background: var(--ap-panel); }
 .lc-error { display: grid; gap: 12px; justify-items: start; }
 .lc-error p { margin: 0; }
 
+/* "Examples for: Statutory audit · Change": the word Change carries an invisible select over it (native picker). */
+.lc-domain { margin: 8px 0 0; color: var(--ap-muted); font-size: 14px; line-height: 1.45; }
+.lc-domain-name { color: var(--ap-navy); font-weight: 700; }
+.lc-domain-dot { margin: 0 6px; }
+.lc-domain-change {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--ap-primary);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    cursor: pointer;
+}
+.lc-domain-change select {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    opacity: 0;
+    font-size: 16px; /* iOS zooms into smaller fields */
+    cursor: pointer;
+}
+.lc-domain-change:focus-within { outline: 3px solid color-mix(in srgb, var(--ap-primary) 40%, transparent); outline-offset: 2px; border-radius: 4px; }
+
+/* Phone: one floating "Open my profile" pill, shown once the open card has scrolled away (the script adds is-shown). */
+.lc-fab {
+    position: fixed;
+    right: 16px;
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    z-index: 30;
+    display: none;
+    align-items: center;
+    gap: 6px;
+    min-height: 44px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    background: var(--ap-primary);
+    color: #fff;
+    font: 600 15px/1 var(--ap-sans);
+    text-decoration: none;
+    box-shadow: var(--ap-shadow-md);
+}
+.lc-fab::after { content: '\2197'; font-weight: 700; }
+.lc-fab.is-shown { display: inline-flex; }
+.lc-fab:focus-visible { outline: 3px solid color-mix(in srgb, var(--ap-primary) 40%, transparent); outline-offset: 2px; }
+
 /* Phone: an open fold-out uses the whole card, not the column beside the tick box; tap targets 44 px. */
 @media (max-width: 599px) {
     .lc-list .ap-cl-example[open] { flex-basis: calc(100% + 64px); margin-left: -64px; }
@@ -227,14 +274,14 @@ body.ap-page .ap-topbar { background: var(--ap-panel); }
     /* No app on a laptop, so no app hint. */
     .lc-open-hint { display: none; }
     .lc-list .ap-progress { top: 72px; }
-    /* The sidebar's "Open my profile" is always in view here, so the repeats on each check go. */
-    .lc-list .lc-fix-profile { display: none; }
+    /* The sidebar's "Open my profile" is always in view here, so no floating pill. */
+    .lc-fab, .lc-fab.is-shown { display: none; }
     .lc-on-wide { display: inline; }
     .lc-on-phone { display: none; }
 }
 
 @media print {
-    .lc-open, .lc-copy-btn, .lc-note-link { display: none; }
+    .lc-open, .lc-copy-btn, .lc-note-link, .lc-fab, .lc-domain { display: none !important; }
     .lc-example { background: none; border: 1px solid #ccc; }
     .ap-cl-example .lc-example p { border: 0; }
     .lc-side { position: static; }

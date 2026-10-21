@@ -5,6 +5,8 @@
  * - When the student is signed in and the table `public.articleship_tool_progress` exists, it also keeps one row per
  *   tool in their account (RLS: own rows only). Without the table, or on any network error, it stays local silently.
  * - Holds the shared settings every tool reads: "my domain" (+ backup) and the CV Recommender's pick for the CV Builder.
+ * - Holds the one release switch every tool reads: WORK_SIMULATION_LIVE (false in release 1: no tool shows, links or
+ *   promises the Work Simulation), with releaseText()/releaseContent() to draw content for the release.
  *
  * Browser: window.MSCArticleshipProgress. Node (tests): require('./scripts/articleship-progress.js').
  * API reference: msc-content/articleship-program/v3/build/tools/PLATFORM.md
@@ -64,6 +66,278 @@
     });
 
     const SITUATIONS = Object.freeze(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']);
+
+    // ---------- Release switch: the Work Simulation ----------
+    // Release 1 ships every programme row except the Work Simulation (row 1.6; Padam's release plan, 20 Oct 2026). While
+    // this is false, no tool shows, links, imports or promises the Work Simulation, and nothing breaks without it.
+    // Release 2: set it to true (the one line every tool reads) and every Work Simulation part is back.
+    const WORK_SIMULATION_LIVE = false;
+
+    // ---------- Release switch: course rows not in the course yet ----------
+    // The rows whose files are still being finished (the Day 4 booklets and the Interview syllabus), the Automail row
+    // (added by 004 once its master Sheet link is set) and the Work Simulation. No tool links to one of these, says
+    // "Read in <title>", or points a student to "<title> – Day N" while it is listed here. When a row goes into the
+    // course (003 / 004 run), delete its line here: the links come back with no other change. Kept equal to the LMS
+    // build (rows in lms-rows.json that are not in rows-release-1.json) by tests/articleship-release.test.cjs.
+    const ROWS_NOT_LIVE = Object.freeze([
+        // Row 1.6 follows WORK_SIMULATION_LIVE (its text and links are the Work Simulation rules' job below).
+        ...(WORK_SIMULATION_LIVE ? [] : [Object.freeze({ row: '1.6', day: 1, title: 'Work Simulation' })]),
+        Object.freeze({ row: '2.6', day: 2, title: 'Automail' }),
+        Object.freeze({ row: '4.2', day: 4, title: 'Interview syllabus' }),
+        Object.freeze({ row: '4.3', day: 4, title: 'Articleship Interview Guide' }),
+        Object.freeze({ row: '4.4', day: 4, title: 'HR round and GD booklet' }),
+        Object.freeze({ row: '4.5', day: 4, title: 'Core accounting booklet' }),
+        Object.freeze({ row: '4.6', day: 4, title: 'Statutory audit booklet' }),
+        Object.freeze({ row: '4.7', day: 4, title: 'Internal audit booklet' }),
+        Object.freeze({ row: '4.8', day: 4, title: 'Direct tax booklet' }),
+        Object.freeze({ row: '4.9', day: 4, title: 'GST booklet' }),
+        Object.freeze({ row: '4.10', day: 4, title: 'Specialist teams booklet' })
+    ]);
+    const COURSE_PATH = /^(?:https:\/\/(?:www\.|mobile\.)?mystudentclub\.com)?\/learning-management-system\/course(?:\.html)?\/?(?:[?#]|$)/i;
+
+    /** Is this course row in the course? By title (any Day) or by title and Day; an unknown title counts as live. */
+    function isRowLive(title, day) {
+        const name = String(title == null ? '' : title).trim().toLowerCase();
+        if (!name) return true;
+        return !ROWS_NOT_LIVE.some(row => row.title.toLowerCase() === name &&
+            (day === undefined || day === null || Number(day) === row.day));
+    }
+
+    /** A link into the course (…/course?course=msc-articleship-program&session=N&resource=T) to a row not in it yet. */
+    function isNotLiveRowLink(href) {
+        if (typeof href !== 'string' || !COURSE_PATH.test(href.trim())) return false;
+        let params;
+        try { params = new URL(href.trim(), 'https://www.mystudentclub.com').searchParams; } catch (error) { return false; }
+        const course = params.get('course');
+        if (course && course !== 'msc-articleship-program') return false;
+        const title = params.get('resource');
+        if (!title) return false;
+        const session = Number(params.get('session'));
+        return !isRowLive(title, Number.isInteger(session) && session > 0 ? session - 1 : undefined);
+    }
+
+    // "<title> – Day N" (the programme's pointer form) or "Read in <title>", for a row that is not in the course yet.
+    const NOT_LIVE_POINTER = new RegExp('(?:\\bread in (?:the )?)?\\b(?:' + ROWS_NOT_LIVE
+        .filter(row => row.row !== '1.6')
+        .map(row => row.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+        .join('|') + ')(?:\\s*[–—-]\\s*Day\\s*\\d\\b|(?=[\\s.,;:)]|$)(?!\\s+tracker))', 'i');
+
+    function namesNotLiveRow(value) {
+        return typeof value === 'string' && NOT_LIVE_POINTER.test(value);
+    }
+
+    /**
+     * One plain sentence without its pointer to a row not in the course yet: the "; …" or ", …" clause or the bracket
+     * that holds it goes; a sentence that is nothing but the pointer goes whole ('' back).
+     */
+    function sentenceWithoutRow(body) {
+        let s = body;
+        for (let guard = 0; guard < 6 && NOT_LIVE_POINTER.test(s); guard++) {
+            const before = s;
+            s = s.replace(/\s*\([^()]*\)/g, part => (NOT_LIVE_POINTER.test(part) ? '' : part));
+            if (s !== before) continue;
+            const semi = s.split(/;\s+/);
+            if (semi.length > 1 && semi.some(part => !NOT_LIVE_POINTER.test(part))) {
+                s = semi.filter(part => !NOT_LIVE_POINTER.test(part)).join('; ');
+                continue;
+            }
+            const comma = s.split(/,\s+/);
+            if (comma.length > 1 && !NOT_LIVE_POINTER.test(comma[0])) {
+                const at = comma.findIndex(part => NOT_LIVE_POINTER.test(part));
+                s = comma.slice(0, at).join(', ');
+                continue;
+            }
+            return '';
+        }
+        return NOT_LIVE_POINTER.test(s) ? '' : s;
+    }
+
+    /** A text (plain, one or more sentences) without its pointers to rows not in the course yet. */
+    function withoutNotLiveRows(value) {
+        const text = String(value);
+        if (!NOT_LIVE_POINTER.test(text)) return text;
+        const pieces = [];
+        const end = /[.!?]+(?=\s|$)\s*/g;
+        let start = 0;
+        let match;
+        while ((match = end.exec(text))) {
+            pieces.push(text.slice(start, end.lastIndex));
+            start = end.lastIndex;
+        }
+        if (start < text.length) pieces.push(text.slice(start));
+        const out = pieces.map(piece => {
+            if (!NOT_LIVE_POINTER.test(piece)) return piece;
+            const parts = piece.match(/^(\s*)([\s\S]*?)([.!?]*)(\s*)$/);
+            const kept = sentenceWithoutRow(parts[2]);
+            return kept ? parts[1] + kept + parts[3] + parts[4] : '';
+        }).join('');
+        if (!out.trim()) return '';
+        return /\s$/.test(text) ? out : out.replace(/\s+$/, '');
+    }
+
+    const WS_WORDS = /\bwork[\s-]?simulations?\b/i;
+    const WS_LINK = /\/articleship-program\/work-simulation(?:[/?#]|$)|[?&]resource=work(?:\+|%20|\s)simulation(?:[&#]|$)/i;
+    const WS_LINE = /^\s*\{ws\}[ \t]?/;
+    const NO_WS_LINE = /^\s*\{no-ws\}[ \t]?/;
+
+    /** The release a tool draws: an explicit true/false (a test, a preview) wins, else WORK_SIMULATION_LIVE. */
+    function workSimulationLive(override) {
+        return typeof override === 'boolean' ? override : WORK_SIMULATION_LIVE;
+    }
+
+    function mentionsWorkSimulation(value) {
+        return value !== undefined && value !== null && WS_WORDS.test(String(value));
+    }
+
+    /** A link to the Work Simulation page, or to its row in the course. */
+    function isWorkSimulationLink(href) {
+        return typeof href === 'string' && WS_LINK.test(href);
+    }
+
+    function capitalise(value) {
+        return value.replace(/^(\s*["“‘'(]*)([a-z])/, (match, lead, letter) => lead + letter.toUpperCase());
+    }
+
+    /**
+     * One sentence (no terminal punctuation) without the Work Simulation, or '' when nothing true is left. In order:
+     * a list item that names it ("Excel, a job simulation, a Work Simulation level, a project"); a ", and" clause that
+     * names it; a clause ending "…Work Simulation and <the rest>" (the rest kept); a short " and Work Simulation level"
+     * (≤ 3 words); a clause after "…job simulations and" (the job simulations kept). Anything else goes whole.
+     */
+    function sentenceWithout(body) {
+        let s = body;
+        for (let guard = 0; guard < 8 && WS_WORDS.test(s); guard++) {
+            const before = s;
+            // 1. A list item (between commas, or the last one before a bracket closes).
+            s = s.replace(/,\s*(?:and\s+|or\s+)?[^,;:()]*\bwork[\s-]?simulations?\b[^,;:()]*(?=\s*[,)])/i, '');
+            if (s !== before) continue;
+            s = s.replace(/\(\s*[^,;:()]*\bwork[\s-]?simulations?\b[^,;:()]*,\s*/i, '(');
+            if (s !== before) continue;
+            // 2. ", and" clauses: keep the ones that do not name it.
+            const parts = s.split(/,\s+and\s+/);
+            if (parts.length > 1) {
+                const keep = parts.filter(part => !WS_WORDS.test(part));
+                if (keep.length && keep.length < parts.length) { s = capitalise(keep.join(', and ')); continue; }
+            }
+            // 3. "<what was done in it> Work Simulation and <something else>".
+            const after = s.match(/\bwork[\s-]?simulation\s+and\s+(.+)$/i);
+            if (after && !WS_WORDS.test(after[1])) { s = capitalise(after[1]); continue; }
+            // 4. "Every job simulation and Work Simulation level": the short phrase goes.
+            s = s.replace(/\s+(?:and|or)\s+(?:[\w’'&-]+\s+){0,3}?work[\s-]?simulations?(?:\s+(?:levels?|lines?))?\b/i, '');
+            if (s !== before) continue;
+            // 5. "Completed two job simulations and <work done in it>": the job simulations stay.
+            const split = s.match(/^(.*\bsimulations?)\s+and\s+(.*)$/i);
+            if (split && !WS_WORDS.test(split[1]) && WS_WORDS.test(split[2])) { s = split[1]; continue; }
+            return '';
+        }
+        return WS_WORDS.test(s) ? '' : s;
+    }
+
+    /** Plain text (one line, no tags) without the sentences, clauses or list items that name the Work Simulation. */
+    function plainWithout(text) {
+        if (!WS_WORDS.test(text)) return text;
+        // A sentence ends at . ! ? followed by a space or the end ("cut-off?” “What…" stays one: a quote is not a space).
+        const pieces = [];
+        const end = /[.!?]+(?=\s|$)\s*/g;
+        let start = 0;
+        let match;
+        while ((match = end.exec(text))) {
+            pieces.push(text.slice(start, end.lastIndex));
+            start = end.lastIndex;
+        }
+        if (start < text.length) pieces.push(text.slice(start));
+        const out = pieces.map(piece => {
+            if (!WS_WORDS.test(piece)) return piece;
+            const parts = piece.match(/^(\s*)([\s\S]*?)([.!?]*)(\s*)$/);
+            const kept = sentenceWithout(parts[2]);
+            return kept ? parts[1] + kept + parts[3] + parts[4] : '';
+        }).join('');
+        return /\s$/.test(text) ? out : out.replace(/\s+$/, '');
+    }
+
+    /** A text (plain or HTML) without the Work Simulation; tags are kept, emptied paragraphs and list items go. */
+    function withoutWorkSimulation(value) {
+        const text = String(value);
+        if (!WS_WORDS.test(text)) return text;
+        if (!/<[a-z/][^>]*>/i.test(text)) return plainWithout(text);
+        const html = text.split(/(<[^>]+>)/).map(part => (part.startsWith('<') ? part : plainWithout(part))).join('')
+            .replace(/<(p|li|strong|em|b|i|span)(\s[^>]*)?>\s*<\/\1>/gi, '');
+        return html.replace(/<[^>]+>/g, '').trim() ? html : '';
+    }
+
+    /**
+     * One text for this release. Lines may start with `{ws}` (shown only once the Work Simulation is out) or `{no-ws}`
+     * (shown only before); the marker never shows. Before it is out, any other line that names the Work Simulation
+     * loses that sentence, clause or list item, or goes whole. Non-strings come back as they are.
+     */
+    function releaseText(value, override) {
+        if (typeof value !== 'string') return value;
+        const live = workSimulationLive(override);
+        const marked = /\{(?:no-)?ws\}/.test(value);
+        if (!marked && (live || !WS_WORDS.test(value))) return value;
+        const lines = value.split('\n').map(line => {
+            if (WS_LINE.test(line)) return live ? line.replace(WS_LINE, '') : null;
+            if (NO_WS_LINE.test(line)) return live ? null : line.replace(NO_WS_LINE, '');
+            if (live || !WS_WORDS.test(line)) return line;
+            const kept = withoutWorkSimulation(line);
+            return kept.trim() ? kept : null;
+        });
+        return lines.filter(line => line !== null).join('\n');
+    }
+
+    // Keys whose strings are ids, paths, patterns or lookups, never words a student reads: left as they are.
+    const RELEASE_SKIP = Object.freeze(['id', 'ids', 'slug', 'href', 'url', 'link_href', 'path', 'src', 'icon', 'match',
+        'find', 'tool', 'type', 'kind', 'domain', 'day', 'row', 'page', 'file', 'templateFile', 'storage_path',
+        'view_storage_path', 'download_storage_path', 'situation', 'persona', 'design']);
+    // A key that names its object: when its text goes, the whole object goes (a check, a topic, a question, a link).
+    const RELEASE_NAMES = Object.freeze(['check', 'topic', 'title', 'q', 'question', 'name', 'label', 'text', 'line']);
+
+    /**
+     * Content JSON for this release (a copy; the input is never changed). Before the Work Simulation is out: every
+     * student-facing string goes through releaseText, a list item or object whose naming text (RELEASE_NAMES) went is
+     * dropped, and so is any object that links to the Work Simulation (href / url / link). Once it is out: only the
+     * `{ws}` / `{no-ws}` markers are resolved. options: { workSimulationLive, skip: [extra keys left as they are] }.
+     */
+    function releaseContent(content, options) {
+        const opts = options || {};
+        const live = workSimulationLive(opts.workSimulationLive);
+        const skip = new Set(RELEASE_SKIP.concat(Array.isArray(opts.skip) ? opts.skip : []));
+        const names = new Set(RELEASE_NAMES);
+        // Rows not in the course yet (ROWS_NOT_LIVE): their links and pointers go too, unless the caller says
+        // `rows: false` (a tool with its own built-rows list) or every row is treated as in the course (`rows: 'all'`).
+        const rows = opts.rows !== false && opts.rows !== 'all';
+        const GONE = {};
+        function walk(node, key) {
+            if (typeof node === 'string') {
+                if (skip.has(key)) return node;
+                let out = releaseText(node, live);
+                if (rows && typeof out === 'string') out = withoutNotLiveRows(out);
+                return out === '' && node.trim() !== '' ? GONE : out;
+            }
+            if (Array.isArray(node)) {
+                const out = [];
+                node.forEach(item => { const value = walk(item, key); if (value !== GONE) out.push(value); });
+                return out;
+            }
+            if (node && typeof node === 'object') {
+                if (!live && ['href', 'url', 'link'].some(k => isWorkSimulationLink(node[k]))) return GONE;
+                if (rows && ['href', 'url', 'link'].some(k => !isWorkSimulationLink(node[k]) && isNotLiveRowLink(node[k]))) return GONE;
+                const out = {};
+                for (const k of Object.keys(node)) {
+                    const value = walk(node[k], k);
+                    if (value === GONE) {
+                        if (names.has(k)) return GONE;
+                        continue;
+                    }
+                    out[k] = value;
+                }
+                return out;
+            }
+            return node;
+        }
+        const result = walk(content, '');
+        return result === GONE ? null : result;
+    }
 
     function slugify(value) {
         return String(value == null ? '' : value).trim().toLowerCase()
@@ -532,6 +806,8 @@
 
     return Object.freeze({
         TABLE, KEY_PREFIX, SETTINGS_TOOL, MAX_BYTES, DOMAINS, SITUATIONS,
+        WORK_SIMULATION_LIVE, workSimulationLive, mentionsWorkSimulation, isWorkSimulationLink, withoutWorkSimulation,
+        releaseText, releaseContent, ROWS_NOT_LIVE, isRowLive, isNotLiveRowLink, namesNotLiveRow, withoutNotLiveRows,
         normaliseDomain, domainLabel, isValidTool, storageKey, isMissingTableError, reconcile,
         createStore, open, settings, getMyDomain, getBackupDomain, setMyDomain,
         normaliseCvPick, setCvPick, getCvPick, onSettingsChange,

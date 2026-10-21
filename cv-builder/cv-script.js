@@ -64,8 +64,65 @@
             if (isArticleshipTemplate(cvData.templateFile)) templateCollection = 'articleship';
             if (collectionSelect) collectionSelect.value = templateCollection;
             if (templateCollection === 'articleship' && !hasArticleshipDraftData(cvData)) {
-                cvData = catalog.createStarter(catalog.templates[0].file, getDefaultTableSettings());
+                cvData = window.MSCArticleshipStage?.blankCv?.(cvData, getDefaultTableSettings())
+                    || catalog.createStarter(catalog.templates[0].file, getDefaultTableSettings());
             }
+        }
+
+        // The articleship stage's panel (articleship-program/cv-builder/stage.js) works on the CV through this host.
+        function articleshipStageHost() {
+            return {
+                getCv: () => cvData,
+                setCv(next, options = {}) {
+                    cvData = next;
+                    ensureCvDataShape();
+                    normalizeSectionOrder();
+                    renderEditor();
+                    updateProgress();
+                    const select = document.getElementById('template-select');
+                    if (options.templateFile && select && options.templateFile !== select.value) {
+                        select.value = options.templateFile;
+                        changeTemplate();
+                    } else {
+                        updateArticleshipEditor();
+                        postToFrame();
+                    }
+                },
+                templateFile: () => getSelectedTemplateFile(),
+                useTemplate(file) {
+                    const select = document.getElementById('template-select');
+                    if (!select || select.value === file) return;
+                    select.value = file;
+                    changeTemplate();
+                },
+                choose: (file, name) => selectTemplate(file, name),
+                // The mobile builder has no template paywall: every design is open.
+                isLocked: () => false,
+                accessChecked: () => true,
+                gallery: () => (window.MSCArticleship?.templates || []).filter(template => template.kind === 'gallery'),
+                collection: () => templateCollection,
+                openTemplates: () => toggleTemplateSidebar(true),
+                closeTemplates: () => toggleTemplateSidebar(false),
+                renderCards: () => renderTemplateCards(),
+                syncName: () => syncCurrentTemplateName(),
+                setFont: key => { cvData.themeFont = String(key || ''); postToFrame(); },
+                // True when the CV no longer fits one A4 page at its own size: the layout has shrunk its text to fit
+                // (--content-scale under 0.92), or the page runs past A4 (every layout is 1414 px high, whatever its
+                // width).
+                overflow() {
+                    try {
+                        const doc = document.getElementById('cv-frame')?.contentDocument;
+                        const page = doc?.getElementById('cv-page');
+                        if (!page || !page.offsetWidth) return false;
+                        const scale = parseFloat(doc.documentElement.style.getPropertyValue('--content-scale'));
+                        if (Number.isFinite(scale) && scale < 0.92) return true;
+                        return Math.max(page.scrollHeight, page.offsetHeight) > 1414 * 1.02;
+                    } catch (_) {
+                        return false;
+                    }
+                },
+                toast: message => showToast(message)
+            };
         }
 
         function applyArticleshipStarter(file) {
@@ -82,6 +139,7 @@
             const active = isArticleshipTemplate();
             const experience = document.querySelector('details[data-section="experience"]');
             if (experience && active && !hasContentInList(cvData.experience)) experience.open = false;
+            document.body.classList.toggle('articleship-mode', active || templateCollection === 'articleship');
             const tagline = document.getElementById('inp-tagline');
             if (tagline) tagline.placeholder = active ? 'CA Intermediate | Both groups cleared' : 'e.g. CA Final | Flipkart';
         }
@@ -122,13 +180,13 @@
         
         const DEMO_PREVIEW_DATA = {
             personal: {
-                name: "Padam Bhansali",
+                name: "[Your name]",
                 tagline: "CA Intermediate",
                 contact: "",
-                phone: "+91 7228881182",
-                email: "capadambhansali@gmail.com",
-                linkedin: "linkedin.com/in/ca-padam-bhansali",
-                location: "Kandivali West, Mumbai",
+                phone: "",
+                email: "",
+                linkedin: "",
+                location: "[City]",
                 socialLinks: []
             },
             summary: "Detail-oriented articled trainee with strong exposure to GST compliance, internal controls, and audit support. Looking to contribute in a high-impact finance and compliance role.",
@@ -270,6 +328,7 @@
             initResizeHandle();
             resetEditorScrollToTop();
             requestAnimationFrame(() => resetEditorScrollToTop());
+            window.MSCArticleshipStage?.init?.(articleshipStageHost());
         };
 
         function resetEditorScrollToTop() {
@@ -2658,6 +2717,10 @@
         function renderTemplateCards() {
             const grid = document.getElementById('template-grid');
             const currentTemplate = document.getElementById('template-select').value;
+            if (templateCollection === 'articleship' && window.MSCArticleshipStage?.renderTemplateCards?.(grid, currentTemplate)) {
+                initLazyLoading();
+                return;
+            }
             
             const templates = templateCollection === 'articleship' ? TEMPLATES.filter(t => isArticleshipTemplate(t.file)) : TEMPLATES;
             grid.innerHTML = templates.map(t => `
@@ -2666,7 +2729,7 @@
                         <iframe data-src="${getTemplateRenderFile(t.file)}" data-template="${t.file}"></iframe>
                         <div class="template-loading" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:12px;color:#9ca3af;">Loading...</div>
                     </div>
-                    <div class="template-card-name">${t.name}</div>
+                    <div class="template-card-name">${t.name}${t.file === 'articleship-classic-academic' ? ' <span class="articleship-pick">My pick</span>' : ''}</div>
                 </div>
             `).join('');
             
@@ -2783,18 +2846,26 @@
             const hasDraft = isArticleshipTemplate(templateFile) ? hasArticleshipDraftData(cvData) : hasUserEnteredData(cvData);
             const useArticleshipDemo = useDemoFallback && isArticleshipTemplate(templateFile)
                 && (!hasDraft || window.MSCArticleship.hasUnchangedStarterContent(cvData));
-            const source = useArticleshipDemo
+            const stageSource = useDemoFallback && templateCollection === 'articleship'
+                ? window.MSCArticleshipStage?.previewSource?.(templateFile) : null;
+            const source = stageSource || (useArticleshipDemo
                 ? window.MSCArticleship.createStarter(templateFile, getDefaultTableSettings())
-                : ((useDemoFallback && !hasDraft) ? DEMO_PREVIEW_DATA : cvData);
+                : ((useDemoFallback && !hasDraft) ? DEMO_PREVIEW_DATA : cvData));
             const payload = JSON.parse(JSON.stringify(source));
+            const articleshipTemplate = window.MSCArticleship?.getTemplate(templateFile);
+            payload.articleshipApplicant = Boolean(articleshipTemplate);
+            payload.articleshipGallery = articleshipTemplate?.kind === 'gallery';
+            payload.articleshipLayoutName = window.MSCArticleshipStage?.layoutName?.(templateFile) || articleshipTemplate?.name || '';
             if (!payload.sectionOrder || !payload.sectionOrder.length) payload.sectionOrder = [...BASE_SECTION_ORDER];
             if (!payload.personal) payload.personal = { name: "", tagline: "", contact: "", phone: "", email: "", linkedin: "", location: "", socialLinks: [] };
             if (!payload.personal.socialLinks) payload.personal.socialLinks = [];
             payload.themeAccent = normalizeHexColor(payload.themeAccent || cvData.themeAccent || '');
             payload.themeFont = String(payload.themeFont || cvData.themeFont || '').trim();
-            payload.sectionTitles = useArticleshipDemo ? (source.sectionTitles || {}) : (cvData.sectionTitles || {});
-            payload.sectionGroups = useArticleshipDemo ? (source.sectionGroups || {}) : (cvData.sectionGroups || {});
-            payload.sectionLabels = useArticleshipDemo ? (source.sectionLabels || {}) : (cvData.sectionLabels || {});
+            window.MSCArticleshipStage?.theme?.(templateFile, payload);
+            const fromSource = Boolean(stageSource || useArticleshipDemo);
+            payload.sectionTitles = fromSource ? (source.sectionTitles || {}) : (cvData.sectionTitles || {});
+            payload.sectionGroups = fromSource ? (source.sectionGroups || {}) : (cvData.sectionGroups || {});
+            payload.sectionLabels = fromSource ? (source.sectionLabels || {}) : (cvData.sectionLabels || {});
             applyFormattedContact(payload);
             return payload;
         }
@@ -2842,6 +2913,7 @@
             if (!skipHistory) pushUndoStateFromCurrent();
             updateUndoRedoControls();
             window.syncPreviewControls?.();
+            window.MSCArticleshipStage?.onChange?.();
         }
 
         function changeTemplate(options = {}) {
@@ -3045,7 +3117,7 @@ async function downloadCvFile(format = 'pdf') {
         // We grab the entire <html>...</html> including <head> (styles/fonts)
         // and <body> (content). This way the Worker's Chromium renders it
         // with the exact same styling the user sees in the preview.
-        const fullHTML = '<!DOCTYPE html>' + doc.documentElement.outerHTML;
+        const fullHTML = '<!DOCTYPE html>' + (window.MSCArticleshipStage?.exportHtml?.(doc) || doc.documentElement.outerHTML);
 
         // ── Step 2: POST the HTML to our Cloudflare Worker ───────────
         // Includes a retry mechanism to gracefully handle high traffic (429 errors).
@@ -4197,7 +4269,7 @@ async function deliverDownloadedBlob(blob, filename) {
         // Auto-start tour for first-time visitors
         document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => {
-                if (!localStorage.getItem('cv_tour_completed')) {
+                if (!localStorage.getItem('cv_tour_completed') && templateCollection !== 'articleship') {
                     startTour();
                 }
             }, 1200); // Delay to ensure page is fully loaded

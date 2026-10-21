@@ -3,23 +3,32 @@
  * Twelve profile checks on the shared checklist engine, each with a good example and a link that opens the student's
  * own LinkedIn profile (or the exact LinkedIn page for that check). Ticks save through the progress engine.
  *
- * This file adds the page around the engine: the content load, the "Open my profile" card, a one-line "How:" click path
- * under each check, a default "Open my profile" link on every check (lighter, so the repeats don't shout; on a phone
- * only, since every default check's click path starts at the profile: from 960 px the sidebar's button is always in
- * view, so the CSS hides the repeats), examples drawn line by line ("> " lines = sample text in a white box; short
- * "Label:" lead-ins in bold), white Copy boxes (headline formula, About lines, result post, recommendation request) at
- * the top of their fold-outs, the shared "my domain" filled into the Copy boxes and examples, and the notes after the
- * last check.
+ * This file adds the page around the engine: the content load, the "Open my profile" card (and, on a phone, one
+ * floating "Open my profile" pill once that card has scrolled away, instead of the same link under every check; from
+ * 960 px the sidebar's button is always in view), a one-line "How:" click path under each check, the "Examples for:
+ * <my domain> · Change" line under the lede (the shared setting, MSCArticleshipProgress.setMyDomain), examples drawn
+ * line by line ("> " lines = sample text in a white box; short "Label:" lead-ins in bold), white Copy boxes (headline
+ * formula, About lines, result post, recommendation request) at the top of their fold-outs, the shared "my domain"
+ * filled into the Copy boxes and examples, and the notes after the last check.
+ *
+ * Release flag: WORK_SIMULATION_LIVE (below). While false (release 1 ships without row 1.6), nothing on the page names,
+ * links or promises the Work Simulation: lines marked `{ws}` are left out, lines marked `{no-ws}` are shown instead,
+ * `copy_ws` is not used, an `also` link with `ws: true` is not drawn, and the worked About example uses `proof_now`.
+ * Release 2 flips the flag (the tests check the Work Simulation page is then on the branch).
  *
  * Content JSON (articleship-program/linkedin-checklist/linkedin-checklist.json) = the engine's schema plus optional
  * `intro` (the lede beside a laptop) + `intro_phone` (under 960 px, where the profile can't sit next to the page);
  * `open` { label, href, hint }; per item `how` (one line), `example_label` (the fold-out's name), `copy` + `copy_label`
- * + `copy_aria`, `also` { label, href } (a second link beside the fix link); `notes` [{ title, text, link: { label, href } }];
- * `proofs` { <domain slug>: one About line }. Domain tokens, filled from MSCArticleshipProgress.getMyDomain() and
- * refilled when it changes: `[domain]` (Copy boxes) and `{domain|statutory audit}` (examples: the default until the
- * student has set "my domain"); `{sim|Statutory Audit}` = that domain's Work Simulation name (SIM_NAME, the names in the
- * CV Recommender's Work Simulation lines); `{proof}` = that domain's line from `proofs` (statutory audit's until a domain
- * is set), so the worked About example is one person in one domain.
+ * + `copy_aria`, `copy_ws` (the Copy text once the Work Simulation is out and a domain is set: the proof filled in),
+ * `also` { label, href, ws } (a second link beside the fix link; `ws: true` = only once the Work Simulation is out);
+ * `notes` [{ title, text, link: { label, href } }]; `proofs` { <domain slug>: one About line from that domain's Work
+ * Simulation }; `proof_now` (the About line while the Work Simulation is not out: one any student can earn today).
+ * Example, copy and note lines may start with `{ws}` or `{no-ws}` (see the release flag). Domain tokens, filled from
+ * MSCArticleshipProgress.getMyDomain() and refilled when it changes: `[domain]` (Copy boxes) and
+ * `{domain|statutory audit}` (examples: the default until the student has set "my domain"); `{sim|Statutory Audit}` =
+ * that domain's Work Simulation name (SIM_NAME, the names in the CV Recommender's Work Simulation lines); `{proof}` =
+ * that domain's line from `proofs` (statutory audit's until a domain is set), so the worked About example is one
+ * person in one domain.
  *
  * Accessibility: the engine's visible number sits inside each checkbox's label; it is aria-hidden here, so a screen
  * reader reads "A clear head-and-shoulders photo of you", not "1A clear …".
@@ -40,6 +49,13 @@
 
     const TOOL = 'linkedin-checklist';
     const CONTENT_URL = '/articleship-program/linkedin-checklist/linkedin-checklist.json';
+    // Release 1 ships without the Work Simulation (row 1.6): nothing here points at it until the shared switch
+    // (MSCArticleshipProgress.WORK_SIMULATION_LIVE, the one flag every tool reads) is true.
+    const WORK_SIMULATION_LIVE = (() => {
+        try { return engine('progress').WORK_SIMULATION_LIVE === true; } catch (_) { return false; }
+    })();
+    const WS_LINE = /^\{ws\}/;
+    const NO_WS_LINE = /^\{no-ws\}/;
     /** LinkedIn sends a signed-in member from /in/me/ to their own profile. */
     const DEFAULT_OPEN = Object.freeze({
         label: 'Open my profile',
@@ -143,9 +159,43 @@
         return text(map[DEFAULT_DOMAIN]);
     }
 
-    /** "My domain" slug → { phrase, sim, proof } for fillDomain. */
-    function domainFill(slug, labelFn, proofs) {
-        return { phrase: domainPhrase(slug, labelFn), sim: simName(slug, labelFn), proof: proofFor(slug, proofs, labelFn) };
+    /** The release this page draws: { wsLive, proofNow }. Missing → the release flag and no `proof_now`. */
+    function releaseOf(release) {
+        const r = release && typeof release === 'object' ? release : {};
+        return { wsLive: typeof r.wsLive === 'boolean' ? r.wsLive : WORK_SIMULATION_LIVE, proofNow: text(r.proofNow) };
+    }
+
+    /**
+     * "My domain" slug → { phrase, sim, proof, ws } for fillDomain. With the Work Simulation out, `proof` is the domain's
+     * Work Simulation line and `ws` is true once a domain is set (the Copy boxes then use their `copy_ws` text); before
+     * it is out, `proof` is `proof_now` for every domain and `ws` is false.
+     */
+    function domainFill(slug, labelFn, proofs, release) {
+        const r = releaseOf(release);
+        const phrase = domainPhrase(slug, labelFn);
+        const sim = simName(slug, labelFn);
+        return {
+            phrase,
+            sim,
+            proof: r.wsLive ? proofFor(slug, proofs, labelFn) : (r.proofNow || PROOF_PLACEHOLDER),
+            ws: r.wsLive && !!phrase && !!sim
+        };
+    }
+
+    /**
+     * Keep the lines for this release: `{ws}` lines only once the Work Simulation is out, `{no-ws}` lines only before
+     * (the marker is dropped). Arrays stay arrays (blank lines kept); a string is handled line by line.
+     */
+    function releaseLines(value, wsLive) {
+        const keep = line => {
+            const s = line === undefined || line === null ? '' : String(line);
+            if (WS_LINE.test(s)) return wsLive ? s.replace(WS_LINE, '') : null;
+            if (NO_WS_LINE.test(s)) return wsLive ? null : s.replace(NO_WS_LINE, '');
+            return s;
+        };
+        if (Array.isArray(value)) return value.map(keep).filter(line => line !== null);
+        if (value === undefined || value === null) return value;
+        return String(value).split('\n').map(keep).filter(line => line !== null).join('\n');
     }
 
     /** The content's `proofs` map, keys lower-cased, empty lines dropped. */
@@ -188,20 +238,23 @@
     }
 
     /**
-     * The content as the engine wants it: every item gets the "Open my profile" link unless it names its own, and
-     * multi-line examples keep their blank lines. Returns { content, copies: Map(id → {label, text}), notes, open }.
+     * The content as the engine wants it, for this release (options.workSimulationLive, default the release flag):
+     * `{ws}`/`{no-ws}` lines picked, multi-line examples keep their blank lines. A check keeps only the link it names
+     * itself (the profile link lives in the open card and, on a phone, the floating pill). Returns { content, model,
+     * copies: Map(id → {label, text, wsText, aria}), extras, notes, open, proofs, proofNow, intro, wsLive }.
      */
     function prepare(content, options) {
-        const Checklist = engine('checklist', options);
+        const opts = options || {};
+        const Checklist = engine('checklist', opts);
+        const wsLive = typeof opts.workSimulationLive === 'boolean' ? opts.workSimulationLive : WORK_SIMULATION_LIVE;
         const source = Array.isArray(content) ? { items: content } : Object.assign({}, content || {});
         const open = openTarget(source, Checklist.safeHref);
-        const fixDefault = { label: open.label, href: open.href };
         const copyById = new Map();
         const extras = new Map();
         const mapItem = raw => {
             const item = typeof raw === 'string' ? { check: raw } : Object.assign({}, raw || {});
+            if (item.example !== undefined) item.example = releaseLines(item.example, wsLive);
             if (Array.isArray(item.example)) item.example = joinLines(item.example);
-            if (!hasFix(item)) item.fix = Object.assign({}, fixDefault);
             return item;
         };
         if (Array.isArray(source.items)) source.items = source.items.map(mapItem);
@@ -220,27 +273,31 @@
             const match = model.items.find(item => !used.has(item.id) && item.check === check);
             if (!match) return;
             used.add(match.id);
-            const copy = joinLines(raw.copy);
+            const copy = joinLines(releaseLines(raw.copy, wsLive));
+            // The Work Simulation's own Copy text: only once it is out (and drawn only once a domain is set).
+            const wsText = wsLive ? joinLines(releaseLines(raw.copy_ws || raw.copyWs, true)) : '';
             const label = text(raw.copy_label || raw.copyLabel) || 'Copy this';
-            if (copy) copyById.set(match.id, { label, text: copy, aria: text(raw.copy_aria || raw.copyAria) || 'Copy ' + label.toLowerCase() });
-            const how = text(raw.how);
+            if (copy) copyById.set(match.id, { label, text: copy, wsText, aria: text(raw.copy_aria || raw.copyAria) || 'Copy ' + label.toLowerCase() });
+            const how = text(releaseLines(raw.how, wsLive));
             const exampleLabel = text(raw.example_label || raw.exampleLabel);
-            const alsoRaw = raw.also && typeof raw.also === 'object' ? raw.also : {};
+            const alsoRaw = raw.also && typeof raw.also === 'object' && (wsLive || raw.also.ws !== true) ? raw.also : {};
             const alsoHref = Checklist.safeHref ? Checklist.safeHref(alsoRaw.href || alsoRaw.url) : text(alsoRaw.href || alsoRaw.url);
             const also = alsoHref && text(alsoRaw.label) ? { label: text(alsoRaw.label), href: alsoHref } : null;
             if (how || exampleLabel || also) extras.set(match.id, { how, exampleLabel, also });
         });
         const notes = (Array.isArray(source.notes) ? source.notes : [])
             .map(note => {
-                if (typeof note === 'string') return { title: '', text: text(note), link: null };
+                if (typeof note === 'string') return { title: '', text: text(releaseLines(note, wsLive)), link: null };
                 const raw = (note && note.link) || {};
                 const href = Checklist.safeHref ? Checklist.safeHref(raw.href || raw.url) : text(raw.href || raw.url);
                 const label = text(raw.label || raw.text);
-                return { title: text(note && note.title), text: joinLines(note && (note.text || note.body)), link: href && label ? { label, href } : null };
+                const body = note && (note.text || note.body);
+                return { title: text(note && note.title), text: joinLines(releaseLines(body, wsLive)), link: href && label ? { label, href } : null };
             })
             .filter(note => note.text);
         const intro = { wide: text(source.intro), phone: text(source.intro_phone || source.introPhone) };
-        return { content: source, model, copies: copyById, extras, notes, open, proofs: readProofs(source), intro };
+        const proofNow = text(source.proof_now || source.proofNow);
+        return { content: source, model, copies: copyById, extras, notes, open, proofs: readProofs(source), proofNow, intro, wsLive };
     }
 
     function el(doc, tag, className, content) {
@@ -306,18 +363,26 @@
         }
     }
 
-    /** A text node that may carry "my domain": keeps its template so the domain can be refilled later. */
-    function setText(node, template, fill) {
+    /**
+     * A text node that may carry "my domain": keeps its template so the domain can be refilled later. `wsTemplate` (a
+     * Copy box's `copy_ws`) is used instead while `fill.ws` is true.
+     */
+    function setText(node, template, fill, wsTemplate) {
         const value = String(template === undefined || template === null ? '' : template);
-        if (HAS_DOMAIN.test(value)) node.setAttribute('data-lc-tpl', value);
-        node.textContent = fillDomain(value, fill);
+        const wsValue = text(wsTemplate);
+        if (HAS_DOMAIN.test(value) || wsValue) node.setAttribute('data-lc-tpl', value);
+        if (wsValue) node.setAttribute('data-lc-tpl-ws', wsValue);
+        node.textContent = fillDomain(wsValue && fill && fill.ws ? wsValue : value, fill);
         return node;
     }
 
     /** Refill every domain-bearing text under `container` (after "my domain" changes). */
     function applyDomain(container, fill) {
         if (!container) return;
-        container.querySelectorAll('[data-lc-tpl]').forEach(node => { node.textContent = fillDomain(node.getAttribute('data-lc-tpl'), fill); });
+        container.querySelectorAll('[data-lc-tpl]').forEach(node => {
+            const ws = node.getAttribute('data-lc-tpl-ws');
+            node.textContent = fillDomain(ws && fill && fill.ws ? ws : node.getAttribute('data-lc-tpl'), fill);
+        });
     }
 
     function copyBox(doc, copy, fill) {
@@ -329,7 +394,7 @@
         button.setAttribute('aria-label', copy.aria || 'Copy ' + copy.label.toLowerCase());
         head.appendChild(button);
         box.appendChild(head);
-        const body = setText(el(doc, 'p', 'lc-copy-text'), copy.text, fill);
+        const body = setText(el(doc, 'p', 'lc-copy-text'), copy.text, fill, copy.wsText);
         box.appendChild(body);
         const status = el(doc, 'p', 'lc-copy-status');
         status.setAttribute('role', 'status');
@@ -369,8 +434,9 @@
     }
 
     /**
-     * Per check: the one-line "How:" click path under the check, the fold-out's own name, and a lighter style for the
-     * repeated default "Open my profile" links (the specific ones, such as "Edit my URL", keep the full style).
+     * Per check: the one-line "How:" click path under the check, the fold-out's own name, a lighter style for a check
+     * whose own link is just "Open my profile" (the specific ones, such as "Edit my URL", keep the full style), and the
+     * `also` link.
      */
     function decorateItems(container, extras, open, fill) {
         const doc = container.ownerDocument;
@@ -484,7 +550,87 @@
         const doc = node.ownerDocument;
         node.textContent = '';
         node.appendChild(externalLink(doc, 'ap-btn is-block lc-open-btn', open));
-        if (open.hint) node.appendChild(el(doc, 'p', 'lc-open-hint', open.hint));
+        // One line per job (keep it open, Share profile updates, the app fallback): the hint's \n splits them.
+        if (open.hint) open.hint.split('\n').map(t => t.trim()).filter(Boolean).forEach(t => node.appendChild(el(doc, 'p', 'lc-open-hint', t)));
+    }
+
+    /**
+     * Phones: one floating "Open my profile" pill instead of the same link under every check. The CSS shows it under
+     * 960 px, and only while the open card (`watch`) is out of view, so it never sits next to the big button. Without
+     * IntersectionObserver it simply stays shown on a phone. Returns the pill (one per page).
+     */
+    function renderFab(doc, open, watch) {
+        if (!doc || !doc.body) return null;
+        let fab = doc.querySelector('a.lc-fab');
+        if (!fab) {
+            fab = el(doc, 'a', 'lc-fab');
+            fab.target = '_blank';
+            fab.rel = 'noopener noreferrer';
+            doc.body.appendChild(fab);
+        }
+        fab.textContent = open.label;
+        fab.href = open.href;
+        if (watch && !fab.hasAttribute('data-lc-watching')) {
+            fab.setAttribute('data-lc-watching', '');
+            const win = doc.defaultView;
+            if (win && typeof win.IntersectionObserver === 'function') {
+                const observer = new win.IntersectionObserver(entries => {
+                    entries.forEach(entry => fab.classList.toggle('is-shown', !entry.isIntersecting));
+                });
+                observer.observe(watch);
+            } else {
+                fab.classList.add('is-shown');
+            }
+        }
+        return fab;
+    }
+
+    /** The domains for the picker: the progress engine's list ({ slug, label }), else none. */
+    function domainList(Progress) {
+        const list = Progress && Array.isArray(Progress.DOMAINS) ? Progress.DOMAINS : [];
+        return list.map(d => ({ slug: text(d && d.slug), label: text(d && d.label) })).filter(d => d.slug && d.label);
+    }
+
+    /**
+     * "Examples for: Statutory audit · Change" under the lede: the domain every example uses (my domain; statutory
+     * audit's until one is set) and a small picker over the word "Change" that sets the shared "my domain".
+     * state: { slug (my domain or null), label (shown), domains [{ slug, label }], onPick(slug) }.
+     */
+    function renderDomainLine(node, state) {
+        if (!node) return;
+        const doc = node.ownerDocument;
+        node.textContent = '';
+        node.appendChild(doc.createTextNode('Examples for: '));
+        node.appendChild(el(doc, 'strong', 'lc-domain-name', state.label));
+        if (state.domains && state.domains.length && typeof state.onPick === 'function') {
+            const dot = el(doc, 'span', 'lc-domain-dot', '·');
+            dot.setAttribute('aria-hidden', 'true');
+            node.appendChild(dot);
+            const label = el(doc, 'label', 'lc-domain-change');
+            label.appendChild(el(doc, 'span', '', 'Change'));
+            const select = doc.createElement('select');
+            select.setAttribute('aria-label', 'My domain');
+            const known = state.domains.some(d => d.slug === state.slug);
+            if (!known) {
+                const none = doc.createElement('option');
+                none.value = '';
+                none.textContent = 'Pick your domain';
+                none.disabled = true;
+                none.selected = true;
+                select.appendChild(none);
+            }
+            state.domains.forEach(d => {
+                const option = doc.createElement('option');
+                option.value = d.slug;
+                option.textContent = d.label;
+                if (d.slug === state.slug) option.selected = true;
+                select.appendChild(option);
+            });
+            select.addEventListener('change', () => { if (select.value) state.onPick(select.value); });
+            label.appendChild(select);
+            node.appendChild(label);
+        }
+        node.classList.remove('ap-hidden');
     }
 
     function renderNotes(node, notes, fill) {
@@ -511,17 +657,43 @@
     }
 
     /**
-     * Draw the tool. els: { app, open, notes, lede } (elements; open/notes/lede optional).
-     * options: { store, Checklist, onChange, domain (slug of "my domain"), domainLabel(slug) }.
+     * Draw the tool. els: { app, open, notes, lede, domain } (elements; all but app optional).
+     * options: { store, Checklist, onChange, domain (slug of "my domain"), domainLabel(slug), domains [{ slug, label }]
+     * (the picker's list), onPickDomain(slug) (saves "my domain"; returns the saved slug), workSimulationLive }.
      * Returns { list, prepared, setDomain(slug) }.
      */
     function render(els, content, options) {
         const opts = options || {};
         const Checklist = engine('checklist', opts);
         const prepared = prepare(content, opts);
-        let fill = domainFill(opts.domain, opts.domainLabel, prepared.proofs);
+        const release = { wsLive: prepared.wsLive, proofNow: prepared.proofNow };
+        const domains = Array.isArray(opts.domains) ? opts.domains : [];
+        const labelFor = slug => {
+            const key = text(slug).toLowerCase();
+            if (!key) return '';
+            const found = domains.find(d => d.slug === key);
+            if (found) return found.label;
+            try { return typeof opts.domainLabel === 'function' ? text(opts.domainLabel(key)) : ''; } catch (_) { return ''; }
+        };
+        let current = opts.domain || null;
+        let fill = domainFill(current, opts.domainLabel, prepared.proofs, release);
+        let page = null;
+        const drawDomain = () => renderDomainLine(els.domain, {
+            slug: current,
+            // A domain with no name anywhere shows the defaults on every example, so the line names the default too.
+            label: (fill.phrase && labelFor(current)) || labelFor(DEFAULT_DOMAIN) || 'Statutory audit',
+            domains,
+            onPick(slug) {
+                let saved = slug;
+                if (typeof opts.onPickDomain === 'function') {
+                    try { saved = opts.onPickDomain(slug) || slug; } catch (_) { saved = slug; }
+                }
+                page.setDomain(saved);
+            }
+        });
         renderLede(els.lede, prepared.intro);
         renderOpen(els.open, prepared.open);
+        renderFab(els.app.ownerDocument, prepared.open, els.open);
         const list = Checklist.mount(els.app, prepared.content, {
             store: opts.store,
             labels: { example: EXAMPLE_LABEL },
@@ -531,23 +703,31 @@
         decorateItems(els.app, prepared.extras, prepared.open, fill);
         addCopyBoxes(els.app, prepared.copies, fill);
         renderNotes(els.notes, prepared.notes, fill);
-        return {
+        drawDomain();
+        page = {
             list,
             prepared,
             setDomain(slug) {
-                fill = domainFill(slug, opts.domainLabel, prepared.proofs);
+                current = slug || null;
+                fill = domainFill(current, opts.domainLabel, prepared.proofs, release);
                 applyDomain(els.app, fill);
                 applyDomain(els.notes, fill);
+                drawDomain();
                 return fill.phrase;
             }
         };
+        return page;
     }
 
-    function showError(app, retry) {
+    /**
+     * The load failed. A network failure asks the student to check the connection; anything else (content that
+     * doesn't parse or draw) says only that the checklist didn't load. Both offer "Try again".
+     */
+    function showError(app, retry, network) {
         const doc = app.ownerDocument;
         app.textContent = '';
         const card = el(doc, 'div', 'ap-card lc-error');
-        card.appendChild(el(doc, 'p', '', 'The checklist didn\'t load. Check your connection and try again.'));
+        card.appendChild(el(doc, 'p', '', network ? 'The checklist didn’t load. Check your connection and try again.' : 'The checklist didn’t load.'));
         const button = el(doc, 'button', 'ap-btn', 'Try again');
         button.type = 'button';
         button.addEventListener('click', retry);
@@ -555,11 +735,20 @@
         app.appendChild(card);
     }
 
+    /** An error that came from the network (no response, or an HTTP error), not from the content. */
+    function networkError(cause) {
+        const error = new Error(cause && cause.message ? cause.message : String(cause));
+        error.lcNetwork = true;
+        return error;
+    }
+
     function loadContent(fetchImpl, url) {
-        return fetchImpl(url || CONTENT_URL, { cache: 'no-cache' }).then(response => {
-            if (!response.ok) throw new Error('HTTP ' + response.status);
-            return response.json();
-        });
+        return Promise.resolve()
+            .then(() => fetchImpl(url || CONTENT_URL, { cache: 'no-cache' }))
+            .then(response => {
+                if (!response || !response.ok) throw networkError('HTTP ' + (response ? response.status : 0));
+                return response.json();
+            }, error => { throw networkError(error); });
     }
 
     /** The shared "my domain" slug, or null (no setting, or storage blocked). */
@@ -569,7 +758,7 @@
 
     /**
      * Page start: gate, content, store, render, then keep "my domain" filled in.
-     * options (tests): { doc, fetch, store, Gate, Checklist, Progress, url }.
+     * options (tests): { doc, fetch, store, Gate, Checklist, Progress, url, workSimulationLive }.
      */
     function boot(options) {
         const opts = options || {};
@@ -578,31 +767,40 @@
             app: doc.getElementById('app'),
             open: doc.getElementById('lc-open'),
             notes: doc.getElementById('lc-notes'),
-            lede: doc.getElementById('lc-lede')
+            lede: doc.getElementById('lc-lede'),
+            domain: doc.getElementById('lc-domain')
         };
         const Gate = opts.Gate || root.MSCArticleshipGate;
         const fetchImpl = opts.fetch || (root.fetch ? root.fetch.bind(root) : null);
         // "My domain" comes from the page's progress engine (or the test's); never opened just for this.
         const Progress = opts.Progress || root.MSCArticleshipProgress || null;
         const domainLabel = slug => (Progress && typeof Progress.domainLabel === 'function' ? Progress.domainLabel(slug) : '');
+        const domains = domainList(Progress);
+        // The picker saves the shared setting, so every programme tool follows; the page refills either way.
+        const onPickDomain = slug => (Progress && typeof Progress.setMyDomain === 'function' ? Progress.setMyDomain(slug) : slug);
         // The open-profile link works before the content arrives.
         renderOpen(els.open, DEFAULT_OPEN);
+        renderFab(doc, DEFAULT_OPEN, els.open);
         let watching = false;
         const start = () => loadContent(fetchImpl, opts.url).then(content => {
             const Checklist = engine('checklist', opts);
             const store = opts.store || engine('progress', opts).open(TOOL, { defaults: { ticks: {} }, merge: Checklist.mergeTicks });
-            const page = render(els, content, { store, Checklist, domain: readDomain(Progress), domainLabel });
+            const page = render(els, content, {
+                store, Checklist, domain: readDomain(Progress), domainLabel, domains, onPickDomain,
+                workSimulationLive: opts.workSimulationLive
+            });
             if (!watching && Progress && typeof Progress.onSettingsChange === 'function') {
                 try { Progress.onSettingsChange(() => page.setDomain(readDomain(Progress))); watching = true; } catch (_) { /* the domain fill is optional */ }
             }
             return page;
-        }).catch(() => { showError(els.app, () => { start(); }); return null; });
+        }).catch(error => { showError(els.app, () => { start(); }, !!(error && error.lcNetwork)); return null; });
         const gate = Gate && typeof Gate.protect === 'function' ? Gate.protect() : Promise.resolve({ state: 'allow' });
         return Promise.resolve(gate).then(start);
     }
 
     return Object.freeze({
-        TOOL, CONTENT_URL, DEFAULT_OPEN, DOMAIN_PHRASE, SIM_NAME, DEFAULT_DOMAIN, joinLines, openTarget, prepare, parseLine,
-        exampleBlocks, domainPhrase, simName, proofFor, domainFill, fillDomain, copyText, selectText, render, boot
+        TOOL, CONTENT_URL, WORK_SIMULATION_LIVE, DEFAULT_OPEN, DOMAIN_PHRASE, SIM_NAME, DEFAULT_DOMAIN, joinLines, openTarget,
+        prepare, releaseLines, parseLine, exampleBlocks, domainPhrase, simName, proofFor, domainFill, fillDomain, copyText,
+        selectText, render, boot
     });
 });

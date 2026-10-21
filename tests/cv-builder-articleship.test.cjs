@@ -6,6 +6,7 @@ const vm = require('node:vm');
 const catalog = require('../cv-builder/cv-articleship.js');
 
 const builder = fs.readFileSync(path.join(__dirname, '../cv-builder/cv-script.js'), 'utf8');
+const renderer = fs.readFileSync(path.join(__dirname, '../cv-builder/cv-common.js'), 'utf8');
 
 function loadStarterHelpers(data) {
     const select = { options: [], appendChild(option) { this.options.push(option); } };
@@ -28,12 +29,17 @@ function loadStarterHelpers(data) {
     return { sandbox, select, collection };
 }
 
-test('six J1 applicant formats reuse the existing MSC layouts', () => {
-    assert.deepEqual(catalog.templates.map(template => template.name), [
+test('all 18 J1 applicant situations reuse the existing MSC layouts', () => {
+    const situations = catalog.templates.filter(template => template.kind === 'situation');
+    assert.deepEqual(situations.map(template => template.name), [
         'Classic Academic', 'Statutory Audit Foundations', 'Direct Tax Practice',
-        'GST Reconciliation', 'Academic Highlights', 'Campus Leadership'
+        'GST Reconciliation', 'Academic Highlights', 'Campus Leadership',
+        'Accounting Practice', 'Audit & Tax', 'College Projects', 'Community Contribution',
+        'Direct Entry Graduate', 'Excel First', 'Financial Analysis', 'IFC Controls',
+        'Internal Audit Process', 'Separate Group Results', 'Sport & Responsibility',
+        'Writing & Communication'
     ]);
-    for (const template of catalog.templates) {
+    for (const template of situations) {
         const starter = catalog.createStarter(template.file);
         assert.ok(fs.existsSync(path.join(__dirname, '../cv-builder', catalog.resolveRenderFile(template.file))));
         assert.equal(template.sourceFile, `day-1/cv-templates/${template.name}.docx`);
@@ -42,10 +48,118 @@ test('six J1 applicant formats reuse the existing MSC layouts', () => {
         assert.equal(starter.personal.name, '[First name]');
         assert.equal(starter.personal.phone, '');
         assert.ok(starter.education.some(entry => /CA Intermediate/.test(entry.degree)));
+        assert.ok(starter.education.filter(entry => /CA Intermediate/.test(entry.degree)).every(entry => /Attempt/.test(entry.remarks)));
         assert.ok(starter.customSections.some(section => section.title === 'ICITSS'));
         assert.ok(catalog.hasUnchangedStarterContent(starter));
+        assert.doesNotMatch(JSON.stringify(starter.personal), /Article Trainee Experience/);
     }
     assert.equal(catalog.resolveRenderFile('classic.html'), 'classic.html');
+});
+
+test('the 62 MSC gallery layouts have distinct renderers and matching Day 1 files', () => {
+    const layouts = catalog.templates.filter(template => template.kind === 'gallery');
+    assert.equal(layouts.length, 62);
+    assert.equal(new Set(layouts.map(template => template.renderFile)).size, 62);
+    assert.equal(new Set(catalog.templates.map(template => template.file)).size, 80);
+    assert.equal(layouts[0].name, 'Classic');
+    assert.equal(layouts.at(-1).name, 'Plain ATS');
+    layouts.forEach((layout, index) => {
+        const stem = layout.name === 'Firm Info' ? 'firm-info' : layout.renderFile.replace(/\.html$/, '');
+        assert.equal(layout.sourceFile, `day-1/cv-gallery/${String(index + 1).padStart(2, '0')}-${stem}.docx`);
+        assert.equal(catalog.resolveRenderFile(layout.file), layout.renderFile);
+        assert.ok(fs.existsSync(path.join(__dirname, '../cv-builder', layout.renderFile)));
+        const starter = catalog.createStarter(layout.file);
+        assert.match(starter.summary, /Seeking articleship/);
+        assert.deepEqual(starter.experience, []);
+        assert.ok(starter.education.some(entry => /CA Intermediate/.test(entry.degree) && /Attempt/.test(entry.remarks)));
+        assert.ok(starter.skills && starter.leadership.length && starter.certifications.length);
+        assert.equal(starter.articleshipGallery, true);
+        assert.equal(starter.articleshipLayoutName, layout.name);
+        assert.doesNotMatch(JSON.stringify(starter), /Article Trainee Experience|industrial training|audit clients/i);
+        assert.ok(catalog.hasUnchangedStarterContent(starter));
+    });
+});
+
+test('the firm-info layout asks for the target firm without inventing past employment', () => {
+    const starter = catalog.createStarter('articleship-layout-modern-elegant');
+    const firm = starter.customSections.find(section => section.title === 'Target firm');
+    assert.ok(firm);
+    assert.deepEqual(firm.items, ['[Firm] | [Team] | [Office] | Available from [date]']);
+    assert.deepEqual(starter.experience, []);
+    assert.ok(starter.sectionOrder.indexOf(firm.id) < starter.sectionOrder.indexOf('education'));
+});
+
+test('the two-column gallery keeps one native custom-section title', () => {
+    const source = fs.readFileSync(path.join(__dirname, '../cv-builder/dual-columns.html'), 'utf8');
+    const start = source.indexOf('function fixUniversalAndCustomSectionHeaders');
+    const end = source.indexOf('function moveCertificationsUnderProjects', start);
+    let removed = 0;
+    let hasNativeTitle = true;
+    const list = { classList: { remove() {}, contains: () => true } };
+    const wrapper = {
+        querySelector(selector) {
+            if (selector === '[data-list]') return list;
+            if (selector === ':scope > .section-head') return {};
+            if (selector === ':scope > .section-head > .section-title') return hasNativeTitle ? {} : null;
+            return null;
+        },
+        querySelectorAll: () => [{ remove() { removed += 1; } }]
+    };
+    const sandbox = {
+        document: { querySelector: selector => selector.includes('data-custom-section-root') ? wrapper : null }
+    };
+    vm.runInNewContext(source.slice(start, end), sandbox);
+    const data = { articleshipGallery: true, customSections: [{ id: 'icitss', title: 'ICITSS' }] };
+    sandbox.fixUniversalAndCustomSectionHeaders(data);
+    assert.equal(removed, 1);
+    removed = 0;
+    sandbox.fixUniversalAndCustomSectionHeaders({ ...data, articleshipGallery: false });
+    assert.equal(removed, 0, 'the existing general CV rendering is unchanged');
+    hasNativeTitle = false;
+    sandbox.fixUniversalAndCustomSectionHeaders(data);
+    assert.equal(removed, 0, 'a generic title stays until its native replacement exists');
+});
+
+test('layouts without result columns still show the supplied Inter marks and attempt', () => {
+    const appended = [];
+    const fields = { marks: [], remarks: [] };
+    const education = {
+        querySelectorAll(selector) {
+            if (selector === 'th' || selector === 'table') return [];
+            return fields[selector.match(/data-field="(\w+)"/)[1]];
+        },
+        appendChild(element) { appended.push(element); }
+    };
+    const sandbox = {
+        stripTags: value => value.replace(/<[^>]*>/g, ''),
+        document: {
+            querySelectorAll: () => [],
+            querySelector: () => education,
+            createElement: () => ({
+                style: {}, children: [], setAttribute() {},
+                appendChild(element) { this.children.push(element); }
+            })
+        }
+    };
+    const start = renderer.indexOf('function renderArticleshipAcademicResults');
+    const end = renderer.indexOf('function renderArticleshipBranding', start);
+    vm.runInNewContext(renderer.slice(start, end), sandbox);
+    const data = {
+        articleshipGallery: true,
+        education: [{ degree: 'CA Intermediate — both groups', marks: '412 / 600', remarks: '2' }]
+    };
+    for (const degree of ['CA Intermediate — both groups', 'CA Inter — both groups']) {
+        appended.length = 0;
+        data.education[0].degree = degree;
+        sandbox.renderArticleshipAcademicResults(data);
+        assert.equal(appended[0].children[0].textContent, `${degree} | Marks: 412 / 600 | Remarks: 2`);
+    }
+
+    appended.length = 0;
+    fields.marks.push({ textContent: '412 / 600', getClientRects: () => [{}] });
+    fields.remarks.push({ textContent: '2', getClientRects: () => [{}] });
+    sandbox.renderArticleshipAcademicResults(data);
+    assert.equal(appended.length, 0, 'a complete native table does not get duplicate result lines');
 });
 
 test('renamed J1 formats retain saved template selections', () => {
@@ -64,7 +178,7 @@ test('renamed J1 formats retain saved template selections', () => {
 test('the Articleship link starts a fresh applicant CV and leaves existing drafts intact', () => {
     const fresh = loadStarterHelpers({ personal: {}, education: [] });
     fresh.sandbox.initializeArticleshipTemplates();
-    assert.equal(fresh.select.options.length, 6);
+    assert.equal(fresh.select.options.length, catalog.templates.length);
     assert.equal(fresh.sandbox.cvData.templateFile, catalog.templates[0].file);
     assert.deepEqual(Array.from(fresh.sandbox.cvData.experience), []);
 
@@ -233,3 +347,14 @@ test('AI Enhance retains the Worker contract with applicant context', async () =
     assert.match(request.custom_prompt, /square-bracket placeholders unchanged/);
     assert.match(request.custom_prompt, /Keep it short\./);
 });
+test('separate group results preserve each group session, marks and attempt field', () => {
+    const starter = catalog.createStarter('articleship-separate-group-results');
+    const groups = starter.education.filter(entry => /CA Intermediate/.test(entry.degree));
+    assert.deepEqual(groups.map(entry => entry.degree), ['CA Intermediate — Group I', 'CA Intermediate — Group II']);
+    for (const group of groups) {
+        assert.equal(group.year, '[Session / year]');
+        assert.equal(group.marks, '[Marks / maximum]');
+        assert.equal(group.remarks, '[Attempt number]');
+    }
+});
+

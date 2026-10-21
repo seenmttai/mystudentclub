@@ -19,6 +19,11 @@
  *   { checking: <slug> }            which CV the switch shows
  * Merges per domain with the checklist engine's mergeTicks (a later tick or untick wins).
  *
+ * Release switch: MSCArticleshipProgress.WORK_SIMULATION_LIVE (the one flag in scripts/articleship-progress.js, read
+ * here as WORK_SIMULATION_LIVE; start's options.workSimulationLive overrides it). While false (release 1), the checks
+ * are drawn without the Work Simulation: an example line about it goes, a mixed line loses the sentence, clause or list
+ * item that names it, a link to it goes (MSCArticleshipProgress.releaseContent). Release 2 flips the shared flag.
+ *
  * Browser: window.MSCArticleshipCvChecklist (boot() is called by the page). Node (tests): require('./scripts/articleship-cv-checklist.js').
  */
 (function (root, factory) {
@@ -42,6 +47,45 @@
         'fdd': 'Due Diligence', 'forensic': 'Forensic', 'consulting': 'Consulting', 'accounting': 'Accounting',
         'ib-er': 'IB and Equity Research'
     });
+
+    function progressApi() {
+        if (root && root.MSCArticleshipProgress) return root.MSCArticleshipProgress;
+        if (typeof require === 'function') {
+            try { return require('./articleship-progress.js'); } catch (_) { /* optional */ }
+        }
+        return null;
+    }
+    // Release 1 ships without the Work Simulation (row 1.6): no check names it until the shared switch is true.
+    const WORK_SIMULATION_LIVE = (() => {
+        const progress = progressApi();
+        return Boolean(progress && progress.WORK_SIMULATION_LIVE === true);
+    })();
+
+    /** The checklist content as this release draws it (a copy; release 1: nothing about the Work Simulation). */
+    function releaseContent(content, live) {
+        const progress = progressApi();
+        if (!content || !progress || typeof progress.releaseContent !== 'function') return content;
+        const on = typeof live === 'boolean' ? live : WORK_SIMULATION_LIVE;
+        return progress.releaseContent(on ? withWorkSimulationLines(content) : content, { workSimulationLive: on });
+    }
+
+    /**
+     * Release 2: a check's "work_simulation": { "replace": { release-1 line: release-2 line } } swaps that example line
+     * (the PDF and sheet twins of row 1.8 do the same). Release 1 never calls this; its work_simulation keys are dropped
+     * by the shared release filter.
+     */
+    function withWorkSimulationLines(content) {
+        if (!content || !Array.isArray(content.items)) return content;
+        const copy = clone(content);
+        copy.items.forEach(item => {
+            const swap = item && item.work_simulation && item.work_simulation.replace;
+            if (!swap || typeof swap !== 'object') return;
+            const swapLine = line => (typeof line === 'string' && Object.prototype.hasOwnProperty.call(swap, line)) ? String(swap[line]) : line;
+            if (Array.isArray(item.example)) item.example = item.example.map(swapLine);
+            else if (typeof item.example === 'string') item.example = item.example.split('\n').map(swapLine).join('\n');
+        });
+        return copy;
+    }
 
     function checklistEngine(options) {
         if (options && options.Checklist) return options.Checklist;
@@ -375,7 +419,7 @@
      * Mount the checklist and the page parts around it.
      * options: { container, nav, end, lede, switcher, content, store, Checklist,
      *            domains() => { main, backup } (slugs of the shared "my domain"), domainSlugs (the 13, in order),
-     *            addBackup(slug) (saves the shared backup domain: "Add a second CV"), now() }
+     *            addBackup(slug) (saves the shared backup domain: "Add a second CV"), now(), workSimulationLive }
      * Returns { list, model, summary(), jump(id), jumpToEnd(), reset(), checking(), choose(slug), refreshDomain(), destroy() }.
      */
     function start(options) {
@@ -384,7 +428,7 @@
         if (!container) throw new Error('No container');
         const doc = container.ownerDocument || root.document;
         const C = checklistEngine(opts);
-        const content = opts.content;
+        const content = releaseContent(opts.content, opts.workSimulationLive);
         const full = C.normalise(content);
         const now = typeof opts.now === 'function' ? opts.now : () => Date.now();
         const readDomains = () => {
@@ -854,7 +898,7 @@
     }
 
     return Object.freeze({
-        TOOL, CONTENT_URL, FILE_DOMAIN, FOLD_MARK, introText, isReviewLink, reviewMessage, reviewHref, cvList, fileNames,
+        TOOL, CONTENT_URL, WORK_SIMULATION_LIVE, releaseContent, FILE_DOMAIN, FOLD_MARK, introText, isReviewLink, reviewMessage, reviewHref, cvList, fileNames,
         domainName, withoutDone, endState, navItems, nextItem, nextStep, exampleLines, exampleGroups, boldParts,
         mergeCvTicks, cvStore, loadContent, watchCompact, start, boot
     });

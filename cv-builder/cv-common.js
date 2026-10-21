@@ -403,6 +403,8 @@ function renderCV(data) {
 
     // 13. Configurable section titles (rename section headings, or fall back to template default)
     applySectionTitles(data.sectionTitles || {});
+    renderArticleshipAcademicResults(data);
+    renderArticleshipBranding(data);
 
     // 14. Recalculate Layout (Scale/Shrink)
     // These functions exist in the templates script block
@@ -422,6 +424,145 @@ function renderCV(data) {
             window.__clContactFix(data);
         }
     });
+}
+
+function renderArticleshipAcademicResults(data) {
+    document.querySelectorAll('[data-msc-academic-results]').forEach(element => element.remove());
+    if (!data.articleshipApplicant && !data.articleshipGallery) return;
+    const education = document.querySelector('.sortable-section[data-section-id="education"]');
+    if (!education) return;
+    education.querySelectorAll('th').forEach(header => {
+        const text = header.textContent.trim();
+        if (/^(?:%\/?CGPA|marks(?:\s*\/\s*(?:score|CGPA|percentage))?|percentage(?:\s*\/\s*CGPA)?|score(?:\s*\(%\)|\s*\/\s*result)?|performance|grade|results?)$/i.test(text)) header.textContent = 'Marks';
+        // The Guidebook's columns (ch 3): Qualification · Year · Institute · Marks · Remarks.
+        if (/^(?:year(?: of passing)?|session \/ year|session)$/i.test(text)) header.textContent = 'Year';
+        if (/^(?:remarks?|attempt)$/i.test(text)) header.textContent = 'Remarks';
+    });
+    education.querySelectorAll('table').forEach(table => {
+        const template = table.querySelector('tbody tr');
+        if (!template) return;
+        const labels = { marks: 'Marks', remarks: 'Remarks', year: 'Year', degree: 'Qualification', institute: 'Institute' };
+        const columns = new Map();
+        Object.keys(labels).forEach(field => {
+            const host = template.querySelector(`[data-field="${field}"]`);
+            const cell = host?.closest('td');
+            if (!cell) return;
+            const index = Array.from(cell.parentElement.children).indexOf(cell);
+            if (!columns.has(index)) columns.set(index, []);
+            columns.get(index).push(labels[field]);
+        });
+        columns.forEach((labels, index) => {
+            const header = table.querySelectorAll('thead th')[index];
+            if (header) header.textContent = labels.join(' / ');
+        });
+    });
+    const text = value => stripTags(String(value || '')).replace(/\s+/g, ' ').trim();
+    const visibleValue = (field, value) => Array.from(education.querySelectorAll(`[data-field="${field}"]`))
+        .some(element => element.getClientRects().length > 0 && text(element.textContent) === text(value));
+    const lines = [];
+    (data.education || []).filter(item => /\bCA\s+Inter(?:mediate)?\b/i.test(text(item.degree))).forEach(item => {
+        const marks = item.marks || item.score || item.result || item.percentage || item.gpa || '';
+        const attempt = item.remarks || '';
+        const missing = [];
+        if (text(marks) && !visibleValue('marks', marks)) missing.push(`Marks: ${text(marks)}`);
+        if (text(attempt) && !visibleValue('remarks', attempt)) missing.push(`Remarks: ${text(attempt)}`);
+        if (missing.length) lines.push(`${text(item.degree)} | ${missing.join(' | ')}`);
+    });
+    if (!lines.length) return;
+    const block = document.createElement('div');
+    block.setAttribute('data-msc-academic-results', '');
+    block.style.cssText = 'font-size:.9em;line-height:1.35;margin-top:6px;';
+    lines.forEach(line => {
+        const row = document.createElement('div');
+        row.textContent = line;
+        block.appendChild(row);
+    });
+    education.appendChild(block);
+}
+
+function renderArticleshipBranding(data) {
+    document.querySelectorAll('[data-msc-program-brand]').forEach(element => element.remove());
+    const page = getPageContainer();
+    if (!page) return;
+    const active = Boolean(data.articleshipApplicant || data.articleshipGallery);
+    page.classList.toggle('msc-articleship-template', active);
+    document.body.classList.toggle('msc-articleship-print', active);
+    if (active && !document.getElementById('msc-articleship-print-style')) {
+        const style = document.createElement('style');
+        style.id = 'msc-articleship-print-style';
+        style.textContent = `@media print {
+            html:has(body.msc-articleship-print), body.msc-articleship-print {
+                width:210mm!important;height:297mm!important;min-height:0!important;
+                margin:0!important;padding:0!important;overflow:hidden!important;background:#fff!important;
+            }
+            body.msc-articleship-print #zoom-wrapper {
+                width:210mm!important;height:297mm!important;min-height:0!important;
+                margin:0!important;padding:0!important;display:block!important;overflow:hidden!important;
+            }
+            #cv-page.msc-articleship-template {
+                width:1000px!important;min-width:1000px!important;height:1412px!important;
+                min-height:1412px!important;max-height:1412px!important;position:relative!important;
+                transform:none!important;zoom:.7937!important;margin:0!important;box-shadow:none!important;
+                padding-top:var(--msc-pad-top)!important;padding-bottom:var(--msc-pad-bottom)!important;
+                padding-left:var(--msc-pad-left)!important;padding-right:var(--msc-pad-right)!important;
+            }
+        }`;
+        document.head.appendChild(style);
+    }
+    if (!active) {
+        if (page.__mscBrandPadding) {
+            page.style.paddingTop = page.__mscBrandPadding.inlineTop;
+            page.style.paddingBottom = page.__mscBrandPadding.inlineBottom;
+            delete page.__mscBrandPadding;
+        }
+        Array.from(page.children).forEach(child => {
+            if (!child.__mscMinHeight) return;
+            child.style.minHeight = child.__mscMinHeight.inline;
+            delete child.__mscMinHeight;
+        });
+        return;
+    }
+    // Keep the brand lines out of row-based CV layouts; extra flex items squeeze their columns.
+    if (!page.__mscBrandPadding) {
+        const style = getComputedStyle(page);
+        page.__mscBrandPadding = {
+            inlineTop: page.style.paddingTop, inlineBottom: page.style.paddingBottom,
+            top: parseFloat(style.paddingTop) || 0, bottom: parseFloat(style.paddingBottom) || 0,
+            left: parseFloat(style.paddingLeft) || 24, right: parseFloat(style.paddingRight) || 24,
+            padLeft: parseFloat(style.paddingLeft) || 0, padRight: parseFloat(style.paddingRight) || 0
+        };
+    }
+    const inset = page.__mscBrandPadding;
+    page.style.setProperty('--msc-pad-top', `${inset.top + 18}px`);
+    page.style.setProperty('--msc-pad-bottom', `${inset.bottom + 18}px`);
+    page.style.setProperty('--msc-pad-left', `${inset.padLeft}px`);
+    page.style.setProperty('--msc-pad-right', `${inset.padRight}px`);
+    page.style.paddingTop = `${inset.top + 18}px`;
+    page.style.paddingBottom = `${inset.bottom + 18}px`;
+    // A block sized to fill the page inside its own padding (a framed sheet) gives the brand lines their room, or the
+    // page runs past A4 and the layout shrinks its text to the floor.
+    Array.from(page.children).forEach(child => {
+        if (child.hasAttribute('data-msc-program-brand')) return;
+        if (!child.__mscMinHeight) {
+            const value = parseFloat(getComputedStyle(child).minHeight) || 0;
+            if (value < 900) return;
+            child.__mscMinHeight = { inline: child.style.minHeight, value };
+        }
+        child.style.minHeight = `${child.__mscMinHeight.value - 36}px`;
+    });
+    const makeLine = (text, position) => {
+        const line = document.createElement('div');
+        line.setAttribute('data-msc-program-brand', position);
+        line.textContent = text;
+        line.style.cssText = `position:absolute;left:${inset.left}px;right:${inset.right}px;font:10px Arial,sans-serif;color:#475569;background:#fff;line-height:1.4;height:14px;z-index:1;`;
+        return line;
+    };
+    const heading = makeLine(`MSC Articleship Program | ${data.articleshipLayoutName || 'CV template'}`, 'header');
+    heading.style.top = `${inset.top}px`;
+    const footer = makeLine('CA Padam Bhansali | My Student Club', 'footer');
+    footer.style.bottom = `${inset.bottom}px`;
+    // Both lines go first: layouts that fit the page by measuring their last block must never measure the footer.
+    page.prepend(heading, footer);
 }
 
 function syncDocumentTitle(data) {

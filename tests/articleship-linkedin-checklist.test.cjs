@@ -42,7 +42,7 @@ function studentText(content) {
     return out.join('\n');
 }
 
-test('content: the 12 profile checks in the row order, each with an example and a link to LinkedIn', () => {
+test('content: the 12 profile checks in the row order, each with an example; only the checks with their own LinkedIn page carry a link', () => {
     const prepared = L.prepare(CONTENT);
     const ids = prepared.model.items.map(i => i.id);
     assert.deepEqual(ids, ['photo', 'name', 'headline', 'custom-url', 'about', 'education', 'certifications',
@@ -50,23 +50,25 @@ test('content: the 12 profile checks in the row order, each with an example and 
     assert.equal(prepared.model.total, 12);
     prepared.model.items.forEach(item => {
         assert.ok(item.example.length > 40, item.id + ' has a good example');
-        assert.ok(item.fix && /^https:\/\/www\.linkedin\.com\//.test(item.fix.href), item.id + ' opens LinkedIn');
-        assert.equal(item.fix.external, true);
+        if (item.fix) {
+            assert.ok(/^https:\/\/www\.linkedin\.com\//.test(item.fix.href), item.id + ' opens LinkedIn');
+            assert.equal(item.fix.external, true);
+        }
     });
     const byId = Object.fromEntries(prepared.model.items.map(i => [i.id, i]));
-    assert.equal(byId.photo.fix.label, 'Open my profile');
-    assert.equal(byId.photo.fix.href, 'https://www.linkedin.com/in/me/');
+    assert.deepEqual(prepared.model.items.filter(i => i.fix).map(i => i.id), ['custom-url', 'recommendation'],
+        'the profile link lives in the open card (and the phone pill), not under every check');
     assert.equal(byId['custom-url'].fix.href, 'https://www.linkedin.com/public-profile/settings');
-    assert.equal(byId.recommendation.fix.label, 'Open my connections');
+    assert.equal(byId.recommendation.fix.label, 'My connections');
     assert.deepEqual([...prepared.copies.keys()], ['headline', 'about', 'featured', 'recommendation']);
     assert.deepEqual([...prepared.copies.values()].map(c => c.aria),
-        ['Copy headline formula', 'Copy About first three lines', 'Copy result post', 'Copy recommendation request']);
+        ['Copy headline formula', 'Copy About opening lines', 'Copy result post', 'Copy recommendation request']);
     prepared.model.items.forEach(item => {
         const how = (prepared.extras.get(item.id) || {}).how || '';
-        assert.ok(how.length > 10 && how.length <= 130, item.id + ' has a one-line How path');
+        assert.ok(how.length > 10 && how.length <= 160, item.id + ' has a short How path');
     });
-    assert.equal(prepared.extras.get('open-to-work').how, 'Your profile → Open to → Finding a new job.');
-    assert.equal(prepared.notes.length, 2);
+    assert.equal(prepared.extras.get('open-to-work').how, 'Your profile › Open to › Finding a new job.');
+    assert.equal(prepared.notes.length, 1);
     assert.deepEqual(prepared.notes[0].link, { label: 'Open my CV', href: '/cv-builder/?stage=articleship' });
     assert.deepEqual(prepared.model.sections.map(s => [s.title, s.items.length]), [['First look', 4], ['Your proof', 5], ['Open the door', 3]]);
 });
@@ -74,7 +76,7 @@ test('content: the 12 profile checks in the row order, each with an example and 
 test('content: house rules (headline formula, no CA prefix, all members, simulations not experience, one home each)', () => {
     const all = studentText(CONTENT);
     const headline = L.prepare(CONTENT).copies.get('headline').text;
-    assert.equal(headline, 'CA Inter cleared ([Month Year]) | Seeking articleship in [domain] | [City] | [one proof]');
+    assert.equal(headline, 'CA Inter cleared ([Month Year]) | [proof] | Seeking articleship in [domain] | [City]', 'one order: stage | proof | Seeking … | City (Guidebook ch 6, the PDF)');
     assert.match(all, /All LinkedIn members/);
     assert.doesNotMatch(all, /salary/i, 'Open to Work has no salary field to talk about (FACTS: titles, locations, start date, notice period)');
     assert.match(all, /❌ CA Riya Sharma/);
@@ -85,12 +87,11 @@ test('content: house rules (headline formula, no CA prefix, all members, simulat
     assert.match(all, /ICITSS completed/, 'ICITSS sits in Education (same as the CV and Guidebook ch 6)');
     assert.match(all, /A rank \(AIR\) only with your rank letter/, 'ranks only with proof (house rule 1)');
     assert.doesNotMatch(all, /\b20\d\d\b/, 'no years: the programme is recorded once and used by later batches');
-    assert.doesNotMatch(all, /Articled Assistant/, 'only the title value already in use (Article Assistant)');
-    assert.match(all, /Job title: Article Assistant\./);
+    assert.match(all, /Job titles: Article Assistant, and Articled Assistant if the list offers it\./);
     const certs = CONTENT.items.find(i => i.id === 'certifications').example;
-    assert.equal(certs[0], '✅ Completed MSC Articleship Program — foundational understanding of work and tasks across all domains · issuer My Student Club',
-        'the MSC programme line first, in Padam\'s exact wording (same as every CV Builder example)');
-    assert.ok(certs.includes('❌ Under Experience or Internship: a simulation is not a job.'), 'the "not under Experience" line sits in the certifications tick');
+    assert.ok(!certs.some(line => /issuer My Student Club/.test(line)), 'MSC issues no credential, so no MSC entry under Licenses');
+    assert.ok(certs.includes('The MSC Articleship Program line goes on your CV, not here.'), 'the programme line has its home on the CV');
+    assert.ok(certs.includes('❌ Under Experience or Internship. A simulation is not a job.'), 'the "not under Experience" line sits in the certifications tick');
     assert.ok(!certs.some(line => /ICITSS/.test(line)), 'ICITSS lives in Education (CV, Guidebook ch 6), not under Licenses');
     const education = CONTENT.items.find(i => i.id === 'education').example.join('\n');
     assert.match(education, /ICITSS completed/);
@@ -129,10 +130,10 @@ test('prepare: default "Open my profile" link, own links kept, array examples ke
     assert.deepEqual(prepared.open, L.DEFAULT_OPEN);
     const items = prepared.model.items;
     assert.equal(items[0].example, 'one\n\ntwo');
-    assert.equal(items[0].fix.href, 'https://www.linkedin.com/in/me/');
+    assert.equal(items[0].fix, null, 'no default profile link on a check');
     assert.equal(items[1].fix.href, '/x/');
-    assert.equal(items[3].fix.label, 'Open my profile');
-    assert.deepEqual([...prepared.copies.entries()], [['b-2', { label: 'Lines', text: 'first\nsecond', aria: 'Copy lines' }]], 'copy pairs with the right duplicate');
+    assert.equal(items[3].fix, null);
+    assert.deepEqual([...prepared.copies.entries()], [['b-2', { label: 'Lines', text: 'first\nsecond', wsText: '', aria: 'Copy lines' }]], 'copy pairs with the right duplicate');
     assert.equal(L.prepare({ open: { href: 'https://example.com/p', label: 'Go', hint: '' }, items: ['x'] }).open.hint, '');
     assert.equal(L.joinLines(['', 'a', '', '', '', 'b', '']), 'a\n\nb');
 });
@@ -146,13 +147,36 @@ test('also: a second link on one check (for the Work Simulation work sample once
     const doc = dom.window.document;
     await L.boot({ doc, fetch: okFetch(content), store: memoryStore(), Gate: null, Checklist: C });
     const also = doc.querySelectorAll('.lc-also');
-    assert.equal(also.length, 1);
-    assert.equal(also[0].getAttribute('href'), '/articleship-program/work-simulation/');
-    assert.equal(also[0].target, '');
-    assert.ok(also[0].closest('.ap-cl-item[data-id="featured"] .ap-cl-extra'));
-    assert.equal(CONTENT.items.some(i => i.also), false, 'not shipped until the Work Simulation page is on the branch (WIRING.md)');
-    assert.equal(fs.existsSync(path.join(ROOT, 'articleship-program/work-simulation/index.html')), false,
-        'the Work Simulation page is on the branch now: add `also` to the featured check (WIRING.md) and drop these two lines');
+    const featuredAlso = doc.querySelector('.ap-cl-item[data-id="featured"] .ap-cl-extra .lc-also');
+    assert.equal(featuredAlso.getAttribute('href'), '/articleship-program/work-simulation/');
+    assert.equal(featuredAlso.target, '');
+    assert.equal(doc.querySelector('.ap-cl-item[data-id="skills"] .lc-also'), null, 'unsafe link dropped');
+    assert.equal(also.length, 4, 'featured + the three CV checklist links (custom URL, certifications, Open to Work)');
+    assert.equal(doc.querySelector('.ap-cl-item[data-id="custom-url"] .lc-also').getAttribute('href'), '/articleship-program/cv-checklist/');
+    assert.equal(doc.querySelector('.ap-cl-item[data-id="certifications"] .lc-also').getAttribute('href'), '/articleship-program/cv-checklist/');
+
+    // As shipped: the featured Work Simulation link is release 2 only (ws: true).
+    const shipped = CONTENT.items.find(i => i.id === 'featured').also;
+    assert.equal(shipped.ws, true);
+    const dom1 = pageDom();
+    await L.boot({ doc: dom1.window.document, fetch: okFetch(CONTENT), store: memoryStore(), Gate: null, Checklist: C, workSimulationLive: false });
+    assert.equal(dom1.window.document.querySelector('.ap-cl-item[data-id="featured"] .lc-also'), null, 'release 1: no Work Simulation link');
+    const dom2 = pageDom();
+    await L.boot({ doc: dom2.window.document, fetch: okFetch(CONTENT), store: memoryStore(), Gate: null, Checklist: C, workSimulationLive: true });
+    assert.equal(dom2.window.document.querySelector('.ap-cl-item[data-id="featured"] .lc-also').getAttribute('href'), shipped.href);
+});
+
+test('release 1: no Work Simulation word anywhere on the page; release 2 shows the hidden lines', async () => {
+    const dom = pageDom();
+    const doc = dom.window.document;
+    await L.boot({ doc, fetch: okFetch(CONTENT), store: memoryStore(), Gate: null, Checklist: C, workSimulationLive: false });
+    assert.doesNotMatch(doc.body.textContent, /Work Simulation/);
+    assert.match(doc.querySelector('.ap-cl-item[data-id="about"] .lc-sample').textContent, /PwC US Audit Job Simulation \(Forage\)/);
+    assert.doesNotMatch(doc.body.textContent, /\{(ws|no-ws|proof|sim)/);
+    const live = pageDom();
+    await L.boot({ doc: live.window.document, fetch: okFetch(CONTENT), store: memoryStore(), Gate: null, Checklist: C, workSimulationLive: true });
+    assert.match(live.window.document.body.textContent, /Statutory Audit Work Simulation/);
+    assert.doesNotMatch(live.window.document.body.textContent, /PwC US Audit Job Simulation \(Forage\) \|/, 'release 2 drops the no-ws headline');
 });
 
 test('examples: lines, labels, ✅/❌ and "> " sample text become separate blocks (text only)', () => {
@@ -180,7 +204,8 @@ test('page: boot renders the open card, 12 checks, copy boxes, notes; ticks save
     assert.equal(open.getAttribute('href'), 'https://www.linkedin.com/in/me/');
     assert.equal(open.target, '_blank');
     assert.equal(open.rel, 'noopener noreferrer');
-    assert.match(doc.querySelector('.lc-open-hint').textContent, /tap your photo/);
+    assert.deepEqual([...doc.querySelectorAll('.lc-open-hint')].map(p => p.textContent.split(' ')[0]), ['Keep', 'Before', 'Link'], 'three short hint lines');
+    assert.match(doc.querySelectorAll('.lc-open-hint')[2].textContent, /tap your photo/);
 
     assert.equal(doc.querySelectorAll('.ap-cl-item').length, 12);
     assert.equal(doc.querySelector('.ap-progress-count').textContent, '0 of 12 done');
@@ -188,15 +213,17 @@ test('page: boot renders the open card, 12 checks, copy boxes, notes; ticks save
     assert.deepEqual([...doc.querySelectorAll('.ap-cl-example summary')].map(x => x.textContent).filter(t => t !== 'Examples'),
         ['Formula', 'Template', 'Result post', 'Request'], 'one-word fold-out names: the toggle and "Open my profile" share a row at 390 px');
     assert.doesNotMatch([...doc.querySelectorAll('.ap-cl-example summary')].map(x => x.textContent).join('|'), /\+/, 'no "+" in a toggle that already ends in +');
-    assert.equal(doc.querySelectorAll('.ap-cl-fix').length, 12);
-    assert.equal([...doc.querySelectorAll('.ap-cl-fix')].filter(a => a.textContent === 'Open my profile').length, 10);
-    assert.equal(doc.querySelectorAll('.ap-cl-fix.lc-fix-profile').length, 10, 'the repeated profile links use the lighter style');
-    assert.ok(!doc.querySelector('.ap-cl-item[data-id="custom-url"] .ap-cl-fix').classList.contains('lc-fix-profile'));
+    assert.equal(doc.querySelectorAll('.ap-cl-fix:not(.lc-also)').length, 2, 'only "Edit my URL" and "My connections": the profile link is not repeated');
+    assert.equal(doc.querySelectorAll('.ap-cl-fix.lc-fix-profile').length, 0);
+    const fabs = doc.querySelectorAll('a.lc-fab');
+    assert.equal(fabs.length, 1, 'one floating "Open my profile" pill for phones');
+    assert.equal(fabs[0].getAttribute('href'), 'https://www.linkedin.com/in/me/');
+    assert.equal(fabs[0].target, '_blank');
 
     // the How path is visible under every check, outside the fold-out
     const hows = doc.querySelectorAll('.ap-cl-item > .lc-how');
     assert.equal(hows.length, 12);
-    assert.equal(doc.querySelector('.ap-cl-item[data-id="open-to-work"] .lc-how').textContent, 'How: Your profile → Open to → Finding a new job.');
+    assert.equal(doc.querySelector('.ap-cl-item[data-id="open-to-work"] .lc-how').textContent, 'How: Your profile › Open to › Finding a new job.');
     assert.equal(doc.querySelector('.ap-cl-item[data-id="open-to-work"] .lc-how').previousElementSibling.className, 'ap-cl-check');
     assert.equal(doc.querySelectorAll('a[href^="javascript"]').length, 0);
 
@@ -204,9 +231,9 @@ test('page: boot renders the open card, 12 checks, copy boxes, notes; ticks save
     assert.equal(doc.querySelectorAll('.ap-cl-example > p').length, 0);
     assert.equal(doc.querySelectorAll('.ap-cl-example .lc-example').length, 12);
     const aboutSample = doc.querySelector('.ap-cl-item[data-id="about"] .lc-sample');
-    assert.equal(aboutSample.querySelectorAll('p').length, 3);
+    assert.equal(aboutSample.querySelectorAll('p').length, 3, 'About: the first three lines');
     assert.match(aboutSample.textContent, /^I cleared CA Intermediate/);
-    assert.equal(doc.querySelector('.ap-cl-item[data-id="open-to-work"] .lc-line strong').textContent, 'Job title:');
+    assert.equal(doc.querySelector('.ap-cl-item[data-id="open-to-work"] .lc-line strong').textContent, 'Job titles:');
     assert.ok(doc.querySelectorAll('.lc-line.is-bad').length >= 8);
     assert.doesNotMatch(doc.getElementById('app').textContent, /(^|\n)> /);
     assert.doesNotMatch(doc.body.textContent, /\{domain/, 'domain tokens are always filled');
@@ -218,12 +245,12 @@ test('page: boot renders the open card, 12 checks, copy boxes, notes; ticks save
         assert.ok(details.children[1].classList.contains('lc-copy'), id + ': the Copy box is the first thing in the fold-out');
     });
     assert.deepEqual([...doc.querySelectorAll('.lc-copy-btn')].map(b => b.getAttribute('aria-label')),
-        ['Copy headline formula', 'Copy About first three lines', 'Copy result post', 'Copy recommendation request']);
+        ['Copy headline formula', 'Copy About opening lines', 'Copy result post', 'Copy recommendation request']);
     assert.equal(doc.querySelector('.ap-cl-item[data-id="headline"] .lc-copy-text').textContent,
-        'CA Inter cleared ([Month Year]) | Seeking articleship in [domain] | [City] | [one proof]', 'no domain set: the placeholder stays');
+        'CA Inter cleared ([Month Year]) | [proof] | Seeking articleship in [domain] | [City]', 'no domain set: the placeholder stays');
     assert.match(doc.querySelector('.ap-cl-item[data-id="headline"] .lc-line.is-good').textContent, /Seeking articleship in statutory audit \| Pune/);
     assert.equal(doc.querySelector('.ap-cl-item[data-id="recommendation"] .lc-copy-label').textContent, 'Your request');
-    assert.equal(doc.querySelectorAll('#lc-notes .lc-note').length, 2);
+    assert.equal(doc.querySelectorAll('#lc-notes .lc-note').length, 1);
     assert.equal(doc.querySelector('#lc-notes .lc-note strong').textContent, 'Same story as your CV');
     const cvLink = doc.querySelector('#lc-notes .lc-note .lc-note-link');
     assert.equal(cvLink.getAttribute('href'), '/cv-builder/?stage=articleship');
@@ -248,7 +275,7 @@ test('page: boot renders the open card, 12 checks, copy boxes, notes; ticks save
     assert.equal(doc.querySelector('.ap-progress-count').textContent, '12 of 12 done');
     const done = doc.querySelector('.ap-cl-done');
     assert.ok(!done.classList.contains('ap-hidden'));
-    assert.equal(done.querySelector('h2').textContent, 'Your profile is ready');
+    assert.equal(done.querySelector('h2').textContent, CONTENT.done.title);
     assert.deepEqual([...done.querySelectorAll('a')].map(a => a.textContent), ['LinkedIn search links', 'Connection notes']);
     assert.equal(done.querySelector('a').target, '', 'programme links stay in the tab');
 
@@ -288,33 +315,32 @@ test('domain: the shared "my domain" fills the Copy boxes and the examples, and 
     };
     let written = null;
     Object.defineProperty(dom.window.navigator, 'clipboard', { value: { writeText: async t => { written = t; } }, configurable: true });
-    const page = await L.boot({ doc, fetch: okFetch(CONTENT), store: memoryStore(), Gate: null, Checklist: C, Progress });
+    const page = await L.boot({ doc, fetch: okFetch(CONTENT), store: memoryStore(), Gate: null, Checklist: C, Progress, workSimulationLive: true });
     const headlineCopy = () => doc.querySelector('.ap-cl-item[data-id="headline"] .lc-copy-text').textContent;
     const pick = () => doc.querySelector('.ap-cl-item[data-id="headline"] .lc-line.is-good').textContent;
-    assert.equal(headlineCopy(), 'CA Inter cleared ([Month Year]) | Seeking articleship in GST | [City] | [one proof]');
+    assert.equal(headlineCopy(), 'CA Inter cleared ([Month Year]) | GST Work Simulation | Seeking articleship in GST | [City]');
     assert.match(pick(), /Seeking articleship in GST \| Pune/);
     assert.match(doc.querySelector('.ap-cl-item[data-id="about"] .lc-copy-text').textContent, /looking for articleship in GST in \[City\]/);
     assert.match(doc.querySelector('.ap-cl-item[data-id="featured"] .lc-copy-text').textContent, /Next: articleship in GST in \[City\]\.$/);
-    assert.match(doc.querySelector('.ap-cl-item[data-id="recommendation"] .lc-copy-text').textContent, /applying for articleship in GST and/);
+    assert.match(doc.querySelector('.ap-cl-item[data-id="recommendation"] .lc-copy-text').textContent, /applying for articleship in GST\./);
     const aboutSample = () => doc.querySelector('.ap-cl-item[data-id="about"] .lc-sample').textContent;
     assert.match(aboutSample(), /articleship in GST in Pune/, 'the worked About example follows my domain');
     assert.match(aboutSample(), /In my GST Work Simulation I prepared GSTR-1 and GSTR-3B workings/, 'with that domain\'s own proof');
     assert.doesNotMatch(aboutSample(), /statutory audit|Statutory Audit|vouched/i, 'one domain on the card');
-    assert.match(doc.querySelector('.ap-cl-item[data-id="certifications"] .lc-example').textContent, /✅ GST Work Simulation, MSC Articleship Program/);
 
     // Copy takes the filled text, and still asks for the other brackets
     const btn = doc.querySelector('.ap-cl-item[data-id="headline"] .lc-copy-btn');
     btn.dispatchEvent(new dom.window.Event('click'));
     await new Promise(r => setTimeout(r, 0));
     await new Promise(r => setTimeout(r, 0));
-    assert.equal(written, 'CA Inter cleared ([Month Year]) | Seeking articleship in GST | [City] | [one proof]');
+    assert.equal(written, 'CA Inter cleared ([Month Year]) | GST Work Simulation | Seeking articleship in GST | [City]');
     assert.equal(doc.querySelector('.ap-cl-item[data-id="headline"] .lc-copy-status').textContent, 'Copied. Fill in the [brackets].');
 
     // set elsewhere (CV Recommender, roadmaps…) → refilled in place
     domain = 'direct-tax';
     assert.equal(listeners.length, 1);
     listeners[0]({});
-    assert.equal(headlineCopy(), 'CA Inter cleared ([Month Year]) | Seeking articleship in direct tax | [City] | [one proof]');
+    assert.equal(headlineCopy(), 'CA Inter cleared ([Month Year]) | Direct Tax Work Simulation | Seeking articleship in direct tax | [City]');
     assert.match(pick(), /Seeking articleship in direct tax \| Pune/);
     assert.match(aboutSample(), /articleship in direct tax in Pune\.\s*In my Direct Tax Work Simulation I checked/);
     assert.doesNotMatch(aboutSample(), /GST|statutory audit/i);
@@ -327,6 +353,15 @@ test('domain: the shared "my domain" fills the Copy boxes and the examples, and 
     assert.match(pick(), /Seeking articleship in statutory audit \| Pune/);
     assert.match(aboutSample(), /statutory audit in Pune\.\s*In my Statutory Audit Work Simulation I vouched 20 purchase bills/, 'no domain: the statutory audit example');
     assert.ok(page && page.list);
+
+    // release 1: the same domain fill, with the job-simulation line every student can earn today
+    const r1 = pageDom();
+    await L.boot({ doc: r1.window.document, fetch: okFetch(CONTENT), store: memoryStore(), Gate: null, Checklist: C,
+        Progress: { getMyDomain: () => 'gst', domainLabel: P.domainLabel }, workSimulationLive: false });
+    assert.equal(r1.window.document.querySelector('.ap-cl-item[data-id="headline"] .lc-copy-text').textContent,
+        'CA Inter cleared ([Month Year]) | [proof] | Seeking articleship in GST | [City]');
+    assert.match(r1.window.document.querySelector('.ap-cl-item[data-id="about"] .lc-sample').textContent,
+        /articleship in GST in Pune\.\s*In the PwC US Audit Job Simulation \(Forage\)/);
 
     // a settings store that throws (storage blocked) leaves the placeholders
     const dom2 = pageDom();
@@ -380,7 +415,7 @@ test('copy button: copies the template and says to fill the brackets; falls back
     btn.dispatchEvent(new dom.window.Event('click'));
     await new Promise(r => setTimeout(r, 0));
     await new Promise(r => setTimeout(r, 0));
-    assert.match(written, /^Hello Sir\/Ma’am/);
+    assert.match(written, /^\[Name\] Sir,\n/);
     assert.equal(btn.textContent, 'Copied');
     assert.equal(doc.querySelector('.ap-cl-item[data-id="recommendation"] .lc-copy-status').textContent, 'Copied. Fill in the [brackets].');
 
@@ -424,18 +459,23 @@ test('proofs: every domain has its own About line, matching its Work Simulation 
         const m = /^(.+) Work Simulation, MSC Articleship Program \| \[Month Year\]: (.+)$/.exec(cv);
         assert.ok(m, 'CV line shape for ' + d.slug);
         assert.equal(m[1], L.SIM_NAME[d.slug], 'SIM_NAME matches the CV line for ' + d.slug);
-        const task = m[2].replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\\\[count\\\]/g, '\\d+').replace(/'/g, '[\'’]');
+        const task = m[2].replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\\\[count\\\]/g, '\\d+').replace(/'/g, '[\'’]')
+            .replace(/accounts/g, 'accounts?'); // a level may have one account
         assert.match(prepared.proofs[d.slug], new RegExp('Work Simulation I ' + task + '\\.$'), 'same work as the CV line: ' + d.slug);
     });
 });
 
-test('content: phone length (each fold-out about 80 words: the rest lives in Guidebook ch 6)', () => {
-    const prepared = L.prepare(CONTENT);
-    const words = value => value.split(/\s+/).filter(w => w && !/^[✅❌>←|·→—]$/.test(w)).length;
-    CONTENT.items.forEach(item => {
-        P.DOMAINS.forEach(d => {
-            const lines = L.fillDomain(L.joinLines(item.example), L.domainFill(d.slug, null, prepared.proofs));
-            assert.ok(words(lines) <= 90, item.id + ' (' + d.slug + '): ' + words(lines) + ' words');
+// The checklist is the profile's one home (V3-STRUCTURE §1.4: Guidebook ch 6 keeps one line and a pointer here), so a
+// fold-out carries the full guidance; the cap only stops one check growing into a chapter.
+test('content: fold-out length (no check over 320 words)', () => {
+    const words = value => value.split(/\s+/).filter(w => w && !/^[✅❌>←|·→—›]$/.test(w)).length;
+    [false, true].forEach(workSimulationLive => {
+        const prepared = L.prepare(CONTENT, { workSimulationLive });
+        prepared.model.items.forEach(item => {
+            P.DOMAINS.forEach(d => {
+                const lines = L.fillDomain(item.example, L.domainFill(d.slug, null, prepared.proofs));
+                assert.ok(words(lines) <= 320, item.id + ' (' + d.slug + '): ' + words(lines) + ' words');
+            });
         });
     });
 });
@@ -443,7 +483,8 @@ test('content: phone length (each fold-out about 80 words: the rest lives in Gui
 test('page CSS: repeats hidden beside the sidebar, solid top bar, phone and laptop ledes, no bleed around the progress card', () => {
     const css = fs.readFileSync(path.join(ROOT, 'articleship-program/linkedin-checklist/linkedin-checklist.css'), 'utf8');
     const wide = css.slice(css.indexOf('@media (min-width: 960px)'));
-    assert.match(wide, /\.lc-list \.lc-fix-profile \{ display: none; \}/);
+    assert.match(wide, /\.lc-fab, \.lc-fab\.is-shown \{ display: none; \}/, 'no floating pill beside the sidebar button');
+    assert.match(css, /\.lc-fab\.is-shown \{ display: inline-flex; \}/);
     assert.match(wide, /\.lc-on-phone \{ display: none; \}/);
     assert.match(css, /\.lc-on-wide \{ display: none; \}/);
     assert.match(css, /body\.ap-page \.ap-topbar \{ background: var\(--ap-panel\); \}/);
