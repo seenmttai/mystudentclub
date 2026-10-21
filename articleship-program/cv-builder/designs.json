@@ -77,7 +77,7 @@
    "font": "Cambria",
    "accent": "#1E4E8C",
    "page": 6,
-   "line": "Groups separately: a quiet, formal page where each Inter row is easy to follow.",
+   "line": "Groups separately: each Inter group on its own row, with its own year and attempt, on a quiet formal page.",
    "bestFor": [
     "B"
    ],
@@ -93,7 +93,7 @@
    "font": "Cambria",
    "accent": "#17365D",
    "page": 7,
-   "line": "Extra-curriculars: a framed page with centred bars that make each block easy to scan.",
+   "line": "Extra-curriculars: a framed page with centred bars, so four or five roles read as separate blocks, not one long list.",
    "bestFor": [
     "E"
    ],
@@ -176,7 +176,6 @@
    "line": "Work experience, or a page still filling up: one full-width bar opens every block, so even a short CV looks complete.",
    "bestFor": [],
    "also": [
-    "A",
     "C",
     "H"
    ]
@@ -415,7 +414,7 @@
    "font": "Arial",
    "accent": "#1D4E5F",
    "page": 27,
-   "line": "Work experience: dashed rules; the jobs get the wide left column, skills and the rest sit beside them, so a partner reads what you did first.",
+   "line": "Work experience: under the grid, your jobs get the wide left column and skills sit beside them, so each task has room for its numbers.",
    "bestFor": [
     "C"
    ],
@@ -447,7 +446,7 @@
    "font": "Times New Roman",
    "accent": "#14508C",
    "page": 29,
-   "line": "Extra-curriculars: a frame, a tinted name band and a left date column, for a formal look.",
+   "line": "Extra-curriculars: the left date column shows the year of every role at a glance, inside a formal frame.",
    "bestFor": [],
    "also": [
     "E"
