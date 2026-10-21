@@ -145,7 +145,7 @@ WITH incoming AS (
       {
         "title": "Personal CV review",
         "type": "external_link",
-        "url": "https://wa.me/917228881182?text=Hi%2C%20my%20CV%20checklist%20is%20done.%20Please%20review%20my%20articleship%20CV.",
+        "url": "https://wa.me/917228881182?text=Hi%2C%20my%20CV%20checklist%20is%20done.%20Please%20review%20my%20articleship%20CV.%20Target%20domain%3A%20%5B%20%5D%20%C2%B7%20My%20question%3A%20%5B%20%5D",
         "group": "Check your CV"
       },
       {
@@ -347,6 +347,7 @@ WITH incoming AS (
         "title": "Articleship transfer guidelines",
         "type": "pdf",
         "view_storage_path": "articleship-program-v3/day-6/Articleship transfer guidelines.pdf",
+        "copy": true,
         "group": "During articleship"
       },
       {
@@ -359,6 +360,7 @@ WITH incoming AS (
         "title": "CA Final study guidelines",
         "type": "pdf",
         "view_storage_path": "articleship-program-v3/day-6/CA Final study guidelines.pdf",
+        "copy": true,
         "group": "During articleship"
       },
       {

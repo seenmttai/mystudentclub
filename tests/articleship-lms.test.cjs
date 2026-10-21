@@ -92,7 +92,10 @@ const COPY_ROWS = ['MSC Articleship Guidebook', 'Choose your CV', 'The Nothing C
     'LinkedIn search links', 'Connection notes', 'First message after the request is accepted', 'Follow-up messages',
     'HR round and GD booklet',
     // Not in §0.3, but its page 2 carries the joining-details mail to copy (judge, 21 Oct): copy reader too.
-    'Articleship registration process'];
+    'Articleship registration process',
+    // Not in §0.3: their in-document "(question N)" links are PDF destinations, which only the copyable reader follows
+    // (the /ca-resource/ viewer draws URL links only), 21 Oct.
+    'Articleship transfer guidelines', 'CA Final study guidelines'];
 
 test('an Articleship enrollment appears on the LMS dashboard and opens its course', async () => {
     const { dashboard, queries, window } = loadDashboard([{ course: 'msc-articleship-program' }]);
