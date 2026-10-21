@@ -1130,6 +1130,15 @@
     }
 }
 
+/* Phones and touch screens: View / Open / Download rows are at least 44 px tall (tap target). */
+@media (max-width: 768px), (pointer: coarse) {
+    .resource-btn {
+        min-height: 44px;
+        padding: 0.55rem 1rem;
+        justify-content: center;
+    }
+}
+
 /* =========================================
    1. Header & Navigation Components
    ========================================= */
