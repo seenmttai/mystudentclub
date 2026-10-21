@@ -311,30 +311,46 @@
         });
     }
 
+    /** The page's text lines in page pixels (a little taller than the glyphs), for placing Copy buttons. */
+    function textRects(items, viewport) {
+        return (items || []).filter(item => item && item.str && item.str.trim() && item.transform).map(item => {
+            const h = Math.abs(item.height || item.transform[3] || 10);
+            const x = item.transform[4];
+            const y = item.transform[5];
+            const r = viewport.convertToViewportRectangle([x, y - h * 0.25, x + (item.width || 0), y + h * 0.95]);
+            return { left: Math.min(r[0], r[2]), right: Math.max(r[0], r[2]), top: Math.min(r[1], r[3]), bottom: Math.max(r[1], r[3]) };
+        });
+    }
+
     async function addCopyButtons(page, viewport, textContent, div) {
         const opList = await page.getOperatorList();
         const boxes = core.copyBoxes(opList, pdfjs.OPS);
+        let texts = null;
         boxes.forEach(box => {
             const text = core.textInBox(textContent.items, box);
-            if (!text) return;
+            // A CV sample or template (its contact line at the top) is there to look at, not to paste.
+            if (!text || core.isCvSample(text)) return;
+            texts = texts || textRects(textContent.items, viewport);
             const rect = viewport.convertToViewportRectangle(box);
             const button = document.createElement('button');
             button.type = 'button';
             button.className = 'rd-copy';
             button.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg><span>Copy</span>';
             button.setAttribute('aria-label', 'Copy this box');
-            // Inside the box's top-right corner: a box's first line (a greeting, "Subject", a short subject line) leaves
-            // that spot free, and nothing outside the box is covered (under the box it hid the next line on a phone).
-            // A one-line box (a subject line) is shorter than the button: it sits on the box's middle instead.
-            const top = Math.min(rect[1], rect[3]);
-            const height = Math.abs(rect[3] - rect[1]);
-            button.style.left = (Math.max(rect[0], rect[2]) - 4) + 'px';
-            if (height < 40) {
-                button.classList.add('is-middle');
-                button.style.top = (top + height / 2) + 'px';
-            } else {
-                button.style.top = (top + 4) + 'px';
-            }
+            // On the box's top border at its right end (half above the box, half on its padding), so it covers none
+            // of the box's lines; core.copyButtonSpot moves it (or makes it icon-only) where text would be under it.
+            button.style.visibility = 'hidden';
+            div.appendChild(button);
+            const full = { width: button.offsetWidth || 24, height: button.offsetHeight || 24 };
+            button.classList.add('is-compact');
+            const compact = { width: button.offsetWidth || full.height, height: button.offsetHeight || full.height };
+            const spot = core.copyButtonSpot(
+                { left: Math.min(rect[0], rect[2]), right: Math.max(rect[0], rect[2]), top: Math.min(rect[1], rect[3]), bottom: Math.max(rect[1], rect[3]) },
+                texts, [full, compact], { width: viewport.width, height: viewport.height });
+            if (spot.size === 0) button.classList.remove('is-compact');
+            button.style.left = spot.left + 'px';
+            button.style.top = spot.top + 'px';
+            button.style.visibility = '';
             button.addEventListener('click', async () => {
                 const ok = await copyText(text);
                 if (ok) {
@@ -346,7 +362,6 @@
                     toast('Select the text and copy it instead');
                 }
             });
-            div.appendChild(button);
         });
     }
 

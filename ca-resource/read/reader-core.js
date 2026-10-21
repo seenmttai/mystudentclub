@@ -252,12 +252,14 @@
         return boxes;
     }
 
-    /**
-     * The text of one copy box, ready to paste into a mail: lines that only wrap are joined, paragraphs are separated
-     * by a blank line, short lines and lines ending in punctuation (sign-offs, addresses) keep their break.
-     * items: pdf.js text items ({ str, transform, width, height }); box: [x1, y1, x2, y2] in PDF space.
-     */
-    function textInBox(items, box) {
+    // A short line that closes or addresses a mail ("Thanking you,", "Regards,", "To,"): the lines under it in the same
+    // paragraph are a name, a firm and an address, each on its own line.
+    const SIGN_OFF = /^(?:to|thanking you|thank you|thanks|regards|warm regards|best regards|kind regards|with regards|yours (?:sincerely|faithfully|truly)|sincerely)\s*,$/i;
+    // A line that starts a list item ("1. ", "2) ", "• ", "- ") or a field ("Tone: ", "Tally Prime (working knowledge): ").
+    const LIST_ITEM = /^(?:\d{1,2}[.)]\s|[•▪◦*\-–—]\s)/;
+    const FIELD = /^[A-Z][^.:!?\[\]]{0,40}:\s/;
+
+    function boxLines(items, box) {
         const inside = (items || []).filter(item => item && typeof item.str === 'string' && item.str !== '' && item.transform)
             .map(item => {
                 const height = Math.abs(item.height || item.transform[3] || 10);
@@ -269,7 +271,6 @@
                 return cx >= box[0] && cx <= box[2] && cy >= box[1] && cy <= box[3];
             })
             .sort((a, b) => (Math.abs(b.y - a.y) > Math.min(a.h, b.h) * 0.5 ? b.y - a.y : a.x - b.x));
-        if (!inside.length) return '';
         const lines = [];
         inside.forEach(item => {
             const line = lines[lines.length - 1];
@@ -278,31 +279,153 @@
                 const needsSpace = gap > item.h * 0.15 && !/\s$/.test(line.text) && !/^\s/.test(item.str);
                 line.text += (needsSpace ? ' ' : '') + item.str;
                 line.right = Math.max(line.right, item.x + item.w);
+                line.items.push(item);
             } else {
-                lines.push({ text: item.str, y: item.y, h: item.h, left: item.x, right: item.x + item.w });
+                lines.push({ text: item.str, y: item.y, h: item.h, left: item.x, right: item.x + item.w, items: [item] });
             }
         });
         lines.forEach(line => { line.text = line.text.replace(/\s+/g, ' ').trim(); });
-        const pitches = [];
-        for (let i = 1; i < lines.length; i++) pitches.push(lines[i - 1].y - lines[i].y);
-        const pitch = pitches.length ? Math.min(...pitches.filter(p => p > 0).concat([Infinity])) : 0;
-        const width = box[2] - box[0];
+        return lines.filter(line => line.text);
+    }
+
+    /**
+     * Width of the first word of a line. pdf.js gives one width per text item, and a word can span items (a ligature
+     * such as "fi" is an item of its own: "fi" + "rst in your city"), so the items are added up to the first space.
+     */
+    function firstWordWidth(line) {
+        let width = 0;
+        let started = false;
+        for (const item of line.items || []) {
+            const str = item.str || '';
+            const lead = started ? 0 : str.length - str.replace(/^\s+/, '').length;
+            const rest = str.slice(lead);
+            const space = rest.search(/\s/);
+            const share = len => (str.length ? (item.w || 0) * (len / str.length) : 0);
+            if (!rest.length) { if (started) break; continue; }
+            started = true;
+            if (space >= 0) return width + share(space);
+            width += share(rest.length);
+        }
+        return width;
+    }
+
+    /**
+     * The text of one copy box, ready to paste into a mail or a message: paragraphs are separated by a blank line;
+     * inside a paragraph, lines are joined with a space (the PDF breaks lines for its page width or for looks, not for
+     * the mail). A break stays after a greeting or a sign-off ("Respected Sir/Ma'am,", "Thanking you,"), in the name
+     * and address lines under a sign-off or "To,", before a list item ("1. "), between fields ("Tone: "), after a line
+     * ending in ":", after a short heading with no full stop ("What to do now"), and between the lines of a box that
+     * has one item per line; a line that only wrapped (its next word would not have fitted) is always joined.
+     * items: pdf.js text items ({ str, transform, width, height }); box: [x1, y1, x2, y2] in PDF space.
+     */
+    function textInBox(items, box) {
+        const lines = boxLines(items, box);
+        if (!lines.length) return '';
+        const gaps = [];
+        for (let i = 1; i < lines.length; i++) gaps.push(lines[i - 1].y - lines[i].y);
+        const positive = gaps.filter(g => g > 0);
+        const pitch = positive.length ? Math.min(...positive) : 0;
+        // The text column's right edge: the box's right side less the same inset the text has on the left.
+        const inset = Math.max(0, Math.min(...lines.map(l => l.left)) - box[0]);
+        const columnRight = box[2] - inset;
+        const words = text => text.split(' ').filter(Boolean).length;
+        // Field lines ("Tone: …", "Languages: …") keep their breaks only in a box that is a list of fields (two or more).
+        const fieldBox = lines.filter(line => FIELD.test(line.text)).length >= 2;
+        // No two lines of the box sit closer than 1.8x their font size: each line is its own paragraph or item (a
+        // list with no wrapped line), so its breaks stay, and only a line that wrapped is joined.
+        const sizes = lines.map(line => line.h).sort((a, b) => a - b);
+        const loose = pitch > sizes[Math.floor(sizes.length / 2)] * 1.8;
         let out = '';
+        let block = false; // inside the name/address lines under a sign-off or "To,"
         lines.forEach((line, i) => {
-            if (i === 0) { out = line.text; return; }
+            if (i === 0) { out = line.text; block = SIGN_OFF.test(line.text); return; }
             const prev = lines[i - 1];
             const gap = prev.y - line.y;
-            const paragraph = pitch && gap > pitch * 1.35;
-            const prevIsWrap = (prev.right - box[0]) > width * 0.62 && !/[.,:;!?)]$/.test(prev.text) && !/^\[[^\]]*\]$/.test(prev.text);
-            if (paragraph) out += '\n\n' + line.text;
-            else if (prevIsWrap) out += ' ' + line.text;
-            else out += '\n' + line.text;
+            // Paragraphs are spaced at least 1.2x the line pitch in these PDFs (1.26x to 2x); lines inside one at 1x.
+            if (pitch && gap > pitch * 1.18) {
+                out += '\n\n' + line.text;
+                block = SIGN_OFF.test(line.text);
+                return;
+            }
+            const space = prev.h * 0.28;
+            const wrapped = prev.right + space + firstWordWidth(line) > columnRight - 1;
+            const startsLower = /^[a-z]/.test(line.text);
+            // "Thanking you," / "Respected Sir/Ma'am," then a new line; "Respected Sir/Ma'am, you spoke…" reads on.
+            const shortCommaLine = /,$/.test(prev.text) && words(prev.text) <= 4 && !startsLower;
+            const heading = !/[.,;:!?)\]"”’]$/.test(prev.text) && words(prev.text) <= 5 && /^[A-Z[“"]/.test(line.text);
+            const sentenceEnd = /[.?!:;]$/.test(prev.text);
+            let keep;
+            if (block || shortCommaLine) keep = true;
+            else if (LIST_ITEM.test(line.text) && sentenceEnd) keep = true; // "…confirm:" / "…report to." then "3. …"
+            else if (/:$/.test(prev.text) && /^[A-Z0-9]/.test(line.text)) keep = true; // "| [Month Year]:" then "Mapped…"
+            else if (loose && /[.?!]$/.test(prev.text) && !startsLower) keep = true; // one item per line
+            else if (wrapped) keep = false;
+            else keep = loose || LIST_ITEM.test(line.text) || LIST_ITEM.test(prev.text) || (fieldBox && FIELD.test(line.text)) ||
+                /:$/.test(prev.text) || heading;
+            out += (keep ? '\n' : ' ') + line.text;
+            if (SIGN_OFF.test(line.text)) block = true;
         });
         return out.trim();
     }
 
+    const CONTACT = /(?:\+91[\s-]?)?\b[6-9][0-9X]{9}\b|[\w.-]+@[\w-]+\.[a-z]{2,}|linkedin\.com\/in\//i;
+    const CV_HEADING = /^(?:career objective|objective|profile|summary|education|educational qualifications?|certifications?(?: and job simulations)?|job simulations|skills|key skills|projects?|experience|work experience|achievements|positions? of responsibility|extra-?curricular activities)$/i;
+
+    /**
+     * A copy box shows a CV (a sample or a template): its contact line (a mobile number, an email or a LinkedIn URL)
+     * comes in its first few lines, or it has a contact line and two CV section headings ("EDUCATION", "SKILLS").
+     * Such a box gets no Copy button. A letter's contact line is at its end, under no section heading.
+     */
+    function isCvSample(text) {
+        const all = String(text || '');
+        if (CONTACT.test(all.slice(0, 200))) return true;
+        if (!CONTACT.test(all)) return false;
+        const headings = new Set(all.split('\n').map(line => line.trim().toLowerCase()).filter(line => CV_HEADING.test(line)));
+        return headings.size >= 2;
+    }
+
+    function overlaps(a, b, pad) {
+        return a.left < b.right + pad && a.right > b.left - pad && a.top < b.bottom + pad && a.bottom > b.top - pad;
+    }
+
+    /**
+     * Where a box's Copy button goes, in page pixels. First choice: on the box's top border at its right end, half
+     * above the box and half on its padding, so it covers none of the box's lines. When text would be under it (a
+     * tight box, a table row, a line that runs to the right edge, a label just above the box), the next spot that
+     * covers no text: inside the top-right corner, a little higher, on the bottom border, inside the bottom-right
+     * corner, then in the page margin beside the box; then the same with the compact (icon-only) button.
+     * box: { left, top, right, bottom }; texts: [{ left, top, right, bottom }] of the page's text; sizes: the button's
+     * { width, height }, full first, then compact; page: { width, height }.
+     * Returns { left, top, size } (size: the index into sizes), or the top-border spot if nothing is clear.
+     */
+    function copyButtonSpot(box, texts, sizes, page) {
+        const list = (Array.isArray(sizes) ? sizes : [sizes]).filter(Boolean);
+        const inset = Math.min(8, Math.max(2, (box.right - box.left) * 0.02));
+        const pageW = page && page.width || Infinity;
+        const pageH = page && page.height || Infinity;
+        const clear = (left, top, size) => left >= 0 && top >= 0 && left + size.width <= pageW && top + size.height <= pageH &&
+            !(texts || []).some(t => overlaps({ left, top, right: left + size.width, bottom: top + size.height }, t, 1));
+        for (let k = 0; k < list.length; k++) {
+            const size = list[k];
+            const left = Math.max(box.left, box.right - inset - size.width);
+            const tops = [box.top - size.height / 2, box.top + 2];
+            for (let top = box.top - size.height / 2 - 1; top >= box.top - size.height - 2; top -= 1) tops.push(top);
+            tops.push(box.bottom - size.height / 2, box.bottom - size.height - 2);
+            for (const top of tops) if (clear(left, top, size)) return { left, top, size: k };
+            // Beside the box, in the page margin, level with its top (or lower, down to its bottom; a box lower than
+            // the button gets it level with its middle).
+            const beside = box.right + 4;
+            const first = Math.min(box.top, (box.top + box.bottom - size.height) / 2);
+            for (let top = first; top <= Math.max(first, box.bottom - size.height); top += 2) {
+                if (clear(beside, top, size)) return { left: beside, top, size: k };
+            }
+        }
+        const size = list[0] || { width: 0, height: 0 };
+        return { left: Math.max(box.left, box.right - inset - size.width), top: Math.max(0, box.top - size.height / 2), size: 0 };
+    }
+
     return Object.freeze({
         PROXY, clampPage, parseQuery, isLocalHost, isAllowedPdfUrl, fetchUrlFor, proxyUrlFor, isSafeLink, siteLink, opensInPlace,
-        normaliseSearch, searchPattern, findMatches, rawIndex, copyBoxes, textInBox, _multiply: multiply
+        normaliseSearch, searchPattern, findMatches, rawIndex, copyBoxes, textInBox, isCvSample, copyButtonSpot, _multiply: multiply
     });
 });
