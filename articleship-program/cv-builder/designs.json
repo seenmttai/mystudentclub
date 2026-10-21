@@ -191,7 +191,7 @@
    "font": "Arial",
    "accent": "#2C5D79",
    "page": 13,
-   "line": "Projects and analysis: a colour banner on top, then light, centred headings that leave room for detail.",
+   "line": "Projects and analysis: a colour banner on top, then light, centred headings, so each project has room for what you found and the numbers behind it.",
    "bestFor": [],
    "also": [
     "D"
@@ -239,7 +239,7 @@
    "font": "Times New Roman",
    "accent": "#111111",
    "page": 16,
-   "line": "Direct entry: black bars, contacts on the right and a light education table.",
+   "line": "Direct entry: black bars, contacts on the right and a light education table, so your degree and Inter rows sit in plain view.",
    "bestFor": [
     "G"
    ],
@@ -303,7 +303,7 @@
    "font": "Calibri",
    "accent": "#292C2C",
    "page": 20,
-   "line": "Projects: a dark banner, the education table across the page, then two columns with clean lines.",
+   "line": "Projects: a dark banner and the education table across the page, then two columns, so your projects and the tools behind them read side by side.",
    "bestFor": [],
    "also": [
     "D"
@@ -415,7 +415,7 @@
    "font": "Arial",
    "accent": "#1D4E5F",
    "page": 27,
-   "line": "Work experience: dashed rules; the jobs get the wide left column, skills and the rest sit beside them.",
+   "line": "Work experience: dashed rules; the jobs get the wide left column, skills and the rest sit beside them, so a partner reads what you did first.",
    "bestFor": [
     "C"
    ],
@@ -431,7 +431,7 @@
    "font": "Cambria",
    "accent": "#0B2046",
    "page": 28,
-   "line": "Projects: your name heads a grey side panel, and small pill headings keep the main column light.",
+   "line": "Projects: your name heads a grey side panel, and small pill headings keep the main column light, so three projects fit without crowding.",
    "bestFor": [],
    "also": [
     "D"
@@ -479,7 +479,7 @@
    "font": "Arial",
    "accent": "#0E2C55",
    "page": 31,
-   "line": "CA with CS or CMA: a left-aligned header, fine rules and a dark-headed education table.",
+   "line": "CA with CS or CMA: a left-aligned header, fine rules and a dark-headed education table, so your CS or CMA row reads as clearly as your CA rows.",
    "bestFor": [],
    "also": [
     "I"
