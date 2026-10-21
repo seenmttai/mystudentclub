@@ -503,10 +503,10 @@ test('stage: a CV templates link opens on its design (?design=N) and, with &exam
     const d = design(4);
     const s = await stage({ url: 'http://127.0.0.1/cv-builder/?stage=articleship&design=4&example=1', wait: 400 });
     assert.deepEqual(s.calls.useTemplate, [d.file]);
-    assert.equal(B.plainText(s.cv.personal.name), 'Sneha Pai', 'design 4\'s applicant');
+    assert.equal(B.plainText(s.cv.personal.name), 'Anushka Pai', 'design 4\'s applicant');
     const only = await stage({ url: 'http://127.0.0.1/cv-builder/?stage=articleship&design=4', wait: 400 });
     assert.deepEqual(only.calls.useTemplate, [d.file]);
-    assert.notEqual(B.plainText(only.cv.personal.name || ''), 'Sneha Pai', 'without &example=1 the CV stays the student\'s');
+    assert.notEqual(B.plainText(only.cv.personal.name || ''), 'Anushka Pai', 'without &example=1 the CV stays the student\'s');
     const bad = await stage({ url: 'http://127.0.0.1/cv-builder/?stage=articleship&design=99&example=1', wait: 200 });
     assert.deepEqual(bad.calls.useTemplate.filter(f => f !== 'articleship-layout-classic'), [], 'an unknown number changes nothing');
 });
