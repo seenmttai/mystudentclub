@@ -19,7 +19,7 @@
         "✅ A formal shirt, kurta or top. You don’t need a blazer.",
         "❌ Arm’s-length selfie, a function photo, a crop from a group picture, sunglasses, filters.",
         "Background cleaned up with an app? Fine. A changed face is not: it must look like you on interview day. Test: at fingernail size, as it shows next to your request, is it still clearly you?",
-        "Visibility (on a laptop): your photo › Visibility › All LinkedIn members, and Public profile & URL › Your profile’s public visibility On. Set to connections only, a partner who isn’t connected yet can’t see your photo.",
+        "Visibility (on a laptop): your photo › Visibility › All LinkedIn members or Public, and Public profile & URL › Your profile’s public visibility On. Set to connections only, a partner who isn’t connected yet can’t see your photo.",
         "Use the same photo on Gmail and WhatsApp, so HR knows the mail and the call are the same person."
       ]
     },
@@ -87,11 +87,11 @@
       "example_label": "Template",
       "example": [
         "Only the first few lines show before “…see more”. Many readers stop there.",
-        "> I cleared CA Intermediate in [Month Year]. I’m looking for articleship in {domain|statutory audit} in Pune.",
+        "> I cleared CA Intermediate in May. I’m looking for articleship in {domain|statutory audit} in Pune.",
         "> {proof}",
         "> I want to learn audit working papers where seniors review my work. Write to me at ishita.sharma@email.com.",
         "",
-        "Helped a CA office or a family business? Put that as line 2, with a number, only if you really did it.",
+        "Helped a CA office or a family business? Put that in place of the [One thing…] line, with a number, only if you really did it.",
         "Result awaited? Line 1: “My CA Intermediate result ([Month Year]) is awaited; I’ve finished ICITSS and I’m looking for articleship in …”",
         "Below them, if you like: how you used your exam break, one college role, a line of search words (Statutory audit · Vouching · Excel · Tally Prime), and once your joining date is fixed, “I can join from [Month Year].”",
         "❌ “Passionate, hardworking, dedicated professional”, copied hobbies, one long paragraph, “he” or “she”.",
@@ -99,7 +99,7 @@
       ],
       "copy_label": "Your opening lines",
       "copy_aria": "Copy About opening lines",
-      "copy": "I cleared CA Intermediate in [Month Year]. I’m looking for articleship in [domain] in [City].\n[One thing you have actually done, with a number.]\nI want to learn [what you want to learn]. Write to me at [email].",
+      "copy": "I cleared CA Intermediate in [Month Year]. I’m looking for articleship in [domain] in [City].\n[One thing you have actually done, in your CV’s words; a number if it has one.]\nI want to learn [what you want to learn]. Write to me at [email].",
       "copy_before": "Helped a CA office",
       "sample_label": "Ishita’s opening lines"
     },
@@ -192,9 +192,9 @@
       "check": "Email in Contact info, a plain banner, your phone number nowhere public",
       "how": "Your profile › Contact info › the pencil.",
       "example": [
-        "Contact info: your name-based email, e.g. ishita.sharma@email.com. Only connections see it; a partner who hasn’t accepted yet finds it on your CV. Phone field: empty.",
+        "Contact info: your name-based email, e.g. ishita.sharma@email.com. Only connections see it; a partner who hasn’t accepted yet finds it in your About and on your CV. Phone field: empty.",
         "Banner: a plain colour, one simple line such as “Statutory audit · Excel · Pune”, or a real photo of you presenting. Keep the left third empty: your photo sits on it.",
-        "❌ Your phone number on the banner or in About: anyone can see it, and scam calls follow. HR take it from your CV.",
+        "❌ Your phone number on the banner or in About: anyone can see it, and scam calls follow. HR will take it from your CV.",
         "❌ Quotes, city skylines, logos of firms you don’t work at."
       ]
     },
@@ -223,7 +223,7 @@
   "notes": [
     {
       "title": "Same story as your CV",
-      "text": "Your profile › More › Save to PDF (on a laptop). Read it line by line next to your CV: result month and groups, marks, certificate months, projects, city. A date that doesn’t match becomes the first interview question.",
+      "text": "Your profile › More › Save to PDF (on a laptop). It’s the file HR forwards. Read it line by line next to your CV: result month and groups, marks, certificate months, projects, city. A date that doesn’t match becomes the first interview question.",
       "link": {
         "label": "Open my CV",
         "href": "/cv-builder/?stage=articleship"
@@ -232,7 +232,7 @@
   ],
   "done": {
     "title": "All 12 ticked?",
-    "text": "Next, today: run the Posts search for your city and list the partner or HR person behind each opening (LinkedIn search links).",
+    "text": "Next, today: run the Posts search for your city, apply to anything that fits the same day, and note the partner or HR person behind each opening.",
     "links": [
       {
         "label": "LinkedIn search links",
@@ -244,7 +244,7 @@
       }
     ]
   },
-  "proof_now": "In the PwC US Audit Job Simulation (Forage) I finished all four tasks, starting with follow-up questions on a client’s purchasing process.",
+  "proof_now": "In the PwC US Audit Job Simulation (Forage) I walked through a client’s purchasing process and built a risk-control matrix.",
   "work_simulation": {
     "_what": "Release 2 only (row 1.6). The tool's WORK_SIMULATION_LIVE flag (and build.py --ws-live) apply this: each swap puts its line in place of the release-1 line named in 'for'; copy is the Copy box text once a domain is set; also is a second link; proofs are the About line per domain. Release 1 reads none of it.",
     "items": {

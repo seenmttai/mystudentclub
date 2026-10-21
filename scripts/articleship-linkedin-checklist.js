@@ -128,7 +128,7 @@
     const HAS_DOMAIN = /\{(?:domain|sim)(?:\|[^}]*)?\}|\{proof\}|\[domain\]/;
     /** The domain the examples show until the student sets "my domain" (the same as the `{domain|statutory audit}` defaults). */
     const DEFAULT_DOMAIN = 'statutory-audit';
-    const PROOF_PLACEHOLDER = '[One thing you have actually done, with a number.]';
+    const PROOF_PLACEHOLDER = '[One thing you have actually done, in your CV’s words; a number if it has one.]';
 
     /**
      * Fill "my domain": `{domain|default}` → the phrase (else the default); `{sim|default}` → the domain's Work Simulation

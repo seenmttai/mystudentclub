@@ -464,7 +464,7 @@ test('proofs: every domain has its own About line, matching its Work Simulation 
     assert.deepEqual(Object.keys(prepared.proofs).sort(), P.DOMAINS.map(d => d.slug).sort(), 'no proof for a domain that does not exist');
     assert.equal(L.proofFor(null, prepared.proofs), prepared.proofs[L.DEFAULT_DOMAIN]);
     assert.equal(L.proofFor('new-domain', prepared.proofs, () => 'Climate audit'), 'In my Climate audit Work Simulation I [one task you did, with a number].');
-    assert.equal(L.fillDomain('> {proof}', {}), '> [One thing you have actually done, with a number.]');
+    assert.equal(L.fillDomain('> {proof}', {}), '> [One thing you have actually done, in your CV’s words; a number if it has one.]');
 
     // The CV Recommender writes each domain's Work Simulation line for the CV; the About line says the same work.
     const situations = path.join(ROOT, 'articleship-program/cv-recommender/situations.json');
