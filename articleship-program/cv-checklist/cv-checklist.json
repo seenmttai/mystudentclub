@@ -29,6 +29,10 @@
       "fix": {
         "label": "Open the CV Builder",
         "href": "/cv-builder/?stage=articleship"
+      },
+      "links": {
+        "_what": "Per-check link target for a named resource (overrides its page=1 default in this check only).",
+        "The Nothing CV": "/learning-management-system/course?course=msc-articleship-program&session=2&resource=The+Nothing+CV&page=5"
       }
     },
     {
@@ -36,38 +40,42 @@
       "section": "Set-up",
       "check": "File named “Your Name - Articleship CV - Domain.pdf”",
       "example": [
-        "✅ One domain: Riya Sharma - Articleship CV - Audit.pdf",
-        "❌ resume final (2).pdf · CV_v3.pdf · Riya copy.pdf",
-        "✅ Two domains, two files: Riya Sharma - Articleship CV - Audit.pdf and Riya Sharma - Articleship CV - GST.pdf"
+        "✅ One domain: Devika Joshi - Articleship CV - Audit.pdf",
+        "❌ resume final (2).pdf · CV_v3.pdf · Devika copy.pdf",
+        "✅ Two domains, two files: Devika Joshi - Articleship CV - Audit.pdf and Devika Joshi - Articleship CV - GST.pdf"
       ]
     },
     {
       "id": "name-email-phone",
-      "section": "Header",
-      "check": "Your name as on your ICAI record, a name-based email and a phone you answer",
+      "section": "Top of the page",
+      "check": "Your name as on your ICAI record, a name-based email and a phone you answer, on ring, not silent",
       "example": [
-        "✅ Riya Sharma · riya.sharma@email.com · 98XXXXXXXX",
-        "❌ CA Riya Sharma · rockstar.riya99@email.com"
+        "✅ Devika Joshi · devika.joshi@email.com · 98XXXXXXXX",
+        "❌ CA Devika Joshi · sweetdevu_2004@email.com"
       ]
     },
     {
       "id": "linkedin",
-      "section": "Header",
+      "section": "Top of the page",
       "check": "LinkedIn hyperlinked, with a custom URL that opens",
       "example": [
         "✅ The word “LinkedIn”, linked to linkedin.com/in/firstname-lastname",
         "❌ linkedin.com/in/firstname-lastname-4b7a91203 as plain text",
         "In Word: select it, press Ctrl+K (Cmd+K on a Mac), paste your link.",
-        "Click it and your email in your PDF: both must open."
+        "Click every link in your PDF (LinkedIn, email, any proof link) in a private window: each must open. Proof links: The Nothing CV p5."
       ],
       "fix": {
         "label": "LinkedIn profile checklist",
         "href": "/articleship-program/linkedin-checklist/"
+      },
+      "links": {
+        "_what": "Per-check link target for a named resource (overrides its page=1 default in this check only).",
+        "The Nothing CV": "/learning-management-system/course?course=msc-articleship-program&session=2&resource=The+Nothing+CV&page=5"
       }
     },
     {
       "id": "city-only",
-      "section": "Header",
+      "section": "Top of the page",
       "check": "Your city only, not your address",
       "example": [
         "✅ Pune",
@@ -77,16 +85,16 @@
     },
     {
       "id": "nothing-personal",
-      "section": "Header",
+      "section": "Top of the page",
       "check": "No photo, date of birth, parents’ names, a declaration or a signature",
       "example": [
-        "Also out: age, gender, religion, marital status, Aadhaar, your ICAI registration number, and a “Resume” or “CV” heading. Your name is the heading.",
+        "Also out: age, gender, religion, marital status, Aadhaar, ICAI registration number, a “Resume” or “CV” heading. Your name is the heading.",
         "A firm that needs these asks on its own form; the space goes to proof."
       ]
     },
     {
       "id": "objective",
-      "section": "Header",
+      "section": "Top of the page",
       "check": "A three-line objective naming your domain, never a generic one",
       "example": [
         "✅ CA Intermediate cleared ([Month Year], first attempt); ICITSS completed. Kept the family shop’s books in Tally Prime for 10 months. Seeking articleship in GST, to learn monthly returns and ITC matching.",
@@ -107,12 +115,7 @@
         "Columns: Year · Qualification · Institute or board · Marks · Remarks.",
         "ICAI levels as marks out of the maximum, CGPA as CGPA, school as a percentage, with the same decimals everywhere.",
         "Year only is fine; show a month in one row and you show it in every row. Short names (“ICAI”) keep every row one line tall. Every other section goes newest first too."
-      ],
-      "fix": {
-        "label": "Your education table",
-        "href": "/learning-management-system/course?course=msc-articleship-program&session=2&resource=Choose+your+CV&page=11",
-        "find": "Your education table"
-      }
+      ]
     },
     {
       "id": "remarks",
@@ -120,11 +123,6 @@
       "check": "A remark on every row, and only what a marksheet or certificate proves",
       "example": [
         "✅ CA Intermediate row: First attempt · 74 in Taxation",
-        "✅ Class XII row: 98 in Accountancy",
-        "✅ AIR 34: only an all-India rank ICAI gave you",
-        "✅ Exemption in [paper]: only if your marksheet shows one.",
-        "Both groups in one sitting, or a Foundation row? Write the score, not an exemption.",
-        "✅ School rank 3 of 140: only with a certificate or letter",
         "❌ A blank cell · “City rank 2” · “Topper” with nothing to prove it"
       ],
       "fix": {
@@ -139,20 +137,35 @@
       "check": "Groups, attempts and results shown exactly as they are",
       "example": [
         "Groups cleared in different sittings: one row each, with its own month, year and marks, so every row shows a month.",
-        "Both groups passed together, but not on the first try: one row, year only is fine; the attempts answer is in HR round and GD booklet – Day 4.",
+        "Both groups passed together, but not on the first try: one row, year only is fine; practise the attempts answer in Practise your interview – Day 4.",
         "Result not out yet: “Result awaited”. Never a score before the result.",
         "A gap: no CV line unless you did real work in it; keep one true sentence ready (Guidebook ch 3, q11)."
       ],
       "also": [
         {
-          "label": "HR round and GD booklet – Day 4",
-          "href": "/learning-management-system/course?course=msc-articleship-program&session=5&resource=HR+round+and+GD+booklet"
+          "label": "Practise your interview – Day 4",
+          "href": "/ai-interview.html?mode=articleship"
         },
         {
           "label": "Guidebook ch 3, q11",
-          "href": "/learning-management-system/course?course=msc-articleship-program&session=1&resource=MSC+Articleship+Guidebook&page=29"
+          "href": "/learning-management-system/course?course=msc-articleship-program&session=1&resource=MSC+Articleship+Guidebook&page=26",
+          "find": "How do I show attempts, groups or a gap?"
         }
       ],
+      "needs": {
+        "_what": "Rows not live yet (v3/build/release/live.json): while the row is not live the example line is used; once it is live, replace swaps the line and also adds these links.",
+        "4.4": {
+          "replace": {
+            "Both groups passed together, but not on the first try: one row, year only is fine; practise the attempts answer in Practise your interview – Day 4.": "Both groups passed together, but not on the first try: one row, year only is fine; the attempts answer is in HR round and GD booklet – Day 4."
+          },
+          "also": [
+            {
+              "label": "HR round and GD booklet – Day 4",
+              "href": "/learning-management-system/course?course=msc-articleship-program&session=5&resource=HR+round+and+GD+booklet"
+            }
+          ]
+        }
+      },
       "fix": {
         "label": "Results, sittings and gaps",
         "href": "/learning-management-system/course?course=msc-articleship-program&session=2&resource=Choose+your+CV&page=12",
@@ -179,7 +192,7 @@
     {
       "id": "line-formula",
       "section": "Proof",
-      "check": "Every line: verb, what, how many, with what, what came of it",
+      "check": "Every line: verb, what, how many, with what, result",
       "example": [
         "✅ Recorded 1,400 sales and purchase vouchers in Tally Prime for the family paint shop over 10 months; reconciled the bank every month and cleared ₹38,000 of unmatched entries before the GST filing.",
         "❌ Responsible for my father’s shop accounts.",
@@ -217,8 +230,8 @@
         "Unfinished? “Ongoing, completes [Month Year]”, as for ICITSS."
       ],
       "fix": {
-        "label": "Guidebook, chapter 3",
-        "href": "/learning-management-system/course?course=msc-articleship-program&session=1&resource=MSC+Articleship+Guidebook&page=32",
+        "label": "Guidebook ch 3, q19",
+        "href": "/learning-management-system/course?course=msc-articleship-program&session=1&resource=MSC+Articleship+Guidebook&page=29",
         "find": "Where do job simulations and certificates go?"
       }
     },
@@ -238,8 +251,8 @@
       "section": "Proof",
       "check": "Every line, skill and hobby survives two questions",
       "example": [
-        "Read each line aloud, write the two questions it invites, answer both.",
-        "Excel: XLOOKUP, PivotTables → “Share your screen and make a PivotTable of this.” “XLOOKUP or VLOOKUP, and why?”",
+        "Read each line aloud. Write the two questions it invites (one is nearly always: what exactly did you do?), then answer both.",
+        "Excel (proficient): XLOOKUP, PivotTables → “Share your screen and make a PivotTable of this.” “XLOOKUP or VLOOKUP, and why?”",
         "Tally Prime → “Pass a purchase entry with GST.” “How do you reconcile the bank in Tally?”",
         "Family shop GST: matched 40 purchase invoices to GSTR-2B → “What is GSTR-2B?” “What did you do with a mismatch?”",
         "▸ More questions",
@@ -248,7 +261,7 @@
         "CARO 2020 → “Which companies does it not apply to?” “Name two things it asks the auditor to report.”",
         "PwC US Audit job simulation (Forage) → “What is a risk-control matrix?” “Which control did you test?”",
         "Reading → “What did you read last?” “What was its main idea?”",
-        "Trekking → “Which trek, and how high?” “What went wrong?”",
+        "Trekking → “Where was your last trek?” “What did you plan yourself?”",
         "Captain, cricket team → “How did you pick the eleven?” “Tell me about a time you dropped someone.”",
         "Volunteer teacher → “What did you teach?” “How did you know it worked?”",
         "▸ Skills and interests that survive",
@@ -306,7 +319,7 @@
       "check": "Phone and printout: nothing cut off, nothing faded",
       "example": [
         "Mail the PDF to yourself and open it from that mail on your phone. Small text is normal on a phone screen; a second page, a cut-off line or text over text is not.",
-        "Print it once: grey text, thin lines and coloured headings must still read in black and white. Read the printout from the bottom line up: slips show when you can’t follow the story."
+        "Print it once: grey text, thin lines and coloured headings must still read in black and white. Then read the printout from the bottom line up: once you can’t follow the story, typos and slips stand out."
       ],
       "fix": {
         "label": "Open the CV Builder",
@@ -328,14 +341,14 @@
     {
       "id": "before-you-send",
       "section": "Finish",
-      "check": "Before you send: the five-second test, after reading five classmates’ CVs",
+      "check": "Before you send: five classmates’ CVs, then the five-second test and a spell check",
       "example": [
         "Read five classmates’ CVs first: after that, your own mistakes jump out.",
         "Then leave yours for a day and look at it for five seconds only. Your Inter result, your best proof and your domain should show in the top third. If not, move them up.",
-        "Run spell check, then read every line aloud once. Firm names, ICAI terms (CARO, GSTR-2B, ITC) and your own name spelt exactly right."
+        "Run spell check, then read every line aloud once. Firm names, technical terms (CARO, GSTR-2B, ITC) and your own name spelt exactly right."
       ],
       "fix": {
-        "label": "Five filled-in CVs: CV templates",
+        "label": "Filled-in CVs to compare: CV templates",
         "href": "/learning-management-system/course?course=msc-articleship-program&session=2&resource=CV+templates&page=2",
         "find": "Design 1 of"
       }

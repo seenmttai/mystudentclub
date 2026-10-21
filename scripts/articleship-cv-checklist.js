@@ -40,7 +40,7 @@
     // An example line "▸ More questions" starts a fold of its own; the lines after it go inside.
     const FOLD_MARK = '▸ ';
 
-    // "my domain" as it goes in a file name, on the switch and in the review message: "Riya Sharma - Articleship CV - GST.pdf".
+    // "my domain" as it goes in a file name, on the switch and in the review message: "Your Name - Articleship CV - GST.pdf".
     const FILE_DOMAIN = Object.freeze({
         'statutory-audit': 'Audit', 'internal-audit': 'Internal Audit', 'direct-tax': 'Direct Tax', 'gst': 'GST',
         'bank-audit': 'Bank Audit', 'transfer-pricing': 'Transfer Pricing', 'ma-tax': 'M&A Tax', 'valuation': 'Valuation',
@@ -66,7 +66,42 @@
         const progress = progressApi();
         if (!content || !progress || typeof progress.releaseContent !== 'function') return content;
         const on = typeof live === 'boolean' ? live : WORK_SIMULATION_LIVE;
-        return progress.releaseContent(on ? withWorkSimulationLines(content) : content, { workSimulationLive: on });
+        const rows = withLiveRowLines(content, row => rowIdLive(progress, row, on));
+        return progress.releaseContent(on ? withWorkSimulationLines(rows) : rows, { workSimulationLive: on });
+    }
+
+    /** Is course row "4.4" in the course? Not when ROWS_NOT_LIVE lists it (1.6 follows the Work Simulation switch). */
+    function rowIdLive(progress, row, workSimulationLive) {
+        const id = String(row);
+        if (id === '1.6') return Boolean(workSimulationLive);
+        const list = (progress && Array.isArray(progress.ROWS_NOT_LIVE)) ? progress.ROWS_NOT_LIVE : [];
+        return !list.some(entry => entry && String(entry.row) === id);
+    }
+
+    /**
+     * Rows not in the course yet (build/release/live.json, the same rows as ROWS_NOT_LIVE): a check's
+     * "needs": { "<row>": { "replace": { line now: line once the row is live }, "also": [links] } } swaps that example
+     * line and adds those links once the row is live; until then the check reads as it is. The "needs" key itself is
+     * never drawn (a copy; the input is never changed).
+     */
+    function withLiveRowLines(content, isLive) {
+        if (!content || !Array.isArray(content.items)) return content;
+        const copy = clone(content);
+        copy.items.forEach(item => {
+            const needs = item && item.needs;
+            if (!needs || typeof needs !== 'object') return;
+            Object.keys(needs).forEach(row => {
+                const spec = needs[row];
+                if (row.startsWith('_') || !spec || typeof spec !== 'object' || !isLive(row)) return;
+                const swap = spec.replace && typeof spec.replace === 'object' ? spec.replace : {};
+                const swapLine = line => (typeof line === 'string' && Object.prototype.hasOwnProperty.call(swap, line)) ? String(swap[line]) : line;
+                if (Array.isArray(item.example)) item.example = item.example.map(swapLine);
+                else if (typeof item.example === 'string') item.example = item.example.split('\n').map(swapLine).join('\n');
+                if (Array.isArray(spec.also) && spec.also.length) item.also = (Array.isArray(item.also) ? item.also : []).concat(clone(spec.also));
+            });
+            delete item.needs;
+        });
+        return copy;
     }
 
     /**
@@ -898,7 +933,7 @@
     }
 
     return Object.freeze({
-        TOOL, CONTENT_URL, WORK_SIMULATION_LIVE, releaseContent, FILE_DOMAIN, FOLD_MARK, introText, isReviewLink, reviewMessage, reviewHref, cvList, fileNames,
+        TOOL, CONTENT_URL, WORK_SIMULATION_LIVE, releaseContent, withLiveRowLines, FILE_DOMAIN, FOLD_MARK, introText, isReviewLink, reviewMessage, reviewHref, cvList, fileNames,
         domainName, withoutDone, endState, navItems, nextItem, nextStep, exampleLines, exampleGroups, boldParts,
         mergeCvTicks, cvStore, loadContent, watchCompact, start, boot
     });

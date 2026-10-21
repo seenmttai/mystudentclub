@@ -23,6 +23,8 @@
  * `also` { label, href, ws } (a second link beside the fix link; `ws: true` = only once the Work Simulation is out);
  * `notes` [{ title, text, link: { label, href } }]; `proofs` { <domain slug>: one About line from that domain's Work
  * Simulation }; `proof_now` (the About line while the Work Simulation is not out: one any student can earn today).
+ * Every Work Simulation field sits under one `work_simulation` key { items: { <id>: { swap: [{ for, line }], copy,
+ * also } }, proofs } (liftWorkSimulation turns it into the shapes above, so the one flag still decides).
  * Example, copy and note lines may start with `{ws}` or `{no-ws}` (see the release flag). Domain tokens, filled from
  * MSCArticleshipProgress.getMyDomain() and refilled when it changes: `[domain]` (Copy boxes) and
  * `{domain|statutory audit}` (examples: the default until the student has set "my domain"); `{sim|Statutory Audit}` =
@@ -126,7 +128,7 @@
     const HAS_DOMAIN = /\{(?:domain|sim)(?:\|[^}]*)?\}|\{proof\}|\[domain\]/;
     /** The domain the examples show until the student sets "my domain" (the same as the `{domain|statutory audit}` defaults). */
     const DEFAULT_DOMAIN = 'statutory-audit';
-    const PROOF_PLACEHOLDER = '[One thing you have actually done, with a number.]';
+    const PROOF_PLACEHOLDER = '[One thing you have actually done, in your CV’s words; a number if it has one.]';
 
     /**
      * Fill "my domain": `{domain|default}` → the phrase (else the default); `{sim|default}` → the domain's Work Simulation
@@ -198,6 +200,42 @@
         return String(value).split('\n').map(keep).filter(line => line !== null).join('\n');
     }
 
+    /**
+     * The content keeps every Work Simulation field under one `work_simulation` key (BUILD-BRIEF), so release 1's file
+     * has none of it in the items. Here they become the release-marked shape the page reads: each
+     * `work_simulation.items.<id>.swap` [{ for, line }] puts `{ws}line` + `{no-ws}for` in place of the release-1 line,
+     * `.copy` becomes the item's `copy_ws`, `.also` its `also` with `ws: true`, and `work_simulation.proofs` the
+     * `proofs` map. The release flag then picks the lines as before. A copy; the content is not changed.
+     */
+    function liftWorkSimulation(source) {
+        const w = source && source.work_simulation && typeof source.work_simulation === 'object' ? source.work_simulation : null;
+        if (!w) return source;
+        const out = Object.assign({}, source);
+        const extra = w.items && typeof w.items === 'object' ? w.items : {};
+        const lift = raw => {
+            if (!raw || typeof raw !== 'object' || !extra[raw.id]) return raw;
+            const ws = extra[raw.id];
+            const item = Object.assign({}, raw);
+            if (Array.isArray(ws.swap) && Array.isArray(item.example)) {
+                let example = item.example.slice();
+                ws.swap.forEach(s => {
+                    const i = example.indexOf(s && s.for);
+                    if (i >= 0 && text(s.line)) example.splice(i, 1, '{ws}' + s.line, '{no-ws}' + s.for);
+                });
+                item.example = example;
+            }
+            if (text(ws.copy)) item.copy_ws = ws.copy;
+            if (ws.also && typeof ws.also === 'object') item.also = Object.assign({}, ws.also, { ws: true });
+            return item;
+        };
+        if (Array.isArray(out.items)) out.items = out.items.map(lift);
+        if (Array.isArray(out.sections)) {
+            out.sections = out.sections.map(section => Object.assign({}, section, { items: (section.items || section.checks || []).map(lift) }));
+        }
+        if (w.proofs && typeof w.proofs === 'object') out.proofs = w.proofs;
+        return out;
+    }
+
     /** The content's `proofs` map, keys lower-cased, empty lines dropped. */
     function readProofs(source) {
         const raw = source && typeof source.proofs === 'object' && !Array.isArray(source.proofs) ? source.proofs : {};
@@ -247,7 +285,7 @@
         const opts = options || {};
         const Checklist = engine('checklist', opts);
         const wsLive = typeof opts.workSimulationLive === 'boolean' ? opts.workSimulationLive : WORK_SIMULATION_LIVE;
-        const source = Array.isArray(content) ? { items: content } : Object.assign({}, content || {});
+        const source = liftWorkSimulation(Array.isArray(content) ? { items: content } : Object.assign({}, content || {}));
         const open = openTarget(source, Checklist.safeHref);
         const copyById = new Map();
         const extras = new Map();
@@ -799,7 +837,7 @@
     }
 
     return Object.freeze({
-        TOOL, CONTENT_URL, WORK_SIMULATION_LIVE, DEFAULT_OPEN, DOMAIN_PHRASE, SIM_NAME, DEFAULT_DOMAIN, joinLines, openTarget,
+        TOOL, CONTENT_URL, WORK_SIMULATION_LIVE, DEFAULT_OPEN, liftWorkSimulation, DOMAIN_PHRASE, SIM_NAME, DEFAULT_DOMAIN, joinLines, openTarget,
         prepare, releaseLines, parseLine, exampleBlocks, domainPhrase, simName, proofFor, domainFill, fillDomain, copyText,
         selectText, render, boot
     });
