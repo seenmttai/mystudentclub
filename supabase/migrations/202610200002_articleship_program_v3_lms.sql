@@ -2,7 +2,7 @@
 -- from lms-rows.json; do not edit by hand. Rows follow V3-STRUCTURE section 2 (one session per Day, Day 0 to Day 6) with
 -- Padam's B9 sheets, minus row 1.6 Work Simulation (release 2). Files live in bucket industrial-training-mastery-resources under articleship-program-v3/.
 --
--- 002 · Release 1: the course as seven sessions with the 35 rows that are ready now.
+-- 002 · Release 1: the course as seven sessions with the 37 rows that are ready now.
 -- Run after: every file in upload-release-1/ is in the bucket at the same path (uploads-manifest.csv, release 1).
 -- The preflight below stops the whole file, changing nothing, if any of those files is missing.
 -- What it does: updates title, description and resources of sessions 1-7 (inserts any that are missing) and removes
@@ -38,6 +38,9 @@ BEGIN
         'articleship-program-v3/day-3/LinkedIn search links.pdf',
         'articleship-program-v3/day-3/Career Portal Links.xlsx',
         'articleship-program-v3/day-3/Connection notes.pdf',
+        'articleship-program-v3/day-3/First message after the request is accepted.pdf',
+        'articleship-program-v3/day-3/Follow-up messages.pdf',
+        'articleship-program-v3/day-3/Follow-up list.xlsx',
         'articleship-program-v3/day-4/Master Excel test.xlsx',
         'articleship-program-v3/day-5/Top 100 Articleship Firms.xlsx',
         'articleship-program-v3/day-6/Articleship registration process.pdf',
@@ -61,7 +64,7 @@ WITH incoming AS (
     "course": "msc-articleship-program",
     "video_number": 1,
     "title": "Start here",
-    "description": "Read the Guidebook''s preface and chapters 1 and 2 first. They show you the whole path, from your result to your first day, and how firms choose their articles.\nThen join the WhatsApp group. We share openings and programme updates there, and only admins post, so nothing gets buried.\nDone when: you are in the group and your SSP profile is checked.",
+    "description": "Read the Guidebook''s preface and chapters 1 and 2 first. They show you the whole path, from your result to your first day, and how firms choose their articles.\nThen join the WhatsApp group. We share openings and programme updates there, and only admins post, so nothing gets buried.\nDone when: you are in the WhatsApp group, your SSP profile is checked, and you have read the preface and chapters 1 and 2.",
     "day_number": 0,
     "resources": [
       {
@@ -84,7 +87,7 @@ WITH incoming AS (
     "course": "msc-articleship-program",
     "video_number": 2,
     "title": "Crafting the Perfect CV",
-    "description": "A CV is not about what you have done. It is about what you wish to show the recruiter.\nPick your CV''s order first (Choose your CV, or let the CV Recommender pick it), then a design from CV templates, and build it once in the CV Builder. Nothing on your CV yet? Start with The Nothing CV.\nDone when: the CV checklist is at 100%, the CV Reviewer has run, your CV is sent for a personal review and your cover letter is saved as a PDF.",
+    "description": "A CV is not about what you have done. It is about what you wish to show the recruiter.\nPick your CV''s order first (Choose your CV, or let the CV Recommender pick it), then a design from CV templates, and build it once in the CV Builder. Nothing on your CV yet? Start with The Nothing CV.\nDone when: your CV checklist shows 100%, CV Reviewer has run and your CV has gone for personal review; your cover letter is saved as a PDF.",
     "day_number": 1,
     "resources": [
       {
@@ -160,7 +163,7 @@ WITH incoming AS (
     "course": "msc-articleship-program",
     "video_number": 3,
     "title": "Applying the Right Way",
-    "description": "Send your first personalised applications today. Start with the Big 10 routes and mail IDs for your cities, then the other firms in your city from the Citywise Firm Email IDs and the cold mailing list.\nDone when: your top 5 firms are applied to on every route and your first 10 mails are out.",
+    "description": "Send your first personalised applications today. Start with the Big 10 routes and mail IDs for your cities, then the other firms in your city from the Citywise Firm Email IDs and the Articleship Cold Mailing List - All Emails. Write each mail from the templates.\nA cold mail in four steps:\n1. Open the list and filter City to yours, Hiring for to the two Articleship values, and Domains to your team (Text contains). Delhi NCR: tick Delhi, Noida, Gurugram, Ghaziabad and Faridabad, then check Not stated too.\n2. Search the firm’s website and note one real detail (no website? use a detail from its hiring post).\n3. Send Mail 5 from Application templates: it asks whether your domain’s team is taking article assistants now.\n4. Set Status, write the date in Notes, and follow up in the same thread.\nDone when: your top five firms are applied to on every side, and your first ten mails are out.",
     "day_number": 2,
     "resources": [
       {
@@ -216,7 +219,7 @@ WITH incoming AS (
     "course": "msc-articleship-program",
     "video_number": 4,
     "title": "Using LinkedIn",
-    "description": "Make your profile findable first, then reach the people who decide: partners, managers and current articles in your domain.\nDone when: the LinkedIn profile checklist is at 100% and this week''s connection requests are sent, with personal notes for your top targets.",
+    "description": "Make your profile findable first, then reach the people who decide: partners, managers and current articles in your domain.\nDone when: your profile checklist shows 100%, and your first 15 connection requests are sent, with notes to your top targets.",
     "day_number": 3,
     "resources": [
       {
@@ -244,6 +247,22 @@ WITH incoming AS (
         "view_storage_path": "articleship-program-v3/day-3/Connection notes.pdf",
         "copy": true,
         "group": "Message them"
+      },
+      {
+        "title": "First message after the request is accepted",
+        "type": "pdf",
+        "view_storage_path": "articleship-program-v3/day-3/First message after the request is accepted.pdf",
+        "copy": true,
+        "group": "Message them"
+      },
+      {
+        "title": "Follow-up messages",
+        "type": "pdf",
+        "view_storage_path": "articleship-program-v3/day-3/Follow-up messages.pdf",
+        "download_storage_path": "articleship-program-v3/day-3/Follow-up list.xlsx",
+        "copy": true,
+        "download_label": "Download the follow-up list",
+        "group": "Message them"
       }
     ],
     "industrial_training_path": null
@@ -252,7 +271,7 @@ WITH incoming AS (
     "course": "msc-articleship-program",
     "video_number": 5,
     "title": "Cracking Interviews",
-    "description": "Prepare the core everyone is asked first, then your own domain, and practise aloud. The tracker shows what is left.\nDone when: the core and your domain are at Learning or better, your introduction is recorded, one AI mock interview is done and you have sat one written test paper.",
+    "description": "Prepare the core everyone is asked first, then your own domain, and practise aloud. The tracker shows what is left.\nDone when: the core topics and your domain are at “Learning” or better in the tracker; your introduction is recorded; you have done one mock in Practise your interview and Screening paper 1 of Written test practice.",
     "day_number": 4,
     "resources": [
       {
@@ -286,7 +305,7 @@ WITH incoming AS (
     "course": "msc-articleship-program",
     "video_number": 6,
     "title": "Domain Guidance",
-    "description": "Confirm your domain and a backup with real work in front of you: the roadmap for each domain, first-hand experiences from articles, and the top firms for each domain.\nDone when: your domain and backup are confirmed and 25 firms are on your list.",
+    "description": "Check your domain against real work: the roadmap for each domain, first-hand experiences from articles, and the top firms for each domain.\nA name on Top 100 Articleship Firms is a place to apply, not a vacancy. Before you join, ask what an article in that team did last month. Apply to the team, not the logo.\nIB and M&A or Equity Research firm? Ask which practising CA registers you. No one? Keep it for industrial training (Day 6).\nDone when: you have read your domain’s card and real experiences in it, and 25 firms in your domain are on your list.",
     "day_number": 5,
     "resources": [
       {
@@ -314,13 +333,14 @@ WITH incoming AS (
     "course": "msc-articleship-program",
     "video_number": 7,
     "title": "Registration Formalities",
-    "description": "Learn exactly how to join and register without losing an attempt, and what to plan once you start.\nPost Articleship CVs: CVs of MSC students selected for industrial training, company by company. Contact links in these CVs are removed on purpose.\nDone when: you know the count-back rule, the joining-date line and Forms 102, 103 and 112, and your documents are ready.",
+    "description": "Learn exactly how to join and register without losing an attempt, and what to plan once you start.\nDone when: you can explain the count-back rule, your joining-date line is ready, and your documents for the deed and Form 103 are in one folder, with Form 112 if you study anything alongside.",
     "day_number": 6,
     "resources": [
       {
         "title": "Articleship registration process",
         "type": "pdf",
         "view_storage_path": "articleship-program-v3/day-6/Articleship registration process.pdf",
+        "copy": true,
         "group": "Join and register"
       },
       {

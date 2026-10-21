@@ -90,7 +90,9 @@ const DAY_TITLES = ['Start here', 'Crafting the Perfect CV', 'Applying the Right
 const COPY_ROWS = ['MSC Articleship Guidebook', 'Choose your CV', 'The Nothing CV', 'CV templates', 'Keywords by domain',
     'Cover letters', 'Big 10 articleship routes', 'Application templates', 'Follow-up templates', 'Back-out templates',
     'LinkedIn search links', 'Connection notes', 'First message after the request is accepted', 'Follow-up messages',
-    'HR round and GD booklet'];
+    'HR round and GD booklet',
+    // Not in §0.3, but its page 2 carries the joining-details mail to copy (judge, 21 Oct): copy reader too.
+    'Articleship registration process'];
 
 test('an Articleship enrollment appears on the LMS dashboard and opens its course', async () => {
     const { dashboard, queries, window } = loadDashboard([{ course: 'msc-articleship-program' }]);

@@ -2,7 +2,7 @@
 -- from lms-rows.json; do not edit by hand. Rows follow V3-STRUCTURE section 2 (one session per Day, Day 0 to Day 6) with
 -- Padam's B9 sheets, minus row 1.6 Work Simulation (release 2). Files live in bucket industrial-training-mastery-resources under articleship-program-v3/.
 --
--- 003 · Add when ready: the full course, so the 11 rows not in 002 appear as their files arrive (First message after the request is accepted, Follow-up messages, Interview syllabus, Articleship Interview Guide, HR round and GD booklet, Core accounting booklet, Statutory audit booklet, Internal audit booklet, Direct tax booklet, GST booklet, Specialist teams booklet).
+-- 003 · Add when ready: the full course, so the 9 rows not in 002 appear as their files arrive (Interview syllabus, Articleship Interview Guide, HR round and GD booklet, Core accounting booklet, Statutory audit booklet, Internal audit booklet, Direct tax booklet, GST booklet, Specialist teams booklet).
 -- Run only after 002 (the guard below stops the file, changing nothing, if 002 has not run).
 -- Safe to run again and again: each run writes the whole course in its final order and shows a later row only once
 -- every file it needs is in the bucket (storage.objects), so upload the newly ready files from upload-later/, then run
@@ -31,8 +31,8 @@ WITH plan AS (
     "video_number": 1,
     "day_number": 0,
     "title": "Start here",
-    "description": "Read the Guidebook''s preface and chapters 1 and 2 first. They show you the whole path, from your result to your first day, and how firms choose their articles.\nThen join the WhatsApp group. We share openings and programme updates there, and only admins post, so nothing gets buried.\nDone when: you are in the group and your SSP profile is checked.",
-    "description_partial": "Read the Guidebook''s preface and chapters 1 and 2 first. They show you the whole path, from your result to your first day, and how firms choose their articles.\nThen join the WhatsApp group. We share openings and programme updates there, and only admins post, so nothing gets buried.\nDone when: you are in the group and your SSP profile is checked.",
+    "description": "Read the Guidebook''s preface and chapters 1 and 2 first. They show you the whole path, from your result to your first day, and how firms choose their articles.\nThen join the WhatsApp group. We share openings and programme updates there, and only admins post, so nothing gets buried.\nDone when: you are in the WhatsApp group, your SSP profile is checked, and you have read the preface and chapters 1 and 2.",
+    "description_partial": "Read the Guidebook''s preface and chapters 1 and 2 first. They show you the whole path, from your result to your first day, and how firms choose their articles.\nThen join the WhatsApp group. We share openings and programme updates there, and only admins post, so nothing gets buried.\nDone when: you are in the WhatsApp group, your SSP profile is checked, and you have read the preface and chapters 1 and 2.",
     "resources": [
       {
         "gate": "uploaded",
@@ -63,8 +63,8 @@ WITH plan AS (
     "video_number": 2,
     "day_number": 1,
     "title": "Crafting the Perfect CV",
-    "description": "A CV is not about what you have done. It is about what you wish to show the recruiter.\nPick your CV''s order first (Choose your CV, or let the CV Recommender pick it), then a design from CV templates, and build it once in the CV Builder. Nothing on your CV yet? Start with The Nothing CV.\nDone when: the CV checklist is at 100%, the CV Reviewer has run, your CV is sent for a personal review and your cover letter is saved as a PDF.",
-    "description_partial": "A CV is not about what you have done. It is about what you wish to show the recruiter.\nLet the CV Recommender pick your CV''s order, then build it once in the CV Builder.\nDone when: the CV checklist is at 100%, the CV Reviewer has run and your CV is sent for a personal review.",
+    "description": "A CV is not about what you have done. It is about what you wish to show the recruiter.\nPick your CV''s order first (Choose your CV, or let the CV Recommender pick it), then a design from CV templates, and build it once in the CV Builder. Nothing on your CV yet? Start with The Nothing CV.\nDone when: your CV checklist shows 100%, CV Reviewer has run and your CV has gone for personal review; your cover letter is saved as a PDF.",
+    "description_partial": "A CV is not about what you have done. It is about what you wish to show the recruiter.\nLet the CV Recommender pick your CV''s order, then build it once in the CV Builder.\nDone when: your CV checklist shows 100%, CV Reviewer has run and your CV has gone for personal review.",
     "resources": [
       {
         "gate": "uploaded",
@@ -185,8 +185,8 @@ WITH plan AS (
     "video_number": 3,
     "day_number": 2,
     "title": "Applying the Right Way",
-    "description": "Send your first personalised applications today. Start with the Big 10 routes and mail IDs for your cities, then the other firms in your city from the Citywise Firm Email IDs and the cold mailing list. Write each mail from the templates, and set up Automail on a laptop so your follow-ups go out by themselves.\nDone when: your top 5 firms are applied to on every route, Automail is set up with a test mail sent, and your first 10 mails are out.",
-    "description_partial": "Send your first personalised applications today. Start with the Big 10 routes and mail IDs for your cities, then the other firms in your city from the Citywise Firm Email IDs and the cold mailing list.\nDone when: your top 5 firms are applied to on every route and your first 10 mails are out.",
+    "description": "Send your first personalised applications today. Start with the Big 10 routes and mail IDs for your cities, then the other firms in your city from the Citywise Firm Email IDs and the Articleship Cold Mailing List - All Emails. Write each mail from the templates, and set up Automail on a laptop so your follow-ups go out by themselves.\nA cold mail in four steps:\n1. Open the list and filter City to yours, Hiring for to the two Articleship values, and Domains to your team (Text contains). Delhi NCR: tick Delhi, Noida, Gurugram, Ghaziabad and Faridabad, then check Not stated too.\n2. Search the firm’s website and note one real detail (no website? use a detail from its hiring post).\n3. Send Mail 5 from Application templates, or add the firm to Automail.\n4. Set Status, write the date in Notes, and follow up in the same thread.\nUsing Automail? Its Status board tracks each firm’s status, follow-ups and replies for you.\nDone when: your top five firms are applied to on every side; Automail is set up, a test mail has reached you, and your first ten mails are out.",
+    "description_partial": "Send your first personalised applications today. Start with the Big 10 routes and mail IDs for your cities, then the other firms in your city from the Citywise Firm Email IDs and the Articleship Cold Mailing List - All Emails. Write each mail from the templates.\nA cold mail in four steps:\n1. Open the list and filter City to yours, Hiring for to the two Articleship values, and Domains to your team (Text contains). Delhi NCR: tick Delhi, Noida, Gurugram, Ghaziabad and Faridabad, then check Not stated too.\n2. Search the firm’s website and note one real detail (no website? use a detail from its hiring post).\n3. Send Mail 5 from Application templates: it asks whether your domain’s team is taking article assistants now.\n4. Set Status, write the date in Notes, and follow up in the same thread.\nDone when: your top five firms are applied to on every side, and your first ten mails are out.",
     "resources": [
       {
         "gate": "uploaded",
@@ -292,8 +292,8 @@ WITH plan AS (
     "video_number": 4,
     "day_number": 3,
     "title": "Using LinkedIn",
-    "description": "Make your profile findable first, then reach the people who decide: partners, managers and current articles in your domain.\nDone when: the LinkedIn profile checklist is at 100% and this week''s connection requests are sent, with personal notes for your top targets.",
-    "description_partial": "Make your profile findable first, then reach the people who decide: partners, managers and current articles in your domain.\nDone when: the LinkedIn profile checklist is at 100% and this week''s connection requests are sent, with personal notes for your top targets.",
+    "description": "Make your profile findable first, then reach the people who decide: partners, managers and current articles in your domain.\nDone when: your profile checklist shows 100%, and your first 15 connection requests are sent, with notes to your top targets.",
+    "description_partial": "Make your profile findable first, then reach the people who decide: partners, managers and current articles in your domain.\nDone when: your profile checklist shows 100%, and your first 15 connection requests are sent, with notes to your top targets.",
     "resources": [
       {
         "gate": "always",
@@ -358,13 +358,16 @@ WITH plan AS (
       {
         "gate": "uploaded",
         "files": [
-          "articleship-program-v3/day-3/Follow-up messages.pdf"
+          "articleship-program-v3/day-3/Follow-up messages.pdf",
+          "articleship-program-v3/day-3/Follow-up list.xlsx"
         ],
         "resource": {
           "title": "Follow-up messages",
           "type": "pdf",
           "view_storage_path": "articleship-program-v3/day-3/Follow-up messages.pdf",
+          "download_storage_path": "articleship-program-v3/day-3/Follow-up list.xlsx",
           "copy": true,
+          "download_label": "Download the follow-up list",
           "group": "Message them"
         }
       }
@@ -375,8 +378,8 @@ WITH plan AS (
     "video_number": 5,
     "day_number": 4,
     "title": "Cracking Interviews",
-    "description": "Prepare the core everyone is asked first, then your own domain, and practise aloud. The tracker shows what is left and opens the right booklet page.\nDone when: the core and your domain are at Learning or better, your introduction is recorded, one AI mock interview is done and you have sat one written test paper.",
-    "description_partial": "Prepare the core everyone is asked first, then your own domain, and practise aloud. The tracker shows what is left.\nDone when: the core and your domain are at Learning or better, your introduction is recorded, one AI mock interview is done and you have sat one written test paper.",
+    "description": "Prepare the core everyone is asked first, then your own domain, and practise aloud. The tracker shows what is left and opens the right booklet page.\nDone when: the core topics and your domain are at “Learning” or better in the tracker; your introduction is recorded; you have done one mock in Practise your interview and Screening paper 1 of Written test practice.",
+    "description_partial": "Prepare the core everyone is asked first, then your own domain, and practise aloud. The tracker shows what is left.\nDone when: the core topics and your domain are at “Learning” or better in the tracker; your introduction is recorded; you have done one mock in Practise your interview and Screening paper 1 of Written test practice.",
     "resources": [
       {
         "gate": "always",
@@ -536,8 +539,8 @@ WITH plan AS (
     "video_number": 6,
     "day_number": 5,
     "title": "Domain Guidance",
-    "description": "Confirm your domain and a backup with real work in front of you: the roadmap for each domain, first-hand experiences from articles, and the top firms for each domain.\nDone when: your domain and backup are confirmed and 25 firms are on your list.",
-    "description_partial": "Confirm your domain and a backup with real work in front of you: the roadmap for each domain, first-hand experiences from articles, and the top firms for each domain.\nDone when: your domain and backup are confirmed and 25 firms are on your list.",
+    "description": "Check your domain against real work: the roadmap for each domain, first-hand experiences from articles, and the top firms for each domain.\nA name on Top 100 Articleship Firms is a place to apply, not a vacancy. Before you join, ask what an article in that team did last month. Apply to the team, not the logo.\nIB and M&A or Equity Research firm? Ask which practising CA registers you. No one? Keep it for industrial training (Day 6).\nDone when: you have read your domain’s card and real experiences in it, and 25 firms in your domain are on your list.",
+    "description_partial": "Check your domain against real work: the roadmap for each domain, first-hand experiences from articles, and the top firms for each domain.\nA name on Top 100 Articleship Firms is a place to apply, not a vacancy. Before you join, ask what an article in that team did last month. Apply to the team, not the logo.\nIB and M&A or Equity Research firm? Ask which practising CA registers you. No one? Keep it for industrial training (Day 6).\nDone when: you have read your domain’s card and real experiences in it, and 25 firms in your domain are on your list.",
     "resources": [
       {
         "gate": "always",
@@ -576,8 +579,8 @@ WITH plan AS (
     "video_number": 7,
     "day_number": 6,
     "title": "Registration Formalities",
-    "description": "Learn exactly how to join and register without losing an attempt, and what to plan once you start.\nPost Articleship CVs: CVs of MSC students selected for industrial training, company by company. Contact links in these CVs are removed on purpose.\nDone when: you know the count-back rule, the joining-date line and Forms 102, 103 and 112, and your documents are ready.",
-    "description_partial": "Learn exactly how to join and register without losing an attempt, and what to plan once you start.\nPost Articleship CVs: CVs of MSC students selected for industrial training, company by company. Contact links in these CVs are removed on purpose.\nDone when: you know the count-back rule, the joining-date line and Forms 102, 103 and 112, and your documents are ready.",
+    "description": "Learn exactly how to join and register without losing an attempt, and what to plan once you start.\nDone when: you can explain the count-back rule, your joining-date line is ready, and your documents for the deed and Form 103 are in one folder, with Form 112 if you study anything alongside.",
+    "description_partial": "Learn exactly how to join and register without losing an attempt, and what to plan once you start.\nDone when: you can explain the count-back rule, your joining-date line is ready, and your documents for the deed and Form 103 are in one folder, with Form 112 if you study anything alongside.",
     "resources": [
       {
         "gate": "uploaded",
@@ -588,6 +591,7 @@ WITH plan AS (
           "title": "Articleship registration process",
           "type": "pdf",
           "view_storage_path": "articleship-program-v3/day-6/Articleship registration process.pdf",
+          "copy": true,
           "group": "Join and register"
         }
       },
