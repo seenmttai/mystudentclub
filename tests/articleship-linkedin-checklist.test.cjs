@@ -466,7 +466,8 @@ test('proofs: every domain has its own About line, matching its Work Simulation 
     assert.equal(L.proofFor('new-domain', prepared.proofs, () => 'Climate audit'), 'In my Climate audit Work Simulation I [one task you did, with a number].');
     assert.equal(L.fillDomain('> {proof}', {}), '> [One thing you have actually done, in your CV’s words; a number if it has one.]');
 
-    // The CV Recommender writes each domain's Work Simulation line for the CV; the About line says the same work.
+    // The CV Recommender writes each domain's Work Simulation line for the CV; the About line says the same work, with
+    // the same [count] placeholder (a fixed count would be the student's claim before they have done the level).
     const situations = path.join(ROOT, 'articleship-program/cv-recommender/situations.json');
     if (!fs.existsSync(situations)) return;
     const cvLines = JSON.parse(fs.readFileSync(situations, 'utf8')).workSimulation || {};
@@ -476,7 +477,7 @@ test('proofs: every domain has its own About line, matching its Work Simulation 
         const m = /^(.+) Work Simulation, MSC Articleship Program \| \[Month Year\]: (.+)$/.exec(cv);
         assert.ok(m, 'CV line shape for ' + d.slug);
         assert.equal(m[1], L.SIM_NAME[d.slug], 'SIM_NAME matches the CV line for ' + d.slug);
-        const task = m[2].replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\\\[count\\\]/g, '\\d+').replace(/'/g, '[\'’]')
+        const task = m[2].replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\\\[count\\\]/g, '(?:\\[count\\]|\\d+)').replace(/'/g, '[\'’]')
             .replace(/accounts/g, 'accounts?'); // a level may have one account
         assert.match(prepared.proofs[d.slug], new RegExp('Work Simulation I ' + task + '\\.$'), 'same work as the CV line: ' + d.slug);
     });
