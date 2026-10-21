@@ -282,6 +282,22 @@ textarea.it-input { min-height: 88px; resize: vertical; line-height: 1.45; }
 .it-plan-btn svg { width: 18px; height: 18px; }
 .it-plan-btn[aria-expanded="true"] { color: var(--ap-primary); border-color: var(--ap-primary); background: var(--ap-primary-light); }
 .it-know { margin: 4px 0 0; color: var(--ap-muted); font-size: 14px; line-height: 1.45; }
+.it-gb-line { margin: 6px 0 0; font-size: 14px; line-height: 1.45; }
+.it-gb {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    color: var(--ap-primary);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+.it-gb:hover { text-decoration-thickness: 2px; }
+.it-gb:focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--ap-primary) 40%, transparent);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
 .it-chip {
     display: inline-block;
     margin: 8px 0 0;
