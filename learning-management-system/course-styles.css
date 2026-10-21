@@ -622,6 +622,15 @@
     background-color: var(--gray-300, #cbd5e1);
 }
 
+/* Phones and touch screens (the app): View / Open / Download rows are at least 44 px tall (tap target). */
+@media (max-width: 768px), (pointer: coarse) {
+    .resource-btn {
+        min-height: 44px;
+        padding: 0.55rem 1rem;
+        justify-content: center;
+    }
+}
+
 .no-video-selected {
     background-color: #ffffff;
     border-radius: 10px;
