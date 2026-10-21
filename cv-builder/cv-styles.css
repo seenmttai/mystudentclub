@@ -3569,6 +3569,13 @@
             }
         }
 
+/* The Download button's chevron sits in its own right padding at every width (the narrow-screen .btn-icon padding
+   above would otherwise pull the label under it). */
+@media (max-width: 1024px) {
+    .btn-icon.dropdown-trigger { padding-right: 22px; }
+    .btn-icon.dropdown-trigger::after { right: 9px; }
+}
+
 /* Articleship starts with the student's CV form. */
 .articleship-mode .beta-badge,
 .articleship-mode .history-strip:has(.history-empty) { display: none; }
