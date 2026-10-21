@@ -96,9 +96,24 @@
             .toLowerCase();
     }
 
+    /** The index in raw item text reached after `n` characters of its normalised form (a whitespace run counts as one). */
+    function rawIndex(raw, n) {
+        const text = String(raw || '');
+        let i = 0;
+        let norm = 0;
+        while (i < text.length && norm < n) {
+            if (/\s/.test(text[i])) { while (i < text.length && /\s/.test(text[i])) i += 1; }
+            else i += 1;
+            norm += 1;
+        }
+        return i;
+    }
+
     /**
-     * pages: array (one per page) of arrays of text-item strings. Returns every match as { page (1-based), item }.
-     * A match is found inside one item, or across neighbouring items of the same page (the first item is reported).
+     * pages: array (one per page) of arrays of text-item strings. Returns every match as { page (1-based), item, last,
+     * start, end }: found inside one item, or across neighbouring items of the same page (item = the first, last = the
+     * last); start is where it begins in the first item's text and end where it stops in the last item's text, so the
+     * reader can mark just the searched words.
      */
     function findMatches(pages, term) {
         const needle = normaliseSearch(term).trim();
@@ -117,7 +132,8 @@
                 while (item + 1 < starts.length && starts[item + 1] <= at) item += 1;
                 let last = item;
                 while (last + 1 < starts.length && starts[last + 1] < at + needle.length) last += 1;
-                results.push({ page: pageIndex + 1, item, last });
+                results.push({ page: pageIndex + 1, item, last,
+                    start: rawIndex(items[item], at - starts[item]), end: rawIndex(items[last], at + needle.length - starts[last]) });
                 from = at + needle.length;
             }
         });
@@ -287,6 +303,6 @@
 
     return Object.freeze({
         PROXY, clampPage, parseQuery, isLocalHost, isAllowedPdfUrl, fetchUrlFor, proxyUrlFor, isSafeLink, siteLink, opensInPlace,
-        normaliseSearch, searchPattern, findMatches, copyBoxes, textInBox, _multiply: multiply
+        normaliseSearch, searchPattern, findMatches, rawIndex, copyBoxes, textInBox, _multiply: multiply
     });
 });
