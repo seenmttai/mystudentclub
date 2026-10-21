@@ -157,10 +157,18 @@ body {
     font: 600 12px/1 'Inter', sans-serif;
     box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12);
     cursor: pointer;
-    transform: translate(-100%, 4px);
+    transform: translateX(-100%);
 }
 .rd-copy svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.rd-copy.is-middle { transform: translate(-100%, -50%); }
 .rd-copy.is-done { background: #168048; border-color: #168048; color: #fff; }
+/* A phone shows the page small: the button is an icon only, so it sits in the box's corner without covering its text
+   (the toast says "Copied"; the label stays for screen readers). */
+@media (max-width: 479px) {
+    .rd-copy { width: 22px; height: 22px; padding: 0; justify-content: center; gap: 0; }
+    .rd-copy span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .rd-copy svg { width: 12px; height: 12px; }
+}
 
 /* pdf.js text layer: transparent text over the canvas, so it can be selected and copied */
 .textLayer {
