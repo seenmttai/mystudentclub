@@ -4,7 +4,7 @@
  * One card per domain (the 13 in MSCArticleshipProgress.DOMAINS), in MSCIT's Domain.docx pattern: what an article does
  * (first three months, later) · who it suits · pros · cons · where it leads, then pairs well with, busy season, five
  * likely questions (→ the booklet, and a mock interview on them), Work Simulation levels and the line they earn, free
- * picks, the paid option for later, and three jumps: Experience Explorer (?domain=), Firms by domain and a LinkedIn
+ * picks, the paid option for later, and three jumps: Experience Explorer (?domain=), Top 100 Articleship Firms and a LinkedIn
  * people search. The same jumps sit in one line under the card's name, so a student who knows the domain needs no scroll.
  * Tiles follow the content's `groups` (where most articles work, then the specialist teams; MSC's experience data).
  *
@@ -86,7 +86,7 @@
     const LINKEDIN_INDIA = '["102713980"]';
     const ARTICLE_TITLES = '"article assistant" OR "CA Finalist"';
 
-    const FIRMS_TITLE = 'Firms by domain';
+    const FIRMS_TITLE = 'Top 100 Articleship Firms'; // Padam's sheet (B9); it replaced Firms by domain on Day 5
     const FIRMS_DAY = 5;
     const BOOKLET_DAY = 4;
     const WORK_SIMULATION_TITLE = 'Work Simulation';
@@ -403,7 +403,7 @@
             picks: normalisePicks(pick(raw, ['picks', 'free_picks', 'freePicks', 'simulations', 'free'])),
             paid: normalisePicks(pick(raw, ['paid', 'paid_option', 'paidOption', 'paid_later', 'later_paid'])),
             extra: normaliseExtra(pick(raw, ['extra', 'good_to_know', 'goodToKnow', 'notes']), defaults.isLive),
-            // null while Firms by domain is not in the course yet (the Firms jumps are then left out).
+            // null while Top 100 Articleship Firms is not in the course yet (the Firms jumps are then left out).
             firms: firmsHref ? { href: firmsHref.href, external: firmsHref.external, hint: firmsHint } : null,
             explorer,
             linkedin
@@ -1063,7 +1063,7 @@
             grid.appendChild(actionRow(doc, card.explorer, 'See real experiences', 'Experience Explorer', false, 'explorer'));
             if (card.firms) {
                 grid.appendChild(actionRow(doc, card.firms.href, 'Firms for this domain',
-                    card.firms.hint ? 'Firms by domain · ' + card.firms.hint : 'Firms by domain', card.firms.external, 'firms'));
+                    card.firms.hint ? FIRMS_TITLE + ' · ' + card.firms.hint + (/ or /.test(card.firms.hint) ? ' tabs' : ' tab') : FIRMS_TITLE, card.firms.external, 'firms'));
             }
             grid.appendChild(actionRow(doc, card.linkedin, 'Articles in it on LinkedIn',
                 'Swap India for your city under Locations', true, 'linkedin'));

@@ -13,7 +13,7 @@
     },
     "firms": {
       "day": 5,
-      "title": "Firms by domain"
+      "title": "Top 100 Articleship Firms"
     }
   },
   "unbuilt": [
@@ -221,7 +221,7 @@
           }
         }
       ],
-      "firms_filter": "Audit and tax",
+      "firms_filter": "Statutory Audit",
       "linkedin": {
         "keywords": "\"statutory audit\""
       }
@@ -314,7 +314,7 @@
           "note": "Internal-audit certification. Plan it after real audit work: with a bachelor's degree, certification needs two years of qualifying experience; the exams can come first."
         }
       ],
-      "firms_filter": "Internal audit, risk and IFC",
+      "firms_filter": "Internal Audit & Risk",
       "linkedin": {
         "keywords": "\"internal audit\" OR \"risk advisory\""
       }
@@ -408,7 +408,7 @@
           "note": "Free official videos on return preparation and tax credits."
         }
       ],
-      "firms_filter": "Audit and tax",
+      "firms_filter": "Direct Tax",
       "linkedin": {
         "keywords": "\"direct tax\" OR \"income tax\""
       }
@@ -495,7 +495,7 @@
           "note": "Free. A mismatch needs a reason before you decide the credit."
         }
       ],
-      "firms_filter": "Audit and tax",
+      "firms_filter": "Indirect Tax (GST)",
       "linkedin": {
         "keywords": "GST OR \"indirect tax\""
       }
@@ -572,7 +572,7 @@
           "note": "Free. Pick Intermediate, then the audit lectures on banks."
         }
       ],
-      "firms_filter": "Audit and tax",
+      "firms_filter": "Statutory Audit",
       "linkedin": {
         "keywords": "\"bank audit\" OR \"concurrent audit\""
       }
@@ -650,7 +650,7 @@
           "note": "Free. TP interviews test tax: revise Intermediate income tax first."
         }
       ],
-      "firms_filter": "Audit and tax",
+      "firms_filter": "Transfer Pricing",
       "linkedin": {
         "keywords": "\"transfer pricing\""
       }
@@ -731,7 +731,7 @@
       "extra": [
         "As a fresher, do not claim M&A tax keywords you cannot defend. Show the interest honestly: what you have read, one piece of work you can explain, a strong tax score and a specific objective."
       ],
-      "firms_filter": "Audit and tax",
+      "firms_filter": "IB and M&A",
       "linkedin": {
         "keywords": "\"M&A tax\" OR \"mergers and acquisitions tax\""
       }
@@ -926,7 +926,7 @@
         },
         "Expect an Excel exercise in the interview."
       ],
-      "firms_filter": "Financial due diligence",
+      "firms_filter": "FDD",
       "linkedin": {
         "keywords": "\"due diligence\" OR \"transaction advisory\""
       }
@@ -1111,7 +1111,7 @@
           }
         }
       ],
-      "firms_filter": "Consulting",
+      "firms_filter": "Consulting & IFRS",
       "linkedin": {
         "keywords": "consulting OR \"risk advisory\""
       }
@@ -1203,7 +1203,7 @@
           "note": "Microsoft's paid Power BI exam. Build one useful dashboard first."
         }
       ],
-      "firms_filter": "Audit and tax",
+      "firms_filter": "Statutory Audit",
       "linkedin": {
         "keywords": "accounting OR MIS OR \"company law\""
       }
@@ -1323,7 +1323,7 @@
           }
         }
       ],
-      "firms_filter": "IB and ER",
+      "firms_filter": "IB and M&A or Equity Research",
       "linkedin": {
         "keywords": "\"equity research\" OR \"investment banking\""
       }

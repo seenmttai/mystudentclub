@@ -16,6 +16,11 @@ const CSS = fs.readFileSync(path.join(TOOL_DIR, 'domain-roadmaps.css'), 'utf8');
 const CONTENT_BUILD = process.env.MSC_CONTENT_BUILD || path.join(ROOT, '..', 'msc-content/articleship-program/v3/build');
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
+// Tabs of Padam's "Top 100 Articleship Firms.xlsx" (build/padam-files, B9), in the workbook's order.
+const TOP_100_TABS = ['Top 100', 'FDD', 'Valuation', 'IB and M&A', 'Equity Research', 'Transfer Pricing', 'Forensic',
+    'Internal Audit & Risk', 'Consulting & IFRS', 'Insolvency', 'Statutory Audit', 'Direct Tax', 'Indirect Tax (GST)',
+    'IT Audit & Analytics', 'Industrial training'];
+
 function copy(value) { return JSON.parse(JSON.stringify(value)); }
 /** The content with every course row treated as built (what the page shows once every file is in the course). */
 function allBuilt() { return Object.assign(copy(CONTENT), { unbuilt: [] }); }
@@ -273,7 +278,7 @@ test('links: every outside link is https on an official or provider site, never 
     }
 });
 
-test('links: Explorer ?domain=, LinkedIn people search with India preloaded, Firms by domain and booklets as course rows', () => {
+test('links: Explorer ?domain=, LinkedIn people search with India preloaded, Top 100 Articleship Firms and booklets as course rows', () => {
     const model = R.normalise(allBuilt());
     for (const card of model.domains) {
         assert.equal(card.explorer, '/articleship-program/experience-explorer/?domain=' + card.slug);
@@ -281,8 +286,10 @@ test('links: Explorer ?domain=, LinkedIn people search with India preloaded, Fir
         assert.equal(li.origin + li.pathname, 'https://www.linkedin.com/search/results/people/');
         assert.equal(li.searchParams.get('geoUrn'), '["102713980"]');
         assert.match(li.searchParams.get('keywords'), /^\("article assistant" OR "CA Finalist"\) AND \(.+\)$/);
-        assert.equal(card.firms.href, '/learning-management-system/course?course=msc-articleship-program&session=6&resource=Firms+by+domain');
+        assert.equal(card.firms.href, '/learning-management-system/course?course=msc-articleship-program&session=6&resource=Top+100+Articleship+Firms');
         assert.ok(card.firms.hint, card.slug + ': which tab or filter to use');
+        // The hint names tabs of Padam's Top 100 Articleship Firms workbook (B9), as the workbook spells them.
+        for (const tab of card.firms.hint.split(' or ')) assert.ok(TOP_100_TABS.includes(tab), card.slug + ': no tab called ' + tab);
         if (card.booklet) {
             assert.equal(card.booklet.live, true);
             assert.equal(card.booklet.href, '/learning-management-system/course?course=msc-articleship-program&session=5&resource=' +
@@ -300,7 +307,7 @@ test('links: a course row listed in `unbuilt` is never linked (booklets, Firms, 
     const unbuilt = new Set(CONTENT.unbuilt.map(r => r.day + '|' + r.title));
     for (const card of model.domains) {
         if (card.booklet) assert.equal(card.booklet.live, !unbuilt.has('4|' + card.booklet.title), card.slug + ' booklet');
-        assert.equal(Boolean(card.firms), !unbuilt.has('5|Firms by domain'), card.slug + ' firms');
+        assert.equal(Boolean(card.firms), !unbuilt.has('5|Top 100 Articleship Firms'), card.slug + ' firms');
         for (const e of card.extra) if (e.link && e.link.row) assert.ok(!unbuilt.has(e.link.row.day + '|' + e.link.row.title));
     }
     assert.equal(Boolean(model.introLink), !unbuilt.has('4|HR round and GD booklet'));
@@ -328,7 +335,7 @@ test('links: every course row this tool opens exists in the v3 LMS rows on its D
         assert.ok(row, title + ' is a Day 4 row');
         assert.match(String(row.view_storage_path), /^articleship-program-v\d+\/day-4\/.+\.pdf$/, title + ' opens as a programme PDF');
     }
-    assert.ok(lmsRow(5, 'Firms by domain'), 'Firms by domain is a Day 5 row');
+    assert.ok(lmsRow(5, 'Top 100 Articleship Firms'), 'Top 100 Articleship Firms is a Day 5 row');
     assert.ok(lmsRow(5, 'Domain roadmaps'), 'this tool is a Day 5 row');
     assert.equal(lmsRow(5, 'Domain roadmaps').url, R.PATHS.page, 'the Day 5 row opens this page');
     // Row 1.6 is release 2: a Day 1 row at the path levels open, exactly when the release flag is on.
@@ -355,7 +362,7 @@ test('links: `unbuilt` matches the content build (a row with its file is linked,
         card.extra.forEach(e => e.link && e.link.row && add(e.link.row.day, e.link.row.title));
     });
     if (model.introLink && model.introLink.row) add(model.introLink.row.day, model.introLink.row.title);
-    if (!CONTENT.links.firms) add(5, 'Firms by domain');
+    if (!CONTENT.links.firms) add(5, 'Top 100 Articleship Firms');
     const unbuilt = new Set(CONTENT.unbuilt.map(r => r.day + '|' + r.title));
     const problems = [];
     for (const [key, { day, title }] of linked) {
@@ -407,7 +414,7 @@ test('links: a wired Work Simulation page turns every level into its own link', 
     assert.ok(!$$('.dr-go').some(a => a.textContent === 'Open the Work Simulation'));
 });
 
-test('links: Firms by domain switches to the Sheet with one data change (even while its course row is unbuilt)', () => {
+test('links: Top 100 Articleship Firms switches to a Sheet with one data change (even while its course row is unbuilt)', () => {
     const sheet = 'https://docs.google.com/spreadsheets/d/abc123/edit?usp=sharing';
     const model = R.normalise(Object.assign(copy(CONTENT), { links: { workSimulation: null, firms: sheet } }));
     assert.equal(model.bySlug.valuation.firms.href, sheet);
@@ -490,7 +497,7 @@ test('page: a card opens from its anchor with every part; jumps to unbuilt rows 
     const heads = $$('.dr-card .dr-h3').map(h => h.textContent);
     assert.deepEqual(heads, ['What an article does', 'Who it suits', 'Pros', 'Cons', 'Where it leads', 'How you are tested',
         'Practise free', 'Good to know', 'Go further']);
-    const firmsLive = !CONTENT.unbuilt.some(r => r.title === 'Firms by domain');
+    const firmsLive = !CONTENT.unbuilt.some(r => r.title === 'Top 100 Articleship Firms');
     const quick = $$('.dr-quick a');
     assert.deepEqual(quick.map(a => a.textContent), firmsLive ? ['Experiences', 'Firms', 'LinkedIn'] : ['Experiences', 'LinkedIn']);
     assert.equal(quick[0].getAttribute('href'), '/articleship-program/experience-explorer/?domain=valuation');
@@ -529,7 +536,7 @@ test('page: a card opens from its anchor with every part; jumps to unbuilt rows 
 test('page: with every row built, the booklet, Firms and intro links all show', async () => {
     const { $, $$, win } = page('#valuation', allBuilt());
     assert.deepEqual($$('.dr-quick a').map(a => a.textContent), ['Experiences', 'Firms', 'LinkedIn']);
-    assert.match($$('.dr-action')[1].textContent, /Firms by domain · Valuation/);
+    assert.match($$('.dr-action')[1].textContent, /Top 100 Articleship Firms · Valuation tab/);
     assert.equal($('.dr-card .dr-go').textContent, 'Answers in the Specialist teams booklet, Valuation part');
     await go(win, '#ib-er');
     assert.match($$('.dr-card .dr-go')[0].textContent, /^More in the Specialist teams booklet, Investment banking part$/);
