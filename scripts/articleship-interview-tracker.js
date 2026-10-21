@@ -207,7 +207,9 @@
         const opts = options || {};
         const live = typeof opts.workSimulationLive === 'boolean' ? opts.workSimulationLive : WORK_SIMULATION_LIVE;
         const P = progressApi();
-        const source = (P && typeof P.releaseContent === 'function' ? P.releaseContent(content || {}, { workSimulationLive: live }) : content) || {};
+        // Rows not in the course yet (MSCArticleshipProgress.ROWS_NOT_LIVE: the Day 4 booklets while they are finished) lose
+        // their Read buttons and pointers; opts.rows = 'all' draws every row as in the course (tests, release 2 previews).
+        const source = (P && typeof P.releaseContent === 'function' ? P.releaseContent(content || {}, { workSimulationLive: live, rows: opts.rows }) : content) || {};
         const booklets = isPlainObject(source.booklets) ? Object.assign({}, source.booklets) : {};
         const ids = new Set();
         const sections = (Array.isArray(source.sections) ? source.sections : []).map((raw, si) => {

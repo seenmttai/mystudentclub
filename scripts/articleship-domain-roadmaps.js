@@ -486,7 +486,8 @@
         // of the content names it either.
         const wsLive = opts.workSimulationLive === undefined ? WORK_SIMULATION_LIVE : Boolean(opts.workSimulationLive);
         const P = progressApi();
-        if (P && typeof P.releaseContent === 'function') content = P.releaseContent(content, { workSimulationLive: wsLive }) || {};
+        // `rows: false`: this tool keeps its own built-rows list (`unbuilt`, kept equal to the release by its tests).
+        if (P && typeof P.releaseContent === 'function') content = P.releaseContent(content, { workSimulationLive: wsLive, rows: false }) || {};
         const warnings = [];
         let rawDomains = pick(content, ['domains', 'cards', 'roadmaps']);
         if (rawDomains && !Array.isArray(rawDomains) && typeof rawDomains === 'object') {

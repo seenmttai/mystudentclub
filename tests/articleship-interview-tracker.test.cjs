@@ -117,7 +117,8 @@ test('content: Core first, then all 13 domains, then the written test and GD; ev
 });
 
 test('content: Read rows are the Day 4 booklets, and every title is a Day 4 row of the v3 course', () => {
-    const model = T.normaliseContent(CONTENT);
+    // Every row as in the course (rows: 'all'); release 1 below.
+    const model = T.normaliseContent(CONTENT, { rows: 'all' });
     const sql = fs.readFileSync(LMS_SQL, 'utf8');
     Object.entries(model.booklets).forEach(([row, title]) => {
         assert.match(row, /^4\.\d+$/);
@@ -221,8 +222,24 @@ test('night before: only Core and my domain, only what is not Ready, often-asked
 });
 
 // ---------- links ----------
-test('Read: the booklet page through the course deep link; the page number only when wired', () => {
+test('release 1: no Read button or pointer opens a row that is not in the course yet; one line in ROWS_NOT_LIVE brings each back', () => {
+    const notLive = new Set(P.ROWS_NOT_LIVE.map(row => row.title));
     const model = T.normaliseContent(CONTENT);
+    assert.deepEqual(Object.values(model.booklets).filter(title => notLive.has(title)), [], 'no booklet that is not in the course');
+    assert.equal(T.readHref({ row: '4.6', page: 12, find: 'x' }, model, Lms), '', 'a booklet not in the course gives no link');
+    const { doc } = mountTracker({});
+    const hrefs = [...doc.querySelectorAll('a[href]')].map(a => a.getAttribute('href'));
+    assert.deepEqual(hrefs.filter(href => P.isNotLiveRowLink(href)), [], 'no link to a row that is not in the course');
+    const words = [...notLive].filter(title => title !== 'Work Simulation');
+    assert.deepEqual(words.filter(title => new RegExp(title + '(?! tracker)').test(doc.body.textContent)), [], 'no title of such a row on the page');
+    // Every topic still shows what to know; the Day 4 booklets come back by themselves once their rows ship.
+    assert.ok(model.sections.every(section => section.topics.every(topic => topic.know.length > 20)));
+    const all = T.normaliseContent(CONTENT, { rows: 'all' });
+    assert.equal(all.booklets['4.6'], 'Statutory audit booklet');
+});
+
+test('Read: the booklet page through the course deep link; the page number only when wired', () => {
+    const model = T.normaliseContent(CONTENT, { rows: 'all' });
     assert.equal(T.readHref({ row: '4.6', page: 12, find: 'x' }, model, Lms),
         '/learning-management-system/course?course=msc-articleship-program&session=5&resource=Statutory+audit+booklet&page=12');
     assert.equal(T.readHref(T.normaliseContent({ sections: [{ id: 's', topics: [{ topic: 'A', read: { row: '4.4', find: 'x' } }] }], booklets: { '4.4': 'HR round and GD booklet' } }).sections[0].topics[0].read, model, Lms),
@@ -542,9 +559,14 @@ test('mount: opens on the syllabus with Core, asks for the domain, and hides Sha
     assert.equal(doc.querySelector('.it-count').classList.contains('is-none'), true);
     assert.equal(app.summary().total, 63);
     assert.doesNotMatch(doc.body.textContent, /Share with MSC/);
-    const read = doc.querySelector('#it-panel-syllabus .it-read');
-    assert.match(read.getAttribute('href'), /^\/learning-management-system\/course\?course=msc-articleship-program&session=5&resource=HR\+round\+and\+GD\+booklet/);
-    assert.match(read.getAttribute('aria-label'), /^Read in HR round and GD booklet: /);
+    // Release 1: the HR round and GD booklet is not in the course yet, so HR topics have no Read button (ROWS_NOT_LIVE).
+    const hrRead = [...doc.querySelectorAll('#it-panel-syllabus .it-section[data-section="hr"] .it-read')];
+    if (P.isRowLive('HR round and GD booklet', 4)) {
+        assert.match(hrRead[0].getAttribute('href'), /^\/learning-management-system\/course\?course=msc-articleship-program&session=5&resource=HR\+round\+and\+GD\+booklet/);
+        assert.match(hrRead[0].getAttribute('aria-label'), /^Read in HR round and GD booklet: /);
+    } else {
+        assert.equal(hrRead.length, 0, 'no Read for a booklet not in the course');
+    }
     const written = [...doc.querySelectorAll('.it-section[data-section="written-test"] .it-read')];
     assert.ok(written.some(a => a.textContent === 'Practise'));
     const writtenLive = fs.existsSync(path.join(ROOT, 'articleship-program/written-test/index.html'));

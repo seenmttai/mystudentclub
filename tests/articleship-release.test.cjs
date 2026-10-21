@@ -185,6 +185,66 @@ test('releaseContent: a copy; what names or links the Work Simulation goes, ids 
     assert.equal(P.mentionsWorkSimulation('a job simulation'), false);
 });
 
+// ---------- rows not in the course yet (ROWS_NOT_LIVE) ----------
+const CONTENT_BUILD = process.env.MSC_CONTENT_BUILD || path.join(ROOT, '..', 'msc-content/articleship-program/v3/build');
+
+test('rows not live: ROWS_NOT_LIVE is every LMS row that is not in release 1 (the LMS build), and nothing else', t => {
+    const rowsFile = path.join(CONTENT_BUILD, 'lms/lms-rows.json');
+    const releaseFile = path.join(CONTENT_BUILD, 'lms/rows-release-1.json');
+    if (!fs.existsSync(rowsFile) || !fs.existsSync(releaseFile)) { t.skip('content build not on this machine'); return; }
+    const all = JSON.parse(fs.readFileSync(rowsFile, 'utf8')).days
+        .flatMap(day => day.groups.flatMap(group => group.rows.map(row => ({ row: row.row, day: day.day, title: row.title }))));
+    const release = JSON.parse(fs.readFileSync(releaseFile, 'utf8'));
+    const inRelease = row => release.some(s => s.day_number === row.day && s.resources.some(r => r.title === row.title));
+    // Row 1.6 is not an LMS row in release 1 (the Work Simulation's own flag); every other missing row must be listed.
+    const missing = all.filter(row => !inRelease(row)).map(row => row.row + ' ' + row.title);
+    if (!P.WORK_SIMULATION_LIVE) missing.push('1.6 Work Simulation');
+    assert.deepEqual(P.ROWS_NOT_LIVE.map(row => row.row + ' ' + row.title).sort(), [...new Set(missing)].sort(),
+        'scripts/articleship-progress.js ROWS_NOT_LIVE: one line per row not in rows-release-1.json');
+    for (const row of P.ROWS_NOT_LIVE.filter(r => r.row !== '1.6')) {
+        assert.ok(all.some(r => r.row === row.row && r.day === row.day && r.title === row.title), row.title + ' is a real LMS row');
+    }
+});
+
+test('rows not live: links to them go, their "<title> – Day N" pointers leave the sentence cleanly, other rows stay', () => {
+    const href = title => '/learning-management-system/course?course=msc-articleship-program&session=5&resource=' + encodeURIComponent(title).replace(/%20/g, '+');
+    assert.equal(P.isNotLiveRowLink(href('HR round and GD booklet')), true);
+    assert.equal(P.isNotLiveRowLink(href('Written test practice')), false);
+    assert.equal(P.isNotLiveRowLink(href('Interview syllabus tracker')), false);
+    assert.equal(P.isNotLiveRowLink('https://www.mystudentclub.com/learning-management-system/course?course=msc-articleship-program&session=5&resource=GST+booklet&page=3'), true);
+    assert.equal(P.isNotLiveRowLink('/learning-management-system/course?course=other&session=5&resource=GST+booklet'), false);
+    assert.equal(P.isRowLive('Interview syllabus tracker', 4), true);
+    assert.equal(P.isRowLive('Interview syllabus', 4), false);
+    assert.equal(P.withoutNotLiveRows('Both groups passed together, but not on the first try: one row, year only is fine; the attempts answer is in HR round and GD booklet – Day 4.'),
+        'Both groups passed together, but not on the first try: one row, year only is fine.');
+    assert.equal(P.withoutNotLiveRows('Tick topics in the Interview syllabus tracker. Then read the GST booklet – Day 4.'), 'Tick topics in the Interview syllabus tracker.');
+    assert.equal(P.withoutNotLiveRows('Open Written test practice (or the Core accounting booklet) tonight.'), 'Open Written test practice tonight.');
+    assert.equal(P.withoutNotLiveRows('Read in GST booklet'), '');
+    assert.equal(P.withoutNotLiveRows('Nothing to change here.'), 'Nothing to change here.');
+    const content = { items: [{ id: 'a', check: 'Groups', also: [{ label: 'HR round and GD booklet – Day 4', href: href('HR round and GD booklet') },
+        { label: 'Guidebook ch 3, q11', href: '/learning-management-system/course?course=msc-articleship-program&session=1&resource=MSC+Articleship+Guidebook&page=29' }] }] };
+    assert.deepEqual(P.releaseContent(content).items[0].also.map(link => link.label), ['Guidebook ch 3, q11']);
+    assert.deepEqual(P.releaseContent(content, { rows: 'all' }), content, "rows: 'all' keeps every row");
+    assert.deepEqual(P.releaseContent(content, { rows: false }), content, 'rows: false (a tool with its own list) keeps them');
+});
+
+test('rows not live: no programme tool draws a link or a pointer to one (CV checklist check 11, tracker, LinkedIn checklist)', () => {
+    const notLive = P.ROWS_NOT_LIVE.filter(row => row.row !== '1.6');
+    const findLinks = value => JSON.stringify(value).match(/\/learning-management-system\/course\?[^"]+/g) || [];
+    const checklist = RELEASE_1.checklist.releaseContent(CONTENT.checklist);
+    assert.deepEqual(findLinks(checklist).filter(P.isNotLiveRowLink), []);
+    assert.deepEqual(notLive.filter(row => JSON.stringify(checklist).includes(row.title + ' –')), []);
+    const attempts = checklist.items.find(item => item.id === 'groups-attempts');
+    assert.ok(attempts.example.includes('Both groups passed together, but not on the first try: one row, year only is fine.'));
+    const syllabus = RELEASE_1.tracker.normaliseContent(CONTENT.syllabus);
+    assert.deepEqual(Object.values(syllabus.booklets).filter(title => !P.isRowLive(title, 4)), []);
+    const linkedin = path.join(ROOT, 'articleship-program/linkedin-checklist/linkedin-checklist.json');
+    if (fs.existsSync(linkedin)) {
+        const released = P.releaseContent(JSON.parse(fs.readFileSync(linkedin, 'utf8')));
+        assert.deepEqual(findLinks(released).filter(P.isNotLiveRowLink), []);
+    }
+});
+
 // ---------- release 1: nothing about the Work Simulation, nothing broken ----------
 
 test('release 1: CV Recommender, situation D (Projects) and every other result say nothing about it', () => {
@@ -292,7 +352,9 @@ test('release 2 (flag flipped): every Work Simulation part is back in every tool
         const swap = (item.work_simulation || {}).replace || {};
         if (Array.isArray(item.example)) item.example = item.example.map(line => (line in swap ? swap[line] : line));
     });
-    assert.deepEqual(C.releaseContent(CONTENT.checklist), swapped, 'every check as written');
+    // (A pointer to a row that is not in the course yet - a Day 4 booklet - stays out until that row ships: ROWS_NOT_LIVE.)
+    assert.deepEqual(C.releaseContent(CONTENT.checklist), RELEASE_2.progress.releaseContent(swapped, { workSimulationLive: true }), 'every check as written');
+    assert.deepEqual(RELEASE_2.progress.releaseContent(swapped, { workSimulationLive: true, rows: 'all' }), swapped);
     assert.match(JSON.stringify(C.releaseContent(CONTENT.checklist)), /Statutory audit Work Simulation: flagged 3 cut-off errors/);
 });
 
