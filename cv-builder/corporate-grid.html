@@ -997,8 +997,11 @@
                     }
                 }
                 if (!title && !bullets.length) return;
-                html += '<div><div class="we-header-row"><div class="we-left"><span class="we-job">' + title + '</span></div>'
-                    + (year ? '<span class="we-date">' + year + '</span>' : '') + '</div>';
+                var headerHTML = (title || year)
+                    ? '<div class="we-header-row"><div class="we-left"><span class="we-job">' + title + '</span></div>'
+                        + (year ? '<span class="we-date">' + year + '</span>' : '') + '</div>'
+                    : '';
+                html += '<div>' + headerHTML;
                 if (bullets.length) html += '<ul>' + bullets.map(function (b) { return '<li>' + b + '</li>'; }).join('') + '</ul>';
                 html += '</div>';
             });
