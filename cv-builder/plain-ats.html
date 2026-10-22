@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CV</title>
+    <style>
+        :root { --ref-width:1000px; --ref-height:1414px; --content-scale:1; --font-main:Arial,sans-serif; }
+        * { box-sizing:border-box; margin:0; padding:0; }
+        html { -webkit-text-size-adjust:100%; text-size-adjust:100%; }
+        body { background:#525659; font-family:var(--font-main); color:#111; width:100%; overflow-x:hidden; }
+        #zoom-wrapper { display:flex; justify-content:center; width:100%; padding:20px 0; overflow:hidden; }
+        .cv-page { width:1000px; height:1414px; flex-shrink:0; position:relative; background:white; padding:calc(42px * var(--content-scale)); font-size:calc(17px * var(--content-scale)); line-height:1.35; transform-origin:top center; overflow:hidden; }
+        .header { text-align:center; margin-bottom:calc(18px * var(--content-scale)); }
+        .name { font-size:calc(32px * var(--content-scale)); line-height:1.15; font-weight:700; }
+        .tagline { margin-top:calc(5px * var(--content-scale)); }
+        .contact { margin-top:calc(5px * var(--content-scale)); font-size:.92em; }
+        .section { margin-top:calc(14px * var(--content-scale)); break-inside:avoid; }
+        .section-title { font-size:1em; text-transform:uppercase; font-weight:700; padding-bottom:calc(3px * var(--content-scale)); margin-bottom:calc(6px * var(--content-scale)); border-bottom:1px solid #111; background:transparent; }
+        .qual-table { width:100%; table-layout:fixed; border-collapse:collapse; font-size:.92em; }
+        .qual-table th,.qual-table td { padding:calc(5px * var(--content-scale)); border:1px solid #666; text-align:left; vertical-align:top; overflow-wrap:anywhere; }
+        .qual-table th { font-weight:700; background:white; }
+        ul { margin:calc(3px * var(--content-scale)) 0; padding-left:calc(21px * var(--content-scale)); }
+        li { margin-bottom:calc(3px * var(--content-scale)); }
+        .project-block { margin-bottom:calc(8px * var(--content-scale)); }
+        .project-title { font-weight:700; }
+        .project-description { font-style:italic; font-size:.94em; }
+        [data-field="skills"] p { margin-bottom:calc(4px * var(--content-scale)); }
+        a { color:inherit; text-decoration:none; }
+        @page { size:A4; margin:0; }
+        @media print {
+            body { background:white; width:1000px; }
+            #zoom-wrapper { padding:0; overflow:visible; }
+            .cv-page { transform:none!important; margin:0!important; box-shadow:none; }
+        }
+    </style>
+</head>
+<body>
+    <div id="zoom-wrapper">
+        <main class="cv-page" id="cv-page">
+            <header class="header">
+                <h1 class="name" data-field="name"></h1>
+                <div class="tagline" data-field="tagline"></div>
+                <div class="contact" data-field="contact"></div>
+            </header>
+            <div data-section-append-host>
+                <section class="section sortable-section" data-section-id="summary">
+                    <h2 class="section-title">Career Objective</h2>
+                    <div data-field="summary"></div>
+                </section>
+                <section class="section sortable-section" data-section-id="education">
+                    <h2 class="section-title">Academics</h2>
+                    <table class="qual-table">
+                        <thead><tr><th>Qualification</th><th>Session / year</th><th>Institute / board</th><th>Marks</th><th>Attempt</th></tr></thead>
+                        <tbody id="education-list">
+                            <tr class="template"><td data-field="degree"></td><td data-field="year"></td><td data-field="institution"></td><td data-field="marks"></td><td data-field="remarks"></td></tr>
+                        </tbody>
+                    </table>
+                </section>
+                <section class="section sortable-section" data-section-id="projects">
+                    <h2 class="section-title">Practice Projects</h2>
+                    <div id="projects-list"><div class="project-block template"><div class="project-title" data-field="title"></div><div class="project-description" data-field="description"></div><ul data-list="bullets"></ul></div></div>
+                </section>
+                <section class="section sortable-section" data-section-id="skills">
+                    <h2 class="section-title">Skills</h2><div data-field="skills"></div>
+                </section>
+                <section class="section sortable-section" data-section-id="leadership">
+                    <h2 class="section-title">Extracurriculars</h2><ul data-list="leadership"></ul>
+                </section>
+                <section class="section sortable-section" data-section-id="certifications">
+                    <h2 class="section-title">Certifications</h2><ul data-list="certifications"></ul>
+                </section>
+            </div>
+        </main>
+    </div>
+    <script src="cv-common.js"></script>
+    <script>
+        function scaleToFit() {
+            const page = document.getElementById('cv-page');
+            if (document.body.classList.contains('print-mode')) return;
+            const scale = Math.min(1, Math.max(0.1, (window.innerWidth - 32) / 1000));
+            page.style.transform = `scale(${scale})`;
+            page.style.marginBottom = `${1414 * (scale - 1)}px`;
+        }
+        function shrinkContentToFit() {
+            const page = document.getElementById('cv-page');
+            let scale = 1;
+            document.documentElement.style.setProperty('--content-scale', scale);
+            while (page.scrollHeight > 1414 && scale > 0.72) {
+                scale -= 0.02;
+                document.documentElement.style.setProperty('--content-scale', scale);
+            }
+        }
+        document.addEventListener('DOMContentLoaded', () => { shrinkContentToFit(); scaleToFit(); });
+        window.addEventListener('resize', scaleToFit);
+        window.addEventListener('beforeprint', () => document.body.classList.add('print-mode'));
+        window.addEventListener('afterprint', () => { document.body.classList.remove('print-mode'); scaleToFit(); });
+    </script>
+</body>
+</html>

@@ -22,5 +22,8 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.95.3",
     "dotenv": "^17.2.4"
+  },
+  "devDependencies": {
+    "jsdom": "30.1.1"
   }
 }
