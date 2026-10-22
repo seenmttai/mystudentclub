@@ -497,7 +497,7 @@
     <!-- RIGHT PANEL -->
     <div class="preview">
         <div class="template-floater">
-            <button class="floater-pill" onclick="toggleTemplateSidebar(true)">
+            <button class="floater-pill" onclick="openPreviewSheet('template')" aria-haspopup="dialog">
                 <span class="template-label">Template</span>
                 <span id="current-template-name" style="font-size: 13px; font-weight: 600; color: var(--text-main);">Classic</span>
                 <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -1058,6 +1058,13 @@
             <h3>Choose Template</h3>
             <button class="template-sidebar-close" onclick="toggleTemplateSidebar(false)">×</button>
         </div>
+        <div id="template-collection-controls" style="padding:0 20px 12px;">
+            <label for="template-collection">Templates for</label>
+            <select id="template-collection" class="form-control" onchange="setTemplateCollection(this.value)">
+                <option value="all">All CVs</option>
+                <option value="articleship">Articleship</option>
+            </select>
+        </div>
         <!-- Accent colour controls. Rendered by renderThemeControls(); the preview "Color" sheet moves this panel into #preview-sheet-content. -->
         <section class="template-theme-panel" aria-labelledby="template-theme-title">
             <div class="template-theme-head">
@@ -1198,11 +1205,12 @@
     }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
+<script src="cv-articleship.js?v=2"></script>
 <script src="/scripts/ai-processing-consent.js"></script>
 <script src="cv-template-catalog.js?v=20260912_1"></script>
-<script src="cv-script.js?v=20260912_7"></script>
+<script src="cv-script.js?v=20261019_2"></script>
 <script src="cv-preview-zoom.js?v=20260912_1"></script>
-<script src="cv-preview.js?v=20261017_1"></script>
+<script src="cv-preview.js?v=20261019_2"></script>
 <script src="https://unpkg.com/markdown-pdfjs@1.0.1/dist/markdown-pdf.umd.js"></script>
 <script type="module" src="cv-reviewer-embedded.js?v=20260921_1"></script>
 
