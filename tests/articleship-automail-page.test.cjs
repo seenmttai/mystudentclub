@@ -224,7 +224,7 @@ test('the pictures match the Automail the student copies (when its code is in th
     'Start here: open the Automail menu at the top and click Start here.', 'If Google says it hasn’t verified this app, ',
     'click Advanced, then Go to Articleship Automail, tick Select all, Continue. Then click Start here again.',
     'Big 10 in your cities', 'Articleship Cold Mailing List - All Emails',
-    'Pick your CV and your cover letter for each domain. Each mail says both are attached.',
+    'Pick your CV and your cover letter for each domain. Automail writes each firm’s name into your letter.',
     'Add the firms. You pick a mail on each one you want to write to, on the Status board.',
     'Back', 'Today', 'Sent today', 'Waiting', 'Followed up', 'Applied', 'Drafted', 'Reply', 'Change', 'New line',
     'Cover letter for ', 'CV for ', 'Each network’s inboxes for your cities as mail rows, its portal as a portal row.',
