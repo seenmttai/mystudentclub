@@ -192,15 +192,20 @@ test('rows not live: ROWS_NOT_LIVE is every LMS row that is not in release 1 (th
     const rowsFile = path.join(CONTENT_BUILD, 'lms/lms-rows.json');
     const releaseFile = path.join(CONTENT_BUILD, 'lms/rows-release-1.json');
     if (!fs.existsSync(rowsFile) || !fs.existsSync(releaseFile)) { t.skip('content build not on this machine'); return; }
-    const all = JSON.parse(fs.readFileSync(rowsFile, 'utf8')).days
+    const rows = JSON.parse(fs.readFileSync(rowsFile, 'utf8'));
+    const all = rows.days
         .flatMap(day => day.groups.flatMap(group => group.rows.map(row => ({ row: row.row, day: day.day, title: row.title }))));
     const release = JSON.parse(fs.readFileSync(releaseFile, 'utf8'));
-    const inRelease = row => release.some(s => s.day_number === row.day && s.resources.some(r => r.title === row.title));
+    // A row that 003 or 004 has put in the course since 002 (lms-rows.json "live_after_002") is in the course too: its
+    // ROWS_NOT_LIVE line is deleted in the same PR.
+    const liveLater = new Set((rows.live_after_002 || []).map(String));
+    const inRelease = row => liveLater.has(String(row.row)) ||
+        release.some(s => s.day_number === row.day && s.resources.some(r => r.title === row.title));
     // Row 1.6 is not an LMS row in release 1 (the Work Simulation's own flag); every other missing row must be listed.
     const missing = all.filter(row => !inRelease(row)).map(row => row.row + ' ' + row.title);
     if (!P.WORK_SIMULATION_LIVE) missing.push('1.6 Work Simulation');
     assert.deepEqual(P.ROWS_NOT_LIVE.map(row => row.row + ' ' + row.title).sort(), [...new Set(missing)].sort(),
-        'scripts/articleship-progress.js ROWS_NOT_LIVE: one line per row not in rows-release-1.json');
+        'scripts/articleship-progress.js ROWS_NOT_LIVE: one line per row not in rows-release-1.json or live_after_002');
     for (const row of P.ROWS_NOT_LIVE.filter(r => r.row !== '1.6')) {
         assert.ok(all.some(r => r.row === row.row && r.day === row.day && r.title === row.title), row.title + ' is a real LMS row');
     }
