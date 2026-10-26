@@ -221,7 +221,7 @@ function renderJob(job, tableName) {
 
     const recruiterPosted = isRecruiterPostedJob(job);
     const applyInfo = recruiterPosted ? { isEmail: false, link: '#' } : getApplicationLink(job['Application ID']);
-    const requiresEnrollment = recruiterPosted && !isEnrolledSync(tableName);
+    const requiresEnrollment = Boolean(job.is_exclusive) && !isEnrolledSync(tableName);
 
     let connectLink = checkConnectLink(job);
     if (!connectLink) {

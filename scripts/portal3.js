@@ -429,8 +429,7 @@ function renderJobCard(job) {
     const isPopular = (job.application_count || 0) > 50;
     const buttonClass = isApplied ? 'applied' : '';
     const applyLink = getApplicationLink(job['Application ID']);
-    const recruiterPosted = isRecruiterPostedJob(job);
-    const isExclusive = Boolean(job.is_exclusive || recruiterPosted);
+    const isExclusive = Boolean(job.is_exclusive);
 
     // Data values
     const primaryDomain = job['Primary Domain'] || job.Category || 'N/A';
@@ -857,7 +856,7 @@ function showExclusiveLockedModal(job) {
 
 function showModal(job) {
     const recruiterPosted = isRecruiterPostedJob(job);
-    const isExclusive = Boolean(job.is_exclusive || recruiterPosted);
+    const isExclusive = Boolean(job.is_exclusive);
 
     // --- Exclusive vacancy gate ---
     if (isExclusive && !isEnrolledSync(currentTable)) {
