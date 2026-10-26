@@ -174,7 +174,7 @@ function renderJobCard(job) {
     const isPopular = (job.application_count || 0) > 50;
     const buttonClass = isApplied ? 'applied' : '';
     const recruiterPosted = isRecruiterPostedJob(job);
-    const isExclusive = Boolean(job.is_exclusive || recruiterPosted);
+    const isExclusive = Boolean(job.is_exclusive);
     const applyLink = recruiterPosted ? '#' : getApplicationLink(job['Application ID']);
 
     const primaryDomain = job['Primary Domain'] || job.Category || 'N/A';
@@ -462,7 +462,7 @@ function showModal(job) {
     const applyCount = job.application_count || 0;
     const recruiterPosted = isRecruiterPostedJob(job);
     const table = job.source_table || state.portalType;
-    const isExclusive = Boolean(job.is_exclusive || recruiterPosted);
+    const isExclusive = Boolean(job.is_exclusive);
     if (isExclusive && !isEnrolledSync(table)) {
         showEnrollmentRequiredPopup();
         return;
@@ -757,6 +757,7 @@ async function fetchJobs() {
                 let selectColumns = selectColumnsBase;
                 if (table === "Fresher Jobs") selectColumns = selectColumnsFresher;
                 else if (table === "Semi Qualified Jobs") selectColumns = selectColumnsSemi;
+                else if (table === "Industrial Training Job Portal") selectColumns += ', is_exclusive';
 
                 let query = supabaseClient.from(table).select(selectColumns);
 
