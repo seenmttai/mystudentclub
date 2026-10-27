@@ -22,22 +22,43 @@
             skills: 'Skills'
         };
 
-        let templateCollection = new URLSearchParams(window.location.search).get('stage') === 'articleship' ? 'articleship' : 'all';
+        // The route decides the mode once; each mode owns its own draft and history keys.
+        const CV_MODE_API = window.MSCCvBuilderMode;
+        const CV_MODE = CV_MODE_API.resolve(window.location.search);
+        const DRAFT_KEY = CV_MODE_API.storageKey(CV_MODE);
+        // Articleship mode keeps its CV in the programme's progress store (scripts/articleship-progress.js) under DRAFT_KEY:
+        // on this device at once and, for a signed-in student, in their account, so it follows them to another device. The
+        // store also starts empty when another student signs in on this browser. The normal CV stays on this device only.
+        let articleshipDraftStore = null;
+
+        function readDraft() {
+            if (CV_MODE !== 'articleship') return localStorage.getItem(DRAFT_KEY);
+            const saved = articleshipDraftStore ? articleshipDraftStore.get().cv : null;
+            return saved ? JSON.stringify(saved) : null;
+        }
+
+        function writeDraft(data) {
+            if (CV_MODE !== 'articleship') { localStorage.setItem(DRAFT_KEY, JSON.stringify(data)); return; }
+            if (!articleshipDraftStore) return;
+            // An unchanged CV is not saved again, so opening the page never outdates a newer copy from another device.
+            if (JSON.stringify(articleshipDraftStore.get().cv) === JSON.stringify(data)) return;
+            articleshipDraftStore.set({ cv: data });
+        }
+
+        function clearDraft() {
+            if (CV_MODE !== 'articleship') localStorage.removeItem(DRAFT_KEY);
+            else if (articleshipDraftStore) articleshipDraftStore.set({ cv: null });
+        }
+        // The Articleship catalog exists only after the gate allowed access, so a template belongs to Articleship
+        // only in Articleship mode; the normal Builder has a single catalog.
+        const IS_ARTICLESHIP_MODE = CV_MODE === 'articleship';
 
         function getTemplateRenderFile(file) {
-            return window.MSCArticleship?.resolveRenderFile(file) || file;
+            return (IS_ARTICLESHIP_MODE && window.MSCArticleship?.resolveRenderFile(file)) || file;
         }
 
         function isArticleshipTemplate(file = getSelectedTemplateFile()) {
-            return !!window.MSCArticleship?.getTemplate(file);
-        }
-
-        function setTemplateCollection(collection) {
-            templateCollection = collection === 'articleship' ? 'articleship' : 'all';
-            const select = document.getElementById('template-collection');
-            if (select) select.value = templateCollection;
-            if (templateCollection === 'articleship') addArticleshipTemplateOptions();
-            renderTemplateCards();
+            return IS_ARTICLESHIP_MODE && !!window.MSCArticleship?.getTemplate(file);
         }
 
         function hasArticleshipDraftData(data) {
@@ -50,10 +71,13 @@
             return hasValue(data?.personal) || hasUserEnteredData(data);
         }
 
-        // The articleship designs are listed only in the articleship view; the normal builder never shows them.
+        // Articleship mode lists only the Articleship catalog in the template select.
         function addArticleshipTemplateOptions() {
             const select = document.getElementById('template-select');
-            if (!select) return;
+            if (!select || !IS_ARTICLESHIP_MODE) return;
+            Array.from(select.options).forEach(option => {
+                if (!window.MSCArticleship?.getTemplate(option.value)) option.remove();
+            });
             (window.MSCArticleship?.templates || []).forEach(template => {
                 if (Array.from(select.options).some(option => option.value === template.file)) return;
                 const option = document.createElement('option');
@@ -66,12 +90,7 @@
         function initializeArticleshipTemplates() {
             const catalog = window.MSCArticleship;
             const select = document.getElementById('template-select');
-            if (!catalog?.templates.length || !select) return;
-            // A CV saved on an articleship design reopens in the articleship view.
-            if (isArticleshipTemplate(cvData.templateFile)) templateCollection = 'articleship';
-            const collectionSelect = document.getElementById('template-collection');
-            if (collectionSelect) collectionSelect.value = templateCollection;
-            if (templateCollection !== 'articleship') return;
+            if (!IS_ARTICLESHIP_MODE || !catalog?.templates.length || !select) return;
             addArticleshipTemplateOptions();
             if (!hasArticleshipDraftData(cvData)) {
                 cvData = window.MSCArticleshipStage?.blankCv?.(cvData, getDefaultTableSettings())
@@ -82,6 +101,8 @@
         // The articleship stage's panel (articleship-program/cv-builder/stage.js) works on the CV through this host.
         function articleshipStageHost() {
             return {
+                mode: CV_MODE,
+                access: 'allow',
                 getCv: () => cvData,
                 setCv(next, options = {}) {
                     cvData = next;
@@ -110,7 +131,6 @@
                 isLocked: () => false,
                 accessChecked: () => true,
                 gallery: () => (window.MSCArticleship?.templates || []).filter(template => template.kind === 'gallery'),
-                collection: () => templateCollection,
                 openTemplates: () => toggleTemplateSidebar(true),
                 closeTemplates: () => toggleTemplateSidebar(false),
                 renderCards: () => renderTemplateCards(),
@@ -149,7 +169,7 @@
             const active = isArticleshipTemplate();
             const experience = document.querySelector('details[data-section="experience"]');
             if (experience && active && !hasContentInList(cvData.experience)) experience.open = false;
-            document.body.classList.toggle('articleship-mode', active || templateCollection === 'articleship');
+            document.body.classList.toggle('articleship-mode', IS_ARTICLESHIP_MODE);
             const tagline = document.getElementById('inp-tagline');
             if (tagline) tagline.placeholder = active ? 'CA Intermediate | Both groups cleared' : 'e.g. CA Final | Flipkart';
         }
@@ -253,7 +273,7 @@
         const WORKER_URL = "https://cv-maker.bhansalimanan55.workers.dev";
         // PDF Worker URL — update this after deploying cv-pdf-worker
         const FILE_WORKER_URL = window.localStorage.getItem('cv_file_worker_url') || "https://cv-pdf-worker.bhansalimanan55.workers.dev";
-        const HISTORY_KEY = 'cv_maker_history_v1';
+        const HISTORY_KEY = CV_MODE_API.historyKey(CV_MODE);
         let history = [];
         const UNDO_LIMIT = 120;
         let undoStack = [];
@@ -268,13 +288,13 @@
         let summaryLinkRange = null;
         const inlineRichEditors = new Map();
 
-        // Initialization
-        window.onload = () => {
+        // Initialization: the normal Builder starts at once; Articleship mode starts only from the gate's onAllow.
+        function startBuilder() {
             if ('scrollRestoration' in window.history) {
                 window.history.scrollRestoration = 'manual';
             }
 
-            const saved = localStorage.getItem('cv_maker_data');
+            const saved = readDraft();
             if (saved) {
                 try { 
                     const parsed = JSON.parse(saved);
@@ -289,6 +309,12 @@
                 }
                 catch (e) { console.error('Load failed', e); }
             }
+            if (window.resolveTemplateFile && cvData.templateFile) cvData.templateFile = window.resolveTemplateFile(cvData.templateFile);
+            cvData = CV_MODE_API.normaliseDraft(CV_MODE, cvData, {
+                normal: Array.from(document.querySelectorAll('#template-select option')).map(option => option.value),
+                articleship: (window.MSCArticleship?.templates || []).map(template => template.file),
+                articleshipDefault: window.MSCArticleship?.getTemplate('articleship-layout-classic') ? 'articleship-layout-classic' : undefined
+            });
             initializeArticleshipTemplates();
             const initialSelect = document.getElementById('template-select');
             const rawInitialTemplate = cvData.templateFile || initialSelect?.value || 'classic.html';
@@ -338,7 +364,129 @@
             initResizeHandle();
             resetEditorScrollToTop();
             requestAnimationFrame(() => resetEditorScrollToTop());
-            window.MSCArticleshipStage?.init?.(articleshipStageHost());
+            if (IS_ARTICLESHIP_MODE) window.MSCArticleshipStage?.init?.(articleshipStageHost());
+            document.documentElement.classList.remove('cv-gating');
+            document.getElementById('cv-mode-shell')?.remove();
+        }
+
+        // ---- Articleship route: gate first, then lazy-load the feature, then boot ----
+        const GATE_ASSETS = [
+            { type: 'style', src: '/articleship-program/shared/articleship-tools.css?v=20261028-r2' },
+            // The site's shared Supabase client, as every other Articleship tool page loads it, so the gate can check enrolment.
+            { type: 'script', src: '/scripts/supabase.js?v=20261028-r2' },
+            { type: 'script', src: '/scripts/supabase-init.js?v=20261028-r2' },
+            { type: 'script', src: '/scripts/articleship-gate.js?v=20261028-r2' }
+        ];
+        const ARTICLESHIP_FEATURE_ASSETS = [
+            { type: 'script', src: '/cv-builder/cv-articleship.js?v=20261018-r2' },
+            { type: 'script', src: '/scripts/articleship-progress.js?v=20261021-r1' },
+            { type: 'script', src: '/scripts/articleship-cv-builder.js?v=20261021-r1' },
+            { type: 'style', src: '/articleship-program/cv-builder/stage.css?v=20261020-v3b' },
+            { type: 'script', src: '/articleship-program/cv-builder/stage.js?v=20261025-r1' }
+        ];
+        const loadedAssets = new Set();
+        let articleshipFeaturePromise = null;
+
+        function loadAsset(asset) {
+            if (loadedAssets.has(asset.src)) return Promise.resolve();
+            return new Promise((resolve, reject) => {
+                const el = document.createElement(asset.type === 'style' ? 'link' : 'script');
+                if (asset.type === 'style') {
+                    el.rel = 'stylesheet';
+                    el.href = asset.src;
+                } else {
+                    el.src = asset.src;
+                    el.async = false;
+                }
+                el.onload = () => { loadedAssets.add(asset.src); resolve(); };
+                el.onerror = () => { el.remove(); reject(new Error('Could not load ' + asset.src)); };
+                document.head.appendChild(el);
+            });
+        }
+
+        async function loadAssets(assets) {
+            for (const asset of assets) await loadAsset(asset);
+        }
+
+        // Appends the Articleship catalog, progress, logic, stage script and stylesheet. Called only after the gate allowed.
+        function loadArticleshipFeature() {
+            if (!articleshipFeaturePromise) {
+                articleshipFeaturePromise = (async () => {
+                    await loadAssets(ARTICLESHIP_FEATURE_ASSETS);
+                    if (!window.MSCArticleship || !window.MSCArticleshipStage || !window.MSCArticleshipProgress) throw new Error('Articleship CV Builder is unavailable');
+                    articleshipDraftStore = window.MSCArticleshipProgress.open('cv-builder', { defaults: { cv: null } });
+                    // The account copy first, so a CV made on another device opens here; never wait long for it.
+                    await Promise.race([articleshipDraftStore.ready, new Promise(resolve => setTimeout(resolve, 5000))]);
+                    window.MSCArticleship.templates.forEach(template => {
+                        if (!TEMPLATES.some(existing => existing.file === template.file)) TEMPLATES.push(template);
+                    });
+                    return window.MSCArticleshipStage;
+                })().catch(error => { articleshipFeaturePromise = null; throw error; });
+            }
+            return articleshipFeaturePromise;
+        }
+
+        function showModeShell(state, retry) {
+            let shell = document.getElementById('cv-mode-shell');
+            if (!shell) {
+                shell = document.createElement('div');
+                shell.id = 'cv-mode-shell';
+                shell.className = 'ap-gate';
+                shell.setAttribute('role', 'dialog');
+                shell.setAttribute('aria-modal', 'true');
+                document.body.appendChild(shell);
+            }
+            shell.textContent = '';
+            shell.dataset.state = state;
+            const card = document.createElement('div');
+            card.className = 'ap-gate-card';
+            if (state === 'loading') {
+                const spinner = document.createElement('div');
+                spinner.className = 'ap-spinner';
+                spinner.setAttribute('aria-label', 'Loading');
+                card.appendChild(spinner);
+            } else {
+                const title = document.createElement('h1');
+                title.textContent = 'The Articleship CV Builder could not load';
+                const text = document.createElement('p');
+                text.textContent = 'Check your internet connection and try again.';
+                const again = document.createElement('button');
+                again.type = 'button';
+                again.className = 'ap-btn is-block';
+                again.textContent = 'Try again';
+                again.addEventListener('click', retry);
+                card.append(title, text, again);
+            }
+            shell.appendChild(card);
+        }
+
+        async function bootArticleship() {
+            showModeShell('loading');
+            try {
+                await loadArticleshipFeature();
+            } catch (error) {
+                console.error(error);
+                showModeShell('unavailable', bootArticleship);
+                return;
+            }
+            startBuilder();
+        }
+
+        async function startArticleshipRoute() {
+            try {
+                await loadAssets(GATE_ASSETS);
+            } catch (error) {
+                console.error(error);
+                showModeShell('unavailable', startArticleshipRoute);
+                return;
+            }
+            const gate = window.MSCArticleshipGate;
+            gate.protect({ presentation: gate.builderPresentation(), location: window.location, document, onAllow: bootArticleship });
+        }
+
+        window.onload = () => {
+            if (IS_ARTICLESHIP_MODE) startArticleshipRoute();
+            else startBuilder();
         };
 
         function resetEditorScrollToTop() {
@@ -2634,7 +2782,7 @@
         }
 
         // Template Sidebar Logic
-        const TEMPLATES = [...(window.CV_TEMPLATE_CATALOG || []), ...(window.MSCArticleship?.templates || [])];
+        const TEMPLATES = [...(window.CV_TEMPLATE_CATALOG || [])];
         const templateSelect = document.getElementById('template-select');
         if (templateSelect && TEMPLATES.length) {
             const rawTemplate = templateSelect.value || 'classic.html';
@@ -2727,12 +2875,12 @@
         function renderTemplateCards() {
             const grid = document.getElementById('template-grid');
             const currentTemplate = document.getElementById('template-select').value;
-            if (templateCollection === 'articleship' && window.MSCArticleshipStage?.renderTemplateCards?.(grid, currentTemplate)) {
+            if (IS_ARTICLESHIP_MODE && window.MSCArticleshipStage?.renderTemplateCards?.(grid, currentTemplate)) {
                 initLazyLoading();
                 return;
             }
             
-            const templates = TEMPLATES.filter(t => isArticleshipTemplate(t.file) === (templateCollection === 'articleship'));
+            const templates = TEMPLATES.filter(t => isArticleshipTemplate(t.file) === IS_ARTICLESHIP_MODE);
             grid.innerHTML = templates.map(t => `
                 <div class="template-card ${t.file === currentTemplate ? 'active' : ''}" onclick="selectTemplate('${t.file}', '${t.name}')">
                     <div class="template-card-preview">
@@ -2856,7 +3004,7 @@
             const hasDraft = isArticleshipTemplate(templateFile) ? hasArticleshipDraftData(cvData) : hasUserEnteredData(cvData);
             const useArticleshipDemo = useDemoFallback && isArticleshipTemplate(templateFile)
                 && (!hasDraft || window.MSCArticleship.hasUnchangedStarterContent(cvData));
-            const stageSource = useDemoFallback && templateCollection === 'articleship'
+            const stageSource = useDemoFallback && IS_ARTICLESHIP_MODE
                 ? window.MSCArticleshipStage?.previewSource?.(templateFile) : null;
             const source = stageSource || (useArticleshipDemo
                 ? window.MSCArticleship.createStarter(templateFile, getDefaultTableSettings())
@@ -2892,6 +3040,8 @@
         }
 
         function selectTemplate(file, name) {
+            // A template outside the active mode's catalog can never be selected.
+            if (isArticleshipTemplate(file) !== IS_ARTICLESHIP_MODE) return;
             const select = document.getElementById('template-select');
             const nameSpan = document.getElementById('current-template-name');
             
@@ -2976,7 +3126,7 @@
 
         function saveLocal() {
             cvData.templateFile = getSelectedTemplateFile();
-            localStorage.setItem('cv_maker_data', JSON.stringify(cvData));
+            writeDraft(cvData);
         }
 
         function manualSave() {
@@ -3030,7 +3180,7 @@
                     sectionOrder: [...BASE_SECTION_ORDER],
                     tableSettings: getDefaultTableSettings()
                 };
-                localStorage.removeItem('cv_maker_data');
+                clearDraft();
                 renderEditor();
                 updateCV();
                 showToast('Form cleared. Saved versions preserved.');
@@ -4279,7 +4429,7 @@ async function deliverDownloadedBlob(blob, filename) {
         // Auto-start tour for first-time visitors
         document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => {
-                if (!localStorage.getItem('cv_tour_completed') && templateCollection !== 'articleship') {
+                if (!localStorage.getItem('cv_tour_completed') && !IS_ARTICLESHIP_MODE) {
                     startTour();
                 }
             }, 1200); // Delay to ensure page is fully loaded
@@ -4368,7 +4518,7 @@ async function deliverDownloadedBlob(blob, filename) {
                         syncCurrentTemplateName();
                     }
                     
-                    localStorage.setItem('cv_maker_data', JSON.stringify(cvData));
+                    writeDraft(cvData);
                     localStorage.removeItem('import_cv_images');
                     localStorage.removeItem('import_cv_filename');
                     

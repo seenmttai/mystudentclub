@@ -18,7 +18,7 @@ function loadStarterHelpers(data) {
             createElement: () => ({})
         },
         cvData: structuredClone(data),
-        templateCollection: 'articleship',
+        IS_ARTICLESHIP_MODE: true,
         getDefaultTableSettings: () => ({}),
         hasUserEnteredData: value => Boolean(value.personal?.name || value.summary || value.education?.length),
         isArticleshipTemplate: file => Boolean(catalog.getTemplate(file))
