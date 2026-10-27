@@ -768,6 +768,7 @@
         var _lastCerts = null;
         var _lastCustomSections = null;
         var _lastPersonal = null;
+        var _lastArticleship = false;
         window.addEventListener('message', function (ev) {
             try {
                 var d = (typeof ev.data === 'string') ? JSON.parse(ev.data) : ev.data;
@@ -776,7 +777,10 @@
                 if (d.type === 'update-cv' && d.payload) d = d.payload;
                 if (Array.isArray(d.certifications)) _lastCerts = d.certifications;
                 if (Array.isArray(d.customSections)) _lastCustomSections = d.customSections;
-                if (d.personal) _lastPersonal = d.personal;
+                if (d.personal) {
+                    _lastPersonal = d.personal;
+                    _lastArticleship = Boolean(d.articleshipApplicant);
+                }
             } catch (e) { }
         });
 
@@ -807,6 +811,8 @@
             if (!ul) return;
             var certs = _lastCerts;
             if (!certs || !certs.length) return;
+            /* Bold up to a colon within 40 characters; an articleship CV's longer certificate titles (up to 90) too. */
+            var boldTo = _lastArticleship ? 90 : 40;
             ul.innerHTML = certs.map(function (c) {
                 if (!c) return '';
                 /* plain-string format */
@@ -816,7 +822,7 @@
                         return '<li><b>' + esc(c.slice(0, ci + 1)) + '</b>' + esc(c.slice(ci + 1)) + '</li>';
                     /* a longer title ("<Domain> Work Simulation, MSC Articleship Program | <Month Year>:") stays in the
                        line's flow, so the bullet reads as one sentence */
-                    if (ci > 40 && ci <= 90)
+                    if (ci > 40 && ci <= boldTo)
                         return '<li><span><b>' + esc(c.slice(0, ci + 1)) + '</b>' + esc(c.slice(ci + 1)) + '</span></li>';
                     return '<li>' + esc(c) + '</li>';
                 }
@@ -825,7 +831,7 @@
                 var issuer = (c.issuer || '').trim();
                 if (!name && !issuer) return '';
                 var ci = name.indexOf(':');
-                if (ci > 0 && ci <= 90) {
+                if (ci > 0 && ci <= boldTo) {
                     var boldPart = name.slice(0, ci + 1);
                     var rest = name.slice(ci + 1).trim();
                     if (issuer) rest = rest ? rest + ' (' + issuer + ')' : issuer;

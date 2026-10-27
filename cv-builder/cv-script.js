@@ -36,6 +36,7 @@
             templateCollection = collection === 'articleship' ? 'articleship' : 'all';
             const select = document.getElementById('template-collection');
             if (select) select.value = templateCollection;
+            if (templateCollection === 'articleship') addArticleshipTemplateOptions();
             renderTemplateCards();
         }
 
@@ -49,21 +50,30 @@
             return hasValue(data?.personal) || hasUserEnteredData(data);
         }
 
-        function initializeArticleshipTemplates() {
-            const catalog = window.MSCArticleship;
+        // The articleship designs are listed only in the articleship view; the normal builder never shows them.
+        function addArticleshipTemplateOptions() {
             const select = document.getElementById('template-select');
-            if (!catalog?.templates.length || !select) return;
-            catalog.templates.forEach(template => {
+            if (!select) return;
+            (window.MSCArticleship?.templates || []).forEach(template => {
                 if (Array.from(select.options).some(option => option.value === template.file)) return;
                 const option = document.createElement('option');
                 option.value = template.file;
                 option.textContent = template.name;
                 select.appendChild(option);
             });
-            const collectionSelect = document.getElementById('template-collection');
+        }
+
+        function initializeArticleshipTemplates() {
+            const catalog = window.MSCArticleship;
+            const select = document.getElementById('template-select');
+            if (!catalog?.templates.length || !select) return;
+            // A CV saved on an articleship design reopens in the articleship view.
             if (isArticleshipTemplate(cvData.templateFile)) templateCollection = 'articleship';
+            const collectionSelect = document.getElementById('template-collection');
             if (collectionSelect) collectionSelect.value = templateCollection;
-            if (templateCollection === 'articleship' && !hasArticleshipDraftData(cvData)) {
+            if (templateCollection !== 'articleship') return;
+            addArticleshipTemplateOptions();
+            if (!hasArticleshipDraftData(cvData)) {
                 cvData = window.MSCArticleshipStage?.blankCv?.(cvData, getDefaultTableSettings())
                     || catalog.createStarter(catalog.templates[0].file, getDefaultTableSettings());
             }
@@ -2722,7 +2732,7 @@
                 return;
             }
             
-            const templates = templateCollection === 'articleship' ? TEMPLATES.filter(t => isArticleshipTemplate(t.file)) : TEMPLATES;
+            const templates = TEMPLATES.filter(t => isArticleshipTemplate(t.file) === (templateCollection === 'articleship'));
             grid.innerHTML = templates.map(t => `
                 <div class="template-card ${t.file === currentTemplate ? 'active' : ''}" onclick="selectTemplate('${t.file}', '${t.name}')">
                     <div class="template-card-preview">

@@ -27,7 +27,8 @@ test('the "Templates" canvas viewer: never for copy rows, never when the course 
 test('reader and browser URLs carry the signed link, the page and the title', () => {
     const signed = 'https://auth.mystudentclub.com/storage/v1/object/sign/b/a.pdf?token=t&x=1';
     const url = new URL(LMS.copyReaderUrl(signed, { page: 3, title: 'Cover letters' }), 'https://www.mystudentclub.com');
-    assert.equal(url.pathname, '/ca-resource/read/');
+    assert.equal(url.pathname, '/ca-resource/', 'one reader: the flipbook');
+    assert.equal(url.searchParams.get('copy'), '1', 'in copy mode');
     assert.equal(url.searchParams.get('pdf'), signed);
     assert.equal(url.searchParams.get('page'), '3');
     assert.equal(url.searchParams.get('title'), 'Cover letters');

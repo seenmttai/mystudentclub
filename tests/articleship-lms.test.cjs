@@ -249,7 +249,7 @@ test('PDF deep links use signed storage and clamp the requested page after loadi
     DOMElements.pdfCanvas = { width: 0, height: 0, getContext: () => ({ clearRect() {} }) };
     const run = courseFunction('openResourceViewer', { state, DOMElements,
         document: { getElementById: () => element() },
-        getResourceViewerSubtitle: () => '', getResourceDownloadLabel: () => 'Download',
+        getResourceViewerSubtitle: () => '', getResourceDownloadLabel: () => 'Download', articleshipLms: () => Lms,
         supabase: { storage: { from: bucket => ({ createSignedUrl: async (path, ttl) => {
             calls.push(['signed', bucket, path, ttl]); return { data: { signedUrl: 'https://signed.test/private.pdf' }, error: null };
         } }) } },
@@ -261,6 +261,7 @@ test('PDF deep links use signed storage and clamp the requested page after loadi
     const resource = { title: 'MSC Domain Roadmaps', view_storage_path: 'articleship-program-v2/day-5/domain-roadmaps/MSC Domain Roadmaps.pdf' };
     await run(resource, 'pdf', 8);
     assert.equal(calls.find(call => call[0] === 'signed')[2], resource.view_storage_path);
+    assert.equal(calls.find(call => call[0] === 'signed')[1], 'articleship-program-resources');
     assert.deepEqual(calls.at(-1), ['page', 8]);
     await run(resource, 'pdf', 999);
     assert.deepEqual(calls.at(-1), ['page', 11]);
@@ -317,7 +318,7 @@ test('mobile Slides open the signed PDF in the MSC reader without requesting a d
     await run(resource);
     assert.equal(signed.length, 1);
     assert.equal(signed[0].path, resource.view_storage_path);
-    assert.equal(signed[0].bucket, 'industrial-training-mastery-resources');
+    assert.equal(signed[0].bucket, 'articleship-program-resources');
     const reader = new URL(window.location.href, 'https://mobile.mystudentclub.com');
     assert.equal(reader.pathname, '/ca-resource/');
     assert.match(reader.searchParams.get('pdf'), /^https:\/\/pdf-proxy-viewer\./);
@@ -360,13 +361,14 @@ test('copy rows open the copyable reader in place (a click) or instead of the co
     const resource = { title: 'Application templates', copy: true, view_storage_path: 'articleship-program-v3/day-2/Application templates.pdf' };
     await openCopy(resource, 8);
     const reader = new URL(window.location.href, 'https://mobile.mystudentclub.com');
-    assert.equal(reader.pathname, '/ca-resource/read/');
+    assert.equal(reader.pathname, '/ca-resource/');
+    assert.equal(reader.searchParams.get('copy'), '1');
     assert.equal(reader.searchParams.get('pdf'), 'https://signed.test/application-templates.pdf');
     assert.equal(reader.searchParams.get('page'), '8');
     assert.equal(reader.searchParams.get('title'), 'Application templates');
     await openCopy(resource, 1, { deepLink: true });
-    assert.match(window.location.href, /^replaced:\/ca-resource\/read\/\?pdf=/);
-    assert.equal(signed[0].bucket, 'industrial-training-mastery-resources');
+    assert.match(window.location.href, /^replaced:\/ca-resource\/\?pdf=.*&copy=1/);
+    assert.equal(signed[0].bucket, 'articleship-program-resources');
     assert.equal(signed[0].path, resource.view_storage_path);
     // handleResourceClick routes a copy row there before any other rule.
     const calls = [];
@@ -461,4 +463,28 @@ test('v3 rows: an Excel download-only row shows only its Download button, a tool
     assert.match(items[0], /resource-btn-download"[^>]*><i class="fas fa-download"><\/i> Download Excel/);
     assert.match(items[1], /resource-btn-view[\s\S]*Open/);
     assert.ok(!/resource-btn-download/.test(items[1]));
+});
+
+test('Articleship files are read from their own bucket; every other course keeps the shared one', async () => {
+    assert.equal(Lms.BUCKET_ARTICLESHIP, 'articleship-program-resources');
+    assert.equal(Lms.BUCKET_DEFAULT, 'industrial-training-mastery-resources');
+    for (const p of ['articleship-program-v3/day-0/MSC Articleship Guidebook.pdf', 'articleship-program-v2/day-1/Choose your CV.pdf', ' articleship-program-v4/day-2/x.xlsx']) {
+        assert.equal(Lms.bucketFor(p), Lms.BUCKET_ARTICLESHIP, p);
+    }
+    for (const p of ['MSCIT Guidebook-3.pdf', 'doc.pdf', 'Finance Interview Booklet.pdf', 'articleship-program/x.pdf', 'my-articleship-program-v3/x.pdf', '', null, undefined]) {
+        assert.equal(Lms.bucketFor(p), Lms.BUCKET_DEFAULT, String(p));
+    }
+    const signed = [];
+    const window = { location: { href: '', replace() {} }, open() { throw new Error('no second tab in the WebView'); } };
+    const supabase = { storage: { from: bucket => ({ createSignedUrl: async (path, ttl) => { signed.push({ bucket, path, ttl }); return { data: { signedUrl: 'https://signed.test/x.pdf' }, error: null }; } }) } };
+    await courseFunction('openCopyResource', { window, supabase, articleshipLms: () => Lms, console, alert(message) { throw new Error(message); } })({ title: 'Older course file', copy: true, view_storage_path: 'MSCIT Guidebook-3.pdf' }, 1);
+    assert.equal(signed[0].bucket, 'industrial-training-mastery-resources', 'a non-Articleship file is still signed in the shared bucket');
+});
+
+test('no LMS page signs a file with a hard-coded bucket', () => {
+    for (const file of ['learning-management-system/course-script.js', 'learning-management-system/lms-resources.html']) {
+        const source = fs.readFileSync(path.join(root, file), 'utf8');
+        assert.doesNotMatch(source, /\.from\('industrial-training-mastery-resources'\)/, `${file} must choose the bucket through bucketFor`);
+        assert.match(source, /bucketFor\(/, file);
+    }
 });
