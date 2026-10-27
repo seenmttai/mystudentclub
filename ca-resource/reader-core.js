@@ -1,6 +1,8 @@
 /**
- * Copyable PDF reader (/ca-resource/read/): the pure parts, shared by the page and its node tests.
- * Browser: window.MSCReaderCore. Node: require('./ca-resource/read/reader-core.js').
+ * The flipbook reader's copy mode (/ca-resource/?copy=1): the pure parts, shared by ca-resource/script.js and its node
+ * tests. Copy mode is for programme files a student copies from (Articleship mail and message templates): text stays
+ * unselectable like every other file, each white template box gets a Copy button, and in-document links work.
+ * Browser: window.MSCReaderCore. Node: require('./ca-resource/reader-core.js').
  */
 (function (root, factory) {
     'use strict';
@@ -48,6 +50,35 @@
         if (!PDF_HOSTS.includes(parsed.hostname)) return false;
         if (parsed.hostname === 'pdf-proxy-viewer.bhansalimanan55.workers.dev') return isAllowedPdfUrl(parsed.searchParams.get('url'), null);
         return parsed.pathname.startsWith('/storage/v1/object/');
+    }
+
+    const ARTICLESHIP_BUCKET = 'articleship-program-resources';
+
+    /**
+     * The storage object a signed (or public) Supabase URL points at, unwrapping the PDF proxy: { bucket, path }, or
+     * null for anything else. The object path is part of what the signature covers, so it cannot be swapped.
+     */
+    function storageObject(url) {
+        let parsed;
+        try { parsed = new URL(String(url || '')); } catch (_) { return null; }
+        if (parsed.hostname === 'pdf-proxy-viewer.bhansalimanan55.workers.dev') return storageObject(parsed.searchParams.get('url'));
+        if (!PDF_HOSTS.includes(parsed.hostname)) return null;
+        const match = /^\/storage\/v1\/object\/(?:sign|public|authenticated)\/([^/]+)\/(.+)$/.exec(parsed.pathname);
+        if (!match) return null;
+        try { return { bucket: decodeURIComponent(match[1]), path: decodeURIComponent(match[2]) }; } catch (_) { return null; }
+    }
+
+    /**
+     * Copy mode is on only for a file in the Articleship Program's own bucket (a signed link the storage policy hands
+     * out to enrolled students only), so adding ?copy=1 to any other course's file changes nothing. On a localhost
+     * preview, a same-origin file under an articleship-program-vN folder also counts.
+     */
+    function isArticleshipFileUrl(url, loc) {
+        if (!isAllowedPdfUrl(url, loc)) return false;
+        const object = storageObject(url);
+        if (object) return object.bucket === ARTICLESHIP_BUCKET;
+        if (!loc || !isLocalHost(loc.hostname)) return false;
+        try { return /\/articleship-program-v\d+\//.test(new URL(url, loc.href).pathname); } catch (_) { return false; }
     }
 
     /** Supabase project URLs go through the PDF proxy (range/CORS); the rest are fetched directly. */
@@ -425,7 +456,8 @@
     }
 
     return Object.freeze({
-        PROXY, clampPage, parseQuery, isLocalHost, isAllowedPdfUrl, fetchUrlFor, proxyUrlFor, isSafeLink, siteLink, opensInPlace,
+        PROXY, ARTICLESHIP_BUCKET, clampPage, parseQuery, isLocalHost, isAllowedPdfUrl, storageObject, isArticleshipFileUrl,
+        fetchUrlFor, proxyUrlFor, isSafeLink, siteLink, opensInPlace,
         normaliseSearch, searchPattern, findMatches, rawIndex, copyBoxes, textInBox, isCvSample, copyButtonSpot, _multiply: multiply
     });
 });

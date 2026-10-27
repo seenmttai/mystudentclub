@@ -446,6 +446,75 @@ body {
     border-color: rgba(56, 189, 248, 0.4);
 }
 
+/* ──────── Copy mode: Copy buttons on template boxes (Articleship files) ──────── */
+.pdf-copy-layer {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+    z-index: 11;
+}
+
+.pdf-copy-btn {
+    position: absolute;
+    pointer-events: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 0 10px;
+    border: 1px solid rgba(0, 87, 255, 0.35);
+    border-radius: 999px;
+    background: #fff;
+    color: #0057FF;
+    font: 600 13px/1 'Inter', -apple-system, sans-serif;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.18);
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+.pdf-copy-btn svg { width: 15px; height: 15px; flex: 0 0 auto; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.pdf-copy-btn:hover { background: #eaf1ff; }
+.pdf-copy-btn.is-done { background: #168048; border-color: #168048; color: #fff; }
+.pdf-copy-btn.is-compact { padding: 0; gap: 0; }
+.pdf-copy-btn.is-compact span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.copy-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    z-index: 2000;
+    max-width: calc(100vw - 32px);
+    padding: 10px 16px;
+    border-radius: 999px;
+    background: #06152F;
+    color: #fff;
+    font: 600 14px/1.3 'Inter', -apple-system, sans-serif;
+    opacity: 0;
+    transform: translate(-50%, 12px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    pointer-events: none;
+}
+.copy-toast.is-on { opacity: 1; transform: translate(-50%, 0); }
+
+/* The hidden field a Copy button uses where the clipboard API is missing: the only thing on the page that can be
+   selected, for that one copy. */
+.copy-fallback {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    -webkit-user-select: text;
+    user-select: text;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .copy-toast { transition: none; }
+}
+
 /* ──────── Security & Focus Loss Blur ──────── */
 body.blurred #pdf-app {
     filter: blur(25px);

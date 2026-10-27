@@ -1859,7 +1859,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         try {
             const { data, error } = await supabase.storage
-                .from('industrial-training-mastery-resources')
+                .from(lms.bucketFor(resource.view_storage_path))
                 .createSignedUrl(resource.view_storage_path, 300);
             if (error) throw error;
             const target = lms.copyTarget(resource, data.signedUrl, page);
@@ -1914,14 +1914,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 try {
                     const { data: viewData, error: viewError } = await supabase.storage
-                        .from('industrial-training-mastery-resources')
+                        .from(articleshipLms()?.bucketFor(resource.view_storage_path) || 'industrial-training-mastery-resources')
                         .createSignedUrl(resource.view_storage_path, 300);
                     if (viewError) throw viewError;
 
                     let dlUrl = '';
                     if (resource.download_storage_path && resource.download_storage_path !== 'None') {
                         const { data: dlData, error: dlError } = await supabase.storage
-                            .from('industrial-training-mastery-resources')
+                            .from(articleshipLms()?.bucketFor(resource.download_storage_path) || 'industrial-training-mastery-resources')
                             .createSignedUrl(resource.download_storage_path, 300, { download: true });
                         if (!dlError && dlData) {
                             dlUrl = dlData.signedUrl;
@@ -1959,7 +1959,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         try {
-            const { data, error } = await supabase.storage.from('industrial-training-mastery-resources').createSignedUrl(path, 300);
+            const { data, error } = await supabase.storage.from(articleshipLms()?.bucketFor(path) || 'industrial-training-mastery-resources').createSignedUrl(path, 300);
             if (error) throw error;
             const response = await fetch(data.signedUrl);
             if (!response.ok) throw new Error('Network response was not ok.');
@@ -2352,7 +2352,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            const { data, error } = await supabase.storage.from('industrial-training-mastery-resources').createSignedUrl(resource.view_storage_path, 300);
+            const { data, error } = await supabase.storage.from(articleshipLms()?.bucketFor(resource.view_storage_path) || 'industrial-training-mastery-resources').createSignedUrl(resource.view_storage_path, 300);
             if (error) throw error;
             const response = await fetch(`https://pdf-proxy-viewer.bhansalimanan55.workers.dev/?url=${encodeURIComponent(data.signedUrl)}`);
             if (!response.ok) throw new Error(`Failed to fetch from proxy: ${response.status}`);

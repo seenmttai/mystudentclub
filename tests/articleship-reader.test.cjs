@@ -2,14 +2,14 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const core = require('../ca-resource/read/reader-core.js');
+const core = require('../ca-resource/reader-core.js');
 
 const root = path.join(__dirname, '..');
 const OPS = { save: 10, restore: 11, transform: 12, moveTo: 13, lineTo: 14, curveTo: 15, curveTo2: 16, curveTo3: 17, closePath: 18,
     rectangle: 19, fill: 22, eoFill: 23, fillStroke: 24, eoFillStroke: 25, closeFillStroke: 26, closeEOFillStroke: 27, endPath: 28,
     setGState: 9, setFillRGBColor: 59, setFillGray: 57, setFillColor: 55, setFillColorN: 56, constructPath: 91,
     paintFormXObjectBegin: 74, paintFormXObjectEnd: 75 };
-const loc = { href: 'https://www.mystudentclub.com/ca-resource/read/?pdf=x', origin: 'https://www.mystudentclub.com' };
+const loc = { href: 'https://www.mystudentclub.com/ca-resource/?pdf=x', origin: 'https://www.mystudentclub.com', hostname: 'www.mystudentclub.com' };
 
 test('query: pdf, page from ?page or #page, title trimmed', () => {
     assert.deepEqual(core.parseQuery('?pdf=https%3A%2F%2Fa&page=4&title=%20Cover%20%20letters ', ''), { pdf: 'https://a', page: 4, title: 'Cover letters' });
@@ -30,6 +30,30 @@ test('only MSC storage links, the PDF proxy or this site can be read', () => {
         assert.equal(core.isAllowedPdfUrl(bad, loc), false, bad);
     }
     assert.ok(core.isAllowedPdfUrl('/x.pdf', { href: 'http://127.0.0.1:8765/', origin: 'http://127.0.0.1:8765' }), 'local preview');
+});
+
+test('copy mode only for a signed link into the Articleship bucket (directly or through the PDF proxy)', () => {
+    const articleship = 'https://auth.mystudentclub.com/storage/v1/object/sign/articleship-program-resources/articleship-program-v3/day-2/Application%20templates.pdf?token=abc';
+    assert.deepEqual(core.storageObject(articleship), { bucket: 'articleship-program-resources', path: 'articleship-program-v3/day-2/Application templates.pdf' });
+    assert.ok(core.isArticleshipFileUrl(articleship, loc));
+    assert.ok(core.isArticleshipFileUrl('https://pdf-proxy-viewer.bhansalimanan55.workers.dev/?url=' + encodeURIComponent(articleship), loc));
+    assert.ok(core.isArticleshipFileUrl('https://izsggdtdiacxdsjjncdq.supabase.co/storage/v1/object/sign/articleship-program-resources/a.pdf?token=t', loc));
+    // Any other course's file stays protected even with ?copy=1: the bucket is part of the signed link.
+    for (const other of [
+        'https://auth.mystudentclub.com/storage/v1/object/sign/industrial-training-mastery-resources/MSCIT%20Guidebook-3.pdf?token=t',
+        'https://auth.mystudentclub.com/storage/v1/object/sign/industrial-training-mastery-resources/articleship-program-v3/day-2/x.pdf?token=t',
+        'https://pdf-proxy-viewer.bhansalimanan55.workers.dev/?url=' + encodeURIComponent('https://auth.mystudentclub.com/storage/v1/object/sign/industrial-training-mastery-resources/doc.pdf?token=t'),
+        'https://evil.example.com/storage/v1/object/sign/articleship-program-resources/x.pdf',
+        'https://auth.mystudentclub.com/rest/v1/articleship-program-resources',
+        '/articleship-program-v3/day-2/x.pdf', ''
+    ]) {
+        assert.equal(core.isArticleshipFileUrl(other, loc), false, other);
+    }
+    // A localhost preview serves the programme files from its own folder.
+    const local = { href: 'http://127.0.0.1:8770/ca-resource/?pdf=x', origin: 'http://127.0.0.1:8770', hostname: '127.0.0.1' };
+    assert.ok(core.isArticleshipFileUrl('/__resources/articleship-program-v3/day-2/x.pdf', local));
+    assert.equal(core.isArticleshipFileUrl('/__resources/premium/x.pdf', local), false);
+    assert.equal(core.storageObject('not a url'), null);
 });
 
 test('Supabase project URLs go through the PDF proxy, the custom domain is fetched directly', () => {
@@ -260,25 +284,29 @@ test('Copy button: on the box top border at its right end, and never on a line o
     assert.equal(spot.size, 1, 'compact in the margin');
 });
 
-test('the reader places Copy buttons with copyButtonSpot and skips CV samples', () => {
-    const js = fs.readFileSync(path.join(root, 'ca-resource/read/reader.js'), 'utf8');
-    assert.match(js, /core\.isCvSample\(text\)/);
-    assert.match(js, /core\.copyButtonSpot\(/);
-    const css = fs.readFileSync(path.join(root, 'ca-resource/read/reader.css'), 'utf8');
-    assert.ok(!/\.rd-copy\s*\{[^}]*transform/.test(css), 'the button is placed by its left/top, not shifted by a transform');
-    assert.match(css, /\.rd-copy\.is-compact\s*\{/);
+test('one reader: the flipbook places Copy buttons with copyButtonSpot and skips CV samples', () => {
+    const js = fs.readFileSync(path.join(root, 'ca-resource/script.js'), 'utf8');
+    assert.match(js, /readerCore\.isCvSample\(entry\.text\)/);
+    assert.match(js, /readerCore\.copyButtonSpot\(/);
+    const css = fs.readFileSync(path.join(root, 'ca-resource/style.css'), 'utf8');
+    assert.ok(!/\.pdf-copy-btn\s*\{[^}]*transform/.test(css), 'the button is placed by its left/top, not shifted by a transform');
+    assert.match(css, /\.pdf-copy-btn\.is-compact\s*\{/);
+    assert.ok(!fs.existsSync(path.join(root, 'ca-resource/read')), 'the separate copyable reader is retired');
 });
 
-test('the reader page loads the vendored pdf.js, the shared client and allows copying', () => {
-    const html = fs.readFileSync(path.join(root, 'ca-resource/read/index.html'), 'utf8');
-    assert.match(html, /<meta name="robots" content="noindex">/);
-    assert.match(html, /src="\/scripts\/vendor\/pdf\.min\.js"/);
-    assert.match(html, /src="\/scripts\/supabase-init\.js"/);
-    assert.ok(!/createClient\(/.test(html), 'no second Supabase client in the page');
-    const js = fs.readFileSync(path.join(root, 'ca-resource/read/reader.js'), 'utf8');
-    assert.ok(!/addEventListener\(\s*'(copy|cut|contextmenu)'[^)]*preventDefault/.test(js), 'copy is never blocked');
-    assert.ok(!/beforeprint/.test(js));
-    assert.match(js, /renderTextLayer\(/, 'text layer on');
-    assert.match(js, /getAnnotations\(/, 'links on');
-    assert.ok(!/innerHTML\s*=\s*[^'"]*(title|text|str)/.test(js), 'PDF text never goes into innerHTML');
+test('the flipbook keeps every course protected: no text layer, copying blocked except a Copy button, print blocked', () => {
+    const html = fs.readFileSync(path.join(root, 'ca-resource/index.html'), 'utf8');
+    assert.match(html, /src="\/ca-resource\/reader-core\.js\?v=\d+"[\s\S]*src="script\.js\?v=\d+"/, 'helpers load before the reader');
+    const js = fs.readFileSync(path.join(root, 'ca-resource/script.js'), 'utf8');
+    assert.ok(!/renderTextLayer\(|textLayer/.test(js), 'no text layer: nothing on a page can be selected');
+    assert.match(js, /const copyMode = Boolean\(readerCore && urlParams\.get\('copy'\) === '1' && readerCore\.isArticleshipFileUrl\(PDF_URL, window\.location\)\)/);
+    assert.match(js, /document\.addEventListener\('copy', e => \{[\s\S]*?e\.preventDefault\(\);\s*\}\);/, 'every copy is still blocked');
+    assert.match(js, /addEventListener\('cut', e => e\.preventDefault\(\)\)/);
+    assert.match(js, /addEventListener\('contextmenu', e => e\.preventDefault\(\)\)/);
+    assert.match(js, /beforeprint/);
+    assert.match(js, /if \(copyMode\) return renderProgrammeLinks\(/, 'other courses keep their old link layer');
+    assert.match(js, /readerCore\.isSafeLink\(url\)/, 'copy-mode links: web, mail and phone only');
+    assert.ok(!/innerHTML\s*=\s*[^'"]*(title|text|str)/.test(js.replace(/innerHTML = COPY_ICON \+ '<span>Copy<\/span>'/, '')), 'PDF text never goes into innerHTML');
+    const css = fs.readFileSync(path.join(root, 'ca-resource/style.css'), 'utf8');
+    assert.match(css, /body\s*\{[^}]*user-select:\s*none/, 'the page stays unselectable');
 });

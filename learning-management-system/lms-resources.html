@@ -32,7 +32,7 @@
     <script src="/scripts/supabase.js"></script>
     <script src="/scripts/supabase-init.js"></script>
     <script src="/scripts/error-reporter.js"></script>
-    <script src="/scripts/articleship-lms.js?v=1"></script>
+    <script src="/scripts/articleship-lms.js?v=3"></script>
     <script type="importmap">
     {
         "imports": {
@@ -1418,7 +1418,7 @@
                             copyWindow.document.write('<p style="font-family: sans-serif; text-align: center; margin-top: 20%; color: #64748b;">Opening…</p>');
                         }
                         try {
-                            const { data, error } = await supabase.storage.from('industrial-training-mastery-resources').createSignedUrl(resource.view_storage_path, 300);
+                            const { data, error } = await supabase.storage.from(articleshipLms.bucketFor(resource.view_storage_path)).createSignedUrl(resource.view_storage_path, 300);
                             if (error) throw error;
                             const target = articleshipLms.copyTarget(resource, data.signedUrl, 1);
                             if (copyWindow) copyWindow.location.href = target; else window.open(target, '_blank');
@@ -1439,12 +1439,12 @@
                         }
 
                         try {
-                            const { data, error } = await supabase.storage.from('industrial-training-mastery-resources').createSignedUrl(resource.view_storage_path, 300);
+                            const { data, error } = await supabase.storage.from(window.MSCArticleshipLms?.bucketFor(resource.view_storage_path) || 'industrial-training-mastery-resources').createSignedUrl(resource.view_storage_path, 300);
                             if (error) throw error;
                             let viewerUrl = `/ca-resource/?pdf=${encodeURIComponent(data.signedUrl)}`;
                             if (this.hasDownloadPath(resource)) {
                                 const { data: dlData, error: dlError } = await supabase.storage
-                                    .from('industrial-training-mastery-resources')
+                                    .from(window.MSCArticleshipLms?.bucketFor(resource.download_storage_path) || 'industrial-training-mastery-resources')
                                     .createSignedUrl(resource.download_storage_path, 300, { download: true });
                                 if (!dlError && dlData?.signedUrl) {
                                     viewerUrl += `&dl=${encodeURIComponent(dlData.signedUrl)}`;
@@ -1495,7 +1495,7 @@
                     }
 
                     try {
-                        const { data, error } = await supabase.storage.from('industrial-training-mastery-resources').createSignedUrl(resource.view_storage_path, 300);
+                        const { data, error } = await supabase.storage.from(window.MSCArticleshipLms?.bucketFor(resource.view_storage_path) || 'industrial-training-mastery-resources').createSignedUrl(resource.view_storage_path, 300);
                         if (error) throw error;
 
                         const proxyUrl = `https://pdf-proxy-viewer.bhansalimanan55.workers.dev/?url=${encodeURIComponent(data.signedUrl)}`;
@@ -1911,7 +1911,7 @@
                         return;
                     }
                     try {
-                        const { data, error } = await supabase.storage.from('industrial-training-mastery-resources').createSignedUrl(path, 300);
+                        const { data, error } = await supabase.storage.from(window.MSCArticleshipLms?.bucketFor(path) || 'industrial-training-mastery-resources').createSignedUrl(path, 300);
                         if (error) throw error;
 
                         const response = await fetch(data.signedUrl);

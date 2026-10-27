@@ -17,7 +17,7 @@ const V3_SQL = path.join(root, 'supabase/migrations/202610200002_articleship_pro
 const V3_LATER_SQL = path.join(root, 'supabase/migrations/202610200003_articleship_program_v3_later_rows.sql');
 const V3_AUTOMAIL_SQL = path.join(root, 'supabase/migrations/202610200004_articleship_automail_row.sql');
 const V2_SQL = path.join(root, 'supabase/migrations/202610190001_articleship_program_lms.sql');
-const BUCKET = 'industrial-training-mastery-resources';
+const BUCKET = 'articleship-program-resources';
 
 function loadDashboard(enrollments) {
     const queries = [];
@@ -423,9 +423,10 @@ test('a copyable row opens the copyable reader in a new tab (browser viewer when
     const resource = { title: 'Application templates', copy: true, view_storage_path: 'articleship-program-v3/day-2/Application templates.pdf', group: 'Write your mails' };
     await open(resource, 1);
     assert.deepEqual(sandbox.calls[0], ['open', '', '_blank'], 'tab opened before any await (popup blockers)');
-    assert.deepEqual(sandbox.calls.find(c => c[0] === 'sign'), ['sign', 'industrial-training-mastery-resources', resource.view_storage_path, 300]);
+    assert.deepEqual(sandbox.calls.find(c => c[0] === 'sign'), ['sign', 'articleship-program-resources', resource.view_storage_path, 300]);
     const href = new URL(sandbox.opened.location.href, 'https://www.mystudentclub.com');
-    assert.equal(href.pathname, '/ca-resource/read/');
+    assert.equal(href.pathname, '/ca-resource/');
+    assert.equal(href.searchParams.get('copy'), '1');
     assert.equal(href.searchParams.get('pdf'), 'https://auth.mystudentclub.com/storage/v1/object/sign/b/x.pdf?token=t');
     assert.equal(href.searchParams.get('title'), 'Application templates');
 
@@ -436,13 +437,35 @@ test('a copyable row opens the copyable reader in a new tab (browser viewer when
     const deep = copySandbox();
     await courseFunction('openCopyResource', deep)(resource, 4, { deepLink: true });
     assert.ok(!deep.calls.some(c => c[0] === 'open'), 'a deep link opens no new tab');
-    assert.match(deep.calls.find(c => c[0] === 'replace')[1], /^\/ca-resource\/read\/\?pdf=.*&page=4&title=Application\+templates$/);
+    assert.match(deep.calls.find(c => c[0] === 'replace')[1], /^\/ca-resource\/\?pdf=.*&copy=1&page=4&title=Application\+templates$/);
 
     const failing = copySandbox();
     failing.console = { error() {} };
     failing.supabase.storage.from = () => ({ createSignedUrl: async () => ({ data: null, error: new Error('denied') }) });
     await courseFunction('openCopyResource', failing)(resource, 1);
     assert.ok(failing.calls.some(c => c[0] === 'close') && failing.calls.some(c => c[0] === 'alert'));
+});
+
+test('Articleship files are read from their own bucket; every other course keeps the shared one', async () => {
+    assert.equal(LMS.BUCKET_ARTICLESHIP, 'articleship-program-resources');
+    assert.equal(LMS.BUCKET_DEFAULT, 'industrial-training-mastery-resources');
+    for (const p of ['articleship-program-v3/day-0/MSC Articleship Guidebook.pdf', 'articleship-program-v2/day-1/Choose your CV.pdf', ' articleship-program-v4/day-2/x.xlsx']) {
+        assert.equal(LMS.bucketFor(p), LMS.BUCKET_ARTICLESHIP, p);
+    }
+    for (const p of ['MSCIT Guidebook-3.pdf', 'doc.pdf', 'Finance Interview Booklet.pdf', 'articleship-program/x.pdf', 'my-articleship-program-v3/x.pdf', '', null, undefined]) {
+        assert.equal(LMS.bucketFor(p), LMS.BUCKET_DEFAULT, String(p));
+    }
+    const sandbox = copySandbox();
+    await courseFunction('openCopyResource', sandbox)({ title: 'Older course file', copy: true, view_storage_path: 'MSCIT Guidebook-3.pdf' }, 1);
+    assert.equal(sandbox.calls.find(c => c[0] === 'sign')[1], 'industrial-training-mastery-resources', 'a non-Articleship file is still signed in the shared bucket');
+});
+
+test('no LMS page signs a file with a hard-coded bucket', () => {
+    for (const file of ['learning-management-system/course-script.js', 'learning-management-system/lms-resources.html']) {
+        const source = fs.readFileSync(path.join(root, file), 'utf8');
+        assert.doesNotMatch(source, /\.from\('industrial-training-mastery-resources'\)/, `${file} must choose the bucket through bucketFor`);
+        assert.match(source, /bucketFor\(/, file);
+    }
 });
 
 test('row clicks: copy flag first, "Templates" canvas rule off for this course only', async () => {

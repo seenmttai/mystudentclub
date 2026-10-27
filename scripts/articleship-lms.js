@@ -3,7 +3,8 @@
  * lms-resources.html, so both pages route a row the same way).
  *
  * Row flag `copy` (V3-STRUCTURE §0.3, P6):
- *   copy: true | "reader"  → the copyable reader /ca-resource/read/ (text layer, copy allowed, links clickable, search)
+ *   copy: true | "reader"  → the flipbook reader in copy mode, /ca-resource/?copy=1 (the same protected reader as every
+ *                            course: no text selection; Copy buttons on the template boxes, in-document links, search)
  *   copy: "browser"        → the fallback: the signed PDF in the browser's own viewer (risk 4). Switching every row to
  *                            the fallback is a data change (SQL), or one line here (COPY_DEFAULT), never a new page.
  * The flag is read before any group-name rule, and the old "group contains 'template' → inline canvas viewer" rule is
@@ -19,9 +20,20 @@
 })(typeof self !== 'undefined' ? self : globalThis, function () {
     'use strict';
 
-    const COPY_READER_PATH = '/ca-resource/read/';
+    const COPY_READER_PATH = '/ca-resource/';
     const COPY_DEFAULT = 'reader';
     const STORAGE_PREFIX = /^articleship-program-v\d+\/day-[0-6]\//;
+    const BUCKET_DEFAULT = 'industrial-training-mastery-resources';
+    const BUCKET_ARTICLESHIP = 'articleship-program-resources';
+    const BUCKET_PATH = /^articleship-program-v\d+\//;
+
+    /**
+     * The private storage bucket a resource path lives in. The Articleship Program has its own bucket, so its files are
+     * never readable through the Industrial / Freshers storage rule; every other course keeps the shared bucket.
+     */
+    function bucketFor(path) {
+        return BUCKET_PATH.test(String(path === undefined || path === null ? '' : path).trim()) ? BUCKET_ARTICLESHIP : BUCKET_DEFAULT;
+    }
 
     function hasPath(value) {
         const text = String(value === undefined || value === null ? '' : value).trim();
@@ -54,6 +66,7 @@
         const opts = options || {};
         const params = new URLSearchParams();
         params.set('pdf', signedUrl);
+        params.set('copy', '1');
         const page = clampPage(opts.page);
         if (page > 1) params.set('page', String(page));
         if (opts.title) params.set('title', String(opts.title).slice(0, 120));
@@ -117,8 +130,8 @@
     }
 
     return Object.freeze({
-        COPY_READER_PATH, COPY_DEFAULT, STORAGE_PREFIX, resourceLink,
+        COPY_READER_PATH, COPY_DEFAULT, STORAGE_PREFIX, BUCKET_DEFAULT, BUCKET_ARTICLESHIP, resourceLink,
         hasPath, copyMode, useTemplateCanvas, clampPage, copyReaderUrl, browserViewerUrl, copyTarget,
-        isProgrammePdfPath, downloadLabel, isSameOriginToolUrl, isSheetCopyUrl
+        isProgrammePdfPath, downloadLabel, isSameOriginToolUrl, isSheetCopyUrl, bucketFor
     });
 });

@@ -1654,7 +1654,8 @@
             <h3>Choose Template</h3>
             <button class="template-sidebar-close" onclick="toggleTemplateSidebar(false)">×</button>
         </div>
-        <div style="padding:0 20px 12px;">
+        <!-- The articleship designs open from the programme (/cv-builder/?stage=articleship); the normal builder lists only its own. -->
+        <div style="padding:0 20px 12px;" hidden>
             <label for="template-collection">Templates for</label>
             <select id="template-collection" class="form-control" onchange="setTemplateCollection(this.value)">
                 <option value="all">All CVs</option>
@@ -1670,7 +1671,7 @@
 <script src="cv-articleship.js?v=20261018-r2"></script>
 <script src="/scripts/articleship-progress.js?v=20261020-r1"></script>
 <script src="/scripts/articleship-cv-builder.js?v=20261020-r1"></script>
-<script src="cv-script.js?v=20261020-v3b"></script>
-<script src="/articleship-program/cv-builder/stage.js?v=20261020-r1"></script>
+<script src="cv-script.js?v=20261025-r1"></script>
+<script src="/articleship-program/cv-builder/stage.js?v=20261025-r1"></script>
 
 </html>

@@ -54,7 +54,9 @@
     };
 
     const getJson = url => fetch(url, { cache: 'no-cache' }).then(res => (res.ok ? res.json() : null)).catch(() => null);
-    const dataReady = Promise.all([getJson(BASE + 'designs.json'), getJson(BASE + 'examples.json'), getJson(LINKS.recommender + 'situations.json')]);
+    // Fetched the first time the articleship view opens, so the normal CV Builder never downloads the programme's data.
+    let dataReady = null;
+    const loadData = () => dataReady || (dataReady = Promise.all([getJson(BASE + 'designs.json'), getJson(BASE + 'examples.json'), getJson(LINKS.recommender + 'situations.json')]));
 
     // ---------- small DOM helpers ----------
     function h(tag, attrs, children) {
@@ -640,7 +642,7 @@
         state.host = host;
         if (!isActive()) return;
         document.body.classList.add('asb-on');
-        const [designsJson, examplesRaw, situationsJson] = await dataReady;
+        const [designsJson, examplesRaw, situationsJson] = await loadData();
         // The applicants as this release shows them (release 1: without their Work Simulation lines).
         const examplesJson = logic.releaseExamples ? logic.releaseExamples(examplesRaw, RELEASE) : examplesRaw;
         state.situations = situationsJson ? logic.mergeSituations(situationsJson) : logic.SITUATIONS;
