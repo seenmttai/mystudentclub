@@ -125,7 +125,7 @@
         return '/login.html?redirect=' + encodeURIComponent(path);
     }
 
-    function renderCard(doc, state, actions) {
+    function renderCard(doc, state, actions, cards) {
         let gate = doc.getElementById('ap-gate');
         if (!gate) {
             gate = doc.createElement('div');
@@ -151,7 +151,7 @@
             loading.appendChild(spinner);
             card.appendChild(loading);
         } else {
-            const copy = CARDS[state];
+            const copy = (cards && cards[state]) || CARDS[state];
             const h1 = doc.createElement('h1');
             h1.textContent = copy.title;
             const p = doc.createElement('p');
@@ -175,6 +175,23 @@
         return gate;
     }
 
+    /**
+     * Presentation for the CV Builder's Articleship route: its own copy and enrolment label, and no early allow from the
+     * local cache (the Builder loads Articleship code only after the server has confirmed enrolment).
+     */
+    function builderPresentation() {
+        return {
+            trustCache: false,
+            cards: {
+                login: { title: 'Log in to open the Articleship CV Builder', text: 'The Articleship CV Builder is part of the MSC Articleship Program. Log in with the account you enrolled with.' },
+                enrol: { title: 'Part of the MSC Articleship Program', text: 'The Articleship CV Builder is unlocked for enrolled students. This account is not enrolled in the programme yet.' }
+            },
+            actions: (loc, helpers) => ({
+                enrol: [{ label: 'Enroll in Articleship to unlock', href: PROGRAMME_URL }, { label: 'Log in with another account', onClick: helpers.switchAccount }]
+            })
+        };
+    }
+
     function ensureNoindex(doc) {
         if (!doc.head || doc.querySelector('meta[name="robots"]')) return;
         const meta = doc.createElement('meta');
@@ -195,7 +212,25 @@
             { getItem: () => null, setItem() {}, removeItem() {} };
         const now = opts.now || (() => Date.now());
         const htmlEl = doc.documentElement;
+        const presentation = opts.presentation || {};
+        const customActions = typeof presentation.actions === 'function' ? presentation.actions(loc, { switchAccount }) : (presentation.actions || {});
         ensureNoindex(doc);
+
+        // "Log in with another account" signs the current account out first: the login page sends a signed-in user
+        // straight back here, so a plain link would loop.
+        async function switchAccount() {
+            try {
+                const db = opts.client || getClient();
+                if (db) await db.auth.signOut({ scope: 'local' });
+            } catch (_) { /* go to login anyway */ }
+            writeCache(storage, null, now());
+            // Whichever auth key holds the session, the login page must not find one and send the student straight back.
+            ['sb-auth-auth-token', 'sb-izsggdtdiacxdsjjncdq-auth-token'].forEach(key => { try { storage.removeItem(key); } catch (_) { /* storage blocked */ } });
+            try { root.__mscSession = null; } catch (_) { /* read-only global */ }
+            const url = loginUrl(loc);
+            if (typeof opts.navigate === 'function') opts.navigate(url);
+            else loc.assign(url);
+        }
 
         let resolveAllowed;
         const allowed = new Promise(resolve => { resolveAllowed = resolve; });
@@ -217,12 +252,12 @@
         function block(state) {
             shown = false;
             htmlEl.classList.add('ap-gated');
-            const actions = state === 'login'
+            const actions = customActions[state] ? customActions[state] : state === 'login'
                 ? [{ label: 'Log in', href: loginUrl(loc) }, { label: 'About the programme', href: PROGRAMME_URL }]
                 : state === 'enrol'
-                    ? [{ label: 'See the programme', href: PROGRAMME_URL }, { label: 'Log in with another account', href: loginUrl(loc) }]
+                    ? [{ label: 'See the programme', href: PROGRAMME_URL }, { label: 'Log in with another account', onClick: switchAccount }]
                     : [{ label: 'Try again', onClick: run }, { label: 'Back to the programme', href: COURSE_URL }];
-            renderCard(doc, state, actions);
+            renderCard(doc, state, actions, presentation.cards);
         }
 
         const params = new URLSearchParams(loc.search || '');
@@ -235,7 +270,7 @@
 
         async function run() {
             const cachedUser = storedUserId();
-            const trusted = cachedUser && readCache(storage, cachedUser, now());
+            const trusted = presentation.trustCache !== false && cachedUser && readCache(storage, cachedUser, now());
             if (trusted) allow({ id: cachedUser }, 'cache');
             else { htmlEl.classList.add('ap-gated'); renderCard(doc, 'loading', []); }
             const access = await check(opts.client);
@@ -256,5 +291,5 @@
         return allowed;
     }
 
-    return Object.freeze({ COURSE, CACHE_KEY, canonicalCourse, isArticleshipCourse, decide, check, protect, isLocalHost, loginUrl });
+    return Object.freeze({ COURSE, CACHE_KEY, canonicalCourse, isArticleshipCourse, decide, check, protect, isLocalHost, loginUrl, builderPresentation });
 });
