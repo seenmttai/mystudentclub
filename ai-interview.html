@@ -3973,7 +3973,7 @@
             const allowed = apCheckCvOwners();
             let builder = null;
             if (allowed.builder) {
-                try { builder = JSON.parse(apReadStorage('cv_maker_data') || 'null'); } catch (error) { builder = null; }
+                try { builder = JSON.parse(AP.readBuilderCv(localStorage) || 'null'); } catch (error) { builder = null; }
             }
             const builderLines = AP.cvLinesFromBuilder(builder);
             if (builderLines.length >= 3) sources.push({ kind: 'builder', label: 'CV Builder', detail: AP.builderName(builder), lines: builderLines });

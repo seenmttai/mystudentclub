@@ -1010,3 +1010,29 @@ test('a scorecard sent without the report markers is split off: only the closing
     assert.equal(articleship.splitUnmarkedReport('What is RCM? Explain with one example.', RUBRIC), null, 'an ordinary question is never a report');
     assert.match(html, /const split = apSplitUnmarkedReport\(aiMessage\);/);
 });
+
+// ---------- which CV Builder draft the Articleship interview reads ----------
+test('the interview prefers the Articleship CV Builder draft and falls back to the normal one', () => {
+    const map = new Map();
+    const storage = {
+        get length() { return map.size; }, key: i => Array.from(map.keys())[i] || null,
+        getItem: k => (map.has(k) ? map.get(k) : null), setItem: (k, v) => map.set(k, String(v)), removeItem: k => map.delete(k)
+    };
+    assert.equal(articleship.builderCvKey(storage), null, 'no CV yet');
+    storage.setItem('cv_maker_data', JSON.stringify({ personal: { name: 'Normal' } }));
+    assert.equal(articleship.builderCvKey(storage), 'cv_maker_data', 'only a normal CV: that one');
+    storage.setItem('msc.articleship.cv-builder', JSON.stringify({ v: 1, data: { cv: null }, updatedAt: 1, owner: null }));
+    assert.equal(articleship.builderCvKey(storage), 'cv_maker_data', 'an empty Articleship store is no CV');
+    storage.setItem('msc.articleship.cv-builder', JSON.stringify({ v: 1, data: { cv: { personal: { name: 'Articleship' } } }, updatedAt: 2, owner: null }));
+    assert.equal(articleship.builderCvKey(storage), 'msc.articleship.cv-builder', 'the Articleship CV wins');
+    assert.equal(JSON.parse(articleship.readBuilderCv(storage)).personal.name, 'Articleship', 'read out of its progress envelope');
+    assert.equal(articleship.cvSourcesAllowed(storage, null).builder, true);
+    // Claiming and the shared-phone guard follow the same draft the student is offered.
+    articleship.claimCv(storage, 'riya', 'builder');
+    const guard = JSON.parse(storage.getItem(articleship.CV_GUARD_KEY));
+    assert.ok(guard.claims.riya.builder.startsWith(String(articleship.readBuilderCv(storage).length) + ':'));
+    // The page reads the CV through the same helper.
+    const page = fs.readFileSync(path.join(__dirname, '../ai-interview.html'), 'utf8');
+    assert.doesNotMatch(page, /apReadStorage\('cv_maker_data'\)/);
+    assert.match(page, /AP\.readBuilderCv\(localStorage\)/);
+});

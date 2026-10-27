@@ -321,7 +321,7 @@
         return cvLinesFromText(text);
     }
 
-    /** The CV Builder's saved CV (localStorage cv_maker_data) to lines. */
+    /** The CV Builder's saved CV (localStorage, see builderCvKey) to lines. */
     function cvLinesFromBuilder(data) {
         if (!isObject(data)) return [];
         const lines = [];
@@ -789,7 +789,7 @@
     }
 
     // ---------- whose CV is on this browser ----------
-    // The CV Builder keeps its CV in localStorage (cv_maker_data) with no owner, and the profile's CV text (userCVText)
+    // The CV Builder keeps its CV in localStorage with no owner, and the profile's CV text (userCVText)
     // survives some sign-outs. On a shared phone the next student must not be offered the previous student's CV.
     const CV_GUARD_KEY = 'msc_ai_interview_cv_guard';
     const PROGRESS_PREFIX = 'msc.articleship.';
@@ -803,6 +803,32 @@
 
     function readStorage(storage, key) {
         try { return storage && typeof storage.getItem === 'function' ? storage.getItem(key) : null; } catch (_) { return null; }
+    }
+
+    // The CV Builder keeps the Articleship CV (in the progress store's 'cv-builder' row) and the normal CV under separate
+    // keys; this interview prefers the Articleship one and falls back to the normal CV for a student who built only that.
+    const ARTICLESHIP_CV_KEY = PROGRESS_PREFIX + 'cv-builder';
+    const BUILDER_CV_KEYS = Object.freeze([ARTICLESHIP_CV_KEY, 'cv_maker_data']);
+
+    /** The CV saved under one key, as JSON text, or null. The Articleship key holds a progress envelope { data: { cv } }. */
+    function builderCvFrom(storage, key) {
+        const raw = readStorage(storage, key);
+        if (!raw || key !== ARTICLESHIP_CV_KEY) return raw || null;
+        try {
+            const envelope = JSON.parse(raw);
+            return envelope && envelope.data && envelope.data.cv ? JSON.stringify(envelope.data.cv) : null;
+        } catch (_) { return null; }
+    }
+
+    /** The key of the CV Builder draft this interview reads, or null when there is none. */
+    function builderCvKey(storage) {
+        return BUILDER_CV_KEYS.find(key => builderCvFrom(storage, key)) || null;
+    }
+
+    /** The CV Builder draft this interview reads, as JSON text, or null. */
+    function readBuilderCv(storage) {
+        const key = builderCvKey(storage);
+        return key ? builderCvFrom(storage, key) : null;
     }
 
     /** True when this browser holds programme progress or a profile cache owned by another account. */
@@ -841,7 +867,7 @@
      * change (the student edits the CV Builder CV) or this student has used that exact CV here before (claimCv).
      */
     function cvSourcesAllowed(storage, userId) {
-        const builderRaw = readStorage(storage, 'cv_maker_data') || '';
+        const builderRaw = readBuilderCv(storage) || '';
         const profileRaw = readStorage(storage, 'userCVText') || '';
         if (!userId) return { builder: !!builderRaw, profile: !!profileRaw };
         const guard = readGuard(storage);
@@ -863,7 +889,7 @@
     /** The student started a mock with this saved CV: it is theirs on this browser from now on. kind: builder|profile. */
     function claimCv(storage, userId, kind) {
         if (!userId || (kind !== 'builder' && kind !== 'profile')) return;
-        const raw = readStorage(storage, kind === 'builder' ? 'cv_maker_data' : 'userCVText');
+        const raw = kind === 'builder' ? readBuilderCv(storage) : readStorage(storage, 'userCVText');
         if (!raw) return;
         const guard = readGuard(storage);
         const claims = isObject(guard.claims) ? guard.claims : {};
@@ -1530,7 +1556,7 @@
         earnedLinesFrom, mergeCvLines, presetFromQuery, SIMULATION_TOOL, WORK_SIMULATION_LIVE, workSimulationLive,
         buildPlan, renderPrompt, welcomeLine, planQuestionIds, markAsked, questionsReached, recordMock, mockSummary,
         parseScorecard, stripScorecard, findScorecard, splitUnmarkedReport, cleanFirm, domainCount,
-        cvSourcesAllowed, claimCv, otherStudentHere, CV_GUARD_KEY, REPORT_START, REPORT_END,
+        cvSourcesAllowed, claimCv, otherStudentHere, builderCvKey, readBuilderCv, CV_GUARD_KEY, REPORT_START, REPORT_END,
         mountSetup, renderScorecard, rng
     });
 });
