@@ -325,3 +325,18 @@
     .cvc-layout { display: block; }
     .cvc-side { position: static; }
 }
+
+/* Long check titles (a file name, a URL) wrap on a phone instead of widening the page. */
+.cvc-main { min-width: 0; }
+.cvc-list .ap-cl-item { overflow-wrap: anywhere; }
+
+/* Desktop up to 1440 px: from 1280 px the sections sit on the left, the checks in the middle, the reviews on the right. */
+.cvc-main.is-wide { max-width: 1440px; }
+@media (min-width: 1280px) {
+    .cvc-main.is-wide { padding-left: 40px; padding-right: 40px; }
+    .cvc-layout { grid-template-columns: 240px minmax(0, 1fr) 320px; gap: 32px; }
+    .cvc-side { display: contents; }
+    .cvc-list { grid-column: 2; grid-row: 1; }
+    .cvc-nav { grid-column: 1; grid-row: 1; position: sticky; top: 80px; }
+    .cvc-end { grid-column: 3; grid-row: 1; position: sticky; top: 80px; margin-top: 0; }
+}
