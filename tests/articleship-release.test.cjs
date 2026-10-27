@@ -103,8 +103,7 @@ test('one flag: every page with such a tool loads the platform script before the
         'articleship-program/cv-checklist/index.html': 'articleship-cv-checklist.js',
         'articleship-program/interview-tracker/index.html': 'articleship-interview-tracker.js',
         'articleship-program/linkedin-checklist/index.html': 'articleship-linkedin-checklist.js',
-        'ai-interview.html': 'articleship-interview.js',
-        'cv-builder/index.html': 'articleship-cv-builder.js'
+        'ai-interview.html': 'articleship-interview.js'
     };
     for (const [page, tool] of Object.entries(pages)) {
         const html = fs.readFileSync(path.join(ROOT, page), 'utf8');
@@ -113,8 +112,12 @@ test('one flag: every page with such a tool loads the platform script before the
         assert.ok(platform !== -1 && own !== -1, page + ' loads both');
         assert.ok(platform < own, page + ': the platform script first');
     }
-    const builder = fs.readFileSync(path.join(ROOT, 'cv-builder/index.html'), 'utf8');
-    assert.ok(builder.search(/articleship-progress\.js/) < builder.search(/articleship-program\/cv-builder\/stage\.js/), 'and before the stage');
+    // The CV Builder has no static Articleship scripts: its lazy loader appends the platform script before the logic and the stage.
+    const loader = fs.readFileSync(path.join(ROOT, 'cv-builder/cv-script.js'), 'utf8');
+    const assets = loader.slice(loader.indexOf('const ARTICLESHIP_FEATURE_ASSETS'), loader.indexOf('const loadedAssets'));
+    const at = name => assets.indexOf(name);
+    assert.ok(at('articleship-progress.js') !== -1 && at('articleship-progress.js') < at('articleship-cv-builder.js'), 'the platform script first');
+    assert.ok(at('articleship-cv-builder.js') < at('cv-builder/stage.js'), 'and before the stage');
 });
 
 // ---------- the shared text rules ----------

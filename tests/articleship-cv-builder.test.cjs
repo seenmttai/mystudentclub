@@ -390,7 +390,7 @@ async function stage(options) {
         <input id="inp-title-certifications"></details></div>
         <span id="current-template-name">Classic</span><select id="template-select"></select>
         <div id="template-sidebar"><div class="template-sidebar-header"><h3>Choose Template</h3></div>
-        <div><select id="template-collection"></select></div><div id="template-grid"></div></div></body>`,
+        <div id="template-grid"></div></div></body>`,
     { url: opts.url || 'http://127.0.0.1/cv-builder/?stage=articleship', runScripts: 'outside-only' });
     const win = dom.window;
     GALLERY.forEach(g => { const o = win.document.createElement('option'); o.value = g.file; o.textContent = g.name; win.document.getElementById('template-select').appendChild(o); });
@@ -423,6 +423,8 @@ async function stage(options) {
     if (!cvData) cvData = S.blankCv({ tableSettings: {} }, { education: {} });
     templateFile = cvData.templateFile || templateFile;
     const host = {
+        mode: 'articleship',
+        access: 'allow',
         getCv: () => cvData,
         setCv(next, o) { cvData = clone(next); if (o && o.templateFile) { templateFile = o.templateFile; cvData.templateFile = templateFile; } },
         templateFile: () => templateFile,
@@ -431,7 +433,6 @@ async function stage(options) {
         isLocked: file => locked.has(file) || (!accessChecked && file !== 'articleship-layout-classic'),
         accessChecked: () => accessChecked,
         gallery: () => GALLERY,
-        collection: () => 'articleship',
         openTemplates() { calls.open += 1; },
         closeTemplates() {},
         renderCards() { calls.renderCards += 1; S.renderTemplateCards(win.document.getElementById('template-grid'), templateFile); },
@@ -677,7 +678,7 @@ test('stage: the design picker shows the look-book designs by number and all 62 
     assert.equal(grid.querySelector('[data-number="3"] .asb-tag').textContent, 'Screen');
     assert.match(grid.querySelector('[data-file="articleship-layout-profile-sidebar"]').textContent, /Your pick/);
     assert.equal(grid.querySelector('[data-number="1"] .asb-card-for').textContent, B.bestForLabel(design(1)));
-    assert.equal(s.doc.getElementById('template-collection').parentElement.hidden, true);
+    assert.equal(s.doc.getElementById('template-collection'), null, 'no collection switch exists');
     assert.match(s.doc.querySelector('.asb-legend').textContent, /Print.*Portal-safe.*Screen/);
     const chips = [...s.doc.querySelectorAll('.asb-chip')];
     assert.deepEqual(chips.map(c => c.dataset.filter), ['all', 'order', 'portal']);
@@ -717,15 +718,17 @@ test('stage: thumbnails show each design\'s applicant while the CV is blank; exp
 
 // ---------- The CV Builder page wiring ----------
 
-test('the CV Builder page loads the stage and calls every hook behind optional chaining', () => {
+test('the CV Builder page ships no Articleship assets; the lazy loader adds them in order and calls every hook behind optional chaining', () => {
     const html = fs.readFileSync(path.join(ROOT, 'cv-builder/index.html'), 'utf8');
-    const order = ['/scripts/articleship-progress.js', '/scripts/articleship-cv-builder.js', 'cv-script.js', '/articleship-program/cv-builder/stage.js']
-        .map(src => html.indexOf(`src="${src}`));
-    assert.ok(order.every(index => index > 0), 'all four scripts');
-    assert.deepEqual([...order].sort((a, b) => a - b), order, 'in order');
+    assert.doesNotMatch(html, /articleship-progress|articleship-cv-builder|cv-articleship|stage\.js|stage\.css|template-collection/);
     assert.match(html, /family=Caveat/);
-    assert.match(html, /\/articleship-program\/cv-builder\/stage\.css/);
     const script = fs.readFileSync(path.join(ROOT, 'cv-builder/cv-script.js'), 'utf8');
+    const feature = script.slice(script.indexOf('const ARTICLESHIP_FEATURE_ASSETS'), script.indexOf('const loadedAssets'));
+    const order = ['/cv-builder/cv-articleship.js', '/scripts/articleship-progress.js', '/scripts/articleship-cv-builder.js', '/articleship-program/cv-builder/stage.js']
+        .map(src => feature.indexOf(src));
+    assert.ok(order.every(index => index >= 0), 'all four scripts');
+    assert.deepEqual([...order].sort((a, b) => a - b), order, 'in order');
+    assert.match(feature, /\/articleship-program\/cv-builder\/stage\.css/);
     ['blankCv', 'init', 'renderTemplateCards', 'previewSource', 'theme', 'layoutName', 'onChange', 'exportHtml']
         .forEach(hook => assert.match(script, new RegExp(`MSCArticleshipStage\\?\\.${hook}\\?\\.\\(`), hook));
 });
@@ -740,7 +743,7 @@ test('the builder\'s articleship start uses the v3 blank CV when the stage is lo
             window: { MSCArticleship: catalog, MSCArticleshipStage: stageApi },
             document: { getElementById: id => (id === 'template-select' ? select : {}), createElement: () => ({}) },
             cvData: { personal: {}, education: [] },
-            templateCollection: 'articleship',
+            IS_ARTICLESHIP_MODE: true,
             getDefaultTableSettings: () => ({ education: {} }),
             hasUserEnteredData: () => false,
             isArticleshipTemplate: file => Boolean(catalog.getTemplate(file))
@@ -761,4 +764,21 @@ test('the stage tool page redirects to the one way in: /cv-builder/?stage=articl
     const page = fs.readFileSync(path.join(ROOT, 'articleship-program/cv-builder/index.html'), 'utf8');
     assert.match(page, /\/cv-builder\/\?stage=articleship/);
     assert.match(page, /name="robots" content="noindex"/);
+});
+
+test('stage: a pick that arrives after opening (another device, another tab) is applied once, like one found on open', async () => {
+    const s = await stage({ wait: 80 });
+    assert.notEqual(s.cv.articleshipStructure, 'D', 'opened before any pick');
+    const pick = { situation: 'D', order: ['header', 'summary', 'education', 'projects', 'certifications', 'skills'], design: 4, savedAt: 'late-1' };
+    s.setPick(pick);
+    await sleep(400);
+    assert.equal(s.cv.articleshipStructure, 'D', 'the order goes on without a reload');
+    assert.equal(s.cv.articleshipPickApplied, 'late-1');
+    assert.deepEqual(s.calls.useTemplate, ['articleship-layout-banner-executive-split'], 'and its design');
+    assert.match(s.panel().textContent, /From your CV Recommender: order D, design 4/);
+    // The same pick announced again (a later pull) changes nothing the student did since.
+    s.host.useTemplate('articleship-layout-plain-ats');
+    s.setPick(Object.assign({}, pick));
+    await sleep(400);
+    assert.deepEqual(s.calls.useTemplate, ['articleship-layout-banner-executive-split', 'articleship-layout-plain-ats']);
 });

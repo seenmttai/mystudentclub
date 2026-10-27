@@ -75,9 +75,9 @@
         return el;
     }
 
+    // Active only for a host that the CV Builder has opened in Articleship mode after the access gate allowed it.
     function isActive() {
-        if (params.get('stage') === 'articleship') return true;
-        return Boolean(state.host && state.host.collection() === 'articleship');
+        return Boolean(state.host && state.host.mode === 'articleship' && state.host.access === 'allow');
     }
 
     function cv() { return state.host ? state.host.getCv() : {}; }
@@ -502,8 +502,6 @@
     function renderTemplateCards(grid, currentTemplate) {
         if (!isActive() || !state.designs.length) return false;
         const sidebar = document.getElementById('template-sidebar');
-        const collection = document.getElementById('template-collection');
-        if (collection && collection.parentElement) collection.parentElement.hidden = true;
         let tabs = document.getElementById('asb-tabs');
         if (!tabs && sidebar) {
             tabs = h('div', { id: 'asb-tabs', class: 'asb-tabs', role: 'tablist' });
@@ -638,9 +636,20 @@
         render();
     }
 
+    /** Applies the CV Recommender's pick once per pick (logic.planPick). Returns the pick's design to put on, or null. */
+    function applyPick(message) {
+        const plan = logic.planPick(pick(), state.designs, cv());
+        if (!plan || !plan.apply) return null;
+        const next = withOrder(cv(), plan.situation, plan.order);
+        next.articleshipPickApplied = plan.key;
+        state.host.setCv(next);
+        state.host.toast(message);
+        return plan.design;
+    }
+
     async function init(host) {
+        if (!host || host.mode !== 'articleship' || host.access !== 'allow') return;
         state.host = host;
-        if (!isActive()) return;
         document.body.classList.add('asb-on');
         const [designsJson, examplesRaw, situationsJson] = await loadData();
         // The applicants as this release shows them (release 1: without their Work Simulation lines).
@@ -654,18 +663,8 @@
         state.earned = readEarned();
         relabelOptions();
 
-        const p = pick();
-        const plan = logic.planPick(p, state.designs, cv());
-        let design = null;
-        if (plan && plan.apply) {
-            const next = withOrder(cv(), plan.situation, plan.order);
-            next.articleshipPickApplied = plan.key;
-            state.host.setCv(next);
-            state.host.toast('Opened with your CV Recommender pick.');
-            design = plan.design;
-        } else if (state.freshBlank) {
-            design = state.designs[0] || null;
-        }
+        let design = applyPick('Opened with your CV Recommender pick.');
+        if (!design && state.freshBlank) design = state.designs[0] || null;
         // A link from CV templates (row 1.4): ?design=N opens on that design; &example=1 also fills in its applicant,
         // so a student on a phone sees the full-size CV the look-book shows in small.
         const linked = logic.resolveDesign(state.designs, params.get('design'));
@@ -679,7 +678,15 @@
             });
         }
 
-        if (progress && progress.onSettingsChange) progress.onSettingsChange(() => scheduleRender());
+        // A pick can arrive after opening: pulled from the student's account (made on another device) or saved in
+        // another tab. A new one goes on just as one found on open does; one already applied changes nothing.
+        if (progress && progress.onSettingsChange) {
+            progress.onSettingsChange(() => {
+                const picked = applyPick('Your CV Recommender pick is on.');
+                if (picked) openOnDesign(picked, state.host.templateFile());
+                scheduleRender();
+            });
+        }
         if (WS_LIVE) {
             try {
                 progress.open('work-simulation', { defaults: {} }).subscribe(() => { state.earned = readEarned(); scheduleRender(); });
