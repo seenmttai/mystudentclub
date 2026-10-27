@@ -106,3 +106,114 @@ test('protect: on localhost the gate steps aside unless asked; ?gate=<card> prev
     assert.equal(G.isLocalHost('www.mystudentclub.com'), false);
     assert.equal(G.isLocalHost('mobile.mystudentclub.com'), false);
 });
+
+const BUILDER_URL = 'https://www.mystudentclub.com/cv-builder/?stage=articleship';
+const wait = () => new Promise(r => setTimeout(r, 10));
+const labels = gateEl => Array.from(gateEl.querySelectorAll('a,button')).map(node => node.textContent);
+
+test('protect: the tool copy and actions are unchanged when no Builder presentation is given', async () => {
+    const other = page('https://www.mystudentclub.com/articleship-program/cv-checklist/');
+    other.gate.protect({ client: client({ user: { id: 'u2' }, courses: ['industrial-training-mastery'] }) });
+    await wait();
+    assert.deepEqual(labels(other.dom.window.document.getElementById('ap-gate')), ['See the programme', 'Log in with another account']);
+    const out = page('https://www.mystudentclub.com/articleship-program/cv-checklist/');
+    out.gate.protect({ client: client({ user: null }) });
+    await wait();
+    assert.deepEqual(labels(out.dom.window.document.getElementById('ap-gate')), ['Log in', 'About the programme']);
+});
+
+test('protect: the Builder presentation renders the enrolment label and keeps the Builder URL in the login redirect', async () => {
+    const out = page(BUILDER_URL);
+    const presentation = out.gate.builderPresentation();
+    out.gate.protect({ client: client({ user: null }), presentation });
+    await wait();
+    const loggedOut = out.dom.window.document.getElementById('ap-gate');
+    assert.deepEqual(labels(loggedOut), ['Log in', 'About the programme']);
+    assert.equal(loggedOut.querySelector('a').getAttribute('href'), '/login.html?redirect=' + encodeURIComponent('/cv-builder/?stage=articleship'));
+    assert.match(loggedOut.querySelector('h1').textContent, /CV Builder/);
+
+    const other = page(BUILDER_URL);
+    other.gate.protect({ client: client({ user: { id: 'u2' }, courses: ['industrial-training-mastery'] }), presentation: other.gate.builderPresentation() });
+    await wait();
+    const enrol = other.dom.window.document.getElementById('ap-gate');
+    assert.equal(enrol.dataset.state, 'enrol');
+    assert.deepEqual(labels(enrol), ['Enroll in Articleship to unlock', 'Log in with another account']);
+    assert.equal(enrol.querySelectorAll('a')[0].getAttribute('href'), '/articleship-program/');
+    assert.equal(enrol.querySelectorAll('button').length, 1, 'switching account is an action that signs out first');
+    assert.equal(enrol.getAttribute('role'), 'dialog');
+    assert.equal(other.dom.window.document.querySelector('meta[name="robots"]').content, 'noindex');
+});
+
+test('protect: the Builder never allows from a local cache before the server answers', async () => {
+    const { dom, gate } = page(BUILDER_URL, { session: 'u1' });
+    dom.window.localStorage.setItem('msc.articleship.gate', JSON.stringify({ user: 'u1', at: Date.now() }));
+    let allowed = 0;
+    let release;
+    const slow = client();
+    slow.auth.getUser = () => new Promise(resolve => { release = () => resolve({ data: { user: { id: 'u1' } }, error: null }); });
+    gate.protect({ client: slow, presentation: gate.builderPresentation(), onAllow: () => { allowed += 1; } });
+    await wait();
+    assert.equal(allowed, 0, 'no allow while the check is pending');
+    assert.equal(dom.window.document.getElementById('ap-gate').dataset.state, 'loading');
+    release();
+    await wait();
+    assert.equal(allowed, 1);
+    // a failed lookup never fails open, even for a recently verified device
+    const failing = page(BUILDER_URL, { session: 'u1' });
+    failing.dom.window.localStorage.setItem('msc.articleship.gate', JSON.stringify({ user: 'u1', at: Date.now() }));
+    let failedAllow = 0;
+    failing.gate.protect({ client: client({ throws: true }), presentation: failing.gate.builderPresentation(), onAllow: () => { failedAllow += 1; } });
+    await wait();
+    assert.equal(failedAllow, 0);
+    assert.equal(failing.dom.window.document.getElementById('ap-gate').dataset.state, 'retry');
+});
+
+test('protect: the Builder "Log in with another account" signs out and clears the cached verdict before going to login', async () => {
+    const { dom, gate } = page(BUILDER_URL, { session: 'u2' });
+    dom.window.localStorage.setItem('msc.articleship.gate', JSON.stringify({ user: 'u2', at: Date.now() }));
+    const other = client({ user: { id: 'u2' }, courses: ['industrial-training-mastery'] });
+    const signOuts = [];
+    other.auth.signOut = async options => { signOuts.push(options); return { error: null }; };
+    const navigated = [];
+    gate.protect({ client: other, presentation: gate.builderPresentation(), navigate: url => navigated.push(url) });
+    await wait();
+    const card = dom.window.document.getElementById('ap-gate');
+    assert.equal(card.dataset.state, 'enrol');
+    const button = Array.from(card.querySelectorAll('a,button')).find(node => node.textContent === 'Log in with another account');
+    assert.equal(button.tagName, 'BUTTON', 'an action, not a link that bounces a signed-in user straight back');
+    button.click();
+    await wait();
+    assert.equal(JSON.stringify(signOuts), JSON.stringify([{ scope: 'local' }]));
+    assert.equal(dom.window.localStorage.getItem('msc.articleship.gate'), null);
+    assert.equal(dom.window.localStorage.getItem('sb-auth-auth-token'), null, 'no auth token is left for the login page to find');
+    assert.deepEqual(navigated, ['/login.html?redirect=' + encodeURIComponent('/cv-builder/?stage=articleship')]);
+});
+
+test('protect: if sign-out fails the Builder still goes to login', async () => {
+    const { dom, gate } = page(BUILDER_URL, { session: 'u2' });
+    const other = client({ user: { id: 'u2' }, courses: [] });
+    other.auth.signOut = async () => { throw new Error('offline'); };
+    const navigated = [];
+    gate.protect({ client: other, presentation: gate.builderPresentation(), navigate: url => navigated.push(url) });
+    await wait();
+    Array.from(dom.window.document.querySelectorAll('#ap-gate button')).find(node => node.textContent === 'Log in with another account').click();
+    await wait();
+    assert.equal(navigated.length, 1);
+});
+
+test('protect: on every tool page "Log in with another account" signs out before going to login (no bounce-back loop)', async () => {
+    const { dom, gate } = page('https://www.mystudentclub.com/articleship-program/cv-checklist/', { session: 'u2' });
+    const other = client({ user: { id: 'u2' }, courses: ['industrial-training-mastery'] });
+    let signedOut = 0;
+    other.auth.signOut = async () => { signedOut += 1; return { error: null }; };
+    const navigated = [];
+    gate.protect({ client: other, navigate: url => navigated.push(url) });
+    await wait();
+    const card = dom.window.document.getElementById('ap-gate');
+    assert.deepEqual(labels(card), ['See the programme', 'Log in with another account'], 'the labels are unchanged');
+    card.querySelector('button').click();
+    await wait();
+    assert.equal(signedOut, 1);
+    assert.equal(dom.window.localStorage.getItem('sb-auth-auth-token'), null);
+    assert.deepEqual(navigated, ['/login.html?redirect=' + encodeURIComponent('/articleship-program/cv-checklist/')]);
+});
