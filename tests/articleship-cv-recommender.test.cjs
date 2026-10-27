@@ -1171,3 +1171,29 @@ test('student-facing text: no banned words, no dates, no "coming soon", no inter
     assert.doesNotMatch(text, /\b(20(2[6-9]))-\d{2}-\d{2}\b|\b\d{1,2} (Oct|Nov|Dec)\b/, 'no dates');
     assert.doesNotMatch(fs.readFileSync(path.join(TOOL_DIR, 'situations.json'), 'utf8'), /\b(D1-\d|MS-\d|TL-M\d|P\d)\b/, 'no internal codes');
 });
+
+test('page: "Start over" at the end of the result clears the answers and opens question 1, after a confirm', async () => {
+    const p = page();
+    const store = memoryStore('cv-recommender', { answers: null, step: 0, done: false });
+    store.set({ answers: answers(), step: 8, done: true });
+    const progress = fakeProgress();
+    R.mount(p.app, Object.assign({ data: data(), store, progress, heroEl: p.hero, mainEl: p.main }, FAST));
+    const pickBefore = progress.getCvPick();
+    assert.ok(pickBefore, 'the result keeps its pick saved');
+    const side = p.doc.querySelector('.cvr-col-side');
+    const restart = side.lastElementChild.querySelector('button');
+    assert.equal(restart.textContent, 'Start over', 'the last thing on the result');
+    p.dom.window.confirm = () => false;
+    restart.dispatchEvent(new p.dom.window.MouseEvent('click', { bubbles: true }));
+    assert.ok(p.doc.querySelector('.cvr-result'), 'cancelled: the result stays');
+    assert.equal(store.get().done, true);
+    p.dom.window.confirm = () => true;
+    p.doc.querySelector('.cvr-restart button').dispatchEvent(new p.dom.window.MouseEvent('click', { bubbles: true }));
+    assert.match(p.app.textContent, /1 of 9/);
+    assert.match(p.app.textContent, /Rank your strengths/);
+    assert.equal(p.doc.querySelectorAll('.cvr-rank-item.is-ranked').length, 0, 'nothing ranked');
+    assert.equal(store.get().done, false);
+    assert.equal(store.get().step, 0);
+    assert.equal(p.main.classList.contains('is-wide'), false, 'back to the quiz width');
+    assert.deepEqual(progress.getCvPick(), pickBefore, 'the CV Builder keeps the last pick until a new result is finished');
+});

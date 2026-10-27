@@ -327,6 +327,9 @@
 .cvr-ask span { font-weight: 700; color: var(--ap-navy); }
 
 .cvr-answers .cvr-hint { margin: -4px 0 8px; }
+/* The last thing on the result: clear the answers and begin again. */
+.cvr-restart { padding-top: 14px; border-top: 1px solid var(--ap-border); }
+.cvr-restart .ap-btn { min-width: 160px; }
 .cvr-chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .cvr-chip {
     display: inline-flex;
@@ -368,7 +371,34 @@
 }
 
 @media print {
-    .cvr-pick .ap-btn, .cvr-copy, .cvr-answers, .cvr-more { display: none; }
+    .cvr-pick .ap-btn, .cvr-copy, .cvr-answers, .cvr-more, .cvr-restart { display: none; }
     .cvr-variant-body[hidden] { display: grid; }
     .cvr-col-paper { position: static; }
+}
+
+/*
+ * Desktop: the quiz keeps a comfortable reading width with its answers in two columns; the result uses the page up to
+ * 1440 px. From 1280 px the CV picture stays on the left; in the wide right column the suggested design spans the card
+ * with the next step and its button in a row beneath, then the lines to add in two columns.
+ */
+@media (min-width: 900px) {
+    .cvr-main { max-width: 880px; }
+    .cvr-options:not(.is-grid) { grid-template-columns: 1fr 1fr; }
+}
+.cvr-main.is-wide { max-width: 1440px; }
+@media (min-width: 1280px) {
+    .cvr-main.is-wide { padding-left: 40px; padding-right: 40px; }
+    .cvr-result-grid { grid-template-columns: minmax(460px, 0.75fr) minmax(0, 1fr); gap: 20px 32px; }
+    .cvr-pick {
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas: 'design design' 'next button';
+        align-items: center;
+        gap: 16px 24px;
+        padding: 20px 22px;
+    }
+    .cvr-pick:not(:has(> .cvr-design)) { grid-template-areas: 'next button'; }
+    .cvr-pick > .cvr-design { grid-area: design; padding: 0 0 16px; border-top: 0; border-bottom: 1px solid var(--ap-border); }
+    .cvr-pick > .cvr-next { grid-area: next; margin: 0; }
+    .cvr-pick > .ap-btn { grid-area: button; width: auto; padding-left: 28px; padding-right: 28px; white-space: nowrap; }
+    .cvr-variants { grid-template-columns: 1fr 1fr; align-items: start; }
 }

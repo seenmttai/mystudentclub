@@ -939,6 +939,14 @@
                 render(true);
             }
 
+            /** From the result: clear the answers and begin again at question 1. The CV Builder keeps the last pick until a new result is finished. */
+            function restart() {
+                if (typeof win.confirm === 'function' && !win.confirm('Clear your answers and start again from question 1?')) return;
+                state.answers = cleanAnswers(null);
+                state.editing = false;
+                go(0);
+            }
+
             /** From the result: open one question, then come straight back to the result. */
             function edit(step) {
                 state.editing = true;
@@ -1234,7 +1242,9 @@
                         pick,
                         thin ? h('div', { class: 'cvr-col-notes' }, [thin]) : null,
                         h('div', { class: 'cvr-col-paper' }, [paper(result)]),
-                        h('div', { class: 'cvr-col-side' }, [unsure, lines, answerSummary()])
+                        h('div', { class: 'cvr-col-side' }, [unsure, lines, answerSummary(), h('div', { class: 'cvr-restart' }, [
+                            h('button', { type: 'button', class: 'ap-btn is-secondary', onclick: restart }, 'Start over')
+                        ])])
                     ])
                 ]);
                 view.replaceChildren(out);
