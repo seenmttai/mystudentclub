@@ -8,6 +8,16 @@ const PREDEFINED_LOCATIONS = ["mumbai", "bangalore", "bengaluru", "gurgaon", "gu
 const JOB_TYPE_MAP = { "Industrial Training Job Portal": "industrial", "Fresher Jobs": "fresher", "Semi Qualified Jobs": "semi", "Articleship Jobs": "articleship" };
 const PORTAL_NAME_MAP = { "Industrial Training Job Portal": "Industrial Training", "Fresher Jobs": "Fresher", "Semi Qualified Jobs": "Semi Qualified", "Articleship Jobs": "Articleship" };
 const PORTAL_LINK_MAP = { "Industrial Training Job Portal": "https://www.mystudentclub.com/", "Fresher Jobs": "https://www.mystudentclub.com/ca-fresher-jobs", "Semi Qualified Jobs": "https://www.mystudentclub.com/semi-qualified-ca-jobs", "Articleship Jobs": "https://www.mystudentclub.com/ca-articleship-jobs" };
+// Type-wide ("All India") topic names, exactly as used by the subscribe UI in portal3.js
+// (manageTopicSubscription / the location+job-type dropdown). Note "Industrial-all" is
+// capitalized where the other three are not — this mirrors an existing inconsistency in
+// portal3.js, not a typo here; topic names must match what subscribers actually subscribed to.
+const TYPE_WIDE_TOPIC_MAP = { industrial: 'Industrial-all', fresher: 'fresher-all', semi: 'semi-all', articleship: 'articleship-all' };
+
+// Batched job notifications: a burst of job postings to the same topic within this
+// rolling window is collapsed into a single "N+ new jobs posted" push instead of one
+// push per job. Named constant so the window is trivial to tune later.
+const NOTIFICATION_BATCH_WINDOW_HOURS = 3;
 
 let currentSession = null;
 let isFetching = false;
@@ -42,14 +52,8 @@ function generateTopicName(locationKeyword, jobType) {
     return `${locationKeyword.toLowerCase().replace(/\s+/g, '-')}-${jobType}`;
 }
 
-function truncateDescription(description, wordLimit = 20) {
-    if (!description) return '';
-    const words = description.split(/\s+/);
-    return words.length <= wordLimit ? description : words.slice(0, wordLimit).join(' ') + '...';
-}
-
 async function sendNotification(topic, title, description, link, accessToken) {
-    if (!topic || !title || !description || !link || !accessToken) return;
+    if (!topic || !title || !description || !link || !accessToken) return false;
     try {
         const response = await fetch(CLOUDFLARE_WORKER_URL, {
             method: 'POST',
@@ -59,28 +63,113 @@ async function sendNotification(topic, title, description, link, accessToken) {
         const result = await response.json();
         if (!response.ok || !result.success) {
             console.error(`Failed to send notification to topic ${topic}:`, result.error || response.statusText);
-        } else {
-            console.log(`Successfully sent notification request for topic: ${topic}`);
+            return false;
         }
+        console.log(`Successfully sent notification request for topic: ${topic}`);
+        return true;
     } catch (error) {
         console.error(`Error sending notification fetch request for topic ${topic}:`, error);
+        return false;
     }
+}
+
+// ---- Batched job notifications: decision logic (pure, unit-tested in tests/) ----
+
+// True when a topic's pending batch should be flushed now: either it has never
+// been sent before (lastSentAt is null/undefined), or the rolling window has
+// fully elapsed since the last send.
+function shouldFlushJobNotificationBatch(lastSentAt, nowMs = Date.now()) {
+    if (!lastSentAt) return true;
+    const lastSentMs = new Date(lastSentAt).getTime();
+    if (Number.isNaN(lastSentMs)) return true;
+    const windowMs = NOTIFICATION_BATCH_WINDOW_HOURS * 60 * 60 * 1000;
+    return (nowMs - lastSentMs) >= windowMs;
+}
+
+// Given the current job_notification_batches row for a topic (or null/undefined if
+// the topic has no row yet) and "now", returns:
+//   - shouldFlush: whether a push should be sent for this job
+//   - pendingCount: the total pending count including this job (used in the message)
+//   - nextRow: the { pending_count, last_sent_at } to persist after this call —
+//     reset to 0 / now() when flushing, otherwise just the incremented count.
+function computeJobNotificationBatchUpdate(row, nowMs = Date.now()) {
+    const currentPendingCount = (row && typeof row.pending_count === 'number') ? row.pending_count : 0;
+    const lastSentAt = row ? row.last_sent_at : null;
+    const pendingCount = currentPendingCount + 1;
+    const shouldFlush = shouldFlushJobNotificationBatch(lastSentAt, nowMs);
+    if (shouldFlush) {
+        return { shouldFlush: true, pendingCount, nextRow: { pending_count: 0, last_sent_at: new Date(nowMs).toISOString() } };
+    }
+    return { shouldFlush: false, pendingCount, nextRow: { pending_count: pendingCount, last_sent_at: lastSentAt } };
+}
+
+// Increments the pending count for `topic` and, if the batch window says it's time,
+// sends one "{pending_count}+ new jobs posted[ for {label}]" push and resets the
+// counter. Otherwise it just persists the incremented count and sends nothing.
+// Safe to call from this admin-session context the same way the rest of admin.js
+// reads/writes Supabase (see job_notification_batches migration for RLS).
+async function notifyOrBatch(topic, label, link, accessToken) {
+    if (!topic) return;
+    try {
+        const { data: row, error: fetchError } = await supabaseClient
+            .from('job_notification_batches')
+            .select('pending_count, last_sent_at')
+            .eq('topic', topic)
+            .maybeSingle();
+        if (fetchError) {
+            console.error(`Could not read notification batch for topic ${topic}:`, fetchError.message || fetchError);
+            return;
+        }
+
+        const update = computeJobNotificationBatchUpdate(row, Date.now());
+        let rowToPersist = update.nextRow;
+
+        if (update.shouldFlush) {
+            const message = topic === 'all'
+                ? `${update.pendingCount}+ new jobs posted`
+                : `${update.pendingCount}+ new jobs posted for ${label}`;
+            const sent = await sendNotification(topic, message, message, link, accessToken);
+            if (!sent) {
+                // Don't advance last_sent_at on a failed send — keep the pending count
+                // so the next job posting on this topic retries the flush.
+                rowToPersist = { pending_count: update.pendingCount, last_sent_at: row ? row.last_sent_at : null };
+            }
+        }
+
+        const { error: upsertError } = await supabaseClient
+            .from('job_notification_batches')
+            .upsert({ topic, pending_count: rowToPersist.pending_count, last_sent_at: rowToPersist.last_sent_at }, { onConflict: 'topic' });
+        if (upsertError) {
+            console.error(`Could not persist notification batch for topic ${topic}:`, upsertError.message || upsertError);
+        }
+    } catch (error) {
+        console.error(`Error batching notification for topic ${topic}:`, error);
+    }
+}
+
+function capitalizeFirst(word) {
+    if (!word) return '';
+    return word.charAt(0).toUpperCase() + word.slice(1);
 }
 
 async function triggerNotifications(jobData, accessToken) {
     if (!jobData || !accessToken) return;
-    const { Company = 'A Company', Location = 'Various Locations', Description = '', table = currentTable } = jobData;
+    const { Location = 'Various Locations', table = currentTable } = jobData;
     const portalName = PORTAL_NAME_MAP[table] || 'Job';
     const jobType = JOB_TYPE_MAP[table];
     const link = PORTAL_LINK_MAP[table] || 'https://www.mystudentclub.com/';
-    const notificationTitle = `New ${portalName} job in ${Location}: ${Company}`;
-    const notificationBody = truncateDescription(Description);
     const matchedLocationKeyword = findMatchingLocationKeyword(Location);
     const specificTopic = generateTopicName(matchedLocationKeyword, jobType);
+    const typeWideTopic = TYPE_WIDE_TOPIC_MAP[jobType];
+
     if (specificTopic) {
-        await sendNotification(specificTopic, notificationTitle, notificationBody, link, accessToken);
+        const specificLabel = `${capitalizeFirst(matchedLocationKeyword)} - ${portalName}`;
+        await notifyOrBatch(specificTopic, specificLabel, link, accessToken);
     }
-    await sendNotification('all', notificationTitle, notificationBody, link, accessToken);
+    if (typeWideTopic) {
+        await notifyOrBatch(typeWideTopic, portalName, link, accessToken);
+    }
+    await notifyOrBatch('all', null, link, accessToken);
 }
 
 function showAccessDenied() {
