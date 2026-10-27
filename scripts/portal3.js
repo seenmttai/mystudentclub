@@ -181,6 +181,17 @@ const JOB_TYPES_NOTIF = [
 ];
 const LOCATIONS_NOTIF = ["mumbai", "bangalore", "gurgaon", "pune", "kolkata", "delhi", "noida", "hyderabad", "ahmedabad", "chennai", "jaipur"];
 
+// Type-wide ("All India") topic name for each job type, exactly as formatTopicForDisplay
+// expects them. "Industrial-all" is capitalized where the other three aren't — that's an
+// existing inconsistency in how these topics were named, not a typo.
+function getTypeWideTopicForJobType(jobType) {
+    if (jobType === 'industrial') return 'Industrial-all';
+    if (jobType === 'fresher') return 'fresher-all';
+    if (jobType === 'semi') return 'semi-all';
+    if (jobType === 'articleship') return 'articleship-all';
+    return null;
+}
+
 const state = {
     keywords: [],
     locations: [],
@@ -3432,10 +3443,7 @@ function setupEventListeners() {
 
         let topicName;
         if (location === 'all') {
-            if (jobType === 'industrial') topicName = 'Industrial-all';
-            else if (jobType === 'fresher') topicName = 'fresher-all';
-            else if (jobType === 'semi') topicName = 'semi-all';
-            else if (jobType === 'articleship') topicName = 'articleship-all';
+            topicName = getTypeWideTopicForJobType(jobType);
         } else {
             topicName = `${location}-${jobType}`;
         }
@@ -4165,6 +4173,27 @@ async function saveJobPreference(preference) {
     }
 }
 
+// Auto-subscribe a student to their matching job-category topic ("{Type}-all") the
+// first time they set a job preference, so batched job notifications actually reach
+// them without requiring them to find the manual subscribe UI first.
+//
+// "First time" check: call this ONLY from the onboarding segment modal's submit
+// handler (see its one call site below). That modal is only ever shown when
+// `!profile.looking_for` (see the auth-state-change handler), i.e. the student has
+// never completed career intake before — so every save reachable from there is a
+// first-time save, never a later edit. As a second, independent safeguard against
+// duplicate subscribes (e.g. a user who already subscribed manually, or a modal
+// shown twice), this also skips subscribing if the topic is already subscribed.
+// Best-effort: FCM may not be ready yet (no permission granted, no token) — that's
+// the normal manageTopicSubscription failure path and is swallowed here rather than
+// shown to the user, since this is a convenience, not something they asked for.
+function autoSubscribeToJobCategoryTopic(preference) {
+    const jobType = String(preference || '').split('_')[0];
+    const topic = getTypeWideTopicForJobType(jobType);
+    if (!topic || getSubscribedTopics().includes(topic)) return;
+    subscribeToTopic(topic).catch(err => console.warn('Auto-subscribe to job category topic failed:', err));
+}
+
 // Fetch and cache user profile data from Supabase on login
 async function fetchAndCacheProfileData() {
     if (!currentSession?.user?.id) return null;
@@ -4696,6 +4725,7 @@ function initOnboardingSegmentForm() {
             const mappedPref = prefMapping[lookingFor];
             if (mappedPref) {
                 await saveJobPreference(mappedPref);
+                autoSubscribeToJobCategoryTopic(mappedPref);
                 setTimeout(() => {
                     redirectToPreferredPortal(mappedPref);
                 }, 1000);
