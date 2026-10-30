@@ -2031,17 +2031,27 @@ async function saveJobPreference(preference) {
 // never a later edit. As a second, independent safeguard against duplicate
 // subscribes (e.g. a user who already subscribed manually, or a modal shown twice),
 // this also skips subscribing if the topic is already subscribed.
-// Best-effort: FCM/the Flutter WebView bridge may not be ready yet (no permission
-// granted, no token) — that's the normal manageTopicSubscription failure path and is
-// swallowed here rather than shown to the user, since this is a convenience, not
-// something they asked for.
-function autoSubscribeToJobCategoryTopic(preference) {
+// The modal's submit button click is a real user gesture, so it's a legitimate
+// moment to ask for browser notification permission here (same call the manual
+// "Enable Notifications" button makes) rather than silently giving up when
+// permission hasn't been granted yet. If the student denies it (or this page is
+// loaded inside the Flutter WebView, where permission is the native app's job, not
+// the browser's), this just skips subscribing — it never blocks or fails the
+// job-preference save itself, which has already completed by the time this runs.
+async function autoSubscribeToJobCategoryTopic(preference) {
   const jobType = String(preference || "").split("_")[0];
   const topic = getTypeWideTopicForJobType(jobType);
   if (!topic || getSubscribedTopics().includes(topic)) return;
-  subscribeToTopic(topic).catch((err) =>
-    console.warn("Auto-subscribe to job category topic failed:", err),
-  );
+  try {
+    if (!window.flutter_app.isReady && Notification.permission === "default") {
+      const permission = await Notification.requestPermission();
+      updatePermissionStatusUI();
+      if (permission === "granted") await initializeFCM();
+    }
+    await subscribeToTopic(topic);
+  } catch (err) {
+    console.warn("Auto-subscribe to job category topic failed:", err);
+  }
 }
 
 
