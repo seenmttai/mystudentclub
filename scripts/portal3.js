@@ -1,6 +1,6 @@
 import { getDaysAgo } from "./date-utils.js";
 import {
-  isProfileComplete,
+  ensureCvAvailable,
   generateEmailBody,
   showResumeRedirectModal,
   showToast,
@@ -1583,7 +1583,7 @@ async function handleAiApplyClick(
     window.location.href = "/login.html";
     return;
   }
-  if (!isProfileComplete()) {
+  if (!(await ensureCvAvailable(supabaseClient, currentSession?.user))) {
     showResumeRedirectModal();
     return;
   }
