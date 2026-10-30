@@ -57,13 +57,46 @@ document.addEventListener('DOMContentLoaded', () => {
     return key;
   }
 
+  function getDb() {
+    return typeof window.getSupabaseClient === 'function' ? window.getSupabaseClient() : null;
+  }
+
+  // join_waitlist / is_on_waitlist are Supabase functions (SQL: notifiable_waitlist_functions, run by the maintainer).
+  // Until they exist, PostgREST says the function is missing and we use the old direct insert.
+  function isMissingFunction(error) {
+    return error && (error.code === 'PGRST202' || error.status === 404 || /could not find the function/i.test(error.message || ''));
+  }
+
   // The waitlist row is what the team counts and mails from; the push topic alone can't be counted.
   async function saveToNotifiable() {
-    const db = typeof window.getSupabaseClient === 'function' ? window.getSupabaseClient() : null;
+    const db = getDb();
     if (!db) return;
+    const { error } = await db.rpc('join_waitlist', { p_topic: NOTIFIABLE_TOPIC, p_key: getDeviceKey() });
+    if (!error) return;
+    if (!isMissingFunction(error)) {
+      console.error('Industrial training waitlist row:', error);
+      return;
+    }
     const email = window.__mscSession?.user?.email || null;
-    const { error } = await db.from('notifiable').insert({ key: getDeviceKey(), email, topic: NOTIFIABLE_TOPIC });
-    if (error) console.error('Industrial training waitlist row:', error);
+    const { error: insertError } = await db.from('notifiable').insert({ key: getDeviceKey(), email, topic: NOTIFIABLE_TOPIC });
+    if (insertError) console.error('Industrial training waitlist row:', insertError);
+  }
+
+  // The notifiable table can't be read from the browser, so ask the yes/no function instead.
+  // This lets a signed-in student see "Added to Waitlist" on a new browser or after clearing data.
+  async function syncFromDatabase() {
+    const db = getDb();
+    if (!db || subscribed) return;
+    try {
+      const { data, error } = await db.rpc('is_on_waitlist', { p_topic: NOTIFIABLE_TOPIC, p_key: localStorage.getItem('msc_device_key') });
+      if (error || data !== true) return;
+      subscribed = true;
+      try {
+        localStorage.setItem(STORAGE_KEY, 'true');
+      } catch (_) { }
+      updateButtons();
+      showStatus(successMessage, 'success', false);
+    } catch (_) { }
   }
 
   try {
@@ -73,6 +106,8 @@ document.addEventListener('DOMContentLoaded', () => {
     updateButtons();
     showStatus(successMessage, 'success', false);
   }
+
+  syncFromDatabase();
 
   async function subscribeToWaitlist() {
     if (pending || subscribed) return;
