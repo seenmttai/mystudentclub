@@ -1,5 +1,5 @@
 import { getDaysAgo } from './date-utils.js';
-import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
+import { ensureCvAvailable, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 
 async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) {
     if (!currentSession) {
@@ -7,7 +7,7 @@ async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) 
         return;
     }
 
-    if (!isProfileComplete()) {
+    if (!(await ensureCvAvailable(supabaseClient, currentSession?.user))) {
         showResumeRedirectModal();
         return;
     }
@@ -1124,8 +1124,8 @@ async function handleApplyClick(job, buttonElement, isAiApply = false) {
 
     if (isAiApply) {
         if (!currentSession) { window.location.href = '/login.html'; return; }
-        if (!isProfileComplete()) {
-            showCvUploadPopup();
+        if (!(await ensureCvAvailable(supabaseClient, currentSession?.user))) {
+            showResumeRedirectModal();
             return;
         }
 
@@ -1246,46 +1246,6 @@ function openMailtoLink(mailtoUrl) {
         // Fallback to window.location.href if the anchor method fails
         window.location.href = mailtoUrl;
     }
-}
-
-function showCvUploadPopup() {
-    // Remove existing if any
-    const existing = document.querySelector('.cv-popup-overlay');
-    if (existing) existing.remove();
-
-    const popupHtml = `
-        <div class="cv-popup-overlay">
-            <div class="cv-popup-card">
-                <div class="cv-popup-icon">
-                    <i class="fas fa-file-upload"></i>
-                </div>
-                <h3>CV Upload Required</h3>
-                <p>Please upload your CV in your profile to enable AI Powered Apply. This allows our AI to personalize your application materials.</p>
-                <div class="cv-popup-btns">
-                    <a href="/profile.html?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}" class="cv-popup-btn-primary">Upload CV Now</a>
-                    <button class="cv-popup-btn-secondary" id="closeCvPopup">Maybe Later</button>
-                </div>
-            </div>
-        </div>
-    `;
-
-    document.body.insertAdjacentHTML('beforeend', popupHtml);
-
-    // Trigger animation
-    const overlay = document.querySelector('.cv-popup-overlay');
-    setTimeout(() => overlay.classList.add('show'), 10);
-
-    // Close logic
-    const closeBtn = document.getElementById('closeCvPopup');
-    const closePopup = () => {
-        overlay.classList.remove('show');
-        setTimeout(() => overlay.remove(), 300);
-    };
-
-    closeBtn.addEventListener('click', closePopup);
-    overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) closePopup();
-    });
 }
 
 
