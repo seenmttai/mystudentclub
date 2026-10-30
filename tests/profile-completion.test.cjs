@@ -15,7 +15,7 @@ function loadCompletion(storage = {}) {
   const context = { Array, Boolean, JSON, Math, String, localStorage };
   context.globalThis = context;
   const executable = source.replaceAll('export function ', 'function ')
-    + '\nthis.completion = { getProfileCompletionItems, calculateProfileCompletion };';
+    + '\nthis.completion = { getProfileCompletionItems, getMissingProfileItems, calculateProfileCompletion };';
   vm.runInNewContext(executable, context);
   return { completion: context.completion, storage, localStorage };
 }
@@ -137,4 +137,112 @@ test('missing-detail CTA is retargeted instead of staying on Personal Details', 
   assert.match(profileHtml, /id="missingCta"/);
   assert.match(profileSource, /missingCta\.dataset\.section/);
   assert.match(profileSource, /navigateToMissingDetail\(sectionId, missingCtaEl\.dataset\.form \|\| ''\)/);
+});
+
+test('missing items list names exactly what is still empty, in profile order', () => {
+  const { completion, localStorage } = loadCompletion({ userCVText: 'resume text' });
+  const profile = completeProfile();
+  assert.deepEqual(Array.from(completion.getMissingProfileItems(profile, localStorage), item => item.label), []);
+
+  delete profile.notice_period;
+  for (const key of Object.keys(profile)) {
+    if (key.startsWith('class10_') || key.startsWith('class12_')) delete profile[key];
+  }
+  assert.deepEqual(
+    Array.from(completion.getMissingProfileItems(profile, localStorage), item => item.label),
+    ['Add Class XII details', 'Add Class X details', 'Add notice period']
+  );
+});
+
+test('a saved CV is not reported missing', () => {
+  const withCv = loadCompletion({ userCVText: 'resume text' });
+  assert.equal(withCv.completion.getMissingProfileItems(completeProfile(), withCv.localStorage).length, 0);
+
+  const withoutCv = loadCompletion({});
+  assert.deepEqual(
+    Array.from(withoutCv.completion.getMissingProfileItems(completeProfile(), withoutCv.localStorage), item => item.label),
+    ['Add resume']
+  );
+});
+
+function loadAiHelper(storage = {}) {
+  const completionSource = source.replaceAll('export function ', 'function ');
+  const helperSource = fs.readFileSync(path.join(root, 'scripts', 'ai-helper.js'), 'utf8')
+    .replace(/^import .*$/m, '')
+    .replaceAll('export async function ', 'async function ')
+    .replaceAll('export function ', 'function ');
+  const appended = [];
+  const element = () => ({
+    set innerHTML(value) { this.html = value; },
+    get innerHTML() { return this.html; },
+    addEventListener() {},
+    remove() {},
+  });
+  const document = {
+    head: { appendChild() {} },
+    body: { appendChild: el => appended.push(el) },
+    getElementById: () => null,
+    createElement: element,
+    addEventListener() {},
+    removeEventListener() {},
+  };
+  const localStorage = {
+    getItem: key => Object.prototype.hasOwnProperty.call(storage, key) ? storage[key] : null,
+    setItem: (key, value) => { storage[key] = String(value); },
+  };
+  const context = {
+    Array, Boolean, Date, JSON, Math, Number, Object, String, console, localStorage, document,
+    encodeURIComponent,
+    window: { location: { href: 'https://www.mystudentclub.com/jobs/fresher/example.html?id=7' } },
+  };
+  context.globalThis = context;
+  vm.runInNewContext(`${completionSource}\n${helperSource}\nthis.helper = { showResumeRedirectModal };`, context);
+  return { helper: context.helper, appended };
+}
+
+test('AI Apply popup lists the missing items and deep-links to the first one', () => {
+  const profile = completeProfile();
+  delete profile.notice_period;
+  for (const key of Object.keys(profile)) {
+    if (key.startsWith('class10_') || key.startsWith('class12_')) delete profile[key];
+  }
+  const { helper, appended } = loadAiHelper({
+    userCVText: 'resume text',
+    userProfileData: JSON.stringify(profile),
+  });
+
+  helper.showResumeRedirectModal();
+
+  assert.equal(appended.length, 1);
+  const html = appended[0].html;
+  assert.match(html, /<li>Class XII details<\/li><li>Class X details<\/li><li>Notice period<\/li>/);
+  assert.match(html, /Your CV is uploaded, but AI Powered Apply needs a complete profile/);
+  assert.doesNotMatch(html, /<li>Resume<\/li>/);
+  assert.doesNotMatch(html, /Upload CV/i);
+  assert.match(html, /section=sec-ca-education&amp;form=sec-12-form|section=sec-ca-education&form=sec-12-form/);
+  assert.match(html, /redirect=https%3A%2F%2Fwww\.mystudentclub\.com%2Fjobs%2Ffresher%2Fexample\.html%3Fid%3D7/);
+});
+
+test('AI Apply popup asks for the CV only when it is actually missing', () => {
+  const { helper, appended } = loadAiHelper({ userProfileData: JSON.stringify(completeProfile()) });
+
+  helper.showResumeRedirectModal();
+
+  const html = appended[0].html;
+  assert.match(html, /<li>Resume<\/li>/);
+  assert.doesNotMatch(html, /Your CV is uploaded/);
+  assert.match(html, /section=sec-resume&form=/);
+});
+
+test('portal pages no longer ship the old "CV Upload Required" popup', () => {
+  for (const file of ['portal-email.js', 'portal3.js', 'job-details.js']) {
+    const text = fs.readFileSync(path.join(root, 'scripts', file), 'utf8');
+    assert.doesNotMatch(text, /CV Upload Required|showCvUploadPopup/, file);
+  }
+});
+
+test('profile page opens the section named by the AI Apply popup link', () => {
+  const profileSource = fs.readFileSync(path.join(root, 'scripts', 'profile.js'), 'utf8');
+  assert.match(profileSource, /deepLink\.get\('section'\)/);
+  assert.match(profileSource, /navigateToMissingDetail\(deepLinkSection, deepLink\.get\('form'\) \|\| ''\)/);
 });

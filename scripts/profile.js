@@ -4705,6 +4705,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             summaryLeft.textContent = `${Math.max(0, left)}`;
         }
         loadLanguageRowsFromHidden();
+        // Deep link from the AI Apply popup (?section=...&form=...): jump to the first missing detail.
+        const deepLink = new URLSearchParams(window.location.search);
+        const deepLinkSection = deepLink.get('section');
+        if (deepLinkSection) {
+            window.setTimeout(() => navigateToMissingDetail(deepLinkSection, deepLink.get('form') || ''), 400);
+        }
     });
 
     // ----- File uploads -----
