@@ -1152,6 +1152,7 @@
   <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
   <script src="script.js?v=20261016.6" type="module"></script>
   <script src="/scripts/program-chrome.js?v=20261016.1"></script>
+  <script src="/scripts/notify-waitlist.js?v=20261031.1"></script>
   <script>
     document.addEventListener("DOMContentLoaded", async () => {
     // Supabase (CDN client, shared auth storage key so the app-injected session is picked up)
@@ -1244,15 +1245,6 @@
       return token;
     }
 
-    function getOrCreateDeviceKey() {
-      let key = localStorage.getItem("msc_device_key");
-      if (!key) {
-        key = "dk_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 9);
-        localStorage.setItem("msc_device_key", key);
-      }
-      return key;
-    }
-
     function setNotifyStatus(msg, type) {
       // Inline status line (when the page has one) + floating toast.
       const inline = document.getElementById("notifyStatus");
@@ -1277,12 +1269,7 @@
 
     async function saveToNotifiable(fcmToken) {
       if (!sb) return;
-      const deviceKey = getOrCreateDeviceKey();
-      const email = session?.user?.email || null;
-      await sb
-        .from("notifiable")
-        .insert({ key: deviceKey, email, topic: "ca-fresher" })
-        .throwOnError();
+      await window.MSCWaitlist?.join(sb, "ca-fresher", session?.user?.email);
     }
 
     async function initNotifyMe() {
@@ -1299,6 +1286,11 @@
 
       const isSubscribed = localStorage.getItem(SUBSCRIBED_KEY) === "true";
       syncButtonStates(isSubscribed);
+      window.MSCWaitlist?.isOn(sb, "ca-fresher")?.then((on) => {
+        if (!on) return;
+        localStorage.setItem(SUBSCRIBED_KEY, "true");
+        syncButtonStates(true);
+      });
 
       async function handleNotifyClick() {
         if (this.disabled) return;

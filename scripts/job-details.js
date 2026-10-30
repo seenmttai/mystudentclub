@@ -1,6 +1,6 @@
 
 import { getDaysAgo } from './date-utils.js';
-import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
+import { ensureCvAvailable, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 
 const supabaseUrl = 'https://auth.mystudentclub.com';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
@@ -335,7 +335,7 @@ async function handleAiApply(job, buttonElement, tableName) {
         return;
     }
 
-    if (!isProfileComplete()) {
+    if (!(await ensureCvAvailable(supabaseClient, session.user))) {
         showResumeRedirectModal();
         return;
     }
@@ -375,46 +375,6 @@ function checkConnectLink(job) {
 function formatDescription(text) {
     if (!text) return '';
     return text.replace(/\n/g, '<br>');
-}
-
-function showCvUploadPopup() {
-    // Remove existing if any
-    const existing = document.querySelector('.cv-popup-overlay');
-    if (existing) existing.remove();
-
-    const popupHtml = `
-        <div class="cv-popup-overlay">
-            <div class="cv-popup-card">
-                <div class="cv-popup-icon">
-                    <i class="fas fa-file-upload"></i>
-                </div>
-                <h3>CV Upload Required</h3>
-                <p>Please upload your CV in your profile to enable AI Powered Apply. This allows our AI to personalize your application materials.</p>
-                <div class="cv-popup-btns">
-                    <a href="/profile.html?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}" class="cv-popup-btn-primary">Upload CV Now</a>
-                    <button class="cv-popup-btn-secondary" id="closeCvPopup">Maybe Later</button>
-                </div>
-            </div>
-        </div>
-    `;
-
-    document.body.insertAdjacentHTML('beforeend', popupHtml);
-
-    // Trigger animation
-    const overlay = document.querySelector('.cv-popup-overlay');
-    setTimeout(() => overlay.classList.add('show'), 10);
-
-    // Close logic
-    const closeBtn = document.getElementById('closeCvPopup');
-    const closePopup = () => {
-        overlay.classList.remove('show');
-        setTimeout(() => overlay.remove(), 300);
-    };
-
-    closeBtn.addEventListener('click', closePopup);
-    overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) closePopup();
-    });
 }
 
 function showError(msg) {

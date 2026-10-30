@@ -19,6 +19,33 @@ export function isProfileComplete() {
 }
 
 /**
+ * isProfileComplete() only sees this browser's cache. A student who uploaded
+ * their CV on another device, or whose cache was cleared, still has it saved in
+ * their account, so look there before telling them it is missing.
+ * @returns {Promise<boolean>} True if a CV is available locally or in the account.
+ */
+export async function ensureCvAvailable(supabaseClient, user) {
+    if (isProfileComplete()) return true;
+    if (!supabaseClient || !user) return false;
+
+    try {
+        const { data } = await supabaseClient
+            .from('profiles')
+            .select('ocr_cv')
+            .eq('uuid', user.id)
+            .single();
+
+        if (data && data.ocr_cv && data.ocr_cv.trim().length > 0) {
+            localStorage.setItem('userCVText', data.ocr_cv); // Cache it, as generateEmailBody does
+            return true;
+        }
+    } catch (e) {
+        console.warn('Could not check the CV saved in the account', e);
+    }
+    return false;
+}
+
+/**
  * Details from job object needed for the AI worker
  * @param {Object} job 
  * @param {string} tableName 
@@ -268,9 +295,9 @@ export function showResumeRedirectModal() {
                 <button class="modal-close-action">×</button>
                  <div style="padding: 2rem; text-align: center;">
                     <i class="fas fa-file-pdf" style="font-size: 3rem; color: #ef4444; margin-bottom: 1rem;"></i>
-                    <h3>Your profile is incomplete</h3>
+                    <h3>CV not found</h3>
                     <p style="margin: 1rem 0; color: #6b7280;">
-                        Please upload your CV to PDF to use <strong>AI Powered Apply</strong>.
+                        We couldn't find a CV on your account. Please upload your CV as a PDF in your profile to use <strong>AI Powered Apply</strong>.
                     </p>
                     <a href="/profile.html?redirect=${encodeURIComponent(window.location.href)}" class="btn btn-primary" style="width: 100%;">
                         Go to Profile
