@@ -1,6 +1,6 @@
 
 // ai-helper.js - Encapsulates AI Apply logic and UI helpers
-import { calculateProfileCompletion, readCachedProfile } from './profile-completion.js';
+import { calculateProfileCompletion, getMissingProfileItems, readCachedProfile } from './profile-completion.js';
 
 const AI_WORKER_URL = 'https://emailgenerator.bhansalimanan55.workers.dev/';
 
@@ -219,64 +219,84 @@ export function showToast(message, type = 'info') {
     }, 3000);
 }
 
+const PROFILE_GATE_ID = 'profile-gate-modal';
+
+function missingItemLabel(label) {
+    const text = String(label || '').replace(/^Add\s+/i, '').trim();
+    return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+function injectProfileGateStyles() {
+    if (document.getElementById('profile-gate-styles')) return;
+    const style = document.createElement('style');
+    style.id = 'profile-gate-styles';
+    style.textContent = `
+        .profile-gate-overlay { position: fixed; inset: 0; z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 1rem; background: rgba(31, 41, 55, 0.7); backdrop-filter: blur(6px); font-family: 'Poppins', sans-serif; }
+        .profile-gate-card { background: #fff; border-radius: 16px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2); width: 100%; max-width: 420px; padding: 1.75rem 1.5rem; text-align: center; }
+        .profile-gate-card h3 { margin: 0 0 0.5rem; font-size: 1.15rem; font-weight: 700; color: #111827; }
+        .profile-gate-card p { margin: 0 0 1rem; font-size: 0.9rem; line-height: 1.5; color: #4b5563; }
+        .profile-gate-list { margin: 0 0 1.25rem; padding: 0.75rem 1rem 0.75rem 2rem; max-height: 200px; overflow-y: auto; text-align: left; font-size: 0.9rem; color: #1f2937; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px; }
+        .profile-gate-list li { padding: 0.15rem 0; }
+        .profile-gate-btn { display: block; width: 100%; box-sizing: border-box; padding: 0.7rem 1rem; border-radius: 10px; font-family: inherit; font-size: 0.92rem; font-weight: 600; text-align: center; text-decoration: none; cursor: pointer; }
+        .profile-gate-btn.primary { background: #4f46e5; color: #fff; border: none; margin-bottom: 0.6rem; }
+        .profile-gate-btn.primary:hover { background: #4338ca; }
+        .profile-gate-btn.secondary { background: #fff; color: #4b5563; border: 1px solid #d1d5db; }
+    `;
+    document.head.appendChild(style);
+}
+
 /**
- * Shows a modal redirecting the user to the profile page.
+ * Shows a modal listing exactly which profile items are still missing for
+ * AI Powered Apply, with a button that opens the first one on the profile page.
+ * Name kept for existing callers; it no longer asks for a CV when one exists.
  */
 export function showResumeRedirectModal() {
-    // Check if we can use the existing #profileIncompleteModal in index.html
-    const profileModal = document.getElementById('profileIncompleteModal');
-
-    if (profileModal) {
-        // Reuse existing modal
-        profileModal.style.display = 'flex';
-
-        // Ensure the "I'll do this later" button closes it
-        const closeBtn = profileModal.querySelector('#closeProfileIncomplete');
-        const modalCloseAction = profileModal.querySelector('.modal-close-action');
-
-        if (closeBtn) {
-            closeBtn.onclick = () => { profileModal.style.display = 'none'; };
-        }
-        if (modalCloseAction) {
-            modalCloseAction.onclick = () => { profileModal.style.display = 'none'; };
-        }
-
-        // Close on overlay click
-        profileModal.onclick = (e) => {
-            if (e.target === profileModal) profileModal.style.display = 'none';
-        };
-        return;
+    let missing = [];
+    let percent = null;
+    try {
+        const profile = readCachedProfile(localStorage);
+        missing = getMissingProfileItems(profile, localStorage);
+        percent = calculateProfileCompletion(profile, localStorage);
+    } catch (_) {
+        // Fall back to the generic message below.
     }
 
-    // If not found (e.g. on other pages), create one dynamically
-    let modal = document.getElementById('ai-redirect-modal');
-    if (!modal) {
-        modal = document.createElement('div');
-        modal.id = 'ai-redirect-modal';
-        modal.className = 'modal-overlay-container';
-        modal.style.zIndex = '10000'; // High z-index to sit on top of everything
-        modal.innerHTML = `
-            <div class="modal-dialog" style="max-width: 400px;">
-                <button class="modal-close-action">×</button>
-                 <div style="padding: 2rem; text-align: center;">
-                    <i class="fas fa-file-pdf" style="font-size: 3rem; color: #ef4444; margin-bottom: 1rem;"></i>
-                    <h3>Your profile is incomplete</h3>
-                    <p style="margin: 1rem 0; color: #6b7280;">
-                        Please complete your profile, including your CV, to use <strong>AI Powered Apply</strong>.
-                    </p>
-                    <a href="/profile.html?redirect=${encodeURIComponent(window.location.href)}" class="btn btn-primary" style="width: 100%;">
-                        Go to Profile
-                    </a>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(modal);
+    const cvMissing = missing.some(item => item.label === 'Add resume');
+    const first = missing[0];
+    const profileUrl = `/profile.html?redirect=${encodeURIComponent(window.location.href)}`
+        + (first?.section ? `&section=${encodeURIComponent(first.section)}&form=${encodeURIComponent(first.form || '')}` : '');
 
-        // Attach close handlers
-        const closeBtn = modal.querySelector('.modal-close-action');
-        closeBtn.onclick = () => { modal.style.display = 'none'; };
-        modal.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
-    }
+    const intro = missing.length
+        ? `${cvMissing ? '' : 'Your CV is uploaded, but '}AI Powered Apply needs a complete profile to personalise your email. Please add:`
+        : 'We could not check your profile. Please open it, save once, and try again.';
+    const list = missing.length
+        ? `<ul class="profile-gate-list">${missing.map(item => `<li>${missingItemLabel(item.label)}</li>`).join('')}</ul>`
+        : '';
 
-    modal.style.display = 'flex';
+    injectProfileGateStyles();
+    document.getElementById(PROFILE_GATE_ID)?.remove();
+
+    const modal = document.createElement('div');
+    modal.id = PROFILE_GATE_ID;
+    modal.className = 'profile-gate-overlay';
+    modal.innerHTML = `
+        <div class="profile-gate-card" role="dialog" aria-modal="true" aria-labelledby="profileGateTitle">
+            <h3 id="profileGateTitle">Complete your profile${percent === null ? '' : ` (${percent}% done)`}</h3>
+            <p>${intro}</p>
+            ${list}
+            <a href="${profileUrl}" class="profile-gate-btn primary">Complete Profile</a>
+            <button type="button" class="profile-gate-btn secondary" data-close>I'll do this later</button>
+        </div>
+    `;
+
+    const close = () => {
+        modal.remove();
+        document.removeEventListener('keydown', onKeydown);
+    };
+    const onKeydown = (e) => { if (e.key === 'Escape') close(); };
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal || e.target.closest('[data-close]')) close();
+    });
+    document.addEventListener('keydown', onKeydown);
+    document.body.appendChild(modal);
 }

@@ -34,6 +34,7 @@
   <!-- Supabase & Firebase -->
   <script src="../scripts/supabase.js"></script>
   <script src="../scripts/supabase-init.js?v=20260927.9"></script>
+  <script src="../scripts/notify-waitlist.js?v=20261031.1"></script>
   <script src="../scripts/error-reporter.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging-compat.js"></script>
@@ -1075,6 +1076,19 @@
         }
       } catch (e) {}
 
+      if (window.MSCWaitlist && window.getSupabaseClient) {
+        window.MSCWaitlist.isOn(window.getSupabaseClient(), 'articleship').then(function (on) {
+          if (!on) return;
+          try { localStorage.setItem('msc_waitlist_' + NOTIFY_TOPIC, 'true'); } catch (e) {}
+          updateAllArticleshipNotifyBtns('Added to Waitlist ✓', true);
+          const statusEl = document.getElementById('notifyStatus');
+          if (statusEl) {
+            statusEl.textContent = "You're on the list! We'll notify you when seats open.";
+            statusEl.style.color = "#86EFAC";
+          }
+        });
+      }
+
       async function subscribeArticleshipWaitlist(triggerBtn) {
         const emailInput = document.getElementById('waitlistEmailInput');
         const statusEl = document.getElementById('notifyStatus');
@@ -1105,6 +1119,10 @@
               }
             }
           }
+
+          try {
+            await window.MSCWaitlist?.join(window.getSupabaseClient?.(), 'articleship', window.__mscSession?.user?.email);
+          } catch (e) {}
 
           try {
             localStorage.setItem('msc_waitlist_' + NOTIFY_TOPIC, 'true');
