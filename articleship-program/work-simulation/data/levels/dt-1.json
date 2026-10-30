@@ -1,0 +1,3101 @@
+{
+ "id": "dt-1",
+ "domain": "direct-tax",
+ "number": 1,
+ "title": "Tax audit checks",
+ "minutes": 40,
+ "learn": [
+  "What a tax auditor checks on cash, TDS and late dues",
+  "Why the day an asset is first used decides depreciation",
+  "Where each finding goes in the new Form 26"
+ ],
+ "do": [
+  "Check eight tax-audit items against the books",
+  "Rebuild the plant and machinery block",
+  "Write the points mail to the client"
+ ],
+ "case": {
+  "role": "First-year article assistant, on loan to the direct-tax team for the tax audit",
+  "client": "Tamhini Drivetech Private Limited, a Chakan company that makes gears, shafts and hubs for vehicle makers",
+  "team": "Kunal Mehrotra (tax senior), Sudha Venkatesh (partner, signs the report); Pallavi Shinde, the client’s accounts executive, drafted the schedules",
+  "goal": "Check eight items for Tamhini’s tax-audit report and write a note for each.",
+  "period": "Tax year 2026–27 (year ended 31 March 2027)",
+  "where": "Accounts room, Chakan plant · Monday 5 July 2027"
+ },
+ "brief": {
+  "from": "kunal",
+  "time": "9:50 am",
+  "messages": [
+   "Tamhini’s tax audit, tax year 2026–27: their first on the new Form 26. I’ve picked eight items. For each, tell me what goes in the report and what it does to taxable income.",
+   "The return is due on 31 October 2027, and several of these turn on that date. Notes by Wednesday, please; Sudha reads them before she signs."
+  ]
+ },
+ "documents": [
+  {
+   "id": "aje",
+   "type": "table",
+   "style": "plain",
+   "title": "Audit adjustments agreed (extract)",
+   "kindLabel": "Audit file",
+   "icon": "sheet",
+   "heading": "Audit adjustments agreed with the company (extract)",
+   "subtitle": "Statutory audit file · year ended 31 March 2027",
+   "columns": [
+    {
+     "key": "id",
+     "label": "Entry"
+    },
+    {
+     "key": "w",
+     "label": "Adjustment"
+    },
+    {
+     "key": "e",
+     "label": "Profit (₹)",
+     "format": "inr",
+     "negative": "paren"
+    }
+   ],
+   "rows": [
+    {
+     "id": "AJE-2",
+     "w": "New screw compressor (₹4,85,000), booked to repairs: capitalised from 17 January 2027, the day it was put to use.",
+     "e": 478773
+    },
+    {
+     "id": "AJE-3",
+     "w": "VMC-10 (₹54,60,000), received 24 March, first used 9 April 2027: moved to capital work-in-progress.",
+     "e": 7579
+    },
+    {
+     "id": "AJE-4",
+     "w": "CNC turning centre TC-35 (₹68,40,000): book depreciation from 12 August 2026, the day it was ready, not 1 October.",
+     "e": -59342
+    },
+    {
+     "id": "AJE-6",
+     "w": "Count differences, 31 March 2027: bearing 6205-2RS short 250 and 180 wet boxes written off; 120 blanks received that evening recorded.",
+     "e": -53780
+    }
+   ],
+   "notes": [
+    "Bapat Venkatesh & Co., statutory audit file, Tamhini Drivetech Private Limited, year ended 31 March 2027. Agreed with Mahesh Kadam and booked in the final accounts on 6 May 2027.",
+    "Book depreciation: ₹6,227 charged on the compressor (AJE-2); ₹7,579 reversed on the VMC (AJE-3); ₹59,342 more on the CNC (AJE-4). Write-offs in AJE-6: 250 × ₹146 = ₹36,500; 180 × ₹96 = ₹17,280."
+   ]
+  },
+  {
+   "id": "cash-dec",
+   "type": "table",
+   "style": "tally",
+   "title": "Item 1 · Cash book, December",
+   "tab": "Cash book",
+   "group": "i1",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Ledger: Cash on hand (petty cash, accounts office)",
+   "period": "18-Dec-2026 to 24-Dec-2026",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "vn",
+     "label": "Vch no."
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "bal",
+     "label": "Balance (₹)",
+     "format": "inr",
+     "runningFrom": {
+      "plus": "dr",
+      "minus": "cr"
+     }
+    }
+   ],
+   "rows": [
+    {
+     "date": "18-12-2026",
+     "part": "Opening balance",
+     "vn": "",
+     "dr": null,
+     "cr": null,
+     "bal": 31260,
+     "_class": "muted"
+    },
+    {
+     "date": "19-12-2026",
+     "part": "Miscellaneous expenses: courier",
+     "vn": "PCV 1183",
+     "dr": null,
+     "cr": 1240,
+     "bal": 30020
+    },
+    {
+     "date": "21-12-2026",
+     "part": "Miscellaneous expenses: tea, shift meeting",
+     "vn": "PCV 1185",
+     "dr": null,
+     "cr": 2180,
+     "bal": 27840
+    },
+    {
+     "date": "22-12-2026",
+     "part": "Cash credit – Vindhya: self cheque 417908",
+     "vn": "C 0612",
+     "dr": 11800,
+     "cr": null,
+     "bal": 39640
+    },
+    {
+     "date": "22-12-2026",
+     "part": "Repairs – others: Bhamchandra Hardware, cash memo 0472",
+     "vn": "PCV 1187",
+     "dr": null,
+     "cr": 5800,
+     "bal": 33840
+    },
+    {
+     "date": "22-12-2026",
+     "part": "Repairs – others: Bhamchandra Hardware, cash memo 0473",
+     "vn": "PCV 1188",
+     "dr": null,
+     "cr": 6000,
+     "bal": 27840
+    },
+    {
+     "date": "23-12-2026",
+     "part": "Miscellaneous expenses: conveyance",
+     "vn": "PCV 1189",
+     "dr": null,
+     "cr": 960,
+     "bal": 26880
+    },
+    {
+     "date": "24-12-2026",
+     "part": "Miscellaneous expenses: stationery",
+     "vn": "PCV 1190",
+     "dr": null,
+     "cr": 1430,
+     "bal": 25450
+    }
+   ],
+   "notes": [
+    "Narration, C 0612: cash drawn by self cheque to top up petty cash for the hardware purchases.",
+    "Narration, PCV 1187 and PCV 1188: wire mesh, angles and fasteners for machine guards, cells 3 and 4.",
+    "Petty cash imprest ₹50,000, held by Rahul Bendre (Accountant).",
+    "PCV numbers run in one series with the plant’s petty cash."
+   ]
+  },
+  {
+   "id": "memo-0472",
+   "type": "card",
+   "style": "slip",
+   "title": "Item 1 · Cash memo 0472",
+   "tab": "Memo 0472",
+   "group": "i1",
+   "handwritten": true,
+   "issuer": "Bhamchandra Hardware Stores, Chakan",
+   "heading": "Cash memo",
+   "number": "0472",
+   "fields": [
+    {
+     "label": "Date",
+     "value": "22/12/26"
+    },
+    {
+     "label": "M/s",
+     "value": "Tamhini Drivetech Pvt. Ltd., Chakan"
+    },
+    {
+     "label": "MS wire mesh, 1.5 mm, 4 rolls × ₹1,450",
+     "value": "₹5,800"
+    },
+    {
+     "label": "Total (all prices include GST)",
+     "value": "₹5,800"
+    },
+    {
+     "label": "Received",
+     "value": "Cash, with thanks"
+    }
+   ],
+   "photoNote": "Market Yard Road, Chakan 410501 · Prop. Vilas Kharpude",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "BHAMCHANDRA\nCHAKAN",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -8
+    }
+   ]
+  },
+  {
+   "id": "pcv-1187",
+   "type": "card",
+   "style": "voucher",
+   "title": "Item 1 · Petty cash voucher 1187",
+   "tab": "PCV 1187",
+   "group": "i1",
+   "issuer": "Tamhini Drivetech Private Limited",
+   "heading": "Petty cash voucher",
+   "number": "PCV 1187",
+   "revenueStamp": true,
+   "fields": [
+    {
+     "label": "Date",
+     "value": "22-12-2026"
+    },
+    {
+     "label": "Paid to",
+     "value": "Bhamchandra Hardware Stores, Chakan"
+    },
+    {
+     "label": "Towards",
+     "value": "Wire mesh for machine guards, cells 3 and 4 (cash memo 0472)"
+    },
+    {
+     "label": "Amount",
+     "value": "₹5,800 (Rupees five thousand eight hundred only)"
+    },
+    {
+     "label": "Debit",
+     "value": "Repairs – others"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "PAID · 22 DEC 2026",
+     "color": "red",
+     "at": "top-right",
+     "rotate": -6
+    },
+    {
+     "kind": "sign",
+     "text": "R. Bendre",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -4
+    },
+    {
+     "kind": "sign",
+     "text": "M. Kadam",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -6
+    }
+   ]
+  },
+  {
+   "id": "memo-0473",
+   "type": "card",
+   "style": "slip",
+   "title": "Item 1 · Cash memo 0473",
+   "tab": "Memo 0473",
+   "group": "i1",
+   "handwritten": true,
+   "issuer": "Bhamchandra Hardware Stores, Chakan",
+   "heading": "Cash memo",
+   "number": "0473",
+   "fields": [
+    {
+     "label": "Date",
+     "value": "22/12/26"
+    },
+    {
+     "label": "M/s",
+     "value": "Tamhini Drivetech Pvt. Ltd., Chakan"
+    },
+    {
+     "label": "MS angle 25 × 25 × 3, 8 lengths × ₹525",
+     "value": "₹4,200"
+    },
+    {
+     "label": "Hinges, nut-bolts and washers, 1 lot",
+     "value": "₹1,800"
+    },
+    {
+     "label": "Total (all prices include GST)",
+     "value": "₹6,000"
+    },
+    {
+     "label": "Received",
+     "value": "Cash, with thanks"
+    }
+   ],
+   "photoNote": "Market Yard Road, Chakan 410501 · Prop. Vilas Kharpude",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "BHAMCHANDRA\nCHAKAN",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -4
+    }
+   ]
+  },
+  {
+   "id": "pcv-1188",
+   "type": "card",
+   "style": "voucher",
+   "title": "Item 1 · Petty cash voucher 1188",
+   "tab": "PCV 1188",
+   "group": "i1",
+   "issuer": "Tamhini Drivetech Private Limited",
+   "heading": "Petty cash voucher",
+   "number": "PCV 1188",
+   "revenueStamp": true,
+   "fields": [
+    {
+     "label": "Date",
+     "value": "22-12-2026"
+    },
+    {
+     "label": "Paid to",
+     "value": "Bhamchandra Hardware Stores, Chakan"
+    },
+    {
+     "label": "Towards",
+     "value": "Angles, hinges and fasteners for machine guards, cells 3 and 4 (cash memo 0473)"
+    },
+    {
+     "label": "Amount",
+     "value": "₹6,000 (Rupees six thousand only)"
+    },
+    {
+     "label": "Debit",
+     "value": "Repairs – others"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "PAID · 22 DEC 2026",
+     "color": "red",
+     "at": "top-right",
+     "rotate": -6
+    },
+    {
+     "kind": "sign",
+     "text": "R. Bendre",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -4
+    },
+    {
+     "kind": "sign",
+     "text": "M. Kadam",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -6
+    }
+   ]
+  },
+  {
+   "id": "cash-feb",
+   "type": "table",
+   "style": "tally",
+   "title": "Item 2 · Cash book, February",
+   "tab": "Cash book",
+   "group": "i2",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Ledger: Cash on hand (petty cash, accounts office)",
+   "period": "1-Feb-2027 to 5-Feb-2027",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "vn",
+     "label": "Vch no."
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "bal",
+     "label": "Balance (₹)",
+     "format": "inr",
+     "runningFrom": {
+      "plus": "dr",
+      "minus": "cr"
+     }
+    }
+   ],
+   "rows": [
+    {
+     "date": "01-02-2027",
+     "part": "Opening balance",
+     "vn": "",
+     "dr": null,
+     "cr": null,
+     "bal": 50000,
+     "_class": "muted"
+    },
+    {
+     "date": "01-02-2027",
+     "part": "Miscellaneous expenses: conveyance",
+     "vn": "PCV 1211",
+     "dr": null,
+     "cr": 1120,
+     "bal": 48880
+    },
+    {
+     "date": "02-02-2027",
+     "part": "Miscellaneous expenses: courier",
+     "vn": "PCV 1213",
+     "dr": null,
+     "cr": 740,
+     "bal": 48140
+    },
+    {
+     "date": "03-02-2027",
+     "part": "Cash credit – Vindhya: self cheque 418331",
+     "vn": "C 0655",
+     "dr": 14500,
+     "cr": null,
+     "bal": 62640
+    },
+    {
+     "date": "03-02-2027",
+     "part": "Freight outward: tempo, Ravi Kute",
+     "vn": "PCV 1215",
+     "dr": null,
+     "cr": 14500,
+     "bal": 48140
+    },
+    {
+     "date": "04-02-2027",
+     "part": "Miscellaneous expenses: tea and snacks",
+     "vn": "PCV 1217",
+     "dr": null,
+     "cr": 1860,
+     "bal": 46280
+    },
+    {
+     "date": "05-02-2027",
+     "part": "Miscellaneous expenses: stationery",
+     "vn": "PCV 1218",
+     "dr": null,
+     "cr": 2040,
+     "bal": 44240
+    }
+   ],
+   "notes": [
+    "Narration, C 0655: cash drawn by self cheque to top up petty cash for the tempo payment.",
+    "Narration, PCV 1215: tempo hire, three trips to Kshitij Driveline, Bhosari; our truck in the workshop.",
+    "Petty cash imprest ₹50,000, held by Rahul Bendre (Accountant).",
+    "PCV numbers run in one series with the plant’s petty cash."
+   ]
+  },
+  {
+   "id": "rcpt-kute",
+   "type": "letter",
+   "style": "note",
+   "title": "Item 2 · Tempo driver’s receipt",
+   "tab": "Receipt",
+   "group": "i2",
+   "subject": "Receipt",
+   "date": "3/2/2027",
+   "body": [
+    "Received from Tamhini Drivetech Pvt. Ltd., Chakan, Rs. 14,500/- (Rupees fourteen thousand five hundred only) in cash, for tempo hire.",
+    "Tempo no. MH 14 HU 6627. Three trips, Chakan to Kshitij Driveline, Bhosari, on 3/2/2027."
+   ],
+   "sign": "Ravi Kute"
+  },
+  {
+   "id": "pcv-1215",
+   "type": "card",
+   "style": "voucher",
+   "title": "Item 2 · Petty cash voucher 1215",
+   "tab": "Voucher",
+   "group": "i2",
+   "issuer": "Tamhini Drivetech Private Limited",
+   "heading": "Petty cash voucher",
+   "number": "PCV 1215",
+   "revenueStamp": true,
+   "fields": [
+    {
+     "label": "Date",
+     "value": "03-02-2027"
+    },
+    {
+     "label": "Paid to",
+     "value": "Ravi Kute (tempo MH 14 HU 6627)"
+    },
+    {
+     "label": "Towards",
+     "value": "Tempo hire, three trips Chakan to Bhosari: urgent delivery of input shafts to Kshitij Driveline (our truck in the workshop)"
+    },
+    {
+     "label": "Amount",
+     "value": "₹14,500 (Rupees fourteen thousand five hundred only)"
+    },
+    {
+     "label": "Debit",
+     "value": "Freight outward"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "PAID · 03 FEB 2027",
+     "color": "red",
+     "at": "top-right",
+     "rotate": -5
+    },
+    {
+     "kind": "sign",
+     "text": "R. Bendre",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -4
+    },
+    {
+     "kind": "sign",
+     "text": "M. Kadam",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -6
+    }
+   ]
+  },
+  {
+   "id": "gate-out",
+   "type": "table",
+   "style": "register",
+   "title": "Item 2 · Gate outward register, 3 February",
+   "tab": "Gate register",
+   "group": "i2",
+   "company": "Tamhini Drivetech Private Limited · Chakan plant",
+   "heading": "Gate outward register · Main gate",
+   "period": "Wednesday 03-02-2027",
+   "columns": [
+    {
+     "key": "t",
+     "label": "Time out"
+    },
+    {
+     "key": "veh",
+     "label": "Vehicle",
+     "mono": true
+    },
+    {
+     "key": "drv",
+     "label": "Driver or transporter"
+    },
+    {
+     "key": "mat",
+     "label": "Material"
+    },
+    {
+     "key": "dc",
+     "label": "DC no."
+    },
+    {
+     "key": "to",
+     "label": "To"
+    }
+   ],
+   "rows": [
+    {
+     "t": "07:50",
+     "veh": "MH 12 RT 4471",
+     "drv": "Mahalunge Roadlines",
+     "mat": "Countershafts 3310, 2,400 nos",
+     "dc": "DC 2085",
+     "to": "Vayuvega Two Wheelers, Chhatrapati Sambhajinagar"
+    },
+    {
+     "t": "10:20",
+     "veh": "MH 14 HU 6627",
+     "drv": "Ravi Kute (tempo)",
+     "mat": "Input shafts 1142, 600 nos",
+     "dc": "DC 2087",
+     "to": "Kshitij Driveline, Bhosari"
+    },
+    {
+     "t": "11:45",
+     "veh": "MH 12 RT 5582",
+     "drv": "Mahalunge Roadlines",
+     "mat": "Helical gears 2210, 1,800 nos",
+     "dc": "DC 2088",
+     "to": "Ashvaratha Motors, Chakan"
+    },
+    {
+     "t": "13:05",
+     "veh": "MH 14 HU 6627",
+     "drv": "Ravi Kute (tempo)",
+     "mat": "Input shafts 1142, 600 nos",
+     "dc": "DC 2089",
+     "to": "Kshitij Driveline, Bhosari"
+    },
+    {
+     "t": "16:40",
+     "veh": "MH 14 HU 6627",
+     "drv": "Ravi Kute (tempo)",
+     "mat": "Input shafts 1142, 400 nos",
+     "dc": "DC 2090",
+     "to": "Kshitij Driveline, Bhosari"
+    }
+   ],
+   "notes": [
+    "Own truck MH 14 GD 2211 in the workshop since 01-02-2027 (gearbox)."
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "SECURITY\nMAIN GATE",
+     "color": "red",
+     "at": "bottom-right",
+     "rotate": -7
+    }
+   ]
+  },
+  {
+   "id": "bill-pm",
+   "type": "letter",
+   "style": "letter",
+   "title": "Item 3 · Consultant’s bill",
+   "tab": "Bill",
+   "group": "i3",
+   "letterhead": {
+    "name": "Parag Mahajani",
+    "address": "Lean manufacturing consultant\nFlat 6, Mayur Apartments, Kothrud, Pune 411038",
+    "pan": "YDGPM7066M",
+    "phone": "98XXXXXXXX",
+    "email": "parag.mahajani@email.com"
+   },
+   "ref": "Bill No. PM/26-27/09",
+   "date": "18-12-2026",
+   "to": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC, Mahalunge, Pune 410501"
+   },
+   "subject": "Fees for the lean manufacturing study at your Chakan plant",
+   "body": [
+    "Kind attn: Mr Amol Joglekar, Managing Director",
+    {
+     "table": {
+      "columns": [
+       {
+        "key": "d",
+        "label": "Particulars"
+       },
+       {
+        "key": "a",
+        "label": "Amount (₹)",
+        "format": "inr"
+       }
+      ],
+      "rows": [
+       {
+        "d": "Shop-floor study of cells 1 to 4, line balancing and layout report (report submitted on 15-12-2026)",
+        "a": 75000
+       },
+       {
+        "_class": "total",
+        "d": "Total",
+        "a": 75000
+       }
+      ]
+     }
+    },
+    "Rupees seventy-five thousand only.",
+    "I am not registered under GST.",
+    "Please pay by NEFT to Satpura Bank Ltd, Kothrud branch, A/c 11020113368805, IFSC STPB0001953."
+   ],
+   "sign": {
+    "name": "Parag Mahajani",
+    "hand": "Parag Mahajani"
+   },
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "ENTERED · JV 2291",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": 3
+    },
+    {
+     "kind": "hand",
+     "text": "Pay ₹75,000 – M.K. 2/1",
+     "color": "blue",
+     "at": "top-right",
+     "rotate": -4
+    }
+   ]
+  },
+  {
+   "id": "led-pm",
+   "type": "table",
+   "style": "tally",
+   "title": "Item 3 · Ledger, Parag Mahajani",
+   "tab": "Ledger",
+   "group": "i3",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Ledger: Parag Mahajani",
+   "subtitle": "Group: Sundry creditors – others",
+   "period": "1-Apr-2026 to 31-Mar-2027",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "vn",
+     "label": "Vch no."
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "18-12-2026",
+     "part": "Legal and professional fees",
+     "vn": "JV 2291",
+     "dr": null,
+     "cr": 75000
+    },
+    {
+     "date": "04-01-2027",
+     "part": "Cash credit – Vindhya Commercial Bank (NEFT, UTR VNCBN27004118823)",
+     "vn": "PV 4407",
+     "dr": 75000,
+     "cr": null
+    },
+    {
+     "_class": "total",
+     "date": "",
+     "part": "Total",
+     "vn": "",
+     "dr": 75000,
+     "cr": 75000
+    }
+   ],
+   "notes": [
+    "Narration, JV 2291: Being bill PM/26-27/09 for the lean manufacturing study booked.",
+    "Closing balance: nil."
+   ]
+  },
+  {
+   "id": "tds-fees",
+   "type": "table",
+   "style": "sheet",
+   "title": "Item 3 · TDS register, fees",
+   "tab": "TDS register",
+   "group": "i3",
+   "sheetName": "Fees",
+   "otherSheets": [
+    "Retainers",
+    "Contractors",
+    "Rent"
+   ],
+   "formula": "=SUBTOTAL(9,E2:E8)",
+   "columns": [
+    {
+     "key": "m",
+     "label": "Month"
+    },
+    {
+     "key": "party",
+     "label": "Party"
+    },
+    {
+     "key": "pan",
+     "label": "PAN"
+    },
+    {
+     "key": "amt",
+     "label": "Paid or credited (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "tds",
+     "label": "TDS (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "on",
+     "label": "Deducted on"
+    }
+   ],
+   "rows": [
+    {
+     "m": "Dec 2026",
+     "party": "Retainers, 6 parties (see Retainers sheet)",
+     "pan": "–",
+     "amt": 342100,
+     "tds": 34210,
+     "on": "31-12-2026"
+    },
+    {
+     "m": "Dec 2026",
+     "party": "Adv. Medha Paranjpe",
+     "pan": "XWMPP5452S",
+     "amt": 60000,
+     "tds": 6000,
+     "on": "31-12-2026"
+    },
+    {
+     "m": "Dec 2026",
+     "party": "Baner Infosoft Private Limited",
+     "pan": "ZJNCB6845H",
+     "amt": 53300,
+     "tds": 1066,
+     "on": "31-12-2026"
+    },
+    {
+     "m": "Dec 2026",
+     "party": "Shirur Metrology Labs",
+     "pan": "ZQFPP2225N",
+     "amt": 70000,
+     "tds": 1400,
+     "on": "31-12-2026"
+    },
+    {
+     "m": "Jan 2027",
+     "party": "Retainers, 6 parties (see Retainers sheet)",
+     "pan": "–",
+     "amt": 342100,
+     "tds": 34210,
+     "on": "31-01-2027"
+    },
+    {
+     "m": "Jan 2027",
+     "party": "Bapat Venkatesh & Co.",
+     "pan": "ZUUFB2298Q",
+     "amt": 200000,
+     "tds": 20000,
+     "on": "15-01-2027"
+    },
+    {
+     "m": "Jan 2027",
+     "party": "Baner Infosoft Private Limited",
+     "pan": "ZJNCB6845H",
+     "amt": 53300,
+     "tds": 1066,
+     "on": "31-01-2027"
+    },
+    {
+     "_class": "total",
+     "m": "Total",
+     "party": "",
+     "pan": "",
+     "amt": 1120800,
+     "tds": 97952,
+     "on": ""
+    }
+   ],
+   "notes": [
+    "Client’s TDS register, fees sheet, December 2026 and January 2027."
+   ]
+  },
+  {
+   "id": "mail-pm",
+   "type": "letter",
+   "style": "email",
+   "title": "Item 3 · Mail from Mahesh",
+   "tab": "Mail",
+   "group": "i3",
+   "from": {
+    "name": "Mahesh Kadam",
+    "email": "mahesh.kadam@email.com"
+   },
+   "to": [
+    {
+     "name": "Kunal Mehrotra",
+     "email": "kunal.mehrotra@email.com"
+    }
+   ],
+   "cc": [
+    {
+     "name": "Pallavi Shinde",
+     "email": "pallavi.shinde@email.com"
+    }
+   ],
+   "date": "Fri, 2 Jul 2027, 11:08 pm",
+   "subject": "Re: Tax audit 2026–27, open points",
+   "body": [
+    "Kunal sir,",
+    "On your point 3, Parag Mahajani’s bill: he wanted the full ₹75,000, so we paid it in full on 4 January and did not deduct TDS. Nothing has been deducted since.",
+    "He has another assignment with us in August. We will recover it from that bill.",
+    "Regards,"
+   ],
+   "sign": {
+    "name": "Mahesh Kadam",
+    "role": "GM, Finance and Accounts",
+    "for": "Tamhini Drivetech Private Limited"
+   }
+  },
+  {
+   "id": "tds-dep",
+   "type": "table",
+   "style": "sheet",
+   "title": "Item 4 · TDS deposits 2026–27",
+   "tab": "Deposits",
+   "group": "i4",
+   "sheetName": "Challans",
+   "otherSheets": [
+    "Fees",
+    "Contractors",
+    "Rent"
+   ],
+   "formula": "=SUM(B2:B14)",
+   "freeze": true,
+   "columns": [
+    {
+     "key": "m",
+     "label": "Deducted in"
+    },
+    {
+     "key": "tds",
+     "label": "TDS (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "due",
+     "label": "Due by"
+    },
+    {
+     "key": "paid",
+     "label": "Paid on"
+    },
+    {
+     "key": "ch",
+     "label": "Challan nos."
+    },
+    {
+     "key": "int",
+     "label": "Interest paid (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "m": "Apr 2026",
+     "tds": 419807,
+     "due": "07-05-2026",
+     "paid": "07-05-2026",
+     "ch": "10058, 10059",
+     "int": null
+    },
+    {
+     "m": "May 2026",
+     "tds": 453639,
+     "due": "07-06-2026",
+     "paid": "07-06-2026",
+     "ch": "10095, 10096",
+     "int": null
+    },
+    {
+     "m": "Jun 2026",
+     "tds": 465001,
+     "due": "07-07-2026",
+     "paid": "07-07-2026",
+     "ch": "10132, 10133",
+     "int": null
+    },
+    {
+     "m": "Jul 2026",
+     "tds": 463125,
+     "due": "07-08-2026",
+     "paid": "07-08-2026",
+     "ch": "10169, 10170",
+     "int": null
+    },
+    {
+     "m": "Aug 2026",
+     "tds": 469381,
+     "due": "07-09-2026",
+     "paid": "07-09-2026",
+     "ch": "10206, 10207",
+     "int": null
+    },
+    {
+     "m": "Sep 2026",
+     "tds": 480199,
+     "due": "07-10-2026",
+     "paid": "07-10-2026",
+     "ch": "10243, 10244",
+     "int": null
+    },
+    {
+     "m": "Oct 2026",
+     "tds": 472614,
+     "due": "07-11-2026",
+     "paid": "07-11-2026",
+     "ch": "10280, 10281",
+     "int": null
+    },
+    {
+     "m": "Nov 2026",
+     "tds": 482820,
+     "due": "07-12-2026",
+     "paid": "07-12-2026",
+     "ch": "10317, 10318",
+     "int": null
+    },
+    {
+     "m": "Dec 2026",
+     "tds": 461238,
+     "due": "07-01-2027",
+     "paid": "11-01-2027",
+     "ch": "10354, 10355",
+     "int": 6919
+    },
+    {
+     "m": "Apr–Dec 2026 (short)",
+     "tds": 175226,
+     "due": "–",
+     "paid": "22-01-2027",
+     "ch": "10368, 10369",
+     "int": 8388
+    },
+    {
+     "m": "Jan 2027",
+     "tds": 486045,
+     "due": "07-02-2027",
+     "paid": "07-02-2027",
+     "ch": "10391, 10392",
+     "int": null
+    },
+    {
+     "m": "Feb 2027",
+     "tds": 467872,
+     "due": "07-03-2027",
+     "paid": "07-03-2027",
+     "ch": "10428, 10429",
+     "int": null
+    },
+    {
+     "m": "Mar 2027",
+     "tds": 618473,
+     "due": "30-04-2027",
+     "paid": "30-04-2027",
+     "ch": "10465, 10466",
+     "int": null
+    },
+    {
+     "_class": "total",
+     "m": "Total",
+     "tds": 5915440,
+     "due": "",
+     "paid": "",
+     "ch": "",
+     "int": 15307
+    }
+   ],
+   "notes": [
+    "Client’s sheet. TAN PNET93412D. Two challans a month (company and other deductees), all paid by net banking from the Vindhya Commercial Bank cash-credit account.",
+    "Apr–Dec 2026 (short): short deductions found at the January TDS review, paid on 22-01-2027 with interest; both challans for deductees other than companies, 10368 for April–⁠September and 10369 for October–⁠December."
+   ]
+  },
+  {
+   "id": "challan-dec",
+   "type": "card",
+   "style": "challan",
+   "title": "Item 4 · Challan receipt, December TDS (other than companies)",
+   "tab": "Challan 10354",
+   "group": "i4",
+   "issuer": "Vindhya Commercial Bank Ltd · net banking · BSR code 6390417",
+   "heading": "Income-tax challan receipt",
+   "number": "10354",
+   "fields": [
+    {
+     "label": "TAN",
+     "value": "PNET93412D"
+    },
+    {
+     "label": "Name",
+     "value": "Tamhini Drivetech Private Limited"
+    },
+    {
+     "label": "Tax year",
+     "value": "2026–27"
+    },
+    {
+     "label": "Paid for",
+     "value": "TDS deducted in December 2026: deductees other than companies"
+    },
+    {
+     "label": "Tax",
+     "value": "₹3,96,697"
+    },
+    {
+     "label": "Interest",
+     "value": "₹5,951"
+    },
+    {
+     "label": "Total",
+     "value": "₹4,02,648"
+    },
+    {
+     "label": "Date of deposit",
+     "value": "11-01-2027"
+    },
+    {
+     "label": "Mode of payment",
+     "value": "Net banking"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "PV 4512 – R.B.",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -9
+    }
+   ]
+  },
+  {
+   "id": "challan-dec-co",
+   "type": "card",
+   "style": "challan",
+   "title": "Item 4 · Challan receipt, December TDS (companies)",
+   "tab": "Challan 10355",
+   "group": "i4",
+   "issuer": "Vindhya Commercial Bank Ltd · net banking · BSR code 6390417",
+   "heading": "Income-tax challan receipt",
+   "number": "10355",
+   "fields": [
+    {
+     "label": "TAN",
+     "value": "PNET93412D"
+    },
+    {
+     "label": "Name",
+     "value": "Tamhini Drivetech Private Limited"
+    },
+    {
+     "label": "Tax year",
+     "value": "2026–27"
+    },
+    {
+     "label": "Paid for",
+     "value": "TDS deducted in December 2026: company deductees"
+    },
+    {
+     "label": "Tax",
+     "value": "₹64,541"
+    },
+    {
+     "label": "Interest",
+     "value": "₹968"
+    },
+    {
+     "label": "Total",
+     "value": "₹65,509"
+    },
+    {
+     "label": "Date of deposit",
+     "value": "11-01-2027"
+    },
+    {
+     "label": "Mode of payment",
+     "value": "Net banking"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "PV 4512 – R.B.",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -5
+    }
+   ]
+  },
+  {
+   "id": "led-tdsint",
+   "type": "table",
+   "style": "tally",
+   "title": "Item 4 · Ledger, interest on late TDS",
+   "tab": "Ledger",
+   "group": "i4",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Ledger: Interest on delayed payment of TDS",
+   "subtitle": "Group: Finance costs",
+   "period": "1-Apr-2026 to 31-Mar-2027",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "vn",
+     "label": "Vch no."
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "11-01-2027",
+     "part": "Cash credit – Vindhya Commercial Bank (challans 10354 and 10355, December TDS)",
+     "vn": "PV 4512",
+     "dr": 6919,
+     "cr": null
+    },
+    {
+     "date": "22-01-2027",
+     "part": "Cash credit – Vindhya Commercial Bank (challans 10368 and 10369, short deductions)",
+     "vn": "PV 4597",
+     "dr": 8388,
+     "cr": null
+    },
+    {
+     "_class": "total",
+     "date": "",
+     "part": "Total",
+     "vn": "",
+     "dr": 15307,
+     "cr": null
+    }
+   ],
+   "notes": [
+    "Closing balance: ₹15,307 Dr."
+   ]
+  },
+  {
+   "id": "pf-reg",
+   "type": "table",
+   "style": "sheet",
+   "title": "Item 5 · Provident fund register",
+   "tab": "PF register",
+   "group": "i5",
+   "sheetName": "PF 26-27",
+   "otherSheets": [
+    "ESI",
+    "PT"
+   ],
+   "formula": "=C7-B7",
+   "freeze": true,
+   "columns": [
+    {
+     "key": "m",
+     "label": "Wage month"
+    },
+    {
+     "key": "due",
+     "label": "Due date"
+    },
+    {
+     "key": "paid",
+     "label": "Paid on"
+    },
+    {
+     "key": "late",
+     "label": "Days after due date",
+     "format": "int"
+    },
+    {
+     "key": "ee",
+     "label": "Employees’ share (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "er",
+     "label": "Employer’s share (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "tot",
+     "label": "Total paid (₹)",
+     "format": "inr",
+     "check": "ee + er"
+    }
+   ],
+   "rows": [
+    {
+     "m": "Apr 2026",
+     "ee": 293290,
+     "er": 317736,
+     "tot": 611026,
+     "due": "15-05-2026",
+     "paid": "15-05-2026",
+     "late": null
+    },
+    {
+     "m": "May 2026",
+     "ee": 294638,
+     "er": 319196,
+     "tot": 613834,
+     "due": "15-06-2026",
+     "paid": "15-06-2026",
+     "late": null
+    },
+    {
+     "m": "Jun 2026",
+     "ee": 293810,
+     "er": 318300,
+     "tot": 612110,
+     "due": "15-07-2026",
+     "paid": "15-07-2026",
+     "late": null
+    },
+    {
+     "m": "Jul 2026",
+     "ee": 317026,
+     "er": 343449,
+     "tot": 660475,
+     "due": "15-08-2026",
+     "paid": "15-08-2026",
+     "late": null
+    },
+    {
+     "m": "Aug 2026",
+     "ee": 318495,
+     "er": 345040,
+     "tot": 663535,
+     "due": "15-09-2026",
+     "paid": "15-09-2026",
+     "late": null
+    },
+    {
+     "m": "Sep 2026",
+     "ee": 322829,
+     "er": 349736,
+     "tot": 672565,
+     "due": "15-10-2026",
+     "paid": "27-10-2026",
+     "late": 12
+    },
+    {
+     "m": "Oct 2026",
+     "ee": 321378,
+     "er": 348165,
+     "tot": 669543,
+     "due": "15-11-2026",
+     "paid": "15-11-2026",
+     "late": null
+    },
+    {
+     "m": "Nov 2026",
+     "ee": 318110,
+     "er": 344624,
+     "tot": 662734,
+     "due": "15-12-2026",
+     "paid": "15-12-2026",
+     "late": null
+    },
+    {
+     "m": "Dec 2026",
+     "ee": 318110,
+     "er": 344624,
+     "tot": 662734,
+     "due": "15-01-2027",
+     "paid": "15-01-2027",
+     "late": null
+    },
+    {
+     "m": "Jan 2027",
+     "ee": 320542,
+     "er": 347259,
+     "tot": 667801,
+     "due": "15-02-2027",
+     "paid": "15-02-2027",
+     "late": null
+    },
+    {
+     "m": "Feb 2027",
+     "ee": 323806,
+     "er": 350796,
+     "tot": 674602,
+     "due": "15-03-2027",
+     "paid": "15-03-2027",
+     "late": null
+    },
+    {
+     "m": "Mar 2027",
+     "ee": 325275,
+     "er": 352387,
+     "tot": 677662,
+     "due": "15-04-2027",
+     "paid": "15-04-2027",
+     "late": null
+    },
+    {
+     "_class": "total",
+     "m": "Total",
+     "ee": 3767309,
+     "er": 4081312,
+     "tot": 7848621,
+     "due": "",
+     "paid": "",
+     "late": null
+    }
+   ],
+   "notes": [
+    "HR’s sheet (Shabana Shaikh). Due date as per our register: 15th of the next month.",
+    "Employer’s share includes the charges paid with it."
+   ],
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Sept late → emp. share ₹3,22,829 disallowed, same as last year. V.",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -2
+    }
+   ]
+  },
+  {
+   "id": "pf-rcpt",
+   "type": "card",
+   "style": "challan",
+   "title": "Item 5 · PF payment receipt, September",
+   "tab": "Receipt",
+   "group": "i5",
+   "issuer": "Provident fund payment · bank receipt",
+   "heading": "Payment receipt",
+   "number": "TRRN 2610270418833",
+   "fields": [
+    {
+     "label": "Establishment",
+     "value": "Tamhini Drivetech Private Limited (PUPUN00XXXXX000)"
+    },
+    {
+     "label": "Wage month",
+     "value": "September 2026"
+    },
+    {
+     "label": "Employees’ share",
+     "value": "₹3,22,829"
+    },
+    {
+     "label": "Employer’s share and charges",
+     "value": "₹3,49,736"
+    },
+    {
+     "label": "Total",
+     "value": "₹6,72,565"
+    },
+    {
+     "label": "Paid on",
+     "value": "27-10-2026, net banking, Vindhya Commercial Bank Ltd"
+    }
+   ]
+  },
+  {
+   "id": "led-leave",
+   "type": "table",
+   "style": "tally",
+   "title": "Item 6 · Ledger, provision for leave encashment",
+   "tab": "Provision",
+   "group": "i6",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Ledger: Provision for leave encashment",
+   "subtitle": "Monthly summary · group: Provisions",
+   "period": "1-Apr-2026 to 31-Mar-2027",
+   "columns": [
+    {
+     "key": "m",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "bal",
+     "label": "Closing Cr (₹)",
+     "format": "inr",
+     "runningFrom": {
+      "plus": "cr",
+      "minus": "dr"
+     }
+    }
+   ],
+   "rows": [
+    {
+     "m": "Opening balance",
+     "dr": null,
+     "cr": null,
+     "bal": 4600000,
+     "_class": "muted"
+    },
+    {
+     "m": "April",
+     "dr": null,
+     "cr": 90000,
+     "bal": 4690000
+    },
+    {
+     "m": "May",
+     "dr": null,
+     "cr": 90000,
+     "bal": 4780000
+    },
+    {
+     "m": "June",
+     "dr": null,
+     "cr": 90000,
+     "bal": 4870000
+    },
+    {
+     "m": "July",
+     "dr": null,
+     "cr": 90000,
+     "bal": 4960000
+    },
+    {
+     "m": "August",
+     "dr": null,
+     "cr": 90000,
+     "bal": 5050000
+    },
+    {
+     "m": "September",
+     "dr": null,
+     "cr": 90000,
+     "bal": 5140000
+    },
+    {
+     "m": "October",
+     "dr": null,
+     "cr": 90000,
+     "bal": 5230000
+    },
+    {
+     "m": "November",
+     "dr": null,
+     "cr": 90000,
+     "bal": 5320000
+    },
+    {
+     "m": "December",
+     "dr": null,
+     "cr": 90000,
+     "bal": 5410000
+    },
+    {
+     "m": "January",
+     "dr": null,
+     "cr": 90000,
+     "bal": 5500000
+    },
+    {
+     "m": "February",
+     "dr": null,
+     "cr": 90000,
+     "bal": 5590000
+    },
+    {
+     "m": "March",
+     "dr": 460000,
+     "cr": 90000,
+     "bal": 5220000
+    },
+    {
+     "m": "Grand total",
+     "dr": 460000,
+     "cr": 1080000,
+     "bal": null,
+     "_class": "total",
+     "_check": false
+    }
+   ],
+   "notes": [
+    "Credits: monthly journal, Leave encashment (expense) Dr, Provision for leave encashment Cr, ₹90,000.",
+    "Debit, 20-03-2027: payment voucher 5530 from the cash credit account, leave encashment in full and final settlements."
+   ]
+  },
+  {
+   "id": "pl-emp",
+   "type": "table",
+   "style": "statement",
+   "title": "Item 6 · Accounts note, employee costs",
+   "tab": "Accounts note",
+   "group": "i6",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "cin": "U29301MH2004PTC942620"
+   },
+   "heading": "Note: Employee benefits expense, year ended 31 March 2027",
+   "subtitle": "Audited financial statements · amounts in ₹",
+   "columns": [
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "amt",
+     "label": "Year ended 31 March 2027",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "part": "Salaries and wages – staff",
+     "amt": 27830424
+    },
+    {
+     "part": "Wages – workers",
+     "amt": 46109740
+    },
+    {
+     "part": "Directors’ remuneration",
+     "amt": 7200000
+    },
+    {
+     "part": "Bonus",
+     "amt": 7680000
+    },
+    {
+     "part": "Contribution to PF and ESI",
+     "amt": 4587922
+    },
+    {
+     "part": "Gratuity",
+     "amt": 2400000
+    },
+    {
+     "part": "Leave encashment",
+     "amt": 1080000
+    },
+    {
+     "part": "Staff welfare",
+     "amt": 9840000
+    },
+    {
+     "part": "Total",
+     "amt": 106728086,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "mail-hr",
+   "type": "letter",
+   "style": "email",
+   "title": "Item 6 · Mail from HR",
+   "tab": "Mail",
+   "group": "i6",
+   "from": {
+    "name": "Shabana Shaikh",
+    "email": "shabana.shaikh@email.com"
+   },
+   "to": [
+    {
+     "name": "Kunal Mehrotra",
+     "email": "kunal.mehrotra@email.com"
+    }
+   ],
+   "cc": [
+    {
+     "name": "Mahesh Kadam",
+     "email": "mahesh.kadam@email.com"
+    }
+   ],
+   "date": "Fri, 2 Jul 2027, 4:15 pm",
+   "subject": "Leave encashment, as asked",
+   "body": [
+    "Kunal sir,",
+    "Leave is encashed only when an employee leaves or retires (our policy HR/07). The ₹4,60,000 paid on 20 March 2027 was for the full and final settlements of the staff and workers who left during 2026–27.",
+    "Nothing has been paid since 1 April 2027, and nothing is due to be paid by 31 October.",
+    "Regards,"
+   ],
+   "sign": {
+    "name": "Shabana Shaikh",
+    "role": "HR and Payroll Executive",
+    "for": "Tamhini Drivetech Private Limited"
+   }
+  },
+  {
+   "id": "dep-draft",
+   "type": "table",
+   "style": "sheet",
+   "title": "Item 7 · Pallavi’s depreciation working (draft)",
+   "tab": "Draft working",
+   "group": "i7",
+   "sheetName": "P&M 15%",
+   "otherSheets": [
+    "Bldg",
+    "Furn",
+    "Comp"
+   ],
+   "formula": "=ROUND(B7*15%,0)",
+   "columns": [
+    {
+     "key": "part",
+     "label": "Clause 36 line"
+    },
+    {
+     "key": "amt",
+     "label": "₹",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "l3",
+     "part": "3 · WDV on 1 April 2026",
+     "amt": 180500000
+    },
+    {
+     "_id": "a1",
+     "part": "Sedan for the MD, 06-06-2026",
+     "amt": 2576000,
+     "_indent": 1
+    },
+    {
+     "_id": "a2",
+     "part": "CNC TC-35, 01-10-2026",
+     "amt": 6840000,
+     "_indent": 1
+    },
+    {
+     "_id": "l4",
+     "part": "4 · Used 180 days or more",
+     "amt": 9416000,
+     "_class": "subtotal",
+     "_sumOf": [
+      "a1",
+      "a2"
+     ]
+    },
+    {
+     "_id": "l5",
+     "part": "5 · Sale of old lathe",
+     "amt": 45000
+    },
+    {
+     "_id": "l6",
+     "part": "6 · Full-rate amount (3 + 4 − 5)",
+     "amt": 189871000,
+     "_class": "subtotal",
+     "_sumOf": [
+      "l3",
+      "l4",
+      "-l5"
+     ]
+    },
+    {
+     "_id": "b1",
+     "part": "CMM, 05-01-2027",
+     "amt": 1890000,
+     "_indent": 1
+    },
+    {
+     "_id": "b2",
+     "part": "VMC-10, 24-03-2027",
+     "amt": 5460000,
+     "_indent": 1
+    },
+    {
+     "_id": "l7",
+     "part": "7 · Used less than 180 days",
+     "amt": 7350000,
+     "_class": "subtotal",
+     "_sumOf": [
+      "b1",
+      "b2"
+     ]
+    },
+    {
+     "_id": "l10",
+     "part": "10 · 15% on 6",
+     "amt": 28480650
+    },
+    {
+     "_id": "l11",
+     "part": "11 · 7.5% on 9 (= 7)",
+     "amt": 551250
+    },
+    {
+     "_id": "l15",
+     "part": "15 · Total depreciation",
+     "amt": 29031900,
+     "_class": "total",
+     "_sumOf": [
+      "l10",
+      "l11"
+     ]
+    },
+    {
+     "_id": "l21",
+     "part": "21 · WDV on 31 March 2027",
+     "amt": 168189100,
+     "_class": "total",
+     "_sumOf": [
+      "l6",
+      "l7",
+      "-l15"
+     ]
+    }
+   ],
+   "notes": [
+    "Plant and machinery block, 15%: depreciation as per the Income-tax rules, tax year 2026–27, draft for the tax audit. Dates as in the books. Prepared from the fixed-asset register on 12-04-2027. P. Shinde."
+   ]
+  },
+  {
+   "id": "far-add",
+   "type": "table",
+   "style": "sheet",
+   "title": "Item 7 · Fixed-asset register, additions",
+   "tab": "Asset register",
+   "group": "i7",
+   "sheetName": "Additions 26-27",
+   "otherSheets": [
+    "Opening",
+    "Sales"
+   ],
+   "formula": "=SUM(C2:C8)",
+   "freeze": true,
+   "columns": [
+    {
+     "key": "a",
+     "label": "Asset"
+    },
+    {
+     "key": "use",
+     "label": "Put to use"
+    },
+    {
+     "key": "cost",
+     "label": "Cost (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "blk",
+     "label": "Income-tax block"
+    },
+    {
+     "key": "inv",
+     "label": "Invoice date"
+    },
+    {
+     "key": "id",
+     "label": "Asset ID"
+    }
+   ],
+   "rows": [
+    {
+     "a": "6 laptops",
+     "use": "15-05-2026",
+     "cost": 432000,
+     "blk": "Computers 40%",
+     "inv": "12-05-2026",
+     "id": "FA-27-01",
+     "_id": "FA-27-01"
+    },
+    {
+     "a": "Sedan for the MD",
+     "use": "06-06-2026",
+     "cost": 2576000,
+     "blk": "P&M 15% (car)",
+     "inv": "04-06-2026",
+     "id": "FA-27-02",
+     "_id": "FA-27-02"
+    },
+    {
+     "a": "Shed extension, Bay 4",
+     "use": "30-06-2026",
+     "cost": 4260000,
+     "blk": "Buildings 10%",
+     "inv": "26-06-2026",
+     "id": "FA-27-03",
+     "_id": "FA-27-03"
+    },
+    {
+     "a": "CNC turning centre TC-35",
+     "use": "12-08-2026",
+     "cost": 6840000,
+     "blk": "P&M 15%",
+     "inv": "18-07-2026",
+     "id": "FA-27-04",
+     "_id": "FA-27-04"
+    },
+    {
+     "a": "CMM, quality lab",
+     "use": "05-01-2027",
+     "cost": 1890000,
+     "blk": "P&M 15%",
+     "inv": "02-01-2027",
+     "id": "FA-27-05",
+     "_id": "FA-27-05"
+    },
+    {
+     "a": "Screw compressor, 15 kW",
+     "use": "17-01-2027",
+     "cost": 485000,
+     "blk": "P&M 15%",
+     "inv": "14-01-2027",
+     "id": "FA-27-07",
+     "_id": "FA-27-07"
+    },
+    {
+     "a": "VMC-10 (capital WIP)",
+     "use": "09-04-2027",
+     "cost": 5460000,
+     "blk": "P&M 15% from 2027–28",
+     "inv": "22-03-2027",
+     "id": "CWIP",
+     "_id": "CWIP"
+    },
+    {
+     "a": "Old lathe (2008), sold",
+     "use": "Sold 14-12-2026",
+     "cost": null,
+     "blk": "P&M 15%: sold ₹45,000",
+     "inv": "",
+     "id": "FA-08-112",
+     "_id": "FA-08-112"
+    }
+   ],
+   "notes": [
+    "After the audit adjustments booked on 6 May 2027: the compressor came out of repairs (AJE-2), the VMC went to capital work-in-progress (AJE-3) and the CNC’s date was corrected from 1 October to 12 August (AJE-4)."
+   ]
+  },
+  {
+   "id": "comm-vmc",
+   "type": "letter",
+   "style": "memo",
+   "title": "Item 7 · Commissioning report, VMC-10",
+   "tab": "Commissioning",
+   "group": "i7",
+   "letterhead": "Tamhini Drivetech Private Limited · Chakan plant",
+   "memoTitle": "Commissioning report",
+   "to": [
+    "Mahesh Kadam, GM Finance and Accounts"
+   ],
+   "from": "Venkat Reddy, Plant Head",
+   "cc": [
+    "Ganesh Tapkir, Maintenance Manager"
+   ],
+   "date": "09-04-2027",
+   "ref": "MNT/COM/2027/03",
+   "subject": "VMC-10 (850 mm table), Singanallur Machine Tools Private Limited",
+   "body": [
+    "- Received at the gate: 24 March 2027 (gate entry G/3791).",
+    "- Foundation bolts grouted: 26 March 2027; installed and levelled: 5 to 8 April 2027.",
+    "- Trial run (20 flanges) and acceptance: 9 April 2027.",
+    "- Handed over to production: 9 April 2027.",
+    "The machine did no production work before 9 April 2027."
+   ],
+   "sign": {
+    "name": "Venkat Reddy",
+    "role": "Plant Head",
+    "hand": "V. Reddy"
+   },
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "PRODUCTION · RECEIVED\n09 APR 2027",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": -6
+    }
+   ]
+  },
+  {
+   "id": "qd-draft",
+   "type": "table",
+   "style": "sheet",
+   "title": "Item 8 · Pallavi’s quantitative details (draft)",
+   "tab": "Draft details",
+   "group": "i8",
+   "sheetName": "Raw materials",
+   "otherSheets": [
+    "Finished goods",
+    "Scrap"
+   ],
+   "formula": "=B5+C5-D5",
+   "freeze": true,
+   "columns": [
+    {
+     "key": "item",
+     "label": "Principal item"
+    },
+    {
+     "key": "open",
+     "label": "Opening",
+     "format": "int"
+    },
+    {
+     "key": "pur",
+     "label": "Purchases",
+     "format": "int"
+    },
+    {
+     "key": "cons",
+     "label": "Consumption",
+     "format": "int"
+    },
+    {
+     "key": "close",
+     "label": "Closing",
+     "format": "int",
+     "check": "open + pur - cons"
+    },
+    {
+     "key": "sx",
+     "label": "Shortage or excess"
+    }
+   ],
+   "rows": [
+    {
+     "item": "EN8 bar Ø28 (kg)",
+     "open": 148000,
+     "pur": 1862400,
+     "cons": 1848000,
+     "close": 162400,
+     "sx": "–"
+    },
+    {
+     "item": "20MnCr5 bar Ø32 (kg)",
+     "open": 69800,
+     "pur": 842000,
+     "cons": 837600,
+     "close": 74200,
+     "sx": "–"
+    },
+    {
+     "item": "Blank GB-110 (nos)",
+     "open": 1640,
+     "pur": 24360,
+     "cons": 24000,
+     "close": 2000,
+     "sx": "–"
+    },
+    {
+     "item": "Bearing 6205-2RS (nos)",
+     "open": 2100,
+     "pur": 21600,
+     "cons": 21550,
+     "close": 2150,
+     "sx": "–"
+    }
+   ],
+   "notes": [
+    "Quantitative details, raw materials, tax year 2026–27: draft for the tax audit, quantities only (values on the valuation sheet). Closing stock as per the audited accounts. P. Shinde, 30-06-2027."
+   ]
+  },
+  {
+   "id": "stk-6205",
+   "type": "table",
+   "style": "tally",
+   "title": "Item 8 · Stock summary, bearing 6205-2RS",
+   "tab": "Stock summary",
+   "group": "i8",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Stock item: Ball bearing 6205-2RS (BOP-BRG-6205)",
+   "subtitle": "Godown: Main stores, Bay B · quantities in nos",
+   "period": "1-Apr-2026 to 31-Mar-2027",
+   "columns": [
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "inw",
+     "label": "Inwards",
+     "format": "int"
+    },
+    {
+     "key": "out",
+     "label": "Outwards",
+     "format": "int"
+    },
+    {
+     "key": "bal",
+     "label": "Closing",
+     "format": "int"
+    }
+   ],
+   "rows": [
+    {
+     "part": "Opening balance",
+     "inw": null,
+     "out": null,
+     "bal": 2100
+    },
+    {
+     "part": "Purchases: 47 GRNs",
+     "inw": 21600,
+     "out": null,
+     "bal": 23700
+    },
+    {
+     "part": "Issues to production: 236 issue slips",
+     "inw": null,
+     "out": 21300,
+     "bal": 2400
+    },
+    {
+     "part": "Short at the count, 31-03-2027 (AJE-6)",
+     "inw": null,
+     "out": 250,
+     "bal": 2150
+    },
+    {
+     "part": "Closing balance",
+     "inw": 21600,
+     "out": 21550,
+     "bal": 2150,
+     "_class": "total",
+     "_check": false
+    }
+   ],
+   "check": false
+  },
+  {
+   "id": "count-bayb",
+   "type": "table",
+   "style": "register",
+   "title": "Item 8 · Stock count sheet, Bay B",
+   "tab": "Count sheet",
+   "group": "i8",
+   "company": "Tamhini Drivetech Private Limited",
+   "heading": "Stock count sheet · Main stores, Bay B",
+   "period": "Count on 31-03-2027",
+   "columns": [
+    {
+     "key": "item",
+     "label": "Item"
+    },
+    {
+     "key": "book",
+     "label": "Book",
+     "format": "int"
+    },
+    {
+     "key": "count",
+     "label": "Counted",
+     "format": "int"
+    },
+    {
+     "key": "diff",
+     "label": "Difference",
+     "format": "int",
+     "check": "count - book"
+    },
+    {
+     "key": "rem",
+     "label": "Remarks"
+    },
+    {
+     "key": "u",
+     "label": "Unit"
+    },
+    {
+     "key": "code",
+     "label": "Code",
+     "mono": true
+    }
+   ],
+   "rows": [
+    {
+     "item": "Bearing 6205-2RS",
+     "book": 2400,
+     "count": 2150,
+     "diff": -250,
+     "rem": "No issue slip found",
+     "u": "nos",
+     "code": "BOP-BRG-6205"
+    },
+    {
+     "item": "Bearing 6306-ZZ",
+     "book": 1850,
+     "count": 1850,
+     "diff": 0,
+     "rem": "",
+     "u": "nos",
+     "code": "BOP-BRG-6306"
+    },
+    {
+     "item": "Circlip 35 mm",
+     "book": 48000,
+     "count": 48000,
+     "diff": 0,
+     "rem": "",
+     "u": "nos",
+     "code": "BOP-CLP-35"
+    },
+    {
+     "item": "Oil seal 45×62×8",
+     "book": 12600,
+     "count": 12600,
+     "diff": 0,
+     "rem": "",
+     "u": "nos",
+     "code": "BOP-SL-4562"
+    }
+   ],
+   "notes": [
+    "Counted by Santosh Kale (Store Keeper) · checked by D. More (Stores In-charge) · observed by Aditi Rane, Bapat Venkatesh & Co."
+   ],
+   "annotations": [
+    {
+     "kind": "sign",
+     "text": "D. More",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": -4
+    },
+    {
+     "kind": "sign",
+     "text": "Aditi R.",
+     "color": "black",
+     "at": "bottom-right",
+     "rotate": 3
+    }
+   ]
+  }
+ ],
+ "tasks": [
+  {
+   "id": "t1",
+   "type": "items",
+   "stage": "Fieldwork",
+   "title": "Check the eight items",
+   "prompt": "Open each item with its papers; the audit adjustments are under Other papers. Decide what goes in the report, why, and what it adds to taxable income. Tax year 2026–27 is the first under the 2025 Act. Your calls go to Kunal when you move on.",
+   "weight": 2,
+   "noun": [
+    "item",
+    "items"
+   ],
+   "lockOnLeave": {
+    "ask": "Hand your calls on the eight items to Kunal?",
+    "note": "You can’t change them after this.",
+    "yes": "Hand them in",
+    "done": "Handed to Kunal. You can read your calls but not change them."
+   },
+   "hints": [
+    "The tests: cash, per person per day (₹35,000 for goods carriages); TDS, deducted in the year and paid by 31 October 2027; employees’ PF and leave encashment, credited or paid by then; a machine, its first day of use; stock, the issue slips.",
+    "Item by item, the paper that decides it: 1, the two memos’ date and shop; 2, the gate register; 3, the TDS register; 4, the challans’ dates; 5, the PF receipt; 6, HR’s mail; 7, the commissioning report; 8, the stock summary."
+   ],
+   "columns": [
+    {
+     "key": "label"
+    },
+    {
+     "key": "amount",
+     "format": "inr"
+    },
+    {
+     "key": "dated"
+    }
+   ],
+   "fields": [
+    {
+     "id": "verdict",
+     "kind": "choice",
+     "label": "Your call",
+     "gate": true,
+     "options": [
+      {
+       "id": "ok",
+       "label": "Fine"
+      },
+      {
+       "id": "disallow",
+       "label": "Disallow"
+      },
+      {
+       "id": "report",
+       "label": "Report only"
+      }
+     ]
+    },
+    {
+     "id": "reasons",
+     "kind": "multi",
+     "label": "Why, and where it goes in Form 26",
+     "showIf": {
+      "verdict": [
+       "disallow",
+       "report"
+      ]
+     },
+     "weight": 3,
+     "options": [
+      {
+       "id": "cash",
+       "label": "Paid in cash above the day limit (clause 30)",
+       "short": "cash over the limit (clause 30)"
+      },
+      {
+       "id": "notds",
+       "label": "TDS not deducted in the year (clause 51(a))",
+       "short": "TDS not deducted (clause 51(a))"
+      },
+      {
+       "id": "latetds",
+       "label": "TDS deposited late: interest (clause 50(c))",
+       "short": "TDS paid late (clause 50(c))"
+      },
+      {
+       "id": "latepf",
+       "label": "Employees’ PF credited late (clause 27(b))",
+       "short": "late PF (clause 27(b))"
+      },
+      {
+       "id": "unpaid",
+       "label": "Not paid by the return due date (clause 32(a))",
+       "short": "unpaid by the due date (clause 32(a))"
+      },
+      {
+       "id": "notused",
+       "label": "Asset not used in the year (clause 36)",
+       "short": "not used in the year (clause 36)"
+      },
+      {
+       "id": "shortage",
+       "label": "Stock shortage not shown (clause 53(b))",
+       "short": "stock shortage (clause 53(b))"
+      },
+      {
+       "id": "related",
+       "label": "Paid to a director or relative (clause 29)",
+       "short": "related party (clause 29)"
+      }
+     ]
+    },
+    {
+     "id": "effect",
+     "kind": "number",
+     "label": "Adds to taxable income",
+     "prefix": "₹",
+     "tolerance": 0,
+     "weight": 3,
+     "sign": false,
+     "showIf": {
+      "verdict": "disallow"
+     }
+    },
+    {
+     "id": "note",
+     "kind": "text",
+     "label": "Your note for the file",
+     "placeholder": "For example: bill of 12 March, paid by NEFT on 19 March"
+    }
+   ],
+   "docs": [
+    "aje",
+    "cash-dec",
+    "memo-0472",
+    "pcv-1187",
+    "memo-0473",
+    "pcv-1188",
+    "cash-feb",
+    "rcpt-kute",
+    "pcv-1215",
+    "gate-out",
+    "bill-pm",
+    "led-pm",
+    "tds-fees",
+    "mail-pm",
+    "tds-dep",
+    "challan-dec",
+    "challan-dec-co",
+    "led-tdsint",
+    "pf-reg",
+    "pf-rcpt",
+    "led-leave",
+    "pl-emp",
+    "mail-hr",
+    "dep-draft",
+    "far-add",
+    "comm-vmc",
+    "qd-draft",
+    "stk-6205",
+    "count-bayb"
+   ],
+   "items": [
+    {
+     "id": "i1",
+     "label": "Item 1 · Cash to a hardware shop",
+     "amount": 11800,
+     "dated": "paid 22 Dec 2026",
+     "docs": [
+      "cash-dec",
+      "memo-0472",
+      "pcv-1187",
+      "memo-0473",
+      "pcv-1188"
+     ],
+     "prompt": "Cash paid to Bhamchandra Hardware for machine-guard material. Is any of it disallowed?",
+     "answer": {
+      "verdict": "disallow",
+      "reasons": [
+       "cash"
+      ],
+      "effect": 11800
+     },
+     "note": "Item 1: two memos, one shop, one day: ₹11,800 in cash. The limit runs per person per day, so all ₹11,800 is disallowed, though each memo is under ₹10,000. Topping up petty cash by cheque doesn’t help either. Clause 30, Yes."
+    },
+    {
+     "id": "i2",
+     "label": "Item 2 · Cash for a tempo",
+     "amount": 14500,
+     "dated": "paid 3 Feb 2027",
+     "docs": [
+      "cash-feb",
+      "rcpt-kute",
+      "pcv-1215",
+      "gate-out"
+     ],
+     "prompt": "Cash paid to a tempo driver for an urgent delivery. Is any of it disallowed?",
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Item 2: Fine. The tempo was hired to carry goods, and for hiring a goods carriage the cash limit is ₹35,000, not ₹10,000. ₹14,500 is inside it, so nothing goes in clause 30."
+    },
+    {
+     "id": "i3",
+     "label": "Item 3 · Consultant’s fee",
+     "amount": 75000,
+     "dated": "billed 18 Dec 2026",
+     "docs": [
+      "bill-pm",
+      "led-pm",
+      "tds-fees",
+      "mail-pm"
+     ],
+     "prompt": "Parag Mahajani’s fee for a lean manufacturing study. Was TDS deducted, and does it matter?",
+     "answer": {
+      "verdict": "disallow",
+      "reasons": [
+       "notds"
+      ],
+      "effect": 22500
+     },
+     "note": "Item 3: a ₹75,000 fee crosses the ₹50,000 line, so TDS was due, and none was deducted in the year. 30% is disallowed now: ₹22,500, allowed back in the year the tax is paid. “He wanted the full ₹75,000” changes nothing. Clause 51(a)."
+    },
+    {
+     "id": "i4",
+     "label": "Item 4 · December TDS",
+     "amount": 461238,
+     "dated": "deposited 11 Jan 2027",
+     "docs": [
+      "tds-dep",
+      "challan-dec",
+      "challan-dec-co",
+      "led-tdsint"
+     ],
+     "prompt": "December’s TDS: was it deposited on time, and does that cost any of December’s expenses? The interest itself is for Kunal’s computation.",
+     "answer": {
+      "verdict": "report",
+      "reasons": [
+       "latetds"
+      ]
+     },
+     "note": "Item 4: December’s TDS went in on 11 January, four days after the 7th, but long before 31 October 2027, so none of December’s expenses is disallowed. Clause 50(c) reports the interest paid: ₹6,919 with these challans and ₹8,388 on 22 January for short deductions."
+    },
+    {
+     "id": "i5",
+     "label": "Item 5 · September PF",
+     "amount": 322829,
+     "dated": "employees’ share, credited 27 Oct 2026",
+     "docs": [
+      "pf-reg",
+      "pf-rcpt"
+     ],
+     "prompt": "September’s employees’ PF. Varun, our second-year article, has marked it on the register.",
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Item 5: Fine. September’s employees’ PF was credited on 27 October 2026, well before the return due date of 31 October 2027, and that date is the test from tax year 2026–27. Varun used last year’s rule: late meant lost. Clause 27(b) is No."
+    },
+    {
+     "id": "i6",
+     "label": "Item 6 · Leave encashment",
+     "amount": 1080000,
+     "dated": "provided in 2026–27",
+     "docs": [
+      "led-leave",
+      "pl-emp",
+      "mail-hr"
+     ],
+     "prompt": "The leave encashment provision. Earlier years’ provisions were added back in those years’ returns.",
+     "answer": {
+      "verdict": "disallow",
+      "reasons": [
+       "unpaid"
+      ],
+      "effect": 620000
+     },
+     "note": "Item 6: leave encashment counts only when paid. This year’s ₹10,80,000 is unpaid, and none of it will be paid by 31 October: clause 32(a), ₹10,80,000. The ₹4,60,000 paid in March, out of earlier provisions, is allowed now. Net add-back ₹6,20,000."
+    },
+    {
+     "id": "i7",
+     "label": "Item 7 · VMC-10 in the block",
+     "amount": 5460000,
+     "dated": "in the half-rate additions",
+     "docs": [
+      "dep-draft",
+      "far-add",
+      "comm-vmc"
+     ],
+     "prompt": "Pallavi’s draft depreciation working puts the VMC in this year’s half-rate additions.",
+     "answer": {
+      "verdict": "disallow",
+      "reasons": [
+       "notused"
+      ],
+      "effect": 409500
+     },
+     "note": "Item 7: the VMC reached Chakan on 24 March but was first used on 9 April. No use in the year, no depreciation: ₹54,60,000 × 7.5% = ₹4,09,500 comes out of the claim. It joins next year’s block. Clause 36."
+    },
+    {
+     "id": "i8",
+     "label": "Item 8 · Bearings 6205-2RS",
+     "dated": "draft consumption 21,550 nos",
+     "docs": [
+      "qd-draft",
+      "stk-6205",
+      "count-bayb"
+     ],
+     "prompt": "Pallavi’s draft quantitative details: check the bearing row against the stock summary and the count.",
+     "answer": {
+      "verdict": "report",
+      "reasons": [
+       "shortage"
+      ]
+     },
+     "note": "Item 8: 21,300 bearings went out on issue slips; the draft says 21,550 consumed. The other 250 are the count shortage, hidden in consumption. They go in the shortage column. A blank there is a wrong answer, not a safe one."
+    }
+   ]
+  },
+  {
+   "id": "t2",
+   "type": "worksheet",
+   "stage": "Review",
+   "title": "Rebuild the plant and machinery block",
+   "prompt": "Pallavi made her working from the asset register before the audit adjustments. Rebuild the 15% block from the register as it now stands, in the clause 36 lines: split this year’s additions by days of use, then work out the depreciation and the closing value.",
+   "noun": [
+    "figure",
+    "figures"
+   ],
+   "lockOnLeave": {
+    "ask": "Hand your depreciation working to Kunal?",
+    "note": "You can’t change it after this.",
+    "yes": "Hand it in",
+    "done": "Handed to Kunal. You can read your working but not change it."
+   },
+   "hints": [
+    "Days of use run from the put-to-use date to 31 March. Under 180 days: half of 15%. Not used at all: not in this year’s block."
+   ],
+   "columns": [
+    {
+     "key": "what",
+     "label": "Clause 36 line"
+    },
+    {
+     "key": "amt",
+     "label": "Amount",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "id": "r3",
+     "cells": {
+      "what": "3 · WDV on 1 April 2026",
+      "amt": 180500000
+     }
+    },
+    {
+     "id": "r4",
+     "cells": {
+      "what": "4 · Additions used 180 days or more",
+      "amt": {
+       "input": true,
+       "answer": 9416000,
+       "tolerance": 1,
+       "working": "Sedan ₹25,76,000 + CNC ₹68,40,000",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "r5",
+     "cells": {
+      "what": "5 · Sale of the old lathe",
+      "amt": 45000
+     }
+    },
+    {
+     "id": "r6",
+     "cells": {
+      "what": "6 · Full-rate amount (3 + 4 − 5)",
+      "amt": {
+       "input": true,
+       "answer": 189871000,
+       "tolerance": 1,
+       "working": "₹18,05,00,000 + ₹94,16,000 − ₹45,000",
+       "sign": false,
+       "follow": "180500000 + {r4.amt} − 45000"
+      }
+     }
+    },
+    {
+     "id": "r7",
+     "cells": {
+      "what": "7 · Additions used less than 180 days",
+      "amt": {
+       "input": true,
+       "answer": 2375000,
+       "tolerance": 1,
+       "working": "CMM ₹18,90,000 + compressor ₹4,85,000",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "r10",
+     "cells": {
+      "what": "10 · Depreciation at 15% on 6",
+      "amt": {
+       "input": true,
+       "answer": 28480650,
+       "tolerance": 1,
+       "working": "₹18,98,71,000 × 15%",
+       "sign": false,
+       "follow": "{r6.amt} × 0.15"
+      }
+     }
+    },
+    {
+     "id": "r11",
+     "cells": {
+      "what": "11 · Depreciation at 7.5% on 9 (= line 7)",
+      "amt": {
+       "input": true,
+       "answer": 178125,
+       "tolerance": 1,
+       "working": "₹23,75,000 × 7.5%",
+       "sign": false,
+       "follow": "{r7.amt} × 0.075"
+      }
+     }
+    },
+    {
+     "id": "r15",
+     "_class": "total",
+     "cells": {
+      "what": "15 · Total depreciation (10 + 11)",
+      "amt": {
+       "input": true,
+       "answer": 28658775,
+       "tolerance": 1,
+       "working": "₹2,84,80,650 + ₹1,78,125",
+       "sign": false,
+       "follow": "{r10.amt} + {r11.amt}"
+      }
+     }
+    },
+    {
+     "id": "r21",
+     "cells": {
+      "what": "21 · WDV on 31 March 2027 (6 + 9 − 15)",
+      "amt": {
+       "input": true,
+       "answer": 163587225,
+       "tolerance": 1,
+       "working": "₹18,98,71,000 + ₹23,75,000 − ₹2,86,58,775",
+       "sign": false,
+       "follow": "{r6.amt} + {r7.amt} − {r15.amt}"
+      }
+     }
+    },
+    {
+     "id": "rx",
+     "cells": {
+      "what": "Pallavi’s draft claims more by",
+      "amt": {
+       "input": true,
+       "answer": 373125,
+       "tolerance": 1,
+       "working": "₹2,90,31,900 − ₹2,86,58,775",
+       "sign": false
+      }
+     }
+    }
+   ],
+   "note": "Line numbers follow the clause 36 schedule of Form 26. Nothing from this year’s additions was sold, so line 9 equals line 7. Lines 12–14 stay empty: under the 22% option Tamhini gets no additional depreciation.",
+   "notes": {
+    "r4.amt": "Sedan from 6 June (299 days) and CNC from 12 August (232 days). Pallavi’s draft starts the CNC on 1 October: still 182 days. The laptops are computers (40%) and the shed a building.",
+    "r7.amt": "CMM from 5 January (86 days) and the compressor from 17 January (74 days), now capitalised. The VMC was first used on 9 April 2027, so it waits for next year’s block.",
+    "rx.amt": "Her line 15 less the right one. Two assets make the whole difference: the VMC not used in the year, and the compressor the audit capitalised."
+   },
+   "sampleBreak": "r10",
+   "docs": [
+    "aje",
+    "far-add",
+    "dep-draft",
+    "comm-vmc"
+   ]
+  },
+  {
+   "id": "t3",
+   "type": "compose",
+   "stage": "Report",
+   "title": "Write the points mail to Mahesh",
+   "prompt": "Kunal wants one mail to Mahesh Kadam, the accounts head, with the points from your checks that need his action or his attention. Pick the right line for each point.",
+   "weight": 2,
+   "noun": [
+    "line",
+    "lines"
+   ],
+   "hints": [
+    "Give Mahesh the figure from the papers and the rule that decides it. Ask him to act only where something must be fixed."
+   ],
+   "previewLabel": "Your mail to Mahesh",
+   "slots": [
+    {
+     "id": "cash",
+     "label": "Items 1 and 2 · Cash payments",
+     "options": [
+      {
+       "id": "a",
+       "text": "Cash payments: the ₹11,800 to Bhamchandra Hardware on 22 December and the ₹14,500 tempo of 3 February were each over ₹10,000 in a day, so both are disallowed, ₹26,300 in all. Please pay such bills by bank transfer.",
+       "why": "Only the hardware bill. For hiring a goods carriage the limit is ₹35,000, and the tempo’s ₹14,500 is inside it."
+      },
+      {
+       "id": "b",
+       "text": "Cash payments: the ₹11,800 to Bhamchandra Hardware on 22 December and the ₹14,500 tempo of 3 February are both allowed, as petty cash was topped up from the bank by cheque the same day.",
+       "why": "The cheque only refilled the cash box. The shop was paid in cash, so its ₹11,800 is disallowed."
+      },
+      {
+       "id": "c",
+       "text": "Cash payments: the ₹11,800 to Bhamchandra Hardware on 22 December is disallowed; the ₹14,500 tempo of 3 February is not, as hiring a goods carriage has a ₹35,000 limit. Please pay such bills by bank transfer.",
+       "why": "The hardware bill is over the day limit, the tempo inside the goods-carriage limit. The last line stops a repeat.",
+       "correct": true
+      }
+     ]
+    },
+    {
+     "id": "tds",
+     "label": "Item 3 · Consultant’s fee",
+     "options": [
+      {
+       "id": "a",
+       "text": "Parag Mahajani’s bill PM/26-27/09 (₹75,000): no TDS was deducted in 2026–27, so the whole ₹75,000 is disallowed for good. Recovering the TDS from his August bill will not make any part of the fee allowable.",
+       "why": "Too far. For a resident payee it is 30% of the fee, not all of it, and it is allowed again in the year the tax is paid."
+      },
+      {
+       "id": "b",
+       "text": "Parag Mahajani’s bill PM/26-27/09 (₹75,000): no TDS was deducted in 2026–27, so 30% of the fee, ₹22,500, is disallowed this year. Please deduct the TDS from his August bill and deposit it with interest.",
+       "why": "The ₹22,500 comes back in the year the tax is paid, so the fix is to deduct and deposit, with interest.",
+       "correct": true
+      },
+      {
+       "id": "c",
+       "text": "Parag Mahajani’s bill PM/26-27/09 (₹75,000): no TDS was deducted, but the fee was paid by NEFT, so nothing is disallowed. Please recover the TDS from him whenever he next bills you and deposit it.",
+       "why": "Paying by bank does not cure a missed deduction. TDS not deducted in the year means 30% of the fee is disallowed this year."
+      }
+     ]
+    },
+    {
+     "id": "pf",
+     "label": "Item 5 · September PF",
+     "options": [
+      {
+       "id": "a",
+       "text": "September PF: the employees’ share of ₹3,22,829 was credited on 27 October 2026, twelve days after your register’s due date, so it is lost for good, as it was last year. It goes in the report as disallowed.",
+       "why": "That was the rule up to 2025–26. From tax year 2026–27, crediting it by the return due date is enough."
+      },
+      {
+       "id": "b",
+       "text": "September PF: the employees’ share of ₹3,22,829 was credited on 27 October 2026, twelve days after your register’s due date, so it is disallowed this year and allowed next year.",
+       "why": "Employees’ PF has no later year. Credited by the return due date, it is allowed; credited after it, it is not allowed at all."
+      },
+      {
+       "id": "c",
+       "text": "September PF: the employees’ share of ₹3,22,829 was credited on 27 October 2026, twelve days after your register’s due date but long before 31 October 2027. For tax year 2026–27 it is allowed.",
+       "why": "Under the 2025 Act as amended in 2026, the test for employees’ PF is the return due date. The delay against Tamhini’s own register does not change the tax answer.",
+       "correct": true
+      }
+     ]
+    },
+    {
+     "id": "dep",
+     "label": "Item 7 · Depreciation",
+     "options": [
+      {
+       "id": "a",
+       "text": "Depreciation: the VMC was first used on 9 April 2027, so it moves to next year’s block. The compressor, capitalised in the audit and running from 17 January, goes in at half rate.",
+       "why": "Depreciation follows use: no use in the year, no depreciation; under 180 days of use, half the rate.",
+       "correct": true
+      },
+      {
+       "id": "b",
+       "text": "Depreciation: the VMC was billed on 22 March and reached Chakan on 24 March, so it stays in this year’s block at half rate. The compressor stays out, as it was first booked to repairs.",
+       "why": "Arrival is not use. And the audit capitalised the compressor, so the block must have it."
+      },
+      {
+       "id": "c",
+       "text": "Depreciation: the VMC and the compressor both reached Chakan before 31 March, so both go into this year’s block at the full 15%, counted from the dates on their purchase bills.",
+       "why": "Full rate needs 180 days of use in the year. The compressor ran 74 days; the VMC was not used before 31 March."
+      }
+     ]
+    },
+    {
+     "id": "qty",
+     "label": "Item 8 · Bearings",
+     "options": [
+      {
+       "id": "a",
+       "text": "Quantitative details: the 250 bearings (6205-2RS) short at the count can stay inside consumption, since the closing figure of 2,150 already agrees with the count.",
+       "why": "The closing figure agreeing is what hides it. The schedule has a shortage column, and 250 belongs there."
+      },
+      {
+       "id": "b",
+       "text": "Quantitative details: the 250 bearings (6205-2RS) short at the count go in the shortage column; consumption becomes the 21,300 issued on slips, not 21,550.",
+       "why": "The shortage is shown on its own, where a reader of the report can see it.",
+       "correct": true
+      },
+      {
+       "id": "c",
+       "text": "Quantitative details: the 250 bearings (6205-2RS) short at the count should be added to taxable income, since no issue slip or other paper supports them.",
+       "why": "The shortage is already in the accounts as a loss. The schedule reports it; nothing is added back."
+      }
+     ]
+    }
+   ],
+   "template": "Subject: Tax audit, tax year 2026–27: points from our checks\n\nMahesh sir,\n\nThese came up in our checks of the tax-audit items. Please go through them before Sudha ma’am signs the report.\n\n{cash}\n\n{tds}\n\n{pf}\n\n{dep}\n\n{qty}\n\nTwo more for your records. The unpaid leave encashment provision is added back as in earlier years: ₹6,20,000, net of the ₹4,60,000 paid in March. The report also shows the interest paid on TDS: ₹6,919 on December’s late deposit and ₹8,388 on the short deductions deposited on 22 January.\n\n{_free}\n\nKunal will send the revised computation once these are settled. Please reply by Friday.\n\nRegards,\nTax team, Bapat Venkatesh & Co.",
+   "freeText": {
+    "label": "Your own line for the mail"
+   },
+   "docs": [
+    "aje",
+    "cash-dec",
+    "memo-0472",
+    "memo-0473",
+    "cash-feb",
+    "rcpt-kute",
+    "gate-out",
+    "bill-pm",
+    "mail-pm",
+    "pf-reg",
+    "far-add",
+    "comm-vmc",
+    "dep-draft",
+    "qd-draft",
+    "stk-6205",
+    "count-bayb"
+   ]
+  }
+ ],
+ "wrap": {
+  "from": "kunal",
+  "text": "The tempo and the September PF look wrong but are allowed in full. Four items change taxable income, and two go in the report with nothing disallowed. Mahesh has till Friday to reply; then I’ll send him the revised computation."
+ },
+ "wrapPartial": {
+  "from": "kunal",
+  "text": "Four items change taxable income and two are report-only; the tempo and the September PF look wrong but are allowed. Sudha signs the report on these notes and Mahesh acts on the mail, so every miss is put right before either leaves my desk."
+ },
+ "wrapRetry": {
+  "from": "kunal",
+  "text": "Each item turns on its own test: per person per day for cash, deducted in the year and paid by 31 October 2027 for TDS, credited by then for employees’ PF, paid by then for leave encashment, first used for the machine. Check the Act, not last year’s file."
+ },
+ "passNeeds": [
+  {
+   "task": "t1",
+   "min": 0.7,
+   "note": "The eight items decide the pass: get more of them fully right, with the call, reason and amount."
+  }
+ ],
+ "model": {
+  "intro": "Where each item goes in Form 26 and what it does to taxable income: items 1, 3 and 6 add ₹6,54,300, and the rebuilt block below adds ₹3,73,125, so these checks add ₹10,27,425 in all.",
+  "blocks": [
+   {
+    "type": "table",
+    "columns": [
+     {
+      "key": "item",
+      "label": "The eight items"
+     },
+     {
+      "key": "f26",
+      "label": "In Form 26"
+     },
+     {
+      "key": "eff",
+      "label": "Taxable income"
+     }
+    ],
+    "rows": [
+     {
+      "item": "1 · Hardware, cash",
+      "f26": "Clause 30: Yes, ₹11,800 paid on 22 December",
+      "eff": "+₹11,800"
+     },
+     {
+      "item": "2 · Tempo, cash",
+      "f26": "Not in clause 30: goods-carriage limit ₹35,000",
+      "eff": "No change"
+     },
+     {
+      "item": "3 · Consultant, no TDS",
+      "f26": "Clause 51(a): Yes, 30% of ₹75,000",
+      "eff": "+₹22,500"
+     },
+     {
+      "item": "4 · December TDS",
+      "f26": "Clause 50(c): Yes, ₹6,919 paid on 11 January and ₹8,388 on 22 January",
+      "eff": "None of December’s expenses disallowed for the delay"
+     },
+     {
+      "item": "5 · September PF",
+      "f26": "Clause 27(b): No, credited before 31 October 2027",
+      "eff": "No change"
+     },
+     {
+      "item": "6 · Leave encashment",
+      "f26": "Clause 32(a): Yes, ₹10,80,000 unpaid; the ₹4,60,000 paid from earlier provisions is allowed",
+      "eff": "+₹6,20,000"
+     },
+     {
+      "item": "7 · VMC-10",
+      "f26": "Clause 36: out of this year’s block",
+      "eff": "+₹4,09,500"
+     },
+     {
+      "item": "8 · Bearings 6205-2RS",
+      "f26": "Clause 53(b): shortage 250 nos; consumption 21,300",
+      "eff": "No change"
+     }
+    ]
+   },
+   {
+    "type": "text",
+    "text": "The block as a whole: the VMC’s ₹4,09,500 comes out and the compressor’s ₹36,375 goes in, so depreciation is ₹2,86,58,775 against Pallavi’s ₹2,90,31,900, and taxable income rises by ₹3,73,125."
+   },
+   {
+    "type": "list",
+    "label": "Also in this file, in Kunal’s own working",
+    "items": [
+     "CSR spend (clause 27(c))",
+     "The gratuity provision (clause 27(a))",
+     "TDS on Kudalwadi Heat Treaters, a firm, at 1% instead of 2% (clause 50(a))",
+     "Dues to micro and small enterprises beyond the MSMED Act time limit (clause 33(b)): Kudalwadi’s ₹14,36,705 and Shirur’s ₹44,660 once its stale cheque was written back"
+    ]
+   },
+   {
+    "type": "note",
+    "from": "kunal",
+    "text": "Every Yes needs its schedule and a working-paper reference. Every item kept out of the report needs its reason in the file, like the goods-carriage limit on the tempo. That’s what Sudha reads first."
+   }
+  ]
+ },
+ "principles": [
+  "Read the test before the amount: a day and a person for cash, the year of deduction for TDS, the day of first use for depreciation.",
+  "A late payment is not always a disallowance, and a blank column is not always safe.",
+  "Know which Act the year falls under: tax year 2026–27 is the first under the 2025 Act, and the employees’ PF test changed with it."
+ ],
+ "earned": {
+  "clause": "checked {items} tax-audit items (cash payments, TDS, late statutory dues, depreciation) against the books[[ and drafted the notes{mail|}]]",
+  "counts": {
+   "items": {
+    "kind": "items",
+    "task": "t1",
+    "answered": "gate"
+   },
+   "mail": {
+    "kind": "correctSlots",
+    "task": "t3"
+   }
+  },
+  "fallback": "checked tax-audit items (cash payments, TDS, late statutory dues, depreciation) against the books[[ and drafted the notes{mail|}]]"
+ },
+ "interview": [
+  {
+   "q": "What is a tax audit, and when does a company need one?",
+   "checking": "Whether you know the tax audit as it is now, under the 2025 Act.",
+   "outline": [
+    "A CA’s audit of the books under section 63 of the 2025 Act, before the return is filed.",
+    "Needed above ₹1 crore of business turnover; ₹10 crore if cash receipts and payments are each within 5%.",
+    "From tax year 2026–27 it is one form, Form 26; earlier years used Forms 3CA/3CB with 3CD."
+   ]
+  },
+  {
+   "q": "Your line says you checked tax-audit items. Which ones, and what did you find?",
+   "checking": "Whether the line is real and you can back it with figures.",
+   "outline": [
+    "In the simulation I checked {items} items: cash, TDS, PF, leave encashment, depreciation and stock.",
+    "₹75,000 paid with no TDS: 30% of the fee, ₹22,500, is disallowed until the tax is paid.",
+    "₹14,500 cash for a tempo looked over the limit, but goods carriages get ₹35,000: allowed."
+   ]
+  }
+ ]
+}

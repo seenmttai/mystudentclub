@@ -1,0 +1,6860 @@
+{
+ "id": "ia-2",
+ "domain": "internal-audit",
+ "number": 2,
+ "title": "Risk-control matrix and expense claims",
+ "minutes": 55,
+ "minutesWhy": "The law row for this level (V3-STRUCTURE 3.3, Internal audit 2) fixes the work at 40 claims tested against a policy grid. A careful first-timer on a phone takes about 55 minutes over the RCM, the 40 claims, the recovery sheet and the four questions (designer round 2: 47 to 64), so the level shows 55, the honest time (house rule 1), above the SPEC 3.2 range of 15 to 40.",
+ "learn": [
+  "What a risk-control matrix (RCM) row holds: risk, control, type and test",
+  "How to test travel claims against a grade and city grid",
+  "How to tell a design gap from a control someone skipped"
+ ],
+ "do": [
+  "Build a five-row risk-control matrix",
+  "Test 40 travel claims and work out what to recover",
+  "Trace the breaches back to the controls"
+ ],
+ "case": {
+  "role": "First-year article assistant on the internal audit team",
+  "client": "Khamang Foods Private Limited, a Ranjangaon company that makes namkeen and chikki. Its board appointed our firm as internal auditor for 2026–27. About 140 of its 620 staff sell in the field.",
+  "team": "Sameer Kulkarni (internal audit senior) and you; Jyoti Pingle, who leads accounts payable, runs the claims desk",
+  "goal": "Document the controls over travel claims in a five-row risk-control matrix, test 40 claims against the policy and work out what to recover.",
+  "period": "Claims settled 1 October 2026 – 31 January 2027",
+  "where": "Accounts office, Ranjangaon plant · Monday 8 February 2027"
+ },
+ "brief": {
+  "from": "sameer",
+  "time": "9:20 am",
+  "messages": [
+   "Morning. Travel claims at Khamang today. Build the five-row RCM from my walkthrough note first, then test my 40 picks against their policy.",
+   "Work out what to recover, claim by claim. All of it to me by 5, please. The closing meeting with Ashwin, their CFO, is on Thursday."
+  ]
+ },
+ "documents": [
+  {
+   "id": "policy",
+   "type": "letter",
+   "style": "policy",
+   "title": "Travel and expense policy · extract",
+   "letterhead": "Khamang Foods Private Limited\nPlot E-14, Ranjangaon MIDC, Taluka Shirur, Pune 412220",
+   "subject": "Travel and expense policy (extract)",
+   "meta": [
+    {
+     "label": "Effective",
+     "value": "1 April 2026"
+    },
+    {
+     "label": "Owner",
+     "value": "CFO"
+    },
+    {
+     "label": "Issued by",
+     "value": "HR"
+    }
+   ],
+   "body": [
+    "## 1. Grades",
+    "G1: sales officers and executives. G2: area sales managers and assistant managers. G3: regional managers and managers. G4: heads of department and above.",
+    "## 2. City classes",
+    "Class A: Mumbai, Pune, Bengaluru, Ahmedabad, Delhi, Hyderabad, Chennai, Kolkata.",
+    "Class B: Nagpur, Nashik, Chhatrapati Sambhajinagar, Panaji, Vadodara, Surat.",
+    "Class C: every other place.",
+    "## 3. Hotel and daily allowance (₹)",
+    "Hotel, per night, taxes included:",
+    {
+     "table": {
+      "columns": [
+       {
+        "key": "g",
+        "label": "Grade"
+       },
+       {
+        "key": "a",
+        "label": "Class A",
+        "format": "inr"
+       },
+       {
+        "key": "b",
+        "label": "Class B",
+        "format": "inr"
+       },
+       {
+        "key": "c",
+        "label": "Class C",
+        "format": "inr"
+       }
+      ],
+      "rows": [
+       {
+        "g": "G1",
+        "a": 2500,
+        "b": 1800,
+        "c": 1200
+       },
+       {
+        "g": "G2",
+        "a": 3500,
+        "b": 2500,
+        "c": 1800
+       },
+       {
+        "g": "G3",
+        "a": 5000,
+        "b": 3500,
+        "c": 2500
+       }
+      ]
+     }
+    },
+    "Daily allowance (DA), per day:",
+    {
+     "table": {
+      "columns": [
+       {
+        "key": "g",
+        "label": "Grade"
+       },
+       {
+        "key": "a",
+        "label": "Class A",
+        "format": "inr"
+       },
+       {
+        "key": "b",
+        "label": "Class B",
+        "format": "inr"
+       },
+       {
+        "key": "c",
+        "label": "Class C",
+        "format": "inr"
+       }
+      ],
+      "rows": [
+       {
+        "g": "G1",
+        "a": 450,
+        "b": 350,
+        "c": 300
+       },
+       {
+        "g": "G2",
+        "a": 600,
+        "b": 500,
+        "c": 400
+       },
+       {
+        "g": "G3",
+        "a": 800,
+        "b": 650,
+        "c": 500
+       }
+      ]
+     }
+    },
+    "DA is paid for each day away from the headquarters city on company work, the days of going and coming back included. It covers meals and small expenses and needs no bill. It is not paid for a day spent in the headquarters city.",
+    "G4: hotel and meals at actuals, with the CFO’s approval in the ERP.",
+    "## 4. Travel",
+    "- G1: train (AC 3-tier) or bus. G2: train (AC 2-tier) or bus. G3: train (AC 2-tier) or bus, or economy air for a trip over 500 km. G4: economy air.",
+    "- Own vehicle, on the kilometres in the trip log: two-wheeler ₹4 a km for every grade; car ₹10 a km from G2 up. Below G2, a car trip is paid at the two-wheeler rate.",
+    "- Auto, taxi or local bus in and around the town visited: at actuals.",
+    "## 5. Claims",
+    "- Claim in the ERP within 30 days of the last day of the trip. A later claim is paid only with the CFO’s approval.",
+    "- Attach the original bill for every item of ₹300 or more. DA needs no bill.",
+    "- Travel on a Sunday or a company holiday needs the manager’s approval in the ERP before the trip. Company holidays from October to January: 2 October, 7–11 November (Diwali shutdown), 25 December and 26 January.",
+    "- One bill is claimed once. A shared room is claimed once, by the senior person.",
+    "- A meal with distributors or customers: at actuals, with the bill and the guests’ names.",
+    "- Not paid: alcohol, tobacco, fines and penalties, personal items, family members’ costs.",
+    "## 6. Approval",
+    "- The reporting manager approves each claim in the ERP. A claim above ₹25,000 also needs the National Sales Manager (sales staff) or the head of the department.",
+    "- Nobody approves their own claim. A head of department’s claims go to the Managing Director."
+   ],
+   "sign": {
+    "name": "Ashwin Pradhan",
+    "role": "Chief Financial Officer",
+    "hand": "A. Pradhan"
+   }
+  },
+  {
+   "id": "limits",
+   "type": "table",
+   "style": "plain",
+   "title": "Travel policy · Annexure: limits grid",
+   "tab": "Limits",
+   "kindLabel": "Policy annexure",
+   "heading": "Travel policy · Annexure: limits grid (₹)",
+   "subtitle": "Khamang Foods Private Limited · effective 1 April 2026",
+   "meta": [
+    {
+     "label": "Class A",
+     "value": "Mumbai, Pune, Bengaluru, Ahmedabad, Delhi, Hyderabad, Chennai, Kolkata"
+    },
+    {
+     "label": "Class B",
+     "value": "Nagpur, Nashik, Chhatrapati Sambhajinagar, Panaji, Vadodara, Surat"
+    },
+    {
+     "label": "Class C",
+     "value": "Every other place"
+    }
+   ],
+   "columns": [
+    {
+     "key": "g",
+     "label": "Grade"
+    },
+    {
+     "key": "a",
+     "label": "Class A",
+     "format": "inr"
+    },
+    {
+     "key": "b",
+     "label": "Class B",
+     "format": "inr"
+    },
+    {
+     "key": "c",
+     "label": "Class C",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "g": "Hotel, a night",
+     "_class": "head"
+    },
+    {
+     "g": "G1",
+     "a": 2500,
+     "b": 1800,
+     "c": 1200
+    },
+    {
+     "g": "G2",
+     "a": 3500,
+     "b": 2500,
+     "c": 1800
+    },
+    {
+     "g": "G3",
+     "a": 5000,
+     "b": 3500,
+     "c": 2500
+    },
+    {
+     "g": "DA, a day",
+     "_class": "head"
+    },
+    {
+     "g": "G1",
+     "a": 450,
+     "b": 350,
+     "c": 300
+    },
+    {
+     "g": "G2",
+     "a": 600,
+     "b": 500,
+     "c": 400
+    },
+    {
+     "g": "G3",
+     "a": 800,
+     "b": 650,
+     "c": 500
+    }
+   ],
+   "notes": [
+    "Hotel limits include taxes. DA is paid for each day away from the headquarters city.",
+    "G4: hotel and meals at actuals, with the CFO’s approval in the ERP.",
+    "Own vehicle, on the kilometres in the trip log: two-wheeler ₹4 a km for every grade; car ₹10 a km from G2 up (below G2, ₹4 a km)."
+   ],
+   "annotations": [
+    {
+     "kind": "sign",
+     "text": "A. Pradhan",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -3
+    }
+   ],
+   "check": false
+  },
+  {
+   "id": "walk-note",
+   "type": "letter",
+   "style": "memo",
+   "title": "Sameer’s walkthrough note · claims",
+   "tab": "Walkthrough note",
+   "letterhead": "Bapat Venkatesh & Co. · Internal audit",
+   "memoTitle": "Walkthrough note",
+   "to": [
+    "File: Khamang Foods, travel claims"
+   ],
+   "from": "Sameer Kulkarni",
+   "date": "05-02-2027",
+   "subject": "How a travel claim moves (with Jyoti Pingle, Accounts, and Priyanka Salunkhe, HR)",
+   "body": [
+    "- After the trip the employee keys the claim into the ERP’s travel module, with photos of the bills. The module fills in the grade from the HR master and the city class from its own city table.",
+    "- **Grade caps.** The module will not save a hotel or DA line above the grade’s limit for that city class. Own-car and two-wheeler rates are one figure each, for every grade.",
+    "- **Duplicate block.** The module refuses a bill number the same employee has already used in a claim.",
+    "- **Manager approval.** The claim goes to the reporting manager in the HR master. Priyanka says managers are told to check the dates and places against the tour plan keyed in before the trip, then approve. Above ₹25,000 it also goes to the National Sales Manager (NSM) or the department head.",
+    "- **Bill check.** The originals reach Accounts in an envelope with the claim number. Jyoti’s claims desk ticks each line against the original bill, or the trip log for an own vehicle, and puts the claim in Friday’s payment batch. A claim sent after 30 days stays out of the batch until Ashwin approves it as a late claim in the ERP.",
+    "- **CFO’s monthly list.** On the 5th of each month Accounts print a list of the last month’s claims above ₹25,000 and claims sent after 30 days. Ashwin reads it, writes his queries on it and signs it.",
+    "- **Policy sign-off.** Every April each employee signs the travel policy as read.",
+    "",
+    "Settings print from IT on file. Picks for testing: my list of 40."
+   ],
+   "sign": {
+    "name": "Sameer Kulkarni",
+    "role": "Internal audit senior",
+    "hand": "Sameer K."
+   }
+  },
+  {
+   "id": "settings",
+   "type": "table",
+   "style": "plain",
+   "title": "Travel module · control settings",
+   "tab": "Settings",
+   "kindLabel": "System print",
+   "heading": "ERP travel module · control settings",
+   "subtitle": "Printed 05-02-2027 by the IT helpdesk for the internal auditors",
+   "columns": [
+    {
+     "key": "set",
+     "label": "Setting"
+    },
+    {
+     "key": "val",
+     "label": "Value"
+    }
+   ],
+   "rows": [
+    {
+     "set": "Hotel and DA limits",
+     "val": "On. A line above the limit for the grade and the city class cannot be saved. G4: no limit."
+    },
+    {
+     "set": "Limits table",
+     "val": "The figures of the policy grid of 1 April 2026"
+    },
+    {
+     "set": "City table, class A",
+     "val": "Mumbai, Pune, Bengaluru, Ahmedabad, Delhi, Hyderabad, Chennai, Kolkata, Nagpur"
+    },
+    {
+     "set": "City table, class B",
+     "val": "Nashik, Chhatrapati Sambhajinagar, Panaji, Vadodara, Surat"
+    },
+    {
+     "set": "City table, class C",
+     "val": "All other places"
+    },
+    {
+     "set": "City table changed",
+     "val": "01-04-2026 by it.admin"
+    },
+    {
+     "set": "Own car",
+     "val": "₹10 a km, all grades"
+    },
+    {
+     "set": "Two-wheeler",
+     "val": "₹4 a km, all grades"
+    },
+    {
+     "set": "Duplicate bill check",
+     "val": "On. Rejects a bill number already used in the same employee’s claims."
+    },
+    {
+     "set": "Approval route",
+     "val": "Reporting manager from the HR master; above ₹25,000 also the NSM or the department head"
+    },
+    {
+     "set": "No reporting manager",
+     "val": "The claim goes to the employee’s own approvals list"
+    },
+    {
+     "set": "Claims after 30 days",
+     "val": "Allowed; shown on the monthly list"
+    },
+    {
+     "set": "Sundays and holidays",
+     "val": "Not checked"
+    }
+   ],
+   "check": false
+  },
+  {
+   "id": "picks",
+   "type": "table",
+   "style": "register",
+   "title": "Sameer’s 40 picks",
+   "heading": "Travel claims: Sameer’s 40 picks",
+   "company": "Khamang Foods Private Limited",
+   "subtitle": "From the 1,186 claims settled 1 October 2026 – 31 January 2027",
+   "columns": [
+    {
+     "key": "n",
+     "label": "Pick"
+    },
+    {
+     "key": "emp",
+     "label": "Employee"
+    },
+    {
+     "key": "g",
+     "label": "Grade"
+    },
+    {
+     "key": "why",
+     "label": "Why picked"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "no",
+     "label": "Claim no.",
+     "mono": true
+    }
+   ],
+   "rows": [
+    {
+     "n": "1",
+     "no": "TE/26-27/2435",
+     "emp": "Rahul Shirke",
+     "g": "G1",
+     "amt": 2270,
+     "why": "A spread of the rest"
+    },
+    {
+     "n": "2",
+     "no": "TE/26-27/2444",
+     "emp": "Swapnil Gade",
+     "g": "G1",
+     "amt": 3870,
+     "why": "Hotels near the limit"
+    },
+    {
+     "n": "3",
+     "no": "TE/26-27/2473",
+     "emp": "Rahul Shirke",
+     "g": "G1",
+     "amt": 2560,
+     "why": "Hotel at the limit"
+    },
+    {
+     "n": "4",
+     "no": "TE/26-27/2521",
+     "emp": "Santosh Hegde",
+     "g": "G2",
+     "amt": 5300,
+     "why": "Hotel near the limit"
+    },
+    {
+     "n": "5",
+     "no": "TE/26-27/2540",
+     "emp": "Prajakta Kulkarni",
+     "g": "G1",
+     "amt": 952,
+     "why": "Own vehicle"
+    },
+    {
+     "n": "6",
+     "no": "TE/26-27/2542",
+     "emp": "Nilesh Bhujade",
+     "g": "G1",
+     "amt": 3640,
+     "why": "A spread of the rest"
+    },
+    {
+     "n": "7",
+     "no": "TE/26-27/2579",
+     "emp": "Akash Thorve",
+     "g": "G1",
+     "amt": 3890,
+     "why": "A spread of the rest"
+    },
+    {
+     "n": "8",
+     "no": "TE/26-27/2585",
+     "emp": "Vikas Pawar",
+     "g": "G2",
+     "amt": 7900,
+     "why": "Own vehicle; hotel near the limit"
+    },
+    {
+     "n": "9",
+     "no": "TE/26-27/2675",
+     "emp": "Rekha Naik",
+     "g": "G3",
+     "amt": 8380,
+     "why": "Regional manager’s claim"
+    },
+    {
+     "n": "10",
+     "no": "TE/26-27/2713",
+     "emp": "Prajakta Kulkarni",
+     "g": "G1",
+     "amt": 1272,
+     "why": "Own vehicle"
+    },
+    {
+     "n": "11",
+     "no": "TE/26-27/2809",
+     "emp": "Swapnil Gade",
+     "g": "G1",
+     "amt": 4280,
+     "why": "A spread of the rest"
+    },
+    {
+     "n": "12",
+     "no": "TE/26-27/2848",
+     "emp": "Faisal Momin",
+     "g": "G1",
+     "amt": 3290,
+     "why": "Sent in near the 30-day limit"
+    },
+    {
+     "n": "13",
+     "no": "TE/26-27/2876",
+     "emp": "Akash Thorve",
+     "g": "G1",
+     "amt": 8530,
+     "why": "Hotel near the limit"
+    },
+    {
+     "n": "14",
+     "no": "TE/26-27/2915",
+     "emp": "Nitin Bhosale",
+     "g": "G3",
+     "amt": 9380,
+     "why": "Own vehicle; other items"
+    },
+    {
+     "n": "15",
+     "no": "TE/26-27/2944",
+     "emp": "Santosh Hegde",
+     "g": "G2",
+     "amt": 26120,
+     "why": "Above ₹25,000"
+    },
+    {
+     "n": "16",
+     "no": "TE/26-27/3011",
+     "emp": "Deepak Iyer",
+     "g": "G4",
+     "amt": 33260,
+     "why": "Head of department’s claim; above ₹25,000"
+    },
+    {
+     "n": "17",
+     "no": "TE/26-27/3015",
+     "emp": "Rekha Naik",
+     "g": "G3",
+     "amt": 4270,
+     "why": "Regional manager’s claim"
+    },
+    {
+     "n": "18",
+     "no": "TE/26-27/3040",
+     "emp": "Priyanka Salunkhe",
+     "g": "G3",
+     "amt": 6120,
+     "why": "Manager’s claim"
+    },
+    {
+     "n": "19",
+     "no": "TE/26-27/3043",
+     "emp": "Rahul Shirke",
+     "g": "G1",
+     "amt": 1960,
+     "why": "A spread of the rest"
+    },
+    {
+     "n": "20",
+     "no": "TE/26-27/3059",
+     "emp": "Santosh Hegde",
+     "g": "G2",
+     "amt": 5050,
+     "why": "A spread of the rest"
+    },
+    {
+     "n": "21",
+     "no": "TE/26-27/3078",
+     "emp": "Prajakta Kulkarni",
+     "g": "G1",
+     "amt": 3890,
+     "why": "Own vehicle"
+    },
+    {
+     "n": "22",
+     "no": "TE/26-27/3082",
+     "emp": "Faisal Momin",
+     "g": "G1",
+     "amt": 640,
+     "why": "A spread of the rest"
+    },
+    {
+     "n": "23",
+     "no": "TE/26-27/3107",
+     "emp": "Kavita Lokhande",
+     "g": "G4",
+     "amt": 24290,
+     "why": "Head of department’s claim"
+    },
+    {
+     "n": "24",
+     "no": "TE/26-27/3116",
+     "emp": "Vikas Pawar",
+     "g": "G2",
+     "amt": 9730,
+     "why": "Own vehicle; meal bills"
+    },
+    {
+     "n": "25",
+     "no": "TE/26-27/3145",
+     "emp": "Jyoti Pingle",
+     "g": "G2",
+     "amt": 1248,
+     "why": "Own vehicle"
+    },
+    {
+     "n": "26",
+     "no": "TE/26-27/3147",
+     "emp": "Nilesh Bhujade",
+     "g": "G1",
+     "amt": 4080,
+     "why": "A spread of the rest"
+    },
+    {
+     "n": "27",
+     "no": "TE/26-27/3308",
+     "emp": "Akash Thorve",
+     "g": "G1",
+     "amt": 2220,
+     "why": "A spread of the rest"
+    },
+    {
+     "n": "28",
+     "no": "TE/26-27/3347",
+     "emp": "Rahul Shirke",
+     "g": "G1",
+     "amt": 5240,
+     "why": "Sent in after 30 days"
+    },
+    {
+     "n": "29",
+     "no": "TE/26-27/3350",
+     "emp": "Swapnil Gade",
+     "g": "G1",
+     "amt": 2170,
+     "why": "Sent in after 30 days"
+    },
+    {
+     "n": "30",
+     "no": "TE/26-27/3356",
+     "emp": "Swapnil Gade",
+     "g": "G1",
+     "amt": 8460,
+     "why": "A Sunday in the dates"
+    },
+    {
+     "n": "31",
+     "no": "TE/26-27/3366",
+     "emp": "Nilesh Bhujade",
+     "g": "G1",
+     "amt": 2970,
+     "why": "A Sunday in the dates"
+    },
+    {
+     "n": "32",
+     "no": "TE/26-27/3376",
+     "emp": "Rekha Naik",
+     "g": "G3",
+     "amt": 4630,
+     "why": "The Kolhapur meet"
+    },
+    {
+     "n": "33",
+     "no": "TE/26-27/3382",
+     "emp": "Santosh Hegde",
+     "g": "G2",
+     "amt": 3020,
+     "why": "The Kolhapur meet"
+    },
+    {
+     "n": "34",
+     "no": "TE/26-27/3395",
+     "emp": "Faisal Momin",
+     "g": "G1",
+     "amt": 2700,
+     "why": "The Kolhapur meet"
+    },
+    {
+     "n": "35",
+     "no": "TE/26-27/3414",
+     "emp": "Prajakta Kulkarni",
+     "g": "G1",
+     "amt": 884,
+     "why": "Own vehicle"
+    },
+    {
+     "n": "36",
+     "no": "TE/26-27/3452",
+     "emp": "Faisal Momin",
+     "g": "G1",
+     "amt": 3680,
+     "why": "A spread of the rest"
+    },
+    {
+     "n": "37",
+     "no": "TE/26-27/3456",
+     "emp": "Nilesh Bhujade",
+     "g": "G1",
+     "amt": 2480,
+     "why": "A spread of the rest"
+    },
+    {
+     "n": "38",
+     "no": "TE/26-27/3462",
+     "emp": "Rahul Shirke",
+     "g": "G1",
+     "amt": 2080,
+     "why": "A spread of the rest"
+    },
+    {
+     "n": "39",
+     "no": "TE/26-27/3465",
+     "emp": "Akash Thorve",
+     "g": "G1",
+     "amt": 3800,
+     "why": "A spread of the rest"
+    },
+    {
+     "n": "40",
+     "no": "TE/26-27/3500",
+     "emp": "Vikas Pawar",
+     "g": "G2",
+     "amt": 4780,
+     "why": "A Sunday in the dates"
+    }
+   ],
+   "notes": [
+    "Picked for risk, not at random: amounts near a limit, own vehicles, Sundays, late claims, heads’ claims and meals, and a spread of the rest."
+   ],
+   "check": false
+  },
+  {
+   "id": "cl-01",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 1 · Claim print",
+   "tab": "Claim",
+   "group": "c01",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/2435",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Rahul Shirke (K-E0158)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G1 · Kolhapur"
+    },
+    {
+     "label": "Reports to",
+     "value": "Vikas Pawar"
+    },
+    {
+     "label": "Trip",
+     "value": "Sangli and Miraj market visits · 05-10-2026 to 06-10-2026"
+    },
+    {
+     "label": "Submitted",
+     "value": "08-10-2026"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Vikas Pawar · 09-10-2026"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 13-10-2026 · paid 16-10-2026"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Mon 05-10",
+     "item": "Bus, Kolhapur–Sangli · ticket",
+     "amt": 140
+    },
+    {
+     "date": "Mon 05-10",
+     "item": "Hotel, Sangli (C) · 1 night × ₹1,150 · bill SNG/4471",
+     "amt": 1150
+    },
+    {
+     "date": "Mon 05-10",
+     "item": "DA, Sangli (C) · 2 days × ₹300 · Mon to Tue",
+     "amt": 600
+    },
+    {
+     "date": "Tue 06-10",
+     "item": "Auto, Sangli–Miraj · no bill",
+     "amt": 220
+    },
+    {
+     "date": "Tue 06-10",
+     "item": "Bus, Miraj–Kolhapur · ticket",
+     "amt": 160
+    },
+    {
+     "date": "Total",
+     "amt": 2270,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-02",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 2 · Claim print",
+   "tab": "Claim",
+   "group": "c02",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/2444",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Swapnil Gade (K-E0154)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G1 · Nashik"
+    },
+    {
+     "label": "Reports to",
+     "value": "Vikas Pawar"
+    },
+    {
+     "label": "Trip",
+     "value": "Malegaon and Dhule distributor visits · 05-10-2026 to 07-10-2026"
+    },
+    {
+     "label": "Submitted",
+     "value": "09-10-2026"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Vikas Pawar · 12-10-2026"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 14-10-2026 · paid 16-10-2026"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Mon 05-10",
+     "item": "Bus, Nashik–Malegaon · ticket",
+     "amt": 230
+    },
+    {
+     "date": "Mon 05-10",
+     "item": "Hotel, Malegaon (C) · 1 night × ₹1,100 · bill MLG/0815",
+     "amt": 1100
+    },
+    {
+     "date": "Mon 05-10",
+     "item": "DA, Malegaon and Dhule (C) · 3 days × ₹300 · Mon to Wed",
+     "amt": 900
+    },
+    {
+     "date": "Tue 06-10",
+     "item": "Bus, Malegaon–Dhule · ticket",
+     "amt": 150
+    },
+    {
+     "date": "Tue 06-10",
+     "item": "Hotel, Dhule (C) · 1 night × ₹1,180 · bill DHL/2290",
+     "amt": 1180
+    },
+    {
+     "date": "Wed 07-10",
+     "item": "Bus, Dhule–Nashik · ticket",
+     "amt": 310
+    },
+    {
+     "date": "Total",
+     "amt": 3870,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-03",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 3 · Claim print",
+   "tab": "Claim",
+   "group": "c03",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/2473",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Rahul Shirke (K-E0158)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G1 · Kolhapur"
+    },
+    {
+     "label": "Reports to",
+     "value": "Vikas Pawar"
+    },
+    {
+     "label": "Trip",
+     "value": "Ratnagiri distributor visit · 08-10-2026 to 09-10-2026"
+    },
+    {
+     "label": "Submitted",
+     "value": "12-10-2026"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Vikas Pawar · 13-10-2026"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 15-10-2026 · paid 16-10-2026"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Thu 08-10",
+     "item": "Bus, Kolhapur–Ratnagiri · ticket",
+     "amt": 380
+    },
+    {
+     "date": "Thu 08-10",
+     "item": "Hotel, Ratnagiri (C) · 1 night × ₹1,200 · bill RTN/1162",
+     "amt": 1200
+    },
+    {
+     "date": "Thu 08-10",
+     "item": "DA, Ratnagiri (C) · 2 days × ₹300 · Thu to Fri",
+     "amt": 600
+    },
+    {
+     "date": "Fri 09-10",
+     "item": "Bus, Ratnagiri–Kolhapur · ticket",
+     "amt": 380
+    },
+    {
+     "date": "Total",
+     "amt": 2560,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-04",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 4 · Claim print",
+   "tab": "Claim",
+   "group": "c04",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/2521",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Santosh Hegde (K-E0096)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G2 · Hubballi"
+    },
+    {
+     "label": "Reports to",
+     "value": "Rekha Naik"
+    },
+    {
+     "label": "Trip",
+     "value": "Belagavi distributor visits · 13-10-2026 to 15-10-2026"
+    },
+    {
+     "label": "Submitted",
+     "value": "17-10-2026"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Rekha Naik · 19-10-2026"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 21-10-2026 · paid 23-10-2026"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Tue 13-10",
+     "item": "Bus, Hubballi–Belagavi · ticket",
+     "amt": 210
+    },
+    {
+     "date": "Tue 13-10",
+     "item": "Hotel, Belagavi (C) · 2 nights × ₹1,750 · bill BGM/3307",
+     "amt": 3500
+    },
+    {
+     "date": "Tue 13-10",
+     "item": "DA, Belagavi (C) · 3 days × ₹400 · Tue to Thu",
+     "amt": 1200
+    },
+    {
+     "date": "Wed 14-10",
+     "item": "Auto, Belagavi market · no bill",
+     "amt": 180
+    },
+    {
+     "date": "Thu 15-10",
+     "item": "Bus, Belagavi–Hubballi · ticket",
+     "amt": 210
+    },
+    {
+     "date": "Total",
+     "amt": 5300,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-05",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 5 · Claim print",
+   "tab": "Claim",
+   "group": "c05",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/2540",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Prajakta Kulkarni (K-E0171)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G1 · Pune"
+    },
+    {
+     "label": "Reports to",
+     "value": "Vikas Pawar"
+    },
+    {
+     "label": "Trip",
+     "value": "Pune city retailer visits · 12-10-2026 to 16-10-2026"
+    },
+    {
+     "label": "Submitted",
+     "value": "19-10-2026"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Vikas Pawar · 20-10-2026"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 22-10-2026 · paid 23-10-2026"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Fri 16-10",
+     "item": "Two-wheeler, Pune city retail beats, 12–16 Oct · 238 km × ₹4 · trip log",
+     "amt": 952
+    },
+    {
+     "date": "Total",
+     "amt": 952,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-06",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 6 · Claim print",
+   "tab": "Claim",
+   "group": "c06",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/2542",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Nilesh Bhujade (K-E0182)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G1 · Nagpur"
+    },
+    {
+     "label": "Reports to",
+     "value": "Deepak Iyer"
+    },
+    {
+     "label": "Trip",
+     "value": "Chandrapur distributor visits · 14-10-2026 to 16-10-2026"
+    },
+    {
+     "label": "Submitted",
+     "value": "19-10-2026"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Deepak Iyer · 20-10-2026"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 22-10-2026 · paid 23-10-2026"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Wed 14-10",
+     "item": "Bus, Nagpur–Chandrapur · ticket",
+     "amt": 290
+    },
+    {
+     "date": "Wed 14-10",
+     "item": "Hotel, Chandrapur (C) · 2 nights × ₹1,000 · bill CHD/0638",
+     "amt": 2000
+    },
+    {
+     "date": "Wed 14-10",
+     "item": "DA, Chandrapur (C) · 3 days × ₹300 · Wed to Fri",
+     "amt": 900
+    },
+    {
+     "date": "Thu 15-10",
+     "item": "Auto, Chandrapur market · no bill",
+     "amt": 160
+    },
+    {
+     "date": "Fri 16-10",
+     "item": "Bus, Chandrapur–Nagpur · ticket",
+     "amt": 290
+    },
+    {
+     "date": "Total",
+     "amt": 3640,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-07",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 7 · Claim print",
+   "tab": "Claim",
+   "group": "c07",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/2579",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Akash Thorve (K-E0177)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G1 · Chhatrapati Sambhajinagar"
+    },
+    {
+     "label": "Reports to",
+     "value": "Deepak Iyer"
+    },
+    {
+     "label": "Trip",
+     "value": "Beed and Parbhani distributor visits · 19-10-2026 to 21-10-2026"
+    },
+    {
+     "label": "Submitted",
+     "value": "23-10-2026"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Deepak Iyer · 26-10-2026"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 28-10-2026 · paid 30-10-2026"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Mon 19-10",
+     "item": "Bus, Chhatrapati Sambhajinagar–Beed · ticket",
+     "amt": 280
+    },
+    {
+     "date": "Mon 19-10",
+     "item": "Hotel, Beed (C) · 1 night × ₹1,050 · bill BED/1204",
+     "amt": 1050
+    },
+    {
+     "date": "Mon 19-10",
+     "item": "DA, Beed and Parbhani (C) · 3 days × ₹300 · Mon to Wed",
+     "amt": 900
+    },
+    {
+     "date": "Tue 20-10",
+     "item": "Bus, Beed–Parbhani · ticket",
+     "amt": 240
+    },
+    {
+     "date": "Tue 20-10",
+     "item": "Hotel, Parbhani (C) · 1 night × ₹1,100 · bill PBN/0977",
+     "amt": 1100
+    },
+    {
+     "date": "Wed 21-10",
+     "item": "Bus, Parbhani–Chhatrapati Sambhajinagar · ticket",
+     "amt": 320
+    },
+    {
+     "date": "Total",
+     "amt": 3890,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-08",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 8 · Claim print",
+   "tab": "Claim",
+   "group": "c08",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/2585",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Vikas Pawar (K-E0102)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G2 · Pune"
+    },
+    {
+     "label": "Reports to",
+     "value": "Deepak Iyer"
+    },
+    {
+     "label": "Trip",
+     "value": "Nashik and Sinnar distributor review · 20-10-2026 to 21-10-2026"
+    },
+    {
+     "label": "Submitted",
+     "value": "23-10-2026"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Deepak Iyer · 26-10-2026"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 28-10-2026 · paid 30-10-2026"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Tue 20-10",
+     "item": "Own car, Pune–Nashik–Sinnar–Pune · 452 km × ₹10 · trip log",
+     "amt": 4520
+    },
+    {
+     "date": "Tue 20-10",
+     "item": "Hotel, Nashik (B) · 1 night × ₹2,480 · bill NSK/5521",
+     "amt": 2480
+    },
+    {
+     "date": "Tue 20-10",
+     "item": "DA, Nashik (B) · 1 day × ₹500 · Tue",
+     "amt": 500
+    },
+    {
+     "date": "Wed 21-10",
+     "item": "DA, Sinnar (C) · 1 day × ₹400 · Wed",
+     "amt": 400
+    },
+    {
+     "date": "Total",
+     "amt": 7900,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-09",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 9 · Claim print",
+   "tab": "Claim",
+   "group": "c09",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/2675",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Rekha Naik (K-E0061)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G3 · Panaji"
+    },
+    {
+     "label": "Reports to",
+     "value": "Deepak Iyer"
+    },
+    {
+     "label": "Trip",
+     "value": "Hubballi and Dharwad regional review · 27-10-2026 to 29-10-2026"
+    },
+    {
+     "label": "Submitted",
+     "value": "02-11-2026"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Deepak Iyer · 03-11-2026"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 04-11-2026 · paid 06-11-2026"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Tue 27-10",
+     "item": "Bus, Panaji–Hubballi · ticket",
+     "amt": 640
+    },
+    {
+     "date": "Tue 27-10",
+     "item": "Hotel, Hubballi (C) · 2 nights × ₹2,350 · bill HBL/7718",
+     "amt": 4700
+    },
+    {
+     "date": "Tue 27-10",
+     "item": "DA, Hubballi (C) · 3 days × ₹500 · Tue to Thu",
+     "amt": 1500
+    },
+    {
+     "date": "Wed 28-10",
+     "item": "Taxi, Hubballi–Dharwad and back · bill TX/2210",
+     "amt": 900
+    },
+    {
+     "date": "Thu 29-10",
+     "item": "Bus, Hubballi–Panaji · ticket",
+     "amt": 640
+    },
+    {
+     "date": "Total",
+     "amt": 8380,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-10",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 10 · Claim print",
+   "tab": "Claim",
+   "group": "c10",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/2713",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Prajakta Kulkarni (K-E0171)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G1 · Pune"
+    },
+    {
+     "label": "Reports to",
+     "value": "Vikas Pawar"
+    },
+    {
+     "label": "Trip",
+     "value": "Bhor and Saswad retailer visits · 03-11-2026 to 04-11-2026"
+    },
+    {
+     "label": "Submitted",
+     "value": "06-11-2026"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Vikas Pawar · 16-11-2026"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 18-11-2026 · paid 20-11-2026"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Tue 03-11",
+     "item": "Two-wheeler, Pune–Bhor–Pune, Pune–Saswad–Pune · 168 km × ₹4 · trip log",
+     "amt": 672
+    },
+    {
+     "date": "Tue 03-11",
+     "item": "DA, Bhor and Saswad (C) · 2 days × ₹300 · Tue to Wed",
+     "amt": 600
+    },
+    {
+     "date": "Total",
+     "amt": 1272,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-11",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 11 · Claim print",
+   "tab": "Claim",
+   "group": "c11",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/2809",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Swapnil Gade (K-E0154)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G1 · Nashik"
+    },
+    {
+     "label": "Reports to",
+     "value": "Vikas Pawar"
+    },
+    {
+     "label": "Trip",
+     "value": "Jalgaon distributor visits · 03-11-2026 to 05-11-2026"
+    },
+    {
+     "label": "Submitted",
+     "value": "16-11-2026"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Vikas Pawar · 17-11-2026"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 18-11-2026 · paid 20-11-2026"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Tue 03-11",
+     "item": "Bus, Nashik–Jalgaon · ticket",
+     "amt": 420
+    },
+    {
+     "date": "Tue 03-11",
+     "item": "Hotel, Jalgaon (C) · 2 nights × ₹1,150 · bill JLG/6603",
+     "amt": 2300
+    },
+    {
+     "date": "Tue 03-11",
+     "item": "DA, Jalgaon (C) · 3 days × ₹300 · Tue to Thu",
+     "amt": 900
+    },
+    {
+     "date": "Wed 04-11",
+     "item": "Auto, Jalgaon market · no bill",
+     "amt": 240
+    },
+    {
+     "date": "Thu 05-11",
+     "item": "Bus, Jalgaon–Nashik · ticket",
+     "amt": 420
+    },
+    {
+     "date": "Total",
+     "amt": 4280,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-12",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 12 · Claim print",
+   "tab": "Claim",
+   "group": "c12",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/2848",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Faisal Momin (K-E0163)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G1 · Solapur"
+    },
+    {
+     "label": "Reports to",
+     "value": "Vikas Pawar"
+    },
+    {
+     "label": "Trip",
+     "value": "Pandharpur and Barshi distributor visits · 19-10-2026 to 21-10-2026"
+    },
+    {
+     "label": "Submitted",
+     "value": "20-11-2026"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Vikas Pawar · 23-11-2026"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 25-11-2026 · paid 27-11-2026"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Mon 19-10",
+     "item": "Bus, Solapur–Pandharpur · ticket",
+     "amt": 170
+    },
+    {
+     "date": "Mon 19-10",
+     "item": "Hotel, Pandharpur (C) · 1 night × ₹1,000 · bill PDP/2215",
+     "amt": 1000
+    },
+    {
+     "date": "Mon 19-10",
+     "item": "DA, Pandharpur and Barshi (C) · 3 days × ₹300 · Mon to Wed",
+     "amt": 900
+    },
+    {
+     "date": "Tue 20-10",
+     "item": "Bus, Pandharpur–Barshi · ticket",
+     "amt": 150
+    },
+    {
+     "date": "Tue 20-10",
+     "item": "Hotel, Barshi (C) · 1 night × ₹950 · bill BRS/0419",
+     "amt": 950
+    },
+    {
+     "date": "Wed 21-10",
+     "item": "Bus, Barshi–Solapur · ticket",
+     "amt": 120
+    },
+    {
+     "date": "Total",
+     "amt": 3290,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-13",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 13 · Claim print",
+   "tab": "Claim",
+   "group": "c13",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/2876",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Akash Thorve (K-E0177)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G1 · Chhatrapati Sambhajinagar"
+    },
+    {
+     "label": "Reports to",
+     "value": "Deepak Iyer"
+    },
+    {
+     "label": "Trip",
+     "value": "Vidarbha and Marathwada sales review, Nagpur · 18-11-2026 to 20-11-2026"
+    },
+    {
+     "label": "Submitted",
+     "value": "23-11-2026"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Deepak Iyer · 24-11-2026"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 26-11-2026 · paid 27-11-2026"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Wed 18-11",
+     "item": "Bus, Chhatrapati Sambhajinagar–Nagpur · ticket",
+     "amt": 1050
+    },
+    {
+     "date": "Wed 18-11",
+     "item": "Hotel, Nagpur (A) · 2 nights × ₹2,450 · bill NGP/3391",
+     "amt": 4900
+    },
+    {
+     "date": "Wed 18-11",
+     "item": "DA, Nagpur (A) · 3 days × ₹450 · Wed to Fri",
+     "amt": 1350
+    },
+    {
+     "date": "Thu 19-11",
+     "item": "Auto, hotel–office · no bill",
+     "amt": 180
+    },
+    {
+     "date": "Fri 20-11",
+     "item": "Bus, Nagpur–Chhatrapati Sambhajinagar · ticket",
+     "amt": 1050
+    },
+    {
+     "date": "Total",
+     "amt": 8530,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-14",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 14 · Claim print",
+   "tab": "Claim",
+   "group": "c14",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/2915",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Nitin Bhosale (K-E0087)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G3 · Ranjangaon"
+    },
+    {
+     "label": "Reports to",
+     "value": "Kavita Lokhande"
+    },
+    {
+     "label": "Trip",
+     "value": "Jaggery suppliers, Kolhapur · 23-11-2026 to 24-11-2026"
+    },
+    {
+     "label": "Submitted",
+     "value": "27-11-2026"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Kavita Lokhande · 30-11-2026"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 02-12-2026 · paid 04-12-2026"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Mon 23-11",
+     "item": "Own car, Ranjangaon–Kolhapur–Ranjangaon · 548 km × ₹10 · trip log",
+     "amt": 5480
+    },
+    {
+     "date": "Mon 23-11",
+     "item": "Hotel, Kolhapur (C) · 1 night × ₹2,400 · bill KLP/8814",
+     "amt": 2400
+    },
+    {
+     "date": "Mon 23-11",
+     "item": "DA, Kolhapur (C) · 2 days × ₹500 · Mon to Tue",
+     "amt": 1000
+    },
+    {
+     "date": "Mon 23-11",
+     "item": "Parking fine, Kolhapur market yard · receipt",
+     "amt": 500
+    },
+    {
+     "date": "Total",
+     "amt": 9380,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-15",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 15 · Claim print",
+   "tab": "Claim",
+   "group": "c15",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/2944",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Santosh Hegde (K-E0096)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G2 · Hubballi"
+    },
+    {
+     "label": "Reports to",
+     "value": "Rekha Naik"
+    },
+    {
+     "label": "Trip",
+     "value": "Vijayapura distributor meet · 24-11-2026 to 26-11-2026"
+    },
+    {
+     "label": "Submitted",
+     "value": "30-11-2026"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Rekha Naik · 01-12-2026; Deepak Iyer (NSM) · 02-12-2026"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 03-12-2026 · paid 04-12-2026"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Tue 24-11",
+     "item": "Bus, Hubballi–Vijayapura · ticket",
+     "amt": 420
+    },
+    {
+     "date": "Tue 24-11",
+     "item": "Hotel, Vijayapura (C) · 2 nights × ₹1,700 · bill VJP/2047",
+     "amt": 3400
+    },
+    {
+     "date": "Tue 24-11",
+     "item": "DA, Vijayapura (C) · 3 days × ₹400 · Tue to Thu",
+     "amt": 1200
+    },
+    {
+     "date": "Wed 25-11",
+     "item": "Distributor meet lunch, 22 guests (list attached) · bill VJP/R-551",
+     "amt": 20680
+    },
+    {
+     "date": "Thu 26-11",
+     "item": "Bus, Vijayapura–Hubballi · ticket",
+     "amt": 420
+    },
+    {
+     "date": "Total",
+     "amt": 26120,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-16",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 16 · Claim print",
+   "tab": "Claim",
+   "group": "c16",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/3011",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Deepak Iyer (K-E0034)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G4 · Pune"
+    },
+    {
+     "label": "Reports to",
+     "value": "–"
+    },
+    {
+     "label": "Trip",
+     "value": "Distributor conference, Bengaluru · 01-12-2026 to 03-12-2026"
+    },
+    {
+     "label": "Submitted",
+     "value": "07-12-2026"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Deepak Iyer · 07-12-2026"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 09-12-2026 · paid 11-12-2026"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Tue 01-12",
+     "item": "Flight, Pune–Bengaluru, economy · e-ticket",
+     "amt": 7640
+    },
+    {
+     "date": "Tue 01-12",
+     "item": "Hotel, Bengaluru (A) · 2 nights × ₹6,800 · bill BLR/40917",
+     "amt": 13600
+    },
+    {
+     "date": "Tue 01-12",
+     "item": "Meals at actuals · bills (4)",
+     "amt": 2860
+    },
+    {
+     "date": "Thu 03-12",
+     "item": "Taxis, airport and city · bills (3)",
+     "amt": 1240
+    },
+    {
+     "date": "Thu 03-12",
+     "item": "Flight, Bengaluru–Pune, economy · e-ticket",
+     "amt": 7920
+    },
+    {
+     "date": "Total",
+     "amt": 33260,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-17",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 17 · Claim print",
+   "tab": "Claim",
+   "group": "c17",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/3015",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Rekha Naik (K-E0061)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G3 · Panaji"
+    },
+    {
+     "label": "Reports to",
+     "value": "Deepak Iyer"
+    },
+    {
+     "label": "Trip",
+     "value": "Karwar distributor visit · 02-12-2026 to 03-12-2026"
+    },
+    {
+     "label": "Submitted",
+     "value": "07-12-2026"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Deepak Iyer · 08-12-2026"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 09-12-2026 · paid 11-12-2026"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Wed 02-12",
+     "item": "Bus, Panaji–Karwar · ticket",
+     "amt": 210
+    },
+    {
+     "date": "Wed 02-12",
+     "item": "Hotel, Karwar (C) · 1 night × ₹2,200 · bill KWR/0731",
+     "amt": 2200
+    },
+    {
+     "date": "Wed 02-12",
+     "item": "DA, Karwar (C) · 2 days × ₹500 · Wed to Thu",
+     "amt": 1000
+    },
+    {
+     "date": "Thu 03-12",
+     "item": "Taxi, Karwar market and back · bill TX/0884",
+     "amt": 650
+    },
+    {
+     "date": "Thu 03-12",
+     "item": "Bus, Karwar–Panaji · ticket",
+     "amt": 210
+    },
+    {
+     "date": "Total",
+     "amt": 4270,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-18",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 18 · Claim print",
+   "tab": "Claim",
+   "group": "c18",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/3040",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Priyanka Salunkhe (K-E0121)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G3 · Pune"
+    },
+    {
+     "label": "Reports to",
+     "value": "Ashwin Pradhan"
+    },
+    {
+     "label": "Trip",
+     "value": "Campus interviews, Sangli · 07-12-2026 to 08-12-2026"
+    },
+    {
+     "label": "Submitted",
+     "value": "10-12-2026"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Ashwin Pradhan · 11-12-2026"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 14-12-2026 · paid 18-12-2026"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Mon 07-12",
+     "item": "Train, Pune–Sangli, AC 2-tier · PNR 8431207756",
+     "amt": 1020
+    },
+    {
+     "date": "Mon 07-12",
+     "item": "Hotel, Sangli (C) · 1 night × ₹2,300 · bill SNG/4980",
+     "amt": 2300
+    },
+    {
+     "date": "Mon 07-12",
+     "item": "DA, Sangli (C) · 2 days × ₹500 · Mon to Tue",
+     "amt": 1000
+    },
+    {
+     "date": "Tue 08-12",
+     "item": "Taxi, Sangli station–college and back · no bill",
+     "amt": 780
+    },
+    {
+     "date": "Tue 08-12",
+     "item": "Train, Sangli–Pune, AC 2-tier · PNR 8431207798",
+     "amt": 1020
+    },
+    {
+     "date": "Total",
+     "amt": 6120,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-19",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 19 · Claim print",
+   "tab": "Claim",
+   "group": "c19",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/3043",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Rahul Shirke (K-E0158)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G1 · Kolhapur"
+    },
+    {
+     "label": "Reports to",
+     "value": "Vikas Pawar"
+    },
+    {
+     "label": "Trip",
+     "value": "Gadhinglaj and Ajara distributor visits · 07-12-2026 to 08-12-2026"
+    },
+    {
+     "label": "Submitted",
+     "value": "10-12-2026"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Vikas Pawar · 11-12-2026"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 14-12-2026 · paid 18-12-2026"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Mon 07-12",
+     "item": "Bus, Kolhapur–Gadhinglaj · ticket",
+     "amt": 150
+    },
+    {
+     "date": "Mon 07-12",
+     "item": "Hotel, Gadhinglaj (C) · 1 night × ₹900 · bill GDJ/0215",
+     "amt": 900
+    },
+    {
+     "date": "Mon 07-12",
+     "item": "DA, Gadhinglaj (C) · 2 days × ₹300 · Mon to Tue",
+     "amt": 600
+    },
+    {
+     "date": "Tue 08-12",
+     "item": "Bus, Gadhinglaj–Ajara · ticket",
+     "amt": 110
+    },
+    {
+     "date": "Tue 08-12",
+     "item": "Bus, Ajara–Kolhapur · ticket",
+     "amt": 200
+    },
+    {
+     "date": "Total",
+     "amt": 1960,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-20",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 20 · Claim print",
+   "tab": "Claim",
+   "group": "c20",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/3059",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Santosh Hegde (K-E0096)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G2 · Hubballi"
+    },
+    {
+     "label": "Reports to",
+     "value": "Rekha Naik"
+    },
+    {
+     "label": "Trip",
+     "value": "Bagalkot and Gadag distributor visits · 08-12-2026 to 10-12-2026"
+    },
+    {
+     "label": "Submitted",
+     "value": "12-12-2026"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Rekha Naik · 14-12-2026"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 16-12-2026 · paid 18-12-2026"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Tue 08-12",
+     "item": "Bus, Hubballi–Bagalkot · ticket",
+     "amt": 380
+    },
+    {
+     "date": "Tue 08-12",
+     "item": "Hotel, Bagalkot (C) · 1 night × ₹1,600 · bill BGK/1290",
+     "amt": 1600
+    },
+    {
+     "date": "Tue 08-12",
+     "item": "DA, Bagalkot and Gadag (C) · 3 days × ₹400 · Tue to Thu",
+     "amt": 1200
+    },
+    {
+     "date": "Wed 09-12",
+     "item": "Bus, Bagalkot–Gadag · ticket",
+     "amt": 260
+    },
+    {
+     "date": "Wed 09-12",
+     "item": "Hotel, Gadag (C) · 1 night × ₹1,500 · bill GDG/0662",
+     "amt": 1500
+    },
+    {
+     "date": "Thu 10-12",
+     "item": "Bus, Gadag–Hubballi · ticket",
+     "amt": 110
+    },
+    {
+     "date": "Total",
+     "amt": 5050,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-21",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 21 · Claim print",
+   "tab": "Claim",
+   "group": "c21",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/3078",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Prajakta Kulkarni (K-E0171)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G1 · Pune"
+    },
+    {
+     "label": "Reports to",
+     "value": "Vikas Pawar"
+    },
+    {
+     "label": "Trip",
+     "value": "Daund and Baramati distributor visits · 09-12-2026 to 10-12-2026"
+    },
+    {
+     "label": "Submitted",
+     "value": "14-12-2026"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Vikas Pawar · 15-12-2026"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 16-12-2026 · paid 18-12-2026"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Wed 09-12",
+     "item": "Own car, Pune–Daund–Baramati–Pune · 214 km × ₹10 · trip log",
+     "amt": 2140
+    },
+    {
+     "date": "Wed 09-12",
+     "item": "Hotel, Baramati (C) · 1 night × ₹1,150 · bill BMT/2873",
+     "amt": 1150
+    },
+    {
+     "date": "Wed 09-12",
+     "item": "DA, Baramati (C) · 2 days × ₹300 · Wed to Thu",
+     "amt": 600
+    },
+    {
+     "date": "Total",
+     "amt": 3890,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-22",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 22 · Claim print",
+   "tab": "Claim",
+   "group": "c22",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/3082",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Faisal Momin (K-E0163)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G1 · Solapur"
+    },
+    {
+     "label": "Reports to",
+     "value": "Vikas Pawar"
+    },
+    {
+     "label": "Trip",
+     "value": "Akkalkot retailer visits · 10-12-2026"
+    },
+    {
+     "label": "Submitted",
+     "value": "14-12-2026"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Vikas Pawar · 15-12-2026"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 16-12-2026 · paid 18-12-2026"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Thu 10-12",
+     "item": "Bus, Solapur–Akkalkot · ticket",
+     "amt": 110
+    },
+    {
+     "date": "Thu 10-12",
+     "item": "Auto, Akkalkot market · no bill",
+     "amt": 120
+    },
+    {
+     "date": "Thu 10-12",
+     "item": "Bus, Akkalkot–Solapur · ticket",
+     "amt": 110
+    },
+    {
+     "date": "Thu 10-12",
+     "item": "DA, Akkalkot (C) · 1 day × ₹300 · Thu",
+     "amt": 300
+    },
+    {
+     "date": "Total",
+     "amt": 640,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-23",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 23 · Claim print",
+   "tab": "Claim",
+   "group": "c23",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/3107",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Kavita Lokhande (K-E0045)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G4 · Ranjangaon"
+    },
+    {
+     "label": "Reports to",
+     "value": "Managing Director"
+    },
+    {
+     "label": "Trip",
+     "value": "Laminate supplier visit, Ahmedabad · 15-12-2026 to 16-12-2026"
+    },
+    {
+     "label": "Submitted",
+     "value": "17-12-2026"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Managing Director · 18-12-2026"
+    },
+    {
+     "label": "Other approvals",
+     "value": "Actuals (G4): Ashwin Pradhan · 18-12-2026"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 21-12-2026 · paid 01-01-2027"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Tue 15-12",
+     "item": "Flight, Pune–Ahmedabad, economy · e-ticket",
+     "amt": 6420
+    },
+    {
+     "date": "Tue 15-12",
+     "item": "Hotel, Ahmedabad (A) · 1 night × ₹7,850 · bill AMD/12245",
+     "amt": 7850
+    },
+    {
+     "date": "Tue 15-12",
+     "item": "Meals at actuals · bills (3)",
+     "amt": 1980
+    },
+    {
+     "date": "Wed 16-12",
+     "item": "Taxis, airport and supplier · bills (4)",
+     "amt": 1160
+    },
+    {
+     "date": "Wed 16-12",
+     "item": "Flight, Ahmedabad–Pune, economy · e-ticket",
+     "amt": 6880
+    },
+    {
+     "date": "Total",
+     "amt": 24290,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-24",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 24 · Claim print",
+   "tab": "Claim",
+   "group": "c24",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/3116",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Vikas Pawar (K-E0102)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G2 · Pune"
+    },
+    {
+     "label": "Reports to",
+     "value": "Deepak Iyer"
+    },
+    {
+     "label": "Trip",
+     "value": "Satara and Karad distributor review · 14-12-2026 to 15-12-2026"
+    },
+    {
+     "label": "Submitted",
+     "value": "18-12-2026"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Deepak Iyer · 21-12-2026"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 23-12-2026 · paid 01-01-2027"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Mon 14-12",
+     "item": "Own car, Pune–Satara–Karad–Pune · 338 km × ₹10 · trip log",
+     "amt": 3380
+    },
+    {
+     "date": "Mon 14-12",
+     "item": "Hotel, Satara (C) · 1 night × ₹1,750 · bill STR/6602",
+     "amt": 1750
+    },
+    {
+     "date": "Mon 14-12",
+     "item": "DA, Satara and Karad (C) · 2 days × ₹400 · Mon to Tue",
+     "amt": 800
+    },
+    {
+     "date": "Mon 14-12",
+     "item": "Dinner, Satara distributor (guests: S. Jagdale, R. Kadam) · bill 3318",
+     "amt": 2340
+    },
+    {
+     "date": "Mon 14-12",
+     "item": "Dinner, Satara distributor (second bill) · bill B-0912",
+     "amt": 1460
+    },
+    {
+     "date": "Total",
+     "amt": 9730,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-25",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 25 · Claim print",
+   "tab": "Claim",
+   "group": "c25",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/3145",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Jyoti Pingle (K-E0029)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G2 · Ranjangaon"
+    },
+    {
+     "label": "Reports to",
+     "value": "Ashwin Pradhan"
+    },
+    {
+     "label": "Trip",
+     "value": "Year-end planning, Pune office · 15-12-2026 to 18-12-2026"
+    },
+    {
+     "label": "Submitted",
+     "value": "21-12-2026"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Ashwin Pradhan · 22-12-2026"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 23-12-2026 · paid 01-01-2027"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Fri 18-12",
+     "item": "Two-wheeler, Ranjangaon–Pune office and back, three days · 312 km × ₹4 · trip log",
+     "amt": 1248
+    },
+    {
+     "date": "Total",
+     "amt": 1248,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-26",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 26 · Claim print",
+   "tab": "Claim",
+   "group": "c26",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/3147",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Nilesh Bhujade (K-E0182)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G1 · Nagpur"
+    },
+    {
+     "label": "Reports to",
+     "value": "Deepak Iyer"
+    },
+    {
+     "label": "Trip",
+     "value": "Amravati distributor visits · 15-12-2026 to 17-12-2026"
+    },
+    {
+     "label": "Submitted",
+     "value": "21-12-2026"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Deepak Iyer · 22-12-2026"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 23-12-2026 · paid 01-01-2027"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Tue 15-12",
+     "item": "Bus, Nagpur–Amravati · ticket",
+     "amt": 310
+    },
+    {
+     "date": "Tue 15-12",
+     "item": "Hotel, Amravati (C) · 2 nights × ₹1,150 · bill AMR/3368",
+     "amt": 2300
+    },
+    {
+     "date": "Tue 15-12",
+     "item": "DA, Amravati (C) · 3 days × ₹300 · Tue to Thu",
+     "amt": 900
+    },
+    {
+     "date": "Wed 16-12",
+     "item": "Auto, Amravati market · no bill",
+     "amt": 260
+    },
+    {
+     "date": "Thu 17-12",
+     "item": "Bus, Amravati–Nagpur · ticket",
+     "amt": 310
+    },
+    {
+     "date": "Total",
+     "amt": 4080,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-27",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 27 · Claim print",
+   "tab": "Claim",
+   "group": "c27",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/3308",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Akash Thorve (K-E0177)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G1 · Chhatrapati Sambhajinagar"
+    },
+    {
+     "label": "Reports to",
+     "value": "Deepak Iyer"
+    },
+    {
+     "label": "Trip",
+     "value": "Jalna distributor visits · 04-01-2027 to 05-01-2027"
+    },
+    {
+     "label": "Submitted",
+     "value": "07-01-2027"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Deepak Iyer · 08-01-2027"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 12-01-2027 · paid 15-01-2027"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Mon 04-01",
+     "item": "Bus, Chhatrapati Sambhajinagar–Jalna · ticket",
+     "amt": 160
+    },
+    {
+     "date": "Mon 04-01",
+     "item": "Hotel, Jalna (C) · 1 night × ₹1,100 · bill JLN/0453",
+     "amt": 1100
+    },
+    {
+     "date": "Mon 04-01",
+     "item": "DA, Jalna (C) · 2 days × ₹300 · Mon to Tue",
+     "amt": 600
+    },
+    {
+     "date": "Tue 05-01",
+     "item": "Auto, Jalna market · no bill",
+     "amt": 200
+    },
+    {
+     "date": "Tue 05-01",
+     "item": "Bus, Jalna–Chhatrapati Sambhajinagar · ticket",
+     "amt": 160
+    },
+    {
+     "date": "Total",
+     "amt": 2220,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-28",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 28 · Claim print",
+   "tab": "Claim",
+   "group": "c28",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/3347",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Rahul Shirke (K-E0158)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G1 · Kolhapur"
+    },
+    {
+     "label": "Reports to",
+     "value": "Vikas Pawar"
+    },
+    {
+     "label": "Trip",
+     "value": "Sawantwadi and Kudal distributor visits · 17-11-2026 to 20-11-2026"
+    },
+    {
+     "label": "Submitted",
+     "value": "11-01-2027"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Vikas Pawar · 12-01-2027"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 13-01-2027 · paid 15-01-2027"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Tue 17-11",
+     "item": "Bus, Kolhapur–Sawantwadi · ticket",
+     "amt": 360
+    },
+    {
+     "date": "Tue 17-11",
+     "item": "Hotel, Sawantwadi (C) · 2 nights × ₹1,100 · bill SWD/0346",
+     "amt": 2200
+    },
+    {
+     "date": "Tue 17-11",
+     "item": "DA, Sawantwadi and Kudal (C) · 4 days × ₹300 · Tue to Fri",
+     "amt": 1200
+    },
+    {
+     "date": "Thu 19-11",
+     "item": "Bus, Sawantwadi–Kudal · ticket",
+     "amt": 90
+    },
+    {
+     "date": "Thu 19-11",
+     "item": "Hotel, Kudal (C) · 1 night × ₹1,050 · bill KDL/1182",
+     "amt": 1050
+    },
+    {
+     "date": "Fri 20-11",
+     "item": "Bus, Kudal–Kolhapur · ticket",
+     "amt": 340
+    },
+    {
+     "date": "Total",
+     "amt": 5240,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-29",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 29 · Claim print",
+   "tab": "Claim",
+   "group": "c29",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/3350",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Swapnil Gade (K-E0154)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G1 · Nashik"
+    },
+    {
+     "label": "Reports to",
+     "value": "Vikas Pawar"
+    },
+    {
+     "label": "Trip",
+     "value": "Igatpuri and Sinnar retailer visits · 02-12-2026 to 03-12-2026"
+    },
+    {
+     "label": "Submitted",
+     "value": "11-01-2027"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Vikas Pawar · 12-01-2027"
+    },
+    {
+     "label": "Other approvals",
+     "value": "Late claim: Ashwin Pradhan · 13-01-2027"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 14-01-2027 · paid 15-01-2027"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Wed 02-12",
+     "item": "Bus, Nashik–Igatpuri · ticket",
+     "amt": 120
+    },
+    {
+     "date": "Wed 02-12",
+     "item": "Hotel, Igatpuri (C) · 1 night × ₹1,200 · bill IGP/0398",
+     "amt": 1200
+    },
+    {
+     "date": "Wed 02-12",
+     "item": "DA, Igatpuri and Sinnar (C) · 2 days × ₹300 · Wed to Thu",
+     "amt": 600
+    },
+    {
+     "date": "Thu 03-12",
+     "item": "Bus, Igatpuri–Sinnar · ticket",
+     "amt": 160
+    },
+    {
+     "date": "Thu 03-12",
+     "item": "Bus, Sinnar–Nashik · ticket",
+     "amt": 90
+    },
+    {
+     "date": "Total",
+     "amt": 2170,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-30",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 30 · Claim print",
+   "tab": "Claim",
+   "group": "c30",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/3356",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Swapnil Gade (K-E0154)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G1 · Nashik"
+    },
+    {
+     "label": "Reports to",
+     "value": "Vikas Pawar"
+    },
+    {
+     "label": "Trip",
+     "value": "Dhule and Shirpur distributor visits · 04-01-2027 to 10-01-2027"
+    },
+    {
+     "label": "Submitted",
+     "value": "12-01-2027"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Vikas Pawar · 13-01-2027"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 14-01-2027 · paid 15-01-2027"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Mon 04-01",
+     "item": "Bus, Nashik–Dhule · ticket",
+     "amt": 310
+    },
+    {
+     "date": "Mon 04-01",
+     "item": "Hotel, Dhule (C) · 3 nights × ₹1,150 · bill DHL/2417",
+     "amt": 3450
+    },
+    {
+     "date": "Mon 04-01",
+     "item": "DA, Dhule and Shirpur (C) · 6 days × ₹300 · Mon to Sat",
+     "amt": 1800
+    },
+    {
+     "date": "Thu 07-01",
+     "item": "Bus, Dhule–Shirpur · ticket",
+     "amt": 130
+    },
+    {
+     "date": "Thu 07-01",
+     "item": "Hotel, Shirpur (C) · 2 nights × ₹1,000 · bill SRP/0581",
+     "amt": 2000
+    },
+    {
+     "date": "Sat 09-01",
+     "item": "Bus, Shirpur–Nashik · ticket",
+     "amt": 420
+    },
+    {
+     "date": "Sun 10-01",
+     "item": "DA, Nashik (B) · 1 day × ₹350 · Sun",
+     "amt": 350
+    },
+    {
+     "date": "Total",
+     "amt": 8460,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-31",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 31 · Claim print",
+   "tab": "Claim",
+   "group": "c31",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/3366",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Nilesh Bhujade (K-E0182)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G1 · Nagpur"
+    },
+    {
+     "label": "Reports to",
+     "value": "Deepak Iyer"
+    },
+    {
+     "label": "Trip",
+     "value": "Wardha distributor visits · 08-01-2027 to 11-01-2027"
+    },
+    {
+     "label": "Submitted",
+     "value": "13-01-2027"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Deepak Iyer · 14-01-2027"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 18-01-2027 · paid 22-01-2027"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Fri 08-01",
+     "item": "Bus, Nagpur–Wardha · ticket",
+     "amt": 180
+    },
+    {
+     "date": "Fri 08-01",
+     "item": "Hotel, Wardha (C) · 1 night × ₹1,050 · bill WRD/0742",
+     "amt": 1050
+    },
+    {
+     "date": "Fri 08-01",
+     "item": "DA, Wardha (C) · 4 days × ₹300 · Fri to Mon",
+     "amt": 1200
+    },
+    {
+     "date": "Sat 09-01",
+     "item": "Bus, Wardha–Nagpur · ticket",
+     "amt": 180
+    },
+    {
+     "date": "Mon 11-01",
+     "item": "Bus, Nagpur–Wardha · ticket",
+     "amt": 180
+    },
+    {
+     "date": "Mon 11-01",
+     "item": "Bus, Wardha–Nagpur · ticket",
+     "amt": 180
+    },
+    {
+     "date": "Total",
+     "amt": 2970,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-32",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 32 · Claim print",
+   "tab": "Claim",
+   "group": "c32",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/3376",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Rekha Naik (K-E0061)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G3 · Panaji"
+    },
+    {
+     "label": "Reports to",
+     "value": "Deepak Iyer"
+    },
+    {
+     "label": "Trip",
+     "value": "Regional distributor meet, Kolhapur · 12-01-2027 to 13-01-2027"
+    },
+    {
+     "label": "Submitted",
+     "value": "14-01-2027"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Deepak Iyer · 15-01-2027"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 19-01-2027 · paid 22-01-2027"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Tue 12-01",
+     "item": "Bus, Panaji–Kolhapur · ticket",
+     "amt": 590
+    },
+    {
+     "date": "Tue 12-01",
+     "item": "Hotel, Kolhapur (C) · 1 night × ₹2,450 · bill KLP/9026",
+     "amt": 2450
+    },
+    {
+     "date": "Tue 12-01",
+     "item": "DA, Kolhapur (C) · 2 days × ₹500 · Tue to Wed",
+     "amt": 1000
+    },
+    {
+     "date": "Wed 13-01",
+     "item": "Bus, Kolhapur–Panaji · ticket",
+     "amt": 590
+    },
+    {
+     "date": "Total",
+     "amt": 4630,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-33",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 33 · Claim print",
+   "tab": "Claim",
+   "group": "c33",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/3382",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Santosh Hegde (K-E0096)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G2 · Hubballi"
+    },
+    {
+     "label": "Reports to",
+     "value": "Rekha Naik"
+    },
+    {
+     "label": "Trip",
+     "value": "Regional distributor meet, Kolhapur · 12-01-2027 to 13-01-2027"
+    },
+    {
+     "label": "Submitted",
+     "value": "14-01-2027"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Rekha Naik · 15-01-2027"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 19-01-2027 · paid 22-01-2027"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Tue 12-01",
+     "item": "Bus, Hubballi–Kolhapur · ticket",
+     "amt": 520
+    },
+    {
+     "date": "Tue 12-01",
+     "item": "Hotel, Kolhapur (C) · 1 night × ₹1,180 · bill SSL/2241",
+     "amt": 1180
+    },
+    {
+     "date": "Tue 12-01",
+     "item": "DA, Kolhapur (C) · 2 days × ₹400 · Tue to Wed",
+     "amt": 800
+    },
+    {
+     "date": "Wed 13-01",
+     "item": "Bus, Kolhapur–Hubballi · ticket",
+     "amt": 520
+    },
+    {
+     "date": "Total",
+     "amt": 3020,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-34",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 34 · Claim print",
+   "tab": "Claim",
+   "group": "c34",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/3395",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Faisal Momin (K-E0163)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G1 · Solapur"
+    },
+    {
+     "label": "Reports to",
+     "value": "Vikas Pawar"
+    },
+    {
+     "label": "Trip",
+     "value": "Regional distributor meet, Kolhapur · 12-01-2027 to 13-01-2027"
+    },
+    {
+     "label": "Submitted",
+     "value": "16-01-2027"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Vikas Pawar · 18-01-2027"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 20-01-2027 · paid 22-01-2027"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Tue 12-01",
+     "item": "Bus, Solapur–Kolhapur · ticket",
+     "amt": 460
+    },
+    {
+     "date": "Tue 12-01",
+     "item": "Hotel, Kolhapur (C) · 1 night × ₹1,180 · bill SSL/2241",
+     "amt": 1180
+    },
+    {
+     "date": "Tue 12-01",
+     "item": "DA, Kolhapur (C) · 2 days × ₹300 · Tue to Wed",
+     "amt": 600
+    },
+    {
+     "date": "Wed 13-01",
+     "item": "Bus, Kolhapur–Solapur · ticket",
+     "amt": 460
+    },
+    {
+     "date": "Total",
+     "amt": 2700,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-35",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 35 · Claim print",
+   "tab": "Claim",
+   "group": "c35",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/3414",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Prajakta Kulkarni (K-E0171)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G1 · Pune"
+    },
+    {
+     "label": "Reports to",
+     "value": "Vikas Pawar"
+    },
+    {
+     "label": "Trip",
+     "value": "Shirur distributor visit · 14-01-2027"
+    },
+    {
+     "label": "Submitted",
+     "value": "18-01-2027"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Vikas Pawar · 19-01-2027"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 20-01-2027 · paid 22-01-2027"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Thu 14-01",
+     "item": "Two-wheeler, Pune–Shirur–Pune · 146 km × ₹4 · trip log",
+     "amt": 584
+    },
+    {
+     "date": "Thu 14-01",
+     "item": "DA, Shirur (C) · 1 day × ₹300 · Thu",
+     "amt": 300
+    },
+    {
+     "date": "Total",
+     "amt": 884,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-36",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 36 · Claim print",
+   "tab": "Claim",
+   "group": "c36",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/3452",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Faisal Momin (K-E0163)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G1 · Solapur"
+    },
+    {
+     "label": "Reports to",
+     "value": "Vikas Pawar"
+    },
+    {
+     "label": "Trip",
+     "value": "Latur and Dharashiv distributor visits · 18-01-2027 to 20-01-2027"
+    },
+    {
+     "label": "Submitted",
+     "value": "22-01-2027"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Vikas Pawar · 25-01-2027"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 27-01-2027 · paid 29-01-2027"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Mon 18-01",
+     "item": "Bus, Solapur–Latur · ticket",
+     "amt": 330
+    },
+    {
+     "date": "Mon 18-01",
+     "item": "Hotel, Latur (C) · 1 night × ₹1,150 · bill LTR/1805",
+     "amt": 1150
+    },
+    {
+     "date": "Mon 18-01",
+     "item": "DA, Latur and Dharashiv (C) · 3 days × ₹300 · Mon to Wed",
+     "amt": 900
+    },
+    {
+     "date": "Tue 19-01",
+     "item": "Bus, Latur–Dharashiv · ticket",
+     "amt": 160
+    },
+    {
+     "date": "Tue 19-01",
+     "item": "Hotel, Dharashiv (C) · 1 night × ₹1,000 · bill DRS/0233",
+     "amt": 1000
+    },
+    {
+     "date": "Wed 20-01",
+     "item": "Bus, Dharashiv–Solapur · ticket",
+     "amt": 140
+    },
+    {
+     "date": "Total",
+     "amt": 3680,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-37",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 37 · Claim print",
+   "tab": "Claim",
+   "group": "c37",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/3456",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Nilesh Bhujade (K-E0182)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G1 · Nagpur"
+    },
+    {
+     "label": "Reports to",
+     "value": "Deepak Iyer"
+    },
+    {
+     "label": "Trip",
+     "value": "Yavatmal distributor visits · 19-01-2027 to 20-01-2027"
+    },
+    {
+     "label": "Submitted",
+     "value": "22-01-2027"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Deepak Iyer · 25-01-2027"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 27-01-2027 · paid 29-01-2027"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Tue 19-01",
+     "item": "Bus, Nagpur–Yavatmal · ticket",
+     "amt": 390
+    },
+    {
+     "date": "Tue 19-01",
+     "item": "Hotel, Yavatmal (C) · 1 night × ₹1,100 · bill YTL/0614",
+     "amt": 1100
+    },
+    {
+     "date": "Tue 19-01",
+     "item": "DA, Yavatmal (C) · 2 days × ₹300 · Tue to Wed",
+     "amt": 600
+    },
+    {
+     "date": "Wed 20-01",
+     "item": "Bus, Yavatmal–Nagpur · ticket",
+     "amt": 390
+    },
+    {
+     "date": "Total",
+     "amt": 2480,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-38",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 38 · Claim print",
+   "tab": "Claim",
+   "group": "c38",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/3462",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Rahul Shirke (K-E0158)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G1 · Kolhapur"
+    },
+    {
+     "label": "Reports to",
+     "value": "Vikas Pawar"
+    },
+    {
+     "label": "Trip",
+     "value": "Sangli and Islampur distributor visits · 19-01-2027 to 20-01-2027"
+    },
+    {
+     "label": "Submitted",
+     "value": "22-01-2027"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Vikas Pawar · 25-01-2027"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 27-01-2027 · paid 29-01-2027"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Tue 19-01",
+     "item": "Bus, Kolhapur–Sangli · ticket",
+     "amt": 140
+    },
+    {
+     "date": "Tue 19-01",
+     "item": "Auto, Sangli market · no bill",
+     "amt": 150
+    },
+    {
+     "date": "Tue 19-01",
+     "item": "Bus, Sangli–Islampur · ticket",
+     "amt": 70
+    },
+    {
+     "date": "Tue 19-01",
+     "item": "Hotel, Islampur (C) · 1 night × ₹950 · bill ISP/0127",
+     "amt": 950
+    },
+    {
+     "date": "Tue 19-01",
+     "item": "DA, Islampur (C) · 2 days × ₹300 · Tue to Wed",
+     "amt": 600
+    },
+    {
+     "date": "Wed 20-01",
+     "item": "Bus, Islampur–Kolhapur · ticket",
+     "amt": 170
+    },
+    {
+     "date": "Total",
+     "amt": 2080,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-39",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 39 · Claim print",
+   "tab": "Claim",
+   "group": "c39",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/3465",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Akash Thorve (K-E0177)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G1 · Chhatrapati Sambhajinagar"
+    },
+    {
+     "label": "Reports to",
+     "value": "Deepak Iyer"
+    },
+    {
+     "label": "Trip",
+     "value": "Parbhani and Hingoli distributor visits · 19-01-2027 to 21-01-2027"
+    },
+    {
+     "label": "Submitted",
+     "value": "23-01-2027"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Deepak Iyer · 25-01-2027"
+    },
+    {
+     "label": "Other approvals",
+     "value": "–"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 27-01-2027 · paid 29-01-2027"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Tue 19-01",
+     "item": "Bus, Chhatrapati Sambhajinagar–Parbhani · ticket",
+     "amt": 320
+    },
+    {
+     "date": "Tue 19-01",
+     "item": "Hotel, Parbhani (C) · 1 night × ₹1,100 · bill PBN/1142",
+     "amt": 1100
+    },
+    {
+     "date": "Tue 19-01",
+     "item": "DA, Parbhani and Hingoli (C) · 3 days × ₹300 · Tue to Thu",
+     "amt": 900
+    },
+    {
+     "date": "Wed 20-01",
+     "item": "Bus, Parbhani–Hingoli · ticket",
+     "amt": 150
+    },
+    {
+     "date": "Wed 20-01",
+     "item": "Hotel, Hingoli (C) · 1 night × ₹950 · bill HGL/0388",
+     "amt": 950
+    },
+    {
+     "date": "Thu 21-01",
+     "item": "Bus, Hingoli–Chhatrapati Sambhajinagar · ticket",
+     "amt": 380
+    },
+    {
+     "date": "Total",
+     "amt": 3800,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "cl-40",
+   "type": "table",
+   "style": "portal",
+   "title": "Claim 40 · Claim print",
+   "tab": "Claim",
+   "group": "c40",
+   "kindLabel": "System print",
+   "brand": "Khamang Foods · ERP · Travel and expense",
+   "heading": "Expense claim TE/26-27/3500",
+   "subtitle": "Printed 05-02-2027 for the internal auditors",
+   "meta": [
+    {
+     "label": "Employee",
+     "value": "Vikas Pawar (K-E0102)"
+    },
+    {
+     "label": "Grade · HQ",
+     "value": "G2 · Pune"
+    },
+    {
+     "label": "Reports to",
+     "value": "Deepak Iyer"
+    },
+    {
+     "label": "Trip",
+     "value": "Satara distributor meet (Monday) · 24-01-2027 to 25-01-2027"
+    },
+    {
+     "label": "Submitted",
+     "value": "27-01-2027"
+    },
+    {
+     "label": "Route approvals",
+     "value": "Deepak Iyer · 27-01-2027"
+    },
+    {
+     "label": "Other approvals",
+     "value": "Sunday travel: Deepak Iyer · 21-01-2027"
+    },
+    {
+     "label": "Accounts",
+     "value": "Originals ticked 28-01-2027 · paid 29-01-2027"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "item",
+     "label": "Expense"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "Sun 24-01",
+     "item": "Own car, Pune–Satara–Pune · 238 km × ₹10 · trip log",
+     "amt": 2380
+    },
+    {
+     "date": "Sun 24-01",
+     "item": "Hotel, Satara (C) · 1 night × ₹1,600 · bill STR/7114",
+     "amt": 1600
+    },
+    {
+     "date": "Sun 24-01",
+     "item": "DA, Satara (C) · 2 days × ₹400 · Sun to Mon",
+     "amt": 800
+    },
+    {
+     "date": "Total",
+     "amt": 4780,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "log-05",
+   "type": "table",
+   "style": "plain",
+   "title": "Claim 5 · Trip log",
+   "tab": "Trip log",
+   "group": "c05",
+   "kindLabel": "Trip log",
+   "heading": "Trip log · own two-wheeler · odometer in km",
+   "subtitle": "Prajakta Kulkarni (K-E0171) · claim TE/26-27/2540",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "route",
+     "label": "From – to"
+    },
+    {
+     "key": "start",
+     "label": "Out",
+     "format": "int"
+    },
+    {
+     "key": "end",
+     "label": "In",
+     "format": "int"
+    },
+    {
+     "key": "km",
+     "label": "Km",
+     "format": "int",
+     "check": "end - start"
+    }
+   ],
+   "rows": [
+    {
+     "date": "12-10",
+     "route": "Hadapsar and back",
+     "start": 18236,
+     "end": 18282,
+     "km": 46
+    },
+    {
+     "date": "13-10",
+     "route": "Kothrud and back",
+     "start": 18282,
+     "end": 18326,
+     "km": 44
+    },
+    {
+     "date": "14-10",
+     "route": "Baner and back",
+     "start": 18326,
+     "end": 18378,
+     "km": 52
+    },
+    {
+     "date": "15-10",
+     "route": "Katraj and back",
+     "start": 18378,
+     "end": 18420,
+     "km": 42
+    },
+    {
+     "date": "16-10",
+     "route": "Viman Nagar and back",
+     "start": 18420,
+     "end": 18474,
+     "km": 54
+    },
+    {
+     "date": "Total",
+     "km": 238,
+     "_class": "total"
+    }
+   ],
+   "notes": [
+    "Purpose: 12‑10, retailers, Hadapsar; 13‑10, retailers, Kothrud and Warje; 14‑10, retailers, Aundh and Baner; 15‑10, retailers, Kondhwa and Katraj; 16‑10, retailers, Yerawada and Viman Nagar."
+   ],
+   "annotations": [
+    {
+     "kind": "sign",
+     "text": "P. Kulkarni",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "log-08",
+   "type": "table",
+   "style": "plain",
+   "title": "Claim 8 · Trip log",
+   "tab": "Trip log",
+   "group": "c08",
+   "kindLabel": "Trip log",
+   "heading": "Trip log · own car · odometer in km",
+   "subtitle": "Vikas Pawar (K-E0102) · claim TE/26-27/2585",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "route",
+     "label": "From – to"
+    },
+    {
+     "key": "start",
+     "label": "Out",
+     "format": "int"
+    },
+    {
+     "key": "end",
+     "label": "In",
+     "format": "int"
+    },
+    {
+     "key": "km",
+     "label": "Km",
+     "format": "int",
+     "check": "end - start"
+    }
+   ],
+   "rows": [
+    {
+     "date": "20-10",
+     "route": "Pune–Nashik",
+     "start": 61420,
+     "end": 61632,
+     "km": 212
+    },
+    {
+     "date": "21-10",
+     "route": "Nashik–Sinnar",
+     "start": 61632,
+     "end": 61664,
+     "km": 32
+    },
+    {
+     "date": "21-10",
+     "route": "Sinnar–Pune",
+     "start": 61664,
+     "end": 61832,
+     "km": 168
+    },
+    {
+     "date": "Total",
+     "km": 412,
+     "_class": "total"
+    }
+   ],
+   "notes": [
+    "Purpose: 20‑10, distributor review, Nashik; 21‑10, Sinnar retailers, back to Pune."
+   ],
+   "annotations": [
+    {
+     "kind": "sign",
+     "text": "V. Pawar",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "log-10",
+   "type": "table",
+   "style": "plain",
+   "title": "Claim 10 · Trip log",
+   "tab": "Trip log",
+   "group": "c10",
+   "kindLabel": "Trip log",
+   "heading": "Trip log · own two-wheeler · odometer in km",
+   "subtitle": "Prajakta Kulkarni (K-E0171) · claim TE/26-27/2713",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "route",
+     "label": "From – to"
+    },
+    {
+     "key": "start",
+     "label": "Out",
+     "format": "int"
+    },
+    {
+     "key": "end",
+     "label": "In",
+     "format": "int"
+    },
+    {
+     "key": "km",
+     "label": "Km",
+     "format": "int",
+     "check": "end - start"
+    }
+   ],
+   "rows": [
+    {
+     "date": "03-11",
+     "route": "Pune–Bhor",
+     "start": 19214,
+     "end": 19266,
+     "km": 52
+    },
+    {
+     "date": "03-11",
+     "route": "Bhor–Pune",
+     "start": 19266,
+     "end": 19318,
+     "km": 52
+    },
+    {
+     "date": "04-11",
+     "route": "Pune–Saswad",
+     "start": 19318,
+     "end": 19350,
+     "km": 32
+    },
+    {
+     "date": "04-11",
+     "route": "Saswad–Pune",
+     "start": 19350,
+     "end": 19382,
+     "km": 32
+    },
+    {
+     "date": "Total",
+     "km": 168,
+     "_class": "total"
+    }
+   ],
+   "notes": [
+    "Purpose: 03‑11, retailers, Bhor; 04‑11, retailers, Saswad."
+   ],
+   "annotations": [
+    {
+     "kind": "sign",
+     "text": "P. Kulkarni",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "log-14",
+   "type": "table",
+   "style": "plain",
+   "title": "Claim 14 · Trip log",
+   "tab": "Trip log",
+   "group": "c14",
+   "kindLabel": "Trip log",
+   "heading": "Trip log · own car · odometer in km",
+   "subtitle": "Nitin Bhosale (K-E0087) · claim TE/26-27/2915",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "route",
+     "label": "From – to"
+    },
+    {
+     "key": "start",
+     "label": "Out",
+     "format": "int"
+    },
+    {
+     "key": "end",
+     "label": "In",
+     "format": "int"
+    },
+    {
+     "key": "km",
+     "label": "Km",
+     "format": "int",
+     "check": "end - start"
+    }
+   ],
+   "rows": [
+    {
+     "date": "23-11",
+     "route": "Ranjangaon–Kolhapur",
+     "start": 38210,
+     "end": 38484,
+     "km": 274
+    },
+    {
+     "date": "24-11",
+     "route": "Kolhapur–Ranjangaon",
+     "start": 38484,
+     "end": 38758,
+     "km": 274
+    },
+    {
+     "date": "Total",
+     "km": 548,
+     "_class": "total"
+    }
+   ],
+   "notes": [
+    "Purpose: 23‑11, jaggery makers, Kolhapur; 24‑11, back to the plant."
+   ],
+   "annotations": [
+    {
+     "kind": "sign",
+     "text": "N. Bhosale",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "log-21",
+   "type": "table",
+   "style": "plain",
+   "title": "Claim 21 · Trip log",
+   "tab": "Trip log",
+   "group": "c21",
+   "kindLabel": "Trip log",
+   "heading": "Trip log · own car · odometer in km",
+   "subtitle": "Prajakta Kulkarni (K-E0171) · claim TE/26-27/3078",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "route",
+     "label": "From – to"
+    },
+    {
+     "key": "start",
+     "label": "Out",
+     "format": "int"
+    },
+    {
+     "key": "end",
+     "label": "In",
+     "format": "int"
+    },
+    {
+     "key": "km",
+     "label": "Km",
+     "format": "int",
+     "check": "end - start"
+    }
+   ],
+   "rows": [
+    {
+     "date": "09-12",
+     "route": "Pune–Daund–Baramati",
+     "start": 45212,
+     "end": 45318,
+     "km": 106
+    },
+    {
+     "date": "10-12",
+     "route": "Baramati–Pune",
+     "start": 45318,
+     "end": 45426,
+     "km": 108
+    },
+    {
+     "date": "Total",
+     "km": 214,
+     "_class": "total"
+    }
+   ],
+   "notes": [
+    "Purpose: 09‑12, distributors, Daund and Baramati; 10‑12, back to Pune."
+   ],
+   "annotations": [
+    {
+     "kind": "sign",
+     "text": "P. Kulkarni",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "log-24",
+   "type": "table",
+   "style": "plain",
+   "title": "Claim 24 · Trip log",
+   "tab": "Trip log",
+   "group": "c24",
+   "kindLabel": "Trip log",
+   "heading": "Trip log · own car · odometer in km",
+   "subtitle": "Vikas Pawar (K-E0102) · claim TE/26-27/3116",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "route",
+     "label": "From – to"
+    },
+    {
+     "key": "start",
+     "label": "Out",
+     "format": "int"
+    },
+    {
+     "key": "end",
+     "label": "In",
+     "format": "int"
+    },
+    {
+     "key": "km",
+     "label": "Km",
+     "format": "int",
+     "check": "end - start"
+    }
+   ],
+   "rows": [
+    {
+     "date": "14-12",
+     "route": "Pune–Satara",
+     "start": 62980,
+     "end": 63098,
+     "km": 118
+    },
+    {
+     "date": "15-12",
+     "route": "Satara–Karad",
+     "start": 63098,
+     "end": 63152,
+     "km": 54
+    },
+    {
+     "date": "15-12",
+     "route": "Karad–Pune",
+     "start": 63152,
+     "end": 63318,
+     "km": 166
+    },
+    {
+     "date": "Total",
+     "km": 338,
+     "_class": "total"
+    }
+   ],
+   "notes": [
+    "Purpose: 14‑12, distributor review, Satara; 15‑12, Karad retailers, back to Pune."
+   ],
+   "annotations": [
+    {
+     "kind": "sign",
+     "text": "V. Pawar",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "log-25",
+   "type": "table",
+   "style": "plain",
+   "title": "Claim 25 · Trip log",
+   "tab": "Trip log",
+   "group": "c25",
+   "kindLabel": "Trip log",
+   "heading": "Trip log · own two-wheeler · odometer in km",
+   "subtitle": "Jyoti Pingle (K-E0029) · claim TE/26-27/3145",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "route",
+     "label": "From – to"
+    },
+    {
+     "key": "start",
+     "label": "Out",
+     "format": "int"
+    },
+    {
+     "key": "end",
+     "label": "In",
+     "format": "int"
+    },
+    {
+     "key": "km",
+     "label": "Km",
+     "format": "int",
+     "check": "end - start"
+    }
+   ],
+   "rows": [
+    {
+     "date": "15-12",
+     "route": "Ranjangaon–Pune office",
+     "start": 27415,
+     "end": 27467,
+     "km": 52
+    },
+    {
+     "date": "15-12",
+     "route": "Pune office–Ranjangaon",
+     "start": 27467,
+     "end": 27519,
+     "km": 52
+    },
+    {
+     "date": "16-12",
+     "route": "Ranjangaon–Pune office",
+     "start": 27601,
+     "end": 27653,
+     "km": 52
+    },
+    {
+     "date": "16-12",
+     "route": "Pune office–Ranjangaon",
+     "start": 27653,
+     "end": 27705,
+     "km": 52
+    },
+    {
+     "date": "18-12",
+     "route": "Ranjangaon–Pune office",
+     "start": 27869,
+     "end": 27921,
+     "km": 52
+    },
+    {
+     "date": "18-12",
+     "route": "Pune office–Ranjangaon",
+     "start": 27921,
+     "end": 27973,
+     "km": 52
+    },
+    {
+     "date": "Total",
+     "km": 312,
+     "_class": "total"
+    }
+   ],
+   "notes": [
+    "Purpose: 15‑12, year-end planning; 16‑12, payables cut-off plan; 18‑12, year-end planning.",
+    "Rides between home and the plant are not entered."
+   ],
+   "annotations": [
+    {
+     "kind": "sign",
+     "text": "J. Pingle",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "log-35",
+   "type": "table",
+   "style": "plain",
+   "title": "Claim 35 · Trip log",
+   "tab": "Trip log",
+   "group": "c35",
+   "kindLabel": "Trip log",
+   "heading": "Trip log · own two-wheeler · odometer in km",
+   "subtitle": "Prajakta Kulkarni (K-E0171) · claim TE/26-27/3414",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "route",
+     "label": "From – to"
+    },
+    {
+     "key": "start",
+     "label": "Out",
+     "format": "int"
+    },
+    {
+     "key": "end",
+     "label": "In",
+     "format": "int"
+    },
+    {
+     "key": "km",
+     "label": "Km",
+     "format": "int",
+     "check": "end - start"
+    }
+   ],
+   "rows": [
+    {
+     "date": "14-01",
+     "route": "Pune–Shirur",
+     "start": 21874,
+     "end": 21947,
+     "km": 73
+    },
+    {
+     "date": "14-01",
+     "route": "Shirur–Pune",
+     "start": 21947,
+     "end": 22020,
+     "km": 73
+    },
+    {
+     "date": "Total",
+     "km": 146,
+     "_class": "total"
+    }
+   ],
+   "notes": [
+    "Purpose: 14‑01, distributor, Shirur."
+   ],
+   "annotations": [
+    {
+     "kind": "sign",
+     "text": "P. Kulkarni",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "log-40",
+   "type": "table",
+   "style": "plain",
+   "title": "Claim 40 · Trip log",
+   "tab": "Trip log",
+   "group": "c40",
+   "kindLabel": "Trip log",
+   "heading": "Trip log · own car · odometer in km",
+   "subtitle": "Vikas Pawar (K-E0102) · claim TE/26-27/3500",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "route",
+     "label": "From – to"
+    },
+    {
+     "key": "start",
+     "label": "Out",
+     "format": "int"
+    },
+    {
+     "key": "end",
+     "label": "In",
+     "format": "int"
+    },
+    {
+     "key": "km",
+     "label": "Km",
+     "format": "int",
+     "check": "end - start"
+    }
+   ],
+   "rows": [
+    {
+     "date": "24-01",
+     "route": "Pune–Satara",
+     "start": 64120,
+     "end": 64239,
+     "km": 119
+    },
+    {
+     "date": "25-01",
+     "route": "Satara–Pune",
+     "start": 64239,
+     "end": 64358,
+     "km": 119
+    },
+    {
+     "date": "Total",
+     "km": 238,
+     "_class": "total"
+    }
+   ],
+   "notes": [
+    "Purpose: 24‑01, meet on Monday morning; 25‑01, back after the meet."
+   ],
+   "annotations": [
+    {
+     "kind": "sign",
+     "text": "V. Pawar",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "bill-lodge",
+   "type": "card",
+   "style": "slip",
+   "title": "Kolhapur meet · Lodge bill SSL/2241",
+   "tab": "Lodge bill",
+   "kindLabel": "Lodge bill",
+   "issuer": "Shahupuri Sadan Lodging",
+   "heading": "Bill",
+   "number": "SSL/2241",
+   "fields": [
+    {
+     "label": "Address",
+     "value": "Station Road, Shahupuri, Kolhapur · Ph. 98XXXXXXXX"
+    },
+    {
+     "label": "Guests",
+     "value": "Mr Santosh Hegde\nMr Faisal Momin"
+    },
+    {
+     "label": "Company",
+     "value": "Khamang Foods Pvt. Ltd."
+    },
+    {
+     "label": "Room",
+     "value": "204 · twin sharing"
+    },
+    {
+     "label": "Arrived",
+     "value": "12-01-2027 · 3:10 pm"
+    },
+    {
+     "label": "Left",
+     "value": "13-01-2027 · 9:30 am"
+    },
+    {
+     "label": "Room rent",
+     "value": "1 night · ₹1,180"
+    },
+    {
+     "label": "Total",
+     "value": "₹1,180 (Rupees one thousand one hundred eighty only)"
+    },
+    {
+     "label": "Paid",
+     "value": "Cash"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "PAID\n13 JAN 2027",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": -6
+    },
+    {
+     "kind": "sign",
+     "text": "for Shahupuri Sadan",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "bill-bar",
+   "type": "card",
+   "style": "slip",
+   "title": "Claim 24 · Bill B-0912",
+   "tab": "Bill B-0912",
+   "kindLabel": "Bill",
+   "group": "c24",
+   "issuer": "Venna Kinara Restaurant and Bar",
+   "heading": "Bar bill",
+   "number": "B-0912",
+   "fields": [
+    {
+     "label": "Address",
+     "value": "Powai Naka, Satara · Ph. 98XXXXXXXX"
+    },
+    {
+     "label": "Date",
+     "value": "14-12-2026 · 10:05 pm"
+    },
+    {
+     "label": "Table",
+     "value": "7 · 3 covers"
+    },
+    {
+     "label": "Items",
+     "value": "Beer 650 ml: 4 × ₹260 = ₹1,040\nWhisky 60 ml: 2 × ₹210 = ₹420"
+    },
+    {
+     "label": "Total",
+     "value": "₹1,460 (taxes included)"
+    },
+    {
+     "label": "Paid",
+     "value": "Card ending 2093"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Distributor dinner, Satara – V.P.",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -2
+    }
+   ]
+  }
+ ],
+ "tasks": [
+  {
+   "id": "t1",
+   "type": "items",
+   "stage": "Planning",
+   "title": "Build the risk-control matrix",
+   "weight": 4,
+   "noun": [
+    "row",
+    "rows"
+   ],
+   "sampleColumns": true,
+   "prompt": "Sameer’s walkthrough note says how a claim moves at Khamang. For each of the five risks, pick the control that answers it, say whether it is preventive or detective and manual or automated, and pick how you will test it. Your RCM goes to Sameer when you move on.",
+   "lockOnLeave": {
+    "ask": "Hand your RCM to Sameer?",
+    "note": "He reviews it before you test. You can’t change it after this.",
+    "yes": "Hand it in",
+    "done": "Handed to Sameer. You can read your RCM but not change it."
+   },
+   "hints": [
+    "Preventive acts before the claim is paid; detective finds a problem after. If no person does it, it is automated."
+   ],
+   "columns": [
+    {
+     "key": "label"
+    }
+   ],
+   "fields": [
+    {
+     "id": "ctl",
+     "kind": "choice",
+     "label": "The control that answers it",
+     "short": "Control",
+     "options": [
+      {
+       "id": "bills",
+       "label": "Bill check"
+      },
+      {
+       "id": "dup",
+       "label": "Duplicate block"
+      },
+      {
+       "id": "caps",
+       "label": "Grade caps"
+      },
+      {
+       "id": "mgr",
+       "label": "Manager approval"
+      },
+      {
+       "id": "cfo",
+       "label": "CFO’s monthly list"
+      },
+      {
+       "id": "signoff",
+       "label": "Policy sign-off"
+      }
+     ],
+     "buttons": true,
+     "weight": 2
+    },
+    {
+     "id": "pd",
+     "kind": "choice",
+     "label": "Preventive or detective",
+     "short": "Type",
+     "options": [
+      {
+       "id": "prev",
+       "label": "Preventive"
+      },
+      {
+       "id": "det",
+       "label": "Detective"
+      }
+     ]
+    },
+    {
+     "id": "ma",
+     "kind": "choice",
+     "label": "Manual or automated",
+     "short": "Nature",
+     "options": [
+      {
+       "id": "manual",
+       "label": "Manual"
+      },
+      {
+       "id": "auto",
+       "label": "Automated"
+      }
+     ]
+    },
+    {
+     "id": "test",
+     "kind": "choice",
+     "label": "How you will test it",
+     "short": "Test",
+     "options": [
+      {
+       "id": "vouch",
+       "label": "Vouch paid claims to their bills"
+      },
+      {
+       "id": "rerun",
+       "label": "Rerun all claims for repeat bills"
+      },
+      {
+       "id": "limits",
+       "label": "Compare module limits with policy"
+      },
+      {
+       "id": "plans",
+       "label": "Match claims to tour plans"
+      },
+      {
+       "id": "lists",
+       "label": "Inspect the signed monthly lists"
+      },
+      {
+       "id": "ask",
+       "label": "Ask Accounts if they check"
+      }
+     ],
+     "layout": "list",
+     "weight": 2
+    }
+   ],
+   "items": [
+    {
+     "id": "r1",
+     "label": "Row 1 · Money not spent",
+     "prompt": "Risk: an employee claims an expense that did not happen, or more than was spent.",
+     "docs": [
+      "walk-note",
+      "settings"
+     ],
+     "answer": {
+      "ctl": "bills",
+      "pd": "prev",
+      "ma": "manual",
+      "test": "vouch"
+     },
+     "note": "Row 1: Jyoti’s claims desk ticks every line against its bill or trip log before Friday’s batch. A person, before payment: preventive, manual. Test it by vouching paid claims to their bills; asking Accounts whether they check proves nothing."
+    },
+    {
+     "id": "r2",
+     "label": "Row 2 · One bill paid twice",
+     "prompt": "Risk: the same hotel bill, ticket or receipt is claimed and paid twice.",
+     "docs": [
+      "walk-note",
+      "settings"
+     ],
+     "answer": {
+      "ctl": "dup",
+      "pd": "prev",
+      "ma": "auto",
+      "test": "rerun"
+     },
+     "note": "Row 2: the module refuses a bill number the same employee has used before. No person, and before payment: preventive, automated. Look at the setting, then rerun the period’s claims yourself for repeats, across every employee."
+    },
+    {
+     "id": "r3",
+     "label": "Row 3 · Above the grade",
+     "prompt": "Risk: a hotel or daily allowance is paid above the limit for the employee’s grade and the city.",
+     "docs": [
+      "walk-note",
+      "settings"
+     ],
+     "answer": {
+      "ctl": "caps",
+      "pd": "prev",
+      "ma": "auto",
+      "test": "limits"
+     },
+     "note": "Row 3: the module will not save hotel or DA above the grade’s limit for the city’s class. Preventive, automated. Test the setting itself: the limits and the city table against the policy. Vouching claims tests people, not the module."
+    },
+    {
+     "id": "r4",
+     "label": "Row 4 · Days not travelled",
+     "prompt": "Risk: allowances are paid for days the employee did not travel, or for travel nobody approved.",
+     "docs": [
+      "walk-note",
+      "settings"
+     ],
+     "answer": {
+      "ctl": "mgr",
+      "pd": "prev",
+      "ma": "manual",
+      "test": "plans"
+     },
+     "note": "Row 4: the reporting manager checks dates and places against the tour plan before approving. A person’s judgement, before payment: preventive, manual. Test it on claims: tour plan, days away, Sundays and who approved."
+    },
+    {
+     "id": "r5",
+     "label": "Row 5 · Nobody finds it",
+     "prompt": "Risk: a wrong claim gets past the checks before payment, and nobody finds it afterwards.",
+     "docs": [
+      "walk-note",
+      "settings"
+     ],
+     "answer": {
+      "ctl": "cfo",
+      "pd": "det",
+      "ma": "manual",
+      "test": "lists"
+     },
+     "note": "Row 5: Ashwin reads the month’s list after the claims are paid: detective, manual. Inspect his signed lists and what he followed up: two months’ lists if you rate the risk lower, three if higher."
+    }
+   ],
+   "docs": [
+    "walk-note",
+    "settings",
+    "policy"
+   ]
+  },
+  {
+   "id": "t2",
+   "type": "items",
+   "stage": "Fieldwork",
+   "title": "Test the claims against the policy",
+   "weight": 1,
+   "noun": [
+    "claim",
+    "claims"
+   ],
+   "prompt": "Open each of Sameer’s picks with its claim print, any bills and any trip log. Test it against the Limits tab and the policy rules under Other papers: grade and city limits, bills, Sundays, the 30-day rule and approvals. Mark it Fine or Exception and pick what is wrong. Your calls go to Sameer when you move on.",
+   "lockOnLeave": {
+    "ask": "Hand your claim calls to Sameer?",
+    "note": "You can’t change them after this.",
+    "yes": "Hand them in",
+    "done": "Handed to Sameer. You can read your calls but not change them."
+   },
+   "hints": [
+    "Take the city’s class from the Limits tab’s city list, not from the claim print: the module prints its own city table.",
+    "Check each DA day against the tickets or trip log: was the employee away from headquarters that day? Check each approver against the employee and the “Reports to” line."
+   ],
+   "columns": [
+    {
+     "key": "label"
+    },
+    {
+     "key": "amount",
+     "format": "inr"
+    },
+    {
+     "key": "dated"
+    }
+   ],
+   "fields": [
+    {
+     "id": "verdict",
+     "kind": "choice",
+     "label": "Your call",
+     "gate": true,
+     "options": [
+      {
+       "id": "ok",
+       "label": "Fine"
+      },
+      {
+       "id": "exception",
+       "label": "Exception"
+      }
+     ]
+    },
+    {
+     "id": "reasons",
+     "kind": "multi",
+     "label": "What is wrong",
+     "showIf": {
+      "verdict": "exception"
+     },
+     "options": [
+      {
+       "id": "grade",
+       "label": "Above the grade’s limit (hotel, DA or own car)",
+       "short": "above grade"
+      },
+      {
+       "id": "km",
+       "label": "Kilometres above the trip log",
+       "short": "km over log"
+      },
+      {
+       "id": "notravel",
+       "label": "Daily allowance for a day at headquarters, or an unapproved Sunday",
+       "short": "DA at HQ"
+      },
+      {
+       "id": "dup",
+       "label": "One bill claimed twice (by one person or by two)",
+       "short": "duplicate bill"
+      },
+      {
+       "id": "nobill",
+       "label": "No original bill for an item of ₹300 or more",
+       "short": "no bill"
+      },
+      {
+       "id": "personal",
+       "label": "An item the policy never pays (alcohol, fines)",
+       "short": "not payable"
+      },
+      {
+       "id": "late",
+       "label": "Sent after 30 days without the CFO’s approval",
+       "short": "late claim"
+      },
+      {
+       "id": "approval",
+       "label": "Self-approved, or a manager’s approval missing",
+       "short": "approval gap"
+      }
+     ],
+     "weight": 3
+    },
+    {
+     "id": "note",
+     "kind": "text",
+     "label": "Your note for the file",
+     "placeholder": "For example: hotel ₹1,080 against a ₹1,200 limit; 3 days of DA for 3 days away"
+    }
+   ],
+   "items": [
+    {
+     "id": "r1",
+     "label": "Claim 1 · Rahul Shirke",
+     "amount": 2270,
+     "dated": "5–6 Oct",
+     "docs": [
+      "cl-01",
+      "limits"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Claim 1: one night in Sangli at ₹1,150 against the G1 limit of ₹1,200, and two days of DA for two days away. The ₹220 auto has no bill, and needs none below ₹300. Fine."
+    },
+    {
+     "id": "s1",
+     "label": "Claim 2 · Swapnil Gade",
+     "amount": 3870,
+     "dated": "5–7 Oct",
+     "docs": [
+      "cl-02",
+      "limits"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Claim 2: nights at ₹1,100 and ₹1,180, both inside ₹1,200 for a class C town. Three days away, three days of DA, a ticket for every bus. Fine."
+    },
+    {
+     "id": "r2",
+     "label": "Claim 3 · Rahul Shirke",
+     "amount": 2560,
+     "dated": "8–9 Oct",
+     "docs": [
+      "cl-03",
+      "limits"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Claim 3: ₹1,200 a night in Ratnagiri is exactly the G1 limit for class C. At the limit is not above it. Two days away, two DAs, tickets both ways. Fine."
+    },
+    {
+     "id": "st1",
+     "label": "Claim 4 · Santosh Hegde",
+     "amount": 5300,
+     "dated": "13–15 Oct",
+     "docs": [
+      "cl-04",
+      "limits"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Claim 4: Belagavi is class C, so a G2 stay is capped at ₹1,800 a night; he took ₹1,750. Three days away, three DAs at ₹400, approved by Rekha, his manager. Fine."
+    },
+    {
+     "id": "p1",
+     "label": "Claim 5 · Prajakta Kulkarni",
+     "amount": 952,
+     "dated": "12–16 Oct",
+     "docs": [
+      "cl-05",
+      "limits",
+      "log-05"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Claim 5: city beats on her two-wheeler at ₹4 a km, and the log’s five days add up to the 238 km claimed. No DA, rightly: Pune is her headquarters. Fine."
+    },
+    {
+     "id": "n1",
+     "label": "Claim 6 · Nilesh Bhujade",
+     "amount": 3640,
+     "dated": "14–16 Oct",
+     "docs": [
+      "cl-06",
+      "limits"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Claim 6: two nights in Chandrapur at ₹1,000, three days of DA at the class C rate, tickets both ways. Deepak, his manager, approved. Fine."
+    },
+    {
+     "id": "a1",
+     "label": "Claim 7 · Akash Thorve",
+     "amount": 3890,
+     "dated": "19–21 Oct",
+     "docs": [
+      "cl-07",
+      "limits"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Claim 7: Beed and Parbhani are class C: ₹1,050 and ₹1,100 a night, under ₹1,200, and three DAs for three days away. Approved by Deepak. Fine."
+    },
+    {
+     "id": "v1",
+     "label": "Claim 8 · Vikas Pawar",
+     "amount": 7900,
+     "dated": "20–21 Oct",
+     "docs": [
+      "cl-08",
+      "limits",
+      "log-08"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "reasons": [
+       "km"
+      ]
+     },
+     "note": "Claim 8: Vikas is G2, so ₹10 a km is right, and his Nashik hotel and DA are inside class B. But the log shows 412 km, not 452. A right rate does not save a wrong distance. Exception.",
+     "weight": 2
+    },
+    {
+     "id": "rk1",
+     "label": "Claim 9 · Rekha Naik",
+     "amount": 8380,
+     "dated": "27–29 Oct",
+     "docs": [
+      "cl-09",
+      "limits"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Claim 9: G3 in a class C town: ₹2,350 a night against ₹2,500, DA at ₹500. The ₹900 taxi to Dharwad has its bill. Deepak, her manager, approved. Fine."
+    },
+    {
+     "id": "p4",
+     "label": "Claim 10 · Prajakta Kulkarni",
+     "amount": 1272,
+     "dated": "3–4 Nov",
+     "docs": [
+      "cl-10",
+      "limits",
+      "log-10"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Claim 10: two day trips out of Pune on her two-wheeler at ₹4 a km, 168 km as the log shows. Each is a day away from her headquarters, so each earns a DA. Fine."
+    },
+    {
+     "id": "s2",
+     "label": "Claim 11 · Swapnil Gade",
+     "amount": 4280,
+     "dated": "3–5 Nov",
+     "docs": [
+      "cl-11",
+      "limits"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Claim 11: two nights in Jalgaon at ₹1,150, three DAs, tickets both ways. Sent in after Diwali, still within 30 days of the trip. Fine."
+    },
+    {
+     "id": "f1",
+     "label": "Claim 12 · Faisal Momin",
+     "amount": 3290,
+     "dated": "19–21 Oct",
+     "docs": [
+      "cl-12",
+      "limits"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Claim 12: the trip ended on 21 October and the claim went in on 20 November, the 30th day. Late-looking, but inside the rule. Hotels under ₹1,200, three DAs. Fine."
+    },
+    {
+     "id": "a2",
+     "label": "Claim 13 · Akash Thorve",
+     "amount": 8530,
+     "dated": "18–20 Nov",
+     "docs": [
+      "cl-13",
+      "limits"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "reasons": [
+       "grade"
+      ]
+     },
+     "note": "Claim 13: the claim says Nagpur (A), but the policy lists Nagpur in class B. A G1 stay there is capped at ₹1,800 a night and DA at ₹350, not ₹2,450 and ₹450. Above the grade. Exception.",
+     "weight": 2
+    },
+    {
+     "id": "nt",
+     "label": "Claim 14 · Nitin Bhosale",
+     "amount": 9380,
+     "dated": "23–24 Nov",
+     "docs": [
+      "cl-14",
+      "limits",
+      "log-14"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "reasons": [
+       "personal"
+      ]
+     },
+     "note": "Claim 14: car, hotel and DA are all within G3. The ₹500 parking fine is not: the policy never pays a fine. Exception.",
+     "weight": 2
+    },
+    {
+     "id": "st2",
+     "label": "Claim 15 · Santosh Hegde",
+     "amount": 26120,
+     "dated": "24–26 Nov",
+     "docs": [
+      "cl-15",
+      "limits"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Claim 15: ₹26,120 is above ₹25,000, so it needed Rekha and then Deepak as National Sales Manager. Both approved. The lunch for 22 has its bill and the guest list. Fine."
+    },
+    {
+     "id": "dp",
+     "label": "Claim 16 · Deepak Iyer",
+     "amount": 33260,
+     "dated": "1–3 Dec",
+     "docs": [
+      "cl-16",
+      "limits"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "reasons": [
+       "approval"
+      ]
+     },
+     "note": "Claim 16: Deepak approved his own claim. His “Reports to” is blank, and a G4 claim at actuals also needs Ashwin. Nobody above him approved ₹33,260 before it was paid. Exception.",
+     "weight": 2
+    },
+    {
+     "id": "rk3",
+     "label": "Claim 17 · Rekha Naik",
+     "amount": 4270,
+     "dated": "2–3 Dec",
+     "docs": [
+      "cl-17",
+      "limits"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Claim 17: ₹2,200 a night in Karwar against ₹2,500 for G3, DA at ₹500, and the ₹650 taxi has its bill. Fine."
+    },
+    {
+     "id": "pr",
+     "label": "Claim 18 · Priyanka Salunkhe",
+     "amount": 6120,
+     "dated": "7–8 Dec",
+     "docs": [
+      "cl-18",
+      "limits"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "reasons": [
+       "nobill"
+      ]
+     },
+     "note": "Claim 18: the ₹780 taxi has no bill, and the policy wants one for any item from ₹300 up. The claims desk ticked it anyway. Train, hotel and DA are inside G3. Exception.",
+     "weight": 2
+    },
+    {
+     "id": "r5",
+     "label": "Claim 19 · Rahul Shirke",
+     "amount": 1960,
+     "dated": "7–8 Dec",
+     "docs": [
+      "cl-19",
+      "limits"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Claim 19: one night in Gadhinglaj at ₹900 and two DAs for two days away, with every bus ticket. Fine."
+    },
+    {
+     "id": "st3",
+     "label": "Claim 20 · Santosh Hegde",
+     "amount": 5050,
+     "dated": "8–10 Dec",
+     "docs": [
+      "cl-20",
+      "limits"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Claim 20: Bagalkot and Gadag at ₹1,600 and ₹1,500 a night, under the G2 limit of ₹1,800, and three DAs at ₹400. Fine."
+    },
+    {
+     "id": "p2",
+     "label": "Claim 21 · Prajakta Kulkarni",
+     "amount": 3890,
+     "dated": "9–10 Dec",
+     "docs": [
+      "cl-21",
+      "limits",
+      "log-21"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "reasons": [
+       "grade"
+      ]
+     },
+     "note": "Claim 21: Prajakta is G1, and the car rate starts at G2. Below G2 a car trip is paid at the two-wheeler rate of ₹4 a km. The log supports the 214 km. Exception.",
+     "weight": 2
+    },
+    {
+     "id": "f4",
+     "label": "Claim 22 · Faisal Momin",
+     "amount": 640,
+     "dated": "10 Dec",
+     "docs": [
+      "cl-22",
+      "limits"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Claim 22: a day trip to Akkalkot: two bus tickets, a ₹120 auto and one DA for the day away. Small and clean. Fine."
+    },
+    {
+     "id": "kv",
+     "label": "Claim 23 · Kavita Lokhande",
+     "amount": 24290,
+     "dated": "15–16 Dec",
+     "docs": [
+      "cl-23",
+      "limits"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Claim 23: G4 flies economy and stays at actuals, so ₹7,850 a night is allowed with Ashwin’s approval for the actuals, which he gave. The Managing Director approved as her manager. Fine."
+    },
+    {
+     "id": "v2",
+     "label": "Claim 24 · Vikas Pawar",
+     "amount": 9730,
+     "dated": "14–15 Dec",
+     "docs": [
+      "cl-24",
+      "limits",
+      "log-24",
+      "bill-bar"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "reasons": [
+       "personal"
+      ]
+     },
+     "note": "Claim 24: the dinner with the distributor is allowed, with its bill and the guests’ names. The second bill is the bar’s: ₹1,460 of beer and whisky. Alcohol is never paid. Exception.",
+     "weight": 2
+    },
+    {
+     "id": "jy",
+     "label": "Claim 25 · Jyoti Pingle",
+     "amount": 1248,
+     "dated": "15–18 Dec",
+     "docs": [
+      "cl-25",
+      "limits",
+      "log-25"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Claim 25: three single-day trips to the Pune office on her two-wheeler, 312 km as the log shows, approved by Ashwin. She claimed no DA. Not claiming is never an exception. Fine."
+    },
+    {
+     "id": "n2",
+     "label": "Claim 26 · Nilesh Bhujade",
+     "amount": 4080,
+     "dated": "15–17 Dec",
+     "docs": [
+      "cl-26",
+      "limits"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Claim 26: Amravati is class C: two nights at ₹1,150 and three DAs at ₹300. The ₹260 auto needs no bill. Fine."
+    },
+    {
+     "id": "a3",
+     "label": "Claim 27 · Akash Thorve",
+     "amount": 2220,
+     "dated": "4–5 Jan",
+     "docs": [
+      "cl-27",
+      "limits"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Claim 27: one night in Jalna at ₹1,100 and two DAs for two days away. Nothing over the G1 limits. Fine."
+    },
+    {
+     "id": "r3",
+     "label": "Claim 28 · Rahul Shirke",
+     "amount": 5240,
+     "dated": "17–20 Nov",
+     "docs": [
+      "cl-28",
+      "limits"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "reasons": [
+       "late"
+      ]
+     },
+     "note": "Claim 28: the trip ended on 20 November and the claim went in on 11 January, 52 days later. After 30 days it needs Ashwin’s approval, and there is none on the claim; the desk paid it anyway. Exception.",
+     "weight": 2
+    },
+    {
+     "id": "s3",
+     "label": "Claim 29 · Swapnil Gade",
+     "amount": 2170,
+     "dated": "2–3 Dec",
+     "docs": [
+      "cl-29",
+      "limits"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Claim 29: sent 39 days after the trip, but Ashwin approved it as a late claim on 13 January, which is what the policy asks. Hotel at the ₹1,200 limit, two DAs. Fine."
+    },
+    {
+     "id": "s4",
+     "label": "Claim 30 · Swapnil Gade",
+     "amount": 8460,
+     "dated": "4–10 Jan",
+     "docs": [
+      "cl-30",
+      "limits"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "reasons": [
+       "notravel"
+      ]
+     },
+     "note": "Claim 30: Monday to Saturday in Dhule and Shirpur is fine. The last line is a DA for Sunday 10 January in Nashik, his own headquarters, where no DA is paid. Exception.",
+     "weight": 2
+    },
+    {
+     "id": "n3",
+     "label": "Claim 31 · Nilesh Bhujade",
+     "amount": 2970,
+     "dated": "8–11 Jan",
+     "docs": [
+      "cl-31",
+      "limits"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "reasons": [
+       "notravel"
+      ]
+     },
+     "note": "Claim 31: four days of DA, Friday to Monday. The tickets show he came home on Saturday and went out again on Monday, so Sunday 10 January was spent in Nagpur. Exception.",
+     "weight": 2
+    },
+    {
+     "id": "rk2",
+     "label": "Claim 32 · Rekha Naik",
+     "amount": 4630,
+     "dated": "12–13 Jan",
+     "docs": [
+      "cl-32",
+      "limits"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Claim 32: Rekha’s own room at the Kolhapur meet, ₹2,450 against ₹2,500 for G3 in class C, and two DAs. A different bill from the twin room. Fine."
+    },
+    {
+     "id": "st4",
+     "label": "Claim 33 · Santosh Hegde",
+     "amount": 3020,
+     "dated": "12–13 Jan",
+     "docs": [
+      "cl-33",
+      "limits",
+      "bill-lodge"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Claim 33: the Kolhapur bill is for a twin room he shared with Faisal. A shared room is claimed once, by the senior person, and Santosh is G2, Faisal G1. His claim is the right one. Fine."
+    },
+    {
+     "id": "f2",
+     "label": "Claim 34 · Faisal Momin",
+     "amount": 2700,
+     "dated": "12–13 Jan",
+     "docs": [
+      "cl-34",
+      "limits",
+      "bill-lodge"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "reasons": [
+       "dup"
+      ]
+     },
+     "note": "Claim 34: the same bill, SSL/2241, is in Santosh’s claim: one twin room, two guests. A shared room is claimed once, by the senior person, so Faisal’s ₹1,180 is the room paid twice. Exception.",
+     "weight": 2
+    },
+    {
+     "id": "p3",
+     "label": "Claim 35 · Prajakta Kulkarni",
+     "amount": 884,
+     "dated": "14 Jan",
+     "docs": [
+      "cl-35",
+      "limits",
+      "log-35"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Claim 35: a day trip to Shirur on her two-wheeler at ₹4 a km, 146 km as the log shows, with one DA for the day away. Within G1. Fine."
+    },
+    {
+     "id": "f3",
+     "label": "Claim 36 · Faisal Momin",
+     "amount": 3680,
+     "dated": "18–20 Jan",
+     "docs": [
+      "cl-36",
+      "limits"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Claim 36: Latur and Dharashiv are class C: ₹1,150 and ₹1,000 a night, three DAs, a ticket for every leg. Fine."
+    },
+    {
+     "id": "n4",
+     "label": "Claim 37 · Nilesh Bhujade",
+     "amount": 2480,
+     "dated": "19–20 Jan",
+     "docs": [
+      "cl-37",
+      "limits"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Claim 37: one night in Yavatmal at ₹1,100, two DAs, tickets both ways. Fine."
+    },
+    {
+     "id": "r4",
+     "label": "Claim 38 · Rahul Shirke",
+     "amount": 2080,
+     "dated": "19–20 Jan",
+     "docs": [
+      "cl-38",
+      "limits"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Claim 38: one night in Islampur at ₹950, two DAs, a ticket for every bus, and a ₹150 auto with no bill, which the policy allows. Fine."
+    },
+    {
+     "id": "a4",
+     "label": "Claim 39 · Akash Thorve",
+     "amount": 3800,
+     "dated": "19–21 Jan",
+     "docs": [
+      "cl-39",
+      "limits"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Claim 39: Parbhani and Hingoli at ₹1,100 and ₹950 a night, three DAs at ₹300. Within G1. Fine."
+    },
+    {
+     "id": "v3",
+     "label": "Claim 40 · Vikas Pawar",
+     "amount": 4780,
+     "dated": "24–25 Jan",
+     "docs": [
+      "cl-40",
+      "limits",
+      "log-40"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Claim 40: he drove to Satara on Sunday 24 January for a Monday meet, and Deepak approved the Sunday travel on 21 January, before the trip. So Sunday’s DA is due. Fine."
+    }
+   ],
+   "docs": [
+    "limits",
+    "policy",
+    "picks",
+    "settings",
+    "cl-01",
+    "cl-02",
+    "cl-03",
+    "cl-04",
+    "cl-05",
+    "cl-06",
+    "cl-07",
+    "cl-08",
+    "cl-09",
+    "cl-10",
+    "cl-11",
+    "cl-12",
+    "cl-13",
+    "cl-14",
+    "cl-15",
+    "cl-16",
+    "cl-17",
+    "cl-18",
+    "cl-19",
+    "cl-20",
+    "cl-21",
+    "cl-22",
+    "cl-23",
+    "cl-24",
+    "cl-25",
+    "cl-26",
+    "cl-27",
+    "cl-28",
+    "cl-29",
+    "cl-30",
+    "cl-31",
+    "cl-32",
+    "cl-33",
+    "cl-34",
+    "cl-35",
+    "cl-36",
+    "cl-37",
+    "cl-38",
+    "cl-39",
+    "cl-40",
+    "log-05",
+    "log-08",
+    "log-10",
+    "log-14",
+    "log-21",
+    "log-24",
+    "log-25",
+    "log-35",
+    "log-40",
+    "bill-lodge",
+    "bill-bar"
+   ]
+  },
+  {
+   "id": "t3",
+   "type": "worksheet",
+   "stage": "Review",
+   "title": "Work out what to recover",
+   "weight": 1,
+   "prompt": "Sameer agreed with these eleven breaches. For each claim, work out what Khamang should recover from the employee, in whole rupees. Type 0 where the trip is due and only an approval is missing. Then add them up.",
+   "lockOnLeave": {
+    "ask": "Hand your recovery sheet to Sameer?",
+    "note": "You can’t change it after this.",
+    "yes": "Hand it in",
+    "done": "Handed to Sameer. You can read your sheet but not change it."
+   },
+   "hints": [
+    "Recover only what the policy does not pay. Where a limit or a lower rate applies, that is the difference, not the whole line."
+   ],
+   "columns": [
+    {
+     "key": "claim",
+     "label": "Claim"
+    },
+    {
+     "key": "what",
+     "label": "Breach"
+    },
+    {
+     "key": "rec",
+     "label": "Recover (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "id": "r1",
+     "cells": {
+      "claim": "Claim 8 · Vikas Pawar",
+      "what": "Car kilometres above the trip log",
+      "rec": {
+       "input": true,
+       "answer": 400,
+       "tolerance": 0,
+       "format": "inr",
+       "sign": false,
+       "working": "(452 − 412) km × ₹10 = ₹400"
+      }
+     }
+    },
+    {
+     "id": "r2",
+     "cells": {
+      "claim": "Claim 13 · Akash Thorve",
+      "what": "Nagpur is class B: hotel and DA at class A rates",
+      "rec": {
+       "input": true,
+       "answer": 1600,
+       "tolerance": 0,
+       "format": "inr",
+       "sign": false,
+       "working": "(₹2,450 − ₹1,800) × 2 nights + (₹450 − ₹350) × 3 days = ₹1,300 + ₹300 = ₹1,600"
+      }
+     }
+    },
+    {
+     "id": "r3",
+     "cells": {
+      "claim": "Claim 14 · Nitin Bhosale",
+      "what": "Parking fine claimed",
+      "rec": {
+       "input": true,
+       "answer": 500,
+       "tolerance": 0,
+       "format": "inr",
+       "sign": false,
+       "working": "The whole fine, ₹500"
+      }
+     }
+    },
+    {
+     "id": "r4",
+     "cells": {
+      "claim": "Claim 16 · Deepak Iyer",
+      "what": "Approved his own claim",
+      "rec": {
+       "input": true,
+       "answer": 0,
+       "tolerance": 0,
+       "format": "inr",
+       "sign": false,
+       "working": "Nothing yet: whether to recover is for the Managing Director and Ashwin, on a claim already paid"
+      }
+     }
+    },
+    {
+     "id": "r5",
+     "cells": {
+      "claim": "Claim 18 · Priyanka Salunkhe",
+      "what": "A ₹780 taxi with no bill",
+      "rec": {
+       "input": true,
+       "answer": 780,
+       "tolerance": 0,
+       "format": "inr",
+       "sign": false,
+       "working": "The taxi, ₹780, unless she produces the bill"
+      }
+     }
+    },
+    {
+     "id": "r6",
+     "cells": {
+      "claim": "Claim 21 · Prajakta Kulkarni",
+      "what": "G1 paid the car rate",
+      "rec": {
+       "input": true,
+       "answer": 1284,
+       "tolerance": 0,
+       "format": "inr",
+       "sign": false,
+       "working": "214 km × (₹10 − ₹4) = ₹1,284"
+      }
+     }
+    },
+    {
+     "id": "r7",
+     "cells": {
+      "claim": "Claim 24 · Vikas Pawar",
+      "what": "Bar bill with the distributor dinner",
+      "rec": {
+       "input": true,
+       "answer": 1460,
+       "tolerance": 0,
+       "format": "inr",
+       "sign": false,
+       "working": "The whole bar bill, ₹1,460"
+      }
+     }
+    },
+    {
+     "id": "r8",
+     "cells": {
+      "claim": "Claim 28 · Rahul Shirke",
+      "what": "Sent 52 days after the trip; no CFO approval",
+      "rec": {
+       "input": true,
+       "answer": 0,
+       "tolerance": 0,
+       "format": "inr",
+       "sign": false,
+       "working": "Nothing yet: whether to recover is Ashwin’s call on a late claim already paid"
+      }
+     }
+    },
+    {
+     "id": "r9",
+     "cells": {
+      "claim": "Claim 30 · Swapnil Gade",
+      "what": "DA for Sunday at his headquarters",
+      "rec": {
+       "input": true,
+       "answer": 350,
+       "tolerance": 0,
+       "format": "inr",
+       "sign": false,
+       "working": "One class B DA, ₹350"
+      }
+     }
+    },
+    {
+     "id": "r10",
+     "cells": {
+      "claim": "Claim 31 · Nilesh Bhujade",
+      "what": "DA for a Sunday spent at home",
+      "rec": {
+       "input": true,
+       "answer": 300,
+       "tolerance": 0,
+       "format": "inr",
+       "sign": false,
+       "working": "One day at ₹300"
+      }
+     }
+    },
+    {
+     "id": "r11",
+     "cells": {
+      "claim": "Claim 34 · Faisal Momin",
+      "what": "Shared room also claimed by Santosh",
+      "rec": {
+       "input": true,
+       "answer": 1180,
+       "tolerance": 0,
+       "format": "inr",
+       "sign": false,
+       "working": "His whole hotel line, ₹1,180"
+      }
+     }
+    },
+    {
+     "id": "tot",
+     "_class": "total",
+     "cells": {
+      "claim": "Total to recover",
+      "what": "–",
+      "rec": {
+       "input": true,
+       "answer": 7854,
+       "tolerance": 0,
+       "format": "inr",
+       "sign": false,
+       "follow": "{r1.rec} + {r2.rec} + {r3.rec} + {r4.rec} + {r5.rec} + {r6.rec} + {r7.rec} + {r8.rec} + {r9.rec} + {r10.rec} + {r11.rec}",
+       "working": "400 + 1,600 + 500 + 0 + 780 + 1,284 + 1,460 + 0 + 350 + 300 + 1,180 = ₹7,854"
+      }
+     }
+    }
+   ],
+   "notes": {
+    "r8.rec": "A late claim is not a false one: Rahul’s trip happened. The 30-day rule decides who must approve it, and that is Ashwin.",
+    "r4.rec": "Deepak’s trip and bills may all be in order. What is missing is the approval, not the spending.",
+    "r1.rec": "Vikas’s rate is right. Recover only the 40 km the log does not support, not the whole car line.",
+    "r2.rec": "The policy still pays a G1 stay in Nagpur up to ₹1,800 a night and ₹350 a day. Recover only what is above that.",
+    "r6.rec": "The trip itself is due. Below G2 a car trip is paid at the two-wheeler rate, so recover the ₹6 a km difference."
+   },
+   "docs": [
+    "limits",
+    "policy",
+    "cl-08",
+    "cl-13",
+    "cl-14",
+    "cl-16",
+    "cl-18",
+    "cl-21",
+    "cl-24",
+    "cl-28",
+    "cl-30",
+    "cl-31",
+    "cl-34",
+    "bill-lodge",
+    "bill-bar",
+    "log-08",
+    "log-21"
+   ]
+  },
+  {
+   "id": "t4",
+   "type": "choice",
+   "stage": "Report",
+   "title": "Trace the breaches back to the RCM",
+   "weight": 3,
+   "prompt": "Before the closing meeting Sameer wants the breaches traced back to the RCM. Answer his four questions from the settings print, the policy and the claims.",
+   "hints": [
+    "A design gap lets the problem through even when everyone does the job. An operating failure is a good control someone skipped."
+   ],
+   "questions": [
+    {
+     "id": "q1",
+     "text": "Faisal and Santosh were both paid for one shared room, though the module blocks repeat bills. What failed?",
+     "sample": "Why the shared room got through",
+     "options": [
+      {
+       "id": "a",
+       "text": "The duplicate check had been switched off, so the module stopped looking for repeat bills this year.",
+       "why": "The settings print shows it on. It did what it was built to do; it was built too narrow."
+      },
+      {
+       "id": "b",
+       "text": "It looks only within one person’s claims, so one bill under two names gets through: a design gap.",
+       "why": "Even run perfectly, it cannot see a bill in someone else’s claim. The fix is to check bill numbers across every employee.",
+       "correct": true
+      },
+      {
+       "id": "c",
+       "text": "Santosh should not have claimed it: as the senior he had to leave the shared room to Faisal.",
+       "why": "The policy says the opposite: a shared room is claimed once, by the senior person. Santosh’s claim is the right one."
+      },
+      {
+       "id": "d",
+       "text": "Nothing failed: the policy lets each person who shares a room claim the whole bill himself.",
+       "why": "One bill is claimed once. Two claims for one room means Khamang paid for it twice."
+      }
+     ]
+    },
+    {
+     "id": "q2",
+     "text": "Nilesh’s and Swapnil’s Sunday allowances were approved by their managers. How do you record this against Row 4?",
+     "sample": "How to record Row 4 for the Sunday allowances",
+     "options": [
+      {
+       "id": "a",
+       "text": "Row 4 is designed well but failed in operation: the managers approved without checking the dates.",
+       "why": "A good control that someone skipped is an operating failure. Test more of their approvals before you call it a pattern.",
+       "correct": true
+      },
+      {
+       "id": "b",
+       "text": "Row 4 is designed badly: staff who work on a Sunday should always be able to claim its allowance.",
+       "why": "Neither of them worked away from home that Sunday. And with prior approval, Sunday travel is paid."
+      },
+      {
+       "id": "c",
+       "text": "No exception for Row 4: once a manager approves a claim, its allowances count as checked.",
+       "why": "An approval shows the step happened, not that it was done well. Both claims show the Sunday plainly."
+      },
+      {
+       "id": "d",
+       "text": "Row 3 failed instead: the module should have capped each Sunday allowance at the limit.",
+       "why": "The amounts were within the limits. The question was the day, which no cap looks at."
+      }
+     ]
+    },
+    {
+     "id": "q3",
+     "text": "Akash’s Nagpur hotel and allowance were above the policy’s limits, yet the module’s grade cap let them through. Why?",
+     "sample": "Why the grade cap passed Akash’s Nagpur claim",
+     "options": [
+      {
+       "id": "a",
+       "text": "Akash keyed the hotel under another head, so the cap on hotel lines never looked at it at all.",
+       "why": "The claim shows it as Hotel. The cap did look, at the wrong limit."
+      },
+      {
+       "id": "b",
+       "text": "The cap applies only from G2 up, so a G1 officer’s claim goes to the manager with no cap at all.",
+       "why": "The settings print shows the cap on for every grade but G4, so G1 lines are capped too."
+      },
+      {
+       "id": "c",
+       "text": "Deepak overrode the cap when he approved the claim, which the module lets any approver do.",
+       "why": "There is no override in the settings and none on the claim. The limit applied was class A’s."
+      },
+      {
+       "id": "d",
+       "text": "The module’s city table puts Nagpur in class A, so it used class A rates; the policy says B.",
+       "why": "A set-up error: the cap worked from the wrong table. Every claim for Nagpur since 1 April needs a look.",
+       "correct": true
+      }
+     ]
+    },
+    {
+     "id": "q4",
+     "text": "Deepak approved his own Bengaluru claim of ₹33,260. How could the module let him?",
+     "sample": "How Deepak could approve his own claim",
+     "options": [
+      {
+       "id": "a",
+       "text": "As National Sales Manager he is the final approver of every sales claim, and that includes his own claims.",
+       "why": "The policy says nobody approves their own claim; a head’s claims go to the Managing Director."
+      },
+      {
+       "id": "b",
+       "text": "G4 claims skip the manager step because the CFO approves actuals, so his own click was enough.",
+       "why": "Actuals need Ashwin as well, and the policy sends a head’s claims to the Managing Director."
+      },
+      {
+       "id": "c",
+       "text": "His “Reports to” in the HR master is blank, so the module sent the claim to his own list.",
+       "why": "Master data broke the control: with no manager set, the module falls back to the claimant. List every blank “Reports to” in the HR master and check those claims.",
+       "correct": true
+      },
+      {
+       "id": "d",
+       "text": "Ashwin approved it on paper first, and Deepak only pressed approve in the module for him.",
+       "why": "Nothing on file shows a paper approval. Without the evidence, the approval did not happen."
+      }
+     ]
+    }
+   ],
+   "docs": [
+    "settings",
+    "limits",
+    "policy",
+    "walk-note",
+    "cl-33",
+    "cl-34",
+    "cl-31",
+    "cl-30",
+    "cl-13",
+    "cl-16",
+    "bill-lodge"
+   ]
+  }
+ ],
+ "passNeeds": [
+  {
+   "task": "t1",
+   "min": 0.6,
+   "note": "Your RCM needs more right: the control, its type and the test for each risk."
+  },
+  {
+   "task": "t2",
+   "min": 0.75,
+   "note": "You need more of the 40 claims right to pass: the call and, for an exception, what is wrong."
+  }
+ ],
+ "wrap": {
+  "from": "sameer",
+  "text": "Eleven breaches in forty, and four of them come from how the module is set up. Those lead the report, because they repeat every month. I have already told Ashwin about the city table and the duplicate check."
+ },
+ "wrapPartial": {
+  "from": "sameer",
+  "text": "Eleven breaches in forty, four of them from how the module is set up. Check your claim calls against the Limits tab and the policy before anything reaches Ashwin."
+ },
+ "wrapRetry": {
+  "from": "sameer",
+  "text": "Take the city’s class from the Limits tab, not the claim print. Check each DA day against the days away, each approver against the employee and each own-vehicle line against its trip log. Any other item of ₹300 or more needs its bill. The RCM comes from my walkthrough note."
+ },
+ "model": {
+  "intro": "Eleven of the 40 picks break the policy, and ₹7,854 is to be recovered. Four trace back to how the module is set up; the other seven needed a person to stop them: the manager or the claims desk.",
+  "blocks": [
+   {
+    "type": "table",
+    "columns": [
+     {
+      "key": "c",
+      "label": "The breaches"
+     },
+     {
+      "key": "f",
+      "label": "What we found"
+     },
+     {
+      "key": "r",
+      "label": "Recover"
+     }
+    ],
+    "rows": [
+     {
+      "c": "Claim 8 · Vikas Pawar",
+      "f": "Car kilometres above the trip log",
+      "r": "₹400"
+     },
+     {
+      "c": "Claim 13 · Akash Thorve",
+      "f": "Nagpur is class B: hotel and DA at class A rates",
+      "r": "₹1,600"
+     },
+     {
+      "c": "Claim 14 · Nitin Bhosale",
+      "f": "Parking fine claimed",
+      "r": "₹500"
+     },
+     {
+      "c": "Claim 16 · Deepak Iyer",
+      "f": "Approved his own claim",
+      "r": "₹0 · for the Managing Director and Ashwin"
+     },
+     {
+      "c": "Claim 18 · Priyanka Salunkhe",
+      "f": "A ₹780 taxi with no bill",
+      "r": "₹780"
+     },
+     {
+      "c": "Claim 21 · Prajakta Kulkarni",
+      "f": "G1 paid the car rate",
+      "r": "₹1,284"
+     },
+     {
+      "c": "Claim 24 · Vikas Pawar",
+      "f": "Bar bill with the distributor dinner",
+      "r": "₹1,460"
+     },
+     {
+      "c": "Claim 28 · Rahul Shirke",
+      "f": "Sent 52 days after the trip; no CFO approval",
+      "r": "₹0 · for Ashwin to decide"
+     },
+     {
+      "c": "Claim 30 · Swapnil Gade",
+      "f": "DA for Sunday at his headquarters",
+      "r": "₹350"
+     },
+     {
+      "c": "Claim 31 · Nilesh Bhujade",
+      "f": "DA for a Sunday spent at home",
+      "r": "₹300"
+     },
+     {
+      "c": "Claim 34 · Faisal Momin",
+      "f": "Shared room also claimed by Santosh",
+      "r": "₹1,180"
+     },
+     {
+      "c": "Total",
+      "f": "",
+      "r": "₹7,854",
+      "_class": "total"
+     }
+    ]
+   },
+   {
+    "type": "text",
+    "text": "Seven claims only look wrong:"
+   },
+   {
+    "type": "list",
+    "items": [
+     "Claim 3: ₹1,200 a night in Ratnagiri is at the G1 limit, not above it.",
+     "Claim 12: sent on the 30th day after the trip, inside the rule.",
+     "Claim 15: above ₹25,000, and both Rekha and Deepak approved it.",
+     "Claim 23: G4 at actuals, which Ashwin approved.",
+     "Claim 29: sent 39 days after the trip, but Ashwin approved it as a late claim.",
+     "Claim 33: the shared room, claimed by Santosh as the senior.",
+     "Claim 40: Sunday travel that Deepak approved before the trip."
+    ]
+   },
+   {
+    "type": "text",
+    "text": "The RCM, row by row:"
+   },
+   {
+    "type": "table",
+    "columns": [
+     {
+      "key": "r",
+      "label": "Risk"
+     },
+     {
+      "key": "c",
+      "label": "Control"
+     },
+     {
+      "key": "o",
+      "label": "Owner, how often"
+     },
+     {
+      "key": "t",
+      "label": "Type"
+     },
+     {
+      "key": "x",
+      "label": "Test"
+     }
+    ],
+    "rows": [
+     {
+      "r": "1 · Money not spent",
+      "c": "Bill check by the claims desk",
+      "o": "Jyoti’s desk, every claim",
+      "t": "Preventive, manual",
+      "x": "Vouch paid claims to their bills and trip logs"
+     },
+     {
+      "r": "2 · One bill paid twice",
+      "c": "Duplicate block in the module",
+      "o": "The module (set up by IT), every claim",
+      "t": "Preventive, automated",
+      "x": "Check the setting; rerun the claims for repeats"
+     },
+     {
+      "r": "3 · Above the grade",
+      "c": "Grade caps in the module",
+      "o": "The module (set up by IT), every line",
+      "t": "Preventive, automated",
+      "x": "Compare the limits and city table with the policy"
+     },
+     {
+      "r": "4 · Days not travelled",
+      "c": "Manager approval against the tour plan",
+      "o": "The reporting manager, every claim",
+      "t": "Preventive, manual",
+      "x": "Match claims to tour plans and approvals"
+     },
+     {
+      "r": "5 · Nobody finds it",
+      "c": "CFO’s signed monthly list",
+      "o": "Ashwin, monthly",
+      "t": "Detective, manual",
+      "x": "Inspect the signed lists and the follow-up"
+     }
+    ]
+   },
+   {
+    "type": "text",
+    "text": "The April policy sign-off answers none of the five risks: it tells staff the rules and checks nothing."
+   },
+   {
+    "type": "text",
+    "text": "The four set-up gaps: the duplicate check sees one person’s claims only; Nagpur sits in class A; the car rate is the same for every grade; and a blank “Reports to” sends a claim back to its owner."
+   },
+   {
+    "type": "note",
+    "from": "sameer",
+    "text": "Eleven in forty sounds like a lot, but I picked for risk, not at random, so never quote it as a share of all 1,186 claims. For the four set-up gaps we pull every claim since April."
+   }
+  ]
+ },
+ "principles": [
+  "Build the RCM from what the client does, then test each control the way it runs: an automated one by its setting, a manual one on the claims it passed.",
+  "Test a claim against the policy, not against the class or limit the system printed.",
+  "A design gap fails every time; a control someone skips fails now and then. Fix the first by changing the control, the second with the people who run it."
+ ],
+ "earned": {
+  "clause": "built a {rcm}-row risk-control matrix for travel and expense claims; tested {claims} claims against the grade-wise travel policy[[ and flagged {found} {found|breach|breaches}]][[; computed recoveries of {rec}]]",
+  "counts": {
+   "rcm": {
+    "kind": "items",
+    "task": "t1"
+   },
+   "claims": {
+    "kind": "items",
+    "task": "t2",
+    "answered": "gate"
+   },
+   "found": {
+    "kind": "itemsWhere",
+    "task": "t2",
+    "field": "verdict",
+    "equals": "exception",
+    "withRight": "reasons"
+   },
+   "rec": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "tot",
+    "col": "rec",
+    "format": "inr"
+   }
+  },
+  "fallback": "built a risk-control matrix for travel and expense claims and tested claims against the grade-wise travel policy"
+ },
+ "interview": [
+  {
+   "q": "What is a risk-control matrix? Walk me through one row of yours.",
+   "checking": "Whether you know what an RCM holds and can explain one row you built.",
+   "outline": [
+    "A table of a process’s risks, each with its control, type, owner and the test we run.",
+    "My row: a hotel above the grade’s limit. The module will not save it: preventive, automated.",
+    "In the simulation I tested its city table against the policy; it had Nagpur in class A."
+   ]
+  },
+  {
+   "q": "How would you find duplicate expense claims?",
+   "checking": "Whether you have a method beyond scrolling, and treat a match as a lead.",
+   "outline": [
+    "Put the period’s claims in one sheet and match bill number, date and amount across employees.",
+    "In the simulation one twin-room bill named two guests, and both had claimed it in full.",
+    "A match is a lead: I read both claims and the policy before calling one a duplicate."
+   ]
+  }
+ ]
+}

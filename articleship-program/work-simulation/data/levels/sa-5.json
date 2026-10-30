@@ -1,0 +1,3195 @@
+{
+ "id": "sa-5",
+ "domain": "statutory-audit",
+ "number": 5,
+ "title": "Quarterly limited review",
+ "minutes": 40,
+ "learn": [
+  "How a threshold picks the lines that need a reason",
+  "Why a line under the threshold can still need a query",
+  "What a review report says, and why it isn’t an audit opinion"
+ ],
+ "do": [
+  "Finish the variance sheet for nine lines",
+  "Explain or query each line",
+  "Draft the query mail and close the checklist"
+ ],
+ "case": {
+  "role": "First-year article assistant on the statutory audit team",
+  "client": "Tamhini Drivetech Private Limited, a Chakan company that makes gears, shafts and hubs for vehicle makers; the private-equity fund that owns 16% wants each quarter’s results reviewed by the statutory auditors",
+  "team": "Aditi Rane (senior), Rehan Siddiqui (manager), Sudha Venkatesh (partner); Varun Shetty, second-year article, set up the variance sheet; at Tamhini, Mahesh Kadam, GM Finance and Accounts, sent the numbers and his reasons",
+  "goal": "Review Tamhini’s results for the quarter ended 30 September 2026 against Q1 and the same quarter last year, query what doesn’t fit and close the checklist.",
+  "period": "Quarter ended 30 September 2026 (limited review)",
+  "where": "Firm office, Prabhat Road · Monday 26 October 2026"
+ },
+ "brief": {
+  "from": "aditi",
+  "time": "9:35 am",
+  "messages": [
+   "Tamhini’s Q2 review is ours this week. Varun has cleared the other lines; the nine I asked Mahesh about are yours. Variance sheet first, then I’ll put his reasons and papers beside each line.",
+   "Our rule: anything over 10% and over ₹10 lakh against Q1 or Q2 last year needs a reason with a paper. Then catch what should have moved and didn’t. Rehan reviews on Thursday."
+  ]
+ },
+ "documents": [
+  {
+   "id": "mail",
+   "type": "letter",
+   "style": "email",
+   "title": "Mahesh’s mail · the Q2 pack",
+   "tab": "Mail",
+   "from": {
+    "name": "Mahesh Kadam",
+    "email": "mahesh.kadam@email.com"
+   },
+   "to": [
+    {
+     "name": "Aditi Rane",
+     "email": "aditi.rane@email.com"
+    }
+   ],
+   "cc": [
+    {
+     "name": "Pallavi Shinde",
+     "email": "pallavi.shinde@email.com"
+    }
+   ],
+   "date": "Thu, 22 Oct 2026, 11:14 pm",
+   "subject": "Tamhini: Q2 numbers and my notes",
+   "body": [
+    "Aditi,",
+    "Q2 pack as promised: the draft results, the ledger summary by quarter, the plant MIS and the fixed-asset schedule. Against each of the nine lines you asked about I have put my reason and whatever papers I had to hand.",
+    "The board meets on Thursday 12 November and Nandini at Kaveri Bridge wants the reviewed results by the 14th. The plant is shut for Diwali from 7 to 11 November, so please send all your queries in one mail, by Friday the 30th if you can.",
+    "Regards,"
+   ],
+   "attachments": [
+    "Q2 results draft.pdf",
+    "P&L by quarter.xlsx",
+    "Plant MIS Q2.pdf",
+    "FA and CWIP H1.xlsx",
+    "Line notes Q2.xlsx"
+   ],
+   "sign": {
+    "name": "Mahesh Kadam",
+    "role": "GM, Finance and Accounts",
+    "for": "Tamhini Drivetech Private Limited",
+    "hand": false
+   }
+  },
+  {
+   "id": "results",
+   "type": "table",
+   "style": "statement",
+   "title": "Draft results · Q2 2026–27",
+   "tab": "Results",
+   "kindLabel": "Draft results",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC, Village Mahalunge, Taluka Khed, Pune 410501",
+    "cin": "U29301MH2004PTC942620"
+   },
+   "heading": "Statement of unaudited financial results for the quarter and half-year ended 30 September 2026",
+   "subtitle": "₹ lakh, except earnings per share",
+   "notesNumbered": true,
+   "columns": [
+    {
+     "key": "item",
+     "label": "Particulars"
+    },
+    {
+     "key": "q2",
+     "label": "Quarter ended 30.09.2026 (unaudited)",
+     "format": "num"
+    },
+    {
+     "key": "q1",
+     "label": "Quarter ended 30.06.2026 (unaudited)",
+     "format": "num"
+    },
+    {
+     "key": "q2ly",
+     "label": "Quarter ended 30.09.2025 (unaudited)",
+     "format": "num"
+    },
+    {
+     "key": "h1",
+     "label": "Half-year ended 30.09.2026 (unaudited)",
+     "format": "num"
+    },
+    {
+     "key": "h1ly",
+     "label": "Half-year ended 30.09.2025 (unaudited)",
+     "format": "num"
+    },
+    {
+     "key": "fy",
+     "label": "Year ended 31.03.2026 (audited)",
+     "format": "num"
+    }
+   ],
+   "rows": [
+    {
+     "item": "I. Revenue from operations",
+     "_id": "rev",
+     "q2": 3094.61,
+     "q1": 2778.68,
+     "q2ly": 2567.26,
+     "h1": 5873.29,
+     "h1ly": 5009.28,
+     "fy": 10436.0
+    },
+    {
+     "item": "II. Other income",
+     "_id": "oi",
+     "q2": 1.01,
+     "q1": 0.82,
+     "q2ly": 1.26,
+     "h1": 1.83,
+     "h1ly": 2.52,
+     "fy": 5.04
+    },
+    {
+     "item": "III. Total income (I + II)",
+     "_id": "ti",
+     "q2": 3095.62,
+     "q1": 2779.5,
+     "q2ly": 2568.52,
+     "h1": 5875.12,
+     "h1ly": 5011.8,
+     "fy": 10441.04,
+     "_class": "total",
+     "_sumOf": [
+      "rev",
+      "oi"
+     ]
+    },
+    {
+     "item": "IV. Expenses",
+     "_class": "head"
+    },
+    {
+     "item": "(a) Cost of materials consumed",
+     "_id": "comc",
+     "q2": 1508.95,
+     "q1": 1368.7,
+     "q2ly": 1242.55,
+     "h1": 2877.65,
+     "h1ly": 2413.8,
+     "fy": 5092.4,
+     "_indent": 1
+    },
+    {
+     "item": "(b) Purchases of stock-in-trade",
+     "_id": "sit",
+     "q2": 390.49,
+     "q1": 353.79,
+     "q2ly": 313.78,
+     "h1": 744.28,
+     "h1ly": 617.28,
+     "fy": 1286.0,
+     "_indent": 1
+    },
+    {
+     "item": "(c) Changes in inventories of finished goods, WIP and stock-in-trade",
+     "_id": "chg",
+     "q2": -43.0,
+     "q1": -37.0,
+     "q2ly": -12.0,
+     "h1": -80.0,
+     "h1ly": -24.8,
+     "fy": -32.0,
+     "_indent": 1
+    },
+    {
+     "item": "(d) Employee benefits expense",
+     "_id": "emp",
+     "q2": 264.81,
+     "q1": 260.61,
+     "q2ly": 235.81,
+     "h1": 525.42,
+     "h1ly": 467.78,
+     "fy": 958.6,
+     "_indent": 1
+    },
+    {
+     "item": "(e) Finance costs",
+     "_id": "fin",
+     "q2": 43.0,
+     "q1": 45.25,
+     "q2ly": 47.67,
+     "h1": 88.25,
+     "h1ly": 96.65,
+     "fy": 188.4,
+     "_indent": 1
+    },
+    {
+     "item": "(f) Depreciation and amortisation expense",
+     "_id": "dep",
+     "q2": 78.32,
+     "q1": 76.43,
+     "q2ly": 70.98,
+     "h1": 154.75,
+     "h1ly": 141.39,
+     "fy": 286.2,
+     "_indent": 1
+    },
+    {
+     "item": "(g) Other expenses",
+     "_id": "oth",
+     "q2": 554.92,
+     "q1": 530.64,
+     "q2ly": 461.48,
+     "h1": 1085.56,
+     "h1ly": 906.01,
+     "fy": 1883.6,
+     "_indent": 1
+    },
+    {
+     "item": "Total expenses (IV)",
+     "_id": "te",
+     "q2": 2797.49,
+     "q1": 2598.42,
+     "q2ly": 2360.27,
+     "h1": 5395.91,
+     "h1ly": 4618.11,
+     "fy": 9663.2,
+     "_class": "total",
+     "_sumOf": [
+      "comc",
+      "sit",
+      "chg",
+      "emp",
+      "fin",
+      "dep",
+      "oth"
+     ]
+    },
+    {
+     "item": "V. Profit before tax (III − IV)",
+     "_id": "pbt",
+     "q2": 298.13,
+     "q1": 181.08,
+     "q2ly": 208.25,
+     "h1": 479.21,
+     "h1ly": 393.69,
+     "fy": 777.84,
+     "_class": "total",
+     "_sumOf": [
+      "ti",
+      "-te"
+     ]
+    },
+    {
+     "item": "VI. Tax expense",
+     "_id": "tax",
+     "q2": 76.29,
+     "q1": 46.34,
+     "q2ly": 47.72,
+     "h1": 122.63,
+     "h1ly": 93.45,
+     "fy": 198.8,
+     "_check": false
+    },
+    {
+     "item": "VII. Profit for the period (V − VI)",
+     "_id": "pat",
+     "q2": 221.84,
+     "q1": 134.74,
+     "q2ly": 160.53,
+     "h1": 356.58,
+     "h1ly": 300.24,
+     "fy": 579.04,
+     "_class": "total",
+     "_sumOf": [
+      "pbt",
+      "-tax"
+     ]
+    },
+    {
+     "item": "VIII. Paid-up equity share capital (face value ₹10 per share)",
+     "_id": "cap",
+     "q2": 2500.0,
+     "q1": 2500.0,
+     "q2ly": 2500.0,
+     "h1": 2500.0,
+     "h1ly": 2500.0,
+     "fy": 2500.0,
+     "_check": false
+    },
+    {
+     "item": "IX. Earnings per share (₹), basic and diluted, not annualised",
+     "_id": "eps",
+     "q2": 0.89,
+     "q1": 0.54,
+     "q2ly": 0.64,
+     "h1": 1.43,
+     "h1ly": 1.2,
+     "fy": 2.32,
+     "_check": false
+    }
+   ],
+   "notes": [
+    "These results will be placed before the Board of Directors at its meeting on 12 November 2026. The statutory auditors are reviewing them, as the shareholders’ agreement with Kaveri Bridge India Growth Fund I requires.",
+    "The results follow the same accounting policies as the audited financial statements for the year ended 31 March 2026.",
+    "The company has one business segment: precision transmission parts, with related trading.",
+    "Earnings per share for earlier periods are on 2,50,00,000 shares, after the 1:1 bonus issue of 18 September 2025.",
+    "Figures are rounded off to the nearest ₹1,000; differences, if any, are due to rounding off."
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "DRAFT · FOR REVIEW",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": -5
+    }
+   ]
+  },
+  {
+   "id": "ledgers",
+   "type": "table",
+   "style": "sheet",
+   "title": "Ledger summary · by quarter",
+   "tab": "Ledgers",
+   "sheetName": "P&L by quarter",
+   "freeze": true,
+   "heading": "Profit and loss by ledger, as booked (₹)",
+   "columns": [
+    {
+     "key": "led",
+     "label": "Ledger"
+    },
+    {
+     "key": "q2",
+     "label": "Q2 2026–27",
+     "format": "num"
+    },
+    {
+     "key": "q1",
+     "label": "Q1 2026–27",
+     "format": "num"
+    },
+    {
+     "key": "ly",
+     "label": "Q2 2025–26",
+     "format": "num"
+    }
+   ],
+   "rows": [
+    {
+     "led": "Revenue from operations",
+     "_class": "head"
+    },
+    {
+     "led": "Sales – manufactured goods (domestic)",
+     "q2": 248388000,
+     "q1": 227291000,
+     "ly": 207574800
+    },
+    {
+     "led": "Sales – manufactured goods (export)",
+     "q2": 6459000,
+     "q1": 3132000,
+     "ly": 4231200
+    },
+    {
+     "led": "Sales – traded goods (domestic)",
+     "q2": 40326000,
+     "q1": 36901000,
+     "ly": 34194000
+    },
+    {
+     "led": "Sales – traded goods (export)",
+     "q2": 5881000,
+     "q1": 2851000,
+     "ly": 3739200
+    },
+    {
+     "led": "Scrap sales",
+     "q2": 8407000,
+     "q1": 7693000,
+     "ly": 6986400
+    },
+    {
+     "led": "Total revenue from operations",
+     "_class": "subtotal",
+     "q2": 309461000,
+     "q1": 277868000,
+     "ly": 256725600
+    },
+    {
+     "led": "Employee benefits expense",
+     "_class": "head"
+    },
+    {
+     "led": "Salaries and wages – staff",
+     "q2": 7107400,
+     "q1": 7029250,
+     "ly": 6351720
+    },
+    {
+     "led": "Wages – workers",
+     "q2": 11746460,
+     "q1": 10540800,
+     "ly": 10076160
+    },
+    {
+     "led": "Directors’ remuneration",
+     "q2": 1800000,
+     "q1": 1800000,
+     "ly": 1623600
+    },
+    {
+     "led": "Bonus",
+     "q2": 1920000,
+     "q1": 1920000,
+     "ly": 1672800
+    },
+    {
+     "led": "Contribution to PF and ESI",
+     "q2": 1146595,
+     "q1": 1131585,
+     "ly": 1018440
+    },
+    {
+     "led": "Gratuity",
+     "q2": 600000,
+     "q1": 600000,
+     "ly": 541200
+    },
+    {
+     "led": "Leave encashment",
+     "q2": 270000,
+     "q1": 270000,
+     "ly": 236160
+    },
+    {
+     "led": "Staff welfare",
+     "q2": 1890000,
+     "q1": 2770000,
+     "ly": 2061480
+    },
+    {
+     "led": "Total employee benefits expense",
+     "_class": "subtotal",
+     "q2": 26480455,
+     "q1": 26061635,
+     "ly": 23581560
+    },
+    {
+     "led": "Finance costs",
+     "_class": "head"
+    },
+    {
+     "led": "Interest on term loans",
+     "q2": 2060798,
+     "q1": 2160000,
+     "ly": 2590720
+    },
+    {
+     "led": "Interest on cash credit",
+     "q2": 2189655,
+     "q1": 2364534,
+     "ly": 2155560
+    },
+    {
+     "led": "Other borrowing costs",
+     "q2": 50000,
+     "q1": "–",
+     "ly": 20240
+    },
+    {
+     "led": "Total finance costs",
+     "_class": "subtotal",
+     "q2": 4300453,
+     "q1": 4524534,
+     "ly": 4766520
+    },
+    {
+     "led": "Depreciation and amortisation",
+     "q2": 7832331,
+     "q1": 7643108,
+     "ly": 7097760,
+     "_class": "subtotal",
+     "_check": false
+    },
+    {
+     "led": "Other expenses",
+     "_class": "head"
+    },
+    {
+     "led": "Stores and consumables consumed",
+     "q2": 7046000,
+     "q1": 6449000,
+     "ly": 5929000
+    },
+    {
+     "led": "Packing materials consumed",
+     "q2": 3284000,
+     "q1": 3070000,
+     "ly": 2842000
+    },
+    {
+     "led": "Power and fuel",
+     "q2": 13727000,
+     "q1": 12561000,
+     "ly": 11319000
+    },
+    {
+     "led": "Job work charges",
+     "q2": 8961400,
+     "q1": 8200200,
+     "ly": 6517000
+    },
+    {
+     "led": "Contract labour charges",
+     "q2": 6700000,
+     "q1": 6700200,
+     "ly": 5390000
+    },
+    {
+     "led": "Repairs – plant and machinery",
+     "q2": 2688900,
+     "q1": 2688900,
+     "ly": 2401000
+    },
+    {
+     "led": "Repairs – buildings",
+     "q2": 484400,
+     "q1": 726800,
+     "ly": 465500
+    },
+    {
+     "led": "Repairs – others",
+     "q2": 407100,
+     "q1": 407100,
+     "ly": 367500
+    },
+    {
+     "led": "Freight outward",
+     "q2": 5331700,
+     "q1": 4878700,
+     "ly": 3969000
+    },
+    {
+     "led": "Rent",
+     "q2": 750000,
+     "q1": 750000,
+     "ly": 735000
+    },
+    {
+     "led": "Insurance",
+     "q2": 817402,
+     "q1": 817398,
+     "ly": 661500
+    },
+    {
+     "led": "Rates and taxes",
+     "q2": 147500,
+     "q1": 737500,
+     "ly": 269500
+    },
+    {
+     "led": "Legal and professional fees",
+     "q2": 1086300,
+     "q1": 1086300,
+     "ly": 882000
+    },
+    {
+     "led": "Payment to auditors",
+     "q2": "–",
+     "q1": "–",
+     "ly": 441000
+    },
+    {
+     "led": "Travelling and conveyance",
+     "q2": 1032600,
+     "q1": 1032600,
+     "ly": 906500
+    },
+    {
+     "led": "Communication",
+     "q2": 197500,
+     "q1": 197700,
+     "ly": 171500
+    },
+    {
+     "led": "Printing and stationery",
+     "q2": 140100,
+     "q1": 140100,
+     "ly": 122500
+    },
+    {
+     "led": "Security charges",
+     "q2": 780000,
+     "q1": 780000,
+     "ly": 710500
+    },
+    {
+     "led": "Housekeeping charges",
+     "q2": 345000,
+     "q1": 345000,
+     "ly": 318500
+    },
+    {
+     "led": "Bank charges",
+     "q2": 222600,
+     "q1": 222600,
+     "ly": 196000
+    },
+    {
+     "led": "Sales promotion",
+     "q2": 560000,
+     "q1": 420000,
+     "ly": 465500
+    },
+    {
+     "led": "CSR expenditure",
+     "q2": "–",
+     "q1": "–",
+     "ly": 294000
+    },
+    {
+     "led": "Vehicle running",
+     "q2": 245100,
+     "q1": 245100,
+     "ly": 171500
+    },
+    {
+     "led": "Software and ERP charges",
+     "q2": 160000,
+     "q1": 160200,
+     "ly": 147000
+    },
+    {
+     "led": "Calibration and testing",
+     "q2": 70000,
+     "q1": 140000,
+     "ly": 98000
+    },
+    {
+     "led": "Miscellaneous expenses",
+     "q2": 307500,
+     "q1": 307500,
+     "ly": 357700
+    },
+    {
+     "led": "Total other expenses",
+     "_class": "subtotal",
+     "q2": 55492102,
+     "q1": 53063898,
+     "ly": 46148200
+    }
+   ],
+   "notes": [
+    "Exported from Tally by Pallavi on 22-10-2026. Cost of materials consumed, purchases of traded goods and the change in inventories are in the results."
+   ]
+  },
+  {
+   "id": "mis",
+   "type": "table",
+   "style": "register",
+   "title": "Plant MIS · quarter summary",
+   "tab": "MIS",
+   "kindLabel": "Plant report",
+   "company": "Tamhini Drivetech Private Limited · Chakan plant",
+   "heading": "Plant MIS: quarter summary",
+   "subtitle": "Prepared by plant accounts from the production and despatch registers",
+   "columns": [
+    {
+     "key": "item",
+     "label": "Measure"
+    },
+    {
+     "key": "q2",
+     "label": "Q2 2026–27",
+     "format": "int"
+    },
+    {
+     "key": "q1",
+     "label": "Q1 2026–27",
+     "format": "int"
+    },
+    {
+     "key": "ly",
+     "label": "Q2 2025–26",
+     "format": "int"
+    }
+   ],
+   "rows": [
+    {
+     "item": "Pieces machined (nos)",
+     "q2": 1186000,
+     "q1": 1085000,
+     "ly": 989000
+    },
+    {
+     "item": "Pieces despatched (nos)",
+     "q2": 1162000,
+     "q1": 1064000,
+     "ly": 971000
+    },
+    {
+     "item": "Workmen on the rolls at quarter-end",
+     "q2": 168,
+     "q1": 163,
+     "ly": 156
+    },
+    {
+     "item": "Contract workers, monthly average",
+     "q2": 110,
+     "q1": 110,
+     "ly": 92
+    },
+    {
+     "item": "Shifts on CNC cell 3",
+     "q2": 3,
+     "q1": 3,
+     "ly": 2
+    }
+   ],
+   "check": false,
+   "notes": [
+    "Third shift on CNC cell 3 since March 2026, worked by contract workers."
+   ],
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Checked. V. Reddy 21/10",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "minutes",
+   "type": "letter",
+   "style": "minutes",
+   "title": "Board minutes · 14 August 2026",
+   "tab": "Minutes",
+   "letterhead": "Tamhini Drivetech Private Limited\nPlot B-47, Chakan Industrial Area Phase II, MIDC, Mahalunge, Pune 410501",
+   "subject": "Minutes of the meeting of the Board of Directors held on Friday, 14 August 2026 at the registered office (extract)",
+   "body": [
+    "Present: Dilip Joglekar (Chairman), Amol Joglekar (Managing Director), Sneha Joglekar, Nandini Krishnamurthy (nominee director). In attendance: Mrunal Deo (Company Secretary), Mahesh Kadam (GM, Finance and Accounts).",
+    "## 3. Results for the quarter ended 30 June 2026",
+    "The Board considered the unaudited results for the quarter ended 30 June 2026, reviewed by the statutory auditors. RESOLVED THAT the results be and are hereby approved and sent to Kaveri Bridge India Growth Fund I.",
+    "## 4. Term loan II and the new CNC turning centre",
+    "The Managing Director informed the Board that ₹51,30,000 of term loan II was drawn from Vindhya Commercial Bank on 20 July 2026 to pay for the CNC turning centre TC-35. The machine was installed in Bay 4 and accepted after its trial run on 12 August 2026, and is now making sample lots for Ashvaratha Motors. The Board noted the same.",
+    "## 5. Wage settlement",
+    "The Board noted the settlement signed with the workmen’s union on 2 July 2026: wages up 9% from 1 July 2026, for three years."
+   ],
+   "initials": "D.J.",
+   "sign": {
+    "closing": "Certified true copy",
+    "for": "Tamhini Drivetech Private Limited",
+    "name": "Mrunal Deo",
+    "role": "Company Secretary",
+    "hand": "Mrunal Deo"
+   },
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "CERTIFIED TRUE COPY",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": -4
+    }
+   ]
+  },
+  {
+   "id": "fa-h1",
+   "type": "table",
+   "style": "sheet",
+   "title": "Fixed-asset schedule · H1 2026–27",
+   "tab": "Fixed assets",
+   "sheetName": "FA and CWIP H1",
+   "freeze": true,
+   "heading": "Fixed assets: additions and capital work-in-progress, 1 April to 30 September 2026",
+   "columns": [
+    {
+     "key": "desc",
+     "label": "Asset"
+    },
+    {
+     "key": "use",
+     "label": "Put to use"
+    },
+    {
+     "key": "cost",
+     "label": "Cost (₹)",
+     "format": "num"
+    },
+    {
+     "key": "inv",
+     "label": "Invoice date"
+    },
+    {
+     "key": "code",
+     "label": "Ref",
+     "mono": true
+    }
+   ],
+   "rows": [
+    {
+     "desc": "Capitalised in the half-year",
+     "_class": "head"
+    },
+    {
+     "code": "FA-27-01",
+     "desc": "6 laptops, production and accounts",
+     "inv": "12-05-2026",
+     "use": "15-05-2026",
+     "cost": 432000
+    },
+    {
+     "code": "FA-27-02",
+     "desc": "Car for the MD (sedan)",
+     "inv": "04-06-2026",
+     "use": "06-06-2026",
+     "cost": 2576000
+    },
+    {
+     "code": "FA-27-03",
+     "desc": "Shed extension, Bay 4",
+     "inv": "26-06-2026",
+     "use": "30-06-2026",
+     "cost": 4260000
+    },
+    {
+     "desc": "Total capitalised",
+     "cost": 7268000,
+     "_class": "subtotal"
+    },
+    {
+     "desc": "Capital work-in-progress at 30-09-2026",
+     "_class": "head"
+    },
+    {
+     "code": "CWIP-01",
+     "desc": "CNC turning centre TC-35 (Yelahanka CNC Systems)",
+     "inv": "18-07-2026",
+     "use": "Not yet",
+     "cost": 6840000
+    },
+    {
+     "desc": "Total capital work-in-progress",
+     "cost": 6840000,
+     "_class": "subtotal"
+    }
+   ],
+   "notes": [
+    "Depreciation: straight line, residual value 5% of cost, from the date an asset is put to use, pro rata by days. Plant and machinery 15 years, buildings 30, vehicles 8, computers 3.",
+    "TC-35: production has asked us to take 1 October, when Ashvaratha’s regular input-shaft schedule starts. We will capitalise it then."
+   ],
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "M.K.",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "fees",
+   "type": "letter",
+   "style": "letter",
+   "title": "Our engagement letter · fees",
+   "tab": "Fees",
+   "letterhead": {
+    "name": "Bapat Venkatesh & Co.",
+    "address": "Chartered Accountants · 5th floor, Sumant Chambers, Prabhat Road, Erandwane, Pune 411004"
+   },
+   "to": "The Board of Directors\nTamhini Drivetech Private Limited\nPlot B-47, Chakan Industrial Area Phase II, MIDC, Mahalunge, Pune 410501",
+   "date": "20 April 2026",
+   "ref": "BVC/TDPL/2026-27/01",
+   "subject": "Audit, tax audit and quarterly reviews for 2026–27: terms (extract)",
+   "body": [
+    "## 4. Fees",
+    {
+     "table": {
+      "columns": [
+       {
+        "key": "w",
+        "label": "Work"
+       },
+       {
+        "key": "f",
+        "label": "Fee (₹)",
+        "format": "inr"
+       }
+      ],
+      "rows": [
+       {
+        "w": "Review of the results for the quarter ended 30 June 2026",
+        "f": 175000
+       },
+       {
+        "w": "Review of the results for the quarter ended 30 September 2026",
+        "f": 175000
+       },
+       {
+        "w": "Review of the results for the quarter ended 31 December 2026",
+        "f": 175000
+       },
+       {
+        "w": "Statutory audit, year ended 31 March 2027",
+        "f": 1075000
+       },
+       {
+        "w": "Tax audit, tax year 2026–27",
+        "f": 350000
+       },
+       {
+        "w": "Total",
+        "f": 1950000
+       }
+      ]
+     }
+    },
+    "GST is extra. Out-of-pocket expenses are billed at actuals. The fourth quarter is covered by the audit.",
+    "## 5. Billing",
+    "We will bill the first two review fees after the half-year review report, the third after its own report, and the audit and tax-audit fees when we sign those reports."
+   ],
+   "sign": {
+    "for": "Bapat Venkatesh & Co., Chartered Accountants · FRN 1XXXXXW",
+    "name": "Sudha Venkatesh",
+    "role": "Partner · M. No. 1XXXXX",
+    "hand": "Sudha Venkatesh"
+   },
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Accepted. A. Joglekar, MD, 24/4/26",
+     "color": "blue",
+     "at": "inline"
+    }
+   ]
+  },
+  {
+   "id": "l1-card",
+   "type": "card",
+   "style": "slip",
+   "group": "l1",
+   "tab": "Line",
+   "arrives": "t2",
+   "title": "Line 1 · Revenue from operations · Variance sheet",
+   "kindLabel": "Variance sheet line",
+   "issuer": "Variance sheet · Q2 2026–27 · ₹ lakh",
+   "heading": "Line 1: Revenue from operations",
+   "fields": [
+    {
+     "label": "Q2 2026–27",
+     "value": "₹3,094.61 lakh"
+    },
+    {
+     "label": "Q1 2026–27",
+     "value": "₹2,778.68 lakh"
+    },
+    {
+     "label": "Q2 2025–26",
+     "value": "₹2,567.26 lakh"
+    },
+    {
+     "label": "Change on Q1",
+     "value": "+₹315.93 lakh · +11.4%"
+    },
+    {
+     "label": "Change on Q2 last year",
+     "value": "+₹527.35 lakh · +20.5%"
+    },
+    {
+     "label": "Reason from Tamhini (Mahesh)",
+     "value": "“New two-wheeler countershaft programme with Vayuvega (first supplies April 2026; nothing last year), festive-season schedules from the other OEMs, and two Kilimani containers this quarter (July and September) against one in Q1 (May).”"
+    },
+    {
+     "label": "Papers sent with it",
+     "value": "Sales by customer; export shipments"
+    }
+   ]
+  },
+  {
+   "id": "l1-cust",
+   "type": "table",
+   "style": "sheet",
+   "group": "l1",
+   "tab": "Customers",
+   "title": "Line 1 · Revenue from operations · Sales by customer",
+   "sheetName": "Sales by customer",
+   "freeze": true,
+   "heading": "Sales by customer, by quarter (₹, net of GST)",
+   "columns": [
+    {
+     "key": "c",
+     "label": "Customer"
+    },
+    {
+     "key": "q2",
+     "label": "Q2 2026–27",
+     "format": "num"
+    },
+    {
+     "key": "q1",
+     "label": "Q1 2026–27",
+     "format": "num"
+    },
+    {
+     "key": "ly",
+     "label": "Q2 2025–26",
+     "format": "num"
+    }
+   ],
+   "rows": [
+    {
+     "c": "Ashvaratha Motors Limited",
+     "q2": 62046240,
+     "q1": 56776320,
+     "ly": 57067600
+    },
+    {
+     "c": "Kshitij Driveline Systems Private Limited",
+     "q2": 41364160,
+     "q1": 37850880,
+     "ly": 38045000
+    },
+    {
+     "c": "Vayuvega Two Wheelers Limited",
+     "q2": 25852600,
+     "q1": 23656800,
+     "ly": "–"
+    },
+    {
+     "c": "Ponni Motors Limited",
+     "q2": 27880600,
+     "q1": 25512300,
+     "ly": 25643400
+    },
+    {
+     "c": "Lothal Motors Limited",
+     "q2": 27373200,
+     "q1": 25048400,
+     "ly": 25176700
+    },
+    {
+     "c": "Vaigai Axle Systems Private Limited",
+     "q2": 22811400,
+     "q1": 20873700,
+     "ly": 20981000
+    },
+    {
+     "c": "Malaprabha Precision Systems Private Limited",
+     "q2": 20529900,
+     "q1": 18786300,
+     "ly": 18882500
+    },
+    {
+     "c": "Kosli Driveline Private Limited",
+     "q2": 20529900,
+     "q1": 18786300,
+     "ly": 18882500
+    },
+    {
+     "c": "Naik Auto Spares Distributors",
+     "q2": 11457600,
+     "q1": 10483800,
+     "ly": 10538200
+    },
+    {
+     "c": "Bhalla Kohli Motor Stores",
+     "q2": 9553500,
+     "q1": 8742600,
+     "ly": 8786900
+    },
+    {
+     "c": "Wardha Road Auto Agencies",
+     "q2": 7638400,
+     "q1": 6989200,
+     "ly": 7025500
+    },
+    {
+     "c": "Ahilya Auto Distributors",
+     "q2": 6369000,
+     "q1": 5828400,
+     "ly": 5857900
+    },
+    {
+     "c": "Golconda Motor Spares",
+     "q2": 5307500,
+     "q1": 4857000,
+     "ly": 4881600
+    },
+    {
+     "c": "Bilal Ferrous Traders",
+     "q2": 8407000,
+     "q1": 7693000,
+     "ly": 6986400
+    },
+    {
+     "c": "Kilimani Motor Spares Limited",
+     "q2": 12340000,
+     "q1": 5983000,
+     "ly": 7970400
+    },
+    {
+     "c": "Total",
+     "q2": 309461000,
+     "q1": 277868000,
+     "ly": 256725600,
+     "_class": "total"
+    }
+   ],
+   "notes": [
+    "Bilal Ferrous Traders buys the steel turnings (scrap). Kilimani Motor Spares, Nairobi, is the export customer (under LUT): since April 2026 it takes a full container every second month, where last year it took a smaller lot every month.",
+    "Vayuvega Two Wheelers: countershaft programme, first supplies April 2026."
+   ]
+  },
+  {
+   "id": "l1-exp",
+   "type": "table",
+   "style": "register",
+   "group": "l1",
+   "tab": "Exports",
+   "title": "Line 1 · Revenue from operations · Export shipments",
+   "company": "Tamhini Drivetech Private Limited, Chakan",
+   "heading": "Export shipments to Kilimani Motor Spares (under LUT)",
+   "subtitle": "Buyer: Kilimani Motor Spares Limited, Nairobi, Kenya · port of loading Nhava Sheva",
+   "columns": [
+    {
+     "key": "n",
+     "label": "Invoice no.",
+     "mono": true
+    },
+    {
+     "key": "d",
+     "label": "Date"
+    },
+    {
+     "key": "sb",
+     "label": "Shipping bill",
+     "mono": true
+    },
+    {
+     "key": "m",
+     "label": "Manufactured goods (₹)",
+     "format": "num"
+    },
+    {
+     "key": "t",
+     "label": "Traded goods (₹)",
+     "format": "num"
+    },
+    {
+     "key": "v",
+     "label": "Invoice value (₹)",
+     "format": "num",
+     "check": "m + t"
+    }
+   ],
+   "rows": [
+    {
+     "n": "Q2 2025–26",
+     "_class": "head"
+    },
+    {
+     "n": "TD/EX/25-26/004",
+     "d": "17-07-2025",
+     "sb": "3318540",
+     "m": 1402000,
+     "t": 1239800,
+     "v": 2641800
+    },
+    {
+     "n": "TD/EX/25-26/005",
+     "d": "18-08-2025",
+     "sb": "3762091",
+     "m": 1410400,
+     "t": 1246400,
+     "v": 2656800
+    },
+    {
+     "n": "TD/EX/25-26/006",
+     "d": "16-09-2025",
+     "sb": "4196327",
+     "m": 1418800,
+     "t": 1253000,
+     "v": 2671800
+    },
+    {
+     "n": "Total Q2 2025–26",
+     "m": 4231200,
+     "t": 3739200,
+     "v": 7970400,
+     "_class": "subtotal"
+    },
+    {
+     "n": "Q1 2026–27",
+     "_class": "head"
+    },
+    {
+     "n": "TD/EX/26-27/001",
+     "d": "18-05-2026",
+     "sb": "4417302",
+     "m": 3132000,
+     "t": 2851000,
+     "v": 5983000
+    },
+    {
+     "n": "Total Q1 2026–27",
+     "m": 3132000,
+     "t": 2851000,
+     "v": 5983000,
+     "_class": "subtotal"
+    },
+    {
+     "n": "Q2 2026–27",
+     "_class": "head"
+    },
+    {
+     "n": "TD/EX/26-27/002",
+     "d": "16-07-2026",
+     "sb": "5219864",
+     "m": 3327000,
+     "t": 3030000,
+     "v": 6357000
+    },
+    {
+     "n": "TD/EX/26-27/003",
+     "d": "17-09-2026",
+     "sb": "6028417",
+     "m": 3132000,
+     "t": 2851000,
+     "v": 5983000
+    },
+    {
+     "n": "Total Q2 2026–27",
+     "m": 6459000,
+     "t": 5881000,
+     "v": 12340000,
+     "_class": "subtotal"
+    }
+   ],
+   "notes": [
+    "One container every second month from April 2026.",
+    "Values as booked in the two export sales ledgers."
+   ]
+  },
+  {
+   "id": "l2-card",
+   "type": "card",
+   "style": "slip",
+   "group": "l2",
+   "tab": "Line",
+   "arrives": "t2",
+   "title": "Line 2 · Cost of materials consumed · Variance sheet",
+   "kindLabel": "Variance sheet line",
+   "issuer": "Variance sheet · Q2 2026–27 · ₹ lakh",
+   "heading": "Line 2: Cost of materials consumed",
+   "fields": [
+    {
+     "label": "Q2 2026–27",
+     "value": "₹1,508.95 lakh"
+    },
+    {
+     "label": "Q1 2026–27",
+     "value": "₹1,368.70 lakh"
+    },
+    {
+     "label": "Q2 2025–26",
+     "value": "₹1,242.55 lakh"
+    },
+    {
+     "label": "Change on Q1",
+     "value": "+₹140.25 lakh · +10.2%"
+    },
+    {
+     "label": "Change on Q2 last year",
+     "value": "+₹266.40 lakh · +21.4%"
+    },
+    {
+     "label": "Reason from Tamhini (Mahesh)",
+     "value": "“Moves with production. Steel and forgings stay about 59% of sales of manufactured goods.”"
+    },
+    {
+     "label": "Papers sent with it",
+     "value": "Material consumption working"
+    }
+   ]
+  },
+  {
+   "id": "l2-cons",
+   "type": "table",
+   "style": "sheet",
+   "group": "l2",
+   "tab": "Working",
+   "title": "Line 2 · Cost of materials consumed · Consumption working",
+   "sheetName": "Consumption",
+   "freeze": true,
+   "heading": "Raw material and bought-out parts consumed (₹)",
+   "columns": [
+    {
+     "key": "r",
+     "label": "Particulars"
+    },
+    {
+     "key": "q2",
+     "label": "Q2 2026–27",
+     "format": "num",
+     "negative": "paren"
+    },
+    {
+     "key": "q1",
+     "label": "Q1 2026–27",
+     "format": "num",
+     "negative": "paren"
+    },
+    {
+     "key": "ly",
+     "label": "Q2 2025–26",
+     "format": "num"
+    }
+   ],
+   "rows": [
+    {
+     "r": "Opening stock (per stock register)",
+     "q2": 68240000,
+     "q1": 64800000,
+     "ly": "–",
+     "_id": "op"
+    },
+    {
+     "r": "Add: purchases, raw material and bought-out parts",
+     "q2": 154865000,
+     "q1": 140310000,
+     "ly": "–",
+     "_id": "pur"
+    },
+    {
+     "r": "Less: closing stock (per stock register)",
+     "q2": -72210000,
+     "q1": -68240000,
+     "ly": "–",
+     "_id": "cl"
+    },
+    {
+     "r": "Cost of materials consumed",
+     "q2": 150895000,
+     "q1": 136870000,
+     "ly": 124254560,
+     "_class": "total"
+    },
+    {
+     "r": "Sales of manufactured goods (domestic and export)",
+     "q2": 254847000,
+     "q1": 230423000,
+     "ly": 211806000,
+     "_check": false
+    },
+    {
+     "r": "Consumed as % of sales of manufactured goods",
+     "q2": "59.2%",
+     "q1": "59.4%",
+     "ly": "58.7%"
+    }
+   ],
+   "notes": [
+    "Last year’s quarter: only the consumption is carried forward from last year’s file."
+   ]
+  },
+  {
+   "id": "l3-card",
+   "type": "card",
+   "style": "slip",
+   "group": "l3",
+   "tab": "Line",
+   "arrives": "t2",
+   "title": "Line 3 · Wages – workers · Variance sheet",
+   "kindLabel": "Variance sheet line",
+   "issuer": "Variance sheet · Q2 2026–27 · ₹ lakh",
+   "heading": "Line 3: Wages – workers",
+   "fields": [
+    {
+     "label": "Q2 2026–27",
+     "value": "₹117.46 lakh"
+    },
+    {
+     "label": "Q1 2026–27",
+     "value": "₹105.41 lakh"
+    },
+    {
+     "label": "Q2 2025–26",
+     "value": "₹100.76 lakh"
+    },
+    {
+     "label": "Change on Q1",
+     "value": "+₹12.05 lakh · +11.4%"
+    },
+    {
+     "label": "Change on Q2 last year",
+     "value": "+₹16.70 lakh · +16.6%"
+    },
+    {
+     "label": "Reason from Tamhini (Mahesh)",
+     "value": "“9% wage settlement from 1 July 2026 and five more workmen.”"
+    },
+    {
+     "label": "Papers sent with it",
+     "value": "Wage summary, April–September; HR circular of 3 July"
+    }
+   ]
+  },
+  {
+   "id": "l3-wages",
+   "type": "table",
+   "style": "register",
+   "group": "l3",
+   "tab": "Wages",
+   "title": "Line 3 · Wages – workers · Wage summary",
+   "company": "Tamhini Drivetech Private Limited",
+   "heading": "Workmen’s wages: summary, April–September 2026",
+   "subtitle": "From the workers’ payroll; permanent workmen only",
+   "columns": [
+    {
+     "key": "m",
+     "label": "Month"
+    },
+    {
+     "key": "h",
+     "label": "Workmen paid",
+     "format": "int"
+    },
+    {
+     "key": "a",
+     "label": "Average gross (₹)",
+     "format": "num"
+    },
+    {
+     "key": "g",
+     "label": "Gross wages (₹)",
+     "format": "num"
+    }
+   ],
+   "rows": [
+    {
+     "m": "Apr 2026",
+     "h": 162,
+     "a": 21600,
+     "g": 3499200
+    },
+    {
+     "m": "May 2026",
+     "h": 163,
+     "a": 21600,
+     "g": 3520800
+    },
+    {
+     "m": "Jun 2026",
+     "h": 163,
+     "a": 21600,
+     "g": 3520800
+    },
+    {
+     "m": "Total Q1 2026–27",
+     "g": 10540800,
+     "_class": "subtotal"
+    },
+    {
+     "m": "Jul 2026",
+     "h": 165,
+     "a": 23540,
+     "g": 3884100
+    },
+    {
+     "m": "Aug 2026",
+     "h": 166,
+     "a": 23540,
+     "g": 3907640
+    },
+    {
+     "m": "Sep 2026",
+     "h": 168,
+     "a": 23540,
+     "g": 3954720
+    },
+    {
+     "m": "Total Q2 2026–27",
+     "g": 11746460,
+     "_class": "subtotal"
+    }
+   ],
+   "notes": [
+    "Gross wages = workmen paid × average gross. Contract workers are paid through Jadhavwadi Manpower Services and are not on this payroll."
+   ]
+  },
+  {
+   "id": "l3-circ",
+   "type": "letter",
+   "style": "memo",
+   "group": "l3",
+   "tab": "Circular",
+   "title": "Line 3 · Wages – workers · HR circular",
+   "letterhead": "Tamhini Drivetech Private Limited",
+   "memoTitle": "Circular",
+   "ref": "HR/2026-27/07",
+   "date": "3 July 2026",
+   "to": [
+    "All permanent workmen",
+    "Accounts"
+   ],
+   "from": "Shabana Shaikh, HR and Payroll",
+   "subject": "Wage settlement 2026–29",
+   "body": [
+    "The settlement signed with the workmen’s union on 2 July 2026 raises the gross wages of every permanent workman by 9% from 1 July 2026, for three years to 30 June 2029.",
+    "July wages, paid on 7 August, carry the new rates. The average gross on the payroll moves from ₹21,600 to ₹23,540."
+   ],
+   "sign": {
+    "name": "Shabana Shaikh",
+    "role": "HR and Payroll",
+    "hand": "Shabana"
+   },
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Approved. A. Joglekar",
+     "color": "blue",
+     "at": "inline"
+    }
+   ]
+  },
+  {
+   "id": "l4-card",
+   "type": "card",
+   "style": "slip",
+   "group": "l4",
+   "tab": "Line",
+   "arrives": "t2",
+   "title": "Line 4 · Power and fuel · Variance sheet",
+   "kindLabel": "Variance sheet line",
+   "issuer": "Variance sheet · Q2 2026–27 · ₹ lakh",
+   "heading": "Line 4: Power and fuel",
+   "fields": [
+    {
+     "label": "Q2 2026–27",
+     "value": "₹137.27 lakh"
+    },
+    {
+     "label": "Q1 2026–27",
+     "value": "₹125.61 lakh"
+    },
+    {
+     "label": "Q2 2025–26",
+     "value": "₹113.19 lakh"
+    },
+    {
+     "label": "Change on Q1",
+     "value": "+₹11.66 lakh · +9.3%"
+    },
+    {
+     "label": "Change on Q2 last year",
+     "value": "+₹24.08 lakh · +21.3%"
+    },
+    {
+     "label": "Reason from Tamhini (Mahesh)",
+     "value": "“Contracted demand raised from 1,600 kVA to 2,000 kVA in April 2026 for the new shed, and more units with production.”"
+    },
+    {
+     "label": "Papers sent with it",
+     "value": "Power and fuel, month by month"
+    }
+   ]
+  },
+  {
+   "id": "l4-power",
+   "type": "table",
+   "style": "sheet",
+   "group": "l4",
+   "tab": "Units by month",
+   "title": "Line 4 · Power and fuel · Month by month",
+   "sheetName": "Power",
+   "freeze": true,
+   "heading": "Power and fuel, month by month",
+   "columns": [
+    {
+     "key": "m",
+     "label": "Month"
+    },
+    {
+     "key": "u",
+     "label": "Units (kWh)",
+     "format": "int"
+    },
+    {
+     "key": "a",
+     "label": "Amount (₹)",
+     "format": "num"
+    },
+    {
+     "key": "r",
+     "label": "₹ per unit",
+     "align": "right"
+    },
+    {
+     "key": "kva",
+     "label": "Contract demand (kVA)",
+     "format": "int"
+    }
+   ],
+   "rows": [
+    {
+     "m": "Jul 2025",
+     "kva": 1600,
+     "u": 350520,
+     "a": 3705000,
+     "r": "10.57"
+    },
+    {
+     "m": "Aug 2025",
+     "kva": 1600,
+     "u": 357725,
+     "a": 3774000,
+     "r": "10.55"
+    },
+    {
+     "m": "Sep 2025",
+     "kva": 1600,
+     "u": 364672,
+     "a": 3840000,
+     "r": "10.53"
+    },
+    {
+     "m": "Total Q2 2025–26",
+     "u": 1072917,
+     "a": 11319000,
+     "_class": "subtotal",
+     "r": "10.55"
+    },
+    {
+     "m": "Apr 2026",
+     "kva": 2000,
+     "u": 371930,
+     "a": 4028000,
+     "r": "10.83"
+    },
+    {
+     "m": "May 2026",
+     "kva": 2000,
+     "u": 392956,
+     "a": 4240000,
+     "r": "10.79"
+    },
+    {
+     "m": "Jun 2026",
+     "kva": 2000,
+     "u": 397868,
+     "a": 4293000,
+     "r": "10.79"
+    },
+    {
+     "m": "Total Q1 2026–27",
+     "u": 1162754,
+     "a": 12561000,
+     "r": "10.80",
+     "_class": "subtotal"
+    },
+    {
+     "m": "Jul 2026",
+     "kva": 2000,
+     "u": 406562,
+     "a": 4399000,
+     "r": "10.82"
+    },
+    {
+     "m": "Aug 2026",
+     "kva": 2000,
+     "u": 421647,
+     "a": 4558000,
+     "r": "10.81"
+    },
+    {
+     "m": "Sep 2026",
+     "kva": 2000,
+     "u": 442486,
+     "a": 4770000,
+     "r": "10.78"
+    },
+    {
+     "m": "Total Q2 2026–27",
+     "u": 1270695,
+     "a": 13727000,
+     "r": "10.80",
+     "_class": "subtotal"
+    }
+   ],
+   "notes": [
+    "Amount: the electricity bill for the month plus diesel for the standby generator, as booked. Units: as billed."
+   ]
+  },
+  {
+   "id": "l5-card",
+   "type": "card",
+   "style": "slip",
+   "group": "l5",
+   "tab": "Line",
+   "arrives": "t2",
+   "title": "Line 5 · Job work charges · Variance sheet",
+   "kindLabel": "Variance sheet line",
+   "issuer": "Variance sheet · Q2 2026–27 · ₹ lakh",
+   "heading": "Line 5: Job work charges",
+   "fields": [
+    {
+     "label": "Q2 2026–27",
+     "value": "₹89.61 lakh"
+    },
+    {
+     "label": "Q1 2026–27",
+     "value": "₹82.00 lakh"
+    },
+    {
+     "label": "Q2 2025–26",
+     "value": "₹65.17 lakh"
+    },
+    {
+     "label": "Change on Q1",
+     "value": "+₹7.61 lakh · +9.3%"
+    },
+    {
+     "label": "Change on Q2 last year",
+     "value": "+₹24.44 lakh · +37.5%"
+    },
+    {
+     "label": "Reason from Tamhini (Mahesh)",
+     "value": "“More gears go for carburising; Kudalwadi Heat Treaters revised rates from 1 July 2026.”"
+    },
+    {
+     "label": "Papers sent with it",
+     "value": "Job work by job worker"
+    }
+   ]
+  },
+  {
+   "id": "l5-jw",
+   "type": "table",
+   "style": "sheet",
+   "group": "l5",
+   "tab": "Job workers",
+   "title": "Line 5 · Job work charges · By job worker",
+   "sheetName": "Job work",
+   "freeze": true,
+   "heading": "Job work charges by job worker (₹, net of GST)",
+   "columns": [
+    {
+     "key": "v",
+     "label": "Job worker"
+    },
+    {
+     "key": "q2",
+     "label": "Q2 2026–27",
+     "format": "num"
+    },
+    {
+     "key": "q1",
+     "label": "Q1 2026–27",
+     "format": "num"
+    },
+    {
+     "key": "ly",
+     "label": "Q2 2025–26",
+     "format": "num"
+    }
+   ],
+   "rows": [
+    {
+     "v": "Kudalwadi Heat Treaters (carburising, hardening)",
+     "q2": 5824910,
+     "q1": 5330130,
+     "ly": 4047800
+    },
+    {
+     "v": "Sakhare Surface Treatment (phosphating)",
+     "q2": 3136490,
+     "q1": 2870070,
+     "ly": 2469200
+    },
+    {
+     "v": "Total",
+     "q2": 8961400,
+     "q1": 8200200,
+     "ly": 6517000,
+     "_class": "total"
+    }
+   ],
+   "notes": [
+    "From the job-work ledgers. Bills are on the job workers’ files."
+   ]
+  },
+  {
+   "id": "l6-card",
+   "type": "card",
+   "style": "slip",
+   "group": "l6",
+   "tab": "Line",
+   "arrives": "t2",
+   "title": "Line 6 · Contract labour charges · Variance sheet",
+   "kindLabel": "Variance sheet line",
+   "issuer": "Variance sheet · Q2 2026–27 · ₹ lakh",
+   "heading": "Line 6: Contract labour charges",
+   "fields": [
+    {
+     "label": "Q2 2026–27",
+     "value": "₹67.00 lakh"
+    },
+    {
+     "label": "Q1 2026–27",
+     "value": "₹67.00 lakh"
+    },
+    {
+     "label": "Q2 2025–26",
+     "value": "₹53.90 lakh"
+    },
+    {
+     "label": "Change on Q1",
+     "value": "₹0.00 lakh · 0.0%"
+    },
+    {
+     "label": "Change on Q2 last year",
+     "value": "+₹13.10 lakh · +24.3%"
+    },
+    {
+     "label": "Reason from Tamhini (Mahesh)",
+     "value": "“Third shift on CNC cell 3 since March 2026 (18 more contract workers) and Jadhavwadi’s new rate from April 2026.”"
+    },
+    {
+     "label": "Papers sent with it",
+     "value": "Jadhavwadi’s bills, month by month"
+    }
+   ]
+  },
+  {
+   "id": "l6-cl",
+   "type": "table",
+   "style": "sheet",
+   "group": "l6",
+   "tab": "Bills",
+   "title": "Line 6 · Contract labour charges · Jadhavwadi’s bills",
+   "sheetName": "Contract labour",
+   "freeze": true,
+   "heading": "Jadhavwadi Manpower Services: bills by month (₹, before GST)",
+   "columns": [
+    {
+     "key": "m",
+     "label": "Month"
+    },
+    {
+     "key": "w",
+     "label": "Workers billed",
+     "format": "int"
+    },
+    {
+     "key": "a",
+     "label": "Bill amount (₹)",
+     "format": "num"
+    }
+   ],
+   "rows": [
+    {
+     "m": "Jul 2025",
+     "w": 92,
+     "a": 1796700
+    },
+    {
+     "m": "Aug 2025",
+     "w": 92,
+     "a": 1796700
+    },
+    {
+     "m": "Sep 2025",
+     "w": 92,
+     "a": 1796600
+    },
+    {
+     "m": "Total Q2 2025–26",
+     "a": 5390000,
+     "_class": "subtotal"
+    },
+    {
+     "m": "Apr 2026",
+     "w": 110,
+     "a": 2233400
+    },
+    {
+     "m": "May 2026",
+     "w": 110,
+     "a": 2233400
+    },
+    {
+     "m": "Jun 2026",
+     "w": 110,
+     "a": 2233400
+    },
+    {
+     "m": "Total Q1 2026–27",
+     "a": 6700200,
+     "_class": "subtotal"
+    },
+    {
+     "m": "Jul 2026",
+     "w": 110,
+     "a": 2233400
+    },
+    {
+     "m": "Aug 2026",
+     "w": 110,
+     "a": 2233300
+    },
+    {
+     "m": "Sep 2026",
+     "w": 110,
+     "a": 2233300
+    },
+    {
+     "m": "Total Q2 2026–27",
+     "a": 6700000,
+     "_class": "subtotal"
+    }
+   ],
+   "notes": [
+    "New agreement from 1 April 2026: the monthly charge per worker went from about ₹19,529 to about ₹20,304. Wages, PF and ESI of the workers are paid by Jadhavwadi."
+   ]
+  },
+  {
+   "id": "l7-card",
+   "type": "card",
+   "style": "slip",
+   "group": "l7",
+   "tab": "Line",
+   "arrives": "t2",
+   "title": "Line 7 · Payment to auditors · Variance sheet",
+   "kindLabel": "Variance sheet line",
+   "issuer": "Variance sheet · Q2 2026–27 · ₹ lakh",
+   "heading": "Line 7: Payment to auditors",
+   "fields": [
+    {
+     "label": "Q2 2026–27",
+     "value": "₹0.00 lakh"
+    },
+    {
+     "label": "Q1 2026–27",
+     "value": "₹0.00 lakh"
+    },
+    {
+     "label": "Q2 2025–26",
+     "value": "₹4.41 lakh"
+    },
+    {
+     "label": "Change on Q1",
+     "value": "Nil in both"
+    },
+    {
+     "label": "Change on Q2 last year",
+     "value": "−₹4.41 lakh · −100.0%"
+    },
+    {
+     "label": "Reason from Tamhini (Mahesh)",
+     "value": "“Booked when the bill comes.”"
+    },
+    {
+     "label": "Papers sent with it",
+     "value": "None"
+    }
+   ]
+  },
+  {
+   "id": "l7-led",
+   "type": "table",
+   "style": "tally",
+   "group": "l7",
+   "tab": "Ledger",
+   "title": "Line 7 · Payment to auditors · Ledger",
+   "kindLabel": "Ledger",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune"
+   },
+   "ledger": "Ledger: Payment to auditors",
+   "period": "1-Apr-2025 to 30-Sep-2026",
+   "columns": [
+    {
+     "key": "d",
+     "label": "Date"
+    },
+    {
+     "key": "p",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "vn",
+     "label": "Journal no.",
+     "mono": true
+    }
+   ],
+   "rows": [
+    {
+     "d": "",
+     "p": "2025–26",
+     "_class": "head"
+    },
+    {
+     "d": "30-06-2025",
+     "p": "Provision: audit and review fees, Q1",
+     "vn": "J-0614",
+     "dr": 424800
+    },
+    {
+     "d": "30-09-2025",
+     "p": "Provision: audit and review fees, Q2",
+     "vn": "J-0921",
+     "dr": 441000
+    },
+    {
+     "d": "31-12-2025",
+     "p": "Provision: audit and review fees, Q3",
+     "vn": "J-1218",
+     "dr": 448200
+    },
+    {
+     "d": "31-03-2026",
+     "p": "Provision: audit and review fees, Q4",
+     "vn": "J-0340",
+     "dr": 486000
+    },
+    {
+     "d": "",
+     "p": "Total 2025–26",
+     "dr": 1800000,
+     "_class": "subtotal"
+    },
+    {
+     "d": "",
+     "p": "2026–27",
+     "_class": "head"
+    },
+    {
+     "d": "",
+     "p": "No entries",
+     "_class": "muted"
+    }
+   ]
+  },
+  {
+   "id": "l8-card",
+   "type": "card",
+   "style": "slip",
+   "group": "l8",
+   "tab": "Line",
+   "arrives": "t2",
+   "title": "Line 8 · Depreciation and amortisation · Variance sheet",
+   "kindLabel": "Variance sheet line",
+   "issuer": "Variance sheet · Q2 2026–27 · ₹ lakh",
+   "heading": "Line 8: Depreciation and amortisation",
+   "fields": [
+    {
+     "label": "Q2 2026–27",
+     "value": "₹78.32 lakh"
+    },
+    {
+     "label": "Q1 2026–27",
+     "value": "₹76.43 lakh"
+    },
+    {
+     "label": "Q2 2025–26",
+     "value": "₹70.98 lakh"
+    },
+    {
+     "label": "Change on Q1",
+     "value": "+₹1.89 lakh · +2.5%"
+    },
+    {
+     "label": "Change on Q2 last year",
+     "value": "+₹7.34 lakh · +10.3%"
+    },
+    {
+     "label": "Reason from Tamhini (Mahesh)",
+     "value": "“Shed extension from 30 June.”"
+    },
+    {
+     "label": "Papers sent with it",
+     "value": "Depreciation by month"
+    }
+   ]
+  },
+  {
+   "id": "l8-dep",
+   "type": "table",
+   "style": "sheet",
+   "group": "l8",
+   "tab": "By month",
+   "title": "Line 8 · Depreciation and amortisation · By month",
+   "sheetName": "Depreciation",
+   "freeze": true,
+   "heading": "Depreciation and amortisation, by month (₹)",
+   "columns": [
+    {
+     "key": "m",
+     "label": "Month"
+    },
+    {
+     "key": "a",
+     "label": "Depreciation (₹)",
+     "format": "num"
+    }
+   ],
+   "rows": [
+    {
+     "m": "Apr 2026",
+     "a": 2507199
+    },
+    {
+     "m": "May 2026",
+     "a": 2596144
+    },
+    {
+     "m": "Jun 2026",
+     "a": 2539765
+    },
+    {
+     "m": "Total Q1 2026–27",
+     "a": 7643108,
+     "_class": "subtotal"
+    },
+    {
+     "m": "Jul 2026",
+     "a": 2638829
+    },
+    {
+     "m": "Aug 2026",
+     "a": 2638829
+    },
+    {
+     "m": "Sep 2026",
+     "a": 2554673
+    },
+    {
+     "m": "Total Q2 2026–27",
+     "a": 7832331,
+     "_class": "subtotal"
+    }
+   ],
+   "notes": [
+    "From the fixed-asset register, by days in each month. July onwards carries the Bay 4 shed extension, put to use on 30 June."
+   ]
+  },
+  {
+   "id": "l9-card",
+   "type": "card",
+   "style": "slip",
+   "group": "l9",
+   "tab": "Line",
+   "arrives": "t2",
+   "title": "Line 9 · Finance costs · Variance sheet",
+   "kindLabel": "Variance sheet line",
+   "issuer": "Variance sheet · Q2 2026–27 · ₹ lakh",
+   "heading": "Line 9: Finance costs",
+   "fields": [
+    {
+     "label": "Q2 2026–27",
+     "value": "₹43.00 lakh"
+    },
+    {
+     "label": "Q1 2026–27",
+     "value": "₹45.25 lakh"
+    },
+    {
+     "label": "Q2 2025–26",
+     "value": "₹47.67 lakh"
+    },
+    {
+     "label": "Change on Q1",
+     "value": "−₹2.25 lakh · −5.0%"
+    },
+    {
+     "label": "Change on Q2 last year",
+     "value": "−₹4.67 lakh · −9.8%"
+    },
+    {
+     "label": "Reason from Tamhini (Mahesh)",
+     "value": "“Term loan I repayments; lower cash-credit use.”"
+    },
+    {
+     "label": "Papers sent with it",
+     "value": "Finance costs working"
+    }
+   ]
+  },
+  {
+   "id": "l9-fin",
+   "type": "table",
+   "style": "sheet",
+   "group": "l9",
+   "tab": "Working",
+   "title": "Line 9 · Finance costs · Working",
+   "sheetName": "Finance costs",
+   "freeze": true,
+   "heading": "Finance costs: working (₹)",
+   "columns": [
+    {
+     "key": "r",
+     "label": "Particulars"
+    },
+    {
+     "key": "q2",
+     "label": "Q2 2026–27",
+     "format": "num"
+    },
+    {
+     "key": "q1",
+     "label": "Q1 2026–27",
+     "format": "num"
+    },
+    {
+     "key": "ly",
+     "label": "Q2 2025–26",
+     "format": "num"
+    }
+   ],
+   "rows": [
+    {
+     "r": "Term loan I at 9.60% (₹9,00,00,000 in Q1; ₹8,25,00,000 after the 30 June instalment)",
+     "q2": 1980000,
+     "q1": 2160000,
+     "ly": "–"
+    },
+    {
+     "r": "Term loan II (₹51,30,000 drawn on 20 July 2026), interest as debited by the bank",
+     "q2": 80798,
+     "q1": "–",
+     "ly": "–"
+    },
+    {
+     "r": "Interest on term loans, last year as booked",
+     "q2": "–",
+     "q1": "–",
+     "ly": 2590720
+    },
+    {
+     "r": "Interest on cash credit, as charged by the bank",
+     "q2": 2189655,
+     "q1": 2364534,
+     "ly": 2155560
+    },
+    {
+     "r": "Processing fee, term loan II",
+     "q2": 50000,
+     "q1": "–",
+     "ly": "–"
+    },
+    {
+     "r": "Other borrowing costs",
+     "q2": "–",
+     "q1": "–",
+     "ly": 20240
+    },
+    {
+     "r": "Finance costs",
+     "q2": 4300453,
+     "q1": 4524534,
+     "ly": 4766520,
+     "_class": "total"
+    }
+   ],
+   "notes": [
+    "Term loan I: 20 quarterly instalments of ₹75,00,000 from 30 June 2024. Cash-credit interest is as charged by the bank each month."
+   ]
+  }
+ ],
+ "tasks": [
+  {
+   "id": "t1",
+   "type": "worksheet",
+   "stage": "Planning",
+   "title": "Finish the variance sheet",
+   "prompt": "Varun set up the variance sheet for the nine lines and left eight boxes for you. Enter each change as a percentage of the comparison, to one decimal: (Q2 − comparison) ÷ comparison × 100, with a minus for a fall. Your sheet goes to Aditi when you move on.",
+   "weight": 1,
+   "lockOnLeave": {
+    "ask": "Hand your variance sheet to Aditi?",
+    "note": "You can’t change it after this.",
+    "yes": "Hand it in",
+    "done": "Handed to Aditi. You can read your figures but not change them."
+   },
+   "hints": [
+    "Divide by the comparison, not by Q2. Varun’s revenue against Q1: (3,094.61 − 2,778.68) ÷ 2,778.68 × 100 = 11.4%."
+   ],
+   "columns": [
+    {
+     "key": "line",
+     "label": "Line (₹ lakh)"
+    },
+    {
+     "key": "q2",
+     "label": "Q2 2026–27",
+     "format": "amount"
+    },
+    {
+     "key": "q1",
+     "label": "Q1 2026–27",
+     "format": "amount"
+    },
+    {
+     "key": "pq1",
+     "label": "Change on Q1",
+     "format": "pct1",
+     "signed": true
+    },
+    {
+     "key": "ly",
+     "label": "Q2 2025–26",
+     "format": "amount"
+    },
+    {
+     "key": "ply",
+     "label": "Change on Q2 last year",
+     "format": "pct1",
+     "signed": true
+    }
+   ],
+   "rows": [
+    {
+     "id": "l1",
+     "cells": {
+      "line": "Revenue from operations",
+      "q2": 3094.61,
+      "q1": 2778.68,
+      "ly": 2567.26,
+      "pq1": 11.4,
+      "ply": {
+       "input": true,
+       "answer": 20.5,
+       "tolerance": 0.1,
+       "format": "pct1",
+       "working": "(3,094.61 − 2,567.26) ÷ 2,567.26 × 100 = +20.5%"
+      }
+     }
+    },
+    {
+     "id": "l2",
+     "cells": {
+      "line": "Cost of materials consumed",
+      "q2": 1508.95,
+      "q1": 1368.7,
+      "ly": 1242.55,
+      "pq1": {
+       "input": true,
+       "answer": 10.2,
+       "tolerance": 0.1,
+       "format": "pct1",
+       "working": "(1,508.95 − 1,368.70) ÷ 1,368.70 × 100 = +10.2%"
+      },
+      "ply": 21.4
+     }
+    },
+    {
+     "id": "l3",
+     "cells": {
+      "line": "Wages – workers",
+      "q2": 117.46,
+      "q1": 105.41,
+      "ly": 100.76,
+      "pq1": {
+       "input": true,
+       "answer": 11.4,
+       "tolerance": 0.1,
+       "format": "pct1",
+       "working": "(117.46 − 105.41) ÷ 105.41 × 100 = +11.4%"
+      },
+      "ply": 16.6
+     }
+    },
+    {
+     "id": "l4",
+     "cells": {
+      "line": "Power and fuel",
+      "q2": 137.27,
+      "q1": 125.61,
+      "ly": 113.19,
+      "pq1": {
+       "input": true,
+       "answer": 9.3,
+       "tolerance": 0.1,
+       "format": "pct1",
+       "working": "(137.27 − 125.61) ÷ 125.61 × 100 = +9.3%"
+      },
+      "ply": 21.3
+     }
+    },
+    {
+     "id": "l5",
+     "cells": {
+      "line": "Job work charges",
+      "q2": 89.61,
+      "q1": 82.0,
+      "ly": 65.17,
+      "pq1": 9.3,
+      "ply": {
+       "input": true,
+       "answer": 37.5,
+       "tolerance": 0.1,
+       "format": "pct1",
+       "working": "(89.61 − 65.17) ÷ 65.17 × 100 = +37.5%"
+      }
+     }
+    },
+    {
+     "id": "l6",
+     "cells": {
+      "line": "Contract labour charges",
+      "q2": 67.0,
+      "q1": 67.0,
+      "ly": 53.9,
+      "pq1": 0.0,
+      "ply": {
+       "input": true,
+       "answer": 24.3,
+       "tolerance": 0.1,
+       "format": "pct1",
+       "working": "(67.00 − 53.90) ÷ 53.90 × 100 = +24.3%"
+      }
+     }
+    },
+    {
+     "id": "l7",
+     "cells": {
+      "line": "Payment to auditors",
+      "q2": 0.0,
+      "q1": 0.0,
+      "ly": 4.41,
+      "pq1": "–",
+      "ply": {
+       "input": true,
+       "answer": -100.0,
+       "tolerance": 0.1,
+       "format": "pct1",
+       "working": "(0.00 − 4.41) ÷ 4.41 × 100 = −100.0%"
+      }
+     }
+    },
+    {
+     "id": "l8",
+     "cells": {
+      "line": "Depreciation and amortisation",
+      "q2": 78.32,
+      "q1": 76.43,
+      "ly": 70.98,
+      "pq1": 2.5,
+      "ply": {
+       "input": true,
+       "answer": 10.3,
+       "tolerance": 0.1,
+       "format": "pct1",
+       "working": "(78.32 − 70.98) ÷ 70.98 × 100 = +10.3%"
+      }
+     }
+    },
+    {
+     "id": "l9",
+     "cells": {
+      "line": "Finance costs",
+      "q2": 43.0,
+      "q1": 45.25,
+      "ly": 47.67,
+      "pq1": -5.0,
+      "ply": -9.8
+     }
+    }
+   ],
+   "notes": {
+    "l1.ply": "Revenue: up a fifth on last year. Over the threshold on both comparisons, so it needs a reason with a paper.",
+    "l2.pq1": "Materials: 10.2% and ₹140.25 lakh. Just over the 10% line against Q1, so this one counts.",
+    "l3.pq1": "Wages: 11.4% and ₹12.05 lakh on Q1, so over the line. Something changed in July.",
+    "l4.pq1": "Power: 9.3% on Q1 is under 10%, though the rupees (₹11.66 lakh) are over. A line crosses only when the % and the rupees are both over.",
+    "l5.ply": "Job work: 37.5% on last year against 9.3% on Q1. Keep the two side by side; the gap between them is the question.",
+    "l6.ply": "Contract labour: 24.3% on last year, nothing on Q1. Whatever changed was in place by April.",
+    "l7.ply": "Our fees: minus 100%, but only ₹4.41 lakh, so under the line. A nil where last year had a provision still needs a look.",
+    "l8.ply": "Depreciation: 10.3%, but only ₹7.34 lakh, so under the line. A machine came in this quarter; check that its depreciation did too."
+   },
+   "docs": [
+    "results",
+    "ledgers",
+    "mail"
+   ],
+   "note": "Change % = (Q2 − comparison) ÷ comparison × 100. Figures in ₹ lakh."
+  },
+  {
+   "id": "t2",
+   "type": "items",
+   "stage": "Fieldwork",
+   "title": "Explain or query each line",
+   "prompt": "Aditi has put Mahesh’s reason and papers beside each line. Say which comparison, if either, crosses our threshold and make your call: no query, or a query to Mahesh. The results, minutes, plant MIS, fixed-asset schedule and our fee letter are under Other papers. Your calls go to Aditi when you move on.",
+   "weight": 2,
+   "noun": [
+    "line",
+    "lines"
+   ],
+   "lockOnLeave": {
+    "ask": "Hand your line calls to Aditi?",
+    "note": "You can’t change them after this.",
+    "yes": "Hand them in",
+    "done": "Handed to Aditi. You can read your calls but not change them."
+   },
+   "hints": [
+    "A line crosses only when the change is more than 10% and more than ₹10 lakh on the same comparison: Q1 or Q2 last year. A reason holds only when a paper backs it and it fits both comparisons.",
+    "Before you pass depreciation and the fees, read the board minutes, the fixed-asset schedule and our engagement letter."
+   ],
+   "columns": [
+    {
+     "key": "label"
+    },
+    {
+     "key": "fig"
+    }
+   ],
+   "fields": [
+    {
+     "id": "over",
+     "kind": "choice",
+     "label": "Our threshold",
+     "options": [
+      {
+       "id": "q1",
+       "label": "Over on Q1 only"
+      },
+      {
+       "id": "ly",
+       "label": "Over on last year only"
+      },
+      {
+       "id": "both",
+       "label": "Over on both"
+      },
+      {
+       "id": "none",
+       "label": "Under on both"
+      }
+     ]
+    },
+    {
+     "id": "verdict",
+     "kind": "choice",
+     "label": "Your call",
+     "gate": true,
+     "weight": 2,
+     "options": [
+      {
+       "id": "ok",
+       "label": "No query"
+      },
+      {
+       "id": "ask",
+       "label": "Query to Mahesh",
+       "short": "Query"
+      }
+     ]
+    },
+    {
+     "id": "note",
+     "kind": "text",
+     "label": "Your note for the file",
+     "placeholder": "For example: the paper you checked and what it showed"
+    }
+   ],
+   "items": [
+    {
+     "id": "l1",
+     "label": "Line 1 · Revenue from operations",
+     "short": "Line 1",
+     "fig": "₹3,094.61 lakh in Q2",
+     "docs": [
+      "l1-card",
+      "l1-cust",
+      "l1-exp"
+     ],
+     "answer": {
+      "over": "both",
+      "verdict": "ok"
+     },
+     "note": "Line 1: over on both, and explained. Vayuvega brings ₹258.53 lakh against nothing last year. On Q1 every domestic customer rose 9.3%, as pieces machined did. Kilimani now takes a full container every second month: two in Q2, one in Q1. No query."
+    },
+    {
+     "id": "l2",
+     "label": "Line 2 · Cost of materials consumed",
+     "short": "Line 2",
+     "fig": "₹1,508.95 lakh in Q2",
+     "docs": [
+      "l2-card",
+      "l2-cons"
+     ],
+     "answer": {
+      "over": "both",
+      "verdict": "ok"
+     },
+     "note": "Line 2: over on both, and it moved with output: 59.2% of manufactured sales in Q2, 59.4% in Q1, 58.7% a year ago. The working adds up, and Q1’s closing stock is Q2’s opening. No query."
+    },
+    {
+     "id": "l3",
+     "label": "Line 3 · Wages – workers",
+     "short": "Line 3",
+     "fig": "₹117.46 lakh in Q2",
+     "docs": [
+      "l3-card",
+      "l3-wages",
+      "l3-circ"
+     ],
+     "answer": {
+      "over": "both",
+      "verdict": "ok"
+     },
+     "note": "Line 3: over on both. From July each workman costs 9% more: the average gross goes from ₹21,600 to ₹23,540. Workmen on the rolls went from 163 to 168 (156 a year ago, plant MIS). Heads × rate gives ₹1,17,46,460 to the rupee. No query."
+    },
+    {
+     "id": "l4",
+     "label": "Line 4 · Power and fuel",
+     "short": "Line 4",
+     "fig": "₹137.27 lakh in Q2",
+     "docs": [
+      "l4-card",
+      "l4-power"
+     ],
+     "answer": {
+      "over": "ly",
+      "verdict": "ok"
+     },
+     "note": "Line 4: 9.3% on Q1 is under 10%; on last year, 21.3% and ₹24.08 lakh are both over. Units rose with production; cost per unit is flat on Q1 and up 2.4% on last year, from the higher contract demand since April. No query."
+    },
+    {
+     "id": "l5",
+     "label": "Line 5 · Job work charges",
+     "short": "Line 5",
+     "fig": "₹89.61 lakh in Q2",
+     "docs": [
+      "l5-card",
+      "l5-jw"
+     ],
+     "answer": {
+      "over": "ly",
+      "verdict": "ask"
+     },
+     "note": "Line 5: over on last year, up 37.5% and ₹24.44 lakh. Mahesh says Kudalwadi’s rates went up on 1 July, yet Q2 rose only 9.3% on Q1, exactly with production. The reason doesn’t fit, and no rate letter came. Query.",
+     "weight": 2
+    },
+    {
+     "id": "l6",
+     "label": "Line 6 · Contract labour charges",
+     "short": "Line 6",
+     "fig": "₹67.00 lakh in Q2",
+     "docs": [
+      "l6-card",
+      "l6-cl"
+     ],
+     "answer": {
+      "over": "ly",
+      "verdict": "ok"
+     },
+     "note": "Line 6: over on last year. Jadhavwadi billed 110 workers every month this year against 92 last year, at about 4% more per worker: 110 ÷ 92 × 1.04 is the 24.3%. Flat on Q1, as it should be. No query."
+    },
+    {
+     "id": "l7",
+     "label": "Line 7 · Payment to auditors",
+     "short": "Line 7",
+     "fig": "Nil in Q2",
+     "docs": [
+      "l7-card",
+      "l7-led"
+     ],
+     "answer": {
+      "over": "none",
+      "verdict": "ask"
+     },
+     "note": "Line 7: under the threshold only because ₹4.41 lakh is small. Last year every quarter carried a provision; this year Q1 and Q2 carry nothing, while note 2 says policies are unchanged. Our fees didn’t stop. Query.",
+     "weight": 2
+    },
+    {
+     "id": "l8",
+     "label": "Line 8 · Depreciation and amortisation",
+     "short": "Line 8",
+     "fig": "₹78.32 lakh in Q2",
+     "docs": [
+      "l8-card",
+      "l8-dep"
+     ],
+     "answer": {
+      "over": "none",
+      "verdict": "ask"
+     },
+     "note": "Line 8: 10.3% but only ₹7.34 lakh, so under the threshold. The minutes say TC-35 was accepted on 12 August; the schedule still holds it in work-in-progress. ₹59,342 for 50 days is missing. Query.",
+     "weight": 2
+    },
+    {
+     "id": "l9",
+     "label": "Line 9 · Finance costs",
+     "short": "Line 9",
+     "fig": "₹43.00 lakh in Q2",
+     "docs": [
+      "l9-card",
+      "l9-fin"
+     ],
+     "answer": {
+      "over": "none",
+      "verdict": "ok"
+     },
+     "note": "Line 9: under on both and down, as the loans say. Term loan I fell by another ₹75 lakh on 30 June; cash-credit interest fell on Q1; term loan II and its processing fee add ₹1.31 lakh. No query."
+    }
+   ],
+   "docs": [
+    "mail",
+    "results",
+    "ledgers",
+    "mis",
+    "minutes",
+    "fa-h1",
+    "fees",
+    "l1-card",
+    "l1-cust",
+    "l1-exp",
+    "l2-card",
+    "l2-cons",
+    "l3-card",
+    "l3-wages",
+    "l3-circ",
+    "l4-card",
+    "l4-power",
+    "l5-card",
+    "l5-jw",
+    "l6-card",
+    "l6-cl",
+    "l7-card",
+    "l7-led",
+    "l8-card",
+    "l8-dep",
+    "l9-card",
+    "l9-fin"
+   ]
+  },
+  {
+   "id": "t3",
+   "type": "compose",
+   "stage": "Fieldwork",
+   "title": "Draft the query mail to Mahesh",
+   "prompt": "Aditi wants one mail to Mahesh with a query for each line that needs one: job work, our fees and depreciation. Pick the right paragraph for each. She will read it before it goes.",
+   "weight": 3,
+   "noun": [
+    "query",
+    "queries"
+   ],
+   "lockOnLeave": {
+    "ask": "Hand your mail to Aditi?",
+    "note": "You can’t change it after this.",
+    "yes": "Hand it in",
+    "done": "Handed to Aditi. You can read your mail but not change it."
+   },
+   "hints": [
+    "Each query says what doesn’t fit and asks for the one paper or entry that settles it."
+   ],
+   "previewLabel": "Your mail to Mahesh",
+   "slots": [
+    {
+     "id": "jw",
+     "label": "Line 5 · Job work",
+     "options": [
+      {
+       "id": "a",
+       "correct": true,
+       "text": "Job work (₹89.61 lakh): up 37.5% on Q2 last year but only 9.3% on Q1, in step with production, so no 1 July rate rise shows. Please send Kudalwadi’s rate letter and the quantities sent for heat treatment each quarter.",
+       "why": "The letter shows when and by how much the rates moved; the quantities show how much more went out. Together they explain the ₹24.44 lakh, or show it is something else."
+      },
+      {
+       "id": "b",
+       "text": "Job work (₹89.61 lakh): up 37.5% on Q2 last year, which Kudalwadi’s 1 July rate revision explains. Please confirm the new rates to us by mail, so that we can note the reason in our file and close this line.",
+       "why": "A mail repeating the reason adds nothing. Q2 rose with production over Q1, so the July revision is not in these figures. We need the letter and the quantities."
+      },
+      {
+       "id": "c",
+       "text": "Job work (₹89.61 lakh): up 37.5% on Q2 last year against 9.3% on Q1. Please send the Kudalwadi and Sakhare bills for July to September with their delivery challans, so that we can vouch each bill before we close this line.",
+       "why": "That is vouching, which a review ordinarily doesn’t do. We ask and compare: the rate letter and the quantities answer the question."
+      }
+     ]
+    },
+    {
+     "id": "fee",
+     "label": "Line 7 · Payment to auditors",
+     "options": [
+      {
+       "id": "a",
+       "text": "Payment to auditors (nil): this is our own fee and well under our threshold, so we have not looked at it further. Nothing is needed from you for Q2, and the bills can be booked when they arrive.",
+       "why": "Last year every quarter carried a provision; this year none, though the reviews go on and our letter puts each at ₹1.75 lakh."
+      },
+      {
+       "id": "b",
+       "correct": true,
+       "text": "Payment to auditors (nil): last year every quarter carried a provision for our fees (₹4.41 lakh in Q2), but Q1 and Q2 this year carry none. Please provide for the fees in each quarter, as you did last year.",
+       "why": "Costs are booked in the period they belong to, billed or not, and note 2 says the policies haven’t changed. The two reviews alone are ₹3.50 lakh."
+      },
+      {
+       "id": "c",
+       "text": "Payment to auditors (nil): please keep booking our fees when the bills arrive, and add a sentence to note 2 of the results saying that review and audit fees are now booked when they are billed.",
+       "why": "That writes the change into the results instead of correcting it. Last year’s quarters were on accrual, and Q2 has to be comparable with them."
+      }
+     ]
+    },
+    {
+     "id": "dep",
+     "label": "Line 8 · Depreciation",
+     "options": [
+      {
+       "id": "a",
+       "text": "Depreciation (₹78.32 lakh): CNC TC-35 starts its regular production for Ashvaratha on 1 October, so please capitalise it from that day and begin its depreciation in Q3, as your fixed-asset schedule already says.",
+       "why": "Depreciation starts when a machine is ready for use, not when its regular orders begin. TC-35 was accepted after its trial run on 12 August."
+      },
+      {
+       "id": "b",
+       "text": "Depreciation (₹78.32 lakh): CNC TC-35 was invoiced on 18 July, as your fixed-asset schedule shows, so please capitalise it from 18 July and book its depreciation from that date to 30 September.",
+       "why": "The invoice date says nothing about readiness. TC-35 was installed in Bay 4 and accepted after its trial run on 12 August; that is the date."
+      },
+      {
+       "id": "c",
+       "correct": true,
+       "text": "Depreciation (₹78.32 lakh): CNC TC-35 was accepted after its trial run on 12 August, yet it sits in capital work-in-progress at 30 September. Please capitalise it from 12 August and book its depreciation from then.",
+       "why": "A machine ready for use is depreciated from that day, idle or busy. From 12 August to 30 September that is ₹59,342."
+      }
+     ]
+    }
+   ],
+   "template": "Subject: Tamhini Q2 review | our queries\n\nMahesh sir,\n\nThank you for the Q2 pack. The lines below need something more from you before we can close our review of the quarter ended 30 September 2026.\n\n{jw}\n\n{fee}\n\n{dep}\n\n{_free}\n\nPlease reply by Friday 30 October, so that our report is ready before the board meeting on 12 November.\n\nRegards,\nAudit team, Bapat Venkatesh & Co.",
+   "freeText": {
+    "label": "Your own sentence for the mail"
+   },
+   "docs": [
+    "mail",
+    "results",
+    "minutes",
+    "fa-h1",
+    "fees",
+    "l5-card",
+    "l5-jw",
+    "l7-card",
+    "l7-led",
+    "l8-card",
+    "l8-dep"
+   ]
+  },
+  {
+   "id": "t4",
+   "type": "choice",
+   "stage": "Report",
+   "title": "Before Sudha signs",
+   "prompt": "Before Sudha signs the review report, Aditi wants three things settled: the checklist, Mahesh’s two uncorrected items and the sentence for the report.",
+   "weight": 2,
+   "hints": [
+    "A review ordinarily means enquiry and analytical procedures. Confirming, counting and vouching belong to the audit."
+   ],
+   "questions": [
+    {
+     "id": "q1",
+     "multi": true,
+     "text": "Aditi’s checklist has ten points, and four of them belong to an audit, not to this review. Tick the six that belong in this review.",
+     "options": [
+      {
+       "id": "a",
+       "correct": true,
+       "text": "Read the minutes of the board meetings held during and after the quarter",
+       "why": "Minutes are where things the numbers don’t show turn up. The 14 August minutes are how we learnt TC-35 was accepted."
+      },
+      {
+       "id": "b",
+       "text": "Send balance confirmation letters to Tamhini’s customers and banks",
+       "why": "Confirmations test the records themselves, and they wait for the year-end audit."
+      },
+      {
+       "id": "c",
+       "correct": true,
+       "text": "Agree the results to the trial balance for the quarter",
+       "why": "The results must agree with the books before anything else on the list means much."
+      },
+      {
+       "id": "d",
+       "correct": true,
+       "text": "Ask whether any accounting policy or method has changed",
+       "why": "A standard question, and this quarter it has an answer: fees booked when billed, not provided each quarter."
+      },
+      {
+       "id": "e",
+       "text": "Attend a stock count at the Chakan plant for 30 September",
+       "why": "Observing a count is audit work. A review ordinarily relies on enquiry and analytical procedures."
+      },
+      {
+       "id": "f",
+       "correct": true,
+       "text": "Ask about related-party transactions and compliance with loan covenants",
+       "why": "Both are on the standard list of enquiries; Tamhini has two term loans with the bank and directors who are shareholders."
+      },
+      {
+       "id": "g",
+       "text": "Write to Tamhini’s lawyers about the pending cases",
+       "why": "We ask management about pending cases instead. For a quarter, a letter to the lawyers usually isn’t needed."
+      },
+      {
+       "id": "h",
+       "correct": true,
+       "text": "Ask about events after 30 September, up to the date of our report",
+       "why": "Anything up to the report date that needs adjusting or disclosing has to be asked about."
+      },
+      {
+       "id": "i",
+       "text": "Vouch the purchase bills booked in the quarter",
+       "why": "Vouching is audit work. In a review we ask and compare, and look for a paper only where something doesn’t fit."
+      },
+      {
+       "id": "j",
+       "correct": true,
+       "text": "Get the management representation letter for the quarter",
+       "why": "Management confirms in writing that the uncorrected items we listed don’t matter, alone or together."
+      }
+     ]
+    },
+    {
+     "id": "q2",
+     "sample": "TC-35’s depreciation and the fee provision, left uncorrected: what now",
+     "text": "Mahesh replies on 30 October with Kudalwadi’s rate letter and the quantities, which settle the job-work query. TC-35’s depreciation and the fee provision, he says, are small, and he will deal with both at the year-end. What happens to those two now?",
+     "options": [
+      {
+       "id": "a",
+       "text": "They come out of the file: each one is under our threshold, so neither can change the conclusion on the quarter.",
+       "why": "The threshold decides what we look at, not what we record. A misstatement we found is listed and weighed with the others."
+      },
+      {
+       "id": "b",
+       "correct": true,
+       "text": "They go on our list of uncorrected misstatements; Sudha weighs them, alone and together, before she signs.",
+       "why": "That is how a found error the client won’t fix is handled. The representation letter then lists them too."
+      },
+      {
+       "id": "c",
+       "text": "The report says the results give a true and fair view except for the depreciation and the fee provision.",
+       "why": "A review gives no audit opinion, and a qualified conclusion is for a material departure. Sudha decides that, and these two are small."
+      },
+      {
+       "id": "d",
+       "text": "The report waits for the year-end audit, when both can be tested properly against the bills and the register.",
+       "why": "The fund needs the reviewed results within 45 days. Known small errors don’t stop a review; they are recorded and weighed."
+      }
+     ]
+    },
+    {
+     "id": "q3",
+     "text": "Which sentence goes into the conclusion of Sudha’s review report on the quarter?",
+     "options": [
+      {
+       "id": "a",
+       "text": "In our opinion and to the best of our information and according to the explanations given to us, the statement gives a true and fair view of the results of the company for the quarter.",
+       "why": "That is an audit opinion. A review gives limited assurance and expresses no audit opinion."
+      },
+      {
+       "id": "b",
+       "text": "Based on our audit of the books and records for the quarter, the statement of results is free from material misstatement and is fairly presented in accordance with the applicable accounting standards.",
+       "why": "We did not audit the quarter, and a review never promises the results are free from misstatement."
+      },
+      {
+       "id": "c",
+       "correct": true,
+       "text": "Based on our review, nothing has come to our attention that causes us to believe that the statement is not prepared, in all material respects, in accordance with the applicable accounting standards.",
+       "why": "This is the review conclusion. The two small errors we found don’t block it: the sentence says “in all material respects”, and Sudha has weighed them."
+      },
+      {
+       "id": "d",
+       "text": "We certify that the statement of results for the quarter ended 30 September 2026 is correct and complete in every respect, and that it agrees with the books of account of the company.",
+       "why": "An auditor doesn’t certify results as correct. A review report states a conclusion and its basis."
+      }
+     ]
+    }
+   ],
+   "docs": [
+    "results",
+    "minutes",
+    "mail",
+    "fees"
+   ]
+  }
+ ],
+ "wrap": {
+  "from": "aditi",
+  "text": "Three queries, and two of them sit under our threshold: our fees and TC-35’s depreciation. Job work was the other kind, over the line with a reason that didn’t fit Q1. I’ll take the list to Rehan on Thursday."
+ },
+ "wrapPartial": {
+  "from": "aditi",
+  "text": "Over the threshold, a reason needs a paper that fits both comparisons; under it, ask what should have moved. And Sudha’s report gives a review conclusion, never an audit opinion. The list goes to Rehan when your file holds to those."
+ },
+ "wrapRetry": {
+  "from": "aditi",
+  "text": "Our rule is over 10% and over ₹10 lakh, against Q1 or last year. Test each reason against both comparisons and its papers. Then ask what should have moved but didn’t; the minutes, the asset schedule and our own fee letter show you where."
+ },
+ "passNeeds": [
+  {
+   "task": "t2",
+   "min": 0.6,
+   "note": "Your nine line calls need more right before this review can close."
+  }
+ ],
+ "model": {
+  "intro": "Five lines cross the threshold and have a paper that explains them. Finance costs is under it and moved as the loans say. Job work crosses it with a reason that doesn’t fit Q1, and two lines under it should have moved: our fees and depreciation.",
+  "blocks": [
+   {
+    "type": "table",
+    "columns": [
+     {
+      "key": "line",
+      "label": "Line"
+     },
+     {
+      "key": "over",
+      "label": "Threshold"
+     },
+     {
+      "key": "call",
+      "label": "Call"
+     },
+     {
+      "key": "why",
+      "label": "What settles it"
+     }
+    ],
+    "rows": [
+     {
+      "line": "1 · Revenue",
+      "over": "Over on both",
+      "call": "No query",
+      "why": "Vayuvega new (₹258.53 lakh); Kilimani two containers, not one"
+     },
+     {
+      "line": "2 · Materials",
+      "over": "Over on both",
+      "call": "No query",
+      "why": "59.2% of manufactured sales, as in Q1"
+     },
+     {
+      "line": "3 · Wages",
+      "over": "Over on both",
+      "call": "No query",
+      "why": "9% from July; 499 workman-months × ₹23,540"
+     },
+     {
+      "line": "4 · Power",
+      "over": "Over on last year only",
+      "call": "No query",
+      "why": "Units with production; cost per unit flat on Q1"
+     },
+     {
+      "line": "5 · Job work",
+      "over": "Over on last year only",
+      "call": "Query",
+      "why": "A 1 July rate rise doesn’t show; no letter"
+     },
+     {
+      "line": "6 · Contract labour",
+      "over": "Over on last year only",
+      "call": "No query",
+      "why": "110 workers against 92, rate up 4%"
+     },
+     {
+      "line": "7 · Auditors’ fees",
+      "over": "Under on both",
+      "call": "Query",
+      "why": "Nil, against a provision every quarter last year"
+     },
+     {
+      "line": "8 · Depreciation",
+      "over": "Under on both",
+      "call": "Query",
+      "why": "TC-35 ready 12 August, still in CWIP"
+     },
+     {
+      "line": "9 · Finance costs",
+      "over": "Under on both",
+      "call": "No query",
+      "why": "Term loan I down ₹75 lakh; cash credit lower than Q1"
+     }
+    ]
+   },
+   {
+    "type": "text",
+    "text": "TC-35’s missing depreciation, from 12 August to 30 September:"
+   },
+   {
+    "type": "list",
+    "items": [
+     "₹68,40,000 × 95% ÷ 15 × 50 ÷ 365 = ₹59,342 for Q2."
+    ]
+   },
+   {
+    "type": "note",
+    "from": "aditi",
+    "text": "The threshold sorts the sheet; it doesn’t close it. Over the line with a paper behind it takes a minute. Under the line, ask what the minutes, the asset schedule and our own letter say should have moved."
+   }
+  ]
+ },
+ "principles": [
+  "A threshold tells you where to look first, not what to ignore.",
+  "A client’s reason counts only when a paper shows it in both comparisons, Q1 and last year.",
+  "A review ends in a conclusion, “nothing has come to our attention”, not an audit opinion."
+ ],
+ "earned": {
+  "clause": "checked {lines} {lines|line|lines} of quarterly results against last quarter and last year for a limited review[[; flagged {over} {over|line|lines} over the threshold]][[; raised {q} client {q|query|queries}]][[; prepared the review checklist{chk|}]]",
+  "counts": {
+   "lines": {
+    "kind": "items",
+    "task": "t2",
+    "answered": "gate"
+   },
+   "over": {
+    "kind": "itemsWhere",
+    "task": "t2",
+    "field": "over",
+    "equals": [
+     "both",
+     "ly",
+     "q1"
+    ]
+   },
+   "q": {
+    "kind": "itemsWhere",
+    "task": "t2",
+    "field": "verdict",
+    "equals": "ask"
+   },
+   "chk": {
+    "kind": "correctQuestions",
+    "task": "t4",
+    "questions": [
+     "q1"
+    ]
+   }
+  },
+  "fallback": "checked lines of quarterly results against last quarter and last year for a limited review"
+ },
+ "interview": [
+  {
+   "q": "What is a limited review, and how is it different from an audit?",
+   "checking": "Whether you know what a review does, and what it does not give.",
+   "outline": [
+    "The statutory auditor’s review of interim results under SRE 2410: enquiries and analytical procedures.",
+    "In the simulation I set nine lines against Q1 and last year, then queried what didn’t fit.",
+    "It ordinarily skips vouching, confirming and counting, and gives limited assurance, not an audit opinion."
+   ]
+  },
+  {
+   "q": "Profit before tax jumps 65% in a quarter. How would you analyse it?",
+   "checking": "Whether you break a movement into its drivers instead of quoting a percentage.",
+   "outline": [
+    "Line by line against Q1 and last year, with a reason and a paper for each big movement.",
+    "In the simulation that was ₹181 lakh to ₹298 lakh: sales up ₹316 lakh, costs ₹199 lakh.",
+    "Materials held near 59%. What should have moved but didn’t: a new machine’s depreciation and the auditors’ fees."
+   ]
+  }
+ ]
+}

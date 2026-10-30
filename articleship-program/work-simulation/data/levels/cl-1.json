@@ -1,0 +1,1741 @@
+{
+ "id": "cl-1",
+ "domain": "accounting",
+ "number": 3,
+ "title": "Company law: minutes and filings",
+ "minutes": 35,
+ "learn": [
+  "What to look for in board minutes and the directors’ contracts register",
+  "Which Board decisions count only when passed at a meeting",
+  "Which ROC filings a private company owes each year, and when"
+ ],
+ "do": [
+  "Check a year’s board minutes and a register entry",
+  "List the year’s ROC filings and their dates",
+  "Draft the note to the company secretary"
+ ],
+ "case": {
+  "role": "First-year article assistant on the statutory audit, lent to the company law desk for the day",
+  "client": "Tamhini Drivetech Private Limited, a Chakan company that makes gears, shafts and hubs for vehicle makers",
+  "team": "Snehal Patil (accounting and company law senior), Aditi Rane (audit senior)",
+  "goal": "Read the year’s board minutes and the register of directors’ contracts for the audit file, and list the ROC filings due for 2026–27.",
+  "period": "Year ended 31 March 2027",
+  "where": "Company secretary’s office, Chakan plant · Monday 10 May 2027"
+ },
+ "brief": {
+  "from": "snehal",
+  "time": "10:10 am",
+  "messages": [
+   "Mrunal, the company secretary, has put out the minutes book and the directors’ contracts register. Check the year’s five Board meetings and the register, then roll her ROC tracker forward for 2026–27.",
+   "I want your points and the list by 6 pm, so Mrunal has the week before the Board meets on 18 May. I’ll send her one note."
+  ]
+ },
+ "documents": [
+  {
+   "id": "mb-index",
+   "type": "table",
+   "style": "plain",
+   "group": "idx",
+   "title": "Index · Board meetings",
+   "tab": "Index",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited"
+   },
+   "heading": "Minutes book No. 6 · Index of Board meetings",
+   "subtitle": "Kept by the Company Secretary",
+   "columns": [
+    {
+     "key": "no",
+     "label": "No."
+    },
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "present",
+     "label": "Directors present"
+    },
+    {
+     "key": "pages",
+     "label": "Pages"
+    }
+   ],
+   "rows": [
+    {
+     "no": "90",
+     "date": "11-02-2026",
+     "pages": "136–140",
+     "present": "4 of 4"
+    },
+    {
+     "no": "91",
+     "date": "19-05-2026",
+     "pages": "141–145",
+     "present": "4 of 4"
+    },
+    {
+     "no": "92",
+     "date": "10-07-2026",
+     "pages": "146–148",
+     "present": "2 of 4 (one by video)"
+    },
+    {
+     "no": "93",
+     "date": "14-08-2026",
+     "pages": "149–152",
+     "present": "4 of 4"
+    },
+    {
+     "no": "94",
+     "date": "12-11-2026",
+     "pages": "153–157",
+     "present": "4 of 4 (one by video)"
+    },
+    {
+     "no": "95",
+     "date": "10-02-2027",
+     "pages": "158–162",
+     "present": "4 of 4"
+    },
+    {
+     "no": "96",
+     "date": "18-05-2027",
+     "pages": "–",
+     "present": "Notice sent 07-05-2027",
+     "_class": "muted"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "91–95 = 2026–27 · M.D.",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": -2
+    }
+   ]
+  },
+  {
+   "id": "min-91",
+   "type": "letter",
+   "style": "minutes",
+   "group": "m91",
+   "title": "Meeting 91 · Minutes",
+   "letterhead": "Tamhini Drivetech Private Limited\nCIN: U29301MH2004PTC942620\nRegd. office: Plot B-47, Chakan Industrial Area Phase II, MIDC, Mahalunge, Pune 410501",
+   "subject": "Minutes of the 91st meeting of the Board of Directors held on Tuesday, 19 May 2026 at 11:00 am at the registered office",
+   "meta": [
+    {
+     "label": "Minutes book",
+     "value": "No. 6"
+    },
+    {
+     "label": "Pages",
+     "value": "141–145"
+    }
+   ],
+   "body": [
+    "Present: Dilip Joglekar (Chairman), Amol Joglekar (Managing Director), Sneha Joglekar, Nandini Krishnamurthy (nominee director).",
+    "In attendance: Mrunal Deo (Company Secretary), Mahesh Kadam (GM, Finance and Accounts); Sudha Venkatesh, partner, Bapat Venkatesh & Co., statutory auditors, for item 5.",
+    "## 1. Chairman and quorum",
+    "Dilip Joglekar took the chair. The requisite quorum being present, the meeting was called to order.",
+    "## 2. Minutes of the previous meeting",
+    "The minutes of the 90th meeting held on 11 February 2026 were read and confirmed.",
+    "## 3. Leave of absence",
+    "No director sought leave of absence.",
+    "## 4. Disclosures of interest",
+    "The Board took note of the disclosures of interest in Form MBP-1 for 2026–27 received from Dilip Joglekar, Amol Joglekar and Sneha Joglekar.",
+    "## 5. Audited financial statements for 2025–26",
+    "The Board considered the audited financial statements for the year ended 31 March 2026, the auditors’ report of even date and the draft Board’s report.",
+    "RESOLVED THAT the financial statements and the Board’s report for 2025–26 be and are hereby approved, and that Dilip Joglekar, Chairman, and Amol Joglekar, Managing Director, be authorised to sign them.",
+    "## 6. Review report for the quarter ended 31 March 2026",
+    "The Board noted the statutory auditors’ review report on the results for the quarter ended 31 March 2026, sent to Kaveri Bridge India Growth Fund I.",
+    "## 7. CSR spending for 2026–27",
+    "RESOLVED THAT ₹13,50,000 be spent in 2026–27 on a science laboratory and computer room at the Zilla Parishad school, Mahalunge, through a registered education trust.",
+    "## 8. Vote of thanks",
+    "The meeting ended at 1:10 pm with a vote of thanks to the chair."
+   ],
+   "sign": {
+    "name": "Dilip Joglekar",
+    "role": "Chairman",
+    "note": "Date of entry in the minutes book: 12-06-2026 · Place: Chakan"
+   },
+   "initials": "D.J."
+  },
+  {
+   "id": "min-92",
+   "type": "letter",
+   "style": "minutes",
+   "group": "m92",
+   "title": "Meeting 92 · Minutes",
+   "letterhead": "Tamhini Drivetech Private Limited\nCIN: U29301MH2004PTC942620\nRegd. office: Plot B-47, Chakan Industrial Area Phase II, MIDC, Mahalunge, Pune 410501",
+   "subject": "Minutes of the 92nd meeting of the Board of Directors held on Friday, 10 July 2026 at 4:00 pm at the registered office",
+   "meta": [
+    {
+     "label": "Minutes book",
+     "value": "No. 6"
+    },
+    {
+     "label": "Pages",
+     "value": "146–148"
+    }
+   ],
+   "body": [
+    "Present: Amol Joglekar (Managing Director); Nandini Krishnamurthy (nominee director), through video conferencing from Mumbai.",
+    "In attendance: Mrunal Deo (Company Secretary), Mahesh Kadam (GM, Finance and Accounts).",
+    "## 1. Chairman and quorum",
+    "In the Chairman’s absence the directors present chose Amol Joglekar to take the chair. The requisite quorum being present, the meeting was called to order.",
+    "## 2. Minutes of the previous meeting",
+    "The minutes of the 91st meeting held on 19 May 2026 were read and confirmed.",
+    "## 3. Leave of absence",
+    "Leave of absence was granted to Dilip Joglekar and Sneha Joglekar.",
+    "## 4. Term loan II from Vindhya Commercial Bank",
+    "The Managing Director placed the bank’s sanction letter dated 3 July 2026 for a term loan of ₹1,00,00,000 at 9.45% a year, to pay for a CNC turning centre and a vertical machining centre.",
+    "RESOLVED THAT the Company borrow ₹1,00,00,000 from Vindhya Commercial Bank Ltd, Chakan branch, as term loan II on the terms of its sanction letter dated 3 July 2026, secured by hypothecation of the two machines;",
+    "FURTHER RESOLVED THAT Amol Joglekar, Managing Director, be and is hereby authorised to sign the loan documents.",
+    "## 5. CNC turning centre",
+    "The Board noted that the order for the CNC turning centre TC-35 has been placed and that the machine is expected at the plant in the first week of August.",
+    "## 6. Vote of thanks",
+    "The meeting ended at 4:50 pm with a vote of thanks to the chair."
+   ],
+   "sign": {
+    "name": "Amol Joglekar",
+    "role": "Chairman of the meeting",
+    "note": "Date of entry in the minutes book: 31-07-2026 · Place: Chakan"
+   },
+   "initials": "A.J."
+  },
+  {
+   "id": "min-93",
+   "type": "letter",
+   "style": "minutes",
+   "group": "m93",
+   "title": "Meeting 93 · Minutes",
+   "letterhead": "Tamhini Drivetech Private Limited\nCIN: U29301MH2004PTC942620\nRegd. office: Plot B-47, Chakan Industrial Area Phase II, MIDC, Mahalunge, Pune 410501",
+   "subject": "Minutes of the 93rd meeting of the Board of Directors held on Friday, 14 August 2026 at 11:00 am at the registered office",
+   "meta": [
+    {
+     "label": "Minutes book",
+     "value": "No. 6"
+    },
+    {
+     "label": "Pages",
+     "value": "149–152"
+    }
+   ],
+   "body": [
+    "Present: Dilip Joglekar (Chairman), Amol Joglekar (Managing Director), Sneha Joglekar, Nandini Krishnamurthy (nominee director).",
+    "In attendance: Mrunal Deo (Company Secretary), Mahesh Kadam (GM, Finance and Accounts).",
+    "## 1. Chairman and quorum",
+    "Dilip Joglekar took the chair. The requisite quorum being present, the meeting was called to order.",
+    "## 2. Minutes of the previous meeting",
+    "The minutes of the 92nd meeting held on 10 July 2026 were read and confirmed.",
+    "## 3. Results for the quarter ended 30 June 2026",
+    "The Board considered the unaudited results for the quarter ended 30 June 2026, reviewed by the statutory auditors. RESOLVED THAT the results be and are hereby approved and sent to Kaveri Bridge India Growth Fund I.",
+    "## 4. Term loan II and the new CNC turning centre",
+    "The Managing Director informed the Board that ₹51,30,000 of term loan II was drawn from Vindhya Commercial Bank on 20 July 2026 to pay for the CNC turning centre TC-35. The machine was installed in Bay 4 and accepted after its trial run on 12 August 2026, and is now making sample lots for Ashvaratha Motors. The Board noted the same.",
+    "## 5. Wage settlement",
+    "The Board noted the settlement signed with the workmen’s union on 2 July 2026: wages up 9% from 1 July 2026, for three years.",
+    "## 6. Vote of thanks",
+    "The meeting ended at 12:35 pm with a vote of thanks to the chair."
+   ],
+   "sign": {
+    "name": "Dilip Joglekar",
+    "role": "Chairman",
+    "note": "Date of entry in the minutes book: 10-09-2026 · Place: Chakan"
+   },
+   "initials": "D.J."
+  },
+  {
+   "id": "min-94",
+   "type": "letter",
+   "style": "minutes",
+   "group": "m94",
+   "title": "Meeting 94 · Minutes",
+   "letterhead": "Tamhini Drivetech Private Limited\nCIN: U29301MH2004PTC942620\nRegd. office: Plot B-47, Chakan Industrial Area Phase II, MIDC, Mahalunge, Pune 410501",
+   "subject": "Minutes of the 94th meeting of the Board of Directors held on Thursday, 12 November 2026 at 11:00 am at the registered office",
+   "meta": [
+    {
+     "label": "Minutes book",
+     "value": "No. 6"
+    },
+    {
+     "label": "Pages",
+     "value": "153–157"
+    }
+   ],
+   "body": [
+    "Present: Dilip Joglekar (Chairman), Amol Joglekar (Managing Director), Sneha Joglekar; Nandini Krishnamurthy (nominee director), through video conferencing from Mumbai.",
+    "In attendance: Mrunal Deo (Company Secretary), Mahesh Kadam (GM, Finance and Accounts).",
+    "## 1. Chairman and quorum",
+    "Dilip Joglekar took the chair. The requisite quorum being present, the meeting was called to order.",
+    "## 2. Minutes of the previous meeting",
+    "The minutes of the 93rd meeting held on 14 August 2026 were read and confirmed.",
+    "## 3. Results for the quarter ended 30 September 2026",
+    "The Board considered the unaudited results for the quarter and half-year ended 30 September 2026, with the statutory auditors’ review report dated 11 November 2026. RESOLVED THAT the results be and are hereby approved and sent to Kaveri Bridge India Growth Fund I.",
+    "## 4. Architect for the canteen and amenities block",
+    "The Managing Director proposed that Sneha Joglekar, who practises as an architect in Pune, design the new canteen and amenities block at the Chakan plant and supervise its building, for a fee of ₹6,00,000 plus GST, paid in three stages: concept drawings, working drawings and completion. Work starts after the 2027 monsoon.",
+    "Sneha Joglekar disclosed her interest in the item and left the meeting while it was discussed and decided. None of the other directors is concerned or interested in the item.",
+    "RESOLVED THAT the Company engage Sneha Joglekar, Architect, a director of the Company, for the design and site supervision of the canteen and amenities block at the Chakan plant for a fee of ₹6,00,000 plus GST, on the terms placed before the meeting.",
+    "Sneha Joglekar then rejoined the meeting.",
+    "## 5. Vote of thanks",
+    "The meeting ended at 12:20 pm with a vote of thanks to the chair."
+   ],
+   "sign": {
+    "name": "Dilip Joglekar",
+    "role": "Chairman",
+    "note": "Date of entry in the minutes book: 24-12-2026 · Place: Chakan"
+   },
+   "initials": "D.J."
+  },
+  {
+   "id": "min-95",
+   "type": "letter",
+   "style": "minutes",
+   "group": "m95",
+   "title": "Meeting 95 · Minutes",
+   "letterhead": "Tamhini Drivetech Private Limited\nCIN: U29301MH2004PTC942620\nRegd. office: Plot B-47, Chakan Industrial Area Phase II, MIDC, Mahalunge, Pune 410501",
+   "subject": "Minutes of the 95th meeting of the Board of Directors held on Wednesday, 10 February 2027 at 11:00 am at the registered office",
+   "meta": [
+    {
+     "label": "Minutes book",
+     "value": "No. 6"
+    },
+    {
+     "label": "Pages",
+     "value": "158–162"
+    }
+   ],
+   "body": [
+    "Present: Dilip Joglekar (Chairman), Amol Joglekar (Managing Director), Sneha Joglekar, Nandini Krishnamurthy (nominee director).",
+    "In attendance: Mrunal Deo (Company Secretary), Mahesh Kadam (GM, Finance and Accounts).",
+    "## 1. Chairman and quorum",
+    "Dilip Joglekar took the chair. The requisite quorum being present, the meeting was called to order.",
+    "## 2. Minutes of the previous meeting",
+    "The minutes of the 94th meeting held on 12 November 2026 were read and confirmed.",
+    "## 3. Results for the quarter ended 31 December 2026",
+    "The Board considered the unaudited results for the quarter and nine months ended 31 December 2026, with the statutory auditors’ review report dated 9 February 2027. RESOLVED THAT the results be and are hereby approved and sent to Kaveri Bridge India Growth Fund I.",
+    "## 4. Vertical machining centre",
+    "RESOLVED THAT the purchase of a vertical machining centre for ₹54,60,000 plus GST, to be paid for partly from term loan II, be and is hereby approved, and that Venkat Reddy, plant head, be authorised to place the order.",
+    "## 5. Resolution passed by circulation",
+    "The Board noted the resolution passed by circulation on 22 December 2026 approving the renewal of the cash-credit limit of ₹18,00,00,000 from Vindhya Commercial Bank Ltd for twelve months from 1 January 2027, and made it part of these minutes.",
+    "## 6. Register of contracts in which directors are interested",
+    "The register in Form MBP-4, with the entry made after the 94th meeting, was placed before the Board and signed by the directors present.",
+    "## 7. Transfer of shares",
+    "The Board noted that Dilip Joglekar gifted 8,00,000 equity shares of the Company to Amol Joglekar on 2 January 2027. After the transfer Amol Joglekar holds 1,12,00,000 shares and Dilip Joglekar 56,00,000.",
+    "## 8. Statutory auditors’ letter on the staff payroll",
+    "The Board considered the statutory auditors’ letter of 20 January 2027 reporting a suspected fraud in the staff payroll: a salary paid since August 2026 under employee code E1093, though no such employee exists. On legal advice the Board decided to keep the payroll unchanged until the review of the payroll assistant’s entries and the police complaint are ready, and authorised the Managing Director to take both steps and to recover the amount.",
+    "## 9. Vote of thanks",
+    "The meeting ended at 1:05 pm with a vote of thanks to the chair."
+   ],
+   "sign": {
+    "name": "Dilip Joglekar",
+    "role": "Chairman",
+    "note": "Date of entry in the minutes book: 09-03-2027 · Place: Chakan"
+   },
+   "initials": "D.J."
+  },
+  {
+   "id": "cr-01",
+   "type": "letter",
+   "style": "letter",
+   "group": "m95",
+   "title": "Meeting 95 · Circular resolution",
+   "tab": "Circular resolution",
+   "kindLabel": "Resolution",
+   "letterhead": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC, Mahalunge, Pune 410501",
+    "cin": "U29301MH2004PTC942620"
+   },
+   "ref": "CR/2026-27/01",
+   "date": "22-12-2026",
+   "subject": "Resolution passed by circulation: renewal of the cash-credit limit",
+   "body": [
+    "The draft resolution below was circulated to all directors on 18-12-2026 with Vindhya Commercial Bank’s letter CKN/ADV/2026/311 dated 15-12-2026, as the bank wanted the Board’s resolution before 31 December for the renewal to run from 1 January 2027.",
+    "## Resolution",
+    "RESOLVED THAT the renewal of the cash-credit limit of ₹18,00,00,000 sanctioned by Vindhya Commercial Bank Ltd, Chakan branch, for twelve months from 1 January 2027, on the terms of the bank’s letter CKN/ADV/2026/311 dated 15-12-2026, be and is hereby approved, and that Amol Joglekar, Managing Director, be authorised to sign the renewal documents.",
+    {
+     "table": {
+      "columns": [
+       {
+        "key": "n",
+        "label": "Director"
+       },
+       {
+        "key": "d",
+        "label": "Approved on"
+       },
+       {
+        "key": "m",
+        "label": "How"
+       }
+      ],
+      "rows": [
+       {
+        "n": "Amol Joglekar",
+        "d": "18-12-2026",
+        "m": "Signed"
+       },
+       {
+        "n": "Dilip Joglekar",
+        "d": "19-12-2026",
+        "m": "Signed"
+       },
+       {
+        "n": "Sneha Joglekar",
+        "d": "22-12-2026",
+        "m": "Signed"
+       },
+       {
+        "n": "Nandini Krishnamurthy",
+        "d": "22-12-2026",
+        "m": "By e-mail"
+       }
+      ]
+     }
+    },
+    "Passed by circulation on 22-12-2026 with the approval of all four directors. To be noted at the next meeting of the Board."
+   ],
+   "sign": {
+    "for": "Tamhini Drivetech Private Limited",
+    "name": "Mrunal Deo",
+    "role": "Company Secretary",
+    "hand": "Mrunal Deo"
+   }
+  },
+  {
+   "id": "mbp4",
+   "type": "card",
+   "style": "slip",
+   "group": "reg",
+   "handwritten": true,
+   "title": "Register · Directors’ contracts (MBP-4)",
+   "tab": "Register",
+   "kindLabel": "Register",
+   "issuer": "Tamhini Drivetech Private Limited · kept at the registered office",
+   "heading": "Form No. MBP 4 · Register of contracts with related party and contracts and bodies etc. in which directors are interested",
+   "number": "1 (page 1)",
+   "fields": [
+    {
+     "label": "Date of contract",
+     "value": "16-11-2026"
+    },
+    {
+     "label": "Name of the party",
+     "value": "Sneha Joglekar, Architect, Pune"
+    },
+    {
+     "label": "Director interested",
+     "value": "Sneha Joglekar (the party herself)"
+    },
+    {
+     "label": "Nature of contract",
+     "value": "Design and site supervision of the canteen and amenities block, Chakan plant"
+    },
+    {
+     "label": "Principal terms",
+     "value": "Fee in three stages: concept drawings, working drawings, completion"
+    },
+    {
+     "label": "Value",
+     "value": "₹60,000 plus GST"
+    },
+    {
+     "label": "Board approval",
+     "value": "12-11-2026 (meeting 94)"
+    },
+    {
+     "label": "Entered by",
+     "value": "Mrunal Deo, Company Secretary"
+    },
+    {
+     "label": "Placed before the Board",
+     "value": "10-02-2027 (meeting 95), signed by the directors present"
+    }
+   ],
+   "planted": [
+    "value ₹60,000 against the ₹6,00,000 the Board approved"
+   ],
+   "annotations": [
+    {
+     "kind": "sign",
+     "text": "D.J.  A.J.  S.J.  N.K.",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "master",
+   "type": "table",
+   "style": "portal",
+   "title": "Company master data · MCA",
+   "tab": "Master data",
+   "kindLabel": "Portal print",
+   "brand": "Ministry of Corporate Affairs",
+   "heading": "Company master data",
+   "subtitle": "Printed 10-05-2027",
+   "meta": [
+    {
+     "label": "CIN",
+     "value": "U29301MH2004PTC942620"
+    },
+    {
+     "label": "Company name",
+     "value": "TAMHINI DRIVETECH PRIVATE LIMITED"
+    },
+    {
+     "label": "ROC",
+     "value": "RoC-Pune"
+    },
+    {
+     "label": "Date of incorporation",
+     "value": "12/08/2004"
+    },
+    {
+     "label": "Class of company",
+     "value": "Private"
+    },
+    {
+     "label": "Category",
+     "value": "Company limited by shares"
+    },
+    {
+     "label": "Sub-category",
+     "value": "Non-government company"
+    },
+    {
+     "label": "Authorised capital (₹)",
+     "value": "30,00,00,000"
+    },
+    {
+     "label": "Paid-up capital (₹)",
+     "value": "25,00,00,000"
+    },
+    {
+     "label": "Listed or unlisted",
+     "value": "Unlisted"
+    },
+    {
+     "label": "Date of last AGM",
+     "value": "25/09/2026"
+    },
+    {
+     "label": "Date of latest balance sheet",
+     "value": "31/03/2026"
+    },
+    {
+     "label": "Company status",
+     "value": "Active"
+    }
+   ],
+   "columns": [
+    {
+     "key": "din",
+     "label": "DIN",
+     "mono": true
+    },
+    {
+     "key": "name",
+     "label": "Name"
+    },
+    {
+     "key": "des",
+     "label": "Designation"
+    },
+    {
+     "key": "from",
+     "label": "Appointed on"
+    }
+   ],
+   "rows": [
+    {
+     "din": "13417702",
+     "name": "DILIP JOGLEKAR",
+     "des": "Director",
+     "from": "12/08/2004"
+    },
+    {
+     "din": "13417719",
+     "name": "AMOL JOGLEKAR",
+     "des": "Managing Director",
+     "from": "01/04/2011"
+    },
+    {
+     "din": "13418044",
+     "name": "SNEHA JOGLEKAR",
+     "des": "Director",
+     "from": "01/07/2013"
+    },
+    {
+     "din": "13530287",
+     "name": "NANDINI KRISHNAMURTHY",
+     "des": "Nominee Director",
+     "from": "01/11/2022"
+    },
+    {
+     "din": "–",
+     "name": "MRUNAL DEO",
+     "des": "Company Secretary",
+     "from": "01/04/2024"
+    }
+   ]
+  },
+  {
+   "id": "tracker",
+   "type": "table",
+   "style": "sheet",
+   "title": "ROC tracker · Mrunal’s sheet",
+   "tab": "Tracker",
+   "kindLabel": "Excel sheet",
+   "sheetName": "Filings",
+   "freeze": true,
+   "pinFit": true,
+   "formula": "",
+   "columns": [
+    {
+     "key": "f",
+     "label": "Form"
+    },
+    {
+     "key": "what",
+     "label": "For",
+     "wrap": true
+    },
+    {
+     "key": "due",
+     "label": "Due by"
+    },
+    {
+     "key": "filed",
+     "label": "Filed on"
+    },
+    {
+     "key": "rem",
+     "label": "Remarks",
+     "wrap": true
+    }
+   ],
+   "rows": [
+    {
+     "_id": "r1",
+     "f": "ADT-1",
+     "what": "Auditors appointed at the 19th AGM (22-09-2023) till the end of the 24th AGM (2028)",
+     "due": "07-10-2023",
+     "filed": "04-10-2023",
+     "rem": "Bapat Venkatesh & Co., five years"
+    },
+    {
+     "_id": "r2",
+     "f": "DIR-3 KYC",
+     "what": "All four directors",
+     "due": "30-09-2025",
+     "filed": "16-09-2025",
+     "rem": "Yearly KYC, filed for all four"
+    },
+    {
+     "_id": "r3",
+     "f": "MSME-1",
+     "what": "October 2025 – March 2026",
+     "due": "30-04-2026",
+     "filed": "28-04-2026",
+     "rem": "Kudalwadi"
+    },
+    {
+     "_id": "r4",
+     "f": "PAS-6",
+     "what": "October 2025 – March 2026",
+     "due": "30-05-2026",
+     "filed": "22-05-2026",
+     "rem": "Certified by the practising company secretary"
+    },
+    {
+     "_id": "r5",
+     "f": "DPT-3",
+     "what": "Return as on 31-03-2026",
+     "due": "30-06-2026",
+     "filed": "24-06-2026",
+     "rem": "Auditors’ certificate attached"
+    },
+    {
+     "_id": "r6",
+     "f": "CHG-1",
+     "what": "Term loan II, Vindhya (charge created 15-07-2026)",
+     "due": "14-08-2026",
+     "filed": "06-08-2026",
+     "rem": "Hypothecation of the machines bought from the loan"
+    },
+    {
+     "_id": "r7",
+     "f": "AOC-4",
+     "what": "Financial statements 2025–26 (22nd AGM, 25-09-2026)",
+     "due": "25-10-2026",
+     "filed": "20-10-2026",
+     "rem": ""
+    },
+    {
+     "_id": "r8",
+     "f": "MSME-1",
+     "what": "April – September 2026",
+     "due": "31-10-2026",
+     "filed": "27-10-2026",
+     "rem": "Kudalwadi"
+    },
+    {
+     "_id": "r9",
+     "f": "MGT-7",
+     "what": "Annual return 2025–26",
+     "due": "24-11-2026",
+     "filed": "18-11-2026",
+     "rem": "With the practising company secretary’s MGT-8"
+    },
+    {
+     "_id": "r10",
+     "f": "PAS-6",
+     "what": "April – September 2026",
+     "due": "29-11-2026",
+     "filed": "24-11-2026",
+     "rem": "Certified by the practising company secretary"
+    },
+    {
+     "_id": "r11",
+     "f": "MSME-1",
+     "what": "October 2026 – March 2027",
+     "due": "30-04-2027",
+     "filed": "",
+     "rem": "Not needed: Mahesh’s mail of 26-04-2027, no micro supplier over 45 days"
+    }
+   ]
+  },
+  {
+   "id": "notice-96",
+   "type": "letter",
+   "style": "notice",
+   "title": "Notice · Board meeting on 18 May",
+   "tab": "Board notice",
+   "letterhead": [
+    "Tamhini Drivetech Private Limited",
+    "CIN: U29301MH2004PTC942620",
+    "Plot B-47, Chakan Industrial Area Phase II, MIDC, Mahalunge, Pune 410501"
+   ],
+   "ref": "TDPL/BM/96",
+   "date": "07-05-2027",
+   "to": [
+    "All directors"
+   ],
+   "subject": "Notice of the 96th meeting of the Board of Directors",
+   "body": [
+    "The 96th meeting of the Board of Directors will be held on Tuesday, 18 May 2027 at 11:00 am at the registered office. Agenda:",
+    "1. Leave of absence",
+    "2. Minutes of the 95th meeting held on 10 February 2027",
+    "3. Disclosures of interest in Form MBP-1 for 2027–28 from all directors",
+    "4. Audited financial statements for 2026–27, with the auditors’ report",
+    "5. Board’s report for 2026–27",
+    "6. Date of the 23rd annual general meeting: proposed for Tuesday, 28 September 2027",
+    "7. Any other business with the permission of the chair"
+   ],
+   "sign": {
+    "for": "Tamhini Drivetech Private Limited",
+    "name": "Mrunal Deo",
+    "role": "Company Secretary",
+    "hand": "Mrunal Deo"
+   }
+  },
+  {
+   "id": "mail-msme",
+   "type": "letter",
+   "style": "email",
+   "title": "Mail · Mahesh on MSME-1",
+   "tab": "Mahesh’s mail",
+   "from": {
+    "name": "Mahesh Kadam",
+    "email": "mahesh.kadam@email.com"
+   },
+   "to": [
+    {
+     "name": "Mrunal Deo",
+     "email": "mrunal.deo@email.com"
+    }
+   ],
+   "cc": [
+    {
+     "name": "Pallavi Shinde",
+     "email": "pallavi.shinde@email.com"
+    }
+   ],
+   "date": "Mon, 26 Apr 2027, 6:48 pm",
+   "subject": "MSME-1 for October–March",
+   "body": [
+    "Mrunal,",
+    "I checked the creditors at 31 March. None of our micro suppliers is beyond 45 days: Moshi, Alandi, Sakhare, the canteen, Talegaon and Shirur are all within terms. So no MSME-1 this time.",
+    "The ageing is attached for your file.",
+    "Regards,"
+   ],
+   "sign": {
+    "name": "Mahesh Kadam",
+    "role": "GM, Finance and Accounts",
+    "for": "Tamhini Drivetech Private Limited"
+   },
+   "attachments": [
+    {
+     "name": "MSE_​creditors_​ageing_​31-⁠03-⁠2027.pdf",
+     "doc": "mse-ageing"
+    }
+   ]
+  },
+  {
+   "id": "mse-ageing",
+   "type": "table",
+   "style": "tally",
+   "title": "Creditors ageing · micro and small",
+   "tab": "Ageing",
+   "kindLabel": "Tally report",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune"
+   },
+   "ledger": "Sundry creditors – micro and small enterprises",
+   "subtitle": "Bill-wise ageing from the date of acceptance",
+   "period": "As at 31-Mar-2027 · Printed on 26-Apr-2027",
+   "columns": [
+    {
+     "key": "party",
+     "label": "Party"
+    },
+    {
+     "key": "cat",
+     "label": "Udyam"
+    },
+    {
+     "key": "bal",
+     "label": "Closing balance",
+     "format": "inr"
+    },
+    {
+     "key": "d45",
+     "label": "Up to 45 days",
+     "format": "inr"
+    },
+    {
+     "key": "o45",
+     "label": "Beyond 45 days",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "party": "Rankala Forgings Pvt Ltd",
+     "cat": "Small",
+     "bal": 21138017,
+     "d45": 21138017,
+     "o45": 0
+    },
+    {
+     "party": "Phillaur Fasteners Pvt Ltd",
+     "cat": "Small",
+     "bal": 968372,
+     "d45": 968372,
+     "o45": 0
+    },
+    {
+     "party": "Kolak Polypack Pvt Ltd",
+     "cat": "Small",
+     "bal": 671656,
+     "d45": 671656,
+     "o45": 0
+    },
+    {
+     "party": "Kudalwadi Heat Treaters",
+     "cat": "Small",
+     "bal": 6120472,
+     "d45": 4683767,
+     "o45": 1436705
+    },
+    {
+     "party": "Moshi Corrugators",
+     "cat": "Micro",
+     "bal": 1024717,
+     "d45": 1024717,
+     "o45": 0
+    },
+    {
+     "party": "Alandi Paper Products",
+     "cat": "Micro",
+     "bal": 206000,
+     "d45": 206000,
+     "o45": 0
+    },
+    {
+     "party": "Sakhare Surface Treatment",
+     "cat": "Micro",
+     "bal": 1859643,
+     "d45": 1859643,
+     "o45": 0
+    },
+    {
+     "party": "Chakan Annachhatra Caterers",
+     "cat": "Micro",
+     "bal": 237600,
+     "d45": 237600,
+     "o45": 0
+    },
+    {
+     "party": "Talegaon Electricals",
+     "cat": "Micro",
+     "bal": 452222,
+     "d45": 452222,
+     "o45": 0
+    },
+    {
+     "party": "Shirur Metrology Labs",
+     "cat": "Micro",
+     "bal": 36540,
+     "d45": 36540,
+     "o45": 0
+    },
+    {
+     "party": "Total",
+     "cat": "",
+     "bal": 32715239,
+     "d45": 31278534,
+     "o45": 1436705,
+     "_class": "total"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "hand",
+     "at": "inline",
+     "color": "blue",
+     "rotate": -2,
+     "text": "Shirur: chq 417652 of 26-11-2026 (₹44,660) written back 6 May, AJE-10. Owed again. –A.R."
+    }
+   ]
+  }
+ ],
+ "tasks": [
+  {
+   "id": "t1",
+   "type": "items",
+   "stage": "Fieldwork",
+   "title": "Check the minutes and the register",
+   "prompt": "Read the index, each meeting’s minutes and the register of directors’ contracts; the company’s master data is under Other papers. Mark each paper Fine or Exception and pick what is wrong. Your calls go to Snehal when you move on.",
+   "weight": 3,
+   "noun": [
+    "paper",
+    "papers"
+   ],
+   "lockOnLeave": {
+    "ask": "Hand your calls on the minutes and the register to Snehal?",
+    "note": "You can’t change them after this.",
+    "yes": "Hand them in",
+    "done": "Handed to Snehal. You can read your calls but not change them."
+   },
+   "hints": [
+    "Count days: from each meeting to its date of entry in the book, and from one meeting to the next. Then read who was present and who disclosed what.",
+    "Some decisions count only when passed at a Board meeting, and borrowing is one. Every director also discloses interests at the first meeting of each year."
+   ],
+   "columns": [
+    {
+     "key": "label"
+    },
+    {
+     "key": "pages"
+    }
+   ],
+   "fields": [
+    {
+     "id": "verdict",
+     "kind": "choice",
+     "label": "Your call",
+     "gate": true,
+     "options": [
+      {
+       "id": "ok",
+       "label": "Fine"
+      },
+      {
+       "id": "exception",
+       "label": "Exception"
+      }
+     ]
+    },
+    {
+     "id": "reasons",
+     "kind": "multi",
+     "label": "What’s wrong",
+     "showIf": {
+      "verdict": "exception"
+     },
+     "weight": 3,
+     "options": [
+      {
+       "id": "gap",
+       "label": "More than 120 days between two meetings",
+       "short": "120-day gap"
+      },
+      {
+       "id": "quorum",
+       "label": "No quorum for the business done",
+       "short": "no quorum"
+      },
+      {
+       "id": "late",
+       "label": "Minutes entered in the book after 30 days",
+       "short": "late minutes entry"
+      },
+      {
+       "id": "disclosure",
+       "label": "A director’s disclosure of interest is missing",
+       "short": "missing disclosure"
+      },
+      {
+       "id": "interested",
+       "label": "An interested director took part in the decision",
+       "short": "interested director"
+      },
+      {
+       "id": "circulation",
+       "label": "Borrowing approved without a Board meeting",
+       "short": "circular-resolution borrowing"
+      },
+      {
+       "id": "register",
+       "label": "Register entry differs from the Board’s approval",
+       "short": "register error"
+      },
+      {
+       "id": "unsigned",
+       "label": "Register not signed at the next Board meeting",
+       "short": "unsigned register"
+      }
+     ]
+    },
+    {
+     "id": "note",
+     "kind": "text",
+     "label": "Your note for the file",
+     "placeholder": "For example: 3 of 4 present; entered 18 days after"
+    }
+   ],
+   "items": [
+    {
+     "id": "idx",
+     "label": "Index · the year’s meetings",
+     "short": "Index",
+     "pages": "Meetings 90–96",
+     "docs": [
+      "mb-index"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Index: five meetings in 2026–27. From meeting 90 the gaps run 97, 52, 35, 90 and 90 days, and 18 May is 97 days after 10 February. None is over 120. Fine."
+    },
+    {
+     "id": "m91",
+     "label": "Meeting 91 · 19 May 2026",
+     "short": "Meeting 91",
+     "pages": "Pages 141–145",
+     "docs": [
+      "min-91"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "reasons": [
+       "disclosure"
+      ]
+     },
+     "note": "Meeting 91: the first meeting of 2026–27, all four present, but the minutes note MBP-1 from only three. Nandini’s disclosure is missing, and every director gives one at the first meeting of each year. Exception."
+    },
+    {
+     "id": "m92",
+     "label": "Meeting 92 · 10 July 2026",
+     "short": "Meeting 92",
+     "pages": "Pages 146–148",
+     "docs": [
+      "min-92"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Meeting 92: only Amol in the room and Nandini on video. With four directors the quorum is two, and video counts. So term loan II was approved by resolution at a valid meeting. Fine."
+    },
+    {
+     "id": "m93",
+     "label": "Meeting 93 · 14 August 2026",
+     "short": "Meeting 93",
+     "pages": "Pages 149–152",
+     "docs": [
+      "min-93"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Meeting 93: all four present, the June quarter’s results approved by resolution, the loan drawn and the machine noted, and the minutes entered 27 days after the meeting. Fine."
+    },
+    {
+     "id": "m94",
+     "label": "Meeting 94 · 12 November 2026",
+     "short": "Meeting 94",
+     "pages": "Pages 153–157",
+     "docs": [
+      "min-94"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "reasons": [
+       "late"
+      ]
+     },
+     "note": "Meeting 94: the minutes went into the book on 24 December, 42 days after the meeting; the limit is 30. Sneha Joglekar’s contract is fine: she disclosed her interest and left the room, and no other director is interested. Exception."
+    },
+    {
+     "id": "m95",
+     "label": "Meeting 95 · 10 February 2027",
+     "short": "Meeting 95",
+     "pages": "Pages 158–162",
+     "docs": [
+      "min-95",
+      "cr-01"
+     ],
+     "prompt": "With the resolution passed by circulation that this meeting noted.",
+     "weight": 2,
+     "answer": {
+      "verdict": "exception",
+      "reasons": [
+       "circulation"
+      ]
+     },
+     "note": "Meeting 95: the cash-credit renewal was approved by circular resolution on 22 December and only noted here. A cash-credit arrangement is borrowing in the Act’s own words, and borrowing needs a resolution at a meeting. Exception."
+    },
+    {
+     "id": "reg",
+     "label": "Register · directors’ contracts",
+     "short": "Register",
+     "pages": "MBP-4, page 1",
+     "docs": [
+      "mbp4",
+      "min-94"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "reasons": [
+       "register"
+      ]
+     },
+     "note": "Register: the entry for Sneha Joglekar’s contract says ₹60,000; the 12 November minutes approve ₹6,00,000. It was placed before the next meeting and signed, as it should be, but the figure is wrong. Exception."
+    }
+   ],
+   "docs": [
+    "mb-index",
+    "min-91",
+    "min-92",
+    "min-93",
+    "min-94",
+    "min-95",
+    "cr-01",
+    "mbp4",
+    "master"
+   ]
+  },
+  {
+   "id": "t2",
+   "type": "items",
+   "stage": "Review",
+   "title": "List the year’s ROC filings and their dates",
+   "prompt": "Roll Mrunal’s tracker forward to the filings for 2026–27. For each form, say whether it falls due for this year and, if it does, by when. The AGM is proposed for 28 September 2027. Your list goes to Snehal when you move on.",
+   "weight": 2,
+   "noun": [
+    "form",
+    "forms"
+   ],
+   "lockOnLeave": {
+    "ask": "Hand your filing list to Snehal?",
+    "note": "You can’t change it after this.",
+    "yes": "Hand it in",
+    "done": "Handed to Snehal. You can read your list but not change it."
+   },
+   "hints": [
+    "Don’t copy last year’s tracker line by line. Ask what triggers each form: the AGM, a fixed date, an appointment, a half-year, or the size of the company.",
+    "Read Mahesh’s mail against his own ageing list. Who counts for MSME-1: micro suppliers only, or micro and small?"
+   ],
+   "columns": [
+    {
+     "key": "label"
+    }
+   ],
+   "fields": [
+    {
+     "id": "due",
+     "kind": "choice",
+     "label": "Your call",
+     "gate": true,
+     "neutral": true,
+     "options": [
+      {
+       "id": "due",
+       "label": "Due"
+      },
+      {
+       "id": "no",
+       "label": "Not due"
+      }
+     ]
+    },
+    {
+     "id": "when",
+     "kind": "choice",
+     "label": "When it is due",
+     "extraLabel": "Your date",
+     "showIf": {
+      "due": "due"
+     },
+     "layout": "list",
+     "weight": 2,
+     "options": [
+      {
+       "id": "apr30",
+       "label": "By 30 April 2027"
+      },
+      {
+       "id": "jun30",
+       "label": "By 30 June 2027"
+      },
+      {
+       "id": "sep30",
+       "label": "By 30 September 2027"
+      },
+      {
+       "id": "agm15",
+       "label": "Within 15 days of the AGM"
+      },
+      {
+       "id": "agm30",
+       "label": "Within 30 days of the AGM"
+      },
+      {
+       "id": "agm60",
+       "label": "Within 60 days of the AGM"
+      },
+      {
+       "id": "res30",
+       "label": "Within 30 days of the resolution"
+      },
+      {
+       "id": "hy60",
+       "label": "Within 60 days of the half-year’s end"
+      }
+     ]
+    },
+    {
+     "id": "note",
+     "kind": "text",
+     "label": "Your note for the calendar",
+     "placeholder": "For example: what sets the date this year"
+    }
+   ],
+   "items": [
+    {
+     "id": "aoc4",
+     "label": "AOC-4 · financial statements",
+     "short": "AOC-4",
+     "docs": [
+      "tracker",
+      "notice-96"
+     ],
+     "answer": {
+      "due": "due",
+      "when": "agm30"
+     },
+     "note": "AOC-4: the 2026–27 financial statements go to the ROC within 30 days of the AGM. With the AGM on 28 September, that means by late October. Due.",
+     "docRow": {
+      "tracker": "r7"
+     }
+    },
+    {
+     "id": "mgt7",
+     "label": "MGT-7 · annual return",
+     "short": "MGT-7",
+     "docs": [
+      "tracker",
+      "notice-96"
+     ],
+     "answer": {
+      "due": "due",
+      "when": "agm60"
+     },
+     "note": "MGT-7: the annual return goes in within 60 days of the AGM, so by late November. Tamhini files MGT-7 because it is not a small company. Due.",
+     "docRow": {
+      "tracker": "r9"
+     }
+    },
+    {
+     "id": "mgt7a",
+     "label": "MGT-7A · annual return",
+     "short": "MGT-7A",
+     "docs": [
+      "tracker",
+      "master"
+     ],
+     "answer": {
+      "due": "no"
+     },
+     "note": "MGT-7A is the annual return of small companies and one person companies. Tamhini has ₹25 crore of paid-up capital, more than any small company can have, so it files MGT-7. Not due."
+    },
+    {
+     "id": "adt1",
+     "label": "ADT-1 · auditors’ appointment",
+     "short": "ADT-1",
+     "docs": [
+      "tracker"
+     ],
+     "answer": {
+      "due": "no"
+     },
+     "note": "ADT-1 goes in within 15 days of an auditor’s appointment, not every year. We were appointed at the 2023 AGM until the end of the 2028 AGM, so nothing is due this year. Not due.",
+     "docRow": {
+      "tracker": "r1"
+     }
+    },
+    {
+     "id": "kyc",
+     "label": "DIR-3 KYC · the four directors",
+     "short": "DIR-3 KYC",
+     "docs": [
+      "tracker",
+      "master"
+     ],
+     "answer": {
+      "due": "no"
+     },
+     "note": "DIR-3 KYC used to be yearly. Since 31 March 2026 it has been once in three years: all four filed in September 2025, so next by 30 June 2028, unless a director’s mobile, email or address changes. Not due.",
+     "docRow": {
+      "tracker": "r2"
+     }
+    },
+    {
+     "id": "dpt3",
+     "label": "DPT-3 · return of deposits",
+     "short": "DPT-3",
+     "docs": [
+      "tracker"
+     ],
+     "answer": {
+      "due": "due",
+      "when": "jun30"
+     },
+     "note": "DPT-3 goes in by 30 June every year, and Mrunal files it with our certificate. The return as on 31 March 2027 is due by 30 June 2027. Due.",
+     "docRow": {
+      "tracker": "r5"
+     }
+    },
+    {
+     "id": "msme",
+     "label": "MSME-1 · October 2026 – March 2027",
+     "short": "MSME-1",
+     "docs": [
+      "tracker",
+      "mail-msme",
+      "mse-ageing"
+     ],
+     "answer": {
+      "due": "due",
+      "when": "apr30"
+     },
+     "note": "MSME-1: Mahesh looked only at micro suppliers. Small enterprises count too: Kudalwadi was owed ₹14,36,705 beyond 45 days at 31 March. His ageing also came before Shirur’s stale cheque was written back, so Shirur’s ₹44,660 counts as well. Due by 30 April, and missed.",
+     "docRow": {
+      "tracker": "r11"
+     }
+    },
+    {
+     "id": "pas6",
+     "label": "PAS-6 · October 2026 – March 2027",
+     "short": "PAS-6",
+     "docs": [
+      "tracker",
+      "master"
+     ],
+     "answer": {
+      "due": "due",
+      "when": "hy60"
+     },
+     "note": "PAS-6: a private company that is not small files it each half-year, within 60 days, and the tracker shows Tamhini’s last two. The half-year to 31 March 2027 is due by 30 May. Due.",
+     "docRow": {
+      "tracker": "r10"
+     }
+    },
+    {
+     "id": "mgt14",
+     "label": "MGT-14 · Board resolutions on borrowing",
+     "short": "MGT-14",
+     "docs": [
+      "tracker"
+     ],
+     "answer": {
+      "due": "no"
+     },
+     "note": "MGT-14: a private company does not file its Board resolutions on borrowing or on approving the accounts with the ROC. Not due."
+    }
+   ],
+   "docs": [
+    "tracker",
+    "notice-96",
+    "master",
+    "mail-msme",
+    "mse-ageing"
+   ]
+  },
+  {
+   "id": "t3",
+   "type": "compose",
+   "stage": "Report",
+   "title": "Draft the note to Mrunal",
+   "prompt": "Snehal wants one note to Mrunal Deo, Tamhini’s company secretary, with your points from the minutes, the register and the tracker. Pick the right line for each point.",
+   "weight": 3,
+   "noun": [
+    "line",
+    "lines"
+   ],
+   "hints": [
+    "Fix each problem at its source, never by changing a date or a paper after the event. The 18 May meeting is where the Board can put things on record."
+   ],
+   "previewLabel": "Your note to Mrunal",
+   "slots": [
+    {
+     "id": "msme",
+     "label": "MSME-1 · October to March",
+     "options": [
+      {
+       "id": "a",
+       "text": "So please show Shirur only, as the return covers micro suppliers alone.",
+       "why": "It covers micro and small enterprises alike, so Kudalwadi’s dues go in beside Shirur’s, and the return was due by 30 April."
+      },
+      {
+       "id": "b",
+       "correct": true,
+       "text": "So the return was due by 30 April. Please file it now.",
+       "why": "Small enterprises count as much as micro ones. The date has gone, so it goes in now, before anything else."
+      },
+      {
+       "id": "c",
+       "text": "So please show both in the April to September return, due by 31 October.",
+       "why": "Wrong half-year. Those dues were outstanding in October to March, and the October to March return was due by 30 April."
+      }
+     ]
+    },
+    {
+     "id": "mbp1",
+     "label": "Meeting 91 · Nandini’s disclosure",
+     "options": [
+      {
+       "id": "a",
+       "correct": true,
+       "text": "As 18 May is the first meeting of 2027–28, please place all four MBP-1s for the year, hers included, before the Board.",
+       "why": "Every director discloses at the first meeting of each year. The 2026–27 one can’t be put right now; the 2027–28 one can be, on 18 May."
+      },
+      {
+       "id": "b",
+       "text": "As hers is the one missing, please have her sign an MBP-1 dated 19 May 2026 now and file it with that meeting’s papers.",
+       "why": "Never. A back-dated disclosure is a false record. What is late stays late; we get the next one right."
+      },
+      {
+       "id": "c",
+       "text": "As the fund’s nominee has no interests of her own to disclose, nothing more is needed from her, this year or next.",
+       "why": "Every director discloses, nominee or not. A fund’s nominee often sits on other boards too, and that is exactly what MBP-1 asks about."
+      }
+     ]
+    },
+    {
+     "id": "minutes",
+     "label": "Meeting 94 · minutes entered late",
+     "options": [
+      {
+       "id": "a",
+       "text": "The Chairman has signed them, so the date of entry no longer matters and the book can stay as it is.",
+       "why": "It matters. Minutes are to be kept within 30 days of the meeting, and a signature does not change when they went in."
+      },
+      {
+       "id": "b",
+       "correct": true,
+       "text": "The limit is 30 days. Please keep to it for the coming meetings, starting with 18 May.",
+       "why": "A late entry can’t be undone. Say it plainly and keep the next ones on time."
+      },
+      {
+       "id": "c",
+       "text": "The limit is 30 days. Please rewrite the date of entry as 10 December, so that the book shows 28 days.",
+       "why": "Never. Changing the date of entry falsifies the minutes book, and the minutes are the evidence of the meeting."
+      }
+     ]
+    },
+    {
+     "id": "borrowing",
+     "label": "Meeting 95 · cash-credit renewal",
+     "options": [
+      {
+       "id": "a",
+       "text": "It has all four directors’ approval, so it stands as a Board resolution and the file is complete.",
+       "why": "Approvals on a circular do not make a meeting, and borrowing needs a resolution passed at one."
+      },
+      {
+       "id": "b",
+       "text": "It was not passed at a meeting, so please ask the bank to stop drawings on the limit until the Board passes one.",
+       "why": "Too far. The plant runs on that limit. What is missing is the Board’s resolution at a meeting, and the Board meets on 18 May."
+      },
+      {
+       "id": "c",
+       "correct": true,
+       "text": "It is borrowing, which needs a resolution passed at a Board meeting, so please put the renewal on the 18 May agenda.",
+       "why": "A circular resolution is not enough for borrowing. The 18 May meeting can pass it the way the law wants, and the file will show both."
+      }
+     ]
+    },
+    {
+     "id": "register",
+     "label": "Register · the design contract",
+     "options": [
+      {
+       "id": "a",
+       "correct": true,
+       "text": "As the register must match the minutes, please correct the entry and place it before the Board on 18 May.",
+       "why": "The register has to match what the Board approved, and a corrected entry goes before the next meeting to be signed."
+      },
+      {
+       "id": "b",
+       "text": "As the two papers must agree, please change the 12 November minutes to ₹60,000, so that they match the register entry.",
+       "why": "The other way round. The minutes are the record of what the Board decided; the register copies from them."
+      },
+      {
+       "id": "c",
+       "text": "As the register is only for the company’s own use, the difference can stay, and nothing more is needed.",
+       "why": "No. The law requires this register, and we read it to check contracts with directors. A wrong figure in it is a wrong record."
+      }
+     ]
+    }
+   ],
+   "template": "Subject: Minutes, register and ROC calendar for 2026–27\n\nDear Mrunal,\n\nThank you for the minutes book, the register and your tracker. One filing first, then our points before the Board meets on 18 May.\n\nMSME-1 for October to March: Mahesh’s mail of 26 April looked only at micro suppliers. Kudalwadi, a small enterprise, was owed ₹14,36,705 beyond 45 days at 31 March, and Shirur ₹44,660 once its stale cheque was written back. {msme}\n\nDisclosures: the minutes of 19 May 2026 record MBP-1 from three directors, not from Nandini Krishnamurthy. {mbp1}\n\nMinutes: the 12 November minutes went into the book on 24 December, 42 days after the meeting. {minutes}\n\nBorrowing: the renewal of the ₹18 crore cash-credit limit was approved by circular resolution on 22 December. {borrowing}\n\nRegister: the MBP-4 entry for Sneha Joglekar’s design contract shows ₹60,000, but the Board approved ₹6,00,000 on 12 November. {register}\n\n{_free}\n\nThe calendar of the 2026–27 filings is attached. Please share the SRN of each form as it is filed.\n\nRegards,\nSnehal Patil\nBapat Venkatesh & Co.",
+   "freeText": {
+    "label": "Your own line for the note"
+   },
+   "docs": [
+    "mail-msme",
+    "mse-ageing",
+    "tracker",
+    "min-91",
+    "min-94",
+    "min-95",
+    "cr-01",
+    "mbp4"
+   ]
+  }
+ ],
+ "passNeeds": [
+  {
+   "task": "t1",
+   "min": 0.6,
+   "note": "You need more of the seven calls on the minutes and the register right to pass."
+  },
+  {
+   "task": "t2",
+   "min": 0.6,
+   "note": "You need more of the nine filing calls right to pass."
+  }
+ ],
+ "wrap": {
+  "from": "snehal",
+  "text": "Four points in the minutes and the register, and one filing that slipped. The circular resolution matters most: borrowing needs a Board meeting, however many directors approve it. The note goes to Mrunal tomorrow, MSME-1 first, as it is already late."
+ },
+ "wrapPartial": {
+  "from": "snehal",
+  "text": "Four points in the minutes and the register, and one filing that slipped past the tracker. I’ll go through the note with you tomorrow morning, before anything goes to Mrunal."
+ },
+ "wrapRetry": {
+  "from": "snehal",
+  "text": "This file is mostly dates and names. Count the days from each meeting to its entry in the book, and between meetings. Check who was present, who disclosed and what was decided without a meeting. Then test each form against this year’s facts, not last year’s list."
+ },
+ "model": {
+  "intro": "Four of the seven papers carry an exception: a disclosure missing at the first meeting of the year, minutes entered 42 days after the meeting, a borrowing approved by circular resolution, and a register entry one zero short. Of the nine forms, five fall due and four do not, and the MSME-1 for October to March was missed.",
+  "blocks": [
+   {
+    "type": "table",
+    "columns": [
+     {
+      "key": "paper",
+      "label": "The four exceptions"
+     },
+     {
+      "key": "found",
+      "label": "What we found"
+     },
+     {
+      "key": "next",
+      "label": "What happens next"
+     }
+    ],
+    "rows": [
+     {
+      "paper": "Meeting 91",
+      "found": "No MBP-1 from Nandini Krishnamurthy at the first meeting of 2026–27",
+      "next": "All four MBP-1s for 2027–28, hers included, on 18 May"
+     },
+     {
+      "paper": "Meeting 94",
+      "found": "Minutes entered on 24 December, 42 days after the meeting",
+      "next": "Minutes entered within 30 days from now on"
+     },
+     {
+      "paper": "Meeting 95",
+      "found": "₹18 crore cash-credit renewal approved by circular resolution on 22 December",
+      "next": "A resolution at the 18 May meeting"
+     },
+     {
+      "paper": "Register",
+      "found": "₹60,000 entered; the Board approved ₹6,00,000",
+      "next": "Correct it and place it before the Board on 18 May"
+     }
+    ]
+   },
+   {
+    "type": "list",
+    "label": "What only looks wrong",
+    "items": [
+     "Index: the longest gap between two meetings is 97 days, well inside 120.",
+     "Meeting 92: two of four directors, one on video, make a quorum, so term loan II was approved at a valid meeting.",
+     "Meeting 94, the architect’s contract: Sneha Joglekar disclosed her interest in it and left the room while it was decided, and no other director is interested."
+    ]
+   },
+   {
+    "type": "list",
+    "label": "What goes to Aditi for the accounts",
+    "items": [
+     "Meetings 92 and 93: term loan II, ₹1,00,00,000 sanctioned and the first ₹51,30,000 drawn on 20 July, to tie to the loan account.",
+     "Meeting 93: the CNC turning centre accepted after its trial run on 12 August, the evidence for when it was ready for use.",
+     "Meeting 94: Sneha Joglekar’s ₹6,00,000 contract, for the related-party list, though the work starts only after the 2027 monsoon.",
+     "Meeting 95, item 4: the ₹54,60,000 vertical machining centre, to check its invoice and when it was ready for use.",
+     "Meeting 95, item 8: what the Board decided on the E1093 payroll fraud we reported, for the fraud note and the recovery."
+    ]
+   },
+   {
+    "type": "table",
+    "columns": [
+     {
+      "key": "form",
+      "label": "The nine forms for 2026–27"
+     },
+     {
+      "key": "due",
+      "label": "Due or not"
+     },
+     {
+      "key": "when",
+      "label": "By when, or why not"
+     }
+    ],
+    "rows": [
+     {
+      "form": "AOC-4",
+      "due": "Due",
+      "when": "Within 30 days of the AGM of 28 September 2027"
+     },
+     {
+      "form": "MGT-7",
+      "due": "Due",
+      "when": "Within 60 days of the AGM"
+     },
+     {
+      "form": "DPT-3",
+      "due": "Due",
+      "when": "By 30 June 2027"
+     },
+     {
+      "form": "MSME-1",
+      "due": "Due",
+      "when": "By 30 April 2027: missed, file now"
+     },
+     {
+      "form": "PAS-6",
+      "due": "Due",
+      "when": "Within 60 days of the half-year’s end: by 30 May 2027"
+     },
+     {
+      "form": "MGT-7A",
+      "due": "Not due",
+      "when": "Only for small companies and one person companies"
+     },
+     {
+      "form": "ADT-1",
+      "due": "Not due",
+      "when": "Only on an appointment; ours runs to the 2028 AGM"
+     },
+     {
+      "form": "DIR-3 KYC",
+      "due": "Not due",
+      "when": "Once in three years now; next by 30 June 2028"
+     },
+     {
+      "form": "MGT-14",
+      "due": "Not due",
+      "when": "A private company does not file these Board resolutions"
+     }
+    ]
+   },
+   {
+    "type": "note",
+    "from": "snehal",
+    "text": "Read minutes twice: first for the law, then for the accounts, because a loan or a contract the Board approves has to show in the books or the notes."
+   }
+  ]
+ },
+ "principles": [
+  "Minutes are the evidence of what the Board decided. Read them for the law and for the accounts.",
+  "Borrowing, investing and approving the accounts count only when passed at a Board meeting; a circular resolution is not enough.",
+  "Roll last year’s filing list forward, but test every line against this year’s facts and today’s rules."
+ ],
+ "earned": {
+  "clause": "checked board minutes and a directors’ contracts register[[; flagged {found} {found|exception|exceptions} ({types})]][[; listed {due} ROC {due|filing|filings} due]]",
+  "counts": {
+   "found": {
+    "kind": "itemsWhere",
+    "task": "t1",
+    "field": "verdict",
+    "equals": "exception",
+    "withRight": "reasons"
+   },
+   "types": {
+    "kind": "tally",
+    "task": "t1",
+    "field": "reasons"
+   },
+   "due": {
+    "kind": "itemsWhere",
+    "task": "t2",
+    "field": "due",
+    "equals": "due",
+    "withRight": "when"
+   }
+  },
+  "fallback": "checked board minutes and a directors’ contracts register"
+ },
+ "interview": [
+  {
+   "q": "What do you look for when you read a company’s board minutes?",
+   "checking": "Whether you read minutes for the law and the accounts, or only look for signatures.",
+   "outline": [
+    "For the law: a quorum, no gap over 120 days, and borrowing passed at meetings, not by circulation.",
+    "For the accounts: the loans, contracts and commitments the Board approved, which the books or notes must show.",
+    "In the simulation I read five meetings and a register[[, and flagged {found} {found|exception|exceptions}]]."
+   ]
+  },
+  {
+   "q": "Which ROC filings does a private company make each year, and by when?",
+   "checking": "Whether you know the forms, what triggers each one, and the three-year KYC rule.",
+   "outline": [
+    "AOC-4 within 30 days of the AGM; MGT-7, or MGT-7A if small, within 60; DPT-3 by 30 June.",
+    "ADT-1 on appointment; DIR-3 KYC every three years; MSME-1 half-yearly for micro and small dues past 45 days.",
+    "In the simulation an MSME-1 was missed: only micro suppliers were checked, though small ones count too."
+   ]
+  }
+ ]
+}

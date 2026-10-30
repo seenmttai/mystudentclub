@@ -1,0 +1,4797 @@
+{
+ "id": "ia-1",
+ "domain": "internal-audit",
+ "number": 1,
+ "title": "Purchase-to-pay walkthrough",
+ "minutes": 40,
+ "learn": [
+  "How one purchase moves from indent to payment, control by control",
+  "How to test approval, three-⁠way match and GRN timing against a policy",
+  "How to write an observation: condition, criteria, cause, consequence, action"
+ ],
+ "do": [
+  "Walk one purchase end to end",
+  "Test 15 purchases and follow up a bank change",
+  "Write two observations for the draft report"
+ ],
+ "case": {
+  "role": "First-⁠year article assistant on the internal audit team",
+  "client": "Khamang Foods Private Limited, a Ranjangaon company that makes namkeen and chikki. Its board appointed our firm as internal auditor for 2026–27.",
+  "team": "Sameer Kulkarni (internal audit senior) and you; Ashwin Pradhan, the CFO, is the client contact",
+  "goal": "Test whether Khamang’s purchase controls worked this year, and give Sameer two observations for the draft report.",
+  "period": "1 April – 13 November 2026",
+  "where": "Accounts office, Ranjangaon plant · Tuesday 17 November 2026"
+ },
+ "brief": {
+  "from": "sameer",
+  "time": "9:35 am",
+  "messages": [
+   "Morning. P2P at Khamang today. Walk Shikrapur’s July box order end to end first, then test my 15 picks against their purchase policy.",
+   "The bank-⁠change log is in the pack too. Observations to me by 5, please: Ashwin wants the draft report this week."
+  ]
+ },
+ "documents": [
+  {
+   "id": "policy",
+   "type": "letter",
+   "style": "policy",
+   "title": "Purchase policy · extract",
+   "letterhead": "Khamang Foods Private Limited\nPlot E-14, Ranjangaon MIDC, Taluka Shirur, Pune 412220",
+   "subject": "Purchase policy (extract)",
+   "meta": [
+    {
+     "label": "Issued",
+     "value": "1 April 2025"
+    },
+    {
+     "label": "Owner",
+     "value": "CFO"
+    }
+   ],
+   "body": [
+    "## 1. Purchase orders",
+    "A purchase order (PO) is needed before any order is placed, except for emergency repairs below ₹10,000. Each PO is approved in the ERP as below:",
+    {
+     "table": {
+      "columns": [
+       {
+        "key": "v",
+        "label": "PO value (before GST)"
+       },
+       {
+        "key": "a",
+        "label": "Approved by"
+       }
+      ],
+      "rows": [
+       {
+        "v": "Up to ₹1,00,000",
+        "a": "Purchase Manager"
+       },
+       {
+        "v": "₹1,00,001 to ₹5,00,000",
+        "a": "Head, Supply Chain"
+       },
+       {
+        "v": "₹5,00,001 to ₹25,00,000",
+        "a": "CFO"
+       },
+       {
+        "v": "Above ₹25,00,000",
+        "a": "Managing Director"
+       }
+      ]
+     }
+    },
+    "A higher level may approve any PO within its own limit.",
+    "Splitting one requirement into several POs to stay within a lower approval limit is not allowed.",
+    "## 2. Quotations",
+    "Three quotations for any purchase above ₹50,000, unless the item is on an approved rate contract.",
+    "## 3. Receiving",
+    "Security logs every vehicle at the gate. Stores enter the GRN in the ERP within 24 hours of receipt, and QC records any rejection on it. Rejected goods go back against our debit note.",
+    "## 4. Three-⁠way match and payment",
+    "Payment only after a three-⁠way match: PO, GRN and invoice agree on quantity and rate (tolerance 2% on rate, 1% on quantity). For a service, the user department’s completion certificate takes the place of the GRN.",
+    "## 5. Vendor master",
+    "New vendors and any change in a vendor’s bank account need a request from Purchase, verification by Accounts (cancelled cheque or bank letter, and a call-⁠back to a known number) and CFO approval in the vendor-⁠master log."
+   ],
+   "sign": {
+    "name": "Ashwin Pradhan",
+    "role": "Chief Financial Officer",
+    "hand": "A. Pradhan"
+   }
+  },
+  {
+   "id": "po-register",
+   "type": "table",
+   "style": "register",
+   "title": "PO register · Sameer’s 15 picks",
+   "heading": "PO register (extract)",
+   "company": "Khamang Foods Private Limited",
+   "subtitle": "Sameer’s 15 picks from the ERP’s PO register (printed 17-11-2026), purchases of 1 April – 13 November 2026: high-⁠value orders, orders near an approval limit, price changes, a bill with no PO and a service.",
+   "columns": [
+    {
+     "key": "pick",
+     "label": "Pick"
+    },
+    {
+     "key": "indent",
+     "label": "Indent",
+     "mono": true
+    },
+    {
+     "key": "po",
+     "label": "PO no.",
+     "mono": true
+    },
+    {
+     "key": "date",
+     "label": "PO date"
+    },
+    {
+     "key": "vendor",
+     "label": "Vendor"
+    },
+    {
+     "key": "value",
+     "label": "PO value (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "appr",
+     "label": "Approved by"
+    }
+   ],
+   "rows": [
+    {
+     "pick": "1",
+     "po": "KF/PO/26-27/0318",
+     "date": "08-06-2026",
+     "vendor": "Lonand Masala",
+     "indent": "IND/26-27/0291",
+     "value": 67840.0,
+     "appr": "N. Bhosale"
+    },
+    {
+     "pick": "2",
+     "po": "KF/PO/26-27/0449",
+     "date": "06-07-2026",
+     "vendor": "Kesnand Peanuts",
+     "indent": "IND/26-27/0392",
+     "value": 784000.0,
+     "appr": "A. Pradhan"
+    },
+    {
+     "pick": "3",
+     "po": "KF/PO/26-27/0571",
+     "date": "03-08-2026",
+     "vendor": "Kedgaon Edible Oils",
+     "indent": "IND/26-27/0502",
+     "value": 1240000.0,
+     "appr": "A. Pradhan"
+    },
+    {
+     "pick": "4",
+     "po": "KF/PO/26-27/0597",
+     "date": "11-08-2026",
+     "vendor": "Lonikand Infosystems",
+     "indent": "IND/26-27/0511",
+     "value": 72000.0,
+     "appr": "K. Lokhande"
+    },
+    {
+     "pick": "5",
+     "po": "KF/PO/26-27/0643",
+     "date": "20-08-2026",
+     "vendor": "Yavat Sweeteners",
+     "indent": "IND/26-27/0523",
+     "value": 417000.0,
+     "appr": "K. Lokhande"
+    },
+    {
+     "pick": "6",
+     "po": "KF/PO/26-27/0702",
+     "date": "01-09-2026",
+     "vendor": "Kedgaon Edible Oils",
+     "indent": "IND/26-27/0566",
+     "value": 1260000.0,
+     "appr": "A. Pradhan"
+    },
+    {
+     "pick": "7",
+     "po": "KF/PO/26-27/0729",
+     "date": "08-09-2026",
+     "vendor": "Lonand Masala",
+     "indent": "IND/26-27/0588",
+     "value": 96600.0,
+     "appr": "N. Bhosale"
+    },
+    {
+     "pick": "8",
+     "po": "No PO",
+     "date": "–",
+     "vendor": "Sanaswadi Engineering",
+     "indent": "Emergency repair",
+     "appr": "–"
+    },
+    {
+     "pick": "9",
+     "po": "KF/PO/26-27/0855",
+     "date": "07-10-2026",
+     "vendor": "Kedgaon Edible Oils",
+     "indent": "IND/26-27/0647",
+     "value": 1250000.0,
+     "appr": "A. Pradhan"
+    },
+    {
+     "pick": "10",
+     "po": "KF/PO/26-27/0848",
+     "date": "06-10-2026",
+     "vendor": "Nhavare Packaging",
+     "indent": "IND/26-27/0641",
+     "value": 92000.0,
+     "appr": "N. Bhosale"
+    },
+    {
+     "pick": "11",
+     "po": "KF/PO/26-27/0867",
+     "date": "12-10-2026",
+     "vendor": "Uruli Flexipack",
+     "indent": "IND/26-27/0652",
+     "value": 127200.0,
+     "appr": "K. Lokhande"
+    },
+    {
+     "pick": "12",
+     "po": "KF/PO/25-26/2491",
+     "date": "28-03-2026",
+     "vendor": "Babhulsar Facility Services",
+     "indent": "Annual service order",
+     "value": 2352000.0,
+     "appr": "A. Pradhan"
+    },
+    {
+     "pick": "13",
+     "po": "KF/PO/26-27/0961",
+     "date": "04-11-2026",
+     "vendor": "Uruli Flexipack",
+     "indent": "IND/26-27/0714",
+     "value": 96000.0,
+     "appr": "N. Bhosale"
+    },
+    {
+     "pick": "14",
+     "po": "KF/PO/26-27/0962",
+     "date": "04-11-2026",
+     "vendor": "Uruli Flexipack",
+     "indent": "IND/26-27/0714",
+     "value": 98500.0,
+     "appr": "N. Bhosale"
+    },
+    {
+     "pick": "15",
+     "po": "KF/PO/26-27/0963",
+     "date": "04-11-2026",
+     "vendor": "Uruli Flexipack",
+     "indent": "IND/26-27/0714",
+     "value": 99200.0,
+     "appr": "N. Bhosale"
+    }
+   ],
+   "check": false,
+   "notes": [
+    "Approvers: N. Bhosale, Purchase Manager · K. Lokhande, Head, Supply Chain · A. Pradhan, CFO."
+   ]
+  },
+  {
+   "id": "wt-voucher",
+   "type": "table",
+   "style": "tally",
+   "title": "Walkthrough · Purchase voucher",
+   "tab": "Voucher",
+   "group": "wt",
+   "company": {
+    "name": "Khamang Foods Private Limited",
+    "address": "Ranjangaon, Pune · books for 2026–27"
+   },
+   "ledger": "Purchase Voucher No. PV/26-27/2214",
+   "subtitle": "Shikrapur Corrugated Boxes · bill SCB/1176 dated 14-07-2026",
+   "period": "Voucher date: 17-Jul-2026",
+   "columns": [
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "part": "Purchases – packing material",
+     "dr": 258000.0
+    },
+    {
+     "part": "Input CGST @ 2.5%",
+     "dr": 6450.0
+    },
+    {
+     "part": "Input SGST @ 2.5%",
+     "dr": 6450.0
+    },
+    {
+     "part": "Shikrapur Corrugated Boxes",
+     "cr": 270900.0
+    },
+    {
+     "_class": "total",
+     "part": "Total",
+     "dr": 270900.0,
+     "cr": 270900.0
+    }
+   ],
+   "notes": [
+    "Narration: matched with PO KF/PO/26-27/0455 and GRN/26-27/1929, 12,000 nos at ₹21.50. Entered by apexec01; passed by J. Pingle."
+   ]
+  },
+  {
+   "id": "wt-bill",
+   "type": "invoice",
+   "title": "Walkthrough · Tax invoice",
+   "tab": "Bill",
+   "group": "wt",
+   "supplier": {
+    "name": "Shikrapur Corrugated Boxes",
+    "address": "Gat No. 64, Chakan–Shikrapur Road\nShikrapur, Pune 412208",
+    "gstin": "27XIAFS9026A1ZE",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "XIAFS9026A"
+   },
+   "buyer": {
+    "name": "Khamang Foods Private Limited",
+    "address": "Plot E-14, Ranjangaon MIDC\nTaluka Shirur, Pune 412220",
+    "gstin": "27ZMSCK1510T1ZG",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "SCB/1176",
+   "date": "14-07-2026",
+   "copy": "Original for recipient",
+   "paymentTerms": "45 days",
+   "poRef": "KF/PO/26-27/0455",
+   "poDate": "08-07-2026",
+   "dispatchDoc": "DC 0442",
+   "dispatchedThrough": "Road",
+   "destination": "Ranjangaon",
+   "vehicle": "MH 12 QT 4418",
+   "placeOfSupply": "Maharashtra (27)",
+   "lines": [
+    {
+     "desc": "5-ply corrugated box, 600 × 400 × 300 mm",
+     "hsn": "4819 10",
+     "qty": 12000,
+     "unit": "nos",
+     "rate": 21.5,
+     "taxable": 258000.0,
+     "gstRate": 5
+    }
+   ],
+   "tax": "intra",
+   "total": 270900.0,
+   "bank": {
+    "name": "Narmada Valley Bank Ltd",
+    "account": "31200000044016",
+    "branch": "Shikrapur",
+    "ifsc": "NMVB0001105"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Subject to Pune jurisdiction."
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "GATE INWARD\nGE 1951\n15 JUL 2026 · 10:05",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": -4
+    },
+    {
+     "kind": "stamp",
+     "text": "PASSED FOR PAYMENT\n₹2,70,900\nJ.P. · 17/07",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": 3
+    },
+    {
+     "kind": "hand",
+     "text": "Paid by NEFT on 28/08/2026 – J.P.",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -2
+    }
+   ]
+  },
+  {
+   "id": "wt-po",
+   "type": "po",
+   "title": "Walkthrough · Purchase order",
+   "tab": "PO",
+   "group": "wt",
+   "company": {
+    "name": "Khamang Foods Private Limited",
+    "address": "Plot E-14, Ranjangaon MIDC, Taluka Shirur, Pune 412220",
+    "gstin": "27ZMSCK1510T1ZG",
+    "cin": "U10799MH2001PTC991797"
+   },
+   "number": "KF/PO/26-27/0455",
+   "date": "08-07-2026",
+   "vendor": {
+    "name": "Shikrapur Corrugated Boxes",
+    "address": "Gat No. 64, Chakan–Shikrapur Road, Shikrapur, Pune 412208",
+    "gstin": "27XIAFS9026A1ZE"
+   },
+   "deliveryBy": "15-07-2026",
+   "deliverTo": "Packing material stores, Ranjangaon plant",
+   "paymentTerms": "45 days",
+   "quoteRef": "Quotation comparison QC/26-27/0034",
+   "intro": "Against our indent IND/26-27/0388. Please supply the following as per the terms below.",
+   "lines": [
+    {
+     "desc": "5-ply corrugated box, 600 × 400 × 300 mm",
+     "qty": 12000,
+     "unit": "nos",
+     "rate": 21.5
+    }
+   ],
+   "taxNote": "Prices exclusive of GST. GST @ 5% (CGST 2.5% + SGST 2.5%) extra.",
+   "terms": [
+    "Delivery at our Ranjangaon plant, freight included.",
+    "Quote this PO number on your invoice and delivery challan.",
+    "Goods are subject to our weighment and QC. We pay for the quantity accepted.",
+    "Rates are firm for this order. Any change needs our written amendment.",
+    "Payment: 45 days from receipt of goods and invoice.",
+    "This order is approved in our ERP and carries no signature."
+   ],
+   "preparedBy": {
+    "name": "Yogesh Narwade, Purchase Executive",
+    "sign": ""
+   },
+   "preparedDate": "08-07-2026",
+   "approvedBy": {
+    "name": "Kavita Lokhande, Head – Supply Chain",
+    "sign": ""
+   },
+   "approvalDate": "08-07-2026 10:20"
+  },
+  {
+   "id": "wt-grn",
+   "type": "grn",
+   "title": "Walkthrough · Goods receipt note",
+   "tab": "GRN",
+   "group": "wt",
+   "company": {
+    "name": "Khamang Foods Private Limited"
+   },
+   "number": "GRN/26-27/1929",
+   "date": "15-07-2026 15:30",
+   "unit": "Packing material stores, Ranjangaon",
+   "vendor": "Shikrapur Corrugated Boxes",
+   "poRef": "KF/PO/26-27/0455",
+   "invoiceRef": "SCB/1176 dt 14.07.2026",
+   "challan": "DC 0442",
+   "vehicle": "MH 12 QT 4418",
+   "lines": [
+    {
+     "desc": "5-ply corrugated box, 600 × 400 × 300 mm",
+     "unit": "nos",
+     "qtyChallan": 12000,
+     "qtyReceived": 12000,
+     "qtyAccepted": 12000,
+     "qtyRejected": 0,
+     "remark": "240 bundles of 50"
+    }
+   ],
+   "receivedBy": "Mahendra Kharat",
+   "receivedSign": "Mahendra K.",
+   "qcBy": "Swati Jagtap",
+   "qcSign": "S. Jagtap",
+   "remarks": "QC sample of 20 boxes: size and burst strength OK."
+  },
+  {
+   "id": "wt-gate",
+   "type": "card",
+   "style": "slip",
+   "title": "Walkthrough · Gate slip",
+   "tab": "Gate slip",
+   "group": "wt",
+   "issuer": "Khamang Foods Private Limited · Main gate, Ranjangaon",
+   "heading": "Gate inward slip",
+   "number": "GE/26-27/1951",
+   "handwritten": true,
+   "fields": [
+    {
+     "label": "Date and time",
+     "value": "15-07-2026, 10:05"
+    },
+    {
+     "label": "Vehicle",
+     "value": "MH 12 QT 4418"
+    },
+    {
+     "label": "From",
+     "value": "Shikrapur Corrugated Boxes"
+    },
+    {
+     "label": "Papers",
+     "value": "Bill SCB/1176, challan DC 0442"
+    },
+    {
+     "label": "Material",
+     "value": "Corrugated boxes, 240 bundles"
+    },
+    {
+     "label": "Sent to",
+     "value": "Packing material stores"
+    },
+    {
+     "label": "Guard on duty",
+     "value": "R. Shinde"
+    }
+   ]
+  },
+  {
+   "id": "wt-pay",
+   "type": "table",
+   "style": "bank",
+   "title": "Walkthrough · Payment batch",
+   "tab": "Payment",
+   "group": "wt",
+   "kindLabel": "Net banking print",
+   "brand": "Narmada Valley Bank Ltd",
+   "docName": "Bulk payment report",
+   "subtitle": "Khamang Foods Private Limited · current account ending 3381 · batch of Friday 28-08-2026 (extract)",
+   "meta": [
+    {
+     "label": "Prepared by",
+     "value": "apexec01"
+    },
+    {
+     "label": "Released by",
+     "value": "jpingle (J. Pingle)"
+    },
+    {
+     "label": "Authorised by",
+     "value": "apradhan (A. Pradhan)"
+    }
+   ],
+   "columns": [
+    {
+     "key": "ben",
+     "label": "Beneficiary"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "acc",
+     "label": "Account no.",
+     "mono": true
+    },
+    {
+     "key": "ifsc",
+     "label": "IFSC",
+     "mono": true
+    },
+    {
+     "key": "bills",
+     "label": "Bills"
+    },
+    {
+     "key": "utr",
+     "label": "UTR",
+     "mono": true
+    }
+   ],
+   "rows": [
+    {
+     "ben": "Shikrapur Corrugated Boxes",
+     "acc": "31200000044016",
+     "ifsc": "NMVB0001105",
+     "bills": "SCB/1176",
+     "amt": 270900.0,
+     "utr": "NMVBN13289282847"
+    },
+    {
+     "ben": "Supe Besan Udyog",
+     "acc": "31200000020259",
+     "ifsc": "NMVB0001102",
+     "bills": "SBU/26-27/0311",
+     "amt": 312480.0,
+     "utr": "NMVBN06570957119"
+    },
+    {
+     "ben": "Karegaon Transport Company",
+     "acc": "31200000051935",
+     "ifsc": "NMVB0001106",
+     "bills": "KTC/0587, KTC/0594",
+     "amt": 126350.0,
+     "utr": "NMVBN21720181382"
+    },
+    {
+     "_class": "total",
+     "ben": "Total, 28 Aug batch",
+     "amt": 709730.0
+    }
+   ],
+   "footnote": "Printed from corporate net banking. Each batch needs a release and an authorisation."
+  },
+  {
+   "id": "wt-quotes",
+   "type": "table",
+   "style": "sheet",
+   "title": "Walkthrough · Quotation comparison",
+   "tab": "Quotes",
+   "group": "wt",
+   "heading": "Quotation comparison QC/26-27/0034",
+   "sheetName": "QC-0034",
+   "formula": "=B2*12000",
+   "columns": [
+    {
+     "key": "v",
+     "label": "Vendor"
+    },
+    {
+     "key": "rate",
+     "label": "Rate per box (₹)",
+     "format": "num"
+    },
+    {
+     "key": "days",
+     "label": "Delivery (days)",
+     "format": "int"
+    },
+    {
+     "key": "pay",
+     "label": "Payment (days)",
+     "format": "int"
+    },
+    {
+     "key": "frt",
+     "label": "Freight"
+    },
+    {
+     "key": "val",
+     "label": "Value, 12,000 boxes (₹)",
+     "format": "num"
+    },
+    {
+     "key": "rank",
+     "label": "Rank"
+    }
+   ],
+   "rows": [
+    {
+     "v": "Shikrapur Corrugated Boxes",
+     "rate": 21.5,
+     "days": 7,
+     "pay": 45,
+     "frt": "Included",
+     "val": 258000.0,
+     "rank": "L1"
+    },
+    {
+     "v": "Moshi Corrugators",
+     "rate": 22.4,
+     "days": 10,
+     "pay": 30,
+     "frt": "Included",
+     "val": 268800.0,
+     "rank": "L2"
+    },
+    {
+     "v": "Nhavare Packaging Industries",
+     "rate": 22.9,
+     "days": 7,
+     "pay": 45,
+     "frt": "Extra",
+     "val": 274800.0,
+     "rank": "L3"
+    }
+   ],
+   "check": false,
+   "notes": [
+    "Prepared by Yogesh Narwade on 06-07-2026 against indent IND/26-27/0388.",
+    "Recommended: L1, Shikrapur Corrugated Boxes. – N. Bhosale, 06-07-2026"
+   ]
+  },
+  {
+   "id": "wt-indent",
+   "type": "card",
+   "style": "slip",
+   "title": "Walkthrough · Indent",
+   "tab": "Indent",
+   "group": "wt",
+   "issuer": "Khamang Foods Private Limited · Ranjangaon plant",
+   "heading": "Material indent",
+   "number": "IND/26-27/0388",
+   "handwritten": true,
+   "fields": [
+    {
+     "label": "Date",
+     "value": "03-07-2026"
+    },
+    {
+     "label": "Department",
+     "value": "Packing"
+    },
+    {
+     "label": "Item",
+     "value": "5-ply corrugated box, 600 × 400 × 300 mm (5 kg farsan carton)"
+    },
+    {
+     "label": "Quantity",
+     "value": "12,000 nos"
+    },
+    {
+     "label": "Required by",
+     "value": "15-07-2026"
+    },
+    {
+     "label": "Stock in hand",
+     "value": "1,850 nos (about 12 days)"
+    },
+    {
+     "label": "Raised by",
+     "value": "R. Kolte, Packing in-⁠charge"
+    },
+    {
+     "label": "Approved (HOD)",
+     "value": "S. Jadhav, Production Manager · 03-07-2026"
+    }
+   ]
+  },
+  {
+   "id": "inv-01",
+   "type": "invoice",
+   "title": "Purchase 1 · Tax invoice",
+   "tab": "Bill",
+   "group": "p01",
+   "supplier": {
+    "name": "Lonand Masala Products",
+    "address": "Plot 22, Lonand MIDC\nLonand, Taluka Khandala, District Satara",
+    "gstin": "27ZTYPD9579U1Z9",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "ZTYPD9579U"
+   },
+   "buyer": {
+    "name": "Khamang Foods Private Limited",
+    "address": "Plot E-14, Ranjangaon MIDC\nTaluka Shirur, Pune 412220",
+    "gstin": "27ZMSCK1510T1ZG",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "LMP/26-27/0147",
+   "date": "11-06-2026",
+   "copy": "Original for recipient",
+   "paymentTerms": "30 days",
+   "placeOfSupply": "Maharashtra (27)",
+   "lines": [
+    {
+     "desc": "Red chilli powder (Byadgi blend)",
+     "hsn": "0904 22",
+     "qty": 200,
+     "unit": "kg",
+     "rate": 236.0,
+     "taxable": 47200.0,
+     "gstRate": 5
+    },
+    {
+     "desc": "Turmeric powder",
+     "hsn": "0910 30",
+     "qty": 120,
+     "unit": "kg",
+     "rate": 172.0,
+     "taxable": 20640.0,
+     "gstRate": 5
+    }
+   ],
+   "tax": "intra",
+   "total": 71232.0,
+   "bank": {
+    "name": "Satpura Bank Ltd",
+    "account": "31200000028178",
+    "branch": "Lonand",
+    "ifsc": "STPB0001103"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Subject to Satara jurisdiction."
+   ],
+   "poRef": "KF/PO/26-27/0318",
+   "poDate": "08-06-2026",
+   "vehicle": "MH 12 HB 4127",
+   "dispatchDoc": "DC 0611",
+   "dispatchedThrough": "Road",
+   "destination": "Ranjangaon",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "GATE INWARD\nGE 1306\n11 JUN 2026 · 14:10",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": -4
+    },
+    {
+     "kind": "stamp",
+     "text": "PASSED FOR PAYMENT\n₹71,232\nJ.P. · 15/06",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": 3
+    },
+    {
+     "kind": "hand",
+     "text": "Paid by NEFT on 10/07/2026 – J.P.",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -2
+    }
+   ]
+  },
+  {
+   "id": "po-01",
+   "type": "po",
+   "title": "Purchase 1 · Purchase order",
+   "tab": "PO",
+   "group": "p01",
+   "company": {
+    "name": "Khamang Foods Private Limited",
+    "address": "Plot E-14, Ranjangaon MIDC, Taluka Shirur, Pune 412220",
+    "gstin": "27ZMSCK1510T1ZG",
+    "cin": "U10799MH2001PTC991797"
+   },
+   "number": "KF/PO/26-27/0318",
+   "date": "08-06-2026",
+   "vendor": {
+    "name": "Lonand Masala Products",
+    "address": "Plot 22, Lonand MIDC, Lonand, Taluka Khandala, District Satara",
+    "gstin": "27ZTYPD9579U1Z9"
+   },
+   "deliverTo": "Stores, Ranjangaon plant",
+   "paymentTerms": "30 days",
+   "quoteRef": "Rate contract RC/26-27/04 (spices, April–September)",
+   "intro": "Against our indent IND/26-27/0291. Please supply the following as per the terms below.",
+   "lines": [
+    {
+     "desc": "Red chilli powder (Byadgi blend), 25 kg bags",
+     "qty": 200,
+     "unit": "kg",
+     "rate": 236.0
+    },
+    {
+     "desc": "Turmeric powder, 25 kg bags",
+     "qty": 120,
+     "unit": "kg",
+     "rate": 172.0
+    }
+   ],
+   "taxNote": "Prices exclusive of GST. GST @ 5% (CGST 2.5% + SGST 2.5%) extra.",
+   "terms": [
+    "Delivery at our Ranjangaon plant, freight included.",
+    "Quote this PO number on your invoice and delivery challan.",
+    "Goods are subject to our weighment and QC. We pay for the quantity accepted.",
+    "Rates are firm for this order. Any change needs our written amendment.",
+    "Payment: 30 days from receipt of goods and invoice.",
+    "This order is approved in our ERP and carries no signature."
+   ],
+   "preparedBy": {
+    "name": "Yogesh Narwade, Purchase Executive",
+    "sign": ""
+   },
+   "preparedDate": "08-06-2026",
+   "approvedBy": {
+    "name": "Nitin Bhosale, Purchase Manager",
+    "sign": ""
+   },
+   "approvalDate": "08-06-2026 17:05",
+   "deliveryBy": "11-06-2026"
+  },
+  {
+   "id": "grn-01",
+   "type": "grn",
+   "title": "Purchase 1 · Goods receipt note",
+   "tab": "GRN",
+   "group": "p01",
+   "company": {
+    "name": "Khamang Foods Private Limited"
+   },
+   "number": "GRN/26-27/1288",
+   "date": "11-06-2026 16:20",
+   "unit": "Raw material stores, Ranjangaon",
+   "vendor": "Lonand Masala Products",
+   "poRef": "KF/PO/26-27/0318",
+   "invoiceRef": "LMP/26-27/0147 dt 11.06.2026",
+   "challan": "DC 0611",
+   "vehicle": "MH 12 HB 4127",
+   "lines": [
+    {
+     "desc": "Red chilli powder (Byadgi blend)",
+     "unit": "kg",
+     "qtyChallan": 200,
+     "qtyReceived": 200,
+     "qtyAccepted": 200,
+     "qtyRejected": 0,
+     "remark": ""
+    },
+    {
+     "desc": "Turmeric powder",
+     "unit": "kg",
+     "qtyChallan": 120,
+     "qtyReceived": 120,
+     "qtyAccepted": 120,
+     "qtyRejected": 0,
+     "remark": ""
+    }
+   ],
+   "receivedBy": "Sachin Dhumal",
+   "receivedSign": "Sachin D.",
+   "remarks": "Moisture and colour checked by QC. OK.",
+   "qcBy": "Swati Jagtap",
+   "qcSign": "S. Jagtap"
+  },
+  {
+   "id": "inv-02",
+   "type": "invoice",
+   "title": "Purchase 2 · Tax invoice",
+   "tab": "Bill",
+   "group": "p02",
+   "supplier": {
+    "name": "Kesnand Peanuts Traders",
+    "address": "Gat No. 418, Kesnand Phata\nKesnand, Taluka Haveli, District Pune",
+    "gstin": "27YXCPH9031A1ZA",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "YXCPH9031A"
+   },
+   "buyer": {
+    "name": "Khamang Foods Private Limited",
+    "address": "Plot E-14, Ranjangaon MIDC\nTaluka Shirur, Pune 412220",
+    "gstin": "27ZMSCK1510T1ZG",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "KPT/0389",
+   "date": "13.07.2026",
+   "copy": "Original for recipient",
+   "paymentTerms": "30 days",
+   "placeOfSupply": "Maharashtra (27)",
+   "lines": [
+    {
+     "desc": "Groundnut kernels, bold (160 bags × 50 kg)",
+     "hsn": "1202 42",
+     "qty": 8000,
+     "unit": "kg",
+     "rate": 98.0,
+     "taxable": 784000.0,
+     "gstRate": 5
+    }
+   ],
+   "tax": "intra",
+   "total": 823200.0,
+   "bank": {
+    "name": "Narmada Valley Bank Ltd",
+    "account": "31200000075692",
+    "branch": "Wagholi",
+    "ifsc": "NMVB0001109"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Subject to Pune jurisdiction."
+   ],
+   "style": "dot",
+   "poRef": "KF/PO/26-27/0449",
+   "poDate": "06-07-2026",
+   "vehicle": "MH 12 KN 8823",
+   "dispatchDoc": "DC 2291",
+   "dispatchedThrough": "Road",
+   "destination": "Ranjangaon",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "GATE INWARD\nGE 1913\n13 JUL 2026 · 16:35",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": -4
+    },
+    {
+     "kind": "stamp",
+     "text": "PASSED FOR PAYMENT\n₹7,97,475 (NET)\nJ.P. · 16/07",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": 3
+    },
+    {
+     "kind": "hand",
+     "text": "Less DN 0058, ₹25,725 (250 kg rejected).",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -2
+    },
+    {
+     "kind": "hand",
+     "text": "Paid by NEFT on 14/08/2026 – J.P.",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -2
+    }
+   ]
+  },
+  {
+   "id": "po-02",
+   "type": "po",
+   "title": "Purchase 2 · Purchase order",
+   "tab": "PO",
+   "group": "p02",
+   "company": {
+    "name": "Khamang Foods Private Limited",
+    "address": "Plot E-14, Ranjangaon MIDC, Taluka Shirur, Pune 412220",
+    "gstin": "27ZMSCK1510T1ZG",
+    "cin": "U10799MH2001PTC991797"
+   },
+   "number": "KF/PO/26-27/0449",
+   "date": "06-07-2026",
+   "vendor": {
+    "name": "Kesnand Peanuts Traders",
+    "address": "Gat No. 418, Kesnand Phata, Kesnand, Taluka Haveli, District Pune",
+    "gstin": "27YXCPH9031A1ZA"
+   },
+   "deliverTo": "Stores, Ranjangaon plant",
+   "paymentTerms": "30 days",
+   "quoteRef": "Quotation comparison QC/26-27/0031",
+   "intro": "Against our indent IND/26-27/0392. Please supply the following as per the terms below.",
+   "lines": [
+    {
+     "desc": "Groundnut kernels, bold, 50 kg bags",
+     "qty": 8000,
+     "unit": "kg",
+     "rate": 98.0
+    }
+   ],
+   "taxNote": "Prices exclusive of GST. GST @ 5% (CGST 2.5% + SGST 2.5%) extra.",
+   "terms": [
+    "Delivery at our Ranjangaon plant, freight included.",
+    "Quote this PO number on your invoice and delivery challan.",
+    "Goods are subject to our weighment and QC. We pay for the quantity accepted.",
+    "Rates are firm for this order. Any change needs our written amendment.",
+    "Payment: 30 days from receipt of goods and invoice.",
+    "This order is approved in our ERP and carries no signature."
+   ],
+   "preparedBy": {
+    "name": "Yogesh Narwade, Purchase Executive",
+    "sign": ""
+   },
+   "preparedDate": "06-07-2026",
+   "approvedBy": {
+    "name": "Ashwin Pradhan, CFO",
+    "sign": ""
+   },
+   "approvalDate": "07-07-2026 11:40",
+   "deliveryBy": "13-07-2026"
+  },
+  {
+   "id": "grn-02",
+   "type": "grn",
+   "title": "Purchase 2 · Goods receipt note",
+   "tab": "GRN",
+   "group": "p02",
+   "company": {
+    "name": "Khamang Foods Private Limited"
+   },
+   "number": "GRN/26-27/1890",
+   "date": "13-07-2026 18:10",
+   "unit": "Raw material stores, Ranjangaon",
+   "vendor": "Kesnand Peanuts Traders",
+   "poRef": "KF/PO/26-27/0449",
+   "invoiceRef": "KPT/0389 dt 13.07.2026",
+   "challan": "DC 2291",
+   "vehicle": "MH 12 KN 8823",
+   "lines": [
+    {
+     "desc": "Groundnut kernels, bold (160 bags × 50 kg)",
+     "unit": "kg",
+     "qtyChallan": 8000,
+     "qtyReceived": 8000,
+     "qtyAccepted": 7750,
+     "qtyRejected": 250,
+     "remark": "Mould in 5 bags"
+    }
+   ],
+   "receivedBy": "Sachin Dhumal",
+   "receivedSign": "Sachin D.",
+   "remarks": "5 bags (250 kg) rejected for mould and sent back on the same truck. Debit note to follow.",
+   "qcBy": "Swati Jagtap",
+   "qcSign": "S. Jagtap"
+  },
+  {
+   "id": "dn-02",
+   "type": "letter",
+   "style": "letter",
+   "title": "Purchase 2 · Debit note",
+   "tab": "Debit note",
+   "group": "p02",
+   "letterhead": {
+    "name": "Khamang Foods Private Limited",
+    "address": "Plot E-14, Ranjangaon MIDC, Taluka Shirur, Pune 412220",
+    "gstin": "27ZMSCK1510T1ZG"
+   },
+   "ref": "Debit Note No. KF/DN/26-27/0058",
+   "date": "15-07-2026",
+   "to": {
+    "name": "Kesnand Peanuts Traders (Prop. Datta Harpale)",
+    "address": "Gat No. 418, Kesnand Phata, Kesnand, Taluka Haveli, District Pune"
+   },
+   "subject": "Debit note against your bill KPT/0389 dated 13-07-2026",
+   "body": [
+    "Our QC rejected the kernels below on arrival (GRN/26-27/1890 of 13-07-2026), and they went back on your vehicle the same day. We have debited your account as under.",
+    {
+     "table": {
+      "columns": [
+       {
+        "key": "p",
+        "label": "Particulars"
+       },
+       {
+        "key": "q",
+        "label": "Qty (kg)",
+        "format": "int"
+       },
+       {
+        "key": "r",
+        "label": "Rate (₹)",
+        "format": "inr"
+       },
+       {
+        "key": "a",
+        "label": "Amount (₹)",
+        "format": "inr"
+       }
+      ],
+      "rows": [
+       {
+        "p": "Groundnut kernels, bold (rejected: mould)",
+        "q": 250,
+        "r": 98,
+        "a": 24500.0
+       },
+       {
+        "p": "CGST @ 2.5%",
+        "a": 612.5
+       },
+       {
+        "p": "SGST @ 2.5%",
+        "a": 612.5
+       },
+       {
+        "p": "Total",
+        "a": 25725.0,
+        "_class": "total"
+       }
+      ]
+     }
+    },
+    "Please adjust it against your bill. We will pay the balance when it falls due."
+   ],
+   "sign": {
+    "closing": "Yours faithfully",
+    "for": "Khamang Foods Private Limited",
+    "name": "Jyoti Pingle",
+    "role": "Accounts Payable Lead",
+    "hand": "Jyoti P."
+   }
+  },
+  {
+   "id": "inv-03",
+   "type": "invoice",
+   "title": "Purchase 3 · Tax invoice",
+   "tab": "Bill",
+   "group": "p03",
+   "supplier": {
+    "name": "Kedgaon Edible Oils Private Limited",
+    "address": "Gat No. 311, Kedgaon–Chaufula Road\nKedgaon, Taluka Daund, District Pune",
+    "gstin": "27YFFCK0914R1Z7",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "YFFCK0914R"
+   },
+   "buyer": {
+    "name": "Khamang Foods Private Limited",
+    "address": "Plot E-14, Ranjangaon MIDC\nTaluka Shirur, Pune 412220",
+    "gstin": "27ZMSCK1510T1ZG",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "KEO/0716",
+   "date": "07-08-2026",
+   "copy": "Original for recipient",
+   "paymentTerms": "15 days",
+   "placeOfSupply": "Maharashtra (27)",
+   "lines": [
+    {
+     "desc": "Refined palmolein (tanker)",
+     "hsn": "1511 90",
+     "qty": 10000,
+     "unit": "kg",
+     "rate": 124.0,
+     "taxable": 1240000.0,
+     "gstRate": 5
+    }
+   ],
+   "tax": "intra",
+   "total": 1302000.0,
+   "bank": {
+    "name": "Narmada Valley Bank Ltd",
+    "account": "31200000012340",
+    "branch": "Daund",
+    "ifsc": "NMVB0001101"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Subject to Pune jurisdiction."
+   ],
+   "style": "erp",
+   "poRef": "KF/PO/26-27/0571",
+   "poDate": "03-08-2026",
+   "vehicle": "MH 12 RT 5530",
+   "dispatchDoc": "DC KEO/D/0716",
+   "dispatchedThrough": "Road",
+   "destination": "Ranjangaon",
+   "irn": "4cca4b1148fca17ec03bb8ca0a2c9a17307e35c92a43d7b764d746e81e0a08c6",
+   "ackNo": "112658482933300",
+   "ackDate": "07-08-2026",
+   "footer": "This is a computer generated invoice and needs no signature.",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "GATE INWARD\nGE 2391\n07 AUG 2026 · 15:20",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": -4
+    },
+    {
+     "kind": "stamp",
+     "text": "PASSED FOR PAYMENT\n₹13,02,000\nJ.P. · 11/08",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": 3
+    },
+    {
+     "kind": "hand",
+     "text": "Paid by NEFT on 21/08/2026 – J.P.",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -2
+    }
+   ]
+  },
+  {
+   "id": "po-03",
+   "type": "po",
+   "title": "Purchase 3 · Purchase order",
+   "tab": "PO",
+   "group": "p03",
+   "company": {
+    "name": "Khamang Foods Private Limited",
+    "address": "Plot E-14, Ranjangaon MIDC, Taluka Shirur, Pune 412220",
+    "gstin": "27ZMSCK1510T1ZG",
+    "cin": "U10799MH2001PTC991797"
+   },
+   "number": "KF/PO/26-27/0571",
+   "date": "03-08-2026",
+   "vendor": {
+    "name": "Kedgaon Edible Oils Private Limited",
+    "address": "Gat No. 311, Kedgaon–Chaufula Road, Kedgaon, Taluka Daund, District Pune",
+    "gstin": "27YFFCK0914R1Z7"
+   },
+   "deliverTo": "Stores, Ranjangaon plant",
+   "paymentTerms": "15 days",
+   "quoteRef": "Rate contract RC/26-27/02 (palmolein, August price)",
+   "intro": "Against our indent IND/26-27/0502. Please supply the following as per the terms below.",
+   "lines": [
+    {
+     "desc": "Refined palmolein, in tanker",
+     "qty": 10000,
+     "unit": "kg",
+     "rate": 124.0
+    }
+   ],
+   "taxNote": "Prices exclusive of GST. GST @ 5% (CGST 2.5% + SGST 2.5%) extra.",
+   "terms": [
+    "Delivery at our Ranjangaon plant, freight included.",
+    "Quote this PO number on your invoice and delivery challan.",
+    "Goods are subject to our weighment and QC. We pay for the quantity accepted.",
+    "Rates are firm for this order. Any change needs our written amendment.",
+    "Payment: 15 days from receipt of goods and invoice.",
+    "This order is approved in our ERP and carries no signature."
+   ],
+   "preparedBy": {
+    "name": "Yogesh Narwade, Purchase Executive",
+    "sign": ""
+   },
+   "preparedDate": "03-08-2026",
+   "approvedBy": {
+    "name": "Ashwin Pradhan, CFO",
+    "sign": ""
+   },
+   "approvalDate": "03-08-2026 12:15",
+   "deliveryBy": "07-08-2026"
+  },
+  {
+   "id": "grn-03",
+   "type": "grn",
+   "title": "Purchase 3 · Goods receipt note",
+   "tab": "GRN",
+   "group": "p03",
+   "company": {
+    "name": "Khamang Foods Private Limited"
+   },
+   "number": "GRN/26-27/2368",
+   "date": "07-08-2026 17:45",
+   "unit": "Raw material stores, Ranjangaon",
+   "vendor": "Kedgaon Edible Oils Private Limited",
+   "poRef": "KF/PO/26-27/0571",
+   "invoiceRef": "KEO/0716 dt 07.08.2026",
+   "challan": "DC KEO/D/0716",
+   "vehicle": "MH 12 RT 5530",
+   "lines": [
+    {
+     "desc": "Refined palmolein (tanker)",
+     "unit": "kg",
+     "qtyChallan": 10000,
+     "qtyReceived": 9640,
+     "qtyAccepted": 9640,
+     "qtyRejected": 0,
+     "remark": "Weighbridge net"
+    }
+   ],
+   "receivedBy": "Sachin Dhumal",
+   "receivedSign": "Sachin D.",
+   "remarks": "Weighbridge slip WB/26-27/1417: gross 26,180 kg, tare 16,540 kg, net 9,640 kg. Quality OK.",
+   "qcBy": "Swati Jagtap",
+   "qcSign": "S. Jagtap"
+  },
+  {
+   "id": "inv-04",
+   "type": "invoice",
+   "title": "Purchase 4 · Tax invoice",
+   "tab": "Bill",
+   "group": "p04",
+   "supplier": {
+    "name": "Lonikand Infosystems Private Limited",
+    "address": "Office 12, Lonikand Business Park\nLonikand, Taluka Haveli, District Pune",
+    "gstin": "27XQCCL0204W1ZM",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "XQCCL0204W"
+   },
+   "buyer": {
+    "name": "Khamang Foods Private Limited",
+    "address": "Plot E-14, Ranjangaon MIDC\nTaluka Shirur, Pune 412220",
+    "gstin": "27ZMSCK1510T1ZG",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "LIS/26-27/0544",
+   "date": "17-08-2026",
+   "copy": "Original for recipient",
+   "paymentTerms": "30 days",
+   "placeOfSupply": "Maharashtra (27)",
+   "lines": [
+    {
+     "desc": "Laptop, 14 inch, i5, 16 GB RAM, 512 GB SSD",
+     "hsn": "8471 30",
+     "qty": 1,
+     "unit": "nos",
+     "rate": 66500.0,
+     "taxable": 66500.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "USB-C docking station",
+     "hsn": "8471 80",
+     "qty": 1,
+     "unit": "nos",
+     "rate": 5500.0,
+     "taxable": 5500.0,
+     "gstRate": 18
+    }
+   ],
+   "tax": "intra",
+   "total": 84960.0,
+   "bank": {
+    "name": "Narmada Valley Bank Ltd",
+    "account": "31200000131125",
+    "branch": "Kharadi",
+    "ifsc": "NMVB0001116"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Subject to Pune jurisdiction."
+   ],
+   "style": "erp",
+   "poRef": "KF/PO/26-27/0597",
+   "poDate": "11-08-2026",
+   "vehicle": "MH 12 VF 2290",
+   "dispatchDoc": "DC 1180",
+   "dispatchedThrough": "Road",
+   "destination": "Ranjangaon",
+   "irn": "ac99e653fbf963789a67fd56e7d317a1f113711dcc872563b9d9b2f44954dfe3",
+   "ackNo": "112603022951428",
+   "ackDate": "17-08-2026",
+   "footer": "This is a computer generated invoice and needs no signature.",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "GATE INWARD\nGE 2583\n17 AUG 2026 · 11:50",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": -4
+    },
+    {
+     "kind": "stamp",
+     "text": "PASSED FOR PAYMENT\n₹84,960\nJ.P. · 20/08",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": 3
+    },
+    {
+     "kind": "hand",
+     "text": "Paid by NEFT on 18/09/2026 – J.P.",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -2
+    }
+   ]
+  },
+  {
+   "id": "po-04",
+   "type": "po",
+   "title": "Purchase 4 · Purchase order",
+   "tab": "PO",
+   "group": "p04",
+   "company": {
+    "name": "Khamang Foods Private Limited",
+    "address": "Plot E-14, Ranjangaon MIDC, Taluka Shirur, Pune 412220",
+    "gstin": "27ZMSCK1510T1ZG",
+    "cin": "U10799MH2001PTC991797"
+   },
+   "number": "KF/PO/26-27/0597",
+   "date": "11-08-2026",
+   "vendor": {
+    "name": "Lonikand Infosystems Private Limited",
+    "address": "Office 12, Lonikand Business Park, Lonikand, Taluka Haveli, District Pune",
+    "gstin": "27XQCCL0204W1ZM"
+   },
+   "deliverTo": "Stores, Ranjangaon plant",
+   "paymentTerms": "30 days",
+   "quoteRef": "Quotation comparison QC/26-27/0088",
+   "intro": "Against our indent IND/26-27/0511. Please supply the following as per the terms below.",
+   "lines": [
+    {
+     "desc": "Laptop, 14 inch, i5, 16 GB RAM, 512 GB SSD",
+     "qty": 1,
+     "unit": "nos",
+     "rate": 66500.0
+    },
+    {
+     "desc": "USB-C docking station",
+     "qty": 1,
+     "unit": "nos",
+     "rate": 5500.0
+    }
+   ],
+   "taxNote": "Prices exclusive of GST. GST @ 18% (CGST 9% + SGST 9%) extra.",
+   "terms": [
+    "Delivery at our Ranjangaon plant, freight included.",
+    "Quote this PO number on your invoice and delivery challan.",
+    "Goods are subject to our weighment and QC. We pay for the quantity accepted.",
+    "Rates are firm for this order. Any change needs our written amendment.",
+    "Payment: 30 days from receipt of goods and invoice.",
+    "This order is approved in our ERP and carries no signature."
+   ],
+   "preparedBy": {
+    "name": "Yogesh Narwade, Purchase Executive",
+    "sign": ""
+   },
+   "preparedDate": "11-08-2026",
+   "approvedBy": {
+    "name": "Kavita Lokhande, Head – Supply Chain",
+    "sign": ""
+   },
+   "approvalDate": "11-08-2026 16:30",
+   "deliveryBy": "17-08-2026",
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "N. Bhosale on leave 10–14 Aug. – KL",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "grn-04",
+   "type": "grn",
+   "title": "Purchase 4 · Goods receipt note",
+   "tab": "GRN",
+   "group": "p04",
+   "company": {
+    "name": "Khamang Foods Private Limited"
+   },
+   "number": "GRN/26-27/2551",
+   "date": "17-08-2026 13:05",
+   "unit": "General stores, Ranjangaon",
+   "vendor": "Lonikand Infosystems Private Limited",
+   "poRef": "KF/PO/26-27/0597",
+   "invoiceRef": "LIS/26-27/0544 dt 17.08.2026",
+   "challan": "DC 1180",
+   "vehicle": "MH 12 VF 2290",
+   "lines": [
+    {
+     "desc": "Laptop, 14 inch, i5, 16 GB RAM, 512 GB SSD",
+     "unit": "nos",
+     "qtyChallan": 1,
+     "qtyReceived": 1,
+     "qtyAccepted": 1,
+     "qtyRejected": 0,
+     "remark": "Serial no. noted"
+    },
+    {
+     "desc": "USB-C docking station",
+     "unit": "nos",
+     "qtyChallan": 1,
+     "qtyReceived": 1,
+     "qtyAccepted": 1,
+     "qtyRejected": 0,
+     "remark": ""
+    }
+   ],
+   "receivedBy": "Mahendra Kharat",
+   "receivedSign": "Mahendra K.",
+   "remarks": "Checked and taken over by IT."
+  },
+  {
+   "id": "inv-05",
+   "type": "invoice",
+   "title": "Purchase 5 · Tax invoice",
+   "tab": "Bill",
+   "group": "p05",
+   "supplier": {
+    "name": "Yavat Sweeteners Private Limited",
+    "address": "Gat No. 905, Yavat–Kedgaon Road\nYavat, Taluka Daund, District Pune",
+    "gstin": "27XYICY7139K1ZN",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "XYICY7139K"
+   },
+   "buyer": {
+    "name": "Khamang Foods Private Limited",
+    "address": "Plot E-14, Ranjangaon MIDC\nTaluka Shirur, Pune 412220",
+    "gstin": "27ZMSCK1510T1ZG",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "YSPL/26-27/1142",
+   "date": "19-08-2026",
+   "copy": "Original for recipient",
+   "paymentTerms": "30 days",
+   "placeOfSupply": "Maharashtra (27)",
+   "lines": [
+    {
+     "desc": "Sugar S-30 (200 bags × 50 kg)",
+     "hsn": "1701 99",
+     "qty": 10000,
+     "unit": "kg",
+     "rate": 41.7,
+     "taxable": 417000.0,
+     "gstRate": 5
+    }
+   ],
+   "tax": "intra",
+   "total": 437850.0,
+   "bank": {
+    "name": "Narmada Valley Bank Ltd",
+    "account": "31200000083611",
+    "branch": "Yavat",
+    "ifsc": "NMVB0001110"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Subject to Pune jurisdiction."
+   ],
+   "style": "erp",
+   "poRef": "Verbal (N. Bhosale)",
+   "poDate": "17-08-2026",
+   "vehicle": "MH 12 SX 7716",
+   "dispatchDoc": "DC 4471",
+   "dispatchedThrough": "Road",
+   "destination": "Ranjangaon",
+   "irn": "fb68b019a21949e4a59b25983b7ae6319f147ba724ef655fe2464e3b190c1506",
+   "ackNo": "112637382853832",
+   "ackDate": "19-08-2026",
+   "footer": "This is a computer generated invoice and needs no signature.",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "GATE INWARD\nGE 2634\n19 AUG 2026 · 17:50",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": -4
+    },
+    {
+     "kind": "stamp",
+     "text": "PASSED FOR PAYMENT\n₹4,37,850\nJ.P. · 24/08",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": 3
+    },
+    {
+     "kind": "hand",
+     "text": "Paid by NEFT on 18/09/2026 – J.P.",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -2
+    }
+   ]
+  },
+  {
+   "id": "po-05",
+   "type": "po",
+   "title": "Purchase 5 · Purchase order",
+   "tab": "PO",
+   "group": "p05",
+   "company": {
+    "name": "Khamang Foods Private Limited",
+    "address": "Plot E-14, Ranjangaon MIDC, Taluka Shirur, Pune 412220",
+    "gstin": "27ZMSCK1510T1ZG",
+    "cin": "U10799MH2001PTC991797"
+   },
+   "number": "KF/PO/26-27/0643",
+   "date": "20-08-2026",
+   "vendor": {
+    "name": "Yavat Sweeteners Private Limited",
+    "address": "Gat No. 905, Yavat–Kedgaon Road, Yavat, Taluka Daund, District Pune",
+    "gstin": "27XYICY7139K1ZN"
+   },
+   "deliverTo": "Stores, Ranjangaon plant",
+   "paymentTerms": "30 days",
+   "quoteRef": "Quotation comparison QC/26-27/0091",
+   "intro": "Against our indent IND/26-27/0523. Please supply the following as per the terms below.",
+   "lines": [
+    {
+     "desc": "Sugar, S-30, 50 kg bags",
+     "qty": 10000,
+     "unit": "kg",
+     "rate": 41.7
+    }
+   ],
+   "taxNote": "Prices exclusive of GST. GST @ 5% (CGST 2.5% + SGST 2.5%) extra.",
+   "terms": [
+    "Delivery at our Ranjangaon plant, freight included.",
+    "Quote this PO number on your invoice and delivery challan.",
+    "Goods are subject to our weighment and QC. We pay for the quantity accepted.",
+    "Rates are firm for this order. Any change needs our written amendment.",
+    "Payment: 30 days from receipt of goods and invoice.",
+    "This order is approved in our ERP and carries no signature."
+   ],
+   "preparedBy": {
+    "name": "Yogesh Narwade, Purchase Executive",
+    "sign": ""
+   },
+   "preparedDate": "20-08-2026",
+   "approvedBy": {
+    "name": "Kavita Lokhande, Head – Supply Chain",
+    "sign": ""
+   },
+   "approvalDate": "20-08-2026 10:15",
+   "deliveryBy": "20-08-2026"
+  },
+  {
+   "id": "grn-05",
+   "type": "grn",
+   "title": "Purchase 5 · Goods receipt note",
+   "tab": "GRN",
+   "group": "p05",
+   "company": {
+    "name": "Khamang Foods Private Limited"
+   },
+   "number": "GRN/26-27/2609",
+   "date": "20-08-2026 11:40",
+   "unit": "Raw material stores, Ranjangaon",
+   "vendor": "Yavat Sweeteners Private Limited",
+   "poRef": "KF/PO/26-27/0643",
+   "invoiceRef": "YSPL/26-27/1142 dt 19.08.2026",
+   "challan": "DC 4471",
+   "vehicle": "MH 12 SX 7716",
+   "lines": [
+    {
+     "desc": "Sugar S-30 (200 bags × 50 kg)",
+     "unit": "kg",
+     "qtyChallan": 10000,
+     "qtyReceived": 10000,
+     "qtyAccepted": 10000,
+     "qtyRejected": 0,
+     "remark": "200 bags"
+    }
+   ],
+   "receivedBy": "Sachin Dhumal",
+   "receivedSign": "Sachin D.",
+   "remarks": "Bags weighed at random: OK.",
+   "qcBy": "Swati Jagtap",
+   "qcSign": "S. Jagtap"
+  },
+  {
+   "id": "inv-06",
+   "type": "invoice",
+   "title": "Purchase 6 · Tax invoice",
+   "tab": "Bill",
+   "group": "p06",
+   "supplier": {
+    "name": "Kedgaon Edible Oils Private Limited",
+    "address": "Gat No. 311, Kedgaon–Chaufula Road\nKedgaon, Taluka Daund, District Pune",
+    "gstin": "27YFFCK0914R1Z7",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "YFFCK0914R"
+   },
+   "buyer": {
+    "name": "Khamang Foods Private Limited",
+    "address": "Plot E-14, Ranjangaon MIDC\nTaluka Shirur, Pune 412220",
+    "gstin": "27ZMSCK1510T1ZG",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "KEO/0798",
+   "date": "04-09-2026",
+   "copy": "Original for recipient",
+   "paymentTerms": "15 days",
+   "placeOfSupply": "Maharashtra (27)",
+   "lines": [
+    {
+     "desc": "Refined palmolein (tanker)",
+     "hsn": "1511 90",
+     "qty": 10000,
+     "unit": "kg",
+     "rate": 126.0,
+     "taxable": 1260000.0,
+     "gstRate": 5
+    }
+   ],
+   "tax": "intra",
+   "total": 1323000.0,
+   "bank": {
+    "name": "Narmada Valley Bank Ltd",
+    "account": "31200000012340",
+    "branch": "Daund",
+    "ifsc": "NMVB0001101"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Subject to Pune jurisdiction."
+   ],
+   "style": "erp",
+   "poRef": "KF/PO/26-27/0702",
+   "poDate": "01-09-2026",
+   "vehicle": "MH 12 RT 5530",
+   "dispatchDoc": "DC KEO/D/0798",
+   "dispatchedThrough": "Road",
+   "destination": "Ranjangaon",
+   "irn": "ab31ddea1012c3ff78215982f07157aacdecb8f1787a85a359a54fe86e29b0a4",
+   "ackNo": "112686297341701",
+   "ackDate": "04-09-2026",
+   "footer": "This is a computer generated invoice and needs no signature.",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "GATE INWARD\nGE 2967\n04 SEP 2026 · 14:50",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": -4
+    },
+    {
+     "kind": "stamp",
+     "text": "PASSED FOR PAYMENT\n₹13,23,000\nJ.P. · 09/09",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": 3
+    },
+    {
+     "kind": "hand",
+     "text": "Paid by NEFT on 18/09/2026 – J.P.",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -2
+    }
+   ]
+  },
+  {
+   "id": "po-06",
+   "type": "po",
+   "title": "Purchase 6 · Purchase order",
+   "tab": "PO",
+   "group": "p06",
+   "company": {
+    "name": "Khamang Foods Private Limited",
+    "address": "Plot E-14, Ranjangaon MIDC, Taluka Shirur, Pune 412220",
+    "gstin": "27ZMSCK1510T1ZG",
+    "cin": "U10799MH2001PTC991797"
+   },
+   "number": "KF/PO/26-27/0702",
+   "date": "01-09-2026",
+   "vendor": {
+    "name": "Kedgaon Edible Oils Private Limited",
+    "address": "Gat No. 311, Kedgaon–Chaufula Road, Kedgaon, Taluka Daund, District Pune",
+    "gstin": "27YFFCK0914R1Z7"
+   },
+   "deliverTo": "Stores, Ranjangaon plant",
+   "paymentTerms": "15 days",
+   "quoteRef": "Rate contract RC/26-27/02 (palmolein, September price)",
+   "intro": "Against our indent IND/26-27/0566. Please supply the following as per the terms below.",
+   "lines": [
+    {
+     "desc": "Refined palmolein, in tanker",
+     "qty": 10000,
+     "unit": "kg",
+     "rate": 126.0
+    }
+   ],
+   "taxNote": "Prices exclusive of GST. GST @ 5% (CGST 2.5% + SGST 2.5%) extra.",
+   "terms": [
+    "Delivery at our Ranjangaon plant, freight included.",
+    "Quote this PO number on your invoice and delivery challan.",
+    "Goods are subject to our weighment and QC. We pay for the quantity accepted.",
+    "Rates are firm for this order. Any change needs our written amendment.",
+    "Payment: 15 days from receipt of goods and invoice.",
+    "This order is approved in our ERP and carries no signature."
+   ],
+   "preparedBy": {
+    "name": "Yogesh Narwade, Purchase Executive",
+    "sign": ""
+   },
+   "preparedDate": "01-09-2026",
+   "approvedBy": {
+    "name": "Ashwin Pradhan, CFO",
+    "sign": ""
+   },
+   "approvalDate": "01-09-2026 11:20",
+   "deliveryBy": "04-09-2026"
+  },
+  {
+   "id": "grn-06",
+   "type": "grn",
+   "title": "Purchase 6 · Goods receipt note",
+   "tab": "GRN",
+   "group": "p06",
+   "company": {
+    "name": "Khamang Foods Private Limited"
+   },
+   "number": "GRN/26-27/2931",
+   "date": "04-09-2026 17:05",
+   "unit": "Raw material stores, Ranjangaon",
+   "vendor": "Kedgaon Edible Oils Private Limited",
+   "poRef": "KF/PO/26-27/0702",
+   "invoiceRef": "KEO/0798 dt 04.09.2026",
+   "challan": "DC KEO/D/0798",
+   "vehicle": "MH 12 RT 5530",
+   "lines": [
+    {
+     "desc": "Refined palmolein (tanker)",
+     "unit": "kg",
+     "qtyChallan": 10000,
+     "qtyReceived": 9750,
+     "qtyAccepted": 9750,
+     "qtyRejected": 0,
+     "remark": "Weighbridge net"
+    }
+   ],
+   "receivedBy": "Sachin Dhumal",
+   "receivedSign": "Sachin D.",
+   "remarks": "Weighbridge slip WB/26-27/1586: gross 26,310 kg, tare 16,560 kg, net 9,750 kg. Quality OK.",
+   "qcBy": "Swati Jagtap",
+   "qcSign": "S. Jagtap"
+  },
+  {
+   "id": "inv-07",
+   "type": "invoice",
+   "title": "Purchase 7 · Tax invoice",
+   "tab": "Bill",
+   "group": "p07",
+   "supplier": {
+    "name": "Lonand Masala Products",
+    "address": "Plot 22, Lonand MIDC\nLonand, Taluka Khandala, District Satara",
+    "gstin": "27ZTYPD9579U1Z9",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "ZTYPD9579U"
+   },
+   "buyer": {
+    "name": "Khamang Foods Private Limited",
+    "address": "Plot E-14, Ranjangaon MIDC\nTaluka Shirur, Pune 412220",
+    "gstin": "27ZMSCK1510T1ZG",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "LMP/26-27/0262",
+   "date": "14-09-2026",
+   "copy": "Original for recipient",
+   "paymentTerms": "30 days",
+   "placeOfSupply": "Maharashtra (27)",
+   "lines": [
+    {
+     "desc": "Red chilli powder (Byadgi blend)",
+     "hsn": "0904 22",
+     "qty": 300,
+     "unit": "kg",
+     "rate": 252.0,
+     "taxable": 75600.0,
+     "gstRate": 5
+    },
+    {
+     "desc": "Turmeric powder",
+     "hsn": "0910 30",
+     "qty": 150,
+     "unit": "kg",
+     "rate": 172.0,
+     "taxable": 25800.0,
+     "gstRate": 5
+    }
+   ],
+   "tax": "intra",
+   "total": 106470.0,
+   "bank": {
+    "name": "Satpura Bank Ltd",
+    "account": "31200000028178",
+    "branch": "Lonand",
+    "ifsc": "STPB0001103"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Subject to Satara jurisdiction."
+   ],
+   "poRef": "KF/PO/26-27/0729",
+   "poDate": "08-09-2026",
+   "vehicle": "MH 12 HB 4127",
+   "dispatchDoc": "DC 0688",
+   "dispatchedThrough": "Road",
+   "destination": "Ranjangaon",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "GATE INWARD\nGE 3115\n14 SEP 2026 · 11:30",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": -4
+    },
+    {
+     "kind": "stamp",
+     "text": "PASSED FOR PAYMENT\n₹1,06,470\nJ.P. · 17/09",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": 3
+    },
+    {
+     "kind": "hand",
+     "text": "Paid by NEFT on 16/10/2026 – J.P.",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -2
+    }
+   ]
+  },
+  {
+   "id": "po-07",
+   "type": "po",
+   "title": "Purchase 7 · Purchase order",
+   "tab": "PO",
+   "group": "p07",
+   "company": {
+    "name": "Khamang Foods Private Limited",
+    "address": "Plot E-14, Ranjangaon MIDC, Taluka Shirur, Pune 412220",
+    "gstin": "27ZMSCK1510T1ZG",
+    "cin": "U10799MH2001PTC991797"
+   },
+   "number": "KF/PO/26-27/0729",
+   "date": "08-09-2026",
+   "vendor": {
+    "name": "Lonand Masala Products",
+    "address": "Plot 22, Lonand MIDC, Lonand, Taluka Khandala, District Satara",
+    "gstin": "27ZTYPD9579U1Z9"
+   },
+   "deliverTo": "Stores, Ranjangaon plant",
+   "paymentTerms": "30 days",
+   "quoteRef": "Rate contract RC/26-27/04 (spices, April–September)",
+   "intro": "Against our indent IND/26-27/0588. Please supply the following as per the terms below.",
+   "lines": [
+    {
+     "desc": "Red chilli powder (Byadgi blend), 25 kg bags",
+     "qty": 300,
+     "unit": "kg",
+     "rate": 236.0
+    },
+    {
+     "desc": "Turmeric powder, 25 kg bags",
+     "qty": 150,
+     "unit": "kg",
+     "rate": 172.0
+    }
+   ],
+   "taxNote": "Prices exclusive of GST. GST @ 5% (CGST 2.5% + SGST 2.5%) extra.",
+   "terms": [
+    "Delivery at our Ranjangaon plant, freight included.",
+    "Quote this PO number on your invoice and delivery challan.",
+    "Goods are subject to our weighment and QC. We pay for the quantity accepted.",
+    "Rates are firm for this order. Any change needs our written amendment.",
+    "Payment: 30 days from receipt of goods and invoice.",
+    "This order is approved in our ERP and carries no signature."
+   ],
+   "preparedBy": {
+    "name": "Yogesh Narwade, Purchase Executive",
+    "sign": ""
+   },
+   "preparedDate": "08-09-2026",
+   "approvedBy": {
+    "name": "Nitin Bhosale, Purchase Manager",
+    "sign": ""
+   },
+   "approvalDate": "08-09-2026 18:20",
+   "deliveryBy": "14-09-2026"
+  },
+  {
+   "id": "grn-07",
+   "type": "grn",
+   "title": "Purchase 7 · Goods receipt note",
+   "tab": "GRN",
+   "group": "p07",
+   "company": {
+    "name": "Khamang Foods Private Limited"
+   },
+   "number": "GRN/26-27/3082",
+   "date": "14-09-2026 13:40",
+   "unit": "Raw material stores, Ranjangaon",
+   "vendor": "Lonand Masala Products",
+   "poRef": "KF/PO/26-27/0729",
+   "invoiceRef": "LMP/26-27/0262 dt 14.09.2026",
+   "challan": "DC 0688",
+   "vehicle": "MH 12 HB 4127",
+   "lines": [
+    {
+     "desc": "Red chilli powder (Byadgi blend)",
+     "unit": "kg",
+     "qtyChallan": 300,
+     "qtyReceived": 300,
+     "qtyAccepted": 300,
+     "qtyRejected": 0,
+     "remark": ""
+    },
+    {
+     "desc": "Turmeric powder",
+     "unit": "kg",
+     "qtyChallan": 150,
+     "qtyReceived": 150,
+     "qtyAccepted": 150,
+     "qtyRejected": 0,
+     "remark": ""
+    }
+   ],
+   "receivedBy": "Sachin Dhumal",
+   "receivedSign": "Sachin D.",
+   "remarks": "Moisture and colour checked by QC. OK.",
+   "qcBy": "Swati Jagtap",
+   "qcSign": "S. Jagtap"
+  },
+  {
+   "id": "inv-08",
+   "type": "invoice",
+   "title": "Purchase 8 · Tax invoice",
+   "tab": "Bill",
+   "group": "p08",
+   "supplier": {
+    "name": "Sanaswadi Engineering Spares",
+    "address": "Shop 3, Sai Complex, Pune–Nagar Road\nSanaswadi, Taluka Shirur, District Pune",
+    "gstin": "27WUVPD0069S1Z6",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "WUVPD0069S"
+   },
+   "buyer": {
+    "name": "Khamang Foods Private Limited",
+    "address": "Plot E-14, Ranjangaon MIDC\nTaluka Shirur, Pune 412220",
+    "gstin": "27ZMSCK1510T1ZG",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "SES/26-27/088",
+   "date": "22-09-2026",
+   "copy": "Original for recipient",
+   "paymentTerms": "30 days",
+   "placeOfSupply": "Maharashtra (27)",
+   "lines": [
+    {
+     "desc": "Emergency repair, fryer line 2 conveyor drive, night call-⁠out (labour)",
+     "hsn": "9987",
+     "qty": 1,
+     "unit": "job",
+     "rate": 6200.0,
+     "taxable": 6200.0,
+     "gstRate": 18
+    }
+   ],
+   "tax": "intra",
+   "total": 7316.0,
+   "bank": {
+    "name": "Satpura Bank Ltd",
+    "account": "31200000059854",
+    "branch": "Shikrapur",
+    "ifsc": "STPB0001107"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Subject to Pune jurisdiction."
+   ],
+   "style": "book",
+   "signedBy": "R. Darekar",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "PASSED FOR PAYMENT\n₹7,316\nJ.P. · 25/09",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": 3
+    },
+    {
+     "kind": "hand",
+     "text": "Paid by NEFT on 23/10/2026 – J.P.",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -2
+    }
+   ]
+  },
+  {
+   "id": "br-08",
+   "type": "card",
+   "style": "slip",
+   "title": "Purchase 8 · Breakdown report",
+   "tab": "Breakdown report",
+   "group": "p08",
+   "issuer": "Khamang Foods Private Limited · Maintenance",
+   "heading": "Breakdown report",
+   "number": "BR/26-27/119",
+   "handwritten": true,
+   "fields": [
+    {
+     "label": "Date",
+     "value": "22-09-2026 (night shift)"
+    },
+    {
+     "label": "Machine",
+     "value": "Fryer line 2, conveyor drive"
+    },
+    {
+     "label": "Stopped at",
+     "value": "03:40"
+    },
+    {
+     "label": "Problem",
+     "value": "Drive chain snapped; sprocket teeth worn"
+    },
+    {
+     "label": "Called",
+     "value": "Sanaswadi Engg. (Rohan Darekar), reached 04:15"
+    },
+    {
+     "label": "Work done",
+     "value": "Chain refitted, sprocket changed (sprocket from our stores)"
+    },
+    {
+     "label": "Restarted at",
+     "value": "06:10"
+    },
+    {
+     "label": "Shift engineer",
+     "value": "G. Shelar"
+    },
+    {
+     "label": "Maintenance head",
+     "value": "Work OK. Pass the bill. – A. Kale"
+    }
+   ]
+  },
+  {
+   "id": "inv-09",
+   "type": "invoice",
+   "title": "Purchase 9 · Tax invoice",
+   "tab": "Bill",
+   "group": "p09",
+   "supplier": {
+    "name": "Kedgaon Edible Oils Private Limited",
+    "address": "Gat No. 311, Kedgaon–Chaufula Road\nKedgaon, Taluka Daund, District Pune",
+    "gstin": "27YFFCK0914R1Z7",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "YFFCK0914R"
+   },
+   "buyer": {
+    "name": "Khamang Foods Private Limited",
+    "address": "Plot E-14, Ranjangaon MIDC\nTaluka Shirur, Pune 412220",
+    "gstin": "27ZMSCK1510T1ZG",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "KEO/0861",
+   "date": "09-10-2026",
+   "copy": "Original for recipient",
+   "paymentTerms": "15 days",
+   "placeOfSupply": "Maharashtra (27)",
+   "lines": [
+    {
+     "desc": "Refined palmolein (tanker)",
+     "hsn": "1511 90",
+     "qty": 10000,
+     "unit": "kg",
+     "rate": 125.0,
+     "taxable": 1250000.0,
+     "gstRate": 5
+    }
+   ],
+   "tax": "intra",
+   "total": 1312500.0,
+   "bank": {
+    "name": "Narmada Valley Bank Ltd",
+    "account": "31200000012340",
+    "branch": "Daund",
+    "ifsc": "NMVB0001101"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Subject to Pune jurisdiction."
+   ],
+   "style": "erp",
+   "poRef": "KF/PO/26-27/0855",
+   "poDate": "07-10-2026",
+   "vehicle": "MH 12 RT 5530",
+   "dispatchDoc": "DC KEO/D/0861",
+   "dispatchedThrough": "Road",
+   "destination": "Ranjangaon",
+   "irn": "879d11864b54a5ef714fb3fffea888d5123440afc5b5f51c0165c224c58ae6fe",
+   "ackNo": "112649934300851",
+   "ackDate": "09-10-2026",
+   "footer": "This is a computer generated invoice and needs no signature.",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "GATE INWARD\nGE 3488\n09 OCT 2026 · 15:05",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": -4
+    },
+    {
+     "kind": "stamp",
+     "text": "PASSED FOR PAYMENT\n₹13,12,500\nJ.P. · 14/10",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": 3
+    },
+    {
+     "kind": "hand",
+     "text": "Paid by NEFT on 23/10/2026 – J.P.",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -2
+    }
+   ]
+  },
+  {
+   "id": "po-09",
+   "type": "po",
+   "title": "Purchase 9 · Purchase order",
+   "tab": "PO",
+   "group": "p09",
+   "company": {
+    "name": "Khamang Foods Private Limited",
+    "address": "Plot E-14, Ranjangaon MIDC, Taluka Shirur, Pune 412220",
+    "gstin": "27ZMSCK1510T1ZG",
+    "cin": "U10799MH2001PTC991797"
+   },
+   "number": "KF/PO/26-27/0855",
+   "date": "07-10-2026",
+   "vendor": {
+    "name": "Kedgaon Edible Oils Private Limited",
+    "address": "Gat No. 311, Kedgaon–Chaufula Road, Kedgaon, Taluka Daund, District Pune",
+    "gstin": "27YFFCK0914R1Z7"
+   },
+   "deliverTo": "Stores, Ranjangaon plant",
+   "paymentTerms": "15 days",
+   "quoteRef": "Rate contract RC/26-27/02 (palmolein, October price)",
+   "intro": "Against our indent IND/26-27/0647. Please supply the following as per the terms below.",
+   "lines": [
+    {
+     "desc": "Refined palmolein, in tanker",
+     "qty": 10000,
+     "unit": "kg",
+     "rate": 125.0
+    }
+   ],
+   "taxNote": "Prices exclusive of GST. GST @ 5% (CGST 2.5% + SGST 2.5%) extra.",
+   "terms": [
+    "Delivery at our Ranjangaon plant, freight included.",
+    "Quote this PO number on your invoice and delivery challan.",
+    "Goods are subject to our weighment and QC. We pay for the quantity accepted.",
+    "Rates are firm for this order. Any change needs our written amendment.",
+    "Payment: 15 days from receipt of goods and invoice.",
+    "This order is approved in our ERP and carries no signature."
+   ],
+   "preparedBy": {
+    "name": "Yogesh Narwade, Purchase Executive",
+    "sign": ""
+   },
+   "preparedDate": "07-10-2026",
+   "approvedBy": {
+    "name": "Ashwin Pradhan, CFO",
+    "sign": ""
+   },
+   "approvalDate": "07-10-2026 10:50",
+   "deliveryBy": "09-10-2026"
+  },
+  {
+   "id": "grn-09",
+   "type": "grn",
+   "title": "Purchase 9 · Goods receipt note",
+   "tab": "GRN",
+   "group": "p09",
+   "company": {
+    "name": "Khamang Foods Private Limited"
+   },
+   "number": "GRN/26-27/3452",
+   "date": "09-10-2026 17:30",
+   "unit": "Raw material stores, Ranjangaon",
+   "vendor": "Kedgaon Edible Oils Private Limited",
+   "poRef": "KF/PO/26-27/0855",
+   "invoiceRef": "KEO/0861 dt 09.10.2026",
+   "challan": "DC KEO/D/0861",
+   "vehicle": "MH 12 RT 5530",
+   "lines": [
+    {
+     "desc": "Refined palmolein (tanker)",
+     "unit": "kg",
+     "qtyChallan": 10000,
+     "qtyReceived": 9970,
+     "qtyAccepted": 9970,
+     "qtyRejected": 0,
+     "remark": "Weighbridge net"
+    }
+   ],
+   "receivedBy": "Sachin Dhumal",
+   "receivedSign": "Sachin D.",
+   "remarks": "Weighbridge slip WB/26-27/1803: gross 26,450 kg, tare 16,480 kg, net 9,970 kg. Quality OK.",
+   "qcBy": "Swati Jagtap",
+   "qcSign": "S. Jagtap"
+  },
+  {
+   "id": "inv-10",
+   "type": "invoice",
+   "title": "Purchase 10 · Tax invoice",
+   "tab": "Bill",
+   "group": "p10",
+   "supplier": {
+    "name": "Nhavare Packaging Industries",
+    "address": "Gat No. 152, Nhavare–Shirur Road\nNhavare, Taluka Shirur, District Pune",
+    "gstin": "27ZTBFN4717R1ZZ",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "ZTBFN4717R"
+   },
+   "buyer": {
+    "name": "Khamang Foods Private Limited",
+    "address": "Plot E-14, Ranjangaon MIDC\nTaluka Shirur, Pune 412220",
+    "gstin": "27ZMSCK1510T1ZG",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "NPI/26-27/0412",
+   "date": "14-10-2026",
+   "copy": "Original for recipient",
+   "paymentTerms": "45 days",
+   "placeOfSupply": "Maharashtra (27)",
+   "lines": [
+    {
+     "desc": "5-ply corrugated box, 600 × 400 × 300 mm",
+     "hsn": "4819 10",
+     "qty": 4000,
+     "unit": "nos",
+     "rate": 23.0,
+     "taxable": 92000.0,
+     "gstRate": 5
+    }
+   ],
+   "tax": "intra",
+   "total": 96600.0,
+   "bank": {
+    "name": "Narmada Valley Bank Ltd",
+    "account": "31200000091530",
+    "branch": "Shirur",
+    "ifsc": "NMVB0001111"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Subject to Pune jurisdiction."
+   ],
+   "poRef": "KF/PO/26-27/0848",
+   "poDate": "06-10-2026",
+   "vehicle": "MH 12 LK 0934",
+   "dispatchDoc": "DC 0977",
+   "dispatchedThrough": "Road",
+   "destination": "Ranjangaon",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "GATE INWARD\nGE 3586\n14 OCT 2026 · 11:20",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": -4
+    },
+    {
+     "kind": "stamp",
+     "text": "PASSED FOR PAYMENT\n₹96,600\nJ.P. · 22/10",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": 3
+    }
+   ]
+  },
+  {
+   "id": "po-10",
+   "type": "po",
+   "title": "Purchase 10 · Purchase order",
+   "tab": "PO",
+   "group": "p10",
+   "company": {
+    "name": "Khamang Foods Private Limited",
+    "address": "Plot E-14, Ranjangaon MIDC, Taluka Shirur, Pune 412220",
+    "gstin": "27ZMSCK1510T1ZG",
+    "cin": "U10799MH2001PTC991797"
+   },
+   "number": "KF/PO/26-27/0848",
+   "date": "06-10-2026",
+   "vendor": {
+    "name": "Nhavare Packaging Industries",
+    "address": "Gat No. 152, Nhavare–Shirur Road, Nhavare, Taluka Shirur, District Pune",
+    "gstin": "27ZTBFN4717R1ZZ"
+   },
+   "deliverTo": "Stores, Ranjangaon plant",
+   "paymentTerms": "45 days",
+   "quoteRef": "Quotation comparison QC/26-27/0139",
+   "intro": "Against our indent IND/26-27/0641. Please supply the following as per the terms below.",
+   "lines": [
+    {
+     "desc": "5-ply corrugated box, 600 × 400 × 300 mm",
+     "qty": 4000,
+     "unit": "nos",
+     "rate": 23.0
+    }
+   ],
+   "taxNote": "Prices exclusive of GST. GST @ 5% (CGST 2.5% + SGST 2.5%) extra.",
+   "terms": [
+    "Delivery at our Ranjangaon plant, freight included.",
+    "Quote this PO number on your invoice and delivery challan.",
+    "Goods are subject to our weighment and QC. We pay for the quantity accepted.",
+    "Rates are firm for this order. Any change needs our written amendment.",
+    "Payment: 45 days from receipt of goods and invoice.",
+    "This order is approved in our ERP and carries no signature."
+   ],
+   "preparedBy": {
+    "name": "Yogesh Narwade, Purchase Executive",
+    "sign": ""
+   },
+   "preparedDate": "06-10-2026",
+   "approvedBy": {
+    "name": "Nitin Bhosale, Purchase Manager",
+    "sign": ""
+   },
+   "approvalDate": "06-10-2026 19:10",
+   "deliveryBy": "14-10-2026"
+  },
+  {
+   "id": "grn-10",
+   "type": "grn",
+   "title": "Purchase 10 · Goods receipt note",
+   "tab": "GRN",
+   "group": "p10",
+   "company": {
+    "name": "Khamang Foods Private Limited"
+   },
+   "number": "GRN/26-27/3551",
+   "date": "20-10-2026 16:05",
+   "unit": "Packing material stores, Ranjangaon",
+   "vendor": "Nhavare Packaging Industries",
+   "poRef": "KF/PO/26-27/0848",
+   "invoiceRef": "NPI/26-27/0412 dt 14.10.2026",
+   "challan": "DC 0977",
+   "vehicle": "MH 12 LK 0934",
+   "lines": [
+    {
+     "desc": "5-ply corrugated box, 600 × 400 × 300 mm",
+     "unit": "nos",
+     "qtyChallan": 4000,
+     "qtyReceived": 4000,
+     "qtyAccepted": 4000,
+     "qtyRejected": 0,
+     "remark": "80 bundles"
+    }
+   ],
+   "receivedBy": "Mahendra Kharat",
+   "receivedSign": "Mahendra K.",
+   "remarks": "Burst strength checked by QC. OK.",
+   "qcBy": "Swati Jagtap",
+   "qcSign": "S. Jagtap"
+  },
+  {
+   "id": "inv-11",
+   "type": "invoice",
+   "title": "Purchase 11 · Tax invoice",
+   "tab": "Bill",
+   "group": "p11",
+   "supplier": {
+    "name": "Uruli Flexipack Private Limited",
+    "address": "Gat No. 1207, Pune–Solapur Highway\nUruli Kanchan, Taluka Haveli, District Pune",
+    "gstin": "27WSVCU3328N1ZU",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "WSVCU3328N"
+   },
+   "buyer": {
+    "name": "Khamang Foods Private Limited",
+    "address": "Plot E-14, Ranjangaon MIDC\nTaluka Shirur, Pune 412220",
+    "gstin": "27ZMSCK1510T1ZG",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "UFPL/26-27/2189",
+   "date": "21-10-2026",
+   "copy": "Original for recipient",
+   "paymentTerms": "45 days",
+   "placeOfSupply": "Maharashtra (27)",
+   "lines": [
+    {
+     "desc": "Printed laminate roll, PET/​MET-⁠PET/​PE, Classic Chiwda 250 g",
+     "hsn": "3920 62",
+     "qty": 400,
+     "unit": "kg",
+     "rate": 324.0,
+     "taxable": 129600.0,
+     "gstRate": 18
+    }
+   ],
+   "tax": "intra",
+   "total": 152928.0,
+   "bank": {
+    "name": "Narmada Valley Bank Ltd",
+    "account": "31200000036097",
+    "branch": "Uruli Kanchan",
+    "ifsc": "NMVB0001104"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Subject to Pune jurisdiction."
+   ],
+   "style": "erp",
+   "poRef": "KF/PO/26-27/0867",
+   "poDate": "12-10-2026",
+   "vehicle": "MH 12 PQ 6618",
+   "dispatchDoc": "DC 2189",
+   "dispatchedThrough": "Road",
+   "destination": "Ranjangaon",
+   "irn": "d1f8444db7bba3ec979c27240a37272a51b740c32d783c67b4c74ecbd3df7f63",
+   "ackNo": "112694721133119",
+   "ackDate": "21-10-2026",
+   "footer": "This is a computer generated invoice and needs no signature.",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "GATE INWARD\nGE 3702\n21 OCT 2026 · 18:40",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": -4
+    },
+    {
+     "kind": "stamp",
+     "text": "PASSED FOR PAYMENT\n₹1,52,928\nJ.P. · 26/10",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": 3
+    }
+   ]
+  },
+  {
+   "id": "po-11",
+   "type": "po",
+   "title": "Purchase 11 · Purchase order",
+   "tab": "PO",
+   "group": "p11",
+   "company": {
+    "name": "Khamang Foods Private Limited",
+    "address": "Plot E-14, Ranjangaon MIDC, Taluka Shirur, Pune 412220",
+    "gstin": "27ZMSCK1510T1ZG",
+    "cin": "U10799MH2001PTC991797"
+   },
+   "number": "KF/PO/26-27/0867",
+   "date": "12-10-2026",
+   "vendor": {
+    "name": "Uruli Flexipack Private Limited",
+    "address": "Gat No. 1207, Pune–Solapur Highway, Uruli Kanchan, Taluka Haveli, District Pune",
+    "gstin": "27WSVCU3328N1ZU"
+   },
+   "deliverTo": "Stores, Ranjangaon plant",
+   "paymentTerms": "45 days",
+   "quoteRef": "Quotation comparison QC/26-27/0143",
+   "intro": "Against our indent IND/26-27/0652. Please supply the following as per the terms below.",
+   "lines": [
+    {
+     "desc": "Printed laminate roll, PET/​MET-⁠PET/​PE, Classic Chiwda 250 g",
+     "qty": 400,
+     "unit": "kg",
+     "rate": 318.0
+    }
+   ],
+   "taxNote": "Prices exclusive of GST. GST @ 18% (CGST 9% + SGST 9%) extra.",
+   "terms": [
+    "Delivery at our Ranjangaon plant, freight included.",
+    "Quote this PO number on your invoice and delivery challan.",
+    "Goods are subject to our weighment and QC. We pay for the quantity accepted.",
+    "Rates are firm for this order. Any change needs our written amendment.",
+    "Payment: 45 days from receipt of goods and invoice.",
+    "This order is approved in our ERP and carries no signature."
+   ],
+   "preparedBy": {
+    "name": "Yogesh Narwade, Purchase Executive",
+    "sign": ""
+   },
+   "preparedDate": "12-10-2026",
+   "approvedBy": {
+    "name": "Kavita Lokhande, Head – Supply Chain",
+    "sign": ""
+   },
+   "approvalDate": "12-10-2026 12:35",
+   "deliveryBy": "21-10-2026"
+  },
+  {
+   "id": "grn-11",
+   "type": "grn",
+   "title": "Purchase 11 · Goods receipt note",
+   "tab": "GRN",
+   "group": "p11",
+   "company": {
+    "name": "Khamang Foods Private Limited"
+   },
+   "number": "GRN/26-27/3664",
+   "date": "22-10-2026 09:30",
+   "unit": "Packing material stores, Ranjangaon",
+   "vendor": "Uruli Flexipack Private Limited",
+   "poRef": "KF/PO/26-27/0867",
+   "invoiceRef": "UFPL/26-27/2189 dt 21.10.2026",
+   "challan": "DC 2189",
+   "vehicle": "MH 12 PQ 6618",
+   "lines": [
+    {
+     "desc": "Printed laminate roll, PET/​MET-⁠PET/​PE, Classic Chiwda 250 g",
+     "unit": "kg",
+     "qtyChallan": 400,
+     "qtyReceived": 400,
+     "qtyAccepted": 400,
+     "qtyRejected": 0,
+     "remark": "16 rolls"
+    }
+   ],
+   "receivedBy": "Mahendra Kharat",
+   "receivedSign": "Mahendra K.",
+   "remarks": "Print and seal strength checked by QC. OK.",
+   "qcBy": "Swati Jagtap",
+   "qcSign": "S. Jagtap"
+  },
+  {
+   "id": "inv-12",
+   "type": "invoice",
+   "title": "Purchase 12 · Tax invoice",
+   "tab": "Bill",
+   "group": "p12",
+   "supplier": {
+    "name": "Babhulsar Facility Services",
+    "address": "Office 4, Shivneri Plaza, Pune–Nagar Road\nBabhulsar, Taluka Shirur, District Pune",
+    "gstin": "27ULVFB0428P1ZO",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "ULVFB0428P"
+   },
+   "buyer": {
+    "name": "Khamang Foods Private Limited",
+    "address": "Plot E-14, Ranjangaon MIDC\nTaluka Shirur, Pune 412220",
+    "gstin": "27ZMSCK1510T1ZG",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "BFS/26-27/0187",
+   "date": "02-11-2026",
+   "copy": "Original for recipient",
+   "paymentTerms": "15 days",
+   "placeOfSupply": "Maharashtra (27)",
+   "lines": [
+    {
+     "desc": "Housekeeping, plant and offices, October 2026 (22 staff), as per your PO KF/PO/25-26/2491",
+     "hsn": "9985",
+     "qty": 1,
+     "unit": "month",
+     "rate": 196000.0,
+     "taxable": 196000.0,
+     "gstRate": 18
+    }
+   ],
+   "tax": "intra",
+   "total": 231280.0,
+   "bank": {
+    "name": "Narmada Valley Bank Ltd",
+    "account": "31200000115287",
+    "branch": "Shirur",
+    "ifsc": "NMVB0001114"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Subject to Pune jurisdiction."
+   ],
+   "poRef": "KF/PO/25-26/2491",
+   "poDate": "28-03-2026",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "PASSED FOR PAYMENT\n₹2,31,280\nJ.P. · 05/11",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": 3
+    }
+   ]
+  },
+  {
+   "id": "po-12",
+   "type": "po",
+   "title": "Purchase 12 · Purchase order",
+   "tab": "PO",
+   "group": "p12",
+   "company": {
+    "name": "Khamang Foods Private Limited",
+    "address": "Plot E-14, Ranjangaon MIDC, Taluka Shirur, Pune 412220",
+    "gstin": "27ZMSCK1510T1ZG",
+    "cin": "U10799MH2001PTC991797"
+   },
+   "number": "KF/PO/25-26/2491",
+   "date": "28-03-2026",
+   "vendor": {
+    "name": "Babhulsar Facility Services",
+    "address": "Office 4, Shivneri Plaza, Pune–Nagar Road, Babhulsar, Taluka Shirur, District Pune",
+    "gstin": "27ULVFB0428P1ZO"
+   },
+   "deliverTo": "Plant and offices, Ranjangaon",
+   "paymentTerms": "15 days",
+   "quoteRef": "Tender TN/25-26/09 · annual service order",
+   "intro": "Please supply the following as per the terms below.",
+   "lines": [
+    {
+     "desc": "Housekeeping, plant and offices, 22 staff, 1 April 2026 – 31 March 2027",
+     "qty": 12,
+     "unit": "month",
+     "rate": 196000.0
+    }
+   ],
+   "taxNote": "Prices exclusive of GST. GST @ 18% (CGST 9% + SGST 9%) extra.",
+   "terms": [
+    "Service at our Ranjangaon plant and offices as per the tender scope.",
+    "Bill monthly with the attendance sheet. Our user department certifies the service before the bill is passed.",
+    "Rates are firm for the year. Any change needs our written amendment.",
+    "Payment: 15 days from the bill and the completion certificate.",
+    "This order is approved in our ERP and carries no signature."
+   ],
+   "preparedBy": {
+    "name": "Yogesh Narwade, Purchase Executive",
+    "sign": ""
+   },
+   "preparedDate": "28-03-2026",
+   "approvedBy": {
+    "name": "Ashwin Pradhan, CFO",
+    "sign": ""
+   },
+   "approvalDate": "28-03-2026 17:10"
+  },
+  {
+   "id": "cc-12",
+   "type": "letter",
+   "style": "memo",
+   "title": "Purchase 12 · Completion certificate",
+   "tab": "Certificate",
+   "group": "p12",
+   "memoTitle": "Service completion certificate",
+   "letterhead": "Khamang Foods Private Limited · Ranjangaon plant",
+   "from": {
+    "name": "Priyanka Salunkhe, HR Manager"
+   },
+   "to": {
+    "name": "Accounts Payable"
+   },
+   "date": "02-11-2026",
+   "subject": "Housekeeping for October 2026 · Babhulsar Facility Services",
+   "body": [
+    "Certified that Babhulsar Facility Services provided housekeeping at the plant and offices from 1 to 31 October 2026, as per PO KF/PO/25-26/2491.",
+    "- Staff deployed: 22 a day, as the contract says; attendance register checked.",
+    "- Work checked weekly by the admin team; no complaint pending.",
+    "Their bill BFS/26-27/0187 for ₹1,96,000 plus GST may be passed."
+   ],
+   "sign": {
+    "name": "Priyanka Salunkhe",
+    "role": "HR Manager",
+    "hand": "Priyanka S."
+   }
+  },
+  {
+   "id": "inv-13",
+   "type": "invoice",
+   "title": "Purchase 13 · Tax invoice",
+   "tab": "Bill",
+   "group": "p13",
+   "supplier": {
+    "name": "Uruli Flexipack Private Limited",
+    "address": "Gat No. 1207, Pune–Solapur Highway\nUruli Kanchan, Taluka Haveli, District Pune",
+    "gstin": "27WSVCU3328N1ZU",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "WSVCU3328N"
+   },
+   "buyer": {
+    "name": "Khamang Foods Private Limited",
+    "address": "Plot E-14, Ranjangaon MIDC\nTaluka Shirur, Pune 412220",
+    "gstin": "27ZMSCK1510T1ZG",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "UFPL/26-27/2304",
+   "date": "06-11-2026",
+   "copy": "Original for recipient",
+   "paymentTerms": "45 days",
+   "placeOfSupply": "Maharashtra (27)",
+   "lines": [
+    {
+     "desc": "Printed laminate roll, PET/​MET-⁠PET/​PE, Masala Peanuts 150 g",
+     "hsn": "3920 62",
+     "qty": 300,
+     "unit": "kg",
+     "rate": 320.0,
+     "taxable": 96000.0,
+     "gstRate": 18
+    }
+   ],
+   "tax": "intra",
+   "total": 113280.0,
+   "bank": {
+    "name": "Narmada Valley Bank Ltd",
+    "account": "31200000036097",
+    "branch": "Uruli Kanchan",
+    "ifsc": "NMVB0001104"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Subject to Pune jurisdiction."
+   ],
+   "style": "erp",
+   "poRef": "KF/PO/26-27/0961",
+   "poDate": "04-11-2026",
+   "vehicle": "MH 12 PQ 6618",
+   "dispatchDoc": "DC 2304",
+   "dispatchedThrough": "Road",
+   "destination": "Ranjangaon",
+   "irn": "6e87f59f222a420867d0f83651a722d1291beebf06ff16aa3087b69b63fe33ff",
+   "ackNo": "112696463661730",
+   "ackDate": "06-11-2026",
+   "footer": "This is a computer generated invoice and needs no signature.",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "GATE INWARD\nGE 4012\n06 NOV 2026 · 12:10",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": -4
+    },
+    {
+     "kind": "stamp",
+     "text": "PASSED FOR PAYMENT\n₹1,13,280\nJ.P. · 13/11",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": 3
+    }
+   ]
+  },
+  {
+   "id": "po-13",
+   "type": "po",
+   "title": "Purchase 13 · Purchase order",
+   "tab": "PO",
+   "group": "p13",
+   "company": {
+    "name": "Khamang Foods Private Limited",
+    "address": "Plot E-14, Ranjangaon MIDC, Taluka Shirur, Pune 412220",
+    "gstin": "27ZMSCK1510T1ZG",
+    "cin": "U10799MH2001PTC991797"
+   },
+   "number": "KF/PO/26-27/0961",
+   "date": "04-11-2026",
+   "vendor": {
+    "name": "Uruli Flexipack Private Limited",
+    "address": "Gat No. 1207, Pune–Solapur Highway, Uruli Kanchan, Taluka Haveli, District Pune",
+    "gstin": "27WSVCU3328N1ZU"
+   },
+   "deliverTo": "Stores, Ranjangaon plant",
+   "paymentTerms": "45 days",
+   "quoteRef": "Quotation comparison QC/26-27/0176",
+   "intro": "Against our indent IND/26-27/0714. Please supply the following as per the terms below.",
+   "lines": [
+    {
+     "desc": "Printed laminate roll, PET/​MET-⁠PET/​PE, Masala Peanuts 150 g",
+     "qty": 300,
+     "unit": "kg",
+     "rate": 320.0
+    }
+   ],
+   "taxNote": "Prices exclusive of GST. GST @ 18% (CGST 9% + SGST 9%) extra.",
+   "terms": [
+    "Delivery at our Ranjangaon plant, freight included.",
+    "Quote this PO number on your invoice and delivery challan.",
+    "Goods are subject to our weighment and QC. We pay for the quantity accepted.",
+    "Rates are firm for this order. Any change needs our written amendment.",
+    "Payment: 45 days from receipt of goods and invoice.",
+    "This order is approved in our ERP and carries no signature."
+   ],
+   "preparedBy": {
+    "name": "Yogesh Narwade, Purchase Executive",
+    "sign": ""
+   },
+   "preparedDate": "04-11-2026",
+   "approvedBy": {
+    "name": "Nitin Bhosale, Purchase Manager",
+    "sign": ""
+   },
+   "approvalDate": "04-11-2026 18:42 (ERP, mobile)",
+   "deliveryBy": "06-11-2026"
+  },
+  {
+   "id": "grn-13",
+   "type": "grn",
+   "title": "Purchase 13 · Goods receipt note",
+   "tab": "GRN",
+   "group": "p13",
+   "company": {
+    "name": "Khamang Foods Private Limited"
+   },
+   "number": "GRN/26-27/3978",
+   "date": "06-11-2026 15:10",
+   "unit": "Packing material stores, Ranjangaon",
+   "vendor": "Uruli Flexipack Private Limited",
+   "poRef": "KF/PO/26-27/0961",
+   "invoiceRef": "UFPL/26-27/2304 dt 06.11.2026",
+   "challan": "DC 2304",
+   "vehicle": "MH 12 PQ 6618",
+   "lines": [
+    {
+     "desc": "Printed laminate roll, PET/​MET-⁠PET/​PE, Masala Peanuts 150 g",
+     "unit": "kg",
+     "qtyChallan": 300,
+     "qtyReceived": 300,
+     "qtyAccepted": 300,
+     "qtyRejected": 0,
+     "remark": ""
+    }
+   ],
+   "receivedBy": "Mahendra Kharat",
+   "receivedSign": "Mahendra K.",
+   "remarks": "Print and seal strength checked by QC. OK.",
+   "qcBy": "Swati Jagtap",
+   "qcSign": "S. Jagtap"
+  },
+  {
+   "id": "inv-14",
+   "type": "invoice",
+   "title": "Purchase 14 · Tax invoice",
+   "tab": "Bill",
+   "group": "p14",
+   "supplier": {
+    "name": "Uruli Flexipack Private Limited",
+    "address": "Gat No. 1207, Pune–Solapur Highway\nUruli Kanchan, Taluka Haveli, District Pune",
+    "gstin": "27WSVCU3328N1ZU",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "WSVCU3328N"
+   },
+   "buyer": {
+    "name": "Khamang Foods Private Limited",
+    "address": "Plot E-14, Ranjangaon MIDC\nTaluka Shirur, Pune 412220",
+    "gstin": "27ZMSCK1510T1ZG",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "UFPL/26-27/2305",
+   "date": "06-11-2026",
+   "copy": "Original for recipient",
+   "paymentTerms": "45 days",
+   "placeOfSupply": "Maharashtra (27)",
+   "lines": [
+    {
+     "desc": "Printed laminate roll, PET/​MET-⁠PET/​PE, Chakli 200 g",
+     "hsn": "3920 62",
+     "qty": 250,
+     "unit": "kg",
+     "rate": 394.0,
+     "taxable": 98500.0,
+     "gstRate": 18
+    }
+   ],
+   "tax": "intra",
+   "total": 116230.0,
+   "bank": {
+    "name": "Narmada Valley Bank Ltd",
+    "account": "31200000036097",
+    "branch": "Uruli Kanchan",
+    "ifsc": "NMVB0001104"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Subject to Pune jurisdiction."
+   ],
+   "style": "erp",
+   "poRef": "KF/PO/26-27/0962",
+   "poDate": "04-11-2026",
+   "vehicle": "MH 12 PQ 6618",
+   "dispatchDoc": "DC 2305",
+   "dispatchedThrough": "Road",
+   "destination": "Ranjangaon",
+   "irn": "edc9e88ebccc524f03f13621718ba0462568a78d6e089d7fe5de3d3e85f0a439",
+   "ackNo": "112690074410219",
+   "ackDate": "06-11-2026",
+   "footer": "This is a computer generated invoice and needs no signature.",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "GATE INWARD\nGE 4012\n06 NOV 2026 · 12:10",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": -4
+    },
+    {
+     "kind": "stamp",
+     "text": "PASSED FOR PAYMENT\n₹1,16,230\nJ.P. · 13/11",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": 3
+    }
+   ]
+  },
+  {
+   "id": "po-14",
+   "type": "po",
+   "title": "Purchase 14 · Purchase order",
+   "tab": "PO",
+   "group": "p14",
+   "company": {
+    "name": "Khamang Foods Private Limited",
+    "address": "Plot E-14, Ranjangaon MIDC, Taluka Shirur, Pune 412220",
+    "gstin": "27ZMSCK1510T1ZG",
+    "cin": "U10799MH2001PTC991797"
+   },
+   "number": "KF/PO/26-27/0962",
+   "date": "04-11-2026",
+   "vendor": {
+    "name": "Uruli Flexipack Private Limited",
+    "address": "Gat No. 1207, Pune–Solapur Highway, Uruli Kanchan, Taluka Haveli, District Pune",
+    "gstin": "27WSVCU3328N1ZU"
+   },
+   "deliverTo": "Stores, Ranjangaon plant",
+   "paymentTerms": "45 days",
+   "quoteRef": "Quotation comparison QC/26-27/0176",
+   "intro": "Against our indent IND/26-27/0714. Please supply the following as per the terms below.",
+   "lines": [
+    {
+     "desc": "Printed laminate roll, PET/​MET-⁠PET/​PE, Chakli 200 g",
+     "qty": 250,
+     "unit": "kg",
+     "rate": 394.0
+    }
+   ],
+   "taxNote": "Prices exclusive of GST. GST @ 18% (CGST 9% + SGST 9%) extra.",
+   "terms": [
+    "Delivery at our Ranjangaon plant, freight included.",
+    "Quote this PO number on your invoice and delivery challan.",
+    "Goods are subject to our weighment and QC. We pay for the quantity accepted.",
+    "Rates are firm for this order. Any change needs our written amendment.",
+    "Payment: 45 days from receipt of goods and invoice.",
+    "This order is approved in our ERP and carries no signature."
+   ],
+   "preparedBy": {
+    "name": "Yogesh Narwade, Purchase Executive",
+    "sign": ""
+   },
+   "preparedDate": "04-11-2026",
+   "approvedBy": {
+    "name": "Nitin Bhosale, Purchase Manager",
+    "sign": ""
+   },
+   "approvalDate": "04-11-2026 18:44 (ERP, mobile)",
+   "deliveryBy": "06-11-2026"
+  },
+  {
+   "id": "grn-14",
+   "type": "grn",
+   "title": "Purchase 14 · Goods receipt note",
+   "tab": "GRN",
+   "group": "p14",
+   "company": {
+    "name": "Khamang Foods Private Limited"
+   },
+   "number": "GRN/26-27/3979",
+   "date": "06-11-2026 15:14",
+   "unit": "Packing material stores, Ranjangaon",
+   "vendor": "Uruli Flexipack Private Limited",
+   "poRef": "KF/PO/26-27/0962",
+   "invoiceRef": "UFPL/26-27/2305 dt 06.11.2026",
+   "challan": "DC 2305",
+   "vehicle": "MH 12 PQ 6618",
+   "lines": [
+    {
+     "desc": "Printed laminate roll, PET/​MET-⁠PET/​PE, Chakli 200 g",
+     "unit": "kg",
+     "qtyChallan": 250,
+     "qtyReceived": 250,
+     "qtyAccepted": 250,
+     "qtyRejected": 0,
+     "remark": ""
+    }
+   ],
+   "receivedBy": "Mahendra Kharat",
+   "receivedSign": "Mahendra K.",
+   "remarks": "Print and seal strength checked by QC. OK.",
+   "qcBy": "Swati Jagtap",
+   "qcSign": "S. Jagtap"
+  },
+  {
+   "id": "inv-15",
+   "type": "invoice",
+   "title": "Purchase 15 · Tax invoice",
+   "tab": "Bill",
+   "group": "p15",
+   "supplier": {
+    "name": "Uruli Flexipack Private Limited",
+    "address": "Gat No. 1207, Pune–Solapur Highway\nUruli Kanchan, Taluka Haveli, District Pune",
+    "gstin": "27WSVCU3328N1ZU",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "WSVCU3328N"
+   },
+   "buyer": {
+    "name": "Khamang Foods Private Limited",
+    "address": "Plot E-14, Ranjangaon MIDC\nTaluka Shirur, Pune 412220",
+    "gstin": "27ZMSCK1510T1ZG",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "UFPL/26-27/2306",
+   "date": "06-11-2026",
+   "copy": "Original for recipient",
+   "paymentTerms": "45 days",
+   "placeOfSupply": "Maharashtra (27)",
+   "lines": [
+    {
+     "desc": "Printed laminate roll, PET/​MET-⁠PET/​PE, Bhavnagari Gathiya 400 g",
+     "hsn": "3920 62",
+     "qty": 320,
+     "unit": "kg",
+     "rate": 310.0,
+     "taxable": 99200.0,
+     "gstRate": 18
+    }
+   ],
+   "tax": "intra",
+   "total": 117056.0,
+   "bank": {
+    "name": "Narmada Valley Bank Ltd",
+    "account": "31200000036097",
+    "branch": "Uruli Kanchan",
+    "ifsc": "NMVB0001104"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Subject to Pune jurisdiction."
+   ],
+   "style": "erp",
+   "poRef": "KF/PO/26-27/0963",
+   "poDate": "04-11-2026",
+   "vehicle": "MH 12 PQ 6618",
+   "dispatchDoc": "DC 2306",
+   "dispatchedThrough": "Road",
+   "destination": "Ranjangaon",
+   "irn": "e5b1868d907c467a6e52c41837556873a65bee2225dc23491b9c03e5484100ab",
+   "ackNo": "112617475764029",
+   "ackDate": "06-11-2026",
+   "footer": "This is a computer generated invoice and needs no signature.",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "GATE INWARD\nGE 4012\n06 NOV 2026 · 12:10",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": -4
+    },
+    {
+     "kind": "stamp",
+     "text": "PASSED FOR PAYMENT\n₹1,17,056\nJ.P. · 13/11",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": 3
+    }
+   ]
+  },
+  {
+   "id": "po-15",
+   "type": "po",
+   "title": "Purchase 15 · Purchase order",
+   "tab": "PO",
+   "group": "p15",
+   "company": {
+    "name": "Khamang Foods Private Limited",
+    "address": "Plot E-14, Ranjangaon MIDC, Taluka Shirur, Pune 412220",
+    "gstin": "27ZMSCK1510T1ZG",
+    "cin": "U10799MH2001PTC991797"
+   },
+   "number": "KF/PO/26-27/0963",
+   "date": "04-11-2026",
+   "vendor": {
+    "name": "Uruli Flexipack Private Limited",
+    "address": "Gat No. 1207, Pune–Solapur Highway, Uruli Kanchan, Taluka Haveli, District Pune",
+    "gstin": "27WSVCU3328N1ZU"
+   },
+   "deliverTo": "Stores, Ranjangaon plant",
+   "paymentTerms": "45 days",
+   "quoteRef": "Quotation comparison QC/26-27/0176",
+   "intro": "Against our indent IND/26-27/0714. Please supply the following as per the terms below.",
+   "lines": [
+    {
+     "desc": "Printed laminate roll, PET/​MET-⁠PET/​PE, Bhavnagari Gathiya 400 g",
+     "qty": 320,
+     "unit": "kg",
+     "rate": 310.0
+    }
+   ],
+   "taxNote": "Prices exclusive of GST. GST @ 18% (CGST 9% + SGST 9%) extra.",
+   "terms": [
+    "Delivery at our Ranjangaon plant, freight included.",
+    "Quote this PO number on your invoice and delivery challan.",
+    "Goods are subject to our weighment and QC. We pay for the quantity accepted.",
+    "Rates are firm for this order. Any change needs our written amendment.",
+    "Payment: 45 days from receipt of goods and invoice.",
+    "This order is approved in our ERP and carries no signature."
+   ],
+   "preparedBy": {
+    "name": "Yogesh Narwade, Purchase Executive",
+    "sign": ""
+   },
+   "preparedDate": "04-11-2026",
+   "approvedBy": {
+    "name": "Nitin Bhosale, Purchase Manager",
+    "sign": ""
+   },
+   "approvalDate": "04-11-2026 18:47 (ERP, mobile)",
+   "deliveryBy": "06-11-2026"
+  },
+  {
+   "id": "grn-15",
+   "type": "grn",
+   "title": "Purchase 15 · Goods receipt note",
+   "tab": "GRN",
+   "group": "p15",
+   "company": {
+    "name": "Khamang Foods Private Limited"
+   },
+   "number": "GRN/26-27/3980",
+   "date": "06-11-2026 15:19",
+   "unit": "Packing material stores, Ranjangaon",
+   "vendor": "Uruli Flexipack Private Limited",
+   "poRef": "KF/PO/26-27/0963",
+   "invoiceRef": "UFPL/26-27/2306 dt 06.11.2026",
+   "challan": "DC 2306",
+   "vehicle": "MH 12 PQ 6618",
+   "lines": [
+    {
+     "desc": "Printed laminate roll, PET/​MET-⁠PET/​PE, Bhavnagari Gathiya 400 g",
+     "unit": "kg",
+     "qtyChallan": 320,
+     "qtyReceived": 320,
+     "qtyAccepted": 320,
+     "qtyRejected": 0,
+     "remark": ""
+    }
+   ],
+   "receivedBy": "Mahendra Kharat",
+   "receivedSign": "Mahendra K.",
+   "remarks": "Print and seal strength checked by QC. OK.",
+   "qcBy": "Swati Jagtap",
+   "qcSign": "S. Jagtap"
+  },
+  {
+   "id": "vendor-master",
+   "type": "table",
+   "style": "register",
+   "title": "Vendor master · extract",
+   "heading": "Vendor master (extract)",
+   "company": "Khamang Foods Private Limited",
+   "subtitle": "Vendors in the bank-⁠change log, as on 13-11-2026, from the ERP",
+   "columns": [
+    {
+     "key": "name",
+     "label": "Vendor"
+    },
+    {
+     "key": "email",
+     "label": "Registered e-⁠mail"
+    },
+    {
+     "key": "phone",
+     "label": "Phone"
+    },
+    {
+     "key": "acc",
+     "label": "Bank account",
+     "mono": true
+    },
+    {
+     "key": "ifsc",
+     "label": "IFSC",
+     "mono": true
+    },
+    {
+     "key": "code",
+     "label": "Code",
+     "mono": true
+    },
+    {
+     "key": "since",
+     "label": "Vendor since"
+    }
+   ],
+   "rows": [
+    {
+     "name": "Kesnand Peanuts Traders",
+     "code": "KV-0109",
+     "acc": "31200000075692",
+     "ifsc": "NMVB0001109",
+     "email": "datta.harpale@email.com",
+     "phone": "98XXXXXXXX",
+     "since": "10-01-2022"
+    },
+    {
+     "name": "Lonikand Infosystems Private Limited",
+     "code": "KV-0116",
+     "acc": "31200000131125",
+     "ifsc": "NMVB0001116",
+     "email": "accounts.lonikand@email.com",
+     "phone": "98XXXXXXXX",
+     "since": "17-08-2023"
+    },
+    {
+     "name": "Shikrapur Corrugated Boxes",
+     "code": "KV-0105",
+     "acc": "31201188405512",
+     "ifsc": "ABRC0002417",
+     "email": "shikrapur.boxes@email.com",
+     "phone": "98XXXXXXXX",
+     "since": "15-06-2024"
+    },
+    {
+     "name": "Avsari Agri Produce Company",
+     "code": "KV-0115",
+     "acc": "31200000123206",
+     "ifsc": "NMVB0001115",
+     "email": "avsari.produce@email.com",
+     "phone": "98XXXXXXXX",
+     "since": "16-07-2022"
+    }
+   ]
+  },
+  {
+   "id": "change-log",
+   "type": "table",
+   "style": "register",
+   "title": "Vendor master change log · bank fields",
+   "heading": "Vendor master change log",
+   "company": "Khamang Foods Private Limited",
+   "subtitle": "Bank fields, 1 April – 13 November 2026 · printed from the ERP on 13.11.2026",
+   "columns": [
+    {
+     "key": "vendor",
+     "label": "Vendor"
+    },
+    {
+     "key": "when",
+     "label": "Changed on"
+    },
+    {
+     "key": "proof",
+     "label": "Request and proof"
+    },
+    {
+     "key": "call",
+     "label": "Call-back"
+    },
+    {
+     "key": "cfo",
+     "label": "CFO approval"
+    },
+    {
+     "key": "by",
+     "label": "Keyed by"
+    },
+    {
+     "key": "field",
+     "label": "Field"
+    },
+    {
+     "key": "old",
+     "label": "Old value",
+     "mono": true
+    },
+    {
+     "key": "new",
+     "label": "New value",
+     "mono": true
+    }
+   ],
+   "rows": [
+    {
+     "when": "12.05.2026 11:20",
+     "vendor": "Kesnand Peanuts Traders",
+     "field": "Bank account",
+     "old": "30910002246581",
+     "new": "31200000075692",
+     "by": "apexec01",
+     "proof": "PR-VM/014; bank letter",
+     "call": "11.05, J. Pingle",
+     "cfo": "A. Pradhan, 12.05"
+    },
+    {
+     "when": "03.07.2026 15:05",
+     "vendor": "Lonikand Infosystems Private Limited",
+     "field": "IFSC",
+     "old": "NMVB0000412",
+     "new": "NMVB0001116",
+     "by": "apexec01",
+     "proof": "PR-VM/022; bank letter on branch merger",
+     "call": "03.07, J. Pingle",
+     "cfo": "A. Pradhan, 03.07"
+    },
+    {
+     "when": "02.09.2026 16:48",
+     "vendor": "Shikrapur Corrugated Boxes",
+     "field": "Bank account and IFSC",
+     "old": "31200000044016",
+     "new": "31201188405512",
+     "by": "apexec02",
+     "proof": "PR-VM/027; vendor’s mail",
+     "call": "–",
+     "cfo": "–"
+    },
+    {
+     "when": "21.10.2026 12:40",
+     "vendor": "Avsari Agri Produce Company",
+     "field": "Bank account",
+     "old": "20410005587312",
+     "new": "31200000123206",
+     "by": "apexec01",
+     "proof": "PR-VM/031; cancelled cheque",
+     "call": "20.10, J. Pingle",
+     "cfo": "A. Pradhan, 21.10"
+    }
+   ],
+   "notes": [
+    "PR-VM: the request Purchase raises in the ERP for a vendor-⁠master change.",
+    "Call-⁠back: Accounts call the vendor on the phone number already in the vendor master."
+   ]
+  },
+  {
+   "id": "mail-change",
+   "type": "letter",
+   "style": "email",
+   "title": "Mail · Nitin’s forward of the bank change",
+   "subject": "Fw: Change in bank details – Shikrapur Corrugated Boxes",
+   "from": {
+    "name": "Nitin Bhosale",
+    "email": "nitin.bhosale@email.com"
+   },
+   "to": [
+    {
+     "name": "Jyoti Pingle",
+     "email": "jyoti.pingle@email.com"
+    }
+   ],
+   "date": "Wed, 2 Sep 2026, 12:31",
+   "body": [
+    "Jyoti, raised PR-VM/027 for this. Pls update in system, their payment is due this Friday.",
+    "Nitin",
+    "Sent from my phone",
+    "",
+    "---------- Forwarded message ----------",
+    "From: Shikrapur Corrugated Boxes <shikrapurboxes@email.com>",
+    "Date: Wed, 2 Sep 2026, 10:12",
+    "To: Nitin Bhosale <nitin.bhosale@email.com>",
+    "",
+    "Dear Sir,",
+    "We have shifted our banking to Ambar Commercial Bank, Shikrapur branch. Our account with Narmada Valley Bank is being closed, so please make all payments from this week to the new account:",
+    "**A/c no. 31201188405512 · IFSC ABRC0002417**",
+    "Kindly update it before your Friday payment.",
+    "Regards,",
+    "Accounts, Shikrapur Corrugated Boxes",
+    "Mob. 98XXXXXXXX (for any query)"
+   ]
+  },
+  {
+   "id": "payments-sep",
+   "type": "table",
+   "style": "bank",
+   "title": "Payments · 4 and 18 September",
+   "tab": "Payments",
+   "kindLabel": "Net banking print",
+   "brand": "Narmada Valley Bank Ltd",
+   "docName": "Bulk payment report",
+   "subtitle": "Khamang Foods Private Limited · current account ending 3381 · batches of Friday 04-09-2026 and Friday 18-09-2026 (extract)",
+   "meta": [
+    {
+     "label": "Prepared by",
+     "value": "apexec01"
+    },
+    {
+     "label": "Released by",
+     "value": "jpingle (J. Pingle)"
+    },
+    {
+     "label": "Authorised by",
+     "value": "apradhan (A. Pradhan)"
+    }
+   ],
+   "columns": [
+    {
+     "key": "ben",
+     "label": "Beneficiary"
+    },
+    {
+     "key": "date",
+     "label": "Value date"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "acc",
+     "label": "Account no.",
+     "mono": true
+    },
+    {
+     "key": "ifsc",
+     "label": "IFSC",
+     "mono": true
+    },
+    {
+     "key": "bills",
+     "label": "Bills"
+    },
+    {
+     "key": "utr",
+     "label": "UTR",
+     "mono": true
+    }
+   ],
+   "rows": [
+    {
+     "ben": "Karegaon Transport Company",
+     "acc": "31200000051935",
+     "ifsc": "NMVB0001106",
+     "bills": "KTC/0611, KTC/0618",
+     "amt": 148680.0,
+     "utr": "NMVBN09810821759",
+     "date": "04-09-2026"
+    },
+    {
+     "ben": "Shikrapur Corrugated Boxes",
+     "acc": "31201188405512",
+     "ifsc": "ABRC0002417",
+     "bills": "SCB/1187",
+     "amt": 386400.0,
+     "utr": "NMVBN88906674689",
+     "date": "04-09-2026"
+    },
+    {
+     "ben": "Supe Besan Udyog",
+     "acc": "31200000020259",
+     "ifsc": "NMVB0001102",
+     "bills": "SBU/26-27/0347",
+     "amt": 294000.0,
+     "utr": "NMVBN60673659931",
+     "date": "04-09-2026"
+    },
+    {
+     "ben": "Pimpalgaon Cold Chain Services",
+     "acc": "31200000067773",
+     "ifsc": "NMVB0001108",
+     "bills": "PCCS/26-27/0162, PCCS/26-27/0171",
+     "amt": 158472.0,
+     "utr": "NMVBN45330266150",
+     "date": "18-09-2026"
+    },
+    {
+     "ben": "Shikrapur Corrugated Boxes",
+     "acc": "31201188405512",
+     "ifsc": "ABRC0002417",
+     "bills": "SCB/1203",
+     "amt": 412800.0,
+     "utr": "NMVBN36484961128",
+     "date": "18-09-2026"
+    },
+    {
+     "ben": "Inkpot Advertising LLP",
+     "acc": "31200000099449",
+     "ifsc": "NMVB0001112",
+     "bills": "INK/26-27/0218",
+     "amt": 226890.0,
+     "utr": "NMVBN12434687263",
+     "date": "18-09-2026"
+    }
+   ],
+   "footnote": "Printed from corporate net banking. Each batch needs a release and an authorisation."
+  },
+  {
+   "id": "mail-reminder",
+   "type": "letter",
+   "style": "email",
+   "title": "Mail · Shikrapur’s reminder and Jyoti’s reply",
+   "subject": "Re: Payment pending – bills SCB/1187 and SCB/1203",
+   "from": {
+    "name": "Jyoti Pingle",
+    "email": "jyoti.pingle@email.com"
+   },
+   "to": [
+    {
+     "name": "Shikrapur Corrugated Boxes",
+     "email": "shikrapur.boxes@email.com"
+    }
+   ],
+   "date": "Mon, 26 Oct 2026, 15:20",
+   "body": [
+    "Dear Sir,",
+    "Both bills were paid by NEFT: SCB/1187 on 4 September and SCB/1203 on 18 September, to your account ending 5512. Please check with your bank.",
+    "Regards,",
+    "Jyoti Pingle, Accounts Payable, Khamang Foods",
+    "",
+    "---------- Original message ----------",
+    "From: Shikrapur Corrugated Boxes <shikrapur.boxes@email.com>",
+    "Date: Mon, 26 Oct 2026, 11:05",
+    "To: Jyoti Pingle <jyoti.pingle@email.com>",
+    "",
+    "Dear Madam,",
+    "Our ledger shows two of your payments pending: bill SCB/1187 of 21-07-2026 for ₹3,86,400 and bill SCB/1203 of 04-08-2026 for ₹4,12,800. Both are past the 45 days. Kindly release them at the earliest.",
+    "Regards,",
+    "Accounts, Shikrapur Corrugated Boxes"
+   ]
+  }
+ ],
+ "tasks": [
+  {
+   "id": "t1",
+   "type": "order",
+   "stage": "Planning",
+   "title": "Walk one purchase end to end",
+   "weight": 9,
+   "prompt": "Before any testing, Sameer wants one purchase walked from the indent to the payment: Shikrapur’s July order for 12,000 boxes. Its papers are in the walkthrough set. Put the eight steps in the order they happened.",
+   "hints": [
+    "Every step left a paper with a date on it. Open the walkthrough set and put the papers in date order."
+   ],
+   "steps": [
+    {
+     "id": "s1",
+     "text": "Packing raises an indent for 12,000 boxes; the production head approves it"
+    },
+    {
+     "id": "s2",
+     "text": "Purchase gets three quotations and recommends the lowest, Shikrapur"
+    },
+    {
+     "id": "s3",
+     "text": "Kavita approves the PO for ₹2,58,000 and it goes to Shikrapur"
+    },
+    {
+     "id": "s4",
+     "text": "Security logs the truck at the gate with Shikrapur’s bill and challan"
+    },
+    {
+     "id": "s5",
+     "text": "Stores count the boxes, QC passes them and the GRN goes into the ERP"
+    },
+    {
+     "id": "s6",
+     "text": "Accounts match the bill with the PO and the GRN, then book it"
+    },
+    {
+     "id": "s7",
+     "text": "The bill joins the Friday batch, which Jyoti releases and Ashwin authorises"
+    },
+    {
+     "id": "s8",
+     "text": "The bank pays Shikrapur, and its account in Khamang’s books is cleared"
+    }
+   ],
+   "answer": [
+    "s1",
+    "s2",
+    "s3",
+    "s4",
+    "s5",
+    "s6",
+    "s7",
+    "s8"
+   ],
+   "notes": {
+    "s1": "Indent 0388 of 3 July, signed by the production head. The control: the people who need the boxes ask for them, and their head agrees. Evidence: the indent.",
+    "s2": "Comparison 0034 of 6 July: three box makers, Shikrapur lowest at ₹21.50. The policy wants three quotes above ₹50,000. Evidence: the comparison sheet.",
+    "s3": "PO 0455 of 8 July for ₹2,58,000, approved by Kavita that morning, inside her ₹5,00,000. The key control: approval before the order goes out.",
+    "s4": "Gate slip 1951, 15 July at 10:05 am. Nothing comes in without a record of what and when, and that time starts the 24 hours for the GRN.",
+    "s5": "GRN 1929, keyed in at 3:30 pm the same day, 12,000 accepted after QC. Khamang pays only for what stores accepted.",
+    "s6": "Voucher 2214 of 17 July: bill, PO and GRN agree at 12,000 boxes and ₹21.50. The key control: the three-⁠way match before the bill is booked.",
+    "s7": "Batch of Friday 28 August, released by Jyoti and authorised by Ashwin: two people before money leaves the bank.",
+    "s8": "₹2,70,900 paid to Shikrapur’s account ending 4016, the one the vendor master held on 28 August. That is why the master itself has to be protected."
+   },
+   "docs": [
+    "wt-voucher",
+    "wt-bill",
+    "wt-po",
+    "wt-grn",
+    "wt-gate",
+    "wt-pay",
+    "wt-quotes",
+    "wt-indent",
+    "policy"
+   ]
+  },
+  {
+   "id": "t2",
+   "type": "items",
+   "stage": "Fieldwork",
+   "title": "Test Sameer’s 15 purchases",
+   "weight": 2,
+   "noun": [
+    "purchase",
+    "purchases"
+   ],
+   "prompt": "Open each purchase with its bill, PO and GRN; the purchase policy and the PO register are under Other papers. Mark it Fine or Exception and pick what failed: approval, three-⁠way match or GRN timing. Your calls go to Sameer when you move on.",
+   "lockOnLeave": {
+    "ask": "Hand your purchase calls to Sameer?",
+    "note": "You can’t change them after this.",
+    "yes": "Hand them in",
+    "done": "Handed to Sameer. You can read your calls but not change them."
+   },
+   "hints": [
+    "Read the policy first: the approval limits, a PO before buying, 24 hours for a GRN, 2% on rate and 1% on quantity. A difference inside a tolerance is not an exception.",
+    "Read the PO register by indent number. One requirement can hide in several POs, each inside a limit."
+   ],
+   "columns": [
+    {
+     "key": "label"
+    },
+    {
+     "key": "amount",
+     "format": "inr"
+    },
+    {
+     "key": "dated"
+    }
+   ],
+   "fields": [
+    {
+     "id": "verdict",
+     "kind": "choice",
+     "label": "Your call",
+     "gate": true,
+     "options": [
+      {
+       "id": "ok",
+       "label": "Fine"
+      },
+      {
+       "id": "exception",
+       "label": "Exception"
+      }
+     ]
+    },
+    {
+     "id": "reasons",
+     "kind": "multi",
+     "label": "What failed",
+     "showIf": {
+      "verdict": "exception"
+     },
+     "options": [
+      {
+       "id": "split",
+       "label": "One requirement split into POs to stay under a limit",
+       "short": "split PO"
+      },
+      {
+       "id": "limit",
+       "label": "PO value above its approver’s limit",
+       "short": "approval above limit"
+      },
+      {
+       "id": "postfacto",
+       "label": "PO raised after the goods or the bill came in",
+       "short": "post-⁠facto PO"
+      },
+      {
+       "id": "nopo",
+       "label": "No PO at all, where the policy needs one",
+       "short": "no PO"
+      },
+      {
+       "id": "rate",
+       "label": "Bill rate over the PO rate by more than 2%",
+       "short": "rate above PO"
+      },
+      {
+       "id": "qty",
+       "label": "Passed for more than stores accepted, by more than 1%",
+       "short": "quantity above GRN"
+      },
+      {
+       "id": "grn",
+       "label": "GRN keyed in more than 24 hours after the goods came in",
+       "short": "late GRN"
+      },
+      {
+       "id": "paid",
+       "label": "Paid before the goods were received",
+       "short": "paid before GRN"
+      }
+     ],
+     "weight": 3
+    },
+    {
+     "id": "note",
+     "kind": "text",
+     "label": "Your note for the file",
+     "placeholder": "For example: bill rate ₹18.50 = PO; GRN 3 hours after the gate"
+    }
+   ],
+   "docs": [
+    "policy",
+    "po-register",
+    "inv-01",
+    "po-01",
+    "grn-01",
+    "inv-02",
+    "po-02",
+    "grn-02",
+    "dn-02",
+    "inv-03",
+    "po-03",
+    "grn-03",
+    "inv-04",
+    "po-04",
+    "grn-04",
+    "inv-05",
+    "po-05",
+    "grn-05",
+    "inv-06",
+    "po-06",
+    "grn-06",
+    "inv-07",
+    "po-07",
+    "grn-07",
+    "inv-08",
+    "br-08",
+    "inv-09",
+    "po-09",
+    "grn-09",
+    "inv-10",
+    "po-10",
+    "grn-10",
+    "inv-11",
+    "po-11",
+    "grn-11",
+    "inv-12",
+    "po-12",
+    "cc-12",
+    "inv-13",
+    "po-13",
+    "grn-13",
+    "inv-14",
+    "po-14",
+    "grn-14",
+    "inv-15",
+    "po-15",
+    "grn-15"
+   ],
+   "items": [
+    {
+     "id": "p01",
+     "label": "Purchase 1 · Lonand Masala",
+     "amount": 71232.0,
+     "dated": "bill dated 11 Jun 2026",
+     "docs": [
+      "inv-01",
+      "po-01",
+      "grn-01"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Purchase 1: chilli and turmeric billed at the PO’s rates, Nitin’s approval inside his ₹1,00,000, received and keyed in on 11 June, passed for the bill amount. Fine."
+    },
+    {
+     "id": "p02",
+     "label": "Purchase 2 · Kesnand Peanuts",
+     "amount": 823200.0,
+     "dated": "bill dated 13 Jul 2026",
+     "docs": [
+      "inv-02",
+      "po-02",
+      "grn-02",
+      "dn-02"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Purchase 2: QC sent back 250 kg of mouldy kernels. Debit note 0058 of 15 July takes ₹25,725 off, and Accounts passed only ₹7,97,475 for the 7,750 kg kept. The match did its job. Fine."
+    },
+    {
+     "id": "p03",
+     "label": "Purchase 3 · Kedgaon Edible Oils",
+     "amount": 1302000.0,
+     "dated": "bill dated 7 Aug 2026",
+     "docs": [
+      "inv-03",
+      "po-03",
+      "grn-03"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "reasons": [
+       "qty"
+      ]
+     },
+     "note": "Purchase 3: the weighbridge gave 9,640 kg against Kedgaon’s 10,000. That is 3.6% short, and the policy allows 1%. Accounts still passed ₹13,02,000 for the full 10,000 kg: ₹46,872 too much with GST. Exception."
+    },
+    {
+     "id": "p04",
+     "label": "Purchase 4 · Lonikand Infosystems",
+     "amount": 84960.0,
+     "dated": "bill dated 17 Aug 2026",
+     "docs": [
+      "inv-04",
+      "po-04",
+      "grn-04"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Purchase 4: ₹72,000 is within Nitin’s limit, but he was on leave and Kavita approved it. The policy lets a higher level approve. PO, GRN and bill agree on the laptop and the dock. Fine."
+    },
+    {
+     "id": "p05",
+     "label": "Purchase 5 · Yavat Sweeteners",
+     "amount": 437850.0,
+     "dated": "bill dated 19 Aug 2026",
+     "docs": [
+      "inv-05",
+      "po-05",
+      "grn-05"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "reasons": [
+       "postfacto"
+      ]
+     },
+     "note": "Purchase 5: Yavat billed on 19 August against Nitin’s verbal order, and the sugar reached the gate at 5:50 pm. Kavita approved the PO the next morning, at the bill’s own ₹41.70. The approval came after the buying. Post-⁠facto PO. Exception."
+    },
+    {
+     "id": "p06",
+     "label": "Purchase 6 · Kedgaon Edible Oils",
+     "amount": 1323000.0,
+     "dated": "bill dated 4 Sep 2026",
+     "docs": [
+      "inv-06",
+      "po-06",
+      "grn-06"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "reasons": [
+       "qty"
+      ]
+     },
+     "note": "Purchase 6: the second short tanker. 9,750 kg weighed against 10,000 billed, 2.5% short against the 1% allowed. Passed in full again, ₹33,075 too much with GST. Exception. Two in a row is a pattern to ask about."
+    },
+    {
+     "id": "p07",
+     "label": "Purchase 7 · Lonand Masala",
+     "amount": 106470.0,
+     "dated": "bill dated 14 Sep 2026",
+     "docs": [
+      "inv-07",
+      "po-07",
+      "grn-07"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "reasons": [
+       "rate"
+      ]
+     },
+     "note": "Purchase 7: chilli powder billed at ₹252 a kg; the PO, raised on rate contract RC/26-27/04, says ₹236. That is 6.8% over, far past the 2% the policy allows, and no amended PO is on file. ₹5,040 extra paid with GST. Exception."
+    },
+    {
+     "id": "p08",
+     "label": "Purchase 8 · Sanaswadi Engineering",
+     "amount": 7316.0,
+     "dated": "bill dated 22 Sep 2026",
+     "docs": [
+      "inv-08",
+      "br-08"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Purchase 8: no PO, but this was a 3:40 am breakdown on fryer line 2, and the bill is ₹7,316 with GST. The policy lets emergency repairs under ₹10,000 go without a PO, and the breakdown report proves the emergency. Fine."
+    },
+    {
+     "id": "p09",
+     "label": "Purchase 9 · Kedgaon Edible Oils",
+     "amount": 1312500.0,
+     "dated": "bill dated 9 Oct 2026",
+     "docs": [
+      "inv-09",
+      "po-09",
+      "grn-09"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Purchase 9: 9,970 kg weighed against 10,000 billed, 0.3% short and inside the policy’s 1%, so the match holds. Fine. Keep it beside Purchases 3 and 6: those two are the pattern, this one is not."
+    },
+    {
+     "id": "p10",
+     "label": "Purchase 10 · Nhavare Packaging",
+     "amount": 96600.0,
+     "dated": "bill dated 14 Oct 2026",
+     "docs": [
+      "inv-10",
+      "po-10",
+      "grn-10"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "reasons": [
+       "grn"
+      ]
+     },
+     "note": "Purchase 10: the boxes came in at the gate on 14 October at 11:20 am, but the GRN was keyed in on 20 October. Six days against the policy’s 24 hours. Quantity and rate agree. Exception. Ask stores why the GRN waited."
+    },
+    {
+     "id": "p11",
+     "label": "Purchase 11 · Uruli Flexipack",
+     "amount": 152928.0,
+     "dated": "bill dated 21 Oct 2026",
+     "docs": [
+      "inv-11",
+      "po-11",
+      "grn-11"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Purchase 11: billed at ₹324 against the PO’s ₹318, which is 1.9% over and inside the 2%. The truck came in at 6:40 pm and the GRN went in at 9:30 the next morning, inside the 24 hours. Fine on both."
+    },
+    {
+     "id": "p12",
+     "label": "Purchase 12 · Babhulsar Facility Services",
+     "amount": 231280.0,
+     "dated": "bill dated 2 Nov 2026",
+     "docs": [
+      "inv-12",
+      "po-12",
+      "cc-12"
+     ],
+     "answer": {
+      "verdict": "ok"
+     },
+     "note": "Purchase 12: a service, so there is no GRN. Priyanka’s completion certificate for October does that job: staff deployed and the work checked. The bill matches the monthly ₹1,96,000 in the PO the CFO approved for the year. Fine."
+    },
+    {
+     "id": "p13",
+     "label": "Purchase 13 · Uruli Flexipack",
+     "amount": 113280.0,
+     "dated": "bill dated 6 Nov 2026",
+     "docs": [
+      "inv-13",
+      "po-13",
+      "grn-13"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "reasons": [
+       "split"
+      ]
+     },
+     "note": "Purchase 13: ₹96,000, inside Nitin’s limit on its own. But the PO register shows two more POs to Uruli the same day, on the same indent, 0714. Together they come to ₹2,93,700, which needed Kavita. Split PO. Exception."
+    },
+    {
+     "id": "p14",
+     "label": "Purchase 14 · Uruli Flexipack",
+     "amount": 116230.0,
+     "dated": "bill dated 6 Nov 2026",
+     "docs": [
+      "inv-14",
+      "po-14",
+      "grn-14"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "reasons": [
+       "split"
+      ]
+     },
+     "note": "Purchase 14: the second slice of indent 0714, ₹98,500, approved two minutes after the first. Each PO is just under ₹1,00,000, and one indent number sits behind all three. Split PO. Exception."
+    },
+    {
+     "id": "p15",
+     "label": "Purchase 15 · Uruli Flexipack",
+     "amount": 117056.0,
+     "dated": "bill dated 6 Nov 2026",
+     "docs": [
+      "inv-15",
+      "po-15",
+      "grn-15"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "reasons": [
+       "split"
+      ]
+     },
+     "note": "Purchase 15: the third slice, ₹99,200. Report the three as one finding with the total of ₹2,93,700, not as three small ones. Split PO. Exception."
+    }
+   ]
+  },
+  {
+   "id": "t3",
+   "type": "choice",
+   "stage": "Review",
+   "title": "Follow up a bank change in the log",
+   "weight": 3,
+   "prompt": "Shikrapur’s bank account was changed on 2 September. Read the change log, Nitin’s mail, the September payments and Shikrapur’s reminder, then answer Sameer’s three questions. Your answers go to Sameer when you move on.",
+   "lockOnLeave": {
+    "ask": "Hand your answers on the bank change to Sameer?",
+    "note": "You can’t change them after this.",
+    "yes": "Hand them in",
+    "done": "Handed to Sameer. You can read your answers but not change them."
+   },
+   "hints": [
+    "Put section 5 of the purchase policy next to Shikrapur’s row in the log, then compare the address the request came from with the one in the vendor master."
+   ],
+   "questions": [
+    {
+     "id": "q1",
+     "multi": true,
+     "text": "Section 5 of the purchase policy sets the steps for a bank change. Which of them did Shikrapur’s change on 2 September skip?",
+     "sample": "Which steps of section 5 Shikrapur’s change skipped",
+     "options": [
+      {
+       "id": "a",
+       "text": "Proof from the vendor: a cancelled cheque or a bank letter",
+       "why": "Nothing but a mail is on file. The log’s proof column names only the vendor’s mail, and that mail has no cheque or letter with it.",
+       "correct": true
+      },
+      {
+       "id": "b",
+       "text": "A call-⁠back to a number Khamang already had for Shikrapur",
+       "why": "The call-⁠back column is blank. A call to the number in the master would have put the change to Shikrapur itself before a rupee moved.",
+       "correct": true
+      },
+      {
+       "id": "c",
+       "text": "CFO approval in the vendor-⁠master log",
+       "why": "The approval column is blank. Nitin’s “Pls update in system” is a Purchase request; section 5 wants the CFO’s approval, recorded in the log.",
+       "correct": true
+      },
+      {
+       "id": "d",
+       "text": "A request from Purchase",
+       "why": "There was one: Nitin, the Purchase Manager, raised PR-VM/027 and forwarded the mail. The request was there; the checks after it were not."
+      },
+      {
+       "id": "e",
+       "text": "An entry in the vendor-⁠master change log",
+       "why": "Not skipped: the change is in the log, keyed by apexec02 at 4:48 pm. The blank columns beside that entry show what was missed."
+      }
+     ]
+    },
+    {
+     "id": "q2",
+     "text": "On 26 October Shikrapur wrote that bills SCB/1187 and SCB/1203 are unpaid. What can you tell Sameer today?",
+     "sample": "What you can tell Sameer about the two unpaid bills",
+     "options": [
+      {
+       "id": "a",
+       "text": "The AP executive who keyed the change has taken the ₹7,99,200; the change log and the two payments prove it.",
+       "why": "Nothing on file shows who gained. The log shows who keyed the change; who took the money needs evidence we do not have."
+      },
+      {
+       "id": "b",
+       "text": "₹7,99,200 went to an account nobody verified, and Shikrapur says it is unpaid. It may be lost.",
+       "why": "Facts first, then the risk, and no names. Shikrapur still has to confirm the account is not its own, and the bank has to trace the transfers.",
+       "correct": true
+      },
+      {
+       "id": "c",
+       "text": "Nothing yet: Jyoti has told Shikrapur that both bills were paid, so the gap must be at Shikrapur’s own bank.",
+       "why": "Jyoti’s reply shows where the money went. It does not show the account is Shikrapur’s, and the change behind it was never verified."
+      },
+      {
+       "id": "d",
+       "text": "Khamang must pay Shikrapur the ₹7,99,200 again in this Friday’s batch, and recover it from the bank later.",
+       "why": "Paying again, and from whom to recover, are for Ashwin to decide once the facts are confirmed. Our job is to report what happened and the risk."
+      }
+     ]
+    },
+    {
+     "id": "q3",
+     "text": "What do you do first?",
+     "options": [
+      {
+       "id": "a",
+       "text": "Call the mobile number given in the 2 September mail and ask Shikrapur whether the new account is really its own.",
+       "why": "Anything in that mail came with the request. If the mail was false, you would be asking the person who sent it."
+      },
+      {
+       "id": "b",
+       "text": "Reply to shikrapurboxes@email.com, attach the change log and ask Shikrapur to confirm its bank account in writing.",
+       "why": "Same problem: that is the address the change came from. The vendor master has a different one, and the log would tell its sender what we know."
+      },
+      {
+       "id": "c",
+       "text": "Tell Sameer now, with the log row, the mail and both payments, and suggest a call-⁠back on the master’s number.",
+       "why": "A possible loss comes to me the same day, with the papers. The call-⁠back uses the number Khamang had before the change.",
+       "correct": true
+      },
+      {
+       "id": "d",
+       "text": "Ask the AP executive who keyed the change to explain, in writing, why it was made, before you tell anyone else.",
+       "why": "Never confront anyone on your own. I take it to management, and they decide who is asked what, and when."
+      }
+     ]
+    }
+   ],
+   "docs": [
+    "policy",
+    "vendor-master",
+    "change-log",
+    "mail-change",
+    "payments-sep",
+    "mail-reminder",
+    "wt-pay"
+   ]
+  },
+  {
+   "id": "t4",
+   "type": "compose",
+   "stage": "Report",
+   "title": "Write the observations for the draft report",
+   "weight": 2,
+   "noun": [
+    "line",
+    "lines"
+   ],
+   "prompt": "Build Sameer’s two draft observations from the lines below: one on the split POs, one on Shikrapur’s bank change. Pick the right line for each part. Sameer has filled in the owners and the dates.",
+   "hints": [
+    "Condition is what the papers show, with numbers; criteria are the rules broken; cause is why the system let it happen, not who to blame."
+   ],
+   "previewLabel": "Your draft observations",
+   "slots": [
+    {
+     "id": "c1",
+     "label": "1 · Condition",
+     "options": [
+      {
+       "id": "a",
+       "text": "On 4 November 2026 three POs on one indent, 0714, went to Uruli Flexipack: ₹96,000, ₹98,500 and ₹99,200. Each was within the Purchase Manager’s ₹1,00,000 limit; together, ₹2,93,700.",
+       "why": "What the papers show, with the numbers and what makes the three POs one requirement: a single indent.",
+       "correct": true
+      },
+      {
+       "id": "b",
+       "text": "On 4 November 2026 three POs went to Uruli Flexipack: ₹96,000, ₹98,500 and ₹99,200. The Purchase Manager approved each of them above his own ₹1,00,000 limit, on his phone.",
+       "why": "Not true: each PO is under ₹1,00,000. The breach is the split, and the shared indent shows it."
+      },
+      {
+       "id": "c",
+       "text": "On 4 November 2026 the Purchase Manager split one laminate requirement into three POs to Uruli Flexipack so that it would skip the Head, Supply Chain, and approved all ₹2,93,700 himself.",
+       "why": "“So that it would skip the Head, Supply Chain” guesses at a motive. A condition sticks to what the papers show."
+      }
+     ],
+     "heading": "Observation 1 · One laminate requirement split into three POs"
+    },
+    {
+     "id": "r1",
+     "label": "1 · Criteria",
+     "options": [
+      {
+       "id": "a",
+       "text": "Purchase policy, section 2: three quotations are needed for any purchase above ₹50,000, and yet these three POs went out with no comparison of quotations behind any of them.",
+       "why": "Not the rule broken, and not true: all three POs cite one quotation comparison, QC/26-27/0176."
+      },
+      {
+       "id": "b",
+       "text": "Purchase policy, section 1: one requirement may not be split to stay within a lower limit, and POs of ₹1,00,001 to ₹5,00,000 need approval by the Head, Supply Chain.",
+       "why": "Both rules the three POs break, as the policy states them.",
+       "correct": true
+      },
+      {
+       "id": "c",
+       "text": "Purchase policy, section 1, which follows the Companies Act: every PO above ₹1,00,000 needs the approval of a head of department or of a company director.",
+       "why": "No Act sets PO approvals. The criteria here are Khamang’s own policy and its approval table."
+      }
+     ]
+    },
+    {
+     "id": "k1",
+     "label": "1 · Cause",
+     "options": [
+      {
+       "id": "a",
+       "text": "The ERP checks each PO against its approver’s limit on its own; it does not add up the POs raised against the same indent.",
+       "why": "The root cause sits in the system: a check that looks at one PO at a time can be beaten by slicing.",
+       "correct": true
+      },
+      {
+       "id": "b",
+       "text": "The ERP was slow in the week before Diwali, so the Purchase Manager approved the three POs on his phone without opening the indent behind them.",
+       "why": "Nothing on file says the ERP was slow, and approving on a phone did not create three POs."
+      },
+      {
+       "id": "c",
+       "text": "The ERP needs one bill for each PO, so Purchase raised three POs on the same day because Uruli wanted to send three separate bills.",
+       "why": "Backwards: the POs came first, on 4 November, and Uruli’s three bills followed them on 6 November."
+      }
+     ]
+    },
+    {
+     "id": "q1",
+     "label": "1 · Consequence",
+     "options": [
+      {
+       "id": "a",
+       "text": "Purchases of ₹2,93,700 were lost to Khamang, because the laminates were bought without the approval that the policy needs for that amount.",
+       "why": "Overstated. The bills match the POs, so no loss is shown. What the split skipped is the review."
+      },
+      {
+       "id": "b",
+       "text": "Purchases of ₹2,93,700 skipped the approval level the policy sets, so the Head, Supply Chain, never reviewed the vendor or the rates.",
+       "why": "The consequence of a control gap: the decision missed the person meant to make it.",
+       "correct": true
+      },
+      {
+       "id": "c",
+       "text": "Purchases of ₹2,93,700 came in at the quoted rates, so the split did no harm to Khamang and needs no further action.",
+       "why": "The rates being right this time does not mean the control worked. Next time the rate or the vendor may be wrong."
+      }
+     ]
+    },
+    {
+     "id": "a1",
+     "label": "1 · Corrective action",
+     "options": [
+      {
+       "id": "a",
+       "text": "Khamang should make the ERP apply the limit to all POs on an indent together, and send the Head, Supply Chain, a monthly list of near-⁠limit POs by vendor.",
+       "why": "It fixes the cause in the system and adds a monthly check that catches slicing even across two indents.",
+       "correct": true
+      },
+      {
+       "id": "b",
+       "text": "Khamang should raise the Purchase Manager’s approval limit to ₹3,00,000, so that a laminate requirement of this size never has to be split into three separate POs again.",
+       "why": "That moves the limit to fit what happened. The limit is there so that the Head, Supply Chain, sees purchases of this size."
+      },
+      {
+       "id": "c",
+       "text": "Khamang should give the Purchase Manager a written warning for the three POs, and ask Uruli Flexipack to put every future indent on a single PO and a single bill.",
+       "why": "It punishes a person and pushes the fix onto the vendor. The gap is in Khamang’s own system."
+      }
+     ]
+    },
+    {
+     "id": "c2",
+     "label": "2 · Condition",
+     "options": [
+      {
+       "id": "a",
+       "text": "On 2 September 2026 Shikrapur’s bank account was changed on a mail from its registered address, with the call-⁠back and the CFO’s approval in the log, and ₹7,99,200 was later paid into the new bank account.",
+       "why": "Wrong on the facts: the mail came from an address that is not in the vendor master, and the call-⁠back and approval columns are blank."
+      },
+      {
+       "id": "b",
+       "text": "On 2 September 2026 Shikrapur’s bank account was changed by the AP executive, who then sent ₹7,99,200 of Shikrapur’s payments to an account that the executive controls.",
+       "why": "An accusation the papers do not support. Nobody yet knows whose account it is; the bank has not traced it."
+      },
+      {
+       "id": "c",
+       "text": "On 2 September 2026 Shikrapur’s bank account was changed on a mail from an unregistered address, with no proof, call-⁠back or CFO approval. The new account received ₹7,99,200; Shikrapur says it is unpaid.",
+       "why": "The facts in order: how the change came in, what is missing, what was paid and what the vendor says.",
+       "correct": true
+      }
+     ],
+     "heading": "Observation 2 · A vendor’s bank account changed on an unverified mail"
+    },
+    {
+     "id": "r2",
+     "label": "2 · Criteria",
+     "options": [
+      {
+       "id": "a",
+       "text": "Purchase policy, section 4: Accounts pay a bill only after a three-⁠way match, where the PO, the GRN and the invoice agree on quantity and rate within the set tolerances.",
+       "why": "Nothing in the pack says those two bills failed the match; Shikrapur’s reminder treats both as genuine and due. The rule broken is the one on bank changes."
+      },
+      {
+       "id": "b",
+       "text": "Purchase policy, section 5: a bank change needs a request from Purchase, a cancelled cheque or bank letter, a call-⁠back to a known number and CFO approval in the log.",
+       "why": "The rule as written, every step of it, so the reader sees which steps were skipped.",
+       "correct": true
+      },
+      {
+       "id": "c",
+       "text": "Purchase policy, section 1: a PO is needed before any order is placed, except for emergency repairs below ₹10,000, and one requirement may not be split into several POs.",
+       "why": "Not the rule in question. Nothing here turns on a missing PO; the failure is in how Shikrapur’s bank details were changed."
+      }
+     ]
+    },
+    {
+     "id": "k2",
+     "label": "2 · Cause",
+     "options": [
+      {
+       "id": "a",
+       "text": "The ERP releases the payment batch only once a week, on Fridays, which leaves Accounts no time to check a bank change keyed in midweek.",
+       "why": "The batch day did not cause this. A change keyed on a Wednesday could have been checked by Friday."
+      },
+      {
+       "id": "b",
+       "text": "The ERP cannot stop a stranger outside Khamang from imitating a vendor’s mail address and then writing to Purchase in that vendor’s name.",
+       "why": "True of any mail system, and nothing an observation can fix. The cause we can fix is inside Khamang."
+      },
+      {
+       "id": "c",
+       "text": "The ERP lets the user who keys a bank change in the vendor master save it with the call-⁠back and CFO approval columns left blank.",
+       "why": "Built into the system: it accepts the change on one person’s word, so the policy rests on people remembering it.",
+       "correct": true
+      }
+     ]
+    },
+    {
+     "id": "q2",
+     "label": "2 · Consequence",
+     "options": [
+      {
+       "id": "a",
+       "text": "Payments of ₹7,99,200 may have reached an account Shikrapur does not own, and any vendor’s payments could be sent astray the same way.",
+       "why": "The amount at risk now and the wider exposure the gap leaves open. “May have” until it is confirmed.",
+       "correct": true
+      },
+      {
+       "id": "b",
+       "text": "Payments of ₹7,99,200 are lost for certain, and Khamang must pay Shikrapur the full amount a second time, from its own funds, this week.",
+       "why": "Not yet known. The bank may still trace the transfers, and whether to pay again is management’s call."
+      },
+      {
+       "id": "c",
+       "text": "Payments of ₹7,99,200 are Shikrapur’s own problem, since Khamang paid exactly as it was told by a mail written in Shikrapur’s name.",
+       "why": "The mail came from an address that is not in the vendor master, and nobody checked it. The control that failed is Khamang’s."
+      }
+     ]
+    },
+    {
+     "id": "a2",
+     "label": "2 · Corrective action",
+     "options": [
+      {
+       "id": "a",
+       "text": "Today, ask Shikrapur to mail its bank details once more so that the master can be corrected, and release both bills, ₹7,99,200 in all, to those new details as soon as it replies.",
+       "why": "A mail is exactly what failed. Confirm by a call to the number Khamang already had, and get the proof on paper."
+      },
+      {
+       "id": "b",
+       "text": "Today, call Shikrapur on the vendor master’s number, stop paying the new account and have the bank trace both transfers; then make bank changes wait for a call-⁠back and approval.",
+       "why": "Contain the loss first, then fix the system so that one person cannot change a bank account alone.",
+       "correct": true
+      },
+      {
+       "id": "c",
+       "text": "Today, stop all bank transfers to Shikrapur and pay it only by cheque until the year end, so that nothing more can go to the wrong account.",
+       "why": "Cheques for one vendor leave the control as it is. The next false mail will be about another vendor."
+      }
+     ]
+    }
+   ],
+   "template": "# Draft observations · Purchase to pay, 1 April – 13 November 2026\n\n**1. One laminate requirement split into three POs (rating: medium)**\n**Condition:** {c1}\n**Criteria:** {r1}\n**Cause:** {k1}\n**Consequence:** {q1}\n**Corrective action:** {a1}\n**Owner:** Kavita Lokhande, Head, Supply Chain · **Target date:** 31 December 2026\n\n**2. A vendor’s bank account changed on an unverified mail (rating: high)**\n**Condition:** {c2}\n**Criteria:** {r2}\n**Cause:** {k2}\n**Consequence:** {q2}\n**Corrective action:** {a2}\n**Owner:** Ashwin Pradhan, CFO, with Jyoti Pingle, Accounts Payable Lead · **Target date:** hold and call-⁠back today; system change by 31 December 2026\n\n{_free}\n\nManagement responses to be added after the closing meeting.\nSameer Kulkarni, Bapat Venkatesh & Co.",
+   "freeText": {
+    "label": "Your own line for the draft"
+   },
+   "docs": [
+    "policy",
+    "po-register",
+    "po-13",
+    "po-14",
+    "po-15",
+    "change-log",
+    "vendor-master",
+    "mail-change",
+    "payments-sep",
+    "mail-reminder"
+   ]
+  }
+ ],
+ "passNeeds": [
+  {
+   "task": "t2",
+   "min": 0.7,
+   "note": "You need more of the 15 purchase calls right to pass."
+  },
+  {
+   "task": "t4",
+   "min": 0.5,
+   "note": "Your two observations need more right lines before this passes."
+  },
+  {
+   "task": "t1",
+   "min": 0.5,
+   "note": "The line you earn opens with this walkthrough: get more of its eight steps in sequence to pass."
+  }
+ ],
+ "wrap": {
+  "from": "sameer",
+  "text": "Eight of the fifteen are exceptions, and three of those are one laminate requirement in three slices. Purchase will say they are three different laminates, so the indent goes in the file. I have already called Ashwin about Shikrapur."
+ },
+ "wrapPartial": {
+  "from": "sameer",
+  "text": "Eight of the fifteen are exceptions, three of them one laminate requirement split three ways. Check each call against the policy, and both observations line by line, before they go into the draft. I have already called Ashwin about Shikrapur."
+ },
+ "wrapRetry": {
+  "from": "sameer",
+  "text": "Put the walkthrough in date order, paper by paper. The policy decides every call: approval limits, a PO before buying, 24 hours for a GRN, 2% on rate, 1% on quantity. Read the PO register by indent number; for the bank change, check each step of section 5."
+ },
+ "model": {
+  "intro": "Eight of the fifteen purchases are exceptions: one laminate requirement split into three POs, a sugar PO approved after the sugar came in, two Kedgaon tankers passed for more oil than arrived, chilli powder billed 6.8% over the PO, and a GRN keyed in six days after the boxes came in. The other seven are fine, and six of them only look wrong.",
+  "blocks": [
+   {
+    "type": "table",
+    "columns": [
+     {
+      "key": "p",
+      "label": "The exceptions"
+     },
+     {
+      "key": "found",
+      "label": "What we found"
+     },
+     {
+      "key": "means",
+      "label": "What it means"
+     }
+    ],
+    "rows": [
+     {
+      "p": "Purchases 13–15 · Uruli",
+      "found": "Three POs on 4 November on one indent, 0714, each under ₹1,00,000",
+      "means": "₹2,93,700 approved by Nitin; it needed Kavita"
+     },
+     {
+      "p": "Purchase 5 · Yavat",
+      "found": "Verbal order; PO approved the morning after the sugar came in",
+      "means": "₹4,17,000 of sugar bought before anyone approved it"
+     },
+     {
+      "p": "Purchase 3 · Kedgaon",
+      "found": "9,640 kg weighed, 10,000 kg passed: 3.6% short",
+      "means": "₹46,872 paid too much, with GST"
+     },
+     {
+      "p": "Purchase 6 · Kedgaon",
+      "found": "9,750 kg weighed, 10,000 kg passed: 2.5% short",
+      "means": "₹33,075 paid too much, with GST"
+     },
+     {
+      "p": "Purchase 7 · Lonand",
+      "found": "Chilli powder at ₹252 against the PO’s ₹236: 6.8% over",
+      "means": "₹5,040 paid too much, with GST"
+     },
+     {
+      "p": "Purchase 10 · Nhavare",
+      "found": "GRN keyed in six days after the boxes came in",
+      "means": "No loss; stores to explain the delay"
+     }
+    ]
+   },
+   {
+    "type": "text",
+    "text": "The six that only look wrong:"
+   },
+   {
+    "type": "list",
+    "items": [
+     "Purchase 2: 250 kg rejected, but debit note 0058 takes it out and only ₹7,97,475 was passed.",
+     "Purchase 4: Kavita approved a ₹72,000 PO while Nitin was on leave; a higher level may approve.",
+     "Purchase 8: no PO, but a ₹7,316 emergency repair, which the policy allows under ₹10,000.",
+     "Purchase 9: oil 0.3% short, inside the 1% tolerance.",
+     "Purchase 11: billed 1.9% over the PO rate, and GRN under 15 hours after the truck; both inside the policy.",
+     "Purchase 12: a service, so the completion certificate stands in for a GRN."
+    ]
+   },
+   {
+    "type": "text",
+    "text": "The walkthrough, step by step, with the paper that proves each control:"
+   },
+   {
+    "type": "table",
+    "columns": [
+     {
+      "key": "s",
+      "label": "The eight steps"
+     },
+     {
+      "key": "paper",
+      "label": "Paper"
+     },
+     {
+      "key": "ctl",
+      "label": "Control it shows"
+     }
+    ],
+    "rows": [
+     {
+      "s": "1 · Indent",
+      "paper": "IND/26-27/0388, 3 July",
+      "ctl": "Packing asks; the production head agrees the need"
+     },
+     {
+      "s": "2 · Quotations",
+      "paper": "QC/26-27/0034, 6 July",
+      "ctl": "Three quotes above ₹50,000; the lowest recommended"
+     },
+     {
+      "s": "3 · PO",
+      "paper": "KF/PO/26-27/0455, 8 July",
+      "ctl": "Kavita approves ₹2,58,000, inside her limit, before ordering"
+     },
+     {
+      "s": "4 · Gate",
+      "paper": "GE/26-27/1951, 15 July, 10:05 am",
+      "ctl": "Every truck logged; the 24 hours for the GRN start here"
+     },
+     {
+      "s": "5 · GRN",
+      "paper": "GRN/26-27/1929, 15 July, 3:30 pm",
+      "ctl": "Only what stores and QC accept is paid for"
+     },
+     {
+      "s": "6 · Booking",
+      "paper": "PV/26-27/2214, 17 July",
+      "ctl": "Three-⁠way match before the bill is booked"
+     },
+     {
+      "s": "7 · Batch",
+      "paper": "Payment batch print, Friday 28 August",
+      "ctl": "Released by Jyoti, authorised by Ashwin"
+     },
+     {
+      "s": "8 · Payment",
+      "paper": "Same print: ₹2,70,900 to the account ending 4016",
+      "ctl": "Payment goes only to the account in the vendor master"
+     }
+    ]
+   },
+   {
+    "type": "text",
+    "text": "The log has only four bank changes since April, so we checked all four. Only Shikrapur’s has no proof, call-⁠back or CFO approval; the other three have all of them."
+   },
+   {
+    "type": "note",
+    "from": "sameer",
+    "text": "That many exceptions can sound dramatic, but these were picks aimed at risk, not a random sample. Write them as control exceptions with amounts, never as fraud."
+   }
+  ]
+ },
+ "principles": [
+  "One walkthrough shows the design. Testing purchases from across the period shows whether the control operated.",
+  "Read the policy before the papers: its limits and tolerances decide what counts as an exception.",
+  "A bank change gets a call-⁠back on a number you already have, never one from the mail that asks for the change."
+ ],
+ "earned": {
+  "clause": "traced one purchase from indent to payment; tested {tested} purchases for approval, three-way match and GRN timing[[; flagged {found} control {found|exception|exceptions}]]; drafted two audit observations",
+  "counts": {
+   "tested": {
+    "kind": "items",
+    "task": "t2",
+    "answered": "gate"
+   },
+   "found": {
+    "kind": "itemsWhere",
+    "task": "t2",
+    "field": "verdict",
+    "equals": "exception",
+    "withRight": "reasons"
+   }
+  },
+  "fallback": "traced one purchase from indent to payment; tested purchases for approval, three-way match and GRN timing; drafted two audit observations"
+ },
+ "interview": [
+  {
+   "q": "You tested three-⁠way match. What did you match, and what did you do when something did not agree?",
+   "checking": "Whether you know what is matched, and what you do with a difference you find.",
+   "outline": [
+    "I matched PO, GRN and bill on quantity and rate; for services, a completion certificate replaced the GRN.",
+    "In the simulation I tested {tested} purchases for approval, three-⁠way match and GRN timing[[, and flagged {found} {found|exception|exceptions}]].",
+    "On a mismatch I looked for a paper explaining it, then the tolerance, and flagged what neither cleared."
+   ]
+  },
+  {
+   "q": "A vendor mails new bank details. What should happen, and what would you do if it was skipped?",
+   "checking": "Whether you know the bank-⁠change control, and escalate instead of acting alone.",
+   "outline": [
+    "A cancelled cheque or bank letter, a call-⁠back on the number already on file, and the CFO’s approval.",
+    "In the simulation a change made on one mail sent two payments to an unverified account.",
+    "I would take it to my senior that day, with the papers, and never call the mail’s number."
+   ]
+  }
+ ]
+}

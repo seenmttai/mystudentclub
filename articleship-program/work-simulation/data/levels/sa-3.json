@@ -1,0 +1,3030 @@
+{
+ "id": "sa-3",
+ "domain": "statutory-audit",
+ "number": 3,
+ "title": "Fixed assets and depreciation",
+ "minutes": 40,
+ "learn": [
+  "When depreciation starts, and which paper proves the date",
+  "How to tell a capital item from a repair",
+  "What CARO asks about fixed-asset records, verification and title"
+ ],
+ "do": [
+  "Vouch four additions and two big repair bills",
+  "Recompute depreciation and draft the adjustments",
+  "Answer the CARO fixed-asset points"
+ ],
+ "case": {
+  "role": "First-year article assistant on the statutory audit, fixed assets",
+  "client": "Tamhini Drivetech Private Limited, a Chakan company that makes gears, shafts and hubs for vehicle makers",
+  "team": "Aditi Rane (senior), Rehan Siddiqui (manager); at Tamhini, Pallavi Shinde in accounts has the files and Venkat Reddy, the plant head, knows when each machine was ready",
+  "goal": "Check the year’s additions and big repairs, recompute depreciation and answer the CARO fixed-asset points.",
+  "period": "Year ended 31 March 2027",
+  "where": "Accounts room, Chakan plant · Thursday 22 April 2027"
+ },
+ "brief": {
+  "from": "aditi",
+  "time": "10:05 am",
+  "messages": [
+   "Fixed assets today. I’ve marked four additions and two big repair bills: vouch each against its invoice and the plant’s reports. Pallavi has the register and the files.",
+   "Then recompute depreciation on what you vouched, draft the adjustments and close the CARO points. Fixed assets is first on Rehan’s list tomorrow; I want to read yours by 5 today."
+  ]
+ },
+ "documents": [
+  {
+   "id": "fa-policy",
+   "type": "letter",
+   "style": "policy",
+   "title": "Fixed-asset policy · extract",
+   "letterhead": "Tamhini Drivetech Private Limited\nPlot B-47, Chakan Industrial Area Phase II, MIDC, Mahalunge, Pune 410501",
+   "subject": "Fixed assets: accounting and control policy (extract)",
+   "meta": [
+    {
+     "label": "Issued",
+     "value": "1 April 2024"
+    },
+    {
+     "label": "Owner",
+     "value": "Finance and accounts"
+    }
+   ],
+   "body": [
+    "## 1. What is capitalised",
+    "An item that will be used for more than a year, and whose cost can be measured, is capitalised: a new machine or unit, or a replacement that is itself such an item.",
+    "Cost is the purchase price plus freight, installation and trial-run costs. GST is left out of cost where the input tax credit is taken; where no credit is available, as on motor cars, the GST is part of cost.",
+    "Day-to-day servicing (labour, consumables and small parts that keep an existing asset working) is charged to repairs.",
+    "## 2. Depreciation",
+    "Straight line over the useful lives below, residual value 5% of cost, from the date the asset is ready for use, pro rata by days (the ready date and 31 March both counted).",
+    {
+     "table": {
+      "columns": [
+       {
+        "key": "c",
+        "label": "Class"
+       },
+       {
+        "key": "l",
+        "label": "Useful life"
+       }
+      ],
+      "rows": [
+       {
+        "c": "Factory buildings",
+        "l": "30 years"
+       },
+       {
+        "c": "Plant and machinery, including inspection and testing machines",
+        "l": "15 years, estimated by our technical team for two-shift working (disclosed in the accounts)"
+       },
+       {
+        "c": "Electrical installations",
+        "l": "10 years"
+       },
+       {
+        "c": "Furniture and fixtures",
+        "l": "10 years"
+       },
+       {
+        "c": "Office equipment",
+        "l": "5 years"
+       },
+       {
+        "c": "Computers: laptops and desktops",
+        "l": "3 years"
+       },
+       {
+        "c": "Vehicles",
+        "l": "8 years"
+       },
+       {
+        "c": "Leasehold land",
+        "l": "Over the 95-year lease, with no residual value"
+       }
+      ]
+     }
+    },
+    "An asset that is not ready for use at 31 March stays in capital work-in-progress, with no depreciation.",
+    "## 3. Approvals and records",
+    "Every capital purchase needs written approval before the order is placed. Spending up to 10% over the approved amount needs no fresh approval; beyond that it does.",
+    "The plant sends accounts an installation and trial-run report for every machine. Accounts keep the fixed-asset register: code, tag, location, quantity, cost, dates and depreciation for each asset.",
+    "Maintenance and accounts verify every asset physically at least once in two years."
+   ],
+   "sign": {
+    "name": "Mahesh Kadam",
+    "role": "GM, Finance and Accounts",
+    "hand": "M. Kadam"
+   }
+  },
+  {
+   "id": "capex",
+   "type": "table",
+   "style": "register",
+   "title": "Capex approvals · 2026–27",
+   "heading": "Capital purchase approvals, 2026–27",
+   "company": "Tamhini Drivetech Private Limited",
+   "subtitle": "Kept by accounts; each approval signed before the order was placed",
+   "columns": [
+    {
+     "key": "ref",
+     "label": "Ref",
+     "mono": true
+    },
+    {
+     "key": "item",
+     "label": "Item"
+    },
+    {
+     "key": "amt",
+     "label": "Approved (₹)",
+     "format": "num"
+    },
+    {
+     "key": "by",
+     "label": "Approved by"
+    },
+    {
+     "key": "on",
+     "label": "Date"
+    },
+    {
+     "key": "rem",
+     "label": "Remarks"
+    }
+   ],
+   "rows": [
+    {
+     "ref": "CA-01",
+     "item": "Shed extension, Bay 4",
+     "amt": 4500000.0,
+     "by": "Managing Director",
+     "on": "08-04-2026",
+     "rem": ""
+    },
+    {
+     "ref": "CA-02",
+     "item": "Laptops for production and accounts (6)",
+     "amt": 450000.0,
+     "by": "Managing Director",
+     "on": "05-05-2026",
+     "rem": ""
+    },
+    {
+     "ref": "CA-03",
+     "item": "Car for the Managing Director",
+     "amt": 2600000.0,
+     "by": "Chairman",
+     "on": "22-05-2026",
+     "rem": ""
+    },
+    {
+     "ref": "CA-04",
+     "item": "CNC turning centre TC-35",
+     "amt": 7000000.0,
+     "by": "Managing Director",
+     "on": "10-06-2026",
+     "rem": "Board noted 10-07-2026 with term loan II"
+    },
+    {
+     "ref": "CA-05",
+     "item": "Coordinate measuring machine, quality lab",
+     "amt": 1800000.0,
+     "by": "Managing Director",
+     "on": "26-11-2026",
+     "rem": ""
+    },
+    {
+     "ref": "CA-06",
+     "item": "Air compressor 15 kW with dryer, to replace the 2009 unit",
+     "amt": 500000.0,
+     "by": "Managing Director",
+     "on": "04-01-2027",
+     "rem": ""
+    },
+    {
+     "ref": "CA-07",
+     "item": "Vertical machining centre VMC-10",
+     "amt": 5460000.0,
+     "by": "Board",
+     "on": "10-02-2027",
+     "rem": "Plus GST; 20% advance with the order"
+    }
+   ],
+   "notes": [
+    "Approved amounts are cost as the policy defines it: without GST where the input tax credit is taken. Spending up to 10% over the approved amount needs no fresh approval (fixed-asset policy, section 3)."
+   ]
+  },
+  {
+   "id": "far-add",
+   "type": "table",
+   "style": "register",
+   "title": "Fixed-asset register · additions 2026–27",
+   "heading": "Fixed-asset register: additions, 2026–27",
+   "company": "Tamhini Drivetech Private Limited",
+   "subtitle": "Extract printed by accounts on 21-04-2027, as booked",
+   "columns": [
+    {
+     "key": "code",
+     "label": "Asset",
+     "mono": true
+    },
+    {
+     "key": "desc",
+     "label": "Description"
+    },
+    {
+     "key": "inv",
+     "label": "Invoice date"
+    },
+    {
+     "key": "use",
+     "label": "Put to use"
+    },
+    {
+     "key": "cost",
+     "label": "Cost (₹)",
+     "format": "num"
+    },
+    {
+     "key": "life",
+     "label": "Life (years)",
+     "format": "int"
+    },
+    {
+     "key": "days",
+     "label": "Days to 31 Mar",
+     "format": "int"
+    },
+    {
+     "key": "dep",
+     "label": "Depreciation 2026–27 (₹)",
+     "format": "num"
+    }
+   ],
+   "rows": [
+    {
+     "code": "FA-27-01",
+     "desc": "6 laptops, production and accounts",
+     "inv": "12-05-2026",
+     "use": "15-05-2026",
+     "cost": 432000.0,
+     "life": 3,
+     "days": 321,
+     "dep": 120309.0
+    },
+    {
+     "code": "FA-27-02",
+     "desc": "Car for the MD (sedan)",
+     "inv": "04-06-2026",
+     "use": "06-06-2026",
+     "cost": 2576000.0,
+     "life": 8,
+     "days": 299,
+     "dep": 250587.0
+    },
+    {
+     "code": "FA-27-03",
+     "desc": "Shed extension, Bay 4",
+     "inv": "26-06-2026",
+     "use": "30-06-2026",
+     "cost": 4260000.0,
+     "life": 30,
+     "days": 275,
+     "dep": 101637.0
+    },
+    {
+     "code": "FA-27-04",
+     "desc": "CNC turning centre TC-35",
+     "inv": "18-07-2026",
+     "use": "01-10-2026",
+     "cost": 6840000.0,
+     "life": 15,
+     "days": 182,
+     "dep": 216007.0
+    },
+    {
+     "code": "FA-27-05",
+     "desc": "CMM, quality lab",
+     "inv": "02-01-2027",
+     "use": "05-01-2027",
+     "cost": 1890000.0,
+     "life": 15,
+     "days": 86,
+     "dep": 28203.0
+    },
+    {
+     "code": "FA-27-06",
+     "desc": "Vertical machining centre VMC-10",
+     "inv": "22-03-2027",
+     "use": "24-03-2027",
+     "cost": 5460000.0,
+     "life": 15,
+     "days": 8,
+     "dep": 7579.0
+    },
+    {
+     "_class": "total",
+     "code": "Total",
+     "cost": 21458000.0,
+     "dep": 724322.0
+    }
+   ],
+   "notes": [
+    "Straight line, residual 5%, from the date put to use, by days: the date put to use and 31 March both counted.",
+    "Class and location: see each asset’s register line. The car’s cost includes GST of ₹7,36,000: no input tax credit is available on it.",
+    "Deletion: FA-08-112, conventional lathe bought in 2008 (cost ₹6,20,000, depreciation to date ₹5,89,000), sold as scrap to Bilal Ferrous Traders on 14-12-2026 for ₹45,000; line taken out of the register."
+   ]
+  },
+  {
+   "id": "far-summary",
+   "type": "table",
+   "style": "register",
+   "title": "Fixed-asset register · class summary",
+   "heading": "Fixed-asset register: class summary, 2026–27",
+   "company": "Tamhini Drivetech Private Limited",
+   "subtitle": "Totals of the register by class at 31-03-2027, as booked, before audit adjustments",
+   "columns": [
+    {
+     "key": "cls",
+     "label": "Class"
+    },
+    {
+     "key": "gcl",
+     "label": "Cost (₹)",
+     "format": "num"
+    },
+    {
+     "key": "dyr",
+     "label": "Depreciation for the year (₹)",
+     "format": "num"
+    },
+    {
+     "key": "dcl",
+     "label": "Depreciation to date (₹)",
+     "format": "num"
+    },
+    {
+     "key": "net",
+     "label": "Net block (₹)",
+     "format": "num",
+     "check": "gcl - dcl"
+    }
+   ],
+   "rows": [
+    {
+     "cls": "Leasehold land (MIDC)",
+     "gcl": 19000000.0,
+     "dyr": 200001.0,
+     "dcl": 4400001.0,
+     "net": 14599999.0
+    },
+    {
+     "cls": "Factory buildings",
+     "gcl": 102760000.0,
+     "dyr": 3220803.0,
+     "dcl": 34460803.0,
+     "net": 68299197.0
+    },
+    {
+     "cls": "Plant and machinery",
+     "gcl": 399570000.0,
+     "dyr": 23368454.0,
+     "dcl": 187579454.0,
+     "net": 211990546.0
+    },
+    {
+     "cls": "Electrical installations",
+     "gcl": 24600000.0,
+     "dyr": 1957000.0,
+     "dcl": 15807000.0,
+     "net": 8793000.0
+    },
+    {
+     "cls": "Furniture and fixtures",
+     "gcl": 6800000.0,
+     "dyr": 494003.0,
+     "dcl": 4414003.0,
+     "net": 2385997.0
+    },
+    {
+     "cls": "Office equipment",
+     "gcl": 3200000.0,
+     "dyr": 342000.0,
+     "dcl": 2622000.0,
+     "net": 578000.0
+    },
+    {
+     "cls": "Computers",
+     "gcl": 4532000.0,
+     "dyr": 626976.0,
+     "dcl": 3986976.0,
+     "net": 545024.0
+    },
+    {
+     "cls": "Vehicles",
+     "gcl": 7176000.0,
+     "dyr": 654336.0,
+     "dcl": 3594336.0,
+     "net": 3581664.0
+    },
+    {
+     "_class": "total",
+     "_id": "ppe",
+     "cls": "Property, plant and equipment",
+     "gcl": 567638000.0,
+     "dyr": 30863573.0,
+     "dcl": 256864573.0,
+     "net": 310773427.0
+    },
+    {
+     "_id": "erp",
+     "cls": "ERP software licence (intangible)",
+     "gcl": 1800000.0,
+     "dyr": 360000.0,
+     "dcl": 1440000.0,
+     "net": 360000.0
+    },
+    {
+     "_class": "total",
+     "cls": "Total",
+     "_sumOf": [
+      "ppe",
+      "erp"
+     ],
+     "gcl": 569438000.0,
+     "dyr": 31223573.0,
+     "dcl": 258304573.0,
+     "net": 311133427.0
+    }
+   ],
+   "notes": [
+    "Additions in the year ₹2,14,58,000 (additions extract). Deletion: the lathe, cost ₹6,20,000.",
+    "Capital work-in-progress at 31 March 2027: nil."
+   ]
+  },
+  {
+   "id": "tb-fa",
+   "type": "table",
+   "style": "tally",
+   "title": "Trial balance · fixed-asset ledgers",
+   "kindLabel": "Trial balance",
+   "check": false,
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Trial Balance (extract)",
+   "subtitle": "Closing balances of the fixed-asset ledgers, before audit adjustments",
+   "period": "As at 31-Mar-2027",
+   "columns": [
+    {
+     "key": "led",
+     "label": "Ledger"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "led": "PPE – Leasehold land (MIDC) (gross)",
+     "dr": 19000000.0
+    },
+    {
+     "led": "Acc. depreciation – Leasehold land (MIDC)",
+     "cr": 4400001.0
+    },
+    {
+     "led": "PPE – Factory buildings (gross)",
+     "dr": 102760000.0
+    },
+    {
+     "led": "Acc. depreciation – Factory buildings",
+     "cr": 34460803.0
+    },
+    {
+     "led": "PPE – Plant and machinery (gross)",
+     "dr": 399570000.0
+    },
+    {
+     "led": "Acc. depreciation – Plant and machinery",
+     "cr": 187579454.0
+    },
+    {
+     "led": "PPE – Electrical installations (gross)",
+     "dr": 24600000.0
+    },
+    {
+     "led": "Acc. depreciation – Electrical installations",
+     "cr": 15807000.0
+    },
+    {
+     "led": "PPE – Furniture and fixtures (gross)",
+     "dr": 6800000.0
+    },
+    {
+     "led": "Acc. depreciation – Furniture and fixtures",
+     "cr": 4414003.0
+    },
+    {
+     "led": "PPE – Office equipment (gross)",
+     "dr": 3200000.0
+    },
+    {
+     "led": "Acc. depreciation – Office equipment",
+     "cr": 2622000.0
+    },
+    {
+     "led": "PPE – Computers (gross)",
+     "dr": 4532000.0
+    },
+    {
+     "led": "Acc. depreciation – Computers",
+     "cr": 3986976.0
+    },
+    {
+     "led": "PPE – Vehicles (gross)",
+     "dr": 7176000.0
+    },
+    {
+     "led": "Acc. depreciation – Vehicles",
+     "cr": 3594336.0
+    },
+    {
+     "led": "Intangible – ERP software (gross)",
+     "dr": 1800000.0
+    },
+    {
+     "led": "Acc. amortisation – ERP software",
+     "cr": 1440000.0
+    },
+    {
+     "led": "Capital work-in-progress",
+     "dr": 0.0
+    },
+    {
+     "led": "Depreciation and amortisation",
+     "dr": 31223573.0
+    },
+    {
+     "led": "Repairs – plant and machinery",
+     "dr": 11240000.0
+    },
+    {
+     "led": "Profit on sale of PPE",
+     "cr": 14000.0
+    }
+   ]
+  },
+  {
+   "id": "rep-ledger",
+   "type": "table",
+   "style": "tally",
+   "title": "Repairs – plant and machinery · January–March",
+   "kindLabel": "Ledger extract",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Ledger: Repairs – plant and machinery",
+   "subtitle": "Entries of ₹1,00,000 and above one by one; the rest in one line. Extract by Pallavi Shinde.",
+   "period": "1-Jan-2027 to 31-Mar-2027",
+   "columns": [
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "vch",
+     "label": "Vch no.",
+     "mono": true
+    },
+    {
+     "key": "amt",
+     "label": "Debit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "",
+     "vch": "",
+     "part": "Opening balance (April–December)",
+     "amt": 8066400.0
+    },
+    {
+     "date": "17-01-2027",
+     "vch": "2346",
+     "part": "Wakad Air Systems: bill WAS/26-27/0291, compressor room",
+     "amt": 485000.0
+    },
+    {
+     "date": "30-01-2027",
+     "vch": "2511",
+     "part": "Talegaon Electricals: January contract bill",
+     "amt": 268860.0
+    },
+    {
+     "date": "27-02-2027",
+     "vch": "2868",
+     "part": "Talegaon Electricals: February contract bill",
+     "amt": 268860.0
+    },
+    {
+     "date": "31-03-2027",
+     "vch": "3217",
+     "part": "Talegaon Electricals: March contract bill",
+     "amt": 268860.0
+    },
+    {
+     "date": "",
+     "vch": "",
+     "part": "182 smaller entries, January–March, each below ₹1,00,000",
+     "amt": 1882020.0,
+     "_class": "muted"
+    },
+    {
+     "_class": "total",
+     "date": "",
+     "vch": "",
+     "part": "Closing balance",
+     "amt": 11240000.0
+    }
+   ]
+  },
+  {
+   "id": "chat-varun",
+   "type": "chat",
+   "title": "Varun · chat",
+   "with": "Varun Shetty",
+   "date": "Thursday 22 April",
+   "me": "You",
+   "messages": [
+    {
+     "from": "varun",
+     "time": "10:11 am",
+     "text": "Fixed assets with Aditi? Last year I ticked the register’s put-to-use dates against the invoice dates. All looked fine, done in an hour."
+    },
+    {
+     "from": "varun",
+     "time": "10:12 am",
+     "text": "Talegaon bills every month, so I never opened those."
+    },
+    {
+     "from": "You",
+     "time": "10:15 am",
+     "text": "She wants the installation reports for every machine."
+    },
+    {
+     "from": "varun",
+     "time": "10:16 am",
+     "text": "Then ask Venkat. He knows the day each machine first ran."
+    }
+   ]
+  },
+  {
+   "id": "pv-report",
+   "type": "letter",
+   "style": "memo",
+   "title": "Physical verification report · February 2027",
+   "kindLabel": "Report",
+   "letterhead": "Tamhini Drivetech Private Limited",
+   "to": [
+    "Mahesh Kadam, GM Finance and Accounts"
+   ],
+   "from": "Ganesh Tapkir, Maintenance Manager, and Rahul Bendre, Accountant",
+   "date": "22-02-2027",
+   "ref": "MNT/PV/2026-27/01",
+   "subject": "Physical verification of fixed assets, 18–20 February 2027",
+   "body": [
+    "Scope: every asset in the fixed-asset register as on 31-01-2027: 1,284 lines at the Chakan plant and 38 at the Hosur depot.",
+    "Method: the register was printed location by location. For each line the team found the asset, read its tag and noted its condition. Rahul Bendre verified the Hosur lines on 19 February with Karthik Ramesh, sales engineer at the Hosur depot, against the same print.",
+    "Result: every asset in the register was found at the location shown. Two worn tags were replaced. No differences, so nothing to adjust in the books.",
+    "Previous full verification: February 2025. Next: February 2029."
+   ],
+   "sign": {
+    "name": "Ganesh Tapkir · Rahul Bendre",
+    "role": "Maintenance Manager · Accountant",
+    "hand": "G. Tapkir  R. Bendre"
+   },
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Seen. M.K. 23/2",
+     "color": "blue",
+     "at": "inline"
+    }
+   ]
+  },
+  {
+   "id": "title-reg",
+   "type": "card",
+   "style": "slip",
+   "title": "Title documents · register extract",
+   "kindLabel": "Register",
+   "issuer": "Tamhini Drivetech Private Limited · Company secretary",
+   "heading": "Register of title documents (extract)",
+   "fields": [
+    {
+     "label": "Property",
+     "value": "Plot B-47, Chakan Industrial Area Phase II, MIDC, Mahalunge (12,400 sq m)"
+    },
+    {
+     "label": "Held as",
+     "value": "Leasehold land: lease from MIDC for 95 years from 2005"
+    },
+    {
+     "label": "Title document",
+     "value": "Lease deed dated 18-03-2005, registered at Khed"
+    },
+    {
+     "label": "In the name of",
+     "value": "Tamhini Drivetech Private Limited, as lessee"
+    },
+    {
+     "label": "Gross carrying value",
+     "value": "₹1,90,00,000"
+    },
+    {
+     "label": "Original held by",
+     "value": "Vindhya Commercial Bank Ltd, Chakan: security for term loan I and the cash credit"
+    },
+    {
+     "label": "Other properties",
+     "value": "None. The factory buildings stand on this plot; the Hosur depot is rented."
+    },
+    {
+     "label": "Position on",
+     "value": "31-03-2027 (Mrunal Deo, Company Secretary)"
+    }
+   ]
+  },
+  {
+   "id": "bank-letter",
+   "type": "letter",
+   "style": "letter",
+   "title": "Vindhya Commercial Bank · title deed letter",
+   "letterhead": {
+    "name": "Vindhya Commercial Bank Ltd",
+    "address": "Chakan branch (0417), Ground floor, Shivneri Arcade, Talegaon–Chakan Road, Chakan, Pune 410501\nIFSC VNCB0000417",
+    "phone": "98XXXXXXXX"
+   },
+   "ref": "VCB/CKN/ADV/2027/118",
+   "date": "12-04-2027",
+   "to": [
+    "Bapat Venkatesh & Co., Chartered Accountants",
+    "5th floor, Sumant Chambers, Prabhat Road, Erandwane, Pune 411004",
+    "Kind attention: Aditi Rane"
+   ],
+   "subject": "Title document held by us: Tamhini Drivetech Private Limited",
+   "body": [
+    "Dear Madam,",
+    "As asked in your letter of 05-04-2027, we confirm that on 31-03-2027 we held the following original document of Tamhini Drivetech Private Limited, deposited with us as security for its term loan I and cash credit:",
+    {
+     "table": {
+      "columns": [
+       {
+        "key": "d",
+        "label": "Document"
+       },
+       {
+        "key": "p",
+        "label": "Property"
+       },
+       {
+        "key": "f",
+        "label": "In favour of"
+       }
+      ],
+      "rows": [
+       {
+        "d": "Lease deed dated 18-03-2005 executed by MIDC as lessor",
+        "p": "Plot B-47, Chakan Industrial Area Phase II, MIDC, Mahalunge, 12,400 sq m",
+        "f": "Tamhini Drivetech Private Limited, lessee"
+       }
+      ]
+     }
+    },
+    "The document remains in our safe custody."
+   ],
+   "sign": {
+    "closing": "Yours faithfully,",
+    "for": "Vindhya Commercial Bank Ltd, Chakan branch",
+    "name": "Prakash Waghmare",
+    "role": "Branch Manager",
+    "hand": "P. Waghmare"
+   },
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "VINDHYA COMMERCIAL BANK\nCHAKAN BRANCH",
+     "color": "violet",
+     "at": "bottom-left",
+     "shape": "round",
+     "rotate": -6
+    },
+    {
+     "kind": "hand",
+     "text": "Received direct by post 15/4. A.R.",
+     "color": "blue",
+     "at": "inline"
+    }
+   ]
+  },
+  {
+   "id": "caro-wp",
+   "type": "letter",
+   "style": "policy",
+   "title": "CARO working paper · fixed assets",
+   "kindLabel": "Working paper",
+   "letterhead": "Bapat Venkatesh & Co., Chartered Accountants\nAudit working paper",
+   "subject": "CARO 2020, paragraph 3(i): property, plant and equipment",
+   "meta": [
+    {
+     "label": "Client",
+     "value": "Tamhini Drivetech Private Limited"
+    },
+    {
+     "label": "Year",
+     "value": "ended 31 March 2027"
+    },
+    {
+     "label": "Prepared by",
+     "value": "Article, fixed assets"
+    },
+    {
+     "label": "Reviewed by",
+     "value": "Aditi Rane"
+    }
+   ],
+   "body": [
+    "## The clause, points (a) to (c)",
+    "“(i) (a) (A) whether the company is maintaining proper records showing full particulars, including quantitative details and situation of Property, Plant and Equipment; (B) whether the company is maintaining proper records showing full particulars of intangible assets;”",
+    "“(b) whether these Property, Plant and Equipment have been physically verified by the management at reasonable intervals; whether any material discrepancies were noticed on such verification and if so, whether the same have been properly dealt with in the books of account;”",
+    "“(c) whether the title deeds of all the immovable properties (other than properties where the company is the lessee and the lease agreements are duly executed in favour of the lessee) disclosed in the financial statements are held in the name of the company, if not, provide the details thereof …”",
+    "## Conclude on",
+    "1. Records of property, plant and equipment: full particulars, quantity and location, what was added and what left; do they agree with the books?",
+    "2. Verification by management: at reasonable intervals? Any material differences, and how were they dealt with?",
+    "3. Title deeds of immovable property: in the company’s name? Where is each original, and what evidence do we hold?",
+    "## Already covered",
+    "(a)(B) Intangibles: the ERP licence has its own register line with cost and amortisation, and agrees with the trial balance. A.R.",
+    "(d) Revaluation in the year: none, per the register and the board minutes. A.R.",
+    "(e) Benami proceedings: none pending, per Mahesh’s reply to our enquiry, the legal-expenses ledger and the board minutes; it goes in the representation letter too. A.R.",
+    "## Conclusion",
+    "Points 1 to 3: to be written from today’s work."
+   ]
+  },
+  {
+   "id": "inv-lap",
+   "type": "invoice",
+   "title": "Laptops · Baner Infosoft invoice",
+   "tab": "Invoice",
+   "group": "lap",
+   "supplier": {
+    "name": "Baner Infosoft Private Limited",
+    "address": "Office 302, Baner Road, Baner\nPune 411045",
+    "gstin": "27ZJNCB6845H1Z1",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "ZJNCB6845H"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "BIS/26-27/0212",
+   "date": "12.05.2026",
+   "copy": "Original for recipient",
+   "poRef": "TD/PO/CAP/2026-27/002",
+   "poDate": "06.05.2026",
+   "paymentTerms": "30 days",
+   "dispatchDoc": "Our DC 0457 dt 13.05.2026",
+   "dispatchedThrough": "By hand",
+   "destination": "Chakan, Pune",
+   "placeOfSupply": "Maharashtra (27)",
+   "lines": [
+    {
+     "desc": "Laptop, Core i5, 16 GB, 512 GB SSD, 14-inch, with OS licence",
+     "hsn": "8471 30",
+     "qty": 6,
+     "unit": "nos",
+     "rate": 72000.0,
+     "taxable": 432000.0,
+     "gstRate": 18,
+     "note": "Serial nos. BN26-5531 to BN26-5536; three-year onsite warranty"
+    }
+   ],
+   "tax": "intra",
+   "total": 509760.0,
+   "bank": {
+    "name": "Ambar Commercial Bank Ltd",
+    "account": "50710101138826",
+    "branch": "Pune Baner",
+    "ifsc": "ABRC0000711"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Warranty as per the maker’s terms, from the date of invoice.",
+    "Subject to Pune jurisdiction."
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "IT · RECEIVED\n13 MAY 2026",
+     "color": "violet",
+     "at": "top-left",
+     "rotate": -4
+    },
+    {
+     "kind": "stamp",
+     "text": "BANER INFOSOFT\nPUNE",
+     "color": "blue",
+     "at": "bottom-right",
+     "shape": "round",
+     "rotate": -8
+    }
+   ]
+  },
+  {
+   "id": "it-lap",
+   "type": "card",
+   "style": "slip",
+   "handwritten": true,
+   "title": "Laptops · IT handover sheet",
+   "tab": "Handover",
+   "group": "lap",
+   "kindLabel": "Handover sheet",
+   "issuer": "Tamhini Drivetech Private Limited · IT desk",
+   "heading": "IT asset handover",
+   "number": "IT/26-27/014",
+   "fields": [
+    {
+     "label": "Received from",
+     "value": "Baner Infosoft, DC 0457, on 13.05.2026"
+    },
+    {
+     "label": "Set up",
+     "value": "ERP client, antivirus, backup: 14–15 May"
+    },
+    {
+     "label": "Issued on",
+     "value": "15.05.2026"
+    },
+    {
+     "label": "Issued to",
+     "value": "Production: P. Lande, T. Mhaske, S. Jagtap, M. A. Khan\nAccounts: R. Bendre, S. Hingne"
+    },
+    {
+     "label": "Tags",
+     "value": "FA-27-01/1 to /6"
+    },
+    {
+     "label": "Handed over by",
+     "value": "Sagar Thakur, IT Executive"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "sign",
+     "text": "Sagar T.",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "far-lap",
+   "type": "card",
+   "style": "slip",
+   "title": "FA-27-01 · Register line",
+   "kindLabel": "Register line",
+   "tab": "Register",
+   "group": "lap",
+   "issuer": "Tamhini Drivetech Private Limited · Fixed-asset register",
+   "heading": "Asset FA-27-01",
+   "fields": [
+    {
+     "label": "Description",
+     "value": "6 laptops (Core i5, 16 GB) for production and accounts"
+    },
+    {
+     "label": "Class",
+     "value": "Computers"
+    },
+    {
+     "label": "Location",
+     "value": "Production office and accounts"
+    },
+    {
+     "label": "Tag",
+     "value": "FA-27-01/1 to /6"
+    },
+    {
+     "label": "Supplier’s invoice",
+     "value": "BIS/26-27/0212 dt 12-05-2026"
+    },
+    {
+     "label": "Capex approval",
+     "value": "CA-02"
+    },
+    {
+     "label": "Put to use (register)",
+     "value": "15-05-2026"
+    },
+    {
+     "label": "Cost",
+     "value": "₹4,32,000"
+    },
+    {
+     "label": "Useful life",
+     "value": "3 years"
+    },
+    {
+     "label": "Depreciation 2026–27",
+     "value": "₹1,20,309 (booked)"
+    }
+   ]
+  },
+  {
+   "id": "inv-cnc",
+   "type": "invoice",
+   "title": "CNC TC-35 · Yelahanka invoice",
+   "tab": "Invoice",
+   "group": "cnc",
+   "style": "erp",
+   "supplier": {
+    "name": "Yelahanka CNC Systems Private Limited",
+    "address": "Plot 9, KIADB Industrial Area, Doddaballapur Road, Yelahanka\nBengaluru 560064",
+    "gstin": "29VQLCY6251L1Z1",
+    "state": "Karnataka",
+    "stateCode": "29",
+    "phone": "98XXXXXXXX",
+    "pan": "VQLCY6251L"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "shipTo": {
+    "name": "Tamhini Drivetech Private Limited (Chakan plant)",
+    "address": "Plot B-47, Chakan Industrial Area Phase II\nMIDC, Mahalunge, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "YCS/2026-27/0418",
+   "date": "18-Jul-2026",
+   "copy": "Original for recipient",
+   "poRef": "TD/PO/CAP/2026-27/004",
+   "poDate": "12-Jun-2026",
+   "paymentTerms": "30 days from installation",
+   "dispatchDoc": "LR 88214 dt 18-Jul-2026",
+   "dispatchedThrough": "Road (trailer)",
+   "destination": "Chakan, Pune",
+   "ewayBill": "3512 5890 2602",
+   "vehicle": "KA 50 B 7714",
+   "placeOfSupply": "27-Maharashtra",
+   "irn": "6e2043d34a3a5d830c48a5c2dce46a8d705bc27e96073c5b6aaa394ee2b60e4d",
+   "ackNo": "112701299539986",
+   "ackDate": "18-Jul-2026",
+   "footer": "This is a computer generated invoice and needs no signature.",
+   "lines": [
+    {
+     "desc": "CNC turning centre T-250, 2-axis, 10-inch chuck (your machine TC-35)",
+     "hsn": "8458 11",
+     "qty": 1,
+     "unit": "set",
+     "rate": 6840000.0,
+     "taxable": 6840000.0,
+     "gstRate": 18,
+     "note": "Our serial no. YCS-T250-26-0611"
+    }
+   ],
+   "tax": "inter",
+   "total": 8071200.0,
+   "bank": {
+    "name": "Narmada Valley Bank Ltd",
+    "account": "31200064409218",
+    "branch": "Bengaluru Yelahanka",
+    "ifsc": "NMVB0001003"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Price includes packing, freight to your Chakan plant, installation and trial run.",
+    "Warranty: 12 months from installation.",
+    "Subject to Bengaluru jurisdiction."
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "RECEIVED AT SITE\n24 JUL 2026",
+     "color": "violet",
+     "at": "top-left",
+     "rotate": -4
+    }
+   ]
+  },
+  {
+   "id": "sr-cnc",
+   "type": "card",
+   "style": "slip",
+   "handwritten": true,
+   "title": "CNC TC-35 · Installation and trial-run report",
+   "kindLabel": "Trial-run report",
+   "tab": "Trial run",
+   "group": "cnc",
+   "issuer": "Yelahanka CNC Systems Private Limited · Service department",
+   "heading": "Installation and trial-run report",
+   "number": "SR-2611",
+   "fields": [
+    {
+     "label": "Customer",
+     "value": "Tamhini Drivetech Pvt Ltd, Chakan"
+    },
+    {
+     "label": "Machine",
+     "value": "T-250 turning centre, serial YCS-T250-26-0611\nCustomer’s no. TC-35, Bay 4, cell 2"
+    },
+    {
+     "label": "Received at site",
+     "value": "24.07.2026"
+    },
+    {
+     "label": "Installed and levelled",
+     "value": "05.08.2026 to 11.08.2026"
+    },
+    {
+     "label": "Operators trained",
+     "value": "10–11.08.2026 (2 operators, 1 setter)"
+    },
+    {
+     "label": "Trial run",
+     "value": "12.08.2026: 50 nos input shaft, customer’s drawing. All within limits."
+    },
+    {
+     "label": "Result",
+     "value": "Machine accepted and handed over to production on 12.08.2026"
+    },
+    {
+     "label": "Service engineer",
+     "value": "N. Gowda"
+    },
+    {
+     "label": "Accepted for customer",
+     "value": "V. Reddy, Plant Head, 12.08.2026"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "sign",
+     "text": "V. Reddy",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "memo-cnc",
+   "type": "letter",
+   "style": "memo",
+   "title": "CNC TC-35 · Production’s note to accounts",
+   "tab": "Memo",
+   "group": "cnc",
+   "letterhead": "Tamhini Drivetech Private Limited",
+   "memoTitle": "Internal memo",
+   "to": [
+    "Rahul Bendre, Accounts"
+   ],
+   "from": "Prashant Lande, Production Manager",
+   "cc": [
+    "Venkat Reddy, Plant Head"
+   ],
+   "date": "30-09-2026",
+   "ref": "PRD/2026-27/031",
+   "subject": "TC-35: date put to use",
+   "body": [
+    "TC-35 was installed in Bay 4 and accepted after the trial run on 12-08-2026 (Yelahanka’s report SR-2611 attached).",
+    "In August and September it made only sample lots for Ashvaratha Motors’ approval and stood idle in between. Their regular input-shaft schedule starts on 1 October.",
+    "Please take 01-10-2026, when regular production starts, as the date put to use."
+   ],
+   "sign": {
+    "name": "Prashant Lande",
+    "role": "Production Manager",
+    "hand": "P. Lande"
+   },
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Capitalised from 1/10 as advised. R.B. 1/10",
+     "color": "blue",
+     "at": "inline"
+    }
+   ]
+  },
+  {
+   "id": "far-cnc",
+   "type": "card",
+   "style": "slip",
+   "title": "FA-27-04 · Register line",
+   "kindLabel": "Register line",
+   "tab": "Register",
+   "group": "cnc",
+   "issuer": "Tamhini Drivetech Private Limited · Fixed-asset register",
+   "heading": "Asset FA-27-04",
+   "fields": [
+    {
+     "label": "Description",
+     "value": "CNC turning centre TC-35, 2-axis, 10-inch chuck"
+    },
+    {
+     "label": "Class",
+     "value": "Plant and machinery"
+    },
+    {
+     "label": "Location",
+     "value": "Bay 4, cell 2"
+    },
+    {
+     "label": "Tag",
+     "value": "FA-27-04"
+    },
+    {
+     "label": "Supplier’s invoice",
+     "value": "YCS/2026-27/0418 dt 18-07-2026"
+    },
+    {
+     "label": "Capex approval",
+     "value": "CA-04"
+    },
+    {
+     "label": "Put to use (register)",
+     "value": "01-10-2026"
+    },
+    {
+     "label": "Cost",
+     "value": "₹68,40,000"
+    },
+    {
+     "label": "Useful life",
+     "value": "15 years"
+    },
+    {
+     "label": "Depreciation 2026–27",
+     "value": "₹2,16,007 (booked)"
+    }
+   ]
+  },
+  {
+   "id": "inv-cmm",
+   "type": "invoice",
+   "title": "CMM · Hebbal Tooling invoice",
+   "tab": "Invoice",
+   "group": "cmm",
+   "style": "erp",
+   "supplier": {
+    "name": "Hebbal Tooling Solutions Private Limited",
+    "address": "No. 14, 2nd Stage, Peenya Industrial Area\nBengaluru 560058",
+    "gstin": "29ZEMCH0865A1ZP",
+    "state": "Karnataka",
+    "stateCode": "29",
+    "phone": "98XXXXXXXX",
+    "pan": "ZEMCH0865A"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "shipTo": {
+    "name": "Tamhini Drivetech Private Limited (Chakan plant)",
+    "address": "Plot B-47, Chakan Industrial Area Phase II\nMIDC, Mahalunge, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "HTS/26-27/0871",
+   "date": "02 Jan 2027",
+   "copy": "Original for recipient",
+   "poRef": "TD/PO/CAP/2026-27/005",
+   "poDate": "30 Nov 2026",
+   "paymentTerms": "45 days",
+   "dispatchDoc": "LR 30127 dt 02 Jan 2027",
+   "dispatchedThrough": "Road",
+   "destination": "Chakan, Pune",
+   "ewayBill": "3587 8480 4645",
+   "vehicle": "KA 01 AM 3390",
+   "placeOfSupply": "27-Maharashtra",
+   "irn": "b2ca9724dd25210d7a3edac4985d2248b097617f6149cc166610c0023d9f9635",
+   "ackNo": "112763528390374",
+   "ackDate": "02 Jan 2027",
+   "footer": "This is a system generated invoice.",
+   "lines": [
+    {
+     "desc": "Coordinate measuring machine, bridge type, 700 × 1000 × 600 mm, with probe kit and software",
+     "hsn": "9031 80",
+     "qty": 1,
+     "unit": "set",
+     "rate": 1890000.0,
+     "taxable": 1890000.0,
+     "gstRate": 18,
+     "note": "Our serial no. HTS-CMM-0726; price includes installation and calibration at your quality lab"
+    }
+   ],
+   "tax": "inter",
+   "total": 2230200.0,
+   "bank": {
+    "name": "Ambar Commercial Bank Ltd",
+    "account": "50710084471230",
+    "branch": "Bengaluru Peenya",
+    "ifsc": "ABRC0000559"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Subject to Bengaluru jurisdiction."
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "QUALITY LAB\nRECD 04 JAN 2027",
+     "color": "violet",
+     "at": "top-left",
+     "rotate": -4
+    }
+   ]
+  },
+  {
+   "id": "sr-cmm",
+   "type": "card",
+   "style": "slip",
+   "handwritten": true,
+   "title": "CMM · Installation and calibration report",
+   "kindLabel": "Calibration report",
+   "tab": "Calibration",
+   "group": "cmm",
+   "issuer": "Hebbal Tooling Solutions Private Limited · Metrology service",
+   "heading": "Installation and calibration report",
+   "number": "MS-0412",
+   "fields": [
+    {
+     "label": "Customer",
+     "value": "Tamhini Drivetech Pvt Ltd, Chakan (quality lab)"
+    },
+    {
+     "label": "Machine",
+     "value": "Bridge-type CMM, serial HTS-CMM-0726"
+    },
+    {
+     "label": "Delivered",
+     "value": "04.01.2027"
+    },
+    {
+     "label": "Installed",
+     "value": "04.01.2027"
+    },
+    {
+     "label": "Calibrated",
+     "value": "05.01.2027, certificate HTS/CAL/27/0031"
+    },
+    {
+     "label": "Result",
+     "value": "Accepted by Quality; in use from 05.01.2027"
+    },
+    {
+     "label": "Service engineer",
+     "value": "R. Nayak"
+    },
+    {
+     "label": "Accepted for customer",
+     "value": "K. Deshpande, Quality Manager, 05.01.2027"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "sign",
+     "text": "K. Deshpande",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "far-cmm",
+   "type": "card",
+   "style": "slip",
+   "title": "FA-27-05 · Register line",
+   "kindLabel": "Register line",
+   "tab": "Register",
+   "group": "cmm",
+   "issuer": "Tamhini Drivetech Private Limited · Fixed-asset register",
+   "heading": "Asset FA-27-05",
+   "fields": [
+    {
+     "label": "Description",
+     "value": "Coordinate measuring machine, quality lab"
+    },
+    {
+     "label": "Class",
+     "value": "Plant and machinery"
+    },
+    {
+     "label": "Location",
+     "value": "Quality lab"
+    },
+    {
+     "label": "Tag",
+     "value": "FA-27-05"
+    },
+    {
+     "label": "Supplier’s invoice",
+     "value": "HTS/26-27/0871 dt 02-01-2027"
+    },
+    {
+     "label": "Capex approval",
+     "value": "CA-05"
+    },
+    {
+     "label": "Put to use (register)",
+     "value": "05-01-2027"
+    },
+    {
+     "label": "Cost",
+     "value": "₹18,90,000"
+    },
+    {
+     "label": "Useful life",
+     "value": "15 years"
+    },
+    {
+     "label": "Depreciation 2026–27",
+     "value": "₹28,203 (booked)"
+    }
+   ]
+  },
+  {
+   "id": "inv-vmc",
+   "type": "invoice",
+   "title": "VMC-10 · Singanallur invoice",
+   "tab": "Invoice",
+   "group": "vmc",
+   "style": "erp",
+   "supplier": {
+    "name": "Singanallur Machine Tools Private Limited",
+    "address": "SF No. 212, Trichy Road, Singanallur\nCoimbatore 641005",
+    "gstin": "33XUBCS2564B1Z3",
+    "state": "Tamil Nadu",
+    "stateCode": "33",
+    "phone": "98XXXXXXXX",
+    "pan": "XUBCS2564B"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "shipTo": {
+    "name": "Tamhini Drivetech Private Limited (Chakan plant)",
+    "address": "Plot B-47, Chakan Industrial Area Phase II\nMIDC, Mahalunge, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "SMT/26-27/0907",
+   "date": "22-Mar-2027",
+   "copy": "Original for recipient",
+   "poRef": "TD/PO/CAP/2026-27/007",
+   "poDate": "12-Feb-2027",
+   "paymentTerms": "Advance ₹10,92,000 received 15-Feb-2027; balance 30 days from installation",
+   "dispatchDoc": "LR 51906 dt 22-Mar-2027",
+   "dispatchedThrough": "Road (trailer)",
+   "destination": "Chakan, Pune",
+   "ewayBill": "3354 9683 1768",
+   "vehicle": "TN 37 DK 2208",
+   "placeOfSupply": "27-Maharashtra",
+   "irn": "d1a28d85e360aecc80439829a286ffc49237e66800c1fd635cbc91f80c26ae53",
+   "ackNo": "112718525457134",
+   "ackDate": "22-Mar-2027",
+   "footer": "This is a computer generated invoice and needs no signature.",
+   "lines": [
+    {
+     "desc": "Vertical machining centre V-850, 850 × 450 mm table, 24-tool changer (your machine VMC-10)",
+     "hsn": "8457 10",
+     "qty": 1,
+     "unit": "set",
+     "rate": 5460000.0,
+     "taxable": 5460000.0,
+     "gstRate": 18,
+     "note": "Our serial no. SMT-V85-27-0114; installation and trial run by our engineer"
+    }
+   ],
+   "tax": "inter",
+   "total": 6442800.0,
+   "bank": {
+    "name": "Ambar Commercial Bank Ltd",
+    "account": "50710112250397",
+    "branch": "Coimbatore",
+    "ifsc": "ABRC0000812"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Warranty: 12 months from installation.",
+    "Subject to Coimbatore jurisdiction."
+   ]
+  },
+  {
+   "id": "grn-vmc",
+   "type": "grn",
+   "title": "VMC-10 · Goods receipt note",
+   "tab": "GRN",
+   "group": "vmc",
+   "number": "GRN-2027-03-0389",
+   "date": "24-03-2027",
+   "unit": "Bay 4 (machine shop extension)",
+   "vendor": "Singanallur Machine Tools Private Limited",
+   "poRef": "TD/PO/CAP/2026-27/007",
+   "invoiceRef": "SMT/26-27/0907 dt 22-Mar-2027",
+   "challan": "LR 51906",
+   "vehicle": "TN 37 DK 2208",
+   "lines": [
+    {
+     "desc": "Vertical machining centre VMC-10 (3 crates)",
+     "unit": "set",
+     "qtyChallan": 1,
+     "qtyReceived": 1,
+     "qtyAccepted": 1,
+     "qtyRejected": 0
+    }
+   ],
+   "receivedBy": "Santosh Kale",
+   "remarks": "Gate entry G/3791. Crates unloaded by crane in Bay 4 and left closed for Singanallur’s engineer to open at installation."
+  },
+  {
+   "id": "sr-vmc",
+   "type": "card",
+   "style": "slip",
+   "handwritten": true,
+   "title": "VMC-10 · Installation and trial-run report",
+   "kindLabel": "Trial-run report",
+   "tab": "Trial run",
+   "group": "vmc",
+   "issuer": "Singanallur Machine Tools Private Limited · Field service",
+   "heading": "Installation and trial-run report",
+   "number": "FS-1187",
+   "fields": [
+    {
+     "label": "Customer",
+     "value": "Tamhini Drivetech Pvt Ltd, Chakan"
+    },
+    {
+     "label": "Machine",
+     "value": "V-850, serial SMT-V85-27-0114\nCustomer’s no. VMC-10, Bay 4, cell 3"
+    },
+    {
+     "label": "Received at site",
+     "value": "24.03.2027"
+    },
+    {
+     "label": "Foundation",
+     "value": "Bolts grouted 26.03.2027; 10 days’ curing before levelling"
+    },
+    {
+     "label": "Installed and levelled",
+     "value": "05.04.2027 to 08.04.2027"
+    },
+    {
+     "label": "Trial run",
+     "value": "09.04.2027: 20 nos flange FL-80, customer’s drawing. All within limits."
+    },
+    {
+     "label": "Result",
+     "value": "Machine accepted and handed over to production on 09.04.2027"
+    },
+    {
+     "label": "Service engineer",
+     "value": "K. Murugan"
+    },
+    {
+     "label": "Accepted for customer",
+     "value": "V. Reddy, Plant Head, 09.04.2027"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "sign",
+     "text": "V. Reddy",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "far-vmc",
+   "type": "card",
+   "style": "slip",
+   "title": "FA-27-06 · Register line",
+   "kindLabel": "Register line",
+   "tab": "Register",
+   "group": "vmc",
+   "issuer": "Tamhini Drivetech Private Limited · Fixed-asset register",
+   "heading": "Asset FA-27-06",
+   "fields": [
+    {
+     "label": "Description",
+     "value": "Vertical machining centre VMC-10, 850 mm table"
+    },
+    {
+     "label": "Class",
+     "value": "Plant and machinery"
+    },
+    {
+     "label": "Location",
+     "value": "Bay 4, cell 3"
+    },
+    {
+     "label": "Tag",
+     "value": "FA-27-06"
+    },
+    {
+     "label": "Supplier’s invoice",
+     "value": "SMT/26-27/0907 dt 22-03-2027"
+    },
+    {
+     "label": "Capex approval",
+     "value": "CA-07"
+    },
+    {
+     "label": "Put to use (register)",
+     "value": "24-03-2027"
+    },
+    {
+     "label": "Cost",
+     "value": "₹54,60,000"
+    },
+    {
+     "label": "Useful life",
+     "value": "15 years"
+    },
+    {
+     "label": "Depreciation 2026–27",
+     "value": "₹7,579 (booked)"
+    }
+   ]
+  },
+  {
+   "id": "inv-wak",
+   "type": "invoice",
+   "title": "Wakad bill · Tax invoice",
+   "tab": "Invoice",
+   "group": "wak",
+   "supplier": {
+    "name": "Wakad Air Systems Private Limited",
+    "address": "Unit 14, Wakad–Hinjewadi Road, Wakad\nPune 411057",
+    "gstin": "27WGDCW4845L1ZV",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "WGDCW4845L"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "WAS/26-27/0291",
+   "date": "14-01-2027",
+   "copy": "Original for recipient",
+   "poRef": "TD/PO/CAP/2026-27/006",
+   "poDate": "05-01-2027",
+   "paymentTerms": "30 days",
+   "dispatchDoc": "Our DC 1127 dt 15-01-2027",
+   "dispatchedThrough": "Our tempo",
+   "destination": "Chakan, Pune",
+   "vehicle": "MH 14 JL 4093",
+   "placeOfSupply": "Maharashtra (27)",
+   "lines": [
+    {
+     "desc": "Screw air compressor WAS-SC15, 15 kW, 7.5 bar, with air dryer and 500 L receiver",
+     "hsn": "8414 80",
+     "qty": 1,
+     "unit": "set",
+     "rate": 485000.0,
+     "taxable": 485000.0,
+     "gstRate": 18,
+     "note": "Serial no. WAS-SC15-2701-118; supply, installation and commissioning; warranty 24 months"
+    }
+   ],
+   "tax": "intra",
+   "total": 572300.0,
+   "bank": {
+    "name": "Satpura Bank Ltd",
+    "account": "11020094426610",
+    "branch": "Wakad",
+    "ifsc": "STPB0001739"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Subject to Pune jurisdiction."
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "MAINTENANCE\nRECD 15 JAN 2027",
+     "color": "violet",
+     "at": "top-left",
+     "rotate": -4
+    },
+    {
+     "kind": "hand",
+     "text": "Commissioned 17/1. Pass for payment. G. Tapkir 18/1",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -2
+    },
+    {
+     "kind": "stamp",
+     "text": "WAKAD AIR SYSTEMS\nPUNE",
+     "color": "blue",
+     "at": "bottom-right",
+     "shape": "round",
+     "rotate": -8
+    }
+   ]
+  },
+  {
+   "id": "sr-wak",
+   "type": "card",
+   "style": "slip",
+   "handwritten": true,
+   "title": "Wakad bill · Commissioning report",
+   "kindLabel": "Commissioning report",
+   "tab": "Commissioning",
+   "group": "wak",
+   "issuer": "Wakad Air Systems Private Limited · Service",
+   "heading": "Commissioning report",
+   "number": "CR-0566",
+   "fields": [
+    {
+     "label": "Customer",
+     "value": "Tamhini Drivetech Pvt Ltd, Chakan (compressor room)"
+    },
+    {
+     "label": "Equipment",
+     "value": "New screw compressor WAS-SC15 with dryer and 500 L receiver, serial WAS-SC15-2701-118"
+    },
+    {
+     "label": "Commissioned",
+     "value": "Sunday 17.01.2027, plant shutdown"
+    },
+    {
+     "label": "Old unit",
+     "value": "2009 reciprocating compressor disconnected, kept as stand-by"
+    },
+    {
+     "label": "Result",
+     "value": "Running on load from 17.01.2027; 7.5 bar held on all lines"
+    },
+    {
+     "label": "Service engineer",
+     "value": "M. Gaware"
+    },
+    {
+     "label": "Taken over by",
+     "value": "G. Tapkir, Maintenance Manager"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "sign",
+     "text": "G. Tapkir",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "led-wak",
+   "type": "table",
+   "style": "tally",
+   "title": "Wakad bill · Purchase voucher",
+   "kindLabel": "Voucher",
+   "tab": "Voucher",
+   "group": "wak",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Purchase Voucher No. 2346",
+   "subtitle": "Wakad Air Systems Private Limited · supplier’s invoice WAS/26-27/0291 dated 14-01-2027",
+   "period": "Voucher date: 17-Jan-2027",
+   "columns": [
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "part": "Repairs – plant and machinery",
+     "dr": 485000.0
+    },
+    {
+     "part": "Input CGST – MH",
+     "dr": 43650.0
+    },
+    {
+     "part": "Input SGST – MH",
+     "dr": 43650.0
+    },
+    {
+     "part": "Wakad Air Systems Private Limited",
+     "cr": 572300.0
+    },
+    {
+     "_class": "total",
+     "part": "Total",
+     "dr": 572300.0,
+     "cr": 572300.0
+    }
+   ],
+   "notes": [
+    "Narration: being Wakad Air Systems’ bill for the compressor room. Bill passed by maintenance."
+   ]
+  },
+  {
+   "id": "inv-tal",
+   "type": "invoice",
+   "title": "Talegaon bill · Tax invoice",
+   "tab": "Invoice",
+   "group": "tal",
+   "supplier": {
+    "name": "Talegaon Electricals",
+    "address": "Shop 12, Station Road, Talegaon Dabhade\nPune 410506\nUdyam Reg. No. UDYAM-MH-26-0912584",
+    "gstin": "27WEXFT8325Y1ZN",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "WEXFT8325Y"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "TE/26-27/094",
+   "date": "30.01.2027",
+   "copy": "Original for recipient",
+   "poRef": "TD/WO/2026-27/0012",
+   "poDate": "01.04.2026",
+   "paymentTerms": "30 days",
+   "placeOfSupply": "Maharashtra (27)",
+   "lines": [
+    {
+     "desc": "Electrical maintenance contract, January 2027: fixed monthly charge as per your work order",
+     "hsn": "998717",
+     "qty": 1,
+     "unit": "month",
+     "rate": 268860.0,
+     "taxable": 268860.0,
+     "gstRate": 18,
+     "note": "Two electricians, both shifts. This month: VMC-02 spindle motor (22 kW) rewound after a burnt winding, new motor bearings; TC-18 servo cable set replaced; four panel ACs serviced."
+    }
+   ],
+   "tax": "intra",
+   "roundOff": -0.8,
+   "total": 317254.0,
+   "bank": {
+    "name": "Vindhya Commercial Bank Ltd",
+    "account": "04180145523390",
+    "branch": "Talegaon",
+    "ifsc": "VNCB0000486"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Subject to Pune jurisdiction."
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "MAINTENANCE\nRECD 01 FEB 2027",
+     "color": "violet",
+     "at": "top-left",
+     "rotate": -4
+    },
+    {
+     "kind": "hand",
+     "text": "Work checked. Pass. G. Tapkir 1/2",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -2
+    }
+   ]
+  },
+  {
+   "id": "job-tal",
+   "type": "card",
+   "style": "slip",
+   "handwritten": true,
+   "title": "Talegaon bill · Breakdown job card",
+   "kindLabel": "Job card",
+   "tab": "Job card",
+   "group": "tal",
+   "issuer": "Tamhini Drivetech Private Limited · Maintenance",
+   "heading": "Breakdown job card",
+   "number": "MJ/2027/0031",
+   "fields": [
+    {
+     "label": "Machine",
+     "value": "VMC-02, Bay 2"
+    },
+    {
+     "label": "Reported",
+     "value": "11.01.2027, 2nd shift: spindle motor tripping, smell of burning"
+    },
+    {
+     "label": "Found",
+     "value": "Spindle motor winding burnt"
+    },
+    {
+     "label": "Action",
+     "value": "Motor sent to Talegaon Electricals for rewinding; refitted 14.01.2027"
+    },
+    {
+     "label": "Back in production",
+     "value": "14.01.2027, 1st shift"
+    },
+    {
+     "label": "Attended by",
+     "value": "V. Kumbhar, Maintenance Engineer"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "sign",
+     "text": "V. Kumbhar",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "led-tal",
+   "type": "table",
+   "style": "tally",
+   "title": "Talegaon bill · Purchase voucher",
+   "kindLabel": "Voucher",
+   "tab": "Voucher",
+   "group": "tal",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Purchase Voucher No. 2511",
+   "subtitle": "Talegaon Electricals · supplier’s invoice TE/26-27/094 dated 30.01.2027",
+   "period": "Voucher date: 30-Jan-2027",
+   "columns": [
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "part": "Repairs – plant and machinery",
+     "dr": 268860.0
+    },
+    {
+     "part": "Input CGST – MH",
+     "dr": 24197.4
+    },
+    {
+     "part": "Input SGST – MH",
+     "dr": 24197.4
+    },
+    {
+     "part": "Round off",
+     "cr": 0.8
+    },
+    {
+     "part": "TDS payable (contractor)",
+     "cr": 5377.0
+    },
+    {
+     "part": "Talegaon Electricals",
+     "cr": 311877.0
+    },
+    {
+     "_class": "total",
+     "part": "Total",
+     "dr": 317254.8,
+     "cr": 317254.8
+    }
+   ],
+   "notes": [
+    "Narration: work order TD/WO/2026-27/0012; electrical maintenance and repairs for January 2027."
+   ]
+  }
+ ],
+ "tasks": [
+  {
+   "id": "t1",
+   "type": "items",
+   "stage": "Fieldwork",
+   "title": "Vouch the additions and the big repairs",
+   "prompt": "Aditi marked four of the year’s additions and two big repair bills. Open each with its papers; the policy, capex approvals, register and repairs ledger are under Other papers. Mark each Fine or Exception, say where it belongs at 31 March and pick what is wrong. Your calls go to Aditi when you move on.",
+   "weight": 5,
+   "noun": [
+    "item",
+    "items"
+   ],
+   "lockOnLeave": {
+    "ask": "Hand your calls to Aditi?",
+    "note": "You can’t change them after this.",
+    "yes": "Hand them in",
+    "done": "Handed to Aditi. You can read your calls but not change them."
+   },
+   "hints": [
+    "Put the date in each installation report next to the register’s put-to-use date. Depreciation runs from the day the asset was ready, not the day it arrived or the day it got busy.",
+    "For each repair bill ask: did this money buy a new unit that will last years, or bring an old one back to working order?"
+   ],
+   "columns": [
+    {
+     "key": "label"
+    },
+    {
+     "key": "amount",
+     "format": "inr"
+    },
+    {
+     "key": "ref"
+    }
+   ],
+   "fields": [
+    {
+     "id": "verdict",
+     "kind": "choice",
+     "label": "Your call",
+     "gate": true,
+     "options": [
+      {
+       "id": "ok",
+       "label": "Fine"
+      },
+      {
+       "id": "exception",
+       "label": "Exception"
+      }
+     ]
+    },
+    {
+     "id": "place",
+     "kind": "choice",
+     "label": "At 31 March it belongs in",
+     "options": [
+      {
+       "id": "ppe",
+       "label": "Property, plant and equipment"
+      },
+      {
+       "id": "cwip",
+       "label": "Capital work-in-progress"
+      },
+      {
+       "id": "pl",
+       "label": "Repairs (profit and loss)"
+      }
+     ]
+    },
+    {
+     "id": "reasons",
+     "kind": "multi",
+     "label": "What’s wrong",
+     "showIf": {
+      "verdict": "exception"
+     },
+     "options": [
+      {
+       "id": "late",
+       "label": "Capitalised late: depreciation started after the asset was ready",
+       "short": "late capitalisation",
+       "needs": [
+        "place"
+       ]
+      },
+      {
+       "id": "early",
+       "label": "Capitalised early: not ready for use by 31 March",
+       "short": "early capitalisation",
+       "needs": [
+        "place"
+       ]
+      },
+      {
+       "id": "repairs",
+       "label": "Capital item charged to repairs",
+       "short": "capital item in repairs",
+       "needs": [
+        "place"
+       ]
+      },
+      {
+       "id": "life",
+       "label": "Useful life does not match the policy",
+       "short": "wrong useful life"
+      },
+      {
+       "id": "gst",
+       "label": "GST wrongly added to cost, or wrongly left out",
+       "short": "GST in cost"
+      },
+      {
+       "id": "approval",
+       "label": "Bought without the approval it needs",
+       "short": "no approval"
+      }
+     ],
+     "weight": 3
+    },
+    {
+     "id": "note",
+     "kind": "text",
+     "label": "Your note for the file",
+     "placeholder": "For example: installed 3 May, register 3 May"
+    }
+   ],
+   "docs": [
+    "fa-policy",
+    "capex",
+    "far-add",
+    "rep-ledger",
+    "chat-varun",
+    "inv-lap",
+    "it-lap",
+    "far-lap",
+    "inv-cnc",
+    "sr-cnc",
+    "memo-cnc",
+    "far-cnc",
+    "inv-cmm",
+    "sr-cmm",
+    "far-cmm",
+    "inv-vmc",
+    "grn-vmc",
+    "sr-vmc",
+    "far-vmc",
+    "inv-wak",
+    "sr-wak",
+    "led-wak",
+    "inv-tal",
+    "job-tal",
+    "led-tal"
+   ],
+   "items": [
+    {
+     "id": "lap",
+     "label": "Laptops · FA-27-01",
+     "amount": 432000.0,
+     "ref": "register from 15 May 2026",
+     "docs": [
+      "inv-lap",
+      "it-lap",
+      "far-lap"
+     ],
+     "answer": {
+      "verdict": "ok",
+      "place": "ppe"
+     },
+     "note": "Laptops: Baner’s bill is 12 May, but Sagar finished setting them up and issued them on 15 May, and the register starts there. Three years is the policy’s life; GST is out of cost because the credit was taken. Fine."
+    },
+    {
+     "id": "cnc",
+     "label": "CNC TC-35 · FA-27-04",
+     "amount": 6840000.0,
+     "ref": "register from 1 Oct 2026",
+     "docs": [
+      "inv-cnc",
+      "sr-cnc",
+      "memo-cnc",
+      "far-cnc"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "place": "ppe",
+      "reasons": [
+       "late"
+      ]
+     },
+     "note": "CNC TC-35: Yelahanka’s report says the trial run passed and the machine went to production on 12 August. Accounts took 1 October, when regular orders began. A ready machine depreciates while it waits for work. Exception: capitalised late, 50 days missing."
+    },
+    {
+     "id": "cmm",
+     "label": "CMM · FA-27-05",
+     "amount": 1890000.0,
+     "ref": "register from 5 Jan 2027",
+     "docs": [
+      "inv-cmm",
+      "sr-cmm",
+      "far-cmm"
+     ],
+     "answer": {
+      "verdict": "ok",
+      "place": "ppe"
+     },
+     "note": "CMM: installed on 4 January, calibrated and accepted on 5 January, depreciated from 5 January. Fifteen years: the policy puts inspection machines with plant. Without GST, ₹18,90,000 is 5% over the ₹18,00,000 approval; the policy allows 10%. Fine."
+    },
+    {
+     "id": "vmc",
+     "label": "VMC-10 · FA-27-06",
+     "amount": 5460000.0,
+     "ref": "register from 24 Mar 2027",
+     "docs": [
+      "inv-vmc",
+      "grn-vmc",
+      "sr-vmc",
+      "far-vmc"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "place": "cwip",
+      "reasons": [
+       "early"
+      ]
+     },
+     "note": "VMC-10: reached Chakan on 24 March and stayed in its crates while the foundation cured; the trial run passed on 9 April. Not ready at 31 March. Exception: capitalised early. It goes to capital work-in-progress and the ₹7,579 comes out."
+    },
+    {
+     "id": "wak",
+     "label": "Wakad bill · repairs",
+     "amount": 485000.0,
+     "ref": "repairs, 17 Jan 2027",
+     "docs": [
+      "inv-wak",
+      "sr-wak",
+      "led-wak"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "place": "ppe",
+      "reasons": [
+       "repairs"
+      ]
+     },
+     "note": "Wakad: a new 15 kW screw compressor with dryer, replacing the 2009 unit, on a capital PO and approval CA-06. An asset with years of life, not a repair. Capitalise ₹4,85,000 from 17 January; the GST stays out, as the credit was taken. Exception."
+    },
+    {
+     "id": "tal",
+     "label": "Talegaon bill · repairs",
+     "amount": 268860.0,
+     "ref": "repairs, 30 Jan 2027",
+     "docs": [
+      "inv-tal",
+      "job-tal",
+      "led-tal"
+     ],
+     "answer": {
+      "verdict": "ok",
+      "place": "pl"
+     },
+     "note": "Talegaon, January: the fixed monthly contract. This month a burnt spindle motor rewound with new bearings, a cable set replaced, four panel ACs serviced: labour and small parts that keep old machines running. No new unit, so it stays in repairs. Fine."
+    }
+   ]
+  },
+  {
+   "id": "t2",
+   "type": "worksheet",
+   "stage": "Fieldwork",
+   "title": "Recompute the year’s depreciation",
+   "prompt": "Aditi has listed the five assets you vouched, with the day each was ready for use from the plant’s reports. Count the days from the ready date to 31 March, both included, and work out the year’s depreciation as the policy says, to the rupee. She will set your figures against what accounts booked.",
+   "weight": 1,
+   "lockOnLeave": {
+    "ask": "Hand your depreciation sheet to Aditi?",
+    "note": "You can’t change it after this.",
+    "yes": "Hand it in",
+    "done": "Handed to Aditi. You can read your figures but not change them."
+   },
+   "hints": [
+    "Depreciation = cost × 95% ÷ life × days ÷ 365. Count the ready date and 31 March as well; a machine ready after 31 March has no days this year."
+   ],
+   "columns": [
+    {
+     "key": "asset",
+     "label": "Asset"
+    },
+    {
+     "key": "cost",
+     "label": "Cost",
+     "format": "inr"
+    },
+    {
+     "key": "life",
+     "label": "Life (years)",
+     "format": "int"
+    },
+    {
+     "key": "ready",
+     "label": "Ready for use"
+    },
+    {
+     "key": "days",
+     "label": "Days to 31 March",
+     "format": "int"
+    },
+    {
+     "key": "dep",
+     "label": "Depreciation 2026–27",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "id": "r1",
+     "cells": {
+      "asset": "Laptops (FA-27-01)",
+      "cost": 432000.0,
+      "life": 3,
+      "ready": "15 May 2026",
+      "days": {
+       "input": true,
+       "answer": 321,
+       "tolerance": 0,
+       "sign": false,
+       "working": "15 May–31 Mar: 17 + 30 + 31 + 31 + 30 + 31 + 30 + 31 + 31 + 28 + 31 = 321"
+      },
+      "dep": {
+       "input": true,
+       "answer": 120309,
+       "tolerance": 1,
+       "sign": false,
+       "working": "4,32,000 × 95% ÷ 3 × 321 ÷ 365 = ₹1,20,309",
+       "follow": "432000 × 0.95 ÷ 3 × {r1.days} ÷ 365"
+      }
+     }
+    },
+    {
+     "id": "r2",
+     "cells": {
+      "asset": "CNC TC-35 (FA-27-04)",
+      "cost": 6840000.0,
+      "life": 15,
+      "ready": "12 Aug 2026",
+      "days": {
+       "input": true,
+       "answer": 232,
+       "tolerance": 0,
+       "sign": false,
+       "working": "12 Aug–31 Mar: 20 + 30 + 31 + 30 + 31 + 31 + 28 + 31 = 232"
+      },
+      "dep": {
+       "input": true,
+       "answer": 275349,
+       "tolerance": 1,
+       "sign": false,
+       "working": "68,40,000 × 95% ÷ 15 × 232 ÷ 365 = ₹2,75,349",
+       "follow": "6840000 × 0.95 ÷ 15 × {r2.days} ÷ 365"
+      }
+     }
+    },
+    {
+     "id": "r3",
+     "cells": {
+      "asset": "CMM (FA-27-05)",
+      "cost": 1890000.0,
+      "life": 15,
+      "ready": "5 Jan 2027",
+      "days": {
+       "input": true,
+       "answer": 86,
+       "tolerance": 0,
+       "sign": false,
+       "working": "5 Jan–31 Mar: 27 + 28 + 31 = 86"
+      },
+      "dep": {
+       "input": true,
+       "answer": 28203,
+       "tolerance": 1,
+       "sign": false,
+       "working": "18,90,000 × 95% ÷ 15 × 86 ÷ 365 = ₹28,203",
+       "follow": "1890000 × 0.95 ÷ 15 × {r3.days} ÷ 365"
+      }
+     }
+    },
+    {
+     "id": "r4",
+     "cells": {
+      "asset": "VMC-10 (FA-27-06)",
+      "cost": 5460000.0,
+      "life": 15,
+      "ready": "9 Apr 2027",
+      "days": {
+       "input": true,
+       "answer": 0,
+       "tolerance": 0,
+       "sign": false,
+       "working": "Ready on 9 April: no days in 2026–27"
+      },
+      "dep": {
+       "input": true,
+       "answer": 0,
+       "tolerance": 1,
+       "sign": false,
+       "working": "Not ready by 31 March: nil"
+      }
+     }
+    },
+    {
+     "id": "r5",
+     "cells": {
+      "asset": "Compressor (booked in repairs)",
+      "cost": 485000.0,
+      "life": 15,
+      "ready": "17 Jan 2027",
+      "days": {
+       "input": true,
+       "answer": 74,
+       "tolerance": 0,
+       "sign": false,
+       "working": "17 Jan–31 Mar: 15 + 28 + 31 = 74"
+      },
+      "dep": {
+       "input": true,
+       "answer": 6227,
+       "tolerance": 1,
+       "sign": false,
+       "working": "4,85,000 × 95% ÷ 15 × 74 ÷ 365 = ₹6,227",
+       "follow": "485000 × 0.95 ÷ 15 × {r5.days} ÷ 365"
+      }
+     }
+    }
+   ],
+   "notes": {
+    "r1.days": "Laptops: 15 May and 31 March both count, so May gives 17 days and the year 321.",
+    "r1.dep": "Laptops: 95% of cost over three years, as the policy keeps a 5% residual. This one agrees with what accounts booked.",
+    "r3.dep": "CMM: agrees with the ₹28,203 booked.",
+    "r2.days": "CNC: count from 12 August, the day the trial run passed, not 1 October. Both ends count: 232 days, where accounts took 182.",
+    "r2.dep": "CNC: ₹2,75,349 against ₹2,16,007 booked. The ₹59,342 between them is the 50 days accounts left out.",
+    "r4.dep": "VMC: ready on 9 April, so nothing in 2026–27. The ₹7,579 booked for 8 days from 24 March comes out.",
+    "r5.dep": "Compressor: it never reached the register, so nothing was booked. From 17 January, both ends counted, it carries 74 days’ depreciation: ₹6,227."
+   },
+   "docs": [
+    "far-add",
+    "fa-policy",
+    "sr-cnc",
+    "memo-cnc",
+    "sr-vmc",
+    "sr-wak",
+    "it-lap",
+    "sr-cmm"
+   ]
+  },
+  {
+   "id": "t3",
+   "type": "compose",
+   "stage": "Review",
+   "title": "Draft the adjustments for Rehan",
+   "prompt": "Rehan’s first question will be: so what does it do to the accounts? Pick the right entry for each of the three exceptions, then the line that sums them up. Aditi reviews the note before it goes to him.",
+   "weight": 3,
+   "noun": [
+    "line",
+    "lines"
+   ],
+   "lockOnLeave": {
+    "ask": "Hand your adjustments to Aditi?",
+    "note": "You can’t change them after this.",
+    "yes": "Hand them in",
+    "done": "Handed to Aditi. You can read your note but not change it."
+   },
+   "hints": [
+    "Each entry corrects only the difference: what the books show now against what they should show."
+   ],
+   "previewLabel": "Your adjustments note",
+   "slots": [
+    {
+     "id": "cnc",
+     "label": "CNC TC-35",
+     "options": [
+      {
+       "id": "a",
+       "text": "CNC TC-35: Dr Depreciation, Cr Accumulated depreciation ₹2,75,349, for the 232 days from 12 August to 31 March.",
+       "why": "That books the full ₹2,75,349 on top of the ₹2,16,007 already there. The entry is only the difference, ₹59,342."
+      },
+      {
+       "id": "b",
+       "text": "CNC TC-35: Dr Depreciation, Cr Accumulated depreciation ₹59,342, for the 50 days from 12 August to 30 September.",
+       "why": "Accounts already booked ₹2,16,007 from 1 October. Only the 50 missing days go in: ₹2,75,349 less ₹2,16,007.",
+       "correct": true
+      },
+      {
+       "id": "c",
+       "text": "CNC TC-35: Dr Accumulated depreciation, Cr Depreciation ₹59,342, for the 50 days from 12 August to 30 September.",
+       "why": "The wrong way round. Depreciation was short, so the charge goes up: debit depreciation, credit accumulated depreciation."
+      }
+     ]
+    },
+    {
+     "id": "vmc",
+     "label": "VMC-10",
+     "options": [
+      {
+       "id": "a",
+       "text": "VMC-10: Dr Accumulated depreciation, Cr Depreciation ₹7,579, to reverse the charge; the ₹54,60,000 stays in plant and machinery, as the machine arrived on 24 March.",
+       "why": "Arriving is not being ready. Plant and machinery holds assets ready for use, and a machine still in its crates is not one yet."
+      },
+      {
+       "id": "b",
+       "text": "VMC-10: Dr Singanallur Machine Tools, Cr Plant and machinery and input IGST ₹64,42,800, to take the purchase out of 2026–27 and book it again in April.",
+       "why": "It reached Chakan on 24 March, so the purchase and what is owed to Singanallur both belong to 2026–27. Only where the cost sits changes."
+      },
+      {
+       "id": "c",
+       "text": "VMC-10: Dr Capital work-in-progress, Cr Plant and machinery ₹54,60,000, as it was not ready; and Dr Accumulated depreciation, Cr Depreciation ₹7,579, to reverse the charge.",
+       "why": "The machine is Tamhini’s and stands in Bay 4, so its cost stays on the balance sheet. It waits in capital work-in-progress till 9 April and takes no depreciation this year.",
+       "correct": true
+      }
+     ]
+    },
+    {
+     "id": "comp",
+     "label": "Wakad compressor",
+     "options": [
+      {
+       "id": "a",
+       "text": "Wakad compressor: Dr Plant and machinery, Cr Repairs ₹4,85,000; then Dr Depreciation, Cr Accumulated depreciation ₹6,227, for 74 days from 17 January.",
+       "why": "Out of repairs and into plant at ₹4,85,000, the cost without GST, since Tamhini took the credit. It ran from 17 January, so it depreciates from then.",
+       "correct": true
+      },
+      {
+       "id": "b",
+       "text": "Wakad compressor: Dr Plant and machinery, Cr Repairs ₹5,72,300, the cost with GST; then Dr Depreciation, Cr Accumulated depreciation ₹7,348, for 74 days.",
+       "why": "Repairs hold only ₹4,85,000: the ₹87,300 of GST went to input credit, which Tamhini keeps. The cost is ₹4,85,000, and depreciation ₹6,227."
+      },
+      {
+       "id": "c",
+       "text": "Wakad compressor: Dr Plant and machinery, Cr Repairs ₹4,85,000; no depreciation this year, as it stood in the repairs ledger till the audit found it.",
+       "why": "Where it was booked does not stop depreciation. It was ready on 17 January, so 74 days of depreciation belong to this year."
+      }
+     ]
+    },
+    {
+     "id": "net",
+     "label": "What it does to profit",
+     "options": [
+      {
+       "id": "a",
+       "text": "Net effect: depreciation up ₹57,990 and repairs unchanged, so profit before tax goes down by ₹57,990.",
+       "why": "This leaves out the compressor’s move out of repairs, which on its own lifts profit by ₹4,85,000."
+      },
+      {
+       "id": "b",
+       "text": "Net effect: repairs down ₹4,85,000 and depreciation up ₹57,990, so profit before tax goes up by ₹4,27,010.",
+       "why": "Depreciation goes up ₹59,342 for the CNC and ₹6,227 for the compressor, and down ₹7,579 for the VMC: ₹57,990 up. Repairs fall by ₹4,85,000. Moving the VMC to capital work-in-progress touches no profit.",
+       "correct": true
+      },
+      {
+       "id": "c",
+       "text": "Net effect: repairs down ₹4,85,000 and depreciation the same overall, so profit before tax goes up by ₹4,85,000.",
+       "why": "Depreciation does change: the CNC’s missing 50 days and the compressor add more than the VMC takes off, ₹57,990 in all."
+      }
+     ]
+    }
+   ],
+   "template": "Proposed audit adjustments · fixed assets\nTamhini Drivetech Private Limited · year ended 31 March 2027\n\n1. {cnc}\n\n2. {vmc}\n\n3. {comp}\n\n{net}\n\n{_free}\n\nFor Aditi’s review.",
+   "freeText": {
+    "label": "Your own line for the note"
+   },
+   "docs": [
+    "far-add",
+    "rep-ledger",
+    "tb-fa",
+    "inv-cnc",
+    "sr-cnc",
+    "memo-cnc",
+    "far-cnc",
+    "inv-vmc",
+    "grn-vmc",
+    "sr-vmc",
+    "far-vmc",
+    "inv-wak",
+    "sr-wak",
+    "led-wak"
+   ]
+  },
+  {
+   "id": "t4",
+   "type": "choice",
+   "stage": "Report",
+   "title": "Answer the CARO fixed-asset points",
+   "prompt": "Aditi has left points 1 to 3 of the CARO working paper for paragraph 3(i) to you. Use the register, the trial balance, the verification report, the title register and the bank’s letter to answer her six questions on them.",
+   "weight": 2,
+   "hints": [
+    "Physical verification is management’s job; you check that it was done and what it found. Land held under a duly executed lease stays out of the title-deed table."
+   ],
+   "questions": [
+    {
+     "id": "q1",
+     "multi": false,
+     "text": "CARO first asks whether the company keeps proper records of its property, plant and equipment. From the register and the trial balance, what do you write?",
+     "options": [
+      {
+       "id": "a",
+       "text": "No: the register gives no supplier’s name against each asset, and CARO needs the supplier and the invoice for every item before records count as proper.",
+       "why": "The test is full particulars, quantity and location, tied to the books. A supplier’s name is useful, not required, and the invoice number is already there."
+      },
+      {
+       "id": "b",
+       "text": "Yes: the auditors traced every asset in the register to the floor in February, so the records can be relied on without checking them further.",
+       "why": "The February verification was management’s, not ours, and it is a separate point. Records are judged on what the register holds and whether it agrees with the books."
+      },
+      {
+       "id": "c",
+       "text": "Yes: each asset has its code, tag, quantity, location, cost, dates and depreciation, and the register’s totals agree with the trial balance, class by class.",
+       "why": "Proper records identify each asset, where it is, how many, what it cost and its depreciation, and they agree with the books. Tamhini’s register does, class by class.",
+       "correct": true
+      },
+      {
+       "id": "d",
+       "text": "Not this year: the register got three items wrong, so the records point waits for next year’s audit, once the entries are passed.",
+       "why": "CARO reports on this year, every year. The three errors are being corrected through the adjustments; they do not take away the register’s particulars."
+      }
+     ],
+     "sample": "Proper records of property, plant and equipment: what to write"
+    },
+    {
+     "id": "q2",
+     "multi": false,
+     "text": "Records also cover what left. The register’s note says the 2008 lathe was sold as scrap on 14 December for ₹45,000, and the trial balance shows ₹14,000 profit on sale. What do you write?",
+     "options": [
+      {
+       "id": "a",
+       "text": "The ₹14,000 is right: ₹45,000 against the ₹31,000 left in the books, cost ₹6,20,000 less depreciation ₹5,89,000. The lathe’s line is out of the register.",
+       "why": "A sold asset comes out of the register at its cost and its depreciation to date; the profit is the price less what was left: ₹45,000 less ₹31,000.",
+       "correct": true
+      },
+      {
+       "id": "b",
+       "text": "The profit should be ₹45,000: a lathe bought in 2008 was fully depreciated long ago, so nothing was left in the books to set against the price.",
+       "why": "Depreciation stops at the 5% residual the policy keeps: ₹5,89,000 of ₹6,20,000. The ₹31,000 left comes off the price, so the profit is ₹14,000."
+      },
+      {
+       "id": "c",
+       "text": "There is a loss of ₹5,75,000: the lathe cost ₹6,20,000 and fetched only ₹45,000 as scrap, so the trial balance should show a loss on sale.",
+       "why": "That ignores the ₹5,89,000 of depreciation already charged over the years. Only the ₹31,000 still in the books comes off the price."
+      },
+      {
+       "id": "d",
+       "text": "Keep the lathe’s line in the register at ₹31,000 till the next physical verification confirms it has gone, and hold back the profit till then.",
+       "why": "The register drops the lathe on 14 December, the day it was sold. Waiting for a count would keep a lathe in the books that Tamhini no longer owns."
+      }
+     ],
+     "sample": "The 2008 lathe sold as scrap: its profit on sale"
+    },
+    {
+     "id": "q3",
+     "multi": false,
+     "text": "Next: were the assets physically verified by management at reasonable intervals? Read the February report.",
+     "options": [
+      {
+       "id": "a",
+       "text": "No: CARO needs every asset verified every year, so a two-year cycle means a qualified answer on this point, whatever the February report found.",
+       "why": "CARO says “reasonable intervals”, not every year, and a two-year cycle that covers every asset is reasonable. Nothing here calls for a qualification."
+      },
+      {
+       "id": "b",
+       "text": "Yes: management verifies every asset once in two years, last on 18–20 February 2027, and found no differences, so nothing needed adjusting in the books.",
+       "why": "Covering every asset at least once in three years is the usual yardstick, and Tamhini covers them in two. The signed report found every line, so the books need nothing.",
+       "correct": true
+      },
+      {
+       "id": "c",
+       "text": "Not for management to answer: the auditor verifies the assets each year, so this point is about the test checks we do ourselves.",
+       "why": "Verification is management’s job, and CARO asks about theirs. We satisfy ourselves that it was done, and see what it found."
+      },
+      {
+       "id": "d",
+       "text": "No: the verification was in February, not on 31 March, so it has to be done again at the year-end before the point can be answered.",
+       "why": "Fixed assets need no year-end count. February is fine; additions after it are checked on their own papers, as you did today."
+      }
+     ],
+     "note": "One more thing: the team went from the register to the floor. The compressor, booked in repairs, had no line, so nobody looked for it. Going from the floor to the register catches that.",
+     "sample": "Physical verification of fixed assets: at reasonable intervals?"
+    },
+    {
+     "id": "q4",
+     "multi": false,
+     "text": "Once the compressor is capitalised, what must the register show for it, so that CARO’s records point still holds?",
+     "options": [
+      {
+       "id": "a",
+       "text": "Nothing new: the register follows the capex approvals, and the compressor is on that list, so the approvals already cover it.",
+       "why": "An approvals list is not a register. The register holds what was bought, where it is, what it cost and its depreciation."
+      },
+      {
+       "id": "b",
+       "text": "The 2009 compressor’s line, renamed for the new unit and keeping the old tag, since the new compressor replaced the old one.",
+       "why": "The 2009 unit is still there, on stand-by, so its line stays. The new compressor gets a line of its own."
+      },
+      {
+       "id": "c",
+       "text": "A line dated 14 January 2027, the date of Wakad’s invoice, in the compressor room, at ₹5,72,300, the bill’s total with the GST included.",
+       "why": "Depreciation runs from the day it was ready, 17 January, and the cost leaves out the GST credit Tamhini took."
+      },
+      {
+       "id": "d",
+       "text": "A new line with its own code and tag, the compressor room as its location, its cost, and 17 January 2027 as its ready date.",
+       "why": "Records mean each asset with its location and quantity. Once the compressor is an asset it needs a line and a tag, or the next verification cannot find it.",
+       "correct": true
+      }
+     ],
+     "sample": "The compressor, once capitalised: what the register must show"
+    },
+    {
+     "id": "q5",
+     "multi": false,
+     "text": "The original MIDC lease deed is with Vindhya Commercial Bank. Mahesh offers a photocopy from his file. What do you rely on?",
+     "options": [
+      {
+       "id": "a",
+       "text": "Mahesh’s photocopy, once he stamps and signs it as a true copy of the original lease deed, kept in the file with his note.",
+       "why": "A copy certified by the client is still a copy from the client. The holder of the original confirms it."
+      },
+      {
+       "id": "b",
+       "text": "Nothing: a deed held by a bank cannot be seen, so the point is left out of the working paper with a note that it was not checked.",
+       "why": "It can be checked: the bank that holds the deed confirms it to us in writing, as Vindhya has done."
+      },
+      {
+       "id": "c",
+       "text": "The bank’s letter to us confirming that it holds the original deed in Tamhini’s favour, matched to the title register and the loans it secures.",
+       "why": "The bank holds the original, so the bank confirms it, in writing and directly to us. Evidence from outside Tamhini about the original beats a photocopy from inside.",
+       "correct": true
+      },
+      {
+       "id": "d",
+       "text": "A request to the bank to send the original deed to the plant, so that we can inspect it ourselves before the report is signed.",
+       "why": "A bank does not release its security for an audit, and it need not. Its written confirmation, sent to us, is the evidence."
+      }
+     ],
+     "sample": "Lease deed held by the bank: what to rely on"
+    },
+    {
+     "id": "q6",
+     "multi": false,
+     "text": "Why does the MIDC plot not go into CARO’s table of title deeds that are not held in the company’s name?",
+     "options": [
+      {
+       "id": "a",
+       "text": "The plot is mortgaged to Vindhya Commercial Bank, so the title belongs to the bank until the term loan and the cash credit are repaid.",
+       "why": "A deposit of the deed is security, not a transfer of title. The lease stays in Tamhini’s favour; the bank only holds the paper."
+      },
+      {
+       "id": "b",
+       "text": "Tamhini holds the plot as lessee under a lease deed duly executed in its favour, and the clause leaves such properties out of the table.",
+       "why": "The title-deed point excludes properties held by the company as lessee under a duly executed lease. The bank’s letter confirms the deed is in Tamhini’s favour.",
+       "correct": true
+      },
+      {
+       "id": "c",
+       "text": "It does go in: MIDC owns the land, so the title is not in Tamhini’s name and the table has to show the plot with MIDC as the holder.",
+       "why": "MIDC owning the land is exactly the lessee case the clause sets aside. The table is for deeds that should be in Tamhini’s name and are not."
+      },
+      {
+       "id": "d",
+       "text": "Land is reported under the revaluation point instead, and Tamhini has not revalued the plot this year, so neither point applies to it.",
+       "why": "Revaluation is a separate point and says nothing about whose name a deed is in. Land comes under the title-deed point like any immovable property; only a lease duly executed in the company’s favour takes it out."
+      }
+     ],
+     "sample": "The MIDC plot: why it stays out of the title-deed table"
+    }
+   ],
+   "docs": [
+    "caro-wp",
+    "far-summary",
+    "tb-fa",
+    "far-add",
+    "pv-report",
+    "title-reg",
+    "bank-letter",
+    "fa-policy",
+    "sr-wak"
+   ]
+  }
+ ],
+ "wrap": {
+  "from": "aditi",
+  "text": "Two machines had the wrong start date: the CNC 50 days late, the VMC before it was ready. We raised the CNC at the Q2 review and Mahesh said year-end; here we are. The compressor was hiding in repairs and needs its own register line and tag. Net, profit rises ₹4,27,010."
+ },
+ "wrapPartial": {
+  "from": "aditi",
+  "text": "One start date late, one early, and a compressor sitting in repairs. Each miss below has my note; read them before you leave. We’ll sit together at 9 tomorrow, before Rehan opens the file."
+ },
+ "wrapRetry": {
+  "from": "aditi",
+  "text": "Most of this file turns on dates: put the day each machine was ready beside the register’s date, and count both ends of every period. Then read each repair bill for what it bought."
+ },
+ "passNeeds": [
+  {
+   "task": "t1",
+   "min": 0.7,
+   "note": "Get more of the six items right: the call, where it belongs at 31 March and what is wrong."
+  },
+  {
+   "task": "t2",
+   "min": 0.7,
+   "note": "Get more figures right, or following your figures: count both ends, and take 95% of cost over the life."
+  }
+ ],
+ "model": {
+  "intro": "Three of the six are exceptions: the CNC was capitalised 50 days late, the VMC before it was ready, and a new compressor was booked as repairs. Together they lift profit before tax by ₹4,27,010. The laptops, the CMM and Talegaon’s bill only look wrong.",
+  "blocks": [
+   {
+    "type": "table",
+    "columns": [
+     {
+      "key": "item",
+      "label": "Item"
+     },
+     {
+      "key": "found",
+      "label": "What we found"
+     },
+     {
+      "key": "entry",
+      "label": "Adjustment"
+     }
+    ],
+    "rows": [
+     {
+      "item": "CNC TC-35",
+      "found": "Ready on 12 Aug; register from 1 Oct, when regular orders began",
+      "entry": "Depreciation up ₹59,342"
+     },
+     {
+      "item": "VMC-10",
+      "found": "Arrived 24 Mar; trial run passed 9 Apr",
+      "entry": "To capital work-in-progress ₹54,60,000; depreciation down ₹7,579"
+     },
+     {
+      "item": "Wakad compressor",
+      "found": "New 15 kW unit booked to repairs",
+      "entry": "To plant ₹4,85,000; depreciation up ₹6,227"
+     },
+     {
+      "item": "Net",
+      "found": "Repairs down ₹4,85,000; depreciation up ₹57,990",
+      "entry": "Profit before tax up ₹4,27,010"
+     }
+    ]
+   },
+   {
+    "type": "text",
+    "text": "Why the other three are fine:"
+   },
+   {
+    "type": "list",
+    "items": [
+     "Laptops: billed 12 May, issued on 15 May after setup, depreciated from 15 May over the policy’s three years.",
+     "CMM: ₹90,000 over its ₹18,00,000 approval, inside the 10% the policy allows without a fresh one.",
+     "Talegaon’s January bill: the fixed monthly contract. Rewinding a burnt motor brings an old machine back and buys no new unit. Repairs."
+    ]
+   },
+   {
+    "type": "text",
+    "text": "For the CARO working paper:"
+   },
+   {
+    "type": "list",
+    "items": [
+     "Records: the register has code, tag, quantity, location, cost, dates and depreciation for each asset, and agrees with the trial balance. The compressor gets its own line and tag once capitalised.",
+     "Disposal: the 2008 lathe left the register on 14 December; ₹45,000 against the ₹31,000 still in the books is the ₹14,000 profit booked.",
+     "Verification: every asset once in two years by management, last on 18–20 February 2027, with no differences.",
+     "Title: the MIDC plot is held under a lease duly executed in Tamhini’s favour, so it stays out of the title-deed table; the bank confirms it holds the deed."
+    ]
+   },
+   {
+    "type": "note",
+    "from": "aditi",
+    "text": "A machine file holds more than one date. The VMC’s register line took the day it arrived, the CNC’s the day it got busy; depreciation follows the day each was ready. Ticking the register against the invoice, Varun’s way, would have passed both."
+   }
+  ]
+ },
+ "principles": [
+  "Depreciation starts on the day an asset is ready for use, as the installation report shows. The invoice date and the production plan do not decide it.",
+  "Read every big repair bill for what it bought. Something new that will serve for years is capitalised, however it was booked; work that keeps an old machine going stays in repairs.",
+  "Each CARO fixed-asset point rests on a paper: the register against the books, management’s verification report, the deed or its holder’s confirmation."
+ ],
+ "earned": {
+  "clause": "vouched {items} fixed-asset additions and repair bills[[; flagged {found} {found|exception|exceptions} ({types})]]; recomputed depreciation[[; checked CARO fixed-asset records, verification and title{rec|}{ver|}{tit|}]]",
+  "counts": {
+   "items": {
+    "kind": "items",
+    "task": "t1",
+    "answered": "gate"
+   },
+   "found": {
+    "kind": "itemsWhere",
+    "task": "t1",
+    "field": "verdict",
+    "equals": "exception",
+    "withRight": "reasons"
+   },
+   "types": {
+    "kind": "tally",
+    "task": "t1",
+    "field": "reasons"
+   },
+   "rec": {
+    "kind": "correctQuestions",
+    "task": "t4",
+    "questions": [
+     "q1",
+     "q2",
+     "q4"
+    ]
+   },
+   "ver": {
+    "kind": "correctQuestions",
+    "task": "t4",
+    "questions": [
+     "q3"
+    ]
+   },
+   "tit": {
+    "kind": "correctQuestions",
+    "task": "t4",
+    "questions": [
+     "q5",
+     "q6"
+    ]
+   }
+  },
+  "fallback": "vouched {items} fixed-asset additions and repair bills; recomputed depreciation"
+ },
+ "interview": [
+  {
+   "q": "When does depreciation start on a new machine?",
+   "checking": "Whether you know the date that drives depreciation, and which paper proves it.",
+   "outline": [
+    "When it is available for use: installed, tested and able to run as management intends.",
+    "Not the invoice date, the delivery date or the day regular orders begin: the trial-run report gives it.",
+    "In the simulation a CNC ready on 12 August was depreciated from 1 October: 50 days short."
+   ]
+  },
+  {
+   "q": "How do you decide whether a repair is really a capital item?",
+   "checking": "Whether you can tell a repair from an asset, with a reason.",
+   "outline": [
+    "I ask what the money bought: a new unit that will last years is an asset.",
+    "Labour, consumables and small parts that keep an old machine running are repairs, however big the bill.",
+    "In the simulation a new ₹4,85,000 compressor sat in repairs; a rewound motor rightly stayed there."
+   ]
+  }
+ ]
+}

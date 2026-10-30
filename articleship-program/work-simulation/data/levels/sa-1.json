@@ -1,0 +1,6268 @@
+{
+ "id": "sa-1",
+ "domain": "statutory-audit",
+ "number": 1,
+ "title": "Vouching and cut-off",
+ "minutes": 45,
+ "minutesWhy": "law §3.3 row: vouch 20 purchase bills against PO, GRN and ledger",
+ "learn": [
+  "What to check on a bill, its PO, GRN and ledger entry",
+  "How delivery terms and receipt date, not bill date, decide the year",
+  "What a cut-off error does to stock and profit"
+ ],
+ "do": [
+  "Vouch 20 purchase bills",
+  "Draft the query mail to the client",
+  "Work out the cut-off effect"
+ ],
+ "case": {
+  "role": "First-year article assistant on the statutory audit",
+  "client": "Tamhini Drivetech Private Limited, a Chakan company that makes gears, shafts and hubs for vehicle makers",
+  "team": "Aditi Rane (senior), Rehan Siddiqui (manager), Sudha Venkatesh (partner)",
+  "goal": "Check that the purchases booked around 31 March are in the right year, were approved and are billed correctly.",
+  "period": "Year ended 31 March 2027",
+  "where": "Accounts room, Chakan plant · Monday 19 April 2027"
+ },
+ "brief": {
+  "from": "aditi",
+  "time": "9:40 am",
+  "messages": [
+   "Pallavi in accounts has put out the 20 purchase bills I picked from either side of 31 March. Vouch each against its PO, GRN and ledger entry.",
+   "Cut-off first, then approval, rate, quantity and GST. Rehan reviews purchases today, so notes by lunch, please."
+  ]
+ },
+ "documents": [
+  {
+   "id": "policy-purchase",
+   "type": "letter",
+   "style": "policy",
+   "title": "Purchase procedure · extract",
+   "letterhead": "Tamhini Drivetech Private Limited\nPlot B-47, Chakan Industrial Area Phase II, MIDC, Mahalunge, Pune 410501",
+   "subject": "Purchase procedure (extract)",
+   "meta": [
+    {
+     "label": "Issued",
+     "value": "1 April 2025"
+    },
+    {
+     "label": "Owner",
+     "value": "Purchase department"
+    }
+   ],
+   "body": [
+    "## 1. Purchase orders",
+    "Every purchase of goods or job work needs a purchase order (PO), approved before it goes to the vendor:",
+    {
+     "table": {
+      "columns": [
+       {
+        "key": "v",
+        "label": "PO value (before GST)"
+       },
+       {
+        "key": "a",
+        "label": "Approved by"
+       }
+      ],
+      "rows": [
+       {
+        "v": "Up to ₹5,00,000",
+        "a": "Purchase Manager"
+       },
+       {
+        "v": "Above ₹5,00,000",
+        "a": "Managing Director"
+       }
+      ]
+     }
+    },
+    "A change in rate or quantity needs a written amendment, approved at the same level.",
+    "## 2. Receiving goods",
+    "Security records every vehicle in the gate inward register. Stores make a goods receipt note (GRN) for each delivery, and QC records any rejection on it.",
+    "Rejected goods go back to the vendor with a debit note within seven days.",
+    "## 3. Booking bills",
+    "Accounts book a bill only after matching it with the approved PO and the GRN, in the month the goods were received."
+   ],
+   "sign": {
+    "name": "Amol Joglekar",
+    "role": "Managing Director",
+    "hand": "A. Joglekar"
+   }
+  },
+  {
+   "id": "vendor-master",
+   "type": "table",
+   "style": "register",
+   "title": "Vendor master · extract",
+   "heading": "Vendor master (extract)",
+   "company": "Tamhini Drivetech Private Limited",
+   "subtitle": "Vendors of the 20 bills, as on 31-03-2027, from the accounts system",
+   "columns": [
+    {
+     "key": "name",
+     "label": "Vendor"
+    },
+    {
+     "key": "gstin",
+     "label": "GSTIN",
+     "mono": true
+    },
+    {
+     "key": "pan",
+     "label": "PAN",
+     "mono": true
+    },
+    {
+     "key": "state",
+     "label": "State"
+    },
+    {
+     "key": "code",
+     "label": "Vendor code",
+     "mono": true
+    },
+    {
+     "key": "place",
+     "label": "Place"
+    },
+    {
+     "key": "msme",
+     "label": "MSME"
+    },
+    {
+     "key": "days",
+     "label": "Credit days",
+     "format": "int"
+    }
+   ],
+   "rows": [
+    {
+     "code": "VEN-1001",
+     "name": "Ghanekar Alloy Steels Private Limited",
+     "place": "Jalna",
+     "gstin": "27UMVCG6849R1ZY",
+     "pan": "UMVCG6849R",
+     "state": "Maharashtra",
+     "msme": "–",
+     "days": 60
+    },
+    {
+     "code": "VEN-1002",
+     "name": "Kharun Steels Private Limited",
+     "place": "Raipur",
+     "gstin": "22UFLCK0414F1Z9",
+     "pan": "UFLCK0414F",
+     "state": "Chhattisgarh",
+     "msme": "–",
+     "days": 60
+    },
+    {
+     "code": "VEN-1003",
+     "name": "Rankala Forgings Private Limited",
+     "place": "Kolhapur",
+     "gstin": "27UJPCR7248B1Z1",
+     "pan": "UJPCR7248B",
+     "state": "Maharashtra",
+     "msme": "Small",
+     "days": 45
+    },
+    {
+     "code": "VEN-1004",
+     "name": "Bhadar Forge and Engineering Private Limited",
+     "place": "Rajkot",
+     "gstin": "24YLTCB8047E1Z6",
+     "pan": "YLTCB8047E",
+     "state": "Gujarat",
+     "msme": "–",
+     "days": 60
+    },
+    {
+     "code": "VEN-1005",
+     "name": "Vishwamitri Bearings Private Limited",
+     "place": "Vadodara",
+     "gstin": "24UQQCV0863H1ZL",
+     "pan": "UQQCV0863H",
+     "state": "Gujarat",
+     "msme": "–",
+     "days": 60
+    },
+    {
+     "code": "VEN-1006",
+     "name": "Palar Seals and Gaskets Private Limited",
+     "place": "Chennai",
+     "gstin": "33VMJCP6724Z1Z1",
+     "pan": "VMJCP6724Z",
+     "state": "Tamil Nadu",
+     "msme": "–",
+     "days": 60
+    },
+    {
+     "code": "VEN-1007",
+     "name": "Sohna Friction Products Private Limited",
+     "place": "Gurugram",
+     "gstin": "06ZDICS4933L1Z4",
+     "pan": "ZDICS4933L",
+     "state": "Haryana",
+     "msme": "–",
+     "days": 60
+    },
+    {
+     "code": "VEN-1008",
+     "name": "Phillaur Fasteners Private Limited",
+     "place": "Ludhiana",
+     "gstin": "03UBZCP4197S1ZJ",
+     "pan": "UBZCP4197S",
+     "state": "Punjab",
+     "msme": "Small",
+     "days": 45
+    },
+    {
+     "code": "VEN-1009",
+     "name": "Hebbal Tooling Solutions Private Limited",
+     "place": "Bengaluru",
+     "gstin": "29ZEMCH0865A1ZP",
+     "pan": "ZEMCH0865A",
+     "state": "Karnataka",
+     "msme": "–",
+     "days": 45
+    },
+    {
+     "code": "VEN-1010",
+     "name": "Mundhwa Lubricants and Chemicals",
+     "place": "Pune",
+     "gstin": "27WHQFM7542F1ZX",
+     "pan": "WHQFM7542F",
+     "state": "Maharashtra",
+     "msme": "–",
+     "days": 30
+    },
+    {
+     "code": "VEN-1011",
+     "name": "Moshi Corrugators (Prop. Ramesh Landge)",
+     "place": "Pune",
+     "gstin": "27YNLPL0717M1Z1",
+     "pan": "YNLPL0717M",
+     "state": "Maharashtra",
+     "msme": "Micro",
+     "days": 30
+    },
+    {
+     "code": "VEN-1013",
+     "name": "Kolak Polypack Private Limited",
+     "place": "Vapi",
+     "gstin": "24WGHCK4121C1Z7",
+     "pan": "WGHCK4121C",
+     "state": "Gujarat",
+     "msme": "Small",
+     "days": 45
+    },
+    {
+     "code": "VEN-1014",
+     "name": "Kudalwadi Heat Treaters",
+     "place": "Pimpri-Chinchwad",
+     "gstin": "27ZPIFK9501Q1Z5",
+     "pan": "ZPIFK9501Q",
+     "state": "Maharashtra",
+     "msme": "Small",
+     "days": 45
+    },
+    {
+     "code": "VEN-1015",
+     "name": "Sakhare Surface Treatment",
+     "place": "Chakan",
+     "gstin": "27ZJGPS6000S1ZY",
+     "pan": "ZJGPS6000S",
+     "state": "Maharashtra",
+     "msme": "Micro",
+     "days": 30
+    }
+   ],
+   "notes": [
+    "GSTINs checked on the GST portal when each vendor was added. Changes need the accounts head’s approval."
+   ]
+  },
+  {
+   "id": "gstin-search",
+   "type": "table",
+   "style": "plain",
+   "title": "GST portal · GSTIN searches",
+   "kindLabel": "Portal print",
+   "icon": "sheet",
+   "heading": "GSTIN searches on the GST portal",
+   "subtitle": "The GSTIN printed on each of the 20 bills, searched one by one (Search taxpayer) on 19-04-2027 and printed for the audit file",
+   "columns": [
+    {
+     "key": "bill",
+     "label": "Bill"
+    },
+    {
+     "key": "gstin",
+     "label": "GSTIN on the bill",
+     "mono": true
+    },
+    {
+     "key": "legal",
+     "label": "Legal name on the portal"
+    }
+   ],
+   "rows": [
+    {
+     "bill": "Bill 1",
+     "gstin": "06ZDICS4933L1Z4",
+     "legal": "SOHNA FRICTION PRODUCTS PRIVATE LIMITED"
+    },
+    {
+     "bill": "Bill 2",
+     "gstin": "03UBZCP4179S1ZJ",
+     "legal": "Not found"
+    },
+    {
+     "bill": "Bill 3",
+     "gstin": "27UMVCG6849R1ZY",
+     "legal": "GHANEKAR ALLOY STEELS PRIVATE LIMITED"
+    },
+    {
+     "bill": "Bill 4",
+     "gstin": "27UJPCR7248B1Z1",
+     "legal": "RANKALA FORGINGS PRIVATE LIMITED"
+    },
+    {
+     "bill": "Bill 5",
+     "gstin": "27YNLPL0717M1Z1",
+     "legal": "RAMESH LANDGE (trade name MOSHI CORRUGATORS)"
+    },
+    {
+     "bill": "Bill 6",
+     "gstin": "29ZEMCH0865A1ZP",
+     "legal": "HEBBAL TOOLING SOLUTIONS PRIVATE LIMITED"
+    },
+    {
+     "bill": "Bill 7",
+     "gstin": "24WGHCK4121C1Z7",
+     "legal": "KOLAK POLYPACK PRIVATE LIMITED"
+    },
+    {
+     "bill": "Bill 8",
+     "gstin": "24YLTCB8047E1Z6",
+     "legal": "BHADAR FORGE AND ENGINEERING PRIVATE LIMITED"
+    },
+    {
+     "bill": "Bill 9",
+     "gstin": "24UQQCV0863H1ZL",
+     "legal": "VISHWAMITRI BEARINGS PRIVATE LIMITED"
+    },
+    {
+     "bill": "Bill 10",
+     "gstin": "33VMJCP6724Z1Z1",
+     "legal": "PALAR SEALS AND GASKETS PRIVATE LIMITED"
+    },
+    {
+     "bill": "Bill 11",
+     "gstin": "22UFLCK0414F1Z9",
+     "legal": "KHARUN STEELS PRIVATE LIMITED"
+    },
+    {
+     "bill": "Bill 12",
+     "gstin": "27ZPIFK9501Q1Z5",
+     "legal": "KUDALWADI HEAT TREATERS"
+    },
+    {
+     "bill": "Bill 13",
+     "gstin": "27WHQFM7542F1ZX",
+     "legal": "MUNDHWA LUBRICANTS AND CHEMICALS"
+    },
+    {
+     "bill": "Bill 14",
+     "gstin": "27ZJGPS6000S1ZY",
+     "legal": "MANGESH SAKHARE (trade name SAKHARE SURFACE TREATMENT)"
+    },
+    {
+     "bill": "Bill 15",
+     "gstin": "27UJPCR7248B1Z1",
+     "legal": "RANKALA FORGINGS PRIVATE LIMITED"
+    },
+    {
+     "bill": "Bill 16",
+     "gstin": "27UMVCG6849R1ZY",
+     "legal": "GHANEKAR ALLOY STEELS PRIVATE LIMITED"
+    },
+    {
+     "bill": "Bill 17",
+     "gstin": "24UQQCV0863H1ZL",
+     "legal": "VISHWAMITRI BEARINGS PRIVATE LIMITED"
+    },
+    {
+     "bill": "Bill 18",
+     "gstin": "22UFLCK0414F1Z9",
+     "legal": "KHARUN STEELS PRIVATE LIMITED"
+    },
+    {
+     "bill": "Bill 19",
+     "gstin": "29ZEMCH0865A1ZP",
+     "legal": "HEBBAL TOOLING SOLUTIONS PRIVATE LIMITED"
+    },
+    {
+     "bill": "Bill 20",
+     "gstin": "06ZDICS4933L1Z4",
+     "legal": "SOHNA FRICTION PRODUCTS PRIVATE LIMITED"
+    }
+   ],
+   "notes": [
+    "Every GSTIN the portal found is active.",
+    "A proprietor’s registration is in the proprietor’s own name; the business name is its trade name."
+   ],
+   "planted": [
+    "03UBZCP4179S1ZJ is the GSTIN printed on the Phillaur bill; no such registration exists"
+   ]
+  },
+  {
+   "id": "gate-register",
+   "type": "table",
+   "style": "register",
+   "title": "Gate register · 29 March – 8 April",
+   "heading": "Gate inward register",
+   "company": "Tamhini Drivetech Private Limited · Main gate",
+   "subtitle": "Extract, 29-03-2027 to 08-04-2027 (vehicles with goods only)",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "time",
+     "label": "Time in"
+    },
+    {
+     "key": "party",
+     "label": "From"
+    },
+    {
+     "key": "doc",
+     "label": "Bill or challan"
+    },
+    {
+     "key": "mat",
+     "label": "Material"
+    },
+    {
+     "key": "veh",
+     "label": "Vehicle no.",
+     "mono": true
+    },
+    {
+     "key": "no",
+     "label": "Entry no.",
+     "mono": true
+    }
+   ],
+   "rows": [
+    {
+     "no": "G/3842",
+     "date": "29-03-2027",
+     "time": "10:20",
+     "veh": "GJ 15 AT 7731",
+     "party": "Kolak Polypack",
+     "doc": "KP/26-27/1342",
+     "mat": "VCI bags, stretch film"
+    },
+    {
+     "no": "G/3846",
+     "date": "29-03-2027",
+     "time": "14:45",
+     "veh": "KA 41 C 2276",
+     "party": "Hebbal Tooling (cargo)",
+     "doc": "HTS/26-27/1042",
+     "mat": "Carbide inserts, 4 boxes"
+    },
+    {
+     "no": "G/3851",
+     "date": "30-03-2027",
+     "time": "09:10",
+     "veh": "GJ 03 BW 5518",
+     "party": "Bhadar Forge",
+     "doc": "BFE/26-27/0611",
+     "mat": "Flange blanks FL-80"
+    },
+    {
+     "no": "G/3853",
+     "date": "30-03-2027",
+     "time": "11:30",
+     "veh": "GJ 06 AZ 8814",
+     "party": "Vishwamitri Bearings",
+     "doc": "VB/2627/4417",
+     "mat": "Bearings, 52 cartons"
+    },
+    {
+     "no": "G/3858",
+     "date": "30-03-2027",
+     "time": "16:05",
+     "veh": "TN 13 BK 9921",
+     "party": "Palar Seals",
+     "doc": "PSG/0938/26-27",
+     "mat": "Oil seals, 26 cartons"
+    },
+    {
+     "no": "G/3862",
+     "date": "31-03-2027",
+     "time": "11:40",
+     "veh": "MH 14 KQ 0457",
+     "party": "Kudalwadi Heat Treaters",
+     "doc": "OUT-1471, OUT-1472",
+     "mat": "Gears back from heat treatment"
+    },
+    {
+     "no": "G/3864",
+     "date": "31-03-2027",
+     "time": "12:15",
+     "veh": "MH 14 FT 2208",
+     "party": "Sakhare Surface Treatment",
+     "doc": "SST/0291",
+     "mat": "Shafts and flanges back from coating"
+    },
+    {
+     "no": "G/3867",
+     "date": "31-03-2027",
+     "time": "15:50",
+     "veh": "MH 12 RT 6634",
+     "party": "Mundhwa Lubricants",
+     "doc": "MLC/26-27/1418",
+     "mat": "Oil, 7 barrels"
+    },
+    {
+     "no": "G/3871",
+     "date": "31-03-2027",
+     "time": "19:40",
+     "veh": "MH 09 GA 6107",
+     "party": "Rankala Forgings",
+     "doc": "RF/2412/26-27",
+     "mat": "Gear blanks GB-110, 120 nos"
+    },
+    {
+     "no": "G/3874",
+     "date": "01-04-2027",
+     "time": "10:05",
+     "veh": "MH 12 QW 4410",
+     "party": "Shirur Metrology Labs",
+     "doc": "DC 0118",
+     "mat": "Gauges back from calibration"
+    },
+    {
+     "no": "G/3878",
+     "date": "02-04-2027",
+     "time": "11:05",
+     "veh": "CG 04 MK 7712",
+     "party": "Kharun Steels",
+     "doc": "KS/2026-27/4418",
+     "mat": "EN8 bars, 27.5 t"
+    },
+    {
+     "no": "G/3881",
+     "date": "02-04-2027",
+     "time": "15:30",
+     "veh": "MH 21 BH 4415",
+     "party": "Ghanekar Alloy Steels",
+     "doc": "GAS/2027-28/0012",
+     "mat": "20MnCr5 bars, 10 t"
+    },
+    {
+     "no": "G/3886",
+     "date": "03-04-2027",
+     "time": "10:45",
+     "veh": "GJ 06 BX 2207",
+     "party": "Vishwamitri Bearings",
+     "doc": "VB/2627/4466",
+     "mat": "Bearings, 30 cartons"
+    },
+    {
+     "no": "G/3897",
+     "date": "06-04-2027",
+     "time": "13:20",
+     "veh": "CG 04 MR 1186",
+     "party": "Kharun Steels",
+     "doc": "KS/2027-28/0021",
+     "mat": "EN8 bars, 20 t"
+    },
+    {
+     "no": "G/3903",
+     "date": "07-04-2027",
+     "time": "12:10",
+     "veh": "KA 41 C 2290",
+     "party": "Hebbal Tooling (cargo)",
+     "doc": "HTS/27-28/0031",
+     "mat": "Gear hobs, 1 box"
+    },
+    {
+     "no": "G/3908",
+     "date": "08-04-2027",
+     "time": "09:35",
+     "veh": "HR 55 AM 0915",
+     "party": "Sohna Friction",
+     "doc": "SFP/2728/00019",
+     "mat": "Clutch plates, 40 cartons"
+    }
+   ],
+   "notes": [
+    "Written by the security guard on duty; copied for the audit by Pallavi Shinde."
+   ]
+  },
+  {
+   "id": "inv-01",
+   "type": "invoice",
+   "title": "Bill 1 · Tax invoice",
+   "tab": "Bill",
+   "group": "b1",
+   "style": "erp",
+   "supplier": {
+    "name": "Sohna Friction Products Private Limited",
+    "address": "Plot 61, Sector 37\nGurugram 122001",
+    "gstin": "06ZDICS4933L1Z4",
+    "state": "Haryana",
+    "stateCode": "06",
+    "phone": "98XXXXXXXX",
+    "pan": "ZDICS4933L"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "shipTo": {
+    "name": "Tamhini Drivetech Private Limited (Chakan plant)",
+    "address": "Stores gate 2, Plot B-47, Chakan Industrial Area Phase II\nMIDC, Mahalunge, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "SFP/2627/01873",
+   "date": "22-Mar-2027",
+   "copy": "Original for recipient",
+   "paymentTerms": "60 days",
+   "poRef": "TD/PO/2026-27/1102",
+   "poDate": "08-Mar-2027",
+   "dispatchDoc": "LR 51128 dt 22-Mar-2027",
+   "dispatchedThrough": "Road",
+   "destination": "Chakan, Pune",
+   "vehicle": "HR 55 AK 2741",
+   "placeOfSupply": "27-Maharashtra",
+   "lines": [
+    {
+     "desc": "Clutch plate assembly 180 mm (three-wheeler)",
+     "hsn": "8708 93",
+     "qty": 2000,
+     "unit": "nos",
+     "rate": 646.0,
+     "taxable": 1292000.0,
+     "gstRate": 18
+    }
+   ],
+   "tax": "inter",
+   "total": 1524560.0,
+   "bank": {
+    "name": "Ambar Commercial Bank Ltd",
+    "account": "50710063390154",
+    "branch": "Gurugram",
+    "ifsc": "ABRC0000437"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Subject to Gurugram jurisdiction."
+   ],
+   "irn": "4d8fb47d27a0464d3694369daaff526da377c5ca5017e368ec7394d6a5edb55c",
+   "ackNo": "112732485430480",
+   "ackDate": "22-Mar-2027",
+   "footer": "This is a computer generated invoice and needs no signature.",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "STORES INWARD\n25 MAR 2027",
+     "color": "violet",
+     "at": "top-left",
+     "rotate": -4
+    },
+    {
+     "kind": "stamp",
+     "text": "ENTERED\nVCH 3141",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": 3
+    }
+   ]
+  },
+  {
+   "id": "po-01",
+   "type": "po",
+   "title": "Bill 1 · Purchase order",
+   "tab": "PO",
+   "group": "b1",
+   "number": "TD/PO/2026-27/1102",
+   "date": "08-03-2027",
+   "vendor": {
+    "name": "Sohna Friction Products Private Limited",
+    "address": "Plot 61, Sector 37, Gurugram 122001",
+    "gstin": "06ZDICS4933L1Z4"
+   },
+   "deliveryBy": "25-03-2027",
+   "deliverTo": "Stores, Chakan plant",
+   "paymentTerms": "60 days",
+   "quoteRef": "Your quotation SFP/Q/0212 dated 03-03-2027",
+   "lines": [
+    {
+     "desc": "Clutch plate assembly 180 mm (three-wheeler)",
+     "qty": 2000,
+     "unit": "nos",
+     "rate": 646.0
+    }
+   ],
+   "taxNote": "Prices exclusive of GST. GST @ 18% (IGST) extra.",
+   "terms": [
+    "Delivery FOR our Chakan plant, freight included. The goods become ours when they are received at our gate.",
+    "Quote this PO number on your invoice, delivery challan and LR.",
+    "Goods are subject to our inspection. Rejected goods go back at your cost against our debit note.",
+    "Rates are firm for this order. Any change needs our written amendment.",
+    "Payment: 60 days from receipt of goods and invoice."
+   ],
+   "preparedBy": {
+    "name": "Kirti Jain (Senior Buyer)",
+    "sign": "Kirti J."
+   },
+   "preparedDate": "08-03-2027",
+   "approvedBy": {
+    "name": "Amol Joglekar (MD)",
+    "sign": "A. Joglekar"
+   },
+   "approvalDate": "09-03-2027"
+  },
+  {
+   "id": "grn-01",
+   "type": "grn",
+   "title": "Bill 1 · Goods receipt note",
+   "tab": "GRN",
+   "group": "b1",
+   "number": "GRN-2027-03-0398",
+   "date": "25-03-2027",
+   "unit": "Main stores, Bay C",
+   "vendor": "Sohna Friction Products Private Limited",
+   "poRef": "TD/PO/2026-27/1102",
+   "invoiceRef": "SFP/2627/01873 dt 22-Mar-2027",
+   "challan": "LR 51128",
+   "vehicle": "HR 55 AK 2741",
+   "lines": [
+    {
+     "desc": "Clutch plate assembly 180 mm (three-wheeler)",
+     "unit": "nos",
+     "qtyChallan": 2000,
+     "qtyReceived": 2000,
+     "qtyAccepted": 2000,
+     "qtyRejected": 0
+    }
+   ],
+   "receivedBy": "Santosh Kale",
+   "qcBy": "Neha Bansode",
+   "remarks": "Visual and dimension check OK."
+  },
+  {
+   "id": "led-01",
+   "type": "table",
+   "style": "tally",
+   "title": "Bill 1 · Ledger entry",
+   "tab": "Ledger",
+   "group": "b1",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Purchase Voucher No. 3141",
+   "subtitle": "Sohna Friction Products Private Limited · supplier’s invoice SFP/2627/01873 dated 22-Mar-2027",
+   "period": "Voucher date: 25-Mar-2027",
+   "columns": [
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "part": "Purchases – traded goods",
+     "dr": 1292000.0
+    },
+    {
+     "part": "Input IGST – MH",
+     "dr": 232560.0
+    },
+    {
+     "part": "Sohna Friction Products Private Limited",
+     "cr": 1524560.0
+    },
+    {
+     "_class": "total",
+     "part": "Total",
+     "dr": 1524560.0,
+     "cr": 1524560.0
+    }
+   ],
+   "notes": [
+    "Narration: Goods received vide GRN-2027-03-0398 against PO TD/PO/2026-27/1102.",
+    "TDS on purchase of goods (0.1%) is booked through the month-end TDS journal."
+   ]
+  },
+  {
+   "id": "inv-02",
+   "type": "invoice",
+   "title": "Bill 2 · Tax invoice",
+   "tab": "Bill",
+   "group": "b2",
+   "supplier": {
+    "name": "Phillaur Fasteners Private Limited",
+    "address": "Focal Point Phase VIII\nLudhiana 141010\nUdyam Reg. No. UDYAM-PB-11-0943122",
+    "gstin": "03UBZCP4179S1ZJ",
+    "state": "Punjab",
+    "stateCode": "03",
+    "phone": "98XXXXXXXX",
+    "pan": "UBZCP4197S"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "shipTo": {
+    "name": "Tamhini Drivetech Private Limited (Chakan plant)",
+    "address": "Stores gate 2, Plot B-47, Chakan Industrial Area Phase II\nMIDC, Mahalunge, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "PF/2026-27/2614",
+   "date": "20.03.2027",
+   "copy": "Original for buyer",
+   "paymentTerms": "45 days",
+   "poRef": "TD/PO/2026-27/1089",
+   "poDate": "04.03.2027",
+   "dispatchDoc": "LR 7740 dt 20.03.2027",
+   "dispatchedThrough": "Road",
+   "destination": "Chakan (Pune)",
+   "vehicle": "PB 10 HK 6123",
+   "placeOfSupply": "Maharashtra (27)",
+   "lines": [
+    {
+     "desc": "Circlip, external, 35 mm (DIN 471)",
+     "hsn": "7318 29",
+     "qty": 60000,
+     "unit": "nos",
+     "rate": 4.2,
+     "taxable": 252000.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "Circlip, internal, 47 mm (DIN 472)",
+     "hsn": "7318 29",
+     "qty": 20000,
+     "unit": "nos",
+     "rate": 5.6,
+     "taxable": 112000.0,
+     "gstRate": 18
+    }
+   ],
+   "tax": "inter",
+   "total": 429520.0,
+   "bank": {
+    "name": "Narmada Valley Bank Ltd",
+    "account": "31200047712096",
+    "branch": "Ludhiana Focal Point",
+    "ifsc": "NMVB0000815"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Interest @ 18% p.a. on bills unpaid after the due date.",
+    "Subject to Ludhiana jurisdiction."
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "STORES INWARD\n25 MAR 2027",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": 5
+    },
+    {
+     "kind": "hand",
+     "text": "GRN 0402",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": -3
+    },
+    {
+     "kind": "stamp",
+     "text": "PHILLAUR FASTENERS\nLUDHIANA",
+     "color": "blue",
+     "at": "bottom-right",
+     "shape": "round",
+     "rotate": -8
+    }
+   ],
+   "planted": [
+    "Supplier GSTIN printed as 03UBZCP4179S1ZJ (digits 9 and 7 swapped); the registration is 03UBZCP4197S1ZJ"
+   ]
+  },
+  {
+   "id": "po-02",
+   "type": "po",
+   "title": "Bill 2 · Purchase order",
+   "tab": "PO",
+   "group": "b2",
+   "number": "TD/PO/2026-27/1089",
+   "date": "04-03-2027",
+   "vendor": {
+    "name": "Phillaur Fasteners Private Limited",
+    "address": "Focal Point Phase VIII, Ludhiana 141010",
+    "gstin": "03UBZCP4197S1ZJ"
+   },
+   "deliveryBy": "25-03-2027",
+   "deliverTo": "Stores, Chakan plant",
+   "paymentTerms": "45 days",
+   "quoteRef": "Rate agreement for 2026–27",
+   "lines": [
+    {
+     "desc": "Circlip, external, 35 mm (DIN 471)",
+     "qty": 60000,
+     "unit": "nos",
+     "rate": 4.2
+    },
+    {
+     "desc": "Circlip, internal, 47 mm (DIN 472)",
+     "qty": 20000,
+     "unit": "nos",
+     "rate": 5.6
+    }
+   ],
+   "taxNote": "Prices exclusive of GST. GST @ 18% (IGST) extra.",
+   "terms": [
+    "Delivery FOR our Chakan plant, freight included. The goods become ours when they are received at our gate.",
+    "Quote this PO number on your invoice, delivery challan and LR.",
+    "Goods are subject to our inspection. Rejected goods go back at your cost against our debit note.",
+    "Rates are firm for this order. Any change needs our written amendment.",
+    "Payment: 45 days from receipt of goods and invoice."
+   ],
+   "preparedBy": {
+    "name": "Omkar Tilekar (Buyer)",
+    "sign": "Omkar T."
+   },
+   "preparedDate": "04-03-2027",
+   "approvedBy": {
+    "name": "Rohit Agrawal (Purchase Manager)",
+    "sign": "R. Agrawal"
+   },
+   "approvalDate": "04-03-2027"
+  },
+  {
+   "id": "grn-02",
+   "type": "grn",
+   "title": "Bill 2 · Goods receipt note",
+   "tab": "GRN",
+   "group": "b2",
+   "style": "book",
+   "number": "GRN-2027-03-0402",
+   "date": "25-03-2027",
+   "unit": "Main stores, Bay B",
+   "vendor": "Phillaur Fasteners Private Limited",
+   "poRef": "TD/PO/2026-27/1089",
+   "invoiceRef": "PF/2026-27/2614 dt 20.03.2027",
+   "challan": "LR 7740",
+   "vehicle": "PB 10 HK 6123",
+   "lines": [
+    {
+     "desc": "Circlip, external, 35 mm (DIN 471)",
+     "unit": "nos",
+     "qtyChallan": 60000,
+     "qtyReceived": 60000,
+     "qtyAccepted": 60000,
+     "qtyRejected": 0
+    },
+    {
+     "desc": "Circlip, internal, 47 mm (DIN 472)",
+     "unit": "nos",
+     "qtyChallan": 20000,
+     "qtyReceived": 20000,
+     "qtyAccepted": 20000,
+     "qtyRejected": 0
+    }
+   ],
+   "receivedBy": "Ajay Thube",
+   "qcBy": "Shrikant Lohar",
+   "remarks": "Sample checked with go/no-go gauge. OK."
+  },
+  {
+   "id": "led-02",
+   "type": "table",
+   "style": "tally",
+   "title": "Bill 2 · Ledger entry",
+   "tab": "Ledger",
+   "group": "b2",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Purchase Voucher No. 3144",
+   "subtitle": "Phillaur Fasteners Private Limited · supplier’s invoice PF/2026-27/2614 dated 20.03.2027",
+   "period": "Voucher date: 25-Mar-2027",
+   "columns": [
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "part": "Purchases – bought-out parts",
+     "dr": 364000.0
+    },
+    {
+     "part": "Input IGST – MH",
+     "dr": 65520.0
+    },
+    {
+     "part": "Phillaur Fasteners Private Limited",
+     "cr": 429520.0
+    },
+    {
+     "_class": "total",
+     "part": "Total",
+     "dr": 429520.0,
+     "cr": 429520.0
+    }
+   ],
+   "notes": [
+    "Narration: Goods received vide GRN-2027-03-0402 against PO TD/PO/2026-27/1089.",
+    "TDS on purchase of goods (0.1%) is booked through the month-end TDS journal."
+   ]
+  },
+  {
+   "id": "inv-03",
+   "type": "invoice",
+   "title": "Bill 3 · Tax invoice",
+   "tab": "Bill",
+   "group": "b3",
+   "supplier": {
+    "name": "Ghanekar Alloy Steels Private Limited",
+    "address": "Plot C-21, Additional MIDC Phase III\nJalna 431213",
+    "gstin": "27UMVCG6849R1ZY",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "UMVCG6849R"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "shipTo": {
+    "name": "Tamhini Drivetech Private Limited (Chakan plant)",
+    "address": "Stores gate 2, Plot B-47, Chakan Industrial Area Phase II\nMIDC, Mahalunge, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "GAS/2026-27/3307",
+   "date": "26/03/2027",
+   "copy": "Original for recipient",
+   "paymentTerms": "60 days",
+   "poRef": "TD/PO/2026-27/1063 (lot 2 of 2)",
+   "poDate": "01/03/2027",
+   "dispatchDoc": "Own vehicle",
+   "dispatchedThrough": "Road",
+   "destination": "Chakan",
+   "vehicle": "MH 21 BH 4402",
+   "placeOfSupply": "Maharashtra (27)",
+   "lines": [
+    {
+     "desc": "20MnCr5 bright bar, Ø32 mm",
+     "hsn": "7228 50",
+     "qty": 12000,
+     "unit": "kg",
+     "rate": 92.4,
+     "taxable": 1108800.0,
+     "gstRate": 18,
+     "note": "Heat no. GA-7731 · MTC enclosed"
+    },
+    {
+     "desc": "20MnCr5 bright bar, Ø50 mm",
+     "hsn": "7228 50",
+     "qty": 9000,
+     "unit": "kg",
+     "rate": 91.6,
+     "taxable": 824400.0,
+     "gstRate": 18,
+     "note": "Heat no. GA-7744 · MTC enclosed"
+    }
+   ],
+   "tax": "intra",
+   "total": 2281176.0,
+   "bank": {
+    "name": "Ambar Commercial Bank Ltd",
+    "account": "50710041823307",
+    "branch": "Jalna",
+    "ifsc": "ABRC0000211"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Weight as per our weighbridge; tolerance ±0.5%.",
+    "Subject to Jalna jurisdiction."
+   ],
+   "irn": "d9dc261149daa21f93252854f1774e5354aa26ced55027f331ec6f9ab7eb15d2",
+   "ackNo": "112799911632960",
+   "ackDate": "26/03/2027",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "STORES INWARD\n27 MAR 2027",
+     "color": "violet",
+     "at": "top-left",
+     "rotate": -6
+    },
+    {
+     "kind": "stamp",
+     "text": "ENTERED\nVCH 3156",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": -3
+    },
+    {
+     "kind": "stamp",
+     "text": "GHANEKAR ALLOY STEELS\nJALNA",
+     "color": "blue",
+     "at": "bottom-right",
+     "shape": "round",
+     "rotate": -8
+    }
+   ]
+  },
+  {
+   "id": "po-03",
+   "type": "po",
+   "title": "Bill 3 · Purchase order",
+   "tab": "PO",
+   "group": "b3",
+   "number": "TD/PO/2026-27/1063",
+   "date": "01-03-2027",
+   "vendor": {
+    "name": "Ghanekar Alloy Steels Private Limited",
+    "address": "Plot C-21, Additional MIDC Phase III, Jalna 431213",
+    "gstin": "27UMVCG6849R1ZY"
+   },
+   "deliveryBy": "Two lots: by 15-03-2027 and by 31-03-2027",
+   "deliverTo": "Stores, Chakan plant",
+   "paymentTerms": "60 days",
+   "quoteRef": "March 2027 schedule",
+   "lines": [
+    {
+     "desc": "20MnCr5 bright bar, Ø32 mm",
+     "qty": 24000,
+     "unit": "kg",
+     "rate": 92.4
+    },
+    {
+     "desc": "20MnCr5 bright bar, Ø50 mm",
+     "qty": 18000,
+     "unit": "kg",
+     "rate": 91.6
+    }
+   ],
+   "taxNote": "Prices exclusive of GST. GST @ 18% (CGST + SGST) extra.",
+   "terms": [
+    "Delivery FOR our Chakan plant, freight included. The goods become ours when they are received at our gate.",
+    "Quote this PO number on your invoice, delivery challan and LR.",
+    "Goods are subject to our inspection. Rejected goods go back at your cost against our debit note.",
+    "Rates are firm for this order. Any change needs our written amendment.",
+    "Payment: 60 days from receipt of goods and invoice."
+   ],
+   "preparedBy": {
+    "name": "Kirti Jain (Senior Buyer)",
+    "sign": "Kirti J."
+   },
+   "preparedDate": "01-03-2027",
+   "approvedBy": {
+    "name": "Amol Joglekar (MD)",
+    "sign": "A. Joglekar"
+   },
+   "approvalDate": "02-03-2027"
+  },
+  {
+   "id": "grn-03",
+   "type": "grn",
+   "title": "Bill 3 · Goods receipt note",
+   "tab": "GRN",
+   "group": "b3",
+   "number": "GRN-2027-03-0417",
+   "date": "27-03-2027",
+   "unit": "RM yard",
+   "vendor": "Ghanekar Alloy Steels Private Limited",
+   "poRef": "TD/PO/2026-27/1063",
+   "invoiceRef": "GAS/2026-27/3307 dt 26/03/2027",
+   "challan": "Weighbridge slip 77412",
+   "vehicle": "MH 21 BH 4402",
+   "lines": [
+    {
+     "desc": "20MnCr5 bright bar, Ø32 mm",
+     "unit": "kg",
+     "qtyChallan": 12000,
+     "qtyReceived": 12000,
+     "qtyAccepted": 12000,
+     "qtyRejected": 0
+    },
+    {
+     "desc": "20MnCr5 bright bar, Ø50 mm",
+     "unit": "kg",
+     "qtyChallan": 9000,
+     "qtyReceived": 9000,
+     "qtyAccepted": 9000,
+     "qtyRejected": 0
+    }
+   ],
+   "receivedBy": "Santosh Kale",
+   "qcBy": "Neha Bansode",
+   "remarks": "Lot 2 of PO 1063. Test certificates checked."
+  },
+  {
+   "id": "led-03",
+   "type": "table",
+   "style": "tally",
+   "title": "Bill 3 · Ledger entry",
+   "tab": "Ledger",
+   "group": "b3",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Purchase Voucher No. 3156",
+   "subtitle": "Ghanekar Alloy Steels Private Limited · supplier’s invoice GAS/2026-27/3307 dated 26/03/2027",
+   "period": "Voucher date: 27-Mar-2027",
+   "columns": [
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "part": "Purchases – raw materials",
+     "dr": 1933200.0
+    },
+    {
+     "part": "Input CGST – MH",
+     "dr": 173988.0
+    },
+    {
+     "part": "Input SGST – MH",
+     "dr": 173988.0
+    },
+    {
+     "part": "Ghanekar Alloy Steels Private Limited",
+     "cr": 2281176.0
+    },
+    {
+     "_class": "total",
+     "part": "Total",
+     "dr": 2281176.0,
+     "cr": 2281176.0
+    }
+   ],
+   "notes": [
+    "Narration: Goods received vide GRN-2027-03-0417 against PO TD/PO/2026-27/1063.",
+    "TDS on purchase of goods (0.1%) is booked through the month-end TDS journal."
+   ]
+  },
+  {
+   "id": "inv-04",
+   "type": "invoice",
+   "title": "Bill 4 · Tax invoice",
+   "tab": "Bill",
+   "group": "b4",
+   "supplier": {
+    "name": "Rankala Forgings Private Limited",
+    "address": "Plot D-12, Shiroli MIDC\nKolhapur 416122\nUdyam Reg. No. UDYAM-MH-09-0958745",
+    "gstin": "27UJPCR7248B1Z1",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "UJPCR7248B"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "RF/2291/26-27",
+   "date": "26.03.2027",
+   "copy": "Original for recipient",
+   "paymentTerms": "45 days",
+   "poRef": "TD/PO/2026-27/1121",
+   "poDate": "12.03.2027",
+   "dispatchDoc": "DC 2291",
+   "dispatchedThrough": "Road",
+   "destination": "Chakan",
+   "vehicle": "MH 09 FL 2290",
+   "placeOfSupply": "Maharashtra (27)",
+   "lines": [
+    {
+     "desc": "Forged gear blank GB-145 (20MnCr5), normalised",
+     "hsn": "7326 19",
+     "qty": 1000,
+     "unit": "nos",
+     "rate": 638.0,
+     "taxable": 638000.0,
+     "gstRate": 18
+    }
+   ],
+   "tax": "intra",
+   "total": 752840.0,
+   "bank": {
+    "name": "Vindhya Commercial Bank Ltd",
+    "account": "04180093317465",
+    "branch": "Kolhapur",
+    "ifsc": "VNCB0000389"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Subject to Kolhapur jurisdiction."
+   ],
+   "irn": "70e50224c9130048ccc02ef531f23a13d52b378383a1e48cfe9cc55d4a989761",
+   "ackNo": "112792640956428",
+   "ackDate": "26.03.2027",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "STORES INWARD\n27 MAR 2027",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": 4
+    },
+    {
+     "kind": "hand",
+     "text": "40 rej. · DN 219",
+     "color": "red",
+     "at": "bottom-left",
+     "rotate": -4
+    },
+    {
+     "kind": "stamp",
+     "text": "RANKALA FORGINGS\nKOLHAPUR",
+     "color": "blue",
+     "at": "bottom-right",
+     "shape": "round",
+     "rotate": -8
+    }
+   ]
+  },
+  {
+   "id": "po-04",
+   "type": "po",
+   "title": "Bill 4 · Purchase order",
+   "tab": "PO",
+   "group": "b4",
+   "number": "TD/PO/2026-27/1121",
+   "date": "12-03-2027",
+   "vendor": {
+    "name": "Rankala Forgings Private Limited",
+    "address": "Plot D-12, Shiroli MIDC, Kolhapur 416122",
+    "gstin": "27UJPCR7248B1Z1"
+   },
+   "deliveryBy": "27-03-2027",
+   "deliverTo": "Stores, Chakan plant",
+   "paymentTerms": "45 days",
+   "quoteRef": "Rate agreement for 2026–27",
+   "lines": [
+    {
+     "desc": "Forged gear blank GB-145 (20MnCr5), normalised",
+     "qty": 1000,
+     "unit": "nos",
+     "rate": 638.0
+    }
+   ],
+   "taxNote": "Prices exclusive of GST. GST @ 18% (CGST + SGST) extra.",
+   "terms": [
+    "Delivery FOR our Chakan plant, freight included. The goods become ours when they are received at our gate.",
+    "Quote this PO number on your invoice, delivery challan and LR.",
+    "Goods are subject to our inspection. Rejected goods go back at your cost against our debit note.",
+    "Rates are firm for this order. Any change needs our written amendment.",
+    "Payment: 45 days from receipt of goods and invoice."
+   ],
+   "preparedBy": {
+    "name": "Kirti Jain (Senior Buyer)",
+    "sign": "Kirti J."
+   },
+   "preparedDate": "12-03-2027",
+   "approvedBy": {
+    "name": "Amol Joglekar (MD)",
+    "sign": "A. Joglekar"
+   },
+   "approvalDate": "13-03-2027"
+  },
+  {
+   "id": "grn-04",
+   "type": "grn",
+   "title": "Bill 4 · Goods receipt note",
+   "tab": "GRN",
+   "group": "b4",
+   "number": "GRN-2027-03-0419",
+   "date": "27-03-2027",
+   "unit": "Main stores, Bay A",
+   "vendor": "Rankala Forgings Private Limited",
+   "poRef": "TD/PO/2026-27/1121",
+   "invoiceRef": "RF/2291/26-27 dt 26.03.2027",
+   "challan": "DC 2291",
+   "vehicle": "MH 09 FL 2290",
+   "lines": [
+    {
+     "desc": "Forged gear blank GB-145 (20MnCr5), normalised",
+     "unit": "nos",
+     "qtyChallan": 1000,
+     "qtyReceived": 1000,
+     "qtyAccepted": 960,
+     "qtyRejected": 40,
+     "remark": "Forging laps"
+    }
+   ],
+   "receivedBy": "Santosh Kale",
+   "qcBy": "Shrikant Lohar",
+   "remarks": "40 nos rejected for forging laps; returned to vendor on 29-03-2027."
+  },
+  {
+   "id": "dn-04",
+   "type": "letter",
+   "style": "letter",
+   "title": "Bill 4 · Debit note",
+   "tab": "Debit note",
+   "group": "b4",
+   "letterhead": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC, Mahalunge, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4"
+   },
+   "ref": "Debit Note No. TD/DN/2026-27/0219",
+   "date": "29-03-2027",
+   "to": {
+    "name": "Rankala Forgings Private Limited",
+    "address": "Plot D-12, Shiroli MIDC, Kolhapur 416122"
+   },
+   "subject": "Debit note for goods rejected at our inspection",
+   "body": [
+    "We have debited your account for the goods below, rejected under GRN-2027-03-0419 and returned on 29-03-2027 with our delivery challan DC/0412.",
+    {
+     "table": {
+      "columns": [
+       {
+        "key": "d",
+        "label": "Particulars"
+       },
+       {
+        "key": "q",
+        "label": "Qty",
+        "format": "int"
+       },
+       {
+        "key": "r",
+        "label": "Rate (₹)",
+        "format": "inr"
+       },
+       {
+        "key": "a",
+        "label": "Amount (₹)",
+        "format": "inr"
+       }
+      ],
+      "rows": [
+       {
+        "d": "Forged gear blank GB-145, your invoice RF/2291/26-27 dt 26.03.2027",
+        "q": 40,
+        "r": 638.0,
+        "a": 25520.0
+       },
+       {
+        "d": "CGST @ 9%",
+        "a": 2296.8
+       },
+       {
+        "d": "SGST @ 9%",
+        "a": 2296.8
+       },
+       {
+        "_class": "total",
+        "d": "Total",
+        "a": 30113.6
+       }
+      ]
+     }
+    },
+    "Reason: forging laps found at incoming inspection."
+   ],
+   "sign": {
+    "for": "Tamhini Drivetech Private Limited",
+    "name": "Kirti Jain",
+    "role": "Senior Buyer",
+    "hand": "Kirti J."
+   }
+  },
+  {
+   "id": "led-04",
+   "type": "table",
+   "style": "tally",
+   "title": "Bill 4 · Ledger entry",
+   "tab": "Ledger",
+   "group": "b4",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Day Book (extract)",
+   "subtitle": "Rankala Forgings Private Limited · vouchers for invoice RF/2291/26-27 dated 26.03.2027",
+   "period": "27-Mar-2027 to 29-Mar-2027",
+   "columns": [
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "_class": "head",
+     "part": "Purchase No. 3158 · 27-Mar-2027"
+    },
+    {
+     "part": "Purchases – raw materials",
+     "dr": 638000.0
+    },
+    {
+     "part": "Input CGST – MH",
+     "dr": 57420.0
+    },
+    {
+     "part": "Input SGST – MH",
+     "dr": 57420.0
+    },
+    {
+     "part": "Rankala Forgings Private Limited",
+     "cr": 752840.0
+    },
+    {
+     "_class": "subtotal",
+     "part": "Voucher total",
+     "dr": 752840.0,
+     "cr": 752840.0
+    },
+    {
+     "_class": "head",
+     "part": "Debit Note No. 219 · 29-Mar-2027"
+    },
+    {
+     "part": "Rankala Forgings Private Limited",
+     "dr": 30113.6
+    },
+    {
+     "part": "Purchases – raw materials",
+     "cr": 25520.0
+    },
+    {
+     "part": "Input CGST – MH",
+     "cr": 2296.8
+    },
+    {
+     "part": "Input SGST – MH",
+     "cr": 2296.8
+    },
+    {
+     "_class": "subtotal",
+     "part": "Voucher total",
+     "dr": 30113.6,
+     "cr": 30113.6
+    }
+   ],
+   "notes": [
+    "Narration (purchase): GB-145 blanks received vide GRN-2027-03-0419 against PO TD/PO/2026-27/1121.",
+    "Narration (debit note): 40 nos rejected and returned, DC/0412.",
+    "TDS on purchase of goods (0.1%) is booked through the month-end TDS journal."
+   ]
+  },
+  {
+   "id": "inv-05",
+   "type": "invoice",
+   "title": "Bill 5 · Tax invoice",
+   "tab": "Bill",
+   "group": "b5",
+   "style": "book",
+   "supplier": {
+    "name": "Moshi Corrugators",
+    "address": "Gat No. 418, Moshi–Alandi Road\nMoshi, Pune 412105\nUdyam Reg. No. UDYAM-MH-26-0944070",
+    "gstin": "27YNLPL0717M1Z1",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "YNLPL0717M"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "MC/26-27/286",
+   "date": "27/3/2027",
+   "copy": "Original",
+   "paymentTerms": "30 days",
+   "poRef": "TD/PO/2026-27/1131",
+   "poDate": "16/3/2027",
+   "destination": "Chakan",
+   "vehicle": "MH 14 GU 3381",
+   "placeOfSupply": "Maharashtra (27)",
+   "lines": [
+    {
+     "desc": "Corrugated box, 5-ply, 600 × 400 × 300 mm",
+     "hsn": "4819 10",
+     "qty": 1200,
+     "unit": "nos",
+     "rate": 96.0,
+     "taxable": 115200.0,
+     "gstRate": 12
+    }
+   ],
+   "tax": "intra",
+   "total": 129024.0,
+   "terms": [
+    "Goods once sold will not be taken back."
+   ],
+   "signFor": "Moshi Corrugators (Prop. Ramesh Landge)",
+   "signedBy": "R. Landge",
+   "footer": "Subject to Pune jurisdiction.",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "STORES INWARD\n27 MAR 2027",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": -5
+    }
+   ],
+   "planted": [
+    "GST charged at 12% (6% + 6%) on corrugated boxes; the rate is 5% (2.5% + 2.5%)"
+   ]
+  },
+  {
+   "id": "po-05",
+   "type": "po",
+   "title": "Bill 5 · Purchase order",
+   "tab": "PO",
+   "group": "b5",
+   "number": "TD/PO/2026-27/1131",
+   "date": "16-03-2027",
+   "vendor": {
+    "name": "Moshi Corrugators (Prop. Ramesh Landge)",
+    "address": "Gat No. 418, Moshi–Alandi Road, Moshi, Pune 412105",
+    "gstin": "27YNLPL0717M1Z1"
+   },
+   "deliveryBy": "27-03-2027",
+   "deliverTo": "Stores, Chakan plant",
+   "paymentTerms": "30 days",
+   "quoteRef": "Rate agreement for 2026–27",
+   "lines": [
+    {
+     "desc": "Corrugated box, 5-ply, 600 × 400 × 300 mm",
+     "qty": 1200,
+     "unit": "nos",
+     "rate": 96.0
+    }
+   ],
+   "taxNote": "Prices exclusive of GST. GST @ 5% (CGST 2.5% + SGST 2.5%) extra. HSN 4819.",
+   "terms": [
+    "Delivery FOR our Chakan plant, freight included. The goods become ours when they are received at our gate.",
+    "Quote this PO number on your invoice, delivery challan and LR.",
+    "Goods are subject to our inspection. Rejected goods go back at your cost against our debit note.",
+    "Rates are firm for this order. Any change needs our written amendment.",
+    "Payment: 30 days from receipt of goods and invoice."
+   ],
+   "preparedBy": {
+    "name": "Omkar Tilekar (Buyer)",
+    "sign": "Omkar T."
+   },
+   "preparedDate": "16-03-2027",
+   "approvedBy": {
+    "name": "Rohit Agrawal (Purchase Manager)",
+    "sign": "R. Agrawal"
+   },
+   "approvalDate": "16-03-2027"
+  },
+  {
+   "id": "grn-05",
+   "type": "grn",
+   "title": "Bill 5 · Goods receipt note",
+   "tab": "GRN",
+   "group": "b5",
+   "style": "book",
+   "number": "GRN-2027-03-0421",
+   "date": "27-03-2027",
+   "unit": "Packing store, Bay D",
+   "vendor": "Moshi Corrugators",
+   "poRef": "TD/PO/2026-27/1131",
+   "invoiceRef": "MC/26-27/286 dt 27/3/2027",
+   "challan": "Bill MC/26-27/286",
+   "vehicle": "MH 14 GU 3381",
+   "lines": [
+    {
+     "desc": "Corrugated box, 5-ply, 600 × 400 × 300 mm",
+     "unit": "nos",
+     "qtyChallan": 1200,
+     "qtyReceived": 1200,
+     "qtyAccepted": 1200,
+     "qtyRejected": 0
+    }
+   ],
+   "receivedBy": "Ajay Thube",
+   "qcBy": "Neha Bansode",
+   "remarks": "Burst strength sample OK."
+  },
+  {
+   "id": "led-05",
+   "type": "table",
+   "style": "tally",
+   "title": "Bill 5 · Ledger entry",
+   "tab": "Ledger",
+   "group": "b5",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Purchase Voucher No. 3160",
+   "subtitle": "Moshi Corrugators · supplier’s invoice MC/26-27/286 dated 27/3/2027",
+   "period": "Voucher date: 27-Mar-2027",
+   "columns": [
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "part": "Purchases – packing materials",
+     "dr": 115200.0
+    },
+    {
+     "part": "Input CGST – MH",
+     "dr": 6912.0
+    },
+    {
+     "part": "Input SGST – MH",
+     "dr": 6912.0
+    },
+    {
+     "part": "Moshi Corrugators",
+     "cr": 129024.0
+    },
+    {
+     "_class": "total",
+     "part": "Total",
+     "dr": 129024.0,
+     "cr": 129024.0
+    }
+   ],
+   "notes": [
+    "Narration: Goods received vide GRN-2027-03-0421 against PO TD/PO/2026-27/1131.",
+    "TDS on purchase of goods (0.1%) is booked through the month-end TDS journal."
+   ]
+  },
+  {
+   "id": "inv-06",
+   "type": "invoice",
+   "title": "Bill 6 · Tax invoice",
+   "tab": "Bill",
+   "group": "b6",
+   "style": "erp",
+   "supplier": {
+    "name": "Hebbal Tooling Solutions Private Limited",
+    "address": "No. 14, 2nd Stage, Peenya Industrial Area\nBengaluru 560058",
+    "gstin": "29ZEMCH0865A1ZP",
+    "state": "Karnataka",
+    "stateCode": "29",
+    "phone": "98XXXXXXXX",
+    "pan": "ZEMCH0865A"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "shipTo": {
+    "name": "Tamhini Drivetech Private Limited (Chakan plant)",
+    "address": "Stores gate 2, Plot B-47, Chakan Industrial Area Phase II\nMIDC, Mahalunge, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "HTS/26-27/1042",
+   "date": "24 Mar 2027",
+   "copy": "Original for recipient",
+   "paymentTerms": "45 days",
+   "poRef": "TD/PO/2026-27/1094, Amdt 1",
+   "poDate": "05 Mar 2027",
+   "dispatchDoc": "Docket 7716 2290",
+   "dispatchedThrough": "Surface cargo",
+   "destination": "Chakan, Pune",
+   "placeOfSupply": "27-Maharashtra",
+   "lines": [
+    {
+     "desc": "Carbide insert CNMG 120408, grade P25",
+     "hsn": "8209 00",
+     "qty": 1600,
+     "unit": "nos",
+     "rate": 265.0,
+     "taxable": 424000.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "Carbide insert WNMG 080408, grade P25",
+     "hsn": "8209 00",
+     "qty": 1200,
+     "unit": "nos",
+     "rate": 248.0,
+     "taxable": 297600.0,
+     "gstRate": 18
+    }
+   ],
+   "tax": "inter",
+   "total": 851488.0,
+   "bank": {
+    "name": "Ambar Commercial Bank Ltd",
+    "account": "50710084471230",
+    "branch": "Bengaluru Peenya",
+    "ifsc": "ABRC0000559"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Subject to Bengaluru jurisdiction."
+   ],
+   "irn": "b1129b57d787a5e56f9f311462f30d7994a238eaebe76d7b828ce53d310c63d7",
+   "ackNo": "112729564656030",
+   "ackDate": "24 Mar 2027",
+   "footer": "This is a system generated invoice.",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "STORES INWARD\n29 MAR 2027",
+     "color": "violet",
+     "at": "top-left",
+     "rotate": 3
+    }
+   ]
+  },
+  {
+   "id": "po-06",
+   "type": "po",
+   "title": "Bill 6 · Purchase order",
+   "tab": "PO",
+   "group": "b6",
+   "number": "TD/PO/2026-27/1094",
+   "date": "05-03-2027",
+   "vendor": {
+    "name": "Hebbal Tooling Solutions Private Limited",
+    "address": "No. 14, 2nd Stage, Peenya Industrial Area, Bengaluru 560058",
+    "gstin": "29ZEMCH0865A1ZP"
+   },
+   "deliveryBy": "30-03-2027",
+   "deliverTo": "Stores, Chakan plant",
+   "paymentTerms": "45 days",
+   "quoteRef": "Your quotation HTS/Q/0388 dated 01-03-2027",
+   "lines": [
+    {
+     "desc": "Carbide insert CNMG 120408, grade P25",
+     "qty": 1600,
+     "unit": "nos",
+     "rate": 258.0
+    },
+    {
+     "desc": "Carbide insert WNMG 080408, grade P25",
+     "qty": 1200,
+     "unit": "nos",
+     "rate": 248.0
+    }
+   ],
+   "taxNote": "Prices exclusive of GST. GST @ 18% (IGST) extra.",
+   "terms": [
+    "Delivery FOR our Chakan plant, freight included. The goods become ours when they are received at our gate.",
+    "Quote this PO number on your invoice, delivery challan and LR.",
+    "Goods are subject to our inspection. Rejected goods go back at your cost against our debit note.",
+    "Rates are firm for this order. Any change needs our written amendment.",
+    "Payment: 45 days from receipt of goods and invoice."
+   ],
+   "preparedBy": {
+    "name": "Kirti Jain (Senior Buyer)",
+    "sign": "Kirti J."
+   },
+   "preparedDate": "05-03-2027",
+   "approvedBy": {
+    "name": "Amol Joglekar (MD)",
+    "sign": "A. Joglekar"
+   },
+   "approvalDate": "05-03-2027",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "AMENDED\nSEE AMDT 1",
+     "color": "red",
+     "at": "top-right",
+     "rotate": 6
+    }
+   ]
+  },
+  {
+   "id": "amd-06",
+   "type": "letter",
+   "style": "letter",
+   "title": "Bill 6 · PO amendment",
+   "tab": "Amendment",
+   "group": "b6",
+   "letterhead": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC, Mahalunge, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4"
+   },
+   "ref": "TD/PO/2026-27/1094 · Amendment 1",
+   "date": "18-03-2027",
+   "to": {
+    "name": "Hebbal Tooling Solutions Private Limited",
+    "address": "No. 14, 2nd Stage, Peenya Industrial Area, Bengaluru 560058"
+   },
+   "subject": "Amendment 1 to our PO TD/PO/2026-27/1094 dated 05-03-2027",
+   "body": [
+    "With reference to your letter of 15-03-2027 on the price of tungsten carbide, the rate of item 1 is revised as below for supplies from 18-03-2027.",
+    {
+     "table": {
+      "columns": [
+       {
+        "key": "item",
+        "label": "Item"
+       },
+       {
+        "key": "old",
+        "label": "Old rate (₹)",
+        "format": "inr"
+       },
+       {
+        "key": "new",
+        "label": "New rate (₹)",
+        "format": "inr"
+       }
+      ],
+      "rows": [
+       {
+        "item": "1. Carbide insert CNMG 120408, grade P25",
+        "old": 258.0,
+        "new": 265.0
+       }
+      ]
+     }
+    },
+    "Quantities and all other terms of the PO stay the same. Revised PO value: ₹7,21,600 before GST."
+   ],
+   "sign": {
+    "closing": "Approved",
+    "for": "Tamhini Drivetech Private Limited",
+    "name": "Amol Joglekar",
+    "role": "Managing Director",
+    "hand": "A. Joglekar"
+   },
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Prepared: Kirti J.",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": -2
+    }
+   ]
+  },
+  {
+   "id": "grn-06",
+   "type": "grn",
+   "title": "Bill 6 · Goods receipt note",
+   "tab": "GRN",
+   "group": "b6",
+   "number": "GRN-2027-03-0433",
+   "date": "29-03-2027",
+   "unit": "Tool crib",
+   "vendor": "Hebbal Tooling Solutions Private Limited",
+   "poRef": "TD/PO/2026-27/1094",
+   "invoiceRef": "HTS/26-27/1042 dt 24 Mar 2027",
+   "challan": "Docket 7716 2290",
+   "lines": [
+    {
+     "desc": "Carbide insert CNMG 120408, grade P25",
+     "unit": "nos",
+     "qtyChallan": 1600,
+     "qtyReceived": 1600,
+     "qtyAccepted": 1600,
+     "qtyRejected": 0
+    },
+    {
+     "desc": "Carbide insert WNMG 080408, grade P25",
+     "unit": "nos",
+     "qtyChallan": 1200,
+     "qtyReceived": 1200,
+     "qtyAccepted": 1200,
+     "qtyRejected": 0
+    }
+   ],
+   "receivedBy": "Santosh Kale",
+   "qcBy": "Neha Bansode",
+   "remarks": "Counted box by box. OK."
+  },
+  {
+   "id": "led-06",
+   "type": "table",
+   "style": "tally",
+   "title": "Bill 6 · Ledger entry",
+   "tab": "Ledger",
+   "group": "b6",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Purchase Voucher No. 3171",
+   "subtitle": "Hebbal Tooling Solutions Private Limited · supplier’s invoice HTS/26-27/1042 dated 24 Mar 2027",
+   "period": "Voucher date: 29-Mar-2027",
+   "columns": [
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "part": "Purchases – stores and consumables",
+     "dr": 721600.0
+    },
+    {
+     "part": "Input IGST – MH",
+     "dr": 129888.0
+    },
+    {
+     "part": "Hebbal Tooling Solutions Private Limited",
+     "cr": 851488.0
+    },
+    {
+     "_class": "total",
+     "part": "Total",
+     "dr": 851488.0,
+     "cr": 851488.0
+    }
+   ],
+   "notes": [
+    "Narration: Goods received vide GRN-2027-03-0433 against PO TD/PO/2026-27/1094.",
+    "TDS on purchase of goods (0.1%) is booked through the month-end TDS journal."
+   ]
+  },
+  {
+   "id": "inv-07",
+   "type": "invoice",
+   "title": "Bill 7 · Tax invoice",
+   "tab": "Bill",
+   "group": "b7",
+   "supplier": {
+    "name": "Kolak Polypack Private Limited",
+    "address": "Plot 1407, Phase III\nGIDC Vapi 396195\nUdyam Reg. No. UDYAM-GJ-24-0957631",
+    "gstin": "24WGHCK4121C1Z7",
+    "state": "Gujarat",
+    "stateCode": "24",
+    "phone": "98XXXXXXXX",
+    "pan": "WGHCK4121C"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "shipTo": {
+    "name": "Tamhini Drivetech Private Limited (Chakan plant)",
+    "address": "Stores gate 2, Plot B-47, Chakan Industrial Area Phase II\nMIDC, Mahalunge, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "KP/26-27/1342",
+   "date": "25/03/2027",
+   "copy": "Original for recipient",
+   "paymentTerms": "45 days",
+   "poRef": "TD/PO/2026-27/1112",
+   "poDate": "10/03/2027",
+   "dispatchDoc": "LR 20918 dt 25/03/2027",
+   "dispatchedThrough": "Road",
+   "destination": "Chakan",
+   "ewayBill": "3638 7904 5068",
+   "vehicle": "GJ 15 AT 7731",
+   "placeOfSupply": "Maharashtra (27)",
+   "lines": [
+    {
+     "desc": "VCI bag, 24 × 36 inch, 100 micron",
+     "hsn": "3923 21",
+     "qty": 12000,
+     "unit": "nos",
+     "rate": 14.5,
+     "taxable": 174000.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "Stretch film roll, 500 mm, 23 micron",
+     "hsn": "3920 10",
+     "qty": 60,
+     "unit": "nos",
+     "rate": 640.0,
+     "taxable": 38400.0,
+     "gstRate": 18
+    }
+   ],
+   "tax": "inter",
+   "total": 250632.0,
+   "bank": {
+    "name": "Narmada Valley Bank Ltd",
+    "account": "31200036654281",
+    "branch": "Vapi GIDC",
+    "ifsc": "NMVB0000377"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Subject to Vapi jurisdiction."
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "STORES INWARD\n29 MAR 2027",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": -3
+    },
+    {
+     "kind": "stamp",
+     "text": "ENTERED\nVCH 3173",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": 4
+    },
+    {
+     "kind": "stamp",
+     "text": "KOLAK POLYPACK\nVAPI",
+     "color": "blue",
+     "at": "bottom-right",
+     "shape": "round",
+     "rotate": -8
+    }
+   ]
+  },
+  {
+   "id": "po-07",
+   "type": "po",
+   "title": "Bill 7 · Purchase order",
+   "tab": "PO",
+   "group": "b7",
+   "number": "TD/PO/2026-27/1112",
+   "date": "10-03-2027",
+   "vendor": {
+    "name": "Kolak Polypack Private Limited",
+    "address": "Plot 1407, Phase III, GIDC Vapi 396195",
+    "gstin": "24WGHCK4121C1Z7"
+   },
+   "deliveryBy": "31-03-2027",
+   "deliverTo": "Stores, Chakan plant",
+   "paymentTerms": "45 days",
+   "quoteRef": "Your quotation KP/Q/77 dated 08-03-2027",
+   "lines": [
+    {
+     "desc": "VCI bag, 24 × 36 inch, 100 micron",
+     "qty": 12000,
+     "unit": "nos",
+     "rate": 14.5
+    },
+    {
+     "desc": "Stretch film roll, 500 mm, 23 micron",
+     "qty": 60,
+     "unit": "nos",
+     "rate": 640.0
+    }
+   ],
+   "taxNote": "Prices exclusive of GST. GST @ 18% (IGST) extra.",
+   "terms": [
+    "Delivery FOR our Chakan plant, freight included. The goods become ours when they are received at our gate.",
+    "Quote this PO number on your invoice, delivery challan and LR.",
+    "Goods are subject to our inspection. Rejected goods go back at your cost against our debit note.",
+    "Rates are firm for this order. Any change needs our written amendment.",
+    "Payment: 45 days from receipt of goods and invoice."
+   ],
+   "preparedBy": {
+    "name": "Omkar Tilekar (Buyer)",
+    "sign": "Omkar T."
+   },
+   "preparedDate": "10-03-2027",
+   "approvedBy": null
+  },
+  {
+   "id": "grn-07",
+   "type": "grn",
+   "title": "Bill 7 · Goods receipt note",
+   "tab": "GRN",
+   "group": "b7",
+   "number": "GRN-2027-03-0435",
+   "date": "29-03-2027",
+   "unit": "Packing store, Bay D",
+   "vendor": "Kolak Polypack Private Limited",
+   "poRef": "TD/PO/2026-27/1112",
+   "invoiceRef": "KP/26-27/1342 dt 25/03/2027",
+   "challan": "LR 20918",
+   "vehicle": "GJ 15 AT 7731",
+   "lines": [
+    {
+     "desc": "VCI bag, 24 × 36 inch, 100 micron",
+     "unit": "nos",
+     "qtyChallan": 12000,
+     "qtyReceived": 12000,
+     "qtyAccepted": 12000,
+     "qtyRejected": 0
+    },
+    {
+     "desc": "Stretch film roll, 500 mm, 23 micron",
+     "unit": "nos",
+     "qtyChallan": 60,
+     "qtyReceived": 60,
+     "qtyAccepted": 60,
+     "qtyRejected": 0
+    }
+   ],
+   "receivedBy": "Ajay Thube",
+   "qcBy": "Neha Bansode",
+   "remarks": "OK."
+  },
+  {
+   "id": "led-07",
+   "type": "table",
+   "style": "tally",
+   "title": "Bill 7 · Ledger entry",
+   "tab": "Ledger",
+   "group": "b7",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Purchase Voucher No. 3173",
+   "subtitle": "Kolak Polypack Private Limited · supplier’s invoice KP/26-27/1342 dated 25/03/2027",
+   "period": "Voucher date: 29-Mar-2027",
+   "columns": [
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "part": "Purchases – packing materials",
+     "dr": 212400.0
+    },
+    {
+     "part": "Input IGST – MH",
+     "dr": 38232.0
+    },
+    {
+     "part": "Kolak Polypack Private Limited",
+     "cr": 250632.0
+    },
+    {
+     "_class": "total",
+     "part": "Total",
+     "dr": 250632.0,
+     "cr": 250632.0
+    }
+   ],
+   "notes": [
+    "Narration: Goods received vide GRN-2027-03-0435 against PO TD/PO/2026-27/1112."
+   ]
+  },
+  {
+   "id": "inv-08",
+   "type": "invoice",
+   "title": "Bill 8 · Tax invoice",
+   "tab": "Bill",
+   "group": "b8",
+   "supplier": {
+    "name": "Bhadar Forge and Engineering Private Limited",
+    "address": "Survey 211, Shapar (Veraval) Industrial Area\nRajkot 360024",
+    "gstin": "24YLTCB8047E1Z6",
+    "state": "Gujarat",
+    "stateCode": "24",
+    "phone": "98XXXXXXXX",
+    "pan": "YLTCB8047E"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "shipTo": {
+    "name": "Tamhini Drivetech Private Limited (Chakan plant)",
+    "address": "Stores gate 2, Plot B-47, Chakan Industrial Area Phase II\nMIDC, Mahalunge, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "BFE/26-27/0611",
+   "date": "25-03-2027",
+   "copy": "Original for buyer",
+   "paymentTerms": "60 days",
+   "poRef": "TD/PO/2026-27/1098",
+   "poDate": "06-03-2027",
+   "dispatchDoc": "LR 30471 dt 25-03-2027",
+   "dispatchedThrough": "Road",
+   "destination": "Chakan, Pune",
+   "ewayBill": "3211 9120 5903",
+   "vehicle": "GJ 03 BW 5518",
+   "placeOfSupply": "Maharashtra (27)",
+   "lines": [
+    {
+     "desc": "Forged flange blank FL-80 (C45), normalised",
+     "hsn": "7326 19",
+     "qty": 3600,
+     "unit": "nos",
+     "rate": 286.0,
+     "taxable": 1029600.0,
+     "gstRate": 18
+    }
+   ],
+   "tax": "inter",
+   "total": 1214928.0,
+   "bank": {
+    "name": "Ambar Commercial Bank Ltd",
+    "account": "50710022906418",
+    "branch": "Rajkot",
+    "ifsc": "ABRC0000118"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Subject to Rajkot jurisdiction."
+   ],
+   "irn": "8f526c332618dccaf0fc05cb2d9f87abb6b25ae1800fbd74e6dbe6959c3fa0b6",
+   "ackNo": "112710727106587",
+   "ackDate": "25-03-2027",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "STORES INWARD\n30 MAR 2027",
+     "color": "violet",
+     "at": "top-left",
+     "rotate": -5
+    },
+    {
+     "kind": "stamp",
+     "text": "BHADAR FORGE\nRAJKOT",
+     "color": "blue",
+     "at": "bottom-right",
+     "shape": "round",
+     "rotate": -8
+    }
+   ]
+  },
+  {
+   "id": "po-08",
+   "type": "po",
+   "title": "Bill 8 · Purchase order",
+   "tab": "PO",
+   "group": "b8",
+   "number": "TD/PO/2026-27/1098",
+   "date": "06-03-2027",
+   "vendor": {
+    "name": "Bhadar Forge and Engineering Private Limited",
+    "address": "Survey 211, Shapar (Veraval) Industrial Area, Rajkot 360024",
+    "gstin": "24YLTCB8047E1Z6"
+   },
+   "deliveryBy": "31-03-2027",
+   "deliverTo": "Stores, Chakan plant",
+   "paymentTerms": "60 days",
+   "quoteRef": "Rate agreement for 2026–27",
+   "lines": [
+    {
+     "desc": "Forged flange blank FL-80 (C45), normalised",
+     "qty": 3600,
+     "unit": "nos",
+     "rate": 286.0
+    }
+   ],
+   "taxNote": "Prices exclusive of GST. GST @ 18% (IGST) extra.",
+   "terms": [
+    "Delivery FOR our Chakan plant, freight included. The goods become ours when they are received at our gate.",
+    "Quote this PO number on your invoice, delivery challan and LR.",
+    "Goods are subject to our inspection. Rejected goods go back at your cost against our debit note.",
+    "Rates are firm for this order. Any change needs our written amendment.",
+    "Payment: 60 days from receipt of goods and invoice."
+   ],
+   "preparedBy": {
+    "name": "Kirti Jain (Senior Buyer)",
+    "sign": "Kirti J."
+   },
+   "preparedDate": "06-03-2027",
+   "approvedBy": {
+    "name": "Amol Joglekar (MD)",
+    "sign": "A. Joglekar"
+   },
+   "approvalDate": "06-03-2027"
+  },
+  {
+   "id": "grn-08",
+   "type": "grn",
+   "title": "Bill 8 · Goods receipt note",
+   "tab": "GRN",
+   "group": "b8",
+   "number": "GRN-2027-03-0441",
+   "date": "30-03-2027",
+   "unit": "Main stores, Bay A",
+   "vendor": "Bhadar Forge and Engineering Private Limited",
+   "poRef": "TD/PO/2026-27/1098",
+   "invoiceRef": "BFE/26-27/0611 dt 25-03-2027",
+   "challan": "LR 30471",
+   "vehicle": "GJ 03 BW 5518",
+   "lines": [
+    {
+     "desc": "Forged flange blank FL-80 (C45), normalised",
+     "unit": "nos",
+     "qtyChallan": 3600,
+     "qtyReceived": 3600,
+     "qtyAccepted": 3600,
+     "qtyRejected": 0
+    }
+   ],
+   "receivedBy": "Santosh Kale",
+   "qcBy": "Shrikant Lohar",
+   "remarks": "Hardness sample OK."
+  },
+  {
+   "id": "led-08",
+   "type": "table",
+   "style": "tally",
+   "title": "Bill 8 · Ledger entry",
+   "tab": "Ledger",
+   "group": "b8",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Purchase Voucher No. 3179",
+   "subtitle": "Bhadar Forge and Engineering Private Limited · supplier’s invoice BFE/26-27/0611 dated 25-03-2027",
+   "period": "Voucher date: 30-Mar-2027",
+   "columns": [
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "part": "Purchases – raw materials",
+     "dr": 1029600.0
+    },
+    {
+     "part": "Input IGST – MH",
+     "dr": 185328.0
+    },
+    {
+     "part": "Bhadar Forge and Engineering Private Limited",
+     "cr": 1214928.0
+    },
+    {
+     "_class": "total",
+     "part": "Total",
+     "dr": 1214928.0,
+     "cr": 1214928.0
+    }
+   ],
+   "notes": [
+    "Narration: Goods received vide GRN-2027-03-0441 against PO TD/PO/2026-27/1098.",
+    "TDS on purchase of goods (0.1%) is booked through the month-end TDS journal."
+   ]
+  },
+  {
+   "id": "inv-09",
+   "type": "invoice",
+   "title": "Bill 9 · Tax invoice",
+   "tab": "Bill",
+   "group": "b9",
+   "style": "erp",
+   "supplier": {
+    "name": "Vishwamitri Bearings Private Limited",
+    "address": "Plot 418, GIDC Makarpura\nVadodara 390010",
+    "gstin": "24UQQCV0863H1ZL",
+    "state": "Gujarat",
+    "stateCode": "24",
+    "phone": "98XXXXXXXX",
+    "pan": "UQQCV0863H"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "shipTo": {
+    "name": "Tamhini Drivetech Private Limited (Chakan plant)",
+    "address": "Stores gate 2, Plot B-47, Chakan Industrial Area Phase II\nMIDC, Mahalunge, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "VB/2627/4417",
+   "date": "26.03.2027",
+   "copy": "Original for recipient",
+   "paymentTerms": "60 days",
+   "poRef": "TD/PO/2026-27/1105",
+   "poDate": "09.03.2027",
+   "dispatchDoc": "LR 77120 dt 26.03.2027",
+   "dispatchedThrough": "Road",
+   "destination": "Chakan, Pune",
+   "ewayBill": "3863 9454 5153",
+   "vehicle": "GJ 06 AZ 8814",
+   "placeOfSupply": "27-Maharashtra",
+   "lines": [
+    {
+     "desc": "Ball bearing 6306-ZZ",
+     "hsn": "8482 10",
+     "qty": 1200,
+     "unit": "nos",
+     "rate": 268.0,
+     "taxable": 321600.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "Ball bearing 6204-2RS (aftermarket pack)",
+     "hsn": "8482 10",
+     "qty": 4000,
+     "unit": "nos",
+     "rate": 128.0,
+     "taxable": 512000.0,
+     "gstRate": 18
+    }
+   ],
+   "tax": "inter",
+   "total": 983648.0,
+   "bank": {
+    "name": "Narmada Valley Bank Ltd",
+    "account": "31200091127743",
+    "branch": "Vadodara Makarpura",
+    "ifsc": "NMVB0000604"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Subject to Vadodara jurisdiction."
+   ],
+   "irn": "792fa41a97188c13fb9e1d6413f2dcb1129131b676e45f0d6fa415e73721aba9",
+   "ackNo": "112796626071488",
+   "ackDate": "26.03.2027",
+   "footer": "This is a system generated invoice.",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "STORES INWARD\n30 MAR 2027",
+     "color": "violet",
+     "at": "top-left",
+     "rotate": 4
+    },
+    {
+     "kind": "stamp",
+     "text": "ENTERED\nVCH 3181",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": -2
+    }
+   ]
+  },
+  {
+   "id": "po-09",
+   "type": "po",
+   "title": "Bill 9 · Purchase order",
+   "tab": "PO",
+   "group": "b9",
+   "number": "TD/PO/2026-27/1105",
+   "date": "09-03-2027",
+   "vendor": {
+    "name": "Vishwamitri Bearings Private Limited",
+    "address": "Plot 418, GIDC Makarpura, Vadodara 390010",
+    "gstin": "24UQQCV0863H1ZL"
+   },
+   "deliveryBy": "30-03-2027",
+   "deliverTo": "Stores, Chakan plant",
+   "paymentTerms": "60 days",
+   "quoteRef": "Rate agreement for 2026–27",
+   "lines": [
+    {
+     "desc": "Ball bearing 6306-ZZ",
+     "qty": 1200,
+     "unit": "nos",
+     "rate": 268.0
+    },
+    {
+     "desc": "Ball bearing 6204-2RS (aftermarket pack)",
+     "qty": 4000,
+     "unit": "nos",
+     "rate": 128.0
+    }
+   ],
+   "taxNote": "Prices exclusive of GST. GST @ 18% (IGST) extra.",
+   "terms": [
+    "Delivery FOR our Chakan plant, freight included. The goods become ours when they are received at our gate.",
+    "Quote this PO number on your invoice, delivery challan and LR.",
+    "Goods are subject to our inspection. Rejected goods go back at your cost against our debit note.",
+    "Rates are firm for this order. Any change needs our written amendment.",
+    "Payment: 60 days from receipt of goods and invoice."
+   ],
+   "preparedBy": {
+    "name": "Kirti Jain (Senior Buyer)",
+    "sign": "Kirti J."
+   },
+   "preparedDate": "09-03-2027",
+   "approvedBy": {
+    "name": "Amol Joglekar (MD)",
+    "sign": "A. Joglekar"
+   },
+   "approvalDate": "10-03-2027"
+  },
+  {
+   "id": "grn-09",
+   "type": "grn",
+   "title": "Bill 9 · Goods receipt note",
+   "tab": "GRN",
+   "group": "b9",
+   "number": "GRN-2027-03-0443",
+   "date": "30-03-2027",
+   "unit": "Main stores, Bay B and Bay C",
+   "vendor": "Vishwamitri Bearings Private Limited",
+   "poRef": "TD/PO/2026-27/1105",
+   "invoiceRef": "VB/2627/4417 dt 26.03.2027",
+   "challan": "LR 77120",
+   "vehicle": "GJ 06 AZ 8814",
+   "lines": [
+    {
+     "desc": "Ball bearing 6306-ZZ",
+     "unit": "nos",
+     "qtyChallan": 1200,
+     "qtyReceived": 1200,
+     "qtyAccepted": 1140,
+     "qtyRejected": 60,
+     "remark": "Noisy on test"
+    },
+    {
+     "desc": "Ball bearing 6204-2RS (aftermarket pack)",
+     "unit": "nos",
+     "qtyChallan": 4000,
+     "qtyReceived": 4000,
+     "qtyAccepted": 4000,
+     "qtyRejected": 0
+    }
+   ],
+   "receivedBy": "Santosh Kale",
+   "qcBy": "Neha Bansode",
+   "remarks": "60 nos 6306-ZZ noisy on the spin test; kept aside for return."
+  },
+  {
+   "id": "led-09",
+   "type": "table",
+   "style": "tally",
+   "title": "Bill 9 · Ledger entry",
+   "tab": "Ledger",
+   "group": "b9",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Purchase Voucher No. 3181",
+   "subtitle": "Vishwamitri Bearings Private Limited · supplier’s invoice VB/2627/4417 dated 26.03.2027",
+   "period": "Voucher date: 30-Mar-2027",
+   "columns": [
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "part": "Purchases – bought-out parts",
+     "dr": 321600.0
+    },
+    {
+     "part": "Purchases – traded goods",
+     "dr": 512000.0
+    },
+    {
+     "part": "Input IGST – MH",
+     "dr": 150048.0
+    },
+    {
+     "part": "Vishwamitri Bearings Private Limited",
+     "cr": 983648.0
+    },
+    {
+     "_class": "total",
+     "part": "Total",
+     "dr": 983648.0,
+     "cr": 983648.0
+    }
+   ],
+   "notes": [
+    "Narration: Goods received vide GRN-2027-03-0443 against PO TD/PO/2026-27/1105.",
+    "TDS on purchase of goods (0.1%) is booked through the month-end TDS journal."
+   ]
+  },
+  {
+   "id": "inv-10",
+   "type": "invoice",
+   "title": "Bill 10 · Tax invoice",
+   "tab": "Bill",
+   "group": "b10",
+   "supplier": {
+    "name": "Palar Seals and Gaskets Private Limited",
+    "address": "No. 27, SIDCO Industrial Estate, Ambattur\nChennai 600098",
+    "gstin": "33VMJCP6724Z1Z1",
+    "state": "Tamil Nadu",
+    "stateCode": "33",
+    "phone": "98XXXXXXXX",
+    "pan": "VMJCP6724Z"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "shipTo": {
+    "name": "Tamhini Drivetech Private Limited (Chakan plant)",
+    "address": "Stores gate 2, Plot B-47, Chakan Industrial Area Phase II\nMIDC, Mahalunge, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "PSG/0938/26-27",
+   "date": "24-03-2027",
+   "copy": "Original for recipient",
+   "paymentTerms": "60 days",
+   "poRef": "TD/PO/2026-27/1101",
+   "poDate": "08-03-2027",
+   "dispatchDoc": "LR 66204 dt 24-03-2027",
+   "dispatchedThrough": "Road",
+   "destination": "Chakan",
+   "ewayBill": "3871 4873 1542",
+   "vehicle": "TN 13 BK 9921",
+   "placeOfSupply": "Maharashtra (27)",
+   "lines": [
+    {
+     "desc": "Oil seal 45 × 62 × 8, NBR",
+     "hsn": "4016 93",
+     "qty": 6000,
+     "unit": "nos",
+     "rate": 39.5,
+     "taxable": 237000.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "Oil seal 35 × 52 × 7, NBR (aftermarket)",
+     "hsn": "4016 93",
+     "qty": 20000,
+     "unit": "nos",
+     "rate": 31.0,
+     "taxable": 620000.0,
+     "gstRate": 18
+    }
+   ],
+   "tax": "inter",
+   "total": 1011260.0,
+   "bank": {
+    "name": "Vindhya Commercial Bank Ltd",
+    "account": "04180110054829",
+    "branch": "Chennai Ambattur",
+    "ifsc": "VNCB0000702"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Subject to Chennai jurisdiction."
+   ],
+   "irn": "34ebc7ad692c1e37ab10a4936f141760d1f69eff505667be208e187863aa83a2",
+   "ackNo": "112781734159807",
+   "ackDate": "24-03-2027",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "STORES INWARD\n30 MAR 2027",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": 5
+    },
+    {
+     "kind": "stamp",
+     "text": "PALAR SEALS\nCHENNAI",
+     "color": "blue",
+     "at": "bottom-right",
+     "shape": "round",
+     "rotate": -8
+    }
+   ]
+  },
+  {
+   "id": "po-10",
+   "type": "po",
+   "title": "Bill 10 · Purchase order",
+   "tab": "PO",
+   "group": "b10",
+   "number": "TD/PO/2026-27/1101",
+   "date": "08-03-2027",
+   "vendor": {
+    "name": "Palar Seals and Gaskets Private Limited",
+    "address": "No. 27, SIDCO Industrial Estate, Ambattur, Chennai 600098",
+    "gstin": "33VMJCP6724Z1Z1"
+   },
+   "deliveryBy": "30-03-2027",
+   "deliverTo": "Stores, Chakan plant",
+   "paymentTerms": "60 days",
+   "quoteRef": "Rate agreement for 2026–27",
+   "lines": [
+    {
+     "desc": "Oil seal 45 × 62 × 8, NBR",
+     "qty": 6000,
+     "unit": "nos",
+     "rate": 38.0
+    },
+    {
+     "desc": "Oil seal 35 × 52 × 7, NBR (aftermarket)",
+     "qty": 20000,
+     "unit": "nos",
+     "rate": 31.0
+    }
+   ],
+   "taxNote": "Prices exclusive of GST. GST @ 18% (IGST) extra.",
+   "terms": [
+    "Delivery FOR our Chakan plant, freight included. The goods become ours when they are received at our gate.",
+    "Quote this PO number on your invoice, delivery challan and LR.",
+    "Goods are subject to our inspection. Rejected goods go back at your cost against our debit note.",
+    "Rates are firm for this order. Any change needs our written amendment.",
+    "Payment: 60 days from receipt of goods and invoice."
+   ],
+   "preparedBy": {
+    "name": "Kirti Jain (Senior Buyer)",
+    "sign": "Kirti J."
+   },
+   "preparedDate": "08-03-2027",
+   "approvedBy": {
+    "name": "Amol Joglekar (MD)",
+    "sign": "A. Joglekar"
+   },
+   "approvalDate": "08-03-2027"
+  },
+  {
+   "id": "grn-10",
+   "type": "grn",
+   "title": "Bill 10 · Goods receipt note",
+   "tab": "GRN",
+   "group": "b10",
+   "number": "GRN-2027-03-0445",
+   "date": "30-03-2027",
+   "unit": "Main stores, Bay B and Bay C",
+   "vendor": "Palar Seals and Gaskets Private Limited",
+   "poRef": "TD/PO/2026-27/1101",
+   "invoiceRef": "PSG/0938/26-27 dt 24-03-2027",
+   "challan": "LR 66204",
+   "vehicle": "TN 13 BK 9921",
+   "lines": [
+    {
+     "desc": "Oil seal 45 × 62 × 8, NBR",
+     "unit": "nos",
+     "qtyChallan": 6000,
+     "qtyReceived": 6000,
+     "qtyAccepted": 6000,
+     "qtyRejected": 0
+    },
+    {
+     "desc": "Oil seal 35 × 52 × 7, NBR (aftermarket)",
+     "unit": "nos",
+     "qtyChallan": 20000,
+     "qtyReceived": 20000,
+     "qtyAccepted": 20000,
+     "qtyRejected": 0
+    }
+   ],
+   "receivedBy": "Ajay Thube",
+   "qcBy": "Shrikant Lohar",
+   "remarks": "OK."
+  },
+  {
+   "id": "led-10",
+   "type": "table",
+   "style": "tally",
+   "title": "Bill 10 · Ledger entry",
+   "tab": "Ledger",
+   "group": "b10",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Purchase Voucher No. 3182",
+   "subtitle": "Palar Seals and Gaskets Private Limited · supplier’s invoice PSG/0938/26-27 dated 24-03-2027",
+   "period": "Voucher date: 30-Mar-2027",
+   "columns": [
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "part": "Purchases – bought-out parts",
+     "dr": 237000.0
+    },
+    {
+     "part": "Purchases – traded goods",
+     "dr": 620000.0
+    },
+    {
+     "part": "Input IGST – MH",
+     "dr": 154260.0
+    },
+    {
+     "part": "Palar Seals and Gaskets Private Limited",
+     "cr": 1011260.0
+    },
+    {
+     "_class": "total",
+     "part": "Total",
+     "dr": 1011260.0,
+     "cr": 1011260.0
+    }
+   ],
+   "notes": [
+    "Narration: Goods received vide GRN-2027-03-0445 against PO TD/PO/2026-27/1101.",
+    "TDS on purchase of goods (0.1%) is booked through the month-end TDS journal."
+   ]
+  },
+  {
+   "id": "inv-11",
+   "type": "invoice",
+   "title": "Bill 11 · Tax invoice",
+   "tab": "Bill",
+   "group": "b11",
+   "style": "erp",
+   "supplier": {
+    "name": "Kharun Steels Private Limited",
+    "address": "Plot 84, Urla Industrial Area\nRaipur 493221",
+    "gstin": "22UFLCK0414F1Z9",
+    "state": "Chhattisgarh",
+    "stateCode": "22",
+    "phone": "98XXXXXXXX",
+    "pan": "UFLCK0414F"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "shipTo": {
+    "name": "Tamhini Drivetech Private Limited (Chakan plant)",
+    "address": "Stores gate 2, Plot B-47, Chakan Industrial Area Phase II\nMIDC, Mahalunge, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "KS/2026-27/4418",
+   "date": "29-03-2027",
+   "copy": "Original for recipient",
+   "paymentTerms": "60 days",
+   "poRef": "TD/PO/2026-27/1126",
+   "poDate": "15-03-2027",
+   "dispatchDoc": "LR 8817 dt 30-03-2027",
+   "dispatchedThrough": "Road (transporter arranged by us)",
+   "destination": "Chakan, Pune",
+   "ewayBill": "3088 2048 6606",
+   "vehicle": "CG 04 MK 7712",
+   "placeOfSupply": "27-Maharashtra",
+   "lines": [
+    {
+     "desc": "EN8 bright bar, Ø36 mm",
+     "hsn": "7215 50",
+     "qty": 25000,
+     "unit": "kg",
+     "rate": 67.78,
+     "taxable": 1694500.0,
+     "gstRate": 18,
+     "note": "Heat no. KS-30118"
+    },
+    {
+     "desc": "EN8 bright bar, Ø28 mm",
+     "hsn": "7215 50",
+     "qty": 2500,
+     "unit": "kg",
+     "rate": 67.8,
+     "taxable": 169500.0,
+     "gstRate": 18,
+     "note": "Heat no. KS-30121"
+    }
+   ],
+   "tax": "inter",
+   "total": 2199520.0,
+   "bank": {
+    "name": "Narmada Valley Bank Ltd",
+    "account": "31200078415502",
+    "branch": "Raipur Urla",
+    "ifsc": "NMVB0000532"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Delivery: FOR Chakan as per your PO.",
+    "Subject to Raipur jurisdiction."
+   ],
+   "irn": "2ffc1e4bd972af1b7401df8ea416e35482be9731c1bb8732701edeb067426123",
+   "ackNo": "112701805812649",
+   "ackDate": "29-03-2027",
+   "footer": "This is a system generated invoice.",
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Mailed copy. Booked 31/3 – P.S.",
+     "color": "blue",
+     "at": "top-left",
+     "rotate": -3
+    },
+    {
+     "kind": "stamp",
+     "text": "ENTERED\nVCH 3214",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": 3
+    }
+   ]
+  },
+  {
+   "id": "po-11",
+   "type": "po",
+   "title": "Bill 11 · Purchase order",
+   "tab": "PO",
+   "group": "b11",
+   "number": "TD/PO/2026-27/1126",
+   "date": "15-03-2027",
+   "vendor": {
+    "name": "Kharun Steels Private Limited",
+    "address": "Plot 84, Urla Industrial Area, Raipur 493221",
+    "gstin": "22UFLCK0414F1Z9"
+   },
+   "deliveryBy": "31-03-2027",
+   "deliverTo": "Stores, Chakan plant",
+   "paymentTerms": "60 days",
+   "quoteRef": "Your offer KS/OF/0921 dated 12-03-2027",
+   "lines": [
+    {
+     "desc": "EN8 bright bar, Ø36 mm",
+     "qty": 25000,
+     "unit": "kg",
+     "rate": 67.78
+    },
+    {
+     "desc": "EN8 bright bar, Ø28 mm",
+     "qty": 2500,
+     "unit": "kg",
+     "rate": 67.8
+    }
+   ],
+   "taxNote": "Prices exclusive of GST. GST @ 18% (IGST) extra.",
+   "terms": [
+    "Delivery FOR our Chakan plant, freight included. The goods become ours when they are received at our gate.",
+    "Quote this PO number on your invoice, delivery challan and LR.",
+    "Goods are subject to our inspection. Rejected goods go back at your cost against our debit note.",
+    "Rates are firm for this order. Any change needs our written amendment.",
+    "Payment: 60 days from receipt of goods and invoice."
+   ],
+   "preparedBy": {
+    "name": "Kirti Jain (Senior Buyer)",
+    "sign": "Kirti J."
+   },
+   "preparedDate": "15-03-2027",
+   "approvedBy": {
+    "name": "Amol Joglekar (MD)",
+    "sign": "A. Joglekar"
+   },
+   "approvalDate": "15-03-2027"
+  },
+  {
+   "id": "grn-11",
+   "type": "grn",
+   "title": "Bill 11 · Goods receipt note",
+   "tab": "GRN",
+   "group": "b11",
+   "number": "GRN-2027-04-0007",
+   "date": "02-04-2027",
+   "unit": "RM yard",
+   "vendor": "Kharun Steels Private Limited",
+   "poRef": "TD/PO/2026-27/1126",
+   "invoiceRef": "KS/2026-27/4418 dt 29-03-2027",
+   "challan": "LR 8817 of 30-03-2027",
+   "vehicle": "CG 04 MK 7712",
+   "lines": [
+    {
+     "desc": "EN8 bright bar, Ø36 mm",
+     "unit": "kg",
+     "qtyChallan": 25000,
+     "qtyReceived": 25000,
+     "qtyAccepted": 25000,
+     "qtyRejected": 0
+    },
+    {
+     "desc": "EN8 bright bar, Ø28 mm",
+     "unit": "kg",
+     "qtyChallan": 2500,
+     "qtyReceived": 2500,
+     "qtyAccepted": 2500,
+     "qtyRejected": 0
+    }
+   ],
+   "receivedBy": "Santosh Kale",
+   "qcBy": "Neha Bansode",
+   "remarks": "Truck at gate 02-04-2027, 11:05 (gate entry G/3878). Weighbridge slip 77689."
+  },
+  {
+   "id": "led-11",
+   "type": "table",
+   "style": "tally",
+   "title": "Bill 11 · Ledger entry",
+   "tab": "Ledger",
+   "group": "b11",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Purchase Voucher No. 3214",
+   "subtitle": "Kharun Steels Private Limited · supplier’s invoice KS/2026-27/4418 dated 29-03-2027",
+   "period": "Voucher date: 31-Mar-2027",
+   "columns": [
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "part": "Purchases – raw materials",
+     "dr": 1864000.0
+    },
+    {
+     "part": "Input IGST – MH",
+     "dr": 335520.0
+    },
+    {
+     "part": "Kharun Steels Private Limited",
+     "cr": 2199520.0
+    },
+    {
+     "_class": "total",
+     "part": "Total",
+     "dr": 2199520.0,
+     "cr": 2199520.0
+    }
+   ],
+   "notes": [
+    "Narration: EN8 bright bars, 27,500 kg, against PO TD/PO/2026-27/1126. Material in transit; GRN awaited.",
+    "TDS on purchase of goods (0.1%) is booked through the month-end TDS journal."
+   ]
+  },
+  {
+   "id": "inv-12",
+   "type": "invoice",
+   "title": "Bill 12 · Tax invoice",
+   "tab": "Bill",
+   "group": "b12",
+   "style": "dot",
+   "supplier": {
+    "name": "Kudalwadi Heat Treaters",
+    "address": "Survey 112, Kudalwadi, Chikhli\nPimpri-Chinchwad, Pune 412114\nUdyam Reg. No. UDYAM-MH-26-0906352",
+    "gstin": "27ZPIFK9501Q1Z5",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "ZPIFK9501Q"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "KHT/26-27/0388",
+   "date": "31/03/2027",
+   "copy": "Original for recipient",
+   "deliveryNote": "Our challans OUT-1471, OUT-1472",
+   "paymentTerms": "45 days",
+   "poRef": "TD/WO/2026-27/0007",
+   "poDate": "01/04/2026",
+   "dispatchedThrough": "Own tempo",
+   "destination": "Chakan",
+   "vehicle": "MH 14 KQ 0457",
+   "placeOfSupply": "Maharashtra (27)",
+   "lines": [
+    {
+     "desc": "Case carburising, hardening and tempering: helical gear 2210 (your job-work challans JW-0611, JW-0612)",
+     "hsn": "9988",
+     "qty": 8400,
+     "unit": "nos",
+     "rate": 42.0,
+     "taxable": 352800.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "Case carburising, hardening and tempering: spur gear 2235 (your job-work challan JW-0614)",
+     "hsn": "9988",
+     "qty": 6000,
+     "unit": "nos",
+     "rate": 36.0,
+     "taxable": 216000.0,
+     "gstRate": 18
+    }
+   ],
+   "tax": "intra",
+   "total": 671184.0,
+   "bank": {
+    "name": "Vindhya Commercial Bank Ltd",
+    "account": "04180138841207",
+    "branch": "Chikhli",
+    "ifsc": "VNCB0000563"
+   },
+   "terms": [
+    "Hardness and case depth report HT/0331 sent with the parts.",
+    "Interest @ 18% p.a. on bills unpaid after 45 days."
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "STORES INWARD\n31 MAR 2027",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": -4
+    },
+    {
+     "kind": "stamp",
+     "text": "KUDALWADI HEAT TREATERS\nPIMPRI-CHINCHWAD",
+     "color": "blue",
+     "at": "bottom-right",
+     "shape": "round",
+     "rotate": -8
+    }
+   ]
+  },
+  {
+   "id": "po-12",
+   "type": "po",
+   "title": "Bill 12 · Purchase order",
+   "tab": "PO",
+   "group": "b12",
+   "number": "TD/WO/2026-27/0007",
+   "date": "01-04-2026",
+   "vendor": {
+    "name": "Kudalwadi Heat Treaters",
+    "address": "Survey 112, Kudalwadi, Chikhli, Pimpri-Chinchwad, Pune 412114",
+    "gstin": "27ZPIFK9501Q1Z5"
+   },
+   "deliveryBy": "Monthly schedules",
+   "deliverTo": "Stores, Chakan plant",
+   "paymentTerms": "45 days",
+   "quoteRef": "Annual rate contract, 1 April 2026 to 31 March 2027",
+   "intro": "Annual rate contract for heat treatment of our parts. Quantities are estimates; we send monthly schedules and job-work challans.",
+   "lines": [
+    {
+     "desc": "Case carburising, hardening and tempering: helical gear 2210",
+     "qty": 120000,
+     "unit": "nos",
+     "rate": 42.0
+    },
+    {
+     "desc": "Case carburising, hardening and tempering: spur gear 2235",
+     "qty": 84000,
+     "unit": "nos",
+     "rate": 36.0
+    }
+   ],
+   "taxNote": "Rates per piece, exclusive of GST. GST @ 18% (CGST + SGST) extra.",
+   "terms": [
+    "Parts are sent and received back on our job-work challans; the job worker returns every piece or reports it.",
+    "Hardness and case depth report to come with each lot.",
+    "Rates are firm for the year. Any change needs our written amendment.",
+    "Payment: 45 days from receipt of the parts and invoice."
+   ],
+   "preparedBy": {
+    "name": "Kirti Jain (Senior Buyer)",
+    "sign": "Kirti J."
+   },
+   "preparedDate": "01-04-2026",
+   "approvedBy": {
+    "name": "Amol Joglekar (MD)",
+    "sign": "A. Joglekar"
+   },
+   "approvalDate": "01-04-2026"
+  },
+  {
+   "id": "grn-12",
+   "type": "grn",
+   "title": "Bill 12 · Goods receipt note",
+   "tab": "GRN",
+   "group": "b12",
+   "number": "GRN-2027-03-0457",
+   "date": "31-03-2027",
+   "unit": "Shop floor stores (job work in)",
+   "vendor": "Kudalwadi Heat Treaters",
+   "poRef": "TD/WO/2026-27/0007",
+   "invoiceRef": "KHT/26-27/0388 dt 31/03/2027",
+   "challan": "Their challans OUT-1471, OUT-1472",
+   "vehicle": "MH 14 KQ 0457",
+   "lines": [
+    {
+     "desc": "Helical gear 2210, heat treated",
+     "unit": "nos",
+     "qtyChallan": 8400,
+     "qtyReceived": 8400,
+     "qtyAccepted": 8400,
+     "qtyRejected": 0
+    },
+    {
+     "desc": "Spur gear 2235, heat treated",
+     "unit": "nos",
+     "qtyChallan": 6000,
+     "qtyReceived": 6000,
+     "qtyAccepted": 6000,
+     "qtyRejected": 0
+    }
+   ],
+   "receivedBy": "Santosh Kale",
+   "qcBy": "Shrikant Lohar",
+   "remarks": "Job work received back. Hardness report HT/0331 checked. Gate in 11:40."
+  },
+  {
+   "id": "led-12",
+   "type": "table",
+   "style": "tally",
+   "title": "Bill 12 · Ledger entry",
+   "tab": "Ledger",
+   "group": "b12",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Purchase Voucher No. 3221",
+   "subtitle": "Kudalwadi Heat Treaters · supplier’s invoice KHT/26-27/0388 dated 31/03/2027",
+   "period": "Voucher date: 31-Mar-2027",
+   "columns": [
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "part": "Job work charges",
+     "dr": 568800.0
+    },
+    {
+     "part": "Input CGST – MH",
+     "dr": 51192.0
+    },
+    {
+     "part": "Input SGST – MH",
+     "dr": 51192.0
+    },
+    {
+     "part": "TDS payable (contractor)",
+     "cr": 11376.0
+    },
+    {
+     "part": "Kudalwadi Heat Treaters",
+     "cr": 659808.0
+    },
+    {
+     "_class": "total",
+     "part": "Total",
+     "dr": 671184.0,
+     "cr": 671184.0
+    }
+   ],
+   "notes": [
+    "Narration: job work on parts received back vide GRN-2027-03-0457, rates as per TD/WO/2026-27/0007."
+   ]
+  },
+  {
+   "id": "inv-13",
+   "type": "invoice",
+   "title": "Bill 13 · Tax invoice",
+   "tab": "Bill",
+   "group": "b13",
+   "style": "dot",
+   "supplier": {
+    "name": "Mundhwa Lubricants and Chemicals",
+    "address": "Shop 6, Keshav Complex, Mundhwa Road\nPune 411036",
+    "gstin": "27WHQFM7542F1ZX",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "WHQFM7542F"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "MLC/26-27/1418",
+   "date": "31-03-2027",
+   "copy": "Original for buyer",
+   "paymentTerms": "30 days",
+   "poRef": "TD/PO/2026-27/1133",
+   "poDate": "22-03-2027",
+   "dispatchedThrough": "Own tempo",
+   "destination": "Chakan",
+   "vehicle": "MH 12 RT 6634",
+   "placeOfSupply": "Maharashtra (27)",
+   "lines": [
+    {
+     "desc": "Soluble cutting oil (5 barrels × 210 L)",
+     "hsn": "3403 19",
+     "qty": 1050,
+     "unit": "ltr",
+     "rate": 182.0,
+     "taxable": 191100.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "Hydraulic oil ISO VG 68 (2 barrels × 210 L)",
+     "hsn": "2710 19",
+     "qty": 420,
+     "unit": "ltr",
+     "rate": 128.0,
+     "taxable": 53760.0,
+     "gstRate": 18
+    }
+   ],
+   "tax": "intra",
+   "roundOff": 0.2,
+   "total": 288935.0,
+   "bank": {
+    "name": "Satpura Bank Ltd",
+    "account": "11020045718823",
+    "branch": "Pune Mundhwa",
+    "ifsc": "STPB0001204"
+   },
+   "terms": [
+    "Goods once sold will not be taken back.",
+    "Subject to Pune jurisdiction."
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "STORES INWARD\n31 MAR 2027",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": 4
+    },
+    {
+     "kind": "hand",
+     "text": "Recd 4.10 pm",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": -4
+    },
+    {
+     "kind": "stamp",
+     "text": "MUNDHWA LUBRICANTS\nPUNE",
+     "color": "blue",
+     "at": "bottom-right",
+     "shape": "round",
+     "rotate": -8
+    }
+   ]
+  },
+  {
+   "id": "po-13",
+   "type": "po",
+   "title": "Bill 13 · Purchase order",
+   "tab": "PO",
+   "group": "b13",
+   "number": "TD/PO/2026-27/1133",
+   "date": "22-03-2027",
+   "vendor": {
+    "name": "Mundhwa Lubricants and Chemicals",
+    "address": "Shop 6, Keshav Complex, Mundhwa Road, Pune 411036",
+    "gstin": "27WHQFM7542F1ZX"
+   },
+   "deliveryBy": "31-03-2027",
+   "deliverTo": "Stores, Chakan plant",
+   "paymentTerms": "30 days",
+   "quoteRef": "Rate agreement for 2026–27",
+   "lines": [
+    {
+     "desc": "Soluble cutting oil (5 barrels × 210 L)",
+     "qty": 1050,
+     "unit": "ltr",
+     "rate": 182.0
+    },
+    {
+     "desc": "Hydraulic oil ISO VG 68 (2 barrels × 210 L)",
+     "qty": 420,
+     "unit": "ltr",
+     "rate": 128.0
+    }
+   ],
+   "taxNote": "Prices exclusive of GST. GST @ 18% (CGST + SGST) extra.",
+   "terms": [
+    "Delivery FOR our Chakan plant, freight included. The goods become ours when they are received at our gate.",
+    "Quote this PO number on your invoice, delivery challan and LR.",
+    "Goods are subject to our inspection. Rejected goods go back at your cost against our debit note.",
+    "Rates are firm for this order. Any change needs our written amendment.",
+    "Payment: 30 days from receipt of goods and invoice."
+   ],
+   "preparedBy": {
+    "name": "Omkar Tilekar (Buyer)",
+    "sign": "Omkar T."
+   },
+   "preparedDate": "22-03-2027",
+   "approvedBy": {
+    "name": "Rohit Agrawal (Purchase Manager)",
+    "sign": "R. Agrawal"
+   },
+   "approvalDate": "22-03-2027"
+  },
+  {
+   "id": "grn-13",
+   "type": "grn",
+   "title": "Bill 13 · Goods receipt note",
+   "tab": "GRN",
+   "group": "b13",
+   "style": "book",
+   "number": "GRN-2027-03-0459",
+   "date": "31-03-2027",
+   "unit": "Oil store",
+   "vendor": "Mundhwa Lubricants and Chemicals",
+   "poRef": "TD/PO/2026-27/1133",
+   "invoiceRef": "MLC/26-27/1418 dt 31-03-2027",
+   "challan": "Bill MLC/26-27/1418",
+   "vehicle": "MH 12 RT 6634",
+   "lines": [
+    {
+     "desc": "Soluble cutting oil (5 barrels × 210 L)",
+     "unit": "ltr",
+     "qtyChallan": 1050,
+     "qtyReceived": 1050,
+     "qtyAccepted": 1050,
+     "qtyRejected": 0
+    },
+    {
+     "desc": "Hydraulic oil ISO VG 68 (2 barrels × 210 L)",
+     "unit": "ltr",
+     "qtyChallan": 420,
+     "qtyReceived": 420,
+     "qtyAccepted": 420,
+     "qtyRejected": 0
+    }
+   ],
+   "receivedBy": "Ajay Thube",
+   "qcBy": "Neha Bansode",
+   "remarks": "Received 4:10 pm. Seals intact."
+  },
+  {
+   "id": "led-13",
+   "type": "table",
+   "style": "tally",
+   "title": "Bill 13 · Ledger entry",
+   "tab": "Ledger",
+   "group": "b13",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Purchase Voucher No. 3219",
+   "subtitle": "Mundhwa Lubricants and Chemicals · supplier’s invoice MLC/26-27/1418 dated 31-03-2027",
+   "period": "Voucher date: 31-Mar-2027",
+   "columns": [
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "part": "Purchases – stores and consumables",
+     "dr": 244860.0
+    },
+    {
+     "part": "Input CGST – MH",
+     "dr": 22037.4
+    },
+    {
+     "part": "Input SGST – MH",
+     "dr": 22037.4
+    },
+    {
+     "part": "Round off",
+     "dr": 0.2
+    },
+    {
+     "part": "Mundhwa Lubricants and Chemicals",
+     "cr": 288935.0
+    },
+    {
+     "_class": "total",
+     "part": "Total",
+     "dr": 288935.0,
+     "cr": 288935.0
+    }
+   ],
+   "notes": [
+    "Narration: Goods received vide GRN-2027-03-0459 against PO TD/PO/2026-27/1133.",
+    "TDS on purchase of goods (0.1%) is booked through the month-end TDS journal."
+   ]
+  },
+  {
+   "id": "inv-14",
+   "type": "invoice",
+   "title": "Bill 14 · Tax invoice",
+   "tab": "Bill",
+   "group": "b14",
+   "style": "book",
+   "supplier": {
+    "name": "Sakhare Surface Treatment",
+    "address": "Gat No. 307, Kharabwadi\nChakan, Pune 410501\nUdyam Reg. No. UDYAM-MH-26-0921929",
+    "gstin": "27ZJGPS6000S1ZY",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "ZJGPS6000S"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "SST/0291",
+   "date": "31/3/2027",
+   "copy": "Original",
+   "deliveryNote": "Your challans JW-0617, JW-0618",
+   "poRef": "TD/WO/2026-27/0011",
+   "poDate": "1/4/2026",
+   "destination": "Chakan",
+   "vehicle": "MH 14 FT 2208",
+   "placeOfSupply": "Maharashtra (27)",
+   "lines": [
+    {
+     "desc": "Phosphating: input shaft 1142",
+     "hsn": "9988",
+     "qty": 4200,
+     "unit": "nos",
+     "rate": 9.5,
+     "taxable": 39900.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "Blackening: companion flange 0880",
+     "hsn": "9988",
+     "qty": 5200,
+     "unit": "nos",
+     "rate": 7.25,
+     "taxable": 37700.0,
+     "gstRate": 18
+    }
+   ],
+   "tax": "intra",
+   "total": 91568.0,
+   "terms": [
+    "Payment within 30 days."
+   ],
+   "signFor": "Sakhare Surface Treatment (Prop. Mangesh Sakhare)",
+   "signedBy": "M. Sakhare",
+   "footer": "Subject to Pune jurisdiction.",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "STORES INWARD\n31 MAR 2027",
+     "color": "violet",
+     "at": "top-left",
+     "rotate": 3
+    },
+    {
+     "kind": "tick",
+     "text": "GRN 0458",
+     "color": "blue",
+     "at": "bottom-left"
+    }
+   ]
+  },
+  {
+   "id": "po-14",
+   "type": "po",
+   "title": "Bill 14 · Purchase order",
+   "tab": "PO",
+   "group": "b14",
+   "number": "TD/WO/2026-27/0011",
+   "date": "01-04-2026",
+   "vendor": {
+    "name": "Sakhare Surface Treatment",
+    "address": "Gat No. 307, Kharabwadi, Chakan, Pune 410501",
+    "gstin": "27ZJGPS6000S1ZY"
+   },
+   "deliveryBy": "Monthly schedules",
+   "deliverTo": "Stores, Chakan plant",
+   "paymentTerms": "30 days",
+   "quoteRef": "Annual rate contract, 1 April 2026 to 31 March 2027",
+   "intro": "Annual rate contract for phosphating and blackening of our parts. Quantities are estimates; we send monthly schedules and job-work challans.",
+   "lines": [
+    {
+     "desc": "Phosphating: input shaft 1142",
+     "qty": 48000,
+     "unit": "nos",
+     "rate": 9.5
+    },
+    {
+     "desc": "Blackening: companion flange 0880",
+     "qty": 60000,
+     "unit": "nos",
+     "rate": 7.25
+    }
+   ],
+   "taxNote": "Rates per piece, exclusive of GST. GST @ 18% (CGST + SGST) extra.",
+   "terms": [
+    "Parts are sent and received back on our job-work challans.",
+    "Rates are firm for the year. Any change needs our written amendment.",
+    "Payment: 30 days from receipt of the parts and invoice."
+   ],
+   "preparedBy": {
+    "name": "Kirti Jain (Senior Buyer)",
+    "sign": "Kirti J."
+   },
+   "preparedDate": "01-04-2026",
+   "approvedBy": {
+    "name": "Amol Joglekar (MD)",
+    "sign": "A. Joglekar"
+   },
+   "approvalDate": "01-04-2026"
+  },
+  {
+   "id": "grn-14",
+   "type": "grn",
+   "title": "Bill 14 · Goods receipt note",
+   "tab": "GRN",
+   "group": "b14",
+   "style": "book",
+   "number": "GRN-2027-03-0458",
+   "date": "31-03-2027",
+   "unit": "Shop floor stores (job work in)",
+   "vendor": "Sakhare Surface Treatment",
+   "poRef": "TD/WO/2026-27/0011",
+   "invoiceRef": "SST/0291 dt 31/3/2027",
+   "challan": "Their delivery 31-03-2027",
+   "vehicle": "MH 14 FT 2208",
+   "lines": [
+    {
+     "desc": "Input shaft 1142, phosphated",
+     "unit": "nos",
+     "qtyChallan": 4200,
+     "qtyReceived": 4200,
+     "qtyAccepted": 4200,
+     "qtyRejected": 0
+    },
+    {
+     "desc": "Companion flange 0880, blackened",
+     "unit": "nos",
+     "qtyChallan": 5200,
+     "qtyReceived": 5200,
+     "qtyAccepted": 5200,
+     "qtyRejected": 0
+    }
+   ],
+   "receivedBy": "Santosh Kale",
+   "qcBy": "Shrikant Lohar",
+   "remarks": "Coating check OK. Gate in 12:15."
+  },
+  {
+   "id": "led-14",
+   "type": "table",
+   "style": "tally",
+   "title": "Bill 14 · Ledger entry",
+   "tab": "Ledger",
+   "group": "b14",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Purchase Voucher No. 3222",
+   "subtitle": "Sakhare Surface Treatment · supplier’s invoice SST/0291 dated 31/3/2027",
+   "period": "Voucher date: 31-Mar-2027",
+   "columns": [
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "part": "Job work charges",
+     "dr": 77600.0
+    },
+    {
+     "part": "Input CGST – MH",
+     "dr": 6984.0
+    },
+    {
+     "part": "Input SGST – MH",
+     "dr": 6984.0
+    },
+    {
+     "part": "TDS payable (contractor)",
+     "cr": 776.0
+    },
+    {
+     "part": "Sakhare Surface Treatment",
+     "cr": 90792.0
+    },
+    {
+     "_class": "total",
+     "part": "Total",
+     "dr": 91568.0,
+     "cr": 91568.0
+    }
+   ],
+   "notes": [
+    "Narration: job work on parts received back vide GRN-2027-03-0458, rates as per TD/WO/2026-27/0011."
+   ]
+  },
+  {
+   "id": "inv-15",
+   "type": "invoice",
+   "title": "Bill 15 · Tax invoice",
+   "tab": "Bill",
+   "group": "b15",
+   "supplier": {
+    "name": "Rankala Forgings Private Limited",
+    "address": "Plot D-12, Shiroli MIDC\nKolhapur 416122\nUdyam Reg. No. UDYAM-MH-09-0958745",
+    "gstin": "27UJPCR7248B1Z1",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "UJPCR7248B"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "RF/2412/26-27",
+   "date": "31.03.2027",
+   "copy": "Original for recipient",
+   "paymentTerms": "45 days",
+   "poRef": "TD/PO/2026-27/1138",
+   "poDate": "24.03.2027",
+   "dispatchDoc": "DC 2412",
+   "dispatchedThrough": "Road",
+   "destination": "Chakan",
+   "vehicle": "MH 09 GA 6107",
+   "placeOfSupply": "Maharashtra (27)",
+   "lines": [
+    {
+     "desc": "Forged gear blank GB-110 (20MnCr5), normalised",
+     "hsn": "7326 19",
+     "qty": 120,
+     "unit": "nos",
+     "rate": 412.0,
+     "taxable": 49440.0,
+     "gstRate": 18
+    }
+   ],
+   "tax": "intra",
+   "roundOff": 0.8,
+   "total": 58340.0,
+   "bank": {
+    "name": "Vindhya Commercial Bank Ltd",
+    "account": "04180093317465",
+    "branch": "Kolhapur",
+    "ifsc": "VNCB0000389"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Subject to Kolhapur jurisdiction."
+   ],
+   "irn": "af040715886e0d1c39e795fef4df2b1ac9236275e74ad857f5143d4a207919d0",
+   "ackNo": "112743372242173",
+   "ackDate": "31.03.2027",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "GATE IN\n31/03/27 19:40",
+     "color": "red",
+     "at": "top-left",
+     "rotate": -5
+    },
+    {
+     "kind": "stamp",
+     "text": "STORES INWARD\n01 APR 2027",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": 4
+    },
+    {
+     "kind": "stamp",
+     "text": "ENTERED\nVCH 0007",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": -3
+    },
+    {
+     "kind": "stamp",
+     "text": "RANKALA FORGINGS\nKOLHAPUR",
+     "color": "blue",
+     "at": "bottom-right",
+     "shape": "round",
+     "rotate": -8
+    }
+   ]
+  },
+  {
+   "id": "po-15",
+   "type": "po",
+   "title": "Bill 15 · Purchase order",
+   "tab": "PO",
+   "group": "b15",
+   "number": "TD/PO/2026-27/1138",
+   "date": "24-03-2027",
+   "vendor": {
+    "name": "Rankala Forgings Private Limited",
+    "address": "Plot D-12, Shiroli MIDC, Kolhapur 416122",
+    "gstin": "27UJPCR7248B1Z1"
+   },
+   "deliveryBy": "31-03-2027 (urgent)",
+   "deliverTo": "Stores, Chakan plant",
+   "paymentTerms": "45 days",
+   "quoteRef": "Rate agreement for 2026–27",
+   "lines": [
+    {
+     "desc": "Forged gear blank GB-110 (20MnCr5), normalised",
+     "qty": 120,
+     "unit": "nos",
+     "rate": 412.0
+    }
+   ],
+   "taxNote": "Prices exclusive of GST. GST @ 18% (CGST + SGST) extra.",
+   "terms": [
+    "Delivery FOR our Chakan plant, freight included. The goods become ours when they are received at our gate.",
+    "Quote this PO number on your invoice, delivery challan and LR.",
+    "Goods are subject to our inspection. Rejected goods go back at your cost against our debit note.",
+    "Rates are firm for this order. Any change needs our written amendment.",
+    "Payment: 45 days from receipt of goods and invoice."
+   ],
+   "preparedBy": {
+    "name": "Omkar Tilekar (Buyer)",
+    "sign": "Omkar T."
+   },
+   "preparedDate": "24-03-2027",
+   "approvedBy": {
+    "name": "Rohit Agrawal (Purchase Manager)",
+    "sign": "R. Agrawal"
+   },
+   "approvalDate": "24-03-2027"
+  },
+  {
+   "id": "grn-15",
+   "type": "grn",
+   "title": "Bill 15 · Goods receipt note",
+   "tab": "GRN",
+   "group": "b15",
+   "number": "GRN-2027-04-0003",
+   "date": "01-04-2027",
+   "unit": "Main stores, Bay A",
+   "vendor": "Rankala Forgings Private Limited",
+   "poRef": "TD/PO/2026-27/1138",
+   "invoiceRef": "RF/2412/26-27 dt 31.03.2027",
+   "challan": "DC 2412",
+   "vehicle": "MH 09 GA 6107",
+   "lines": [
+    {
+     "desc": "Forged gear blank GB-110 (20MnCr5), normalised",
+     "unit": "nos",
+     "qtyChallan": 120,
+     "qtyReceived": 120,
+     "qtyAccepted": 120,
+     "qtyRejected": 0
+    }
+   ],
+   "receivedBy": "Ajay Thube",
+   "qcBy": "Shrikant Lohar",
+   "remarks": "Material came in at 7:40 pm on 31-03-2027 (gate entry G/3871); GRN made next morning."
+  },
+  {
+   "id": "note-15",
+   "type": "letter",
+   "style": "note",
+   "title": "Bill 15 · Stores note",
+   "tab": "Stores note",
+   "group": "b15",
+   "subject": "Rankala GB-110 blanks, 120 nos",
+   "date": "01.04.2027",
+   "body": [
+    "Came in at 7:40 pm on 31.03, after the GRN desk closed.",
+    "Kept in Bay A and counted in the stock-take that night.",
+    "GRN made on 01.04, so they are not in the March stock records."
+   ],
+   "sign": "D. More, Stores"
+  },
+  {
+   "id": "led-15",
+   "type": "table",
+   "style": "tally",
+   "title": "Bill 15 · Ledger entry",
+   "tab": "Ledger",
+   "group": "b15",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2027–28"
+   },
+   "ledger": "Purchase Voucher No. 0007",
+   "subtitle": "Rankala Forgings Private Limited · supplier’s invoice RF/2412/26-27 dated 31.03.2027",
+   "period": "Voucher date: 01-Apr-2027",
+   "columns": [
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "part": "Purchases – raw materials",
+     "dr": 49440.0
+    },
+    {
+     "part": "Input CGST – MH",
+     "dr": 4449.6
+    },
+    {
+     "part": "Input SGST – MH",
+     "dr": 4449.6
+    },
+    {
+     "part": "Round off",
+     "dr": 0.8
+    },
+    {
+     "part": "Rankala Forgings Private Limited",
+     "cr": 58340.0
+    },
+    {
+     "_class": "total",
+     "part": "Total",
+     "dr": 58340.0,
+     "cr": 58340.0
+    }
+   ],
+   "notes": [
+    "Narration: Goods received vide GRN-2027-04-0003 against PO TD/PO/2026-27/1138."
+   ]
+  },
+  {
+   "id": "inv-16",
+   "type": "invoice",
+   "title": "Bill 16 · Tax invoice",
+   "tab": "Bill",
+   "group": "b16",
+   "supplier": {
+    "name": "Ghanekar Alloy Steels Private Limited",
+    "address": "Plot C-21, Additional MIDC Phase III\nJalna 431213",
+    "gstin": "27UMVCG6849R1ZY",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "UMVCG6849R"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "GAS/2027-28/0012",
+   "date": "01/04/2027",
+   "copy": "Original for recipient",
+   "paymentTerms": "60 days",
+   "poRef": "TD/PO/2026-27/1140 (lot 1)",
+   "poDate": "25/03/2027",
+   "dispatchDoc": "Own vehicle",
+   "dispatchedThrough": "Road",
+   "destination": "Chakan",
+   "vehicle": "MH 21 BH 4415",
+   "placeOfSupply": "Maharashtra (27)",
+   "lines": [
+    {
+     "desc": "20MnCr5 bright bar, Ø32 mm",
+     "hsn": "7228 50",
+     "qty": 10000,
+     "unit": "kg",
+     "rate": 92.4,
+     "taxable": 924000.0,
+     "gstRate": 18,
+     "note": "Heat no. GA-7809 · MTC enclosed"
+    }
+   ],
+   "tax": "intra",
+   "total": 1090320.0,
+   "bank": {
+    "name": "Ambar Commercial Bank Ltd",
+    "account": "50710041823307",
+    "branch": "Jalna",
+    "ifsc": "ABRC0000211"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Weight as per our weighbridge; tolerance ±0.5%.",
+    "Subject to Jalna jurisdiction."
+   ],
+   "irn": "9567562b0d06380011d76cf8cc654f9f6a6dc5dc507d0f2324a1eb43bf9defba",
+   "ackNo": "112773901210941",
+   "ackDate": "01/04/2027",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "STORES INWARD\n02 APR 2027",
+     "color": "violet",
+     "at": "top-left",
+     "rotate": -4
+    },
+    {
+     "kind": "stamp",
+     "text": "GHANEKAR ALLOY STEELS\nJALNA",
+     "color": "blue",
+     "at": "bottom-right",
+     "shape": "round",
+     "rotate": -8
+    }
+   ]
+  },
+  {
+   "id": "po-16",
+   "type": "po",
+   "title": "Bill 16 · Purchase order",
+   "tab": "PO",
+   "group": "b16",
+   "number": "TD/PO/2026-27/1140",
+   "date": "25-03-2027",
+   "vendor": {
+    "name": "Ghanekar Alloy Steels Private Limited",
+    "address": "Plot C-21, Additional MIDC Phase III, Jalna 431213",
+    "gstin": "27UMVCG6849R1ZY"
+   },
+   "deliveryBy": "Three lots in April 2027",
+   "deliverTo": "Stores, Chakan plant",
+   "paymentTerms": "60 days",
+   "quoteRef": "April 2027 schedule",
+   "lines": [
+    {
+     "desc": "20MnCr5 bright bar, Ø32 mm",
+     "qty": 30000,
+     "unit": "kg",
+     "rate": 92.4
+    }
+   ],
+   "taxNote": "Prices exclusive of GST. GST @ 18% (CGST + SGST) extra.",
+   "terms": [
+    "Delivery FOR our Chakan plant, freight included. The goods become ours when they are received at our gate.",
+    "Quote this PO number on your invoice, delivery challan and LR.",
+    "Goods are subject to our inspection. Rejected goods go back at your cost against our debit note.",
+    "Rates are firm for this order. Any change needs our written amendment.",
+    "Payment: 60 days from receipt of goods and invoice."
+   ],
+   "preparedBy": {
+    "name": "Kirti Jain (Senior Buyer)",
+    "sign": "Kirti J."
+   },
+   "preparedDate": "25-03-2027",
+   "approvedBy": {
+    "name": "Amol Joglekar (MD)",
+    "sign": "A. Joglekar"
+   },
+   "approvalDate": "26-03-2027"
+  },
+  {
+   "id": "grn-16",
+   "type": "grn",
+   "title": "Bill 16 · Goods receipt note",
+   "tab": "GRN",
+   "group": "b16",
+   "number": "GRN-2027-04-0008",
+   "date": "02-04-2027",
+   "unit": "RM yard",
+   "vendor": "Ghanekar Alloy Steels Private Limited",
+   "poRef": "TD/PO/2026-27/1140",
+   "invoiceRef": "GAS/2027-28/0012 dt 01/04/2027",
+   "challan": "Weighbridge slip 77694",
+   "vehicle": "MH 21 BH 4415",
+   "lines": [
+    {
+     "desc": "20MnCr5 bright bar, Ø32 mm",
+     "unit": "kg",
+     "qtyChallan": 10000,
+     "qtyReceived": 10000,
+     "qtyAccepted": 10000,
+     "qtyRejected": 0
+    }
+   ],
+   "receivedBy": "Santosh Kale",
+   "qcBy": "Neha Bansode",
+   "remarks": "Lot 1 of PO 1140. Test certificate checked."
+  },
+  {
+   "id": "led-16",
+   "type": "table",
+   "style": "tally",
+   "title": "Bill 16 · Ledger entry",
+   "tab": "Ledger",
+   "group": "b16",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2027–28"
+   },
+   "ledger": "Purchase Voucher No. 0011",
+   "subtitle": "Ghanekar Alloy Steels Private Limited · supplier’s invoice GAS/2027-28/0012 dated 01/04/2027",
+   "period": "Voucher date: 02-Apr-2027",
+   "columns": [
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "part": "Purchases – raw materials",
+     "dr": 924000.0
+    },
+    {
+     "part": "Input CGST – MH",
+     "dr": 83160.0
+    },
+    {
+     "part": "Input SGST – MH",
+     "dr": 83160.0
+    },
+    {
+     "part": "Ghanekar Alloy Steels Private Limited",
+     "cr": 1090320.0
+    },
+    {
+     "_class": "total",
+     "part": "Total",
+     "dr": 1090320.0,
+     "cr": 1090320.0
+    }
+   ],
+   "notes": [
+    "Narration: Goods received vide GRN-2027-04-0008 against PO TD/PO/2026-27/1140."
+   ]
+  },
+  {
+   "id": "inv-17",
+   "type": "invoice",
+   "title": "Bill 17 · Tax invoice",
+   "tab": "Bill",
+   "group": "b17",
+   "style": "erp",
+   "supplier": {
+    "name": "Vishwamitri Bearings Private Limited",
+    "address": "Plot 418, GIDC Makarpura\nVadodara 390010",
+    "gstin": "24UQQCV0863H1ZL",
+    "state": "Gujarat",
+    "stateCode": "24",
+    "phone": "98XXXXXXXX",
+    "pan": "UQQCV0863H"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "shipTo": {
+    "name": "Tamhini Drivetech Private Limited (Chakan plant)",
+    "address": "Stores gate 2, Plot B-47, Chakan Industrial Area Phase II\nMIDC, Mahalunge, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "VB/2627/4466",
+   "date": "30.03.2027",
+   "copy": "Original for recipient",
+   "paymentTerms": "60 days",
+   "poRef": "TD/PO/2026-27/1129",
+   "poDate": "15.03.2027",
+   "dispatchDoc": "LR 77291 dt 30.03.2027",
+   "dispatchedThrough": "Road",
+   "destination": "Chakan, Pune",
+   "ewayBill": "3408 5595 0062",
+   "vehicle": "GJ 06 BX 2207",
+   "placeOfSupply": "27-Maharashtra",
+   "lines": [
+    {
+     "desc": "Taper roller bearing 30206 (aftermarket pack)",
+     "hsn": "8482 20",
+     "qty": 1500,
+     "unit": "nos",
+     "rate": 412.0,
+     "taxable": 618000.0,
+     "gstRate": 18
+    }
+   ],
+   "tax": "inter",
+   "total": 729240.0,
+   "bank": {
+    "name": "Narmada Valley Bank Ltd",
+    "account": "31200091127743",
+    "branch": "Vadodara Makarpura",
+    "ifsc": "NMVB0000604"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Subject to Vadodara jurisdiction."
+   ],
+   "irn": "5c7664875982fb6bb5edbaf899dc830ad79f14161062c956664858bdb0ca6ddc",
+   "ackNo": "112706351318950",
+   "ackDate": "30.03.2027",
+   "footer": "This is a system generated invoice.",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "STORES INWARD\n03 APR 2027",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": -4
+    }
+   ]
+  },
+  {
+   "id": "po-17",
+   "type": "po",
+   "title": "Bill 17 · Purchase order",
+   "tab": "PO",
+   "group": "b17",
+   "number": "TD/PO/2026-27/1129",
+   "date": "15-03-2027",
+   "vendor": {
+    "name": "Vishwamitri Bearings Private Limited",
+    "address": "Plot 418, GIDC Makarpura, Vadodara 390010",
+    "gstin": "24UQQCV0863H1ZL"
+   },
+   "deliveryBy": "05-04-2027",
+   "deliverTo": "Stores, Chakan plant",
+   "paymentTerms": "60 days",
+   "quoteRef": "Rate agreement for 2026–27",
+   "lines": [
+    {
+     "desc": "Taper roller bearing 30206 (aftermarket pack)",
+     "qty": 1500,
+     "unit": "nos",
+     "rate": 412.0
+    }
+   ],
+   "taxNote": "Prices exclusive of GST. GST @ 18% (IGST) extra.",
+   "terms": [
+    "Delivery FOR our Chakan plant, freight included. The goods become ours when they are received at our gate.",
+    "Quote this PO number on your invoice, delivery challan and LR.",
+    "Goods are subject to our inspection. Rejected goods go back at your cost against our debit note.",
+    "Rates are firm for this order. Any change needs our written amendment.",
+    "Payment: 60 days from receipt of goods and invoice."
+   ],
+   "preparedBy": {
+    "name": "Kirti Jain (Senior Buyer)",
+    "sign": "Kirti J."
+   },
+   "preparedDate": "15-03-2027",
+   "approvedBy": {
+    "name": "Amol Joglekar (MD)",
+    "sign": "A. Joglekar"
+   },
+   "approvalDate": "16-03-2027"
+  },
+  {
+   "id": "grn-17",
+   "type": "grn",
+   "title": "Bill 17 · Goods receipt note",
+   "tab": "GRN",
+   "group": "b17",
+   "number": "GRN-2027-04-0012",
+   "date": "03-04-2027",
+   "unit": "Main stores, Bay C",
+   "vendor": "Vishwamitri Bearings Private Limited",
+   "poRef": "TD/PO/2026-27/1129",
+   "invoiceRef": "VB/2627/4466 dt 30.03.2027",
+   "challan": "LR 77291",
+   "vehicle": "GJ 06 BX 2207",
+   "lines": [
+    {
+     "desc": "Taper roller bearing 30206 (aftermarket pack)",
+     "unit": "nos",
+     "qtyChallan": 1500,
+     "qtyReceived": 1500,
+     "qtyAccepted": 1500,
+     "qtyRejected": 0
+    }
+   ],
+   "receivedBy": "Ajay Thube",
+   "qcBy": "Neha Bansode",
+   "remarks": "OK."
+  },
+  {
+   "id": "led-17",
+   "type": "table",
+   "style": "tally",
+   "title": "Bill 17 · Ledger entry",
+   "tab": "Ledger",
+   "group": "b17",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2027–28"
+   },
+   "ledger": "Purchase Voucher No. 0016",
+   "subtitle": "Vishwamitri Bearings Private Limited · supplier’s invoice VB/2627/4466 dated 30.03.2027",
+   "period": "Voucher date: 03-Apr-2027",
+   "columns": [
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "part": "Purchases – traded goods",
+     "dr": 618000.0
+    },
+    {
+     "part": "Input IGST – MH",
+     "dr": 111240.0
+    },
+    {
+     "part": "Vishwamitri Bearings Private Limited",
+     "cr": 729240.0
+    },
+    {
+     "_class": "total",
+     "part": "Total",
+     "dr": 729240.0,
+     "cr": 729240.0
+    }
+   ],
+   "notes": [
+    "Narration: Goods received vide GRN-2027-04-0012 against PO TD/PO/2026-27/1129."
+   ]
+  },
+  {
+   "id": "inv-18",
+   "type": "invoice",
+   "title": "Bill 18 · Tax invoice",
+   "tab": "Bill",
+   "group": "b18",
+   "style": "erp",
+   "supplier": {
+    "name": "Kharun Steels Private Limited",
+    "address": "Plot 84, Urla Industrial Area\nRaipur 493221",
+    "gstin": "22UFLCK0414F1Z9",
+    "state": "Chhattisgarh",
+    "stateCode": "22",
+    "phone": "98XXXXXXXX",
+    "pan": "UFLCK0414F"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "shipTo": {
+    "name": "Tamhini Drivetech Private Limited (Chakan plant)",
+    "address": "Stores gate 2, Plot B-47, Chakan Industrial Area Phase II\nMIDC, Mahalunge, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "KS/2027-28/0021",
+   "date": "02-04-2027",
+   "copy": "Original for recipient",
+   "paymentTerms": "60 days",
+   "poRef": "TD/PO/2026-27/1135",
+   "poDate": "22-03-2027",
+   "dispatchDoc": "LR 8851 dt 02-04-2027",
+   "dispatchedThrough": "Road (transporter arranged by us)",
+   "destination": "Chakan, Pune",
+   "ewayBill": "3603 5362 9769",
+   "vehicle": "CG 04 MR 1186",
+   "placeOfSupply": "27-Maharashtra",
+   "lines": [
+    {
+     "desc": "EN8 bright bar, Ø45 mm",
+     "hsn": "7215 50",
+     "qty": 20000,
+     "unit": "kg",
+     "rate": 67.2,
+     "taxable": 1344000.0,
+     "gstRate": 18,
+     "note": "Heat no. KS-30177"
+    }
+   ],
+   "tax": "inter",
+   "total": 1585920.0,
+   "bank": {
+    "name": "Narmada Valley Bank Ltd",
+    "account": "31200078415502",
+    "branch": "Raipur Urla",
+    "ifsc": "NMVB0000532"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Delivery: FOR Chakan as per your PO.",
+    "Subject to Raipur jurisdiction."
+   ],
+   "irn": "1917e8107614c1f31f241b5ae40015f8ce2b761e03327fa6bf134b120a01f0f9",
+   "ackNo": "112743492396080",
+   "ackDate": "02-04-2027",
+   "footer": "This is a system generated invoice.",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "STORES INWARD\n06 APR 2027",
+     "color": "violet",
+     "at": "top-left",
+     "rotate": 4
+    },
+    {
+     "kind": "stamp",
+     "text": "ENTERED\nVCH 0019",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "po-18",
+   "type": "po",
+   "title": "Bill 18 · Purchase order",
+   "tab": "PO",
+   "group": "b18",
+   "number": "TD/PO/2026-27/1135",
+   "date": "22-03-2027",
+   "vendor": {
+    "name": "Kharun Steels Private Limited",
+    "address": "Plot 84, Urla Industrial Area, Raipur 493221",
+    "gstin": "22UFLCK0414F1Z9"
+   },
+   "deliveryBy": "10-04-2027",
+   "deliverTo": "Stores, Chakan plant",
+   "paymentTerms": "60 days",
+   "quoteRef": "Your offer KS/OF/0934 dated 20-03-2027",
+   "lines": [
+    {
+     "desc": "EN8 bright bar, Ø45 mm",
+     "qty": 20000,
+     "unit": "kg",
+     "rate": 67.2
+    }
+   ],
+   "taxNote": "Prices exclusive of GST. GST @ 18% (IGST) extra.",
+   "terms": [
+    "Delivery FOR our Chakan plant, freight included. The goods become ours when they are received at our gate.",
+    "Quote this PO number on your invoice, delivery challan and LR.",
+    "Goods are subject to our inspection. Rejected goods go back at your cost against our debit note.",
+    "Rates are firm for this order. Any change needs our written amendment.",
+    "Payment: 60 days from receipt of goods and invoice."
+   ],
+   "preparedBy": {
+    "name": "Kirti Jain (Senior Buyer)",
+    "sign": "Kirti J."
+   },
+   "preparedDate": "22-03-2027",
+   "approvedBy": {
+    "name": "Amol Joglekar (MD)",
+    "sign": "A. Joglekar"
+   },
+   "approvalDate": "22-03-2027"
+  },
+  {
+   "id": "grn-18",
+   "type": "grn",
+   "title": "Bill 18 · Goods receipt note",
+   "tab": "GRN",
+   "group": "b18",
+   "number": "GRN-2027-04-0019",
+   "date": "06-04-2027",
+   "unit": "RM yard",
+   "vendor": "Kharun Steels Private Limited",
+   "poRef": "TD/PO/2026-27/1135",
+   "invoiceRef": "KS/2027-28/0021 dt 02-04-2027",
+   "challan": "LR 8851",
+   "vehicle": "CG 04 MR 1186",
+   "lines": [
+    {
+     "desc": "EN8 bright bar, Ø45 mm",
+     "unit": "kg",
+     "qtyChallan": 20000,
+     "qtyReceived": 20000,
+     "qtyAccepted": 20000,
+     "qtyRejected": 0
+    }
+   ],
+   "receivedBy": "Santosh Kale",
+   "qcBy": "Neha Bansode",
+   "remarks": "Weighbridge slip 77731. Test certificate checked."
+  },
+  {
+   "id": "led-18",
+   "type": "table",
+   "style": "tally",
+   "title": "Bill 18 · Ledger entry",
+   "tab": "Ledger",
+   "group": "b18",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2027–28"
+   },
+   "ledger": "Purchase Voucher No. 0019",
+   "subtitle": "Kharun Steels Private Limited · supplier’s invoice KS/2027-28/0021 dated 02-04-2027",
+   "period": "Voucher date: 06-Apr-2027",
+   "columns": [
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "part": "Purchases – raw materials",
+     "dr": 1344000.0
+    },
+    {
+     "part": "Input IGST – MH",
+     "dr": 241920.0
+    },
+    {
+     "part": "Kharun Steels Private Limited",
+     "cr": 1585920.0
+    },
+    {
+     "_class": "total",
+     "part": "Total",
+     "dr": 1585920.0,
+     "cr": 1585920.0
+    }
+   ],
+   "notes": [
+    "Narration: Goods received vide GRN-2027-04-0019 against PO TD/PO/2026-27/1135."
+   ]
+  },
+  {
+   "id": "inv-19",
+   "type": "invoice",
+   "title": "Bill 19 · Tax invoice",
+   "tab": "Bill",
+   "group": "b19",
+   "style": "erp",
+   "supplier": {
+    "name": "Hebbal Tooling Solutions Private Limited",
+    "address": "No. 14, 2nd Stage, Peenya Industrial Area\nBengaluru 560058",
+    "gstin": "29ZEMCH0865A1ZP",
+    "state": "Karnataka",
+    "stateCode": "29",
+    "phone": "98XXXXXXXX",
+    "pan": "ZEMCH0865A"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "shipTo": {
+    "name": "Tamhini Drivetech Private Limited (Chakan plant)",
+    "address": "Stores gate 2, Plot B-47, Chakan Industrial Area Phase II\nMIDC, Mahalunge, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "HTS/27-28/0031",
+   "date": "05 Apr 2027",
+   "copy": "Original for recipient",
+   "paymentTerms": "45 days",
+   "poRef": "TD/PO/2026-27/1137",
+   "poDate": "23 Mar 2027",
+   "dispatchDoc": "Docket 7716 3104",
+   "dispatchedThrough": "Surface cargo",
+   "destination": "Chakan, Pune",
+   "placeOfSupply": "27-Maharashtra",
+   "lines": [
+    {
+     "desc": "Gear hob, module 2.5, TiAlN coated",
+     "hsn": "8207 70",
+     "qty": 4,
+     "unit": "nos",
+     "rate": 38500.0,
+     "taxable": 154000.0,
+     "gstRate": 18
+    }
+   ],
+   "tax": "inter",
+   "total": 181720.0,
+   "bank": {
+    "name": "Ambar Commercial Bank Ltd",
+    "account": "50710084471230",
+    "branch": "Bengaluru Peenya",
+    "ifsc": "ABRC0000559"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Subject to Bengaluru jurisdiction."
+   ],
+   "irn": "5e5ddf9140d3d24c31545c8ec0436982f4e8dbd6ddb991ac9ea62b2282236865",
+   "ackNo": "112731001662601",
+   "ackDate": "05 Apr 2027",
+   "footer": "This is a system generated invoice.",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "STORES INWARD\n07 APR 2027",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": 3
+    }
+   ]
+  },
+  {
+   "id": "po-19",
+   "type": "po",
+   "title": "Bill 19 · Purchase order",
+   "tab": "PO",
+   "group": "b19",
+   "number": "TD/PO/2026-27/1137",
+   "date": "23-03-2027",
+   "vendor": {
+    "name": "Hebbal Tooling Solutions Private Limited",
+    "address": "No. 14, 2nd Stage, Peenya Industrial Area, Bengaluru 560058",
+    "gstin": "29ZEMCH0865A1ZP"
+   },
+   "deliveryBy": "10-04-2027",
+   "deliverTo": "Stores, Chakan plant",
+   "paymentTerms": "45 days",
+   "quoteRef": "Your quotation HTS/Q/0402 dated 20-03-2027",
+   "lines": [
+    {
+     "desc": "Gear hob, module 2.5, TiAlN coated",
+     "qty": 4,
+     "unit": "nos",
+     "rate": 38500.0
+    }
+   ],
+   "taxNote": "Prices exclusive of GST. GST @ 18% (IGST) extra.",
+   "terms": [
+    "Delivery FOR our Chakan plant, freight included. The goods become ours when they are received at our gate.",
+    "Quote this PO number on your invoice, delivery challan and LR.",
+    "Goods are subject to our inspection. Rejected goods go back at your cost against our debit note.",
+    "Rates are firm for this order. Any change needs our written amendment.",
+    "Payment: 45 days from receipt of goods and invoice."
+   ],
+   "preparedBy": {
+    "name": "Omkar Tilekar (Buyer)",
+    "sign": "Omkar T."
+   },
+   "preparedDate": "23-03-2027",
+   "approvedBy": {
+    "name": "Rohit Agrawal (Purchase Manager)",
+    "sign": "R. Agrawal"
+   },
+   "approvalDate": "23-03-2027"
+  },
+  {
+   "id": "grn-19",
+   "type": "grn",
+   "title": "Bill 19 · Goods receipt note",
+   "tab": "GRN",
+   "group": "b19",
+   "number": "GRN-2027-04-0024",
+   "date": "07-04-2027",
+   "unit": "Tool crib",
+   "vendor": "Hebbal Tooling Solutions Private Limited",
+   "poRef": "TD/PO/2026-27/1137",
+   "invoiceRef": "HTS/27-28/0031 dt 05 Apr 2027",
+   "challan": "Docket 7716 3104",
+   "lines": [
+    {
+     "desc": "Gear hob, module 2.5, TiAlN coated",
+     "unit": "nos",
+     "qtyChallan": 4,
+     "qtyReceived": 4,
+     "qtyAccepted": 4,
+     "qtyRejected": 0
+    }
+   ],
+   "receivedBy": "Santosh Kale",
+   "qcBy": "Neha Bansode",
+   "remarks": "OK."
+  },
+  {
+   "id": "led-19",
+   "type": "table",
+   "style": "tally",
+   "title": "Bill 19 · Ledger entry",
+   "tab": "Ledger",
+   "group": "b19",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2027–28"
+   },
+   "ledger": "Purchase Voucher No. 0024",
+   "subtitle": "Hebbal Tooling Solutions Private Limited · supplier’s invoice HTS/27-28/0031 dated 05 Apr 2027",
+   "period": "Voucher date: 07-Apr-2027",
+   "columns": [
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "part": "Purchases – stores and consumables",
+     "dr": 154000.0
+    },
+    {
+     "part": "Input IGST – MH",
+     "dr": 27720.0
+    },
+    {
+     "part": "Hebbal Tooling Solutions Private Limited",
+     "cr": 181720.0
+    },
+    {
+     "_class": "total",
+     "part": "Total",
+     "dr": 181720.0,
+     "cr": 181720.0
+    }
+   ],
+   "notes": [
+    "Narration: Goods received vide GRN-2027-04-0024 against PO TD/PO/2026-27/1137."
+   ]
+  },
+  {
+   "id": "inv-20",
+   "type": "invoice",
+   "title": "Bill 20 · Tax invoice",
+   "tab": "Bill",
+   "group": "b20",
+   "style": "erp",
+   "supplier": {
+    "name": "Sohna Friction Products Private Limited",
+    "address": "Plot 61, Sector 37\nGurugram 122001",
+    "gstin": "06ZDICS4933L1Z4",
+    "state": "Haryana",
+    "stateCode": "06",
+    "phone": "98XXXXXXXX",
+    "pan": "ZDICS4933L"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "shipTo": {
+    "name": "Tamhini Drivetech Private Limited (Chakan plant)",
+    "address": "Stores gate 2, Plot B-47, Chakan Industrial Area Phase II\nMIDC, Mahalunge, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "SFP/2728/00019",
+   "date": "03-Apr-2027",
+   "copy": "Original for recipient",
+   "paymentTerms": "60 days",
+   "poRef": "TD/PO/2026-27/1136",
+   "poDate": "22-Mar-2027",
+   "dispatchDoc": "LR 51302 dt 03-Apr-2027",
+   "dispatchedThrough": "Road",
+   "destination": "Chakan, Pune",
+   "ewayBill": "3308 5454 1182",
+   "vehicle": "HR 55 AM 0915",
+   "placeOfSupply": "27-Maharashtra",
+   "lines": [
+    {
+     "desc": "Clutch plate assembly 240 mm (LCV)",
+     "hsn": "8708 93",
+     "qty": 1000,
+     "unit": "nos",
+     "rate": 1182.0,
+     "taxable": 1182000.0,
+     "gstRate": 18
+    }
+   ],
+   "tax": "inter",
+   "total": 1394760.0,
+   "bank": {
+    "name": "Ambar Commercial Bank Ltd",
+    "account": "50710063390154",
+    "branch": "Gurugram",
+    "ifsc": "ABRC0000437"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Subject to Gurugram jurisdiction."
+   ],
+   "irn": "6b8377369c8bd3eb23d5fd34a2b497b7f3b30ef51d5d32200299f260d921b30a",
+   "ackNo": "112721487819395",
+   "ackDate": "03-Apr-2027",
+   "footer": "This is a computer generated invoice and needs no signature.",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "STORES INWARD\n08 APR 2027",
+     "color": "violet",
+     "at": "top-left",
+     "rotate": -3
+    },
+    {
+     "kind": "stamp",
+     "text": "ENTERED\nVCH 0027",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": 2
+    }
+   ]
+  },
+  {
+   "id": "po-20",
+   "type": "po",
+   "title": "Bill 20 · Purchase order",
+   "tab": "PO",
+   "group": "b20",
+   "number": "TD/PO/2026-27/1136",
+   "date": "22-03-2027",
+   "vendor": {
+    "name": "Sohna Friction Products Private Limited",
+    "address": "Plot 61, Sector 37, Gurugram 122001",
+    "gstin": "06ZDICS4933L1Z4"
+   },
+   "deliveryBy": "10-04-2027",
+   "deliverTo": "Stores, Chakan plant",
+   "paymentTerms": "60 days",
+   "quoteRef": "Your quotation SFP/Q/0230 dated 19-03-2027",
+   "lines": [
+    {
+     "desc": "Clutch plate assembly 240 mm (LCV)",
+     "qty": 1000,
+     "unit": "nos",
+     "rate": 1182.0
+    }
+   ],
+   "taxNote": "Prices exclusive of GST. GST @ 18% (IGST) extra.",
+   "terms": [
+    "Delivery FOR our Chakan plant, freight included. The goods become ours when they are received at our gate.",
+    "Quote this PO number on your invoice, delivery challan and LR.",
+    "Goods are subject to our inspection. Rejected goods go back at your cost against our debit note.",
+    "Rates are firm for this order. Any change needs our written amendment.",
+    "Payment: 60 days from receipt of goods and invoice."
+   ],
+   "preparedBy": {
+    "name": "Kirti Jain (Senior Buyer)",
+    "sign": "Kirti J."
+   },
+   "preparedDate": "22-03-2027",
+   "approvedBy": {
+    "name": "Amol Joglekar (MD)",
+    "sign": "A. Joglekar"
+   },
+   "approvalDate": "23-03-2027"
+  },
+  {
+   "id": "grn-20",
+   "type": "grn",
+   "title": "Bill 20 · Goods receipt note",
+   "tab": "GRN",
+   "group": "b20",
+   "number": "GRN-2027-04-0026",
+   "date": "08-04-2027",
+   "unit": "Main stores, Bay C",
+   "vendor": "Sohna Friction Products Private Limited",
+   "poRef": "TD/PO/2026-27/1136",
+   "invoiceRef": "SFP/2728/00019 dt 03-Apr-2027",
+   "challan": "LR 51302",
+   "vehicle": "HR 55 AM 0915",
+   "lines": [
+    {
+     "desc": "Clutch plate assembly 240 mm (LCV)",
+     "unit": "nos",
+     "qtyChallan": 1000,
+     "qtyReceived": 1000,
+     "qtyAccepted": 1000,
+     "qtyRejected": 0
+    }
+   ],
+   "receivedBy": "Ajay Thube",
+   "qcBy": "Neha Bansode",
+   "remarks": "Visual and dimension check OK."
+  },
+  {
+   "id": "led-20",
+   "type": "table",
+   "style": "tally",
+   "title": "Bill 20 · Ledger entry",
+   "tab": "Ledger",
+   "group": "b20",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2027–28"
+   },
+   "ledger": "Purchase Voucher No. 0027",
+   "subtitle": "Sohna Friction Products Private Limited · supplier’s invoice SFP/2728/00019 dated 03-Apr-2027",
+   "period": "Voucher date: 08-Apr-2027",
+   "columns": [
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "part": "Purchases – traded goods",
+     "dr": 1182000.0
+    },
+    {
+     "part": "Input IGST – MH",
+     "dr": 212760.0
+    },
+    {
+     "part": "Sohna Friction Products Private Limited",
+     "cr": 1394760.0
+    },
+    {
+     "_class": "total",
+     "part": "Total",
+     "dr": 1394760.0,
+     "cr": 1394760.0
+    }
+   ],
+   "notes": [
+    "Narration: Goods received vide GRN-2027-04-0026 against PO TD/PO/2026-27/1136."
+   ]
+  }
+ ],
+ "tasks": [
+  {
+   "id": "t1",
+   "type": "items",
+   "stage": "Fieldwork",
+   "title": "Vouch the 20 bills",
+   "prompt": "Open each bill with its PO, GRN and ledger entry; the purchase procedure, vendor master, GSTIN searches and gate register are under Other papers. Mark each bill Fine or Exception and the year the purchase belongs to; for an exception, pick what is wrong. Your calls go to Aditi when you move on.",
+   "weight": 2,
+   "noun": [
+    "bill",
+    "bills"
+   ],
+   "lockOnLeave": {
+    "ask": "Hand your bill calls to Aditi?",
+    "note": "You can’t change them after this.",
+    "yes": "Hand them in",
+    "done": "Handed to Aditi. You can read your calls but not change them."
+   },
+   "hints": [
+    "Cut-off: put the day the goods reached the Chakan gate (the GRN, or the gate register when they differ) next to the month the bill was booked. The PO terms say the goods become Tamhini’s at its gate.",
+    "Read the vendor’s GSTIN on the bill against the vendor master, character by character, and the GST rate against the PO."
+   ],
+   "columns": [
+    {
+     "key": "label"
+    },
+    {
+     "key": "amount",
+     "format": "inr"
+    },
+    {
+     "key": "dated"
+    }
+   ],
+   "fields": [
+    {
+     "id": "verdict",
+     "kind": "choice",
+     "label": "Your call",
+     "gate": true,
+     "options": [
+      {
+       "id": "ok",
+       "label": "Fine"
+      },
+      {
+       "id": "exception",
+       "label": "Exception"
+      }
+     ]
+    },
+    {
+     "id": "year",
+     "kind": "choice",
+     "label": "This purchase belongs to",
+     "options": [
+      {
+       "id": "fy27",
+       "label": "2026–27"
+      },
+      {
+       "id": "fy28",
+       "label": "2027–28"
+      }
+     ]
+    },
+    {
+     "id": "reasons",
+     "kind": "multi",
+     "label": "What’s wrong",
+     "showIf": {
+      "verdict": "exception"
+     },
+     "options": [
+      {
+       "id": "cutoff",
+       "label": "Cut-off: booked in the wrong year",
+       "short": "cut-off",
+       "needs": [
+        "year"
+       ]
+      },
+      {
+       "id": "approval",
+       "label": "PO not approved, or not by the right person",
+       "short": "unapproved PO"
+      },
+      {
+       "id": "price",
+       "label": "Price above the PO rate",
+       "short": "overpricing"
+      },
+      {
+       "id": "qty",
+       "label": "Billed and booked for more than the stores accepted",
+       "short": "excess quantity"
+      },
+      {
+       "id": "gstin",
+       "label": "Vendor’s GSTIN on the bill is wrong",
+       "short": "GSTIN mismatch"
+      },
+      {
+       "id": "gstRate",
+       "label": "Wrong GST rate for the goods",
+       "short": "wrong GST rate"
+      },
+      {
+       "id": "taxType",
+       "label": "IGST where CGST and SGST apply, or the other way round",
+       "short": "tax type"
+      },
+      {
+       "id": "dup",
+       "label": "Bill booked twice",
+       "short": "duplicate"
+      }
+     ],
+     "weight": 3
+    },
+    {
+     "id": "note",
+     "kind": "text",
+     "label": "Your note for the file",
+     "placeholder": "For example: rate as per PO; GRN 12 March, booked 12 March"
+    }
+   ],
+   "docs": [
+    "policy-purchase",
+    "vendor-master",
+    "gstin-search",
+    "gate-register",
+    "inv-01",
+    "po-01",
+    "grn-01",
+    "led-01",
+    "inv-02",
+    "po-02",
+    "grn-02",
+    "led-02",
+    "inv-03",
+    "po-03",
+    "grn-03",
+    "led-03",
+    "inv-04",
+    "po-04",
+    "grn-04",
+    "dn-04",
+    "led-04",
+    "inv-05",
+    "po-05",
+    "grn-05",
+    "led-05",
+    "inv-06",
+    "po-06",
+    "amd-06",
+    "grn-06",
+    "led-06",
+    "inv-07",
+    "po-07",
+    "grn-07",
+    "led-07",
+    "inv-08",
+    "po-08",
+    "grn-08",
+    "led-08",
+    "inv-09",
+    "po-09",
+    "grn-09",
+    "led-09",
+    "inv-10",
+    "po-10",
+    "grn-10",
+    "led-10",
+    "inv-11",
+    "po-11",
+    "grn-11",
+    "led-11",
+    "inv-12",
+    "po-12",
+    "grn-12",
+    "led-12",
+    "inv-13",
+    "po-13",
+    "grn-13",
+    "led-13",
+    "inv-14",
+    "po-14",
+    "grn-14",
+    "led-14",
+    "inv-15",
+    "po-15",
+    "grn-15",
+    "note-15",
+    "led-15",
+    "inv-16",
+    "po-16",
+    "grn-16",
+    "led-16",
+    "inv-17",
+    "po-17",
+    "grn-17",
+    "led-17",
+    "inv-18",
+    "po-18",
+    "grn-18",
+    "led-18",
+    "inv-19",
+    "po-19",
+    "grn-19",
+    "led-19",
+    "inv-20",
+    "po-20",
+    "grn-20",
+    "led-20"
+   ],
+   "items": [
+    {
+     "id": "b1",
+     "label": "Bill 1 · Sohna Friction",
+     "amount": 1524560.0,
+     "dated": "bill dated 22 Mar 2027",
+     "docs": [
+      "inv-01",
+      "po-01",
+      "grn-01",
+      "led-01"
+     ],
+     "answer": {
+      "verdict": "ok",
+      "year": "fy27"
+     },
+     "note": "Bill 1: 2,000 clutch plates at the PO rate of ₹646, all accepted on 25 March and booked that day to traded goods. The MD signed the PO, as the purchase procedure needs above ₹5 lakh. Fine."
+    },
+    {
+     "id": "b2",
+     "label": "Bill 2 · Phillaur Fasteners",
+     "amount": 429520.0,
+     "dated": "bill dated 20 Mar 2027",
+     "docs": [
+      "inv-02",
+      "po-02",
+      "grn-02",
+      "led-02"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "year": "fy27",
+      "reasons": [
+       "gstin"
+      ]
+     },
+     "note": "Bill 2: the bill prints 03UBZCP4179S1ZJ, which the portal does not find; the master has 03UBZCP4197S1ZJ. Two digits swapped. Exception. Tamhini needs a corrected invoice from Phillaur; until then the ₹65,520 credit is at risk."
+    },
+    {
+     "id": "b3",
+     "label": "Bill 3 · Ghanekar Alloy Steels",
+     "amount": 2281176.0,
+     "dated": "bill dated 26 Mar 2027",
+     "docs": [
+      "inv-03",
+      "po-03",
+      "grn-03",
+      "led-03"
+     ],
+     "answer": {
+      "verdict": "ok",
+      "year": "fy27"
+     },
+     "note": "Bill 3: second lot of the March schedule. Rates match the PO, the MD approved it, and 21,000 kg came in on 27 March and was booked that day. Fine."
+    },
+    {
+     "id": "b4",
+     "label": "Bill 4 · Rankala Forgings",
+     "amount": 752840.0,
+     "dated": "bill dated 26 Mar 2027",
+     "docs": [
+      "inv-04",
+      "po-04",
+      "grn-04",
+      "dn-04",
+      "led-04"
+     ],
+     "answer": {
+      "verdict": "ok",
+      "year": "fy27"
+     },
+     "note": "Bill 4: 40 blanks rejected for forging laps and sent back. The debit note of 29 March takes them out, so March carries only the 960 Tamhini kept. Fine."
+    },
+    {
+     "id": "b5",
+     "label": "Bill 5 · Moshi Corrugators",
+     "amount": 129024.0,
+     "dated": "bill dated 27 Mar 2027",
+     "docs": [
+      "inv-05",
+      "po-05",
+      "grn-05",
+      "led-05"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "year": "fy27",
+      "reasons": [
+       "gstRate"
+      ]
+     },
+     "note": "Bill 5: corrugated boxes have been at 5% since 22 September 2025, and Tamhini’s PO says 5%. Moshi charged 6% + 6%, so ₹8,064 too much tax. Exception. Moshi must correct the bill; Tamhini pays only the right tax."
+    },
+    {
+     "id": "b6",
+     "label": "Bill 6 · Hebbal Tooling",
+     "amount": 851488.0,
+     "dated": "bill dated 24 Mar 2027",
+     "docs": [
+      "inv-06",
+      "po-06",
+      "amd-06",
+      "grn-06",
+      "led-06"
+     ],
+     "answer": {
+      "verdict": "ok",
+      "year": "fy27"
+     },
+     "note": "Bill 6: the CNMG inserts are ₹7 above the PO, but amendment 1 of 18 March revised the rate and the MD approved it. Quantities match the GRN. Fine."
+    },
+    {
+     "id": "b7",
+     "label": "Bill 7 · Kolak Polypack",
+     "amount": 250632.0,
+     "dated": "bill dated 25 Mar 2027",
+     "docs": [
+      "inv-07",
+      "po-07",
+      "grn-07",
+      "led-07"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "year": "fy27",
+      "reasons": [
+       "approval"
+      ]
+     },
+     "note": "Bill 7: the PO’s approval box is blank. Goods, rate and bill all match, but nothing on file shows anyone approved the purchase. Exception. Ask Rohit whether he approved it and why the PO went out unsigned."
+    },
+    {
+     "id": "b8",
+     "label": "Bill 8 · Bhadar Forge",
+     "amount": 1214928.0,
+     "dated": "bill dated 25 Mar 2027",
+     "docs": [
+      "inv-08",
+      "po-08",
+      "grn-08",
+      "led-08"
+     ],
+     "answer": {
+      "verdict": "ok",
+      "year": "fy27"
+     },
+     "note": "Bill 8: left Rajkot on 25 March and reached Tamhini’s stores on 30 March, so the blanks were Tamhini’s before year-end. Booked on 30 March at the PO rate. Fine."
+    },
+    {
+     "id": "b9",
+     "label": "Bill 9 · Vishwamitri Bearings",
+     "amount": 983648.0,
+     "dated": "bill dated 26 Mar 2027",
+     "docs": [
+      "inv-09",
+      "po-09",
+      "grn-09",
+      "led-09"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "year": "fy27",
+      "reasons": [
+       "qty"
+      ]
+     },
+     "note": "Bill 9: QC rejected 60 of the 1,200 bearings (6306-ZZ) on 30 March, but the full bill is booked with no debit note, and the procedure’s seven days are over. Exception. Purchases are ₹16,080 too high and the IGST credit ₹2,894.40 too high."
+    },
+    {
+     "id": "b10",
+     "label": "Bill 10 · Palar Seals",
+     "amount": 1011260.0,
+     "dated": "bill dated 24 Mar 2027",
+     "docs": [
+      "inv-10",
+      "po-10",
+      "grn-10",
+      "led-10"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "year": "fy27",
+      "reasons": [
+       "price"
+      ]
+     },
+     "note": "Bill 10: the 45 × 62 × 8 seals are billed at ₹39.50; the PO says ₹38.00 and there is no amendment. Exception. That is ₹9,000 extra plus ₹1,620 IGST. Ask Rohit for Palar’s credit note, or an amendment the MD has approved."
+    },
+    {
+     "id": "b11",
+     "label": "Bill 11 · Kharun Steels",
+     "amount": 2199520.0,
+     "dated": "bill dated 29 Mar 2027",
+     "docs": [
+      "inv-11",
+      "po-11",
+      "grn-11",
+      "led-11"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "year": "fy28",
+      "reasons": [
+       "cutoff"
+      ]
+     },
+     "note": "Bill 11: Kharun billed on 29 March, but the steel reached the Chakan gate on 2 April, and the PO says ownership passes there. It is booked in March. Exception. Take it out of March purchases and creditors."
+    },
+    {
+     "id": "b12",
+     "label": "Bill 12 · Kudalwadi Heat Treaters",
+     "amount": 671184.0,
+     "dated": "bill dated 31 Mar 2027",
+     "docs": [
+      "inv-12",
+      "po-12",
+      "grn-12",
+      "led-12"
+     ],
+     "answer": {
+      "verdict": "ok",
+      "year": "fy27"
+     },
+     "note": "Bill 12: job work on the gears that came back on 31 March, at the rate-contract prices. Work done and received in March, booked in March, with TDS at 2% because Kudalwadi is a firm. Fine."
+    },
+    {
+     "id": "b13",
+     "label": "Bill 13 · Mundhwa Lubricants",
+     "amount": 288935.0,
+     "dated": "bill dated 31 Mar 2027",
+     "docs": [
+      "inv-13",
+      "po-13",
+      "grn-13",
+      "led-13"
+     ],
+     "answer": {
+      "verdict": "ok",
+      "year": "fy27"
+     },
+     "note": "Bill 13: billed on 31 March and in the oil store by 4:10 pm the same day. Received before year-end, so March is right, and the rates match the PO. Fine."
+    },
+    {
+     "id": "b14",
+     "label": "Bill 14 · Sakhare Surface Treatment",
+     "amount": 91568.0,
+     "dated": "bill dated 31 Mar 2027",
+     "docs": [
+      "inv-14",
+      "po-14",
+      "grn-14",
+      "led-14"
+     ],
+     "answer": {
+      "verdict": "ok",
+      "year": "fy27"
+     },
+     "note": "Bill 14: phosphating and blackening on parts back in the stores on 31 March, at contract rates, with TDS at 1% for a proprietor. A small bill, but it gets the same checks. Fine."
+    },
+    {
+     "id": "b15",
+     "label": "Bill 15 · Rankala Forgings",
+     "amount": 58340.0,
+     "dated": "bill dated 31 Mar 2027",
+     "docs": [
+      "inv-15",
+      "po-15",
+      "grn-15",
+      "note-15",
+      "led-15"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "year": "fy27",
+      "reasons": [
+       "cutoff"
+      ]
+     },
+     "note": "Bill 15: the opposite of Bill 11. The blanks came in at 7:40 pm on 31 March and were counted that night, so they are March stock and a March liability. Booked in April. Exception. Year-end creditors are short by ₹58,340."
+    },
+    {
+     "id": "b16",
+     "label": "Bill 16 · Ghanekar Alloy Steels",
+     "amount": 1090320.0,
+     "dated": "bill dated 1 Apr 2027",
+     "docs": [
+      "inv-16",
+      "po-16",
+      "grn-16",
+      "led-16"
+     ],
+     "answer": {
+      "verdict": "ok",
+      "year": "fy28"
+     },
+     "note": "Bill 16: dated 1 April, received on 2 April, booked in April against the April schedule. Next year’s purchase, rightly kept out of March. Fine."
+    },
+    {
+     "id": "b17",
+     "label": "Bill 17 · Vishwamitri Bearings",
+     "amount": 729240.0,
+     "dated": "bill dated 30 Mar 2027",
+     "docs": [
+      "inv-17",
+      "po-17",
+      "grn-17",
+      "led-17"
+     ],
+     "answer": {
+      "verdict": "ok",
+      "year": "fy28"
+     },
+     "note": "Bill 17: bill and LR are dated 30 March, but the bearings reached Chakan on 3 April. Under the PO terms they became Tamhini’s in April, so booking them in April is right. Fine."
+    },
+    {
+     "id": "b18",
+     "label": "Bill 18 · Kharun Steels",
+     "amount": 1585920.0,
+     "dated": "bill dated 2 Apr 2027",
+     "docs": [
+      "inv-18",
+      "po-18",
+      "grn-18",
+      "led-18"
+     ],
+     "answer": {
+      "verdict": "ok",
+      "year": "fy28"
+     },
+     "note": "Bill 18: Kharun’s next bill, dated 2 April, received on 6 April and booked in April. Same vendor and terms as Bill 11, and this time the right year. Fine."
+    },
+    {
+     "id": "b19",
+     "label": "Bill 19 · Hebbal Tooling",
+     "amount": 181720.0,
+     "dated": "bill dated 5 Apr 2027",
+     "docs": [
+      "inv-19",
+      "po-19",
+      "grn-19",
+      "led-19"
+     ],
+     "answer": {
+      "verdict": "ok",
+      "year": "fy28"
+     },
+     "note": "Bill 19: four gear hobs, billed on 5 April and received on 7 April. PO rate, Rohit’s approval within his limit, booked in April. Fine."
+    },
+    {
+     "id": "b20",
+     "label": "Bill 20 · Sohna Friction",
+     "amount": 1394760.0,
+     "dated": "bill dated 3 Apr 2027",
+     "docs": [
+      "inv-20",
+      "po-20",
+      "grn-20",
+      "led-20"
+     ],
+     "answer": {
+      "verdict": "ok",
+      "year": "fy28"
+     },
+     "note": "Bill 20: 1,000 clutch plates received on 8 April and booked in April at the PO rate. The MD signed the PO. Fine."
+    }
+   ]
+  },
+  {
+   "id": "t2",
+   "type": "compose",
+   "stage": "Fieldwork",
+   "title": "Draft the query mail to Mahesh",
+   "weight": 3,
+   "noun": [
+    "line",
+    "lines"
+   ],
+   "prompt": "Aditi wants one mail to Mahesh Kadam, the accounts head, with a query for each exception other than the two cut-offs, which she will send herself. Pick the right line for each bill.",
+   "hints": [
+    "Each problem is fixed by whoever caused it: the vendor corrects its own bill, Tamhini raises the debit note for what its QC rejected, and Rohit answers for his PO."
+   ],
+   "previewLabel": "Your mail to Mahesh",
+   "slots": [
+    {
+     "id": "gstin",
+     "label": "Bill 2 · Phillaur",
+     "options": [
+      {
+       "id": "a",
+       "text": "Bill 2 (Phillaur, PF/2026-27/2614): the GSTIN printed is 03UBZCP4179S1ZJ, but their registration is 03UBZCP4197S1ZJ. Please get a corrected invoice from Phillaur; until then the ₹65,520 credit is at risk.",
+       "why": "A wrong supplier GSTIN is fixed by the supplier, with a corrected document. Until then the credit is at risk, not lost.",
+       "correct": true
+      },
+      {
+       "id": "b",
+       "text": "Bill 2 (Phillaur, PF/2026-27/2614): the GSTIN printed is 03UBZCP4179S1ZJ, not their 03UBZCP4197S1ZJ, so the ₹65,520 credit is lost for good. Please reverse it and pay Phillaur only ₹3,64,000.",
+       "why": "Too far. Nothing is lost while Phillaur can still correct the bill, and Phillaur is still owed the GST it charged."
+      },
+      {
+       "id": "c",
+       "text": "Bill 2 (Phillaur, PF/2026-27/2614): two digits of the GSTIN are swapped, but the PAN printed on the bill is right, so the bill can be passed as it is and the credit kept.",
+       "why": "The bill must carry the supplier’s correct GSTIN. A right PAN elsewhere on the page does not fix it."
+      }
+     ]
+    },
+    {
+     "id": "rate",
+     "label": "Bill 5 · Moshi",
+     "options": [
+      {
+       "id": "a",
+       "text": "Bill 5 (Moshi, MC/26-27/286): the bill charges 6% + 6% on ₹1,15,200 of corrugated boxes, as Moshi’s bills did before September 2025, so the bill is fine as it is and can be paid in full.",
+       "why": "That was the old rate. Corrugated boxes moved from 12% to 5% from 22 September 2025, and Tamhini’s own PO says 5%."
+      },
+      {
+       "id": "b",
+       "text": "Bill 5 (Moshi, MC/26-27/286): the bill charges 6% + 6% where your PO says 5%. Please send all the 1,200 boxes back to Moshi and ask for a fresh supply on a new bill at 5% GST.",
+       "why": "The boxes are fine. Only the tax on the bill is wrong, and the supplier can correct that."
+      },
+      {
+       "id": "c",
+       "text": "Bill 5 (Moshi, MC/26-27/286): corrugated boxes are at 5% GST and your PO says 5%, but the bill charges 6% + 6%. Please ask Moshi to correct the bill and hold back the extra ₹8,064 till then.",
+       "why": "The supplier corrects its own bill, and Tamhini pays only the tax that is due.",
+       "correct": true
+      }
+     ]
+    },
+    {
+     "id": "approval",
+     "label": "Bill 7 · Kolak",
+     "options": [
+      {
+       "id": "a",
+       "text": "Bill 7 (Kolak, KP/26-27/1342): the PO for the VCI bags and film has no approval. Please have Rohit sign it today and date it 10 March, the PO date, so that the file is complete.",
+       "why": "Never. A backdated signature is a false record. If he approved it, he says so now, with today’s date."
+      },
+      {
+       "id": "b",
+       "text": "Bill 7 (Kolak, KP/26-27/1342): the PO for the VCI bags and film has no approval. Please ask Rohit to confirm in writing whether he approved this purchase, and why the PO went out unsigned.",
+       "why": "We want the truth on file: who approved it and when. The answer goes into our controls note.",
+       "correct": true
+      },
+      {
+       "id": "c",
+       "text": "Bill 7 (Kolak, KP/26-27/1342): the goods, rate and bill all match the PO, so the blank approval box does not matter. Nothing is needed from Rohit on this one.",
+       "why": "It matters. Approval is the control that stops unauthorised buying, even when the amount is right."
+      }
+     ]
+    },
+    {
+     "id": "qty",
+     "label": "Bill 9 · Vishwamitri",
+     "options": [
+      {
+       "id": "a",
+       "text": "Bill 9 (Vishwamitri, VB/2627/4417): QC rejected 60 of the 1,200 bearings (6306-ZZ), but they are already booked. Please keep them in stock and use them where you can.",
+       "why": "Rejected goods are not usable stock. They go back, and the debit note reverses what was booked."
+      },
+      {
+       "id": "b",
+       "text": "Bill 9 (Vishwamitri, VB/2627/4417): QC rejected 60 of the 1,200 bearings (6306-ZZ). Please leave this year’s entry as it is and make a provision for ₹18,974.40 next year, when they go back.",
+       "why": "The rejection happened in March, so March purchases must come down. A provision next year does not do that."
+      },
+      {
+       "id": "c",
+       "text": "Bill 9 (Vishwamitri, VB/2627/4417): QC rejected 60 of the 1,200 bearings (6306-ZZ), yet the full bill is booked. Please raise the debit note for ₹18,974.40 and send the 60 back.",
+       "why": "The debit note takes the rejected 60 out of March purchases and the vendor’s balance, as the PO terms say.",
+       "correct": true
+      }
+     ]
+    },
+    {
+     "id": "price",
+     "label": "Bill 10 · Palar",
+     "options": [
+      {
+       "id": "a",
+       "text": "Bill 10 (Palar, PSG/0938/26-27): the 45 × 62 × 8 seals are billed at ₹39.50 against your PO rate of ₹38.00. The difference is only ₹1.50 a seal, so please pass the bill as it is.",
+       "why": "It is ₹10,620 on one bill, and an unapproved price is an exception whatever its size."
+      },
+      {
+       "id": "b",
+       "text": "Bill 10 (Palar, PSG/0938/26-27): the 45 × 62 × 8 seals are billed at ₹39.50 against your PO rate of ₹38.00, with no amendment. Please get Palar’s credit note for ₹10,620, or an amendment the MD has approved.",
+       "why": "Either the price goes back to the PO, or someone with authority approves the change in writing.",
+       "correct": true
+      },
+      {
+       "id": "c",
+       "text": "Bill 10 (Palar, PSG/0938/26-27): the 45 × 62 × 8 seals are billed at ₹39.50 against your PO rate of ₹38.00. Please change your PO rate to ₹39.50 so that the PO matches the bill and it can be paid.",
+       "why": "That bends the control to fit the bill. A change needs a proper amendment, approved by the right person."
+      }
+     ]
+    }
+   ],
+   "template": "Subject: Purchase vouching queries, year ended 31 March 2027\n\nMahesh sir,\n\nThese are the queries from our vouching of the year-end purchase bills.\n\n{gstin}\n\n{rate}\n\n{approval}\n\n{qty}\n\n{price}\n\n{_free}\n\nAditi will send the two cut-off entries (Kharun and Rankala) separately. Please reply by Wednesday so that we can close purchases.\n\nRegards,\nAudit team, Bapat Venkatesh & Co.",
+   "freeText": {
+    "label": "Your own line for the mail"
+   },
+   "docs": [
+    "policy-purchase",
+    "vendor-master",
+    "gstin-search",
+    "inv-02",
+    "po-02",
+    "grn-02",
+    "led-02",
+    "inv-05",
+    "po-05",
+    "grn-05",
+    "led-05",
+    "inv-07",
+    "po-07",
+    "grn-07",
+    "led-07",
+    "inv-09",
+    "po-09",
+    "grn-09",
+    "led-09",
+    "inv-10",
+    "po-10",
+    "grn-10",
+    "led-10"
+   ]
+  },
+  {
+   "id": "t3",
+   "type": "worksheet",
+   "stage": "Review",
+   "title": "Work out the cut-off effect on March",
+   "prompt": "For each of the two cut-off bills, enter the change to March purchases, closing stock and profit before tax, leaving GST out: minus for down, 0 for no change. The draft closing stock came from the stock records, which follow GRN dates.",
+   "weight": 2,
+   "hints": [
+    "For each bill ask: does the cost belong to March, were the goods in the stores on 31 March, and are they already in the draft stock?"
+   ],
+   "columns": [
+    {
+     "key": "bill",
+     "label": "Bill"
+    },
+    {
+     "key": "pur",
+     "label": "March purchases",
+     "format": "inr",
+     "signed": true
+    },
+    {
+     "key": "stk",
+     "label": "Closing stock",
+     "format": "inr",
+     "signed": true
+    },
+    {
+     "key": "pbt",
+     "label": "Profit before tax",
+     "format": "inr",
+     "signed": true
+    }
+   ],
+   "rows": [
+    {
+     "id": "r1",
+     "cells": {
+      "bill": "Bill 11 · Kharun: out of March",
+      "pur": {
+       "input": true,
+       "answer": -1864000,
+       "tolerance": 1,
+       "working": "Taxable value ₹18,64,000 comes out of March"
+      },
+      "stk": {
+       "input": true,
+       "answer": 0,
+       "tolerance": 1,
+       "working": "Steel not at Chakan on 31 March: no change"
+      },
+      "pbt": {
+       "input": true,
+       "answer": 1864000,
+       "tolerance": 1,
+       "working": "Cost −₹18,64,000, stock unchanged: +₹18,64,000"
+      }
+     }
+    },
+    {
+     "id": "r2",
+     "cells": {
+      "bill": "Bill 15 · Rankala: into March",
+      "pur": {
+       "input": true,
+       "answer": 49440,
+       "tolerance": 1,
+       "working": "120 blanks × ₹412 = ₹49,440"
+      },
+      "stk": {
+       "input": true,
+       "answer": 49440,
+       "tolerance": 1,
+       "working": "120 × ₹412, in the stores on 31 March"
+      },
+      "pbt": {
+       "input": true,
+       "answer": 0,
+       "tolerance": 1,
+       "working": "Cost +₹49,440, stock +₹49,440: no change"
+      }
+     }
+    }
+   ],
+   "notes": {
+    "r1.stk": "The steel was still on the road on 31 March, so it was not yet in Tamhini’s stock. Nothing to take out of closing stock.",
+    "r1.pbt": "The cost leaves March and no stock leaves with it. Profit goes up by the whole ₹18,64,000.",
+    "r2.stk": "The blanks were in the stores on 31 March but missing from the records, so March closing stock goes up by ₹49,440.",
+    "r2.pbt": "Purchases and closing stock rise by the same ₹49,440, so profit does not move."
+   },
+   "docs": [
+    "gate-register",
+    "inv-11",
+    "po-11",
+    "grn-11",
+    "led-11",
+    "inv-15",
+    "po-15",
+    "grn-15",
+    "note-15",
+    "led-15"
+   ]
+  }
+ ],
+ "wrap": {
+  "from": "aditi",
+  "text": "Seven of the twenty had something wrong, and two are cut-off errors in opposite directions: Kharun out of March, Rankala into March. That pair is the lesson. I’ll put both in the list of audit adjustments for Rehan and read your mail once more before it goes to Mahesh."
+ },
+ "wrapPartial": {
+  "from": "aditi",
+  "text": "Seven of the twenty had something wrong, and the pair to remember is Kharun out of March and Rankala into March. Go through your misses below before anything goes to Mahesh. I’ll check the file again after lunch."
+ },
+ "wrapRetry": {
+  "from": "aditi",
+  "text": "Start again from the day each delivery reached the Chakan gate (the GRN, or the gate register when they differ), and put it next to the month the bill was booked. That settles the year on every bill and finds both cut-offs. Then read every PO’s approval box and rate."
+ },
+ "passNeeds": [
+  {
+   "task": "t1",
+   "min": 0.7,
+   "note": "You need more of the 20 bill calls right to pass."
+  }
+ ],
+ "model": {
+  "intro": "Seven of the twenty bills are exceptions: two cut-off errors in opposite directions, an unapproved PO, a price above the PO, rejected goods booked in full, a wrong GSTIN and a wrong GST rate. The other thirteen are fine, and five of those only look wrong.",
+  "blocks": [
+   {
+    "type": "table",
+    "columns": [
+     {
+      "key": "bill",
+      "label": "The seven exceptions"
+     },
+     {
+      "key": "found",
+      "label": "What we found"
+     },
+     {
+      "key": "next",
+      "label": "What happens next"
+     }
+    ],
+    "rows": [
+     {
+      "bill": "Bill 2 · Phillaur",
+      "found": "GSTIN on the bill 03UBZCP4179S1ZJ; registration 03UBZCP4197S1ZJ",
+      "next": "Corrected invoice; ₹65,520 credit at risk till then"
+     },
+     {
+      "bill": "Bill 5 · Moshi",
+      "found": "Boxes billed at 12% GST; the rate is 5%",
+      "next": "Moshi corrects the bill; ₹8,064 extra tax held back"
+     },
+     {
+      "bill": "Bill 7 · Kolak",
+      "found": "PO approval box blank",
+      "next": "Rohit confirms in writing; point for the controls note"
+     },
+     {
+      "bill": "Bill 9 · Vishwamitri",
+      "found": "60 bearings rejected, full bill booked",
+      "next": "Debit note for ₹18,974.40"
+     },
+     {
+      "bill": "Bill 10 · Palar",
+      "found": "Seals at ₹39.50 against a PO rate of ₹38.00",
+      "next": "Credit note for ₹10,620, or an approved amendment"
+     },
+     {
+      "bill": "Bill 11 · Kharun",
+      "found": "Steel received on 2 April, booked in March",
+      "next": "Out of March: purchases down and profit up by ₹18,64,000"
+     },
+     {
+      "bill": "Bill 15 · Rankala",
+      "found": "Blanks received on 31 March, booked in April",
+      "next": "Into March: purchases and closing stock up by ₹49,440"
+     }
+    ]
+   },
+   {
+    "type": "text",
+    "text": "Five bills only look wrong:"
+   },
+   {
+    "type": "list",
+    "items": [
+     "Bill 4: 40 blanks rejected, but the debit note of 29 March already takes them out.",
+     "Bill 6: the insert rate is above the original PO, but amendment 1 approved it.",
+     "Bill 8: billed in Rajkot on 25 March, received on 30 March, so in before year-end.",
+     "Bill 13: billed and received on 31 March, by 4:10 pm.",
+     "Bill 17: LR dated 30 March, but received on 3 April and booked in April, which is right."
+    ]
+   },
+   {
+    "type": "note",
+    "from": "aditi",
+    "text": "Vouching goes from the ledger to the bill: did it happen, is it Tamhini’s, is the amount right? Rankala is the other way, from what came in at the gate to the books: is everything recorded? Cut-off needs both."
+   }
+  ]
+ },
+ "principles": [
+  "The year follows the day the goods reached the buyer’s gate, read with the PO’s delivery terms. The bill date does not decide it.",
+  "Test cut-off both ways: March bills for goods that came in April, and March goods booked in April.",
+  "Check approval, price, quantity and GST on every bill, even when the amount looks right."
+ ],
+ "earned": {
+  "clause": "vouched {bills} year-end purchase bills against PO, GRN and ledger[[; flagged {found} {found|exception|exceptions} ({types})]]",
+  "counts": {
+   "bills": {
+    "kind": "items",
+    "task": "t1",
+    "answered": "gate"
+   },
+   "found": {
+    "kind": "itemsWhere",
+    "task": "t1",
+    "field": "verdict",
+    "equals": "exception",
+    "withRight": "reasons"
+   },
+   "types": {
+    "kind": "tally",
+    "task": "t1",
+    "field": "reasons"
+   }
+  },
+  "fallback": "vouched {bills} year-end purchase bills against PO, GRN and ledger"
+ },
+ "interview": [
+  {
+   "q": "What exactly did you check while vouching a purchase bill?",
+   "checking": "Whether you know the evidence behind each tick, or only ticked.",
+   "outline": [
+    "I checked the PO for approver, rate and quantity, and the GRN for what came in and when.",
+    "On the bill I checked the vendor’s GSTIN and GST rate; in the ledger, head, amount and month.",
+    "In the simulation I vouched {bills} bills that way[[ and flagged {found} {found|exception|exceptions}]]."
+   ]
+  },
+  {
+   "q": "A bill is dated 29 March but the goods came on 2 April. Which year does it belong to?",
+   "checking": "Whether you know what decides the year, and what the fix does to profit.",
+   "outline": [
+    "Next year, if ownership passes at the buyer’s gate: the receipt date decides, not the bill date.",
+    "In the simulation a 29 March steel bill had a 2 April GRN but was booked in March.",
+    "Taking it out cut March purchases by ₹18,64,000; it was not in closing stock, so profit rose."
+   ]
+  }
+ ]
+}

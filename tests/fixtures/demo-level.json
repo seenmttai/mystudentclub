@@ -1,0 +1,3127 @@
+{
+ "id": "demo-1",
+ "domain": "statutory-audit",
+ "number": 9,
+ "title": "Year-end checks at a packaging client",
+ "minutes": 30,
+ "learn": [
+  "Why the receipt date decides the year of a purchase",
+  "How to read a PO’s approval box and rate",
+  "How to spot red flags in a payments export"
+ ],
+ "do": [
+  "Vouch four bills",
+  "Count a stock room",
+  "Flag payments and write one observation"
+ ],
+ "case": {
+  "role": "First-year article assistant on the statutory audit",
+  "client": "Kesari Flexipack Private Limited, a flexible-packaging maker in Chakan, Pune",
+  "team": "Neha Sathe (senior), Rohan Bhide (manager)",
+  "goal": "Close the purchase cut-off and stock count papers before the manager’s review",
+  "period": "Year ended 31 March 2027",
+  "where": "Client’s Chakan factory, accounts room"
+ },
+ "brief": {
+  "from": "demo-senior",
+  "time": "9:40 am",
+  "messages": [
+   "Four bills I picked around 31 March are in the pack, with POs, GRNs and the ledger. Vouch them, then do the stock count sheet.",
+   "Manager reviews at 4. Flag anything odd in the payments export too."
+  ]
+ },
+ "people": [
+  {
+   "id": "demo-senior",
+   "name": "Neha Sathe",
+   "role": "Audit senior",
+   "initials": "NS",
+   "color": "#5638CC"
+  },
+  {
+   "id": "demo-manager",
+   "name": "Rohan Bhide",
+   "role": "Audit manager",
+   "initials": "RB",
+   "color": "#0A7373"
+  },
+  {
+   "id": "demo-accountant",
+   "name": "Prakash Nair",
+   "role": "Accounts head, Kesari Flexipack",
+   "initials": "PN",
+   "color": "#B4560C"
+  }
+ ],
+ "documents": [
+  {
+   "id": "inv-1",
+   "type": "invoice",
+   "title": "Bill 1 · Tax invoice",
+   "group": "b1",
+   "tab": "Bill",
+   "supplier": {
+    "name": "Avishkar Polymers",
+    "address": "Gat No. 412, Kharabwadi, Chakan\nPune 410501",
+    "gstin": "27ABEFA2231K1ZO",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "email": "accounts.avishkar@email.com"
+   },
+   "buyer": {
+    "name": "Kesari Flexipack Private Limited",
+    "address": "Plot B-17, MIDC Chakan Phase II\nKhed, Pune 410501",
+    "gstin": "27AAKCK4417M1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "pan": "AAKCK4417M"
+   },
+   "number": "AP/26-27/0931",
+   "date": "24-03-2027",
+   "placeOfSupply": "Maharashtra (27)",
+   "poRef": "KFPL/PO/26-27/0412",
+   "lines": [
+    {
+     "desc": "LDPE granules, film grade",
+     "hsn": "3901",
+     "qty": 2500,
+     "unit": "kg",
+     "rate": 112.4,
+     "taxable": 281000.0,
+     "gstRate": 18
+    }
+   ],
+   "tax": "intra",
+   "total": 331580.0,
+   "amountInWords": "INR Three Lakh Thirty One Thousand Five Hundred Eighty Only",
+   "bank": {
+    "name": "Bhimashankar Commercial Bank Ltd",
+    "account": "0441820001387",
+    "branch": "Chakan",
+    "ifsc": "BHCB000111"
+   },
+   "terms": [
+    "Goods once sold will not be taken back.",
+    "Interest at 18% a year on bills unpaid after 30 days.",
+    "Subject to Pune jurisdiction."
+   ],
+   "signFor": "Avishkar Polymers",
+   "signedBy": "S. Patil",
+   "ewayBill": "2312 4417 0981",
+   "vehicle": "MH14 HU 4471",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "RECEIVED\n25 MAR 2027",
+     "color": "blue",
+     "at": "top-right",
+     "rotate": -7
+    },
+    {
+     "kind": "hand",
+     "text": "Qty checked with GRN, G.",
+     "color": "blue",
+     "at": "inline"
+    }
+   ]
+  },
+  {
+   "id": "po-1",
+   "type": "po",
+   "title": "Bill 1 · Purchase order",
+   "group": "b1",
+   "tab": "PO",
+   "company": {
+    "name": "Kesari Flexipack Private Limited",
+    "address": "Plot B-17, MIDC Chakan Phase II, Khed, Pune 410501",
+    "gstin": "27AAKCK4417M1Z4",
+    "cin": "U22220PN2014PTC151872"
+   },
+   "number": "KFPL/PO/26-27/0412",
+   "date": "10-03-2027",
+   "vendor": {
+    "name": "Avishkar Polymers",
+    "address": "Gat No. 412, Kharabwadi, Chakan\nPune 410501",
+    "gstin": "27ABEFA2231K1ZO"
+   },
+   "deliveryBy": "22-03-2027",
+   "deliverTo": "Chakan factory, stores gate 2",
+   "paymentTerms": "30 days from GRN",
+   "lines": [
+    {
+     "desc": "LDPE granules, film grade",
+     "qty": 2500,
+     "unit": "kg",
+     "rate": 112.4
+    }
+   ],
+   "taxNote": "GST extra as applicable. Freight paid by supplier.",
+   "terms": [
+    "Delivery at our Chakan factory; ownership passes when the goods are accepted at our stores.",
+    "Quote this PO number on the challan and the bill.",
+    "Rate is firm till delivery."
+   ],
+   "preparedBy": {
+    "name": "Meena Joshi",
+    "sign": "M. Joshi"
+   },
+   "preparedDate": "10-03-2027",
+   "approvedBy": {
+    "name": "Sunil Kale, Plant head",
+    "sign": "S. Kale"
+   },
+   "approvalDate": "10-03-2027"
+  },
+  {
+   "id": "grn-1",
+   "type": "grn",
+   "title": "Bill 1 · Goods receipt note",
+   "group": "b1",
+   "tab": "GRN",
+   "company": {
+    "name": "Kesari Flexipack Private Limited"
+   },
+   "unit": "Stores, Chakan factory",
+   "number": "2611",
+   "date": "25-03-2027",
+   "vendor": "Avishkar Polymers",
+   "poRef": "KFPL/PO/26-27/0412",
+   "invoiceRef": "AP/26-27/0931 dt 24-03-2027",
+   "challan": "DC-3317",
+   "vehicle": "MH14 HU 4471",
+   "lines": [
+    {
+     "desc": "LDPE granules, film grade",
+     "unit": "kg",
+     "qtyChallan": 2500,
+     "qtyReceived": 2500,
+     "qtyAccepted": 2500,
+     "qtyRejected": 0
+    }
+   ],
+   "receivedBy": "Ganesh Pawar",
+   "receivedSign": "G. Pawar",
+   "qcBy": "Swati Rane",
+   "qcSign": "S. Rane",
+   "remarks": "Received in good condition.",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "STORES\nKESARI FLEXIPACK",
+     "shape": "round",
+     "color": "violet",
+     "at": "bottom-right",
+     "rotate": -12
+    }
+   ]
+  },
+  {
+   "id": "inv-2",
+   "type": "invoice",
+   "title": "Bill 2 · Tax invoice",
+   "group": "b2",
+   "tab": "Bill",
+   "supplier": {
+    "name": "Shubh Labh Films Private Limited",
+    "address": "Plot 61, Sector 7, Bhosari MIDC\nPune 411026",
+    "gstin": "27AAHCS5532Q1ZP",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX"
+   },
+   "buyer": {
+    "name": "Kesari Flexipack Private Limited",
+    "address": "Plot B-17, MIDC Chakan Phase II\nKhed, Pune 410501",
+    "gstin": "27AAKCK4417M1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "pan": "AAKCK4417M"
+   },
+   "number": "SLF/2627/1187",
+   "date": "30-03-2027",
+   "placeOfSupply": "Maharashtra (27)",
+   "poRef": "KFPL/PO/26-27/0429",
+   "lines": [
+    {
+     "desc": "BOPP film, 20 micron, 1,000 mm",
+     "hsn": "3920",
+     "qty": 1800,
+     "unit": "kg",
+     "rate": 168.0,
+     "taxable": 302400.0,
+     "gstRate": 18
+    }
+   ],
+   "tax": "intra",
+   "total": 356832.0,
+   "amountInWords": "INR Three Lakh Fifty Six Thousand Eight Hundred Thirty Two Only",
+   "bank": {
+    "name": "Bhimashankar Commercial Bank Ltd",
+    "account": "0441920001687",
+    "branch": "Chakan",
+    "ifsc": "BHCB000112"
+   },
+   "terms": [
+    "Goods once sold will not be taken back.",
+    "Interest at 18% a year on bills unpaid after 30 days.",
+    "Subject to Pune jurisdiction."
+   ],
+   "signFor": "Shubh Labh Films Private Limited",
+   "signedBy": "A. Mehta",
+   "ewayBill": "2312 4471 6620",
+   "vehicle": "MH14 KJ 2231",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "ACCOUNTS\n31 MAR 2027",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -7
+    }
+   ]
+  },
+  {
+   "id": "po-2",
+   "type": "po",
+   "title": "Bill 2 · Purchase order",
+   "group": "b2",
+   "tab": "PO",
+   "company": {
+    "name": "Kesari Flexipack Private Limited",
+    "address": "Plot B-17, MIDC Chakan Phase II, Khed, Pune 410501",
+    "gstin": "27AAKCK4417M1Z4",
+    "cin": "U22220PN2014PTC151872"
+   },
+   "number": "KFPL/PO/26-27/0429",
+   "date": "18-03-2027",
+   "vendor": {
+    "name": "Shubh Labh Films Private Limited",
+    "address": "Plot 61, Sector 7, Bhosari MIDC\nPune 411026",
+    "gstin": "27AAHCS5532Q1ZP"
+   },
+   "deliveryBy": "28-03-2027",
+   "deliverTo": "Chakan factory, stores gate 2",
+   "paymentTerms": "30 days from GRN",
+   "lines": [
+    {
+     "desc": "BOPP film, 20 micron, 1,000 mm",
+     "qty": 1800,
+     "unit": "kg",
+     "rate": 168.0
+    }
+   ],
+   "taxNote": "GST extra as applicable. Freight paid by supplier.",
+   "terms": [
+    "Delivery at our Chakan factory; ownership passes when the goods are accepted at our stores.",
+    "Quote this PO number on the challan and the bill.",
+    "Rate is firm till delivery."
+   ],
+   "preparedBy": {
+    "name": "Meena Joshi",
+    "sign": "M. Joshi"
+   },
+   "preparedDate": "18-03-2027",
+   "approvedBy": {
+    "name": "Sunil Kale, Plant head",
+    "sign": "S. Kale"
+   },
+   "approvalDate": "18-03-2027"
+  },
+  {
+   "id": "grn-2",
+   "type": "grn",
+   "title": "Bill 2 · Goods receipt note",
+   "group": "b2",
+   "tab": "GRN",
+   "company": {
+    "name": "Kesari Flexipack Private Limited"
+   },
+   "unit": "Stores, Chakan factory",
+   "number": "2638",
+   "date": "02-04-2027",
+   "vendor": "Shubh Labh Films Private Limited",
+   "poRef": "KFPL/PO/26-27/0429",
+   "invoiceRef": "SLF/2627/1187 dt 30-03-2027",
+   "challan": "DC-3334",
+   "vehicle": "MH14 KJ 2231",
+   "lines": [
+    {
+     "desc": "BOPP film, 20 micron, 1,000 mm",
+     "unit": "kg",
+     "qtyChallan": 1800,
+     "qtyReceived": 1800,
+     "qtyAccepted": 1800,
+     "qtyRejected": 0
+    }
+   ],
+   "receivedBy": "Ganesh Pawar",
+   "receivedSign": "G. Pawar",
+   "qcBy": "Swati Rane",
+   "qcSign": "S. Rane",
+   "remarks": "Truck reported 2/4 morning. 72 rolls unloaded.",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "STORES\nKESARI FLEXIPACK",
+     "shape": "round",
+     "color": "violet",
+     "at": "inline",
+     "rotate": -12
+    }
+   ]
+  },
+  {
+   "id": "inv-3",
+   "type": "invoice",
+   "title": "Bill 3 · Tax invoice",
+   "group": "b3",
+   "tab": "Bill",
+   "supplier": {
+    "name": "Mahalaxmi Adhesives",
+    "address": "Shed 9, Talawade Industrial Area\nPune 411062",
+    "gstin": "27AAQFM3317H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "buyer": {
+    "name": "Kesari Flexipack Private Limited",
+    "address": "Plot B-17, MIDC Chakan Phase II\nKhed, Pune 410501",
+    "gstin": "27AAKCK4417M1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "pan": "AAKCK4417M"
+   },
+   "number": "MA/1142/26-27",
+   "date": "26-03-2027",
+   "placeOfSupply": "Maharashtra (27)",
+   "poRef": "KFPL/PO/26-27/0437",
+   "lines": [
+    {
+     "desc": "PU laminating adhesive, two-part",
+     "hsn": "3506",
+     "qty": 600,
+     "unit": "kg",
+     "rate": 245.0,
+     "taxable": 147000.0,
+     "gstRate": 18
+    }
+   ],
+   "tax": "intra",
+   "total": 173460.0,
+   "amountInWords": "INR One Lakh Seventy Three Thousand Four Hundred Sixty Only",
+   "bank": {
+    "name": "Bhimashankar Commercial Bank Ltd",
+    "account": "0442020001987",
+    "branch": "Chakan",
+    "ifsc": "BHCB000113"
+   },
+   "terms": [
+    "Goods once sold will not be taken back.",
+    "Interest at 18% a year on bills unpaid after 30 days.",
+    "Subject to Pune jurisdiction."
+   ],
+   "signFor": "Mahalaxmi Adhesives",
+   "signedBy": "R. Kadam",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "RECEIVED\n27 MAR 2027",
+     "color": "blue",
+     "at": "top-right",
+     "rotate": -7
+    }
+   ]
+  },
+  {
+   "id": "po-3",
+   "type": "po",
+   "title": "Bill 3 · Purchase order",
+   "group": "b3",
+   "tab": "PO",
+   "company": {
+    "name": "Kesari Flexipack Private Limited",
+    "address": "Plot B-17, MIDC Chakan Phase II, Khed, Pune 410501",
+    "gstin": "27AAKCK4417M1Z4",
+    "cin": "U22220PN2014PTC151872"
+   },
+   "number": "KFPL/PO/26-27/0437",
+   "date": "20-03-2027",
+   "vendor": {
+    "name": "Mahalaxmi Adhesives",
+    "address": "Shed 9, Talawade Industrial Area\nPune 411062",
+    "gstin": "27AAQFM3317H1Z4"
+   },
+   "deliveryBy": "25-03-2027",
+   "deliverTo": "Chakan factory, stores gate 2",
+   "paymentTerms": "30 days from GRN",
+   "lines": [
+    {
+     "desc": "PU laminating adhesive, two-part",
+     "qty": 600,
+     "unit": "kg",
+     "rate": 245.0
+    }
+   ],
+   "taxNote": "GST extra as applicable. Freight paid by supplier.",
+   "terms": [
+    "Delivery at our Chakan factory; ownership passes when the goods are accepted at our stores.",
+    "Quote this PO number on the challan and the bill.",
+    "Rate is firm till delivery."
+   ],
+   "preparedBy": {
+    "name": "Meena Joshi",
+    "sign": "M. Joshi"
+   },
+   "preparedDate": "20-03-2027",
+   "approvedBy": null,
+   "approvalDate": null
+  },
+  {
+   "id": "grn-3",
+   "type": "grn",
+   "title": "Bill 3 · Goods receipt note",
+   "group": "b3",
+   "tab": "GRN",
+   "company": {
+    "name": "Kesari Flexipack Private Limited"
+   },
+   "unit": "Stores, Chakan factory",
+   "number": "2619",
+   "date": "27-03-2027",
+   "vendor": "Mahalaxmi Adhesives",
+   "poRef": "KFPL/PO/26-27/0437",
+   "invoiceRef": "MA/1142/26-27 dt 26-03-2027",
+   "challan": "DC-3351",
+   "vehicle": "Supplier tempo",
+   "lines": [
+    {
+     "desc": "PU laminating adhesive, two-part",
+     "unit": "kg",
+     "qtyChallan": 600,
+     "qtyReceived": 600,
+     "qtyAccepted": 600,
+     "qtyRejected": 0
+    }
+   ],
+   "receivedBy": "Ganesh Pawar",
+   "receivedSign": "G. Pawar",
+   "qcBy": "Swati Rane",
+   "qcSign": "S. Rane",
+   "remarks": "Received in good condition.",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "STORES\nKESARI FLEXIPACK",
+     "shape": "round",
+     "color": "violet",
+     "at": "bottom-right",
+     "rotate": -12
+    }
+   ]
+  },
+  {
+   "id": "inv-4",
+   "type": "invoice",
+   "title": "Bill 4 · Tax invoice",
+   "group": "b4",
+   "tab": "Bill",
+   "supplier": {
+    "name": "Rangoli Inks and Coatings",
+    "address": "Plot 2208, Phase III, GIDC\nVapi 396195",
+    "gstin": "24AAKFR7781G1ZT",
+    "state": "Gujarat",
+    "stateCode": "24",
+    "email": "billing.rangoli@email.com"
+   },
+   "buyer": {
+    "name": "Kesari Flexipack Private Limited",
+    "address": "Plot B-17, MIDC Chakan Phase II\nKhed, Pune 410501",
+    "gstin": "27AAKCK4417M1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "pan": "AAKCK4417M"
+   },
+   "number": "RIC/26-27/2210",
+   "date": "28-03-2027",
+   "placeOfSupply": "Maharashtra (27)",
+   "poRef": "KFPL/PO/26-27/0418",
+   "lines": [
+    {
+     "desc": "Gravure printing ink, cyan",
+     "hsn": "3215",
+     "qty": 400,
+     "unit": "kg",
+     "rate": 386.0,
+     "taxable": 154400.0,
+     "gstRate": 18
+    }
+   ],
+   "tax": "inter",
+   "total": 182192.0,
+   "amountInWords": "INR One Lakh Eighty Two Thousand One Hundred Ninety Two Only",
+   "bank": {
+    "name": "Bhimashankar Commercial Bank Ltd",
+    "account": "04421200011287",
+    "branch": "Chakan",
+    "ifsc": "BHCB000114"
+   },
+   "terms": [
+    "Goods once sold will not be taken back.",
+    "Interest at 18% a year on bills unpaid after 30 days.",
+    "Subject to Vapi jurisdiction."
+   ],
+   "signFor": "Rangoli Inks and Coatings",
+   "signedBy": "H. Desai",
+   "ewayBill": "2410 8853 2271",
+   "vehicle": "GJ15 AT 9082",
+   "irn": "8f3a71c2e9d04b6aa1f25c7e0b9d3e41c6a7f28b5d901e3c74a62f0d8b1e5c93",
+   "ackNo": "1127 1009 4821 553",
+   "ackDate": "28-03-2027",
+   "shipTo": {
+    "name": "Kesari Flexipack Private Limited",
+    "address": "Plot B-17, MIDC Chakan Phase II\nKhed, Pune 410501",
+    "gstin": "27AAKCK4417M1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "RECEIVED\n29 MAR 2027",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -7
+    },
+    {
+     "kind": "highlight",
+     "text": "386.00",
+     "color": "yellow"
+    },
+    {
+     "kind": "hand",
+     "text": "Rate as per PO?",
+     "color": "red",
+     "at": "bottom-left",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "po-4",
+   "type": "po",
+   "title": "Bill 4 · Purchase order",
+   "group": "b4",
+   "tab": "PO",
+   "company": {
+    "name": "Kesari Flexipack Private Limited",
+    "address": "Plot B-17, MIDC Chakan Phase II, Khed, Pune 410501",
+    "gstin": "27AAKCK4417M1Z4",
+    "cin": "U22220PN2014PTC151872"
+   },
+   "number": "KFPL/PO/26-27/0418",
+   "date": "12-03-2027",
+   "vendor": {
+    "name": "Rangoli Inks and Coatings",
+    "address": "Plot 2208, Phase III, GIDC\nVapi 396195",
+    "gstin": "24AAKFR7781G1ZT"
+   },
+   "deliveryBy": "26-03-2027",
+   "deliverTo": "Chakan factory, stores gate 2",
+   "paymentTerms": "30 days from GRN",
+   "lines": [
+    {
+     "desc": "Gravure printing ink, cyan",
+     "qty": 400,
+     "unit": "kg",
+     "rate": 362.0
+    }
+   ],
+   "taxNote": "GST extra as applicable. Freight paid by supplier.",
+   "terms": [
+    "Delivery at our Chakan factory; ownership passes when the goods are accepted at our stores.",
+    "Quote this PO number on the challan and the bill.",
+    "Rate is firm till delivery."
+   ],
+   "preparedBy": {
+    "name": "Meena Joshi",
+    "sign": "M. Joshi"
+   },
+   "preparedDate": "12-03-2027",
+   "approvedBy": {
+    "name": "Sunil Kale, Plant head",
+    "sign": "S. Kale"
+   },
+   "approvalDate": "12-03-2027"
+  },
+  {
+   "id": "grn-4",
+   "type": "grn",
+   "title": "Bill 4 · Goods receipt note",
+   "group": "b4",
+   "tab": "GRN",
+   "company": {
+    "name": "Kesari Flexipack Private Limited"
+   },
+   "unit": "Stores, Chakan factory",
+   "number": "2627",
+   "date": "29-03-2027",
+   "vendor": "Rangoli Inks and Coatings",
+   "poRef": "KFPL/PO/26-27/0418",
+   "invoiceRef": "RIC/26-27/2210 dt 28-03-2027",
+   "challan": "DC-3368",
+   "vehicle": "GJ15 AT 9082",
+   "lines": [
+    {
+     "desc": "Gravure printing ink, cyan",
+     "unit": "kg",
+     "qtyChallan": 400,
+     "qtyReceived": 400,
+     "qtyAccepted": 400,
+     "qtyRejected": 0
+    }
+   ],
+   "receivedBy": "Ganesh Pawar",
+   "receivedSign": "G. Pawar",
+   "qcBy": "Swati Rane",
+   "qcSign": "S. Rane",
+   "remarks": "Drums sealed. Batch noted on drums.",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "STORES\nKESARI FLEXIPACK",
+     "shape": "round",
+     "color": "violet",
+     "at": "inline",
+     "rotate": -12
+    }
+   ],
+   "style": "book"
+  },
+  {
+   "id": "led-purchase",
+   "type": "table",
+   "style": "tally",
+   "title": "Purchase ledger · Raw material",
+   "tab": "Ledger",
+   "company": {
+    "name": "Kesari Flexipack Private Limited",
+    "address": "Chakan, Pune"
+   },
+   "ledger": "Purchase Accounts: Raw material",
+   "subtitle": "Ledger Account",
+   "period": "24-Mar-2027 to 31-Mar-2027",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "vtype",
+     "label": "Vch Type"
+    },
+    {
+     "key": "vno",
+     "label": "Vch No."
+    },
+    {
+     "key": "dr",
+     "label": "Debit",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "24-Mar-27",
+     "part": "Opening Balance",
+     "vtype": "",
+     "vno": "",
+     "dr": 41236500.0,
+     "cr": null,
+     "_class": "muted"
+    },
+    {
+     "date": "24-Mar-27",
+     "part": "Avishkar Polymers",
+     "vtype": "Purchase",
+     "vno": "931",
+     "dr": 281000.0,
+     "cr": null
+    },
+    {
+     "date": "26-Mar-27",
+     "part": "Mahalaxmi Adhesives",
+     "vtype": "Purchase",
+     "vno": "944",
+     "dr": 147000.0,
+     "cr": null
+    },
+    {
+     "date": "28-Mar-27",
+     "part": "Rangoli Inks and Coatings",
+     "vtype": "Purchase",
+     "vno": "952",
+     "dr": 154400.0,
+     "cr": null
+    },
+    {
+     "date": "30-Mar-27",
+     "part": "Shubh Labh Films Private Limited",
+     "vtype": "Purchase",
+     "vno": "960",
+     "dr": 302400.0,
+     "cr": null
+    },
+    {
+     "date": "",
+     "part": "Closing Balance",
+     "vtype": "",
+     "vno": "",
+     "dr": 42121300.0,
+     "cr": null,
+     "_class": "total"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "tick",
+     "text": "traced",
+     "color": "green",
+     "at": "top-right",
+     "rotate": -4
+    },
+    {
+     "kind": "highlight",
+     "text": "30-Mar-27",
+     "color": "pink"
+    }
+   ]
+  },
+  {
+   "id": "bins-store",
+   "type": "bins",
+   "title": "Stock room · Raw material store",
+   "room": "Raw material store, Chakan factory",
+   "subtitle": "Count date: 31 March 2027, 6:00 pm",
+   "grid": {
+    "rows": 2,
+    "cols": 4
+   },
+   "bins": [
+    {
+     "id": "a1",
+     "pos": "A1",
+     "item": "LDPE granules",
+     "short": "LDPE",
+     "code": "RM-101",
+     "unit": "kg",
+     "pack": [
+      "bag",
+      "bags"
+     ],
+     "tag": {
+      "text": "2,400 kg",
+      "date": "28/03/27"
+     },
+     "cartons": 95,
+     "perCarton": 25,
+     "loose": 0,
+     "condition": "ok",
+     "lastMoved": "29/03/27",
+     "remark": "25 kg bags"
+    },
+    {
+     "id": "a2",
+     "pos": "A2",
+     "item": "BOPP film rolls, 20 micron",
+     "short": "BOPP film",
+     "code": "RM-114",
+     "unit": "rolls",
+     "tag": {
+      "text": "60 rolls",
+      "date": "27/03/27"
+     },
+     "cartons": 0,
+     "perCarton": 0,
+     "loose": 58,
+     "condition": "ok",
+     "lastMoved": "30/03/27"
+    },
+    {
+     "id": "a3",
+     "pos": "A3",
+     "item": "Gravure ink, cyan (20 kg drums)",
+     "short": "Ink cyan",
+     "code": "RM-131",
+     "unit": "drums",
+     "tag": {
+      "text": "18 drums",
+      "date": "29/03/27"
+     },
+     "cartons": 0,
+     "perCarton": 0,
+     "loose": 18,
+     "condition": "damaged",
+     "lastMoved": "29/03/27",
+     "remark": "2 drums dented, one leaking"
+    },
+    {
+     "id": "a4",
+     "pos": "A4",
+     "item": "PU adhesive (15 kg cans)",
+     "short": "Adhesive",
+     "code": "RM-142",
+     "unit": "cans",
+     "pack": [
+      "carton",
+      "cartons"
+     ],
+     "tag": {
+      "text": "40 cans",
+      "date": "27/03/27"
+     },
+     "cartons": 3,
+     "perCarton": 12,
+     "loose": 6,
+     "condition": "ok",
+     "lastMoved": "28/03/27"
+    },
+    {
+     "id": "b1",
+     "pos": "B1",
+     "item": "Corrugated cartons, 5-ply",
+     "short": "Cartons",
+     "code": "PM-208",
+     "unit": "pcs",
+     "pack": [
+      "bundle",
+      "bundles"
+     ],
+     "tag": {
+      "text": "1,200 pcs",
+      "date": "11/09/26"
+     },
+     "cartons": 24,
+     "perCarton": 50,
+     "loose": 0,
+     "condition": "dusty",
+     "lastMoved": "11/09/26",
+     "remark": "No issue since September"
+    },
+    {
+     "id": "b3",
+     "pos": "B3",
+     "item": "Ethyl acetate (15 kg cans)",
+     "short": "Solvent",
+     "code": "RM-150",
+     "unit": "cans",
+     "tag": {
+      "text": "30 cans",
+      "date": "02/02/27"
+     },
+     "cartons": 0,
+     "perCarton": 0,
+     "loose": 30,
+     "condition": "expired",
+     "lastMoved": "02/02/27",
+     "remark": "Label: use before 01/2027"
+    }
+   ],
+   "door": "Door and weighbridge side"
+  },
+  {
+   "id": "stock-register",
+   "type": "table",
+   "style": "register",
+   "title": "Stock register · March 2027",
+   "company": {
+    "name": "Kesari Flexipack Private Limited"
+   },
+   "heading": "Stock register (quantity)",
+   "period": "For the year ended 31-03-2027",
+   "columns": [
+    {
+     "key": "code",
+     "label": "Code"
+    },
+    {
+     "key": "item",
+     "label": "Item"
+    },
+    {
+     "key": "unit",
+     "label": "Unit"
+    },
+    {
+     "key": "op",
+     "label": "Opening",
+     "format": "int"
+    },
+    {
+     "key": "rec",
+     "label": "Receipts",
+     "format": "int"
+    },
+    {
+     "key": "iss",
+     "label": "Issues",
+     "format": "int"
+    },
+    {
+     "key": "cl",
+     "label": "Closing",
+     "format": "int",
+     "check": "op + rec - iss"
+    }
+   ],
+   "rows": [
+    {
+     "code": "RM-101",
+     "item": "LDPE granules",
+     "unit": "kg",
+     "op": 1800,
+     "rec": 9500,
+     "iss": 8900,
+     "cl": 2400
+    },
+    {
+     "code": "RM-114",
+     "item": "BOPP film rolls",
+     "unit": "rolls",
+     "op": 45,
+     "rec": 210,
+     "iss": 195,
+     "cl": 60
+    },
+    {
+     "code": "RM-131",
+     "item": "Gravure ink, cyan",
+     "unit": "drums",
+     "op": 12,
+     "rec": 40,
+     "iss": 34,
+     "cl": 18
+    },
+    {
+     "code": "RM-142",
+     "item": "PU adhesive",
+     "unit": "cans",
+     "op": 25,
+     "rec": 120,
+     "iss": 105,
+     "cl": 40
+    },
+    {
+     "code": "PM-208",
+     "item": "Corrugated cartons, 5-ply",
+     "unit": "pcs",
+     "op": 1200,
+     "rec": 0,
+     "iss": 0,
+     "cl": 1200
+    },
+    {
+     "code": "RM-150",
+     "item": "Ethyl acetate",
+     "unit": "cans",
+     "op": 30,
+     "rec": 0,
+     "iss": 0,
+     "cl": 30
+    }
+   ]
+  },
+  {
+   "id": "tag-a1",
+   "type": "card",
+   "style": "tag",
+   "title": "Stock tag · Bin A1",
+   "heading": "Stock tag",
+   "fields": [
+    {
+     "label": "Bin",
+     "value": "A1"
+    },
+    {
+     "label": "Item",
+     "value": "LDPE granules (RM-101)"
+    },
+    {
+     "label": "Balance",
+     "value": "2,400 kg"
+    },
+    {
+     "label": "Updated",
+     "value": "28/03/27, G. Pawar"
+    }
+   ],
+   "photoNote": "Tag tied to the rack upright of bin A1."
+  },
+  {
+   "id": "vendor-master",
+   "type": "table",
+   "style": "plain",
+   "title": "Vendor master · extract",
+   "heading": "Vendor master (active vendors)",
+   "columns": [
+    {
+     "key": "name",
+     "label": "Vendor"
+    },
+    {
+     "key": "gstin",
+     "label": "GSTIN",
+     "mono": true
+    },
+    {
+     "key": "pan",
+     "label": "PAN",
+     "mono": true
+    },
+    {
+     "key": "bank",
+     "label": "Bank account",
+     "mono": true
+    },
+    {
+     "key": "city",
+     "label": "City"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "v1",
+     "name": "Avishkar Polymers",
+     "gstin": "27ABEFA2231K1ZO",
+     "pan": "ABEFA2231K",
+     "bank": "50200014417201",
+     "city": "Chakan"
+    },
+    {
+     "_id": "v2",
+     "name": "Shubh Labh Films Private Limited",
+     "gstin": "27AAHCS5532Q1ZP",
+     "pan": "AAHCS5532Q",
+     "bank": "50200099881020",
+     "city": "Bhosari"
+    },
+    {
+     "_id": "v3",
+     "name": "Mahalaxmi Adhesives",
+     "gstin": "27AAQFM3317H1Z4",
+     "pan": "AAQFM3317H",
+     "bank": "60110044210988",
+     "city": "Talawade"
+    },
+    {
+     "_id": "v4",
+     "name": "Rangoli Inks and Coatings",
+     "gstin": "24AAKFR7781G1ZT",
+     "pan": "AAKFR7781G",
+     "bank": "32150077100452",
+     "city": "Vapi"
+    },
+    {
+     "_id": "v5",
+     "name": "Jyotirling Traders",
+     "gstin": "27AKXPW6521L1Z4",
+     "pan": "AKXPW6521L",
+     "bank": "50100231187764",
+     "city": "Alandi"
+    },
+    {
+     "_id": "v6",
+     "name": "Om Logistics Services",
+     "gstin": "27AAGFO1188B1ZF",
+     "pan": "AAGFO1188B",
+     "bank": "60110021155309",
+     "city": "Chakan"
+    },
+    {
+     "_id": "v7",
+     "name": "Kumar Enterprises",
+     "gstin": "27BFTPK7742E1Z0",
+     "pan": "BFTPK7742E",
+     "bank": "35550012009871",
+     "city": "Pimpri"
+    },
+    {
+     "_id": "v8",
+     "name": "Pragati Electricals",
+     "gstin": "27AAJFP4461N1ZO",
+     "pan": "AAJFP4461N",
+     "bank": "50200018834550",
+     "city": "Bhosari"
+    }
+   ]
+  },
+  {
+   "id": "employee-master",
+   "type": "table",
+   "style": "sheet",
+   "title": "Employee master · export",
+   "sheetName": "Employees",
+   "otherSheets": [
+    "Left in 2026–27"
+   ],
+   "formula": "=COUNTA(A2:A6)",
+   "columns": [
+    {
+     "key": "code",
+     "label": "Emp code"
+    },
+    {
+     "key": "name",
+     "label": "Name"
+    },
+    {
+     "key": "dept",
+     "label": "Department"
+    },
+    {
+     "key": "bank",
+     "label": "Salary account",
+     "mono": true
+    },
+    {
+     "key": "city",
+     "label": "City"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "E-1021",
+     "code": "E-1021",
+     "name": "Ganesh Pawar",
+     "dept": "Stores",
+     "bank": "50100212309911",
+     "city": "Chakan"
+    },
+    {
+     "_id": "E-1047",
+     "code": "E-1047",
+     "name": "Jyoti Waghmare",
+     "dept": "Stores",
+     "bank": "50100231187764",
+     "city": "Alandi"
+    },
+    {
+     "_id": "E-1102",
+     "code": "E-1102",
+     "name": "Meena Joshi",
+     "dept": "Purchase",
+     "bank": "60110098811230",
+     "city": "Pune"
+    },
+    {
+     "_id": "E-1150",
+     "code": "E-1150",
+     "name": "Swati Rane",
+     "dept": "Quality",
+     "bank": "35550033201197",
+     "city": "Chakan"
+    },
+    {
+     "_id": "E-1166",
+     "code": "E-1166",
+     "name": "Prakash Nair",
+     "dept": "Accounts",
+     "bank": "50200061178002",
+     "city": "Pune"
+    }
+   ]
+  },
+  {
+   "id": "payments",
+   "type": "table",
+   "style": "sheet",
+   "title": "Payments export · Jan–Mar 2027",
+   "sheetName": "Payments Q4",
+   "formula": "=SUBTOTAL(9,E2:E41)",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date",
+     "format": "date"
+    },
+    {
+     "key": "vch",
+     "label": "Vch No."
+    },
+    {
+     "key": "party",
+     "label": "Party"
+    },
+    {
+     "key": "narr",
+     "label": "Narration"
+    },
+    {
+     "key": "amount",
+     "label": "Amount",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "p01",
+     "date": "05-01-2027",
+     "vch": "2101",
+     "party": "Avishkar Polymers",
+     "narr": "Against bill 181",
+     "amount": 223110.7
+    },
+    {
+     "_id": "p02",
+     "date": "06-01-2027",
+     "vch": "2102",
+     "party": "Shubh Labh Films Private Limited",
+     "narr": "Against bill 911",
+     "amount": 160176.28
+    },
+    {
+     "_id": "p03",
+     "date": "08-01-2027",
+     "vch": "2103",
+     "party": "Mahalaxmi Adhesives",
+     "narr": "Against bill 925",
+     "amount": 153354.94
+    },
+    {
+     "_id": "p04",
+     "date": "11-01-2027",
+     "vch": "2104",
+     "party": "Rangoli Inks and Coatings",
+     "narr": "Against bill, NEFT 456",
+     "amount": 100813.2
+    },
+    {
+     "_id": "p05",
+     "date": "14-01-2027",
+     "vch": "2105",
+     "party": "Om Logistics Services",
+     "narr": "Freight for 395",
+     "amount": 49956.17
+    },
+    {
+     "_id": "p06",
+     "date": "18-01-2027",
+     "vch": "2106",
+     "party": "Pragati Electricals",
+     "narr": "AMC and repairs, bill 754",
+     "amount": 149632.46
+    },
+    {
+     "_id": "p07",
+     "date": "20-01-2027",
+     "vch": "2107",
+     "party": "Kumar Enterprises",
+     "narr": "Advance for scrap disposal",
+     "amount": 50000.0
+    },
+    {
+     "_id": "p08",
+     "date": "21-01-2027",
+     "vch": "2108",
+     "party": "Avishkar Polymers",
+     "narr": "Against bill 168",
+     "amount": 87587.26
+    },
+    {
+     "_id": "p09",
+     "date": "25-01-2027",
+     "vch": "2109",
+     "party": "Shubh Labh Films Private Limited",
+     "narr": "Against bill 946",
+     "amount": 228325.25
+    },
+    {
+     "_id": "p10",
+     "date": "28-01-2027",
+     "vch": "2110",
+     "party": "Mahalaxmi Adhesives",
+     "narr": "Against bill 535",
+     "amount": 206995.27
+    },
+    {
+     "_id": "p11",
+     "date": "01-02-2027",
+     "vch": "2111",
+     "party": "Rangoli Inks and Coatings",
+     "narr": "Against bill, NEFT 851",
+     "amount": 61395.32
+    },
+    {
+     "_id": "p12",
+     "date": "03-02-2027",
+     "vch": "2112",
+     "party": "Om Logistics Services",
+     "narr": "Freight for 324",
+     "amount": 203528.02
+    },
+    {
+     "_id": "p13",
+     "date": "05-02-2027",
+     "vch": "2113",
+     "party": "Pragati Electricals",
+     "narr": "AMC and repairs, bill 267",
+     "amount": 113567.87
+    },
+    {
+     "_id": "p14",
+     "date": "08-02-2027",
+     "vch": "2114",
+     "party": "Avishkar Polymers",
+     "narr": "Against bill 854",
+     "amount": 95051.0
+    },
+    {
+     "_id": "p15",
+     "date": "10-02-2027",
+     "vch": "2115",
+     "party": "Shubh Labh Films Private Limited",
+     "narr": "Against bill 227",
+     "amount": 150587.38
+    },
+    {
+     "_id": "p16",
+     "date": "11-02-2027",
+     "vch": "2116",
+     "party": "Mahalaxmi Adhesives",
+     "narr": "Against bill 163",
+     "amount": 207677.06
+    },
+    {
+     "_id": "p17",
+     "date": "12-02-2027",
+     "vch": "2117",
+     "party": "Avishkar Polymers",
+     "narr": "Against bill AP/26-27/0788",
+     "amount": 128640.0
+    },
+    {
+     "_id": "p18",
+     "date": "15-02-2027",
+     "vch": "2118",
+     "party": "Avishkar Polymers",
+     "narr": "Against bill AP/26-27/0788",
+     "amount": 128640.0
+    },
+    {
+     "_id": "p19",
+     "date": "15-02-2027",
+     "vch": "2119",
+     "party": "Rangoli Inks and Coatings",
+     "narr": "Against bill, NEFT 637",
+     "amount": 118655.5
+    },
+    {
+     "_id": "p20",
+     "date": "16-02-2027",
+     "vch": "2120",
+     "party": "Om Logistics Services",
+     "narr": "Freight for 880",
+     "amount": 71811.87
+    },
+    {
+     "_id": "p21",
+     "date": "18-02-2027",
+     "vch": "2121",
+     "party": "Pragati Electricals",
+     "narr": "AMC and repairs, bill 191",
+     "amount": 97812.28
+    },
+    {
+     "_id": "p22",
+     "date": "19-02-2027",
+     "vch": "2122",
+     "party": "Avishkar Polymers",
+     "narr": "Against bill 174",
+     "amount": 71665.66
+    },
+    {
+     "_id": "p23",
+     "date": "22-02-2027",
+     "vch": "2123",
+     "party": "Shubh Labh Films Private Limited",
+     "narr": "Against bill 726",
+     "amount": 194394.68
+    },
+    {
+     "_id": "p24",
+     "date": "24-02-2027",
+     "vch": "2124",
+     "party": "Jyotirling Traders",
+     "narr": "Packing material, bill 0412",
+     "amount": 38460.0
+    },
+    {
+     "_id": "p25",
+     "date": "25-02-2027",
+     "vch": "2125",
+     "party": "Mahalaxmi Adhesives",
+     "narr": "Against bill 614",
+     "amount": 181541.12
+    },
+    {
+     "_id": "p26",
+     "date": "01-03-2027",
+     "vch": "2126",
+     "party": "Rangoli Inks and Coatings",
+     "narr": "Against bill, NEFT 335",
+     "amount": 24299.19
+    },
+    {
+     "_id": "p27",
+     "date": "02-03-2027",
+     "vch": "2127",
+     "party": "Om Logistics Services",
+     "narr": "Freight for 410",
+     "amount": 16671.57
+    },
+    {
+     "_id": "p28",
+     "date": "03-03-2027",
+     "vch": "2128",
+     "party": "Om Logistics Services",
+     "narr": "On account",
+     "amount": 75000.0
+    },
+    {
+     "_id": "p29",
+     "date": "05-03-2027",
+     "vch": "2129",
+     "party": "Pragati Electricals",
+     "narr": "AMC and repairs, bill 619",
+     "amount": 154398.64
+    },
+    {
+     "_id": "p30",
+     "date": "08-03-2027",
+     "vch": "2130",
+     "party": "Avishkar Polymers",
+     "narr": "Against bill 128",
+     "amount": 29355.84
+    },
+    {
+     "_id": "p31",
+     "date": "11-03-2027",
+     "vch": "2131",
+     "party": "Shubh Labh Films Private Limited",
+     "narr": "Against bill 724",
+     "amount": 153636.12
+    },
+    {
+     "_id": "p32",
+     "date": "12-03-2027",
+     "vch": "2132",
+     "party": "Mahalaxmi Adhesives",
+     "narr": "Against bill 114",
+     "amount": 86507.25
+    },
+    {
+     "_id": "p33",
+     "date": "14-03-2027",
+     "vch": "2133",
+     "party": "Shubh Labh Films Private Limited",
+     "narr": "Against bill SLF/2627/1102",
+     "amount": 43218.6
+    },
+    {
+     "_id": "p34",
+     "date": "15-03-2027",
+     "vch": "2134",
+     "party": "Rangoli Inks and Coatings",
+     "narr": "Against bill, NEFT 743",
+     "amount": 15066.08
+    },
+    {
+     "_id": "p35",
+     "date": "17-03-2027",
+     "vch": "2135",
+     "party": "Om Logistics Services",
+     "narr": "Freight for 625",
+     "amount": 155427.87
+    },
+    {
+     "_id": "p36",
+     "date": "19-03-2027",
+     "vch": "2136",
+     "party": "Pragati Electricals",
+     "narr": "AMC and repairs, bill 941",
+     "amount": 124590.1
+    },
+    {
+     "_id": "p37",
+     "date": "22-03-2027",
+     "vch": "2137",
+     "party": "Avishkar Polymers",
+     "narr": "Against bill 943",
+     "amount": 115573.91
+    },
+    {
+     "_id": "p38",
+     "date": "24-03-2027",
+     "vch": "2138",
+     "party": "Shubh Labh Films Private Limited",
+     "narr": "Against bill 588",
+     "amount": 115249.16
+    },
+    {
+     "_id": "p39",
+     "date": "26-03-2027",
+     "vch": "2139",
+     "party": "Mahalaxmi Adhesives",
+     "narr": "Against bill 125",
+     "amount": 64135.98
+    },
+    {
+     "_id": "p40",
+     "date": "29-03-2027",
+     "vch": "2140",
+     "party": "Rangoli Inks and Coatings",
+     "narr": "Against bill, NEFT 366",
+     "amount": 170599.89
+    }
+   ]
+  },
+  {
+   "id": "bank-stmt",
+   "type": "table",
+   "style": "bank",
+   "title": "Bank statement · April 2027",
+   "brand": "Bhimashankar Commercial Bank Ltd",
+   "subtitle": "Chakan branch · IFSC BHCB0000112",
+   "meta": [
+    {
+     "label": "Account name",
+     "value": "Kesari Flexipack Private Limited"
+    },
+    {
+     "label": "Account no.",
+     "value": "XXXXXXXX4417"
+    },
+    {
+     "label": "Account type",
+     "value": "Cash credit"
+    },
+    {
+     "label": "Period",
+     "value": "01-04-2027 to 06-04-2027"
+    }
+   ],
+   "columns": [
+    {
+     "key": "date",
+     "label": "Txn date"
+    },
+    {
+     "key": "narr",
+     "label": "Narration"
+    },
+    {
+     "key": "ref",
+     "label": "Chq/Ref no."
+    },
+    {
+     "key": "vdate",
+     "label": "Value date"
+    },
+    {
+     "key": "wd",
+     "label": "Withdrawal",
+     "format": "inr"
+    },
+    {
+     "key": "dep",
+     "label": "Deposit",
+     "format": "inr"
+    },
+    {
+     "key": "bal",
+     "label": "Balance",
+     "format": "inr",
+     "runningFrom": {
+      "plus": "dep",
+      "minus": "wd"
+     }
+    }
+   ],
+   "rows": [
+    {
+     "date": "01-04-2027",
+     "narr": "Opening balance",
+     "ref": "",
+     "vdate": "",
+     "wd": null,
+     "dep": null,
+     "bal": 1842316.5,
+     "_class": "muted"
+    },
+    {
+     "date": "01-04-2027",
+     "narr": "NEFT/Avishkar Polymers/AP-0931",
+     "ref": "N091044",
+     "vdate": "01-04-2027",
+     "wd": 331580.0,
+     "dep": null,
+     "bal": 1510736.5
+    },
+    {
+     "date": "02-04-2027",
+     "narr": "RTGS/Nilkanth Foods Pvt Ltd/INV 4402",
+     "ref": "R772031",
+     "vdate": "02-04-2027",
+     "wd": null,
+     "dep": 640000.0,
+     "bal": 2150736.5
+    },
+    {
+     "date": "03-04-2027",
+     "narr": "CHQ 004512/Mahalaxmi Adhesives",
+     "ref": "004512",
+     "vdate": "03-04-2027",
+     "wd": 173460.0,
+     "dep": null,
+     "bal": 1977276.5
+    },
+    {
+     "date": "05-04-2027",
+     "narr": "Service charges incl GST",
+     "ref": "SC0405",
+     "vdate": "05-04-2027",
+     "wd": 590.0,
+     "dep": null,
+     "bal": 1976686.5
+    },
+    {
+     "date": "06-04-2027",
+     "narr": "NEFT/Rangoli Inks and Coatings/RIC-2210",
+     "ref": "N091377",
+     "vdate": "06-04-2027",
+     "wd": 182192.0,
+     "dep": null,
+     "bal": 1794494.5
+    }
+   ]
+  },
+  {
+   "id": "gstr2b",
+   "type": "table",
+   "style": "portal",
+   "title": "GSTR-2B extract · March 2027",
+   "brand": "Goods and Services Tax",
+   "heading": "GSTR-2B · B2B invoices",
+   "subtitle": "Auto-drafted ITC statement (extract)",
+   "meta": [
+    {
+     "label": "GSTIN",
+     "value": "27AAKCK4417M1Z4"
+    },
+    {
+     "label": "Legal name",
+     "value": "Kesari Flexipack Private Limited"
+    },
+    {
+     "label": "Tax period",
+     "value": "March 2027"
+    }
+   ],
+   "columns": [
+    {
+     "key": "gstin",
+     "label": "GSTIN of supplier",
+     "mono": true
+    },
+    {
+     "key": "name",
+     "label": "Trade name"
+    },
+    {
+     "key": "inv",
+     "label": "Invoice no."
+    },
+    {
+     "key": "date",
+     "label": "Invoice date"
+    },
+    {
+     "key": "taxable",
+     "label": "Taxable value (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "igst",
+     "label": "IGST (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cgst",
+     "label": "CGST (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "sgst",
+     "label": "SGST (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "gstin": "27ABEFA2231K1ZO",
+     "name": "Avishkar Polymers",
+     "inv": "AP/26-27/0931",
+     "date": "24-03-2027",
+     "taxable": 281000.0,
+     "igst": 0,
+     "cgst": 25290.0,
+     "sgst": 25290.0
+    },
+    {
+     "gstin": "27AAHCS5532Q1ZP",
+     "name": "Shubh Labh Films Private Limited",
+     "inv": "SLF/2627/1187",
+     "date": "30-03-2027",
+     "taxable": 302400.0,
+     "igst": 0,
+     "cgst": 27216.0,
+     "sgst": 27216.0
+    },
+    {
+     "gstin": "27AAQFM3317H1Z4",
+     "name": "Mahalaxmi Adhesives",
+     "inv": "MA/1142/26-27",
+     "date": "26-03-2027",
+     "taxable": 147000.0,
+     "igst": 0,
+     "cgst": 13230.0,
+     "sgst": 13230.0
+    },
+    {
+     "gstin": "24AAKFR7781G1ZT",
+     "name": "Rangoli Inks and Coatings",
+     "inv": "RIC/26-27/2210",
+     "date": "28-03-2027",
+     "taxable": 154400.0,
+     "igst": 27792.0,
+     "cgst": 0,
+     "sgst": 0
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "highlight",
+     "text": "SLF/2627/1187",
+     "color": "green"
+    }
+   ]
+  },
+  {
+   "id": "pl",
+   "type": "table",
+   "style": "statement",
+   "title": "Draft statement of profit and loss",
+   "company": {
+    "name": "Kesari Flexipack Private Limited",
+    "cin": "U22220PN2014PTC151872"
+   },
+   "heading": "Statement of Profit and Loss for the year ended 31 March 2027 (draft)",
+   "subtitle": "All amounts in ₹ lakh unless otherwise stated",
+   "columns": [
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "note",
+     "label": "Note"
+    },
+    {
+     "key": "cy",
+     "label": "Year ended 31 March 2027",
+     "format": "num"
+    },
+    {
+     "key": "py",
+     "label": "Year ended 31 March 2026",
+     "format": "num"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "rev",
+     "part": "Revenue from operations",
+     "note": "22",
+     "cy": 4812.4,
+     "py": 4390.1
+    },
+    {
+     "_id": "oi",
+     "part": "Other income",
+     "note": "23",
+     "cy": 18.6,
+     "py": 12.3
+    },
+    {
+     "_id": "ti",
+     "part": "Total income",
+     "note": "",
+     "cy": 4831.0,
+     "py": 4402.4,
+     "_class": "subtotal",
+     "_sumOf": [
+      "rev",
+      "oi"
+     ]
+    },
+    {
+     "_id": "hd",
+     "part": "Expenses",
+     "note": "",
+     "cy": null,
+     "py": null,
+     "_class": "head"
+    },
+    {
+     "_id": "comc",
+     "part": "Cost of materials consumed",
+     "note": "24",
+     "cy": 3126.8,
+     "py": 2874.6,
+     "_indent": 1
+    },
+    {
+     "_id": "chg",
+     "part": "Changes in inventories of finished goods and work in progress",
+     "note": "25",
+     "cy": -42.1,
+     "py": 15.8,
+     "_indent": 1
+    },
+    {
+     "_id": "emp",
+     "part": "Employee benefits expense",
+     "note": "26",
+     "cy": 402.5,
+     "py": 371.2,
+     "_indent": 1
+    },
+    {
+     "_id": "fin",
+     "part": "Finance costs",
+     "note": "27",
+     "cy": 61.2,
+     "py": 66.9,
+     "_indent": 1
+    },
+    {
+     "_id": "dep",
+     "part": "Depreciation and amortisation expense",
+     "note": "28",
+     "cy": 88.4,
+     "py": 81.7,
+     "_indent": 1
+    },
+    {
+     "_id": "oth",
+     "part": "Other expenses",
+     "note": "29",
+     "cy": 611.7,
+     "py": 566.4,
+     "_indent": 1
+    },
+    {
+     "_id": "te",
+     "part": "Total expenses",
+     "note": "",
+     "cy": 4248.5,
+     "py": 3976.6,
+     "_class": "subtotal",
+     "_sumOf": [
+      "comc",
+      "chg",
+      "emp",
+      "fin",
+      "dep",
+      "oth"
+     ]
+    },
+    {
+     "_id": "pbt",
+     "part": "Profit before tax",
+     "note": "",
+     "cy": 582.5,
+     "py": 425.8,
+     "_class": "total",
+     "_sumOf": [
+      "ti",
+      "-te"
+     ]
+    }
+   ],
+   "check": false
+  },
+  {
+   "id": "mail-bills",
+   "type": "letter",
+   "style": "email",
+   "title": "Mail from the client · Year-end bills",
+   "from": {
+    "name": "Prakash Nair",
+    "email": "prakash.nair@email.com"
+   },
+   "to": [
+    {
+     "name": "Neha Sathe",
+     "email": "neha.sathe@email.com"
+    }
+   ],
+   "cc": [
+    {
+     "name": "Meena Joshi",
+     "email": "meena.joshi@email.com"
+    }
+   ],
+   "date": "Thu, 15 Apr 2027, 11:42 am",
+   "subject": "Year-end purchase bills you asked for",
+   "body": [
+    "Hi Neha,",
+    "Sharing the four bills you picked, with their POs, GRNs and the ledger print. The Shubh Labh film reached us after the long weekend; Ganesh has written a note on it.",
+    "Let me know if you need the gate register too.",
+    "Regards,"
+   ],
+   "sign": {
+    "name": "Prakash Nair",
+    "role": "Accounts head",
+    "for": "Kesari Flexipack Private Limited"
+   },
+   "attachments": [
+    "Bills_year_end_four.pdf",
+    "GRN_register_Mar27.pdf"
+   ]
+  },
+  {
+   "id": "conf-avi",
+   "type": "letter",
+   "style": "letter",
+   "title": "Balance confirmation · Avishkar Polymers",
+   "letterhead": {
+    "name": "Avishkar Polymers",
+    "address": "Gat No. 412, Kharabwadi, Chakan, Pune 410501",
+    "gstin": "27ABEFA2231K1ZO",
+    "email": "accounts.avishkar@email.com"
+   },
+   "ref": "AP/CONF/26-27/18",
+   "date": "12 April 2027",
+   "to": [
+    "The Auditors",
+    "Kesari Flexipack Private Limited",
+    "Chakan, Pune 410501"
+   ],
+   "subject": "Confirmation of balance as on 31 March 2027",
+   "body": [
+    "Dear Sir/Madam,",
+    "As requested, we confirm that **₹3,31,580.00** was due to us from Kesari Flexipack Private Limited as on 31 March 2027, against our bill AP/26-27/0931 dated 24-03-2027.",
+    "The amount was received by NEFT on 1 April 2027.",
+    "Thanking you,"
+   ],
+   "sign": {
+    "closing": "Yours faithfully,",
+    "for": "Avishkar Polymers",
+    "name": "Sanjay Patil",
+    "role": "Partner",
+    "hand": "S. Patil"
+   },
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "RECEIVED\n13 APR 2027",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": 6
+    }
+   ]
+  },
+  {
+   "id": "bank-notice",
+   "type": "letter",
+   "style": "notice",
+   "title": "Bank notice · Cash credit rate",
+   "letterhead": [
+    "BHIMASHANKAR COMMERCIAL BANK LTD",
+    "Chakan Branch, Talegaon Road, Chakan, Pune 410501"
+   ],
+   "ref": "BCB/CHK/CC/2027/114",
+   "date": "20-03-2027",
+   "to": {
+    "name": "The Director, Kesari Flexipack Private Limited",
+    "address": "Plot B-17, MIDC Chakan Phase II, Khed, Pune 410501"
+   },
+   "meta": [
+    {
+     "label": "Account",
+     "value": "Cash credit XXXXXXXX4417"
+    },
+    {
+     "label": "Sanctioned limit",
+     "value": "₹4,50,00,000"
+    }
+   ],
+   "subject": "Revision of interest rate on your cash credit account",
+   "body": [
+    "1. From 1 April 2027 the interest rate on the above account will be 10.15% a year, payable monthly.",
+    "2. All other terms of the sanction letter dated 14-06-2026 stay the same.",
+    "3. Please sign and return the duplicate of this notice as your acceptance."
+   ],
+   "sign": {
+    "name": "V. R. Kulkarni",
+    "role": "Branch Manager",
+    "hand": "V R Kulkarni"
+   },
+   "annotations": [
+    {
+     "kind": "sign",
+     "text": "P. Nair",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": -6
+    }
+   ]
+  },
+  {
+   "id": "minutes-bm",
+   "type": "letter",
+   "style": "minutes",
+   "title": "Board minutes · 18 March 2027",
+   "letterhead": [
+    "Kesari Flexipack Private Limited",
+    "CIN: U22220PN2014PTC151872"
+   ],
+   "subject": "Minutes of the meeting of the Board of Directors held on Thursday, 18 March 2027 at 11:00 am at the registered office",
+   "body": [
+    "## Present",
+    "- Mr Anil Kesarkar, Director (in the chair)",
+    "- Mrs Sunanda Kesarkar, Director",
+    "## 1. Leave of absence",
+    "No director sought leave of absence.",
+    "## 2. Purchase of a slitting and rewinding machine",
+    "The Chairman placed the quotation for a new slitting and rewinding machine for ₹48,00,000 plus GST.",
+    "**RESOLVED THAT** the purchase of the slitting and rewinding machine for ₹48,00,000 plus GST be and is hereby approved, and Mr Sunil Kale, Plant head, be authorised to place the order.",
+    "## 3. Vote of thanks",
+    "The meeting ended with a vote of thanks to the chair."
+   ],
+   "sign": {
+    "name": "Anil Kesarkar",
+    "role": "Chairman",
+    "note": "Date of entry: 22-03-2027"
+   },
+   "initials": "AK"
+  },
+  {
+   "id": "memo-cutoff",
+   "type": "letter",
+   "style": "memo",
+   "title": "Internal memo · Year-end cut-off",
+   "letterhead": "Kesari Flexipack Private Limited",
+   "to": [
+    "All stores and accounts staff"
+   ],
+   "from": "Prakash Nair, Accounts head",
+   "date": "25-03-2027",
+   "ref": "ACC/2027/07",
+   "subject": "Year-end cut-off for purchases",
+   "body": [
+    "Goods received at stores up to 31 March 2027 go into 2026–27. Goods received on or after 1 April go into 2027–28, whatever the bill date.",
+    "- Stores to send the GRN register for 25 March to 5 April by 6 April.",
+    "- Accounts to hold any March bill whose goods have not come in."
+   ],
+   "sign": "Prakash Nair"
+  },
+  {
+   "id": "policy-purchase",
+   "type": "letter",
+   "style": "policy",
+   "title": "Purchase policy · Approval limits",
+   "letterhead": "Kesari Flexipack Private Limited",
+   "subject": "Purchase policy",
+   "meta": [
+    {
+     "label": "Version",
+     "value": "3.0"
+    },
+    {
+     "label": "Effective from",
+     "value": "1 April 2026"
+    },
+    {
+     "label": "Approved by",
+     "value": "Board of Directors"
+    }
+   ],
+   "body": [
+    "## 4. Approval of purchase orders",
+    "Every purchase order is approved in writing before it is sent to the vendor. The approver is decided by the value of the PO before GST:",
+    {
+     "table": {
+      "columns": [
+       {
+        "key": "v",
+        "label": "Value of the PO before GST"
+       },
+       {
+        "key": "a",
+        "label": "Approved by"
+       }
+      ],
+      "rows": [
+       {
+        "v": "Up to ₹1,00,000",
+        "a": "Purchase manager"
+       },
+       {
+        "v": "₹1,00,001 to ₹10,00,000",
+        "a": "Plant head"
+       },
+       {
+        "v": "Above ₹10,00,000",
+        "a": "Director"
+       }
+      ]
+     }
+    },
+    "## 5. Changes in rate",
+    "A rate higher than the PO needs a revised PO with the same approval before the bill is passed."
+   ]
+  },
+  {
+   "id": "note-stores",
+   "type": "letter",
+   "style": "note",
+   "title": "Stores note · Shubh Labh film",
+   "group": "b2",
+   "subject": "Shubh Labh film",
+   "date": "2/4/27",
+   "body": [
+    "Truck MH14 KJ 2231 came at 8:30 am today.",
+    "72 rolls, 1,800 kg as per weighbridge.",
+    "GRN 2638 made today."
+   ],
+   "sign": "Ganesh"
+  },
+  {
+   "id": "chat-client",
+   "type": "chat",
+   "title": "Chat with the client",
+   "with": "Kesari accounts",
+   "members": "Neha Sathe, Prakash Nair",
+   "me": "demo-senior",
+   "date": "15 April 2027",
+   "messages": [
+    {
+     "from": "demo-senior",
+     "text": "Prakash, for Bill 3 the PO copy has no approval sign. Is there a signed copy?",
+     "time": "12:10 pm"
+    },
+    {
+     "from": "demo-accountant",
+     "text": "Sunil sir was on leave that week. Meena placed it on phone approval.",
+     "time": "12:24 pm"
+    },
+    {
+     "from": "demo-senior",
+     "text": "Phone approval is not in your policy. I’ll note it.",
+     "time": "12:26 pm"
+    }
+   ]
+  },
+  {
+   "id": "voucher-07",
+   "type": "card",
+   "style": "voucher",
+   "title": "Cash voucher · Courier",
+   "issuer": "Kesari Flexipack Private Limited",
+   "heading": "Cash payment voucher",
+   "number": "CV-0712",
+   "revenueStamp": true,
+   "fields": [
+    {
+     "label": "Date",
+     "value": "29-03-2027"
+    },
+    {
+     "label": "Paid to",
+     "value": "Swift Courier, Chakan"
+    },
+    {
+     "label": "Towards",
+     "value": "Courier of bills to Vapi"
+    },
+    {
+     "label": "Amount",
+     "value": "₹2,450 (Two thousand four hundred fifty only)"
+    },
+    {
+     "label": "Debit",
+     "value": "Postage and courier"
+    }
+   ]
+  },
+  {
+   "id": "gate-slip",
+   "type": "card",
+   "style": "slip",
+   "title": "Gate inward slip · 2 April",
+   "group": "b2",
+   "issuer": "Kesari Flexipack Private Limited",
+   "heading": "Gate inward slip",
+   "number": "GI-5520",
+   "fields": [
+    {
+     "label": "Date and time",
+     "value": "02-04-2027, 8:30 am"
+    },
+    {
+     "label": "Vehicle",
+     "value": "MH14 KJ 2231"
+    },
+    {
+     "label": "Supplier",
+     "value": "Shubh Labh Films Private Limited"
+    },
+    {
+     "label": "Challan",
+     "value": "DC-3334"
+    },
+    {
+     "label": "Material",
+     "value": "BOPP film, 72 rolls"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "SECURITY\nGATE 2",
+     "color": "red",
+     "at": "bottom-right",
+     "rotate": -9
+    }
+   ]
+  }
+ ],
+ "tasks": [
+  {
+   "id": "t1",
+   "type": "items",
+   "stage": "Fieldwork",
+   "title": "Vouch the year-end bills",
+   "prompt": "Open each bill with its PO, GRN and the ledger. Mark it Fine or Exception, say what is wrong, and note the quantity the stores accepted and the year it belongs to.",
+   "lockOnLeave": true,
+   "noun": [
+    "bill",
+    "bills"
+   ],
+   "hints": [
+    "Read the day the goods came in before the bill date. The goods decide the year, not the paper.",
+    "Check the PO’s approval box and its rate against the bill."
+   ],
+   "columns": [
+    {
+     "key": "label"
+    },
+    {
+     "key": "amount",
+     "format": "inr"
+    }
+   ],
+   "fields": [
+    {
+     "id": "verdict",
+     "kind": "choice",
+     "label": "Your call",
+     "gate": true,
+     "options": [
+      {
+       "id": "ok",
+       "label": "Fine"
+      },
+      {
+       "id": "exception",
+       "label": "Exception"
+      }
+     ]
+    },
+    {
+     "id": "reasons",
+     "kind": "multi",
+     "label": "What’s wrong",
+     "showIf": {
+      "verdict": "exception"
+     },
+     "options": [
+      {
+       "id": "cutoff",
+       "label": "Cut-off: goods received after 31 March",
+       "short": "cut-off",
+       "needs": [
+        "belongs"
+       ]
+      },
+      {
+       "id": "approval",
+       "label": "PO not approved",
+       "short": "unapproved PO"
+      },
+      {
+       "id": "gstin",
+       "label": "GSTIN on the bill differs from the vendor master",
+       "short": "GSTIN mismatch"
+      },
+      {
+       "id": "rate",
+       "label": "Rate on the bill differs from the PO",
+       "short": "rate difference"
+      },
+      {
+       "id": "qty",
+       "label": "Billed more than received",
+       "short": "short receipt"
+      }
+     ]
+    },
+    {
+     "id": "qty",
+     "kind": "number",
+     "label": "Quantity accepted as per GRN",
+     "unit": "kg",
+     "tolerance": 0
+    },
+    {
+     "id": "belongs",
+     "kind": "choice",
+     "label": "The purchase belongs to",
+     "options": [
+      {
+       "id": "feb27",
+       "label": "February 2027"
+      },
+      {
+       "id": "mar27",
+       "label": "March 2027 (this year)"
+      },
+      {
+       "id": "apr27",
+       "label": "April 2027 (next year)"
+      },
+      {
+       "id": "may27",
+       "label": "May 2027"
+      },
+      {
+       "id": "none",
+       "label": "Not a purchase"
+      }
+     ]
+    },
+    {
+     "id": "note",
+     "kind": "text",
+     "label": "Your note for the file"
+    }
+   ],
+   "items": [
+    {
+     "id": "b1",
+     "label": "Bill 1 · Avishkar Polymers",
+     "amount": 331580.0,
+     "docs": [
+      "inv-1",
+      "po-1",
+      "grn-1",
+      "led-purchase"
+     ],
+     "answer": {
+      "verdict": "ok",
+      "qty": 2500,
+      "belongs": "mar27"
+     },
+     "note": "Bill 1: PO approved, 2,500 kg received on 25 March, booked on 24 March at the PO rate. Fine."
+    },
+    {
+     "id": "b2",
+     "label": "Bill 2 · Shubh Labh Films Private Limited",
+     "amount": 356832.0,
+     "docs": [
+      "inv-2",
+      "po-2",
+      "grn-2",
+      "led-purchase"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "qty": 1800,
+      "belongs": "apr27",
+      "reasons": [
+       "cutoff"
+      ]
+     },
+     "note": "Bill 2: bill dated 30 March, but the film reached our stores on 2 April. The PO says ownership passes on acceptance, so this belongs to 2027–28."
+    },
+    {
+     "id": "b3",
+     "label": "Bill 3 · Mahalaxmi Adhesives",
+     "amount": 173460.0,
+     "docs": [
+      "inv-3",
+      "po-3",
+      "grn-3",
+      "led-purchase"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "qty": 600,
+      "belongs": "mar27",
+      "reasons": [
+       "approval"
+      ]
+     },
+     "note": "Bill 3: the PO for ₹1,47,000 has no approver’s signature. The policy needs the plant head above ₹1 lakh. Exception, even though the goods came in fine."
+    },
+    {
+     "id": "b4",
+     "label": "Bill 4 · Rangoli Inks and Coatings",
+     "amount": 182192.0,
+     "docs": [
+      "inv-4",
+      "po-4",
+      "grn-4",
+      "led-purchase"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "qty": 400,
+      "belongs": "mar27",
+      "reasons": [
+       "rate"
+      ]
+     },
+     "note": "Bill 4: the bill charges ₹386 a kg; the approved PO says ₹362. That is ₹9,600 more before GST. Ask purchase who agreed to the new rate."
+    }
+   ],
+   "docs": [
+    "inv-1",
+    "po-1",
+    "grn-1",
+    "inv-2",
+    "po-2",
+    "grn-2",
+    "note-stores",
+    "gate-slip",
+    "inv-3",
+    "po-3",
+    "grn-3",
+    "inv-4",
+    "po-4",
+    "grn-4",
+    "led-purchase",
+    "vendor-master",
+    "policy-purchase",
+    "memo-cutoff",
+    "mail-bills",
+    "chat-client"
+   ],
+   "weight": 3
+  },
+  {
+   "id": "t2",
+   "type": "worksheet",
+   "stage": "Fieldwork",
+   "title": "Count the stock and work out the variance",
+   "prompt": "Tap each bin in the stock room, count what is on the shelf, and fill in the counted quantity, the variance and the variance % against the stock register.",
+   "docs": [
+    "bins-store",
+    "stock-register",
+    "tag-a1"
+   ],
+   "hints": [
+    "Counted = cartons × per carton + loose. Variance = counted − book."
+   ],
+   "columns": [
+    {
+     "key": "item",
+     "label": "Item"
+    },
+    {
+     "key": "book",
+     "label": "Book qty",
+     "format": "int"
+    },
+    {
+     "key": "counted",
+     "label": "Counted",
+     "format": "int"
+    },
+    {
+     "key": "var",
+     "label": "Variance",
+     "format": "int"
+    },
+    {
+     "key": "pct",
+     "label": "Variance %",
+     "format": "pct"
+    }
+   ],
+   "rows": [
+    {
+     "id": "r1",
+     "cells": {
+      "item": "LDPE granules (kg)",
+      "book": 2400,
+      "counted": {
+       "input": true,
+       "answer": 2375,
+       "tolerance": 0,
+       "working": "95 × 25 + 0 loose"
+      },
+      "var": {
+       "input": true,
+       "answer": -25,
+       "tolerance": 0,
+       "working": "2,375 − 2,400"
+      },
+      "pct": {
+       "input": true,
+       "answer": -1.04,
+       "tolerance": 0.05,
+       "format": "pct",
+       "working": "−25 ÷ 2,400 × 100"
+      }
+     }
+    },
+    {
+     "id": "r2",
+     "cells": {
+      "item": "BOPP film rolls (rolls)",
+      "book": 60,
+      "counted": {
+       "input": true,
+       "answer": 58,
+       "tolerance": 0,
+       "working": "58 counted loose"
+      },
+      "var": {
+       "input": true,
+       "answer": -2,
+       "tolerance": 0,
+       "working": "58 − 60"
+      },
+      "pct": {
+       "input": true,
+       "answer": -3.33,
+       "tolerance": 0.05,
+       "format": "pct",
+       "working": "−2 ÷ 60 × 100"
+      }
+     }
+    },
+    {
+     "id": "r3",
+     "cells": {
+      "item": "PU adhesive (cans)",
+      "book": 40,
+      "counted": {
+       "input": true,
+       "answer": 42,
+       "tolerance": 0,
+       "working": "3 × 12 + 6 loose"
+      },
+      "var": {
+       "input": true,
+       "answer": 2,
+       "tolerance": 0,
+       "working": "42 − 40"
+      },
+      "pct": {
+       "input": true,
+       "answer": 5.0,
+       "tolerance": 0.05,
+       "format": "pct",
+       "working": "2 ÷ 40 × 100"
+      }
+     }
+    },
+    {
+     "id": "r4",
+     "cells": {
+      "item": "Corrugated cartons, 5-ply (pcs)",
+      "book": 1200,
+      "counted": {
+       "input": true,
+       "answer": 1200,
+       "tolerance": 0,
+       "working": "24 × 50 + 0 loose"
+      },
+      "var": {
+       "input": true,
+       "answer": 0,
+       "tolerance": 0,
+       "working": "1,200 − 1,200"
+      },
+      "pct": {
+       "input": true,
+       "answer": 0.0,
+       "tolerance": 0.05,
+       "format": "pct",
+       "working": "0 ÷ 1,200 × 100"
+      }
+     }
+    }
+   ],
+   "notes": {
+    "r3.counted": "Three full cartons of 12 and six loose cans. Count the loose ones too.",
+    "r1.pct": "Round to two decimals: −1.04%."
+   }
+  },
+  {
+   "id": "t3",
+   "type": "hunt",
+   "stage": "Review",
+   "title": "Scan the payments for red flags",
+   "prompt": "Go through the January–March payments. Use the tools to find duplicates, round sums, weekend payments and any vendor that looks linked to an employee. Flag each with its reason.",
+   "dataset": "payments",
+   "rowKey": "_id",
+   "noun": [
+    "row",
+    "rows"
+   ],
+   "hints": [
+    "Turn on Duplicates first, then Match. Flag only the second payment of a pair."
+   ],
+   "docs": [
+    "payments",
+    "vendor-master",
+    "employee-master"
+   ],
+   "reasons": [
+    {
+     "id": "dup",
+     "label": "Duplicate payment",
+     "short": "duplicate"
+    },
+    {
+     "id": "round",
+     "label": "Round-sum payment",
+     "short": "round sum"
+    },
+    {
+     "id": "weekend",
+     "label": "Paid on a weekend",
+     "short": "weekend"
+    },
+    {
+     "id": "related",
+     "label": "Vendor linked to an employee",
+     "short": "vendor–employee match"
+    }
+   ],
+   "tools": [
+    "search",
+    "sort",
+    "weekend",
+    "round",
+    "duplicates",
+    "match"
+   ],
+   "keys": {
+    "date": "date",
+    "amount": "amount",
+    "party": "party",
+    "text": "narr",
+    "ref": "vch"
+   },
+   "matchWith": {
+    "left": "vendor-master",
+    "right": "employee-master",
+    "label": "Match masters",
+    "title": "Vendors that share details with an employee",
+    "keys": [
+     {
+      "left": "bank",
+      "right": "bank",
+      "label": "bank account"
+     }
+    ],
+    "leftName": "name",
+    "rightName": "name",
+    "link": {
+     "left": "name"
+    }
+   },
+   "answer": {
+    "p07": "round",
+    "p18": "dup",
+    "p24": "related",
+    "p28": "round",
+    "p33": "weekend"
+   },
+   "notes": {
+    "p07": "A round amount with no bill behind it. Ask for the bill or the approval.",
+    "p18": "Same bill paid twice, three days apart. Get the second one back or adjusted.",
+    "p24": "Jyotirling Traders is paid into Jyoti Waghmare’s salary account. Raise it with the partner today.",
+    "p28": "A round amount with no bill behind it. Ask for the bill or the approval.",
+    "p33": "Paid on a Sunday. Who released it, and why could it not wait?"
+   },
+   "weight": 2
+  },
+  {
+   "id": "t4",
+   "type": "choice",
+   "stage": "Review",
+   "title": "Calls on cut-off",
+   "prompt": "Answer the two questions the manager will ask you about Bill 2.",
+   "hints": [
+    "Read the PO terms on ownership."
+   ],
+   "questions": [
+    {
+     "id": "q1",
+     "text": "Bill 2 is dated 30 March, but the film reached the stores on 2 April. Where does this purchase belong?",
+     "options": [
+      {
+       "id": "a",
+       "text": "2026–27, because the bill is dated in March",
+       "why": "The bill date does not decide it. The PO says ownership passes on acceptance at stores."
+      },
+      {
+       "id": "b",
+       "text": "2027–28, when the stores accepted the goods",
+       "correct": true,
+       "why": "Acceptance at stores on 2 April passes ownership, so the purchase and the creditor belong to next year."
+      },
+      {
+       "id": "c",
+       "text": "Split equally between the two years",
+       "why": "One delivery is not split between years."
+      }
+     ]
+    },
+    {
+     "id": "q2",
+     "text": "Which papers show the goods actually reached the factory?",
+     "multi": true,
+     "options": [
+      {
+       "id": "a",
+       "text": "The goods receipt note",
+       "correct": true,
+       "why": "Stores prepare it when goods are received and accepted."
+      },
+      {
+       "id": "b",
+       "text": "The gate inward slip",
+       "correct": true,
+       "why": "Security writes it when the truck enters, with date and time."
+      },
+      {
+       "id": "c",
+       "text": "The supplier’s tax invoice",
+       "why": "The supplier writes it; it proves a sale was billed, not received."
+      },
+      {
+       "id": "d",
+       "text": "The purchase order",
+       "why": "It shows what was ordered, before anything arrived."
+      }
+     ]
+    }
+   ],
+   "weight": 5
+  },
+  {
+   "id": "t5",
+   "type": "order",
+   "stage": "Planning",
+   "title": "Put the vouching steps in order",
+   "prompt": "Arrange the steps the way you would do them on the file.",
+   "hints": [
+    "Start from the register, end with the client."
+   ],
+   "steps": [
+    {
+     "id": "s1",
+     "text": "Pick the bills to vouch from the purchase register around 31 March"
+    },
+    {
+     "id": "s2",
+     "text": "Match each bill to its approved PO: item, rate and quantity"
+    },
+    {
+     "id": "s3",
+     "text": "Match the bill to the GRN: quantity accepted and date received"
+    },
+    {
+     "id": "s4",
+     "text": "Trace the bill to the ledger: amount, account and date booked"
+    },
+    {
+     "id": "s5",
+     "text": "List the exceptions and ask the client for reasons"
+    }
+   ],
+   "answer": [
+    "s1",
+    "s2",
+    "s3",
+    "s4",
+    "s5"
+   ],
+   "notes": {
+    "s1": "Picking the bills comes first; everything else works on them.",
+    "s5": "Exceptions go to the client only after you have all of them."
+   },
+   "weight": 10
+  },
+  {
+   "id": "t6",
+   "type": "compose",
+   "stage": "Report",
+   "title": "Write the approval observation",
+   "prompt": "Build the observation for the management letter from the parts below. Pick the best line for each part.",
+   "hints": [
+    "The criteria line must come from the client’s own policy."
+   ],
+   "slots": [
+    {
+     "id": "condition",
+     "label": "What we found",
+     "options": [
+      {
+       "id": "a",
+       "text": "PO KFPL/PO/26-27/0437 for ₹1,47,000 of adhesive was placed without an approver’s signature.",
+       "correct": true,
+       "why": "States the fact with the PO number and value."
+      },
+      {
+       "id": "b",
+       "text": "The adhesive supplier charged more than the PO rate.",
+       "why": "That was Bill 4, not Bill 3."
+      },
+      {
+       "id": "c",
+       "text": "Some purchase controls look weak.",
+       "why": "Too vague for a management letter."
+      }
+     ]
+    },
+    {
+     "id": "criteria",
+     "label": "What it should be",
+     "options": [
+      {
+       "id": "a",
+       "text": "The purchase policy needs the plant head’s approval on every PO above ₹1 lakh.",
+       "correct": true,
+       "why": "This is the client’s own rule, from section 4 of its policy."
+      },
+      {
+       "id": "b",
+       "text": "GST law needs every PO to be approved.",
+       "why": "GST law says nothing about PO approval."
+      },
+      {
+       "id": "c",
+       "text": "The auditor must approve every PO.",
+       "why": "Auditors never approve client transactions."
+      }
+     ]
+    },
+    {
+     "id": "effect",
+     "label": "Why it matters",
+     "options": [
+      {
+       "id": "a",
+       "text": "Goods can be ordered without anyone checking the need, the price or the vendor.",
+       "correct": true,
+       "why": "That is the risk the approval is there to stop."
+      },
+      {
+       "id": "b",
+       "text": "The bill can never be paid.",
+       "why": "Overstated: the bill can be paid once the PO is ratified."
+      }
+     ]
+    },
+    {
+     "id": "reco",
+     "label": "What we recommend",
+     "options": [
+      {
+       "id": "a",
+       "text": "Block GRN entry for POs without approval in the system, and get this PO ratified by the plant head.",
+       "correct": true,
+       "why": "Fixes the cause and this instance."
+      },
+      {
+       "id": "b",
+       "text": "Stop buying adhesive from this vendor.",
+       "why": "The vendor did nothing wrong."
+      }
+     ]
+    }
+   ],
+   "template": "{condition} {criteria} {effect} {reco}",
+   "freeText": {
+    "label": "Add one line of your own"
+   },
+   "weight": 3
+  }
+ ],
+ "wrapRetry": {
+  "from": "demo-senior",
+  "text": "Not there yet. Start with Bill 2: put the GRN date next to the bill date and the answer is in front of you. Then redo the count."
+ },
+ "wrap": {
+  "from": "demo-senior",
+  "text": "Good file. Bill 2 is the one the manager will ask about, so keep the gate slip with it. Send me the observation on Bill 3 before you leave."
+ },
+ "wrapPartial": {
+  "from": "demo-senior",
+  "text": "Most of the file is there. Go through the misses below before anything goes to the client; Bill 2 is the one the manager will ask about."
+ },
+ "passNeeds": [
+  {
+   "task": "t1",
+   "min": 0.5,
+   "note": "Your bill calls need more right before this passes."
+  }
+ ],
+ "model": {
+  "intro": "Three of the four bills are exceptions. The count shows a small shortage in LDPE and BOPP and two extra cans of adhesive.",
+  "blocks": [
+   {
+    "type": "table",
+    "columns": [
+     {
+      "key": "bill",
+      "label": "Bill"
+     },
+     {
+      "key": "issue",
+      "label": "Issue"
+     },
+     {
+      "key": "amt",
+      "label": "Amount",
+      "format": "inr"
+     }
+    ],
+    "rows": [
+     {
+      "bill": "Bill 2",
+      "issue": "Cut-off: belongs to 2027–28",
+      "amt": 356832.0
+     },
+     {
+      "bill": "Bill 3",
+      "issue": "PO not approved",
+      "amt": 173460.0
+     },
+     {
+      "bill": "Bill 4",
+      "issue": "Rate ₹24 a kg above the PO",
+      "amt": 9600
+     }
+    ]
+   },
+   {
+    "type": "list",
+    "items": [
+     "Reverse Bill 2 from March purchases and creditors.",
+     "Get the Bill 3 PO ratified.",
+     "Recover or approve the ₹9,600 rate difference on Bill 4."
+    ]
+   },
+   {
+    "type": "note",
+    "from": "demo-manager",
+    "text": "Always put the gate slip on file with a cut-off exception. It ends the argument."
+   }
+  ]
+ },
+ "principles": [
+  "The goods decide the year, not the bill date.",
+  "An unapproved PO is an exception even when the goods are fine."
+ ],
+ "earned": {
+  "clause": "vouched {bills} year-end purchase bills against POs, GRNs and the ledger; flagged {found} {found|exception|exceptions} ({types})[[ and {hits} payment red flags]]",
+  "counts": {
+   "bills": {
+    "kind": "items",
+    "task": "t1",
+    "answered": "gate"
+   },
+   "found": {
+    "kind": "itemsWhere",
+    "task": "t1",
+    "field": "verdict",
+    "equals": "exception",
+    "withRight": "reasons"
+   },
+   "types": {
+    "kind": "tally",
+    "task": "t1",
+    "field": "reasons"
+   },
+   "hits": {
+    "kind": "huntHits",
+    "task": "t3"
+   },
+   "lldpe": {
+    "kind": "cell",
+    "task": "t2",
+    "row": "r1",
+    "col": "pct",
+    "format": "pct1"
+   },
+   "rows": {
+    "kind": "rows",
+    "doc": "payments"
+   },
+   "cells": {
+    "kind": "correctCells",
+    "task": "t2"
+   }
+  },
+  "fallback": "vouched {bills} year-end purchase bills against POs, GRNs and the ledger"
+ },
+ "interview": [
+  {
+   "q": "You were vouching purchases at year-end. What were you looking for?",
+   "checking": "whether you know cut-off, approval and rate checks",
+   "outline": [
+    "I matched each bill to its PO, GRN and the ledger entry.",
+    "I flagged {found} of {bills} bills, for example one where goods came after 31 March.",
+    "For each exception I wrote the client question before the review."
+   ]
+  },
+  {
+   "q": "How would you spot a fake vendor in a payments ledger?",
+   "checking": "whether you think beyond the amount",
+   "outline": [
+    "I compare the vendor master with the employee master: bank account, address and PAN.",
+    "I look at round sums, weekend payments and duplicates in the export.",
+    "[[I found {hits} such flags in {rows} payments; ]]I take matches to the senior the same day."
+   ]
+  }
+ ]
+}

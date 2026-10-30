@@ -1,0 +1,1218 @@
+{
+ "id": "con-1",
+ "domain": "consulting",
+ "number": 1,
+ "title": "Profitability case",
+ "minutes": 40,
+ "learn": [
+  "How to split a change in profit into price, volume and costs",
+  "Why a price cut is paid on every unit, old and new",
+  "How to judge a sales channel by what each unit contributes"
+ ],
+ "do": [
+  "Bridge a product line’s profit from one year to the next",
+  "Test four managers’ explanations against the bridge",
+  "Draft the one change for the client"
+ ],
+ "case": {
+  "role": "First-year article assistant, borrowed by the consulting desk",
+  "client": "Agnika Appliances Limited, a listed kitchen-appliance maker in Coimbatore: its pressure-cooker line",
+  "team": "Ananya Mukherjee (consulting lead); at Agnika, Gopinath Ramasamy (CFO) and Shalini Bhargava (Head of Corporate Development)",
+  "goal": "Explain why the pressure-cooker line made less money in 2025–26 while it sold more cookers, and pick the one change that would do most to bring the profit back.",
+  "period": "2025–26 against 2024–25",
+  "where": "Consulting desk, Prabhat Road office · Monday 7 December 2026"
+ },
+ "brief": {
+  "from": "ananya",
+  "time": "9:50 am",
+  "messages": [
+   "Agnika sold 1.3 lakh more pressure cookers in 2025–26 and the line made ₹27 crore less. Gopinath, their CFO, wants the reasons in figures that add up, and one change.",
+   "Split the fall from their MIS, check what each manager told us at the kick-off, then draft the answer. To me by 5 pm; I meet Gopinath on Wednesday at 11."
+  ]
+ },
+ "documents": [
+  {
+   "id": "mail-cfo",
+   "type": "letter",
+   "style": "email",
+   "title": "Gopinath’s mail · 3 December",
+   "tab": "CFO’s mail",
+   "from": {
+    "name": "Gopinath Ramasamy",
+    "email": "gopinath.ramasamy@email.com"
+   },
+   "to": [
+    {
+     "name": "Ananya Mukherjee",
+     "email": "ananya.mukherjee@email.com"
+    }
+   ],
+   "cc": [
+    {
+     "name": "Shalini Bhargava",
+     "email": "shalini.bhargava@email.com"
+    }
+   ],
+   "date": "Thu, 3 Dec 2026, 7:15 pm",
+   "subject": "Pressure cookers: MIS for the review",
+   "body": [
+    "Ananya,",
+    "Thank you for coming down to Coimbatore yesterday. As promised, the pressure-cooker MIS for 2024–25 and 2025–26 is attached, with the cookers sold by channel, Vikram’s price circular of March 2025 and Murugesan’s note on material.",
+    "The short version you heard yesterday: we sold 1.3 lakh more cookers last year and the line made ₹27 crore less. Each of my managers has an explanation, and they cannot all be right.",
+    "The board meets on 21 January to set the 2027–28 plan. Before it spends money on another cookware company, it wants to know what happened to our own cookers. I need two things from you: why the profit fell, in figures that add up, and the one change that would do most to bring it back. One change, not a list of twenty.",
+    "Regards,",
+    "Gopinath Ramasamy",
+    "CFO, Agnika Appliances Limited"
+   ],
+   "attachments": [
+    {
+     "name": "Pressure cooker MIS FY26.xlsx",
+     "doc": "mis"
+    },
+    {
+     "name": "Cookers by channel.xlsx",
+     "doc": "channels"
+    },
+    {
+     "name": "Price circular March 2025.pdf",
+     "doc": "circular"
+    },
+    {
+     "name": "Material note Nov 2026.pdf",
+     "doc": "material"
+    }
+   ]
+  },
+  {
+   "id": "kickoff",
+   "type": "letter",
+   "style": "memo",
+   "title": "Ananya’s file note · the kick-off",
+   "tab": "File note",
+   "kindLabel": "File note",
+   "memoTitle": "File note",
+   "letterhead": "Bapat Venkatesh & Co., Chartered Accountants · Consulting",
+   "from": "Ananya Mukherjee",
+   "to": [
+    "Agnika pressure-cooker review file"
+   ],
+   "date": "02-12-2026",
+   "subject": "Kick-off at Agnika, Coimbatore: what each manager said",
+   "body": [
+    "Present: Gopinath Ramasamy (CFO), Shalini Bhargava (Corporate Development), Vikram Sundaresan (Sales, Cookware), Tanvi Oberoi (Online sales), Deepa Raghunathan (Finance Controller) and P. Murugesan (Purchase); for us, Ananya Mukherjee and our article assistant.",
+    "Gopinath opened with the numbers: 1.3 lakh more cookers in 2025–26 and ₹27 crore less line profit. Each manager then gave a view. Noted as said, not yet checked:",
+    "1. Vikram: “The April price cut paid for itself. We sold 1.3 lakh more cookers because of it.”",
+    "2. Tanvi: “Online is now our most profitable channel. It brought all of last year’s growth, at the same price as the dealers.”",
+    "3. Deepa: “Load each cooker with its share of fixed costs, about ₹207, and every online cooker loses about ₹88. Stop selling online and the line makes more money.”",
+    "4. Murugesan: “Aluminium is the main reason. Material went up ₹52 a cooker, and that is outside our control.”",
+    "Shalini: the board wants this explained before it takes the cookware search any further.",
+    "Next: bridge the year from the MIS, test each view against it, and send one recommendation to Gopinath by Wednesday 9 December."
+   ],
+   "sign": {
+    "name": "Ananya Mukherjee",
+    "role": "Consulting lead",
+    "hand": "Ananya"
+   }
+  },
+  {
+   "id": "percooker",
+   "type": "table",
+   "style": "statement",
+   "title": "MIS · Per cooker",
+   "tab": "Per cooker",
+   "company": {
+    "name": "Agnika Appliances Limited"
+   },
+   "heading": "Pressure cookers · per cooker",
+   "subtitle": "Management information, cookware · ₹ a cooker unless stated",
+   "columns": [
+    {
+     "key": "line",
+     "label": ""
+    },
+    {
+     "key": "fy25",
+     "label": "2024–25",
+     "format": "num"
+    },
+    {
+     "key": "fy26",
+     "label": "2025–26",
+     "format": "num"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "u",
+     "line": "Cookers sold (nos)",
+     "fy25": 1860000,
+     "fy26": 1990000,
+     "_check": false
+    },
+    {
+     "_id": "nr",
+     "line": "Net realisation",
+     "fy25": 1420,
+     "fy26": 1365
+    },
+    {
+     "line": "Variable costs a cooker",
+     "_class": "head"
+    },
+    {
+     "_id": "mat",
+     "line": "Material",
+     "fy25": 742,
+     "fy26": 794,
+     "_indent": 1
+    },
+    {
+     "_id": "conv",
+     "line": "Conversion",
+     "fy25": 168,
+     "fy26": 176,
+     "_indent": 1
+    },
+    {
+     "_id": "frt",
+     "line": "Freight out",
+     "fy25": 46,
+     "fy26": 56,
+     "_indent": 1
+    },
+    {
+     "_id": "war",
+     "line": "Warranty",
+     "fy25": 22,
+     "fy26": 29,
+     "_indent": 1
+    },
+    {
+     "_id": "cb",
+     "line": "Contribution a cooker, before marketplace commission",
+     "fy25": 442,
+     "fy26": 310,
+     "_class": "total",
+     "_sumOf": [
+      "nr",
+      "-mat",
+      "-conv",
+      "-frt",
+      "-war"
+     ]
+    }
+   ],
+   "notes": [
+    "Net realisation is what Agnika receives for a cooker after trade discounts and schemes, before GST. One price list runs in every channel.",
+    "Marketplace commission is not in these figures: only cookers sold online pay it. See the line P&L and the channel split."
+   ]
+  },
+  {
+   "id": "mis",
+   "type": "table",
+   "style": "statement",
+   "title": "MIS · Line P&L",
+   "tab": "Line P&L",
+   "company": {
+    "name": "Agnika Appliances Limited"
+   },
+   "heading": "Pressure cookers · line P&L",
+   "subtitle": "Management information, cookware · ₹ lakh",
+   "columns": [
+    {
+     "key": "line",
+     "label": ""
+    },
+    {
+     "key": "fy25",
+     "label": "2024–25",
+     "format": "num"
+    },
+    {
+     "key": "fy26",
+     "label": "2025–26",
+     "format": "num"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "rev",
+     "line": "Revenue",
+     "fy25": 26412.0,
+     "fy26": 27163.5
+    },
+    {
+     "line": "Variable costs",
+     "_class": "head"
+    },
+    {
+     "_id": "mat",
+     "line": "Material",
+     "fy25": 13801.2,
+     "fy26": 15800.6,
+     "_indent": 1
+    },
+    {
+     "_id": "conv",
+     "line": "Conversion",
+     "fy25": 3124.8,
+     "fy26": 3502.4,
+     "_indent": 1
+    },
+    {
+     "_id": "frt",
+     "line": "Freight out",
+     "fy25": 855.6,
+     "fy26": 1114.4,
+     "_indent": 1
+    },
+    {
+     "_id": "war",
+     "line": "Warranty",
+     "fy25": 409.2,
+     "fy26": 577.1,
+     "_indent": 1
+    },
+    {
+     "_id": "com",
+     "line": "Marketplace commission",
+     "fy25": 665.58,
+     "fy26": 1026.78,
+     "_indent": 1
+    },
+    {
+     "_id": "tvc",
+     "line": "Total variable costs",
+     "fy25": 18856.38,
+     "fy26": 22021.28,
+     "_class": "subtotal",
+     "_sumOf": [
+      "mat",
+      "conv",
+      "frt",
+      "war",
+      "com"
+     ]
+    },
+    {
+     "_id": "con",
+     "line": "Contribution",
+     "fy25": 7555.62,
+     "fy26": 5142.22,
+     "_class": "subtotal",
+     "_sumOf": [
+      "rev",
+      "-tvc"
+     ]
+    },
+    {
+     "_id": "fix",
+     "line": "Fixed costs of the line",
+     "fy25": 3840.0,
+     "fy26": 4120.0
+    },
+    {
+     "_id": "lp",
+     "line": "Line profit",
+     "fy25": 3715.62,
+     "fy26": 1022.22,
+     "_class": "total",
+     "_sumOf": [
+      "con",
+      "-fix"
+     ]
+    },
+    {
+     "line": "Line profit, % of revenue",
+     "fy25": "14.1%",
+     "fy26": "3.8%",
+     "_class": "muted",
+     "_check": false
+    }
+   ],
+   "notes": [
+    "Revenue is cookers sold × net realisation, before GST.",
+    "Marketplace commission is 14% of net realisation, on cookers sold online only.",
+    "Fixed costs of the line: Baddi plant overheads and depreciation, line staff and cookware advertising. Line profit is before corporate costs, interest and tax."
+   ]
+  },
+  {
+   "id": "channels",
+   "type": "table",
+   "style": "sheet",
+   "title": "Cookers sold by channel",
+   "tab": "Channels",
+   "heading": "Cookers sold by channel",
+   "sheetName": "Channels",
+   "freeze": true,
+   "formulaCell": "D5",
+   "formula": "=SUM(D2:D4)",
+   "columns": [
+    {
+     "key": "ch",
+     "label": "Channel"
+    },
+    {
+     "key": "u25",
+     "label": "2024–25",
+     "format": "int"
+    },
+    {
+     "key": "s25",
+     "label": "Share",
+     "format": "pct0"
+    },
+    {
+     "key": "u26",
+     "label": "2025–26",
+     "format": "int"
+    },
+    {
+     "key": "s26",
+     "label": "Share",
+     "format": "pct0"
+    },
+    {
+     "key": "chg",
+     "label": "Change",
+     "format": "int",
+     "check": "u26 - u25"
+    }
+   ],
+   "rows": [
+    {
+     "ch": "Dealers",
+     "u25": 1339200,
+     "s25": 72,
+     "u26": 1253700,
+     "s26": 63,
+     "chg": -85500
+    },
+    {
+     "ch": "Modern trade",
+     "u25": 186000,
+     "s25": 10,
+     "u26": 199000,
+     "s26": 10,
+     "chg": 13000
+    },
+    {
+     "ch": "Online marketplaces",
+     "u25": 334800,
+     "s25": 18,
+     "u26": 537300,
+     "s26": 27,
+     "chg": 202500
+    },
+    {
+     "ch": "Total",
+     "u25": 1860000,
+     "s25": 100,
+     "u26": 1990000,
+     "s26": 100,
+     "chg": 130000,
+     "_class": "total"
+    }
+   ],
+   "notes": [
+    "One net price list in every channel.",
+    "The marketplaces keep 14% of net realisation as commission: ₹198.80 a cooker in 2024–25 and ₹191.10 in 2025–26."
+   ]
+  },
+  {
+   "id": "circular",
+   "type": "letter",
+   "style": "memo",
+   "title": "Price circular · March 2025",
+   "tab": "Price circular",
+   "kindLabel": "Sales circular",
+   "memoTitle": "Price circular",
+   "letterhead": "Agnika Appliances Limited · Sales, Cookware",
+   "from": "Vikram Sundaresan, Head of Sales, Cookware",
+   "to": [
+    "Regional managers, modern-trade accounts and the online team"
+   ],
+   "date": "26-03-2025",
+   "subject": "Pressure cookers: new net prices from April 2025",
+   "body": [
+    "Aluminium has eased since December, and the online brands are selling 8–10% below us. To hold our share we are withdrawing the 4% increase of February 2024.",
+    "From 1 April 2025 the net price of every pressure-cooker model comes down by about 4%, ₹40 to ₹75 a cooker by size. The new list applies in every channel: dealers, modern trade and our marketplace stores.",
+    "Schemes and dealer margins stay as they are. Revised price lists go to regional managers today."
+   ],
+   "sign": {
+    "name": "Vikram Sundaresan",
+    "role": "Head of Sales, Cookware",
+    "hand": "Vikram S."
+   },
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Agreed. Review in Sept if\naluminium moves. – G.R. 27/3",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "material",
+   "type": "letter",
+   "style": "memo",
+   "title": "Murugesan’s note · material per cooker",
+   "tab": "Material note",
+   "kindLabel": "Purchase note",
+   "memoTitle": "Note",
+   "letterhead": "Agnika Appliances Limited · Purchase, Cookware",
+   "from": "P. Murugesan, Head of Purchase",
+   "to": [
+    "Gopinath Ramasamy, CFO"
+   ],
+   "date": "18-11-2026",
+   "subject": "Material cost per pressure cooker, 2024–25 and 2025–26",
+   "body": [
+    "As asked for the review: material cost a cooker averaged ₹794 in 2025–26 against ₹742 in 2024–25, up ₹52.",
+    "Aluminium circles are ₹47 of the rise. Aluminium turned up again from June 2025 and stayed up for the rest of the year. Gaskets, whistles and handles are the other ₹5.",
+    "We buy circles from two mills at each month’s rate, as before. Sales had the rise in our monthly cost notes from July 2025."
+   ],
+   "sign": {
+    "name": "P. Murugesan",
+    "role": "Head of Purchase",
+    "hand": "Murugesan"
+   }
+  }
+ ],
+ "tasks": [
+  {
+   "id": "t1",
+   "type": "choice",
+   "stage": "Planning",
+   "title": "Read the MIS first",
+   "weight": 2,
+   "noun": [
+    "question",
+    "questions"
+   ],
+   "prompt": "Before any bridge, read the two MIS pages the way Ananya will: what the figures already tell you, and what a cooker is worth to the line. Three questions. Your answers go to Ananya when you move on.",
+   "lockOnLeave": {
+    "ask": "Hand your first read to Ananya?",
+    "note": "You can’t change it after this.",
+    "yes": "Hand it in",
+    "done": "Handed to Ananya. You can read your answers but not change them."
+   },
+   "hints": [
+    "Revenue is cookers × net realisation. Compare what each of those did, then what one cooker keeps after its own costs."
+   ],
+   "docs": [
+    "mail-cfo",
+    "kickoff",
+    "percooker",
+    "mis",
+    "channels",
+    "circular",
+    "material"
+   ],
+   "questions": [
+    {
+     "id": "q1",
+     "text": "Cookers sold rose 7.0%, revenue only 2.8%. What does that gap tell you before anything else?",
+     "options": [
+      {
+       "id": "a",
+       "text": "Costs grew faster than revenue, so the line sold its extra cookers at a loss.",
+       "why": "Revenue says nothing about costs. Cookers and revenue moving apart is about what each cooker fetched."
+      },
+      {
+       "id": "b",
+       "correct": true,
+       "text": "Each cooker fetched less: net realisation fell from ₹1,420 to ₹1,365.",
+       "why": "Revenue is cookers × net realisation. When it grows slower than cookers, the price fell: ₹55 a cooker, or 3.9%."
+      },
+      {
+       "id": "c",
+       "text": "More cookers went to modern trade, where Agnika gets less for each one.",
+       "why": "Modern trade stayed at 10% of cookers, and one price list runs in every channel. The gap is the price itself."
+      },
+      {
+       "id": "d",
+       "text": "Revenue is shown before GST, so it always grows slower than cookers.",
+       "why": "Both years are before GST, so GST cannot open a gap between them."
+      }
+     ]
+    },
+    {
+     "id": "q2",
+     "text": "Revenue rose 2.8%, yet line profit fell 72%. What makes profit fall so hard while revenue grows?",
+     "options": [
+      {
+       "id": "a",
+       "text": "Fixed costs of the line roughly doubled, so they ate the whole of the extra revenue.",
+       "why": "They went from ₹3,840 lakh to ₹4,120 lakh, about 7%. Real, but a small part of a ₹2,693.40 lakh fall."
+      },
+      {
+       "id": "b",
+       "text": "Marketplace commission rose 54%, from ₹665.58 lakh to ₹1,026.78 lakh, more than the extra revenue brought in.",
+       "why": "It rose ₹361.20 lakh, under half the ₹751.50 lakh of extra revenue. What hit profit is the ₹132 less each cooker kept, on all 19,90,000 of them."
+      },
+      {
+       "id": "c",
+       "correct": true,
+       "text": "Each cooker kept ₹132 less before commission (₹442 down to ₹310), and the fixed costs still had to be paid.",
+       "why": "Line profit is what is left after the fixed costs. A thinner margin on every cooker comes off that small remainder in full, so profit can fall hard even while revenue grows."
+      }
+     ]
+    },
+    {
+     "id": "q3",
+     "text": "Ananya’s bridge values the 1,30,000 extra cookers at ₹442 each, not at their ₹1,365 price. Why?",
+     "options": [
+      {
+       "id": "a",
+       "correct": true,
+       "text": "₹442 is what a cooker leaves after its own costs, and that is what reaches line profit.",
+       "why": "The price pays for the cooker’s material, conversion, freight and warranty first. In 2024–25 ₹442 of it was left, before any marketplace commission, for fixed costs and profit."
+      },
+      {
+       "id": "b",
+       "text": "₹1,365 still includes GST, which Agnika only collects for the government.",
+       "why": "Net realisation is already before GST. The difference is the cooker’s own costs."
+      },
+      {
+       "id": "c",
+       "text": "₹442 is the price after the April 2025 cut, which applied to the new cookers.",
+       "why": "The price after the cut is ₹1,365. ₹442 is 2024–25’s price less that year’s material, conversion, freight and warranty a cooker."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t2",
+   "type": "worksheet",
+   "stage": "Fieldwork",
+   "title": "Build the profit bridge",
+   "weight": 2,
+   "noun": [
+    "figure",
+    "figures"
+   ],
+   "prompt": "Bridge 2024–25’s line profit to 2025–26’s, in ₹ lakh to two decimals. Value the extra cookers at 2024–25’s ₹442 a cooker; work price and each cost per cooker on 2025–26’s 19,90,000 cookers; take commission and fixed costs as the change in the total. Anything that cut profit is a minus.",
+   "lockOnLeave": {
+    "ask": "Hand your bridge to Ananya?",
+    "note": "You can’t change it after this.",
+    "yes": "Hand it in",
+    "done": "Handed to Ananya. You can read your bridge but not change it."
+   },
+   "hints": [
+    "Each per-cooker line works like conversion: the change per cooker × 19,90,000, divided by 1,00,000 for ₹ lakh. A lower price or a higher cost is a minus.",
+    "Your effects must add up to 1,022.22 − 3,715.62. If they don’t, look at volume first: 1,30,000 cookers at ₹442, not at ₹1,365."
+   ],
+   "docs": [
+    "percooker",
+    "mis",
+    "channels"
+   ],
+   "note": "Conversion is worked for you: ₹8 more a cooker × 19,90,000 cookers = −₹1,59,20,000, which is −159.20 in ₹ lakh.",
+   "noteAt": "top",
+   "invalidNote": "In ₹ lakh, like −159.20 for −₹1,59,20,000",
+   "maxAbs": 10000,
+   "columns": [
+    {
+     "key": "line",
+     "label": "Effect on line profit"
+    },
+    {
+     "key": "amt",
+     "label": "₹ lakh",
+     "format": "amount"
+    }
+   ],
+   "rows": [
+    {
+     "id": "r0",
+     "cells": {
+      "line": "Line profit, 2024–25",
+      "amt": 3715.62
+     }
+    },
+    {
+     "id": "r1",
+     "cells": {
+      "line": "Volume: the extra cookers, at 2024–25’s ₹442",
+      "amt": {
+       "input": true,
+       "answer": 574.6,
+       "tolerance": 0.01,
+       "signed": true,
+       "working": "1,30,000 more cookers × ₹442 = +₹5,74,60,000, which is +574.60 in ₹ lakh"
+      }
+     }
+    },
+    {
+     "id": "r2",
+     "cells": {
+      "line": "Price: net realisation per cooker",
+      "amt": {
+       "input": true,
+       "answer": -1094.5,
+       "tolerance": 0.01,
+       "signed": true,
+       "working": "₹55 less a cooker × 19,90,000 = −₹10,94,50,000, which is −1,094.50 in ₹ lakh"
+      }
+     }
+    },
+    {
+     "id": "r3",
+     "cells": {
+      "line": "Material per cooker",
+      "amt": {
+       "input": true,
+       "answer": -1034.8,
+       "tolerance": 0.01,
+       "signed": true,
+       "working": "₹52 more a cooker × 19,90,000 = −₹10,34,80,000, which is −1,034.80 in ₹ lakh"
+      }
+     }
+    },
+    {
+     "id": "r4",
+     "cells": {
+      "line": "Conversion per cooker (worked for you)",
+      "amt": -159.2
+     }
+    },
+    {
+     "id": "r5",
+     "cells": {
+      "line": "Freight out per cooker",
+      "amt": {
+       "input": true,
+       "answer": -199.0,
+       "tolerance": 0.01,
+       "signed": true,
+       "working": "₹10 more a cooker × 19,90,000 = −₹1,99,00,000, which is −199.00 in ₹ lakh"
+      }
+     }
+    },
+    {
+     "id": "r6",
+     "cells": {
+      "line": "Warranty per cooker",
+      "amt": {
+       "input": true,
+       "answer": -139.3,
+       "tolerance": 0.01,
+       "signed": true,
+       "working": "₹7 more a cooker × 19,90,000 = −₹1,39,30,000, which is −139.30 in ₹ lakh"
+      }
+     }
+    },
+    {
+     "id": "r7",
+     "cells": {
+      "line": "Marketplace commission: change in the total",
+      "amt": {
+       "input": true,
+       "answer": -361.2,
+       "tolerance": 0.01,
+       "signed": true,
+       "working": "665.58 − 1,026.78 = −361.20"
+      }
+     }
+    },
+    {
+     "id": "r8",
+     "cells": {
+      "line": "Fixed costs of the line: change in the total",
+      "amt": {
+       "input": true,
+       "answer": -280.0,
+       "tolerance": 0.01,
+       "signed": true,
+       "working": "3,840.00 − 4,120.00 = −280.00"
+      }
+     }
+    },
+    {
+     "id": "r9",
+     "_class": "total",
+     "cells": {
+      "line": "Change in line profit",
+      "amt": {
+       "input": true,
+       "answer": -2693.4,
+       "tolerance": 0.01,
+       "signed": true,
+       "working": "574.60 − 1,094.50 − 1,034.80 − 159.20 − 199.00 − 139.30 − 361.20 − 280.00 = −2,693.40",
+       "follow": "{r1.amt} + {r2.amt} + {r3.amt} − 159.20 + {r5.amt} + {r6.amt} + {r7.amt} + {r8.amt}"
+      }
+     }
+    },
+    {
+     "id": "r10",
+     "cells": {
+      "line": "Line profit, 2025–26",
+      "amt": 1022.22
+     }
+    }
+   ],
+   "notes": {
+    "r1.amt": "Volume: each extra cooker is valued at what a cooker kept in 2024–25, ₹442, not at its ₹1,365 price. The price and cost changes on those cookers sit in their own lines, so nothing is counted twice.",
+    "r2.amt": "Price: ₹55 given up on all 19,90,000 cookers, the 18.6 lakh the line would have sold anyway as well as the 1.3 lakh new ones. That is why a 4% cut cost nearly twice what the extra cookers brought.",
+    "r3.amt": "Material: ₹52 more a cooker, so a minus; ₹47 of the ₹52 is aluminium. Almost as big as the price cut, and the one large line here that Agnika did not decide.",
+    "r5.amt": "Freight out: ₹10 more a cooker. Real money, but about a fifth of the price cut.",
+    "r6.amt": "Warranty: ₹7 more a cooker. The smallest line in the bridge.",
+    "r7.amt": "Commission: take the totals, 665.58 less 1,026.78. It rose because many more cookers went online, where each pays 14% of its price. Dealer and modern-trade cookers pay none, so it is not a per-cooker line.",
+    "r8.amt": "Fixed costs rose ₹280 lakh, about 7%. Worth a line in the note, not the headline.",
+    "r9.amt": "The effects add to −2,693.40, exactly 1,022.22 less 3,715.62: nothing missing, nothing counted twice. When a bridge misses, the gap names the line to check; a gap of twice one line means that line’s sign is wrong."
+   }
+  },
+  {
+   "id": "t3",
+   "type": "choice",
+   "stage": "Review",
+   "title": "Test what the managers said",
+   "weight": 2.5,
+   "noun": [
+    "question",
+    "questions"
+   ],
+   "prompt": "Ananya’s file note has four views from last Wednesday’s meeting. Test each against your bridge, the MIS and the channel split. Your answers go to Ananya when you move on.",
+   "lockOnLeave": {
+    "ask": "Hand your answers to Ananya?",
+    "note": "You can’t change them after this.",
+    "yes": "Hand them in",
+    "done": "Handed to Ananya. You can read your answers but not change them."
+   },
+   "hints": [
+    "For each view, find the figure that settles it: what the extra cookers added at ₹442, what an online cooker keeps after the 14%, which costs leave with a channel, and where material ranks in your bridge."
+   ],
+   "docs": [
+    "kickoff",
+    "percooker",
+    "mis",
+    "channels",
+    "circular",
+    "material"
+   ],
+   "questions": [
+    {
+     "id": "q1",
+     "sample": "Vikram: did the April price cut pay for itself?",
+     "text": "Vikram (Sales): “The April price cut paid for itself. We sold 1.3 lakh more cookers because of it.” Does it hold?",
+     "options": [
+      {
+       "id": "a",
+       "text": "Yes. The 1,30,000 extra cookers brought in ₹1,774.50 lakh of revenue, well over the ₹1,094.50 lakh the cut gave away on price.",
+       "why": "That sets revenue against profit. Valued at ₹442, what a cooker kept after its own costs in 2024–25, the extra cookers added ₹574.60 lakh, not ₹1,774.50 lakh."
+      },
+      {
+       "id": "b",
+       "correct": true,
+       "text": "No. Even if the cut brought every extra cooker, they added ₹574.60 lakh at ₹442 each; the cut gave away ₹1,094.50 lakh.",
+       "why": "The cut is paid on all 19.9 lakh cookers; the gain comes only from the 1.3 lakh new ones. With ₹55 off the ₹442, each new cooker would keep ₹387, so the cut needed about 2.6 lakh extra cookers, 14% more, to cover itself."
+      },
+      {
+       "id": "c",
+       "text": "No. The channel split shows online brought all the extra cookers, so the cut brought none of them.",
+       "why": "The split shows where cookers sold, not why, and the cut ran online too. The test that settles it: even if the cut brought every extra cooker, they added ₹574.60 lakh against ₹1,094.50 lakh given away."
+      }
+     ]
+    },
+    {
+     "id": "q2",
+     "sample": "Tanvi: is online now the most profitable channel?",
+     "text": "Tanvi (Online sales): “Online is now our most profitable channel. It brought all of last year’s growth, at the same price as the dealers.” Does it hold?",
+     "options": [
+      {
+       "id": "a",
+       "correct": true,
+       "text": "No. The growth is real, but after the 14% commission an online cooker keeps ₹118.90, against ₹310 for a dealer cooker.",
+       "why": "Same price, different cost: the marketplace keeps ₹191.10 of each online cooker’s ₹1,365. Dealers still earned ₹3,886.47 lakh of contribution in 2025–26, online ₹638.85 lakh."
+      },
+      {
+       "id": "b",
+       "text": "Yes. Online cookers rose by 2,02,500 while dealer cookers fell by 85,500, and every channel sells at the same net price.",
+       "why": "Both facts are true, and neither makes online the most profitable channel. What a cooker earns is price less cost, and an online cooker carries the marketplace’s 14% on top."
+      },
+      {
+       "id": "c",
+       "text": "No. Online lost money in 2025–26, because each online cooker earned less than its ₹207 share of the line’s fixed costs.",
+       "why": "Online cookers kept ₹118.90 each towards fixed costs, ₹638.85 lakh in all. The fixed costs are paid whether online sells or not; that is the next view to test."
+      }
+     ]
+    },
+    {
+     "id": "q3",
+     "sample": "Deepa: would stopping online make the line more money?",
+     "text": "Deepa (Finance): “Load each cooker with its share of fixed costs, about ₹207, and every online cooker loses about ₹88. Stop selling online and the line makes more money.” Does it hold?",
+     "options": [
+      {
+       "id": "a",
+       "text": "Yes. 5,37,300 online cookers losing about ₹88 each is roughly ₹474 lakh a year that the line would save by stopping.",
+       "why": "The ₹207 is a share of costs that stay. Stop online and the ₹4,120 lakh of fixed costs is still paid, now by fewer cookers."
+      },
+      {
+       "id": "b",
+       "text": "No. An online cooker sells at the same net price as a dealer cooker, so it cannot lose money while a dealer cooker does not.",
+       "why": "The verdict is right, the reason is not: the marketplace keeps ₹191.10 of every online cooker, so an online cooker keeps ₹118.90 against ₹310. The view fails because the ₹4,120 lakh of fixed costs stays if online stops."
+      },
+      {
+       "id": "c",
+       "correct": true,
+       "text": "No. The ₹4,120 lakh of fixed costs stays if online stops; online cookers bring ₹638.85 lakh towards it. Profit falls.",
+       "why": "Each online cooker still brings ₹118.90 towards fixed costs that do not leave with it. Unless those buyers move to dealers, the line loses that ₹638.85 lakh."
+      }
+     ]
+    },
+    {
+     "id": "q4",
+     "sample": "Murugesan: is aluminium the main reason profit fell?",
+     "text": "Murugesan (Purchase): “Aluminium is the main reason. Material went up ₹52 a cooker, and that is outside our control.” Does it hold?",
+     "options": [
+      {
+       "id": "a",
+       "text": "Yes. Material took ₹1,034.80 lakh, the largest single effect in the whole bridge, ahead of the price cut.",
+       "why": "The price cut took more, ₹1,094.50 lakh: ₹55 a cooker against material’s ₹52, both on all 19.9 lakh cookers. Material is the largest cost line, not the largest effect."
+      },
+      {
+       "id": "b",
+       "text": "Partly. Material took ₹1,034.80 lakh, but freight, conversion and warranty together took more.",
+       "why": "Together they took ₹497.50 lakh, under half of material. The bigger effect is the price cut, ₹1,094.50 lakh, and that was Agnika’s own call."
+      },
+      {
+       "id": "c",
+       "correct": true,
+       "text": "Partly. Material took ₹1,034.80 lakh, but the price cut took more, ₹1,094.50 lakh, and that was Agnika’s call.",
+       "why": "Aluminium hurt, and Agnika could not stop it. But the cut leaned on cheaper aluminium, and the price stayed down when that ended in June."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t4",
+   "type": "compose",
+   "stage": "Report",
+   "title": "Draft the answer for Gopinath",
+   "weight": 3,
+   "noun": [
+    "line",
+    "lines"
+   ],
+   "prompt": "Ananya will send Gopinath a short answer in four parts: what happened, why, the one change, and what it is worth with its risk. Pick the right line for each part. Add a line of your own if you like.",
+   "hints": [
+    "Lead with the two biggest effects and recommend the one Agnika decided itself. Online cookers pay 14% of any price rise too."
+   ],
+   "previewLabel": "Your draft for Ananya",
+   "template": "Ananya,\n\nDraft for Gopinath on the pressure-cooker line, 2025–26 against 2024–25:\n\n{what}\n\n{why}\n\n{change}\n\n{worth}\n\n{_free}\n\nRegards,\nArticle assistant, consulting desk",
+   "freeText": {
+    "label": "Your own line for Ananya"
+   },
+   "slots": [
+    {
+     "id": "what",
+     "label": "What happened",
+     "options": [
+      {
+       "id": "a",
+       "correct": true,
+       "text": "Cookers sold rose 7.0% to 19.9 lakh, but line profit fell ₹2,693.40 lakh, from ₹3,715.62 lakh to ₹1,022.22 lakh: 14.1% of revenue down to 3.8%.",
+       "why": "Volume, profit and margin in one line, each straight from the MIS. Gopinath sees the size of the problem before any reason."
+      },
+      {
+       "id": "b",
+       "text": "Revenue rose 2.8% to ₹27,163.50 lakh, so the line is still growing; profit dipped in 2025–26 because of costs that should not repeat.",
+       "why": "Profit fell 72%, which is no dip. Nothing in the bridge is a one-off: the lower price ran all year, and aluminium stayed up from June to March."
+      },
+      {
+       "id": "c",
+       "text": "Cookers sold rose 7.0% to 19.9 lakh, but line profit fell ₹2,693.40 lakh, from ₹3,715.62 lakh to ₹1,022.22 lakh, and its margin fell 10.3%.",
+       "why": "From 14.1% to 3.8% is a fall of 10.3 points, which is 73% of the margin. “Fell 10.3%” understates it about sevenfold; give both ends, as the MIS does."
+      }
+     ]
+    },
+    {
+     "id": "why",
+     "label": "Why",
+     "options": [
+      {
+       "id": "a",
+       "text": "Fixed costs and freight did most of it: the line’s fixed costs rose ₹280.00 lakh and freight out ₹199.00 lakh, while price and material moved only with volume.",
+       "why": "Together they are ₹479 lakh of a ₹2,693.40 lakh fall. Price and material, at ₹1,094.50 lakh and ₹1,034.80 lakh, are the story."
+      },
+      {
+       "id": "b",
+       "correct": true,
+       "text": "Price and material did most of it: the April 2025 price cut took ₹1,094.50 lakh and material ₹1,034.80 lakh, while 1,30,000 extra cookers won back ₹574.60 lakh.",
+       "why": "The two biggest effects, and the volume set against them. Commission, fixed costs, freight, conversion and warranty fill in the rest."
+      },
+      {
+       "id": "c",
+       "text": "The online channel did most of it: commission rose ₹361.20 lakh, the biggest effect in the bridge, and online cookers lose money after fixed costs.",
+       "why": "Commission is fourth in the bridge, behind price, material and volume. And online cookers keep ₹118.90 each towards fixed costs; they do not lose money."
+      }
+     ]
+    },
+    {
+     "id": "change",
+     "label": "The one change",
+     "options": [
+      {
+       "id": "a",
+       "text": "Stop selling through the marketplaces: on a full-cost view each online cooker loses about ₹88, which the line would save.",
+       "why": "The ₹207 of fixed cost a cooker stays when online stops. The line would lose ₹638.85 lakh of contribution unless those buyers moved to dealers."
+      },
+      {
+       "id": "b",
+       "text": "Cut net prices by a further 4% in every channel to win back the 85,500 cookers the dealers lost to online sellers.",
+       "why": "Another ₹55 a cooker costs about ₹1,053 lakh on 2025–26’s cookers, net of commission; 85,500 cookers at 2025–26’s ₹310 bring back at most ₹265 lakh. The last cut already failed that test."
+      },
+      {
+       "id": "c",
+       "correct": true,
+       "text": "Take back the April 2025 price cut: put net prices up by about ₹55 a cooker (4%) in every channel from the next price list.",
+       "why": "Agnika’s own call, and the biggest effect in the bridge. Gopinath’s own note on the circular asked for a review if aluminium moved; it rose from June 2025."
+      }
+     ]
+    },
+    {
+     "id": "worth",
+     "label": "What it is worth, and the risk",
+     "options": [
+      {
+       "id": "a",
+       "correct": true,
+       "text": "On 2025–26’s cookers that is worth about ₹1,053 lakh a year. It pays unless Agnika loses more than 3.4 lakh cookers (17%), so track orders by channel every month.",
+       "why": "₹55 on every dealer and modern-trade cooker, plus ₹47.30 on each online one after the 14%. Lost volume is the risk, and 17% is a wide margin for it."
+      },
+      {
+       "id": "b",
+       "text": "On 2025–26’s cookers that is worth ₹1,094.50 lakh a year, ₹55 on every cooker, and the risk is small: buyers have nowhere cheaper to go.",
+       "why": "Online cookers pay 14% of the higher price too, so it is about ₹1,053 lakh. And the online brands are cheaper: holding share against them was the point of the cut."
+      },
+      {
+       "id": "c",
+       "text": "On 2025–26’s cookers that is worth about ₹1,053 lakh a year. It pays unless Agnika loses more than 1.3 lakh cookers (7%), so track orders by channel every month.",
+       "why": "1.3 lakh is how many more cookers 2025–26 sold, not where the rise stops paying. Each cooker would keep about ₹311 on average after it, so the line can lose about 3.4 lakh, 17%, before it is worse off."
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "wrap": {
+  "from": "ananya",
+  "text": "The bridge lands on ₹1,022.22 lakh: the price cut and dearer material took ₹2,129.30 lakh, and the extra cookers won back ₹574.60 lakh. Only the price was Agnika’s call, so that is the change Gopinath hears on Wednesday: about ₹55 back on every cooker, from the next price list."
+ },
+ "wrapPartial": {
+  "from": "ananya",
+  "text": "If your bridge does not land on ₹1,022.22 lakh, fix that first: the four views and the draft both stand on it. Gopinath asked for reasons in figures that add up, so each line of the draft has to agree with the bridge and the MIS."
+ },
+ "wrapRetry": {
+  "from": "ananya",
+  "text": "One cooker first: what it sold for and what it cost, in each year. Multiply each change by 19,90,000 cookers, value the extra 1,30,000 at 2024–25’s ₹442, and check that the effects land on 2025–26’s profit. Then test each view against that."
+ },
+ "passNeeds": [
+  {
+   "task": "t2",
+   "min": 0.625,
+   "note": "Your bridge needs at least five of its eight figures right, or following your figures, to pass."
+  }
+ ],
+ "model": {
+  "intro": "Line profit fell ₹2,693.40 lakh. The April 2025 price cut (₹1,094.50 lakh) and dearer material (₹1,034.80 lakh) did most of it, and the 1,30,000 extra cookers won back only ₹574.60 lakh. None of the four views holds in full, and the one change is to take back the price cut.",
+  "blocks": [
+   {
+    "type": "table",
+    "grid": true,
+    "columns": [
+     {
+      "key": "e",
+      "label": "Ranked by size"
+     },
+     {
+      "key": "amt",
+      "label": "₹ lakh",
+      "format": "amount"
+     },
+     {
+      "key": "how",
+      "label": "Worked as"
+     }
+    ],
+    "rows": [
+     {
+      "e": "Price cut, April 2025",
+      "amt": "−1,094.50",
+      "how": "₹55 × 19.9 lakh"
+     },
+     {
+      "e": "Material (aluminium ₹47 of the ₹52 a cooker)",
+      "amt": "−1,034.80",
+      "how": "₹52 × 19.9 lakh"
+     },
+     {
+      "e": "Extra cookers",
+      "amt": "+574.60",
+      "how": "1.3 lakh × ₹442"
+     },
+     {
+      "e": "Marketplace commission",
+      "amt": "−361.20",
+      "how": "Change in total"
+     },
+     {
+      "e": "Fixed costs of the line",
+      "amt": "−280.00",
+      "how": "Change in total"
+     },
+     {
+      "e": "Freight out",
+      "amt": "−199.00",
+      "how": "₹10 × 19.9 lakh"
+     },
+     {
+      "e": "Conversion",
+      "amt": "−159.20",
+      "how": "₹8 × 19.9 lakh"
+     },
+     {
+      "e": "Warranty",
+      "amt": "−139.30",
+      "how": "₹7 × 19.9 lakh"
+     },
+     {
+      "e": "Change in line profit",
+      "amt": "−2,693.40",
+      "how": "3,715.62 to 1,022.22",
+      "_class": "total"
+     }
+    ]
+   },
+   {
+    "type": "text",
+    "text": "What a cooker kept in 2025–26, by channel. The channels add up to the MIS contribution of ₹5,142.22 lakh, and every channel pays towards the same fixed costs:"
+   },
+   {
+    "type": "table",
+    "grid": true,
+    "columns": [
+     {
+      "key": "c",
+      "label": "Channel, 2025–26"
+     },
+     {
+      "key": "u",
+      "label": "Cookers",
+      "format": "int"
+     },
+     {
+      "key": "k",
+      "label": "Keeps a cooker",
+      "format": "inr"
+     },
+     {
+      "key": "v",
+      "label": "₹ lakh",
+      "format": "amount"
+     }
+    ],
+    "rows": [
+     {
+      "c": "Dealers",
+      "u": 1253700,
+      "k": 310,
+      "v": 3886.47
+     },
+     {
+      "c": "Modern trade",
+      "u": 199000,
+      "k": 310,
+      "v": 616.9
+     },
+     {
+      "c": "Online, after ₹191.10 commission",
+      "u": 537300,
+      "k": 118.9,
+      "v": 638.85
+     },
+     {
+      "c": "Contribution",
+      "u": 1990000,
+      "k": "–",
+      "v": 5142.22,
+      "_class": "total"
+     }
+    ]
+   },
+   {
+    "type": "text",
+    "text": "Taking back the cut, on 2025–26’s cookers: 14,52,700 dealer and modern-trade cookers × ₹55 = ₹798.99 lakh, plus 5,37,300 online cookers × ₹47.30 (₹55 less the marketplace’s 14%) = ₹254.14 lakh, so ₹1,053.13 lakh a year. Each cooker would then keep ₹311.32 on average, so 16.52 lakh cookers earn the same ₹5,142.22 lakh of contribution: the line can lose 3.38 lakh cookers, 17.0% at this channel mix, before it is worse off."
+   },
+   {
+    "type": "note",
+    "from": "ananya",
+    "text": "Each manager had a true fact and drew too much from it. Vikram did sell more cookers, Tanvi did grow online, Deepa’s ₹88 is real arithmetic and aluminium did rise. The bridge says which facts matter, and by how much."
+   }
+  ]
+ },
+ "principles": [
+  "Profit moves on price, volume, cost per unit and fixed costs. Split a change that way before you explain it.",
+  "Value extra volume at what a unit keeps after its own costs. A cut in price costs you on the units you would have sold anyway.",
+  "Judge a channel on what it contributes. Fixed costs stay when a channel goes."
+ ],
+ "earned": {
+  "clause": "built a price-volume-cost bridge for a product line[[ and traced a {fall} fall in its profit]][[; tested {views} {views|manager’s explanation|managers’ explanations} against the bridge]][[; drafted one pricing recommendation{rec|}]]",
+  "counts": {
+   "fall": {
+    "kind": "cell",
+    "task": "t2",
+    "row": "r9",
+    "col": "amt",
+    "abs": true,
+    "scale": 100000,
+    "format": "crore1",
+    "withRight": [
+     "r1.amt",
+     "r2.amt",
+     "r3.amt",
+     "r5.amt",
+     "r6.amt",
+     "r7.amt",
+     "r8.amt"
+    ]
+   },
+   "views": {
+    "kind": "correctQuestions",
+    "task": "t3"
+   },
+   "rec": {
+    "kind": "correctSlots",
+    "task": "t4",
+    "slots": [
+     "change"
+    ]
+   }
+  }
+ },
+ "interview": [
+  {
+   "q": "Revenue went up but profit fell. How did you work out why?",
+   "checking": "Whether you can split a change in profit into price, volume and costs, and size each part.",
+   "outline": [
+    "I split revenue into units × net price, and costs into variable cost per unit and fixed costs.",
+    "Then I bridged one year’s profit to the next, one driver at a time, until it tied.",
+    "In the simulation the price cut and dearer material took ₹21.3 crore; extra cookers won back ₹5.7 crore."
+   ]
+  },
+  {
+   "q": "Why did you recommend a price change rather than cutting costs?",
+   "checking": "Whether your recommendation follows the biggest driver the client controls, and whether you know its risk.",
+   "outline": [
+    "In the simulation the biggest driver was the client’s own price cut; at best, extra cookers repaid half.",
+    "Material was nearly as big, but aluminium is bought at each month’s rate; other costs were far smaller.",
+    "Lost volume is the risk: it still pays unless volume falls over 17%, so I’d track orders monthly."
+   ]
+  }
+ ]
+}

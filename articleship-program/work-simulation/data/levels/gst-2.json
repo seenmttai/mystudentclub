@@ -1,0 +1,2225 @@
+{
+ "id": "gst-2",
+ "domain": "gst",
+ "number": 2,
+ "title": "Annual return and reconciliation",
+ "minutes": 40,
+ "learn": [
+  "Why audited turnover and GST turnover differ, line by line",
+  "How the credit in the books ties to the year’s 3Bs",
+  "What to do with a supply that no return shows"
+ ],
+ "do": [
+  "Classify seven turnover papers and five credit items",
+  "Build the bridge for GSTR-9 and 9C",
+  "Write the mail to Mahesh"
+ ],
+ "case": {
+  "role": "Article assistant, GST team",
+  "client": "Tamhini Drivetech Private Limited, a Chakan company that makes gears, shafts and hubs for vehicle makers, with a depot at Hosur in Tamil Nadu",
+  "team": "Neethu Thomas (GST senior) and Varun Shetty, who has Hosur’s return; at Tamhini, Pallavi Shinde sends the data and Mahesh Kadam, the accounts head, approves payments",
+  "goal": "Bridge Chakan’s 2026–27 turnover and input tax credit from the audited accounts to its returns, explain every difference and find what the returns missed, before GSTR-9 and 9C are filed.",
+  "period": "Year ended 31 March 2027 · annual return due 31 December 2027",
+  "where": "Firm office, Prabhat Road · Wednesday 1 to Friday 3 December 2027"
+ },
+ "brief": {
+  "from": "neethu",
+  "time": "10:10 am",
+  "messages": [
+   "Chakan’s 2026–27 annual return is ours; Varun has Hosur’s. Start from the audited revenue and the input ledgers and walk to what Chakan’s returns show.",
+   "Every difference needs a reason or a payment. The bridge to me by Friday; we file well before the 31st."
+  ]
+ },
+ "documents": [
+  {
+   "id": "reg-note",
+   "type": "table",
+   "style": "plain",
+   "title": "Permanent file · GST registrations",
+   "kindLabel": "Firm file",
+   "heading": "Tamhini Drivetech · GST registrations (permanent file)",
+   "subtitle": "Bapat Venkatesh & Co., GST team · updated November 2027",
+   "columns": [
+    {
+     "key": "reg",
+     "label": "Registration"
+    },
+    {
+     "key": "gstin",
+     "label": "GSTIN",
+     "mono": true
+    },
+    {
+     "key": "series",
+     "label": "Invoice series"
+    }
+   ],
+   "rows": [
+    {
+     "reg": "Chakan plant, Pune (principal place)",
+     "gstin": "27ZHDCT5940H1Z4",
+     "series": "TD/MF manufactured goods · TD/TR traded goods · TD/SC scrap · TD/EX exports · TD/ST dispatches to Hosur · TD/CN credit notes"
+    },
+    {
+     "reg": "Hosur depot, Tamil Nadu (separate registration)",
+     "gstin": "33ZHDCT5940H1ZB",
+     "series": "TDH sales from the depot"
+    }
+   ],
+   "notes": [
+    "Both GSTINs are under PAN ZHDCT5940H. Each files its own GSTR-1 and GSTR-3B every month, and its own annual return, GSTR-9 with GSTR-9C.",
+    "Books: one company in TallyPrime for both registrations; audited accounts approved by the board on 18 May 2027.",
+    "2026–27 annual returns: Chakan with Neethu; Hosur with Varun."
+   ]
+  },
+  {
+   "id": "mail-pallavi",
+   "type": "letter",
+   "style": "email",
+   "title": "Pallavi’s mail · Annual return data",
+   "from": {
+    "name": "Pallavi Shinde",
+    "email": "pallavi.shinde@email.com"
+   },
+   "to": [
+    {
+     "name": "Neethu Thomas",
+     "email": "neethu.thomas@email.com"
+    }
+   ],
+   "cc": [
+    {
+     "name": "Mahesh Kadam",
+     "email": "mahesh.kadam@email.com"
+    }
+   ],
+   "date": "Tue, 30 Nov 2027, 6:52 pm",
+   "subject": "GSTR-9 data 2026–27 · Chakan",
+   "body": [
+    "Neethu ma’am,",
+    "Annual return data for 2026–27 attached: sales by GSTIN, the stock transfer, export and scrap registers, the input ledgers and the fixed asset register, all after the audit entries. On the points your team asked about:",
+    "- Credit note 001 to Ashvaratha Motors (28 March, price reduction on input shaft 1142 for January–March) is in the March books. We uploaded it with the April 2027 GSTR-1.",
+    "- Naik’s invoice 0412 of 31 March is in the March GSTR-1, and its GST went with March’s 3B. Your audit team moved the sale to April (AJE-1). Should we cut 2026–27 turnover in GSTR-9 to match?",
+    "- Kharun’s bill of 29 March was booked in March and its credit taken in March’s 3B, filed on 20 April. The audit moved it to April (AJE-8), so I think we should reverse the ₹3,35,520 in GSTR-9.",
+    "- Rankala’s bill of 31 March was entered on 1 April and its credit taken in the April 2027 3B. The audit brought it back into March (AJE-6).",
+    "- The old lathe went to Bilal Ferrous Traders on 14 December. It was sold as scrap, so plant did not ask for an invoice; the ₹45,000 came by NEFT.",
+    "- The service centre bill for MD sir’s car (February, GST ₹6,840) shows in 2B. We booked the GST to vehicle running and took no credit.",
+    "Regards,"
+   ],
+   "sign": {
+    "name": "Pallavi Shinde",
+    "role": "Accounts Executive",
+    "for": "Tamhini Drivetech Private Limited",
+    "hand": false
+   },
+   "attachments": [
+    "Sales_by_GSTIN_FY27.xlsx",
+    "Registers_FY27.pdf",
+    "Input_ledgers_FY27.pdf",
+    "FAR_disposals_FY27.pdf"
+   ]
+  },
+  {
+   "id": "rev-note",
+   "type": "table",
+   "style": "statement",
+   "title": "Audited accounts · Revenue note",
+   "kindLabel": "Accounts note",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "cin": "U29301MH2004PTC942620"
+   },
+   "heading": "Note: Revenue from operations, year ended 31 March 2027",
+   "subtitle": "Audited financial statements · amounts in ₹",
+   "columns": [
+    {
+     "key": "p",
+     "label": "Particulars"
+    },
+    {
+     "key": "y27",
+     "label": "Year ended 31 March 2027",
+     "format": "inr"
+    },
+    {
+     "key": "y26",
+     "label": "Year ended 31 March 2026",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "p": "Sale of products",
+     "_class": "head"
+    },
+    {
+     "p": "Manufactured goods – domestic",
+     "y27": 957788000,
+     "y26": 843800000,
+     "_indent": 1
+    },
+    {
+     "p": "Manufactured goods – export",
+     "y27": 19572000,
+     "y26": 17200000,
+     "_indent": 1
+    },
+    {
+     "p": "Traded goods – domestic",
+     "y27": 155700000,
+     "y26": 139000000,
+     "_indent": 1
+    },
+    {
+     "p": "Traded goods – export",
+     "y27": 17820000,
+     "y26": 15200000,
+     "_indent": 1
+    },
+    {
+     "p": "Other operating revenue: sale of scrap",
+     "y27": 32460000,
+     "y26": 28400000
+    },
+    {
+     "p": "Revenue from operations",
+     "_class": "total",
+     "y27": 1183340000,
+     "y26": 1043600000
+    }
+   ],
+   "notes": [
+    "Sale of products is shown net of credit notes for price reductions. Exports are made under a letter of undertaking, without payment of tax.",
+    "As per our report of even date · For Bapat Venkatesh & Co., Chartered Accountants (FRN 1XXXXXW) · Sudha Venkatesh, Partner (M. No. 1XXXXX) · Pune, 18 May 2027"
+   ]
+  },
+  {
+   "id": "aje",
+   "type": "table",
+   "style": "plain",
+   "title": "Audit adjustments · 2026–27",
+   "tab": "Audit entries",
+   "kindLabel": "Audit file",
+   "icon": "sheet",
+   "heading": "Tamhini Drivetech · audit adjustments passed in the books, 2026–27",
+   "subtitle": "Extract from our audit file · agreed with Mahesh Kadam and booked on 6 May 2027",
+   "columns": [
+    {
+     "key": "no",
+     "label": "No."
+    },
+    {
+     "key": "what",
+     "label": "Entry"
+    },
+    {
+     "key": "gst",
+     "label": "GST ledgers touched"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "check": false,
+   "rows": [
+    {
+     "no": "AJE-1",
+     "what": "Naik Auto Spares Distributors, invoice 0412 of 31 March: the goods left on 2 April on delivered terms. Sale reversed to advance billing; stock back at cost (₹36,34,800).",
+     "gst": "None (output GST stays as invoiced)",
+     "amt": 4680000
+    },
+    {
+     "no": "AJE-2",
+     "what": "New screw air compressor booked as repairs: moved to plant and machinery.",
+     "gst": "None",
+     "amt": 485000
+    },
+    {
+     "no": "AJE-3",
+     "what": "VMC not ready for use on 31 March: moved to capital work-in-progress.",
+     "gst": "None",
+     "amt": 5460000
+    },
+    {
+     "no": "AJE-4",
+     "what": "CNC turning centre: depreciation from 12 August, not 1 October.",
+     "gst": "None",
+     "amt": 59342
+    },
+    {
+     "no": "AJE-5",
+     "what": "Finished goods FG-SH-0907 written down to realisable value.",
+     "gst": "None",
+     "amt": 1067640
+    },
+    {
+     "no": "AJE-6",
+     "what": "Rankala Forgings, bill RF/2412/26-27 of 31 March: blanks in at 7:40 pm on 31 March, entered on 1 April; purchase brought into March. Also count differences (bearings ₹36,500, wet boxes ₹17,280).",
+     "gst": "Input CGST ₹4,450 · Input SGST ₹4,450 (in)",
+     "amt": 58340
+    },
+    {
+     "no": "AJE-7",
+     "what": "Payroll overpayments shown as recoverable.",
+     "gst": "None",
+     "amt": 255000
+    },
+    {
+     "no": "AJE-8",
+     "what": "Kharun Steels, bill 4418 of 29 March: steel received on 2 April. Purchase moved to April.",
+     "gst": "Input IGST ₹3,35,520 (out)",
+     "amt": 2199520
+    }
+   ],
+   "notes": [
+    "Entries 9 to 13 are FD interest, bank items and tax; none touches sales, purchases or a GST ledger.",
+    "Amount: the main figure of each entry; for AJE-6 and AJE-8, the supplier’s bill with its GST."
+   ]
+  },
+  {
+   "id": "gstr9-wk",
+   "type": "table",
+   "style": "sheet",
+   "title": "Varun’s sheet · GSTR-9 figures",
+   "sheetName": "GSTR-9 Chakan",
+   "freeze": true,
+   "otherSheets": [
+    "Hosur",
+    "Notes"
+   ],
+   "formula": "=SUM(B3:B6)",
+   "columns": [
+    {
+     "key": "p",
+     "label": "GSTR-9 as the portal filled it (Chakan)"
+    },
+    {
+     "key": "t",
+     "label": "Taxable value",
+     "format": "inr"
+    },
+    {
+     "key": "i",
+     "label": "IGST",
+     "format": "inr"
+    },
+    {
+     "key": "c",
+     "label": "CGST",
+     "format": "inr"
+    },
+    {
+     "key": "s",
+     "label": "SGST",
+     "format": "inr"
+    },
+    {
+     "key": "x",
+     "label": "Total tax",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "_class": "head",
+     "p": "Supplies, from the GSTR-1s for April 2026 – March 2027"
+    },
+    {
+     "p": "B2B within Maharashtra",
+     "t": 609954000,
+     "i": 0,
+     "c": 54895860,
+     "s": 54895860,
+     "x": 109791720
+    },
+    {
+     "p": "B2B to other States, Hosur depot included",
+     "t": 530251000,
+     "i": 95445180,
+     "c": 0,
+     "s": 0,
+     "x": 95445180
+    },
+    {
+     "p": "Exports without payment of tax (LUT)",
+     "t": 37392000,
+     "i": 0,
+     "c": 0,
+     "s": 0,
+     "x": 0
+    },
+    {
+     "p": "Credit notes to registered buyers",
+     "t": 0,
+     "i": 0,
+     "c": 0,
+     "s": 0,
+     "x": 0
+    },
+    {
+     "_class": "total",
+     "p": "Total turnover",
+     "t": 1177597000,
+     "i": 95445180,
+     "c": 54895860,
+     "s": 54895860,
+     "x": 205236900
+    },
+    {
+     "_class": "head",
+     "p": "Credit, from the 3Bs for April 2026 – March 2027"
+    },
+    {
+     "p": "Credit taken, net of reversals",
+     "i": 83003400,
+     "c": 38870214,
+     "s": 38870214,
+     "x": 160743828,
+     "_check": false
+    },
+    {
+     "p": "of which reverse charge (legal fees)",
+     "i": 0,
+     "c": 21600,
+     "s": 21600,
+     "x": 43200,
+     "_class": "muted",
+     "_check": false
+    }
+   ],
+   "notes": [
+    "Portal figures for Chakan only. Anything first reported in a 2027–28 return is not in them. Varun"
+   ]
+  },
+  {
+   "id": "sales-gstin",
+   "type": "table",
+   "style": "tally",
+   "title": "Sales ledgers by GSTIN · 2026–27",
+   "tab": "Sales by GSTIN",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune"
+   },
+   "ledger": "Sales ledgers · GSTIN-wise (cost centres)",
+   "subtitle": "After audit adjustments; as in the audited revenue note",
+   "period": "1-Apr-2026 to 31-Mar-2027",
+   "columns": [
+    {
+     "key": "p",
+     "label": "Particulars"
+    },
+    {
+     "key": "v",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "_class": "head",
+     "p": "Chakan · GSTIN 27ZHDCT5940H1Z4"
+    },
+    {
+     "p": "Sales – manufactured goods (domestic)",
+     "v": 762068000
+    },
+    {
+     "p": "Sales – manufactured goods (export)",
+     "v": 19572000
+    },
+    {
+     "p": "Sales – traded goods (domestic)",
+     "v": 155700000
+    },
+    {
+     "p": "Sales – traded goods (export)",
+     "v": 17820000
+    },
+    {
+     "p": "Scrap sales",
+     "v": 32460000
+    },
+    {
+     "_class": "subtotal",
+     "p": "Chakan total",
+     "v": 987620000
+    },
+    {
+     "_class": "head",
+     "p": "Hosur depot · GSTIN 33ZHDCT5940H1ZB"
+    },
+    {
+     "p": "Sales – manufactured goods (domestic)",
+     "v": 195720000
+    },
+    {
+     "_class": "subtotal",
+     "p": "Hosur depot total",
+     "v": 195720000
+    },
+    {
+     "_class": "total",
+     "p": "Revenue from operations",
+     "v": 1183340000
+    }
+   ],
+   "notes": [
+    "Hosur depot sells within Tamil Nadu on its own TDH invoices."
+   ]
+  },
+  {
+   "id": "exp-reg",
+   "type": "table",
+   "style": "register",
+   "title": "Export register · 2026–27",
+   "tab": "Export register",
+   "heading": "Export register (under LUT)",
+   "company": "Tamhini Drivetech Private Limited, Chakan",
+   "subtitle": "Buyer: Kilimani Motor Spares Limited, Nairobi, Kenya · port of loading Nhava Sheva",
+   "columns": [
+    {
+     "key": "n",
+     "label": "Invoice no."
+    },
+    {
+     "key": "d",
+     "label": "Date"
+    },
+    {
+     "key": "sb",
+     "label": "Shipping bill",
+     "mono": true
+    },
+    {
+     "key": "v",
+     "label": "Value (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "n": "TD/EX/26-27/001",
+     "d": "18-05-2026",
+     "sb": "4417302",
+     "v": 5983000
+    },
+    {
+     "n": "TD/EX/26-27/002",
+     "d": "16-07-2026",
+     "sb": "5219864",
+     "v": 6357000
+    },
+    {
+     "n": "TD/EX/26-27/003",
+     "d": "17-09-2026",
+     "sb": "6028417",
+     "v": 5983000
+    },
+    {
+     "n": "TD/EX/26-27/004",
+     "d": "19-11-2026",
+     "sb": "6830295",
+     "v": 6357000
+    },
+    {
+     "n": "TD/EX/26-27/005",
+     "d": "21-01-2027",
+     "sb": "7617058",
+     "v": 6356000
+    },
+    {
+     "n": "TD/EX/26-27/006",
+     "d": "18-03-2027",
+     "sb": "8402736",
+     "v": 6356000
+    },
+    {
+     "_class": "total",
+     "n": "Total",
+     "d": "",
+     "sb": "",
+     "v": 37392000
+    }
+   ],
+   "notes": [
+    "Letter of undertaking for 2026–27 furnished on 28 March 2026: no IGST charged on these invoices.",
+    "Ledgers: manufactured goods (export) ₹1,95,72,000 and traded goods (export) ₹1,78,20,000. Each invoice is in that month’s GSTR-1 under exports without payment of tax."
+   ]
+  },
+  {
+   "id": "fa-del",
+   "type": "table",
+   "style": "register",
+   "title": "Fixed asset register · disposals",
+   "tab": "Asset register",
+   "heading": "Fixed asset register · disposals, 2026–27",
+   "company": "Tamhini Drivetech Private Limited, Chakan",
+   "subtitle": "Plant and machinery",
+   "check": false,
+   "columns": [
+    {
+     "key": "a",
+     "label": "Asset no.",
+     "mono": true
+    },
+    {
+     "key": "d",
+     "label": "Description"
+    },
+    {
+     "key": "cost",
+     "label": "Cost (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "dep",
+     "label": "Depreciation to date (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "wdv",
+     "label": "Book value (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "on",
+     "label": "Sold on"
+    },
+    {
+     "key": "to",
+     "label": "Sold to"
+    },
+    {
+     "key": "sv",
+     "label": "Sale value (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "pr",
+     "label": "Profit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "a": "FA-08-112",
+     "d": "Conventional lathe, bought 2008",
+     "cost": 620000,
+     "dep": 589000,
+     "wdv": 31000,
+     "on": "14-12-2026",
+     "to": "Bilal Ferrous Traders (as scrap)",
+     "sv": 45000,
+     "pr": 14000
+    }
+   ],
+   "notes": [
+    "Sale value received by NEFT on 14-12-2026 into the cash credit account (JV/12/0418). Profit of ₹14,000 taken to “Profit on sale of property, plant and equipment” under other income.",
+    "No other asset was sold or scrapped in the year."
+   ]
+  },
+  {
+   "id": "nrgp",
+   "type": "card",
+   "style": "slip",
+   "title": "Gate pass · Old lathe",
+   "tab": "Gate pass",
+   "issuer": "Tamhini Drivetech Private Limited · Chakan plant",
+   "heading": "Non-returnable gate pass",
+   "number": "NRGP/26-27/0388",
+   "handwritten": true,
+   "fields": [
+    {
+     "label": "Date",
+     "value": "14-12-2026"
+    },
+    {
+     "label": "Issued to",
+     "value": "Bilal Ferrous Traders, Bhosari"
+    },
+    {
+     "label": "Material",
+     "value": "Old conventional lathe (FA-08-112), 1 no., as scrap"
+    },
+    {
+     "label": "Vehicle",
+     "value": "MH 12 SX 9024"
+    },
+    {
+     "label": "Against",
+     "value": "MD’s mail of 10-12-2026 · ₹45,000 by NEFT, received"
+    },
+    {
+     "label": "Invoice / DC no.",
+     "value": "–"
+    },
+    {
+     "label": "Prepared by",
+     "value": "D. More, Stores"
+    },
+    {
+     "label": "Approved by",
+     "value": "V. Reddy, Plant head"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "SECURITY · MAIN GATE\nOUT 14 DEC 2026",
+     "color": "red",
+     "at": "bottom-right",
+     "rotate": -4
+    }
+   ]
+  },
+  {
+   "id": "st-reg",
+   "type": "table",
+   "style": "tally",
+   "title": "Stock transfer register · 2026–27",
+   "tab": "Transfer register",
+   "kindLabel": "Register",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune"
+   },
+   "ledger": "Stock Transfer Out · Chakan to Hosur depot · month-wise",
+   "subtitle": "Voucher type: Stock Transfer Out (posted to no sales ledger)",
+   "period": "1-Apr-2026 to 31-Mar-2027",
+   "columns": [
+    {
+     "key": "m",
+     "label": "Month"
+    },
+    {
+     "key": "n",
+     "label": "TD/ST invoices"
+    },
+    {
+     "key": "t",
+     "label": "Taxable value",
+     "format": "inr"
+    },
+    {
+     "key": "i",
+     "label": "IGST",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "m": "Apr 2026",
+     "n": "0001–0012",
+     "t": 17685000,
+     "i": 3183300
+    },
+    {
+     "m": "May 2026",
+     "n": "0013–0023",
+     "t": 14405000,
+     "i": 2592900
+    },
+    {
+     "m": "Jun 2026",
+     "n": "0024–0034",
+     "t": 14584000,
+     "i": 2625120
+    },
+    {
+     "m": "Jul 2026",
+     "n": "0035–0045",
+     "t": 14945000,
+     "i": 2690100
+    },
+    {
+     "m": "Aug 2026",
+     "n": "0046–0056",
+     "t": 15485000,
+     "i": 2787300
+    },
+    {
+     "m": "Sep 2026",
+     "n": "0057–0067",
+     "t": 16205000,
+     "i": 2916900
+    },
+    {
+     "m": "Oct 2026",
+     "n": "0068–0075",
+     "t": 16565000,
+     "i": 2981700
+    },
+    {
+     "m": "Nov 2026",
+     "n": "0076–0085",
+     "t": 13324000,
+     "i": 2398320
+    },
+    {
+     "m": "Dec 2026",
+     "n": "0086–0095",
+     "t": 13685000,
+     "i": 2463300
+    },
+    {
+     "m": "Jan 2027",
+     "n": "0096–0106",
+     "t": 15124000,
+     "i": 2722320
+    },
+    {
+     "m": "Feb 2027",
+     "n": "0107–0117",
+     "t": 15305000,
+     "i": 2754900
+    },
+    {
+     "m": "Mar 2027",
+     "n": "0118–0129",
+     "t": 16745000,
+     "i": 3014100
+    },
+    {
+     "_class": "total",
+     "m": "Total",
+     "n": "",
+     "t": 184057000,
+     "i": 33130260
+    }
+   ],
+   "notes": [
+    "Consignee on every invoice: Tamhini Drivetech Private Limited (Hosur depot), GSTIN 33ZHDCT5940H1ZB. Reported each month in Chakan’s GSTR-1, B2B."
+   ]
+  },
+  {
+   "id": "scrap-reg",
+   "type": "table",
+   "style": "tally",
+   "title": "Scrap sales register · 2026–27",
+   "tab": "Scrap register",
+   "kindLabel": "Register",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune"
+   },
+   "ledger": "Scrap sales · Bilal Ferrous Traders · month-wise",
+   "subtitle": "Steel turnings and borings, by weighbridge slip · TD/SC series",
+   "period": "1-Apr-2026 to 31-Mar-2027",
+   "columns": [
+    {
+     "key": "m",
+     "label": "Month"
+    },
+    {
+     "key": "n",
+     "label": "TD/SC invoices"
+    },
+    {
+     "key": "t",
+     "label": "Taxable value",
+     "format": "inr"
+    },
+    {
+     "key": "c",
+     "label": "CGST",
+     "format": "inr"
+    },
+    {
+     "key": "s",
+     "label": "SGST",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "m": "Apr 2026",
+     "n": "0001–0017",
+     "t": 2467000,
+     "c": 222030,
+     "s": 222030
+    },
+    {
+     "m": "May 2026",
+     "n": "0018–0035",
+     "t": 2597000,
+     "c": 233730,
+     "s": 233730
+    },
+    {
+     "m": "Jun 2026",
+     "n": "0036–0053",
+     "t": 2629000,
+     "c": 236610,
+     "s": 236610
+    },
+    {
+     "m": "Jul 2026",
+     "n": "0054–0071",
+     "t": 2694000,
+     "c": 242460,
+     "s": 242460
+    },
+    {
+     "m": "Aug 2026",
+     "n": "0072–0089",
+     "t": 2792000,
+     "c": 251280,
+     "s": 251280
+    },
+    {
+     "m": "Sep 2026",
+     "n": "0090–0107",
+     "t": 2921000,
+     "c": 262890,
+     "s": 262890
+    },
+    {
+     "m": "Oct 2026",
+     "n": "0108–0130",
+     "t": 2986000,
+     "c": 268740,
+     "s": 268740
+    },
+    {
+     "m": "Nov 2026",
+     "n": "0131–0146",
+     "t": 2402000,
+     "c": 216180,
+     "s": 216180
+    },
+    {
+     "m": "Dec 2026",
+     "n": "0147–0163",
+     "t": 2467000,
+     "c": 222030,
+     "s": 222030
+    },
+    {
+     "m": "Jan 2027",
+     "n": "0164–0181",
+     "t": 2727000,
+     "c": 245430,
+     "s": 245430
+    },
+    {
+     "m": "Feb 2027",
+     "n": "0182–0199",
+     "t": 2759000,
+     "c": 248310,
+     "s": 248310
+    },
+    {
+     "m": "Mar 2027",
+     "n": "0200–0219",
+     "t": 3019000,
+     "c": 271710,
+     "s": 271710
+    },
+    {
+     "_class": "total",
+     "m": "Total",
+     "n": "",
+     "t": 32460000,
+     "c": 2921400,
+     "s": 2921400
+    }
+   ],
+   "notes": [
+    "Buyer GSTIN 27XOAPA1054F1Z1 (Bilal Ansari, proprietor, Bhosari). Every TD/SC invoice is in Chakan’s GSTR-1, B2B."
+   ]
+  },
+  {
+   "id": "gstr1-apr",
+   "type": "table",
+   "style": "portal",
+   "title": "GSTR-1 · April 2027 · credit notes",
+   "tab": "April GSTR-1",
+   "kindLabel": "Portal print",
+   "brand": "Goods and Services Tax",
+   "heading": "GSTR-1 · Credit / debit notes (registered)",
+   "subtitle": "Filed return · extract",
+   "meta": [
+    {
+     "label": "GSTIN",
+     "value": "27ZHDCT5940H1Z4"
+    },
+    {
+     "label": "Legal name",
+     "value": "Tamhini Drivetech Private Limited"
+    },
+    {
+     "label": "Tax period",
+     "value": "April 2027"
+    },
+    {
+     "label": "Filed on",
+     "value": "10/05/2027"
+    }
+   ],
+   "columns": [
+    {
+     "key": "r",
+     "label": "Recipient"
+    },
+    {
+     "key": "g",
+     "label": "GSTIN",
+     "mono": true
+    },
+    {
+     "key": "n",
+     "label": "Note no."
+    },
+    {
+     "key": "d",
+     "label": "Note date"
+    },
+    {
+     "key": "ty",
+     "label": "Type"
+    },
+    {
+     "key": "t",
+     "label": "Taxable value (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "c",
+     "label": "Central tax (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "s",
+     "label": "State/UT tax (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "r": "Ashvaratha Motors Limited",
+     "g": "27VSDCA4210X1ZM",
+     "n": "TD/CN/26-27/001",
+     "d": "28-03-2027",
+     "ty": "Credit note",
+     "t": 1240000,
+     "c": 111600,
+     "s": 111600
+    }
+   ],
+   "notes": [
+    "No other credit or debit note in this period."
+   ]
+  },
+  {
+   "id": "itc-led",
+   "type": "table",
+   "style": "tally",
+   "title": "GST input ledgers · 2026–27",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune"
+   },
+   "ledger": "Duties and taxes · GST input ledgers · credit booked in the year",
+   "subtitle": "After audit adjustments; debits for the year less reversals",
+   "period": "1-Apr-2026 to 31-Mar-2027",
+   "columns": [
+    {
+     "key": "p",
+     "label": "Ledger"
+    },
+    {
+     "key": "v",
+     "label": "Credit booked (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "_class": "head",
+     "p": "Chakan · GSTIN 27ZHDCT5940H1Z4"
+    },
+    {
+     "p": "Input IGST – MH",
+     "v": 82667880
+    },
+    {
+     "p": "Input CGST – MH",
+     "v": 38874664
+    },
+    {
+     "p": "Input SGST – MH",
+     "v": 38874664
+    },
+    {
+     "_class": "subtotal",
+     "p": "Chakan total",
+     "v": 160417208
+    },
+    {
+     "_class": "head",
+     "p": "Hosur depot · GSTIN 33ZHDCT5940H1ZB"
+    },
+    {
+     "p": "Input IGST – TN",
+     "v": 33130260
+    },
+    {
+     "p": "Input CGST – TN",
+     "v": 270000
+    },
+    {
+     "p": "Input SGST – TN",
+     "v": 270000
+    },
+    {
+     "_class": "subtotal",
+     "p": "Hosur depot total",
+     "v": 33670260
+    },
+    {
+     "_class": "total",
+     "p": "All GST input ledgers",
+     "v": 194087468
+    }
+   ],
+   "notes": [
+    "Input CGST and SGST – MH include reverse charge on legal fees, ₹21,600 each. Input IGST – TN is the IGST on Chakan’s transfer invoices to the depot; Input CGST and SGST – TN are on the depot rent."
+   ]
+  },
+  {
+   "id": "rcm-reg",
+   "type": "table",
+   "style": "tally",
+   "title": "Reverse charge register · 2026–27",
+   "tab": "RCM register",
+   "kindLabel": "Register",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune"
+   },
+   "ledger": "GST payable under reverse charge – MH",
+   "period": "1-Apr-2026 to 31-Mar-2027",
+   "columns": [
+    {
+     "key": "m",
+     "label": "Month"
+    },
+    {
+     "key": "a",
+     "label": "Advocate"
+    },
+    {
+     "key": "f",
+     "label": "Fee (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "c",
+     "label": "CGST (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "s",
+     "label": "SGST (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "m": "Jun 2026",
+     "a": "Retainer advocate (labour)",
+     "f": 60000,
+     "c": 5400.0,
+     "s": 5400.0
+    },
+    {
+     "m": "Sep 2026",
+     "a": "Retainer advocate (labour)",
+     "f": 60000,
+     "c": 5400.0,
+     "s": 5400.0
+    },
+    {
+     "m": "Dec 2026",
+     "a": "Adv. Medha Paranjpe",
+     "f": 60000,
+     "c": 5400.0,
+     "s": 5400.0
+    },
+    {
+     "m": "Mar 2027",
+     "a": "Adv. Medha Paranjpe",
+     "f": 60000,
+     "c": 5400.0,
+     "s": 5400.0
+    },
+    {
+     "_class": "total",
+     "m": "Total",
+     "a": "",
+     "f": 240000,
+     "c": 21600,
+     "s": 21600
+    }
+   ],
+   "notes": [
+    "Tax paid in cash with each month’s 3B; the same amount taken as credit in that 3B and debited to Input CGST and SGST – MH."
+   ]
+  },
+  {
+   "id": "grn-kharun",
+   "type": "grn",
+   "title": "Kharun Steels · Goods receipt note",
+   "tab": "GRN",
+   "number": "GRN-2027-04-0007",
+   "date": "02-04-2027",
+   "unit": "RM yard",
+   "vendor": "Kharun Steels Private Limited",
+   "poRef": "TD/PO/2026-27/1126",
+   "invoiceRef": "KS/2026-27/4418 dt 29-03-2027",
+   "challan": "LR 8817 of 30-03-2027",
+   "vehicle": "CG 04 MK 7712",
+   "lines": [
+    {
+     "desc": "EN8 bright bar, Ø36 mm",
+     "unit": "kg",
+     "qtyChallan": 25000,
+     "qtyReceived": 25000,
+     "qtyAccepted": 25000,
+     "qtyRejected": 0
+    },
+    {
+     "desc": "EN8 bright bar, Ø28 mm",
+     "unit": "kg",
+     "qtyChallan": 2500,
+     "qtyReceived": 2500,
+     "qtyAccepted": 2500,
+     "qtyRejected": 0
+    }
+   ],
+   "receivedBy": "Santosh Kale",
+   "qcBy": "Neha Bansode",
+   "remarks": "Truck at gate 02-04-2027, 11:05 (gate entry G/3878). Weighbridge slip 77689."
+  },
+  {
+   "id": "veh-led",
+   "type": "table",
+   "style": "tally",
+   "title": "Vehicle running ledger · February 2027",
+   "tab": "Vehicle ledger",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune"
+   },
+   "ledger": "Ledger: Vehicle running",
+   "subtitle": "Extract by Pallavi Shinde",
+   "period": "1-Feb-2027 to 28-Feb-2027",
+   "columns": [
+    {
+     "key": "d",
+     "label": "Date"
+    },
+    {
+     "key": "p",
+     "label": "Particulars"
+    },
+    {
+     "key": "vn",
+     "label": "Vch no."
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "d": "15-02-2027",
+     "p": "Ravet Car Care: bill 1184, MD’s car service",
+     "vn": "2716",
+     "dr": 44840
+    },
+    {
+     "d": "",
+     "p": "Fuel, tolls and parking: 14 entries, each below ₹10,000",
+     "vn": "",
+     "dr": 36760,
+     "_class": "muted"
+    },
+    {
+     "_class": "total",
+     "d": "",
+     "p": "Total, February 2027",
+     "vn": "",
+     "dr": 81600
+    }
+   ],
+   "notes": [
+    "Narration, 2716: Being the service bill for the MD’s car; GST ₹6,840 included, not taken as input credit (blocked)."
+   ]
+  },
+  {
+   "id": "grn-rankala",
+   "type": "grn",
+   "title": "Rankala Forgings · Goods receipt note",
+   "tab": "GRN",
+   "number": "GRN-2027-04-0003",
+   "date": "01-04-2027",
+   "unit": "Main stores, Bay A",
+   "vendor": "Rankala Forgings Private Limited",
+   "poRef": "TD/PO/2026-27/1138",
+   "invoiceRef": "RF/2412/26-27 dt 31.03.2027",
+   "challan": "DC 2412",
+   "vehicle": "MH 09 GA 6107",
+   "lines": [
+    {
+     "desc": "Forged gear blank GB-110 (20MnCr5), normalised",
+     "unit": "nos",
+     "qtyChallan": 120,
+     "qtyReceived": 120,
+     "qtyAccepted": 120,
+     "qtyRejected": 0
+    }
+   ],
+   "receivedBy": "Ajay Thube",
+   "qcBy": "Shrikant Lohar",
+   "remarks": "Material came in at 7:40 pm on 31-03-2027 (gate entry G/3871); GRN made next morning."
+  }
+ ],
+ "tasks": [
+  {
+   "id": "t1",
+   "type": "items",
+   "stage": "Fieldwork",
+   "title": "Turnover: accounts to returns",
+   "weight": 4,
+   "noun": [
+    "paper",
+    "papers"
+   ],
+   "prompt": "Walk from the audited revenue to what Chakan’s 2026–27 GSTR-1s show. For each paper, say what it does to the accounts figure and why. Pallavi’s mail, the revenue note, Varun’s sheet and the registrations file are under Other papers. Your calls go to Neethu when you move on.",
+   "lockOnLeave": {
+    "ask": "Hand your turnover calls to Neethu?",
+    "note": "You can’t change them after this.",
+    "yes": "Hand them in",
+    "done": "Handed to Neethu. You can read your calls but not change them."
+   },
+   "hints": [
+    "Same two questions as October’s tie-up, now for the whole year: is it in the audited revenue, and is it in Chakan’s GSTR-1s? Only a yes and a no make a difference.",
+    "The revenue bridge can’t see what is in neither. Look at what left the company outside revenue."
+   ],
+   "columns": [
+    {
+     "key": "label"
+    },
+    {
+     "key": "amount",
+     "format": "inr"
+    }
+   ],
+   "fields": [
+    {
+     "id": "effect",
+     "kind": "choice",
+     "label": "On the way to Chakan’s GSTR-1s",
+     "short": "Effect",
+     "gate": true,
+     "neutral": true,
+     "options": [
+      {
+       "id": "out",
+       "label": "Take out",
+       "short": "Take out"
+      },
+      {
+       "id": "add",
+       "label": "Add",
+       "short": "Add"
+      },
+      {
+       "id": "none",
+       "label": "No difference",
+       "short": "No difference"
+      },
+      {
+       "id": "tax",
+       "label": "In no return: tax to pay",
+       "short": "Tax to pay"
+      }
+     ]
+    },
+    {
+     "id": "why",
+     "kind": "choice",
+     "label": "Why",
+     "showIf": {
+      "effect": [
+       "out",
+       "add"
+      ]
+     },
+     "options": [
+      {
+       "id": "gstin",
+       "label": "Billed on the Hosur depot’s own GSTIN"
+      },
+      {
+       "id": "transfer",
+       "label": "A supply to Tamhini’s own GSTIN in another State"
+      },
+      {
+       "id": "moved",
+       "label": "Invoiced in March; the audit moved the sale to April"
+      },
+      {
+       "id": "cn",
+       "label": "Credit note in the March books, uploaded in April 2027"
+      }
+     ]
+    },
+    {
+     "id": "note",
+     "kind": "text",
+     "label": "Your note for the file",
+     "placeholder": "For example: which paper shows it, and in which month"
+    }
+   ],
+   "docs": [
+    "mail-pallavi",
+    "rev-note",
+    "aje",
+    "gstr9-wk",
+    "reg-note",
+    "sales-gstin",
+    "exp-reg",
+    "fa-del",
+    "nrgp",
+    "st-reg",
+    "scrap-reg",
+    "gstr1-apr"
+   ],
+   "items": [
+    {
+     "id": "s1",
+     "label": "Hosur depot’s sales",
+     "short": "Hosur",
+     "amount": 195720000,
+     "docs": [
+      "sales-gstin"
+     ],
+     "answer": {
+      "effect": "out",
+      "why": "gstin"
+     },
+     "note": "Take Hosur out first. The depot bills on its own Tamil Nadu GSTIN and files its own GSTR-9 and 9C; Varun has that one. Chakan’s bridge starts at ₹98,76,20,000."
+    },
+    {
+     "id": "s2",
+     "label": "Exports to Kenya under LUT",
+     "short": "exports",
+     "amount": 37392000,
+     "docs": [
+      "exp-reg"
+     ],
+     "answer": {
+      "effect": "none"
+     },
+     "note": "No difference. Exports under the LUT carry no tax, but they are still in Chakan’s GSTR-1, under exports, and in its turnover, just as they are in revenue. No tax doesn’t mean no reporting."
+    },
+    {
+     "id": "s3",
+     "label": "Naik Auto Spares · invoice 0412 of 31 March",
+     "short": "Naik",
+     "amount": 4680000,
+     "docs": [
+      "aje"
+     ],
+     "answer": {
+      "effect": "add",
+      "why": "moved"
+     },
+     "note": "Add. The invoice was issued on 31 March, so its GST belongs to March and was paid. The audit moved only the revenue to April, because the goods left on 2 April. Nothing to undo in the returns."
+    },
+    {
+     "id": "s4",
+     "label": "Old lathe sold on 14 December",
+     "short": "the lathe",
+     "amount": 45000,
+     "docs": [
+      "fa-del",
+      "nrgp"
+     ],
+     "weight": 3,
+     "answer": {
+      "effect": "tax"
+     },
+     "note": "In no return. A business asset sold for ₹45,000 is a supply, scrap or not, and Bilal got no invoice. Only the profit sits in other income, so the revenue bridge can’t show it; the asset register does. Tax to pay."
+    },
+    {
+     "id": "s5",
+     "label": "Stock transfers to the Hosur depot",
+     "short": "transfers",
+     "amount": 184057000,
+     "docs": [
+      "st-reg"
+     ],
+     "answer": {
+      "effect": "add",
+      "why": "transfer"
+     },
+     "note": "Add. Goods sent to Tamhini’s own Hosur GSTIN are a supply between distinct persons, invoiced with IGST and in Chakan’s GSTR-1, but they never touch a sales ledger."
+    },
+    {
+     "id": "s6",
+     "label": "Scrap sales to Bilal Ferrous",
+     "short": "scrap",
+     "amount": 32460000,
+     "docs": [
+      "scrap-reg"
+     ],
+     "answer": {
+      "effect": "none"
+     },
+     "note": "No difference. Every load went to Bilal on a TD/SC tax invoice, sits in revenue from operations and is in GSTR-1. The bridge moves only what is in one and not the other."
+    },
+    {
+     "id": "s7",
+     "label": "Ashvaratha Motors · credit note 001 of 28 March",
+     "short": "Ashvaratha",
+     "amount": 1240000,
+     "docs": [
+      "gstr1-apr"
+     ],
+     "answer": {
+      "effect": "add",
+      "why": "cn"
+     },
+     "note": "Add. The credit note cut March’s revenue, but it was uploaded with April 2027’s GSTR-1, so the year’s GSTR-1s don’t have it. In GSTR-9 it goes in the part for this year’s items declared in next year’s returns."
+    }
+   ]
+  },
+  {
+   "id": "t2",
+   "type": "items",
+   "stage": "Fieldwork",
+   "title": "Credit: books to returns",
+   "weight": 4,
+   "noun": [
+    "item",
+    "items"
+   ],
+   "prompt": "Now the credit: from the input ledgers in the audited books to the credit Chakan’s 2026–27 3Bs took. For each item, say where it sits. The input ledgers, Varun’s sheet, the audit adjustments and Pallavi’s mail are under Other papers. Your calls go to Neethu when you move on.",
+   "lockOnLeave": {
+    "ask": "Hand your credit calls to Neethu?",
+    "note": "You can’t change them after this.",
+    "yes": "Hand them in",
+    "done": "Handed to Neethu. You can read your calls but not change them."
+   },
+   "hints": [
+    "Same two questions: is it in Chakan’s books for 2026–27, and in a 2026–27 3B? Two audit entries moved bills across 31 March, one each way."
+   ],
+   "columns": [
+    {
+     "key": "label"
+    },
+    {
+     "key": "amount",
+     "format": "inr"
+    }
+   ],
+   "fields": [
+    {
+     "id": "effect",
+     "kind": "choice",
+     "label": "On the way to Chakan’s 3Bs",
+     "short": "Effect",
+     "gate": true,
+     "neutral": true,
+     "options": [
+      {
+       "id": "out",
+       "label": "Take out: Hosur’s credit",
+       "short": "Take out"
+      },
+      {
+       "id": "r3b",
+       "label": "3B first: this year’s 3B, next year’s books",
+       "short": "3B first"
+      },
+      {
+       "id": "rbk",
+       "label": "Books first: this year’s books, next year’s 3B",
+       "short": "Books first"
+      },
+      {
+       "id": "none",
+       "label": "No difference",
+       "short": "No difference"
+      }
+     ]
+    },
+    {
+     "id": "note",
+     "kind": "text",
+     "label": "Your note for the file",
+     "placeholder": "For example: claimed in July’s 3B; booked in July"
+    }
+   ],
+   "docs": [
+    "itc-led",
+    "gstr9-wk",
+    "aje",
+    "mail-pallavi",
+    "rcm-reg",
+    "grn-kharun",
+    "veh-led",
+    "grn-rankala"
+   ],
+   "items": [
+    {
+     "id": "c1",
+     "label": "Hosur depot’s input ledgers",
+     "short": "Hosur",
+     "amount": 33670260,
+     "docs": [],
+     "answer": {
+      "effect": "out"
+     },
+     "note": "Take them out. That IGST is the tax on Chakan’s transfer invoices, which Hosur claims, and the CGST and SGST are on the depot rent. Hosur’s 9C explains them; Chakan’s starts at ₹16,04,17,208."
+    },
+    {
+     "id": "c2",
+     "label": "Reverse charge on legal fees",
+     "short": "the fees",
+     "amount": 43200,
+     "docs": [
+      "rcm-reg"
+     ],
+     "answer": {
+      "effect": "none"
+     },
+     "note": "No difference. Tamhini paid the tax on its legal fees in cash and took the same ₹43,200 as credit in those 3Bs; the books carry exactly that."
+    },
+    {
+     "id": "c3",
+     "label": "Kharun Steels · bill of 29 March",
+     "short": "Kharun",
+     "amount": 335520,
+     "docs": [
+      "grn-kharun"
+     ],
+     "answer": {
+      "effect": "r3b"
+     },
+     "note": "In March’s 3B, out of the 2026–27 books: the steel came in on 2 April, so the audit moved the bill to April. One claim, in a different year from the books: timing. Watch for a second claim."
+    },
+    {
+     "id": "c4",
+     "label": "Service centre bill · MD’s car",
+     "short": "the car bill",
+     "amount": 6840,
+     "docs": [
+      "veh-led"
+     ],
+     "answer": {
+      "effect": "none"
+     },
+     "note": "No difference. Repairs of a car like the MD’s are blocked credit, so the ₹6,840 went to vehicle running: it is in neither the input ledgers nor the 3Bs’ net credit. A bill showing in 2B doesn’t make its credit claimable."
+    },
+    {
+     "id": "c5",
+     "label": "Rankala Forgings · bill of 31 March",
+     "short": "Rankala",
+     "amount": 8900,
+     "docs": [
+      "grn-rankala"
+     ],
+     "answer": {
+      "effect": "rbk"
+     },
+     "note": "Kharun the other way round. The blanks came in at 7:40 pm on 31 March, so the audit put the bill in March; the credit went in April 2027’s 3B, inside the time limit. Timing again."
+    }
+   ]
+  },
+  {
+   "id": "t3",
+   "type": "worksheet",
+   "stage": "Review",
+   "title": "Build the bridge",
+   "prompt": "Put your calls into figures. Enter each line as it moves the accounts figure, minus to take out and plus to add, then each total; both should equal Varun’s sheet. Last, the lathe: its value and 18% GST on that value; the deal had no GST in it, so the tax goes on top.",
+   "lockOnLeave": {
+    "ask": "Hand the bridge to Neethu?",
+    "note": "You can’t change it after this.",
+    "yes": "Hand it in",
+    "done": "Handed to Neethu. You can read your bridge but not change it."
+   },
+   "hints": [
+    "Every amount is printed somewhere in the pack: the sales ledgers by GSTIN, the transfer register, the audit adjustments, the April GSTR-1, the input ledgers and the asset register. Signs carry the meaning."
+   ],
+   "columns": [
+    {
+     "key": "line",
+     "label": "Line"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "int"
+    }
+   ],
+   "rows": [
+    {
+     "id": "r1",
+     "cells": {
+      "line": "Revenue from operations, audited (whole company)",
+      "amt": 1183340000
+     }
+    },
+    {
+     "id": "r2",
+     "cells": {
+      "line": "Hosur depot’s sales",
+      "amt": {
+       "input": true,
+       "answer": -195720000,
+       "tolerance": 1,
+       "signed": true,
+       "working": "Out: Hosur depot total in the sales ledgers by GSTIN"
+      }
+     }
+    },
+    {
+     "id": "r3",
+     "cells": {
+      "line": "Stock transfers to the Hosur depot",
+      "amt": {
+       "input": true,
+       "answer": 184057000,
+       "tolerance": 1,
+       "signed": true,
+       "working": "In: stock transfer register total"
+      }
+     }
+    },
+    {
+     "id": "r4",
+     "cells": {
+      "line": "Naik Auto Spares, invoice 0412 of 31 March",
+      "amt": {
+       "input": true,
+       "answer": 4680000,
+       "tolerance": 1,
+       "signed": true,
+       "working": "In: AJE-1 took it out of revenue; it stays in March’s GSTR-1"
+      }
+     }
+    },
+    {
+     "id": "r5",
+     "cells": {
+      "line": "Ashvaratha Motors, credit note 001 of 28 March",
+      "amt": {
+       "input": true,
+       "answer": 1240000,
+       "tolerance": 1,
+       "signed": true,
+       "working": "In: cut March revenue; uploaded with April 2027’s GSTR-1"
+      }
+     }
+    },
+    {
+     "id": "r6",
+     "_class": "total",
+     "cells": {
+      "line": "Chakan’s turnover in its 2026–27 GSTR-1s",
+      "amt": {
+       "input": true,
+       "answer": 1177597000,
+       "tolerance": 1,
+       "sign": false,
+       "follow": "1183340000 + {r2.amt} + {r3.amt} + {r4.amt} + {r5.amt}",
+       "working": "1,18,33,40,000 − 19,57,20,000 + 18,40,57,000 + 46,80,000 + 12,40,000"
+      }
+     }
+    },
+    {
+     "id": "c1",
+     "cells": {
+      "line": "Input GST ledgers, audited (whole company)",
+      "amt": 194087468
+     }
+    },
+    {
+     "id": "c2",
+     "cells": {
+      "line": "Hosur depot’s input ledgers",
+      "amt": {
+       "input": true,
+       "answer": -33670260,
+       "tolerance": 1,
+       "signed": true,
+       "working": "Out: Hosur depot total in the input ledgers"
+      }
+     }
+    },
+    {
+     "id": "c3",
+     "cells": {
+      "line": "Rankala Forgings, bill of 31 March",
+      "amt": {
+       "input": true,
+       "answer": -8900,
+       "tolerance": 1,
+       "signed": true,
+       "working": "Out: in the books by AJE-6; credit taken in April 2027’s 3B"
+      }
+     }
+    },
+    {
+     "id": "c4",
+     "cells": {
+      "line": "Kharun Steels, bill of 29 March",
+      "amt": {
+       "input": true,
+       "answer": 335520,
+       "tolerance": 1,
+       "signed": true,
+       "working": "In: credit taken in March’s 3B; out of the books by AJE-8"
+      }
+     }
+    },
+    {
+     "id": "c5",
+     "_class": "total",
+     "cells": {
+      "line": "Chakan’s credit in its 2026–27 3Bs",
+      "amt": {
+       "input": true,
+       "answer": 160743828,
+       "tolerance": 1,
+       "sign": false,
+       "follow": "194087468 + {c2.amt} + {c3.amt} + {c4.amt}",
+       "working": "19,40,87,468 − 3,36,70,260 − 8,900 + 3,35,520"
+      }
+     }
+    },
+    {
+     "id": "r7",
+     "cells": {
+      "line": "Old lathe sold on 14 December (in no return)",
+      "amt": {
+       "input": true,
+       "answer": 45000,
+       "tolerance": 1,
+       "sign": false,
+       "working": "Sale value in the fixed asset register"
+      }
+     }
+    },
+    {
+     "id": "r8",
+     "cells": {
+      "line": "GST on the lathe at 18%",
+      "amt": {
+       "input": true,
+       "answer": 8100,
+       "tolerance": 1,
+       "sign": false,
+       "follow": "{r7.amt} × 18 ÷ 100",
+       "working": "45,000 × 18%: CGST 4,050 + SGST 4,050"
+      }
+     }
+    }
+   ],
+   "sampleBreak": "c1",
+   "notes": {
+    "r2.amt": "Hosur leaves first: GSTR-9 and 9C are filed per GSTIN, and Hosur has its own.",
+    "r4.amt": "Plus, and no cut in GSTR-9: the year’s return keeps an invoice whose GST was paid.",
+    "r6.amt": "Varun’s sheet says ₹1,17,75,97,000; a total that ties to it to the rupee leaves nothing unexplained on the turnover side.",
+    "r7.amt": "The price Bilal paid. It goes into Chakan’s GSTR-9 as a 2026–27 supply.",
+    "r8.amt": "On top of the ₹45,000: nothing in the deal included GST. Paid from the cash ledger through DRC-03, with interest.",
+    "c3.amt": "Minus, and nothing to claim in GSTR-9: April 2027’s 3B already took it.",
+    "c4.amt": "Plus, and nothing to reverse in GSTR-9: one claim, in March’s 3B.",
+    "c5.amt": "The 3Bs’ net credit is ₹16,07,43,828; Chakan’s books and returns differ only by Kharun and Rankala."
+   },
+   "docs": [
+    "sales-gstin",
+    "st-reg",
+    "aje",
+    "gstr1-apr",
+    "gstr9-wk",
+    "fa-del",
+    "itc-led",
+    "rev-note",
+    "mail-pallavi"
+   ]
+  },
+  {
+   "id": "t4",
+   "type": "compose",
+   "stage": "Report",
+   "title": "Write to Mahesh",
+   "weight": 3,
+   "noun": [
+    "line",
+    "lines"
+   ],
+   "prompt": "Mahesh approves every payment, so he needs one mail from us: what the bridge found and what Tamhini does next. Pick the right line for each point.",
+   "hints": [
+    "GSTR-9 can’t be revised and gives no new credit, and after 30 November a 2026–27 supply can’t go into a GSTR-1."
+   ],
+   "previewLabel": "Your mail to Mahesh",
+   "slots": [
+    {
+     "id": "turnover",
+     "label": "Turnover",
+     "options": [
+      {
+       "id": "a",
+       "text": "Turnover: Chakan’s 2026–27 GSTR-1s come to ₹1,17,75,97,000 against audited revenue of ₹1,18,33,40,000, and the whole gap is explained: Hosur’s ₹19,57,20,000 goes in Hosur’s own return, and the transfers to Hosur, Naik’s 31 March invoice and Ashvaratha’s credit note make up the rest.",
+       "why": "Every line has a paper and a reason, and no part of the gap is left for the department to ask about.",
+       "correct": true
+      },
+      {
+       "id": "b",
+       "text": "Turnover: Chakan’s 2026–27 GSTR-1s come to ₹1,17,75,97,000 against audited revenue of ₹1,18,33,40,000. Since the audit moved Naik’s 31 March sale to April, we will cut ₹46,80,000 from 2026–27 turnover in GSTR-9, so that the return matches your audited accounts for the year exactly.",
+       "why": "The invoice was issued on 31 March, so the supply and its GST stay in 2026–27. The audit moved the revenue, not the invoice."
+      },
+      {
+       "id": "c",
+       "text": "Turnover: Chakan’s 2026–27 GSTR-1s come to ₹1,17,75,97,000 against audited revenue of ₹1,18,33,40,000. The transfers to Hosur are only stock moving between your own two units, so we will show their ₹18,40,57,000 in 9C as unreconciled and explain it to the department later.",
+       "why": "Transfers to Tamhini’s own Tamil Nadu GSTIN are supplies between distinct persons. They are a reason, not an unreconciled gap."
+      }
+     ]
+    },
+    {
+     "id": "lathe",
+     "label": "The lathe",
+     "options": [
+      {
+       "id": "a",
+       "text": "Lathe: the 2008 lathe sold to Bilal Ferrous Traders on 14 December 2026 for ₹45,000 went out without a tax invoice. Please raise the invoice now so we can put it in this month’s GSTR-1, and approve the ₹8,100 of GST, with interest, for this month’s 3B.",
+       "why": "Too late for that: a 2026–27 supply can’t go into a GSTR-1 after 30 November 2027."
+      },
+      {
+       "id": "b",
+       "text": "Lathe: the 2008 lathe sold to Bilal Ferrous Traders on 14 December 2026 for ₹45,000 went out without a tax invoice. A business asset sold is a supply, so we will declare it in GSTR-9. Please approve the ₹8,100 of GST, with interest, for DRC-03 in cash.",
+       "why": "With 30 November gone, GSTR-9 and DRC-03 are the route, and that payment can only come from the cash ledger.",
+       "correct": true
+      },
+      {
+       "id": "c",
+       "text": "Lathe: the 2008 lathe sold to Bilal Ferrous Traders on 14 December 2026 for ₹45,000 went out without a tax invoice. It went out as scrap, so no GST applies to it, and we will leave it out of both GSTR-9 and 9C, as the plant treated it.",
+       "why": "Scrap is taxable: Tamhini bills Bilal GST on every load of turnings. A business asset sold for a price is a supply, whatever state it is in."
+      }
+     ]
+    },
+    {
+     "id": "credit",
+     "label": "Credit",
+     "options": [
+      {
+       "id": "a",
+       "text": "Credit: Chakan’s books and 3Bs differ only by timing. As the audit moved Kharun’s bill to April, we will reverse its ₹3,35,520 in GSTR-9, and as Rankala’s bill is now in the March books, we will claim its ₹8,900 in the same return.",
+       "why": "GSTR-9 gives no new credit, and Rankala’s was taken in April’s 3B anyway. Kharun’s was taken once; reversing it now would lose it, with 30 November gone."
+      },
+      {
+       "id": "b",
+       "text": "Credit: Chakan’s books and 3Bs differ only by timing. Kharun’s ₹3,35,520 now sits in your April books, so it can be claimed again in this month’s 3B; Rankala’s ₹8,900 went in April’s 3B and needs no further step from us.",
+       "why": "That would be Kharun’s credit twice: March’s 3B already took it."
+      },
+      {
+       "id": "c",
+       "text": "Credit: Chakan’s books and 3Bs differ only by timing. Kharun’s ₹3,35,520 went in March’s 3B and the audit moved the bill to April; Rankala’s ₹8,900 went the other way. Please confirm no 2027–28 return took Kharun’s credit again.",
+       "why": "Each bill was claimed once, in a different year from its books. The check now is for a second claim.",
+       "correct": true
+      }
+     ]
+    }
+   ],
+   "template": "Subject: GSTR-9 and 9C for 2026–27, Chakan GSTIN\n\nMahesh sir,\n\nWe have bridged Chakan’s 2026–27 returns to the audited accounts. Three points before we file:\n\n{turnover}\n\n{lathe}\n\n{credit}\n\n{_free}\n\nWe file GSTR-9 and 9C well before 31 December. Neethu will call you this afternoon to go through it.\n\nRegards,\nGST team, Bapat Venkatesh & Co.",
+   "freeText": {
+    "label": "Your own line for the mail"
+   },
+   "docs": [
+    "mail-pallavi",
+    "gstr9-wk",
+    "fa-del",
+    "nrgp",
+    "aje",
+    "sales-gstin"
+   ]
+  }
+ ],
+ "wrap": {
+  "from": "neethu",
+  "text": "Every difference had its paper: four on the turnover, three on the credit. The lathe is the one that costs money: ₹8,100 and its interest now, rather than after a notice. I’ll take Mahesh through your mail this afternoon."
+ },
+ "wrapPartial": {
+  "from": "neethu",
+  "text": "The bridge is Hosur out; the transfers, Naik and the credit note in; two timing items on the credit. The lathe is in no return, so it is tax to pay. Redo your misses below before the mail goes to Mahesh; I don’t file a bridge that doesn’t tie."
+ },
+ "wrapRetry": {
+  "from": "neethu",
+  "text": "Two questions for every paper: is it in the audited revenue, and is it in Chakan’s GSTR-1s? A yes and a no is a difference. Then look outside revenue, at the asset register, for anything sold without an invoice."
+ },
+ "passNeeds": [
+  {
+   "task": "t1",
+   "min": 0.5,
+   "note": "You need half the turnover marks to pass; the lathe counts three times. The bridge starts there."
+  }
+ ],
+ "model": {
+  "intro": "Chakan’s returns follow its own GSTIN and its invoices; the audited accounts follow the whole company and its sales. Take Hosur’s sales and credit out, add what Chakan’s GSTR-1s carry and its revenue does not, and the turnover ties to the rupee; the credit ties after two timing items. The lathe is in no return at all, so it is tax to pay.",
+  "blocks": [
+   {
+    "type": "table",
+    "grid": true,
+    "columns": [
+     {
+      "key": "s",
+      "label": "Turnover bridge"
+     },
+     {
+      "key": "v",
+      "label": "Amount",
+      "format": "inr"
+     }
+    ],
+    "rows": [
+     {
+      "s": "Revenue from operations, audited",
+      "v": "₹1,18,33,40,000"
+     },
+     {
+      "s": "Hosur depot’s sales (Hosur’s own return)",
+      "v": "−₹19,57,20,000"
+     },
+     {
+      "s": "Stock transfers to Hosur (supply, not revenue)",
+      "v": "+₹18,40,57,000"
+     },
+     {
+      "s": "Naik 0412 (invoiced 31 March; revenue moved to April)",
+      "v": "+₹46,80,000"
+     },
+     {
+      "s": "Ashvaratha credit note 001 (in April 2027’s GSTR-1)",
+      "v": "+₹12,40,000"
+     },
+     {
+      "_class": "total",
+      "s": "Chakan’s 2026–27 GSTR-1s",
+      "v": "₹1,17,75,97,000"
+     }
+    ]
+   },
+   {
+    "type": "table",
+    "grid": true,
+    "columns": [
+     {
+      "key": "s",
+      "label": "Credit bridge"
+     },
+     {
+      "key": "v",
+      "label": "Amount",
+      "format": "inr"
+     }
+    ],
+    "rows": [
+     {
+      "s": "Input GST ledgers, audited",
+      "v": "₹19,40,87,468"
+     },
+     {
+      "s": "Hosur depot’s ledgers (Hosur’s own return)",
+      "v": "−₹3,36,70,260"
+     },
+     {
+      "s": "Rankala (books 2026–27, 3B April 2027)",
+      "v": "−₹8,900"
+     },
+     {
+      "s": "Kharun (3B March 2027, books 2027–28)",
+      "v": "+₹3,35,520"
+     },
+     {
+      "_class": "total",
+      "s": "Chakan’s 2026–27 3Bs, net",
+      "v": "₹16,07,43,828"
+     }
+    ]
+   },
+   {
+    "type": "table",
+    "columns": [
+     {
+      "key": "s",
+      "label": "What the bridge found"
+     },
+     {
+      "key": "g",
+      "label": "Where it lands"
+     }
+    ],
+    "rows": [
+     {
+      "s": "Hosur’s sales and credit",
+      "g": "Hosur’s own GSTR-9 and 9C"
+     },
+     {
+      "s": "Transfers to Hosur",
+      "g": "Chakan’s supplies, with IGST; never revenue in the accounts"
+     },
+     {
+      "s": "Naik 0412",
+      "g": "A 2026–27 supply: invoiced 31 March, GST paid with March’s 3B"
+     },
+     {
+      "s": "Credit note 001",
+      "g": "GSTR-9’s part for this year’s items declared in next year’s returns"
+     },
+     {
+      "s": "The lathe",
+      "g": "Declared in GSTR-9; ₹8,100 with interest through DRC-03, in cash"
+     },
+     {
+      "s": "Kharun",
+      "g": "Timing: one claim, in March’s 3B, in a different year from its books"
+     },
+     {
+      "s": "Rankala",
+      "g": "Timing: one claim, in April 2027’s 3B; in GSTR-9, the part for this year’s items declared in next year’s returns"
+     },
+     {
+      "s": "Exports, scrap, reverse charge, MD’s car",
+      "g": "No difference: in both, or (the car) in neither"
+     }
+    ]
+   },
+   {
+    "type": "note",
+    "from": "neethu",
+    "text": "Had we closed this bridge before 30 November, the lathe could have gone into a GSTR-1. From next year Tamhini’s bridge starts in October."
+   }
+  ]
+ },
+ "principles": [
+  "Book turnover and GST turnover measure different things; the bridge names each difference and the paper behind it.",
+  "A taxable supply that no return carries, like an asset sold without an invoice, is tax to pay.",
+  "GSTR-9 can’t be revised and gives no new credit, so give every difference a reason or a payment before filing."
+ ],
+ "earned": {
+  "clause": "reconciled one GSTIN’s turnover and ITC with the audited accounts for GSTR-9 and 9C{br2|}{br3|}{br4|}{br5|}{br6|}{bc2|}{bc3|}{bc4|}{bc5|}[[; traced differences: {t} on turnover, {c} on ITC]][[; flagged an asset sale missing from every return{lathe|}]]",
+  "counts": {
+   "t": {
+    "kind": "itemsWhere",
+    "task": "t1",
+    "field": "effect",
+    "equals": [
+     "out",
+     "add"
+    ],
+    "withRight": "why"
+   },
+   "c": {
+    "kind": "itemsWhere",
+    "task": "t2",
+    "field": "effect",
+    "equals": [
+     "out",
+     "r3b",
+     "rbk"
+    ]
+   },
+   "br2": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "r2",
+    "col": "amt"
+   },
+   "br3": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "r3",
+    "col": "amt"
+   },
+   "br4": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "r4",
+    "col": "amt"
+   },
+   "br5": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "r5",
+    "col": "amt"
+   },
+   "br6": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "r6",
+    "col": "amt"
+   },
+   "bc2": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "c2",
+    "col": "amt"
+   },
+   "bc3": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "c3",
+    "col": "amt"
+   },
+   "bc4": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "c4",
+    "col": "amt"
+   },
+   "bc5": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "c5",
+    "col": "amt"
+   },
+   "lathe": {
+    "kind": "itemsWhere",
+    "task": "t1",
+    "field": "effect",
+    "equals": "tax"
+   }
+  },
+  "fallback": "matched one GSTIN’s turnover and ITC to the audited accounts for GSTR-9 and 9C[[; traced differences: {t} on turnover, {c} on ITC]][[; flagged an asset sale missing from every return{lathe|}]]"
+ },
+ "interview": [
+  {
+   "q": "What is the difference between GSTR-9 and GSTR-9C?",
+   "checking": "Whether you know who files what, and that 9C is now self-certified.",
+   "outline": [
+    "GSTR-9 is each GSTIN’s annual return, filled mostly from that year’s GSTR-1s and 3Bs; due 31 December.",
+    "GSTR-9C reconciles it with the audited accounts; it is self-certified, needed above ₹5 crore aggregate turnover.",
+    "GSTR-9 can’t be revised, so the bridge comes first[[; in the simulation I traced {t} turnover {t|difference|differences}]]."
+   ]
+  },
+  {
+   "q": "Why would turnover in the audited accounts differ from GST turnover?",
+   "checking": "Whether you can name real reasons, each with an example, not textbook guesses.",
+   "outline": [
+    "The accounts cover the company; GST runs per GSTIN, so in the simulation the depot’s sales came out.",
+    "Transfers to its other GSTIN were supplies, not revenue; an audit entry moved a sale, not its invoice.",
+    "A taxable supply in no return is tax to pay[[: I found a lathe sold without an invoice{lathe|}]]."
+   ]
+  }
+ ]
+}
