@@ -72,7 +72,9 @@ test('portal listing, trending and shared link all skip hidden vacancies, with t
   const source = read('scripts/portal3.js');
   assert.match(source, /let q = excludeHidden\(supabaseClient\.from\(currentTable\)\.select\(cols\)\);/);
   assert.equal((source.match(/excludeHidden\(supabaseClient/g) || []).length, 3, 'listing, shared link, trending');
-  assert.equal((source.match(/if \(isHiddenColumnError\(error\) && !hiddenFilterOff\)/g) || []).length, 3);
+  // Retry on the error itself, not on the flag: another query may already have turned the filter off.
+  assert.equal((source.match(/if \(isHiddenColumnError\(error\)\) \{\s*(console\.warn\([^)]*\);\s*)?hiddenFilterOff = true;/g) || []).length, 3);
+  assert.doesNotMatch(source, /isHiddenColumnError\(error\) && !hiddenFilterOff/);
 });
 
 test('jobs by email skips hidden vacancies and ignores a hidden shared link', () => {

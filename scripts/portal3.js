@@ -1662,7 +1662,7 @@ async function fetchJobs() {
         }
 
         // Same failsafe for the hidden column.
-        if (isHiddenColumnError(error) && !hiddenFilterOff) {
+        if (isHiddenColumnError(error)) {
             console.warn('hidden column does not exist on Supabase yet. Showing all vacancies.');
             hiddenFilterOff = true;
             const fallbackResult = await buildQuery(selectColumns);
@@ -3820,7 +3820,7 @@ async function fetchSharedJob(jobId) {
             .eq('id', jobId))
             .maybeSingle();
         let { data, error } = await fetchJob();
-        if (isHiddenColumnError(error) && !hiddenFilterOff) {
+        if (isHiddenColumnError(error)) {
             hiddenFilterOff = true;
             ({ data, error } = await fetchJob());
         }
@@ -4837,7 +4837,7 @@ async function dv2PopulateTrending() {
             .order('Created_At', { ascending: false, nullsFirst: false })
             .limit(5);
         let { data, error } = await fetchTrending();
-        if (isHiddenColumnError(error) && !hiddenFilterOff) {
+        if (isHiddenColumnError(error)) {
             hiddenFilterOff = true;
             ({ data, error } = await fetchTrending());
         }
