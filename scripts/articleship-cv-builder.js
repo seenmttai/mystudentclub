@@ -794,6 +794,15 @@
         return out;
     }
 
+    /**
+     * The domain part of a Work Simulation line, lower-case: "gst work simulation" for "GST Work Simulation, MSC
+     * Articleship Program | …"; '' for any other line (and for the blank CV's "[Domain] Work Simulation" gap).
+     */
+    function simulationPrefix(text) {
+        const match = plainText(text).match(/^(.*?\bwork simulation),\s*MSC Articleship Program\b/i);
+        return match && !/\[/.test(match[1]) ? match[1].trim().toLowerCase() : '';
+    }
+
     function hasLine(cv, line) {
         const target = plainText(line).toLowerCase();
         return (cv && Array.isArray(cv.certifications) ? cv.certifications : []).some(item => certText(item).toLowerCase() === target
@@ -814,9 +823,18 @@
             .filter(Boolean).map(curly);
         let added = 0;
         let skipped = 0;
+        let replaced = 0;
         incoming.forEach(line => {
             if (hasLine(cv, line)) { skipped += 1; return; }
-            cv.certifications.push({ name: line, issuer: '' });
+            // One line per domain: a newer line for a domain takes the place of the one the CV holds
+            // ("<CV name>, MSC Articleship Program …", the Work Simulation's INTEGRATION.md §5).
+            const prefix = simulationPrefix(line);
+            const at = prefix ? cv.certifications.findIndex(item => classifyCertification(item) === 'msc-simulation'
+                && simulationPrefix(certText(item)) === prefix) : -1;
+            if (at !== -1) {
+                cv.certifications[at] = Object.assign({}, isObject(cv.certifications[at]) ? cv.certifications[at] : {}, { name: line, issuer: '' });
+                replaced += 1;
+            } else cv.certifications.push({ name: line, issuer: '' });
             added += 1;
         });
         if (added) {
@@ -829,7 +847,7 @@
             if (!cv.sectionOrder.includes('certifications')) cv.sectionOrder.splice(Math.min(3, cv.sectionOrder.length), 0, 'certifications');
             setTitle(cv, 'certifications', CERT_TITLE, true);
         }
-        return { cv, added, skipped, counts: countCertificates(cv.certifications) };
+        return { cv, added, skipped, replaced, counts: countCertificates(cv.certifications) };
     }
 
     // ---------- Live checks (non-blocking) ----------

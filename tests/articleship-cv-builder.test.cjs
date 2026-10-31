@@ -413,6 +413,7 @@ async function stage(options) {
         onSettingsChange: fn => { settingsListeners.add(fn); return () => settingsListeners.delete(fn); }
     };
     win.MSCArticleshipCvBuilder = B;
+    if (typeof opts.before === 'function') opts.before(win);
     const calls = { useTemplate: [], toasts: [], choose: [], renderCards: 0, open: 0 };
     let cvData = opts.cv || null;
     let templateFile = (opts.cv && opts.cv.templateFile) || 'articleship-layout-classic';
@@ -420,7 +421,7 @@ async function stage(options) {
     const locked = new Set(opts.locked || []);
     win.eval(fs.readFileSync(path.join(ROOT, 'articleship-program/cv-builder/stage.js'), 'utf8'));
     const S = win.MSCArticleshipStage;
-    if (!cvData) cvData = S.blankCv({ tableSettings: {} }, { education: {} });
+    if (!cvData) cvData = S.blankCv(Object.assign({ tableSettings: {} }, opts.blankFrom || {}), { education: {} });
     templateFile = cvData.templateFile || templateFile;
     const host = {
         getCv: () => cvData,
@@ -602,6 +603,39 @@ test('stage (Work Simulation out): earned lines are offered, queued ones arrive 
     const ws = [...none.panel().querySelectorAll('a')].find(a => a.textContent === 'Work Simulation');
     assert.equal(ws.getAttribute('href'), '/articleship-program/work-simulation/',
         'the page itself, now that the shared situations list names it (release 2; its Day in the course before)');
+});
+
+test('stage (Work Simulation out): the page\'s own "Add to my CV" queue on this device arrives once, one line per domain, then is cleared', async () => {
+    const old = 'GST Work Simulation, MSC Articleship Program | Nov 2026: prepared GSTR-1 for 18 invoices';
+    const line = 'GST Work Simulation, MSC Articleship Program | Nov 2026: prepared GSTR-1 for 18 invoices; matched 40 bills with GSTR-2B';
+    const sa = 'Statutory Audit Work Simulation, MSC Articleship Program | Nov 2026: vouched 20 purchase bills; flagged 7 exceptions';
+    const cv = studentCv({ certifications: [{ name: old, issuer: '' }, { name: 'PwC US Audit Job Simulation (Forage) | Mar 2026: built a risk-control matrix.', issuer: '' }] });
+    const queue = [{ source: 'work-simulation', domain: 'gst', line, at: 2 }, { source: 'work-simulation', domain: 'statutory-audit', line: sa, at: 3 }];
+    const s = await stage({ cv, workSimulationLive: true, before: win => win.localStorage.setItem('msc-articleship:cv-import', JSON.stringify(queue)) });
+    const names = s.cv.certifications.map(c => c.name);
+    assert.ok(names.includes(line) && names.includes(sa), 'both queued lines arrived');
+    assert.ok(!names.includes(old), 'the newer GST line took the place of the older one');
+    assert.equal(names.filter(n => /^GST Work Simulation/.test(n)).length, 1, 'one line per domain');
+    assert.equal(B.countCertificates(s.cv.certifications).outside, 1, 'MSC lines never count against the four');
+    assert.equal(s.win.localStorage.getItem('msc-articleship:cv-import'), null, 'the queue is cleared');
+    // Deleted by the student afterwards: the same line queued again is not brought back.
+    const later = clone(s.cv);
+    later.certifications = later.certifications.filter(c => c.name !== sa);
+    const again = await stage({ cv: later, workSimulationLive: true, before: win => win.localStorage.setItem('msc-articleship:cv-import', JSON.stringify(queue)) });
+    assert.ok(!again.cv.certifications.some(c => c.name === sa));
+    // Release 1 (flag off): the queue is neither read nor cleared.
+    const off = await stage({ cv, workSimulationLive: false, before: win => win.localStorage.setItem('msc-articleship:cv-import', JSON.stringify(queue)) });
+    assert.ok(!off.cv.certifications.some(c => c.name === line));
+    assert.ok(off.win.localStorage.getItem('msc-articleship:cv-import'));
+});
+
+test('stage (Work Simulation out): a line added before there was any CV opens on the blank starter, kept under "Certifications and job simulations"', async () => {
+    const line = 'Valuation Work Simulation, MSC Articleship Program | Nov 2026: cleaned a 3-year P&L to EBITDA';
+    const s = await stage({ workSimulationLive: true, blankFrom: { certifications: [{ name: line, issuer: '' }] } });
+    assert.equal(s.cv.articleshipStarter, 'blank', 'the blank starter');
+    assert.ok(s.cv.certifications.some(c => c.name === line), 'with the line');
+    assert.equal(s.cv.sectionTitles.certifications, B.CERT_TITLE);
+    assert.equal(s.cv.certifications.filter(c => /Work Simulation/.test(c.name)).length, 1, 'and no [Domain] gap beside it');
 });
 
 test('stage (release 1, Work Simulation not out): nothing read, offered, linked or pre-filled; the switch brings it all back', async () => {

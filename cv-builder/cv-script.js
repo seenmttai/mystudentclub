@@ -58,7 +58,13 @@
                 if (value && typeof value === 'object') return Object.values(value).some(hasValue);
                 return false;
             }
-            return hasValue(data?.personal) || hasUserEnteredData(data);
+            // A Work Simulation line added before there was any CV is not a draft: the articleship stage opens its blank
+            // starter and keeps the line (articleship-program/cv-builder/stage.js blankCv).
+            const logic = window.MSCArticleshipCvBuilder;
+            const mscLine = item => logic?.classifyCertification?.(item) === 'msc-simulation';
+            const ownWork = data && Array.isArray(data.certifications) && data.certifications.some(mscLine)
+                ? { ...data, certifications: data.certifications.filter(item => !mscLine(item)) } : data;
+            return hasValue(data?.personal) || hasUserEnteredData(ownWork);
         }
 
         function initializeArticleshipTemplates() {
