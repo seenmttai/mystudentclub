@@ -1197,3 +1197,28 @@ test('page: "Start over" at the end of the result clears the answers and opens q
     assert.equal(p.main.classList.contains('is-wide'), false, 'back to the quiz width');
     assert.deepEqual(progress.getCvPick(), pickBefore, 'the CV Builder keeps the last pick until a new result is finished');
 });
+
+test('page: lines to add come in two groups; a copied line is ticked and its group counts what was copied', async () => {
+    const p = page();
+    const store = memoryStore('cv-recommender', { answers: null, step: 0, done: false });
+    store.set({ answers: answers({ gap: 'after-inter', work: ['ca-firm'], projects: ['model', 'job-simulation'] }), step: 8, done: true });
+    p.dom.window.navigator.clipboard = { writeText: () => Promise.resolve() };
+    R.mount(p.app, Object.assign({ data: data(), store, progress: fakeProgress() }, FAST));
+    const groups = [...p.doc.querySelectorAll('.cvr-lines-group')];
+    assert.deepEqual(groups.map(g => g.querySelector('.cvr-lines-title').textContent), ['From your answers', 'Also add, if it fits']);
+    const own = groups[0];
+    const ownRows = [...own.querySelectorAll('.cvr-variant')];
+    assert.ok(ownRows.length >= 2 && ownRows.every(row => row.classList.contains('is-own')), 'the first group is the student\'s own lines');
+    assert.ok(groups[1].querySelector('.cvr-variant.is-msc'), 'the programme line is among the extras');
+    assert.ok(ownRows.every(row => row.querySelector('.cvr-where').textContent.startsWith('Goes in ')), 'each own line says where it goes');
+    assert.equal(own.querySelector('.cvr-lines-count').textContent, ownRows.length + ' lines');
+    ownRows[0].querySelector('.cvr-copy').dispatchEvent(new p.dom.window.MouseEvent('click', { bubbles: true }));
+    await sleep(30);
+    assert.ok(ownRows[0].classList.contains('is-copied'));
+    assert.equal(own.querySelector('.cvr-lines-count').textContent, '1 of ' + ownRows.length + ' copied');
+    assert.ok(!own.classList.contains('is-done'));
+    ownRows.slice(1).forEach(row => row.querySelector('.cvr-copy').dispatchEvent(new p.dom.window.MouseEvent('click', { bubbles: true })));
+    await sleep(30);
+    assert.ok(own.classList.contains('is-done'), 'every line copied');
+    assert.ok(!groups[1].querySelector('.is-copied'), 'the other group is counted separately');
+});

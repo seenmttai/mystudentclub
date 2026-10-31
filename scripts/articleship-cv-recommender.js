@@ -872,6 +872,10 @@
             let touched = false;
             let advanceTimer = null;
             let guardUntil = 0;
+            // For the motion only: the question last drawn, the option just tapped, and where the progress bar was.
+            let shownStep = null;
+            let shownPct = 0;
+            let freshTap = null;
             // "My domain" is written from here only when the student tapped the domain question in this visit.
             let domainTapped = false;
             let uid = 0;
@@ -977,6 +981,7 @@
                 touched = true;
                 if (q.id === 'domain') domainTapped = true;
                 state.answers = tap(state.answers, q.id, optionId);
+                freshTap = optionId;
                 persist();
                 render(false);
                 if (q.type !== 'single') return;
@@ -989,13 +994,13 @@
                 }, advanceMs);
             }
 
-            function stepBar() {
+            function stepBar(grow) {
                 const n = state.step + 1;
                 const pct = Math.round((state.step / QUESTIONS.length) * 100);
                 return h('div', { class: 'cvr-stepbar' }, [
                     h('span', { class: 'cvr-count', text: n + ' of ' + QUESTIONS.length }),
                     h('div', { class: 'cvr-bar', role: 'progressbar', 'aria-valuemin': 0, 'aria-valuemax': QUESTIONS.length, 'aria-valuenow': state.step, 'aria-label': 'Questions answered' },
-                        h('span', { style: 'width:' + pct + '%' }))
+                        h('span', { class: grow ? 'is-grow' : null, style: 'width:' + pct + '%;--from:' + shownPct + '%' }))
                 ]);
             }
 
@@ -1006,7 +1011,7 @@
                     const ranked = at !== -1;
                     return h('button', {
                         type: 'button',
-                        class: 'cvr-rank-item' + (ranked ? ' is-ranked' : ''),
+                        class: 'cvr-rank-item' + (ranked ? ' is-ranked' : '') + (ranked && freshTap === s.id ? ' is-fresh' : ''),
                         'aria-pressed': ranked ? 'true' : 'false',
                         'aria-label': s.label + (ranked ? ', number ' + (at + 1) : ''),
                         onclick: () => answer(q, s.id)
@@ -1025,7 +1030,7 @@
                     const on = multi ? value.includes(o.id) : value === o.id;
                     return h('button', {
                         type: 'button',
-                        class: 'cvr-opt' + (on ? ' is-on' : '') + (multi ? ' is-multi' : ''),
+                        class: 'cvr-opt' + (on ? ' is-on' : '') + (multi ? ' is-multi' : '') + (on && freshTap === o.id ? ' is-fresh' : ''),
                         'aria-pressed': on ? 'true' : 'false',
                         onclick: () => answer(q, o.id)
                     }, [
@@ -1043,8 +1048,11 @@
                 const toResult = last || state.editing;
                 const showNext = q.type !== 'single' || answered;
                 const heading = h('h2', { class: 'cvr-q', tabindex: '-1', text: q.title });
-                const card = h('section', { class: 'cvr-card ap-card', 'aria-label': 'Question ' + (state.step + 1) + ' of ' + QUESTIONS.length }, [
-                    stepBar(),
+                // A new question slides in (from the left when going back); a tap inside one only pops its own tick.
+                const entering = focus || shownStep === null;
+                const back = shownStep !== null && state.step < shownStep;
+                const card = h('section', { class: 'cvr-card ap-card' + (entering ? ' cvr-enter' : '') + (entering && back ? ' cvr-enter-back' : ''), 'aria-label': 'Question ' + (state.step + 1) + ' of ' + QUESTIONS.length }, [
+                    stepBar(entering),
                     heading,
                     q.hint ? h('p', { class: 'cvr-hint', text: q.hint }) : null,
                     q.type === 'rank' ? rankList(q) : optionList(q),
@@ -1060,6 +1068,9 @@
                     ])
                 ]);
                 view.replaceChildren(card);
+                shownStep = state.step;
+                shownPct = Math.round((state.step / QUESTIONS.length) * 100);
+                freshTap = null;
                 if (focus) {
                     live.textContent = 'Question ' + (state.step + 1) + ' of ' + QUESTIONS.length + ': ' + q.title;
                     try { heading.focus({ preventScroll: true }); } catch (_) { heading.focus(); }
@@ -1105,6 +1116,16 @@
                 return figure;
             }
 
+            /** "2 lines" until the student copies one, then "1 of 2 copied"; a group with everything copied turns green. */
+            function refreshCount(group) {
+                if (!group) return;
+                const total = group.querySelectorAll('.cvr-variant').length;
+                const done = group.querySelectorAll('.cvr-variant.is-copied').length;
+                const el = group.querySelector('.cvr-lines-count');
+                if (el) el.textContent = done ? done + ' of ' + total + ' copied' : total + (total === 1 ? ' line' : ' lines');
+                group.classList.toggle('is-done', total > 0 && done === total);
+            }
+
             function copyButton(label, text) {
                 return h('button', {
                     type: 'button', class: 'cvr-copy', 'aria-label': 'Copy: ' + label, 'data-copy': text,
@@ -1112,6 +1133,8 @@
                         const btn = event.currentTarget;
                         copyText(win, text).then(ok => {
                             btn.textContent = ok ? 'Copied' : 'Select and copy';
+                            const row = btn.closest('.cvr-variant');
+                            if (ok && row) { row.classList.add('is-copied'); refreshCount(row.closest('.cvr-lines-group')); }
                             if (!ok) {
                                 const body = btn.closest('.cvr-variant').querySelector('.cvr-variant-body');
                                 const toggle = btn.closest('.cvr-variant').querySelector('.cvr-variant-toggle');
@@ -1128,7 +1151,7 @@
              * simulations) open at once; every other card shows the start of its line under the label, so Copy never
              * copies a line the student has not seen, and opens on a tap for the note and "If asked".
              */
-            function variantCard(v) {
+            function variantCard(v, where) {
                 const text = v.lines.join('\n');
                 const id = 'cvr-v-' + (++uid);
                 const open = Boolean(v.block);
@@ -1154,7 +1177,10 @@
                     }
                 }, [
                     h('span', { class: 'cvr-variant-head' }, [
-                        h('span', { class: 'cvr-variant-label', text: v.label }),
+                        h('span', { class: 'cvr-variant-top' }, [
+                            h('span', { class: 'cvr-variant-label', text: v.label }),
+                            where ? h('span', { class: 'cvr-where', text: 'Goes in ' + where }) : null
+                        ]),
                         v.lines.length ? h('span', { class: 'cvr-variant-peek', 'aria-hidden': 'true', text: v.lines[0] }) : null
                     ]),
                     h('span', { class: 'cvr-chev', 'aria-hidden': 'true' })
@@ -1219,10 +1245,21 @@
                     design
                 ]);
                 // The student's own lines first (their work, projects, simulations), then the MSC line, then the variants.
-                const cards = result.ownLines.concat([result.mscLine], result.variants).filter(Boolean);
-                const lines = cards.length ? h('section', { class: 'cvr-variants-wrap' }, [
+                const blockLabel = id => (result.blocks.find(block => block.id === id) || {}).label || '';
+                const own = result.ownLines.filter(Boolean);
+                const also = [result.mscLine].concat(result.variants).filter(Boolean);
+                const linesGroup = (kind, title, sub, cards, whereOf) => (cards.length ? h('div', { class: 'cvr-lines-group is-' + kind }, [
+                    h('div', { class: 'cvr-lines-head' }, [
+                        h('h3', { class: 'cvr-lines-title', text: title }),
+                        h('span', { class: 'cvr-lines-count', 'aria-live': 'polite', text: cards.length + (cards.length === 1 ? ' line' : ' lines') })
+                    ]),
+                    h('p', { class: 'cvr-lines-sub', text: sub }),
+                    h('ul', { class: 'cvr-variants' }, cards.map(card => variantCard(card, whereOf(card))))
+                ]) : null);
+                const lines = own.length || also.length ? h('section', { class: 'cvr-variants-wrap' }, [
                     h('h2', { class: 'ap-h2', text: 'Add these lines' }),
-                    h('ul', { class: 'cvr-variants' }, cards.map(variantCard))
+                    linesGroup('own', 'From your answers', 'Change the brackets and numbers to what you really did, then paste each where it belongs.', own, card => blockLabel(card.block)),
+                    linesGroup('also', 'Also add, if it fits', 'Open one to read it first; Copy keeps track of what you have taken.', also, () => '')
                 ]) : null;
                 const thin = result.thinProof ? h('div', { class: 'cvr-note ' + (result.situation === 'H' ? 'is-next' : 'is-thin') }, [
                     h('strong', { text: result.thinProof.label }), ' ' + result.thinProof.text,

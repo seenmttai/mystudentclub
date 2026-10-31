@@ -516,9 +516,10 @@
             if (step.kind === 'end') jumpToEnd(); else jump(step.id);
         });
 
-        // "Untick all" under the list, confirmed in place (a WebView may answer window.confirm() with "no" unasked).
+        // "Start over" in the sticky progress row, confirmed in place under the bar (a WebView may answer window.confirm()
+        // with "no" unasked). Without a progress row it sits under the list.
         const resetRow = el(doc, 'div', 'cvc-reset-row');
-        const reset = el(doc, 'button', 'cvc-reset', 'Untick all');
+        const reset = el(doc, 'button', 'cvc-reset', 'Start over');
         reset.type = 'button';
         const confirmBox = el(doc, 'div', 'cvc-confirm');
         confirmBox.setAttribute('role', 'group');
@@ -533,14 +534,14 @@
         confirmBox.appendChild(question);
         confirmBox.appendChild(yes);
         confirmBox.appendChild(cancel);
-        resetRow.appendChild(reset);
-        resetRow.appendChild(confirmBox);
-        container.appendChild(resetRow);
+        if (progressText) progressText.insertBefore(reset, progressText.querySelector('.ap-progress-pct')); else resetRow.appendChild(reset);
+        if (progress) progress.appendChild(confirmBox); else resetRow.appendChild(confirmBox);
+        if (!progress || !progressText) container.appendChild(resetRow);
         let confirming = false;
         function openConfirm() {
             if (!list.summary().done) return;
             const name = cvLabel(view.slug());
-            question.textContent = 'Untick all ' + model.total + (view.list().length > 1 && name ? ' on your ' + name : '') + '?';
+            question.textContent = 'Start over and untick all ' + model.total + (view.list().length > 1 && name ? ' on your ' + name : '') + '?';
             confirming = true;
             reset.hidden = true;
             confirmBox.hidden = false;
@@ -598,6 +599,35 @@
             label.appendChild(select);
             switcher.appendChild(label);
         }
+        function renderChange(main, current) {
+            // Two CVs: the second can be swapped for another domain, or removed (the shared backup domain every tool reads).
+            const label = el(doc, 'label', 'cvc-add cvc-change');
+            label.appendChild(el(doc, 'span', 'cvc-add-label', 'Second CV:'));
+            const select = doc.createElement('select');
+            select.className = 'cvc-add-select cvc-change-select';
+            (opts.domainSlugs || Object.keys(FILE_DOMAIN)).filter(slug => slug !== main && domainName(slug)).forEach(slug => {
+                const option = el(doc, 'option', '', cvLabel(slug));
+                option.value = slug;
+                option.selected = slug === current;
+                select.appendChild(option);
+            });
+            const none = el(doc, 'option', '', 'Remove the second CV');
+            none.value = '';
+            select.appendChild(none);
+            select.addEventListener('change', () => {
+                const slug = select.value;
+                if (slug === current) return;
+                try { opts.addBackup(slug || null); } catch (_) { select.value = current; return; }
+                closeConfirm(false);
+                refreshDomain();
+                paint(list.summary());
+                const chosen = switchParts.find(part => part.slug === slug);
+                const target = chosen ? chosen.input : (switcher.querySelector('select') || null);
+                if (target) target.focus();
+            });
+            label.appendChild(select);
+            switcher.appendChild(label);
+        }
         function renderSwitch() {
             if (!switcher) return;
             switcher.textContent = '';
@@ -630,6 +660,7 @@
                 switchParts.push({ slug, input, label, count });
             });
             switcher.appendChild(set);
+            if (typeof opts.addBackup === 'function') renderChange(cvs[0], cvs[1]);
         }
         function paintSwitch() {
             const current = view.slug();
@@ -770,6 +801,8 @@
                 if (!parts) return;
                 parts.count.textContent = entry.count;
                 parts.a.classList.toggle('is-complete', entry.complete);
+                const [done, total] = entry.count.split('/').map(Number);
+                parts.a.style.setProperty('--pct', (total ? Math.round((done / total) * 100) : 0) + '%');
             });
             paintSwitch();
             if (endParts) {

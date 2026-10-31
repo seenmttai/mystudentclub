@@ -61,7 +61,8 @@ test('head: noindex, Indian English, canonical, description, the platform look t
   assert.match(HTML, /<meta name="viewport" content="width=device-width, initial-scale=1/);
   assert.match(HTML, /<link rel="canonical" href="https:\/\/www\.mystudentclub\.com\/articleship-program\/automail\/">/);
   const sheets = [...HTML.matchAll(/<link (?:href="([^"]+)" rel="stylesheet"|rel="stylesheet" href="([^"]+)")>/g)].map((m) => m[1] || m[2]);
-  assert.deepEqual(sheets.slice(1), ['/articleship-program/shared/articleship-tools.css', '/articleship-program/shared/msc-tool.css',
+  // A version query (?v=…) only busts the cache; the files and their order are what matter.
+  assert.deepEqual(sheets.slice(1).map((href) => href.split('?')[0]), ['/articleship-program/shared/articleship-tools.css', '/articleship-program/shared/msc-tool.css',
     '/articleship-program/automail/automail.css']);
   assert.match(sheets[0], /^https:\/\/fonts\.googleapis\.com\/css2\?family=Caveat[^"]*family=Inter/);
   assert.match(HTML, /<body class="ap-page ap-day-2 day-2"/);
@@ -87,7 +88,7 @@ test('nothing loads from outside the site but the platform fonts: every file exi
     if (kind === 'link' && /^https:\/\/fonts\.(googleapis|gstatic)\.com/.test(url)) continue; // the platform's Inter + Caveat
     assert.ok(!/^[a-z]+:|^\/\//i.test(url), `${kind} loads ${url}`);
     assert.match(url, /^\//, `${kind} uses a site path: ${url}`);
-    assert.ok(fs.existsSync(path.join(ROOT, decode(url).split('#')[0])), `missing file ${url}`);
+    assert.ok(fs.existsSync(path.join(ROOT, decode(url).split('#')[0].split('?')[0])), `missing file ${url}`);
   }
   const scripts = [...HTML.matchAll(/<script\b([^>]*)>([^<]*)<\/script>/g)]
     .map((m) => ((m[1].match(/src="([^"]+)"/) || [])[1]) || m[2].trim());

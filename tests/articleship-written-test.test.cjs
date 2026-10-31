@@ -51,7 +51,8 @@ test('page: platform skeleton (gated, noindex, Day 4, platform look first) and t
     assert.match(HTML, /<body class="ap-page ap-day-4 day-4" data-course="msc-articleship-program">/);
     const sheets = [...HTML.matchAll(/<link href="([^"]+)" rel="stylesheet">|<link rel="stylesheet" href="([^"]+)">/g)].map(m => m[1] || m[2]);
     assert.match(sheets[0], /^https:\/\/fonts\.googleapis\.com\/css2\?family=Caveat[^"]*family=Inter/);
-    assert.deepEqual(sheets.slice(1), ['/articleship-program/shared/articleship-tools.css', '/articleship-program/shared/msc-tool.css',
+    // A version query (?v=…) only busts the cache; the files and their order are what matter.
+    assert.deepEqual(sheets.slice(1).map(href => href.split('?')[0]), ['/articleship-program/shared/articleship-tools.css', '/articleship-program/shared/msc-tool.css',
         '/articleship-program/written-test/written-test.css']);
     assert.match(HTML, /<header class="ap-topbar msc-bar" id="bar">\s*<a class="ap-brand logo" id="bar-logo" href="\/learning-management-system\/course\?course=msc-articleship-program&amp;session=5"/);
     for (const id of ['bar', 'bar-logo', 'bar-tool', 'bar-right', 'app', 'announce', 'confirm', 'nav-sheet']) {

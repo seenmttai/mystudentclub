@@ -456,3 +456,30 @@ dialog.sheet { width: 100%; max-width: 560px; max-height: 82vh; overflow: auto; 
 
 /* number–unit pairs (2025–26, ₹7.2 lakh, 8 m, 7 : 5, (4, 6)) never break across lines; the page wraps them in span.nw */
 .nw { white-space: nowrap; }
+
+/* ---------- Home polish: the papers as a grid of soft cards that rise in one after another ---------- */
+.paper-card { position: relative; overflow: hidden; border: 0; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 10px 24px -18px rgba(15, 23, 42, 0.3); transition: box-shadow 0.15s ease, transform 0.15s ease; }
+.paper-card::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--navy); opacity: 0.85; }
+@media (hover: hover) {
+    .paper-card:hover { border-color: transparent; transform: translateY(-3px); box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06), 0 18px 34px -18px rgba(15, 23, 42, 0.42); }
+}
+.papers > li { animation: wt-rise 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.papers > li:nth-child(2) { animation-delay: 60ms; }
+.papers > li:nth-child(3) { animation-delay: 120ms; }
+.papers > li:nth-child(4) { animation-delay: 180ms; }
+.papers > li:nth-child(5) { animation-delay: 240ms; }
+.papers > li:nth-child(n+6) { animation-delay: 300ms; }
+@keyframes wt-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@media (min-width: 900px) {
+    .home .wrap { max-width: 1240px; }
+    .home .lead { max-width: 52em; }
+    .papers { grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 18px; }
+    .paper-card { grid-template-columns: 1fr; align-content: start; min-height: 150px; padding: 22px 22px 18px 26px; }
+    .pc-title { font-size: 20px; }
+    .pc-side { justify-content: flex-start; margin-top: 4px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .papers > li { animation: none; }
+    .paper-card { transition: none; }
+    .paper-card:hover { transform: none; }
+}

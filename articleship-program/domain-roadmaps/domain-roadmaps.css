@@ -585,3 +585,15 @@
     .dr-layout { display: block; }
     .dr-card { box-shadow: none; }
 }
+
+/* ---------- Layout polish: the card's sections in two columns on wide screens ---------- */
+@media (min-width: 1280px) {
+    .dr-layout { grid-template-columns: 340px minmax(0, 1fr); gap: 28px; }
+    .dr-more { margin-left: 368px; }
+    /* The header, quick links, note, "Go further" and prev / next stay full width; the sections flow in two columns. */
+    .dr-card { column-count: 2; column-gap: 48px; padding: 28px 32px 16px; }
+    .dr-card > .dr-back, .dr-card > .dr-card-head, .dr-card > .dr-mine-slot, .dr-card > .dr-quick, .dr-card > .dr-note,
+    .dr-card > .dr-actions, .dr-card > .dr-prevnext { column-span: all; }
+    .dr-card > * { break-inside: avoid; }
+    .dr-card > .dr-prevnext { margin: 20px -32px -16px; padding: 4px 32px; }
+}

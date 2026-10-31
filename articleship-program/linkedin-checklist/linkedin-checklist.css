@@ -286,3 +286,43 @@ body.ap-page .ap-topbar { background: var(--ap-panel); }
     .ap-cl-example .lc-example p { border: 0; }
     .lc-side { position: static; }
 }
+
+/* ---------- Layout polish: soft cards, Example / links beside each title, a wider side column ---------- */
+.lc-list .ap-cl-item {
+    position: relative;
+    padding: 2px 16px 8px 20px;
+    border-color: transparent;
+    border-radius: 14px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 8px 20px -16px rgba(15, 23, 42, 0.28);
+    transition: box-shadow 0.15s ease, background 0.15s ease;
+}
+.lc-list .ap-cl-item::before { content: ''; position: absolute; inset: 10px auto 10px 0; width: 4px; border-radius: 0 4px 4px 0; background: var(--ap-border-dark); transition: background 0.15s ease; }
+.lc-list .ap-cl-item:hover { box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06), 0 12px 26px -16px rgba(15, 23, 42, 0.36); }
+.lc-list .ap-cl-item.is-done { border-color: transparent; }
+.lc-list .ap-cl-item.is-done::before { background: var(--ap-success); }
+.lc-list .ap-cl-item.is-done .ap-cl-text { color: #5b7467; }
+.lc-list .ap-cl-section-title { margin: 22px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--ap-border); }
+.lc-list .ap-cl-check { min-height: 40px; padding-top: 6px; }
+.lc-list .ap-cl-no { white-space: nowrap; }
+@media (min-width: 768px) {
+    .lc-list .ap-progress-count { font-size: 28px; }
+    .lc-list .ap-progress-bar { height: 12px; }
+}
+@media (min-width: 1100px) {
+    .lc-layout { grid-template-columns: minmax(0, 1fr) 360px; gap: 32px; }
+}
+/* Wide lists: the title on the left, Example and the links in a zone of their own on the right (a check with four or more
+   links, or an opened example, takes the full width under its title). */
+@media (min-width: 768px) {
+    .lc-list .ap-cl-item { display: grid; grid-template-columns: minmax(0, 1fr) minmax(170px, 36%); column-gap: 20px; align-items: start; }
+    .lc-list .ap-cl-item:has(.ap-cl-extra > :only-child) { grid-template-columns: minmax(0, 1fr) auto; }
+    .lc-list .ap-cl-check { grid-column: 1; grid-row: 1; min-width: 0; }
+    .lc-list .ap-cl-extra { grid-column: 2; grid-row: 1; min-width: 0; margin: 8px 0 0; flex-wrap: wrap; justify-content: flex-end; gap: 2px 14px; }
+    .lc-list .ap-cl-why { grid-column: 1 / -1; grid-row: 2; margin-top: 0; }
+    .lc-list .ap-cl-extra:has(details[open]),
+    .lc-list .ap-cl-extra:has(> :nth-child(4)) { grid-column: 1 / -1; grid-row: 3; margin: 2px 0 4px 64px; justify-content: flex-start; }
+}
+.lc-open, .lc-notes > * { border: 0; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 12px 28px -18px rgba(15, 23, 42, 0.3); }
+@media (prefers-reduced-motion: reduce) {
+    .lc-list .ap-cl-item, .lc-list .ap-cl-item::before { transition: none; }
+}
