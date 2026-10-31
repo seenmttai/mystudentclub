@@ -112,11 +112,17 @@ function getPublicJobSelectColumns(tableName) {
 }
 
 async function fetchJobDetails(id, tableName) {
-    const { data, error } = await supabaseClient
-        .from(tableName)
-        .select(getPublicJobSelectColumns(tableName))
-        .eq('id', id)
-        .single();
+    // A hidden vacancy (third-party repost) reads as not found. Before the hidden column exists, fetch without the filter.
+    const fetchJob = (filterHidden) => {
+        let query = supabaseClient
+            .from(tableName)
+            .select(getPublicJobSelectColumns(tableName))
+            .eq('id', id);
+        if (filterHidden) query = query.not('hidden', 'is', true);
+        return query.single();
+    };
+    let { data, error } = await fetchJob(true);
+    if (error && error.message && error.message.includes('hidden')) ({ data, error } = await fetchJob(false));
 
     if (error) throw error;
     if (!data) throw new Error('Job not found');

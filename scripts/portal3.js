@@ -269,17 +269,34 @@ function getPublicJobSelectColumns(tableName) {
   return columns;
 }
 
+// Hidden vacancies (third-party reposts and the like) stay in the table but never show on the site.
+// hiddenFilterOff covers the time before the `hidden` column exists: show everything rather than nothing.
+let hiddenFilterOff = false;
+
+function excludeHidden(query) {
+  return hiddenFilterOff ? query : query.not("hidden", "is", true);
+}
+
+function isHiddenColumnError(error) {
+  return Boolean(error && error.message && error.message.includes("hidden"));
+}
+
 //  TRENDING SECTION
 async function fetchTrendingJobs() {
   if (!dom.trendingSection || !dom.trendingScroll) return;
   dom.trendingScroll.innerHTML = `<div class="trending-placeholder">${[0, 1, 2].map(() => '<div class="trending-card-skeleton"></div>').join("")}</div>`;
   try {
     const selectCols = getPublicJobSelectColumns(currentTable);
-    const { data, error } = await supabaseClient
+    const fetchTrending = () => excludeHidden(supabaseClient
       .from(currentTable)
-      .select(selectCols)
+      .select(selectCols))
       .order("application_count", { ascending: false, nullsFirst: false })
       .limit(8);
+    let { data, error } = await fetchTrending();
+    if (isHiddenColumnError(error)) {
+      hiddenFilterOff = true;
+      ({ data, error } = await fetchTrending());
+    }
     if (error) throw error;
     const jobs = (data || []).filter((j) => (j.application_count || 0) > 0);
     if (jobs.length === 0) {
@@ -465,7 +482,8 @@ async function fetchJobs() {
 
   try {
     const selectCols = getPublicJobSelectColumns(currentTable);
-    let query = supabaseClient.from(currentTable).select(selectCols);
+    const usedHiddenFilter = !hiddenFilterOff;
+    let query = excludeHidden(supabaseClient.from(currentTable).select(selectCols));
 
     if (state.keywords.length > 0) {
       const ors = state.keywords.map((k) => {
@@ -523,6 +541,13 @@ async function fetchJobs() {
     query = query.range(page * limit, (page + 1) * limit - 1);
 
     let { data, error } = await query;
+    // Failsafe: before the hidden column exists, fetch again without the filter.
+    if (isHiddenColumnError(error) && usedHiddenFilter) {
+      hiddenFilterOff = true;
+      isFetching = false;
+      await fetchJobs();
+      return;
+    }
     if (!error && data && state.sortBy === "popular") {
       data.sort(
         (a, b) => (b.application_count || 0) - (a.application_count || 0),
@@ -2519,17 +2544,23 @@ function checkAndOpenSharedJob() {
 async function fetchSharedJob(jobId, targetTable) {
   const table = targetTable || currentTable;
   try {
-    let { data, error } = await supabaseClient
+    const usedHiddenFilter = !hiddenFilterOff;
+    let { data, error } = await excludeHidden(supabaseClient
       .from(table)
       .select(getPublicJobSelectColumns(table))
-      .eq("id", jobId)
+      .eq("id", jobId))
       .single();
 
+    if (isHiddenColumnError(error) && usedHiddenFilter) {
+      hiddenFilterOff = true;
+      return fetchSharedJob(jobId, targetTable);
+    }
+
     if (error && !isNaN(jobId)) {
-      const retry = await supabaseClient
+      const retry = await excludeHidden(supabaseClient
         .from(table)
         .select(getPublicJobSelectColumns(table))
-        .eq("id", Number(jobId))
+        .eq("id", Number(jobId)))
         .single();
       if (!retry.error && retry.data) {
         data = retry.data;
