@@ -32,7 +32,10 @@
             });
             ['userProfileData', 'msc_profile_cache_owner', 'userCVText', 'userCVFileName', 'userCVImages', 'userCVPdf',
               'userCoverLetterText', 'userCoverLetterFileName', 'cv_cloud_synced', 'cv_images_synced',
-              'userJobPreference', 'newUserSignup', 'newUserEmail'].forEach(key => localStorage.removeItem(key));
+              'userJobPreference', 'newUserSignup', 'newUserEmail',
+              // The Work Simulation's own copies belong to the browser, not the account: the next student on this
+              // phone must not inherit them (articleship-program/work-simulation INTEGRATION.md §2).
+              'msc-articleship:work-simulation', 'msc-articleship:cv-import', 'msc-articleship:my-domain'].forEach(key => localStorage.removeItem(key));
           } catch (_) { /* clearing UI state must still proceed if storage is blocked */ }
           document.cookie = 'cv_cloud_synced=; Max-Age=0; path=/';
           global._wzCVImages = null;

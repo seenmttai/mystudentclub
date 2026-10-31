@@ -1,0 +1,1977 @@
+{
+ "id": "sa-7",
+ "domain": "statutory-audit",
+ "number": 7,
+ "title": "Materiality, CARO report and opinion",
+ "minutes": 40,
+ "learn": [
+  "How to pick a benchmark and set final materiality",
+  "What CARO asks, clause by clause, and how to word it",
+  "When an opinion is qualified, disclaimed or carries an emphasis"
+ ],
+ "do": [
+  "Set final materiality and answer Rehan’s review points",
+  "Draft ten clauses of the CARO annexure",
+  "Pick the opinion for four matters"
+ ],
+ "case": {
+  "role": "First-year article assistant on the statutory audit, completion week",
+  "client": "Tamhini Drivetech Private Limited, a Chakan company that makes gears, shafts and hubs for vehicle makers",
+  "team": "Rehan Siddiqui (manager), Aarti Rane (senior), Sudha Venkatesh (partner); at Tamhini, Mahesh Kadam (GM Finance and Accounts)",
+  "goal": "Get Tamhini’s audit file ready for Sudha’s review and the audit report.",
+  "period": "Year ended 31 March 2027",
+  "where": "Prabhat Road office · Thursday 13 May 2027"
+ },
+ "brief": {
+  "from": "rehan",
+  "time": "10:40 am",
+  "messages": [
+   "Completion on Tamhini. Lock final materiality, draft your clauses of the CARO annexure, then tell me the opinion on four matters.",
+   "Sudha reviews the file on Monday and the Board meets on Tuesday. To me by Friday evening, please."
+  ]
+ },
+ "documents": [
+  {
+   "id": "manual",
+   "type": "letter",
+   "style": "policy",
+   "title": "Audit manual · Materiality (extract)",
+   "kindLabel": "Firm manual",
+   "letterhead": "Bapat Venkatesh & Co., Chartered Accountants\nAudit manual",
+   "subject": "Section 5 · Materiality (extract)",
+   "meta": [
+    {
+     "label": "Applies to",
+     "value": "Statutory audits of companies"
+    },
+    {
+     "label": "Revised",
+     "value": "April 2025"
+    }
+   ],
+   "body": [
+    "## 5.2 Benchmark",
+    "Profit before tax, for a company that made a profit this year and in each of the two years before it, and whose profit this year is within 30% of last year’s, up or down. Take this year’s figure from the latest accounts: at completion, the audited figures after every adjustment booked.",
+    "## 5.3 When profit is not steady",
+    "If profit moved by more than 30%, use the average profit before tax of this year and the two years before it. If the company made a loss in any of those three years, use 1% of revenue from operations.",
+    "## 5.4 Percentage",
+    "5% of the profit benchmark.",
+    "## 5.5 Rounding",
+    "Round overall materiality down to the nearest ₹10,000. Work performance materiality and clearly trivial from the rounded figure.",
+    "## 5.6 Performance materiality",
+    "75% of overall materiality for a continuing client, where last year’s audit left no uncorrected misstatement above clearly trivial and this year’s work has found no fraud and no significant deficiency in internal control. 60% in every other case.",
+    "## 5.7 Clearly trivial",
+    "5% of overall materiality. A misstatement below it is noted on the area paper and not carried to the summary of unadjusted differences.",
+    "## 5.8 At completion",
+    "Recompute all three on the audited figures, give the reasons in the template’s rationale box and set the final figures beside the planning ones."
+   ],
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Our rule, not ICAI’s: SA 320 leaves the % to judgement. R.S.",
+     "color": "blue",
+     "at": "inline"
+    }
+   ]
+  },
+  {
+   "id": "plan-memo",
+   "type": "letter",
+   "style": "memo",
+   "title": "Planning memo · materiality, October 2026",
+   "kindLabel": "Memo",
+   "letterhead": "Bapat Venkatesh & Co., Chartered Accountants",
+   "to": [
+    "Rehan Siddiqui, Audit Manager"
+   ],
+   "from": "Aarti Rane, Audit Senior",
+   "date": "12-10-2026",
+   "ref": "TDPL/26-27/PL-03",
+   "subject": "Planning materiality: Tamhini Drivetech, year ending 31 March 2027",
+   "body": [
+    "Benchmark: profit before tax. Tamhini made a profit in each of the last three years, and the budget for FY 2026–27, ₹9,62,00,000, is 23.68% above FY 2025–26’s audited ₹7,77,84,000, inside the manual’s 30%.",
+    "Overall materiality: 5% of ₹9,62,00,000 = ₹48,10,000.",
+    "Performance materiality: 75% = ₹36,07,500. A continuing client: the FY 2025–26 completion memo shows no uncorrected misstatement above clearly trivial and no significant deficiency.",
+    "Clearly trivial: 5% = ₹2,40,500.",
+    "Testing thresholds for the interim and the final audit are set from ₹36,07,500. All three to be recomputed on the audited figures at completion (manual 5.8)."
+   ],
+   "sign": {
+    "name": "Aarti Rane",
+    "role": "Audit Senior",
+    "hand": "Aarti"
+   },
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Agreed. R.S. 13/10",
+     "color": "blue",
+     "at": "inline"
+    }
+   ]
+  },
+  {
+   "id": "fs",
+   "type": "table",
+   "style": "statement",
+   "title": "Statement of profit and loss · audited",
+   "tab": "P&L",
+   "kindLabel": "Accounts",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "cin": "U29301MH2004PTC942620"
+   },
+   "heading": "Statement of profit and loss for the year ended 31 March 2027 (extract)",
+   "subtitle": "Amounts in ₹ · the audited figures, after the adjustments booked on 6 May 2027, beside the figures first given in April",
+   "columns": [
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "a",
+     "label": "FY 2026–27 audited",
+     "format": "inr"
+    },
+    {
+     "key": "u",
+     "label": "FY 2026–27 as first given",
+     "format": "inr"
+    },
+    {
+     "key": "ly",
+     "label": "FY 2025–26 audited",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "rev",
+     "part": "Revenue from operations",
+     "a": 1183340000,
+     "u": 1188020000,
+     "ly": 1043600000
+    },
+    {
+     "_id": "oi",
+     "part": "Other income",
+     "a": 810932,
+     "u": 772649,
+     "ly": 504000
+    },
+    {
+     "_id": "ti",
+     "part": "Total income",
+     "a": 1184150932,
+     "u": 1188792649,
+     "ly": 1044104000,
+     "_class": "subtotal",
+     "_sumOf": [
+      "rev",
+      "oi"
+     ]
+    },
+    {
+     "_id": "hd",
+     "part": "Expenses",
+     "a": null,
+     "u": null,
+     "ly": null,
+     "_class": "head"
+    },
+    {
+     "_id": "comc",
+     "part": "Cost of materials consumed",
+     "a": 575932500,
+     "u": 577760000,
+     "ly": 509240000,
+     "_indent": 1
+    },
+    {
+     "_id": "sit",
+     "part": "Purchases of stock-in-trade",
+     "a": 146800000,
+     "u": 146800000,
+     "ly": 128600000,
+     "_indent": 1
+    },
+    {
+     "_id": "chg",
+     "part": "Changes in inventories of finished goods, work-in-progress and stock-in-trade",
+     "a": -8287160,
+     "u": -5720000,
+     "ly": -3200000,
+     "_indent": 1
+    },
+    {
+     "_id": "emp",
+     "part": "Employee benefits expense",
+     "a": 106728086,
+     "u": 106983086,
+     "ly": 95860000,
+     "_indent": 1
+    },
+    {
+     "_id": "fin",
+     "part": "Finance costs",
+     "a": 16763610,
+     "u": 16763610,
+     "ly": 18840000,
+     "_indent": 1
+    },
+    {
+     "_id": "dep",
+     "part": "Depreciation and amortisation expense",
+     "a": 31281563,
+     "u": 31223573,
+     "ly": 28620000,
+     "_indent": 1
+    },
+    {
+     "_id": "oth",
+     "part": "Other expenses",
+     "a": 220994640,
+     "u": 221460000,
+     "ly": 188360000,
+     "_indent": 1
+    },
+    {
+     "_id": "te",
+     "part": "Total expenses",
+     "a": 1090213239,
+     "u": 1095270269,
+     "ly": 966320000,
+     "_class": "subtotal",
+     "_sumOf": [
+      "comc",
+      "sit",
+      "chg",
+      "emp",
+      "fin",
+      "dep",
+      "oth"
+     ]
+    },
+    {
+     "_id": "pbt",
+     "part": "Profit before tax",
+     "a": 93937693,
+     "u": 93522380,
+     "ly": 77784000,
+     "_class": "total",
+     "_sumOf": [
+      "ti",
+      "-te"
+     ]
+    },
+    {
+     "_id": "ct",
+     "part": "Current tax",
+     "a": 23578456,
+     "u": 23155107,
+     "ly": 19400000,
+     "_indent": 1
+    },
+    {
+     "_id": "dt",
+     "part": "Deferred tax",
+     "a": 290980,
+     "u": 777975,
+     "ly": 480000,
+     "_indent": 1
+    },
+    {
+     "_id": "pat",
+     "part": "Profit for the year",
+     "a": 70068257,
+     "u": 69589298,
+     "ly": 57904000,
+     "_class": "total",
+     "_sumOf": [
+      "pbt",
+      "-ct",
+      "-dt"
+     ]
+    }
+   ],
+   "notes": [
+    "Profit before tax in earlier years (audited): FY 2024–25 ₹6,58,00,000; FY 2023–24 ₹5,86,20,000.",
+    "At 31 March 2027 (audited): total assets ₹79,20,41,754; net worth ₹39,23,33,096."
+   ]
+  },
+  {
+   "id": "aje",
+   "type": "table",
+   "style": "sheet",
+   "sheetName": "AJE",
+   "freeze": true,
+   "title": "Audit adjustments · agreed with Mahesh",
+   "tab": "Adjustments",
+   "kindLabel": "Working paper",
+   "columns": [
+    {
+     "key": "what",
+     "label": "Entry and what it corrects"
+    },
+    {
+     "key": "eff",
+     "label": "Effect on profit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "aje1",
+     "what": "AJE-1 · Naik Auto sale of 31 March out of March (goods left on 2 April)",
+     "eff": -1045200
+    },
+    {
+     "_id": "aje2",
+     "what": "AJE-2 · New air compressor moved from repairs to plant and machinery",
+     "eff": 478773
+    },
+    {
+     "_id": "aje3",
+     "what": "AJE-3 · VMC not ready at 31 March: to capital work-in-progress",
+     "eff": 7579
+    },
+    {
+     "_id": "aje4",
+     "what": "AJE-4 · CNC turning centre depreciated from 12 August",
+     "eff": -59342
+    },
+    {
+     "_id": "aje5",
+     "what": "AJE-5 · Shafts 0907 written down to scrap value",
+     "eff": -1067640
+    },
+    {
+     "_id": "aje6",
+     "what": "AJE-6 · Stock count differences",
+     "eff": -53780
+    },
+    {
+     "_id": "aje7",
+     "what": "AJE-7 · Payroll: salary to E1093 and to Amit Wagh after exit, recoverable",
+     "eff": 255000
+    },
+    {
+     "_id": "aje8",
+     "what": "AJE-8 · Kharun Steels bill of 29 March out of March (goods came on 2 April)",
+     "eff": 1864000
+    },
+    {
+     "_id": "aje9",
+     "what": "AJE-9 · FD-2 interest to 31 March",
+     "eff": 38283
+    },
+    {
+     "_id": "aje10",
+     "what": "AJE-10 · Shirur’s stale cheque 417652 written back",
+     "eff": 0
+    },
+    {
+     "_id": "aje11",
+     "what": "AJE-11 · Lothal’s NEFT of 30 March booked in March",
+     "eff": 0
+    },
+    {
+     "_id": "aje12",
+     "what": "AJE-12 · Bank charges of 31 March booked in March",
+     "eff": -2360
+    },
+    {
+     "_id": "net",
+     "what": "Net effect on profit before tax",
+     "eff": 415313,
+     "_class": "subtotal",
+     "_sumOf": [
+      "aje1",
+      "aje2",
+      "aje3",
+      "aje4",
+      "aje5",
+      "aje6",
+      "aje7",
+      "aje8",
+      "aje9",
+      "aje10",
+      "aje11",
+      "aje12"
+     ]
+    },
+    {
+     "_id": "first",
+     "what": "Profit before tax as first given",
+     "eff": 93522380
+    },
+    {
+     "_id": "aud",
+     "what": "Profit before tax, audited",
+     "eff": 93937693,
+     "_class": "total",
+     "_sumOf": [
+      "first",
+      "net"
+     ]
+    }
+   ],
+   "notes": [
+    "Audit adjustments agreed with the company for FY 2026–27, booked by Mahesh Kadam on 6 May 2027. Effect on profit before tax, in ₹.",
+    "AJE-13, current and deferred tax on the audited profit, follows from these and does not change profit before tax."
+   ]
+  },
+  {
+   "id": "points",
+   "type": "letter",
+   "style": "memo",
+   "title": "Completion points · Aarti, 12 May",
+   "kindLabel": "Memo",
+   "letterhead": "Bapat Venkatesh & Co., Chartered Accountants",
+   "to": [
+    "Rehan Siddiqui, Audit Manager"
+   ],
+   "cc": [
+    "Article on the Tamhini file"
+   ],
+   "from": "Aarti Rane, Audit Senior",
+   "date": "12-05-2027",
+   "ref": "TDPL/26-27/CP-01",
+   "subject": "Tamhini: open points for completion",
+   "body": [
+    "1. Final materiality on the audited figures: the template is with the article, for Rehan.",
+    "2. Payroll: E1093, the employee who does not exist, found at the interim on 18 January. Our letter to the Board went on 20 January; the recovery is booked in AJE-7. Rehan’s note is in the file.",
+    "3. CARO annexure: Rehan has drafted all but ten clauses. Those are the article’s, from the clause papers.",
+    "4. Summary of unadjusted differences: Mahesh declines the one item left. I finalise it once the materiality is in.",
+    "5. Subsequent events: none to date, per Mahesh and the board minutes to 10 May. To be brought up to the date of the report.",
+    "6. Representation letter: in draft with Mahesh, to be dated with the report.",
+    "7. Sudha reviews the file on Monday 17 May; the Board meets on Tuesday 18 May."
+   ],
+   "sign": {
+    "name": "Aarti Rane",
+    "role": "Audit Senior",
+    "hand": "Aarti"
+   }
+  },
+  {
+   "id": "fraud",
+   "type": "letter",
+   "style": "memo",
+   "title": "Payroll fraud · Rehan’s note",
+   "kindLabel": "File note",
+   "letterhead": "Bapat Venkatesh & Co., Chartered Accountants",
+   "to": [
+    "Audit file: Tamhini Drivetech, FY 2026–27"
+   ],
+   "from": "Rehan Siddiqui, Audit Manager",
+   "date": "10-05-2027",
+   "ref": "TDPL/26-27/FR-01",
+   "subject": "Payroll fraud found at the interim audit: the facts for CARO and the file",
+   "body": [
+    "## What happened",
+    "Employee code E1093, “Rakesh Bhoir”, was added to the staff master on 1 August 2026 by the payroll assistant, Sunil Gaikwad. There is no such employee. A gross salary of ₹28,000 a month was booked for him, and the net pay went into an account the bank confirms is Sunil’s.",
+    "## How it was found and reported",
+    "By our team at the interim audit, on 18 January 2027. We reported it to the Board of Directors by our letter of 20 January 2027 under section 143(12) read with rule 13.",
+    "On its lawyers’ advice, the Board let E1093’s January to March salaries run, so that Sunil was not alerted while the police complaint and a review of his other payroll entries were prepared. E1093 came off the master, and Sunil was suspended, on 1 April 2027.",
+    "## Amount",
+    "Booked for E1093 in the year, August 2026 to March 2027: 8 × ₹28,000 = ₹2,24,000, gross.",
+    "AJE-7 books ₹2,55,000 as recoverable: the ₹2,24,000 above, and ₹31,000 paid to Amit Wagh for September 2026 after he left on 31 August, which was an error, not a fraud.",
+    "## Now",
+    "Recovery from Sunil Gaikwad is under way.",
+    "## The clause, points (xi)(a) and (b)",
+    "“(xi) (a) whether any fraud by the company or any fraud on the company has been noticed or reported during the year, if yes, the nature and the amount involved is to be indicated;”",
+    "“(b) whether any report under sub-section (12) of section 143 of the Companies Act has been filed by the auditors in Form ADT-4 as prescribed under rule 13 of Companies (Audit and Auditors) Rules, 2014 with the Central Government;”"
+   ],
+   "sign": {
+    "name": "Rehan Siddiqui",
+    "role": "Audit Manager",
+    "hand": "R. Siddiqui"
+   }
+  },
+  {
+   "id": "skeleton",
+   "type": "letter",
+   "style": "memo",
+   "title": "CARO annexure · Rehan’s draft",
+   "kindLabel": "Draft report",
+   "letterhead": "Bapat Venkatesh & Co., Chartered Accountants",
+   "to": [
+    "Article on the Tamhini file"
+   ],
+   "from": "Rehan Siddiqui, Audit Manager",
+   "date": "12-05-2027",
+   "ref": "TDPL/26-27/AR-02",
+   "subject": "Annexure A to the Independent Auditor’s Report on Tamhini Drivetech Private Limited, year ended 31 March 2027: draft 2",
+   "body": [
+    "Referred to in paragraph 1 under “Report on Other Legal and Regulatory Requirements” of our report of even date. The Companies (Auditor’s Report) Order, 2020, paragraph 3.",
+    "## Opening line",
+    "“In terms of the information and explanations sought by us and given by the company and the books of account and records examined by us in the normal course of audit and to the best of our knowledge and belief, we state that:”",
+    "## Drafted by me",
+    "(i)(a), (i)(c), (i)(d), (i)(e) · (iii) to (vi) · (viii) · (ix)(b) to (f) · (x) · (xi)(c) · (xii) · (xiii) · (xiv)(b) · (xv) to (xx).",
+    "## Yours, and the paper for each",
+    "- (i)(b): CARO working paper, fixed assets",
+    "- (ii)(a): CARO working paper, inventory",
+    "- (ii)(b): Quarterly statements to the bank (Aarti’s sheet)",
+    "- (vii)(a): Statutory dues, deposit check",
+    "- (vii)(b): Income-tax demands under appeal (Mahesh’s register)",
+    "- (ix)(a): Borrowings, repayment check",
+    "- (xi)(a) and (xi)(b): Payroll fraud, my note",
+    "- (xiv)(a) and (xxi): Company facts for CARO, permanent file",
+    "## How to write them",
+    "- Answer the question the clause asks, in its own words. Each paper quotes it.",
+    "- Where the answer is unfavourable or qualified, give the basis and the details the clause asks for.",
+    "- Where a clause does not apply to Tamhini, say so, and why."
+   ],
+   "sign": {
+    "name": "Rehan Siddiqui",
+    "role": "Audit Manager",
+    "hand": "R.S."
+   }
+  },
+  {
+   "id": "wp-fa",
+   "type": "letter",
+   "style": "policy",
+   "title": "CARO working paper · fixed assets (closed)",
+   "kindLabel": "Working paper",
+   "letterhead": "Bapat Venkatesh & Co., Chartered Accountants\nAudit working paper",
+   "subject": "CARO 2020, paragraph 3(i): property, plant and equipment",
+   "meta": [
+    {
+     "label": "Client",
+     "value": "Tamhini Drivetech Private Limited"
+    },
+    {
+     "label": "Year",
+     "value": "ended 31 March 2027"
+    },
+    {
+     "label": "Prepared by",
+     "value": "Article, fixed assets"
+    },
+    {
+     "label": "Reviewed by",
+     "value": "Aarti Rane, 26-04-2027"
+    }
+   ],
+   "body": [
+    "## The clause, points (a)(A) and (b)",
+    "“(i) (a) (A) whether the company is maintaining proper records showing full particulars, including quantitative details and situation of Property, Plant and Equipment;”",
+    "“(b) whether these Property, Plant and Equipment have been physically verified by the management at reasonable intervals; whether any material discrepancies were noticed on such verification and if so, whether the same have been properly dealt with in the books of account;”",
+    "## Conclusions",
+    "1. Records. The fixed-asset register gives each asset its code, tag, description, quantity, location (a bay at Chakan, or the Hosur depot for its 38 lines), cost, invoice reference, date put to use, life and depreciation. Class totals agree with the trial balance after AJE-2 to AJE-4. The new air compressor went into the register on 23 April 2027 as FA-27-07.",
+    "2. Verification. Management verified every asset on 18–20 February 2027, under its programme of covering all assets once in two years (the last full verification was in February 2025). Every asset was found where the register shows it; nothing to adjust in the books.",
+    "3. Title. The MIDC plot is held under a lease deed executed in the company’s favour, confirmed by Vindhya Commercial Bank, which holds the original.",
+    "## For the annexure",
+    "Rehan drafts (i)(a), (c), (d) and (e) from this file; (i)(b) is for the article."
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "REVIEWED\n26 APR 2027 · A.R.",
+     "color": "blue",
+     "at": "top-right",
+     "rotate": -6
+    }
+   ]
+  },
+  {
+   "id": "wp-inv",
+   "type": "letter",
+   "style": "policy",
+   "title": "CARO working paper · inventory (closed)",
+   "kindLabel": "Working paper",
+   "letterhead": "Bapat Venkatesh & Co., Chartered Accountants\nAudit working paper",
+   "subject": "CARO 2020, paragraph 3(ii)(a): inventory",
+   "meta": [
+    {
+     "label": "Client",
+     "value": "Tamhini Drivetech Private Limited"
+    },
+    {
+     "label": "Year",
+     "value": "ended 31 March 2027"
+    },
+    {
+     "label": "Prepared by",
+     "value": "Article on the count"
+    },
+    {
+     "label": "Reviewed by",
+     "value": "Aarti Rane, 05-04-2027"
+    }
+   ],
+   "body": [
+    "## The clause",
+    "“(ii) (a) whether physical verification of inventory has been conducted at reasonable intervals by the management and whether, in the opinion of the auditor, the coverage and procedure of such verification by the management is appropriate; whether any discrepancies of 10% or more in the aggregate for each class of inventory were noticed and if so, whether they have been properly dealt with in the books of account;”",
+    "## Conclusions",
+    "1. Verified by management twice in the year: every location on 26–27 September 2026 and on 31 March 2027, under written instructions. We attended the 31 March count and test-counted.",
+    "2. Coverage: every location at Chakan; the Hosur depot’s own count on both dates (signed sheets received 2 April 2027); stock with Kudalwadi and Sakhare, the two job workers, confirmed by them in writing.",
+    "3. Procedure: pre-numbered tags, cut-off at the last GRN and gate pass, test counts with recounts. Two wrong tags were corrected after clean recounts of their bays.",
+    "4. The 10% test, class by class, by value and net, against the books: bought-out parts 0.42% short (₹36,500 of ₹87,60,000); raw materials 0.08% over (₹49,440); no other class differs. September’s differences were under 1% in every class.",
+    "5. Dealt with in the books (AJE-6): the 120 blanks as a March receipt; the 250 bearings written off, as no issue record was found; the 180 wet boxes written off as damaged. The shafts 0907 are written down to scrap value (AJE-5), a valuation, not a count difference."
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "REVIEWED\n5 APR 2027 · A.R.",
+     "color": "blue",
+     "at": "top-right",
+     "rotate": -6
+    }
+   ]
+  },
+  {
+   "id": "stock-stmt",
+   "type": "table",
+   "style": "sheet",
+   "title": "Quarterly statements to the bank · against the books",
+   "tab": "Statements",
+   "kindLabel": "Working paper",
+   "sheetName": "CARO ii(b)",
+   "freeze": true,
+   "columns": [
+    {
+     "key": "part",
+     "label": "Quarter ended"
+    },
+    {
+     "key": "q1",
+     "label": "30-06-2026",
+     "format": "inr"
+    },
+    {
+     "key": "q2",
+     "label": "30-09-2026",
+     "format": "inr"
+    },
+    {
+     "key": "q3",
+     "label": "31-12-2026",
+     "format": "inr"
+    },
+    {
+     "key": "q4",
+     "label": "31-03-2027",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "st",
+     "part": "Stock per statement",
+     "q1": 170820000,
+     "q2": 179310000,
+     "q3": 178170000,
+     "q4": 174072000
+    },
+    {
+     "_id": "bk",
+     "part": "Stock per books",
+     "q1": 165740000,
+     "q2": 174010000,
+     "q3": 172730000,
+     "q4": 168760000
+    },
+    {
+     "_id": "df",
+     "part": "Difference",
+     "q1": 5080000,
+     "q2": 5300000,
+     "q3": 5440000,
+     "q4": 5312000,
+     "_class": "subtotal",
+     "_sumOf": [
+      "st",
+      "-bk"
+     ]
+    },
+    {
+     "_id": "fg",
+     "part": "of which finished goods, per books",
+     "q1": 50800000,
+     "q2": 53000000,
+     "q3": 54400000,
+     "q4": 53120000,
+     "_indent": 1,
+     "_check": false
+    },
+    {
+     "_id": "rs",
+     "part": "Receivables per statement",
+     "q1": 215647686,
+     "q2": 240042679,
+     "q3": 208348506,
+     "q4": 249191995
+    },
+    {
+     "_id": "rb",
+     "part": "Receivables per books",
+     "q1": 215647686,
+     "q2": 240042679,
+     "q3": 208348506,
+     "q4": 249191995
+    },
+    {
+     "_id": "cs",
+     "part": "Creditors for goods per statement",
+     "q1": 158078776,
+     "q2": 174654223,
+     "q3": 150927470,
+     "q4": 167784717
+    },
+    {
+     "_id": "cb",
+     "part": "Creditors for goods per books",
+     "q1": 158078776,
+     "q2": 174654223,
+     "q3": 150927470,
+     "q4": 167784717
+    }
+   ],
+   "notes": [
+    "CARO 2020, paragraph 3(ii)(b): “whether during any point of time of the year, the company has been sanctioned working capital limits in excess of five crore rupees, in aggregate, from banks or financial institutions on the basis of security of current assets; whether the quarterly returns or statements filed by the company with such banks or financial institutions are in agreement with the books of account of the Company, if not, give details;”",
+    "Statements filed with Vindhya Commercial Bank against the books, FY 2026–27. Prepared by Aarti Rane from the four quarter-end statements and the books for each quarter. Amounts in ₹.",
+    "Sanction: cash credit of ₹18,00,00,000 from Vindhya Commercial Bank, Chakan, on hypothecation of stock and book debts.",
+    "Filed with the bank on 9 July, 8 October, 8 January and 10 April.",
+    "March: the books as they stood when the statement was filed on 10 April, before the audit adjustments of 6 May.",
+    "Stock here is raw materials, bought-out parts, work-in-progress, finished goods and stock-in-trade, the lines the statement lists.",
+    "Mahesh’s reply to our query, 14 April 2027: “The statements take finished goods at selling price, about cost plus 10%. The books carry them at cost.”"
+   ]
+  },
+  {
+   "id": "dues",
+   "type": "table",
+   "style": "sheet",
+   "sheetName": "Dues 26-27",
+   "freeze": true,
+   "pinFit": true,
+   "title": "Statutory dues · deposit check",
+   "tab": "Dues",
+   "kindLabel": "Working paper",
+   "columns": [
+    {
+     "key": "due",
+     "label": "Dues"
+    },
+    {
+     "key": "what",
+     "label": "Months and amount",
+     "wrap": true
+    },
+    {
+     "key": "paid",
+     "label": "Deposited",
+     "wrap": true
+    },
+    {
+     "key": "by",
+     "label": "Due by"
+    }
+   ],
+   "rows": [
+    {
+     "due": "PF",
+     "what": "April–August 2026",
+     "by": "15th of the next month",
+     "paid": "On the due date"
+    },
+    {
+     "due": "PF",
+     "what": "September 2026 · ₹6,72,565",
+     "by": "15-10-2026",
+     "paid": "27-10-2026"
+    },
+    {
+     "due": "PF",
+     "what": "October 2026 – February 2027, on the old ₹15,000 ceiling",
+     "by": "15th of the next month",
+     "paid": "On the due date"
+    },
+    {
+     "due": "PF arrears",
+     "what": "Shortfall on the revised ₹25,000 ceiling from 17 September 2026, found at our interim in January",
+     "by": "With each month’s PF",
+     "paid": "Not deposited at 31 March; Mahesh deposits them with April’s PF by 15 May 2027, with interest"
+    },
+    {
+     "due": "ESI",
+     "what": "April 2026 – February 2027",
+     "by": "15th of the next month",
+     "paid": "On the due date"
+    },
+    {
+     "due": "TDS",
+     "what": "April 2026 – February 2027, except December",
+     "by": "7th of the next month",
+     "paid": "On the due date"
+    },
+    {
+     "due": "TDS",
+     "what": "December 2026 · ₹4,61,238",
+     "by": "07-01-2027",
+     "paid": "11-01-2027: 4 days late; interest of ₹6,919 paid with it"
+    },
+    {
+     "due": "TDS short",
+     "what": "Short deducted: Kudalwadi Heat Treaters, April–September 2026, at 1% where 2% was due, ₹1,11,550; four payees, October–December 2026, ₹63,676",
+     "by": "7th of the month after each bill",
+     "paid": "22-01-2027, with interest, after our TDS review in January"
+    },
+    {
+     "due": "TDS",
+     "what": "Not deducted: TDS on Parag Mahajani’s consultancy fee of ₹75,000, booked on 18-12-2026 and paid on 04-01-2027",
+     "by": "07-01-2027",
+     "paid": "Not deducted or deposited at 31 March; found at our year-end check. Mahesh to deduct it from Mahajani’s next bill and deposit it with interest."
+    },
+    {
+     "due": "GST",
+     "what": "April 2026 – February 2027",
+     "by": "20th of the next month",
+     "paid": "On or before the due date, Maharashtra and Tamil Nadu"
+    },
+    {
+     "due": "All",
+     "what": "March 2027",
+     "by": "In April 2027",
+     "paid": "In April, by the due dates; not due at 31 March"
+    }
+   ],
+   "notes": [
+    "CARO 2020, paragraph 3(vii)(a): “whether the company is regular in depositing undisputed statutory dues including Goods and Services Tax, provident fund, employees’ state insurance, income-tax … and any other statutory dues to the appropriate authorities and if not, the extent of the arrears of outstanding statutory dues as on the last day of the financial year concerned for a period of more than six months from the date they became payable, shall be indicated;”",
+    "Statutory dues deposited in FY 2026–27, from Pallavi Shinde’s register, checked by Aarti Rane on 28-04-2027. Due dates as the register shows them.",
+    "PF: provident fund. ESI: employees’ state insurance.",
+    "Outstanding at 31 March 2027: March’s dues, none of them yet due; the PF arrears on the revised ceiling, from the September 2026 wage month on; and the TDS on Parag Mahajani’s fee, due on 7 January. Nothing outstanding for more than six months."
+   ]
+  },
+  {
+   "id": "it-demand",
+   "type": "card",
+   "style": "slip",
+   "title": "Income-tax demands under appeal · register extract",
+   "kindLabel": "Register",
+   "issuer": "Tamhini Drivetech Private Limited · Tax cases register, kept by Mahesh Kadam",
+   "heading": "Disputed income-tax demands",
+   "fields": [
+    {
+     "label": "CARO asks",
+     "value": "3(vii)(b): “where statutory dues referred to in sub-clause (a) have not been deposited on account of any dispute, then the amounts involved and the forum where dispute is pending shall be mentioned (a mere representation to the concerned Department shall not be treated as a dispute);”"
+    },
+    {
+     "label": "AY 2024–25",
+     "value": "Financial year 2023–24. Assessment order of 18-12-2025: demand ₹6,42,000. The company contests the additions made in it."
+    },
+    {
+     "label": "AY 2024–25 · appeal",
+     "value": "Form 35 filed on 12-01-2026 before the Commissioner of Income Tax (Appeals). Pending at 31-03-2027; no hearing yet."
+    },
+    {
+     "label": "AY 2024–25 · paid",
+     "value": "Nil"
+    },
+    {
+     "label": "AY 2026–27",
+     "value": "Financial year 2025–26. Intimation of 17-03-2027 on the return: the ₹61,20,000 of workmen’s bonus it added back is disputed. Tax on it: ₹15,40,280."
+    },
+    {
+     "label": "AY 2026–27 · accepted",
+     "value": "The ₹9,57,340 the company accepted in its reply of 27-01-2027 to the proposed adjustments. Its tax, ₹2,40,940, was paid on 26-03-2027."
+    },
+    {
+     "label": "AY 2026–27 · appeal",
+     "value": "Fee paid on 22-03-2027; Form 35 filed on 09-04-2027 before the Commissioner of Income Tax (Appeals)."
+    },
+    {
+     "label": "AY 2026–27 · paid",
+     "value": "Nil"
+    },
+    {
+     "label": "Both years",
+     "value": "Under the Income-tax Act, 1961. Contingent liabilities in the accounts, note 31."
+    },
+    {
+     "label": "Other disputes",
+     "value": "None. No GST, customs or other tax demand is pending."
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Both Form 35 acknowledgements seen. A.R. 30/4",
+     "color": "blue",
+     "at": "inline"
+    }
+   ]
+  },
+  {
+   "id": "loans",
+   "type": "table",
+   "style": "sheet",
+   "sheetName": "Loans",
+   "freeze": true,
+   "pinFit": true,
+   "title": "Borrowings · repayment check",
+   "tab": "Loans",
+   "kindLabel": "Working paper",
+   "columns": [
+    {
+     "key": "fac",
+     "label": "Payment"
+    },
+    {
+     "key": "due",
+     "label": "Due on"
+    },
+    {
+     "key": "paid",
+     "label": "Paid on",
+     "wrap": true
+    },
+    {
+     "key": "amt",
+     "label": "Amount due (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "os",
+     "label": "Outstanding at 31 March 2027 (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "fac": "Term loan I · 9 of 20",
+     "due": "30-06-2026",
+     "amt": 7500000,
+     "paid": "30-06-2026",
+     "os": null
+    },
+    {
+     "fac": "Term loan I · 10 of 20",
+     "due": "30-09-2026",
+     "amt": 7500000,
+     "paid": "30-09-2026",
+     "os": null
+    },
+    {
+     "fac": "Term loan I · 11 of 20",
+     "due": "31-12-2026",
+     "amt": 7500000,
+     "paid": "31-12-2026",
+     "os": null
+    },
+    {
+     "fac": "Term loan I · 12 of 20",
+     "due": "31-03-2027",
+     "amt": 7500000,
+     "paid": "31-03-2027",
+     "os": 60000000
+    },
+    {
+     "fac": "Term loan II · 1 of 15",
+     "due": "30-06-2027",
+     "amt": 615000,
+     "paid": "Not yet due",
+     "os": 9225000
+    },
+    {
+     "fac": "Term loans · interest",
+     "due": "Month-end",
+     "amt": null,
+     "paid": "Debited on the due date, all twelve months",
+     "os": null
+    },
+    {
+     "fac": "Cash credit · interest",
+     "due": "Month-end",
+     "amt": null,
+     "paid": "Debited and paid, all twelve months",
+     "os": null
+    }
+   ],
+   "check": false,
+   "notes": [
+    "CARO 2020, paragraph 3(ix)(a): “whether the company has defaulted in repayment of loans or other borrowings or in the payment of interest thereon to any lender, if yes, the period and the amount of default to be reported …”",
+    "Borrowings from Vindhya Commercial Bank, FY 2026–27, from the bank’s loan statements and the sanction letters, checked by Aarti Rane on 29-04-2027.",
+    "Paid on: the date the bank debited the instalment to the cash credit account, from the loan statement.",
+    "Term loan II: ₹92,25,000 drawn, ₹51,30,000 on 20-07-2026 and ₹40,95,000 on 26-03-2027; repayable in 15 quarterly instalments of ₹6,15,000 from 30-06-2027.",
+    "Cash credit: limit ₹18,00,00,000; balance at 31 March 2027 ₹8,82,61,002 per the bank."
+   ]
+  },
+  {
+   "id": "co-facts",
+   "type": "card",
+   "style": "slip",
+   "title": "Company facts for CARO · permanent file",
+   "kindLabel": "Permanent file",
+   "issuer": "Bapat Venkatesh & Co., Chartered Accountants · Permanent file, Tamhini Drivetech Private Limited",
+   "heading": "Facts for the CARO clauses, at 31 March 2027",
+   "fields": [
+    {
+     "label": "CARO asks",
+     "value": "3(xiv)(a): “whether the company has an internal audit system commensurate with the size and nature of its business;”"
+    },
+    {
+     "label": "Internal audit",
+     "value": "No internal audit function and no internal auditor. Section 138 does not require one for the company this year: applicability worked on sheet 12 of this file."
+    },
+    {
+     "label": "CARO asks",
+     "value": "3(xxi): “whether there have been any qualifications or adverse remarks by the respective auditors in the Companies (Auditor’s Report) Order (CARO) reports of the companies included in the consolidated financial statements …”"
+    },
+    {
+     "label": "And paragraph 2",
+     "value": "“Provided this Order shall not apply to the auditor’s report on consolidated financial statements except clause (xxi) of paragraph 3.”"
+    },
+    {
+     "label": "Group",
+     "value": "None. Not a holding or subsidiary company of any company; no associate or joint venture."
+    },
+    {
+     "label": "Accounts",
+     "value": "Standalone financial statements only; no consolidated statements."
+    },
+    {
+     "label": "Business",
+     "value": "Manufacturing and trading. Not a Nidhi company, not a non-banking financial company."
+    },
+    {
+     "label": "Updated",
+     "value": "12-05-2027 · A.R."
+    }
+   ]
+  },
+  {
+   "id": "sad",
+   "type": "table",
+   "style": "sheet",
+   "sheetName": "SAD",
+   "freeze": true,
+   "title": "Summary of unadjusted differences",
+   "tab": "SAD",
+   "kindLabel": "Working paper",
+   "arrives": "t4",
+   "columns": [
+    {
+     "key": "item",
+     "label": "Item"
+    },
+    {
+     "key": "pbt",
+     "label": "Effect on profit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "why",
+     "label": "Our view",
+     "wrap": true
+    },
+    {
+     "key": "bs",
+     "label": "Effect on the balance sheet",
+     "wrap": true
+    },
+    {
+     "key": "view",
+     "label": "Management’s view",
+     "wrap": true
+    }
+   ],
+   "rows": [
+    {
+     "_id": "v",
+     "item": "Vaigai Axle Systems · debit note 14-12-2026",
+     "pbt": -1480000,
+     "why": "₹14,80,000 withheld against its debit note for a rejected gear lot; over 90 days at 31 March. We propose a provision in full.",
+     "bs": "Trade receivables lower by ₹14,80,000",
+     "view": "Disputes the rejection; no provision"
+    },
+    {
+     "_id": "tot",
+     "item": "Total uncorrected",
+     "pbt": -1480000,
+     "why": "",
+     "bs": "",
+     "view": "",
+     "_class": "total",
+     "_sumOf": [
+      "v"
+     ]
+    }
+   ],
+   "notes": [
+    "Summary of unadjusted differences, FY 2026–27. Final materiality ₹46,90,000 · performance materiality ₹28,14,000 · clearly trivial ₹2,34,500. Aarti Rane, 13-05-2027.",
+    "Corrected: AJE-1 to AJE-12, booked on 6 May 2027, which together add ₹4,15,313 to profit before tax."
+   ]
+  }
+ ],
+ "tasks": [
+  {
+   "id": "t1",
+   "type": "worksheet",
+   "stage": "Review",
+   "title": "Fill the final materiality template",
+   "prompt": "Fill Rehan’s final materiality template from the statements, the firm’s manual and Aarti’s completion points. The change in profit to two decimals; round materiality as the manual says. Your template goes to Rehan when you move on.",
+   "weight": 1.5,
+   "noun": [
+    "figure",
+    "figures"
+   ],
+   "layout": "grid",
+   "lockOnLeave": {
+    "ask": "Hand your template to Rehan?",
+    "note": "You can’t change it after this.",
+    "yes": "Hand it in",
+    "done": "Handed to Rehan. You can read your figures but not change them."
+   },
+   "hints": [
+    "Check the change in profit against the manual’s 30% before you pick the benchmark, and take this year’s audited figure, not the one first given.",
+    "Round materiality down to the nearest ₹10,000 first. For the performance percentage, read Aarti’s completion points for anything this year’s work has found."
+   ],
+   "columns": [
+    {
+     "key": "line",
+     "label": "Template line"
+    },
+    {
+     "key": "plan",
+     "label": "Planning, October 2026"
+    },
+    {
+     "key": "amt",
+     "label": "Final: your figure",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "id": "chg",
+     "cells": {
+      "line": "Change in profit before tax on last year",
+      "plan": "+23.68%",
+      "amt": {
+       "input": true,
+       "answer": 20.77,
+       "tolerance": 0.05,
+       "format": "pct",
+       "signed": true,
+       "working": "(9,39,37,693 − 7,77,84,000) ÷ 7,77,84,000 × 100 = 20.77"
+      }
+     }
+    },
+    {
+     "id": "bm",
+     "cells": {
+      "line": "Benchmark figure",
+      "plan": "Budget ₹9,62,00,000",
+      "amt": {
+       "input": true,
+       "answer": 93937693,
+       "tolerance": 1,
+       "format": "inr",
+       "sign": false,
+       "working": "Audited profit before tax: 9,35,22,380 as first given + 4,15,313 of adjustments = 9,39,37,693"
+      }
+     }
+    },
+    {
+     "id": "om",
+     "cells": {
+      "line": "Overall materiality",
+      "plan": "₹48,10,000",
+      "amt": {
+       "input": true,
+       "answer": 4690000,
+       "tolerance": 0,
+       "format": "inr",
+       "sign": false,
+       "working": "5% × 9,39,37,693 = 46,96,885, rounded down to 46,90,000"
+      }
+     }
+    },
+    {
+     "id": "pm",
+     "cells": {
+      "line": "Performance materiality",
+      "plan": "75%: ₹36,07,500",
+      "amt": {
+       "input": true,
+       "answer": 2814000,
+       "tolerance": 1,
+       "format": "inr",
+       "sign": false,
+       "working": "60% × 46,90,000 = 28,14,000",
+       "follow": "{om.amt} × 60 ÷ 100"
+      }
+     }
+    },
+    {
+     "id": "ctt",
+     "cells": {
+      "line": "Clearly trivial",
+      "plan": "₹2,40,500",
+      "amt": {
+       "input": true,
+       "answer": 234500,
+       "tolerance": 1,
+       "format": "inr",
+       "sign": false,
+       "working": "5% × 46,90,000 = 2,34,500",
+       "follow": "{om.amt} × 5 ÷ 100"
+      }
+     }
+    }
+   ],
+   "notes": {
+    "chg.amt": "₹9,39,37,693 against ₹7,77,84,000 is up 20.77%. Inside the manual’s 30%, and all three years are profits, so this year’s profit is the benchmark.",
+    "bm.amt": "The audited profit, after the twelve adjustments: ₹9,39,37,693. The ₹9,35,22,380 Mahesh first gave is out of date once the entries are booked.",
+    "om.amt": "5% of ₹9,39,37,693 is ₹46,96,885. The manual rounds down to the nearest ₹10,000: ₹46,90,000.",
+    "pm.amt": "60%, not 75%: the interim found a payroll fraud this year, and the manual drops to 60% when the year’s work finds one. 60% of ₹46,90,000 is ₹28,14,000.",
+    "ctt.amt": "5% of ₹46,90,000: ₹2,34,500. Below it, a misstatement stays on its area paper and is not carried to the summary."
+   },
+   "docs": [
+    "manual",
+    "plan-memo",
+    "fs",
+    "aje",
+    "points",
+    "fraud"
+   ]
+  },
+  {
+   "id": "t2",
+   "type": "choice",
+   "stage": "Review",
+   "title": "Answer Rehan’s review points on materiality",
+   "prompt": "Rehan has your template. Before he signs off its rationale box he has four review points. Answer each one as it would go in the file. Your answers go to him when you move on.",
+   "weight": 1.5,
+   "lockOnLeave": {
+    "ask": "Hand your answers to Rehan?",
+    "note": "You can’t change them after this.",
+    "yes": "Hand them in",
+    "done": "Handed to Rehan. You can read your answers but not change them."
+   },
+   "hints": [
+    "SA 320 asks for materiality to be revised when the figures change. When it comes down, the work done at the old figure needs a second look."
+   ],
+   "questions": [
+    {
+     "id": "q1",
+     "sample": "Why audited profit before tax is the benchmark",
+     "text": "Rehan’s first point: “Why this year’s audited profit before tax, and not the three-year average, or revenue?” What goes in the rationale box?",
+     "options": [
+      {
+       "id": "a",
+       "text": "This year’s profit is 20.77% above last year’s, so it is not steady: the manual then wants the three-year average, ₹7,91,73,898, and 5% of that.",
+       "why": "Steady, by the manual, means within 30% of last year’s, up or down. 20.77% is inside it, so the average does not come in."
+      },
+      {
+       "id": "b",
+       "text": "Profit was made in all three years, and this year’s is 20.77% above last year’s, inside the manual’s 30%. At completion the audited figure replaces the one first given.",
+       "why": "Both tests of 5.2, and the right figure for them: the audited profit, after the twelve entries Mahesh booked.",
+       "correct": true
+      },
+      {
+       "id": "c",
+       "text": "Profit as first given, ₹9,35,22,380, is management’s own figure, so the benchmark stays on it and the audit adjustments are then judged against it.",
+       "why": "The manual takes the latest figures, and at completion that is the audited profit. The adjustments are in the accounts now; materiality follows them."
+      },
+      {
+       "id": "d",
+       "text": "Revenue would suit Tamhini better, but 1% of ₹1,18,33,40,000 gives ₹1,18,33,400, too high to test with, so the manual falls back on profit.",
+       "why": "Revenue comes in only after a loss in one of the three years. Tamhini made a profit in all three, so profit is the benchmark on its own merits."
+      }
+     ]
+    },
+    {
+     "id": "q2",
+     "sample": "Performance materiality: 75% or 60%",
+     "text": "His second point: “Performance materiality: 75%, as we planned, or 60%?”",
+     "options": [
+      {
+       "id": "a",
+       "text": "75% still applies: the FY 2025–26 completion memo shows no uncorrected misstatement above clearly trivial and no significant deficiency, as the planning memo says.",
+       "why": "That was true in October. In January the interim found E1093, and 5.6 asks about this year’s work too."
+      },
+      {
+       "id": "b",
+       "text": "60%, because final materiality has come out below the planning figure, and the manual cuts performance materiality whenever materiality falls at completion.",
+       "why": "5.6 sets the percentage by what last year’s audit and this year’s work have found, and says nothing about materiality falling. A lower figure sends us back to the work done at the old one."
+      },
+      {
+       "id": "c",
+       "text": "60%, because this year’s interim audit found a payroll fraud, and the manual drops to 60% when the year’s work finds a fraud, whatever last year showed.",
+       "why": "One fraud found this year is enough under 5.6, however clean last year was. A lower percentage leaves more room for what we may not have found.",
+       "correct": true
+      },
+      {
+       "id": "d",
+       "text": "50%: a fraud was found, so the safe course is to halve materiality for performance, in case the payroll assistant’s fraud went beyond the payroll.",
+       "why": "The manual has two percentages, 75% and 60%. If we feared Sunil had gone beyond the payroll, we would extend our tests there; the percentage stays at 60%."
+      }
+     ]
+    },
+    {
+     "id": "q3",
+     "sample": "Final materiality below planning: what the file needs",
+     "text": "His third point: final materiality is ₹46,90,000 against ₹48,10,000 at planning. The fieldwork tested to ₹36,07,500, and final performance materiality is ₹28,14,000. What does he need in the file before Monday?",
+     "options": [
+      {
+       "id": "a",
+       "text": "For each area tested to ₹36,07,500, a note on whether that work is still enough at the final figures, and more work where it is not.",
+       "why": "That is what SA 320 asks when materiality comes down: decide whether the work done is still enough, area by area, before the report.",
+       "correct": true
+      },
+      {
+       "id": "b",
+       "text": "Nothing more: the fieldwork was planned on approved figures, and planning materiality governs the audit until the report is signed.",
+       "why": "Planning figures are revised when better information arrives, and the audited accounts are the best there is. The question is whether the work still stands."
+      },
+      {
+       "id": "c",
+       "text": "Final materiality kept at ₹48,10,000, since the work was done on it and a lower figure now would only add work before the report.",
+       "why": "Materiality follows the audited accounts. Keeping ₹48,10,000 would only leave the work done at the old figures unchecked."
+      },
+      {
+       "id": "d",
+       "text": "Every test of the year redone at ₹28,14,000 before the report, since none of the earlier work can be relied on after a revision.",
+       "why": "Much of the work will still hold. The check is area by area; only what falls short at the new figures needs more."
+      }
+     ]
+    },
+    {
+     "id": "q4",
+     "sample": "Alandi’s ₹56,500 GST on the summary?",
+     "text": "And his last: Alandi Paper Products, a box supplier, kept charging GST after its registration was cancelled in September. Tamhini took no credit on those bills and paid Alandi without the GST, which Alandi may yet claim: ₹56,500 in all. Does it go on the summary of unadjusted differences?",
+     "options": [
+      {
+       "id": "a",
+       "text": "Yes: every unadjusted item goes on the summary, whatever its size, so that the partner sees all of them together before the report.",
+       "why": "The summary collects misstatements above clearly trivial. One far below it would only bury the items that matter."
+      },
+      {
+       "id": "b",
+       "text": "No: at ₹56,500 it is below performance materiality of ₹28,14,000, and anything below that is not a misstatement at all.",
+       "why": "It is a misstatement, just a small one. Performance materiality sets how much testing we do; clearly trivial, ₹2,34,500, decides what goes on the summary."
+      },
+      {
+       "id": "c",
+       "text": "Yes: it involves GST, and a tax item goes on the summary however small it is, because of what it could lead to.",
+       "why": "No rule makes every tax item matter. Tamhini never took the credit; what is left is ₹56,500 that Alandi may claim, far below clearly trivial."
+      },
+      {
+       "id": "d",
+       "text": "No: ₹56,500 is well under the ₹2,34,500 clearly trivial line, and nothing about it makes it matter more. It stays noted on the GST paper.",
+       "why": "That is what the clearly trivial line is for. In doubt it would go on, but here the size and the facts both say it is trivial.",
+       "correct": true
+      }
+     ]
+    }
+   ],
+   "docs": [
+    "manual",
+    "plan-memo",
+    "fs",
+    "aje",
+    "points",
+    "fraud"
+   ]
+  },
+  {
+   "id": "t3",
+   "type": "compose",
+   "stage": "Report",
+   "title": "Draft your clauses of the CARO annexure",
+   "prompt": "Rehan has drafted the rest. Build your clauses from the clause papers: for each, pick the comment as it will read in the annexure. The draft goes to Rehan when you move on.",
+   "weight": 1,
+   "noun": [
+    "clause",
+    "clauses"
+   ],
+   "previewLabel": "Your draft annexure",
+   "lockOnLeave": {
+    "ask": "Hand your CARO clauses to Rehan?",
+    "note": "You can’t change them after this.",
+    "yes": "Hand them in",
+    "done": "Handed to Rehan. You can read your clauses but not change them."
+   },
+   "hints": [
+    "Each clause paper quotes the clause’s question: read that first, then the facts. A favourable answer needs no details; an unfavourable or qualified one gives them.",
+    "Arrears are counted on 31 March. An appeal makes a due disputed. A clause about group companies needs a group."
+   ],
+   "template": "Annexure A · Tamhini Drivetech Private Limited · year ended 31 March 2027 · your clauses\n\nIn terms of the information and explanations sought by us and given by the company and the books of account and records examined by us in the normal course of audit and to the best of our knowledge and belief, we state that:\n\n(i)(b) {c2}\n\n(ii)(a) {c3}\n\n(ii)(b) {c4}\n\n(vii)(a) {c5}\n\n(vii)(b) {c6}\n\n(ix)(a) {c7}\n\n(xi)(a) {c8}\n\n(xi)(b) {c9}\n\n(xiv)(a) {c10}\n\n(xxi) {c11}",
+   "slots": [
+    {
+     "id": "c2",
+     "label": "(i)(b) · Physical verification",
+     "options": [
+      {
+       "id": "a",
+       "text": "Property, plant and equipment were physically verified by us at the year-end, every asset at both locations, and no material discrepancies were noticed on our verification.",
+       "why": "Verification is management’s, and it was in February, not at the year-end. CARO asks about management’s verification; we look at what it covered and found."
+      },
+      {
+       "id": "b",
+       "text": "Property, plant and equipment were physically verified by management in February 2027, under a programme covering every asset once in two years, which, in our opinion, is reasonable; no material discrepancies were noticed.",
+       "why": "Every asset once in two years is a reasonable interval for a plant like this, and February’s check found every one. Nothing to deal with in the books.",
+       "correct": true
+      },
+      {
+       "id": "c",
+       "text": "Property, plant and equipment were not physically verified at reasonable intervals: management covers every asset only once in two years, and the Order expects a yearly check.",
+       "why": "The Order says reasonable intervals and fixes no period. Two years for every asset is reasonable, and the last full check was this February."
+      }
+     ],
+     "heading": "Property, plant and equipment",
+     "docs": [
+      "wp-fa"
+     ]
+    },
+    {
+     "id": "c3",
+     "label": "(ii)(a) · Physical verification of inventory",
+     "options": [
+      {
+       "id": "a",
+       "text": "Inventory was physically verified by management at reasonable intervals, in September 2026 and on 31 March 2027, and in our opinion the coverage and procedure were appropriate; packing materials differed by 10% or more (180 wet boxes) and were written off.",
+       "why": "Every one of the 180 wet boxes was on the shelf, so packing materials agreed with the books. Water damage is a write-off for value; the 10% test is about what the count found against the books."
+      },
+      {
+       "id": "b",
+       "text": "Inventory was physically verified by management at reasonable intervals, in September 2026 and on 31 March 2027, and in our opinion the coverage and procedure were appropriate; ball bearings 6205-2RS differed by 10.4% and were dealt with in the books.",
+       "why": "The bearings are one line of bought-out parts, counted in pieces. CARO reads the whole class, in rupees and net: bought-out parts are 0.42% short, nowhere near 10%."
+      },
+      {
+       "id": "c",
+       "text": "Inventory was physically verified by management at reasonable intervals, in September 2026 and on 31 March 2027, and in our opinion the coverage and procedure were appropriate, with job workers confirming their stock; no class differed by 10% or more.",
+       "why": "Twice in the year is a reasonable interval. Every location was covered and both job workers confirmed their stock; the largest class difference is 0.42%. Smaller differences still go into the books; the 10% only decides what is reported.",
+       "correct": true
+      }
+     ],
+     "heading": "Inventory and working capital",
+     "docs": [
+      "wp-inv"
+     ]
+    },
+    {
+     "id": "c4",
+     "label": "(ii)(b) · Quarterly statements to the bank",
+     "options": [
+      {
+       "id": "a",
+       "text": "The company has a working capital limit of ₹18,00,00,000 from Vindhya Commercial Bank, secured on current assets. Its quarterly statements were accepted by the bank without objection, and its stock auditor raised no point on them, so they are taken to be in agreement with the books of account.",
+       "why": "The bank’s acceptance says nothing about the books. Set each statement beside the quarter-end books: the stock is higher every quarter, so the clause wants details."
+      },
+      {
+       "id": "b",
+       "text": "The company has a working capital limit of ₹18,00,00,000 from Vindhya Commercial Bank, secured on current assets. Its quarterly statements did not agree with the books: stock was shown higher by ₹50,80,000 (June), ₹53,00,000 (September), ₹54,40,000 (December) and ₹53,12,000 (March), finished goods being taken at selling price.",
+       "why": "Four quarters, each about 10% of the finished goods: selling price in the statements, cost in the books. “If not, give details”: the amounts and the reason both go in.",
+       "correct": true
+      },
+      {
+       "id": "c",
+       "text": "The company has a working capital limit of ₹18,00,00,000 from Vindhya Commercial Bank, secured on current assets. Its quarterly statements differed from the books by about 3% of the stock shown in each of the four quarters, which is within a normal margin for such statements, so no details are needed.",
+       "why": "₹50–54 lakh every quarter, more than our materiality and from one cause: a difference that size matters to the bank, so the clause wants its details."
+      }
+     ],
+     "docs": [
+      "stock-stmt"
+     ]
+    },
+    {
+     "id": "c5",
+     "label": "(vii)(a) · Undisputed statutory dues",
+     "options": [
+      {
+       "id": "a",
+       "text": "Undisputed statutory dues, including goods and services tax, provident fund, employees’ state insurance and income-tax, have been regularly deposited with the appropriate authorities in all cases during the year; none was outstanding at 31 March 2027 for more than six months from the date it became payable.",
+       "why": "Not in all cases: the PF arrears on the revised ceiling were open at 31 March, December’s TDS went 4 days late, the short-deducted TDS only in January, and Parag Mahajani’s TDS was open too. The delays are stated."
+      },
+      {
+       "id": "b",
+       "text": "Undisputed statutory dues, including goods and services tax, provident fund, employees’ state insurance and income-tax, have generally been regularly deposited with the appropriate authorities, though there were delays in a few cases; none was outstanding at 31 March 2027 for more than six months from the date it became payable.",
+       "why": "Late in a few cases, including the PF arrears on the revised ceiling, open at 31 March, and three TDS items: December’s, the short deductions and Parag Mahajani’s, due on 7 January. The comment says so, and that nothing was in arrears over six months.",
+       "correct": true
+      },
+      {
+       "id": "c",
+       "text": "Undisputed statutory dues, including goods and services tax, provident fund, employees’ state insurance and income-tax, have not been regularly deposited; arrears outstanding for more than six months: TDS short deducted on Kudalwadi Heat Treaters’ bills for April to September 2026, ₹1,11,550.",
+       "why": "That TDS was deposited, with interest, on 22 January 2027. Arrears are counted on 31 March, and on 31 March nothing was outstanding over six months."
+      }
+     ],
+     "heading": "Statutory dues",
+     "docs": [
+      "dues"
+     ]
+    },
+    {
+     "id": "c6",
+     "label": "(vii)(b) · Disputed statutory dues",
+     "options": [
+      {
+       "id": "a",
+       "text": "Income-tax of ₹6,42,000 for assessment year 2024–25 has not been deposited on account of a dispute; the appeal is pending before the Commissioner of Income Tax (Appeals). No other dispute is open.",
+       "why": "The AY 2026–27 intimation is disputed too: its appeal fee went on 22 March, before the year-end, and Form 35 on 9 April. Each year’s dispute goes in, with its amount and forum."
+      },
+      {
+       "id": "b",
+       "text": "Income-tax of ₹6,42,000 for assessment year 2024–25 and of ₹15,40,280 for assessment year 2026–27 is undisputed and outstanding at 31 March 2027, and is reported as arrears under (vii)(a) above.",
+       "why": "Tamhini has appealed both, so both are disputed. Under (vii)(a) they would read as dues Tamhini has accepted."
+      },
+      {
+       "id": "c",
+       "text": "Income-tax of ₹6,42,000 for assessment year 2024–25 and of ₹15,40,280 for assessment year 2026–27 has not been deposited on account of disputes; both appeals are pending before the Commissioner of Income Tax (Appeals).",
+       "why": "An appeal makes each a disputed due. The clause wants the amounts and the forum, and the year each relates to goes with them.",
+       "correct": true
+      },
+      {
+       "id": "d",
+       "text": "Income-tax of ₹6,42,000 for assessment year 2024–25 and of ₹15,40,280 for assessment year 2026–27 is under appeal and not yet payable, so it is shown only as contingent liabilities in the notes, and nothing is reported here.",
+       "why": "This clause exists for exactly this: a due not deposited because of a dispute is reported with its amount and forum, whatever the notes say."
+      }
+     ],
+     "docs": [
+      "it-demand"
+     ]
+    },
+    {
+     "id": "c7",
+     "label": "(ix)(a) · Defaults to lenders",
+     "options": [
+      {
+       "id": "a",
+       "text": "The company has defaulted in repaying term loan II: none of the ₹92,25,000 drawn in the year was repaid by 31 March 2027. Details are in the table below.",
+       "why": "Term loan II’s first instalment falls due on 30 June 2027. Money not yet due is not a default."
+      },
+      {
+       "id": "b",
+       "text": "The company has defaulted in the repayment of borrowings to the extent of ₹6,00,00,000, the balance of term loan I outstanding at 31 March 2027; details below.",
+       "why": "An outstanding balance is not a default. All four of the year’s instalments were paid on their due dates; the rest falls due later."
+      },
+      {
+       "id": "c",
+       "text": "The company has not defaulted in the repayment of loans or other borrowings, or in the payment of interest on them, to any lender during the year.",
+       "why": "Every instalment and every month’s interest was paid on its due date, and term loan II’s repayments start only in June 2027.",
+       "correct": true
+      }
+     ],
+     "heading": "Borrowings",
+     "docs": [
+      "loans"
+     ]
+    },
+    {
+     "id": "c8",
+     "label": "(xi)(a) · Fraud noticed in the year",
+     "options": [
+      {
+       "id": "a",
+       "text": "During the year a fraud on the company by an employee was noticed: salary of ₹2,24,000 was booked for a fictitious employee, the net pay going to the payroll assistant’s own bank account. Recovery is under way.",
+       "why": "Nature and amount, as the clause asks. Eight months at ₹28,000: the fraud is ₹2,24,000, not the whole of AJE-7.",
+       "correct": true
+      },
+      {
+       "id": "b",
+       "text": "During the year a fraud on the company by employees was noticed: payroll overpayments of ₹2,55,000, to a fictitious employee and to a leaver after his exit. Recovery is under way.",
+       "why": "₹31,000 of that is Amit Wagh’s September salary, paid in error after he left. The fraud is the ₹2,24,000 booked for the fictitious employee."
+      },
+      {
+       "id": "c",
+       "text": "During the year no fraud by or on the company remained to be reported: the ₹2,24,000 booked for a fictitious employee is shown as recoverable and the books are corrected.",
+       "why": "The clause asks whether a fraud was noticed during the year, not whether the books are now right. It was noticed, so it is reported."
+      }
+     ],
+     "heading": "Fraud",
+     "docs": [
+      "fraud"
+     ]
+    },
+    {
+     "id": "c9",
+     "label": "(xi)(b) · Report to the Central Government",
+     "options": [
+      {
+       "id": "a",
+       "text": "Under section 143(12), we have filed a report in Form ADT-4 with the Central Government on the payroll fraud, as every fraud an auditor notices is reported there.",
+       "why": "Only a fraud of ₹1 crore or more goes to the Central Government in Form ADT-4. A smaller one is reported to the audit committee or the Board."
+      },
+      {
+       "id": "b",
+       "text": "Under section 143(12), no report has been filed by us in Form ADT-4 with the Central Government: the payroll fraud was below ₹1 crore and was reported to the Board.",
+       "why": "₹2,24,000 is far below ₹1 crore, so our report went to the Board, on 20 January. Nothing went to the Central Government.",
+       "correct": true
+      },
+      {
+       "id": "c",
+       "text": "Under section 143(12), no report was needed, because the payroll fraud is already reported under (xi)(a) above and the section covers only frauds by the company itself.",
+       "why": "Section 143(12) is about fraud by the company’s officers or employees, which this was. Being under ₹1 crore, it went to the Board, not the Central Government."
+      }
+     ],
+     "docs": [
+      "fraud"
+     ]
+    },
+    {
+     "id": "c10",
+     "label": "(xiv)(a) · Internal audit system",
+     "options": [
+      {
+       "id": "a",
+       "text": "The company has an internal audit system commensurate with its size and the nature of its business, as the accounts team checks every voucher before payment.",
+       "why": "A voucher check by the accounts team is an internal control, not internal audit. Tamhini has no internal audit and no internal auditor."
+      },
+      {
+       "id": "b",
+       "text": "The company does not have an internal audit system, though section 138 requires one, and it appointed no internal auditor for the year.",
+       "why": "The permanent file shows section 138 does not require one for Tamhini this year. Saying it does would report a breach that is not there."
+      },
+      {
+       "id": "c",
+       "text": "The company does not have an internal audit system and is not required to have one under section 138 of the Companies Act, 2013.",
+       "why": "Not required, and not there: the clause still gets an answer that says both.",
+       "correct": true
+      }
+     ],
+     "heading": "Internal audit",
+     "docs": [
+      "co-facts"
+     ]
+    },
+    {
+     "id": "c11",
+     "label": "(xxi) · Remarks in group companies’ CARO reports",
+     "options": [
+      {
+       "id": "a",
+       "text": "Reporting under this clause does not arise: it applies only to the report on consolidated financial statements, and the company has no subsidiary, associate or joint venture.",
+       "why": "CARO reaches a consolidated report only through clause (xxi). Tamhini prepares standalone statements, so the clause does not arise; one line says why.",
+       "correct": true
+      },
+      {
+       "id": "b",
+       "text": "Reporting under this clause is nil: the CARO reports of the companies in the group carry no qualifications or adverse remarks for the year.",
+       "why": "There is no group: no subsidiary, associate or joint venture. A nil answer suggests reports that do not exist."
+      },
+      {
+       "id": "c",
+       "text": "Reporting under this clause refers to last year’s CARO report on Tamhini, which carried no qualifications or adverse remarks.",
+       "why": "Clause (xxi) is not about last year. It asks about other companies’ CARO reports, in a consolidated report, and Tamhini has none."
+      }
+     ],
+     "heading": "Consolidated statements",
+     "docs": [
+      "co-facts"
+     ]
+    }
+   ],
+   "docs": [
+    "skeleton",
+    "wp-fa",
+    "wp-inv",
+    "stock-stmt",
+    "dues",
+    "it-demand",
+    "loans",
+    "fraud",
+    "co-facts"
+   ]
+  },
+  {
+   "id": "t4",
+   "type": "choice",
+   "stage": "Report",
+   "title": "Pick the opinion for each matter",
+   "prompt": "Three files from this season that went to the firm’s technical desk, client names taken out, then Tamhini itself. Pick the opinion for each. Aarti’s summary of unadjusted differences is in your documents now.",
+   "weight": 1.5,
+   "hints": [
+    "First ask: is something misstated, or is evidence missing? Then: is it one line, or a large part of the accounts? A CARO remark is neither."
+   ],
+   "questions": [
+    {
+     "id": "q1",
+     "sample": "Bhosari forging: obsolete flanges carried at cost",
+     "text": "A forging company in Bhosari. Materiality ₹30,00,000; total assets ₹96 crore. Flanges for a model its customer stopped making are carried at cost, ₹1,26,00,000; they will fetch ₹18,00,000 as scrap. Management will not write them down. Nothing else is open. Which opinion?",
+     "options": [
+      {
+       "id": "a",
+       "text": "Adverse: ₹1,08,00,000 is more than three times materiality, so the accounts as a whole cannot be relied on.",
+       "why": "Size alone does not make it pervasive. It sits in one line, inventories, about 1% of total assets: material, but neither spread wide nor a large share. Qualified."
+      },
+      {
+       "id": "b",
+       "text": "Qualified: inventories and profit are overstated by ₹1,08,00,000, which is material but confined to inventories.",
+       "why": "₹1,26,00,000 less ₹18,00,000 is a ₹1,08,00,000 overstatement, 3.6 times materiality. It stays in inventories and profit, so the opinion is “except for” that.",
+       "correct": true
+      },
+      {
+       "id": "c",
+       "text": "Unmodified, with an Emphasis of Matter drawing readers to the slow-moving flanges in the inventory note.",
+       "why": "An emphasis is no substitute for a modified opinion. The accounts are misstated, so the opinion has to say so."
+      },
+      {
+       "id": "d",
+       "text": "Disclaimer: management refused to make the write-down, so the auditor cannot form an opinion at all.",
+       "why": "Nothing is missing: we have the cost, the scrap value and the refusal. That is a misstatement we can measure, not a lack of evidence."
+      }
+     ]
+    },
+    {
+     "id": "q2",
+     "sample": "Ranjangaon packaging: godown fire after the year-end",
+     "text": "A packaging company in Ranjangaon, year to 31 March 2027. On 18 April 2027 a fire destroyed its finished-goods godown: stock of about ₹4.6 crore, insured, claim filed. Note 38 describes it fully; the 31 March figures need no change, and the company can carry on. The partner wants readers pointed to note 38. How does that go in?",
+     "options": [
+      {
+       "id": "a",
+       "text": "Qualified: except for the effect of the fire, since the stock it destroyed is still in the 31 March balance sheet.",
+       "why": "The stock was there on 31 March, so the balance sheet is right. A fire after the year-end is disclosed, not adjusted: nothing is misstated."
+      },
+      {
+       "id": "b",
+       "text": "Unmodified, with an Other Matter paragraph on the fire, since it happened after the year being audited.",
+       "why": "An Other Matter paragraph is for something not in the accounts. The fire is in note 38, so pointing readers to it is an Emphasis of Matter."
+      },
+      {
+       "id": "c",
+       "text": "Unmodified, with an Emphasis of Matter paragraph pointing readers to note 38; the opinion is not modified for it.",
+       "why": "A fire after the year-end, fully disclosed, is the kind of matter an emphasis is for. The paragraph says the opinion is not modified in respect of it.",
+       "correct": true
+      },
+      {
+       "id": "d",
+       "text": "Disclaimer: the fire took the godown’s stock records with it, so the closing stock can no longer be audited.",
+       "why": "The count was done on 31 March and its papers are in the file; the fire came 18 days later. Nothing about 31 March is out of reach."
+      }
+     ]
+    },
+    {
+     "id": "q3",
+     "sample": "Pimpri distributor: stock and debtor records lost",
+     "text": "A distributor in Pimpri. Materiality ₹20,00,000; total assets ₹64 crore. In May 2027 a server failure wiped its stock and debtor records, and the backups are corrupt. Inventories of ₹17 crore and receivables of ₹15 crore, half the total assets, cannot be audited any other way. Which opinion?",
+     "options": [
+      {
+       "id": "a",
+       "text": "Qualified: the problem is limited to two lines, inventories and receivables, so the rest of the accounts can still be relied on.",
+       "why": "Two lines, but half the total assets, and they run into sales and profit. A share that large is pervasive even when confined: a disclaimer."
+      },
+      {
+       "id": "b",
+       "text": "Adverse: with half the assets unaudited, the accounts are materially and pervasively misstated.",
+       "why": "No misstatement has been found; the evidence cannot be had. Adverse is for misstatements we have found. Missing evidence on this much is a disclaimer."
+      },
+      {
+       "id": "c",
+       "text": "Unmodified, with an Emphasis of Matter on the server failure, which management has disclosed in a note.",
+       "why": "An emphasis cannot replace a modification. Without evidence for half the assets there is no basis for an opinion at all."
+      },
+      {
+       "id": "d",
+       "text": "Disclaimer: no evidence can be had for half the assets, so the possible effect is both material and pervasive.",
+       "why": "Inventories and receivables are ₹32 crore of ₹64 crore, with no other way to audit them. Possibly material and pervasive means no opinion is expressed.",
+       "correct": true
+      }
+     ]
+    },
+    {
+     "id": "q4",
+     "sample": "Tamhini: the opinion for Sudha’s draft",
+     "text": "And Tamhini. Aarti’s summary of unadjusted differences has come in, and your annexure reports the stock statements that did not agree with the books, late deposits of statutory dues, the disputed income-tax demands and the payroll fraud. Which opinion goes into Sudha’s draft report?",
+     "options": [
+      {
+       "id": "a",
+       "text": "Unmodified: the one unadjusted item, ₹14,80,000, is well below materiality, and the CARO comments are facts reported in the annexure.",
+       "why": "₹14,80,000 against ₹46,90,000, with nothing in its nature to change that. The stock statements, late deposits, two disputed demands and a corrected ₹2,24,000 fraud go in CARO; none misstates the accounts by more than clearly trivial.",
+       "correct": true
+      },
+      {
+       "id": "b",
+       "text": "Qualified: the annexure reports late deposits, disputed demands and a fraud, and those remarks carry into the opinion as “except for”.",
+       "why": "A CARO remark does not qualify the opinion by itself. The opinion changes only if the accounts are materially misstated, or evidence is missing."
+      },
+      {
+       "id": "c",
+       "text": "Unmodified, with an Emphasis of Matter on the Vaigai debit note, since management will not provide for it.",
+       "why": "An emphasis points to something properly shown in the accounts. An unprovided ₹14,80,000 is a misstatement, well below materiality; it stays on the summary."
+      },
+      {
+       "id": "d",
+       "text": "Qualified: the Vaigai item is more than six times clearly trivial, and management still refuses to provide for it.",
+       "why": "Clearly trivial decides what goes on the summary. The opinion turns on materiality, ₹46,90,000, and ₹14,80,000 is well below it."
+      }
+     ]
+    }
+   ],
+   "docs": [
+    "sad",
+    "aje",
+    "fs"
+   ]
+  }
+ ],
+ "wrap": {
+  "from": "rehan",
+  "text": "That closes the file for Sudha, with your ten clauses in the annexure. The call I would have checked first is the 60%: one fraud found in January, and every area tested at ₹36,07,500 needs a second look."
+ },
+ "wrapPartial": {
+  "from": "rehan",
+  "text": "The annexure goes to Sudha word for word, so put any CARO line right first, then the figures and the opinions. An unfavourable answer gives the details the clause asks for; a clause that does not apply says why, in one line."
+ },
+ "wrapRetry": {
+  "from": "rehan",
+  "text": "Materiality is the manual’s arithmetic: audited profit, 5%, rounded down, 60% for the fraud. For CARO, read the question each paper quotes; an unfavourable or qualified answer carries its details. Opinions: a material misstatement in one small area means qualified; no evidence for half the assets, a disclaimer."
+ },
+ "passNeeds": [
+  {
+   "task": "t3",
+   "min": 0.6,
+   "note": "You need six of the ten CARO clauses right to pass: the annexure goes to the partner."
+  }
+ ],
+ "model": {
+  "intro": "Final materiality is ₹46,90,000: 5% of the audited profit before tax of ₹9,39,37,693, rounded down. Performance materiality is 60%, ₹28,14,000, because of the payroll fraud; clearly trivial is ₹2,34,500. Four of your ten CARO clauses carry details. The opinions: qualified, unmodified with an Emphasis of Matter, a disclaimer and, for Tamhini, unmodified.",
+  "blocks": [
+   {
+    "type": "table",
+    "columns": [
+     {
+      "key": "l",
+      "label": "The template"
+     },
+     {
+      "key": "p",
+      "label": "Planning, October 2026"
+     },
+     {
+      "key": "f",
+      "label": "Final, May 2027"
+     }
+    ],
+    "rows": [
+     {
+      "l": "Benchmark",
+      "p": "Budget profit ₹9,62,00,000",
+      "f": "Audited profit ₹9,39,37,693"
+     },
+     {
+      "l": "Change on last year",
+      "p": "+23.68%",
+      "f": "+20.77%"
+     },
+     {
+      "l": "Overall materiality (5%, rounded down)",
+      "p": "₹48,10,000",
+      "f": "₹46,90,000"
+     },
+     {
+      "l": "Performance materiality",
+      "p": "75%: ₹36,07,500",
+      "f": "60%: ₹28,14,000"
+     },
+     {
+      "l": "Clearly trivial (5%)",
+      "p": "₹2,40,500",
+      "f": "₹2,34,500"
+     }
+    ]
+   },
+   {
+    "type": "list",
+    "label": "The four clauses that carry details",
+    "items": [
+     "(ii)(b): every quarter’s statement showed stock ₹50.80–54.40 lakh above the books, finished goods at selling price.",
+     "(vii)(a): delays in a few cases, including the PF arrears on the revised ceiling, December’s TDS, the short deductions and Parag Mahajani’s TDS; nothing in arrears over six months at 31 March.",
+     "(vii)(b): income-tax of ₹6,42,000 for assessment year 2024–25 and ₹15,40,280 for assessment year 2026–27, both before the Commissioner of Income Tax (Appeals).",
+     "(xi)(a): ₹2,24,000 of salary booked for a fictitious employee; recovery under way."
+    ]
+   },
+   {
+    "type": "table",
+    "columns": [
+     {
+      "key": "c",
+      "label": "The four opinions"
+     },
+     {
+      "key": "w",
+      "label": "What it does to the accounts"
+     },
+     {
+      "key": "op",
+      "label": "Opinion"
+     }
+    ],
+    "rows": [
+     {
+      "c": "Case 1 · Bhosari",
+      "w": "₹1,08,00,000 overstated in one line, about 1% of assets: material, not pervasive",
+      "op": "Qualified"
+     },
+     {
+      "c": "Case 2 · Ranjangaon",
+      "w": "Fire after the year-end, fully disclosed: nothing misstated",
+      "op": "Unmodified, with an Emphasis of Matter"
+     },
+     {
+      "c": "Case 3 · Pimpri",
+      "w": "No evidence for half the assets: possibly material and pervasive",
+      "op": "Disclaimer"
+     },
+     {
+      "c": "Tamhini",
+      "w": "₹14,80,000 left unadjusted, well below ₹46,90,000",
+      "op": "Unmodified; the CARO remarks stay in the annexure"
+     }
+    ]
+   },
+   {
+    "type": "note",
+    "from": "rehan",
+    "text": "The test for each matter is what it does to the accounts. CARO reports the facts the Order asks for: the ₹2,24,000 fraud goes in although it is below clearly trivial. The opinion moves only for a misstatement, or missing evidence, that matters."
+   }
+  ]
+ },
+ "principles": [
+  "Final materiality is worked on the audited figures; where it comes out lower than planned, the work done at the old figure is checked again.",
+  "Each CARO clause asks a question: answer it, and where the answer is unfavourable or qualified, give the basis and the details it asks for.",
+  "A CARO remark does not qualify the opinion by itself. A material misstatement that is neither widespread nor a large share of the accounts means a qualified opinion; missing evidence whose possible effect is material and pervasive means a disclaimer."
+ ],
+ "earned": {
+  "clause": "[[computed final materiality on audited profit{mat|}; ]]drafted CARO 2020 comments on {cl} {cl|clause|clauses} from the audit working papers[[; picked the audit opinion for {op} {op|case|cases}]]",
+  "counts": {
+   "mat": {
+    "kind": "correctCells",
+    "task": "t1",
+    "rows": [
+     "om"
+    ]
+   },
+   "cl": {
+    "kind": "correctSlots",
+    "task": "t3"
+   },
+   "op": {
+    "kind": "correctQuestions",
+    "task": "t4"
+   }
+  },
+  "fallback": "drafted CARO 2020 comments from the audit working papers"
+ },
+ "interview": [
+  {
+   "q": "How would you set materiality for an audit?",
+   "checking": "Whether you can choose a benchmark and defend it with reasons.",
+   "outline": [
+    "It’s judgement: a benchmark users watch, and for a steadily profitable manufacturer that’s profit before tax.",
+    "In the simulation profit rose 21%, inside the firm’s 30% band, so materiality was 5% of audited profit.",
+    "Performance materiality went to 60%, not 75%, because a payroll fraud had been found that year."
+   ]
+  },
+  {
+   "q": "The company paid PF late, and CARO reports it. Does that qualify the audit opinion?",
+   "checking": "Whether you can tell a CARO fact from a matter that changes the opinion.",
+   "outline": [
+    "No, not by itself: CARO answers the Order’s questions on facts like regular deposit of dues.",
+    "Only material misstatement or missing evidence moves the opinion: qualified if not pervasive; adverse or disclaimer if pervasive.",
+    "In the simulation I drafted {cl} CARO clauses; late dues and a corrected fraud left the opinion unmodified."
+   ]
+  }
+ ]
+}

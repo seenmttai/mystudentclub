@@ -1,0 +1,3321 @@
+{
+ "id": "xl-1",
+ "domain": "accounting",
+ "number": 1,
+ "title": "Excel: raw export to a register",
+ "minutes": 40,
+ "learn": [
+  "Which rows of a raw export to keep, fix or take out",
+  "Why lookups and SUMIFS break on raw data, and the fix",
+  "How to tie a register to the TB, then read a pivot"
+ ],
+ "do": [
+  "Clean a 71-row ledger export",
+  "Pick the formulas and tie the register to the TB",
+  "Write the manager one point from the pivot"
+ ],
+ "case": {
+  "role": "First-year article assistant on the statutory audit",
+  "client": "Tamhini Drivetech Private Limited, a Chakan company that makes gears, shafts and hubs for vehicle makers",
+  "team": "Aarti Rane (senior), Rehan Siddiqui (manager), Sudha Venkatesh (partner); Varun Shetty, second-year article, had the first go at the register",
+  "goal": "Turn the raw January–March purchase export for packing and stores into a register the audit can test, tie it to the trial balance, and find one point worth telling Rehan.",
+  "period": "Year ended 31 March 2027 · purchases of January–March 2027",
+  "where": "Accounts room, Chakan plant · Wednesday 21 April 2027"
+ },
+ "brief": {
+  "from": "aarti",
+  "time": "9:50 am",
+  "messages": [
+   "Pallavi’s Excel copy of the January–March purchase register for packing and stores is in the pack, with the vendor master and the TB; we did April–December at the interim. Varun’s first try doesn’t tie.",
+   "Clean it into a register with each bill’s MSME status and tie it to the TB: Rehan’s sample comes from it. One point from the pivot for him too, by 4 pm."
+  ]
+ },
+ "downloads": [
+  {
+   "label": "Pallavi’s workbook (Excel)",
+   "file": "tamhini-purchase-register-jan-mar-2027.xlsx",
+   "note": "Open it on a laptop, in Excel or Google Sheets. You can answer everything on a phone, but build it once before Excel goes on your CV: interviewers ask you to show it."
+  }
+ ],
+ "documents": [
+  {
+   "id": "mail",
+   "type": "letter",
+   "style": "email",
+   "title": "Pallavi’s mail · the register",
+   "tab": "Mail",
+   "from": {
+    "name": "Pallavi Shinde",
+    "email": "pallavi.shinde@email.com"
+   },
+   "to": [
+    {
+     "name": "Aarti Rane",
+     "email": "aarti.rane@email.com"
+    }
+   ],
+   "date": "Tue, 20 Apr 2027, 6:48 pm",
+   "subject": "Purchase register Jan–Mar 2027 · packing and stores",
+   "body": [
+    "Aarti ma’am,",
+    "The purchase register for Purchases – packing materials and Purchases – stores and consumables, 1 January to 31 March 2027, is attached in Excel. I printed it from Tally and converted the PDF, so the page lines have come along. Sorry about that.",
+    "Bills are entered on the day the goods reach Chakan, as always. The vendor master and the TB for the quarter are attached too.",
+    "Regards,"
+   ],
+   "sign": {
+    "name": "Pallavi Shinde",
+    "role": "Accounts Executive",
+    "for": "Tamhini Drivetech Private Limited",
+    "hand": false
+   },
+   "attachments": [
+    {
+     "name": "Purchase_register_Jan-Mar27.xlsx",
+     "file": "tamhini-purchase-register-jan-mar-2027.xlsx"
+    },
+    {
+     "name": "Vendor_master.xlsx",
+     "doc": "vendors"
+    },
+    {
+     "name": "TB_1Jan-31Mar27.pdf",
+     "doc": "tb"
+    }
+   ]
+  },
+  {
+   "id": "raw",
+   "type": "table",
+   "style": "sheet",
+   "headless": true,
+   "title": "Raw sheet · all 71 rows",
+   "tab": "Raw sheet",
+   "sheetName": "Raw",
+   "otherSheets": [
+    "Vendors",
+    "Varun"
+   ],
+   "check": false,
+   "columns": [
+    {
+     "key": "A",
+     "label": "A",
+     "letter": "A"
+    },
+    {
+     "key": "B",
+     "label": "B",
+     "letter": "B"
+    },
+    {
+     "key": "C",
+     "label": "C",
+     "format": "text",
+     "align": "right",
+     "letter": "C"
+    },
+    {
+     "key": "D",
+     "label": "D",
+     "letter": "D"
+    },
+    {
+     "key": "E",
+     "label": "E",
+     "letter": "E"
+    },
+    {
+     "key": "F",
+     "label": "F",
+     "letter": "F"
+    },
+    {
+     "key": "G",
+     "label": "G",
+     "letter": "G"
+    },
+    {
+     "key": "H",
+     "label": "H",
+     "format": "amount",
+     "letter": "H"
+    },
+    {
+     "key": "I",
+     "label": "I",
+     "format": "amount",
+     "letter": "I"
+    },
+    {
+     "key": "J",
+     "label": "J",
+     "format": "amount",
+     "letter": "J"
+    },
+    {
+     "key": "K",
+     "label": "K",
+     "format": "amount",
+     "letter": "K"
+    },
+    {
+     "key": "L",
+     "label": "L",
+     "format": "amount",
+     "letter": "L"
+    },
+    {
+     "key": "M",
+     "label": "M",
+     "format": "amount",
+     "letter": "M"
+    }
+   ],
+   "rows": [
+    {
+     "_rn": 1,
+     "B": "Tamhini Drivetech Private Limited"
+    },
+    {
+     "_rn": 2,
+     "B": "B-47, MIDC Chakan Phase II, Pune 410501"
+    },
+    {
+     "_rn": 3,
+     "B": "Purchase Register"
+    },
+    {
+     "_rn": 4,
+     "B": "1-Jan-2027 to 31-Mar-2027"
+    },
+    {
+     "_rn": 5,
+     "A": "Date",
+     "B": "Particulars",
+     "C": "Vch No.",
+     "D": "Supplier Inv No.",
+     "E": "Supplier Inv Date",
+     "F": "GSTIN/UIN",
+     "G": "Purchase Ledger",
+     "H": "Taxable Value",
+     "I": "CGST",
+     "J": "SGST",
+     "K": "IGST",
+     "L": "Round Off",
+     "M": "Gross Total"
+    },
+    {
+     "_rn": 6,
+     "A": "2-Jan-2027",
+     "B": "Kolak Polypack Private Limited",
+     "C": 2251,
+     "D": "KP/26-27/1253",
+     "E": "30-Dec-2026",
+     "F": "24WGHCK4121C1Z7",
+     "G": "Purchases – packing materials",
+     "H": 146000.0,
+     "K": 26280.0,
+     "M": 172280.0
+    },
+    {
+     "_rn": 7,
+     "B": "(Recd 2-1-2027 vide GRN-2027-01-0017)"
+    },
+    {
+     "_rn": 8,
+     "A": "4-Jan-2027",
+     "B": "Moshi Corrugators",
+     "C": 2271,
+     "D": "MC/26-27/214",
+     "E": "4-Jan-2027",
+     "F": "27YNLPL0717M1Z1",
+     "G": "Purchases – packing materials",
+     "H": 76800.0,
+     "I": 1920.0,
+     "J": 1920.0,
+     "M": 80640.0
+    },
+    {
+     "_rn": 9,
+     "A": "7-Jan-2027",
+     "B": "Moshi Corrugators",
+     "C": 2305,
+     "D": "MC/26-27/217",
+     "E": "7-Jan-2027",
+     "F": "27YNLPL0717M1Z1",
+     "G": "Purchases – packing materials",
+     "H": 86400.0,
+     "I": 2160.0,
+     "J": 2160.0,
+     "M": 90720.0
+    },
+    {
+     "_rn": 10,
+     "B": "(Being 3,600 nos 3-ply boxes, GRN-2027-01-0086)"
+    },
+    {
+     "_rn": 11,
+     "A": "7-Jan-2027",
+     "B": "Hebbal Tooling Solutions Private Limited",
+     "C": 2308,
+     "D": "HTS/26-27/0874",
+     "E": "4-Jan-2027",
+     "F": "29ZEMCH0865A1ZP",
+     "G": "Purchases – stores and consumables",
+     "H": 312500.0,
+     "K": 56250.0,
+     "M": 368750.0
+    },
+    {
+     "_rn": 12,
+     "A": "8-Jan-2027",
+     "B": "Mundhwa Lubricants and Chemicals",
+     "C": 2313,
+     "D": "MLC/26-27/1196",
+     "E": "8-Jan-2027",
+     "F": "27WHQFM7542F1ZX",
+     "G": "Purchases – stores and consumables",
+     "H": 394600.0,
+     "I": 35514.0,
+     "J": 35514.0,
+     "M": 465628.0
+    },
+    {
+     "_rn": 13,
+     "A": "13-Jan-2027",
+     "B": "Moshi Corrugators",
+     "C": 2367,
+     "D": "MC/26-27/222",
+     "E": "13-Jan-2027",
+     "F": "27YNLPL0717M1Z1",
+     "G": "Purchases – packing materials",
+     "H": 92160.0,
+     "I": 2304.0,
+     "J": 2304.0,
+     "M": 96768.0
+    },
+    {
+     "_rn": 14,
+     "A": "13-Jan-2027",
+     "B": "Alandi Paper Products",
+     "C": 2370,
+     "D": "APP/26-27/0149",
+     "E": "12-Jan-2027",
+     "F": "27ZDLPK9230K1ZG",
+     "G": "Purchases – packing materials",
+     "H": 240000.0,
+     "I": 6000.0,
+     "J": 6000.0,
+     "M": 252000.0
+    },
+    {
+     "_rn": 15,
+     "A": "14-Jan-2027",
+     "B": "Hebbal Tooling Solutions Private Limited",
+     "C": 2380,
+     "D": "HTS/26-27/0879",
+     "E": "11-Jan-2027",
+     "F": "29ZEMCH0865A1ZP",
+     "G": "Purchases – stores and consumables",
+     "H": 328000.0,
+     "K": 59040.0,
+     "M": 387040.0
+    },
+    {
+     "_rn": 16,
+     "A": "18-Jan-2027",
+     "B": "Moshi Corrugators",
+     "C": 2421,
+     "D": "MC/26-27/226",
+     "E": "18-Jan-2027",
+     "F": "27YNLPL0717M1Z1",
+     "G": "Purchases – packing materials",
+     "H": 86400.0,
+     "I": 2160.0,
+     "J": 2160.0,
+     "M": 90720.0
+    },
+    {
+     "_rn": 17,
+     "A": "19-Jan-2027",
+     "B": "Kolak Polypack Private Limited",
+     "C": 2434,
+     "D": "KP/26-27/1264",
+     "E": "16-Jan-2027",
+     "F": "24WGHCK4121C1Z7",
+     "G": "Purchases – packing materials",
+     "H": 136000.0,
+     "K": 24480.0,
+     "M": 160480.0
+    },
+    {
+     "_rn": 18,
+     "A": "19-Jan-2027",
+     "B": "Mundhwa Lubricants and Chemicals",
+     "C": 2437,
+     "D": "MLC/26-27/1238",
+     "E": "19-Jan-2027",
+     "F": "27WHQFM7542F1ZX ",
+     "G": "Purchases – stores and consumables",
+     "H": 348200.0,
+     "I": 31338.0,
+     "J": 31338.0,
+     "M": 410876.0
+    },
+    {
+     "_rn": 19,
+     "A": "21-Jan-2027",
+     "B": "Hebbal Tooling Solutions Private Limited",
+     "C": 2454,
+     "D": "HTS/26-27/0885",
+     "E": "18-Jan-2027",
+     "F": "29ZEMCH0865A1ZP",
+     "G": "Purchases – stores and consumables",
+     "H": 297000.0,
+     "K": 53460.0,
+     "M": 350460.0
+    },
+    {
+     "_rn": 20,
+     "A": "22-Jan-2027",
+     "B": "Moshi Corrugators",
+     "C": 2467,
+     "D": "MC/26-27/229",
+     "E": "22-Jan-2027",
+     "F": "27YNLPL0717M1Z1",
+     "G": "Purchases – packing materials",
+     "H": 72000.0,
+     "I": 1800.0,
+     "J": 1800.0,
+     "M": 75600.0
+    },
+    {
+     "_rn": 21,
+     "A": "27-Jan-2027",
+     "B": "Mundhwa Lubricants and Chemicals",
+     "C": 2521,
+     "D": "MLC/26-27/1269",
+     "E": "27-Jan-2027",
+     "F": "27WHQFM7542F1ZX",
+     "G": "Purchases – stores and consumables",
+     "H": 308200.0,
+     "I": 27738.0,
+     "J": 27738.0,
+     "M": 363676.0
+    },
+    {
+     "_rn": 22,
+     "A": "28-Jan-2027",
+     "B": "Moshi Corrugators",
+     "C": 2529,
+     "D": "MC/26-27/235",
+     "E": "28-Jan-2027",
+     "F": "27YNLPL0717M1Z1",
+     "G": "Purchases – packing materials",
+     "H": 85240.0,
+     "I": 2131.0,
+     "J": 2131.0,
+     "M": 89502.0
+    },
+    {
+     "_rn": 23,
+     "A": "28-Jan-2027",
+     "B": "Hebbal Tooling Solutions Private Limited",
+     "C": 2532,
+     "D": "HTS/26-27/0890",
+     "E": "25-Jan-2027",
+     "F": "29ZEMCH0865A1ZP",
+     "G": "Purchases – stores and consumables",
+     "H": 346500.0,
+     "K": 62370.0,
+     "M": 408870.0
+    },
+    {
+     "_rn": 24,
+     "A": "29-Jan-2027",
+     "B": "Kolak Polypack Private Limited",
+     "C": 2539,
+     "D": "KP/26-27/1276",
+     "E": "27-Jan-2027",
+     "F": "24WGHCK4121C1Z7",
+     "G": "Purchases – packing materials",
+     "H": 104000.0,
+     "K": 18720.0,
+     "M": 122720.0
+    },
+    {
+     "_rn": 25,
+     "A": "2-Feb-2027",
+     "B": "Moshi Corrugators",
+     "C": 2587,
+     "D": "MC/26-27/240",
+     "E": "2-Feb-2027",
+     "F": "27YNLPL0717M1Z1",
+     "G": "Purchases – packing materials",
+     "H": 81600.0,
+     "I": 2040.0,
+     "J": 2040.0,
+     "M": 85680.0
+    },
+    {
+     "_rn": 26,
+     "A": "4-Feb-2027",
+     "B": "Hebbal Tooling Solutions Private Limited",
+     "C": 2607,
+     "D": "HTS/26-27/0896",
+     "E": "1-Feb-2027",
+     "F": "29ZEMCH0865A1ZP",
+     "G": "Purchases – stores and consumables",
+     "H": 341000.0,
+     "K": 61380.0,
+     "M": 402380.0
+    },
+    {
+     "_rn": 27,
+     "B": "Carried Over",
+     "H": 3882600.0,
+     "I": 115105.0,
+     "J": 115105.0,
+     "K": 361980.0,
+     "M": 4474790.0
+    },
+    {
+     "_rn": 28,
+     "B": "Purchase Register · Page 2"
+    },
+    {
+     "_rn": 29,
+     "A": "Date",
+     "B": "Particulars",
+     "C": "Vch No.",
+     "D": "Supplier Inv No.",
+     "E": "Supplier Inv Date",
+     "F": "GSTIN/UIN",
+     "G": "Purchase Ledger",
+     "H": "Taxable Value",
+     "I": "CGST",
+     "J": "SGST",
+     "K": "IGST",
+     "L": "Round Off",
+     "M": "Gross Total"
+    },
+    {
+     "_rn": 30,
+     "B": "Brought Forward",
+     "H": 3882600.0,
+     "I": 115105.0,
+     "J": 115105.0,
+     "K": 361980.0,
+     "M": 4474790.0
+    },
+    {
+     "_rn": 31,
+     "A": "4-Feb-2027",
+     "B": "Hebbal Tooling Solutions Private Limited",
+     "C": 2607,
+     "D": "HTS/26-27/0896",
+     "E": "1-Feb-2027",
+     "F": "29ZEMCH0865A1ZP",
+     "G": "Purchases – stores and consumables",
+     "H": 341000.0,
+     "K": 61380.0,
+     "M": 402380.0
+    },
+    {
+     "_rn": 32,
+     "A": "5-Feb-2027",
+     "B": "Kolak Polypack Private Limited",
+     "C": 2615,
+     "D": "KP/26-27/1288",
+     "E": "3-Feb-2027",
+     "F": "24WGHCK4121C1Z7",
+     "G": "Purchases – packing materials",
+     "H": 132000.0,
+     "K": 23760.0,
+     "M": 155760.0
+    },
+    {
+     "_rn": 33,
+     "A": "6-Feb-2027",
+     "B": "Moshi Corrugators",
+     "C": 2628,
+     "D": "MC/26-27/243",
+     "E": "6-Feb-2027",
+     "F": "27YNLPL0717M1Z1",
+     "G": "Purchases – packing materials",
+     "H": 90240.0,
+     "I": 2256.0,
+     "J": 2256.0,
+     "M": 94752.0
+    },
+    {
+     "_rn": 34,
+     "A": "9-Feb-2027",
+     "B": "Mundhwa Lubricants and Chemicals",
+     "C": 2662,
+     "D": "MLC/26-27/1311",
+     "E": "9-Feb-2027",
+     "F": "27WHQFM7542F1ZX",
+     "G": "Purchases – stores and consumables",
+     "H": 460200.0,
+     "I": 41418.0,
+     "J": 41418.0,
+     "M": 543036.0
+    },
+    {
+     "_rn": 35,
+     "A": "10-Feb-2027",
+     "B": "Alandi Paper Products",
+     "C": 2670,
+     "D": "APP/26-27/0158",
+     "E": "10-Feb-2027",
+     "F": "27ZDLPK9230K1ZG",
+     "G": "Purchases – packing materials",
+     "H": 250000.0,
+     "I": 6250.0,
+     "J": 6250.0,
+     "M": 262500.0
+    },
+    {
+     "_rn": 36,
+     "A": "11-Feb-2027",
+     "B": "Moshi Corrugators",
+     "C": 2683,
+     "D": "MC/26-27/247",
+     "E": "11-Feb-2027",
+     "F": "27YNLPL0717M1Z1",
+     "G": "Purchases – packing materials",
+     "H": 78720.0,
+     "I": 1968.0,
+     "J": 1968.0,
+     "M": 82656.0
+    },
+    {
+     "_rn": 37,
+     "A": "11-Feb-2027",
+     "B": "Hebbal Tooling Solutions Private Limited",
+     "C": 2686,
+     "D": "HTS/26-27/0902",
+     "E": "8-Feb-2027",
+     "F": "29ZEMCH0865A1ZP",
+     "G": "Purchases – stores and consumables",
+     "H": 318500.0,
+     "K": 57330.0,
+     "M": 375830.0
+    },
+    {
+     "_rn": 38,
+     "A": "16-Feb-2027",
+     "B": "Moshi Corrugators",
+     "C": 2737,
+     "D": "MC/26-27/251",
+     "E": "16-Feb-2027",
+     "F": "27YNLPL0717M1Z1",
+     "G": "Purchases – packing materials",
+     "H": 88320.0,
+     "I": 2208.0,
+     "J": 2208.0,
+     "M": 92736.0
+    },
+    {
+     "_rn": 39,
+     "A": "18-Feb-2027",
+     "B": "Kolak Polypack Private Limited",
+     "C": 2758,
+     "D": "KP/26-27/1301",
+     "E": "15-Feb-2027",
+     "F": "24WGHCK4121C1Z7",
+     "G": "Purchases – packing materials",
+     "H": "138500.00",
+     "K": "24930.00",
+     "M": "163430.00",
+     "_txt": [
+      "H",
+      "K",
+      "M"
+     ]
+    },
+    {
+     "_rn": 40,
+     "A": "18-Feb-2027",
+     "B": "Mundhwa Lubricants and Chemicals",
+     "C": 2761,
+     "D": "MLC/26-27/1347",
+     "E": "18-Feb-2027",
+     "F": "27WHQFM7542F1ZX",
+     "G": "Purchases – stores and consumables",
+     "H": 378000.0,
+     "I": 34020.0,
+     "J": 34020.0,
+     "M": 446040.0
+    },
+    {
+     "_rn": 41,
+     "A": "18-Feb-2027",
+     "B": "(cancelled)",
+     "C": 2762
+    },
+    {
+     "_rn": 42,
+     "A": "18-Feb-2027",
+     "B": "Hebbal Tooling Solutions Private Limited",
+     "C": 2764,
+     "D": "HTS/26-27/0907",
+     "E": "15-Feb-2027",
+     "F": "29ZEMCH0865A1ZP",
+     "G": "Purchases – stores and consumables",
+     "H": 332000.0,
+     "K": 59760.0,
+     "M": 391760.0
+    },
+    {
+     "_rn": 43,
+     "A": "22-Feb-2027",
+     "B": "Moshi Corrugators",
+     "C": 2804,
+     "D": "MC/26-27/256",
+     "E": "22-Feb-2027",
+     "F": "27YNLPL0717M1Z1",
+     "G": "Purchases – packing materials",
+     "H": 83520.0,
+     "I": 2088.0,
+     "J": 2088.0,
+     "M": 87696.0
+    },
+    {
+     "_rn": 44,
+     "A": "23-Feb-2027",
+     "B": "Hebbal Tooling Solutions Private Limited",
+     "C": 2812,
+     "D": "HTS/26-27/0912",
+     "E": "20-Feb-2027",
+     "F": "29ZEMCH0865A1ZP",
+     "G": "Purchases – stores and consumables",
+     "H": 323500.0,
+     "K": 58230.0,
+     "M": 381730.0
+    },
+    {
+     "_rn": 45,
+     "A": "25-Feb-2027",
+     "B": "Mundhwa Lubricants and Chemicals",
+     "C": 2833,
+     "D": "MLC/26-27/1372",
+     "E": "25-Feb-2027",
+     "F": "27WHQFM7542F1ZX",
+     "G": "Purchases – stores and consumables",
+     "H": 237800.0,
+     "I": 21402.0,
+     "J": 21402.0,
+     "M": 280604.0
+    },
+    {
+     "_rn": 46,
+     "A": "26-Feb-2027",
+     "B": "Moshi Corrugators",
+     "C": 2846,
+     "D": "MC/26-27/260",
+     "E": "26-Feb-2027",
+     "F": "27YNLPL0717M1Z1",
+     "G": "Purchases – packing materials",
+     "H": 84600.0,
+     "I": 2115.0,
+     "J": 2115.0,
+     "M": 88830.0
+    },
+    {
+     "_rn": 47,
+     "A": "26-Feb-2027",
+     "B": "Kolak Polypack Private Limited",
+     "C": 2849,
+     "D": "KP/26-27/1317",
+     "E": "24-Feb-2027",
+     "F": "24WGHCK4121C1Z7",
+     "G": "Purchases – packing materials",
+     "H": 125500.0,
+     "K": 22590.0,
+     "M": 148090.0
+    },
+    {
+     "_rn": 48,
+     "A": "2-Mar-2027",
+     "B": "Moshi Corrugators",
+     "C": 2892,
+     "D": "MC/26-27/264",
+     "E": "2-Mar-2027",
+     "F": "27YNLPL0717M1Z1",
+     "G": "Purchases – packing materials",
+     "H": 88800.0,
+     "I": 2220.0,
+     "J": 2220.0,
+     "M": 93240.0
+    },
+    {
+     "_rn": 49,
+     "A": "4-Mar-2027",
+     "B": "Hebbal Tooling Solutions Private Limited",
+     "C": 2912,
+     "D": "HTS/26-27/0917",
+     "E": "26-Feb-2027",
+     "F": "29ZEMCH0865A1ZP",
+     "G": "Purchases – stores and consumables",
+     "H": 320000.0,
+     "K": 57600.0,
+     "M": 377600.0
+    },
+    {
+     "_rn": 50,
+     "B": "(Recd 4-3-2027 vide GRN-2027-03-0052, LR 22184)"
+    },
+    {
+     "_rn": 51,
+     "A": "5-Mar-2027",
+     "B": "Moshi Corrugators",
+     "C": 2920,
+     "D": "MC/26-27/266",
+     "E": "5-Mar-2027",
+     "F": "27YNLPL0717M1Z1",
+     "G": "Purchases – packing materials",
+     "H": 93600.0,
+     "I": 2340.0,
+     "J": 2340.0,
+     "M": 98280.0
+    },
+    {
+     "_rn": 52,
+     "A": "8-Mar-2027",
+     "B": "Mundhwa Lubricants and Chemicals",
+     "C": 2954,
+     "D": "MLC/26-27/1391",
+     "E": "8-Mar-2027",
+     "F": "27WHQFM7542F1ZX",
+     "G": "Purchases – stores and consumables",
+     "H": 426300.0,
+     "I": 38367.0,
+     "J": 38367.0,
+     "M": 503034.0
+    },
+    {
+     "_rn": 53,
+     "B": "Carried Over",
+     "H": 7932700.0,
+     "I": 271757.0,
+     "J": 271757.0,
+     "K": 666180.0,
+     "M": 9142394.0
+    },
+    {
+     "_rn": 54,
+     "B": "Purchase Register · Page 3"
+    },
+    {
+     "_rn": 55,
+     "A": "Date",
+     "B": "Particulars",
+     "C": "Vch No.",
+     "D": "Supplier Inv No.",
+     "E": "Supplier Inv Date",
+     "F": "GSTIN/UIN",
+     "G": "Purchase Ledger",
+     "H": "Taxable Value",
+     "I": "CGST",
+     "J": "SGST",
+     "K": "IGST",
+     "L": "Round Off",
+     "M": "Gross Total"
+    },
+    {
+     "_rn": 56,
+     "B": "Brought Forward",
+     "H": 7932700.0,
+     "I": 271757.0,
+     "J": 271757.0,
+     "K": 666180.0,
+     "M": 9142394.0
+    },
+    {
+     "_rn": 57,
+     "A": "9-Mar-2027",
+     "B": "Moshi Corrugators",
+     "C": 2967,
+     "D": "MC/26-27/270",
+     "E": "9-Mar-2027",
+     "F": "27YNLPL0717M1Z1",
+     "G": "Purchases – packing materials",
+     "H": 86880.0,
+     "I": 2172.0,
+     "J": 2172.0,
+     "M": 91224.0
+    },
+    {
+     "_rn": 58,
+     "A": "9-Mar-2027",
+     "B": "Kolak Polypack Private Limited",
+     "C": 2970,
+     "D": "KP/26-27/1326",
+     "E": "6-Mar-2027",
+     "F": "24WGHCK4121C1Z7",
+     "G": "Purchases – packing materials",
+     "H": 178600.0,
+     "K": 32148.0,
+     "M": 210748.0
+    },
+    {
+     "_rn": 59,
+     "B": "(Being VCI bags and film, GRN-2027-03-0131)"
+    },
+    {
+     "_rn": 60,
+     "A": "12-Mar-2027",
+     "B": "Moshi Corrugators",
+     "C": 3001,
+     "D": "MC/26-27/273",
+     "E": "12-Mar-2027",
+     "F": "27YNLPL0717M1Z1",
+     "G": "Purchases – packing materials",
+     "H": 91200.0,
+     "I": 2280.0,
+     "J": 2280.0,
+     "M": 95760.0
+    },
+    {
+     "_rn": 61,
+     "A": "13-Mar-2027",
+     "B": "Hebbal Tooling Solutions Private Limited",
+     "C": 3008,
+     "D": "HTS/26-27/0979",
+     "E": "10-Mar-2027",
+     "F": "29ZEMCH0865A1ZP",
+     "G": "Purchases – stores and consumables",
+     "H": 258400.0,
+     "K": 46512.0,
+     "M": 304912.0
+    },
+    {
+     "_rn": 62,
+     "A": "17-Mar-2027",
+     "B": "Moshi Corrugators",
+     "C": 3055,
+     "D": "MC/26-27/277",
+     "E": "17-Mar-2027",
+     "F": "27YNLPL0717M1Z1",
+     "G": "Purchases – packing materials",
+     "H": 94080.0,
+     "I": 2352.0,
+     "J": 2352.0,
+     "M": 98784.0
+    },
+    {
+     "_rn": 63,
+     "A": "19-Mar-2027",
+     "B": "Mundhwa Lubricants and Chemicals",
+     "C": 3076,
+     "D": "MLC/26-27/1404",
+     "E": "19-Mar-2027",
+     "F": "27WHQFM7542F1ZX",
+     "G": "Purchases – stores and consumables",
+     "H": 391840.0,
+     "I": 35265.6,
+     "J": 35265.6,
+     "M": 462371.2
+    },
+    {
+     "_rn": 64,
+     "A": "22-Mar-2027",
+     "B": "Moshi Corrugators",
+     "C": 3110,
+     "D": "MC/26-27/281",
+     "E": "22-Mar-2027",
+     "F": "27YNLPL0717M1Z1",
+     "G": "Purchases – packing materials",
+     "H": 89760.0,
+     "I": 2244.0,
+     "J": 2244.0,
+     "M": 94248.0
+    },
+    {
+     "_rn": 65,
+     "A": "27-Mar-2027",
+     "B": "Moshi Corrugators",
+     "C": 3160,
+     "D": "MC/26-27/286",
+     "E": "27-Mar-2027",
+     "F": "27YNLPL0717M1Z1",
+     "G": "Purchases – packing materials",
+     "H": 115200.0,
+     "I": 6912.0,
+     "J": 6912.0,
+     "M": 129024.0
+    },
+    {
+     "_rn": 66,
+     "A": "29-Mar-2027",
+     "B": "Hebbal Tooling Solutions Private Limited",
+     "C": 3171,
+     "D": "HTS/26-27/1042",
+     "E": "24-Mar-2027",
+     "F": "29ZEMCH0865A1ZP",
+     "G": "Purchases – stores and consumables",
+     "H": 721600.0,
+     "K": 129888.0,
+     "M": 851488.0
+    },
+    {
+     "_rn": 67,
+     "A": "29-Mar-2027",
+     "B": "Kolak Polypack Private Limited",
+     "C": 3173,
+     "D": "KP/26-27/1342",
+     "E": "25-Mar-2027",
+     "F": "24WGHCK4121C1Z7",
+     "G": "Purchases – packing materials",
+     "H": 212400.0,
+     "K": 38232.0,
+     "M": 250632.0
+    },
+    {
+     "_rn": 68,
+     "A": "30-Mar-2027",
+     "B": "Moshi Corrugators",
+     "C": 3195,
+     "D": "MC/26-27/289",
+     "E": "30-Mar-2027",
+     "F": "27YNLPL0717M1Z1",
+     "G": "Purchases – packing materials",
+     "H": 88480.0,
+     "I": 2212.0,
+     "J": 2212.0,
+     "M": 92904.0
+    },
+    {
+     "_rn": 69,
+     "A": "31-Mar-2027",
+     "B": "Mundhwa Lubricants and Chemicals",
+     "C": 3219,
+     "D": "MLC/26-27/1418",
+     "E": "31-Mar-2027",
+     "F": "27WHQFM7542F1ZX",
+     "G": "Purchases – stores and consumables",
+     "H": 244860.0,
+     "I": 22037.4,
+     "J": 22037.4,
+     "L": 0.2,
+     "M": 288935.0
+    },
+    {
+     "_rn": 70
+    },
+    {
+     "_rn": 71,
+     "B": "Grand Total",
+     "H": 10506000.0,
+     "I": 347232.0,
+     "J": 347232.0,
+     "K": 912960.0,
+     "L": 0.2,
+     "M": 12113424.2
+    }
+   ],
+   "notes": [
+    "Pallavi’s Excel copy of the Tally print, as it came. Row 5 holds the column headings: Date, Particulars, Vch No., Supplier Inv No., Supplier Inv Date, GSTIN/UIN, Purchase Ledger, Taxable Value, CGST, SGST, IGST, Round Off, Gross Total."
+   ],
+   "planted": [
+    "Converted print: title rows, page breaks with Carried Over and Brought Forward, row 31 repeats row 26, narration lines, a cancelled voucher, a space after the GSTIN in row 18, row 39 amounts stored as text, a blank row and the grand total: the level’s row calls"
+   ]
+  },
+  {
+   "id": "vendors",
+   "type": "table",
+   "style": "sheet",
+   "headRn": 3,
+   "title": "Vendor master · extract",
+   "tab": "Vendors",
+   "sheetName": "Vendors",
+   "otherSheets": [
+    "Raw",
+    "Varun"
+   ],
+   "freeze": true,
+   "check": false,
+   "columns": [
+    {
+     "key": "name",
+     "label": "Vendor",
+     "letter": "A"
+    },
+    {
+     "key": "gstin",
+     "label": "GSTIN",
+     "letter": "B"
+    },
+    {
+     "key": "pan",
+     "label": "PAN",
+     "letter": "C"
+    },
+    {
+     "key": "state",
+     "label": "State",
+     "letter": "D"
+    },
+    {
+     "key": "code",
+     "label": "Vendor code",
+     "letter": "E"
+    },
+    {
+     "key": "place",
+     "label": "Place",
+     "letter": "F"
+    },
+    {
+     "key": "msme",
+     "label": "MSME",
+     "letter": "G"
+    },
+    {
+     "key": "days",
+     "label": "Credit days",
+     "letter": "H"
+    }
+   ],
+   "rows": [
+    {
+     "_rn": 4,
+     "name": "Ghanekar Alloy Steels Private Limited",
+     "gstin": "27UMVCG6849R1ZY",
+     "pan": "UMVCG6849R",
+     "state": "Maharashtra",
+     "code": "VEN-1001",
+     "place": "Jalna",
+     "msme": "–",
+     "days": 60
+    },
+    {
+     "_rn": 5,
+     "name": "Kharun Steels Private Limited",
+     "gstin": "22UFLCK0414F1Z9",
+     "pan": "UFLCK0414F",
+     "state": "Chhattisgarh",
+     "code": "VEN-1002",
+     "place": "Raipur",
+     "msme": "–",
+     "days": 60
+    },
+    {
+     "_rn": 6,
+     "name": "Rankala Forgings Private Limited",
+     "gstin": "27UJPCR7248B1Z1",
+     "pan": "UJPCR7248B",
+     "state": "Maharashtra",
+     "code": "VEN-1003",
+     "place": "Kolhapur",
+     "msme": "Small",
+     "days": 45
+    },
+    {
+     "_rn": 7,
+     "name": "Bhadar Forge and Engineering Private Limited",
+     "gstin": "24YLTCB8047E1Z6",
+     "pan": "YLTCB8047E",
+     "state": "Gujarat",
+     "code": "VEN-1004",
+     "place": "Rajkot",
+     "msme": "–",
+     "days": 60
+    },
+    {
+     "_rn": 8,
+     "name": "Vishwamitri Bearings Private Limited",
+     "gstin": "24UQQCV0863H1ZL",
+     "pan": "UQQCV0863H",
+     "state": "Gujarat",
+     "code": "VEN-1005",
+     "place": "Vadodara",
+     "msme": "–",
+     "days": 60
+    },
+    {
+     "_rn": 9,
+     "name": "Palar Seals and Gaskets Private Limited",
+     "gstin": "33VMJCP6724Z1Z1",
+     "pan": "VMJCP6724Z",
+     "state": "Tamil Nadu",
+     "code": "VEN-1006",
+     "place": "Chennai",
+     "msme": "–",
+     "days": 60
+    },
+    {
+     "_rn": 10,
+     "name": "Sohna Friction Products Private Limited",
+     "gstin": "06ZDICS4933L1Z4",
+     "pan": "ZDICS4933L",
+     "state": "Haryana",
+     "code": "VEN-1007",
+     "place": "Gurugram",
+     "msme": "–",
+     "days": 60
+    },
+    {
+     "_rn": 11,
+     "name": "Phillaur Fasteners Private Limited",
+     "gstin": "03UBZCP4197S1ZJ",
+     "pan": "UBZCP4197S",
+     "state": "Punjab",
+     "code": "VEN-1008",
+     "place": "Ludhiana",
+     "msme": "Small",
+     "days": 45
+    },
+    {
+     "_rn": 12,
+     "name": "Hebbal Tooling Solutions Private Limited",
+     "gstin": "29ZEMCH0865A1ZP",
+     "pan": "ZEMCH0865A",
+     "state": "Karnataka",
+     "code": "VEN-1009",
+     "place": "Bengaluru",
+     "msme": "–",
+     "days": 45
+    },
+    {
+     "_rn": 13,
+     "name": "Mundhwa Lubricants and Chemicals",
+     "gstin": "27WHQFM7542F1ZX",
+     "pan": "WHQFM7542F",
+     "state": "Maharashtra",
+     "code": "VEN-1010",
+     "place": "Pune",
+     "msme": "–",
+     "days": 30
+    },
+    {
+     "_rn": 14,
+     "name": "Moshi Corrugators (Prop. Ramesh Landge)",
+     "gstin": "27YNLPL0717M1Z1",
+     "pan": "YNLPL0717M",
+     "state": "Maharashtra",
+     "code": "VEN-1011",
+     "place": "Pune",
+     "msme": "Micro",
+     "days": 30
+    },
+    {
+     "_rn": 15,
+     "name": "Alandi Paper Products (Prop. Kiran Kurhade)",
+     "gstin": "27ZDLPK9230K1ZG",
+     "pan": "ZDLPK9230K",
+     "state": "Maharashtra",
+     "code": "VEN-1012",
+     "place": "Alandi",
+     "msme": "Micro",
+     "days": 30
+    },
+    {
+     "_rn": 16,
+     "name": "Kolak Polypack Private Limited",
+     "gstin": "24WGHCK4121C1Z7",
+     "pan": "WGHCK4121C",
+     "state": "Gujarat",
+     "code": "VEN-1013",
+     "place": "Vapi",
+     "msme": "Small",
+     "days": 45
+    },
+    {
+     "_rn": 17,
+     "name": "Kudalwadi Heat Treaters",
+     "gstin": "27ZPIFK9501Q1Z5",
+     "pan": "ZPIFK9501Q",
+     "state": "Maharashtra",
+     "code": "VEN-1014",
+     "place": "Pimpri-Chinchwad",
+     "msme": "Small",
+     "days": 45
+    },
+    {
+     "_rn": 18,
+     "name": "Sakhare Surface Treatment",
+     "gstin": "27ZJGPS6000S1ZY",
+     "pan": "ZJGPS6000S",
+     "state": "Maharashtra",
+     "code": "VEN-1015",
+     "place": "Chakan",
+     "msme": "Micro",
+     "days": 30
+    }
+   ],
+   "notes": [
+    "Rows 1–2 of the sheet carry its title: Tamhini Drivetech Private Limited · Vendor master (extract), printed 20-04-2027."
+   ]
+  },
+  {
+   "id": "tb",
+   "type": "table",
+   "style": "tally",
+   "title": "TB · 1 January – 31 March 2027, extract",
+   "tab": "TB",
+   "kindLabel": "Trial balance",
+   "heading": "Trial Balance",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited"
+   },
+   "period": "1-Jan-2027 to 31-Mar-2027",
+   "columns": [
+    {
+     "key": "p",
+     "label": "Particulars"
+    },
+    {
+     "key": "o",
+     "label": "Opening Balance (Dr)",
+     "format": "inr"
+    },
+    {
+     "key": "dr",
+     "label": "Transactions: Debit",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Transactions: Credit",
+     "format": "inr"
+    },
+    {
+     "key": "c",
+     "label": "Closing Balance (Dr)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "p": "Purchases – raw materials",
+     "o": 409005000,
+     "dr": 139995000,
+     "c": 549000000
+    },
+    {
+     "p": "Purchases – bought-out parts",
+     "o": 24734000,
+     "dr": 8466000,
+     "c": 33200000
+    },
+    {
+     "p": "Purchases – traded goods",
+     "o": 109366000,
+     "dr": 37434000,
+     "c": 146800000
+    },
+    {
+     "p": "Purchases – stores and consumables",
+     "o": 20711000,
+     "dr": 7089000,
+     "c": 27800000
+    },
+    {
+     "p": "Purchases – packing materials",
+     "o": 9983000,
+     "dr": 3417000,
+     "c": 13400000
+    },
+    {
+     "_class": "total",
+     "p": "Purchase Accounts",
+     "o": 573799000,
+     "dr": 196401000,
+     "c": 770200000
+    }
+   ],
+   "notes": [
+    "Extract: the Purchase Accounts group only. Opening balance is as at 1 January 2027, closing as at 31 March 2027."
+   ]
+  },
+  {
+   "id": "varun",
+   "type": "table",
+   "style": "sheet",
+   "headless": true,
+   "title": "Varun’s tie · first try",
+   "tab": "Varun’s tie",
+   "sheetName": "Varun",
+   "otherSheets": [
+    "Raw",
+    "Vendors"
+   ],
+   "freeze": true,
+   "check": false,
+   "formula": "=SUMIFS($H$6:$H$71, $G$6:$G$71, Q5)",
+   "formulaCell": "R5",
+   "columns": [
+    {
+     "key": "q",
+     "label": "Q",
+     "letter": "Q"
+    },
+    {
+     "key": "r",
+     "label": "R",
+     "letter": "R",
+     "format": "amount"
+    },
+    {
+     "key": "s",
+     "label": "S",
+     "letter": "S",
+     "format": "amount"
+    },
+    {
+     "key": "t",
+     "label": "T",
+     "letter": "T",
+     "format": "amount"
+    }
+   ],
+   "rows": [
+    {
+     "_rn": 4,
+     "q": "Ledger",
+     "r": "Register (SUMIFS)",
+     "s": "TB",
+     "t": "Difference"
+    },
+    {
+     "_rn": 5,
+     "q": "Purchases – packing materials",
+     "r": 3278500.0,
+     "s": 13400000,
+     "t": -10121500.0
+    },
+    {
+     "_rn": 6,
+     "q": "Purchases – stores and consumables",
+     "r": 7430000.0,
+     "s": 27800000,
+     "t": -20370000.0
+    },
+    {
+     "_rn": 7,
+     "q": "Total",
+     "r": 10708500.0,
+     "s": 41200000,
+     "t": -30491500.0
+    },
+    {
+     "_rn": 8
+    },
+    {
+     "_rn": 9,
+     "q": "Doesn’t tie. Out by crores on both??"
+    },
+    {
+     "_rn": 10,
+     "q": "Will look again tomorrow. V"
+    }
+   ],
+   "notes": [
+    "Varun’s sheet is a copy of the raw sheet with two checks of his own: column N looks up each GSTIN’s MSME status in the vendor master, column O counts rows with the same supplier and the same amount."
+   ]
+  },
+  {
+   "id": "ex-01",
+   "type": "table",
+   "style": "sheet",
+   "headless": true,
+   "title": "Rows 1–4 · Raw sheet",
+   "tab": "Raw sheet",
+   "group": "i01",
+   "packGroup": "The twelve rows",
+   "sheetName": "Raw",
+   "freeze": true,
+   "check": false,
+   "columns": [
+    {
+     "key": "B",
+     "label": "B",
+     "letter": "B"
+    },
+    {
+     "key": "C",
+     "label": "C",
+     "format": "text",
+     "align": "right",
+     "letter": "C"
+    },
+    {
+     "key": "H",
+     "label": "H",
+     "format": "amount",
+     "letter": "H"
+    }
+   ],
+   "rows": [
+    {
+     "_rn": 1,
+     "B": "Tamhini Drivetech Private Limited",
+     "_hl": true
+    },
+    {
+     "_rn": 2,
+     "B": "B-47, MIDC Chakan Phase II, Pune 410501",
+     "_hl": true
+    },
+    {
+     "_rn": 3,
+     "B": "Purchase Register",
+     "_hl": true
+    },
+    {
+     "_rn": 4,
+     "B": "1-Jan-2027 to 31-Mar-2027",
+     "_hl": true
+    },
+    {
+     "_rn": 5,
+     "B": "Particulars",
+     "C": "Vch No.",
+     "H": "Taxable Value"
+    },
+    {
+     "_rn": 6,
+     "B": "Kolak Polypack Private Limited",
+     "C": 2251,
+     "H": 146000.0
+    }
+   ]
+  },
+  {
+   "id": "ex-02",
+   "type": "table",
+   "style": "sheet",
+   "headless": true,
+   "title": "Row 6 · Raw sheet",
+   "tab": "Raw sheet",
+   "group": "i02",
+   "packGroup": "The twelve rows",
+   "sheetName": "Raw",
+   "freeze": true,
+   "check": false,
+   "columns": [
+    {
+     "key": "B",
+     "label": "B",
+     "letter": "B"
+    },
+    {
+     "key": "E",
+     "label": "E",
+     "letter": "E"
+    },
+    {
+     "key": "H",
+     "label": "H",
+     "format": "amount",
+     "letter": "H"
+    }
+   ],
+   "rows": [
+    {
+     "_rn": 5,
+     "B": "Particulars",
+     "E": "Supplier Inv Date",
+     "H": "Taxable Value"
+    },
+    {
+     "_rn": 6,
+     "B": "Kolak Polypack Private Limited",
+     "E": "30-Dec-2026",
+     "H": 146000.0,
+     "_hl": true
+    },
+    {
+     "_rn": 7,
+     "B": "(Recd 2-1-2027 vide GRN-2027-01-0017)"
+    },
+    {
+     "_rn": 8,
+     "B": "Moshi Corrugators",
+     "E": "4-Jan-2027",
+     "H": 76800.0
+    }
+   ]
+  },
+  {
+   "id": "ex-03",
+   "type": "table",
+   "style": "sheet",
+   "headless": true,
+   "title": "Row 10 · Raw sheet",
+   "tab": "Raw sheet",
+   "group": "i03",
+   "packGroup": "The twelve rows",
+   "sheetName": "Raw",
+   "freeze": true,
+   "check": false,
+   "columns": [
+    {
+     "key": "B",
+     "label": "B",
+     "letter": "B"
+    },
+    {
+     "key": "C",
+     "label": "C",
+     "format": "text",
+     "align": "right",
+     "letter": "C"
+    },
+    {
+     "key": "H",
+     "label": "H",
+     "format": "amount",
+     "letter": "H"
+    }
+   ],
+   "rows": [
+    {
+     "_rn": 5,
+     "B": "Particulars",
+     "C": "Vch No.",
+     "H": "Taxable Value"
+    },
+    {
+     "_rn": 8,
+     "B": "Moshi Corrugators",
+     "C": 2271,
+     "H": 76800.0
+    },
+    {
+     "_rn": 9,
+     "B": "Moshi Corrugators",
+     "C": 2305,
+     "H": 86400.0
+    },
+    {
+     "_rn": 10,
+     "B": "(Being 3,600 nos 3-ply boxes, GRN-2027-01-0086)",
+     "_hl": true
+    },
+    {
+     "_rn": 11,
+     "B": "Hebbal Tooling Solutions Private Limited",
+     "C": 2308,
+     "H": 312500.0
+    }
+   ]
+  },
+  {
+   "id": "ex-04",
+   "type": "table",
+   "style": "sheet",
+   "headless": true,
+   "title": "Row 16 · Varun’s sheet",
+   "tab": "Varun’s sheet",
+   "group": "i04",
+   "packGroup": "The twelve rows",
+   "sheetName": "Varun",
+   "freeze": true,
+   "check": false,
+   "columns": [
+    {
+     "key": "B",
+     "label": "B",
+     "letter": "B"
+    },
+    {
+     "key": "D",
+     "label": "D",
+     "letter": "D"
+    },
+    {
+     "key": "H",
+     "label": "H",
+     "format": "amount",
+     "letter": "H"
+    },
+    {
+     "key": "O",
+     "label": "O",
+     "format": "int",
+     "letter": "O"
+    }
+   ],
+   "rows": [
+    {
+     "_rn": 5,
+     "B": "Particulars",
+     "D": "Supplier Inv No.",
+     "H": "Taxable Value",
+     "O": "Same party + amount"
+    },
+    {
+     "_rn": 9,
+     "B": "Moshi Corrugators",
+     "D": "MC/26-27/217",
+     "H": 86400.0,
+     "O": 2,
+     "_hl": true
+    },
+    {
+     "_rn": 10,
+     "B": "(Being 3,600 nos 3-ply boxes, GRN-2027-01-0086)",
+     "O": 0
+    },
+    {
+     "_rn": 16,
+     "B": "Moshi Corrugators",
+     "D": "MC/26-27/226",
+     "H": 86400.0,
+     "O": 2,
+     "_hl": true
+    }
+   ],
+   "formula": "=IF(ISNUMBER(H16), COUNTIFS($B$6:$B$71, B16, $H$6:$H$71, H16), 0)",
+   "formulaCell": "O16"
+  },
+  {
+   "id": "ex-05",
+   "type": "table",
+   "style": "sheet",
+   "headless": true,
+   "title": "Row 18 · Varun’s sheet",
+   "tab": "Varun’s sheet",
+   "group": "i05",
+   "packGroup": "The twelve rows",
+   "sheetName": "Varun",
+   "freeze": true,
+   "check": false,
+   "columns": [
+    {
+     "key": "B",
+     "label": "B",
+     "letter": "B"
+    },
+    {
+     "key": "F",
+     "label": "F",
+     "letter": "F"
+    },
+    {
+     "key": "N",
+     "label": "N",
+     "letter": "N"
+    }
+   ],
+   "rows": [
+    {
+     "_rn": 5,
+     "B": "Particulars",
+     "F": "GSTIN/UIN",
+     "N": "MSME (lookup)"
+    },
+    {
+     "_rn": 17,
+     "B": "Kolak Polypack Private Limited",
+     "F": "24WGHCK4121C1Z7",
+     "N": "Small"
+    },
+    {
+     "_rn": 18,
+     "B": "Mundhwa Lubricants and Chemicals",
+     "F": "27WHQFM7542F1ZX ",
+     "N": "#N/A",
+     "_hl": true
+    },
+    {
+     "_rn": 19,
+     "B": "Hebbal Tooling Solutions Private Limited",
+     "F": "29ZEMCH0865A1ZP",
+     "N": "–"
+    }
+   ],
+   "formula": "=VLOOKUP(F18, Vendors!$B$4:$H$18, 6, FALSE)",
+   "formulaCell": "N18"
+  },
+  {
+   "id": "ex-06",
+   "type": "table",
+   "style": "sheet",
+   "headless": true,
+   "title": "Rows 27 and 30 · Raw sheet",
+   "tab": "Raw sheet",
+   "group": "i06",
+   "packGroup": "The twelve rows",
+   "sheetName": "Raw",
+   "freeze": true,
+   "check": false,
+   "columns": [
+    {
+     "key": "B",
+     "label": "B",
+     "letter": "B"
+    },
+    {
+     "key": "H",
+     "label": "H",
+     "format": "amount",
+     "letter": "H"
+    },
+    {
+     "key": "M",
+     "label": "M",
+     "format": "amount",
+     "letter": "M"
+    }
+   ],
+   "rows": [
+    {
+     "_rn": 25,
+     "B": "Moshi Corrugators",
+     "H": 81600.0,
+     "M": 85680.0
+    },
+    {
+     "_rn": 26,
+     "B": "Hebbal Tooling Solutions Private Limited",
+     "H": 341000.0,
+     "M": 402380.0
+    },
+    {
+     "_rn": 27,
+     "B": "Carried Over",
+     "H": 3882600.0,
+     "M": 4474790.0,
+     "_hl": true
+    },
+    {
+     "_rn": 28,
+     "B": "Purchase Register · Page 2"
+    },
+    {
+     "_rn": 29,
+     "B": "Particulars",
+     "H": "Taxable Value",
+     "M": "Gross Total"
+    },
+    {
+     "_rn": 30,
+     "B": "Brought Forward",
+     "H": 3882600.0,
+     "M": 4474790.0,
+     "_hl": true
+    },
+    {
+     "_rn": 31,
+     "B": "Hebbal Tooling Solutions Private Limited",
+     "H": 341000.0,
+     "M": 402380.0
+    }
+   ]
+  },
+  {
+   "id": "ex-07",
+   "type": "table",
+   "style": "sheet",
+   "headless": true,
+   "title": "Rows 28–29 · Raw sheet",
+   "tab": "Raw sheet",
+   "group": "i07",
+   "packGroup": "The twelve rows",
+   "sheetName": "Raw",
+   "freeze": true,
+   "check": false,
+   "columns": [
+    {
+     "key": "B",
+     "label": "B",
+     "letter": "B"
+    },
+    {
+     "key": "C",
+     "label": "C",
+     "format": "text",
+     "align": "right",
+     "letter": "C"
+    },
+    {
+     "key": "H",
+     "label": "H",
+     "format": "amount",
+     "letter": "H"
+    }
+   ],
+   "rows": [
+    {
+     "_rn": 26,
+     "B": "Hebbal Tooling Solutions Private Limited",
+     "C": 2607,
+     "H": 341000.0
+    },
+    {
+     "_rn": 27,
+     "B": "Carried Over",
+     "H": 3882600.0
+    },
+    {
+     "_rn": 28,
+     "B": "Purchase Register · Page 2",
+     "_hl": true
+    },
+    {
+     "_rn": 29,
+     "B": "Particulars",
+     "C": "Vch No.",
+     "H": "Taxable Value",
+     "_hl": true
+    },
+    {
+     "_rn": 30,
+     "B": "Brought Forward",
+     "H": 3882600.0
+    },
+    {
+     "_rn": 31,
+     "B": "Hebbal Tooling Solutions Private Limited",
+     "C": 2607,
+     "H": 341000.0
+    }
+   ]
+  },
+  {
+   "id": "ex-08",
+   "type": "table",
+   "style": "sheet",
+   "headless": true,
+   "title": "Row 31 · Varun’s sheet",
+   "tab": "Varun’s sheet",
+   "group": "i08",
+   "packGroup": "The twelve rows",
+   "sheetName": "Varun",
+   "freeze": true,
+   "check": false,
+   "columns": [
+    {
+     "key": "B",
+     "label": "B",
+     "letter": "B"
+    },
+    {
+     "key": "D",
+     "label": "D",
+     "letter": "D"
+    },
+    {
+     "key": "H",
+     "label": "H",
+     "format": "amount",
+     "letter": "H"
+    },
+    {
+     "key": "O",
+     "label": "O",
+     "format": "int",
+     "letter": "O"
+    }
+   ],
+   "rows": [
+    {
+     "_rn": 5,
+     "B": "Particulars",
+     "D": "Supplier Inv No.",
+     "H": "Taxable Value",
+     "O": "Same party + amount"
+    },
+    {
+     "_rn": 25,
+     "B": "Moshi Corrugators",
+     "D": "MC/26-27/240",
+     "H": 81600.0,
+     "O": 1
+    },
+    {
+     "_rn": 26,
+     "B": "Hebbal Tooling Solutions Private Limited",
+     "D": "HTS/26-27/0896",
+     "H": 341000.0,
+     "O": 2,
+     "_hl": true
+    },
+    {
+     "_rn": 27,
+     "B": "Carried Over",
+     "H": 3882600.0,
+     "O": 1
+    },
+    {
+     "_rn": 30,
+     "B": "Brought Forward",
+     "H": 3882600.0,
+     "O": 1
+    },
+    {
+     "_rn": 31,
+     "B": "Hebbal Tooling Solutions Private Limited",
+     "D": "HTS/26-27/0896",
+     "H": 341000.0,
+     "O": 2,
+     "_hl": true
+    },
+    {
+     "_rn": 32,
+     "B": "Kolak Polypack Private Limited",
+     "D": "KP/26-27/1288",
+     "H": 132000.0,
+     "O": 1
+    }
+   ]
+  },
+  {
+   "id": "ex-09",
+   "type": "table",
+   "style": "sheet",
+   "headless": true,
+   "title": "Row 39 · Raw sheet",
+   "tab": "Raw sheet",
+   "group": "i09",
+   "packGroup": "The twelve rows",
+   "sheetName": "Raw",
+   "freeze": true,
+   "check": false,
+   "columns": [
+    {
+     "key": "B",
+     "label": "B",
+     "letter": "B"
+    },
+    {
+     "key": "H",
+     "label": "H",
+     "format": "amount",
+     "letter": "H"
+    },
+    {
+     "key": "K",
+     "label": "K",
+     "format": "amount",
+     "letter": "K"
+    },
+    {
+     "key": "M",
+     "label": "M",
+     "format": "amount",
+     "letter": "M"
+    }
+   ],
+   "rows": [
+    {
+     "_rn": 5,
+     "B": "Particulars",
+     "H": "Taxable Value",
+     "K": "IGST",
+     "M": "Gross Total"
+    },
+    {
+     "_rn": 38,
+     "B": "Moshi Corrugators",
+     "H": 88320.0,
+     "M": 92736.0
+    },
+    {
+     "_rn": 39,
+     "B": "Kolak Polypack Private Limited",
+     "H": "138500.00",
+     "K": "24930.00",
+     "M": "163430.00",
+     "_txt": [
+      "H",
+      "K",
+      "M"
+     ],
+     "_hl": true
+    },
+    {
+     "_rn": 40,
+     "B": "Mundhwa Lubricants and Chemicals",
+     "H": 378000.0,
+     "M": 446040.0
+    }
+   ]
+  },
+  {
+   "id": "ex-10",
+   "type": "table",
+   "style": "sheet",
+   "headless": true,
+   "title": "Row 41 · Raw sheet",
+   "tab": "Raw sheet",
+   "group": "i10",
+   "packGroup": "The twelve rows",
+   "sheetName": "Raw",
+   "freeze": true,
+   "check": false,
+   "columns": [
+    {
+     "key": "B",
+     "label": "B",
+     "letter": "B"
+    },
+    {
+     "key": "C",
+     "label": "C",
+     "format": "text",
+     "align": "right",
+     "letter": "C"
+    },
+    {
+     "key": "H",
+     "label": "H",
+     "format": "amount",
+     "letter": "H"
+    }
+   ],
+   "rows": [
+    {
+     "_rn": 5,
+     "B": "Particulars",
+     "C": "Vch No.",
+     "H": "Taxable Value"
+    },
+    {
+     "_rn": 40,
+     "B": "Mundhwa Lubricants and Chemicals",
+     "C": 2761,
+     "H": 378000.0
+    },
+    {
+     "_rn": 41,
+     "B": "(cancelled)",
+     "C": 2762,
+     "_hl": true
+    },
+    {
+     "_rn": 42,
+     "B": "Hebbal Tooling Solutions Private Limited",
+     "C": 2764,
+     "H": 332000.0
+    }
+   ]
+  },
+  {
+   "id": "ex-11",
+   "type": "table",
+   "style": "sheet",
+   "headless": true,
+   "title": "Row 70 · Raw sheet",
+   "tab": "Raw sheet",
+   "group": "i11",
+   "packGroup": "The twelve rows",
+   "sheetName": "Raw",
+   "freeze": true,
+   "check": false,
+   "columns": [
+    {
+     "key": "B",
+     "label": "B",
+     "letter": "B"
+    },
+    {
+     "key": "C",
+     "label": "C",
+     "format": "text",
+     "align": "right",
+     "letter": "C"
+    },
+    {
+     "key": "H",
+     "label": "H",
+     "format": "amount",
+     "letter": "H"
+    },
+    {
+     "key": "M",
+     "label": "M",
+     "format": "amount",
+     "letter": "M"
+    }
+   ],
+   "rows": [
+    {
+     "_rn": 67,
+     "B": "Kolak Polypack Private Limited",
+     "C": 3173,
+     "H": 212400.0,
+     "M": 250632.0
+    },
+    {
+     "_rn": 68,
+     "B": "Moshi Corrugators",
+     "C": 3195,
+     "H": 88480.0,
+     "M": 92904.0
+    },
+    {
+     "_rn": 69,
+     "B": "Mundhwa Lubricants and Chemicals",
+     "C": 3219,
+     "H": 244860.0,
+     "M": 288935.0
+    },
+    {
+     "_rn": 70,
+     "_hl": true
+    },
+    {
+     "_rn": 71,
+     "B": "Grand Total",
+     "H": 10506000.0,
+     "M": 12113424.2
+    }
+   ]
+  },
+  {
+   "id": "ex-12",
+   "type": "table",
+   "style": "sheet",
+   "headless": true,
+   "title": "Row 71 · Raw sheet",
+   "tab": "Raw sheet",
+   "group": "i12",
+   "packGroup": "The twelve rows",
+   "sheetName": "Raw",
+   "freeze": true,
+   "check": false,
+   "columns": [
+    {
+     "key": "B",
+     "label": "B",
+     "letter": "B"
+    },
+    {
+     "key": "C",
+     "label": "C",
+     "format": "text",
+     "align": "right",
+     "letter": "C"
+    },
+    {
+     "key": "H",
+     "label": "H",
+     "format": "amount",
+     "letter": "H"
+    },
+    {
+     "key": "M",
+     "label": "M",
+     "format": "amount",
+     "letter": "M"
+    }
+   ],
+   "rows": [
+    {
+     "_rn": 5,
+     "B": "Particulars",
+     "C": "Vch No.",
+     "H": "Taxable Value",
+     "M": "Gross Total"
+    },
+    {
+     "_rn": 68,
+     "B": "Moshi Corrugators",
+     "C": 3195,
+     "H": 88480.0,
+     "M": 92904.0
+    },
+    {
+     "_rn": 69,
+     "B": "Mundhwa Lubricants and Chemicals",
+     "C": 3219,
+     "H": 244860.0,
+     "M": 288935.0
+    },
+    {
+     "_rn": 70
+    },
+    {
+     "_rn": 71,
+     "B": "Grand Total",
+     "H": 10506000.0,
+     "M": 12113424.2,
+     "_hl": true
+    }
+   ]
+  },
+  {
+   "id": "pivot",
+   "type": "table",
+   "style": "sheet",
+   "title": "Pivot · supplier by month",
+   "tab": "Pivot",
+   "arrives": "t4",
+   "sheetName": "Pivot",
+   "otherSheets": [
+    "Register",
+    "Tie"
+   ],
+   "headRn": 4,
+   "freeze": true,
+   "pinFit": true,
+   "columns": [
+    {
+     "key": "l",
+     "label": "Row Labels"
+    },
+    {
+     "key": "jan",
+     "label": "Jan",
+     "format": "inr"
+    },
+    {
+     "key": "feb",
+     "label": "Feb",
+     "format": "inr"
+    },
+    {
+     "key": "mar",
+     "label": "Mar",
+     "format": "inr"
+    },
+    {
+     "key": "t",
+     "label": "Grand Total",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "_class": "subtotal",
+     "_id": "g1",
+     "_sumOf": [
+      "g1-1",
+      "g1-2",
+      "g1-3"
+     ],
+     "l": "Purchases – packing materials",
+     "t": 3417000.0,
+     "jan": 1125000.0,
+     "feb": 1153000.0,
+     "mar": 1139000.0,
+     "_rn": 5
+    },
+    {
+     "_rn": 6,
+     "_id": "g1-1",
+     "_indent": 1,
+     "l": "Alandi Paper Products",
+     "jan": 240000.0,
+     "feb": 250000.0,
+     "t": 490000.0
+    },
+    {
+     "_rn": 7,
+     "_id": "g1-2",
+     "_indent": 1,
+     "l": "Kolak Polypack Private Limited",
+     "jan": 386000.0,
+     "feb": 396000.0,
+     "mar": 391000.0,
+     "t": 1173000.0
+    },
+    {
+     "_rn": 8,
+     "_id": "g1-3",
+     "_indent": 1,
+     "l": "Moshi Corrugators",
+     "jan": 499000.0,
+     "feb": 507000.0,
+     "mar": 748000.0,
+     "t": 1754000.0
+    },
+    {
+     "_class": "subtotal",
+     "_id": "g2",
+     "_sumOf": [
+      "g2-1",
+      "g2-2"
+     ],
+     "l": "Purchases – stores and consumables",
+     "t": 7089000.0,
+     "jan": 2335000.0,
+     "feb": 2391000.0,
+     "mar": 2363000.0,
+     "_rn": 9
+    },
+    {
+     "_rn": 10,
+     "_id": "g2-1",
+     "_indent": 1,
+     "l": "Hebbal Tooling Solutions Private Limited",
+     "jan": 1284000.0,
+     "feb": 1315000.0,
+     "mar": 1300000.0,
+     "t": 3899000.0
+    },
+    {
+     "_rn": 11,
+     "_id": "g2-2",
+     "_indent": 1,
+     "l": "Mundhwa Lubricants and Chemicals",
+     "jan": 1051000.0,
+     "feb": 1076000.0,
+     "mar": 1063000.0,
+     "t": 3190000.0
+    },
+    {
+     "_class": "total",
+     "_sumOf": [
+      "g1",
+      "g2"
+     ],
+     "l": "Grand Total",
+     "jan": 3460000.0,
+     "feb": 3544000.0,
+     "mar": 3502000.0,
+     "t": 10506000.0,
+     "_rn": 12
+    }
+   ],
+   "notes": [
+    "Sum of Taxable Value from the cleaned register, rows 6–55. Rows: Purchase Ledger, then Particulars; columns: the voucher date, grouped by month. Each ledger’s total sits on its own row, its suppliers under it."
+   ]
+  }
+ ],
+ "tasks": [
+  {
+   "id": "t1",
+   "type": "items",
+   "stage": "Fieldwork",
+   "title": "Clean the raw export",
+   "prompt": "Twelve rows of Pallavi’s sheet caught your eye or tripped Varun’s checks. For each, keep it as it is, fix it and keep it, or leave it out of the register, and say what it is. Your calls go to Aarti when you move on.",
+   "weight": 2,
+   "noun": [
+    "row call",
+    "row calls"
+   ],
+   "lockOnLeave": {
+    "ask": "Hand your row calls to Aarti?",
+    "note": "You can’t change them after this.",
+    "yes": "Hand them in",
+    "done": "Handed to Aarti. You can read your calls but not change them."
+   },
+   "hints": [
+    "Ask of each row: is it one bill, once, booked in this quarter? If it is, keep it, fixing anything that would trip a formula. If it isn’t, it leaves the register.",
+    "When Varun’s check counts 2, put the two rows side by side and compare the bill numbers and dates before you call either one a repeat."
+   ],
+   "columns": [
+    {
+     "key": "label"
+    },
+    {
+     "key": "seen"
+    }
+   ],
+   "fields": [
+    {
+     "id": "action",
+     "kind": "choice",
+     "label": "Your call",
+     "gate": true,
+     "options": [
+      {
+       "id": "keep",
+       "label": "Keep"
+      },
+      {
+       "id": "fix",
+       "label": "Fix and keep"
+      },
+      {
+       "id": "out",
+       "label": "Leave out"
+      }
+     ]
+    },
+    {
+     "id": "why",
+     "kind": "multi",
+     "label": "What it is",
+     "showIf": {
+      "action": [
+       "fix",
+       "out"
+      ]
+     },
+     "options": [
+      {
+       "id": "head",
+       "label": "Title or heading lines, not a bill",
+       "short": "heading rows"
+      },
+      {
+       "id": "narr",
+       "label": "Narration of the bill above",
+       "short": "narration line"
+      },
+      {
+       "id": "sub",
+       "label": "Page subtotal (Carried Over or Brought Forward)",
+       "short": "page subtotals"
+      },
+      {
+       "id": "total",
+       "label": "Grand total row",
+       "short": "grand total"
+      },
+      {
+       "id": "blank",
+       "label": "Blank row",
+       "short": "blank row"
+      },
+      {
+       "id": "rep",
+       "label": "The same bill printed twice",
+       "short": "repeated bill"
+      },
+      {
+       "id": "canc",
+       "label": "Cancelled voucher",
+       "short": "cancelled voucher"
+      },
+      {
+       "id": "period",
+       "label": "Belongs to another period",
+       "short": "wrong period"
+      },
+      {
+       "id": "master",
+       "label": "Supplier missing from the vendor master",
+       "short": "not in master"
+      },
+      {
+       "id": "space",
+       "label": "Stray space inside a cell",
+       "short": "stray space"
+      },
+      {
+       "id": "text",
+       "label": "Amount stored as text",
+       "short": "text amount"
+      }
+     ],
+     "weight": 3
+    },
+    {
+     "id": "note",
+     "kind": "text",
+     "label": "Your note for the file",
+     "placeholder": "For example: Moshi 222, voucher 2367; kept as it is"
+    }
+   ],
+   "docs": [
+    "mail",
+    "raw",
+    "vendors",
+    "varun",
+    "ex-01",
+    "ex-02",
+    "ex-03",
+    "ex-04",
+    "ex-05",
+    "ex-06",
+    "ex-07",
+    "ex-08",
+    "ex-09",
+    "ex-10",
+    "ex-11",
+    "ex-12"
+   ],
+   "downloads": [
+    {
+     "label": "Pallavi’s workbook (Excel)",
+     "file": "tamhini-purchase-register-jan-mar-2027.xlsx",
+     "note": "For a laptop. Here, the papers hold every answer."
+    }
+   ],
+   "items": [
+    {
+     "id": "i01",
+     "label": "Rows 1–4 · above the headings",
+     "seen": "Text, no date",
+     "docs": [
+      "ex-01"
+     ],
+     "prompt": "Rows 1–4 come before the column headings in row 5.",
+     "answer": {
+      "action": "out",
+      "why": [
+       "head"
+      ]
+     },
+     "note": "Rows 1–4: company, address, report name and period. Right on a print, wrong in a register, where a filter or a pivot reads them as data. Leave out; your register’s table starts with the headings, in row 5."
+    },
+    {
+     "id": "i02",
+     "label": "Row 6 · Kolak Polypack",
+     "seen": "Bill dated in December",
+     "docs": [
+      "ex-02"
+     ],
+     "weight": 1.5,
+     "prompt": "Kolak’s bill is dated 30 December 2026; the voucher is dated 2 January 2027. Read row 7 under it too.",
+     "answer": {
+      "action": "keep"
+     },
+     "note": "Row 6: billed 30 December, received 2 January (row 7 gives the GRN), and Pallavi books on receipt. A January purchase in the TB’s quarter and the same financial year: no year-end cut-off. The interim, to 31 December, never saw it. Keep it."
+    },
+    {
+     "id": "i03",
+     "label": "Row 10 · under Moshi’s bill",
+     "seen": "No date, no amount",
+     "docs": [
+      "ex-03"
+     ],
+     "prompt": "Row 10 sits under Moshi’s bill in row 9 and has text only in column B.",
+     "answer": {
+      "action": "out",
+      "why": [
+       "narr"
+      ]
+     },
+     "note": "Row 10: the narration of Moshi’s bill 217, which the print puts on a line of its own. Not a bill. Leave it out, or copy the text into a narration column against row 9. Rows 7, 50 and 59 are the same."
+    },
+    {
+     "id": "i04",
+     "label": "Row 16 · Moshi Corrugators",
+     "seen": "Varun’s count of 2",
+     "docs": [
+      "ex-04"
+     ],
+     "weight": 1.5,
+     "prompt": "Varun’s check (same supplier, same amount) counts 2 on rows 9 and 16.",
+     "answer": {
+      "action": "keep"
+     },
+     "note": "Rows 9 and 16: Moshi, ₹86,400 both times, but bills 217 and 226, eleven days apart, on vouchers 2305 and 2421. Two deliveries of the same quantity. Keep both. A repeat is the same supplier with the same bill number."
+    },
+    {
+     "id": "i05",
+     "label": "Row 18 · Mundhwa Lubricants",
+     "seen": "Varun’s #N/A",
+     "docs": [
+      "ex-05"
+     ],
+     "prompt": "Mundhwa is in the vendor master, yet Varun’s lookup gives #N/A here. =LEN(F18) gives 16; =LEN(Vendors!B13) gives 15.",
+     "answer": {
+      "action": "fix",
+      "why": [
+       "space"
+      ]
+     },
+     "note": "Row 18: one character more than the master’s copy of the same GSTIN. It is a space the conversion left at the end, so a plain lookup misses Mundhwa. TRIM the cell in your register and keep the bill: ₹3,48,200 of stores."
+    },
+    {
+     "id": "i06",
+     "label": "Rows 27 and 30 · Carried Over, Brought Forward",
+     "seen": "Totals, no date",
+     "docs": [
+      "ex-06"
+     ],
+     "prompt": "Rows 27 and 30 sit either side of the page break, with the same figures.",
+     "answer": {
+      "action": "out",
+      "why": [
+       "sub"
+      ]
+     },
+     "note": "Rows 27 and 30: Tally’s running total, ₹38,82,600, at the foot of page 1 and the head of page 2. Left in, a plain SUM counts every bill above it twice more. Leave out, with rows 53 and 56."
+    },
+    {
+     "id": "i07",
+     "label": "Rows 28–29 · top of page 2",
+     "seen": "Text, no date",
+     "docs": [
+      "ex-07"
+     ],
+     "prompt": "Rows 28 and 29 open page 2 of the print.",
+     "answer": {
+      "action": "out",
+      "why": [
+       "head"
+      ]
+     },
+     "note": "Rows 28–29: the page heading and the column headings, printed again on page 2. Leave out, and rows 54–55 too. A register keeps one heading row, at the top, or filters and pivots trip over the rest."
+    },
+    {
+     "id": "i08",
+     "label": "Row 31 · Hebbal Tooling",
+     "seen": "Varun’s count of 2",
+     "docs": [
+      "ex-08"
+     ],
+     "prompt": "Varun’s check counts 2 on rows 26 and 31, either side of the page break.",
+     "answer": {
+      "action": "out",
+      "why": [
+       "rep"
+      ]
+     },
+     "note": "Row 31 repeats row 26: Hebbal bill 0896, voucher 2607, ₹3,41,000, carried over the page break by the conversion. Tally’s own subtotals count it once. Keep row 26, leave out row 31."
+    },
+    {
+     "id": "i09",
+     "label": "Row 39 · Kolak Polypack",
+     "seen": "Green corner marks",
+     "docs": [
+      "ex-09"
+     ],
+     "prompt": "Excel marks row 39’s amounts with its green triangle in the corner of each cell.",
+     "answer": {
+      "action": "fix",
+      "why": [
+       "text"
+      ]
+     },
+     "note": "Row 39: Kolak’s bill 1301 came across as text, which is what Excel’s green corner mark says. SUMIFS leaves its ₹1,38,500 out and a pivot counts instead of adding. Convert it to a number and keep the bill; don’t retype it."
+    },
+    {
+     "id": "i10",
+     "label": "Row 41 · voucher 2762",
+     "seen": "No ledger, no amount",
+     "docs": [
+      "ex-10"
+     ],
+     "prompt": "Row 41 has a voucher number but no amount.",
+     "answer": {
+      "action": "out",
+      "why": [
+       "canc"
+      ]
+     },
+     "note": "Row 41: voucher 2762, cancelled in Tally, which keeps the number but books nothing on it. Leave it out, or it adds a bill to your count, and list it in your file with the other rows you took out."
+    },
+    {
+     "id": "i11",
+     "label": "Row 70 · empty",
+     "seen": "Nothing in it",
+     "docs": [
+      "ex-11"
+     ],
+     "prompt": "Row 70 is empty, just above the last row.",
+     "answer": {
+      "action": "out",
+      "why": [
+       "blank"
+      ]
+     },
+     "note": "Row 70: empty. A blank row in a pivot’s source makes it count the amounts instead of adding them, and a register has no use for one. Leave it out."
+    },
+    {
+     "id": "i12",
+     "label": "Row 71 · Grand Total",
+     "seen": "Total, no date",
+     "docs": [
+      "ex-12"
+     ],
+     "prompt": "Row 71 is the last row of the sheet.",
+     "answer": {
+      "action": "out",
+      "why": [
+       "total"
+      ]
+     },
+     "note": "Row 71: Tally’s grand total, ₹1,05,06,000. It already holds every bill above it, so leave it out and let your SUMIFS make the totals. Keep the figure, though: it is your first check on the register."
+    }
+   ],
+   "sampleGroups": [
+    {
+     "call": "out",
+     "label": "Left out of the register"
+    },
+    {
+     "call": "fix",
+     "label": "Fixed and kept"
+    },
+    {
+     "call": "keep",
+     "label": "Kept as they are"
+    }
+   ]
+  },
+  {
+   "id": "t2",
+   "type": "choice",
+   "stage": "Fieldwork",
+   "title": "Pick the formulas",
+   "prompt": "Your register keeps Pallavi’s columns A to M (G is the ledger, H the taxable value, M the gross), the bills in rows 6–55, and adds column N for MSME status. Pick the formula that does each job, in Excel or Google Sheets.",
+   "weight": 1.5,
+   "hints": [
+    "Read each formula aloud: where it looks or what it adds, in which column, and what happens to its ranges when you fill it down or right."
+   ],
+   "docs": [
+    "vendors",
+    "raw",
+    "varun",
+    "tb"
+   ],
+   "questions": [
+    {
+     "id": "q1",
+     "text": "N6 should bring each bill’s MSME status from the Vendors sheet, where the GSTINs sit in column B and MSME in column G, rows 4–18. Which formula do you fill down from N6?",
+     "options": [
+      {
+       "id": "a",
+       "text": "=VLOOKUP(TRIM(F6), Vendors!$B$4:$H$18, 6, TRUE)",
+       "why": "TRUE asks for an approximate match on a list that isn’t sorted, so a GSTIN that isn’t there can quietly return another supplier’s status. Exact match, FALSE, every time."
+      },
+      {
+       "id": "b",
+       "text": "=VLOOKUP(TRIM(F6), Vendors!B4:H18, 6, FALSE)",
+       "why": "Without the dollar signs the range slides down as you fill. N16 looks in Vendors!B14:H28, past Mundhwa’s row 13, and by N19 the range is below all five suppliers: from N16 down, every bill returns #N/A."
+      },
+      {
+       "id": "c",
+       "text": "=VLOOKUP(TRIM(F6), Vendors!$B$4:$H$18, 6, FALSE)",
+       "why": "Exact match on a locked range that starts at the GSTIN column; MSME is the sixth column counting from B. The TRIM inside it also covers a stray space you missed, like row 18’s.",
+       "correct": true
+      },
+      {
+       "id": "d",
+       "text": "=VLOOKUP(TRIM(F6), Vendors!$A$4:$H$18, 7, FALSE)",
+       "why": "VLOOKUP searches the first column of its range, and column A holds names. No GSTIN is ever found there, so every row returns #N/A."
+      }
+     ],
+     "code": true,
+     "sample": "Column N: each bill’s MSME status from the Vendors sheet"
+    },
+    {
+     "id": "q2",
+     "text": "On the Tie sheet, C4 holds the packing ledger’s name and D4 the stores ledger’s. Which formula in C8, filled right to D8, totals that ledger from your register?",
+     "options": [
+      {
+       "id": "a",
+       "text": "=SUMIFS(Register!$H:$H, Register!$G:$G, C$4)",
+       "why": "The range to add comes first, the taxable value, then the ledger column and the name to match. The dollar signs hold H and G as you fill right; C$4 becomes D$4. H, not M: the GST went to the input ledgers.",
+       "correct": true
+      },
+      {
+       "id": "b",
+       "text": "=SUMIFS(Register!$M:$M, Register!$G:$G, C$4)",
+       "why": "Column M is the gross, GST included. The TB’s purchase ledgers carry the taxable value only, so this total can never tie."
+      },
+      {
+       "id": "c",
+       "text": "=SUMIFS(Register!$G:$G, C$4, Register!$H:$H)",
+       "why": "That is SUMIF’s order. SUMIFS takes the range to add first, then each range with its condition, and the ranges here don’t even match in size."
+      },
+      {
+       "id": "d",
+       "text": "=SUMIF(Register!$H:$H, C$4, Register!$G:$G)",
+       "why": "This tests the amounts against the ledger’s name and would add column G, which holds names. Nothing matches and nothing adds up: it gives 0."
+      }
+     ],
+     "code": true,
+     "sample": "Tie sheet, C8 to D8: each ledger’s total from the register"
+    },
+    {
+     "id": "q3",
+     "text": "You filter the register to Hebbal to agree its bills with Hebbal’s statement. Which formula at the foot of column H shows the total of the rows you can see?",
+     "options": [
+      {
+       "id": "a",
+       "text": "=SUM(H6:H55)",
+       "why": "SUM adds every cell in its range, hidden by the filter or not, so it still shows the total of all 50 bills."
+      },
+      {
+       "id": "b",
+       "text": "=SUBTOTAL(109, H6:H55)",
+       "why": "SUBTOTAL leaves out the rows a filter hides, and 109 makes it a sum. Filter to Hebbal and it shows Hebbal’s total; clear the filter and it shows all.",
+       "correct": true
+      },
+      {
+       "id": "c",
+       "text": "=SUBTOTAL(103, H6:H55)",
+       "why": "This one leaves out filtered rows too, but 103 counts the cells instead of adding them: how many Hebbal bills, not how much."
+      }
+     ],
+     "code": true,
+     "sample": "Foot of column H: Hebbal’s total with the register filtered"
+    },
+    {
+     "id": "q4",
+     "text": "Which check flags a bill entered twice, without flagging two genuine bills from one supplier for the same amount?",
+     "options": [
+      {
+       "id": "a",
+       "text": "=COUNTIFS($B$6:$B$55, B6, $D$6:$D$55, D6)",
+       "why": "A supplier numbers its own bills, so the same supplier with the same bill number is the same bill. A 2 here is worth opening; a matching amount alone proves nothing.",
+       "correct": true
+      },
+      {
+       "id": "b",
+       "text": "=COUNTIFS($B$6:$B$55, B6, $H$6:$H$55, H6)",
+       "why": "Same supplier and same amount is Varun’s check, and it flagged Moshi’s bills 217 and 226: two real deliveries of the same quantity."
+      },
+      {
+       "id": "c",
+       "text": "=COUNTIF($H$6:$H$55, H6)",
+       "why": "Amount alone flags any two bills that happen to match, from any supplier. More noise, and still no proof of a repeat."
+      }
+     ],
+     "code": true,
+     "sample": "Repeat check: a bill entered twice, not genuine twin bills"
+    },
+    {
+     "id": "q5",
+     "text": "You build a pivot on the register and it shows “Count of Taxable Value” where you expected a sum. What went wrong?",
+     "options": [
+      {
+       "id": "a",
+       "text": "A pivot counts first, every time; switch the field to Sum once and every later pivot will add.",
+       "why": "No. Numbers in the Values area show as a sum by default. Excel counts a column that holds anything else: text, as here, or a blank cell."
+      },
+      {
+       "id": "b",
+       "text": "Some amounts in the column are stored as text, so Excel counts the field. Convert them, then refresh the pivot.",
+       "why": "When Excel reads a value field as text it counts it. Row 39 is that text. Fix it in the register and refresh: an Excel pivot doesn’t redo itself when its source changes.",
+       "correct": true
+      },
+      {
+       "id": "c",
+       "text": "The source must start with the GSTIN column. Move column F to the left of the date and build it again.",
+       "why": "A pivot doesn’t care which column comes first. It needs a single heading row and no blank rows: one more reason the repeated headings and row 70 had to go."
+      }
+     ],
+     "sample": "Pivot shows “Count of Taxable Value” where a sum was expected"
+    }
+   ]
+  },
+  {
+   "id": "t3",
+   "type": "worksheet",
+   "stage": "Review",
+   "title": "Tie the register to the TB",
+   "prompt": "Varun ran SUMIFS on the raw sheet. Correct each of his figures for the row that threw it off (minus takes out, plus adds back), carry them down to your register’s totals, then enter the TB’s figure for the same three months and the difference. Whole rupees.",
+   "weight": 1.5,
+   "lockOnLeave": {
+    "ask": "Hand your tie to Aarti?",
+    "note": "You can’t change it after this.",
+    "yes": "Hand it in",
+    "done": "Handed to Aarti. You can read your tie but not change it."
+   },
+   "hints": [
+    "Start from Varun’s two figures and correct only what rows 31 and 39 did to them. Then take the TB column that covers January to March and nothing earlier."
+   ],
+   "columns": [
+    {
+     "key": "line",
+     "label": "Line"
+    },
+    {
+     "key": "p",
+     "label": "Packing materials",
+     "format": "inr"
+    },
+    {
+     "key": "s",
+     "label": "Stores and consumables",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "id": "r1",
+     "cells": {
+      "line": "Varun’s SUMIFS on the raw sheet",
+      "p": 3278500.0,
+      "s": 7430000.0
+     }
+    },
+    {
+     "id": "r2",
+     "cells": {
+      "line": "Row 31, the bill printed twice",
+      "p": "–",
+      "s": {
+       "input": true,
+       "answer": -341000.0,
+       "tolerance": 1,
+       "signed": true,
+       "working": "Hebbal bill 0896 counted twice: take out ₹3,41,000"
+      }
+     }
+    },
+    {
+     "id": "r3",
+     "cells": {
+      "line": "Row 39, the amount stored as text",
+      "p": {
+       "input": true,
+       "answer": 138500.0,
+       "tolerance": 1,
+       "signed": true,
+       "working": "Kolak bill 1301 left out by SUMIFS: add back ₹1,38,500"
+      },
+      "s": "–"
+     }
+    },
+    {
+     "id": "r4",
+     "_class": "total",
+     "cells": {
+      "line": "Your register, January–March",
+      "p": {
+       "input": true,
+       "answer": 3417000.0,
+       "tolerance": 1,
+       "sign": false,
+       "follow": "3278500 + {r3.p}",
+       "working": "32,78,500 + 1,38,500"
+      },
+      "s": {
+       "input": true,
+       "answer": 7089000.0,
+       "tolerance": 1,
+       "sign": false,
+       "follow": "7430000 + {r2.s}",
+       "working": "74,30,000 − 3,41,000"
+      }
+     }
+    },
+    {
+     "id": "r5",
+     "cells": {
+      "line": "TB, the same three months",
+      "p": {
+       "input": true,
+       "answer": 3417000,
+       "tolerance": 1,
+       "sign": false,
+       "working": "TB debit column, 1 January – 31 March 2027"
+      },
+      "s": {
+       "input": true,
+       "answer": 7089000,
+       "tolerance": 1,
+       "sign": false,
+       "working": "TB debit column, 1 January – 31 March 2027"
+      }
+     }
+    },
+    {
+     "id": "r6",
+     "cells": {
+      "line": "Difference",
+      "p": {
+       "input": true,
+       "answer": 0,
+       "tolerance": 1,
+       "signed": true,
+       "follow": "{r4.p} − 3417000",
+       "working": "34,17,000 − 34,17,000"
+      },
+      "s": {
+       "input": true,
+       "answer": 0,
+       "tolerance": 1,
+       "signed": true,
+       "follow": "{r4.s} − 7089000",
+       "working": "70,89,000 − 70,89,000"
+      }
+     }
+    }
+   ],
+   "notes": {
+    "r2.s": "Row 31 is the print’s copy of row 26, so Varun’s SUMIFS added Hebbal’s ₹3,41,000 twice. His stores figure is that much too high.",
+    "r3.p": "SUMIFS adds numbers only, so Kolak’s ₹1,38,500 stored as text never reached Varun’s packing figure. It goes back in.",
+    "r5.p": "The debit column is January to March. The closing balances, ₹1,34,00,000 and ₹2,78,00,000, are the whole year, April to March, which is why Varun was out by crores on both.",
+    "r6.s": "Nil on both ledgers. Tally’s own grand total, ₹1,05,06,000, is the two TB figures together: a second check on the same tie."
+   },
+   "docs": [
+    "varun",
+    "tb",
+    "raw"
+   ],
+   "downloads": [
+    {
+     "label": "Pallavi’s workbook (Excel)",
+     "file": "tamhini-purchase-register-jan-mar-2027.xlsx"
+    }
+   ]
+  },
+  {
+   "id": "t4",
+   "type": "compose",
+   "stage": "Report",
+   "title": "Write Rehan the pivot finding",
+   "prompt": "Rehan wants one point from the register’s pivot, supplier by month, not a tour. On a laptop, build it on the Pivot sheet; here it is as it comes out. Pick the line that says what it shows, the figures behind it, and what you will do. Add a line of your own if you like.",
+   "weight": 3,
+   "noun": [
+    "line",
+    "lines"
+   ],
+   "hints": [
+    "Read each supplier’s row across, January to March. A supplier that goes quiet says as much as one that grows."
+   ],
+   "previewLabel": "Your note to Rehan",
+   "docs": [
+    "pivot"
+   ],
+   "downloads": [
+    {
+     "label": "Pallavi’s workbook (Excel)",
+     "file": "tamhini-purchase-register-jan-mar-2027.xlsx"
+    }
+   ],
+   "freeText": {
+    "label": "Your own line for the note"
+   },
+   "template": "Rehan,\n\nOne point from the pivot on the January–March register for packing and stores.\n\n{find}\n\n{fig}\n\n{next}\n\n{_free}\n\nRegards,\nArticle assistant, audit team",
+   "slots": [
+    {
+     "id": "find",
+     "label": "What the pivot shows",
+     "options": [
+      {
+       "id": "a",
+       "text": "In March, Moshi billed ₹7.48 lakh, its biggest month of the quarter, so packing purchases jumped and look overbooked against February.",
+       "why": "Moshi did grow, but packing as a whole did not: ₹11.53 lakh in February, ₹11.39 lakh in March. Read the supplier beside it."
+      },
+      {
+       "id": "b",
+       "text": "In March, Alandi billed nothing, and Moshi’s bills rose by about what Alandi used to bill in a month: the box orders moved from Alandi to Moshi.",
+       "correct": true,
+       "why": "Same packing spend, a different supplier. Neethu, our GST senior, found Alandi billing GST on a GSTIN cancelled in September, which may be why it stopped. Ask; don’t assume."
+      },
+      {
+       "id": "c",
+       "text": "In March, Alandi billed nothing, so one of its bills is missing from Pallavi’s export and our register is short of the books by that much.",
+       "why": "The register ties to the TB to the rupee, so nothing booked is missing from it. A quiet supplier is a question for purchase, not a hole in the export."
+      }
+     ]
+    },
+    {
+     "id": "fig",
+     "label": "The figures",
+     "options": [
+      {
+       "id": "a",
+       "text": "Moshi: ₹5.07 lakh in February, ₹7.48 lakh in March. Alandi: ₹4.90 lakh in February, nothing in March. Packing in all: ₹11.53 lakh, then ₹11.39 lakh.",
+       "why": "₹4.90 lakh is Alandi’s whole quarter. Its February was ₹2.50 lakh, and that is the figure Moshi’s rise stands beside."
+      },
+      {
+       "id": "b",
+       "text": "Moshi: ₹4.99 lakh in January, ₹7.48 lakh in March. Kolak: ₹3.86 lakh in January, ₹3.91 lakh in March. Packing in all: ₹11.25 lakh, then ₹11.39 lakh.",
+       "why": "True figures, wrong pair. Kolak’s steady bills don’t show the move; Alandi’s February and March do."
+      },
+      {
+       "id": "c",
+       "text": "Moshi: ₹5.07 lakh in February, ₹7.48 lakh in March. Alandi: ₹2.50 lakh in February, nothing in March. Packing in all: ₹11.53 lakh, then ₹11.39 lakh.",
+       "correct": true,
+       "why": "Moshi up ₹2.41 lakh, Alandi down ₹2.50 lakh, packing flat: three pairs of figures that make the point without a word of opinion."
+      }
+     ]
+    },
+    {
+     "id": "next",
+     "label": "What you will do",
+     "options": [
+      {
+       "id": "a",
+       "text": "I’ll ask Rohit in purchase who approved moving the box orders to Moshi, and check Moshi’s March bills against its rate agreement.",
+       "correct": true,
+       "why": "Moshi billing almost half as much again in a month is a purchase decision: someone approved it, at some rate. Moshi’s POs quote a rate agreement for 2026–27, so check against that."
+      },
+      {
+       "id": "b",
+       "text": "I’ll ask Pallavi to book a provision for Alandi’s March boxes, since its March bill has not reached accounts yet.",
+       "why": "No GRN and no bill says Alandi sent anything in March. A provision for goods nobody received would put a liability in the books that isn’t there."
+      },
+      {
+       "id": "c",
+       "text": "I’ll ask Pallavi to move ₹2.41 lakh of Moshi’s March bills to April, so that March packing is in line with February.",
+       "why": "Never. Moshi’s goods came in March and were booked in March. Moving bills to make a month look normal is the error we are here to find."
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "wrap": {
+  "from": "aarti",
+  "text": "Kolak’s December bill and Moshi’s twin bills only looked wrong; every other row on your list needed work. I’ll check your tie against the TB’s January–March debits, then pick Rehan’s sample from the register and put your pivot finding in his notes."
+ },
+ "wrapPartial": {
+  "from": "aarti",
+  "text": "Rows 6 and 16 only looked wrong: Kolak’s December bill and Moshi’s second ₹86,400 bill. And the tie is the quarter against the TB’s January–March column, never the year. Rehan’s sample waits until the register is right."
+ },
+ "wrapRetry": {
+  "from": "aarti",
+  "text": "Ask of every row: is it one bill, once, booked in this quarter? Keep or fix those and take out the rest. Then open each of Varun’s flags before acting on it, and tie the quarter to the TB’s January–March column."
+ },
+ "passNeeds": [
+  {
+   "task": "t1",
+   "min": 0.7,
+   "note": "Rows 6 and 16 carry extra weight. You need more of the twelve row calls right to pass."
+  }
+ ],
+ "model": {
+  "intro": "Eight of the twelve calls take rows out, and two keep a bill once it is fixed: row 18’s stray space and row 39’s text amount. Kolak’s December bill, booked when the goods arrived in January, and Moshi’s two ₹86,400 bills stay as they are. Cleaned, the register ties to the TB’s January–March debits to the rupee.",
+  "blocks": [
+   {
+    "type": "text",
+    "text": "Take out the rows no call listed too: the narration lines in rows 7, 50 and 59, and the second page break, rows 53–56. That leaves 50 bills, rows 6–55 of your register."
+   },
+   {
+    "type": "table",
+    "grid": true,
+    "columns": [
+     {
+      "key": "l",
+      "label": "Tie, January–March"
+     },
+     {
+      "key": "p",
+      "label": "Packing",
+      "format": "inr"
+     },
+     {
+      "key": "s",
+      "label": "Stores",
+      "format": "inr"
+     }
+    ],
+    "rows": [
+     {
+      "l": "Varun’s SUMIFS on the raw sheet",
+      "p": "₹32,78,500",
+      "s": "₹74,30,000"
+     },
+     {
+      "l": "Row 31, Hebbal 0896 printed twice",
+      "p": "",
+      "s": "−₹3,41,000"
+     },
+     {
+      "l": "Row 39, Kolak 1301 stored as text",
+      "p": "+₹1,38,500",
+      "s": ""
+     },
+     {
+      "l": "Register, January–March",
+      "p": "₹34,17,000",
+      "s": "₹70,89,000"
+     },
+     {
+      "l": "TB debits, 1 January – 31 March",
+      "p": "₹34,17,000",
+      "s": "₹70,89,000"
+     },
+     {
+      "l": "Difference",
+      "p": "₹0",
+      "s": "₹0"
+     }
+    ]
+   },
+   {
+    "type": "text",
+    "text": "Varun’s SUMIFS had already skipped the page subtotals and the grand total, because column G is empty on those rows. A plain SUM of column H would not have: ₹4,48,45,100, against ₹1,05,06,000 in the two TB ledgers."
+   },
+   {
+    "type": "text",
+    "text": "The pivot finding: Alandi billed nothing in March, and Moshi’s March bills rose by ₹2.41 lakh, close to Alandi’s ₹2.40–2.50 lakh a month. Packing as a whole stayed between ₹11.25 lakh and ₹11.53 lakh a month. The box orders moved to Moshi, and Rohit in purchase owes us the why."
+   },
+   {
+    "type": "note",
+    "from": "aarti",
+    "text": "Keep a list of the 20 rows you took out, each with its reason. When Rehan asks how 71 rows became one heading row and 50 bills, that list is your answer."
+   }
+  ]
+ },
+ "principles": [
+  "Keep the raw export as it came. Clean a copy, and take a row out only for a reason you can name.",
+  "Tie a register to the TB for the same period before you test from it: the quarter against the quarter, never the year.",
+  "A same-amount check only flags. The bill number decides: same supplier and same bill number is a repeat; the same amount is not."
+ ],
+ "earned": {
+  "clause": "cleaned a {rows}-row ledger export into a purchase register[[ with lookups and SUMIFS{lk|}{sf|}]], clearing {found} data {found|issue|issues}[[; tied it to the trial balance{r4p|}{r4s|}{r5p|}{r5s|}]][[; flagged a supplier switch from a PivotTable{pv|}]]",
+  "counts": {
+   "rows": {
+    "kind": "const",
+    "value": 71
+   },
+   "found": {
+    "kind": "itemsWhere",
+    "task": "t1",
+    "field": "action",
+    "equals": [
+     "fix",
+     "out"
+    ],
+    "withRight": "why"
+   },
+   "lk": {
+    "kind": "correctQuestions",
+    "task": "t2",
+    "questions": [
+     "q1"
+    ]
+   },
+   "sf": {
+    "kind": "correctQuestions",
+    "task": "t2",
+    "questions": [
+     "q2"
+    ]
+   },
+   "r4p": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "r4",
+    "col": "p"
+   },
+   "r4s": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "r4",
+    "col": "s"
+   },
+   "r5p": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "r5",
+    "col": "p"
+   },
+   "r5s": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "r5",
+    "col": "s"
+   },
+   "pv": {
+    "kind": "correctSlots",
+    "task": "t4",
+    "slots": [
+     "find"
+    ]
+   }
+  },
+  "fallback": "cleaned a {rows}-row ledger export into a purchase register[[ with lookups and SUMIFS{lk|}{sf|}]][[; tied it to the trial balance{r4p|}{r4s|}{r5p|}{r5s|}]][[; flagged a supplier switch from a PivotTable{pv|}]]"
+ },
+ "interview": [
+  {
+   "q": "You’ve written Excel on your CV. What can you actually do in it?",
+   "checking": "Whether you can show real work, not recite a list of functions.",
+   "outline": [
+    "I clean a copy of the raw export: titles, subtotals and repeats out; spaces and text amounts fixed.",
+    "Then VLOOKUP on GSTIN with exact match, SUMIFS by ledger, and a PivotTable by supplier and month.",
+    "In the simulation I cleared {found} issues in a {rows}-row export[[ and tied it to the TB{r4p|}{r4s|}{r5p|}{r5s|}]]."
+   ]
+  },
+  {
+   "q": "Your VLOOKUP shows #N/A for a supplier who is in the master. What do you check?",
+   "checking": "Whether you know why two keys that look the same fail to match.",
+   "outline": [
+    "The key itself: a trailing space, or a number stored as text, makes equal-looking values differ.",
+    "LEN shows the extra character; TRIM removes spaces, though not the non-breaking space web pages use.",
+    "In the simulation LEN gave one character more than the master’s GSTIN: a trailing space. TRIM fixed it."
+   ]
+  }
+ ]
+}
