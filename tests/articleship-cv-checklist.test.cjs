@@ -631,8 +631,27 @@ function normaliseText(text) {
     return String(text || '').toLowerCase().replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/­/g, '').replace(/\s+/g, ' ').trim();
 }
 
+/**
+ * Release 2 re-uploads release 1's files at the same bucket paths with the Work Simulation shown (the 215-page
+ * Guidebook moves pages by +1 from p31, +2 from Day 2, +3 later): the content build's release-2 set
+ * (build/release/release-2/files.json) names each re-rendered file. Null in release 1 or without that set.
+ */
+function release2Pdf(title) {
+    if (!P.WORK_SIMULATION_LIVE) return null;
+    const set = path.join(CONTENT_BUILD, 'release', 'release-2', 'files.json');
+    if (!fs.existsSync(set)) return null;
+    let files = [];
+    try { files = JSON.parse(fs.readFileSync(set, 'utf8')).files || []; } catch (_) { return null; }
+    const hit = files.find(f => f && f.title === title && f.role === 'view' && /\.pdf$/i.test(f.storage || '') && f.local);
+    if (!hit) return null;
+    const inBuild = path.join(CONTENT_BUILD, String(hit.local).split('/build/').pop());
+    return [inBuild, hit.local].find(file => fs.existsSync(file)) || null;
+}
+
 /** The built PDF for an LMS row title, from the uploads manifest (null until the content build has made it). */
 function rowPdf(title) {
+    const release2 = release2Pdf(title);
+    if (release2) return release2;
     const manifest = path.join(CONTENT_BUILD, 'lms', 'uploads-manifest.csv');
     if (!fs.existsSync(manifest)) return null;
     const [head, ...rows] = csvRows(fs.readFileSync(manifest, 'utf8'));
