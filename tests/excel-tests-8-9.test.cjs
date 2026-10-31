@@ -62,6 +62,19 @@ test('nothing changes until both files of a test are in the bucket', async () =>
     await db.close();
 });
 
+test('a test edited since (different paths) is left alone', async () => {
+    const db = await freshDb();
+    const edited = day6();
+    edited[3] = entry('Excel Test 9', 'admin-managed/industrial-training-mastery/day-6/video-7/1793000000000-excel-test-9.csv', 'admin-managed/industrial-training-mastery/day-6/video-7/1793000000001-excel-test-9-excel.xlsx');
+    await db.query("update public.videos set resources = $1", [JSON.stringify(edited)]);
+    await addObjects(db, NEW_FILES);
+    await db.exec(migration);
+    const r = byTitle(await resources(db));
+    assert.deepEqual(r['Excel Test 9'], edited[3]);
+    assert.equal(r['Excel Test 8'].download_storage_path, 'Excel_Assessment_ONS.xlsx');
+    await db.close();
+});
+
 test('the reverse statement in the header puts the old paths back', async () => {
     const db = await freshDb();
     await addObjects(db, NEW_FILES);
@@ -74,5 +87,14 @@ test('the reverse statement in the header puts the old paths back', async () => 
     assert.match(reverse, /^update public\.videos/);
     await db.exec(reverse + ';');
     assert.deepEqual(await resources(db), day6());
+
+    // Undo after a later admin edit to Test 9: Test 8 goes back, the edited Test 9 is kept.
+    await db.exec(migration);
+    const edited = entry('Excel Test 9', 'admin-managed/x/new.csv', 'admin-managed/x/new.xlsx');
+    await db.query("update public.videos set resources = (select jsonb_agg(case when e->>'title' = 'Excel Test 9' then $1::jsonb else e end) from jsonb_array_elements(resources) e)", [JSON.stringify(edited)]);
+    await db.exec(reverse + ';');
+    const r = byTitle(await resources(db));
+    assert.deepEqual(r['Excel Test 9'], edited);
+    assert.deepEqual(r['Excel Test 8'], day6()[2]);
     await db.close();
 });

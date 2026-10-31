@@ -14,17 +14,22 @@
 --   swap on 31 Oct 2026; files from his "Industrial Training Program/Day 6/Excel Test" folder):
 --   Excel_Assessment_ONS.xlsx, Excel_Assessment_ONS_.csv,
 --   Excel_Test_ITC_Industrial_Training.xlsx, Excel_Test_ITC_Industrial_Training_.csv
+--   Each _.csv is the workbook's first sheet as Excel shows it (cached values, dates as YYYY-MM-DD, whole numbers
+--   without .0, leading and trailing blank rows dropped), written with openpyxl + Python's csv module.
 --
 -- Safe to run more than once. A test changes only when (a) it still has the old paths and (b) both new files are
---   in the bucket. The old files stay in the bucket.
+--   in the bucket. The old files stay in the bucket, so the reverse below keeps working; once the swap is settled,
+--   admin-managed/industrial-training-mastery/day-7/video-7/1784370466616-excel-test-9.csv is unused.
 --
--- Reversible: yes. This puts the old paths back:
+-- Reversible: yes. This puts the old paths back (only where a test still has this migration's paths):
 --   update public.videos v set resources = (
 --     select jsonb_agg(case
---       when e.elem->>'title' = 'Excel Test 8' then e.elem
+--       when e.elem->>'title' = 'Excel Test 8' and e.elem->>'download_storage_path' = 'Excel_Assessment_ONS.xlsx'
+--         and e.elem->>'view_storage_path' = 'Excel_Assessment_ONS_.csv' then e.elem
 --         || jsonb_build_object('view_storage_path', '1.1-Excel-Assessment-Test-_Questions__.csv',
 --                               'download_storage_path', '1.1 Excel Assessment Test (Questions).xlsx')
---       when e.elem->>'title' = 'Excel Test 9' then e.elem
+--       when e.elem->>'title' = 'Excel Test 9' and e.elem->>'download_storage_path' = 'Excel_Test_ITC_Industrial_Training.xlsx'
+--         and e.elem->>'view_storage_path' = 'Excel_Test_ITC_Industrial_Training_.csv' then e.elem
 --         || jsonb_build_object('view_storage_path', 'admin-managed/industrial-training-mastery/day-7/video-7/1784370466616-excel-test-9.csv',
 --                               'download_storage_path', '1.1 Excel Assessment Test (Questions).xlsx')
 --       else e.elem end order by e.ord)
