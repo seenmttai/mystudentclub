@@ -1,0 +1,3185 @@
+{
+ "id": "ba-1",
+ "domain": "bank-audit",
+ "number": 1,
+ "title": "Drawing power and classification",
+ "minutes": 40,
+ "learn": [
+  "How a bank works out drawing power from a stock statement",
+  "The RBI tests that make a loan SMA or NPA",
+  "Why the branch system’s classification needs checking by hand"
+ ],
+ "do": [
+  "Rework one borrower’s drawing power",
+  "Classify ten loan accounts as at 31 March",
+  "Write the note on drawing power"
+ ],
+ "case": {
+  "role": "First-year article assistant on the statutory branch audit",
+  "client": "Ambar Commercial Bank Ltd, Chakan branch (0388), an SME and mid-corporate branch with about ₹186 crore of advances in 412 accounts; branch manager Dinesh Bhalekar, credit officer Swati Kalokhe",
+  "team": "Subhajit Das (bank audit lead); Shrikant Bapat (partner, signs the branch audit report)",
+  "goal": "Check Kuruli Precision Pressings’ drawing power against its February stock statement, and the classification of ten loan accounts, as at 31 March 2027.",
+  "period": "Year ended 31 March 2027",
+  "where": "Advances section, Chakan branch · Monday 5 April 2027"
+ },
+ "brief": {
+  "from": "subhajit",
+  "time": "10:05 am",
+  "messages": [
+   "Swati has put Kuruli’s February stock statement and sanction letter on your desk. Rework the drawing power on the sanction’s terms and tell me if the 31 March balance is inside it.",
+   "Then classify the ten accounts on the advances list as at 31 March. I sit with Dinesh at 4 to agree the changes, so both by 3, please."
+  ]
+ },
+ "documents": [
+  {
+   "id": "k-sanction",
+   "type": "letter",
+   "style": "letter",
+   "title": "Kuruli Precision Pressings · Sanction letter",
+   "tab": "Sanction",
+   "group": "kuruli",
+   "letterhead": {
+    "name": "Ambar Commercial Bank Ltd",
+    "address": "Chakan branch (0388) · First floor, Ganesh Plaza, Pune–Nashik Highway, Chakan, Pune 410501 · IFSC ABRC0000388"
+   },
+   "ref": "ACB/CKN/ADV/2026-27/0011",
+   "date": "06.04.2026",
+   "to": {
+    "name": "The Board of Directors, Kuruli Precision Pressings Private Limited",
+    "address": "Gat No. 412, Kuruli, Chakan–Alandi Road, Taluka Khed, Pune 410501"
+   },
+   "subject": "Renewal of working capital limit: cash credit account 038861002019",
+   "body": [
+    "Dear Sirs,",
+    "We are pleased to renew the limit first sanctioned on 08.04.2024, on the terms below. Please sign and return the duplicate of this letter as your acceptance.",
+    {
+     "table": {
+      "columns": [
+       {
+        "key": "f",
+        "label": "Facility"
+       },
+       {
+        "key": "l",
+        "label": "Limit (₹)",
+        "format": "inr"
+       },
+       {
+        "key": "v",
+        "label": "Valid till"
+       }
+      ],
+      "rows": [
+       {
+        "f": "Cash credit (hypothecation of stock and book debts)",
+        "l": 45000000,
+        "v": "07.04.2027"
+       }
+      ]
+     }
+    },
+    "## Drawing power",
+    "- Worked out every month from the stock statement, and never more than the limit.",
+    "- Stock: raw materials, work-in-progress and finished goods, valued at cost or market price, whichever is lower, less sundry creditors for goods. Margin 25%.",
+    "- Book debts: debts not more than 90 days old from the invoice date. Margin 40%.",
+    "- Not counted: stores and spares, packing materials, goods not owned by the company, book debts over 90 days and debts due from group companies.",
+    "## Stock statement",
+    "- As at each month end, to reach the branch by the 10th of the next month, with an age-wise list of book debts and the stock summary from the company’s books.",
+    "## Other terms",
+    "- Interest: 10.25% p.a. at present, debited monthly.",
+    "- Security: hypothecation of stock and book debts; hypothecation of the press machines; personal guarantees of the directors.",
+    "- Stocks to be insured against fire and burglary, with the bank’s clause."
+   ],
+   "sign": {
+    "closing": "Yours faithfully,",
+    "for": "Ambar Commercial Bank Ltd",
+    "name": "Dinesh Bhalekar",
+    "role": "Branch Manager",
+    "hand": "D. Bhalekar"
+   },
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "A.C.B. LTD\nCHAKAN\n0388",
+     "color": "violet",
+     "at": "bottom-right",
+     "shape": "round",
+     "rotate": -10
+    },
+    {
+     "kind": "hand",
+     "text": "Accepted. For Kuruli Precision Pressings Pvt Ltd, Director · 08.04.2026",
+     "color": "blue",
+     "at": "inline"
+    }
+   ]
+  },
+  {
+   "id": "k-stock",
+   "type": "table",
+   "style": "statement",
+   "title": "Kuruli Precision Pressings · Stock statement",
+   "tab": "Stock statement",
+   "group": "kuruli",
+   "company": {
+    "name": "Kuruli Precision Pressings Private Limited"
+   },
+   "heading": "Statement of stock and book debts as on 28.02.2027",
+   "subtitle": "To Ambar Commercial Bank Ltd, Chakan branch · cash credit account 038861002019 · ₹ in lakh",
+   "columns": [
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "amt",
+     "label": "₹ lakh",
+     "format": "amount"
+    }
+   ],
+   "rows": [
+    {
+     "part": "A. Stock",
+     "_class": "head"
+    },
+    {
+     "_id": "rm",
+     "part": "Raw materials (CRCA and HR sheets, coils)",
+     "amt": 142.0,
+     "_indent": 1
+    },
+    {
+     "_id": "wip",
+     "part": "Work-in-progress",
+     "amt": 38.0,
+     "_indent": 1
+    },
+    {
+     "_id": "fg",
+     "part": "Finished goods (Annexure 1)",
+     "amt": 110.4,
+     "_indent": 1
+    },
+    {
+     "_id": "ss",
+     "part": "Stores and spares",
+     "amt": 22.0,
+     "_indent": 1
+    },
+    {
+     "_id": "tot",
+     "part": "Total stock",
+     "amt": 312.4,
+     "_class": "subtotal",
+     "_sumOf": [
+      "rm",
+      "wip",
+      "fg",
+      "ss"
+     ]
+    },
+    {
+     "_id": "cr",
+     "part": "Less: sundry creditors for goods",
+     "amt": -118.0,
+     "_indent": 1
+    },
+    {
+     "_id": "paid",
+     "part": "Paid stock",
+     "amt": 194.4,
+     "_class": "total",
+     "_sumOf": [
+      "tot",
+      "cr"
+     ]
+    },
+    {
+     "part": "B. Book debts (Annexure 2)",
+     "amt": 264.0
+    },
+    {
+     "part": "C. Drawing power",
+     "_class": "head"
+    },
+    {
+     "_id": "dps",
+     "part": "Paid stock less 25% margin",
+     "amt": 145.8,
+     "_indent": 1
+    },
+    {
+     "_id": "dpd",
+     "part": "Book debts less 40% margin",
+     "amt": 158.4,
+     "_indent": 1
+    },
+    {
+     "_id": "dp",
+     "part": "Drawing power",
+     "amt": 304.2,
+     "_class": "total",
+     "_sumOf": [
+      "dps",
+      "dpd"
+     ]
+    },
+    {
+     "part": "Sanctioned limit",
+     "amt": 450.0
+    },
+    {
+     "part": "Drawing power available (the lower of the two)",
+     "amt": 304.2,
+     "_class": "total",
+     "_check": false
+    }
+   ],
+   "notes": [
+    "We certify that the stocks above are owned by us and fully paid for, except to the extent of the creditors shown; that they are hypothecated to the bank and insured; and that they are valued at cost or market price, whichever is lower. The book debts are good and recoverable.",
+    "Enclosed: Annexure 1 (finished goods), Annexure 2 (book debts, age-wise), stock summary from our books.",
+    "Place: Kuruli · Date: 06.03.2027"
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "RECEIVED 09 MAR 2027",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": 5
+    },
+    {
+     "kind": "stamp",
+     "text": "For KURULI PRECISION\nPRESSINGS PVT LTD",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -4
+    },
+    {
+     "kind": "hand",
+     "text": "Director",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -2
+    },
+    {
+     "kind": "hand",
+     "text": "DP 304.20 L from 9/3. Entered. S.K.",
+     "color": "violet",
+     "at": "inline",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "k-fg",
+   "type": "table",
+   "style": "statement",
+   "title": "Kuruli Precision Pressings · Annexure 1, finished goods",
+   "tab": "Annexure 1",
+   "group": "kuruli",
+   "company": {
+    "name": "Kuruli Precision Pressings Private Limited"
+   },
+   "heading": "Annexure 1 · Finished goods as on 28.02.2027",
+   "columns": [
+    {
+     "key": "item",
+     "label": "Item"
+    },
+    {
+     "key": "qty",
+     "label": "Qty (nos)",
+     "format": "int"
+    },
+    {
+     "key": "rate",
+     "label": "Rate (₹)",
+     "format": "int"
+    },
+    {
+     "key": "val",
+     "label": "Value (₹ lakh)",
+     "format": "amount"
+    }
+   ],
+   "rows": [
+    {
+     "item": "Seat bracket SB-210",
+     "qty": 24000,
+     "rate": 111,
+     "val": 26.64
+    },
+    {
+     "item": "Door hinge plate DH-36",
+     "qty": 30000,
+     "rate": 74,
+     "val": 22.2
+    },
+    {
+     "item": "Floor cross member FC-12",
+     "qty": 6000,
+     "rate": 456,
+     "val": 27.36
+    },
+    {
+     "item": "Battery tray BT-75",
+     "qty": 9000,
+     "rate": 380,
+     "val": 34.2
+    },
+    {
+     "item": "Total",
+     "val": 110.4,
+     "_class": "total"
+    }
+   ],
+   "notes": [
+    "Rates are our current selling prices."
+   ]
+  },
+  {
+   "id": "k-debts",
+   "type": "table",
+   "style": "statement",
+   "title": "Kuruli Precision Pressings · Annexure 2, book debts",
+   "tab": "Annexure 2",
+   "group": "kuruli",
+   "company": {
+    "name": "Kuruli Precision Pressings Private Limited"
+   },
+   "heading": "Annexure 2 · Book debts, age-wise, as on 28.02.2027",
+   "columns": [
+    {
+     "key": "age",
+     "label": "Age from invoice date"
+    },
+    {
+     "key": "amt",
+     "label": "₹ lakh",
+     "format": "amount"
+    }
+   ],
+   "rows": [
+    {
+     "age": "Up to 30 days",
+     "amt": 128.5
+    },
+    {
+     "age": "31–60 days",
+     "amt": 61.2
+    },
+    {
+     "age": "61–90 days",
+     "amt": 28.3
+    },
+    {
+     "age": "91–180 days",
+     "amt": 31.4
+    },
+    {
+     "age": "Over 180 days",
+     "amt": 14.6
+    },
+    {
+     "age": "Total",
+     "amt": 264.0,
+     "_class": "total"
+    }
+   ],
+   "notes": [
+    "No debts are due from group companies."
+   ]
+  },
+  {
+   "id": "k-books",
+   "type": "table",
+   "style": "tally",
+   "title": "Kuruli Precision Pressings · Stock summary from its books",
+   "tab": "Stock summary",
+   "group": "kuruli",
+   "company": {
+    "name": "Kuruli Precision Pressings Private Limited",
+    "address": "Gat No. 412, Kuruli, Chakan–Alandi Road, Taluka Khed, Pune 410501"
+   },
+   "ledger": "Stock Summary",
+   "subtitle": "Closing balance",
+   "period": "1-Feb-2027 to 28-Feb-2027",
+   "columns": [
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "qty",
+     "label": "Qty (nos)",
+     "format": "int"
+    },
+    {
+     "key": "rate",
+     "label": "Rate",
+     "format": "inr"
+    },
+    {
+     "key": "val",
+     "label": "Value",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "rm",
+     "part": "Raw Materials",
+     "val": 14200000
+    },
+    {
+     "_id": "wip",
+     "part": "Work-in-Progress",
+     "val": 3800000
+    },
+    {
+     "_id": "fg",
+     "part": "Finished Goods",
+     "val": 9600000,
+     "_sumOf": [
+      "f0",
+      "f1",
+      "f2",
+      "f3"
+     ]
+    },
+    {
+     "_id": "f0",
+     "part": "Seat bracket SB-210",
+     "qty": 24000,
+     "rate": 98,
+     "val": 2352000,
+     "_indent": 1
+    },
+    {
+     "_id": "f1",
+     "part": "Door hinge plate DH-36",
+     "qty": 30000,
+     "rate": 64,
+     "val": 1920000,
+     "_indent": 1
+    },
+    {
+     "_id": "f2",
+     "part": "Floor cross member FC-12",
+     "qty": 6000,
+     "rate": 396,
+     "val": 2376000,
+     "_indent": 1
+    },
+    {
+     "_id": "f3",
+     "part": "Battery tray BT-75",
+     "qty": 9000,
+     "rate": 328,
+     "val": 2952000,
+     "_indent": 1
+    },
+    {
+     "_id": "ss",
+     "part": "Stores & Spares",
+     "val": 2200000
+    },
+    {
+     "part": "Grand Total",
+     "val": 29800000,
+     "_class": "total",
+     "_sumOf": [
+      "rm",
+      "wip",
+      "fg",
+      "ss"
+     ]
+    }
+   ],
+   "notes": [
+    "Stock valued at cost (weighted average)."
+   ]
+  },
+  {
+   "id": "k-cbs",
+   "type": "table",
+   "style": "bank",
+   "title": "Kuruli Precision Pressings · March statement",
+   "tab": "March statement",
+   "group": "kuruli",
+   "brand": "Ambar Commercial Bank Ltd",
+   "docName": "Statement of account",
+   "subtitle": "Chakan branch (0388) · cash credit 038861002019 · Kuruli Precision Pressings Private Limited",
+   "meta": [
+    {
+     "label": "Period",
+     "value": "01-03-2027 to 31-03-2027"
+    },
+    {
+     "label": "Sanctioned limit",
+     "value": "₹4,50,00,000"
+    },
+    {
+     "label": "Limit valid till",
+     "value": "07-04-2027"
+    },
+    {
+     "label": "Drawing power",
+     "value": "₹3,04,20,000 from 09-03-2027 (₹2,96,80,000 before)"
+    },
+    {
+     "label": "Interest",
+     "value": "10.25% p.a."
+    },
+    {
+     "label": "Closing balance",
+     "value": "₹2,92,60,000 Dr"
+    }
+   ],
+   "columns": [
+    {
+     "key": "dt",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "bal",
+     "label": "Balance, Dr (₹)",
+     "format": "inr",
+     "runningFrom": {
+      "plus": "dr",
+      "minus": "cr"
+     }
+    }
+   ],
+   "rows": [
+    {
+     "dt": "01-03-2027",
+     "part": "Balance brought forward",
+     "dr": null,
+     "cr": null,
+     "bal": 24343366,
+     "_class": "muted"
+    },
+    {
+     "dt": "02-03-2027",
+     "part": "By NEFT: customer",
+     "dr": null,
+     "cr": 2850000,
+     "bal": 21493366
+    },
+    {
+     "dt": "03-03-2027",
+     "part": "To RTGS: CRCA coil purchase",
+     "dr": 2120000,
+     "cr": null,
+     "bal": 23613366
+    },
+    {
+     "dt": "05-03-2027",
+     "part": "To chq 004518: wages",
+     "dr": 940000,
+     "cr": null,
+     "bal": 24553366
+    },
+    {
+     "dt": "08-03-2027",
+     "part": "By NEFT: customer",
+     "dr": null,
+     "cr": 2160000,
+     "bal": 22393366
+    },
+    {
+     "dt": "09-03-2027",
+     "part": "To RTGS: HR sheet purchase",
+     "dr": 4875000,
+     "cr": null,
+     "bal": 27268366
+    },
+    {
+     "dt": "12-03-2027",
+     "part": "By NEFT: customer",
+     "dr": null,
+     "cr": 1880000,
+     "bal": 25388366
+    },
+    {
+     "dt": "15-03-2027",
+     "part": "To RTGS: CRCA coil purchase",
+     "dr": 2240000,
+     "cr": null,
+     "bal": 27628366
+    },
+    {
+     "dt": "18-03-2027",
+     "part": "To GST payment",
+     "dr": 685000,
+     "cr": null,
+     "bal": 28313366
+    },
+    {
+     "dt": "23-03-2027",
+     "part": "By NEFT: customer",
+     "dr": null,
+     "cr": 2430000,
+     "bal": 25883366
+    },
+    {
+     "dt": "25-03-2027",
+     "part": "To RTGS: press tooling",
+     "dr": 1790000,
+     "cr": null,
+     "bal": 27673366
+    },
+    {
+     "dt": "26-03-2027",
+     "part": "To RTGS: CRCA coil purchase",
+     "dr": 1040000,
+     "cr": null,
+     "bal": 28713366
+    },
+    {
+     "dt": "29-03-2027",
+     "part": "To chq 004533: wages",
+     "dr": 955000,
+     "cr": null,
+     "bal": 29668366
+    },
+    {
+     "dt": "30-03-2027",
+     "part": "By NEFT: customer",
+     "dr": null,
+     "cr": 640000,
+     "bal": 29028366
+    },
+    {
+     "dt": "31-03-2027",
+     "part": "Interest Mar 2027",
+     "dr": 231634,
+     "cr": null,
+     "bal": 29260000
+    }
+   ],
+   "footnote": "Computer-generated statement. Interest is worked on the daily balance and debited on the last day of the month."
+  },
+  {
+   "id": "dp-register",
+   "type": "table",
+   "style": "register",
+   "title": "Drawing power register",
+   "tab": "DP register",
+   "company": {
+    "name": "Ambar Commercial Bank Ltd · Chakan branch (0388)"
+   },
+   "heading": "Drawing power register",
+   "subtitle": "Cash credit against stock and book debts · last two entries for each borrower in the sample",
+   "columns": [
+    {
+     "key": "bor",
+     "label": "Borrower"
+    },
+    {
+     "key": "as",
+     "label": "Stock statement as on"
+    },
+    {
+     "key": "rc",
+     "label": "Received"
+    },
+    {
+     "key": "dp",
+     "label": "Drawing power (₹)",
+     "format": "int"
+    },
+    {
+     "key": "fr",
+     "label": "Applied from"
+    },
+    {
+     "key": "en",
+     "label": "Entered"
+    },
+    {
+     "key": "ck",
+     "label": "Checked"
+    }
+   ],
+   "rows": [
+    {
+     "bor": "Medankar",
+     "as": "31.12.2026",
+     "rc": "08.01.2027",
+     "dp": 23850000,
+     "fr": "08.01.2027",
+     "en": "SK",
+     "ck": "DB"
+    },
+    {
+     "bor": "Medankar",
+     "as": "31.01.2027",
+     "rc": "09.02.2027",
+     "dp": 23100000,
+     "fr": "10.02.2027",
+     "en": "SK",
+     "ck": "DB"
+    },
+    {
+     "bor": "Pathare",
+     "as": "31.01.2027",
+     "rc": "10.02.2027",
+     "dp": 7520000,
+     "fr": "10.02.2027",
+     "en": "SK",
+     "ck": "DB"
+    },
+    {
+     "bor": "Pathare",
+     "as": "28.02.2027",
+     "rc": "10.03.2027",
+     "dp": 7400000,
+     "fr": "10.03.2027",
+     "en": "SK",
+     "ck": "DB"
+    },
+    {
+     "bor": "Bhamchandra",
+     "as": "31.07.2026",
+     "rc": "10.08.2026",
+     "dp": 14500000,
+     "fr": "10.08.2026",
+     "en": "SK",
+     "ck": "DB"
+    },
+    {
+     "bor": "Bhamchandra",
+     "as": "31.08.2026",
+     "rc": "11.09.2026",
+     "dp": 14200000,
+     "fr": "11.09.2026",
+     "en": "SK",
+     "ck": "DB"
+    },
+    {
+     "bor": "Ambethan",
+     "as": "31.01.2027",
+     "rc": "09.02.2027",
+     "dp": 10800000,
+     "fr": "09.02.2027",
+     "en": "SK",
+     "ck": "DB"
+    },
+    {
+     "bor": "Ambethan",
+     "as": "28.02.2027",
+     "rc": "09.03.2027",
+     "dp": 10600000,
+     "fr": "09.03.2027",
+     "en": "SK",
+     "ck": "DB"
+    },
+    {
+     "bor": "Kuruli",
+     "as": "31.01.2027",
+     "rc": "08.02.2027",
+     "dp": 29680000,
+     "fr": "08.02.2027",
+     "en": "SK",
+     "ck": "DB"
+    },
+    {
+     "bor": "Kuruli",
+     "as": "28.02.2027",
+     "rc": "09.03.2027",
+     "dp": 30420000,
+     "fr": "09.03.2027",
+     "en": "SK",
+     "ck": "DB"
+    }
+   ],
+   "notes": [
+    "Drawing power as worked on the borrower’s statement and applied in the system from the date shown."
+   ],
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Bhamchandra: reminder sent 12/1. S.K.",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -2
+    }
+   ]
+  },
+  {
+   "id": "adv-list",
+   "type": "table",
+   "style": "bank",
+   "title": "Advances list · 31 March 2027",
+   "tab": "Advances list",
+   "brand": "Ambar Commercial Bank Ltd",
+   "docName": "Asset classification report",
+   "subtitle": "Chakan branch (0388) · accounts in the audit sample · day-end 31-03-2027",
+   "meta": [
+    {
+     "label": "Printed",
+     "value": "01-04-2027, 10:12"
+    },
+    {
+     "label": "Accounts",
+     "value": "10 of 412"
+    }
+   ],
+   "kindLabel": "System report",
+   "columns": [
+    {
+     "key": "name",
+     "label": "Borrower"
+    },
+    {
+     "key": "fac",
+     "label": "Facility"
+    },
+    {
+     "key": "cls",
+     "label": "Class"
+    },
+    {
+     "key": "since",
+     "label": "Overdue since"
+    },
+    {
+     "key": "npa",
+     "label": "NPA date"
+    },
+    {
+     "key": "bal",
+     "label": "Balance (₹)",
+     "format": "int"
+    },
+    {
+     "key": "dp",
+     "label": "DP (₹)",
+     "format": "int"
+    },
+    {
+     "key": "lim",
+     "label": "Limit (₹)",
+     "format": "int"
+    },
+    {
+     "key": "ac",
+     "label": "Account no.",
+     "mono": true
+    }
+   ],
+   "rows": [
+    {
+     "_id": "b02",
+     "name": "Medankar Polymers Pvt Ltd",
+     "ac": "038861009458",
+     "fac": "CC-HYP",
+     "lim": 25000000,
+     "dp": 23100000,
+     "bal": 24736000,
+     "since": "10-02-2027",
+     "cls": "SMA-1",
+     "npa": "–"
+    },
+    {
+     "_id": "b03",
+     "name": "Rasal Roadways",
+     "ac": "038872004187",
+     "fac": "TL-VEH",
+     "lim": 12000000,
+     "dp": "–",
+     "bal": 7840000,
+     "since": "05-01-2027",
+     "cls": "SMA-2",
+     "npa": "–"
+    },
+    {
+     "_id": "b04",
+     "name": "Kadus Dairy Products Pvt Ltd",
+     "ac": "038873008916",
+     "fac": "TL",
+     "lim": 30000000,
+     "dp": "–",
+     "bal": 21200000,
+     "since": "–",
+     "cls": "STD",
+     "npa": "–"
+    },
+    {
+     "_id": "b05",
+     "name": "Pathare Fabricators",
+     "ac": "038861003645",
+     "fac": "CC-HYP",
+     "lim": 8000000,
+     "dp": 7400000,
+     "bal": 7130000,
+     "since": "–",
+     "cls": "STD",
+     "npa": "–"
+    },
+    {
+     "_id": "b06",
+     "name": "Hotel Nanekarwadi Grand",
+     "ac": "038873008374",
+     "fac": "TL",
+     "lim": 15000000,
+     "dp": "–",
+     "bal": 11800000,
+     "since": "14-01-2027",
+     "cls": "SMA-2",
+     "npa": "–"
+    },
+    {
+     "_id": "b07",
+     "name": "Ganesh Kalbhor",
+     "ac": "038881003103",
+     "fac": "HL",
+     "lim": 4200000,
+     "dp": "–",
+     "bal": 3680000,
+     "since": "–",
+     "cls": "STD",
+     "npa": "–"
+    },
+    {
+     "_id": "b08",
+     "name": "Bhamchandra Hardware Stores",
+     "ac": "038861007832",
+     "fac": "CC-HYP",
+     "lim": 15000000,
+     "dp": 14200000,
+     "bal": 13870000,
+     "since": "–",
+     "cls": "STD",
+     "npa": "–"
+    },
+    {
+     "_id": "b09",
+     "name": "Bankar Diagnostics",
+     "ac": "038872002561",
+     "fac": "TL-EQP",
+     "lim": 5500000,
+     "dp": "–",
+     "bal": 4160000,
+     "since": "02-07-2025",
+     "cls": "SUB",
+     "npa": "30-09-2025"
+    },
+    {
+     "_id": "b10",
+     "name": "Ambethan Engineering Works",
+     "ac": "038861007290",
+     "fac": "CC-HYP",
+     "lim": 11000000,
+     "dp": 10600000,
+     "bal": 10420000,
+     "since": "–",
+     "cls": "STD",
+     "npa": "–"
+    },
+    {
+     "_id": "b11",
+     "name": "Kuruli Precision Pressings Pvt Ltd",
+     "ac": "038861002019",
+     "fac": "CC-HYP",
+     "lim": 45000000,
+     "dp": 30420000,
+     "bal": 29260000,
+     "since": "–",
+     "cls": "STD",
+     "npa": "–"
+    }
+   ],
+   "footnote": "CC-HYP cash credit against hypothecation · TL term loan (VEH vehicle, EQP equipment) · HL housing loan · STD standard · SUB sub-standard · DP drawing power. Overdue since: for a cash credit, the day it went irregular. System classification at day-end; subject to audit."
+  },
+  {
+   "id": "checklist",
+   "type": "letter",
+   "style": "memo",
+   "title": "Subhajit’s checklist · Classification",
+   "tab": "Checklist",
+   "kindLabel": "Audit note",
+   "memoTitle": "Audit note",
+   "letterhead": "Bapat Venkatesh & Co., Chartered Accountants · Branch audit, Chakan (0388)",
+   "from": "Subhajit Das",
+   "to": [
+    "Chakan audit team"
+   ],
+   "date": "02-04-2027",
+   "subject": "Advances: classification checks as at 31 March 2027",
+   "body": [
+    "Classify every account in the sample from its own papers. Check the system’s class against them; never copy it.",
+    "SMA-0, SMA-1 and SMA-2 are early-warning tags on a standard account: it stays a standard asset until it turns NPA.",
+    "## Term loans",
+    "- An amount is overdue when it is not paid on its due date. Count from the oldest instalment not fully paid to 31 March: 5 March to 31 March is 26 days.",
+    "- SMA-0: up to 30 days. SMA-1: over 30 and up to 60. SMA-2: over 60 and up to 90. Over 90 days: NPA.",
+    "## Cash credit",
+    "- No SMA-0. SMA-1 or SMA-2 when the balance stays above the lower of limit and drawing power, without a break, for over 30 or over 60 days.",
+    "- NPA (out of order) when the balance stays above the lower of limit and drawing power for 90 days without a break; or no credit comes in for 90 days; or credits do come in, but those in the 90 days to 31 March, 31 March included, do not cover the interest debited in those days.",
+    "- Drawing power worked on a stock statement more than three months old is irregular. Ninety days of drawings on it make the account NPA.",
+    "- A limit not renewed within 180 days of its due date makes the account NPA. Each statement’s header shows how long the limit runs.",
+    "- A short excess over drawing power, or a statement that has not come in yet, is not NPA by itself.",
+    "## NPA classes",
+    "- Sub-standard for its first twelve months as NPA. After twelve months as sub-standard: doubtful."
+   ],
+   "sign": {
+    "name": "Subhajit Das",
+    "role": "Bank audit lead",
+    "hand": "Subhajit"
+   }
+  },
+  {
+   "id": "s-b02",
+   "type": "table",
+   "style": "bank",
+   "title": "Medankar Polymers · Account statement",
+   "tab": "Statement",
+   "group": "b02",
+   "brand": "Ambar Commercial Bank Ltd",
+   "docName": "Statement of account",
+   "subtitle": "Chakan branch (0388) · cash credit 038861009458 · Medankar Polymers Private Limited",
+   "meta": [
+    {
+     "label": "Period",
+     "value": "01-02-2027 to 31-03-2027"
+    },
+    {
+     "label": "Sanctioned limit",
+     "value": "₹2,50,00,000"
+    },
+    {
+     "label": "Limit valid till",
+     "value": "20-08-2027"
+    },
+    {
+     "label": "Drawing power",
+     "value": "₹2,31,00,000 from 10-02-2027 (₹2,38,50,000 before)"
+    },
+    {
+     "label": "Interest",
+     "value": "10.40% p.a."
+    },
+    {
+     "label": "Closing balance",
+     "value": "₹2,47,36,000 Dr"
+    }
+   ],
+   "columns": [
+    {
+     "key": "dt",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "bal",
+     "label": "Balance, Dr (₹)",
+     "format": "inr",
+     "runningFrom": {
+      "plus": "dr",
+      "minus": "cr"
+     }
+    }
+   ],
+   "rows": [
+    {
+     "dt": "01-02-2027",
+     "part": "Balance brought forward",
+     "dr": null,
+     "cr": null,
+     "bal": 23640000,
+     "_class": "muted"
+    },
+    {
+     "dt": "02-02-2027",
+     "part": "By NEFT: customer",
+     "dr": null,
+     "cr": 920000,
+     "bal": 22720000
+    },
+    {
+     "dt": "03-02-2027",
+     "part": "To RTGS: resin purchase",
+     "dr": 1070000,
+     "cr": null,
+     "bal": 23790000
+    },
+    {
+     "dt": "08-02-2027",
+     "part": "By NEFT: customer",
+     "dr": null,
+     "cr": 410000,
+     "bal": 23380000
+    },
+    {
+     "dt": "09-02-2027",
+     "part": "To chq 118642: wages",
+     "dr": 380000,
+     "cr": null,
+     "bal": 23760000
+    },
+    {
+     "dt": "11-02-2027",
+     "part": "To RTGS: resin purchase",
+     "dr": 870000,
+     "cr": null,
+     "bal": 24630000
+    },
+    {
+     "dt": "12-02-2027",
+     "part": "By NEFT: customer",
+     "dr": null,
+     "cr": 1120000,
+     "bal": 23510000
+    },
+    {
+     "dt": "16-02-2027",
+     "part": "To RTGS: resin purchase",
+     "dr": 910000,
+     "cr": null,
+     "bal": 24420000
+    },
+    {
+     "dt": "18-02-2027",
+     "part": "By NEFT: customer",
+     "dr": null,
+     "cr": 1020000,
+     "bal": 23400000
+    },
+    {
+     "dt": "19-02-2027",
+     "part": "To GST payment",
+     "dr": 412000,
+     "cr": null,
+     "bal": 23812000
+    },
+    {
+     "dt": "24-02-2027",
+     "part": "To RTGS: resin purchase",
+     "dr": 830000,
+     "cr": null,
+     "bal": 24642000
+    },
+    {
+     "dt": "25-02-2027",
+     "part": "By NEFT: customer",
+     "dr": null,
+     "cr": 970000,
+     "bal": 23672000
+    },
+    {
+     "dt": "28-02-2027",
+     "part": "Interest Feb 2027",
+     "dr": 189625,
+     "cr": null,
+     "bal": 23861625
+    },
+    {
+     "dt": "02-03-2027",
+     "part": "To RTGS: mould repairs",
+     "dr": 640000,
+     "cr": null,
+     "bal": 24501625
+    },
+    {
+     "dt": "04-03-2027",
+     "part": "By NEFT: customer",
+     "dr": null,
+     "cr": 1020000,
+     "bal": 23481625
+    },
+    {
+     "dt": "09-03-2027",
+     "part": "To chq 118671: wages",
+     "dr": 410000,
+     "cr": null,
+     "bal": 23891625
+    },
+    {
+     "dt": "10-03-2027",
+     "part": "To RTGS: resin purchase",
+     "dr": 810000,
+     "cr": null,
+     "bal": 24701625
+    },
+    {
+     "dt": "12-03-2027",
+     "part": "By NEFT: customer",
+     "dr": null,
+     "cr": 1180000,
+     "bal": 23521625
+    },
+    {
+     "dt": "17-03-2027",
+     "part": "To RTGS: resin purchase",
+     "dr": 940000,
+     "cr": null,
+     "bal": 24461625
+    },
+    {
+     "dt": "19-03-2027",
+     "part": "To GST payment",
+     "dr": 398000,
+     "cr": null,
+     "bal": 24859625
+    },
+    {
+     "dt": "23-03-2027",
+     "part": "By NEFT: customer",
+     "dr": null,
+     "cr": 1090000,
+     "bal": 23769625
+    },
+    {
+     "dt": "25-03-2027",
+     "part": "To RTGS: resin purchase",
+     "dr": 730000,
+     "cr": null,
+     "bal": 24499625
+    },
+    {
+     "dt": "29-03-2027",
+     "part": "By NEFT: customer",
+     "dr": null,
+     "cr": 620000,
+     "bal": 23879625
+    },
+    {
+     "dt": "30-03-2027",
+     "part": "To RTGS: packing material",
+     "dr": 643246,
+     "cr": null,
+     "bal": 24522871
+    },
+    {
+     "dt": "31-03-2027",
+     "part": "Interest Mar 2027",
+     "dr": 213129,
+     "cr": null,
+     "bal": 24736000
+    }
+   ],
+   "footnote": "Computer-generated statement. Interest is worked on the daily balance and debited on the last day of the month."
+  },
+  {
+   "id": "l-b03",
+   "type": "table",
+   "style": "bank",
+   "title": "Rasal Roadways · Loan account",
+   "tab": "Loan account",
+   "group": "b03",
+   "brand": "Ambar Commercial Bank Ltd",
+   "docName": "Loan account · demand and recovery",
+   "subtitle": "Chakan branch (0388) · vehicle loan 038872004187 · Rasal Roadways (proprietor: Santosh Rasal)",
+   "meta": [
+    {
+     "label": "Sanctioned",
+     "value": "₹1,20,00,000 on 06-05-2024"
+    },
+    {
+     "label": "EMI",
+     "value": "₹2,65,000 on the 5th of each month"
+    },
+    {
+     "label": "Balance outstanding",
+     "value": "₹78,40,000 on 31-03-2027"
+    }
+   ],
+   "columns": [
+    {
+     "key": "due",
+     "label": "EMI due on"
+    },
+    {
+     "key": "emi",
+     "label": "EMI (₹)",
+     "format": "int"
+    },
+    {
+     "key": "rec",
+     "label": "Recovered (₹)",
+     "format": "int"
+    },
+    {
+     "key": "left",
+     "label": "Still due (₹)",
+     "format": "int",
+     "check": "emi - rec"
+    },
+    {
+     "key": "on",
+     "label": "Recovered on"
+    }
+   ],
+   "rows": [
+    {
+     "due": "05-10-2026",
+     "emi": 265000,
+     "rec": 265000,
+     "on": "05-10-2026",
+     "left": 0
+    },
+    {
+     "due": "05-11-2026",
+     "emi": 265000,
+     "rec": 265000,
+     "on": "05-11-2026",
+     "left": 0
+    },
+    {
+     "due": "05-12-2026",
+     "emi": 265000,
+     "rec": 220000,
+     "on": "14-01-2027 and 22-03-2027",
+     "left": 45000
+    },
+    {
+     "due": "05-01-2027",
+     "emi": 265000,
+     "rec": 0,
+     "on": "–",
+     "left": 265000
+    },
+    {
+     "due": "05-02-2027",
+     "emi": 265000,
+     "rec": 0,
+     "on": "–",
+     "left": 265000
+    },
+    {
+     "due": "05-03-2027",
+     "emi": 265000,
+     "rec": 0,
+     "on": "–",
+     "left": 265000
+    },
+    {
+     "due": "Total",
+     "emi": 1590000,
+     "rec": 750000,
+     "left": 840000,
+     "_class": "total"
+    }
+   ],
+   "footnote": "Computer-generated statement. EMIs are recovered by standing instruction on the due date; recoveries are applied to the instalments shown against them.",
+   "notes": [
+    "Recovered ₹1,00,000 on 14-01-2027 and ₹1,20,000 on 22-03-2027, both applied to the EMI due on 05-12-2026."
+   ]
+  },
+  {
+   "id": "l-b04",
+   "type": "table",
+   "style": "bank",
+   "title": "Kadus Dairy Products · Loan account",
+   "tab": "Loan account",
+   "group": "b04",
+   "brand": "Ambar Commercial Bank Ltd",
+   "docName": "Loan account · demand and recovery",
+   "subtitle": "Chakan branch (0388) · term loan 038873008916 · Kadus Dairy Products Private Limited",
+   "meta": [
+    {
+     "label": "Sanctioned",
+     "value": "₹3,00,00,000 on 15-11-2023"
+    },
+    {
+     "label": "EMI",
+     "value": "₹4,80,000 on the 10th of each month"
+    },
+    {
+     "label": "Balance outstanding",
+     "value": "₹2,12,00,000 on 31-03-2027"
+    }
+   ],
+   "columns": [
+    {
+     "key": "due",
+     "label": "EMI due on"
+    },
+    {
+     "key": "emi",
+     "label": "EMI (₹)",
+     "format": "int"
+    },
+    {
+     "key": "rec",
+     "label": "Recovered (₹)",
+     "format": "int"
+    },
+    {
+     "key": "left",
+     "label": "Still due (₹)",
+     "format": "int",
+     "check": "emi - rec"
+    },
+    {
+     "key": "on",
+     "label": "Recovered on"
+    }
+   ],
+   "rows": [
+    {
+     "due": "10-10-2026",
+     "emi": 480000,
+     "rec": 480000,
+     "on": "10-10-2026",
+     "left": 0
+    },
+    {
+     "due": "10-11-2026",
+     "emi": 480000,
+     "rec": 480000,
+     "on": "10-11-2026",
+     "left": 0
+    },
+    {
+     "due": "10-12-2026",
+     "emi": 480000,
+     "rec": 480000,
+     "on": "10-12-2026",
+     "left": 0
+    },
+    {
+     "due": "10-01-2027",
+     "emi": 480000,
+     "rec": 480000,
+     "on": "10-01-2027",
+     "left": 0
+    },
+    {
+     "due": "10-02-2027",
+     "emi": 480000,
+     "rec": 480000,
+     "on": "10-02-2027",
+     "left": 0
+    },
+    {
+     "due": "10-03-2027",
+     "emi": 480000,
+     "rec": 480000,
+     "on": "10-03-2027",
+     "left": 0
+    },
+    {
+     "due": "Total",
+     "emi": 2880000,
+     "rec": 2880000,
+     "left": 0,
+     "_class": "total"
+    }
+   ],
+   "footnote": "Computer-generated statement. EMIs are recovered by standing instruction on the due date; recoveries are applied to the instalments shown against them."
+  },
+  {
+   "id": "s-b05",
+   "type": "table",
+   "style": "bank",
+   "title": "Pathare Fabricators · Account statement",
+   "tab": "Statement",
+   "group": "b05",
+   "brand": "Ambar Commercial Bank Ltd",
+   "docName": "Statement of account",
+   "subtitle": "Chakan branch (0388) · cash credit 038861003645 · Pathare Fabricators",
+   "meta": [
+    {
+     "label": "Period",
+     "value": "01-12-2026 to 31-03-2027"
+    },
+    {
+     "label": "Sanctioned limit",
+     "value": "₹80,00,000"
+    },
+    {
+     "label": "Limit valid till",
+     "value": "03-07-2027"
+    },
+    {
+     "label": "Drawing power",
+     "value": "₹74,00,000 from 10-03-2027 (₹75,20,000 before)"
+    },
+    {
+     "label": "Interest",
+     "value": "11.20% p.a."
+    },
+    {
+     "label": "Closing balance",
+     "value": "₹71,30,000 Dr"
+    }
+   ],
+   "columns": [
+    {
+     "key": "dt",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "bal",
+     "label": "Balance, Dr (₹)",
+     "format": "inr",
+     "runningFrom": {
+      "plus": "dr",
+      "minus": "cr"
+     }
+    }
+   ],
+   "rows": [
+    {
+     "dt": "01-12-2026",
+     "part": "Balance brought forward",
+     "dr": null,
+     "cr": null,
+     "bal": 6495057,
+     "_class": "muted"
+    },
+    {
+     "dt": "04-12-2026",
+     "part": "To chq 004211: wages",
+     "dr": 215000,
+     "cr": null,
+     "bal": 6710057
+    },
+    {
+     "dt": "08-12-2026",
+     "part": "To RTGS: steel sections",
+     "dr": 340000,
+     "cr": null,
+     "bal": 7050057
+    },
+    {
+     "dt": "12-12-2026",
+     "part": "By NEFT: customer",
+     "dr": null,
+     "cr": 480000,
+     "bal": 6570057
+    },
+    {
+     "dt": "21-12-2026",
+     "part": "To chq 004215: wages",
+     "dr": 160000,
+     "cr": null,
+     "bal": 6730057
+    },
+    {
+     "dt": "31-12-2026",
+     "part": "Interest Dec 2026",
+     "dr": 63729,
+     "cr": null,
+     "bal": 6793786
+    },
+    {
+     "dt": "08-01-2027",
+     "part": "To chq 004218: wages",
+     "dr": 95000,
+     "cr": null,
+     "bal": 6888786
+    },
+    {
+     "dt": "31-01-2027",
+     "part": "Interest Jan 2027",
+     "dr": 65324,
+     "cr": null,
+     "bal": 6954110
+    },
+    {
+     "dt": "05-02-2027",
+     "part": "To MSEDCL: power bill",
+     "dr": 48600,
+     "cr": null,
+     "bal": 7002710
+    },
+    {
+     "dt": "28-02-2027",
+     "part": "Interest Feb 2027",
+     "dr": 60106,
+     "cr": null,
+     "bal": 7062816
+    },
+    {
+     "dt": "31-03-2027",
+     "part": "Interest Mar 2027",
+     "dr": 67184,
+     "cr": null,
+     "bal": 7130000
+    }
+   ],
+   "footnote": "Computer-generated statement. Interest is worked on the daily balance and debited on the last day of the month."
+  },
+  {
+   "id": "l-b06",
+   "type": "table",
+   "style": "bank",
+   "title": "Hotel Nanekarwadi Grand · Loan account",
+   "tab": "Loan account",
+   "group": "b06",
+   "brand": "Ambar Commercial Bank Ltd",
+   "docName": "Loan account · demand and recovery",
+   "subtitle": "Chakan branch (0388) · term loan 038873008374 · Hotel Nanekarwadi Grand",
+   "meta": [
+    {
+     "label": "Sanctioned",
+     "value": "₹1,50,00,000 on 18-09-2024"
+    },
+    {
+     "label": "EMI",
+     "value": "₹2,25,000 on the 14th of each month"
+    },
+    {
+     "label": "Balance outstanding",
+     "value": "₹1,18,00,000 on 31-03-2027"
+    }
+   ],
+   "columns": [
+    {
+     "key": "due",
+     "label": "EMI due on"
+    },
+    {
+     "key": "emi",
+     "label": "EMI (₹)",
+     "format": "int"
+    },
+    {
+     "key": "rec",
+     "label": "Recovered (₹)",
+     "format": "int"
+    },
+    {
+     "key": "left",
+     "label": "Still due (₹)",
+     "format": "int",
+     "check": "emi - rec"
+    },
+    {
+     "key": "on",
+     "label": "Recovered on"
+    }
+   ],
+   "rows": [
+    {
+     "due": "14-10-2026",
+     "emi": 225000,
+     "rec": 225000,
+     "on": "14-10-2026",
+     "left": 0
+    },
+    {
+     "due": "14-11-2026",
+     "emi": 225000,
+     "rec": 225000,
+     "on": "14-11-2026",
+     "left": 0
+    },
+    {
+     "due": "14-12-2026",
+     "emi": 225000,
+     "rec": 225000,
+     "on": "08-03-2027",
+     "left": 0
+    },
+    {
+     "due": "14-01-2027",
+     "emi": 225000,
+     "rec": 0,
+     "on": "–",
+     "left": 225000
+    },
+    {
+     "due": "14-02-2027",
+     "emi": 225000,
+     "rec": 0,
+     "on": "–",
+     "left": 225000
+    },
+    {
+     "due": "14-03-2027",
+     "emi": 225000,
+     "rec": 0,
+     "on": "–",
+     "left": 225000
+    },
+    {
+     "due": "Total",
+     "emi": 1350000,
+     "rec": 675000,
+     "left": 675000,
+     "_class": "total"
+    }
+   ],
+   "footnote": "Computer-generated statement. EMIs are recovered by standing instruction on the due date; recoveries are applied to the instalments shown against them.",
+   "notes": [
+    "Recovered ₹2,25,000 on 08-03-2027, applied to the EMI due on 14-12-2026."
+   ]
+  },
+  {
+   "id": "l-b07",
+   "type": "table",
+   "style": "bank",
+   "title": "Ganesh Kalbhor · Loan account",
+   "tab": "Loan account",
+   "group": "b07",
+   "brand": "Ambar Commercial Bank Ltd",
+   "docName": "Loan account · demand and recovery",
+   "subtitle": "Chakan branch (0388) · housing loan 038881003103 · Ganesh Kalbhor",
+   "meta": [
+    {
+     "label": "Sanctioned",
+     "value": "₹42,00,000 on 26-03-2021"
+    },
+    {
+     "label": "EMI",
+     "value": "₹36,900 on the 5th of each month"
+    },
+    {
+     "label": "Balance outstanding",
+     "value": "₹36,80,000 on 31-03-2027"
+    }
+   ],
+   "columns": [
+    {
+     "key": "due",
+     "label": "EMI due on"
+    },
+    {
+     "key": "emi",
+     "label": "EMI (₹)",
+     "format": "int"
+    },
+    {
+     "key": "rec",
+     "label": "Recovered (₹)",
+     "format": "int"
+    },
+    {
+     "key": "left",
+     "label": "Still due (₹)",
+     "format": "int",
+     "check": "emi - rec"
+    },
+    {
+     "key": "on",
+     "label": "Recovered on"
+    }
+   ],
+   "rows": [
+    {
+     "due": "05-10-2026",
+     "emi": 36900,
+     "rec": 36900,
+     "on": "05-10-2026",
+     "left": 0
+    },
+    {
+     "due": "05-11-2026",
+     "emi": 36900,
+     "rec": 36900,
+     "on": "05-11-2026",
+     "left": 0
+    },
+    {
+     "due": "05-12-2026",
+     "emi": 36900,
+     "rec": 36900,
+     "on": "05-12-2026",
+     "left": 0
+    },
+    {
+     "due": "05-01-2027",
+     "emi": 36900,
+     "rec": 36900,
+     "on": "05-01-2027",
+     "left": 0
+    },
+    {
+     "due": "05-02-2027",
+     "emi": 36900,
+     "rec": 36900,
+     "on": "05-02-2027",
+     "left": 0
+    },
+    {
+     "due": "05-03-2027",
+     "emi": 36900,
+     "rec": 36900,
+     "on": "05-03-2027",
+     "left": 0
+    },
+    {
+     "due": "Total",
+     "emi": 221400,
+     "rec": 221400,
+     "left": 0,
+     "_class": "total"
+    }
+   ],
+   "footnote": "Computer-generated statement. EMIs are recovered by standing instruction on the due date; recoveries are applied to the instalments shown against them."
+  },
+  {
+   "id": "s-b08",
+   "type": "table",
+   "style": "bank",
+   "title": "Bhamchandra Hardware · Account statement",
+   "tab": "Statement",
+   "group": "b08",
+   "brand": "Ambar Commercial Bank Ltd",
+   "docName": "Statement of account",
+   "subtitle": "Chakan branch (0388) · cash credit 038861007832 · Bhamchandra Hardware Stores (proprietor: Vilas Kharpude)",
+   "meta": [
+    {
+     "label": "Period",
+     "value": "01-01-2027 to 31-03-2027"
+    },
+    {
+     "label": "Sanctioned limit",
+     "value": "₹1,50,00,000"
+    },
+    {
+     "label": "Limit valid till",
+     "value": "11-06-2027"
+    },
+    {
+     "label": "Drawing power",
+     "value": "₹1,42,00,000 from 11-09-2026"
+    },
+    {
+     "label": "Interest",
+     "value": "10.60% p.a."
+    },
+    {
+     "label": "Closing balance",
+     "value": "₹1,38,70,000 Dr"
+    }
+   ],
+   "columns": [
+    {
+     "key": "dt",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "bal",
+     "label": "Balance, Dr (₹)",
+     "format": "inr",
+     "runningFrom": {
+      "plus": "dr",
+      "minus": "cr"
+     }
+    }
+   ],
+   "rows": [
+    {
+     "dt": "01-01-2027",
+     "part": "Balance brought forward",
+     "dr": null,
+     "cr": null,
+     "bal": 13934495,
+     "_class": "muted"
+    },
+    {
+     "dt": "05-01-2027",
+     "part": "By NEFT: sales",
+     "dr": null,
+     "cr": 1420000,
+     "bal": 12514495
+    },
+    {
+     "dt": "05-01-2027",
+     "part": "To RTGS: hardware purchase",
+     "dr": 1390000,
+     "cr": null,
+     "bal": 13904495
+    },
+    {
+     "dt": "19-01-2027",
+     "part": "By NEFT: sales",
+     "dr": null,
+     "cr": 1640000,
+     "bal": 12264495
+    },
+    {
+     "dt": "19-01-2027",
+     "part": "To RTGS: hardware purchase",
+     "dr": 1580000,
+     "cr": null,
+     "bal": 13844495
+    },
+    {
+     "dt": "31-01-2027",
+     "part": "Interest Jan 2027",
+     "dr": 124987,
+     "cr": null,
+     "bal": 13969482
+    },
+    {
+     "dt": "04-02-2027",
+     "part": "By NEFT: sales",
+     "dr": null,
+     "cr": 1510000,
+     "bal": 12459482
+    },
+    {
+     "dt": "04-02-2027",
+     "part": "To RTGS: hardware purchase",
+     "dr": 1430000,
+     "cr": null,
+     "bal": 13889482
+    },
+    {
+     "dt": "18-02-2027",
+     "part": "By NEFT: sales",
+     "dr": null,
+     "cr": 1760000,
+     "bal": 12129482
+    },
+    {
+     "dt": "18-02-2027",
+     "part": "To RTGS: hardware purchase",
+     "dr": 1690000,
+     "cr": null,
+     "bal": 13819482
+    },
+    {
+     "dt": "28-02-2027",
+     "part": "Interest Feb 2027",
+     "dr": 112789,
+     "cr": null,
+     "bal": 13932271
+    },
+    {
+     "dt": "04-03-2027",
+     "part": "By NEFT: sales",
+     "dr": null,
+     "cr": 1690000,
+     "bal": 12242271
+    },
+    {
+     "dt": "04-03-2027",
+     "part": "To RTGS: hardware purchase",
+     "dr": 1590000,
+     "cr": null,
+     "bal": 13832271
+    },
+    {
+     "dt": "17-03-2027",
+     "part": "To GST payment",
+     "dr": 186000,
+     "cr": null,
+     "bal": 14018271
+    },
+    {
+     "dt": "27-03-2027",
+     "part": "By NEFT: sales",
+     "dr": null,
+     "cr": 1660000,
+     "bal": 12358271
+    },
+    {
+     "dt": "29-03-2027",
+     "part": "To RTGS: hardware purchase",
+     "dr": 1387505,
+     "cr": null,
+     "bal": 13745776
+    },
+    {
+     "dt": "31-03-2027",
+     "part": "Interest Mar 2027",
+     "dr": 124224,
+     "cr": null,
+     "bal": 13870000
+    }
+   ],
+   "footnote": "Computer-generated statement. Interest is worked on the daily balance and debited on the last day of the month."
+  },
+  {
+   "id": "l-b09",
+   "type": "table",
+   "style": "bank",
+   "title": "Bankar Diagnostics · Loan account",
+   "tab": "Loan account",
+   "group": "b09",
+   "brand": "Ambar Commercial Bank Ltd",
+   "docName": "Loan account · demand and recovery",
+   "subtitle": "Chakan branch (0388) · equipment loan 038872002561 · Bankar Diagnostics (proprietor: Dr Sayali Bankar)",
+   "meta": [
+    {
+     "label": "Sanctioned",
+     "value": "₹55,00,000 on 30-01-2023"
+    },
+    {
+     "label": "EMI",
+     "value": "₹1,32,000 on the 2nd of each month"
+    },
+    {
+     "label": "Balance outstanding",
+     "value": "₹41,60,000 on 31-03-2027"
+    },
+    {
+     "label": "Class (system)",
+     "value": "Sub-standard · NPA date 30-09-2025"
+    }
+   ],
+   "columns": [
+    {
+     "key": "due",
+     "label": "EMI due on"
+    },
+    {
+     "key": "emi",
+     "label": "EMI (₹)",
+     "format": "int"
+    },
+    {
+     "key": "rec",
+     "label": "Recovered (₹)",
+     "format": "int"
+    },
+    {
+     "key": "left",
+     "label": "Still due (₹)",
+     "format": "int",
+     "check": "emi - rec"
+    },
+    {
+     "key": "on",
+     "label": "Recovered on"
+    }
+   ],
+   "rows": [
+    {
+     "due": "02-04-2025",
+     "emi": 132000,
+     "rec": 132000,
+     "on": "02-04-2025",
+     "left": 0
+    },
+    {
+     "due": "02-05-2025",
+     "emi": 132000,
+     "rec": 132000,
+     "on": "02-05-2025",
+     "left": 0
+    },
+    {
+     "due": "02-06-2025",
+     "emi": 132000,
+     "rec": 132000,
+     "on": "04-06-2025",
+     "left": 0
+    },
+    {
+     "due": "02-07-2025",
+     "emi": 132000,
+     "rec": 60000,
+     "on": "19-08-2026",
+     "left": 72000
+    },
+    {
+     "due": "02-08-2025 to 02-03-2027 (20 EMIs)",
+     "emi": 2640000,
+     "rec": 0,
+     "on": "–",
+     "left": 2640000
+    },
+    {
+     "due": "Total",
+     "emi": 3168000,
+     "rec": 456000,
+     "left": 2712000,
+     "_class": "total"
+    }
+   ],
+   "footnote": "Computer-generated statement. EMIs are recovered by standing instruction on the due date; recoveries are applied to the instalments shown against them."
+  },
+  {
+   "id": "s-b10",
+   "type": "table",
+   "style": "bank",
+   "title": "Ambethan Engineering · Account statement",
+   "tab": "Statement",
+   "group": "b10",
+   "brand": "Ambar Commercial Bank Ltd",
+   "docName": "Statement of account",
+   "subtitle": "Chakan branch (0388) · cash credit 038861007290 · Ambethan Engineering Works",
+   "meta": [
+    {
+     "label": "Period",
+     "value": "01-01-2027 to 31-03-2027"
+    },
+    {
+     "label": "Sanctioned limit",
+     "value": "₹1,10,00,000"
+    },
+    {
+     "label": "Limit valid till",
+     "value": "18-12-2027"
+    },
+    {
+     "label": "Drawing power",
+     "value": "₹1,06,00,000 from 09-03-2027 (₹1,08,00,000 before)"
+    },
+    {
+     "label": "Interest",
+     "value": "11.05% p.a."
+    },
+    {
+     "label": "Closing balance",
+     "value": "₹1,04,20,000 Dr"
+    }
+   ],
+   "columns": [
+    {
+     "key": "dt",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "bal",
+     "label": "Balance, Dr (₹)",
+     "format": "inr",
+     "runningFrom": {
+      "plus": "dr",
+      "minus": "cr"
+     }
+    }
+   ],
+   "rows": [
+    {
+     "dt": "01-01-2027",
+     "part": "Balance brought forward",
+     "dr": null,
+     "cr": null,
+     "bal": 8644661,
+     "_class": "muted"
+    },
+    {
+     "dt": "06-01-2027",
+     "part": "To chq 003318: wages",
+     "dr": 240000,
+     "cr": null,
+     "bal": 8884661
+    },
+    {
+     "dt": "14-01-2027",
+     "part": "To RTGS: cutting tools",
+     "dr": 310000,
+     "cr": null,
+     "bal": 9194661
+    },
+    {
+     "dt": "20-01-2027",
+     "part": "By NEFT: job work",
+     "dr": null,
+     "cr": 40000,
+     "bal": 9154661
+    },
+    {
+     "dt": "31-01-2027",
+     "part": "Interest Jan 2027",
+     "dr": 84563,
+     "cr": null,
+     "bal": 9239224
+    },
+    {
+     "dt": "05-02-2027",
+     "part": "To chq 003324: wages",
+     "dr": 235000,
+     "cr": null,
+     "bal": 9474224
+    },
+    {
+     "dt": "16-02-2027",
+     "part": "To MSEDCL: power bill",
+     "dr": 62400,
+     "cr": null,
+     "bal": 9536624
+    },
+    {
+     "dt": "28-02-2027",
+     "part": "Interest Feb 2027",
+     "dr": 80271,
+     "cr": null,
+     "bal": 9616895
+    },
+    {
+     "dt": "05-03-2027",
+     "part": "To chq 003331: wages",
+     "dr": 230000,
+     "cr": null,
+     "bal": 9846895
+    },
+    {
+     "dt": "18-03-2027",
+     "part": "By NEFT: job work",
+     "dr": null,
+     "cr": 72000,
+     "bal": 9774895
+    },
+    {
+     "dt": "24-03-2027",
+     "part": "To RTGS: machine spares",
+     "dr": 551939,
+     "cr": null,
+     "bal": 10326834
+    },
+    {
+     "dt": "31-03-2027",
+     "part": "Interest Mar 2027",
+     "dr": 93166,
+     "cr": null,
+     "bal": 10420000
+    }
+   ],
+   "footnote": "Computer-generated statement. Interest is worked on the daily balance and debited on the last day of the month."
+  }
+ ],
+ "tasks": [
+  {
+   "id": "t1",
+   "type": "worksheet",
+   "stage": "Fieldwork",
+   "title": "Rework Kuruli’s drawing power",
+   "prompt": "Each line shows Kuruli’s own working, which the branch took as it was. Rework it on the sanction letter’s terms and enter your figures in ₹ lakh, to two decimals, as the statement prints them. The annexures, Kuruli’s stock summary and its March account statement are in the documents.",
+   "weight": 1,
+   "noun": [
+    "figure",
+    "figures"
+   ],
+   "layout": "grid",
+   "lockOnLeave": {
+    "ask": "Hand your drawing power working to Subhajit?",
+    "note": "You can’t change it after this.",
+    "yes": "Hand it in",
+    "done": "Handed to Subhajit. You can read your figures but not change them."
+   },
+   "hints": [
+    "Read the sanction’s drawing power terms line by line against the statement: how stock is valued, what is left out and how old a debt may be.",
+    "Finished goods at cost are in Kuruli’s stock summary from its books, not on the statement."
+   ],
+   "columns": [
+    {
+     "key": "line",
+     "label": "Line"
+    },
+    {
+     "key": "k",
+     "label": "Kuruli’s working (₹ lakh)",
+     "format": "amount"
+    },
+    {
+     "key": "you",
+     "label": "Your figure (₹ lakh)",
+     "format": "amount"
+    }
+   ],
+   "rows": [
+    {
+     "id": "r1",
+     "cells": {
+      "line": "Raw materials",
+      "k": 142.0,
+      "you": 142.0
+     }
+    },
+    {
+     "id": "r2",
+     "cells": {
+      "line": "Work-in-progress",
+      "k": 38.0,
+      "you": 38.0
+     }
+    },
+    {
+     "id": "r3",
+     "cells": {
+      "line": "Finished goods",
+      "k": 110.4,
+      "you": {
+       "input": true,
+       "answer": 96.0,
+       "tolerance": 0.05,
+       "working": "At cost, from Kuruli’s stock summary: ₹96,00,000 = 96.00",
+       "sign": false,
+       "unit": "lakh"
+      }
+     }
+    },
+    {
+     "id": "r4",
+     "cells": {
+      "line": "Stores and spares",
+      "k": 22.0,
+      "you": {
+       "input": true,
+       "answer": 0,
+       "tolerance": 0.05,
+       "working": "Not counted under the sanction: 0.00",
+       "sign": false,
+       "unit": "lakh"
+      }
+     }
+    },
+    {
+     "id": "r5",
+     "cells": {
+      "line": "Less: sundry creditors for goods",
+      "k": -118.0,
+      "you": -118.0
+     }
+    },
+    {
+     "id": "r6",
+     "_class": "total",
+     "cells": {
+      "line": "Paid stock",
+      "k": 194.4,
+      "you": {
+       "input": true,
+       "answer": 158.0,
+       "tolerance": 0.05,
+       "working": "142.00 + 38.00 + 96.00 + 0.00 − 118.00 = 158.00",
+       "sign": false,
+       "unit": "lakh",
+       "follow": "142 + 38 + {r3.you} + {r4.you} − 118",
+       "noFollowIf": "k"
+      }
+     }
+    },
+    {
+     "id": "r7",
+     "cells": {
+      "line": "Drawing power on stock, after the 25% margin",
+      "k": 145.8,
+      "you": {
+       "input": true,
+       "answer": 118.5,
+       "tolerance": 0.05,
+       "working": "158.00 × 75% = 118.50",
+       "sign": false,
+       "unit": "lakh",
+       "follow": "{r6.you} × 0.75",
+       "noFollowIf": "k"
+      }
+     }
+    },
+    {
+     "id": "r8",
+     "cells": {
+      "line": "Book debts that count",
+      "k": 264.0,
+      "you": {
+       "input": true,
+       "answer": 218.0,
+       "tolerance": 0.05,
+       "working": "128.50 + 61.20 + 28.30 = 218.00 (up to 90 days)",
+       "sign": false,
+       "unit": "lakh"
+      }
+     }
+    },
+    {
+     "id": "r9",
+     "cells": {
+      "line": "Drawing power on book debts, after the 40% margin",
+      "k": 158.4,
+      "you": {
+       "input": true,
+       "answer": 130.8,
+       "tolerance": 0.05,
+       "working": "218.00 × 60% = 130.80",
+       "sign": false,
+       "unit": "lakh",
+       "follow": "{r8.you} × 0.6",
+       "noFollowIf": "k"
+      }
+     }
+    },
+    {
+     "id": "r10",
+     "_class": "total",
+     "cells": {
+      "line": "Drawing power (not above the ₹450 lakh limit)",
+      "k": 304.2,
+      "you": {
+       "input": true,
+       "answer": 249.3,
+       "tolerance": 0.05,
+       "working": "118.50 + 130.80 = 249.30, inside the 450.00 limit",
+       "sign": false,
+       "unit": "lakh",
+       "follow": "{r7.you} + {r9.you}",
+       "noFollowIf": "k"
+      }
+     }
+    },
+    {
+     "id": "r11",
+     "cells": {
+      "line": "Balance on 31 March 2027",
+      "k": 292.6,
+      "you": 292.6
+     }
+    },
+    {
+     "id": "r12",
+     "cells": {
+      "line": "Excess over drawing power",
+      "k": "Nil",
+      "you": {
+       "input": true,
+       "answer": 43.3,
+       "tolerance": 0.05,
+       "working": "292.60 − 249.30 = 43.30",
+       "sign": false,
+       "unit": "lakh",
+       "follow": "292.6 − {r10.you}",
+       "noFollowIf": "k"
+      }
+     }
+    }
+   ],
+   "notes": {
+    "r3.you": "The sanction values stock at cost or market price, whichever is lower. Annexure 1 prices finished goods at selling price; Kuruli’s own stock summary has them at cost: ₹96.00 lakh.",
+    "r4.you": "Stores and spares are on the sanction’s not-counted list. Nil, whatever the statement says.",
+    "r6.you": "₹194.40 lakh is Kuruli’s own figure: finished goods at selling price, stores and spares included. With finished goods at cost and no stores, paid stock is ₹158.00 lakh.",
+    "r7.you": "₹145.80 lakh is Kuruli’s own figure: 75% of its ₹194.40 lakh. On the ₹158.00 lakh of paid stock, the drawing power on stock is ₹118.50 lakh.",
+    "r8.you": "Only debts up to 90 days count: ₹31.40 lakh at 91–180 days and ₹14.60 lakh over 180 come out, which leaves ₹218.00 lakh.",
+    "r9.you": "₹158.40 lakh is Kuruli’s own figure: 60% of all ₹264.00 lakh of debts, old ones included. On the ₹218.00 lakh that count, the drawing power on debts is ₹130.80 lakh.",
+    "r10.you": "₹249.30 lakh against the branch’s ₹304.20 lakh. Well inside the limit, so the limit does not bite.",
+    "r12.you": "The balance of ₹292.60 lakh sits ₹43.30 lakh over the right drawing power. On the branch’s figure nobody saw it."
+   },
+   "docs": [
+    "k-sanction",
+    "k-stock",
+    "k-fg",
+    "k-debts",
+    "k-books",
+    "k-cbs",
+    "dp-register"
+   ]
+  },
+  {
+   "id": "t2",
+   "type": "items",
+   "stage": "Review",
+   "title": "Classify the accounts on the advances list",
+   "prompt": "Classify each account as at 31 March 2027 from its papers, the advances list and the drawing power register; Subhajit’s checklist is under Other papers. Call it Standard, SMA or NPA, then pick the tag or class, the test that decides it and, where asked, the days to 31 March. Your calls go to Subhajit when you move on.",
+   "weight": 1,
+   "noun": [
+    "account",
+    "accounts"
+   ],
+   "lockOnLeave": {
+    "ask": "Hand your classifications to Subhajit?",
+    "note": "You can’t change them after this.",
+    "yes": "Hand them in",
+    "done": "Handed to Subhajit. You can read your calls but not change them."
+   },
+   "hints": [
+    "Classify from the account’s own papers, not the system’s class. A term loan counts from its oldest instalment not fully paid; a cash credit goes through every check in Subhajit’s checklist: the excess, the credits, the interest, the stock statement’s date and the renewal.",
+    "A part payment does not clear an instalment; a late payment in full does. A busy cash credit can still fail: see which statement its drawing power rests on, and set the credits against the interest debited."
+   ],
+   "columns": [
+    {
+     "key": "label"
+    },
+    {
+     "key": "amount",
+     "format": "inr"
+    }
+   ],
+   "fields": [
+    {
+     "id": "cls",
+     "kind": "choice",
+     "label": "Classification at 31 March",
+     "gate": true,
+     "options": [
+      {
+       "id": "std",
+       "label": "Standard"
+      },
+      {
+       "id": "sma",
+       "label": "SMA"
+      },
+      {
+       "id": "npa",
+       "label": "NPA"
+      }
+     ]
+    },
+    {
+     "id": "sma",
+     "kind": "choice",
+     "label": "Which SMA",
+     "short": "SMA",
+     "showIf": {
+      "cls": "sma"
+     },
+     "options": [
+      {
+       "id": "sma0",
+       "label": "SMA-0"
+      },
+      {
+       "id": "sma1",
+       "label": "SMA-1"
+      },
+      {
+       "id": "sma2",
+       "label": "SMA-2"
+      }
+     ]
+    },
+    {
+     "id": "cat",
+     "kind": "choice",
+     "label": "Which NPA class",
+     "short": "NPA class",
+     "showIf": {
+      "cls": "npa"
+     },
+     "options": [
+      {
+       "id": "sub",
+       "label": "Sub-standard"
+      },
+      {
+       "id": "dbt",
+       "label": "Doubtful"
+      }
+     ]
+    },
+    {
+     "id": "test",
+     "kind": "choice",
+     "label": "What decides it",
+     "short": "Test",
+     "layout": "list",
+     "weight": 2,
+     "showIf": {
+      "cls": [
+       "sma",
+       "npa"
+      ]
+     },
+     "options": [
+      {
+       "id": "emi",
+       "label": "Oldest instalment not fully paid (term loan)",
+       "short": "overdue instalment"
+      },
+      {
+       "id": "excess",
+       "label": "Balance above the drawing power or limit",
+       "short": "over drawing power"
+      },
+      {
+       "id": "nocredit",
+       "label": "No credit into the account",
+       "short": "no credits"
+      },
+      {
+       "id": "short",
+       "label": "Some credits, but short of the interest debited",
+       "short": "credits short of interest"
+      },
+      {
+       "id": "stale",
+       "label": "Drawing power on a stock statement over three months old",
+       "short": "stale stock statement"
+      }
+     ]
+    },
+    {
+     "id": "days",
+     "kind": "number",
+     "label": "Days to 31 March",
+     "unit": "days",
+     "integer": true,
+     "sign": false,
+     "tolerance": 1,
+     "placeholder": "For example: 26",
+     "showIf": {
+      "test": [
+       "emi",
+       "excess",
+       "nocredit"
+      ]
+     },
+     "invalidNote": "Type the number of days only, like 26"
+    },
+    {
+     "id": "note",
+     "kind": "text",
+     "label": "Your note for the file",
+     "placeholder": "For example: EMI of 10 Feb unpaid; nothing since"
+    }
+   ],
+   "items": [
+    {
+     "id": "b02",
+     "label": "Medankar Polymers · cash credit",
+     "short": "Medankar",
+     "fac": "Cash credit",
+     "amount": 24736000,
+     "docs": [
+      "s-b02"
+     ],
+     "docRow": {
+      "adv-list": "b02"
+     },
+     "answer": {
+      "cls": "sma",
+      "sma": "sma1",
+      "test": "excess",
+      "days": 49
+     },
+     "note": "Medankar: the January statement cut drawing power to ₹2,31,00,000 from 10 February, and the balance has sat above it every day since. 49 days at 31 March: SMA-1. Not NPA unless it runs to 90. The system has it right."
+    },
+    {
+     "id": "b03",
+     "label": "Rasal Roadways · vehicle loan",
+     "short": "Rasal",
+     "fac": "Term loan",
+     "amount": 7840000,
+     "docs": [
+      "l-b03"
+     ],
+     "docRow": {
+      "adv-list": "b03"
+     },
+     "answer": {
+      "cls": "npa",
+      "cat": "sub",
+      "test": "emi",
+      "days": 116
+     },
+     "note": "Rasal: December’s EMI is still ₹45,000 short; both part payments were applied to it. Overdue from 5 December: 116 days, NPA from 5 March. The system skipped the part-paid EMI and counted from January. Only paying all the arrears brings it back to standard.",
+     "weight": 2
+    },
+    {
+     "id": "b04",
+     "label": "Kadus Dairy Products · term loan",
+     "short": "Kadus",
+     "fac": "Term loan",
+     "amount": 21200000,
+     "docs": [
+      "l-b04"
+     ],
+     "docRow": {
+      "adv-list": "b04"
+     },
+     "answer": {
+      "cls": "std"
+     },
+     "note": "Kadus: every EMI recovered on the 10th, March included. Nothing overdue. Standard."
+    },
+    {
+     "id": "b05",
+     "label": "Pathare Fabricators · cash credit",
+     "short": "Pathare",
+     "fac": "Cash credit",
+     "amount": 7130000,
+     "docs": [
+      "s-b05"
+     ],
+     "docRow": {
+      "adv-list": "b05"
+     },
+     "answer": {
+      "cls": "npa",
+      "cat": "sub",
+      "test": "nocredit",
+      "days": 109
+     },
+     "note": "Pathare: inside its limit and drawing power, but the last credit was on 12 December. 109 days with nothing in is the no-credit test: out of order, NPA from 12 March. A quiet account is not a healthy one. The system missed it.",
+     "weight": 2
+    },
+    {
+     "id": "b06",
+     "label": "Hotel Nanekarwadi Grand · term loan",
+     "short": "Nanekarwadi",
+     "fac": "Term loan",
+     "amount": 11800000,
+     "docs": [
+      "l-b06"
+     ],
+     "docRow": {
+      "adv-list": "b06"
+     },
+     "answer": {
+      "cls": "sma",
+      "sma": "sma2",
+      "test": "emi",
+      "days": 76
+     },
+     "note": "Nanekarwadi: the 8 March payment cleared December’s EMI, late. The oldest one not fully paid is 14 January: 76 days, SMA-2. It turns NPA on 14 April unless January’s EMI is paid in full. The system has it right."
+    },
+    {
+     "id": "b07",
+     "label": "Ganesh Kalbhor · housing loan",
+     "short": "Kalbhor",
+     "fac": "Housing loan",
+     "amount": 3680000,
+     "docs": [
+      "l-b07"
+     ],
+     "docRow": {
+      "adv-list": "b07"
+     },
+     "answer": {
+      "cls": "std"
+     },
+     "note": "Kalbhor: every EMI recovered on the 5th. Nothing overdue. Standard."
+    },
+    {
+     "id": "b08",
+     "label": "Bhamchandra Hardware · cash credit",
+     "short": "Bhamchandra",
+     "fac": "Cash credit",
+     "amount": 13870000,
+     "docs": [
+      "s-b08"
+     ],
+     "docRow": {
+      "adv-list": "b08"
+     },
+     "answer": {
+      "cls": "npa",
+      "cat": "sub",
+      "test": "stale"
+     },
+     "note": "Bhamchandra: a busy account, but its drawing power still rests on the statement as on 31 August. That statement was over three months old from 1 December, so every drawing since is irregular: 120 days at 31 March, NPA from 1 March.",
+     "weight": 2
+    },
+    {
+     "id": "b09",
+     "label": "Bankar Diagnostics · equipment loan",
+     "short": "Bankar",
+     "fac": "Term loan",
+     "amount": 4160000,
+     "docs": [
+      "l-b09"
+     ],
+     "docRow": {
+      "adv-list": "b09"
+     },
+     "answer": {
+      "cls": "npa",
+      "cat": "dbt",
+      "test": "emi",
+      "days": 637
+     },
+     "note": "Bankar: overdue since 2 July 2025, 637 days, and NPA since 30 September 2025. Its twelve months as sub-standard ended on 30 September 2026, so it is doubtful now. The system still says sub-standard; August’s ₹60,000 changed nothing.",
+     "weight": 2
+    },
+    {
+     "id": "b10",
+     "label": "Ambethan Engineering · cash credit",
+     "short": "Ambethan",
+     "fac": "Cash credit",
+     "amount": 10420000,
+     "docs": [
+      "s-b10"
+     ],
+     "docRow": {
+      "adv-list": "b10"
+     },
+     "answer": {
+      "cls": "npa",
+      "cat": "sub",
+      "test": "short"
+     },
+     "note": "Ambethan: inside its limit, but from 1 January to 31 March only ₹1,12,000 came in against ₹2,58,000 of interest debited. Credits short of interest: out of order, NPA at 31 March. The system looked only at the limit.",
+     "weight": 2
+    },
+    {
+     "id": "b11",
+     "label": "Kuruli Precision Pressings · cash credit",
+     "short": "Kuruli",
+     "fac": "Cash credit",
+     "amount": 29260000,
+     "docs": [
+      "k-cbs"
+     ],
+     "docRow": {
+      "adv-list": "b11"
+     },
+     "answer": {
+      "cls": "std"
+     },
+     "note": "Kuruli: on the right drawing power of ₹2,49,30,000 the balance has been over since 9 March, 22 days at 31 March. Irregular, but a cash credit has no SMA-0 and SMA-1 needs over 30 days. Standard, excess reported.",
+     "recall": {
+      "task": "t1",
+      "cell": "r10.you",
+      "label": "Your drawing power from task 1",
+      "prefix": "₹",
+      "unit": "lakh"
+     },
+     "prompt": "Read the March statement against it, from 9 March."
+    }
+   ],
+   "docs": [
+    "checklist",
+    "adv-list",
+    "dp-register",
+    "s-b02",
+    "l-b03",
+    "l-b04",
+    "s-b05",
+    "l-b06",
+    "l-b07",
+    "s-b08",
+    "l-b09",
+    "s-b10",
+    "k-cbs"
+   ]
+  },
+  {
+   "id": "t3",
+   "type": "compose",
+   "stage": "Report",
+   "title": "Write the note on drawing power",
+   "prompt": "Subhajit takes Kuruli to Dinesh at 4 and wants your note for the file: what you found, why, what it means and what the branch should do. Pick the right line for each part.",
+   "weight": 1.5,
+   "noun": [
+    "line",
+    "lines"
+   ],
+   "previewLabel": "Your note for Subhajit",
+   "hints": [
+    "Say what the account is today and when it would turn, and keep the branch’s fix to what the sanction already allows."
+   ],
+   "slots": [
+    {
+     "id": "found",
+     "label": "What we found",
+     "options": [
+      {
+       "id": "a",
+       "text": "Kuruli’s drawing power from the February statement is ₹2,49,30,000 on the sanction’s terms, not the ₹3,04,20,000 the branch set on 9 March. The 31 March balance of ₹2,92,60,000 is ₹43,30,000 over it.",
+       "correct": true,
+       "why": "The right figure, the date it applies from and the excess. Dinesh will ask for each."
+      },
+      {
+       "id": "b",
+       "text": "Kuruli’s drawing power from the February statement is ₹2,49,30,000 on the sanction’s terms, not the ₹3,04,20,000 the branch set on 9 March. The account is therefore out of order, and NPA at 31 March.",
+       "why": "Out of order needs 90 days of excess without a break. Kuruli has been over the right figure since 9 March: 22 days."
+      },
+      {
+       "id": "c",
+       "text": "Kuruli’s drawing power from the February statement is ₹3,04,20,000, as the branch set it on 9 March. The 31 March balance of ₹2,92,60,000 is inside it, so there is no excess to report.",
+       "why": "That is Kuruli’s own working, which the branch took as it was. On the sanction’s terms the figure is ₹2,49,30,000."
+      }
+     ]
+    },
+    {
+     "id": "cause",
+     "label": "Why",
+     "options": [
+      {
+       "id": "a",
+       "text": "The branch took Kuruli’s working as it was: the statement deducts nothing for sundry creditors for goods, so paid stock is overstated by the full ₹118 lakh that Kuruli still owes its suppliers.",
+       "why": "The statement does take off the ₹118 lakh of creditors. The gap comes from valuation, stores and old debts."
+      },
+      {
+       "id": "b",
+       "text": "The branch took Kuruli’s working as it was: finished goods at selling price, ₹110.40 lakh against ₹96.00 lakh at cost; ₹22.00 lakh of stores and spares; and ₹46.00 lakh of debts over 90 days.",
+       "correct": true,
+       "why": "Each of the three breaks a term the sanction spells out, so the branch can’t argue with any of them."
+      },
+      {
+       "id": "c",
+       "text": "The branch took Kuruli’s working as it was: the February statement reached the branch too late to be relied on, so drawing power should have stayed on January’s figures until the next one.",
+       "why": "It came on 9 March, before the 10th, and a statement as on 28 February is current at 31 March. Its age is not the problem."
+      }
+     ]
+    },
+    {
+     "id": "effect",
+     "label": "What it means",
+     "options": [
+      {
+       "id": "a",
+       "text": "The register overstates drawing power by ₹54,90,000. The account turned SMA-0 on 9 March, the day the excess began, and should be reported as SMA-0 at 31 March.",
+       "why": "A cash credit has no SMA-0. Its first tag, SMA-1, comes only after 30 days of excess without a break."
+      },
+      {
+       "id": "b",
+       "text": "The register overstates drawing power by ₹54,90,000, but a director has certified the statement, so the branch may keep ₹3,04,20,000 until the next statement comes in.",
+       "why": "A certificate does not change the sanction’s terms. The branch resets drawing power as soon as it knows the figure is wrong."
+      },
+      {
+       "id": "c",
+       "text": "The register overstates drawing power by ₹54,90,000. At 31 March the account is irregular, not NPA: 22 days over. After 30 days it would be SMA-1; after 90, NPA.",
+       "correct": true,
+       "why": "Today’s position and the day it turns. The branch needs to know how long it has."
+      }
+     ]
+    },
+    {
+     "id": "action",
+     "label": "What the branch should do",
+     "options": [
+      {
+       "id": "a",
+       "text": "Reset Kuruli’s drawing power to ₹2,49,30,000 from 9 March in the register, ask Kuruli to bring the balance within it and check the March stock statement on the same points.",
+       "correct": true,
+       "why": "Fix the register and get the excess down. Next month’s statement is where it would creep back."
+      },
+      {
+       "id": "b",
+       "text": "Reset Kuruli’s drawing power once Kuruli sends a fresh February statement with stock high enough to cover the balance, so that the account shows no excess at all at 31 March.",
+       "why": "That asks Kuruli to make the figures fit. Drawing power follows the stock, never the balance."
+      },
+      {
+       "id": "c",
+       "text": "Reset Kuruli’s drawing power to nil and recall the whole limit at once, since a borrower that has overstated its stock to the bank cannot be given any more credit.",
+       "why": "Too far. ₹43.30 lakh over on a ₹4.50 crore limit, 22 days old: the branch resets and follows up. A recall is the bank’s credit call, not ours."
+      }
+     ]
+    }
+   ],
+   "template": "Kuruli Precision Pressings · cash credit 038861002019\n\n{found}\n\n{cause}\n\n{effect}\n\n{action}",
+   "docs": [
+    "k-sanction",
+    "k-stock",
+    "k-cbs",
+    "dp-register"
+   ]
+  }
+ ],
+ "wrap": {
+  "from": "subhajit",
+  "text": "The system had five of the ten wrong, and all five are NPAs: four it shows as standard or SMA, and Bankar, which went doubtful in September. With Kuruli’s ₹43.30 lakh excess, that is my list for Dinesh. He will want every date; each is in my notes below."
+ },
+ "wrapPartial": {
+  "from": "subhajit",
+  "text": "Five of the ten are NPAs, and the system had every one of them wrong. I sit with Dinesh at 4; he will question every figure and date, so check yours first."
+ },
+ "wrapRetry": {
+  "from": "subhajit",
+  "text": "Each account’s papers decide its class: for a term loan, the oldest instalment not fully paid; for a cash credit, the balance against drawing power, the last credit, the interest and the stock statement’s date. Count to 31 March against my checklist. Check Kuruli line by line against the sanction."
+ },
+ "passNeeds": [
+  {
+   "task": "t2",
+   "min": 0.7,
+   "note": "You need more of the ten accounts right to pass."
+  }
+ ],
+ "model": {
+  "intro": "On the sanction’s terms Kuruli’s drawing power is ₹249.30 lakh, not ₹304.20 lakh, so its 31 March balance is ₹43.30 lakh over. Of the ten accounts, five are NPAs: four the system showed as standard or SMA, and one it kept as sub-standard after it had turned doubtful. It had the other five right.",
+  "blocks": [
+   {
+    "type": "table",
+    "columns": [
+     {
+      "key": "a",
+      "label": "The ten accounts"
+     },
+     {
+      "key": "s",
+      "label": "System said"
+     },
+     {
+      "key": "r",
+      "label": "Right class"
+     },
+     {
+      "key": "w",
+      "label": "What decides it"
+     }
+    ],
+    "rows": [
+     {
+      "a": "Medankar",
+      "s": "SMA-1",
+      "r": "Standard, SMA-1",
+      "w": "49 days over drawing power, since 10 February"
+     },
+     {
+      "a": "Rasal",
+      "s": "SMA-2",
+      "r": "NPA, sub-standard",
+      "w": "December’s EMI ₹45,000 short: 116 days"
+     },
+     {
+      "a": "Kadus",
+      "s": "Standard",
+      "r": "Standard",
+      "w": "Nothing overdue"
+     },
+     {
+      "a": "Pathare",
+      "s": "Standard",
+      "r": "NPA, sub-standard",
+      "w": "No credit since 12 December: 109 days"
+     },
+     {
+      "a": "Nanekarwadi",
+      "s": "SMA-2",
+      "r": "Standard, SMA-2",
+      "w": "Oldest EMI not fully paid: 14 January, 76 days"
+     },
+     {
+      "a": "Kalbhor",
+      "s": "Standard",
+      "r": "Standard",
+      "w": "Nothing overdue"
+     },
+     {
+      "a": "Bhamchandra",
+      "s": "Standard",
+      "r": "NPA, sub-standard",
+      "w": "Drawing power on the statement as on 31 August; NPA from 1 March"
+     },
+     {
+      "a": "Bankar",
+      "s": "Sub-standard",
+      "r": "NPA, doubtful",
+      "w": "NPA since 30 September 2025: over twelve months"
+     },
+     {
+      "a": "Ambethan",
+      "s": "Standard",
+      "r": "NPA, sub-standard",
+      "w": "Credits ₹1,12,000 against interest ₹2,58,000"
+     },
+     {
+      "a": "Kuruli",
+      "s": "Standard",
+      "r": "Standard",
+      "w": "22 days over the right drawing power; SMA-1 needs over 30"
+     }
+    ]
+   },
+   {
+    "type": "note",
+    "from": "subhajit",
+    "text": "All five go into the memorandum of changes for Dinesh, each with the date it took effect. He will push back on Bhamchandra, because the account looks busy, and on Pathare, because it is inside its limit. Both are NPA all the same."
+   }
+  ]
+ },
+ "principles": [
+  "Drawing power is what the sanction allows on the stock statement, checked against the books, not the borrower’s own working.",
+  "Count overdue days from the oldest instalment not fully paid, and test every cash credit for excess, credits and a stale statement, whatever the system shows.",
+  "A short excess over drawing power is irregular, not NPA. It makes the account NPA only after 90 days without a break."
+ ],
+ "earned": {
+  "clause": "[[recomputed drawing power from a stock statement, finding a ₹{excess} lakh excess drawing; ]]classified {accounts} loan accounts by days overdue under RBI norms[[, flagging {npa} {npa|NPA|NPAs} the system had wrong]]",
+  "counts": {
+   "excess": {
+    "kind": "cell",
+    "task": "t1",
+    "row": "r12",
+    "col": "you",
+    "format": "num1"
+   },
+   "accounts": {
+    "kind": "items",
+    "task": "t2",
+    "answered": "gate"
+   },
+   "npa": {
+    "kind": "itemsWhere",
+    "task": "t2",
+    "field": "cls",
+    "equals": "npa",
+    "withRight": [
+     "cat",
+     "test"
+    ]
+   }
+  },
+  "fallback": "classified {accounts} loan accounts by days overdue under RBI norms"
+ },
+ "interview": [
+  {
+   "q": "What is drawing power, and how did you work it out?",
+   "checking": "Whether you can apply a sanction’s terms to a stock statement, line by line.",
+   "outline": [
+    "What a cash-credit borrower may draw: paid stock and eligible debts, less margins, up to the limit.",
+    "In the simulation the sanction took finished goods at cost, the lower figure; no stores or old debts.",
+    "The right drawing power was ₹249.3 lakh, not ₹304.2 lakh: the balance was ₹43.3 lakh over it."
+   ]
+  },
+  {
+   "q": "When does a cash-credit account become an NPA?",
+   "checking": "Whether you know the out-of-order tests, not just “90 days overdue”.",
+   "outline": [
+    "Out of order: 90 days over the lower of limit and DP, or 90 days with no credit.",
+    "Or credits short of the interest. Separately, 90 days of drawings on a statement over three months old.",
+    "In the simulation the system showed three such cash credits as standard; each had failed one of them."
+   ]
+  }
+ ]
+}

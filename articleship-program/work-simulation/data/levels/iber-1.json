@@ -1,0 +1,2897 @@
+{
+ "id": "iber-1",
+ "domain": "ib-er",
+ "number": 1,
+ "title": "Analyst desk",
+ "minutes": 40,
+ "learn": [
+  "How a buyer’s tests turn a long list into a shortlist",
+  "What a one-page company profile carries, and where each figure comes from",
+  "Market cap, EV and the peer median: pricing a listed company"
+ ],
+ "do": [
+  "Screen eight acquisition targets on six tests",
+  "Roll a listed company’s one-pager forward and check the peer table",
+  "Draft the cover mail to the client"
+ ],
+ "case": {
+  "role": "First-year article assistant, borrowed by the deals desk in your first week",
+  "client": "Agnika Appliances Limited, a listed Coimbatore maker of kitchen appliances and cookware, which wants to buy a cookware company",
+  "team": "Ishaan Sethi (Manager, Deals and Valuation); Varun Shetty (second-year article, your buddy); Shalini Bhargava (Head of Corporate Development, Agnika)",
+  "goal": "Run the board’s six tests on the eight private companies on the long list, roll Agnika’s one-page profile forward and price Agnika against its listed peers, for the board meeting on 22 October.",
+  "period": "Accounts to 31 March 2026; prices at 30 September 2026",
+  "where": "Deals desk, Prabhat Road office · Thursday 8 October 2026"
+ },
+ "brief": {
+  "from": "ishaan",
+  "time": "9:50 am",
+  "messages": [
+   "Agnika’s board wants to buy a cookware company. Shalini’s mail has the board’s six tests: run them on the eight in our long list and note every test each one fails.",
+   "Then roll Agnika’s one-pager forward and check Varun’s peer table. It all goes into Shalini’s board pack on Monday, so to me by 4 pm tomorrow."
+  ]
+ },
+ "documents": [
+  {
+   "id": "mandate",
+   "type": "letter",
+   "style": "email",
+   "tab": "Six tests",
+   "title": "Shalini’s mail · the board’s six tests",
+   "from": {
+    "name": "Shalini Bhargava",
+    "email": "shalini.bhargava@email.com"
+   },
+   "to": [
+    {
+     "name": "Ishaan Sethi",
+     "email": "ishaan.sethi@email.com"
+    }
+   ],
+   "date": "Tue, 6 Oct 2026, 7:18 pm",
+   "subject": "Cookware search: the board’s six tests",
+   "body": [
+    "Ishaan,",
+    "The board wants a first view of the cookware search at its meeting on 22 October. Please run the eight names on your long list against the six tests the board set in August. Nothing else should keep a company in or out.",
+    "1. Cookware is at least 70% of revenue. By cookware we mean pressure cookers, non-stick and tri-ply, the lines we sell.",
+    "2. Revenue for 2025–26 between ₹100 crore and ₹300 crore.",
+    "3. EBITDA margin of 10% or more in 2025–26.",
+    "4. Net debt (borrowings less cash and bank balances) at 31 March 2026 no more than 2.0 times 2025–26 EBITDA.",
+    "5. Its own plant in west or north India, which for us means Gujarat, Maharashtra, Goa, Rajasthan, Madhya Pradesh, Punjab, Haryana, Delhi, Himachal Pradesh, Uttarakhand or Uttar Pradesh.",
+    "6. A promoter open to selling a majority stake.",
+    "The board would also like one page on Agnika as the market sees it today, with our price set against the five listed peers. Some directors feel the market has marked us down since cookware’s margin fell last year.",
+    "Regards,"
+   ],
+   "sign": {
+    "name": "Shalini Bhargava",
+    "role": "Head of Corporate Development",
+    "for": "Agnika Appliances Limited"
+   }
+  },
+  {
+   "id": "soundings",
+   "type": "table",
+   "style": "plain",
+   "tab": "Call notes",
+   "kindLabel": "Ishaan’s notes",
+   "title": "Ishaan’s call notes · the promoters",
+   "heading": "Long list · what each promoter said",
+   "subtitle": "Calls by Ishaan Sethi, 1–7 October 2026",
+   "columns": [
+    {
+     "key": "co",
+     "label": "Company"
+    },
+    {
+     "key": "said",
+     "label": "Who said what",
+     "wrap": true
+    }
+   ],
+   "rows": [
+    {
+     "_id": "savli",
+     "co": "Savli",
+     "said": "Hitesh Vasani, promoter and MD: wants a partner with a national brand. Will sell a majority if he runs the business for three years after the deal."
+    },
+    {
+     "_id": "bhimtal",
+     "co": "Bhimtal",
+     "said": "The two promoter brothers: would sell 51% or more at the right price. Both want to stay on for a year to hand over."
+    },
+    {
+     "_id": "kanjur",
+     "co": "Kanjur",
+     "said": "Second-generation promoter: wants growth money for a second line at Wada. Will sell up to 26%; the family keeps control."
+    },
+    {
+     "_id": "ponmudi",
+     "co": "Ponmudi",
+     "said": "Founder, aged 68: no successor in the business. Would sell the whole company."
+    },
+    {
+     "_id": "chinhat",
+     "co": "Chinhat",
+     "said": "Promoter and MD: open to selling a majority, if the buyer takes over the bank loans."
+    },
+    {
+     "_id": "chilika",
+     "co": "Chilika",
+     "said": "Promoter couple: would sell 60–75% and stay on to run the plant."
+    },
+    {
+     "_id": "uchila",
+     "co": "Uchila",
+     "said": "Promoter family, through its banker: not selling. The family plans to grow the grinders business itself."
+    },
+    {
+     "_id": "wadhwan",
+     "co": "Wadhwan",
+     "said": "Promoter: would sell 100%. His sons are not in the business."
+    }
+   ],
+   "notes": [
+    "For the deals desk and Shalini only. No promoter has been told who the buyer is."
+   ]
+  },
+  {
+   "id": "p-savli",
+   "type": "table",
+   "style": "portal",
+   "group": "savli",
+   "packGroup": "Company profiles",
+   "tab": "Profile",
+   "kindLabel": "Database print",
+   "title": "Savli · Company profile",
+   "brand": "Company database · firm licence",
+   "heading": "Savli Cookware Private Limited",
+   "subtitle": "CIN U25920GJ2008PTC942143 · from the financial statements for 2025–26 filed with the Registrar in September 2026 · ₹ crore",
+   "meta": [
+    {
+     "label": "Registered office",
+     "value": "Plot 41, GIDC Savli, Vadodara 391770, Gujarat"
+    },
+    {
+     "label": "Plant",
+     "value": "Plot 41, GIDC Savli, Vadodara, Gujarat"
+    },
+    {
+     "label": "Business",
+     "value": "Pressure cookers, non-stick and tri-ply cookware; 40% under its own brand, 60% private label"
+    },
+    {
+     "label": "Earlier revenue",
+     "value": "₹141.2 crore in 2023–24 · ₹163.8 crore in 2024–25"
+    }
+   ],
+   "columns": [
+    {
+     "key": "item",
+     "label": "2025–26"
+    },
+    {
+     "key": "amt",
+     "label": "₹ crore",
+     "format": "num1",
+     "align": "right"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "l0",
+     "item": "Pressure cookers",
+     "amt": 96.9,
+     "_indent": 1
+    },
+    {
+     "_id": "l1",
+     "item": "Non-stick cookware",
+     "amt": 48.5,
+     "_indent": 1
+    },
+    {
+     "_id": "l2",
+     "item": "Tri-ply cookware",
+     "amt": 26.1,
+     "_indent": 1
+    },
+    {
+     "_id": "l3",
+     "item": "Cooker spares and kitchen tools",
+     "amt": 14.9,
+     "_indent": 1
+    },
+    {
+     "_id": "rev",
+     "item": "Revenue from operations",
+     "amt": 186.4,
+     "_class": "total"
+    },
+    {
+     "_id": "ebitda",
+     "item": "EBITDA",
+     "amt": 21.6
+    },
+    {
+     "_id": "borr",
+     "item": "Borrowings, long-term and short-term, at 31 March 2026",
+     "amt": 28.4
+    },
+    {
+     "_id": "cash",
+     "item": "Cash and bank balances at 31 March 2026",
+     "amt": 1.7
+    }
+   ],
+   "notes": [
+    "EBITDA is revenue from operations less operating expenses; other income is left out.",
+    "Product lines as the company reports them in its revenue note."
+   ]
+  },
+  {
+   "id": "p-bhimtal",
+   "type": "table",
+   "style": "portal",
+   "group": "bhimtal",
+   "packGroup": "Company profiles",
+   "tab": "Profile",
+   "kindLabel": "Database print",
+   "title": "Bhimtal · Company profile",
+   "brand": "Company database · firm licence",
+   "heading": "Bhimtal Kitchenware Private Limited",
+   "subtitle": "CIN U25920UR2004PTC944655 · from the financial statements for 2025–26 filed with the Registrar in September 2026 · ₹ crore",
+   "meta": [
+    {
+     "label": "Registered office",
+     "value": "Industrial Area, Bareilly Road, Haldwani, Uttarakhand"
+    },
+    {
+     "label": "Plant",
+     "value": "Bareilly Road, Haldwani, Uttarakhand"
+    },
+    {
+     "label": "Business",
+     "value": "Aluminium pressure cookers and non-stick cookware, sold in north India"
+    },
+    {
+     "label": "Earlier revenue",
+     "value": "₹113.4 crore in 2023–24 · ₹127.2 crore in 2024–25"
+    }
+   ],
+   "columns": [
+    {
+     "key": "item",
+     "label": "2025–26"
+    },
+    {
+     "key": "amt",
+     "label": "₹ crore",
+     "format": "num1",
+     "align": "right"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "l0",
+     "item": "Pressure cookers",
+     "amt": 92.8,
+     "_indent": 1
+    },
+    {
+     "_id": "l1",
+     "item": "Non-stick cookware",
+     "amt": 32.9,
+     "_indent": 1
+    },
+    {
+     "_id": "l2",
+     "item": "Aluminium tiffins and storage",
+     "amt": 17.1,
+     "_indent": 1
+    },
+    {
+     "_id": "rev",
+     "item": "Revenue from operations",
+     "amt": 142.8,
+     "_class": "total"
+    },
+    {
+     "_id": "ebitda",
+     "item": "EBITDA",
+     "amt": 12.0
+    },
+    {
+     "_id": "borr",
+     "item": "Borrowings, long-term and short-term, at 31 March 2026",
+     "amt": 31.2
+    },
+    {
+     "_id": "cash",
+     "item": "Cash and bank balances at 31 March 2026",
+     "amt": 14.4
+    }
+   ],
+   "notes": [
+    "EBITDA is revenue from operations less operating expenses; other income is left out.",
+    "Product lines as the company reports them in its revenue note."
+   ]
+  },
+  {
+   "id": "p-kanjur",
+   "type": "table",
+   "style": "portal",
+   "group": "kanjur",
+   "packGroup": "Company profiles",
+   "tab": "Profile",
+   "kindLabel": "Database print",
+   "title": "Kanjur · Company profile",
+   "brand": "Company database · firm licence",
+   "heading": "Kanjur Steelcraft Private Limited",
+   "subtitle": "CIN U25920MH2011PTC990748 · from the financial statements for 2025–26 filed with the Registrar in September 2026 · ₹ crore",
+   "meta": [
+    {
+     "label": "Registered office",
+     "value": "Unit 7, Kanjurmarg (East), Mumbai, Maharashtra"
+    },
+    {
+     "label": "Plant",
+     "value": "Wada, Palghar district, Maharashtra"
+    },
+    {
+     "label": "Business",
+     "value": "Stainless-steel tri-ply cookware under its own brand, largely online"
+    },
+    {
+     "label": "Earlier revenue",
+     "value": "₹66.9 crore in 2023–24 · ₹81.2 crore in 2024–25"
+    }
+   ],
+   "columns": [
+    {
+     "key": "item",
+     "label": "2025–26"
+    },
+    {
+     "key": "amt",
+     "label": "₹ crore",
+     "format": "num1",
+     "align": "right"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "l0",
+     "item": "Tri-ply cookware",
+     "amt": 93.7,
+     "_indent": 1
+    },
+    {
+     "_id": "l1",
+     "item": "Steel serveware",
+     "amt": 4.9,
+     "_indent": 1
+    },
+    {
+     "_id": "rev",
+     "item": "Revenue from operations",
+     "amt": 98.6,
+     "_class": "total"
+    },
+    {
+     "_id": "ebitda",
+     "item": "EBITDA",
+     "amt": 12.6
+    },
+    {
+     "_id": "borr",
+     "item": "Borrowings, long-term and short-term, at 31 March 2026",
+     "amt": 10.2
+    },
+    {
+     "_id": "cash",
+     "item": "Cash and bank balances at 31 March 2026",
+     "amt": 2.6
+    }
+   ],
+   "notes": [
+    "EBITDA is revenue from operations less operating expenses; other income is left out.",
+    "Product lines as the company reports them in its revenue note."
+   ]
+  },
+  {
+   "id": "p-ponmudi",
+   "type": "table",
+   "style": "portal",
+   "group": "ponmudi",
+   "packGroup": "Company profiles",
+   "tab": "Profile",
+   "kindLabel": "Database print",
+   "title": "Ponmudi · Company profile",
+   "brand": "Company database · firm licence",
+   "heading": "Ponmudi Appliances Private Limited",
+   "subtitle": "CIN U27501TN1998PTC987235 · from the financial statements for 2025–26 filed with the Registrar in September 2026 · ₹ crore",
+   "meta": [
+    {
+     "label": "Registered office",
+     "value": "Industrial Estate, Kurichi, Coimbatore, Tamil Nadu"
+    },
+    {
+     "label": "Plant",
+     "value": "Kurichi, Coimbatore, Tamil Nadu"
+    },
+    {
+     "label": "Business",
+     "value": "Mixer-grinders and table-top wet grinders"
+    },
+    {
+     "label": "Earlier revenue",
+     "value": "₹177.5 crore in 2023–24 · ₹194.9 crore in 2024–25"
+    }
+   ],
+   "columns": [
+    {
+     "key": "item",
+     "label": "2025–26"
+    },
+    {
+     "key": "amt",
+     "label": "₹ crore",
+     "format": "num1",
+     "align": "right"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "l0",
+     "item": "Mixer-grinders",
+     "amt": 176.4,
+     "_indent": 1
+    },
+    {
+     "_id": "l1",
+     "item": "Wet grinders",
+     "amt": 37.6,
+     "_indent": 1
+    },
+    {
+     "_id": "rev",
+     "item": "Revenue from operations",
+     "amt": 214.0,
+     "_class": "total"
+    },
+    {
+     "_id": "ebitda",
+     "item": "EBITDA",
+     "amt": 21.8
+    },
+    {
+     "_id": "borr",
+     "item": "Borrowings, long-term and short-term, at 31 March 2026",
+     "amt": 52.0
+    },
+    {
+     "_id": "cash",
+     "item": "Cash and bank balances at 31 March 2026",
+     "amt": 28.0
+    }
+   ],
+   "notes": [
+    "EBITDA is revenue from operations less operating expenses; other income is left out.",
+    "Product lines as the company reports them in its revenue note."
+   ]
+  },
+  {
+   "id": "p-chinhat",
+   "type": "table",
+   "style": "portal",
+   "group": "chinhat",
+   "packGroup": "Company profiles",
+   "tab": "Profile",
+   "kindLabel": "Database print",
+   "title": "Chinhat · Company profile",
+   "brand": "Company database · firm licence",
+   "heading": "Chinhat Home Appliances Private Limited",
+   "subtitle": "CIN U25920UP2007PTC915817 · from the financial statements for 2025–26 filed with the Registrar in September 2026 · ₹ crore",
+   "meta": [
+    {
+     "label": "Registered office",
+     "value": "Chinhat Industrial Area, Lucknow, Uttar Pradesh"
+    },
+    {
+     "label": "Plant",
+     "value": "Chinhat Industrial Area, Lucknow, Uttar Pradesh"
+    },
+    {
+     "label": "Business",
+     "value": "Pressure cookers and gas stoves for dealers in Uttar Pradesh and Bihar"
+    },
+    {
+     "label": "Earlier revenue",
+     "value": "₹96.9 crore in 2023–24 · ₹111.5 crore in 2024–25"
+    }
+   ],
+   "columns": [
+    {
+     "key": "item",
+     "label": "2025–26"
+    },
+    {
+     "key": "amt",
+     "label": "₹ crore",
+     "format": "num1",
+     "align": "right"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "l0",
+     "item": "Pressure cookers",
+     "amt": 95.0,
+     "_indent": 1
+    },
+    {
+     "_id": "l1",
+     "item": "Gas stoves",
+     "amt": 33.4,
+     "_indent": 1
+    },
+    {
+     "_id": "rev",
+     "item": "Revenue from operations",
+     "amt": 128.4,
+     "_class": "total"
+    },
+    {
+     "_id": "ebitda",
+     "item": "EBITDA",
+     "amt": 13.6
+    },
+    {
+     "_id": "borr",
+     "item": "Borrowings, long-term and short-term, at 31 March 2026",
+     "amt": 41.3
+    },
+    {
+     "_id": "cash",
+     "item": "Cash and bank balances at 31 March 2026",
+     "amt": 3.2
+    }
+   ],
+   "notes": [
+    "EBITDA is revenue from operations less operating expenses; other income is left out.",
+    "Product lines as the company reports them in its revenue note."
+   ]
+  },
+  {
+   "id": "p-chilika",
+   "type": "table",
+   "style": "portal",
+   "group": "chilika",
+   "packGroup": "Company profiles",
+   "tab": "Profile",
+   "kindLabel": "Database print",
+   "title": "Chilika · Company profile",
+   "brand": "Company database · firm licence",
+   "heading": "Chilika Homeware Private Limited",
+   "subtitle": "CIN U25920OR2015PTC992094 · from the financial statements for 2025–26 filed with the Registrar in September 2026 · ₹ crore",
+   "meta": [
+    {
+     "label": "Registered office",
+     "value": "Mancheswar Industrial Estate, Bhubaneswar, Odisha"
+    },
+    {
+     "label": "Plant",
+     "value": "Mancheswar Industrial Estate, Bhubaneswar, Odisha"
+    },
+    {
+     "label": "Business",
+     "value": "Non-stick cookware for modern trade and e-commerce"
+    },
+    {
+     "label": "Earlier revenue",
+     "value": "₹72.5 crore in 2023–24 · ₹90.3 crore in 2024–25"
+    }
+   ],
+   "columns": [
+    {
+     "key": "item",
+     "label": "2025–26"
+    },
+    {
+     "key": "amt",
+     "label": "₹ crore",
+     "format": "num1",
+     "align": "right"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "l0",
+     "item": "Non-stick cookware",
+     "amt": 112.6,
+     "_indent": 1
+    },
+    {
+     "_id": "rev",
+     "item": "Revenue from operations",
+     "amt": 112.6,
+     "_class": "total"
+    },
+    {
+     "_id": "ebitda",
+     "item": "EBITDA",
+     "amt": 12.6
+    },
+    {
+     "_id": "borr",
+     "item": "Borrowings, long-term and short-term, at 31 March 2026",
+     "amt": 18.3
+    },
+    {
+     "_id": "cash",
+     "item": "Cash and bank balances at 31 March 2026",
+     "amt": 3.2
+    }
+   ],
+   "notes": [
+    "EBITDA is revenue from operations less operating expenses; other income is left out.",
+    "Product lines as the company reports them in its revenue note."
+   ]
+  },
+  {
+   "id": "p-uchila",
+   "type": "table",
+   "style": "portal",
+   "group": "uchila",
+   "packGroup": "Company profiles",
+   "tab": "Profile",
+   "kindLabel": "Database print",
+   "title": "Uchila · Company profile",
+   "brand": "Company database · firm licence",
+   "heading": "Uchila Appliances Private Limited",
+   "subtitle": "CIN U27501KA2002PTC934061 · from the financial statements for 2025–26 filed with the Registrar in September 2026 · ₹ crore",
+   "meta": [
+    {
+     "label": "Registered office",
+     "value": "Manipal Road, Udupi, Karnataka"
+    },
+    {
+     "label": "Plant",
+     "value": "Manipal Road, Udupi, Karnataka"
+    },
+    {
+     "label": "Business",
+     "value": "Wet grinders, with a smaller pressure-cooker line"
+    },
+    {
+     "label": "Earlier revenue",
+     "value": "₹56.8 crore in 2023–24 · ₹65.9 crore in 2024–25"
+    }
+   ],
+   "columns": [
+    {
+     "key": "item",
+     "label": "2025–26"
+    },
+    {
+     "key": "amt",
+     "label": "₹ crore",
+     "format": "num1",
+     "align": "right"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "l0",
+     "item": "Wet grinders",
+     "amt": 49.7,
+     "_indent": 1
+    },
+    {
+     "_id": "l1",
+     "item": "Pressure cookers",
+     "amt": 26.7,
+     "_indent": 1
+    },
+    {
+     "_id": "rev",
+     "item": "Revenue from operations",
+     "amt": 76.4,
+     "_class": "total"
+    },
+    {
+     "_id": "ebitda",
+     "item": "EBITDA",
+     "amt": 10.2
+    },
+    {
+     "_id": "borr",
+     "item": "Borrowings, long-term and short-term, at 31 March 2026",
+     "amt": 6.5
+    },
+    {
+     "_id": "cash",
+     "item": "Cash and bank balances at 31 March 2026",
+     "amt": 2.4
+    }
+   ],
+   "notes": [
+    "EBITDA is revenue from operations less operating expenses; other income is left out.",
+    "Product lines as the company reports them in its revenue note."
+   ]
+  },
+  {
+   "id": "p-wadhwan",
+   "type": "table",
+   "style": "portal",
+   "group": "wadhwan",
+   "packGroup": "Company profiles",
+   "tab": "Profile",
+   "kindLabel": "Database print",
+   "title": "Wadhwan · Company profile",
+   "brand": "Company database · firm licence",
+   "heading": "Wadhwan Steelware Private Limited",
+   "subtitle": "CIN U25999GJ1994PTC985638 · from the financial statements for 2025–26 filed with the Registrar in September 2026 · ₹ crore",
+   "meta": [
+    {
+     "label": "Registered office",
+     "value": "GIDC Estate, Wadhwan, Surendranagar, Gujarat"
+    },
+    {
+     "label": "Plant",
+     "value": "GIDC Estate, Wadhwan, Surendranagar, Gujarat"
+    },
+    {
+     "label": "Business",
+     "value": "Stainless-steel pressure cookers, tableware and kitchen storage"
+    },
+    {
+     "label": "Earlier revenue",
+     "value": "₹233.9 crore in 2023–24 · ₹248.9 crore in 2024–25"
+    }
+   ],
+   "columns": [
+    {
+     "key": "item",
+     "label": "2025–26"
+    },
+    {
+     "key": "amt",
+     "label": "₹ crore",
+     "format": "num1",
+     "align": "right"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "l0",
+     "item": "Pressure cookers",
+     "amt": 161.5,
+     "_indent": 1
+    },
+    {
+     "_id": "l1",
+     "item": "Steel tableware and storage",
+     "amt": 103.3,
+     "_indent": 1
+    },
+    {
+     "_id": "rev",
+     "item": "Revenue from operations",
+     "amt": 264.8,
+     "_class": "total"
+    },
+    {
+     "_id": "ebitda",
+     "item": "EBITDA",
+     "amt": 20.9
+    },
+    {
+     "_id": "borr",
+     "item": "Borrowings, long-term and short-term, at 31 March 2026",
+     "amt": 37.9
+    },
+    {
+     "_id": "cash",
+     "item": "Cash and bank balances at 31 March 2026",
+     "amt": 4.5
+    }
+   ],
+   "notes": [
+    "EBITDA is revenue from operations less operating expenses; other income is left out.",
+    "Product lines as the company reports them in its revenue note."
+   ]
+  },
+  {
+   "id": "onepager",
+   "type": "letter",
+   "style": "memo",
+   "tab": "One-pager",
+   "kindLabel": "Ishaan’s draft",
+   "title": "Agnika one-pager · draft",
+   "letterhead": "Bapat Venkatesh & Co. · Deals desk",
+   "memoTitle": "One-page profile · draft",
+   "to": [
+    "Agnika board pack"
+   ],
+   "from": "Ishaan Sethi",
+   "date": "7 October 2026",
+   "subject": "Agnika Appliances Limited · listed, symbol AGNIKA · Coimbatore",
+   "body": [
+    "## What it does",
+    "Kitchen appliances (mixer-grinders, wet grinders, induction cooktops), cookware (pressure cookers, non-stick, tri-ply) and home comfort (fans, irons). Sold through 9,000 dealers, modern trade and e-commerce. Plants at Coimbatore, Hosur and Baddi.",
+    "## Shareholding, 30 September 2026",
+    "Promoters 58.4% · mutual funds and insurers 14.2% · foreign portfolio investors 9.6% · public and others 17.8%.",
+    "## Recent developments",
+    "- Hosur induction-cooktop plant commissioned in June 2026, with capacity of 9 lakh units a year.",
+    "- Pressure-cooker prices were cut by about 4% from April 2025 as aluminium eased, and not raised again when aluminium climbed from June 2025; e-commerce discounting continues.",
+    "- In August 2026 the board approved a search for a cookware company, to grow tri-ply and add cookware capacity in the west or north.",
+    "- Net debt rose in 2025–26 to pay for Hosur; management guides to capex of about ₹70 crore in 2026–27.",
+    "## Key numbers",
+    "To fill for 2025–26 from the annual report: EBITDA and its margin, cookware’s segment margin, net debt and net debt ÷ EBITDA. 2023–24 and 2024–25 are on last year’s page.",
+    "## Valuation at ₹368",
+    "To fill: market cap, EV, EV/EBITDA and P/E, against the five listed peers."
+   ],
+   "sign": {
+    "name": "Ishaan Sethi",
+    "role": "Manager, Deals and Valuation",
+    "hand": "Ishaan"
+   }
+  },
+  {
+   "id": "rules",
+   "type": "letter",
+   "style": "memo",
+   "tab": "Desk note",
+   "kindLabel": "Desk note",
+   "title": "Ishaan’s note · how the desk works the figures",
+   "letterhead": "Bapat Venkatesh & Co. · Deals desk",
+   "memoTitle": "Desk note",
+   "to": [
+    "Everyone on the deals desk"
+   ],
+   "from": "Ishaan Sethi",
+   "date": "April 2026",
+   "subject": "One-pagers and peer tables: how we work the figures",
+   "body": [
+    "## The one-pager",
+    "- EBITDA: revenue from operations less materials and traded goods (with the change in inventories), employee benefits and other expenses. Other income stays out.",
+    "- EBITDA margin: EBITDA ÷ revenue from operations.",
+    "- Segment margin: the segment’s result ÷ the segment’s own revenue, both from the segment note.",
+    "- Net debt: borrowings, non-current and current, less cash and cash equivalents and other bank balances. Lease liabilities stay out, for the company and for its peers alike.",
+    "## The peer table",
+    "- Market cap: shares in issue × the closing price, on the same date for every company.",
+    "- Enterprise value (EV): market cap + net debt. Net debt is a minus figure when cash is more than borrowings.",
+    "- EV/EBITDA on the last audited year’s EBITDA. P/E: price ÷ that year’s earnings per share.",
+    "- Read the company against the peer median, the middle peer, never the average.",
+    "- In the peer table, ₹ crore and multiples to one decimal."
+   ],
+   "sign": {
+    "name": "Ishaan Sethi",
+    "role": "Manager, Deals and Valuation",
+    "hand": "Ishaan"
+   }
+  },
+  {
+   "id": "ar-pl",
+   "type": "table",
+   "style": "statement",
+   "tab": "P&L",
+   "kindLabel": "Annual report extract",
+   "title": "Annual report · profit and loss, three years",
+   "company": {
+    "name": "Agnika Appliances Limited",
+    "cin": "L27501TN1992PLC998970"
+   },
+   "heading": "Statement of profit and loss (extract)",
+   "subtitle": "Years ended 31 March · ₹ crore · from the annual reports 2024–25 and 2025–26",
+   "columns": [
+    {
+     "key": "item",
+     "label": "Particulars"
+    },
+    {
+     "key": "fy24",
+     "label": "2023–24",
+     "format": "num1",
+     "align": "right"
+    },
+    {
+     "key": "fy25",
+     "label": "2024–25",
+     "format": "num1",
+     "align": "right"
+    },
+    {
+     "key": "fy26",
+     "label": "2025–26",
+     "format": "num1",
+     "align": "right"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "rev",
+     "item": "Revenue from operations",
+     "fy24": 1528.4,
+     "fy25": 1694.2,
+     "fy26": 1812.6
+    },
+    {
+     "_id": "oi",
+     "item": "Other income",
+     "fy24": 9.8,
+     "fy25": 11.2,
+     "fy26": 12.4
+    },
+    {
+     "_id": "ti",
+     "item": "Total income",
+     "_class": "subtotal",
+     "_sumOf": [
+      "rev",
+      "oi"
+     ],
+     "fy24": 1538.2,
+     "fy25": 1705.4,
+     "fy26": 1825.0
+    },
+    {
+     "item": "Expenses",
+     "_class": "head"
+    },
+    {
+     "_id": "cogs",
+     "item": "Materials, traded goods and change in inventories (combined)",
+     "_indent": 1,
+     "fy24": 992.6,
+     "fy25": 1108.8,
+     "fy26": 1203.4
+    },
+    {
+     "_id": "emp",
+     "item": "Employee benefits expense",
+     "_indent": 1,
+     "fy24": 128.4,
+     "fy25": 141.2,
+     "fy26": 152.6
+    },
+    {
+     "_id": "fin",
+     "item": "Finance costs",
+     "_indent": 1,
+     "fy24": 12.4,
+     "fy25": 14.8,
+     "fy26": 18.6
+    },
+    {
+     "_id": "da",
+     "item": "Depreciation and amortisation expense",
+     "_indent": 1,
+     "fy24": 38.6,
+     "fy25": 44.1,
+     "fy26": 51.8
+    },
+    {
+     "_id": "oe",
+     "item": "Other expenses",
+     "_indent": 1,
+     "fy24": 214.8,
+     "fy25": 236.9,
+     "fy26": 255.7
+    },
+    {
+     "_id": "te",
+     "item": "Total expenses",
+     "_class": "subtotal",
+     "fy24": 1386.8,
+     "fy25": 1545.8,
+     "fy26": 1682.1
+    },
+    {
+     "_id": "pbt",
+     "item": "Profit before tax",
+     "_class": "subtotal",
+     "_sumOf": [
+      "ti",
+      "-te"
+     ],
+     "fy24": 151.4,
+     "fy25": 159.6,
+     "fy26": 142.9
+    },
+    {
+     "_id": "tax",
+     "item": "Tax expense",
+     "fy24": 38.4,
+     "fy25": 40.9,
+     "fy26": 36.9
+    },
+    {
+     "_id": "pat",
+     "item": "Profit for the year",
+     "_class": "total",
+     "_sumOf": [
+      "pbt",
+      "-tax"
+     ],
+     "fy24": 113.0,
+     "fy25": 118.7,
+     "fy26": 106.0
+    },
+    {
+     "_id": "eps",
+     "item": "Earnings per share, basic and diluted (₹; face value ₹2)",
+     "_check": false,
+     "fy24": "8.97",
+     "fy25": "9.42",
+     "fy26": "8.41"
+    }
+   ],
+   "notes": [
+    "Shares in issue: 12.6 crore of ₹2 each in all three years."
+   ]
+  },
+  {
+   "id": "ar-bs",
+   "type": "table",
+   "style": "statement",
+   "tab": "Balance sheet",
+   "kindLabel": "Annual report extract",
+   "title": "Annual report · borrowings and cash",
+   "company": {
+    "name": "Agnika Appliances Limited",
+    "cin": "L27501TN1992PLC998970"
+   },
+   "heading": "Balance sheet (extract)",
+   "subtitle": "At 31 March · ₹ crore · from the annual report 2025–26",
+   "columns": [
+    {
+     "key": "item",
+     "label": "Particulars"
+    },
+    {
+     "key": "d1",
+     "label": "31 Mar 2025",
+     "format": "num1",
+     "align": "right"
+    },
+    {
+     "key": "d2",
+     "label": "31 Mar 2026",
+     "format": "num1",
+     "align": "right"
+    }
+   ],
+   "rows": [
+    {
+     "item": "Borrowings",
+     "_class": "head"
+    },
+    {
+     "_id": "ncb",
+     "item": "Non-current borrowings",
+     "_indent": 1,
+     "d1": 104.0,
+     "d2": 148.0
+    },
+    {
+     "_id": "cb",
+     "item": "Current borrowings (incl. current maturities)",
+     "_indent": 1,
+     "d1": 42.0,
+     "d2": 64.0
+    },
+    {
+     "_id": "tb",
+     "item": "Total borrowings",
+     "_class": "subtotal",
+     "d1": 146.0,
+     "d2": 212.0
+    },
+    {
+     "item": "Cash and bank balances",
+     "_class": "head"
+    },
+    {
+     "_id": "cce",
+     "item": "Cash and cash equivalents",
+     "_indent": 1,
+     "d1": 21.4,
+     "d2": 18.6
+    },
+    {
+     "_id": "obb",
+     "item": "Other bank balances (fixed deposits)",
+     "_indent": 1,
+     "d1": 31.2,
+     "d2": 26.2
+    },
+    {
+     "_id": "tc",
+     "item": "Total cash and bank balances",
+     "_class": "subtotal",
+     "d1": 52.6,
+     "d2": 44.8
+    },
+    {
+     "_id": "ll",
+     "item": "Lease liabilities, non-current and current",
+     "d1": 12.8,
+     "d2": 14.2
+    },
+    {
+     "_id": "eq",
+     "item": "Total equity",
+     "d1": 836.1,
+     "d2": 914.4
+    }
+   ],
+   "notes": [
+    "Extract: the lines the deals desk uses. Lease liabilities are shown apart from borrowings."
+   ]
+  },
+  {
+   "id": "ar-seg",
+   "type": "table",
+   "style": "statement",
+   "tab": "Segments",
+   "kindLabel": "Annual report extract",
+   "title": "Annual report · segment note",
+   "company": {
+    "name": "Agnika Appliances Limited",
+    "cin": "L27501TN1992PLC998970"
+   },
+   "heading": "Note 38 · Segment information (extract)",
+   "subtitle": "Years ended 31 March · ₹ crore",
+   "columns": [
+    {
+     "key": "item",
+     "label": "Particulars"
+    },
+    {
+     "key": "fy25",
+     "label": "2024–25",
+     "format": "num1",
+     "align": "right"
+    },
+    {
+     "key": "fy26",
+     "label": "2025–26",
+     "format": "num1",
+     "align": "right"
+    }
+   ],
+   "rows": [
+    {
+     "item": "Segment revenue",
+     "_class": "head"
+    },
+    {
+     "_id": "rka",
+     "item": "Kitchen appliances",
+     "_indent": 1,
+     "fy25": 842.6,
+     "fy26": 901.8
+    },
+    {
+     "_id": "rcw",
+     "item": "Cookware",
+     "_indent": 1,
+     "fy25": 528.4,
+     "fy26": 566.2
+    },
+    {
+     "_id": "rhc",
+     "item": "Home comfort",
+     "_indent": 1,
+     "fy25": 323.2,
+     "fy26": 344.6
+    },
+    {
+     "_id": "rt",
+     "item": "Revenue from operations",
+     "_class": "subtotal",
+     "fy25": 1694.2,
+     "fy26": 1812.6
+    },
+    {
+     "item": "Segment results (before finance costs, other income and tax)",
+     "_class": "head"
+    },
+    {
+     "_id": "ska",
+     "item": "Kitchen appliances",
+     "_indent": 1,
+     "fy25": 98.4,
+     "fy26": 104.6
+    },
+    {
+     "_id": "scw",
+     "item": "Cookware",
+     "_indent": 1,
+     "fy25": 58.0,
+     "fy26": 33.0
+    },
+    {
+     "_id": "shc",
+     "item": "Home comfort",
+     "_indent": 1,
+     "fy25": 24.6,
+     "fy26": 27.2
+    },
+    {
+     "_id": "stot",
+     "item": "Total segment results",
+     "_class": "subtotal",
+     "fy25": 181.0,
+     "fy26": 164.8
+    },
+    {
+     "_id": "un",
+     "item": "Less: unallocated corporate costs",
+     "fy25": -17.8,
+     "fy26": -15.7
+    },
+    {
+     "_id": "soi",
+     "item": "Add: other income",
+     "fy25": 11.2,
+     "fy26": 12.4
+    },
+    {
+     "_id": "sfin",
+     "item": "Less: finance costs",
+     "fy25": -14.8,
+     "fy26": -18.6
+    },
+    {
+     "_id": "spbt",
+     "item": "Profit before tax",
+     "_class": "total",
+     "_sumOf": [
+      "stot",
+      "un",
+      "soi",
+      "sfin"
+     ],
+     "fy25": 159.6,
+     "fy26": 142.9
+    }
+   ],
+   "notes": [
+    "A segment’s result is its revenue less its own costs, depreciation included.",
+    "Cookware is pressure cookers, non-stick and tri-ply, made at Baddi."
+   ]
+  },
+  {
+   "id": "shp",
+   "type": "table",
+   "style": "plain",
+   "tab": "Shareholding",
+   "kindLabel": "Company filing",
+   "title": "Shareholding · 30 September 2026",
+   "company": {
+    "name": "Agnika Appliances Limited"
+   },
+   "heading": "Shareholding pattern, quarter ended 30 September 2026 (summary)",
+   "columns": [
+    {
+     "key": "cat",
+     "label": "Category"
+    },
+    {
+     "key": "n",
+     "label": "Shares held",
+     "format": "int"
+    },
+    {
+     "key": "p",
+     "label": "% of shares",
+     "format": "pct1"
+    }
+   ],
+   "rows": [
+    {
+     "cat": "Promoter and promoter group",
+     "n": 73584000,
+     "p": 58.4
+    },
+    {
+     "cat": "Mutual funds and insurance companies",
+     "n": 17892000,
+     "p": 14.2
+    },
+    {
+     "cat": "Foreign portfolio investors",
+     "n": 12096000,
+     "p": 9.6
+    },
+    {
+     "cat": "Public and others",
+     "n": 22428000,
+     "p": 17.8
+    },
+    {
+     "cat": "Total",
+     "n": 126000000,
+     "p": 100.0,
+     "_class": "total"
+    }
+   ],
+   "notes": [
+    "Shares of ₹2 each. None of the promoters’ shares is pledged."
+   ]
+  },
+  {
+   "id": "mkt",
+   "type": "table",
+   "style": "plain",
+   "tab": "Share data",
+   "kindLabel": "Market data",
+   "title": "Share data · 30 September 2026",
+   "heading": "Agnika Appliances Limited · share data",
+   "subtitle": "Close of Wednesday 30 September 2026 · from the research desk’s market-data screen",
+   "columns": [
+    {
+     "key": "k",
+     "label": "Item"
+    },
+    {
+     "key": "v",
+     "label": "Value",
+     "align": "right"
+    }
+   ],
+   "rows": [
+    {
+     "k": "Closing price",
+     "v": "₹368.00"
+    },
+    {
+     "k": "52-week high",
+     "v": "₹412.00"
+    },
+    {
+     "k": "52-week low",
+     "v": "₹301.00"
+    },
+    {
+     "k": "Shares in issue",
+     "v": "12,60,00,000"
+    },
+    {
+     "k": "Face value",
+     "v": "₹2 a share"
+    },
+    {
+     "k": "Dividend for 2025–26",
+     "v": "₹2.20 a share"
+    }
+   ],
+   "notes": [
+    "The peers’ prices in the peer table are closes of the same day."
+   ]
+  },
+  {
+   "id": "comps",
+   "type": "table",
+   "style": "sheet",
+   "tab": "Peer table",
+   "kindLabel": "Varun’s sheet",
+   "title": "Varun’s peer table",
+   "arrives": "t3",
+   "sheetName": "Comps",
+   "freeze": true,
+   "pinFit": true,
+   "startPage": "last",
+   "formulaCell": "I7",
+   "formula": "=AVERAGE(I2:I6)",
+   "columns": [
+    {
+     "key": "co",
+     "label": "Company"
+    },
+    {
+     "key": "px",
+     "label": "Price (₹)",
+     "format": "amount",
+     "align": "right"
+    },
+    {
+     "key": "sh",
+     "label": "Shares (crore)",
+     "format": "num1",
+     "align": "right"
+    },
+    {
+     "key": "mc",
+     "label": "Market cap",
+     "format": "num1",
+     "align": "right"
+    },
+    {
+     "key": "nd",
+     "label": "Net debt",
+     "format": "num1",
+     "align": "right"
+    },
+    {
+     "key": "ev",
+     "label": "EV",
+     "format": "num1",
+     "align": "right"
+    },
+    {
+     "key": "eb",
+     "label": "EBITDA 2025–26",
+     "format": "num1",
+     "align": "right"
+    },
+    {
+     "key": "pat",
+     "label": "Profit after tax 2025–26",
+     "format": "num1",
+     "align": "right"
+    },
+    {
+     "key": "evx",
+     "label": "EV/EBITDA (×)",
+     "format": "num1",
+     "align": "right"
+    },
+    {
+     "key": "pe",
+     "label": "P/E (×)",
+     "format": "num1",
+     "align": "right"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "dhruvatara",
+     "co": "Dhruvatara",
+     "px": 181.5,
+     "sh": 16.8,
+     "mc": 3049.2,
+     "nd": 64.0,
+     "ev": 3113.2,
+     "eb": 152.5,
+     "pat": 92.4,
+     "evx": 20.4,
+     "pe": 33.0
+    },
+    {
+     "_id": "kaumudi",
+     "co": "Kaumudi",
+     "px": 301.0,
+     "sh": 9.6,
+     "mc": 2889.6,
+     "nd": -22.0,
+     "ev": 2911.6,
+     "eb": 92.0,
+     "pat": 51.6,
+     "evx": 31.6,
+     "pe": 56.0
+    },
+    {
+     "_id": "ojasvi",
+     "co": "Ojasvi",
+     "px": 617.0,
+     "sh": 12.0,
+     "mc": 7404.0,
+     "nd": 182.0,
+     "ev": 7586.0,
+     "eb": 289.0,
+     "pat": 168.2,
+     "evx": 26.2,
+     "pe": 44.0
+    },
+    {
+     "_id": "rasika",
+     "co": "Rasika",
+     "px": 70.5,
+     "sh": 11.2,
+     "mc": 789.6,
+     "nd": 96.0,
+     "ev": 885.6,
+     "eb": 55.1,
+     "pat": 26.4,
+     "evx": 16.1,
+     "pe": 29.9
+    },
+    {
+     "_id": "vaibhavi",
+     "co": "Vaibhavi",
+     "px": 249.0,
+     "sh": 42.1,
+     "mc": 10482.9,
+     "nd": 410.0,
+     "ev": 10892.9,
+     "eb": 343.3,
+     "pat": 201.8,
+     "evx": 31.7,
+     "pe": 51.9
+    },
+    {
+     "_id": "med",
+     "co": "Median",
+     "evx": 25.2,
+     "pe": 43.0
+    },
+    {
+     "_id": "agnika",
+     "co": "Agnika",
+     "px": 368.0,
+     "sh": 12.6
+    }
+   ],
+   "planted": [
+    "Kaumudi’s EV adds its net cash instead of taking it off: 2,911.6 for 2,867.6, and 31.6 times for 31.2",
+    "The Median row runs AVERAGE: 25.2 and 43.0 for medians of 26.2 and 44.0"
+   ],
+   "notes": [
+    "₹ crore, except price (₹) and shares (crore). Prices: close of 30 September 2026.",
+    "Net debt as each company’s last annual report shows it; a minus figure is net cash."
+   ]
+  },
+  {
+   "id": "varun",
+   "type": "chat",
+   "title": "Varun · the peer table",
+   "tab": "Chat",
+   "arrives": "t3",
+   "with": "Varun Shetty",
+   "date": "Thursday 8 October",
+   "me": "You",
+   "messages": [
+    {
+     "from": "varun",
+     "time": "3:42 pm",
+     "text": "Peer table for Agnika is on the Comps sheet. Four peers were there from last quarter, I added Kaumudi from its annual report. ₹22 crore net cash, nice company."
+    },
+    {
+     "from": "varun",
+     "time": "3:43 pm",
+     "text": "Median row is done. Drop Agnika’s numbers in the last row and it’s finished."
+    },
+    {
+     "from": "You",
+     "time": "3:51 pm",
+     "text": "Thanks. I’ll go through it with Ishaan’s note."
+    }
+   ]
+  },
+  {
+   "id": "checked",
+   "type": "table",
+   "style": "plain",
+   "tab": "Checked figures",
+   "kindLabel": "Ishaan’s check",
+   "title": "One-pager figures · checked",
+   "arrives": "t3",
+   "heading": "Agnika one-pager · key numbers, checked",
+   "subtitle": "Years ended 31 March · Ishaan Sethi, 8 October 2026",
+   "columns": [
+    {
+     "key": "line",
+     "label": "Line"
+    },
+    {
+     "key": "y0",
+     "label": "2023–24",
+     "align": "right"
+    },
+    {
+     "key": "y1",
+     "label": "2024–25",
+     "align": "right"
+    },
+    {
+     "key": "y2",
+     "label": "2025–26",
+     "align": "right"
+    }
+   ],
+   "rows": [
+    {
+     "line": "Revenue from operations, ₹ crore",
+     "y0": "1,528.4",
+     "y1": "1,694.2",
+     "y2": "1,812.6"
+    },
+    {
+     "line": "EBITDA, ₹ crore",
+     "y0": "192.6",
+     "y1": "207.3",
+     "y2": "200.9"
+    },
+    {
+     "line": "EBITDA margin, %",
+     "y0": "12.6",
+     "y1": "12.2",
+     "y2": "11.1"
+    },
+    {
+     "line": "Cookware segment margin, %",
+     "y0": "–",
+     "y1": "11.0",
+     "y2": "5.8"
+    },
+    {
+     "line": "Net debt at 31 March, ₹ crore",
+     "y0": "55.8",
+     "y1": "93.4",
+     "y2": "167.2"
+    },
+    {
+     "line": "Net debt ÷ EBITDA, times",
+     "y0": "0.29",
+     "y1": "0.45",
+     "y2": "0.83"
+    },
+    {
+     "line": "Earnings per share, ₹",
+     "y0": "8.97",
+     "y1": "9.42",
+     "y2": "8.41"
+    }
+   ],
+   "notes": [
+    "Shares in issue 12.6 crore. Use these for the peer table."
+   ],
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Checked – I.S.",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -4
+    }
+   ]
+  },
+  {
+   "id": "comps-ok",
+   "type": "table",
+   "style": "sheet",
+   "tab": "Peer table, checked",
+   "kindLabel": "Ishaan’s sheet",
+   "title": "Peer table · checked",
+   "arrives": "t4",
+   "sheetName": "Comps",
+   "freeze": true,
+   "pinFit": true,
+   "startPage": "last",
+   "formulaCell": "J7",
+   "formula": "=MEDIAN(J2:J6)",
+   "columns": [
+    {
+     "key": "co",
+     "label": "Company"
+    },
+    {
+     "key": "px",
+     "label": "Price (₹)",
+     "format": "amount",
+     "align": "right"
+    },
+    {
+     "key": "sh",
+     "label": "Shares (crore)",
+     "format": "num1",
+     "align": "right"
+    },
+    {
+     "key": "mc",
+     "label": "Market cap",
+     "format": "num1",
+     "align": "right"
+    },
+    {
+     "key": "nd",
+     "label": "Net debt",
+     "format": "num1",
+     "align": "right"
+    },
+    {
+     "key": "ev",
+     "label": "EV",
+     "format": "num1",
+     "align": "right"
+    },
+    {
+     "key": "eb",
+     "label": "EBITDA 2025–26",
+     "format": "num1",
+     "align": "right"
+    },
+    {
+     "key": "pat",
+     "label": "Profit after tax 2025–26",
+     "format": "num1",
+     "align": "right"
+    },
+    {
+     "key": "evx",
+     "label": "EV/EBITDA (×)",
+     "format": "num1",
+     "align": "right"
+    },
+    {
+     "key": "pe",
+     "label": "P/E (×)",
+     "format": "num1",
+     "align": "right"
+    },
+    {
+     "key": "cv",
+     "label": "Profit ÷ EBITDA (%)",
+     "format": "num1",
+     "align": "right"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "dhruvatara",
+     "co": "Dhruvatara",
+     "px": 181.5,
+     "sh": 16.8,
+     "mc": 3049.2,
+     "nd": 64.0,
+     "ev": 3113.2,
+     "eb": 152.5,
+     "pat": 92.4,
+     "evx": 20.4,
+     "pe": 33.0,
+     "cv": 60.6
+    },
+    {
+     "_id": "kaumudi",
+     "co": "Kaumudi",
+     "px": 301.0,
+     "sh": 9.6,
+     "mc": 2889.6,
+     "nd": -22.0,
+     "ev": 2867.6,
+     "eb": 92.0,
+     "pat": 51.6,
+     "evx": 31.2,
+     "pe": 56.0,
+     "cv": 56.1
+    },
+    {
+     "_id": "ojasvi",
+     "co": "Ojasvi",
+     "px": 617.0,
+     "sh": 12.0,
+     "mc": 7404.0,
+     "nd": 182.0,
+     "ev": 7586.0,
+     "eb": 289.0,
+     "pat": 168.2,
+     "evx": 26.2,
+     "pe": 44.0,
+     "cv": 58.2
+    },
+    {
+     "_id": "rasika",
+     "co": "Rasika",
+     "px": 70.5,
+     "sh": 11.2,
+     "mc": 789.6,
+     "nd": 96.0,
+     "ev": 885.6,
+     "eb": 55.1,
+     "pat": 26.4,
+     "evx": 16.1,
+     "pe": 29.9,
+     "cv": 47.9
+    },
+    {
+     "_id": "vaibhavi",
+     "co": "Vaibhavi",
+     "px": 249.0,
+     "sh": 42.1,
+     "mc": 10482.9,
+     "nd": 410.0,
+     "ev": 10892.9,
+     "eb": 343.3,
+     "pat": 201.8,
+     "evx": 31.7,
+     "pe": 51.9,
+     "cv": 58.8
+    },
+    {
+     "_id": "med",
+     "co": "Median",
+     "evx": 26.2,
+     "pe": 44.0
+    },
+    {
+     "_id": "agnika",
+     "co": "Agnika",
+     "px": 368.0,
+     "sh": 12.6,
+     "mc": 4636.8,
+     "nd": 167.2,
+     "ev": 4804.0,
+     "eb": 200.9,
+     "pat": 106.0,
+     "evx": 23.9,
+     "pe": 43.8,
+     "cv": 52.8,
+     "_hl": true
+    }
+   ],
+   "notes": [
+    "₹ crore, except price (₹) and shares (crore). Prices: close of 30 September 2026.",
+    "Kaumudi’s EV corrected for its net cash; the Median row now takes the middle peer.",
+    "Agnika’s P/E is ₹368 ÷ ₹8.41 of earnings a share."
+   ],
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Checked – I.S.",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "onepager-final",
+   "type": "letter",
+   "style": "memo",
+   "tab": "One-pager, final",
+   "kindLabel": "Ishaan’s final",
+   "title": "Agnika one-pager · for the board pack",
+   "arrives": "t4",
+   "letterhead": "Bapat Venkatesh & Co. · Deals desk",
+   "memoTitle": "One-page profile",
+   "to": [
+    "Agnika board pack"
+   ],
+   "from": "Ishaan Sethi",
+   "date": "8 October 2026",
+   "subject": "Agnika Appliances Limited · listed, symbol AGNIKA · Coimbatore",
+   "body": [
+    "## What it does",
+    "Kitchen appliances (mixer-grinders, wet grinders, induction cooktops), cookware (pressure cookers, non-stick, tri-ply) and home comfort (fans, irons). Sold through 9,000 dealers, modern trade and e-commerce. Plants at Coimbatore, Hosur and Baddi.",
+    "## Shareholding, 30 September 2026",
+    "Promoters 58.4% · mutual funds and insurers 14.2% · foreign portfolio investors 9.6% · public and others 17.8%.",
+    "## Recent developments",
+    "- Hosur induction-cooktop plant commissioned in June 2026, with capacity of 9 lakh units a year.",
+    "- Pressure-cooker prices were cut by about 4% from April 2025 as aluminium eased, and not raised again when aluminium climbed from June 2025; e-commerce discounting continues.",
+    "- In August 2026 the board approved a search for a cookware company, to grow tri-ply and add cookware capacity in the west or north.",
+    "- Net debt rose in 2025–26 to pay for Hosur; management guides to capex of about ₹70 crore in 2026–27.",
+    "## Key numbers, 2025–26",
+    "- EBITDA ₹200.9 crore, an 11.1% margin (12.2% in 2024–25).",
+    "- Cookware’s segment margin 5.8%, down from 11.0% in 2024–25.",
+    "- Net debt ₹167.2 crore at 31 March 2026, 0.83 times EBITDA.",
+    "## Valuation at ₹368, 30 September 2026",
+    "- Market cap ₹4,636.8 crore; EV ₹4,804.0 crore.",
+    "- 23.9 times EBITDA against a peer median of 26.2; 43.8 times earnings against 44.0.",
+    "## Valuation summary, ₹ a share",
+    "- 52-week range: ₹301–412.",
+    "- EV/EBITDA, middle three peers: ₹312–484.",
+    "- P/E, middle three peers: ₹278–436.",
+    "- At the peer medians: ₹404 on EV/EBITDA, ₹370 on P/E."
+   ],
+   "sign": {
+    "name": "Ishaan Sethi",
+    "role": "Manager, Deals and Valuation",
+    "hand": "Ishaan"
+   }
+  }
+ ],
+ "tasks": [
+  {
+   "id": "t1",
+   "type": "items",
+   "stage": "Planning",
+   "title": "Screen the eight targets",
+   "prompt": "Eight private companies are on the long list. Open each profile and run the board’s six tests from Shalini’s mail: mark it Passes, or Fails and tick every test it misses. Each promoter’s answer is in Ishaan’s call notes, the tab beside the profile. Your screen goes to Ishaan when you move on.",
+   "weight": 2,
+   "noun": [
+    "company",
+    "companies"
+   ],
+   "lockOnLeave": {
+    "ask": "Hand your screen to Ishaan?",
+    "note": "You can’t change your calls after this.",
+    "yes": "Hand it in",
+    "done": "Handed to Ishaan. You can read your calls but not change them."
+   },
+   "hints": [
+    "For each company: cookware lines over revenue, EBITDA over revenue, and borrowings less cash over EBITDA. Then the plant’s state against Shalini’s list, and the promoter’s answer in the call notes.",
+    "Only the board’s six tests decide. Growth or a near miss never moves a company in or out."
+   ],
+   "columns": [
+    {
+     "key": "label"
+    },
+    {
+     "key": "where"
+    }
+   ],
+   "fields": [
+    {
+     "id": "verdict",
+     "kind": "choice",
+     "label": "Your call",
+     "gate": true,
+     "options": [
+      {
+       "id": "pass",
+       "label": "Passes"
+      },
+      {
+       "id": "fail",
+       "label": "Fails"
+      }
+     ]
+    },
+    {
+     "id": "reasons",
+     "kind": "multi",
+     "label": "Tests it fails",
+     "showIf": {
+      "verdict": "fail"
+     },
+     "weight": 3,
+     "options": [
+      {
+       "id": "focus",
+       "label": "Cookware under 70% of revenue",
+       "short": "cookware"
+      },
+      {
+       "id": "size",
+       "label": "Revenue outside ₹100–300 crore",
+       "short": "size"
+      },
+      {
+       "id": "margin",
+       "label": "EBITDA margin under 10%",
+       "short": "margin"
+      },
+      {
+       "id": "debt",
+       "label": "Net debt above 2.0 times EBITDA",
+       "short": "debt"
+      },
+      {
+       "id": "plant",
+       "label": "No own plant in west or north India",
+       "short": "plant"
+      },
+      {
+       "id": "promoter",
+       "label": "Promoter won’t sell a majority",
+       "short": "promoter"
+      },
+      {
+       "id": "growth",
+       "label": "Revenue growth under 10% a year",
+       "short": "growth"
+      }
+     ]
+    },
+    {
+     "id": "note",
+     "kind": "text",
+     "label": "Your note for the screen",
+     "placeholder": "For example: cookware 81%, margin 9.6%, net debt 0.9 times"
+    }
+   ],
+   "sampleGroups": [
+    {
+     "call": "pass",
+     "label": "The shortlist"
+    },
+    {
+     "call": "fail",
+     "label": "Out, with the tests failed"
+    }
+   ],
+   "items": [
+    {
+     "id": "savli",
+     "label": "Savli Cookware",
+     "short": "Savli",
+     "where": "Vadodara, Gujarat",
+     "docs": [
+      "p-savli",
+      "soundings"
+     ],
+     "docRow": {
+      "soundings": "savli"
+     },
+     "answer": {
+      "verdict": "pass"
+     },
+     "note": "Savli: cookware ₹171.5 crore of ₹186.4 crore (92%), an 11.6% margin, net debt ₹26.7 crore at 1.2 times EBITDA, a plant in Gujarat, and Hitesh will sell a majority. Passes all six.",
+     "weight": 2
+    },
+    {
+     "id": "bhimtal",
+     "label": "Bhimtal Kitchenware",
+     "short": "Bhimtal",
+     "where": "Haldwani, Uttarakhand",
+     "docs": [
+      "p-bhimtal",
+      "soundings"
+     ],
+     "docRow": {
+      "soundings": "bhimtal"
+     },
+     "answer": {
+      "verdict": "fail",
+      "reasons": [
+       "margin"
+      ]
+     },
+     "note": "Bhimtal: ₹12.0 crore on ₹142.8 crore is an 8.4% margin, under the 10% floor. Borrowings of ₹31.2 crore look heavy, but ₹14.4 crore of cash brings net debt to 1.4 times. Fails on margin only."
+    },
+    {
+     "id": "kanjur",
+     "label": "Kanjur Steelcraft",
+     "short": "Kanjur",
+     "where": "Mumbai; plant at Wada",
+     "docs": [
+      "p-kanjur",
+      "soundings"
+     ],
+     "docRow": {
+      "soundings": "kanjur"
+     },
+     "answer": {
+      "verdict": "fail",
+      "reasons": [
+       "size",
+       "promoter"
+      ]
+     },
+     "note": "Kanjur: the tri-ply business Agnika wants, but ₹98.6 crore is under the ₹100 crore floor, and the family will sell only 26%. Two fails. Worth a line in the mail; it stays out unless the board changes both tests.",
+     "weight": 2
+    },
+    {
+     "id": "ponmudi",
+     "label": "Ponmudi Appliances",
+     "short": "Ponmudi",
+     "where": "Coimbatore, Tamil Nadu",
+     "docs": [
+      "p-ponmudi",
+      "soundings"
+     ],
+     "docRow": {
+      "soundings": "ponmudi"
+     },
+     "answer": {
+      "verdict": "fail",
+      "reasons": [
+       "focus",
+       "plant"
+      ]
+     },
+     "note": "Ponmudi makes grinders, not cookware, and its plant is in Coimbatore. The 10.2% margin and net debt at 1.1 times pass, and growth under 10% is not one of the tests. Fails on cookware and plant."
+    },
+    {
+     "id": "chinhat",
+     "label": "Chinhat Home Appliances",
+     "short": "Chinhat",
+     "where": "Lucknow, Uttar Pradesh",
+     "docs": [
+      "p-chinhat",
+      "soundings"
+     ],
+     "docRow": {
+      "soundings": "chinhat"
+     },
+     "answer": {
+      "verdict": "fail",
+      "reasons": [
+       "debt"
+      ]
+     },
+     "note": "Chinhat: pressure cookers are 74% of revenue, so the gas stoves don’t sink it. Net debt is ₹41.3 crore less ₹3.2 crore, ₹38.1 crore, which is 2.8 times EBITDA. Fails on debt."
+    },
+    {
+     "id": "chilika",
+     "label": "Chilika Homeware",
+     "short": "Chilika",
+     "where": "Bhubaneswar, Odisha",
+     "docs": [
+      "p-chilika",
+      "soundings"
+     ],
+     "docRow": {
+      "soundings": "chilika"
+     },
+     "answer": {
+      "verdict": "fail",
+      "reasons": [
+       "plant"
+      ]
+     },
+     "note": "Chilika: all non-stick, the fastest growth on the list, and inside every number test. But Bhubaneswar is in Odisha, which is not on Shalini’s list of states. Fails on plant, however good the rest looks.",
+     "weight": 2
+    },
+    {
+     "id": "uchila",
+     "label": "Uchila Appliances",
+     "short": "Uchila",
+     "where": "Udupi, Karnataka",
+     "docs": [
+      "p-uchila",
+      "soundings"
+     ],
+     "docRow": {
+      "soundings": "uchila"
+     },
+     "answer": {
+      "verdict": "fail",
+      "reasons": [
+       "focus",
+       "size",
+       "plant",
+       "promoter"
+      ]
+     },
+     "note": "Uchila: grinders are most of it, so cookware is 35%; ₹76.4 crore is under the floor; Udupi is in Karnataka; and the family is not selling. Four fails. Only the margin and debt tests pass."
+    },
+    {
+     "id": "wadhwan",
+     "label": "Wadhwan Steelware",
+     "short": "Wadhwan",
+     "where": "Surendranagar, Gujarat",
+     "docs": [
+      "p-wadhwan",
+      "soundings"
+     ],
+     "docRow": {
+      "soundings": "wadhwan"
+     },
+     "answer": {
+      "verdict": "fail",
+      "reasons": [
+       "focus",
+       "margin"
+      ]
+     },
+     "note": "Wadhwan: steel tableware is not cookware on Shalini’s definition, so cookware is ₹161.5 crore of ₹264.8 crore, 61%. The margin is 7.9%. Two fails. Slow growth is not a test."
+    }
+   ],
+   "docs": [
+    "mandate",
+    "soundings",
+    "p-savli",
+    "p-bhimtal",
+    "p-kanjur",
+    "p-ponmudi",
+    "p-chinhat",
+    "p-chilika",
+    "p-uchila",
+    "p-wadhwan"
+   ]
+  },
+  {
+   "id": "t2",
+   "type": "worksheet",
+   "stage": "Fieldwork",
+   "title": "Bring Agnika’s profile up to date",
+   "prompt": "Last year’s page has 2023–24 and 2024–25. Work 2025–26 from the annual report extracts, on the definitions in Ishaan’s desk note: EBITDA and its margin, cookware’s segment margin, net debt and net debt ÷ EBITDA. ₹ crore and percentages to one decimal; net debt ÷ EBITDA to two, as last year’s page has it.",
+   "weight": 1.5,
+   "noun": [
+    "figure",
+    "figures"
+   ],
+   "lockOnLeave": {
+    "ask": "Hand your one-pager figures to Ishaan?",
+    "note": "You can’t change them after this.",
+    "yes": "Hand them in",
+    "done": "Handed to Ishaan. You can read your figures but not change them."
+   },
+   "hints": [
+    "EBITDA is revenue from operations less materials and traded goods, employee benefits and other expenses. Other income stays out, as last year’s 207.3 shows.",
+    "Net debt is both borrowings lines less both cash lines; lease liabilities stay out. A segment’s margin is its result over its own revenue."
+   ],
+   "layout": "grid",
+   "columns": [
+    {
+     "key": "line",
+     "label": "Line"
+    },
+    {
+     "key": "fy24",
+     "label": "2023–24",
+     "format": "num"
+    },
+    {
+     "key": "fy25",
+     "label": "2024–25",
+     "format": "num"
+    },
+    {
+     "key": "fy26",
+     "label": "2025–26",
+     "format": "num"
+    }
+   ],
+   "rows": [
+    {
+     "id": "r1",
+     "cells": {
+      "line": "Revenue from operations, ₹ crore",
+      "fy24": 1528.4,
+      "fy25": 1694.2,
+      "fy26": 1812.6
+     }
+    },
+    {
+     "id": "r2",
+     "cells": {
+      "line": "EBITDA, ₹ crore",
+      "fy24": 192.6,
+      "fy25": 207.3,
+      "fy26": {
+       "input": true,
+       "answer": 200.9,
+       "tolerance": 0.06,
+       "working": "1,812.6 − 1,203.4 − 152.6 − 255.7 = 200.9",
+       "sign": false,
+       "weight": 2
+      }
+     }
+    },
+    {
+     "id": "r3",
+     "cells": {
+      "line": "EBITDA margin, %",
+      "fy24": 12.6,
+      "fy25": 12.2,
+      "fy26": {
+       "input": true,
+       "answer": 11.1,
+       "tolerance": 0.06,
+       "working": "200.9 ÷ 1,812.6 = 11.08%",
+       "sign": false,
+       "follow": "{r2.fy26} ÷ 1812.6 × 100"
+      }
+     }
+    },
+    {
+     "id": "r4",
+     "cells": {
+      "line": "Cookware segment margin, %",
+      "fy24": "–",
+      "fy25": "11.0",
+      "fy26": {
+       "input": true,
+       "answer": 5.8,
+       "tolerance": 0.06,
+       "working": "33.0 ÷ 566.2 = 5.83%",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "r5",
+     "cells": {
+      "line": "Net debt at 31 March, ₹ crore",
+      "fy24": 55.8,
+      "fy25": 93.4,
+      "fy26": {
+       "input": true,
+       "answer": 167.2,
+       "tolerance": 0.06,
+       "working": "(148.0 + 64.0) − (18.6 + 26.2) = 212.0 − 44.8 = 167.2",
+       "sign": false,
+       "weight": 2
+      }
+     }
+    },
+    {
+     "id": "r6",
+     "cells": {
+      "line": "Net debt ÷ EBITDA, times",
+      "fy24": 0.29,
+      "fy25": 0.45,
+      "fy26": {
+       "input": true,
+       "answer": 0.83,
+       "tolerance": 0.035,
+       "working": "167.2 ÷ 200.9 = 0.83",
+       "sign": false,
+       "follow": "{r5.fy26} ÷ {r2.fy26}"
+      }
+     }
+    }
+   ],
+   "notes": {
+    "r2.fy26": "If you have 213.3, other income crept in, as it does when you build up from profit before tax. EBITDA is what the operations earn; last year’s 207.3 leaves other income out too.",
+    "r3.fy26": "Down from 12.2% last year and 12.6% the year before, though revenue grew 7%. Cookware’s result fell ₹25.0 crore; the other two segments rose.",
+    "r4.fy26": "Half of last year’s 11.0%, while kitchen appliances stayed at about 11.6%. If you divided by all of Agnika’s revenue, you got 1.8%: a segment is read on its own revenue. And cookware is what the board wants to buy.",
+    "r5.fy26": "If you have 181.4, the lease liabilities went in. The peers’ net debt leaves them out, so Agnika’s must too, or the multiples stop comparing like with like.",
+    "r6.fy26": "Up from 0.45 a year ago, and well inside the 2.0 Agnika asks of a target, so it has room to borrow for one. The one-pager prints it to two decimals: 0.83."
+   },
+   "docs": [
+    "onepager",
+    "rules",
+    "ar-pl",
+    "ar-bs",
+    "ar-seg",
+    "shp"
+   ]
+  },
+  {
+   "id": "t3",
+   "type": "worksheet",
+   "stage": "Review",
+   "title": "Check the peer table and price Agnika",
+   "prompt": "Ishaan has checked your figures, and Varun has set up the peer table. Check it against Ishaan’s desk note. Then work Agnika’s market cap, EV and multiples at ₹368, the two peer medians, and what Agnika would be worth a share at each median. Its EBITDA, net debt and earnings a share are on Ishaan’s checked figures.",
+   "weight": 1.5,
+   "noun": [
+    "figure",
+    "figures"
+   ],
+   "lockOnLeave": {
+    "ask": "Hand the peer check to Ishaan?",
+    "note": "You can’t change your figures after this.",
+    "yes": "Hand it in",
+    "done": "Handed to Ishaan. You can read your figures but not change them."
+   },
+   "hints": [
+    "EV is market cap plus net debt. Where cash is more than borrowings, net debt is a minus figure, so EV comes out below market cap.",
+    "Put the five peers’ multiples in order and take the middle one. Then read the formula bar above Varun’s Median cell."
+   ],
+   "layout": "table",
+   "columns": [
+    {
+     "key": "line",
+     "label": "Line"
+    },
+    {
+     "key": "v",
+     "label": "Figure",
+     "format": "num1"
+    }
+   ],
+   "rows": [
+    {
+     "id": "c1",
+     "cells": {
+      "line": "Agnika’s market cap at ₹368, ₹ crore",
+      "v": {
+       "input": true,
+       "answer": 4636.8,
+       "tolerance": 0.5,
+       "working": "12.6 crore shares × ₹368 = 4,636.8",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "c2",
+     "cells": {
+      "line": "Agnika’s EV, ₹ crore",
+      "v": {
+       "input": true,
+       "answer": 4804.0,
+       "tolerance": 0.5,
+       "working": "4,636.8 + 167.2 of net debt = 4,804.0",
+       "sign": false,
+       "follow": "{c1.v} + 167.2"
+      }
+     }
+    },
+    {
+     "id": "c3",
+     "cells": {
+      "line": "Agnika’s EV/EBITDA, times",
+      "v": {
+       "input": true,
+       "answer": 23.9,
+       "tolerance": 0.06,
+       "working": "4,804.0 ÷ 200.9 = 23.91",
+       "sign": false,
+       "follow": "{c2.v} ÷ 200.9"
+      }
+     }
+    },
+    {
+     "id": "c4",
+     "cells": {
+      "line": "Agnika’s P/E, times",
+      "v": {
+       "input": true,
+       "answer": [
+        43.8,
+        43.7
+       ],
+       "tolerance": 0.05,
+       "working": "₹368 ÷ ₹8.41 = 43.76; or 4,636.8 ÷ 106.0 = 43.74",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "c5",
+     "cells": {
+      "line": "Kaumudi’s EV/EBITDA, times",
+      "v": {
+       "input": true,
+       "answer": 31.2,
+       "tolerance": 0.06,
+       "working": "(2,889.6 − 22.0) ÷ 92.0 = 2,867.6 ÷ 92.0 = 31.17",
+       "sign": false,
+       "weight": 2
+      }
+     }
+    },
+    {
+     "id": "c6",
+     "cells": {
+      "line": "Peer median EV/EBITDA, times",
+      "v": {
+       "input": true,
+       "answer": 26.2,
+       "tolerance": 0.06,
+       "working": "In order 16.1, 20.4, 26.2, 31.2, 31.7: the middle one is Ojasvi’s",
+       "sign": false,
+       "weight": 2
+      }
+     }
+    },
+    {
+     "id": "c7",
+     "cells": {
+      "line": "Peer median P/E, times",
+      "v": {
+       "input": true,
+       "answer": 44.0,
+       "tolerance": 0.06,
+       "working": "In order 29.9, 33.0, 44.0, 51.9, 56.0: Ojasvi’s again",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "c8",
+     "cells": {
+      "line": "Agnika at the median EV/EBITDA, ₹ a share",
+      "v": {
+       "input": true,
+       "answer": 404.47,
+       "tolerance": 1.0,
+       "working": "26.2 × 200.9 = 5,263.6 of EV; less 167.2 = 5,096.4; ÷ 12.6 crore shares = 404.47",
+       "sign": false,
+       "prefix": "₹",
+       "format": "inr",
+       "invalidNote": "Type a number only, like 125.50",
+       "follow": "({c6.v} × 200.9 − 167.2) ÷ 12.6"
+      }
+     }
+    },
+    {
+     "id": "c9",
+     "cells": {
+      "line": "Agnika at the median P/E, ₹ a share",
+      "v": {
+       "input": true,
+       "answer": 370.04,
+       "tolerance": 1.0,
+       "working": "44.0 × ₹8.41 of earnings a share = 370.04",
+       "sign": false,
+       "prefix": "₹",
+       "format": "inr",
+       "invalidNote": "Type a number only, like 125.50",
+       "follow": "{c7.v} × 8.41"
+      }
+     }
+    }
+   ],
+   "notes": {
+    "c1.v": "The 30 September close, the same day as every peer’s price, so the six companies compare.",
+    "c2.v": "EV prices the whole business, the lenders’ claim included, so Agnika’s net debt goes on top of its market cap.",
+    "c3.v": "If you have 23.1, that is market cap over EBITDA. EBITDA is earned for lenders and shareholders both, so it is set against EV: 4,804.0 ÷ 200.9.",
+    "c4.v": "Market cap over profit, 4,636.8 ÷ 106.0, gives 43.7. The gap is only the rounding in the printed earnings a share, so either is right.",
+    "c5.v": "Kaumudi holds more cash than borrowings, so its EV sits below its market cap. Varun added the ₹22.0 crore instead: 2,911.6 and 31.6.",
+    "c6.v": "Varun’s cell says Median, but its formula is AVERAGE, which gave 25.2 with his Kaumudi in it. Read a cell’s formula, not its label.",
+    "c7.v": "Varun’s average, 43.0, is a point under the median: the two low peers sit further below the middle than the two high ones sit above it. The median is the middle peer, whatever the others do.",
+    "c8.v": "About 10% above ₹368: where the peer median would put Agnika. A yardstick for the board, never a forecast of the share price.",
+    "c9.v": "On earnings the peer median puts Agnika at about ₹370, close to its ₹368; on EV/EBITDA it was ₹404. The board sees both, because the gap between them is what answers the directors’ worry."
+   },
+   "docs": [
+    "comps",
+    "varun",
+    "checked",
+    "rules",
+    "mkt",
+    "ar-pl"
+   ]
+  },
+  {
+   "id": "t4",
+   "type": "compose",
+   "stage": "Report",
+   "title": "Draft the cover mail to Shalini",
+   "prompt": "Ishaan sends this to Shalini under his name. Pick the right line for each part: what passed, Kanjur, how the market prices Agnika, what that means for the directors and the next step. Add a line of your own if you like.",
+   "weight": 3,
+   "noun": [
+    "line",
+    "lines"
+   ],
+   "previewLabel": "Your draft to Shalini",
+   "hints": [
+    "Every line must hold up when Shalini reads it out to her board: the tests as the board wrote them, multiples on the same footing, and no value for Savli before we have its detailed accounts."
+   ],
+   "template": "Subject: Cookware search: the screen, and Agnika’s one-pager\n\nDear Shalini,\n\nWe have run the board’s six tests on the eight companies on our long list, and Agnika’s one-page profile is attached.\n\n{screen}\n\n{near}\n\n{price}\n\n{gap}\n\n{next}\n\n{_free}\n\nRegards,\nIshaan Sethi\nManager, Deals and Valuation\nBapat Venkatesh & Co.",
+   "freeText": {
+    "label": "Your own line for the mail"
+   },
+   "slots": [
+    {
+     "id": "screen",
+     "label": "The screen · what passed",
+     "docs": [
+      "mandate",
+      "soundings"
+     ],
+     "options": [
+      {
+       "id": "a",
+       "text": "Of the eight, Savli Cookware and Chilika Homeware pass. Chilika’s Odisha plant is outside the list, but it is all cookware and grew fastest, about 25% a year.",
+       "why": "Growth is not one of the board’s tests, and the plant test is. Odisha is not on Shalini’s list of states, so Chilika fails."
+      },
+      {
+       "id": "b",
+       "correct": true,
+       "text": "Of the eight, only Savli Cookware passes all six tests. Bhimtal, Chinhat and Chilika each fail one, on margin, debt and plant; the other four fail two or more.",
+       "why": "Every company against every test, as the board wrote them, and the single test that sank each of the three close ones. Shalini will be asked that first."
+      },
+      {
+       "id": "c",
+       "text": "Of the eight, Savli, Bhimtal and Chinhat pass. Bhimtal’s 8.4% margin and Chinhat’s net debt at 2.8 times EBITDA are close enough to the limits for a first list.",
+       "why": "The tests are the board’s, not ours to stretch. 8.4% is under 10% and 2.8 is over 2.0: both fail, and the mail says so."
+      }
+     ]
+    },
+    {
+     "id": "near",
+     "label": "The tri-ply name · Kanjur",
+     "docs": [
+      "p-kanjur",
+      "soundings"
+     ],
+     "options": [
+      {
+       "id": "a",
+       "correct": true,
+       "text": "Kanjur Steelcraft is the tri-ply maker the board will ask about: a 12.8% margin, little debt. But revenue is ₹98.6 crore and the family will sell only 26%, so it stays out unless both change.",
+       "why": "It fails two tests, size and the promoter, and the line names both. Whether to bend either is for the board to decide."
+      },
+      {
+       "id": "b",
+       "text": "Kanjur Steelcraft is the tri-ply maker the board will ask about: a 12.8% margin, little debt. Revenue is only ₹1.4 crore under ₹100 crore, so we have put it on the shortlist beside Savli.",
+       "why": "₹98.6 crore is under the floor, however close. And the family will sell only 26%, so Kanjur fails the promoter test as well."
+      },
+      {
+       "id": "c",
+       "text": "Kanjur Steelcraft is the tri-ply maker the board will ask about: a 12.8% margin, little debt. It fails only on revenue, and the family is open to a sale, so a lower revenue floor would bring it in.",
+       "why": "Read the call notes again: the family will sell up to 26% and keep control. That fails the majority test, whatever the floor."
+      }
+     ]
+    },
+    {
+     "id": "price",
+     "label": "The price · Agnika against its peers",
+     "docs": [
+      "comps-ok",
+      "onepager-final"
+     ],
+     "options": [
+      {
+       "id": "a",
+       "text": "At ₹368 on 30 September, Agnika trades at 23.9 times 2025–26 EBITDA against 25.2 for the five listed peers, and at 43.8 times earnings against their 43.0.",
+       "why": "25.2 and 43.0 are Varun’s averages, and the first carries his Kaumudi slip. The peer medians are 26.2 and 44.0."
+      },
+      {
+       "id": "b",
+       "text": "At ₹368 on 30 September, Agnika trades at 23.1 times 2025–26 EBITDA against a median of 26.2 for the five listed peers, and at 43.8 times earnings against their 44.0.",
+       "why": "23.1 is market cap over EBITDA. EBITDA pays lenders as well as shareholders, so it goes with EV: 4,804.0 ÷ 200.9 is 23.9."
+      },
+      {
+       "id": "c",
+       "correct": true,
+       "text": "At ₹368 on 30 September, Agnika trades at 23.9 times 2025–26 EBITDA against a median of 26.2 for the five listed peers, and at 43.8 times earnings against their 44.0.",
+       "why": "EV over EBITDA and price over earnings, on the same year and the same date for all six, against the middle peer."
+      }
+     ]
+    },
+    {
+     "id": "gap",
+     "label": "What it means · the directors’ worry",
+     "docs": [
+      "comps-ok",
+      "onepager-final",
+      "checked"
+     ],
+     "options": [
+      {
+       "id": "a",
+       "correct": true,
+       "text": "So the market has not marked Agnika down on profit. It looks cheap only on EBITDA, because less of its EBITDA reaches profit than at four of the five peers.",
+       "why": "When two multiples disagree, look at what sits between EBITDA and profit: depreciation, interest and tax. On earnings, Agnika is priced like its peers."
+      },
+      {
+       "id": "b",
+       "text": "So the market has marked Agnika down by about 10%. At the peer median of 26.2 times, its shares would be worth about ₹404, and the price should move towards that.",
+       "why": "That reads one multiple and adds a forecast. On profit Agnika and the peers sit at 43.8 and 44.0, and our mail never tells a board where its share price will go."
+      },
+      {
+       "id": "c",
+       "text": "So the market has marked Agnika down for its debt. Its ₹167.2 crore of net debt pulls EV/EBITDA below peers that carry less debt than it does.",
+       "why": "EV/EBITDA is built to compare companies whatever their debt: the debt is already inside EV. Vaibhavi carries ₹410 crore of net debt and trades at 31.7 times."
+      }
+     ]
+    },
+    {
+     "id": "next",
+     "label": "Next step · Savli",
+     "docs": [
+      "soundings",
+      "comps-ok"
+     ],
+     "options": [
+      {
+       "id": "a",
+       "text": "Next, we can put a value on Savli: the peer median of 26.2 times on its ₹21.6 crore of EBITDA gives about ₹566 crore, a ceiling for Agnika’s offer.",
+       "why": "The largest of the five listed peers earns nearly sixteen times Savli’s EBITDA. A multiple from companies that size can check Savli’s value; it never sets it."
+      },
+      {
+       "id": "b",
+       "correct": true,
+       "text": "Next, with your go-ahead, I will ask Hitesh Vasani for Savli’s detailed accounts under a confidentiality agreement, to value Savli on its own numbers.",
+       "why": "Savli is private and a tenth of Agnika’s size. It is valued from its own detailed accounts; the peer multiples only check that value later."
+      },
+      {
+       "id": "c",
+       "text": "Next, I suggest Agnika tells Hitesh Vasani it will pay its own multiple of 23.9 times, about ₹516 crore, so that the deal does not dilute Agnika’s earnings.",
+       "why": "No figure goes to a seller before we have the detailed accounts, and Agnika’s own multiple says nothing about what Savli is worth."
+      }
+     ]
+    }
+   ],
+   "docs": [
+    "mandate",
+    "soundings",
+    "p-kanjur",
+    "comps-ok",
+    "onepager-final",
+    "checked",
+    "ar-seg"
+   ]
+  }
+ ],
+ "wrap": {
+  "from": "ishaan",
+  "text": "Savli alone clears all six, and Kanjur stays out for all its tri-ply. On price, Agnika looks cheap at 23.9 times EBITDA and is level with its peers on earnings, which answers the directors’ worry. Shalini gets it under my name in Monday’s pack; once she says yes, I ask Hitesh for Savli’s detailed accounts."
+ },
+ "wrapPartial": {
+  "from": "ishaan",
+  "text": "Savli is the only one that clears all six, and Varun’s sheet had two slips: Kaumudi’s net cash added, and an average in the Median row. Shalini will read this out to her board, so each test and each multiple has to hold as written."
+ },
+ "wrapRetry": {
+  "from": "ishaan",
+  "text": "This can’t go into the board pack yet. Take each company back to the six tests in Shalini’s mail, and each figure back to my desk note: ratios from the filed accounts, net debt after cash, EV with net debt in it, the middle peer."
+ },
+ "passNeeds": [
+  {
+   "task": "t1",
+   "min": 0.7,
+   "note": "You need more of the eight screening calls right, with the tests they fail, to pass."
+  }
+ ],
+ "model": {
+  "intro": "Only Savli Cookware passes all six tests; Bhimtal, Chinhat and Chilika fail one each, and Kanjur, the tri-ply maker, fails two. Agnika’s 2025–26 EBITDA is ₹200.9 crore, an 11.1% margin, with cookware down to 5.8% and net debt at ₹167.2 crore. At ₹368 it trades at 23.9 times EBITDA against a peer median of 26.2, and at 43.8 times earnings against 44.0.",
+  "blocks": [
+   {
+    "type": "table",
+    "columns": [
+     {
+      "key": "co",
+      "label": "The eight companies"
+     },
+     {
+      "key": "f",
+      "label": "Tests failed"
+     },
+     {
+      "key": "c",
+      "label": "Call"
+     }
+    ],
+    "rows": [
+     {
+      "co": "Savli",
+      "f": "None",
+      "c": "Shortlist"
+     },
+     {
+      "co": "Bhimtal",
+      "f": "Margin 8.4%",
+      "c": "Out"
+     },
+     {
+      "co": "Kanjur",
+      "f": "Revenue ₹98.6 crore; family will sell 26% at most",
+      "c": "Out; named in the mail"
+     },
+     {
+      "co": "Ponmudi",
+      "f": "No cookware; plant in Tamil Nadu",
+      "c": "Out"
+     },
+     {
+      "co": "Chinhat",
+      "f": "Net debt 2.8 times EBITDA",
+      "c": "Out"
+     },
+     {
+      "co": "Chilika",
+      "f": "Plant in Odisha",
+      "c": "Out"
+     },
+     {
+      "co": "Uchila",
+      "f": "Cookware 35%; revenue ₹76.4 crore; plant in Karnataka; not selling",
+      "c": "Out"
+     },
+     {
+      "co": "Wadhwan",
+      "f": "Cookware 61%; margin 7.9%",
+      "c": "Out"
+     }
+    ]
+   },
+   {
+    "type": "list",
+    "label": "Two catches in Varun’s sheet",
+    "items": [
+     "Kaumudi has ₹22.0 crore of net cash, so its EV is ₹2,867.6 crore, below its market cap: 31.2 times, not 31.6.",
+     "The Median row ran AVERAGE and gave 25.2 and 43.0. The middle peer gives 26.2 and 44.0."
+    ]
+   },
+   {
+    "type": "table",
+    "columns": [
+     {
+      "key": "y",
+      "label": "The valuation summary"
+     },
+     {
+      "key": "m",
+      "label": "Multiple"
+     },
+     {
+      "key": "p",
+      "label": "₹ a share"
+     }
+    ],
+    "rows": [
+     {
+      "y": "52-week range",
+      "m": "–",
+      "p": "₹301–412"
+     },
+     {
+      "y": "EV/EBITDA, middle three peers",
+      "m": "20.4–31.2 times",
+      "p": "₹312–484"
+     },
+     {
+      "y": "P/E, middle three peers",
+      "m": "33.0–51.9 times",
+      "p": "₹278–436"
+     },
+     {
+      "y": "At the peer medians",
+      "m": "26.2 and 44.0 times",
+      "p": "₹404 and ₹370"
+     },
+     {
+      "y": "Agnika at ₹368",
+      "m": "23.9 and 43.8 times",
+      "p": "₹368"
+     }
+    ]
+   },
+   {
+    "type": "note",
+    "from": "ishaan",
+    "text": "Some directors feel the market has marked Agnika down. On earnings it has not: 43.8 against 44.0. It looks cheaper only on EBITDA, because depreciation, interest and tax take more of each rupee of EBITDA than at most peers."
+   }
+  ]
+ },
+ "principles": [
+  "A screen applies the client’s tests exactly as written. Write down every test a company fails, and leave near misses for the client to judge.",
+  "EBITDA goes with enterprise value and profit with the share price. Net debt is added to market cap; net cash comes off it.",
+  "Compare with the peer median, and when two multiples disagree, look at what sits between EBITDA and profit."
+ ],
+ "earned": {
+  "clause": "screened {n} private acquisition targets on a buyer’s six tests[[, rejecting {rej} with reasons]][[; updated a listed company’s one-page profile{eb|}{nd|}]][[; corrected {k} peer-table {k|error|errors}]][[; built a peer-multiple valuation summary{md|}{px|}{pp|}]]",
+  "counts": {
+   "n": {
+    "kind": "items",
+    "task": "t1",
+    "answered": "gate"
+   },
+   "rej": {
+    "kind": "itemsWhere",
+    "task": "t1",
+    "field": "verdict",
+    "equals": "fail",
+    "withRight": "reasons"
+   },
+   "eb": {
+    "kind": "cell",
+    "task": "t2",
+    "row": "r2",
+    "col": "fy26"
+   },
+   "nd": {
+    "kind": "cell",
+    "task": "t2",
+    "row": "r5",
+    "col": "fy26"
+   },
+   "md": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "c6",
+    "col": "v"
+   },
+   "px": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "c8",
+    "col": "v"
+   },
+   "pp": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "c9",
+    "col": "v"
+   },
+   "k": {
+    "kind": "correctCells",
+    "task": "t3",
+    "rows": [
+     "c5",
+     "c6"
+    ]
+   }
+  },
+  "fallback": "screened private acquisition targets on a buyer’s six tests[[; updated a listed company’s one-page profile{eb|}{nd|}]][[; corrected {k} peer-table {k|error|errors}]][[; built a peer-multiple valuation summary{md|}{px|}{pp|}]]"
+ },
+ "interview": [
+  {
+   "q": "How did you screen the acquisition targets?",
+   "checking": "Whether you applied the client’s tests as written and worked each figure yourself.",
+   "outline": [
+    "I applied the buyer’s six tests as written: cookware share, revenue band, margin, net debt, plant, promoter.",
+    "I worked each ratio from the filed figures, net debt after cash, and listed every failed test.",
+    "In the simulation one of eight passed; a tri-ply maker that failed on size and promoter stayed out."
+   ]
+  },
+  {
+   "q": "What is the difference between market cap and enterprise value?",
+   "checking": "Whether you can build the bridge between the two and use the right one in a multiple.",
+   "outline": [
+    "Market cap is shares times price; EV adds net debt, so it values the whole business.",
+    "Net cash puts EV below market cap; in the simulation a colleague’s peer table had added the cash.",
+    "For the listed company, ₹4,636.8 crore market cap plus ₹167.2 crore net debt gave ₹4,804.0 crore of EV."
+   ]
+  }
+ ]
+}
