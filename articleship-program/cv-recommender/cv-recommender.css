@@ -400,5 +400,126 @@
     .cvr-pick > .cvr-design { grid-area: design; padding: 0 0 16px; border-top: 0; border-bottom: 1px solid var(--ap-border); }
     .cvr-pick > .cvr-next { grid-area: next; margin: 0; }
     .cvr-pick > .ap-btn { grid-area: button; width: auto; padding-left: 28px; padding-right: 28px; white-space: nowrap; }
-    .cvr-variants { grid-template-columns: 1fr 1fr; align-items: start; }
+}
+
+/*
+ * The quiz fits one screen: from 900 px wide, every gap, row and heading scales with the window height (vh), so a question
+ * and its Next button show without scrolling on a laptop. On every width the Back / Next row stays pinned to the bottom
+ * of the screen, so Next is always in reach even on a short window or a small phone.
+ */
+.cvr-nav {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    padding: 8px 0 4px;
+    background: var(--ap-panel);
+}
+@media (min-width: 900px) {
+    .cvr-main:not(.is-wide) { padding-top: clamp(6px, 1.6vh, 24px); padding-bottom: 20px; }
+    .cvr-main:not(.is-wide) .ap-hero { margin: 0 0 clamp(6px, 1.4vh, 14px); }
+    .cvr-main:not(.is-wide) .ap-title { font-size: clamp(30px, 5.4vh, 44px); }
+    .cvr-main:not(.is-wide) .ap-lede { margin-top: 2px; }
+    .cvr-card { padding: clamp(14px, 2.2vh, 22px) 24px clamp(10px, 1.6vh, 16px); }
+    .cvr-stepbar { margin-bottom: clamp(4px, 1vh, 10px); }
+    .cvr-q { font-size: clamp(26px, 4.8vh, 34px); }
+    .cvr-options, .cvr-rank { gap: clamp(6px, 1vh, 8px); margin-top: clamp(6px, 1.2vh, 12px); }
+    .cvr-opt, .cvr-rank-item { min-height: clamp(42px, 7vh, 54px); padding-top: clamp(5px, 1vh, 10px); padding-bottom: clamp(5px, 1vh, 10px); }
+    .cvr-options.is-grid { grid-template-columns: repeat(4, 1fr); }
+    .cvr-options.is-grid .cvr-opt { min-height: clamp(42px, 7vh, 56px); }
+    .cvr-rank-no { flex-basis: clamp(28px, 4.8vh, 34px); width: clamp(28px, 4.8vh, 34px); height: clamp(28px, 4.8vh, 34px); }
+    .cvr-reset { min-height: 32px; margin-top: 2px; }
+    .cvr-nav { margin-top: clamp(4px, 1vh, 12px); }
+}
+/* A short laptop window: the intro line goes, the title stays. */
+@media (min-width: 900px) and (max-height: 720px) {
+    .cvr-main:not(.is-wide) .ap-lede { display: none; }
+}
+
+/* ---------- Quiz: no outline, motion ---------- */
+.cvr-card.ap-card {
+    border: 0;
+    box-shadow: 0 18px 44px -18px rgba(15, 23, 42, 0.18), 0 2px 8px rgba(15, 23, 42, 0.05);
+}
+/* A new question slides in (from the left when going back); its answers rise one after another. */
+.cvr-card.cvr-enter { animation: cvr-in 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.cvr-card.cvr-enter-back { animation-name: cvr-in-back; }
+.cvr-card.cvr-enter .cvr-opt,
+.cvr-card.cvr-enter .cvr-rank-item {
+    animation: cvr-rise 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    animation-delay: calc(var(--i, 0) * 45ms + 110ms);
+}
+.cvr-options > :nth-child(1), .cvr-rank > :nth-child(1) { --i: 0; }
+.cvr-options > :nth-child(2), .cvr-rank > :nth-child(2) { --i: 1; }
+.cvr-options > :nth-child(3), .cvr-rank > :nth-child(3) { --i: 2; }
+.cvr-options > :nth-child(4), .cvr-rank > :nth-child(4) { --i: 3; }
+.cvr-options > :nth-child(5), .cvr-rank > :nth-child(5) { --i: 4; }
+.cvr-options > :nth-child(6), .cvr-rank > :nth-child(6) { --i: 5; }
+.cvr-options > :nth-child(7), .cvr-rank > :nth-child(7) { --i: 6; }
+.cvr-options > :nth-child(8), .cvr-rank > :nth-child(8) { --i: 7; }
+.cvr-options > :nth-child(9), .cvr-rank > :nth-child(9) { --i: 8; }
+.cvr-options > :nth-child(10), .cvr-rank > :nth-child(10) { --i: 9; }
+.cvr-options > :nth-child(11), .cvr-rank > :nth-child(11) { --i: 10; }
+.cvr-options > :nth-child(12), .cvr-rank > :nth-child(12) { --i: 11; }
+.cvr-options > :nth-child(13), .cvr-rank > :nth-child(13) { --i: 12; }
+.cvr-options > :nth-child(14), .cvr-rank > :nth-child(14) { --i: 13; }
+.cvr-bar > span.is-grow { animation: cvr-grow 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+/* The answer just tapped: its tick pops and the row gives one soft pulse. */
+.cvr-opt.is-fresh .cvr-tick, .cvr-rank-item.is-fresh .cvr-rank-no { animation: cvr-pop 0.32s cubic-bezier(0.3, 1.6, 0.5, 1); }
+.cvr-opt.is-fresh, .cvr-rank-item.is-fresh { animation: cvr-pulse 0.5s ease-out; }
+.cvr-opt, .cvr-rank-item { transition: border-color 0.15s ease, background 0.15s ease, transform 0.12s ease, box-shadow 0.15s ease; }
+.cvr-opt:hover, .cvr-rank-item:hover { transform: translateY(-1px); box-shadow: 0 6px 16px -10px rgba(15, 23, 42, 0.3); }
+.cvr-opt:active, .cvr-rank-item:active { transform: scale(0.992); }
+@keyframes cvr-in { from { opacity: 0; transform: translateX(32px) scale(0.985); } to { opacity: 1; transform: none; } }
+@keyframes cvr-in-back { from { opacity: 0; transform: translateX(-32px) scale(0.985); } to { opacity: 1; transform: none; } }
+@keyframes cvr-rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@keyframes cvr-grow { from { width: var(--from, 0%); } }
+@keyframes cvr-pop { from { transform: scale(0.55); } to { transform: scale(1); } }
+@keyframes cvr-pulse { from { box-shadow: 0 0 0 0 color-mix(in srgb, var(--ap-primary) 35%, transparent); } to { box-shadow: 0 0 0 9px transparent; } }
+@media (prefers-reduced-motion: reduce) {
+    .cvr-card.cvr-enter, .cvr-card.cvr-enter .cvr-opt, .cvr-card.cvr-enter .cvr-rank-item, .cvr-bar > span.is-grow,
+    .cvr-opt.is-fresh, .cvr-rank-item.is-fresh, .cvr-opt.is-fresh .cvr-tick, .cvr-rank-item.is-fresh .cvr-rank-no { animation: none; }
+    .cvr-opt:hover, .cvr-rank-item:hover, .cvr-opt:active, .cvr-rank-item:active { transform: none; }
+}
+/* Desktop: the question sits in the middle of the screen, a touch above centre. */
+@media (min-width: 900px) {
+    .cvr-main:not(.is-wide) {
+        min-height: calc(100vh - 62px);
+        min-height: calc(100dvh - 62px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding-bottom: 6vh;
+    }
+}
+
+/* ---------- Lines to add: from your answers, then the extras ---------- */
+.cvr-variants-wrap { display: grid; gap: 22px; }
+.cvr-variants-wrap > .ap-h2 { margin: 4px 0 -10px; }
+.cvr-lines-group { display: grid; gap: 8px; }
+.cvr-lines-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.cvr-lines-title { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ap-muted); }
+.cvr-lines-count { font-size: 13px; font-weight: 600; color: var(--ap-muted); }
+.cvr-lines-group.is-done .cvr-lines-count { color: var(--ap-success); }
+.cvr-lines-group.is-done .cvr-lines-count::before { content: '\2713'; margin-right: 4px; }
+.cvr-lines-sub { margin: -4px 0 2px; font-size: 14px; color: #475569; }
+.cvr-variant { position: relative; transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease; }
+.cvr-variant.is-own, .cvr-variant.is-msc { border-color: var(--ap-border); }
+/* A coloured edge says what kind of line it is; it turns green once copied. */
+.cvr-variant::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 4px; border-radius: 14px 0 0 14px; background: var(--ap-border-dark); }
+.cvr-variant.is-own::before { background: var(--ap-primary); }
+.cvr-variant.is-msc::before { background: var(--ap-accent); }
+.cvr-variant.is-copied::before { background: var(--ap-success); }
+.cvr-variant.is-copied { border-color: color-mix(in srgb, var(--ap-success) 40%, var(--ap-border)); }
+.cvr-variant:hover { box-shadow: 0 8px 20px -14px rgba(15, 23, 42, 0.4); }
+.cvr-variant-row { padding: 0 10px 0 4px; }
+.cvr-variant-top { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+.cvr-where { padding: 2px 9px; border-radius: 999px; background: color-mix(in srgb, var(--ap-primary) 10%, #fff); color: var(--ap-primary); font: 600 11.5px/1.5 var(--ap-sans); }
+.cvr-copy { min-height: 38px; min-width: 76px; padding: 0 14px; border-radius: 999px; border-color: color-mix(in srgb, var(--ap-primary) 40%, var(--ap-border)); color: var(--ap-primary); font-weight: 700; transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease; }
+.cvr-copy:hover { background: var(--ap-primary-light); }
+.cvr-variant.is-copied .cvr-copy { border-color: var(--ap-success); background: var(--ap-success-light); color: var(--ap-success); }
+.cvr-variant.is-copied .cvr-copy::before { content: '\2713'; margin-right: 5px; }
+@media (pointer: coarse) { .cvr-copy { min-height: 44px; } }
+@media (min-width: 1280px) {
+    .cvr-lines-group.is-also .cvr-variants { grid-template-columns: 1fr 1fr; align-items: start; }
+    .cvr-lines-group.is-also .cvr-variant:has(.cvr-variant-toggle[aria-expanded="true"]) { grid-column: 1 / -1; }
 }

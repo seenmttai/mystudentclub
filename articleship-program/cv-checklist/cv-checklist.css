@@ -340,3 +340,109 @@
     .cvc-nav { grid-column: 1; grid-row: 1; position: sticky; top: 80px; }
     .cvc-end { grid-column: 3; grid-row: 1; position: sticky; top: 80px; margin-top: 0; }
 }
+
+/* ---------- Layout polish: soft cards, the CV tabs beside the title, denser checks ---------- */
+.cvc-hero .ap-lede { max-width: 62ch; }
+.cvc-cvs { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 18px; }
+.cvc-cvs-legend { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+.cvc-cv { border: 0; border-radius: 999px; padding: 6px 18px; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06), inset 0 0 0 1px var(--ap-border); transition: background 0.15s ease, box-shadow 0.15s ease; }
+.cvc-cv:hover { box-shadow: 0 4px 12px -8px rgba(15, 23, 42, 0.4), inset 0 0 0 1px var(--ap-border-dark); }
+.cvc-cv.is-current { box-shadow: 0 6px 16px -10px color-mix(in srgb, var(--ap-accent) 80%, #000), inset 0 0 0 2px var(--ap-accent); }
+.cvc-change-select { border-style: solid; border-radius: 999px; }
+.cvc-add-label { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+.cvc-change { align-items: flex-end; }
+
+/* The progress row: Start over beside Jump; the question opens under the bar. */
+.cvc-reset {
+    min-height: 32px;
+    padding: 4px 12px;
+    border: 1px solid var(--ap-border-dark);
+    border-radius: 999px;
+    background: var(--ap-panel);
+    color: var(--ap-navy);
+    font: 600 13px/1 var(--ap-sans);
+    text-decoration: none;
+    white-space: nowrap;
+}
+.cvc-reset::before { content: '\21BA'; margin-right: 5px; }
+.cvc-reset:hover { background: var(--ap-hover); color: var(--ap-navy); }
+.ap-progress-text .cvc-reset { margin-left: 8px; }
+.cvc-next[hidden] + .cvc-reset { margin-left: auto; }
+.ap-progress > .cvc-confirm { justify-content: flex-start; margin-top: 8px; padding: 8px 10px; border-radius: 10px; background: color-mix(in srgb, var(--ap-danger) 6%, #fff); }
+@media (max-width: 479px) {
+    .cvc-list .ap-progress-pct { display: none; }
+    .cvc-reset { padding: 4px 10px; }
+    .cvc-list .ap-progress.cvc-compact .cvc-reset { min-height: 28px; padding: 3px 9px; }
+}
+
+/* Soft cards instead of outlines; a coloured edge turns green when a check is ticked. */
+.cvc-list .ap-cl-item {
+    position: relative;
+    padding: 2px 16px 8px 20px;
+    border-color: transparent;
+    border-radius: 14px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 8px 20px -16px rgba(15, 23, 42, 0.28);
+    transition: box-shadow 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+.cvc-list .ap-cl-item::before { content: ''; position: absolute; inset: 10px auto 10px 0; width: 4px; border-radius: 0 4px 4px 0; background: var(--ap-border-dark); transition: background 0.15s ease; }
+.cvc-list .ap-cl-item:hover { box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06), 0 12px 26px -16px rgba(15, 23, 42, 0.36); }
+.cvc-list .ap-cl-item.is-done { border-color: transparent; }
+.cvc-list .ap-cl-item.is-done::before { background: var(--ap-success); }
+.cvc-list .ap-cl-item.is-done .ap-cl-text { color: #5b7467; }
+.cvc-list .ap-cl-section-title { margin: 22px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--ap-border); }
+.cvc-end-card { border: 0; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 12px 28px -18px rgba(15, 23, 42, 0.3); }
+.cvc-end-card.is-complete { border: 0; }
+.cvc-nav-link { position: relative; min-height: 44px; padding-bottom: 10px; }
+.cvc-nav-link::after {
+    content: '';
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    bottom: 4px;
+    height: 3px;
+    border-radius: 3px;
+    background: linear-gradient(var(--ap-success), var(--ap-success)) left / var(--pct, 0%) 100% no-repeat, #e7edf5;
+    transition: background-size 0.3s ease;
+}
+@media (min-width: 768px) {
+    .cvc-list .ap-progress { padding: 12px 18px 14px; border: 0; border-radius: 16px; background: #fff; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 12px 28px -18px rgba(15, 23, 42, 0.35); }
+    .cvc-list .ap-progress-count { font-size: 28px; }
+    .cvc-list .ap-progress-bar { height: 12px; }
+}
+@media (min-width: 1280px) {
+    /* The title and intro on the left, the CV tabs and the second-CV picker on the right (below this width they sit under the title). */
+    .cvc-hero { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 32px; align-items: end; margin-bottom: 18px; }
+    .cvc-hero .cvc-back { grid-column: 1 / -1; justify-self: start; }
+    .cvc-hero .ap-title, .cvc-hero .ap-lede { grid-column: 1; }
+    .cvc-hero .cvc-cvs { grid-column: 2; grid-row: 2 / span 2; align-self: end; justify-content: flex-end; margin: 0; }
+}
+@media (min-width: 1024px) {
+    .cvc-nav { border: 0; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 12px 28px -18px rgba(15, 23, 42, 0.3); }
+}
+/* Tighter rows: the title, then Example and the fix links under it (they wrap, so many links never squeeze the title). */
+.cvc-list .ap-cl-check { min-height: 40px; padding-top: 6px; }
+.cvc-list .ap-cl-no { white-space: nowrap; }
+.cvc-list .ap-cl-extra { margin-top: 0; }
+/* A link that wraps keeps its arrow on its last line (a flex box would push the arrow to the far edge). */
+.cvc-list .ap-cl-fix { display: inline-block; min-height: 0; padding: 5px 0 3px; line-height: 1.3; overflow-wrap: anywhere; }
+/*
+ * Wide lists use the row's width: the title on the left and Example / the fix links in a zone of their own on the right
+ * (a capped width that wraps, so the links can never squeeze the title). A check with four or more links, or an opened
+ * example, takes the full width under its title instead.
+ */
+@media (min-width: 768px) and (max-width: 1279px), (min-width: 1440px) {
+    .cvc-list .ap-cl-item { display: grid; grid-template-columns: minmax(0, 1fr) minmax(170px, 40%); column-gap: 20px; align-items: start; }
+    /* Only "Example": no wide zone, the title keeps the room. */
+    .cvc-list .ap-cl-item:has(.ap-cl-extra > :only-child) { grid-template-columns: minmax(0, 1fr) auto; }
+    .cvc-list .ap-cl-check { grid-column: 1; grid-row: 1; min-width: 0; }
+    .cvc-list .ap-cl-extra { grid-column: 2; grid-row: 1; min-width: 0; margin: 8px 0 0; flex-wrap: wrap; justify-content: flex-end; gap: 2px 14px; }
+    .cvc-list .ap-cl-why { grid-column: 1; grid-row: 2; min-width: 0; }
+    .cvc-list .ap-cl-extra:has(details[open]),
+    .cvc-list .ap-cl-extra:has(> :nth-child(4)) { grid-column: 1 / -1; grid-row: auto; margin: 2px 0 4px 64px; justify-content: flex-start; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .cvc-nav-link::after, .cvc-list .ap-cl-item, .cvc-list .ap-cl-item::before, .cvc-cv { transition: none; }
+}
+@media print {
+    .cvc-reset { display: none !important; }
+}

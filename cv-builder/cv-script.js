@@ -371,7 +371,7 @@
 
         // ---- Articleship route: gate first, then lazy-load the feature, then boot ----
         const GATE_ASSETS = [
-            { type: 'style', src: '/articleship-program/shared/articleship-tools.css?v=20261028-r2' },
+            { type: 'style', src: '/articleship-program/shared/articleship-tools.css?v=20261030-r1' },
             // The site's shared Supabase client, as every other Articleship tool page loads it, so the gate can check enrolment.
             { type: 'script', src: '/scripts/supabase.js?v=20261028-r2' },
             { type: 'script', src: '/scripts/supabase-init.js?v=20261028-r2' },

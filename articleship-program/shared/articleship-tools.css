@@ -346,3 +346,12 @@ html.ap-gated body.ap-page > :not(.ap-gate) { visibility: hidden; }
     .ap-topbar, .ap-progress, .ap-gate { position: static; }
     .ap-cl-example p { background: none; border: 1px solid #ccc; }
 }
+
+/* ---------- Polish shared by every tool: 1440 px wide pages, soft cards, a gentle entrance ---------- */
+@media (min-width: 1024px) {
+    .ap-main.is-wide { max-width: 1440px; padding-left: 40px; padding-right: 40px; }
+}
+.ap-card { border: 0; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 12px 28px -18px rgba(15, 23, 42, 0.3); }
+.ap-hero { animation: ap-rise 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+@keyframes ap-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .ap-hero { animation: none; } }

@@ -278,3 +278,18 @@
 @media (prefers-reduced-motion: no-preference) {
     .xp-tag, .xp-hint-btn, .xp-q, .xp-field select, .xp-firm-chip { transition: background-color .15s, border-color .15s; }
 }
+
+/* ---------- Layout polish: soft cards, three to a row on wide screens ---------- */
+.xp-card { border: 0; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 10px 24px -18px rgba(15, 23, 42, 0.3); transition: box-shadow 0.15s ease, transform 0.15s ease; }
+.xp-card:hover { box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06), 0 16px 32px -18px rgba(15, 23, 42, 0.4); transform: translateY(-2px); }
+.xp-common, .xp-firms-here { border-left: 0; border-right: 0; border-bottom: 0; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 12px 28px -18px rgba(15, 23, 42, 0.3); }
+@media (min-width: 1100px) {
+    .xp-results { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+}
+@media (min-width: 1280px) {
+    .xp-glance.is-two { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .xp-card { transition: none; }
+    .xp-card:hover { transform: none; }
+}

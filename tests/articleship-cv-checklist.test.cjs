@@ -228,7 +228,8 @@ test('page: gated, noindex, MSC logo, notebook headings, scripts in order, every
     assert.match(PAGE, /msc-logo\.svg/);
     assert.match(PAGE, /family=Caveat/);
     assert.match(PAGE, /class="ap-page ap-day-1"/);
-    const scripts = [...PAGE.matchAll(/<script src="([^"]+)"/g)].map(m => m[1]);
+    // A version query (?v=…) only busts the cache; the files and their order are what matter.
+    const scripts = [...PAGE.matchAll(/<script src="([^"]+)"/g)].map(m => m[1].split('?')[0]);
     assert.deepEqual(scripts, ['/scripts/supabase.js', '/scripts/supabase-init.js', '/scripts/articleship-gate.js',
         '/scripts/articleship-progress.js', '/scripts/articleship-checklist.js', '/scripts/articleship-cv-checklist.js']);
     assert.match(PAGE, /MSCArticleshipCvChecklist\.boot\(\)/);
@@ -348,7 +349,7 @@ test('untick all asks in place (Yes / Cancel), never through window.confirm(), t
     reset.click();
     assert.equal(box.hidden, false);
     assert.ok(reset.hidden, 'the question replaces the button');
-    assert.equal(doc.querySelector('.cvc-confirm-q').textContent, 'Untick all 22?');
+    assert.equal(doc.querySelector('.cvc-confirm-q').textContent, 'Start over and untick all 22?');
     assert.equal(box.getAttribute('role'), 'group');
     assert.equal(box.getAttribute('aria-labelledby'), 'cvc-confirm-q');
     assert.equal(doc.activeElement, doc.querySelector('.cvc-confirm-no'), 'focus on Cancel: Enter never wipes the ticks');
@@ -907,7 +908,7 @@ test('two CVs: "Checking: GST CV / Direct Tax CV" keeps the ticks of each domain
     assert.deepEqual(Object.keys(store.get().cvs.gst.ticks).sort(), ['file-name', 'one-page']);
     // The untick-all question names the CV, and only that CV is cleared.
     doc.querySelector('.cvc-reset').click();
-    assert.equal(doc.querySelector('.cvc-confirm-q').textContent, 'Untick all 22 on your Direct Tax CV?');
+    assert.equal(doc.querySelector('.cvc-confirm-q').textContent, 'Start over and untick all 22 on your Direct Tax CV?');
     doc.querySelector('.cvc-confirm-yes').click();
     assert.deepEqual(store.get().cvs['direct-tax'].ticks, {});
     assert.equal(Object.keys(store.get().cvs.gst.ticks).length, 2);
@@ -1018,4 +1019,62 @@ test('rows not live yet ("needs"): the check reads as it is until its row is in 
         assert.ok(![...card.querySelectorAll('a')].some(a => /HR\+round/.test(a.getAttribute('href'))));
         assert.match(card.textContent, /your interview answer: Guidebook ch 7, q8/);
     }
+});
+
+test('start over: the button sits in the sticky progress row and its question under the bar', () => {
+    const dom = new JSDOM('<!doctype html><div id="app"></div>');
+    const doc = dom.window.document;
+    const store = memoryStore({ ticks: {} });
+    CV.start({ container: doc.getElementById('app'), content: CONTENT, store });
+    const reset = doc.querySelector('.cvc-reset');
+    assert.equal(reset.textContent, 'Start over');
+    assert.equal(reset.parentNode, doc.querySelector('.ap-progress-text'), 'next to Jump, inside the progress row');
+    assert.equal(doc.querySelector('.cvc-confirm').parentNode, doc.querySelector('.ap-progress'), 'the question opens under the bar');
+    assert.equal(doc.querySelector('.cvc-reset-row'), null, 'nothing is left under the list');
+    assert.ok(reset.hidden, 'nothing ticked: nothing to start over');
+});
+
+test('two CVs: the second CV can be changed to another domain or removed, and the old CV\'s ticks are kept', () => {
+    const dom = new JSDOM('<!doctype html><div id="cvc-cvs" hidden></div><div id="app"></div>');
+    const doc = dom.window.document;
+    const switcher = doc.getElementById('cvc-cvs');
+    const store = memoryStore({ ticks: {} });
+    let domains = { main: 'statutory-audit', backup: 'direct-tax' };
+    const saved = [];
+    const page = CV.start({ container: doc.getElementById('app'), switcher, content: CONTENT, store, domains: () => domains,
+        domainSlugs: P.DOMAINS.map(d => d.slug), addBackup: slug => { saved.push(slug); domains = Object.assign({}, domains, { backup: slug }); } });
+    const names = () => [...switcher.querySelectorAll('.cvc-cv-name')].map(n => n.textContent);
+    assert.deepEqual(names(), ['Audit CV', 'Direct Tax CV']);
+    page.choose('direct-tax');
+    page.list.tick('one-page', true);
+    const select = switcher.querySelector('select.cvc-change-select');
+    assert.equal(switcher.querySelector('.cvc-change .cvc-add-label').textContent, 'Second CV:');
+    assert.equal(select.value, 'direct-tax', 'shows the current second CV');
+    const values = [...select.options].map(o => o.value);
+    assert.ok(!values.includes('statutory-audit'), 'never the first CV\'s own domain');
+    assert.equal(values.at(-1), '', 'the last choice removes the second CV');
+    select.value = 'gst';
+    select.dispatchEvent(new dom.window.Event('change'));
+    assert.deepEqual(saved, ['gst']);
+    assert.deepEqual(names(), ['Audit CV', 'GST CV']);
+    assert.equal(page.checking(), 'statutory-audit', 'the replaced CV was open: back to the first one');
+    assert.equal(page.summary().done, 0, 'the new second CV starts clear');
+    assert.deepEqual(store.get().cvs['direct-tax'].ticks, { 'one-page': true }, 'the old second CV keeps its ticks');
+    switcher.querySelector('select.cvc-change-select').value = '';
+    switcher.querySelector('select.cvc-change-select').dispatchEvent(new dom.window.Event('change'));
+    assert.deepEqual(saved, ['gst', null]);
+    assert.ok(switcher.querySelector('select.cvc-add-select:not(.cvc-change-select)'), 'one domain again: "Add a second CV" is back');
+    assert.deepEqual(names(), []);
+});
+
+test('the side list shows how far each section is', () => {
+    const dom = new JSDOM('<!doctype html><nav id="cvc-nav"></nav><div id="app"></div>');
+    const doc = dom.window.document;
+    const store = memoryStore({ ticks: {} });
+    const page = CV.start({ container: doc.getElementById('app'), nav: doc.getElementById('cvc-nav'), content: CONTENT, store });
+    const first = doc.querySelector('.cvc-nav-link');
+    assert.equal(first.style.getPropertyValue('--pct'), '0%');
+    const ids = page.model.sections[0].items.map(item => item.id);
+    ids.forEach(id => page.list.tick(id, true));
+    assert.equal(doc.querySelector('.cvc-nav-link').style.getPropertyValue('--pct'), '100%');
 });
