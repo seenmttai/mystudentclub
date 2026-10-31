@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Got Placed? Get Your Company WhatsApp Groups - My Student Club</title>
+    <meta name="description" content="Share your offer letter once. When it is verified, you get the My Student Club WhatsApp groups for your company, your city and your batch.">
+    <meta name="robots" content="noindex">
+    <link rel="canonical" href="https://www.mystudentclub.com/offer-groups">
+    <link rel="icon" href="/favicon.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/scripts/resource-library.css?v=20261003.2">
+    <link rel="stylesheet" href="/scripts/offer-groups.css?v=20261031.1">
+    <script src="/scripts/vendor/supabase.js" defer></script>
+    <script src="/scripts/supabase-init.js?v=20260927.9" defer></script>
+    <script src="/scripts/vendor/pdf.min.js" defer></script>
+    <script src="/scripts/offer-groups.js?v=20261031.1" defer></script>
+</head>
+<body class="og-page">
+    <header class="floating-header">
+        <div class="header-container">
+            <a href="/" class="brand-link" aria-label="My Student Club home">
+                <img src="/assets/logo.png" alt="My Student Club" class="brand-logo">
+            </a>
+            <div class="header-actions">
+                <a href="/profile.html" class="auth-icon-btn" aria-label="My profile">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                </a>
+                <button class="menu-button-style" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="expandedMenu" id="menuButton">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="expanded-menu" id="expandedMenu">
+        <button type="button" class="menu-close-btn" id="menuCloseBtn" aria-label="Close menu">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+        <div class="menu-items">
+            <a href="/" class="menu-item">Home</a>
+            <a href="/profile.html" class="menu-item">My Profile</a>
+            <a href="/links" class="menu-item">MSC WhatsApp Communities</a>
+            <a href="/ca-industrial-training-program/" class="menu-item">MSC Industrial Training Program</a>
+            <a href="/articleship-program/" class="menu-item">MSC Articleship Program</a>
+            <a href="/msc-ca-fresher-program/" class="menu-item">MSC CA Freshers Program</a>
+            <a href="/contact.html" class="menu-item" style="margin-top: 0.5rem;">Contact Us</a>
+        </div>
+    </div>
+
+    <main class="og-main" id="main-content">
+        <section class="og-hero" aria-labelledby="og-title">
+            <p class="og-eyebrow">Got placed? 🎉</p>
+            <h1 id="og-title">Share your offer letter, get your company groups</h1>
+            <p>Once your letter is verified, you get the WhatsApp groups for your company and city, plus the MSC student group.</p>
+            <ol class="og-how" aria-label="How it works">
+                <li><b>1</b>Tell us where you are joining</li>
+                <li><b>2</b>Upload your offer letter</li>
+                <li><b>3</b>Join your groups</li>
+            </ol>
+        </section>
+        <div id="offer-app" aria-live="polite" aria-busy="true">
+            <section class="og-card og-center"><div class="og-spinner" aria-hidden="true"></div><p class="og-muted">Loading…</p></section>
+        </div>
+        <p class="og-privacy">Only the MSC team sees your offer letter, to check it. You can hide the stipend or salary before uploading.</p>
+        <noscript><p>Please enable JavaScript to share your offer letter.</p></noscript>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const button = document.getElementById('menuButton'), menu = document.getElementById('expandedMenu'), closeBtn = document.getElementById('menuCloseBtn');
+            if (!button || !menu || !closeBtn) return;
+            const setOpen = open => { menu.classList.toggle('active', open); button.setAttribute('aria-expanded', String(open)); };
+            button.addEventListener('click', () => setOpen(!menu.classList.contains('active')));
+            closeBtn.addEventListener('click', () => setOpen(false));
+            document.addEventListener('click', e => { if (menu.classList.contains('active') && !menu.contains(e.target) && !button.contains(e.target)) setOpen(false); });
+            document.addEventListener('keydown', e => { if (e.key === 'Escape' && menu.classList.contains('active')) { setOpen(false); button.focus(); } });
+        });
+    </script>
+</body>
+</html>
