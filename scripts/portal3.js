@@ -125,6 +125,18 @@ function getPublicJobSelectColumns(tableName) {
     return columns;
 }
 
+// Hidden vacancies (third-party reposts and the like) stay in the table but never show on the site.
+// hiddenFilterOff covers the time before the `hidden` column exists: show everything rather than nothing.
+let hiddenFilterOff = false;
+
+function excludeHidden(query) {
+    return hiddenFilterOff ? query : query.not('hidden', 'is', true);
+}
+
+function isHiddenColumnError(error) {
+    return Boolean(error && error.message && error.message.includes('hidden'));
+}
+
 function slugifyText(text) {
     if (text === null || text === undefined || text === '') return '';
     return String(text)
@@ -1500,7 +1512,7 @@ async function fetchJobs() {
         }
 
         const buildQuery = (cols) => {
-            let q = supabaseClient.from(currentTable).select(cols);
+            let q = excludeHidden(supabaseClient.from(currentTable).select(cols));
 
             // Optimize keyword query building - pre-process terms once
             if (state.keywords.length > 0) {
@@ -1645,6 +1657,15 @@ async function fetchJobs() {
             selectColumns = selectColumns.replace(', is_exclusive', '');
             query = buildQuery(selectColumns);
             const fallbackResult = await query;
+            data = fallbackResult.data;
+            error = fallbackResult.error;
+        }
+
+        // Same failsafe for the hidden column.
+        if (isHiddenColumnError(error) && !hiddenFilterOff) {
+            console.warn('hidden column does not exist on Supabase yet. Showing all vacancies.');
+            hiddenFilterOff = true;
+            const fallbackResult = await buildQuery(selectColumns);
             data = fallbackResult.data;
             error = fallbackResult.error;
         }
@@ -3793,11 +3814,16 @@ function checkAndOpenSharedJob() {
 // Fetch a specific shared job and open modal
 async function fetchSharedJob(jobId) {
     try {
-        const { data, error } = await supabaseClient
+        const fetchJob = () => excludeHidden(supabaseClient
             .from(currentTable)
             .select(getPublicJobSelectColumns(currentTable))
-            .eq('id', jobId)
+            .eq('id', jobId))
             .maybeSingle();
+        let { data, error } = await fetchJob();
+        if (isHiddenColumnError(error) && !hiddenFilterOff) {
+            hiddenFilterOff = true;
+            ({ data, error } = await fetchJob());
+        }
 
         if (!error && data) {
             setTimeout(() => showModal(data), 300);
@@ -4805,11 +4831,16 @@ async function dv2PopulateTrending() {
     const list = document.getElementById('dv2TrendingList');
     if (!card || !list) return;
     try {
-        const { data, error } = await supabaseClient
+        const fetchTrending = () => excludeHidden(supabaseClient
             .from(currentTable)
-            .select(getPublicJobSelectColumns(currentTable))
+            .select(getPublicJobSelectColumns(currentTable)))
             .order('Created_At', { ascending: false, nullsFirst: false })
             .limit(5);
+        let { data, error } = await fetchTrending();
+        if (isHiddenColumnError(error) && !hiddenFilterOff) {
+            hiddenFilterOff = true;
+            ({ data, error } = await fetchTrending());
+        }
         if (error || !data || data.length === 0) return;
 
         list.innerHTML = '';
