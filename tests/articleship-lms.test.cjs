@@ -211,7 +211,13 @@ test('release 1 (002): the full course\'s rows in its order, a short description
         assert.deepEqual(titles, order.filter(t => titles.includes(t)), `Day ${session.day_number}: same order as the full course`);
         session.resources.forEach(r => assert.deepEqual(r, all.resources.find(x => x.title === r.title)));
         const complete = titles.length === order.length;
-        assert.equal(session.description, complete ? all.description : all.description_partial, `Day ${session.day_number} description`);
+        if (all.resources.some(r => r.title === WORK_SIMULATION_ROW.title)) {
+            // Day 1: release 2 gave it a description that names the Work Simulation; release 1's never does.
+            assert.ok(!/work simulation/i.test(session.description), `Day ${session.day_number}: release 1 never names the Work Simulation`);
+            assert.ok(/work simulation/i.test(all.description), `Day ${session.day_number}: release 2's description names it`);
+        } else {
+            assert.equal(session.description, complete ? all.description : all.description_partial, `Day ${session.day_number} description`);
+        }
         // A description never names a row that is not in this session.
         for (const title of order.filter(t => !titles.includes(t))) {
             assert.ok(!session.description.includes(title), `Day ${session.day_number} names "${title}", which is not in release 1`);
