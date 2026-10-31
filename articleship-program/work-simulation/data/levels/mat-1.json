@@ -1,0 +1,1544 @@
+{
+ "id": "mat-1",
+ "domain": "ma-tax",
+ "number": 1,
+ "title": "Cash-out options note",
+ "minutes": 35,
+ "learn": [
+  "How dividends, buybacks and capital reductions are taxed in tax year 2026–27",
+  "How first in, first out sets the cost of demat shares",
+  "How the buyback limit and the Tribunal shape the choice"
+ ],
+ "do": [
+  "Read the pack and settle four facts",
+  "Set out how each route is taxed",
+  "Work out the tax and draft the note"
+ ],
+ "case": {
+  "role": "First-year article assistant, borrowed by the M&A tax team for the day",
+  "client": "Paralikar Holdings Private Limited (Holdings), Pune, the Paralikar family’s holding company, and its wholly owned subsidiary Paralikar Speciality Chemicals Private Limited (PSC), Taloja",
+  "team": "Kaizad Engineer (Director, M&A Tax); Varun Shetty, second-year article, your buddy; Ishaan Sethi (Manager, Deals and Valuation), who valued PSC’s shares; at Holdings, Madhav Paralikar (Chairman), who owns it with Leena and Aditya Paralikar",
+  "goal": "A one-page first cut comparing three ways to move ₹40 crore of surplus cash from PSC up to Holdings, with the tax each costs Holdings.",
+  "period": "Tax year 2026–27: the money moves before 31 March 2027",
+  "where": "M&A tax desk, Prabhat Road office · Monday 11 January 2027"
+ },
+ "brief": {
+  "from": "kaizad",
+  "time": "10:05 am",
+  "messages": [
+   "Madhav Paralikar wants ₹40 crore moved from PSC up to Holdings before 31 March. Dividend, buyback or capital reduction: what does each cost Holdings in tax?",
+   "One page, my sheet’s base rates, no surcharge yet. To me by 4 pm, please; I call Madhav tomorrow morning."
+  ]
+ },
+ "documents": [
+  {
+   "id": "madhav",
+   "type": "letter",
+   "style": "email",
+   "title": "Madhav’s mail · moving ₹40 crore",
+   "tab": "Madhav’s mail",
+   "from": {
+    "name": "Madhav Paralikar",
+    "email": "madhav.paralikar@email.com"
+   },
+   "to": [
+    {
+     "name": "Kaizad Engineer",
+     "email": "kaizad.engineer@email.com"
+    }
+   ],
+   "date": "Fri, 8 Jan 2027, 7:18 pm",
+   "subject": "Taloja cash: moving ₹40 crore up to Holdings",
+   "body": [
+    "Kaizad,",
+    "Thank you for this morning’s call. The position in one place, as promised:",
+    "- PSC has about ₹48.6 crore in the bank, nearly all of it from last February’s sale of the adhesives division. The tax on that gain was paid in 2025–26, before the year closed.",
+    "- The Taloja plant needs about ₹8.6 crore over the next year. The other ₹40 crore should come up to Holdings.",
+    "- Holdings has signed for the warehouse plot at Chakan. ₹40 crore is due at registration, on or before 31 March 2027.",
+    "- Holdings keeps the money: the plot is for our next business. It will not pay the family a dividend this year or next.",
+    "The family is split: Leena has heard that a buyback is cheaper, and Aditya says a capital reduction is cleaner. I want one answer: the least tax first, then the least fuss.",
+    "Ishaan sent me his valuation summary this afternoon; I attach it so you have everything in one place. Holdings’ register of investments and PSC’s audited balance sheet are with your team.",
+    "Regards,"
+   ],
+   "sign": {
+    "name": "Madhav Paralikar",
+    "role": "Chairman",
+    "for": "Paralikar Holdings Private Limited"
+   },
+   "attachments": [
+    {
+     "name": "PSC share valuation, 31 Dec 2026.pdf",
+     "doc": "valuer"
+    }
+   ]
+  },
+  {
+   "id": "sheet",
+   "type": "table",
+   "style": "sheet",
+   "title": "Kaizad’s options sheet · first cut",
+   "tab": "Options sheet",
+   "kindLabel": "Kaizad’s sheet",
+   "sheetName": "Options",
+   "check": false,
+   "freeze": true,
+   "columns": [
+    {
+     "key": "a",
+     "label": "Route or rate"
+    },
+    {
+     "key": "b",
+     "label": "₹ crore or %",
+     "align": "right"
+    }
+   ],
+   "rows": [
+    {
+     "a": "Route A: interim dividend",
+     "b": "40.00"
+    },
+    {
+     "a": "Route B: buyback, 10,00,000 shares at ₹182 (Ishaan’s value)",
+     "b": "18.20"
+    },
+    {
+     "a": "Route B: interim dividend for the rest",
+     "b": "21.80"
+    },
+    {
+     "a": "Route C: capital reduction",
+     "b": "40.00"
+    },
+    {
+     "a": "Base rates, tax year 2026–27",
+     "b": "",
+     "_class": "head"
+    },
+    {
+     "a": "Holdings: 22% option, section 200 (opted)",
+     "b": "22%"
+    },
+    {
+     "a": "Long-term capital gains (section 197): unlisted shares held over 24 months",
+     "b": "12.5%"
+    },
+    {
+     "a": "Promoter’s additional tax, long-term buyback gain, company promoter (section 69(2))",
+     "b": "9.5%"
+    },
+    {
+     "a": "TDS on a dividend (section 393(1)), deducted by PSC before it pays",
+     "b": "10%"
+    }
+   ],
+   "notes": [
+    "Surcharge and cess: leave them out of this first cut. I add them in the second cut, before I call Madhav. KE",
+    "Cost of the shares bought back: as the Act sets it for shares held in demat (my extracts). Check route B against the Companies Act limit before you work it."
+   ]
+  },
+  {
+   "id": "bs",
+   "type": "table",
+   "style": "statement",
+   "title": "PSC · Balance sheet, 31 March 2026",
+   "tab": "Balance sheet",
+   "company": {
+    "name": "Paralikar Speciality Chemicals Private Limited",
+    "address": "Taloja MIDC, Navi Mumbai, Maharashtra"
+   },
+   "heading": "Balance sheet as at 31 March 2026",
+   "subtitle": "₹ crore · from the audited financial statements",
+   "columns": [
+    {
+     "key": "item",
+     "label": "Particulars"
+    },
+    {
+     "key": "fy26",
+     "label": "31.03.2026",
+     "format": "amount"
+    },
+    {
+     "key": "fy25",
+     "label": "31.03.2025",
+     "format": "amount"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "h1",
+     "item": "Equity and liabilities",
+     "_class": "head"
+    },
+    {
+     "_id": "h2",
+     "item": "Shareholders’ funds",
+     "_class": "head"
+    },
+    {
+     "_id": "sc",
+     "item": "Share capital: 80,00,000 equity shares of ₹10 each",
+     "fy26": 8.0,
+     "fy25": 8.0,
+     "_indent": 1
+    },
+    {
+     "_id": "rs",
+     "item": "Reserves and surplus",
+     "fy26": 70.4,
+     "fy25": 31.65,
+     "_sumOf": [
+      "prem",
+      "gr",
+      "pl"
+     ],
+     "_indent": 1
+    },
+    {
+     "_id": "prem",
+     "item": "Of which: securities premium",
+     "fy26": 9.0,
+     "fy25": 9.0,
+     "_indent": 2
+    },
+    {
+     "_id": "gr",
+     "item": "Of which: general reserve",
+     "fy26": 4.0,
+     "fy25": 4.0,
+     "_indent": 2
+    },
+    {
+     "_id": "pl",
+     "item": "Of which: surplus in the statement of profit and loss",
+     "fy26": 57.4,
+     "fy25": 18.65,
+     "_indent": 2
+    },
+    {
+     "_id": "sf",
+     "item": "Total shareholders’ funds",
+     "fy26": 78.4,
+     "fy25": 39.65,
+     "_class": "subtotal",
+     "_sumOf": [
+      "sc",
+      "rs"
+     ]
+    },
+    {
+     "_id": "h3",
+     "item": "Non-current liabilities",
+     "_class": "head"
+    },
+    {
+     "_id": "ltb",
+     "item": "Long-term borrowings",
+     "fy26": "–",
+     "fy25": 6.5,
+     "_indent": 1
+    },
+    {
+     "_id": "dtl",
+     "item": "Deferred tax liabilities (net)",
+     "fy26": 1.12,
+     "fy25": 1.86,
+     "_indent": 1
+    },
+    {
+     "_id": "ltp",
+     "item": "Long-term provisions",
+     "fy26": 0.64,
+     "fy25": 0.71,
+     "_indent": 1
+    },
+    {
+     "_id": "ncl",
+     "item": "Total non-current liabilities",
+     "fy26": 1.76,
+     "fy25": 9.07,
+     "_class": "subtotal",
+     "_sumOf": [
+      "ltb",
+      "dtl",
+      "ltp"
+     ]
+    },
+    {
+     "_id": "h4",
+     "item": "Current liabilities",
+     "_class": "head"
+    },
+    {
+     "_id": "tp",
+     "item": "Trade payables",
+     "fy26": 9.86,
+     "fy25": 14.2,
+     "_indent": 1
+    },
+    {
+     "_id": "ocl",
+     "item": "Other current liabilities",
+     "fy26": 3.28,
+     "fy25": 4.02,
+     "_indent": 1
+    },
+    {
+     "_id": "stp",
+     "item": "Short-term provisions",
+     "fy26": 0.42,
+     "fy25": 0.38,
+     "_indent": 1
+    },
+    {
+     "_id": "cl",
+     "item": "Total current liabilities",
+     "fy26": 13.56,
+     "fy25": 18.6,
+     "_class": "subtotal",
+     "_sumOf": [
+      "tp",
+      "ocl",
+      "stp"
+     ]
+    },
+    {
+     "_id": "tel",
+     "item": "Total equity and liabilities",
+     "fy26": 93.72,
+     "fy25": 67.32,
+     "_class": "total",
+     "_sumOf": [
+      "sf",
+      "ncl",
+      "cl"
+     ]
+    },
+    {
+     "_id": "h5",
+     "item": "Assets",
+     "_class": "head"
+    },
+    {
+     "_id": "h6",
+     "item": "Non-current assets",
+     "_class": "head"
+    },
+    {
+     "_id": "ppe",
+     "item": "Property, plant and equipment",
+     "fy26": 21.36,
+     "fy25": 36.1,
+     "_indent": 1
+    },
+    {
+     "_id": "cwip",
+     "item": "Capital work-in-progress",
+     "fy26": 1.84,
+     "fy25": 0.62,
+     "_indent": 1
+    },
+    {
+     "_id": "ltla",
+     "item": "Long-term loans and advances",
+     "fy26": 1.1,
+     "fy25": 1.24,
+     "_indent": 1
+    },
+    {
+     "_id": "nca",
+     "item": "Total non-current assets",
+     "fy26": 24.3,
+     "fy25": 37.96,
+     "_class": "subtotal",
+     "_sumOf": [
+      "ppe",
+      "cwip",
+      "ltla"
+     ]
+    },
+    {
+     "_id": "h7",
+     "item": "Current assets",
+     "_class": "head"
+    },
+    {
+     "_id": "inv",
+     "item": "Inventories",
+     "fy26": 7.62,
+     "fy25": 12.48,
+     "_indent": 1
+    },
+    {
+     "_id": "tr",
+     "item": "Trade receivables",
+     "fy26": 11.4,
+     "fy25": 13.96,
+     "_indent": 1
+    },
+    {
+     "_id": "cash",
+     "item": "Cash and cash equivalents",
+     "fy26": 48.6,
+     "fy25": 1.74,
+     "_indent": 1
+    },
+    {
+     "_id": "stla",
+     "item": "Short-term loans and advances",
+     "fy26": 1.8,
+     "fy25": 1.18,
+     "_indent": 1
+    },
+    {
+     "_id": "ca",
+     "item": "Total current assets",
+     "fy26": 69.42,
+     "fy25": 29.36,
+     "_class": "subtotal",
+     "_sumOf": [
+      "inv",
+      "tr",
+      "cash",
+      "stla"
+     ]
+    },
+    {
+     "_id": "ta",
+     "item": "Total assets",
+     "fy26": 93.72,
+     "fy25": 67.32,
+     "_class": "total",
+     "_sumOf": [
+      "nca",
+      "ca"
+     ]
+    }
+   ],
+   "notes": [
+    "The adhesives division was sold on 20 February 2026 for ₹72 crore, and the term loan was repaid from the proceeds. PSC has no borrowings.",
+    "These are the latest audited accounts. The accounts for 2026–27 will be audited after 31 March 2027."
+   ]
+  },
+  {
+   "id": "rom",
+   "type": "table",
+   "style": "plain",
+   "title": "PSC · Register of members",
+   "tab": "Members",
+   "kindLabel": "Register extract",
+   "icon": "ledger",
+   "company": {
+    "name": "Paralikar Speciality Chemicals Private Limited",
+    "address": "Taloja MIDC, Navi Mumbai, Maharashtra"
+   },
+   "heading": "Register of members (extract)",
+   "subtitle": "Equity shares of ₹10 each, fully paid · as on 31 December 2026",
+   "columns": [
+    {
+     "key": "name",
+     "label": "Member"
+    },
+    {
+     "key": "folio",
+     "label": "Folio"
+    },
+    {
+     "key": "shares",
+     "label": "Shares",
+     "format": "int"
+    },
+    {
+     "key": "form",
+     "label": "Held in"
+    }
+   ],
+   "rows": [
+    {
+     "folio": "E-001",
+     "name": "Paralikar Holdings Private Limited",
+     "shares": 7999999,
+     "form": "Demat"
+    },
+    {
+     "folio": "E-002",
+     "name": "Madhav Paralikar, as nominee of Paralikar Holdings Private Limited",
+     "shares": 1,
+     "form": "Demat"
+    },
+    {
+     "folio": "",
+     "name": "Total",
+     "shares": 8000000,
+     "form": "",
+     "_class": "total"
+    }
+   ],
+   "notes": [
+    "PSC is unlisted. Holdings owns every share, one of them through its nominee."
+   ]
+  },
+  {
+   "id": "invreg",
+   "type": "table",
+   "style": "plain",
+   "title": "Holdings · Register of investments",
+   "tab": "Investments",
+   "kindLabel": "Register extract",
+   "icon": "ledger",
+   "company": {
+    "name": "Paralikar Holdings Private Limited",
+    "address": "Pune"
+   },
+   "heading": "Register of investments (extract)",
+   "subtitle": "Equity shares of Paralikar Speciality Chemicals Private Limited (unlisted), face value ₹10",
+   "columns": [
+    {
+     "key": "lot",
+     "label": "Lot"
+    },
+    {
+     "key": "shares",
+     "label": "Shares",
+     "format": "int"
+    },
+    {
+     "key": "cost",
+     "label": "Cost (₹ crore)",
+     "format": "amount"
+    }
+   ],
+   "rows": [
+    {
+     "lot": "Lot 1 · 09-06-2004 · subscribed at par on incorporation, ₹10 a share",
+     "shares": 5000000,
+     "cost": 5.0
+    },
+    {
+     "lot": "Lot 2 · 22-09-2016 · rights issue at ₹40 a share (₹10 face value + ₹30 premium)",
+     "shares": 3000000,
+     "cost": 12.0
+    },
+    {
+     "lot": "Total",
+     "shares": 8000000,
+     "cost": 17.0,
+     "_class": "total"
+    }
+   ],
+   "notes": [
+    "Lot 1 was moved into Holdings’ demat account in 2014; lot 2 was allotted straight into it. One share of lot 1 is held by Madhav Paralikar as Holdings’ nominee."
+   ]
+  },
+  {
+   "id": "valuer",
+   "type": "card",
+   "style": "slip",
+   "title": "Valuation summary · ₹182 a share",
+   "tab": "Valuation",
+   "kindLabel": "Valuation summary",
+   "issuer": "Bapat Venkatesh & Co., Chartered Accountants · Deals and Valuation",
+   "heading": "Valuation of equity shares: summary",
+   "fields": [
+    {
+     "label": "Reference",
+     "value": "BVC/DV/PSC/01"
+    },
+    {
+     "label": "Company",
+     "value": "Paralikar Speciality Chemicals Private Limited"
+    },
+    {
+     "label": "Purpose",
+     "value": "Fair value of an equity share, for a proposed buyback"
+    },
+    {
+     "label": "Valuation date",
+     "value": "31 December 2026"
+    },
+    {
+     "label": "Method",
+     "value": "Discounted cash flow, cross-checked with net assets"
+    },
+    {
+     "label": "Equity value",
+     "value": "₹145.60 crore for 80,00,000 shares of ₹10"
+    },
+    {
+     "label": "Fair value per share",
+     "value": "₹182"
+    },
+    {
+     "label": "Report dated",
+     "value": "8 January 2027"
+    },
+    {
+     "label": "Prepared by",
+     "value": "Ishaan Sethi, Manager, Deals and Valuation"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "sign",
+     "text": "I. Sethi",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -4
+    }
+   ]
+  },
+  {
+   "id": "ita",
+   "type": "letter",
+   "style": "policy",
+   "title": "Income-tax Act, 2025 · extracts",
+   "tab": "Income-tax Act",
+   "kindLabel": "Act extracts",
+   "letterhead": "Income-tax Act, 2025, as amended by the Finance Act, 2026 · extracts for the Paralikar note",
+   "subject": "Sections 2(40), 67(7), 69, 93(2) and 148(1)",
+   "body": [
+    "Kaizad’s extracts. Read the section, not last year’s notes.",
+    "## Section 2(40): “dividend” includes",
+    "(d) any distribution to its shareholders by a company on the reduction of its capital, to the extent to which the company possesses accumulated profits, whether capitalised or not;",
+    "… where “accumulated profits” for the purposes of sub-clauses (a), (b), (d) and (e), shall include all profits of the company up to the date of distribution or payment referred to in those sub-clauses;",
+    "[Sub-clause (f), which made a buyback payment a dividend, was omitted by the Finance Act, 2026 from 1 April 2026.]",
+    "## Section 67(7): shares held through a depository",
+    "(7) If any person, at any time during the tax year, had any beneficial interest in any securities and any profits or gains arise from transfer made by the depository or participant of such beneficial interest in respect of securities, then, … (c) for the purposes of section 72 and section 2(101)(b), the cost of acquisition and the period of holding of any securities shall be determined on the basis of the first-in-first-out method.",
+    "## Section 69: Capital gains on purchase by company of its own shares",
+    "(1) If a shareholder … receives any consideration from any company for the purchase of its own shares …, then, subject to the provisions of section 72, the difference between the cost of acquisition and the value of consideration so received shall be deemed to be the “Capital gains” arising to such shareholder …",
+    "(2) In respect of capital gains referred to in sub-section (1), where a company purchases its own shares … in accordance with the provisions of section 68 of the Companies Act, 2013 and the shareholder … is a promoter, the aggregate income-tax payable on such capital gains shall be: (a) the income-tax payable on such capital gains in accordance with the provisions of this Act; and (b) an additional income-tax … computed at the rate specified in the Table below:",
+    {
+     "table": {
+      "columns": [
+       {
+        "key": "inc",
+        "label": "Income"
+       },
+       {
+        "key": "dom",
+        "label": "Promoter a domestic company"
+       },
+       {
+        "key": "oth",
+        "label": "Any other promoter"
+       }
+      ],
+      "rows": [
+       {
+        "inc": "Short-term capital gains referred to in section 196",
+        "dom": "2%",
+        "oth": "10%"
+       },
+       {
+        "inc": "Long-term capital gains referred to in section 197 or section 198",
+        "dom": "9.5%",
+        "oth": "17.5%"
+       }
+      ]
+     }
+    },
+    "(3) … (b) in any other case [a company not listed in India], “promoter” means: (i) a “promoter” as defined in section 2(69) of the Companies Act, 2013; or (ii) a person who holds, directly or indirectly, more than 10% of the shareholding in the company;",
+    "[Sub-sections (2) and (3) as substituted by the Finance Act, 2026, from 1 April 2026.]",
+    "## Section 93(2): deductions from income from other sources",
+    "(2) Irrespective of anything contained in sub-section (1), in respect of any dividend income … no deduction shall be allowed.",
+    "## Section 148(1): inter-corporate dividends",
+    "(1) If the gross total income of a domestic company in any tax year includes any income by way of dividends from: (a) any other domestic company; … such domestic company shall be allowed a deduction of an amount equal to so much of the income by way of dividends received … as does not exceed the amount of dividend distributed by it at least one month before the due date for filing the return of income under section 263(1)."
+   ],
+   "annotations": [
+    {
+     "kind": "highlight",
+     "text": "Sub-sections (2) and (3) as substituted by the Finance Act, 2026",
+     "color": "yellow"
+    },
+    {
+     "kind": "hand",
+     "text": "New this year. KE",
+     "color": "blue",
+     "at": "top-right",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "ca",
+   "type": "letter",
+   "style": "policy",
+   "title": "Companies Act, 2013 · extracts",
+   "tab": "Companies Act",
+   "kindLabel": "Act extracts",
+   "letterhead": "Companies Act, 2013 · extracts for the Paralikar note",
+   "subject": "Sections 2(43), 66, 68 and 123(3)",
+   "body": [
+    "## Section 2(43)",
+    "(43) “free reserves” means such reserves which, as per the latest audited balance sheet of a company, are available for distribution as dividend: …",
+    "## Section 66: Reduction of share capital",
+    "(1) Subject to confirmation by the Tribunal on an application by the company, a company limited by shares … may, by a special resolution, reduce the share capital in any manner and in particular, may … (b) … (ii) pay off any paid-up share capital which is in excess of the wants of the company, …",
+    "(2) The Tribunal shall give notice of every application made to it under sub-section (1) to the Central Government, Registrar … and the creditors of the company and shall take into consideration the representations, if any, made to it … within a period of three months from the date of receipt of the notice: …",
+    "## Section 68: Power of company to purchase its own securities",
+    "(1) … a company may purchase its own shares or other specified securities (hereinafter referred to as buy-back) out of: (a) its free reserves; (b) the securities premium account; or (c) the proceeds of the issue of any shares or other specified securities: …",
+    "(2) No company shall purchase its own shares or other specified securities under sub-section (1), unless: (a) the buy-back is authorised by its articles; (b) a special resolution has been passed at a general meeting of the company authorising the buy-back: Provided that nothing contained in this clause shall apply to a case where (i) the buy-back is, ten per cent or less of the total paid-up equity capital and free reserves of the company; and (ii) such buy-back has been authorised by the Board by means of a resolution passed at its meeting; (c) the buy-back is twenty-five per cent or less of the aggregate of paid-up capital and free reserves of the company: …",
+    "Provided that no offer of buy-back under this sub-section shall be made within a period of one year reckoned from the date of the closure of the preceding offer of buy-back, if any.",
+    "Explanation II: For the purposes of this section, “free reserves” includes securities premium account.",
+    "## Section 123(3): interim dividend",
+    "(3) The Board of Directors of a company may declare interim dividend during any financial year … out of the surplus in the profit and loss account or out of profits of the financial year for which such interim dividend is sought to be declared …"
+   ]
+  },
+  {
+   "id": "varun",
+   "type": "chat",
+   "title": "Varun · on the Paralikar note",
+   "tab": "Chat",
+   "with": "Varun Shetty",
+   "date": "Monday 11 January",
+   "me": "You",
+   "group": false,
+   "messages": [
+    {
+     "from": "varun",
+     "time": "10:21 am",
+     "text": "Paralikar note? I did one like it last year. A buyback is taxed as dividend now, so all three routes come out the same. Write “pay a dividend, least fuss” and come for lunch."
+    },
+    {
+     "from": "varun",
+     "time": "10:22 am",
+     "text": "For cost I took the average: ₹17 crore ÷ 80 lakh shares = ₹21.25 a share. Nobody said anything."
+    },
+    {
+     "from": "You",
+     "time": "10:26 am",
+     "text": "Kaizad sir’s sheet says tax year 2026–27. Same rules as last year?"
+    },
+    {
+     "from": "varun",
+     "time": "10:27 am",
+     "text": "Should be. Check his Act extracts if you want to be sure."
+    }
+   ]
+  }
+ ],
+ "tasks": [
+  {
+   "id": "t1",
+   "type": "choice",
+   "stage": "Planning",
+   "title": "Read the pack",
+   "prompt": "Before any numbers, Kaizad wants four facts settled from the pack: what the bought-back shares cost Holdings, whether Holdings is a promoter, how big a buyback company law allows this year, and what decides the tax on a capital reduction. Your answers go to Kaizad when you move on.",
+   "weight": 1.25,
+   "noun": [
+    "answer",
+    "answers"
+   ],
+   "lockOnLeave": {
+    "ask": "Hand your answers to Kaizad?",
+    "note": "You can’t change them after this.",
+    "yes": "Hand them in",
+    "done": "Handed to Kaizad. You can read your answers but not change them."
+   },
+   "hints": [
+    "Read the Income-tax Act extracts before Varun’s chat: section 69 changed from 1 April 2026.",
+    "Shares in a demat account leave first in, first out. For the buyback limit, see what the Companies Act counts as free reserves."
+   ],
+   "questions": [
+    {
+     "id": "q1",
+     "multi": false,
+     "text": "In the buyback working, what does each of the 10,00,000 shares bought back cost Holdings?",
+     "options": [
+      {
+       "id": "a",
+       "text": "₹40, the 2016 rights price: Holdings tenders its dearer shares",
+       "why": "Holdings can’t pick the dearer lot. For shares in a demat account the Act sets cost first in, first out, so the 2004 shares go first, at ₹10."
+      },
+      {
+       "id": "b",
+       "text": "₹21.25, the average: ₹17 crore of cost spread over all 80 lakh shares",
+       "why": "Averaging is Varun’s shortcut, not the Act’s rule. Demat shares go first in, first out, so these ten lakh come from the 2004 lot, at ₹10."
+      },
+      {
+       "id": "c",
+       "correct": true,
+       "text": "₹10, the 2004 subscription price: the oldest shares leave first",
+       "why": "Section 67(7) sets the cost of demat shares first in, first out. The 2004 shares went in first, so all ten lakh cost ₹10, and held since 2004 they are long-term."
+      },
+      {
+       "id": "d",
+       "text": "₹182, the valuation’s price: that is what each share is worth today",
+       "why": "₹182 is what Holdings receives, not what it paid. Its cost is ₹10 a share, because the 2004 shares leave the demat account first."
+      }
+     ]
+    },
+    {
+     "id": "q2",
+     "multi": false,
+     "text": "Is Holdings a promoter for the buyback’s additional tax?",
+     "options": [
+      {
+       "id": "a",
+       "text": "No: a promoter has to be a person, so a company never counts",
+       "why": "A company is a person under the Act, and for an unlisted company anyone holding more than 10% is a promoter. Holdings has all of it."
+      },
+      {
+       "id": "b",
+       "correct": true,
+       "text": "Yes: it holds more than 10% of an unlisted company’s shares",
+       "why": "Section 69(3) counts anyone holding more than 10% of an unlisted company, directly or indirectly. Holdings has 100%, so 9.5% sits on top of the 12.5% on a long-term gain."
+      },
+      {
+       "id": "c",
+       "text": "No: the promoter test applies only to companies listed in India",
+       "why": "Listed companies use SEBI’s buyback definition; every other company uses the Companies Act’s definition or the more-than-10% test. PSC is unlisted, and Holdings holds 100%."
+      }
+     ]
+    },
+    {
+     "id": "q3",
+     "multi": false,
+     "text": "Route B needs a buyback. What is the most PSC can spend on one this year?",
+     "options": [
+      {
+       "id": "a",
+       "text": "₹7.84 crore: 10% of its paid-up capital and free reserves",
+       "why": "10% is what the Board can approve on its own. With a special resolution, which Holdings can pass, the limit is 25%: ₹19.60 crore."
+      },
+      {
+       "id": "b",
+       "text": "₹17.35 crore: 25% of capital and reserves, leaving out the premium",
+       "why": "For a buyback, free reserves include the securities premium (Explanation II). 25% of ₹78.40 crore is ₹19.60 crore."
+      },
+      {
+       "id": "c",
+       "text": "₹40.00 crore: no limit applies when one company holds every share",
+       "why": "The limits apply to every buyback, whoever holds the shares, and a second offer has to wait a year after the first closes."
+      },
+      {
+       "id": "d",
+       "correct": true,
+       "text": "₹19.60 crore: 25% of capital and free reserves, premium included",
+       "why": "25% of ₹8.00 crore of capital and ₹70.40 crore of free reserves, the premium counted for a buyback. Ten lakh shares at ₹182, ₹18.20 crore, fit; ₹40 crore never could."
+      }
+     ]
+    },
+    {
+     "id": "q4",
+     "multi": false,
+     "text": "What decides how much of a capital-reduction payout is taxed as dividend?",
+     "options": [
+      {
+       "id": "a",
+       "correct": true,
+       "text": "PSC’s accumulated profits: ₹61.40 crore at the last balance sheet",
+       "why": "Dividend to the extent of accumulated profits, capitalised or not. The ₹57.40 crore surplus in profit and loss and the ₹4.00 crore general reserve already cover the ₹40 crore, and profits since only add."
+      },
+      {
+       "id": "b",
+       "text": "Its share capital: only the ₹8.00 crore of capital being reduced",
+       "why": "Capital tells company law what is reduced. The Act asks how much accumulated profit PSC has: ₹61.40 crore, more than the payout."
+      },
+      {
+       "id": "c",
+       "text": "Its cash: dividend goes only as far as the ₹48.60 crore in the bank",
+       "why": "Cash decides what PSC can pay, not how Holdings is taxed. The Act looks at accumulated profits: ₹61.40 crore."
+      },
+      {
+       "id": "d",
+       "text": "All its reserves: ₹70.40 crore, the securities premium included",
+       "why": "Premium is money shareholders paid in, not profit. Without it accumulated profits are ₹61.40 crore, still more than the ₹40 crore."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t2",
+   "type": "items",
+   "stage": "Fieldwork",
+   "title": "Set out how each route is taxed",
+   "prompt": "Kaizad has your answers. Now set out each route as Holdings will be taxed on it: the head of income, whether the 9.5% promoter tax applies, whether Holdings’ cost of the shares comes off, and what PSC needs under company law.",
+   "weight": 2,
+   "noun": [
+    "route",
+    "routes"
+   ],
+   "sampleColumns": true,
+   "lockOnLeave": {
+    "ask": "Hand your route table to Kaizad?",
+    "note": "You can’t change it after this.",
+    "yes": "Hand it in",
+    "done": "Handed to Kaizad. You can read your table but not change it."
+   },
+   "hints": [
+    "For each route, three tax questions: which head of income? Does section 69(2) reach it? Can Holdings’ cost of the shares come off, and off how much? Then what PSC needs under the Companies Act."
+   ],
+   "columns": [
+    {
+     "key": "label"
+    }
+   ],
+   "fields": [
+    {
+     "id": "head",
+     "kind": "choice",
+     "label": "How Holdings is taxed",
+     "short": "Taxed as",
+     "layout": "list",
+     "weight": 2,
+     "chip": true,
+     "options": [
+      {
+       "id": "div",
+       "label": "Dividend in full, whatever PSC’s accumulated profits",
+       "short": "Dividend"
+      },
+      {
+       "id": "cg",
+       "label": "Capital gains: the price less the shares’ cost",
+       "short": "Capital gains"
+      },
+      {
+       "id": "split",
+       "label": "Dividend as far as PSC’s accumulated profits go, a capital receipt above",
+       "short": "Dividend up to profits"
+      },
+      {
+       "id": "none",
+       "label": "Not taxed: it is Holdings’ own money coming back",
+       "short": "Not taxed"
+      }
+     ]
+    },
+    {
+     "id": "extra",
+     "kind": "choice",
+     "label": "Does the 9.5% promoter tax apply?",
+     "short": "Promoter tax",
+     "options": [
+      {
+       "id": "yes",
+       "label": "Yes"
+      },
+      {
+       "id": "no",
+       "label": "No"
+      }
+     ]
+    },
+    {
+     "id": "cost",
+     "kind": "choice",
+     "label": "Does Holdings’ cost of the shares come off?",
+     "short": "Cost comes off",
+     "layout": "list",
+     "options": [
+      {
+       "id": "no",
+       "label": "No: no shares are given up, so there is no cost",
+       "short": "No"
+      },
+      {
+       "id": "yes",
+       "label": "Yes: the cost comes off the price",
+       "short": "Yes"
+      },
+      {
+       "id": "above",
+       "label": "Only off any part paid above accumulated profits",
+       "short": "Only above profits"
+      }
+     ]
+    },
+    {
+     "id": "law",
+     "kind": "choice",
+     "label": "What PSC needs under company law",
+     "short": "Company law",
+     "layout": "list",
+     "options": [
+      {
+       "id": "board",
+       "label": "A Board resolution: an interim dividend",
+       "short": "Board resolution"
+      },
+      {
+       "id": "special",
+       "label": "A special resolution: over 10% of capital and free reserves",
+       "short": "Special resolution"
+      },
+      {
+       "id": "tribunal",
+       "label": "A special resolution and the Tribunal’s confirmation",
+       "short": "Tribunal"
+      }
+     ]
+    }
+   ],
+   "docs": [
+    "sheet",
+    "ita",
+    "ca",
+    "bs",
+    "invreg",
+    "rom",
+    "valuer",
+    "madhav",
+    "varun"
+   ],
+   "items": [
+    {
+     "id": "ra",
+     "label": "Route A · Interim dividend of ₹40 crore",
+     "short": "Route A",
+     "prompt": "PSC’s Board declares an interim dividend of ₹40 crore, all of it to Holdings.",
+     "docs": [
+      "ca",
+      "ita"
+     ],
+     "answer": {
+      "head": "div",
+      "extra": "no",
+      "cost": "no",
+      "law": "board"
+     },
+     "note": "All ₹40 crore is dividend, income from other sources at Holdings’ 22%. No promoter tax, and nothing comes off: no shares go, and section 93(2) lets no expense come off a dividend. The Board declares it as an interim dividend."
+    },
+    {
+     "id": "rb",
+     "label": "Route B · Buyback of 10,00,000 shares at ₹182",
+     "short": "Route B",
+     "prompt": "PSC buys back 10,00,000 of Holdings’ shares at ₹182, ₹18.20 crore. Answer for the buyback: the rest goes as a dividend, as in route A.",
+     "docs": [
+      "invreg",
+      "ita",
+      "ca"
+     ],
+     "answer": {
+      "head": "cg",
+      "extra": "yes",
+      "cost": "yes",
+      "law": "special"
+     },
+     "note": "From this tax year a buyback is capital gains, ₹182 less what the shares cost. Holdings holds over 10% of an unlisted company, so the 9.5% promoter tax applies. At over 10% of capital and free reserves, it needs a special resolution."
+    },
+    {
+     "id": "rc",
+     "label": "Route C · Capital reduction paying ₹40 crore",
+     "short": "Route C",
+     "prompt": "PSC reduces its share capital, cancelling part of Holdings’ shares, and pays Holdings ₹40 crore.",
+     "docs": [
+      "bs",
+      "ita",
+      "ca"
+     ],
+     "answer": {
+      "head": "split",
+      "extra": "no",
+      "cost": "above",
+      "law": "tribunal"
+     },
+     "note": "Dividend as far as accumulated profits go, a capital receipt only above them. PSC’s ₹61.40 crore covers all ₹40 crore, so nothing is paid above them for the cost to come off. No promoter tax on a reduction. Special resolution, then the Tribunal."
+    }
+   ]
+  },
+  {
+   "id": "t3",
+   "type": "worksheet",
+   "stage": "Fieldwork",
+   "title": "Work out the tax on each route",
+   "prompt": "Kaizad has your route table. Now the numbers, in ₹ crore to two decimals, at his base rates. Route B is his 10,00,000 shares at ₹182 with a dividend for the rest. Work out the tax on each route and what route B saves.",
+   "weight": 2.5,
+   "noun": [
+    "figure",
+    "figures"
+   ],
+   "layout": "table",
+   "invalidNote": "Type the figure only, like 1.25",
+   "lockOnLeave": {
+    "ask": "Hand your figures to Kaizad?",
+    "note": "You can’t change them after this.",
+    "yes": "Hand them in",
+    "done": "Handed to Kaizad. You can read your figures but not change them."
+   },
+   "hints": [
+    "Take the cost of the shares that leave, first in, first out. A company promoter’s long-term gain bears 12.5% and 9.5% more.",
+    "A capital reduction is dividend up to accumulated profits: set the ₹40 crore against PSC’s ₹61.40 crore."
+   ],
+   "columns": [
+    {
+     "key": "line",
+     "label": "Line"
+    },
+    {
+     "key": "amt",
+     "label": "₹ crore",
+     "format": "amount"
+    }
+   ],
+   "rows": [
+    {
+     "id": "ga",
+     "cells": {
+      "line": "Route A · interim dividend",
+      "amt": 40.0
+     }
+    },
+    {
+     "id": "a1",
+     "cells": {
+      "line": "Route A · Holdings’ tax at 22%",
+      "amt": {
+       "input": true,
+       "answer": 8.8,
+       "tolerance": 0.01,
+       "working": "40.00 × 22%",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "gb",
+     "cells": {
+      "line": "Route B · buyback, 10,00,000 shares at ₹182",
+      "amt": 18.2
+     }
+    },
+    {
+     "id": "b1",
+     "cells": {
+      "line": "Holdings’ cost of the shares bought back",
+      "amt": {
+       "input": true,
+       "answer": 1.0,
+       "tolerance": 0.01,
+       "working": "10,00,000 × ₹10: the 2004 shares go first",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "b2",
+     "cells": {
+      "line": "Capital gain on the buyback",
+      "amt": {
+       "input": true,
+       "answer": 17.2,
+       "tolerance": 0.01,
+       "working": "18.20 − 1.00",
+       "sign": false,
+       "follow": "18.2 − {b1.amt}"
+      }
+     }
+    },
+    {
+     "id": "b3",
+     "cells": {
+      "line": "Tax on the buyback gain at 12.5% + 9.5%",
+      "amt": {
+       "input": true,
+       "answer": 3.784,
+       "tolerance": 0.01,
+       "working": "17.20 × 22% = 3.784 (12.5% is 2.150, 9.5% is 1.634)",
+       "sign": false,
+       "follow": "{b2.amt} × 0.22"
+      }
+     }
+    },
+    {
+     "id": "gb2",
+     "cells": {
+      "line": "Route B · interim dividend for the rest",
+      "amt": 21.8
+     }
+    },
+    {
+     "id": "b5",
+     "cells": {
+      "line": "Tax on route B’s dividend at 22%",
+      "amt": {
+       "input": true,
+       "answer": 4.796,
+       "tolerance": 0.01,
+       "working": "21.80 × 22% = 4.796",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "b6",
+     "_class": "total",
+     "cells": {
+      "line": "Route B · Holdings’ total tax",
+      "amt": {
+       "input": true,
+       "answer": 8.58,
+       "tolerance": 0.01,
+       "working": "3.784 + 4.796",
+       "sign": false,
+       "follow": "{b3.amt} + {b5.amt}"
+      }
+     }
+    },
+    {
+     "id": "td",
+     "cells": {
+      "line": "Memo · TDS PSC deducts from route B’s dividend",
+      "amt": {
+       "input": true,
+       "answer": 2.18,
+       "tolerance": 0.01,
+       "working": "21.80 × 10%",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "gc",
+     "cells": {
+      "line": "Route C · paid on the capital reduction",
+      "amt": 40.0
+     }
+    },
+    {
+     "id": "c1",
+     "cells": {
+      "line": "Route C · part taxed as dividend",
+      "amt": {
+       "input": true,
+       "answer": 40.0,
+       "tolerance": 0.01,
+       "working": "Lower of 40.00 and accumulated profits of 61.40: all of it",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "c2",
+     "cells": {
+      "line": "Route C · Holdings’ tax at 22%",
+      "amt": {
+       "input": true,
+       "answer": 8.8,
+       "tolerance": 0.01,
+       "working": "40.00 × 22%",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "sv",
+     "_class": "total",
+     "cells": {
+      "line": "What route B saves against route A",
+      "amt": {
+       "input": true,
+       "answer": 0.22,
+       "tolerance": 0.01,
+       "working": "8.80 − 8.58 = 0.22, which is 22% of the 1.00 cost",
+       "sign": false
+      }
+     }
+    }
+   ],
+   "notes": {
+    "a1.amt": "No expense comes off a dividend this year (section 93(2)), and no promoter tax: 22% of all ₹40 crore.",
+    "b1.amt": "₹21.25 is the average and ₹40 the 2016 price. From a demat account the 2004 shares go first, at ₹10.",
+    "b3.amt": "If you had 2.15, that is 12.5% alone: the promoter tax is missing. Together they make 22%, the rate Holdings pays on a dividend.",
+    "td.amt": "10% of the ₹21.80 crore dividend. TDS counts as tax paid for Holdings: part of the tax is paid sooner, none is added.",
+    "c1.amt": "Only a payout above accumulated profits is capital. PSC has ₹61.40 crore of them, so none of the ₹40 crore is.",
+    "c2.amt": "All ₹40 crore is dividend, so route C costs what route A does: the Tribunal adds steps, not savings.",
+    "sv.amt": "Check it from the other end: 22% of the ₹1.00 crore the shares cost Holdings."
+   },
+   "note": "₹ crore to two decimals. Base rates only: no surcharge or cess.",
+   "docs": [
+    "sheet",
+    "bs",
+    "invreg",
+    "valuer",
+    "ita",
+    "ca"
+   ]
+  },
+  {
+   "id": "t4",
+   "type": "compose",
+   "stage": "Report",
+   "title": "Draft the options note",
+   "prompt": "Kaizad sends the note to Madhav under his own name once he has read it. Pick the right line for each part: the recommendation, the reason, why the buyback can’t carry it all, the capital reduction and the next step. Add a line of your own if you like.",
+   "weight": 2,
+   "noun": [
+    "line",
+    "lines"
+   ],
+   "previewLabel": "Your note for Kaizad",
+   "hints": [
+    "Each line must hold if Madhav forwards it to his own adviser: your figures from task 3, the right Companies Act limit, and what could still change the answer."
+   ],
+   "template": "# Paralikar Holdings: moving ₹40 crore up from PSC\nFirst cut for Kaizad · tax year 2026–27 · base rates, before surcharge and cess\n\n{rec}\n\n{why}\n\n{limit}\n\n{capred}\n\n{next}\n\n{_free}\n\nDraft for discussion.",
+   "freeText": {
+    "label": "Your own line for Kaizad"
+   },
+   "slots": [
+    {
+     "id": "rec",
+     "label": "The recommendation",
+     "options": [
+      {
+       "id": "a",
+       "correct": true,
+       "text": "We recommend a buyback of 10,00,000 shares at ₹182 (₹18.20 crore) and an interim dividend of ₹21.80 crore for the rest of the ₹40 crore.",
+       "why": "Of the three routes, the cheapest the Companies Act allows this year, in a line Madhav can act on. Whether the saving is worth the extra steps is his call; the next lines give him its size."
+      },
+      {
+       "id": "b",
+       "text": "We recommend an interim dividend of the full ₹40 crore, since once the 9.5% promoter tax is added a buyback costs Holdings more than a dividend.",
+       "why": "12.5% plus 9.5% is 22%, exactly what Holdings pays on a dividend, and a buyback taxes only the gain. It costs less, not more."
+      },
+      {
+       "id": "c",
+       "text": "We recommend a capital reduction paying out the full ₹40 crore, since a reduction returns capital to Holdings and is taxed only as capital gains.",
+       "why": "A reduction is dividend up to accumulated profits, and PSC’s ₹61.40 crore covers all ₹40 crore. The same tax as a dividend, with the Tribunal on top."
+      }
+     ]
+    },
+    {
+     "id": "why",
+     "label": "The reason",
+     "options": [
+      {
+       "id": "a",
+       "text": "Holdings’ tax comes to ₹7.92 crore against ₹8.80 crore for an all-dividend route: a saving of ₹0.88 crore, 22% of the ₹4.00 crore the bought-back shares cost.",
+       "why": "₹40 is the 2016 price. Demat shares go first in, first out, so the 2004 shares at ₹10 are the ones that go, and the saving is ₹0.22 crore."
+      },
+      {
+       "id": "b",
+       "correct": true,
+       "text": "Holdings’ tax comes to ₹8.58 crore against ₹8.80 crore for an all-dividend route: a saving of ₹0.22 crore, 22% of the ₹1.00 crore the bought-back shares cost.",
+       "why": "One sum anyone can check: 22% of the ₹1.00 crore cost is ₹0.22 crore, the whole difference."
+      },
+      {
+       "id": "c",
+       "text": "Holdings’ tax comes to ₹6.95 crore against ₹8.80 crore for an all-dividend route: a saving of ₹1.85 crore, as the buyback gain bears 12.5% instead of 22%.",
+       "why": "That leaves out the 9.5% promoter tax. With it the gain bears 22%, as a dividend does, and the total is ₹8.58 crore."
+      }
+     ]
+    },
+    {
+     "id": "limit",
+     "label": "Why the buyback can’t carry it all",
+     "options": [
+      {
+       "id": "a",
+       "text": "A buyback cannot carry all ₹40 crore: the Companies Act caps it at 10% of paid-up capital and free reserves, ₹7.84 crore, so ten lakh shares are already too many.",
+       "why": "10% is only what the Board can approve alone. Holdings can pass the special resolution, so the cap is 25%: ₹19.60 crore, and ₹18.20 crore fits."
+      },
+      {
+       "id": "b",
+       "text": "A buyback cannot carry all ₹40 crore: the Companies Act caps it at 25% of capital and reserves without the premium, ₹17.35 crore, so ten lakh shares are too many.",
+       "why": "For a buyback the premium counts as a free reserve (Explanation II). 25% of ₹78.40 crore is ₹19.60 crore, so ₹18.20 crore fits."
+      },
+      {
+       "id": "c",
+       "correct": true,
+       "text": "A buyback cannot carry all ₹40 crore: the Companies Act caps it at 25% of paid-up capital and free reserves, ₹19.60 crore, and a second offer has to wait a year.",
+       "why": "Both limits that bite: 25% with the premium counted, and a year’s wait before another offer. That is why over half the ₹40 crore still goes as dividend."
+      }
+     ]
+    },
+    {
+     "id": "capred",
+     "label": "The capital reduction",
+     "options": [
+      {
+       "id": "a",
+       "correct": true,
+       "text": "A capital reduction saves nothing here: PSC’s ₹61.40 crore of accumulated profits covers the ₹40 crore, so it is all dividend, and it needs the Tribunal.",
+       "why": "Accumulated profits decide it, whichever reserve the money leaves from. And the Tribunal gives the Registrar and creditors three months to object, so 31 March is out of reach."
+      },
+      {
+       "id": "b",
+       "text": "A capital reduction saves the most here: only the ₹23 crore paid above PSC’s ₹17 crore of capital and premium is dividend, though it needs the Tribunal.",
+       "why": "Capital and premium tell company law what is reduced, not how Holdings is taxed. Dividend runs to accumulated profits, ₹61.40 crore here: all of the ₹40 crore."
+      },
+      {
+       "id": "c",
+       "text": "A capital reduction saves as much as the buyback here: Holdings’ cost of the cancelled shares comes off the payout, though it needs the Tribunal.",
+       "why": "Cost comes off only what is paid above accumulated profits. Nothing is, so Holdings’ cost cuts none of this year’s tax, unlike on a buyback."
+      }
+     ]
+    },
+    {
+     "id": "next",
+     "label": "The next step",
+     "options": [
+      {
+       "id": "a",
+       "text": "Before Madhav decides: ask Ishaan to raise the value to ₹200 a share, so that fewer shares go and a smaller part of the ₹18.20 crore counts as gain.",
+       "why": "We don’t move a valuation to suit the tax. And at ₹200 fewer shares go, so less cost comes off: more of the ₹18.20 crore is gain, not less."
+      },
+      {
+       "id": "b",
+       "text": "Before Madhav decides: file the buyback papers with the Registrar today, so that the money reaches Holdings well before the plot falls due on 31 March.",
+       "why": "Not from a first cut I haven’t read, before Madhav has chosen a route. The special resolution comes first, and the filings follow from it."
+      },
+      {
+       "id": "c",
+       "correct": true,
+       "text": "Before Madhav decides: company-law team to confirm the buyback can close by 31 March; Madhav to confirm Holdings won’t pass the money on as a dividend.",
+       "why": "The two things that could change the answer: company-law timing, and section 148. If Holdings paid a dividend of its own in time, it could deduct the dividend it received, up to what it paid out."
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "wrap": {
+  "from": "kaizad",
+  "text": "₹22 lakh, not crores, and that is the honest answer. The same 22% both ways, so the saving is 22% of the ₹1 crore those ten lakh 2004 shares cost, and the cap sends over half the money by dividend anyway. I’ll add surcharge and cess before I call Madhav."
+ },
+ "wrapPartial": {
+  "from": "kaizad",
+  "text": "Each line has to hold if Madhav forwards the note, and the ranking turns on two facts: the 22% both routes share and the 2004 shares going first. See me at five, before I call him."
+ },
+ "wrapRetry": {
+  "from": "kaizad",
+  "text": "The Act extracts decide this, not Varun’s chat. Route by route: the head of income, whether the promoter tax applies, whether Holdings’ cost comes off. Then the cost of the shares that leave the demat account first, and the 25% cap."
+ },
+ "passNeeds": [
+  {
+   "task": "t3",
+   "min": 0.5,
+   "note": "You need five of the ten figures right, or following your figures, to pass."
+  },
+  {
+   "task": "t4",
+   "min": 0.4,
+   "note": "You need at least two lines of the note right to pass: it is what Madhav reads."
+  }
+ ],
+ "model": {
+  "intro": "Route B is cheapest, by ₹0.22 crore: ₹8.58 crore against ₹8.80 crore for a dividend or a capital reduction. A company promoter’s long-term buyback gain bears 12.5% plus 9.5%, the 22% Holdings pays on a dividend. So the only difference is the cost a buyback deducts, and first in, first out puts that at ₹10 a share, the 2004 price. The Companies Act caps the buyback at ₹19.60 crore, so over half the ₹40 crore goes as dividend whatever the split: ₹21.80 crore on Kaizad’s ten lakh shares.",
+  "blocks": [
+   {
+    "type": "table",
+    "columns": [
+     {
+      "key": "route",
+      "label": "Route"
+     },
+     {
+      "key": "taxed",
+      "label": "Holdings is taxed on"
+     },
+     {
+      "key": "tax",
+      "label": "Tax, ₹ crore",
+      "format": "amount"
+     },
+     {
+      "key": "law",
+      "label": "Company law"
+     }
+    ],
+    "rows": [
+     {
+      "route": "A · Dividend",
+      "taxed": "₹40.00 crore of dividend at 22%",
+      "tax": 8.8,
+      "law": "Board: interim dividend"
+     },
+     {
+      "route": "B · Buyback and dividend",
+      "taxed": "Gain of ₹17.20 crore at 12.5% + 9.5%; dividend of ₹21.80 crore at 22%",
+      "tax": 8.58,
+      "law": "Special resolution, inside the 25% cap"
+     },
+     {
+      "route": "C · Capital reduction",
+      "taxed": "₹40.00 crore of dividend at 22%: all of it within accumulated profits",
+      "tax": 8.8,
+      "law": "Special resolution and the Tribunal"
+     }
+    ]
+   },
+   {
+    "type": "text",
+    "text": "What changed this year: from tax year 2026–27 a buyback is capital gains, the price less the cost, with an additional tax for promoters. From 1 October 2024 to 31 March 2026 the whole payout was dividend and the cost became a capital loss, so last year’s notes, Varun’s included, are out of date."
+   },
+   {
+    "type": "list",
+    "label": "Before Madhav sees it",
+    "items": [
+     "PSC’s articles must allow a buyback, and the company-law team must confirm it can close by 31 March. If it cannot, route A is the fallback, at ₹0.22 crore more.",
+     "The cap allows up to 10,76,923 shares; ten lakh keeps room if the price moves, for under ₹2 lakh of saving given up.",
+     "Madhav to confirm Holdings keeps the money. If it paid a dividend of its own in time, section 148 would let it deduct the dividend it received, up to what it paid out, and the ranking would change.",
+     "PSC deducts 10% TDS from the dividend, ₹2.18 crore. It counts as tax paid for Holdings, so the cost does not change, but Holdings receives that much less in cash before the plot falls due.",
+     "Only surplus cash should go up. PSC has repaid its term loan; confirm the plant’s ₹8.6 crore with PSC before the ₹40 crore is fixed.",
+     "Surcharge and cess go in the second cut."
+    ]
+   },
+   {
+    "type": "note",
+    "from": "kaizad",
+    "text": "₹22 lakh is small beside ₹40 crore, and Madhav may still choose the dividend for less fuss. That is his call. Ours is the honest number and the steps each route needs. And never write “tax-free”: nothing here is."
+   }
+  ]
+ },
+ "principles": [
+  "For a promoter company on the 22% option, 12.5% plus 9.5% equals its dividend rate: a buyback then saves only the tax on the cost of the shares bought back.",
+  "Shares in a demat account leave first in, first out: the oldest lot goes first, at its own cost, whatever the owner would prefer.",
+  "On a capital reduction the Act looks at accumulated profits, not the reserve debited; company law then decides what can be done by when."
+ ],
+ "earned": {
+  "clause": "compared dividend, buyback and capital-reduction routes for moving ₹{amt} crore from a subsidiary to its holding company[[; computed each route’s tax{ta|}{tb|}{tc|}]][[; checked the buyback limit{lim|}]]; drafted a one-page options note",
+  "counts": {
+   "amt": {
+    "kind": "const",
+    "value": 40
+   },
+   "ta": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "a1",
+    "col": "amt"
+   },
+   "tb": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "b6",
+    "col": "amt"
+   },
+   "tc": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "c2",
+    "col": "amt"
+   },
+   "lim": {
+    "kind": "correctQuestions",
+    "task": "t1",
+    "questions": [
+     "q3"
+    ]
+   }
+  }
+ },
+ "interview": [
+  {
+   "q": "How is a share buyback taxed now, and how was it taxed before?",
+   "checking": "Whether you know the current law, not last year’s notes.",
+   "outline": [
+    "From tax year 2026–27 it is capital gains: the buyback price less the cost of the shares.",
+    "Promoters pay more: a company promoter adds 9.5% to the 12.5% long-term rate, 22% in all.",
+    "From October 2024 to March 2026 the whole payout was dividend, and the cost became a capital loss."
+   ]
+  },
+  {
+   "q": "Which route came out cheapest in your note, and by how much?",
+   "checking": "Whether you know where a buyback’s saving comes from, not just that it saves.",
+   "outline": [
+    "In the simulation, the buyback won by only ₹22 lakh: as a promoter, the holding company paid 22%.",
+    "That was its dividend rate too, so only the cost mattered: a buyback taxes just the gain.",
+    "First in, first out took the 2004 shares at ₹10, so the saving was 22% of ₹1 crore."
+   ]
+  }
+ ]
+}

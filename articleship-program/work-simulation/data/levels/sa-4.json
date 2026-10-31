@@ -1,0 +1,4190 @@
+{
+ "id": "sa-4",
+ "domain": "statutory-audit",
+ "number": 4,
+ "title": "Payroll",
+ "minutes": 40,
+ "learn": [
+  "How a headcount roll-forward finds one salary too many",
+  "What proves a joiner is real, and what only looks like proof",
+  "How to recompute PF and ESI after the 2026 PF ceiling change"
+ ],
+ "do": [
+  "Roll the headcount forward",
+  "Test seven joiners and leavers",
+  "Recompute PF and ESI, then write your points"
+ ],
+ "case": {
+  "role": "First-year article assistant on the interim audit, staff payroll",
+  "client": "Tamhini Drivetech Private Limited, a Chakan company that makes gears, shafts and hubs for vehicle makers",
+  "team": "Aarti Rane (senior), Rehan Siddiqui (manager), Sudha Venkatesh (partner); Varun Shetty, second-year article, did this file last year; at Tamhini, Shabana Shaikh runs the staff payroll on a spreadsheet with Sunil Gaikwad, the payroll assistant",
+  "goal": "Test the staff payroll for April to December 2026: headcount, joiners and leavers, PF and ESI.",
+  "period": "Nine months to 31 December 2026 (interim audit)",
+  "where": "HR office, Chakan plant · Monday 18 January 2027"
+ },
+ "brief": {
+  "from": "aarti",
+  "time": "11:20 am",
+  "messages": [
+   "Staff payroll today, April to December. Roll the headcount forward, test the joiners and leavers, then recompute PF and ESI on the December rows I’ve marked.",
+   "Shabana has put out the files. Anything odd comes to me first, not to HR. Rehan reviews payroll tomorrow, so your points by 5, please."
+  ]
+ },
+ "documents": [
+  {
+   "id": "mail-shabana",
+   "type": "letter",
+   "style": "email",
+   "title": "Shabana · payroll files",
+   "from": {
+    "name": "Shabana Shaikh",
+    "email": "shabana.shaikh@email.com"
+   },
+   "to": [
+    {
+     "name": "Aarti Rane",
+     "email": "aarti.rane@email.com"
+    }
+   ],
+   "cc": [
+    {
+     "name": "Sunil Gaikwad",
+     "email": "sunil.gaikwad@email.com"
+    }
+   ],
+   "date": "Fri 15 Jan 2027, 6:40 pm",
+   "subject": "Payroll files, April to December 2026",
+   "body": [
+    "Dear Aarti ma’am,",
+    "As asked, the staff payroll files for April to December 2026 are in the shared folder. The salary register has one sheet a month. PF and ESI are worked out in the sheet with the same formulas as last year.",
+    "Joining letters are in the HR cabinet. One personnel file is not there yet; my note is with the files. Sunil will help with anything else you need on Monday.",
+    "Regards,"
+   ],
+   "sign": "Shabana Shaikh\nHR and Payroll Executive\nTamhini Drivetech Private Limited",
+   "attachments": [
+    "Salary register Apr–Dec 2026.xlsx",
+    "Employee master and change register.xlsx",
+    "F&F statements (4).pdf",
+    "Bank salary report Dec 2026.pdf"
+   ]
+  },
+  {
+   "id": "prog",
+   "type": "letter",
+   "style": "policy",
+   "title": "Audit programme · staff payroll",
+   "kindLabel": "Audit file",
+   "letterhead": "Bapat Venkatesh & Co., Chartered Accountants\nAudit programme",
+   "subject": "Staff payroll · interim audit 2026–27",
+   "meta": [
+    {
+     "label": "Client",
+     "value": "Tamhini Drivetech Private Limited"
+    },
+    {
+     "label": "Period",
+     "value": "April to December 2026"
+    },
+    {
+     "label": "Prepared by",
+     "value": "Rehan Siddiqui, Audit Manager"
+    },
+    {
+     "label": "Updated",
+     "value": "12-01-2027"
+    }
+   ],
+   "body": [
+    "## 1. Headcount",
+    "- Roll the April headcount forward: add joiners from their start month; take leavers out from the month after their last working day. Compare with the heads paid and explain every difference.",
+    "## 2. Joiners",
+    "- An appointment letter signed by an authorised person, with the pay the register shows.",
+    "- Attendance from the first month, a UAN, and salary paid into an account in the employee’s own name that no one else is paid into.",
+    "- The master entry approved by someone other than the person who made it.",
+    "## 3. Leavers",
+    "- Last working day from the accepted resignation. Salary up to that day and not after; F&F paid; the exit entered in the master before the next salary run.",
+    "## 4. PF and ESI (December 2026)",
+    "- PF, employee’s share: 12% of PF wages, with PF wages capped at ₹25,000 from 17 September 2026 (₹15,000 before), or the actual PF wages if lower.",
+    "- ESI, employee’s share: 0.75% of ESI wages, rounded up to the next rupee, where ESI wages are ₹21,000 a month or less.",
+    "## 5. Bank",
+    "- December net pay in the register agrees with the bank’s salary credit report, name by name, and no account is paid twice.",
+    "## 6. Controls",
+    "- Note who enters changes to the master and who approves them, and whether anyone checks the salary register before the bank file goes."
+   ]
+  },
+  {
+   "id": "chat-varun",
+   "type": "chat",
+   "title": "Varun · chat",
+   "with": "Varun Shetty",
+   "date": "Monday 18 January",
+   "me": "You",
+   "messages": [
+    {
+     "from": "varun",
+     "time": "11:34 am",
+     "text": "Tamhini payroll? Easy one. Last year I checked heads per the HR master against heads paid, every month. I looked at this December’s too: 43 and 43."
+    },
+    {
+     "from": "varun",
+     "time": "11:35 am",
+     "text": "Shabana’s sheet has been right for years. I ticked it and moved on."
+    },
+    {
+     "from": "You",
+     "time": "11:38 am",
+     "text": "Aarti wants the joiners and leavers tested one by one."
+    },
+    {
+     "from": "varun",
+     "time": "11:39 am",
+     "text": "Then sit with Sunil. He keeps the master."
+    }
+   ]
+  },
+  {
+   "id": "pay-summary",
+   "type": "table",
+   "style": "sheet",
+   "title": "Payroll summary · April–December 2026",
+   "sheetName": "Summary",
+   "otherSheets": [
+    "Dec-26",
+    "Nov-26",
+    "Oct-26"
+   ],
+   "formula": "=SUM(C2:C10)",
+   "columns": [
+    {
+     "key": "m",
+     "label": "Month"
+    },
+    {
+     "key": "heads",
+     "label": "Heads paid",
+     "format": "int"
+    },
+    {
+     "key": "gross",
+     "label": "Gross (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "pf",
+     "label": "PF, employees (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "esi",
+     "label": "ESI, employees (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "oth",
+     "label": "TDS and other (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "net",
+     "label": "Net pay (₹)",
+     "format": "inr",
+     "check": "gross - pf - esi - oth"
+    }
+   ],
+   "rows": [
+    {
+     "m": "Apr 2026",
+     "heads": 43,
+     "gross": 2347500,
+     "pf": 73140,
+     "esi": 714,
+     "oth": 73920,
+     "net": 2199726
+    },
+    {
+     "m": "May 2026",
+     "heads": 43,
+     "gross": 2347500,
+     "pf": 73140,
+     "esi": 714,
+     "oth": 73920,
+     "net": 2199726
+    },
+    {
+     "m": "Jun 2026",
+     "heads": 43,
+     "gross": 2334250,
+     "pf": 72312,
+     "esi": 714,
+     "oth": 73920,
+     "net": 2187304
+    },
+    {
+     "m": "Jul 2026",
+     "heads": 43,
+     "gross": 2343000,
+     "pf": 72858,
+     "esi": 714,
+     "oth": 73720,
+     "net": 2195708
+    },
+    {
+     "m": "Aug 2026",
+     "heads": 44,
+     "gross": 2371000,
+     "pf": 72858,
+     "esi": 714,
+     "oth": 73920,
+     "net": 2223508
+    },
+    {
+     "m": "Sep 2026",
+     "heads": 45,
+     "gross": 2393400,
+     "pf": 74255,
+     "esi": 714,
+     "oth": 73920,
+     "net": 2244511
+    },
+    {
+     "m": "Oct 2026",
+     "heads": 44,
+     "gross": 2368000,
+     "pf": 72804,
+     "esi": 714,
+     "oth": 73920,
+     "net": 2220562
+    },
+    {
+     "m": "Nov 2026",
+     "heads": 43,
+     "gross": 2312000,
+     "pf": 71004,
+     "esi": 714,
+     "oth": 73720,
+     "net": 2166562
+    },
+    {
+     "m": "Dec 2026",
+     "heads": 43,
+     "gross": 2312000,
+     "pf": 71004,
+     "esi": 714,
+     "oth": 73720,
+     "net": 2166562
+    },
+    {
+     "_class": "total",
+     "m": "Total",
+     "gross": 21128650,
+     "pf": 653375,
+     "esi": 6426,
+     "oth": 664680,
+     "net": 19804169
+    }
+   ],
+   "notes": [
+    "Staff payroll only. Each line is the total of that month’s salary register sheet."
+   ]
+  },
+  {
+   "id": "hr-master",
+   "type": "table",
+   "style": "sheet",
+   "title": "Employee master · joiners, leavers",
+   "freeze": true,
+   "sheetName": "Movements",
+   "otherSheets": [
+    "Master",
+    "Changes"
+   ],
+   "formula": "=COUNTA(Master[Code])",
+   "columns": [
+    {
+     "key": "emp",
+     "label": "Employee"
+    },
+    {
+     "key": "joined",
+     "label": "Joined"
+    },
+    {
+     "key": "left",
+     "label": "Left"
+    },
+    {
+     "key": "uan",
+     "label": "UAN",
+     "mono": true
+    },
+    {
+     "key": "acct",
+     "label": "Salary a/c no.",
+     "mono": true
+    },
+    {
+     "key": "gross",
+     "label": "Gross a month (₹)",
+     "format": "int"
+    },
+    {
+     "key": "dept",
+     "label": "Department"
+    },
+    {
+     "key": "desig",
+     "label": "Designation"
+    }
+   ],
+   "rows": [
+    {
+     "emp": "E1030 Hemant Jadhav",
+     "dept": "Production",
+     "desig": "Production Engineer",
+     "joined": "05-02-2018",
+     "left": "31-10-2026",
+     "uan": "100009391137",
+     "acct": "04170163370881",
+     "gross": 56000
+    },
+    {
+     "emp": "E1037 Vinod Sonawane",
+     "dept": "Stores and Logistics",
+     "desig": "Store Keeper",
+     "joined": "14-01-2019",
+     "left": "15-06-2026",
+     "uan": "100009446570",
+     "acct": "04170164103984",
+     "gross": 26500
+    },
+    {
+     "emp": "E1044 Amit Wagh",
+     "dept": "Quality",
+     "desig": "Quality Inspector",
+     "joined": "03-06-2019",
+     "left": "31-08-2026",
+     "uan": "100009502003",
+     "acct": "04170164837087",
+     "gross": 31000
+    },
+    {
+     "emp": "E1058 Meera Pillai",
+     "dept": "Sales and Marketing",
+     "desig": "Sales Coordinator",
+     "joined": "15-03-2021",
+     "left": "31-12-2026",
+     "uan": "100009612869",
+     "acct": "04170166303293",
+     "gross": 33000
+    },
+    {
+     "emp": "E1090 Pooja Nimbalkar",
+     "dept": "Production",
+     "desig": "Graduate Engineer Trainee",
+     "joined": "01-07-2026",
+     "left": "",
+     "uan": "100009866277",
+     "acct": "04170169654621",
+     "gross": 22000
+    },
+    {
+     "emp": "E1091 Nita Bansode",
+     "dept": "Quality",
+     "desig": "Quality Inspector",
+     "joined": "07-09-2026",
+     "left": "",
+     "uan": "100009874196",
+     "acct": "04170169759350",
+     "gross": 28000
+    },
+    {
+     "emp": "E1092 Sameera Attar",
+     "dept": "Finance and Accounts",
+     "desig": "Accounts Assistant",
+     "joined": "04-01-2027",
+     "left": "",
+     "uan": "100009882115",
+     "acct": "04170169864079",
+     "gross": 23000
+    },
+    {
+     "emp": "E1093 Rakesh Bhoir",
+     "dept": "Production",
+     "desig": "Production Assistant",
+     "joined": "01-08-2026",
+     "left": "",
+     "uan": "",
+     "acct": "04170166931667",
+     "gross": 28000
+    }
+   ],
+   "notes": [
+    "Joiners and leavers from 1 April 2026, as at 15-01-2027. Headcount on 1 April 2026: 43.",
+    "Salary accounts are with Vindhya Commercial Bank, Chakan."
+   ]
+  },
+  {
+   "id": "change-reg",
+   "type": "table",
+   "style": "sheet",
+   "title": "Employee master · change register",
+   "sheetName": "Changes",
+   "otherSheets": [
+    "Master",
+    "Movements"
+   ],
+   "formula": "",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "code",
+     "label": "Code"
+    },
+    {
+     "key": "chg",
+     "label": "Change"
+    },
+    {
+     "key": "by",
+     "label": "Entered by"
+    },
+    {
+     "key": "appr",
+     "label": "Approved (initials, date)"
+    }
+   ],
+   "rows": [
+    {
+     "date": "18-05-2026",
+     "code": "E1037",
+     "chg": "Exit date: 15-06-2026",
+     "by": "Sunil G.",
+     "appr": "S.S. 18-05-2026"
+    },
+    {
+     "date": "29-06-2026",
+     "code": "E1090",
+     "chg": "New: Pooja Nimbalkar",
+     "by": "Sunil G.",
+     "appr": "S.S. 29-06-2026"
+    },
+    {
+     "date": "29-06-2026",
+     "code": "E1090",
+     "chg": "Bank a/c: 04170169654621",
+     "by": "Sunil G.",
+     "appr": "S.S. 29-06-2026"
+    },
+    {
+     "date": "14-07-2026",
+     "code": "E1066",
+     "chg": "Designation: CNC Programmer",
+     "by": "Sunil G.",
+     "appr": "S.S. 14-07-2026"
+    },
+    {
+     "date": "01-08-2026",
+     "code": "E1093",
+     "chg": "New: Rakesh Bhoir",
+     "by": "Sunil G.",
+     "appr": ""
+    },
+    {
+     "date": "01-08-2026",
+     "code": "E1093",
+     "chg": "Bank a/c: 04170166931667",
+     "by": "Sunil G.",
+     "appr": ""
+    },
+    {
+     "date": "04-09-2026",
+     "code": "E1091",
+     "chg": "New: Nita Bansode",
+     "by": "Sunil G.",
+     "appr": "S.S. 04-09-2026"
+    },
+    {
+     "date": "04-09-2026",
+     "code": "E1091",
+     "chg": "Bank a/c: 04170169759350",
+     "by": "Sunil G.",
+     "appr": "S.S. 04-09-2026"
+    },
+    {
+     "date": "05-10-2026",
+     "code": "E1044",
+     "chg": "Exit date: 31-08-2026",
+     "by": "Sunil G.",
+     "appr": "S.S. 05-10-2026"
+    },
+    {
+     "date": "09-10-2026",
+     "code": "E1030",
+     "chg": "Exit date: 31-10-2026",
+     "by": "Sunil G.",
+     "appr": "S.S. 09-10-2026"
+    },
+    {
+     "date": "01-12-2026",
+     "code": "E1058",
+     "chg": "Exit date: 31-12-2026",
+     "by": "Sunil G.",
+     "appr": "S.S. 01-12-2026"
+    },
+    {
+     "date": "28-12-2026",
+     "code": "E1092",
+     "chg": "New: Sameera Attar",
+     "by": "Sunil G.",
+     "appr": "S.S. 28-12-2026"
+    },
+    {
+     "date": "28-12-2026",
+     "code": "E1092",
+     "chg": "Bank a/c: 04170169864079",
+     "by": "Sunil G.",
+     "appr": "S.S. 28-12-2026"
+    }
+   ],
+   "notes": [
+    "Kept by HR. Every change to be approved by the HR and Payroll Executive before the next salary run, which is made at the end of the month from the master as it stands.",
+    "April 2026 to January 2027."
+   ]
+  },
+  {
+   "id": "idcards",
+   "type": "table",
+   "style": "register",
+   "title": "Security · staff ID cards",
+   "heading": "Staff ID and access cards · issued and returned",
+   "company": "Tamhini Drivetech Private Limited",
+   "subtitle": "Security office, main gate · April 2026 to January 2027",
+   "columns": [
+    {
+     "key": "emp",
+     "label": "Employee"
+    },
+    {
+     "key": "iss",
+     "label": "Issued"
+    },
+    {
+     "key": "ret",
+     "label": "Returned"
+    },
+    {
+     "key": "card",
+     "label": "Card no.",
+     "mono": true
+    },
+    {
+     "key": "dept",
+     "label": "Department"
+    }
+   ],
+   "rows": [
+    {
+     "card": "TD-S-0398",
+     "emp": "E1030 Hemant Jadhav",
+     "dept": "Production",
+     "iss": "05-02-2018",
+     "ret": "31-10-2026"
+    },
+    {
+     "card": "TD-S-0418",
+     "emp": "E1037 Vinod Sonawane",
+     "dept": "Stores and Logistics",
+     "iss": "14-01-2019",
+     "ret": "15-06-2026"
+    },
+    {
+     "card": "TD-S-0436",
+     "emp": "E1044 Amit Wagh",
+     "dept": "Quality",
+     "iss": "03-06-2019",
+     "ret": "31-08-2026"
+    },
+    {
+     "card": "TD-S-0470",
+     "emp": "E1058 Meera Pillai",
+     "dept": "Sales and Marketing",
+     "iss": "15-03-2021",
+     "ret": "31-12-2026"
+    },
+    {
+     "card": "TD-S-0532",
+     "emp": "E1090 Pooja Nimbalkar",
+     "dept": "Production",
+     "iss": "01-07-2026",
+     "ret": ""
+    },
+    {
+     "card": "TD-S-0533",
+     "emp": "E1091 Nita Bansode",
+     "dept": "Quality",
+     "iss": "07-09-2026",
+     "ret": ""
+    },
+    {
+     "card": "TD-S-0534",
+     "emp": "E1092 Sameera Attar",
+     "dept": "Finance and Accounts",
+     "iss": "04-01-2027",
+     "ret": ""
+    }
+   ],
+   "notes": [
+    "Staff cards only. A card is issued on the first day and collected on the last; it also enrols the holder on the biometric reader."
+   ]
+  },
+  {
+   "id": "dec-reg",
+   "type": "table",
+   "style": "sheet",
+   "title": "Salary register · December 2026",
+   "freeze": true,
+   "sheetName": "Dec-26",
+   "otherSheets": [
+    "Nov-26",
+    "Oct-26",
+    "Summary"
+   ],
+   "formula": "=ROUND(MIN(D4, 15000)*12%, 0)",
+   "columns": [
+    {
+     "key": "emp",
+     "label": "Employee"
+    },
+    {
+     "key": "days",
+     "label": "Days paid",
+     "format": "int"
+    },
+    {
+     "key": "gross",
+     "label": "Gross (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "pfw",
+     "label": "PF wages (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "pf",
+     "label": "PF 12% (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "esiw",
+     "label": "ESI wages (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "esi",
+     "label": "ESI 0.75% (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "tds",
+     "label": "TDS (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "oth",
+     "label": "Other ded. (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "net",
+     "label": "Net pay (₹)",
+     "format": "inr",
+     "check": "gross - pf - esi - tds - oth"
+    }
+   ],
+   "rows": [
+    {
+     "emp": "E1002 Venkat Reddy",
+     "days": 31,
+     "gross": 210000,
+     "pfw": 109200,
+     "pf": 1800,
+     "esiw": 210000,
+     "esi": 0,
+     "tds": 27170,
+     "oth": 200,
+     "net": 180830,
+     "_hl": true
+    },
+    {
+     "emp": "E1003 Mahesh Kadam",
+     "days": 31,
+     "gross": 185000,
+     "pfw": 96200,
+     "pf": 1800,
+     "esiw": 185000,
+     "esi": 0,
+     "tds": 20475,
+     "oth": 200,
+     "net": 162525
+    },
+    {
+     "emp": "E1005 Dattatray More",
+     "days": 31,
+     "gross": 58000,
+     "pfw": 30150,
+     "pf": 1800,
+     "esiw": 58000,
+     "esi": 0,
+     "tds": 0,
+     "oth": 200,
+     "net": 56000,
+     "_hl": true
+    },
+    {
+     "emp": "E1008 Harshad Patel",
+     "days": 31,
+     "gross": 175000,
+     "pfw": 91000,
+     "pf": 1800,
+     "esiw": 175000,
+     "esi": 0,
+     "tds": 17875,
+     "oth": 200,
+     "net": 155125
+    },
+    {
+     "emp": "E1012 Rohit Agrawal",
+     "days": 31,
+     "gross": 98000,
+     "pfw": 50950,
+     "pf": 1800,
+     "esiw": 98000,
+     "esi": 0,
+     "tds": 0,
+     "oth": 200,
+     "net": 96000
+    },
+    {
+     "emp": "E1015 Prashant Lande",
+     "days": 31,
+     "gross": 105000,
+     "pfw": 54600,
+     "pf": 1800,
+     "esiw": 105000,
+     "esi": 0,
+     "tds": 0,
+     "oth": 200,
+     "net": 103000
+    },
+    {
+     "emp": "E1018 Pallavi Shinde",
+     "days": 31,
+     "gross": 46000,
+     "pfw": 23900,
+     "pf": 1800,
+     "esiw": 46000,
+     "esi": 0,
+     "tds": 0,
+     "oth": 200,
+     "net": 44000,
+     "_hl": true
+    },
+    {
+     "emp": "E1019 Kavita Deshpande",
+     "days": 31,
+     "gross": 92000,
+     "pfw": 47850,
+     "pf": 1800,
+     "esiw": 92000,
+     "esi": 0,
+     "tds": 0,
+     "oth": 200,
+     "net": 90000
+    },
+    {
+     "emp": "E1021 Shabana Shaikh",
+     "days": 31,
+     "gross": 44000,
+     "pfw": 22900,
+     "pf": 1800,
+     "esiw": 44000,
+     "esi": 0,
+     "tds": 0,
+     "oth": 200,
+     "net": 42000
+    },
+    {
+     "emp": "E1025 Ganesh Tapkir",
+     "days": 31,
+     "gross": 78000,
+     "pfw": 40550,
+     "pf": 1800,
+     "esiw": 78000,
+     "esi": 0,
+     "tds": 0,
+     "oth": 200,
+     "net": 76000
+    },
+    {
+     "emp": "E1027 Ritu Malhotra",
+     "days": 31,
+     "gross": 96000,
+     "pfw": 49900,
+     "pf": 1800,
+     "esiw": 96000,
+     "esi": 0,
+     "tds": 0,
+     "oth": 200,
+     "net": 94000
+    },
+    {
+     "emp": "E1029 Sachin Jagtap",
+     "days": 31,
+     "gross": 58000,
+     "pfw": 30150,
+     "pf": 1800,
+     "esiw": 58000,
+     "esi": 0,
+     "tds": 0,
+     "oth": 200,
+     "net": 56000
+    },
+    {
+     "emp": "E1031 Anil Pawar",
+     "days": 31,
+     "gross": 32000,
+     "pfw": 16650,
+     "pf": 1800,
+     "esiw": 32000,
+     "esi": 0,
+     "tds": 0,
+     "oth": 200,
+     "net": 30000,
+     "_hl": true
+    },
+    {
+     "emp": "E1034 Bhimrao Kamble",
+     "days": 31,
+     "gross": 39000,
+     "pfw": 20300,
+     "pf": 1800,
+     "esiw": 39000,
+     "esi": 0,
+     "tds": 0,
+     "oth": 200,
+     "net": 37000
+    },
+    {
+     "emp": "E1036 Santosh Kale",
+     "days": 31,
+     "gross": 27500,
+     "pfw": 14300,
+     "pf": 1716,
+     "esiw": 27500,
+     "esi": 0,
+     "tds": 0,
+     "oth": 200,
+     "net": 25584,
+     "_hl": true
+    },
+    {
+     "emp": "E1040 Arjun Rathod",
+     "days": 31,
+     "gross": 38000,
+     "pfw": 19750,
+     "pf": 1800,
+     "esiw": 38000,
+     "esi": 0,
+     "tds": 0,
+     "oth": 200,
+     "net": 36000
+    },
+    {
+     "emp": "E1042 Rahul Bendre",
+     "days": 31,
+     "gross": 38500,
+     "pfw": 20000,
+     "pf": 1800,
+     "esiw": 38500,
+     "esi": 0,
+     "tds": 0,
+     "oth": 200,
+     "net": 36500
+    },
+    {
+     "emp": "E1046 Kirti Jain",
+     "days": 31,
+     "gross": 52000,
+     "pfw": 27050,
+     "pf": 1800,
+     "esiw": 52000,
+     "esi": 0,
+     "tds": 0,
+     "oth": 200,
+     "net": 50000
+    },
+    {
+     "emp": "E1048 Rajendra Ghadge",
+     "days": 31,
+     "gross": 36000,
+     "pfw": 18700,
+     "pf": 1800,
+     "esiw": 36000,
+     "esi": 0,
+     "tds": 0,
+     "oth": 200,
+     "net": 34000
+    },
+    {
+     "emp": "E1050 Karthik Ramesh",
+     "days": 31,
+     "gross": 54000,
+     "pfw": 28100,
+     "pf": 1800,
+     "esiw": 54000,
+     "esi": 0,
+     "tds": 0,
+     "oth": 200,
+     "net": 52000
+    },
+    {
+     "emp": "E1052 Baban Shelar",
+     "days": 31,
+     "gross": 19800,
+     "pfw": 10300,
+     "pf": 1236,
+     "esiw": 19800,
+     "esi": 149,
+     "tds": 0,
+     "oth": 200,
+     "net": 18215,
+     "_hl": true
+    },
+    {
+     "emp": "E1055 Mohammed Ashfaq Khan",
+     "days": 31,
+     "gross": 52000,
+     "pfw": 27050,
+     "pf": 1800,
+     "esiw": 52000,
+     "esi": 0,
+     "tds": 0,
+     "oth": 200,
+     "net": 50000
+    },
+    {
+     "emp": "E1057 Vishal Kumbhar",
+     "days": 31,
+     "gross": 44000,
+     "pfw": 22900,
+     "pf": 1800,
+     "esiw": 44000,
+     "esi": 0,
+     "tds": 0,
+     "oth": 200,
+     "net": 42000
+    },
+    {
+     "emp": "E1058 Meera Pillai",
+     "days": 31,
+     "gross": 33000,
+     "pfw": 17150,
+     "pf": 1800,
+     "esiw": 33000,
+     "esi": 0,
+     "tds": 0,
+     "oth": 200,
+     "net": 31000
+    },
+    {
+     "emp": "E1059 Ajay Thube",
+     "days": 31,
+     "gross": 25500,
+     "pfw": 13250,
+     "pf": 1590,
+     "esiw": 25500,
+     "esi": 0,
+     "tds": 0,
+     "oth": 200,
+     "net": 23710
+    },
+    {
+     "emp": "E1061 Rupesh Chavan",
+     "days": 31,
+     "gross": 36500,
+     "pfw": 19000,
+     "pf": 1800,
+     "esiw": 36500,
+     "esi": 0,
+     "tds": 0,
+     "oth": 200,
+     "net": 34500
+    },
+    {
+     "emp": "E1062 Gurpreet Singh Sandhu",
+     "days": 31,
+     "gross": 56000,
+     "pfw": 29100,
+     "pf": 1800,
+     "esiw": 56000,
+     "esi": 0,
+     "tds": 0,
+     "oth": 200,
+     "net": 54000
+    },
+    {
+     "emp": "E1064 Sunil Gaikwad",
+     "days": 31,
+     "gross": 24000,
+     "pfw": 12500,
+     "pf": 1500,
+     "esiw": 24000,
+     "esi": 0,
+     "tds": 0,
+     "oth": 200,
+     "net": 22300
+    },
+    {
+     "emp": "E1066 Tejas Mhaske",
+     "days": 31,
+     "gross": 46000,
+     "pfw": 23900,
+     "pf": 1800,
+     "esiw": 46000,
+     "esi": 0,
+     "tds": 0,
+     "oth": 200,
+     "net": 44000
+    },
+    {
+     "emp": "E1068 Shrikant Lohar",
+     "days": 31,
+     "gross": 29500,
+     "pfw": 15350,
+     "pf": 1800,
+     "esiw": 29500,
+     "esi": 0,
+     "tds": 0,
+     "oth": 200,
+     "net": 27500,
+     "_hl": true
+    },
+    {
+     "emp": "E1070 Ganpat Zende",
+     "days": 31,
+     "gross": 16500,
+     "pfw": 8600,
+     "pf": 1032,
+     "esiw": 16500,
+     "esi": 124,
+     "tds": 0,
+     "oth": 200,
+     "net": 15144,
+     "_hl": true
+    },
+    {
+     "emp": "E1072 Sagar Thakur",
+     "days": 31,
+     "gross": 41000,
+     "pfw": 21300,
+     "pf": 1800,
+     "esiw": 41000,
+     "esi": 0,
+     "tds": 0,
+     "oth": 200,
+     "net": 39000
+    },
+    {
+     "emp": "E1073 Omkar Tilekar",
+     "days": 31,
+     "gross": 33000,
+     "pfw": 17150,
+     "pf": 1800,
+     "esiw": 33000,
+     "esi": 0,
+     "tds": 0,
+     "oth": 200,
+     "net": 31000
+    },
+    {
+     "emp": "E1075 Akshay Solanke",
+     "days": 31,
+     "gross": 26000,
+     "pfw": 13500,
+     "pf": 1620,
+     "esiw": 26000,
+     "esi": 0,
+     "tds": 0,
+     "oth": 200,
+     "net": 24180
+    },
+    {
+     "emp": "E1077 Swati Hingne",
+     "days": 31,
+     "gross": 24500,
+     "pfw": 12750,
+     "pf": 1530,
+     "esiw": 24500,
+     "esi": 0,
+     "tds": 0,
+     "oth": 0,
+     "net": 22970
+    },
+    {
+     "emp": "E1079 Aishwarya Joshi",
+     "days": 31,
+     "gross": 34000,
+     "pfw": 17700,
+     "pf": 1800,
+     "esiw": 34000,
+     "esi": 0,
+     "tds": 0,
+     "oth": 200,
+     "net": 32000
+    },
+    {
+     "emp": "E1081 Mrunal Deo",
+     "days": 31,
+     "gross": 72000,
+     "pfw": 37450,
+     "pf": 1800,
+     "esiw": 72000,
+     "esi": 0,
+     "tds": 0,
+     "oth": 200,
+     "net": 70000
+    },
+    {
+     "emp": "E1083 Nikhil Gawade",
+     "days": 31,
+     "gross": 18500,
+     "pfw": 9600,
+     "pf": 1152,
+     "esiw": 18500,
+     "esi": 139,
+     "tds": 0,
+     "oth": 200,
+     "net": 17009,
+     "_hl": true
+    },
+    {
+     "emp": "E1086 Devendra Yadav",
+     "days": 31,
+     "gross": 21000,
+     "pfw": 10900,
+     "pf": 1308,
+     "esiw": 21000,
+     "esi": 158,
+     "tds": 0,
+     "oth": 200,
+     "net": 19334
+    },
+    {
+     "emp": "E1088 Irfan Tamboli",
+     "days": 31,
+     "gross": 19200,
+     "pfw": 10000,
+     "pf": 1200,
+     "esiw": 19200,
+     "esi": 144,
+     "tds": 0,
+     "oth": 200,
+     "net": 17656,
+     "_hl": true
+    },
+    {
+     "emp": "E1090 Pooja Nimbalkar",
+     "days": 31,
+     "gross": 22000,
+     "pfw": 11450,
+     "pf": 1374,
+     "esiw": 22000,
+     "esi": 0,
+     "tds": 0,
+     "oth": 0,
+     "net": 20626
+    },
+    {
+     "emp": "E1091 Nita Bansode",
+     "days": 31,
+     "gross": 28000,
+     "pfw": 14550,
+     "pf": 1746,
+     "esiw": 28000,
+     "esi": 0,
+     "tds": 0,
+     "oth": 200,
+     "net": 26054,
+     "_hl": true
+    },
+    {
+     "emp": "E1093 Rakesh Bhoir",
+     "days": 31,
+     "gross": 28000,
+     "pfw": 14550,
+     "pf": 0,
+     "esiw": 28000,
+     "esi": 0,
+     "tds": 0,
+     "oth": 200,
+     "net": 27800
+    },
+    {
+     "_class": "total",
+     "emp": "Total (43)",
+     "gross": 2312000,
+     "pfw": 1202200,
+     "pf": 71004,
+     "esiw": 2312000,
+     "esi": 714,
+     "tds": 65520,
+     "oth": 8200,
+     "net": 2166562
+    }
+   ],
+   "notes": [
+    "Prepared: Sunil G. · Checked: (blank)"
+   ],
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Yellow rows: recompute the PF or ESI on my list. A.R.",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -2
+    }
+   ]
+  },
+  {
+   "id": "bank-dec",
+   "type": "table",
+   "style": "bank",
+   "title": "Bank · salary credits, December",
+   "kindLabel": "Bank report",
+   "brand": "Vindhya Commercial Bank Ltd",
+   "docName": "Bulk salary credit report",
+   "subtitle": "Chakan branch · Corporate salary service",
+   "meta": [
+    {
+     "label": "Customer",
+     "value": "Tamhini Drivetech Private Limited"
+    },
+    {
+     "label": "Debit account",
+     "value": "041760000918 (cash credit)"
+    },
+    {
+     "label": "Batch",
+     "value": "SAL/DEC-2026/TDPL"
+    },
+    {
+     "label": "Value date",
+     "value": "31-12-2026"
+    },
+    {
+     "label": "Records",
+     "value": "43"
+    }
+   ],
+   "columns": [
+    {
+     "key": "ben",
+     "label": "Beneficiary"
+    },
+    {
+     "key": "acct",
+     "label": "Account no.",
+     "mono": true
+    },
+    {
+     "key": "held",
+     "label": "Account holder per bank"
+    },
+    {
+     "key": "amt",
+     "label": "Amount credited (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "ben": "Venkat Reddy",
+     "acct": "04170160438469",
+     "amt": 180830,
+     "held": "VENKAT REDDY"
+    },
+    {
+     "ben": "Mahesh Kadam",
+     "acct": "04170160543198",
+     "amt": 162525,
+     "held": "MAHESH KADAM"
+    },
+    {
+     "ben": "Dattatray More",
+     "acct": "04170160752656",
+     "amt": 56000,
+     "held": "DATTATRAY MORE"
+    },
+    {
+     "ben": "Harshad Patel",
+     "acct": "04170161066843",
+     "amt": 155125,
+     "held": "HARSHAD PATEL"
+    },
+    {
+     "ben": "Rohit Agrawal",
+     "acct": "04170161485759",
+     "amt": 96000,
+     "held": "ROHIT AGRAWAL"
+    },
+    {
+     "ben": "Prashant Lande",
+     "acct": "04170161799946",
+     "amt": 103000,
+     "held": "PRASHANT LANDE"
+    },
+    {
+     "ben": "Pallavi Shinde",
+     "acct": "04170162114133",
+     "amt": 44000,
+     "held": "PALLAVI SHINDE"
+    },
+    {
+     "ben": "Kavita Deshpande",
+     "acct": "04170162218862",
+     "amt": 90000,
+     "held": "KAVITA DESHPANDE"
+    },
+    {
+     "ben": "Shabana Shaikh",
+     "acct": "04170162428320",
+     "amt": 42000,
+     "held": "SHABANA SHAIKH"
+    },
+    {
+     "ben": "Ganesh Tapkir",
+     "acct": "04170162847236",
+     "amt": 76000,
+     "held": "GANESH TAPKIR"
+    },
+    {
+     "ben": "Ritu Malhotra",
+     "acct": "04170163056694",
+     "amt": 94000,
+     "held": "RITU MALHOTRA"
+    },
+    {
+     "ben": "Sachin Jagtap",
+     "acct": "04170163266152",
+     "amt": 56000,
+     "held": "SACHIN JAGTAP"
+    },
+    {
+     "ben": "Anil Pawar",
+     "acct": "04170163475610",
+     "amt": 30000,
+     "held": "ANIL PAWAR"
+    },
+    {
+     "ben": "Bhimrao Kamble",
+     "acct": "04170163789797",
+     "amt": 37000,
+     "held": "BHIMRAO KAMBLE"
+    },
+    {
+     "ben": "Santosh Kale",
+     "acct": "04170163999255",
+     "amt": 25584,
+     "held": "SANTOSH KALE"
+    },
+    {
+     "ben": "Arjun Rathod",
+     "acct": "04170164418171",
+     "amt": 36000,
+     "held": "ARJUN RATHOD"
+    },
+    {
+     "ben": "Rahul Bendre",
+     "acct": "04170164627629",
+     "amt": 36500,
+     "held": "RAHUL BENDRE"
+    },
+    {
+     "ben": "Kirti Jain",
+     "acct": "04170165046545",
+     "amt": 50000,
+     "held": "KIRTI JAIN"
+    },
+    {
+     "ben": "Rajendra Ghadge",
+     "acct": "04170165256003",
+     "amt": 34000,
+     "held": "RAJENDRA GHADGE"
+    },
+    {
+     "ben": "Karthik Ramesh",
+     "acct": "04170165465461",
+     "amt": 52000,
+     "held": "KARTHIK RAMESH"
+    },
+    {
+     "ben": "Baban Shelar",
+     "acct": "04170165674919",
+     "amt": 18215,
+     "held": "BABAN SHELAR"
+    },
+    {
+     "ben": "Mohammed Ashfaq Khan",
+     "acct": "04170165989106",
+     "amt": 50000,
+     "held": "MOHAMMED ASHFAQ KHAN"
+    },
+    {
+     "ben": "Vishal Kumbhar",
+     "acct": "04170166198564",
+     "amt": 42000,
+     "held": "VISHAL KUMBHAR"
+    },
+    {
+     "ben": "Meera Pillai",
+     "acct": "04170166303293",
+     "amt": 31000,
+     "held": "MEERA PILLAI"
+    },
+    {
+     "ben": "Ajay Thube",
+     "acct": "04170166408022",
+     "amt": 23710,
+     "held": "AJAY THUBE"
+    },
+    {
+     "ben": "Rupesh Chavan",
+     "acct": "04170166617480",
+     "amt": 34500,
+     "held": "RUPESH CHAVAN"
+    },
+    {
+     "ben": "Gurpreet Singh Sandhu",
+     "acct": "04170166722209",
+     "amt": 54000,
+     "held": "GURPREET SINGH SANDHU"
+    },
+    {
+     "ben": "Sunil Gaikwad",
+     "acct": "04170166931667",
+     "amt": 22300,
+     "held": "SUNIL GAIKWAD"
+    },
+    {
+     "ben": "Tejas Mhaske",
+     "acct": "04170167141125",
+     "amt": 44000,
+     "held": "TEJAS MHASKE"
+    },
+    {
+     "ben": "Shrikant Lohar",
+     "acct": "04170167350583",
+     "amt": 27500,
+     "held": "SHRIKANT LOHAR"
+    },
+    {
+     "ben": "Ganpat Zende",
+     "acct": "04170167560041",
+     "amt": 15144,
+     "held": "GANPAT ZENDE"
+    },
+    {
+     "ben": "Sagar Thakur",
+     "acct": "04170167769499",
+     "amt": 39000,
+     "held": "SAGAR THAKUR"
+    },
+    {
+     "ben": "Omkar Tilekar",
+     "acct": "04170167874228",
+     "amt": 31000,
+     "held": "OMKAR TILEKAR"
+    },
+    {
+     "ben": "Akshay Solanke",
+     "acct": "04170168083686",
+     "amt": 24180,
+     "held": "AKSHAY SOLANKE"
+    },
+    {
+     "ben": "Swati Hingne",
+     "acct": "04170168293144",
+     "amt": 22970,
+     "held": "SWATI HINGNE"
+    },
+    {
+     "ben": "Aishwarya Joshi",
+     "acct": "04170168502602",
+     "amt": 32000,
+     "held": "AISHWARYA JOSHI"
+    },
+    {
+     "ben": "Mrunal Deo",
+     "acct": "04170168712060",
+     "amt": 70000,
+     "held": "MRUNAL DEO"
+    },
+    {
+     "ben": "Nikhil Gawade",
+     "acct": "04170168921518",
+     "amt": 17009,
+     "held": "NIKHIL GAWADE"
+    },
+    {
+     "ben": "Devendra Yadav",
+     "acct": "04170169235705",
+     "amt": 19334,
+     "held": "DEVENDRA YADAV"
+    },
+    {
+     "ben": "Irfan Tamboli",
+     "acct": "04170169445163",
+     "amt": 17656,
+     "held": "IRFAN TAMBOLI"
+    },
+    {
+     "ben": "Pooja Nimbalkar",
+     "acct": "04170169654621",
+     "amt": 20626,
+     "held": "POOJA NIMBALKAR"
+    },
+    {
+     "ben": "Nita Bansode",
+     "acct": "04170169759350",
+     "amt": 26054,
+     "held": "NITA BANSODE"
+    },
+    {
+     "ben": "Rakesh Bhoir",
+     "acct": "04170166931667",
+     "amt": 27800,
+     "held": "SUNIL GAIKWAD"
+    },
+    {
+     "_class": "total",
+     "ben": "Total (43 credits)",
+     "amt": 2166562
+    }
+   ],
+   "footnote": "Credits are made to the account number. Beneficiary names are as uploaded by the customer, in the order of its file; account holders are as held by the bank. This is a computer generated report and does not need a signature."
+  },
+  {
+   "id": "ap-1090",
+   "type": "letter",
+   "style": "letter",
+   "title": "Pooja Nimbalkar · appointment letter",
+   "tab": "Letter",
+   "group": "p1090",
+   "letterhead": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC, Village Mahalunge, Taluka Khed, Pune 410501",
+    "cin": "U29301MH2004PTC942620"
+   },
+   "ref": "TDPL/HR/APT/26-27/011",
+   "date": "15-06-2026",
+   "to": {
+    "name": "Ms Pooja Nimbalkar",
+    "address": "Flat 7, Shivneri Apartments, Moshi, Pune 412105"
+   },
+   "subject": "Appointment as Graduate Engineer Trainee",
+   "body": [
+    "We are pleased to appoint you as Graduate Engineer Trainee in the Production department at our Chakan plant from 1 July 2026, on these terms:",
+    "- Gross salary of ₹22,000 a month, paid at the end of each month into a bank account in your own name.",
+    "- One year as a trainee; weekly off on Sunday.",
+    "- PF and other deductions as the law and company policy require.",
+    "- One month’s notice on either side.",
+    "Please sign the duplicate and return it as your acceptance."
+   ],
+   "sign": {
+    "for": "Tamhini Drivetech Private Limited",
+    "name": "Amol Joglekar",
+    "role": "Managing Director",
+    "hand": "Amol Joglekar"
+   },
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Accepted. Pooja Nimbalkar, 16/6/2026",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -2
+    }
+   ]
+  },
+  {
+   "id": "att-1090",
+   "type": "table",
+   "style": "register",
+   "title": "Pooja Nimbalkar · biometric attendance",
+   "tab": "Attendance",
+   "kindLabel": "Attendance summary",
+   "group": "p1090",
+   "heading": "Biometric attendance summary",
+   "company": "Tamhini Drivetech Private Limited",
+   "subtitle": "E1090 Pooja Nimbalkar · Production",
+   "columns": [
+    {
+     "key": "m",
+     "label": "Month"
+    },
+    {
+     "key": "days",
+     "label": "Days",
+     "format": "int"
+    },
+    {
+     "key": "pr",
+     "label": "Punched",
+     "format": "int"
+    },
+    {
+     "key": "od",
+     "label": "On duty",
+     "format": "int"
+    },
+    {
+     "key": "lv",
+     "label": "Leave",
+     "format": "int"
+    },
+    {
+     "key": "off",
+     "label": "Offs",
+     "format": "int"
+    },
+    {
+     "key": "paid",
+     "label": "Paid",
+     "format": "int",
+     "check": "off + pr + od + lv"
+    }
+   ],
+   "rows": [
+    {
+     "m": "Jul 2026",
+     "days": 31,
+     "off": 4,
+     "pr": 27,
+     "od": 0,
+     "lv": 0,
+     "paid": 31
+    },
+    {
+     "m": "Aug 2026",
+     "days": 31,
+     "off": 6,
+     "pr": 19,
+     "od": 6,
+     "lv": 0,
+     "paid": 31
+    },
+    {
+     "m": "Sep 2026",
+     "days": 30,
+     "off": 5,
+     "pr": 25,
+     "od": 0,
+     "lv": 0,
+     "paid": 30
+    },
+    {
+     "m": "Oct 2026",
+     "days": 31,
+     "off": 6,
+     "pr": 24,
+     "od": 0,
+     "lv": 1,
+     "paid": 31
+    },
+    {
+     "m": "Nov 2026",
+     "days": 30,
+     "off": 9,
+     "pr": 21,
+     "od": 0,
+     "lv": 0,
+     "paid": 30
+    },
+    {
+     "m": "Dec 2026",
+     "days": 31,
+     "off": 5,
+     "pr": 25,
+     "od": 0,
+     "lv": 1,
+     "paid": 31
+    }
+   ],
+   "check": false,
+   "notes": [
+    "Punched: present on the biometric reader. On duty: away on company work, on an approved slip. Leave: paid leave from the balance. Offs: Sundays and company holidays. Paid: days paid in the month."
+   ]
+  },
+  {
+   "id": "od-1090",
+   "type": "card",
+   "style": "slip",
+   "handwritten": true,
+   "title": "Pooja Nimbalkar · on-duty slip, August",
+   "tab": "On-duty slip",
+   "group": "p1090",
+   "issuer": "Tamhini Drivetech Private Limited · Production",
+   "heading": "On-duty slip",
+   "number": "OD/PRD/0817",
+   "fields": [
+    {
+     "label": "Name and code",
+     "value": "Pooja Nimbalkar, E1090"
+    },
+    {
+     "label": "Dates",
+     "value": "17-08-2026 to 22-08-2026 (6 days)"
+    },
+    {
+     "label": "Where",
+     "value": "Hosur depot and customer line: gear inspection training"
+    },
+    {
+     "label": "Approved by",
+     "value": "Prashant Lande, Production Manager, 14-08-2026"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "sign",
+     "text": "P. Lande",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -4
+    }
+   ]
+  },
+  {
+   "id": "pay-1090",
+   "type": "table",
+   "style": "sheet",
+   "title": "Pooja Nimbalkar · salary paid, month by month",
+   "tab": "Salary paid",
+   "group": "p1090",
+   "sheetName": "Employee view",
+   "freeze": true,
+   "otherSheets": [
+    "Dec-26",
+    "Summary"
+   ],
+   "formula": "=FILTER(AllMonths, AllMonths[Code]=$J$1)",
+   "columns": [
+    {
+     "key": "m",
+     "label": "Month"
+    },
+    {
+     "key": "days",
+     "label": "Days paid",
+     "format": "int"
+    },
+    {
+     "key": "gross",
+     "label": "Gross (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "pf",
+     "label": "PF (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "esi",
+     "label": "ESI (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "oth",
+     "label": "TDS and other (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "net",
+     "label": "Net pay (₹)",
+     "format": "inr",
+     "check": "gross - pf - esi - oth"
+    },
+    {
+     "key": "cr",
+     "label": "Credited on"
+    }
+   ],
+   "rows": [
+    {
+     "m": "Jul 2026",
+     "days": 31,
+     "gross": 22000,
+     "pf": 1374,
+     "esi": 0,
+     "oth": 0,
+     "net": 20626,
+     "cr": "31-07-2026"
+    },
+    {
+     "m": "Aug 2026",
+     "days": 31,
+     "gross": 22000,
+     "pf": 1374,
+     "esi": 0,
+     "oth": 0,
+     "net": 20626,
+     "cr": "31-08-2026"
+    },
+    {
+     "m": "Sep 2026",
+     "days": 30,
+     "gross": 22000,
+     "pf": 1374,
+     "esi": 0,
+     "oth": 0,
+     "net": 20626,
+     "cr": "30-09-2026"
+    },
+    {
+     "m": "Oct 2026",
+     "days": 31,
+     "gross": 22000,
+     "pf": 1374,
+     "esi": 0,
+     "oth": 0,
+     "net": 20626,
+     "cr": "30-10-2026"
+    },
+    {
+     "m": "Nov 2026",
+     "days": 30,
+     "gross": 22000,
+     "pf": 1374,
+     "esi": 0,
+     "oth": 0,
+     "net": 20626,
+     "cr": "30-11-2026"
+    },
+    {
+     "m": "Dec 2026",
+     "days": 31,
+     "gross": 22000,
+     "pf": 1374,
+     "esi": 0,
+     "oth": 0,
+     "net": 20626,
+     "cr": "31-12-2026"
+    }
+   ],
+   "notes": [
+    "E1090 Pooja Nimbalkar · Graduate Engineer Trainee · from the monthly salary register sheets, April to December 2026."
+   ]
+  },
+  {
+   "id": "note-1093",
+   "type": "letter",
+   "style": "note",
+   "title": "Rakesh Bhoir · Shabana’s note on the file",
+   "tab": "File note",
+   "group": "p1093",
+   "subject": "E1093 Rakesh Bhoir",
+   "date": "15/1",
+   "body": [
+    "Personnel file not in the HR cabinet.",
+    "Sunil says his joining papers are with Production (Prashant sir).",
+    "Biometric enrolment pending. UAN to be generated.",
+    "Will send on Monday."
+   ],
+   "sign": "S.S."
+  },
+  {
+   "id": "att-1093",
+   "type": "card",
+   "style": "slip",
+   "title": "Rakesh Bhoir · biometric attendance",
+   "tab": "Attendance",
+   "kindLabel": "Attendance summary",
+   "group": "p1093",
+   "issuer": "Tamhini Drivetech Private Limited · HR",
+   "heading": "Biometric attendance summary",
+   "number": "E1093",
+   "fields": [
+    {
+     "label": "Employee",
+     "value": "E1093 Rakesh Bhoir, Production Assistant"
+    },
+    {
+     "label": "Enrolled on the biometric reader",
+     "value": "No"
+    },
+    {
+     "label": "August to December 2026",
+     "value": "No punches recorded"
+    },
+    {
+     "label": "Days paid",
+     "value": "Full month each month, from the payroll input"
+    },
+    {
+     "label": "Payroll input remark",
+     "value": "Manual muster from Production, to be collected. Sunil G."
+    }
+   ]
+  },
+  {
+   "id": "pay-1093",
+   "type": "table",
+   "style": "sheet",
+   "title": "Rakesh Bhoir · salary paid, month by month",
+   "tab": "Salary paid",
+   "group": "p1093",
+   "sheetName": "Employee view",
+   "freeze": true,
+   "otherSheets": [
+    "Dec-26",
+    "Summary"
+   ],
+   "formula": "=FILTER(AllMonths, AllMonths[Code]=$J$1)",
+   "columns": [
+    {
+     "key": "m",
+     "label": "Month"
+    },
+    {
+     "key": "days",
+     "label": "Days paid",
+     "format": "int"
+    },
+    {
+     "key": "gross",
+     "label": "Gross (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "pf",
+     "label": "PF (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "esi",
+     "label": "ESI (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "oth",
+     "label": "TDS and other (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "net",
+     "label": "Net pay (₹)",
+     "format": "inr",
+     "check": "gross - pf - esi - oth"
+    },
+    {
+     "key": "cr",
+     "label": "Credited on"
+    }
+   ],
+   "rows": [
+    {
+     "m": "Aug 2026",
+     "days": 31,
+     "gross": 28000,
+     "pf": 0,
+     "esi": 0,
+     "oth": 200,
+     "net": 27800,
+     "cr": "31-08-2026"
+    },
+    {
+     "m": "Sep 2026",
+     "days": 30,
+     "gross": 28000,
+     "pf": 0,
+     "esi": 0,
+     "oth": 200,
+     "net": 27800,
+     "cr": "30-09-2026"
+    },
+    {
+     "m": "Oct 2026",
+     "days": 31,
+     "gross": 28000,
+     "pf": 0,
+     "esi": 0,
+     "oth": 200,
+     "net": 27800,
+     "cr": "30-10-2026"
+    },
+    {
+     "m": "Nov 2026",
+     "days": 30,
+     "gross": 28000,
+     "pf": 0,
+     "esi": 0,
+     "oth": 200,
+     "net": 27800,
+     "cr": "30-11-2026"
+    },
+    {
+     "m": "Dec 2026",
+     "days": 31,
+     "gross": 28000,
+     "pf": 0,
+     "esi": 0,
+     "oth": 200,
+     "net": 27800,
+     "cr": "31-12-2026"
+    }
+   ],
+   "notes": [
+    "E1093 Rakesh Bhoir · Production Assistant · from the monthly salary register sheets, April to December 2026.",
+    "PF: not deducted, UAN awaited."
+   ]
+  },
+  {
+   "id": "ap-1091",
+   "type": "letter",
+   "style": "letter",
+   "title": "Nita Bansode · appointment letter",
+   "tab": "Letter",
+   "group": "p1091",
+   "letterhead": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC, Village Mahalunge, Taluka Khed, Pune 410501",
+    "cin": "U29301MH2004PTC942620"
+   },
+   "ref": "TDPL/HR/APT/26-27/019",
+   "date": "25-08-2026",
+   "to": {
+    "name": "Ms Nita Bansode",
+    "address": "Plot 22, Sant Tukaram Nagar, Bhosari, Pune 411039"
+   },
+   "subject": "Appointment as Quality Inspector",
+   "body": [
+    "We are pleased to appoint you as Quality Inspector in the Quality department at our Chakan plant from 7 September 2026, on these terms:",
+    "- Gross salary of ₹28,000 a month, paid at the end of each month into a bank account in your own name. The first month is paid for the days from your joining date.",
+    "- Probation of six months; weekly off on Sunday.",
+    "- PF and other deductions as the law and company policy require.",
+    "- One month’s notice on either side.",
+    "Please sign the duplicate and return it as your acceptance."
+   ],
+   "sign": {
+    "for": "Tamhini Drivetech Private Limited",
+    "name": "Amol Joglekar",
+    "role": "Managing Director",
+    "hand": "Amol Joglekar"
+   },
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Accepted. Nita Bansode, 26/8/2026",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -2
+    }
+   ]
+  },
+  {
+   "id": "att-1091",
+   "type": "table",
+   "style": "register",
+   "title": "Nita Bansode · biometric attendance",
+   "tab": "Attendance",
+   "kindLabel": "Attendance summary",
+   "group": "p1091",
+   "heading": "Biometric attendance summary",
+   "company": "Tamhini Drivetech Private Limited",
+   "subtitle": "E1091 Nita Bansode · Quality",
+   "columns": [
+    {
+     "key": "m",
+     "label": "Month"
+    },
+    {
+     "key": "days",
+     "label": "Days",
+     "format": "int"
+    },
+    {
+     "key": "pr",
+     "label": "Punched",
+     "format": "int"
+    },
+    {
+     "key": "od",
+     "label": "On duty",
+     "format": "int"
+    },
+    {
+     "key": "lv",
+     "label": "Leave",
+     "format": "int"
+    },
+    {
+     "key": "off",
+     "label": "Offs",
+     "format": "int"
+    },
+    {
+     "key": "paid",
+     "label": "Paid",
+     "format": "int",
+     "check": "off + pr + od + lv"
+    }
+   ],
+   "rows": [
+    {
+     "m": "Sep 2026 (from 7th)",
+     "days": 24,
+     "off": 4,
+     "pr": 20,
+     "od": 0,
+     "lv": 0,
+     "paid": 24
+    },
+    {
+     "m": "Oct 2026",
+     "days": 31,
+     "off": 6,
+     "pr": 25,
+     "od": 0,
+     "lv": 0,
+     "paid": 31
+    },
+    {
+     "m": "Nov 2026",
+     "days": 30,
+     "off": 9,
+     "pr": 20,
+     "od": 0,
+     "lv": 1,
+     "paid": 30
+    },
+    {
+     "m": "Dec 2026",
+     "days": 31,
+     "off": 5,
+     "pr": 26,
+     "od": 0,
+     "lv": 0,
+     "paid": 31
+    }
+   ],
+   "check": false,
+   "notes": [
+    "Punched: present on the biometric reader. Leave: paid leave. Offs: Sundays and company holidays. Paid: days paid in the month. September counts from the joining date, 7 September."
+   ]
+  },
+  {
+   "id": "pay-1091",
+   "type": "table",
+   "style": "sheet",
+   "title": "Nita Bansode · salary paid, month by month",
+   "tab": "Salary paid",
+   "group": "p1091",
+   "sheetName": "Employee view",
+   "freeze": true,
+   "otherSheets": [
+    "Dec-26",
+    "Summary"
+   ],
+   "formula": "=FILTER(AllMonths, AllMonths[Code]=$J$1)",
+   "columns": [
+    {
+     "key": "m",
+     "label": "Month"
+    },
+    {
+     "key": "days",
+     "label": "Days paid",
+     "format": "int"
+    },
+    {
+     "key": "gross",
+     "label": "Gross (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "pf",
+     "label": "PF (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "esi",
+     "label": "ESI (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "oth",
+     "label": "TDS and other (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "net",
+     "label": "Net pay (₹)",
+     "format": "inr",
+     "check": "gross - pf - esi - oth"
+    },
+    {
+     "key": "cr",
+     "label": "Credited on"
+    }
+   ],
+   "rows": [
+    {
+     "m": "Sep 2026",
+     "days": 24,
+     "gross": 22400,
+     "pf": 1397,
+     "esi": 0,
+     "oth": 0,
+     "net": 21003,
+     "cr": "30-09-2026"
+    },
+    {
+     "m": "Oct 2026",
+     "days": 31,
+     "gross": 28000,
+     "pf": 1746,
+     "esi": 0,
+     "oth": 200,
+     "net": 26054,
+     "cr": "30-10-2026"
+    },
+    {
+     "m": "Nov 2026",
+     "days": 30,
+     "gross": 28000,
+     "pf": 1746,
+     "esi": 0,
+     "oth": 200,
+     "net": 26054,
+     "cr": "30-11-2026"
+    },
+    {
+     "m": "Dec 2026",
+     "days": 31,
+     "gross": 28000,
+     "pf": 1746,
+     "esi": 0,
+     "oth": 200,
+     "net": 26054,
+     "cr": "31-12-2026"
+    }
+   ],
+   "notes": [
+    "E1091 Nita Bansode · Quality Inspector · from the monthly salary register sheets, April to December 2026."
+   ]
+  },
+  {
+   "id": "res-1037",
+   "type": "letter",
+   "style": "letter",
+   "title": "Vinod Sonawane · resignation accepted",
+   "tab": "Resignation",
+   "group": "p1037",
+   "letterhead": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC, Village Mahalunge, Taluka Khed, Pune 410501",
+    "cin": "U29301MH2004PTC942620"
+   },
+   "ref": "TDPL/HR/EXIT/26-27/004",
+   "date": "18-05-2026",
+   "to": {
+    "name": "Mr Vinod Sonawane (E1037)",
+    "address": "Store Keeper, Stores and Logistics"
+   },
+   "subject": "Acceptance of your resignation",
+   "body": [
+    "We accept your resignation dated 16 May 2026. Your last working day with the company will be 15 June 2026.",
+    "Please hand over your work and return your ID card on your last working day. Your full and final settlement will be paid after that.",
+    "Copy to: Payroll (Sunil Gaikwad); Stores (Dattatray More)"
+   ],
+   "sign": {
+    "for": "Tamhini Drivetech Private Limited",
+    "name": "Shabana Shaikh",
+    "role": "HR and Payroll Executive",
+    "hand": "Shabana S."
+   }
+  },
+  {
+   "id": "ff-1037",
+   "type": "card",
+   "style": "slip",
+   "title": "Vinod Sonawane · full and final settlement",
+   "tab": "F&F",
+   "kindLabel": "F&F statement",
+   "group": "p1037",
+   "issuer": "Tamhini Drivetech Private Limited · HR and Payroll",
+   "heading": "Full and final settlement",
+   "number": "F&F/26-27/1037",
+   "fields": [
+    {
+     "label": "Employee",
+     "value": "E1037 Vinod Sonawane, Store Keeper"
+    },
+    {
+     "label": "Joined",
+     "value": "14.01.2019"
+    },
+    {
+     "label": "Last working day",
+     "value": "15.06.2026"
+    },
+    {
+     "label": "Notice",
+     "value": "Served in full (resigned 16.05.2026)"
+    },
+    {
+     "label": "Salary to the last day",
+     "value": "15 days of June, paid in the June payroll"
+    },
+    {
+     "label": "Leave encashment",
+     "value": "9 days × ₹13,800 basic ÷ 30 = ₹4,140"
+    },
+    {
+     "label": "Notice pay recovery",
+     "value": "Nil"
+    },
+    {
+     "label": "Gratuity",
+     "value": "Claim sent to the group gratuity trust on 22.06.2026"
+    },
+    {
+     "label": "Net paid",
+     "value": "₹4,140 by NEFT on 30.06.2026"
+    },
+    {
+     "label": "Prepared · checked · approved",
+     "value": "Sunil G. · Shabana S. · Mahesh Kadam"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "PAID 30 JUN 2026",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": -6
+    }
+   ]
+  },
+  {
+   "id": "pay-1037",
+   "type": "table",
+   "style": "sheet",
+   "title": "Vinod Sonawane · salary paid, month by month",
+   "tab": "Salary paid",
+   "group": "p1037",
+   "sheetName": "Employee view",
+   "freeze": true,
+   "otherSheets": [
+    "Dec-26",
+    "Summary"
+   ],
+   "formula": "=FILTER(AllMonths, AllMonths[Code]=$J$1)",
+   "columns": [
+    {
+     "key": "m",
+     "label": "Month"
+    },
+    {
+     "key": "days",
+     "label": "Days paid",
+     "format": "int"
+    },
+    {
+     "key": "gross",
+     "label": "Gross (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "pf",
+     "label": "PF (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "esi",
+     "label": "ESI (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "oth",
+     "label": "TDS and other (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "net",
+     "label": "Net pay (₹)",
+     "format": "inr",
+     "check": "gross - pf - esi - oth"
+    },
+    {
+     "key": "cr",
+     "label": "Credited on"
+    }
+   ],
+   "rows": [
+    {
+     "m": "Apr 2026",
+     "days": 30,
+     "gross": 26500,
+     "pf": 1656,
+     "esi": 0,
+     "oth": 200,
+     "net": 24644,
+     "cr": "30-04-2026"
+    },
+    {
+     "m": "May 2026",
+     "days": 31,
+     "gross": 26500,
+     "pf": 1656,
+     "esi": 0,
+     "oth": 200,
+     "net": 24644,
+     "cr": "29-05-2026"
+    },
+    {
+     "m": "Jun 2026",
+     "days": 15,
+     "gross": 13250,
+     "pf": 828,
+     "esi": 0,
+     "oth": 200,
+     "net": 12222,
+     "cr": "30-06-2026"
+    }
+   ],
+   "notes": [
+    "E1037 Vinod Sonawane · Store Keeper · from the monthly salary register sheets, April to December 2026.",
+    "Jul–Dec 2026: not on the register."
+   ]
+  },
+  {
+   "id": "res-1044",
+   "type": "letter",
+   "style": "letter",
+   "title": "Amit Wagh · resignation accepted",
+   "tab": "Resignation",
+   "group": "p1044",
+   "letterhead": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC, Village Mahalunge, Taluka Khed, Pune 410501",
+    "cin": "U29301MH2004PTC942620"
+   },
+   "ref": "TDPL/HR/EXIT/26-27/007",
+   "date": "03-08-2026",
+   "to": {
+    "name": "Mr Amit Wagh (E1044)",
+    "address": "Quality Inspector, Quality"
+   },
+   "subject": "Acceptance of your resignation",
+   "body": [
+    "We accept your resignation dated 31 July 2026. Your last working day with the company will be 31 August 2026.",
+    "Please hand over your work and return your ID card on your last working day. Your full and final settlement will be paid after that.",
+    "Copy to: Payroll (Sunil Gaikwad); Quality (Kavita Deshpande)"
+   ],
+   "sign": {
+    "for": "Tamhini Drivetech Private Limited",
+    "name": "Shabana Shaikh",
+    "role": "HR and Payroll Executive",
+    "hand": "Shabana S."
+   }
+  },
+  {
+   "id": "ff-1044",
+   "type": "card",
+   "style": "slip",
+   "title": "Amit Wagh · full and final settlement",
+   "tab": "F&F",
+   "kindLabel": "F&F statement",
+   "group": "p1044",
+   "issuer": "Tamhini Drivetech Private Limited · HR and Payroll",
+   "heading": "Full and final settlement",
+   "number": "F&F/26-27/1044",
+   "fields": [
+    {
+     "label": "Employee",
+     "value": "E1044 Amit Wagh, Quality Inspector"
+    },
+    {
+     "label": "Joined",
+     "value": "03.06.2019"
+    },
+    {
+     "label": "Last working day",
+     "value": "31.08.2026"
+    },
+    {
+     "label": "Notice",
+     "value": "Served in full (resigned 31.07.2026)"
+    },
+    {
+     "label": "Salary to the last day",
+     "value": "31 days of August, paid in the August payroll"
+    },
+    {
+     "label": "Leave encashment",
+     "value": "12 days × ₹16,100 basic ÷ 30 = ₹6,440"
+    },
+    {
+     "label": "Notice pay recovery",
+     "value": "Nil"
+    },
+    {
+     "label": "Gratuity",
+     "value": "Claim sent to the group gratuity trust on 07.09.2026"
+    },
+    {
+     "label": "Net paid",
+     "value": "₹6,440 by NEFT on 15.09.2026"
+    },
+    {
+     "label": "Prepared · checked · approved",
+     "value": "Sunil G. · Shabana S. · Mahesh Kadam"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "PAID 15 SEP 2026",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": -6
+    }
+   ]
+  },
+  {
+   "id": "pay-1044",
+   "type": "table",
+   "style": "sheet",
+   "title": "Amit Wagh · salary paid, month by month",
+   "tab": "Salary paid",
+   "group": "p1044",
+   "sheetName": "Employee view",
+   "freeze": true,
+   "otherSheets": [
+    "Dec-26",
+    "Summary"
+   ],
+   "formula": "=FILTER(AllMonths, AllMonths[Code]=$J$1)",
+   "columns": [
+    {
+     "key": "m",
+     "label": "Month"
+    },
+    {
+     "key": "days",
+     "label": "Days paid",
+     "format": "int"
+    },
+    {
+     "key": "gross",
+     "label": "Gross (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "pf",
+     "label": "PF (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "esi",
+     "label": "ESI (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "oth",
+     "label": "TDS and other (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "net",
+     "label": "Net pay (₹)",
+     "format": "inr",
+     "check": "gross - pf - esi - oth"
+    },
+    {
+     "key": "cr",
+     "label": "Credited on"
+    }
+   ],
+   "rows": [
+    {
+     "m": "Apr 2026",
+     "days": 30,
+     "gross": 31000,
+     "pf": 1800,
+     "esi": 0,
+     "oth": 200,
+     "net": 29000,
+     "cr": "30-04-2026"
+    },
+    {
+     "m": "May 2026",
+     "days": 31,
+     "gross": 31000,
+     "pf": 1800,
+     "esi": 0,
+     "oth": 200,
+     "net": 29000,
+     "cr": "29-05-2026"
+    },
+    {
+     "m": "Jun 2026",
+     "days": 30,
+     "gross": 31000,
+     "pf": 1800,
+     "esi": 0,
+     "oth": 200,
+     "net": 29000,
+     "cr": "30-06-2026"
+    },
+    {
+     "m": "Jul 2026",
+     "days": 31,
+     "gross": 31000,
+     "pf": 1800,
+     "esi": 0,
+     "oth": 200,
+     "net": 29000,
+     "cr": "31-07-2026"
+    },
+    {
+     "m": "Aug 2026",
+     "days": 31,
+     "gross": 31000,
+     "pf": 1800,
+     "esi": 0,
+     "oth": 200,
+     "net": 29000,
+     "cr": "31-08-2026"
+    },
+    {
+     "m": "Sep 2026",
+     "days": 30,
+     "gross": 31000,
+     "pf": 1800,
+     "esi": 0,
+     "oth": 200,
+     "net": 29000,
+     "cr": "30-09-2026"
+    }
+   ],
+   "notes": [
+    "E1044 Amit Wagh · Quality Inspector · from the monthly salary register sheets, April to December 2026.",
+    "Oct–Dec 2026: not on the register."
+   ]
+  },
+  {
+   "id": "res-1030",
+   "type": "letter",
+   "style": "letter",
+   "title": "Hemant Jadhav · resignation accepted",
+   "tab": "Resignation",
+   "group": "p1030",
+   "letterhead": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC, Village Mahalunge, Taluka Khed, Pune 410501",
+    "cin": "U29301MH2004PTC942620"
+   },
+   "ref": "TDPL/HR/EXIT/26-27/011",
+   "date": "09-10-2026",
+   "to": {
+    "name": "Mr Hemant Jadhav (E1030)",
+    "address": "Production Engineer, Production"
+   },
+   "subject": "Acceptance of your resignation",
+   "body": [
+    "We accept your resignation dated 1 October 2026. Your last working day with the company will be 31 October 2026.",
+    "Please hand over your work and return your ID card on your last working day. Your full and final settlement will be paid after that.",
+    "Copy to: Payroll (Sunil Gaikwad); Production (Prashant Lande)"
+   ],
+   "sign": {
+    "for": "Tamhini Drivetech Private Limited",
+    "name": "Shabana Shaikh",
+    "role": "HR and Payroll Executive",
+    "hand": "Shabana S."
+   }
+  },
+  {
+   "id": "ff-1030",
+   "type": "card",
+   "style": "slip",
+   "title": "Hemant Jadhav · full and final settlement",
+   "tab": "F&F",
+   "kindLabel": "F&F statement",
+   "group": "p1030",
+   "issuer": "Tamhini Drivetech Private Limited · HR and Payroll",
+   "heading": "Full and final settlement",
+   "number": "F&F/26-27/1030",
+   "fields": [
+    {
+     "label": "Employee",
+     "value": "E1030 Hemant Jadhav, Production Engineer"
+    },
+    {
+     "label": "Joined",
+     "value": "05.02.2018"
+    },
+    {
+     "label": "Last working day",
+     "value": "31.10.2026"
+    },
+    {
+     "label": "Notice",
+     "value": "Served in full (resigned 01.10.2026)"
+    },
+    {
+     "label": "Salary to the last day",
+     "value": "31 days of October, paid in the October payroll"
+    },
+    {
+     "label": "Leave encashment",
+     "value": "14 days × ₹29,100 basic ÷ 30 = ₹13,580"
+    },
+    {
+     "label": "Notice pay recovery",
+     "value": "Nil"
+    },
+    {
+     "label": "Gratuity",
+     "value": "Claim sent to the group gratuity trust on 06.11.2026"
+    },
+    {
+     "label": "Net paid",
+     "value": "₹13,580 by NEFT on 20.11.2026"
+    },
+    {
+     "label": "Prepared · checked · approved",
+     "value": "Sunil G. · Shabana S. · Mahesh Kadam"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "PAID 20 NOV 2026",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": -6
+    }
+   ]
+  },
+  {
+   "id": "pay-1030",
+   "type": "table",
+   "style": "sheet",
+   "title": "Hemant Jadhav · salary paid, month by month",
+   "tab": "Salary paid",
+   "group": "p1030",
+   "sheetName": "Employee view",
+   "freeze": true,
+   "otherSheets": [
+    "Dec-26",
+    "Summary"
+   ],
+   "formula": "=FILTER(AllMonths, AllMonths[Code]=$J$1)",
+   "columns": [
+    {
+     "key": "m",
+     "label": "Month"
+    },
+    {
+     "key": "days",
+     "label": "Days paid",
+     "format": "int"
+    },
+    {
+     "key": "gross",
+     "label": "Gross (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "pf",
+     "label": "PF (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "esi",
+     "label": "ESI (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "oth",
+     "label": "TDS and other (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "net",
+     "label": "Net pay (₹)",
+     "format": "inr",
+     "check": "gross - pf - esi - oth"
+    },
+    {
+     "key": "cr",
+     "label": "Credited on"
+    }
+   ],
+   "rows": [
+    {
+     "m": "Apr 2026",
+     "days": 30,
+     "gross": 56000,
+     "pf": 1800,
+     "esi": 0,
+     "oth": 200,
+     "net": 54000,
+     "cr": "30-04-2026"
+    },
+    {
+     "m": "May 2026",
+     "days": 31,
+     "gross": 56000,
+     "pf": 1800,
+     "esi": 0,
+     "oth": 200,
+     "net": 54000,
+     "cr": "29-05-2026"
+    },
+    {
+     "m": "Jun 2026",
+     "days": 30,
+     "gross": 56000,
+     "pf": 1800,
+     "esi": 0,
+     "oth": 200,
+     "net": 54000,
+     "cr": "30-06-2026"
+    },
+    {
+     "m": "Jul 2026",
+     "days": 31,
+     "gross": 56000,
+     "pf": 1800,
+     "esi": 0,
+     "oth": 200,
+     "net": 54000,
+     "cr": "31-07-2026"
+    },
+    {
+     "m": "Aug 2026",
+     "days": 31,
+     "gross": 56000,
+     "pf": 1800,
+     "esi": 0,
+     "oth": 200,
+     "net": 54000,
+     "cr": "31-08-2026"
+    },
+    {
+     "m": "Sep 2026",
+     "days": 30,
+     "gross": 56000,
+     "pf": 1800,
+     "esi": 0,
+     "oth": 200,
+     "net": 54000,
+     "cr": "30-09-2026"
+    },
+    {
+     "m": "Oct 2026",
+     "days": 31,
+     "gross": 56000,
+     "pf": 1800,
+     "esi": 0,
+     "oth": 200,
+     "net": 54000,
+     "cr": "30-10-2026"
+    }
+   ],
+   "notes": [
+    "E1030 Hemant Jadhav · Production Engineer · from the monthly salary register sheets, April to December 2026.",
+    "Nov–Dec 2026: not on the register."
+   ]
+  },
+  {
+   "id": "res-1058",
+   "type": "letter",
+   "style": "letter",
+   "title": "Meera Pillai · resignation accepted",
+   "tab": "Resignation",
+   "group": "p1058",
+   "letterhead": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC, Village Mahalunge, Taluka Khed, Pune 410501",
+    "cin": "U29301MH2004PTC942620"
+   },
+   "ref": "TDPL/HR/EXIT/26-27/015",
+   "date": "01-12-2026",
+   "to": {
+    "name": "Ms Meera Pillai (E1058)",
+    "address": "Sales Coordinator, Sales and Marketing"
+   },
+   "subject": "Acceptance of your resignation",
+   "body": [
+    "We accept your resignation dated 30 November 2026. Your last working day with the company will be 31 December 2026.",
+    "Please hand over your work and return your ID card on your last working day. Your full and final settlement will be paid after that.",
+    "Copy to: Payroll (Sunil Gaikwad); Sales (Harshad Patel)"
+   ],
+   "sign": {
+    "for": "Tamhini Drivetech Private Limited",
+    "name": "Shabana Shaikh",
+    "role": "HR and Payroll Executive",
+    "hand": "Shabana S."
+   }
+  },
+  {
+   "id": "ff-1058",
+   "type": "card",
+   "style": "slip",
+   "title": "Meera Pillai · full and final settlement",
+   "tab": "F&F",
+   "kindLabel": "F&F statement",
+   "group": "p1058",
+   "issuer": "Tamhini Drivetech Private Limited · HR and Payroll",
+   "heading": "Full and final settlement",
+   "number": "F&F/26-27/1058",
+   "fields": [
+    {
+     "label": "Employee",
+     "value": "E1058 Meera Pillai, Sales Coordinator"
+    },
+    {
+     "label": "Joined",
+     "value": "15.03.2021"
+    },
+    {
+     "label": "Last working day",
+     "value": "31.12.2026"
+    },
+    {
+     "label": "Notice",
+     "value": "Served in full (resigned 30.11.2026)"
+    },
+    {
+     "label": "Salary to the last day",
+     "value": "31 days of December, paid in the December payroll"
+    },
+    {
+     "label": "Leave encashment",
+     "value": "6 days × ₹17,150 basic ÷ 30 = ₹3,430"
+    },
+    {
+     "label": "Notice pay recovery",
+     "value": "Nil"
+    },
+    {
+     "label": "Gratuity",
+     "value": "Claim sent to the group gratuity trust on 04.01.2027"
+    },
+    {
+     "label": "Net paid",
+     "value": "₹3,430 by NEFT on 08.01.2027"
+    },
+    {
+     "label": "Prepared · checked · approved",
+     "value": "Sunil G. · Shabana S. · Mahesh Kadam"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "PAID 08 JAN 2027",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": -6
+    }
+   ]
+  },
+  {
+   "id": "pay-1058",
+   "type": "table",
+   "style": "sheet",
+   "title": "Meera Pillai · salary paid, month by month",
+   "tab": "Salary paid",
+   "group": "p1058",
+   "sheetName": "Employee view",
+   "freeze": true,
+   "otherSheets": [
+    "Dec-26",
+    "Summary"
+   ],
+   "formula": "=FILTER(AllMonths, AllMonths[Code]=$J$1)",
+   "columns": [
+    {
+     "key": "m",
+     "label": "Month"
+    },
+    {
+     "key": "days",
+     "label": "Days paid",
+     "format": "int"
+    },
+    {
+     "key": "gross",
+     "label": "Gross (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "pf",
+     "label": "PF (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "esi",
+     "label": "ESI (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "oth",
+     "label": "TDS and other (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "net",
+     "label": "Net pay (₹)",
+     "format": "inr",
+     "check": "gross - pf - esi - oth"
+    },
+    {
+     "key": "cr",
+     "label": "Credited on"
+    }
+   ],
+   "rows": [
+    {
+     "m": "Apr 2026",
+     "days": 30,
+     "gross": 33000,
+     "pf": 1800,
+     "esi": 0,
+     "oth": 200,
+     "net": 31000,
+     "cr": "30-04-2026"
+    },
+    {
+     "m": "May 2026",
+     "days": 31,
+     "gross": 33000,
+     "pf": 1800,
+     "esi": 0,
+     "oth": 200,
+     "net": 31000,
+     "cr": "29-05-2026"
+    },
+    {
+     "m": "Jun 2026",
+     "days": 30,
+     "gross": 33000,
+     "pf": 1800,
+     "esi": 0,
+     "oth": 200,
+     "net": 31000,
+     "cr": "30-06-2026"
+    },
+    {
+     "m": "Jul 2026",
+     "days": 31,
+     "gross": 33000,
+     "pf": 1800,
+     "esi": 0,
+     "oth": 200,
+     "net": 31000,
+     "cr": "31-07-2026"
+    },
+    {
+     "m": "Aug 2026",
+     "days": 31,
+     "gross": 33000,
+     "pf": 1800,
+     "esi": 0,
+     "oth": 200,
+     "net": 31000,
+     "cr": "31-08-2026"
+    },
+    {
+     "m": "Sep 2026",
+     "days": 30,
+     "gross": 33000,
+     "pf": 1800,
+     "esi": 0,
+     "oth": 200,
+     "net": 31000,
+     "cr": "30-09-2026"
+    },
+    {
+     "m": "Oct 2026",
+     "days": 31,
+     "gross": 33000,
+     "pf": 1800,
+     "esi": 0,
+     "oth": 200,
+     "net": 31000,
+     "cr": "30-10-2026"
+    },
+    {
+     "m": "Nov 2026",
+     "days": 30,
+     "gross": 33000,
+     "pf": 1800,
+     "esi": 0,
+     "oth": 200,
+     "net": 31000,
+     "cr": "30-11-2026"
+    },
+    {
+     "m": "Dec 2026",
+     "days": 31,
+     "gross": 33000,
+     "pf": 1800,
+     "esi": 0,
+     "oth": 200,
+     "net": 31000,
+     "cr": "31-12-2026"
+    }
+   ],
+   "notes": [
+    "E1058 Meera Pillai · Sales Coordinator · from the monthly salary register sheets, April to December 2026."
+   ]
+  }
+ ],
+ "tasks": [
+  {
+   "id": "t1",
+   "type": "worksheet",
+   "stage": "Planning",
+   "title": "Roll the headcount forward",
+   "prompt": "Roll the April headcount forward to two payrolls: September, the half-year, and December, our interim date. Take joiners and leavers from the dates in the employee master, then compare with the heads the payroll actually paid. Your sheet goes to Aarti when you move on.",
+   "weight": 1,
+   "layout": "grid",
+   "noun": [
+    "cell",
+    "cells"
+   ],
+   "lockOnLeave": {
+    "ask": "Hand your headcount sheet to Aarti?",
+    "note": "You can’t change it after this.",
+    "yes": "Hand it in",
+    "done": "Handed to Aarti. You can read your sheet but not change it."
+   },
+   "hints": [
+    "A leaver is paid for the month they leave and drops out the month after.",
+    "A joiner counts from the month they start, even if that is the 7th."
+   ],
+   "columns": [
+    {
+     "key": "line",
+     "label": "Roll-forward"
+    },
+    {
+     "key": "sep",
+     "label": "September 2026",
+     "format": "int"
+    },
+    {
+     "key": "dec",
+     "label": "December 2026",
+     "format": "int"
+    }
+   ],
+   "rows": [
+    {
+     "id": "open",
+     "cells": {
+      "line": "Heads on the April 2026 payroll",
+      "sep": 43,
+      "dec": 43
+     }
+    },
+    {
+     "id": "join",
+     "cells": {
+      "line": "Add: joiners who started in or before that month",
+      "sep": {
+       "input": true,
+       "answer": 3,
+       "tolerance": 0,
+       "working": "Pooja 1 July, Rakesh 1 August, Nita 7 September",
+       "sign": false
+      },
+      "dec": {
+       "input": true,
+       "answer": 3,
+       "tolerance": 0,
+       "working": "Pooja, Rakesh, Nita; Sameera starts on 4 January 2027",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "leave",
+     "cells": {
+      "line": "Less: leavers who left before that month",
+      "sep": {
+       "input": true,
+       "answer": [
+        2,
+        -2
+       ],
+       "tolerance": 0,
+       "working": "Vinod (left in June), Amit (August)",
+       "sign": false
+      },
+      "dec": {
+       "input": true,
+       "answer": [
+        3,
+        -3
+       ],
+       "tolerance": 0,
+       "working": "Vinod, Amit, Hemant; Meera leaves on 31 December",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "exp",
+     "cells": {
+      "line": "Heads expected",
+      "sep": {
+       "input": true,
+       "answer": 44,
+       "tolerance": 0,
+       "working": "43 + 3 − 2",
+       "sign": false,
+       "follow": "43 + {join.sep} − {leave.sep}"
+      },
+      "dec": {
+       "input": true,
+       "answer": 43,
+       "tolerance": 0,
+       "working": "43 + 3 − 3",
+       "sign": false,
+       "follow": "43 + {join.dec} − {leave.dec}"
+      }
+     }
+    },
+    {
+     "id": "paid",
+     "cells": {
+      "line": "Heads paid that month (payroll summary)",
+      "sep": 45,
+      "dec": 43
+     }
+    },
+    {
+     "id": "diff",
+     "cells": {
+      "line": "Paid minus expected",
+      "sep": {
+       "input": true,
+       "answer": 1,
+       "tolerance": 0,
+       "working": "45 − 44",
+       "signed": true,
+       "follow": "45 − {exp.sep}"
+      },
+      "dec": {
+       "input": true,
+       "answer": 0,
+       "tolerance": 0,
+       "working": "43 − 43",
+       "signed": true,
+       "follow": "43 − {exp.dec}"
+      }
+     }
+    }
+   ],
+   "notes": {
+    "join.sep": "Rakesh counts: the master gives him a joining date. Whether he exists is a question for the joiner tests.",
+    "leave.sep": "Vinod left in June and Amit on 31 August. Hemant and Meera were still here in September.",
+    "diff.sep": "September paid 45 heads against 44 expected: one salary too many. Amit left on 31 August and should have dropped out of the September run.",
+    "join.dec": "Sameera went into the master on 28 December but starts on 4 January 2027. The start date counts, not the entry. Still three.",
+    "leave.dec": "Meera’s last day is 31 December, so she drops out in January. Still three.",
+    "diff.dec": "December ties, 43 and 43, which is where Varun stopped. A tie only says the payroll agrees with the master, and the master holds Rakesh."
+   },
+   "docs": [
+    "pay-summary",
+    "hr-master",
+    "prog",
+    "chat-varun",
+    "mail-shabana"
+   ]
+  },
+  {
+   "id": "t2",
+   "type": "items",
+   "stage": "Fieldwork",
+   "title": "Test the joiners and leavers",
+   "prompt": "Each joiner and leaver opens with their own papers; the audit programme, employee master, change register, ID cards and December bank report are under Other papers. Mark each Fine or Exception and say whether salary is due to them in January. For an exception, pick what is wrong and enter the gross overpaid.",
+   "weight": 2,
+   "noun": [
+    "person",
+    "people"
+   ],
+   "lockOnLeave": {
+    "ask": "Hand your joiner and leaver calls to Aarti?",
+    "note": "You can’t change them after this.",
+    "yes": "Hand them in",
+    "done": "Handed to Aarti. You can read your calls but not change them."
+   },
+   "hints": [
+    "In the bank report, read each name against its account number and the account holder.",
+    "Put each leaver’s last working day next to the last month the register paid them."
+   ],
+   "columns": [
+    {
+     "key": "label"
+    },
+    {
+     "key": "move"
+    }
+   ],
+   "fields": [
+    {
+     "id": "verdict",
+     "kind": "choice",
+     "label": "Your call",
+     "gate": true,
+     "options": [
+      {
+       "id": "ok",
+       "label": "Fine"
+      },
+      {
+       "id": "exception",
+       "label": "Exception"
+      }
+     ]
+    },
+    {
+     "id": "jan",
+     "kind": "choice",
+     "label": "January 2027 salary run",
+     "options": [
+      {
+       "id": "yes",
+       "label": "Due in January"
+      },
+      {
+       "id": "no",
+       "label": "Not due in January"
+      }
+     ]
+    },
+    {
+     "id": "reasons",
+     "kind": "multi",
+     "label": "What’s wrong",
+     "showIf": {
+      "verdict": "exception"
+     },
+     "weight": 9,
+     "options": [
+      {
+       "id": "ghost",
+       "label": "Nothing shows this person exists or works here",
+       "short": "ghost employee",
+       "needs": [
+        "jan"
+       ]
+      },
+      {
+       "id": "afterExit",
+       "label": "Paid for a month after the last working day",
+       "short": "paid after exit",
+       "needs": [
+        "jan"
+       ]
+      },
+      {
+       "id": "days",
+       "label": "Wrong number of days paid in the joining or leaving month",
+       "short": "wrong days paid"
+      },
+      {
+       "id": "letter",
+       "label": "Paid above the appointment letter",
+       "short": "pay above the letter"
+      }
+     ]
+    },
+    {
+     "id": "amount",
+     "kind": "number",
+     "label": "Gross overpaid up to 31 December",
+     "prefix": "₹",
+     "showIf": {
+      "verdict": "exception"
+     },
+     "sign": false,
+     "tolerance": 0,
+     "placeholder": "In rupees"
+    },
+    {
+     "id": "note",
+     "kind": "text",
+     "label": "Your note for the file",
+     "placeholder": "For example: letter dated 2 May; first punch 4 May"
+    }
+   ],
+   "items": [
+    {
+     "id": "p1090",
+     "label": "E1090 · Pooja Nimbalkar",
+     "short": "Pooja",
+     "move": "Joiner · 1 Jul 2026",
+     "docs": [
+      "ap-1090",
+      "att-1090",
+      "od-1090",
+      "pay-1090"
+     ],
+     "answer": {
+      "verdict": "ok",
+      "jan": "yes"
+     },
+     "note": "Pooja: the MD’s letter for ₹22,000 from 1 July, biometric every month, her own UAN and account. August’s six days away are on duty at Hosur, on a slip Prashant signed. Fine, and her January salary is due."
+    },
+    {
+     "id": "p1093",
+     "label": "E1093 · Rakesh Bhoir",
+     "short": "Rakesh",
+     "move": "Joiner · 1 Aug 2026",
+     "docs": [
+      "note-1093",
+      "att-1093",
+      "pay-1093"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "jan": "no",
+      "reasons": [
+       "ghost"
+      ],
+      "amount": 140000
+     },
+     "note": "Rakesh: no letter on file, no biometric, no UAN, no ID card. Sunil entered him on 1 August, approval blank. His ₹27,800 goes into account 04170166931667, which the bank shows as Sunil’s. ₹1,40,000 gross to December. Exception, and nothing shows a January salary is due.",
+     "weight": 4
+    },
+    {
+     "id": "p1091",
+     "label": "E1091 · Nita Bansode",
+     "short": "Nita",
+     "move": "Joiner · 7 Sep 2026",
+     "docs": [
+      "ap-1091",
+      "att-1091",
+      "pay-1091"
+     ],
+     "answer": {
+      "verdict": "ok",
+      "jan": "yes"
+     },
+     "note": "Nita joined on 7 September, so September is 24 days: ₹28,000 × 24 ÷ 30 = ₹22,400. Letter, biometric, UAN and her own account. Fine, and her January salary is due."
+    },
+    {
+     "id": "p1037",
+     "label": "E1037 · Vinod Sonawane",
+     "short": "Vinod",
+     "move": "Leaver · 15 Jun 2026",
+     "docs": [
+      "res-1037",
+      "ff-1037",
+      "pay-1037"
+     ],
+     "answer": {
+      "verdict": "ok",
+      "jan": "no"
+     },
+     "note": "Vinod’s last day was 15 June. June paid for 15 days, nothing after, F&F on 30 June, ID card back on his last day. That is how a leaver should come off the payroll. Nothing is due in January. Fine."
+    },
+    {
+     "id": "p1044",
+     "label": "E1044 · Amit Wagh",
+     "short": "Amit",
+     "move": "Leaver · 31 Aug 2026",
+     "docs": [
+      "res-1044",
+      "ff-1044",
+      "pay-1044"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "jan": "no",
+      "reasons": [
+       "afterExit"
+      ],
+      "amount": 31000
+     },
+     "note": "Amit left on 31 August and got his F&F on 15 September. Then the September run paid him a full month, ₹31,000 gross. His exit reached the master on 5 October, after the run. Exception, to be recovered. Nothing is due in January.",
+     "weight": 2
+    },
+    {
+     "id": "p1030",
+     "label": "E1030 · Hemant Jadhav",
+     "short": "Hemant",
+     "move": "Leaver · 31 Oct 2026",
+     "docs": [
+      "res-1030",
+      "ff-1030",
+      "pay-1030"
+     ],
+     "answer": {
+      "verdict": "ok",
+      "jan": "no"
+     },
+     "note": "Hemant’s last day was 31 October, so October’s full salary is his. The payment on 20 November is his F&F, not salary. He is off the payroll from November; nothing is due in January. Fine."
+    },
+    {
+     "id": "p1058",
+     "label": "E1058 · Meera Pillai",
+     "short": "Meera",
+     "move": "Leaver · 31 Dec 2026",
+     "docs": [
+      "res-1058",
+      "ff-1058",
+      "pay-1058"
+     ],
+     "answer": {
+      "verdict": "ok",
+      "jan": "no"
+     },
+     "note": "Meera worked till 31 December, so December’s salary is hers. Her F&F went out on 8 January; no January salary is due. Fine."
+    }
+   ],
+   "docs": [
+    "prog",
+    "hr-master",
+    "change-reg",
+    "idcards",
+    "bank-dec",
+    "mail-shabana",
+    "ap-1090",
+    "att-1090",
+    "od-1090",
+    "pay-1090",
+    "note-1093",
+    "att-1093",
+    "pay-1093",
+    "ap-1091",
+    "att-1091",
+    "pay-1091",
+    "res-1037",
+    "ff-1037",
+    "pay-1037",
+    "res-1044",
+    "ff-1044",
+    "pay-1044",
+    "res-1030",
+    "ff-1030",
+    "pay-1030",
+    "res-1058",
+    "ff-1058",
+    "pay-1058"
+   ]
+  },
+  {
+   "id": "t3",
+   "type": "worksheet",
+   "stage": "Fieldwork",
+   "title": "Recompute December PF and ESI",
+   "prompt": "Recompute the employee’s share of PF and ESI on the rows Aarti marked yellow in the December register, taking PF wages and ESI wages as the sheet shows them. Rates and ceilings are in the audit programme. Enter what each should be, 0 where nothing is due. Your figures go to Aarti when you move on.",
+   "weight": 1,
+   "lockOnLeave": {
+    "ask": "Hand your PF and ESI figures to Aarti?",
+    "note": "You can’t change them after this.",
+    "yes": "Hand them in",
+    "done": "Handed to Aarti. You can read your figures but not change them."
+   },
+   "hints": [
+    "From 17 September 2026 PF wages stop at ₹25,000, not ₹15,000. Below the cap, take the actual PF wages.",
+    "ESI is due only where ESI wages are ₹21,000 or less."
+   ],
+   "layout": "grid",
+   "columns": [
+    {
+     "key": "emp",
+     "label": "Check"
+    },
+    {
+     "key": "wages",
+     "label": "Wages",
+     "format": "inr"
+    },
+    {
+     "key": "ded",
+     "label": "Deducted",
+     "format": "inr"
+    },
+    {
+     "key": "due",
+     "label": "Should be",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "id": "pf1002",
+     "cells": {
+      "emp": "PF · Venkat Reddy (E1002)",
+      "wages": 109200,
+      "ded": 1800,
+      "due": {
+       "input": true,
+       "answer": 3000,
+       "tolerance": 0.5,
+       "working": "12% × ₹25,000 (PF wages ₹1,09,200, above the cap)",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "pf1005",
+     "cells": {
+      "emp": "PF · Dattatray More (E1005)",
+      "wages": 30150,
+      "ded": 1800,
+      "due": {
+       "input": true,
+       "answer": 3000,
+       "tolerance": 0.5,
+       "working": "12% × ₹25,000 (PF wages ₹30,150, above the cap)",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "pf1018",
+     "cells": {
+      "emp": "PF · Pallavi Shinde (E1018)",
+      "wages": 23900,
+      "ded": 1800,
+      "due": {
+       "input": true,
+       "answer": 2868,
+       "tolerance": 0.5,
+       "working": "12% × ₹23,900 (under the ₹25,000 cap)",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "pf1031",
+     "cells": {
+      "emp": "PF · Anil Pawar (E1031)",
+      "wages": 16650,
+      "ded": 1800,
+      "due": {
+       "input": true,
+       "answer": 1998,
+       "tolerance": 0.5,
+       "working": "12% × ₹16,650 (under the ₹25,000 cap)",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "pf1068",
+     "cells": {
+      "emp": "PF · Shrikant Lohar (E1068)",
+      "wages": 15350,
+      "ded": 1800,
+      "due": {
+       "input": true,
+       "answer": 1842,
+       "tolerance": 0.5,
+       "working": "12% × ₹15,350 (under the ₹25,000 cap)",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "pf1036",
+     "cells": {
+      "emp": "PF · Santosh Kale (E1036)",
+      "wages": 14300,
+      "ded": 1716,
+      "due": {
+       "input": true,
+       "answer": 1716,
+       "tolerance": 0.5,
+       "working": "12% × ₹14,300 (under the ₹25,000 cap)",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "pf1091",
+     "cells": {
+      "emp": "PF · Nita Bansode (E1091)",
+      "wages": 14550,
+      "ded": 1746,
+      "due": {
+       "input": true,
+       "answer": 1746,
+       "tolerance": 0.5,
+       "working": "12% × ₹14,550 (under the ₹25,000 cap)",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "pf1052",
+     "cells": {
+      "emp": "PF · Baban Shelar (E1052)",
+      "wages": 10300,
+      "ded": 1236,
+      "due": {
+       "input": true,
+       "answer": 1236,
+       "tolerance": 0.5,
+       "working": "12% × ₹10,300 (under the ₹25,000 cap)",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "esi1052",
+     "cells": {
+      "emp": "ESI · Baban Shelar (E1052)",
+      "wages": 19800,
+      "ded": 149,
+      "due": {
+       "input": true,
+       "answer": 149,
+       "tolerance": 0.5,
+       "working": "0.75% × ₹19,800 = ₹148.50, rounded up to ₹149",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "esi1070",
+     "cells": {
+      "emp": "ESI · Ganpat Zende (E1070)",
+      "wages": 16500,
+      "ded": 124,
+      "due": {
+       "input": true,
+       "answer": 124,
+       "tolerance": 0.5,
+       "working": "0.75% × ₹16,500 = ₹123.75, rounded up to ₹124",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "esi1083",
+     "cells": {
+      "emp": "ESI · Nikhil Gawade (E1083)",
+      "wages": 18500,
+      "ded": 139,
+      "due": {
+       "input": true,
+       "answer": 139,
+       "tolerance": 0.5,
+       "working": "0.75% × ₹18,500 = ₹138.75, rounded up to ₹139",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "esi1088",
+     "cells": {
+      "emp": "ESI · Irfan Tamboli (E1088)",
+      "wages": 19200,
+      "ded": 144,
+      "due": {
+       "input": true,
+       "answer": 144,
+       "tolerance": 0.5,
+       "working": "0.75% × ₹19,200 = ₹144",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "esi1018",
+     "cells": {
+      "emp": "ESI · Pallavi Shinde (E1018)",
+      "wages": 46000,
+      "ded": 0,
+      "due": {
+       "input": true,
+       "answer": 0,
+       "tolerance": 0.5,
+       "working": "ESI wages ₹46,000, above ₹21,000: nothing due",
+       "sign": false
+      }
+     }
+    }
+   ],
+   "notes": {
+    "pf1002.due": "Venkat’s PF wages are ₹1,09,200, far above the cap. From 17 September 2026 the cap is ₹25,000, so ₹3,000 against the ₹1,800 deducted.",
+    "pf1005.due": "Datta’s PF wages are ₹30,150. On the ₹25,000 cap that is ₹3,000; the sheet’s formula still says MIN(…, 15000), so it deducted ₹1,800.",
+    "pf1018.due": "Pallavi’s PF wages, ₹23,900, are under the new cap, so the actual wages count: ₹2,868. The sheet took ₹15,000 and deducted ₹1,800.",
+    "pf1031.due": "Anil’s ₹16,650 is under ₹25,000: 12% is ₹1,998. Only the old cap made it ₹1,800.",
+    "pf1068.due": "Shrikant’s ₹15,350 is just over the old cap, so the sheet cut him to ₹1,800. On actual wages it is ₹1,842.",
+    "pf1036.due": "Santosh’s ₹14,300 is under both caps, so the change does nothing for him: ₹1,716, as deducted.",
+    "esi1052.due": "ESI is deducted in whole rupees, and any paise round up: ₹148.50 becomes ₹149, as the sheet has it. Ganpat’s and Nikhil’s round the same way.",
+    "esi1018.due": "Pallavi’s PF goes by her PF wages, ₹23,900; her ESI goes by her ESI wages, ₹46,000, far above ₹21,000. Nil is right."
+   },
+   "docs": [
+    "dec-reg",
+    "prog",
+    "mail-shabana"
+   ]
+  },
+  {
+   "id": "t4",
+   "type": "compose",
+   "stage": "Report",
+   "title": "Write your points for Aarti",
+   "weight": 3,
+   "noun": [
+    "line",
+    "lines"
+   ],
+   "prompt": "Aarti wants one note with today’s points. It stays inside the firm until Rehan and Sudha have read it. Pick the right line for each point; the change register, bank report, F&F papers and salary register are in Documents.",
+   "hints": [
+    "Write what each paper shows, names included. What it means, and what happens to anyone, is for Rehan and Sudha.",
+    "For the control point, read the change register’s two name columns and the foot of the salary register."
+   ],
+   "previewLabel": "Your points for Aarti",
+   "slots": [
+    {
+     "id": "ghost",
+     "label": "E1093 · Rakesh Bhoir",
+     "options": [
+      {
+       "id": "a",
+       "text": "E1093 Rakesh Bhoir: a fake employee that Sunil Gaikwad created on 1 August 2026 to draw a second salary into his own account, 04170166931667. Sunil has taken ₹1,40,000 gross so far and should be suspended from all payroll work before the January salary run.",
+       "why": "The facts behind it may all be true, but “fake” and “taken” are conclusions, and “suspended” a decision, for Rehan and Sudha after they look. Our note says what the papers show."
+      },
+      {
+       "id": "b",
+       "correct": true,
+       "text": "E1093 Rakesh Bhoir: entered on 1 August 2026 with the approval blank; no appointment letter on file, and no biometric record, ID card or UAN. His salary goes into account 04170166931667, held at the bank by Sunil Gaikwad. ₹1,40,000 gross paid to December.",
+       "why": "Facts only, each from a paper: the change register, the missing file, the attendance, the ID cards and the bank report. Sunil’s account is what makes it serious."
+      },
+      {
+       "id": "c",
+       "text": "E1093 Rakesh Bhoir: entered on 1 August 2026; his joining papers are with Production, his biometric enrolment is pending and his UAN is still to come, so HR will complete the file. ₹1,40,000 gross paid to December.",
+       "why": "That is HR’s story, not evidence: five months with no letter on file, no punch and no UAN, while his pay lands in Sunil’s account."
+      }
+     ]
+    },
+    {
+     "id": "next",
+     "label": "What happens next",
+     "options": [
+      {
+       "id": "a",
+       "text": "Next: I have mailed Sunil to explain the shared account and to send Rakesh Bhoir’s joining papers by Wednesday, so that we can close this point and pay E1093 as usual in January.",
+       "why": "That warns the one person whose account the money goes into, gives papers two days to appear and pays E1093 again in January. Nothing about E1093 goes to Sunil."
+      },
+      {
+       "id": "b",
+       "text": "Next: I have asked Shabana to delete E1093 from the master today and to recover the ₹1,40,000 from Sunil’s January salary, so that the January salary run goes out clean and nothing more is lost to him.",
+       "why": "Deleting the entry destroys the record we need, and a recovery from Sunil assumes a finding nobody has made yet. Neither is ours to ask for."
+      },
+      {
+       "id": "c",
+       "correct": true,
+       "text": "Next: I have not raised E1093 with Shabana or Sunil. Please take it to Rehan and Sudha before the January run, so they decide what happens to the payment, with the records kept as they are.",
+       "why": "It goes up the line before anyone at Tamhini hears of it, and nothing is touched. How it is taken up is for Rehan and Sudha."
+      }
+     ]
+    },
+    {
+     "id": "leaver",
+     "label": "E1044 · Amit Wagh",
+     "options": [
+      {
+       "id": "a",
+       "correct": true,
+       "text": "E1044 Amit Wagh: last working day 31 August 2026, F&F paid on 15 September, yet the September run paid him a full month, ₹31,000 gross and ₹29,000 net to his account. His exit reached the master only on 5 October. To recover.",
+       "why": "The acceptance letter and the F&F fix the last day; the register shows September paid anyway. The late master entry is the cause, and the point for Shabana."
+      },
+      {
+       "id": "b",
+       "text": "E1044 Amit Wagh: last working day 31 August 2026, F&F paid on 15 September, and the September run paid him ₹31,000 gross as his leave encashment, settled with the F&F. His exit was entered in the master on 5 October. Nothing to recover.",
+       "why": "His leave encashment was 12 days, ₹6,440, paid with the F&F. The ₹31,000 is a full month’s salary for September, after he had left."
+      },
+      {
+       "id": "c",
+       "text": "E1044 Amit Wagh: last working day 31 August 2026, F&F paid on 15 September, and the September run paid him ₹31,000 gross as notice pay agreed in his F&F. His exit reached the master on 5 October. Nothing to recover.",
+       "why": "His F&F says notice was served in full and pays no notice pay. The September money is salary for a month he did not work."
+      }
+     ]
+    },
+    {
+     "id": "pf",
+     "label": "PF ceiling",
+     "options": [
+      {
+       "id": "a",
+       "text": "PF: the ceiling is ₹25,000 from 17 September 2026, but only for employees who joined after that date. Existing staff stay on the ₹15,000 cap, so the sheet is right and all eight December rows I recomputed agree with it. No arrears are due.",
+       "why": "It covers existing staff too: PF wages capped at ₹15,000 now go up to ₹25,000, or the actual PF wages if lower. The audit programme sets one cap for everyone."
+      },
+      {
+       "id": "b",
+       "correct": true,
+       "text": "PF: the ceiling is ₹25,000 from 17 September 2026, but the sheet still caps PF wages at ₹15,000. Five of eight rows I recomputed are short, E1005’s by ₹1,200, and Tamhini’s matching share with them. Arrears since the change to be worked out.",
+       "why": "Below the new cap the actual PF wages count, so Santosh, Nita and Baban were already right. The rest stay short until Shabana fixes the formula."
+      },
+      {
+       "id": "c",
+       "text": "PF: the ceiling is ₹25,000 from 17 September 2026, so every employee’s PF is now ₹3,000 a month, 12% of ₹25,000, whatever the wages. All eight December rows I recomputed are short. Arrears since the change to be worked out.",
+       "why": "₹25,000 is a cap, not a fixed wage. Where PF wages are lower, 12% of the actual wages applies: Santosh’s ₹1,716 was right."
+      }
+     ]
+    },
+    {
+     "id": "control",
+     "label": "Control",
+     "options": [
+      {
+       "id": "a",
+       "text": "Control: the payroll controls work, since Shabana approves master changes and the December register agrees with the bank report. E1093 and Amit are one-off slips at Sunil’s desk, so a reminder to him to enter changes on time is enough for now.",
+       "why": "E1093 went in with no approval at all, and the register agreeing with the bank only proves the bank paid what the sheet said. Nobody checks the sheet itself."
+      },
+      {
+       "id": "b",
+       "text": "Control: Sunil should come off payroll work today and the salary run should move to the accounts team from January, with Mahesh signing every payment. I will tell Shabana so at this evening’s closing meeting, so that it is in place before the January run.",
+       "why": "That settles Sunil’s case before Rehan and Sudha have looked, and tells HR today. The note names the gap and the check that closes it; who runs payroll is Tamhini’s call."
+      },
+      {
+       "id": "c",
+       "correct": true,
+       "text": "Control: Sunil makes every master change and prepares the salary register, and nobody checks the register before the bank file goes. E1093 went in unapproved; Amit’s exit went in after the September run. A joiner and leaver check before each run would catch both.",
+       "why": "The change register and the foot of the salary register show it: one person makes the changes and the run, and E1093 went through with the approval blank. The check is a recommendation; what it means for Sunil is for Rehan and Sudha."
+      }
+     ]
+    }
+   ],
+   "template": "Payroll, April to December 2026 · points for review\nFor Aarti Rane\n\n{ghost}\n\n{next}\n\n{leaver}\n\n{pf}\n\n{control}\n\n{_free}\n\nWorking papers: interim file, Payroll section. Prepared on 18 January 2027.",
+   "freeText": {
+    "label": "Your own line for the note"
+   },
+   "docs": [
+    "change-reg",
+    "bank-dec",
+    "hr-master",
+    "idcards",
+    "res-1044",
+    "ff-1044",
+    "pay-1044",
+    "pay-1093",
+    "att-1093",
+    "note-1093",
+    "dec-reg",
+    "prog"
+   ]
+  }
+ ],
+ "passNeeds": [
+  {
+   "task": "t2",
+   "min": 0.6,
+   "note": "The seven calls do not count the same: Rakesh counts four times, Amit twice. Get more right to pass."
+  }
+ ],
+ "wrap": {
+  "from": "aarti",
+  "text": "One of the seven has nothing behind him but a master entry and a salary, and Amit was paid for a month after he left. December’s headcount still tied. I’ve called Rehan; he and Sudha will read your note before anyone at Tamhini hears of it. The PF formula goes to Shabana once they agree."
+ },
+ "wrapPartial": {
+  "from": "aarti",
+  "text": "Before this note goes anywhere, check each call against the papers, not against Shabana’s file note or Varun’s chat. I’ll take the note to Rehan myself this afternoon."
+ },
+ "wrapRetry": {
+  "from": "aarti",
+  "text": "The bank report shows the extra salary once you put each name next to the account it is paid into. Then match each leaver’s last working day to the months they were paid, and recompute PF with the ₹25,000 cap: below it, the actual PF wages count."
+ },
+ "model": {
+  "intro": "Two of the seven are exceptions. Rakesh Bhoir has a master entry and a salary, nothing else, and the salary goes into an account the bank holds in Sunil Gaikwad’s name. Amit Wagh was paid for September after leaving on 31 August. The headcount tied in December all the same. The sheet still caps PF wages at ₹15,000, and nobody checks the sheet before the bank file goes.",
+  "blocks": [
+   {
+    "type": "table",
+    "columns": [
+     {
+      "key": "item",
+      "label": "The four points"
+     },
+     {
+      "key": "found",
+      "label": "What we found"
+     },
+     {
+      "key": "next",
+      "label": "What happens next"
+     }
+    ],
+    "rows": [
+     {
+      "item": "Rakesh Bhoir",
+      "found": "No letter on file, no biometric, ID card or UAN; entered by Sunil, approval blank; salary into an account the bank holds in Sunil’s name; ₹1,40,000 gross paid to December",
+      "next": "To Rehan and Sudha before the January run; records kept as they are"
+     },
+     {
+      "item": "Amit Wagh",
+      "found": "Left 31 August; September paid in full; exit entered on 5 October",
+      "next": "Recover ₹31,000 gross; the joiner and leaver check below would catch a late exit"
+     },
+     {
+      "item": "PF ceiling",
+      "found": "Sheet still caps PF wages at ₹15,000 after 17 September 2026; December’s employee PF short by ₹26,598 across the register, and Tamhini’s matching share with it",
+      "next": "Shabana corrects the formula once Rehan and Sudha agree; arrears since the change to be worked out"
+     },
+     {
+      "item": "Control",
+      "found": "Sunil makes every master change and prepares the register; nobody checks the register (“Checked:” blank); E1093 went in unapproved",
+      "next": "A joiner and leaver check against HR’s letters before each run; no master change goes into a run until it is approved"
+     }
+    ]
+   },
+   {
+    "type": "text",
+    "text": "The other five only look wrong:"
+   },
+   {
+    "type": "list",
+    "items": [
+     "Pooja: 19 punched days in August, plus six on-duty days at Hosur on a slip Prashant Lande signed.",
+     "Nita: 24 days paid in September, because she joined on the 7th.",
+     "Vinod: 15 days paid in June, his last month, and nothing after.",
+     "Hemant: a payment on 20 November, which is his F&F, not salary.",
+     "Meera: on the December payroll, because her last day is 31 December."
+    ]
+   },
+   {
+    "type": "text",
+    "text": "On the rows Aarti marked, ESI was right throughout: 0.75% of ESI wages rounded up to the rupee, and nothing for Pallavi, whose ESI wages are above ₹21,000."
+   },
+   {
+    "type": "note",
+    "from": "aarti",
+    "text": "Varun’s check was the master against the payroll, and the master holds Rakesh, so it tied. Next time, start with the bank report and look for any account paid twice. That takes a minute."
+   }
+  ]
+ },
+ "principles": [
+  "A headcount that ties can still hide a ghost: test every joiner against a letter, attendance, a UAN and a bank account of their own.",
+  "Take a suspected ghost to your senior as facts from the papers, before anyone at the client hears of it, and leave every record as it is.",
+  "Recompute PF on the ceiling for the days the wages cover: ₹25,000 from 17 September 2026, ₹15,000 before, or the actual PF wages if lower."
+ ],
+ "earned": {
+  "clause": "tested {people} joiners and leavers[[ after a headcount roll-forward{rf|}]][[, flagging {found} {found|exception|exceptions} ({types})]][[; recomputed PF and ESI{pfRows|}{esiRows|}]][[, finding PF capped at the old ₹15,000{pfA|}{pfB|}{esiRows|}]]",
+  "counts": {
+   "people": {
+    "kind": "items",
+    "task": "t2",
+    "answered": "gate"
+   },
+   "rf": {
+    "kind": "correctCells",
+    "task": "t1",
+    "rows": [
+     "join",
+     "leave"
+    ]
+   },
+   "found": {
+    "kind": "itemsWhere",
+    "task": "t2",
+    "field": "verdict",
+    "equals": "exception",
+    "withRight": "reasons"
+   },
+   "types": {
+    "kind": "tally",
+    "task": "t2",
+    "field": "reasons"
+   },
+   "pfRows": {
+    "kind": "correctCells",
+    "task": "t3",
+    "rows": [
+     "pf1002",
+     "pf1005",
+     "pf1018",
+     "pf1031",
+     "pf1068",
+     "pf1036",
+     "pf1091",
+     "pf1052"
+    ]
+   },
+   "pfShort": {
+    "kind": "correctCells",
+    "task": "t3",
+    "rows": [
+     "pf1002",
+     "pf1005",
+     "pf1018",
+     "pf1031",
+     "pf1068"
+    ]
+   },
+   "esiRows": {
+    "kind": "correctCells",
+    "task": "t3",
+    "rows": [
+     "esi1052",
+     "esi1070",
+     "esi1083",
+     "esi1088",
+     "esi1018"
+    ]
+   },
+   "pfA": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "pf1005",
+    "col": "due"
+   },
+   "pfB": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "pf1018",
+    "col": "due"
+   }
+  },
+  "fallback": "tested {people} joiners and leavers[[ after a headcount roll-forward{rf|}]][[; recomputed PF and ESI{pfRows|}{esiRows|}]]"
+ },
+ "interview": [
+  {
+   "q": "How would you find a ghost employee on a payroll?",
+   "checking": "Whether you know the tests behind the word, or only the word.",
+   "outline": [
+    "I roll the headcount forward, then test every joiner: letter, attendance, UAN and an account of their own.",
+    "A PF or tax deduction proves only that the sheet worked it out, not that the person exists.",
+    "In the simulation December’s headcount tied, yet one joiner’s salary went into the payroll assistant’s account."
+   ]
+  },
+  {
+   "q": "How did you recompute PF, and what changed in 2026?",
+   "checking": "Whether you know the rate and the ceiling, and that the ceiling moved in 2026.",
+   "outline": [
+    "The employee pays 12% of PF wages up to the ceiling, and the employer matches it.",
+    "The ceiling rose from ₹15,000 to ₹25,000 on 17 September 2026; below it, actual wages apply.",
+    "In the simulation the sheet used the old ₹15,000 cap[[; five of eight rows I recomputed were short{pfShort|}]]."
+   ]
+  }
+ ]
+}

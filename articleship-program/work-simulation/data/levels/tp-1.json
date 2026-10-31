@@ -1,0 +1,2961 @@
+{
+ "id": "tp-1",
+ "domain": "transfer-pricing",
+ "number": 1,
+ "title": "Arm’s length test",
+ "minutes": 40,
+ "learn": [
+  "How a database search is screened down to true comparables",
+  "Why margins are weighted by cost, and how the percentiles are counted",
+  "What a year-end true-up is, and how it is sized"
+ ],
+ "do": [
+  "Screen 15 companies from a database search",
+  "Work out the margins and the arm’s length range",
+  "Test the client’s margin and draft the true-up mail"
+ ],
+ "case": {
+  "role": "First-year article assistant, borrowed by the transfer pricing team",
+  "client": "Brandhof Engineering Services India Private Limited, Hinjewadi, Pune: embedded software and engineering design for its Dutch parent, Brandhof Systems B.V., paid at cost plus 12%",
+  "team": "Gayathri Sundaram (Transfer Pricing Lead); Varun Shetty, second-year article, your buddy; at Brandhof India, Smita Kale (Finance Controller)",
+  "goal": "Before the books close, check whether Brandhof India’s margin for the year will be at arm’s length, and what true-up it needs if not.",
+  "period": "Tax year 2026–27 (April–December actual, January–March projected)",
+  "where": "Transfer pricing desk, Prabhat Road office · Monday 22 February 2027"
+ },
+ "brief": {
+  "from": "gayathri",
+  "time": "10:15 am",
+  "messages": [
+   "Brandhof India’s year-end check. The database search is back with 15 companies: screen them on my memo, then the margins and this year’s range.",
+   "Test Brandhof’s projected margin against it and draft my mail to Smita. If they need a true-up invoice, Smita has to raise it before 31 March. Draft to me by Thursday, please."
+  ]
+ },
+ "documents": [
+  {
+   "id": "memo",
+   "type": "letter",
+   "style": "memo",
+   "title": "Gayathri’s benchmark memo",
+   "tab": "Memo",
+   "kindLabel": "TP team note",
+   "letterhead": "Bapat Venkatesh & Co., Chartered Accountants",
+   "memoTitle": "Transfer pricing team note",
+   "to": [
+    "TP team"
+   ],
+   "from": "Gayathri Sundaram, Transfer Pricing Lead",
+   "date": "22 February 2027",
+   "ref": "BVC/TP/BRH/27-03",
+   "subject": "Brandhof India: year-end check, tax year 2026–27",
+   "body": [
+    "Brandhof India is tested under the transactional net margin method (TNMM): its margin on cost against independent companies doing the same kind of work. Read this before you screen.",
+    "## Our screens (the team’s, the same as in last year’s study)",
+    "1. Does different work: reject companies that sell their own products or licences, or run BPO, call-centre or data-processing work. Brandhof India writes software and does design work to its parent’s orders and owns no IP.",
+    "2. Related-party transactions above 25% of operating revenue in 2025–26: reject.",
+    "3. Operating losses in two or more of the three years 2023–24 to 2025–26: reject.",
+    "4. A financial year that does not end on 31 March: reject.",
+    "5. Operating revenue outside ₹1 crore to ₹200 crore in 2025–26: reject.",
+    "Nothing else rejects a company. Never its margin, high or low.",
+    "## Years",
+    "The comparables’ 2026–27 accounts are not out yet, so the check uses each company’s two latest years, 2024–25 and 2025–26, the years the rules fall back on when current-year accounts are not available. The October study tests the year again on 2026–27 figures where filed.",
+    "## Margin on cost (OP/OC)",
+    "- Operating profit = operating revenue less operating cost. Operating cost includes depreciation. Finance cost and other income (interest on deposits and the like) stay out.",
+    "- A company’s margin = its total operating profit for the two years ÷ its total operating cost for the two years. Rule 81 weights the years by the base of the margin, here cost, so never average the two percentages.",
+    "- Percentages to two decimals.",
+    "## The range (Income-tax Rules, 2026, rule 81)",
+    "- Put the margins in ascending order.",
+    "- Place = number of companies × 35% (65% for the top of the range, 50% for the median). Not a whole number: take the value at the next place up. A whole number: take the average of the value at that place and the next.",
+    "- With six or more companies, a margin inside the 35th to 65th percentile range is at arm’s length. Outside it, the median is the arm’s length margin.",
+    "## Year-end true-up",
+    "- Outside the range, we advise a true-up invoice to Brandhof Systems before 31 March that brings the year to the median, not to the edge of the range, which the October figures may move.",
+    "- True-up = median × operating cost, less operating profit."
+   ],
+   "sign": {
+    "name": "Gayathri Sundaram",
+    "role": "Transfer Pricing Lead",
+    "hand": "Gayathri"
+   }
+  },
+  {
+   "id": "far",
+   "type": "table",
+   "style": "plain",
+   "title": "FAR summary · Brandhof India",
+   "tab": "FAR",
+   "kindLabel": "From last year’s study",
+   "heading": "Functions, assets and risks · from the 2025–26 study",
+   "columns": [
+    {
+     "key": "area",
+     "label": "Area"
+    },
+    {
+     "key": "nl",
+     "label": "Brandhof Systems B.V. (Netherlands)"
+    },
+    {
+     "key": "in",
+     "label": "Brandhof India"
+    }
+   ],
+   "rows": [
+    {
+     "area": "What it does",
+     "nl": "Decides what is built; designs the machine controls and drives; sells them",
+     "in": "Writes embedded software and does design work to the parent’s specifications"
+    },
+    {
+     "area": "Customers",
+     "nl": "Machine builders in Europe and Asia",
+     "in": "None of its own: all work is for the parent"
+    },
+    {
+     "area": "Intellectual property",
+     "nl": "Owns all of it",
+     "in": "Owns none; all work belongs to the parent"
+    },
+    {
+     "area": "Assets",
+     "nl": "Product designs, trademarks",
+     "in": "Leased offices, computers, test rigs bought in 2025 with the parent’s capital"
+    },
+    {
+     "area": "Market and product risk",
+     "nl": "Bears it",
+     "in": "None: paid its costs plus 12% whatever the products earn"
+    },
+    {
+     "area": "Credit and currency risk",
+     "nl": "Bears it: pays in rupees every month",
+     "in": "None in practice"
+    }
+   ],
+   "notes": [
+    "Brandhof India is a captive provider of software development and engineering design services to its parent, bearing limited risk. It is the tested party; the method is TNMM, margin on cost.",
+    "Brandhof Systems B.V. owns Brandhof India; one share is held by its nominee."
+   ]
+  },
+  {
+   "id": "search",
+   "type": "table",
+   "style": "portal",
+   "title": "Search results · 15 companies",
+   "tab": "Search",
+   "kindLabel": "Database print",
+   "brand": "Company database · firm licence",
+   "heading": "Search results",
+   "subtitle": "Software development and engineering design services, India",
+   "meta": [
+    {
+     "label": "Run on",
+     "value": "22-02-2027"
+    },
+    {
+     "label": "Run by",
+     "value": "Gayathri Sundaram"
+    },
+    {
+     "label": "Latest year",
+     "value": "2025–26"
+    },
+    {
+     "label": "Companies",
+     "value": "15"
+    }
+   ],
+   "columns": [
+    {
+     "key": "co",
+     "label": "Company"
+    },
+    {
+     "key": "line",
+     "label": "Business line"
+    },
+    {
+     "key": "ye",
+     "label": "Year end"
+    },
+    {
+     "key": "rev",
+     "label": "Operating revenue, latest year (₹ lakh)",
+     "format": "int"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "c01",
+     "co": "Akshaya Digital Engineering Ltd",
+     "line": "Software products and licences",
+     "ye": "31 Mar",
+     "rev": 18406
+    },
+    {
+     "_id": "c02",
+     "co": "Corvanta Technologies Ltd",
+     "line": "Software services",
+     "ye": "31 Mar",
+     "rev": 12046
+    },
+    {
+     "_id": "c03",
+     "co": "Dakshin Code Labs Ltd",
+     "line": "Software services",
+     "ye": "31 Mar",
+     "rev": 4604
+    },
+    {
+     "_id": "c04",
+     "co": "Ekanth Software Ltd",
+     "line": "Software services",
+     "ye": "31 Mar",
+     "rev": 3186
+    },
+    {
+     "_id": "c05",
+     "co": "Halasya Technologies Ltd",
+     "line": "Software services",
+     "ye": "31 Mar",
+     "rev": 3998
+    },
+    {
+     "_id": "c06",
+     "co": "Meruvi Technologies Ltd",
+     "line": "Software services",
+     "ye": "31 Dec",
+     "rev": 996
+    },
+    {
+     "_id": "c07",
+     "co": "Nirvaan Embedded Systems Ltd",
+     "line": "Embedded software services",
+     "ye": "31 Mar",
+     "rev": 3604
+    },
+    {
+     "_id": "c08",
+     "co": "Orvitas Infosolutions Ltd",
+     "line": "BPO and data processing",
+     "ye": "31 Mar",
+     "rev": 6402
+    },
+    {
+     "_id": "c09",
+     "co": "Pratibimb Design Technologies Ltd",
+     "line": "Engineering design services",
+     "ye": "31 Mar",
+     "rev": 1402
+    },
+    {
+     "_id": "c10",
+     "co": "Quillon Infotech Ltd",
+     "line": "Software services",
+     "ye": "31 Mar",
+     "rev": 5904
+    },
+    {
+     "_id": "c11",
+     "co": "Sarvatra Engineering Services Ltd",
+     "line": "Engineering design services",
+     "ye": "31 Mar",
+     "rev": 7890
+    },
+    {
+     "_id": "c12",
+     "co": "Sutrakar Infotech Ltd",
+     "line": "Software services",
+     "ye": "31 Mar",
+     "rev": 31206
+    },
+    {
+     "_id": "c13",
+     "co": "Tessarine Software Services Ltd",
+     "line": "Software services",
+     "ye": "31 Mar",
+     "rev": 2812
+    },
+    {
+     "_id": "c14",
+     "co": "Trivenika Systems Ltd",
+     "line": "Engineering design services",
+     "ye": "31 Mar",
+     "rev": 2302
+    },
+    {
+     "_id": "c15",
+     "co": "Velantra Systems Ltd",
+     "line": "Engineering design services",
+     "ye": "31 Mar",
+     "rev": 1596
+    }
+   ],
+   "notes": [
+    "Operating revenue for the latest year filed (2025–26; calendar 2025 for a December year end)."
+   ]
+  },
+  {
+   "id": "co-01",
+   "type": "table",
+   "style": "portal",
+   "group": "c01",
+   "packGroup": "Company profiles",
+   "title": "Akshaya · Company profile",
+   "tab": "Profile",
+   "kindLabel": "Database print",
+   "brand": "Company database · firm licence",
+   "heading": "Akshaya Digital Engineering Ltd",
+   "subtitle": "Software products and licences",
+   "meta": [
+    {
+     "label": "Year end",
+     "value": "31 March"
+    },
+    {
+     "label": "Related parties, 2025–26",
+     "value": "₹1,288 lakh (7.0% of revenue)"
+    }
+   ],
+   "columns": [
+    {
+     "key": "yr",
+     "label": "Year"
+    },
+    {
+     "key": "rev",
+     "label": "Revenue",
+     "format": "int"
+    },
+    {
+     "key": "oc",
+     "label": "Op. cost",
+     "format": "int"
+    },
+    {
+     "key": "op",
+     "label": "Op. profit",
+     "format": "int",
+     "negative": "paren",
+     "check": "rev - oc"
+    },
+    {
+     "key": "m",
+     "label": "OP/OC",
+     "format": "pct2",
+     "negative": "paren"
+    }
+   ],
+   "rows": [
+    {
+     "yr": "2023–24",
+     "rev": 14206,
+     "oc": 11604,
+     "op": 2602,
+     "m": 22.42
+    },
+    {
+     "yr": "2024–25",
+     "rev": 16102,
+     "oc": 13218,
+     "op": 2884,
+     "m": 21.82
+    },
+    {
+     "yr": "2025–26",
+     "rev": 18406,
+     "oc": 15014,
+     "op": 3392,
+     "m": 22.59
+    }
+   ],
+   "notes": [
+    "Business: Develops and sells licences of its own plant-maintenance and asset-tracking software, with annual maintenance and cloud subscriptions. Owns the software and its trademarks.",
+    "₹ lakh. Revenue is operating revenue. Operating cost includes depreciation; finance cost and other income are left out."
+   ]
+  },
+  {
+   "id": "co-02",
+   "type": "table",
+   "style": "portal",
+   "group": "c02",
+   "packGroup": "Company profiles",
+   "title": "Corvanta · Company profile",
+   "tab": "Profile",
+   "kindLabel": "Database print",
+   "brand": "Company database · firm licence",
+   "heading": "Corvanta Technologies Ltd",
+   "subtitle": "Software services",
+   "meta": [
+    {
+     "label": "Year end",
+     "value": "31 March"
+    },
+    {
+     "label": "Related parties, 2025–26",
+     "value": "₹361 lakh (3.0% of revenue)"
+    }
+   ],
+   "columns": [
+    {
+     "key": "yr",
+     "label": "Year"
+    },
+    {
+     "key": "rev",
+     "label": "Revenue",
+     "format": "int"
+    },
+    {
+     "key": "oc",
+     "label": "Op. cost",
+     "format": "int"
+    },
+    {
+     "key": "op",
+     "label": "Op. profit",
+     "format": "int",
+     "negative": "paren",
+     "check": "rev - oc"
+    },
+    {
+     "key": "m",
+     "label": "OP/OC",
+     "format": "pct2",
+     "negative": "paren"
+    }
+   ],
+   "rows": [
+    {
+     "yr": "2023–24",
+     "rev": 9620,
+     "oc": 8204,
+     "op": 1416,
+     "m": 17.26
+    },
+    {
+     "yr": "2024–25",
+     "rev": 10810,
+     "oc": 9310,
+     "op": 1500,
+     "m": 16.11
+    },
+    {
+     "yr": "2025–26",
+     "rev": 12046,
+     "oc": 10412,
+     "op": 1634,
+     "m": 15.69
+    }
+   ],
+   "notes": [
+    "Business: Custom software development and testing for manufacturers and logistics firms in India and Europe, on time-and-material and fixed-price contracts. No products of its own.",
+    "₹ lakh. Revenue is operating revenue. Operating cost includes depreciation; finance cost and other income are left out."
+   ]
+  },
+  {
+   "id": "co-03",
+   "type": "table",
+   "style": "portal",
+   "group": "c03",
+   "packGroup": "Company profiles",
+   "title": "Dakshin · Company profile",
+   "tab": "Profile",
+   "kindLabel": "Database print",
+   "brand": "Company database · firm licence",
+   "heading": "Dakshin Code Labs Ltd",
+   "subtitle": "Software services",
+   "meta": [
+    {
+     "label": "Year end",
+     "value": "31 March"
+    },
+    {
+     "label": "Related parties, 2025–26",
+     "value": "₹276 lakh (6.0% of revenue)"
+    }
+   ],
+   "columns": [
+    {
+     "key": "yr",
+     "label": "Year"
+    },
+    {
+     "key": "rev",
+     "label": "Revenue",
+     "format": "int"
+    },
+    {
+     "key": "oc",
+     "label": "Op. cost",
+     "format": "int"
+    },
+    {
+     "key": "op",
+     "label": "Op. profit",
+     "format": "int",
+     "negative": "paren",
+     "check": "rev - oc"
+    },
+    {
+     "key": "m",
+     "label": "OP/OC",
+     "format": "pct2",
+     "negative": "paren"
+    }
+   ],
+   "rows": [
+    {
+     "yr": "2023–24",
+     "rev": 3806,
+     "oc": 3412,
+     "op": 394,
+     "m": 11.55
+    },
+    {
+     "yr": "2024–25",
+     "rev": 4118,
+     "oc": 3686,
+     "op": 432,
+     "m": 11.72
+    },
+    {
+     "yr": "2025–26",
+     "rev": 4604,
+     "oc": 4090,
+     "op": 514,
+     "m": 12.57
+    }
+   ],
+   "notes": [
+    "Business: Software development, testing and support for engineering and retail clients, billed on contract. Development centres in Chennai and Coimbatore.",
+    "₹ lakh. Revenue is operating revenue. Operating cost includes depreciation; finance cost and other income are left out."
+   ]
+  },
+  {
+   "id": "co-04",
+   "type": "table",
+   "style": "portal",
+   "group": "c04",
+   "packGroup": "Company profiles",
+   "title": "Ekanth · Company profile",
+   "tab": "Profile",
+   "kindLabel": "Database print",
+   "brand": "Company database · firm licence",
+   "heading": "Ekanth Software Ltd",
+   "subtitle": "Software services",
+   "meta": [
+    {
+     "label": "Year end",
+     "value": "31 March"
+    },
+    {
+     "label": "Related parties, 2025–26",
+     "value": "₹255 lakh (8.0% of revenue)"
+    }
+   ],
+   "columns": [
+    {
+     "key": "yr",
+     "label": "Year"
+    },
+    {
+     "key": "rev",
+     "label": "Revenue",
+     "format": "int"
+    },
+    {
+     "key": "oc",
+     "label": "Op. cost",
+     "format": "int"
+    },
+    {
+     "key": "op",
+     "label": "Op. profit",
+     "format": "int",
+     "negative": "paren",
+     "check": "rev - oc"
+    },
+    {
+     "key": "m",
+     "label": "OP/OC",
+     "format": "pct2",
+     "negative": "paren"
+    }
+   ],
+   "rows": [
+    {
+     "yr": "2023–24",
+     "rev": 2604,
+     "oc": 2318,
+     "op": 286,
+     "m": 12.34
+    },
+    {
+     "yr": "2024–25",
+     "rev": 2908,
+     "oc": 2574,
+     "op": 334,
+     "m": 12.98
+    },
+    {
+     "yr": "2025–26",
+     "rev": 3186,
+     "oc": 2834,
+     "op": 352,
+     "m": 12.42
+    }
+   ],
+   "notes": [
+    "Business: Application development and maintenance for industrial clients from delivery centres in Pune and Nagpur, on contract.",
+    "₹ lakh. Revenue is operating revenue. Operating cost includes depreciation; finance cost and other income are left out."
+   ]
+  },
+  {
+   "id": "co-05",
+   "type": "table",
+   "style": "portal",
+   "group": "c05",
+   "packGroup": "Company profiles",
+   "title": "Halasya · Company profile",
+   "tab": "Profile",
+   "kindLabel": "Database print",
+   "brand": "Company database · firm licence",
+   "heading": "Halasya Technologies Ltd",
+   "subtitle": "Software services",
+   "meta": [
+    {
+     "label": "Year end",
+     "value": "31 March"
+    },
+    {
+     "label": "Related parties, 2025–26",
+     "value": "₹760 lakh (19.0% of revenue)"
+    }
+   ],
+   "columns": [
+    {
+     "key": "yr",
+     "label": "Year"
+    },
+    {
+     "key": "rev",
+     "label": "Revenue",
+     "format": "int"
+    },
+    {
+     "key": "oc",
+     "label": "Op. cost",
+     "format": "int"
+    },
+    {
+     "key": "op",
+     "label": "Op. profit",
+     "format": "int",
+     "negative": "paren",
+     "check": "rev - oc"
+    },
+    {
+     "key": "m",
+     "label": "OP/OC",
+     "format": "pct2",
+     "negative": "paren"
+    }
+   ],
+   "rows": [
+    {
+     "yr": "2023–24",
+     "rev": 3312,
+     "oc": 2986,
+     "op": 326,
+     "m": 10.92
+    },
+    {
+     "yr": "2024–25",
+     "rev": 3604,
+     "oc": 3242,
+     "op": 362,
+     "m": 11.17
+    },
+    {
+     "yr": "2025–26",
+     "rev": 3998,
+     "oc": 3588,
+     "op": 410,
+     "m": 11.43
+    }
+   ],
+   "notes": [
+    "Business: Software development services for automotive and electronics clients. Some of its work is for an associate company in Singapore.",
+    "₹ lakh. Revenue is operating revenue. Operating cost includes depreciation; finance cost and other income are left out."
+   ]
+  },
+  {
+   "id": "co-06",
+   "type": "table",
+   "style": "portal",
+   "group": "c06",
+   "packGroup": "Company profiles",
+   "title": "Meruvi · Company profile",
+   "tab": "Profile",
+   "kindLabel": "Database print",
+   "brand": "Company database · firm licence",
+   "heading": "Meruvi Technologies Ltd",
+   "subtitle": "Software services",
+   "meta": [
+    {
+     "label": "Year end",
+     "value": "31 December"
+    },
+    {
+     "label": "Related parties, 2025",
+     "value": "₹30 lakh (3.0% of revenue)"
+    }
+   ],
+   "columns": [
+    {
+     "key": "yr",
+     "label": "Year (Jan–Dec)"
+    },
+    {
+     "key": "rev",
+     "label": "Revenue",
+     "format": "int"
+    },
+    {
+     "key": "oc",
+     "label": "Op. cost",
+     "format": "int"
+    },
+    {
+     "key": "op",
+     "label": "Op. profit",
+     "format": "int",
+     "negative": "paren",
+     "check": "rev - oc"
+    },
+    {
+     "key": "m",
+     "label": "OP/OC",
+     "format": "pct2",
+     "negative": "paren"
+    }
+   ],
+   "rows": [
+    {
+     "yr": "2023",
+     "rev": 842,
+     "oc": 768,
+     "op": 74,
+     "m": 9.64
+    },
+    {
+     "yr": "2024",
+     "rev": 918,
+     "oc": 832,
+     "op": 86,
+     "m": 10.34
+    },
+    {
+     "yr": "2025",
+     "rev": 996,
+     "oc": 902,
+     "op": 94,
+     "m": 10.42
+    }
+   ],
+   "notes": [
+    "Business: Embedded and application software development for consumer-electronics makers, on contract. Owned by a German engineering group, it keeps the group’s January–December financial year.",
+    "₹ lakh. Revenue is operating revenue. Operating cost includes depreciation; finance cost and other income are left out."
+   ]
+  },
+  {
+   "id": "co-07",
+   "type": "table",
+   "style": "portal",
+   "group": "c07",
+   "packGroup": "Company profiles",
+   "title": "Nirvaan · Company profile",
+   "tab": "Profile",
+   "kindLabel": "Database print",
+   "brand": "Company database · firm licence",
+   "heading": "Nirvaan Embedded Systems Ltd",
+   "subtitle": "Embedded software services",
+   "meta": [
+    {
+     "label": "Year end",
+     "value": "31 March"
+    },
+    {
+     "label": "Related parties, 2025–26",
+     "value": "₹72 lakh (2.0% of revenue)"
+    }
+   ],
+   "columns": [
+    {
+     "key": "yr",
+     "label": "Year"
+    },
+    {
+     "key": "rev",
+     "label": "Revenue",
+     "format": "int"
+    },
+    {
+     "key": "oc",
+     "label": "Op. cost",
+     "format": "int"
+    },
+    {
+     "key": "op",
+     "label": "Op. profit",
+     "format": "int",
+     "negative": "paren",
+     "check": "rev - oc"
+    },
+    {
+     "key": "m",
+     "label": "OP/OC",
+     "format": "pct2",
+     "negative": "paren"
+    }
+   ],
+   "rows": [
+    {
+     "yr": "2023–24",
+     "rev": 2906,
+     "oc": 2502,
+     "op": 404,
+     "m": 16.15
+    },
+    {
+     "yr": "2024–25",
+     "rev": 3218,
+     "oc": 2812,
+     "op": 406,
+     "m": 14.44
+    },
+    {
+     "yr": "2025–26",
+     "rev": 3604,
+     "oc": 3146,
+     "op": 458,
+     "m": 14.56
+    }
+   ],
+   "notes": [
+    "Business: Embedded firmware, controls software and validation for industrial-equipment and automation makers, on contract.",
+    "₹ lakh. Revenue is operating revenue. Operating cost includes depreciation; finance cost and other income are left out."
+   ]
+  },
+  {
+   "id": "co-08",
+   "type": "table",
+   "style": "portal",
+   "group": "c08",
+   "packGroup": "Company profiles",
+   "title": "Orvitas · Company profile",
+   "tab": "Profile",
+   "kindLabel": "Database print",
+   "brand": "Company database · firm licence",
+   "heading": "Orvitas Infosolutions Ltd",
+   "subtitle": "BPO and data processing",
+   "meta": [
+    {
+     "label": "Year end",
+     "value": "31 March"
+    },
+    {
+     "label": "Related parties, 2025–26",
+     "value": "₹704 lakh (11.0% of revenue)"
+    }
+   ],
+   "columns": [
+    {
+     "key": "yr",
+     "label": "Year"
+    },
+    {
+     "key": "rev",
+     "label": "Revenue",
+     "format": "int"
+    },
+    {
+     "key": "oc",
+     "label": "Op. cost",
+     "format": "int"
+    },
+    {
+     "key": "op",
+     "label": "Op. profit",
+     "format": "int",
+     "negative": "paren",
+     "check": "rev - oc"
+    },
+    {
+     "key": "m",
+     "label": "OP/OC",
+     "format": "pct2",
+     "negative": "paren"
+    }
+   ],
+   "rows": [
+    {
+     "yr": "2023–24",
+     "rev": 5212,
+     "oc": 4286,
+     "op": 926,
+     "m": 21.61
+    },
+    {
+     "yr": "2024–25",
+     "rev": 5806,
+     "oc": 4802,
+     "op": 1004,
+     "m": 20.91
+    },
+    {
+     "yr": "2025–26",
+     "rev": 6402,
+     "oc": 5316,
+     "op": 1086,
+     "m": 20.43
+    }
+   ],
+   "notes": [
+    "Business: Back-office data processing, claims transcription and voice support for insurers and banks.",
+    "₹ lakh. Revenue is operating revenue. Operating cost includes depreciation; finance cost and other income are left out."
+   ]
+  },
+  {
+   "id": "co-09",
+   "type": "table",
+   "style": "portal",
+   "group": "c09",
+   "packGroup": "Company profiles",
+   "title": "Pratibimb · Company profile",
+   "tab": "Profile",
+   "kindLabel": "Database print",
+   "brand": "Company database · firm licence",
+   "heading": "Pratibimb Design Technologies Ltd",
+   "subtitle": "Engineering design services",
+   "meta": [
+    {
+     "label": "Year end",
+     "value": "31 March"
+    },
+    {
+     "label": "Related parties, 2025–26",
+     "value": "₹70 lakh (5.0% of revenue)"
+    }
+   ],
+   "columns": [
+    {
+     "key": "yr",
+     "label": "Year"
+    },
+    {
+     "key": "rev",
+     "label": "Revenue",
+     "format": "int"
+    },
+    {
+     "key": "oc",
+     "label": "Op. cost",
+     "format": "int"
+    },
+    {
+     "key": "op",
+     "label": "Op. profit",
+     "format": "int",
+     "negative": "paren",
+     "check": "rev - oc"
+    },
+    {
+     "key": "m",
+     "label": "OP/OC",
+     "format": "pct2",
+     "negative": "paren"
+    }
+   ],
+   "rows": [
+    {
+     "yr": "2023–24",
+     "rev": 1118,
+     "oc": 1204,
+     "op": -86,
+     "m": -7.14
+    },
+    {
+     "yr": "2024–25",
+     "rev": 1204,
+     "oc": 1286,
+     "op": -82,
+     "m": -6.38
+    },
+    {
+     "yr": "2025–26",
+     "rev": 1402,
+     "oc": 1352,
+     "op": 50,
+     "m": 3.7
+    }
+   ],
+   "notes": [
+    "Business: Product design, CAD modelling and simulation for automotive suppliers, on contract.",
+    "₹ lakh. Revenue is operating revenue. Operating cost includes depreciation; finance cost and other income are left out."
+   ]
+  },
+  {
+   "id": "co-10",
+   "type": "table",
+   "style": "portal",
+   "group": "c10",
+   "packGroup": "Company profiles",
+   "title": "Quillon · Company profile",
+   "tab": "Profile",
+   "kindLabel": "Database print",
+   "brand": "Company database · firm licence",
+   "heading": "Quillon Infotech Ltd",
+   "subtitle": "Software services",
+   "meta": [
+    {
+     "label": "Year end",
+     "value": "31 March"
+    },
+    {
+     "label": "Related parties, 2025–26",
+     "value": "₹236 lakh (4.0% of revenue)"
+    }
+   ],
+   "columns": [
+    {
+     "key": "yr",
+     "label": "Year"
+    },
+    {
+     "key": "rev",
+     "label": "Revenue",
+     "format": "int"
+    },
+    {
+     "key": "oc",
+     "label": "Op. cost",
+     "format": "int"
+    },
+    {
+     "key": "op",
+     "label": "Op. profit",
+     "format": "int",
+     "negative": "paren",
+     "check": "rev - oc"
+    },
+    {
+     "key": "m",
+     "label": "OP/OC",
+     "format": "pct2",
+     "negative": "paren"
+    }
+   ],
+   "rows": [
+    {
+     "yr": "2023–24",
+     "rev": 4820,
+     "oc": 4212,
+     "op": 608,
+     "m": 14.43
+    },
+    {
+     "yr": "2024–25",
+     "rev": 5316,
+     "oc": 4598,
+     "op": 718,
+     "m": 15.62
+    },
+    {
+     "yr": "2025–26",
+     "rev": 5904,
+     "oc": 5102,
+     "op": 802,
+     "m": 15.72
+    }
+   ],
+   "notes": [
+    "Business: Custom and embedded software development for industrial and automotive clients, on time-and-material contracts. No products of its own.",
+    "₹ lakh. Revenue is operating revenue. Operating cost includes depreciation; finance cost and other income are left out."
+   ]
+  },
+  {
+   "id": "co-11",
+   "type": "table",
+   "style": "portal",
+   "group": "c11",
+   "packGroup": "Company profiles",
+   "title": "Sarvatra · Company profile",
+   "tab": "Profile",
+   "kindLabel": "Database print",
+   "brand": "Company database · firm licence",
+   "heading": "Sarvatra Engineering Services Ltd",
+   "subtitle": "Engineering design services",
+   "meta": [
+    {
+     "label": "Year end",
+     "value": "31 March"
+    },
+    {
+     "label": "Related parties, 2025–26",
+     "value": "₹3,235 lakh (41.0% of revenue)"
+    }
+   ],
+   "columns": [
+    {
+     "key": "yr",
+     "label": "Year"
+    },
+    {
+     "key": "rev",
+     "label": "Revenue",
+     "format": "int"
+    },
+    {
+     "key": "oc",
+     "label": "Op. cost",
+     "format": "int"
+    },
+    {
+     "key": "op",
+     "label": "Op. profit",
+     "format": "int",
+     "negative": "paren",
+     "check": "rev - oc"
+    },
+    {
+     "key": "m",
+     "label": "OP/OC",
+     "format": "pct2",
+     "negative": "paren"
+    }
+   ],
+   "rows": [
+    {
+     "yr": "2023–24",
+     "rev": 6412,
+     "oc": 5604,
+     "op": 808,
+     "m": 14.42
+    },
+    {
+     "yr": "2024–25",
+     "rev": 7104,
+     "oc": 6212,
+     "op": 892,
+     "m": 14.36
+    },
+    {
+     "yr": "2025–26",
+     "rev": 7890,
+     "oc": 6858,
+     "op": 1032,
+     "m": 15.05
+    }
+   ],
+   "notes": [
+    "Business: Mechanical and electrical design services. The group companies of its Japanese parent are its largest customers.",
+    "₹ lakh. Revenue is operating revenue. Operating cost includes depreciation; finance cost and other income are left out."
+   ]
+  },
+  {
+   "id": "co-12",
+   "type": "table",
+   "style": "portal",
+   "group": "c12",
+   "packGroup": "Company profiles",
+   "title": "Sutrakar · Company profile",
+   "tab": "Profile",
+   "kindLabel": "Database print",
+   "brand": "Company database · firm licence",
+   "heading": "Sutrakar Infotech Ltd",
+   "subtitle": "Software services",
+   "meta": [
+    {
+     "label": "Year end",
+     "value": "31 March"
+    },
+    {
+     "label": "Related parties, 2025–26",
+     "value": "₹624 lakh (2.0% of revenue)"
+    }
+   ],
+   "columns": [
+    {
+     "key": "yr",
+     "label": "Year"
+    },
+    {
+     "key": "rev",
+     "label": "Revenue",
+     "format": "int"
+    },
+    {
+     "key": "oc",
+     "label": "Op. cost",
+     "format": "int"
+    },
+    {
+     "key": "op",
+     "label": "Op. profit",
+     "format": "int",
+     "negative": "paren",
+     "check": "rev - oc"
+    },
+    {
+     "key": "m",
+     "label": "OP/OC",
+     "format": "pct2",
+     "negative": "paren"
+    }
+   ],
+   "rows": [
+    {
+     "yr": "2023–24",
+     "rev": 24806,
+     "oc": 20612,
+     "op": 4194,
+     "m": 20.35
+    },
+    {
+     "yr": "2024–25",
+     "rev": 27904,
+     "oc": 23218,
+     "op": 4686,
+     "m": 20.18
+    },
+    {
+     "yr": "2025–26",
+     "rev": 31206,
+     "oc": 25996,
+     "op": 5210,
+     "m": 20.04
+    }
+   ],
+   "notes": [
+    "Business: Software development and maintenance for banks, insurers and retailers in India and abroad.",
+    "₹ lakh. Revenue is operating revenue. Operating cost includes depreciation; finance cost and other income are left out."
+   ]
+  },
+  {
+   "id": "co-13",
+   "type": "table",
+   "style": "portal",
+   "group": "c13",
+   "packGroup": "Company profiles",
+   "title": "Tessarine · Company profile",
+   "tab": "Profile",
+   "kindLabel": "Database print",
+   "brand": "Company database · firm licence",
+   "heading": "Tessarine Software Services Ltd",
+   "subtitle": "Software services",
+   "meta": [
+    {
+     "label": "Year end",
+     "value": "31 March"
+    },
+    {
+     "label": "Related parties, 2025–26",
+     "value": "₹253 lakh (9.0% of revenue)"
+    }
+   ],
+   "columns": [
+    {
+     "key": "yr",
+     "label": "Year"
+    },
+    {
+     "key": "rev",
+     "label": "Revenue",
+     "format": "int"
+    },
+    {
+     "key": "oc",
+     "label": "Op. cost",
+     "format": "int"
+    },
+    {
+     "key": "op",
+     "label": "Op. profit",
+     "format": "int",
+     "negative": "paren",
+     "check": "rev - oc"
+    },
+    {
+     "key": "m",
+     "label": "OP/OC",
+     "format": "pct2",
+     "negative": "paren"
+    }
+   ],
+   "rows": [
+    {
+     "yr": "2023–24",
+     "rev": 2214,
+     "oc": 1986,
+     "op": 228,
+     "m": 11.48
+    },
+    {
+     "yr": "2024–25",
+     "rev": 2486,
+     "oc": 2198,
+     "op": 288,
+     "m": 13.1
+    },
+    {
+     "yr": "2025–26",
+     "rev": 2812,
+     "oc": 2466,
+     "op": 346,
+     "m": 14.03
+    }
+   ],
+   "notes": [
+    "Business: Software development and testing for engineering and manufacturing clients in Europe and India.",
+    "₹ lakh. Revenue is operating revenue. Operating cost includes depreciation; finance cost and other income are left out."
+   ]
+  },
+  {
+   "id": "co-14",
+   "type": "table",
+   "style": "portal",
+   "group": "c14",
+   "packGroup": "Company profiles",
+   "title": "Trivenika · Company profile",
+   "tab": "Profile",
+   "kindLabel": "Database print",
+   "brand": "Company database · firm licence",
+   "heading": "Trivenika Systems Ltd",
+   "subtitle": "Engineering design services",
+   "meta": [
+    {
+     "label": "Year end",
+     "value": "31 March"
+    },
+    {
+     "label": "Related parties, 2025–26",
+     "value": "₹92 lakh (4.0% of revenue)"
+    }
+   ],
+   "columns": [
+    {
+     "key": "yr",
+     "label": "Year"
+    },
+    {
+     "key": "rev",
+     "label": "Revenue",
+     "format": "int"
+    },
+    {
+     "key": "oc",
+     "label": "Op. cost",
+     "format": "int"
+    },
+    {
+     "key": "op",
+     "label": "Op. profit",
+     "format": "int",
+     "negative": "paren",
+     "check": "rev - oc"
+    },
+    {
+     "key": "m",
+     "label": "OP/OC",
+     "format": "pct2",
+     "negative": "paren"
+    }
+   ],
+   "rows": [
+    {
+     "yr": "2023–24",
+     "rev": 1904,
+     "oc": 1712,
+     "op": 192,
+     "m": 11.21
+    },
+    {
+     "yr": "2024–25",
+     "rev": 2108,
+     "oc": 1886,
+     "op": 222,
+     "m": 11.77
+    },
+    {
+     "yr": "2025–26",
+     "rev": 2302,
+     "oc": 2062,
+     "op": 240,
+     "m": 11.64
+    }
+   ],
+   "notes": [
+    "Business: Engineering design, CAD and drawing services for machine and plant builders, on contract.",
+    "₹ lakh. Revenue is operating revenue. Operating cost includes depreciation; finance cost and other income are left out."
+   ]
+  },
+  {
+   "id": "co-15",
+   "type": "table",
+   "style": "portal",
+   "group": "c15",
+   "packGroup": "Company profiles",
+   "title": "Velantra · Company profile",
+   "tab": "Profile",
+   "kindLabel": "Database print",
+   "brand": "Company database · firm licence",
+   "heading": "Velantra Systems Ltd",
+   "subtitle": "Engineering design services",
+   "meta": [
+    {
+     "label": "Year end",
+     "value": "31 March"
+    },
+    {
+     "label": "Related parties, 2025–26",
+     "value": "₹192 lakh (12.0% of revenue)"
+    }
+   ],
+   "columns": [
+    {
+     "key": "yr",
+     "label": "Year"
+    },
+    {
+     "key": "rev",
+     "label": "Revenue",
+     "format": "int"
+    },
+    {
+     "key": "oc",
+     "label": "Op. cost",
+     "format": "int"
+    },
+    {
+     "key": "op",
+     "label": "Op. profit",
+     "format": "int",
+     "negative": "paren",
+     "check": "rev - oc"
+    },
+    {
+     "key": "m",
+     "label": "OP/OC",
+     "format": "pct2",
+     "negative": "paren"
+    }
+   ],
+   "rows": [
+    {
+     "yr": "2023–24",
+     "rev": 1312,
+     "oc": 1176,
+     "op": 136,
+     "m": 11.56
+    },
+    {
+     "yr": "2024–25",
+     "rev": 1402,
+     "oc": 1268,
+     "op": 134,
+     "m": 10.57
+    },
+    {
+     "yr": "2025–26",
+     "rev": 1596,
+     "oc": 1418,
+     "op": 178,
+     "m": 12.55
+    }
+   ],
+   "notes": [
+    "Business: Mechanical and controls design for machine builders, with the embedded control software that goes with it.",
+    "₹ lakh. Revenue is operating revenue. Operating cost includes depreciation; finance cost and other income are left out."
+   ]
+  },
+  {
+   "id": "agr",
+   "type": "letter",
+   "style": "policy",
+   "title": "Services agreement · clause 4",
+   "tab": "Agreement",
+   "kindLabel": "Agreement extract",
+   "letterhead": "Engineering Services Agreement between Brandhof Systems B.V. (the Company) and Brandhof Engineering Services India Private Limited (the Service Provider)",
+   "subject": "Clause 4 · Service fee",
+   "meta": [
+    {
+     "label": "Dated",
+     "value": "1 April 2014"
+    },
+    {
+     "label": "Clause 4 amended",
+     "value": "1 April 2025"
+    }
+   ],
+   "body": [
+    "4.1 For the Services, the Company shall pay the Service Provider a monthly Service Fee equal to the Cost Base for the month plus a mark-up of twelve per cent (12%).",
+    "4.2 Cost Base means all costs incurred by the Service Provider in providing the Services, as recorded in its books, excluding (a) depreciation on equipment bought out of capital contributed by the Company, and (b) interest and other finance costs.",
+    "4.3 The Service Provider shall invoice the Service Fee in Indian rupees by the 7th of the following month, on the basis of its cost-centre report. The Company shall pay within 30 days of the invoice.",
+    "4.4 Before the end of each financial year the Parties shall review the Service Fee and may agree an adjustment so that the year’s fee remains at arm’s length."
+   ]
+  },
+  {
+   "id": "pl",
+   "type": "table",
+   "style": "statement",
+   "title": "Brandhof India · P&L 2026–27, with projection",
+   "tab": "P&L",
+   "kindLabel": "Client’s projection",
+   "company": {
+    "name": "Brandhof Engineering Services India Private Limited",
+    "cin": "U62011MH2014PTC909478"
+   },
+   "heading": "Statement of profit and loss, 2026–27",
+   "subtitle": "₹ lakh · April–December from the books (unaudited); January–March projected by Smita Kale on 19 February 2027",
+   "columns": [
+    {
+     "key": "item",
+     "label": "Particulars"
+    },
+    {
+     "key": "ad",
+     "label": "Apr–Dec 2026 actual",
+     "format": "num"
+    },
+    {
+     "key": "jm",
+     "label": "Jan–Mar 2027 projected",
+     "format": "num"
+    },
+    {
+     "key": "fy",
+     "label": "2026–27",
+     "format": "num",
+     "check": "ad + jm"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "rev",
+     "item": "Revenue from operations",
+     "ad": 5458.88,
+     "jm": 1859.2,
+     "fy": 7318.08
+    },
+    {
+     "_id": "oi",
+     "item": "Other income",
+     "ad": 106.5,
+     "jm": 35.5,
+     "fy": 142.0
+    },
+    {
+     "_id": "ti",
+     "item": "Total income",
+     "ad": 5565.38,
+     "jm": 1894.7,
+     "fy": 7460.08,
+     "_class": "subtotal",
+     "_sumOf": [
+      "rev",
+      "oi"
+     ]
+    },
+    {
+     "item": "Expenses",
+     "_class": "head"
+    },
+    {
+     "_id": "e0",
+     "item": "Employee benefits expense",
+     "ad": 3718,
+     "jm": 1268,
+     "fy": 4986,
+     "_indent": 1
+    },
+    {
+     "_id": "e1",
+     "item": "Rent",
+     "ad": 423,
+     "jm": 165,
+     "fy": 588,
+     "_indent": 1
+    },
+    {
+     "_id": "e2",
+     "item": "Depreciation",
+     "ad": 234,
+     "jm": 78,
+     "fy": 312,
+     "_indent": 1
+    },
+    {
+     "_id": "e3",
+     "item": "Other expenses",
+     "ad": 562,
+     "jm": 194,
+     "fy": 756,
+     "_indent": 1
+    },
+    {
+     "_id": "te",
+     "item": "Total expenses",
+     "ad": 4937,
+     "jm": 1705,
+     "fy": 6642,
+     "_class": "subtotal",
+     "_sumOf": [
+      "e0",
+      "e1",
+      "e2",
+      "e3"
+     ]
+    },
+    {
+     "_id": "pbt",
+     "item": "Profit before tax",
+     "ad": 628.38,
+     "jm": 189.7,
+     "fy": 818.08,
+     "_class": "total",
+     "_sumOf": [
+      "ti",
+      "-te"
+     ]
+    }
+   ],
+   "notes": [
+    "Revenue from operations: the monthly service fee invoiced to Brandhof Systems B.V. under the services agreement.",
+    "Other income: interest on fixed deposits of surplus cash. The company has no borrowings, so no finance costs.",
+    "Depreciation includes ₹84 lakh for the year (₹63 lakh to December, ₹21 lakh January–March) on the test rigs bought in 2025 with the capital Brandhof Systems contributed.",
+    "Rent: Floor 6, ₹47 lakh a month; Floor 7 from 1 February 2027, ₹12 lakh a month."
+   ]
+  },
+  {
+   "id": "smita",
+   "type": "letter",
+   "style": "email",
+   "title": "Smita’s mail · the projection",
+   "tab": "Smita’s mail",
+   "from": {
+    "name": "Smita Kale",
+    "email": "smita.kale@email.com"
+   },
+   "to": [
+    {
+     "name": "Gayathri Sundaram",
+     "email": "gayathri.sundaram@email.com"
+    }
+   ],
+   "date": "Fri, 19 Feb 2027, 5:42 pm",
+   "subject": "Brandhof India: 2026–27 projection for your year-end check",
+   "body": [
+    "Gayathri,",
+    "Attached is our P&L to December from the books, with my projection for January to March. The projection runs December’s costs forward and adds the seventh floor.",
+    "Two points before you test it:",
+    "- We invoice on the cost-centre report, as clause 4.3 says. Floor 7 (cost centre CC-207) started on 1 February at ₹12 lakh a month. It is not in the billing template yet, so my projection keeps it out of the February and March invoices. IT will add it from April.",
+    "- Depreciation on the test rigs stays out of the invoices, as clause 4.2 has said since April 2025.",
+    "Our auditors will ask about a true-up when they come in April. If one is needed, the invoice must be raised and booked before 31 March.",
+    "Regards,"
+   ],
+   "sign": {
+    "name": "Smita Kale",
+    "role": "Finance Controller",
+    "for": "Brandhof Engineering Services India Private Limited"
+   },
+   "attachments": [
+    "Brandhof India P&L and projection, Feb 2027.xlsx"
+   ]
+  },
+  {
+   "id": "sheet2",
+   "type": "table",
+   "style": "sheet",
+   "title": "Margins sheet · to finish",
+   "tab": "Margins",
+   "kindLabel": "Gayathri’s sheet",
+   "sheetName": "Margins",
+   "otherSheets": [
+    "Screen"
+   ],
+   "freeze": true,
+   "pinFit": true,
+   "formulaCell": "F2",
+   "formula": "=(C2+E2)/(B2+D2)",
+   "columns": [
+    {
+     "key": "co",
+     "label": "Company"
+    },
+    {
+     "key": "oc1",
+     "label": "Cost 24–25",
+     "format": "int"
+    },
+    {
+     "key": "op1",
+     "label": "Profit 24–25",
+     "format": "int"
+    },
+    {
+     "key": "oc2",
+     "label": "Cost 25–26",
+     "format": "int"
+    },
+    {
+     "key": "op2",
+     "label": "Profit 25–26",
+     "format": "int"
+    },
+    {
+     "key": "w",
+     "label": "OP/OC",
+     "format": "pct2"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "c02",
+     "co": "Corvanta",
+     "oc1": 9310,
+     "op1": 1500,
+     "oc2": 10412,
+     "op2": 1634,
+     "w": 15.89
+    },
+    {
+     "_id": "c03",
+     "co": "Dakshin",
+     "oc1": 3686,
+     "op1": 432,
+     "oc2": 4090,
+     "op2": 514
+    },
+    {
+     "_id": "c04",
+     "co": "Ekanth",
+     "oc1": 2574,
+     "op1": 334,
+     "oc2": 2834,
+     "op2": 352
+    },
+    {
+     "_id": "c05",
+     "co": "Halasya",
+     "oc1": 3242,
+     "op1": 362,
+     "oc2": 3588,
+     "op2": 410,
+     "w": 11.3
+    },
+    {
+     "_id": "c07",
+     "co": "Nirvaan",
+     "oc1": 2812,
+     "op1": 406,
+     "oc2": 3146,
+     "op2": 458,
+     "w": 14.5
+    },
+    {
+     "_id": "c10",
+     "co": "Quillon",
+     "oc1": 4598,
+     "op1": 718,
+     "oc2": 5102,
+     "op2": 802,
+     "w": 15.67
+    },
+    {
+     "_id": "c13",
+     "co": "Tessarine",
+     "oc1": 2198,
+     "op1": 288,
+     "oc2": 2466,
+     "op2": 346
+    },
+    {
+     "_id": "c14",
+     "co": "Trivenika",
+     "oc1": 1886,
+     "op1": 222,
+     "oc2": 2062,
+     "op2": 240,
+     "w": 11.7
+    },
+    {
+     "_id": "c15",
+     "co": "Velantra",
+     "oc1": 1268,
+     "op1": 134,
+     "oc2": 1418,
+     "op2": 178
+    }
+   ],
+   "check": false,
+   "arrives": "t2",
+   "notes": [
+    "₹ lakh: operating cost and operating profit, from the database. OP/OC is the two years’ profit over the two years’ cost. Corvanta, Halasya, Nirvaan, Quillon and Trivenika were in last year’s set: brought forward and updated to 2025–26. Dakshin, Ekanth, Tessarine and Velantra are new this year: yours. GS"
+   ]
+  },
+  {
+   "id": "sheet3",
+   "type": "table",
+   "style": "sheet",
+   "title": "Margins sheet · checked",
+   "tab": "Checked sheet",
+   "kindLabel": "Gayathri’s sheet",
+   "sheetName": "Margins",
+   "otherSheets": [
+    "Screen"
+   ],
+   "freeze": true,
+   "pinFit": true,
+   "startPage": "last",
+   "formulaCell": "F2",
+   "formula": "=(C2+E2)/(B2+D2)",
+   "columns": [
+    {
+     "key": "co",
+     "label": "Company"
+    },
+    {
+     "key": "oc1",
+     "label": "Cost 24–25",
+     "format": "int"
+    },
+    {
+     "key": "op1",
+     "label": "Profit 24–25",
+     "format": "int"
+    },
+    {
+     "key": "oc2",
+     "label": "Cost 25–26",
+     "format": "int"
+    },
+    {
+     "key": "op2",
+     "label": "Profit 25–26",
+     "format": "int"
+    },
+    {
+     "key": "w",
+     "label": "OP/OC",
+     "format": "pct2"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "c02",
+     "co": "Corvanta",
+     "oc1": 9310,
+     "op1": 1500,
+     "oc2": 10412,
+     "op2": 1634,
+     "w": 15.89
+    },
+    {
+     "_id": "c03",
+     "co": "Dakshin",
+     "oc1": 3686,
+     "op1": 432,
+     "oc2": 4090,
+     "op2": 514,
+     "w": 12.17
+    },
+    {
+     "_id": "c04",
+     "co": "Ekanth",
+     "oc1": 2574,
+     "op1": 334,
+     "oc2": 2834,
+     "op2": 352,
+     "w": 12.68
+    },
+    {
+     "_id": "c05",
+     "co": "Halasya",
+     "oc1": 3242,
+     "op1": 362,
+     "oc2": 3588,
+     "op2": 410,
+     "w": 11.3
+    },
+    {
+     "_id": "c07",
+     "co": "Nirvaan",
+     "oc1": 2812,
+     "op1": 406,
+     "oc2": 3146,
+     "op2": 458,
+     "w": 14.5
+    },
+    {
+     "_id": "c10",
+     "co": "Quillon",
+     "oc1": 4598,
+     "op1": 718,
+     "oc2": 5102,
+     "op2": 802,
+     "w": 15.67
+    },
+    {
+     "_id": "c13",
+     "co": "Tessarine",
+     "oc1": 2198,
+     "op1": 288,
+     "oc2": 2466,
+     "op2": 346,
+     "w": 13.59
+    },
+    {
+     "_id": "c14",
+     "co": "Trivenika",
+     "oc1": 1886,
+     "op1": 222,
+     "oc2": 2062,
+     "op2": 240,
+     "w": 11.7
+    },
+    {
+     "_id": "c15",
+     "co": "Velantra",
+     "oc1": 1268,
+     "op1": 134,
+     "oc2": 1418,
+     "op2": 178,
+     "w": 11.62
+    }
+   ],
+   "check": false,
+   "arrives": "t3",
+   "notes": [
+    "₹ lakh: operating cost and operating profit. All nine checked. Brandhof India, 2026–27 projected: 676.08 ÷ 6,642.00 = 10.18%. Range and median next, the way my memo counts places. GS"
+   ]
+  },
+  {
+   "id": "varun",
+   "type": "chat",
+   "title": "Varun · percentiles",
+   "tab": "Chat",
+   "arrives": "t3",
+   "with": "Varun Shetty",
+   "date": "Monday 22 February",
+   "me": "You",
+   "messages": [
+    {
+     "from": "varun",
+     "time": "4:06 pm",
+     "text": "Brandhof range? Don’t count places by hand. =PERCENTILE.INC(F2:F10, 0.35) and 0.65 on Gayathri’s sheet, done in a minute."
+    },
+    {
+     "from": "varun",
+     "time": "4:07 pm",
+     "text": "Same as MEDIAN for the middle. I did a study that way last month."
+    },
+    {
+     "from": "You",
+     "time": "4:11 pm",
+     "text": "Her memo counts places."
+    },
+    {
+     "from": "varun",
+     "time": "4:12 pm",
+     "text": "Same thing. Excel is just faster."
+    }
+   ]
+  }
+ ],
+ "tasks": [
+  {
+   "id": "t1",
+   "type": "items",
+   "stage": "Planning",
+   "title": "Screen the 15 companies",
+   "prompt": "Fifteen companies came out of the database search. Open each one and screen it on the five filters in Gayathri’s memo: Accept, or Reject with the reason. The memo is under Documents, and under Other papers on each company. Your matrix goes to Gayathri when you move on.",
+   "weight": 2,
+   "noun": [
+    "company",
+    "companies"
+   ],
+   "lockOnLeave": {
+    "ask": "Hand your screen to Gayathri?",
+    "note": "You can’t change your calls after this.",
+    "yes": "Hand it in",
+    "done": "Handed to Gayathri. You can read your calls but not change them."
+   },
+   "hints": [
+    "Read the business line first. Brandhof India writes software and does design work to its parent’s orders, so a company that sells its own product or runs back-office work does something else.",
+    "Then the figures, filter by filter: related parties over 25%, losses in two or more of the three years, a year not ending 31 March, revenue outside ₹1–200 crore. Nothing else rejects a company."
+   ],
+   "columns": [
+    {
+     "key": "label"
+    },
+    {
+     "key": "line"
+    }
+   ],
+   "fields": [
+    {
+     "id": "verdict",
+     "kind": "choice",
+     "label": "Your call",
+     "gate": true,
+     "options": [
+      {
+       "id": "accept",
+       "label": "Accept"
+      },
+      {
+       "id": "reject",
+       "label": "Reject"
+      }
+     ]
+    },
+    {
+     "id": "reasons",
+     "kind": "multi",
+     "label": "Rejected because",
+     "showIf": {
+      "verdict": "reject"
+     },
+     "options": [
+      {
+       "id": "functional",
+       "label": "Does different work: products, licences, BPO",
+       "short": "different work"
+      },
+      {
+       "id": "rpt",
+       "label": "Related-party transactions above 25% of revenue",
+       "short": "related parties"
+      },
+      {
+       "id": "loss",
+       "label": "Operating losses in two or more of the three years",
+       "short": "losses"
+      },
+      {
+       "id": "yearend",
+       "label": "Year does not end on 31 March",
+       "short": "year end"
+      },
+      {
+       "id": "size",
+       "label": "Revenue outside ₹1–200 crore",
+       "short": "size"
+      },
+      {
+       "id": "margin",
+       "label": "Margin out of line with the rest",
+       "short": "margin"
+      }
+     ],
+     "weight": 2
+    },
+    {
+     "id": "note",
+     "kind": "text",
+     "label": "Your note for the matrix",
+     "placeholder": "For example: related parties 14%, profits all three years, ₹38 crore"
+    }
+   ],
+   "docs": [
+    "memo",
+    "far",
+    "search",
+    "co-01",
+    "co-02",
+    "co-03",
+    "co-04",
+    "co-05",
+    "co-06",
+    "co-07",
+    "co-08",
+    "co-09",
+    "co-10",
+    "co-11",
+    "co-12",
+    "co-13",
+    "co-14",
+    "co-15"
+   ],
+   "items": [
+    {
+     "id": "c01",
+     "label": "Akshaya Digital Engineering Ltd",
+     "short": "Akshaya",
+     "line": "Software products and licences",
+     "docs": [
+      "co-01"
+     ],
+     "docRow": {
+      "search": "c01"
+     },
+     "answer": {
+      "verdict": "reject",
+      "reasons": [
+       "functional"
+      ]
+     },
+     "note": "Akshaya sells licences of its own plant-maintenance software and owns the IP. Brandhof India owns no IP and sells engineering hours to one customer. Revenue and related parties pass; the work does not. Reject: does different work."
+    },
+    {
+     "id": "c02",
+     "label": "Corvanta Technologies Ltd",
+     "short": "Corvanta",
+     "line": "Software services",
+     "docs": [
+      "co-02"
+     ],
+     "docRow": {
+      "search": "c02"
+     },
+     "answer": {
+      "verdict": "accept"
+     },
+     "note": "Corvanta: custom development for manufacturers, related parties 3%, profits all three years, ₹120 crore. Of the companies that pass, its two-year margin is the highest, and a margin is no filter. Dropping it to pull the range down would be cherry-picking. Accept."
+    },
+    {
+     "id": "c03",
+     "label": "Dakshin Code Labs Ltd",
+     "short": "Dakshin",
+     "line": "Software services",
+     "docs": [
+      "co-03"
+     ],
+     "docRow": {
+      "search": "c03"
+     },
+     "answer": {
+      "verdict": "accept"
+     },
+     "note": "Dakshin: development, testing and support on contract, related parties 6%, profits all three years, ₹46 crore. It passes every filter. Accept."
+    },
+    {
+     "id": "c04",
+     "label": "Ekanth Software Ltd",
+     "short": "Ekanth",
+     "line": "Software services",
+     "docs": [
+      "co-04"
+     ],
+     "docRow": {
+      "search": "c04"
+     },
+     "answer": {
+      "verdict": "accept"
+     },
+     "note": "Ekanth passes all five: related parties 8%, profits all three years, ₹32 crore. Accept."
+    },
+    {
+     "id": "c05",
+     "label": "Halasya Technologies Ltd",
+     "short": "Halasya",
+     "line": "Software services",
+     "docs": [
+      "co-05"
+     ],
+     "docRow": {
+      "search": "c05"
+     },
+     "answer": {
+      "verdict": "accept"
+     },
+     "note": "Halasya: related parties 19% of revenue. That is under our 25%, so it stays; write the 19% in the matrix so the reviewer sees it was checked. Profits all three years. Accept."
+    },
+    {
+     "id": "c06",
+     "label": "Meruvi Technologies Ltd",
+     "short": "Meruvi",
+     "line": "Software services",
+     "docs": [
+      "co-06"
+     ],
+     "docRow": {
+      "search": "c06"
+     },
+     "answer": {
+      "verdict": "reject",
+      "reasons": [
+       "yearend"
+      ]
+     },
+     "note": "Meruvi does the right work, but its year ends on 31 December. Its years do not line up with Brandhof’s April–March year, and our filter rejects it. Reject: year does not end 31 March."
+    },
+    {
+     "id": "c07",
+     "label": "Nirvaan Embedded Systems Ltd",
+     "short": "Nirvaan",
+     "line": "Embedded software services",
+     "docs": [
+      "co-07"
+     ],
+     "docRow": {
+      "search": "c07"
+     },
+     "answer": {
+      "verdict": "accept"
+     },
+     "note": "Nirvaan: embedded firmware for equipment makers, the closest match to Brandhof India in the set. Related parties 2%, profits all three years, ₹36 crore. Accept."
+    },
+    {
+     "id": "c08",
+     "label": "Orvitas Infosolutions Ltd",
+     "short": "Orvitas",
+     "line": "BPO and data processing",
+     "docs": [
+      "co-08"
+     ],
+     "docRow": {
+      "search": "c08"
+     },
+     "answer": {
+      "verdict": "reject",
+      "reasons": [
+       "functional"
+      ]
+     },
+     "note": "Orvitas runs data processing and voice support for insurers and banks. That is back-office work, not software development or design. Reject: does different work."
+    },
+    {
+     "id": "c09",
+     "label": "Pratibimb Design Technologies Ltd",
+     "short": "Pratibimb",
+     "line": "Engineering design services",
+     "docs": [
+      "co-09"
+     ],
+     "docRow": {
+      "search": "c09"
+     },
+     "answer": {
+      "verdict": "reject",
+      "reasons": [
+       "loss"
+      ]
+     },
+     "note": "Pratibimb lost money in 2023–24 and 2024–25 and made a small profit in 2025–26. Two loss years out of three fails our filter. Reject: losses."
+    },
+    {
+     "id": "c10",
+     "label": "Quillon Infotech Ltd",
+     "short": "Quillon",
+     "line": "Software services",
+     "docs": [
+      "co-10"
+     ],
+     "docRow": {
+      "search": "c10"
+     },
+     "answer": {
+      "verdict": "accept"
+     },
+     "note": "Quillon: custom and embedded software on contract, related parties 4%, profits all three years, ₹59 crore. The same kind of work as Brandhof India. Accept."
+    },
+    {
+     "id": "c11",
+     "label": "Sarvatra Engineering Services Ltd",
+     "short": "Sarvatra",
+     "line": "Engineering design services",
+     "docs": [
+      "co-11"
+     ],
+     "docRow": {
+      "search": "c11"
+     },
+     "answer": {
+      "verdict": "reject",
+      "reasons": [
+       "rpt"
+      ]
+     },
+     "note": "Sarvatra does design work like Brandhof’s, but 41% of its revenue is with its own group. That margin is a group price, not a market one. Reject: related parties over 25%."
+    },
+    {
+     "id": "c12",
+     "label": "Sutrakar Infotech Ltd",
+     "short": "Sutrakar",
+     "line": "Software services",
+     "docs": [
+      "co-12"
+     ],
+     "docRow": {
+      "search": "c12"
+     },
+     "answer": {
+      "verdict": "reject",
+      "reasons": [
+       "size"
+      ]
+     },
+     "note": "Sutrakar: ₹312 crore of revenue against our ceiling of ₹200 crore. A company that size works at another scale and cost. Reject: revenue outside the band."
+    },
+    {
+     "id": "c13",
+     "label": "Tessarine Software Services Ltd",
+     "short": "Tessarine",
+     "line": "Software services",
+     "docs": [
+      "co-13"
+     ],
+     "docRow": {
+      "search": "c13"
+     },
+     "answer": {
+      "verdict": "accept"
+     },
+     "note": "Tessarine: development and testing for engineering clients, related parties 9%, profits all three years, ₹28 crore. Accept."
+    },
+    {
+     "id": "c14",
+     "label": "Trivenika Systems Ltd",
+     "short": "Trivenika",
+     "line": "Engineering design services",
+     "docs": [
+      "co-14"
+     ],
+     "docRow": {
+      "search": "c14"
+     },
+     "answer": {
+      "verdict": "accept"
+     },
+     "note": "Trivenika: engineering design and CAD work for machine builders, related parties 4%, profits all three years, ₹23 crore. Accept."
+    },
+    {
+     "id": "c15",
+     "label": "Velantra Systems Ltd",
+     "short": "Velantra",
+     "line": "Engineering design services",
+     "docs": [
+      "co-15"
+     ],
+     "docRow": {
+      "search": "c15"
+     },
+     "answer": {
+      "verdict": "accept"
+     },
+     "note": "Velantra: mechanical and controls design for machine builders, related parties 12%, profits all three years, ₹16 crore. Its 2024–25 margin dipped, but a dip is not a loss. Accept."
+    }
+   ]
+  },
+  {
+   "id": "t2",
+   "type": "worksheet",
+   "stage": "Fieldwork",
+   "title": "Work out the margins",
+   "prompt": "Gayathri has your screen. Five of the nine she kept were in last year’s set and are done on her sheet. Work out the margin on cost of the four new ones over their two years, and Brandhof India’s own margin for 2026–27 from the projection. Percentages to two decimals.",
+   "weight": 2,
+   "noun": [
+    "margin",
+    "margins"
+   ],
+   "lockOnLeave": {
+    "ask": "Hand your margins to Gayathri?",
+    "note": "You can’t change them after this.",
+    "yes": "Hand them in",
+    "done": "Handed to Gayathri. You can read your margins but not change them."
+   },
+   "hints": [
+    "Add a company’s operating profit for the two years, add its operating cost for the two years, then divide. Do not average the two percentages.",
+    "For Brandhof, operating profit is revenue from operations less all four expenses. The deposit interest is other income, and depreciation stays in the cost."
+   ],
+   "columns": [
+    {
+     "key": "co",
+     "label": "Company"
+    },
+    {
+     "key": "oc1",
+     "label": "Cost 24–25",
+     "format": "int"
+    },
+    {
+     "key": "op1",
+     "label": "Profit 24–25",
+     "format": "int"
+    },
+    {
+     "key": "oc2",
+     "label": "Cost 25–26",
+     "format": "int"
+    },
+    {
+     "key": "op2",
+     "label": "Profit 25–26",
+     "format": "int"
+    },
+    {
+     "key": "m",
+     "label": "OP/OC",
+     "format": "pct2"
+    }
+   ],
+   "rows": [
+    {
+     "id": "r1",
+     "cells": {
+      "co": "Dakshin",
+      "oc1": 3686,
+      "op1": 432,
+      "oc2": 4090,
+      "op2": 514,
+      "m": {
+       "input": true,
+       "answer": 12.17,
+       "tolerance": 0.01,
+       "working": "(432 + 514) ÷ (3,686 + 4,090) = 946 ÷ 7,776",
+       "format": "pct2",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "r2",
+     "cells": {
+      "co": "Ekanth",
+      "oc1": 2574,
+      "op1": 334,
+      "oc2": 2834,
+      "op2": 352,
+      "m": {
+       "input": true,
+       "answer": 12.68,
+       "tolerance": 0.01,
+       "working": "(334 + 352) ÷ (2,574 + 2,834) = 686 ÷ 5,408",
+       "format": "pct2",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "r3",
+     "cells": {
+      "co": "Tessarine",
+      "oc1": 2198,
+      "op1": 288,
+      "oc2": 2466,
+      "op2": 346,
+      "m": {
+       "input": true,
+       "answer": 13.59,
+       "tolerance": 0.01,
+       "working": "(288 + 346) ÷ (2,198 + 2,466) = 634 ÷ 4,664",
+       "format": "pct2",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "r4",
+     "cells": {
+      "co": "Velantra",
+      "oc1": 1268,
+      "op1": 134,
+      "oc2": 1418,
+      "op2": 178,
+      "m": {
+       "input": true,
+       "answer": 11.62,
+       "tolerance": 0.01,
+       "working": "(134 + 178) ÷ (1,268 + 1,418) = 312 ÷ 2,686",
+       "format": "pct2",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "r5",
+     "total": true,
+     "cells": {
+      "co": "Brandhof India, 2026–27 projected",
+      "oc1": "–",
+      "op1": "–",
+      "oc2": "–",
+      "op2": "–",
+      "m": {
+       "input": true,
+       "answer": 10.18,
+       "tolerance": 0.01,
+       "working": "(7,318.08 − 6,642.00) ÷ 6,642.00 = 676.08 ÷ 6,642.00; interest out, depreciation in",
+       "format": "pct2",
+       "sign": false
+      }
+     }
+    }
+   ],
+   "notes": {
+    "r1.m": "Averaging 11.72% and 12.57% gives 12.15%. Two hundredths look small until Dakshin turns out to be the 35th percentile.",
+    "r2.m": "Its two years average 12.70%, but 2025–26, the weaker year, also had the bigger cost, so the weighted figure comes out lower.",
+    "r3.m": "Averaging 13.10% and 14.03% gives 13.57%. Total profit over total cost, every time: that is how the rule weights the years.",
+    "r4.m": "Averaging 10.57% and 12.55% gives 11.56%, which is not the rule: 2025–26, the better year, also had the bigger cost, so it counts for more.",
+    "r5.m": "With the deposit interest in it reads 12.32%, and on the billed cost of 6,534 it reads 12.00%. Neither is the margin the comparables are measured on."
+   },
+   "docs": [
+    "sheet2",
+    "memo",
+    "pl",
+    "smita",
+    "agr",
+    "co-03",
+    "co-04",
+    "co-13",
+    "co-15"
+   ]
+  },
+  {
+   "id": "t3",
+   "type": "worksheet",
+   "stage": "Review",
+   "title": "Build the range and test Brandhof",
+   "prompt": "Gayathri’s checked sheet has all nine margins. Build the range and the median as her memo sets out. Then two figures for Brandhof: its margin if the costs left out of the invoices were billed with the 12% mark-up, and the true-up to the median, in ₹ lakh. Percentages to two decimals.",
+   "weight": 2,
+   "noun": [
+    "figure",
+    "figures"
+   ],
+   "lockOnLeave": {
+    "ask": "Hand your range and true-up to Gayathri?",
+    "note": "You can’t change them after this.",
+    "yes": "Hand them in",
+    "done": "Handed to Gayathri. You can read your figures but not change them."
+   },
+   "hints": [
+    "Rank the nine from lowest to highest. A place such as 3.15 is not a whole number, so take the value at the next place up, the 4th. Excel’s PERCENTILE functions interpolate between values; the rule takes the value at a place.",
+    "The left-out costs are in the P&L notes and Smita’s mail. The true-up is the median’s operating profit less the operating profit the projection shows."
+   ],
+   "layout": "table",
+   "columns": [
+    {
+     "key": "line",
+     "label": "Line"
+    },
+    {
+     "key": "v",
+     "label": "Figure",
+     "format": "pct2"
+    }
+   ],
+   "rows": [
+    {
+     "id": "p35",
+     "cells": {
+      "line": "35th percentile",
+      "v": {
+       "input": true,
+       "answer": 12.17,
+       "tolerance": 0.01,
+       "working": "9 × 0.35 = 3.15, not a whole number: the 4th value, Dakshin",
+       "format": "pct2",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "p65",
+     "cells": {
+      "line": "65th percentile",
+      "v": {
+       "input": true,
+       "answer": 13.59,
+       "tolerance": 0.01,
+       "working": "9 × 0.65 = 5.85: the 6th value, Tessarine",
+       "format": "pct2",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "med",
+     "cells": {
+      "line": "Median",
+      "v": {
+       "input": true,
+       "answer": 12.68,
+       "tolerance": 0.01,
+       "working": "9 × 0.50 = 4.5: the 5th value, Ekanth",
+       "format": "pct2",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "fix",
+     "cells": {
+      "line": "Brandhof’s margin, missing costs billed",
+      "v": {
+       "input": true,
+       "answer": 12.0,
+       "tolerance": 0.01,
+       "working": "(676.08 + 108 × 1.12) ÷ 6,642.00 = 797.04 ÷ 6,642.00",
+       "format": "pct2",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "tu",
+     "cells": {
+      "line": "True-up to the median, ₹ lakh",
+      "v": {
+       "input": true,
+       "answer": 166.13,
+       "tolerance": 0.4,
+       "working": "12.68% × 6,642.00 = 842.21; less 676.08",
+       "format": "amount",
+       "sign": false,
+       "follow": "{med.v} × 66.42 − 676.08"
+      }
+     }
+    }
+   ],
+   "notes": {
+    "p35.v": "Excel’s PERCENTILE.INC gives 12.07%, between the 3rd and 4th values. The rule takes the value at the place, the 4th.",
+    "p65.v": "Varun’s PERCENTILE.INC gives 13.78%, a wider range than the rule allows.",
+    "med.v": "A whole-number place would mean the average of two values, the one there and the next; with nine companies, no place comes out whole.",
+    "fix.v": "Rig depreciation ₹84 lakh and Floor 7 rent ₹24 lakh: ₹108 lakh, or ₹120.96 lakh with the mark-up. Cost plus 12% on the whole cost is exactly 12.00%, and the range starts at 12.17%.",
+    "tu.v": "₹120.96 lakh of it is the two costs with their mark-up; the other ₹45.17 lakh is the gap between 12% and the median."
+   },
+   "docs": [
+    "sheet3",
+    "varun",
+    "memo",
+    "pl",
+    "smita",
+    "agr"
+   ]
+  },
+  {
+   "id": "t4",
+   "type": "compose",
+   "stage": "Report",
+   "title": "Draft the mail to Smita",
+   "prompt": "Gayathri sends this to Smita under her name. Pick the right line for each part of the mail: what we found, why, whether fixing the bill is enough, and what we advise. Add a line of your own if you like.",
+   "weight": 3,
+   "noun": [
+    "line",
+    "lines"
+   ],
+   "previewLabel": "Your draft to Smita",
+   "hints": [
+    "Each line must hold up if Smita forwards it to her auditors: the margin on the whole cost, the real cause, and a true-up that reaches the median."
+   ],
+   "template": "Subject: Brandhof India: year-end margin check, 2026–27\n\nDear Smita,\n\nThank you for the projection. We have tested it against this year’s benchmark.\n\n{finding}\n\n{cause}\n\n{fix}\n\n{action}\n\n{_free}\n\nIn October we will test the year again on the comparables’ 2026–27 accounts where filed. I am happy to go through the working with you this week.\n\nRegards,\nGayathri Sundaram\nTransfer Pricing Lead, Bapat Venkatesh & Co.",
+   "freeText": {
+    "label": "Your own line for the mail"
+   },
+   "slots": [
+    {
+     "id": "finding",
+     "label": "What we found",
+     "options": [
+      {
+       "id": "a",
+       "correct": true,
+       "text": "On your projection, Brandhof India earns 10.18% on its total operating cost for 2026–27, below this year’s arm’s length range of 12.17% to 13.59%, built from nine comparable companies.",
+       "why": "The margin on the whole operating cost, with the interest out, against the range the rule builds from the nine. Smita can check every figure in it."
+      },
+      {
+       "id": "b",
+       "text": "On your projection, Brandhof India earns 12.32% on its total operating cost for 2026–27 once the deposit interest is counted, inside this year’s range of 12.17% to 13.59%.",
+       "why": "Interest on fixed deposits is other income, not earned by the engineering the parent pays for. Out of operating profit, the margin is 10.18%, below the range."
+      },
+      {
+       "id": "c",
+       "text": "On your projection, Brandhof India earns 12.00% on its costs for 2026–27, exactly the mark-up the agreement sets, which is just below this year’s range of 12.17% to 13.59%.",
+       "why": "The 12% is earned on the cost billed, not on the whole cost. On the whole operating cost the margin is 10.18%, well below the range."
+      }
+     ]
+    },
+    {
+     "id": "cause",
+     "label": "Why",
+     "options": [
+      {
+       "id": "a",
+       "text": "Most of the gap comes from the comparables: their margins of 11.30% to 15.89% in 2024–25 and 2025–26 were unusually high, and in an ordinary year Brandhof would sit inside the range.",
+       "why": "The set is screened on our filters, never on margin, so its margins stand. Most of the gap is in Brandhof’s own invoices: ₹108 lakh of cost they left out."
+      },
+      {
+       "id": "b",
+       "correct": true,
+       "text": "Most of the gap comes from the invoices, which left out ₹108 lakh of cost: ₹84 lakh of rig depreciation that clause 4.2 excludes and ₹24 lakh of Floor 7 rent.",
+       "why": "It splits the ₹108 lakh by cause: clause 4.2 keeps out the depreciation, and the billing template misses the Floor 7 rent. Smita can fix each at its source."
+      },
+      {
+       "id": "c",
+       "text": "Most of the gap comes from ₹84 lakh of rig depreciation, which clause 4.2 rightly keeps out of the cost base. The test should leave it out of Brandhof’s operating cost, as the invoices do.",
+       "why": "The test follows the margin on cost, not the bill. Depreciation is a real cost of the work, and the comparables’ margins carry theirs; take it out of Brandhof’s alone and the figures no longer compare."
+      }
+     ]
+    },
+    {
+     "id": "fix",
+     "label": "Is fixing the bill enough?",
+     "options": [
+      {
+       "id": "a",
+       "correct": true,
+       "text": "Billing that ₹108 lakh with the 12% mark-up would add ₹120.96 lakh and lift the margin to 12.00%, still below 12.17%, so fixing the invoices alone does not reach the range.",
+       "why": "Once the whole cost is billed, the margin on cost equals the mark-up, and 12% is under this year’s range. The price itself has fallen behind the market."
+      },
+      {
+       "id": "b",
+       "text": "Billing that ₹108 lakh with the 12% mark-up would add ₹120.96 lakh and lift the margin to 12.20%, inside the range, so a corrected March invoice settles the year.",
+       "why": "That divides by the billed cost of 6,534. The margin is on the whole operating cost: 797.04 ÷ 6,642.00 is 12.00%, still below 12.17%, so the median would still apply."
+      },
+      {
+       "id": "c",
+       "text": "Billing that ₹108 lakh is not needed, because a margin a little outside the range is still accepted under the tolerance, and 10.18% is close enough to 12.17%.",
+       "why": "With six or more comparables the range decides, and outside it the median applies. Under TNMM the tolerance is only for sets of fewer than six, and only as notified."
+      }
+     ]
+    },
+    {
+     "id": "action",
+     "label": "What we advise",
+     "options": [
+      {
+       "id": "a",
+       "text": "We advise a true-up invoice of ₹132.25 lakh to Brandhof Systems before 31 March, which brings the year just to 12.17%, the bottom of the range. From April, both costs go into the bill, with clause 4.2 amended.",
+       "why": "Inside, but on the edge, and the October figures may move the range. My memo advises the median for that reason."
+      },
+      {
+       "id": "b",
+       "text": "We advise a true-up invoice of ₹120.96 lakh to Brandhof Systems before 31 March, which bills the two costs with their mark-up and brings the year to 12.00%. From April, billing stays as it is.",
+       "why": "That fixes the bill and still leaves the year below the range, so the median would apply anyway, and the gap opens again next year."
+      },
+      {
+       "id": "c",
+       "correct": true,
+       "text": "We advise a true-up invoice of ₹166.13 lakh to Brandhof Systems before 31 March, which brings the year to the median of 12.68%. From April, both costs go into the bill, with clause 4.2 amended.",
+       "why": "The median is the figure the rule would use, and clause 4.4 lets the two companies agree the adjustment before the year ends."
+      }
+     ]
+    }
+   ],
+   "docs": [
+    "smita",
+    "pl",
+    "agr",
+    "sheet3",
+    "memo",
+    "far"
+   ]
+  }
+ ],
+ "wrap": {
+  "from": "gayathri",
+  "text": "Nine in, six out, and Corvanta stays though it tops the set. Brandhof sits at 10.18% because ₹108 lakh never reached the invoices, and even 12% on the whole cost is short of 12.17%. The mail goes to Smita today with the ₹166.13 lakh true-up."
+ },
+ "wrapPartial": {
+  "from": "gayathri",
+  "text": "A slip anywhere ends up in the mail: the screen sets the range, and the range sets the true-up Smita will book. We’ll go through it together before anything goes to Brandhof."
+ },
+ "wrapRetry": {
+  "from": "gayathri",
+  "text": "Smita will book whatever true-up this mail gives her. Only the five filters decide the nine, and the range comes from the rule’s places, not from Excel. Brandhof is tested on its whole operating cost. Put each miss right against my memo first."
+ },
+ "passNeeds": [
+  {
+   "task": "t1",
+   "min": 0.7,
+   "note": "You need more of the 15 screening calls right, with their reasons, to pass."
+  },
+  {
+   "task": "t3",
+   "min": 0.6,
+   "note": "You need three of the five figures in task 3 right, or following your figures, to pass."
+  }
+ ],
+ "model": {
+  "intro": "Nine of the fifteen companies pass the screens. Weighted by cost over 2024–25 and 2025–26, they give a range of 12.17% to 13.59% and a median of 12.68%. Brandhof India’s projected 10.18% is below the range: ₹108 lakh of cost never reached the invoices, and even billed at cost plus 12% the year would reach only 12.00%. A true-up of ₹166.13 lakh before 31 March brings the year to the median.",
+  "blocks": [
+   {
+    "type": "text",
+    "text": "The nine, lowest to highest, with the places the rule counts:"
+   },
+   {
+    "type": "table",
+    "grid": true,
+    "columns": [
+     {
+      "key": "pl",
+      "label": "Place"
+     },
+     {
+      "key": "co",
+      "label": "Company"
+     },
+     {
+      "key": "m",
+      "label": "OP/OC"
+     },
+     {
+      "key": "mk",
+      "label": "Reads as"
+     }
+    ],
+    "rows": [
+     {
+      "pl": "1",
+      "co": "Halasya",
+      "m": "11.30%",
+      "mk": "–"
+     },
+     {
+      "pl": "2",
+      "co": "Velantra",
+      "m": "11.62%",
+      "mk": "–"
+     },
+     {
+      "pl": "3",
+      "co": "Trivenika",
+      "m": "11.70%",
+      "mk": "–"
+     },
+     {
+      "pl": "4",
+      "co": "Dakshin",
+      "m": "12.17%",
+      "mk": "35th percentile"
+     },
+     {
+      "pl": "5",
+      "co": "Ekanth",
+      "m": "12.68%",
+      "mk": "Median"
+     },
+     {
+      "pl": "6",
+      "co": "Tessarine",
+      "m": "13.59%",
+      "mk": "65th percentile"
+     },
+     {
+      "pl": "7",
+      "co": "Nirvaan",
+      "m": "14.50%",
+      "mk": "–"
+     },
+     {
+      "pl": "8",
+      "co": "Quillon",
+      "m": "15.67%",
+      "mk": "–"
+     },
+     {
+      "pl": "9",
+      "co": "Corvanta",
+      "m": "15.89%",
+      "mk": "–"
+     }
+    ]
+   },
+   {
+    "type": "text",
+    "text": "Brandhof India: 676.08 ÷ 6,642.00 = 10.18%, below 12.17%. Billing the ₹108 lakh left out, with its 12%, gives 797.04 ÷ 6,642.00 = 12.00%: still below. True-up to the median: 12.68% × 6,642.00 = 842.21, less 676.08 = ₹166.13 lakh."
+   },
+   {
+    "type": "list",
+    "items": [
+     "Out on their work: Akshaya (its own software licences) and Orvitas (back-office and voice work).",
+     "Out on the other filters: Sarvatra (41% with its group), Pratibimb (losses in 2023–24 and 2024–25), Meruvi (year ends 31 December) and Sutrakar (₹312 crore of revenue).",
+     "In, though they look odd: Corvanta, the highest margin of the nine, and Halasya, at 19% with related parties, under the 25% line."
+    ]
+   },
+   {
+    "type": "note",
+    "from": "gayathri",
+    "text": "The bill was short because clause 4.2 keeps the rigs’ depreciation out and Floor 7 never reached the template. Amend the clause and the template from April, and 12% still sits under this year’s range: the mark-up itself needs a look before the next agreement."
+   }
+  ]
+ },
+ "principles": [
+  "A comparable is chosen for the work it does and the independence of its prices, never for its margin.",
+  "Weight each company’s years by its cost, rank the set, and count the places the rule’s way: a place that is not a whole number goes up to the next value.",
+  "Test the margin on the whole operating cost. What the agreement leaves out of the bill is still cost."
+ ],
+ "earned": {
+  "clause": "screened {n} companies for a TNMM benchmark[[ and rejected {rej}]][[; computed cost-weighted margins{wm|}]][[; built the 35th–65th percentile range{p35|}{p65|}]][[; tested the client’s margin and computed a year-end true-up{bm|}{tu|}]]",
+  "counts": {
+   "n": {
+    "kind": "items",
+    "task": "t1",
+    "answered": "gate"
+   },
+   "rej": {
+    "kind": "itemsWhere",
+    "task": "t1",
+    "field": "verdict",
+    "equals": "reject",
+    "withRight": "reasons"
+   },
+   "wm": {
+    "kind": "correctCells",
+    "task": "t2",
+    "rows": [
+     "r1",
+     "r2",
+     "r3",
+     "r4"
+    ]
+   },
+   "p35": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "p35",
+    "col": "v"
+   },
+   "p65": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "p65",
+    "col": "v"
+   },
+   "bm": {
+    "kind": "cell",
+    "task": "t2",
+    "row": "r5",
+    "col": "m"
+   },
+   "tu": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "tu",
+    "col": "v"
+   }
+  },
+  "fallback": "screened {n} companies for a TNMM benchmark"
+ },
+ "interview": [
+  {
+   "q": "What is the arm’s length price, and why is it tested?",
+   "checking": "Whether you can explain transfer pricing in plain words before any method.",
+   "outline": [
+    "It is the price unrelated parties would agree on for the same deal in similar conditions.",
+    "Group companies could move profit between countries through their prices, so the Act tests such deals against it.",
+    "In the simulation a captive on cost plus 12% earned 10.18% on its whole cost, below the range."
+   ]
+  },
+  {
+   "q": "How did you build the arm’s length range?",
+   "checking": "Whether you know the Indian method: weighted margins, the rule’s percentiles, the median when the margin falls outside.",
+   "outline": [
+    "In the simulation I screened {n} companies on work, related-party share, losses, year end and size[[, rejecting {rej}]].",
+    "Each margin was both years’ operating profit over both years’ operating cost: weighted by cost, not averaged.",
+    "Ranked, the 4th and 6th of nine gave 12.17%–13.59%; the client was below, so the median applied."
+   ]
+  }
+ ]
+}

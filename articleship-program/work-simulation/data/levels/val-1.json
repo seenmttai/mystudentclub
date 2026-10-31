@@ -1,0 +1,2035 @@
+{
+ "id": "val-1",
+ "domain": "valuation",
+ "number": 1,
+ "title": "P&L to a simple DCF",
+ "minutes": 40,
+ "learn": [
+  "Which P&L lines belong in EBITDA, and which come out",
+  "How free cash flow is built up from EBITDA",
+  "How far the value moves with one point of WACC"
+ ],
+ "do": [
+  "Clean a 3-year P&L to adjusted EBITDA",
+  "Finish a 5-year DCF with a WACC range",
+  "Write the cover note to your manager"
+ ],
+ "case": {
+  "role": "First-year article assistant, borrowed by the deals desk",
+  "client": "Agnika Appliances Limited, a listed kitchen-appliance maker weighing an offer for Savli Cookware Private Limited of Vadodara",
+  "team": "Ishaan Sethi (Manager, Deals and Valuation)",
+  "goal": "Clean Savli’s three-year P&L to the EBITDA a buyer can rely on, and finish the first-cut DCF behind Agnika’s indicative offer.",
+  "period": "Three years to 31 March 2026; forecast 2026–27 to 2030–31",
+  "where": "Deals desk, Prabhat Road office · Wednesday 16 December 2026"
+ },
+ "brief": {
+  "from": "ishaan",
+  "time": "10:10 am",
+  "messages": [
+   "Savli’s P&L, its notes and the information memorandum (IM) from Hitesh, the promoter, are in the pack. First clean EBITDA for each of the three years, then my DCF sheet.",
+   "Every add-back needs a paper behind it. Cover note to me by 5 pm; Shalini at Agnika wants a value range on Friday."
+  ]
+ },
+ "documents": [
+  {
+   "id": "pl",
+   "type": "table",
+   "style": "statement",
+   "tab": "P&L",
+   "title": "Profit and loss · three years",
+   "company": {
+    "name": "Savli Cookware Private Limited",
+    "cin": "U25920GJ2008PTC942143"
+   },
+   "heading": "Statement of profit and loss (summary)",
+   "subtitle": "Years ended 31 March · ₹ lakh · from the audited financial statements",
+   "columns": [
+    {
+     "key": "item",
+     "label": "Particulars"
+    },
+    {
+     "key": "note",
+     "label": "Note"
+    },
+    {
+     "key": "fy24",
+     "label": "2023⁠–⁠24",
+     "format": "int"
+    },
+    {
+     "key": "fy25",
+     "label": "2024⁠–⁠25",
+     "format": "int"
+    },
+    {
+     "key": "fy26",
+     "label": "2025⁠–⁠26",
+     "format": "int"
+    }
+   ],
+   "rows": [
+    {
+     "item": "Revenue from operations",
+     "note": "17",
+     "fy24": 14120,
+     "fy25": 16380,
+     "fy26": 18640
+    },
+    {
+     "item": "Other income",
+     "note": "18",
+     "fy24": 42,
+     "fy25": 362,
+     "fy26": 58
+    },
+    {
+     "item": "Total income",
+     "fy24": 14162,
+     "fy25": 16742,
+     "fy26": 18698,
+     "_class": "total"
+    },
+    {
+     "item": "Expenses",
+     "_class": "head"
+    },
+    {
+     "item": "Cost of goods sold (materials, purchases, change in stock)",
+     "note": "19",
+     "fy24": 9540,
+     "fy25": 11052,
+     "fy26": 12652,
+     "_indent": 1
+    },
+    {
+     "item": "Employee benefits expense",
+     "note": "20",
+     "fy24": 1386,
+     "fy25": 1548,
+     "fy26": 1852,
+     "_indent": 1
+    },
+    {
+     "item": "Finance costs",
+     "note": "21",
+     "fy24": 268,
+     "fy25": 296,
+     "fy26": 332,
+     "_indent": 1
+    },
+    {
+     "item": "Depreciation and amortisation expense",
+     "note": "22",
+     "fy24": 310,
+     "fy25": 342,
+     "fy26": 378,
+     "_indent": 1
+    },
+    {
+     "item": "Other expenses",
+     "note": "23",
+     "fy24": 1668,
+     "fy25": 1884,
+     "fy26": 1974,
+     "_indent": 1
+    },
+    {
+     "item": "Total expenses",
+     "fy24": 13172,
+     "fy25": 15122,
+     "fy26": 17188,
+     "_class": "total"
+    },
+    {
+     "item": "Profit before tax",
+     "fy24": 990,
+     "fy25": 1620,
+     "fy26": 1510,
+     "_class": "total"
+    }
+   ],
+   "notes": [
+    "Note numbers are those of Savli’s audited financial statements. Tax and profit after tax are in the full accounts in the data room."
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "DATA ROOM · 2.1",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": -5
+    }
+   ]
+  },
+  {
+   "id": "note-oi",
+   "type": "table",
+   "style": "statement",
+   "tab": "Note 18",
+   "title": "Note 18 · Other income",
+   "company": {
+    "name": "Savli Cookware Private Limited",
+    "cin": "U25920GJ2008PTC942143"
+   },
+   "heading": "Note 18 · Other income",
+   "subtitle": "₹ lakh",
+   "columns": [
+    {
+     "key": "item",
+     "label": "Particulars"
+    },
+    {
+     "key": "fy24",
+     "label": "2023⁠–⁠24",
+     "format": "int"
+    },
+    {
+     "key": "fy25",
+     "label": "2024⁠–⁠25",
+     "format": "int"
+    },
+    {
+     "key": "fy26",
+     "label": "2025⁠–⁠26",
+     "format": "int"
+    }
+   ],
+   "rows": [
+    {
+     "item": "Interest on fixed deposits with banks",
+     "_id": "oi-int",
+     "fy24": 14,
+     "fy25": 16,
+     "fy26": 18
+    },
+    {
+     "item": "Rent received for godown space let out",
+     "_id": "oi-rent",
+     "fy24": 28,
+     "fy25": 28,
+     "fy26": 40
+    },
+    {
+     "item": "Insurance claim received: February 2023 fire at the Halol godown",
+     "_id": "oi-ins",
+     "fy24": "–",
+     "fy25": 318,
+     "fy26": "–"
+    },
+    {
+     "item": "Total",
+     "fy24": 42,
+     "fy25": 362,
+     "fy26": 58,
+     "_class": "total"
+    }
+   ],
+   "notes": [
+    "Interest is earned on the fixed deposits held with the banks as margin money for bank guarantees.",
+    "The first floor of the Halol godown is let to a transport company on an 11-month licence, renewed each year; the fee was raised from April 2025.",
+    "The insurance claim settles the stock lost in the fire of February 2023. The loss itself was booked in 2022–23."
+   ]
+  },
+  {
+   "id": "note-emp",
+   "type": "table",
+   "style": "statement",
+   "tab": "Note 20",
+   "title": "Note 20 · Employee benefits",
+   "company": {
+    "name": "Savli Cookware Private Limited",
+    "cin": "U25920GJ2008PTC942143"
+   },
+   "heading": "Note 20 · Employee benefits expense",
+   "subtitle": "₹ lakh",
+   "columns": [
+    {
+     "key": "item",
+     "label": "Particulars"
+    },
+    {
+     "key": "fy24",
+     "label": "2023⁠–⁠24",
+     "format": "int"
+    },
+    {
+     "key": "fy25",
+     "label": "2024⁠–⁠25",
+     "format": "int"
+    },
+    {
+     "key": "fy26",
+     "label": "2025⁠–⁠26",
+     "format": "int"
+    }
+   ],
+   "rows": [
+    {
+     "item": "Salaries, wages and bonus",
+     "fy24": 1170,
+     "fy25": 1314,
+     "fy26": 1473
+    },
+    {
+     "item": "Contribution to provident fund and ESI",
+     "fy24": 96,
+     "fy25": 107,
+     "fy26": 118
+    },
+    {
+     "item": "Gratuity",
+     "fy24": 22,
+     "fy25": 25,
+     "fy26": 28
+    },
+    {
+     "item": "Staff welfare",
+     "fy24": 38,
+     "fy25": 42,
+     "fy26": 47
+    },
+    {
+     "item": "Managing director’s remuneration: Hitesh Vasani",
+     "_id": "emp-md",
+     "fy24": 60,
+     "fy25": 60,
+     "fy26": 66
+    },
+    {
+     "item": "Salary to a relative of a director: Ramit Vasani",
+     "_id": "emp-ramit",
+     "fy24": "–",
+     "fy25": "–",
+     "fy26": 120
+    },
+    {
+     "item": "Total",
+     "fy24": 1386,
+     "fy25": 1548,
+     "fy26": 1852,
+     "_class": "total"
+    }
+   ],
+   "notes": [
+    "Ramit Vasani, son of the managing director, joined on 1 April 2025 as Head of Business Development.",
+    "The board raised the managing director’s remuneration from ₹60 lakh to ₹66 lakh a year from 1 April 2025."
+   ]
+  },
+  {
+   "id": "note-oe",
+   "type": "table",
+   "style": "statement",
+   "tab": "Note 23",
+   "title": "Note 23 · Other expenses",
+   "company": {
+    "name": "Savli Cookware Private Limited",
+    "cin": "U25920GJ2008PTC942143"
+   },
+   "heading": "Note 23 · Other expenses",
+   "subtitle": "₹ lakh",
+   "columns": [
+    {
+     "key": "item",
+     "label": "Particulars"
+    },
+    {
+     "key": "fy24",
+     "label": "2023⁠–⁠24",
+     "format": "int"
+    },
+    {
+     "key": "fy25",
+     "label": "2024⁠–⁠25",
+     "format": "int"
+    },
+    {
+     "key": "fy26",
+     "label": "2025⁠–⁠26",
+     "format": "int"
+    }
+   ],
+   "rows": [
+    {
+     "item": "Power and fuel",
+     "fy24": 486,
+     "fy25": 552,
+     "fy26": 598
+    },
+    {
+     "item": "Freight outward and e-commerce delivery",
+     "fy24": 342,
+     "fy25": 401,
+     "fy26": 446
+    },
+    {
+     "item": "Advertisement and sales promotion",
+     "fy24": 214,
+     "fy25": 246,
+     "fy26": 262
+    },
+    {
+     "item": "Dealers’ meet",
+     "_id": "oe-meet",
+     "fy24": 41,
+     "fy25": 44,
+     "fy26": 46
+    },
+    {
+     "item": "Warranty cost: provision for the year’s sales",
+     "_id": "oe-wty",
+     "fy24": 112,
+     "fy25": 131,
+     "fy26": 149
+    },
+    {
+     "item": "Warranty provision written back",
+     "_id": "oe-wb",
+     "fy24": "–",
+     "fy25": "–",
+     "fy26": -92
+    },
+    {
+     "item": "Rent: warehouse at Plot 44, GIDC Savli, paid to Hitesh Vasani",
+     "_id": "oe-rent",
+     "fy24": 24,
+     "fy25": 24,
+     "fy26": 24
+    },
+    {
+     "item": "Repairs and maintenance",
+     "fy24": 118,
+     "fy25": 132,
+     "fy26": 141
+    },
+    {
+     "item": "Legal and professional fees",
+     "fy24": 64,
+     "fy25": 72,
+     "fy26": 81
+    },
+    {
+     "item": "Insurance, rates and taxes",
+     "fy24": 58,
+     "fy25": 63,
+     "fy26": 69
+    },
+    {
+     "item": "Travelling and conveyance",
+     "fy24": 72,
+     "fy25": 81,
+     "fy26": 86
+    },
+    {
+     "item": "Miscellaneous expenses",
+     "fy24": 137,
+     "fy25": 138,
+     "fy26": 164
+    },
+    {
+     "item": "Total",
+     "fy24": 1668,
+     "fy25": 1884,
+     "fy26": 1974,
+     "_class": "total"
+    }
+   ],
+   "notes": [
+    "Dealers’ meet: about 300 dealers each January (Goa 2024, Udaipur 2025, Jaipur 2026).",
+    "Warranty cost: pressure cookers carry two years’ warranty; each year’s provision is made on that year’s sales.",
+    "Warranty provision written back: the provision made in 2022–23 for claims on one batch of non-stick pans. The claim period ended in May 2025 with fewer claims than provided for.",
+    "Rent: agreement of April 2019 at ₹2 lakh a month. Hitesh Vasani owns the warehouse."
+   ]
+  },
+  {
+   "id": "im",
+   "type": "table",
+   "style": "plain",
+   "tab": "IM",
+   "kindLabel": "IM extract",
+   "title": "Information memorandum · page 14",
+   "heading": "Savli Cookware · Information memorandum",
+   "subtitle": "Page 14 · Financial highlights · EBITDA, ₹ lakh · Strictly private and confidential",
+   "columns": [
+    {
+     "key": "item",
+     "label": "EBITDA"
+    },
+    {
+     "key": "fy24",
+     "label": "2023⁠–⁠24",
+     "format": "int"
+    },
+    {
+     "key": "fy25",
+     "label": "2024⁠–⁠25",
+     "format": "int"
+    },
+    {
+     "key": "fy26",
+     "label": "2025⁠–⁠26",
+     "format": "int"
+    }
+   ],
+   "rows": [
+    {
+     "item": "Reported EBITDA",
+     "fy24": 1526,
+     "fy25": 1896,
+     "fy26": 2162
+    },
+    {
+     "item": "Add: family salary that ends on a sale (Ramit Vasani)",
+     "fy24": "–",
+     "fy25": "–",
+     "fy26": 120
+    },
+    {
+     "item": "Add: non-recurring dealer conference",
+     "fy24": 41,
+     "fy25": 44,
+     "fy26": 46
+    },
+    {
+     "item": "Adjusted EBITDA",
+     "fy24": 1567,
+     "fy25": 1940,
+     "fy26": 2328,
+     "_class": "total"
+    },
+    {
+     "item": "Adjusted EBITDA margin",
+     "fy24": "11.1%",
+     "fy25": "11.8%",
+     "fy26": "12.5%"
+    }
+   ],
+   "notes": [
+    "Savli makes pressure cookers, non-stick and tri-ply cookware. In 2025–26, 40% of sales were under the Savli brand (dealers and e-commerce) and 60% private label for large e-commerce sellers and two appliance brands.",
+    "Reported EBITDA is revenue less cost of goods sold, employee benefits and other expenses.",
+    "Adjusted EBITDA shows Savli as a new partner would run it."
+   ],
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Paper for each? – I.S.",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "bench",
+   "type": "letter",
+   "style": "email",
+   "tab": "Benchmarks",
+   "title": "Shalini’s mail · benchmarks",
+   "from": {
+    "name": "Shalini Bhargava",
+    "email": "shalini.bhargava@email.com"
+   },
+   "to": [
+    {
+     "name": "Ishaan Sethi",
+     "email": "ishaan.sethi@email.com"
+    }
+   ],
+   "date": "Mon, 14 Dec 2026, 6:12 pm",
+   "subject": "Savli: the benchmarks you asked for",
+   "body": [
+    "Ishaan,",
+    "Our HR and admin teams have come back on the three points from Friday.",
+    "- Head of business development at a consumer-durables company of ₹150–250 crore revenue: about ₹36 lakh a year, all in.",
+    "- Managing director at that size: ₹60–75 lakh a year. Hitesh stays on as MD for three years after closing, on his present pay. That is agreed in principle.",
+    "- Warehouse of the same size in GIDC Savli: two quotes, ₹5.8 lakh and ₹6.2 lakh a month. Please take ₹6 lakh. After closing we rent at market or we move.",
+    "Ramit’s role carries on after closing. We would pay the market rate for it.",
+    "Regards,"
+   ],
+   "sign": {
+    "name": "Shalini Bhargava",
+    "role": "Head of Corporate Development",
+    "for": "Agnika Appliances Limited"
+   }
+  },
+  {
+   "id": "inputs",
+   "type": "letter",
+   "style": "memo",
+   "tab": "Inputs",
+   "title": "Ishaan’s note · DCF inputs",
+   "letterhead": "Bapat Venkatesh & Co. · Deals and valuation",
+   "memoTitle": "File note",
+   "to": "Savli file (deals desk)",
+   "from": "ishaan",
+   "date": "15 December 2026",
+   "subject": "Savli: inputs for the first-cut DCF",
+   "body": [
+    "## The three inputs",
+    "- Revenue growth: 12% a year, 2026–27 to 2030–31, on 2025–26 revenue of ₹186.40 crore.",
+    "- EBITDA margin: 11.0% of revenue, every year. My call for this cut; the diligence may move it.",
+    "- WACC: 13%, our working figure for a private cookware maker of this size.",
+    "## Fixed for this cut",
+    "- Depreciation 2.1% and capex 2.6% of revenue.",
+    "- Increase in working capital: 22% of each year’s rise in revenue.",
+    "- Tax on EBIT at 25.17%: the working rate Kunal on the tax desk gave for Savli. Take it as given.",
+    "- Terminal value: 2030–31 FCFF grown at 5% a year for ever (Gordon growth). Simple for this cut; I will normalise the last year for the offer.",
+    "- Value at 31 March 2026, the last audited balance sheet; year-end discounting. I will roll it forward for the offer.",
+    "## Bridge to equity",
+    "- Debt: the bank borrowings and Hitesh’s loan to the company.",
+    "- Cash: cash and bank balances free to use. Margin money held under bank guarantees is not free cash.",
+    "- Statutory dues, gratuity and capital creditors wait for the diligence.",
+    "## The sensitivity",
+    "- WACC at 12% and 14%, everything else the same. The sheet has the five-year PVs of FCFF for each rate."
+   ],
+   "sign": {
+    "name": "Ishaan Sethi",
+    "role": "Manager, Deals and Valuation",
+    "hand": "Ishaan"
+   }
+  },
+  {
+   "id": "dcf",
+   "type": "table",
+   "style": "sheet",
+   "tab": "Forecast",
+   "check": false,
+   "freeze": true,
+   "title": "DCF sheet · forecast",
+   "sheetName": "DCF",
+   "otherSheets": [
+    "Inputs",
+    "Value"
+   ],
+   "formula": "=C2*(1+Inputs!$C$5)",
+   "formulaCell": "D2",
+   "columns": [
+    {
+     "key": "line",
+     "label": "₹ crore"
+    },
+    {
+     "key": "a26",
+     "label": "2025–26A",
+     "format": "num"
+    },
+    {
+     "key": "e27",
+     "label": "2026–27E",
+     "format": "num"
+    },
+    {
+     "key": "e28",
+     "label": "2027–28E",
+     "format": "num"
+    },
+    {
+     "key": "e29",
+     "label": "2028–29E",
+     "format": "num"
+    },
+    {
+     "key": "e30",
+     "label": "2029–30E",
+     "format": "num"
+    },
+    {
+     "key": "e31",
+     "label": "2030–31E",
+     "format": "num"
+    }
+   ],
+   "rows": [
+    {
+     "line": "Revenue",
+     "a26": 186.4,
+     "e27": 208.77,
+     "e28": 233.82,
+     "e29": 261.88,
+     "e30": 293.3,
+     "e31": 328.5
+    },
+    {
+     "line": "EBITDA (11.0%)",
+     "e27": 22.96,
+     "e28": 25.72,
+     "e29": 28.81,
+     "e30": 32.26,
+     "e31": 36.14
+    },
+    {
+     "line": "Less: depreciation (2.1%)",
+     "e27": 4.38,
+     "e28": 4.91,
+     "e29": 5.5,
+     "e30": 6.16,
+     "e31": 6.9
+    },
+    {
+     "line": "EBIT",
+     "e27": 18.58,
+     "e28": 20.81,
+     "e29": 23.31,
+     "e30": 26.1,
+     "e31": 29.24
+    },
+    {
+     "line": "Less: tax on EBIT (25.17%)",
+     "e27": "",
+     "e28": 5.24,
+     "e29": 5.87,
+     "e30": 6.57,
+     "e31": 7.36,
+     "_hlCols": [
+      "e27"
+     ]
+    },
+    {
+     "line": "NOPAT",
+     "e27": "",
+     "e28": 15.57,
+     "e29": 17.44,
+     "e30": 19.53,
+     "e31": 21.88,
+     "_hlCols": [
+      "e27"
+     ]
+    },
+    {
+     "line": "Add back: depreciation",
+     "e27": 4.38,
+     "e28": 4.91,
+     "e29": 5.5,
+     "e30": 6.16,
+     "e31": 6.9
+    },
+    {
+     "line": "Less: capex (2.6%)",
+     "e27": 5.43,
+     "e28": 6.08,
+     "e29": 6.81,
+     "e30": 7.63,
+     "e31": 8.54
+    },
+    {
+     "line": "Less: increase in working capital (22% of the rise in revenue)",
+     "e27": "",
+     "e28": 5.51,
+     "e29": 6.17,
+     "e30": 6.91,
+     "e31": 7.74,
+     "_hlCols": [
+      "e27"
+     ]
+    },
+    {
+     "line": "FCFF",
+     "e27": "",
+     "e28": 8.89,
+     "e29": 9.96,
+     "e30": 11.15,
+     "e31": 12.49,
+     "_hlCols": [
+      "e27"
+     ]
+    },
+    {
+     "line": "Discount factor at 13%",
+     "e27": "0.8850",
+     "e28": "0.7831",
+     "e29": "0.6931",
+     "e30": "0.6133",
+     "e31": "0.5428"
+    }
+   ],
+   "notes": [
+    "Shown to two decimals; the sheet works unrounded, so a line can differ by 0.01 from the lines above it.",
+    "Shaded cells in 2026–27 are left for you to work by hand; the later years run the same formulas."
+   ]
+  },
+  {
+   "id": "dcf-value",
+   "type": "table",
+   "style": "sheet",
+   "tab": "Value",
+   "check": false,
+   "freeze": true,
+   "title": "DCF sheet · value block",
+   "sheetName": "Value",
+   "otherSheets": [
+    "Inputs",
+    "DCF"
+   ],
+   "formula": "=1/(1+C2)^5",
+   "formulaCell": "C4",
+   "columns": [
+    {
+     "key": "line",
+     "label": "₹ crore"
+    },
+    {
+     "key": "w12",
+     "label": "Lower",
+     "format": "num"
+    },
+    {
+     "key": "w13",
+     "label": "Base",
+     "format": "num"
+    },
+    {
+     "key": "w14",
+     "label": "Higher",
+     "format": "num"
+    }
+   ],
+   "rows": [
+    {
+     "line": "WACC",
+     "w12": "12.00%",
+     "w13": "13.00%",
+     "w14": "14.00%"
+    },
+    {
+     "line": "PV of FCFF, 2026–27 to 2030–31",
+     "w12": 35.44,
+     "w13": 34.51,
+     "w14": 33.62
+    },
+    {
+     "line": "Discount factor, end of 2030–31",
+     "w12": "0.5674",
+     "w13": "0.5428",
+     "w14": "0.5194"
+    },
+    {
+     "line": "Terminal value, end of 2030–31",
+     "w12": "",
+     "w13": "",
+     "w14": "",
+     "_hlCols": [
+      "w12",
+      "w13",
+      "w14"
+     ]
+    },
+    {
+     "line": "PV of terminal value",
+     "w12": "",
+     "w13": "",
+     "w14": "",
+     "_hlCols": [
+      "w12",
+      "w13",
+      "w14"
+     ]
+    },
+    {
+     "line": "Enterprise value",
+     "w12": "",
+     "w13": "",
+     "w14": "",
+     "_hlCols": [
+      "w12",
+      "w13",
+      "w14"
+     ]
+    },
+    {
+     "line": "Net debt, 31 March 2026",
+     "w13": "",
+     "_hlCols": [
+      "w13"
+     ]
+    },
+    {
+     "line": "Equity value",
+     "w13": "",
+     "_hlCols": [
+      "w13"
+     ]
+    }
+   ],
+   "notes": [
+    "Terminal growth 5% in every column. The PVs of FCFF are from Ishaan’s run of the full forecast."
+   ]
+  },
+  {
+   "id": "bs",
+   "type": "table",
+   "style": "statement",
+   "tab": "Balance sheet",
+   "title": "Balance sheet · 31 March 2026 extract",
+   "company": {
+    "name": "Savli Cookware Private Limited",
+    "cin": "U25920GJ2008PTC942143"
+   },
+   "heading": "Balance sheet at 31 March 2026 (extract)",
+   "subtitle": "₹ lakh · from the audited financial statements",
+   "columns": [
+    {
+     "key": "item",
+     "label": "Particulars"
+    },
+    {
+     "key": "amt",
+     "label": "₹ lakh",
+     "format": "int"
+    }
+   ],
+   "rows": [
+    {
+     "item": "Borrowings",
+     "_class": "head"
+    },
+    {
+     "item": "Term loan from bank (secured)",
+     "amt": 1040,
+     "_indent": 1
+    },
+    {
+     "item": "Cash credit from bank (secured)",
+     "amt": 1200,
+     "_indent": 1
+    },
+    {
+     "item": "Loan from director: Hitesh Vasani (unsecured)",
+     "amt": 600,
+     "_indent": 1
+    },
+    {
+     "item": "Current liabilities and provisions",
+     "_class": "head"
+    },
+    {
+     "item": "Trade payables",
+     "amt": 2104,
+     "_indent": 1
+    },
+    {
+     "item": "Other current liabilities (incl. statutory dues and creditors for capital goods)",
+     "amt": 438,
+     "_indent": 1
+    },
+    {
+     "item": "Provision for gratuity (not funded)",
+     "amt": 104,
+     "_indent": 1
+    },
+    {
+     "item": "Current assets",
+     "_class": "head"
+    },
+    {
+     "item": "Inventories",
+     "amt": 2986,
+     "_indent": 1
+    },
+    {
+     "item": "Trade receivables",
+     "amt": 3212,
+     "_indent": 1
+    },
+    {
+     "item": "Cash on hand and balances in current accounts",
+     "amt": 168,
+     "_indent": 1
+    },
+    {
+     "item": "Fixed deposits held as margin money for bank guarantees",
+     "amt": 240,
+     "_indent": 1
+    }
+   ],
+   "notes": [
+    "Extract: the lines the deals team asked for. The full balance sheet is in the data room."
+   ]
+  },
+  {
+   "id": "peers",
+   "type": "table",
+   "style": "plain",
+   "tab": "Peers",
+   "kindLabel": "Research note",
+   "title": "Listed peers · multiples",
+   "heading": "Listed kitchen-appliance and cookware makers",
+   "subtitle": "Research desk, October 2026 · prices at 30 September 2026",
+   "columns": [
+    {
+     "key": "name",
+     "label": "Company"
+    },
+    {
+     "key": "rev",
+     "label": "Revenue 2025⁠–⁠26, ₹ crore",
+     "align": "right"
+    },
+    {
+     "key": "mult",
+     "label": "EV/EBITDA",
+     "align": "right"
+    }
+   ],
+   "rows": [
+    {
+     "name": "Vaibhavi Appliances",
+     "rev": "3,120.8",
+     "mult": "31.7×"
+    },
+    {
+     "name": "Kaumudi Housewares",
+     "rev": "968.4",
+     "mult": "31.2×"
+    },
+    {
+     "name": "Ojasvi Appliances",
+     "rev": "2,240.6",
+     "mult": "26.2×"
+    },
+    {
+     "name": "Dhruvatara Home Products",
+     "rev": "1,386.2",
+     "mult": "20.4×"
+    },
+    {
+     "name": "Rasika Kitchen Systems",
+     "rev": "612.2",
+     "mult": "16.1×"
+    },
+    {
+     "name": "Savli Cookware (unlisted, for scale)",
+     "rev": "186.4",
+     "mult": "–",
+     "_class": "muted"
+    }
+   ],
+   "notes": [
+    "EV = market capitalisation at 30 September 2026 + net debt from each company’s last annual report; EBITDA for 2025–26.",
+    "All five are listed and sell under their own brands. Agnika’s board pack uses this set."
+   ]
+  }
+ ],
+ "tasks": [
+  {
+   "id": "t1",
+   "type": "items",
+   "stage": "Fieldwork",
+   "title": "Sort the P&L lines for EBITDA",
+   "prompt": "Nine lines of Savli’s P&L need a call before EBITDA can be built. For each, decide: keep it as reported, take it out, or adjust it to the market rate. Each line opens with the papers that bear on it. Your calls go to Ishaan when you move on.",
+   "weight": 2,
+   "noun": [
+    "line",
+    "lines"
+   ],
+   "lockOnLeave": {
+    "ask": "Hand your EBITDA calls to Ishaan?",
+    "note": "You can’t change them after this.",
+    "yes": "Hand them in",
+    "done": "Handed to Ishaan. You can read your calls but not change them."
+   },
+   "hints": [
+    "Ask three questions of each line: does it come from making and selling cookware, does it happen every year, and will Agnika keep paying it on these terms?",
+    "Read the IM’s labels last. The notes say what each line is and how often it happens; Shalini’s mail says what Agnika will pay after closing."
+   ],
+   "columns": [
+    {
+     "key": "label"
+    },
+    {
+     "key": "where"
+    },
+    {
+     "key": "amts"
+    }
+   ],
+   "fields": [
+    {
+     "id": "verdict",
+     "kind": "choice",
+     "label": "Your call",
+     "gate": true,
+     "neutral": true,
+     "options": [
+      {
+       "id": "keep",
+       "label": "Keep"
+      },
+      {
+       "id": "out",
+       "label": "Take out"
+      },
+      {
+       "id": "market",
+       "label": "Adjust to market",
+       "short": "To market"
+      }
+     ]
+    },
+    {
+     "id": "note",
+     "kind": "text",
+     "label": "Your note for the file",
+     "placeholder": "For example: which note, which years, why"
+    }
+   ],
+   "docs": [
+    "pl",
+    "note-oi",
+    "note-emp",
+    "note-oe",
+    "im",
+    "bench"
+   ],
+   "items": [
+    {
+     "id": "i1",
+     "label": "Line 1 · Interest on fixed deposits",
+     "where": "Note 18",
+     "amts": "₹14, 16 and 18 lakh",
+     "docs": [
+      "note-oi",
+      "pl"
+     ],
+     "answer": {
+      "verdict": "out"
+     },
+     "note": "Line 1: interest on deposits is what Savli’s money in the bank earns, not what its plant earns. Out. The I in EBITDA covers interest earned as well as interest paid.",
+     "docRow": {
+      "note-oi": "oi-int"
+     }
+    },
+    {
+     "id": "i2",
+     "label": "Line 2 · Rent received for godown space",
+     "where": "Note 18",
+     "amts": "₹28, 28 and 40 lakh",
+     "docs": [
+      "note-oi",
+      "pl"
+     ],
+     "answer": {
+      "verdict": "out"
+     },
+     "note": "Line 2: letting out the first floor at Halol is property income, not cookware. Out. If Agnika wants that space valued, it is valued on its own, outside EBITDA.",
+     "docRow": {
+      "note-oi": "oi-rent"
+     }
+    },
+    {
+     "id": "i3",
+     "label": "Line 3 · Insurance claim for the 2023 fire",
+     "where": "Note 18",
+     "amts": "₹318 lakh, 2024–25 only",
+     "docs": [
+      "note-oi",
+      "pl"
+     ],
+     "answer": {
+      "verdict": "out"
+     },
+     "note": "Line 3: one fire in February 2023, one insurance cheque in 2024–25. Out. Left in, it makes 2024–25 look ₹318 lakh better than the business was.",
+     "docRow": {
+      "note-oi": "oi-ins"
+     }
+    },
+    {
+     "id": "i4",
+     "label": "Line 4 · Warranty provision written back",
+     "where": "Note 23",
+     "amts": "₹92 lakh credit, 2025–26 only",
+     "docs": [
+      "note-oe"
+     ],
+     "answer": {
+      "verdict": "out"
+     },
+     "note": "Line 4: an old provision written back is a one-time credit sitting inside other expenses. It flatters 2025–26 by ₹92 lakh. Take it out, and EBITDA falls by the same amount.",
+     "docRow": {
+      "note-oe": "oe-wb"
+     }
+    },
+    {
+     "id": "i5",
+     "label": "Line 5 · Warranty cost for the year",
+     "where": "Note 23",
+     "amts": "₹112, 131 and 149 lakh",
+     "docs": [
+      "note-oe"
+     ],
+     "answer": {
+      "verdict": "keep"
+     },
+     "note": "Line 5: every cooker sold carries two years’ warranty, and each year’s cost is provided on that year’s sales. A recurring cost of selling cookers. Keep.",
+     "docRow": {
+      "note-oe": "oe-wty"
+     }
+    },
+    {
+     "id": "i6",
+     "label": "Line 6 · Dealers’ meet",
+     "where": "Note 23",
+     "amts": "₹41, 44 and 46 lakh",
+     "docs": [
+      "note-oe",
+      "im"
+     ],
+     "answer": {
+      "verdict": "keep"
+     },
+     "note": "Line 6: the IM calls it non-recurring. Note 23 shows Goa, Udaipur and Jaipur, one each January. Three years running is a cost of selling. Keep.",
+     "docRow": {
+      "note-oe": "oe-meet"
+     }
+    },
+    {
+     "id": "i7",
+     "label": "Line 7 · Ramit Vasani’s salary",
+     "where": "Note 20",
+     "amts": "₹120 lakh, 2025–26 only",
+     "docs": [
+      "note-emp",
+      "bench",
+      "im"
+     ],
+     "answer": {
+      "verdict": "market"
+     },
+     "note": "Line 7: the IM says this cost ends on a sale, but Shalini’s mail says the role carries on and Agnika would pay ₹36 lakh for it. Only the ₹84 lakh above that comes back. Adjust to market.",
+     "docRow": {
+      "note-emp": "emp-ramit"
+     }
+    },
+    {
+     "id": "i8",
+     "label": "Line 8 · Hitesh Vasani’s pay as MD",
+     "where": "Note 20",
+     "amts": "₹60, 60 and 66 lakh",
+     "docs": [
+      "note-emp",
+      "bench"
+     ],
+     "answer": {
+      "verdict": "keep"
+     },
+     "note": "Line 8: Hitesh stays as MD on his present pay, and ₹66 lakh sits inside Agnika’s ₹60–75 lakh range. Already at market, so there is nothing to adjust. Keep.",
+     "docRow": {
+      "note-emp": "emp-md"
+     }
+    },
+    {
+     "id": "i9",
+     "label": "Line 9 · Warehouse rent paid to Hitesh",
+     "where": "Note 23",
+     "amts": "₹24 lakh each year",
+     "docs": [
+      "note-oe",
+      "bench"
+     ],
+     "answer": {
+      "verdict": "market"
+     },
+     "note": "Line 9: ₹2 lakh a month to the promoter against ₹6 lakh at market, and Agnika will pay market or move. That is ₹48 lakh more cost a year, so EBITDA falls by that much in all three years. Adjust to market.",
+     "docRow": {
+      "note-oe": "oe-rent"
+     }
+    }
+   ]
+  },
+  {
+   "id": "t2",
+   "type": "worksheet",
+   "stage": "Fieldwork",
+   "title": "Build the EBITDA bridge",
+   "prompt": "Ishaan has been through your calls. On his list, other income and the warranty write-back come out, Ramit’s salary and the warehouse rent go to market, and the rest stays. Fill the two market adjustments, then build adjusted EBITDA for each year, the 2025–26 margin and the gap to the IM. All in ₹ lakh.",
+   "weight": 2,
+   "noun": [
+    "figure",
+    "figures"
+   ],
+   "lockOnLeave": {
+    "ask": "Hand your bridge to Ishaan?",
+    "note": "You can’t change it after this.",
+    "yes": "Hand it in",
+    "done": "Handed to Ishaan. You can read your bridge but not change it."
+   },
+   "hints": [
+    "Profit before tax, plus finance costs and depreciation, less all of other income, gives back reported EBITDA. Start there.",
+    "Each market adjustment is the gap between what Savli paid and what Agnika will pay: the rent in all three years, Ramit’s salary in 2025–26 only."
+   ],
+   "layout": "grid",
+   "columns": [
+    {
+     "key": "line",
+     "label": "Line"
+    },
+    {
+     "key": "fy24",
+     "label": "2023–24",
+     "format": "int"
+    },
+    {
+     "key": "fy25",
+     "label": "2024–25",
+     "format": "int"
+    },
+    {
+     "key": "fy26",
+     "label": "2025–26",
+     "format": "int"
+    }
+   ],
+   "rows": [
+    {
+     "id": "r1",
+     "cells": {
+      "line": "Profit before tax",
+      "fy24": 990,
+      "fy25": 1620,
+      "fy26": 1510
+     }
+    },
+    {
+     "id": "r2",
+     "cells": {
+      "line": "Add back: finance costs",
+      "fy24": 268,
+      "fy25": 296,
+      "fy26": 332
+     }
+    },
+    {
+     "id": "r3",
+     "cells": {
+      "line": "Add back: depreciation and amortisation",
+      "fy24": 310,
+      "fy25": 342,
+      "fy26": 378
+     }
+    },
+    {
+     "id": "r4",
+     "cells": {
+      "line": "Less: other income (all three lines of Note 18)",
+      "fy24": 42,
+      "fy25": 362,
+      "fy26": 58
+     }
+    },
+    {
+     "id": "r5",
+     "cells": {
+      "line": "Less: warranty provision written back",
+      "fy24": "–",
+      "fy25": "–",
+      "fy26": 92
+     }
+    },
+    {
+     "id": "r6",
+     "cells": {
+      "line": "Add back: Ramit’s salary above market",
+      "fy24": "–",
+      "fy25": "–",
+      "fy26": {
+       "input": true,
+       "answer": [
+        84,
+        -84
+       ],
+       "tolerance": 0,
+       "working": "120 paid − 36 at market = 84",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "r7",
+     "cells": {
+      "line": "Less: extra rent to bring the warehouse to market",
+      "fy24": {
+       "input": true,
+       "answer": [
+        48,
+        -48
+       ],
+       "tolerance": 0,
+       "working": "72 at market − 24 paid = 48",
+       "sign": false
+      },
+      "fy25": {
+       "input": true,
+       "answer": [
+        48,
+        -48
+       ],
+       "tolerance": 0,
+       "working": "72 at market − 24 paid = 48",
+       "sign": false
+      },
+      "fy26": {
+       "input": true,
+       "answer": [
+        48,
+        -48
+       ],
+       "tolerance": 0,
+       "working": "72 at market − 24 paid = 48",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "r8",
+     "_class": "total",
+     "cells": {
+      "line": "Adjusted EBITDA",
+      "fy24": {
+       "input": true,
+       "answer": 1478,
+       "tolerance": 0,
+       "working": "990 + 268 + 310 − 42 − 48 = 1,478",
+       "sign": false,
+       "follow": "990 + 268 + 310 − 42 − {r7.fy24}"
+      },
+      "fy25": {
+       "input": true,
+       "answer": 1848,
+       "tolerance": 0,
+       "working": "1,620 + 296 + 342 − 362 − 48 = 1,848",
+       "sign": false,
+       "follow": "1620 + 296 + 342 − 362 − {r7.fy25}"
+      },
+      "fy26": {
+       "input": true,
+       "answer": 2106,
+       "tolerance": 0,
+       "working": "1,510 + 332 + 378 − 58 − 92 + 84 − 48 = 2,106",
+       "sign": false,
+       "follow": "1510 + 332 + 378 − 58 − 92 + {r6.fy26} − {r7.fy26}"
+      }
+     }
+    },
+    {
+     "id": "r9",
+     "cells": {
+      "line": "Adjusted EBITDA margin",
+      "fy24": "–",
+      "fy25": "–",
+      "fy26": {
+       "input": true,
+       "answer": 11.3,
+       "tolerance": 0.05,
+       "working": "2,106 ÷ 18,640 = 11.30%",
+       "sign": false,
+       "format": "pct",
+       "follow": "{r8.fy26} ÷ 18640 × 100"
+      }
+     }
+    },
+    {
+     "id": "r10",
+     "cells": {
+      "line": "The IM’s adjusted EBITDA",
+      "fy24": 1567,
+      "fy25": 1940,
+      "fy26": 2328
+     }
+    },
+    {
+     "id": "r11",
+     "cells": {
+      "line": "Gap: the IM’s figure less adjusted EBITDA",
+      "fy24": "–",
+      "fy25": "–",
+      "fy26": {
+       "input": true,
+       "answer": 222,
+       "tolerance": 0,
+       "working": "2,328 − 2,106 = 222",
+       "sign": false,
+       "follow": "2328 − {r8.fy26}"
+      }
+     }
+    }
+   ],
+   "notes": {
+    "r6.fy26": "If you put 120, you added back the whole salary, as the IM does; if you put 36, you took the market salary, not the excess. The role carries on, and Agnika would still pay ₹36 lakh for it.",
+    "r7.fy24": "If you put 72, you took the market rent, not the extra. Savli already pays ₹24 lakh, and the rent never changed, so the same ₹48 lakh goes in every year.",
+    "r8.fy24": "Apart from other income, 2023–24 has only the rent to put at market. The IM’s ₹1,567 lakh is ₹89 lakh higher: it adds back the ₹41 lakh meet and leaves the rent ₹48 lakh under market.",
+    "r8.fy25": "2024–25 is where the insurance cheque hides: profit before tax of ₹1,620 lakh includes ₹318 lakh that no cooker earned.",
+    "r8.fy26": "2025–26 sits ₹56 lakh under reported EBITDA: the write-back out (−92), Ramit at market (+84), rent at market (−48). This is the base year my forecast margin and the peer check are tested against.",
+    "r9.fy26": "11.3%, not the IM’s 12.5%. It backs my 11.0% forecast margin; at 12.5% the same sheet gives about ₹160 crore. Each point of margin moves EV by about ₹24 crore.",
+    "r11.fy26": "₹222 lakh: the IM adds back ₹36 lakh more of Ramit’s salary and the ₹46 lakh meet, keeps the ₹92 lakh write-back and leaves the rent ₹48 lakh under market."
+   },
+   "docs": [
+    "pl",
+    "note-oi",
+    "note-emp",
+    "note-oe",
+    "im",
+    "bench"
+   ]
+  },
+  {
+   "id": "t3",
+   "type": "worksheet",
+   "stage": "Fieldwork",
+   "title": "Finish the DCF and the WACC range",
+   "prompt": "Ishaan’s sheet runs 2026–27 to 2030–31 on his inputs. Work 2026–27 by hand: tax on EBIT, the increase in working capital, free cash flow to the firm (FCFF). Then the terminal value and enterprise value at 13%, net debt and equity value as his note defines them, and EV at 12% and 14%. In ₹ crore, to two decimals.",
+   "weight": 1.5,
+   "noun": [
+    "figure",
+    "figures"
+   ],
+   "lockOnLeave": {
+    "ask": "Hand your DCF figures to Ishaan?",
+    "note": "You can’t change them after this.",
+    "yes": "Hand them in",
+    "done": "Handed to Ishaan. You can read your figures but not change them."
+   },
+   "hints": [
+    "FCFF = EBIT − tax on EBIT + depreciation − capex − increase in working capital. That increase is 22% of the rise in revenue, not of revenue.",
+    "Terminal value = 2030–31 FCFF × 1.05 ÷ (WACC − 5%). Multiply it by that rate’s discount factor for the end of 2030–31 before you add the five-year PVs."
+   ],
+   "layout": "table",
+   "sampleBreak": "r7",
+   "columns": [
+    {
+     "key": "line",
+     "label": "Line"
+    },
+    {
+     "key": "amt",
+     "label": "₹ crore",
+     "format": "amount"
+    }
+   ],
+   "rows": [
+    {
+     "id": "r1",
+     "cells": {
+      "line": "2026–27 EBIT (from the sheet)",
+      "amt": 18.58
+     }
+    },
+    {
+     "id": "r2",
+     "cells": {
+      "line": "Less: tax on EBIT at 25.17%",
+      "amt": {
+       "input": true,
+       "answer": [
+        4.68,
+        -4.68
+       ],
+       "tolerance": 0.02,
+       "working": "18.58 × 25.17% = 4.68",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "r3",
+     "cells": {
+      "line": "Add back: depreciation (from the sheet)",
+      "amt": 4.38
+     }
+    },
+    {
+     "id": "r4",
+     "cells": {
+      "line": "Less: capex (from the sheet)",
+      "amt": 5.43
+     }
+    },
+    {
+     "id": "r5",
+     "cells": {
+      "line": "Less: increase in working capital",
+      "amt": {
+       "input": true,
+       "answer": [
+        4.92,
+        -4.92
+       ],
+       "tolerance": 0.02,
+       "working": "22% × (208.77 − 186.40) = 4.92",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "r6",
+     "cells": {
+      "line": "2026–27 FCFF",
+      "amt": {
+       "input": true,
+       "answer": 7.94,
+       "tolerance": 0.03,
+       "working": "18.58 − 4.68 + 4.38 − 5.43 − 4.92 = 7.93 (7.94 unrounded)",
+       "sign": false,
+       "follow": "18.58 − {r2.amt} + 4.38 − 5.43 − {r5.amt}"
+      }
+     }
+    },
+    {
+     "id": "r7",
+     "cells": {
+      "line": "PV of FCFF, five years, at 13% (from the sheet)",
+      "amt": 34.51
+     }
+    },
+    {
+     "id": "r8",
+     "cells": {
+      "line": "Terminal value at the end of 2030–31, at 13%",
+      "amt": {
+       "input": true,
+       "answer": 163.96,
+       "tolerance": 0,
+       "working": "12.49 × 1.05 ÷ (13% − 5%) = 163.93 (163.96 unrounded)",
+       "sign": false,
+       "toleranceRel": 0.003
+      }
+     }
+    },
+    {
+     "id": "r9",
+     "cells": {
+      "line": "Enterprise value at 13%",
+      "amt": {
+       "input": true,
+       "answer": 123.5,
+       "tolerance": 0,
+       "working": "34.51 + 163.96 × 0.5428 = 123.51 (123.50 unrounded)",
+       "sign": false,
+       "toleranceRel": 0.003,
+       "follow": "34.51 + {r8.amt} × 0.5428"
+      }
+     }
+    },
+    {
+     "id": "r10",
+     "cells": {
+      "line": "Net debt at 31 March 2026",
+      "amt": {
+       "input": true,
+       "answer": 26.72,
+       "tolerance": 0.02,
+       "working": "10.40 term loan + 12.00 cash credit + 6.00 Hitesh − 1.68 free cash = 26.72",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "r11",
+     "cells": {
+      "line": "Equity value at 13%",
+      "amt": {
+       "input": true,
+       "answer": 96.78,
+       "tolerance": 0,
+       "working": "123.50 − 26.72 = 96.78",
+       "sign": false,
+       "toleranceRel": 0.003,
+       "follow": "{r9.amt} − {r10.amt}"
+      }
+     }
+    },
+    {
+     "id": "r12",
+     "cells": {
+      "line": "Enterprise value at 12%",
+      "amt": {
+       "input": true,
+       "answer": 141.77,
+       "tolerance": 0,
+       "working": "35.44 + (12.49 × 1.05 ÷ 7%) × 0.5674 = 141.74 (141.77 unrounded)",
+       "sign": false,
+       "toleranceRel": 0.003
+      }
+     }
+    },
+    {
+     "id": "r13",
+     "cells": {
+      "line": "Enterprise value at 14%",
+      "amt": {
+       "input": true,
+       "answer": 109.31,
+       "tolerance": 0,
+       "working": "33.62 + (12.49 × 1.05 ÷ 9%) × 0.5194 = 109.31",
+       "sign": false,
+       "toleranceRel": 0.003
+      }
+     }
+    }
+   ],
+   "notes": {
+    "r2.amt": "Tax on EBIT, not on profit before tax. FCFF is the cash before lenders are paid, so the tax is worked as if there were no interest.",
+    "r5.amt": "22% of the rise in revenue, ₹22.37 crore, not of the whole ₹208.77 crore. Growth ties up cash: stock and receivables grow with sales.",
+    "r6.amt": "From ₹22.96 crore of EBITDA, only ₹7.94 crore is free cash: tax, capex and working capital take the rest. That gap is why a DCF values cash, not EBITDA.",
+    "r8.amt": "Grow 2030–31’s ₹12.49 crore by 5% for one more year, then divide by 13% − 5%. That is every year after 2030–31, valued at the end of 2030–31.",
+    "r9.amt": "The terminal value sits at the end of 2030–31, so it is multiplied by the 0.5428 discount factor before the ₹34.51 crore of five-year PVs is added.",
+    "r10.amt": "Bank loans of ₹22.40 crore and Hitesh’s ₹6.00 crore, less ₹1.68 crore of free cash. The margin money backs guarantees, so it stays out, as my note says.",
+    "r11.amt": "EV belongs to everyone who funds Savli. Take off what Savli owes its lenders, less its free cash, and ₹96.78 crore is the shareholders’ part. If your net debt was off, equity follows it.",
+    "r12.amt": "One point lower adds about ₹18 crore, and almost all of it comes through the terminal value.",
+    "r13.amt": "One point higher takes off about ₹14 crore. The range, ₹109–142 crore, is what Shalini needs on Friday."
+   },
+   "docs": [
+    "inputs",
+    "dcf",
+    "dcf-value",
+    "bs",
+    "pl"
+   ],
+   "downloads": [
+    {
+     "file": "savli-dcf-first-cut.xlsx",
+     "label": "Ishaan’s sheet in Excel",
+     "note": "For a laptop: the same sheet with live formulas, the 2026–27 cells left for you."
+    }
+   ]
+  },
+  {
+   "id": "t4",
+   "type": "compose",
+   "stage": "Report",
+   "title": "Write the cover note to Ishaan",
+   "prompt": "Ishaan wants a short cover note with your first cut: the base year, the value and its range, what the terminal value means, and a check against the listed peers. Pick the right line for each part. Add a line of your own if you like.",
+   "weight": 3,
+   "noun": [
+    "line",
+    "lines"
+   ],
+   "previewLabel": "Your note to Ishaan",
+   "hints": [
+    "Net debt comes off enterprise value, and a lower discount rate gives a higher value. A peer multiple is a check on your inputs, never a target to tune them to."
+   ],
+   "template": "Ishaan,\n\nFirst cut of the Savli DCF on your inputs of 15 December, valued at 31 March 2026.\n\n{base}\n\n{value}\n\n{tv}\n\n{check}\n\n{_free}\n\nRegards,\nArticle assistant, deals desk",
+   "freeText": {
+    "label": "Your own line for Ishaan"
+   },
+   "slots": [
+    {
+     "id": "base",
+     "label": "Base year",
+     "options": [
+      {
+       "id": "a",
+       "correct": true,
+       "text": "Base year: 2025–26 adjusted EBITDA is ₹21.06 crore (11.3% of revenue), not the IM’s ₹23.28 crore: the meet stays in, the write-back comes out, Ramit’s salary and the rent go to market.",
+       "why": "Note 23 shows the meet every January and the write-back once, and Shalini’s benchmarks set Ramit’s pay and the rent."
+      },
+      {
+       "id": "b",
+       "text": "Base year: 2025–26 adjusted EBITDA is ₹23.28 crore (12.5% of revenue), as the IM shows. Ramit’s salary ends on a sale and the dealers’ meet is a one-time event, so both add-backs stand.",
+       "why": "That is Hitesh’s number. It keeps the ₹92 lakh write-back and the cheap rent, yet the meet has run three Januaries in a row and Ramit’s role carries on at ₹36 lakh."
+      },
+      {
+       "id": "c",
+       "text": "Base year: 2025–26 EBITDA is ₹21.62 crore (11.6% of revenue), as reported, with nothing adjusted. Ramit’s salary, the warehouse rent and the warranty write-back are what Savli paid and earned.",
+       "why": "Reported is where you start, not where you stop. The write-back flatters 2025–26, and Agnika will pay market rent and a market salary after closing."
+      }
+     ]
+    },
+    {
+     "id": "value",
+     "label": "Value and range",
+     "options": [
+      {
+       "id": "a",
+       "text": "Value: at a 13% WACC, enterprise value is ₹123.5 crore; plus net debt of ₹26.7 crore, equity value is ₹150.2 crore. At 12% and 14%, EV is ₹141.8 crore and ₹109.3 crore.",
+       "why": "Debt is owed to the bank and to Hitesh, so net debt comes off enterprise value. Adding it hands the shareholders money that belongs to the lenders."
+      },
+      {
+       "id": "b",
+       "correct": true,
+       "text": "Value: at a 13% WACC, enterprise value is ₹123.5 crore; less net debt of ₹26.7 crore, equity value is ₹96.8 crore. At 12% and 14%, EV is ₹141.8 crore and ₹109.3 crore.",
+       "why": "Net debt of ₹26.7 crore comes off EV, and a lower discount rate gives the higher value."
+      },
+      {
+       "id": "c",
+       "text": "Value: at a 13% WACC, enterprise value is ₹123.5 crore; less net debt of ₹26.7 crore, equity value is ₹96.8 crore. At 12% and 14%, EV is ₹109.3 crore and ₹141.8 crore.",
+       "why": "The rates are swapped. A lower discount rate makes future cash worth more today, so 12% gives ₹141.8 crore and 14% gives ₹109.3 crore."
+      }
+     ]
+    },
+    {
+     "id": "tv",
+     "label": "Terminal value",
+     "options": [
+      {
+       "id": "a",
+       "text": "Terminal value: about 72% of EV comes from the years after 2030–31, so I suggest we cut the forecast to three years and leave less of the value in the terminal year.",
+       "why": "A shorter forecast pushes more of the value into the terminal year, not less. The share would go up."
+      },
+      {
+       "id": "b",
+       "text": "Terminal value: about 72% of EV comes from the years after 2030–31, which is too much to rely on, so I suggest we leave it out and value only the five forecast years.",
+       "why": "Savli does not shut in 2031. Leaving the terminal value out prices the company as if it stops trading after five years."
+      },
+      {
+       "id": "c",
+       "correct": true,
+       "text": "Terminal value: about 72% of EV comes from the years after 2030–31, so the 12–14% range matters more than the single figure, and I suggest we give Shalini the range.",
+       "why": "Most of the value rests on WACC and long-run growth, so a range is the honest answer for an indicative offer."
+      }
+     ]
+    },
+    {
+     "id": "check",
+     "label": "Check against peers",
+     "options": [
+      {
+       "id": "a",
+       "correct": true,
+       "text": "Check: EV is about 5.9 times 2025–26 adjusted EBITDA, against 16–32 times for the listed peers. Savli is far smaller and mostly private label, so it should sit lower; I will recheck the margin.",
+       "why": "Listed brands with scale trade at higher multiples, so a gap is expected. Saying so, and naming what you will recheck, is the sanity check."
+      },
+      {
+       "id": "b",
+       "text": "Check: EV is about 5.9 times 2025–26 adjusted EBITDA, against 16–32 times for the listed peers, so Savli is worth at least 16 times, about ₹337 crore, and the DCF can be set aside.",
+       "why": "The peers are listed brands with 3 to 17 times Savli’s revenue, and 60% of Savli’s sales carry other people’s labels. Their multiples check a DCF; they do not replace it."
+      },
+      {
+       "id": "c",
+       "text": "Check: EV is about 5.9 times 2025–26 adjusted EBITDA, against 16–32 times for the listed peers, so I have raised the margin to 15% to bring the DCF closer to the peers.",
+       "why": "Never tune an input to reach a number you want. The inputs come from the business and my note; the multiple only checks them."
+      }
+     ]
+    }
+   ],
+   "docs": [
+    "peers",
+    "im",
+    "inputs",
+    "dcf-value"
+   ]
+  }
+ ],
+ "wrap": {
+  "from": "ishaan",
+  "text": "Your note keeps the dealers’ meet in where the IM wanted it out, and every change in the ₹21.06 crore base traces to a note or a mail. Value is ₹123.5 crore at 13%, but the range is the answer: ₹109–142 crore. I’ll take your note into Friday’s call with Shalini."
+ },
+ "wrapPartial": {
+  "from": "ishaan",
+  "text": "Parts of this would reach Shalini wrong. Be hardest on any miss that touches the base year: Hitesh will argue every lakh of it when the offer goes to him. I’ll look at the file again before Friday."
+ },
+ "wrapRetry": {
+  "from": "ishaan",
+  "text": "Go back to profit before tax and ask of each line: does it come from making and selling cookware, every year, on terms Agnika will keep? Then work 2026–27 down to free cash flow, one line at a time."
+ },
+ "passNeeds": [
+  {
+   "task": "t1",
+   "min": 0.66,
+   "note": "You need at least six of the nine EBITDA calls right to pass."
+  },
+  {
+   "task": "t2",
+   "min": 0.55,
+   "note": "Your bridge needs at least five of its nine figures right, or following your figures, to pass."
+  },
+  {
+   "task": "t3",
+   "min": 0.55,
+   "note": "Your DCF needs at least five of its nine figures right, or following your figures, to pass."
+  }
+ ],
+ "model": {
+  "intro": "Savli’s clean 2025–26 EBITDA is ₹2,106 lakh, not the IM’s ₹2,328 lakh. Of the nine lines, four come out, two related-party costs go to market and three stay as reported. The clean 11.3% margin backs Ishaan’s 11.0% forecast; on his inputs the DCF gives an EV of ₹123.5 crore at 13%, and ₹109–142 crore across 12–14%.",
+  "blocks": [
+   {
+    "type": "text",
+    "text": "Where the IM and the clean figure differ, both starting from reported EBITDA:"
+   },
+   {
+    "type": "table",
+    "grid": true,
+    "columns": [
+     {
+      "key": "line",
+      "label": "2025–26, ₹ lakh"
+     },
+     {
+      "key": "im",
+      "label": "The IM",
+      "format": "int"
+     },
+     {
+      "key": "us",
+      "label": "Clean",
+      "format": "int"
+     }
+    ],
+    "rows": [
+     {
+      "line": "Reported EBITDA",
+      "im": 2162,
+      "us": 2162
+     },
+     {
+      "line": "Ramit’s salary",
+      "im": "+120",
+      "us": "+84"
+     },
+     {
+      "line": "Dealers’ meet",
+      "im": "+46",
+      "us": "–"
+     },
+     {
+      "line": "Warranty write-back",
+      "im": "–",
+      "us": "−92"
+     },
+     {
+      "line": "Warehouse rent at market",
+      "im": "–",
+      "us": "−48"
+     },
+     {
+      "line": "Adjusted EBITDA",
+      "im": 2328,
+      "us": 2106,
+      "_class": "total"
+     },
+     {
+      "line": "Margin on revenue",
+      "im": "12.5%",
+      "us": "11.3%"
+     }
+    ]
+   },
+   {
+    "type": "text",
+    "text": "2026–27 by hand (₹ crore): EBITDA 22.96 less depreciation 4.38 is EBIT 18.58; tax at 25.17% on EBIT is 4.68, leaving NOPAT 13.90; add back depreciation 4.38, take off capex 5.43 and the working-capital increase 4.92 (22% of the ₹22.37 crore rise in revenue): FCFF 7.93 on these rounded figures (7.94 unrounded)."
+   },
+   {
+    "type": "text",
+    "text": "Value at 13%: terminal value 12.49 × 1.05 ÷ 8% = ₹163.93 crore (₹163.96 unrounded), worth ₹88.99 crore at 31 March 2026 (× 0.5428, worked unrounded). Add the ₹34.51 crore of five-year PVs: EV ₹123.50 crore. Less net debt of ₹26.72 crore, equity is ₹96.78 crore. About 72% of EV is terminal value."
+   },
+   {
+    "type": "text",
+    "text": "If Shalini asks about growth too:"
+   },
+   {
+    "type": "table",
+    "grid": true,
+    "columns": [
+     {
+      "key": "w",
+      "label": "EV, ₹ crore"
+     },
+     {
+      "key": "g4",
+      "label": "Growth 4%",
+      "format": "num"
+     },
+     {
+      "key": "g5",
+      "label": "Growth 5%",
+      "format": "num"
+     },
+     {
+      "key": "g6",
+      "label": "Growth 6%",
+      "format": "num"
+     }
+    ],
+    "rows": [
+     {
+      "w": "WACC 12%",
+      "g4": "127.6",
+      "g5": "141.8",
+      "g6": "160.7"
+     },
+     {
+      "w": "WACC 13%",
+      "g4": "112.9",
+      "g5": "123.5",
+      "g6": "137.2"
+     },
+     {
+      "w": "WACC 14%",
+      "g4": "101.1",
+      "g5": "109.3",
+      "g6": "119.6"
+     }
+    ]
+   },
+   {
+    "type": "text",
+    "text": "For later: the terminal value grows 2030–31’s FCFF, which still carries the extra working capital that 12% growth needs. A final model resets that last year to 5% growth before growing it for ever; on these inputs EV at 13% is then about ₹154 crore. That is the “normalise the last year” in Ishaan’s note on the DCF inputs."
+   },
+   {
+    "type": "note",
+    "from": "ishaan",
+    "text": "One point of WACC moves EV by ₹14–18 crore; one point of terminal growth by ₹11–14 crore. Shalini will ask which number we stand behind. The range, on a base year we can prove line by line."
+   }
+  ]
+ },
+ "principles": [
+  "EBITDA is the profit from making and selling, year after year, at the costs a buyer will carry.",
+  "A label in an IM is not evidence: check the papers behind every add-back.",
+  "When most of the value sits in the terminal value, give the range, not one number."
+ ],
+ "earned": {
+  "clause": "cleaned a 3-year P&L to adjusted EBITDA (removed {out} one-off or non-operating {out|item|items}[[, normalised {mkt} related-party {mkt|cost|costs} to market]]); completed a 5-year DCF[[ (EV ₹{ev} crore)]][[ with a WACC sensitivity{s12|}{s14|}]]",
+  "counts": {
+   "out": {
+    "kind": "itemsWhere",
+    "task": "t1",
+    "field": "verdict",
+    "equals": "out"
+   },
+   "mkt": {
+    "kind": "itemsWhere",
+    "task": "t1",
+    "field": "verdict",
+    "equals": "market"
+   },
+   "ev": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "r9",
+    "col": "amt",
+    "format": "num1"
+   },
+   "s12": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "r12",
+    "col": "amt"
+   },
+   "s14": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "r13",
+    "col": "amt"
+   }
+  },
+  "fallback": "cleaned a 3-year P&L to adjusted EBITDA; completed a 5-year DCF[[ (EV ₹{ev} crore)]][[ with a WACC sensitivity{s12|}{s14|}]]"
+ },
+ "interview": [
+  {
+   "q": "Your line says you cleaned a P&L to adjusted EBITDA. What did you take out, and how did you decide?",
+   "checking": "Whether you know what EBITDA is for, and can back each change with a document.",
+   "outline": [
+    "I asked of each line: is it operating, does it recur, and will a buyer keep paying it?",
+    "In the simulation I took out {out} {out|line|lines}[[ and put {mkt} related-party {mkt|cost|costs} at market]].",
+    "The IM called the dealers’ meet one-off, but it ran every January, so it stayed in."
+   ]
+  },
+  {
+   "q": "Walk me through how you got from EBITDA to free cash flow.",
+   "checking": "Whether you know each step in between, and which profit the tax is worked on.",
+   "outline": [
+    "EBITDA less depreciation gives EBIT; tax on EBIT, not on profit before tax, gives NOPAT.",
+    "Then I added back depreciation, a non-cash cost, and took off capex and the working-capital increase.",
+    "In the simulation, 2026–27 EBITDA of ₹22.96 crore became about ₹7.9 crore of free cash flow."
+   ]
+  }
+ ]
+}
