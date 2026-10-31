@@ -111,13 +111,14 @@ test('Worker errors and network failures show a message and re-enable the button
   assert.match(offline.status.textContent, /offline/);
 });
 
-test('profile.html has the card outside the profile form and loads the script', () => {
+test('profile.html has the card outside the profile form and opens /offer-groups', () => {
+  // Since 31 Oct 2026 the card links to /offer-groups (verified offer letter → WhatsApp groups) instead of
+  // starting the msc-mail /placed form, so profile.html no longer loads placed-card.js.
   const html = fs.readFileSync(path.join(root, 'profile.html'), 'utf8');
   const card = html.indexOf('id="sec-placed"');
   assert.ok(card > 0 && card < html.indexOf('<form id="profile-form"'), 'card sits before the form, so its button never submits it');
-  assert.match(html, /<button type="button" class="p2-placed-btn" id="placedStartBtn">/);
-  assert.match(html, /<p class="p2-placed-status" id="placedStatus" role="status" aria-live="polite"><\/p>/);
-  assert.match(html, /<script src="\/scripts\/placed-card\.js" defer><\/script>/);
+  assert.match(html, /<a class="p2-placed-btn" href="\/offer-groups"/);
+  assert.doesNotMatch(html, /placed-card\.js/);
   assert.equal((html.match(/id="sec-placed"/g) || []).length, 1, 'exactly one #sec-placed');
   assert.match(html, /<a href="#sec-placed" class="p2-ql">Got placed\? <span class="p2-ql-share">Share<\/span><\/a>/);
 });
