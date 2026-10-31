@@ -1,0 +1,2423 @@
+{
+  "tool": "interview-tracker",
+  "title": "Interview syllabus tracker",
+  "ready": "Ready = you can explain it aloud in a minute, solve a small case on it and answer one follow-up.",
+  "order": "Prepare your domain and Core first, then your second choice.",
+  "booklets": {
+    "4.3": "Articleship Interview Guide",
+    "4.4": "HR round and GD booklet",
+    "4.5": "Core accounting booklet",
+    "4.6": "Statutory audit booklet",
+    "4.7": "Internal audit booklet",
+    "4.8": "Direct tax booklet",
+    "4.9": "GST booklet",
+    "4.10": "Specialist teams booklet",
+    "4.12": "Master Excel test"
+  },
+  "sections": [
+    {
+      "id": "hr",
+      "part": "core",
+      "title": "HR and you",
+      "practise": {
+        "label": "Practise your interview",
+        "href": "/ai-interview.html?mode=articleship"
+      },
+      "topics": [
+        {
+          "id": "hr-intro",
+          "topic": "Introduce yourself",
+          "know": "45 seconds: name and city, how you cleared Inter, one thing beyond the books, why this domain. Family in one line at the end, or leave it out.",
+          "most": true,
+          "read": {
+            "row": "4.4",
+            "find": "Tell me about yourself"
+          },
+          "guidebook": {
+            "page": 75,
+            "find": "“Tell me about yourself”: what do I say?"
+          }
+        },
+        {
+          "id": "hr-attempts",
+          "topic": "Attempts and marks",
+          "know": "Exact months and groups, said plainly. More than one attempt: the true count in one line and what you changed.",
+          "most": true,
+          "read": {
+            "row": "4.4",
+            "find": "attempts"
+          },
+          "guidebook": {
+            "page": 76,
+            "find": "“How many attempts?”: how do I answer?"
+          }
+        },
+        {
+          "id": "hr-why",
+          "topic": "Why CA, this firm, this domain",
+          "know": "Three answers tied to the real work of the team you applied to, never to the firm's size or brand.",
+          "most": true,
+          "read": {
+            "row": "4.4",
+            "find": "Why do you want to join us"
+          },
+          "guidebook": {
+            "page": 78,
+            "find": "“Why this firm?” and “Why not the other one?”"
+          }
+        },
+        {
+          "id": "hr-strengths",
+          "topic": "Strengths and weakness",
+          "know": "Two strengths, each with a small proof. One real weakness and what you are doing about it; never perfectionism.",
+          "most": true,
+          "read": {
+            "row": "4.4",
+            "find": "Weaknesses"
+          },
+          "guidebook": {
+            "page": 79,
+            "find": "Strengths and a weakness: what works?"
+          }
+        },
+        {
+          "id": "hr-cv-lines",
+          "topic": "Every line on your CV",
+          "know": "Each line is a question: what you did, how many, what you found, what you learnt. Work Simulation lines too.",
+          "most": true,
+          "read": {
+            "row": "4.4",
+            "find": "Walk me through your CV"
+          },
+          "guidebook": {
+            "page": 85,
+            "find": "Will they really ask about every line on my CV?"
+          }
+        },
+        {
+          "id": "hr-five-years",
+          "topic": "Five years from now",
+          "know": "Qualified, good at this domain's work, trusted with bigger tasks. Talk about learning, not titles.",
+          "read": {
+            "row": "4.4",
+            "find": "five years"
+          },
+          "guidebook": {
+            "page": 80,
+            "find": "Five years, motivation, expectations: what do I say?"
+          }
+        },
+        {
+          "id": "hr-it-question",
+          "topic": "The industrial-training question",
+          "know": "Never raise it. If asked: a later decision you would take with your principal's consent; right now you want to learn the work here.",
+          "read": {
+            "row": "4.4",
+            "find": "industrial training"
+          },
+          "guidebook": {
+            "page": 82,
+            "find": "“Will you do industrial training?”"
+          }
+        },
+        {
+          "id": "hr-stories",
+          "topic": "A difficult situation, a team task",
+          "know": "Two true stories: the situation, what you did, the result. College, exams, a family business or a project all count.",
+          "read": {
+            "row": "4.4",
+            "find": "difficult situation"
+          },
+          "guidebook": {
+            "page": 81,
+            "find": "Tell us about a difficult situation."
+          }
+        },
+        {
+          "id": "hr-situations",
+          "topic": "Workplace situations",
+          "know": "A client delays documents, a voucher looks fake, your senior disagrees, you find your own error: your first step and who you tell.",
+          "read": {
+            "row": "4.4",
+            "find": "A client keeps delaying"
+          },
+          "guidebook": {
+            "page": 82,
+            "find": "“What would you do if…?”"
+          }
+        },
+        {
+          "id": "hr-joining",
+          "topic": "Joining date, travel, other courses",
+          "know": "Your real earliest joining date, ICITSS status exactly as it is, travel only if true, any CS or CMA said honestly.",
+          "read": {
+            "row": "4.4",
+            "find": "When can you join"
+          },
+          "guidebook": {
+            "page": 73,
+            "find": "Which questions come on the call?"
+          }
+        },
+        {
+          "id": "hr-call",
+          "topic": "The HR call",
+          "know": "Phone on ring, answer unknown numbers, note the caller, firm and next step. Attempts, joining date and cities ready.",
+          "read": {
+            "row": "4.4",
+            "find": "HR call"
+          },
+          "guidebook": {
+            "page": 73,
+            "find": "HR is on the line. How do I handle the call?"
+          }
+        },
+        {
+          "id": "hr-firm-research",
+          "topic": "Research the firm",
+          "know": "The team you applied to, what it does, its clients' sectors from the firm's own site, one recent news item, your 'why this team' line.",
+          "most": true,
+          "read": {
+            "row": "4.4",
+            "find": "Research the firm"
+          },
+          "guidebook": {
+            "page": 77,
+            "find": "How do I research a firm before the interview?"
+          }
+        },
+        {
+          "id": "hr-firm-page",
+          "topic": "Your firm's interview page",
+          "know": "If your firm has a page: how it hires and what students were asked there. Answer each question aloud once.",
+          "read": {
+            "row": "4.3"
+          },
+          "guidebook": {
+            "page": 77,
+            "find": "How do I research a firm before the interview?"
+          }
+        },
+        {
+          "id": "hr-questions",
+          "topic": "Your questions for them",
+          "know": "Two about the work: what an article in this team does first, how work is reviewed. Hours and policies go to current articles, or HR after the offer.",
+          "read": {
+            "row": "4.4",
+            "find": "questions for us"
+          },
+          "guidebook": {
+            "page": 83,
+            "find": "“Do you have any questions for us?”"
+          }
+        },
+        {
+          "id": "hr-dont-know",
+          "topic": "When you don't know",
+          "know": "Say so in one line, say how you would find out, then bridge to what you do know. Never guess a section number.",
+          "read": {
+            "row": "4.4",
+            "find": "don't know"
+          },
+          "guidebook": {
+            "page": 85,
+            "find": "What if I don’t know the answer?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "accounts",
+      "part": "core",
+      "title": "Accounts",
+      "topics": [
+        {
+          "id": "acct-entries",
+          "topic": "Journal entries with amounts",
+          "know": "Say them aloud with numbers: a sale with GST, fees with TDS, prepaid insurance, outstanding salary, a customer advance, a bad debt.",
+          "most": true,
+          "read": {
+            "row": "4.5",
+            "find": "Pass the entry"
+          },
+          "guidebook": {
+            "page": 113,
+            "find": "Entries to say aloud, with amounts"
+          }
+        },
+        {
+          "id": "acct-as2",
+          "topic": "AS 2 Inventories",
+          "know": "Lower of cost and NRV, item by item; what goes into cost; FIFO and weighted average; the disclosures.",
+          "most": true,
+          "read": {
+            "row": "4.5",
+            "find": "AS 2"
+          },
+          "guidebook": {
+            "page": 84,
+            "find": "Which standards should I know deeply?"
+          }
+        },
+        {
+          "id": "acct-as9",
+          "topic": "AS 9 Revenue",
+          "know": "When revenue is recognised for goods, services, interest and dividends, and what to do when collection is uncertain.",
+          "most": true,
+          "read": {
+            "row": "4.5",
+            "find": "AS 9"
+          },
+          "guidebook": {
+            "page": 84,
+            "find": "Which standards should I know deeply?"
+          }
+        },
+        {
+          "id": "acct-as10",
+          "topic": "AS 10 Property, plant and equipment",
+          "know": "What goes into cost, capital or revenue spend, when depreciation starts, and the disclosures.",
+          "most": true,
+          "read": {
+            "row": "4.5",
+            "find": "AS 10"
+          },
+          "guidebook": {
+            "page": 84,
+            "find": "Which standards should I know deeply?"
+          }
+        },
+        {
+          "id": "acct-favourite-as",
+          "topic": "Two favourite standards",
+          "know": "Two more you can explain fully, with an example and their disclosures. 'Your favourite AS' always gets a follow-up.",
+          "most": true,
+          "read": {
+            "row": "4.5",
+            "find": "favourite accounting standard"
+          },
+          "guidebook": {
+            "page": 84,
+            "find": "Which standards should I know deeply?"
+          }
+        },
+        {
+          "id": "acct-other-as",
+          "topic": "Other standards in one line",
+          "know": "AS 1, 4, 12, 16, 22, 26 and 29: what each covers and one example. Provision vs contingent liability comes up often.",
+          "most": true,
+          "read": {
+            "row": "4.5",
+            "find": "AS 29"
+          },
+          "guidebook": {
+            "page": 84,
+            "find": "Which standards should I know deeply?"
+          }
+        },
+        {
+          "id": "acct-ind-as",
+          "topic": "AS and Ind AS",
+          "know": "Who follows Ind AS, one difference you can explain, and Ind AS 115's five steps in outline.",
+          "read": {
+            "row": "4.5",
+            "find": "Ind AS 115"
+          },
+          "guidebook": {
+            "page": 117,
+            "find": "Which companies follow Ind AS, and how is it different from AS?"
+          }
+        },
+        {
+          "id": "acct-three-statements",
+          "topic": "Three statements linked",
+          "know": "Follow one change, such as extra depreciation, through the profit and loss, the balance sheet and the cash flow.",
+          "read": {
+            "row": "4.5",
+            "find": "three statements"
+          },
+          "guidebook": {
+            "page": 115,
+            "find": "How the three statements connect"
+          }
+        },
+        {
+          "id": "acct-cash-flow",
+          "topic": "Cash flow statement",
+          "know": "Classify common items as operating, investing or financing, and say why a profitable company can run short of cash.",
+          "read": {
+            "row": "4.5",
+            "find": "cash flows"
+          },
+          "guidebook": {
+            "page": 117,
+            "find": "Profit went up but cash went down. How?"
+          }
+        },
+        {
+          "id": "acct-ratios",
+          "topic": "Ratios",
+          "know": "Current, quick, debt-equity, interest cover, ROCE, ROE, debtor days: compute one and say what it tells you.",
+          "read": {
+            "row": "4.5",
+            "find": "Ratios"
+          },
+          "guidebook": {
+            "page": 116,
+            "find": "Current ratio and quick ratio: what do they tell you?"
+          }
+        },
+        {
+          "id": "acct-schedule-iii",
+          "topic": "Schedule III",
+          "know": "Main headings of the balance sheet and profit and loss, current vs non-current, and where common items sit.",
+          "read": {
+            "row": "4.5",
+            "find": "Schedule III"
+          },
+          "guidebook": {
+            "page": 113,
+            "find": "The work: record to report"
+          }
+        },
+        {
+          "id": "acct-tb-brs",
+          "topic": "Trial balance and BRS",
+          "know": "What a tallied trial balance does not prove, and why the bank balance differs from the books and how each item clears.",
+          "read": {
+            "row": "4.5",
+            "find": "tallied trial balance"
+          },
+          "guidebook": {
+            "page": 114,
+            "find": "A tallied trial balance proves very little."
+          }
+        },
+        {
+          "id": "acct-company-law",
+          "topic": "Company-law basics",
+          "know": "MoA vs AoA, separate legal entity, limited liability, who approves the accounts, related-party approvals in outline.",
+          "read": {
+            "row": "4.5",
+            "find": "MoA vs AoA"
+          },
+          "guidebook": {
+            "page": 115,
+            "find": "Company law basics"
+          }
+        },
+        {
+          "id": "acct-finance",
+          "topic": "Costing and finance basics",
+          "know": "Contribution and break-even, NPV and IRR, working capital, operating vs financial leverage.",
+          "read": {
+            "row": "4.5",
+            "find": "break-even"
+          },
+          "guidebook": {
+            "page": 118,
+            "find": "Contribution, P/V ratio and break-even?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "audit-basics",
+      "part": "core",
+      "title": "Audit basics",
+      "topics": [
+        {
+          "id": "aud-flow",
+          "topic": "How an audit runs",
+          "know": "Acceptance, planning, risk assessment, fieldwork, completion and reporting, with one task an article does at each stage.",
+          "most": true,
+          "read": {
+            "row": "4.6",
+            "find": "how would you conduct one"
+          },
+          "guidebook": {
+            "page": 119,
+            "find": "The work: five stages"
+          }
+        },
+        {
+          "id": "aud-assertions",
+          "topic": "Assertions",
+          "know": "Existence, completeness, accuracy, cut-off, classification, rights and obligations, and the direction of testing for each.",
+          "most": true,
+          "read": {
+            "row": "4.6",
+            "find": "assertions"
+          },
+          "guidebook": {
+            "page": 120,
+            "find": "Assertions: what management is claiming."
+          }
+        },
+        {
+          "id": "aud-materiality",
+          "topic": "Materiality",
+          "know": "Overall, performance and clearly trivial; how a benchmark is chosen; why performance materiality is lower.",
+          "most": true,
+          "read": {
+            "row": "4.6",
+            "find": "materiality"
+          },
+          "guidebook": {
+            "page": 120,
+            "find": "overall materiality"
+          }
+        },
+        {
+          "id": "aud-evidence",
+          "topic": "Evidence and procedures",
+          "know": "Tests of controls vs substantive tests, vouching vs tracing, confirmations, analytical procedures.",
+          "read": {
+            "row": "4.6",
+            "find": "Test of controls"
+          },
+          "guidebook": {
+            "page": 121,
+            "find": "Controls, then substance."
+          }
+        },
+        {
+          "id": "aud-opinions",
+          "topic": "Audit opinions",
+          "know": "Unmodified, qualified, adverse and disclaimer, when each is given; emphasis of matter vs other matter.",
+          "most": true,
+          "read": {
+            "row": "4.6",
+            "find": "Types of audit opinion"
+          },
+          "guidebook": {
+            "page": 122,
+            "find": "How it ends: the report"
+          }
+        },
+        {
+          "id": "aud-sa-numbers",
+          "topic": "SA numbers",
+          "know": "The common SAs by number and purpose: 200, 230, 240, 300, 315, 320, 330, 500, 530, 570, 580 and 700.",
+          "read": {
+            "row": "4.6",
+            "find": "SA numbers"
+          },
+          "guidebook": {
+            "page": 123,
+            "find": "The standards in the order you meet them"
+          }
+        },
+        {
+          "id": "aud-caro",
+          "topic": "CARO in outline",
+          "know": "What CARO is, that it is reported alongside the audit opinion, and two clauses you can explain: inventory and statutory dues.",
+          "most": true,
+          "read": {
+            "row": "4.6",
+            "find": "CARO"
+          },
+          "guidebook": {
+            "page": 123,
+            "find": "Companies that CARO covers"
+          }
+        }
+      ]
+    },
+    {
+      "id": "tax-basics",
+      "part": "core",
+      "title": "Tax basics",
+      "topics": [
+        {
+          "id": "tax-tds",
+          "topic": "TDS",
+          "know": "Classify the payment first, then threshold and rate. Most non-salary TDS falls due on credit or payment, whichever is earlier.",
+          "most": true,
+          "read": {
+            "row": "4.8",
+            "find": "What is TDS"
+          },
+          "guidebook": {
+            "page": 129,
+            "find": "TDS in one breath."
+          }
+        },
+        {
+          "id": "tax-tds-tcs",
+          "topic": "TDS vs TCS",
+          "know": "Who deducts or collects, from whom, and one example of each.",
+          "read": {
+            "row": "4.8",
+            "find": "TDS vs TCS"
+          },
+          "guidebook": {
+            "page": 128,
+            "find": "TDS and TCS: monthly deposits"
+          }
+        },
+        {
+          "id": "tax-which-act",
+          "topic": "Which Income-tax Act",
+          "know": "The Income-tax Act, 2025 from tax year 2026–27; earlier years stay under the 1961 Act. Ask which year a question is about.",
+          "read": {
+            "row": "4.8",
+            "find": "Which law applies"
+          },
+          "guidebook": {
+            "page": 128,
+            "find": "Which law, which year."
+          }
+        },
+        {
+          "id": "tax-gst-itc",
+          "topic": "GST input tax credit",
+          "know": "The conditions to claim it, blocked credit with two examples, and why the books and GSTR-2B can differ.",
+          "most": true,
+          "read": {
+            "row": "4.9",
+            "find": "input tax credit"
+          },
+          "guidebook": {
+            "page": 132,
+            "find": "Input tax credit: a separate decision"
+          }
+        },
+        {
+          "id": "tax-rcm",
+          "topic": "Reverse charge",
+          "know": "Who pays the tax, the common cases, the entry, and when the credit can be taken.",
+          "most": true,
+          "read": {
+            "row": "4.9",
+            "find": "Reverse charge"
+          },
+          "guidebook": {
+            "page": 133,
+            "find": "Reverse charge:"
+          }
+        }
+      ]
+    },
+    {
+      "id": "excel",
+      "part": "core",
+      "title": "Excel",
+      "practise": {
+        "label": "Master Excel test",
+        "row": "4.12"
+      },
+      "topics": [
+        {
+          "id": "xl-lookups",
+          "topic": "Lookups",
+          "know": "VLOOKUP, XLOOKUP and INDEX-MATCH with exact match, and what you do with missing or duplicate keys.",
+          "most": true,
+          "read": {
+            "row": "4.5",
+            "find": "XLOOKUP"
+          },
+          "guidebook": {
+            "page": 86,
+            "find": "What if they hand me an Excel sheet?"
+          }
+        },
+        {
+          "id": "xl-sumifs",
+          "topic": "SUMIFS and COUNTIFS",
+          "know": "Conditional totals that tie back to the source; SUBTOTAL vs SUM on a filtered list.",
+          "read": {
+            "row": "4.5",
+            "find": "SUMIFS"
+          },
+          "guidebook": {
+            "page": 86,
+            "find": "What if they hand me an Excel sheet?"
+          }
+        },
+        {
+          "id": "xl-pivots",
+          "topic": "PivotTables",
+          "know": "Build, refresh and filter one, and say what you would use it for in an audit.",
+          "most": true,
+          "read": {
+            "row": "4.5",
+            "find": "PivotTable"
+          },
+          "guidebook": {
+            "page": 86,
+            "find": "What if they hand me an Excel sheet?"
+          }
+        },
+        {
+          "id": "xl-text",
+          "topic": "Cleaning text and dates",
+          "know": "TRIM, LEFT, RIGHT, MID, TEXT and date fixes: a clean key before any lookup.",
+          "read": {
+            "row": "4.5",
+            "find": "text functions"
+          },
+          "guidebook": {
+            "page": 86,
+            "find": "What if they hand me an Excel sheet?"
+          }
+        },
+        {
+          "id": "xl-logic",
+          "topic": "IF, AND, OR, IFERROR",
+          "know": "Simple logic, and IFERROR only where an error is expected, never to hide a real one.",
+          "read": {
+            "row": "4.5",
+            "find": "IFERROR"
+          },
+          "guidebook": {
+            "page": 86,
+            "find": "What if they hand me an Excel sheet?"
+          }
+        },
+        {
+          "id": "xl-drill",
+          "topic": "The five-minute drill",
+          "know": "Raw data to one PivotTable to one insight, timed. Some firms give a live task while you share your screen.",
+          "read": {
+            "row": "4.5",
+            "find": "PivotTable"
+          },
+          "guidebook": {
+            "page": 86,
+            "find": "What if they hand me an Excel sheet?"
+          }
+        },
+        {
+          "id": "xl-shortcuts",
+          "topic": "Shortcuts",
+          "know": "Ctrl+T table, Ctrl+Shift+L filter, Alt+= sum, F4 to fix a reference, Ctrl+arrow to jump. Use them while sharing your screen.",
+          "read": {
+            "row": "4.5",
+            "find": "Excel"
+          },
+          "guidebook": {
+            "page": 86,
+            "find": "What if they hand me an Excel sheet?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "statutory-audit",
+      "part": "domain",
+      "domain": "statutory-audit",
+      "title": "Statutory audit",
+      "topics": [
+        {
+          "id": "sa-walkthrough",
+          "topic": "Walk me through an audit",
+          "know": "The five-stage answer, with what an article does at each stage and one example.",
+          "most": true,
+          "read": {
+            "row": "4.6",
+            "find": "five-stage"
+          },
+          "guidebook": {
+            "page": 119,
+            "find": "The work: five stages"
+          }
+        },
+        {
+          "id": "sa-first-day",
+          "topic": "First day at a client",
+          "know": "What you ask for: trial balance, ledgers, last year's file, bank statements, fixed-asset register, stock records.",
+          "read": {
+            "row": "4.6",
+            "find": "first day"
+          },
+          "guidebook": {
+            "page": 119,
+            "find": "4 Statutory audit"
+          }
+        },
+        {
+          "id": "sa-revenue",
+          "topic": "Revenue and receivables",
+          "know": "Occurrence and cut-off for sales; confirmations and later receipts for debtors; what if a debtor doesn't reply.",
+          "most": true,
+          "read": {
+            "row": "4.6",
+            "find": "audit revenue"
+          },
+          "guidebook": {
+            "page": 121,
+            "find": "Booked or proved: the same areas through two eyes"
+          }
+        },
+        {
+          "id": "sa-inventory",
+          "topic": "Inventory",
+          "know": "Attending the count, test counts both ways, valuation at lower of cost and NRV, slow-moving items.",
+          "most": true,
+          "read": {
+            "row": "4.6",
+            "find": "audit inventory"
+          },
+          "guidebook": {
+            "page": 121,
+            "find": "Booked or proved: the same areas through two eyes"
+          }
+        },
+        {
+          "id": "sa-ppe",
+          "topic": "Fixed assets",
+          "know": "Additions vouched, capitalisation date, depreciation recomputed, physical verification, capital items booked as repairs.",
+          "read": {
+            "row": "4.6",
+            "find": "audit PPE"
+          },
+          "guidebook": {
+            "page": 121,
+            "find": "Booked or proved: the same areas through two eyes"
+          }
+        },
+        {
+          "id": "sa-cash-bank",
+          "topic": "Cash, bank and confirmations",
+          "know": "Reconciliation items traced to the next statement; why a confirmation must come straight to the auditor.",
+          "read": {
+            "row": "4.6",
+            "find": "cash and bank"
+          },
+          "guidebook": {
+            "page": 121,
+            "find": "Booked or proved: the same areas through two eyes"
+          }
+        },
+        {
+          "id": "sa-purchases-payroll",
+          "topic": "Purchases, expenses and payroll",
+          "know": "Vouch against PO, GRN and invoice; search for unrecorded liabilities; find ghost employees.",
+          "read": {
+            "row": "4.6",
+            "find": "payroll"
+          },
+          "guidebook": {
+            "page": 121,
+            "find": "Booked or proved: the same areas through two eyes"
+          }
+        },
+        {
+          "id": "sa-cut-off",
+          "topic": "Cut-off, vouching and verification",
+          "know": "Test the last and first entries around year end. Vouching proves an entry; verification proves an asset exists.",
+          "read": {
+            "row": "4.6",
+            "find": "cut-off"
+          },
+          "guidebook": {
+            "page": 121,
+            "find": "Booked or proved: the same areas through two eyes"
+          }
+        },
+        {
+          "id": "sa-completion",
+          "topic": "Completion",
+          "know": "Subsequent events, going concern, written representations, and what happens to misstatements you found.",
+          "read": {
+            "row": "4.6",
+            "find": "Going concern"
+          },
+          "guidebook": {
+            "page": 122,
+            "find": "going concern and the final analytics"
+          }
+        },
+        {
+          "id": "sa-caro-ifc",
+          "topic": "CARO and IFC",
+          "know": "The CARO checks on inventory, fixed assets and statutory dues, and what IFC reporting asks of the auditor.",
+          "most": true,
+          "read": {
+            "row": "4.6",
+            "find": "CARO 2020"
+          },
+          "guidebook": {
+            "page": 123,
+            "find": "Companies that CARO covers"
+          }
+        },
+        {
+          "id": "sa-limited-review",
+          "topic": "Quarterly limited review",
+          "know": "Enquiry and analytics instead of full testing, so the conclusion says nothing has come to the auditor's attention.",
+          "read": {
+            "row": "4.6",
+            "find": "Limited review"
+          },
+          "guidebook": {
+            "page": 119,
+            "find": "4 Statutory audit"
+          }
+        },
+        {
+          "id": "sa-companies-act",
+          "topic": "Auditor rules in the Companies Act",
+          "know": "Appointment and removal (s.139, 140), who can't be an auditor (s.141), barred services (s.144), fraud reporting (s.143(12)).",
+          "read": {
+            "row": "4.6",
+            "find": "s.139"
+          },
+          "guidebook": {
+            "page": 123,
+            "find": "The standards in the order you meet them"
+          }
+        }
+      ]
+    },
+    {
+      "id": "internal-audit",
+      "part": "domain",
+      "domain": "internal-audit",
+      "title": "Internal audit, risk & IFC",
+      "topics": [
+        {
+          "id": "ia-vs-sa",
+          "topic": "Internal vs statutory audit",
+          "know": "Who appoints, whom it reports to, its scope, and what each one produces.",
+          "most": true,
+          "read": {
+            "row": "4.7",
+            "find": "Statutory audit vs internal audit"
+          },
+          "guidebook": {
+            "page": 124,
+            "find": "5 Internal audit and IFC"
+          }
+        },
+        {
+          "id": "ia-prc",
+          "topic": "Process, risk, control",
+          "know": "Explain any process this way, with purchasing as your example, and look for the root cause.",
+          "most": true,
+          "read": {
+            "row": "4.7",
+            "find": "Process, risk, control"
+          },
+          "guidebook": {
+            "page": 125,
+            "find": "The core logic"
+          }
+        },
+        {
+          "id": "ia-rcm",
+          "topic": "Risk control matrix",
+          "know": "Its columns, and how a process narrative and a walkthrough fill it.",
+          "read": {
+            "row": "4.7",
+            "find": "RCM"
+          },
+          "guidebook": {
+            "page": 125,
+            "find": "Its columns: process step, what can go wrong, the control"
+          }
+        },
+        {
+          "id": "ia-p2p",
+          "topic": "Purchase-to-pay",
+          "know": "The steps, the risks (fake vendors, duplicate payments, no approval) and the controls, three-way match included.",
+          "most": true,
+          "read": {
+            "row": "4.7",
+            "find": "P2P"
+          },
+          "guidebook": {
+            "page": 126,
+            "find": "Purchase to pay: risks and controls"
+          }
+        },
+        {
+          "id": "ia-o2c",
+          "topic": "Order-to-cash",
+          "know": "Credit limits, dispatch, invoicing, collection and credit notes: the risks and the controls.",
+          "read": {
+            "row": "4.7",
+            "find": "O2C"
+          },
+          "guidebook": {
+            "page": 126,
+            "find": "Order to cash:"
+          }
+        },
+        {
+          "id": "ia-h2r",
+          "topic": "Payroll (hire-to-retire)",
+          "know": "Joiners, leavers, attendance and salary changes: the risks and the controls.",
+          "read": {
+            "row": "4.7",
+            "find": "H2R"
+          },
+          "guidebook": {
+            "page": 126,
+            "find": "a joiner–leaver reconciliation"
+          }
+        },
+        {
+          "id": "ia-sod",
+          "topic": "Segregation of duties",
+          "know": "Maker-checker, incompatible access and compensating controls, each with an example.",
+          "read": {
+            "row": "4.7",
+            "find": "Segregation of duties"
+          },
+          "guidebook": {
+            "page": 125,
+            "find": "Segregation of duties:"
+          }
+        },
+        {
+          "id": "ia-testing",
+          "topic": "Testing a control",
+          "know": "Design vs operating effectiveness, sample, evidence and exceptions; manual vs automated controls.",
+          "read": {
+            "row": "4.7",
+            "find": "Design vs operating effectiveness"
+          },
+          "guidebook": {
+            "page": 125,
+            "find": "only a sample tested across the period shows it ran"
+          }
+        },
+        {
+          "id": "ia-ifc",
+          "topic": "IFC and ICFR",
+          "know": "What each means, who reports on them, and IT general controls in outline.",
+          "read": {
+            "row": "4.7",
+            "find": "IFC vs ICFR"
+          },
+          "guidebook": {
+            "page": 127,
+            "find": "IFC, SOX and IT controls"
+          }
+        },
+        {
+          "id": "ia-observation",
+          "topic": "Writing an observation",
+          "know": "Condition, criteria, root cause, impact, recommendation, owner and date, with one worked example.",
+          "read": {
+            "row": "4.7",
+            "find": "audit observation"
+          },
+          "guidebook": {
+            "page": 127,
+            "find": "Writing an observation"
+          }
+        }
+      ]
+    },
+    {
+      "id": "direct-tax",
+      "part": "domain",
+      "domain": "direct-tax",
+      "title": "Direct tax",
+      "topics": [
+        {
+          "id": "dt-which-law",
+          "topic": "Which law for which year",
+          "know": "The Income-tax Act, 2025 from tax year 2026–27. FY 2025–26 and earlier stay under the 1961 Act, even when filed later.",
+          "most": true,
+          "read": {
+            "row": "4.8",
+            "find": "Which law applies"
+          },
+          "guidebook": {
+            "page": 128,
+            "find": "Which law, which year."
+          }
+        },
+        {
+          "id": "dt-article-work",
+          "topic": "What an article does in tax",
+          "know": "Computations and returns, TDS deposits and quarterly returns, advance tax, AIS matching, tax-audit schedules, notice replies.",
+          "read": {
+            "row": "4.8",
+            "find": "What does an article do"
+          },
+          "guidebook": {
+            "page": 128,
+            "find": "6 Direct tax"
+          }
+        },
+        {
+          "id": "dt-heads",
+          "topic": "Heads of income and residence",
+          "know": "The five heads, and how residential status decides which income is taxed in India.",
+          "read": {
+            "row": "4.8",
+            "find": "Five heads"
+          },
+          "guidebook": {
+            "page": 129,
+            "find": "Five heads:"
+          }
+        },
+        {
+          "id": "dt-book-to-tax",
+          "topic": "Book profit to taxable income",
+          "know": "Add back disallowances, swap book depreciation for tax depreciation, and explain each difference with a number.",
+          "most": true,
+          "read": {
+            "row": "4.8",
+            "find": "book profit"
+          },
+          "guidebook": {
+            "page": 129,
+            "find": "Why book profit isn’t taxable income:"
+          }
+        },
+        {
+          "id": "dt-tds-desk",
+          "topic": "TDS in practice",
+          "know": "Classify, check threshold and PAN, deduct, deposit, file the quarterly return, issue the certificate; and what a missed deduction costs.",
+          "most": true,
+          "read": {
+            "row": "4.8",
+            "find": "not deducting TDS"
+          },
+          "guidebook": {
+            "page": 129,
+            "find": "TDS in one breath."
+          }
+        },
+        {
+          "id": "dt-advance-tax",
+          "topic": "Advance tax",
+          "know": "15%, 45%, 75% and 100% by 15 June, 15 September, 15 December and 15 March, and interest when short.",
+          "read": {
+            "row": "4.8",
+            "find": "Advance tax"
+          },
+          "guidebook": {
+            "page": 129,
+            "find": "Advance tax:"
+          }
+        },
+        {
+          "id": "dt-ais",
+          "topic": "AIS and Form 26AS vs books",
+          "know": "Books first, portal second: match income and tax credits, and explain every gap.",
+          "read": {
+            "row": "4.8",
+            "find": "AIS"
+          },
+          "guidebook": {
+            "page": 130,
+            "find": "Books first, portal second: a worked bridge"
+          }
+        },
+        {
+          "id": "dt-tax-audit",
+          "topic": "Tax audit",
+          "know": "Who needs one and what is reported: Forms 3CA/3CB with 3CD for FY 2025–26, the combined Form 26 from tax year 2026–27.",
+          "most": true,
+          "read": {
+            "row": "4.8",
+            "find": "Tax audit"
+          },
+          "guidebook": {
+            "page": 130,
+            "find": "Tax audit is an evidence exercise"
+          }
+        },
+        {
+          "id": "dt-presumptive",
+          "topic": "Presumptive taxation",
+          "know": "Who can opt for it, how income is worked out, and when books must still be kept.",
+          "read": {
+            "row": "4.8",
+            "find": "Presumptive"
+          },
+          "guidebook": {
+            "page": 128,
+            "find": "6 Direct tax"
+          }
+        },
+        {
+          "id": "dt-disallowances",
+          "topic": "Common disallowances",
+          "know": "Expenses allowed only on payment (statutory dues, MSME dues), cash payment limits, and expenses where TDS was missed.",
+          "read": {
+            "row": "4.8",
+            "find": "43B"
+          },
+          "guidebook": {
+            "page": 129,
+            "find": "certain dues count only when paid or deducted on time"
+          }
+        },
+        {
+          "id": "dt-returns",
+          "topic": "Returns and ITR forms",
+          "know": "Original, belated, revised and updated returns, and which ITR form suits which taxpayer.",
+          "read": {
+            "row": "4.8",
+            "find": "Return types"
+          },
+          "guidebook": {
+            "page": 128,
+            "find": "6 Direct tax"
+          }
+        },
+        {
+          "id": "dt-notices",
+          "topic": "Notices and appeals in outline",
+          "know": "Intimation vs scrutiny, the papers you collect, and how a reply is put together.",
+          "read": {
+            "row": "4.8",
+            "find": "Notices"
+          },
+          "guidebook": {
+            "page": 128,
+            "find": "replies to intimations and notices"
+          }
+        }
+      ]
+    },
+    {
+      "id": "gst",
+      "part": "domain",
+      "domain": "gst",
+      "title": "GST",
+      "topics": [
+        {
+          "id": "gst-read",
+          "topic": "Read GST from the transaction",
+          "know": "Is it a supply? Intra- or inter-state? Rate, time and value? Credit? Ask in that order.",
+          "most": true,
+          "read": {
+            "row": "4.9",
+            "find": "golden rule"
+          },
+          "guidebook": {
+            "page": 132,
+            "find": "Read GST from the transaction, not the form."
+          }
+        },
+        {
+          "id": "gst-supply",
+          "topic": "Supply, composite and mixed",
+          "know": "What counts as a supply, and how composite and mixed supplies are taxed, with one example each.",
+          "read": {
+            "row": "4.9",
+            "find": "Composite vs mixed"
+          },
+          "guidebook": {
+            "page": 132,
+            "find": "Supply quirks:"
+          }
+        },
+        {
+          "id": "gst-place-time",
+          "topic": "Place and time of supply",
+          "know": "CGST with SGST or IGST from the place of supply; when tax falls due on goods, services and advances.",
+          "read": {
+            "row": "4.9",
+            "find": "Place of supply"
+          },
+          "guidebook": {
+            "page": 132,
+            "find": "Read GST from the transaction, not the form."
+          }
+        },
+        {
+          "id": "gst-itc",
+          "topic": "Input tax credit",
+          "know": "The conditions, blocked credits with examples, and no credit on the tax portion where depreciation is claimed on it.",
+          "most": true,
+          "read": {
+            "row": "4.9",
+            "find": "Conditions to claim"
+          },
+          "guidebook": {
+            "page": 132,
+            "find": "Input tax credit: a separate decision"
+          }
+        },
+        {
+          "id": "gst-2b-ims",
+          "topic": "GSTR-2B and IMS",
+          "know": "Credit claimed should match 2B. In IMS you accept, reject or keep invoices pending, and 2B can be recomputed before 3B is filed.",
+          "most": true,
+          "read": {
+            "row": "4.9",
+            "find": "IMS"
+          },
+          "guidebook": {
+            "page": 133,
+            "find": "The monthly cycle and five reconciliations"
+          }
+        },
+        {
+          "id": "gst-rcm",
+          "topic": "Reverse charge",
+          "know": "Read it from the notification, not the ledger name; the common services; the entry and the credit.",
+          "most": true,
+          "read": {
+            "row": "4.9",
+            "find": "Reverse charge"
+          },
+          "guidebook": {
+            "page": 133,
+            "find": "Reverse charge:"
+          }
+        },
+        {
+          "id": "gst-returns",
+          "topic": "GSTR-1 and GSTR-3B",
+          "know": "What each return reports, and how they tie to the books and to each other every month.",
+          "read": {
+            "row": "4.9",
+            "find": "Returns and due dates"
+          },
+          "guidebook": {
+            "page": 133,
+            "find": "The monthly cycle and five reconciliations"
+          }
+        },
+        {
+          "id": "gst-recon",
+          "topic": "GST reconciliations",
+          "know": "Books vs GSTR-1, 3B vs 1, books vs 2B, and turnover vs the financial statements; explain each difference.",
+          "read": {
+            "row": "4.9",
+            "find": "reconciliations"
+          },
+          "guidebook": {
+            "page": 133,
+            "find": "The monthly cycle and five reconciliations"
+          }
+        },
+        {
+          "id": "gst-rates",
+          "topic": "The rate structure",
+          "know": "Two main rates, 5% and 18%, and 40% for a short list of luxury and demerit goods.",
+          "read": {
+            "row": "4.9",
+            "find": "Rate structure"
+          },
+          "guidebook": {
+            "page": 132,
+            "find": "Read GST from the transaction, not the form."
+          }
+        },
+        {
+          "id": "gst-registration",
+          "topic": "Registration and composition",
+          "know": "When registration is needed, one PAN with a GSTIN in each state, and who can opt for composition.",
+          "read": {
+            "row": "4.9",
+            "find": "Composition"
+          },
+          "guidebook": {
+            "page": 132,
+            "find": "Read GST from the transaction, not the form."
+          }
+        },
+        {
+          "id": "gst-zero-rated",
+          "topic": "Exempt, nil and zero-rated",
+          "know": "Exports and SEZ supplies are zero-rated and keep their credit; exempt supplies need the related credit reversed.",
+          "read": {
+            "row": "4.9",
+            "find": "zero-rated"
+          },
+          "guidebook": {
+            "page": 133,
+            "find": "Zero-rated or exempt:"
+          }
+        },
+        {
+          "id": "gst-documents",
+          "topic": "Invoices, notes, e-invoice, e-way bill",
+          "know": "What each document is for and when it applies.",
+          "read": {
+            "row": "4.9",
+            "find": "e-way bill"
+          },
+          "guidebook": {
+            "page": 134,
+            "find": "A notice, in three steps"
+          }
+        }
+      ]
+    },
+    {
+      "id": "bank-audit",
+      "part": "domain",
+      "domain": "bank-audit",
+      "title": "Bank audit",
+      "topics": [
+        {
+          "id": "bank-work",
+          "topic": "What an article does in a branch audit",
+          "know": "Advances, drawing power, asset classification, KYC and documentation, and the reports the branch auditor signs.",
+          "read": {
+            "row": "4.10",
+            "find": "bank branch audit"
+          },
+          "guidebook": {
+            "page": 134,
+            "find": "8 Bank audit"
+          }
+        },
+        {
+          "id": "bank-npa",
+          "topic": "NPA and SMA",
+          "know": "When an account turns non-performing, and the special-mention stages that warn of it first.",
+          "most": true,
+          "read": {
+            "row": "4.10",
+            "find": "NPA"
+          },
+          "guidebook": {
+            "page": 135,
+            "find": "When a loan turns bad."
+          }
+        },
+        {
+          "id": "bank-dp",
+          "topic": "Drawing power",
+          "know": "Stock and debtors less the margin, and what you report when the outstanding is above it.",
+          "read": {
+            "row": "4.10",
+            "find": "drawing power"
+          },
+          "guidebook": {
+            "page": 135,
+            "find": "Drawing power: a worked check"
+          }
+        },
+        {
+          "id": "bank-concurrent",
+          "topic": "Statutory vs concurrent audit",
+          "know": "A year-end opinion vs a running check of the branch's daily transactions.",
+          "read": {
+            "row": "4.10",
+            "find": "concurrent"
+          },
+          "guidebook": {
+            "page": 136,
+            "find": "Statutory branch audit or concurrent audit"
+          }
+        },
+        {
+          "id": "bank-credit",
+          "topic": "Five Cs of credit",
+          "know": "Character, capacity, capital, collateral and conditions; interest cover and debt service.",
+          "read": {
+            "row": "4.10",
+            "find": "Five Cs"
+          },
+          "guidebook": {
+            "page": 134,
+            "find": "8 Bank audit"
+          }
+        },
+        {
+          "id": "bank-loan-file",
+          "topic": "The loan file",
+          "know": "What a sanctioned loan file must hold, and the gaps an auditor looks for.",
+          "read": {
+            "row": "4.10",
+            "find": "bank"
+          },
+          "guidebook": {
+            "page": 136,
+            "find": "Statutory branch audit or concurrent audit"
+          }
+        }
+      ]
+    },
+    {
+      "id": "transfer-pricing",
+      "part": "domain",
+      "domain": "transfer-pricing",
+      "title": "Transfer pricing",
+      "topics": [
+        {
+          "id": "tp-what",
+          "topic": "Why transfer pricing exists",
+          "know": "Prices between related companies across borders must be at arm's length, so profit isn't shifted out of India.",
+          "most": true,
+          "read": {
+            "row": "4.10",
+            "find": "transfer pricing"
+          },
+          "guidebook": {
+            "page": 137,
+            "find": "9 Transfer pricing"
+          }
+        },
+        {
+          "id": "tp-methods",
+          "topic": "Arm's length methods",
+          "know": "CUP, resale price, cost plus, TNMM, profit split and other method, and why TNMM is used most.",
+          "read": {
+            "row": "4.10",
+            "find": "methods"
+          },
+          "guidebook": {
+            "page": 137,
+            "find": "The methods the law lists:"
+          }
+        },
+        {
+          "id": "tp-range",
+          "topic": "The arm's length range",
+          "know": "Screen comparables, compute their margins, and test where the client's margin falls.",
+          "read": {
+            "row": "4.10",
+            "find": "range"
+          },
+          "guidebook": {
+            "page": 138,
+            "find": "the comparables’ margins give a range"
+          }
+        },
+        {
+          "id": "tp-far",
+          "topic": "FAR analysis",
+          "know": "Functions, assets and risks decide which entity should earn what.",
+          "read": {
+            "row": "4.10",
+            "find": "FAR"
+          },
+          "guidebook": {
+            "page": 138,
+            "find": "the comparables’ margins give a range"
+          }
+        },
+        {
+          "id": "tp-docs",
+          "topic": "Documentation and reporting",
+          "know": "The records kept every year and the accountant's report filed with the return.",
+          "read": {
+            "row": "4.10",
+            "find": "documentation"
+          },
+          "guidebook": {
+            "page": 139,
+            "find": "“What is in a transfer pricing study?”"
+          }
+        },
+        {
+          "id": "tp-core-tax",
+          "topic": "Normal income tax",
+          "know": "TP interviews still ask TDS, heads of income and the new Act. Keep your Core tax ready.",
+          "read": {
+            "row": "4.10",
+            "find": "normal income tax"
+          },
+          "guidebook": {
+            "page": 137,
+            "find": "9 Transfer pricing"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ma-tax",
+      "part": "domain",
+      "domain": "ma-tax",
+      "title": "M&A tax",
+      "topics": [
+        {
+          "id": "mna-what",
+          "topic": "What an M&A tax team does",
+          "know": "Tax on deals: structuring, tax due diligence and the compliance that follows a deal.",
+          "read": {
+            "row": "4.10",
+            "find": "M&A tax team"
+          },
+          "guidebook": {
+            "page": 139,
+            "find": "10 M&A tax"
+          }
+        },
+        {
+          "id": "mna-capital-gains",
+          "topic": "Capital gains",
+          "know": "Short vs long term, cost and holding period, and how a sale of shares is taxed.",
+          "most": true,
+          "read": {
+            "row": "4.10",
+            "find": "Capital gains"
+          },
+          "guidebook": {
+            "page": 140,
+            "find": "Topics to know cold"
+          }
+        },
+        {
+          "id": "mna-structures",
+          "topic": "Merger, demerger, slump sale",
+          "know": "What each one is, and the tax question each one raises, in outline.",
+          "read": {
+            "row": "4.10",
+            "find": "slump sale"
+          },
+          "guidebook": {
+            "page": 140,
+            "find": "“Merger or demerger?”"
+          }
+        },
+        {
+          "id": "mna-cash-out",
+          "topic": "Dividend, buyback, capital reduction",
+          "know": "Three ways to return cash to shareholders, and the tax angle of each, in outline.",
+          "read": {
+            "row": "4.10",
+            "find": "buyback"
+          },
+          "guidebook": {
+            "page": 140,
+            "find": "Topics to know cold"
+          }
+        },
+        {
+          "id": "mna-tds",
+          "topic": "TDS on a deal",
+          "know": "Why a buyer checks TDS before paying for shares or a business, above all to a non-resident seller.",
+          "read": {
+            "row": "4.10",
+            "find": "TDS"
+          },
+          "guidebook": {
+            "page": 140,
+            "find": "Topics to know cold"
+          }
+        },
+        {
+          "id": "mna-treaties",
+          "topic": "DTAA, PE and TRC",
+          "know": "One line each: tax treaties, permanent establishment and the tax residency certificate.",
+          "read": {
+            "row": "4.8",
+            "find": "DTAA"
+          },
+          "guidebook": {
+            "page": 139,
+            "find": "10 M&A tax"
+          }
+        }
+      ]
+    },
+    {
+      "id": "valuation",
+      "part": "domain",
+      "domain": "valuation",
+      "title": "Valuation",
+      "topics": [
+        {
+          "id": "val-approaches",
+          "topic": "Three approaches",
+          "know": "Income, market and cost (asset) approaches, and when each one fits.",
+          "read": {
+            "row": "4.10",
+            "find": "Three approaches"
+          },
+          "guidebook": {
+            "page": 141,
+            "find": "Three approaches"
+          }
+        },
+        {
+          "id": "val-ev-equity",
+          "topic": "Enterprise vs equity value",
+          "know": "The bridge between them: net debt and debt-like items.",
+          "read": {
+            "row": "4.10",
+            "find": "Enterprise value vs equity value"
+          },
+          "guidebook": {
+            "page": 142,
+            "find": "Formulas you’ll use every day"
+          }
+        },
+        {
+          "id": "val-dcf",
+          "topic": "Walk me through a DCF",
+          "know": "Free cash flows, discount rate, terminal value, enterprise value, then equity value.",
+          "most": true,
+          "read": {
+            "row": "4.10",
+            "find": "Walk me through a DCF"
+          },
+          "guidebook": {
+            "page": 142,
+            "find": "Formulas you’ll use every day"
+          }
+        },
+        {
+          "id": "val-wacc",
+          "topic": "WACC and CAPM",
+          "know": "Cost of equity from CAPM, post-tax cost of debt, weights at market value.",
+          "read": {
+            "row": "4.10",
+            "find": "WACC"
+          },
+          "guidebook": {
+            "page": 142,
+            "find": "Formulas you’ll use every day"
+          }
+        },
+        {
+          "id": "val-terminal",
+          "topic": "Terminal value",
+          "know": "Perpetual growth vs exit multiple, and why it is often most of the value.",
+          "read": {
+            "row": "4.10",
+            "find": "Terminal value"
+          },
+          "guidebook": {
+            "page": 142,
+            "find": "Formulas you’ll use every day"
+          }
+        },
+        {
+          "id": "val-multiples",
+          "topic": "Multiples",
+          "know": "EV/EBITDA and P/E, and how you pick comparable companies.",
+          "read": {
+            "row": "4.10",
+            "find": "Multiples"
+          },
+          "guidebook": {
+            "page": 143,
+            "find": "Why compare companies on EV/EBITDA rather than P/E?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "fdd",
+      "part": "domain",
+      "domain": "fdd",
+      "title": "Financial due diligence",
+      "topics": [
+        {
+          "id": "fdd-what",
+          "topic": "FDD vs statutory audit",
+          "know": "The buyer's view and quality of earnings, not an opinion on the accounts.",
+          "most": true,
+          "read": {
+            "row": "4.10",
+            "find": "What is FDD"
+          },
+          "guidebook": {
+            "page": 143,
+            "find": "12 Financial due diligence"
+          }
+        },
+        {
+          "id": "fdd-ebitda",
+          "topic": "Normalised EBITDA",
+          "know": "One-off items, owner costs and related-party pricing: what you adjust and why.",
+          "read": {
+            "row": "4.10",
+            "find": "Normalised EBITDA"
+          },
+          "guidebook": {
+            "page": 144,
+            "find": "A worked quality-of-earnings bridge"
+          }
+        },
+        {
+          "id": "fdd-wc",
+          "topic": "Working capital",
+          "know": "The trend, the seasonality, and the normal level a buyer expects at closing.",
+          "read": {
+            "row": "4.10",
+            "find": "Working-capital peg"
+          },
+          "guidebook": {
+            "page": 144,
+            "find": "A worked quality-of-earnings bridge"
+          }
+        },
+        {
+          "id": "fdd-net-debt",
+          "topic": "Net debt and debt-like items",
+          "know": "Borrowings less cash, plus items such as overdue statutory dues and deferred payments.",
+          "read": {
+            "row": "4.10",
+            "find": "Debt-like items"
+          },
+          "guidebook": {
+            "page": 145,
+            "find": "“What goes into net debt?”"
+          }
+        },
+        {
+          "id": "fdd-red-flags",
+          "topic": "Red flags",
+          "know": "Revenue up while cash falls, large year-end entries, reliance on related parties.",
+          "read": {
+            "row": "4.10",
+            "find": "red flags"
+          },
+          "guidebook": {
+            "page": 145,
+            "find": "“What red flags do you look for in a databook?”"
+          }
+        },
+        {
+          "id": "fdd-databook",
+          "topic": "The databook",
+          "know": "Monthly analyses of the P&L, balance sheet and cash on which a diligence report is built.",
+          "read": {
+            "row": "4.10",
+            "find": "FDD"
+          },
+          "guidebook": {
+            "page": 145,
+            "find": "“What red flags do you look for in a databook?”"
+          }
+        }
+      ]
+    },
+    {
+      "id": "forensic",
+      "part": "domain",
+      "domain": "forensic",
+      "title": "Forensic",
+      "topics": [
+        {
+          "id": "for-what",
+          "topic": "Forensic vs statutory audit",
+          "know": "Looking into a specific wrong, with evidence fit for a dispute, vs an opinion on the accounts.",
+          "most": true,
+          "read": {
+            "row": "4.10",
+            "find": "forensic audit"
+          },
+          "guidebook": {
+            "page": 146,
+            "find": "13 Forensic"
+          }
+        },
+        {
+          "id": "for-triangle",
+          "topic": "The fraud triangle",
+          "know": "Pressure, opportunity and rationalisation, and the main families of fraud.",
+          "read": {
+            "row": "4.10",
+            "find": "Fraud triangle"
+          },
+          "guidebook": {
+            "page": 146,
+            "find": "The fraud triangle:"
+          }
+        },
+        {
+          "id": "for-ledger-flags",
+          "topic": "Ledger red flags",
+          "know": "Duplicates, round sums, weekend entries, a vendor sharing an employee's bank account or address.",
+          "read": {
+            "row": "4.10",
+            "find": "red flags"
+          },
+          "guidebook": {
+            "page": 146,
+            "find": "Red flags you’ll learn to spot"
+          }
+        },
+        {
+          "id": "for-benford",
+          "topic": "Benford's law",
+          "know": "The first-digit pattern and how it helps pick entries to test.",
+          "read": {
+            "row": "4.10",
+            "find": "Benford"
+          },
+          "guidebook": {
+            "page": 146,
+            "find": "Benford’s law"
+          }
+        },
+        {
+          "id": "for-shell-vendor",
+          "topic": "Shell vendors",
+          "know": "No or mismatched GSTIN, no real address or website, payments just under approval limits.",
+          "read": {
+            "row": "4.10",
+            "find": "shell vendor"
+          },
+          "guidebook": {
+            "page": 146,
+            "find": "Shell vendors:"
+          }
+        },
+        {
+          "id": "for-evidence",
+          "topic": "Evidence and conduct",
+          "know": "Keep the chain of evidence, record facts, never accuse, and tell only those who need to know.",
+          "read": {
+            "row": "4.10",
+            "find": "forensic"
+          },
+          "guidebook": {
+            "page": 147,
+            "find": "“How do you handle digital evidence?”"
+          }
+        }
+      ]
+    },
+    {
+      "id": "consulting",
+      "part": "domain",
+      "domain": "consulting",
+      "title": "Consulting & risk advisory",
+      "topics": [
+        {
+          "id": "con-what",
+          "topic": "What risk advisory does",
+          "know": "Internal audit, IFC, process reviews and risk assessments for clients.",
+          "read": {
+            "row": "4.7",
+            "find": "Why does internal audit exist"
+          },
+          "guidebook": {
+            "page": 148,
+            "find": "14 Consulting and risk advisory"
+          }
+        },
+        {
+          "id": "con-prc",
+          "topic": "Process, risk, control",
+          "know": "Explain any business process this way. It is the core of the work.",
+          "most": true,
+          "read": {
+            "row": "4.7",
+            "find": "Process, risk, control"
+          },
+          "guidebook": {
+            "page": 125,
+            "find": "The core logic"
+          }
+        },
+        {
+          "id": "con-controls",
+          "topic": "Controls and segregation of duties",
+          "know": "Types of controls, maker-checker, and how you test one control.",
+          "read": {
+            "row": "4.7",
+            "find": "Types of controls"
+          },
+          "guidebook": {
+            "page": 125,
+            "find": "Segregation of duties:"
+          }
+        },
+        {
+          "id": "con-case",
+          "topic": "A profitability case",
+          "know": "Profit is price times volume less costs. Ask questions, split the problem, give one recommendation.",
+          "read": {
+            "href": "/articleship-program/domain-roadmaps/#consulting"
+          }
+        },
+        {
+          "id": "con-structure",
+          "topic": "Structured thinking",
+          "know": "Split a problem into parts that don't overlap, and say your structure before your answer.",
+          "read": {
+            "href": "/articleship-program/domain-roadmaps/#consulting"
+          }
+        },
+        {
+          "id": "con-excel-slides",
+          "topic": "Excel to one slide",
+          "know": "Clean data, one PivotTable, and one slide that says what it shows.",
+          "read": {
+            "row": "4.5",
+            "find": "PivotTable"
+          },
+          "guidebook": {
+            "page": 148,
+            "find": "14 Consulting and risk advisory"
+          }
+        }
+      ]
+    },
+    {
+      "id": "accounting",
+      "part": "domain",
+      "domain": "accounting",
+      "title": "Accounting, MIS & company law",
+      "topics": [
+        {
+          "id": "acc-close",
+          "topic": "Closing the books",
+          "know": "Journals, trial balance, Schedule III statements, bank reconciliation: the month-end order.",
+          "most": true,
+          "read": {
+            "row": "4.5",
+            "find": "Schedule III"
+          },
+          "guidebook": {
+            "page": 113,
+            "find": "The work: record to report"
+          }
+        },
+        {
+          "id": "acc-year-end",
+          "topic": "Year-end entries",
+          "know": "Accruals, prepayments, provisions, depreciation, and the GST and TDS entries.",
+          "read": {
+            "row": "4.5",
+            "find": "Pass the entry"
+          },
+          "guidebook": {
+            "page": 113,
+            "find": "Entries to say aloud, with amounts"
+          }
+        },
+        {
+          "id": "acc-reconciliations",
+          "topic": "Reconciliations",
+          "know": "Bank, vendor, customer and GST: why balances differ and how each item clears.",
+          "read": {
+            "row": "4.5",
+            "find": "BRS"
+          },
+          "guidebook": {
+            "page": 115,
+            "find": "The papers behind each cycle"
+          }
+        },
+        {
+          "id": "acc-mis",
+          "topic": "MIS reports",
+          "know": "Monthly P&L against budget, variances explained, a one-page summary for management.",
+          "read": {
+            "href": "/articleship-program/domain-roadmaps/#accounting"
+          }
+        },
+        {
+          "id": "acc-company-law",
+          "topic": "Company-law compliance",
+          "know": "Board and general meetings, minutes, statutory registers and the annual filings, in outline.",
+          "read": {
+            "row": "4.5",
+            "find": "MoA vs AoA"
+          },
+          "guidebook": {
+            "page": 115,
+            "find": "Company law basics"
+          }
+        },
+        {
+          "id": "acc-software",
+          "topic": "Tally or ERP basics",
+          "know": "Vouchers, ledgers and reports. Say only what you have really used.",
+          "read": {
+            "row": "4.5",
+            "find": "Tally"
+          },
+          "guidebook": {
+            "page": 113,
+            "find": "The work: record to report"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ib-er",
+      "part": "domain",
+      "domain": "ib-er",
+      "title": "IB & equity research",
+      "topics": [
+        {
+          "id": "ib-work",
+          "topic": "What an article does in IB or research",
+          "know": "Company profiles, comparable companies, models and pitch material.",
+          "read": {
+            "row": "4.10",
+            "find": "investment banking"
+          },
+          "guidebook": {
+            "page": 149,
+            "find": "15 Investment banking and equity research"
+          }
+        },
+        {
+          "id": "ib-dcf",
+          "topic": "DCF and multiples",
+          "know": "Walk through a DCF, and say when you would use EV/EBITDA or P/E.",
+          "most": true,
+          "read": {
+            "row": "4.10",
+            "find": "Walk me through a DCF"
+          },
+          "guidebook": {
+            "page": 142,
+            "find": "Formulas you’ll use every day"
+          }
+        },
+        {
+          "id": "ib-ev",
+          "topic": "Enterprise vs equity value",
+          "know": "The bridge between them, and why EV/EBITDA uses one and P/E the other.",
+          "read": {
+            "row": "4.10",
+            "find": "Enterprise value vs equity value"
+          },
+          "guidebook": {
+            "page": 142,
+            "find": "Formulas you’ll use every day"
+          }
+        },
+        {
+          "id": "ib-ebitda-cash",
+          "topic": "Positive EBITDA, still in trouble",
+          "know": "Cash flow, debt service and working capital explain why a company with profits can still fail.",
+          "read": {
+            "row": "4.10",
+            "find": "positive EBITDA"
+          },
+          "guidebook": {
+            "page": 149,
+            "find": "15 Investment banking and equity research"
+          }
+        },
+        {
+          "id": "ib-markets",
+          "topic": "Market basics",
+          "know": "Indices, the market's P/E, and fundamental vs technical analysis.",
+          "read": {
+            "href": "/articleship-program/domain-roadmaps/#ib-er"
+          }
+        },
+        {
+          "id": "ib-profile",
+          "topic": "A one-page company profile",
+          "know": "Business, numbers, peers and a view. Practise on one listed company before the interview.",
+          "read": {
+            "href": "/articleship-program/domain-roadmaps/#ib-er"
+          }
+        }
+      ]
+    },
+    {
+      "id": "written-test",
+      "part": "after",
+      "title": "Written test",
+      "practise": {
+        "label": "Written test practice",
+        "href": "/articleship-program/written-test/"
+      },
+      "topics": [
+        {
+          "id": "wt-english",
+          "topic": "English",
+          "know": "Grammar, error spotting, vocabulary, sentence order, a short passage, and picking the right professional email.",
+          "read": {
+            "href": "/articleship-program/written-test/"
+          }
+        },
+        {
+          "id": "wt-numbers",
+          "topic": "Numbers",
+          "know": "Percentages, profit and discount, interest, ratios, averages, time and work, speed and distance, data from a table.",
+          "read": {
+            "href": "/articleship-program/written-test/"
+          }
+        },
+        {
+          "id": "wt-reasoning",
+          "topic": "Reasoning",
+          "know": "Series, coding, syllogisms, seating grids, directions, family relations, data sufficiency.",
+          "read": {
+            "href": "/articleship-program/written-test/"
+          }
+        },
+        {
+          "id": "wt-judgement",
+          "topic": "Workplace judgement",
+          "know": "Pick the best first action, not the most heroic one.",
+          "read": {
+            "href": "/articleship-program/written-test/"
+          }
+        },
+        {
+          "id": "wt-technical",
+          "topic": "Accounts, audit, tax and law",
+          "know": "Inter-level one-liners, plus one business-awareness question.",
+          "read": {
+            "href": "/articleship-program/written-test/"
+          }
+        },
+        {
+          "id": "wt-negative",
+          "topic": "Timing and negative marking",
+          "know": "Do the easy ones first. With negative marking, guess only after you rule out options.",
+          "read": {
+            "href": "/articleship-program/written-test/"
+          }
+        },
+        {
+          "id": "wt-email",
+          "topic": "The on-the-spot email",
+          "know": "Owning an error, asking a client for documents, a fee revision; and an 80–120-word view on a current topic.",
+          "read": {
+            "row": "4.4",
+            "find": "on-the-spot email"
+          },
+          "guidebook": {
+            "page": 98,
+            "find": "What if they ask me to write an email on the spot?"
+          }
+        },
+        {
+          "id": "wt-spoken",
+          "topic": "Spoken-English test",
+          "know": "Repeat a sentence, read aloud, build a sentence, answer briefly. Work on clarity and pace, not accent.",
+          "read": {
+            "row": "4.4",
+            "find": "Spoken English"
+          },
+          "guidebook": {
+            "page": 98,
+            "find": "What if there is a spoken-English test?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "gd",
+      "part": "after",
+      "title": "Group discussion",
+      "topics": [
+        {
+          "id": "gd-judges",
+          "topic": "What a GD judges",
+          "know": "Content, listening, bringing others in and a fair summary. Not the loudest voice.",
+          "read": {
+            "row": "4.4",
+            "find": "What a GD is"
+          },
+          "guidebook": {
+            "page": 93,
+            "find": "Will there be a GD, and what do they judge?"
+          }
+        },
+        {
+          "id": "gd-worksheet",
+          "topic": "The GD worksheet",
+          "know": "Practise it on one abstract topic, one case and one current-affairs topic.",
+          "read": {
+            "row": "4.4",
+            "find": "GD worksheet"
+          },
+          "guidebook": {
+            "page": 96,
+            "find": "How do I practise a GD?"
+          }
+        },
+        {
+          "id": "gd-open-close",
+          "topic": "Opening and concluding",
+          "know": "Five ways to open, and how to sum up both sides in the last minute.",
+          "read": {
+            "row": "4.4",
+            "find": "Five ways to open"
+          },
+          "guidebook": {
+            "page": 94,
+            "find": "Should I open, and how?"
+          }
+        },
+        {
+          "id": "gd-moves",
+          "topic": "Join, agree, disagree",
+          "know": "Link to the last point, add one new idea, disagree with the point and never the person.",
+          "read": {
+            "row": "4.4",
+            "find": "Entering, building, disagreeing"
+          },
+          "guidebook": {
+            "page": 94,
+            "find": "How do I get in, agree and disagree?"
+          }
+        },
+        {
+          "id": "gd-current-affairs",
+          "topic": "Current affairs",
+          "know": "15 minutes a day for the month before. Five things to explain: Budget headlines, RBI's stance, a GST Council decision, the new Income-tax Act, one corporate story.",
+          "read": {
+            "row": "4.4",
+            "find": "current affairs"
+          },
+          "guidebook": {
+            "page": 96,
+            "find": "What kinds of topics come?"
+          }
+        },
+        {
+          "id": "gd-online",
+          "topic": "Online GD",
+          "know": "Camera on, muted until you speak, enter at a pause, no notes on screen.",
+          "read": {
+            "row": "4.4",
+            "find": "Before the GD"
+          },
+          "guidebook": {
+            "page": 93,
+            "find": "What do I do in the minute before it starts?"
+          }
+        },
+        {
+          "id": "gd-peer",
+          "topic": "Practise with friends",
+          "know": "Six to eight on a call: opener, regulator, summariser, observer. Two rounds, one fix each.",
+          "read": {
+            "row": "4.4",
+            "find": "practice GD"
+          },
+          "guidebook": {
+            "page": 96,
+            "find": "How do I practise a GD?"
+          }
+        }
+      ]
+    }
+  ],
+  "nightBefore": {
+    "steps": [
+      "Your introduction aloud, twice.",
+      "Your three 'why' answers: CA, this firm, this domain.",
+      "Your favourite standards with their disclosures.",
+      "One fresh fact about the firm and the team.",
+      "Ten minutes of business news.",
+      "Clothes, two printed CVs, mark sheets and ID laid out.",
+      "Sleep on time."
+    ],
+    "testWeek": {
+      "title": "A written test this week?",
+      "steps": [
+        "Days 7 to 4: one timed mixed paper a day; note your weak sections.",
+        "Days 3 and 2: only the weak sections, Core basics and the last three months' business news.",
+        "Day before: light revision of formulas; laptop, internet, camera and ID checked.",
+        "Test day: join 15 minutes early, read every instruction, start with what is easy."
+      ]
+    }
+  },
+  "interviewDay": {
+    "sections": [
+      {
+        "title": "Every interview",
+        "items": [
+          {
+            "id": "day-cv-twice",
+            "check": "Read your CV twice",
+            "why": "Every line is a question."
+          },
+          {
+            "id": "day-attempts",
+            "check": "Attempt months and CA Final eligibility on the tip of your tongue"
+          },
+          {
+            "id": "day-printed-cv",
+            "check": "Two printed copies of your CV",
+            "why": "In colour if your CV uses colour."
+          },
+          {
+            "id": "day-mark-sheets",
+            "check": "Mark sheets and ID"
+          },
+          {
+            "id": "day-pen",
+            "check": "A pen and a small notebook"
+          },
+          {
+            "id": "day-phone",
+            "check": "Phone on silent, water, washroom before you go in",
+            "why": "Rounds can run back to back for hours."
+          }
+        ]
+      },
+      {
+        "title": "In person",
+        "items": [
+          {
+            "id": "day-clothes",
+            "check": "Formal clothes, head to toe"
+          },
+          {
+            "id": "day-early",
+            "check": "Reach 15 to 20 minutes early"
+          },
+          {
+            "id": "day-waiting",
+            "check": "Calm in the waiting area",
+            "why": "Someone may be watching."
+          }
+        ]
+      },
+      {
+        "title": "Online",
+        "items": [
+          {
+            "id": "day-laptop",
+            "check": "A laptop, not a phone"
+          },
+          {
+            "id": "day-apps",
+            "check": "Meet, Teams and Zoom tested a day before",
+            "why": "Camera, mic, mute and screen share in each."
+          },
+          {
+            "id": "day-room",
+            "check": "Quiet room, desk clear, no notes on screen",
+            "why": "You may be asked to show the room."
+          },
+          {
+            "id": "day-frame",
+            "check": "Plain wall behind, light on your face, camera at eye level"
+          },
+          {
+            "id": "day-backup",
+            "check": "Phone hotspot and charger as backup"
+          },
+          {
+            "id": "day-online-clothes",
+            "check": "Formal clothes in full, not only on top"
+          },
+          {
+            "id": "day-join-early",
+            "check": "Join 10 to 15 minutes early"
+          }
+        ]
+      }
+    ],
+    "notes": [
+      {
+        "title": "If the call drops",
+        "text": "Say calmly what happened, offer to rejoin or reschedule, then send a two-line mail.",
+        "mode": "online"
+      },
+      {
+        "title": "Walk in like this",
+        "text": "Smile. A small town or a small firm is one confident line, never an apology.",
+        "mode": "in-person"
+      },
+      {
+        "title": "After",
+        "text": "A thank-you mail the same day. Then log the questions in My interviews.",
+        "link": {
+          "label": "Follow-up templates",
+          "day": 2,
+          "title": "Follow-up templates"
+        }
+      }
+    ]
+  }
+}

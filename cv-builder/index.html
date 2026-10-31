@@ -27,12 +27,17 @@
   <meta name="twitter:image" content="https://www.mystudentclub.com/assets/og-cv-suite.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Driver.js for Guided Tour -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css" />
     <script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css">
-    <link rel="stylesheet" href="cv-styles.css?v=2.6">
+    <link rel="stylesheet" href="cv-styles.css?v=20261028-r1">
+    <!-- The route's mode is resolved before first paint; an Articleship request hides the page behind the access gate. -->
+    <script src="cv-mode.js?v=20261028-r2"></script>
+    <script>
+        if (window.MSCCvBuilderMode.resolve(window.location.search) === 'articleship') document.documentElement.classList.add('cv-gating');
+    </script>
     <!-- Promise.withResolvers polyfill for older browsers/devices -->
     <script>
         if (typeof Promise.withResolvers === 'undefined') {
@@ -195,23 +200,23 @@
                 <summary>Personal Details</summary>
                 <div class="section-body">
                     <div class="form-group">
-                        <label for="inp-name">Full Name</label>
-                        <input type="text" class="form-control" id="inp-name" name="inp-name" placeholder="e.g. Padam Bhansali"
+                        <label for="inp-name">Name</label>
+                        <input type="text" class="form-control" id="inp-name" name="inp-name" placeholder="Your name"
                             oninput="updateCV()" spellcheck="false">
                     </div>
                     <div class="form-group" data-section="tagline">
-                        <label for="inp-tagline">Tagline / Current Role</label>
+                        <label for="inp-tagline">Headline</label>
                         <input type="text" class="form-control" id="inp-tagline" name="inp-tagline" placeholder="e.g. CA Final | Flipkart"
                             oninput="updateCV()">
                     </div>
                     <div class="form-group" data-section="phone">
                         <label for="inp-phone">Phone</label>
-                        <input type="text" class="form-control" id="inp-phone" name="inp-phone" placeholder="+91 98765 43210"
+                        <input type="text" class="form-control" id="inp-phone" name="inp-phone" placeholder="Your mobile number"
                             oninput="updateCV()" onblur="formatPhoneInput(this)">
                     </div>
                     <div class="form-group" data-section="email">
                         <label for="inp-email">Email</label>
-                        <input type="email" class="form-control" id="inp-email" name="inp-email" placeholder="yourname@email.com"
+                        <input type="email" class="form-control" id="inp-email" name="inp-email" placeholder="Your email address"
                             oninput="updateCV()">
                     </div>
                     <div class="form-group" data-section="linkedin">
@@ -220,14 +225,14 @@
                             oninput="updateCV()">
                     </div>
                     <div class="form-group" data-section="location">
-                        <label for="inp-location">Location (optional)</label>
+                        <label for="inp-location">City</label>
                         <input type="text" class="form-control" id="inp-location" name="inp-location" placeholder="e.g. Mumbai, India"
                             oninput="updateCV()">
                     </div>
 
                     <!-- Social Links Section -->
                     <div class="form-group" style="margin-top: 15px; border-top: 1px dashed #ccc; padding-top: 10px;">
-                        <div class="form-label-heading">Social Links / Portfolio</div>
+                        <div class="form-label-heading">Work links</div>
                         <div id="social-links-container"></div>
                         <button class="btn-dashed" onclick="addSocialLink()">+ Add Link</button>
                     </div>
@@ -1585,7 +1590,7 @@
                     <path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"></path>
                 </svg>
             </div>
-            <h3 id="tpl-login-title">Log in to unlock premium templates</h3>
+            <h3 id="tpl-login-title">Log in for premium templates</h3>
             <p class="tpl-gate-text" id="tpl-login-text">This template is part of MSC's premium collection. Sign in to
                 your MSC account to continue.</p>
             <div class="tpl-gate-actions">
@@ -1608,8 +1613,8 @@
                     <path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"></path>
                 </svg>
             </div>
-            <h3 id="tpl-buy-title">Unlock all premium templates</h3>
-            <p class="tpl-gate-text">Enroll in any MSC program to instantly unlock every resume template.</p>
+            <h3 id="tpl-buy-title">All premium templates</h3>
+            <p class="tpl-gate-text">Enrol in an MSC program to use every CV template.</p>
             <div id="tpl-buy-course-list" class="tpl-course-list">
                 <!-- Course cards injected by JS from PREMIUM_COURSES -->
             </div>
@@ -1659,6 +1664,6 @@
     </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
-<script src="cv-script.js?v=2.7"></script>
+<script src="cv-script.js?v=20261030-r1"></script>
 
 </html>

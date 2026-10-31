@@ -1,0 +1,357 @@
+/*
+ * MSC Articleship Program: shared look for every programme web tool.
+ * The CV Builder base (Inter, white cards on a light canvas, one main button, 14 px radius) with the notebook accent:
+ * Caveat in headings, MSC navy and brand blue from the logo. Phone first (390 px), then wider.
+ * Head snippet and markup: msc-content/articleship-program/v3/build/tools/PLATFORM.md
+ */
+:root {
+    --ap-primary: #0057FF;
+    --ap-primary-hover: #0046cc;
+    --ap-primary-light: #eaf1ff;
+    --ap-navy: #06152F;
+    --ap-ink: #0f172a;
+    --ap-muted: #64748b;
+    --ap-light: #94a3b8;
+    --ap-bg: #f8fafc;
+    --ap-panel: #ffffff;
+    --ap-hover: #f1f5f9;
+    --ap-border: #e2e8f0;
+    --ap-border-dark: #cbd5e1;
+    --ap-success: #168048;
+    --ap-success-light: #e3f6ea;
+    --ap-danger: #c83a3a;
+    --ap-sticky: #FFF1A6;
+    --ap-radius: 14px;
+    --ap-radius-sm: 8px;
+    --ap-shadow-sm: 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+    --ap-shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.08);
+    --ap-hand: 'Caveat', 'Segoe Print', 'Bradley Hand', cursive;
+    --ap-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    /* Day colours (the programme's wayfinding layer) */
+    --ap-day-0: #0057FF;
+    --ap-day-1: #F07C1E;
+    --ap-day-2: #1E9E58;
+    --ap-day-3: #7A5AF0;
+    --ap-day-4: #E5487F;
+    --ap-day-5: #C98A04;
+    --ap-day-6: #14A3A3;
+    --ap-accent: var(--ap-primary);
+}
+
+.ap-page,
+.ap-page *,
+.ap-page *::before,
+.ap-page *::after { box-sizing: border-box; }
+
+body.ap-page {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--ap-bg);
+    color: var(--ap-ink);
+    font-family: var(--ap-sans);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-size-adjust: 100%;
+}
+body.ap-page.ap-day-1 { --ap-accent: var(--ap-day-1); }
+body.ap-page.ap-day-2 { --ap-accent: var(--ap-day-2); }
+body.ap-page.ap-day-3 { --ap-accent: var(--ap-day-3); }
+body.ap-page.ap-day-4 { --ap-accent: var(--ap-day-4); }
+body.ap-page.ap-day-5 { --ap-accent: var(--ap-day-5); }
+body.ap-page.ap-day-6 { --ap-accent: var(--ap-day-6); }
+
+/* ---------- Top bar: MSC logo (back to the programme) + tool name ---------- */
+.ap-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 56px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.96);
+    border-bottom: 1px solid var(--ap-border);
+    backdrop-filter: saturate(1.4) blur(8px);
+    -webkit-backdrop-filter: saturate(1.4) blur(8px);
+}
+.ap-brand { display: inline-flex; align-items: center; flex: 0 0 auto; }
+.ap-brand img { display: block; height: 26px; width: auto; }
+.ap-topbar-title {
+    margin-left: auto;
+    font-family: var(--ap-hand);
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 1;
+    color: var(--ap-navy);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ---------- Layout ---------- */
+.ap-main { width: 100%; max-width: 760px; margin: 0 auto; padding: 16px 16px 48px; }
+.ap-main.is-wide { max-width: 1080px; }
+.ap-hero { margin: 8px 0 16px; }
+.ap-title {
+    margin: 0;
+    font-family: var(--ap-hand);
+    font-weight: 700;
+    font-size: 34px;
+    line-height: 1.05;
+    color: var(--ap-navy);
+}
+.ap-title .ap-mark {
+    background: linear-gradient(transparent 58%, color-mix(in srgb, var(--ap-accent) 30%, transparent) 58%);
+    padding: 0 2px;
+}
+.ap-lede { margin: 6px 0 0; color: var(--ap-muted); font-size: 15px; }
+.ap-h2 {
+    margin: 24px 0 10px;
+    font-family: var(--ap-hand);
+    font-weight: 700;
+    font-size: 26px;
+    line-height: 1.1;
+    color: var(--ap-navy);
+}
+.ap-card {
+    background: var(--ap-panel);
+    border: 1px solid var(--ap-border);
+    border-radius: var(--ap-radius);
+    box-shadow: var(--ap-shadow-sm);
+    padding: 16px;
+}
+.ap-sticky {
+    background: var(--ap-sticky);
+    border-radius: 4px 4px 12px 4px;
+    padding: 12px 14px;
+    box-shadow: 0 2px 0 rgba(6, 21, 47, 0.06);
+    font-size: 14px;
+}
+.ap-sticky strong { font-family: var(--ap-hand); font-size: 19px; font-weight: 700; color: var(--ap-navy); }
+.ap-hidden { display: none !important; }
+
+/* ---------- Buttons and links ---------- */
+.ap-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 10px 18px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background: var(--ap-primary);
+    color: #fff;
+    font: 600 15px/1.2 var(--ap-sans);
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+.ap-btn:hover { background: var(--ap-primary-hover); }
+.ap-btn:focus-visible, .ap-link:focus-visible { outline: 3px solid color-mix(in srgb, var(--ap-primary) 40%, transparent); outline-offset: 2px; }
+.ap-btn.is-secondary { background: var(--ap-panel); color: var(--ap-navy); border-color: var(--ap-border-dark); }
+.ap-btn.is-secondary:hover { background: var(--ap-hover); }
+.ap-btn.is-block { width: 100%; }
+.ap-link { color: var(--ap-primary); font-weight: 600; text-decoration: none; }
+.ap-link:hover { text-decoration: underline; }
+
+/* ---------- Progress (shared by checklists, tracker, simulation) ---------- */
+.ap-progress {
+    position: sticky;
+    top: 56px;
+    z-index: 10;
+    margin: 0 -16px 12px;
+    padding: 10px 16px 12px;
+    background: rgba(248, 250, 252, 0.97);
+    border-bottom: 1px solid var(--ap-border);
+}
+.ap-progress-text { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
+.ap-progress-count { font-family: var(--ap-hand); font-weight: 700; font-size: 24px; line-height: 1; color: var(--ap-navy); }
+.ap-progress-pct { font-size: 13px; font-weight: 600; color: var(--ap-muted); }
+.ap-progress-bar { height: 10px; border-radius: 999px; background: #e7edf5; overflow: hidden; }
+.ap-progress-bar > span {
+    display: block;
+    height: 100%;
+    width: 0;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--ap-primary), #3d7dff);
+    transition: width 0.25s ease;
+}
+.ap-progress.is-complete .ap-progress-bar > span { background: var(--ap-success); }
+
+/* ---------- Checklist engine ---------- */
+.ap-cl-section { margin: 0 0 18px; }
+.ap-cl-section-title {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 18px 0 8px;
+    font-family: var(--ap-hand);
+    font-weight: 700;
+    font-size: 25px;
+    line-height: 1.1;
+    color: var(--ap-navy);
+}
+.ap-cl-count { font-family: var(--ap-sans); font-size: 13px; font-weight: 600; color: var(--ap-muted); }
+.ap-cl-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.ap-cl-item {
+    background: var(--ap-panel);
+    border: 1px solid var(--ap-border);
+    border-radius: 12px;
+    padding: 4px 12px 10px;
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+.ap-cl-item.is-done { background: #fbfefc; border-color: #bfe6cd; }
+.ap-cl-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    min-height: 44px;
+    padding-top: 8px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+.ap-cl-check input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+.ap-cl-box {
+    flex: 0 0 26px;
+    width: 26px;
+    height: 26px;
+    margin-top: -1px;
+    border: 2px solid var(--ap-border-dark);
+    border-radius: 7px;
+    background: #fff;
+    display: grid;
+    place-items: center;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+.ap-cl-box::after {
+    content: '';
+    width: 7px;
+    height: 13px;
+    margin-top: -3px;
+    border: solid #fff;
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg) scale(0);
+    transition: transform 0.15s ease;
+}
+.ap-cl-check input:checked + .ap-cl-box { background: var(--ap-success); border-color: var(--ap-success); }
+.ap-cl-check input:checked + .ap-cl-box::after { transform: rotate(45deg) scale(1); }
+.ap-cl-check input:focus-visible + .ap-cl-box { outline: 3px solid color-mix(in srgb, var(--ap-primary) 40%, transparent); outline-offset: 2px; }
+.ap-cl-no { flex: 0 0 18px; width: 18px; font-family: var(--ap-hand); font-weight: 700; font-size: 20px; line-height: 1.2; color: var(--ap-primary); }
+.ap-cl-text { flex: 1 1 auto; font-weight: 600; line-height: 1.4; color: var(--ap-ink); }
+.ap-cl-item.is-done .ap-cl-text { color: #3c5a48; }
+.ap-cl-why { margin: 4px 0 0 64px; color: var(--ap-muted); font-size: 14px; }
+.ap-cl-extra { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin: 6px 0 0 64px; }
+.ap-cl-example summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 32px;
+    color: var(--ap-primary);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+}
+.ap-cl-example summary::-webkit-details-marker { display: none; }
+.ap-cl-example summary::after { content: '+'; font-weight: 700; }
+.ap-cl-example[open] summary::after { content: '\2212'; }
+.ap-cl-example[open] { flex-basis: 100%; }
+.ap-cl-example p {
+    margin: 4px 0 6px;
+    padding: 10px 12px;
+    background: var(--ap-sticky);
+    border-radius: 4px 4px 10px 4px;
+    font-size: 14px;
+    white-space: pre-line;
+}
+.ap-cl-fix {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    color: var(--ap-navy);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 2px solid color-mix(in srgb, var(--ap-accent) 55%, transparent);
+}
+.ap-cl-fix::after { content: '\2192'; margin-left: 6px; }
+.ap-checklist.no-numbers .ap-cl-why,
+.ap-checklist.no-numbers .ap-cl-extra { margin-left: 36px; }
+.ap-cl-done {
+    margin: 18px 0 0;
+    padding: 16px;
+    border-radius: var(--ap-radius);
+    background: var(--ap-success-light);
+    border: 1px solid #bfe6cd;
+}
+.ap-cl-done h2 { margin: 0 0 4px; font-family: var(--ap-hand); font-size: 28px; color: var(--ap-success); }
+.ap-cl-done p { margin: 0 0 12px; }
+.ap-cl-done .ap-cl-done-links { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* ---------- Courtesy gate ---------- */
+.ap-gate {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: grid;
+    place-items: center;
+    padding: 24px 16px;
+    background: var(--ap-bg);
+}
+.ap-gate-card {
+    width: 100%;
+    max-width: 400px;
+    padding: 28px 22px 22px;
+    text-align: center;
+    background: var(--ap-panel);
+    border: 1px solid var(--ap-border);
+    border-radius: 18px;
+    box-shadow: var(--ap-shadow-md);
+}
+.ap-gate-card img { height: 30px; width: auto; margin: 0 auto 16px; display: block; }
+.ap-gate-card h1 { margin: 0 0 6px; font-family: var(--ap-hand); font-size: 30px; line-height: 1.1; color: var(--ap-navy); }
+.ap-gate-card p { margin: 0 0 18px; color: var(--ap-muted); }
+.ap-gate-actions { display: grid; gap: 10px; }
+.ap-gate-loading { display: grid; justify-items: center; gap: 12px; color: var(--ap-muted); font-size: 14px; }
+.ap-spinner {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 3px solid #dbe4f3;
+    border-top-color: var(--ap-primary);
+    animation: ap-spin 0.8s linear infinite;
+}
+@keyframes ap-spin { to { transform: rotate(360deg); } }
+html.ap-gated body.ap-page > :not(.ap-gate) { visibility: hidden; }
+
+@media (min-width: 768px) {
+    .ap-topbar { padding: 8px 24px; }
+    .ap-brand img { height: 30px; }
+    .ap-topbar-title { font-size: 24px; }
+    .ap-main { padding: 28px 24px 64px; }
+    .ap-progress { margin: 0 0 14px; border: 1px solid var(--ap-border); border-radius: 12px; top: 64px; }
+    .ap-title { font-size: 44px; }
+    .ap-cl-item { padding: 6px 16px 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ap-progress-bar > span, .ap-cl-box, .ap-cl-box::after, .ap-spinner { transition: none; animation: none; }
+}
+
+@media print {
+    .ap-topbar, .ap-progress, .ap-gate { position: static; }
+    .ap-cl-example p { background: none; border: 1px solid #ccc; }
+}
+
+/* ---------- Polish shared by every tool: 1440 px wide pages, soft cards, a gentle entrance ---------- */
+@media (min-width: 1024px) {
+    .ap-main.is-wide { max-width: 1440px; padding-left: 40px; padding-right: 40px; }
+}
+.ap-card { border: 0; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 12px 28px -18px rgba(15, 23, 42, 0.3); }
+.ap-hero { animation: ap-rise 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+@keyframes ap-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .ap-hero { animation: none; } }

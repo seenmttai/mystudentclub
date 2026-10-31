@@ -40,8 +40,14 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         'msc-articleship-program': {
             title: 'MSC Articleship Program',
-            description: 'Resources and guidance for your articleship preparation.',
-            thumbnail: '/assets/articleship-course-main.png'
+            description: 'Build your CV, apply to firms, prepare for interviews and start your articleship.',
+            thumbnail: '/assets/articleship-course-main.png',
+            dayTitles: ['Start here', 'Crafting the Perfect CV', 'Applying the Right Way', 'Using LinkedIn',
+                'Cracking Interviews', 'Domain Guidance', 'Registration Formalities'],
+            // Phone-first rows: no repeated format notes, and links open without a dead Download button.
+            compactResources: true,
+            // v3: rows flagged `copy` open in the copyable reader; no "Templates" group opens the canvas viewer.
+            templateCanvas: false
         }
     };
 
@@ -99,6 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
         prevVideoBtn: document.getElementById('prev-video-btn'),
         nextVideoBtn: document.getElementById('next-video-btn'),
         videoCounter: document.getElementById('video-counter'),
+        sessionTitle: document.getElementById('session-title'),
         prevVideoBtn: document.getElementById('prev-video-btn'),
         nextVideoBtn: document.getElementById('next-video-btn'),
         videoCounter: document.getElementById('video-counter'),
@@ -186,6 +193,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const getSheetPreviewUrl = (url) => {
         if (!url) return url;
+        // A "/copy" link opens Google's "Make a copy?" prompt; rewriting it to /edit would open the master instead.
+        if (/docs\.google\.com\/spreadsheets\/d\/[A-Za-z0-9_-]+\/copy\b/.test(url)) return url;
         const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
         if (!match) return url;
         const sheetId = match[1];
@@ -209,18 +218,28 @@ document.addEventListener('DOMContentLoaded', () => {
         return (type === 'csv' || viewPath.endsWith('.csv')) && hasPreview && hasDownload;
     };
 
+    const isCompactResourceCourse = () => Boolean(courses[state.courseSlug]?.compactResources);
+
     const getResourceViewLabel = (resource) => {
+        if (resource?.type === 'external_link' && isCompactResourceCourse()) return 'Open';
         if (isGoogleSheetResource(resource)) return 'View Sheet';
         if (isDocxPreviewResource(resource)) return 'Preview PDF';
         if (isCsvPreviewResource(resource)) return 'Preview CSV';
         return 'View';
     };
 
+    const articleshipLms = () => (typeof window !== 'undefined' && window.MSCArticleshipLms) || null;
+
     const getResourceDownloadLabel = (resource) => {
+        if (isCompactResourceCourse() && articleshipLms() && !isGoogleSheetResource(resource) &&
+            !/\.zip$/i.test(String(resource?.download_storage_path || '')) && resource?.type !== 'zip') {
+            return articleshipLms().downloadLabel(resource);
+        }
         if (isGoogleSheetResource(resource)) return 'Download Excel';
         if (isDocxPreviewResource(resource)) return 'Download DOCX';
         const dlPath = String(resource?.download_storage_path || '').toLowerCase();
         if (dlPath.endsWith('.xlsx') || dlPath.endsWith('.xls')) return 'Download Excel';
+        if (dlPath.endsWith('.zip') || resource?.type === 'zip') return 'Download ZIP (for laptop)';
         if (dlPath.endsWith('.csv') || resource?.type === 'csv') return 'Download CSV';
         return 'Download';
     };
@@ -232,6 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const getResourceFormatNote = (resource) => {
+        if (isCompactResourceCourse()) return '';
         if (isGoogleSheetResource(resource)) {
             return 'Opens Google Sheet. Download exports as Excel (.xlsx).';
         }
@@ -598,11 +618,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     resourcesHTML += '</div>';
                 }
 
+                // One session per Day: a session named like its Day reads as an action instead of repeating the title.
+                const sessionLabel = isCompactResourceCourse() && (day.title === video.title || String(day.title).endsWith(' · ' + video.title))
+                    ? `Open Day ${day.day_number}` : video.title;
                 sessionsHTML += `
                     <div class="sub-video-item ${isVideoSelected ? 'active' : ''} ${isVideoCompleted ? 'completed' : ''}" data-video-id="${video.id}">
                         <div class="sub-video-header">
                             <i class="fas ${isVideoCompleted ? 'fa-check-circle' : 'fa-play-circle'}"></i>
-                            <span>${video.title}</span>
+                            <span>${sessionLabel}</span>
                         </div>
                     </div>
                     ${resourcesHTML}
@@ -655,6 +678,45 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
+    // Resolve a title from enrolled course rows; query strings never supply a bucket path or PDF URL.
+    const getArticleshipResourceTarget = () => {
+        if (state.courseSlug !== 'msc-articleship-program' || !state.user || !state.isEnrolled) return null;
+        const params = new URLSearchParams(window.location.search);
+        const rawSession = params.get('session') || '';
+        if (!/^[1-9]\d{0,5}$/.test(rawSession)) return null;
+        const video = findVideoById(Number(rawSession));
+        if (!video) return null;
+        const title = params.get('resource');
+        // Only a programme PDF (articleship-program-v<N>/day-<d>/…) of an enrolled row; never a path from the URL.
+        // A title that matches no such row (not uploaded yet, renamed, or a tool row) still opens its Day's session.
+        const resource = title ? video.resources?.find(item => item.title === title &&
+            /^articleship-program-v\d+\/day-[0-6]\//.test(String(item.view_storage_path || '')) &&
+            !String(item.view_storage_path || '').includes('..') &&
+            String(item.view_storage_path || '').toLowerCase().endsWith('.pdf')) || null : null;
+        const rawPage = params.get('page') || '1';
+        const page = /^[1-9]\d{0,5}$/.test(rawPage) ? Number(rawPage) : 1;
+        // A row of this Day that is not a programme PDF (a tool, an Excel sheet): the Day opens on its row, scrolled to.
+        const row = title && !resource ? video.resources?.find(item => item.title === title) || null : null;
+        return { video, resource, page, row };
+    };
+
+    // Scroll a deep-linked row (tool or download) into view on the Resources tab and flash it once.
+    const highlightResourceRow = (title) => {
+        const container = DOMElements.tabContents.resources;
+        if (!container || !title) return;
+        const item = [...container.querySelectorAll('.resource-item')]
+            .find(li => (li.querySelector('.resource-title')?.textContent || '').trim() === title);
+        if (!item) return;
+        const group = item.closest('details');
+        if (group) group.open = true;
+        const still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        item.classList.remove('resource-item-target');
+        void item.offsetWidth; // restart the flash on a second deep link to the same row
+        item.classList.add('resource-item-target');
+        requestAnimationFrame(() => item.scrollIntoView({ block: 'center', behavior: still ? 'auto' : 'smooth' }));
+        setTimeout(() => item.classList.remove('resource-item-target'), 2600);
+    };
+
     const loadVideoProgress = async () => {
         const savedVideos = localStorage.getItem(`courseVideos_${state.courseSlug}`);
         if (savedVideos) {
@@ -672,6 +734,22 @@ document.addEventListener('DOMContentLoaded', () => {
         // Fetch cloud watch-time data before selecting first video
         await fetchWatchTimeForCourse();
 
+        const target = getArticleshipResourceTarget();
+        if (target) {
+            await selectVideo(target.video.id);
+            if (state.user && state.isEnrolled) {
+                setActiveTab('resources');
+                if (target.resource && articleshipLms()?.copyMode(target.resource)) {
+                    // A copyable row opens in the reader in place of this page, so Back returns to the tool that linked here.
+                    await openCopyResource(target.resource, target.page, { deepLink: true });
+                } else if (target.resource) {
+                    await openResourceViewer(target.resource, 'pdf', target.page);
+                } else if (target.row) {
+                    highlightResourceRow(target.row.title);
+                }
+            }
+            return;
+        }
         const lastVideoId = localStorage.getItem(`lastVideoId_${state.courseSlug}`);
         if (lastVideoId && findVideoById(parseInt(lastVideoId))) {
             selectVideo(parseInt(lastVideoId));
@@ -731,7 +809,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const mainVideo = dayVideos[0] || {};
                 const parsedDay = parseInt(dayNum);
                 return {
-                    day_number: parsedDay, title: mainVideo.title || (parsedDay === 0 ? 'Day 0' : `Day ${parsedDay}`),
+                    day_number: parsedDay,
+                    title: courses[state.courseSlug]?.dayTitles?.[parsedDay]
+                        ? `Day ${parsedDay} · ${courses[state.courseSlug].dayTitles[parsedDay]}`
+                        : mainVideo.title || (parsedDay === 0 ? 'Day 0' : `Day ${parsedDay}`),
                     expanded: parsedDay === 1 || parsedDay === 0, videos: dayVideos, mainVideo: mainVideo
                 };
             }).sort((a, b) => a.day_number - b.day_number);
@@ -741,7 +822,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 DOMElements.totalVideosCount.textContent = `${totalVideos} Sessions`;
                 DOMElements.totalVideosMeta.style.display = 'flex';
             }
-            loadVideoProgress();
+            await loadVideoProgress();
             renderCourseModules();
         } catch (error) {
             logFrontendError(error.message, error.stack, 'loadCourseVideos');
@@ -1587,10 +1668,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } else {
             DOMElements.videoPlayerContainer.style.display = 'none';
-            DOMElements.noVideoMessagePlayer.style.display = 'block';
+            DOMElements.noVideoMessagePlayer.style.display = isCompactResourceCourse() ? 'none' : 'block';
+            DOMElements.videoLoadingOverlay.style.display = 'none';
         }
 
-        setActiveTab('overview');
+        const resourceSession = isCompactResourceCourse() && currentVideo?.resources?.length &&
+            !currentVideo.hlsPath && !currentVideo.fileName;
+        setActiveTab(resourceSession ? 'resources' : 'overview');
         renderTabsAndContent();
 
         if (window.innerWidth < 768) {
@@ -1612,7 +1696,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tabs.forEach(tabId => {
             const btn = document.createElement('button');
             btn.className = 'tab-btn';
-            btn.textContent = tabId === 'report' ? 'Report an Issue' : tabId.charAt(0).toUpperCase() + tabId.slice(1);
+            btn.textContent = tabId === 'report' ? (isCompactResourceCourse() ? 'Report issue' : 'Report an Issue') : tabId.charAt(0).toUpperCase() + tabId.slice(1);
             btn.dataset.tab = tabId;
 
             if (tabId === 'resources' && (!currentVideo.resources || currentVideo.resources.length === 0)) {
@@ -1639,8 +1723,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let resourcesHTML = '';
             for (const groupName in groups) {
-                resourcesHTML += `<div class="resource-group">`;
-                if (groupName !== 'General Resources' || Object.keys(groups).length > 1) {
+                const collapsible = isCompactResourceCourse() && groupName === 'Templates' && groups[groupName].length > 12;
+                resourcesHTML += collapsible ? `<details class="resource-group resource-template-group"><summary class="resource-group-title">Templates (${groups[groupName].length})</summary>` : `<div class="resource-group">`;
+                if (!collapsible && (groupName !== 'General Resources' || Object.keys(groups).length > 1)) {
                     resourcesHTML += `<h4 class="resource-group-title">${groupName}</h4>`;
                 }
                 resourcesHTML += `<ul class="resource-list">`;
@@ -1649,6 +1734,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     const downloadLabel = getResourceDownloadLabel(resource);
                     const formatNote = getResourceFormatNote(resource);
                     const safeResourceStr = encodeURIComponent(JSON.stringify(resource));
+                    const hasViewTarget = Boolean(resource.url) || resource.type === 'external_link' ||
+                        Boolean(resource.view_storage_path && resource.view_storage_path !== 'None' && String(resource.view_storage_path).trim() !== '');
+                    // Compact rows with only a file to download (e.g. the Excel test) show just the Download button.
+                    const showView = hasViewTarget || !isCompactResourceCourse();
                     resourcesHTML += `
                         <li class="resource-item">
                             <span class="resource-icon"><i class="${getResourceIcon(resource.type)}"></i></span>
@@ -1657,15 +1746,16 @@ document.addEventListener('DOMContentLoaded', () => {
                                 ${formatNote ? `<span class="resource-format-note">${formatNote}</span>` : ''}
                             </div>
                             <div class="resource-actions">
-                                <button class="resource-btn resource-btn-view" data-resource="${safeResourceStr}"><i class="fas fa-eye"></i> ${viewLabel}</button>
+                                ${showView ? `<button class="resource-btn resource-btn-view" data-resource="${safeResourceStr}"><i class="fas fa-eye"></i> ${viewLabel}</button>` : ''}
                                 ${(resource.download_storage_path && resource.download_storage_path !== 'None' && String(resource.download_storage_path).trim() !== '') ?
                             `<button class="resource-btn resource-btn-download" data-resource="${safeResourceStr}"><i class="fas fa-download"></i> ${downloadLabel}</button>` :
-                            `<span class="resource-btn resource-btn-download disabled"><i class="fas fa-download"></i> ${downloadLabel}</span>`
+                            (isCompactResourceCourse() ? '' :
+                            `<span class="resource-btn resource-btn-download disabled"><i class="fas fa-download"></i> ${downloadLabel}</span>`)
                         }
                             </div>
                         </li>`;
                 });
-                resourcesHTML += `</ul></div>`;
+                resourcesHTML += collapsible ? `</ul></details>` : `</ul></div>`;
             }
             DOMElements.tabContents.resources.innerHTML = resourcesHTML;
 
@@ -1709,6 +1799,10 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const updateNavButtons = () => {
+        if (isCompactResourceCourse()) {
+            DOMElements.prevVideoBtn.querySelector('span').textContent = 'Previous session';
+            DOMElements.nextVideoBtn.querySelector('span').textContent = 'Next session';
+        }
         DOMElements.prevVideoBtn.disabled = getAdjacentVideo('previous') === null;
         DOMElements.nextVideoBtn.disabled = getAdjacentVideo('next') === null;
     };
@@ -1724,7 +1818,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const currentVideoIndex = section.videos.findIndex(v => v.id === state.currentVideoId) + 1;
             const sessionText = section.videos.length > 1 ? ` - Session ${currentVideoIndex}/${section.videos.length}` : '';
             const totalDays = state.courseSections.filter(s => s.day_number > 0).length;
-            DOMElements.videoCounter.textContent = section.day_number === 0
+            const compact = isCompactResourceCourse();
+            if (DOMElements.sessionTitle) {
+                const sessionName = section.videos[currentVideoIndex - 1].title;
+                // One session per Day: a session named like its Day is not repeated under the Day title.
+                const repeatsDay = section.title === sessionName || String(section.title).endsWith(' · ' + sessionName);
+                DOMElements.sessionTitle.textContent = compact && !repeatsDay ? sessionName : '';
+                DOMElements.sessionTitle.hidden = !compact || repeatsDay;
+            }
+            DOMElements.videoCounter.textContent = compact ? section.title : section.day_number === 0
                 ? `Day 0${sessionText}`
                 : `Day ${section.day_number} of ${totalDays}${sessionText}`;
             DOMElements.videoCounter.style.display = 'inline-block';
@@ -1747,7 +1849,39 @@ document.addEventListener('DOMContentLoaded', () => {
         return false;
     };
 
+    // Copyable rows (V3 §0.3, P6): the copyable reader, or the browser's own PDF viewer when the row says "browser".
+    const openCopyResource = async (resource, page = 1, { deepLink = false } = {}) => {
+        const lms = articleshipLms();
+        // A click pre-opens the tab synchronously (Safari/iOS popup blocker); a deep link replaces the course page.
+        const newWindow = deepLink ? null : window.open('', '_blank');
+        if (newWindow) {
+            newWindow.document.write('<p style="font-family: sans-serif; text-align: center; margin-top: 20%; color: #64748b;">Opening…</p>');
+        }
+        try {
+            const { data, error } = await supabase.storage
+                .from(lms.bucketFor(resource.view_storage_path))
+                .createSignedUrl(resource.view_storage_path, 300);
+            if (error) throw error;
+            const target = lms.copyTarget(resource, data.signedUrl, page);
+            if (deepLink) {
+                window.location.replace(target);
+            } else if (newWindow) {
+                newWindow.location.href = target;
+            } else {
+                window.open(target, '_blank');
+            }
+        } catch (err) {
+            console.error('Error opening copyable resource:', err);
+            if (newWindow) newWindow.close();
+            alert('Could not open the resource. Please try again.');
+        }
+    };
+
     const handleResourceClick = async (resource) => {
+        if (articleshipLms()?.copyMode(resource)) {
+            await openCopyResource(resource, Number.isSafeInteger(resource.page) ? resource.page : 1);
+            return;
+        }
         if (isGoogleSheetResource(resource)) {
             const redirectUrl = getSheetPreviewUrl(resource.url || resource.view_storage_path) || resource.url;
             if (redirectUrl) {
@@ -1766,9 +1900,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const path = resource.view_storage_path.toLowerCase();
             if (path.endsWith('.csv')) {
                 await openResourceViewer(resource, 'csv');
-            } else if (resource.group && resource.group.toLowerCase().includes('template')) {
-                // Templates (CV, Cover Letter, etc.) use the inline modal viewer
-                await openResourceViewer(resource, 'pdf');
+            } else if (resource.group && resource.group.toLowerCase().includes('template') &&
+                courses[state.courseSlug]?.templateCanvas !== false) {
+                // Templates (CV, Cover Letter, etc.) use the inline modal viewer (switched off for the Articleship course)
+                await openResourceViewer(resource, 'pdf', Number.isSafeInteger(resource.page) ? resource.page : 1);
             } else {
                 // All other PDFs open in the ca-resource flipbook viewer
                 // Pre-open window synchronously to prevent Safari/iOS popup blocker
@@ -1779,14 +1914,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 try {
                     const { data: viewData, error: viewError } = await supabase.storage
-                        .from('industrial-training-mastery-resources')
+                        .from(articleshipLms()?.bucketFor(resource.view_storage_path) || 'industrial-training-mastery-resources')
                         .createSignedUrl(resource.view_storage_path, 300);
                     if (viewError) throw viewError;
 
                     let dlUrl = '';
                     if (resource.download_storage_path && resource.download_storage_path !== 'None') {
                         const { data: dlData, error: dlError } = await supabase.storage
-                            .from('industrial-training-mastery-resources')
+                            .from(articleshipLms()?.bucketFor(resource.download_storage_path) || 'industrial-training-mastery-resources')
                             .createSignedUrl(resource.download_storage_path, 300, { download: true });
                         if (!dlError && dlData) {
                             dlUrl = dlData.signedUrl;
@@ -1824,7 +1959,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         try {
-            const { data, error } = await supabase.storage.from('industrial-training-mastery-resources').createSignedUrl(path, 300);
+            const { data, error } = await supabase.storage.from(articleshipLms()?.bucketFor(path) || 'industrial-training-mastery-resources').createSignedUrl(path, 300);
             if (error) throw error;
             const response = await fetch(data.signedUrl);
             if (!response.ok) throw new Error('Network response was not ok.');
@@ -2140,7 +2275,8 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     };
 
-    const openResourceViewer = async (resource, type) => {
+    const openResourceViewer = async (resource, type, initialPage = 1) => {
+        if (state.courseSlug === 'msc-articleship-program' && (!state.user || !state.isEnrolled)) return;
         state.pdfDoc = null; state.csvData = null; state.pdfCurrentPage = 1; state.pdfTotalPages = 1;
         const ctx = DOMElements.pdfCanvas.getContext('2d');
         ctx.clearRect(0, 0, DOMElements.pdfCanvas.width, DOMElements.pdfCanvas.height);
@@ -2216,7 +2352,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            const { data, error } = await supabase.storage.from('industrial-training-mastery-resources').createSignedUrl(resource.view_storage_path, 300);
+            const { data, error } = await supabase.storage.from(articleshipLms()?.bucketFor(resource.view_storage_path) || 'industrial-training-mastery-resources').createSignedUrl(resource.view_storage_path, 300);
             if (error) throw error;
             const response = await fetch(`https://pdf-proxy-viewer.bhansalimanan55.workers.dev/?url=${encodeURIComponent(data.signedUrl)}`);
             if (!response.ok) throw new Error(`Failed to fetch from proxy: ${response.status}`);
@@ -2226,7 +2362,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 state.pdfDoc = await pdfjsLib.getDocument(pdfData).promise;
                 state.pdfTotalPages = state.pdfDoc.numPages;
                 DOMElements.pdfViewerContainer.style.display = 'block';
-                await renderPdfPage(1);
+                const requestedPage = Number.isSafeInteger(initialPage) ? initialPage : 1;
+                await renderPdfPage(Math.max(1, Math.min(state.pdfTotalPages, requestedPage)));
             } else if (type === 'csv') {
                 const csvText = await response.text();
                 // Reset search input and info bar before rendering
@@ -2641,6 +2778,7 @@ document.addEventListener('DOMContentLoaded', () => {
             rawSlug = slugAliases[rawSlug];
         }
         state.courseSlug = rawSlug;
+        document.body.classList.toggle('articleship-course', isCompactResourceCourse());
         if (!state.courseSlug || !courses[state.courseSlug]) {
             window.location.href = '/learning-management-system/';
             return;
