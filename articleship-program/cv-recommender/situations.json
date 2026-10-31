@@ -279,11 +279,11 @@
     "transfer-pricing": "Transfer Pricing Work Simulation, MSC Articleship Program | [Month Year]: screened [count] comparables, computed margins and the range, and tested the client's margin",
     "ma-tax": "M&A Tax Work Simulation, MSC Articleship Program | [Month Year]: compared dividend, buyback and capital reduction for a group company and wrote a one-page note on the tax angle of each",
     "valuation": "Valuation Work Simulation, MSC Articleship Program | [Month Year]: cleaned a 3-year P&L to EBITDA and built a DCF with three inputs and one sensitivity",
-    "fdd": "FDD Work Simulation, MSC Articleship Program | [Month Year]: normalised EBITDA for [count] adjustments, trended working capital, listed net debt and three red flags",
+    "fdd": "Financial Due Diligence Work Simulation, MSC Articleship Program | [Month Year]: normalised EBITDA for [count] adjustments, trended working capital, listed net debt and three red flags",
     "forensic": "Forensic Work Simulation, MSC Articleship Program | [Month Year]: analysed a 500-row ledger and flagged duplicates, round sums, holiday entries and vendor–employee matches",
     "consulting": "Consulting Work Simulation, MSC Articleship Program | [Month Year]: broke a profit fall into price, volume and cost drivers and made one recommendation",
-    "accounting": "Accounting Work Simulation, MSC Articleship Program | [Month Year]: closed a month's books from vouchers to a trial balance and Schedule III statements, with a bank reconciliation",
-    "ib-er": "IB & ER Work Simulation, MSC Articleship Program | [Month Year]: wrote a one-page company profile and a target screen with a valuation summary"
+    "accounting": "Accounting and Company Law Work Simulation, MSC Articleship Program | [Month Year]: closed a month's books from vouchers to a trial balance and Schedule III statements, with a bank reconciliation",
+    "ib-er": "IB and Equity Research Work Simulation, MSC Articleship Program | [Month Year]: wrote a one-page company profile and a target screen with a valuation summary"
   },
   "mscLine": {
     "label": "MSC Articleship Program",

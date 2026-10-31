@@ -416,7 +416,7 @@ test('examples: the work and project lines follow what was tapped; the certifica
     assert.match(exL(Object.assign({ projects: ['work-simulation'], domain: 'gst' }, D), 'certifications'),
         /^GST Work Simulation, MSC Articleship Program \| \[Month Year\]: .*GSTR-2B/);
     assert.match(exL(Object.assign({ projects: ['work-simulation'], domain: 'direct-tax' }, D), 'certifications'), /^Direct Tax Work Simulation/);
-    assert.match(exL(Object.assign({ projects: ['work-simulation'], domain: 'ib-er' }, D), 'certifications'), /^IB & ER Work Simulation/);
+    assert.match(exL(Object.assign({ projects: ['work-simulation'], domain: 'ib-er' }, D), 'certifications'), /^IB and Equity Research Work Simulation/);
     assert.match(exL(Object.assign({ projects: ['work-simulation'], domain: 'unsure' }, D), 'certifications'), /^Statutory Audit Work Simulation/,
         'not sure yet: statutory audit (house rule 10)');
     assert.match(ex(Object.assign({ projects: ['job-simulation'], domain: 'gst' }, D), 'certifications'), /Job Simulation \(Forage\)/,
