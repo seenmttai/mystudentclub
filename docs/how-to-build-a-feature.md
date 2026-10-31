@@ -1,50 +1,25 @@
-# How to build a feature with Claude (for the developer)
+# How we build and ship (Padam + Claude)
 
-This is the short version of the process the team agreed on. The goal: the developer builds whenever they want, the maintainer ships it within a day, and nothing breaks on the live site.
+Since 31 Oct 2026, MSC's tech is two people: Padam and Claude. Claude builds each change and makes it live. `AGENTS.md` has the full rules, and `/msc-feature` walks Claude through them.
 
-## The one rule
+## For Padam
 
-**Claude builds everything. Claude makes nothing live.**
+- Ask in any Claude session, or add a card to Notion Tasks with Who = Claude. One line is enough.
+- Claude builds it on a branch, tests it, checks the preview, has it reviewed, makes it live and checks the live site. You get one line back: "Live: <what> · <link>".
+- Claude asks you first only for:
+  - money
+  - deleting or exposing student data
+  - messages to many students or recruiters
+  - store submissions
+  - legal text
+  - anything under your name
+- If something breaks, it gets undone at once and you're told.
 
-Going live means: running SQL on Supabase, deploying a Cloudflare Worker, changing anything in a dashboard, or merging into the main branch. Those four things belong to the maintainer. Everything else belongs to the developer and Claude.
+## Why every change still gets a pull request
 
-Why: when a change goes live without a trail, the maintainer cannot see what changed, cannot test it, and cannot undo it. That is where the weeks go. When it arrives as a branch plus a handover zip, it can be reviewed and shipped the same day.
+Nobody reviews the PR any more, but it is the record. It says what changed, why, how to check it and how to undo it, so any change can be read and reverted in minutes.
 
-## What the developer does
+## One-time setup
 
-Open Claude Code inside the repo to change (`mystudentclub`, `hiremsc` or `msc-app`) and type:
-
-```
-/msc-feature
-```
-
-Then describe the feature in plain words. Say what it should do, who it is for, and why. Claude will ask a couple of questions, write a scope note, build the feature on a branch, run the tests, and prepare the handover.
-
-Useful prompts:
-
-- **Start:** `/msc-feature Add a LinkedIn URL field to the student profile so recruiters can see it.`
-- **Continue later:** `/msc-feature Continue the linkedin-url feature on branch feature/linkedin-url.`
-- **Finish:** `/msc-feature Hand over the linkedin-url feature.`
-
-Claude will refuse to deploy or run SQL even when asked. That is on purpose. If it ever does deploy something, tell the maintainer the same day.
-
-## What comes out at the end
-
-1. A pull request on GitHub from a branch named like `feature/linkedin-url`, raised by Claude. For the web site, Cloudflare Pages adds a preview link to it, where the feature can be clicked through before it goes live.
-2. A zip file in the `handover/` folder of the repo, named like `2026-10-18-linkedin-url.zip`. It contains the handover document, any SQL files, and any Worker files.
-
-Send the maintainer the zip. The pull request is already waiting on GitHub. The zip never goes on GitHub, because it can hold SQL and Worker code.
-
-## What the maintainer does
-
-Reads the handover and the pull request, tests on the preview, runs the SQL, deploys the Workers, merges. Anything unclear gets asked on the pull request. Target: live within 24 hours of receiving it.
-
-## One-time setup on the developer's machine
-
-1. **Supabase MCP in read-only mode.** In the file where the Supabase MCP server is configured (usually `~/.claude.json` or the Claude settings), add `--read-only` to its arguments and restart Claude Code. Claude can then read tables but physically cannot change them.
-2. **Cloudflare token read-only.** If Claude or GPT has a Cloudflare API token, replace it with one that has only Read permissions (Workers Scripts: Read, Account Settings: Read). The human dashboard login stays as it is.
-3. **Pull the latest branch** in each repo so the new `AGENTS.md`, `CLAUDE.md` and `.claude/` folder are there. They make all of this automatic.
-4. **Open Claude inside the repo folder**, not a parent folder. The safety rules only load when Claude starts in `mystudentclub`, `hiremsc` or `msc-app` itself.
-5. **Share the MCP server names with the maintainer.** Open Claude Code and type `/mcp`; it lists them. The block list needs the exact names (for example `supabase`, `cloudflare`). If a name is different from what the block list assumes, it will not catch that server.
-
-If the developer uses ChatGPT or Codex instead of Claude, it reads the same `AGENTS.md` file and should follow the same steps by hand. Ask it to "follow AGENTS.md" at the start.
+- **Supabase write access:** a Supabase personal access token, saved on the Mac in Keychain as `msc-supabase-token`. Until it's there, changes with SQL wait.
+- **Permissions:** Claude sessions that ship run in Bypass permissions.
