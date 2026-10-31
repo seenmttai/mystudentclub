@@ -132,19 +132,32 @@ document.addEventListener('DOMContentLoaded', () => {
         return type === 'docx' && hasPreview && hasDownload;
     };
 
+    const isExcelDownloadResource = (resource) => {
+        const viewPath = String(resource?.view_storage_path || '').toLowerCase();
+        const dlPath = String(resource?.download_storage_path || '').toLowerCase();
+        return viewPath.endsWith('.csv') && (dlPath.endsWith('.xlsx') || dlPath.endsWith('.xls'));
+    };
+
     const getResourceViewLabel = (resource) => isDocxPreviewResource(resource) ? 'Preview PDF' : 'View';
 
-    const getResourceDownloadLabel = (resource) => isDocxPreviewResource(resource) ? 'Download DOCX' : 'Download';
+    const getResourceDownloadLabel = (resource) => {
+        if (isDocxPreviewResource(resource)) return 'Download DOCX';
+        if (isExcelDownloadResource(resource)) return 'Download Excel';
+        return 'Download';
+    };
 
-    const getResourceFormatNote = (resource) => (
-        isDocxPreviewResource(resource)
-            ? 'PDF preview available. Download returns the original DOCX file.'
-            : ''
-    );
+    const getResourceFormatNote = (resource) => {
+        if (isDocxPreviewResource(resource)) return 'PDF preview available. Download returns the original DOCX file.';
+        if (isExcelDownloadResource(resource)) return 'Preview shows one sheet. Download the Excel file for every sheet.';
+        return '';
+    };
 
     const getResourceViewerSubtitle = (resource, type) => {
         if (isDocxPreviewResource(resource) && type === 'pdf') {
             return 'Previewing the PDF version. Use download to get the original DOCX file.';
+        }
+        if (isExcelDownloadResource(resource) && type === 'csv') {
+            return 'This preview shows one sheet. Download the Excel file for every sheet.';
         }
         return '';
     };
