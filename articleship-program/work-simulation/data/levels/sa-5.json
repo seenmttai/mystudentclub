@@ -17,13 +17,13 @@
  "case": {
   "role": "First-year article assistant on the statutory audit team",
   "client": "Tamhini Drivetech Private Limited, a Chakan company that makes gears, shafts and hubs for vehicle makers; the private-equity fund that owns 16% wants each quarter’s results reviewed by the statutory auditors",
-  "team": "Aditi Rane (senior), Rehan Siddiqui (manager), Sudha Venkatesh (partner); Varun Shetty, second-year article, set up the variance sheet; at Tamhini, Mahesh Kadam, GM Finance and Accounts, sent the numbers and his reasons",
+  "team": "Aarti Rane (senior), Rehan Siddiqui (manager), Sudha Venkatesh (partner); Varun Shetty, second-year article, set up the variance sheet; at Tamhini, Mahesh Kadam, GM Finance and Accounts, sent the numbers and his reasons",
   "goal": "Review Tamhini’s results for the quarter ended 30 September 2026 against Q1 and the same quarter last year, query what doesn’t fit and close the checklist.",
   "period": "Quarter ended 30 September 2026 (limited review)",
   "where": "Firm office, Prabhat Road · Monday 26 October 2026"
  },
  "brief": {
-  "from": "aditi",
+  "from": "aarti",
   "time": "9:35 am",
   "messages": [
    "Tamhini’s Q2 review is ours this week. Varun has cleared the other lines; the nine I asked Mahesh about are yours. Variance sheet first, then I’ll put his reasons and papers beside each line.",
@@ -43,8 +43,8 @@
    },
    "to": [
     {
-     "name": "Aditi Rane",
-     "email": "aditi.rane@email.com"
+     "name": "Aarti Rane",
+     "email": "aarti.rane@email.com"
     }
    ],
    "cc": [
@@ -56,7 +56,7 @@
    "date": "Thu, 22 Oct 2026, 11:14 pm",
    "subject": "Tamhini: Q2 numbers and my notes",
    "body": [
-    "Aditi,",
+    "Aarti,",
     "Q2 pack as promised: the draft results, the ledger summary by quarter, the plant MIS and the fixed-asset schedule. Against each of the nine lines you asked about I have put my reason and whatever papers I had to hand.",
     "The board meets on Thursday 12 November and Nandini at Kaveri Bridge wants the reviewed results by the 14th. The plant is shut for Diwali from 7 to 11 November, so please send all your queries in one mail, by Friday the 30th if you can.",
     "Regards,"
@@ -770,7 +770,7 @@
    "letterhead": "Tamhini Drivetech Private Limited\nPlot B-47, Chakan Industrial Area Phase II, MIDC, Mahalunge, Pune 410501",
    "subject": "Minutes of the meeting of the Board of Directors held on Friday, 14 August 2026 at the registered office (extract)",
    "body": [
-    "Present: Dilip Joglekar (Chairman), Amol Joglekar (Managing Director), Sneha Joglekar, Nandini Krishnamurthy (nominee director). In attendance: Mrunal Deo (Company Secretary), Mahesh Kadam (GM, Finance and Accounts).",
+    "Present: Dilip Joglekar (Chairman), Amol Joglekar (Managing Director), Sejal Joglekar, Nandini Krishnamurthy (nominee director). In attendance: Mrunal Deo (Company Secretary), Mahesh Kadam (GM, Finance and Accounts).",
     "## 3. Results for the quarter ended 30 June 2026",
     "The Board considered the unaudited results for the quarter ended 30 June 2026, reviewed by the statutory auditors. RESOLVED THAT the results be and are hereby approved and sent to Kaveri Bridge India Growth Fund I.",
     "## 4. Term loan II and the new CNC turning centre",
@@ -2312,13 +2312,13 @@
    "type": "worksheet",
    "stage": "Planning",
    "title": "Finish the variance sheet",
-   "prompt": "Varun set up the variance sheet for the nine lines and left eight boxes for you. Enter each change as a percentage of the comparison, to one decimal: (Q2 − comparison) ÷ comparison × 100, with a minus for a fall. Your sheet goes to Aditi when you move on.",
+   "prompt": "Varun set up the variance sheet for the nine lines and left eight boxes for you. Enter each change as a percentage of the comparison, to one decimal: (Q2 − comparison) ÷ comparison × 100, with a minus for a fall. Your sheet goes to Aarti when you move on.",
    "weight": 1,
    "lockOnLeave": {
-    "ask": "Hand your variance sheet to Aditi?",
+    "ask": "Hand your variance sheet to Aarti?",
     "note": "You can’t change it after this.",
     "yes": "Hand it in",
-    "done": "Handed to Aditi. You can read your figures but not change them."
+    "done": "Handed to Aarti. You can read your figures but not change them."
    },
    "hints": [
     "Divide by the comparison, not by Q2. Varun’s revenue against Q1: (3,094.61 − 2,778.68) ÷ 2,778.68 × 100 = 11.4%."
@@ -2527,17 +2527,17 @@
    "type": "items",
    "stage": "Fieldwork",
    "title": "Explain or query each line",
-   "prompt": "Aditi has put Mahesh’s reason and papers beside each line. Say which comparison, if either, crosses our threshold and make your call: no query, or a query to Mahesh. The results, minutes, plant MIS, fixed-asset schedule and our fee letter are under Other papers. Your calls go to Aditi when you move on.",
+   "prompt": "Aarti has put Mahesh’s reason and papers beside each line. Say which comparison, if either, crosses our threshold and make your call: no query, or a query to Mahesh. The results, minutes, plant MIS, fixed-asset schedule and our fee letter are under Other papers. Your calls go to Aarti when you move on.",
    "weight": 2,
    "noun": [
     "line",
     "lines"
    ],
    "lockOnLeave": {
-    "ask": "Hand your line calls to Aditi?",
+    "ask": "Hand your line calls to Aarti?",
     "note": "You can’t change them after this.",
     "yes": "Hand them in",
-    "done": "Handed to Aditi. You can read your calls but not change them."
+    "done": "Handed to Aarti. You can read your calls but not change them."
    },
    "hints": [
     "A line crosses only when the change is more than 10% and more than ₹10 lakh on the same comparison: Q1 or Q2 last year. A reason holds only when a paper backs it and it fits both comparisons.",
@@ -2777,17 +2777,17 @@
    "type": "compose",
    "stage": "Fieldwork",
    "title": "Draft the query mail to Mahesh",
-   "prompt": "Aditi wants one mail to Mahesh with a query for each line that needs one: job work, our fees and depreciation. Pick the right paragraph for each. She will read it before it goes.",
+   "prompt": "Aarti wants one mail to Mahesh with a query for each line that needs one: job work, our fees and depreciation. Pick the right paragraph for each. She will read it before it goes.",
    "weight": 3,
    "noun": [
     "query",
     "queries"
    ],
    "lockOnLeave": {
-    "ask": "Hand your mail to Aditi?",
+    "ask": "Hand your mail to Aarti?",
     "note": "You can’t change it after this.",
     "yes": "Hand it in",
-    "done": "Handed to Aditi. You can read your mail but not change it."
+    "done": "Handed to Aarti. You can read your mail but not change it."
    },
    "hints": [
     "Each query says what doesn’t fit and asks for the one paper or entry that settles it."
@@ -2884,7 +2884,7 @@
    "type": "choice",
    "stage": "Report",
    "title": "Before Sudha signs",
-   "prompt": "Before Sudha signs the review report, Aditi wants three things settled: the checklist, Mahesh’s two uncorrected items and the sentence for the report.",
+   "prompt": "Before Sudha signs the review report, Aarti wants three things settled: the checklist, Mahesh’s two uncorrected items and the sentence for the report.",
    "weight": 2,
    "hints": [
     "A review ordinarily means enquiry and analytical procedures. Confirming, counting and vouching belong to the audit."
@@ -2893,7 +2893,7 @@
     {
      "id": "q1",
      "multi": true,
-     "text": "Aditi’s checklist has ten points, and four of them belong to an audit, not to this review. Tick the six that belong in this review.",
+     "text": "Aarti’s checklist has ten points, and four of them belong to an audit, not to this review. Tick the six that belong in this review.",
      "options": [
       {
        "id": "a",
@@ -3018,15 +3018,15 @@
   }
  ],
  "wrap": {
-  "from": "aditi",
+  "from": "aarti",
   "text": "Three queries, and two of them sit under our threshold: our fees and TC-35’s depreciation. Job work was the other kind, over the line with a reason that didn’t fit Q1. I’ll take the list to Rehan on Thursday."
  },
  "wrapPartial": {
-  "from": "aditi",
+  "from": "aarti",
   "text": "Over the threshold, a reason needs a paper that fits both comparisons; under it, ask what should have moved. And Sudha’s report gives a review conclusion, never an audit opinion. The list goes to Rehan when your file holds to those."
  },
  "wrapRetry": {
-  "from": "aditi",
+  "from": "aarti",
   "text": "Our rule is over 10% and over ₹10 lakh, against Q1 or last year. Test each reason against both comparisons and its papers. Then ask what should have moved but didn’t; the minutes, the asset schedule and our own fee letter show you where."
  },
  "passNeeds": [
@@ -3128,7 +3128,7 @@
    },
    {
     "type": "note",
-    "from": "aditi",
+    "from": "aarti",
     "text": "The threshold sorts the sheet; it doesn’t close it. Over the line with a paper behind it takes a minute. Under the line, ask what the minutes, the asset schedule and our own letter say should have moved."
    }
   ]

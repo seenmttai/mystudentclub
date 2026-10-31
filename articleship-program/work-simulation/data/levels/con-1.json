@@ -99,10 +99,10 @@
    "date": "02-12-2026",
    "subject": "Kick-off at Agnika, Coimbatore: what each manager said",
    "body": [
-    "Present: Gopinath Ramasamy (CFO), Shalini Bhargava (Corporate Development), Vikram Sundaresan (Sales, Cookware), Tanvi Oberoi (Online sales), Deepa Raghunathan (Finance Controller) and P. Murugesan (Purchase); for us, Ananya Mukherjee and our article assistant.",
+    "Present: Gopinath Ramasamy (CFO), Shalini Bhargava (Corporate Development), Vikram Sundaresan (Sales, Cookware), Trisha Oberoi (Online sales), Deepa Raghunathan (Finance Controller) and P. Murugesan (Purchase); for us, Ananya Mukherjee and our article assistant.",
     "Gopinath opened with the numbers: 1.3 lakh more cookers in 2025–26 and ₹27 crore less line profit. Each manager then gave a view. Noted as said, not yet checked:",
     "1. Vikram: “The April price cut paid for itself. We sold 1.3 lakh more cookers because of it.”",
-    "2. Tanvi: “Online is now our most profitable channel. It brought all of last year’s growth, at the same price as the dealers.”",
+    "2. Trisha: “Online is now our most profitable channel. It brought all of last year’s growth, at the same price as the dealers.”",
     "3. Deepa: “Load each cooker with its share of fixed costs, about ₹207, and every online cooker loses about ₹88. Stop selling online and the line makes more money.”",
     "4. Murugesan: “Aluminium is the main reason. Material went up ₹52 a cooker, and that is outside our control.”",
     "Shalini: the board wants this explained before it takes the cookware search any further.",
@@ -820,8 +820,8 @@
     },
     {
      "id": "q2",
-     "sample": "Tanvi: is online now the most profitable channel?",
-     "text": "Tanvi (Online sales): “Online is now our most profitable channel. It brought all of last year’s growth, at the same price as the dealers.” Does it hold?",
+     "sample": "Trisha: is online now the most profitable channel?",
+     "text": "Trisha (Online sales): “Online is now our most profitable channel. It brought all of last year’s growth, at the same price as the dealers.” Does it hold?",
      "options": [
       {
        "id": "a",
@@ -1152,7 +1152,7 @@
    {
     "type": "note",
     "from": "ananya",
-    "text": "Each manager had a true fact and drew too much from it. Vikram did sell more cookers, Tanvi did grow online, Deepa’s ₹88 is real arithmetic and aluminium did rise. The bridge says which facts matter, and by how much."
+    "text": "Each manager had a true fact and drew too much from it. Vikram did sell more cookers, Trisha did grow online, Deepa’s ₹88 is real arithmetic and aluminium did rise. The bridge says which facts matter, and by how much."
    }
   ]
  },

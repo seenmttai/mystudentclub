@@ -1790,7 +1790,7 @@ function emChipKids(html, open) {
 }
 test('sa-4 round 5: a mail chip’s name is one span beside the badge, in every branch and in every level’s mails', () => {
   const D = require('../articleship-program/work-simulation/js/ws-docs.js');
-  const mail = { id: 'm', type: 'letter', style: 'email', title: 'Mail', subject: 'Payroll files', from: { name: 'Shabana Shaikh' }, to: [{ name: 'Aditi Rane' }], body: ['Attached.'],
+  const mail = { id: 'm', type: 'letter', style: 'email', title: 'Mail', subject: 'Payroll files', from: { name: 'Shabana Shaikh' }, to: [{ name: 'Aarti Rane' }], body: ['Attached.'],
     attachments: ['Bank salary report Dec 2026.pdf', { name: 'Salary register Apr–Dec 2026.xlsx', file: 'reg.xlsx' }, { name: 'Valuation, 31 Dec 2026.pdf', doc: 'v' }] };
   const link = { levelId: 'x', docLink: (id, cls) => ({ open: '<button type="button" class="' + cls + '" data-doc="' + id + '">', close: '</button>' }) };
   [{}, link].forEach(c => {

@@ -297,8 +297,8 @@
      "fy26": 66
     },
     {
-     "item": "Salary to a relative of a director: Rohan Vasani",
-     "_id": "emp-rohan",
+     "item": "Salary to a relative of a director: Ramit Vasani",
+     "_id": "emp-ramit",
      "fy24": "–",
      "fy25": "–",
      "fy26": 120
@@ -312,7 +312,7 @@
     }
    ],
    "notes": [
-    "Rohan Vasani, son of the managing director, joined on 1 April 2025 as Head of Business Development.",
+    "Ramit Vasani, son of the managing director, joined on 1 April 2025 as Head of Business Development.",
     "The board raised the managing director’s remuneration from ₹60 lakh to ₹66 lakh a year from 1 April 2025."
    ]
   },
@@ -479,7 +479,7 @@
      "fy26": 2162
     },
     {
-     "item": "Add: family salary that ends on a sale (Rohan Vasani)",
+     "item": "Add: family salary that ends on a sale (Ramit Vasani)",
      "fy24": "–",
      "fy25": "–",
      "fy26": 120
@@ -543,7 +543,7 @@
     "- Head of business development at a consumer-durables company of ₹150–250 crore revenue: about ₹36 lakh a year, all in.",
     "- Managing director at that size: ₹60–75 lakh a year. Hitesh stays on as MD for three years after closing, on his present pay. That is agreed in principle.",
     "- Warehouse of the same size in GIDC Savli: two quotes, ₹5.8 lakh and ₹6.2 lakh a month. Please take ₹6 lakh. After closing we rent at market or we move.",
-    "Rohan’s role carries on after closing. We would pay the market rate for it.",
+    "Ramit’s role carries on after closing. We would pay the market rate for it.",
     "Regards,"
    ],
    "sign": {
@@ -1183,7 +1183,7 @@
     },
     {
      "id": "i7",
-     "label": "Line 7 · Rohan Vasani’s salary",
+     "label": "Line 7 · Ramit Vasani’s salary",
      "where": "Note 20",
      "amts": "₹120 lakh, 2025–26 only",
      "docs": [
@@ -1196,7 +1196,7 @@
      },
      "note": "Line 7: the IM says this cost ends on a sale, but Shalini’s mail says the role carries on and Agnika would pay ₹36 lakh for it. Only the ₹84 lakh above that comes back. Adjust to market.",
      "docRow": {
-      "note-emp": "emp-rohan"
+      "note-emp": "emp-ramit"
      }
     },
     {
@@ -1240,7 +1240,7 @@
    "type": "worksheet",
    "stage": "Fieldwork",
    "title": "Build the EBITDA bridge",
-   "prompt": "Ishaan has been through your calls. On his list, other income and the warranty write-back come out, Rohan’s salary and the warehouse rent go to market, and the rest stays. Fill the two market adjustments, then build adjusted EBITDA for each year, the 2025–26 margin and the gap to the IM. All in ₹ lakh.",
+   "prompt": "Ishaan has been through your calls. On his list, other income and the warranty write-back come out, Ramit’s salary and the warehouse rent go to market, and the rest stays. Fill the two market adjustments, then build adjusted EBITDA for each year, the 2025–26 margin and the gap to the IM. All in ₹ lakh.",
    "weight": 2,
    "noun": [
     "figure",
@@ -1254,7 +1254,7 @@
    },
    "hints": [
     "Profit before tax, plus finance costs and depreciation, less all of other income, gives back reported EBITDA. Start there.",
-    "Each market adjustment is the gap between what Savli paid and what Agnika will pay: the rent in all three years, Rohan’s salary in 2025–26 only."
+    "Each market adjustment is the gap between what Savli paid and what Agnika will pay: the rent in all three years, Ramit’s salary in 2025–26 only."
    ],
    "layout": "grid",
    "columns": [
@@ -1327,7 +1327,7 @@
     {
      "id": "r6",
      "cells": {
-      "line": "Add back: Rohan’s salary above market",
+      "line": "Add back: Ramit’s salary above market",
       "fy24": "–",
       "fy25": "–",
       "fy26": {
@@ -1457,9 +1457,9 @@
     "r7.fy24": "If you put 72, you took the market rent, not the extra. Savli already pays ₹24 lakh, and the rent never changed, so the same ₹48 lakh goes in every year.",
     "r8.fy24": "Apart from other income, 2023–24 has only the rent to put at market. The IM’s ₹1,567 lakh is ₹89 lakh higher: it adds back the ₹41 lakh meet and leaves the rent ₹48 lakh under market.",
     "r8.fy25": "2024–25 is where the insurance cheque hides: profit before tax of ₹1,620 lakh includes ₹318 lakh that no cooker earned.",
-    "r8.fy26": "2025–26 sits ₹56 lakh under reported EBITDA: the write-back out (−92), Rohan at market (+84), rent at market (−48). This is the base year my forecast margin and the peer check are tested against.",
+    "r8.fy26": "2025–26 sits ₹56 lakh under reported EBITDA: the write-back out (−92), Ramit at market (+84), rent at market (−48). This is the base year my forecast margin and the peer check are tested against.",
     "r9.fy26": "11.3%, not the IM’s 12.5%. It backs my 11.0% forecast margin; at 12.5% the same sheet gives about ₹160 crore. Each point of margin moves EV by about ₹24 crore.",
-    "r11.fy26": "₹222 lakh: the IM adds back ₹36 lakh more of Rohan’s salary and the ₹46 lakh meet, keeps the ₹92 lakh write-back and leaves the rent ₹48 lakh under market."
+    "r11.fy26": "₹222 lakh: the IM adds back ₹36 lakh more of Ramit’s salary and the ₹46 lakh meet, keeps the ₹92 lakh write-back and leaves the rent ₹48 lakh under market."
    },
    "docs": [
     "pl",
@@ -1718,17 +1718,17 @@
       {
        "id": "a",
        "correct": true,
-       "text": "Base year: 2025–26 adjusted EBITDA is ₹21.06 crore (11.3% of revenue), not the IM’s ₹23.28 crore: the meet stays in, the write-back comes out, Rohan’s salary and the rent go to market.",
-       "why": "Note 23 shows the meet every January and the write-back once, and Shalini’s benchmarks set Rohan’s pay and the rent."
+       "text": "Base year: 2025–26 adjusted EBITDA is ₹21.06 crore (11.3% of revenue), not the IM’s ₹23.28 crore: the meet stays in, the write-back comes out, Ramit’s salary and the rent go to market.",
+       "why": "Note 23 shows the meet every January and the write-back once, and Shalini’s benchmarks set Ramit’s pay and the rent."
       },
       {
        "id": "b",
-       "text": "Base year: 2025–26 adjusted EBITDA is ₹23.28 crore (12.5% of revenue), as the IM shows. Rohan’s salary ends on a sale and the dealers’ meet is a one-time event, so both add-backs stand.",
-       "why": "That is Hitesh’s number. It keeps the ₹92 lakh write-back and the cheap rent, yet the meet has run three Januaries in a row and Rohan’s role carries on at ₹36 lakh."
+       "text": "Base year: 2025–26 adjusted EBITDA is ₹23.28 crore (12.5% of revenue), as the IM shows. Ramit’s salary ends on a sale and the dealers’ meet is a one-time event, so both add-backs stand.",
+       "why": "That is Hitesh’s number. It keeps the ₹92 lakh write-back and the cheap rent, yet the meet has run three Januaries in a row and Ramit’s role carries on at ₹36 lakh."
       },
       {
        "id": "c",
-       "text": "Base year: 2025–26 EBITDA is ₹21.62 crore (11.6% of revenue), as reported, with nothing adjusted. Rohan’s salary, the warehouse rent and the warranty write-back are what Savli paid and earned.",
+       "text": "Base year: 2025–26 EBITDA is ₹21.62 crore (11.6% of revenue), as reported, with nothing adjusted. Ramit’s salary, the warehouse rent and the warranty write-back are what Savli paid and earned.",
        "why": "Reported is where you start, not where you stop. The write-back flatters 2025–26, and Agnika will pay market rent and a market salary after closing."
       }
      ]
@@ -1870,7 +1870,7 @@
       "us": 2162
      },
      {
-      "line": "Rohan’s salary",
+      "line": "Ramit’s salary",
       "im": "+120",
       "us": "+84"
      },

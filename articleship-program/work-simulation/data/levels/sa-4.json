@@ -17,13 +17,13 @@
  "case": {
   "role": "First-year article assistant on the interim audit, staff payroll",
   "client": "Tamhini Drivetech Private Limited, a Chakan company that makes gears, shafts and hubs for vehicle makers",
-  "team": "Aditi Rane (senior), Rehan Siddiqui (manager), Sudha Venkatesh (partner); Varun Shetty, second-year article, did this file last year; at Tamhini, Shabana Shaikh runs the staff payroll on a spreadsheet with Sunil Gaikwad, the payroll assistant",
+  "team": "Aarti Rane (senior), Rehan Siddiqui (manager), Sudha Venkatesh (partner); Varun Shetty, second-year article, did this file last year; at Tamhini, Shabana Shaikh runs the staff payroll on a spreadsheet with Sunil Gaikwad, the payroll assistant",
   "goal": "Test the staff payroll for April to December 2026: headcount, joiners and leavers, PF and ESI.",
   "period": "Nine months to 31 December 2026 (interim audit)",
   "where": "HR office, Chakan plant · Monday 18 January 2027"
  },
  "brief": {
-  "from": "aditi",
+  "from": "aarti",
   "time": "11:20 am",
   "messages": [
    "Staff payroll today, April to December. Roll the headcount forward, test the joiners and leavers, then recompute PF and ESI on the December rows I’ve marked.",
@@ -42,8 +42,8 @@
    },
    "to": [
     {
-     "name": "Aditi Rane",
-     "email": "aditi.rane@email.com"
+     "name": "Aarti Rane",
+     "email": "aarti.rane@email.com"
     }
    ],
    "cc": [
@@ -55,7 +55,7 @@
    "date": "Fri 15 Jan 2027, 6:40 pm",
    "subject": "Payroll files, April to December 2026",
    "body": [
-    "Dear Aditi ma’am,",
+    "Dear Aarti ma’am,",
     "As asked, the staff payroll files for April to December 2026 are in the shared folder. The salary register has one sheet a month. PF and ESI are worked out in the sheet with the same formulas as last year.",
     "Joining letters are in the HR cabinet. One personnel file is not there yet; my note is with the files. Sunil will help with anything else you need on Monday.",
     "Regards,"
@@ -133,7 +133,7 @@
     {
      "from": "You",
      "time": "11:38 am",
-     "text": "Aditi wants the joiners and leavers tested one by one."
+     "text": "Aarti wants the joiners and leavers tested one by one."
     },
     {
      "from": "varun",
@@ -388,7 +388,7 @@
      "gross": 22000
     },
     {
-     "emp": "E1091 Neha Bansode",
+     "emp": "E1091 Nita Bansode",
      "dept": "Quality",
      "desig": "Quality Inspector",
      "joined": "07-09-2026",
@@ -502,7 +502,7 @@
     {
      "date": "04-09-2026",
      "code": "E1091",
-     "chg": "New: Neha Bansode",
+     "chg": "New: Nita Bansode",
      "by": "Sunil G.",
      "appr": "S.S. 04-09-2026"
     },
@@ -623,7 +623,7 @@
     },
     {
      "card": "TD-S-0533",
-     "emp": "E1091 Neha Bansode",
+     "emp": "E1091 Nita Bansode",
      "dept": "Quality",
      "iss": "07-09-2026",
      "ret": ""
@@ -1209,7 +1209,7 @@
      "net": 20626
     },
     {
-     "emp": "E1091 Neha Bansode",
+     "emp": "E1091 Nita Bansode",
      "days": 31,
      "gross": 28000,
      "pfw": 14550,
@@ -1558,10 +1558,10 @@
      "held": "POOJA NIMBALKAR"
     },
     {
-     "ben": "Neha Bansode",
+     "ben": "Nita Bansode",
      "acct": "04170169759350",
      "amt": 26054,
-     "held": "NEHA BANSODE"
+     "held": "NITA BANSODE"
     },
     {
      "ben": "Rakesh Bhoir",
@@ -2056,7 +2056,7 @@
    "id": "ap-1091",
    "type": "letter",
    "style": "letter",
-   "title": "Neha Bansode · appointment letter",
+   "title": "Nita Bansode · appointment letter",
    "tab": "Letter",
    "group": "p1091",
    "letterhead": {
@@ -2067,7 +2067,7 @@
    "ref": "TDPL/HR/APT/26-27/019",
    "date": "25-08-2026",
    "to": {
-    "name": "Ms Neha Bansode",
+    "name": "Ms Nita Bansode",
     "address": "Plot 22, Sant Tukaram Nagar, Bhosari, Pune 411039"
    },
    "subject": "Appointment as Quality Inspector",
@@ -2088,7 +2088,7 @@
    "annotations": [
     {
      "kind": "hand",
-     "text": "Accepted. Neha Bansode, 26/8/2026",
+     "text": "Accepted. Nita Bansode, 26/8/2026",
      "color": "blue",
      "at": "inline",
      "rotate": -2
@@ -2099,13 +2099,13 @@
    "id": "att-1091",
    "type": "table",
    "style": "register",
-   "title": "Neha Bansode · biometric attendance",
+   "title": "Nita Bansode · biometric attendance",
    "tab": "Attendance",
    "kindLabel": "Attendance summary",
    "group": "p1091",
    "heading": "Biometric attendance summary",
    "company": "Tamhini Drivetech Private Limited",
-   "subtitle": "E1091 Neha Bansode · Quality",
+   "subtitle": "E1091 Nita Bansode · Quality",
    "columns": [
     {
      "key": "m",
@@ -2190,7 +2190,7 @@
    "id": "pay-1091",
    "type": "table",
    "style": "sheet",
-   "title": "Neha Bansode · salary paid, month by month",
+   "title": "Nita Bansode · salary paid, month by month",
    "tab": "Salary paid",
    "group": "p1091",
    "sheetName": "Employee view",
@@ -2284,7 +2284,7 @@
     }
    ],
    "notes": [
-    "E1091 Neha Bansode · Quality Inspector · from the monthly salary register sheets, April to December 2026."
+    "E1091 Nita Bansode · Quality Inspector · from the monthly salary register sheets, April to December 2026."
    ]
   },
   {
@@ -3167,7 +3167,7 @@
    "type": "worksheet",
    "stage": "Planning",
    "title": "Roll the headcount forward",
-   "prompt": "Roll the April headcount forward to two payrolls: September, the half-year, and December, our interim date. Take joiners and leavers from the dates in the employee master, then compare with the heads the payroll actually paid. Your sheet goes to Aditi when you move on.",
+   "prompt": "Roll the April headcount forward to two payrolls: September, the half-year, and December, our interim date. Take joiners and leavers from the dates in the employee master, then compare with the heads the payroll actually paid. Your sheet goes to Aarti when you move on.",
    "weight": 1,
    "layout": "grid",
    "noun": [
@@ -3175,10 +3175,10 @@
     "cells"
    ],
    "lockOnLeave": {
-    "ask": "Hand your headcount sheet to Aditi?",
+    "ask": "Hand your headcount sheet to Aarti?",
     "note": "You can’t change it after this.",
     "yes": "Hand it in",
-    "done": "Handed to Aditi. You can read your sheet but not change it."
+    "done": "Handed to Aarti. You can read your sheet but not change it."
    },
    "hints": [
     "A leaver is paid for the month they leave and drops out the month after.",
@@ -3217,14 +3217,14 @@
        "input": true,
        "answer": 3,
        "tolerance": 0,
-       "working": "Pooja 1 July, Rakesh 1 August, Neha 7 September",
+       "working": "Pooja 1 July, Rakesh 1 August, Nita 7 September",
        "sign": false
       },
       "dec": {
        "input": true,
        "answer": 3,
        "tolerance": 0,
-       "working": "Pooja, Rakesh, Neha; Sameera starts on 4 January 2027",
+       "working": "Pooja, Rakesh, Nita; Sameera starts on 4 January 2027",
        "sign": false
       }
      }
@@ -3336,10 +3336,10 @@
     "people"
    ],
    "lockOnLeave": {
-    "ask": "Hand your joiner and leaver calls to Aditi?",
+    "ask": "Hand your joiner and leaver calls to Aarti?",
     "note": "You can’t change them after this.",
     "yes": "Hand them in",
-    "done": "Handed to Aditi. You can read your calls but not change them."
+    "done": "Handed to Aarti. You can read your calls but not change them."
    },
    "hints": [
     "In the bank report, read each name against its account number and the account holder.",
@@ -3482,8 +3482,8 @@
     },
     {
      "id": "p1091",
-     "label": "E1091 · Neha Bansode",
-     "short": "Neha",
+     "label": "E1091 · Nita Bansode",
+     "short": "Nita",
      "move": "Joiner · 7 Sep 2026",
      "docs": [
       "ap-1091",
@@ -3494,7 +3494,7 @@
       "verdict": "ok",
       "jan": "yes"
      },
-     "note": "Neha joined on 7 September, so September is 24 days: ₹28,000 × 24 ÷ 30 = ₹22,400. Letter, biometric, UAN and her own account. Fine, and her January salary is due."
+     "note": "Nita joined on 7 September, so September is 24 days: ₹28,000 × 24 ÷ 30 = ₹22,400. Letter, biometric, UAN and her own account. Fine, and her January salary is due."
     },
     {
      "id": "p1037",
@@ -3602,13 +3602,13 @@
    "type": "worksheet",
    "stage": "Fieldwork",
    "title": "Recompute December PF and ESI",
-   "prompt": "Recompute the employee’s share of PF and ESI on the rows Aditi marked yellow in the December register, taking PF wages and ESI wages as the sheet shows them. Rates and ceilings are in the audit programme. Enter what each should be, 0 where nothing is due. Your figures go to Aditi when you move on.",
+   "prompt": "Recompute the employee’s share of PF and ESI on the rows Aarti marked yellow in the December register, taking PF wages and ESI wages as the sheet shows them. Rates and ceilings are in the audit programme. Enter what each should be, 0 where nothing is due. Your figures go to Aarti when you move on.",
    "weight": 1,
    "lockOnLeave": {
-    "ask": "Hand your PF and ESI figures to Aditi?",
+    "ask": "Hand your PF and ESI figures to Aarti?",
     "note": "You can’t change them after this.",
     "yes": "Hand them in",
-    "done": "Handed to Aditi. You can read your figures but not change them."
+    "done": "Handed to Aarti. You can read your figures but not change them."
    },
    "hints": [
     "From 17 September 2026 PF wages stop at ₹25,000, not ₹15,000. Below the cap, take the actual PF wages.",
@@ -3730,7 +3730,7 @@
     {
      "id": "pf1091",
      "cells": {
-      "emp": "PF · Neha Bansode (E1091)",
+      "emp": "PF · Nita Bansode (E1091)",
       "wages": 14550,
       "ded": 1746,
       "due": {
@@ -3853,18 +3853,18 @@
    "id": "t4",
    "type": "compose",
    "stage": "Report",
-   "title": "Write your points for Aditi",
+   "title": "Write your points for Aarti",
    "weight": 3,
    "noun": [
     "line",
     "lines"
    ],
-   "prompt": "Aditi wants one note with today’s points. It stays inside the firm until Rehan and Sudha have read it. Pick the right line for each point; the change register, bank report, F&F papers and salary register are in Documents.",
+   "prompt": "Aarti wants one note with today’s points. It stays inside the firm until Rehan and Sudha have read it. Pick the right line for each point; the change register, bank report, F&F papers and salary register are in Documents.",
    "hints": [
     "Write what each paper shows, names included. What it means, and what happens to anyone, is for Rehan and Sudha.",
     "For the control point, read the change register’s two name columns and the foot of the salary register."
    ],
-   "previewLabel": "Your points for Aditi",
+   "previewLabel": "Your points for Aarti",
    "slots": [
     {
      "id": "ghost",
@@ -3945,7 +3945,7 @@
        "id": "b",
        "correct": true,
        "text": "PF: the ceiling is ₹25,000 from 17 September 2026, but the sheet still caps PF wages at ₹15,000. Five of eight rows I recomputed are short, E1005’s by ₹1,200, and Tamhini’s matching share with them. Arrears since the change to be worked out.",
-       "why": "Below the new cap the actual PF wages count, so Santosh, Neha and Baban were already right. The rest stay short until Shabana fixes the formula."
+       "why": "Below the new cap the actual PF wages count, so Santosh, Nita and Baban were already right. The rest stay short until Shabana fixes the formula."
       },
       {
        "id": "c",
@@ -3977,7 +3977,7 @@
      ]
     }
    ],
-   "template": "Payroll, April to December 2026 · points for review\nFor Aditi Rane\n\n{ghost}\n\n{next}\n\n{leaver}\n\n{pf}\n\n{control}\n\n{_free}\n\nWorking papers: interim file, Payroll section. Prepared on 18 January 2027.",
+   "template": "Payroll, April to December 2026 · points for review\nFor Aarti Rane\n\n{ghost}\n\n{next}\n\n{leaver}\n\n{pf}\n\n{control}\n\n{_free}\n\nWorking papers: interim file, Payroll section. Prepared on 18 January 2027.",
    "freeText": {
     "label": "Your own line for the note"
    },
@@ -4005,15 +4005,15 @@
   }
  ],
  "wrap": {
-  "from": "aditi",
+  "from": "aarti",
   "text": "One of the seven has nothing behind him but a master entry and a salary, and Amit was paid for a month after he left. December’s headcount still tied. I’ve called Rehan; he and Sudha will read your note before anyone at Tamhini hears of it. The PF formula goes to Shabana once they agree."
  },
  "wrapPartial": {
-  "from": "aditi",
+  "from": "aarti",
   "text": "Before this note goes anywhere, check each call against the papers, not against Shabana’s file note or Varun’s chat. I’ll take the note to Rehan myself this afternoon."
  },
  "wrapRetry": {
-  "from": "aditi",
+  "from": "aarti",
   "text": "The bank report shows the extra salary once you put each name next to the account it is paid into. Then match each leaver’s last working day to the months they were paid, and recompute PF with the ₹25,000 cap: below it, the actual PF wages count."
  },
  "model": {
@@ -4066,7 +4066,7 @@
     "type": "list",
     "items": [
      "Pooja: 19 punched days in August, plus six on-duty days at Hosur on a slip Prashant Lande signed.",
-     "Neha: 24 days paid in September, because she joined on the 7th.",
+     "Nita: 24 days paid in September, because she joined on the 7th.",
      "Vinod: 15 days paid in June, his last month, and nothing after.",
      "Hemant: a payment on 20 November, which is his F&F, not salary.",
      "Meera: on the December payroll, because her last day is 31 December."
@@ -4074,11 +4074,11 @@
    },
    {
     "type": "text",
-    "text": "On the rows Aditi marked, ESI was right throughout: 0.75% of ESI wages rounded up to the rupee, and nothing for Pallavi, whose ESI wages are above ₹21,000."
+    "text": "On the rows Aarti marked, ESI was right throughout: 0.75% of ESI wages rounded up to the rupee, and nothing for Pallavi, whose ESI wages are above ₹21,000."
    },
    {
     "type": "note",
-    "from": "aditi",
+    "from": "aarti",
     "text": "Varun’s check was the master against the payroll, and the master holds Rakesh, so it tied. Next time, start with the bank report and look for any account paid twice. That takes a minute."
    }
   ]

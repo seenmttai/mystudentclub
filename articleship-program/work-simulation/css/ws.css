@@ -1333,7 +1333,7 @@ tr.row-focus + tr.row-focus td:first-child { box-shadow: inset 3px 0 0 var(--nav
 .grn-rem { margin: 6px 0; }
 .grn-rem .k { color: #555B66; }
 .grn-signs { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 12px; }
-/* at 360 px the two signatures ("Santosh Kale", "Neha Bansode": 30 px Caveat, nowrap) needed more than the paper's width,
+/* at 360 px the two signatures ("Santosh Kale", "Nita Bansode": 30 px Caveat, nowrap) needed more than the paper's width,
    so the QC column ran 8 px past it (sa-1's twelve GRNs; play.mjs at phone360). Narrower than 380 px they write a little
    smaller; at 390 px and wider nothing changes */
 @media (max-width: 379px) { .grn-signs .sig { font-size: 25px; } }
@@ -1644,7 +1644,7 @@ a.em-file:focus-visible, button.em-file:focus-visible { outline: 3px solid var(-
 .bn.bn-wet { border-color: #3D6FB6; background-color: #D6E3F2; }
 .bn.bn-expired { border-color: #B4560C; background-color: #F6E1C9; }
 .bn.bn-dusty { border-style: dotted; border-color: #7A7466; background-color: #E4E0D6; color: #4E4A40; }
-/* the condition in a word as well as a colour (WCAG 1.4.1), and Aditi's pencil tick on a bin on the count list */
+/* the condition in a word as well as a colour (WCAG 1.4.1), and Aarti's pencil tick on a bin on the count list */
 .bn-cond { font-size: 14px; font-weight: 800; line-height: 1.2; }
 /* a handwritten Z carries a bar, as written beside digits (6306-ZZ never reads 6306-22 in Kalam) */
 .hw .zb { position: relative; display: inline-block; }
@@ -1653,7 +1653,7 @@ a.em-file:focus-visible, button.em-file:focus-visible { outline: 3px solid var(-
 .bn-dusty .bn-cond { color: #4E4A40; }
 .bn-damaged .bn-cond { color: #8E1F18; }
 .bn-expired .bn-cond { color: #8A420A; }
-/* sa-2 r1b: the list mark is Aditi's pencil tick (the tick doodle's shape in pencil, 4.3:1 or more on every bin colour),
+/* sa-2 r1b: the list mark is Aarti's pencil tick (the tick doodle's shape in pencil, 4.3:1 or more on every bin colour),
    never the green tick that means "right" in the review */
 .bn.bn-listed::before { content: ""; position: absolute; right: 4px; top: 5px; width: 20px; height: 20px; background: var(--pencil); -webkit-mask: url("../img/doodles/tick.svg") center / 100% no-repeat; mask: url("../img/doodles/tick.svg") center / 100% no-repeat; }
 .bn.bn-damaged.bn-listed::before { right: 24px; }

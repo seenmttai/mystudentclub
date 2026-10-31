@@ -17,13 +17,13 @@
  "case": {
   "role": "First-year article assistant on the statutory audit, at the year-end stock count",
   "client": "Tamhini Drivetech Private Limited, a Chakan company that makes gears, shafts and hubs for vehicle makers",
-  "team": "Aditi Rane (senior) on site; Rehan Siddiqui (manager) reviews; at Tamhini, Dattatray More (stores in-charge) runs the count on instructions from Mahesh Kadam (GM Finance and Accounts)",
-  "goal": "Test-count the locations Aditi picked, note what is damaged, slow or kept out of the count, and check what CARO asks about inventory.",
+  "team": "Aarti Rane (senior) on site; Rehan Siddiqui (manager) reviews; at Tamhini, Dattatray More (stores in-charge) runs the count on instructions from Mahesh Kadam (GM Finance and Accounts)",
+  "goal": "Test-count the locations Aarti picked, note what is damaged, slow or kept out of the count, and check what CARO asks about inventory.",
   "period": "Year ended 31 March 2027",
   "where": "Main stores, packing store and FG store, Chakan plant · Wednesday 31 March 2027, from 8 pm"
  },
  "brief": {
-  "from": "aditi",
+  "from": "aarti",
   "time": "5:50 pm",
   "messages": [
    "Count starts at 8 in Bay A. Datta’s teams count and tag; you test-count the 12 locations on my list against the register.",
@@ -522,7 +522,7 @@
     }
    ],
    "door": "Receiving door beside Bay A · dispatch bay beside Bay E",
-   "hint": "Aditi’s pencil tick marks the 12 locations on her list. Tap a bin to open its bin card and see what is on the shelf."
+   "hint": "Aarti’s pencil tick marks the 12 locations on her list. Tap a bin to open its bin card and see what is on the shelf."
   },
   {
    "id": "register",
@@ -1849,8 +1849,8 @@
    },
    "to": [
     {
-     "name": "Aditi Rane",
-     "email": "aditi.rane@email.com"
+     "name": "Aarti Rane",
+     "email": "aarti.rane@email.com"
     }
    ],
    "cc": [
@@ -1862,7 +1862,7 @@
    "date": "Wed, 31 Mar 2027, 4:12 pm",
    "subject": "Input shaft 0907: what they will fetch",
    "body": [
-    "Aditi,",
+    "Aarti,",
     "You asked about the 0907 input shafts in the FG store. The customer stopped that gearbox in 2024 and has no open order with us. Two of our distributors looked at them in February and would not take any.",
     "Bilal Ferrous Traders, who lift our turnings, have offered ₹30 a kg for them as melting scrap, loading and transport at their cost. Each shaft weighs 7.1 kg. Their letter is attached.",
     "Regards,"
@@ -1978,7 +1978,7 @@
    "to": [
     "Bapat Venkatesh & Co., Chartered Accountants",
     "5th floor, Sumant Chambers, Prabhat Road, Erandwane, Pune 411004",
-    "Kind attention: Aditi Rane"
+    "Kind attention: Aarti Rane"
    ],
    "subject": "Goods of Tamhini Drivetech Private Limited held by us on 31 March 2027",
    "body": [
@@ -2100,7 +2100,7 @@
     },
     {
      "label": "Reviewed by",
-     "value": "Aditi Rane"
+     "value": "Aarti Rane"
     }
    ],
    "body": [
@@ -2122,20 +2122,20 @@
    "id": "t1",
    "type": "items",
    "stage": "Fieldwork",
-   "title": "Test-count the 12 locations on Aditi’s list",
-   "prompt": "Walk the floor: open each location on Aditi’s list, count what is on the shelf, compare it with the register and make your call; then note anything else for the count sheet. The register and Mahesh’s count instructions are under Other papers. Your counts go to Aditi when you move on.",
+   "title": "Test-count the 12 locations on Aarti’s list",
+   "prompt": "Walk the floor: open each location on Aarti’s list, count what is on the shelf, compare it with the register and make your call; then note anything else for the count sheet. The register and Mahesh’s count instructions are under Other papers. Your counts go to Aarti when you move on.",
    "weight": 6,
    "noun": [
     "location",
     "locations"
    ],
    "map": "plan",
-   "mapHint": "Tap a location on Aditi’s list to count it. The grey ones are not on it.",
+   "mapHint": "Tap a location on Aarti’s list to count it. The grey ones are not on it.",
    "lockOnLeave": {
-    "ask": "Hand your count sheet to Aditi?",
+    "ask": "Hand your count sheet to Aarti?",
     "note": "You can’t change your counts after this.",
     "yes": "Hand it in",
-    "done": "Handed to Aditi. You can read your counts but not change them."
+    "done": "Handed to Aarti. You can read your counts but not change them."
    },
    "hints": [
     "Count the shelf, not the bin card, the tag or the label: packs × what one actually holds, plus loose, plus every lot in the bin.",
@@ -2654,7 +2654,7 @@
    "type": "choice",
    "stage": "Report",
    "title": "Close the count file and the CARO check",
-   "prompt": "Datta corrected the A2 and C2 tags and recounted Bays A and C: no other error. He signed the final sheets at 11:40 pm. Use Naik’s invoice, Kudalwadi’s confirmation, the September report and the CARO working paper to answer the five points Aditi needs for the file.",
+   "prompt": "Datta corrected the A2 and C2 tags and recounted Bays A and C: no other error. He signed the final sheets at 11:40 pm. Use Naik’s invoice, Kudalwadi’s confirmation, the September report and the CARO working paper to answer the five points Aarti needs for the file.",
    "weight": 3,
    "hints": [
     "Use your task 2 figures: CARO compares each class’s net difference with its book value. Materiality does not come into it.",
@@ -2679,7 +2679,7 @@
       {
        "id": "a",
        "correct": true,
-       "text": "Keep them off the bin counts, list them with invoice TD/TR/26-27/0412, and tell Aditi property passes only on delivery.",
+       "text": "Keep them off the bin counts, list them with invoice TD/TR/26-27/0412, and tell Aarti property passes only on delivery.",
        "why": "Billed is not delivered. Under these terms the goods are Tamhini’s until they reach Bhiwandi, so the sale may belong to April. That is my cut-off call; your list is my evidence."
       },
       {
@@ -2815,15 +2815,15 @@
   }
  ],
  "wrap": {
-  "from": "aditi",
+  "from": "aarti",
   "text": "Two differences, one wet pallet, one dead lot of shafts and two tags that did not match the shelf. No class is anywhere near 10%. Datta signed at 11:40, and both differences and both write-downs are on my list for Rehan. Go home; the final audit starts on the 19th."
  },
  "wrapPartial": {
-  "from": "aditi",
+  "from": "aarti",
   "text": "Rehan sees the file with my corrections beside your answers. A wrong count usually means you counted the label, the tag or the bin card instead of the shelf; a missed note means the shelf showed something you walked past."
  },
  "wrapRetry": {
-  "from": "aditi",
+  "from": "aarti",
   "text": "The bin card and the carton print can both be wrong, so count the shelf: every lot, and one carton opened wherever there are cartons. Then compare with the register, and read Mahesh’s instructions for what stays out of the count."
  },
  "passNeeds": [
@@ -2891,7 +2891,7 @@
      {
       "loc": "E3 · dispatch bay",
       "found": "Goods billed to Naik on 31 March, still here",
-      "next": "Listed with the invoice; Aditi checks the terms and the date of the sale"
+      "next": "Listed with the invoice; Aarti checks the terms and the date of the sale"
      }
     ]
    },
@@ -2910,7 +2910,7 @@
    },
    {
     "type": "note",
-    "from": "aditi",
+    "from": "aarti",
     "text": "A test count goes both ways. From the register to the shelf asks: is it really there? From the shelf to the register asks: is everything recorded? B1 failed the first test, and the blanks at A1 failed the second."
    }
   ]

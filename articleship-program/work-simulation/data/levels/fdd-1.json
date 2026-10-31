@@ -69,7 +69,7 @@
     },
     {
      "_id": "s3",
-     "item": "Add: family salary that ends on a sale (Rohan Vasani)",
+     "item": "Add: family salary that ends on a sale (Ramit Vasani)",
      "amt": 90
     },
     {
@@ -350,7 +350,7 @@
     },
     {
      "_id": "e6",
-     "item": "Salary to a relative of a director: Rohan Vasani",
+     "item": "Salary to a relative of a director: Ramit Vasani",
      "m9": 90,
      "fy26": 120
     },
@@ -364,7 +364,7 @@
    "notes": [
     "Bonus and incentives are booked in March, when the year’s figures are final, and paid in April.",
     "Hitesh Vasani’s remuneration: ₹6 lakh a month from 1 April 2026 (₹5.5 lakh a month in 2025–26).",
-    "Rohan Vasani, son of the managing director, has been Head of Business Development since 1 April 2025 at ₹10 lakh a month."
+    "Ramit Vasani, son of the managing director, has been Head of Business Development since 1 April 2025 at ₹10 lakh a month."
    ]
   },
   {
@@ -511,7 +511,7 @@
     "My answers, numbered as your questions.",
     "1. Flood. On 18 December a water main burst in the GIDC estate and flooded our Halol godown. We wrote off ₹126 lakh of packed cookers and non-stick pans. The claim is lodged; the insurer’s surveyor came on 4 January and his report is awaited. It is our second loss there: the claim for the February 2023 fire was settled in 2024–25.",
     "2. Export incentives. The ₹74 lakh is the incentive on our private-label export shipments of 2023–24 and 2024–25, approved and paid in October 2026. It comes from exporting, so I count it as operating income.",
-    "3. Rohan. He has headed business development since April 2025 at ₹10 lakh a month. This cost ends when the family exits.",
+    "3. Ramit. He has headed business development since April 2025 at ₹10 lakh a month. This cost ends when the family exits.",
     "4. My pay. The board raised it to ₹6 lakh a month from April 2026. Agnika’s team will run Savli after closing, so my pay is not a cost they will carry. I have added it back.",
     "5. Bonus. We book bonus and incentives in March, when the year’s figures are final, and pay in April. 2025–26 was ₹96 lakh, paid in April 2026. This year’s will be about the same.",
     "6. Aluminium. From 1 October we buy aluminium circles under a one-year contract that saves ₹12 a kg. We bought 1,250 tonnes from April to September at the old rate, so the ₹150 lakh is real money we would have saved.",
@@ -549,7 +549,7 @@
     "- Head of business development at a consumer-durables company of ₹150–250 crore revenue: about ₹36 lakh a year, all in.",
     "- Managing director at that size: ₹60–75 lakh a year. Hitesh stays on as MD for three years after closing, on his present pay. That is agreed in principle.",
     "- Warehouse of the same size in GIDC Savli: two quotes, ₹5.8 lakh and ₹6.2 lakh a month. Please take ₹6 lakh. After closing we rent at market or we move.",
-    "Rohan’s role carries on after closing. We would pay the market rate for it.",
+    "Ramit’s role carries on after closing. We would pay the market rate for it.",
     "Regards,"
    ],
    "sign": {
@@ -1122,7 +1122,7 @@
     }
    ],
    "notes": [
-    "The three years are from our December clean-up: rent at market every year; in 2025–26 also Rohan at market and the warranty write-back out.",
+    "The three years are from our December clean-up: rent at market every year; in 2025–26 also Ramit at market and the warranty write-back out.",
     "Shaded cells are left for you: the nine months’ adjusted EBITDA and margin."
    ]
   },
@@ -1356,7 +1356,7 @@
     },
     {
      "id": "i3",
-     "label": "Item 3 · Rohan Vasani’s salary",
+     "label": "Item 3 · Ramit Vasani’s salary",
      "short": "item 3",
      "src": "Hitesh adds ₹90 lakh",
      "docs": [
@@ -1770,7 +1770,7 @@
    "type": "worksheet",
    "stage": "Review",
    "title": "Finish the databook",
-   "prompt": "Ishaan has checked your calls. On his list the flood and the adviser’s retainer are added back, Rohan and the rent go to market, and nine months’ bonus comes off. Work the Rohan, rent and bonus amounts, adjusted EBITDA and margin, receivable days and trade working capital, net debt on Schedule 2 and the equity value. Money in ₹ lakh.",
+   "prompt": "Ishaan has checked your calls. On his list the flood and the adviser’s retainer are added back, Ramit and the rent go to market, and nine months’ bonus comes off. Work the Ramit, rent and bonus amounts, adjusted EBITDA and margin, receivable days and trade working capital, net debt on Schedule 2 and the equity value. Money in ₹ lakh.",
    "weight": 1.5,
    "noun": [
     "figure",
@@ -1783,7 +1783,7 @@
     "done": "Handed to Ishaan. You can read your figures but not change them."
    },
    "hints": [
-    "Rohan at market and the bonus start from a year’s figure: take 9 ÷ 12 of it. The rent gap is ₹4 lakh a month.",
+    "Ramit at market and the bonus start from a year’s figure: take 9 ÷ 12 of it. The rent gap is ₹4 lakh a month.",
     "Trade working capital is already on the NWC tab, ₹5,312 lakh at 31 December: put it over a year’s revenue, not nine months’. Net debt starts from Hitesh’s ₹2,468 lakh and adds only what Schedule 2 adds."
    ],
    "layout": "table",
@@ -1824,7 +1824,7 @@
     {
      "id": "r4",
      "cells": {
-      "line": "Add back: Rohan above market",
+      "line": "Add back: Ramit above market",
       "val": {
        "input": true,
        "answer": [
@@ -2194,7 +2194,7 @@
       "us": "–"
      },
      {
-      "line": "Rohan’s salary",
+      "line": "Ramit’s salary",
       "hit": "+90",
       "us": "+63"
      },

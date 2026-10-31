@@ -17,13 +17,13 @@
  "case": {
   "role": "First-year article assistant on the statutory audit",
   "client": "Tamhini Drivetech Private Limited, a Chakan company that makes gears, shafts and hubs for vehicle makers",
-  "team": "Aditi Rane (senior), Rehan Siddiqui (manager), Sudha Venkatesh (partner); Varun Shetty, second-year article, had the first go at the register",
+  "team": "Aarti Rane (senior), Rehan Siddiqui (manager), Sudha Venkatesh (partner); Varun Shetty, second-year article, had the first go at the register",
   "goal": "Turn the raw January–March purchase export for packing and stores into a register the audit can test, tie it to the trial balance, and find one point worth telling Rehan.",
   "period": "Year ended 31 March 2027 · purchases of January–March 2027",
   "where": "Accounts room, Chakan plant · Wednesday 21 April 2027"
  },
  "brief": {
-  "from": "aditi",
+  "from": "aarti",
   "time": "9:50 am",
   "messages": [
    "Pallavi’s Excel copy of the January–March purchase register for packing and stores is in the pack, with the vendor master and the TB; we did April–December at the interim. Varun’s first try doesn’t tie.",
@@ -50,14 +50,14 @@
    },
    "to": [
     {
-     "name": "Aditi Rane",
-     "email": "aditi.rane@email.com"
+     "name": "Aarti Rane",
+     "email": "aarti.rane@email.com"
     }
    ],
    "date": "Tue, 20 Apr 2027, 6:48 pm",
    "subject": "Purchase register Jan–Mar 2027 · packing and stores",
    "body": [
-    "Aditi ma’am,",
+    "Aarti ma’am,",
     "The purchase register for Purchases – packing materials and Purchases – stores and consumables, 1 January to 31 March 2027, is attached in Excel. I printed it from Tally and converted the PDF, so the page lines have come along. Sorry about that.",
     "Bills are entered on the day the goods reach Chakan, as always. The vendor master and the TB for the quarter are attached too.",
     "Regards,"
@@ -2385,17 +2385,17 @@
    "type": "items",
    "stage": "Fieldwork",
    "title": "Clean the raw export",
-   "prompt": "Twelve rows of Pallavi’s sheet caught your eye or tripped Varun’s checks. For each, keep it as it is, fix it and keep it, or leave it out of the register, and say what it is. Your calls go to Aditi when you move on.",
+   "prompt": "Twelve rows of Pallavi’s sheet caught your eye or tripped Varun’s checks. For each, keep it as it is, fix it and keep it, or leave it out of the register, and say what it is. Your calls go to Aarti when you move on.",
    "weight": 2,
    "noun": [
     "row call",
     "row calls"
    ],
    "lockOnLeave": {
-    "ask": "Hand your row calls to Aditi?",
+    "ask": "Hand your row calls to Aarti?",
     "note": "You can’t change them after this.",
     "yes": "Hand them in",
-    "done": "Handed to Aditi. You can read your calls but not change them."
+    "done": "Handed to Aarti. You can read your calls but not change them."
    },
    "hints": [
     "Ask of each row: is it one bill, once, booked in this quarter? If it is, keep it, fixing anything that would trip a formula. If it isn’t, it leaves the register.",
@@ -2892,10 +2892,10 @@
    "prompt": "Varun ran SUMIFS on the raw sheet. Correct each of his figures for the row that threw it off (minus takes out, plus adds back), carry them down to your register’s totals, then enter the TB’s figure for the same three months and the difference. Whole rupees.",
    "weight": 1.5,
    "lockOnLeave": {
-    "ask": "Hand your tie to Aditi?",
+    "ask": "Hand your tie to Aarti?",
     "note": "You can’t change it after this.",
     "yes": "Hand it in",
-    "done": "Handed to Aditi. You can read your tie but not change it."
+    "done": "Handed to Aarti. You can read your tie but not change it."
    },
    "hints": [
     "Start from Varun’s two figures and correct only what rows 31 and 39 did to them. Then take the TB column that covers January to March and nothing earlier."
@@ -3136,15 +3136,15 @@
   }
  ],
  "wrap": {
-  "from": "aditi",
+  "from": "aarti",
   "text": "Kolak’s December bill and Moshi’s twin bills only looked wrong; every other row on your list needed work. I’ll check your tie against the TB’s January–March debits, then pick Rehan’s sample from the register and put your pivot finding in his notes."
  },
  "wrapPartial": {
-  "from": "aditi",
+  "from": "aarti",
   "text": "Rows 6 and 16 only looked wrong: Kolak’s December bill and Moshi’s second ₹86,400 bill. And the tie is the quarter against the TB’s January–March column, never the year. Rehan’s sample waits until the register is right."
  },
  "wrapRetry": {
-  "from": "aditi",
+  "from": "aarti",
   "text": "Ask of every row: is it one bill, once, booked in this quarter? Keep or fix those and take out the rest. Then open each of Varun’s flags before acting on it, and tie the quarter to the TB’s January–March column."
  },
  "passNeeds": [
@@ -3223,7 +3223,7 @@
    },
    {
     "type": "note",
-    "from": "aditi",
+    "from": "aarti",
     "text": "Keep a list of the 20 rows you took out, each with its reason. When Rehan asks how 71 rows became one heading row and 50 bills, that list is your answer."
    }
   ]

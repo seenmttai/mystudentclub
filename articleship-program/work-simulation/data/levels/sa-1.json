@@ -18,13 +18,13 @@
  "case": {
   "role": "First-year article assistant on the statutory audit",
   "client": "Tamhini Drivetech Private Limited, a Chakan company that makes gears, shafts and hubs for vehicle makers",
-  "team": "Aditi Rane (senior), Rehan Siddiqui (manager), Sudha Venkatesh (partner)",
+  "team": "Aarti Rane (senior), Rehan Siddiqui (manager), Sudha Venkatesh (partner)",
   "goal": "Check that the purchases booked around 31 March are in the right year, were approved and are billed correctly.",
   "period": "Year ended 31 March 2027",
   "where": "Accounts room, Chakan plant · Monday 19 April 2027"
  },
  "brief": {
-  "from": "aditi",
+  "from": "aarti",
   "time": "9:40 am",
   "messages": [
    "Pallavi in accounts has put out the 20 purchase bills I picked from either side of 31 March. Vouch each against its PO, GRN and ledger entry.",
@@ -759,7 +759,7 @@
     }
    ],
    "receivedBy": "Santosh Kale",
-   "qcBy": "Neha Bansode",
+   "qcBy": "Nita Bansode",
    "remarks": "Visual and dimension check OK."
   },
   {
@@ -1246,7 +1246,7 @@
     }
    ],
    "receivedBy": "Santosh Kale",
-   "qcBy": "Neha Bansode",
+   "qcBy": "Nita Bansode",
    "remarks": "Lot 2 of PO 1063. Test certificates checked."
   },
   {
@@ -1765,7 +1765,7 @@
     }
    ],
    "receivedBy": "Ajay Thube",
-   "qcBy": "Neha Bansode",
+   "qcBy": "Nita Bansode",
    "remarks": "Burst strength sample OK."
   },
   {
@@ -2071,7 +2071,7 @@
     }
    ],
    "receivedBy": "Santosh Kale",
-   "qcBy": "Neha Bansode",
+   "qcBy": "Nita Bansode",
    "remarks": "Counted box by box. OK."
   },
   {
@@ -2306,7 +2306,7 @@
     }
    ],
    "receivedBy": "Ajay Thube",
-   "qcBy": "Neha Bansode",
+   "qcBy": "Nita Bansode",
    "remarks": "OK."
   },
   {
@@ -2754,7 +2754,7 @@
     }
    ],
    "receivedBy": "Santosh Kale",
-   "qcBy": "Neha Bansode",
+   "qcBy": "Nita Bansode",
    "remarks": "60 nos 6306-ZZ noisy on the spin test; kept aside for return."
   },
   {
@@ -3236,7 +3236,7 @@
     }
    ],
    "receivedBy": "Santosh Kale",
-   "qcBy": "Neha Bansode",
+   "qcBy": "Nita Bansode",
    "remarks": "Truck at gate 02-04-2027, 11:05 (gate entry G/3878). Weighbridge slip 77689."
   },
   {
@@ -3701,7 +3701,7 @@
     }
    ],
    "receivedBy": "Ajay Thube",
-   "qcBy": "Neha Bansode",
+   "qcBy": "Nita Bansode",
    "remarks": "Received 4:10 pm. Seals intact."
   },
   {
@@ -4381,7 +4381,7 @@
     }
    ],
    "receivedBy": "Santosh Kale",
-   "qcBy": "Neha Bansode",
+   "qcBy": "Nita Bansode",
    "remarks": "Lot 1 of PO 1140. Test certificate checked."
   },
   {
@@ -4590,7 +4590,7 @@
     }
    ],
    "receivedBy": "Ajay Thube",
-   "qcBy": "Neha Bansode",
+   "qcBy": "Nita Bansode",
    "remarks": "OK."
   },
   {
@@ -4804,7 +4804,7 @@
     }
    ],
    "receivedBy": "Santosh Kale",
-   "qcBy": "Neha Bansode",
+   "qcBy": "Nita Bansode",
    "remarks": "Weighbridge slip 77731. Test certificate checked."
   },
   {
@@ -5006,7 +5006,7 @@
     }
    ],
    "receivedBy": "Santosh Kale",
-   "qcBy": "Neha Bansode",
+   "qcBy": "Nita Bansode",
    "remarks": "OK."
   },
   {
@@ -5218,7 +5218,7 @@
     }
    ],
    "receivedBy": "Ajay Thube",
-   "qcBy": "Neha Bansode",
+   "qcBy": "Nita Bansode",
    "remarks": "Visual and dimension check OK."
   },
   {
@@ -5282,17 +5282,17 @@
    "type": "items",
    "stage": "Fieldwork",
    "title": "Vouch the 20 bills",
-   "prompt": "Open each bill with its PO, GRN and ledger entry; the purchase procedure, vendor master, GSTIN searches and gate register are under Other papers. Mark each bill Fine or Exception and the year the purchase belongs to; for an exception, pick what is wrong. Your calls go to Aditi when you move on.",
+   "prompt": "Open each bill with its PO, GRN and ledger entry; the purchase procedure, vendor master, GSTIN searches and gate register are under Other papers. Mark each bill Fine or Exception and the year the purchase belongs to; for an exception, pick what is wrong. Your calls go to Aarti when you move on.",
    "weight": 2,
    "noun": [
     "bill",
     "bills"
    ],
    "lockOnLeave": {
-    "ask": "Hand your bill calls to Aditi?",
+    "ask": "Hand your bill calls to Aarti?",
     "note": "You can’t change them after this.",
     "yes": "Hand them in",
-    "done": "Handed to Aditi. You can read your calls but not change them."
+    "done": "Handed to Aarti. You can read your calls but not change them."
    },
    "hints": [
     "Cut-off: put the day the goods reached the Chakan gate (the GRN, or the gate register when they differ) next to the month the bill was booked. The PO terms say the goods become Tamhini’s at its gate.",
@@ -5869,7 +5869,7 @@
     "line",
     "lines"
    ],
-   "prompt": "Aditi wants one mail to Mahesh Kadam, the accounts head, with a query for each exception other than the two cut-offs, which she will send herself. Pick the right line for each bill.",
+   "prompt": "Aarti wants one mail to Mahesh Kadam, the accounts head, with a query for each exception other than the two cut-offs, which she will send herself. Pick the right line for each bill.",
    "hints": [
     "Each problem is fixed by whoever caused it: the vendor corrects its own bill, Tamhini raises the debit note for what its QC rejected, and Rohit answers for his PO."
    ],
@@ -5986,7 +5986,7 @@
      ]
     }
    ],
-   "template": "Subject: Purchase vouching queries, year ended 31 March 2027\n\nMahesh sir,\n\nThese are the queries from our vouching of the year-end purchase bills.\n\n{gstin}\n\n{rate}\n\n{approval}\n\n{qty}\n\n{price}\n\n{_free}\n\nAditi will send the two cut-off entries (Kharun and Rankala) separately. Please reply by Wednesday so that we can close purchases.\n\nRegards,\nAudit team, Bapat Venkatesh & Co.",
+   "template": "Subject: Purchase vouching queries, year ended 31 March 2027\n\nMahesh sir,\n\nThese are the queries from our vouching of the year-end purchase bills.\n\n{gstin}\n\n{rate}\n\n{approval}\n\n{qty}\n\n{price}\n\n{_free}\n\nAarti will send the two cut-off entries (Kharun and Rankala) separately. Please reply by Wednesday so that we can close purchases.\n\nRegards,\nAudit team, Bapat Venkatesh & Co.",
    "freeText": {
     "label": "Your own line for the mail"
    },
@@ -6121,15 +6121,15 @@
   }
  ],
  "wrap": {
-  "from": "aditi",
+  "from": "aarti",
   "text": "Seven of the twenty had something wrong, and two are cut-off errors in opposite directions: Kharun out of March, Rankala into March. That pair is the lesson. I’ll put both in the list of audit adjustments for Rehan and read your mail once more before it goes to Mahesh."
  },
  "wrapPartial": {
-  "from": "aditi",
+  "from": "aarti",
   "text": "Seven of the twenty had something wrong, and the pair to remember is Kharun out of March and Rankala into March. Go through your misses below before anything goes to Mahesh. I’ll check the file again after lunch."
  },
  "wrapRetry": {
-  "from": "aditi",
+  "from": "aarti",
   "text": "Start again from the day each delivery reached the Chakan gate (the GRN, or the gate register when they differ), and put it next to the month the bill was booked. That settles the year on every bill and finds both cut-offs. Then read every PO’s approval box and rate."
  },
  "passNeeds": [
@@ -6212,7 +6212,7 @@
    },
    {
     "type": "note",
-    "from": "aditi",
+    "from": "aarti",
     "text": "Vouching goes from the ledger to the bill: did it happen, is it Tamhini’s, is the amount right? Rankala is the other way, from what came in at the gate to the books: is everything recorded? Cut-off needs both."
    }
   ]

@@ -17,7 +17,7 @@
  "case": {
   "role": "First-year article assistant on the statutory audit",
   "client": "Kesari Flexipack Private Limited, a flexible-packaging maker in Chakan, Pune",
-  "team": "Neha Sathe (senior), Rohan Bhide (manager)",
+  "team": "Nita Sathe (senior), Ramit Bhide (manager)",
   "goal": "Close the purchase cut-off and stock count papers before the manager’s review",
   "period": "Year ended 31 March 2027",
   "where": "Client’s Chakan factory, accounts room"
@@ -33,14 +33,14 @@
  "people": [
   {
    "id": "demo-senior",
-   "name": "Neha Sathe",
+   "name": "Nita Sathe",
    "role": "Audit senior",
    "initials": "NS",
    "color": "#5638CC"
   },
   {
    "id": "demo-manager",
-   "name": "Rohan Bhide",
+   "name": "Ramit Bhide",
    "role": "Audit manager",
    "initials": "RB",
    "color": "#0A7373"
@@ -1981,8 +1981,8 @@
    },
    "to": [
     {
-     "name": "Neha Sathe",
-     "email": "neha.sathe@email.com"
+     "name": "Nita Sathe",
+     "email": "nita.sathe@email.com"
     }
    ],
    "cc": [
@@ -1994,7 +1994,7 @@
    "date": "Thu, 15 Apr 2027, 11:42 am",
    "subject": "Year-end purchase bills you asked for",
    "body": [
-    "Hi Neha,",
+    "Hi Nita,",
     "Sharing the four bills you picked, with their POs, GRNs and the ledger print. The Shubh Labh film reached us after the long weekend; Ganesh has written a note on it.",
     "Let me know if you need the gate register too.",
     "Regards,"
@@ -2222,7 +2222,7 @@
    "type": "chat",
    "title": "Chat with the client",
    "with": "Kesari accounts",
-   "members": "Neha Sathe, Prakash Nair",
+   "members": "Nita Sathe, Prakash Nair",
    "me": "demo-senior",
    "date": "15 April 2027",
    "messages": [

@@ -17,7 +17,7 @@
  "case": {
   "role": "First-year article assistant on the statutory audit, completion week",
   "client": "Tamhini Drivetech Private Limited, a Chakan company that makes gears, shafts and hubs for vehicle makers",
-  "team": "Rehan Siddiqui (manager), Aditi Rane (senior), Sudha Venkatesh (partner); at Tamhini, Mahesh Kadam (GM Finance and Accounts)",
+  "team": "Rehan Siddiqui (manager), Aarti Rane (senior), Sudha Venkatesh (partner); at Tamhini, Mahesh Kadam (GM Finance and Accounts)",
   "goal": "Get Tamhini’s audit file ready for Sudha’s review and the audit report.",
   "period": "Year ended 31 March 2027",
   "where": "Prabhat Road office · Thursday 13 May 2027"
@@ -84,7 +84,7 @@
    "to": [
     "Rehan Siddiqui, Audit Manager"
    ],
-   "from": "Aditi Rane, Audit Senior",
+   "from": "Aarti Rane, Audit Senior",
    "date": "12-10-2026",
    "ref": "TDPL/26-27/PL-03",
    "subject": "Planning materiality: Tamhini Drivetech, year ending 31 March 2027",
@@ -96,9 +96,9 @@
     "Testing thresholds for the interim and the final audit are set from ₹36,07,500. All three to be recomputed on the audited figures at completion (manual 5.8)."
    ],
    "sign": {
-    "name": "Aditi Rane",
+    "name": "Aarti Rane",
     "role": "Audit Senior",
-    "hand": "Aditi"
+    "hand": "Aarti"
    },
    "annotations": [
     {
@@ -424,7 +424,7 @@
    "id": "points",
    "type": "letter",
    "style": "memo",
-   "title": "Completion points · Aditi, 12 May",
+   "title": "Completion points · Aarti, 12 May",
    "kindLabel": "Memo",
    "letterhead": "Bapat Venkatesh & Co., Chartered Accountants",
    "to": [
@@ -433,7 +433,7 @@
    "cc": [
     "Article on the Tamhini file"
    ],
-   "from": "Aditi Rane, Audit Senior",
+   "from": "Aarti Rane, Audit Senior",
    "date": "12-05-2027",
    "ref": "TDPL/26-27/CP-01",
    "subject": "Tamhini: open points for completion",
@@ -447,9 +447,9 @@
     "7. Sudha reviews the file on Monday 17 May; the Board meets on Tuesday 18 May."
    ],
    "sign": {
-    "name": "Aditi Rane",
+    "name": "Aarti Rane",
     "role": "Audit Senior",
-    "hand": "Aditi"
+    "hand": "Aarti"
    }
   },
   {
@@ -510,7 +510,7 @@
     "## Yours, and the paper for each",
     "- (i)(b): CARO working paper, fixed assets",
     "- (ii)(a): CARO working paper, inventory",
-    "- (ii)(b): Quarterly statements to the bank (Aditi’s sheet)",
+    "- (ii)(b): Quarterly statements to the bank (Aarti’s sheet)",
     "- (vii)(a): Statutory dues, deposit check",
     "- (vii)(b): Income-tax demands under appeal (Mahesh’s register)",
     "- (ix)(a): Borrowings, repayment check",
@@ -550,7 +550,7 @@
     },
     {
      "label": "Reviewed by",
-     "value": "Aditi Rane, 26-04-2027"
+     "value": "Aarti Rane, 26-04-2027"
     }
    ],
    "body": [
@@ -597,7 +597,7 @@
     },
     {
      "label": "Reviewed by",
-     "value": "Aditi Rane, 05-04-2027"
+     "value": "Aarti Rane, 05-04-2027"
     }
    ],
    "body": [
@@ -730,7 +730,7 @@
    ],
    "notes": [
     "CARO 2020, paragraph 3(ii)(b): “whether during any point of time of the year, the company has been sanctioned working capital limits in excess of five crore rupees, in aggregate, from banks or financial institutions on the basis of security of current assets; whether the quarterly returns or statements filed by the company with such banks or financial institutions are in agreement with the books of account of the Company, if not, give details;”",
-    "Statements filed with Vindhya Commercial Bank against the books, FY 2026–27. Prepared by Aditi Rane from the four quarter-end statements and the books for each quarter. Amounts in ₹.",
+    "Statements filed with Vindhya Commercial Bank against the books, FY 2026–27. Prepared by Aarti Rane from the four quarter-end statements and the books for each quarter. Amounts in ₹.",
     "Sanction: cash credit of ₹18,00,00,000 from Vindhya Commercial Bank, Chakan, on hypothecation of stock and book debts.",
     "Filed with the bank on 9 July, 8 October, 8 January and 10 April.",
     "March: the books as they stood when the statement was filed on 10 April, before the audit adjustments of 6 May.",
@@ -838,7 +838,7 @@
    ],
    "notes": [
     "CARO 2020, paragraph 3(vii)(a): “whether the company is regular in depositing undisputed statutory dues including Goods and Services Tax, provident fund, employees’ state insurance, income-tax … and any other statutory dues to the appropriate authorities and if not, the extent of the arrears of outstanding statutory dues as on the last day of the financial year concerned for a period of more than six months from the date they became payable, shall be indicated;”",
-    "Statutory dues deposited in FY 2026–27, from Pallavi Shinde’s register, checked by Aditi Rane on 28-04-2027. Due dates as the register shows them.",
+    "Statutory dues deposited in FY 2026–27, from Pallavi Shinde’s register, checked by Aarti Rane on 28-04-2027. Due dates as the register shows them.",
     "PF: provident fund. ESI: employees’ state insurance.",
     "Outstanding at 31 March 2027: March’s dues, none of them yet due; the PF arrears on the revised ceiling, from the September 2026 wage month on; and the TDS on Parag Mahajani’s fee, due on 7 January. Nothing outstanding for more than six months."
    ]
@@ -991,7 +991,7 @@
    "check": false,
    "notes": [
     "CARO 2020, paragraph 3(ix)(a): “whether the company has defaulted in repayment of loans or other borrowings or in the payment of interest thereon to any lender, if yes, the period and the amount of default to be reported …”",
-    "Borrowings from Vindhya Commercial Bank, FY 2026–27, from the bank’s loan statements and the sanction letters, checked by Aditi Rane on 29-04-2027.",
+    "Borrowings from Vindhya Commercial Bank, FY 2026–27, from the bank’s loan statements and the sanction letters, checked by Aarti Rane on 29-04-2027.",
     "Paid on: the date the bank debited the instalment to the cash credit account, from the loan statement.",
     "Term loan II: ₹92,25,000 drawn, ₹51,30,000 on 20-07-2026 and ₹40,95,000 on 26-03-2027; repayable in 15 quarterly instalments of ₹6,15,000 from 30-06-2027.",
     "Cash credit: limit ₹18,00,00,000; balance at 31 March 2027 ₹8,82,61,002 per the bank."
@@ -1099,7 +1099,7 @@
     }
    ],
    "notes": [
-    "Summary of unadjusted differences, FY 2026–27. Final materiality ₹46,90,000 · performance materiality ₹28,14,000 · clearly trivial ₹2,34,500. Aditi Rane, 13-05-2027.",
+    "Summary of unadjusted differences, FY 2026–27. Final materiality ₹46,90,000 · performance materiality ₹28,14,000 · clearly trivial ₹2,34,500. Aarti Rane, 13-05-2027.",
     "Corrected: AJE-1 to AJE-12, booked on 6 May 2027, which together add ₹4,15,313 to profit before tax."
    ]
   }
@@ -1110,7 +1110,7 @@
    "type": "worksheet",
    "stage": "Review",
    "title": "Fill the final materiality template",
-   "prompt": "Fill Rehan’s final materiality template from the statements, the firm’s manual and Aditi’s completion points. The change in profit to two decimals; round materiality as the manual says. Your template goes to Rehan when you move on.",
+   "prompt": "Fill Rehan’s final materiality template from the statements, the firm’s manual and Aarti’s completion points. The change in profit to two decimals; round materiality as the manual says. Your template goes to Rehan when you move on.",
    "weight": 1.5,
    "noun": [
     "figure",
@@ -1125,7 +1125,7 @@
    },
    "hints": [
     "Check the change in profit against the manual’s 30% before you pick the benchmark, and take this year’s audited figure, not the one first given.",
-    "Round materiality down to the nearest ₹10,000 first. For the performance percentage, read Aditi’s completion points for anything this year’s work has found."
+    "Round materiality down to the nearest ₹10,000 first. For the performance percentage, read Aarti’s completion points for anything this year’s work has found."
    ],
    "columns": [
     {
@@ -1680,7 +1680,7 @@
    "type": "choice",
    "stage": "Report",
    "title": "Pick the opinion for each matter",
-   "prompt": "Three files from this season that went to the firm’s technical desk, client names taken out, then Tamhini itself. Pick the opinion for each. Aditi’s summary of unadjusted differences is in your documents now.",
+   "prompt": "Three files from this season that went to the firm’s technical desk, client names taken out, then Tamhini itself. Pick the opinion for each. Aarti’s summary of unadjusted differences is in your documents now.",
    "weight": 1.5,
    "hints": [
     "First ask: is something misstated, or is evidence missing? Then: is it one line, or a large part of the accounts? A CARO remark is neither."
@@ -1773,7 +1773,7 @@
     {
      "id": "q4",
      "sample": "Tamhini: the opinion for Sudha’s draft",
-     "text": "And Tamhini. Aditi’s summary of unadjusted differences has come in, and your annexure reports the stock statements that did not agree with the books, late deposits of statutory dues, the disputed income-tax demands and the payroll fraud. Which opinion goes into Sudha’s draft report?",
+     "text": "And Tamhini. Aarti’s summary of unadjusted differences has come in, and your annexure reports the stock statements that did not agree with the books, late deposits of statutory dues, the disputed income-tax demands and the payroll fraud. Which opinion goes into Sudha’s draft report?",
      "options": [
       {
        "id": "a",

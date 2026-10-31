@@ -121,7 +121,7 @@ test('letters: bullets, headings, numbered lists, tables and sign-offs', () => {
 });
 
 test('chat, stock room, bin card and small forms', () => {
-  const people = { 'demo-senior': { name: 'Neha Sathe' }, 'demo-accountant': { name: 'Prakash Nair' } };
+  const people = { 'demo-senior': { name: 'Nita Sathe' }, 'demo-accountant': { name: 'Prakash Nair' } };
   const chat = D.renderDocument(doc('chat-client'), { person: id => people[id] });
   assert.equal((chat.match(/ch-msg me/g) || []).length, 2);
   assert.match(chat, /Prakash Nair/);
@@ -594,7 +594,7 @@ test('xl-1 round 1: a sheet’s Name Box (formulaCell), a mail chip that downloa
   assert.match(sheet({ formulaCell: 'R5' }), /<div class="xl-bar"><span class="xl-name">R5<\/span><span class="xl-fx">fx<\/span>/);
   assert.ok(!/xl-name/.test(sheet({})) && !/xl-name/.test(sheet({ formulaCell: 'r5<b>' })), 'no box without a cell address');
   // a chip given as { name, file } links to files/<level id>/<file> when the app passes the level id; a plain name stays a chip
-  const mail = { id: 'm', type: 'letter', style: 'email', title: 'Mail', subject: 'S', from: { name: 'Pallavi Shinde' }, to: [{ name: 'Aditi Rane' }], body: ['Hi'],
+  const mail = { id: 'm', type: 'letter', style: 'email', title: 'Mail', subject: 'S', from: { name: 'Pallavi Shinde' }, to: [{ name: 'Aarti Rane' }], body: ['Hi'],
     attachments: [{ name: 'Purchase_register.xlsx', file: 'book one.xlsx' }, 'TB.pdf'] };
   const linked = D.renderDocument(mail, { levelId: 'xl-1' });
   assert.match(linked, /<a class="em-file x-xls" href="files\/xl-1\/book%20one\.xlsx" download><span class="em-name">Purchase_register\.xlsx<\/span><\/a>/);

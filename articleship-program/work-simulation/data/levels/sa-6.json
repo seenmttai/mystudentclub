@@ -17,13 +17,13 @@
  "case": {
   "role": "First-year article assistant on the statutory audit",
   "client": "Tamhini Drivetech Private Limited, a Chakan company that makes gears, shafts and hubs for vehicle makers; its main bank is Vindhya Commercial Bank, Chakan, with a cash credit, two term loans and two fixed deposits",
-  "team": "Aditi Rane (senior), Rehan Siddiqui (manager), Sudha Venkatesh (partner); Varun Shetty, second-year article, posted the confirmations; at Tamhini, Mahesh Kadam (GM Finance and Accounts), Pallavi Shinde (accounts executive) and Harshad Patel (head of sales)",
+  "team": "Aarti Rane (senior), Rehan Siddiqui (manager), Sudha Venkatesh (partner); Varun Shetty, second-year article, posted the confirmations; at Tamhini, Mahesh Kadam (GM Finance and Accounts), Pallavi Shinde (accounts executive) and Harshad Patel (head of sales)",
   "goal": "Close the bank, FD and confirmations section of the year-end file: the BRS, the bank’s and the parties’ confirmations, and the interest on the two deposits.",
   "period": "Year ended 31 March 2027",
   "where": "Accounts room, Chakan plant · Monday 26 April 2027"
  },
  "brief": {
-  "from": "aditi",
+  "from": "aarti",
   "time": "9:40 am",
   "messages": [
    "Bank, FD and confirmations for Tamhini are yours. The April statement is in, so start with Pallavi’s 31 March BRS and trace every item.",
@@ -907,7 +907,7 @@
    "to": [
     "Bapat Venkatesh & Co., Chartered Accountants",
     "5th floor, Sumant Chambers, Prabhat Road, Erandwane, Pune 411004",
-    "Kind attention: Aditi Rane"
+    "Kind attention: Aarti Rane"
    ],
    "subject": "Tamhini Drivetech Private Limited: balances and other information as at 31-03-2027",
    "body": [
@@ -1906,7 +1906,7 @@
    "to": [
     "Bapat Venkatesh & Co., Chartered Accountants",
     "5th floor, Sumant Chambers, Prabhat Road, Erandwane, Pune 411004",
-    "Kind attention: Aditi Rane"
+    "Kind attention: Aarti Rane"
    ],
    "subject": "Confirmation of balance as at 31 March 2027: Tamhini Drivetech Private Limited",
    "body": [
@@ -1947,7 +1947,7 @@
    "to": [
     "Bapat Venkatesh & Co., Chartered Accountants",
     "5th floor, Sumant Chambers, Prabhat Road, Erandwane, Pune 411004",
-    "Kind attention: Aditi Rane"
+    "Kind attention: Aarti Rane"
    ],
    "subject": "Confirmation of balance as at 31 March 2027: Tamhini Drivetech Private Limited",
    "body": [
@@ -2039,7 +2039,7 @@
    "to": [
     "Bapat Venkatesh & Co., Chartered Accountants",
     "5th floor, Sumant Chambers, Prabhat Road, Erandwane, Pune 411004",
-    "Kind attention: Aditi Rane"
+    "Kind attention: Aarti Rane"
    ],
    "subject": "Confirmation of balance as at 31 March 2027: Tamhini Drivetech Private Limited",
    "body": [
@@ -2148,7 +2148,7 @@
    "to": [
     "Bapat Venkatesh & Co., Chartered Accountants",
     "5th floor, Sumant Chambers, Prabhat Road, Erandwane, Pune 411004",
-    "Kind attention: Aditi Rane"
+    "Kind attention: Aarti Rane"
    ],
    "subject": "Confirmation of balance as at 31 March 2027: Tamhini Drivetech Private Limited",
    "body": [
@@ -2271,7 +2271,7 @@
    "body": [
     "Dear Sir,",
     "We wrote to you on 6 April and again on 20 April, asking you to confirm to our auditors your balance with us at 31 March 2027: ₹2,12,56,039 receivable by us.",
-    "We have not had your reply. Please confirm, or send your statement of account, directly to Bapat Venkatesh & Co., Chartered Accountants, 5th floor, Sumant Chambers, Prabhat Road, Erandwane, Pune 411004 (aditi.rane@email.com)."
+    "We have not had your reply. Please confirm, or send your statement of account, directly to Bapat Venkatesh & Co., Chartered Accountants, 5th floor, Sumant Chambers, Prabhat Road, Erandwane, Pune 411004 (aarti.rane@email.com)."
    ],
    "sign": {
     "closing": "Yours faithfully,",
@@ -2428,7 +2428,7 @@
    "body": [
     "Dear Sir,",
     "We wrote to you on 6 April and again on 20 April, asking you to confirm to our auditors your balance with us at 31 March 2027: ₹2,19,09,784 payable by us.",
-    "We have not had your reply. Please confirm, or send your statement of account, directly to Bapat Venkatesh & Co., Chartered Accountants, 5th floor, Sumant Chambers, Prabhat Road, Erandwane, Pune 411004 (aditi.rane@email.com)."
+    "We have not had your reply. Please confirm, or send your statement of account, directly to Bapat Venkatesh & Co., Chartered Accountants, 5th floor, Sumant Chambers, Prabhat Road, Erandwane, Pune 411004 (aarti.rane@email.com)."
    ],
    "sign": {
     "closing": "Yours faithfully,",
@@ -2472,7 +2472,7 @@
    "to": [
     "Bapat Venkatesh & Co., Chartered Accountants",
     "5th floor, Sumant Chambers, Prabhat Road, Erandwane, Pune 411004",
-    "Kind attention: Aditi Rane"
+    "Kind attention: Aarti Rane"
    ],
    "subject": "Confirmation of balance as at 31 March 2027: Tamhini Drivetech Private Limited",
    "body": [
@@ -2653,7 +2653,7 @@
    "to": [
     "Bapat Venkatesh & Co., Chartered Accountants",
     "5th floor, Sumant Chambers, Prabhat Road, Erandwane, Pune 411004",
-    "Kind attention: Aditi Rane"
+    "Kind attention: Aarti Rane"
    ],
    "subject": "Confirmation of balance as at 31 March 2027: Tamhini Drivetech Private Limited",
    "body": [
@@ -2689,12 +2689,12 @@
     "item",
     "items"
    ],
-   "prompt": "Pallavi’s 31 March BRS lists seven items. Trace each cheque and deposit to the April statement: same number, same amount, the day it cleared. Check the bank’s own entries against the March statement and the advice behind each. For an exception, pick what is wrong and the entry it needs. Your calls go to Aditi when you move on.",
+   "prompt": "Pallavi’s 31 March BRS lists seven items. Trace each cheque and deposit to the April statement: same number, same amount, the day it cleared. Check the bank’s own entries against the March statement and the advice behind each. For an exception, pick what is wrong and the entry it needs. Your calls go to Aarti when you move on.",
    "lockOnLeave": {
-    "ask": "Hand your BRS calls to Aditi?",
+    "ask": "Hand your BRS calls to Aarti?",
     "note": "You can’t change them after this.",
     "yes": "Hand them in",
-    "done": "Handed to Aditi. You can read your calls but not change them."
+    "done": "Handed to Aarti. You can read your calls but not change them."
    },
    "hints": [
     "Put each cheque and deposit beside the April statement: same number, same amount. For a cheque that never turns up, read the date written on it.",
@@ -2962,12 +2962,12 @@
     "line",
     "lines"
    ],
-   "prompt": "You showed Aditi Varun’s chat. She wants one mail from you to Mahesh about the bank’s certificate and Kshitij’s reply, saying what we do with each. Pick the right line for each part; the chat and both papers are in Documents. The mail goes to Aditi when you move on.",
+   "prompt": "You showed Aarti Varun’s chat. She wants one mail from you to Mahesh about the bank’s certificate and Kshitij’s reply, saying what we do with each. Pick the right line for each part; the chat and both papers are in Documents. The mail goes to Aarti when you move on.",
    "lockOnLeave": {
-    "ask": "Give your mail to Aditi?",
+    "ask": "Give your mail to Aarti?",
     "note": "You can’t change it after this.",
-    "yes": "Give it to Aditi",
-    "done": "With Aditi. You can read your mail but not change it."
+    "yes": "Give it to Aarti",
+    "done": "With Aarti. You can read your mail but not change it."
    },
    "hints": [
     "Ask of each paper: did it reach us straight from the bank or from Kshitij? Whatever passed through Tamhini, however genuine it looks, we ask for again ourselves."
@@ -3402,8 +3402,8 @@
       },
       {
        "id": "escalate",
-       "label": "Ask Mahesh for the papers behind his reason, tell Aditi, and check receipts meanwhile",
-       "short": "papers from Mahesh; tell Aditi; receipts meanwhile"
+       "label": "Ask Mahesh for the papers behind his reason, tell Aarti, and check receipts meanwhile",
+       "short": "papers from Mahesh; tell Aarti; receipts meanwhile"
       }
      ]
     },
@@ -3613,15 +3613,15 @@
   }
  ],
  "wrap": {
-  "from": "aditi",
+  "from": "aarti",
   "text": "Three BRS entries, Naik’s ₹46,80,000 sale moving to April and FD-2’s 19 days go on Rehan’s list. Lothal’s reply shows the same ₹12,64,000 from their side, so the BRS and the tracker agree. I’ll raise Kilimani with Rehan today; the certificate Mahesh collected stays out of the evidence."
  },
  "wrapPartial": {
-  "from": "aditi",
+  "from": "aarti",
   "text": "Not ready for Rehan yet. Most misses come from reading a paper on its own, not beside the one that proves it. I’ll go through the file with you after lunch."
  },
  "wrapRetry": {
-  "from": "aditi",
+  "from": "aarti",
   "text": "Put each cheque and deposit beside the April line that clears it, same number and amount, and read the date on any that never cleared. Then ask of every reply whether it reached us directly, and of every difference what each side booked, and when."
  },
  "passNeeds": [
@@ -3754,7 +3754,7 @@
      {
       "p": "Kilimani",
       "r": "Not sent at Mahesh’s request",
-      "n": "The papers behind his reason; to Aditi and Rehan"
+      "n": "The papers behind his reason; to Aarti and Rehan"
      },
      {
       "p": "Rankala",
@@ -3786,7 +3786,7 @@
    },
    {
     "type": "note",
-    "from": "aditi",
+    "from": "aarti",
     "text": "Most finds in this section came from putting one paper beside another: the BRS beside April’s statement, the books beside Form 168. The certificate and Kshitij’s forward matched to the rupee and still couldn’t be used, because they came through Tamhini."
    }
   ]

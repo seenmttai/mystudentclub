@@ -17,13 +17,13 @@
  "case": {
   "role": "First-year article assistant on the statutory audit, fixed assets",
   "client": "Tamhini Drivetech Private Limited, a Chakan company that makes gears, shafts and hubs for vehicle makers",
-  "team": "Aditi Rane (senior), Rehan Siddiqui (manager); at Tamhini, Pallavi Shinde in accounts has the files and Venkat Reddy, the plant head, knows when each machine was ready",
+  "team": "Aarti Rane (senior), Rehan Siddiqui (manager); at Tamhini, Pallavi Shinde in accounts has the files and Venkat Reddy, the plant head, knows when each machine was ready",
   "goal": "Check the year’s additions and big repairs, recompute depreciation and answer the CARO fixed-asset points.",
   "period": "Year ended 31 March 2027",
   "where": "Accounts room, Chakan plant · Thursday 22 April 2027"
  },
  "brief": {
-  "from": "aditi",
+  "from": "aarti",
   "time": "10:05 am",
   "messages": [
    "Fixed assets today. I’ve marked four additions and two big repair bills: vouch each against its invoice and the plant’s reports. Pallavi has the register and the files.",
@@ -673,7 +673,7 @@
     {
      "from": "varun",
      "time": "10:11 am",
-     "text": "Fixed assets with Aditi? Last year I ticked the register’s put-to-use dates against the invoice dates. All looked fine, done in an hour."
+     "text": "Fixed assets with Aarti? Last year I ticked the register’s put-to-use dates against the invoice dates. All looked fine, done in an hour."
     },
     {
      "from": "varun",
@@ -784,7 +784,7 @@
    "to": [
     "Bapat Venkatesh & Co., Chartered Accountants",
     "5th floor, Sumant Chambers, Prabhat Road, Erandwane, Pune 411004",
-    "Kind attention: Aditi Rane"
+    "Kind attention: Aarti Rane"
    ],
    "subject": "Title document held by us: Tamhini Drivetech Private Limited",
    "body": [
@@ -864,7 +864,7 @@
     },
     {
      "label": "Reviewed by",
-     "value": "Aditi Rane"
+     "value": "Aarti Rane"
     }
    ],
    "body": [
@@ -2080,17 +2080,17 @@
    "type": "items",
    "stage": "Fieldwork",
    "title": "Vouch the additions and the big repairs",
-   "prompt": "Aditi marked four of the year’s additions and two big repair bills. Open each with its papers; the policy, capex approvals, register and repairs ledger are under Other papers. Mark each Fine or Exception, say where it belongs at 31 March and pick what is wrong. Your calls go to Aditi when you move on.",
+   "prompt": "Aarti marked four of the year’s additions and two big repair bills. Open each with its papers; the policy, capex approvals, register and repairs ledger are under Other papers. Mark each Fine or Exception, say where it belongs at 31 March and pick what is wrong. Your calls go to Aarti when you move on.",
    "weight": 5,
    "noun": [
     "item",
     "items"
    ],
    "lockOnLeave": {
-    "ask": "Hand your calls to Aditi?",
+    "ask": "Hand your calls to Aarti?",
     "note": "You can’t change them after this.",
     "yes": "Hand them in",
-    "done": "Handed to Aditi. You can read your calls but not change them."
+    "done": "Handed to Aarti. You can read your calls but not change them."
    },
    "hints": [
     "Put the date in each installation report next to the register’s put-to-use date. Depreciation runs from the day the asset was ready, not the day it arrived or the day it got busy.",
@@ -2343,13 +2343,13 @@
    "type": "worksheet",
    "stage": "Fieldwork",
    "title": "Recompute the year’s depreciation",
-   "prompt": "Aditi has listed the five assets you vouched, with the day each was ready for use from the plant’s reports. Count the days from the ready date to 31 March, both included, and work out the year’s depreciation as the policy says, to the rupee. She will set your figures against what accounts booked.",
+   "prompt": "Aarti has listed the five assets you vouched, with the day each was ready for use from the plant’s reports. Count the days from the ready date to 31 March, both included, and work out the year’s depreciation as the policy says, to the rupee. She will set your figures against what accounts booked.",
    "weight": 1,
    "lockOnLeave": {
-    "ask": "Hand your depreciation sheet to Aditi?",
+    "ask": "Hand your depreciation sheet to Aarti?",
     "note": "You can’t change it after this.",
     "yes": "Hand it in",
-    "done": "Handed to Aditi. You can read your figures but not change them."
+    "done": "Handed to Aarti. You can read your figures but not change them."
    },
    "hints": [
     "Depreciation = cost × 95% ÷ life × days ÷ 365. Count the ready date and 31 March as well; a machine ready after 31 March has no days this year."
@@ -2530,17 +2530,17 @@
    "type": "compose",
    "stage": "Review",
    "title": "Draft the adjustments for Rehan",
-   "prompt": "Rehan’s first question will be: so what does it do to the accounts? Pick the right entry for each of the three exceptions, then the line that sums them up. Aditi reviews the note before it goes to him.",
+   "prompt": "Rehan’s first question will be: so what does it do to the accounts? Pick the right entry for each of the three exceptions, then the line that sums them up. Aarti reviews the note before it goes to him.",
    "weight": 3,
    "noun": [
     "line",
     "lines"
    ],
    "lockOnLeave": {
-    "ask": "Hand your adjustments to Aditi?",
+    "ask": "Hand your adjustments to Aarti?",
     "note": "You can’t change them after this.",
     "yes": "Hand them in",
-    "done": "Handed to Aditi. You can read your note but not change it."
+    "done": "Handed to Aarti. You can read your note but not change it."
    },
    "hints": [
     "Each entry corrects only the difference: what the books show now against what they should show."
@@ -2636,7 +2636,7 @@
      ]
     }
    ],
-   "template": "Proposed audit adjustments · fixed assets\nTamhini Drivetech Private Limited · year ended 31 March 2027\n\n1. {cnc}\n\n2. {vmc}\n\n3. {comp}\n\n{net}\n\n{_free}\n\nFor Aditi’s review.",
+   "template": "Proposed audit adjustments · fixed assets\nTamhini Drivetech Private Limited · year ended 31 March 2027\n\n1. {cnc}\n\n2. {vmc}\n\n3. {comp}\n\n{net}\n\n{_free}\n\nFor Aarti’s review.",
    "freeText": {
     "label": "Your own line for the note"
    },
@@ -2662,7 +2662,7 @@
    "type": "choice",
    "stage": "Report",
    "title": "Answer the CARO fixed-asset points",
-   "prompt": "Aditi has left points 1 to 3 of the CARO working paper for paragraph 3(i) to you. Use the register, the trial balance, the verification report, the title register and the bank’s letter to answer her six questions on them.",
+   "prompt": "Aarti has left points 1 to 3 of the CARO working paper for paragraph 3(i) to you. Use the register, the trial balance, the verification report, the title register and the bank’s letter to answer her six questions on them.",
    "weight": 2,
    "hints": [
     "Physical verification is management’s job; you check that it was done and what it found. Land held under a duly executed lease stays out of the title-deed table."
@@ -2858,15 +2858,15 @@
   }
  ],
  "wrap": {
-  "from": "aditi",
+  "from": "aarti",
   "text": "Two machines had the wrong start date: the CNC 50 days late, the VMC before it was ready. We raised the CNC at the Q2 review and Mahesh said year-end; here we are. The compressor was hiding in repairs and needs its own register line and tag. Net, profit rises ₹4,27,010."
  },
  "wrapPartial": {
-  "from": "aditi",
+  "from": "aarti",
   "text": "One start date late, one early, and a compressor sitting in repairs. Each miss below has my note; read them before you leave. We’ll sit together at 9 tomorrow, before Rehan opens the file."
  },
  "wrapRetry": {
-  "from": "aditi",
+  "from": "aarti",
   "text": "Most of this file turns on dates: put the day each machine was ready beside the register’s date, and count both ends of every period. Then read each repair bill for what it bought."
  },
  "passNeeds": [
@@ -2950,7 +2950,7 @@
    },
    {
     "type": "note",
-    "from": "aditi",
+    "from": "aarti",
     "text": "A machine file holds more than one date. The VMC’s register line took the day it arrived, the CNC’s the day it got busy; depreciation follows the day each was ready. Ticking the register against the invoice, Varun’s way, would have passed both."
    }
   ]
