@@ -21,6 +21,7 @@ body.og-page {
   --og-alert-line: #fecaca;
   --og-alert-ink: #991b1b;
   background: var(--og-bg);
+  font-family: 'Plus Jakarta Sans', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 /* The mobile app's dark mode (html[data-theme=dark], set by program-chrome.js). */
 html[data-theme=dark] body.og-page {
@@ -44,10 +45,7 @@ html[data-theme=dark] body.og-page {
   --og-alert-ink: #fecaca;
 }
 /* Tokens live on body so the confirm dialog (appended to body) gets them too. */
-.og-main, .og-modal {
-  color: var(--og-ink);
-  font-family: 'Plus Jakarta Sans', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
+.og-main, .og-modal { color: var(--og-ink); }
 .og-main { max-width: 760px; margin: 0 auto; padding: 96px 16px 64px; }
 
 .og-hero { text-align: center; margin-bottom: 24px; }
