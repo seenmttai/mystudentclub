@@ -32,6 +32,11 @@
 </main>
 <div id="ws-live" class="vh" aria-live="polite" aria-atomic="true"></div>
 <noscript><div class="page"><div class="card err"><p>Work Simulation needs JavaScript. Turn it on in your browser and open this page again.</p></div></div></noscript>
+<!-- The site's account sync, "my domain" and CV hooks (INTEGRATION.md §3): window.MSCProgress over the shared progress engine -->
+<script src="/scripts/supabase.js"></script>
+<script src="/scripts/supabase-init.js"></script>
+<script src="/scripts/articleship-progress.js"></script>
+<script src="/scripts/articleship-work-simulation-bridge.js"></script>
 <script src="js/ws-engine.js"></script>
 <script src="js/ws-docs.js"></script>
 <script src="js/ws-store.js"></script>
