@@ -1,4 +1,4 @@
--- 001_excel_tests_xlsx_downloads.sql
+-- 202610310001_excel_tests_xlsx_downloads.sql
 --
 -- What it does:
 --   Industrial Training Mastery, Day 6 (videos: course = 'industrial-training-mastery', video_number = 7,
@@ -6,15 +6,21 @@
 --   .xlsx workbook (every sheet) instead of the one-sheet CSV. The CSV preview (view_storage_path) is not
 --   touched. Master Excel Test 1 already works this way and is not touched.
 --
--- Before running: upload the 3 workbooks in this handover's files/ folder to the ROOT of the Storage bucket
---   industrial-training-mastery-resources, keeping their exact file names. The other 3 workbooks
---   (Tests 3, 4, 6) are already in the bucket.
+-- Needs these workbooks at the ROOT of the Storage bucket industrial-training-mastery-resources:
+--   Excel Interview Questions.xlsx, Excel Test.xlsx, Excel_Skills_Test.xlsx (already there before this change),
+--   Excel Assessment Test (Questions).xlsx, 1.1 Excel Assessment Test (Questions).xlsx, Excel test-1.xlsx
+--   (uploaded 31 Oct 2026 from Padam's "Industrial Training Program/Day 6/Excel Test" folder).
 --
 -- Safe to run more than once. A test changes only when (a) its download is still the old CSV path and
---   (b) its .xlsx is in the bucket. Run before the upload and Tests 3, 4 and 6 change now; the rest change
---   when you run it again after uploading.
+--   (b) its .xlsx is in the bucket.
 --
--- Reversible: yes. HANDOVER.md section 8 has the reverse statement.
+-- Reversible: yes. Before this change every Excel Test 2 to 9 downloaded its preview CSV, so this puts it back:
+--   update public.videos v set resources = (
+--     select jsonb_agg(case when e.elem->>'group' = 'Excel Tests' and e.elem->>'title' <> 'Master Excel Test  1'
+--                           then jsonb_set(e.elem, '{download_storage_path}', e.elem->'view_storage_path')
+--                           else e.elem end order by e.ord)
+--     from jsonb_array_elements(v.resources::jsonb) with ordinality as e(elem, ord))
+--   where v.course = 'industrial-training-mastery' and v.video_number = 7;
 
 with mapping(title, old_download, new_download) as (
   values
