@@ -1,0 +1,461 @@
+{
+  "tool": "cv-recommender",
+  "day": 1,
+  "resources": {
+    "choose": "Choose your CV",
+    "nothing": "The Nothing CV",
+    "templates": "CV templates",
+    "workSimulation": "Work Simulation"
+  },
+  "links": {
+    "workSimulation": null,
+    "domainRoadmaps": "/articleship-program/domain-roadmaps/"
+  },
+  "sections": {
+    "header": {
+      "label": "Name and contact",
+      "example": "Name · city · phone · email · LinkedIn. No photo, no date of birth."
+    },
+    "summary": {
+      "label": "3-line objective",
+      "example": "Who you are now · your best proof · the domain you want"
+    },
+    "education": {
+      "label": "Education + ICITSS row",
+      "example": "Newest first. Remarks never blank. ICITSS sits in this table."
+    },
+    "experience": {
+      "label": "Work experience",
+      "example": "Intern, [Firm], [City] | [Month Year]–[Month Year]: two to four action lines with numbers"
+    },
+    "projects": {
+      "label": "Projects",
+      "example": "Read [Listed company]'s annual report; summarised its 3 key audit matters"
+    },
+    "certifications": {
+      "label": "Certifications and job simulations",
+      "example": "[Company] [Simulation] Job Simulation (Forage) | [Month Year]: [what you did]"
+    },
+    "leadership": {
+      "label": "Roles and achievements",
+      "example": "Treasurer, Commerce Society, [Year]: kept the accounts of 9 events"
+    },
+    "achievements": {
+      "label": "Achievements",
+      "example": "Runner-up, inter-college debate (24 teams), [Year]"
+    },
+    "skills": {
+      "label": "Skills",
+      "example": "Excel: XLOOKUP, PivotTables, SUMIFS · Tally Prime: GST vouchers"
+    },
+    "interests": {
+      "label": "Interests",
+      "example": "One or two you can talk about for a minute"
+    }
+  },
+  "situations": {
+    "A": {
+      "name": "Academics",
+      "useIf": "First attempt, an exemption, a rank or strong school marks, and little else yet.",
+      "reason": "Your marks are your loudest proof, so they sit on top with every Remark filled.",
+      "reasonByInter": {
+        "both-awaited": "Your Inter result is not out yet, so your Foundation and school marks lead, with every Remark filled."
+      },
+      "rule": "No Remarks cell is blank, and every remark is something a mark sheet or certificate shows.",
+      "page": 3,
+      "lead": "education",
+      "order": [
+        "header",
+        "summary",
+        "education",
+        "certifications",
+        "leadership",
+        "skills",
+        "interests"
+      ],
+      "examples": {
+        "education": "CA Intermediate (both groups) | [Year] | ICAI | [Marks] | First attempt; [best paper score]"
+      }
+    },
+    "B": {
+      "name": "Groups separately",
+      "useIf": "Your Inter groups came in different sittings, or a level took more than one attempt.",
+      "reason": "Your Inter took more than one sitting. Show each result clearly and put your proof of improvement right under the table.",
+      "reasonByInter": {
+        "one-awaited": "One group is cleared and one is awaited. Give each its own row: the cleared group with its marks, the other as Result awaited."
+      },
+      "rule": "Each group gets its own row with its own year and marks. A year-only column is fine.",
+      "page": 4,
+      "lead": "education",
+      "order": [
+        "header",
+        "summary",
+        "education",
+        "certifications",
+        "leadership",
+        "skills",
+        "interests"
+      ],
+      "examples": {
+        "education": "CA Inter Group II | [Year] | [Marks], then Group I | [Year] | [Marks]"
+      }
+    },
+    "C": {
+      "name": "Work experience",
+      "useIf": "An internship, your family business's books, tuition or part-time accounts work.",
+      "reason": "Real work beats everything at your stage. It goes right after your education.",
+      "rule": "Say what the organisation is, then two to four action lines with numbers. Never a client's name.",
+      "page": 5,
+      "lead": "experience",
+      "order": [
+        "header",
+        "summary",
+        "education",
+        "experience",
+        "certifications",
+        "skills",
+        "leadership",
+        "interests"
+      ]
+    },
+    "D": {
+      "name": "Projects",
+      "useIf": "Work Simulation levels, a job simulation, a model, a dashboard or an annual-report project.",
+      "reason": "Your projects show you can already do the work. They go right after your education.",
+      "rule": "Simulations go in Certifications and job simulations, your own projects in Projects, neither in Experience.",
+      "page": 6,
+      "lead": "projects",
+      "order": [
+        "header",
+        "summary",
+        "education",
+        "projects",
+        "certifications",
+        "skills",
+        "leadership",
+        "interests"
+      ]
+    },
+    "E": {
+      "name": "Extra-curriculars",
+      "useIf": "Posts you held, sport, debate, NCC or volunteering are your strongest proof.",
+      "reason": "Your roles show you can own a task and handle people. They go right after your education.",
+      "rule": "Role + scale + result + year in every line. Recent and relevant first.",
+      "page": 7,
+      "lead": "leadership",
+      "order": [
+        "header",
+        "summary",
+        "education",
+        "leadership",
+        "achievements",
+        "certifications",
+        "skills",
+        "interests"
+      ],
+      "labels": {
+        "leadership": "Positions of responsibility"
+      },
+      "examples": {
+        "leadership": "Captain, college cricket team, [Year]: led 15 players to the inter-college semi-final"
+      }
+    },
+    "F": {
+      "name": "Skills with proof",
+      "useIf": "Excel, Tally Prime, Power BI or a portal you have actually used.",
+      "reason": "Your skills are your edge. Name the functions and put the proof next to each.",
+      "rule": "Name the functions or tasks, put the proof beside them, and expect to show it live.",
+      "page": 8,
+      "lead": "skills",
+      "order": [
+        "header",
+        "summary",
+        "education",
+        "skills",
+        "projects",
+        "certifications",
+        "leadership",
+        "interests"
+      ],
+      "examples": {
+        "skills": "Excel (proficient): XLOOKUP, PivotTables, SUMIFS; built an EMI schedule for [3] loans with the interest split"
+      }
+    },
+    "G": {
+      "name": "Direct entry",
+      "useIf": "You joined after graduation, so there is no Foundation row.",
+      "reason": "No Foundation row for you. Your graduation row carries the Remarks.",
+      "rule": "The graduation row carries the Remarks; nothing to explain about the missing row.",
+      "page": 9,
+      "lead": "education",
+      "order": [
+        "header",
+        "summary",
+        "education",
+        "certifications",
+        "leadership",
+        "skills",
+        "interests"
+      ],
+      "examples": {
+        "education": "B.Com (Hons) | [Year] | [University] | 8.1 CGPA | First class. No Foundation row."
+      }
+    },
+    "H": {
+      "name": "Nothing yet",
+      "useIf": "Nothing on your CV yet beyond your marks.",
+      "reason": "One weekend gives you the four quick certificates; one more true line takes a few weeks.",
+      "rule": "Build it in this order: objective, education with ICITSS, the four quick certificates, the MSC line, extra-curriculars.",
+      "resource": "nothing",
+      "fixed": true,
+      "seeLabel": "See The Nothing CV",
+      "heading": {
+        "before": "Start with ",
+        "mark": "The Nothing CV",
+        "after": ""
+      },
+      "leadNote": "start here",
+      "page": 1,
+      "lead": "certifications",
+      "order": [
+        "header",
+        "summary",
+        "education",
+        "certifications",
+        "leadership",
+        "skills"
+      ],
+      "examples": {
+        "education": "Class X, XII, CA Foundation, CA Inter, B.Com if any. ICITSS row inside.",
+        "certifications": "The four quick certificates + the MSC Articleship Program line"
+      }
+    }
+  },
+  "answerExamples": {
+    "work": {
+      "ca-firm": "Intern, [CA firm], [City] | [Month Year]–[Month Year]: vouched 120 purchase bills against goods receipt notes",
+      "company": "Finance intern, [Company], [City] | [Month Year]–[Month Year]: reconciled 3 months of vendor ledgers and cleared 40 open items",
+      "part-time": "Part-time accountant, [Shop or firm], [City] | [Month Year]–[Month Year]: entered about 300 vouchers a month in Tally Prime",
+      "family": "Accounts, family business ([trade], [City]) | [Year]–[Year]: kept the books in Tally Prime; prepared the data for 12 monthly GST returns",
+      "tuition": "Tutor, Class XI–XII Accountancy | [Year]–[Year]: taught 12 students; set and checked their weekly test papers"
+    },
+    "projects": {
+      "model": "Built a debtors-ageing dashboard in Excel for 400 invoices: PivotTables, SUMIFS and one chart",
+      "annual-report": "Read [Listed company]'s annual report; summarised its key audit matters and the auditor's response"
+    },
+    "certifications": {
+      "job-simulation": "[Company] [Simulation] Job Simulation (Forage) | [Month Year]: [what you did]",
+      "none": "The four quick certificates (The Nothing CV) and the MSC Articleship Program line"
+    },
+    "educationByInter": {
+      "both-awaited": "CA Intermediate (both groups) | [Year] | ICAI | Result awaited",
+      "one-awaited": "CA Inter Group II | [Year] | Result awaited, then Group I | [Year] | [Marks]",
+      "later": "CA Intermediate (both groups) | [Year] | ICAI | [Marks] | [Best paper score]"
+    }
+  },
+  "ownLines": {
+    "experience": {
+      "label": "Your work experience",
+      "note": "Change the numbers and the brackets to what you really did."
+    },
+    "projects": {
+      "label": "Your projects",
+      "note": "Change the numbers and the brackets to what you really did."
+    },
+    "certifications": {
+      "label": "Your simulations",
+      "note": "Goes in Certifications and job simulations, never in Experience. Put in your own counts.",
+      "labelExample": "Your simulations (example)",
+      "noteExample": "This is the {domain} Work Simulation line, as an example. Copy the line your own level gave you, with your own counts. It goes in Certifications and job simulations, never in Experience."
+    }
+  },
+  "defaultDomain": "statutory-audit",
+  "workSimulation": {
+    "statutory-audit": "Statutory Audit Work Simulation, MSC Articleship Program | [Month Year]: vouched 20 purchase bills against orders, receipt notes and ledgers and flagged [count] cut-off, approval and GST exceptions",
+    "internal-audit": "Internal Audit Work Simulation, MSC Articleship Program | [Month Year]: walked one purchase end to end, tested approval and three-way-match controls on 15 purchases and wrote 2 observations",
+    "direct-tax": "Direct Tax Work Simulation, MSC Articleship Program | [Month Year]: checked [count] tax-audit items (cash payments, TDS, late statutory dues, depreciation) against the books and drafted the notes",
+    "gst": "GST Work Simulation, MSC Articleship Program | [Month Year]: prepared GSTR-1 and GSTR-3B workings for a month of [count] invoices and checked input tax credit against GSTR-2B",
+    "bank-audit": "Bank Audit Work Simulation, MSC Articleship Program | [Month Year]: recomputed drawing power for [count] cash-credit accounts and classified [count] accounts by days overdue",
+    "transfer-pricing": "Transfer Pricing Work Simulation, MSC Articleship Program | [Month Year]: screened [count] comparables, computed margins and the range, and tested the client's margin",
+    "ma-tax": "M&A Tax Work Simulation, MSC Articleship Program | [Month Year]: compared dividend, buyback and capital reduction for a group company and wrote a one-page note on the tax angle of each",
+    "valuation": "Valuation Work Simulation, MSC Articleship Program | [Month Year]: cleaned a 3-year P&L to EBITDA and built a DCF with three inputs and one sensitivity",
+    "fdd": "FDD Work Simulation, MSC Articleship Program | [Month Year]: normalised EBITDA for [count] adjustments, trended working capital, listed net debt and three red flags",
+    "forensic": "Forensic Work Simulation, MSC Articleship Program | [Month Year]: analysed a 500-row ledger and flagged duplicates, round sums, holiday entries and vendor–employee matches",
+    "consulting": "Consulting Work Simulation, MSC Articleship Program | [Month Year]: broke a profit fall into price, volume and cost drivers and made one recommendation",
+    "accounting": "Accounting Work Simulation, MSC Articleship Program | [Month Year]: closed a month's books from vouchers to a trial balance and Schedule III statements, with a bank reconciliation",
+    "ib-er": "IB & ER Work Simulation, MSC Articleship Program | [Month Year]: wrote a one-page company profile and a target screen with a valuation summary"
+  },
+  "mscLine": {
+    "label": "MSC Articleship Program",
+    "line": "MSC Articleship Program (ongoing)",
+    "later": {
+      "label": "Once you finish the programme",
+      "line": "Completed MSC Articleship Program — foundational understanding of work and tasks across all domains"
+    },
+    "note": "Goes in Certifications and job simulations. It is not one of the four outside certificates."
+  },
+  "lastNote": "your no. 5 goes last",
+  "variants": {
+    "g2-awaited": {
+      "label": "One group awaited",
+      "lines": [
+        "CA Intermediate [Group II] | [Year] | ICAI | Result awaited",
+        "CA Intermediate [Group I] | [Year] | ICAI | [Marks]"
+      ],
+      "ask": "My [Group II] result is due on [date]. I'll share it the day it is out."
+    },
+    "result-awaited": {
+      "label": "Result awaited",
+      "lines": [
+        "CA Intermediate (both groups) | [Year] | ICAI | Result awaited"
+      ],
+      "ask": "My result is due on [date]. I'll share it the day it is out."
+    },
+    "groups-separately": {
+      "label": "Groups in different sittings",
+      "note": "Each group its own row, newest first.",
+      "lines": [
+        "CA Intermediate Group II | [Year] | ICAI | [Marks]",
+        "CA Intermediate Group I | [Year] | ICAI | [Marks]"
+      ],
+      "ask": "I cleared Group I in [Month Year] and Group II in [Month Year]."
+    },
+    "more-attempts": {
+      "label": "More than one attempt",
+      "note": "A year-only column is fine. Put your best paper in Remarks.",
+      "lines": [
+        "CA Intermediate (both groups) | [Year] | ICAI | [Marks] | [Best paper score]"
+      ],
+      "ask": "I cleared it in my [second] attempt. What changed: [one true line]."
+    },
+    "gap": {
+      "label": "A gap",
+      "note": "Never hide it: the years in your table show it anyway. Put this one line under your education table. Real work in the gap goes in Work experience instead.",
+      "linesByKind": {
+        "after-foundation": [
+          "[Month Year]–[Month Year] | [What you did: family business accounts / Inter preparation / a course]"
+        ],
+        "after-inter": [
+          "[Month Year]–[Month Year] | [What you did: family business accounts / a course / ICITSS]"
+        ],
+        "missed-sitting": [
+          "[Month Year]–[Month Year] | [What you did: Group [I or II] preparation / family business accounts]"
+        ],
+        "year-out": [
+          "[Month Year]–[Month Year] | [What you did: family business accounts / a course / caring for family]"
+        ]
+      },
+      "ask": "[Month Year] to [Month Year] I [true reason]. Since then I have [what you completed].",
+      "asks": {
+        "missed-sitting": "I skipped the [Month Year] sitting because [true reason]. I cleared [the group] in [Month Year]."
+      }
+    },
+    "icitss-done": {
+      "label": "ICITSS row",
+      "note": "Its own row in your education table.",
+      "lines": [
+        "ICITSS (Orientation Course + IT Training) | ICAI | Completed [Month Year]"
+      ]
+    },
+    "icitss-ongoing": {
+      "label": "ICITSS ongoing",
+      "lines": [
+        "ICITSS (Orientation Course + IT Training) | ICAI | Ongoing, completes [Month Year]"
+      ],
+      "ask": "I complete ICITSS on [date], so I can join from [date]."
+    },
+    "icitss-pending": {
+      "label": "ICITSS not started",
+      "note": "Book your batch now: articleship starts only after ICITSS.",
+      "lines": [
+        "ICITSS (Orientation Course + IT Training) | ICAI | Batch from [Month Year]"
+      ],
+      "ask": "My ICITSS batch starts on [date], so I can join from [date]."
+    },
+    "pursuing": {
+      "label": "Graduation ongoing",
+      "lines": [
+        "B.Com | [Years] | [University] | Pursuing (Sem [N]: [CGPA])"
+      ]
+    },
+    "distance": {
+      "label": "Distance or evening B.Com",
+      "lines": [
+        "B.Com (distance learning) | [Years] | [University] | Pursuing (Year [N]: [%])"
+      ],
+      "ask": "My exams are in [months]. I'll plan my leave for them well in advance."
+    },
+    "stopped": {
+      "label": "Degree stopped",
+      "note": "Leave it out unless it explains a gap. Never write Pursuing.",
+      "lines": [
+        "B.Com | [University] | Discontinued after Year [N]"
+      ],
+      "ask": "I stopped B.Com after [Year N] to focus on CA."
+    },
+    "cs-cma": {
+      "label": "CA with {course}",
+      "note": "Same education table. Give your true reason, never a borrowed one.",
+      "lines": [
+        "{line}"
+      ],
+      "ask": "CA comes first. I take {course} papers only where they don't clash.",
+      "courses": {
+        "cs": {
+          "course": "CS",
+          "line": "CS [Executive] | ICSI | Pursuing"
+        },
+        "cma": {
+          "course": "CMA",
+          "line": "CMA [Intermediate] | ICMAI | Pursuing"
+        }
+      }
+    },
+    "other-course": {
+      "label": "Another course",
+      "lines": [
+        "{line}"
+      ],
+      "courses": {
+        "cfa": {
+          "course": "CFA",
+          "line": "CFA Level I | CFA Institute | Registered, exam [Month Year]",
+          "note": "Only after you have registered."
+        },
+        "degree": {
+          "course": "Another degree",
+          "line": "[LL.B.] | [University] | Pursuing"
+        }
+      }
+    }
+  },
+  "thinProof": {
+    "label": "Thin on proof?",
+    "text": "Add one Work Simulation level and the four quick certificates.",
+    "textHasSimulation": "Add the four quick certificates.",
+    "textNoWs": "Add the four quick certificates, then one more true line.",
+    "labelNothing": "Then",
+    "textNothing": "do one Work Simulation level. It gives you a line you earned, with your own numbers.",
+    "textNothingNoWs": "earn one more true line in a few weeks, like an annual-report project.",
+    "moreLabel": "Earn one more line",
+    "page": 4,
+    "morePage": 5
+  },
+  "unsure": {
+    "label": "Domain not decided?",
+    "text": "Start with statutory audit and some tax.",
+    "linkLabel": "Domain roadmaps",
+    "day": 5,
+    "row": "Domain roadmaps"
+  },
+  "portal": "Applying on a firm's portal? Use {design} with the same order.",
+  "alsoFits": {
+    "cs-cma": "{label}? {design} fits it too."
+  },
+  "next": {
+    "text": "Next: open the CV Builder in {link}. It opens with this order; pick design No. {design} there.",
+    "textNoDesign": "Next: pick a design in CV templates, then open the CV Builder in {link}.",
+    "linkLabel": "Day 1",
+    "row": "CV Builder"
+  }
+}
