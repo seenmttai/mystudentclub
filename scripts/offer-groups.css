@@ -13,7 +13,35 @@ body.og-page {
   --og-red: #dc2626;
   --og-amber-soft: #fff7ed;
   --og-amber: #c2410c;
+  --og-surface: #fff;
+  --og-input: #fff;
+  --og-input-line: #cbd5e1;
+  --og-drop: #fafbff;
+  --og-alert-bg: #fef2f2;
+  --og-alert-line: #fecaca;
+  --og-alert-ink: #991b1b;
   background: var(--og-bg);
+}
+/* The mobile app's dark mode (html[data-theme=dark], set by program-chrome.js). */
+html[data-theme=dark] body.og-page {
+  --og-ink: #e2e8f0;
+  --og-ink-2: #cbd5e1;
+  --og-muted: #94a3b8;
+  --og-line: #1e293b;
+  --og-bg: #0b1220;
+  --og-brand: #818cf8;
+  --og-brand-dark: #6366f1;
+  --og-brand-soft: rgba(129, 140, 248, 0.14);
+  --og-red: #f87171;
+  --og-amber-soft: rgba(251, 146, 60, 0.12);
+  --og-amber: #fdba74;
+  --og-surface: #111a2e;
+  --og-input: #0f172a;
+  --og-input-line: #334155;
+  --og-drop: #0f172a;
+  --og-alert-bg: rgba(248, 113, 113, 0.12);
+  --og-alert-line: rgba(248, 113, 113, 0.35);
+  --og-alert-ink: #fecaca;
 }
 /* Tokens live on body so the confirm dialog (appended to body) gets them too. */
 .og-main, .og-modal {
@@ -30,7 +58,7 @@ body.og-page {
 .og-how li { display: flex; align-items: center; gap: 8px; }
 .og-how b { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--og-brand); color: #fff; font-size: 0.75rem; }
 
-.og-card { background: #fff; border: 1px solid var(--og-line); border-radius: 16px; padding: 24px; box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.06); }
+.og-card { background: var(--og-surface); border: 1px solid var(--og-line); border-radius: 16px; padding: 24px; box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.06); }
 .og-center { text-align: center; padding: 40px 24px; }
 .og-center h2 { margin: 8px 0; font-size: 1.35rem; }
 .og-muted { color: var(--og-muted); }
@@ -41,36 +69,36 @@ body.og-page {
 .og-field { display: grid; gap: 6px; min-width: 0; }
 .og-field label, .og-label { font-weight: 600; font-size: 0.92rem; color: var(--og-ink); }
 .og-field input:not([type=radio]):not([type=checkbox]):not([type=file]), .og-field select {
-  width: 100%; box-sizing: border-box; min-height: 46px; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 10px;
-  font: inherit; font-size: 16px; color: var(--og-ink); background: #fff;
+  width: 100%; box-sizing: border-box; min-height: 46px; padding: 10px 12px; border: 1px solid var(--og-input-line); border-radius: 10px;
+  font: inherit; font-size: 16px; color: var(--og-ink); background: var(--og-input);
 }
 .og-field input:focus, .og-field select:focus { outline: 2px solid var(--og-brand); outline-offset: 1px; border-color: var(--og-brand); }
 .og-field [aria-invalid=true] { border-color: var(--og-red); }
-.og-field select:disabled { background: #f1f5f9; color: var(--og-muted); }
+.og-field select:disabled { background: var(--og-bg); color: var(--og-muted); }
 .og-hint { margin: 0; font-size: 0.82rem; color: var(--og-muted); }
 .og-field-error { margin: 0; font-size: 0.84rem; color: var(--og-red); min-height: 0; }
 .og-field-error:empty { display: none; }
 
 .og-chips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-.og-chip { position: relative; display: flex; align-items: center; justify-content: center; min-height: 46px; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 10px; cursor: pointer; text-align: center; font-weight: 500; font-size: 0.92rem; background: #fff; }
+.og-chip { position: relative; display: flex; align-items: center; justify-content: center; min-height: 46px; padding: 8px 10px; border: 1px solid var(--og-input-line); border-radius: 10px; cursor: pointer; text-align: center; font-weight: 500; font-size: 0.92rem; background: var(--og-input); color: var(--og-ink); }
 .og-chip input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
 .og-chip:has(input:checked) { border-color: var(--og-brand); background: var(--og-brand-soft); color: var(--og-brand-dark); font-weight: 600; }
 .og-chip:has(input:focus-visible) { outline: 2px solid var(--og-brand); outline-offset: 2px; }
 
 .og-file-input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
-.og-drop { display: grid; justify-items: center; gap: 4px; padding: 26px 16px; border: 2px dashed #c7d2fe; border-radius: 14px; background: #fafbff; cursor: pointer; text-align: center; }
+.og-drop { display: grid; justify-items: center; gap: 4px; padding: 26px 16px; border: 2px dashed #c7d2fe; border-radius: 14px; background: var(--og-drop); cursor: pointer; text-align: center; }
 .og-drop:hover, .og-drop.og-drag { border-color: var(--og-brand); background: var(--og-brand-soft); }
 .og-file-input:focus-visible + .og-drop { outline: 2px solid var(--og-brand); outline-offset: 2px; }
 .og-drop-icon { font-size: 1.8rem; }
 .og-drop .og-muted { font-size: 0.85rem; }
 .og-drop[hidden], .og-file-box[hidden], .og-password[hidden] { display: none; }
-.og-file-box { display: flex; align-items: center; gap: 14px; padding: 12px; border: 1px solid var(--og-line); border-radius: 12px; background: #fff; }
+.og-file-box { display: flex; align-items: center; gap: 14px; padding: 12px; border: 1px solid var(--og-line); border-radius: 12px; background: var(--og-surface); }
 .og-file-box > div { display: grid; gap: 2px; min-width: 0; }
 .og-file-box strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .og-thumb { width: 64px; height: 84px; object-fit: cover; object-position: top; border: 1px solid var(--og-line); border-radius: 6px; flex: none; }
-.og-password { display: grid; gap: 8px; padding: 14px; border-radius: 12px; background: var(--og-amber-soft); border: 1px solid #fed7aa; }
+.og-password { display: grid; gap: 8px; padding: 14px; border-radius: 12px; background: var(--og-amber-soft); border: 1px solid var(--og-amber-soft); }
 .og-password label { font-weight: 600; }
-.og-password input { flex: 1; min-width: 0; min-height: 44px; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 10px; font: inherit; font-size: 16px; }
+.og-password input { flex: 1; min-width: 0; min-height: 44px; padding: 8px 12px; border: 1px solid var(--og-input-line); border-radius: 10px; font: inherit; font-size: 16px; background: var(--og-input); color: var(--og-ink); }
 
 .og-row { display: flex; gap: 10px; align-items: center; }
 .og-row-end { justify-content: flex-end; flex-wrap: wrap; }
@@ -78,7 +106,7 @@ body.og-page {
 .og-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .og-btn-primary { background: var(--og-brand); color: #fff; }
 .og-btn-primary:not(:disabled):hover { background: var(--og-brand-dark); }
-.og-btn-ghost { background: #fff; color: var(--og-ink); border-color: #cbd5e1; }
+.og-btn-ghost { background: var(--og-surface); color: var(--og-ink); border-color: var(--og-input-line); }
 .og-btn-ghost:hover { border-color: var(--og-brand); color: var(--og-brand); }
 .og-btn-wa { background: var(--og-wa); color: #fff; min-height: 40px; padding: 0 18px; flex: none; }
 .og-btn-wa:hover { background: var(--og-wa-dark); }
@@ -86,11 +114,11 @@ body.og-page {
 .og-btn-block { width: 100%; }
 .og-link { background: none; border: 0; padding: 0; color: var(--og-brand); font: inherit; font-weight: 600; cursor: pointer; justify-self: start; }
 
-.og-alert { padding: 12px 14px; border-radius: 10px; background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; line-height: 1.5; }
+.og-alert { padding: 12px 14px; border-radius: 10px; background: var(--og-alert-bg); border: 1px solid var(--og-alert-line); color: var(--og-alert-ink); line-height: 1.5; }
 .og-note { margin: 14px 0 0; padding: 12px 14px; border-radius: 10px; background: var(--og-amber-soft); color: var(--og-amber); font-size: 0.92rem; }
 
 .og-modal { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 16px; background: rgba(15, 23, 42, 0.55); }
-.og-modal-card { width: min(460px, 100%); max-height: calc(100vh - 32px); overflow: auto; box-sizing: border-box; background: #fff; border-radius: 18px; padding: 24px; text-align: center; box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25); }
+.og-modal-card { width: min(460px, 100%); max-height: calc(100vh - 32px); overflow: auto; box-sizing: border-box; background: var(--og-surface); border-radius: 18px; padding: 24px; text-align: center; box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25); }
 .og-modal-card h2 { margin: 4px 0 8px; font-size: 1.3rem; }
 .og-modal-card p { line-height: 1.55; color: var(--og-ink-2); }
 .og-warn { font-weight: 700; color: var(--og-red) !important; margin: 0; }
