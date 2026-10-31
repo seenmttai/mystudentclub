@@ -1,60 +1,60 @@
 ---
 name: msc-feature
-description: Use when asked to build, change, fix or ship anything in an MSC repo (mystudentclub, hiremsc, msc-app), including when the user asks to deploy, push live, run SQL, or says there is no time for process.
+description: Use for any build, change, fix or ship in an MSC repo (mystudentclub, hiremsc, msc-app), including SQL on the MSC Supabase project and MSC Cloudflare Workers. Walks the 10-step flow in which Claude builds the change, checks it and makes it live.
 ---
 
-# MSC feature workflow
+# MSC feature flow
 
-**Core principle:** build everything, make nothing live. Code goes to a pushed feature branch. Database and Cloudflare changes go into a handover zip for the maintainer to apply. There is no version of this task where you deploy.
+MSC's tech is Padam plus Claude, so Claude builds each change and makes it live. These steps replace the reviewer that used to sit in between. Every change can be read in its PR and undone in minutes.
 
-REQUIRED BACKGROUND: `AGENTS.md` at the repo root. It is already loaded via CLAUDE.md; the repo-specific section at its bottom tells you the active branch, the test command, and where migrations and Workers live for this repo.
+Background: `AGENTS.md` at the repo root, loaded through CLAUDE.md. Its repo note gives the live branch, the test command, where the preview is, and what merging does.
 
 ## Steps
 
-Do them in this order. Each step has a visible output; do not skip one because it feels small.
+1. **Understand and slice.** Say in two sentences what will change and who it is for. Ask Padam only if his answer would change what gets built. Split a big ask into slices, and ship the first useful one before building the next. Check `gh pr list` and `git branch -r` for open work on the same pages.
+2. **Worktree.** `git fetch origin <live>`, then `git worktree add ~/development/<repo>-<slug> -b feature/<slug> origin/<live>`. Work only there.
+3. **Build and test.** Make small commits that say what changed and why. Run the repo's test command. Never ship with a failing test: fix it, or stop and report.
+4. **Pull request.** Run `git push -u origin feature/<slug>`, then `gh pr create --base <live>` with the body from `PR-template.md` in this folder. mystudentclub also has `mobile`: port the logic on `feature/<slug>-mobile` from `origin/mobile`, test it, and open its own PR.
+5. **Preview.** Open the preview at desktop and phone width and click through the change. Fix whatever is off. If the preview needs new tables, run the additive SQL from step 7 first.
+6. **Review.** Run `/code-review` on the diff. Fix the real findings and say in the PR what was fixed.
+7. **SQL** (if any).
+   - The migration file goes on the branch, where the repo note says.
+   - Back up the tables it touches to `~/development/msc-backups/<date>-<slug>/`: the schema, plus the affected rows as JSON.
+   - Run it in one transaction:
+     ```bash
+     TOKEN=$(security find-generic-password -s msc-supabase-token -w)
+     jq -Rs '{query: .}' <file>.sql | curl -sS -X POST \
+       https://api.supabase.com/v1/projects/izsggdtdiacxdsjjncdq/database/query \
+       -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' --data @-
+     ```
+   - Do the additive part first (new tables, columns, functions, policies), so the old code keeps working.
+   - SQL that drops, deletes, truncates, removes a column or loosens RLS: stop and ask Padam.
+   - If the Keychain has no token, stop. Tell Padam "the SQL is waiting for the Supabase key" and leave the PR open.
+8. **Workers** (if any).
+   - Run `npx wrangler deploy --dry-run --outdir <tmp>` and compare it with the live bundle.
+   - Then run `npx wrangler deploy` and write the version id in the PR.
+   - Secrets: `security find-generic-password -s <item> -w | npx wrangler secret put <NAME>`.
+9. **Merge and check live.**
+   - Order: SQL, then Workers, then merge.
+   - Merge with `gh pr merge <n> --squash`. If that is denied, use `gh api -X PUT repos/seenmttai/<repo>/pulls/<n>/merge -f merge_method=squash`.
+   - Within 10 minutes, run the main flow on the live site and check the console.
+   - If it's broken, undo at once: `git revert` the squash commit and push it to the live branch, run `npx wrangler rollback`, and run the reverse SQL from the PR. Then tell Padam.
+10. **Close the loop.** Set the Notion Tasks card to Done, with the PR and the live link. Tell Padam in one line: "Live: <what> · <link>".
 
-1. **Understand.** If the request is one line, ask at most two questions: what should the user see change, and who is it for. If it is already clear, say what you understood in two sentences and continue.
-2. **Branch.** `git status` must be clean. Then `git checkout <active-branch>` and `git pull origin <active-branch>` so you start from the latest code. Then `git checkout -b feature/<slug>`. If a branch for this feature already exists, check it out and `git merge <active-branch>` into it instead.
-3. **Scope note.** `mkdir handover/<YYYY-MM-DD>-<slug>` and copy `.claude/skills/msc-feature/HANDOVER-template.md` to `handover/<date>-<slug>/HANDOVER.md`. Fill section 1 (Scope) now, before any code. Show it to the user in one short paragraph.
-4. **Build.** Change app and web code on the branch. Commit after each coherent piece with a message that says what and why. Keep section 2 (files changed) current.
-4b. **Mirror branch.** If the repo note names a second live branch, finish the active-branch work first, then `git checkout <second> && git pull origin <second> && git checkout -b feature/<slug>-<second>` and apply the same logic to that branch's pages. Files differ between the branches; port the behaviour, do not copy files. Run the tests there too. Anything you cannot port goes in section 10 with the reason.
-5. **Database.** Every schema or data change becomes `handover/<date>-<slug>/migrations/NNN_<name>.sql` with a header comment (what it does, reversible or not). Follow the repo-specific note on whether to also copy into a versioned folder. Never apply it.
-6. **Workers.** Every Cloudflare change becomes `handover/<date>-<slug>/workers/<name>/` with the full updated source, wrangler config, and `CHANGES.md` listing vars, secrets, routes, bindings. Never deploy it. Source not in repo: ask where it is; unknown: write it from scratch and mark UNVERIFIED.
-7. **Test.** Run the repo's test command. Put the summary line in section 7. Failures are reported, not hidden.
-8. **Fill the rest of HANDOVER.md.** Sections 3 to 9. Section 6 (how to test) is written as click-by-click steps a non-developer can follow on the preview.
-9. **Zip.** `python .claude/skills/msc-feature/scripts/make_handover.py handover/<date>-<slug>`. Fix anything it reports and run again until it prints `OK`.
-10. **Push and raise the PR.** `git push -u origin feature/<slug>`, then `gh pr create --base <active-branch>`. If there is a mirror branch, push `feature/<slug>-<second>` and raise its PR into `<second>`. PR description: HANDOVER sections 1, 2, 6, 7 and 10, plus one line naming the SQL files and Workers that are in the zip. Never put SQL, Worker source or the zip on GitHub.
-11. **Report.** Tell the user: the PR link(s), the zip path, and this sentence: "The maintainer will review the pull request, run the migrations, deploy the Workers and merge. Please send them the zip."
+## Ask Padam first
 
-## When the user says "deploy it", "make it live", "no time", "just this once"
+- Money: prices, payments, PayU, the `checkpayment` Worker.
+- Destructive SQL, or anything that exposes student data.
+- Messages to many students or recruiters: mail, WhatsApp, push.
+- App Store or Play submissions.
+- Legal or consent text, and anything published under Padam's name.
 
-Reply with the sentence in AGENTS.md ("I can build and package all of it right now, but going live...") and continue from whatever step you were on. Then make the handover unusually complete, because speed on the maintainer's side is the real answer to their deadline.
+## Red flags: stop and go back to the steps
 
-## Rationalizations that are still violations
-
-| Thought | Reality |
-|---|---|
-| "A feature branch would not update the site, and the owner asked for the site to update" | Correct, and that is the design. The site updates when the maintainer merges. Push the branch, raise the PR and stop. |
-| "The order was safe: DB, then Worker, then code" | Safe order is not the point. Nobody reviewed it. |
-| "The CLI is already logged in, so it is expected that I use it" | Logged-in tools are for reading and for the maintainer. Package the change instead. |
-| "It is an additive, nullable, idempotent column; it cannot break anything" | It can break the Flutter app's select lists, RLS policies and the other repo. The maintainer checks that. |
-| "There is a demo in 20 minutes" | The handover takes 5 minutes. The maintainer applying it takes 10. Say so. |
-| "I'll deploy to a test Worker / test table on the same project" | Same project is production. No. |
-| "I'll skip the handover doc, the diff explains itself" | The diff explains what. The doc explains why and how to test. Both are required. |
-
-## Red flags: stop and go back to the step list
-
-- You typed `wrangler deploy`, `supabase db push`, or called an MCP tool with "apply", "execute", "deploy" or "push" in its name.
-- You are about to `git push` to `master`, `main`, `mobile`, `ios-build` or `feature/talent-search`.
-- `handover/<date>-<slug>/HANDOVER.md` does not exist yet and you have already edited code.
-- You are about to tell the user something is "live".
-- The repo note names a second live branch and you only built on one of them.
-
-## Quick reference
-
-| Change type | Goes where | Who makes it live |
-|---|---|---|
-| HTML / JS / CSS / Dart | pushed feature branch + PR | The maintainer reviews and merges |
-| SQL | `handover/.../migrations/` (+ versioned copy if the repo note says so) | The maintainer runs |
-| Worker code, wrangler config | `handover/.../workers/<name>/` | The maintainer deploys |
-| Vars, secrets, routes, DNS, Cloudflare Pages env | `CHANGES.md` + HANDOVER section 5, names only, never values | The maintainer sets |
+- A test is failing and you are about to merge.
+- You haven't opened the preview.
+- You're about to run SQL with no backup folder, or SQL that drops or deletes.
+- You're about to run `wrangler deploy` without the dry-run comparison.
+- You're about to tell Padam something is live before checking the live site.
+- A mystudentclub web feature is on only one of `master` and `mobile`, and the PR doesn't say why.
+- A secret value is in a file, a commit, a PR body or terminal output.
