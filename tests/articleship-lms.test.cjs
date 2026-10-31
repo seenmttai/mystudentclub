@@ -349,6 +349,28 @@ test('programme tools (site paths, or the desktop host) open inside the WebView;
     assert.ok(fs.existsSync(path.join(root, 'articleship-program/experience-explorer/experiences.json')));
 });
 
+// Release 2 (31 Oct 2026) adds row 1.6 to the shared course (003/004 on the desktop branch; this branch has no SQL):
+// Day 1, its own heading, a link row with a site path, so one row serves web and app (package A INTEGRATION.md §7).
+const WORK_SIMULATION_ROW = Object.freeze({ title: 'Work Simulation', type: 'external_link', url: '/articleship-program/work-simulation/', group: 'Work Simulation' });
+
+test('release 2: the Work Simulation row (1.6) opens its page inside the WebView, like the other programme tools', async () => {
+    const opened = [];
+    const window = { location: { href: '' }, open(url) { opened.push(url); } };
+    const run = courseFunction('handleResourceClick', { state: { courseSlug: 'msc-articleship-program' }, window, articleshipLms: () => Lms });
+    await run(WORK_SIMULATION_ROW);
+    assert.equal(window.location.href, '/articleship-program/work-simulation/', 'in place: the app has no second tab');
+    assert.deepEqual(opened, []);
+    window.location.href = '';
+    await run(Object.assign({}, WORK_SIMULATION_ROW, { url: 'https://www.mystudentclub.com/articleship-program/work-simulation/' }));
+    assert.equal(window.location.href, '/articleship-program/work-simulation/', 'a row written with the desktop host stays on this site');
+    assert.deepEqual(opened, []);
+    // The page it opens is on this branch, phone-first, and loads only this site's files.
+    const page = fs.readFileSync(path.join(root, 'articleship-program/work-simulation/index.html'), 'utf8');
+    assert.match(page, /<meta name="viewport" content="width=device-width, initial-scale=1/);
+    assert.ok(!/(src|href)="(https?:)?\/\//.test(page), 'no file from another host');
+    assert.ok(!/https:\/\/www\.mystudentclub\.com/.test(page), 'no link back to the desktop host');
+});
+
 test('copy rows open the copyable reader in place (a click) or instead of the course page (a deep link)', async () => {
     const signed = [];
     const window = { location: { href: '', replace(url) { this.href = 'replaced:' + url; } }, open() { throw new Error('no second tab in the WebView'); } };

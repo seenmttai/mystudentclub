@@ -600,8 +600,8 @@ test('stage (Work Simulation out): earned lines are offered, queued ones arrive 
     const none = await stage({ workSimulationLive: true });
     assert.match(none.panel().textContent, /Earn a line with your own counts in Work Simulation/);
     const ws = [...none.panel().querySelectorAll('a')].find(a => a.textContent === 'Work Simulation');
-    assert.equal(ws.getAttribute('href'), '/learning-management-system/course?course=msc-articleship-program&session=2',
-        'its Day in the course until the shared situations list names the page');
+    assert.equal(ws.getAttribute('href'), '/articleship-program/work-simulation/',
+        'the page itself, now that the shared situations list names it (release 2; its Day in the course before)');
 });
 
 test('stage (release 1, Work Simulation not out): nothing read, offered, linked or pre-filled; the switch brings it all back', async () => {

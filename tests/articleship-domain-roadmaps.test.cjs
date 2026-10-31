@@ -16,8 +16,11 @@ const CSS = fs.readFileSync(path.join(TOOL_DIR, 'domain-roadmaps.css'), 'utf8');
 const CONTENT_BUILD = process.env.MSC_CONTENT_BUILD || path.join(ROOT, '..', 'msc-content/articleship-program/v3/build');
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 // The full v3 course (003). The desktop branch keeps it in supabase/migrations/; the mobile branch shares the database
-// and has no SQL, so it reads the LMS build's copy (and skips these checks on a machine without either).
+// and has no SQL, so it reads the LMS build's copy (and skips these checks on a machine without either). From release 2
+// (WORK_SIMULATION_LIVE true) that copy is the build's release-2 003 (lms/release-2/: row 1.6 added), the same rows as
+// the desktop branch's 003.
 const LATER_SQL = [path.join(ROOT, 'supabase/migrations/202610200003_articleship_program_v3_later_rows.sql'),
+    ...(P.WORK_SIMULATION_LIVE ? [path.join(CONTENT_BUILD, 'lms/release-2/003_articleship_program_v3_later_rows.sql')] : []),
     path.join(CONTENT_BUILD, 'lms/003_articleship_program_v3_later_rows.sql')].find(file => fs.existsSync(file));
 const NO_SQL = LATER_SQL ? false : 'no v3 LMS SQL on this machine (supabase/migrations or the content build)';
 
@@ -381,8 +384,8 @@ test('links: `unbuilt` matches the content build (a row with its file is linked,
 });
 
 test('Work Simulation: hidden in release 1 (WORK_SIMULATION_LIVE false), every part back with one flag', async () => {
-    assert.equal(R.WORK_SIMULATION_LIVE, false, 'release 1 ships without the Work Simulation');
-    const off = page('');
+    assert.equal(R.WORK_SIMULATION_LIVE, true, 'release 2 ships the Work Simulation');
+    const off = page('', CONTENT, null, { workSimulationLive: false });
     for (const card of R.normalise(CONTENT).domains) {
         await go(off.win, '#' + card.slug);
         const text = off.$('.dr-card').textContent;
@@ -390,7 +393,9 @@ test('Work Simulation: hidden in release 1 (WORK_SIMULATION_LIVE false), every p
     }
     assert.doesNotMatch(off.$('.dr').textContent, /Work Simulation/, 'nowhere on the page');
 
-    const on = page('#statutory-audit', CONTENT, null, { workSimulationLive: true });
+    // The flag on, the page not wired (links.workSimulation null): the levels as text and one link to its Day 1 row.
+    const unwired = Object.assign(copy(CONTENT), { links: Object.assign({}, CONTENT.links, { workSimulation: null }) });
+    const on = page('#statutory-audit', unwired, null, { workSimulationLive: true });
     assert.ok(on.$$('.dr-card .dr-h3').some(h => h.textContent === 'Earn the CV line'));
     assert.equal(on.$$('.dr-level.is-plain').length, 7);
     const open = on.$$('.dr-card .dr-go').find(a => a.textContent === 'Open the Work Simulation');
@@ -410,13 +415,33 @@ test('links: a wired Work Simulation page turns every level into its own link', 
 
     const on = R.normalise(Object.assign(copy(CONTENT), { links: { workSimulation: '/articleship-program/work-simulation/' } }), { workSimulationLive: true });
     assert.equal(on.workSimulation.wired, true);
-    assert.equal(on.bySlug.gst.levels[1].href, '/articleship-program/work-simulation/?domain=gst&level=gst-2');
+    // The page's own route to a level (its INTEGRATION.md §4a): #/l/<its level id>.
+    assert.equal(on.bySlug.gst.levels[1].href, '/articleship-program/work-simulation/#/l/gst-2');
     const content = Object.assign(copy(CONTENT), { links: { workSimulation: '/articleship-program/work-simulation/' } });
     const { $$ } = page('#statutory-audit', content, null, { workSimulationLive: true });
     const levels = $$('a.dr-level');
     assert.equal(levels.length, 7);
-    assert.equal(levels[0].getAttribute('href'), '/articleship-program/work-simulation/?domain=statutory-audit&level=statutory-audit-1');
+    assert.equal(levels[0].getAttribute('href'), '/articleship-program/work-simulation/#/l/sa-1');
     assert.ok(!$$('.dr-go').some(a => a.textContent === 'Open the Work Simulation'));
+    // An id the page does not know opens the domain's levels, never "This page is not here".
+    assert.equal(R.normalise(Object.assign(copy(content), { domains: content.domains.map(c => (c.slug === 'gst' ? Object.assign({}, c, { levels: [{ id: 'gst-annual', title: 'GST annual' }] }) : c)) }),
+        { workSimulationLive: true }).bySlug.gst.levels[0].href, '/articleship-program/work-simulation/#/d/gst');
+});
+
+test('links: every level on a card opens a published level of that domain on the Work Simulation page', { skip: !fs.existsSync(path.join(ROOT, 'articleship-program/work-simulation/data/catalogue.json')) && 'the Work Simulation page is not on this branch' }, () => {
+    const catalogue = JSON.parse(fs.readFileSync(path.join(ROOT, 'articleship-program/work-simulation/data/catalogue.json'), 'utf8'));
+    const model = R.normalise(Object.assign(copy(CONTENT), { links: Object.assign({}, CONTENT.links, { workSimulation: '/articleship-program/work-simulation/' }) }), { workSimulationLive: true });
+    const linked = [];
+    for (const card of model.domains) {
+        for (const level of card.levels) {
+            const id = (level.href.match(/#\/l\/([a-z0-9-]+)$/) || [])[1];
+            const target = catalogue.levels.find(l => l.id === id);
+            assert.ok(target && target.published, card.slug + ' · ' + level.title + ': ' + level.href + ' is a published level');
+            assert.equal(target.domain, card.slug, level.title + ' opens a level of its own domain');
+            linked.push(id);
+        }
+    }
+    assert.deepEqual(linked.sort(), catalogue.levels.filter(l => l.published).map(l => l.id).sort(), 'every published level is on its card, once');
 });
 
 test('links: Top 100 Articleship Firms switches to a Sheet with one data change (even while its course row is unbuilt)', () => {
@@ -501,7 +526,7 @@ test('page: a card opens from its anchor with every part; jumps to unbuilt rows 
     assert.equal($('#dr-card').getAttribute('aria-live'), null, 'no aria-live: focus moves to the name instead');
     const heads = $$('.dr-card .dr-h3').map(h => h.textContent);
     assert.deepEqual(heads, ['What an article does', 'Who it suits', 'Pros', 'Cons', 'Where it leads', 'How you are tested',
-        'Practise free', 'Good to know', 'Go further']);
+        'Earn the CV line', 'Practise free', 'Good to know', 'Go further'], 'release 2: "Earn the CV line" too');
     const firmsLive = !CONTENT.unbuilt.some(r => r.title === 'Top 100 Articleship Firms');
     const quick = $$('.dr-quick a');
     assert.deepEqual(quick.map(a => a.textContent), firmsLive ? ['Experiences', 'Firms', 'LinkedIn'] : ['Experiences', 'LinkedIn']);
