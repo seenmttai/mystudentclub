@@ -219,6 +219,23 @@ test('Articleship seeding preserves drafts with only a location, highlight or ot
     }
 });
 
+test('a Work Simulation line added before there was any CV is not a draft; the student\'s own certificates are', () => {
+    // The Work Simulation page writes { certifications: [{ name: <line>, issuer: '' }] } into cv_maker_data (its
+    // INTEGRATION.md §5); the articleship stage then opens its blank starter and keeps the line (stage.js blankCv).
+    const logic = require('../scripts/articleship-cv-builder.js');
+    const sandbox = {
+        window: { MSCArticleship: catalog, MSCArticleshipCvBuilder: logic },
+        hasUserEnteredData: value => Boolean(value.personal?.name || value.summary || value.certifications?.length)
+    };
+    const start = builder.indexOf('function hasArticleshipDraftData');
+    vm.runInNewContext(builder.slice(start, builder.indexOf('function initializeArticleshipTemplates', start)), sandbox);
+    const line = 'GST Work Simulation, MSC Articleship Program | Nov 2026: Prepared GSTR-1 for 18 invoices';
+    assert.equal(sandbox.hasArticleshipDraftData({ certifications: [{ name: line, issuer: '' }] }), false);
+    assert.equal(sandbox.hasArticleshipDraftData({ certifications: [{ name: line, issuer: '' }, { name: 'Tally Prime course | Jan 2026', issuer: '' }] }), true,
+        'an outside certificate the student typed is a draft');
+    assert.equal(sandbox.hasArticleshipDraftData({ personal: { name: 'Kirti Joshi' }, certifications: [{ name: line, issuer: '' }] }), true);
+});
+
 test('closing and reopening the mobile template sheet restores both moved controls', () => {
     class Node {
         constructor(name) { this.name = name; this.children = []; this.parentElement = null; }

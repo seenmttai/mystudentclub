@@ -103,7 +103,12 @@
     function blankCv(current, tableSettings) {
         state.freshBlank = true;
         const p = pick();
-        const out = logic.createBlank(current, { structure: (p && p.situation) || 'A', order: p && p.order, situations: state.situations, workSimulationLive: WS_LIVE });
+        let out = logic.createBlank(current, { structure: (p && p.situation) || 'A', order: p && p.order, situations: state.situations, workSimulationLive: WS_LIVE });
+        // A Work Simulation line added before there was any CV (the page writes it into cv_maker_data) stays.
+        const lines = WS_LIVE ? ((current && current.certifications) || [])
+            .filter(item => logic.classifyCertification(item) === 'msc-simulation')
+            .map(item => logic.plainText(item && typeof item === 'object' ? item.name : item)) : [];
+        if (lines.length) out = logic.importEarnedLines(out, lines).cv;
         out.templateFile = 'articleship-layout-classic';
         out.tableSettings = JSON.parse(JSON.stringify(tableSettings || {}));
         return out;
@@ -238,11 +243,11 @@
         commit(next, 'The Nothing CV loaded. Make every line your own.');
     }
 
-    function newLines() {
+    function newLines(lines) {
         const data = cv();
         const done = new Set((data.articleshipImported || []).map(line => String(line).toLowerCase()));
         const on = new Set((data.certifications || []).map(item => logic.plainText(item && typeof item === 'object' ? item.name : item).toLowerCase()));
-        return state.earned.filter(item => !on.has(item.line.toLowerCase()) && !done.has(item.line.toLowerCase()));
+        return (lines || state.earned).filter(item => !on.has(item.line.toLowerCase()) && !done.has(item.line.toLowerCase()));
     }
 
     function addLines(lines, quietIfNone) {
@@ -277,17 +282,38 @@
         }
     }
 
-    /** Lines the student sent with "Add to my CV" arrive by themselves, once each. */
-    function importQueued() {
-        if (!WS_LIVE || !progress || !progress.open) return;
-        let queued = [];
+    // The Work Simulation page's own "Add to my CV" queue on this device (its INTEGRATION.md §5):
+    // [{ source, domain, line, at }], one entry per domain. Read on open, then cleared.
+    const CV_IMPORT_KEY = 'msc-articleship:cv-import';
+
+    function localQueue() {
         try {
-            const data = progress.open('work-simulation', { defaults: {} }).get();
-            queued = logic.readEarnedLines({ cvQueue: data && (data.cvQueue || data.addToCv) });
-        } catch (_) { queued = []; }
-        const queuedSet = new Set(queued.map(item => item.line.toLowerCase()));
-        const fresh = newLines().filter(item => queuedSet.has(item.line.toLowerCase()));
+            const list = JSON.parse(window.localStorage.getItem(CV_IMPORT_KEY) || '[]');
+            return Array.isArray(list) ? list.filter(item => item && typeof item.line === 'string') : [];
+        } catch (_) { return []; }
+    }
+
+    function clearLocalQueue() {
+        try { window.localStorage.removeItem(CV_IMPORT_KEY); } catch (_) { /* blocked storage: nothing queued either */ }
+    }
+
+    /**
+     * Lines the student sent with "Add to my CV" arrive by themselves, once each, under "Certifications and job
+     * simulations": from the account (the tool's cvQueue) and from this device's queue. A newer line for a domain takes
+     * the place of the older one; a line the student deleted here is not brought back.
+     */
+    function importQueued() {
+        if (!WS_LIVE) return;
+        let saved = [];
+        try {
+            const data = progress && progress.open ? progress.open('work-simulation', { defaults: {} }).get() : null;
+            saved = (data && (data.cvQueue || data.addToCv)) || [];
+        } catch (_) { saved = []; }
+        const local = localQueue();
+        const queued = logic.readEarnedLines({ cvQueue: [].concat(saved, local) });
+        const fresh = newLines(queued);
         if (fresh.length) addLines(fresh, true);
+        if (local.length) clearLocalQueue();
     }
 
     // ---------- the panel ----------
