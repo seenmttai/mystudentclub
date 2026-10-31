@@ -1729,7 +1729,7 @@
             </div>
             <div class="form-group" id="lmsCsvExcelUpload" style="display:none; border-top: 1px solid #333; padding-top: 15px; margin-top: 15px;">
               <label class="form-label" for="lmsResourceFileExcel">Excel file for download (optional)</label>
-              <input id="lmsResourceFileExcel" type="file" accept=".xlsx,.xls,.xlsm" class="form-input">
+              <input id="lmsResourceFileExcel" type="file" accept=".xlsx,.xls" class="form-input">
               <div class="lms-resource-inline-note">The CSV is only the preview. Students download this workbook with every sheet. Leave it empty and they download the CSV.</div>
             </div>
             <label class="lms-resource-checkbox" id="lmsResourceViewOnlyWrap">
@@ -2472,10 +2472,12 @@
     function isManagedLmsStoragePath(path) {
       return typeof path === 'string' && path.startsWith(`admin-managed/`);
     }
+    // Matches the extensions the LMS labels "Download Excel".
+    const LMS_EXCEL_FILE_PATTERN = /\.(xlsx|xls)$/i;
     function getLmsExcelDownloadPath(resource) {
       // A CSV resource can carry the original workbook as its download (view = .csv, download = .xlsx).
       const path = String(resource?.download_storage_path || '').trim();
-      return /\.(xlsx|xls|xlsm)$/i.test(path) && path !== resource?.view_storage_path ? path : null;
+      return LMS_EXCEL_FILE_PATTERN.test(path) && path !== resource?.view_storage_path ? path : null;
     }
     function collectManagedPaths(resource) {
       const paths = new Set();
@@ -3027,7 +3029,7 @@
       const pdfFile = pdfFileInput ? pdfFileInput.files[0] : null;
       const excelFileInput = document.getElementById('lmsResourceFileExcel');
       const excelFile = mode === 'file' && typeSelect.value === 'csv' && excelFileInput ? excelFileInput.files[0] || null : null;
-      if (excelFile && !/\.(xlsx|xls|xlsm)$/i.test(excelFile.name)) {
+      if (excelFile && !LMS_EXCEL_FILE_PATTERN.test(excelFile.name)) {
         setLmsResourceStatus('The download file must be an Excel workbook (.xlsx).', 'error');
         return;
       }
@@ -3111,15 +3113,16 @@
                   : existingResource.view_storage_path || 'None');
             }
 
+            const existingExcelPath = getLmsExcelDownloadPath(existingResource);
             if (nextResource.type === 'csv' && !isViewOnly) {
               if (excelFile) {
                 const excelPath = await uploadLmsResourceFile(excelFile, video, title + '_excel');
                 rollbackUploads.push(excelPath);
                 nextResource.download_storage_path = excelPath;
                 if (existingResource) cleanupAfterSave.push(...collectManagedPaths(existingResource));
-              } else if (getLmsExcelDownloadPath(existingResource)) {
+              } else if (existingExcelPath) {
                 // A new CSV preview keeps the workbook students already download.
-                nextResource.download_storage_path = getLmsExcelDownloadPath(existingResource);
+                nextResource.download_storage_path = existingExcelPath;
               }
             }
           }

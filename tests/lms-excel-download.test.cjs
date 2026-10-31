@@ -102,15 +102,17 @@ test('admin: a view-only CSV ignores the Excel file', async () => {
 });
 
 test('admin: a non-Excel download file is refused before anything uploads', async () => {
-    const { calls } = await saveResource({ file: { name: 'test.csv' }, excelFile: { name: 'answers.pdf' } });
-    assert.equal(calls.uploads.length, 0);
-    assert.equal(calls.saved, null);
-    assert.equal(calls.status.at(-1).kind, 'error');
+    for (const name of ['answers.pdf', 'macro-book.xlsm']) {
+        const { calls } = await saveResource({ file: { name: 'test.csv' }, excelFile: { name } });
+        assert.equal(calls.uploads.length, 0);
+        assert.equal(calls.saved, null);
+        assert.equal(calls.status.at(-1).kind, 'error');
+    }
 });
 
 test('admin: the Excel upload shows only for the CSV type', () => {
     assert.match(adminHtml, /id="lmsCsvExcelUpload"/);
-    assert.match(adminHtml, /<input id="lmsResourceFileExcel" type="file" accept="\.xlsx,\.xls,\.xlsm"/);
+    assert.match(adminHtml, /<input id="lmsResourceFileExcel" type="file" accept="\.xlsx,\.xls"/);
     assert.match(slice('function updateLmsResourceModePanels(', 'function inferLmsResourceTypeFromName('), /csvExcelExtra\.style\.display = isCsv && mode === 'file'/);
 });
 
