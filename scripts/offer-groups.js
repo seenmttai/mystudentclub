@@ -308,7 +308,7 @@
             city.addEventListener('blur', function () { city.value = snapCity(city.value, state.data); });
 
             function fillDomains() {
-                var cat = CATEGORIES.filter(function (c) { return c.id === (form.category && form.category.value); })[0];
+                var cat = CATEGORIES.filter(function (c) { return c.id === checkedCategory(); })[0];
                 var items = cat ? state.domains[cat.domains] || [] : [];
                 domain.replaceChildren(el('option', { value: '', text: cat ? 'Choose your domain' : 'Choose what you are joining as first' }));
                 items.forEach(function (d) { domain.append(el('option', { value: d, text: d })); });
@@ -385,6 +385,7 @@
             ['dragleave', 'drop'].forEach(function (t) { drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.remove('og-drag'); }); });
             drop.addEventListener('drop', function (e) { var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]; if (f) handleFile(f); });
 
+            var checkedCategory = function () { var r = chips.querySelector('input[name=category]:checked'); return r ? r.value : ''; };
             var submit = el('button', { type: 'submit', class: 'og-btn og-btn-primary og-btn-block', text: 'Verify my offer letter' });
             var form = el('form', { class: 'og-form', novalidate: '' }, [
                 notice || null,
@@ -410,7 +411,7 @@
             });
 
             function collect() {
-                v.category = form.category.value || '';
+                v.category = checkedCategory();
                 v.company = snapCompany(company.value, state.data);
                 v.city = snapCity(city.value, state.data);
                 v.domain = domain.value;
