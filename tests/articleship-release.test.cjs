@@ -62,11 +62,12 @@ const RELEASE_2 = loadScripts(true);
 
 // ---------- the one flag ----------
 
-test('one flag: WORK_SIMULATION_LIVE lives once, in the shared platform script, and release 1 ships it false', () => {
+test('one flag: WORK_SIMULATION_LIVE lives once, in the shared platform script, and release 2 ships it true', () => {
     const source = fs.readFileSync(path.join(SCRIPTS, 'articleship-progress.js'), 'utf8');
     assert.equal((source.match(new RegExp(FLAG_LINE.source, 'gm')) || []).length, 1, 'one line to flip');
-    assert.equal(P.WORK_SIMULATION_LIVE, false,
-        'release 1 ships without the Work Simulation (row 1.6). Release 2: set it to true here, wire links.workSimulation, update this line');
+    assert.equal(P.WORK_SIMULATION_LIVE, true,
+        'release 2 ships the Work Simulation (row 1.6, 31 Oct 2026); release 1 shipped it false. Back to release 1: set it to false here');
+    assert.equal(RELEASE_1.progress.WORK_SIMULATION_LIVE, false, 'the flip test really flips it back');
     assert.equal(P.workSimulationLive(), P.WORK_SIMULATION_LIVE);
     assert.equal(P.workSimulationLive(true), true);
     assert.equal(P.workSimulationLive(false), false);

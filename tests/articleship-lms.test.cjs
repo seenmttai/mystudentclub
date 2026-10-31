@@ -12,7 +12,9 @@ const html = fs.readFileSync(path.join(root, 'learning-management-system/index.h
 const dashboardScript = html.match(/<script type="module">([\s\S]*?)<\/script>/)[1]
     .replace(/import \{ createApp \} from 'vue';/, '');
 // 002 = release 1 (the rows ready at handover), 003 = the full course (a later row shows once its files are uploaded),
-// 004 = 003 plus the Automail row. Built by msc-content/articleship-program/v3/build/lms/build_lms_sql.mjs.
+// 004 = 003 plus the Automail row. Built by msc-content/articleship-program/v3/build/lms/build_lms_sql.mjs; release 2
+// (31 Oct) added row 1.6 Work Simulation to 003 and 004 by hand (Day 1, its own heading, a link row: always there).
+const WORK_SIMULATION_ROW = Object.freeze({ title: 'Work Simulation', type: 'external_link', url: '/articleship-program/work-simulation/', group: 'Work Simulation' });
 const V3_SQL = path.join(root, 'supabase/migrations/202610200002_articleship_program_v3_lms.sql');
 const V3_LATER_SQL = path.join(root, 'supabase/migrations/202610200003_articleship_program_v3_later_rows.sql');
 const V3_AUTOMAIL_SQL = path.join(root, 'supabase/migrations/202610200004_articleship_automail_row.sql');
@@ -60,7 +62,7 @@ function migrationRows(file = V3_SQL) {
     return JSON.parse(encoded[1].replaceAll("''", "'"));
 }
 
-/** The full v3 course (every row of V3-STRUCTURE §2 + B9 minus 1.6), as 003 carries it: each row under "resource". */
+/** The full v3 course (every row of V3-STRUCTURE §2 + B9), as 003 carries it: each row under "resource". */
 function fullCourse(file = V3_LATER_SQL) {
     const sql = fs.readFileSync(file, 'utf8');
     const encoded = sql.match(/jsonb_array_elements\('([\s\S]*?)'::jsonb\)/);
@@ -126,11 +128,11 @@ test('the dashboard progress estimate counts one session per Day', async () => {
     assert.equal(migrationRows().length, 7);
 });
 
-test('v3 rows: one session per Day, headings are actions, 47 rows (45 + B9 sheets - Work Simulation), nothing a student should not see', () => {
+test('v3 rows: one session per Day, headings are actions, 48 rows (45 + B9 sheets, Work Simulation in release 2), nothing a student should not see', () => {
     const rows = fullCourse();
     assert.deepEqual(rows.map(row => [row.day_number, row.video_number, row.title]), DAY_TITLES.map((title, day) => [day, day + 1, title]));
-    assert.equal(rows.flatMap(row => row.resources).length, 47);
-    const banned = /ca ?monk|thinking ?bridge|umbrella|needs-check|\bwaves?\b|live week|coming soon|\b202[5-9]\b|slides|example cvs|vacancy alerts|form 109|work simulation/i;
+    assert.equal(rows.flatMap(row => row.resources).length, 48);
+    const banned = /ca ?monk|thinking ?bridge|umbrella|needs-check|\bwaves?\b|live week|coming soon|\b202[5-9]\b|slides|example cvs|vacancy alerts|form 109/i;
     for (const row of rows) {
         assert.equal(row.course, 'msc-articleship-program');
         for (const text of [row.title, row.description, row.description_partial]) assert.ok(!banned.test(text), `Day ${row.day_number} text`);
@@ -165,8 +167,11 @@ test('v3 rows: one session per Day, headings are actions, 47 rows (45 + B9 sheet
     assert.equal(rows[0].resources[1].url, WHATSAPP_GROUP);
     assert.ok(!/one domain, one backup|cities written down/i.test(rows[0].description), 'no Day 0 domain task (B2)');
     const dayOne = rows[1].resources;
-    assert.deepEqual([...new Set(dayOne.map(r => r.group))], ['Choose your CV', 'Pick your design', 'Check your CV', 'Cover letters'], 'no Work Simulation heading in release 1');
-    assert.ok(!all.some(r => /work simulation/i.test(r.title) || /work-simulation/.test(r.url || '')), 'row 1.6 is release 2');
+    assert.deepEqual([...new Set(dayOne.map(r => r.group))], ['Choose your CV', 'Pick your design', 'Work Simulation', 'Check your CV', 'Cover letters'],
+        'release 2: the Work Simulation heading sits between Pick your design and Check your CV');
+    assert.deepEqual(all.filter(r => /work simulation/i.test(r.title) || /work-simulation/.test(r.url || '')), [WORK_SIMULATION_ROW], 'row 1.6, once, on Day 1');
+    assert.deepEqual(dayOne.slice(dayOne.findIndex(r => r.title === 'CV Builder'), dayOne.findIndex(r => r.title === 'CV Builder') + 3).map(r => r.title),
+        ['CV Builder', 'Work Simulation', 'Keywords by domain'], 'after the CV Builder, before Check your CV');
     assert.equal(dayOne.find(r => r.title === 'CV Builder').url, '/cv-builder/?stage=articleship');
     const cover = dayOne.find(r => r.title === 'Cover letters');
     assert.ok(cover.copy && cover.view_storage_path.endsWith('.pdf') && cover.download_storage_path.endsWith('.docx'), 'Word on the same row');
@@ -197,7 +202,8 @@ test('release 1 (002): the full course\'s rows in its order, a short description
     for (const [index, session] of release.entries()) {
         const all = full[index];
         assert.equal(session.title, all.title);
-        const order = all.resources.map(r => r.title);
+        // Release 1's course: the full course without row 1.6, which release 2 added to 003 and 004.
+        const order = all.resources.map(r => r.title).filter(t => t !== WORK_SIMULATION_ROW.title);
         const titles = session.resources.map(r => r.title);
         assert.deepEqual(titles, order.filter(t => titles.includes(t)), `Day ${session.day_number}: same order as the full course`);
         session.resources.forEach(r => assert.deepEqual(r, all.resources.find(x => x.title === r.title)));
@@ -243,7 +249,9 @@ test('the v3 migrations run on top of v2: 002 waits for its uploads, 003 adds la
         assert.deepEqual(rows.map(r => r.resources), release.map(s => s.resources));
         assert.equal(rows[1].industrial_training_path, 'rec/day1', 'a recording added later is kept');
         await db.exec(later);
-        assert.deepEqual((await course()).map(r => r.resources), release.map(s => s.resources), '003 with nothing new changes nothing');
+        // Release 2: 003 with no new file adds only row 1.6 (a link row needs no upload), after the CV Builder.
+        const withWorkSimulation = release.map(s => s.day_number !== 1 ? s.resources : s.resources.flatMap(r => (r.title === 'CV Builder' ? [r, WORK_SIMULATION_ROW] : [r])));
+        assert.deepEqual((await course()).map(r => r.resources), withWorkSimulation, '003 with nothing new adds only row 1.6');
         const full = fullCourse();
         await upload(full.flatMap(s => s.resources.flatMap(filesOf)).filter(f => !release.some(s => s.resources.some(r => filesOf(r).includes(f)))));
         await db.exec(later);

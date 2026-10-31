@@ -2,7 +2,7 @@
   "tool": "domain-roadmaps",
   "title": "Domain roadmaps",
   "links": {
-    "workSimulation": null,
+    "workSimulation": "/articleship-program/work-simulation/",
     "firms": null,
     "practise": "/ai-interview.html?mode=articleship"
   },

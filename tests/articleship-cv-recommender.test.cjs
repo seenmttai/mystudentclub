@@ -31,8 +31,10 @@ const DESIGNS = ON_BRANCH.designs ? JSON.parse(fs.readFileSync(BUILDER_DESIGNS, 
 const MSC_LINE = 'Completed MSC Articleship Program — foundational understanding of work and tasks across all domains';
 const MSC_ONGOING = 'MSC Articleship Program (ongoing)';
 const DESIGN_LIST = R.normaliseDesigns(DESIGNS);
-// R is the tool as shipped (release 1: WORK_SIMULATION_LIVE false). RL is the same tool once the Work Simulation is out.
+// R is the tool as shipped (release 2, 31 Oct 2026: WORK_SIMULATION_LIVE true). RL is the same tool with the flag on
+// whatever ships; R1 is release 1 (the flag off), which must still draw cleanly if the switch is ever turned back.
 const RL = R.withConfig({ workSimulationLive: true });
+const R1 = R.withConfig({ workSimulationLive: false });
 // Page tests run with short timings; one test checks the real ones (280 ms advance, 250 ms double-tap guard).
 const FAST = { advanceMs: 20, tapGuardMs: 0 };
 
@@ -175,9 +177,10 @@ test('situation A: academics first, both groups in the first attempt', () => {
     const marksOnly = R.recommend(answers(), data());
     assert.equal(marksOnly.situation, 'A', 'a first-attempt student with marks and nothing else is A');
     assert.match(SITUATIONS.situations.A.useIf, /little else yet/);
-    assert.deepEqual(marksOnly.thinProof.links.map(l => l.label), ['The Nothing CV', 'Earn one more line'], 'and is pointed to The Nothing CV');
-    assert.deepEqual(RL.recommend(answers(), data()).thinProof.links.map(l => l.label), ['Work Simulation', 'The Nothing CV'],
-        'once the Work Simulation is out: a level first');
+    assert.deepEqual(marksOnly.thinProof.links.map(l => l.label), ['Work Simulation', 'The Nothing CV'],
+        'and is pointed to a Work Simulation level first, then The Nothing CV (release 2)');
+    assert.deepEqual(R1.recommend(answers(), data()).thinProof.links.map(l => l.label), ['The Nothing CV', 'Earn one more line'],
+        'release 1 (flag off): The Nothing CV');
     // Inter not out yet: the marks that lead are Foundation and school, not Inter.
     const awaited = R.recommend(answers({ inter: 'both-awaited' }), data());
     assert.match(awaited.reason, /^Your Inter result is not out yet, so your Foundation and school marks lead/);
@@ -278,13 +281,13 @@ test('situation H: no work and no project, with work or projects ranked first �
         assert.equal(r.reason, 'One weekend gives you the four quick certificates; one more true line takes a few weeks.',
             'the weekend is the four certificates (The Nothing CV p4); a project line is a few weeks (p5)');
         assert.equal(r.thinProof.label, 'Then');
-        assert.match(r.thinProof.text, /^earn one more true line in a few weeks/, 'reads on from "Then"');
-        assert.deepEqual(r.thinProof.links.map(l => l.label), ['Earn one more line']);
-        assert.equal(r.thinProof.links[0].href, '/learning-management-system/course?course=msc-articleship-program&session=2&resource=The+Nothing+CV&page=5',
+        assert.match(r.thinProof.text, /^do one Work Simulation level/, 'reads on from "Then": the Work Simulation is the step after (release 2)');
+        assert.deepEqual(r.thinProof.links.map(l => l.label), ['Work Simulation']);
+        const r1 = R1.recommend(answers({ rank }), data());
+        assert.match(r1.thinProof.text, /^earn one more true line in a few weeks/, 'release 1 (flag off): reads on from "Then"');
+        assert.deepEqual(r1.thinProof.links.map(l => l.label), ['Earn one more line']);
+        assert.equal(r1.thinProof.links[0].href, '/learning-management-system/course?course=msc-articleship-program&session=2&resource=The+Nothing+CV&page=5',
             'The Nothing CV p5: "Earn one more true line"');
-        const live = RL.recommend(answers({ rank }), data());
-        assert.match(live.thinProof.text, /^do one Work Simulation level/, 'once it is out, the Work Simulation is the step after');
-        assert.deepEqual(live.thinProof.links.map(l => l.label), ['Work Simulation']);
         sameDesign(r, designFor('H'));
         if (ON_BRANCH.designs) assert.match(r.design.name, /Portal plain/, 'the Nothing CV is shown in Portal plain');
         assert.equal(r.portal, null, 'no second portal line when the design already is the portal one');
@@ -309,8 +312,11 @@ test('no proof yet, but marks, roles or skills ranked first: their own order, wi
         assert.equal(r.situation, code, rank[0] + ' first');
         assert.equal(r.lead, lead);
         assert.equal(r.thinProof.label, 'Thin on proof?');
-        assert.equal(r.thinProof.text, 'Add the four quick certificates, then one more true line.');
-        assert.match(r.thinProof.links[0].href, /resource=The\+Nothing\+CV&page=4$/, code + ': The Nothing CV p4, the four certificates');
+        assert.equal(r.thinProof.text, 'Add one Work Simulation level and the four quick certificates.');
+        assert.match(r.thinProof.links.find(l => l.label === 'The Nothing CV').href, /resource=The\+Nothing\+CV&page=4$/, code + ': The Nothing CV p4, the four certificates');
+        const r1 = R1.recommend(answers(Object.assign({ rank }, over)), data());
+        assert.equal(r1.thinProof.text, 'Add the four quick certificates, then one more true line.', code + ': release 1 (flag off)');
+        assert.match(r1.thinProof.links[0].href, /resource=The\+Nothing\+CV&page=4$/, code + ': release 1 opens The Nothing CV p4 first');
         assert.ok(!r.order.includes('experience') && !r.order.includes('projects'), 'no empty Work or Projects block');
     }
     const separate = R.recommend(answers({ inter: 'separate' }), data());
@@ -577,7 +583,8 @@ test('own lines: the student\'s work, projects and simulations become lines to c
 
 test('thin proof: one piece or none (A only when none); The Nothing CV now, a Work Simulation level once it is out', () => {
     const roles = { rank: ['roles', 'academics', 'work', 'projects', 'skills'], work: ['tuition'] };
-    const one = R.recommend(answers(roles), data());
+    // Release 1 (flag off): The Nothing CV now.
+    const one = R1.recommend(answers(roles), data());
     assert.equal(one.thinProof.text, 'Add the four quick certificates, then one more true line.');
     assert.deepEqual(one.thinProof.links.map(l => l.label), ['The Nothing CV', 'Earn one more line']);
     assert.match(one.thinProof.links[0].href, /resource=The\+Nothing\+CV&page=4$/, 'The Nothing CV p4: the four certificates');
@@ -585,7 +592,8 @@ test('thin proof: one piece or none (A only when none); The Nothing CV now, a Wo
     assert.equal(R.recommend(answers({ work: ['tuition'] }), data()).thinProof, null, 'A with one piece of proof is fine');
     assert.ok(R.recommend(answers(), data()).thinProof, 'A with nothing at all still gets the pointer');
 
-    const oneLive = RL.recommend(answers(roles), data());
+    // Release 2, as shipped: a Work Simulation level first.
+    const oneLive = R.recommend(answers(roles), data());
     assert.equal(oneLive.thinProof.text, 'Add one Work Simulation level and the four quick certificates.');
     assert.deepEqual(oneLive.thinProof.links.map(l => l.label), ['Work Simulation', 'The Nothing CV']);
     const hasWs = RL.recommend(answers({ rank: ['projects', 'academics', 'work', 'roles', 'skills'], projects: ['work-simulation'] }), data());
@@ -593,13 +601,14 @@ test('thin proof: one piece or none (A only when none); The Nothing CV now, a Wo
     assert.deepEqual(hasWs.thinProof.links.map(l => l.label), ['The Nothing CV'], 'no Work Simulation link when a level is done');
 });
 
-test('release 1: no Work Simulation tap, link, line or promise in any result or on the page', async () => {
-    assert.equal(R.WORK_SIMULATION_LIVE, false, 'release 1 ships without the Work Simulation');
-    assert.equal(R.workSimulationLive, false);
+test('release 1 (flag off): no Work Simulation tap, link, line or promise in any result or on the page', async () => {
+    assert.equal(R.WORK_SIMULATION_LIVE, true, 'release 2 ships the Work Simulation');
+    assert.equal(R.workSimulationLive, true);
+    assert.equal(R1.workSimulationLive, false);
     assert.equal(RL.workSimulationLive, true);
-    assert.ok(!R.QUESTIONS.find(q => q.id === 'projects').options.some(o => o.id === 'work-simulation'), 'no "Work Simulation level" tap');
-    assert.ok(RL.QUESTIONS.find(q => q.id === 'projects').options.some(o => o.id === 'work-simulation'), 'it comes back with the flag');
-    assert.deepEqual(R.cleanAnswers(answers({ projects: ['work-simulation'] })).projects, [], 'a stray answer is dropped');
+    assert.ok(!R1.QUESTIONS.find(q => q.id === 'projects').options.some(o => o.id === 'work-simulation'), 'no "Work Simulation level" tap');
+    assert.ok(R.QUESTIONS.find(q => q.id === 'projects').options.some(o => o.id === 'work-simulation'), 'it is back with the flag (as shipped)');
+    assert.deepEqual(R1.cleanAnswers(answers({ projects: ['work-simulation'] })).projects, [], 'a stray answer is dropped');
     const ranks = [['academics', 'work', 'projects', 'roles', 'skills'], ['work', 'academics', 'projects', 'roles', 'skills'],
         ['projects', 'academics', 'work', 'roles', 'skills'], ['roles', 'academics', 'work', 'projects', 'skills'], ['skills', 'academics', 'work', 'projects', 'roles']];
     const sets = [];
@@ -608,7 +617,7 @@ test('release 1: no Work Simulation tap, link, line or promise in any result or 
             ['completed', 'direct-entry'].forEach(graduation => sets.push(answers({ rank, work, projects, inter, domain, graduation }))))))));
     const seen = new Set();
     sets.forEach(a => {
-        const r = R.recommend(a, data());
+        const r = R1.recommend(a, data());
         seen.add(r.situation);
         assert.doesNotMatch(JSON.stringify(r), /work simulation|work-simulation/i, r.situation + ': nothing points at the Work Simulation');
     });
@@ -617,10 +626,10 @@ test('release 1: no Work Simulation tap, link, line or promise in any result or 
     const p = page();
     const store = memoryStore('cv-recommender', { answers: null, step: 0, done: false });
     store.set({ answers: answers({ rank: ['work', 'academics', 'projects', 'roles', 'skills'] }), step: 8, done: true });
-    const ui = R.mount(p.app, Object.assign({ data: data(), store, progress: fakeProgress() }, FAST));
+    const ui = R1.mount(p.app, Object.assign({ data: data(), store, progress: fakeProgress() }, FAST));
     assert.match(p.app.textContent, /Start with The Nothing CV/);
     assert.doesNotMatch(p.app.textContent, /Work Simulation/);
-    for (let step = 0; step < R.QUESTIONS.length; step++) {
+    for (let step = 0; step < R1.QUESTIONS.length; step++) {
         ui.go(step);
         assert.doesNotMatch(p.app.textContent, /Work Simulation/, 'question ' + (step + 1));
     }
@@ -630,18 +639,19 @@ test('links: once the Work Simulation is out it opens on my domain (its page, el
     const rank = ['work', 'academics', 'projects', 'roles', 'skills'];
     const h = RL.recommend(answers({ rank }), data());
     const ws = SITUATIONS.links.workSimulation;
-    if (ws) assert.equal(h.thinProof.links[0].href, ws + '?domain=statutory-audit');
+    // The page's own route to a domain (its INTEGRATION.md §4a): #/d/<domain id>.
+    if (ws) assert.equal(h.thinProof.links[0].href, ws + '#/d/statutory-audit');
     else assert.equal(h.thinProof.links[0].href, '/learning-management-system/course?course=msc-articleship-program&session=2&resource=Work+Simulation');
     if (!ws) assert.ok(!fs.existsSync(path.join(ROOT, 'articleship-program/work-simulation/index.html')),
         'the Work Simulation page is on the branch now: set links.workSimulation to /articleship-program/work-simulation/ and WORK_SIMULATION_LIVE to true');
     const wired = data();
     wired.links.workSimulation = '/articleship-program/work-simulation/';
-    assert.equal(RL.recommend(answers({ rank, domain: 'gst' }), wired).thinProof.links[0].href, '/articleship-program/work-simulation/?domain=gst',
+    assert.equal(RL.recommend(answers({ rank, domain: 'gst' }), wired).thinProof.links[0].href, '/articleship-program/work-simulation/#/d/gst',
         'the student\'s own domain opens');
     assert.equal(RL.recommend(answers({ rank, domain: 'unsure' }), wired).thinProof.links[0].href, '/articleship-program/work-simulation/', 'no domain yet: the page itself');
     wired.links.workSimulation = '/articleship-program/work-simulation/?from=cv';
-    assert.equal(RL.recommend(answers({ rank, domain: 'ma-tax' }), wired).thinProof.links[0].href, '/articleship-program/work-simulation/?from=cv&domain=ma-tax');
-    assert.equal(R.recommend(answers({ rank }), wired).thinProof.links.some(l => /work-simulation/.test(l.href)), false, 'never in release 1, even when wired');
+    assert.equal(RL.recommend(answers({ rank, domain: 'ma-tax' }), wired).thinProof.links[0].href, '/articleship-program/work-simulation/?from=cv#/d/ma-tax');
+    assert.equal(R1.recommend(answers({ rank }), wired).thinProof.links.some(l => /work-simulation/.test(l.href)), false, 'never in release 1, even when wired');
 });
 
 // A page another tool owns may not be ported to this branch yet: the test then skips and names it (its link would

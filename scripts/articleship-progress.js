@@ -5,8 +5,8 @@
  * - When the student is signed in and the table `public.articleship_tool_progress` exists, it also keeps one row per
  *   tool in their account (RLS: own rows only). Without the table, or on any network error, it stays local silently.
  * - Holds the shared settings every tool reads: "my domain" (+ backup) and the CV Recommender's pick for the CV Builder.
- * - Holds the one release switch every tool reads: WORK_SIMULATION_LIVE (false in release 1: no tool shows, links or
- *   promises the Work Simulation), with releaseText()/releaseContent() to draw content for the release.
+ * - Holds the one release switch every tool reads: WORK_SIMULATION_LIVE (true from release 2; false in release 1: no tool
+ *   shows, links or promises the Work Simulation), with releaseText()/releaseContent() to draw content for the release.
  *
  * Browser: window.MSCArticleshipProgress. Node (tests): require('./scripts/articleship-progress.js').
  * API reference: msc-content/articleship-program/v3/build/tools/PLATFORM.md
@@ -68,10 +68,10 @@
     const SITUATIONS = Object.freeze(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']);
 
     // ---------- Release switch: the Work Simulation ----------
-    // Release 1 ships every programme row except the Work Simulation (row 1.6; Padam's release plan, 20 Oct 2026). While
+    // Release 1 shipped every programme row except the Work Simulation (row 1.6; Padam's release plan, 20 Oct 2026). While
     // this is false, no tool shows, links, imports or promises the Work Simulation, and nothing breaks without it.
-    // Release 2: set it to true (the one line every tool reads) and every Work Simulation part is back.
-    const WORK_SIMULATION_LIVE = false;
+    // Release 2 (31 Oct 2026, /articleship-program/work-simulation/): true, the one line every tool reads.
+    const WORK_SIMULATION_LIVE = true;
 
     // ---------- Release switch: course rows not in the course yet ----------
     // The rows whose files are still being finished (the Day 4 booklets and the Interview syllabus), the Automail row
