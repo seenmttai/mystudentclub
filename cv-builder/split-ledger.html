@@ -496,7 +496,8 @@
                 section.setAttribute('data-serif-group', section.getAttribute('data-serif-group') || 'extra');
 
                 const customId = section.getAttribute('data-custom-section-root') || section.getAttribute('data-section-id') || '';
-                const title = serifCustomSectionTitles.get(customId) ||
+                const title = window.__currentCVData?.customSections?.find(item => item.id === customId)?.title ||
+                    serifCustomSectionTitles.get(customId) ||
                     section.querySelector('.section-header')?.textContent?.trim() ||
                     'Custom Section';
                 if (section.getAttribute('data-serif-custom-normalized') === 'true') {
