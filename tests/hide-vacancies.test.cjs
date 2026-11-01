@@ -57,7 +57,7 @@ test('jobs by email skips hidden vacancies and ignores a hidden shared link', ()
 test('job page filters out a hidden vacancy and falls back before the column exists', () => {
   const source = read('scripts/job-details.js');
   assert.match(source, /if \(filterHidden\) query = query\.not\('hidden', 'is', true\);/);
-  assert.match(source, /if \(error && error\.message && error\.message\.includes\('hidden'\)\) \(\{ data, error \} = await fetchJob\(false\)\);/);
+  assert.match(source, /hidden does not exist[^\n]*\(\{ data, error \} = await fetchJob\(false\)\);/);
 });
 
 test('admin can hide and unhide, and hidden cards are marked', () => {

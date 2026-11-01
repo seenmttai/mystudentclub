@@ -122,7 +122,7 @@ async function fetchJobDetails(id, tableName) {
         return query.single();
     };
     let { data, error } = await fetchJob(true);
-    if (error && error.message && error.message.includes('hidden')) ({ data, error } = await fetchJob(false));
+    if (error && error.message && /\bhidden" does not exist|\bhidden does not exist|could not find the 'hidden' column/i.test(error.message)) ({ data, error } = await fetchJob(false));
 
     if (error) throw error;
     if (!data) throw new Error('Job not found');
