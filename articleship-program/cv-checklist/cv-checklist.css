@@ -1,0 +1,327 @@
+/*
+ * CV checklist (row 1.8): the page around the shared checklist engine.
+ * Base look: /articleship-program/shared/articleship-tools.css. Phone first; a section list beside the checks from 1024 px.
+ */
+.cvc-hero { margin: 0 0 12px; }
+/* "‹ Day 1": the visible way back, above the title */
+.cvc-back {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    margin: 0 0 2px -2px;
+    padding: 2px;
+    font-size: 14px;
+    font-weight: 600;
+    color: color-mix(in srgb, var(--ap-accent) 82%, #000);
+    text-decoration: none;
+}
+.cvc-back:hover { text-decoration: underline; text-underline-offset: 3px; }
+.cvc-back:focus-visible { outline: 3px solid color-mix(in srgb, var(--ap-primary) 40%, transparent); outline-offset: 2px; border-radius: 4px; }
+
+/* Jump to the next unticked check, in the sticky progress row */
+.cvc-next {
+    margin-left: auto;
+    min-height: 32px;
+    padding: 4px 12px;
+    border: 1px solid color-mix(in srgb, var(--ap-accent) 45%, transparent);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--ap-accent) 10%, #fff);
+    color: var(--ap-navy);
+    font: 600 13px/1 var(--ap-sans);
+    cursor: pointer;
+    white-space: nowrap;
+}
+.cvc-next::after { content: '\2193'; margin-left: 5px; }
+.cvc-next:hover { background: color-mix(in srgb, var(--ap-accent) 18%, #fff); }
+.cvc-next:focus-visible { outline: 3px solid color-mix(in srgb, var(--ap-primary) 40%, transparent); outline-offset: 2px; }
+.cvc-next[hidden] { display: none; }
+/* All ticked: the button leads on to the two reviews */
+.cvc-next.is-end {
+    border-color: color-mix(in srgb, var(--ap-success) 45%, transparent);
+    background: var(--ap-success-light);
+    color: var(--ap-success);
+}
+.cvc-next.is-end:hover { background: color-mix(in srgb, var(--ap-success) 16%, #fff); }
+.ap-progress-text { align-items: center; min-height: 32px; }
+.cvc-list .ap-progress { background: var(--ap-bg); }
+@media (min-width: 768px) {
+    /* The progress row sticks 8 px under the top bar: fill that strip so checks never show through it. */
+    .cvc-list .ap-progress::before {
+        content: '';
+        position: absolute;
+        left: -2px;
+        right: -2px;
+        bottom: 100%;
+        height: 10px;
+        background: var(--ap-bg);
+    }
+}
+
+/* Phones: once the title has scrolled away the progress row slims down (scripts: watchCompact) */
+@media (max-width: 767px) {
+    .cvc-list .ap-progress { transition: padding 0.15s ease; }
+    .cvc-list .ap-progress.cvc-compact { padding-top: 6px; padding-bottom: 8px; }
+    .cvc-list .ap-progress.cvc-compact .ap-progress-text { min-height: 28px; margin-bottom: 4px; }
+    .cvc-list .ap-progress.cvc-compact .ap-progress-count { font-size: 21px; }
+    .cvc-list .ap-progress.cvc-compact .ap-progress-bar { height: 6px; }
+    .cvc-list .ap-progress.cvc-compact .cvc-next { min-height: 28px; padding: 3px 10px; }
+}
+
+/* Narrow phones: "Example +" and the fix link always on their own lines, so every card has the same shape */
+@media (max-width: 419px) {
+    .cvc-list .ap-cl-extra { flex-direction: column; align-items: flex-start; gap: 2px; }
+    .cvc-list .ap-cl-extra > .ap-cl-example { align-self: stretch; }
+}
+
+/* Sticky top bar + progress row stay clear of a jumped-to check */
+.ap-cl-item, .ap-cl-section { scroll-margin-top: 132px; }
+.ap-cl-item.cvc-flash { animation: cvc-flash 1.4s ease; }
+@keyframes cvc-flash {
+    0%, 35% { border-color: var(--ap-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ap-accent) 25%, transparent); }
+    100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+/* Examples: one block per line, the claim in bold on "claim → question" lines */
+.ap-cl-example .cvc-ex {
+    margin: 4px 0 6px;
+    padding: 10px 12px;
+    background: var(--ap-sticky);
+    border-radius: 4px 4px 10px 4px;
+    font-size: 14px;
+    line-height: 1.45;
+}
+.ap-cl-example .cvc-ex p {
+    margin: 0 0 7px;
+    padding: 0;
+    background: none;
+    border-radius: 0;
+    white-space: normal;
+}
+.ap-cl-example .cvc-ex p:last-child { margin-bottom: 0; }
+.ap-cl-example .cvc-ex strong { font-weight: 700; color: var(--ap-navy); }
+/* Bold inside an example shows what bold looks like on a CV: plain ink, not the navy lead-in */
+.ap-cl-example .cvc-ex strong.cvc-ex-bold { color: var(--ap-ink); }
+/* A fold of its own next to "Example" (an example line "▸ More questions" starts one) */
+.ap-cl-example.cvc-fold summary { color: var(--ap-navy); }
+.ap-cl-example.cvc-fold summary::after { color: var(--ap-primary); }
+/* The student's own file name, from "my domain" */
+.ap-cl-example .cvc-ex p.cvc-ex-mine {
+    padding: 6px 8px;
+    background: #fff;
+    border-radius: 6px;
+    overflow-wrap: anywhere;
+}
+
+/* Untick all */
+.cvc-reset-row { display: flex; justify-content: flex-end; margin: 4px 0 0; }
+.cvc-reset {
+    min-height: 40px;
+    padding: 8px 4px;
+    border: 0;
+    background: none;
+    color: var(--ap-muted);
+    font: 500 13px/1.2 var(--ap-sans);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+}
+.cvc-reset:hover { color: var(--ap-ink); }
+.cvc-reset[hidden] { display: none; }
+.cvc-confirm {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 6px 0;
+}
+.cvc-confirm[hidden] { display: none; }
+.cvc-confirm-q { font-size: 14px; font-weight: 600; color: var(--ap-ink); }
+.cvc-confirm button {
+    min-height: 40px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font: 600 14px/1.2 var(--ap-sans);
+    cursor: pointer;
+}
+.cvc-confirm-yes { border: 1px solid var(--ap-danger); background: #fff; color: var(--ap-danger); }
+.cvc-confirm-yes:hover { background: color-mix(in srgb, var(--ap-danger) 8%, #fff); }
+.cvc-confirm-no { border: 1px solid var(--ap-border-dark); background: var(--ap-panel); color: var(--ap-navy); }
+.cvc-confirm-no:hover { background: var(--ap-hover); }
+.cvc-reset:focus-visible, .cvc-confirm button:focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--ap-primary) 40%, transparent);
+    outline-offset: 2px;
+}
+
+/* Two domains, two CVs: "Checking: GST CV / Direct Tax CV" */
+.cvc-cvs { margin: 10px 0 0; }
+.cvc-cvs[hidden] { display: none; }
+.cvc-cvs-set {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 8px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+}
+/* The legend on its own line (float makes a legend take part in the flex row), the two CVs side by side under it */
+.cvc-cvs-legend { float: left; width: 100%; margin: 0 0 2px; padding: 0; font-size: 14px; font-weight: 600; color: var(--ap-muted); }
+.cvc-cv {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1 1 140px;
+    justify-content: space-between;
+    min-height: 44px;
+    padding: 6px 14px;
+    border: 1px solid var(--ap-border-dark);
+    border-radius: 12px;
+    background: var(--ap-panel);
+    color: var(--ap-navy);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+.cvc-cv input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+.cvc-cv-count { color: var(--ap-muted); font-size: 13px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.cvc-cv.is-current {
+    border-color: var(--ap-accent);
+    background: color-mix(in srgb, var(--ap-accent) 12%, #fff);
+    box-shadow: inset 0 0 0 1px var(--ap-accent);
+}
+.cvc-cv.is-current .cvc-cv-count { color: var(--ap-navy); }
+.cvc-cv:has(input:focus-visible) { outline: 3px solid color-mix(in srgb, var(--ap-primary) 40%, transparent); outline-offset: 2px; }
+@media (min-width: 640px) {
+    .cvc-cv { flex: 0 1 auto; min-width: 190px; gap: 14px; }
+}
+/* One domain so far: "Applying in two domains? [Add a second CV]" */
+.cvc-add { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: 14px; }
+.cvc-add-label { color: var(--ap-muted); font-weight: 500; }
+.cvc-add-select {
+    min-height: 40px;
+    max-width: 100%;
+    padding: 6px 34px 6px 14px;
+    border: 1px dashed var(--ap-border-dark);
+    border-radius: 12px;
+    background: var(--ap-panel) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%2306152F' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center;
+    color: var(--ap-navy);
+    font: 600 14px/1.2 var(--ap-sans);
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+}
+.cvc-add-select:focus-visible { outline: 3px solid color-mix(in srgb, var(--ap-primary) 40%, transparent); outline-offset: 2px; }
+
+/* Closing card: CV Reviewer, then the personal review */
+.cvc-end { margin-top: 12px; }
+.cvc-end-card {
+    padding: 16px;
+    background: var(--ap-panel);
+    border: 1px solid var(--ap-border);
+    border-radius: var(--ap-radius);
+    box-shadow: var(--ap-shadow-sm);
+}
+.cvc-end-title {
+    margin: 0 0 4px;
+    font-family: var(--ap-hand);
+    font-weight: 700;
+    font-size: 26px;
+    line-height: 1.1;
+    color: var(--ap-navy);
+}
+.cvc-end-text { margin: 0 0 14px; color: var(--ap-muted); font-size: 14px; }
+.cvc-end-links { display: grid; gap: 8px; }
+.cvc-end-card .ap-btn.is-secondary { color: var(--ap-navy); }
+.cvc-end-card { scroll-margin-top: 80px; }
+.cvc-end-card:focus { outline: none; }
+.cvc-end-card.cvc-flash { animation: cvc-flash 1.4s ease; }
+/* The one question for the personal review, typed here so the message never goes bare */
+.cvc-ask { display: grid; gap: 4px; margin: 6px 0 0; }
+.cvc-ask-label { font-size: 14px; font-weight: 600; color: var(--ap-navy); }
+.cvc-ask-field {
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 64px;
+    padding: 10px 12px;
+    border: 1px solid var(--ap-border-dark);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--ap-ink);
+    font: 400 16px/1.4 var(--ap-sans);
+    resize: vertical;
+}
+.cvc-ask-field:focus-visible { outline: 3px solid color-mix(in srgb, var(--ap-primary) 40%, transparent); outline-offset: 1px; border-color: var(--ap-primary); }
+.cvc-ask-hint { margin: 0; min-height: 0; font-size: 13px; font-weight: 600; color: var(--ap-danger); }
+.cvc-ask-hint:empty { display: none; }
+.cvc-end-card.is-complete { background: var(--ap-success-light); border-color: #bfe6cd; }
+.cvc-end-card.is-complete .cvc-end-title { color: var(--ap-success); font-size: 30px; }
+.cvc-end-card.is-complete .cvc-end-text { color: var(--ap-ink); }
+
+/* Section list (wide screens only) */
+.cvc-nav { display: none; }
+.cvc-nav-title {
+    margin: 0 0 6px;
+    font-family: var(--ap-hand);
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--ap-navy);
+}
+.cvc-nav-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.cvc-nav-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    min-height: 40px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    color: var(--ap-ink);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+}
+.cvc-nav-link:hover { background: var(--ap-hover); }
+.cvc-nav-link:focus-visible { outline: 3px solid color-mix(in srgb, var(--ap-primary) 40%, transparent); outline-offset: 1px; }
+.cvc-nav-count { color: var(--ap-muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+.cvc-nav-link.is-complete .cvc-nav-count { color: var(--ap-success); }
+.cvc-nav-link.is-complete .cvc-nav-count::before { content: '\2713'; margin-right: 4px; font-weight: 700; }
+
+.cvc-error p { margin: 0 0 12px; }
+
+@media (min-width: 1024px) {
+    .cvc-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 280px;
+        gap: 28px;
+        align-items: start;
+    }
+    .cvc-side { position: sticky; top: 80px; }
+    .cvc-nav {
+        display: block;
+        padding: 12px 8px 10px;
+        background: var(--ap-panel);
+        border: 1px solid var(--ap-border);
+        border-radius: var(--ap-radius);
+        box-shadow: var(--ap-shadow-sm);
+    }
+    .cvc-nav-title { padding: 0 10px; }
+    .cvc-end { margin-top: 14px; }
+    .ap-cl-item, .ap-cl-section { scroll-margin-top: 150px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ap-cl-item.cvc-flash { animation: none; border-color: var(--ap-accent); }
+    .cvc-end-card.cvc-flash { animation: none; }
+    .cvc-list .ap-progress { transition: none; }
+}
+
+@media print {
+    .ap-cl-example .cvc-ex { background: none; border: 1px solid #ccc; }
+    .cvc-next, .cvc-reset-row, .cvc-nav, .cvc-cvs, .cvc-ask { display: none !important; }
+    .cvc-layout { display: block; }
+    .cvc-side { position: static; }
+}

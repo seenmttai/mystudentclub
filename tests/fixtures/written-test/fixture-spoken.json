@@ -1,0 +1,178 @@
+{
+ "id": "fixture-spoken",
+ "kind": "english",
+ "title": "Fixture paper: spoken",
+ "order": 92,
+ "minutes": null,
+ "marking": {
+  "correct": 1,
+  "wrong": 0,
+  "blank": 0
+ },
+ "intro": "Answer out loud every time, then check yours against the model.",
+ "sections": [
+  {
+   "id": "read-aloud",
+   "title": "Read aloud",
+   "budget_minutes": 1
+  },
+  {
+   "id": "repeat",
+   "title": "Repeat",
+   "budget_minutes": 0.5
+  },
+  {
+   "id": "conversations",
+   "title": "Conversations",
+   "budget_minutes": 0.5
+  },
+  {
+   "id": "situations",
+   "title": "Speak at work",
+   "budget_minutes": 1.5
+  },
+  {
+   "id": "dictation",
+   "title": "Dictation",
+   "budget_minutes": 0.5
+  },
+  {
+   "id": "rewrite",
+   "title": "Rewrite the passage",
+   "budget_minutes": 2
+  }
+ ],
+ "stimuli": [
+  {
+   "id": "st1",
+   "type": "passage",
+   "title": "Read this aloud",
+   "text": "Our audit team will visit the Pune warehouse on Thursday morning. Please keep the stock sheets, the last three delivery challans and the gate register ready by ten o’clock. If any item is short, note it on the sheet and tell the store manager before we begin the count."
+  },
+  {
+   "id": "st2",
+   "type": "passage",
+   "title": "Read it, then rewrite it",
+   "text": "On Tuesday, Kabir found two invoices from the same supplier with the same number but different amounts. He checked the purchase register and the supplier’s statement, and saw that one invoice had been entered twice, once with a typing error. He told his senior, who asked the client to cancel the wrong entry."
+  }
+ ],
+ "questions": [
+  {
+   "id": "fixture-spoken-q01",
+   "n": 1,
+   "section": "read-aloud",
+   "topic": "Read aloud",
+   "difficulty": "easy",
+   "type": "speak",
+   "stimulus": "st1",
+   "seconds": 30,
+   "stem": "Read the passage aloud, clearly and at a steady pace.",
+   "answer": {
+    "model": "Our audit team will visit the Pune warehouse on Thursday morning. Please keep the stock sheets, the last three delivery challans and the gate register ready by ten o’clock. If any item is short, note it on the sheet and tell the store manager before we begin the count.",
+    "checklist": [
+     "You read every word without skipping one",
+     "You paused at each full stop",
+     "You said “challans” and “register” clearly",
+     "You finished inside 30 seconds"
+    ]
+   },
+   "reason": "Read-aloud tasks check pace and clarity: steady speed, a pause at each full stop, every word said."
+  },
+  {
+   "id": "fixture-spoken-q02",
+   "n": 2,
+   "section": "repeat",
+   "topic": "Repeat the sentence",
+   "difficulty": "easy",
+   "type": "speak",
+   "say": "Please send the signed copy by Friday.",
+   "seconds": 15,
+   "stem": "Listen, then repeat the sentence word for word.",
+   "answer": {
+    "model": "Please send the signed copy by Friday.",
+    "checklist": [
+     "Every word, in the same order",
+     "Clear, at a normal pace"
+    ]
+   },
+   "reason": "Repeating tests listening and memory: keep the exact words, including the small ones such as ‘the’ and ‘by’."
+  },
+  {
+   "id": "fixture-spoken-q03",
+   "n": 3,
+   "section": "conversations",
+   "topic": "Answer a question about a conversation",
+   "difficulty": "medium",
+   "type": "speak",
+   "say": "Have the bank statements for March come in?\nOnly for the current account. The loan account one is still pending.\nWhich statement is still pending?",
+   "seconds": 15,
+   "stem": "Listen to the conversation and the question, then answer it aloud in a few words.",
+   "answer": {
+    "model": "The loan account statement.",
+    "checklist": [
+     "You named the loan account statement",
+     "You answered in a few words"
+    ]
+   },
+   "reason": "The second speaker says only the current account statement has come, so the loan account one is pending."
+  },
+  {
+   "id": "fixture-spoken-q04",
+   "n": 4,
+   "section": "situations",
+   "topic": "Speak at work: explain a delay",
+   "difficulty": "medium",
+   "type": "speak",
+   "prep_seconds": 10,
+   "seconds": 60,
+   "stem": "Your senior asks why the bank reconciliation is late. Plan for 10 seconds, then answer for up to 60 seconds as if you were talking to your senior.",
+   "answer": {
+    "model": "The loan account statement for March reached me only this morning, so I could not match the last week’s entries. The current account is fully reconciled. I have matched half of the loan account already, and I will send you the full reconciliation by 4 pm today.",
+    "checklist": [
+     "You gave the reason in one line",
+     "You said what is already done",
+     "You gave a time when it will be ready",
+     "You blamed no one"
+    ]
+   },
+   "reason": "A senior wants the reason, what is done and when the rest will be ready, in that order and without excuses."
+  },
+  {
+   "id": "fixture-spoken-q05",
+   "n": 5,
+   "section": "dictation",
+   "topic": "Dictation",
+   "difficulty": "easy",
+   "type": "dictation",
+   "say": "The client has asked for the report by Monday evening.",
+   "seconds": 25,
+   "stem": "Listen and type the sentence exactly as you hear it.",
+   "answer": {
+    "text": "The client has asked for the report by Monday evening."
+   },
+   "reason": "Every word counts: ‘has asked’, not ‘asked’, and ‘by Monday evening’."
+  },
+  {
+   "id": "fixture-spoken-q06",
+   "n": 6,
+   "section": "rewrite",
+   "topic": "Rewrite the passage",
+   "difficulty": "medium",
+   "type": "write",
+   "stimulus": "st2",
+   "prep_seconds": 30,
+   "seconds": 90,
+   "stem": "Read the passage for 30 seconds. It then hides, and you have 90 seconds to write it in your own words.",
+   "answer": {
+    "model": "On Tuesday Kabir noticed two invoices from one supplier with the same number but different amounts. Checking the purchase register and the supplier’s statement, he found that one invoice had been entered twice, once with a typing error. He told his senior, who asked the client to cancel the wrong entry.",
+    "checklist": [
+     "Who: Kabir and his senior",
+     "What he found: one invoice entered twice",
+     "How he checked: the register and the supplier’s statement",
+     "How it ended: the client cancelled the wrong entry"
+    ]
+   },
+   "reason": "A good rewrite keeps who, what, how and the ending, in your own words and in the same order."
+  }
+ ]
+}
