@@ -1387,7 +1387,7 @@
                     if (this.isCsvPreviewResource(resource)) {
                         const dlPath = String(resource?.download_storage_path || '').toLowerCase();
                         if (dlPath.endsWith('.xlsx') || dlPath.endsWith('.xls')) {
-                            return 'CSV preview available. Download returns the original Excel (.xlsx) file.';
+                            return 'Preview shows one sheet. Download the Excel file for every sheet.';
                         }
                         return 'CSV preview available. Download returns the file.';
                     }
@@ -1450,7 +1450,7 @@
                     this.currentResourceSubtitle = (this.isDocxPreviewResource(resource) && type === 'pdf')
                         ? 'Previewing the PDF version. Download gets the original DOCX file.'
                         : (type === 'csv' && this.hasDownloadPath(resource) && (String(resource.download_storage_path).toLowerCase().endsWith('.xlsx') || String(resource.download_storage_path).toLowerCase().endsWith('.xls'))
-                            ? 'Previewing CSV version. Download gets the original Excel (.xlsx) file.'
+                            ? 'This preview shows one sheet. Download the Excel file for every sheet.'
                             : '');
                     this.previewType = type;
                     this.viewerLoading = true;
