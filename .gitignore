@@ -13,5 +13,5 @@ docs/
 msc-mail-notify-worker-2026-10-11/
 pr.md
 
-# Feature handover zips and folders (travel to the maintainer by hand, never via git)
+# Old handover folders from the maintainer process (ended 31 Oct 2026); keep any local leftovers out of git
 handover/

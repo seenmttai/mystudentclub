@@ -295,6 +295,52 @@ function renderCV(data) {
     updateList('projects-list', data.projects, hasProjects, (block, item) => {
         setHTMLIn(block, '[data-field="title"]', (item.title || '') + entryLinkChipHTML(item.titleLink));
 
+        const titleText = stripTags(item.title || '').trim();
+        const hasTitle = Boolean(titleText || item.titleLink);
+        const titleEls = block.querySelectorAll('[data-field="title"]');
+
+        titleEls.forEach(titleEl => {
+            titleEl.style.display = hasTitle ? '' : 'none';
+
+            // 1. If title is in a table cell acting as a 2-column label cell (e.g. grid-docket, composite-ledger, clean-ledger)
+            const titleCell = titleEl.closest('td, th');
+            if (titleCell && !titleCell.querySelector('[data-field="description"], [data-list="bullets"]')) {
+                if (titleCell === titleEl || titleCell.children.length <= 1) {
+                    titleCell.style.display = hasTitle ? '' : 'none';
+                    const nextCell = titleCell.nextElementSibling;
+                    if (nextCell && /^(TD|TH)$/i.test(nextCell.tagName)) {
+                        if (!hasTitle) {
+                            nextCell.setAttribute('colspan', '2');
+                            nextCell.style.setProperty('width', '100%', 'important');
+                        } else {
+                            nextCell.removeAttribute('colspan');
+                            nextCell.style.removeProperty('width');
+                        }
+                    }
+                }
+            }
+
+            // 2. Find closest title-specific header row/container that does NOT contain description or bullets
+            const headerContainer = titleEl.closest(
+                '.project-title-row, .job-headers-container, .job-header, .job-title-row, .job-list-header, .job-title-block, .job-row, ' +
+                '.exp-header-row, .experience-header, .experience-card-header, .entry-header-row, ' +
+                '.exp-subhead-bar, .exp-subhead-top, .exp-role-row, .cell-sub-header, .work-subheader, ' +
+                '.item-header, .item-row, .work-exp-header, .sub-header, .band-row, .exp-heading-row, ' +
+                '.experience-header-row, .sub-section-header, .extra-header-row, .subhead-bar, tr'
+            );
+
+            if (headerContainer && headerContainer !== block && !headerContainer.querySelector('[data-field="description"], [data-list="bullets"]')) {
+                headerContainer.style.display = hasTitle ? '' : 'none';
+            }
+
+            // 3. Hide wrapper parent elements between titleEl and headerContainer/block
+            let parent = titleEl.parentElement;
+            while (parent && parent !== block && !parent.querySelector('[data-field="description"], [data-list="bullets"]')) {
+                parent.style.display = hasTitle ? '' : 'none';
+                parent = parent.parentElement;
+            }
+        });
+
         const descSpan = block.querySelector('[data-field="description"]');
         if (descSpan) {
             const descriptionText = item.description || '';

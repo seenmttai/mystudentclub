@@ -27,13 +27,14 @@
 
   <!-- Site Styles -->
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="sections.css?v=20261008.comp4">
+  <link rel="stylesheet" href="sections.css?v=20261025.nextbatch">
   <link rel="stylesheet" href="footer.css?v=20261006.1">
   <link rel="stylesheet" href="../scripts/portal-style.css?v=20261008.1">
 
   <!-- Supabase & Firebase -->
   <script src="../scripts/supabase.js"></script>
   <script src="../scripts/supabase-init.js?v=20260927.9"></script>
+  <script src="../scripts/notify-waitlist.js?v=20261031.1"></script>
   <script src="../scripts/error-reporter.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging-compat.js"></script>
@@ -122,9 +123,17 @@
       <div class="hero-wrapper">
         <!-- Hero Left Column -->
         <div class="hero-left" data-aos="fade-right" data-aos-duration="800">
-          <div class="eyebrow-pill">
-            <span class="eyebrow-dot"></span>
-            <span>LIMITED SEATS LEFT!</span>
+          <div class="hero-status-row">
+            <div class="eyebrow-pill">
+              <span class="eyebrow-dot"></span>
+              <span>REGISTRATION CLOSED</span>
+            </div>
+
+            <div class="next-batch-pill" role="status">
+              <i class="fas fa-calendar-check" aria-hidden="true"></i>
+              <span>Next Batch Registrations Start on</span>
+              <span class="next-batch-date">Nov 15th</span>
+            </div>
           </div>
 
           <h1 class="hero-heading">
@@ -1067,6 +1076,19 @@
         }
       } catch (e) {}
 
+      if (window.MSCWaitlist && window.getSupabaseClient) {
+        window.MSCWaitlist.isOn(window.getSupabaseClient(), 'articleship').then(function (on) {
+          if (!on) return;
+          try { localStorage.setItem('msc_waitlist_' + NOTIFY_TOPIC, 'true'); } catch (e) {}
+          updateAllArticleshipNotifyBtns('Added to Waitlist ✓', true);
+          const statusEl = document.getElementById('notifyStatus');
+          if (statusEl) {
+            statusEl.textContent = "You're on the list! We'll notify you when seats open.";
+            statusEl.style.color = "#86EFAC";
+          }
+        });
+      }
+
       async function subscribeArticleshipWaitlist(triggerBtn) {
         const emailInput = document.getElementById('waitlistEmailInput');
         const statusEl = document.getElementById('notifyStatus');
@@ -1097,6 +1119,10 @@
               }
             }
           }
+
+          try {
+            await window.MSCWaitlist?.join(window.getSupabaseClient?.(), 'articleship', window.__mscSession?.user?.email);
+          } catch (e) {}
 
           try {
             localStorage.setItem('msc_waitlist_' + NOTIFY_TOPIC, 'true');

@@ -429,8 +429,7 @@ function renderJobCard(job) {
     const isPopular = (job.application_count || 0) > 50;
     const buttonClass = isApplied ? 'applied' : '';
     const applyLink = getApplicationLink(job['Application ID']);
-    const recruiterPosted = isRecruiterPostedJob(job);
-    const isExclusive = Boolean(job.is_exclusive || recruiterPosted);
+    const isExclusive = Boolean(job.is_exclusive);
 
     // Data values
     const primaryDomain = job['Primary Domain'] || job.Category || 'N/A';
@@ -857,7 +856,7 @@ function showExclusiveLockedModal(job) {
 
 function showModal(job) {
     const recruiterPosted = isRecruiterPostedJob(job);
-    const isExclusive = Boolean(job.is_exclusive || recruiterPosted);
+    const isExclusive = Boolean(job.is_exclusive);
 
     // --- Exclusive vacancy gate ---
     if (isExclusive && !isEnrolledSync(currentTable)) {
@@ -2790,7 +2789,7 @@ async function handleApplyClick(job, buttonElement, isAiApply = false) {
 async function executeActualApply(job, buttonElement, isAiApply = false) {
     if (isRecruiterPostedJob(job)) return recordApplication(job, buttonElement);
     if (!currentSession) { window.location.href = '/login.html'; return false; }
-    if (isAiApply && !isProfileComplete()) { showCvUploadPopup(); return false; }
+    if (isAiApply && !isProfileComplete()) { showResumeRedirectModal(); return false; }
     markJobAsApplied(job);
     if (!isAiApply) {
         const applyLink = getApplicationLink(job['Application ID']);
@@ -2890,46 +2889,6 @@ function openMailtoLink(mailtoUrl) {
         // Fallback to window.location.href if the anchor method fails
         window.location.href = mailtoUrl;
     }
-}
-
-function showCvUploadPopup() {
-    // Remove existing if any
-    const existing = document.querySelector('.cv-popup-overlay');
-    if (existing) existing.remove();
-
-    const popupHtml = `
-        <div class="cv-popup-overlay">
-            <div class="cv-popup-card">
-                <div class="cv-popup-icon">
-                    <i class="fas fa-file-upload"></i>
-                </div>
-                <h3>CV Upload Required</h3>
-                <p>Please upload your CV in your profile to enable AI Powered Apply. This allows our AI to personalize your application materials.</p>
-                <div class="cv-popup-btns">
-                    <a href="/profile.html?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}" class="cv-popup-btn-primary">Upload CV Now</a>
-                    <button class="cv-popup-btn-secondary" id="closeCvPopup">Maybe Later</button>
-                </div>
-            </div>
-        </div>
-    `;
-
-    document.body.insertAdjacentHTML('beforeend', popupHtml);
-
-    // Trigger animation
-    const overlay = document.querySelector('.cv-popup-overlay');
-    setTimeout(() => overlay.classList.add('show'), 10);
-
-    // Close logic
-    const closeBtn = document.getElementById('closeCvPopup');
-    const closePopup = () => {
-        overlay.classList.remove('show');
-        setTimeout(() => overlay.remove(), 300);
-    };
-
-    closeBtn.addEventListener('click', closePopup);
-    overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) closePopup();
-    });
 }
 
 

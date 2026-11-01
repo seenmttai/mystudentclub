@@ -25,7 +25,7 @@
   <meta name="twitter:description" content="Real-time AI voice and video mock interviews with instant speech evaluation and technical role assessments.">
   <meta name="twitter:image" content="https://www.mystudentclub.com/assets/og-ai-interview.png">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.7.107/build/pdf.min.js"></script>
+  <script src="/scripts/vendor/pdf.min.js"></script>
   <style>
     .hidden { display: none !important; }
     :root {
@@ -1578,7 +1578,7 @@
     // --- GLOBAL LOGIC ---
     let avatar, userStream, isModelLoaded = false, areSubtitlesOn = true, interviewConfig = {}, messages = [], speechRecognition, isWaitingForAIResponse = false, interviewPlan = null, cvImages = [];
 
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.7.107/build/pdf.worker.min.js';
+    pdfjsLib.GlobalWorkerOptions.workerSrc = '/scripts/vendor/pdf.worker.min.js';
 
     const EMOJI_CHAR = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u;
     function extractEmojisAndSanitize(text = "") {
