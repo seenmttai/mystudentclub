@@ -1,4 +1,4 @@
--- 001_add_hidden_to_job_tables.sql
+-- 202610310002_add_hidden_to_job_tables.sql
 -- What: lets a vacancy be hidden from the site without deleting it (Padam, 31 Oct 2026: third-party reposts such as
 -- BuddingCA should come off the portal, but a delete can't be undone). Adds three columns to each vacancy table:
 --   hidden        boolean, not null, default false: the site skips rows where it is true

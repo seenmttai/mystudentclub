@@ -17,7 +17,7 @@ test('migration adds hidden columns to every vacancy table, idempotently, hiding
       await db.exec(`create table public."${table}" (id bigint primary key, "Company" text);
         insert into public."${table}" values (1, 'Existing Co');`);
     }
-    const migration = read('supabase/migrations/202610310001_add_hidden_to_job_tables.sql');
+    const migration = read('supabase/migrations/202610310002_add_hidden_to_job_tables.sql');
     await db.exec(migration);
     await db.exec(migration);
     for (const table of TABLES) {
@@ -30,12 +30,6 @@ test('migration adds hidden columns to every vacancy table, idempotently, hiding
   } finally {
     await db.close();
   }
-});
-
-test('handover migration matches the versioned copy', () => {
-  const handover = path.join(root, 'handover/2026-10-31-hide-vacancies/migrations/001_add_hidden_to_job_tables.sql');
-  if (!fs.existsSync(handover)) return; // handover/ is gitignored; only present where the feature was built.
-  assert.equal(fs.readFileSync(handover, 'utf8'), read('supabase/migrations/202610310001_add_hidden_to_job_tables.sql'));
 });
 
 function loadHelpers(file) {

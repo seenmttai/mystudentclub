@@ -109,7 +109,7 @@ function excludeHidden(query) {
 }
 
 function isHiddenColumnError(error) {
-    return Boolean(error && error.message && error.message.includes('hidden'));
+    return Boolean(error && error.message && /\bhidden" does not exist|\bhidden does not exist|could not find the 'hidden' column/i.test(error.message));
 }
 // Cache sorted locations/categories for performance
 let cachedSortedLocations = null;

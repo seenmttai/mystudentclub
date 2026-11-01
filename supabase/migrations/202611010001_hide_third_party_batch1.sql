@@ -1,6 +1,6 @@
 -- 202611010001_hide_third_party_batch1.sql
 -- What: hides the first 5 third-party reposts listed on Notion card MSC-92 (Padam, 31 Oct 2026). Run it after
--- 202610310001_add_hidden_to_job_tables.sql. Nothing is deleted: the rows stay and can be unhidden in the admin panel.
+-- 202610310002_add_hidden_to_job_tables.sql. Nothing is deleted: the rows stay and can be unhidden in the admin panel.
 -- Checked against live on 1 Nov 2026: all 5 ids exist in "Industrial Training Job Portal" with these companies.
 -- Safe to run twice (only touches rows that are not hidden yet).
 
