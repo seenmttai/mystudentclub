@@ -250,6 +250,10 @@
             text-align: justify !important;
         }
 
+        .bullet-list li:last-child {
+            margin-bottom: 0;
+        }
+
         .bullet-list li::before {
             content: "\2022";
             position: absolute;
@@ -321,8 +325,7 @@
         }
 
         .project-entry {
-            border: 1px solid var(--border-color);
-            border-top: none;
+            display: contents;
         }
 
         .project-title-row {
@@ -330,8 +333,14 @@
             font-weight: 900;
             text-align: left;
             padding: calc(4px * var(--content-scale)) calc(10px * var(--content-scale));
-            border-bottom: 1px solid var(--border-color);
+            border: 1px solid var(--border-color);
+            border-top: none;
             font-size: calc(17px * var(--content-scale));
+        }
+
+        .project-title-row:empty,
+        .project-title-row:has([data-field="title"]:empty) {
+            display: none;
         }
 
         .project-desc {
