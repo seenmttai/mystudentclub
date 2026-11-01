@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Offer Groups Admin - My Student Club</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" href="/favicon.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="/scripts/vendor/supabase.js" defer></script>
+    <script src="/scripts/supabase-init.js?v=20260927.9" defer></script>
+    <script src="/scripts/admin-offer-groups.js?v=20261031.1" defer></script>
+    <style>
+        :root { --ink: #0f172a; --muted: #64748b; --line: #e2e8f0; --brand: #4f46e5; --green: #15803d; --red: #b91c1c; --amber: #b45309; }
+        * { box-sizing: border-box; }
+        body { margin: 0; background: #f8fafc; color: var(--ink); font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 15px; }
+        header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 20px; background: #fff; border-bottom: 1px solid var(--line); }
+        header h1 { margin: 0; font-size: 1.1rem; }
+        header a { color: var(--brand); font-weight: 600; text-decoration: none; }
+        main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
+        .aog-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+        .aog-tab { display: inline-flex; align-items: center; gap: 6px; padding: 9px 14px; border: 1px solid var(--line); border-radius: 999px; background: #fff; font: inherit; font-weight: 500; cursor: pointer; }
+        .aog-tab-on { background: var(--brand); border-color: var(--brand); color: #fff; }
+        .aog-count { min-width: 20px; padding: 0 6px; border-radius: 999px; background: #fef3c7; color: var(--amber); font-size: 0.78rem; font-weight: 700; text-align: center; }
+        .aog-status { min-height: 1.2em; margin: 4px 0 12px; color: var(--green); font-weight: 500; }
+        .aog-status:empty { display: none; }
+        .aog-bad { color: var(--red) !important; }
+        .aog-muted { color: var(--muted); }
+        .aog-small { font-size: 0.85rem; }
+        .aog-list { display: grid; gap: 12px; }
+        .aog-card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 8px; }
+        .aog-card p { margin: 0; }
+        .aog-card-head { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+        .aog-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+        .aog-chip { padding: 2px 9px; border-radius: 999px; font-size: 0.78rem; font-weight: 600; background: #f1f5f9; color: #334155; }
+        .aog-chip-green { background: #dcfce7; color: var(--green); }
+        .aog-chip-amber { background: #fef3c7; color: var(--amber); }
+        .aog-chip-red { background: #fee2e2; color: var(--red); }
+        .aog-summary { padding: 10px 12px; border-radius: 10px; background: #f8fafc; line-height: 1.5; }
+        .aog-tamper { margin: 0; padding-left: 20px; color: var(--red); font-size: 0.9rem; }
+        .aog-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+        .aog-letter { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+        .aog-letter:empty { display: none; }
+        .aog-link { color: var(--brand); font-weight: 600; }
+        .aog-btn { min-height: 38px; padding: 0 14px; border: 1px solid #cbd5e1; border-radius: 9px; background: #fff; font: inherit; font-weight: 600; font-size: 0.88rem; cursor: pointer; color: var(--ink); }
+        .aog-btn:hover { border-color: var(--brand); color: var(--brand); }
+        .aog-btn-ok { background: var(--brand); border-color: var(--brand); color: #fff; }
+        .aog-btn-ok:hover { background: #4338ca; color: #fff; }
+        .aog-btn-bad { color: var(--red); border-color: #fecaca; }
+        .aog-btn-bad:hover { background: #fef2f2; color: var(--red); border-color: var(--red); }
+        .aog-btn-sm { min-height: 32px; padding: 0 10px; font-size: 0.82rem; }
+        .aog-toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+        .aog-toolbar input, .aog-toolbar select, .aog-form input, .aog-form select { min-height: 40px; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 9px; font: inherit; font-size: 15px; background: #fff; }
+        .aog-toolbar input { flex: 1; min-width: 200px; }
+        .aog-form { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 16px; margin-bottom: 14px; display: grid; gap: 10px; }
+        .aog-form h3 { margin: 0; }
+        .aog-form p { margin: 0; }
+        .aog-form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .aog-form-grid label { display: grid; gap: 4px; font-weight: 600; font-size: 0.88rem; }
+        .aog-wide { grid-column: 1 / -1; }
+        .aog-check { display: flex; align-items: center; gap: 6px; }
+        .aog-table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+        .aog-table th, .aog-table td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; }
+        .aog-table th { background: #f8fafc; font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; }
+        .aog-table a { color: var(--ink); font-weight: 600; }
+        .aog-off td { opacity: 0.55; }
+        .aog-row-actions { white-space: nowrap; text-align: right; }
+        @media (max-width: 700px) {
+            .aog-form-grid { grid-template-columns: 1fr; }
+            .aog-table thead { display: none; }
+            .aog-table tr { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--line); }
+            .aog-table td { border: 0; padding: 6px 12px; }
+            .aog-table td:first-child { grid-column: 1 / -1; padding-top: 12px; }
+            .aog-row-actions { grid-column: 1 / -1; text-align: left; padding-bottom: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Offer letters &amp; WhatsApp groups</h1>
+        <a href="/admin.html">← Admin</a>
+    </header>
+    <main id="aog-app" aria-live="polite">
+        <p class="aog-muted">Loading…</p>
+    </main>
+</body>
+</html>
