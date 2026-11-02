@@ -1,5 +1,5 @@
 // Daily assignments (MSC-26): page helpers, plus the migration's permissions on PGlite.
-const { test, after } = require('node:test');
+const { test, before, after } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -22,6 +22,7 @@ test('location filter matches city text or a whole state, and hides ended or hid
   assert.deepEqual(ids({}), ['b', 'a']);
   assert.deepEqual(ids({ location: ' PUNE' }), ['a']);
   assert.deepEqual(ids({ location: 'maharashtra' }), ['b', 'a']);
+  assert.deepEqual(ids({ location: 'Maharash' }), ['b', 'a']);
   assert.deepEqual(ids({ location: 'Indore' }), []);
   assert.deepEqual(ids({ workType: 'Bank branch audit' }), ['b']);
 });
@@ -72,6 +73,7 @@ test('the page loads the shared client and helpers, escapes data and sends logge
 const A = '10000000-0000-4000-8000-00000000000a';
 const B = '10000000-0000-4000-8000-00000000000b';
 let db;
+before(async () => { await setup(); });
 after(async () => { if (db) await db.close(); });
 
 async function setup() {
@@ -96,7 +98,6 @@ async function as(roleName, user = '') {
 }
 
 test('SQL: anyone sees only open, current assignments and never the firm email', async () => {
-  await setup();
   await as('anon');
   const rows = (await db.query('select id, title from daily_assignments')).rows;
   assert.deepEqual(rows.map((r) => r.title), ['Stock audit']);

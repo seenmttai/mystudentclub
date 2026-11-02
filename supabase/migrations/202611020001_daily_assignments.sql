@@ -26,7 +26,6 @@ create table if not exists public.daily_assignments (
   check (end_date >= start_date)
 );
 create index if not exists daily_assignments_open_idx on public.daily_assignments (status, start_date);
-create index if not exists daily_assignments_city_idx on public.daily_assignments (lower(city));
 
 create table if not exists public.daily_assignment_applications (
   id uuid primary key default gen_random_uuid(),

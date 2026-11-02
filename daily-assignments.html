@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Daily Assignments: Stock Audits &amp; Bank Audits Near You | My Student Club</title>
   <meta name="description" content="Short paid assignments for CA students and CAs: stock audits, bank branch audits and physical verification for 1–few days in your town. Filter by location and apply in one tap.">
-  <link rel="canonical" href="https://www.mystudentclub.com/daily-assignments.html">
+  <link rel="canonical" href="https://www.mystudentclub.com/daily-assignments">
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#0d2452">
   <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
@@ -179,7 +179,6 @@
       const list = DA.filterAssignments(state.items, { location: location_, places: state.places, workType: $('typeSelect').value });
       const where = location_.trim() ? ` in ${DA.titleCase(location_)}` : state.places.length ? ' in your places' : '';
       $('count').textContent = `${list.length} assignment${list.length === 1 ? '' : 's'}${where}`;
-      $('cityList').innerHTML = DA.cityOptions(state.items).map((c) => `<option value="${esc(c)}">`).join('');
       if (!list.length) {
         $('grid').innerHTML = `<div class="empty"><strong>No assignments${esc(where)} right now</strong>${state.items.length ? 'Try another place or clear the filters.' : 'New ones come in through the season. Save your places and check back.'}</div>`;
         return;
@@ -206,7 +205,7 @@
     }
 
     async function load() {
-      if (demo) { state.items = SAMPLE; showNotice('Preview with sample assignments. Nothing you do here is saved.'); render(); return; }
+      if (demo) { state.items = SAMPLE; $('cityList').innerHTML = DA.cityOptions(SAMPLE).map((c) => `<option value="${esc(c)}">`).join(''); showNotice('Preview with sample assignments. Nothing you do here is saved.'); render(); return; }
       const db = window.getSupabaseClient && window.getSupabaseClient();
       if (!db) { showNotice('Could not connect. Please refresh the page.'); render(); return; }
       try { const { data } = await db.auth.getSession(); state.session = data && data.session; } catch (_) { state.session = null; }
@@ -218,6 +217,7 @@
         showNotice(error.code === 'PGRST205' || error.code === '42P01' ? 'Daily assignments open soon. Save your places now and check back.' : 'Could not load assignments. Please refresh the page.');
       }
       state.items = data || [];
+      $('cityList').innerHTML = DA.cityOptions(state.items).map((c) => `<option value="${esc(c)}">`).join('');
       if (state.session && state.items.length) {
         const mine = await db.from('daily_assignment_applications').select('assignment_id');
         (mine.data || []).forEach((r) => state.applied.add(r.assignment_id));
@@ -255,6 +255,10 @@
         if (!demo) {
           const { error } = await window.getSupabaseClient().from('daily_assignment_applications').insert(row);
           // 23505 = already applied (unique per student and assignment): treat as done.
+          if (error && (error.status === 401 || error.code === 'PGRST301' || error.code === 'PGRST303')) {
+            location.href = '/login.html?redirect=' + encodeURIComponent(location.pathname + location.search);
+            return;
+          }
           if (error && error.code !== '23505') throw error;
         }
         state.applied.add(a.id);

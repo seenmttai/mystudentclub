@@ -70,7 +70,7 @@
       .filter((a) => {
         const city = normPlace(a.city);
         const state = normPlace(a.state);
-        if (loc) return city.includes(loc) || state === loc;
+        if (loc) return city.includes(loc) || state.includes(loc);
         if (places.length) return places.some((p) => city === p || state === p);
         return true;
       })
