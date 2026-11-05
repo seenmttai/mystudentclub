@@ -529,6 +529,21 @@
     background-color: rgba(30, 64, 175, 0.05);
 }
 
+/* A row opened by a deep link (…&resource=<title>) that is a tool or a download: scrolled to and flashed once. */
+.resource-item.resource-item-target {
+    animation: resource-item-flash 2.4s ease-out;
+    border-radius: 8px;
+}
+
+@keyframes resource-item-flash {
+    0%, 35% { background-color: rgba(250, 204, 21, 0.35); box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.55); }
+    100% { background-color: transparent; box-shadow: 0 0 0 3px rgba(234, 179, 8, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .resource-item.resource-item-target { animation: none; background-color: rgba(250, 204, 21, 0.3); }
+}
+
 .resource-icon {
     width: 24px;
     text-align: center;
@@ -1127,6 +1142,15 @@
     .resource-actions {
         flex-basis: 100%;
         justify-content: flex-end;
+    }
+}
+
+/* Phones and touch screens: View / Open / Download rows are at least 44 px tall (tap target). */
+@media (max-width: 768px), (pointer: coarse) {
+    .resource-btn {
+        min-height: 44px;
+        padding: 0.55rem 1rem;
+        justify-content: center;
     }
 }
 
@@ -2198,3 +2222,16 @@
     display: none !important;
 }
 
+
+/* Articleship sessions keep the current work visible above the resource tabs. */
+.articleship-session-title { margin: 0; padding: 1rem 1.5rem .5rem; font-size: 1.25rem; line-height: 1.35; }
+.resource-template-group > summary { cursor: pointer; padding: .75rem 0; }
+.resource-template-group[open] > summary { margin-bottom: .5rem; }
+@media (max-width: 480px) {
+    .articleship-course .course-tabs { gap: 0; padding: 0 .5rem; }
+    .articleship-course .tab-btn { padding: 1rem .6rem; font-size: .875rem; flex-shrink: 0; }
+    .articleship-session-title { padding: 1rem; font-size: 1.1rem; }
+    .articleship-course .video-progress-center { min-width: 0; }
+    .articleship-course .video-counter { white-space: normal; font-size: .75rem; }
+    .articleship-course .nav-button-premium span { font-size: .875rem; }
+}

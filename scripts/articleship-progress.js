@@ -1,0 +1,816 @@
+/**
+ * MSC Articleship Program: one progress engine for every programme tool.
+ *
+ * - Saves to localStorage at once (works logged out, offline, before any SQL is run).
+ * - When the student is signed in and the table `public.articleship_tool_progress` exists, it also keeps one row per
+ *   tool in their account (RLS: own rows only). Without the table, or on any network error, it stays local silently.
+ * - Holds the shared settings every tool reads: "my domain" (+ backup) and the CV Recommender's pick for the CV Builder.
+ * - Holds the one release switch every tool reads: WORK_SIMULATION_LIVE (false in release 1: no tool shows, links or
+ *   promises the Work Simulation), with releaseText()/releaseContent() to draw content for the release.
+ *
+ * Browser: window.MSCArticleshipProgress. Node (tests): require('./scripts/articleship-progress.js').
+ * API reference: msc-content/articleship-program/v3/build/tools/PLATFORM.md
+ */
+(function (root, factory) {
+    'use strict';
+    const api = factory(root);
+    if (typeof module === 'object' && module.exports) module.exports = api;
+    else root.MSCArticleshipProgress = api;
+})(typeof self !== 'undefined' ? self : globalThis, function (root) {
+    'use strict';
+
+    const TABLE = 'articleship_tool_progress';
+    const KEY_PREFIX = 'msc.articleship.';
+    const REMOTE_FLAG = 'msc.articleship.remote';
+    // supabase-js stores the session under sb-<first host label>-auth-token: "sb-auth-…" for auth.mystudentclub.com
+    // (the live client) and the project-ref key for older pages.
+    const AUTH_KEYS = ['sb-auth-auth-token', 'sb-izsggdtdiacxdsjjncdq-auth-token'];
+    const SETTINGS_TOOL = 'settings';
+    const MAX_BYTES = 250000;
+    const ENVELOPE_VERSION = 1;
+
+    // The 13 domains used everywhere (keywords, roadmaps, booklets, Work Simulation, tracker), most common first.
+    const DOMAINS = Object.freeze([
+        { slug: 'statutory-audit', label: 'Statutory audit' },
+        { slug: 'internal-audit', label: 'Internal audit, risk & IFC' },
+        { slug: 'direct-tax', label: 'Direct tax' },
+        { slug: 'gst', label: 'GST' },
+        { slug: 'bank-audit', label: 'Bank audit' },
+        { slug: 'transfer-pricing', label: 'Transfer pricing' },
+        { slug: 'ma-tax', label: 'M&A tax' },
+        { slug: 'valuation', label: 'Valuation' },
+        { slug: 'fdd', label: 'Financial due diligence' },
+        { slug: 'forensic', label: 'Forensic' },
+        { slug: 'consulting', label: 'Consulting & risk advisory' },
+        { slug: 'accounting', label: 'Accounting, MIS & company law' },
+        { slug: 'ib-er', label: 'IB & equity research' }
+    ].map(Object.freeze));
+
+    const DOMAIN_ALIASES = Object.freeze({
+        'audit': 'statutory-audit', 'statutory': 'statutory-audit', 'stat-audit': 'statutory-audit',
+        'statutory-audit-assurance': 'statutory-audit', 'assurance': 'statutory-audit',
+        'ia': 'internal-audit', 'internal-audit-risk-ifc': 'internal-audit', 'internal-audit-risk-and-ifc': 'internal-audit',
+        'risk': 'internal-audit', 'ifc': 'internal-audit', 'risk-advisory': 'consulting',
+        'dt': 'direct-tax', 'income-tax': 'direct-tax', 'tax': 'direct-tax',
+        'idt': 'gst', 'indirect-tax': 'gst', 'goods-and-services-tax': 'gst',
+        'bank': 'bank-audit', 'banking': 'bank-audit',
+        'tp': 'transfer-pricing',
+        'm-a-tax': 'ma-tax', 'm-and-a-tax': 'ma-tax', 'mergers-and-acquisitions-tax': 'ma-tax', 'deal-tax': 'ma-tax',
+        'financial-due-diligence': 'fdd', 'due-diligence': 'fdd', 'transaction-advisory': 'fdd',
+        'forensic-audit': 'forensic', 'forensics': 'forensic',
+        'consulting-risk-advisory': 'consulting', 'consulting-and-risk-advisory': 'consulting', 'management-consulting': 'consulting',
+        'accounting-mis-company-law': 'accounting', 'accounting-mis-and-company-law': 'accounting', 'accounts': 'accounting',
+        'mis': 'accounting', 'company-law': 'accounting',
+        'ib': 'ib-er', 'er': 'ib-er', 'ib-equity-research': 'ib-er', 'ib-and-equity-research': 'ib-er',
+        'investment-banking': 'ib-er', 'equity-research': 'ib-er'
+    });
+
+    const SITUATIONS = Object.freeze(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']);
+
+    // ---------- Release switch: the Work Simulation ----------
+    // Release 1 ships every programme row except the Work Simulation (row 1.6; Padam's release plan, 20 Oct 2026). While
+    // this is false, no tool shows, links, imports or promises the Work Simulation, and nothing breaks without it.
+    // Release 2: set it to true (the one line every tool reads) and every Work Simulation part is back.
+    const WORK_SIMULATION_LIVE = false;
+
+    // ---------- Release switch: course rows not in the course yet ----------
+    // The rows whose files are still being finished (the Day 4 booklets and the Interview syllabus), the Automail row
+    // (added by 004 once its master Sheet link is set) and the Work Simulation. No tool links to one of these, says
+    // "Read in <title>", or points a student to "<title> – Day N" while it is listed here. When a row goes into the
+    // course (003 / 004 run), delete its line here: the links come back with no other change. Kept equal to the LMS
+    // build (rows in lms-rows.json that are not in rows-release-1.json) by tests/articleship-release.test.cjs.
+    const ROWS_NOT_LIVE = Object.freeze([
+        // Row 1.6 follows WORK_SIMULATION_LIVE (its text and links are the Work Simulation rules' job below).
+        ...(WORK_SIMULATION_LIVE ? [] : [Object.freeze({ row: '1.6', day: 1, title: 'Work Simulation' })]),
+        Object.freeze({ row: '2.6', day: 2, title: 'Automail' }),
+        Object.freeze({ row: '4.2', day: 4, title: 'Interview syllabus' }),
+        Object.freeze({ row: '4.3', day: 4, title: 'Articleship Interview Guide' }),
+        Object.freeze({ row: '4.4', day: 4, title: 'HR round and GD booklet' }),
+        Object.freeze({ row: '4.5', day: 4, title: 'Core accounting booklet' }),
+        Object.freeze({ row: '4.6', day: 4, title: 'Statutory audit booklet' }),
+        Object.freeze({ row: '4.7', day: 4, title: 'Internal audit booklet' }),
+        Object.freeze({ row: '4.8', day: 4, title: 'Direct tax booklet' }),
+        Object.freeze({ row: '4.9', day: 4, title: 'GST booklet' }),
+        Object.freeze({ row: '4.10', day: 4, title: 'Specialist teams booklet' })
+    ]);
+    const COURSE_PATH = /^(?:https:\/\/(?:www\.|mobile\.)?mystudentclub\.com)?\/learning-management-system\/course(?:\.html)?\/?(?:[?#]|$)/i;
+
+    /** Is this course row in the course? By title (any Day) or by title and Day; an unknown title counts as live. */
+    function isRowLive(title, day) {
+        const name = String(title == null ? '' : title).trim().toLowerCase();
+        if (!name) return true;
+        return !ROWS_NOT_LIVE.some(row => row.title.toLowerCase() === name &&
+            (day === undefined || day === null || Number(day) === row.day));
+    }
+
+    /** A link into the course (…/course?course=msc-articleship-program&session=N&resource=T) to a row not in it yet. */
+    function isNotLiveRowLink(href) {
+        if (typeof href !== 'string' || !COURSE_PATH.test(href.trim())) return false;
+        let params;
+        try { params = new URL(href.trim(), 'https://www.mystudentclub.com').searchParams; } catch (error) { return false; }
+        const course = params.get('course');
+        if (course && course !== 'msc-articleship-program') return false;
+        const title = params.get('resource');
+        if (!title) return false;
+        const session = Number(params.get('session'));
+        return !isRowLive(title, Number.isInteger(session) && session > 0 ? session - 1 : undefined);
+    }
+
+    // "<title> – Day N" (the programme's pointer form) or "Read in <title>", for a row that is not in the course yet.
+    const NOT_LIVE_POINTER = new RegExp('(?:\\bread in (?:the )?)?\\b(?:' + ROWS_NOT_LIVE
+        .filter(row => row.row !== '1.6')
+        .map(row => row.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+        .join('|') + ')(?:\\s*[–—-]\\s*Day\\s*\\d\\b|(?=[\\s.,;:)]|$)(?!\\s+tracker))', 'i');
+
+    function namesNotLiveRow(value) {
+        return typeof value === 'string' && NOT_LIVE_POINTER.test(value);
+    }
+
+    /**
+     * One plain sentence without its pointer to a row not in the course yet: the "; …" or ", …" clause or the bracket
+     * that holds it goes; a sentence that is nothing but the pointer goes whole ('' back).
+     */
+    function sentenceWithoutRow(body) {
+        let s = body;
+        for (let guard = 0; guard < 6 && NOT_LIVE_POINTER.test(s); guard++) {
+            const before = s;
+            s = s.replace(/\s*\([^()]*\)/g, part => (NOT_LIVE_POINTER.test(part) ? '' : part));
+            if (s !== before) continue;
+            const semi = s.split(/;\s+/);
+            if (semi.length > 1 && semi.some(part => !NOT_LIVE_POINTER.test(part))) {
+                s = semi.filter(part => !NOT_LIVE_POINTER.test(part)).join('; ');
+                continue;
+            }
+            const comma = s.split(/,\s+/);
+            if (comma.length > 1 && !NOT_LIVE_POINTER.test(comma[0])) {
+                const at = comma.findIndex(part => NOT_LIVE_POINTER.test(part));
+                s = comma.slice(0, at).join(', ');
+                continue;
+            }
+            return '';
+        }
+        return NOT_LIVE_POINTER.test(s) ? '' : s;
+    }
+
+    /** A text (plain, one or more sentences) without its pointers to rows not in the course yet. */
+    function withoutNotLiveRows(value) {
+        const text = String(value);
+        if (!NOT_LIVE_POINTER.test(text)) return text;
+        const pieces = [];
+        const end = /[.!?]+(?=\s|$)\s*/g;
+        let start = 0;
+        let match;
+        while ((match = end.exec(text))) {
+            pieces.push(text.slice(start, end.lastIndex));
+            start = end.lastIndex;
+        }
+        if (start < text.length) pieces.push(text.slice(start));
+        const out = pieces.map(piece => {
+            if (!NOT_LIVE_POINTER.test(piece)) return piece;
+            const parts = piece.match(/^(\s*)([\s\S]*?)([.!?]*)(\s*)$/);
+            const kept = sentenceWithoutRow(parts[2]);
+            return kept ? parts[1] + kept + parts[3] + parts[4] : '';
+        }).join('');
+        if (!out.trim()) return '';
+        return /\s$/.test(text) ? out : out.replace(/\s+$/, '');
+    }
+
+    const WS_WORDS = /\bwork[\s-]?simulations?\b/i;
+    const WS_LINK = /\/articleship-program\/work-simulation(?:[/?#]|$)|[?&]resource=work(?:\+|%20|\s)simulation(?:[&#]|$)/i;
+    const WS_LINE = /^\s*\{ws\}[ \t]?/;
+    const NO_WS_LINE = /^\s*\{no-ws\}[ \t]?/;
+
+    /** The release a tool draws: an explicit true/false (a test, a preview) wins, else WORK_SIMULATION_LIVE. */
+    function workSimulationLive(override) {
+        return typeof override === 'boolean' ? override : WORK_SIMULATION_LIVE;
+    }
+
+    function mentionsWorkSimulation(value) {
+        return value !== undefined && value !== null && WS_WORDS.test(String(value));
+    }
+
+    /** A link to the Work Simulation page, or to its row in the course. */
+    function isWorkSimulationLink(href) {
+        return typeof href === 'string' && WS_LINK.test(href);
+    }
+
+    function capitalise(value) {
+        return value.replace(/^(\s*["“‘'(]*)([a-z])/, (match, lead, letter) => lead + letter.toUpperCase());
+    }
+
+    /**
+     * One sentence (no terminal punctuation) without the Work Simulation, or '' when nothing true is left. In order:
+     * a list item that names it ("Excel, a job simulation, a Work Simulation level, a project"); a ", and" clause that
+     * names it; a clause ending "…Work Simulation and <the rest>" (the rest kept); a short " and Work Simulation level"
+     * (≤ 3 words); a clause after "…job simulations and" (the job simulations kept). Anything else goes whole.
+     */
+    function sentenceWithout(body) {
+        let s = body;
+        for (let guard = 0; guard < 8 && WS_WORDS.test(s); guard++) {
+            const before = s;
+            // 1. A list item (between commas, or the last one before a bracket closes).
+            s = s.replace(/,\s*(?:and\s+|or\s+)?[^,;:()]*\bwork[\s-]?simulations?\b[^,;:()]*(?=\s*[,)])/i, '');
+            if (s !== before) continue;
+            s = s.replace(/\(\s*[^,;:()]*\bwork[\s-]?simulations?\b[^,;:()]*,\s*/i, '(');
+            if (s !== before) continue;
+            // 2. ", and" clauses: keep the ones that do not name it.
+            const parts = s.split(/,\s+and\s+/);
+            if (parts.length > 1) {
+                const keep = parts.filter(part => !WS_WORDS.test(part));
+                if (keep.length && keep.length < parts.length) { s = capitalise(keep.join(', and ')); continue; }
+            }
+            // 3. "<what was done in it> Work Simulation and <something else>".
+            const after = s.match(/\bwork[\s-]?simulation\s+and\s+(.+)$/i);
+            if (after && !WS_WORDS.test(after[1])) { s = capitalise(after[1]); continue; }
+            // 4. "Every job simulation and Work Simulation level": the short phrase goes.
+            s = s.replace(/\s+(?:and|or)\s+(?:[\w’'&-]+\s+){0,3}?work[\s-]?simulations?(?:\s+(?:levels?|lines?))?\b/i, '');
+            if (s !== before) continue;
+            // 5. "Completed two job simulations and <work done in it>": the job simulations stay.
+            const split = s.match(/^(.*\bsimulations?)\s+and\s+(.*)$/i);
+            if (split && !WS_WORDS.test(split[1]) && WS_WORDS.test(split[2])) { s = split[1]; continue; }
+            return '';
+        }
+        return WS_WORDS.test(s) ? '' : s;
+    }
+
+    /** Plain text (one line, no tags) without the sentences, clauses or list items that name the Work Simulation. */
+    function plainWithout(text) {
+        if (!WS_WORDS.test(text)) return text;
+        // A sentence ends at . ! ? followed by a space or the end ("cut-off?” “What…" stays one: a quote is not a space).
+        const pieces = [];
+        const end = /[.!?]+(?=\s|$)\s*/g;
+        let start = 0;
+        let match;
+        while ((match = end.exec(text))) {
+            pieces.push(text.slice(start, end.lastIndex));
+            start = end.lastIndex;
+        }
+        if (start < text.length) pieces.push(text.slice(start));
+        const out = pieces.map(piece => {
+            if (!WS_WORDS.test(piece)) return piece;
+            const parts = piece.match(/^(\s*)([\s\S]*?)([.!?]*)(\s*)$/);
+            const kept = sentenceWithout(parts[2]);
+            return kept ? parts[1] + kept + parts[3] + parts[4] : '';
+        }).join('');
+        return /\s$/.test(text) ? out : out.replace(/\s+$/, '');
+    }
+
+    /** A text (plain or HTML) without the Work Simulation; tags are kept, emptied paragraphs and list items go. */
+    function withoutWorkSimulation(value) {
+        const text = String(value);
+        if (!WS_WORDS.test(text)) return text;
+        if (!/<[a-z/][^>]*>/i.test(text)) return plainWithout(text);
+        const html = text.split(/(<[^>]+>)/).map(part => (part.startsWith('<') ? part : plainWithout(part))).join('')
+            .replace(/<(p|li|strong|em|b|i|span)(\s[^>]*)?>\s*<\/\1>/gi, '');
+        return html.replace(/<[^>]+>/g, '').trim() ? html : '';
+    }
+
+    /**
+     * One text for this release. Lines may start with `{ws}` (shown only once the Work Simulation is out) or `{no-ws}`
+     * (shown only before); the marker never shows. Before it is out, any other line that names the Work Simulation
+     * loses that sentence, clause or list item, or goes whole. Non-strings come back as they are.
+     */
+    function releaseText(value, override) {
+        if (typeof value !== 'string') return value;
+        const live = workSimulationLive(override);
+        const marked = /\{(?:no-)?ws\}/.test(value);
+        if (!marked && (live || !WS_WORDS.test(value))) return value;
+        const lines = value.split('\n').map(line => {
+            if (WS_LINE.test(line)) return live ? line.replace(WS_LINE, '') : null;
+            if (NO_WS_LINE.test(line)) return live ? null : line.replace(NO_WS_LINE, '');
+            if (live || !WS_WORDS.test(line)) return line;
+            const kept = withoutWorkSimulation(line);
+            return kept.trim() ? kept : null;
+        });
+        return lines.filter(line => line !== null).join('\n');
+    }
+
+    // Keys whose strings are ids, paths, patterns or lookups, never words a student reads: left as they are.
+    const RELEASE_SKIP = Object.freeze(['id', 'ids', 'slug', 'href', 'url', 'link_href', 'path', 'src', 'icon', 'match',
+        'find', 'tool', 'type', 'kind', 'domain', 'day', 'row', 'page', 'file', 'templateFile', 'storage_path',
+        'view_storage_path', 'download_storage_path', 'situation', 'persona', 'design']);
+    // A key that names its object: when its text goes, the whole object goes (a check, a topic, a question, a link).
+    const RELEASE_NAMES = Object.freeze(['check', 'topic', 'title', 'q', 'question', 'name', 'label', 'text', 'line']);
+
+    /**
+     * Content JSON for this release (a copy; the input is never changed). Before the Work Simulation is out: every
+     * student-facing string goes through releaseText, a list item or object whose naming text (RELEASE_NAMES) went is
+     * dropped, and so is any object that links to the Work Simulation (href / url / link). Once it is out: only the
+     * `{ws}` / `{no-ws}` markers are resolved. options: { workSimulationLive, skip: [extra keys left as they are] }.
+     */
+    function releaseContent(content, options) {
+        const opts = options || {};
+        const live = workSimulationLive(opts.workSimulationLive);
+        const skip = new Set(RELEASE_SKIP.concat(Array.isArray(opts.skip) ? opts.skip : []));
+        const names = new Set(RELEASE_NAMES);
+        // Rows not in the course yet (ROWS_NOT_LIVE): their links and pointers go too, unless the caller says
+        // `rows: false` (a tool with its own built-rows list) or every row is treated as in the course (`rows: 'all'`).
+        const rows = opts.rows !== false && opts.rows !== 'all';
+        const GONE = {};
+        function walk(node, key) {
+            if (typeof node === 'string') {
+                if (skip.has(key)) return node;
+                let out = releaseText(node, live);
+                if (rows && typeof out === 'string') out = withoutNotLiveRows(out);
+                return out === '' && node.trim() !== '' ? GONE : out;
+            }
+            if (Array.isArray(node)) {
+                const out = [];
+                node.forEach(item => { const value = walk(item, key); if (value !== GONE) out.push(value); });
+                return out;
+            }
+            if (node && typeof node === 'object') {
+                if (!live && ['href', 'url', 'link'].some(k => isWorkSimulationLink(node[k]))) return GONE;
+                if (rows && ['href', 'url', 'link'].some(k => !isWorkSimulationLink(node[k]) && isNotLiveRowLink(node[k]))) return GONE;
+                const out = {};
+                for (const k of Object.keys(node)) {
+                    const value = walk(node[k], k);
+                    if (value === GONE) {
+                        if (names.has(k)) return GONE;
+                        continue;
+                    }
+                    out[k] = value;
+                }
+                return out;
+            }
+            return node;
+        }
+        const result = walk(content, '');
+        return result === GONE ? null : result;
+    }
+
+    function slugify(value) {
+        return String(value == null ? '' : value).trim().toLowerCase()
+            .replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    }
+
+    /** Any label, slug or common alias → the canonical slug, or null. */
+    function normaliseDomain(value) {
+        const slug = slugify(value);
+        if (!slug) return null;
+        if (DOMAINS.some(domain => domain.slug === slug)) return slug;
+        if (DOMAIN_ALIASES[slug]) return DOMAIN_ALIASES[slug];
+        const byLabel = DOMAINS.find(domain => slugify(domain.label) === slug);
+        if (byLabel) return byLabel.slug;
+        const withoutAnd = slug.replace(/-and-/g, '-');
+        return DOMAIN_ALIASES[withoutAnd] || null;
+    }
+
+    function domainLabel(value) {
+        const slug = normaliseDomain(value);
+        const found = DOMAINS.find(domain => domain.slug === slug);
+        return found ? found.label : '';
+    }
+
+    function isValidTool(tool) {
+        return typeof tool === 'string' && /^[a-z0-9][a-z0-9-]{1,39}$/.test(tool);
+    }
+
+    function storageKey(tool) {
+        if (!isValidTool(tool)) throw new Error('Invalid tool key: ' + tool);
+        return KEY_PREFIX + tool;
+    }
+
+    function clone(value) {
+        return value === undefined ? undefined : JSON.parse(JSON.stringify(value));
+    }
+
+    function isPlainObject(value) {
+        return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+    }
+
+    function emptyEnvelope(defaults, owner) {
+        return { v: ENVELOPE_VERSION, data: clone(defaults || {}), updatedAt: 0, syncedAt: 0, dirty: false, owner: owner || null };
+    }
+
+    function readEnvelope(raw, defaults) {
+        if (!raw) return emptyEnvelope(defaults);
+        try {
+            const parsed = JSON.parse(raw);
+            if (!isPlainObject(parsed) || !isPlainObject(parsed.data)) return emptyEnvelope(defaults);
+            return {
+                v: ENVELOPE_VERSION,
+                data: Object.assign(clone(defaults || {}), parsed.data),
+                updatedAt: Number(parsed.updatedAt) || 0,
+                syncedAt: Number(parsed.syncedAt) || 0,
+                dirty: Boolean(parsed.dirty),
+                owner: typeof parsed.owner === 'string' ? parsed.owner : null
+            };
+        } catch (_) {
+            return emptyEnvelope(defaults);
+        }
+    }
+
+    /** PostgREST / Postgres "this table is not there (yet)". Only then does the engine stop trying for the session. */
+    function isMissingTableError(error) {
+        if (!error) return false;
+        const code = String(error.code || '');
+        const message = String(error.message || '') + ' ' + String(error.details || '') + ' ' + String(error.hint || '');
+        return code === 'PGRST205' || code === '42P01' || code === 'PGRST106' ||
+            Number(error.status) === 404 ||
+            /could not find the table|relation .* does not exist|schema cache/i.test(message);
+    }
+
+    /**
+     * Decide what to do with the local copy and the account row.
+     * local: envelope; remote: null | { data, updated_at }.
+     * Returns { action: 'none' | 'push' | 'pull' | 'merge', data, remoteTime }.
+     */
+    function reconcile(local, remote, merge) {
+        if (!remote) {
+            return { action: local.updatedAt > 0 ? 'push' : 'none', data: local.data, remoteTime: 0 };
+        }
+        const remoteTime = Date.parse(remote.updated_at) || 0;
+        const remoteData = isPlainObject(remote.data) ? remote.data : {};
+        if (!local.dirty) {
+            if (remoteTime !== local.syncedAt) return { action: 'pull', data: remoteData, remoteTime };
+            return { action: 'none', data: local.data, remoteTime };
+        }
+        if (remoteTime === local.syncedAt) return { action: 'push', data: local.data, remoteTime };
+        // Both changed since the last sync (two devices). A tool may merge; otherwise the later change wins.
+        if (typeof merge === 'function') {
+            return { action: 'merge', data: merge(clone(local.data), clone(remoteData)), remoteTime };
+        }
+        if (local.updatedAt >= remoteTime) return { action: 'push', data: local.data, remoteTime };
+        return { action: 'pull', data: remoteData, remoteTime };
+    }
+
+    function browserStorage() {
+        try {
+            const storage = root.localStorage;
+            const probe = KEY_PREFIX + 'probe';
+            storage.setItem(probe, '1');
+            storage.removeItem(probe);
+            return storage;
+        } catch (_) {
+            const memory = new Map();
+            return {
+                getItem: key => (memory.has(key) ? memory.get(key) : null),
+                setItem: (key, value) => { memory.set(key, String(value)); },
+                removeItem: key => { memory.delete(key); }
+            };
+        }
+    }
+
+    function browserSessionFlags() {
+        try { return root.sessionStorage; } catch (_) { return null; }
+    }
+
+    function browserClient() {
+        try {
+            return root.supabaseClient || (typeof root.getSupabaseClient === 'function' ? root.getSupabaseClient() : null);
+        } catch (_) {
+            return null;
+        }
+    }
+
+    /** The signed-in user id without a network call (supabase-init keeps the stored session on window.__mscSession). */
+    function sessionUserId(storage) {
+        try {
+            if (root.__mscSession && root.__mscSession.user && root.__mscSession.user.id) return root.__mscSession.user.id;
+            const store = storage || browserStorage();
+            for (const key of AUTH_KEYS) {
+                const raw = store.getItem(key);
+                if (!raw) continue;
+                const parsed = JSON.parse(raw);
+                const id = (parsed && parsed.user && parsed.user.id) || (parsed && parsed.currentSession && parsed.currentSession.user && parsed.currentSession.user.id);
+                if (id) return id;
+            }
+            return null;
+        } catch (_) {
+            return null;
+        }
+    }
+
+    async function currentUserId(client, storage) {
+        try {
+            if (client && client.auth && typeof client.auth.getSession === 'function') {
+                const { data } = await client.auth.getSession();
+                if (data && data.session && data.session.user) return data.session.user.id;
+                return null;
+            }
+        } catch (_) { /* fall through to the stored session */ }
+        return sessionUserId(storage);
+    }
+
+    /**
+     * Create a store for one tool. Options (all optional; the browser defaults are used when absent):
+     *   defaults   – the data shape a new student starts with
+     *   merge      – (localData, remoteData) => data, used only when two devices changed it since the last sync
+     *   storage    – localStorage-like; client – Supabase client; sessionFlags – sessionStorage-like
+     *   now        – () => ms; debounceMs – delay before an account save (default 800)
+     *   userId     – () => id | null (synchronous; defaults to the stored Supabase session)
+     *   remote     – false to keep this store on the device only
+     */
+    function createStore(tool, options) {
+        const opts = options || {};
+        const key = storageKey(tool);
+        const storage = opts.storage || browserStorage();
+        const sessionFlags = opts.sessionFlags === undefined ? browserSessionFlags() : opts.sessionFlags;
+        const getClient = () => (opts.client === undefined ? browserClient() : opts.client);
+        const now = opts.now || (() => Date.now());
+        const debounceMs = opts.debounceMs === undefined ? 800 : opts.debounceMs;
+        const defaults = isPlainObject(opts.defaults) ? opts.defaults : {};
+        const syncUser = opts.userId || (() => sessionUserId(storage));
+        const listeners = new Set();
+        let envelope = readEnvelope(storage.getItem(key), defaults);
+        let remoteState = opts.remote === false ? 'off' : 'idle';
+        let editVersion = 0;
+        let timer = null;
+        let inFlight = null;
+        let destroyed = false;
+
+        // Another student signed in on this browser: never carry their progress into this account.
+        const visibleUser = syncUser();
+        if (visibleUser && envelope.owner && envelope.owner !== visibleUser) {
+            envelope = emptyEnvelope(defaults, visibleUser);
+            persist();
+        }
+
+        function persist() {
+            try { storage.setItem(key, JSON.stringify(envelope)); } catch (_) { /* quota or blocked: memory copy still works */ }
+        }
+
+        function emit(source) {
+            const snapshot = clone(envelope.data);
+            listeners.forEach(listener => {
+                try { listener(clone(snapshot), { source, tool }); } catch (error) { if (root.console) root.console.error(error); }
+            });
+        }
+
+        function remoteDisabled() {
+            if (remoteState === 'off' || remoteState === 'missing') return true;
+            try { return Boolean(sessionFlags && sessionFlags.getItem(REMOTE_FLAG) === 'missing'); } catch (_) { return false; }
+        }
+
+        function markMissing() {
+            remoteState = 'missing';
+            try { if (sessionFlags) sessionFlags.setItem(REMOTE_FLAG, 'missing'); } catch (_) { /* ignore */ }
+        }
+
+        function applyRemote(data, remoteTime, owner) {
+            envelope = {
+                v: ENVELOPE_VERSION, data: Object.assign(clone(defaults), clone(data)),
+                updatedAt: remoteTime, syncedAt: remoteTime, dirty: false, owner: owner || envelope.owner
+            };
+            persist();
+            emit('remote');
+        }
+
+        async function push() {
+            if (remoteDisabled()) return false;
+            const client = getClient();
+            if (!client || typeof client.from !== 'function') return false;
+            const userId = await currentUserId(client, storage);
+            if (!userId) return false;
+            if (envelope.owner && envelope.owner !== userId) return false;
+            const body = JSON.stringify(envelope.data);
+            if (body.length > MAX_BYTES) { remoteState = 'too-large'; return false; }
+            const version = editVersion;
+            try {
+                const { data, error } = await client.from(TABLE)
+                    .upsert({ user_id: userId, tool, data: envelope.data }, { onConflict: 'user_id,tool' })
+                    .select('updated_at').single();
+                if (error) {
+                    if (isMissingTableError(error)) markMissing(); else remoteState = 'error';
+                    return false;
+                }
+                const serverTime = Date.parse(data && data.updated_at) || now();
+                envelope.syncedAt = serverTime;
+                envelope.owner = userId;
+                if (version === editVersion) envelope.dirty = false;
+                persist();
+                remoteState = 'synced';
+                return true;
+            } catch (_) {
+                remoteState = 'error';
+                return false;
+            }
+        }
+
+        function schedulePush() {
+            if (remoteDisabled() || destroyed) return;
+            if (timer) clearTimeout(timer);
+            if (debounceMs <= 0) { flush(); return; }
+            timer = setTimeout(() => { timer = null; flush(); }, debounceMs);
+        }
+
+        function flush() {
+            if (timer) { clearTimeout(timer); timer = null; }
+            if (inFlight) return inFlight.then(() => (envelope.dirty ? flush() : true));
+            if (!envelope.dirty) return Promise.resolve(true);
+            inFlight = push().finally(() => { inFlight = null; });
+            return inFlight;
+        }
+
+        async function pull() {
+            if (remoteDisabled()) return 'local';
+            const client = getClient();
+            if (!client || typeof client.from !== 'function') return 'local';
+            const userId = await currentUserId(client, storage);
+            if (!userId) return 'local';
+            if (envelope.owner && envelope.owner !== userId) {
+                envelope = emptyEnvelope(defaults, userId);
+                persist();
+                emit('account-switch');
+            }
+            try {
+                const { data, error } = await client.from(TABLE).select('data, updated_at').eq('tool', tool).maybeSingle();
+                if (error) {
+                    if (isMissingTableError(error)) markMissing(); else remoteState = 'error';
+                    return 'local';
+                }
+                const decision = reconcile(envelope, data || null, opts.merge);
+                if (decision.action === 'pull') applyRemote(decision.data, decision.remoteTime, userId);
+                else if (decision.action === 'push' || decision.action === 'merge') {
+                    if (decision.action === 'merge') {
+                        envelope.data = Object.assign(clone(defaults), decision.data);
+                        envelope.updatedAt = now();
+                        persist();
+                        emit('merge');
+                    }
+                    envelope.syncedAt = decision.remoteTime || envelope.syncedAt;
+                    envelope.dirty = true;
+                    envelope.owner = userId;
+                    persist();
+                    await flush();
+                } else {
+                    envelope.owner = userId;
+                    persist();
+                    remoteState = 'synced';
+                }
+                return decision.action;
+            } catch (_) {
+                remoteState = 'error';
+                return 'local';
+            }
+        }
+
+        function commit(next, source) {
+            if (!isPlainObject(next)) throw new TypeError('Progress data must be a plain object');
+            envelope.data = clone(next);
+            envelope.updatedAt = Math.max(now(), envelope.updatedAt + 1);
+            envelope.dirty = true;
+            if (!envelope.owner) envelope.owner = syncUser() || null;
+            editVersion += 1;
+            persist();
+            emit(source || 'local');
+            schedulePush();
+        }
+
+        const store = {
+            tool,
+            key,
+            get: () => clone(envelope.data),
+            set: next => commit(next),
+            update(change) {
+                const current = clone(envelope.data);
+                let next;
+                if (typeof change === 'function') {
+                    const returned = change(current);
+                    next = returned === undefined ? current : returned;
+                } else {
+                    next = Object.assign(current, change || {});
+                }
+                commit(next);
+                return clone(envelope.data);
+            },
+            clear() { commit(clone(defaults)); },
+            subscribe(listener) {
+                listeners.add(listener);
+                return () => listeners.delete(listener);
+            },
+            flush,
+            pull,
+            status: () => ({ remote: remoteDisabled() && remoteState === 'idle' ? 'missing' : remoteState, dirty: envelope.dirty, updatedAt: envelope.updatedAt }),
+            destroy() {
+                destroyed = true;
+                if (timer) clearTimeout(timer);
+                listeners.clear();
+            },
+            // Another tab saved the same tool: pick it up without a reload.
+            _onStorageEvent(event) {
+                if (!event || event.key !== key) return;
+                envelope = readEnvelope(event.newValue, defaults);
+                emit('other-tab');
+            }
+        };
+        store.ready = opts.autoPull === false ? Promise.resolve('local') : Promise.resolve().then(pull);
+        return store;
+    }
+
+    // ---------- Browser singletons ----------
+    const openStores = new Map();
+    let storageListenerBound = false;
+
+    function bindStorageListener() {
+        if (storageListenerBound || !root.addEventListener) return;
+        storageListenerBound = true;
+        root.addEventListener('storage', event => openStores.forEach(store => store._onStorageEvent(event)));
+        const flushAll = () => openStores.forEach(store => { store.flush(); });
+        root.addEventListener('pagehide', flushAll);
+        root.addEventListener('online', () => openStores.forEach(store => { if (store.status().dirty) store.flush(); }));
+        if (root.document && root.document.addEventListener) {
+            root.document.addEventListener('visibilitychange', () => { if (root.document.visibilityState === 'hidden') flushAll(); });
+        }
+    }
+
+    /** The page-level store for a tool (one per tool per page). */
+    function open(tool, options) {
+        if (openStores.has(tool)) return openStores.get(tool);
+        const store = createStore(tool, options);
+        openStores.set(tool, store);
+        bindStorageListener();
+        return store;
+    }
+
+    // ---------- Shared settings: "my domain" and the CV pick ----------
+    const SETTINGS_DEFAULTS = Object.freeze({ myDomain: null, backupDomain: null, cvPick: null });
+
+    function settings(options) {
+        return open(SETTINGS_TOOL, Object.assign({ defaults: SETTINGS_DEFAULTS }, options || {}));
+    }
+
+    function getMyDomain(store) {
+        return normaliseDomain((store || settings()).get().myDomain);
+    }
+
+    function getBackupDomain(store) {
+        return normaliseDomain((store || settings()).get().backupDomain);
+    }
+
+    /** Set "my domain" (and optionally the backup). Unknown domains are refused. Returns the saved slug. */
+    function setMyDomain(value, extra, store) {
+        const slug = normaliseDomain(value);
+        if (!slug) throw new Error('Unknown domain: ' + value);
+        const target = store || settings();
+        target.update(data => {
+            data.myDomain = slug;
+            if (extra && Object.prototype.hasOwnProperty.call(extra, 'backup')) {
+                const backup = extra.backup ? normaliseDomain(extra.backup) : null;
+                if (extra.backup && !backup) throw new Error('Unknown domain: ' + extra.backup);
+                data.backupDomain = backup && backup !== slug ? backup : null;
+            } else if (data.backupDomain === slug) {
+                data.backupDomain = null;
+            }
+            return data;
+        });
+        return slug;
+    }
+
+    /** Validate and normalise a CV pick: { situation 'A'-'H', order [section ids], design, variants [], domain }. */
+    function normaliseCvPick(pick) {
+        if (!isPlainObject(pick)) throw new TypeError('CV pick must be an object');
+        const situation = String(pick.situation || '').trim().toUpperCase();
+        if (!SITUATIONS.includes(situation)) throw new Error('Unknown situation: ' + pick.situation);
+        const order = Array.isArray(pick.order) ? pick.order.map(item => String(item).trim()).filter(Boolean) : [];
+        const variants = Array.isArray(pick.variants) ? [...new Set(pick.variants.map(item => String(item).trim()).filter(Boolean))] : [];
+        let design = pick.design;
+        if (design !== null && design !== undefined && design !== '') {
+            design = typeof design === 'number' ? design : String(design).trim();
+            if (typeof design === 'string' && /^\d+$/.test(design)) design = Number(design);
+        } else {
+            design = null;
+        }
+        return {
+            situation,
+            order,
+            design,
+            variants,
+            domain: pick.domain ? normaliseDomain(pick.domain) : null,
+            source: pick.source ? String(pick.source) : 'cv-recommender',
+            savedAt: pick.savedAt ? String(pick.savedAt) : new Date().toISOString()
+        };
+    }
+
+    function setCvPick(pick, store) {
+        const clean = normaliseCvPick(pick);
+        const target = store || settings();
+        target.update(data => {
+            data.cvPick = clean;
+            if (clean.domain && !data.myDomain) data.myDomain = clean.domain;
+            return data;
+        });
+        return clean;
+    }
+
+    function getCvPick(store) {
+        const pick = (store || settings()).get().cvPick;
+        if (!pick) return null;
+        try { return normaliseCvPick(pick); } catch (_) { return null; }
+    }
+
+    function onSettingsChange(listener, store) {
+        return (store || settings()).subscribe(listener);
+    }
+
+    return Object.freeze({
+        TABLE, KEY_PREFIX, SETTINGS_TOOL, MAX_BYTES, DOMAINS, SITUATIONS,
+        WORK_SIMULATION_LIVE, workSimulationLive, mentionsWorkSimulation, isWorkSimulationLink, withoutWorkSimulation,
+        releaseText, releaseContent, ROWS_NOT_LIVE, isRowLive, isNotLiveRowLink, namesNotLiveRow, withoutNotLiveRows,
+        normaliseDomain, domainLabel, isValidTool, storageKey, isMissingTableError, reconcile,
+        createStore, open, settings, getMyDomain, getBackupDomain, setMyDomain,
+        normaliseCvPick, setCvPick, getCvPick, onSettingsChange,
+        _readEnvelope: readEnvelope, _sessionUserId: sessionUserId
+    });
+});

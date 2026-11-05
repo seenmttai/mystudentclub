@@ -1,0 +1,282 @@
+/*
+ * "Practise your interview" (articleship mode of /ai-interview.html): the setup screen in the programme's look
+ * (CV Builder base + Caveat headings, shared tokens from /articleship-program/shared/articleship-tools.css)
+ * and the 1-4 scorecard on the report. Everything is scoped to .aii-shell / .aii-sc so the general interview page
+ * keeps its own look.
+ */
+body.aii-mode {
+    background: #f8fafc;
+    background-image: none;
+    color: #0f172a;
+}
+
+.aii-shell {
+    --ap-accent: var(--ap-day-4);
+    min-height: 100vh;
+    background: var(--ap-bg);
+    color: var(--ap-ink);
+    font-family: var(--ap-sans);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+.aii-shell *, .aii-sc * { box-sizing: border-box; }
+.aii-shell .ap-hero { margin: 8px 0 16px; }
+.aii-shell .ap-lede { margin-top: 6px; }
+.aii-main { max-width: 600px; }
+.aii-loading { display: grid; place-items: center; min-height: 60vh; }
+
+.aii-form { display: grid; gap: 18px; padding: 18px 16px 20px; }
+.aii-field { display: grid; gap: 8px; min-width: 0; margin: 0; padding: 0; border: 0; }
+.aii-label {
+    padding: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ap-navy);
+}
+.aii-input {
+    width: 100%;
+    min-height: 46px;
+    padding: 10px 12px;
+    border: 1px solid var(--ap-border-dark);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--ap-ink);
+    font: 16px/1.3 var(--ap-sans);
+}
+select.aii-input {
+    -webkit-appearance: none;
+    appearance: none;
+    padding-right: 40px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2306152F' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+}
+.aii-input:focus { outline: none; border-color: var(--ap-primary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ap-primary) 22%, transparent); }
+.aii-input::placeholder { color: var(--ap-light); }
+
+/* Choices: round cards and pills share one radio pattern */
+.aii-options { display: grid; gap: 8px; }
+.aii-options.is-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.aii-option { position: relative; display: flex; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.aii-option input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+.aii-option-body {
+    flex: 1 1 auto;
+    display: grid;
+    gap: 2px;
+    min-height: 44px;
+    padding: 11px 14px;
+    border: 1.5px solid var(--ap-border);
+    border-radius: 12px;
+    background: #fff;
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+.aii-option:hover .aii-option-body { border-color: var(--ap-border-dark); }
+.aii-option-name { font-weight: 600; color: var(--ap-ink); }
+.aii-option-meta { font-size: 13px; color: var(--ap-muted); line-height: 1.35; }
+.aii-option input:checked + .aii-option-body {
+    border-color: var(--ap-primary);
+    background: var(--ap-primary-light);
+    box-shadow: inset 0 0 0 1px var(--ap-primary);
+}
+.aii-option input:checked + .aii-option-body .aii-option-name { color: var(--ap-navy); }
+.aii-option input:focus-visible + .aii-option-body { outline: 3px solid color-mix(in srgb, var(--ap-primary) 40%, transparent); outline-offset: 2px; }
+.is-pills .aii-option-body {
+    display: flex;
+    align-items: center;
+    min-height: 42px;
+    padding: 8px 12px;
+    border-radius: 999px;
+}
+
+/* During an articleship interview: the general page's score and progress pills never update, so they stay hidden. */
+body.aii-live .interview-header .pills { display: none; }
+
+.aii-file { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.aii-note { margin: 0; min-height: 0; color: var(--ap-muted); font-size: 14px; overflow-wrap: anywhere; }
+.aii-note:empty { display: none; }
+.aii-choose { min-height: 40px; padding: 8px 14px; font-size: 14px; }
+.aii-linkbtn {
+    padding: 0 4px;
+    border: 0;
+    background: none;
+    color: var(--ap-primary);
+    font: 600 14px var(--ap-sans);
+    cursor: pointer;
+}
+
+/* "Coach me" switch */
+.aii-switch {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 44px;
+    font-weight: 600;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+.aii-switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.aii-switch-track {
+    position: relative;
+    flex: 0 0 46px;
+    width: 46px;
+    height: 28px;
+    border-radius: 999px;
+    background: var(--ap-border-dark);
+    transition: background 0.15s ease;
+}
+.aii-switch-track::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(6, 21, 47, 0.25);
+    transition: transform 0.15s ease;
+}
+.aii-switch input:checked + .aii-switch-track { background: var(--ap-primary); }
+.aii-switch input:checked + .aii-switch-track::after { transform: translateX(18px); }
+.aii-switch input:focus-visible + .aii-switch-track { outline: 3px solid color-mix(in srgb, var(--ap-primary) 40%, transparent); outline-offset: 2px; }
+
+.aii-retry { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
+.aii-retry[hidden] { display: none; }
+.aii-retry input { flex: 0 0 20px; width: 20px; height: 20px; margin-top: 3px; accent-color: var(--ap-primary); }
+.aii-retry strong { margin-right: 4px; }
+
+.aii-error { margin: 0; color: var(--ap-danger); font-size: 14px; font-weight: 600; }
+.aii-start { min-height: 52px; font-size: 16px; }
+.aii-start:disabled { opacity: 0.7; cursor: progress; }
+.aii-other { margin: -4px 0 0; text-align: center; font-size: 14px; }
+
+@media (min-width: 640px) {
+    .aii-form { padding: 22px 22px 24px; gap: 20px; }
+    .aii-options.is-rounds { grid-template-columns: 1fr 1fr; }
+}
+
+/* ---------- Scorecard on the report (sits on the dark report like a sheet of paper) ---------- */
+.aii-sc {
+    --ap-accent: var(--ap-day-4);
+    margin: 0 0 20px;
+    padding: 18px 16px 16px;
+    border-radius: 16px;
+    background: #fff;
+    color: var(--ap-ink);
+    font-family: var(--ap-sans);
+    font-size: 15px;
+    line-height: 1.45;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+}
+.aii-sc-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 0 0 10px; }
+.aii-sc-title { margin: 0; font-family: var(--ap-hand); font-weight: 700; font-size: 30px; line-height: 1.05; color: var(--ap-navy); }
+.aii-sc-total { font-family: var(--ap-hand); font-weight: 700; font-size: 26px; color: var(--ap-primary); white-space: nowrap; }
+.aii-sc-rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.aii-sc-row {
+    padding: 10px 12px;
+    border: 1px solid var(--ap-border);
+    border-left: 4px solid var(--ap-border);
+    border-radius: 10px;
+    background: #fff;
+}
+.aii-sc-row.is-weak { border-left-color: var(--ap-accent); background: #fff7fa; }
+.aii-sc-line { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: 4px 10px; }
+.aii-sc-name { font-weight: 600; color: var(--ap-navy); }
+.aii-sc-meter { display: inline-flex; align-items: center; gap: 8px; padding-top: 3px; white-space: nowrap; }
+.aii-sc-dots { display: inline-flex; gap: 4px; }
+.aii-sc-dot { width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--ap-border-dark); background: #fff; }
+.aii-sc-dot.is-on { border-color: var(--ap-primary); background: var(--ap-primary); }
+.aii-sc-row.is-weak .aii-sc-dot.is-on { border-color: var(--ap-accent); background: var(--ap-accent); }
+.aii-sc-score { min-width: 30px; text-align: right; font-weight: 700; font-size: 14px; line-height: 1; color: var(--ap-muted); }
+.aii-sc-row.is-skipped { background: var(--ap-bg); }
+.aii-sc-row.is-skipped .aii-sc-name { color: var(--ap-muted); font-weight: 500; }
+.aii-sc-row.is-skipped .aii-sc-score { font-weight: 500; font-size: 13px; }
+.aii-sc-evidence { margin: 6px 0 0; color: var(--ap-muted); font-style: italic; font-size: 14px; }
+.aii-sc-fix, .aii-sc-retry { margin: 4px 0 0; font-size: 14px; }
+.aii-sc-fix strong, .aii-sc-retry strong { color: var(--ap-navy); }
+.aii-sc-again { margin-top: 14px; width: 100%; }
+@media (min-width: 640px) {
+    .aii-options.is-pills { gap: 8px; }
+    .is-pills .aii-option-body { padding: 8px 16px; }
+    .aii-sc { padding: 22px 22px 20px; }
+    .aii-sc-title { font-size: 34px; }
+    .aii-sc-again { width: auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .aii-option-body, .aii-switch-track, .aii-switch-track::after { transition: none; }
+}
+
+/* "+ 2 Work Simulation lines": earned lines the chosen CV does not carry yet are probed too */
+.aii-earned { color: var(--ap-navy); font-weight: 600; }
+
+/* "Mocks done: 2, last 18/28" under the lede */
+.aii-done {
+    display: inline-block;
+    margin: 10px 0 0;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: var(--ap-success-light);
+    color: var(--ap-success);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* "More options": firm size and toughness, folded, their choice shown on the row */
+.aii-more { border: 1.5px solid var(--ap-border); border-radius: 12px; background: #fff; }
+.aii-more-summary {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 46px;
+    padding: 10px 14px;
+    cursor: pointer;
+    list-style: none;
+    -webkit-tap-highlight-color: transparent;
+}
+.aii-more-summary::-webkit-details-marker { display: none; }
+.aii-more-state { margin-left: auto; color: var(--ap-muted); font-size: 14px; text-align: right; }
+.aii-more-summary::after {
+    content: '';
+    flex: 0 0 8px;
+    width: 8px;
+    height: 8px;
+    margin: -4px 2px 0 4px;
+    border-right: 2px solid var(--ap-navy);
+    border-bottom: 2px solid var(--ap-navy);
+    transform: rotate(45deg);
+    transition: transform 0.15s ease;
+}
+.aii-more[open] .aii-more-summary::after { transform: rotate(225deg); margin-top: 4px; }
+.aii-more-summary:focus-visible { outline: 3px solid color-mix(in srgb, var(--ap-primary) 40%, transparent); outline-offset: 2px; border-radius: 12px; }
+.aii-more-body { display: grid; gap: 16px; padding: 2px 14px 14px; }
+
+/* Start: one button; on a phone it stays at the bottom of the screen while the form scrolls */
+.aii-actions { display: grid; gap: 10px; }
+@media (max-width: 639px) {
+    .aii-actions {
+        position: sticky;
+        bottom: 0;
+        z-index: 5;
+        margin: 0 -16px -20px;
+        padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+        border-top: 1px solid var(--ap-border);
+        border-radius: 0 0 var(--ap-radius) var(--ap-radius);
+        background: rgba(255, 255, 255, 0.98);
+        box-shadow: 0 -8px 18px rgba(6, 21, 47, 0.07);
+    }
+}
+
+/* The report could not be read into a scorecard: one line instead of a gap */
+.aii-sc-fallback { margin: 0; font-weight: 600; color: var(--ap-navy); }
+
+/* Articleship report: the scorecard leads; the long analysis cards fold on a phone (set in the page script) */
+body.aii-report .report-section.hidden { display: none; }
+@media (max-width: 640px) {
+    body.aii-report .aii-sc { margin-top: 4px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .aii-more-summary::after { transition: none; }
+}
