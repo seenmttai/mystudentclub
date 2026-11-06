@@ -1866,6 +1866,55 @@ async function initializeUserFeatures() {
 }
 
 
+// CA Industrial Training Program strip (6 Nov 2026): under the header and profile reminder, above the search bar, on the Industrial
+// Training and Articleship portals. One tap opens the program page. Hidden for students already enrolled in the IT
+// program; the × hides it for 7 days on this browser.
+const IT_STRIP_HIDE_KEY = 'mscItStripHiddenUntil';
+const IT_STRIP_HIDE_DAYS = 7;
+const IT_STRIP_URL = '/ca-industrial-training-program/?utm_source=job_portal&utm_medium=strip&utm_campaign=it_program';
+
+function renderItProgramStrip() {
+    document.getElementById('itProgramStrip')?.remove();
+    if (currentTable !== 'Industrial Training Job Portal' && currentTable !== 'Articleship Jobs') return;
+    if (isEnrolledSync('Industrial Training Job Portal')) return;
+    try {
+        if (Number(localStorage.getItem(IT_STRIP_HIDE_KEY) || 0) > Date.now()) return;
+    } catch (e) { /* storage blocked: just show it */ }
+    const main = document.querySelector('main.app-main');
+    if (!main) return;
+
+    const strip = document.createElement('div');
+    strip.id = 'itProgramStrip';
+    strip.className = 'itp-strip';
+    strip.innerHTML = `
+        <a class="itp-link" href="${IT_STRIP_URL}" aria-label="Explore the MSC CA Industrial Training Program">
+            <span class="itp-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/><path d="M22 10v6"/></svg>
+            </span>
+            <span class="itp-text">
+                <span class="itp-eyebrow">MSC Program</span>
+                <span class="itp-title"><span class="itp-title-ca">CA </span>Industrial Training Program</span>
+                <span class="itp-sub"><span class="itp-sub-long">Exclusive vacancies, 1:1 CV rebuild &amp; 1,500+ HR contacts</span><span class="itp-sub-short">Exclusive vacancies &amp; CV rebuild</span></span>
+            </span>
+            <span class="itp-cta">Explore<svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 0 1 .02-1.06L11.17 10 7.23 6.29a.75.75 0 1 1 1.04-1.08l4.5 4.25a.75.75 0 0 1 0 1.08l-4.5 4.25a.75.75 0 0 1-1.06-.02z" clip-rule="evenodd"/></svg></span>
+        </a>
+        <button type="button" class="itp-close" aria-label="Hide for a week">
+            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22z"/></svg>
+        </button>`;
+
+    const track = (action) => { try { if (typeof gtag === 'function') gtag('event', 'it_program_strip', { action, portal: currentTable }); } catch (e) { } };
+    strip.querySelector('.itp-link').addEventListener('click', () => track('open'));
+    strip.querySelector('.itp-close').addEventListener('click', () => {
+        try { localStorage.setItem(IT_STRIP_HIDE_KEY, String(Date.now() + IT_STRIP_HIDE_DAYS * 864e5)); } catch (e) { }
+        track('hide');
+        strip.classList.add('itp-hiding');
+        setTimeout(() => strip.remove(), 180);
+    });
+    // Under the profile reminder (if any), above the sticky search bar, so it scrolls away with the page.
+    const anchor = main.querySelector('.sticky-bar');
+    main.insertBefore(strip, anchor && anchor.parentElement === main ? anchor : main.firstChild);
+}
+
 //  PROFILE & PREFERENCES
 
 function getProfileReminderDismissKey() {
@@ -3356,6 +3405,8 @@ async function initializePage() {
       }
     }
   }
+
+  renderItProgramStrip(); // enrolment is known now (initializeUserFeatures awaits it), so enrolled students never see it flash
 
   // Load filter options and populate
   await fetchFilterOptions();
