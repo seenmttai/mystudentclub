@@ -442,6 +442,65 @@
         if (premiumStat) premiumStat.hidden = catalogueError || (catalogueLoaded && premiumRows.length === 0);
         stats.hidden = false;
     }
+    // "What's included": every premium collection with its size, so students see what the program holds before scrolling.
+    function renderPremiumOverview() {
+        const box = document.getElementById('premium-overview');
+        if (!box) return;
+        box.replaceChildren();
+        box.hidden = !catalogueLoaded || premiumRows.length === 0;
+        if (box.hidden) return;
+        // Same rule as groupPremiumResources: collection names match regardless of case.
+        const totals = new Map();
+        groupPremiumResources(premiumRows).forEach(day => day.groups.forEach(group => {
+            const key = group.title.toLocaleLowerCase();
+            const entry = totals.get(key) || { name: group.title, count: 0 };
+            entry.count += group.resources.length;
+            totals.set(key, entry);
+        }));
+        const list = element('ul', 'premium-overview-list');
+        totals.forEach(({ name, count }) => {
+            const item = element('li');
+            const chip = element('button', 'premium-overview-chip');
+            chip.type = 'button';
+            chip.append(element('span', '', name), element('span', 'premium-overview-count', String(count)));
+            chip.setAttribute('aria-label', name + ', ' + count + (count === 1 ? ' resource' : ' resources') + '. Go to this collection');
+            chip.addEventListener('click', () => jumpToCollection(name));
+            item.append(chip);
+            list.append(item);
+        });
+        box.append(element('p', 'premium-overview-title', "What's included"), list);
+    }
+    function jumpToCollection(name) {
+        const wanted = name.toLocaleLowerCase();
+        const find = () => [...document.querySelectorAll('#premium-resources-list .premium-collection')].find(collection => collection.querySelector('h4')?.textContent.toLocaleLowerCase() === wanted);
+        if (!find()) {
+            // The collection may be hidden by a day filter or a search: clear both, then go.
+            selectedDay = 'all'; premiumQuery = '';
+            const input = document.getElementById('premium-resource-search');
+            if (input) input.value = '';
+            renderPremiumResults();
+        }
+        const target = find();
+        if (!target) return;
+        const reduceMotion = global.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+        if (typeof target.scrollIntoView === 'function') target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+        target.classList.remove('premium-collection-flash');
+        void target.offsetWidth;
+        target.classList.add('premium-collection-flash');
+        clearTimeout(jumpToCollection.timer);
+        jumpToCollection.timer = setTimeout(() => target.classList.remove('premium-collection-flash'), 1800);
+    }
+    // Hero stats scroll to their section without adding #hash history entries,
+    // so the app's Back button still leaves the page in one press.
+    function setupStatLinks() {
+        document.querySelectorAll('a.rh-stat[href^="#"]').forEach(link => link.addEventListener('click', event => {
+            const target = document.getElementById(link.getAttribute('href').slice(1));
+            if (!target) return;
+            event.preventDefault();
+            const reduceMotion = global.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+            if (typeof target.scrollIntoView === 'function') target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+        }));
+    }
     function renderPremiumResults(focusGroup) {
         const grid = document.getElementById('premium-resources-list');
         if (!grid) return;
@@ -543,6 +602,10 @@
             header.append(enroll);
         }
         premium.append(header);
+        const overview = element('div', 'premium-overview');
+        overview.id = 'premium-overview';
+        overview.hidden = true;
+        premium.append(overview);
         const toolbar = element('div', 'resource-search-toolbar');
         const searchLabel = element('label', 'resource-search');
         searchLabel.htmlFor = 'premium-resource-search';
@@ -591,9 +654,11 @@
             catalogueLoaded = true;
             catalogueError = false;
             renderPremiumResults();
+            renderPremiumOverview();
         } catch (_) {
             catalogueError = true;
             renderPremiumResults();
+            renderPremiumOverview();
             status.replaceChildren(document.createTextNode('We could not load the premium library. You can still use every free resource. '));
             const retry = element('button', '', 'Try again');
             retry.type = 'button'; retry.addEventListener('click', loadCatalogue); status.append(retry);
@@ -604,6 +669,7 @@
         config = pages[stage];
         if (!config || !document.getElementById('resources-container')) return;
         renderResources();
+        setupStatLinks();
         const modal = document.getElementById('resource-enroll-dialog');
         modal.querySelector('.dialog-close').addEventListener('click', () => modal.close());
         modal.addEventListener('click', e => { if (e.target === modal) { const rect = modal.getBoundingClientRect(); if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) modal.close(); } });
