@@ -30,10 +30,12 @@ test('all vacancy share paths use the links page in the share copy', () => {
       !source.includes(retiredShareUrl),
       `${path.relative(root, scriptPath)} must not use the retired WhatsApp group URL`,
     );
+    // Since Nov 2026 shares use the readable job page URL
+    // ("/jobs/industrial/dbs-hiring-ca-industrial-trainee-finance-pune-10651") from scripts/job-seo.js.
     assert.match(
       source,
-      /const jobUrl = `\$\{window\.location\.origin\}\/job\.html\?id=\$\{job\.id\}&type=\$\{jobType\}`;/,
-      `${path.relative(root, scriptPath)} must keep the canonical job share URL`,
+      /const jobUrl = (?:jobSeo|globalThis\.MSCJobSeo)\.jobUrl\(job, /,
+      `${path.relative(root, scriptPath)} must share the readable job page URL`,
     );
   }
 });

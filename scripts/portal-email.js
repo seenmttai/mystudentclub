@@ -1,4 +1,5 @@
 import { getDaysAgo, isJobExpired } from './date-utils.js';
+import './job-seo.js';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 import { calculateProfileCompletion as calculateSharedProfileCompletion, readCachedProfile } from './profile-completion.js';
 
@@ -331,10 +332,8 @@ function generateApplicationLinks(applicationId) {
 // Share job using Web Share API or fallback to copy link
 function shareJob(job, btnElement) {
     const table = job.source_table || state.portalType;
-    const jobType = table === 'Industrial Training Job Portal' ? 'industrial' :
-        table === 'Fresher Jobs' ? 'fresher' :
-            table === 'Semi Qualified Jobs' ? 'semi' : 'articleship';
-    const jobUrl = `${window.location.origin}/job.html?id=${job.id}&type=${jobType}`;
+    // Readable job page URL; the 404 page covers jobs whose page isn't built yet.
+    const jobUrl = globalThis.MSCJobSeo.jobUrl(job, globalThis.MSCJobSeo.categoryFromTable(table));
 
     const shareText = `Check out this job at *${job.Company}* for *${job.Location}*
 URL - ${jobUrl}

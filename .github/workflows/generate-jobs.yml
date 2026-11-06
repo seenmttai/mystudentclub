@@ -22,30 +22,16 @@ jobs:
     - name: Install Astro Dependencies
       run: cd jobs-builder && npm install
       
-    - name: Build New Job Pages (Astro)
+    - name: Build Job Pages (Astro, every job from the last 15 days)
       env:
         SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
         SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
       run: cd jobs-builder && npx astro build
 
-    - name: Update Sync State
-      run: cd jobs-builder && npm run sync:update
-
-    - name: Copy New Pages to Jobs Folder
-      run: |
-        mkdir -p jobs/industrial jobs/fresher jobs/semi-qualified jobs/articleship
-        if [ -d "jobs-builder/dist/jobs" ] && [ "$(ls -A jobs-builder/dist/jobs 2>/dev/null)" ]; then
-          cp -r jobs-builder/dist/jobs/* jobs/
-          echo "Copied generated job pages to jobs/"
-        else
-          echo "No new job pages to copy in jobs-builder/dist/jobs"
-        fi
-
-    - name: Run Folder Cleanup (3000 limit)
-      run: cd jobs-builder && npm run cleanup
-
-    - name: Delete Jobs Older Than 15 Days
-      run: cd jobs-builder && npm run expire
+    # Copies the built pages into jobs/, redirects old URLs of live jobs to their
+    # current URL and deletes pages of expired or removed jobs.
+    - name: Sync Job Pages
+      run: cd jobs-builder && npm run sync
 
     - name: Generate Sitemap
       run: cd jobs-builder && npm run sitemap
@@ -59,7 +45,7 @@ jobs:
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        git add jobs/ jobs-sitemap.xml jobs-builder/scripts/sync-state.json
+        git add -A jobs/ jobs-sitemap.xml
         if ! git diff --staged --quiet; then
           git commit -m "Auto-generated jobs update (Astro SSG)"
           git pull --rebase origin ${{ github.ref_name }}
