@@ -1838,7 +1838,11 @@
     // (manageTopicSubscription / the location+job-type dropdown). Note "Industrial-all" is
     // capitalized where the other three are not — this mirrors an existing inconsistency in
     // portal3.js, not a typo here; topic names must match what subscribers actually subscribed to.
-    const TYPE_WIDE_TOPIC_MAP = { industrial: 'Industrial-all', fresher: 'fresher-all', semi: 'semi-all', articleship: 'articleship-all' };
+    const TYPE_WIDE_TOPIC_MAP = { industrial: 'Industrial-all', fresher: 'fresher-all', semi: 'semi-all', articleship: 'articleship-all', experienced: 'experienced-all' };
+    // Experienced CA jobs are rows in "Fresher Jobs" with Experience = 'Experienced'. Besides the
+    // usual Fresher topics, they also go to the "Experienced CA" topics students pick in the bell.
+    const EXPERIENCED_PORTAL_NAME = 'Experienced CA';
+    const EXPERIENCED_PORTAL_LINK = 'https://www.mystudentclub.com/experienced-ca-jobs';
     
     // Batched job notifications: a burst of job postings to the same topic within this
     // rolling window is collapsed into a single "N+ new jobs posted" push instead of one
@@ -2118,6 +2122,13 @@
         }
         if (typeWideTopic) {
             await notifyOrBatch(typeWideTopic, portalName, link, accessToken);
+        }
+        if (table === 'Fresher Jobs' && jobData.Experience === 'Experienced') {
+            const experiencedTopic = generateTopicName(matchedLocationKeyword, 'experienced');
+            if (experiencedTopic) {
+                await notifyOrBatch(experiencedTopic, `${capitalizeFirst(matchedLocationKeyword)} - ${EXPERIENCED_PORTAL_NAME}`, EXPERIENCED_PORTAL_LINK, accessToken);
+            }
+            await notifyOrBatch(TYPE_WIDE_TOPIC_MAP.experienced, EXPERIENCED_PORTAL_NAME, EXPERIENCED_PORTAL_LINK, accessToken);
         }
         await notifyOrBatch('all', null, link, accessToken);
     }

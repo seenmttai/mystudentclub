@@ -38,6 +38,7 @@ const JOB_TYPES_NOTIF = [
   { value: "semi", label: "Semi Qualified" },
   { value: "fresher", label: "Fresher" },
   { value: "articleship", label: "Articleship" },
+  { value: "experienced", label: "Experienced CA" },
 ];
 
 // Type-wide ("All India") topic name for each job type, exactly as formatTopicForDisplay
@@ -48,6 +49,7 @@ function getTypeWideTopicForJobType(jobType) {
   if (jobType === "fresher") return "fresher-all";
   if (jobType === "semi") return "semi-all";
   if (jobType === "articleship") return "articleship-all";
+  if (jobType === "experienced") return "experienced-all";
   return null;
 }
 const LOCATIONS_NOTIF = [
@@ -2192,6 +2194,8 @@ function formatTopicForDisplay(topic) {
     return { location: "All India", jobType: "Semi Qualified" };
   if (topic === "articleship-all")
     return { location: "All India", jobType: "Articleship" };
+  if (topic === "experienced-all")
+    return { location: "All India", jobType: "Experienced CA" };
   const parts = topic.split("-");
   if (parts.length < 2) return { location: topic, jobType: "" };
   const jobTypeVal = parts.pop();
