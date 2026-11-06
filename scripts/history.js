@@ -196,6 +196,7 @@ async function fetchApplications() {
                             ...app,
                             job_table: targetTable,
                             job_id: targetJobId,
+                            jobMissing: true,
                             job: {
                                 id: targetJobId,
                                 Company: 'Unknown Company',
@@ -218,6 +219,7 @@ async function fetchApplications() {
                     console.error('Error fetching job details:', err);
                     return {
                         ...app,
+                        jobMissing: true,
                         job: {
                             id: app.job_id,
                             Company: 'Error Loading',
@@ -496,9 +498,18 @@ function escapeHtml(value) {
 }
 
 // The job row as BrowserGuard knows it: the real Supabase table and job id.
+// One unlock at a time per job: a second click while one runs shares its result.
+const pendingUnlocks = new Map();
 function unlockApplication(application) {
-    return unlockJobDetails({ id: application.job_id }, application.job_table, currentSession);
+    const key = `${application.job_table}:${application.job_id}`;
+    if (!pendingUnlocks.has(key)) {
+        const pending = unlockJobDetails({ id: application.job_id }, application.job_table, currentSession)
+            .finally(() => pendingUnlocks.delete(key));
+        pendingUnlocks.set(key, pending);
+    }
+    return pendingUnlocks.get(key);
 }
+
 
 function getCachedUnlock(application) {
     if (!currentSession) return null;
@@ -698,7 +709,9 @@ function showJobModal(application) {
     };
 
     const cached = getCachedUnlock(application);
-    if (cached) {
+    if (application.jobMissing) {
+        if (linksContainer) linksContainer.innerHTML = '<p class="modal-description">This job post may have been removed, so its application details are no longer available.</p>';
+    } else if (cached) {
         showUnlocked(cached);
     } else if (application.isSaved) {
         // Not applied yet: reveal on request, exactly like the portal's
@@ -723,37 +736,30 @@ function showJobModal(application) {
             applyNowBtn.disabled = true;
             applyNowBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="font-size:0.9rem;"></i> Applying...';
 
-            // Open the tab inside the click so pop-up blockers allow it; point it at the link once known.
-            const applyTab = window.open('', '_blank');
-
             const unlocked = getCachedUnlock(application) || await unlockHere();
+            // Closed the popup or opened another job while we checked: don't apply behind their back.
+            if (!isCurrentModal()) return;
             const applyHref = unlocked ? getApplyHref(unlocked.applicationId) : null;
             const success = unlocked ? await recordApplicationFromSaved(application) : false;
 
             if (!success) {
-                if (applyTab) applyTab.close();
                 applyNowBtn.disabled = false;
                 applyNowBtn.innerHTML = APPLY_NOW_BTN_HTML;
                 if (unlocked) alert('Failed to record application. Please try again.');
                 return;
             }
 
+            // If the browser blocks the new tab, the links stay in the popup below with Open buttons.
             if (applyHref) {
-                if (applyHref.startsWith('mailto:')) {
-                    if (applyTab) applyTab.close();
-                    window.location.href = applyHref;
-                } else if (applyTab) {
-                    applyTab.location.href = applyHref;
-                } else {
-                    window.open(applyHref, '_blank');
-                }
-            } else if (applyTab) {
-                applyTab.close();
+                if (applyHref.startsWith('mailto:')) window.location.href = applyHref;
+                else window.open(applyHref, '_blank', 'noopener');
             }
 
             const newApp = { ...application, applied_at: new Date().toISOString() };
             delete newApp.isSaved;
-            allApplications.unshift(newApp);
+            const alreadyListed = allApplications.some(a =>
+                String(a.job_id) === String(newApp.job_id) && a.job_table === newApp.job_table);
+            if (!alreadyListed) allApplications.unshift(newApp);
             removeSavedJob(application.job_id, application.job_table);
 
             const appliedBtn = document.getElementById('appliedToggleBtn');
@@ -764,8 +770,8 @@ function showJobModal(application) {
             filterAndSortApplications();
             updateCounts();
 
-            // Keep the popup open, now as an applied job with its details showing.
-            showJobModal(newApp);
+            // Keep the popup open (unless the student closed it meanwhile), now as an applied job.
+            if (isCurrentModal()) showJobModal(newApp);
         });
     }
 }

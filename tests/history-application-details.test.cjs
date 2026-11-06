@@ -167,3 +167,57 @@ test('application text is escaped before it reaches the page', async () => {
   assert.equal(links.querySelector('img'), null);
   assert.match(links.textContent, /<img src=x/);
 });
+
+test('removed jobs say so instead of trying to unlock', async () => {
+  const { window, calls, tracker } = loadTracker({ unlock: async () => ({ applicationId: 'x' }) });
+  tracker.showJobModal({ ...appliedJob, jobMissing: true, job: { ...appliedJob.job, Company: 'Unknown Company' } });
+  await flush();
+  assert.equal(calls.unlock.length, 0);
+  assert.match(window.document.getElementById('historyAppLinks').textContent, /may have been removed/);
+});
+
+test('reveal then Apply Now while it runs shares one unlock', async () => {
+  let release;
+  const { window, calls, tracker } = loadTracker({
+    unlock: () => new Promise((resolve) => { release = () => resolve({ applicationId: 'https://acme.example/apply' }); }),
+  });
+  const saved = { ...appliedJob, id: undefined, isSaved: true };
+  tracker.showJobModal(saved);
+  const modal = window.document.getElementById('modal-body-content');
+  modal.querySelector('.history-reveal-btn').click();
+  modal.querySelector('#modalApplyNowBtn').click();
+  await flush();
+  release();
+  await flush();
+  await flush();
+  assert.equal(calls.unlock.length, 1);
+  assert.equal(calls.inserts.length, 1);
+  assert.equal(calls.opened.length, 1);
+});
+
+test('closing the popup while Apply Now checks cancels the apply', async () => {
+  let release;
+  const { calls, tracker, window } = loadTracker({
+    unlock: () => new Promise((resolve) => { release = () => resolve({ applicationId: 'https://acme.example/apply' }); }),
+  });
+  tracker.showJobModal({ ...appliedJob, id: undefined, isSaved: true });
+  window.document.querySelector('#modalApplyNowBtn').click();
+  await flush();
+  tracker.closeModal();
+  release();
+  await flush();
+  await flush();
+  assert.equal(calls.inserts.length, 0);
+  assert.equal(calls.opened.length, 0);
+  assert.equal(window.document.getElementById('modal').style.display, 'none');
+});
+
+test('applying from saved for a job already in Applied does not list it twice', async () => {
+  const { window, tracker } = loadTracker({ unlock: async () => ({ applicationId: 'https://acme.example/apply' }) });
+  tracker.getApplications().push({ ...appliedJob });
+  tracker.showJobModal({ ...appliedJob, id: undefined, isSaved: true });
+  window.document.querySelector('#modalApplyNowBtn').click();
+  await flush();
+  await flush();
+  assert.equal(tracker.getApplications().length, 1);
+});
