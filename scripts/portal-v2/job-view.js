@@ -199,12 +199,21 @@ export function detailHtml(job, portal, ctx = {}) {
     const headingId = ctx.headingId || 'pv2-detail-title';
     const allowed = canSeeApplyDetails(job, portal, ctx.courses);
     const fullDescription = (allowed && ctx.unlocked && ctx.unlocked.description) || job.Description || '';
-    // Contacts in the description stay hidden until the BrowserGuard unlock (as before); an exclusive vacancy shows
-    // only a short teaser to students outside its programme.
+    // Contacts in the description stay hidden until the BrowserGuard unlock (as before). An exclusive vacancy shows
+    // no description at all to students outside its programme (the portal does not even fetch it for them).
     const unlocked = Boolean(ctx.unlocked && ctx.unlocked.applicationId);
-    const description = allowed
-        ? descriptionHtml(fullDescription, { mask: !unlocked })
-        : descriptionHtml(fullDescription, { mask: true, maxLength: 320 });
+    const description = allowed ? descriptionHtml(fullDescription, { mask: !unlocked }) : '';
+    let descriptionBlock;
+    if (!allowed) {
+        descriptionBlock = `<div class="pv2-prose is-locked" data-region="description"><span class="pv2-locked-lines" aria-hidden="true"></span><p>The full description and how to apply are for ${escapeHtml(portal.programme.name)} students.</p></div>`;
+    } else if (description) {
+        descriptionBlock = `<div class="pv2-prose" data-region="description">${description}</div>`;
+    } else {
+        const note = ctx.descriptionError
+            ? 'The description could not load. Close and open the vacancy to try again.'
+            : ctx.descriptionLoading ? 'Loading the description…' : 'The recruiter did not add a description.';
+        descriptionBlock = `<div class="pv2-prose" data-region="description"><p class="pv2-muted">${note}</p></div>`;
+    }
     const tags = tagsOf(job).slice(0, 14);
     const pay = formatPayLong(job, portal);
     const cities = citiesOf(job.Location);
@@ -239,7 +248,7 @@ export function detailHtml(job, portal, ctx = {}) {
   </div>
   <section class="pv2-section" aria-labelledby="${escapeHtml(headingId)}-about">
     <h3 id="${escapeHtml(headingId)}-about">About the role</h3>
-    <div class="pv2-prose${allowed ? '' : ' is-teaser'}" data-region="description">${description || (ctx.descriptionLoading ? '<p class="pv2-muted">Loading the description…</p>' : '<p class="pv2-muted">The recruiter did not add a description.</p>')}</div>
+    ${descriptionBlock}
   </section>
   ${tags.length ? `<section class="pv2-section"><h3>Skills and focus areas</h3><div class="pv2-tag-cloud">${tags.map((tag) => `<span class="pv2-chip">${escapeHtml(tag)}</span>`).join('')}</div></section>` : ''}
   <section class="pv2-section"><h3>At a glance</h3>${factsHtml(job, portal)}</section>

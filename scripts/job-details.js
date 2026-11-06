@@ -9,16 +9,19 @@ import {
     companyName,
     detailColumns,
     escapeHtml,
+    hasProgrammePerks,
+    isSavedJob,
+    listColumns,
     peersSearchUrl,
     portalFromJobType,
     PORTALS,
     publicJob,
     selectWithFallback,
     shareUrl,
+    toggleSavedJob,
 } from './portal-v2/jobs-core.js?v=1';
 import { detailHtml } from './portal-v2/job-view.js?v=1';
 
-const SAVED_KEY = 'msc_saved_jobs';
 const supabaseClient = window.supabaseClient || (typeof window.getSupabaseClient === 'function' ? window.getSupabaseClient() : null);
 
 const TABLE_TO_PORTAL = {
@@ -35,34 +38,12 @@ function portalFromParams(params) {
     return TABLE_TO_PORTAL[type] || portalFromJobType(type, PORTALS.industrial);
 }
 
-function readSaved() {
+function storage() {
     try {
-        const saved = JSON.parse(localStorage.getItem(SAVED_KEY) || '[]');
-        return Array.isArray(saved) ? saved : [];
+        return window.localStorage;
     } catch {
-        return [];
+        return { getItem: () => null, setItem: () => {} };
     }
-}
-
-function isSaved(job) {
-    return readSaved().some((s) => String(s.id) === String(job.id) && s.table === state.portal.table);
-}
-
-function toggleSaved(job) {
-    const list = readSaved();
-    const index = list.findIndex((s) => String(s.id) === String(job.id) && s.table === state.portal.table);
-    if (index >= 0) list.splice(index, 1);
-    else list.push({ id: job.id, table: state.portal.table, savedAt: new Date().toISOString() });
-    try {
-        localStorage.setItem(SAVED_KEY, JSON.stringify(list));
-    } catch { /* storage blocked */ }
-}
-
-// Same rule as the portal's existing perks (AI Apply, Connect with peers): IT enrolment on the IT portal,
-// any enrolment elsewhere.
-function hasPerks() {
-    if (state.portal.key === 'industrial') return state.courses.includes('industrial-training-mastery');
-    return state.courses.length > 0;
 }
 
 async function loadCourses(userId) {
@@ -88,10 +69,11 @@ function render() {
         now: new Date(),
         loggedIn: Boolean(state.session),
         courses: state.courses,
-        saved: isSaved(job),
+        saved: isSavedJob(storage(), job, state.portal.table),
         returnUrl: window.location.pathname + window.location.search,
         headingId: 'jobTitle',
         descriptionLoading: false,
+        descriptionError: Boolean(job.__detailError),
     });
     loading.hidden = true;
     container.hidden = false;
@@ -118,7 +100,7 @@ async function onClick(event) {
         event.preventDefault();
         window.location.href = portalLink(job);
     } else if (action === 'save') {
-        toggleSaved(job);
+        toggleSavedJob(storage(), job, state.portal.table);
         render();
     } else if (action === 'share') {
         const url = shareUrl(job, state.portal, window.location.origin);
@@ -135,7 +117,7 @@ async function onClick(event) {
         event.preventDefault();
         if (!state.session) {
             window.location.href = `/login.html?redirect=${encodeURIComponent(window.location.href)}`;
-        } else if (!hasPerks() || !canSeeApplyDetails(job, state.portal, state.courses)) {
+        } else if (!hasProgrammePerks(state.portal, state.courses) || !canSeeApplyDetails(job, state.portal, state.courses)) {
             window.open(state.portal.programme.href, '_blank', 'noopener');
         } else {
             window.open(peersSearchUrl(job, state.portal), '_blank', 'noopener');
@@ -164,20 +146,32 @@ async function init() {
         state.session = null;
     }
     const coursesPromise = state.session?.user?.id ? loadCourses(state.session.user.id) : Promise.resolve([]);
+    // Listing fields first; the description (which often holds the contact) only when this visitor may see it.
     const result = await selectWithFallback((omit) => supabaseClient
         .from(state.portal.table)
-        .select(detailColumns(state.portal, { omit }))
+        .select(listColumns(state.portal, { omit }))
         .eq('id', id)
         .maybeSingle());
     const row = Array.isArray(result.data) ? result.data[0] : result.data;
     if (result.error || !row || row.hidden === true) {
         if (result.error) console.error('Vacancy failed to load:', result.error);
-        showError('This vacancy is no longer listed.');
+        showError(result.error && /fetch|network/i.test(String(result.error.message || ''))
+            ? 'This vacancy could not load. Check your connection.'
+            : 'This vacancy is no longer listed.');
         return;
     }
     state.courses = await coursesPromise;
     state.job = publicJob(row);
-    state.job.__detailLoaded = true;
+    if (canSeeApplyDetails(state.job, state.portal, state.courses)) {
+        const detail = await selectWithFallback((omit) => supabaseClient
+            .from(state.portal.table)
+            .select(detailColumns(state.portal, { omit }))
+            .eq('id', id)
+            .maybeSingle(), result.omitted);
+        const full = Array.isArray(detail.data) ? detail.data[0] : detail.data;
+        if (full) Object.assign(state.job, publicJob(full));
+        state.job.__detailError = Boolean(detail.error);
+    }
     render();
     document.getElementById('jobDetailsContainer').addEventListener('click', onClick);
 }

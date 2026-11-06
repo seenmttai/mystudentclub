@@ -220,7 +220,13 @@ export async function selectWithFallback(runQuery, initialOmit = []) {
         }
         const remaining = OPTIONAL_COLUMNS.filter((col) => !omit.includes(col));
         if (isPermissionError(error) && remaining.length) {
-            omit = [...omit, remaining[remaining.length - 1]];
+            const dropped = remaining[remaining.length - 1];
+            if (dropped === 'is_exclusive' && typeof console !== 'undefined') {
+                // Only happens for logged-out visitors if the migration's column grant is missing. They cannot
+                // apply anyway (applying needs a login, and logged-in users can read is_exclusive).
+                console.warn('is_exclusive is not readable here; exclusive vacancies cannot be marked for this visitor.');
+            }
+            omit = [...omit, dropped];
             continue;
         }
         return { data: [], error, omitted: omit };
@@ -363,6 +369,41 @@ export function canSeeApplyDetails(job, portal, courses) {
 export function isTeamPosted(job) {
     const applicationId = String(job?.['Application ID'] || '').trim().toLowerCase();
     return Boolean(job && (job.posted_by || job.hirer_email || applicationId === 'recruit@mystudentclub.com'));
+}
+
+/** The existing perks rule (AI Apply, Connect with peers, Original post): IT enrolment on IT, any enrolment elsewhere. */
+export function hasProgrammePerks(portal, courses) {
+    if (!Array.isArray(courses)) return false;
+    if (portal.key === 'industrial') return courses.includes('industrial-training-mastery');
+    return courses.length > 0;
+}
+
+// Saved vacancies: localStorage "msc_saved_jobs" = [{ id, table, savedAt }] (My Applications → Saved Jobs reads it).
+export const SAVED_JOBS_KEY = 'msc_saved_jobs';
+
+export function readSavedJobs(storage) {
+    try {
+        const saved = JSON.parse(storage.getItem(SAVED_JOBS_KEY) || '[]');
+        return Array.isArray(saved) ? saved : [];
+    } catch {
+        return [];
+    }
+}
+
+export function isSavedJob(storage, job, table) {
+    return readSavedJobs(storage).some((s) => String(s.id) === String(job.id) && s.table === table);
+}
+
+/** Save or unsave; returns true when the vacancy is now saved. */
+export function toggleSavedJob(storage, job, table, now = new Date()) {
+    const list = readSavedJobs(storage);
+    const index = list.findIndex((s) => String(s.id) === String(job.id) && s.table === table);
+    if (index >= 0) list.splice(index, 1);
+    else list.push({ id: job.id, table, savedAt: now.toISOString() });
+    try {
+        storage.setItem(SAVED_JOBS_KEY, JSON.stringify(list));
+    } catch { /* storage blocked: saving just doesn't persist */ }
+    return index < 0;
 }
 
 export function isListable(job) {
@@ -853,7 +894,8 @@ export function sanitizeForFilter(text) {
     return String(text || '').replace(/[,()"'\\%*:]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 60);
 }
 
-const SEARCH_COLUMNS = ['Company', 'Job_Title', 'Category', 'Location', '"Primary Domain"'];
+// Text columns every job table has. The client check (matchesFilters) also reads tags, so it re-checks every row.
+const SEARCH_COLUMNS = ['Company', 'Job_Title', 'Category', 'Location', '"Primary Domain"', '"Secondary Domain"', '"Company Type"', '"Industry Type"'];
 
 /**
  * Apply the base portal rule and the filters that the database can check to a Supabase query builder.
@@ -878,12 +920,16 @@ export function applyServerFilters(query, filters, portal) {
         const clean = values.map((value) => cleanText(value).replace(/["\\]/g, '')).filter(Boolean);
         if (clean.length) q = q.in(column, clean);
     };
-    if (f.domains.length) exact('Primary Domain', f.domains);
+    if (f.domains.length) {
+        // domainOf() falls back to Category, so the database is asked for either; matchesFilters narrows it again.
+        const list = f.domains.map((value) => `"${cleanText(value).replace(/["\\]/g, '')}"`).join(',');
+        q = q.or(`"Primary Domain".in.(${list}),Category.in.(${list})`);
+    }
     if (f.companyTypes.length) exact('Company Type', f.companyTypes);
     if (f.industries.length) exact('Industry Type', f.industries);
     if (f.firmTypes.length) exact('Firm Type', f.firmTypes);
     if (f.experience) q = q.eq('Experience', f.experience);
-    if (f.easyApplyOnly) q = q.not('posted_by', 'is', null);
+    if (f.easyApplyOnly) q = q.or('posted_by.not.is.null,hirer_email.not.is.null');
     return q;
 }
 

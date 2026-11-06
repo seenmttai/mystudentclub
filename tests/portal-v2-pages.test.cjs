@@ -71,6 +71,16 @@ test('no listing query reads a private column; the LinkedIn post is fetched only
   assert.doesNotMatch(host, /posts_link|select\('\*'\)/);
 });
 
+test('exclusive state is never cached, and a locked vacancy\'s description is never fetched', () => {
+  const app = read('scripts/portal-v2/portal-app.js');
+  assert.match(app, /state\.omit = cached\.omit\.filter\(\(col\) => col === 'hidden'\);/);
+  assert.match(app, /const omit = state\.omit\.filter\(\(col\) => col === 'hidden'\);/);
+  assert.match(app, /async function loadDetail\(job\) \{[\s\S]{0,400}if \(!canSeeApplyDetails\(job, portal, courses\(\)\)\) return;[\s\S]{0,200}detailColumns/);
+  assert.match(app, /if \(generation !== state\.olderGeneration\) return;/, 'a stale "older" answer is dropped');
+  const details = read('scripts/job-details.js');
+  assert.match(details, /if \(canSeeApplyDetails\(state\.job, state\.portal, state\.courses\)\) \{\s*const detail = await selectWithFallback/);
+});
+
 test('portal3.js hands the listing its host and keeps its own jobs', () => {
   const source = read('scripts/portal3.js');
   assert.match(source, /portalApp = mountPortalApp\(createPortalHost\(\)\);/);
@@ -118,6 +128,12 @@ test('remove-exclusive-jobs matches pages to vacancy ids exactly', async () => {
     mod.pagesToRemove(['acme-mumbai-10572.html', 'other-mumbai-110572.html', '9250.html', 'x-1057.html', 'readme.txt'], ['10572', 9250]),
     ['acme-mumbai-10572.html', '9250.html'],
   );
+  // Semi Qualified Jobs ids are UUIDs (generated slugs and the old id-only pages both end in them).
+  const uuid = '00269efd-17dd-4ed2-ba8b-60a0a87f760c';
+  assert.equal(mod.idFromPageName(`acme-audit-pune-${uuid}.html`), uuid);
+  assert.equal(mod.idFromPageName(`${uuid}.html`), uuid);
+  assert.equal(mod.idFromPageName('acme-pune-00269efd-17dd-4ed2-ba8b-123456789012.html'), '00269efd-17dd-4ed2-ba8b-123456789012');
+  assert.deepEqual(mod.pagesToRemove([`acme-${uuid}.html`, `${uuid.toUpperCase()}.html`, 'other-11111111-2222-3333-4444-555555555555.html'], [uuid]), [`acme-${uuid}.html`, `${uuid.toUpperCase()}.html`]);
 });
 
 test('is_exclusive migration is additive, idempotent and readable by logged-out visitors', async () => {

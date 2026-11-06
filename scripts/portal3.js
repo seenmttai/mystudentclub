@@ -5,7 +5,7 @@
 import { isProfileComplete, generateEmailBody, showResumeRedirectModal, showToast } from './ai-helper.js';
 import { unlockJobDetails, getCachedUnlockedJob } from './browser-guard.js';
 import { calculateProfileCompletion as calculateSharedProfileCompletion, readCachedProfile } from './profile-completion.js';
-import { portalFromPath } from './portal-v2/jobs-core.js?v=1';
+import { isTeamPosted, portalFromPath } from './portal-v2/jobs-core.js?v=1';
 import { mountPortalApp } from './portal-v2/portal-app.js?v=1';
 
 async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) {
@@ -455,13 +455,7 @@ function clearEnrollmentCache() {
 }
 
 function getCoursePageLink() {
-    if (currentTable === 'Articleship Jobs') {
-        return '/articleship-program';
-    }
-    if (currentTable === 'Industrial Training Job Portal' || currentTable === 'Semi Qualified Jobs') {
-        return '/ca-industrial-training-program';
-    }
-    return '/msc-ca-fresher-program';
+    return PORTAL.programme.href;
 }
 
 function showEnrollmentRequiredPopup() {
@@ -505,14 +499,7 @@ function showEnrollmentRequiredPopup() {
 
 
 function isRecruiterPostedJob(job) {
-    const applicationId = String(job?.['Application ID'] || '').trim().toLowerCase();
-    return Boolean(job && (
-        job.posted_by ||
-        job.hirer_email ||
-        job['posted_by'] ||
-        job['hirer_email'] ||
-        applicationId === 'recruit@mystudentclub.com'
-    ));
+    return isTeamPosted(job);
 }
 
 function showRecruiterProfileRequiredPopup(job) {

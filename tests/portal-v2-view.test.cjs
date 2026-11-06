@@ -79,7 +79,8 @@ test('a locked exclusive vacancy shows a teaser and the programme, no way to app
       assert.match(html, new RegExp(`href="${portal.programme.href}"`), key);
       assert.doesNotMatch(html, /data-action="(apply|reveal|easy-apply|simple-apply|ai-apply|apply-link)"/, key);
       assert.doesNotMatch(html, /linkedin\.com\/posts|hr@acme|acme\.com\/apply|9876543210|secret/, key);
-      assert.match(html, /pv2-prose is-teaser/, key);
+      assert.match(html, /pv2-prose is-locked/, key);
+      assert.doesNotMatch(html, /Write to|Apply at|\[email hidden\]/, `${key}: no description text at all`);
       assert.equal(/Log in<\/a>/.test(html), !loggedIn, `${key}: log-in link only when logged out`);
     }
   }
@@ -107,6 +108,13 @@ test('an open vacancy: log in to apply, then Apply now, then the unlocked applic
   assert.match(easy, /data-action="easy-apply"/);
   assert.match(easy, /Applied/);
   assert.match(easy, /pv2-badge-easy/);
+});
+
+test('a description that failed to load says so (and is not passed off as missing)', () => {
+  const portal = core.PORTALS.fresher;
+  const html = view.detailHtml(job({ Description: '' }), portal, { now: NOW, loggedIn: true, descriptionError: true });
+  assert.match(html, /could not load/);
+  assert.doesNotMatch(html, /did not add a description/);
 });
 
 test('old vacancies warn that they may be filled', () => {

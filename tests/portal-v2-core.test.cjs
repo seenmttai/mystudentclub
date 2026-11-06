@@ -237,7 +237,10 @@ test('filters survive the URL and stay safe for PostgREST', () => {
   assert.deepEqual(calls[1], ['or', 'yoe.is.null,yoe.lte.1']);
   for (const [, filter] of calls.filter((c) => c[0] === 'or').slice(1)) assert.doesNotMatch(filter, /\(x\)|kpmg,/);
   assert.ok(calls.some((c) => c[0] === 'or' && /Location\.ilike\.\*bangalore\*/.test(c[1])));
-  assert.deepEqual(calls.find((c) => c[0] === 'in'), ['in', 'Primary Domain', ['Banking, Financial Services & Insurance (BFSI)']]);
+  assert.ok(calls.some((c) => c[0] === 'or' && c[1] === '"Primary Domain".in.("Banking, Financial Services & Insurance (BFSI)"),Category.in.("Banking, Financial Services & Insurance (BFSI)")'), 'domain asks Primary Domain or Category, quoted');
+  calls.length = 0;
+  core.applyServerFilters(builder, { ...core.emptyFilters(), easyApplyOnly: true, companyTypes: ['Big 4'] }, core.PORTALS.semi);
+  assert.deepEqual(calls, [['in', 'Company Type', ['Big 4']], ['or', 'posted_by.not.is.null,hirer_email.not.is.null']]);
 });
 
 test('descriptions are escaped, links limited to http(s), contacts masked for teasers', () => {
@@ -257,6 +260,23 @@ test('descriptions are escaped, links limited to http(s), contacts masked for te
   assert.equal(core.escapeHtml('<a href="x">\'&'), '&lt;a href=&quot;x&quot;&gt;&#39;&amp;');
   assert.equal(core.safeHttpUrl('javascript:alert(1)'), '');
   assert.equal(core.safeHttpUrl(' https://a.com/x '), 'https://a.com/x');
+});
+
+test('saved vacancies and programme perks', () => {
+  const store = new Map();
+  const storage = { getItem: (k) => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, String(v)) };
+  const table = core.PORTALS.semi.table;
+  assert.equal(core.toggleSavedJob(storage, { id: 'a-uuid' }, table, new Date('2026-11-06T00:00:00Z')), true);
+  assert.equal(core.isSavedJob(storage, { id: 'a-uuid' }, table), true);
+  assert.equal(core.isSavedJob(storage, { id: 'a-uuid' }, 'Fresher Jobs'), false);
+  assert.deepEqual(JSON.parse(store.get('msc_saved_jobs')), [{ id: 'a-uuid', table, savedAt: '2026-11-06T00:00:00.000Z' }], 'same format My Applications reads');
+  assert.equal(core.toggleSavedJob(storage, { id: 'a-uuid' }, table), false);
+  store.set('msc_saved_jobs', 'not json');
+  assert.deepEqual(core.readSavedJobs(storage), []);
+  assert.equal(core.hasProgrammePerks(core.PORTALS.industrial, ['msc-ca-freshers-program']), false);
+  assert.equal(core.hasProgrammePerks(core.PORTALS.industrial, ['industrial-training-mastery']), true);
+  assert.equal(core.hasProgrammePerks(core.PORTALS.articleship, ['msc-ca-freshers-program']), true);
+  assert.equal(core.hasProgrammePerks(core.PORTALS.semi, []), false);
 });
 
 test('application details and headlines', () => {

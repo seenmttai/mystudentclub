@@ -20,15 +20,18 @@ export const CATEGORY_TABLES = {
     articleship: 'Articleship Jobs',
 };
 
-/** Page file → vacancy id: "acme-audit-mumbai-1234.html" and "1234.html" → "1234"; anything else → null. */
+// Semi Qualified Jobs ids are UUIDs; the other tables use numbers. Slugs end in the id either way.
+const PAGE_ID = /(?:^|-)([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|\d+)\.html$/i;
+
+/** Page file → vacancy id: "acme-audit-mumbai-1234.html", "1234.html", "…-<uuid>.html"; anything else → null. */
 export function idFromPageName(fileName) {
-    const match = String(fileName).match(/(?:^|-)(\d+)\.html$/);
-    return match ? match[1] : null;
+    const match = String(fileName).match(PAGE_ID);
+    return match ? match[1].toLowerCase() : null;
 }
 
 /** Which page files in a folder belong to the given exclusive ids. */
 export function pagesToRemove(fileNames, exclusiveIds) {
-    const ids = new Set([...exclusiveIds].map(String));
+    const ids = new Set([...exclusiveIds].map((id) => String(id).toLowerCase()));
     return fileNames.filter((name) => {
         const id = idFromPageName(name);
         return id !== null && ids.has(id);

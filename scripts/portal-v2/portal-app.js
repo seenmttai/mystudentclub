@@ -30,9 +30,11 @@ import {
     postedLabel,
     publicJob,
     rankJobs,
+    readSavedJobs,
     roleTitle,
     selectWithFallback,
     SORTS,
+    toggleSavedJob,
     YOE_BUCKETS,
     escapeHtml,
 } from './jobs-core.js?v=1';
@@ -43,7 +45,6 @@ const FIRST_CHUNK = 40;
 const CHUNK = 1000;
 const MAX_FRESH_ROWS = 6000;
 const OLDER_PAGE = 30;
-const SAVED_KEY = 'msc_saved_jobs';
 const FACET_LIMIT = { city: 8, domain: 8, companyType: 6, industry: 6, firmType: 6 };
 const FACET_TITLE = {
     city: 'City',
@@ -56,19 +57,12 @@ const FACET_TITLE = {
 };
 const FILTER_KEY = { city: 'cities', domain: 'domains', companyType: 'companyTypes', industry: 'industries', firmType: 'firmTypes' };
 
-function readSaved() {
+function storage() {
     try {
-        const saved = JSON.parse(localStorage.getItem(SAVED_KEY) || '[]');
-        return Array.isArray(saved) ? saved : [];
+        return window.localStorage;
     } catch {
-        return [];
+        return { getItem: () => null, setItem: () => {} };
     }
-}
-
-function writeSaved(list) {
-    try {
-        localStorage.setItem(SAVED_KEY, JSON.stringify(list));
-    } catch { /* storage blocked: saving just doesn't persist */ }
 }
 
 function plural(count, one, many = `${one}s`) {
@@ -117,6 +111,7 @@ export function mountPortalApp(host) {
         olderDone: false,
         olderLoading: false,
         olderOpen: false,
+        olderGeneration: 0,
         expanded: new Set(),
         ratings: new Map(),
         unlocked: new Map(),
@@ -128,16 +123,22 @@ export function mountPortalApp(host) {
         newestAt: null,
     };
 
+    // Remember for a few hours that this table has no `hidden` column (saves a failing first request per visit).
+    // is_exclusive is never remembered: after the migration a stale "no is_exclusive" would unlock exclusive
+    // vacancies, so every visit asks for it again.
     const OMIT_KEY = `msc_pv2_omit:${portal.table}`;
     const OMIT_TTL_MS = 6 * 60 * 60 * 1000;
     try {
-        const cached = JSON.parse(localStorage.getItem(OMIT_KEY) || 'null');
-        if (cached && Array.isArray(cached.omit) && Date.now() - cached.at < OMIT_TTL_MS) state.omit = cached.omit;
+        const cached = JSON.parse(storage().getItem(OMIT_KEY) || 'null');
+        if (cached && Array.isArray(cached.omit) && Date.now() - cached.at < OMIT_TTL_MS) {
+            state.omit = cached.omit.filter((col) => col === 'hidden');
+        }
     } catch { /* no cache */ }
     const rememberOmit = () => {
         try {
-            if (state.omit.length) localStorage.setItem(OMIT_KEY, JSON.stringify({ omit: state.omit, at: Date.now() }));
-            else localStorage.removeItem(OMIT_KEY);
+            const omit = state.omit.filter((col) => col === 'hidden');
+            if (omit.length) storage().setItem(OMIT_KEY, JSON.stringify({ omit, at: Date.now() }));
+            else storage().removeItem?.(OMIT_KEY);
         } catch { /* storage blocked */ }
     };
 
@@ -145,7 +146,7 @@ export function mountPortalApp(host) {
     const session = () => host.getSession();
     const courses = () => host.getCourses() || [];
     const appliedIds = () => new Set([...(host.getAppliedIds() || [])].map(String));
-    const savedIds = () => new Set(readSaved().filter((s) => s.table === portal.table).map((s) => String(s.id)));
+    const savedIds = () => new Set(readSavedJobs(storage()).filter((s) => s.table === portal.table).map((s) => String(s.id)));
     const returnUrl = () => window.location.pathname + window.location.search;
 
     function remember(jobs) {
@@ -455,16 +456,20 @@ export function mountPortalApp(host) {
     // ---------------------------------------------------------------- older vacancies
 
     function resetOlder() {
+        state.olderGeneration += 1; // a request still in flight belongs to the old filters: drop its answer
         state.older = [];
         state.olderOffset = 0;
         state.olderDone = false;
         state.olderOpen = false;
+        state.olderLoading = false;
+        if (el.olderButton) el.olderButton.disabled = false;
     }
 
     async function loadOlder() {
         if (state.olderLoading || state.olderDone) return;
         state.olderLoading = true;
         state.olderOpen = true;
+        const generation = state.olderGeneration;
         el.olderButton.disabled = true;
         el.olderStatus.textContent = 'Loading older vacancies…';
         const cutoff = freshnessCutoff(now()).toISOString();
@@ -477,6 +482,7 @@ export function mountPortalApp(host) {
                 .order('Created_At', { ascending: false, nullsFirst: false })
                 .order('id', { ascending: false })
                 .range(from, from + OLDER_PAGE - 1), state.omit);
+            if (generation !== state.olderGeneration) return;
             if (result.error) throw result.error;
             const rows = result.data.map(publicJob);
             remember(rows);
@@ -503,8 +509,10 @@ export function mountPortalApp(host) {
             console.error('Older vacancies failed:', error);
             el.olderStatus.textContent = 'Could not load older vacancies. Try again.';
         } finally {
-            state.olderLoading = false;
-            el.olderButton.disabled = false;
+            if (generation === state.olderGeneration) {
+                state.olderLoading = false;
+                el.olderButton.disabled = false;
+            }
         }
     }
 
@@ -550,16 +558,8 @@ export function mountPortalApp(host) {
     // ---------------------------------------------------------------- saved jobs
 
     function toggleSaved(job) {
-        const list = readSaved();
-        const index = list.findIndex((s) => String(s.id) === String(job.id) && s.table === portal.table);
-        if (index >= 0) {
-            list.splice(index, 1);
-            host.toast('Removed from saved vacancies.', 'info');
-        } else {
-            list.push({ id: job.id, table: portal.table, savedAt: new Date().toISOString() });
-            host.toast('Saved. Find it under My Applications → Saved Jobs.', 'success');
-        }
-        writeSaved(list);
+        const saved = toggleSavedJob(storage(), job, portal.table);
+        host.toast(saved ? 'Saved. Find it under My Applications → Saved Jobs.' : 'Removed from saved vacancies.', saved ? 'success' : 'info');
         refreshJob(job);
     }
 
@@ -593,7 +593,8 @@ export function mountPortalApp(host) {
             returnUrl: returnUrl(),
             postLink: enrolledForPerks ? state.postLinks.get(String(job.id)) : null,
             headingId: 'pv2-detail-title',
-            descriptionLoading: !job.__detailLoaded,
+            descriptionLoading: !job.__detailLoaded && !job.__detailError,
+            descriptionError: Boolean(job.__detailError),
         };
     }
 
@@ -609,15 +610,24 @@ export function mountPortalApp(host) {
     }
 
     async function loadDetail(job) {
-        if (job.__detailLoaded) return;
+        if (job.__detailLoaded || job.__detailLoading) return;
+        // A locked exclusive vacancy shows a teaser built from the listing fields; its description (which often
+        // holds the contact) is not fetched for students outside the programme.
+        if (!canSeeApplyDetails(job, portal, courses())) return;
+        job.__detailLoading = true;
+        job.__detailError = false;
         try {
             const result = await selectWithFallback((omit) => supabase.from(portal.table).select(detailColumns(portal, { omit })).eq('id', job.id).maybeSingle(), state.omit);
+            if (result.error) throw result.error;
             const row = Array.isArray(result.data) ? result.data[0] : result.data;
             if (row) Object.assign(job, publicJob(row));
+            job.__detailLoaded = true;
         } catch (error) {
             console.warn('Vacancy description could not load:', error);
+            job.__detailError = true; // opening it again retries
+        } finally {
+            job.__detailLoading = false;
         }
-        job.__detailLoaded = true;
         if (state.current === job) renderDrawer();
     }
 
@@ -713,6 +723,13 @@ export function mountPortalApp(host) {
         }
         try {
             const result = await selectWithFallback((omit) => supabase.from(sharedPortal.table).select(listColumns(sharedPortal, { omit })).eq('id', id).maybeSingle(), state.omit);
+            if (result.error) {
+                // A bad id (e.g. text in a numeric column) or a network problem: say so instead of "not listed".
+                console.error('Shared vacancy failed to load:', result.error);
+                const offline = /fetch|network/i.test(String(result.error.message || ''));
+                host.toast(offline ? 'Could not open that vacancy. Check your connection.' : 'That vacancy is no longer listed.', 'info');
+                return;
+            }
             const row = Array.isArray(result.data) ? result.data[0] : result.data;
             if (!row || row.hidden === true) {
                 host.toast('That vacancy is no longer listed.', 'info');
@@ -781,7 +798,12 @@ export function mountPortalApp(host) {
                 refreshJob(job);
                 const target = applicationTargets(unlocked.applicationId)[0];
                 if (target?.kind === 'email') host.openMailto(full);
-                else if (target) window.open(target.href, '_blank', 'noopener');
+                else if (target) {
+                    // The unlock takes a few seconds, so some browsers block this tab; the link is on screen now.
+                    const opened = window.open(target.href, '_blank');
+                    if (opened) opened.opener = null;
+                    else host.toast('Your browser blocked the new tab. Use “Apply on company site” below.', 'info');
+                }
                 break;
             }
             case 'reveal': {
@@ -802,14 +824,10 @@ export function mountPortalApp(host) {
                 await host.aiApply(unlockedJob(job), button);
                 refreshJob(job);
                 break;
-            case 'apply-link': {
-                event.preventDefault();
-                const href = button.getAttribute('href');
-                if (session()) await host.recordApplication(unlockedJob(job), button);
-                window.open(href, '_blank', 'noopener');
-                refreshJob(job);
+            case 'apply-link':
+                // Let the link open the company site itself (a real click is never popup-blocked); record meanwhile.
+                if (session()) Promise.resolve(host.recordApplication(unlockedJob(job), button)).then(() => refreshJob(job));
                 break;
-            }
             case 'copy': {
                 const text = button.dataset.copy || '';
                 try {
