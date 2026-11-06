@@ -4725,3 +4725,47 @@ body:has(.portal-nav-bar) {
 
 /* The logo artwork reaches the edges of its image: never round or clip its corners. */
 img[src*="/assets/logo"] { border-radius: 0 !important; }
+
+/* Structured vacancy filters (scripts/job-filters.js) */
+.jf-container .jf-group {
+  margin-bottom: 1.25rem;
+}
+
+.jf-chip-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.jf-chip {
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--border-medium);
+  border-radius: 999px;
+  background: var(--surface-bg, #fff);
+  color: inherit;
+  font: inherit;
+  font-size: 0.8rem;
+  line-height: 1.3;
+  cursor: pointer;
+}
+
+.jf-chip:hover {
+  border-color: var(--primary-brand);
+}
+
+.jf-chip.active {
+  background: var(--primary-brand);
+  border-color: var(--primary-brand);
+  color: #fff;
+}
+
+.jf-container .jf-text {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.job-tag.tag-deadline {
+  background-color: #fef2f2;
+  color: #b91c1c;
+  border-color: #fecaca;
+}
