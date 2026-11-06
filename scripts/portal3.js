@@ -166,7 +166,7 @@ const state = {
 const JOB_FILTER_OPTIONS = { withTypeFilters: true };
 
 // False once the database answers that the filter columns are missing (migration
-// 202611060001 on master not run yet): the sheet then shows only the older filters.
+// 202611060003 on master not run yet): the sheet then shows only the older filters.
 let jobFilterColumnsAvailable = true;
 let extraBeforeSheet = null;
 
