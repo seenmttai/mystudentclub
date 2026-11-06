@@ -370,3 +370,142 @@ test('an enrolled student bypasses the lead form when accessing free resources',
         assert.equal(collectorOpened, false, 'enrolled student previews free resource without opening lead form');
     } finally { dom.window.close(); }
 });
+
+const tileCount = (doc, name) => doc.querySelector('.category-tile[data-category="' + name + '"]');
+const mixedRows = program => [
+    ...Array.from({length:4}, (_, i) => ({program_type:program, title:'CV Template '+(i+1), category:'cv-prep', sort_order:10})),
+    {program_type:program, title:'Cover Letter for Firms', category:'cv-prep', sort_order:10},
+    {program_type:program, title:'Excel Practice Sheet', category:'application-tricks', sort_order:10},
+    {program_type:program, title:'Mock Interview Questions', category:'interview-guidance', sort_order:10}
+];
+
+test('every resource page keeps the same 11 category tiles and counts, whatever the catalogue holds', async () => {
+    const expected = ['62','5','3','12','17','9','2','5','5','21','14'];
+    for (const [slug, program] of [['ca-industrial-training-resources','industrial-training'],['ca-fresher-training-resources','ca-fresher'],['articleship-resources','articleship'],['semi-qualified-ca-resources','industrial-training']]) {
+        const dom = await render(slug, async () => ({data: mixedRows(program)}));
+        try {
+            const doc = dom.window.document;
+            const tiles = [...doc.querySelectorAll('.category-tile')];
+            assert.deepEqual(tiles.map(tile => tile.querySelector('p').textContent), expected.map(n => n + ' resources'), slug);
+            assert.ok(tiles.every(tile => !tile.hidden), slug + ' shows every tile');
+            assert.equal(doc.querySelector('.hub-badge-pill').textContent, '11 Categories');
+        } finally { dom.window.close(); }
+    }
+});
+
+test('clicking a category tile filters, highlights and focuses the premium section on every page', async () => {
+    for (const [slug, program] of [['articleship-resources','articleship'],['ca-fresher-training-resources','ca-fresher'],['ca-industrial-training-resources','industrial-training']]) {
+        const dom = await render(slug, async () => ({data: mixedRows(program)}));
+        try {
+            const doc = dom.window.document;
+            const tile = tileCount(doc, 'CV Templates');
+            assert.equal(tile.getAttribute('role'), 'button');
+            assert.equal(tile.tabIndex, 0);
+            typeSearch(dom, 'Excel');
+            tile.click();
+            assert.equal(tile.getAttribute('aria-pressed'), 'true');
+            assert.equal(doc.querySelector('#premium-resource-search').value, '', 'a category starts from a clean search');
+            assert.deepEqual(groupsIn(doc).map(group => group.querySelector('h4').textContent), ['CV Templates']);
+            assert.ok(doc.querySelector('.resource-premium-section').classList.contains('resource-premium-spotlight'));
+            assert.equal(doc.activeElement, doc.querySelector('#resource-premium'));
+            const bar = doc.querySelector('#premium-category-filter');
+            assert.ok(!bar.hidden);
+            assert.match(bar.querySelector(".premium-category-filter-text").textContent, /^Premium\s*CV Templates · included with the MSC .+ Program$/);
+            assert.equal(doc.querySelector('#hubCategorySelectedLabel').textContent, 'CV Templates');
+            // Keyboard users get the same action.
+            tileCount(doc, 'Excel Practice').dispatchEvent(new dom.window.KeyboardEvent('keydown', {key:'Enter', bubbles:true}));
+            assert.deepEqual(groupsIn(doc).map(group => group.querySelector('h4').textContent), ['Excel Practice']);
+            bar.querySelector('.premium-category-clear').click();
+            assert.ok(bar.hidden);
+            assert.equal(groupsIn(doc).length, 4);
+            assert.equal(doc.querySelector('#hubCategorySelectedLabel').textContent, 'All categories');
+            assertReferenceTargets(doc);
+        } finally { dom.window.close(); }
+    }
+});
+
+test('the All categories button opens a menu that filters premium resources', async () => {
+    const dom = await render('ca-fresher-training-resources', async () => ({data: mixedRows('ca-fresher')}));
+    try {
+        const doc = dom.window.document;
+        const button = doc.querySelector('#hubCategoryMenuBtn');
+        const menu = doc.querySelector('#hub-category-menu');
+        assert.equal(button.getAttribute('aria-controls'), 'hub-category-menu');
+        assert.ok(menu.hidden);
+        button.click();
+        assert.ok(!menu.hidden);
+        assert.equal(button.getAttribute('aria-expanded'), 'true');
+        const items = [...menu.querySelectorAll('[role="menuitemradio"]')];
+        assert.equal(items.length, 12, 'All categories + the 11 tiles');
+        assert.equal(items[0].firstChild.textContent, 'All categories');
+        assert.equal(items[1].firstChild.textContent, 'CV Templates');
+        assert.equal(items[1].querySelector('.hub-category-menu-count').textContent, '62', 'menu count matches the tile');
+        assert.equal(items[0].getAttribute('aria-checked'), 'true');
+        assert.equal(doc.activeElement, items[0]);
+        menu.dispatchEvent(new dom.window.KeyboardEvent('keydown', {key:'ArrowDown', bubbles:true}));
+        assert.equal(doc.activeElement.dataset.category, 'CV Templates');
+        doc.activeElement.click();
+        assert.ok(menu.hidden);
+        assert.equal(doc.querySelector('#hubCategorySelectedLabel').textContent, 'CV Templates');
+        assert.deepEqual(groupsIn(doc).map(group => group.querySelector('h4').textContent), ['CV Templates']);
+        button.click();
+        menu.dispatchEvent(new dom.window.KeyboardEvent('keydown', {key:'Escape', bubbles:true}));
+        assert.ok(menu.hidden);
+        assert.equal(doc.activeElement, button);
+        button.click();
+        doc.body.click();
+        assert.ok(menu.hidden, 'a click outside closes the menu');
+        assertReferenceTargets(doc);
+    } finally { dom.window.close(); }
+});
+
+test('the top search box and popular-search chips work on every resource page', async () => {
+    for (const [slug, program] of [['articleship-resources','articleship'],['semi-qualified-ca-resources','industrial-training']]) {
+        const dom = await render(slug, async () => ({data: mixedRows(program)}));
+        try {
+            const doc = dom.window.document;
+            doc.querySelector('.hub-chip[data-query="Cover Letter"]').click();
+            assert.equal(doc.querySelector('#premium-resource-search').value, 'Cover Letter');
+            assert.deepEqual(titlesIn(doc), ['Cover Letter for Firms']);
+            const input = doc.querySelector('#hub-main-search');
+            input.value = 'Excel';
+            doc.querySelector('#hubSearchSubmitBtn').click();
+            assert.deepEqual(titlesIn(doc), ['Excel Practice Sheet']);
+            input.value = 'Mock';
+            input.dispatchEvent(new dom.window.KeyboardEvent('keydown', {key:'Enter', bubbles:true}));
+            assert.deepEqual(titlesIn(doc), ['Mock Interview Questions']);
+        } finally { dom.window.close(); }
+    }
+});
+
+test('hub search keeps focus in the search box, and every resource page loads the same library version', async () => {
+    const versions = new Set();
+    for (const slug of ['ca-industrial-training-resources','ca-fresher-training-resources','articleship-resources','semi-qualified-ca-resources']) {
+        const html = fs.readFileSync(path.join(root, slug + '.html'), 'utf8');
+        for (const match of html.matchAll(/resource-library\.(?:js|css)\?v=([\w.]+)/g)) versions.add(match[1]);
+        assert.doesNotMatch(html, /Discovery Hub Client Interactions/, slug + ' has no second, inline hub script');
+    }
+    assert.equal(versions.size, 1, 'one cache version, so no page pairs new HTML with an old cached script');
+    const dom = await render('articleship-resources', async () => ({data: mixedRows('articleship')}));
+    try {
+        const doc = dom.window.document;
+        const input = doc.querySelector('#hub-main-search');
+        input.focus(); input.value = 'CV';
+        input.dispatchEvent(new dom.window.KeyboardEvent('keydown', {key:'Enter', bubbles:true}));
+        assert.equal(doc.activeElement, input);
+        assert.ok(doc.querySelector('.resource-premium-section').classList.contains('resource-premium-spotlight'));
+    } finally { dom.window.close(); }
+});
+
+test('a category with no premium resources yet still opens Premium with a clear message', async () => {
+    const dom = await render('ca-fresher-training-resources', async () => ({data: mixedRows('ca-fresher')}));
+    try {
+        const doc = dom.window.document;
+        tileCount(doc, 'WhatsApp Communities').click();
+        assert.equal(doc.querySelector('#hubCategorySelectedLabel').textContent, 'WhatsApp Communities');
+        assert.equal(groupsIn(doc).length, 0);
+        const empty = doc.querySelector('#premium-resources-empty');
+        assert.ok(!empty.hidden);
+        assert.match(empty.textContent, /No premium WhatsApp Communities resources yet/);
+    } finally { dom.window.close(); }
+});
