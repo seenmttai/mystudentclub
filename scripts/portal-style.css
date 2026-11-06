@@ -4725,3 +4725,105 @@ body:has(.portal-nav-bar) {
 
 /* The logo artwork reaches the edges of its image: never round or clip its corners. */
 img[src*="/assets/logo"] { border-radius: 0 !important; }
+
+/* CA Industrial Training Program strip (portal3.js renderItProgramStrip) */
+.itp-strip {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  margin: 0 0 1rem;
+  border: 1px solid #c7d7fe;
+  border-radius: 14px;
+  background: linear-gradient(100deg, #eef4ff 0%, #f5f3ff 60%, #fdf4ff 100%);
+  box-shadow: 0 1px 2px rgba(30, 64, 175, 0.06);
+  transition: opacity 0.18s ease, transform 0.18s ease, box-shadow 0.2s ease;
+}
+.itp-strip:hover { box-shadow: 0 6px 18px rgba(37, 99, 235, 0.12); }
+.itp-strip.itp-hiding { opacity: 0; transform: translateY(-4px); }
+.itp-link {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.75rem 3rem 0.75rem 0.9rem;
+  color: inherit;
+  text-decoration: none;
+  border-radius: 14px;
+}
+.itp-link:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; }
+.itp-icon {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.28);
+}
+.itp-icon svg { width: 22px; height: 22px; }
+.itp-text { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.itp-eyebrow {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6d28d9;
+}
+.itp-title { font-size: 0.98rem; font-weight: 700; color: #0f172a; line-height: 1.25; }
+.itp-sub { font-size: 0.8rem; color: #475569; line-height: 1.35; }
+.itp-sub-short { display: none; }
+.itp-cta {
+  flex-shrink: 0;
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.5rem 0.95rem;
+  border-radius: 999px;
+  background: #2563eb;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background 0.2s ease;
+}
+.itp-cta svg { width: 16px; height: 16px; }
+.itp-link:hover .itp-cta { background: #1d4ed8; }
+.itp-close {
+  position: absolute;
+  top: 50%;
+  right: 0.45rem;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #94a3b8;
+  cursor: pointer;
+}
+.itp-close:hover { background: rgba(15, 23, 42, 0.06); color: #475569; }
+.itp-close:focus-visible { outline: 2px solid #2563eb; }
+.itp-close svg { width: 16px; height: 16px; }
+
+@media (max-width: 640px) {
+  .itp-strip { margin-bottom: 0.85rem; border-radius: 12px; }
+  .itp-link { gap: 0.7rem; padding: 0.65rem 2.35rem 0.65rem 0.75rem; border-radius: 12px; }
+  .itp-icon { width: 38px; height: 38px; border-radius: 10px; }
+  .itp-icon svg { width: 20px; height: 20px; }
+  .itp-eyebrow { display: none; }
+  .itp-title-ca { display: none; }
+  .itp-title { font-size: 0.9rem; }
+  .itp-sub { font-size: 0.74rem; }
+  .itp-sub-long { display: none; }
+  .itp-sub-short { display: inline; }
+  .itp-cta { padding: 0; background: none; color: #2563eb; font-size: 0; }
+  .itp-cta svg { width: 20px; height: 20px; }
+  .itp-link:hover .itp-cta { background: none; }
+  .itp-close { right: 0.2rem; width: 30px; height: 30px; }
+}
