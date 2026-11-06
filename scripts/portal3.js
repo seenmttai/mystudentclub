@@ -1132,10 +1132,10 @@ function showJobDetail(job) {
             </div>`;
   }
 
-  // Truncate and mask description for unverified/unlocked state
+  // Full description; contact details masked until the application is revealed
   const rawDesc = isApplicationUnlocked
     ? effectiveDescription
-    : getTruncatedDescription(effectiveDescription, 260);
+    : getMaskedDescription(effectiveDescription);
 
   // Application details section depending on lock / login state
   let applicationDetailsHtml = "";
@@ -1458,31 +1458,14 @@ function generateApplicationLinks(applicationId) {
     .join("");
 }
 
-// Truncate job description and mask potential contact details for unverified users
-function getTruncatedDescription(desc, maxLength = 260) {
+// Full job description with contact details masked, for users who haven't revealed the application yet.
+// The whole text is shown (no length cut); only emails, links and phone numbers are hidden.
+function getMaskedDescription(desc) {
   if (!desc) return "No description available.";
-  let clean = String(desc).trim();
-
-  // Mask emails that might have been pasted into the description
-  clean = clean.replace(
-    /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/gi,
-    "[email protected]",
-  );
-  // Mask URLs
-  clean = clean.replace(/https?:\/\/[^\s\)]+/gi, "[link protected]");
-  // Mask phone numbers
-  clean = clean.replace(/(?:\+?91[\s-]?)?[6-9]\d{9}/g, "[phone protected]");
-
-  if (clean.length <= maxLength) {
-    return clean;
-  }
-
-  let cut = clean.slice(0, maxLength);
-  const lastSpace = cut.lastIndexOf(" ");
-  if (lastSpace > maxLength * 0.6) {
-    cut = cut.slice(0, lastSpace);
-  }
-  return cut + "...";
+  return String(desc).trim()
+    .replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/gi, "[email protected]")
+    .replace(/https?:\/\/[^\s\)]+/gi, "[link protected]")
+    .replace(/(?:\+?91[\s-]?)?[6-9]\d{9}/g, "[phone protected]");
 }
 
 function renderMarkdown(text) {
