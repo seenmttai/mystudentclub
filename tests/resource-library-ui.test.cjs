@@ -487,3 +487,40 @@ test('the top search box and popular-search chips work on every resource page', 
         } finally { dom.window.close(); }
     }
 });
+
+test('hub search keeps focus in the search box, and every resource page loads the same library version', async () => {
+    const versions = new Set();
+    for (const slug of ['ca-industrial-training-resources','ca-fresher-training-resources','articleship-resources','semi-qualified-ca-resources']) {
+        const html = fs.readFileSync(path.join(root, slug + '.html'), 'utf8');
+        for (const match of html.matchAll(/resource-library\.(?:js|css)\?v=([\w.]+)/g)) versions.add(match[1]);
+        assert.doesNotMatch(html, /Discovery Hub Client Interactions/, slug + ' has no second, inline hub script');
+    }
+    assert.equal(versions.size, 1, 'one cache version, so no page pairs new HTML with an old cached script');
+    const dom = await render('articleship-resources', async () => ({data: mixedRows('articleship')}));
+    try {
+        const doc = dom.window.document;
+        const input = doc.querySelector('#hub-main-search');
+        input.focus(); input.value = 'CV';
+        input.dispatchEvent(new dom.window.KeyboardEvent('keydown', {key:'Enter', bubbles:true}));
+        assert.equal(doc.activeElement, input);
+        assert.ok(doc.querySelector('.resource-premium-section').classList.contains('resource-premium-spotlight'));
+    } finally { dom.window.close(); }
+});
+
+test('a category that disappears after a catalogue refresh falls back to all categories', async () => {
+    let rows = mixedRows('articleship');
+    const dom = await render('articleship-resources', async () => ({data: rows}));
+    try {
+        const doc = dom.window.document;
+        tileCount(doc, 'Excel Practice').click();
+        assert.equal(doc.querySelector('#hubCategorySelectedLabel').textContent, 'Excel Practice');
+        rows = rows.filter(row => !/Excel/.test(row.title));
+        dom.window.Date.now = () => Date.now() + 120000;
+        dom.window.dispatchEvent(new dom.window.Event('focus'));
+        await tick(); await tick();
+        assert.ok(tileCount(doc, 'Excel Practice').hidden);
+        assert.equal(doc.querySelector('#hubCategorySelectedLabel').textContent, 'All categories');
+        assert.ok(doc.querySelector('#premium-category-filter').hidden);
+        assert.equal(groupsIn(doc).length, 3);
+    } finally { dom.window.close(); }
+});

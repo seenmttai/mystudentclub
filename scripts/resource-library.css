@@ -2184,7 +2184,8 @@ h2#resource-premium::before {
 .resource-categories-hub-section[hidden] { display: none; }
 
 .resource-premium-section { scroll-margin-top: 96px; }
-.resource-premium-section h2:focus { outline: none; }
+.resource-premium-section h2:focus:not(:focus-visible) { outline: none; }
+.resource-premium-section h2:focus-visible { outline: 2px solid #6366f1; outline-offset: 4px; border-radius: 4px; }
 .resource-premium-spotlight { animation: premium-spotlight 2.4s ease-out 1; }
 @keyframes premium-spotlight {
   0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.55); border-color: #6366f1; }

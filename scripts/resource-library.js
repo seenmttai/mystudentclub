@@ -416,6 +416,8 @@
     function renderPremiumResults(focusGroup) {
         const grid = document.getElementById('premium-resources-list');
         if (!grid) return;
+        // A refresh can remove every resource of the chosen category; fall back to all.
+        if (catalogueLoaded && selectedCategory !== 'all' && !premiumRows.some(resource => resourceCategory(resource) === selectedCategory)) selectedCategory = 'all';
         const scoped = selectedCategory === 'all' ? premiumRows : premiumRows.filter(resource => resourceCategory(resource) === selectedCategory);
         const days = groupPremiumResources(scoped);
         const filters = document.getElementById('premium-day-filters');
@@ -481,7 +483,7 @@
         empty.hidden = matches > 0 || !catalogueLoaded;
         empty.textContent = !premiumRows.length ? 'New program resources will appear here as they are added.'
             : !scoped.length ? 'No premium ' + selectedCategory + ' resources yet. Choose another category.'
-            : 'No resources match your search. Try another keyword or choose All days.';
+            : 'No resources match your search. Try another keyword' + (selectedCategory === 'all' ? '' : ' or tap Show all categories') + (selectedDay === 'all' ? '' : ' or choose All days') + '.';
         const summary = document.getElementById('premium-search-results');
         summary.textContent = !catalogueLoaded ? (catalogueError ? 'Premium library unavailable' : 'Loading resources…') : searching
             ? matches + (matches===1 ? ' match' : ' matches') + (selectedDay==='all' ? '' : ' in ' + (selectedDay==='library' ? 'More resources' : 'Day ' + selectedDay))
@@ -491,7 +493,7 @@
         updateCategoryUI();
     }
     // ─── Discovery hub: category tiles, "All categories" menu, top search and chips ───
-    const plural = (n, word) => n + ' ' + word + (n === 1 ? '' : 's');
+    const plural = (n, word, many = word + 's') => n + ' ' + (n === 1 ? word : many);
     function availableCategories() {
         if (!catalogueLoaded) return collectionNames.map(name => ({ name, count: null }));
         const counts = countByCategory(premiumRows);
@@ -515,7 +517,7 @@
         if (hub && tiles.length) {
             hub.hidden = catalogueLoaded && available.length === 0;
             const pill = hub.querySelector('.hub-badge-pill');
-            if (pill) pill.textContent = plural(available.length, 'Category').replace('Categorys', 'Categories');
+            if (pill) pill.textContent = plural(available.length, 'Category', 'Categories');
         }
         const selectedLabel = document.getElementById('hubCategorySelectedLabel');
         if (selectedLabel) selectedLabel.textContent = selectedCategory === 'all' ? 'All categories' : selectedCategory;
@@ -568,7 +570,7 @@
         button?.setAttribute('aria-expanded', 'false');
         if (returnFocus) button?.focus({ preventScroll: true });
     }
-    function revealPremium() {
+    function revealPremium(moveFocus = true) {
         const section = document.querySelector('.resource-premium-section');
         if (!section) return;
         const reduceMotion = global.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
@@ -578,7 +580,7 @@
         section.classList.add('resource-premium-spotlight');
         clearTimeout(spotlightTimer);
         spotlightTimer = setTimeout(() => section.classList.remove('resource-premium-spotlight'), 2600);
-        document.getElementById('resource-premium')?.focus({ preventScroll: true });
+        if (moveFocus) document.getElementById('resource-premium')?.focus({ preventScroll: true });
     }
     function setPremiumQuery(value) {
         premiumQuery = value;
@@ -599,7 +601,7 @@
         selectedDay = 'all';
         setPremiumQuery(String(term || '').trim());
         renderPremiumResults();
-        revealPremium();
+        revealPremium(false); // keep the cursor in the search box the student is typing in
     }
     function setupDiscoveryHub() {
         document.querySelectorAll('.category-tile[data-category]').forEach(tile => {
