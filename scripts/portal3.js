@@ -1,4 +1,5 @@
 import { getDaysAgo, isJobExpired } from './date-utils.js';
+import './job-seo.js';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 import { unlockJobDetails, getCachedUnlockedJob } from './browser-guard.js';
 import { calculateProfileCompletion as calculateSharedProfileCompletion, readCachedProfile } from './profile-completion.js';
@@ -125,29 +126,9 @@ function getPublicJobSelectColumns(tableName) {
     return columns;
 }
 
-function slugifyText(text) {
-    if (text === null || text === undefined || text === '') return '';
-    return String(text)
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '')
-        .slice(0, 50);
-}
-
-function generateJobSlug(job) {
-    const company = slugifyText(job.Company || 'job');
-    const role = slugifyText(job.Role || job.Category || '');
-    const rawLocation = String(job.Location || '').split(',')[0].trim();
-    const location = slugifyText(rawLocation || 'india');
-    const id = String(job.id || '');
-
-    const parts = [company];
-    if (role && role !== company) parts.push(role);
-    if (location) parts.push(location);
-    if (id) parts.push(id);
-
-    return parts.filter(Boolean).join('-');
-}
+// Job page URLs ("/jobs/industrial/dbs-hiring-ca-industrial-trainee-finance-pune-10651")
+// come from scripts/job-seo.js, the same code that builds the static job pages.
+const jobSeo = globalThis.MSCJobSeo;
 let currentSession = null;
 const pendingRecruiterApplications = new Set();
 const completedRecruiterApplications = new Set();
@@ -499,8 +480,7 @@ function renderJobCard(job) {
         `;
     }
 
-    const jobSlug = generateJobSlug(job);
-    const jobCategorySlug = TABLE_SLUG_MAP[currentTable] || 'industrial';
+    const jobPagePath = jobSeo.jobPath(job, TABLE_SLUG_MAP[currentTable] || 'industrial');
 
     jobCard.classList.toggle('job-card-expired', isExpired);
     jobCard.innerHTML = `
@@ -537,7 +517,7 @@ function renderJobCard(job) {
         ${descriptionText ? `<p class="job-card-description">${descriptionText.slice(0, 120)}${descriptionText.length > 120 ? "…" : ""}</p>` : ""}
         <div class="job-card-actions">
             ${applyButtonHtml}
-            <a href="/jobs/${jobCategorySlug}/${jobSlug}.html" class="view-details-card-btn secondary" onclick="event.preventDefault();">View Details ›</a>
+            <a href="${jobPagePath}" class="view-details-card-btn secondary" onclick="event.preventDefault();">View Details ›</a>
         </div>`;
 
     const applyBtn = jobCard.querySelector('.apply-now-card-btn.primary');
@@ -641,10 +621,9 @@ function generateApplicationLinks(applicationId) {
 
 // Share job using Web Share API or fallback to copy link
 function shareJob(job, btnElement) {
-    const jobType = currentTable === 'Industrial Training Job Portal' ? 'industrial' :
-        currentTable === 'Fresher Jobs' ? 'fresher' :
-            currentTable === 'Semi Qualified Jobs' ? 'semi' : 'articleship';
-    const jobUrl = `${window.location.origin}/job.html?id=${job.id}&type=${jobType}`;
+    // Readable job page URL ("…/jobs/industrial/dbs-hiring-ca-industrial-trainee-finance-pune-10651");
+    // jobs posted in the last few hours, whose page isn't built yet, keep the job.html link.
+    const jobUrl = jobSeo.shareUrl(job, TABLE_SLUG_MAP[currentTable] || 'industrial');
 
     const shareText = `Check out this job at *${job.Company}* for *${job.Location}*
 URL - ${jobUrl}
@@ -3787,11 +3766,21 @@ function checkAndOpenSharedJob() {
 // Fetch a specific shared job and open modal
 async function fetchSharedJob(jobId) {
     try {
-        const { data, error } = await supabaseClient
+        let query = supabaseClient
             .from(currentTable)
-            .select(getPublicJobSelectColumns(currentTable))
-            .eq('id', jobId)
-            .maybeSingle();
+            .select(getPublicJobSelectColumns(currentTable));
+        // Semi-qualified job URLs carry only the first 8 characters of the job's UUID.
+        if (currentTable === 'Semi Qualified Jobs' && /^[0-9a-f]{8}$/i.test(jobId)) {
+            const prefix = jobId.toLowerCase();
+            query = query
+                .gte('id', `${prefix}-0000-0000-0000-000000000000`)
+                .lte('id', `${prefix}-ffff-ffff-ffff-ffffffffffff`)
+                .order('Created_At', { ascending: false })
+                .limit(1);
+        } else {
+            query = query.eq('id', jobId);
+        }
+        const { data, error } = await query.maybeSingle();
 
         if (!error && data) {
             setTimeout(() => showModal(data), 300);

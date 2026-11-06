@@ -123,77 +123,15 @@ export function constructMailto(job: any, tableName: string): string {
     return `mailto:${email}?subject=${encodeURIComponent(subject)}`;
 }
 
-export function slugifyText(text: any): string {
-    if (text === null || text === undefined || text === '') return '';
-    return String(text)
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '')
-        .slice(0, 50);
+// Slugs, titles and Google for Jobs data come from one shared file, so the portal,
+// the 404 page and these static pages always agree on a job's URL.
+import '../../../scripts/job-seo.js';
+export const jobSeo: any = (globalThis as any).MSCJobSeo;
+
+export function generateJobSlug(job: any, categorySlug: string): string {
+    return jobSeo.jobSlug(job, categorySlug);
 }
 
-export function generateJobSlug(job: any): string {
-    const company = slugifyText(job.Company || 'job');
-    const role = slugifyText(job.Role || job.Category || '');
-    const rawLocation = String(job.Location || '').split(',')[0].trim();
-    const location = slugifyText(rawLocation || 'india');
-    const id = String(job.id || '');
-
-    const parts = [company];
-    if (role && role !== company) parts.push(role);
-    if (location) parts.push(location);
-    if (id) parts.push(id);
-
-    return parts.filter(Boolean).join('-');
+export function generateJsonLd(job: any, categorySlug: string): any {
+    return jobSeo.jobPostingJsonLd(job, categorySlug);
 }
-
-export function generateJsonLd(job: any, slug: string, categorySlug: any): any {
-    const DOMAIN = 'https://www.mystudentclub.com';
-    const datePosted = formatDate(job.Created_At);
-    const description = job.Description
-        ? String(job.Description).trim()
-        : 'No description available';
-
-    return {
-        "@context": "https://schema.org/",
-        "@type": "JobPosting",
-        "title": job.Role || job.Category || "Job Vacancy",
-        "description": description,
-        "identifier": {
-            "@type": "PropertyValue",
-            "name": job.Company,
-            "value": String(job.id)
-        },
-        "url": `${DOMAIN}/jobs/${categorySlug}/${slug}.html`,
-        "datePosted": datePosted,
-        "validThrough": new Date(new Date(datePosted).setDate(new Date(datePosted).getDate() + JOB_EXPIRATION_DAYS)).toISOString(),
-        "employmentType": "FULL_TIME",
-        "hiringOrganization": {
-            "@type": "Organization",
-            "name": job.Company,
-            "sameAs": DOMAIN,
-            "logo": `${DOMAIN}/assets/icon-70x70.png`
-        },
-        "jobLocation": {
-            "@type": "Place",
-            "address": {
-                "@type": "PostalAddress",
-                "streetAddress": job.Location || "Remote",
-                "addressLocality": job.Location || "Remote",
-                "addressRegion": "IN",
-                "addressCountry": "IN",
-                "postalCode": (job.Location && job.Location.match(/\b\d{6}\b/) ? job.Location.match(/\b\d{6}\b/)[0] : undefined)
-            }
-        },
-        "baseSalary": {
-            "@type": "MonetaryAmount",
-            "currency": "INR",
-            "value": {
-                "@type": "QuantitativeValue",
-                "value": parseInt(String(job.Salary || '0').replace(/[^0-9]/g, '')) || 0,
-                "unitText": "MONTH"
-            }
-        }
-    };
-}
-

@@ -11,8 +11,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const DOMAIN = 'https://www.mystudentclub.com';
-const DIST_JOBS_DIR = path.join(__dirname, '..', 'dist', 'jobs');
-const CATEGORIES = ['industrial', 'fresher', 'semi-qualified', 'articleship'];
+const DIST_DIR = path.join(__dirname, '..', 'dist');
 const MAX_URLS_PER_RUN = 100;
 
 console.log('📡 Google Indexing API automation...\n');
@@ -119,23 +118,15 @@ async function publishUrl(accessToken, url, type = 'URL_UPDATED') {
 
 // 4. Main runner
 async function main() {
-    // Collect freshly built URLs
-    const urlsToSubmit = [];
-
-    for (const category of CATEGORIES) {
-        const folderPath = path.join(DIST_JOBS_DIR, category);
-        if (!fs.existsSync(folderPath)) continue;
-
-        const files = fs.readdirSync(folderPath).filter(f => f.endsWith('.html'));
-        for (const file of files) {
-            urlsToSubmit.push(`${DOMAIN}/jobs/${category}/${file}`);
-            if (urlsToSubmit.length >= MAX_URLS_PER_RUN) break;
-        }
-        if (urlsToSubmit.length >= MAX_URLS_PER_RUN) break;
-    }
+    // New job URLs from sync-job-pages.js (newest first). Pages that already
+    // existed are not resubmitted, so the daily quota goes to new jobs.
+    const newUrlsPath = path.join(DIST_DIR, 'new-job-urls.json');
+    const urlsToSubmit = fs.existsSync(newUrlsPath)
+        ? JSON.parse(fs.readFileSync(newUrlsPath, 'utf8')).slice(0, MAX_URLS_PER_RUN)
+        : [];
 
     if (urlsToSubmit.length === 0) {
-        console.log('ℹ️  No new job pages found to submit in dist/jobs.');
+        console.log('ℹ️  No new job pages to submit.');
         return;
     }
 
