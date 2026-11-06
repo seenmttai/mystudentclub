@@ -1,7 +1,7 @@
 // Structured vacancy filters for each job portal (Aniket, 6 Nov 2026).
 //
 // The values come from columns that the database fills from each vacancy's own text
-// (supabase/migrations/202611060001_job_filter_fields.sql). This module owns:
+// (supabase/migrations/202611060003_job_filter_fields.sql). This module owns:
 //   - which filters each portal shows (FILTERS_BY_PORTAL),
 //   - how a filter narrows the Supabase query (applyJobFilters),
 //   - the filter controls in the desktop sidebar and the phone filter sheet (renderJobFilters),

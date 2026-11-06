@@ -9,15 +9,17 @@ const { pathToFileURL } = require('node:url');
 const { PGlite } = require('@electric-sql/pglite');
 
 const root = path.resolve(__dirname, '..');
-const migration = fs.readFileSync(path.join(root, 'supabase/migrations/202611060001_job_filter_fields.sql'), 'utf8');
-const backfill = fs.readFileSync(path.join(root, 'supabase/migrations/202611060002_job_filter_fields_backfill.sql'), 'utf8');
+const migration = fs.readFileSync(path.join(root, 'supabase/migrations/202611060003_job_filter_fields.sql'), 'utf8');
+const backfill = fs.readFileSync(path.join(root, 'supabase/migrations/202611060004_job_filter_fields_backfill.sql'), 'utf8');
 
 let db;
 after(async () => { if (db) await db.close(); });
 
-const BASE = '"Company" text, "Location" text, "Salary" bigint, "Description" text, "Created_At" timestamptz default now(), "Application ID" text, posted_by text, hirer_email text';
+const BASE = 'posts_link text, "Company" text, "Location" text, "Salary" bigint, "Description" text, "Created_At" timestamptz default now(), "Application ID" text, posted_by text, hirer_email text';
 
-async function freshDB({ withRows = false } = {}) {
+const guard = fs.readFileSync(path.join(root, 'supabase/migrations/202611060002_vacancy_duplicate_guard.sql'), 'utf8');
+
+async function freshDB({ withRows = false, withGuard = false } = {}) {
   if (db) await db.close();
   db = new PGlite();
   await db.exec(`
@@ -32,6 +34,7 @@ async function freshDB({ withRows = false } = {}) {
     await db.query(`insert into "Articleship Jobs"("Company","Location","Description","Created_At") values ($1,$2,$3,'2026-11-05')`,
       ['Nangia & Co LLP', 'Mumbai', 'Statutory audit and GST exposure. Stipend: ₹10,000 per month. Transfer cases accepted.']);
   }
+  if (withGuard) await db.exec(guard);
   await db.exec(migration);
   await db.exec(migration); // idempotent
   return db;
@@ -271,4 +274,16 @@ test('company keys match between the database and the browser', async () => {
     const sql = (await db.query('select public.job_filter_company_key($1) as k', [name])).rows[0].k;
     assert.equal(normalizeCompanyKey(name), sql, name);
   }
+});
+
+test('works alongside the vacancy duplicate guard, which runs first', async () => {
+  await freshDB({ withGuard: true });
+  const names = (await db.query(`select tgname from pg_trigger where tgrelid = '"Fresher Jobs"'::regclass and not tgisinternal order by tgname`)).rows.map(r => r.tgname);
+  assert.deepEqual(names, ['msc_block_duplicate_vacancy', 'msc_job_filter_fill']);
+  const link = 'https://www.linkedin.com/jobs/view/1234567890/';
+  const first = await insert('Fresher Jobs', { Company: 'EY', posts_link: link, Description: 'Hybrid. Excel.' });
+  assert.equal(first.work_mode, 'Hybrid');
+  const dup = await db.query(`insert into "Fresher Jobs"(posts_link, "Company", "Description") values ($1, 'EY', 'Hybrid') returning id`, [link]);
+  assert.equal(dup.rows.length, 0, 'duplicate skipped');
+  assert.equal((await db.query('select count(*)::int n from "Fresher Jobs"')).rows[0].n, 1);
 });

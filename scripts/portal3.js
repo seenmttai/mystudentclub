@@ -212,7 +212,7 @@ const state = {
 };
 
 // False once the database answers that the filter columns are missing (migration
-// 202611060001 not run yet): the portal then falls back to its older filters.
+// 202611060003 not run yet): the portal then falls back to its older filters.
 let jobFilterColumnsAvailable = true;
 
 function currentPortal() {
@@ -1726,7 +1726,7 @@ async function fetchJobs() {
         // until neither applies.
         for (let retry = 0; retry < 2 && error; retry++) {
             if (jobFilterColumnsAvailable && isMissingFilterColumnError(error)) {
-                // The filter columns are not in the database yet (migration 202611060001): use the older filters.
+                // The filter columns are not in the database yet (migration 202611060003): use the older filters.
                 console.warn('Structured filter columns are not available yet; using the basic filters.', error.message);
                 disableStructuredFilters();
                 selectColumns = selectColumns.replace(extraSelectColumns(currentTable), '');

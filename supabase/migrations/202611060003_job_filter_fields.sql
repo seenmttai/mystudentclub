@@ -13,10 +13,10 @@
 -- block that logs a warning and leaves the row as it was.
 --
 -- Reversible: yes. Reverse SQL (drops only what this file adds):
---   drop trigger if exists job_filter_fill on "Articleship Jobs";
---   drop trigger if exists job_filter_fill on "Industrial Training Job Portal";
---   drop trigger if exists job_filter_fill on "Fresher Jobs";
---   drop trigger if exists job_filter_fill on "Semi Qualified Jobs";
+--   drop trigger if exists msc_job_filter_fill on "Articleship Jobs";
+--   drop trigger if exists msc_job_filter_fill on "Industrial Training Job Portal";
+--   drop trigger if exists msc_job_filter_fill on "Fresher Jobs";
+--   drop trigger if exists msc_job_filter_fill on "Semi Qualified Jobs";
 --   drop function if exists public.job_filter_fill(), public.job_filter_patch(text, jsonb), public.job_filter_keys(),
 --     public.job_filter_extract(text, jsonb),
 --     public.job_filter_months(text), public.job_filter_company_key(text),
@@ -24,7 +24,7 @@
 --   alter table <each table> drop column if exists <each column added below>;
 --   ("Semi Qualified Jobs".yoe is new here; "Fresher Jobs".yoe is older and must be kept.)
 --
--- Backfill of existing rows: 202611060002_job_filter_fields_backfill.sql (run after this file).
+-- Backfill of existing rows: 202611060004_job_filter_fields_backfill.sql (run after this file).
 
 -- ---------------------------------------------------------------------------------------------
 -- Columns
@@ -587,6 +587,8 @@ end $$;
 
 -- ---------------------------------------------------------------------------------------------
 -- Trigger: fill empty filter columns on insert and when the text they come from changes.
+-- Named msc_job_filter_fill so it runs after msc_block_duplicate_vacancy (202611060002): Postgres fires
+-- BEFORE triggers in name order, so a skipped duplicate is never parsed.
 -- ---------------------------------------------------------------------------------------------
 
 -- Every column the extractor can fill.
@@ -648,20 +650,20 @@ begin
   return new;
 end $$;
 
-drop trigger if exists job_filter_fill on "Articleship Jobs";
-create trigger job_filter_fill before insert or update of "Description", "Company", "Location", "Salary"
+drop trigger if exists msc_job_filter_fill on "Articleship Jobs";
+create trigger msc_job_filter_fill before insert or update of "Description", "Company", "Location", "Salary"
   on "Articleship Jobs" for each row execute function public.job_filter_fill();
 
-drop trigger if exists job_filter_fill on "Industrial Training Job Portal";
-create trigger job_filter_fill before insert or update of "Description", "Company", "Location", "Salary"
+drop trigger if exists msc_job_filter_fill on "Industrial Training Job Portal";
+create trigger msc_job_filter_fill before insert or update of "Description", "Company", "Location", "Salary"
   on "Industrial Training Job Portal" for each row execute function public.job_filter_fill();
 
-drop trigger if exists job_filter_fill on "Fresher Jobs";
-create trigger job_filter_fill before insert or update of "Description", "Company", "Location", "Salary"
+drop trigger if exists msc_job_filter_fill on "Fresher Jobs";
+create trigger msc_job_filter_fill before insert or update of "Description", "Company", "Location", "Salary"
   on "Fresher Jobs" for each row execute function public.job_filter_fill();
 
-drop trigger if exists job_filter_fill on "Semi Qualified Jobs";
-create trigger job_filter_fill before insert or update of "Description", "Company", "Location", "Salary"
+drop trigger if exists msc_job_filter_fill on "Semi Qualified Jobs";
+create trigger msc_job_filter_fill before insert or update of "Description", "Company", "Location", "Salary"
   on "Semi Qualified Jobs" for each row execute function public.job_filter_fill();
 
 -- ---------------------------------------------------------------------------------------------

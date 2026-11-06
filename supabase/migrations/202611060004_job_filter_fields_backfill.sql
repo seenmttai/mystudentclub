@@ -1,5 +1,5 @@
--- Backfill the structured vacancy filter columns (202611060001_job_filter_fields.sql) for jobs that
--- were posted before the trigger existed. Run once, after 202611060001.
+-- Backfill the structured vacancy filter columns (202611060003_job_filter_fields.sql) for jobs that
+-- were posted before the trigger existed. Run once, after 202611060003.
 --
 -- Writes only the new filter columns (and "Semi Qualified Jobs".yoe / "Fresher Jobs".yoe where they
 -- are empty). It never changes Description, Company, Salary or any other existing value.
@@ -10,7 +10,7 @@
 --
 -- Reversible: yes. To undo, set the new columns back to null, e.g.
 --   update "Articleship Jobs" set pay_min = null, pay_max = null, ... ;
--- (or drop them with the reverse SQL in 202611060001).
+-- (or drop them with the reverse SQL in 202611060003).
 
 set local session_replication_role = replica;
 
