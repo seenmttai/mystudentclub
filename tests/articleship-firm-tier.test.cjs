@@ -18,7 +18,8 @@ async function getDb() {
   db = new PGlite();
   await db.exec(`create table public."Articleship Jobs" (id bigint primary key, "Company" text, "Firm Type" text);
     insert into "Articleship Jobs" values (1, 'EY India', null), (2, 'Walker Chandiok & Co LLP', ''),
-      (3, 'Nangia & Co LLP', null), (4, 'Sharma & Associates', null), (5, 'Deloitte', 'Mid-size CA Firm');`);
+      (3, 'Nangia & Co LLP', null), (4, 'Sharma & Associates', null), (5, 'Deloitte', 'Mid-size CA Firm'),
+      (7, 'Gupta & Co', '  ');`);
   await db.exec(migration);
   await db.exec(migration); // idempotent
   return db;
@@ -53,6 +54,9 @@ test('existing rows are filled, a hand-picked value is kept, new and renamed row
   assert.equal(await ft(3), 'Big 10');
   assert.equal(await ft(4), null);
   assert.equal(await ft(5), 'Mid-size CA Firm'); // chosen by hand: never overwritten
+  assert.equal(await ft(7), null); // blank text becomes null, so "Other firms" finds it
+  await d.query(`insert into "Articleship Jobs" (id, "Company", "Firm Type") values (8, 'Mehta & Co', '')`);
+  assert.equal(await ft(8), null);
   await d.query(`insert into "Articleship Jobs" (id, "Company") values (6, 'KPMG')`);
   assert.equal(await ft(6), 'Big 4');
   await d.query(`update "Articleship Jobs" set "Company" = 'BDO India' where id = 6`);

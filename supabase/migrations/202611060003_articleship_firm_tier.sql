@@ -86,8 +86,9 @@ create trigger articleship_firm_tier_trg
   before insert or update of "Company", "Firm Type" on public."Articleship Jobs"
   for each row execute function public.articleship_firm_tier_trg();
 
--- One-time fill for existing vacancies with a blank "Firm Type".
+-- One-time fill for existing vacancies with a blank "Firm Type". Blank text becomes null too, so "Other firms"
+-- (Firm Type is null) finds every firm that isn't Big 4/6/10.
 update public."Articleship Jobs"
    set "Firm Type" = public.msc_firm_tier("Company")
  where coalesce(btrim("Firm Type"), '') = ''
-   and public.msc_firm_tier("Company") is not null;
+   and "Firm Type" is distinct from public.msc_firm_tier("Company");
