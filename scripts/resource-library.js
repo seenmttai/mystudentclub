@@ -449,10 +449,16 @@
         box.replaceChildren();
         box.hidden = !catalogueLoaded || premiumRows.length === 0;
         if (box.hidden) return;
+        // Same rule as groupPremiumResources: collection names match regardless of case.
         const totals = new Map();
-        groupPremiumResources(premiumRows).forEach(day => day.groups.forEach(group => totals.set(group.title, (totals.get(group.title) || 0) + group.resources.length)));
+        groupPremiumResources(premiumRows).forEach(day => day.groups.forEach(group => {
+            const key = group.title.toLocaleLowerCase();
+            const entry = totals.get(key) || { name: group.title, count: 0 };
+            entry.count += group.resources.length;
+            totals.set(key, entry);
+        }));
         const list = element('ul', 'premium-overview-list');
-        totals.forEach((count, name) => {
+        totals.forEach(({ name, count }) => {
             const item = element('li');
             const chip = element('button', 'premium-overview-chip');
             chip.type = 'button';
@@ -465,7 +471,8 @@
         box.append(element('p', 'premium-overview-title', "What's included"), list);
     }
     function jumpToCollection(name) {
-        const find = () => [...document.querySelectorAll('#premium-resources-list .premium-collection')].find(collection => collection.querySelector('h4')?.textContent === name);
+        const wanted = name.toLocaleLowerCase();
+        const find = () => [...document.querySelectorAll('#premium-resources-list .premium-collection')].find(collection => collection.querySelector('h4')?.textContent.toLocaleLowerCase() === wanted);
         if (!find()) {
             // The collection may be hidden by a day filter or a search: clear both, then go.
             selectedDay = 'all'; premiumQuery = '';
@@ -480,7 +487,19 @@
         target.classList.remove('premium-collection-flash');
         void target.offsetWidth;
         target.classList.add('premium-collection-flash');
-        setTimeout(() => target.classList.remove('premium-collection-flash'), 1800);
+        clearTimeout(jumpToCollection.timer);
+        jumpToCollection.timer = setTimeout(() => target.classList.remove('premium-collection-flash'), 1800);
+    }
+    // Hero stats scroll to their section without adding #hash history entries,
+    // so the app's Back button still leaves the page in one press.
+    function setupStatLinks() {
+        document.querySelectorAll('a.rh-stat[href^="#"]').forEach(link => link.addEventListener('click', event => {
+            const target = document.getElementById(link.getAttribute('href').slice(1));
+            if (!target) return;
+            event.preventDefault();
+            const reduceMotion = global.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+            if (typeof target.scrollIntoView === 'function') target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+        }));
     }
     function renderPremiumResults(focusGroup) {
         const grid = document.getElementById('premium-resources-list');
@@ -650,6 +669,7 @@
         config = pages[stage];
         if (!config || !document.getElementById('resources-container')) return;
         renderResources();
+        setupStatLinks();
         const modal = document.getElementById('resource-enroll-dialog');
         modal.querySelector('.dialog-close').addEventListener('click', () => modal.close());
         modal.addEventListener('click', e => { if (e.target === modal) { const rect = modal.getBoundingClientRect(); if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) modal.close(); } });

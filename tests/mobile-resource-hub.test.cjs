@@ -54,3 +54,9 @@ test('premium section has a "What\'s included" overview that jumps to each colle
   assert.match(css, /\.premium-overview\[hidden\] \{ display: none; \}/);
   assert.match(css, /@media \(max-width: 599px\)[\s\S]*\.preview-mock-lines \{ display: none; \}/, 'phones get the compact premium card');
 });
+
+test('stat taps scroll without adding history entries (WebView Back leaves in one press)', () => {
+  const library = read('scripts/resource-library.js');
+  assert.match(library, /function setupStatLinks\(\)[\s\S]*?event\.preventDefault\(\)/);
+  assert.match(library, /renderResources\(\);\n\s+setupStatLinks\(\);/);
+});
