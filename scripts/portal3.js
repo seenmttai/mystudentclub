@@ -575,28 +575,14 @@ function renderJobCard(job) {
     return jobCard;
 }
 
-// Truncate job description and mask potential contact details for unverified users
-function getTruncatedDescription(desc, maxLength = 260) {
+// Full job description with contact details masked, for users who haven't revealed the application yet.
+// The whole text is shown (no length cut); only emails, links and phone numbers are hidden.
+function getMaskedDescription(desc) {
     if (!desc) return 'No description available.';
-    let clean = String(desc).trim();
-
-    // Mask emails that might have been pasted into the description
-    clean = clean.replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/gi, '[email protected]');
-    // Mask URLs
-    clean = clean.replace(/https?:\/\/[^\s\)]+/gi, '[link protected]');
-    // Mask phone numbers
-    clean = clean.replace(/(?:\+?91[\s-]?)?[6-9]\d{9}/g, '[phone protected]');
-
-    if (clean.length <= maxLength) {
-        return clean;
-    }
-
-    let cut = clean.slice(0, maxLength);
-    const lastSpace = cut.lastIndexOf(' ');
-    if (lastSpace > maxLength * 0.6) {
-        cut = cut.slice(0, lastSpace);
-    }
-    return cut + '...';
+    return String(desc).trim()
+        .replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/gi, '[email protected]')
+        .replace(/https?:\/\/[^\s\)]+/gi, '[link protected]')
+        .replace(/(?:\+?91[\s-]?)?[6-9]\d{9}/g, '[phone protected]');
 }
 
 // Simple markdown renderer for job descriptions
@@ -1040,7 +1026,7 @@ function showModal(job) {
     }
 
     const rawDesc = effectiveDescription
-        ? (isApplicationUnlocked ? effectiveDescription : getTruncatedDescription(effectiveDescription, 260))
+        ? (isApplicationUnlocked ? effectiveDescription : getMaskedDescription(effectiveDescription))
         : '';
     const descContentHtml = `
         <div class="modal-description-wrapper" id="modalDescriptionWrapper">
@@ -1059,7 +1045,7 @@ function showModal(job) {
                     const descEl = document.getElementById('modalDescriptionContent');
                     if (descEl) {
                         const updatedEffective = (currentSession ? getCachedUnlockedJob(job.id, currentTable, currentSession)?.description : null) || job.Description;
-                        const finalRaw = isApplicationUnlocked ? updatedEffective : getTruncatedDescription(updatedEffective, 260);
+                        const finalRaw = isApplicationUnlocked ? updatedEffective : getMaskedDescription(updatedEffective);
                         descEl.innerHTML = renderMarkdown(finalRaw);
                     }
                 }
