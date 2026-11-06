@@ -32,6 +32,10 @@ test('keys normalise the same job across link forms',async()=>{
  assert.equal(await key('https://www.naukri.com/job-listings-ca-industrial-trainee-renew-gurugram-0-to-1-years-031125012345'),'naukri:031125012345');
  assert.equal(await key('https://careers.ey.com/ey/job/Hyderabad-Industrial-Trainee/1454958233/?utm_source=x'),'url:careers.ey.com/ey/job/hyderabad-industrial-trainee/1454958233');
  assert.equal(await key(null),null);
+ // job ids in the query string stay distinct; tracking parameters are dropped
+ assert.equal(await key('https://careers.acme.com/job?jobId=101&utm_source=li'),'url:careers.acme.com/job?jobid=101');
+ assert.notEqual(await key('https://careers.acme.com/job?jobId=101'),await key('https://careers.acme.com/job?jobId=202'));
+ assert.equal(await key('https://careers.acme.com/job/?trk=x&jobId=101#apply'),'url:careers.acme.com/job?jobid=101');
 });
 
 test('a scraped duplicate is skipped in any table; team posts and new jobs are saved',async()=>{

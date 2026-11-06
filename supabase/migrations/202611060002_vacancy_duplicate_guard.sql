@@ -26,9 +26,13 @@ as $$
     when link ~* 'lnkd\.in/' then 'lnkd:' || substring(link from 'lnkd\.in/((?:p/)?[A-Za-z0-9_-]{4,})')
     -- Naukri job id
     when link ~* 'naukri\.com/job-listings-' then 'naukri:' || substring(link from '(\d{9,})(?:[/?#]|$)')
-    -- Any other page: host + path, without scheme, www., query string or trailing slash
-    else 'url:' || lower(regexp_replace(regexp_replace(split_part(split_part(btrim(link), '#', 1), '?', 1),
-                                                       '^https?://(www\.|m\.|in\.)?', ''), '/+$', ''))
+    -- Any other page: host + path + query (job ids often live in the query), without scheme, www.,
+    -- fragment, tracking parameters or trailing slashes
+    else 'url:' || lower(regexp_replace(regexp_replace(regexp_replace(regexp_replace(
+           split_part(btrim(link), '#', 1),
+           '([?&])(utm_[a-z_]+|trk|trkinfo|trackingid|refid|ref|src|source|gh_src|lipi|fbclid|gclid)=[^&]*', '\1', 'gi'),
+           '[?&]+$|(\?)&+', '\1', 'g'),
+           '^https?://(www\.|m\.|in\.)?', ''), '/+(\?|$)', '\1'))
   end
 $$;
 
@@ -50,7 +54,6 @@ set search_path = public
 as $$
 declare
   k text;
-  t text;
   dup boolean;
 begin
   if new.posts_link is null or btrim(new.posts_link) = '' then
@@ -60,15 +63,20 @@ begin
   if k is null or k like 'li-job:' or k like 'lnkd:' or k like 'naukri:' or (k like 'url:%' and length(k) < 16) then
     return new;                                   -- no usable key: let the app's own checks decide
   end if;
-  foreach t in array array['Industrial Training Job Portal', 'Fresher Jobs', 'Semi Qualified Jobs', 'Articleship Jobs'] loop
-    execute format(
-      'select exists (select 1 from public.%I where posts_link is not null and public.msc_vacancy_key(posts_link) = $1 '
-      'and "Created_At" >= now() - interval ''60 days'')', t)
-      into dup using k;
-    if dup then
-      return null;                                -- duplicate: skip this insert quietly
-    end if;
-  end loop;
+  -- Serialise writers of the same job so two simultaneous inserts can't both pass the check.
+  perform pg_advisory_xact_lock(hashtext('msc_vacancy:' || k));
+  select exists (
+      select 1 from public."Industrial Training Job Portal" where posts_link is not null and public.msc_vacancy_key(posts_link) = k and "Created_At" >= now() - interval '60 days'
+      union all
+      select 1 from public."Fresher Jobs" where posts_link is not null and public.msc_vacancy_key(posts_link) = k and "Created_At" >= now() - interval '60 days'
+      union all
+      select 1 from public."Semi Qualified Jobs" where posts_link is not null and public.msc_vacancy_key(posts_link) = k and "Created_At" >= now() - interval '60 days'
+      union all
+      select 1 from public."Articleship Jobs" where posts_link is not null and public.msc_vacancy_key(posts_link) = k and "Created_At" >= now() - interval '60 days')
+    into dup;
+  if dup then
+    return null;                                  -- duplicate: skip this insert quietly
+  end if;
   return new;
 end
 $$;
