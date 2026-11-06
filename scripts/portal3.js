@@ -2,6 +2,7 @@ import { getDaysAgo, isJobExpired } from './date-utils.js';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 import { unlockJobDetails, getCachedUnlockedJob } from './browser-guard.js';
 import { calculateProfileCompletion as calculateSharedProfileCompletion, readCachedProfile } from './profile-completion.js';
+import { portalFor, extraSelectColumns, companyTypeFilter, applyJobFilters, describeJobFilters, withoutFilterValue, renderJobFilters, syncJobFilters, formatPayRange, formatDeadline } from './job-filters.js';
 
 function isSalaryDisclosed(val) {
     if (!val) return false;
@@ -205,8 +206,65 @@ const state = {
     applicationStatus: 'all',
     companyType: '',
     industryType: '',
-    firmType: ''
+    firmType: '',
+    // Structured filters from scripts/job-filters.js, keyed by filter key.
+    extra: {}
 };
+
+// False once the database answers that the filter columns are missing (migration
+// 202611060003 not run yet): the portal then falls back to its older filters.
+let jobFilterColumnsAvailable = true;
+
+function currentPortal() {
+    return portalFor(currentTable, isExperiencedFresherPortal());
+}
+
+function isAnnualPayTable() {
+    return currentTable === 'Fresher Jobs' || currentTable === 'Semi Qualified Jobs';
+}
+
+// The structured filter block, once in the desktop sidebar and once in the phone filter sheet.
+function ensureJobFilterContainers() {
+    const hosts = [
+        { root: document.querySelector('.filter-sidebar'), id: 'jobFiltersDesktop', mobile: false },
+        { root: document.querySelector('.filter-modal-content'), id: 'jobFiltersMobile', mobile: true }
+    ];
+    return hosts.map(h => {
+        if (!h.root) return null;
+        let el = document.getElementById(h.id);
+        if (!el) {
+            el = document.createElement('div');
+            el.id = h.id;
+            el.className = 'jf-container';
+            const before = h.root.querySelector('.application-status-filter-group');
+            if (before && before.parentElement) before.parentElement.insertBefore(el, before);
+            else h.root.appendChild(el);
+        }
+        return { el, mobile: h.mobile };
+    }).filter(Boolean);
+}
+
+function renderStructuredFilters() {
+    const portal = currentPortal();
+    ensureJobFilterContainers().forEach(({ el, mobile }) => {
+        if (!jobFilterColumnsAvailable || !portal) {
+            el.innerHTML = '';
+            el.style.display = 'none';
+            return;
+        }
+        el.style.display = '';
+        renderJobFilters(el, portal, {
+            idPrefix: mobile ? 'jfm' : 'jfd',
+            payKind: isAnnualPayTable() ? 'annual' : 'monthly',
+            getValues: () => state.extra,
+            onChange: (next) => {
+                state.extra = next;
+                // Desktop applies at once; the phone sheet applies on "Show Jobs".
+                if (mobile) syncFiltersUI(); else syncAndFetch();
+            }
+        });
+    });
+}
 
 const dom = {};
 
@@ -265,7 +323,7 @@ function setActivePortalTab() {
         activeSelector = 'a[href="/"]';
     }
 
-    if (currentTable === 'Industrial Training Job Portal') {
+    if (currentTable === 'Industrial Training Job Portal' && !jobFilterColumnsAvailable) {
         state.companyType = '';
     }
 
@@ -300,8 +358,13 @@ function adjustFiltersForPortal() {
     const hide = (el) => { if (el) el.style.display = 'none'; };
 
     if (currentTable === 'Industrial Training Job Portal') {
-        hide(companyTypeGroupDesktop);
-        hide(companyTypeGroupMobile);
+        if (jobFilterColumnsAvailable) {
+            show(companyTypeGroupDesktop);
+            show(companyTypeGroupMobile);
+        } else {
+            hide(companyTypeGroupDesktop);
+            hide(companyTypeGroupMobile);
+        }
         show(industryTypeGroupDesktop);
         show(industryTypeGroupMobile);
         hide(firmTypeGroupDesktop);
@@ -362,6 +425,7 @@ function adjustFiltersForPortal() {
     }
 
     populateSalaryFilter();
+    renderStructuredFilters();
 }
 
 const SAVED_JOBS_KEY = 'msc_saved_jobs';
@@ -446,8 +510,9 @@ function renderJobCard(job) {
     const primaryDomain = job['Primary Domain'] || job.Category || 'N/A';
     const secondaryDomain = (currentTable === 'Fresher Jobs' || currentTable === 'Semi Qualified Jobs') ? job['Secondary Domain'] : null;
     const companyType = job['Company Type'];
-    const firmType = job['Firm Type'];
+    const firmType = job['Firm Type'] || (job.firm_size && job.firm_size !== 'Other' ? job.firm_size : '');
     const industryType = job['Industry Type'];
+    const deadlineText = formatDeadline(job);
     const compLabel = (currentTable === 'Semi Qualified Jobs' || currentTable === 'Fresher Jobs') ? 'Salary' : 'Stipend';
     const roleLabel = job.Role || (currentTable === 'Industrial Training Job Portal' ? 'Industrial Trainee' : currentTable === 'Articleship Jobs' ? 'Articleship' : 'Professional');
 
@@ -458,6 +523,9 @@ function renderJobCard(job) {
         compText = job['Stipend Range'] || (job.Salary ? `₹${job.Salary}` : '');
     } else {
         compText = job.Salary ? `₹${job.Salary}` : '';
+    }
+    if (!isSalaryDisclosed(compText)) {
+        compText = formatPayRange(job, isAnnualPayTable());
     }
 
     const isRecent = job.Created_At && (Date.now() - new Date(job.Created_At).getTime()) < 3 * 24 * 60 * 60 * 1000;
@@ -522,6 +590,7 @@ function renderJobCard(job) {
             ${isExpired ? `<span class="job-tag tag-expired"><i class="fas fa-hourglass-end"></i> Expired</span>` : ""}
             ${isExclusive ? `<span class="job-tag tag-exclusive"><i class="fas fa-star"></i> Exclusive</span>` : ""}
             ${isPopular ? `<span class="job-tag tag-popular"><i class="fas fa-fire"></i> Popular</span>` : ""}
+            ${deadlineText && !isExpired ? `<span class="job-tag tag-deadline"><i class="far fa-calendar-alt"></i> ${deadlineText}</span>` : ""}
             <span class="job-tag job-tag-location">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="11" height="11"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                 ${job.Location || "N/A"}
@@ -998,7 +1067,7 @@ function showModal(job) {
     // Compensation display range parsing for modal
     const compRange = currentTable === 'Fresher Jobs' ? job['CTC Range'] : (currentTable === 'Articleship Jobs' || currentTable === 'Industrial Training Job Portal') ? job['Stipend Range'] : null;
     const compLabel = (currentTable === 'Semi Qualified Jobs' || currentTable === 'Fresher Jobs') ? 'Salary' : 'Stipend';
-    const compDisplay = compRange || (job.Salary ? `₹${job.Salary}` : null);
+    const compDisplay = compRange || (job.Salary ? `₹${job.Salary}` : null) || formatPayRange(job, isAnnualPayTable()) || null;
 
     const primaryDomain = job['Primary Domain'] || job.Category || 'N/A';
 
@@ -1021,8 +1090,8 @@ function showModal(job) {
         tagsSectionsHtml += renderPillSection("Functional Competencies", job["Functional Tags"], "#eff6ff", "#1e40af", "#bfdbfe");
         tagsSectionsHtml += renderPillSection("Tech Stack & Tools", job["Technology Tags"], "#f5f3ff", "#5b21b6", "#ddd6fe");
     } else if (currentTable === "Articleship Jobs") {
-        tagsSectionsHtml += renderPillSection("Areas of Exposure", job["Exposure Tags"], "#ecfdf5", "#065f46", "#a7f3d0");
-        tagsSectionsHtml += renderPillSection("Client Sector Exposure", job["Client Exposure Tags"], "#fff7ed", "#9a3412", "#ffedd5");
+        tagsSectionsHtml += renderPillSection("Areas of Exposure", (job["Exposure Tags"] && job["Exposure Tags"].length) ? job["Exposure Tags"] : job.exposure_areas, "#ecfdf5", "#065f46", "#a7f3d0");
+        tagsSectionsHtml += renderPillSection("Client Sector Exposure", (job["Client Exposure Tags"] && job["Client Exposure Tags"].length) ? job["Client Exposure Tags"] : job.client_types, "#fff7ed", "#9a3412", "#ffedd5");
     }
 
     const rawDesc = effectiveDescription
@@ -1090,7 +1159,8 @@ function showModal(job) {
             <span class="job-tag" style="background-color: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; font-weight: 600;">Category: ${primaryDomain}</span>
             ${job['Secondary Domain'] ? `<span class="job-tag" style="background-color: #e0f2fe; color: #0369a1; border-color: #bae6fd;">Secondary: ${job['Secondary Domain']}</span>` : ''}
             ${job['Company Type'] ? `<span class="job-tag"><i class="fas fa-building" style="margin-right: 4px;"></i>${job['Company Type']}</span>` : ''}
-            ${job['Firm Type'] ? `<span class="job-tag"><i class="fas fa-briefcase" style="margin-right: 4px;"></i>${job['Firm Type']}</span>` : ''}
+            ${(job['Firm Type'] || (job.firm_size && job.firm_size !== 'Other' ? job.firm_size : '')) ? `<span class="job-tag"><i class="fas fa-briefcase" style="margin-right: 4px;"></i>${job['Firm Type'] || job.firm_size}</span>` : ''}
+            ${formatDeadline(job) ? `<span class="job-tag tag-deadline"><i class="far fa-calendar-alt" style="margin-right: 4px;"></i>${formatDeadline(job)}</span>` : ''}
             ${job['Industry Type'] ? `<span class="job-tag"><i class="fas fa-industry" style="margin-right: 4px;"></i>${job['Industry Type']}</span>` : ''}
         </div>
         <div id="modalPrimaryActionsContainer">
@@ -1440,7 +1510,9 @@ function getFilterFingerprint() {
         applicationStatus: state.applicationStatus,
         companyType: state.companyType,
         industryType: state.industryType,
-        firmType: state.firmType
+        firmType: state.firmType,
+        extra: state.extra,
+        jobFilterColumnsAvailable
     });
 }
 
@@ -1495,8 +1567,11 @@ async function fetchJobs() {
         } else if (currentTable === "Articleship Jobs") {
             selectColumns += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range"';
         }
+        if (jobFilterColumnsAvailable) {
+            selectColumns += extraSelectColumns(currentTable);
+        }
 
-        const buildQuery = (cols) => {
+        const buildQuery = (cols, useFilterColumns = jobFilterColumnsAvailable) => {
             let q = supabaseClient.from(currentTable).select(cols);
 
             // Optimize keyword query building - pre-process terms once
@@ -1557,25 +1632,29 @@ async function fetchJobs() {
                 q = q.or(categoryOr.join(','));
             }
 
+            // pay_min / pay_max hold the stipend (per month) or salary (per year) read from the
+            // vacancy, so a range matches every job whose pay range overlaps it.
+            const payLow = useFilterColumns ? 'pay_max' : 'Salary';
+            const payHigh = useFilterColumns ? 'pay_min' : 'Salary';
             if (state.salaryMin != null && state.salaryMin !== '') {
                 const min = Number(state.salaryMin);
                 if (!isNaN(min) && min > 0) {
-                    q = q.gte('Salary', min);
+                    q = q.gte(payLow, min);
                 }
             }
             if (state.salaryMax != null && state.salaryMax !== '') {
                 const max = Number(state.salaryMax);
                 if (!isNaN(max) && max > 0) {
-                    q = q.lte('Salary', max);
+                    q = q.lte(payHigh, max);
                 }
             }
             if ((state.salaryMin == null || state.salaryMin === '') && (state.salaryMax == null || state.salaryMax === '') && state.salary) {
                 if (state.salary.endsWith('+')) {
                     const minValue = parseInt(state.salary);
-                    if (!isNaN(minValue)) q = q.gte('Salary', minValue);
+                    if (!isNaN(minValue)) q = q.gte(payLow, minValue);
                 } else if (state.salary.includes('-')) {
                     const [min, max] = state.salary.split('-').map(Number);
-                    if (!isNaN(min) && !isNaN(max)) q = q.gte('Salary', min).lte('Salary', max);
+                    if (!isNaN(min) && !isNaN(max)) q = q.gte(payLow, min).lte(payHigh, max);
                 }
             }
 
@@ -1591,15 +1670,22 @@ async function fetchJobs() {
                 q = q.eq('Experience', state.experience);
             }
 
-            // Apply new Company Type, Industry Type and Firm Type filters
-            if (state.companyType && (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs")) {
+            // Apply new Company Type, Industry Type and Firm Type filters.
+            // employer_type is "Company Type" in the filter's own labels, filled in where it was empty.
+            if (state.companyType && useFilterColumns && (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs" || currentTable === "Industrial Training Job Portal")) {
+                q = q.or(companyTypeFilter(state.companyType));
+            } else if (state.companyType && (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs")) {
                 q = q.eq('Company Type', state.companyType);
             }
             if (state.industryType && (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs" || currentTable === "Industrial Training Job Portal")) {
                 q = q.eq('Industry Type', state.industryType);
             }
             if (state.firmType && currentTable === "Articleship Jobs") {
-                q = q.eq('Firm Type', state.firmType);
+                q = useFilterColumns ? q.eq('firm_size', state.firmType) : q.eq('Firm Type', state.firmType);
+            }
+
+            if (useFilterColumns) {
+                q = applyJobFilters(q, currentPortal(), state.extra);
             }
 
             if (state.applicationStatus === 'not_applied' && currentSession && appliedJobIds.size > 0) {
@@ -1610,8 +1696,8 @@ async function fetchJobs() {
 
             let sortCol = 'Created_At';
             let isAsc = false;
-            if (state.sortBy === 'salary_asc') { sortCol = 'Salary'; isAsc = true; }
-            else if (state.sortBy === 'salary_desc') { sortCol = 'Salary'; isAsc = false; }
+            if (state.sortBy === 'salary_asc') { sortCol = useFilterColumns ? 'pay_min' : 'Salary'; isAsc = true; }
+            else if (state.sortBy === 'salary_desc') { sortCol = useFilterColumns ? 'pay_max' : 'Salary'; isAsc = false; }
 
             q = q.order(sortCol, {
                 ascending: isAsc,
@@ -1636,10 +1722,20 @@ async function fetchJobs() {
         let query = buildQuery(selectColumns);
         let { data, error } = await query;
 
-        // Failsafe Fallback: If is_exclusive does not exist yet on the table, strip it and retry.
-        if (error && error.message && error.message.includes('is_exclusive') && selectColumns.includes('is_exclusive')) {
-            console.warn('is_exclusive column does not exist on Supabase yet. Falling back to default query.');
-            selectColumns = selectColumns.replace(', is_exclusive', '');
+        // Failsafes for columns the database does not have yet. Either can come first, so retry
+        // until neither applies.
+        for (let retry = 0; retry < 2 && error; retry++) {
+            if (jobFilterColumnsAvailable && isMissingFilterColumnError(error)) {
+                // The filter columns are not in the database yet (migration 202611060003): use the older filters.
+                console.warn('Structured filter columns are not available yet; using the basic filters.', error.message);
+                disableStructuredFilters();
+                selectColumns = selectColumns.replace(extraSelectColumns(currentTable), '');
+            } else if (error.message && error.message.includes('is_exclusive') && selectColumns.includes('is_exclusive')) {
+                console.warn('is_exclusive column does not exist on Supabase yet. Falling back to default query.');
+                selectColumns = selectColumns.replace(', is_exclusive', '');
+            } else {
+                break;
+            }
             query = buildQuery(selectColumns);
             const fallbackResult = await query;
             data = fallbackResult.data;
@@ -1773,6 +1869,28 @@ async function fetchJobs() {
     }
 }
 
+// PostgREST answers a missing column with 42703 / PGRST204 and "column <table>.<name> does not exist".
+const FILTER_COLUMN_NAMES = ['pay_min', 'pay_max', 'apply_methods', 'deadline', 'company_key', 'is_pan_india', 'work_mode',
+    'immediate_joining', 'joining_month', 'notice_days', 'attempt_from', 'attempt_to', 'duration_min_months', 'duration_max_months',
+    'exam_criteria', 'employer_type', 'inter_requirement', 'itt_oc_required', 'transfer_accepted', 'firm_size', 'exposure_areas',
+    'client_types', 'outstation_audits', 'work_types', 'shift', 'pqe_required', 'tools', 'working_days', 'yoe'];
+
+function isMissingFilterColumnError(error) {
+    if (!error) return false;
+    const message = String(error.message || '');
+    const missing = error.code === '42703' || error.code === 'PGRST204' || /does not exist|could not find .* column/i.test(message);
+    if (!missing) return false;
+    const named = message.match(/'([a-z_]+)' column/i) || message.match(/column\s+(?:[^\n]*\.)?"?([a-z_]+)"?\s+does not exist/i);
+    return Boolean(named && FILTER_COLUMN_NAMES.includes(named[1]));
+}
+
+function disableStructuredFilters() {
+    jobFilterColumnsAvailable = false;
+    state.extra = {};
+    if (currentTable === 'Industrial Training Job Portal') state.companyType = '';
+    adjustFiltersForPortal();
+}
+
 function resetAndFetch() {
     clearTimeout(debounceTimeout);
     debounceTimeout = setTimeout(() => {
@@ -1825,16 +1943,17 @@ function getSalaryConfig() {
         };
     } else if (currentTable === "Semi Qualified Jobs") {
         return {
+            // Per year: Semi Qualified salaries are stored as annual CTC (median about ₹6 LPA).
             label: 'Salary',
             minBound: 0,
-            maxBound: 100000,
-            step: 2500,
+            maxBound: 2000000,
+            step: 50000,
             presets: [
                 { value: '', label: 'Any Salary', min: null, max: null },
-                { value: '0-25000', label: 'Below ₹25k', min: null, max: 25000 },
-                { value: '25000-35000', label: '₹25k - ₹35k', min: 25000, max: 35000 },
-                { value: '35000-50000', label: '₹35k - ₹50k', min: 35000, max: 50000 },
-                { value: '50000+', label: 'Above ₹50k', min: 50000, max: null }
+                { value: '0-400000', label: 'Below ₹4 LPA', min: null, max: 400000 },
+                { value: '400000-600000', label: '₹4-6 LPA', min: 400000, max: 600000 },
+                { value: '600000-1000000', label: '₹6-10 LPA', min: 600000, max: 1000000 },
+                { value: '1000000+', label: '₹10+ LPA', min: 1000000, max: null }
             ]
         };
     } else if (currentTable === "Fresher Jobs") {
@@ -2090,6 +2209,12 @@ function renderActiveFilterPills() {
     state.keywords.forEach(item => createPill(item, 'keywords'));
     state.locations.forEach(item => createPill(item, 'locations'));
     state.categories.forEach(item => createPill(item, 'categories'));
+    if (jobFilterColumnsAvailable) {
+        describeJobFilters(currentPortal(), state.extra).forEach(p => createPill(p.label, `extra:${p.key}`, () => {
+            state.extra = withoutFilterValue(state.extra, p.key, p.value);
+            syncAndFetch();
+        }));
+    }
 
     // Salary / Stipend Active Pill
     const isSalary = (currentTable === 'Semi Qualified Jobs' || currentTable === 'Fresher Jobs');
@@ -2194,6 +2319,9 @@ function syncFiltersUI() {
     document.querySelectorAll('.application-status-filter-group .pill-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.value === state.applicationStatus);
     });
+
+    syncJobFilters(document.getElementById('jobFiltersDesktop'), state.extra);
+    syncJobFilters(document.getElementById('jobFiltersMobile'), state.extra);
 
     renderActiveFilterPills();
 }
@@ -3271,9 +3399,22 @@ function setupEventListeners() {
     dom.menuButton.addEventListener('click', () => dom.expandedMenu.classList.add('active'));
     dom.menuCloseBtn.addEventListener('click', () => dom.expandedMenu.classList.remove('active'));
 
-    dom.openFilterModalBtn.addEventListener('click', () => dom.filterModalOverlay.classList.add('show'));
-    dom.closeFilterModalBtn.addEventListener('click', () => dom.filterModalOverlay.classList.remove('show'));
-    dom.filterModalOverlay.addEventListener('click', (e) => { if (e.target === dom.filterModalOverlay) dom.filterModalOverlay.classList.remove('show'); });
+    // The structured filters in the phone sheet apply on "Show Jobs"; closing the sheet any other way
+    // throws those changes away.
+    let extraBeforeSheet = null;
+    const discardSheetChanges = () => {
+        if (extraBeforeSheet) {
+            state.extra = extraBeforeSheet;
+            extraBeforeSheet = null;
+            syncFiltersUI();
+        }
+    };
+    dom.openFilterModalBtn.addEventListener('click', () => {
+        extraBeforeSheet = { ...state.extra };
+        dom.filterModalOverlay.classList.add('show');
+    });
+    dom.closeFilterModalBtn.addEventListener('click', () => { discardSheetChanges(); dom.filterModalOverlay.classList.remove('show'); });
+    dom.filterModalOverlay.addEventListener('click', (e) => { if (e.target === dom.filterModalOverlay) { discardSheetChanges(); dom.filterModalOverlay.classList.remove('show'); } });
 
     dom.applyFiltersBtn.addEventListener('click', () => {
         const mobMinInput = document.querySelector('#salaryFilterMobileWrapper .stipend-min-input');
@@ -3292,6 +3433,12 @@ function setupEventListeners() {
         if (dom.companyTypeFilterMobile) state.companyType = dom.companyTypeFilterMobile.value;
         if (dom.industryTypeFilterMobile) state.industryType = dom.industryTypeFilterMobile.value;
         if (dom.firmTypeFilterMobile) state.firmType = dom.firmTypeFilterMobile.value;
+        document.querySelectorAll('#jobFiltersMobile .jf-text').forEach(input => {
+            const text = input.value.trim();
+            if (text) state.extra = { ...state.extra, [input.dataset.key]: text };
+            else state.extra = withoutFilterValue(state.extra, input.dataset.key);
+        });
+        extraBeforeSheet = null;
         syncAndFetch();
         dom.filterModalOverlay.classList.remove('show');
     });
@@ -3311,6 +3458,7 @@ function setupEventListeners() {
             state.companyType = '';
             state.industryType = '';
             state.firmType = '';
+            state.extra = {};
             if (dom.searchInputMobile) dom.searchInputMobile.value = '';
             if (currentTable === 'Fresher Jobs') {
                 state.experience = isExperiencedFresherPortal() ? 'Experienced' : 'Freshers';
