@@ -367,6 +367,18 @@ html.pv2-noscroll body {
   border-bottom: 0;
 }
 
+/* Until the vacancies arrive the filter panel shows placeholder lines, not an empty box. */
+#pv2FilterBody:empty::before {
+  content: "";
+  display: block;
+  height: 320px;
+  margin: 16px 18px;
+  border-radius: 10px;
+  background:
+    repeating-linear-gradient(180deg, #edf1f7 0 14px, transparent 14px 34px);
+  opacity: 0.8;
+}
+
 /* float + clear makes the legend an ordinary block inside the fieldset (no extra gap under it) */
 .pv2-group legend {
   float: left;
@@ -1585,6 +1597,11 @@ html.pv2-noscroll body {
   .pv2-card-meta {
     gap: 2px 12px;
     font-size: 0.8rem;
+  }
+
+  .pv2-detail-head {
+    flex-direction: column;
+    gap: 12px;
   }
 
   .pv2-detail-title {

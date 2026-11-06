@@ -111,7 +111,6 @@ export function mountPortalApp(host) {
         error: null,
         omit: [],
         view: [],
-        staleInWindow: [],
         rendered: 0,
         older: [],
         olderOffset: 0,
@@ -214,7 +213,6 @@ export function mountPortalApp(host) {
         const matching = state.fresh.filter((job) => matchesFilters(job, state.filters, portal, ctx));
         const ranked = rankJobs(matching, { sort: state.sort, now: ctx.now, portal });
         state.view = ranked.fresh;
-        state.staleInWindow = ranked.older;
     }
 
     function renderCards(jobs) {
@@ -425,12 +423,15 @@ export function mountPortalApp(host) {
      * Re-rank and re-draw. keepList keeps the cards already on screen when they are still the top of the new
      * ranking (more rows arrived), so the page does not jump while the rest of the vacancies load.
      */
-    function refresh({ keepList = false } = {}) {
+    function refresh({ keepList = false, redraw = false } = {}) {
         const shownIds = [...el.list.querySelectorAll('.pv2-card[data-job-id]')].map((node) => node.dataset.jobId);
         recompute();
         const samePrefix = keepList && shownIds.length > 0 && shownIds.length === state.rendered
             && shownIds.every((id, index) => state.view[index] && String(state.view[index].id) === id);
-        if (samePrefix) {
+        if (redraw) {
+            // Same cards, new state (login, enrolments, applications): redraw as many as are on screen.
+            renderList(Math.max(state.rendered, PAGE_SIZE));
+        } else if (samePrefix) {
             if (state.rendered < PAGE_SIZE) renderMore();
         } else {
             renderList(keepList ? Math.max(state.rendered, PAGE_SIZE) : PAGE_SIZE);
@@ -468,9 +469,11 @@ export function mountPortalApp(host) {
         el.olderStatus.textContent = 'Loading older vacancies…';
         const cutoff = freshnessCutoff(now()).toISOString();
         const ctx = { now: now(), appliedIds: appliedIds() };
+        // Asking for older vacancies overrides a "posted in the last N days" choice; every other filter applies.
+        const olderFilters = { ...state.filters, posted: '' };
         const from = state.olderOffset;
         try {
-            const result = await selectWithFallback((omit) => applyServerFilters(baseQuery(omit).lt('Created_At', cutoff), state.filters, portal)
+            const result = await selectWithFallback((omit) => applyServerFilters(baseQuery(omit).lt('Created_At', cutoff), olderFilters, portal)
                 .order('Created_At', { ascending: false, nullsFirst: false })
                 .order('id', { ascending: false })
                 .range(from, from + OLDER_PAGE - 1), state.omit);
@@ -479,10 +482,11 @@ export function mountPortalApp(host) {
             remember(rows);
             state.olderOffset += result.data.length;
             state.olderDone = result.data.length < OLDER_PAGE;
-            let matching = rows.filter((job) => matchesFilters(job, state.filters, portal, ctx));
+            let matching = rows.filter((job) => matchesFilters(job, olderFilters, portal, ctx));
             if (from === 0) {
                 // Vacancies scraped in the last 15 days but posted earlier belong here too, at the top.
-                matching = rankJobs(state.staleInWindow, { now: ctx.now, portal }).older.concat(matching);
+                const stale = state.fresh.filter((job) => !isFresh(job, ctx.now) && matchesFilters(job, olderFilters, portal, ctx));
+                matching = rankJobs(stale, { now: ctx.now, portal }).older.concat(matching);
                 el.olderList.innerHTML = '';
             }
             const known = new Set(state.older.map((job) => String(job.id)));
@@ -1077,10 +1081,8 @@ export function mountPortalApp(host) {
     const api = {
         ready,
         state,
-        openSharedJob: async (id, type) => {
-            await ready;
-            return openSharedJob(id, type);
-        },
+        // A shared link (?id=…&type=…) opens at once; the vacancy is fetched on its own if the list hasn't got it yet.
+        openSharedJob: (id, type) => openSharedJob(id, type),
         /** Merge filter values (e.g. the student's experience level) unless the link already set them. */
         setFilters(partial) {
             Object.assign(state.filters, partial);
@@ -1088,7 +1090,7 @@ export function mountPortalApp(host) {
         },
         /** Called by the host after login state, enrolments or applications change. */
         rerender() {
-            refresh();
+            if (state.freshDone) refresh({ redraw: true });
             if (state.current) renderDrawer();
         },
     };
