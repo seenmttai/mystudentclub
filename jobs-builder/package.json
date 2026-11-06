@@ -8,12 +8,10 @@
     "build": "astro check && astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "cleanup": "node scripts/cleanup-folders.js",
-    "expire": "node scripts/expire-old-jobs.js",
     "sitemap": "node scripts/generate-sitemap.js",
-    "sync:update": "node scripts/update-sync-state.js",
     "index": "node scripts/index-now.js",
-    "build:full": "npm run build && npm run sync:update && npm run cleanup && npm run expire && npm run sitemap && npm run index"
+    "build:full": "astro build && npm run sync && npm run sitemap && npm run index",
+    "sync": "node scripts/sync-job-pages.js"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.6",

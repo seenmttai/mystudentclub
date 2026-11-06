@@ -1,77 +1,69 @@
 ---
-import { 
+import {
   supabase,
   TABLE_MAP,
   JOB_TITLE_MAP,
+  JOB_EXPIRATION_DAYS,
   getPublicJobSelectColumns,
-  escapeHtml,
-  getDaysAgo,
-  isJobExpired,
   renderMarkdown,
   generateJobSlug,
-  generateJsonLd
+  generateJsonLd,
+  jobSeo
 } from '../../../lib/jobHelpers';
 import fs from 'node:fs';
 import path from 'node:path';
 
+// Every run builds a page for every job posted in the last JOB_EXPIRATION_DAYS days.
+// Pages carry no "x days ago" text, so an unchanged job gives a byte-identical page
+// and the commit only holds new, edited or removed jobs.
+// scripts/sync-job-pages.js then copies them into /jobs, redirects old URLs and
+// deletes pages of jobs that are gone. It reads dist/jobs-manifest.json to skip any
+// table whose fetch failed, so a Supabase outage never wipes a category.
 export async function getStaticPaths() {
   const paths: any[] = [];
-  
-  // Read sync state for incremental builds
-  const syncStatePath = path.resolve(process.cwd(), 'scripts', 'sync-state.json');
-  
-  let syncState: Record<string, string> = {};
-  let isFirstRun = true;
-  
-  if (fs.existsSync(syncStatePath)) {
-    try {
-      syncState = JSON.parse(fs.readFileSync(syncStatePath, 'utf8'));
-      isFirstRun = false;
-      console.log('📋 Sync state loaded - incremental build mode');
-    } catch (e) {
-      console.log('⚠️ Failed to read sync state, using first-run mode');
-    }
-  } else {
-    console.log('🆕 No sync state found - first run, fetching 100 per table');
-  }
-
-  const FETCH_LIMIT = 100;
+  const manifest: Record<string, { ok: boolean; count: number }> = {};
+  const since = new Date(Date.now() - JOB_EXPIRATION_DAYS * 24 * 60 * 60 * 1000).toISOString();
+  const PAGE_SIZE = 1000;
 
   for (const [tableName, categorySlug] of Object.entries(TABLE_MAP)) {
-    let query = supabase
-      .from(tableName)
-      .select(getPublicJobSelectColumns(tableName))
-      .order('Created_At', { ascending: false })
-      .limit(FETCH_LIMIT);
-
-    // If we have a sync state for this table, only fetch newer jobs
-    if (!isFirstRun && syncState[tableName]) {
-      query = query.gt('Created_At', syncState[tableName]);
-      console.log(`  ${tableName}: Fetching jobs after ${syncState[tableName]}`);
-    } else {
-      console.log(`  ${tableName}: Fetching latest ${FETCH_LIMIT} jobs`);
+    const jobs: any[] = [];
+    let ok = true;
+    for (let from = 0; ; from += PAGE_SIZE) {
+      const { data, error } = await supabase
+        .from(tableName)
+        .select(getPublicJobSelectColumns(tableName))
+        .gt('Created_At', since)
+        .order('Created_At', { ascending: false })
+        .order('id', { ascending: false })
+        .range(from, from + PAGE_SIZE - 1);
+      if (error) {
+        console.error(`Error fetching ${tableName}:`, error);
+        ok = false;
+        break;
+      }
+      jobs.push(...(data || []));
+      if (!data || data.length < PAGE_SIZE) break;
     }
 
-    const { data: jobs, error } = await query;
+    manifest[categorySlug as string] = { ok, count: jobs.length };
+    console.log(`  ${tableName}: ${ok ? jobs.length + ' active jobs' : 'FETCH FAILED'}`);
+    if (!ok) continue;
 
-    if (error) {
-      console.error(`Error fetching ${tableName}:`, error);
-      continue;
-    }
-
-    console.log(`  → Fetched ${(jobs || []).length} jobs from ${tableName}`);
-
-    for (const job of jobs || []) {
-      const slug = generateJobSlug(job);
+    const seen = new Set<string>();
+    for (const job of jobs) {
+      const slug = generateJobSlug(job, categorySlug as string);
+      if (seen.has(slug)) continue;
+      seen.add(slug);
       paths.push({
-        params: {
-          category: categorySlug as string,
-          slug: slug
-        },
+        params: { category: categorySlug as string, slug },
         props: { job, tableName, categorySlug, slug }
       });
     }
   }
+
+  const distDir = path.resolve(process.cwd(), 'dist');
+  fs.mkdirSync(distDir, { recursive: true });
+  fs.writeFileSync(path.join(distDir, 'jobs-manifest.json'), JSON.stringify(manifest, null, 2));
 
   console.log(`\n📊 Total pages to generate: ${paths.length}`);
   return paths;
@@ -79,33 +71,28 @@ export async function getStaticPaths() {
 
 const { job, tableName, categorySlug, slug } = Astro.props;
 
+const DOMAIN = 'https://www.mystudentclub.com';
+const canonicalUrl = `${DOMAIN}/jobs/${categorySlug}/${slug}`;
 const companyName = (job.Company || 'Company Name').trim();
 const companyInitial = companyName.charAt(0).toUpperCase();
-const isExpired = isJobExpired(job.Created_At);
-const postedDate = isExpired ? 'Expired' : getDaysAgo(job.Created_At);
-const salary = job.Salary ? `₹${job.Salary}` : '';
-const location = job.Location || 'Remote / Unspecified';
+const postedAt = new Date(job.Created_At);
+const postedDate = Number.isFinite(postedAt.getTime())
+  ? postedAt.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' })
+  : '';
+const salary = job.Salary
+  ? (/^\d+$/.test(String(job.Salary).trim()) ? `₹${Number(job.Salary).toLocaleString('en-IN')}` : `₹${job.Salary}`)
+  : '';
+const location = job.Location || 'India';
 const category = job.Category || 'General';
-function getSafePublicDescription(desc: any, maxLength = 300): { html: string; isTruncated: boolean } {
-  if (!desc) return { html: renderMarkdown('No description available'), isTruncated: false };
-  let clean = String(desc).trim();
+const roleTitle = jobSeo.jobTitle(job, categorySlug);
+const parsedLocation = jobSeo.parseLocation(job.Location);
+const city = parsedLocation.places[0]?.city || (parsedLocation.remote ? 'Remote' : 'India');
 
-  // Mask emails and links that recruiters might have put in description
-  clean = clean.replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/gi, '[email protected]');
-  clean = clean.replace(/https?:\/\/[^\s\)]+/gi, '[link protected]');
-  clean = clean.replace(/(?:\+?91[\s-]?)?[6-9]\d{9}/g, '[phone protected]');
-
-  const isTruncated = clean.length > maxLength;
-  if (isTruncated) {
-    let cut = clean.slice(0, maxLength);
-    const lastSpace = cut.lastIndexOf(' ');
-    if (lastSpace > maxLength * 0.6) cut = cut.slice(0, lastSpace);
-    clean = cut + '...';
-  }
-  return { html: renderMarkdown(clean), isTruncated };
-}
-
-const { html: descriptionHtml, isTruncated: isDescTruncated } = getSafePublicDescription(job.Description);
+// Full description with emails, links and phone numbers masked (same as the portal popup).
+const maskedDescription = jobSeo.maskContacts(job.Description);
+const descriptionHtml = renderMarkdown(maskedDescription || 'No description available');
+const snippet = maskedDescription.replace(/\s+/g, ' ').replace(/[*_#>`]/g, '').trim();
+const metaSnippet = snippet.length > 110 ? snippet.slice(0, 110).replace(/\s+\S*$/, '') + '…' : snippet;
 
 // Connect Link
 let connectLink = job.connect_link || job['connect_link'];
@@ -116,14 +103,9 @@ if (!connectLink || String(connectLink).trim() === '') {
   connectLink = `https://www.linkedin.com/search/results/people/?keywords=${encodedQuery}&origin=SWITCH_SEARCH_VERTICAL`;
 }
 
-const portalMap: Record<string, { url: string; label: string }> = {
-  'industrial': { url: '/', label: 'Industrial Training' },
-  'fresher': { url: '/ca-fresher-jobs.html', label: 'Fresher Jobs' },
-  'semi-qualified': { url: '/semi-qualified-ca-jobs.html', label: 'Semi Qualified' },
-  'articleship': { url: '/ca-articleship-opportunities.html', label: 'Articleship' }
-};
-const backLinkUrl = portalMap[categorySlug as string]?.url || '/';
-const targetPortalUrl = `${backLinkUrl}?id=${job.id}&type=${categorySlug}`;
+const backLinkUrl = jobSeo.CATEGORY_PORTAL[categorySlug as string] || '/';
+const categoryLabel = jobSeo.CATEGORY_LABEL[categorySlug as string] || 'CA Jobs';
+const targetPortalUrl = `${backLinkUrl}?id=${encodeURIComponent(job.id)}&type=${categorySlug}`;
 
 // Protected Apply Button
 const applyButtonsHtml = `
@@ -134,17 +116,22 @@ const applyButtonsHtml = `
   </div>
 `;
 
-const jsonLd = generateJsonLd(job, slug, categorySlug);
-
-// SEO: Human-readable category label for titles
-const CATEGORY_LABEL_MAP: Record<string, string> = {
-  'industrial': 'CA Industrial Training',
-  'fresher': 'CA Fresher Job',
-  'semi-qualified': 'Semi Qualified CA Job',
-  'articleship': 'CA Articleship'
+const jsonLd = generateJsonLd(job, categorySlug);
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  // The industrial portal is the home page, so it gets one crumb instead of two.
+  itemListElement: (backLinkUrl === '/'
+    ? [{ name: categoryLabel, item: `${DOMAIN}/` }]
+    : [{ name: 'My Student Club', item: `${DOMAIN}/` }, { name: categoryLabel, item: `${DOMAIN}${backLinkUrl}` }]
+  ).concat([{ name: `${roleTitle} at ${companyName}`, item: canonicalUrl }])
+    .map((crumb, index) => ({ '@type': 'ListItem', position: index + 1, ...crumb }))
 };
-const categoryLabel = CATEGORY_LABEL_MAP[categorySlug as string] || 'CA Job';
-const roleLabel = job.Role ? job.Role.trim() : categoryLabel;
+
+// Search-style title: "Amazon is hiring CA Industrial Trainee - FP&A in Mumbai".
+const pageTitle = `${companyName} is hiring ${roleTitle} in ${city} | My Student Club`;
+const shareTitle = `${companyName} is hiring ${roleTitle} in ${city}`;
+const metaDescription = `${companyName} is hiring ${roleTitle} in ${location}${postedDate ? ` (posted ${postedDate})` : ''}. ${metaSnippet ? metaSnippet + ' ' : ''}Apply on My Student Club.`;
 
 // Category-specific high-resolution social share banner (1200x630)
 const CATEGORY_OG_MAP: Record<string, string> = {
@@ -161,34 +148,37 @@ const ogImage = CATEGORY_OG_MAP[categorySlug as string] || 'https://www.mystuden
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{`${roleLabel} at ${companyName}, ${location} | My Student Club`}</title>
-    <meta name="description" content={`${escapeHtml(roleLabel)} opening at ${escapeHtml(companyName)} in ${escapeHtml(location)}. Apply now on My Student Club – India's CA job portal for fresher, industrial training and articleship opportunities.`}>
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href={`https://www.mystudentclub.com/jobs/${categorySlug}/${slug}.html`}>
+    <title>{pageTitle}</title>
+    <meta name="description" content={metaDescription}>
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+    <meta name="msc-page" content="job-v2">
+    <link rel="canonical" href={canonicalUrl}>
 
     <!-- Open Graph / WhatsApp / Facebook / LinkedIn -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content={`https://www.mystudentclub.com/jobs/${categorySlug}/${slug}.html`}>
-    <meta property="og:title" content={`${escapeHtml(roleLabel)} at ${escapeHtml(companyName)}, ${escapeHtml(location)}`}>
-    <meta property="og:description" content={`${escapeHtml(roleLabel)} opening at ${escapeHtml(companyName)} in ${escapeHtml(location)}. Apply on My Student Club.`}>
+    <meta property="og:url" content={canonicalUrl}>
+    <meta property="og:title" content={shareTitle}>
+    <meta property="og:description" content={metaDescription}>
     <meta property="og:image" content={ogImage}>
     <meta property="og:image:secure_url" content={ogImage}>
     <meta property="og:image:type" content="image/png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content={`${escapeHtml(roleLabel)} at ${escapeHtml(companyName)}`}>
+    <meta property="og:image:alt" content={shareTitle}>
     <meta property="og:site_name" content="My Student Club">
+    <meta property="og:locale" content="en_IN">
 
     <!-- Twitter / X -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content={`${escapeHtml(roleLabel)} at ${escapeHtml(companyName)}, ${escapeHtml(location)}`}>
-    <meta name="twitter:description" content={`${escapeHtml(roleLabel)} opening in ${escapeHtml(location)}. Apply on My Student Club.`}>
+    <meta name="twitter:title" content={shareTitle}>
+    <meta name="twitter:description" content={metaDescription}>
     <meta name="twitter:image" content={ogImage}>
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
-    <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)}></script>
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')}></script>
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbLd).replace(/</g, '\\u003c')}></script>
     
     <style is:inline>
         /* Professional Job Details Design - Migrated from jobs-test.html */
@@ -681,6 +671,49 @@ const ogImage = CATEGORY_OG_MAP[categorySlug as string] || 'https://www.mystuden
             margin-bottom: 0.75rem;
         }
 
+        .job-h1-company {
+            font-weight: 500;
+            opacity: 0.9;
+        }
+
+        .job-breadcrumb {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            padding: 0.25rem 0.5rem 0.6rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.35rem;
+        }
+
+        .job-breadcrumb a {
+            color: var(--secondary-color);
+            text-decoration: none;
+        }
+
+        .job-more-links {
+            margin-top: 1rem;
+            font-size: 0.85rem;
+        }
+
+        .job-more-links a {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .job-related ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+            font-size: 0.85rem;
+        }
+
+        .job-related a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
         /* Responsive Design */
         @media (max-width: 968px) {
             .job-body {
@@ -766,12 +799,17 @@ const ogImage = CATEGORY_OG_MAP[categorySlug as string] || 'https://www.mystuden
     </header>
 
     <main class="main-content-area">
+        <nav class="job-breadcrumb" aria-label="Breadcrumb">
+            {backLinkUrl !== '/' && <Fragment><a href="/">Home</a> <span aria-hidden="true">›</span></Fragment>}
+            <a href={backLinkUrl}>{categoryLabel}</a> <span aria-hidden="true">›</span>
+            <span>{companyName}</span>
+        </nav>
         <div class="job-details-container">
             <div class="job-header-section">
                 <div class="job-header-content">
                     <div class="company-logo-large">{companyInitial}</div>
                     <div class="job-title-block">
-                        <h1>{companyName}</h1>
+                        <h1>{roleTitle} <span class="job-h1-company">at {companyName}</span></h1>
                         <div class="job-meta-row">
                             <div class="job-meta-item">
                                 <i class="fas fa-map-marker-alt"></i>
@@ -783,14 +821,10 @@ const ogImage = CATEGORY_OG_MAP[categorySlug as string] || 'https://www.mystuden
                                     <span>{salary}</span>
                                 </div>
                             )}
-                            <div class="job-meta-item">
-                                <i class="far fa-clock"></i>
-                                <span>{isExpired ? 'Expired' : `Posted ${postedDate}`}</span>
-                            </div>
-                            {isExpired && (
-                                <div class="job-meta-item job-expired-status">
-                                    <i class="fas fa-hourglass-end"></i>
-                                    <span>Expired</span>
+                            {postedDate && (
+                                <div class="job-meta-item">
+                                    <i class="far fa-clock"></i>
+                                    <span>Posted <time datetime={jsonLd.datePosted}>{postedDate}</time></span>
                                 </div>
                             )}
                             {category && (
@@ -809,12 +843,9 @@ const ogImage = CATEGORY_OG_MAP[categorySlug as string] || 'https://www.mystuden
                     <div class="description-section">
                         <h2><i class="fas fa-file-lines"></i> Job Description</h2>
                         <div class="description-content" set:html={descriptionHtml}></div>
-                        {isDescTruncated && (
-                            <div style="margin-top: 1rem; padding: 0.85rem 1rem; background: rgba(59, 130, 246, 0.05); border: 1px dashed rgba(59, 130, 246, 0.3); border-radius: 8px; font-size: 0.85rem; color: var(--text-secondary); display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap;">
-                                <span><i class="fas fa-shield-alt" style="color: var(--primary-color, #2563eb); margin-right: 4px;"></i> Full description and recruiter contact details unlocked on the application portal.</span>
-                                <a href={targetPortalUrl} style="color: var(--primary-color, #2563eb); font-weight: 600; text-decoration: underline;">Unlock on Portal &rsaquo;</a>
-                            </div>
-                        )}
+                        <p class="job-more-links">
+                            <a href={targetPortalUrl}>See recruiter contact details and apply &rsaquo;</a>
+                        </p>
                     </div>
                 </div>
 
@@ -834,6 +865,14 @@ const ogImage = CATEGORY_OG_MAP[categorySlug as string] || 'https://www.mystuden
                         <div class="action-card-footer" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color); text-align: center;">
                             False job vacancy? <a href="/contact.html" style="color: var(--primary-color); text-decoration: none; font-weight: 500;">Report it</a>
                         </div>
+                    </div>
+
+                    <div class="action-card job-related">
+                        <h3>More {categoryLabel}</h3>
+                        <ul>
+                            <li><a href={backLinkUrl}>All latest {categoryLabel}</a></li>
+                            <li><a href="/jobs-by-email">Get new jobs by email</a></li>
+                        </ul>
                     </div>
                 </aside>
             </div>
