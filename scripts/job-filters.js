@@ -165,7 +165,7 @@ const COMMON = {
     },
     payDisclosed: {
         key: 'payDisclosed', label: 'Pay', kind: 'chips',
-        options: table => [opt('yes', table === 'annual' ? 'Shows salary' : 'Shows stipend')],
+        options: ctx => [opt('yes', ctx.payKind === 'annual' ? 'Shows salary' : 'Shows stipend')],
         apply: (q, v) => (v.includes('yes') ? q.not('pay_min', 'is', null) : q),
         pill: () => 'Pay shown'
     },
@@ -289,7 +289,7 @@ const ARTICLESHIP = [
 const INDUSTRIAL = [
     {
         key: 'finalAttempt', label: 'Your CA Final attempt', kind: 'select',
-        options: now => [opt('', 'Any')].concat(upcomingFinalAttempts(now).map(v => opt(v, monthLabel(v)))),
+        options: ({ now }) => [opt('', 'Any')].concat(upcomingFinalAttempts(now).map(v => opt(v, monthLabel(v)))),
         apply: (q, v) => applyAttempt(q, v),
         pill: v => `Final attempt: ${monthLabel(v)}`
     },
@@ -302,7 +302,7 @@ const INDUSTRIAL = [
     COMMON.examCriteria,
     {
         key: 'joining', label: 'Joining', kind: 'select',
-        options: now => [opt('', 'Any'), opt('immediate', 'Immediate joiners')].concat(nextMonths(now, 6).map(v => opt(v, `Joining ${monthLabel(v)}`))),
+        options: ({ now }) => [opt('', 'Any'), opt('immediate', 'Immediate joiners')].concat(nextMonths(now, 6).map(v => opt(v, `Joining ${monthLabel(v)}`))),
         apply: (q, v) => (v === 'immediate' ? q.is('immediate_joining', true) : q.eq('joining_month', v)),
         pill: v => (v === 'immediate' ? 'Immediate joiners' : `Joining ${monthLabel(v)}`)
     },
@@ -317,7 +317,7 @@ const INDUSTRIAL = [
 const FRESHER = [
     {
         key: 'qualifyingAttempt', label: 'Your qualifying attempt', kind: 'select',
-        options: now => [opt('', 'Any')].concat(recentQualifyingAttempts(now).map(v => opt(v, monthLabel(v)))),
+        options: ({ now }) => [opt('', 'Any')].concat(recentQualifyingAttempts(now).map(v => opt(v, monthLabel(v)))),
         apply: (q, v) => applyAttempt(q, v),
         pill: v => `Qualified: ${monthLabel(v)}`
     },
@@ -449,14 +449,15 @@ function escapeHtml(text) {
 export function renderJobFilters(container, portal, { getValues, onChange, idPrefix = 'jf', now = new Date(), payKind = 'monthly' }) {
     if (!container) return;
     const defs = filtersFor(portal);
+    const ctx = { now, payKind };
     container.innerHTML = defs.map(def => {
         const id = `${idPrefix}-${def.key}`;
         let control = '';
         if (def.kind === 'select') {
-            control = `<select id="${id}" class="filter-control jf-select" data-key="${def.key}">${def.options(now)
+            control = `<select id="${id}" class="filter-control jf-select" data-key="${def.key}">${def.options(ctx)
                 .map(o => `<option value="${escapeHtml(o.value)}">${escapeHtml(o.label)}</option>`).join('')}</select>`;
         } else if (def.kind === 'chips') {
-            const options = def.key === 'payDisclosed' ? def.options(payKind) : def.options(now);
+            const options = def.options(ctx);
             control = `<div class="jf-chip-options" data-key="${def.key}">${options
                 .map(o => `<button type="button" class="jf-chip" data-key="${def.key}" data-value="${escapeHtml(o.value)}" aria-pressed="false">${escapeHtml(o.label)}</button>`).join('')}</div>`;
         } else if (def.kind === 'text') {

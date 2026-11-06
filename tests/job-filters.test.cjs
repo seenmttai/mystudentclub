@@ -130,8 +130,35 @@ test('portal wiring: filters applied, reset, fingerprinted, and a fallback when 
   assert.match(src, /extra: state\.extra,/);
   assert.match(src, /isMissingFilterColumnError\(error\)/);
   assert.match(src, /q\.eq\('firm_size', state\.firmType\)/);
-  assert.match(src, /q = q\.eq\('employer_type', state\.companyType\);/);
+  assert.match(src, /q = q\.or\(companyTypeFilter\(state\.companyType\)\);/);
   assert.match(src, /const payLow = useFilterColumns \? 'pay_max' : 'Salary';/);
   // Semi-qualified salaries are yearly, so the presets are in LPA.
   assert.match(src, /label: '₹4-6 LPA', min: 400000, max: 600000/);
+});
+
+test('only a missing filter column switches the structured filters off', () => {
+  const src = read('scripts/portal3.js');
+  const names = src.match(/const FILTER_COLUMN_NAMES = (\[[\s\S]*?\]);/)[1];
+  const fn = src.match(/function isMissingFilterColumnError\(error\) \{[\s\S]*?\n\}/)[0];
+  const isMissing = new Function(`const FILTER_COLUMN_NAMES = ${names}; ${fn}; return isMissingFilterColumnError;`)();
+  assert.equal(isMissing({ code: '42703', message: 'column Articleship Jobs.pay_min does not exist' }), true);
+  assert.equal(isMissing({ code: 'PGRST204', message: "Could not find the 'firm_size' column of 'Articleship Jobs' in the schema cache" }), true);
+  assert.equal(isMissing({ code: '42703', message: 'column Industrial Training Job Portal.is_exclusive does not exist' }), false);
+  assert.equal(isMissing({ code: '42501', message: 'permission denied for table Fresher Jobs (shift tools deadline)' }), false);
+  assert.equal(isMissing({ code: '42703', message: 'column Fresher Jobs.shift_type does not exist' }), false);
+});
+
+test('Company Type also matches the posted value and the Consulting spelling of each page', () => {
+  const src = read('scripts/portal3.js');
+  const fn = src.match(/function companyTypeFilter\(value\) \{[\s\S]*?\n\}/)[0];
+  const companyTypeFilter = new Function(`${fn}; return companyTypeFilter;`)();
+  assert.equal(companyTypeFilter('MNC'), 'employer_type.eq."MNC","Company Type".eq."MNC"');
+  assert.equal(companyTypeFilter('Consulting Firm'),
+    'employer_type.eq."Consulting",employer_type.eq."Consulting Firm","Company Type".eq."Consulting","Company Type".eq."Consulting Firm"');
+});
+
+test('closing the phone sheet without "Show Jobs" throws away its structured filter changes', () => {
+  const src = read('scripts/portal3.js');
+  assert.match(src, /extraBeforeSheet = \{ \.\.\.state\.extra \};/);
+  assert.match(src, /closeFilterModalBtn\.addEventListener\('click', \(\) => \{ discardSheetChanges\(\);/);
 });

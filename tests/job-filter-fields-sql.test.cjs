@@ -188,6 +188,39 @@ test('values set by the poster are kept, and the Salary column wins over text', 
   assert.equal(explicit.rows[0].transfer_accepted, false);
 });
 
+test('editing the text works the values out again, but keeps what the edit itself sets and the posted yoe', async () => {
+  await freshDB();
+  const job = await insert('Fresher Jobs', { Company: 'Acme', Experience: 'Experienced', yoe: 4, Description: 'Remote role. Last date: 20 November 2026. Tally.', Created_At: '2026-11-05T10:00:00Z' });
+  assert.equal(job.work_mode, 'Remote');
+  assert.equal(day(job.deadline), '2026-11-20');
+  const edited = (await db.query(`update "Fresher Jobs" set "Description" = 'Hybrid role. Last date: 25 November 2026. SAP.', shift = 'Day' where id = $1 returning *`, [job.id])).rows[0];
+  assert.equal(edited.work_mode, 'Hybrid');
+  assert.equal(day(edited.deadline), '2026-11-25');
+  assert.deepEqual(edited.tools, ['SAP']);
+  assert.equal(edited.shift, 'Day', 'set by the edit');
+  assert.equal(edited.yoe, 4, 'posted yoe kept');
+  const other = (await db.query(`update "Fresher Jobs" set "Experience" = 'Experienced' where id = $1 returning work_mode`, [job.id])).rows[0];
+  assert.equal(other.work_mode, 'Hybrid', 'unrelated edits leave the values alone');
+});
+
+test('a posted Company Type or Firm Type wins, and maps to the filter labels', async () => {
+  await freshDB();
+  const cases = [['Investment Bank', 'Investment Bank'], ['Private Equity', 'PE / VC Fund'], ['Developer', null], ['Bank/NBFC', 'Bank / NBFC'],
+    ['GCC', 'Global Capability Centre (GCC)'], ['PSU', 'Government / PSU'], ['Other', 'Other'], ['Consulting Firm', 'Consulting']];
+  for (const [ctype, expected] of cases) {
+    const job = await insert('Industrial Training Job Portal', { Company: 'Some Co', 'Company Type': ctype, Description: 'Finance role.' });
+    assert.equal(job.employer_type, expected, ctype);
+  }
+  const art = await insert('Articleship Jobs', { Company: 'Deloitte', 'Firm Type': 'Mid-size CA Firm', Description: 'x' });
+  assert.equal(art.firm_size, 'Mid-size CA Firm');
+});
+
+test('a monthly figure in a yearly Salary column is made yearly', async () => {
+  await freshDB();
+  const job = await insert('Semi Qualified Jobs', { Company: 'X', Salary: 35000, Description: 'Accounts executive.' });
+  assert.equal(job.pay_min, 420000);
+});
+
 test('pay ignores years, PIN codes, foreign currency and client turnover', async () => {
   await freshDB();
   const sq = await insert('Semi Qualified Jobs', { Company: 'X', Description: 'Office: Pune 411027. Salary: AED 4,000 per month.\nFounded in 2012.' });

@@ -18,12 +18,7 @@ do $$
 declare
   t text;
   cols text[];
-  extract_keys text[] := array[
-    'pay_min', 'pay_max', 'apply_methods', 'deadline', 'company_key', 'is_pan_india', 'work_mode',
-    'immediate_joining', 'joining_month', 'notice_days', 'attempt_from', 'attempt_to', 'duration_min_months',
-    'duration_max_months', 'exam_criteria', 'employer_type', 'inter_requirement', 'itt_oc_required',
-    'transfer_accepted', 'firm_size', 'exposure_areas', 'client_types', 'outstation_audits', 'work_types',
-    'shift', 'pqe_required', 'tools', 'working_days', 'yoe'];
+  extract_keys text[] := public.job_filter_keys();
 begin
   foreach t in array array['Articleship Jobs', 'Industrial Training Job Portal', 'Fresher Jobs', 'Semi Qualified Jobs'] loop
     select array_agg(column_name::text order by column_name) into cols

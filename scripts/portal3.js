@@ -1673,7 +1673,7 @@ async function fetchJobs() {
             // Apply new Company Type, Industry Type and Firm Type filters.
             // employer_type is "Company Type" in the filter's own labels, filled in where it was empty.
             if (state.companyType && useFilterColumns && (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs" || currentTable === "Industrial Training Job Portal")) {
-                q = q.eq('employer_type', state.companyType);
+                q = q.or(companyTypeFilter(state.companyType));
             } else if (state.companyType && (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs")) {
                 q = q.eq('Company Type', state.companyType);
             }
@@ -1722,22 +1722,20 @@ async function fetchJobs() {
         let query = buildQuery(selectColumns);
         let { data, error } = await query;
 
-        // Failsafe: the filter columns are not in the database yet. Use the older filters and retry.
-        if (error && jobFilterColumnsAvailable && isMissingFilterColumnError(error)) {
-            console.warn('Structured filter columns are not available yet; using the basic filters.', error.message);
-            jobFilterColumnsAvailable = false;
-            selectColumns = selectColumns.replace(extraSelectColumns(currentTable), '');
-            adjustFiltersForPortal();
-            query = buildQuery(selectColumns, false);
-            const fallbackResult = await query;
-            data = fallbackResult.data;
-            error = fallbackResult.error;
-        }
-
-        // Failsafe Fallback: If is_exclusive does not exist yet on the table, strip it and retry.
-        if (error && error.message && error.message.includes('is_exclusive') && selectColumns.includes('is_exclusive')) {
-            console.warn('is_exclusive column does not exist on Supabase yet. Falling back to default query.');
-            selectColumns = selectColumns.replace(', is_exclusive', '');
+        // Failsafes for columns the database does not have yet. Either can come first, so retry
+        // until neither applies.
+        for (let retry = 0; retry < 2 && error; retry++) {
+            if (jobFilterColumnsAvailable && isMissingFilterColumnError(error)) {
+                // The filter columns are not in the database yet (migration 202611060001): use the older filters.
+                console.warn('Structured filter columns are not available yet; using the basic filters.', error.message);
+                disableStructuredFilters();
+                selectColumns = selectColumns.replace(extraSelectColumns(currentTable), '');
+            } else if (error.message && error.message.includes('is_exclusive') && selectColumns.includes('is_exclusive')) {
+                console.warn('is_exclusive column does not exist on Supabase yet. Falling back to default query.');
+                selectColumns = selectColumns.replace(', is_exclusive', '');
+            } else {
+                break;
+            }
             query = buildQuery(selectColumns);
             const fallbackResult = await query;
             data = fallbackResult.data;
@@ -1871,11 +1869,34 @@ async function fetchJobs() {
     }
 }
 
+// PostgREST answers a missing column with 42703 / PGRST204 and "column <table>.<name> does not exist".
+const FILTER_COLUMN_NAMES = ['pay_min', 'pay_max', 'apply_methods', 'deadline', 'company_key', 'is_pan_india', 'work_mode',
+    'immediate_joining', 'joining_month', 'notice_days', 'attempt_from', 'attempt_to', 'duration_min_months', 'duration_max_months',
+    'exam_criteria', 'employer_type', 'inter_requirement', 'itt_oc_required', 'transfer_accepted', 'firm_size', 'exposure_areas',
+    'client_types', 'outstation_audits', 'work_types', 'shift', 'pqe_required', 'tools', 'working_days', 'yoe'];
+
 function isMissingFilterColumnError(error) {
-    const message = String(error && error.message || '');
-    const filterColumns = /pay_min|pay_max|apply_methods|deadline|company_key|is_pan_india|work_mode|immediate_joining|joining_month|notice_days|attempt_from|attempt_to|duration_min_months|exam_criteria|employer_type|inter_requirement|itt_oc_required|transfer_accepted|firm_size|exposure_areas|client_types|outstation_audits|work_types|shift|pqe_required|tools|working_days|yoe/;
-    return (error && (error.code === '42703' || error.code === 'PGRST204' || error.code === '42501')) && filterColumns.test(message)
-        || (/does not exist|permission denied/i.test(message) && filterColumns.test(message));
+    if (!error) return false;
+    const message = String(error.message || '');
+    const missing = error.code === '42703' || error.code === 'PGRST204' || /does not exist|could not find .* column/i.test(message);
+    if (!missing) return false;
+    const named = message.match(/'([a-z_]+)' column/i) || message.match(/column\s+(?:[^\n]*\.)?"?([a-z_]+)"?\s+does not exist/i);
+    return Boolean(named && FILTER_COLUMN_NAMES.includes(named[1]));
+}
+
+// The Industrial Training page says "Consulting Firm" where the others say "Consulting"; a posted
+// "Company Type" always matches as well.
+function companyTypeFilter(value) {
+    const aliases = (value === 'Consulting' || value === 'Consulting Firm') ? ['Consulting', 'Consulting Firm'] : [value];
+    const quote = v => `"${String(v).replace(/"/g, '')}"`;
+    return aliases.map(v => `employer_type.eq.${quote(v)}`).concat(aliases.map(v => `"Company Type".eq.${quote(v)}`)).join(',');
+}
+
+function disableStructuredFilters() {
+    jobFilterColumnsAvailable = false;
+    state.extra = {};
+    if (currentTable === 'Industrial Training Job Portal') state.companyType = '';
+    adjustFiltersForPortal();
 }
 
 function resetAndFetch() {
@@ -3386,9 +3407,22 @@ function setupEventListeners() {
     dom.menuButton.addEventListener('click', () => dom.expandedMenu.classList.add('active'));
     dom.menuCloseBtn.addEventListener('click', () => dom.expandedMenu.classList.remove('active'));
 
-    dom.openFilterModalBtn.addEventListener('click', () => dom.filterModalOverlay.classList.add('show'));
-    dom.closeFilterModalBtn.addEventListener('click', () => dom.filterModalOverlay.classList.remove('show'));
-    dom.filterModalOverlay.addEventListener('click', (e) => { if (e.target === dom.filterModalOverlay) dom.filterModalOverlay.classList.remove('show'); });
+    // The structured filters in the phone sheet apply on "Show Jobs"; closing the sheet any other way
+    // throws those changes away.
+    let extraBeforeSheet = null;
+    const discardSheetChanges = () => {
+        if (extraBeforeSheet) {
+            state.extra = extraBeforeSheet;
+            extraBeforeSheet = null;
+            syncFiltersUI();
+        }
+    };
+    dom.openFilterModalBtn.addEventListener('click', () => {
+        extraBeforeSheet = { ...state.extra };
+        dom.filterModalOverlay.classList.add('show');
+    });
+    dom.closeFilterModalBtn.addEventListener('click', () => { discardSheetChanges(); dom.filterModalOverlay.classList.remove('show'); });
+    dom.filterModalOverlay.addEventListener('click', (e) => { if (e.target === dom.filterModalOverlay) { discardSheetChanges(); dom.filterModalOverlay.classList.remove('show'); } });
 
     dom.applyFiltersBtn.addEventListener('click', () => {
         const mobMinInput = document.querySelector('#salaryFilterMobileWrapper .stipend-min-input');
@@ -3412,6 +3446,7 @@ function setupEventListeners() {
             if (text) state.extra = { ...state.extra, [input.dataset.key]: text };
             else state.extra = withoutFilterValue(state.extra, input.dataset.key);
         });
+        extraBeforeSheet = null;
         syncAndFetch();
         dom.filterModalOverlay.classList.remove('show');
     });

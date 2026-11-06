@@ -17,7 +17,7 @@
 --   drop trigger if exists job_filter_fill on "Industrial Training Job Portal";
 --   drop trigger if exists job_filter_fill on "Fresher Jobs";
 --   drop trigger if exists job_filter_fill on "Semi Qualified Jobs";
---   drop function if exists public.job_filter_fill(), public.job_filter_patch(text, jsonb),
+--   drop function if exists public.job_filter_fill(), public.job_filter_patch(text, jsonb), public.job_filter_keys(),
 --     public.job_filter_extract(text, jsonb),
 --     public.job_filter_months(text), public.job_filter_company_key(text),
 --     public.job_filter_safe_date(int, int, int), public.job_filter_month_no(text);
@@ -340,6 +340,8 @@ begin
   exception when others then
     v := null;
   end;
+  -- A few Semi-Qualified / Fresher rows store a monthly figure in Salary (e.g. 35000): make it yearly.
+  if annual and v between 5000 and 99999 then v := v * 12; end if;
   if v is not null and v > 0 and ((annual and v between 50000 and 20000000) or (not annual and v between 500 and 200000)) then
     out := out || jsonb_build_object('pay_min', v::int, 'pay_max', v::int);
   elsif cardinality(vals) > 0 then
@@ -415,15 +417,16 @@ begin
     when ctype ~* '^big ?4$' then 'Big 4'
     when ctype ~* '^big ?6$' then 'Big 6'
     when ctype ~* '^mnc$' then 'MNC'
+    when ctype ~* 'investment bank' then 'Investment Bank'
+    when ctype ~* '^(pe|vc)\M|private equity|venture capital|pe ?/ ?vc' then 'PE / VC Fund'
     when ctype ~* 'listed' and ctype !~* 'unlisted' then 'Listed Company'
-    when ctype ~* 'unlisted|private' then 'Unlisted Company'
+    when ctype ~* 'unlisted|^private' then 'Unlisted Company'
     when ctype ~* 'bank|nbfc|bfsi' then 'Bank / NBFC'
     when ctype ~* 'psu|government' then 'Government / PSU'
     when ctype ~* 'startup' then 'Startup'
     when ctype ~* 'unicorn' then 'Unicorn'
-    when ctype ~* 'investment bank' then 'Investment Bank'
-    when ctype ~* 'pe|vc' then 'PE / VC Fund'
     when ctype ~* 'consult' then 'Consulting'
+    when ctype ~* '^other$' then 'Other'
     when ctype ~* 'gcc|capability' then 'Global Capability Centre (GCC)'
     when ctype ~* 'ca firm' then 'CA Firm'
     when ctype ~* 'family' then 'Family-Owned Business'
@@ -463,8 +466,10 @@ begin
       out := out || jsonb_build_object('transfer_accepted', true);
     end if;
 
-    w := null;
-    if co ~ '\m(deloitte|ey|ernst|kpmg|pwc|pricewaterhouse|price waterhouse|s r batliboi|srbc|b s r|bsr|lovelock)\M' then w := 'Big 4';
+    w := nullif(btrim(coalesce(r->>'Firm Type', '')), '');
+    if w is not null then
+      null; -- a Firm Type set by the poster wins
+    elsif co ~ '\m(deloitte|ey|ernst|kpmg|pwc|pricewaterhouse|price waterhouse|s r batliboi|srbc|b s r|bsr|lovelock)\M' then w := 'Big 4';
     elsif co ~ '\m(grant thornton|walker chandiok|bdo|mska)\M' then w := 'Big 6';
     elsif co ~ '\m(rsm|nangia|t ?r ?chadha|mazars|forvis|baker tilly|asa|crowe|cnk|nexdigm|knav|kreston|mgi|pkf|moore|hlb|singhi|lodha|sgco|mukund m chitale|chaturvedi and shah|kirtane|shah dhandharia|sharp and tannan|khimji|sr dinodia|s r dinodia)\M' then w := 'Big 10';
     else
@@ -584,6 +589,16 @@ end $$;
 -- Trigger: fill empty filter columns on insert and when the text they come from changes.
 -- ---------------------------------------------------------------------------------------------
 
+-- Every column the extractor can fill.
+create or replace function public.job_filter_keys() returns text[]
+language sql immutable as $$
+  select array['pay_min', 'pay_max', 'apply_methods', 'deadline', 'company_key', 'is_pan_india', 'work_mode',
+    'immediate_joining', 'joining_month', 'notice_days', 'attempt_from', 'attempt_to', 'duration_min_months',
+    'duration_max_months', 'exam_criteria', 'employer_type', 'inter_requirement', 'itt_oc_required',
+    'transfer_accepted', 'firm_size', 'exposure_areas', 'client_types', 'outstation_audits', 'work_types',
+    'shift', 'pqe_required', 'tools', 'working_days', 'yoe']
+$$;
+
 -- The values to write for one row: extracted values for columns that exist and are still empty.
 create or replace function public.job_filter_patch(tbl text, cur jsonb) returns jsonb
 language sql stable as $$
@@ -594,13 +609,36 @@ language sql stable as $$
     and (cur->e.key is null or jsonb_typeof(cur->e.key) = 'null')
 $$;
 
+-- On insert: fill the empty columns. On an edit of the text they come from: work them out again,
+-- except columns the same edit sets itself, and an existing yoe (which comes from the poster).
 create or replace function public.job_filter_fill() returns trigger
 language plpgsql as $$
 declare
-  patch jsonb;
+  cur jsonb;
+  prev jsonb;
+  ext jsonb;
+  patch jsonb := '{}'::jsonb;
+  k text;
 begin
   begin
-    patch := public.job_filter_patch(tg_table_name, to_jsonb(new));
+    cur := to_jsonb(new);
+    if tg_op = 'UPDATE' then
+      prev := to_jsonb(old);
+      if cur->'Description' is distinct from prev->'Description' or cur->'Company' is distinct from prev->'Company'
+         or cur->'Location' is distinct from prev->'Location' or cur->'Salary' is distinct from prev->'Salary' then
+        ext := public.job_filter_extract(tg_table_name, cur);
+        foreach k in array public.job_filter_keys() loop
+          continue when not (cur ? k);
+          continue when cur->k is distinct from prev->k;           -- set by this edit
+          continue when k = 'yoe' and jsonb_typeof(cur->k) <> 'null';
+          patch := patch || jsonb_build_object(k, coalesce(ext->k, 'null'::jsonb));
+        end loop;
+      else
+        patch := public.job_filter_patch(tg_table_name, cur);
+      end if;
+    else
+      patch := public.job_filter_patch(tg_table_name, cur);
+    end if;
     if patch <> '{}'::jsonb then
       new := jsonb_populate_record(new, patch);
     end if;
