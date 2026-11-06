@@ -108,7 +108,8 @@ const JOB_TYPES_NOTIF = [
     { value: "industrial", label: "Industrial Training" },
     { value: "semi", label: "Semi Qualified" },
     { value: "fresher", label: "Fresher" },
-    { value: "articleship", label: "Articleship" }
+    { value: "articleship", label: "Articleship" },
+    { value: "experienced", label: "Experienced CA" }
 ];
 const LOCATIONS_NOTIF = ["mumbai", "bangalore", "gurgaon", "pune", "kolkata", "delhi", "noida", "hyderabad", "ahmedabad", "chennai", "jaipur"];
 
@@ -1384,6 +1385,7 @@ function formatTopicForDisplay(topic) {
     if (topic === 'fresher-all') return { location: 'All India', jobType: 'Fresher' };
     if (topic === 'semi-all') return { location: 'All India', jobType: 'Semi Qualified' };
     if (topic === 'articleship-all') return { location: 'All India', jobType: 'Articleship' };
+    if (topic === 'experienced-all') return { location: 'All India', jobType: 'Experienced CA' };
 
     const parts = topic.split('-');
     if (parts.length < 2) return { location: topic, jobType: '' };
@@ -1713,6 +1715,7 @@ function setupEventListeners() {
             else if (jobType === 'fresher') topicName = 'fresher-all';
             else if (jobType === 'semi') topicName = 'semi-all';
             else if (jobType === 'articleship') topicName = 'articleship-all';
+            else if (jobType === 'experienced') topicName = 'experienced-all';
         } else {
             topicName = `${location}-${jobType}`;
         }

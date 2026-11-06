@@ -143,3 +143,24 @@ test('no access token means no push and no database write', async () => {
   assert.equal(calls.length, 0);
   assert.deepEqual(db.table, {});
 });
+
+test('an Experienced job in Fresher Jobs also pushes to the Experienced CA city and All India topics', async () => {
+  const { api, calls } = load();
+  await api.triggerNotifications({ ...job('Mumbai', 'Fresher Jobs'), Experience: 'Experienced' }, 'token');
+  assert.deepEqual(calls.map(c => c.topic).sort(), ['all', 'experienced-all', 'fresher-all', 'mumbai-experienced', 'mumbai-fresher']);
+  const byTopic = Object.fromEntries(calls.map(c => [c.topic, c]));
+  assert.equal(byTopic['mumbai-experienced'].title, '1+ new jobs posted for Mumbai - Experienced CA');
+  assert.equal(byTopic['experienced-all'].title, '1+ new jobs posted for Experienced CA');
+  assert.equal(byTopic['experienced-all'].link, 'https://www.mystudentclub.com/experienced-ca-jobs');
+});
+
+test('Fresher and unspecified-experience jobs do not push to the Experienced CA topics', async () => {
+  for (const Experience of ['Freshers', null, undefined]) {
+    const { api, calls } = load();
+    await api.triggerNotifications({ ...job('Mumbai', 'Fresher Jobs'), Experience }, 'token');
+    assert.ok(!calls.some(c => c.topic.includes('experienced')), `Experience=${Experience} should not reach experienced topics`);
+  }
+  const { api, calls } = load();
+  await api.triggerNotifications({ ...job('Mumbai', 'Semi Qualified Jobs'), Experience: 'Experienced' }, 'token');
+  assert.ok(!calls.some(c => c.topic.includes('experienced')), 'Semi Qualified experienced jobs stay on semi topics');
+});
