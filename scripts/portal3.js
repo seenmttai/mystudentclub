@@ -1493,7 +1493,7 @@ function shareJob(job, btnElement) {
     );
   if (isMobile && navigator.share) {
     navigator
-      .share({ title: `Job at ${job.Company}`, text: shareText, url: jobUrl })
+      .share({ title: `Job at ${job.Company}`, text: shareText }) // link is already in the text; a url field makes apps repeat it
       .catch(() => {});
   } else {
     navigator.clipboard
