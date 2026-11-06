@@ -52,6 +52,11 @@ test('remote, several cities, states and places abroad', async () => {
   assert.equal(await clean('India'), 'India');
   assert.equal(await clean('Pan India'), 'Pan India');
   assert.equal(await clean('Dubai, UAE'), 'Dubai, UAE');
+  assert.equal(await clean('PUNE'), 'Pune');            // review: short all-caps city names are not country codes
+  assert.equal(await clean('GOA'), 'Goa');
+  assert.equal(await clean('Salt Lake City'), 'Salt Lake City'); // review: suffixes only after a major city
+  assert.equal(await clean('Pune City, Maharashtra, India'), 'Pune');
+  assert.equal(await clean('Mumbai Suburban'), 'Mumbai');
   assert.equal(await clean(null), null);
   assert.equal(await clean(''), '');
 });

@@ -72,7 +72,8 @@ begin
 
     -- region wording
     low := regexp_replace(low, '^greater (.+) area$', '\1');
-    low := regexp_replace(low, '\s+(metropolitan region|division|district|city|urban|rural|suburban|east|west|north|south|area)$', '');
+    -- region wording after a major city only ("Salt Lake City" stays)
+    low := regexp_replace(low, '^(mumbai|pune|bengaluru|bangalore|hyderabad|chennai|kolkata|delhi|new delhi|ahmedabad|noida|gurugram|gurgaon|jaipur|lucknow|indore|nagpur|surat|kochi|thane|vadodara|coimbatore|bhopal|chandigarh|mohali|ludhiana|raipur)\s+(metropolitan region|division|district|city|urban|rural|suburban|east|west|north|south|area)$', '\1');
     low := regexp_replace(low, '\s*\(all areas\)$', '');
     low := regexp_replace(low, '^(south|north|east|west|central) delhi$', 'delhi');
     low := btrim(low);
@@ -98,8 +99,8 @@ begin
     if low = 'delhi ncr' or low = 'ncr' then part := 'Delhi NCR';
     elsif low = 'pan india' then part := 'Pan India';
     elsif low = 'remote' then remote := true; continue;
-    elsif part ~ '^[A-Z]{2,4}$' and lower(part) = low then
-      part := part;                              -- short all-caps names: UAE, USA, UK
+    elsif low in ('uae', 'usa', 'us', 'uk', 'ksa') then
+      part := upper(low);                        -- country codes stay in capitals
     elsif part ~ '[A-Z]' and part ~ '[a-z]' and lower(part) = low then
       part := part;                              -- already mixed case and unchanged: keep as written
     else
