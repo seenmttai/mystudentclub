@@ -3609,3 +3609,18 @@ img.header-logo { height: 38px; width: auto; max-width: none; object-fit: contai
 
 /* The logo artwork reaches the edges of its image: never round or clip its corners. */
 img[src*="/assets/logo"] { border-radius: 0 !important; }
+
+/* Articleship firm type pills (filter sheet) */
+.firm-type-row {
+  flex-wrap: wrap;
+}
+.firm-type-row .pill-toggle {
+  flex: 1 1 auto;
+  min-width: 64px;
+  padding: 8px 12px;
+}
+.filter-hint {
+  margin: 6px 0 0;
+  font-size: 11.5px;
+  color: var(--sub);
+}

@@ -147,7 +147,24 @@ const state = {
   salary: "",
   sortBy: "popular",
   applicationStatus: "all",
+  firmType: "",
 };
+
+// Articleship "Firm Type" is set from the firm's name by the database (master migration 202611060003).
+// Tiers are cumulative: "Big 6" also shows the Big 4, "Big 10" shows all three.
+const FIRM_TYPE_TIERS = {
+  "Big 4": ["Big 4"],
+  "Big 6": ["Big 4", "Big 6"],
+  "Big 10": ["Big 4", "Big 6", "Big 10"],
+};
+
+function applyFirmTypeFilter(query) {
+  if (!state.firmType || currentTable !== "Articleship Jobs") return query;
+  const tiers = FIRM_TYPE_TIERS[state.firmType];
+  if (tiers) return query.in("Firm Type", tiers);
+  if (state.firmType === "Other") return query.is("Firm Type", null); // every firm that isn't Big 4/6/10
+  return query.eq("Firm Type", state.firmType);
+}
 
 const dom = {};
 
@@ -511,6 +528,7 @@ async function fetchJobs() {
     } else if (currentExperience && currentTable === "Semi Qualified Jobs") {
       query = query.eq("Experience", currentExperience);
     }
+    query = applyFirmTypeFilter(query);
     if (
       state.applicationStatus === "not_applied" &&
       currentSession &&
@@ -660,6 +678,9 @@ function renderActiveFilters() {
     ...(state.salary
       ? [{ text: `Stipend: ${state.salary}`, type: "salary", val: "" }]
       : []),
+    ...(state.firmType && currentTable === "Articleship Jobs"
+      ? [{ text: state.firmType === "Other" ? "Other firms" : state.firmType, type: "firmType", val: "" }]
+      : []),
   ];
   if (pills.length === 0) {
     dom.activeFiltersBar.style.display = "none";
@@ -679,6 +700,7 @@ function renderActiveFilters() {
     btn.addEventListener("click", () => {
       const { type, val } = btn.dataset;
       if (type === "salary") state.salary = "";
+      else if (type === "firmType") { state.firmType = ""; renderStatusToggles(); }
       else state[type] = state[type].filter((i) => i !== val);
       renderActiveFilters();
       resetAndFetch();
@@ -722,11 +744,14 @@ function renderLocationPills() {
 }
 
 function renderStatusToggles() {
-  document.querySelectorAll("#filterSheet .pill-toggle").forEach((btn) => {
+  document.querySelectorAll("#appStatusFilterGroup .pill-toggle").forEach((btn) => {
     btn.classList.toggle(
       "active",
       btn.dataset.value === state.applicationStatus,
     );
+  });
+  document.querySelectorAll("#firmTypeToggles .pill-toggle").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.firm === state.firmType);
   });
 }
 
@@ -2894,6 +2919,7 @@ function setupEventListeners() {
     state.salary = "";
     state.sortBy = "popular";
     state.applicationStatus = "all";
+    state.firmType = "";
     if (dom.sortBySelect) dom.sortBySelect.value = "popular";
     if (dom.salaryFilter) dom.salaryFilter.value = "";
     if (dom.locationInput) dom.locationInput.value = "";
@@ -2903,12 +2929,20 @@ function setupEventListeners() {
     resetAndFetch();
   });
 
+  // Filter sheet firm type (Articleship only; applied with the sheet's Apply button like the other filters)
+  document.querySelectorAll("#firmTypeToggles .pill-toggle").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      state.firmType = btn.dataset.firm || "";
+      renderStatusToggles();
+    });
+  });
+
   // Filter sheet status toggles
-  document.querySelectorAll("#filterSheet .pill-toggle").forEach((btn) => {
+  document.querySelectorAll("#appStatusFilterGroup .pill-toggle").forEach((btn) => {
     btn.addEventListener("click", () => {
       state.applicationStatus = btn.dataset.value;
       document
-        .querySelectorAll("#filterSheet .pill-toggle")
+        .querySelectorAll("#appStatusFilterGroup .pill-toggle")
         .forEach((b) =>
           b.classList.toggle(
             "active",
