@@ -4,14 +4,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script>
-    // A job page that no longer exists (renamed city, or cleaned out of /jobs/) is answered with this page.
-    // Send the visitor to that job in the portal instead: the id is the last part of the address.
-    (function () {
-      var m = location.pathname.match(/^\/jobs\/(industrial|fresher|semi-qualified|articleship)\/(?:[^\/]*-)?([0-9]+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\.html$/i);
-      if (m) location.replace('/job.html?id=' + encodeURIComponent(m[2]) + '&type=' + (m[1].toLowerCase() === 'semi-qualified' ? 'semi' : m[1].toLowerCase()));
-    })();
-  </script>
   <title>My Student Club - CA Industrial Training, Articleship & Fresher Jobs</title>
   <meta name="description" content="Find the best CA industrial training, articleship, and CA fresher jobs at My Student Club. Apply directly to verified opportunities at top MNCs, Big 4, and leading firms.">
   <!-- Open Graph / WhatsApp / Facebook / LinkedIn -->

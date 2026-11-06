@@ -98,14 +98,3 @@ test('city filter also searches the other name of a city (portal and jobs by ema
   }
 });
 
-test('a missing /jobs/ page (renamed city, cleaned-out page) sends the visitor to that job', () => {
-  const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-  const script = html.slice(html.indexOf('<script>') + 8, html.indexOf('</script>'));
-  const run = (pathname) => { let to = null; vm.runInNewContext(script, { location: { pathname, replace: (u) => { to = u; } }, encodeURIComponent }); return to; };
-  assert.equal(run('/jobs/fresher/gratitude-finance-bangalore-38191.html'), '/job.html?id=38191&type=fresher');
-  assert.equal(run('/jobs/semi-qualified/x-kolkata-ee12cde2-b629-4a44-a5c5-507f5f0e20b5.html'), '/job.html?id=ee12cde2-b629-4a44-a5c5-507f5f0e20b5&type=semi');
-  assert.equal(run('/jobs/articleship/9920.html'), '/job.html?id=9920&type=articleship');
-  assert.equal(run('/'), null);
-  assert.equal(run('/ca-fresher-jobs'), null);
-  assert.equal(run('/jobs/fresher/'), null);
-});
