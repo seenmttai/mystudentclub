@@ -109,6 +109,16 @@
         if (/registration|stamp paper|form \d|consent letter/.test(title)) return 'Registration & Forms';
         return 'More Resources';
     }
+    // The 11 "Browse by Categories" tiles. A custom LMS group name falls back to the title rules.
+    function resourceCategory(resource) {
+        const group = inferResourceGroup(resource);
+        return collectionNames.includes(group) ? group : inferResourceGroup({ ...resource, group_name: '' });
+    }
+    function countByCategory(resources) {
+        const counts = Object.fromEntries(collectionNames.map(name => [name, 0]));
+        for (const resource of resources) counts[resourceCategory(resource)]++;
+        return counts;
+    }
     function sanitizeCatalogue(rows, program) {
         const seen = new Set();
         return (Array.isArray(rows) ? rows : []).flatMap(row => {
@@ -156,13 +166,13 @@
             }))
         }));
     }
-    const exports = { cleanFileName, sanitizeCatalogue, pages, programs, hasProgramEnrollment, compareResourceTitles, organizeResources, searchResources, inferResourceGroup, groupPremiumResources };
+    const exports = { cleanFileName, sanitizeCatalogue, pages, programs, hasProgramEnrollment, compareResourceTitles, organizeResources, searchResources, inferResourceGroup, groupPremiumResources, resourceCategory, countByCategory, categoryNames: collectionNames };
     if (typeof module !== 'undefined' && module.exports) module.exports = exports;
     global.MSCResourceLibrary = exports;
     if (typeof document === 'undefined') return;
 
     let config, stage, premiumRows = [], returnFocus, catalogueLoaded = false, catalogueError = false, userCourses = [];
-    let premiumQuery = '', selectedDay = 'all';
+    let premiumQuery = '', selectedDay = 'all', selectedCategory = 'all', spotlightTimer = null;
     const expandedGroups = new Set();
     const GROUP_PREVIEW_SIZE = 3;
     const element = (tag, className, text) => {
@@ -406,14 +416,15 @@
     function renderPremiumResults(focusGroup) {
         const grid = document.getElementById('premium-resources-list');
         if (!grid) return;
-        const days = groupPremiumResources(premiumRows);
+        const scoped = selectedCategory === 'all' ? premiumRows : premiumRows.filter(resource => resourceCategory(resource) === selectedCategory);
+        const days = groupPremiumResources(scoped);
         const filters = document.getElementById('premium-day-filters');
         const focusedDay = filters.contains(document.activeElement) ? document.activeElement.dataset.day : null;
         const hasDays = days.some(day => day.day_number !== null);
         if (selectedDay !== 'all' && !days.some(day => day.key === selectedDay)) selectedDay = 'all';
         filters.replaceChildren();
         filters.hidden = !hasDays;
-        if (hasDays) [{key:'all',label:'All days',count:premiumRows.length}, ...days.map(day => ({key:day.key,label:day.day_number === null ? 'More resources' : 'Day ' + day.day_number,count:day.groups.reduce((sum,group)=>sum+group.resources.length,0)}))].forEach(day => {
+        if (hasDays) [{key:'all',label:'All days',count:scoped.length}, ...days.map(day => ({key:day.key,label:day.day_number === null ? 'More resources' : 'Day ' + day.day_number,count:day.groups.reduce((sum,group)=>sum+group.resources.length,0)}))].forEach(day => {
             const button = element('button', 'premium-day-filter'); button.type = 'button'; button.dataset.day = day.key;
             button.setAttribute('aria-pressed', String(selectedDay === day.key));
             button.setAttribute('aria-label',day.label + ', ' + day.count + (day.count===1 ? ' resource' : ' resources'));
@@ -468,13 +479,168 @@
         });
         const empty = document.getElementById('premium-resources-empty');
         empty.hidden = matches > 0 || !catalogueLoaded;
-        empty.textContent = premiumRows.length ? 'No resources match your search. Try another keyword or choose All days.' : 'New program resources will appear here as they are added.';
+        empty.textContent = !premiumRows.length ? 'New program resources will appear here as they are added.'
+            : !scoped.length ? 'No premium ' + selectedCategory + ' resources yet. Choose another category.'
+            : 'No resources match your search. Try another keyword or choose All days.';
         const summary = document.getElementById('premium-search-results');
         summary.textContent = !catalogueLoaded ? (catalogueError ? 'Premium library unavailable' : 'Loading resources…') : searching
             ? matches + (matches===1 ? ' match' : ' matches') + (selectedDay==='all' ? '' : ' in ' + (selectedDay==='library' ? 'More resources' : 'Day ' + selectedDay))
-            : premiumRows.length ? matches + ' resources · ' + collectionCount + (collectionCount===1 ? ' collection' : ' collections') : 'No premium resources added yet';
+            : scoped.length ? matches + (matches===1 ? ' resource · ' : ' resources · ') + collectionCount + (collectionCount===1 ? ' collection' : ' collections') : 'No premium resources added yet';
         document.querySelector('.resource-search-toolbar').hidden = catalogueLoaded && premiumRows.length === 0;
         if (focusGroup) [...grid.querySelectorAll('[data-group-toggle]')].find(button=>button.dataset.groupToggle===focusGroup)?.focus({preventScroll:true});
+        updateCategoryUI();
+    }
+    // ─── Discovery hub: category tiles, "All categories" menu, top search and chips ───
+    const plural = (n, word) => n + ' ' + word + (n === 1 ? '' : 's');
+    function availableCategories() {
+        if (!catalogueLoaded) return collectionNames.map(name => ({ name, count: null }));
+        const counts = countByCategory(premiumRows);
+        return collectionNames.filter(name => counts[name] > 0).map(name => ({ name, count: counts[name] }));
+    }
+    function updateCategoryUI() {
+        const available = availableCategories();
+        const counts = new Map(available.map(category => [category.name, category.count]));
+        const tiles = document.querySelectorAll('.category-tile[data-category]');
+        tiles.forEach(tile => {
+            const name = tile.dataset.category;
+            const count = counts.get(name);
+            const label = tile.querySelector('.tile-content p');
+            // Counts come from this page's own premium catalogue, so every programme shows its real numbers.
+            tile.hidden = catalogueLoaded && !counts.has(name);
+            if (label) label.textContent = catalogueLoaded ? plural(count || 0, 'premium resource') : (catalogueError ? 'Premium resources' : 'Loading…');
+            tile.setAttribute('aria-pressed', String(selectedCategory === name));
+            tile.setAttribute('aria-label', name + (catalogueLoaded ? ', ' + plural(count || 0, 'premium resource') : '') + '. Show in Premium Resources');
+        });
+        const hub = document.querySelector('.resource-categories-hub-section');
+        if (hub && tiles.length) {
+            hub.hidden = catalogueLoaded && available.length === 0;
+            const pill = hub.querySelector('.hub-badge-pill');
+            if (pill) pill.textContent = plural(available.length, 'Category').replace('Categorys', 'Categories');
+        }
+        const selectedLabel = document.getElementById('hubCategorySelectedLabel');
+        if (selectedLabel) selectedLabel.textContent = selectedCategory === 'all' ? 'All categories' : selectedCategory;
+        const bar = document.getElementById('premium-category-filter');
+        if (bar) {
+            bar.hidden = selectedCategory === 'all';
+            const text = bar.querySelector('.premium-category-filter-text');
+            if (text && selectedCategory !== 'all') {
+                text.replaceChildren(element('span', 'premium-category-filter-badge', 'Premium'), element('strong', '', selectedCategory));
+                const count = counts.get(selectedCategory);
+                if (count) text.append(document.createTextNode(' · ' + plural(count, 'resource') + ' included with the ' + programs[config.premiumProgram].title));
+            }
+        }
+        renderCategoryMenu(available);
+    }
+    function renderCategoryMenu(available) {
+        const menu = document.getElementById('hub-category-menu');
+        if (!menu) return;
+        const focusedKey = menu.contains(document.activeElement) ? document.activeElement.dataset.category : null;
+        menu.replaceChildren();
+        [{ name: 'all', label: 'All categories', count: catalogueLoaded ? premiumRows.length : null }, ...available.map(category => ({ ...category, label: category.name }))].forEach(category => {
+            const item = element('button', 'hub-category-menu-item');
+            item.type = 'button';
+            item.dataset.category = category.name;
+            item.setAttribute('role', 'menuitemradio');
+            item.setAttribute('aria-checked', String(selectedCategory === category.name));
+            item.tabIndex = -1;
+            item.append(element('span', '', category.label));
+            if (category.count !== null) item.append(element('span', 'hub-category-menu-count', String(category.count)));
+            item.addEventListener('click', () => { closeCategoryMenu(); selectCategory(category.name); });
+            menu.append(item);
+            if (focusedKey === category.name) item.focus({ preventScroll: true });
+        });
+    }
+    function openCategoryMenu() {
+        const menu = document.getElementById('hub-category-menu');
+        const button = document.getElementById('hubCategoryMenuBtn');
+        if (!menu || !button) return;
+        menu.hidden = false;
+        button.setAttribute('aria-expanded', 'true');
+        if (typeof menu.scrollIntoView === 'function') menu.scrollIntoView({ block: 'nearest' });
+        const items = [...menu.querySelectorAll('[role="menuitemradio"]')];
+        (items.find(item => item.getAttribute('aria-checked') === 'true') || items[0])?.focus({ preventScroll: true });
+    }
+    function closeCategoryMenu(returnFocus) {
+        const menu = document.getElementById('hub-category-menu');
+        const button = document.getElementById('hubCategoryMenuBtn');
+        if (!menu || menu.hidden) return;
+        menu.hidden = true;
+        button?.setAttribute('aria-expanded', 'false');
+        if (returnFocus) button?.focus({ preventScroll: true });
+    }
+    function revealPremium() {
+        const section = document.querySelector('.resource-premium-section');
+        if (!section) return;
+        const reduceMotion = global.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+        if (typeof section.scrollIntoView === 'function') section.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+        section.classList.remove('resource-premium-spotlight');
+        void section.offsetWidth; // restart the highlight when the same tile is clicked twice
+        section.classList.add('resource-premium-spotlight');
+        clearTimeout(spotlightTimer);
+        spotlightTimer = setTimeout(() => section.classList.remove('resource-premium-spotlight'), 2600);
+        document.getElementById('resource-premium')?.focus({ preventScroll: true });
+    }
+    function setPremiumQuery(value) {
+        premiumQuery = value;
+        const premiumInput = document.getElementById('premium-resource-search');
+        if (premiumInput) premiumInput.value = value;
+        const hubInput = document.getElementById('hub-main-search');
+        if (hubInput) hubInput.value = value;
+    }
+    function selectCategory(name, reveal = true) {
+        selectedCategory = name === 'all' || collectionNames.includes(name) ? name : 'all';
+        selectedDay = 'all';
+        setPremiumQuery('');
+        renderPremiumResults();
+        if (reveal) revealPremium();
+    }
+    function searchFromHub(term) {
+        selectedCategory = 'all';
+        selectedDay = 'all';
+        setPremiumQuery(String(term || '').trim());
+        renderPremiumResults();
+        revealPremium();
+    }
+    function setupDiscoveryHub() {
+        document.querySelectorAll('.category-tile[data-category]').forEach(tile => {
+            tile.setAttribute('role', 'button');
+            tile.tabIndex = 0;
+            tile.addEventListener('click', () => selectCategory(tile.dataset.category));
+            tile.addEventListener('keydown', event => {
+                if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); selectCategory(tile.dataset.category); }
+            });
+        });
+        document.querySelector('.resource-categories-hub-section .hub-view-link')?.addEventListener('click', event => { event.preventDefault(); selectCategory('all'); });
+        const hubInput = document.getElementById('hub-main-search');
+        hubInput?.addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); searchFromHub(hubInput.value); } });
+        document.getElementById('hubSearchSubmitBtn')?.addEventListener('click', () => searchFromHub(hubInput ? hubInput.value : ''));
+        document.querySelectorAll('.hub-chip').forEach(chip => chip.addEventListener('click', () => searchFromHub(chip.dataset.query || chip.textContent)));
+        const button = document.getElementById('hubCategoryMenuBtn');
+        if (button) {
+            const menu = element('div', 'hub-category-menu');
+            menu.id = 'hub-category-menu';
+            menu.setAttribute('role', 'menu');
+            menu.setAttribute('aria-label', 'Resource categories');
+            menu.hidden = true;
+            button.setAttribute('aria-haspopup', 'menu');
+            button.setAttribute('aria-expanded', 'false');
+            button.setAttribute('aria-controls', menu.id);
+            button.after(menu);
+            button.addEventListener('click', () => { if (menu.hidden) openCategoryMenu(); else closeCategoryMenu(); });
+            button.addEventListener('keydown', event => { if (event.key === 'ArrowDown') { event.preventDefault(); openCategoryMenu(); } });
+            menu.addEventListener('keydown', event => {
+                const items = [...menu.querySelectorAll('[role="menuitemradio"]')];
+                const index = items.indexOf(document.activeElement);
+                if (event.key === 'Escape') { event.preventDefault(); closeCategoryMenu(true); }
+                else if (event.key === 'ArrowDown') { event.preventDefault(); items[(index + 1) % items.length]?.focus(); }
+                else if (event.key === 'ArrowUp') { event.preventDefault(); items[(index - 1 + items.length) % items.length]?.focus(); }
+                else if (event.key === 'Home') { event.preventDefault(); items[0]?.focus(); }
+                else if (event.key === 'End') { event.preventDefault(); items[items.length - 1]?.focus(); }
+                else if (event.key === 'Tab') closeCategoryMenu();
+            });
+            document.addEventListener('click', event => { if (!button.parentElement.contains(event.target)) closeCategoryMenu(); });
+        }
+        updateCategoryUI();
     }
     function renderResources() {
         const container = document.getElementById('resources-container');
@@ -519,6 +685,17 @@
         summary.setAttribute('aria-live', 'polite');
         toolbar.append(searchLabel, summary);
         premium.append(toolbar);
+        header.querySelector('h2').tabIndex = -1;
+        const categoryBar = element('div', 'premium-category-filter');
+        categoryBar.id = 'premium-category-filter';
+        categoryBar.hidden = true;
+        const categoryText = element('p', 'premium-category-filter-text');
+        categoryText.setAttribute('role', 'status');
+        const showAll = element('button', 'premium-category-clear', 'Show all categories');
+        showAll.type = 'button';
+        showAll.addEventListener('click', () => selectCategory('all', false));
+        categoryBar.append(categoryText, showAll);
+        premium.append(categoryBar);
         const status = document.getElementById('resource-catalog-status');
         premium.append(status);
         const filters = element('div', 'premium-day-filters');
@@ -560,6 +737,7 @@
         config = pages[stage];
         if (!config || !document.getElementById('resources-container')) return;
         renderResources();
+        setupDiscoveryHub();
         const modal = document.getElementById('resource-enroll-dialog');
         modal.querySelector('.dialog-close').addEventListener('click', () => modal.close());
         modal.addEventListener('click', e => { if (e.target === modal) { const rect = modal.getBoundingClientRect(); if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) modal.close(); } });
