@@ -38,27 +38,46 @@ test('keys normalise the same job across link forms',async()=>{
  assert.equal(await key('https://careers.acme.com/job/?trk=x&jobId=101#apply'),'url:careers.acme.com/job?jobid=101');
 });
 
-test('a scraped duplicate is skipped in any table; team posts and new jobs are saved',async()=>{
- await db.exec(`insert into public."Fresher Jobs"("Company",posts_link) values ('EY','https://www.linkedin.com/jobs/view/4466063675/')`);
- // same LinkedIn job with tracking codes, into the same table and into another table: both skipped
- await db.exec(`insert into public."Fresher Jobs"("Company",posts_link) values ('EY','https://in.linkedin.com/jobs/view/x-4466063675?trk=y')`);
- await db.exec(`insert into public."Semi Qualified Jobs"("Company",posts_link) values ('EY','https://www.linkedin.com/jobs/view/4466063675')`);
+const ins=(t,co,link,extra='')=>db.exec(`insert into public."${t}"("Company",posts_link${extra?',"Created_At"':''}) values ('${co}',${link===null?'null':`'${link}'`}${extra?`,${extra}`:''})`);
+const DUP=/duplicate vacancy/;
+
+test('a scraped duplicate is rejected in any table; team posts and new jobs are saved',async()=>{
+ await ins('Fresher Jobs','EY','https://www.linkedin.com/jobs/view/4466063675/');
+ // same LinkedIn job with tracking codes, into the same table and into another table: both rejected
+ await assert.rejects(ins('Fresher Jobs','EY','https://in.linkedin.com/jobs/view/x-4466063675?trk=y'),DUP);
+ await assert.rejects(ins('Semi Qualified Jobs','EY','https://www.linkedin.com/jobs/view/4466063675'),DUP);
  assert.equal(await count('Fresher Jobs'),1);
  assert.equal(await count('Semi Qualified Jobs'),0);
+ // the error is a unique_violation, so writers can tell it apart from other failures
+ await assert.rejects(ins('Fresher Jobs','EY','https://www.linkedin.com/jobs/view/4466063675/'),e=>e.code==='23505');
  // a different job is saved
- await db.exec(`insert into public."Fresher Jobs"("Company",posts_link) values ('KPMG','https://www.linkedin.com/jobs/view/4466069999/')`);
+ await ins('Fresher Jobs','KPMG','https://www.linkedin.com/jobs/view/4466069999/');
  assert.equal(await count('Fresher Jobs'),2);
  // team-posted vacancies (no posts_link) are never blocked, even when identical
- await db.exec(`insert into public."Industrial Training Job Portal"("Company",posts_link) values ('HSBC',null),('HSBC',null)`);
+ await ins('Industrial Training Job Portal','HSBC',null);
+ await ins('Industrial Training Job Portal','HSBC',null);
  assert.equal(await count('Industrial Training Job Portal'),2);
- // an old copy (over 60 days) does not block a new posting
- await db.exec(`insert into public."Articleship Jobs"("Company",posts_link,"Created_At") values ('BSR','https://lnkd.in/p/abcdEF12', now() - interval '70 days')`);
- await db.exec(`insert into public."Articleship Jobs"("Company",posts_link) values ('BSR','https://lnkd.in/p/abcdEF12')`);
+ // an old copy (over 60 days) does not block a new posting...
+ await ins('Articleship Jobs','BSR','https://lnkd.in/p/abcdEF12',"now() - interval '70 days'");
+ await ins('Articleship Jobs','BSR','https://lnkd.in/p/abcdEF12');
  assert.equal(await count('Articleship Jobs'),2);
- // ...but a third copy inside 60 days is skipped
- await db.exec(`insert into public."Articleship Jobs"("Company",posts_link) values ('BSR','https://lnkd.in/p/abcdEF12')`);
+ // ...but a third copy inside 60 days is rejected
+ await assert.rejects(ins('Articleship Jobs','BSR','https://lnkd.in/p/abcdEF12'),DUP);
  assert.equal(await count('Articleship Jobs'),2);
- // a RETURNING insert of a skipped duplicate returns no row (the poster reads this as "duplicate")
- const r=await db.query(`insert into public."Fresher Jobs"("Company",posts_link) values ('EY','https://www.linkedin.com/jobs/view/4466063675/') returning id`);
- assert.equal(r.rows.length,0);
+ // two different jobs on a site that keeps the job id in the query string are both saved
+ await ins('Fresher Jobs','Acme','https://careers.acme.com/job?jobId=101');
+ await ins('Fresher Jobs','Acme','https://careers.acme.com/job?jobId=202&utm_source=li');
+ assert.equal(await count('Fresher Jobs'),4);
+});
+
+test('updates: changing posts_link to a saved job is rejected; editing a row in place is not',async()=>{
+ // a row can be edited (its own link unchanged, or re-saved as the same link) without tripping the guard
+ await db.exec(`update public."Fresher Jobs" set "Company"='KPMG India' where posts_link='https://www.linkedin.com/jobs/view/4466069999/'`);
+ await db.exec(`update public."Fresher Jobs" set posts_link='https://www.linkedin.com/jobs/view/4466069999?trk=x' where "Company"='KPMG India'`);
+ // pointing a row at another saved job's link is rejected
+ await assert.rejects(db.exec(`update public."Fresher Jobs" set posts_link='https://www.linkedin.com/jobs/view/4466063675/' where "Company"='KPMG India'`),DUP);
+ // filling in a link that is new is fine
+ await ins('Semi Qualified Jobs','Team post',null);
+ await db.exec(`update public."Semi Qualified Jobs" set posts_link='https://www.linkedin.com/jobs/view/4466070000/' where "Company"='Team post'`);
+ assert.equal((await db.query(`select count(*)::int n from public."Semi Qualified Jobs" where posts_link is not null`)).rows[0].n,1);
 });
