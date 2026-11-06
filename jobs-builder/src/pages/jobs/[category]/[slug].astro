@@ -51,6 +51,8 @@ export async function getStaticPaths() {
 
     const seen = new Set<string>();
     for (const job of jobs) {
+      // Without a valid date the page would change on every build; such rows are skipped.
+      if (!Number.isFinite(new Date(job.Created_At).getTime())) continue;
       const slug = generateJobSlug(job, categorySlug as string);
       if (seen.has(slug)) continue;
       seen.add(slug);

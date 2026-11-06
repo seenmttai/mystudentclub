@@ -34,7 +34,7 @@ test('all vacancy share paths use the links page in the share copy', () => {
     // ("/jobs/industrial/dbs-hiring-ca-industrial-trainee-finance-pune-10651") from scripts/job-seo.js.
     assert.match(
       source,
-      /const jobUrl = (?:jobSeo|globalThis\.MSCJobSeo)\.jobUrl\(job, /,
+      /const jobUrl = (?:jobSeo|globalThis\.MSCJobSeo)\.shareUrl\(job, /,
       `${path.relative(root, scriptPath)} must share the readable job page URL`,
     );
   }

@@ -304,6 +304,17 @@
         return DOMAIN + jobPath(job, category);
     }
 
+    // Link for "Share this job". Job pages are built every 3 hours, so a job posted in the
+    // last few hours may have no page yet: those keep the job.html link (portal popup, with
+    // a WhatsApp preview) instead of a URL that would answer 404 for now.
+    var PAGE_BUILD_LAG_MS = 6 * 60 * 60 * 1000;
+    function shareUrl(job, category, now) {
+        var posted = new Date(job && job.Created_At);
+        var age = (now ? new Date(now) : new Date()).getTime() - posted.getTime();
+        if (Number.isFinite(age) && age >= PAGE_BUILD_LAG_MS) return jobUrl(job, category);
+        return DOMAIN + '/job.html?id=' + encodeURIComponent(job && job.id) + '&type=' + encodeURIComponent(category);
+    }
+
     // Read the job id back out of a job page path (old or new format). Used by the 404 page.
     function parseJobPath(pathname) {
         var match = /^\/jobs\/(industrial|fresher|semi-qualified|articleship)\/([^/?#]+?)(?:\.html)?\/?$/.exec(String(pathname || ''));
@@ -324,13 +335,18 @@
         return id ? { category: category, id: id } : null;
     }
 
-    // Emails, links and phone numbers stay hidden on public pages (same rule as the portal popup).
+    // Emails, links and phone numbers stay hidden on public pages. Same rule as the portal
+    // popup, plus numbers written with spaces or dashes ("98765 43210", "+91-98765-43210",
+    // "022 2345 6789") and "www." links, because these pages are public and indexed.
     function maskContacts(text) {
         if (!text) return '';
         return String(text).trim()
             .replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/gi, '[email protected]')
             .replace(/https?:\/\/[^\s)]+/gi, '[link protected]')
-            .replace(/(?:\+?91[\s-]?)?[6-9]\d{9}/g, '[phone protected]');
+            .replace(/\bwww\.[^\s)]+/gi, '[link protected]')
+            .replace(/\+?\d[\d\s().-]{8,}\d/g, function (match) {
+                return match.replace(/\D/g, '').length >= 10 ? '[phone protected]' : match;
+            });
     }
 
     // Salary as Google wants it, or null when we can't tell.
@@ -344,11 +360,13 @@
                 .map(function (n) { return parseFloat(n.replace(/,/g, '')); })
                 .filter(function (n) { return n > 0; });
             if (!numbers.length || numbers.length > 2) continue;
+            // Two numbers only count as a range when written as one ("25,000 - 30,000", "8 to 10 LPA").
+            if (numbers.length === 2 && !/\d\s*(?:-|–|to)\s*(?:rs\.?|₹|inr)?\s*\d/i.test(text)) continue;
             var multiplier = /\b(lpa|lakhs?|lacs?|l\.p\.a)\b/i.test(text) ? 100000 : 1;
             numbers = numbers.map(function (n) { return Math.round(n * multiplier); });
             var unit;
-            if (multiplier > 1 || /(annum|per year|\byear|\bp\.?a\b|\bctc\b)/i.test(text)) unit = 'YEAR';
-            else if (/(month|\bpm\b|p\.m)/i.test(text)) unit = 'MONTH';
+            if (/(month|\bpm\b|p\.m\.?)/i.test(text)) unit = 'MONTH';
+            else if (multiplier > 1 || /(annum|per year|\byear|\bp\.?a\b|\bctc\b)/i.test(text)) unit = 'YEAR';
             else if (category === 'industrial' || category === 'articleship') unit = 'MONTH';
             else unit = Math.max.apply(null, numbers) >= 100000 ? 'YEAR' : 'MONTH';
             var min = Math.min.apply(null, numbers);
@@ -467,6 +485,7 @@
         jobSlug: jobSlug,
         jobPath: jobPath,
         jobUrl: jobUrl,
+        shareUrl: shareUrl,
         parseJobPath: parseJobPath,
         maskContacts: maskContacts,
         parseSalary: parseSalary,

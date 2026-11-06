@@ -5,15 +5,18 @@
 
 import fs from 'fs';
 import path from 'path';
+import { createRequire } from 'module';
 import { fileURLToPath } from 'url';
+
+const jobSeo = createRequire(import.meta.url)('../../scripts/job-seo.js');
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const DOMAIN = 'https://www.mystudentclub.com';
+const DOMAIN = jobSeo.DOMAIN;
 const LIVE_JOBS_DIR = path.join(__dirname, '..', '..', 'jobs');
 const SITEMAP_PATH = path.join(__dirname, '..', '..', 'jobs-sitemap.xml');
-const CATEGORIES = ['industrial', 'fresher', 'semi-qualified', 'articleship'];
+const CATEGORIES = Object.values(jobSeo.TABLE_TO_CATEGORY);
 const V2_MARKER = '<meta name="msc-page" content="job-v2">';
 
 export function buildJobsSitemap(liveDir, now = new Date()) {

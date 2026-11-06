@@ -38,6 +38,21 @@ test('job URLs read like a search: company, "hiring", role, domain, city, then t
     assert.doesNotMatch(seo.jobUrl(industrialJob, 'industrial'), /\.html$/);
 });
 
+test('share links: readable URL once the page is built, job.html before that', () => {
+    const job = { ...industrialJob, Created_At: '2026-11-06T01:00:00Z' };
+    assert.equal(seo.shareUrl(job, 'industrial', '2026-11-06T09:00:00Z'),
+        'https://www.mystudentclub.com/jobs/industrial/dbs-hiring-ca-industrial-trainee-finance-pune-10651');
+    assert.equal(seo.shareUrl(job, 'industrial', '2026-11-06T03:00:00Z'),
+        'https://www.mystudentclub.com/job.html?id=10651&type=industrial');
+});
+
+test('contacts written with spaces, dashes or www are masked too', () => {
+    const masked = seo.maskContacts('Call 98765 43210 or +91-98765-43210 or 022 2345 6789, see www.dbs.com/careers. Stipend 25,000 - 30,000, batch 2026-2027.');
+    assert.doesNotMatch(masked, /98765|2345 6789|www\.dbs/);
+    assert.match(masked, /25,000 - 30,000/);
+    assert.match(masked, /2026-2027/);
+});
+
 test('the 404 page can read the job back out of old and new URLs', () => {
     assert.deepEqual(seo.parseJobPath('/jobs/industrial/7524.html'), { category: 'industrial', id: '7524' });
     assert.deepEqual(seo.parseJobPath('/jobs/industrial/canon-india-business-finance-gurugram-10634.html'), { category: 'industrial', id: '10634' });
@@ -73,6 +88,9 @@ test('salary is left out rather than sent as 0 or garbage', () => {
     assert.deepEqual(seo.parseSalary({ 'CTC Range': '8-10 LPA' }, 'fresher').value,
         { '@type': 'QuantitativeValue', unitText: 'YEAR', minValue: 800000, maxValue: 1000000 });
     assert.equal(seo.parseSalary({ Salary: 1200000 }, 'semi-qualified').value.unitText, 'YEAR');
+    assert.deepEqual(seo.parseSalary({ Salary: '1.5 lakh per month' }, 'fresher').value,
+        { '@type': 'QuantitativeValue', unitText: 'MONTH', value: 150000 });
+    assert.equal(seo.parseSalary({ Salary: 'Rs 25000 pm + 5000 incentive' }, 'industrial'), null);
 });
 
 test('locations: several cities, pan-India, remote and abroad', () => {
@@ -123,6 +141,12 @@ test('page sync: new pages copied, old URLs of live jobs redirect, dead pages de
     assert.ok(fs.existsSync(path.join(live, 'fresher', 'keep-me-1.html')), 'a failed fetch must not delete pages');
     assert.deepEqual(result.newUrls, ['https://www.mystudentclub.com/jobs/industrial/dbs-hiring-ca-industrial-trainee-finance-pune-10651']);
 
+    // A quiet category (fetch worked, 0 jobs) only loses pages past their 15 days.
+    fs.writeFileSync(path.join(dist, 'jobs-manifest.json'), JSON.stringify({ industrial: { ok: true, count: 1 }, fresher: { ok: true, count: 0 } }));
+    writePage(path.join(live, 'fresher'), 'recent-2.html', `<script type="application/ld+json">{"datePosted":"${new Date().toISOString()}"}</script>`);
+    syncJobPages({ distDir: dist, liveDir: live, log: () => {} });
+    assert.deepEqual(fs.readdirSync(path.join(live, 'fresher')), ['recent-2.html']);
+
     // Second run: nothing new, nothing rewritten.
     const again = syncJobPages({ distDir: dist, liveDir: live, log: () => {} });
     assert.deepEqual(again.newUrls, []);
@@ -151,12 +175,11 @@ test('portal links and share links use the readable job URL', () => {
     const portal = read('scripts/portal3.js');
     assert.match(portal, /import '\.\/job-seo\.js';/);
     assert.match(portal, /jobSeo\.jobPath\(job,/);
-    assert.match(portal, /const jobUrl = jobSeo\.jobUrl\(job,/);
-    assert.doesNotMatch(portal, /job\.html\?id=/);
+    assert.match(portal, /const jobUrl = jobSeo\.shareUrl\(job,/);
     assert.doesNotMatch(portal, /\$\{jobSlug\}\.html/);
     const emailPortal = read('scripts/portal-email.js');
     assert.match(emailPortal, /import '\.\/job-seo\.js';/);
-    assert.doesNotMatch(emailPortal, /job\.html\?id=/);
+    assert.match(emailPortal, /MSCJobSeo\.shareUrl\(job,/);
 });
 
 test('404 page is real (noindex) and sends job URLs to the portal', () => {

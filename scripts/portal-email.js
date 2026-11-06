@@ -332,8 +332,8 @@ function generateApplicationLinks(applicationId) {
 // Share job using Web Share API or fallback to copy link
 function shareJob(job, btnElement) {
     const table = job.source_table || state.portalType;
-    // Readable job page URL; the 404 page covers jobs whose page isn't built yet.
-    const jobUrl = globalThis.MSCJobSeo.jobUrl(job, globalThis.MSCJobSeo.categoryFromTable(table));
+    // Readable job page URL (job.html for jobs posted in the last few hours; see job-seo.js).
+    const jobUrl = globalThis.MSCJobSeo.shareUrl(job, globalThis.MSCJobSeo.categoryFromTable(table));
 
     const shareText = `Check out this job at *${job.Company}* for *${job.Location}*
 URL - ${jobUrl}

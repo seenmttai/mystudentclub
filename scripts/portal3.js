@@ -621,10 +621,9 @@ function generateApplicationLinks(applicationId) {
 
 // Share job using Web Share API or fallback to copy link
 function shareJob(job, btnElement) {
-    // Readable job page URL ("…/jobs/industrial/dbs-hiring-ca-industrial-trainee-finance-pune-10651").
-    // A job posted in the last few hours has no page yet; the 404 page sends those visitors
-    // to the portal with the job open, as the old job.html links did.
-    const jobUrl = jobSeo.jobUrl(job, TABLE_SLUG_MAP[currentTable] || 'industrial');
+    // Readable job page URL ("…/jobs/industrial/dbs-hiring-ca-industrial-trainee-finance-pune-10651");
+    // jobs posted in the last few hours, whose page isn't built yet, keep the job.html link.
+    const jobUrl = jobSeo.shareUrl(job, TABLE_SLUG_MAP[currentTable] || 'industrial');
 
     const shareText = `Check out this job at *${job.Company}* for *${job.Location}*
 URL - ${jobUrl}

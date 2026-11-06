@@ -17,7 +17,8 @@ import { fileURLToPath } from 'url';
 const require = createRequire(import.meta.url);
 const jobSeo = require('../../scripts/job-seo.js');
 
-export const CATEGORIES = ['industrial', 'fresher', 'semi-qualified', 'articleship'];
+export const CATEGORIES = Object.values(jobSeo.TABLE_TO_CATEGORY);
+const EXPIRY_MS = jobSeo.JOB_EXPIRATION_DAYS * 24 * 60 * 60 * 1000;
 const V2_MARKER = '<meta name="msc-page" content="job-v2">';
 const REDIRECT_MARKER = 'name="msc-page" content="job-redirect"';
 
@@ -63,7 +64,7 @@ export function redirectPage(jobId, targetPath) {
 `;
 }
 
-export function syncJobPages({ distDir, liveDir, log = console.log }) {
+export function syncJobPages({ distDir, liveDir, log = console.log, now = new Date() }) {
     const manifestPath = path.join(distDir, 'jobs-manifest.json');
     if (!fs.existsSync(manifestPath)) {
         throw new Error(`No ${manifestPath}: run astro build first.`);
@@ -74,12 +75,17 @@ export function syncJobPages({ distDir, liveDir, log = console.log }) {
 
     for (const category of CATEGORIES) {
         const status = manifest[category];
-        if (!status || !status.ok || !status.count) {
-            log(`⚠️  ${category}: fetch failed or returned no jobs; leaving /jobs/${category} as it is.`);
+        if (!status || !status.ok) {
+            log(`⚠️  ${category}: fetch failed; leaving /jobs/${category} as it is.`);
             continue;
         }
+        // An empty answer could be a real quiet fortnight or a broken query: then only
+        // pages whose 15 days are over are deleted, never pages of jobs that may be live.
+        const emptyFetch = !status.count;
+        if (emptyFetch) log(`⚠️  ${category}: no jobs in the last ${jobSeo.JOB_EXPIRATION_DAYS} days; deleting only pages past their expiry.`);
 
         const builtDir = path.join(distDir, 'jobs', category);
+        fs.mkdirSync(builtDir, { recursive: true });
         const liveCategoryDir = path.join(liveDir, category);
         fs.mkdirSync(liveCategoryDir, { recursive: true });
 
@@ -94,17 +100,22 @@ export function syncJobPages({ distDir, liveDir, log = console.log }) {
 
         let redirected = 0;
         let deleted = 0;
-        const liveV2Ids = new Set();
+        const liveFilesBefore = new Set();
 
         for (const file of fs.readdirSync(liveCategoryDir).filter(f => f.endsWith('.html'))) {
             const filePath = path.join(liveCategoryDir, file);
             const content = fs.readFileSync(filePath, 'utf8');
             const id = readJobId(content, file, category);
-            if (content.includes(V2_MARKER) && id) liveV2Ids.add(String(id));
+            if (content.includes(V2_MARKER)) liveFilesBefore.add(file);
             if (builtFiles.has(file)) continue; // overwritten below
 
             const current = id ? built.get(String(id)) : null;
-            if (current) {
+            if (emptyFetch) {
+                const posted = new Date(readDatePosted(content) || 0);
+                if (Number.isFinite(posted.getTime()) && now.getTime() - posted.getTime() <= EXPIRY_MS) continue;
+                fs.unlinkSync(filePath);
+                deleted++;
+            } else if (current) {
                 const target = `/jobs/${category}/${current.file.replace(/\.html$/, '')}`;
                 const stub = redirectPage(id, target);
                 if (content !== stub) fs.writeFileSync(filePath, stub);
@@ -123,7 +134,8 @@ export function syncJobPages({ distDir, liveDir, log = console.log }) {
                 fs.writeFileSync(filePath, page.content);
                 written++;
             }
-            if (!liveV2Ids.has(id)) {
+            // New job, or a job whose URL changed because it was edited.
+            if (!liveFilesBefore.has(page.file)) {
                 newUrls.push({
                     url: `${jobSeo.DOMAIN}/jobs/${category}/${page.file.replace(/\.html$/, '')}`,
                     datePosted: page.datePosted || ''
