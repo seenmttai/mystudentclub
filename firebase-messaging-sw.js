@@ -24,6 +24,11 @@ try {
     });
 
     messaging.onBackgroundMessage((payload) => {
+        // A push with a `notification` block is already shown by the Firebase SDK itself
+        // (and its click opens fcmOptions.link). Showing it again here made every push
+        // appear twice, which helped get the site flagged as spam by Chrome.
+        if (payload.notification) return;
+
         const notificationTitle = payload.notification?.title || 'New Job Alert';
         const notificationOptions = {
             body: payload.notification?.body || 'A new job matching your preferences was posted.',
