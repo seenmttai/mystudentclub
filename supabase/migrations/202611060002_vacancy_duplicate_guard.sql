@@ -1,9 +1,11 @@
 -- Vacancy duplicate guard (6 Nov 2026, Padam: "duplicates get a solution so it doesnt repeat in future").
 --
 -- A scraped vacancy (posts_link set) whose source job was already saved in the last 60 days, in ANY of the
--- four job tables, is skipped at insert time (the insert affects 0 rows; no error is raised, so no writer
--- breaks). This stops duplicates from every writer: the cloud/Mac job poster, the old poster still running
--- on another machine, reruns and overlapping schedules.
+-- four job tables, is rejected on insert, and so is an update that changes posts_link to such a link. The
+-- error is a unique_violation (SQLSTATE 23505, "duplicate vacancy: <key>"), so no writer mistakes a rejected
+-- row for a saved one (no push or WhatsApp for a vacancy that doesn't exist). This stops duplicates from
+-- every writer: the cloud/Mac job poster, the old poster still running on another machine, reruns and
+-- overlapping schedules.
 --
 -- Team-posted vacancies (posts_link is null: hire.msc, admin, Codex vacancy run) are never touched.
 -- Undo: drop the four triggers (see the bottom of this file).
@@ -59,6 +61,9 @@ begin
   if new.posts_link is null or btrim(new.posts_link) = '' then
     return new;                                   -- team-posted vacancy: never blocked
   end if;
+  if tg_op = 'UPDATE' and new.posts_link is not distinct from old.posts_link then
+    return new;                                   -- link unchanged: nothing to check
+  end if;
   k := public.msc_vacancy_key(new.posts_link);
   if k is null or k like 'li-job:' or k like 'lnkd:' or k like 'naukri:' or (k like 'url:%' and length(k) < 16) then
     return new;                                   -- no usable key: let the app's own checks decide
@@ -67,31 +72,36 @@ begin
   perform pg_advisory_xact_lock(hashtext('msc_vacancy:' || k));
   select exists (
       select 1 from public."Industrial Training Job Portal" where posts_link is not null and public.msc_vacancy_key(posts_link) = k and "Created_At" >= now() - interval '60 days'
+        and not (tg_table_name = 'Industrial Training Job Portal' and id::text = new.id::text)
       union all
       select 1 from public."Fresher Jobs" where posts_link is not null and public.msc_vacancy_key(posts_link) = k and "Created_At" >= now() - interval '60 days'
+        and not (tg_table_name = 'Fresher Jobs' and id::text = new.id::text)
       union all
       select 1 from public."Semi Qualified Jobs" where posts_link is not null and public.msc_vacancy_key(posts_link) = k and "Created_At" >= now() - interval '60 days'
+        and not (tg_table_name = 'Semi Qualified Jobs' and id::text = new.id::text)
       union all
-      select 1 from public."Articleship Jobs" where posts_link is not null and public.msc_vacancy_key(posts_link) = k and "Created_At" >= now() - interval '60 days')
+      select 1 from public."Articleship Jobs" where posts_link is not null and public.msc_vacancy_key(posts_link) = k and "Created_At" >= now() - interval '60 days'
+        and not (tg_table_name = 'Articleship Jobs' and id::text = new.id::text))
     into dup;
   if dup then
-    return null;                                  -- duplicate: skip this insert quietly
+    raise exception using errcode = 'unique_violation', message = 'duplicate vacancy: ' || k,
+      hint = 'This job was already saved in the last 60 days (any MSC job table).';
   end if;
   return new;
 end
 $$;
 
 drop trigger if exists msc_block_duplicate_vacancy on public."Industrial Training Job Portal";
-create trigger msc_block_duplicate_vacancy before insert on public."Industrial Training Job Portal"
+create trigger msc_block_duplicate_vacancy before insert or update of posts_link on public."Industrial Training Job Portal"
   for each row execute function public.msc_block_duplicate_vacancy();
 drop trigger if exists msc_block_duplicate_vacancy on public."Fresher Jobs";
-create trigger msc_block_duplicate_vacancy before insert on public."Fresher Jobs"
+create trigger msc_block_duplicate_vacancy before insert or update of posts_link on public."Fresher Jobs"
   for each row execute function public.msc_block_duplicate_vacancy();
 drop trigger if exists msc_block_duplicate_vacancy on public."Semi Qualified Jobs";
-create trigger msc_block_duplicate_vacancy before insert on public."Semi Qualified Jobs"
+create trigger msc_block_duplicate_vacancy before insert or update of posts_link on public."Semi Qualified Jobs"
   for each row execute function public.msc_block_duplicate_vacancy();
 drop trigger if exists msc_block_duplicate_vacancy on public."Articleship Jobs";
-create trigger msc_block_duplicate_vacancy before insert on public."Articleship Jobs"
+create trigger msc_block_duplicate_vacancy before insert or update of posts_link on public."Articleship Jobs"
   for each row execute function public.msc_block_duplicate_vacancy();
 
 -- Undo:
