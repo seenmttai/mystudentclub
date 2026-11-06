@@ -151,19 +151,20 @@ const state = {
 };
 
 // Articleship "Firm Type" is set from the firm's name by the database (master migration 202611060003).
-// Tiers are cumulative: "Big 6" also shows the Big 4, "Big 10" shows all three.
+// Big tiers are cumulative: "Big 6" also shows the Big 4, "Big 20" shows all the top firms.
+// Mid-size and Small-size match exactly.
 const FIRM_TYPE_TIERS = {
   "Big 4": ["Big 4"],
   "Big 6": ["Big 4", "Big 6"],
   "Big 10": ["Big 4", "Big 6", "Big 10"],
+  "Big 20": ["Big 4", "Big 6", "Big 10", "Big 20"],
 };
+const MID_SIZE_FIRM = "Mid-size CA Firm";
 
 function applyFirmTypeFilter(query) {
   if (!state.firmType || currentTable !== "Articleship Jobs") return query;
   const tiers = FIRM_TYPE_TIERS[state.firmType];
-  if (tiers) return query.in("Firm Type", tiers);
-  if (state.firmType === "Other") return query.is("Firm Type", null); // every firm that isn't Big 4/6/10
-  return query.eq("Firm Type", state.firmType);
+  return tiers ? query.in("Firm Type", tiers) : query.eq("Firm Type", state.firmType);
 }
 
 const dom = {};
@@ -438,7 +439,7 @@ function renderJobCard(job) {
             ${primaryDomain ? `<span class="jc-chip jc-chip-domain">${primaryDomain}</span>` : ""}
             ${secondaryDomain ? `<span class="jc-chip jc-chip-domain" style="background-color: #e0f2fe; color: #0369a1; border-color: #bae6fd;">${secondaryDomain}</span>` : ""}
             ${companyType ? `<span class="jc-chip"><i class="fa-solid fa-building" style="margin-right: 4px; color: #94a3b8;"></i>${companyType}</span>` : ""}
-            ${firmType ? `<span class="jc-chip"><i class="fa-solid fa-briefcase" style="margin-right: 4px; color: #94a3b8;"></i>${firmType}</span>` : ""}
+            ${firmType && firmType !== MID_SIZE_FIRM ? `<span class="jc-chip"><i class="fa-solid fa-briefcase" style="margin-right: 4px; color: #94a3b8;"></i>${firmType}</span>` : ""}
             ${industryType ? `<span class="jc-chip"><i class="fa-solid fa-industry" style="margin-right: 4px; color: #94a3b8;"></i>${industryType}</span>` : ""}
             ${job.Experience ? `<span class="jc-chip">${job.Experience}</span>` : ""}
         </div>
@@ -679,7 +680,7 @@ function renderActiveFilters() {
       ? [{ text: `Stipend: ${state.salary}`, type: "salary", val: "" }]
       : []),
     ...(state.firmType && currentTable === "Articleship Jobs"
-      ? [{ text: state.firmType === "Other" ? "Other firms" : state.firmType, type: "firmType", val: "" }]
+      ? [{ text: state.firmType.replace(" CA Firm", ""), type: "firmType", val: "" }]
       : []),
   ];
   if (pills.length === 0) {

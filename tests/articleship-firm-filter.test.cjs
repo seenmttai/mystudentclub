@@ -14,22 +14,26 @@ function run(firmType, table = 'Articleship Jobs') {
   const start = source.indexOf('const FIRM_TYPE_TIERS');
   const end = source.indexOf('\n}\n', source.indexOf('function applyFirmTypeFilter', start)) + 2;
   const calls = [];
-  const q = { in: (...a) => (calls.push(['in', ...a]), q), is: (...a) => (calls.push(['is', ...a]), q), eq: (...a) => (calls.push(['eq', ...a]), q) };
+  const q = { in: (...a) => (calls.push(['in', ...a]), q), eq: (...a) => (calls.push(['eq', ...a]), q) };
   vm.runInNewContext(`${source.slice(start, end)}; applyFirmTypeFilter(q);`, { state: { firmType }, currentTable: table, q });
   return JSON.parse(JSON.stringify(calls));
 }
 
-test('tiers are cumulative; Other firms = no Big tier; only on Articleship', () => {
+test('Big tiers are cumulative; Mid-size and Small-size exact; only on Articleship', () => {
   assert.deepEqual(run('Big 4'), [['in', 'Firm Type', ['Big 4']]]);
   assert.deepEqual(run('Big 6'), [['in', 'Firm Type', ['Big 4', 'Big 6']]]);
   assert.deepEqual(run('Big 10'), [['in', 'Firm Type', ['Big 4', 'Big 6', 'Big 10']]]);
-  assert.deepEqual(run('Other'), [['is', 'Firm Type', null]]);
+  assert.deepEqual(run('Big 20'), [['in', 'Firm Type', ['Big 4', 'Big 6', 'Big 10', 'Big 20']]]);
+  assert.deepEqual(run('Mid-size CA Firm'), [['eq', 'Firm Type', 'Mid-size CA Firm']]);
+  assert.deepEqual(run('Small-size CA Firm'), [['eq', 'Firm Type', 'Small-size CA Firm']]);
   assert.deepEqual(run(''), []);
   assert.deepEqual(run('Big 4', 'Industrial Training Job Portal'), []);
 });
 
 test('the Articleship sheet offers the five choices and the query applies them', () => {
-  for (const v of ['', 'Big 4', 'Big 6', 'Big 10', 'Other']) assert.ok(page.includes(`data-firm="${v}"`), v);
+  for (const v of ['', 'Big 4', 'Big 6', 'Big 10', 'Big 20', 'Mid-size CA Firm', 'Small-size CA Firm']) assert.ok(page.includes(`data-firm="${v}"`), v);
+  assert.ok(!page.includes('data-firm="Other"'));
+  assert.match(source, /firmType && firmType !== MID_SIZE_FIRM \?/); // no Mid-size pill on 90% of cards
   assert.match(source, /query = applyFirmTypeFilter\(query\);/);
   assert.match(source, /state\.firmType = "";\n\s*if \(dom\.sortBySelect\) dom\.sortBySelect\.value = "popular";/); // Reset clears it
 });
