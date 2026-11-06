@@ -108,6 +108,27 @@ const TABLE_SLUG_MAP = {
     'Articleship Jobs': 'articleship'
 };
 
+// Locations are stored with one name per city (migration 202611060004: Bangalore = Bengaluru, Gurgaon = Gurugram...).
+// A student typing the other name still finds them, and older rows that kept the other name still match.
+const CITY_ALIASES = [
+    ['bengaluru', 'bangalore'], ['gurugram', 'gurgaon'], ['mumbai', 'bombay'], ['kolkata', 'calcutta'],
+    ['chennai', 'madras'], ['vadodara', 'baroda'], ['kochi', 'cochin'], ['mysuru', 'mysore'],
+    ['mangaluru', 'mangalore'], ['thiruvananthapuram', 'trivandrum'], ['delhi', 'new delhi'],
+];
+
+function expandLocationTerms(locations) {
+    const terms = [];
+    const add = (t) => { if (t && !terms.some(x => x.toLowerCase() === t.toLowerCase())) terms.push(t); };
+    for (const loc of locations) {
+        add(loc);
+        const low = String(loc).trim().toLowerCase();
+        for (const group of CITY_ALIASES) {
+            if (group.includes(low)) group.forEach(add);
+        }
+    }
+    return terms;
+}
+
 function getPublicJobSelectColumns(tableName) {
     // Keep recruiter metadata available for shared /job.html links.  The
     // Application ID remains protected, but without these fields a shared
@@ -1536,8 +1557,8 @@ async function fetchJobs() {
 
             if (state.locations.length > 0) {
                 const locationOr = [];
-                for (let i = 0; i < state.locations.length; i++) {
-                    locationOr.push(`Location.ilike."%${state.locations[i]}%"`);
+                for (const term of expandLocationTerms(state.locations)) {
+                    locationOr.push(`Location.ilike."%${term}%"`);
                 }
                 q = q.or(locationOr.join(','));
             }
