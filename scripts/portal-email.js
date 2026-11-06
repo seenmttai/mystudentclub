@@ -276,10 +276,10 @@ URL - ${jobUrl}
 Do turn on notifications to stay updated with all such opportunites and ensure joining the whatsapp group below
 https://chat.whatsapp.com/D491zsqKmv25S2YLloSUBR`;
 
+    // No separate url: the link is already in the text, and WhatsApp & co. would add it again at the end.
     const shareData = {
         title: `Job at ${job.Company}`,
-        text: shareText,
-        url: jobUrl
+        text: shareText
     };
 
     // Simple mobile detection
