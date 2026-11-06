@@ -1,4 +1,5 @@
 import { getDaysAgo } from './date-utils.js';
+import { unlockJobDetails, getCachedUnlockedJob } from './browser-guard.js';
 
 function isSalaryDisclosed(val) {
     if (!val) return false;
@@ -481,6 +482,108 @@ async function recordApplicationFromSaved(application) {
     }
 }
 
+let activeModalToken = 0;
+
+const APPLY_NOW_BTN_HTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg> Apply Now';
+
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+// The job row as BrowserGuard knows it: the real Supabase table and job id.
+function unlockApplication(application) {
+    return unlockJobDetails({ id: application.job_id }, application.job_table, currentSession);
+}
+
+function getCachedUnlock(application) {
+    if (!currentSession) return null;
+    return getCachedUnlockedJob(application.job_id, application.job_table, currentSession);
+}
+
+// Where "Apply" should take the student for one Application ID entry.
+function getApplyHref(applicationId) {
+    const first = String(applicationId || '').split(',').map(v => v.trim()).find(Boolean);
+    if (!first) return null;
+    if (/^https?:\/\//i.test(first)) {
+        try { return new URL(first).href; } catch (_) { /* fall through to search */ }
+    }
+    if (first.includes('@')) return `mailto:${first}`;
+    return `https://www.google.com/search?q=${encodeURIComponent(first + ' careers')}`;
+}
+
+function renderApplyLoading() {
+    return `
+        <div class="history-apply-loading" style="display: flex; align-items: center; gap: 0.6rem; padding: 0.9rem 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; color: #475569; font-size: 0.88rem;">
+            <i class="fas fa-spinner fa-spin" style="color: #3b82f6;"></i>
+            <span>Loading your application details…</span>
+        </div>`;
+}
+
+function renderRevealButton() {
+    return `
+        <button type="button" class="history-reveal-btn" style="width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.75rem 1rem; background: #fff; color: #1d4ed8; border: 1.5px solid #bfdbfe; border-radius: 10px; font-size: 0.88rem; font-weight: 600; cursor: pointer;">
+            <i class="fas fa-eye" style="font-size: 0.85rem;"></i>
+            View Application Details &amp; Link to Apply
+        </button>`;
+}
+
+function renderApplyError(error) {
+    const message = error?.message || 'Could not load the application details.';
+    return `
+        <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; padding: 0.9rem 1rem; background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px;">
+            <p style="flex: 1; min-width: 180px; margin: 0; font-size: 0.85rem; color: #b91c1c;">${escapeHtml(message)}</p>
+            <button type="button" class="history-unlock-retry" style="flex-shrink: 0; padding: 0.5rem 0.9rem; background: #ef4444; color: #fff; border: none; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer;">Try again</button>
+        </div>`;
+}
+
+// Application ID can hold several comma-separated links/emails; each gets
+// an open button and a copy button.
+function renderApplicationLinks(applicationId) {
+    const links = String(applicationId || '').split(',').map(v => v.trim()).filter(Boolean);
+    if (links.length === 0) {
+        return '<p class="modal-description">No application link was shared for this job.</p>';
+    }
+    return links.map((link, index) => {
+        const href = getApplyHref(link);
+        const openLabel = href && href.startsWith('mailto:') ? 'Email' : 'Open';
+        return `
+        <div style="display: flex; align-items: center; gap: 0.5rem; background: #f8fafc; padding: 0.4rem 0.4rem 0.4rem 0.75rem; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: ${index < links.length - 1 ? '0.6rem' : '0'};">
+            <p class="modal-description" style="flex: 1; margin: 0; word-break: break-all; font-size: 0.92rem;">${escapeHtml(link)}</p>
+            ${href ? `<a href="${escapeHtml(href)}" target="_blank" rel="noopener" style="flex-shrink: 0; height: 40px; display: inline-flex; align-items: center; padding: 0 0.8rem; background: linear-gradient(135deg, #3b82f6, #6366f1); color: #fff; border-radius: 6px; font-size: 0.8rem; font-weight: 600; text-decoration: none;">${openLabel}</a>` : ''}
+            <button type="button" class="modal-copy-btn" data-copy-text="${escapeHtml(link)}" style="background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer; flex-shrink: 0; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;" title="Copy to clipboard" aria-label="Copy to clipboard">
+                <i class="fas fa-copy" style="font-size: 1rem;"></i>
+            </button>
+        </div>`;
+    }).join('');
+}
+
+function bindCopyButtons(root) {
+    root.querySelectorAll('.modal-copy-btn').forEach(copyBtn => {
+        copyBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const text = copyBtn.getAttribute('data-copy-text');
+            const icon = copyBtn.querySelector('i');
+            const originalClass = icon.className;
+            navigator.clipboard.writeText(text).then(() => {
+                icon.className = 'fas fa-check';
+                copyBtn.style.background = '#10b981';
+                setTimeout(() => {
+                    icon.className = originalClass;
+                    copyBtn.style.background = '#3b82f6';
+                }, 2000);
+            }).catch(err => {
+                console.error('Copy failed:', err);
+                alert('Failed to copy.');
+            });
+        });
+    });
+}
+
 // Show job details modal (as premium centered popup)
 function showJobModal(application) {
     const job = application.job;
@@ -505,43 +608,7 @@ function showJobModal(application) {
         return '<p>' + html + '</p>';
     };
 
-    const generateApplicationLinks = (_applicationId) => {
-        // Application ID is protected by BrowserGuard — direct users to the job portal
-        // to unlock recruiter details through the verified unlock flow.
-        const portalMap = {
-            'Industrial Training Job Portal': '/',
-            'Fresher Jobs': '/ca-fresher-jobs.html',
-            'Semi Qualified Jobs': '/semi-qualified-ca-jobs.html',
-            'Articleship Jobs': '/ca-articleship-opportunities.html',
-            'Experienced CA Jobs': '/experienced-ca-jobs.html'
-        };
-        const typeMap = {
-            'Industrial Training Job Portal': 'industrial',
-            'Fresher Jobs': 'fresher',
-            'Semi Qualified Jobs': 'semi',
-            'Articleship Jobs': 'articleship',
-            'Experienced CA Jobs': 'experienced'
-        };
-        const portalUrl = portalMap[application.job_table] || '/';
-        const jobId = application.job_id;
-        const jobType = typeMap[application.job_table] || 'industrial';
-        return `
-            <div style="background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 10px; padding: 1rem; display: flex; align-items: center; gap: 0.75rem;">
-                <div style="flex-shrink: 0; width: 36px; height: 36px; background: linear-gradient(135deg, #3b82f6, #6366f1); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                    <i class="fas fa-shield-alt" style="color: white; font-size: 0.85rem;"></i>
-                </div>
-                <div style="flex: 1;">
-                    <p style="margin: 0 0 0.25rem; font-size: 0.85rem; font-weight: 600; color: #1e40af;">Recruiter contact verified &amp; protected</p>
-                    <p style="margin: 0; font-size: 0.78rem; color: #3b82f6;">Open the job portal to unlock application details instantly.</p>
-                </div>
-                <a href="${portalUrl}?id=${jobId}&type=${jobType}" target="_blank" style="flex-shrink: 0; padding: 0.5rem 0.9rem; background: linear-gradient(135deg, #3b82f6, #6366f1); color: white; border-radius: 8px; font-size: 0.8rem; font-weight: 600; text-decoration: none; white-space: nowrap;">
-                    View &amp; Unlock
-                </a>
-            </div>
-        `;
-    };
-
-    const applicationContentHtml = generateApplicationLinks(job['Application ID']);
+    const applicationContentHtml = renderApplyLoading();
 
     dom.modalBody.innerHTML = `
         <div class="modal-header">
@@ -567,27 +634,20 @@ function showJobModal(application) {
 
         ${application.isSaved ? `
         <div style="display: flex; gap: 0.65rem; flex-wrap: wrap;">
-            <a id="modalApplyNowBtn" href="${({
-                'Industrial Training Job Portal': '/',
-                'Fresher Jobs': '/ca-fresher-jobs.html',
-                'Semi Qualified Jobs': '/semi-qualified-ca-jobs.html',
-                'Articleship Jobs': '/ca-articleship-opportunities.html',
-                'Experienced CA Jobs': '/experienced-ca-jobs.html'
-            })[application.job_table] || '/'}?id=${application.job_id}&type=${{ 'Industrial Training Job Portal': 'industrial', 'Fresher Jobs': 'fresher', 'Semi Qualified Jobs': 'semi', 'Articleship Jobs': 'articleship', 'Experienced CA Jobs': 'experienced' }[application.job_table] || 'industrial'}" target="_blank" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.7rem 1.25rem; background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); color: #fff; border-radius: 12px; font-size: 0.88rem; font-weight: 700; text-decoration: none; box-shadow: 0 4px 12px rgba(59,130,246,0.25);">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                View &amp; Unlock Contact
-            </a>
+            <button id="modalApplyNowBtn" type="button" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.7rem 1.25rem; background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); color: #fff; border: none; border-radius: 12px; font-size: 0.88rem; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(59,130,246,0.25);">
+                ${APPLY_NOW_BTN_HTML}
+            </button>
         </div>
         ` : ''}
 
         <div class="modal-section">
             <h3><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>Apply here!</h3>
-            ${applicationContentHtml}
+            <div id="historyAppLinks">${applicationContentHtml}</div>
         </div>
 
         <div class="modal-section">
             <h3><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Job Description</h3>
-            <div class="modal-description">${renderMarkdown(job.Description)}</div>
+            <div class="modal-description" id="historyModalDescription">${renderMarkdown(job.Description)}</div>
         </div>
 
         <div class="modal-footer" style="text-align: center; padding: 1rem; border-top: 1px solid #e5e7eb; margin-top: 1rem;">
@@ -601,63 +661,100 @@ function showJobModal(application) {
     dom.modalOverlay.style.display = 'flex';
     document.body.style.overflow = 'hidden';
 
-    // Copy clipboards
-    const copyBtns = dom.modalBody.querySelectorAll('.modal-copy-btn');
-    copyBtns.forEach(copyBtn => {
-        copyBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const text = copyBtn.getAttribute('data-copy-text');
-            const icon = copyBtn.querySelector('i');
-            const originalClass = icon.className;
+    // Each modal open gets a token, so a slow unlock never paints into a modal
+    // the student has since closed or swapped for another job.
+    const modalToken = ++activeModalToken;
+    const isCurrentModal = () => modalToken === activeModalToken && dom.modalOverlay.style.display !== 'none';
+    const linksContainer = dom.modalBody.querySelector('#historyAppLinks');
+    const descriptionEl = dom.modalBody.querySelector('#historyModalDescription');
 
-            navigator.clipboard.writeText(text).then(() => {
-                icon.className = 'fas fa-check';
-                copyBtn.style.background = '#10b981';
-                setTimeout(() => {
-                    icon.className = originalClass;
-                    copyBtn.style.background = '#3b82f6';
-                }, 2000);
-            }).catch(err => {
-                console.error('Copy failed:', err);
-                alert('Failed to copy.');
-            });
-        });
-    });
+    const showUnlocked = (unlocked) => {
+        if (!isCurrentModal() || !linksContainer) return;
+        linksContainer.innerHTML = renderApplicationLinks(unlocked.applicationId);
+        bindCopyButtons(linksContainer);
+        if (unlocked.description && descriptionEl) {
+            descriptionEl.innerHTML = renderMarkdown(unlocked.description);
+        }
+    };
 
-    const executeApplyNow = async () => {
-        const applyNowBtn = dom.modalBody.querySelector('#modalApplyNowBtn');
-        const appId = job['Application ID'];
-        const firstLink = appId ? appId.split(',')[0].trim() : null;
-
-        let applyHref = null;
-        if (firstLink) {
-            if (firstLink.toLowerCase().startsWith('http')) {
-                applyHref = firstLink;
-            } else if (firstLink.includes('@')) {
-                applyHref = `mailto:${firstLink}`;
-            } else {
-                applyHref = `https://www.google.com/search?q=${encodeURIComponent(firstLink + ' careers')}`;
+    // Same BrowserGuard unlock the job portal uses, run right here in the tracker.
+    const unlockHere = async () => {
+        if (linksContainer) linksContainer.innerHTML = renderApplyLoading();
+        try {
+            const unlocked = await unlockApplication(application);
+            showUnlocked(unlocked);
+            return unlocked;
+        } catch (error) {
+            console.error('BrowserGuard unlock failed:', error);
+            if (isCurrentModal() && linksContainer) {
+                linksContainer.innerHTML = renderApplyError(error);
+                linksContainer.querySelector('.history-unlock-retry')?.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    unlockHere();
+                });
             }
+            return null;
         }
+    };
 
-        if (applyNowBtn) {
-            applyNowBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="font-size:0.9rem;"></i> Applying...';
+    const cached = getCachedUnlock(application);
+    if (cached) {
+        showUnlocked(cached);
+    } else if (application.isSaved) {
+        // Not applied yet: reveal on request, exactly like the portal's
+        // "View Application Details" button, but without leaving this page.
+        if (linksContainer) {
+            linksContainer.innerHTML = renderRevealButton();
+            linksContainer.querySelector('.history-reveal-btn')?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                unlockHere();
+            });
+        }
+    } else {
+        // Already applied: this is the student's own application, show it straight away.
+        unlockHere();
+    }
+
+    // Apply Now (saved view): unlock here, record the application, open the link.
+    const applyNowBtn = dom.modalBody.querySelector('#modalApplyNowBtn');
+    if (application.isSaved && applyNowBtn) {
+        applyNowBtn.addEventListener('click', async () => {
+            if (applyNowBtn.disabled) return;
             applyNowBtn.disabled = true;
-        }
+            applyNowBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="font-size:0.9rem;"></i> Applying...';
 
-        const success = await recordApplicationFromSaved(application);
+            // Open the tab inside the click so pop-up blockers allow it; point it at the link once known.
+            const applyTab = window.open('', '_blank');
 
-        if (success) {
-            const newApp = {
-                ...application,
-                isSaved: false,
-                applied_at: new Date().toISOString()
-            };
+            const unlocked = getCachedUnlock(application) || await unlockHere();
+            const applyHref = unlocked ? getApplyHref(unlocked.applicationId) : null;
+            const success = unlocked ? await recordApplicationFromSaved(application) : false;
+
+            if (!success) {
+                if (applyTab) applyTab.close();
+                applyNowBtn.disabled = false;
+                applyNowBtn.innerHTML = APPLY_NOW_BTN_HTML;
+                if (unlocked) alert('Failed to record application. Please try again.');
+                return;
+            }
+
+            if (applyHref) {
+                if (applyHref.startsWith('mailto:')) {
+                    if (applyTab) applyTab.close();
+                    window.location.href = applyHref;
+                } else if (applyTab) {
+                    applyTab.location.href = applyHref;
+                } else {
+                    window.open(applyHref, '_blank');
+                }
+            } else if (applyTab) {
+                applyTab.close();
+            }
+
+            const newApp = { ...application, applied_at: new Date().toISOString() };
             delete newApp.isSaved;
             allApplications.unshift(newApp);
-
             removeSavedJob(application.job_id, application.job_table);
-            closeModal();
 
             const appliedBtn = document.getElementById('appliedToggleBtn');
             const savedBtn = document.getElementById('savedToggleBtn');
@@ -667,24 +764,9 @@ function showJobModal(application) {
             filterAndSortApplications();
             updateCounts();
 
-            if (applyHref) window.open(applyHref, '_blank');
-        } else {
-            if (applyNowBtn) {
-                applyNowBtn.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg> Apply Now';
-                applyNowBtn.disabled = false;
-            }
-            alert('Failed to record application. Please try again.');
-        }
-    };
-
-    // Apply Now button (only in saved view)
-    if (application.isSaved) {
-        const applyNowBtn = dom.modalBody.querySelector('#modalApplyNowBtn');
-        if (applyNowBtn) {
-            applyNowBtn.addEventListener('click', async () => {
-                await executeApplyNow();
-            });
-        }
+            // Keep the popup open, now as an applied job with its details showing.
+            showJobModal(newApp);
+        });
     }
 }
 
