@@ -108,6 +108,16 @@ const TABLE_SLUG_MAP = {
     'Articleship Jobs': 'articleship'
 };
 
+// Articleship "Firm Type" is set from the firm's name by the database (migration 202611060003).
+// Big tiers are cumulative ("Big 6" also shows the Big 4); Mid-size and Small-size match exactly.
+const FIRM_TYPE_TIERS = {
+    'Big 4': ['Big 4'],
+    'Big 6': ['Big 4', 'Big 6'],
+    'Big 10': ['Big 4', 'Big 6', 'Big 10'],
+    'Big 20': ['Big 4', 'Big 6', 'Big 10', 'Big 20'],
+};
+const MID_SIZE_FIRM = 'Mid-size CA Firm';
+
 function getPublicJobSelectColumns(tableName) {
     // Keep recruiter metadata available for shared /job.html links.  The
     // Application ID remains protected, but without these fields a shared
@@ -529,7 +539,7 @@ function renderJobCard(job) {
             ${job.Experience ? `<span class="job-tag job-tag-exp"><i class="far fa-clock"></i> ${job.Experience}</span>` : ""}
             <span class="job-tag tag-primary"><i class="fas fa-briefcase"></i> ${primaryDomain}</span>
             ${companyType ? `<span class="job-tag"><i class="fas fa-building"></i> ${companyType}</span>` : ""}
-            ${firmType ? `<span class="job-tag"><i class="fas fa-file-alt"></i> ${firmType}</span>` : ""}
+            ${firmType && firmType !== MID_SIZE_FIRM ? `<span class="job-tag"><i class="fas fa-file-alt"></i> ${firmType}</span>` : ""}
             ${industryType ? `<span class="job-tag job-tag-industry"><i class="fas fa-chart-line"></i> ${industryType}</span>` : ""}
             ${secondaryDomain ? `<span class="job-tag tag-secondary">${secondaryDomain}</span>` : ""}
         </div>
@@ -1599,7 +1609,8 @@ async function fetchJobs() {
                 q = q.eq('Industry Type', state.industryType);
             }
             if (state.firmType && currentTable === "Articleship Jobs") {
-                q = q.eq('Firm Type', state.firmType);
+                const tiers = FIRM_TYPE_TIERS[state.firmType];
+                q = tiers ? q.in('Firm Type', tiers) : q.eq('Firm Type', state.firmType);
             }
 
             if (state.applicationStatus === 'not_applied' && currentSession && appliedJobIds.size > 0) {
