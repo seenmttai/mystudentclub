@@ -393,8 +393,36 @@ export const FILTERS_BY_PORTAL = {
     [PORTALS.SEMI]: SEMI
 };
 
-export function filtersFor(portal) {
-    return FILTERS_BY_PORTAL[portal] || [];
+// Firm size (Articleship) and Company Type (the rest). The www pages have their own dropdowns for
+// these; mobile.mystudentclub.com shows them through this module (options.withTypeFilters).
+const FIRM_SIZE = {
+    key: 'firmSize', label: 'Firm size', kind: 'select',
+    options: () => [opt('', 'Any'), opt('Big 4'), opt('Big 6'), opt('Big 10'), opt('Mid-size CA Firm'), opt('Small-size CA Firm'), opt('Other', 'Other CA firms')],
+    apply: (q, v) => q.eq('firm_size', v),
+    pill: v => v
+};
+
+const COMPANY_TYPE = {
+    key: 'companyType', label: 'Company type', kind: 'select',
+    options: () => [opt('', 'Any'), opt('Big 4'), opt('Big 6'), opt('MNC'), opt('Global Capability Centre (GCC)'), opt('Listed Company'),
+        opt('Unlisted Company'), opt('Startup'), opt('Unicorn'), opt('Bank / NBFC'), opt('Investment Bank'), opt('PE / VC Fund'),
+        opt('Consulting'), opt('CA Firm'), opt('Government / PSU'), opt('Family-Owned Business'), opt('Other')],
+    apply: (q, v) => q.or(companyTypeFilter(v)),
+    pill: v => v
+};
+
+// employer_type holds the Company Type in these labels; a posted "Company Type" always matches too,
+// and both spellings of Consulting are the same thing.
+export function companyTypeFilter(value) {
+    const aliases = (value === 'Consulting' || value === 'Consulting Firm') ? ['Consulting', 'Consulting Firm'] : [value];
+    const quote = v => `"${String(v).replace(/"/g, '')}"`;
+    return aliases.map(v => `employer_type.eq.${quote(v)}`).concat(aliases.map(v => `"Company Type".eq.${quote(v)}`)).join(',');
+}
+
+export function filtersFor(portal, { withTypeFilters = false } = {}) {
+    const defs = FILTERS_BY_PORTAL[portal] || [];
+    if (!withTypeFilters || defs.length === 0) return defs;
+    return [portal === PORTALS.ARTICLESHIP ? FIRM_SIZE : COMPANY_TYPE].concat(defs);
 }
 
 function isSet(value) {
@@ -403,8 +431,8 @@ function isSet(value) {
 }
 
 // Narrow a Supabase query by every filter the student has set.
-export function applyJobFilters(q, portal, values = {}, now = new Date()) {
-    for (const def of filtersFor(portal)) {
+export function applyJobFilters(q, portal, values = {}, now = new Date(), options = {}) {
+    for (const def of filtersFor(portal, options)) {
         const value = values[def.key];
         if (!isSet(value)) continue;
         q = def.apply(q, value, now) || q;
@@ -413,9 +441,9 @@ export function applyJobFilters(q, portal, values = {}, now = new Date()) {
 }
 
 // One entry per chosen value, for the "active filters" pills: { key, value, label }.
-export function describeJobFilters(portal, values = {}) {
+export function describeJobFilters(portal, values = {}, options = {}) {
     const out = [];
-    for (const def of filtersFor(portal)) {
+    for (const def of filtersFor(portal, options)) {
         const value = values[def.key];
         if (!isSet(value)) continue;
         if (Array.isArray(value)) {
@@ -446,25 +474,30 @@ function escapeHtml(text) {
 
 // Render the controls for a portal into `container`. `getValues()` returns the current values,
 // `onChange(nextValues)` is called on every change (the caller decides whether to fetch now).
-export function renderJobFilters(container, portal, { getValues, onChange, idPrefix = 'jf', now = new Date(), payKind = 'monthly' }) {
+// `classes` lets each site use its own form styles.
+export function renderJobFilters(container, portal, {
+    getValues, onChange, idPrefix = 'jf', now = new Date(), payKind = 'monthly', withTypeFilters = false,
+    classes = { group: 'filter-group', label: '', select: 'filter-control', text: 'multi-select-input' }
+}) {
     if (!container) return;
-    const defs = filtersFor(portal);
+    const defs = filtersFor(portal, { withTypeFilters });
     const ctx = { now, payKind };
     container.innerHTML = defs.map(def => {
         const id = `${idPrefix}-${def.key}`;
         let control = '';
         if (def.kind === 'select') {
-            control = `<select id="${id}" class="filter-control jf-select" data-key="${def.key}">${def.options(ctx)
+            control = `<select id="${id}" class="${classes.select || ''} jf-select" data-key="${def.key}">${def.options(ctx)
                 .map(o => `<option value="${escapeHtml(o.value)}">${escapeHtml(o.label)}</option>`).join('')}</select>`;
         } else if (def.kind === 'chips') {
             const options = def.options(ctx);
             control = `<div class="jf-chip-options" data-key="${def.key}">${options
                 .map(o => `<button type="button" class="jf-chip" data-key="${def.key}" data-value="${escapeHtml(o.value)}" aria-pressed="false">${escapeHtml(o.label)}</button>`).join('')}</div>`;
         } else if (def.kind === 'text') {
-            control = `<input type="text" id="${id}" class="multi-select-input jf-text" data-key="${def.key}" placeholder="${escapeHtml(def.placeholder || '')}" autocomplete="off">`;
+            control = `<input type="text" id="${id}" class="${classes.text || ''} jf-text" data-key="${def.key}" placeholder="${escapeHtml(def.placeholder || '')}" autocomplete="off">`;
         }
         const labelFor = def.kind === 'chips' ? '' : ` for="${id}"`;
-        return `<div class="filter-group jf-group" data-key="${def.key}"><label${labelFor}>${escapeHtml(def.label)}</label>${control}</div>`;
+        const labelClass = classes.label ? ` class="${classes.label}"` : '';
+        return `<div class="${classes.group || ''} jf-group" data-key="${def.key}"><label${labelFor}${labelClass}>${escapeHtml(def.label)}</label>${control}</div>`;
     }).join('');
 
     container.querySelectorAll('.jf-select').forEach(select => {

@@ -148,13 +148,16 @@ test('only a missing filter column switches the structured filters off', () => {
   assert.equal(isMissing({ code: '42703', message: 'column Fresher Jobs.shift_type does not exist' }), false);
 });
 
-test('Company Type also matches the posted value and the Consulting spelling of each page', () => {
-  const src = read('scripts/portal3.js');
-  const fn = src.match(/function companyTypeFilter\(value\) \{[\s\S]*?\n\}/)[0];
-  const companyTypeFilter = new Function(`${fn}; return companyTypeFilter;`)();
+test('Company Type also matches the posted value and the Consulting spelling of each page', async () => {
+  const { companyTypeFilter, filtersFor } = await load();
   assert.equal(companyTypeFilter('MNC'), 'employer_type.eq."MNC","Company Type".eq."MNC"');
   assert.equal(companyTypeFilter('Consulting Firm'),
     'employer_type.eq."Consulting",employer_type.eq."Consulting Firm","Company Type".eq."Consulting","Company Type".eq."Consulting Firm"');
+  assert.match(read('scripts/portal3.js'), /companyTypeFilter, applyJobFilters/);
+  // mobile.mystudentclub.com has no Firm/Company Type dropdowns of its own, so it asks for them here.
+  assert.equal(filtersFor('articleship', { withTypeFilters: true })[0].key, 'firmSize');
+  assert.equal(filtersFor('semi', { withTypeFilters: true })[0].key, 'companyType');
+  assert.ok(!filtersFor('semi').some(f => f.key === 'companyType'));
 });
 
 test('closing the phone sheet without "Show Jobs" throws away its structured filter changes', () => {

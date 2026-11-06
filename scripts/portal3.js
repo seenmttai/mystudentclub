@@ -2,7 +2,7 @@ import { getDaysAgo, isJobExpired } from './date-utils.js';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 import { unlockJobDetails, getCachedUnlockedJob } from './browser-guard.js';
 import { calculateProfileCompletion as calculateSharedProfileCompletion, readCachedProfile } from './profile-completion.js';
-import { portalFor, extraSelectColumns, applyJobFilters, describeJobFilters, withoutFilterValue, renderJobFilters, syncJobFilters, formatPayRange, formatDeadline } from './job-filters.js';
+import { portalFor, extraSelectColumns, companyTypeFilter, applyJobFilters, describeJobFilters, withoutFilterValue, renderJobFilters, syncJobFilters, formatPayRange, formatDeadline } from './job-filters.js';
 
 function isSalaryDisclosed(val) {
     if (!val) return false;
@@ -1882,14 +1882,6 @@ function isMissingFilterColumnError(error) {
     if (!missing) return false;
     const named = message.match(/'([a-z_]+)' column/i) || message.match(/column\s+(?:[^\n]*\.)?"?([a-z_]+)"?\s+does not exist/i);
     return Boolean(named && FILTER_COLUMN_NAMES.includes(named[1]));
-}
-
-// The Industrial Training page says "Consulting Firm" where the others say "Consulting"; a posted
-// "Company Type" always matches as well.
-function companyTypeFilter(value) {
-    const aliases = (value === 'Consulting' || value === 'Consulting Firm') ? ['Consulting', 'Consulting Firm'] : [value];
-    const quote = v => `"${String(v).replace(/"/g, '')}"`;
-    return aliases.map(v => `employer_type.eq.${quote(v)}`).concat(aliases.map(v => `"Company Type".eq.${quote(v)}`)).join(',');
 }
 
 function disableStructuredFilters() {
