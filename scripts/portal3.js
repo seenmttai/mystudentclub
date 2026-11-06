@@ -177,7 +177,8 @@ const JOB_TYPES_NOTIF = [
     { value: "industrial", label: "Industrial Training" },
     { value: "semi", label: "Semi Qualified" },
     { value: "fresher", label: "Fresher" },
-    { value: "articleship", label: "Articleship" }
+    { value: "articleship", label: "Articleship" },
+    { value: "experienced", label: "Experienced CA" }
 ];
 const LOCATIONS_NOTIF = ["mumbai", "bangalore", "gurgaon", "pune", "kolkata", "delhi", "noida", "hyderabad", "ahmedabad", "chennai", "jaipur"];
 
@@ -188,6 +189,7 @@ function getTypeWideTopicForJobType(jobType) {
     if (jobType === 'industrial') return 'Industrial-all';
     if (jobType === 'fresher') return 'fresher-all';
     if (jobType === 'semi') return 'semi-all';
+    if (jobType === 'experienced') return 'experienced-all';
     if (jobType === 'articleship') return 'articleship-all';
     return null;
 }
@@ -3062,6 +3064,7 @@ function formatTopicForDisplay(topic) {
     if (topic === 'fresher-all') return { location: 'All India', jobType: 'Fresher' };
     if (topic === 'semi-all') return { location: 'All India', jobType: 'Semi Qualified' };
     if (topic === 'articleship-all') return { location: 'All India', jobType: 'Articleship' };
+    if (topic === 'experienced-all') return { location: 'All India', jobType: 'Experienced CA' };
 
     const parts = topic.split('-');
     if (parts.length < 2) return { location: topic, jobType: '' };
