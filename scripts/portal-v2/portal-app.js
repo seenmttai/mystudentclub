@@ -1089,6 +1089,13 @@ export function mountPortalApp(host) {
 
     // ---------------------------------------------------------------- boot
 
+    // Phones show only part of the tab strip: bring the current portal's tab into view (no page scroll).
+    const tabs = document.querySelector('.pv2-tabs');
+    const currentTab = tabs?.querySelector('[aria-current="page"]');
+    if (tabs && currentTab && tabs.scrollWidth > tabs.clientWidth) {
+        tabs.scrollLeft = currentTab.offsetLeft - (tabs.clientWidth - currentTab.offsetWidth) / 2;
+    }
+
     if (el.search) el.search.value = state.filters.q;
     if (el.sort) {
         el.sort.innerHTML = Object.entries(SORTS).map(([value, label]) => `<option value="${value}"${value === state.sort ? ' selected' : ''}>${escapeHtml(label === 'Highest pay' ? `Highest ${portal.payLabel.toLowerCase()}` : label)}</option>`).join('');

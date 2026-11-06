@@ -103,6 +103,7 @@ html.pv2-noscroll body {
 }
 
 .pv2-tabs {
+  position: relative;
   display: flex;
   gap: 4px;
   padding: 4px;
