@@ -118,7 +118,7 @@ function getPublicJobSelectColumns(tableName) {
     } else if (tableName === 'Semi Qualified Jobs') {
         columns += ', Experience, "Secondary Domain", Tags, "Company Type", "Industry Type"';
     } else if (tableName === 'Industrial Training Job Portal') {
-        columns += ', "Company Type", "Industry Type", "Stipend Range", "Functional Tags", "Technology Tags", is_exclusive';
+        columns += ', "Company Type", "Industry Type", "Stipend Range", "Functional Tags", "Technology Tags", is_exclusive, joining_label';
     } else if (tableName === 'Articleship Jobs') {
         columns += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range"';
     }
@@ -481,6 +481,7 @@ function renderJobCard(job) {
             </div>`);
     const infoRowHtml = infoRowItems.length ? `<div class="job-card-info-row">${infoRowItems.join('')}</div>` : '';
     const descriptionText = job.Description ? job.Description.replace(/[#*_`\[\]]/g, '').trim() : '';
+    const joiningLabel = currentTable === 'Industrial Training Job Portal' ? (job.joining_label || '') : '';
     const isLocked = isExclusive && !isEnrolledSync(currentTable);
     let applyButtonHtml = '';
     if (isLocked) {
@@ -528,6 +529,7 @@ function renderJobCard(job) {
             </span>
             ${job.Experience ? `<span class="job-tag job-tag-exp"><i class="far fa-clock"></i> ${job.Experience}</span>` : ""}
             <span class="job-tag tag-primary"><i class="fas fa-briefcase"></i> ${primaryDomain}</span>
+            ${joiningLabel ? `<span class="job-tag tag-joining"><i class="far fa-calendar-check"></i> ${joiningLabel}</span>` : ""}
             ${companyType ? `<span class="job-tag"><i class="fas fa-building"></i> ${companyType}</span>` : ""}
             ${firmType ? `<span class="job-tag"><i class="fas fa-file-alt"></i> ${firmType}</span>` : ""}
             ${industryType ? `<span class="job-tag job-tag-industry"><i class="fas fa-chart-line"></i> ${industryType}</span>` : ""}
@@ -1102,6 +1104,7 @@ function showModal(job) {
             ${isSalaryDisclosed(compDisplay) ? `<span class="job-tag">${compLabel}: ${compDisplay}</span>` : ''}
             <span class="job-tag">Posted: ${postedDate}</span>
             <span class="job-tag" style="background-color: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; font-weight: 600;">Category: ${primaryDomain}</span>
+            ${currentTable === 'Industrial Training Job Portal' && job.joining_label ? `<span class="job-tag tag-joining"><i class="far fa-calendar-check" style="margin-right: 4px;"></i>${job.joining_label}</span>` : ''}
             ${job['Secondary Domain'] ? `<span class="job-tag" style="background-color: #e0f2fe; color: #0369a1; border-color: #bae6fd;">Secondary: ${job['Secondary Domain']}</span>` : ''}
             ${job['Company Type'] ? `<span class="job-tag"><i class="fas fa-building" style="margin-right: 4px;"></i>${job['Company Type']}</span>` : ''}
             ${job['Firm Type'] ? `<span class="job-tag"><i class="fas fa-briefcase" style="margin-right: 4px;"></i>${job['Firm Type']}</span>` : ''}
@@ -1505,7 +1508,7 @@ async function fetchJobs() {
         } else if (currentTable === "Semi Qualified Jobs") {
             selectColumns += ', Experience, "Secondary Domain", Tags, "Company Type", "Industry Type"';
         } else if (currentTable === "Industrial Training Job Portal") {
-            selectColumns += ', "Company Type", "Industry Type", "Stipend Range", "Functional Tags", "Technology Tags", is_exclusive';
+            selectColumns += ', "Company Type", "Industry Type", "Stipend Range", "Functional Tags", "Technology Tags", is_exclusive, joining_label';
         } else if (currentTable === "Articleship Jobs") {
             selectColumns += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range"';
         }
