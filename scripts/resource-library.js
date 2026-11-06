@@ -114,11 +114,6 @@
         const group = inferResourceGroup(resource);
         return collectionNames.includes(group) ? group : inferResourceGroup({ ...resource, group_name: '' });
     }
-    function countByCategory(resources) {
-        const counts = Object.fromEntries(collectionNames.map(name => [name, 0]));
-        for (const resource of resources) counts[resourceCategory(resource)]++;
-        return counts;
-    }
     function sanitizeCatalogue(rows, program) {
         const seen = new Set();
         return (Array.isArray(rows) ? rows : []).flatMap(row => {
@@ -166,7 +161,7 @@
             }))
         }));
     }
-    const exports = { cleanFileName, sanitizeCatalogue, pages, programs, hasProgramEnrollment, compareResourceTitles, organizeResources, searchResources, inferResourceGroup, groupPremiumResources, resourceCategory, countByCategory, categoryNames: collectionNames };
+    const exports = { cleanFileName, sanitizeCatalogue, pages, programs, hasProgramEnrollment, compareResourceTitles, organizeResources, searchResources, inferResourceGroup, groupPremiumResources, resourceCategory, categoryNames: collectionNames };
     if (typeof module !== 'undefined' && module.exports) module.exports = exports;
     global.MSCResourceLibrary = exports;
     if (typeof document === 'undefined') return;
@@ -416,8 +411,6 @@
     function renderPremiumResults(focusGroup) {
         const grid = document.getElementById('premium-resources-list');
         if (!grid) return;
-        // A refresh can remove every resource of the chosen category; fall back to all.
-        if (catalogueLoaded && selectedCategory !== 'all' && !premiumRows.some(resource => resourceCategory(resource) === selectedCategory)) selectedCategory = 'all';
         const scoped = selectedCategory === 'all' ? premiumRows : premiumRows.filter(resource => resourceCategory(resource) === selectedCategory);
         const days = groupPremiumResources(scoped);
         const filters = document.getElementById('premium-day-filters');
@@ -493,32 +486,20 @@
         updateCategoryUI();
     }
     // ─── Discovery hub: category tiles, "All categories" menu, top search and chips ───
-    const plural = (n, word, many = word + 's') => n + ' ' + (n === 1 ? word : many);
-    function availableCategories() {
-        if (!catalogueLoaded) return collectionNames.map(name => ({ name, count: null }));
-        const counts = countByCategory(premiumRows);
-        return collectionNames.filter(name => counts[name] > 0).map(name => ({ name, count: counts[name] }));
+    // Categories and their counts are the tiles written in the page, so the menu always matches the tiles.
+    function pageCategories() {
+        return [...document.querySelectorAll('.category-tile[data-category]')].map(tile => ({
+            name: tile.dataset.category,
+            count: (tile.querySelector('.tile-content p')?.textContent.match(/\d+/) || [null])[0]
+        }));
     }
     function updateCategoryUI() {
-        const available = availableCategories();
-        const counts = new Map(available.map(category => [category.name, category.count]));
-        const tiles = document.querySelectorAll('.category-tile[data-category]');
-        tiles.forEach(tile => {
+        document.querySelectorAll('.category-tile[data-category]').forEach(tile => {
             const name = tile.dataset.category;
-            const count = counts.get(name);
-            const label = tile.querySelector('.tile-content p');
-            // Counts come from this page's own premium catalogue, so every programme shows its real numbers.
-            tile.hidden = catalogueLoaded && !counts.has(name);
-            if (label) label.textContent = catalogueLoaded ? plural(count || 0, 'premium resource') : (catalogueError ? 'Premium resources' : 'Loading…');
+            const countText = tile.querySelector('.tile-content p')?.textContent.trim();
             tile.setAttribute('aria-pressed', String(selectedCategory === name));
-            tile.setAttribute('aria-label', name + (catalogueLoaded ? ', ' + plural(count || 0, 'premium resource') : '') + '. Show in Premium Resources');
+            tile.setAttribute('aria-label', name + (countText ? ', ' + countText : '') + '. Show in Premium Resources');
         });
-        const hub = document.querySelector('.resource-categories-hub-section');
-        if (hub && tiles.length) {
-            hub.hidden = catalogueLoaded && available.length === 0;
-            const pill = hub.querySelector('.hub-badge-pill');
-            if (pill) pill.textContent = plural(available.length, 'Category', 'Categories');
-        }
         const selectedLabel = document.getElementById('hubCategorySelectedLabel');
         if (selectedLabel) selectedLabel.textContent = selectedCategory === 'all' ? 'All categories' : selectedCategory;
         const bar = document.getElementById('premium-category-filter');
@@ -526,19 +507,18 @@
             bar.hidden = selectedCategory === 'all';
             const text = bar.querySelector('.premium-category-filter-text');
             if (text && selectedCategory !== 'all') {
-                text.replaceChildren(element('span', 'premium-category-filter-badge', 'Premium'), element('strong', '', selectedCategory));
-                const count = counts.get(selectedCategory);
-                if (count) text.append(document.createTextNode(' · ' + plural(count, 'resource') + ' included with the ' + programs[config.premiumProgram].title));
+                text.replaceChildren(element('span', 'premium-category-filter-badge', 'Premium'), element('strong', '', selectedCategory),
+                    document.createTextNode(' · included with the ' + programs[config.premiumProgram].title));
             }
         }
-        renderCategoryMenu(available);
+        renderCategoryMenu(pageCategories());
     }
     function renderCategoryMenu(available) {
         const menu = document.getElementById('hub-category-menu');
         if (!menu) return;
         const focusedKey = menu.contains(document.activeElement) ? document.activeElement.dataset.category : null;
         menu.replaceChildren();
-        [{ name: 'all', label: 'All categories', count: catalogueLoaded ? premiumRows.length : null }, ...available.map(category => ({ ...category, label: category.name }))].forEach(category => {
+        [{ name: 'all', label: 'All categories', count: null }, ...available.map(category => ({ ...category, label: category.name }))].forEach(category => {
             const item = element('button', 'hub-category-menu-item');
             item.type = 'button';
             item.dataset.category = category.name;

@@ -379,31 +379,18 @@ const mixedRows = program => [
     {program_type:program, title:'Mock Interview Questions', category:'interview-guidance', sort_order:10}
 ];
 
-test('category tiles show each page\'s own premium counts, not one hard-coded set', async () => {
-    for (const slug of ['ca-industrial-training-resources','ca-fresher-training-resources','articleship-resources','semi-qualified-ca-resources']) {
-        const html = fs.readFileSync(path.join(root, slug + '.html'), 'utf8');
-        assert.doesNotMatch(html, /<p>\d+ resources<\/p>/, slug + ' has no hard-coded tile counts');
+test('every resource page keeps the same 11 category tiles and counts, whatever the catalogue holds', async () => {
+    const expected = ['62','5','3','12','17','9','2','5','5','21','14'];
+    for (const [slug, program] of [['ca-industrial-training-resources','industrial-training'],['ca-fresher-training-resources','ca-fresher'],['articleship-resources','articleship'],['semi-qualified-ca-resources','industrial-training']]) {
+        const dom = await render(slug, async () => ({data: mixedRows(program)}));
+        try {
+            const doc = dom.window.document;
+            const tiles = [...doc.querySelectorAll('.category-tile')];
+            assert.deepEqual(tiles.map(tile => tile.querySelector('p').textContent), expected.map(n => n + ' resources'), slug);
+            assert.ok(tiles.every(tile => !tile.hidden), slug + ' shows every tile');
+            assert.equal(doc.querySelector('.hub-badge-pill').textContent, '11 Categories');
+        } finally { dom.window.close(); }
     }
-    const industrial = await render('ca-industrial-training-resources', async () => ({data: rowsForTemplates(62)}));
-    const articleship = await render('articleship-resources', async () => ({data: mixedRows('articleship')}));
-    try {
-        const iDoc = industrial.window.document, aDoc = articleship.window.document;
-        assert.equal(tileCount(iDoc, 'CV Templates').querySelector('p').textContent, '62 premium resources');
-        assert.equal(tileCount(aDoc, 'CV Templates').querySelector('p').textContent, '4 premium resources');
-        assert.equal(tileCount(aDoc, 'Cover Letter Templates').querySelector('p').textContent, '1 premium resource');
-        assert.ok(tileCount(aDoc, 'WhatsApp Communities').hidden, 'empty categories are hidden');
-        assert.equal(aDoc.querySelector('.hub-badge-pill').textContent, '4 Categories');
-        assert.equal(iDoc.querySelector('.hub-badge-pill').textContent, '1 Category');
-    } finally { industrial.window.close(); articleship.window.close(); }
-});
-
-test('semi-qualified tiles count the industrial training catalogue', async () => {
-    const programs = [];
-    const dom = await render('semi-qualified-ca-resources', async (_, args) => { programs.push(args.p_program); return {data: rowsForTemplates(62)}; });
-    try {
-        assert.deepEqual(programs, ['industrial-training']);
-        assert.equal(tileCount(dom.window.document, 'CV Templates').querySelector('p').textContent, '62 premium resources');
-    } finally { dom.window.close(); }
 });
 
 test('clicking a category tile filters, highlights and focuses the premium section on every page', async () => {
@@ -423,7 +410,7 @@ test('clicking a category tile filters, highlights and focuses the premium secti
             assert.equal(doc.activeElement, doc.querySelector('#resource-premium'));
             const bar = doc.querySelector('#premium-category-filter');
             assert.ok(!bar.hidden);
-            assert.match(bar.textContent, /Premium.*CV Templates.*4 resources/);
+            assert.match(bar.querySelector(".premium-category-filter-text").textContent, /^Premium\s*CV Templates · included with the MSC .+ Program$/);
             assert.equal(doc.querySelector('#hubCategorySelectedLabel').textContent, 'CV Templates');
             // Keyboard users get the same action.
             tileCount(doc, 'Excel Practice').dispatchEvent(new dom.window.KeyboardEvent('keydown', {key:'Enter', bubbles:true}));
@@ -449,7 +436,10 @@ test('the All categories button opens a menu that filters premium resources', as
         assert.ok(!menu.hidden);
         assert.equal(button.getAttribute('aria-expanded'), 'true');
         const items = [...menu.querySelectorAll('[role="menuitemradio"]')];
-        assert.deepEqual(items.map(item => item.firstChild.textContent), ['All categories','CV Templates','Cover Letter Templates','Interview Preparation','Excel Practice']);
+        assert.equal(items.length, 12, 'All categories + the 11 tiles');
+        assert.equal(items[0].firstChild.textContent, 'All categories');
+        assert.equal(items[1].firstChild.textContent, 'CV Templates');
+        assert.equal(items[1].querySelector('.hub-category-menu-count').textContent, '62', 'menu count matches the tile');
         assert.equal(items[0].getAttribute('aria-checked'), 'true');
         assert.equal(doc.activeElement, items[0]);
         menu.dispatchEvent(new dom.window.KeyboardEvent('keydown', {key:'ArrowDown', bubbles:true}));
@@ -507,20 +497,15 @@ test('hub search keeps focus in the search box, and every resource page loads th
     } finally { dom.window.close(); }
 });
 
-test('a category that disappears after a catalogue refresh falls back to all categories', async () => {
-    let rows = mixedRows('articleship');
-    const dom = await render('articleship-resources', async () => ({data: rows}));
+test('a category with no premium resources yet still opens Premium with a clear message', async () => {
+    const dom = await render('ca-fresher-training-resources', async () => ({data: mixedRows('ca-fresher')}));
     try {
         const doc = dom.window.document;
-        tileCount(doc, 'Excel Practice').click();
-        assert.equal(doc.querySelector('#hubCategorySelectedLabel').textContent, 'Excel Practice');
-        rows = rows.filter(row => !/Excel/.test(row.title));
-        dom.window.Date.now = () => Date.now() + 120000;
-        dom.window.dispatchEvent(new dom.window.Event('focus'));
-        await tick(); await tick();
-        assert.ok(tileCount(doc, 'Excel Practice').hidden);
-        assert.equal(doc.querySelector('#hubCategorySelectedLabel').textContent, 'All categories');
-        assert.ok(doc.querySelector('#premium-category-filter').hidden);
-        assert.equal(groupsIn(doc).length, 3);
+        tileCount(doc, 'WhatsApp Communities').click();
+        assert.equal(doc.querySelector('#hubCategorySelectedLabel').textContent, 'WhatsApp Communities');
+        assert.equal(groupsIn(doc).length, 0);
+        const empty = doc.querySelector('#premium-resources-empty');
+        assert.ok(!empty.hidden);
+        assert.match(empty.textContent, /No premium WhatsApp Communities resources yet/);
     } finally { dom.window.close(); }
 });
