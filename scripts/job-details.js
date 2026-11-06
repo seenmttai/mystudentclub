@@ -1,632 +1,185 @@
+// /jobs?id=…&type=… : one vacancy on its own page (job portal v2, 6 Nov 2026).
+// It shows the same detail as the portal drawer. Applying happens in the portal (the drawer owns the BrowserGuard
+// unlock, Easy Apply profile checks, AI Apply and application records), so every apply button here opens the
+// vacancy there through /job.html. Public columns only: no Application ID, Apply_Link or posts_link is fetched.
 
-import { getDaysAgo, isJobExpired } from './date-utils.js';
-import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
+import {
+    canSeeApplyDetails,
+    cardHeadline,
+    companyName,
+    detailColumns,
+    escapeHtml,
+    peersSearchUrl,
+    portalFromJobType,
+    PORTALS,
+    publicJob,
+    selectWithFallback,
+    shareUrl,
+} from './portal-v2/jobs-core.js?v=1';
+import { detailHtml } from './portal-v2/job-view.js?v=1';
 
-function isSalaryDisclosed(val) {
-    if (!val) return false;
-    const clean = val.toString().replace(/[₹\s\-\.]/g, '').toLowerCase();
-    return clean !== '' && clean !== 'notdisclosed' && clean !== 'nil' && clean !== 'null' && clean !== 'na';
-}
+const SAVED_KEY = 'msc_saved_jobs';
+const supabaseClient = window.supabaseClient || (typeof window.getSupabaseClient === 'function' ? window.getSupabaseClient() : null);
 
-const supabaseUrl = 'https://auth.mystudentclub.com';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
-
-const JOB_TITLE_MAP = {
-    "Industrial Training Job Portal": "Industrial Trainee",
-    "Fresher Jobs": "CA Fresher",
-    "Semi Qualified Jobs": "Semi Qualified Chartered Accountant",
-    "Articleship Jobs": "Articleship Trainee"
+const TABLE_TO_PORTAL = {
+    'Industrial Training Job Portal': PORTALS.industrial,
+    'Fresher Jobs': PORTALS.fresher,
+    'Semi Qualified Jobs': PORTALS.semi,
+    'Articleship Jobs': PORTALS.articleship,
 };
 
-const TABLE_MAP = {
-    "industrial": "Industrial Training Job Portal",
-    "fresher": "Fresher Jobs",
-    "semi": "Semi Qualified Jobs",
-    "semi-qualified": "Semi Qualified Jobs",
-    "articleship": "Articleship Jobs"
-};
+const state = { session: null, courses: [], job: null, portal: PORTALS.industrial };
 
-let currentSession = null;
-const pendingApplications = new Set();
-const completedApplications = new Set();
-
-function isRecruiterPostedJob(job) {
-    const applicationId = String(job?.['Application ID'] || '').trim().toLowerCase();
-    return Boolean(job && (
-        job.posted_by ||
-        job.hirer_email ||
-        job['posted_by'] ||
-        job['hirer_email'] ||
-        applicationId === 'recruit@mystudentclub.com'
-    ));
+function portalFromParams(params) {
+    const type = params.get('type') || params.get('table') || '';
+    return TABLE_TO_PORTAL[type] || portalFromJobType(type, PORTALS.industrial);
 }
 
-async function recordRecruiterApplication(job, buttonElement, tableName) {
-    if (!currentSession) {
-        window.location.href = `/login.html?redirect=${encodeURIComponent(window.location.href)}`;
-        return;
-    }
-    if (!isProfileComplete()) {
-        showResumeRedirectModal();
-        return false;
-    }
-    const applicationKey = `${tableName}:${job.id}`;
-    if (pendingApplications.has(applicationKey) || completedApplications.has(applicationKey)) {
-        showToast('Already applied to this vacancy.', 'info');
-        return;
-    }
-    pendingApplications.add(applicationKey);
-
-    const originalText = buttonElement.innerHTML;
-    buttonElement.disabled = true;
-    buttonElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Applying...';
+function readSaved() {
     try {
-        const { error } = await supabaseClient.from('job_applications').insert({
-            user_id: currentSession.user.id, job_id: job.id, job_table: tableName, applied_at: new Date().toISOString()
-        });
-        if (error && error.code !== '23505') throw error;
-        completedApplications.add(applicationKey);
-        buttonElement.classList.add('applied');
-        buttonElement.innerHTML = '<i class="fas fa-check"></i> Applied';
-        buttonElement.disabled = false;
-        showToast('Application submitted to the hirer dashboard.', 'success');
-    } catch (error) {
-        console.error('Application exception:', error);
-        buttonElement.disabled = false;
-        buttonElement.innerHTML = originalText;
-        showToast('Unable to submit your application. Please try again.', 'error');
-    } finally {
-        pendingApplications.delete(applicationKey);
-    }
-}
-
-async function init() {
-    currentSession = await getCurrentSession();
-    if (currentSession && currentSession.user) {
-        await hydrateProfileForCompletion();
-        prefetchEnrollmentStatus(currentSession.user.id);
-    }
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get('id');
-
-    let tableParam = params.get('type') || params.get('table');
-
-    setBackLink(tableParam);
-
-    if (!id) {
-        showError('No job ID specified.');
-        return;
-    }
-
-    let tableName = 'Industrial Training Job Portal';
-    if (tableParam) {
-        if (TABLE_MAP[tableParam]) tableName = TABLE_MAP[tableParam];
-        else if (Object.values(TABLE_MAP).includes(tableParam)) tableName = tableParam;
-    }
-
-    try {
-        await fetchJobDetails(id, tableName);
-    } catch (error) {
-        showError('Job not found or error loading details.');
-        console.error(error);
-    }
-}
-
-async function hydrateProfileForCompletion() {
-    const profileState = window.MSCProfileState;
-    if (!profileState || !currentSession?.user?.id) return;
-
-    try {
-        profileState.prepareUserCache(currentSession.user.id);
-        const hydrated = await profileState.hydrateProfileFromSupabase(supabaseClient, currentSession.user);
-        if (hydrated?.data?.ocr_cv) {
-            localStorage.setItem('userCVText', hydrated.data.ocr_cv);
-        }
-    } catch (error) {
-        // A cached profile can still be used by the shared checker when the
-        // network is unavailable, so do not make the job page fail to render.
-        console.warn('Could not refresh profile before Easy Apply:', error);
-    }
-}
-
-function setBackLink(type) {
-    const backLink = document.getElementById('backLink');
-    const backLinkText = document.getElementById('backLinkText');
-
-    if (!backLink || !backLinkText) return;
-
-    const portalMap = {
-        'industrial': { url: '/', label: 'Industrial Training' },
-        'fresher': { url: '/ca-fresher-jobs', label: 'Fresher Jobs' },
-        'semi': { url: '/semi-qualified-ca-jobs', label: 'Semi Qualified' },
-        'semi-qualified': { url: '/semi-qualified-ca-jobs', label: 'Semi Qualified' },
-        'articleship': { url: '/ca-articleship-opportunities', label: 'Articleship' }
-    };
-
-    const portal = portalMap[type] || portalMap['industrial'];
-    backLink.href = portal.url;
-    backLinkText.textContent = 'Back to jobs';
-}
-
-function renderMarkdown(text) {
-    if (!text) return 'No description provided.';
-
-    let html = text
-        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-        .replace(/__(.+?)__/g, '<strong>$1</strong>')
-        .replace(/\*(.+?)\*/g, '<em>$1</em>')
-        .replace(/_(.+?)_/g, '<em>$1</em>')
-        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
-        .replace(/\n\n/g, '</p><p>')
-        .replace(/\n/g, '<br>');
-
-    html = '<p>' + html + '</p>';
-
-    html = html.replace(/<p><\/p>/g, '');
-
-    return html;
-}
-
-function copyApplyLink(event) {
-    const btn = event.currentTarget;
-    const text = btn.getAttribute('data-copy-text');
-
-    if (!text || text === 'N/A') return;
-
-    navigator.clipboard.writeText(text).then(() => {
-        const icon = btn.querySelector('i');
-        icon.className = 'fas fa-check';
-        btn.style.color = '#22c55e';
-        setTimeout(() => {
-            icon.className = 'fas fa-copy';
-            btn.style.color = '';
-        }, 2000);
-    }).catch(err => {
-        console.error('Copy failed:', err);
-        alert('Failed to copy. Please copy manually.');
-    });
-}
-
-async function fetchJobDetails(id, tableName) {
-    const { data, error } = await supabaseClient
-        .from(tableName)
-        .select('*')
-        .eq('id', id)
-        .single();
-
-    if (error) throw error;
-    if (!data) throw new Error('Job not found');
-
-    renderJob(data, tableName);
-}
-
-function renderJob(job, tableName) {
-    const container = document.getElementById('jobDetailsContainer');
-    const loadingState = document.getElementById('loadingState');
-
-    currentTableName = tableName;
-
-    const companyName = (job.Company || 'Company Name').trim();
-    const companyInitial = companyName.charAt(0).toUpperCase();
-    const isExpired = isJobExpired(job.Created_At);
-    const postedDate = isExpired ? 'Expired' : (job.Created_At ? getDaysAgo(job.Created_At) : 'Recently');
-    const salary = isSalaryDisclosed(job.Salary) ? `₹${job.Salary}` : '';
-    const location = job.Location || 'Remote / Unspecified';
-    const category = job.Category || 'General';
-    const description = job.Description || 'No description provided.';
-
-    const recruiterPosted = isRecruiterPostedJob(job);
-    const applyInfo = recruiterPosted ? { isEmail: false, link: '#' } : getApplicationLink(job['Application ID']);
-    const requiresEnrollment = Boolean(job.is_exclusive) && !isEnrolledSync(tableName);
-
-    let connectLink = checkConnectLink(job);
-    if (!connectLink) {
-        const searchKeywordSuffix = JOB_TITLE_MAP[tableName] || "Chartered Accountant";
-        const query = `${companyName} ${searchKeywordSuffix}`;
-        connectLink = `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(query)}&origin=SWITCH_SEARCH_VERTICAL`;
-    }
-
-    const applyButtonsHtml = requiresEnrollment
-        ? '<button class="btn-large btn-primary-large" id="simpleApplyBtn" type="button"><i class="fas fa-lock"></i> Unlock Apply</button>'
-        : recruiterPosted
-        ? '<button class="btn-large btn-primary-large" id="simpleApplyBtn" type="button"><i class="fas fa-paper-plane"></i> Apply Now</button>'
-        : generateApplyButtons(applyInfo, job);
-
-    const html = `
-      <div class="job-header-section">
-        <div class="job-header-content">
-          <div class="company-logo-large">${companyInitial}</div>
-          <div class="job-title-block">
-            <h1>${companyName}</h1>
-            <div class="job-meta-row">
-                <div class="job-meta-item">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span>${location}</span>
-                </div>
-                ${salary ? `
-                <div class="job-meta-item">
-                    <span>Stipend: ${salary}</span>
-                </div>
-                ` : ''}
-                <div class="job-meta-item">
-                    <i class="far fa-clock"></i>
-                    <span>${isExpired ? 'Expired' : `Posted ${postedDate}`}</span>
-                </div>
-                ${isExpired ? `<div class="job-meta-item job-expired-status"><i class="fas fa-hourglass-end"></i><span>Expired</span></div>` : ''}
-                <div class="job-meta-item">
-                    <i class="fas fa-tag"></i>
-                    <span>${category}</span>
-                </div>
-            </div>
-            
-            <!-- Mobile Apply Buttons (visible only on mobile) -->
-            <div class="mobile-apply-btn">
-                ${applyButtonsHtml}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="job-body">
-        <div class="main-column">
-            <div class="description-section">
-                <h2><i class="fas fa-file-lines"></i> Job Description</h2>
-                <div class="description-content">${renderMarkdown(description)}</div>
-            </div>
-        </div>
-
-        <aside class="action-sidebar">
-            <div class="action-card">
-                <h3>Apply here</h3>
-                
-                ${recruiterPosted ? '<p><i class="fas fa-circle-info"></i> Easy Apply is enabled. Your profile and CV will be sent to the hirer dashboard.</p>' : `<div class="info-grid">
-                    <div class="info-card">
-                        <div>
-                            <span class="info-label">${applyInfo.isEmail ? 'Email' : 'Apply Link'}</span>
-                            <div class="info-value-container">
-                                <div class="info-value-scroll">
-                                    <i class="fas ${applyInfo.isEmail ? 'fa-envelope' : 'fa-link'}"></i>
-                                    <span class="apply-link-text">${applyInfo.isEmail ? applyInfo.email : job['Application ID'] || 'N/A'}</span>
-                                </div>
-                                <button class="copy-btn" data-copy-text="${applyInfo.isEmail ? applyInfo.email : job['Application ID'] || 'N/A'}" title="Copy">
-                                    <i class="fas fa-copy"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>`}
-
-                <h3 style="margin-top: 1rem;">Interested?</h3>
-                <p>Apply now or connect with peers at this company.</p>
-                
-                ${applyButtonsHtml}
-
-                <a href="${connectLink}" id="connectPeersBtn" target="_blank" class="btn-large btn-linkedin" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-                    <i class="fab fa-linkedin"></i> Connect to Peers
-                </a>
-                
-                ${job.posts_link ? `
-                <a href="${job.posts_link}" id="originalPostBtn" target="_blank" class="btn-large btn-linkedin" style="background: white; color: #0a66c2; border: 1px solid #0a66c2; margin-top: 0.5rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-                    <i class="fab fa-linkedin"></i> Original Post
-                </a>
-                ` : ''}
-                
-                <div class="action-card-footer">
-                    False job vacancy? <a href="/contact.html">Report it</a>
-                </div>
-            </div>
-        </aside>
-      </div>
-    `;
-
-    container.innerHTML = html;
-    container.classList.add('fade-in');
-    loadingState.style.display = 'none';
-    container.style.display = 'block';
-
-    if (requiresEnrollment) {
-        const applyButton = container.querySelector('#simpleApplyBtn');
-        if (applyButton) applyButton.addEventListener('click', () => showEnrollmentRequiredPopup());
-    } else if (recruiterPosted) {
-        const applyButton = container.querySelector('#simpleApplyBtn');
-        if (applyButton) applyButton.addEventListener('click', () => recordRecruiterApplication(job, applyButton, tableName));
-    }
-
-    if (!recruiterPosted && applyInfo.isEmail) {
-        const aiApplyButtons = container.querySelectorAll('.btn-ai-apply');
-        aiApplyButtons.forEach(btn => {
-            btn.addEventListener('click', () => handleAiApply(job, btn, tableName));
-        });
-    }
-
-    const connectPeersBtn = container.querySelector('#connectPeersBtn');
-    if (connectPeersBtn) {
-        connectPeersBtn.addEventListener('click', (e) => {
-            if (!currentSession) {
-                e.preventDefault();
-                window.location.href = '/login.html';
-                return;
-            }
-            if (isEnrolledSync(tableName)) {
-                // let natural link target open
-            } else {
-                e.preventDefault();
-                showEnrollmentRequiredPopup();
-            }
-        });
-    }
-
-    const originalPostBtn = container.querySelector('#originalPostBtn');
-    if (originalPostBtn) {
-        originalPostBtn.addEventListener('click', (e) => {
-            if (!currentSession) {
-                e.preventDefault();
-                window.location.href = '/login.html';
-                return;
-            }
-            if (isEnrolledSync(tableName)) {
-                // let natural link target open
-            } else {
-                e.preventDefault();
-                showEnrollmentRequiredPopup();
-            }
-        });
-    }
-
-    const copyBtn = container.querySelector('.copy-btn');
-    if (copyBtn) {
-        copyBtn.addEventListener('click', copyApplyLink);
-    }
-}
-
-function getApplicationLink(id) {
-    if (!id) return { link: '#', isEmail: false };
-    const trimmedId = id.trim();
-
-    if (trimmedId.toLowerCase().startsWith('http')) {
-        try {
-            new URL(trimmedId);
-            return { link: trimmedId, isEmail: false };
-        } catch (_) { }
-    }
-
-    if (trimmedId.includes('@')) {
-        const emailMatch = trimmedId.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
-        if (emailMatch) {
-            return { link: trimmedId, isEmail: true, email: emailMatch[0] };
-        }
-    }
-
-    return {
-        link: `https://www.google.com/search?q=${encodeURIComponent(trimmedId + ' careers')}`,
-        isEmail: false
-    };
-}
-
-const EMAIL_SUBJECT_MAP = {
-    "Industrial Training Job Portal": "Application for CA Industrial Training",
-    "Fresher Jobs": "Application for CA Fresher",
-    "Semi Qualified Jobs": "Application for Semi Qualified CA",
-    "Articleship Jobs": "Application for CA Articleship"
-};
-
-function constructMailto(job, tableName, body = "") {
-    const rawLink = job['Application ID'];
-    if (!rawLink) return '#';
-    const emailMatch = rawLink.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
-    if (!emailMatch) return '#';
-    const email = emailMatch[0];
-    const subjectBase = EMAIL_SUBJECT_MAP[tableName] || `Application for ${job.Category || 'the role'} Position`;
-    const subject = `${subjectBase} at ${job.Company} (Ref: My Student Club)`;
-    return `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-}
-
-let currentTableName = 'Industrial Training Job Portal';
-
-function generateApplyButtons(applyInfo, job) {
-    if (applyInfo.isEmail) {
-        const simpleMailto = constructMailto(job, currentTableName, generateFallbackEmail(job, currentTableName));
-        return `
-            <div class="email-apply-buttons">
-                <a href="${simpleMailto}" class="btn-large btn-secondary-large" id="simpleApplyBtn">
-                    <i class="fas fa-envelope"></i> Simple Apply
-                </a>
-                <button class="btn-large btn-ai-apply">
-                    <i class="fas fa-magic"></i>
-                    <span class="btn-text">AI Powered Apply</span>
-                    <i class="fas fa-spinner fa-spin"></i>
-                </button>
-            </div>
-        `;
-    } else {
-        return `
-            <a href="${applyInfo.link}" target="_blank" class="btn-large btn-primary-large">
-                <i class="fas fa-external-link-alt"></i> Apply Now
-            </a>
-        `;
-    }
-}
-
-async function getCurrentSession() {
-    try {
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        return session;
-    } catch (e) {
-        return null;
-    }
-}
-
-async function handleAiApply(job, buttonElement, tableName) {
-    const btnText = buttonElement.querySelector('.btn-text');
-    const spinner = buttonElement.querySelector('.fa-spinner');
-    const originalText = btnText.textContent;
-
-    if (!currentSession) {
-        window.location.href = '/login.html';
-        return;
-    }
-
-    if (!isEnrolledSync(tableName)) {
-        showEnrollmentRequiredPopup();
-        return;
-    }
-
-    if (!isProfileComplete()) {
-        showResumeRedirectModal();
-        return;
-    }
-
-    buttonElement.classList.add('loading');
-    btnText.textContent = 'Preparing...';
-    if (spinner) spinner.style.display = 'inline-block';
-    buttonElement.disabled = true;
-
-    try {
-        const emailBody = await generateEmailBody(job, tableName);
-        window.location.href = constructMailto(job, tableName, emailBody);
-    } catch (e) {
-        console.error('AI Apply error:', e);
-        showToast("Server busy, reverting to simple apply", "error");
-
-        // Use timeout to allow toast to render before opening mailto (which might block UI thread briefly)
-        setTimeout(() => {
-            // Revert to simple apply (no body)
-            window.location.href = constructMailto(job, tableName, "");
-        }, 3000);
-
-    } finally {
-        buttonElement.classList.remove('loading');
-        btnText.textContent = originalText;
-        if (spinner) spinner.style.display = 'none';
-        buttonElement.disabled = false;
-    }
-}
-
-function checkConnectLink(job) {
-    if (job.connect_link && job.connect_link.trim() !== '') return job.connect_link;
-    if (job['connect_link'] && job['connect_link'].trim() !== '') return job['connect_link'];
-    return null;
-}
-
-function formatDescription(text) {
-    if (!text) return '';
-    return text.replace(/\n/g, '<br>');
-}
-
-function showError(msg) {
-
-    const loadingState = document.getElementById('loadingState');
-    loadingState.innerHTML = `<div style="text-align:center; padding: 2rem; color: #ef4444;">
-        <i class="fas fa-exclamation-circle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
-        <h3>Error</h3>
-        <p>${msg}</p>
-        <a href="/" class="btn-large btn-secondary-large" style="margin-top: 1rem; display: inline-flex; width: auto;">Go Home</a>
-        </div>`;
-}
-
-let userEnrollmentsCache = null;
-let enrollmentStatusCache = null;
-
-async function prefetchEnrollmentStatus(userId) {
-    try {
-        const { count: anyCount, error: e1 } = await supabaseClient
-            .from('enrollment')
-            .select('course', { count: 'exact', head: true })
-            .eq('uuid', userId);
-        if (e1) throw e1;
-        const hasAny = (anyCount || 0) > 0;
-        enrollmentStatusCache = { any: hasAny, industrialTraining: false, freshers: false };
-        if (hasAny) {
-            const [r1, r2] = await Promise.all([
-                supabaseClient.from('enrollment').select('course', { count: 'exact', head: true }).eq('uuid', userId).eq('course', 'industrial-training-mastery'),
-                supabaseClient.from('enrollment').select('course', { count: 'exact', head: true }).eq('uuid', userId).eq('course', 'msc-ca-freshers-program')
-            ]);
-            enrollmentStatusCache.industrialTraining = (r1.count || 0) > 0;
-            enrollmentStatusCache.freshers = (r2.count || 0) > 0;
-        }
-    } catch (e) {
-        console.error('Failed to prefetch enrollment:', e);
-        enrollmentStatusCache = { any: false, industrialTraining: false, freshers: false };
-    }
-}
-
-function isEnrolledSync(tableName) {
-    if (!enrollmentStatusCache) return false;
-    if (tableName === 'Industrial Training Job Portal') return enrollmentStatusCache.industrialTraining;
-    if (tableName === 'Fresher Jobs') return enrollmentStatusCache.freshers;
-    return enrollmentStatusCache.any;
-}
-
-async function getUserEnrollments(userId) {
-    if (userEnrollmentsCache !== null) {
-        return userEnrollmentsCache;
-    }
-    try {
-        const { data, error } = await supabaseClient
-            .from('enrollment')
-            .select('course')
-            .eq('uuid', userId);
-        if (error) throw error;
-        userEnrollmentsCache = (data || []).map(e => e.course);
-        return userEnrollmentsCache;
-    } catch (err) {
-        console.error("Failed to fetch user enrollments:", err);
+        const saved = JSON.parse(localStorage.getItem(SAVED_KEY) || '[]');
+        return Array.isArray(saved) ? saved : [];
+    } catch {
         return [];
     }
 }
 
-async function checkEnrollmentForTable(tableName, userId) {
-    if (!userId) return false;
-    const enrollments = await getUserEnrollments(userId);
-    if (tableName === 'Industrial Training Job Portal') {
-        return enrollments.includes('industrial-training-mastery');
-    } else if (tableName === 'Fresher Jobs') {
-        return enrollments.includes('msc-ca-freshers-program');
-    } else {
-        return enrollments.length > 0;
+function isSaved(job) {
+    return readSaved().some((s) => String(s.id) === String(job.id) && s.table === state.portal.table);
+}
+
+function toggleSaved(job) {
+    const list = readSaved();
+    const index = list.findIndex((s) => String(s.id) === String(job.id) && s.table === state.portal.table);
+    if (index >= 0) list.splice(index, 1);
+    else list.push({ id: job.id, table: state.portal.table, savedAt: new Date().toISOString() });
+    try {
+        localStorage.setItem(SAVED_KEY, JSON.stringify(list));
+    } catch { /* storage blocked */ }
+}
+
+// Same rule as the portal's existing perks (AI Apply, Connect with peers): IT enrolment on the IT portal,
+// any enrolment elsewhere.
+function hasPerks() {
+    if (state.portal.key === 'industrial') return state.courses.includes('industrial-training-mastery');
+    return state.courses.length > 0;
+}
+
+async function loadCourses(userId) {
+    try {
+        const { data, error } = await supabaseClient.from('enrollment').select('course').eq('uuid', userId);
+        if (error) throw error;
+        return (data || []).map((row) => row.course);
+    } catch (error) {
+        console.warn('Enrolments could not load:', error);
+        return [];
     }
 }
 
-function showEnrollmentRequiredPopup() {
-    const existing = document.querySelector('.cv-popup-overlay');
-    if (existing) existing.remove();
+function portalLink(job) {
+    return `/job.html?id=${encodeURIComponent(job.id)}&type=${encodeURIComponent(state.portal.jobType)}`;
+}
 
-    const popupHtml = `
-        <div class="cv-popup-overlay">
-            <div class="cv-popup-card">
-                <div class="cv-popup-icon" style="background-color: #fef3c7; color: #d97706;">
-                    <i class="fas fa-lock"></i>
-                </div>
-                <h3>Exclusive Premium Feature</h3>
-                <p>This feature is exclusively only available for course enrolled students.</p>
-                <div class="cv-popup-btns">
-                    <a href="https://www.mystudentclub.com/ca-industrial-training-program/" target="_blank" class="cv-popup-btn-primary">View Courses</a>
-                    <button class="cv-popup-btn-secondary" id="closeEnrollmentPopup">Maybe Later</button>
-                </div>
-            </div>
-        </div>
-    `;
-
-    document.body.insertAdjacentHTML('beforeend', popupHtml);
-
-    const overlay = document.querySelector('.cv-popup-overlay');
-    setTimeout(() => overlay.classList.add('show'), 10);
-
-    const closeBtn = document.getElementById('closeEnrollmentPopup');
-    const closePopup = () => {
-        overlay.classList.remove('show');
-        setTimeout(() => overlay.remove(), 300);
-    };
-
-    closeBtn.addEventListener('click', closePopup);
-    overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) closePopup();
+function render() {
+    const job = state.job;
+    const container = document.getElementById('jobDetailsContainer');
+    const loading = document.getElementById('loadingState');
+    container.innerHTML = detailHtml(job, state.portal, {
+        now: new Date(),
+        loggedIn: Boolean(state.session),
+        courses: state.courses,
+        saved: isSaved(job),
+        returnUrl: window.location.pathname + window.location.search,
+        headingId: 'jobTitle',
+        descriptionLoading: false,
     });
+    loading.hidden = true;
+    container.hidden = false;
+    const headline = cardHeadline(job, state.portal);
+    document.title = `${headline.title}${headline.companyFirst ? '' : ` at ${companyName(job)}`} | My Student Club`;
+}
+
+function showError(message) {
+    const loading = document.getElementById('loadingState');
+    loading.innerHTML = `<div class="pv2-empty pv2-error" role="alert">
+  <div class="pv2-empty-art" aria-hidden="true"><i class="fa-solid fa-briefcase"></i></div>
+  <h3>${escapeHtml(message)}</h3>
+  <p>It may have been filled or taken down. Fresh vacancies are on the portal.</p>
+  <div class="pv2-empty-actions"><a class="pv2-btn pv2-btn-primary" href="${escapeHtml(state.portal.path)}">See fresh vacancies</a></div>
+</div>`;
+}
+
+async function onClick(event) {
+    const target = event.target.closest('[data-action]');
+    if (!target || !state.job) return;
+    const job = state.job;
+    const action = target.dataset.action;
+    if (['apply', 'reveal', 'easy-apply'].includes(action)) {
+        event.preventDefault();
+        window.location.href = portalLink(job);
+    } else if (action === 'save') {
+        toggleSaved(job);
+        render();
+    } else if (action === 'share') {
+        const url = shareUrl(job, state.portal, window.location.origin);
+        const text = `Check out this job at *${companyName(job)}*\nURL - ${url}`;
+        if (navigator.share && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+            navigator.share({ title: `Job at ${companyName(job)}`, text, url }).catch(() => {});
+        } else {
+            try {
+                await navigator.clipboard.writeText(text);
+                target.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i> Copied';
+            } catch { /* clipboard blocked */ }
+        }
+    } else if (action === 'peers') {
+        event.preventDefault();
+        if (!state.session) {
+            window.location.href = `/login.html?redirect=${encodeURIComponent(window.location.href)}`;
+        } else if (!hasPerks() || !canSeeApplyDetails(job, state.portal, state.courses)) {
+            window.open(state.portal.programme.href, '_blank', 'noopener');
+        } else {
+            window.open(peersSearchUrl(job, state.portal), '_blank', 'noopener');
+        }
+    }
+}
+
+async function init() {
+    const params = new URLSearchParams(window.location.search);
+    state.portal = portalFromParams(params);
+    const backLink = document.getElementById('backLink');
+    if (backLink) backLink.href = state.portal.path;
+    const id = params.get('id');
+    if (!id) {
+        showError('No vacancy was named in this link.');
+        return;
+    }
+    if (!supabaseClient) {
+        showError('This page could not connect. Please refresh.');
+        return;
+    }
+    try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        state.session = session || null;
+    } catch {
+        state.session = null;
+    }
+    const coursesPromise = state.session?.user?.id ? loadCourses(state.session.user.id) : Promise.resolve([]);
+    const result = await selectWithFallback((omit) => supabaseClient
+        .from(state.portal.table)
+        .select(detailColumns(state.portal, { omit }))
+        .eq('id', id)
+        .maybeSingle());
+    const row = Array.isArray(result.data) ? result.data[0] : result.data;
+    if (result.error || !row || row.hidden === true) {
+        if (result.error) console.error('Vacancy failed to load:', result.error);
+        showError('This vacancy is no longer listed.');
+        return;
+    }
+    state.courses = await coursesPromise;
+    state.job = publicJob(row);
+    state.job.__detailLoaded = true;
+    render();
+    document.getElementById('jobDetailsContainer').addEventListener('click', onClick);
 }
 
 init();
-

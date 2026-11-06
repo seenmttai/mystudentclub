@@ -4,6 +4,8 @@ import {
   TABLE_MAP,
   JOB_TITLE_MAP,
   getPublicJobSelectColumns,
+  isExclusiveJob,
+  isMissingExclusiveColumn,
   escapeHtml,
   getDaysAgo,
   isJobExpired,
@@ -38,30 +40,40 @@ export async function getStaticPaths() {
   const FETCH_LIMIT = 100;
 
   for (const [tableName, categorySlug] of Object.entries(TABLE_MAP)) {
-    let query = supabase
-      .from(tableName)
-      .select(getPublicJobSelectColumns(tableName))
-      .order('Created_At', { ascending: false })
-      .limit(FETCH_LIMIT);
+    const buildQuery = (withExclusive: boolean) => {
+      let query = supabase
+        .from(tableName)
+        .select(getPublicJobSelectColumns(tableName, { withExclusive }))
+        .order('Created_At', { ascending: false })
+        .limit(FETCH_LIMIT);
+      // If we have a sync state for this table, only fetch newer jobs
+      if (!isFirstRun && syncState[tableName]) query = query.gt('Created_At', syncState[tableName]);
+      return query;
+    };
 
-    // If we have a sync state for this table, only fetch newer jobs
     if (!isFirstRun && syncState[tableName]) {
-      query = query.gt('Created_At', syncState[tableName]);
       console.log(`  ${tableName}: Fetching jobs after ${syncState[tableName]}`);
     } else {
       console.log(`  ${tableName}: Fetching latest ${FETCH_LIMIT} jobs`);
     }
 
-    const { data: jobs, error } = await query;
+    let { data: jobs, error } = await buildQuery(true);
+    // Before the is_exclusive migration only Industrial Training has the column, and no other row can be exclusive.
+    // Any other error (e.g. permission denied) skips the table: better no page than a public exclusive vacancy.
+    if (error && isMissingExclusiveColumn(error)) {
+      console.warn(`  ${tableName}: no is_exclusive column yet; building without it.`);
+      ({ data: jobs, error } = await buildQuery(false));
+    }
 
     if (error) {
       console.error(`Error fetching ${tableName}:`, error);
       continue;
     }
 
-    console.log(`  → Fetched ${(jobs || []).length} jobs from ${tableName}`);
+    const publicJobs = (jobs || []).filter((job: any) => !isExclusiveJob(job));
+    console.log(`  → Fetched ${(jobs || []).length} jobs from ${tableName} (${(jobs || []).length - publicJobs.length} exclusive skipped)`);
 
-    for (const job of jobs || []) {
+    for (const job of publicJobs) {
       const slug = generateJobSlug(job);
       paths.push({
         params: {
@@ -123,7 +135,11 @@ const portalMap: Record<string, { url: string; label: string }> = {
   'articleship': { url: '/ca-articleship-opportunities.html', label: 'Articleship' }
 };
 const backLinkUrl = portalMap[categorySlug as string]?.url || '/';
-const targetPortalUrl = `${backLinkUrl}?id=${job.id}&type=${categorySlug}`;
+// Experienced CA roles live in "Fresher Jobs" too; send them to their own portal page.
+const isExperiencedRole = categorySlug === 'fresher' && String(job.Experience || '').trim().toLowerCase() === 'experienced';
+const targetPortalUrl = isExperiencedRole
+  ? `/experienced-ca-jobs?id=${job.id}&type=experienced`
+  : `${backLinkUrl}?id=${job.id}&type=${categorySlug}`;
 
 // Protected Apply Button
 const applyButtonsHtml = `

@@ -9,17 +9,27 @@ const root = path.resolve(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(root, 'scripts', file), 'utf8');
 
 test('portal cards and modals lock only jobs ticked exclusive', () => {
-  for (const file of ['portal3.js', 'portal-email.js']) {
-    const source = read(file);
-    const checks = source.match(/const isExclusive = [^;]+;/g) || [];
-    assert.equal(checks.length, 2, `${file} should decide exclusivity in the card and the modal`);
-    for (const check of checks) assert.equal(check, 'const isExclusive = Boolean(job.is_exclusive);', file);
-    assert.doesNotMatch(source, /is_exclusive\s*\|\|\s*recruiterPosted/, file);
+  // Jobs by email still renders its own cards and modal.
+  const email = read('portal-email.js');
+  const checks = email.match(/const isExclusive = [^;]+;/g) || [];
+  assert.equal(checks.length, 2, 'portal-email.js should decide exclusivity in the card and the modal');
+  for (const check of checks) assert.equal(check, 'const isExclusive = Boolean(job.is_exclusive);');
+  assert.doesNotMatch(email, /is_exclusive\s*\|\|\s*recruiterPosted/);
+
+  // The five portals (job portal v2) decide it in one place, jobs-core.js, used by the card and the drawer.
+  const core = read('portal-v2/jobs-core.js');
+  assert.match(core, /export function isExclusiveJob\(job\) \{\s*return Boolean\(job\?\.is_exclusive\);\s*\}/);
+  assert.match(core, /return !isExclusiveJob\(job\) \|\| isEnrolledInProgramme\(portal, courses\);/);
+  for (const file of ['portal-v2/jobs-core.js', 'portal-v2/job-view.js', 'portal-v2/portal-app.js', 'portal3.js']) {
+    assert.doesNotMatch(read(file), /is_exclusive\s*\|\|\s*(recruiterPosted|isTeamPosted)/, file);
   }
 });
 
 test('job detail page asks to enrol only for jobs ticked exclusive', () => {
-  assert.match(read('job-details.js'), /const requiresEnrollment = Boolean\(job\.is_exclusive\) && !isEnrolledSync\(tableName\);/);
+  const view = read('portal-v2/job-view.js');
+  assert.match(view, /if \(isExclusiveJob\(job\)\) \{\s*const locked = !canSeeApplyDetails\(job, portal, ctx\.courses\);/);
+  assert.match(read('portal-v2/jobs-core.js'), /if \(!canSeeApplyDetails\(job, portal, ctx\.courses\)\) return 'locked';/);
+  assert.match(read('job-details.js'), /detailHtml\(job, state\.portal, \{/);
 });
 
 test('jobs by email reads is_exclusive for Industrial Training only', () => {

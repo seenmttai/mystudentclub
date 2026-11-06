@@ -51,10 +51,15 @@ test('email portal and standalone job details gate Easy Apply on hydrated comple
   assert.ok(emailHydrationWait >= 0);
   assert.ok(emailHeaderRender > emailHydrationWait);
 
+  // Since job portal v2 the standalone page (/jobs) sends every apply action to the portal drawer, where
+  // portal3.js gates Easy Apply on the hydrated profile (recordApplication → showRecruiterProfileWarningPopup).
   const jobDetails = read('scripts/job-details.js');
-  assert.match(jobDetails, /await hydrateProfileForCompletion\(\)/);
-  assert.match(jobDetails, /if \(!isProfileComplete\(\)\) \{[\s\S]*?showResumeRedirectModal\(\)/);
-  assert.match(jobDetails, /'semi-qualified': \{ url: '\/semi-qualified-ca-jobs'/);
+  assert.match(jobDetails, /\['apply', 'reveal', 'easy-apply'\]\.includes\(action\)[\s\S]*?window\.location\.href = portalLink\(job\)/);
+  assert.match(jobDetails, /return `\/job\.html\?id=\$\{encodeURIComponent\(job\.id\)\}&type=/);
+  assert.match(read('scripts/portal-v2/jobs-core.js'), /path: '\/semi-qualified-ca-jobs'/);
+  const portal = read('scripts/portal3.js');
+  assert.match(portal, /easyApply: \(job, button\) => recordApplication\(job, button\)/);
+  assert.match(portal, /if \(recruiterPosted && !isProfileComplete\(\)\) \{\s*showRecruiterProfileWarningPopup/);
   assert.match(read('jobs.html'), /profile-state\.js[\s\S]*job-details\.js/);
 });
 

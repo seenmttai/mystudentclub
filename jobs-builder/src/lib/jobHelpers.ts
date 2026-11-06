@@ -12,18 +12,32 @@ export const TABLE_MAP = {
     'Articleship Jobs': 'articleship'
 };
 
-export function getPublicJobSelectColumns(tableName: string): string {
-    let columns = 'id, Company, Location, Salary, Description, Created_At, Category, posts_link, connect_link, "Primary Domain"';
+// Public pages never read posts_link (the LinkedIn post a vacancy came from) or the Application ID.
+// is_exclusive is read on every table so exclusive vacancies get no public page (see isExclusiveJob).
+export function getPublicJobSelectColumns(tableName: string, { withExclusive = true } = {}): string {
+    let columns = 'id, Company, Location, Salary, Description, Created_At, Category, connect_link, "Primary Domain"';
     if (tableName === 'Fresher Jobs') {
         columns += ', Experience, yoe, "Secondary Domain", Tags, "Company Type", "Industry Type", "CTC Range"';
     } else if (tableName === 'Semi Qualified Jobs') {
         columns += ', Experience, "Secondary Domain", Tags, "Company Type", "Industry Type"';
     } else if (tableName === 'Industrial Training Job Portal') {
-        columns += ', "Company Type", "Industry Type", "Stipend Range", "Functional Tags", "Technology Tags", is_exclusive';
+        columns += ', "Company Type", "Industry Type", "Stipend Range", "Functional Tags", "Technology Tags"';
     } else if (tableName === 'Articleship Jobs') {
         columns += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range"';
     }
+    if (withExclusive) columns += ', is_exclusive';
     return columns;
+}
+
+/** Exclusive vacancies are for enrolled students only: never a public static page. */
+export function isExclusiveJob(job: any): boolean {
+    return Boolean(job && job.is_exclusive);
+}
+
+/** The query error says is_exclusive does not exist (the table predates the column): build without it. */
+export function isMissingExclusiveColumn(error: any): boolean {
+    const message = String(error?.message || '');
+    return message.includes('is_exclusive') && /does not exist|could not find|schema cache/i.test(message);
 }
 
 export const JOB_TITLE_MAP = {

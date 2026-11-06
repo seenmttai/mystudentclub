@@ -1089,6 +1089,8 @@ async function generateJobs() {
         // Write/Overwrite files. 
         // Files written here will have their 'mtime' (modification time) updated to NOW.
         for (const job of jobs) {
+            // Exclusive vacancies are for enrolled students only: no public page (same rule as jobs-builder).
+            if (job.is_exclusive) continue;
             const fileName = `${job.id}.html`;
             const filePath = path.join(folderPath, fileName);
 
