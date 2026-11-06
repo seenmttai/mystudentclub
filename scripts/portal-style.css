@@ -1537,6 +1537,13 @@ body {
   font-weight: 600;
 }
 
+.job-tag.tag-joining {
+  background-color: #ecfdf5;
+  color: #047857;
+  border-color: #a7f3d0;
+  font-weight: 600;
+}
+
 .job-tag.tag-secondary {
   background-color: #e0f2fe;
   color: #0369a1;
