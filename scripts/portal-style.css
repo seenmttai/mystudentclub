@@ -1477,6 +1477,16 @@ body:has(.expanded-menu.active) .expanded-menu-backdrop {
   background: rgba(37, 99, 235, 0.15);
   border: 1px solid rgba(147, 197, 253, 0.3);
 }
+.jc-chip-joining {
+  color: #047857;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+}
+[data-theme="dark"] .jc-chip-joining {
+  color: #6ee7b7;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(110, 231, 183, 0.3);
+}
 .jc-chip-type {
   color: var(--brand);
   background: #eff6ff;
