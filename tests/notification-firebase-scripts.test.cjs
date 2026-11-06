@@ -27,3 +27,10 @@ test('FCM init failures are logged, not swallowed', () => {
     assert.match(src, /console\.error\('FCM token request failed:'/, `${f} requestTokenAndSync`);
   }
 });
+
+// The Firebase SDK already shows a push that has a `notification` block; the service
+// worker must not show it a second time (every push appeared twice until Nov 2026).
+test('service worker does not show SDK-displayed pushes a second time', () => {
+  const sw = fs.readFileSync(path.join(root, 'firebase-messaging-sw.js'), 'utf8');
+  assert.match(sw, /onBackgroundMessage\(\(payload\) => \{\s*(\/\/[^\n]*\n\s*)*if \(payload\.notification\) return;/);
+});
