@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <!-- Added maximum-scale to prevent auto-zoom glitches on reload -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Padam Bhansali - Resume</title>
+    <title>[Your name] - Resume</title>
     <style>
         /* ---------------------------------------------------------
            CORE VARIABLES
@@ -563,7 +563,7 @@
 
             const targetWidth = window.innerWidth - 48;
             const refWidth = 1000;
-            const scale = targetWidth / refWidth;
+            const scale = Math.min(targetWidth / refWidth, 1);
 
             page.style.transform = `scale(${scale})`;
 

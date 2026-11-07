@@ -538,7 +538,8 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>© 2025 My Student Club LMS. All rights reserved.</p>
+                <p>© <span class="lms-year">2026</span> My Student Club LMS. All rights reserved.</p>
+                <script>document.querySelectorAll('.lms-year').forEach(function (n) { n.textContent = new Date().getFullYear(); });</script>
             </div>
         </footer>
     </div>
@@ -581,9 +582,9 @@
                             id: 3,
                             slug: 'msc-articleship-program',
                             title: 'MSC Articleship Program',
-                            description: 'Resources and guidance for your articleship preparation.',
+                            description: 'Build your CV, apply to firms, prepare for interviews and start your articleship.',
                             thumbnail: '/assets/articleship-course-main.png',
-                            videoCountEstimate: 0
+                            videoCountEstimate: 7
                         }
                     ],
                     enrolledCourses: [],
