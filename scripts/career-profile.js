@@ -70,7 +70,7 @@
   function loadStyles() {
     if (document.querySelector('link[data-msc-career]')) return;
     const link = document.createElement('link');
-    link.rel = 'stylesheet'; link.href = '/scripts/career-profile.css?v=20261107.1'; link.dataset.mscCareer = 'true';
+    link.rel = 'stylesheet'; link.href = '/scripts/career-profile.css?v=20261108.1'; link.dataset.mscCareer = 'true';
     document.head.appendChild(link);
   }
   function select(name, label, options, selected = '') {
@@ -222,9 +222,16 @@
     // The sign-up popup asks only the portal and its questions: no name, phone or consent (given on the sign-up page).
     const personalFields = options.signupIntake ? '' : `${identityFields}${input('phone','Phone Number','tel',meta.phone || '', 'autocomplete="tel" pattern="[+]?[0-9]{10,15}" maxlength="16"')}`;
     const closeButton = options.required ? '' : '<button type="button" class="msc-career-close" aria-label="Close">×</button>';
-    backdrop.innerHTML = `<section class="msc-career-dialog" role="dialog" aria-modal="true" aria-labelledby="msc-career-title">${closeButton}<h2 id="msc-career-title">${escapeHTML(options.title || 'Access Resource')}</h2><p>${escapeHTML(options.subtitle || 'Share your details to access free resources and relevant opportunities.')}</p><form class="msc-career-form">${personalFields}<div data-career-fields></div><p class="msc-career-error" role="alert" hidden></p><button type="submit" class="msc-career-primary">${escapeHTML(options.submitLabel || 'Continue')}</button></form></section>`;
+    // A new account that never saw the sign-up page (Google "Login") answers the sign-up boxes here, same wording.
+    const signupBoxes = options.askSignupConsent ? `<div class="msc-signup-consent msc-popup-consent"><label class="msc-career-consent"><input type="checkbox" name="msc_consent_age" required><span>By using this platform, you declare that you are <strong>18 years of age or older</strong> and agree to our <a href="/privacy-policy.html" target="_blank" rel="noopener">Privacy Policy</a>.</span></label>${SIGNUP_CONSENT.boxes.map(box => `<label class="msc-career-consent"><input type="checkbox" name="msc_consent_${box.name}"${SIGNUP_CONSENT.defaultChecked ? ' checked' : ''}><span>${escapeHTML(box.text)}</span></label>`).join('')}</div>` : '';
+    backdrop.innerHTML = `<section class="msc-career-dialog" role="dialog" aria-modal="true" aria-labelledby="msc-career-title">${closeButton}<h2 id="msc-career-title">${escapeHTML(options.title || 'Access Resource')}</h2><p>${escapeHTML(options.subtitle || 'Share your details to access free resources and relevant opportunities.')}</p><form class="msc-career-form">${personalFields}<div data-career-fields></div>${signupBoxes}<p class="msc-career-error" role="alert" hidden></p><button type="submit" class="msc-career-primary">${escapeHTML(options.submitLabel || 'Continue')}</button></form></section>`;
     document.body.appendChild(backdrop); document.body.style.overflow = 'hidden';
     const fields = mountFields(backdrop.querySelector('[data-career-fields]'),{ stage:options.stage,allowOther:options.allowOther,label:options.stageLabel,values:options.values,noConsent:options.signupIntake,stageCards:options.signupIntake });
+    // Continue stays greyed out until the 18+ box is ticked, as on the sign-up page.
+    const ageBox = backdrop.querySelector('[name="msc_consent_age"]');
+    const submitButton = backdrop.querySelector('button[type="submit"]');
+    const syncAge = () => { if (ageBox) submitButton.disabled = !ageBox.checked; };
+    ageBox?.addEventListener('change', syncAge); syncAge();
     let resolve;
     const promise = new Promise(done => { resolve = done; });
     const close = result => {
@@ -251,6 +258,11 @@
           // Name from the account (sign-up form or Google); email from the session; no phone.
           details.name = String(meta.full_name || meta.name || '').trim();
           details.email = user?.email || '';
+          if (options.askSignupConsent) {
+            if (!ageBox.checked) throw new Error('Please confirm you are 18 or older to continue.');
+            const consent = { promotional: Boolean(form.querySelector('[name="msc_consent_promotional"]')?.checked), version: SIGNUP_CONSENT.version };
+            if (!(await saveSignupConsent(consent))) throw new Error('We could not save your answers. Please try again.');
+          }
           const saved = await persist(details,options.source,user,'submit_signup_career_intake'); close(saved);
           return;
         }
@@ -258,7 +270,7 @@
         details.email = user?.email || String(data.get('email') || '').trim();
         details.phone = String(data.get('phone') || '').trim();
         const saved = await persist(details,options.source,user); close(saved);
-      } catch (err) { error.textContent = err.message; error.hidden = false; button.disabled = false; button.textContent = options.submitLabel || 'Continue'; }
+      } catch (err) { error.textContent = err.message; error.hidden = false; button.disabled = false; button.textContent = options.submitLabel || 'Continue'; syncAge(); }
     });
     activeModal = { scope, promise, cancel:()=>close(false) };
     backdrop.querySelector('input,select')?.focus();
@@ -308,14 +320,8 @@
   function rememberSignupConsent(consent) {
     if (consent?.version === SIGNUP_CONSENT.version) safeSet(SIGNUP_CONSENT_PENDING, JSON.stringify(consent));
   }
-  // Records the sign-up boxes once (server time and wording in the database). True once they are recorded; false for
-  // accounts that never used the new sign-up, or while the database part is not live yet.
-  async function recordSignupConsent(user) {
-    const meta = user?.user_metadata || {};
-    if (meta.msc_signup_consent_recorded) return true;
-    let consent = meta.msc_signup_consent;
-    if (!consent) { try { consent = JSON.parse(safeGet(SIGNUP_CONSENT_PENDING) || 'null'); } catch (_) { consent = null; } }
-    if (!consent || consent.version !== SIGNUP_CONSENT.version) return false;
+  // Saves the boxes in the database (server time and wording; the first answer wins) and remembers it on the account.
+  async function saveSignupConsent(consent) {
     const { error } = await client().rpc('record_signup_consent', { p_promotional: Boolean(consent.promotional), p_version: consent.version });
     if (error) { console.warn('Sign-up consent could not be recorded yet:', error.message); return false; }
     try { sessionStorage.removeItem(SIGNUP_CONSENT_PENDING); } catch (_) {}
@@ -323,14 +329,31 @@
     if (metaError) console.warn('Could not remember that sign-up consent was recorded.');
     return true;
   }
-  // The required portal popup: only for accounts whose sign-up consent is recorded (so never for existing students, and
-  // never while the database part is missing), and only until they have answered once.
+  // Records the sign-up boxes once. 'recorded' once they are in the database; 'missing' when this account never sent
+  // them (Google "Login", or a tick lost with the tab); 'error' while the database part is not reachable.
+  async function recordSignupConsent(user) {
+    const meta = user?.user_metadata || {};
+    if (meta.msc_signup_consent_recorded) return 'recorded';
+    let consent = meta.msc_signup_consent;
+    if (!consent) { try { consent = JSON.parse(safeGet(SIGNUP_CONSENT_PENDING) || 'null'); } catch (_) { consent = null; } }
+    if (!consent || consent.version !== SIGNUP_CONSENT.version) return 'missing';
+    return (await saveSignupConsent(consent)) ? 'recorded' : 'error';
+  }
+  // Accounts created from this moment on are "new" (2:30pm IST on 7 Nov 2026, just before the sign-up boxes went live).
+  // Older accounts are existing students and never see the portal popup.
+  const SIGNUP_LAUNCH = Date.parse('2026-11-07T09:00:00Z');
+  const isNewAccount = user => Date.parse(user?.created_at || '') >= SIGNUP_LAUNCH;
+  // The required portal popup: for new accounts only, and only until they have answered once. A new account with no
+  // boxes on record (it never saw the sign-up page) answers them inside the popup: 18+ (required) and promotional.
   async function offerSignupIntake(user) {
     const doneKey = `${PREFIX}${user.id}:signup-intake-done`;
     // A new sign-up who refreshed or closed the tab on the "complete your profile" popup has not answered it yet.
     const profilePopupPending = Boolean(user.user_metadata?.msc_signup_consent) && !user.user_metadata?.msc_onboarding_seen;
     if (safeGet(doneKey) && !profilePopupPending) return true;
-    if (!(await recordSignupConsent(user))) return true;
+    const consentState = await recordSignupConsent(user);
+    if (consentState === 'error') return true;
+    const askConsent = consentState === 'missing';
+    if (askConsent && !isNewAccount(user)) return true;
     const { data, error } = await client().from('career_intakes').select('stage, details').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1);
     if (error) return true;
     if (data?.length) {
@@ -347,6 +370,7 @@
       submitLabel: 'Continue',
       required: true,
       signupIntake: true,
+      askSignupConsent: askConsent,
       source: { kind: 'signup-intake', title: 'Account signup', url: location.pathname }
     }, user);
     if (!saved) return saved !== null;
