@@ -10,10 +10,11 @@
     "astro": "astro",
     "cleanup": "node scripts/cleanup-folders.js",
     "expire": "node scripts/expire-old-jobs.js",
+    "hide": "node scripts/remove-hidden-jobs.js",
     "sitemap": "node scripts/generate-sitemap.js",
     "sync:update": "node scripts/update-sync-state.js",
     "index": "node scripts/index-now.js",
-    "build:full": "npm run build && npm run sync:update && npm run cleanup && npm run expire && npm run sitemap && npm run index"
+    "build:full": "npm run build && npm run sync:update && npm run cleanup && npm run expire && npm run hide && npm run sitemap && npm run index"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.6",

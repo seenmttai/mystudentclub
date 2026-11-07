@@ -37,22 +37,37 @@ export async function getStaticPaths() {
 
   const FETCH_LIMIT = 100;
 
-  for (const [tableName, categorySlug] of Object.entries(TABLE_MAP)) {
-    let query = supabase
-      .from(tableName)
-      .select(getPublicJobSelectColumns(tableName))
-      .order('Created_At', { ascending: false })
-      .limit(FETCH_LIMIT);
+  // Hidden vacancies (third-party reposts) get no page. Before the `hidden` column exists, build without the filter.
+  let hiddenFilterOff = false;
 
-    // If we have a sync state for this table, only fetch newer jobs
+  for (const [tableName, categorySlug] of Object.entries(TABLE_MAP)) {
+    const buildQuery = () => {
+      let query = supabase
+        .from(tableName)
+        .select(getPublicJobSelectColumns(tableName))
+        .order('Created_At', { ascending: false })
+        .limit(FETCH_LIMIT);
+      if (!hiddenFilterOff) query = query.not('hidden', 'is', true);
+
+      // If we have a sync state for this table, only fetch newer jobs
+      if (!isFirstRun && syncState[tableName]) {
+        query = query.gt('Created_At', syncState[tableName]);
+      }
+      return query;
+    };
+
     if (!isFirstRun && syncState[tableName]) {
-      query = query.gt('Created_At', syncState[tableName]);
       console.log(`  ${tableName}: Fetching jobs after ${syncState[tableName]}`);
     } else {
       console.log(`  ${tableName}: Fetching latest ${FETCH_LIMIT} jobs`);
     }
 
-    const { data: jobs, error } = await query;
+    let { data: jobs, error } = await buildQuery();
+    if (error && error.message && error.message.includes('hidden') && !hiddenFilterOff) {
+      console.warn('  hidden column does not exist yet; building without the filter.');
+      hiddenFilterOff = true;
+      ({ data: jobs, error } = await buildQuery());
+    }
 
     if (error) {
       console.error(`Error fetching ${tableName}:`, error);
