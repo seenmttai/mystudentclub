@@ -2198,3 +2198,16 @@
     display: none !important;
 }
 
+
+/* Articleship sessions keep the current work visible above the resource tabs. */
+.articleship-session-title { margin: 0; padding: 1rem 1.5rem .5rem; font-size: 1.25rem; line-height: 1.35; }
+.resource-template-group > summary { cursor: pointer; padding: .75rem 0; }
+.resource-template-group[open] > summary { margin-bottom: .5rem; }
+@media (max-width: 480px) {
+    .articleship-course .course-tabs { gap: 0; padding: 0 .5rem; }
+    .articleship-course .tab-btn { padding: 1rem .6rem; font-size: .875rem; flex-shrink: 0; }
+    .articleship-session-title { padding: 1rem; font-size: 1.1rem; }
+    .articleship-course .video-progress-center { min-width: 0; }
+    .articleship-course .video-counter { white-space: normal; font-size: .75rem; }
+    .articleship-course .nav-button-premium span { font-size: .875rem; }
+}
