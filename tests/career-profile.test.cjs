@@ -261,6 +261,8 @@ test('both email signup pages remain nonblocking with the real career helper',as
   for(const file of ['login.html','sign-up.html']){
     const {dom,writes}=await authPageHarness(file);const doc=dom.window.document;
     for(const [id,value] of Object.entries({'signup-firstname':'Test Name','signup-name':'Test Name','signup-email':'test@example.test','email':'test@example.test','signup-password':'password123','password':'password123','confirm-password':'password123','signup-phone':'9999999999'})){if(doc.getElementById(id))doc.getElementById(id).value=value;}
+    // login.html requires the 18+ declaration before it signs anyone up.
+    const age=doc.getElementById('signup-age-declaration');if(age){age.checked=true;age.dispatchEvent(new dom.window.Event('change',{bubbles:true}));}
     doc.getElementById('signup-form').dispatchEvent(new dom.window.Event('submit',{bubbles:true,cancelable:true}));await tick();await tick();assert.equal(writes.length,1,file);assert.equal(writes[0].options.data.msc_auth_redirect,'/cv-builder/');assert.equal(writes[0].options.data.phone,'9999999999');assert.equal(writes[0].options.data.msc_career_intake,undefined);dom.window.close();
   }
 });
