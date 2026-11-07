@@ -1,0 +1,26 @@
+name = "job-digest-worker"
+main = "index.mjs"
+compatibility_date = "2024-09-23"
+# Nothing to call: it only runs from the cron below.
+workers_dev = false
+
+# Keep every run's log in the Cloudflare dashboard (Workers > job-digest-worker > Logs), not only in a live tail.
+[observability]
+enabled = true
+
+# Cron times are UTC. 02:30, 05:30, 08:30, 11:30 and 14:30 UTC = 8:00, 11:00, 14:00, 17:00 and 20:00 IST.
+# Jobs posted after 8pm IST are announced in the 8am push, so nobody is woken by a notification.
+[triggers]
+crons = ["30 2,5,8,11,14 * * *"]
+
+[vars]
+SUPABASE_URL = "https://izsggdtdiacxdsjjncdq.supabase.co"
+PUSH_WORKER_URL = "https://auth-check.bhansalimanan55.workers.dev"
+# "true" = read and log what it WOULD send, send nothing and move no marker. "false" = live.
+# Dry run checked 2026-11-07 14:00 IST (13 Fresher + 1 Semi Qualified counted). Before the first live deploy run:
+#   update job_digest_state set announced_through = now();
+DRY_RUN = "false"
+
+# Secrets (never in this file): set with `npx wrangler secret put <NAME>`
+#   SUPABASE_SERVICE_ROLE_KEY  reads the job tables and job_digest_state
+#   SECURE_API_KEY             the auth-check push Worker's X-API-Key
