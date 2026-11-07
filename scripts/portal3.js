@@ -3759,17 +3759,10 @@ async function initializePage() {
             profile = await fetchAndCacheProfileData();
         }
 
-        // Show onboarding segment modal if looking_for is not set on the homepage. New sign-ups are asked by the
-        // required portal popup instead (scripts/career-profile.js), which also fills looking_for.
+        // The old 4-option "What are you looking for?" questionnaire is retired (8 Nov 2026). New accounts are asked by
+        // the required portal popup (scripts/career-profile.js), which also fills looking_for; nobody else is asked.
         const newSignup = Boolean(currentSession?.user?.user_metadata?.msc_signup_consent);
-        if ((!profile || !profile.looking_for) && !newSignup) {
-            const path = window.location.pathname;
-            if (path === '/' || path === '/index.html') {
-                setTimeout(() => {
-                    showOnboardingSegmentModal();
-                }, 800); // Small pleasant delay after load
-            }
-        } else {
+        if (profile?.looking_for || newSignup) {
             // User has a default portal set — redirect if arriving from an external link/bookmark
             const lookingForToPreference = {
                 'CA Industrial Training Default': 'industrial',
@@ -3777,7 +3770,7 @@ async function initializePage() {
                 'CA Fresher': 'fresher_fresher',
                 'Semi Qualified CA': 'semi_fresher'
             };
-            const pref = getJobPreference() || lookingForToPreference[profile.looking_for];
+            const pref = getJobPreference() || lookingForToPreference[profile?.looking_for];
             if (pref) {
                 redirectToPreferredPortal(pref);
             }
@@ -4515,17 +4508,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 // ==========================================
 // ONBOARDING QUESTIONNAIRE SEGMENT MODAL
 // ==========================================
-
-// Show Onboarding Segment Modal with premium transition
-function showOnboardingSegmentModal() {
-    const modal = document.getElementById('onboardingSegmentModal');
-    if (modal) {
-        modal.style.display = 'flex';
-        // Trigger reflow for animation
-        modal.offsetHeight;
-        modal.classList.add('show-modal');
-    }
-}
 
 // Hide Onboarding Segment Modal with premium transition
 function hideOnboardingSegmentModal() {
