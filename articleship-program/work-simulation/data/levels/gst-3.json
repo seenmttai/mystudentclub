@@ -1,0 +1,2800 @@
+{
+ "id": "gst-3",
+ "domain": "gst",
+ "number": 3,
+ "title": "ITC and IMS actions",
+ "minutes": 40,
+ "learn": [
+  "What accept, reject and pending in IMS do to 2B",
+  "Why a bill misses 2B, and when its credit comes",
+  "Which 3B row reverses blocked and unpaid-bill credit"
+ ],
+ "do": [
+  "Decide 11 records: the IMS action and February’s credit",
+  "Work out Table 4 of the 3B",
+  "Draft one supplier mail"
+ ],
+ "case": {
+  "role": "First-year article assistant, GST team",
+  "client": "Tamhini Drivetech Private Limited, a Chakan company that makes gears, shafts and hubs for vehicle makers, with a depot at Hosur in Tamil Nadu",
+  "team": "Neethu Thomas (GST senior) and Varun Shetty (second-year article, who prepares Hosur’s returns); at Tamhini, Pallavi Shinde (accounts) and Rohit Agrawal (purchase)",
+  "goal": "For each record Varun’s match left open, decide the IMS action and its place in February’s 3B; then work out Table 4 for the return.",
+  "period": "February 2027 (GSTR-2B of 14 March; GSTR-3B due 20 March)",
+  "where": "Firm office, Prabhat Road · Monday 15 to Wednesday 17 March 2027"
+ },
+ "brief": {
+  "from": "neethu",
+  "time": "10:40 am",
+  "messages": [
+   "February’s 2B came yesterday. Varun’s sheet has the 11 records his match couldn’t settle: decide the IMS action and February’s credit for each, by our IMS rules.",
+   "Then Table 4 for the 3B and one supplier mail for Pallavi to send. I file on Friday, so Wednesday evening, please."
+  ]
+ },
+ "documents": [
+  {
+   "id": "memo-ims",
+   "type": "letter",
+   "style": "memo",
+   "title": "Our IMS rules · GST team memo",
+   "tab": "IMS rules",
+   "letterhead": "Bapat Venkatesh & Co., Chartered Accountants",
+   "memoTitle": "Internal memo",
+   "to": [
+    "GST team"
+   ],
+   "from": "Neethu Thomas, GST Senior",
+   "date": "4 January 2027",
+   "ref": "BVC/GST/07",
+   "subject": "IMS and input credit: how we work",
+   "body": [
+    "For every client whose returns we prepare. Read it before you act in IMS.",
+    "## Matching",
+    "- Match the books with 2B on GSTIN, invoice number and amount, never on the supplier’s name alone.",
+    "## Acting in IMS",
+    "- Accept a record that is the client’s and correct, whether or not the client has booked it yet. A genuine bill whose credit is blocked is accepted too; its credit comes out in 3B Table 4B(1).",
+    "- Keep pending a record that is the client’s but cannot be claimed this month, such as goods that reach after the month ends. Accept it in the month they arrive.",
+    "- Reject only a record that is not the client’s: nothing ordered and nothing received. Add a remark.",
+    "- Act on every record. No action counts as accepted when 2B is made.",
+    "- After any change, recompute 2B before the 3B is filed.",
+    "## Not in IMS",
+    "- Nothing to act on there. Find out why: the supplier has not filed, has filed it on another GSTIN, or its GSTIN is cancelled. No credit until the record reaches the client’s 2B.",
+    "- Filed on another GSTIN: that GSTIN rejects it in its own IMS, and the supplier corrects the buyer’s GSTIN in its next GSTR-1. GSTR-1A cannot change a buyer’s GSTIN.",
+    "## Unpaid bills",
+    "- A bill still unpaid 180 days after its date: reverse the credit in 3B Table 4B(2), with any interest payable under section 50, and take it back when the client pays."
+   ],
+   "sign": "Neethu Thomas"
+  },
+  {
+   "id": "varun-sheet",
+   "type": "table",
+   "style": "sheet",
+   "title": "Varun’s sheet · Records to decide",
+   "tab": "Varun’s sheet",
+   "sheetName": "To decide",
+   "freeze": true,
+   "otherSheets": [
+    "Matched"
+   ],
+   "formula": "=COUNTIFS(Matched!B:B,B2)",
+   "columns": [
+    {
+     "key": "p",
+     "label": "Supplier"
+    },
+    {
+     "key": "n",
+     "label": "Doc no."
+    },
+    {
+     "key": "d",
+     "label": "Doc date"
+    },
+    {
+     "key": "b",
+     "label": "Tax in books (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "g",
+     "label": "Tax in 2B (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "x",
+     "label": "Varun’s note"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "l1",
+     "p": "Alandi Paper Products",
+     "n": "APP/26-27/0158",
+     "d": "10-02-2027",
+     "b": 12500,
+     "g": "–",
+     "x": "Not in 2B"
+    },
+    {
+     "_id": "l2",
+     "p": "Hebbal Tooling Solutions",
+     "n": "HTS/26-27/0917",
+     "d": "26-02-2027",
+     "b": "–",
+     "g": 57600,
+     "x": "Books: 04-03-2027"
+    },
+    {
+     "_id": "l3",
+     "p": "Kolak Polypack",
+     "n": "KP/26-27/1276",
+     "d": "27-01-2027",
+     "b": "–",
+     "g": 18720,
+     "x": "January bill"
+    },
+    {
+     "_id": "l4",
+     "p": "Palar Seals and Gaskets",
+     "n": "PSG/DN/014/26-27",
+     "d": "22-02-2027",
+     "b": "–",
+     "g": 8640,
+     "x": "Debit note; not in books"
+    },
+    {
+     "_id": "l5",
+     "p": "Phillaur Fasteners",
+     "n": "PF/2026-27/2281",
+     "d": "18-02-2027",
+     "b": 37800,
+     "g": "–",
+     "x": "Not in 2B"
+    },
+    {
+     "_id": "l6",
+     "p": "Rankala Forgings",
+     "n": "2214 · RF/2214/26-27",
+     "d": "18-02-2027",
+     "b": 33480,
+     "g": 33480,
+     "x": "Number differs"
+    },
+    {
+     "_id": "l7",
+     "p": "Ravet Car Care",
+     "n": "1184",
+     "d": "15-02-2027",
+     "b": "–",
+     "g": 6840,
+     "x": "Not in register"
+    },
+    {
+     "_id": "l8",
+     "p": "Sakhare Surface Treatment",
+     "n": "SST/0276",
+     "d": "24-02-2027",
+     "b": 9730,
+     "g": 9729,
+     "x": "Tax differs by ₹1"
+    },
+    {
+     "_id": "l9",
+     "p": "Sawangi Pressed Metals",
+     "n": "SPM/26-27/0391",
+     "d": "11-02-2027",
+     "b": "–",
+     "g": 20700,
+     "x": "No such party"
+    },
+    {
+     "_id": "l10",
+     "p": "Shirur Metrology Labs",
+     "n": "SML/26-27/052",
+     "d": "20-02-2027",
+     "b": 12600,
+     "g": "–",
+     "x": "Not in 2B"
+    },
+    {
+     "_id": "l11",
+     "p": "Mundhwa Lubricants and Chemicals",
+     "n": "MLC/26-27/0742",
+     "d": "04-08-2026",
+     "b": 30960,
+     "g": "–",
+     "x": "Unpaid since August"
+    }
+   ],
+   "check": false,
+   "notes": [
+    "Books: Pallavi’s February register. 2B: the download of 14-03-2027 for the Chakan GSTIN. The other 236 records match on GSTIN, number and amount (sheet Matched). Last row from Pallavi’s ageing. Tax = IGST, or CGST plus SGST. Varun"
+   ]
+  },
+  {
+   "id": "mail-pallavi",
+   "type": "letter",
+   "style": "email",
+   "title": "Pallavi’s mail · February 2B",
+   "tab": "Pallavi’s mail",
+   "from": {
+    "name": "Pallavi Shinde",
+    "email": "pallavi.shinde@email.com"
+   },
+   "to": [
+    {
+     "name": "Neethu Thomas",
+     "email": "neethu.thomas@email.com"
+    }
+   ],
+   "cc": [
+    {
+     "name": "Varun Shetty",
+     "email": "varun.shetty@email.com"
+    }
+   ],
+   "date": "Mon, 15 Mar 2027, 10:12 am",
+   "subject": "February 2B · points from our side",
+   "body": [
+    "Neethu ma’am,",
+    "February’s purchase register and the creditors ageing are attached. Three things from our side before the 3B:",
+    "- Ravet Car Care’s bill for MD sir’s car is in 2B. We booked the GST to vehicle running and took no credit, so shall we reject it in IMS and keep 2B clean?",
+    "- Hebbal’s inserts came on 4 March, before the 3B is filed. Can we take that credit in February itself?",
+    "- Phillaur says they filed on 11 March, but their bill 2281 is not in our 2B.",
+    "Regards,"
+   ],
+   "sign": {
+    "name": "Pallavi Shinde",
+    "role": "Accounts Executive",
+    "for": "Tamhini Drivetech Private Limited",
+    "hand": false
+   },
+   "attachments": [
+    "Purchase_register_Feb27.xlsx",
+    "Creditors_ageing_28Feb27.xlsx"
+   ]
+  },
+  {
+   "id": "purch-reg",
+   "type": "table",
+   "style": "tally",
+   "title": "Purchase register · February 2027",
+   "tab": "Register",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · GSTIN 27ZHDCT5940H1Z4"
+   },
+   "ledger": "Purchase and expense register · input tax, party-wise",
+   "period": "1-Feb-2027 to 28-Feb-2027",
+   "columns": [
+    {
+     "key": "p",
+     "label": "Particulars"
+    },
+    {
+     "key": "g",
+     "label": "GSTIN",
+     "mono": true
+    },
+    {
+     "key": "t",
+     "label": "Taxable value",
+     "format": "inr"
+    },
+    {
+     "key": "i",
+     "label": "IGST",
+     "format": "inr"
+    },
+    {
+     "key": "c",
+     "label": "CGST",
+     "format": "inr"
+    },
+    {
+     "key": "s",
+     "label": "SGST",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "p": "Alandi Paper Products",
+     "g": "27ZDLPK9230K1ZG",
+     "t": 250000,
+     "i": 0,
+     "c": 6250.0,
+     "s": 6250.0
+    },
+    {
+     "p": "Hebbal Tooling Solutions Pvt Ltd",
+     "g": "29ZEMCH0865A1ZP",
+     "t": 1315000,
+     "i": 236700,
+     "c": 0,
+     "s": 0
+    },
+    {
+     "p": "Kolak Polypack Pvt Ltd",
+     "g": "24WGHCK4121C1Z7",
+     "t": 396000,
+     "i": 71280,
+     "c": 0,
+     "s": 0
+    },
+    {
+     "p": "Palar Seals and Gaskets Pvt Ltd",
+     "g": "33VMJCP6724Z1Z1",
+     "t": 3491250,
+     "i": 628425,
+     "c": 0,
+     "s": 0
+    },
+    {
+     "p": "Phillaur Fasteners Pvt Ltd",
+     "g": "03UBZCP4197S1ZJ",
+     "t": 571000,
+     "i": 102780,
+     "c": 0,
+     "s": 0
+    },
+    {
+     "p": "Rankala Forgings Pvt Ltd",
+     "g": "27UJPCR7248B1Z1",
+     "t": 12464640,
+     "i": 0,
+     "c": 1121818.0,
+     "s": 1121818.0
+    },
+    {
+     "p": "Sakhare Surface Treatment",
+     "g": "27ZJGPS6000S1ZY",
+     "t": 1029350,
+     "i": 0,
+     "c": 92642.0,
+     "s": 92642.0
+    },
+    {
+     "p": "Shirur Metrology Labs",
+     "g": "27ZQFPP2225N1ZV",
+     "t": 70000,
+     "i": 0,
+     "c": 6300.0,
+     "s": 6300.0
+    },
+    {
+     "_class": "muted",
+     "p": "Other suppliers: 14 parties and sundry bills",
+     "g": "",
+     "t": 55820460,
+     "i": 5879475,
+     "c": 2051149.0,
+     "s": 2051149.0
+    },
+    {
+     "_class": "total",
+     "p": "Total, February 2027",
+     "g": "",
+     "t": 75407700,
+     "i": 6918660,
+     "c": 3278159,
+     "s": 3278159
+    }
+   ],
+   "notes": [
+    "Bills are entered on the day the goods or service reach Chakan. GST on the car, canteen and travel bills is booked to the expense, not to input tax."
+   ]
+  },
+  {
+   "id": "ims-print",
+   "type": "table",
+   "style": "portal",
+   "title": "IMS · Inward records to act on",
+   "tab": "IMS",
+   "kindLabel": "Portal print",
+   "brand": "Goods and Services Tax",
+   "heading": "Invoice Management System · Inward supplies",
+   "subtitle": "B2B invoices and debit notes, saved or filed by suppliers · filter applied",
+   "meta": [
+    {
+     "label": "GSTIN",
+     "value": "27ZHDCT5940H1Z4"
+    },
+    {
+     "label": "Legal name",
+     "value": "Tamhini Drivetech Private Limited"
+    },
+    {
+     "label": "GSTR-2B period",
+     "value": "February 2027"
+    },
+    {
+     "label": "Printed on",
+     "value": "15/03/2027, 11:20"
+    }
+   ],
+   "columns": [
+    {
+     "key": "n",
+     "label": "Supplier (trade name)"
+    },
+    {
+     "key": "g",
+     "label": "GSTIN of supplier",
+     "mono": true
+    },
+    {
+     "key": "ty",
+     "label": "Type"
+    },
+    {
+     "key": "no",
+     "label": "Doc no."
+    },
+    {
+     "key": "d",
+     "label": "Doc date"
+    },
+    {
+     "key": "src",
+     "label": "Source"
+    },
+    {
+     "key": "fd",
+     "label": "Filed on"
+    },
+    {
+     "key": "st",
+     "label": "Status"
+    },
+    {
+     "key": "t",
+     "label": "Taxable value (₹)",
+     "format": "amount"
+    },
+    {
+     "key": "i",
+     "label": "Integrated tax (₹)",
+     "format": "amount"
+    },
+    {
+     "key": "c",
+     "label": "Central tax (₹)",
+     "format": "amount"
+    },
+    {
+     "key": "s",
+     "label": "State/UT tax (₹)",
+     "format": "amount"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "hebbal",
+     "n": "Hebbal Tooling Solutions",
+     "g": "29ZEMCH0865A1ZP",
+     "ty": "Invoice",
+     "no": "HTS/26-27/0917",
+     "d": "26-02-2027",
+     "src": "GSTR-1",
+     "fd": "10/03/2027",
+     "st": "No action",
+     "t": 320000,
+     "i": 57600,
+     "c": 0,
+     "s": 0
+    },
+    {
+     "_id": "kolak",
+     "n": "Kolak Polypack",
+     "g": "24WGHCK4121C1Z7",
+     "ty": "Invoice",
+     "no": "KP/26-27/1276",
+     "d": "27-01-2027",
+     "src": "GSTR-1A",
+     "fd": "15/02/2027",
+     "st": "No action",
+     "t": 104000,
+     "i": 18720,
+     "c": 0,
+     "s": 0
+    },
+    {
+     "_id": "palar",
+     "n": "Palar Seals and Gaskets",
+     "g": "33VMJCP6724Z1Z1",
+     "ty": "Debit note",
+     "no": "PSG/DN/014/26-27",
+     "d": "22-02-2027",
+     "src": "GSTR-1",
+     "fd": "11/03/2027",
+     "st": "No action",
+     "t": 48000,
+     "i": 8640,
+     "c": 0,
+     "s": 0
+    },
+    {
+     "_id": "rankala",
+     "n": "Rankala Forgings",
+     "g": "27UJPCR7248B1Z1",
+     "ty": "Invoice",
+     "no": "RF/2214/26-27",
+     "d": "18-02-2027",
+     "src": "GSTR-1",
+     "fd": "09/03/2027",
+     "st": "No action",
+     "t": 186000,
+     "i": 0,
+     "c": 16740,
+     "s": 16740
+    },
+    {
+     "_id": "ravet",
+     "n": "Ravet Car Care",
+     "g": "27VHVFR1828K1ZK",
+     "ty": "Invoice",
+     "no": "1184",
+     "d": "15-02-2027",
+     "src": "GSTR-1",
+     "fd": "10/03/2027",
+     "st": "No action",
+     "t": 38000,
+     "i": 0,
+     "c": 3420,
+     "s": 3420
+    },
+    {
+     "_id": "sakhare",
+     "n": "Sakhare Surface Treatment",
+     "g": "27ZJGPS6000S1ZY",
+     "ty": "Invoice",
+     "no": "SST/0276",
+     "d": "24-02-2027",
+     "src": "GSTR-1",
+     "fd": "09/03/2027",
+     "st": "No action",
+     "t": 54050,
+     "i": 0,
+     "c": 4864.5,
+     "s": 4864.5
+    },
+    {
+     "_id": "sawangi",
+     "n": "Sawangi Pressed Metals",
+     "g": "27XWECS6447U1ZG",
+     "ty": "Invoice",
+     "no": "SPM/26-27/0391",
+     "d": "11-02-2027",
+     "src": "GSTR-1",
+     "fd": "11/03/2027",
+     "st": "No action",
+     "t": 115000,
+     "i": 0,
+     "c": 10350,
+     "s": 10350
+    }
+   ],
+   "notes": [
+    "Showing 7 of 243 records · Filter: supplier GSTIN, document number · Actions: A · R · P · Recompute GSTR-2B after any action."
+   ],
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "7 of my 11 are here – V.S.",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": -2
+    }
+   ]
+  },
+  {
+   "id": "gstr2b",
+   "type": "table",
+   "style": "portal",
+   "title": "GSTR-2B · February 2027 · summary",
+   "tab": "2B summary",
+   "kindLabel": "Portal print",
+   "brand": "Goods and Services Tax",
+   "heading": "GSTR-2B · Auto-drafted ITC statement",
+   "subtitle": "Summary · ITC available (draft)",
+   "meta": [
+    {
+     "label": "GSTIN",
+     "value": "27ZHDCT5940H1Z4"
+    },
+    {
+     "label": "Legal name",
+     "value": "Tamhini Drivetech Private Limited"
+    },
+    {
+     "label": "Tax period",
+     "value": "February 2027"
+    },
+    {
+     "label": "Generated on",
+     "value": "14/03/2027"
+    }
+   ],
+   "columns": [
+    {
+     "key": "h",
+     "label": "Heading"
+    },
+    {
+     "key": "i",
+     "label": "Integrated tax (₹)",
+     "format": "amount"
+    },
+    {
+     "key": "c",
+     "label": "Central tax (₹)",
+     "format": "amount"
+    },
+    {
+     "key": "s",
+     "label": "State/UT tax (₹)",
+     "format": "amount"
+    },
+    {
+     "key": "x",
+     "label": "Cess (₹)",
+     "format": "amount"
+    }
+   ],
+   "rows": [
+    {
+     "h": "Part A · I. All other ITC: supplies from registered persons (not reverse charge)",
+     "i": 6965820,
+     "c": 3279378.5,
+     "s": 3279378.5,
+     "x": 0
+    },
+    {
+     "h": "Part A · II. Inward supplies from ISD",
+     "i": 0,
+     "c": 0,
+     "s": 0,
+     "x": 0
+    },
+    {
+     "h": "Part A · III. Inward supplies liable for reverse charge",
+     "i": 0,
+     "c": 0,
+     "s": 0,
+     "x": 0
+    },
+    {
+     "h": "Part A · IV. Import of goods",
+     "i": 0,
+     "c": 0,
+     "s": 0,
+     "x": 0
+    },
+    {
+     "h": "Part B · I. Others (credit notes)",
+     "i": 0,
+     "c": 0,
+     "s": 0,
+     "x": 0
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "243 in Part A I: 236 matched + the 7 on the IMS print – V.S.",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -2
+    }
+   ]
+  },
+  {
+   "id": "gstin-search",
+   "type": "table",
+   "style": "plain",
+   "title": "Varun’s check · Return status",
+   "tab": "Return status",
+   "kindLabel": "Varun’s notes",
+   "icon": "sheet",
+   "heading": "Return status on the GST portal · checked 15-03-2027",
+   "columns": [
+    {
+     "key": "n",
+     "label": "Supplier"
+    },
+    {
+     "key": "f",
+     "label": "Status and returns filed"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "alandi",
+     "n": "Alandi Paper Products (Kiran Kurhade) · 27ZDLPK9230K1ZG",
+     "f": "Cancelled, effective 15/09/2026; no return since September 2026"
+    },
+    {
+     "_id": "kolak",
+     "n": "Kolak Polypack Private Limited · 24WGHCK4121C1Z7",
+     "f": "Active; GSTR-1 for January filed 11/02/2027; GSTR-1A for January filed 15/02/2027"
+    },
+    {
+     "_id": "phillaur",
+     "n": "Phillaur Fasteners Private Limited · 03UBZCP4197S1ZJ",
+     "f": "Active; GSTR-1 for February filed 11/03/2027"
+    },
+    {
+     "_id": "shirur",
+     "n": "Shirur Metrology Labs (Anand Pachpute) · 27ZQFPP2225N1ZV",
+     "f": "Active; GSTR-1 for January filed 11/02/2027; GSTR-1 for February not filed"
+    }
+   ],
+   "notes": [
+    "The suppliers on my sheet whose bills were missing or late. Varun"
+   ]
+  },
+  {
+   "id": "note-jan",
+   "type": "letter",
+   "style": "note",
+   "title": "Neethu’s note · January 3B",
+   "tab": "January note",
+   "icon": "pin",
+   "subject": "Tamhini · January 3B",
+   "date": "19/2/27",
+   "body": [
+    "Filed today. Carry to Feb:",
+    "- Kolak KP/26-27/1276 (27/1), IGST 18,720: not in Jan 2B. Held back. Claim when 2B shows it.",
+    "- Alandi: still cancelled. No credit, as Oct to Dec."
+   ],
+   "sign": "N.T."
+  },
+  {
+   "id": "ageing",
+   "type": "table",
+   "style": "sheet",
+   "title": "Creditors ageing · 28 February 2027",
+   "tab": "Ageing",
+   "sheetName": "Over 90 days",
+   "otherSheets": [
+    "All creditors"
+   ],
+   "formula": "=$H$1-D3",
+   "columns": [
+    {
+     "key": "p",
+     "label": "Supplier"
+    },
+    {
+     "key": "n",
+     "label": "Bill no."
+    },
+    {
+     "key": "d",
+     "label": "Bill date"
+    },
+    {
+     "key": "a",
+     "label": "Unpaid (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "k",
+     "label": "Days",
+     "format": "int"
+    },
+    {
+     "key": "r",
+     "label": "Remark"
+    }
+   ],
+   "freeze": true,
+   "rows": [
+    {
+     "_id": "mundhwa",
+     "p": "Mundhwa Lubricants and Chemicals",
+     "n": "MLC/26-27/0742",
+     "d": "04-08-2026",
+     "a": 202960,
+     "k": 208,
+     "r": "On hold: oil dispute"
+    },
+    {
+     "_id": "vishwamitri",
+     "p": "Vishwamitri Bearings Private Limited",
+     "n": "VB/2627/3806",
+     "d": "20-11-2026",
+     "a": 141600,
+     "k": 100,
+     "r": "Debit note due"
+    },
+    {
+     "_class": "total",
+     "p": "Total",
+     "n": "",
+     "d": "",
+     "a": 344560,
+     "k": "",
+     "r": ""
+    }
+   ],
+   "notes": [
+    "Bills unpaid for more than 90 days on 28-02-2027, counted from the bill date. Pallavi"
+   ]
+  },
+  {
+   "id": "reg-note",
+   "type": "table",
+   "style": "plain",
+   "title": "Permanent file · GST registrations",
+   "kindLabel": "Firm file",
+   "heading": "Tamhini Drivetech · GST registrations (permanent file)",
+   "subtitle": "Bapat Venkatesh & Co., GST team · updated April 2026",
+   "columns": [
+    {
+     "key": "reg",
+     "label": "Registration"
+    },
+    {
+     "key": "gstin",
+     "label": "GSTIN",
+     "mono": true
+    },
+    {
+     "key": "who",
+     "label": "Returns prepared by"
+    }
+   ],
+   "rows": [
+    {
+     "reg": "Chakan plant, Pune (principal place)",
+     "gstin": "27ZHDCT5940H1Z4",
+     "who": "Neethu Thomas"
+    },
+    {
+     "reg": "Hosur depot, Tamil Nadu (separate registration)",
+     "gstin": "33ZHDCT5940H1ZB",
+     "who": "Varun Shetty"
+    }
+   ],
+   "notes": [
+    "Both GSTINs are under PAN ZHDCT5940H. Each files its own GSTR-1 and GSTR-3B every month and has its own IMS dashboard and GSTR-2B."
+   ]
+  },
+  {
+   "id": "inv-alandi",
+   "type": "invoice",
+   "title": "Alandi · Tax invoice",
+   "tab": "Bill",
+   "group": "l1",
+   "supplier": {
+    "name": "Alandi Paper Products",
+    "address": "Gat No. 92, Markal Road, Alandi\nPune 412105\nUdyam Reg. No. UDYAM-MH-26-0994657",
+    "gstin": "27ZDLPK9230K1ZG",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "APP/26-27/0158",
+   "date": "10-02-2027",
+   "copy": "Original for recipient",
+   "placeOfSupply": "27-Maharashtra",
+   "tax": "intra",
+   "lines": [
+    {
+     "desc": "Corrugated box, 3-ply, 400 × 300 × 300 mm",
+     "hsn": "4819 10",
+     "qty": 10000,
+     "unit": "nos",
+     "rate": 25.0,
+     "taxable": 250000.0,
+     "gstRate": 5
+    }
+   ],
+   "total": 262500.0,
+   "signFor": "Alandi Paper Products",
+   "paymentTerms": "30 days",
+   "poRef": "TD/PO/2026-27/1004",
+   "poDate": "02-02-2027",
+   "dispatchedThrough": "Own tempo",
+   "destination": "Chakan",
+   "vehicle": "MH 14 GU 3381",
+   "signedBy": "K. Kurhade",
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Subject to Pune jurisdiction."
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "RECEIVED\n10 FEB 2027",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": -5
+    }
+   ]
+  },
+  {
+   "id": "inv-hebbal",
+   "type": "invoice",
+   "title": "Hebbal · Tax invoice",
+   "tab": "Bill",
+   "group": "l2",
+   "supplier": {
+    "name": "Hebbal Tooling Solutions Private Limited",
+    "address": "No. 14, 2nd Stage, Peenya Industrial Area\nBengaluru 560058",
+    "gstin": "29ZEMCH0865A1ZP",
+    "state": "Karnataka",
+    "stateCode": "29",
+    "phone": "98XXXXXXXX",
+    "pan": "ZEMCH0865A"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "HTS/26-27/0917",
+   "date": "26 Feb 2027",
+   "copy": "Original for recipient",
+   "placeOfSupply": "27-Maharashtra",
+   "tax": "inter",
+   "lines": [
+    {
+     "desc": "Carbide insert CNMG 120408, grade P25",
+     "hsn": "8209 00",
+     "qty": 800,
+     "unit": "nos",
+     "rate": 265.0,
+     "taxable": 212000.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "Carbide insert WNMG 080408, grade P25",
+     "hsn": "8209 00",
+     "qty": 125,
+     "unit": "nos",
+     "rate": 248.0,
+     "taxable": 31000.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "Gear hob, module 2.5, TiAlN coated",
+     "hsn": "8207 70",
+     "qty": 2,
+     "unit": "nos",
+     "rate": 38500.0,
+     "taxable": 77000.0,
+     "gstRate": 18
+    }
+   ],
+   "total": 377600.0,
+   "signFor": "Hebbal Tooling Solutions Private Limited",
+   "style": "erp",
+   "shipTo": {
+    "name": "Tamhini Drivetech Private Limited (Chakan plant)",
+    "address": "Stores gate 2, Plot B-47, Chakan Industrial Area Phase II\nMIDC, Mahalunge, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "paymentTerms": "45 days",
+   "poRef": "TD/PO/2026-27/1031",
+   "poDate": "16 Feb 2027",
+   "dispatchDoc": "LR 22184 dt 27-02-2027",
+   "dispatchedThrough": "Road (transporter’s LR)",
+   "destination": "Chakan, Pune",
+   "ewayBill": "3230 1852 1485 dt 27/02/2027",
+   "signedBy": "R. Nagaraj",
+   "irn": "f072957fb03cae98f6b84da2f506ddba32dc33706290c170bfdd3dce7f1fdc9b",
+   "ackNo": "132754616232502",
+   "ackDate": "26 Feb 2027",
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Delivery FOR your Chakan plant, freight included, as per your PO.",
+    "Subject to Bengaluru jurisdiction."
+   ]
+  },
+  {
+   "id": "grn-hebbal",
+   "type": "grn",
+   "title": "Hebbal · Goods receipt note",
+   "tab": "GRN",
+   "group": "l2",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited"
+   },
+   "unit": "Tool crib",
+   "number": "GRN-2027-03-0052",
+   "date": "04-03-2027",
+   "vendor": "Hebbal Tooling Solutions Private Limited",
+   "poRef": "TD/PO/2026-27/1031",
+   "invoiceRef": "HTS/26-27/0917 dt 26-02-2027",
+   "challan": "LR 22184",
+   "vehicle": "KA 52 B 4417",
+   "lines": [
+    {
+     "desc": "Carbide insert CNMG 120408, grade P25",
+     "unit": "nos",
+     "qtyChallan": 800,
+     "qtyReceived": 800,
+     "qtyAccepted": 800,
+     "qtyRejected": 0
+    },
+    {
+     "desc": "Carbide insert WNMG 080408, grade P25",
+     "unit": "nos",
+     "qtyChallan": 125,
+     "qtyReceived": 125,
+     "qtyAccepted": 125,
+     "qtyRejected": 0
+    },
+    {
+     "desc": "Gear hob, module 2.5, TiAlN coated",
+     "unit": "nos",
+     "qtyChallan": 2,
+     "qtyReceived": 2,
+     "qtyAccepted": 2,
+     "qtyRejected": 0
+    }
+   ],
+   "receivedBy": "Santosh Kale",
+   "receivedSign": "S. Kale",
+   "remarks": "Lorry reported 4/3 at 10:20 am. Sent from Bengaluru by road on 27/2.",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "STORES\nTAMHINI · CHAKAN",
+     "color": "violet",
+     "at": "bottom-right",
+     "rotate": -12,
+     "shape": "round"
+    }
+   ]
+  },
+  {
+   "id": "inv-kolak",
+   "type": "invoice",
+   "title": "Kolak · Tax invoice",
+   "tab": "Bill",
+   "group": "l3",
+   "supplier": {
+    "name": "Kolak Polypack Private Limited",
+    "address": "Plot 1407, Phase III\nGIDC Vapi 396195\nUdyam Reg. No. UDYAM-GJ-24-0957631",
+    "gstin": "24WGHCK4121C1Z7",
+    "state": "Gujarat",
+    "stateCode": "24",
+    "phone": "98XXXXXXXX",
+    "pan": "WGHCK4121C"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "KP/26-27/1276",
+   "date": "27/01/2027",
+   "copy": "Original for recipient",
+   "placeOfSupply": "27-Maharashtra",
+   "tax": "inter",
+   "lines": [
+    {
+     "desc": "VCI bag, 24 × 36 inch, 100 micron",
+     "hsn": "3923 21",
+     "qty": 5760,
+     "unit": "nos",
+     "rate": 14.5,
+     "taxable": 83520.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "Stretch film roll, 500 mm, 23 micron",
+     "hsn": "3920 10",
+     "qty": 32,
+     "unit": "nos",
+     "rate": 640.0,
+     "taxable": 20480.0,
+     "gstRate": 18
+    }
+   ],
+   "total": 122720.0,
+   "signFor": "Kolak Polypack Private Limited",
+   "shipTo": {
+    "name": "Tamhini Drivetech Private Limited (Chakan plant)",
+    "address": "Stores gate 2, Plot B-47, Chakan Industrial Area Phase II\nMIDC, Mahalunge, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "paymentTerms": "45 days",
+   "poRef": "TD/PO/2026-27/0979",
+   "poDate": "19/01/2027",
+   "dispatchedThrough": "Vapi–Pune road transport",
+   "destination": "Chakan",
+   "vehicle": "GJ 15 AV 6620",
+   "signedBy": "H. Desai",
+   "ewayBill": "3369 2509 8279 dt 27/01/2027",
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Subject to Vapi jurisdiction."
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "RECEIVED\n29 JAN 2027",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": -5
+    },
+    {
+     "kind": "hand",
+     "text": "Booked Jan, vch 2539 – P.S.",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": -2
+    }
+   ]
+  },
+  {
+   "id": "dn-palar",
+   "type": "letter",
+   "style": "letter",
+   "title": "Palar · Debit note",
+   "tab": "Debit note",
+   "group": "l4",
+   "letterhead": {
+    "name": "Palar Seals and Gaskets Private Limited",
+    "address": "No. 27, SIDCO Industrial Estate, Ambattur, Chennai 600098",
+    "gstin": "33VMJCP6724Z1Z1",
+    "pan": "VMJCP6724Z"
+   },
+   "ref": "Debit note PSG/DN/014/26-27",
+   "date": "22-02-2027",
+   "irn": "bd6da6c7a8a45fd2d66fdca0338594dd1f61dca12464760395232f76305d7a28",
+   "ackNo": "132762551391973",
+   "ackDate": "22-02-2027",
+   "to": [
+    "Tamhini Drivetech Private Limited",
+    "Plot B-47, Chakan Industrial Area Phase II, MIDC, Pune 410501",
+    "GSTIN 27ZHDCT5940H1Z4"
+   ],
+   "subject": "Debit note against our invoice PSG/0907/26-27 of 12-02-2027 · place of supply 27-Maharashtra",
+   "body": [
+    "Dear Sir/Madam,",
+    "Our invoice PSG/0907/26-27 billed oil seal 40 × 55 × 8 at ₹27.00 a piece. Your purchase order TD/PO/2026-27/0987 fixes the rate at ₹29.00. We debit the difference:",
+    {
+     "table": {
+      "columns": [
+       {
+        "key": "p",
+        "label": "Particulars"
+       },
+       {
+        "key": "q",
+        "label": "Qty",
+        "format": "int"
+       },
+       {
+        "key": "r",
+        "label": "Rate (₹)",
+        "format": "amount"
+       },
+       {
+        "key": "a",
+        "label": "Amount (₹)",
+        "format": "amount"
+       }
+      ],
+      "rows": [
+       {
+        "p": "Oil seal 40 × 55 × 8, NBR (HSN 4016 93): rate difference",
+        "q": 24000,
+        "r": 2,
+        "a": 48000
+       },
+       {
+        "p": "IGST @ 18%",
+        "q": "",
+        "r": "",
+        "a": 8640
+       },
+       {
+        "p": "Total",
+        "q": "",
+        "r": "",
+        "a": 56640
+       }
+      ]
+     }
+    },
+    "Amount in words: Indian Rupees Fifty Six Thousand Six Hundred Forty only."
+   ],
+   "sign": {
+    "closing": "Yours faithfully,",
+    "for": "Palar Seals and Gaskets Private Limited",
+    "name": "K. Sundaram",
+    "role": "Accounts Manager",
+    "hand": "K. Sundaram"
+   },
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "PURCHASE DEPT\nRECEIVED 24 FEB 2027",
+     "color": "violet",
+     "at": "inline",
+     "rotate": 4
+    },
+    {
+     "kind": "hand",
+     "text": "Rate 29.00 as per PO – OK.\nR. Agrawal 24/2",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "inv-phillaur",
+   "type": "invoice",
+   "title": "Phillaur · Tax invoice",
+   "tab": "Bill",
+   "group": "l5",
+   "supplier": {
+    "name": "Phillaur Fasteners Private Limited",
+    "address": "Focal Point Phase VIII\nLudhiana 141010\nUdyam Reg. No. UDYAM-PB-11-0943122",
+    "gstin": "03UBZCP4197S1ZJ",
+    "state": "Punjab",
+    "stateCode": "03",
+    "phone": "98XXXXXXXX",
+    "pan": "UBZCP4197S"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "PF/2026-27/2281",
+   "date": "18-02-2027",
+   "copy": "Original for recipient",
+   "placeOfSupply": "27-Maharashtra",
+   "tax": "inter",
+   "lines": [
+    {
+     "desc": "Circlip, external, 25 mm (DIN 471)",
+     "hsn": "7318 29",
+     "qty": 60000,
+     "unit": "nos",
+     "rate": 1.5,
+     "taxable": 90000.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "Circlip, internal, 52 mm (DIN 472)",
+     "hsn": "7318 29",
+     "qty": 40000,
+     "unit": "nos",
+     "rate": 3.0,
+     "taxable": 120000.0,
+     "gstRate": 18
+    }
+   ],
+   "total": 247800.0,
+   "signFor": "Phillaur Fasteners Private Limited",
+   "paymentTerms": "45 days",
+   "poRef": "TD/PO/2026-27/1009",
+   "poDate": "05-02-2027",
+   "dispatchedThrough": "Ludhiana–Pune road transport",
+   "destination": "Chakan, Pune",
+   "vehicle": "PB 10 HN 7731",
+   "ewayBill": "3072 8575 0842 dt 18-02-2027",
+   "signedBy": "G. S. Sandhu",
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Interest @ 18% p.a. on bills unpaid after the due date.",
+    "Subject to Ludhiana jurisdiction."
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "RECEIVED\n22 FEB 2027",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": -5
+    }
+   ]
+  },
+  {
+   "id": "chat-varun",
+   "type": "chat",
+   "title": "Phillaur · Varun’s chat",
+   "tab": "Chat",
+   "group": "l5",
+   "with": "Varun Shetty",
+   "date": "Monday 15 March",
+   "me": "You",
+   "messages": [
+    {
+     "from": "varun",
+     "time": "11:02 am",
+     "text": "Doing Hosur’s IMS. There’s a Phillaur Fasteners bill in it: PF/2026-27/2281, ₹2,10,000 + IGST ₹37,800."
+    },
+    {
+     "from": "varun",
+     "time": "11:03 am",
+     "text": "Hosur buys nothing from Phillaur. Is it Chakan’s?"
+    },
+    {
+     "from": "You",
+     "time": "11:05 am",
+     "text": "Checking."
+    },
+    {
+     "from": "varun",
+     "time": "11:06 am",
+     "text": "Keeping it pending at Hosur till you tell me. Then I’ll reject it there."
+    }
+   ]
+  },
+  {
+   "id": "inv-rankala",
+   "type": "invoice",
+   "title": "Rankala · Tax invoice",
+   "tab": "Bill",
+   "group": "l6",
+   "supplier": {
+    "name": "Rankala Forgings Private Limited",
+    "address": "Plot D-12, Shiroli MIDC\nKolhapur 416122\nUdyam Reg. No. UDYAM-MH-09-0958745",
+    "gstin": "27UJPCR7248B1Z1",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "UJPCR7248B"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "RF/2214/26-27",
+   "date": "18-02-2027",
+   "copy": "Original for recipient",
+   "placeOfSupply": "27-Maharashtra",
+   "tax": "intra",
+   "lines": [
+    {
+     "desc": "Forged flange blank FB-210, 20MnCr5",
+     "hsn": "7326 19",
+     "qty": 250,
+     "unit": "nos",
+     "rate": 744.0,
+     "taxable": 186000.0,
+     "gstRate": 18
+    }
+   ],
+   "total": 219480.0,
+   "signFor": "Rankala Forgings Private Limited",
+   "shipTo": {
+    "name": "Tamhini Drivetech Private Limited (Chakan plant)",
+    "address": "Stores gate 2, Plot B-47, Chakan Industrial Area Phase II\nMIDC, Mahalunge, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "paymentTerms": "45 days",
+   "poRef": "TD/PO/2026-27/0998",
+   "poDate": "01-02-2027",
+   "dispatchedThrough": "Rankala Forgings tempo",
+   "destination": "Chakan",
+   "vehicle": "MH 09 GL 4416",
+   "signedBy": "V. Patil",
+   "ewayBill": "3651 3694 1593 dt 18-02-2027",
+   "irn": "6dd96f9f783f53e8f9b536e83e1fd4ab306664fbfab401df1f25776f362c9d32",
+   "ackNo": "132744290547773",
+   "ackDate": "18-02-2027",
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Subject to Kolhapur jurisdiction."
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "RECEIVED\n19 FEB 2027",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": -5
+    },
+    {
+     "kind": "hand",
+     "text": "Entered as 2214, vch 2861 – P.S.",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": -2
+    }
+   ]
+  },
+  {
+   "id": "inv-ravet",
+   "type": "invoice",
+   "title": "Ravet · Tax invoice",
+   "tab": "Bill",
+   "group": "l7",
+   "supplier": {
+    "name": "Ravet Car Care",
+    "address": "Shop 3, Mukai Chowk Road\nRavet, Pimpri-Chinchwad, Pune 412101",
+    "gstin": "27VHVFR1828K1ZK",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "VHVFR1828K"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "1184",
+   "date": "15-02-2027",
+   "copy": "Original for recipient",
+   "placeOfSupply": "27-Maharashtra",
+   "tax": "intra",
+   "lines": [
+    {
+     "desc": "Front brake discs and pads (job card 3318)",
+     "hsn": "8708 30",
+     "qty": 1,
+     "unit": "set",
+     "rate": 18600.0,
+     "taxable": 18600.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "Suspension bushes and link rods",
+     "hsn": "8708 80",
+     "qty": 1,
+     "unit": "set",
+     "rate": 5900.0,
+     "taxable": 5900.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "Labour: 40,000 km periodic service",
+     "hsn": "998714",
+     "qty": 1,
+     "unit": "job",
+     "rate": 13500.0,
+     "taxable": 13500.0,
+     "gstRate": 18
+    }
+   ],
+   "total": 44840.0,
+   "signFor": "Ravet Car Care",
+   "paymentTerms": "15 days",
+   "destination": "Ravet workshop",
+   "signedBy": "S. Bhondve",
+   "vehicle": "MH 14 HX 5809 (sedan), owner Tamhini Drivetech Pvt Ltd",
+   "terms": [
+    "Vehicle delivered after trial run.",
+    "Subject to Pune jurisdiction."
+   ],
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "MD sir’s car. Booked to vehicle running – P.S.",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": -2
+    }
+   ]
+  },
+  {
+   "id": "veh-led",
+   "type": "table",
+   "style": "tally",
+   "title": "Ravet · Vehicle running ledger",
+   "tab": "Ledger",
+   "group": "l7",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune"
+   },
+   "ledger": "Ledger: Vehicle running",
+   "subtitle": "Extract by Pallavi Shinde",
+   "period": "1-Feb-2027 to 28-Feb-2027",
+   "columns": [
+    {
+     "key": "d",
+     "label": "Date"
+    },
+    {
+     "key": "p",
+     "label": "Particulars"
+    },
+    {
+     "key": "vn",
+     "label": "Vch no."
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "d": "15-02-2027",
+     "p": "Ravet Car Care: bill 1184, MD’s car service",
+     "vn": "2716",
+     "dr": 44840
+    },
+    {
+     "d": "",
+     "p": "Fuel, tolls and parking: 14 entries, each below ₹10,000",
+     "vn": "",
+     "dr": 36760,
+     "_class": "muted"
+    },
+    {
+     "_class": "total",
+     "d": "",
+     "p": "Total, February 2027",
+     "vn": "",
+     "dr": 81600
+    }
+   ],
+   "notes": [
+    "Narration, 2716: Being the service bill for the MD’s car; GST ₹6,840 included, not taken as input credit (blocked)."
+   ]
+  },
+  {
+   "id": "inv-sakhare",
+   "type": "invoice",
+   "title": "Sakhare · Tax invoice",
+   "tab": "Bill",
+   "group": "l8",
+   "supplier": {
+    "name": "Sakhare Surface Treatment",
+    "address": "Gat No. 307, Kharabwadi, Chakan\nPune 410501\nUdyam Reg. No. UDYAM-MH-26-0921929",
+    "gstin": "27ZJGPS6000S1ZY",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "SST/0276",
+   "date": "24/2/2027",
+   "copy": "Original",
+   "placeOfSupply": "Maharashtra (27)",
+   "tax": "intra",
+   "lines": [
+    {
+     "desc": "Phosphating: input shaft 1142",
+     "hsn": "9988",
+     "qty": 3400,
+     "unit": "nos",
+     "rate": 9.5,
+     "taxable": 32300.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "Blackening: companion flange 0880",
+     "hsn": "9988",
+     "qty": 3000,
+     "unit": "nos",
+     "rate": 7.25,
+     "taxable": 21750.0,
+     "gstRate": 18
+    }
+   ],
+   "total": 63779.0,
+   "signFor": "Sakhare Surface Treatment",
+   "style": "book",
+   "deliveryNote": "Your challans JW-0583, JW-0584",
+   "poRef": "TD/WO/2026-27/0011",
+   "poDate": "1/4/2026",
+   "destination": "Chakan",
+   "vehicle": "MH 14 FT 2208",
+   "signedBy": "M. Sakhare",
+   "terms": [
+    "Payment within 30 days."
+   ],
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Entered CGST 4,865 + SGST 4,865, vch 2903 – P.S.",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": -2
+    }
+   ]
+  },
+  {
+   "id": "mail-rohit",
+   "type": "letter",
+   "style": "email",
+   "title": "Sawangi · Rohit’s reply",
+   "tab": "Mail",
+   "group": "l9",
+   "from": {
+    "name": "Rohit Agrawal",
+    "email": "rohit.agrawal@email.com"
+   },
+   "to": [
+    {
+     "name": "Varun Shetty",
+     "email": "varun.shetty@email.com"
+    }
+   ],
+   "cc": [
+    {
+     "name": "Pallavi Shinde",
+     "email": "pallavi.shinde@email.com"
+    }
+   ],
+   "date": "Mon, 15 Mar 2027, 12:40 pm",
+   "subject": "Re: Sawangi Pressed Metals · bill SPM/26-27/0391 in our 2B",
+   "body": [
+    "Varun,",
+    "We have never bought anything from Sawangi Pressed Metals. There is no PO and no GRN, and they are not in our vendor master. Nobody here has asked them for a quote either.",
+    "Please don’t book it.",
+    "Regards,"
+   ],
+   "sign": {
+    "name": "Rohit Agrawal",
+    "role": "Purchase Manager",
+    "for": "Tamhini Drivetech Private Limited",
+    "hand": false
+   }
+  },
+  {
+   "id": "inv-shirur",
+   "type": "invoice",
+   "title": "Shirur · Tax invoice",
+   "tab": "Bill",
+   "group": "l10",
+   "supplier": {
+    "name": "Shirur Metrology Labs",
+    "address": "Plot A-9, Ranjangaon MIDC, Shirur\nPune 412220\nUdyam Reg. No. UDYAM-MH-26-0947424",
+    "gstin": "27ZQFPP2225N1ZV",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "SML/26-27/052",
+   "date": "20-02-2027",
+   "copy": "Original for recipient",
+   "placeOfSupply": "27-Maharashtra",
+   "tax": "intra",
+   "lines": [
+    {
+     "desc": "Calibration of 48 plug and ring gauges and 14 micrometers, with certificates",
+     "hsn": "998346",
+     "qty": 1,
+     "unit": "job",
+     "rate": 70000.0,
+     "taxable": 70000.0,
+     "gstRate": 18
+    }
+   ],
+   "total": 82600.0,
+   "signFor": "Shirur Metrology Labs",
+   "paymentTerms": "30 days",
+   "poRef": "TD/PO/2026-27/1016",
+   "poDate": "08-02-2027",
+   "destination": "Chakan (on site)",
+   "signedBy": "A. Pachpute",
+   "terms": [
+    "We declare that this invoice shows the actual price of the services described and that all particulars are true and correct.",
+    "Subject to Pune jurisdiction."
+   ],
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Certificates recd 20/2 – quality lab",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": -2
+    }
+   ]
+  },
+  {
+   "id": "mund-bills",
+   "type": "table",
+   "style": "tally",
+   "title": "Mundhwa · Pending bills",
+   "tab": "Pending bills",
+   "group": "l11",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune"
+   },
+   "ledger": "Bills payable: Mundhwa Lubricants and Chemicals",
+   "period": "Pending as at 28-Feb-2027",
+   "columns": [
+    {
+     "key": "n",
+     "label": "Bill no."
+    },
+    {
+     "key": "d",
+     "label": "Bill date"
+    },
+    {
+     "key": "a",
+     "label": "Pending (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "k",
+     "label": "Age (days)",
+     "format": "int"
+    },
+    {
+     "key": "r",
+     "label": "Remark"
+    }
+   ],
+   "rows": [
+    {
+     "n": "MLC/26-27/0742",
+     "d": "04-08-2026",
+     "a": 202960.0,
+     "k": 208,
+     "r": "On hold: oil dispute"
+    },
+    {
+     "n": "MLC/26-27/1311",
+     "d": "09-02-2027",
+     "a": 542575.8,
+     "k": 19,
+     "r": "Not due"
+    },
+    {
+     "n": "MLC/26-27/1347",
+     "d": "18-02-2027",
+     "a": 445662.0,
+     "k": 10,
+     "r": "Not due"
+    },
+    {
+     "n": "MLC/26-27/1372",
+     "d": "25-02-2027",
+     "a": 280366.2,
+     "k": 3,
+     "r": "Not due"
+    },
+    {
+     "_class": "total",
+     "n": "Total pending",
+     "d": "",
+     "a": 1471564.0,
+     "k": "",
+     "r": ""
+    }
+   ],
+   "notes": [
+    "0742: hydraulic oil, 20 drums; input credit of ₹15,480 + ₹15,480 taken in the August 2026 3B.",
+    "Credit terms 30 days. Bills from September 2026 to January 2027 paid in full.",
+    "Pending is after TDS on purchase of goods: ₹1,076 on the February bills, none on 0742, which came before the year’s purchases passed ₹50 lakh."
+   ],
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "0742: Rohit settling with Mundhwa. Don’t pay yet – M.K.",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": -2
+    }
+   ]
+  }
+ ],
+ "tasks": [
+  {
+   "id": "t1",
+   "type": "items",
+   "stage": "Fieldwork",
+   "title": "Decide the 11 records",
+   "weight": 3,
+   "noun": [
+    "record",
+    "records"
+   ],
+   "prompt": "Varun’s sheet lists the 11 records his match could not settle. Open each with its papers; our IMS rules, the register, the IMS print, 2B and the rest are under Other papers. For each, pick February’s 3B treatment, the IMS action and, if it isn’t claimed, the reason. Your calls go to Neethu when you move on.",
+   "lockOnLeave": {
+    "ask": "Hand your calls to Neethu?",
+    "note": "You can’t change them after this.",
+    "yes": "Hand them in",
+    "done": "Handed to Neethu. You can read your calls but not change them."
+   },
+   "hints": [
+    "Start from the record’s line. In books only: why did it miss 2B? Read the return status and Varun’s papers. In 2B only: whose bill is it, when did the goods come, when was it booked? In both: the same bill? Unpaid: how many days?",
+    "Then ask if the law lets Tamhini keep the credit: what was the bill for, and is it still unpaid 180 days after its date? Our IMS rules give the action either way."
+   ],
+   "columns": [
+    {
+     "key": "label"
+    },
+    {
+     "key": "sum"
+    }
+   ],
+   "fields": [
+    {
+     "id": "credit",
+     "kind": "choice",
+     "label": "In February’s 3B",
+     "short": "3B",
+     "gate": true,
+     "options": [
+      {
+       "id": "claim",
+       "label": "Claim it",
+       "short": "Claim"
+      },
+      {
+       "id": "out",
+       "label": "Leave it out",
+       "short": "Leave out"
+      },
+      {
+       "id": "r1",
+       "label": "Reverse in 4B(1)",
+       "short": "4B(1)"
+      },
+      {
+       "id": "r2",
+       "label": "Reverse in 4B(2)",
+       "short": "4B(2)"
+      }
+     ]
+    },
+    {
+     "id": "ims",
+     "kind": "choice",
+     "label": "IMS action at Chakan",
+     "options": [
+      {
+       "id": "accept",
+       "label": "Accept"
+      },
+      {
+       "id": "reject",
+       "label": "Reject"
+      },
+      {
+       "id": "pending",
+       "label": "Keep pending"
+      },
+      {
+       "id": "none",
+       "label": "Nothing: not in Chakan’s IMS"
+      }
+     ]
+    },
+    {
+     "id": "why",
+     "kind": "choice",
+     "label": "Reason",
+     "showIf": {
+      "credit": [
+       "out",
+       "r1",
+       "r2"
+      ]
+     },
+     "weight": 2,
+     "layout": "list",
+     "options": [
+      {
+       "id": "notfiled",
+       "label": "Supplier hasn’t filed its GSTR-1",
+       "short": "not filed"
+      },
+      {
+       "id": "gstin",
+       "label": "Supplier reported it on another GSTIN",
+       "short": "wrong GSTIN"
+      },
+      {
+       "id": "transit",
+       "label": "Goods not received in February",
+       "short": "goods not in"
+      },
+      {
+       "id": "notours",
+       "label": "Not Tamhini’s purchase",
+       "short": "not Tamhini’s"
+      },
+      {
+       "id": "blocked",
+       "label": "Blocked credit, section 17(5)",
+       "short": "blocked"
+      },
+      {
+       "id": "cancelled",
+       "label": "Supplier’s GSTIN is cancelled",
+       "short": "GSTIN cancelled"
+      },
+      {
+       "id": "unpaid",
+       "label": "Unpaid 180 days after the bill",
+       "short": "unpaid 180 days"
+      }
+     ]
+    },
+    {
+     "id": "note",
+     "kind": "text",
+     "label": "Your note for the file",
+     "placeholder": "For example: GSTIN, number and amount agree with 2B"
+    }
+   ],
+   "docs": [
+    "memo-ims",
+    "varun-sheet",
+    "mail-pallavi",
+    "purch-reg",
+    "ims-print",
+    "gstr2b",
+    "gstin-search",
+    "note-jan",
+    "ageing",
+    "reg-note",
+    "inv-alandi",
+    "inv-hebbal",
+    "grn-hebbal",
+    "inv-kolak",
+    "dn-palar",
+    "inv-phillaur",
+    "chat-varun",
+    "inv-rankala",
+    "inv-ravet",
+    "veh-led",
+    "inv-sakhare",
+    "mail-rohit",
+    "inv-shirur",
+    "mund-bills"
+   ],
+   "items": [
+    {
+     "id": "l1",
+     "label": "Alandi Paper Products",
+     "short": "Alandi",
+     "tax": 12500.0,
+     "sum": "Tax ₹12,500 · in books only",
+     "docs": [
+      "inv-alandi"
+     ],
+     "answer": {
+      "credit": "out",
+      "ims": "none",
+      "why": "cancelled"
+     },
+     "note": "Alandi: its GSTIN has been cancelled since 15 September, so nothing it bills reaches 2B. Nothing to act on in IMS, and no credit while it stays cancelled. Tamhini pays Alandi the bill value without the GST, as it has since October.",
+     "docRow": {
+      "varun-sheet": "l1",
+      "gstin-search": "alandi"
+     }
+    },
+    {
+     "id": "l2",
+     "label": "Hebbal Tooling Solutions",
+     "short": "Hebbal",
+     "tax": 57600.0,
+     "sum": "Tax ₹57,600 · in 2B only",
+     "docs": [
+      "inv-hebbal",
+      "grn-hebbal"
+     ],
+     "answer": {
+      "credit": "out",
+      "ims": "pending",
+      "why": "transit"
+     },
+     "note": "Hebbal: in 2B, but delivery is at Chakan, and the inserts and hobs reached the tool crib on 4 March. No goods in February, no February credit. Keep it pending, as our rules say, and accept it in March. Pallavi’s idea is a month early.",
+     "docRow": {
+      "varun-sheet": "l2",
+      "ims-print": "hebbal"
+     },
+     "weight": 2
+    },
+    {
+     "id": "l3",
+     "label": "Kolak Polypack",
+     "short": "Kolak",
+     "tax": 18720.0,
+     "sum": "Tax ₹18,720 · in 2B only",
+     "docs": [
+      "inv-kolak"
+     ],
+     "answer": {
+      "credit": "claim",
+      "ims": "accept"
+     },
+     "note": "Kolak again. January’s bill, held back then because it missed January’s 2B. Kolak added it by GSTR-1A on 15 February, after the cut-off, so it sits in February’s 2B. Accept and claim it now.",
+     "docRow": {
+      "varun-sheet": "l3",
+      "ims-print": "kolak",
+      "gstin-search": "kolak"
+     }
+    },
+    {
+     "id": "l4",
+     "label": "Palar Seals and Gaskets",
+     "short": "Palar",
+     "tax": 8640.0,
+     "sum": "Tax ₹8,640 · in 2B only",
+     "docs": [
+      "dn-palar"
+     ],
+     "answer": {
+      "credit": "claim",
+      "ims": "accept"
+     },
+     "note": "Palar: a debit note bringing the seal rate up to the PO’s ₹29.00. Rohit checked it, but it never left the purchase desk. It is Tamhini’s and right, so accept and claim it, and ask Pallavi to book it in February.",
+     "docRow": {
+      "varun-sheet": "l4",
+      "ims-print": "palar"
+     }
+    },
+    {
+     "id": "l5",
+     "label": "Phillaur Fasteners",
+     "short": "Phillaur",
+     "tax": 37800.0,
+     "sum": "Tax ₹37,800 · in books only",
+     "docs": [
+      "inv-phillaur",
+      "chat-varun"
+     ],
+     "answer": {
+      "credit": "out",
+      "ims": "none",
+      "why": "gstin"
+     },
+     "note": "Phillaur did file, on 11 March, but put 2281 on Hosur’s GSTIN; Varun found it in Hosur’s IMS. It is not in Chakan’s IMS or 2B, so no credit this month. Varun rejects it at Hosur, and Phillaur corrects it in its March GSTR-1.",
+     "docRow": {
+      "varun-sheet": "l5",
+      "gstin-search": "phillaur"
+     }
+    },
+    {
+     "id": "l6",
+     "label": "Rankala Forgings",
+     "short": "Rankala",
+     "tax": 33480.0,
+     "sum": "Tax ₹33,480 · in both, number differs",
+     "docs": [
+      "inv-rankala"
+     ],
+     "answer": {
+      "credit": "claim",
+      "ims": "accept"
+     },
+     "note": "Rankala: one bill. Pallavi typed 2214; the portal has RF/2214/26-27. GSTIN, date and tax agree to the rupee, so accept and claim, and ask Pallavi to enter the full number in the books.",
+     "docRow": {
+      "varun-sheet": "l6",
+      "ims-print": "rankala"
+     }
+    },
+    {
+     "id": "l7",
+     "label": "Ravet Car Care",
+     "short": "Ravet",
+     "tax": 6840.0,
+     "sum": "Tax ₹6,840 · in 2B only",
+     "docs": [
+      "inv-ravet",
+      "veh-led"
+     ],
+     "answer": {
+      "credit": "r1",
+      "ims": "accept",
+      "why": "blocked"
+     },
+     "note": "Ravet: servicing of the MD’s sedan. Repairs of a passenger car, 13 seats or fewer, are blocked under section 17(5). The bill is genuine, so accept it, don’t reject it; its ₹6,840 comes into 4A(5) from 2B and goes out in 4B(1).",
+     "docRow": {
+      "varun-sheet": "l7",
+      "ims-print": "ravet"
+     }
+    },
+    {
+     "id": "l8",
+     "label": "Sakhare Surface Treatment",
+     "short": "Sakhare",
+     "tax": 9729.0,
+     "sum": "Tax ₹9,729 · in both, tax differs",
+     "docs": [
+      "inv-sakhare"
+     ],
+     "answer": {
+      "credit": "claim",
+      "ims": "accept"
+     },
+     "note": "Sakhare: the bill and 2B say ₹4,864.50 each of CGST and SGST; Pallavi rounded it to ₹4,865. Fifty paise is a round-off, not a mismatch. Accept and claim, at 2B’s figure.",
+     "docRow": {
+      "varun-sheet": "l8",
+      "ims-print": "sakhare"
+     }
+    },
+    {
+     "id": "l9",
+     "label": "Sawangi Pressed Metals",
+     "short": "Sawangi",
+     "tax": 20700.0,
+     "sum": "Tax ₹20,700 · in 2B only",
+     "docs": [
+      "mail-rohit"
+     ],
+     "answer": {
+      "credit": "out",
+      "ims": "reject",
+      "why": "notours"
+     },
+     "note": "Sawangi: Rohit has never bought from them. No PO, no GRN, no vendor code. It isn’t Tamhini’s, so reject it with a remark. Left on No action, the portal would have counted it as accepted.",
+     "docRow": {
+      "varun-sheet": "l9",
+      "ims-print": "sawangi"
+     }
+    },
+    {
+     "id": "l10",
+     "label": "Shirur Metrology Labs",
+     "short": "Shirur",
+     "tax": 12600.0,
+     "sum": "Tax ₹12,600 · in books only",
+     "docs": [
+      "inv-shirur"
+     ],
+     "answer": {
+      "credit": "out",
+      "ims": "none",
+      "why": "notfiled"
+     },
+     "note": "Shirur: the calibration is done and booked, but Shirur hasn’t filed February’s GSTR-1, so the bill is in neither IMS nor 2B. No credit yet. Pallavi chases Shirur; the credit comes in the 2B after it files.",
+     "docRow": {
+      "varun-sheet": "l10",
+      "gstin-search": "shirur"
+     }
+    },
+    {
+     "id": "l11",
+     "label": "Mundhwa Lubricants and Chemicals",
+     "short": "Mundhwa",
+     "tax": 30960.0,
+     "sum": "Tax ₹30,960 · August bill, unpaid",
+     "docs": [
+      "mund-bills"
+     ],
+     "answer": {
+      "credit": "r2",
+      "ims": "none",
+      "why": "unpaid"
+     },
+     "note": "Mundhwa: bill of 4 August, credit taken in August, unpaid while the oil dispute runs. The 180 days ran out on 31 January, so February’s 3B reverses ₹15,480 each of CGST and SGST in 4B(2). It comes back when Tamhini pays.",
+     "docRow": {
+      "varun-sheet": "l11",
+      "ageing": "mundhwa"
+     },
+     "weight": 2
+    }
+   ]
+  },
+  {
+   "id": "t2",
+   "type": "worksheet",
+   "stage": "Review",
+   "title": "Work out February’s credit table",
+   "prompt": "Now Table 4 of February’s 3B, from your IMS calls. Start from 2B as generated on 14 March and take out what you kept pending or rejected: that is the recomputed 2B, which fills 4A(5). Then the two reversals and the net. Enter positive figures.",
+   "hints": [
+    "Pending and rejected records drop out when 2B is recomputed; the rest of 2B fills 4A(5). The blocked bill and the 180-day bill then come out in 4B."
+   ],
+   "columns": [
+    {
+     "key": "line",
+     "label": "Particulars"
+    },
+    {
+     "key": "ig",
+     "label": "IGST",
+     "format": "inr"
+    },
+    {
+     "key": "cg",
+     "label": "CGST",
+     "format": "inr"
+    },
+    {
+     "key": "sg",
+     "label": "SGST",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "id": "r1",
+     "cells": {
+      "line": "ITC available in GSTR-2B as generated on 14 March (every record on No action)",
+      "ig": 6965820,
+      "cg": 3279378.5,
+      "sg": 3279378.5
+     }
+    },
+    {
+     "id": "r2",
+     "cells": {
+      "line": "Less: records kept pending or rejected in IMS",
+      "ig": {
+       "input": true,
+       "answer": 57600,
+       "tolerance": 1,
+       "sign": false,
+       "working": "Hebbal HTS/26-27/0917, kept pending"
+      },
+      "cg": {
+       "input": true,
+       "answer": 10350,
+       "tolerance": 1,
+       "sign": false,
+       "working": "Sawangi SPM/26-27/0391, rejected"
+      },
+      "sg": {
+       "input": true,
+       "answer": 10350,
+       "tolerance": 1,
+       "sign": false,
+       "working": "Sawangi SPM/26-27/0391, rejected"
+      }
+     }
+    },
+    {
+     "id": "r3",
+     "cells": {
+      "line": "4A(5) All other ITC: the recomputed 2B",
+      "ig": {
+       "input": true,
+       "answer": 6908220,
+       "tolerance": 1,
+       "sign": false,
+       "follow": "6965820 − {r2.ig}",
+       "working": "69,65,820 − 57,600"
+      },
+      "cg": {
+       "input": true,
+       "answer": 3269028.5,
+       "tolerance": 1,
+       "sign": false,
+       "follow": "3279378.5 − {r2.cg}",
+       "working": "32,79,378.50 − 10,350"
+      },
+      "sg": {
+       "input": true,
+       "answer": 3269028.5,
+       "tolerance": 1,
+       "sign": false,
+       "follow": "3279378.5 − {r2.sg}",
+       "working": "32,79,378.50 − 10,350"
+      }
+     }
+    },
+    {
+     "id": "r4",
+     "cells": {
+      "line": "4B(1) Reversed: rules 38, 42, 43 and section 17(5)",
+      "ig": "–",
+      "cg": {
+       "input": true,
+       "answer": 3420,
+       "tolerance": 1,
+       "sign": false,
+       "working": "Ravet bill 1184, MD’s car service"
+      },
+      "sg": {
+       "input": true,
+       "answer": 3420,
+       "tolerance": 1,
+       "sign": false,
+       "working": "Ravet bill 1184, MD’s car service"
+      }
+     }
+    },
+    {
+     "id": "r5",
+     "cells": {
+      "line": "4B(2) Reversed: others",
+      "ig": "–",
+      "cg": {
+       "input": true,
+       "answer": 15480,
+       "tolerance": 1,
+       "sign": false,
+       "working": "Mundhwa MLC/26-27/0742 of 4 August, unpaid"
+      },
+      "sg": {
+       "input": true,
+       "answer": 15480,
+       "tolerance": 1,
+       "sign": false,
+       "working": "Mundhwa MLC/26-27/0742 of 4 August, unpaid"
+      }
+     }
+    },
+    {
+     "id": "r6",
+     "_class": "total",
+     "cells": {
+      "line": "4C Net ITC available",
+      "ig": {
+       "input": true,
+       "answer": 6908220,
+       "tolerance": 1,
+       "sign": false,
+       "follow": "{r3.ig}",
+       "working": "69,08,220; nothing reversed under IGST"
+      },
+      "cg": {
+       "input": true,
+       "answer": 3250128.5,
+       "tolerance": 1,
+       "sign": false,
+       "follow": "{r3.cg} − {r4.cg} − {r5.cg}",
+       "working": "32,69,028.50 − 3,420 − 15,480"
+      },
+      "sg": {
+       "input": true,
+       "answer": 3250128.5,
+       "tolerance": 1,
+       "sign": false,
+       "follow": "{r3.sg} − {r4.sg} − {r5.sg}",
+       "working": "32,69,028.50 − 3,420 − 15,480"
+      }
+     }
+    }
+   ],
+   "notes": {
+    "r2.ig": "Hebbal’s ₹57,600 leaves 2B when you recompute, and reaches March’s 2B when you accept it then. Accepted now, it would be March’s credit taken in February.",
+    "r2.cg": "Sawangi’s bill moves to the rejected part of 2B and gives no credit at all.",
+    "r3.ig": "4A(5) is the recomputed 2B. Kolak’s January bill and Palar’s debit note are in it; Phillaur’s and Shirur’s bills are not.",
+    "r4.cg": "Ravet’s tax came in through 2B with the accepted bill, so it goes out here, for good.",
+    "r5.cg": "Mundhwa’s August credit goes out now and comes back in 4A(5) the month Tamhini pays.",
+    "r6.cg": "4C is what reaches the credit ledger for February."
+   },
+   "docs": [
+    "gstr2b",
+    "ims-print",
+    "varun-sheet",
+    "memo-ims",
+    "purch-reg",
+    "ageing"
+   ]
+  },
+  {
+   "id": "t3",
+   "type": "compose",
+   "stage": "Report",
+   "title": "Draft the supplier mail",
+   "weight": 3,
+   "noun": [
+    "line",
+    "lines"
+   ],
+   "prompt": "Phillaur’s bill 2281 needs a correction only Phillaur can make. Draft the mail Pallavi will send them: pick the right line for each part.",
+   "hints": [
+    "Phillaur did file, on time. Read what our IMS rules say about a record filed on another GSTIN, and remember the credit follows 2B."
+   ],
+   "previewLabel": "Pallavi’s mail to Phillaur",
+   "slots": [
+    {
+     "id": "what",
+     "label": "What went wrong",
+     "options": [
+      {
+       "id": "a",
+       "text": "Your invoice PF/2026-27/2281 of 18 February (₹2,10,000 + IGST ₹37,800) is made out to our Chakan GSTIN, 27ZHDCT5940H1Z4, but your February GSTR-1 reports it against our Hosur GSTIN, 33ZHDCT5940H1ZB.",
+       "why": "Naming both GSTINs lets their accountant find the record at once. The paper is right; only the return entry went astray.",
+       "correct": true
+      },
+      {
+       "id": "b",
+       "text": "Your invoice PF/2026-27/2281 of 18 February (₹2,10,000 + IGST ₹37,800) is not in our GSTR-2B, because your February GSTR-1 has not been filed yet. Please file it at the earliest.",
+       "why": "They filed on 11 March. The bill is sitting in Hosur’s IMS, not missing."
+      },
+      {
+       "id": "c",
+       "text": "Your invoice PF/2026-27/2281 of 18 February (₹2,10,000 + IGST ₹37,800) carries a wrong GSTIN on its face, so it is not a valid tax invoice in our hands as it stands.",
+       "why": "Read the bill again: it shows Chakan’s GSTIN. Only Phillaur’s GSTR-1 entry is wrong."
+      }
+     ]
+    },
+    {
+     "id": "need",
+     "label": "What we ask",
+     "options": [
+      {
+       "id": "a",
+       "text": "Please amend this record to our Chakan GSTIN through your GSTR-1A for February, before you file your February 3B, so that the credit reaches us this month.",
+       "why": "GSTR-1A can’t change a buyer’s GSTIN; only a later GSTR-1 can. Even a GSTR-1A record reaches the buyer in the next month’s 2B, not this one."
+      },
+      {
+       "id": "b",
+       "text": "Please amend this record to our Chakan GSTIN in your March GSTR-1, due on 11 April. Our Hosur unit is rejecting it in its IMS meanwhile.",
+       "why": "Hosur’s rejection keeps the credit out of Hosur’s 3B, and the March GSTR-1 moves the bill to Chakan’s GSTIN.",
+       "correct": true
+      },
+      {
+       "id": "c",
+       "text": "Please take no action at your end: our Hosur unit will take the credit, as its 2B shows the invoice, and settle it with our Chakan unit.",
+       "why": "Hosur never received the circlips, so the credit is not Hosur’s. Varun is rejecting it there."
+      }
+     ]
+    },
+    {
+     "id": "then",
+     "label": "When we claim it",
+     "options": [
+      {
+       "id": "a",
+       "text": "We are taking the credit in our February return now, as the invoice is made out to Chakan; the amendment can follow when convenient.",
+       "why": "Not before Chakan’s 2B shows it. Credit follows 2B, whatever the paper says."
+      },
+      {
+       "id": "b",
+       "text": "We will take the credit in the month the amended record reaches our Chakan GSTR-2B. Please confirm once you have filed the amendment.",
+       "why": "Filed by 11 April, the corrected record lands in March’s 2B, so the credit is claimed in March’s 3B.",
+       "correct": true
+      },
+      {
+       "id": "c",
+       "text": "We have lost the credit on this invoice, as our February return closes this week, and will deduct the GST from your next payment.",
+       "why": "Nothing is lost: the credit comes in the month the amended record reaches Chakan’s 2B."
+      }
+     ]
+    }
+   ],
+   "template": "Subject: Your invoice PF/2026-27/2281 of 18 February 2027\n\nDear Sir/Madam,\n\n{what}\n\n{need}\n\n{then}\n\n{_free}\n\nRegards,\nPallavi Shinde\nAccounts, Tamhini Drivetech Private Limited, Chakan",
+   "freeText": {
+    "label": "Your own line for the mail"
+   },
+   "docs": [
+    "inv-phillaur",
+    "chat-varun",
+    "gstin-search",
+    "reg-note",
+    "memo-ims"
+   ]
+  }
+ ],
+ "wrap": {
+  "from": "neethu",
+  "text": "Eleven records: four claimed now, five wait or never come, and two go out through 4B. I’ll tie your Table 4 to the recomputed 2B before Friday’s 3B. Pass the Phillaur mail to Pallavi today, and tell Varun to reject 2281 at Hosur."
+ },
+ "wrapPartial": {
+  "from": "neethu",
+  "text": "Before Friday, ask of each record you missed: whose is it, has it arrived, is the credit allowed, is it in Chakan’s 2B? That settles the IMS action and the 3B row. 4A(5) is 2B less what IMS held back. Nothing goes to Phillaur until every mail line is right."
+ },
+ "wrapRetry": {
+  "from": "neethu",
+  "text": "Work from each record’s own papers, not from 2B. Whose bill is it, did the goods come in February, is the credit allowed, and did the supplier file it on Chakan’s GSTIN? Then our IMS rules give the action and the Table 4 row."
+ },
+ "passNeeds": [
+  {
+   "task": "t1",
+   "min": 0.7,
+   "note": "Hebbal and Mundhwa count twice. You need 70% of the record marks to pass; a wrong 3B call scores nothing."
+  }
+ ],
+ "model": {
+  "intro": "Four of the eleven only needed a closer look and are claimed in February: Kolak, Palar, Rankala and Sakhare. Five stay out, for the reasons in the table. Ravet’s car service comes in through 2B and goes out in 4B(1); Mundhwa’s August credit goes out in 4B(2).",
+  "blocks": [
+   {
+    "type": "table",
+    "columns": [
+     {
+      "key": "r",
+      "label": "Out or reversed"
+     },
+     {
+      "key": "w",
+      "label": "Why"
+     },
+     {
+      "key": "n",
+      "label": "What happens next"
+     }
+    ],
+    "rows": [
+     {
+      "r": "Alandi",
+      "w": "GSTIN cancelled from 15 September",
+      "n": "No credit while it stays cancelled; Tamhini pays without the GST"
+     },
+     {
+      "r": "Hebbal",
+      "w": "Goods reached Chakan on 4 March",
+      "n": "Pending now; accept in March’s IMS"
+     },
+     {
+      "r": "Phillaur",
+      "w": "Filed on Hosur’s GSTIN",
+      "n": "Varun rejects at Hosur; Phillaur corrects it in its March GSTR-1; claimed in March"
+     },
+     {
+      "r": "Sawangi",
+      "w": "Not Tamhini’s purchase",
+      "n": "Rejected with a remark"
+     },
+     {
+      "r": "Shirur",
+      "w": "February GSTR-1 not filed",
+      "n": "Pallavi chases Shirur; claimed in the month its bill reaches 2B"
+     },
+     {
+      "r": "Ravet",
+      "w": "Servicing of the MD’s sedan: blocked",
+      "n": "Accepted; out in 4B(1), for good"
+     },
+     {
+      "r": "Mundhwa",
+      "w": "Unpaid 180 days after 4 August",
+      "n": "Out in 4B(2); back in 4A(5) when paid"
+     }
+    ]
+   },
+   {
+    "type": "table",
+    "columns": [
+     {
+      "key": "s",
+      "label": "Table 4"
+     },
+     {
+      "key": "i",
+      "label": "IGST",
+      "format": "inr"
+     },
+     {
+      "key": "c",
+      "label": "CGST",
+      "format": "inr"
+     },
+     {
+      "key": "g",
+      "label": "SGST",
+      "format": "inr"
+     }
+    ],
+    "rows": [
+     {
+      "s": "4A(5)",
+      "i": 6908220,
+      "c": 3269028.5,
+      "g": 3269028.5
+     },
+     {
+      "s": "4B(1)",
+      "i": "–",
+      "c": 3420,
+      "g": 3420
+     },
+     {
+      "s": "4B(2)",
+      "i": "–",
+      "c": 15480,
+      "g": 15480
+     },
+     {
+      "_class": "total",
+      "s": "4C net",
+      "i": 6908220,
+      "c": 3250128.5,
+      "g": 3250128.5
+     }
+    ]
+   },
+   {
+    "type": "text",
+    "text": "Every difference between the books and the 2B of 14 March has a name:"
+   },
+   {
+    "type": "table",
+    "grid": true,
+    "columns": [
+     {
+      "key": "s",
+      "label": "Books to 2B"
+     },
+     {
+      "key": "i",
+      "label": "IGST",
+      "format": "inr"
+     },
+     {
+      "key": "c",
+      "label": "CGST (SGST same)",
+      "format": "inr"
+     }
+    ],
+    "rows": [
+     {
+      "s": "In the books, February",
+      "i": "₹69,18,660",
+      "c": "₹32,78,159"
+     },
+     {
+      "s": "Phillaur, filed on Hosur’s GSTIN",
+      "i": "−₹37,800",
+      "c": "–"
+     },
+     {
+      "s": "Alandi, GSTIN cancelled",
+      "i": "–",
+      "c": "−₹6,250"
+     },
+     {
+      "s": "Shirur, not filed",
+      "i": "–",
+      "c": "−₹6,300"
+     },
+     {
+      "s": "Sakhare, round-off",
+      "i": "–",
+      "c": "−₹0.50"
+     },
+     {
+      "s": "Hebbal, goods in March",
+      "i": "+₹57,600",
+      "c": "–"
+     },
+     {
+      "s": "Kolak, January bill",
+      "i": "+₹18,720",
+      "c": "–"
+     },
+     {
+      "s": "Palar, debit note",
+      "i": "+₹8,640",
+      "c": "–"
+     },
+     {
+      "s": "Ravet, car service",
+      "i": "–",
+      "c": "+₹3,420"
+     },
+     {
+      "s": "Sawangi, not Tamhini’s",
+      "i": "–",
+      "c": "+₹10,350"
+     },
+     {
+      "_class": "total",
+      "s": "GSTR-2B as generated",
+      "i": "₹69,65,820",
+      "c": "₹32,79,378.50"
+     }
+    ]
+   },
+   {
+    "type": "note",
+    "from": "neethu",
+    "text": "2B is what suppliers uploaded, not what Tamhini may claim. IMS decides what stays in 2B’s ITC available; Table 4B then takes out what the law blocks or holds back."
+   }
+  ]
+ },
+ "principles": [
+  "Reject only what isn’t the client’s; a genuine bill with blocked credit is accepted and reversed in 4B(1).",
+  "A credit that is only late comes in the month its fix lands: the supplier files or corrects the GSTIN, or the goods arrive.",
+  "4B(1) is credit gone for good; 4B(2) is credit that comes back, such as the credit on a bill unpaid for 180 days."
+ ],
+ "earned": {
+  "clause": "reconciled {n} supplier records across the purchase register, GSTR-2B and IMS[[; flagged {found} ITC {found|exception|exceptions} with the reason for each]][[; computed net ITC for GSTR-3B{c1|}{c2|}{c3|}]]",
+  "counts": {
+   "n": {
+    "kind": "items",
+    "task": "t1",
+    "answered": "gate"
+   },
+   "found": {
+    "kind": "itemsWhere",
+    "task": "t1",
+    "field": "credit",
+    "equals": [
+     "out",
+     "r1",
+     "r2"
+    ],
+    "withRight": [
+     "why",
+     "ims"
+    ]
+   },
+   "c1": {
+    "kind": "cell",
+    "task": "t2",
+    "row": "r6",
+    "col": "ig"
+   },
+   "c2": {
+    "kind": "cell",
+    "task": "t2",
+    "row": "r6",
+    "col": "cg"
+   },
+   "c3": {
+    "kind": "cell",
+    "task": "t2",
+    "row": "r6",
+    "col": "sg"
+   },
+   "rej": {
+    "kind": "itemsWhere",
+    "task": "t1",
+    "field": "ims",
+    "equals": "reject",
+    "withRight": [
+     "why",
+     "credit"
+    ]
+   },
+   "pend": {
+    "kind": "itemsWhere",
+    "task": "t1",
+    "field": "ims",
+    "equals": "pending",
+    "withRight": [
+     "why",
+     "credit"
+    ]
+   }
+  },
+  "fallback": "reconciled supplier records across the purchase register, GSTR-2B and IMS[[; flagged {found} ITC {found|exception|exceptions} with the reason for each]][[; computed net ITC for GSTR-3B{c1|}{c2|}{c3|}]]"
+ },
+ "interview": [
+  {
+   "q": "What is IMS, and what can you do in it?",
+   "checking": "Whether you know how IMS actions shape the credit in GSTR-2B, and when each action fits.",
+   "outline": [
+    "The GST portal’s Invoice Management System: I accept, reject or keep pending each bill a supplier uploads.",
+    "No action counts as accepted when 2B is made; pending and rejected bills don’t flow into the 3B.",
+    "Reject only what isn’t yours[[; in the simulation I rejected a stranger’s bill{rej|} and held one awaiting goods{pend|}]]."
+   ]
+  },
+  {
+   "q": "A supplier’s bill for servicing the MD’s car shows in GSTR-2B. Do you reject it in IMS?",
+   "checking": "Whether you can tell a bill to reject from a credit to reverse, and where that credit goes.",
+   "outline": [
+    "No. The bill is genuine and the client’s; blocked credit is no reason to reject it.",
+    "Its credit is blocked under section 17(5): accept the bill, then reverse the credit in 4B(1).",
+    "In the simulation a car-service bill went that way; one unpaid for 180 days went to 4B(2)."
+   ]
+  }
+ ]
+}

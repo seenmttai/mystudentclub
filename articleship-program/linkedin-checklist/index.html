@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en" class="ap-gated">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>LinkedIn profile checklist | My Student Club</title>
+<meta name="description" content="Fix your LinkedIn profile for articleship, one tick at a time.">
+<meta name="theme-color" content="#ffffff">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/articleship-program/shared/articleship-tools.css">
+<link rel="stylesheet" href="/articleship-program/linkedin-checklist/linkedin-checklist.css">
+<link rel="icon" href="/articleship-program/shared/msc-symbol.svg" type="image/svg+xml">
+</head>
+<body class="ap-page ap-day-3">
+<header class="ap-topbar">
+  <a class="ap-brand" href="/learning-management-system/course?course=msc-articleship-program&amp;session=4" aria-label="Back to Day 3">
+    <img src="/articleship-program/shared/msc-logo.svg" alt="My Student Club" width="132" height="26"></a>
+  <span class="ap-topbar-title">LinkedIn checklist</span>
+</header>
+<main class="ap-main is-wide">
+  <div class="ap-hero">
+    <p class="lc-day">Day 3 · Fix your profile</p>
+    <h1 class="ap-title">Fix your <span class="ap-mark">LinkedIn</span></h1>
+    <p class="ap-lede" id="lc-lede"><span class="lc-on-wide">12 checks. Every partner I write to opens my profile before replying, and yours will be read right after your CV. Before a partner opens your profile, they see only your photo, name and headline: fix those three first.</span><span class="lc-on-phone">12 checks. Every partner I write to opens my profile before replying, and yours will be read right after your CV. Fix your photo, name and headline first: open your profile, fix one check, come back and tick it.</span></p>
+    <p class="lc-domain ap-hidden" id="lc-domain"></p>
+  </div>
+  <div class="lc-layout">
+    <aside class="lc-side" aria-label="Your profile">
+      <div class="ap-card lc-open" id="lc-open"></div>
+      <div class="lc-notes" id="lc-notes"></div>
+    </aside>
+    <div id="app" class="lc-list"></div>
+  </div>
+</main>
+<script src="/scripts/supabase.js"></script>
+<script src="/scripts/supabase-init.js"></script>
+<script src="/scripts/articleship-gate.js"></script>
+<script src="/scripts/articleship-progress.js"></script>
+<script src="/scripts/articleship-checklist.js"></script>
+<script src="/scripts/articleship-linkedin-checklist.js"></script>
+<script>
+MSCArticleshipLinkedinChecklist.boot();
+</script>
+</body>
+</html>

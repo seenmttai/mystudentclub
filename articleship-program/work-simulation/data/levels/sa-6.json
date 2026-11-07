@@ -1,0 +1,3880 @@
+{
+ "id": "sa-6",
+ "domain": "statutory-audit",
+ "number": 6,
+ "title": "Bank, FD and confirmations",
+ "minutes": 40,
+ "learn": [
+  "How to trace a BRS to next month’s statement",
+  "Why a confirmation that came through the client doesn’t count",
+  "How to tie FD interest to the bank and Form 168"
+ ],
+ "do": [
+  "Trace seven BRS items to the April statement",
+  "Write to the client about two confirmations",
+  "Recompute FD interest, then close the confirmation tracker"
+ ],
+ "case": {
+  "role": "First-year article assistant on the statutory audit",
+  "client": "Tamhini Drivetech Private Limited, a Chakan company that makes gears, shafts and hubs for vehicle makers; its main bank is Vindhya Commercial Bank, Chakan, with a cash credit, two term loans and two fixed deposits",
+  "team": "Aarti Rane (senior), Rehan Siddiqui (manager), Sudha Venkatesh (partner); Varun Shetty, second-year article, posted the confirmations; at Tamhini, Mahesh Kadam (GM Finance and Accounts), Pallavi Shinde (accounts executive) and Harshad Patel (head of sales)",
+  "goal": "Close the bank, FD and confirmations section of the year-end file: the BRS, the bank’s and the parties’ confirmations, and the interest on the two deposits.",
+  "period": "Year ended 31 March 2027",
+  "where": "Accounts room, Chakan plant · Monday 26 April 2027"
+ },
+ "brief": {
+  "from": "aarti",
+  "time": "9:40 am",
+  "messages": [
+   "Bank, FD and confirmations for Tamhini are yours. The April statement is in, so start with Pallavi’s 31 March BRS and trace every item.",
+   "Then sort out the two confirmations Varun is holding. We’ll close the FD interest and the tracker when the replies are in; Rehan reviews the section on 11 May."
+  ]
+ },
+ "documents": [
+  {
+   "id": "brs",
+   "type": "table",
+   "style": "sheet",
+   "title": "BRS · cash credit, 31 March 2027",
+   "kindLabel": "Client’s BRS",
+   "icon": "sheet",
+   "tab": "BRS",
+   "sheetName": "BRS Mar-27",
+   "freeze": true,
+   "formula": "=C2-C8+C10+C12-C14",
+   "columns": [
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "book",
+     "part": "Balance as per books (overdrawn)",
+     "date": "31-03-2027",
+     "amt": 87033730
+    },
+    {
+     "_class": "head",
+     "part": "Less: cheques issued, not presented",
+     "date": ""
+    },
+    {
+     "_id": "c1",
+     "part": "418806 · Moshi Corrugators",
+     "date": "26-03-2027",
+     "amt": 292793
+    },
+    {
+     "_id": "c2",
+     "part": "418811 · Talegaon Electricals",
+     "date": "26-03-2027",
+     "amt": 171532
+    },
+    {
+     "_id": "c3",
+     "part": "418814 · Nighojkar Security Services",
+     "date": "26-03-2027",
+     "amt": 30160
+    },
+    {
+     "_id": "c4",
+     "part": "417652 · Shirur Metrology Labs",
+     "date": "26-11-2026",
+     "amt": 44660
+    },
+    {
+     "_id": "s1",
+     "_class": "subtotal",
+     "_sumOf": [
+      "c1",
+      "c2",
+      "c3",
+      "c4"
+     ],
+     "part": "Cheques not presented",
+     "date": "",
+     "amt": 539145
+    },
+    {
+     "_class": "head",
+     "part": "Add: cheques paid in, not credited",
+     "date": ""
+    },
+    {
+     "_id": "s2",
+     "part": "663210 · Bilal Ferrous Traders",
+     "date": "31-03-2027",
+     "amt": 3028057
+    },
+    {
+     "_class": "head",
+     "part": "Add: debited by the bank, not in books",
+     "date": ""
+    },
+    {
+     "_id": "s3",
+     "part": "Locker rent",
+     "date": "31-03-2027",
+     "amt": 2360
+    },
+    {
+     "_class": "head",
+     "part": "Less: credited by the bank, not in books",
+     "date": ""
+    },
+    {
+     "_id": "s4",
+     "part": "NEFT received, Lothal Motors (advice awaited)",
+     "date": "30-03-2027",
+     "amt": 1264000
+    },
+    {
+     "_id": "bank",
+     "_class": "total",
+     "_sumOf": [
+      "book",
+      "-s1",
+      "s2",
+      "s3",
+      "-s4"
+     ],
+     "part": "Balance as per bank statement (overdrawn)",
+     "date": "31-03-2027",
+     "amt": 88261002
+    }
+   ],
+   "notes": [
+    "Prepared by Pallavi Shinde on 05-04-2027 from the March statement; checked by Mahesh Kadam.",
+    "Cash credit a/c 041760000918, Vindhya Commercial Bank, Chakan branch."
+   ],
+   "annotations": [
+    {
+     "kind": "sign",
+     "text": "P. Shinde",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": -3
+    },
+    {
+     "kind": "sign",
+     "text": "M. Kadam",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -4
+    }
+   ]
+  },
+  {
+   "id": "stmt-mar",
+   "type": "table",
+   "style": "bank",
+   "title": "Bank statement · 24–31 March 2027",
+   "tab": "March statement",
+   "brand": "Vindhya Commercial Bank Ltd",
+   "docName": "Statement of account",
+   "subtitle": "Chakan branch (0417) · cash credit account 041760000918 · Tamhini Drivetech Private Limited",
+   "meta": [
+    {
+     "label": "Period",
+     "value": "24-03-2027 to 31-03-2027"
+    },
+    {
+     "label": "Sanctioned limit",
+     "value": "₹18,00,00,000"
+    },
+    {
+     "label": "Closing balance",
+     "value": "₹8,82,61,002 Dr"
+    }
+   ],
+   "columns": [
+    {
+     "key": "dt",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "bal",
+     "label": "Balance, Dr (₹)",
+     "format": "inr",
+     "runningFrom": {
+      "plus": "dr",
+      "minus": "cr"
+     }
+    }
+   ],
+   "rows": [
+    {
+     "dt": "24-03-2027",
+     "part": "Balance brought forward",
+     "dr": null,
+     "cr": null,
+     "bal": 75736299,
+     "_class": "muted"
+    },
+    {
+     "dt": "24-03-2027",
+     "part": "NEFT DR PALAR SEALS AND GASKETS PVT LTD",
+     "dr": 2860000,
+     "cr": null,
+     "bal": 78596299
+    },
+    {
+     "dt": "25-03-2027",
+     "part": "RTGS CR VAYUVEGA TWO WHEELERS LTD",
+     "dr": null,
+     "cr": 9840000,
+     "bal": 68756299
+    },
+    {
+     "dt": "25-03-2027",
+     "part": "NEFT DR GHANEKAR ALLOY STEELS PVT LTD",
+     "dr": 11250000,
+     "cr": null,
+     "bal": 80006299
+    },
+    {
+     "dt": "26-03-2027",
+     "part": "RTGS CR KOSLI DRIVELINE PVT LTD",
+     "dr": null,
+     "cr": 7480000,
+     "bal": 72526299
+    },
+    {
+     "dt": "26-03-2027",
+     "part": "NEFT DR VISHWAMITRI BEARINGS PVT LTD",
+     "dr": 6480000,
+     "cr": null,
+     "bal": 79006299
+    },
+    {
+     "dt": "29-03-2027",
+     "part": "RTGS CR ASHVARATHA MOTORS LTD",
+     "dr": null,
+     "cr": 21000000,
+     "bal": 58006299
+    },
+    {
+     "dt": "29-03-2027",
+     "part": "NEFT DR BHADAR FORGE AND ENGG PVT LTD",
+     "dr": 7800000,
+     "cr": null,
+     "bal": 65806299
+    },
+    {
+     "dt": "30-03-2027",
+     "part": "NEFT CR NMVBN27089117426 LOTHAL MOTORS LTD",
+     "dr": null,
+     "cr": 1264000,
+     "bal": 64542299
+    },
+    {
+     "dt": "30-03-2027",
+     "part": "RTGS DR KHARUN STEELS PVT LTD",
+     "dr": 9640000,
+     "cr": null,
+     "bal": 74182299
+    },
+    {
+     "dt": "31-03-2027",
+     "part": "NEFT BULK UPLD SALARY MAR27 TDPL",
+     "dr": 2181772,
+     "cr": null,
+     "bal": 76364071
+    },
+    {
+     "dt": "31-03-2027",
+     "part": "NEFT BULK UPLD WAGES MAR27 TDPL",
+     "dr": 3733140,
+     "cr": null,
+     "bal": 80097211
+    },
+    {
+     "dt": "31-03-2027",
+     "part": "TRF TO TL 041760000921 INSTALMENT",
+     "dr": 7500000,
+     "cr": null,
+     "bal": 87597211
+    },
+    {
+     "dt": "31-03-2027",
+     "part": "INT ON CC 01-03-2027 TO 31-03-2027",
+     "dr": 661431,
+     "cr": null,
+     "bal": 88258642
+    },
+    {
+     "dt": "31-03-2027",
+     "part": "CHGS LOCKER RENT LKR 37 FY 26‑27",
+     "dr": 2360,
+     "cr": null,
+     "bal": 88261002
+    }
+   ]
+  },
+  {
+   "id": "stmt-apr",
+   "type": "table",
+   "style": "bank",
+   "title": "Bank statement · 1–23 April 2027",
+   "tab": "April statement",
+   "brand": "Vindhya Commercial Bank Ltd",
+   "docName": "Statement of account",
+   "subtitle": "Chakan branch (0417) · cash credit account 041760000918 · Tamhini Drivetech Private Limited",
+   "meta": [
+    {
+     "label": "Period",
+     "value": "01-04-2027 to 23-04-2027"
+    },
+    {
+     "label": "Generated on",
+     "value": "26-04-2027"
+    },
+    {
+     "label": "Sanctioned limit",
+     "value": "₹18,00,00,000"
+    }
+   ],
+   "columns": [
+    {
+     "key": "dt",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "bal",
+     "label": "Balance, Dr (₹)",
+     "format": "inr",
+     "runningFrom": {
+      "plus": "dr",
+      "minus": "cr"
+     }
+    }
+   ],
+   "rows": [
+    {
+     "dt": "01-04-2027",
+     "part": "Balance brought forward",
+     "dr": null,
+     "cr": null,
+     "bal": 88261002,
+     "_class": "muted"
+    },
+    {
+     "dt": "02-04-2027",
+     "part": "CTS CLG CR CHQ 663210 BILAL FERROUS TRADERS",
+     "dr": null,
+     "cr": 3028057,
+     "bal": 85232945
+    },
+    {
+     "dt": "02-04-2027",
+     "part": "CTS CHQ PAID 418814 NIGHOJKAR SECURITY SERV",
+     "dr": 30160,
+     "cr": null,
+     "bal": 85263105
+    },
+    {
+     "dt": "02-04-2027",
+     "part": "RTGS CR ASHVARATHA MOTORS LTD",
+     "dr": null,
+     "cr": 14820000,
+     "bal": 70443105
+    },
+    {
+     "dt": "05-04-2027",
+     "part": "CTS CHQ PAID 418806 MOSHI CORRUGATORS",
+     "dr": 292793,
+     "cr": null,
+     "bal": 70735898
+    },
+    {
+     "dt": "05-04-2027",
+     "part": "NEFT DR RANKALA FORGINGS PVT LTD",
+     "dr": 5860000,
+     "cr": null,
+     "bal": 76595898
+    },
+    {
+     "dt": "06-04-2027",
+     "part": "NEFT CR KSHITIJ DRIVELINE SYSTEMS",
+     "dr": null,
+     "cr": 9240000,
+     "bal": 67355898
+    },
+    {
+     "dt": "08-04-2027",
+     "part": "CTS CHQ PAID 418811 TALEGAON ELECTRICALS",
+     "dr": 171532,
+     "cr": null,
+     "bal": 67527430
+    },
+    {
+     "dt": "08-04-2027",
+     "part": "NEFT DR KUDALWADI HEAT TREATERS",
+     "dr": 1840000,
+     "cr": null,
+     "bal": 69367430
+    },
+    {
+     "dt": "09-04-2027",
+     "part": "RTGS CR LOTHAL MOTORS LTD",
+     "dr": null,
+     "cr": 10230000,
+     "bal": 59137430
+    },
+    {
+     "dt": "12-04-2027",
+     "part": "NEFT DR GHANEKAR ALLOY STEELS PVT LTD",
+     "dr": 10500000,
+     "cr": null,
+     "bal": 69637430
+    },
+    {
+     "dt": "13-04-2027",
+     "part": "RTGS CR VAYUVEGA TWO WHEELERS LTD",
+     "dr": null,
+     "cr": 8650000,
+     "bal": 60987430
+    },
+    {
+     "dt": "15-04-2027",
+     "part": "NEFT DR PALAR SEALS AND GASKETS PVT LTD",
+     "dr": 3240000,
+     "cr": null,
+     "bal": 64227430
+    },
+    {
+     "dt": "16-04-2027",
+     "part": "RTGS CR KOSLI DRIVELINE PVT LTD",
+     "dr": null,
+     "cr": 6920000,
+     "bal": 57307430
+    },
+    {
+     "dt": "19-04-2027",
+     "part": "NEFT DR SOHNA FRICTION PRODUCTS PVT LTD",
+     "dr": 4160000,
+     "cr": null,
+     "bal": 61467430
+    },
+    {
+     "dt": "21-04-2027",
+     "part": "RTGS CR MALAPRABHA PRECISION SYSTEMS",
+     "dr": null,
+     "cr": 7430000,
+     "bal": 54037430
+    },
+    {
+     "dt": "22-04-2027",
+     "part": "NEFT DR BHADAR FORGE AND ENGG PVT LTD",
+     "dr": 6120000,
+     "cr": null,
+     "bal": 60157430
+    },
+    {
+     "dt": "23-04-2027",
+     "part": "RTGS CR ASHVARATHA MOTORS LTD",
+     "dr": null,
+     "cr": 13360000,
+     "bal": 46797430
+    }
+   ]
+  },
+  {
+   "id": "cf-418806",
+   "type": "card",
+   "style": "slip",
+   "handwritten": true,
+   "title": "Cheque 418806 · Counterfoil",
+   "tab": "Counterfoil",
+   "group": "i1",
+   "issuer": "Vindhya Commercial Bank Ltd · Chakan · a/c 041760000918",
+   "heading": "Cheque counterfoil",
+   "number": "418806",
+   "fields": [
+    {
+     "label": "Date",
+     "value": "26/3/27"
+    },
+    {
+     "label": "To",
+     "value": "Moshi Corrugators"
+    },
+    {
+     "label": "For",
+     "value": "Boxes, Feb bills"
+    },
+    {
+     "label": "Rs.",
+     "value": "2,92,793/-"
+    }
+   ]
+  },
+  {
+   "id": "cf-418811",
+   "type": "card",
+   "style": "slip",
+   "handwritten": true,
+   "title": "Cheque 418811 · Counterfoil",
+   "tab": "Counterfoil",
+   "group": "i2",
+   "issuer": "Vindhya Commercial Bank Ltd · Chakan · a/c 041760000918",
+   "heading": "Cheque counterfoil",
+   "number": "418811",
+   "fields": [
+    {
+     "label": "Date",
+     "value": "26/3/27"
+    },
+    {
+     "label": "To",
+     "value": "Talegaon Electricals"
+    },
+    {
+     "label": "For",
+     "value": "Panel work, Feb"
+    },
+    {
+     "label": "Rs.",
+     "value": "1,71,532/-"
+    }
+   ]
+  },
+  {
+   "id": "cf-418814",
+   "type": "card",
+   "style": "slip",
+   "handwritten": true,
+   "title": "Cheque 418814 · Counterfoil",
+   "tab": "Counterfoil",
+   "group": "i3",
+   "issuer": "Vindhya Commercial Bank Ltd · Chakan · a/c 041760000918",
+   "heading": "Cheque counterfoil",
+   "number": "418814",
+   "fields": [
+    {
+     "label": "Date",
+     "value": "26/3/27"
+    },
+    {
+     "label": "To",
+     "value": "Nighojkar Security Services"
+    },
+    {
+     "label": "For",
+     "value": "Security, Feb"
+    },
+    {
+     "label": "Rs.",
+     "value": "30,160/-"
+    }
+   ]
+  },
+  {
+   "id": "cf-417652",
+   "type": "card",
+   "style": "slip",
+   "handwritten": true,
+   "title": "Cheque 417652 · Counterfoil",
+   "tab": "Counterfoil",
+   "group": "i4",
+   "issuer": "Vindhya Commercial Bank Ltd · Chakan · a/c 041760000918",
+   "heading": "Cheque counterfoil",
+   "number": "417652",
+   "fields": [
+    {
+     "label": "Date",
+     "value": "26/11/26"
+    },
+    {
+     "label": "To",
+     "value": "Shirur Metrology Labs"
+    },
+    {
+     "label": "For",
+     "value": "Calibration, Oct"
+    },
+    {
+     "label": "Rs.",
+     "value": "44,660/-"
+    }
+   ]
+  },
+  {
+   "id": "shirur-mail",
+   "type": "letter",
+   "style": "email",
+   "title": "Cheque 417652 · Shirur’s mail",
+   "tab": "Shirur’s mail",
+   "group": "i4",
+   "from": {
+    "name": "Anand Pachpute",
+    "email": "anand.pachpute@email.com"
+   },
+   "to": [
+    {
+     "name": "Pallavi Shinde",
+     "email": "pallavi.shinde@email.com"
+    }
+   ],
+   "date": "Wed, 21 Apr 2027, 11:05 am",
+   "subject": "Re: Cheque 417652 of 26 November",
+   "body": [
+    "Madam,",
+    "Your cheque 417652 of 26 November for ₹44,660, against our calibration bills of October, was misplaced when we shifted the lab in December. We never deposited it.",
+    "Please cancel it and pay the amount by NEFT. Our bank details are on our bills.",
+    "Regards,"
+   ],
+   "sign": {
+    "name": "Anand Pachpute",
+    "for": "Shirur Metrology Labs"
+   }
+  },
+  {
+   "id": "slip-bilal",
+   "type": "card",
+   "style": "slip",
+   "handwritten": true,
+   "title": "Bilal’s cheque · Pay-in slip",
+   "tab": "Pay-in slip",
+   "group": "i5",
+   "issuer": "Vindhya Commercial Bank Ltd · Chakan branch (0417)",
+   "heading": "Pay-in slip (counterfoil)",
+   "number": "118",
+   "fields": [
+    {
+     "label": "Date",
+     "value": "31/03/2027"
+    },
+    {
+     "label": "Credit to",
+     "value": "Tamhini Drivetech Pvt Ltd · CC a/c 041760000918"
+    },
+    {
+     "label": "Cheque no.",
+     "value": "663210"
+    },
+    {
+     "label": "Drawn on",
+     "value": "Narmada Valley Bank, Bhosari"
+    },
+    {
+     "label": "From",
+     "value": "Bilal Ferrous Traders"
+    },
+    {
+     "label": "Amount",
+     "value": "₹30,28,057"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "VINDHYA BANK\nCHAKAN (0417)\n31 MAR 2027",
+     "color": "violet",
+     "at": "inline",
+     "rotate": -6
+    }
+   ]
+  },
+  {
+   "id": "adv-chg",
+   "type": "letter",
+   "style": "letter",
+   "title": "Locker rent · Debit advice",
+   "tab": "Debit advice",
+   "group": "i6",
+   "letterhead": {
+    "name": "Vindhya Commercial Bank Ltd",
+    "address": "Chakan branch (0417), Talegaon–Chakan Road, Chakan, Pune 410501 · IFSC VNCB0000417"
+   },
+   "ref": "CKN/CHG/2026-27/2291",
+   "date": "31-03-2027",
+   "to": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC, Mahalunge, Pune 410501"
+   },
+   "subject": "Debit advice: cash credit account 041760000918",
+   "body": [
+    "Dear Customer,",
+    "We have debited your cash credit account on 31-03-2027 with ₹2,360, being locker rent (locker 37) for 2026–27.",
+    "This is a computer-generated advice and needs no signature."
+   ],
+   "sign": {
+    "hand": false,
+    "closing": "Chakan branch"
+   },
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Recd 8/4. Book in April. P.S.",
+     "color": "blue",
+     "at": "top-right",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "lothal-adv",
+   "type": "letter",
+   "style": "email",
+   "title": "Lothal’s NEFT · Payment advice",
+   "tab": "Payment advice",
+   "group": "i7",
+   "from": {
+    "name": "Harshad Patel",
+    "email": "harshad.patel@email.com"
+   },
+   "to": [
+    {
+     "name": "Pallavi Shinde",
+     "email": "pallavi.shinde@email.com"
+    }
+   ],
+   "date": "Tue, 6 Apr 2027, 9:14 am",
+   "subject": "Fwd: Payment advice, Lothal Motors",
+   "body": [
+    "Pallavi, Lothal’s payment advice. It came to me on 30 March. Please book.",
+    "---------- Forwarded message ----------",
+    "From: Hetal Vora, Lothal Motors Limited · Tue, 30 Mar 2027, 4:52 pm",
+    "Dear Sir, we have released ₹12,64,000 today by NEFT to your cash credit account 041760000918, UTR NMVBN27089117426, against your invoices TD/MF/26-27/1874 and TD/MF/26-27/1891 of January, net of TDS.",
+    "Regards, Hetal Vora, Accounts Payable"
+   ],
+   "sign": {
+    "name": "Harshad Patel",
+    "role": "Head – Sales",
+    "for": "Tamhini Drivetech Private Limited"
+   }
+  },
+  {
+   "id": "chat-varun",
+   "type": "chat",
+   "title": "Varun · two confirmations",
+   "with": "Varun Shetty",
+   "date": "Monday 26 April",
+   "me": "You",
+   "messages": [
+    {
+     "from": "varun",
+     "time": "9:12 am",
+     "text": "Two confirmations sorted for you. Mahesh sir collected the bank’s balance certificate himself on Friday, so I never sent our request to the bank. Saved us a week."
+    },
+    {
+     "from": "varun",
+     "time": "9:13 am",
+     "text": "And Kshitij replied. Harshad, Tamhini’s sales head, got it, forwarded it to Mahesh sir, and he forwarded it to me."
+    },
+    {
+     "from": "varun",
+     "time": "9:13 am",
+     "text": "Both match the books to the rupee. File them and tick the tracker?"
+    },
+    {
+     "from": "You",
+     "time": "9:18 am",
+     "text": "Let me read them first."
+    }
+   ]
+  },
+  {
+   "id": "bank-cert",
+   "type": "letter",
+   "style": "letter",
+   "title": "Bank’s balance certificate · via Mahesh",
+   "tab": "Bank certificate",
+   "letterhead": {
+    "name": "Vindhya Commercial Bank Ltd",
+    "address": "Chakan branch (0417), Talegaon–Chakan Road, Chakan, Pune 410501 · IFSC VNCB0000417"
+   },
+   "ref": "CKN/BC/2026-27/118",
+   "date": "22-04-2027",
+   "to": {
+    "name": "The Accounts Manager, Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC, Mahalunge, Pune 410501"
+   },
+   "subject": "Balance certificate as on 31-03-2027",
+   "body": [
+    "This is to certify that the cash credit account no. 041760000918 of M/s Tamhini Drivetech Private Limited showed a debit balance of ₹8,82,61,002 (Rupees eight crore eighty-two lakh sixty-one thousand and two only) as on 31-03-2027.",
+    "This certificate is issued at the specific request of the customer, without any risk or responsibility on the part of the bank or its officials."
+   ],
+   "sign": {
+    "closing": "For Vindhya Commercial Bank Ltd",
+    "role": "Branch Manager",
+    "hand": "P. Waghmare"
+   },
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "VINDHYA BANK\nCHAKAN",
+     "color": "violet",
+     "at": "bottom-left",
+     "shape": "round",
+     "rotate": -10
+    },
+    {
+     "kind": "hand",
+     "text": "Collected 23/4. M.K.",
+     "color": "blue",
+     "at": "top-right",
+     "rotate": -4
+    }
+   ]
+  },
+  {
+   "id": "kshitij-fwd",
+   "type": "letter",
+   "style": "email",
+   "title": "Kshitij’s reply · forwarded",
+   "tab": "Kshitij’s mail",
+   "from": {
+    "name": "Mahesh Kadam",
+    "email": "mahesh.kadam@email.com"
+   },
+   "to": [
+    {
+     "name": "Varun Shetty",
+     "email": "varun.shetty@email.com"
+    }
+   ],
+   "date": "Fri, 23 Apr 2027, 7:41 pm",
+   "subject": "Fwd: Fwd: Balance confirmation 31.03.2027",
+   "body": [
+    "Varun, Kshitij confirmation below. Please close it.",
+    "---------- Forwarded message ----------",
+    "From: Harshad Patel, Head – Sales, Tamhini Drivetech · Fri, 23 Apr 2027, 5:10 pm",
+    "Mahesh sir, Kshitij has confirmed our balance. Forwarding.",
+    "---------- Forwarded message ----------",
+    "From: Area Manager – Sales, Kshitij Driveline Systems, Bhosari · Fri, 23 Apr 2027, 4:32 pm",
+    "Harshad ji, as discussed on the phone, we confirm your balance of Rs 3,58,60,691 as on 31.03.2027. Regards."
+   ],
+   "sign": {
+    "name": "Mahesh Kadam",
+    "role": "GM, Finance and Accounts",
+    "for": "Tamhini Drivetech Private Limited"
+   }
+  },
+  {
+   "id": "bank-reply",
+   "type": "letter",
+   "style": "letter",
+   "arrives": "t3",
+   "title": "Bank’s reply to us · 4 May 2027",
+   "tab": "Bank’s reply",
+   "letterhead": {
+    "name": "Vindhya Commercial Bank Ltd",
+    "address": "Chakan branch (0417), Talegaon–Chakan Road, Chakan, Pune 410501 · IFSC VNCB0000417"
+   },
+   "ref": "CKN/AUD/2026-27/046",
+   "date": "04-05-2027",
+   "to": [
+    "Bapat Venkatesh & Co., Chartered Accountants",
+    "5th floor, Sumant Chambers, Prabhat Road, Erandwane, Pune 411004",
+    "Kind attention: Aarti Rane"
+   ],
+   "subject": "Tamhini Drivetech Private Limited: balances and other information as at 31-03-2027",
+   "body": [
+    "Dear Sirs,",
+    "In reply to our customer’s letter of 26-04-2027, which you sent us, we confirm the following at the close of business on 31-03-2027:",
+    {
+     "table": {
+      "columns": [
+       {
+        "key": "a",
+        "label": "Account"
+       },
+       {
+        "key": "n",
+        "label": "Number"
+       },
+       {
+        "key": "b",
+        "label": "Balance (₹)",
+        "format": "inr"
+       },
+       {
+        "key": "s",
+        "label": "Dr / Cr"
+       }
+      ],
+      "rows": [
+       {
+        "a": "Cash credit",
+        "n": "041760000918",
+        "b": 88261002,
+        "s": "Dr"
+       },
+       {
+        "a": "Term loan I",
+        "n": "041760000921",
+        "b": 60000000,
+        "s": "Dr"
+       },
+       {
+        "a": "Term loan II",
+        "n": "041760001107",
+        "b": 9225000,
+        "s": "Dr"
+       },
+       {
+        "a": "FD-1",
+        "n": "041765002276",
+        "b": 6000000,
+        "s": "Cr"
+       },
+       {
+        "a": "FD-1 interest accrued, not yet due",
+        "n": "041765002276",
+        "b": 14425,
+        "s": "Cr"
+       },
+       {
+        "a": "FD-2, after tax recovered",
+        "n": "041765003318",
+        "b": 10318508,
+        "s": "Cr"
+       },
+       {
+        "a": "FD-2 interest accrued, not yet added",
+        "n": "041765003318",
+        "b": 38283,
+        "s": "Cr"
+       }
+      ]
+     }
+    },
+    "- Cash credit: limit ₹18,00,00,000, against hypothecation of stock and book debts; collateral: equitable mortgage of the MIDC plot and building; personal guarantees of Dilip Joglekar and Amol Joglekar, directors.",
+    "- Term loan I: equitable mortgage of the plot and building. Term loan II: hypothecation of the CNC turning centre and the VMC, and FD-2 under lien.",
+    "- FD-1: 6.75% a year from 18-06-2026, interest paid quarterly; held as margin for the guarantee below. Interest accrued for 19-03-2027 to 31-03-2027.",
+    "- FD-2: 7.10% a year, compounded quarterly; tax of ₹39,643 recovered from it on 31-03-2027; under lien for term loan II. Interest accrued for 13-03-2027 to 31-03-2027.",
+    "Bank guarantee BG/0417/2025/0093 for ₹1,20,00,000, issued on the customer’s behalf in favour of the electricity distribution licensee, valid till 31-08-2027, secured by FD-1.",
+    "The customer has no other account, deposit, loan or guarantee at this branch. Accounts at our Hosur branch are confirmed by that branch."
+   ],
+   "sign": {
+    "closing": "For Vindhya Commercial Bank Ltd",
+    "name": "Prakash Waghmare",
+    "role": "Branch Manager",
+    "hand": "P. Waghmare"
+   },
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "BAPAT VENKATESH & CO.\nRECEIVED 07 MAY 2027",
+     "color": "blue",
+     "at": "top-right",
+     "rotate": 4
+    },
+    {
+     "kind": "stamp",
+     "text": "VINDHYA BANK\nCHAKAN",
+     "color": "violet",
+     "at": "bottom-left",
+     "shape": "round",
+     "rotate": -10
+    }
+   ]
+  },
+  {
+   "id": "int-cert",
+   "type": "letter",
+   "style": "letter",
+   "arrives": "t3",
+   "title": "Bank’s interest certificate · 2026–27",
+   "tab": "Interest certificate",
+   "letterhead": {
+    "name": "Vindhya Commercial Bank Ltd",
+    "address": "Chakan branch (0417), Talegaon–Chakan Road, Chakan, Pune 410501 · IFSC VNCB0000417"
+   },
+   "ref": "CKN/TDS/2026-27/0631",
+   "date": "09-04-2027",
+   "to": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC, Mahalunge, Pune 410501"
+   },
+   "subject": "Interest certificate for 01-04-2026 to 31-03-2027 · PAN ZHDCT5940H",
+   "body": [
+    "Interest paid or credited on your deposits with us, and tax deducted at source on it:",
+    {
+     "table": {
+      "columns": [
+       {
+        "key": "d",
+        "label": "Deposit"
+       },
+       {
+        "key": "i",
+        "label": "Interest paid or credited (₹)",
+        "format": "inr"
+       },
+       {
+        "key": "t",
+        "label": "Tax deducted (₹)",
+        "format": "inr"
+       }
+      ],
+      "rows": [
+       {
+        "d": "FD-1 · 041765002276",
+        "i": 399750,
+        "t": 39975
+       },
+       {
+        "d": "FD-2 · 041765003318",
+        "i": 396434,
+        "t": 39643
+       },
+       {
+        "_class": "total",
+        "d": "Total",
+        "i": 796184,
+        "t": 79618
+       }
+      ]
+     }
+    },
+    "Tax deducted has been paid to the credit of the Central Government. TAN of the branch: PNEV98339H.",
+    "This is a computer-generated certificate and needs no signature."
+   ],
+   "sign": {
+    "hand": false,
+    "closing": "Chakan branch"
+   },
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Recd 12/4. P.S.",
+     "color": "blue",
+     "at": "top-right",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "fd1-adv",
+   "type": "letter",
+   "style": "letter",
+   "arrives": "t3",
+   "title": "FD-1 · Interest advice, March",
+   "tab": "FD-1 advice",
+   "letterhead": {
+    "name": "Vindhya Commercial Bank Ltd",
+    "address": "Chakan branch (0417), Talegaon–Chakan Road, Chakan, Pune 410501 · TAN PNEV98339H"
+   },
+   "ref": "FD/0417/2026-27/INT/4377",
+   "date": "18-03-2027",
+   "to": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC, Mahalunge, Pune 410501"
+   },
+   "subject": "Interest on fixed deposit 041765002276 (margin money, FD-1)",
+   "body": [
+    "Dear Customer,",
+    "We have paid the quarterly interest on your fixed deposit as below:",
+    {
+     "table": {
+      "columns": [
+       {
+        "key": "d",
+        "label": "Particulars"
+       },
+       {
+        "key": "a",
+        "label": "Amount (₹)",
+        "format": "inr"
+       }
+      ],
+      "rows": [
+       {
+        "d": "Deposit ₹60,00,000 at 6.75% a year (renewed on 18-06-2026): interest for the quarter to 18-03-2027",
+        "a": 101250
+       },
+       {
+        "d": "Less: tax deducted at source @ 10%",
+        "a": -10125,
+        "_check": false
+       },
+       {
+        "_class": "total",
+        "d": "Credited to your cash credit account on 18-03-2027",
+        "a": 91125
+       }
+      ]
+     }
+    },
+    "## Terms of this deposit",
+    "- Interest is paid on 18 June, 18 September, 18 December and 18 March, each a quarter of the yearly rate.",
+    "- Interest for part of a quarter is worked on the actual days after the last payment date, at the yearly rate, on a 365-day year.",
+    "- Tax is deducted at each payment.",
+    "This is a computer-generated advice and needs no signature."
+   ],
+   "sign": {
+    "hand": false,
+    "closing": "Chakan branch"
+   }
+  },
+  {
+   "id": "fd2-rcpt",
+   "type": "card",
+   "style": "slip",
+   "arrives": "t3",
+   "title": "FD-2 · Deposit receipt",
+   "tab": "FD-2 receipt",
+   "issuer": "Vindhya Commercial Bank Ltd · Chakan branch (0417)",
+   "heading": "Term deposit receipt (reinvestment)",
+   "number": "041765003318",
+   "fields": [
+    {
+     "label": "Depositor",
+     "value": "Tamhini Drivetech Private Limited"
+    },
+    {
+     "label": "Amount",
+     "value": "₹1,00,00,000 (Rupees one crore only)"
+    },
+    {
+     "label": "Deposited",
+     "value": "12-09-2026 · 12 months · matures 12-09-2027"
+    },
+    {
+     "label": "Rate",
+     "value": "7.10% a year, compounded quarterly"
+    },
+    {
+     "label": "Interest",
+     "value": "Added to the deposit on 12 December, 12 March, 12 June and 12 September: 7.10% ÷ 4 on the balance at the start of that quarter"
+    },
+    {
+     "label": "Part of a quarter",
+     "value": "Actual days after the last date interest was added, at 7.10% a year, on a 365-day year"
+    },
+    {
+     "label": "Tax",
+     "value": "On each financial year’s interest, added or accrued, deducted on 31 March (or at maturity, if earlier) and recovered from the deposit"
+    },
+    {
+     "label": "Lien",
+     "value": "Marked in the bank’s favour against term loan II, a/c 041760001107"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "LIEN MARKED",
+     "color": "red",
+     "at": "top-right",
+     "rotate": 6
+    },
+    {
+     "kind": "sign",
+     "text": "P. Waghmare",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -4
+    }
+   ]
+  },
+  {
+   "id": "f168",
+   "type": "table",
+   "style": "plain",
+   "arrives": "t3",
+   "title": "Form 168 extract · the bank’s rows",
+   "kindLabel": "Tax-credit statement",
+   "tab": "Form 168",
+   "icon": "receipt",
+   "heading": "Form 168 · Annual Information Statement · tax year 2026–27",
+   "subtitle": "Information relating to tax deducted or collected at source (extract: Vindhya Commercial Bank’s rows)",
+   "meta": [
+    {
+     "label": "PAN",
+     "value": "ZHDCT5940H"
+    },
+    {
+     "label": "Name",
+     "value": "Tamhini Drivetech Private Limited"
+    },
+    {
+     "label": "Viewed on",
+     "value": "10-05-2027"
+    },
+    {
+     "label": "Deductor",
+     "value": "Vindhya Commercial Bank Ltd, Chakan · TAN PNEV98339H"
+    }
+   ],
+   "columns": [
+    {
+     "key": "q",
+     "label": "Quarter"
+    },
+    {
+     "key": "td",
+     "label": "Transaction date"
+    },
+    {
+     "key": "amt",
+     "label": "Paid or credited (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "tds",
+     "label": "Tax deducted (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "s",
+     "label": "Section 393(1) entry"
+    }
+   ],
+   "rows": [
+    {
+     "q": "Apr–Jun 2026",
+     "td": "18-06-2026",
+     "amt": 96000,
+     "tds": 9600,
+     "s": "5(ii)"
+    },
+    {
+     "q": "Jul–Sep 2026",
+     "td": "18-09-2026",
+     "amt": 101250,
+     "tds": 10125,
+     "s": "5(ii)"
+    },
+    {
+     "q": "Oct–Dec 2026",
+     "td": "18-12-2026",
+     "amt": 101250,
+     "tds": 10125,
+     "s": "5(ii)"
+    },
+    {
+     "q": "Jan–Mar 2027",
+     "td": "18-03-2027",
+     "amt": 101250,
+     "tds": 10125,
+     "s": "5(ii)"
+    },
+    {
+     "q": "Jan–Mar 2027",
+     "td": "31-03-2027",
+     "amt": 396434,
+     "tds": 39643,
+     "s": "5(ii)"
+    },
+    {
+     "_class": "total",
+     "q": "Total",
+     "td": "",
+     "amt": 796184,
+     "tds": 79618,
+     "s": ""
+    }
+   ],
+   "notes": [
+    "Form 168 replaced Form 26AS from tax year 2026–27; 26AS still shows the years up to 2025–26.",
+    "Copied from Form 168 as viewed on 10 May 2027: every row it shows for Vindhya Commercial Bank."
+   ]
+  },
+  {
+   "id": "led-fdint",
+   "type": "table",
+   "style": "tally",
+   "arrives": "t3",
+   "title": "Ledger · interest on fixed deposits",
+   "tab": "Interest ledger",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Ledger: Interest on fixed deposits",
+   "subtitle": "Group: Indirect incomes",
+   "period": "1-Apr-2026 to 31-Mar-2027",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "vn",
+     "label": "Vch no."
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "01-04-2026",
+     "part": "Interest accrued on fixed deposits (31 March 2026 accrual reversed)",
+     "vn": "JV 0003",
+     "dr": 13677,
+     "cr": null
+    },
+    {
+     "date": "18-06-2026",
+     "part": "Cash credit – Vindhya Commercial Bank (FD-1 interest)",
+     "vn": "RV 0611",
+     "dr": null,
+     "cr": 86400
+    },
+    {
+     "date": "18-06-2026",
+     "part": "TDS receivable – 2026–27 (FD-1 interest)",
+     "vn": "RV 0611",
+     "dr": null,
+     "cr": 9600
+    },
+    {
+     "date": "18-09-2026",
+     "part": "Cash credit – Vindhya Commercial Bank (FD-1 interest)",
+     "vn": "RV 0944",
+     "dr": null,
+     "cr": 91125
+    },
+    {
+     "date": "12-12-2026",
+     "part": "Fixed deposit – Vindhya, FD-2 (interest added)",
+     "vn": "JV 2262",
+     "dr": null,
+     "cr": 177500
+    },
+    {
+     "date": "18-12-2026",
+     "part": "Cash credit – Vindhya Commercial Bank (FD-1 interest)",
+     "vn": "RV 1281",
+     "dr": null,
+     "cr": 91125
+    },
+    {
+     "date": "18-12-2026",
+     "part": "TDS receivable – 2026–27 (FD-1 interest)",
+     "vn": "RV 1281",
+     "dr": null,
+     "cr": 10125
+    },
+    {
+     "date": "19-01-2027",
+     "part": "TDS receivable – 2026–27 (FD-1 interest of 18-09-2026, booked net)",
+     "vn": "JV 2418",
+     "dr": null,
+     "cr": 10125
+    },
+    {
+     "date": "12-03-2027",
+     "part": "Fixed deposit – Vindhya, FD-2 (interest added)",
+     "vn": "JV 2712",
+     "dr": null,
+     "cr": 180651
+    },
+    {
+     "date": "18-03-2027",
+     "part": "Cash credit – Vindhya Commercial Bank (FD-1 interest)",
+     "vn": "RV 1618",
+     "dr": null,
+     "cr": 91125
+    },
+    {
+     "date": "18-03-2027",
+     "part": "TDS receivable – 2026–27 (FD-1 interest)",
+     "vn": "RV 1618",
+     "dr": null,
+     "cr": 10125
+    },
+    {
+     "date": "31-03-2027",
+     "part": "Interest accrued on fixed deposits (FD-1, 19–31 March)",
+     "vn": "JV 2840",
+     "dr": null,
+     "cr": 14425
+    },
+    {
+     "_class": "total",
+     "date": "",
+     "part": "Total",
+     "vn": "",
+     "dr": 13677,
+     "cr": 772326
+    },
+    {
+     "_class": "muted",
+     "_check": false,
+     "date": "31-03-2027",
+     "part": "Closing balance (Cr)",
+     "vn": "",
+     "dr": null,
+     "cr": 758649
+    }
+   ]
+  },
+  {
+   "id": "led-tdsr",
+   "type": "table",
+   "style": "tally",
+   "arrives": "t3",
+   "title": "Ledger · TDS receivable, bank entries",
+   "tab": "TDS ledger",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Ledger: TDS receivable – 2026–27",
+   "subtitle": "Filtered: entries for interest on fixed deposits",
+   "period": "1-Apr-2026 to 31-Mar-2027",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "vn",
+     "label": "Vch no."
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "18-06-2026",
+     "part": "Interest on fixed deposits (FD-1)",
+     "vn": "RV 0611",
+     "dr": 9600,
+     "cr": null
+    },
+    {
+     "date": "12-12-2026",
+     "part": "Fixed deposit – Vindhya, FD-2 (tax on interest added)",
+     "vn": "JV 2262",
+     "dr": 17750,
+     "cr": null
+    },
+    {
+     "date": "18-12-2026",
+     "part": "Interest on fixed deposits (FD-1)",
+     "vn": "RV 1281",
+     "dr": 10125,
+     "cr": null
+    },
+    {
+     "date": "19-01-2027",
+     "part": "Interest on fixed deposits (FD-1 of 18-09-2026, booked net)",
+     "vn": "JV 2418",
+     "dr": 10125,
+     "cr": null
+    },
+    {
+     "date": "12-03-2027",
+     "part": "Fixed deposit – Vindhya, FD-2 (tax on interest added)",
+     "vn": "JV 2712",
+     "dr": 18065,
+     "cr": null
+    },
+    {
+     "date": "18-03-2027",
+     "part": "Interest on fixed deposits (FD-1)",
+     "vn": "RV 1618",
+     "dr": 10125,
+     "cr": null
+    },
+    {
+     "_class": "total",
+     "date": "",
+     "part": "Total of these entries",
+     "vn": "",
+     "dr": 75790,
+     "cr": null
+    }
+   ],
+   "notes": [
+    "Customers’ TDS entries are hidden by the filter."
+   ]
+  },
+  {
+   "id": "led-fd2",
+   "type": "table",
+   "style": "tally",
+   "arrives": "t3",
+   "title": "Ledger · fixed deposit FD-2",
+   "tab": "FD-2 ledger",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Ledger: Fixed deposit – Vindhya (lien for term loan II, FD-2)",
+   "subtitle": "Group: Bank accounts",
+   "period": "1-Apr-2026 to 31-Mar-2027",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "vn",
+     "label": "Vch no."
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "bal",
+     "label": "Balance, Dr (₹)",
+     "format": "inr",
+     "runningFrom": {
+      "plus": "dr",
+      "minus": "cr"
+     }
+    }
+   ],
+   "rows": [
+    {
+     "date": "12-09-2026",
+     "part": "Cash credit – Vindhya Commercial Bank (deposit made)",
+     "vn": "PV 3301",
+     "dr": 10000000,
+     "cr": null,
+     "bal": 10000000
+    },
+    {
+     "date": "12-12-2026",
+     "part": "Interest on fixed deposits (interest added)",
+     "vn": "JV 2262",
+     "dr": 177500,
+     "cr": null,
+     "bal": 10177500
+    },
+    {
+     "date": "12-12-2026",
+     "part": "TDS receivable – 2026–27",
+     "vn": "JV 2262",
+     "dr": null,
+     "cr": 17750,
+     "bal": 10159750
+    },
+    {
+     "date": "12-03-2027",
+     "part": "Interest on fixed deposits (interest added)",
+     "vn": "JV 2712",
+     "dr": 180651,
+     "cr": null,
+     "bal": 10340401
+    },
+    {
+     "date": "12-03-2027",
+     "part": "TDS receivable – 2026–27",
+     "vn": "JV 2712",
+     "dr": null,
+     "cr": 18065,
+     "bal": 10322336
+    }
+   ]
+  },
+  {
+   "id": "tracker",
+   "type": "table",
+   "style": "sheet",
+   "arrives": "t4",
+   "title": "Confirmation tracker · 10 May",
+   "kindLabel": "Our tracker",
+   "tab": "Tracker",
+   "icon": "sheet",
+   "sheetName": "BC tracker",
+   "freeze": true,
+   "formula": "=C3-G3",
+   "columns": [
+    {
+     "key": "p",
+     "label": "Party"
+    },
+    {
+     "key": "t",
+     "label": "Type"
+    },
+    {
+     "key": "b",
+     "label": "Books, 31 March (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "sent",
+     "label": "Sent"
+    },
+    {
+     "key": "rem",
+     "label": "Reminders"
+    },
+    {
+     "key": "rcd",
+     "label": "Reply in"
+    },
+    {
+     "key": "rep",
+     "label": "Reply says (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "rk",
+     "label": "Remarks"
+    },
+    {
+     "key": "st",
+     "label": "Status"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "c01",
+     "p": "Ashvaratha Motors Ltd",
+     "t": "Customer",
+     "b": 49941209,
+     "sent": "06-04",
+     "rem": "–",
+     "rcd": "16-04",
+     "rep": 49941209,
+     "rk": "Net of credit note 28-03",
+     "st": "Agreed · VS"
+    },
+    {
+     "_id": "c02",
+     "p": "Kshitij Driveline Systems",
+     "t": "Customer",
+     "b": 35860691,
+     "sent": "06-04; 26-04",
+     "rem": "–",
+     "rcd": "06-05",
+     "rep": 35860691,
+     "rk": "Via Harshad: not used",
+     "st": "",
+     "_hl": true
+    },
+    {
+     "_id": "c03",
+     "p": "Vayuvega Two Wheelers",
+     "t": "Customer",
+     "b": 21418503,
+     "sent": "06-04",
+     "rem": "–",
+     "rcd": "20-04",
+     "rep": 21418503,
+     "rk": "",
+     "st": "Agreed · VS"
+    },
+    {
+     "_id": "c04",
+     "p": "Naik Auto Spares",
+     "t": "Customer",
+     "b": 11909232,
+     "sent": "06-04",
+     "rem": "–",
+     "rcd": "22-04",
+     "rep": 6386832,
+     "rk": "",
+     "st": "",
+     "_hl": true
+    },
+    {
+     "_id": "c06",
+     "p": "Wardha Road Auto Agencies",
+     "t": "Customer",
+     "b": 4257889,
+     "sent": "06-04",
+     "rem": "–",
+     "rcd": "21-04",
+     "rep": 3074679,
+     "rk": "",
+     "st": "",
+     "_hl": true
+    },
+    {
+     "_id": "c07",
+     "p": "Ponni Motors Ltd",
+     "t": "Customer",
+     "b": 23098307,
+     "sent": "06-04",
+     "rem": "–",
+     "rcd": "20-04",
+     "rep": 23098307,
+     "rk": "",
+     "st": "Agreed · VS"
+    },
+    {
+     "_id": "c08",
+     "p": "Vaigai Axle Systems",
+     "t": "Customer",
+     "b": 21256039,
+     "sent": "06-04",
+     "rem": "20-04, 04-05",
+     "rcd": "–",
+     "rep": null,
+     "rk": "Reminders delivered",
+     "st": "",
+     "_hl": true
+    },
+    {
+     "_id": "c09",
+     "p": "Lothal Motors Ltd",
+     "t": "Customer",
+     "b": 22678749,
+     "sent": "06-04",
+     "rem": "–",
+     "rcd": "21-04",
+     "rep": 21414749,
+     "rk": "",
+     "st": "",
+     "_hl": true
+    },
+    {
+     "_id": "c14",
+     "p": "Golconda Motor Spares",
+     "t": "Customer",
+     "b": 2958570,
+     "sent": "06-04",
+     "rem": "–",
+     "rcd": "–",
+     "rep": null,
+     "rk": "Cover returned 16-04",
+     "st": "",
+     "_hl": true
+    },
+    {
+     "_id": "c15",
+     "p": "Kilimani Motor Spares (Kenya)",
+     "t": "Customer",
+     "b": 10805200,
+     "sent": "–",
+     "rem": "–",
+     "rcd": "–",
+     "rep": null,
+     "rk": "Not posted: Mahesh 05-04",
+     "st": "",
+     "_hl": true
+    },
+    {
+     "_id": "v01",
+     "p": "Ghanekar Alloy Steels",
+     "t": "Supplier",
+     "b": 33155244,
+     "sent": "06-04",
+     "rem": "–",
+     "rcd": "16-04",
+     "rep": 33155244,
+     "rk": "",
+     "st": "Agreed · VS"
+    },
+    {
+     "_id": "v03",
+     "p": "Rankala Forgings",
+     "t": "Supplier",
+     "b": 21138017,
+     "sent": "06-04",
+     "rem": "–",
+     "rcd": "20-04",
+     "rep": 21196357,
+     "rk": "",
+     "st": "",
+     "_hl": true
+    },
+    {
+     "_id": "v04",
+     "p": "Bhadar Forge and Engineering",
+     "t": "Supplier",
+     "b": 21909784,
+     "sent": "06-04",
+     "rem": "20-04, 04-05",
+     "rcd": "–",
+     "rep": null,
+     "rk": "Reminders delivered",
+     "st": "",
+     "_hl": true
+    },
+    {
+     "_id": "v05",
+     "p": "Vishwamitri Bearings",
+     "t": "Supplier",
+     "b": 16254991,
+     "sent": "06-04",
+     "rem": "–",
+     "rcd": "20-04",
+     "rep": 16254991,
+     "rk": "",
+     "st": "Agreed · VS"
+    },
+    {
+     "_id": "v14",
+     "p": "Kudalwadi Heat Treaters",
+     "t": "Supplier",
+     "b": 6120472,
+     "sent": "06-04",
+     "rem": "–",
+     "rcd": "13-04",
+     "rep": 6120472,
+     "rk": "Line on unpaid bills",
+     "st": "",
+     "_hl": true
+    }
+   ],
+   "notes": [
+    "Requests posted by us on 06-04-2027 on Tamhini’s letterhead, signed by Mahesh Kadam, with replies to our office. Dates are 2027.",
+    "Yellow rows are open. Varun ticked the others against the ledgers."
+   ]
+  },
+  {
+   "id": "r-kshitij",
+   "type": "letter",
+   "style": "letter",
+   "arrives": "t4",
+   "title": "Kshitij · Reply, 3 May",
+   "tab": "Reply",
+   "letterhead": {
+    "name": "Kshitij Driveline Systems Private Limited",
+    "address": "Plot J-118, MIDC Bhosari, Pune 411026",
+    "gstin": "27VJJCK8454A1ZD",
+    "phone": "98XXXXXXXX"
+   },
+   "ref": "KDS/ACC/27/0219",
+   "date": "03.05.2027",
+   "to": [
+    "Bapat Venkatesh & Co., Chartered Accountants",
+    "5th floor, Sumant Chambers, Prabhat Road, Erandwane, Pune 411004",
+    "Kind attention: Aarti Rane"
+   ],
+   "subject": "Confirmation of balance as at 31 March 2027: Tamhini Drivetech Private Limited",
+   "body": [
+    "Dear Sirs,",
+    "As asked in Tamhini’s letter of 26 April 2027, we confirm that our books show ₹3,58,60,691 payable to Tamhini Drivetech Private Limited at 31 March 2027."
+   ],
+   "sign": {
+    "closing": "Yours faithfully,",
+    "for": "Kshitij Driveline Systems Private Limited",
+    "role": "Head – Accounts",
+    "hand": "S. Bhide"
+   },
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "BAPAT VENKATESH & CO.\nRECEIVED 06 MAY 2027",
+     "color": "blue",
+     "at": "top-right",
+     "rotate": 4
+    }
+   ]
+  },
+  {
+   "id": "r-naik",
+   "type": "letter",
+   "style": "letter",
+   "arrives": "t4",
+   "title": "Naik · Reply",
+   "tab": "Reply",
+   "letterhead": {
+    "name": "Naik Auto Spares Distributors",
+    "address": "Gala 21, Mankoli Naka, Bhiwandi, Thane 421302",
+    "gstin": "27ZYOFN5752Z1ZR",
+    "phone": "98XXXXXXXX"
+   },
+   "ref": "NASD/27-28/014",
+   "date": "20.04.2027",
+   "to": [
+    "Bapat Venkatesh & Co., Chartered Accountants",
+    "5th floor, Sumant Chambers, Prabhat Road, Erandwane, Pune 411004",
+    "Kind attention: Aarti Rane"
+   ],
+   "subject": "Confirmation of balance as at 31 March 2027: Tamhini Drivetech Private Limited",
+   "body": [
+    "Dear Sirs,",
+    "As asked in Tamhini’s letter of 6 April, our books show ₹63,86,832 payable to Tamhini Drivetech Private Limited at 31 March 2027, not ₹1,19,09,232.",
+    "The difference of ₹55,22,400 is your invoice TD/TR/26-27/0412 of 31.03.2027. The goods reached our Bhiwandi warehouse on 05.04.2027 (Mahalunge Roadlines LR 3317), and your invoice says delivery at our warehouse, so we have entered it on 05.04.2027."
+   ],
+   "sign": {
+    "closing": "Yours faithfully,",
+    "for": "Naik Auto Spares Distributors",
+    "role": "Partner",
+    "hand": "K. Naik"
+   },
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "BAPAT VENKATESH & CO.\nRECEIVED 22 APR 2027",
+     "color": "blue",
+     "at": "top-right",
+     "rotate": 4
+    }
+   ]
+  },
+  {
+   "id": "lr-naik",
+   "type": "card",
+   "style": "slip",
+   "arrives": "t4",
+   "title": "Naik · Lorry receipt",
+   "tab": "LR",
+   "issuer": "Mahalunge Roadlines · Mahalunge, Chakan, Pune",
+   "heading": "Consignment note (LR)",
+   "number": "3317",
+   "fields": [
+    {
+     "label": "Date",
+     "value": "02-04-2027"
+    },
+    {
+     "label": "Consignor",
+     "value": "Tamhini Drivetech Pvt Ltd, Chakan"
+    },
+    {
+     "label": "Consignee",
+     "value": "Naik Auto Spares Distributors, Gala 21, Mankoli Naka, Bhiwandi"
+    },
+    {
+     "label": "Invoice",
+     "value": "TD/TR/26-27/0412 dt 31-03-2027"
+    },
+    {
+     "label": "E-way bill",
+     "value": "Dated 02-04-2027"
+    },
+    {
+     "label": "Packages",
+     "value": "62 cartons, said to contain auto parts"
+    },
+    {
+     "label": "Freight",
+     "value": "Paid by consignor · door delivery at consignee’s warehouse"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "NAIK AUTO SPARES\nRECEIVED\n05 APR 2027",
+     "color": "violet",
+     "at": "bottom-right",
+     "rotate": -6
+    }
+   ]
+  },
+  {
+   "id": "r-wardha",
+   "type": "letter",
+   "style": "letter",
+   "arrives": "t4",
+   "title": "Wardha · Reply",
+   "tab": "Reply",
+   "letterhead": {
+    "name": "Wardha Road Auto Agencies",
+    "address": "Plot 45, Wardha Road, Somalwada, Nagpur 440025",
+    "gstin": "27VQUFW5986C1ZV",
+    "phone": "98XXXXXXXX"
+   },
+   "ref": "WRAA/CONF/27",
+   "date": "17.04.2027",
+   "to": [
+    "Bapat Venkatesh & Co., Chartered Accountants",
+    "5th floor, Sumant Chambers, Prabhat Road, Erandwane, Pune 411004",
+    "Kind attention: Aarti Rane"
+   ],
+   "subject": "Confirmation of balance as at 31 March 2027: Tamhini Drivetech Private Limited",
+   "body": [
+    "Dear Sirs,",
+    "As asked in Tamhini’s letter of 6 April, our books show ₹30,74,679 payable to Tamhini Drivetech Private Limited at 31 March 2027.",
+    "Your figure of ₹42,57,889 does not include our cheque no. 553871 of 30.03.2027 for ₹11,83,210 against your February bills, sent to Tamhini by courier the same day."
+   ],
+   "sign": {
+    "closing": "Yours faithfully,",
+    "for": "Wardha Road Auto Agencies",
+    "role": "Partner",
+    "hand": "M. Deshmukh"
+   },
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "BAPAT VENKATESH & CO.\nRECEIVED 21 APR 2027",
+     "color": "blue",
+     "at": "top-right",
+     "rotate": 4
+    }
+   ]
+  },
+  {
+   "id": "led-wardha",
+   "type": "table",
+   "style": "tally",
+   "arrives": "t4",
+   "title": "Wardha · Our ledger",
+   "tab": "Ledger",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2027–28"
+   },
+   "ledger": "Ledger: Wardha Road Auto Agencies",
+   "subtitle": "Group: Sundry debtors",
+   "period": "1-Apr-2027 to 10-Apr-2027",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "vn",
+     "label": "Vch no."
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "bal",
+     "label": "Balance, Dr (₹)",
+     "format": "inr",
+     "runningFrom": {
+      "plus": "dr",
+      "minus": "cr"
+     }
+    }
+   ],
+   "rows": [
+    {
+     "_class": "muted",
+     "date": "01-04-2027",
+     "part": "Opening balance",
+     "vn": "",
+     "dr": null,
+     "cr": null,
+     "bal": 4257889
+    },
+    {
+     "date": "02-04-2027",
+     "part": "Satpura Bank – current account (cheque 553871 of 30-03-2027, received by courier 02-04-2027)",
+     "vn": "RV 0004",
+     "dr": null,
+     "cr": 1183210,
+     "bal": 3074679
+    }
+   ]
+  },
+  {
+   "id": "r-lothal",
+   "type": "letter",
+   "style": "letter",
+   "arrives": "t4",
+   "title": "Lothal · Reply",
+   "tab": "Reply",
+   "letterhead": {
+    "name": "Lothal Motors Limited",
+    "address": "Survey 160, GIDC Sanand II, Ahmedabad 382170",
+    "gstin": "24WTACL5330D1ZF",
+    "phone": "98XXXXXXXX"
+   },
+   "ref": "LML/AP/27/0388",
+   "date": "19.04.2027",
+   "to": [
+    "Bapat Venkatesh & Co., Chartered Accountants",
+    "5th floor, Sumant Chambers, Prabhat Road, Erandwane, Pune 411004",
+    "Kind attention: Aarti Rane"
+   ],
+   "subject": "Confirmation of balance as at 31 March 2027: Tamhini Drivetech Private Limited",
+   "body": [
+    "Dear Sirs,",
+    "As asked in Tamhini’s letter of 6 April, our books show ₹2,14,14,749 payable to Tamhini Drivetech Private Limited at 31 March 2027.",
+    "The difference of ₹12,64,000 from Tamhini’s figure is our NEFT of 30.03.2027 (UTR NMVBN27089117426) against invoices TD/MF/26-27/1874 and 1891."
+   ],
+   "sign": {
+    "closing": "Regards,",
+    "for": "Lothal Motors Limited",
+    "role": "Accounts Payable",
+    "hand": "Hetal Vora"
+   },
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "BAPAT VENKATESH & CO.\nRECEIVED 21 APR 2027",
+     "color": "blue",
+     "at": "top-right",
+     "rotate": 4
+    }
+   ]
+  },
+  {
+   "id": "led-lothal",
+   "type": "table",
+   "style": "tally",
+   "arrives": "t4",
+   "title": "Lothal · Our ledger",
+   "tab": "Ledger",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2027–28"
+   },
+   "ledger": "Ledger: Lothal Motors Limited",
+   "subtitle": "Group: Sundry debtors",
+   "period": "1-Apr-2027 to 10-Apr-2027",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "vn",
+     "label": "Vch no."
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "bal",
+     "label": "Balance, Dr (₹)",
+     "format": "inr",
+     "runningFrom": {
+      "plus": "dr",
+      "minus": "cr"
+     }
+    }
+   ],
+   "rows": [
+    {
+     "_class": "muted",
+     "date": "01-04-2027",
+     "part": "Opening balance",
+     "vn": "",
+     "dr": null,
+     "cr": null,
+     "bal": 22678749
+    },
+    {
+     "date": "06-04-2027",
+     "part": "Cash credit – Vindhya (NEFT of 30-03-2027; advice received 06-04-2027)",
+     "vn": "RV 0019",
+     "dr": null,
+     "cr": 1264000,
+     "bal": 21414749
+    },
+    {
+     "date": "09-04-2027",
+     "part": "Cash credit – Vindhya (RTGS)",
+     "vn": "RV 0031",
+     "dr": null,
+     "cr": 10230000,
+     "bal": 11184749
+    }
+   ]
+  },
+  {
+   "id": "rem-vaigai",
+   "type": "letter",
+   "style": "letter",
+   "arrives": "t4",
+   "title": "Vaigai · Second reminder",
+   "tab": "Reminder",
+   "letterhead": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC, Village Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "cin": "U29301MH2004PTC942620",
+    "phone": "98XXXXXXXX"
+   },
+   "ref": "TD/ACC/CONF/27/031",
+   "date": "04-05-2027",
+   "to": {
+    "name": "The Head of Accounts, Vaigai Axle Systems Private Limited",
+    "address": "Plot B-14, SIPCOT Industrial Park, Oragadam, Kancheepuram District 602105"
+   },
+   "subject": "Second reminder: confirmation of balance as at 31 March 2027",
+   "body": [
+    "Dear Sir,",
+    "We wrote to you on 6 April and again on 20 April, asking you to confirm to our auditors your balance with us at 31 March 2027: ₹2,12,56,039 receivable by us.",
+    "We have not had your reply. Please confirm, or send your statement of account, directly to Bapat Venkatesh & Co., Chartered Accountants, 5th floor, Sumant Chambers, Prabhat Road, Erandwane, Pune 411004 (aarti.rane@email.com)."
+   ],
+   "sign": {
+    "closing": "Yours faithfully,",
+    "for": "Tamhini Drivetech Private Limited",
+    "name": "Mahesh Kadam",
+    "role": "GM, Finance and Accounts",
+    "hand": "M. Kadam"
+   },
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Sent by us 4/5. V.S.",
+     "color": "blue",
+     "at": "top-right",
+     "rotate": -3
+    },
+    {
+     "kind": "stamp",
+     "text": "COURIER: DELIVERED\n06 MAY 2027",
+     "color": "green",
+     "at": "bottom-left",
+     "rotate": 5
+    }
+   ]
+  },
+  {
+   "id": "ret-golconda",
+   "type": "card",
+   "style": "slip",
+   "arrives": "t4",
+   "title": "Golconda · Returned cover",
+   "tab": "Returned cover",
+   "issuer": "Registered post · sent by Bapat Venkatesh & Co., Pune",
+   "heading": "Returned cover",
+   "fields": [
+    {
+     "label": "Addressed to",
+     "value": "Golconda Motor Spares, 5‑2‑182, Ranigunj, Secunderabad 500003"
+    },
+    {
+     "label": "Posted",
+     "value": "06-04-2027"
+    },
+    {
+     "label": "Returned",
+     "value": "16-04-2027"
+    },
+    {
+     "label": "Postal remark",
+     "value": "Left. No forwarding address."
+    },
+    {
+     "label": "Address from",
+     "value": "Tamhini’s customer master"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "RETURNED TO SENDER",
+     "color": "red",
+     "at": "top-right",
+     "rotate": 4
+    }
+   ]
+  },
+  {
+   "id": "gst-golconda",
+   "type": "table",
+   "style": "plain",
+   "arrives": "t4",
+   "title": "Golconda · GSTIN search",
+   "kindLabel": "Portal print",
+   "tab": "GSTIN search",
+   "icon": "sheet",
+   "heading": "GSTIN search on the GST portal",
+   "subtitle": "Searched by Varun on 07-05-2027 (Search taxpayer) and printed for the file",
+   "columns": [
+    {
+     "key": "k",
+     "label": "Detail"
+    },
+    {
+     "key": "v",
+     "label": "As shown"
+    }
+   ],
+   "rows": [
+    {
+     "k": "GSTIN",
+     "v": "36WHFFG8255U1ZG"
+    },
+    {
+     "k": "Legal name",
+     "v": "GOLCONDA MOTOR SPARES"
+    },
+    {
+     "k": "Status",
+     "v": "Active"
+    },
+    {
+     "k": "Principal place of business",
+     "v": "Shop 14, Autonagar, Vanasthalipuram, Hyderabad, Telangana 500070"
+    }
+   ]
+  },
+  {
+   "id": "mail-kilimani",
+   "type": "letter",
+   "style": "email",
+   "arrives": "t4",
+   "title": "Kilimani · Mahesh’s mail",
+   "tab": "Mahesh’s mail",
+   "from": {
+    "name": "Mahesh Kadam",
+    "email": "mahesh.kadam@email.com"
+   },
+   "to": [
+    {
+     "name": "Varun Shetty",
+     "email": "varun.shetty@email.com"
+    }
+   ],
+   "date": "Mon, 5 Apr 2027, 6:40 pm",
+   "subject": "Confirmations: leave out Kilimani",
+   "body": [
+    "Varun,",
+    "Please don’t send a confirmation to Kilimani in Nairobi. Their owner gets touchy about paperwork from India, and we are in the middle of agreeing next year’s prices with him.",
+    "I’ll give you the shipping bills and the bank’s inward remittance advices for whatever they pay.",
+    "Mahesh"
+   ]
+  },
+  {
+   "id": "rem-bhadar",
+   "type": "letter",
+   "style": "letter",
+   "arrives": "t4",
+   "title": "Bhadar · Second reminder",
+   "tab": "Reminder",
+   "letterhead": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC, Village Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "cin": "U29301MH2004PTC942620",
+    "phone": "98XXXXXXXX"
+   },
+   "ref": "TD/ACC/CONF/27/033",
+   "date": "04-05-2027",
+   "to": {
+    "name": "The Accounts Manager, Bhadar Forge and Engineering Private Limited",
+    "address": "Survey 211, Shapar (Veraval) Industrial Area, Rajkot 360024"
+   },
+   "subject": "Second reminder: confirmation of balance as at 31 March 2027",
+   "body": [
+    "Dear Sir,",
+    "We wrote to you on 6 April and again on 20 April, asking you to confirm to our auditors your balance with us at 31 March 2027: ₹2,19,09,784 payable by us.",
+    "We have not had your reply. Please confirm, or send your statement of account, directly to Bapat Venkatesh & Co., Chartered Accountants, 5th floor, Sumant Chambers, Prabhat Road, Erandwane, Pune 411004 (aarti.rane@email.com)."
+   ],
+   "sign": {
+    "closing": "Yours faithfully,",
+    "for": "Tamhini Drivetech Private Limited",
+    "name": "Mahesh Kadam",
+    "role": "GM, Finance and Accounts",
+    "hand": "M. Kadam"
+   },
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Sent by us 4/5. V.S.",
+     "color": "blue",
+     "at": "top-right",
+     "rotate": -3
+    },
+    {
+     "kind": "stamp",
+     "text": "COURIER: DELIVERED\n06 MAY 2027",
+     "color": "green",
+     "at": "bottom-left",
+     "rotate": 5
+    }
+   ]
+  },
+  {
+   "id": "r-rankala",
+   "type": "letter",
+   "style": "letter",
+   "arrives": "t4",
+   "title": "Rankala · Reply",
+   "tab": "Reply",
+   "letterhead": {
+    "name": "Rankala Forgings Private Limited",
+    "address": "Plot D-12, Shiroli MIDC, Kolhapur 416122",
+    "gstin": "27UJPCR7248B1Z1",
+    "phone": "98XXXXXXXX"
+   },
+   "ref": "RF/ACC/27/112",
+   "date": "16.04.2027",
+   "to": [
+    "Bapat Venkatesh & Co., Chartered Accountants",
+    "5th floor, Sumant Chambers, Prabhat Road, Erandwane, Pune 411004",
+    "Kind attention: Aarti Rane"
+   ],
+   "subject": "Confirmation of balance as at 31 March 2027: Tamhini Drivetech Private Limited",
+   "body": [
+    "Dear Sirs,",
+    "As asked in Tamhini’s letter of 6 April, our books show ₹2,11,96,357 receivable from Tamhini Drivetech Private Limited at 31 March 2027. The last entries:",
+    {
+     "table": {
+      "columns": [
+       {
+        "key": "d",
+        "label": "Date"
+       },
+       {
+        "key": "p",
+        "label": "Particulars"
+       },
+       {
+        "key": "a",
+        "label": "Amount (₹)",
+        "format": "inr"
+       }
+      ],
+      "rows": [
+       {
+        "d": "30.03.2027",
+        "p": "Balance brought forward",
+        "a": 21138017
+       },
+       {
+        "d": "31.03.2027",
+        "p": "Our invoice RF/2412/26‑27: 120 forged gear blanks GB-110",
+        "a": 58340
+       },
+       {
+        "_class": "total",
+        "d": "",
+        "p": "Balance at 31.03.2027",
+        "a": 21196357
+       }
+      ]
+     }
+    }
+   ],
+   "sign": {
+    "closing": "Yours faithfully,",
+    "for": "Rankala Forgings Private Limited",
+    "role": "Accounts Manager",
+    "hand": "P. Desai"
+   },
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "BAPAT VENKATESH & CO.\nRECEIVED 20 APR 2027",
+     "color": "blue",
+     "at": "top-right",
+     "rotate": 4
+    }
+   ]
+  },
+  {
+   "id": "led-rankala",
+   "type": "table",
+   "style": "tally",
+   "arrives": "t4",
+   "title": "Rankala · Our ledger",
+   "tab": "Ledger",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2027–28"
+   },
+   "ledger": "Ledger: Rankala Forgings Private Limited",
+   "subtitle": "Group: Sundry creditors",
+   "period": "1-Apr-2027 to 10-Apr-2027",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "vn",
+     "label": "Vch no."
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "bal",
+     "label": "Balance, Cr (₹)",
+     "format": "inr",
+     "runningFrom": {
+      "plus": "cr",
+      "minus": "dr"
+     }
+    }
+   ],
+   "rows": [
+    {
+     "_class": "muted",
+     "date": "01-04-2027",
+     "part": "Opening balance",
+     "vn": "",
+     "dr": null,
+     "cr": null,
+     "bal": 21138017
+    },
+    {
+     "date": "01-04-2027",
+     "part": "Purchases – raw materials (bill RF/2412/26‑27 of 31-03-2027; GRN-2027-04-0003)",
+     "vn": "PV 0007",
+     "dr": null,
+     "cr": 58340,
+     "bal": 21196357
+    },
+    {
+     "date": "05-04-2027",
+     "part": "Cash credit – Vindhya (NEFT)",
+     "vn": "PV 0012",
+     "dr": 5860000,
+     "cr": null,
+     "bal": 15336357
+    }
+   ]
+  },
+  {
+   "id": "grn-rankala",
+   "type": "grn",
+   "arrives": "t4",
+   "title": "Rankala · GRN",
+   "tab": "GRN",
+   "number": "GRN-2027-04-0003",
+   "date": "01-04-2027",
+   "unit": "Main stores, Bay A",
+   "vendor": "Rankala Forgings Private Limited",
+   "poRef": "TD/PO/2026-27/1138",
+   "invoiceRef": "RF/2412/26‑27 dt 31.03.2027",
+   "challan": "DC 2412",
+   "vehicle": "MH 09 GA 6107",
+   "lines": [
+    {
+     "desc": "Forged gear blank GB-110 (20MnCr5), normalised",
+     "unit": "nos",
+     "qtyChallan": 120,
+     "qtyReceived": 120,
+     "qtyAccepted": 120,
+     "qtyRejected": 0
+    }
+   ],
+   "receivedBy": "Ajay Thube",
+   "qcBy": "Shrikant Lohar",
+   "remarks": "Material came in at 7:40 pm on 31-03-2027 (gate entry G/3871); GRN made next morning."
+  },
+  {
+   "id": "r-kudal",
+   "type": "letter",
+   "style": "letter",
+   "arrives": "t4",
+   "title": "Kudalwadi · Reply",
+   "tab": "Reply",
+   "letterhead": {
+    "name": "Kudalwadi Heat Treaters",
+    "address": "Survey 112, Kudalwadi, Chikhli, Pimpri-Chinchwad, Pune 412114\nUdyam Reg. No. UDYAM-MH-26-0906352",
+    "gstin": "27ZPIFK9501Q1Z5",
+    "phone": "98XXXXXXXX"
+   },
+   "ref": "KHT/CONF/27-28/02",
+   "date": "12.04.2027",
+   "to": [
+    "Bapat Venkatesh & Co., Chartered Accountants",
+    "5th floor, Sumant Chambers, Prabhat Road, Erandwane, Pune 411004",
+    "Kind attention: Aarti Rane"
+   ],
+   "subject": "Confirmation of balance as at 31 March 2027: Tamhini Drivetech Private Limited",
+   "body": [
+    "Dear Madam,",
+    "As asked in Tamhini’s letter of 6 April, we confirm that our books show ₹61,20,472 receivable from Tamhini Drivetech Private Limited at 31 March 2027.",
+    "We also request early payment of our bills of December 2026 and January 2027, which are still outstanding."
+   ],
+   "sign": {
+    "closing": "Yours faithfully,",
+    "for": "Kudalwadi Heat Treaters",
+    "role": "Partner",
+    "hand": "R. Kudale"
+   },
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "BAPAT VENKATESH & CO.\nRECEIVED 13 APR 2027",
+     "color": "blue",
+     "at": "top-right",
+     "rotate": 4
+    }
+   ]
+  }
+ ],
+ "tasks": [
+  {
+   "id": "t1",
+   "type": "items",
+   "stage": "Fieldwork",
+   "title": "Trace the BRS to the April statement",
+   "weight": 2,
+   "noun": [
+    "item",
+    "items"
+   ],
+   "prompt": "Pallavi’s 31 March BRS lists seven items. Trace each cheque and deposit to the April statement: same number, same amount, the day it cleared. Check the bank’s own entries against the March statement and the advice behind each. For an exception, pick what is wrong and the entry it needs. Your calls go to Aarti when you move on.",
+   "lockOnLeave": {
+    "ask": "Hand your BRS calls to Aarti?",
+    "note": "You can’t change them after this.",
+    "yes": "Hand them in",
+    "done": "Handed to Aarti. You can read your calls but not change them."
+   },
+   "hints": [
+    "Put each cheque and deposit beside the April statement: same number, same amount. For a cheque that never turns up, read the date written on it.",
+    "An entry the bank made in March that the books don’t have is booked at 31 March, whenever its advice reached accounts."
+   ],
+   "columns": [
+    {
+     "key": "label"
+    },
+    {
+     "key": "amount",
+     "format": "inr"
+    },
+    {
+     "key": "dated"
+    }
+   ],
+   "fields": [
+    {
+     "id": "verdict",
+     "kind": "choice",
+     "label": "Your call",
+     "gate": true,
+     "options": [
+      {
+       "id": "ok",
+       "label": "Fine"
+      },
+      {
+       "id": "exception",
+       "label": "Exception"
+      }
+     ]
+    },
+    {
+     "id": "cleared",
+     "kind": "number",
+     "label": "Day it cleared",
+     "unit": "April",
+     "placeholder": "day",
+     "sign": false,
+     "invalidNote": "Type the day only, like 5",
+     "integer": true,
+     "tolerance": 0,
+     "weight": 2,
+     "showIf": {
+      "verdict": "ok"
+     }
+    },
+    {
+     "id": "reasons",
+     "kind": "choice",
+     "label": "What’s wrong",
+     "showIf": {
+      "verdict": "exception"
+     },
+     "weight": 3,
+     "buttons": true,
+     "options": [
+      {
+       "id": "stale",
+       "label": "Stale cheque",
+       "short": "stale cheque"
+      },
+      {
+       "id": "unbooked",
+       "label": "Not in the books",
+       "short": "bank entry not in the books"
+      },
+      {
+       "id": "notcredited",
+       "label": "Not credited",
+       "short": "deposit not credited"
+      },
+      {
+       "id": "amount",
+       "label": "Amount differs",
+       "short": "amount difference"
+      },
+      {
+       "id": "late",
+       "label": "Paid in late",
+       "short": "late deposit"
+      }
+     ]
+    },
+    {
+     "id": "entry",
+     "kind": "choice",
+     "label": "Entry at 31 March",
+     "showIf": {
+      "verdict": "exception"
+     },
+     "weight": 2,
+     "layout": "list",
+     "options": [
+      {
+       "id": "reverse",
+       "label": "Reverse it: debit cash credit, credit the payee",
+       "short": "reverse to the payee"
+      },
+      {
+       "id": "charges",
+       "label": "Debit bank charges, credit cash credit",
+       "short": "book the charges"
+      },
+      {
+       "id": "receipt",
+       "label": "Debit cash credit, credit the customer",
+       "short": "book the receipt"
+      },
+      {
+       "id": "none",
+       "label": "No entry: it will clear in the next statement",
+       "short": "no entry"
+      }
+     ]
+    },
+    {
+     "id": "note",
+     "kind": "text",
+     "label": "Your note for the file",
+     "placeholder": "For example: paid 9 April, same number and amount (or what is wrong)"
+    }
+   ],
+   "items": [
+    {
+     "id": "i1",
+     "label": "Cheque 418806 · Moshi Corrugators",
+     "short": "Moshi",
+     "amount": 292793,
+     "dated": "issued 26 Mar 2027",
+     "docs": [
+      "cf-418806",
+      "stmt-apr"
+     ],
+     "answer": {
+      "verdict": "ok",
+      "cleared": 5
+     },
+     "note": "Fine. Cheque 418806 for ₹2,92,793 was paid on 5 April: same number, same amount, ten days after it was written. That is how a cheque on a BRS should behave."
+    },
+    {
+     "id": "i2",
+     "label": "Cheque 418811 · Talegaon Electricals",
+     "short": "Talegaon",
+     "amount": 171532,
+     "dated": "issued 26 Mar 2027",
+     "docs": [
+      "cf-418811",
+      "stmt-apr"
+     ],
+     "answer": {
+      "verdict": "ok",
+      "cleared": 8
+     },
+     "note": "Fine. Paid on 8 April, with the number and amount the BRS lists."
+    },
+    {
+     "id": "i3",
+     "label": "Cheque 418814 · Nighojkar Security",
+     "short": "Nighojkar",
+     "amount": 30160,
+     "dated": "issued 26 Mar 2027",
+     "docs": [
+      "cf-418814",
+      "stmt-apr"
+     ],
+     "answer": {
+      "verdict": "ok",
+      "cleared": 2
+     },
+     "note": "Fine. Nighojkar banked it quickly: paid on 2 April for ₹30,160."
+    },
+    {
+     "id": "i4",
+     "label": "Cheque 417652 · Shirur Metrology Labs",
+     "short": "Shirur",
+     "amount": 44660,
+     "dated": "issued 26 Nov 2026",
+     "docs": [
+      "cf-417652",
+      "shirur-mail",
+      "stmt-apr"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "reasons": "stale",
+      "entry": "reverse"
+     },
+     "note": "Exception. Written on 26 November and never presented. After three months the bank won’t pay it, and Shirur has lost it anyway. Reverse it: the cash credit comes down by ₹44,660 and Shirur is owed again."
+    },
+    {
+     "id": "i5",
+     "label": "Deposit · Bilal Ferrous Traders",
+     "short": "Bilal",
+     "amount": 3028057,
+     "dated": "deposited 31 Mar 2027",
+     "docs": [
+      "slip-bilal",
+      "stmt-apr"
+     ],
+     "answer": {
+      "verdict": "ok",
+      "cleared": 2
+     },
+     "note": "Fine. The bank stamped the slip on 31 March and credited the cheque on 2 April. Paid in during March, cleared in April: an honest reconciling item."
+    },
+    {
+     "id": "i6",
+     "label": "Bank debit · Locker rent",
+     "short": "locker rent",
+     "amount": 2360,
+     "dated": "debited 31 Mar 2027",
+     "docs": [
+      "adv-chg",
+      "stmt-mar"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "reasons": "unbooked",
+      "entry": "charges"
+     },
+     "note": "Exception, a small one. The bank took ₹2,360 on 31 March and the books don’t have it. Pallavi’s note says book it in April; it belongs to March. Debit bank charges, credit the cash credit."
+    },
+    {
+     "id": "i7",
+     "label": "Bank credit · NEFT from Lothal Motors",
+     "short": "Lothal",
+     "amount": 1264000,
+     "dated": "credited 30 Mar 2027",
+     "docs": [
+      "lothal-adv",
+      "stmt-mar"
+     ],
+     "answer": {
+      "verdict": "exception",
+      "reasons": "unbooked",
+      "entry": "receipt"
+     },
+     "note": "Exception. Lothal’s ₹12,64,000 reached the bank on 30 March; the books took it on 6 April, when Harshad passed on the advice. At 31 March the cash credit and Lothal’s balance are both overstated. Book the receipt in March."
+    }
+   ],
+   "docs": [
+    "brs",
+    "stmt-mar",
+    "stmt-apr",
+    "cf-418806",
+    "cf-418811",
+    "cf-418814",
+    "cf-417652",
+    "shirur-mail",
+    "slip-bilal",
+    "adv-chg",
+    "lothal-adv"
+   ]
+  },
+  {
+   "id": "t2",
+   "type": "compose",
+   "stage": "Fieldwork",
+   "title": "Write to Mahesh about the confirmations",
+   "weight": 3,
+   "noun": [
+    "line",
+    "lines"
+   ],
+   "prompt": "You showed Aarti Varun’s chat. She wants one mail from you to Mahesh about the bank’s certificate and Kshitij’s reply, saying what we do with each. Pick the right line for each part; the chat and both papers are in Documents. The mail goes to Aarti when you move on.",
+   "lockOnLeave": {
+    "ask": "Give your mail to Aarti?",
+    "note": "You can’t change it after this.",
+    "yes": "Give it to Aarti",
+    "done": "With Aarti. You can read your mail but not change it."
+   },
+   "hints": [
+    "Ask of each paper: did it reach us straight from the bank or from Kshitij? Whatever passed through Tamhini, however genuine it looks, we ask for again ourselves."
+   ],
+   "previewLabel": "Your mail to Mahesh",
+   "template": "Subject: Bank and Kshitij confirmations, 31 March 2027\n\nMahesh sir,\n\n{bank} {bankreq}\n\n{kshitij} {kreq}\n\n{dispatch}\n\n{_free}\n\nRegards,\nAudit team, Bapat Venkatesh & Co.",
+   "freeText": {
+    "label": "Your own line for the mail"
+   },
+   "slots": [
+    {
+     "id": "bank",
+     "label": "The bank’s certificate",
+     "options": [
+      {
+       "id": "a",
+       "correct": true,
+       "text": "Thank you for the bank’s certificate. We can’t use it as the bank’s confirmation to us: it is addressed to Tamhini and came through you, so it is not the bank’s reply to the auditors.",
+       "why": "The bank wrote to Tamhini, at Tamhini’s request, and the paper reached us through Mahesh. It isn’t a reply to us, and it says nothing about the deposits, the loans or the guarantee."
+      },
+      {
+       "id": "b",
+       "text": "Thank you for the bank’s certificate. We can use it as the bank’s confirmation: it is on the bank’s letterhead, signed and sealed by the branch manager, and its balance matches the statement to the rupee.",
+       "why": "Letterhead, seal and a matching balance don’t make it ours. Its last line says it was “issued at the specific request of the customer”: it answers Tamhini, not us. It covers only the cash credit."
+      },
+      {
+       "id": "c",
+       "text": "Thank you for the bank’s certificate. We can’t use it until the branch manager confirms the balance to us on the phone, so we will call the branch today and note his answer on the file.",
+       "why": "A phone call is not a written reply to us, so it can’t stand as the bank’s confirmation. The bank has to write to us directly."
+      }
+     ]
+    },
+    {
+     "id": "bankreq",
+     "label": "Our request to the bank",
+     "options": [
+      {
+       "id": "a",
+       "text": "Please sign our request to the branch manager on Tamhini’s letterhead. It asks the bank to confirm to us, at our office, the cash credit balance of ₹8,82,61,002 at 31 March, which we have filled in from the bank statement for them.",
+       "why": "Only the cash credit, and already filled in. The bank would agree a number we gave it, and nobody would ask about anything else Tamhini has with the bank."
+      },
+      {
+       "id": "b",
+       "correct": true,
+       "text": "Please sign our request to the branch manager on Tamhini’s letterhead. It asks the bank to write to us with every account, deposit, loan, guarantee and lien at 31 March, and the interest accrued, leaving every amount blank.",
+       "why": "Tamhini signs it, so the bank will answer; it asks for the reply at our office, so the answer comes to us. Asking for everything, with the amounts blank, makes the bank read its own books. That is how liens and guarantees come out."
+      },
+      {
+       "id": "c",
+       "text": "Please sign our request to the branch manager on Tamhini’s letterhead. It asks the bank to send Tamhini a fresh certificate covering every account, deposit, loan and guarantee, which you can then pass on to us when it comes.",
+       "why": "Every account this time, but back to Tamhini again. A reply that passes through the client is the problem we started with."
+      }
+     ]
+    },
+    {
+     "id": "kshitij",
+     "label": "Kshitij’s reply",
+     "options": [
+      {
+       "id": "a",
+       "text": "Kshitij’s reply is fine to keep. Harshad knows their people well, and their sales office has confirmed our exact balance of ₹3,58,60,691 to him in writing, on the same day that he asked for it.",
+       "why": "Knowing the people is the problem, not the proof. Kshitij’s sales office writing to Tamhini’s sales head is not Kshitij’s accounts confirming to us."
+      },
+      {
+       "id": "b",
+       "text": "Kshitij’s reply is fine to keep if Harshad signs a printout of the whole mail chain as a true copy, so that someone at Tamhini takes responsibility for the figure we file.",
+       "why": "Tamhini signing for its own debtor proves nothing about Kshitij’s books. The confirmation has to come from Kshitij, to us."
+      },
+      {
+       "id": "c",
+       "correct": true,
+       "text": "Kshitij’s reply has the same problem. It went from their sales office to Harshad, then to you and to Varun, so it never came to us, and we can’t tell who at Kshitij checked it.",
+       "why": "Kshitij’s mail says “as discussed on the phone”: their sales office agreed a figure on a call with Harshad. Their accounts team has to check it in their books and write to us."
+      }
+     ]
+    },
+    {
+     "id": "kreq",
+     "label": "The fresh request to Kshitij",
+     "options": [
+      {
+       "id": "a",
+       "correct": true,
+       "text": "Please sign the fresh request to Kshitij too. It goes to their head of accounts at the Bhosari address on their purchase orders, stating ₹3,58,60,691 as per your books, with replies only to our office.",
+       "why": "The right person, at an address we checked ourselves, a request that states the balance, and a reply that can only come to us."
+      },
+      {
+       "id": "b",
+       "text": "Please sign the fresh request to Kshitij too. Harshad can hand it to their sales office on his next visit; it states ₹3,58,60,691 as per your books and asks their accounts team to reply to him by mail.",
+       "why": "Same route, same problem. Tamhini’s sales team must have no hand in carrying the request or the reply."
+      },
+      {
+       "id": "c",
+       "text": "Please sign the fresh request to Kshitij too. It goes to their head of accounts, states ₹3,58,60,691 as per your books, and says that if we hear nothing in seven days, we will take it as agreed.",
+       "why": "Silence is not agreement. A request that wants a reply only if they disagree is the weakest kind of confirmation, and not for a balance of ₹3.59 crore."
+      }
+     ]
+    },
+    {
+     "id": "dispatch",
+     "label": "Sending and chasing",
+     "options": [
+      {
+       "id": "a",
+       "text": "Your office can courier both requests today, and Harshad can follow up with Kshitij and collect their reply, since he speaks to their team every week.",
+       "why": "Once Tamhini sends and chases, we no longer control what goes out or what comes back."
+      },
+      {
+       "id": "b",
+       "text": "We will email both requests from Tamhini’s accounts mailbox today, so that Kshitij and the bank see they come from you and can simply reply to that mailbox.",
+       "why": "Sent from Tamhini’s mailbox, the requests bring every reply back to Tamhini. Mahesh’s signature on the letter is authority enough; the sending is ours."
+      },
+      {
+       "id": "c",
+       "correct": true,
+       "text": "We will post both requests ourselves today and send a reminder if nothing reaches us in ten days. Please ask Harshad not to take it up with Kshitij.",
+       "why": "We post the requests and the reminders, and the replies come only to us. That control is what makes a confirmation worth having."
+      }
+     ]
+    }
+   ],
+   "docs": [
+    "chat-varun",
+    "bank-cert",
+    "kshitij-fwd"
+   ]
+  },
+  {
+   "id": "t3",
+   "type": "worksheet",
+   "stage": "Fieldwork",
+   "title": "Recompute FD interest and tie it out",
+   "weight": 1,
+   "prompt": "Monday 10 May. The bank’s reply came on Friday, and Form 168 now shows its January–March rows. Recompute each deposit’s interest for 2026–27 from its terms, then tie the books to it and to Form 168: enter what the books must add, 0 where nothing. The papers are in Documents.",
+   "hints": [
+    "FD-1’s last payment was 18 March, FD-2’s last addition 12 March. Work FD-2’s days on the bank’s balance after that addition, not the ledger’s: the ledger is net of tax.",
+    "Form 168 shows what the bank paid or credited in the year, not the year’s interest income."
+   ],
+   "layout": "grid",
+   "note": "Count days from the day after the last payment or addition, to 31 March, as each deposit’s terms say. Round each figure to the rupee.",
+   "noteAt": "top",
+   "columns": [
+    {
+     "key": "k",
+     "label": "Line"
+    },
+    {
+     "key": "fd1",
+     "label": "FD-1 (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "fd2",
+     "label": "FD-2 (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "id": "r1",
+     "cells": {
+      "k": "Interest paid out or added in the year",
+      "fd1": 399750,
+      "fd2": 358151
+     }
+    },
+    {
+     "id": "r2",
+     "cells": {
+      "k": "Less: accrued at 31 March 2026",
+      "fd1": 13677,
+      "fd2": 0
+     }
+    },
+    {
+     "id": "r3",
+     "cells": {
+      "k": "Add: accrued at 31 March 2027",
+      "fd1": {
+       "input": true,
+       "answer": 14425,
+       "tolerance": 1,
+       "working": "₹60,00,000 × 6.75% × 13 ÷ 365 (19–31 March) = ₹14,424.66",
+       "sign": false
+      },
+      "fd2": {
+       "input": true,
+       "answer": 38283,
+       "tolerance": 1,
+       "working": "₹1,03,58,151 × 7.10% × 19 ÷ 365 (13–31 March) = ₹38,282.59",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "r4",
+     "cells": {
+      "k": "Interest for 2026–27",
+      "fd1": {
+       "input": true,
+       "answer": 400498,
+       "tolerance": 2,
+       "working": "₹3,99,750 − ₹13,677 + ₹14,425",
+       "sign": false,
+       "follow": "399750 − 13677 + {r3.fd1}"
+      },
+      "fd2": {
+       "input": true,
+       "answer": 396434,
+       "tolerance": 2,
+       "working": "₹3,58,151 + ₹38,283",
+       "sign": false,
+       "follow": "358151 + {r3.fd2}"
+      }
+     }
+    },
+    {
+     "id": "r5",
+     "cells": {
+      "k": "Interest in the books",
+      "fd1": 400498,
+      "fd2": 358151
+     }
+    },
+    {
+     "id": "r6",
+     "cells": {
+      "k": "Interest to add to the books",
+      "fd1": {
+       "input": true,
+       "answer": 0,
+       "tolerance": 2,
+       "working": "₹4,00,498 − ₹4,00,498",
+       "follow": "{r4.fd1} − 400498"
+      },
+      "fd2": {
+       "input": true,
+       "answer": 38283,
+       "tolerance": 2,
+       "working": "₹3,96,434 − ₹3,58,151",
+       "follow": "{r4.fd2} − 358151"
+      }
+     }
+    },
+    {
+     "id": "r7",
+     "cells": {
+      "k": "TDS in Form 168",
+      "fd1": {
+       "input": true,
+       "answer": 39975,
+       "tolerance": 1,
+       "working": "₹9,600 + ₹10,125 × 3",
+       "sign": false
+      },
+      "fd2": {
+       "input": true,
+       "answer": 39643,
+       "tolerance": 1,
+       "working": "One row: 10% of ₹3,96,434",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "r8",
+     "cells": {
+      "k": "TDS in the books",
+      "fd1": 39975,
+      "fd2": 35815
+     }
+    },
+    {
+     "id": "r9",
+     "cells": {
+      "k": "TDS to add to the books",
+      "fd1": {
+       "input": true,
+       "answer": 0,
+       "tolerance": 1,
+       "working": "₹39,975 − ₹39,975",
+       "follow": "{r7.fd1} − 39975"
+      },
+      "fd2": {
+       "input": true,
+       "answer": 3828,
+       "tolerance": 1,
+       "working": "₹39,643 − ₹35,815",
+       "follow": "{r7.fd2} − 35815"
+      }
+     }
+    }
+   ],
+   "notes": {
+    "r3.fd1": "Thirteen days, 19 to 31 March: interest runs from the day after the 18 March payment. The books already carry this ₹14,425.",
+    "r3.fd2": "Nineteen days, 13 to 31 March, on the bank’s ₹1,03,58,151 after the 12 March addition. The ledger shows less because the books took tax off at each addition; the bank takes it only on 31 March. This ₹38,283 is missing from the books.",
+    "r4.fd1": "Four payments totalling ₹3,99,750, less the ₹13,677 of last March that came with June’s payment, plus this March’s ₹14,425.",
+    "r4.fd2": "Two quarters added to the deposit, then nineteen days. It matches the bank’s interest certificate to the rupee.",
+    "r6.fd1": "Nothing. Form 168 is ₹748 short of the books: this bank deducts tax on FD-1 only when it pays, so last March’s 13 days sit in June’s row and this March’s are missing. By law it should have deducted at 31 March, as on FD-2.",
+    "r6.fd2": "Book ₹38,283 as interest accrued on FD-2 and as interest income for March.",
+    "r7.fd1": "Four rows: ₹9,600 on June’s payment, worked at the old 6.40% interest rate, then ₹10,125 a quarter.",
+    "r7.fd2": "One row in January–March: the bank deducts tax on FD-2’s whole year on 31 March.",
+    "r9.fd1": "Nothing. Form 168 and the books agree.",
+    "r9.fd2": "₹3,828 more in TDS receivable, and FD-2 down by the same amount: the bank took the tax from the deposit. It also clears the gap between FD-2 in the books and in the bank’s reply."
+   },
+   "docs": [
+    "bank-reply",
+    "int-cert",
+    "fd1-adv",
+    "fd2-rcpt",
+    "f168",
+    "led-fdint",
+    "led-tdsr",
+    "led-fd2"
+   ]
+  },
+  {
+   "id": "t4",
+   "type": "items",
+   "stage": "Review",
+   "title": "Close the confirmation tracker",
+   "weight": 2,
+   "noun": [
+    "confirmation",
+    "confirmations"
+   ],
+   "prompt": "Ten rows of the tracker are open; Varun ticked the rest. For each, say where it stands. If the reply differs, say why; if nothing came back, or nothing was sent, pick what we do next. The tracker and the March statement are under Other papers.",
+   "hints": [
+    "For each difference, find the date each side booked it: money on its way at 31 March, or an entry one side hasn’t made.",
+    "A cover returned undelivered is no reply at all. A request the client stopped was never sent."
+   ],
+   "columns": [
+    {
+     "key": "label"
+    },
+    {
+     "key": "amount",
+     "format": "inr"
+    }
+   ],
+   "fields": [
+    {
+     "id": "status",
+     "kind": "choice",
+     "label": "Where it stands",
+     "short": "Your call",
+     "gate": true,
+     "neutral": true,
+     "options": [
+      {
+       "id": "agree",
+       "label": "Agrees"
+      },
+      {
+       "id": "diff",
+       "label": "Differs"
+      },
+      {
+       "id": "none",
+       "label": "No reply"
+      },
+      {
+       "id": "notsent",
+       "label": "Not sent"
+      }
+     ]
+    },
+    {
+     "id": "cause",
+     "kind": "choice",
+     "label": "Why it differs",
+     "showIf": {
+      "status": "diff"
+     },
+     "weight": 2,
+     "buttons": true,
+     "options": [
+      {
+       "id": "transit",
+       "label": "Money in transit",
+       "short": "in transit"
+      },
+      {
+       "id": "receipt",
+       "label": "Receipt not booked",
+       "short": "receipt not booked"
+      },
+      {
+       "id": "sale",
+       "label": "Sale in wrong year",
+       "short": "sale in the wrong year"
+      },
+      {
+       "id": "bill",
+       "label": "Bill not booked",
+       "short": "bill not booked"
+      },
+      {
+       "id": "theirs",
+       "label": "Their books wrong",
+       "short": "their error"
+      }
+     ]
+    },
+    {
+     "id": "next",
+     "kind": "choice",
+     "label": "What we do next",
+     "showIf": {
+      "status": [
+       "none",
+       "notsent"
+      ]
+     },
+     "weight": 2,
+     "layout": "list",
+     "options": [
+      {
+       "id": "receipts",
+       "label": "Check receipts after 31 March, then invoices and proof of delivery for the rest",
+       "short": "receipts after 31 March, then invoices"
+      },
+      {
+       "id": "payments",
+       "label": "Check payments after 31 March and the GRNs, and search for bills not booked",
+       "short": "payments after 31 March, GRNs, unbooked bills"
+      },
+      {
+       "id": "address",
+       "label": "Find the right address ourselves, send again, and start on receipts meanwhile",
+       "short": "find the address, resend; receipts meanwhile"
+      },
+      {
+       "id": "escalate",
+       "label": "Ask Mahesh for the papers behind his reason, tell Aarti, and check receipts meanwhile",
+       "short": "papers from Mahesh; tell Aarti; receipts meanwhile"
+      }
+     ]
+    },
+    {
+     "id": "note",
+     "kind": "text",
+     "label": "Your note for the tracker",
+     "placeholder": "For example: tick to the April receipt"
+    }
+   ],
+   "items": [
+    {
+     "id": "k1",
+     "label": "Kshitij Driveline Systems · customer",
+     "short": "Kshitij",
+     "amount": 35860691,
+     "docs": [
+      "r-kshitij"
+     ],
+     "answer": {
+      "status": "agree"
+     },
+     "note": "Agrees, and this time it came to us: Kshitij’s head of accounts signed it and sent it to our office. File this one. The forward through Harshad stays out of the evidence.",
+     "docRow": {
+      "tracker": "c02"
+     }
+    },
+    {
+     "id": "k2",
+     "label": "Naik Auto Spares · customer",
+     "short": "Naik",
+     "amount": 11909232,
+     "docs": [
+      "r-naik",
+      "lr-naik"
+     ],
+     "answer": {
+      "status": "diff",
+      "cause": "sale"
+     },
+     "note": "Sale in the wrong year. The goods were to be delivered at Naik’s warehouse and got there on 5 April, as the LR shows. Until then they were Tamhini’s, so the ₹46,80,000 sale (before GST) moves to April and the goods return to closing stock.",
+     "docRow": {
+      "tracker": "c04"
+     }
+    },
+    {
+     "id": "k3",
+     "label": "Wardha Road Auto Agencies · customer",
+     "short": "Wardha",
+     "amount": 4257889,
+     "docs": [
+      "r-wardha",
+      "led-wardha"
+     ],
+     "answer": {
+      "status": "diff",
+      "cause": "transit"
+     },
+     "note": "In transit. Wardha’s cheque of 30 March reached Tamhini on 2 April, and the ledger shows it that day. Both books are right on their own dates, so there is nothing to correct. Keep the reply with the ledger page.",
+     "docRow": {
+      "tracker": "c06"
+     }
+    },
+    {
+     "id": "k4",
+     "label": "Vaigai Axle Systems · customer",
+     "short": "Vaigai",
+     "amount": 21256039,
+     "docs": [
+      "rem-vaigai"
+     ],
+     "answer": {
+      "status": "none",
+      "next": "receipts"
+     },
+     "note": "No reply after two reminders, and the courier shows them delivered, so the address works. Check receipts after 31 March against the March balance, then the invoices and proof of delivery for whatever stays unpaid.",
+     "docRow": {
+      "tracker": "c08"
+     }
+    },
+    {
+     "id": "k5",
+     "label": "Lothal Motors · customer",
+     "short": "Lothal",
+     "amount": 22678749,
+     "docs": [
+      "r-lothal",
+      "led-lothal"
+     ],
+     "answer": {
+      "status": "diff",
+      "cause": "receipt"
+     },
+     "note": "Receipt not booked. Lothal paid ₹12,64,000 by NEFT on 30 March and it is in the March statement; Tamhini booked it on 6 April. Their reply proves the BRS item from the other side.",
+     "docRow": {
+      "tracker": "c09"
+     }
+    },
+    {
+     "id": "k6",
+     "label": "Golconda Motor Spares · customer",
+     "short": "Golconda",
+     "amount": 2958570,
+     "docs": [
+      "ret-golconda",
+      "gst-golconda"
+     ],
+     "answer": {
+      "status": "none",
+      "next": "address"
+     },
+     "note": "A cover returned undelivered counts as no reply. The GST record shows a new address, so the one in Tamhini’s master is out of date. Send again to the address we found, and start on receipts and invoices meanwhile.",
+     "docRow": {
+      "tracker": "c14"
+     }
+    },
+    {
+     "id": "k7",
+     "label": "Kilimani Motor Spares · customer, Kenya",
+     "short": "Kilimani",
+     "amount": 10805200,
+     "docs": [
+      "mail-kilimani"
+     ],
+     "answer": {
+      "status": "notsent",
+      "next": "escalate"
+     },
+     "note": "Not sent, at Mahesh’s request. A mail to Varun isn’t enough to drop a ₹1.08 crore balance. Ask Mahesh for the papers behind his reason, tell me today, and check Kilimani’s receipts and shipping bills meanwhile. If the reason doesn’t hold, Rehan takes it further.",
+     "docRow": {
+      "tracker": "c15"
+     }
+    },
+    {
+     "id": "k8",
+     "label": "Rankala Forgings · supplier",
+     "short": "Rankala",
+     "amount": 21138017,
+     "docs": [
+      "r-rankala",
+      "grn-rankala",
+      "led-rankala"
+     ],
+     "answer": {
+      "status": "diff",
+      "cause": "bill"
+     },
+     "note": "Bill not booked. The GRN says Rankala’s blanks came in at 7:40 pm on 31 March, so the ₹58,340 bill is March’s; Tamhini booked it on 1 April. Creditors and purchases are short: it’s Bill 15 of the year-end vouching, already on Rehan’s list.",
+     "docRow": {
+      "tracker": "v03"
+     }
+    },
+    {
+     "id": "k9",
+     "label": "Bhadar Forge and Engineering · supplier",
+     "short": "Bhadar",
+     "amount": 21909784,
+     "docs": [
+      "rem-bhadar"
+     ],
+     "answer": {
+      "status": "none",
+      "next": "payments"
+     },
+     "note": "No reply from a supplier. Check what Tamhini paid them after 31 March and the GRNs around the year-end. With creditors the worry is bills nobody booked, so search for those too. That’s why we choose suppliers to confirm by purchases, not balances.",
+     "docRow": {
+      "tracker": "v04"
+     }
+    },
+    {
+     "id": "k10",
+     "label": "Kudalwadi Heat Treaters · supplier",
+     "short": "Kudalwadi",
+     "amount": 6120472,
+     "docs": [
+      "r-kudal"
+     ],
+     "answer": {
+      "status": "agree"
+     },
+     "note": "Agrees. Their request to pay the December and January bills doesn’t change the balance. But the letterhead carries an Udyam number, so I’ll take those bills to the review of dues to micro and small enterprises.",
+     "docRow": {
+      "tracker": "v14"
+     }
+    }
+   ],
+   "docs": [
+    "tracker",
+    "stmt-mar",
+    "r-kshitij",
+    "r-naik",
+    "lr-naik",
+    "r-wardha",
+    "led-wardha",
+    "rem-vaigai",
+    "r-lothal",
+    "led-lothal",
+    "ret-golconda",
+    "gst-golconda",
+    "mail-kilimani",
+    "r-rankala",
+    "grn-rankala",
+    "led-rankala",
+    "rem-bhadar",
+    "r-kudal"
+   ]
+  }
+ ],
+ "wrap": {
+  "from": "aarti",
+  "text": "Three BRS entries, Naik’s ₹46,80,000 sale moving to April and FD-2’s 19 days go on Rehan’s list. Lothal’s reply shows the same ₹12,64,000 from their side, so the BRS and the tracker agree. I’ll raise Kilimani with Rehan today; the certificate Mahesh collected stays out of the evidence."
+ },
+ "wrapPartial": {
+  "from": "aarti",
+  "text": "Not ready for Rehan yet. Most misses come from reading a paper on its own, not beside the one that proves it. I’ll go through the file with you after lunch."
+ },
+ "wrapRetry": {
+  "from": "aarti",
+  "text": "Put each cheque and deposit beside the April line that clears it, same number and amount, and read the date on any that never cleared. Then ask of every reply whether it reached us directly, and of every difference what each side booked, and when."
+ },
+ "passNeeds": [
+  {
+   "task": "t1",
+   "min": 0.6,
+   "note": "You need more of the seven BRS calls right to pass."
+  },
+  {
+   "task": "t4",
+   "min": 0.6,
+   "note": "You need more of the ten tracker calls right to pass."
+  }
+ ],
+ "model": {
+  "intro": "Three of the seven BRS items need an entry at 31 March: the stale Shirur cheque, the bank charges and Lothal’s NEFT. Both papers that came through the client are replaced by our own requests. The books miss FD-2’s last 19 days of interest and the ₹3,828 of tax the bank took from it. Of the ten open confirmations, two agree, four differ for four different reasons, three need alternative work and one was never sent.",
+  "blocks": [
+   {
+    "type": "table",
+    "columns": [
+     {
+      "key": "i",
+      "label": "BRS item"
+     },
+     {
+      "key": "a",
+      "label": "In the bank statement"
+     },
+     {
+      "key": "e",
+      "label": "Entry at 31 March"
+     }
+    ],
+    "rows": [
+     {
+      "i": "Cheque 418806 · Moshi",
+      "a": "Paid 5 April, ₹2,92,793",
+      "e": "None"
+     },
+     {
+      "i": "Cheque 418811 · Talegaon",
+      "a": "Paid 8 April, ₹1,71,532",
+      "e": "None"
+     },
+     {
+      "i": "Cheque 418814 · Nighojkar",
+      "a": "Paid 2 April, ₹30,160",
+      "e": "None"
+     },
+     {
+      "i": "Cheque 417652 · Shirur",
+      "a": "Not there; dated 26 November",
+      "e": "Reverse: cash credit down ₹44,660, Shirur up ₹44,660"
+     },
+     {
+      "i": "Bilal’s deposit",
+      "a": "Credited 2 April, ₹30,28,057",
+      "e": "None"
+     },
+     {
+      "i": "Locker rent",
+      "a": "Debited 31 March, ₹2,360 (March page)",
+      "e": "Bank charges up ₹2,360, cash credit up ₹2,360"
+     },
+     {
+      "i": "Lothal’s NEFT",
+      "a": "Credited 30 March, ₹12,64,000 (March page)",
+      "e": "Cash credit down ₹12,64,000, Lothal down ₹12,64,000"
+     }
+    ]
+   },
+   {
+    "type": "text",
+    "text": "The cash credit after the three entries, worked from both ends:"
+   },
+   {
+    "type": "list",
+    "items": [
+     "Books: ₹8,70,33,730 − ₹44,660 + ₹2,360 − ₹12,64,000 = ₹8,57,27,430 overdrawn.",
+     "Bank: ₹8,82,61,002 + ₹4,94,485 of cheques still with their payees − ₹30,28,057 of Bilal’s cheque = ₹8,57,27,430."
+    ]
+   },
+   {
+    "type": "table",
+    "columns": [
+     {
+      "key": "p",
+      "label": "Confirmation"
+     },
+     {
+      "key": "r",
+      "label": "Where it stands"
+     },
+     {
+      "key": "n",
+      "label": "What happens next"
+     }
+    ],
+    "rows": [
+     {
+      "p": "Kshitij",
+      "r": "Agrees, direct this time",
+      "n": "File it; the forward stays out"
+     },
+     {
+      "p": "Naik",
+      "r": "₹55,22,400 less: sale in the wrong year",
+      "n": "The ₹46,80,000 sale moves to April; the goods go back into stock"
+     },
+     {
+      "p": "Wardha",
+      "r": "₹11,83,210 less: cheque in transit",
+      "n": "Nothing to correct; tick the 2 April receipt"
+     },
+     {
+      "p": "Vaigai",
+      "r": "No reply after two reminders",
+      "n": "Receipts after 31 March, then invoices and delivery proof"
+     },
+     {
+      "p": "Lothal",
+      "r": "₹12,64,000 less: receipt not booked",
+      "n": "The BRS entry corrects it"
+     },
+     {
+      "p": "Golconda",
+      "r": "Returned undelivered",
+      "n": "New address from the GST record; resend; receipts meanwhile"
+     },
+     {
+      "p": "Kilimani",
+      "r": "Not sent at Mahesh’s request",
+      "n": "The papers behind his reason; to Aarti and Rehan"
+     },
+     {
+      "p": "Rankala",
+      "r": "₹58,340 more: bill not booked",
+      "n": "Creditors and purchases come up"
+     },
+     {
+      "p": "Bhadar",
+      "r": "No reply after two reminders",
+      "n": "Payments after 31 March, GRNs, search for unbooked bills"
+     },
+     {
+      "p": "Kudalwadi",
+      "r": "Agrees",
+      "n": "File it; its unpaid bills go to the micro and small dues review"
+     }
+    ]
+   },
+   {
+    "type": "text",
+    "text": "The FD-2 entry for 31 March:"
+   },
+   {
+    "type": "list",
+    "items": [
+     "Interest accrued on fixed deposits ₹38,283 debit; interest on fixed deposits ₹38,283 credit.",
+     "TDS receivable ₹3,828 debit; fixed deposit FD-2 ₹3,828 credit. FD-2 then shows the bank’s ₹1,03,18,508."
+    ]
+   },
+   {
+    "type": "note",
+    "from": "aarti",
+    "text": "Most finds in this section came from putting one paper beside another: the BRS beside April’s statement, the books beside Form 168. The certificate and Kshitij’s forward matched to the rupee and still couldn’t be used, because they came through Tamhini."
+   }
+  ]
+ },
+ "principles": [
+  "A BRS item clears in the next statement with the same number and amount, or it needs an entry or an answer.",
+  "A confirmation counts only when it reaches us straight from the party; one that passed through the client is a lead, never a confirmation.",
+  "No reply means alternative work, never a tick. A difference means finding why: money on its way needs no entry; a wrong or missing entry is put right."
+ ],
+ "earned": {
+  "clause": "traced {brs} bank reconciliation items to the next statement; tracked {conf} balance confirmations[[, explained {diff} {diff|difference|differences}]][[ and planned alternatives for {alt} {alt|non-reply|non-replies}]][[; recomputed FD interest against the tax-credit statement{fd1|}{fd2|}{tds1|}{tds2|}]]",
+  "counts": {
+   "brs": {
+    "kind": "items",
+    "task": "t1",
+    "answered": "gate"
+   },
+   "conf": {
+    "kind": "items",
+    "task": "t4",
+    "answered": "gate"
+   },
+   "diff": {
+    "kind": "itemsWhere",
+    "task": "t4",
+    "field": "status",
+    "equals": "diff",
+    "withRight": "cause"
+   },
+   "alt": {
+    "kind": "itemsWhere",
+    "task": "t4",
+    "field": "status",
+    "equals": "none",
+    "withRight": "next"
+   },
+   "esc": {
+    "kind": "itemsWhere",
+    "task": "t4",
+    "field": "status",
+    "equals": "notsent",
+    "withRight": "next"
+   },
+   "fd1": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "r4",
+    "col": "fd1"
+   },
+   "fd2": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "r4",
+    "col": "fd2"
+   },
+   "tds1": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "r7",
+    "col": "fd1"
+   },
+   "tds2": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "r7",
+    "col": "fd2"
+   }
+  },
+  "fallback": "traced {brs} bank reconciliation items to the next statement; tracked {conf} balance confirmations"
+ },
+ "interview": [
+  {
+   "q": "The client’s accountant hands you the bank’s balance certificate. Will you accept it?",
+   "checking": "Whether you know why only a reply sent straight to the auditor counts.",
+   "outline": [
+    "No. It’s addressed to the client and came through them: not the bank’s reply to us.",
+    "I’d send our request on the client’s letterhead, signed by them, with replies only to our firm.",
+    "In the simulation the bank’s reply showed FD-2 under lien and a ₹1.20 crore guarantee; the certificate didn’t."
+   ]
+  },
+  {
+   "q": "A debtor doesn’t reply to your confirmation. What do you do?",
+   "checking": "Whether you know the alternative work when a confirmation never comes back.",
+   "outline": [
+    "Check the address myself and send a reminder; a letter returned undelivered also counts as no reply.",
+    "Then receipts after year-end against that balance, and invoices with proof of delivery for the rest.",
+    "In the simulation I updated the tracker[[ and planned alternatives for {alt} {alt|non-reply|non-replies}]][[; I escalated a client’s refusal{esc|}]]."
+   ]
+  }
+ ]
+}

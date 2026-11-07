@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <meta name="theme-color" content="#ffffff">
+    <title>Reader | My Student Club</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/ca-resource/read/reader.css?v=1">
+    <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
+    <link rel="shortcut icon" href="https://www.mystudentclub.com/favicon.ico">
+</head>
+<body>
+    <header class="rd-bar">
+        <a class="rd-logo" href="/learning-management-system/" aria-label="My Student Club courses">
+            <img class="rd-logo-full" src="/articleship-program/shared/msc-logo.svg" alt="My Student Club" width="132" height="26">
+            <img class="rd-logo-mark" src="/articleship-program/shared/msc-symbol.svg" alt="My Student Club" width="28" height="28">
+        </a>
+        <h1 class="rd-title" id="rd-title"></h1>
+        <div class="rd-tools">
+            <button class="rd-icon" id="rd-outline-btn" type="button" aria-label="Contents" aria-expanded="false" hidden>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+            </button>
+            <button class="rd-icon" id="rd-search-btn" type="button" aria-label="Search" aria-expanded="false">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+            </button>
+            <div class="rd-pager">
+                <input id="rd-page" type="text" inputmode="numeric" pattern="[0-9]*" value="1" aria-label="Page">
+                <span>/ <span id="rd-total">–</span></span>
+            </div>
+            <button class="rd-icon rd-zoom" id="rd-zoom-out" type="button" aria-label="Zoom out">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg>
+            </button>
+            <button class="rd-icon rd-zoom" id="rd-zoom-in" type="button" aria-label="Zoom in">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+        </div>
+    </header>
+
+    <form class="rd-search" id="rd-search" role="search" hidden>
+        <input id="rd-search-input" type="search" placeholder="Search this file" autocomplete="off" enterkeyhint="search" aria-label="Search this file">
+        <span class="rd-search-count" id="rd-search-count" aria-live="polite"></span>
+        <button class="rd-icon" id="rd-search-prev" type="button" aria-label="Previous match" disabled>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 15 6-6 6 6"/></svg>
+        </button>
+        <button class="rd-icon" id="rd-search-next" type="submit" aria-label="Next match">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+    </form>
+
+    <aside class="rd-outline" id="rd-outline" hidden aria-label="Contents">
+        <div class="rd-outline-head">
+            <strong>Contents</strong>
+            <button class="rd-icon" id="rd-outline-close" type="button" aria-label="Close contents">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+            </button>
+        </div>
+        <nav id="rd-outline-list"></nav>
+    </aside>
+
+    <main class="rd-doc" id="rd-doc" tabindex="-1"></main>
+
+    <div class="rd-state" id="rd-state" role="status">
+        <div class="rd-spinner" aria-hidden="true"></div>
+        <p id="rd-state-text">Opening…</p>
+        <a class="rd-btn" id="rd-state-action" href="/learning-management-system/" hidden>Back to your course</a>
+    </div>
+
+    <div class="rd-toast" id="rd-toast" role="status" aria-live="polite"></div>
+
+    <script src="/scripts/vendor/pdf.min.js"></script>
+    <script>pdfjsLib.GlobalWorkerOptions.workerSrc = '/scripts/vendor/pdf.worker.min.js';</script>
+    <script src="/scripts/supabase.js"></script>
+    <script src="/scripts/supabase-init.js"></script>
+    <script src="/ca-resource/read/reader-core.js?v=2"></script>
+    <script src="/ca-resource/read/reader.js?v=2"></script>
+</body>
+</html>

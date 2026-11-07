@@ -814,6 +814,10 @@
                     var ci = c.indexOf(':');
                     if (ci > 0 && ci <= 40)
                         return '<li><b>' + esc(c.slice(0, ci + 1)) + '</b>' + esc(c.slice(ci + 1)) + '</li>';
+                    /* a longer title ("<Domain> Work Simulation, MSC Articleship Program | <Month Year>:") stays in the
+                       line's flow, so the bullet reads as one sentence */
+                    if (ci > 40 && ci <= 90)
+                        return '<li><span><b>' + esc(c.slice(0, ci + 1)) + '</b>' + esc(c.slice(ci + 1)) + '</span></li>';
                     return '<li>' + esc(c) + '</li>';
                 }
                 /* object format { name, issuer } — **Name:** Issuer */
@@ -821,13 +825,17 @@
                 var issuer = (c.issuer || '').trim();
                 if (!name && !issuer) return '';
                 var ci = name.indexOf(':');
-                if (ci > 0 && ci <= 40) {
+                if (ci > 0 && ci <= 90) {
                     var boldPart = name.slice(0, ci + 1);
                     var rest = name.slice(ci + 1).trim();
                     if (issuer) rest = rest ? rest + ' (' + issuer + ')' : issuer;
-                    return '<li><b>' + esc(boldPart) + '</b>' + (rest ? ' ' + esc(rest) : '') + '</li>';
+                    var line = '<b>' + esc(boldPart) + '</b>' + (rest ? ' ' + esc(rest) : '');
+                    /* a longer title ("<Domain> Work Simulation, MSC Articleship Program | <Month Year>:") stays in the
+                       line's flow, so the bullet reads as one sentence */
+                    return '<li>' + (ci > 40 ? '<span>' + line + '</span>' : line) + '</li>';
                 }
-                return '<li><b>' + esc(name) + ':</b>' + (issuer ? ' ' + esc(issuer) : '') + '</li>';
+                /* no stray colon when there is nothing after the name */
+                return '<li><b>' + esc(name) + (issuer ? ':' : '') + '</b>' + (issuer ? ' ' + esc(issuer) : '') + '</li>';
             }).filter(Boolean).join('');
         }
         function scaleToFit() {

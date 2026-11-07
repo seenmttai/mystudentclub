@@ -1,0 +1,4196 @@
+{
+ "id": "acc-1",
+ "domain": "accounting",
+ "number": 2,
+ "title": "Close the books",
+ "minutes": 40,
+ "learn": [
+  "How a BRS splits timing items from entries the books still need",
+  "Which close entries a year-end needs, and how to clear suspense",
+  "How a trial balance becomes Schedule III lines"
+ ],
+ "do": [
+  "Reconcile the bank account at 31 March",
+  "Pass the year-end entries on Snehal’s close list",
+  "Tally the trial balance and draft the Schedule III figures"
+ ],
+ "case": {
+  "role": "First-year article assistant, lent to the accounting desk for a client’s year-end",
+  "client": "Kaapi Kala Roasters Private Limited, Baner: a coffee roastery with two cafés and an online store. Our desk keeps its books; another firm audits them.",
+  "team": "Snehal Patil (accounting senior) and Varun Shetty (second-year article); Kunal Mehrotra, the tax senior, sends the tax figure; at Kaapi Kala, the founders Meghna Rao and Arjun Hegde",
+  "goal": "Close Kaapi Kala’s 2026–27 books so that Meghna sees draft statements before the auditors arrive on 19 April.",
+  "period": "Year ended 31 March 2027",
+  "where": "Accounting desk, Bapat Venkatesh & Co., Prabhat Road · Friday 9 April 2027"
+ },
+ "brief": {
+  "from": "snehal",
+  "time": "10:10 am",
+  "messages": [
+   "Kaapi Kala’s year-end close is yours. Start with the 31 March bank reconciliation, then my close list: the entries, and the ₹2,24,000 Varun parked in suspense.",
+   "TB and Schedule III figures by Tuesday, please. Their auditors start on Monday 19 April, and Meghna wants to see a draft first."
+  ]
+ },
+ "documents": [
+  {
+   "id": "close-list",
+   "type": "table",
+   "style": "sheet",
+   "title": "Snehal’s close list · March 2027",
+   "tab": "Close list",
+   "kindLabel": "Desk checklist",
+   "icon": "clipboard",
+   "sheetName": "Close Mar-27",
+   "freeze": true,
+   "columns": [
+    {
+     "key": "item",
+     "label": "Item"
+    },
+    {
+     "key": "papers",
+     "label": "Papers",
+     "wrap": true
+    },
+    {
+     "key": "who",
+     "label": "Who"
+    },
+    {
+     "key": "st",
+     "label": "Status"
+    }
+   ],
+   "rows": [
+    {
+     "item": "Bank reconciliation, Satpura current account, 31 March",
+     "papers": "Bank book; March and April statements",
+     "who": "You",
+     "st": "Open"
+    },
+    {
+     "item": "Two NEFTs Varun parked in suspense (18 and 22 March)",
+     "papers": "Suspense ledger; the senders’ mails",
+     "who": "You",
+     "st": "Open"
+    },
+    {
+     "item": "Bank’s own entries the BRS turns up",
+     "papers": "Bank papers",
+     "who": "You",
+     "st": "Open"
+    },
+    {
+     "item": "March power bills, came 8 April",
+     "papers": "Arjun’s photos; bill summary",
+     "who": "You",
+     "st": "Open"
+    },
+    {
+     "item": "March salaries",
+     "papers": "Salary batch; Salary payable ledger",
+     "who": "You",
+     "st": "Open"
+    },
+    {
+     "item": "Shop and stock policy, paid 1 October",
+     "papers": "Policy schedule; Insurance ledger",
+     "who": "You",
+     "st": "Open"
+    },
+    {
+     "item": "Depreciation 2026–27",
+     "papers": "Fixed asset schedule",
+     "who": "You",
+     "st": "Open"
+    },
+    {
+     "item": "Cheque 000418",
+     "papers": "Counterfoil; April statement",
+     "who": "You",
+     "st": "Open"
+    },
+    {
+     "item": "FeastFleet orders of 30 and 31 March",
+     "papers": "Payout of 2 April; FeastFleet ledger",
+     "who": "You",
+     "st": "Open"
+    },
+    {
+     "item": "Closing stock, count of 31 March: ₹9,38,000",
+     "papers": "Count sheet",
+     "who": "Snehal",
+     "st": "Done"
+    },
+    {
+     "item": "Audit fee and tax provision",
+     "papers": "Audit fee letter; Kunal’s tax working",
+     "who": "Snehal",
+     "st": "After Kunal"
+    },
+    {
+     "item": "TB summary and Schedule III figures",
+     "papers": "TB; loan, creditors and stock papers",
+     "who": "You",
+     "st": "Open"
+    }
+   ],
+   "notes": [
+    "Desk rule: a cost of the year whose bill is still to come (or came after 31 March) is credited to Expenses payable, never to the supplier’s own ledger. The one exception: a charge a platform keeps back from its payout is credited to that platform’s own ledger, as every payout is booked.",
+    "Prepaid and accrued amounts go by whole months.",
+    "New ledgers made for this close: Expenses payable (Current Liabilities), Prepaid insurance (Current Assets) and Depreciation (Indirect Expenses).",
+    "Work in rupees. I round the final statements to ₹ lakh."
+   ],
+   "annotations": [
+    {
+     "kind": "sign",
+     "text": "S. Patil",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "tb-pre",
+   "type": "table",
+   "style": "tally",
+   "title": "Trial balance before the close · 6 April",
+   "tab": "TB before close",
+   "kindLabel": "Tally trial balance",
+   "company": {
+    "name": "Kaapi Kala Roasters Private Limited",
+    "address": "Baner, Pune · books for 2026–27"
+   },
+   "ledger": "Trial Balance (detailed)",
+   "subtitle": "Printed 06-Apr-2027 · groups in bold, their ledgers below",
+   "period": "1-Apr-2026 to 31-Mar-2027",
+   "check": false,
+   "columns": [
+    {
+     "key": "p",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "p": "Inventory – opening (1 April 2026)",
+     "dr": 782000,
+     "cr": null,
+     "_class": "subtotal"
+    },
+    {
+     "p": "Capital Account",
+     "dr": null,
+     "cr": 1300000,
+     "_class": "subtotal"
+    },
+    {
+     "p": "Share capital",
+     "dr": null,
+     "cr": 1000000,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Reserves and surplus (opening)",
+     "dr": null,
+     "cr": 300000,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Loans (Liability)",
+     "dr": null,
+     "cr": 684000,
+     "_class": "subtotal"
+    },
+    {
+     "p": "Vehicle loan – Satpura Bank",
+     "dr": null,
+     "cr": 684000,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Current Liabilities",
+     "dr": null,
+     "cr": 1975200,
+     "_class": "subtotal"
+    },
+    {
+     "p": "Sundry creditors",
+     "dr": null,
+     "cr": 1362600,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "GST payable (net)",
+     "dr": null,
+     "cr": 64400,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "PF, ESI and professional tax payable",
+     "dr": null,
+     "cr": 114000,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "TDS payable",
+     "dr": null,
+     "cr": 38200,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Salary payable",
+     "dr": null,
+     "cr": 396000,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Fixed Assets",
+     "dr": 4088000,
+     "cr": null,
+     "_class": "subtotal"
+    },
+    {
+     "p": "Roasting machine and café equipment (gross)",
+     "dr": 4680000,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Accumulated depreciation",
+     "dr": null,
+     "cr": 1264000,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Delivery van (gross)",
+     "dr": 920000,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Accumulated depreciation – van",
+     "dr": null,
+     "cr": 248000,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Current Assets",
+     "dr": 1767500,
+     "cr": null,
+     "_class": "subtotal"
+    },
+    {
+     "p": "Security deposits (café premises)",
+     "dr": 600000,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Sundry debtors",
+     "dr": 436800,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Cash on hand",
+     "dr": 38400,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Satpura Bank – current account",
+     "dr": 692300,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Sales Accounts",
+     "dr": null,
+     "cr": 31800000,
+     "_class": "subtotal"
+    },
+    {
+     "p": "Sales – cafés",
+     "dr": null,
+     "cr": 19460000,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Sales – online and wholesale",
+     "dr": null,
+     "cr": 12340000,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Purchase Accounts",
+     "dr": 15120000,
+     "cr": null,
+     "_class": "subtotal"
+    },
+    {
+     "p": "Purchases – green coffee",
+     "dr": 9840000,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Purchases – milk, food and packaging",
+     "dr": 5280000,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Indirect Expenses",
+     "dr": 14225700,
+     "cr": null,
+     "_class": "subtotal"
+    },
+    {
+     "p": "Salaries and wages",
+     "dr": 6420000,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Rent – cafés and roastery",
+     "dr": 3600000,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "GST on café rent (reverse charge)",
+     "dr": 518400,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Electricity",
+     "dr": 984000,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Delivery and courier",
+     "dr": 374000,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Aggregator and payment-gateway commission",
+     "dr": 1186000,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Marketing",
+     "dr": 229600,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Repairs and maintenance",
+     "dr": 362000,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Insurance",
+     "dr": 144000,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Interest on vehicle loan",
+     "dr": 72000,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Professional fees",
+     "dr": 180000,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Bank charges",
+     "dr": 46000,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Miscellaneous",
+     "dr": 109700,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Suspense A/c",
+     "dr": null,
+     "cr": 224000,
+     "_class": "subtotal"
+    },
+    {
+     "p": "Grand Total",
+     "dr": 35983200,
+     "cr": 35983200,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "bank-book",
+   "type": "table",
+   "style": "tally",
+   "title": "Bank book · Satpura current account, 26–31 March",
+   "tab": "Bank book",
+   "company": {
+    "name": "Kaapi Kala Roasters Private Limited",
+    "address": "Baner, Pune · books for 2026–27"
+   },
+   "ledger": "Ledger: Satpura Bank – current account",
+   "subtitle": "Group: Bank Accounts · a/c 11020128801554 · Baner branch",
+   "period": "26-Mar-2027 to 31-Mar-2027",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars",
+     "wrap": true
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "vn",
+     "label": "Vch no."
+    }
+   ],
+   "rows": [
+    {
+     "date": "26-03-2027",
+     "part": "Opening balance",
+     "vn": "",
+     "dr": 684175,
+     "cr": null,
+     "_class": "muted"
+    },
+    {
+     "_id": "b01",
+     "date": "26-03-2027",
+     "part": "Card and UPI sales of 26 March (net)",
+     "vn": "RV 1241",
+     "dr": 63900,
+     "cr": null
+    },
+    {
+     "_id": "b02",
+     "date": "27-03-2027",
+     "part": "Card and UPI sales of 27 March (net)",
+     "vn": "RV 1242",
+     "dr": 58700,
+     "cr": null
+    },
+    {
+     "_id": "b03",
+     "date": "28-03-2027",
+     "part": "Card and UPI sales of 28 March (net)",
+     "vn": "RV 1243",
+     "dr": 61200,
+     "cr": null
+    },
+    {
+     "_id": "b04",
+     "date": "29-03-2027",
+     "part": "Card and UPI sales of 29 March (net)",
+     "vn": "RV 1244",
+     "dr": 44800,
+     "cr": null
+    },
+    {
+     "_id": "b05",
+     "date": "29-03-2027",
+     "part": "Mallandur Coffee · chq 000417",
+     "vn": "PV 0612",
+     "dr": null,
+     "cr": 118000
+    },
+    {
+     "_id": "b06",
+     "date": "29-03-2027",
+     "part": "Hinjewadi Pouch Works · NEFT",
+     "vn": "PV 0613",
+     "dr": null,
+     "cr": 38500
+    },
+    {
+     "_id": "b07",
+     "date": "30-03-2027",
+     "part": "Card and UPI sales of 30 March (net)",
+     "vn": "RV 1245",
+     "dr": 47600,
+     "cr": null
+    },
+    {
+     "_id": "b08",
+     "date": "30-03-2027",
+     "part": "FeastFleet · payout, orders of 23 to 29 March",
+     "vn": "RV 1246",
+     "dr": 119230,
+     "cr": null
+    },
+    {
+     "_id": "b09",
+     "date": "30-03-2027",
+     "part": "Rent, KP café, March, less TDS ₹15,000 · chq 000418",
+     "vn": "PV 0614",
+     "dr": null,
+     "cr": 135000
+    },
+    {
+     "_id": "b10",
+     "date": "30-03-2027",
+     "part": "Rent, Baner café, March, less TDS ₹9,000 · NEFT",
+     "vn": "PV 0615",
+     "dr": null,
+     "cr": 81000
+    },
+    {
+     "_id": "b11",
+     "date": "31-03-2027",
+     "part": "Card and UPI sales of 31 March (net)",
+     "vn": "RV 1247",
+     "dr": 62800,
+     "cr": null
+    },
+    {
+     "_id": "b12",
+     "date": "31-03-2027",
+     "part": "Rent, roastery, March, less TDS ₹6,000 · NEFT",
+     "vn": "PV 0616",
+     "dr": null,
+     "cr": 54000
+    },
+    {
+     "_id": "b13",
+     "date": "31-03-2027",
+     "part": "Vehicle loan EMI, March",
+     "vn": "PV 0617",
+     "dr": null,
+     "cr": 23605
+    },
+    {
+     "date": "31-03-2027",
+     "part": "Closing balance (Dr)",
+     "vn": "",
+     "dr": null,
+     "cr": 692300,
+     "_class": "muted"
+    },
+    {
+     "date": "",
+     "part": "Total",
+     "vn": "",
+     "dr": 1142405,
+     "cr": 1142405,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "stmt-mar",
+   "type": "table",
+   "style": "bank",
+   "title": "Bank statement · 27–31 March",
+   "tab": "March statement",
+   "brand": "Satpura Bank Ltd",
+   "docName": "Statement of account",
+   "subtitle": "Baner branch · current account 11020128801554 · Kaapi Kala Roasters Private Limited",
+   "meta": [
+    {
+     "label": "Period",
+     "value": "27-03-2027 to 31-03-2027"
+    },
+    {
+     "label": "IFSC",
+     "value": "STPB0002061"
+    },
+    {
+     "label": "Closing balance",
+     "value": "₹7,75,320 Cr"
+    }
+   ],
+   "columns": [
+    {
+     "key": "dt",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars",
+     "wrap": true
+    },
+    {
+     "key": "dr",
+     "label": "Withdrawal (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Deposit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "bal",
+     "label": "Balance, Cr (₹)",
+     "format": "inr",
+     "runningFrom": {
+      "plus": "cr",
+      "minus": "dr"
+     }
+    }
+   ],
+   "rows": [
+    {
+     "dt": "27-03-2027",
+     "part": "Balance brought forward",
+     "dr": null,
+     "cr": null,
+     "bal": 684175,
+     "_class": "muted"
+    },
+    {
+     "_id": "pos26",
+     "dt": "27-03-2027",
+     "part": "NEFT CR POS SETTL MID220461 BATCH 260327",
+     "dr": null,
+     "cr": 63900,
+     "bal": 748075
+    },
+    {
+     "_id": "pos27",
+     "dt": "28-03-2027",
+     "part": "NEFT CR POS SETTL MID220461 BATCH 270327",
+     "dr": null,
+     "cr": 58700,
+     "bal": 806775
+    },
+    {
+     "_id": "pos28",
+     "dt": "29-03-2027",
+     "part": "NEFT CR POS SETTL MID220461 BATCH 280327",
+     "dr": null,
+     "cr": 61200,
+     "bal": 867975
+    },
+    {
+     "_id": "ipdl",
+     "dt": "29-03-2027",
+     "part": "NEFT CR IPDL SD REFUND CONS 170412905548",
+     "dr": null,
+     "cr": 12000,
+     "bal": 879975
+    },
+    {
+     "_id": "pouch",
+     "dt": "29-03-2027",
+     "part": "NEFT DR HINJEWADI POUCH WORKS",
+     "dr": 38500,
+     "cr": null,
+     "bal": 841475
+    },
+    {
+     "_id": "pos29",
+     "dt": "30-03-2027",
+     "part": "NEFT CR POS SETTL MID220461 BATCH 290327",
+     "dr": null,
+     "cr": 44800,
+     "bal": 886275
+    },
+    {
+     "_id": "ff0330",
+     "dt": "30-03-2027",
+     "part": "NEFT CR FEASTFLEET TECH PAYOUT FF-STL-0330",
+     "dr": null,
+     "cr": 119230,
+     "bal": 1005505
+    },
+    {
+     "_id": "kale",
+     "dt": "30-03-2027",
+     "part": "NEFT DR MOHAN KALE RENT MAR27",
+     "dr": 81000,
+     "cr": null,
+     "bal": 924505
+    },
+    {
+     "_id": "pos30",
+     "dt": "31-03-2027",
+     "part": "NEFT CR POS SETTL MID220461 BATCH 300327",
+     "dr": null,
+     "cr": 47600,
+     "bal": 972105
+    },
+    {
+     "_id": "q417",
+     "dt": "31-03-2027",
+     "part": "CTS CHQ PAID 000417 MALLANDUR COFFEE",
+     "dr": 118000,
+     "cr": null,
+     "bal": 854105
+    },
+    {
+     "_id": "lagad",
+     "dt": "31-03-2027",
+     "part": "NEFT DR SUNITA LAGAD RENT MAR27",
+     "dr": 54000,
+     "cr": null,
+     "bal": 800105
+    },
+    {
+     "_id": "emi",
+     "dt": "31-03-2027",
+     "part": "VEH LOAN EMI 641900072263 MAR27",
+     "dr": 23605,
+     "cr": null,
+     "bal": 776500
+    },
+    {
+     "_id": "posrent",
+     "dt": "31-03-2027",
+     "part": "POS TERMINAL RENT MAR27 TID 22046108",
+     "dr": 1180,
+     "cr": null,
+     "bal": 775320
+    }
+   ]
+  },
+  {
+   "id": "stmt-apr",
+   "type": "table",
+   "style": "bank",
+   "title": "Bank statement · 1–8 April",
+   "tab": "April statement",
+   "brand": "Satpura Bank Ltd",
+   "docName": "Statement of account",
+   "subtitle": "Baner branch · current account 11020128801554 · Kaapi Kala Roasters Private Limited",
+   "meta": [
+    {
+     "label": "Period",
+     "value": "01-04-2027 to 08-04-2027"
+    },
+    {
+     "label": "IFSC",
+     "value": "STPB0002061"
+    },
+    {
+     "label": "Closing balance",
+     "value": "₹7,16,920 Cr"
+    }
+   ],
+   "columns": [
+    {
+     "key": "dt",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars",
+     "wrap": true
+    },
+    {
+     "key": "dr",
+     "label": "Withdrawal (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Deposit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "bal",
+     "label": "Balance, Cr (₹)",
+     "format": "inr",
+     "runningFrom": {
+      "plus": "cr",
+      "minus": "dr"
+     }
+    }
+   ],
+   "rows": [
+    {
+     "dt": "01-04-2027",
+     "part": "Balance brought forward",
+     "dr": null,
+     "cr": null,
+     "bal": 775320,
+     "_class": "muted"
+    },
+    {
+     "_id": "pos31",
+     "dt": "01-04-2027",
+     "part": "NEFT CR POS SETTL MID220461 BATCH 310327",
+     "dr": null,
+     "cr": 62800,
+     "bal": 838120
+    },
+    {
+     "_id": "pos01",
+     "dt": "02-04-2027",
+     "part": "NEFT CR POS SETTL MID220461 BATCH 010427",
+     "dr": null,
+     "cr": 52300,
+     "bal": 890420
+    },
+    {
+     "_id": "ff0402",
+     "dt": "02-04-2027",
+     "part": "NEFT CR FEASTFLEET TECH PAYOUT FF-STL-0402",
+     "dr": null,
+     "cr": 38600,
+     "bal": 929020
+    },
+    {
+     "_id": "pos02",
+     "dt": "03-04-2027",
+     "part": "NEFT CR POS SETTL MID220461 BATCH 020427",
+     "dr": null,
+     "cr": 57400,
+     "bal": 986420
+    },
+    {
+     "_id": "pos03",
+     "dt": "04-04-2027",
+     "part": "NEFT CR POS SETTL MID220461 BATCH 030427",
+     "dr": null,
+     "cr": 59900,
+     "bal": 1046320
+    },
+    {
+     "_id": "pos04",
+     "dt": "05-04-2027",
+     "part": "NEFT CR POS SETTL MID220461 BATCH 040427",
+     "dr": null,
+     "cr": 61500,
+     "bal": 1107820
+    },
+    {
+     "_id": "q418",
+     "dt": "05-04-2027",
+     "part": "CTS CHQ PAID 000418 ASHOK SATHAYE",
+     "dr": 135000,
+     "cr": null,
+     "bal": 972820
+    },
+    {
+     "_id": "pos05",
+     "dt": "06-04-2027",
+     "part": "NEFT CR POS SETTL MID220461 BATCH 050427",
+     "dr": null,
+     "cr": 43200,
+     "bal": 1016020
+    },
+    {
+     "_id": "sal",
+     "dt": "06-04-2027",
+     "part": "BULK NEFT SALARY MAR27 BATCH SAL-MAR27",
+     "dr": 396000,
+     "cr": null,
+     "bal": 620020
+    },
+    {
+     "_id": "pos06",
+     "dt": "07-04-2027",
+     "part": "NEFT CR POS SETTL MID220461 BATCH 060427",
+     "dr": null,
+     "cr": 46800,
+     "bal": 666820
+    },
+    {
+     "_id": "pos07",
+     "dt": "08-04-2027",
+     "part": "NEFT CR POS SETTL MID220461 BATCH 070427",
+     "dr": null,
+     "cr": 50100,
+     "bal": 716920
+    }
+   ]
+  },
+  {
+   "id": "led-susp",
+   "type": "table",
+   "style": "tally",
+   "arrives": "t2",
+   "title": "Suspense ledger",
+   "tab": "Suspense ledger",
+   "company": {
+    "name": "Kaapi Kala Roasters Private Limited",
+    "address": "Baner, Pune · books for 2026–27"
+   },
+   "ledger": "Ledger: Suspense A/c",
+   "subtitle": "Group: Suspense A/c",
+   "period": "1-Apr-2026 to 31-Mar-2027",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars",
+     "wrap": true
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "vn",
+     "label": "Vch no."
+    }
+   ],
+   "rows": [
+    {
+     "date": "18-03-2027",
+     "part": "Satpura Bank · NEFT from NILIMA APTE, purpose not known",
+     "vn": "RV 1198",
+     "dr": null,
+     "cr": 100000
+    },
+    {
+     "date": "22-03-2027",
+     "part": "Satpura Bank · NEFT from PASHAN COWORK HUB, no invoice quoted",
+     "vn": "RV 1219",
+     "dr": null,
+     "cr": 124000
+    },
+    {
+     "date": "31-03-2027",
+     "part": "Closing balance (Cr)",
+     "vn": "",
+     "dr": 224000,
+     "cr": null,
+     "_class": "muted"
+    },
+    {
+     "date": "",
+     "part": "Total",
+     "vn": "",
+     "dr": 224000,
+     "cr": 224000,
+     "_class": "total"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Parked both, will ask Meghna. –V",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": -2
+    }
+   ]
+  },
+  {
+   "id": "mail-apte",
+   "type": "letter",
+   "style": "email",
+   "arrives": "t2",
+   "title": "Nilima Apte’s mail · 18 March",
+   "tab": "Landlord’s mail",
+   "from": {
+    "name": "Meghna Rao",
+    "email": "meghna.rao@email.com"
+   },
+   "to": [
+    {
+     "name": "Snehal Patil",
+     "email": "snehal.patil@email.com"
+    }
+   ],
+   "date": "Thu, 8 Apr 2027, 6:05 pm",
+   "subject": "Fwd: Shop 2 deposit",
+   "body": [
+    "Snehal, this is the ₹1 lakh that came in March. Sorry, I should have sent it then.",
+    "Meghna",
+    "",
+    "---------- Forwarded message ----------",
+    "From: Nilima Apte · Thu, 18 Mar 2027, 11:40 am",
+    "Dear Meghna, as agreed when you handed over Shop 2, Lane 6 on 27 February, I have returned the full security deposit of ₹1,00,000 by NEFT today to your Satpura Bank account. Please confirm when you see it. All the best at the new place.",
+    "Regards, Nilima Apte"
+   ]
+  },
+  {
+   "id": "mail-pashan",
+   "type": "letter",
+   "style": "email",
+   "arrives": "t2",
+   "title": "Pashan Cowork Hub · Payment advice",
+   "tab": "Payment advice",
+   "from": {
+    "name": "Priya Deshmukh",
+    "email": "priya.deshmukh@email.com"
+   },
+   "to": [
+    {
+     "name": "Meghna Rao",
+     "email": "meghna.rao@email.com"
+    }
+   ],
+   "date": "Mon, 22 Mar 2027, 3:18 pm",
+   "subject": "Payment advice",
+   "body": [
+    "Dear Meghna,",
+    "We have paid ₹1,24,000 by NEFT today against your invoice KKR/WS/26-27/0311 dated 20-02-2027 for the roasted coffee supplied to our three centres in February. UTR N081270433318.",
+    "Please acknowledge."
+   ],
+   "sign": {
+    "name": "Priya Deshmukh",
+    "role": "Accounts",
+    "for": "Pashan Cowork Hub Private Limited"
+   }
+  },
+  {
+   "id": "led-pashan",
+   "type": "table",
+   "style": "tally",
+   "arrives": "t2",
+   "title": "Pashan Cowork Hub · Debtor ledger",
+   "tab": "Debtor ledger",
+   "company": {
+    "name": "Kaapi Kala Roasters Private Limited",
+    "address": "Baner, Pune · books for 2026–27"
+   },
+   "ledger": "Ledger: Pashan Cowork Hub Private Limited",
+   "subtitle": "Group: Sundry Debtors (wholesale)",
+   "period": "1-Jan-2027 to 31-Mar-2027",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars",
+     "wrap": true
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "vn",
+     "label": "Vch no."
+    }
+   ],
+   "rows": [
+    {
+     "date": "20-01-2027",
+     "part": "Sales · invoice KKR/WS/26-27/0287",
+     "vn": "SV 0287",
+     "dr": 116000,
+     "cr": null
+    },
+    {
+     "date": "12-02-2027",
+     "part": "Satpura Bank · NEFT for invoice 0287",
+     "vn": "RV 1077",
+     "dr": null,
+     "cr": 116000
+    },
+    {
+     "date": "20-02-2027",
+     "part": "Sales · invoice KKR/WS/26-27/0311",
+     "vn": "SV 0311",
+     "dr": 124000,
+     "cr": null
+    },
+    {
+     "date": "31-03-2027",
+     "part": "Closing balance (Dr)",
+     "vn": "",
+     "dr": null,
+     "cr": 124000,
+     "_class": "muted"
+    },
+    {
+     "date": "",
+     "part": "Total",
+     "vn": "",
+     "dr": 240000,
+     "cr": 240000,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "deposits",
+   "type": "table",
+   "style": "sheet",
+   "arrives": "t2",
+   "title": "Security deposits · break-up",
+   "tab": "Deposits",
+   "kindLabel": "Desk schedule",
+   "sheetName": "Deposits",
+   "freeze": true,
+   "columns": [
+    {
+     "key": "what",
+     "label": "Deposit",
+     "wrap": true
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "what": "Baner café, Shop 3 and 4, Sakal Nagar Road, lease to 31-03-2029 · Mohan Kale (landlord)",
+     "amt": 150000
+    },
+    {
+     "what": "Koregaon Park café, Shop 7, Lane 5, lease 01-03-2027 to 28-02-2030 · Ashok Sathaye (landlord)",
+     "amt": 200000
+    },
+    {
+     "what": "Koregaon Park café, Shop 2, Lane 6 (vacated 27-02-2027) · Nilima Apte (landlord)",
+     "amt": 100000
+    },
+    {
+     "what": "Roastery, Survey no. 41, Baner, lease to 30-06-2029 · Sunita Lagad (landlord)",
+     "amt": 120000
+    },
+    {
+     "what": "Electricity, roastery meter 1704 1290 5548 (disconnected 27-02-2027) · Indrayani Power",
+     "amt": 12000
+    },
+    {
+     "what": "Electricity, roastery three-phase meter and both cafés, refundable when a connection closes · Indrayani Power",
+     "amt": 18000
+    },
+    {
+     "what": "Ledger: Security deposits (café premises)",
+     "amt": 600000,
+     "_class": "total"
+    }
+   ],
+   "notes": [
+    "Per the books at 31 March 2027, before the close. The electricity deposits sit in the same ledger. None of the three leases ends before 2029."
+   ]
+  },
+  {
+   "id": "discom-letter",
+   "type": "letter",
+   "style": "letter",
+   "arrives": "t2",
+   "title": "Indrayani Power · Deposit refund letter",
+   "tab": "Refund letter",
+   "letterhead": {
+    "name": "Indrayani Power Distribution Ltd",
+    "address": "Baner subdivision, Pashan–Baner Link Road, Pune 411045"
+   },
+   "ref": "IPDL/BNR/SDR/2026-27/0887",
+   "date": "30-03-2027",
+   "to": {
+    "name": "Kaapi Kala Roasters Private Limited",
+    "address": "Roastery, Survey no. 41, Baner, Pune 411045"
+   },
+   "subject": "Refund of security deposit: consumer no. 1704 1290 5548",
+   "body": [
+    "Dear Consumer,",
+    "The above connection was permanently disconnected on 27-02-2027 at your request, and its final bill dated 05-03-2027 has been paid in full.",
+    "The security deposit of ₹12,000 held against the connection has been refunded by NEFT on 29-03-2027 to your Satpura Bank account ending 1554.",
+    "This is a computer-generated letter and needs no signature."
+   ],
+   "sign": {
+    "hand": false,
+    "closing": "Assistant Accountant, Baner subdivision"
+   },
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "KAAPI KALA ROASTERS\nRECEIVED 05 APR 2027",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": 5
+    }
+   ]
+  },
+  {
+   "id": "chat-arjun",
+   "type": "chat",
+   "arrives": "t2",
+   "title": "Arjun · March power bills",
+   "tab": "Arjun’s photos",
+   "with": "Arjun Hegde",
+   "date": "Thursday 8 April",
+   "me": "Snehal Patil",
+   "messages": [
+    {
+     "from": "arjun",
+     "time": "12:41 pm",
+     "text": "[Photo] Roastery light bill, March. ₹52,600"
+    },
+    {
+     "from": "arjun",
+     "time": "12:41 pm",
+     "text": "[Photo] Baner café, March. ₹21,300"
+    },
+    {
+     "from": "arjun",
+     "time": "12:42 pm",
+     "text": "[Photo] KP café, March. ₹18,500. All three came today, due on the 26th."
+    },
+    {
+     "from": "Snehal Patil",
+     "time": "12:58 pm",
+     "text": "Got them, thanks. I’ll take the summary off the portal too."
+    }
+   ]
+  },
+  {
+   "id": "elec-bills",
+   "type": "table",
+   "style": "portal",
+   "arrives": "t2",
+   "title": "Indrayani Power · March bills",
+   "tab": "Bill summary",
+   "kindLabel": "Portal print",
+   "brand": "Indrayani Power Distribution Ltd",
+   "heading": "Consumer bills · billing month March 2027",
+   "meta": [
+    {
+     "label": "Account holder",
+     "value": "Kaapi Kala Roasters Private Limited"
+    },
+    {
+     "label": "Printed on",
+     "value": "08/04/2027, 13:05"
+    }
+   ],
+   "columns": [
+    {
+     "key": "p",
+     "label": "Premises · consumer no.",
+     "wrap": true
+    },
+    {
+     "key": "amt",
+     "label": "Bill amount (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "per",
+     "label": "Reading period"
+    },
+    {
+     "key": "u",
+     "label": "Units",
+     "format": "int"
+    },
+    {
+     "key": "bd",
+     "label": "Bill date"
+    },
+    {
+     "key": "dd",
+     "label": "Due date"
+    }
+   ],
+   "rows": [
+    {
+     "p": "Roastery, Baner (three-phase) · 1704 1290 7713",
+     "per": "01-03-2027 to 31-03-2027",
+     "u": 4880,
+     "bd": "06-04-2027",
+     "dd": "26-04-2027",
+     "amt": 52600
+    },
+    {
+     "p": "Baner café · 1704 1291 0326",
+     "per": "01-03-2027 to 31-03-2027",
+     "u": 1960,
+     "bd": "06-04-2027",
+     "dd": "26-04-2027",
+     "amt": 21300
+    },
+    {
+     "p": "Koregaon Park café, Lane 5 · 1704 1311 4502",
+     "per": "01-03-2027 to 31-03-2027",
+     "u": 1700,
+     "bd": "06-04-2027",
+     "dd": "26-04-2027",
+     "amt": 18500
+    },
+    {
+     "p": "Total",
+     "per": "",
+     "u": null,
+     "bd": "",
+     "dd": "",
+     "amt": 92400,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "bulk-sal",
+   "type": "card",
+   "style": "slip",
+   "arrives": "t2",
+   "title": "March salaries · Bank batch",
+   "tab": "Salary batch",
+   "issuer": "Satpura Bank Ltd · Corporate net banking",
+   "heading": "Bulk payment batch: status report",
+   "number": "SAL-MAR27",
+   "fields": [
+    {
+     "label": "Account",
+     "value": "Kaapi Kala Roasters Private Limited, current account 11020128801554"
+    },
+    {
+     "label": "Purpose",
+     "value": "Salaries for March 2027"
+    },
+    {
+     "label": "Payees",
+     "value": "26"
+    },
+    {
+     "label": "Amount",
+     "value": "₹3,96,000"
+    },
+    {
+     "label": "Value date",
+     "value": "06-04-2027"
+    },
+    {
+     "label": "Status",
+     "value": "Processed: 26 of 26 credited"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "March salary paid in April. Provide 3.96 L as payable? –V",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "led-salpay",
+   "type": "table",
+   "style": "tally",
+   "arrives": "t2",
+   "title": "Salary payable ledger",
+   "tab": "Salary payable",
+   "company": {
+    "name": "Kaapi Kala Roasters Private Limited",
+    "address": "Baner, Pune · books for 2026–27"
+   },
+   "ledger": "Ledger: Salary payable",
+   "subtitle": "Group: Current Liabilities",
+   "period": "1-Mar-2027 to 31-Mar-2027",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars",
+     "wrap": true
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "vn",
+     "label": "Vch no."
+    }
+   ],
+   "rows": [
+    {
+     "date": "01-03-2027",
+     "part": "Opening balance (February salaries)",
+     "vn": "",
+     "dr": null,
+     "cr": 388500,
+     "_class": "muted"
+    },
+    {
+     "date": "05-03-2027",
+     "part": "Satpura Bank · February salaries",
+     "vn": "PV 0544",
+     "dr": 388500,
+     "cr": null
+    },
+    {
+     "date": "31-03-2027",
+     "part": "Salaries and wages · March salaries, payable 6 April",
+     "vn": "JV 0218",
+     "dr": null,
+     "cr": 396000
+    },
+    {
+     "date": "31-03-2027",
+     "part": "Closing balance (Cr)",
+     "vn": "",
+     "dr": 396000,
+     "cr": null,
+     "_class": "muted"
+    },
+    {
+     "date": "",
+     "part": "Total",
+     "vn": "",
+     "dr": 784500,
+     "cr": 784500,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "policy",
+   "type": "card",
+   "style": "slip",
+   "arrives": "t2",
+   "title": "Shop and stock policy · Schedule",
+   "tab": "Policy schedule",
+   "issuer": "Tapti General Insurance Company Ltd · Shivajinagar office, Pune",
+   "heading": "Policy schedule: shop and stock insurance",
+   "number": "TGI/PN/SHP/2026/0418831",
+   "fields": [
+    {
+     "label": "Insured",
+     "value": "Kaapi Kala Roasters Private Limited"
+    },
+    {
+     "label": "Locations",
+     "value": "Roastery, Baner; cafés at Baner and Koregaon Park"
+    },
+    {
+     "label": "Cover",
+     "value": "Fire and allied perils, burglary, machinery breakdown, loss of profits after a fire, public liability at both cafés"
+    },
+    {
+     "label": "Sum insured",
+     "value": "Equipment ₹45,00,000 · stock ₹10,00,000 · loss of profits ₹1,20,00,000 · public liability ₹1,00,00,000"
+    },
+    {
+     "label": "Period",
+     "value": "From 00:00 hours on 01-10-2026 to midnight on 30-09-2027"
+    },
+    {
+     "label": "Premium",
+     "value": "₹1,44,000, paid by NEFT on 01-10-2026 (receipt R/26/774102)"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "PREMIUM RECEIVED",
+     "color": "blue",
+     "at": "top-right",
+     "rotate": 5
+    }
+   ]
+  },
+  {
+   "id": "led-ins",
+   "type": "table",
+   "style": "tally",
+   "arrives": "t2",
+   "title": "Insurance ledger",
+   "tab": "Insurance ledger",
+   "company": {
+    "name": "Kaapi Kala Roasters Private Limited",
+    "address": "Baner, Pune · books for 2026–27"
+   },
+   "ledger": "Ledger: Insurance",
+   "subtitle": "Group: Indirect Expenses",
+   "period": "1-Apr-2026 to 31-Mar-2027",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars",
+     "wrap": true
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "vn",
+     "label": "Vch no."
+    }
+   ],
+   "rows": [
+    {
+     "date": "01-10-2026",
+     "part": "Satpura Bank · Tapti General, policy 0418831",
+     "vn": "PV 0311",
+     "dr": 144000,
+     "cr": null
+    },
+    {
+     "date": "31-03-2027",
+     "part": "Closing balance (Dr)",
+     "vn": "",
+     "dr": null,
+     "cr": 144000,
+     "_class": "muted"
+    },
+    {
+     "date": "",
+     "part": "Total",
+     "vn": "",
+     "dr": 144000,
+     "cr": 144000,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "fa-sched",
+   "type": "table",
+   "style": "sheet",
+   "arrives": "t2",
+   "title": "Fixed assets and depreciation · 2026–27",
+   "tab": "FA schedule",
+   "kindLabel": "Desk schedule",
+   "sheetName": "FA 26-27",
+   "freeze": true,
+   "columns": [
+    {
+     "key": "a",
+     "label": "Asset"
+    },
+    {
+     "key": "g",
+     "label": "Cost, 1-4-26 (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "o",
+     "label": "Dep. to 31-3-26 (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "y",
+     "label": "Dep. 2026–27 (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "n",
+     "label": "Net, 31-3-27 (₹)",
+     "format": "inr",
+     "check": "g - o - y"
+    }
+   ],
+   "rows": [
+    {
+     "a": "Roasting machine and café equipment",
+     "g": 4680000,
+     "o": 1264000,
+     "y": 624000,
+     "n": 2792000
+    },
+    {
+     "a": "Delivery van",
+     "g": 920000,
+     "o": 248000,
+     "y": 115000,
+     "n": 557000
+    },
+    {
+     "a": "Total",
+     "g": 5600000,
+     "o": 1512000,
+     "y": 739000,
+     "n": 3349000,
+     "_class": "total"
+    }
+   ],
+   "notes": [
+    "Straight line at the company’s rates: equipment over 7½ years, the van over 8. No additions or sales this year.",
+    "Depreciation for 2026–27 is not yet in the books."
+   ]
+  },
+  {
+   "id": "cf-000418",
+   "type": "card",
+   "style": "slip",
+   "handwritten": true,
+   "arrives": "t2",
+   "title": "Cheque 000418 · Counterfoil",
+   "tab": "Counterfoil",
+   "issuer": "Satpura Bank Ltd · Baner · a/c 11020128801554",
+   "heading": "Cheque counterfoil",
+   "number": "000418",
+   "fields": [
+    {
+     "label": "Date",
+     "value": "30/3/27"
+    },
+    {
+     "label": "To",
+     "value": "Ashok Sathaye"
+    },
+    {
+     "label": "For",
+     "value": "KP café rent, March, less TDS"
+    },
+    {
+     "label": "Rs.",
+     "value": "1,35,000/-"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Not in the March statement. Reverse it? –V",
+     "color": "blue",
+     "at": "inline",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "ff-payout",
+   "type": "table",
+   "style": "portal",
+   "arrives": "t2",
+   "title": "FeastFleet · Payout of 2 April",
+   "tab": "Payout",
+   "kindLabel": "Partner portal print",
+   "brand": "FeastFleet Partner Hub",
+   "heading": "Payout statement · FF-STL-0402",
+   "meta": [
+    {
+     "label": "Partner",
+     "value": "Kaapi Kala (Baner, Koregaon Park)"
+    },
+    {
+     "label": "Orders",
+     "value": "30-03-2027 to 31-03-2027"
+    },
+    {
+     "label": "Paid on",
+     "value": "02-04-2027 by NEFT"
+    }
+   ],
+   "columns": [
+    {
+     "key": "p",
+     "label": "Particulars"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "o30",
+     "p": "Order value, 30-03-2027 (64 orders)",
+     "amt": 21400
+    },
+    {
+     "_id": "o31",
+     "p": "Order value, 31-03-2027 (71 orders)",
+     "amt": 23600
+    },
+    {
+     "_id": "ov",
+     "p": "Total order value",
+     "amt": 45000,
+     "_class": "subtotal",
+     "_sumOf": [
+      "o30",
+      "o31"
+     ]
+    },
+    {
+     "_id": "cm",
+     "p": "Less: commission and fees",
+     "amt": 6400
+    },
+    {
+     "_id": "net",
+     "p": "Net payout",
+     "amt": 38600,
+     "_class": "total",
+     "_sumOf": [
+      "ov",
+      "-cm"
+     ]
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Book 38,600 as April sales? –V",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": -2
+    }
+   ]
+  },
+  {
+   "id": "led-feast",
+   "type": "table",
+   "style": "tally",
+   "arrives": "t2",
+   "title": "FeastFleet · Ledger",
+   "tab": "FeastFleet ledger",
+   "company": {
+    "name": "Kaapi Kala Roasters Private Limited",
+    "address": "Baner, Pune · books for 2026–27"
+   },
+   "ledger": "Ledger: FeastFleet (orders)",
+   "subtitle": "Group: Sundry Debtors",
+   "period": "26-Mar-2027 to 31-Mar-2027",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars",
+     "wrap": true
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "vn",
+     "label": "Vch no."
+    }
+   ],
+   "rows": [
+    {
+     "date": "26-03-2027",
+     "part": "Opening balance (orders of 23–25 March)",
+     "vn": "",
+     "dr": 58900,
+     "cr": null,
+     "_class": "muted"
+    },
+    {
+     "date": "26-03-2027",
+     "part": "Sales – cafés · orders of 26-03",
+     "vn": "SV FF26",
+     "dr": 21300,
+     "cr": null
+    },
+    {
+     "date": "27-03-2027",
+     "part": "Sales – cafés · orders of 27-03",
+     "vn": "SV FF27",
+     "dr": 19900,
+     "cr": null
+    },
+    {
+     "date": "28-03-2027",
+     "part": "Sales – cafés · orders of 28-03",
+     "vn": "SV FF28",
+     "dr": 18900,
+     "cr": null
+    },
+    {
+     "date": "29-03-2027",
+     "part": "Sales – cafés · orders of 29-03",
+     "vn": "SV FF29",
+     "dr": 20000,
+     "cr": null
+    },
+    {
+     "date": "30-03-2027",
+     "part": "Satpura Bank · payout FF-STL-0330",
+     "vn": "RV 1246",
+     "dr": null,
+     "cr": 119230
+    },
+    {
+     "date": "30-03-2027",
+     "part": "Aggregator commission · payout FF-STL-0330",
+     "vn": "RV 1246",
+     "dr": null,
+     "cr": 19770
+    },
+    {
+     "date": "30-03-2027",
+     "part": "Sales – cafés · orders of 30-03",
+     "vn": "SV FF30",
+     "dr": 21400,
+     "cr": null
+    },
+    {
+     "date": "31-03-2027",
+     "part": "Sales – cafés · orders of 31-03",
+     "vn": "SV FF31",
+     "dr": 23600,
+     "cr": null
+    },
+    {
+     "date": "31-03-2027",
+     "part": "Closing balance (Dr)",
+     "vn": "",
+     "dr": null,
+     "cr": 45000,
+     "_class": "muted"
+    },
+    {
+     "date": "",
+     "part": "Total",
+     "vn": "",
+     "dr": 184000,
+     "cr": 184000,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "jv-list",
+   "type": "table",
+   "style": "tally",
+   "arrives": "t3",
+   "title": "Journal register · close entries as posted",
+   "tab": "Journal register",
+   "company": {
+    "name": "Kaapi Kala Roasters Private Limited",
+    "address": "Baner, Pune · books for 2026–27"
+   },
+   "ledger": "Journal Register",
+   "subtitle": "All dated 31-03-2027 · reviewed and posted by Snehal Patil on 09-04-2027",
+   "period": "1-Apr-2026 to 31-Mar-2027",
+   "columns": [
+    {
+     "key": "vn",
+     "label": "Vch no."
+    },
+    {
+     "key": "part",
+     "label": "Particulars",
+     "wrap": true
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "vn": "JV 0231",
+     "part": "Bank charges Dr",
+     "dr": 1180,
+     "cr": null
+    },
+    {
+     "vn": "",
+     "part": "To Satpura Bank – current account",
+     "dr": null,
+     "cr": 1180,
+     "_indent": 1
+    },
+    {
+     "vn": "",
+     "part": "(POS terminal rent, March, debited by the bank on 31-03-2027)",
+     "dr": null,
+     "cr": null,
+     "_class": "muted"
+    },
+    {
+     "vn": "JV 0232",
+     "part": "Satpura Bank – current account Dr",
+     "dr": 12000,
+     "cr": null
+    },
+    {
+     "vn": "",
+     "part": "To Security deposits (café premises)",
+     "dr": null,
+     "cr": 12000,
+     "_indent": 1
+    },
+    {
+     "vn": "",
+     "part": "(Refund of deposit, old roastery meter 1704 1290 5548, credited 29-03-2027)",
+     "dr": null,
+     "cr": null,
+     "_class": "muted"
+    },
+    {
+     "vn": "JV 0233",
+     "part": "Suspense A/c Dr",
+     "dr": 100000,
+     "cr": null
+    },
+    {
+     "vn": "",
+     "part": "To Security deposits (café premises)",
+     "dr": null,
+     "cr": 100000,
+     "_indent": 1
+    },
+    {
+     "vn": "",
+     "part": "(Deposit on Shop 2, Lane 6, returned by Nilima Apte; NEFT 18-03-2027)",
+     "dr": null,
+     "cr": null,
+     "_class": "muted"
+    },
+    {
+     "vn": "JV 0234",
+     "part": "Suspense A/c Dr",
+     "dr": 124000,
+     "cr": null
+    },
+    {
+     "vn": "",
+     "part": "To Pashan Cowork Hub Private Limited",
+     "dr": null,
+     "cr": 124000,
+     "_indent": 1
+    },
+    {
+     "vn": "",
+     "part": "(NEFT of 22-03-2027 against invoice KKR/WS/26-27/0311)",
+     "dr": null,
+     "cr": null,
+     "_class": "muted"
+    },
+    {
+     "vn": "JV 0235",
+     "part": "Electricity Dr",
+     "dr": 92400,
+     "cr": null
+    },
+    {
+     "vn": "",
+     "part": "To Expenses payable",
+     "dr": null,
+     "cr": 92400,
+     "_indent": 1
+    },
+    {
+     "vn": "",
+     "part": "(March bills, three meters, billed 06-04-2027)",
+     "dr": null,
+     "cr": null,
+     "_class": "muted"
+    },
+    {
+     "vn": "JV 0236",
+     "part": "Prepaid insurance Dr",
+     "dr": 72000,
+     "cr": null
+    },
+    {
+     "vn": "",
+     "part": "To Insurance",
+     "dr": null,
+     "cr": 72000,
+     "_indent": 1
+    },
+    {
+     "vn": "",
+     "part": "(Policy 0418831, 01-10-2026 to 30-09-2027: April–September 2027)",
+     "dr": null,
+     "cr": null,
+     "_class": "muted"
+    },
+    {
+     "vn": "JV 0237",
+     "part": "Depreciation Dr",
+     "dr": 739000,
+     "cr": null
+    },
+    {
+     "vn": "",
+     "part": "To Accumulated depreciation",
+     "dr": null,
+     "cr": 624000,
+     "_indent": 1
+    },
+    {
+     "vn": "",
+     "part": "To Accumulated depreciation – van",
+     "dr": null,
+     "cr": 115000,
+     "_indent": 1
+    },
+    {
+     "vn": "",
+     "part": "(As per the fixed asset schedule, 2026–27)",
+     "dr": null,
+     "cr": null,
+     "_class": "muted"
+    },
+    {
+     "vn": "JV 0238",
+     "part": "Aggregator and payment-gateway commission Dr",
+     "dr": 6400,
+     "cr": null
+    },
+    {
+     "vn": "",
+     "part": "To FeastFleet (orders)",
+     "dr": null,
+     "cr": 6400,
+     "_indent": 1
+    },
+    {
+     "vn": "",
+     "part": "(Commission on orders of 30–31 March, payout FF-STL-0402)",
+     "dr": null,
+     "cr": null,
+     "_class": "muted"
+    },
+    {
+     "vn": "",
+     "part": "Total",
+     "dr": 1146980,
+     "cr": 1146980,
+     "_class": "total"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Checked and posted. Salaries and 000418: no entry. –S.P.",
+     "color": "green",
+     "at": "bottom-left",
+     "rotate": -2
+    }
+   ]
+  },
+  {
+   "id": "tb-adj",
+   "type": "table",
+   "style": "tally",
+   "arrives": "t4",
+   "title": "Trial balance after the close",
+   "tab": "TB after close",
+   "kindLabel": "Tally trial balance",
+   "company": {
+    "name": "Kaapi Kala Roasters Private Limited",
+    "address": "Baner, Pune · books for 2026–27"
+   },
+   "ledger": "Trial Balance (detailed)",
+   "subtitle": "Printed 09-Apr-2027, after JV 0231 to JV 0238 · before the audit fee and tax",
+   "period": "1-Apr-2026 to 31-Mar-2027",
+   "check": false,
+   "columns": [
+    {
+     "key": "p",
+     "label": "Particulars"
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "p": "Inventory – opening (1 April 2026)",
+     "dr": 782000,
+     "cr": null,
+     "_class": "subtotal"
+    },
+    {
+     "p": "Capital Account",
+     "dr": null,
+     "cr": 1300000,
+     "_class": "subtotal"
+    },
+    {
+     "p": "Share capital",
+     "dr": null,
+     "cr": 1000000,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Reserves and surplus (opening)",
+     "dr": null,
+     "cr": 300000,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Loans (Liability)",
+     "dr": null,
+     "cr": 684000,
+     "_class": "subtotal"
+    },
+    {
+     "p": "Vehicle loan – Satpura Bank",
+     "dr": null,
+     "cr": 684000,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Current Liabilities",
+     "dr": null,
+     "cr": 2067600,
+     "_class": "subtotal"
+    },
+    {
+     "p": "Sundry creditors",
+     "dr": null,
+     "cr": 1362600,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "GST payable (net)",
+     "dr": null,
+     "cr": 64400,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "PF, ESI and professional tax payable",
+     "dr": null,
+     "cr": 114000,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "TDS payable",
+     "dr": null,
+     "cr": 38200,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Salary payable",
+     "dr": null,
+     "cr": 396000,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Expenses payable",
+     "dr": null,
+     "cr": 92400,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Fixed Assets",
+     "dr": 3349000,
+     "cr": null,
+     "_class": "subtotal"
+    },
+    {
+     "p": "Roasting machine and café equipment (gross)",
+     "dr": 4680000,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Accumulated depreciation",
+     "dr": null,
+     "cr": 1888000,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Delivery van (gross)",
+     "dr": 920000,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Accumulated depreciation – van",
+     "dr": null,
+     "cr": 363000,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Current Assets",
+     "dr": 1607920,
+     "cr": null,
+     "_class": "subtotal"
+    },
+    {
+     "p": "Security deposits (café premises)",
+     "dr": 488000,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Sundry debtors",
+     "dr": 306400,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Cash on hand",
+     "dr": 38400,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Satpura Bank – current account",
+     "dr": 703120,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Prepaid insurance",
+     "dr": 72000,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Sales Accounts",
+     "dr": null,
+     "cr": 31800000,
+     "_class": "subtotal"
+    },
+    {
+     "p": "Sales – cafés",
+     "dr": null,
+     "cr": 19460000,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Sales – online and wholesale",
+     "dr": null,
+     "cr": 12340000,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Purchase Accounts",
+     "dr": 15120000,
+     "cr": null,
+     "_class": "subtotal"
+    },
+    {
+     "p": "Purchases – green coffee",
+     "dr": 9840000,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Purchases – milk, food and packaging",
+     "dr": 5280000,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Indirect Expenses",
+     "dr": 14992680,
+     "cr": null,
+     "_class": "subtotal"
+    },
+    {
+     "p": "Salaries and wages",
+     "dr": 6420000,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Rent – cafés and roastery",
+     "dr": 3600000,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "GST on café rent (reverse charge)",
+     "dr": 518400,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Electricity",
+     "dr": 1076400,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Delivery and courier",
+     "dr": 374000,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Aggregator and payment-gateway commission",
+     "dr": 1192400,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Marketing",
+     "dr": 229600,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Repairs and maintenance",
+     "dr": 362000,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Insurance",
+     "dr": 72000,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Interest on vehicle loan",
+     "dr": 72000,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Professional fees",
+     "dr": 180000,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Bank charges",
+     "dr": 47180,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Miscellaneous",
+     "dr": 109700,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Depreciation",
+     "dr": 739000,
+     "cr": null,
+     "_indent": 1,
+     "_class": "muted"
+    },
+    {
+     "p": "Suspense A/c",
+     "dr": "–",
+     "cr": null,
+     "_class": "subtotal"
+    },
+    {
+     "p": "Grand Total",
+     "dr": 35851600,
+     "cr": 35851600,
+     "_class": "total"
+    }
+   ]
+  },
+  {
+   "id": "loan-sched",
+   "type": "table",
+   "style": "bank",
+   "arrives": "t4",
+   "title": "Vehicle loan · Repayment schedule",
+   "tab": "Loan schedule",
+   "brand": "Satpura Bank Ltd",
+   "docName": "Repayment schedule",
+   "subtitle": "Baner branch · vehicle loan 641900072263 · Kaapi Kala Roasters Private Limited · hypothecation of delivery van MH 12 TK 4417",
+   "meta": [
+    {
+     "label": "Rate",
+     "value": "9.00% a year, reducing balance"
+    },
+    {
+     "label": "EMI",
+     "value": "₹23,605, debited on the last day of each month"
+    },
+    {
+     "label": "Balance after the March 2027 EMI",
+     "value": "₹6,84,000"
+    }
+   ],
+   "columns": [
+    {
+     "key": "d",
+     "label": "EMI date"
+    },
+    {
+     "key": "emi",
+     "label": "EMI (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "int",
+     "label": "Interest (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "prin",
+     "label": "Principal (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "bal",
+     "label": "Balance (₹)",
+     "format": "inr",
+     "runningFrom": {
+      "plus": null,
+      "minus": "prin"
+     }
+    }
+   ],
+   "rows": [
+    {
+     "d": "31-03-2027",
+     "emi": null,
+     "int": null,
+     "prin": null,
+     "bal": 684000,
+     "_class": "muted"
+    },
+    {
+     "d": "30-04-2027",
+     "emi": 23605,
+     "int": 5130,
+     "prin": 18475,
+     "bal": 665525
+    },
+    {
+     "d": "31-05-2027",
+     "emi": 23605,
+     "int": 4991,
+     "prin": 18614,
+     "bal": 646911
+    },
+    {
+     "d": "30-06-2027",
+     "emi": 23605,
+     "int": 4852,
+     "prin": 18753,
+     "bal": 628158
+    },
+    {
+     "d": "31-07-2027",
+     "emi": 23605,
+     "int": 4711,
+     "prin": 18894,
+     "bal": 609264
+    },
+    {
+     "d": "31-08-2027",
+     "emi": 23605,
+     "int": 4569,
+     "prin": 19036,
+     "bal": 590228
+    },
+    {
+     "d": "30-09-2027",
+     "emi": 23605,
+     "int": 4427,
+     "prin": 19178,
+     "bal": 571050
+    },
+    {
+     "d": "31-10-2027",
+     "emi": 23605,
+     "int": 4283,
+     "prin": 19322,
+     "bal": 551728
+    },
+    {
+     "d": "30-11-2027",
+     "emi": 23605,
+     "int": 4138,
+     "prin": 19467,
+     "bal": 532261
+    },
+    {
+     "d": "31-12-2027",
+     "emi": 23605,
+     "int": 3992,
+     "prin": 19613,
+     "bal": 512648
+    },
+    {
+     "d": "31-01-2028",
+     "emi": 23605,
+     "int": 3845,
+     "prin": 19760,
+     "bal": 492888
+    },
+    {
+     "d": "29-02-2028",
+     "emi": 23605,
+     "int": 3697,
+     "prin": 19908,
+     "bal": 472980
+    },
+    {
+     "d": "31-03-2028",
+     "emi": 23605,
+     "int": 3547,
+     "prin": 20058,
+     "bal": 452922
+    }
+   ],
+   "footnote": "Twelve EMIs to 31-03-2028: principal ₹2,31,078, interest ₹52,182. A further 21 EMIs from April 2028, the last of ₹18,765."
+  },
+  {
+   "id": "creditors",
+   "type": "table",
+   "style": "sheet",
+   "arrives": "t4",
+   "title": "Sundry creditors · with MSME status",
+   "tab": "Creditors",
+   "kindLabel": "Tally export, with status",
+   "sheetName": "Creditors 31-3",
+   "freeze": true,
+   "columns": [
+    {
+     "key": "v",
+     "label": "Creditor"
+    },
+    {
+     "key": "st",
+     "label": "Udyam status"
+    },
+    {
+     "key": "amt",
+     "label": "31-03-2027 (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "v": "Mallandur Coffee Curing Works, Chikkamagaluru · green coffee (arabica)",
+     "st": "Small",
+     "amt": 486000
+    },
+    {
+     "v": "Paderu Hill Produce Company, Paderu · green coffee (arabica)",
+     "st": "Medium",
+     "amt": 246000
+    },
+    {
+     "v": "Sus Gaon Dairy (prop. Ganesh Chande), Sus · milk and cream",
+     "st": "Micro",
+     "amt": 148600
+    },
+    {
+     "v": "Hinjewadi Pouch Works, Hinjewadi · valve bags, cups and lids",
+     "st": "Micro",
+     "amt": 174000
+    },
+    {
+     "v": "Wakad Food Ingredients, Wakad · syrups, chocolate, flour",
+     "st": "Small",
+     "amt": 126000
+    },
+    {
+     "v": "Bhosari Roastech Services, Bhosari · roaster servicing and spares",
+     "st": "Small",
+     "amt": 96000
+    },
+    {
+     "v": "Balewadi Housekeeping Services, Balewadi · housekeeping, both cafés",
+     "st": "Not registered",
+     "amt": 86000
+    },
+    {
+     "v": "Total: Sundry creditors",
+     "st": "",
+     "amt": 1362600,
+     "_class": "total"
+    }
+   ],
+   "notes": [
+    "Status as each supplier’s Udyam certificate states it; Balewadi has none. Every balance is for goods or services bought in the normal course and is due within the year."
+   ]
+  },
+  {
+   "id": "inv-note",
+   "type": "table",
+   "style": "statement",
+   "arrives": "t4",
+   "title": "Last year’s accounts · Inventories note",
+   "tab": "Inventories 2026",
+   "kindLabel": "Audited accounts 2025–26",
+   "company": {
+    "name": "Kaapi Kala Roasters Private Limited",
+    "cin": "U10792MH2022PTC982255"
+   },
+   "heading": "Note: Inventories, as at 31 March 2026",
+   "subtitle": "From the audited financial statements for 2025–26 · amounts in ₹",
+   "columns": [
+    {
+     "key": "p",
+     "label": "Particulars"
+    },
+    {
+     "key": "amt",
+     "label": "31 March 2026",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "a",
+     "p": "Raw materials: green coffee",
+     "amt": 510000
+    },
+    {
+     "_id": "b",
+     "p": "Raw and packing materials: milk, food ingredients and packaging",
+     "amt": 80000
+    },
+    {
+     "_id": "c",
+     "p": "Finished goods: roasted coffee",
+     "amt": 192000
+    },
+    {
+     "p": "Total",
+     "amt": 782000,
+     "_class": "total",
+     "_sumOf": [
+      "a",
+      "b",
+      "c"
+     ]
+    }
+   ],
+   "notes": [
+    "Valued at the lower of cost and net realisable value."
+   ]
+  },
+  {
+   "id": "count-sheet",
+   "type": "table",
+   "style": "sheet",
+   "arrives": "t4",
+   "title": "Stock count · 31 March, valued",
+   "tab": "Count sheet",
+   "kindLabel": "Count sheet",
+   "sheetName": "Stock 31-3-27",
+   "freeze": true,
+   "columns": [
+    {
+     "key": "i",
+     "label": "Item"
+    },
+    {
+     "key": "q",
+     "label": "Quantity × cost"
+    },
+    {
+     "key": "amt",
+     "label": "Value (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "i": "Green coffee, arabica, Chikkamagaluru (roastery)",
+     "q": "1,040 kg × ₹420",
+     "amt": 436800
+    },
+    {
+     "i": "Green coffee, arabica, Paderu (roastery)",
+     "q": "480 kg × ₹390",
+     "amt": 187200
+    },
+    {
+     "i": "Roasted coffee, espresso blend (roastery)",
+     "q": "160 kg × ₹750",
+     "amt": 120000
+    },
+    {
+     "i": "Roasted coffee, single estate (roastery)",
+     "q": "112 kg × ₹875",
+     "amt": 98000
+    },
+    {
+     "i": "Packaging: valve bags, cups, lids (both cafés and roastery)",
+     "q": "per list",
+     "amt": 58000
+    },
+    {
+     "i": "Food ingredients: syrups, chocolate, flour (both cafés)",
+     "q": "per list",
+     "amt": 29600
+    },
+    {
+     "i": "Milk and cream (both cafés)",
+     "q": "per list",
+     "amt": 8400
+    },
+    {
+     "i": "Total",
+     "q": "",
+     "amt": 938000,
+     "_class": "total"
+    }
+   ],
+   "notes": [
+    "Counted by Arjun Hegde and Varun Shetty on 31-03-2027 after closing; valued by Snehal at cost, which is below net realisable value for every line."
+   ],
+   "annotations": [
+    {
+     "kind": "sign",
+     "text": "A. Hegde",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": -3
+    },
+    {
+     "kind": "sign",
+     "text": "S. Patil",
+     "color": "blue",
+     "at": "bottom-right",
+     "rotate": -4
+    }
+   ]
+  }
+ ],
+ "tasks": [
+  {
+   "id": "t1",
+   "type": "worksheet",
+   "stage": "Fieldwork",
+   "title": "Reconcile the bank at 31 March",
+   "weight": 1,
+   "layout": "table",
+   "prompt": "Tick the bank book against the March statement, line by line; the April statement shows what cleared later. Put what is left under the four heads, 0 where a head is empty, then work out the bank balance the books should carry. Your BRS goes to Snehal when you move on.",
+   "lockOnLeave": {
+    "ask": "Hand your BRS to Snehal?",
+    "note": "You can’t change it after this.",
+    "yes": "Hand it in",
+    "done": "Handed to Snehal. You can read your BRS but not change it."
+   },
+   "hints": [
+    "Tick by amount, not by date: a card settlement reaches the bank the day after the sale, and a cheque when the payee banks it.",
+    "Only what the bank did on its own (charges it took, money it received directly) is missing from the books. Cheques and deposits still on their way are not."
+   ],
+   "note": "Type each head as a positive figure; its label says whether it is added or taken off. When the four heads are right, the book’s ₹6,92,300 lands exactly on the statement’s ₹7,75,320.",
+   "noteAt": "top",
+   "columns": [
+    {
+     "key": "line",
+     "label": "Bank reconciliation, 31 March 2027"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "id": "b0",
+     "cells": {
+      "line": "Balance as per bank book",
+      "amt": 692300
+     }
+    },
+    {
+     "id": "r1",
+     "cells": {
+      "line": "Add: cheques issued, not yet presented",
+      "amt": {
+       "input": true,
+       "answer": 135000,
+       "tolerance": 0,
+       "sign": false,
+       "working": "Cheque 000418, Ashok Sathaye, 30 March: paid by the bank on 5 April"
+      }
+     }
+    },
+    {
+     "id": "r2",
+     "cells": {
+      "line": "Add: credited by the bank, not yet in the bank book",
+      "amt": {
+       "input": true,
+       "answer": 12000,
+       "tolerance": 0,
+       "sign": false,
+       "weight": 2,
+       "working": "Meter deposit refund from Indrayani Power, credited 29 March"
+      }
+     }
+    },
+    {
+     "id": "r3",
+     "cells": {
+      "line": "Less: receipts in the bank book, not yet credited by the bank",
+      "amt": {
+       "input": true,
+       "answer": 62800,
+       "tolerance": 0,
+       "sign": false,
+       "working": "Card and UPI sales of 31 March, credited on 1 April"
+      }
+     }
+    },
+    {
+     "id": "r4",
+     "cells": {
+      "line": "Less: debited by the bank, not yet in the bank book",
+      "amt": {
+       "input": true,
+       "answer": 1180,
+       "tolerance": 0,
+       "sign": false,
+       "weight": 2,
+       "working": "POS terminal rent for March, debited 31 March"
+      }
+     }
+    },
+    {
+     "id": "b1",
+     "cells": {
+      "line": "Balance as per bank statement",
+      "amt": 775320
+     },
+     "_class": "total"
+    },
+    {
+     "id": "r5",
+     "cells": {
+      "line": "Bank balance the books should carry, once the bank’s own entries are in",
+      "amt": {
+       "input": true,
+       "answer": 703120,
+       "tolerance": 0,
+       "sign": false,
+       "working": "₹6,92,300 + ₹12,000 − ₹1,180",
+       "follow": "692300 + {r2.amt} − {r4.amt}"
+      }
+     }
+    }
+   ],
+   "notes": {
+    "r1.amt": "The Koregaon Park rent, net of TDS. Cheque 000417 to Mallandur was written a day earlier but cleared on the 31st, so it ticks.",
+    "r2.amt": "The old roastery meter’s deposit. The bank has it; the bank book doesn’t yet.",
+    "r3.amt": "Each day’s card money reaches the bank the next day, and for 31 March that day fell in April. The other days all tick.",
+    "r4.amt": "The bank’s monthly rent for the card machine. Nobody told the books.",
+    "r5.amt": "Only the bank’s two entries go into the books. The cheque and the card money are on their way, so ₹7,03,120 is the figure for the balance sheet, not the statement’s ₹7,75,320."
+   },
+   "docs": [
+    "close-list",
+    "bank-book",
+    "stmt-mar",
+    "stmt-apr"
+   ]
+  },
+  {
+   "id": "t2",
+   "type": "items",
+   "stage": "Fieldwork",
+   "title": "Pass the close entries",
+   "weight": 2,
+   "noun": [
+    "item",
+    "items"
+   ],
+   "prompt": "Ten items from Snehal’s close list, each with its papers. Where the books need an entry, pick the account to debit, the account to credit and the amount; where they don’t, say so. Your entries go to Snehal when you move on.",
+   "lockOnLeave": {
+    "ask": "Hand your entries to Snehal?",
+    "note": "You can’t change them after this.",
+    "yes": "Hand them in",
+    "done": "Handed to Snehal. You can read your entries but not change them."
+   },
+   "hints": [
+    "For each paper ask two things: does the cost or the money belong to 2026–27, and is it already in the trial balance?",
+    "A suspense receipt is cleared to the ledger it should have gone to. Find whose money it was before you pick the credit."
+   ],
+   "columns": [
+    {
+     "key": "label"
+    },
+    {
+     "key": "src"
+    }
+   ],
+   "fields": [
+    {
+     "id": "call",
+     "kind": "choice",
+     "label": "Your call",
+     "gate": true,
+     "options": [
+      {
+       "id": "entry",
+       "label": "Pass an entry",
+       "short": "Entry"
+      },
+      {
+       "id": "none",
+       "label": "No entry"
+      }
+     ]
+    },
+    {
+     "id": "dr",
+     "kind": "choice",
+     "label": "Debit",
+     "short": "Dr",
+     "lead": "Dr",
+     "showIf": {
+      "call": "entry"
+     },
+     "weight": 2,
+     "options": [
+      {
+       "id": "accdep",
+       "label": "Accumulated depreciation (equipment and van)"
+      },
+      {
+       "id": "comm",
+       "label": "Aggregator and payment-gateway commission"
+      },
+      {
+       "id": "bankchg",
+       "label": "Bank charges"
+      },
+      {
+       "id": "dep",
+       "label": "Depreciation"
+      },
+      {
+       "id": "power",
+       "label": "Electricity"
+      },
+      {
+       "id": "exppay",
+       "label": "Expenses payable"
+      },
+      {
+       "id": "insurance",
+       "label": "Insurance"
+      },
+      {
+       "id": "othinc",
+       "label": "Other income"
+      },
+      {
+       "id": "prepaid",
+       "label": "Prepaid insurance"
+      },
+      {
+       "id": "rent",
+       "label": "Rent – cafés and roastery"
+      },
+      {
+       "id": "salpay",
+       "label": "Salary payable"
+      },
+      {
+       "id": "salaries",
+       "label": "Salaries and wages"
+      },
+      {
+       "id": "salescafe",
+       "label": "Sales – cafés"
+      },
+      {
+       "id": "saleswhole",
+       "label": "Sales – online and wholesale"
+      },
+      {
+       "id": "bank",
+       "label": "Satpura Bank – current account"
+      },
+      {
+       "id": "deposits",
+       "label": "Security deposits (café premises)"
+      },
+      {
+       "id": "creditors",
+       "label": "Sundry creditors"
+      },
+      {
+       "id": "debtors",
+       "label": "Sundry debtors"
+      },
+      {
+       "id": "susp",
+       "label": "Suspense A/c"
+      }
+     ]
+    },
+    {
+     "id": "cr",
+     "kind": "choice",
+     "label": "Credit",
+     "short": "Cr",
+     "lead": "Cr",
+     "showIf": {
+      "call": "entry"
+     },
+     "weight": 2,
+     "options": [
+      {
+       "id": "accdep",
+       "label": "Accumulated depreciation (equipment and van)"
+      },
+      {
+       "id": "comm",
+       "label": "Aggregator and payment-gateway commission"
+      },
+      {
+       "id": "bankchg",
+       "label": "Bank charges"
+      },
+      {
+       "id": "dep",
+       "label": "Depreciation"
+      },
+      {
+       "id": "power",
+       "label": "Electricity"
+      },
+      {
+       "id": "exppay",
+       "label": "Expenses payable"
+      },
+      {
+       "id": "insurance",
+       "label": "Insurance"
+      },
+      {
+       "id": "othinc",
+       "label": "Other income"
+      },
+      {
+       "id": "prepaid",
+       "label": "Prepaid insurance"
+      },
+      {
+       "id": "rent",
+       "label": "Rent – cafés and roastery"
+      },
+      {
+       "id": "salpay",
+       "label": "Salary payable"
+      },
+      {
+       "id": "salaries",
+       "label": "Salaries and wages"
+      },
+      {
+       "id": "salescafe",
+       "label": "Sales – cafés"
+      },
+      {
+       "id": "saleswhole",
+       "label": "Sales – online and wholesale"
+      },
+      {
+       "id": "bank",
+       "label": "Satpura Bank – current account"
+      },
+      {
+       "id": "deposits",
+       "label": "Security deposits (café premises)"
+      },
+      {
+       "id": "creditors",
+       "label": "Sundry creditors"
+      },
+      {
+       "id": "debtors",
+       "label": "Sundry debtors"
+      },
+      {
+       "id": "susp",
+       "label": "Suspense A/c"
+      }
+     ]
+    },
+    {
+     "id": "amt",
+     "kind": "number",
+     "label": "Amount",
+     "prefix": "₹",
+     "showIf": {
+      "call": "entry"
+     },
+     "tolerance": 0,
+     "sign": false,
+     "chip": true,
+     "placeholder": "In rupees",
+     "invalidNote": "Type the amount in rupees, like 1,25,000"
+    },
+    {
+     "id": "note",
+     "kind": "text",
+     "label": "Narration, or why no entry",
+     "placeholder": "For example: being March telephone bill, payable in April"
+    }
+   ],
+   "sampleGroups": [
+    {
+     "call": "entry",
+     "label": "Entries passed"
+    },
+    {
+     "call": "none",
+     "label": "No entry needed"
+    }
+   ],
+   "items": [
+    {
+     "id": "i1",
+     "label": "Suspense · NEFT of 18 March",
+     "short": "NEFT 18 Mar",
+     "src": "Suspense ledger",
+     "susp": 100000,
+     "docs": [
+      "led-susp",
+      "mail-apte",
+      "deposits"
+     ],
+     "note": "NEFT of 18 March: Nilima Apte returned the deposit on the old Koregaon Park shop when Kaapi Kala moved out. Their own money coming back, not income. Suspense Dr, Security deposits Cr, ₹1,00,000.",
+     "answer": {
+      "call": "entry",
+      "dr": "susp",
+      "cr": "deposits",
+      "amt": 100000
+     }
+    },
+    {
+     "id": "i2",
+     "label": "Suspense · NEFT of 22 March",
+     "short": "NEFT 22 Mar",
+     "src": "Suspense ledger",
+     "susp": 124000,
+     "docs": [
+      "led-susp",
+      "mail-pashan",
+      "led-pashan"
+     ],
+     "note": "NEFT of 22 March: Pashan Cowork Hub paid invoice 0311, and their mail says so. The sale went into the books in February, so this only settles the debtor. Suspense Dr, Sundry debtors Cr, ₹1,24,000, and their ledger goes to nil.",
+     "answer": {
+      "call": "entry",
+      "dr": "susp",
+      "cr": "debtors",
+      "amt": 124000
+     }
+    },
+    {
+     "id": "i3",
+     "label": "Bank’s debit · POS terminal rent",
+     "short": "POS rent",
+     "src": "March statement",
+     "docs": [
+      "stmt-mar"
+     ],
+     "docRow": {
+      "stmt-mar": "posrent"
+     },
+     "note": "POS rent: ₹1,180 for the card machine, taken by Satpura on 31 March. Bank charges Dr, Satpura Bank Cr, dated that day, not the day the books found it.",
+     "answer": {
+      "call": "entry",
+      "dr": "bankchg",
+      "cr": "bank",
+      "amt": 1180
+     }
+    },
+    {
+     "id": "i4",
+     "label": "Bank’s credit · Meter deposit refund",
+     "short": "Meter refund",
+     "src": "March statement",
+     "docs": [
+      "discom-letter",
+      "stmt-mar",
+      "deposits"
+     ],
+     "docRow": {
+      "stmt-mar": "ipdl"
+     },
+     "note": "Meter refund: the old roastery meter’s ₹12,000 deposit came back on 29 March. It sits in Security deposits, so that is the credit; Satpura Bank Dr. Calling it income would leave a deposit they no longer have and a profit they never made.",
+     "answer": {
+      "call": "entry",
+      "dr": "bank",
+      "cr": "deposits",
+      "amt": 12000
+     }
+    },
+    {
+     "id": "i5",
+     "label": "March power bills",
+     "short": "Power bills",
+     "src": "Bills dated 6 April",
+     "docs": [
+      "chat-arjun",
+      "elec-bills"
+     ],
+     "note": "Power bills: March’s units are March’s cost, whatever date the bill carries. ₹52,600 + ₹21,300 + ₹18,500 = ₹92,400. Electricity Dr, Expenses payable Cr, as the desk rule says.",
+     "answer": {
+      "call": "entry",
+      "dr": "power",
+      "cr": "exppay",
+      "amt": 92400
+     }
+    },
+    {
+     "id": "i6",
+     "label": "March salaries",
+     "short": "Salaries",
+     "src": "Salary batch of 6 April",
+     "weight": 2,
+     "docs": [
+      "bulk-sal",
+      "led-salpay",
+      "tb-pre"
+     ],
+     "note": "Salaries: no entry. JV 0218 already provided ₹3,96,000 on 31 March, and Salary payable shows it in the TB. The April batch only paid that liability. Varun’s entry would have counted March twice.",
+     "answer": {
+      "call": "none"
+     }
+    },
+    {
+     "id": "i7",
+     "label": "Shop and stock policy",
+     "short": "Insurance",
+     "src": "Policy schedule",
+     "docs": [
+      "policy",
+      "led-ins"
+     ],
+     "note": "Insurance: the policy runs 1 October to 30 September, and the desk counts whole months: six of its twelve belong to 2027–28. So ₹72,000, half the premium, goes to Prepaid insurance; Insurance Cr.",
+     "answer": {
+      "call": "entry",
+      "dr": "prepaid",
+      "cr": "insurance",
+      "amt": 72000
+     }
+    },
+    {
+     "id": "i8",
+     "label": "Depreciation 2026–27",
+     "short": "Depreciation",
+     "src": "Fixed asset schedule",
+     "docs": [
+      "fa-sched",
+      "tb-pre"
+     ],
+     "note": "Depreciation: none in the TB at all. The schedule gives ₹6,24,000 on equipment and ₹1,15,000 on the van: Depreciation Dr ₹7,39,000, credited to the two accumulated depreciation ledgers.",
+     "answer": {
+      "call": "entry",
+      "dr": "dep",
+      "cr": "accdep",
+      "amt": 739000
+     }
+    },
+    {
+     "id": "i9",
+     "label": "Cheque 000418",
+     "short": "Cheque 000418",
+     "src": "Counterfoil of 30 March",
+     "weight": 2,
+     "docs": [
+      "cf-000418",
+      "stmt-apr"
+     ],
+     "docRow": {
+      "stmt-apr": "q418"
+     },
+     "note": "Cheque 000418: no entry. Ashok Sathaye banked it and it was paid on 5 April. A cheque on its way is a timing item. Reversing it would undo March rent they really paid.",
+     "answer": {
+      "call": "none"
+     }
+    },
+    {
+     "id": "i10",
+     "label": "FeastFleet orders of 30 and 31 March",
+     "short": "FeastFleet",
+     "src": "Payout of 2 April",
+     "docs": [
+      "ff-payout",
+      "led-feast",
+      "stmt-apr"
+     ],
+     "docRow": {
+      "stmt-apr": "ff0402"
+     },
+     "note": "FeastFleet: the ₹45,000 of orders is already in March sales and their ledger; booking ₹38,600 as April sales would count those orders twice. What is missing is the ₹6,400 commission: Commission Dr, FeastFleet (Sundry debtors) Cr, not Expenses payable, as they keep it back.",
+     "answer": {
+      "call": "entry",
+      "dr": "comm",
+      "cr": "debtors",
+      "amt": 6400
+     }
+    }
+   ],
+   "docs": [
+    "close-list",
+    "tb-pre",
+    "stmt-mar",
+    "stmt-apr",
+    "led-susp",
+    "mail-apte",
+    "mail-pashan",
+    "led-pashan",
+    "deposits",
+    "discom-letter",
+    "chat-arjun",
+    "elec-bills",
+    "bulk-sal",
+    "led-salpay",
+    "policy",
+    "led-ins",
+    "fa-sched",
+    "cf-000418",
+    "ff-payout",
+    "led-feast"
+   ]
+  },
+  {
+   "id": "t3",
+   "type": "worksheet",
+   "stage": "Review",
+   "title": "Tally the trial balance",
+   "weight": 1,
+   "layout": "grid",
+   "prompt": "Snehal has posted the reviewed close entries in Tally; the journal register is in Documents. On her TB summary, work out each changed group’s balance after the close, then the two totals. If the totals differ, a posting has gone the wrong way.",
+   "lockOnLeave": {
+    "ask": "Hand your TB summary to Snehal?",
+    "note": "You can’t change it after this.",
+    "yes": "Hand it in",
+    "done": "Handed to Snehal. You can read your TB summary but not change it."
+   },
+   "hints": [
+    "Post each entry to its ledger’s group: an asset or an expense rises with a debit, a liability or an income with a credit.",
+    "An entry between two ledgers of the same group (the bank and the deposits are both Current Assets) leaves that group’s total where it was."
+   ],
+   "columns": [
+    {
+     "key": "g",
+     "label": "Tally group"
+    },
+    {
+     "key": "pre",
+     "label": "Before the close (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "post",
+     "label": "After the close (₹)",
+     "format": "inr"
+    }
+   ],
+   "note": "Debit groups first, then credit groups. Each total adds its side’s groups after the close.",
+   "noteAt": "top",
+   "rows": [
+    {
+     "id": "drfix",
+     "cells": {
+      "g": "Debit groups the close leaves alone: opening inventory, purchases",
+      "pre": 15902000,
+      "post": 15902000
+     }
+    },
+    {
+     "id": "fa",
+     "cells": {
+      "g": "Fixed Assets (Dr)",
+      "pre": 4088000,
+      "post": {
+       "input": true,
+       "answer": 3349000,
+       "tolerance": 0,
+       "working": "₹40,88,000 − ₹7,39,000 (JV 0237)",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "ca",
+     "cells": {
+      "g": "Current Assets (Dr)",
+      "pre": 1767500,
+      "post": {
+       "input": true,
+       "answer": 1607920,
+       "tolerance": 0,
+       "working": "₹17,67,500 − ₹1,180 − ₹1,00,000 − ₹1,24,000 + ₹72,000 − ₹6,400",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "ie",
+     "cells": {
+      "g": "Indirect Expenses (Dr)",
+      "pre": 14225700,
+      "post": {
+       "input": true,
+       "answer": 14992680,
+       "tolerance": 0,
+       "working": "₹1,42,25,700 + ₹1,180 + ₹92,400 − ₹72,000 + ₹7,39,000 + ₹6,400",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "tdr",
+     "_class": "total",
+     "cells": {
+      "g": "Total, debit side",
+      "pre": 35983200,
+      "post": {
+       "input": true,
+       "answer": 35851600,
+       "tolerance": 0,
+       "working": "₹1,59,02,000 + ₹33,49,000 + ₹16,07,920 + ₹1,49,92,680",
+       "sign": false,
+       "follow": "15902000 + {fa.post} + {ca.post} + {ie.post}"
+      }
+     }
+    },
+    {
+     "id": "crfix",
+     "cells": {
+      "g": "Credit groups the close leaves alone: capital, loans, sales",
+      "pre": 33784000,
+      "post": 33784000
+     }
+    },
+    {
+     "id": "cl",
+     "cells": {
+      "g": "Current Liabilities (Cr)",
+      "pre": 1975200,
+      "post": {
+       "input": true,
+       "answer": 2067600,
+       "tolerance": 0,
+       "working": "₹19,75,200 + ₹92,400 (JV 0235)",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "sus",
+     "cells": {
+      "g": "Suspense A/c (Cr)",
+      "pre": 224000,
+      "post": {
+       "input": true,
+       "answer": 0,
+       "tolerance": 0,
+       "working": "₹2,24,000 − ₹1,00,000 − ₹1,24,000",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "tcr",
+     "_class": "total",
+     "cells": {
+      "g": "Total, credit side",
+      "pre": 35983200,
+      "post": {
+       "input": true,
+       "answer": 35851600,
+       "tolerance": 0,
+       "working": "₹3,37,84,000 + ₹20,67,600 + nil",
+       "sign": false,
+       "follow": "33784000 + {cl.post} + {sus.post}"
+      }
+     }
+    }
+   ],
+   "notes": {
+    "cl.post": "Only the March power bills touch this group: ₹92,400 into Expenses payable. Salaries were already here.",
+    "fa.post": "Depreciation is credited to the two accumulated depreciation ledgers, which sit inside Fixed Assets, so the group falls by ₹7,39,000.",
+    "ca.post": "The meter refund moves ₹12,000 from deposits to the bank, both in this group, so only the other five postings move the group.",
+    "ie.post": "Four postings add to expenses and one takes ₹72,000 out: the insurance that belongs to next year.",
+    "sus.post": "Nil. A suspense balance at the year-end means somebody’s money is still unexplained, and auditors ask about it first.",
+    "tdr.post": "Both sides fall by ₹1,31,600: the ₹2,24,000 of suspense goes and ₹92,400 of power bills comes in. Depreciation only moves value from Fixed Assets to expenses, both on the debit side.",
+    "tcr.post": "Equal to the debit side, so the TB tallies. It tallied before the close too, which is why a tally alone proves so little."
+   },
+   "docs": [
+    "tb-pre",
+    "jv-list",
+    "close-list"
+   ]
+  },
+  {
+   "id": "t4",
+   "type": "worksheet",
+   "stage": "Report",
+   "title": "Draft the Schedule III figures",
+   "weight": 1,
+   "layout": "table",
+   "prompt": "Map the trial balance after the close to Schedule III (Division I), in rupees; Snehal rounds the final set. The loan schedule, creditors list and stock papers are in Documents. The audit fee and Kunal’s tax figure come later, so stop at profit before tax.",
+   "hints": [
+    "Principal that falls due by 31 March 2028 leaves long-term borrowings and joins short-term borrowings.",
+    "A manufacturer shows materials consumed and the change in finished goods, not purchases: opening plus purchases less closing, class by class."
+   ],
+   "note": "The first five lines are balance-sheet figures at 31 March 2027; the rest is the statement of profit and loss for 2026–27.",
+   "noteAt": "top",
+   "sampleBreak": "rev",
+   "columns": [
+    {
+     "key": "line",
+     "label": "Schedule III line"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "id": "ltb",
+     "cells": {
+      "line": "Long-term borrowings",
+      "amt": {
+       "input": true,
+       "answer": 452922,
+       "tolerance": 0,
+       "working": "₹6,84,000 − ₹2,31,078 due by March 2028",
+       "sign": false,
+       "follow": "684000 − {stb.amt}"
+      }
+     }
+    },
+    {
+     "id": "stb",
+     "cells": {
+      "line": "Short-term borrowings",
+      "amt": {
+       "input": true,
+       "answer": 231078,
+       "tolerance": 0,
+       "working": "Principal in the twelve EMIs to 31 March 2028",
+       "weight": 3,
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "mse",
+     "cells": {
+      "line": "Trade payables: micro and small enterprises",
+      "amt": {
+       "input": true,
+       "answer": 1030600,
+       "tolerance": 0,
+       "working": "₹4,86,000 + ₹1,48,600 + ₹1,74,000 + ₹1,26,000 + ₹96,000",
+       "weight": 3,
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "tcl",
+     "cells": {
+      "line": "Total current liabilities",
+      "amt": {
+       "input": true,
+       "answer": 2298678,
+       "tolerance": 0,
+       "working": "₹2,31,078 + ₹13,62,600 + ₹64,400 + ₹1,14,000 + ₹38,200 + ₹3,96,000 + ₹92,400",
+       "sign": false,
+       "follow": "{stb.amt} + 1362600 + 705000"
+      }
+     }
+    },
+    {
+     "id": "onca",
+     "cells": {
+      "line": "Other non-current assets",
+      "amt": {
+       "input": true,
+       "answer": 488000,
+       "tolerance": 0,
+       "working": "Security deposits after the two refunds",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "rev",
+     "cells": {
+      "line": "Revenue from operations",
+      "amt": 31800000
+     }
+    },
+    {
+     "id": "comc",
+     "cells": {
+      "line": "Cost of materials consumed",
+      "amt": {
+       "input": true,
+       "answer": 14990000,
+       "tolerance": 0,
+       "working": "₹5,10,000 + ₹80,000 + ₹98,40,000 + ₹52,80,000 − ₹6,24,000 − ₹96,000",
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "chg",
+     "cells": {
+      "line": "Changes in inventories of finished goods, work in progress and stock in trade",
+      "amt": {
+       "input": true,
+       "answer": -26000,
+       "tolerance": 0,
+       "working": "Roasted coffee: ₹1,92,000 − ₹2,18,000",
+       "signed": true
+      }
+     }
+    },
+    {
+     "id": "emp",
+     "cells": {
+      "line": "Employee benefits expense",
+      "amt": 6420000
+     }
+    },
+    {
+     "id": "fin",
+     "cells": {
+      "line": "Finance costs",
+      "amt": 72000
+     }
+    },
+    {
+     "id": "dep",
+     "cells": {
+      "line": "Depreciation and amortisation expense",
+      "amt": 739000
+     }
+    },
+    {
+     "id": "oth",
+     "cells": {
+      "line": "Other expenses",
+      "amt": 7761680
+     }
+    },
+    {
+     "id": "pbt",
+     "_class": "total",
+     "cells": {
+      "line": "Profit before tax",
+      "amt": {
+       "input": true,
+       "answer": 1843320,
+       "tolerance": 0,
+       "working": "₹3,18,00,000 − ₹2,99,56,680 of expenses",
+       "sign": false,
+       "follow": "31800000 − {comc.amt} − {chg.amt} − 6420000 − 72000 − 739000 − 7761680"
+      }
+     }
+    }
+   ],
+   "notes": {
+    "ltb.amt": "What stays long-term is only the principal falling due after March 2028.",
+    "stb.amt": "Schedule III puts current maturities of a long-term loan under short-term borrowings. Principal only: the interest in those EMIs is next year’s cost, not a debt today.",
+    "mse.amt": "Micro and small only: Mallandur, Sus Gaon, Hinjewadi, Wakad and Bhosari. Paderu’s Udyam certificate says medium and Balewadi has none, so their ₹3,32,000 goes under others.",
+    "tcl.amt": "The loan’s current portion, every creditor, GST, PF, ESI, professional tax and TDS payable, March salaries and the March power bills: all due within twelve months.",
+    "onca.amt": "The deposits for the cafés, the roastery and the meters come back only when a lease or a connection ends. Schedule III gives security deposits their own place under other non-current assets.",
+    "comc.amt": "Green coffee and the raw and packing materials: opening plus purchases less the count. Roasted coffee is finished goods, so it stays out of this line.",
+    "chg.amt": "More roasted coffee at the end than at the start means less expense, so the change is −₹26,000.",
+    "pbt.amt": "Before the audit fee and tax, which I add after Kunal’s working."
+   },
+   "docs": [
+    "tb-adj",
+    "loan-sched",
+    "creditors",
+    "inv-note",
+    "count-sheet",
+    "deposits",
+    "fa-sched"
+   ]
+  }
+ ],
+ "wrap": {
+  "from": "snehal",
+  "text": "Eight entries went in, two of them found only in the bank statement, and the suspense is at nil. Two lines trip most first-year articles here: the van loan’s current portion and Paderu’s dues. Check yours against my notes below before Kunal’s tax figure comes on Monday."
+ },
+ "wrapPartial": {
+  "from": "snehal",
+  "text": "Your misses below are figures the close would carry wrong, so nothing goes to Meghna until they are fixed. Take them in the order of the close: the bank, the entries, the TB, then the statements."
+ },
+ "wrapRetry": {
+  "from": "snehal",
+  "text": "Start again at the bank: tick every line of the book against the statement, and only the bank’s own entries go into the books. Then ask of each close item whether 2026–27 owns it and whether the TB already has it."
+ },
+ "passNeeds": [
+  {
+   "task": "t1",
+   "min": 0.6,
+   "note": "Your BRS needs more of its figures right, or following your figures, to pass."
+  },
+  {
+   "task": "t2",
+   "min": 0.55,
+   "note": "You need more of the ten close calls right to pass."
+  }
+ ],
+ "model": {
+  "intro": "The BRS found two entries the bank had made on its own. With them and six more, the suspense went to nil and the TB moved to ₹3,58,51,600 a side. Profit before tax is ₹18,43,320, with the audit fee and tax still to come.",
+  "blocks": [
+   {
+    "type": "table",
+    "grid": true,
+    "columns": [
+     {
+      "key": "l",
+      "label": "BRS, 31 March 2027"
+     },
+     {
+      "key": "a",
+      "label": "₹",
+      "format": "inr"
+     }
+    ],
+    "rows": [
+     {
+      "l": "Balance as per bank book",
+      "a": 692300
+     },
+     {
+      "l": "Add: cheque 000418, not presented",
+      "a": 135000
+     },
+     {
+      "l": "Add: meter deposit refund, not in the book",
+      "a": 12000
+     },
+     {
+      "l": "Less: card and UPI of 31 March, not credited",
+      "a": 62800
+     },
+     {
+      "l": "Less: POS terminal rent, not in the book",
+      "a": 1180
+     },
+     {
+      "l": "Balance as per bank statement",
+      "a": 775320,
+      "_class": "total"
+     }
+    ]
+   },
+   {
+    "type": "text",
+    "text": "After the two bank entries the books carry ₹7,03,120. That is the bank figure in the balance sheet; the cheque and the card money are only on their way."
+   },
+   {
+    "type": "table",
+    "columns": [
+     {
+      "key": "i",
+      "label": "Close entries"
+     },
+     {
+      "key": "d",
+      "label": "Debit"
+     },
+     {
+      "key": "c",
+      "label": "Credit"
+     },
+     {
+      "key": "a",
+      "label": "Amount",
+      "format": "inr"
+     }
+    ],
+    "rows": [
+     {
+      "i": "NEFT of 18 March",
+      "d": "Suspense",
+      "c": "Security deposits",
+      "a": 100000
+     },
+     {
+      "i": "NEFT of 22 March",
+      "d": "Suspense",
+      "c": "Sundry debtors (Pashan)",
+      "a": 124000
+     },
+     {
+      "i": "POS terminal rent",
+      "d": "Bank charges",
+      "c": "Satpura Bank",
+      "a": 1180
+     },
+     {
+      "i": "Meter deposit refund",
+      "d": "Satpura Bank",
+      "c": "Security deposits",
+      "a": 12000
+     },
+     {
+      "i": "March power bills",
+      "d": "Electricity",
+      "c": "Expenses payable",
+      "a": 92400
+     },
+     {
+      "i": "Shop and stock policy",
+      "d": "Prepaid insurance",
+      "c": "Insurance",
+      "a": 72000
+     },
+     {
+      "i": "Depreciation",
+      "d": "Depreciation",
+      "c": "Accumulated depreciation, equipment ₹6,24,000 and van ₹1,15,000",
+      "a": 739000
+     },
+     {
+      "i": "FeastFleet commission",
+      "d": "Aggregator commission",
+      "c": "Sundry debtors (FeastFleet)",
+      "a": 6400
+     }
+    ]
+   },
+   {
+    "type": "text",
+    "text": "No entry for the March salaries, which JV 0218 had already provided on 31 March, or for cheque 000418, a timing item the bank paid on 5 April."
+   },
+   {
+    "type": "table",
+    "grid": true,
+    "columns": [
+     {
+      "key": "l",
+      "label": "Draft balance sheet, 31 March 2027"
+     },
+     {
+      "key": "a",
+      "label": "₹",
+      "format": "inr"
+     }
+    ],
+    "rows": [
+     {
+      "l": "Share capital",
+      "a": 1000000
+     },
+     {
+      "l": "Reserves and surplus (with the year’s profit before tax)",
+      "a": 2143320
+     },
+     {
+      "l": "Long-term borrowings",
+      "a": 452922
+     },
+     {
+      "l": "Short-term borrowings",
+      "a": 231078
+     },
+     {
+      "l": "Trade payables: micro and small enterprises",
+      "a": 1030600
+     },
+     {
+      "l": "Trade payables: others (creditors ₹3,32,000, March power ₹92,400)",
+      "a": 424400
+     },
+     {
+      "l": "Other current liabilities (statutory dues, March salaries)",
+      "a": 612600
+     },
+     {
+      "l": "Total equity and liabilities",
+      "a": 5894920,
+      "_class": "total"
+     },
+     {
+      "l": "Property, plant and equipment",
+      "a": 3349000
+     },
+     {
+      "l": "Other non-current assets",
+      "a": 488000
+     },
+     {
+      "l": "Inventories",
+      "a": 938000
+     },
+     {
+      "l": "Trade receivables",
+      "a": 306400
+     },
+     {
+      "l": "Cash and cash equivalents",
+      "a": 741520
+     },
+     {
+      "l": "Short-term loans and advances (prepaid insurance)",
+      "a": 72000
+     },
+     {
+      "l": "Total assets",
+      "a": 5894920,
+      "_class": "total"
+     }
+    ]
+   },
+   {
+    "type": "note",
+    "from": "snehal",
+    "text": "A close starts at the bank, because the bank’s own entries belong in the TB before anything else is mapped. Then each balance gets its proper head. Rounding to ₹ lakh comes last, once every figure ties."
+   }
+  ]
+ },
+ "principles": [
+  "Most BRS differences are timing items, which clear in a few days with no entry, or the bank’s own entries, which the books must take before the trial balance. An error in the book is corrected, never carried.",
+  "A close entry follows the period the cost belongs to, not the date on its paper. Check the trial balance first: what is already provided needs no second entry.",
+  "Schedule III wants the true head. Principal due within twelve months moves to short-term borrowings, and a medium supplier’s dues go under others, not micro and small."
+ ],
+ "earned": {
+  "clause": "reconciled a private company’s bank account{b1|}{b2|}{b3|}{b4|} and prepared[[ {jv}]] year-end adjusting entries[[ (clearing {susp} of suspense)]][[; tallied the trial balance{drtot|}{crtot|}]][[ and mapped the balances to Schedule III{stb|}{mse|}]]",
+  "counts": {
+   "b1": {
+    "kind": "cell",
+    "task": "t1",
+    "row": "r1",
+    "col": "amt"
+   },
+   "b2": {
+    "kind": "cell",
+    "task": "t1",
+    "row": "r2",
+    "col": "amt"
+   },
+   "b3": {
+    "kind": "cell",
+    "task": "t1",
+    "row": "r3",
+    "col": "amt"
+   },
+   "b4": {
+    "kind": "cell",
+    "task": "t1",
+    "row": "r4",
+    "col": "amt"
+   },
+   "jv": {
+    "kind": "itemsWhere",
+    "task": "t2",
+    "field": "call",
+    "equals": "entry",
+    "withRight": [
+     "dr",
+     "cr",
+     "amt"
+    ]
+   },
+   "susp": {
+    "kind": "sumItems",
+    "task": "t2",
+    "prop": "susp",
+    "where": {
+     "field": "call",
+     "equals": "entry"
+    },
+    "withRight": [
+     "dr",
+     "cr",
+     "amt"
+    ],
+    "format": "inr"
+   },
+   "drtot": {
+    "kind": "correctCells",
+    "task": "t3",
+    "rows": [
+     "tdr"
+    ]
+   },
+   "crtot": {
+    "kind": "correctCells",
+    "task": "t3",
+    "rows": [
+     "tcr"
+    ]
+   },
+   "stb": {
+    "kind": "correctCells",
+    "task": "t4",
+    "rows": [
+     "stb"
+    ]
+   },
+   "mse": {
+    "kind": "correctCells",
+    "task": "t4",
+    "rows": [
+     "mse"
+    ]
+   }
+  },
+  "fallback": "prepared a private company’s bank reconciliation and[[ {jv}]] year-end adjusting entries[[ (clearing {susp} of suspense)]][[; tallied the trial balance{drtot|}{crtot|}]][[ and mapped the balances to Schedule III{stb|}{mse|}]]"
+ },
+ "interview": [
+  {
+   "q": "Why do we prepare a bank reconciliation, and what did yours find?",
+   "checking": "Whether you know which differences wait and which need an entry.",
+   "outline": [
+    "It explains why the bank book and statement differ on a date, and finds what the books missed.",
+    "Cheques not yet presented and deposits not yet credited wait; bank charges and direct credits need entries.",
+    "In the simulation the BRS turned up ₹1,180 of POS rent and a ₹12,000 refund the books lacked."
+   ]
+  },
+  {
+   "q": "Your trial balance tallied. Does that mean the books were right?",
+   "checking": "Whether you know what a tallied trial balance cannot prove.",
+   "outline": [
+    "No. It proves only that debits equal credits; omissions and wrong heads still tally.",
+    "In the simulation it tallied with ₹2,24,000 in suspense and no depreciation or March power bill.",
+    "So I cleared the suspense, passed the close entries, then split the loan and creditors for Schedule III."
+   ]
+  }
+ ]
+}
