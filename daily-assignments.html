@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Daily Assignments: Stock Audits &amp; Bank Audits Near You | My Student Club</title>
+  <meta name="description" content="Short paid assignments for CA students and CAs: stock audits, bank branch audits and physical verification for 1–few days in your town. Filter by location and apply in one tap.">
+  <link rel="canonical" href="https://www.mystudentclub.com/daily-assignments">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#0d2452">
+  <link rel="icon" href="https://www.mystudentclub.com/favicon.png" sizes="192x192" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/scripts/supabase-init.js"></script>
+  <script src="/scripts/daily-assignments.js"></script>
+  <style>
+    :root {
+      --bg: #f8fafc; --card: #fff; --text: #334155; --heading: #0f172a; --muted: #64748b;
+      --border: #e2e8f0; --accent: #2563eb; --accent-dark: #1e40af; --navy: #0d2452;
+      --ok: #059669; --ok-bg: #ecfdf5; --chip: #eff6ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.55; }
+    a { color: var(--accent); }
+    .site-header { background: #fff; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 20; }
+    .header-container { max-width: 1100px; margin: 0 auto; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .brand-logo { height: 32px; width: auto; display: block; }
+    .nav-actions { display: flex; gap: 8px; }
+    .pill { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 999px; font-size: 13px; font-weight: 600; text-decoration: none; background: var(--navy); color: #fff; white-space: nowrap; }
+    .pill.secondary { background: var(--chip); color: var(--accent-dark); }
+    main { max-width: 1100px; margin: 0 auto; padding: 24px 16px 64px; }
+    .hero h1 { color: var(--heading); font-size: clamp(24px, 4vw, 34px); line-height: 1.2; font-weight: 800; }
+    .hero p { color: var(--muted); margin-top: 8px; max-width: 680px; }
+    .notice { margin-top: 16px; padding: 12px 14px; border-radius: 10px; background: #fffbeb; border: 1px solid #fde68a; color: #92400e; font-size: 14px; }
+    .filters { margin-top: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px; display: grid; grid-template-columns: 1fr 220px; gap: 12px; }
+    .field label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: .03em; }
+    .field input, .field select, .sheet input, .sheet textarea { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 10px; font: inherit; font-size: 15px; background: #fff; color: var(--heading); }
+    .loc-row { display: flex; gap: 8px; }
+    .btn { border: 0; border-radius: 10px; padding: 10px 14px; font: inherit; font-weight: 600; font-size: 14px; cursor: pointer; background: var(--accent); color: #fff; white-space: nowrap; }
+    .btn.ghost { background: var(--chip); color: var(--accent-dark); }
+    .btn:disabled { opacity: .6; cursor: default; }
+    .places { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 13px; color: var(--muted); }
+    .chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px; background: var(--chip); color: var(--accent-dark); font-weight: 600; border: 1px solid #bfdbfe; }
+    .chip button { border: 0; background: none; color: inherit; cursor: pointer; font-size: 14px; line-height: 1; }
+    .count { margin: 18px 2px 10px; font-size: 14px; color: var(--muted); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+    .card .type { align-self: flex-start; font-size: 12px; font-weight: 700; color: var(--accent-dark); background: var(--chip); padding: 3px 9px; border-radius: 999px; }
+    .card h2 { font-size: 17px; color: var(--heading); line-height: 1.3; }
+    .card .firm { font-size: 14px; color: var(--muted); margin-top: -6px; }
+    .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; font-size: 14px; }
+    .facts i { width: 16px; color: var(--accent); margin-right: 4px; }
+    .card .desc { font-size: 14px; color: var(--text); white-space: pre-line; }
+    .card .open-to { font-size: 12px; color: var(--muted); }
+    .card .actions { margin-top: auto; display: flex; gap: 8px; }
+    .card .actions .btn { flex: 1; }
+    .applied { background: var(--ok-bg); color: var(--ok); }
+    .empty { text-align: center; padding: 40px 16px; background: var(--card); border: 1px dashed var(--border); border-radius: 14px; color: var(--muted); }
+    .empty strong { display: block; color: var(--heading); font-size: 16px; margin-bottom: 4px; }
+    .backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, .45); display: none; align-items: center; justify-content: center; z-index: 50; padding: 16px; }
+    .backdrop.open { display: flex; }
+    .sheet { background: #fff; border-radius: 16px; width: 100%; max-width: 460px; padding: 20px; max-height: 92vh; overflow: auto; }
+    .sheet h3 { color: var(--heading); font-size: 18px; }
+    .sheet .sub { color: var(--muted); font-size: 14px; margin: 2px 0 14px; }
+    .sheet .q { margin-bottom: 12px; }
+    .sheet .q > span { display: block; font-size: 14px; font-weight: 600; color: var(--heading); margin-bottom: 6px; }
+    .seg { display: flex; gap: 8px; }
+    .seg label { flex: 1; text-align: center; padding: 8px; border: 1px solid #cbd5e1; border-radius: 10px; cursor: pointer; font-size: 14px; }
+    .seg input { position: absolute; opacity: 0; pointer-events: none; }
+    .seg input:checked + span { color: var(--accent-dark); font-weight: 700; }
+    .seg label:has(input:checked) { border-color: var(--accent); background: var(--chip); }
+    .sheet .hint { font-size: 12px; color: var(--muted); margin-top: 6px; }
+    .sheet .row { display: flex; gap: 8px; margin-top: 16px; }
+    .sheet .row .btn { flex: 1; }
+    .sheet .err { color: #b91c1c; font-size: 13px; margin-top: 8px; min-height: 1em; }
+    @media (max-width: 640px) {
+      .filters { grid-template-columns: 1fr; }
+      .grid { grid-template-columns: 1fr; }
+      .nav-actions .secondary { display: none; }
+      .backdrop { align-items: flex-end; padding: 0; }
+      .sheet { border-radius: 16px 16px 0 0; max-width: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="/" class="brand-link"><img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club" class="brand-logo" width="201" height="36"></a>
+      <nav class="nav-actions">
+        <a href="/" class="pill secondary">Job Portal</a>
+        <a href="/profile.html" class="pill" id="profileLink"><i class="fa-regular fa-user"></i> Profile</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <h1>Daily assignments near you</h1>
+      <p>Paid work for a day or a few days in your own town: stock audits, bank branch audits and physical verification. Firms save on travel; you earn and learn. Open to article assistants, semi-qualified CAs and non-CAs.</p>
+      <div class="notice" id="notice" hidden></div>
+    </section>
+
+    <section class="filters" aria-label="Filter assignments">
+      <div class="field">
+        <label for="locInput">I'm in</label>
+        <div class="loc-row">
+          <input id="locInput" list="cityList" placeholder="City or state, e.g. Pune" autocomplete="address-level2">
+          <datalist id="cityList"></datalist>
+          <button class="btn ghost" id="savePlaceBtn" type="button" title="Save this place"><i class="fa-regular fa-bookmark"></i> Save</button>
+        </div>
+      </div>
+      <div class="field">
+        <label for="typeSelect">Kind of work</label>
+        <select id="typeSelect"><option value="">All kinds</option></select>
+      </div>
+      <div class="places" id="places"></div>
+    </section>
+
+    <p class="count" id="count" aria-live="polite">Loading assignments…</p>
+    <div class="grid" id="grid"></div>
+  </main>
+
+  <div class="backdrop" id="sheetBackdrop" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <form class="sheet" id="applyForm">
+      <h3 id="sheetTitle">Apply</h3>
+      <p class="sub" id="sheetSub"></p>
+      <p class="sub">The firm gets your MSC profile and CV. Everything below is optional.</p>
+      <div class="q"><span>Where are you right now?</span><input name="currentLocation" maxlength="80" placeholder="City"></div>
+      <div class="q"><span>OK with the pay?</span>
+        <div class="seg"><label><input type="radio" name="payOk" value="yes"><span>Yes</span></label><label><input type="radio" name="payOk" value="no"><span>No</span></label></div>
+      </div>
+      <div class="q"><span>Done this kind of work before?</span>
+        <div class="seg"><label><input type="radio" name="doneBefore" value="yes"><span>Yes</span></label><label><input type="radio" name="doneBefore" value="no"><span>No</span></label></div>
+      </div>
+      <div class="q"><span>Anything for the firm?</span><textarea name="note" rows="2" maxlength="1000" placeholder="e.g. I have my own laptop and can travel within the district"></textarea>
+        <p class="hint">No CV on your profile yet? <a href="/profile.html">Add it here</a> so the firm can see it.</p>
+      </div>
+      <p class="err" id="applyErr" role="alert"></p>
+      <div class="row">
+        <button type="button" class="btn ghost" id="cancelApply">Cancel</button>
+        <button type="submit" class="btn" id="sendApply">Send application</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+  (function () {
+    const DA = window.MSCDailyAssignments;
+    const params = new URLSearchParams(location.search);
+    const demo = params.get('demo') === '1';
+    const $ = (id) => document.getElementById(id);
+    const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const state = { items: [], applied: new Set(), places: DA.loadPlaces(window.localStorage), session: null, current: null };
+
+    // Sample rows so the page can be seen before the tables exist (?demo=1). Never written anywhere.
+    const plus = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
+    const SAMPLE = [
+      { id: 'demo-1', firm_name: 'Sample & Co. Chartered Accountants', title: 'Stock audit of a steel trader', work_type: 'Stock audit', city: 'Nagpur', state: 'Maharashtra', start_date: plus(3), end_date: plus(4), people_needed: 2, pay_amount: 1500, pay_unit: 'per day', description: 'Count and value closing stock at two godowns. Bring a laptop.', open_to: ['Article assistant', 'Semi-qualified CA', 'Non-CA'] },
+      { id: 'demo-2', firm_name: 'Sample Associates', title: 'Bank branch audit support', work_type: 'Bank branch audit', city: 'Indore', state: 'Madhya Pradesh', start_date: plus(6), end_date: plus(8), people_needed: 1, pay_amount: 5000, pay_unit: 'total', description: 'Help the team with advances and KYC checks at one branch.', open_to: ['Article assistant', 'Semi-qualified CA'] },
+      { id: 'demo-3', firm_name: 'Sample LLP', title: 'Physical verification of fixed assets', work_type: 'Physical verification', city: 'Pune', state: 'Maharashtra', start_date: plus(2), end_date: plus(2), people_needed: 3, pay_amount: null, pay_unit: 'per day', description: 'Tag and verify assets at a factory in Chakan.', open_to: ['Article assistant', 'Non-CA'] }
+    ];
+
+    DA.WORK_TYPES.forEach((t) => { const o = document.createElement('option'); o.value = t; o.textContent = t; $('typeSelect').appendChild(o); });
+
+    function showNotice(text) { $('notice').textContent = text; $('notice').hidden = !text; }
+
+    function renderPlaces() {
+      const box = $('places');
+      if (!state.places.length) { box.innerHTML = '<span>Save the places you can work in, and you\'ll see only those.</span>'; return; }
+      box.innerHTML = '<span>Showing your places:</span>' + state.places.map((p) =>
+        `<span class="chip">${esc(p)}<button type="button" data-remove="${esc(p)}" aria-label="Remove ${esc(p)}">×</button></span>`).join('');
+    }
+
+    function render() {
+      const location_ = $('locInput').value;
+      const list = DA.filterAssignments(state.items, { location: location_, places: state.places, workType: $('typeSelect').value });
+      const where = location_.trim() ? ` in ${DA.titleCase(location_)}` : state.places.length ? ' in your places' : '';
+      $('count').textContent = `${list.length} assignment${list.length === 1 ? '' : 's'}${where}`;
+      if (!list.length) {
+        $('grid').innerHTML = `<div class="empty"><strong>No assignments${esc(where)} right now</strong>${state.items.length ? 'Try another place or clear the filters.' : 'New ones come in through the season. Save your places and check back.'}</div>`;
+        return;
+      }
+      $('grid').innerHTML = list.map((a) => {
+        const done = state.applied.has(a.id);
+        return `<article class="card">
+          <span class="type">${esc(a.work_type)}</span>
+          <h2>${esc(a.title)}</h2>
+          <p class="firm">${esc(a.firm_name)}</p>
+          <div class="facts">
+            <span><i class="fa-solid fa-location-dot"></i>${esc(a.city)}${a.state ? ', ' + esc(a.state) : ''}</span>
+            <span><i class="fa-regular fa-calendar"></i>${esc(DA.formatDates(a.start_date, a.end_date))}</span>
+            <span><i class="fa-solid fa-indian-rupee-sign"></i>${esc(DA.formatPay(a.pay_amount, a.pay_unit))}</span>
+            <span><i class="fa-solid fa-users"></i>${esc(a.people_needed)} needed</span>
+          </div>
+          ${a.description ? `<p class="desc">${esc(a.description)}</p>` : ''}
+          ${a.open_to && a.open_to.length ? `<p class="open-to">Open to: ${esc(a.open_to.join(', '))}</p>` : ''}
+          <div class="actions">${done
+            ? '<button class="btn applied" disabled><i class="fa-solid fa-check"></i> Applied</button>'
+            : `<button class="btn" data-apply="${esc(a.id)}">Apply in one tap</button>`}</div>
+        </article>`;
+      }).join('');
+    }
+
+    async function load() {
+      if (demo) { state.items = SAMPLE; $('cityList').innerHTML = DA.cityOptions(SAMPLE).map((c) => `<option value="${esc(c)}">`).join(''); showNotice('Preview with sample assignments. Nothing you do here is saved.'); render(); return; }
+      const db = window.getSupabaseClient && window.getSupabaseClient();
+      if (!db) { showNotice('Could not connect. Please refresh the page.'); render(); return; }
+      try { const { data } = await db.auth.getSession(); state.session = data && data.session; } catch (_) { state.session = null; }
+      const { data, error } = await db.from('daily_assignments')
+        .select('id,firm_name,title,work_type,city,state,start_date,end_date,people_needed,pay_amount,pay_unit,description,open_to')
+        .order('start_date', { ascending: true }).limit(500);
+      if (error) {
+        console.warn('daily_assignments', error.code, error.message);
+        showNotice(error.code === 'PGRST205' || error.code === '42P01' ? 'Daily assignments open soon. Save your places now and check back.' : 'Could not load assignments. Please refresh the page.');
+      }
+      state.items = data || [];
+      $('cityList').innerHTML = DA.cityOptions(state.items).map((c) => `<option value="${esc(c)}">`).join('');
+      if (state.session && state.items.length) {
+        const mine = await db.from('daily_assignment_applications').select('assignment_id');
+        (mine.data || []).forEach((r) => state.applied.add(r.assignment_id));
+      }
+      render();
+    }
+
+    function openSheet(id) {
+      const a = state.items.find((x) => x.id === id);
+      if (!a) return;
+      if (!demo && !state.session) {
+        location.href = '/login.html?redirect=' + encodeURIComponent(location.pathname + location.search);
+        return;
+      }
+      state.current = a;
+      $('applyForm').reset();
+      $('applyErr').textContent = '';
+      $('sheetTitle').textContent = a.title;
+      $('sheetSub').textContent = `${a.firm_name} · ${a.city} · ${DA.formatDates(a.start_date, a.end_date)}`;
+      const here = $('locInput').value.trim();
+      if (here) $('applyForm').currentLocation.value = DA.titleCase(here);
+      $('sheetBackdrop').classList.add('open');
+      $('applyForm').currentLocation.focus();
+    }
+    function closeSheet() { $('sheetBackdrop').classList.remove('open'); state.current = null; }
+
+    $('applyForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const a = state.current;
+      if (!a) return;
+      const f = e.target;
+      const row = DA.applicationRow(a.id, { currentLocation: f.currentLocation.value, payOk: f.payOk.value, doneBefore: f.doneBefore.value, note: f.note.value });
+      $('sendApply').disabled = true;
+      try {
+        if (!demo) {
+          const { error } = await window.getSupabaseClient().from('daily_assignment_applications').insert(row);
+          // 23505 = already applied (unique per student and assignment): treat as done.
+          if (error && (error.status === 401 || error.code === 'PGRST301' || error.code === 'PGRST303')) {
+            location.href = '/login.html?redirect=' + encodeURIComponent(location.pathname + location.search);
+            return;
+          }
+          if (error && error.code !== '23505') throw error;
+        }
+        state.applied.add(a.id);
+        closeSheet();
+        render();
+      } catch (err) {
+        console.warn('apply', err && err.code, err && err.message);
+        $('applyErr').textContent = 'Could not send your application. Please try again.';
+      } finally { $('sendApply').disabled = false; }
+    });
+
+    $('grid').addEventListener('click', (e) => { const b = e.target.closest('[data-apply]'); if (b) openSheet(b.dataset.apply); });
+    $('cancelApply').addEventListener('click', closeSheet);
+    $('sheetBackdrop').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeSheet(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSheet(); });
+    $('locInput').addEventListener('input', render);
+    $('typeSelect').addEventListener('change', render);
+    $('savePlaceBtn').addEventListener('click', () => {
+      const v = $('locInput').value.trim();
+      if (!v) { $('locInput').focus(); return; }
+      state.places = DA.savePlaces(window.localStorage, DA.addPlace(state.places, v));
+      $('locInput').value = '';
+      renderPlaces(); render();
+    });
+    $('places').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-remove]');
+      if (!b) return;
+      state.places = DA.savePlaces(window.localStorage, DA.removePlace(state.places, b.dataset.remove));
+      renderPlaces(); render();
+    });
+
+    renderPlaces();
+    load();
+  })();
+  </script>
+</body>
+</html>
