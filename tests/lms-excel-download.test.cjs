@@ -120,7 +120,8 @@ test('course page: a CSV preview with a workbook download says Download Excel an
     const source = fs.readFileSync(path.join(root, 'learning-management-system/course-script.js'), 'utf8');
     const start = source.indexOf('const isDocxPreviewResource');
     const end = source.indexOf('const updateLearningStreak', start);
-    const context = {};
+    // The label helpers read the page's course table (Articleship v3 compact resources).
+    const context = { courses: {}, state: { courseSlug: 'industrial-training-mastery' } };
     vm.createContext(context);
     vm.runInContext(source.slice(start, end) + '\nthis.api = { getResourceDownloadLabel, getResourceFormatNote, getResourceViewerSubtitle };', context);
     const { getResourceDownloadLabel, getResourceFormatNote, getResourceViewerSubtitle } = context.api;
@@ -129,6 +130,6 @@ test('course page: a CSV preview with a workbook download says Download Excel an
     assert.equal(getResourceDownloadLabel(excel), 'Download Excel');
     assert.match(getResourceFormatNote(excel), /one sheet/);
     assert.match(getResourceViewerSubtitle(excel, 'csv'), /one sheet/);
-    assert.equal(getResourceDownloadLabel(csvOnly), 'Download');
+    assert.equal(getResourceDownloadLabel(csvOnly), 'Download CSV'); // v3 names every file type on its button
     assert.equal(getResourceFormatNote(csvOnly), '');
 });

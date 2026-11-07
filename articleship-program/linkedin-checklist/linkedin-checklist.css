@@ -1,0 +1,288 @@
+/*
+ * LinkedIn profile checklist (row 3.1): the page around the shared checklist engine.
+ * Base look: /articleship-program/shared/articleship-tools.css. Phone first; two columns from 960 px.
+ */
+.lc-day {
+    margin: 0 0 2px;
+    color: var(--ap-accent);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+/* The top bar is solid on this page: the list scrolls under it (the shared bar is 96% white, so text showed through). */
+body.ap-page .ap-topbar { background: var(--ap-panel); }
+
+/* The lede has a phone line and a laptop line (a phone can't put the profile next to this page). */
+.lc-on-wide { display: none; }
+
+/* Phone: open card, then the list, then the notes. */
+.lc-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "open" "list" "notes";
+    gap: 14px;
+}
+.lc-side { display: contents; }
+.lc-open { grid-area: open; }
+.lc-list { grid-area: list; min-width: 0; }
+.lc-notes { grid-area: notes; display: grid; gap: 12px; }
+
+.lc-open {
+    display: grid;
+    gap: 8px;
+    padding: 14px;
+}
+.lc-open-btn { gap: 10px; }
+.lc-open-btn::before {
+    content: 'in';
+    display: inline-grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
+    background: #fff;
+    color: var(--ap-primary);
+    font: 800 13px/1 var(--ap-sans);
+    letter-spacing: -0.02em;
+}
+.lc-open-btn::after { content: '\2197'; font-weight: 700; }
+.lc-open-hint { margin: 0; color: var(--ap-muted); font-size: 13px; line-height: 1.45; text-align: center; }
+
+/* External fix links say they leave the page. */
+.lc-list .ap-cl-fix[target="_blank"]::after { content: '\2197'; }
+/* Underline on the text, not the 44 px box, so it stays under the words. */
+.lc-list .ap-cl-fix {
+    border-bottom: 0;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-decoration-color: color-mix(in srgb, var(--ap-accent) 55%, transparent);
+    text-underline-offset: 5px;
+}
+/* The repeated "Open my profile" links are quieter than the one-off links ("Edit my URL", "Open my connections"). */
+.lc-list .ap-cl-fix.lc-fix-profile {
+    color: var(--ap-muted);
+    font-weight: 500;
+    text-decoration-thickness: 1px;
+    text-decoration-color: var(--ap-border-dark);
+}
+.lc-list .ap-cl-fix.lc-fix-profile:hover { color: var(--ap-navy); text-decoration-color: var(--ap-accent); }
+/* The arrow sits outside the underline (out of flow, so the link's underline doesn't reach it). */
+.lc-list .ap-cl-fix, .lc-note-link { position: relative; padding-right: 1.25em; }
+.lc-list .ap-cl-fix::after, .lc-note-link::after { position: absolute; right: 0; top: 50%; margin: 0; transform: translateY(-50%); }
+
+/* The click path, always visible under the check. */
+.lc-how {
+    margin: 2px 0 0 64px;
+    color: var(--ap-muted);
+    font-size: 13.5px;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+.lc-how strong { color: var(--ap-navy); font-weight: 700; }
+
+/* The progress bar scrolls over the list: solid, so no text shows through it. */
+.lc-list .ap-progress { background: var(--ap-bg); }
+
+/* Copy boxes inside the examples: white, so they read as "the text you take away". */
+.lc-copy {
+    margin: 4px 0 8px;
+    background: var(--ap-panel);
+    border: 1px solid var(--ap-border-dark);
+    border-radius: 10px;
+    padding: 10px 12px 8px;
+}
+.lc-copy-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
+.lc-copy-label { font-family: var(--ap-hand); font-weight: 700; font-size: 20px; line-height: 1.1; color: var(--ap-navy); }
+.lc-copy-btn {
+    flex: 0 0 auto;
+    min-height: 36px;
+    min-width: 76px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--ap-primary);
+    background: var(--ap-primary-light);
+    color: var(--ap-primary);
+    font: 600 14px/1 var(--ap-sans);
+    cursor: pointer;
+}
+.lc-copy-btn:hover { background: #dbe7ff; }
+.lc-copy-btn:focus-visible { outline: 3px solid color-mix(in srgb, var(--ap-primary) 40%, transparent); outline-offset: 2px; }
+.lc-copy-btn.is-done { background: var(--ap-success-light); border-color: var(--ap-success); color: var(--ap-success); }
+.ap-cl-example .lc-copy-text,
+.lc-copy-text {
+    margin: 0;
+    padding: 0;
+    background: none;
+    border-radius: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--ap-ink);
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}
+.ap-cl-example .lc-copy-status,
+.lc-copy-status { margin: 2px 0 0; padding: 0; background: none; min-height: 0; font-size: 12.5px; color: var(--ap-success); }
+.lc-copy-status:empty { display: none; }
+
+/* Examples, line by line, on the yellow sticky (the engine's single paragraph is redrawn by the page script). */
+.lc-example {
+    margin: 4px 0 6px;
+    padding: 12px 12px 10px;
+    background: var(--ap-sticky);
+    border-radius: 4px 4px 10px 4px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--ap-ink);
+}
+.ap-cl-example .lc-example p {
+    margin: 0;
+    padding: 0;
+    background: none;
+    border-radius: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+/* :is(p, blockquote) keeps these above the margin reset just above. */
+.ap-cl-example .lc-example > :is(p, blockquote) + :is(p, blockquote) { margin-top: 8px; }
+.ap-cl-example .lc-example > .has-gap { margin-top: 16px; }
+.lc-example strong { font-weight: 700; color: var(--ap-navy); }
+.lc-example .lc-line.is-good,
+.lc-example .lc-line.is-bad { padding-left: 1.6em; text-indent: -1.6em; }
+.lc-sample {
+    margin: 0;
+    padding: 10px 12px;
+    background: var(--ap-panel);
+    border-left: 3px solid var(--ap-accent);
+    border-radius: 2px 8px 8px 2px;
+}
+.ap-cl-example .lc-sample p + p { margin-top: 4px; }
+
+/* Examples hold LinkedIn addresses and headlines: let them wrap on a phone. */
+.lc-list .ap-cl-example p { overflow-wrap: anywhere; }
+
+.lc-note p { margin: 4px 0 0; }
+.lc-note-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--ap-navy);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-decoration-color: color-mix(in srgb, var(--ap-accent) 55%, transparent);
+    text-underline-offset: 5px;
+}
+.lc-note-link::after { content: '\2192'; margin-left: 6px; }
+.lc-note-link:focus-visible { outline: 3px solid color-mix(in srgb, var(--ap-primary) 40%, transparent); outline-offset: 2px; }
+.lc-error { display: grid; gap: 12px; justify-items: start; }
+.lc-error p { margin: 0; }
+
+/* "Examples for: Statutory audit · Change": the word Change carries an invisible select over it (native picker). */
+.lc-domain { margin: 8px 0 0; color: var(--ap-muted); font-size: 14px; line-height: 1.45; }
+.lc-domain-name { color: var(--ap-navy); font-weight: 700; }
+.lc-domain-dot { margin: 0 6px; }
+.lc-domain-change {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--ap-primary);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    cursor: pointer;
+}
+.lc-domain-change select {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    opacity: 0;
+    font-size: 16px; /* iOS zooms into smaller fields */
+    cursor: pointer;
+}
+.lc-domain-change:focus-within { outline: 3px solid color-mix(in srgb, var(--ap-primary) 40%, transparent); outline-offset: 2px; border-radius: 4px; }
+
+/* Phone: one floating "Open my profile" pill, shown once the open card has scrolled away (the script adds is-shown). */
+.lc-fab {
+    position: fixed;
+    right: 16px;
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    z-index: 30;
+    display: none;
+    align-items: center;
+    gap: 6px;
+    min-height: 44px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    background: var(--ap-primary);
+    color: #fff;
+    font: 600 15px/1 var(--ap-sans);
+    text-decoration: none;
+    box-shadow: var(--ap-shadow-md);
+}
+.lc-fab::after { content: '\2197'; font-weight: 700; }
+.lc-fab.is-shown { display: inline-flex; }
+.lc-fab:focus-visible { outline: 3px solid color-mix(in srgb, var(--ap-primary) 40%, transparent); outline-offset: 2px; }
+
+/* Phone: an open fold-out uses the whole card, not the column beside the tick box; tap targets 44 px. */
+@media (max-width: 599px) {
+    .lc-list .ap-cl-example[open] { flex-basis: calc(100% + 64px); margin-left: -64px; }
+    .lc-list .ap-cl-example[open] > summary { margin-left: 64px; }
+    .lc-list .ap-cl-example summary,
+    .lc-list .ap-cl-fix { min-height: 44px; }
+    .lc-list .ap-cl-extra { margin-top: 2px; }
+}
+
+/*
+ * Wider screens: the progress card sits a little below the top bar with rounded corners. A background-coloured ring
+ * covers the four corner notches, and square strips above (up to the top bar) and below square the ring off, so no
+ * list text shows around the card and the list slides under a straight edge.
+ */
+@media (min-width: 768px) {
+    .lc-list .ap-progress { box-shadow: 0 0 0 12px var(--ap-bg); }
+    .lc-list .ap-progress::before,
+    .lc-list .ap-progress::after {
+        content: '';
+        position: absolute;
+        /* Measured from the padding box: 1 px of border, then the 12 px ring. */
+        left: -13px;
+        right: -13px;
+        background: var(--ap-bg);
+        pointer-events: none;
+    }
+    .lc-list .ap-progress::before { bottom: calc(100% + 1px); height: 16px; }
+    .lc-list .ap-progress::after { top: calc(100% + 1px); height: 12px; }
+}
+
+@media (min-width: 960px) {
+    .lc-layout {
+        grid-template-columns: minmax(0, 1fr) 300px;
+        grid-template-areas: "list side";
+        gap: 28px;
+        align-items: start;
+    }
+    .lc-side {
+        display: grid;
+        gap: 14px;
+        grid-area: side;
+        position: sticky;
+        top: 84px;
+    }
+    .lc-open, .lc-notes { grid-area: auto; }
+    /* No app on a laptop, so no app hint. */
+    .lc-open-hint { display: none; }
+    .lc-list .ap-progress { top: 72px; }
+    /* The sidebar's "Open my profile" is always in view here, so no floating pill. */
+    .lc-fab, .lc-fab.is-shown { display: none; }
+    .lc-on-wide { display: inline; }
+    .lc-on-phone { display: none; }
+}
+
+@media print {
+    .lc-open, .lc-copy-btn, .lc-note-link, .lc-fab, .lc-domain { display: none !important; }
+    .lc-example { background: none; border: 1px solid #ccc; }
+    .ap-cl-example .lc-example p { border: 0; }
+    .lc-side { position: static; }
+}

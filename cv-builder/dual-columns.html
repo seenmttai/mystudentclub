@@ -414,6 +414,8 @@
             padding-top: calc(3.36px * var(--content-scale));
         }
 
+        .msc-articleship-template .edu-score { flex-basis: 120px; }
+
         .edu-score .lbl {
             font-size: calc(14.26px * var(--content-scale));
             color: var(--dategray);
@@ -713,6 +715,9 @@
                 const wrapper = document.querySelector(`[data-custom-section-root="${section.id}"]`);
                 if (!wrapper) return;
                 wrapInSectionHead(wrapper, section.title || 'Custom Section');
+                if (data.articleshipGallery && wrapper.querySelector(':scope > .section-head > .section-title')) {
+                    wrapper.querySelectorAll(':scope > .section-header, :scope > .section-title').forEach(header => header.remove());
+                }
             });
         }
 

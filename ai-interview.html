@@ -14,6 +14,9 @@
 
     <title>AI Video Interview - Professional Practice Platform</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/articleship-program/shared/articleship-tools.css">
+    <link rel="stylesheet" href="/articleship-program/ai-interview/ai-interview.css">
     <style>
         :root {
             --primary: #4f46e5;
@@ -2166,6 +2169,8 @@
     </div>
 
 
+    <div id="ap-interview-setup" class="aii-shell hidden"></div>
+
     <div id="loading-screen" class="loading-screen hidden">
         <div class="loading-spinner"></div>
         <div class="loading-text">Preparing your interview...</div>
@@ -2343,6 +2348,7 @@
                 </div>
             </div>
             <div id="report-meta" class="report-meta"></div>
+            <section id="ap-scorecard" class="aii-sc hidden" aria-label="Your scorecard"></section>
             <div id="analysis-status" class="analysis-status hidden"></div>
             <div id="analysis-loading" class="analysis-loading hidden">
                 <div class="loading-spinner"></div>
@@ -2440,6 +2446,9 @@
 
     <script src="https://unpkg.com/markdown-pdfjs@1.0.1/dist/markdown-pdf.umd.js"></script>
     <script src="scripts/interview-conduct.js"></script>
+    <script src="/scripts/supabase-init.js"></script>
+    <script src="/scripts/articleship-progress.js"></script>
+    <script src="/scripts/articleship-interview.js"></script>
     <script src="scripts/ai-processing-consent.js"></script>
     <script type="module">
         import { LipsyncEn } from 'lipsync-en';
@@ -2454,7 +2463,7 @@
         // --- SUPABASE & AUTH CONFIG ---
         const supabaseUrl = 'https://auth.mystudentclub.com';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey, { auth: { storageKey: 'sb-izsggdtdiacxdsjjncdq-auth-token' } });
+        const supabase = window.supabaseClient || window.supabase.createClient(supabaseUrl, supabaseKey, { auth: { storageKey: 'sb-izsggdtdiacxdsjjncdq-auth-token' } });
 
         // --- NEW STATE ---
         let interviewPlan = null;
@@ -2688,7 +2697,7 @@
 
                 if (!session || !session.user) {
                     // Redirect to login page
-                    window.location.href = 'https://mystudentclub.com/login?redirect=' + encodeURIComponent(window.location.pathname);
+                    window.location.href = 'https://mystudentclub.com/login?redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
                     return;
                 }
 
@@ -2709,7 +2718,8 @@
 
                 // User is authenticated and enrolled! Proceed to load page contents
                 authCheckingScreen.classList.add('hidden');
-                setupScreen.classList.remove('hidden');
+                if (isArticleshipMode()) showArticleshipSetup({ userId: session.user.id });
+                else setupScreen.classList.remove('hidden');
 
                 setupEventListeners();
                 setupContinuousSpeechRecognition();
@@ -2720,7 +2730,7 @@
             } catch (error) {
                 console.error("Auth check failed:", error);
                 // Fallback to login redirect
-                window.location.href = 'https://mystudentclub.com/login?redirect=' + encodeURIComponent(window.location.pathname);
+                window.location.href = 'https://mystudentclub.com/login?redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
             }
         }
 
@@ -3224,6 +3234,7 @@
                 </div>
             `);
 
+            if (isArticleshipInterview()) apTrimAnalysis();
             setAnalysisStatus('Detailed AI analysis is ready.', 'success');
         }
 
@@ -3550,6 +3561,8 @@
                 </div>
             `;
 
+            if (isArticleshipInterview()) apRenderReport(reportText);
+
             const candidateTurns = messages.filter(msg => msg.role === 'user').length;
             if (endedEarly && candidateTurns < 3) {
                 setAnalysisFallbackState(`${InterviewConduct.endReasonMessage(interviewEndCode)} Detailed analysis was skipped because the interview ended early.`);
@@ -3565,7 +3578,7 @@
                 return;
             }
 
-            const markdown = buildInterviewReportMarkdown();
+            const markdown = isArticleshipInterview() ? apReportMarkdown(buildInterviewReportMarkdown()) : buildInterviewReportMarkdown();
             const pdfOptions = getInterviewPdfOptions();
 
             if (pdfPreviewContainer) {
@@ -3842,7 +3855,7 @@
             btn.disabled = true;
             btn.innerHTML = '<span class="loading-spinner" style="width:16px;height:16px;border-width:2px;"></span> Initializing...';
 
-            interviewConfig = { 
+            interviewConfig = window.MSCArticleshipInterview.normalizeConfig({
                 positionApplied: document.getElementById('positionApplied').value,
                 experienceLevel: document.getElementById('experienceLevel').value,
                 companyName: document.getElementById('companyName').value,
@@ -3852,7 +3865,7 @@
                 jobDescription: document.getElementById('jobDescription').value,
                 specialization: document.getElementById('positionApplied').value,
                 duration: 30 // Default duration
-            };
+            });
             
             // Process PDF if exists
             const fileInput = document.getElementById('cvFile');
@@ -3865,22 +3878,321 @@
             }
 
             currentRoleSpan.textContent = `${interviewConfig.positionApplied} (${interviewConfig.toughness})`;
-            setupScreen.classList.add('hidden');
-            
-            if (!isModelLoaded) { 
-                loadingScreen.classList.remove('hidden'); 
-                while (!isModelLoaded) await new Promise(r => setTimeout(r, 100)); 
-                loadingScreen.classList.add('hidden'); 
-            }
-
-            try { 
-                await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }); 
-                skipPermissions(); 
-            } catch (error) { 
-                permissionsModal.classList.remove('hidden'); 
+            try {
+                await proceedToInterview();
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = originalBtnText;
+            }
+        }
+
+        async function proceedToInterview() {
+            setupScreen.classList.add('hidden');
+
+            if (!isModelLoaded) {
+                loadingScreen.classList.remove('hidden');
+                while (!isModelLoaded) await new Promise(r => setTimeout(r, 100));
+                loadingScreen.classList.add('hidden');
+            }
+
+            try {
+                await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+                skipPermissions();
+            } catch (error) {
+                permissionsModal.classList.remove('hidden');
+            }
+        }
+
+        // --- ARTICLESHIP MODE (MSC Articleship Program, Day 4 "Practise your interview": ?mode=articleship) ---
+        const AP = window.MSCArticleshipInterview;
+        const apSetupRoot = document.getElementById('ap-interview-setup');
+        const apScorecard = document.getElementById('ap-scorecard');
+        let apContent = null;
+        let apStore = null;
+        let apMounted = false;
+        let apUserId = null;
+        let apCvAllowed = null;
+        let apCard = null;
+        let apSavedFor = null;
+        const AP_TITLE = 'Practise your interview | My Student Club';
+
+        function isArticleshipMode() {
+            return new URLSearchParams(window.location.search).get('mode') === 'articleship';
+        }
+
+        function isArticleshipInterview() {
+            return !!(interviewConfig && interviewConfig.positionApplied === AP.ROLE);
+        }
+
+        function apOpenStore() {
+            if (apStore) return apStore;
+            try {
+                apStore = window.MSCArticleshipProgress
+                    ? window.MSCArticleshipProgress.open(AP.TOOL, { defaults: { last: null, asked: {}, retry: [] } })
+                    : null;
+            } catch (error) {
+                apStore = null;
+            }
+            return apStore;
+        }
+
+        async function apLoadContent() {
+            if (apContent) return apContent;
+            try {
+                const res = await fetch(AP.CONTENT_URL, { cache: 'no-cache' });
+                if (!res.ok) throw new Error(`content ${res.status}`);
+                apContent = await res.json();
+            } catch (error) {
+                console.warn('Articleship interview content did not load; using the general articleship interviewer.', error);
+                apContent = null;
+            }
+            return apContent;
+        }
+
+        function apReadStorage(key) {
+            try { return localStorage.getItem(key) || ''; } catch (error) { return ''; }
+        }
+
+        function apSessionUserId() {
+            if (apUserId) return apUserId;
+            const progress = window.MSCArticleshipProgress;
+            try { return progress && progress._sessionUserId ? progress._sessionUserId(localStorage) : null; } catch (error) { return null; }
+        }
+
+        // Which saved CVs belong to this student on this browser. Read before any progress store opens: opening one
+        // resets another account's progress, and that is how a shared phone is noticed.
+        function apCheckCvOwners() {
+            if (apCvAllowed) return apCvAllowed;
+            try { apCvAllowed = AP.cvSourcesAllowed(localStorage, apSessionUserId()); } catch (error) { apCvAllowed = { builder: false, profile: false }; }
+            return apCvAllowed;
+        }
+
+        // The student's saved CVs on this site: the CV Builder's CV and the profile's CV text (only this student's).
+        function apCvSources() {
+            const sources = [];
+            const allowed = apCheckCvOwners();
+            let builder = null;
+            if (allowed.builder) {
+                try { builder = JSON.parse(apReadStorage('cv_maker_data') || 'null'); } catch (error) { builder = null; }
+            }
+            const builderLines = AP.cvLinesFromBuilder(builder);
+            if (builderLines.length >= 3) sources.push({ kind: 'builder', label: 'CV Builder', detail: AP.builderName(builder), lines: builderLines });
+            const profileLines = allowed.profile ? AP.cvLinesFromText(apReadStorage('userCVText')) : [];
+            if (profileLines.length >= 3) sources.push({ kind: 'profile', label: 'Profile CV', detail: apReadStorage('userCVFileName'), lines: profileLines });
+            return sources;
+        }
+
+        async function showArticleshipSetup(options = {}) {
+            if (options.userId) apUserId = options.userId;
+            apCheckCvOwners();
+            document.title = AP_TITLE;
+            setupScreen.classList.add('hidden');
+            document.body.classList.add('aii-mode');
+            apSetupRoot.classList.remove('hidden');
+            const permissionsText = document.querySelector('#permissions-modal .permissions-text');
+            if (permissionsText) permissionsText.textContent = 'Allow the microphone so the interviewer can hear your answers.';
+            if (options.fromDropdown && !isArticleshipMode()) {
+                const url = new URL(window.location.href);
+                url.searchParams.set('mode', 'articleship');
+                history.replaceState(null, '', url);
+            }
+            window.scrollTo(0, 0);
+            if (apMounted) return;
+            apMounted = true;
+            const spinner = document.createElement('div');
+            spinner.className = 'aii-loading';
+            spinner.setAttribute('role', 'status');
+            spinner.innerHTML = '<span class="ap-spinner"></span>';
+            apSetupRoot.replaceChildren(spinner);
+            const content = await apLoadContent();
+            const cvSources = apCvSources();
+            AP.mountSetup(apSetupRoot, {
+                content: content || {},
+                store: apOpenStore(),
+                progress: window.MSCArticleshipProgress,
+                cvSources,
+                fromDropdown: !!options.fromDropdown,
+                otherRolesHref: '/ai-interview.html',
+                onStart: startArticleshipInterview
+            });
+        }
+
+        async function apPdfLines(file) {
+            const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
+            const items = [];
+            for (let i = 1; i <= Math.min(pdf.numPages, 3); i += 1) {
+                const page = await pdf.getPage(i);
+                const text = await page.getTextContent();
+                text.items.forEach(item => items.push({ str: item.str, x: item.transform[4], y: item.transform[5], page: i }));
+            }
+            return AP.cvLinesFromPdfItems(items);
+        }
+
+        async function startArticleshipInterview(setup) {
+            let cvLines = [];
+            cvImages = [];
+            if (setup.cv.kind === 'pdf' && setup.cv.file) {
+                try { cvLines = await apPdfLines(setup.cv.file); } catch (error) { console.error('CV text extraction failed:', error); }
+                // A scanned CV has no text layer: send its pages as images, as the general interview does.
+                if (cvLines.length < 4) {
+                    try { cvImages = await processPdfToImages(setup.cv.file); } catch (error) { console.error('PDF Processing failed:', error); }
+                }
+            } else if (Array.isArray(setup.cv.lines)) {
+                cvLines = setup.cv.lines;
+                // They picked this saved CV knowing whose it is: it stays offered to them on this browser.
+                try { AP.claimCv(localStorage, apSessionUserId(), setup.cv.kind); } catch (error) { /* storage blocked */ }
+            }
+
+            const store = apOpenStore();
+            const saved = store ? store.get() : {};
+            // A scanned CV goes as page images: the interviewer is told it is attached (not that there is no CV).
+            // Questions count for rotation only when the report shows they were reached (apSaveMock).
+            const plan = apContent
+                ? AP.buildPlan(apContent, { ...setup, cvLines, cvAsImages: Array.isArray(cvImages) && cvImages.length > 0, asked: saved && saved.asked, seed: Date.now() })
+                : null;
+            apCard = null;
+
+            const round = AP.roundInfo(apContent, setup.round);
+            const domain = AP.domainInfo(AP.normaliseDomain(setup.domain) || 'statutory-audit');
+            interviewConfig = AP.normalizeConfig({
+                positionApplied: AP.ROLE,
+                experienceLevel: 'Fresher',
+                companyName: setup.firm || 'CA firm',
+                companyType: AP.firmTypeInfo(setup.firmType).worker,
+                interviewDomain: domain.label,
+                toughness: AP.toughnessInfo(setup.toughness).id,
+                jobDescription: '',
+                specialization: AP.ROLE,
+                duration: Number(round.minutes) || 30,
+                articleshipRound: round.label,
+                articleshipPlan: plan
+            });
+
+            apSetupRoot.classList.add('hidden');
+            document.body.classList.remove('aii-mode');
+            document.body.classList.add('aii-live');
+            document.title = AP_TITLE;
+            // The live header in the programme's words: "Practise your interview · Full interview · GST".
+            const titlePrefix = currentRoleSpan.previousSibling;
+            if (titlePrefix && titlePrefix.nodeType === 3) titlePrefix.textContent = 'Practise your interview \u00b7 ';
+            currentRoleSpan.textContent = `${round.label} \u00b7 ${domain.label}`;
+            await proceedToInterview();
+        }
+
+        function apSplitUnmarkedReport(text) {
+            const plan = interviewConfig && interviewConfig.articleshipPlan;
+            return plan ? AP.splitUnmarkedReport(text, plan.rubric) : null;
+        }
+
+        // Every finished mock is saved: questions reached (rotation), the weak-spot retries and a history entry.
+        function apSaveMock(plan, card) {
+            if (!plan || apSavedFor === interviewStartedAt) return;
+            apSavedFor = interviewStartedAt;
+            const store = apOpenStore();
+            if (!store) return;
+            const turns = Array.isArray(messages) ? messages : [];
+            const said = turns.filter(m => m && m.role === 'assistant').map(m => String(m.content || ''));
+            const answers = turns.filter(m => m && m.role === 'user').length;
+            const reached = AP.questionsReached(plan, said, answers);
+            try {
+                store.update(data => AP.recordMock(data, { plan, card, reached, answers, at: new Date().toISOString() }));
+            } catch (error) {
+                console.error('Saving the practice failed:', error);
+            }
+        }
+
+        // On a phone the scorecard leads and the long analysis cards start folded (the first one stays open).
+        function apFoldReportOnPhone() {
+            const phone = window.matchMedia && window.matchMedia('(max-width: 640px)').matches;
+            if (!phone) return;
+            document.querySelectorAll('#analysis-grid details.analysis-accordion').forEach((card, index) => {
+                if (index > 0) card.open = false;
+            });
+        }
+
+        function apRenderReport(reportText) {
+            const plan = interviewConfig.articleshipPlan;
+            document.body.classList.add('aii-report');
+            document.title = AP_TITLE;
+            const kicker = document.querySelector('#report-screen .report-kicker');
+            if (kicker) kicker.textContent = 'Practise your interview';
+            const heading = document.querySelector('#report-screen .report-title');
+            if (heading) heading.textContent = 'Your practice report';
+            const meta = [
+                ['Round', interviewConfig.articleshipRound || AP.ROLE],
+                ['Domain', interviewConfig.interviewDomain],
+                ['Firm', plan && plan.firm ? plan.firm : AP.firmTypeInfo(plan && plan.firmType).label],
+                ['Toughness', AP.toughnessInfo(interviewConfig.toughness).label],
+                ['Started', formatDateTime(interviewStartedAt)]
+            ];
+            reportMeta.innerHTML = meta.map(([label, value]) => `
+                <div class="report-meta-item">
+                    <span class="report-meta-label">${escapeHtml(label)}</span>
+                    <span class="report-meta-value">${escapeHtml(value || 'N/A')}</span>
+                </div>`).join('');
+            if (!apScorecard) return;
+            // The scorecard from the report, or from the interviewer's last message when the report came unmarked.
+            const found = plan ? AP.findScorecard(reportText, messages, plan.rubric) : null;
+            const card = found ? found.card : null;
+            apCard = card;
+            apSaveMock(plan, card);
+            if (reportMeta && reportMeta.parentNode && apScorecard.nextElementSibling !== reportMeta) {
+                reportMeta.parentNode.insertBefore(apScorecard, reportMeta);
+            }
+            if (card && reportBody) {
+                // The scorecard is shown once, as the card above; the Assessment keeps the rest of the report.
+                const rest = AP.stripScorecard(found.text, card);
+                reportBody.innerHTML = formatAssessmentHtml(rest);
+                const section = reportBody.closest ? reportBody.closest('.report-section') : null;
+                if (section) section.classList.toggle('hidden', !rest);
+            }
+            apFoldReportOnPhone();
+            if (!card) {
+                AP.renderScorecard(apScorecard, null, { fallback: plan ? 'Your scorecard is in the report below.' : '' });
+                apScorecard.classList.toggle('hidden', !plan);
+                return;
+            }
+            AP.renderScorecard(apScorecard, card, {
+                onRetry: retry => {
+                    const store = apOpenStore();
+                    if (store) store.update(data => { data.retry = retry; data.retryCall = !!(plan && plan.round === 'call'); return data; });
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('mode', 'articleship');
+                    window.location.href = url.toString();
+                }
+            });
+            apScorecard.classList.remove('hidden');
+        }
+
+        // The downloaded report says the same as the screen: no hiring recommendation, and the scorecard total as the one score.
+        function apReportMarkdown(markdown) {
+            const out = [];
+            String(markdown || '').split(/\n(?=## )/).forEach(part => {
+                if (/^## Recommendation\b/.test(part)) return;
+                if (/^## Scores\b/.test(part)) {
+                    if (apCard && apCard.max) out.push(`## Scorecard\n\n**${apCard.total} / ${apCard.max}** (each row scored 1 to 4; the rows are in the Assessment)\n`);
+                    return;
+                }
+                out.push(part);
+            });
+            return out.join('\n').replace(/^# AI Interview Analysis Report/m, '# Practise your interview: practice report');
+        }
+
+        // Practice feedback, never a hiring prediction: the articleship report drops the recommendation line, and the
+        // student sees one score: the scorecard's when it was read, else the analysis' practice score alone.
+        function apTrimAnalysis() {
+            if (analysisOverviewReco) { analysisOverviewReco.classList.add('hidden'); analysisOverviewReco.textContent = ''; }
+            if (analysisRecommendation) { analysisRecommendation.classList.add('hidden'); analysisRecommendation.textContent = ''; }
+            const scoreGrid = document.getElementById('analysis-score-grid');
+            if (scoreGrid) scoreGrid.classList.add('hidden');
+            const overview = document.getElementById('analysis-overview');
+            if (overview) overview.classList.toggle('hidden', !!apCard);
+            const overviewLabel = document.querySelector('#analysis-overview .analysis-overview-label');
+            if (overviewLabel) overviewLabel.textContent = 'Practice score';
+            if (analysisOverviewPills) {
+                analysisOverviewPills.innerHTML = [interviewConfig.articleshipRound, interviewConfig.interviewDomain, `${interviewConfig.duration} min`]
+                    .filter(Boolean)
+                    .map(value => `<span class="analysis-overview-pill">${escapeHtml(value)}</span>`).join('');
             }
         }
 
@@ -3917,13 +4229,30 @@
         const posSelect = document.getElementById('positionApplied');
         const expGroup = document.getElementById('exp-group');
         if (posSelect && expGroup) {
-            posSelect.addEventListener('change', () => {
-                if (posSelect.value === 'CA Articleship') {
-                    expGroup.classList.add('hidden');
-                } else {
-                    expGroup.classList.remove('hidden');
+            const companyTypeSelect = document.getElementById('companyType');
+            const domainSelect = document.getElementById('interviewDomain');
+            let previousSetup = null;
+            const updateArticleshipSetup = () => {
+                const isArticleship = posSelect.value === window.MSCArticleshipInterview.ROLE;
+                expGroup.classList.toggle('hidden', isArticleship);
+                if (isArticleship && !previousSetup) {
+                    previousSetup = { companyType: companyTypeSelect.value, domain: domainSelect.value };
+                    companyTypeSelect.value = 'Mid-Size';
+                    domainSelect.value = 'Statutory Audit';
+                } else if (!isArticleship && previousSetup) {
+                    companyTypeSelect.value = previousSetup.companyType;
+                    domainSelect.value = previousSetup.domain;
+                    previousSetup = null;
                 }
+            };
+            posSelect.addEventListener('change', () => {
+                updateArticleshipSetup();
+                if (posSelect.value === window.MSCArticleshipInterview.ROLE) showArticleshipSetup({ fromDropdown: true });
             });
+            if (new URLSearchParams(window.location.search).get('mode') === 'articleship') {
+                posSelect.value = window.MSCArticleshipInterview.ROLE;
+            }
+            updateArticleshipSetup();
         }
 
         // CV Upload Preview
@@ -3960,7 +4289,7 @@
                     - Hard: Be critical, deep-dive into technical details, and challenge their answers.
                     - Brutal: Be aggressive, use stress-interview tactics, interrupt occasionally, and ask extremely complex technical questions.
 
-                    ${InterviewConduct.CONDUCT_PROMPT}`
+                    ${InterviewConduct.CONDUCT_PROMPT}${window.MSCArticleshipInterview.getInstructions(interviewConfig)}`
                 }
             ];
             
@@ -3985,8 +4314,12 @@
 
             await initializeVAD();
 
-            let welcome = "Hello, I'm Aditya. Let's get started. Please walk me through your background.";
-            if (interviewConfig.toughness === 'Easy') {
+            const apPlan = interviewConfig.articleshipPlan;
+            let welcome = (apPlan && window.MSCArticleshipInterview.welcomeLine(apPlan))
+                || "Hello, I'm Aditya. Let's get started. Please walk me through your background.";
+            if (apPlan && window.MSCArticleshipInterview.welcomeLine(apPlan)) {
+                // Articleship mode: the plan's own opening line.
+            } else if (interviewConfig.toughness === 'Easy') {
                 welcome = "Hi! I'm Aditya. I'm really looking forward to our chat. To start off, could you tell me a little bit about yourself and your background?";
             } else if (interviewConfig.toughness === 'Hard') {
                 welcome = "Hello, I'm Aditya. We have a lot to cover. Start by walking me through your background, focusing specifically on your technical contributions.";
@@ -4299,8 +4632,16 @@
                     messages.push({ role: 'system', content: InterviewConduct.LINES.continueNote });
                 }
                 let aiMessage = endMarker.text;
-                const { clean: cleanFromModel, emojis, report } = extractEmojisAndSanitize(aiMessage);
-                let clean = cleanFromModel;
+                const extracted = extractEmojisAndSanitize(aiMessage);
+                const emojis = extracted.emojis;
+                let report = extracted.report;
+                let clean = extracted.clean;
+                // Articleship mode: a scorecard sent without the report markers is still the report. Only the closing
+                // line before it is spoken; the scorecard goes to the report screen.
+                if (!report && isArticleshipInterview()) {
+                    const split = apSplitUnmarkedReport(aiMessage);
+                    if (split) { report = split.report; clean = extractEmojisAndSanitize(split.spoken).clean; }
+                }
                 if (conductDecision && conductDecision.action === 'warn' && !endMarker.end && !InterviewConduct.aiTextAlreadyWarns(clean)) {
                     // Deterministic warning even if the model ignored the conduct note.
                     clean = `${clean} ${InterviewConduct.LINES.warning}`.trim();

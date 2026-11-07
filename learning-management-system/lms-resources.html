@@ -19,6 +19,7 @@
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/scripts/articleship-lms.js?v=1"></script>
     <script type="importmap">
     {
         "imports": {
@@ -604,6 +605,20 @@
                 },
 
                 async openViewer(resource, type) {
+                    // Rows flagged `copy` (Articleship v3) open in the copyable reader before any group-name rule, in place
+                    // (the app's WebView has no second tab).
+                    const articleshipLms = window.MSCArticleshipLms;
+                    if (type === 'pdf' && articleshipLms && articleshipLms.copyMode(resource)) {
+                        try {
+                            const { data, error } = await supabase.storage.from('industrial-training-mastery-resources').createSignedUrl(resource.view_storage_path, 300);
+                            if (error) throw error;
+                            window.location.href = articleshipLms.copyTarget(resource, data.signedUrl, 1);
+                        } catch (err) {
+                            console.error("Viewer error", err);
+                            alert("Could not load resource.");
+                        }
+                        return;
+                    }
                     // Non-template PDFs open in the ca-resource flipbook viewer
                     const isTemplate = resource.group && resource.group.toLowerCase().includes('template');
                     if (type === 'pdf' && !isTemplate) {

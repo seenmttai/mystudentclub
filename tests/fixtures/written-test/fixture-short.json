@@ -1,0 +1,113 @@
+{
+ "id": "fixture-short",
+ "kind": "aptitude",
+ "title": "Fixture paper: short",
+ "order": 91,
+ "minutes": 2,
+ "marking": {
+  "correct": 1,
+  "wrong": 0,
+  "blank": 0
+ },
+ "intro": "Three quick questions for the timer.",
+ "sections": [
+  {
+   "id": "numbers",
+   "title": "Numbers",
+   "budget_minutes": 2
+  }
+ ],
+ "stimuli": [],
+ "questions": [
+  {
+   "id": "fixture-short-q01",
+   "n": 1,
+   "section": "numbers",
+   "topic": "Percentages",
+   "difficulty": "easy",
+   "type": "single",
+   "stem": "What is 15% of ₹2,400?",
+   "options": [
+    {
+     "id": "a",
+     "text": "₹240"
+    },
+    {
+     "id": "b",
+     "text": "₹360"
+    },
+    {
+     "id": "c",
+     "text": "₹160"
+    },
+    {
+     "id": "d",
+     "text": "₹3,600"
+    }
+   ],
+   "answer": "b",
+   "working": "₹2,400 × 15 ÷ 100 = ₹360.",
+   "reason": "10% is ₹240 and 5% is ₹120; together ₹360."
+  },
+  {
+   "id": "fixture-short-q02",
+   "n": 2,
+   "section": "numbers",
+   "topic": "Rate and time",
+   "difficulty": "easy",
+   "type": "single",
+   "stem": "A file has 48 pages. You check 6 pages every 10 minutes. How long does the whole file take?",
+   "options": [
+    {
+     "id": "a",
+     "text": "60 minutes"
+    },
+    {
+     "id": "b",
+     "text": "90 minutes"
+    },
+    {
+     "id": "c",
+     "text": "80 minutes"
+    },
+    {
+     "id": "d",
+     "text": "120 minutes"
+    }
+   ],
+   "answer": "c",
+   "working": "48 ÷ 6 = 8 blocks; 8 × 10 = 80 minutes.",
+   "reason": "Eight blocks of 6 pages, 10 minutes each."
+  },
+  {
+   "id": "fixture-short-q03",
+   "n": 3,
+   "section": "numbers",
+   "topic": "Number series",
+   "difficulty": "easy",
+   "type": "single",
+   "stem": "Which number comes next: 3, 6, 12, 24, …?",
+   "options": [
+    {
+     "id": "a",
+     "text": "36"
+    },
+    {
+     "id": "b",
+     "text": "42"
+    },
+    {
+     "id": "c",
+     "text": "30"
+    },
+    {
+     "id": "d",
+     "text": "48"
+    }
+   ],
+   "answer": "d",
+   "working": "Each term doubles: 24 × 2 = 48.",
+   "reason": "The rule is ×2, not +12."
+  }
+ ]
+}
