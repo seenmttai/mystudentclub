@@ -8,7 +8,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="/scripts/supabase.js"></script>
   <script src="/scripts/supabase-init.js"></script>
-  <script src="/scripts/career-profile.js?v=20260927.9"></script>
+  <script src="/scripts/career-profile.js?v=20261107.1"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <style>
@@ -534,6 +534,8 @@
             <input type="tel" id="signup-phone" class="form-input" autocomplete="tel"
               pattern="[+]?[0-9]{10,15}" maxlength="16">
           </div>
+          <!-- Recruiter sharing + promotional emails tick-boxes, drawn by MSCCareerProfile.mountSignupConsent -->
+          <div id="signup-consent" class="form-group"></div>
           <button type="submit" class="signup-btn">
             Sign Up
             <div class="loading-spinner"></div>
@@ -610,6 +612,7 @@
     const passwordInput = document.getElementById('password');
     const confirmPasswordInput = document.getElementById('confirm-password');
     const emailInput = document.getElementById('email');
+    const signupConsent = MSCCareerProfile.mountSignupConsent(document.getElementById('signup-consent'));
     const signupOnboarding = document.getElementById('signup-onboarding');
     const onboardingCloseButton = document.getElementById('signup-onboarding-close');
     const onboardingLaterButton = document.getElementById('signup-onboarding-later');
@@ -714,7 +717,9 @@
             data: {
               full_name: name,
               msc_auth_redirect: MSCCareerProfile.safeRedirect(redirectUrl || '/'),
-              phone: document.getElementById('signup-phone')?.value.trim() || ''
+              phone: document.getElementById('signup-phone')?.value.trim() || '',
+              // Which consent boxes were ticked; recorded with server time once the account is signed in.
+              msc_signup_consent: signupConsent.read()
             }
           }
         });
@@ -756,6 +761,8 @@
       errorMessage.classList.remove('show');
       successMessage.classList.remove('show');
       try {
+        // Google leaves this page before the account exists: carry the ticked boxes until login completes.
+        MSCCareerProfile.rememberSignupConsent(signupConsent.read());
         const { data, error } = await supabaseClient.auth.signInWithOAuth({
           provider: 'google',
           options: {}
@@ -776,6 +783,7 @@
         return;
       }
       try {
+        MSCCareerProfile.rememberSignupConsent(signupConsent.read());
         const { error } = await supabaseClient.auth.signInWithIdToken({
           provider: 'google',
           token: id_token

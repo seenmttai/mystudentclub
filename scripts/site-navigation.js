@@ -200,7 +200,7 @@
         finally{button.disabled=false;}
       })));
       window.dispatchEvent(new CustomEvent('msc:auth-ready',{detail:{client:sb}}));
-      if(!window.MSCCareerProfile)await loadScript('/scripts/career-profile.js?v=20260927.9');
+      if(!window.MSCCareerProfile)await loadScript('/scripts/career-profile.js?v=20261107.1');
       window.MSCCareerProfile?.initOnboarding?.();
     }).catch(error=>console.warn('MSC account navigation could not initialize:',error.message));
   }

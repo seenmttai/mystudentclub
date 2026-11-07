@@ -13,6 +13,18 @@
     'other': 'Others'
   };
   const CONSENT = 'I confirm that my details are correct and agree to My Student Club sharing my profile with recruiters and sending me relevant opportunities and updates via email.';
+  // The promotional-emails tick-box on the sign-up pages. Recruiter sharing is not asked here: the site asks for it when a
+  // CV is uploaded (portal3.js prompt, profile toggle). The wording must match record_signup_consent() in
+  // supabase/migrations/202611070001_signup_consent_and_portal.sql, which stores it with the server time.
+  const SIGNUP_CONSENT = {
+    version: '2026-11-07',
+    // Padam's call (6 Nov 2026): the box starts ticked and the student can untick it. Set false to start unticked.
+    defaultChecked: true,
+    boxes: [
+      { name: 'promotional', text: 'Email me about new batches, events, updates and offers.' }
+    ]
+  };
+  const SIGNUP_CONSENT_PENDING = 'msc_signup_consent_pending';
   let identity = null;
   let activeModal = null;
   let activeOnboarding = null;
@@ -58,7 +70,7 @@
   function loadStyles() {
     if (document.querySelector('link[data-msc-career]')) return;
     const link = document.createElement('link');
-    link.rel = 'stylesheet'; link.href = '/scripts/career-profile.css?v=20260927.9'; link.dataset.mscCareer = 'true';
+    link.rel = 'stylesheet'; link.href = '/scripts/career-profile.css?v=20261107.1'; link.dataset.mscCareer = 'true';
     document.head.appendChild(link);
   }
   function select(name, label, options, selected = '') {
@@ -93,18 +105,39 @@
   function disclosure(stage) {
     return `<div class="msc-career-disclosure"><p><strong>Before you submit:</strong> Please recheck all details, especially the <strong>year and date fields</strong>${stage === 'industrial-training' ? ' in your <strong>Industrial Training eligibility date</strong>' : ''}, as these will appear in your profile shared with recruiters.</p><label class="msc-career-consent"><input type="checkbox" name="sharing_consent" required><span>${CONSENT}</span></label></div>`;
   }
+  // Icon cards for the five portals. Icons and colours match the site's "What are you looking for?" picker.
+  const STAGE_CARDS = [
+    ['industrial-training', '#4f46e5,#6366f1', '<path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/>'],
+    ['articleship', '#059669,#10b981', '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>'],
+    ['ca-fresher', '#d97706,#f59e0b', '<path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>'],
+    ['experienced-ca', '#ea580c,#fb923c', '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>'],
+    ['semi-qualified', '#7c3aed,#8b5cf6', '<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="M8 7h6"/><path d="M8 11h8"/>']
+  ];
+  function stageCards(label, selected = '') {
+    const cards = STAGE_CARDS.map(([stage, colours, icon]) => `<label class="msc-stage-card${stage === selected ? ' is-selected' : ''}"><input type="radio" name="career_stage" value="${stage}" required${stage === selected ? ' checked' : ''}><span class="msc-stage-icon" style="background:linear-gradient(135deg,${colours})"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icon}</svg></span><span>${escapeHTML(STAGES[stage])}</span></label>`).join('');
+    return `<fieldset class="msc-stage-cards"><legend>${escapeHTML(label)}</legend>${cards}</fieldset>`;
+  }
   function mountFields(container, options = {}) {
     loadStyles();
     const fixedStage = options.stage;
     const initial = options.values || {};
     const stages = Object.entries(STAGES).filter(([stage]) => options.allowOther || stage !== 'other').map(([stage,label]) => [stage, options.allowOther && ['industrial-training','articleship'].includes(stage) ? `${label} Aspirant` : label]);
     container.classList.add('msc-career-fields');
-    container.innerHTML = `${fixedStage ? '' : select('career_stage',options.label || 'Job Looking For?',stages,initial.stage)}<div data-stage-fields></div><div data-disclosure></div>`;
-    const stageSelect = container.querySelector('[name="career_stage"]');
+    // The sign-up popup shows the portals as icon cards (same look as the site's "What are you looking for?" picker);
+    // other forms keep the dropdown.
+    const stagePicker = fixedStage ? '' : options.stageCards ? stageCards(options.label || 'What are you looking for?', initial.stage) : select('career_stage',options.label || 'Job Looking For?',stages,initial.stage);
+    container.innerHTML = `${stagePicker}<div data-stage-fields></div><div data-disclosure></div>`;
+    const stageSelect = container.querySelector('select[name="career_stage"]');
+    const currentStage = () => fixedStage || stageSelect?.value || container.querySelector('input[name="career_stage"]:checked')?.value || '';
+    container.querySelectorAll('input[name="career_stage"]').forEach(radio => radio.addEventListener('change', () => {
+      container.querySelectorAll('.msc-stage-card').forEach(card => card.classList.toggle('is-selected', card.querySelector('input').checked));
+      redraw();
+    }));
     const redraw = () => {
-      const stage = fixedStage || stageSelect.value;
+      const stage = currentStage();
       container.querySelector('[data-stage-fields]').innerHTML = stage ? stageFields(stage, initial) : '';
-      container.querySelector('[data-disclosure]').innerHTML = stage ? disclosure(stage) : '';
+      // The sign-up popup asks no consent: that was given by the tick-boxes on the sign-up page.
+      container.querySelector('[data-disclosure]').innerHTML = stage && !options.noConsent ? disclosure(stage) : '';
       const type = container.querySelector('[name="experience_type"]');
       const experience = container.querySelector('[data-experience-fields]');
       const setExperience = () => {
@@ -117,12 +150,16 @@
     stageSelect?.addEventListener('change', redraw); redraw();
     return {
       read() {
-        const stage = fixedStage || stageSelect.value;
-        const result = { stage, consent_version: VERSION, consent_text: CONSENT, consent_at: new Date().toISOString() };
+        const stage = currentStage();
+        const result = options.noConsent ? { stage } : { stage, consent_version: VERSION, consent_text: CONSENT, consent_at: new Date().toISOString() };
         container.querySelectorAll('input,select').forEach(el => {
           if (el.disabled || el.name === 'career_stage') return;
           result[el.name] = el.type === 'checkbox' ? el.checked : el.value.trim();
         });
+        if (options.noConsent) {
+          if (!STAGES[stage]) throw new Error('Please choose what you are looking for.');
+          return result;
+        }
         if (!STAGES[stage] || !result.sharing_consent) throw new Error('Please complete your career details and confirm the disclosure.');
         return result;
       }
@@ -156,12 +193,12 @@
     if (error) throw new Error('Unable to verify program access. Please try again.');
     return (data || []).some(row => ['industrial-training-mastery','msc-ca-freshers-program','msc-ca-articleship-program','articleship-program'].includes(row.course));
   }
-  async function persist(details, source, expectedUser) {
+  async function persist(details, source, expectedUser, rpcName = 'submit_career_intake') {
     const user = await currentUser();
     if ((expectedUser?.id || 'guest') !== (user?.id || 'guest')) throw new Error('Your account changed. Please reopen this form.');
     // Authenticated identity always comes from the current session, never a cached form or another account.
     const normalized = { ...details, email: user?.email || details.email, name: details.name || user?.user_metadata?.full_name || user?.user_metadata?.name };
-    const { error } = await client().rpc('submit_career_intake', { p_stage: details.stage, p_details: normalized, p_source: {...source,user_agent:navigator.userAgent || ''} });
+    const { error } = await client().rpc(rpcName, { p_stage: details.stage, p_details: normalized, p_source: {...source,user_agent:navigator.userAgent || ''} });
     if (error) throw new Error('We could not save your details. Please try again; your form has been kept.');
     const key = cacheKey(user,details.stage);
     completed.set(key,normalized);
@@ -182,9 +219,12 @@
     const google = user?.app_metadata?.provider === 'google' || user?.identities?.some(item=>item.provider === 'google');
     const googleIdentity = Boolean(google && user?.email && String(meta.full_name || meta.name || '').trim());
     const identityFields = googleIdentity ? '<p class="msc-career-account">Your name and email are supplied by your Google account.</p>' : `${input('name','Name','text',meta.full_name || meta.name || '', 'autocomplete="name" maxlength="160"')}${user?.email ? '' : input('email','Email','email','','autocomplete="email"')}`;
-    backdrop.innerHTML = `<section class="msc-career-dialog" role="dialog" aria-modal="true" aria-labelledby="msc-career-title"><button type="button" class="msc-career-close" aria-label="Close">×</button><h2 id="msc-career-title">${escapeHTML(options.title || 'Access Resource')}</h2><p>${escapeHTML(options.subtitle || 'Share your details to access free resources and relevant opportunities.')}</p><form class="msc-career-form">${identityFields}${input('phone','Phone Number','tel',meta.phone || '', 'autocomplete="tel" pattern="[+]?[0-9]{10,15}" maxlength="16"')}<div data-career-fields></div><p class="msc-career-error" role="alert" hidden></p><button type="submit" class="msc-career-primary">${escapeHTML(options.submitLabel || 'Continue')}</button></form></section>`;
+    // The sign-up popup asks only the portal and its questions: no name, phone or consent (given on the sign-up page).
+    const personalFields = options.signupIntake ? '' : `${identityFields}${input('phone','Phone Number','tel',meta.phone || '', 'autocomplete="tel" pattern="[+]?[0-9]{10,15}" maxlength="16"')}`;
+    const closeButton = options.required ? '' : '<button type="button" class="msc-career-close" aria-label="Close">×</button>';
+    backdrop.innerHTML = `<section class="msc-career-dialog" role="dialog" aria-modal="true" aria-labelledby="msc-career-title">${closeButton}<h2 id="msc-career-title">${escapeHTML(options.title || 'Access Resource')}</h2><p>${escapeHTML(options.subtitle || 'Share your details to access free resources and relevant opportunities.')}</p><form class="msc-career-form">${personalFields}<div data-career-fields></div><p class="msc-career-error" role="alert" hidden></p><button type="submit" class="msc-career-primary">${escapeHTML(options.submitLabel || 'Continue')}</button></form></section>`;
     document.body.appendChild(backdrop); document.body.style.overflow = 'hidden';
-    const fields = mountFields(backdrop.querySelector('[data-career-fields]'),{ stage:options.stage,allowOther:options.allowOther,label:options.stageLabel,values:options.values });
+    const fields = mountFields(backdrop.querySelector('[data-career-fields]'),{ stage:options.stage,allowOther:options.allowOther,label:options.stageLabel,values:options.values,noConsent:options.signupIntake,stageCards:options.signupIntake });
     let resolve;
     const promise = new Promise(done => { resolve = done; });
     const close = result => {
@@ -198,7 +238,7 @@
       else if (!event.shiftKey && document.activeElement === focusable.at(-1)) { event.preventDefault(); focusable[0]?.focus(); }
     };
     document.addEventListener('keydown',keyHandler);
-    backdrop.querySelector('.msc-career-close').addEventListener('click',()=>close(false));
+    backdrop.querySelector('.msc-career-close')?.addEventListener('click',()=>close(false));
     backdrop.addEventListener('click',event=>{if(event.target === backdrop && !options.required) close(false);});
     backdrop.querySelector('form').addEventListener('submit', async event => {
       event.preventDefault();
@@ -207,6 +247,13 @@
       button.disabled = true; button.textContent = 'Saving…'; error.hidden = true;
       try {
         const data = new FormData(form), details = fields.read();
+        if (options.signupIntake) {
+          // Name from the account (sign-up form or Google); email from the session; no phone.
+          details.name = String(meta.full_name || meta.name || '').trim();
+          details.email = user?.email || '';
+          const saved = await persist(details,options.source,user,'submit_signup_career_intake'); close(saved);
+          return;
+        }
         details.name = googleIdentity ? String(meta.full_name || meta.name).trim() : String(data.get('name') || '').trim();
         details.email = user?.email || String(data.get('email') || '').trim();
         details.phone = String(data.get('phone') || '').trim();
@@ -243,12 +290,71 @@
     if (result) safeSet(key,result.stage);
     return Boolean(result);
   }
+  // ---- Sign-up consent and the required portal popup ----
+  // The tick-box on the sign-up pages. read() -> {promotional, version}.
+  function mountSignupConsent(container) {
+    if (!container) return { read: () => null };
+    loadStyles();
+    container.classList.add('msc-signup-consent');
+    container.innerHTML = SIGNUP_CONSENT.boxes.map(box => `<label class="msc-career-consent"><input type="checkbox" name="msc_consent_${box.name}"${SIGNUP_CONSENT.defaultChecked ? ' checked' : ''}><span>${escapeHTML(box.text)}</span></label>`).join('');
+    return {
+      read() {
+        const ticked = name => Boolean(container.querySelector(`[name="msc_consent_${name}"]`)?.checked);
+        return { promotional: ticked('promotional'), version: SIGNUP_CONSENT.version };
+      }
+    };
+  }
+  // Google sign-up leaves the page before an account exists, so the boxes travel in sessionStorage until login completes.
+  function rememberSignupConsent(consent) {
+    if (consent?.version === SIGNUP_CONSENT.version) safeSet(SIGNUP_CONSENT_PENDING, JSON.stringify(consent));
+  }
+  // Records the sign-up boxes once (server time and wording in the database). True once they are recorded; false for
+  // accounts that never used the new sign-up, or while the database part is not live yet.
+  async function recordSignupConsent(user) {
+    const meta = user?.user_metadata || {};
+    if (meta.msc_signup_consent_recorded) return true;
+    let consent = meta.msc_signup_consent;
+    if (!consent) { try { consent = JSON.parse(safeGet(SIGNUP_CONSENT_PENDING) || 'null'); } catch (_) { consent = null; } }
+    if (!consent || consent.version !== SIGNUP_CONSENT.version) return false;
+    const { error } = await client().rpc('record_signup_consent', { p_promotional: Boolean(consent.promotional), p_version: consent.version });
+    if (error) { console.warn('Sign-up consent could not be recorded yet:', error.message); return false; }
+    try { sessionStorage.removeItem(SIGNUP_CONSENT_PENDING); } catch (_) {}
+    const { error: metaError } = await client().auth.updateUser({ data: { msc_signup_consent: consent, msc_signup_consent_recorded: true } });
+    if (metaError) console.warn('Could not remember that sign-up consent was recorded.');
+    return true;
+  }
+  // The required portal popup: only for accounts whose sign-up consent is recorded (so never for existing students, and
+  // never while the database part is missing), and only until they have answered once.
+  async function offerSignupIntake(user) {
+    const doneKey = `${PREFIX}${user.id}:signup-intake-done`;
+    if (safeGet(doneKey)) return true;
+    if (!(await recordSignupConsent(user))) return true;
+    const { data, error } = await client().from('career_intakes').select('stage').eq('user_id', user.id).limit(1);
+    if (error) return true;
+    if (data?.length) { safeSet(doneKey, '1'); return true; }
+    const saved = await formModal({
+      title: 'One last step',
+      subtitle: 'Tell us what you are looking for, so we can show you the right jobs and opportunities.',
+      stageLabel: 'What are you looking for?',
+      submitLabel: 'Continue',
+      required: true,
+      signupIntake: true,
+      source: { kind: 'signup-intake', title: 'Account signup', url: location.pathname }
+    }, user);
+    if (saved) safeSet(doneKey, '1');
+    return saved !== null;
+  }
   async function finishAuth(user, redirect) {
     const authenticated = await currentUser();
     if (!authenticated || (user && user.id !== authenticated.id)) return false;
     user = authenticated;
     redirect = safeRedirect(redirect || user.user_metadata?.msc_auth_redirect || '/');
     const metadata = user.user_metadata || {};
+    try {
+      if (!(await offerSignupIntake(user))) return false;
+    } catch (error) {
+      console.warn('Sign-up details step skipped:', error.message);
+    }
     if (metadata.msc_career_intake?.sharing_consent) {
       try {
         const stage = metadata.msc_career_intake.stage;
@@ -326,6 +432,12 @@
     try {
       const user = await currentUser();
       if (!user) return;
+      // A new sign-up who closed the tab before answering the portal popup gets it on whatever page they open next.
+      try {
+        if (!(await offerSignupIntake(user))) return;
+      } catch (error) {
+        console.warn('Sign-up details step skipped:', error.message);
+      }
       const emailSignupPending = user.user_metadata?.msc_career_intake?.sharing_consent && !user.user_metadata?.msc_onboarding_seen;
       if (!safeGet('msc_career_auth_pending') && !emailSignupPending) return;
       await finishAuth(user,safeGet('msc_career_auth_redirect') || (emailSignupPending && user.user_metadata?.msc_auth_redirect) || location.pathname + location.search);
@@ -337,6 +449,6 @@
       notice.append(message,retry); document.body.prepend(notice);
     } finally { onboardingStarting = false; }
   }
-  global.MSCCareerProfile = {initOnboarding,markAuthPending,getCurrentStage:()=>safeGet(`${PREFIX}${identity || 'guest'}:current-stage`),ensureForTool,ensureForResource,mountFields,finishAuth,safeRedirect,clearGuestState,STAGES};
+  global.MSCCareerProfile = {initOnboarding,markAuthPending,getCurrentStage:()=>safeGet(`${PREFIX}${identity || 'guest'}:current-stage`),ensureForTool,ensureForResource,mountFields,finishAuth,safeRedirect,clearGuestState,STAGES,mountSignupConsent,rememberSignupConsent,SIGNUP_CONSENT};
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',startProfileTour); else startProfileTour();
 })(window);

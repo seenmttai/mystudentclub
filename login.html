@@ -10,7 +10,7 @@
   <script src="/scripts/supabase.js"></script>
   <script src="/scripts/supabase-init.js"></script>
   <script src="/scripts/profile-state.js"></script>
-  <script src="/scripts/career-profile.js?v=20260927.9"></script>
+  <script src="/scripts/career-profile.js?v=20261107.1"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * {
@@ -847,6 +847,72 @@
         gap: 0;
       }
     }
+
+    /* Sign-up fits one screen. Spacing shrinks with the visible screen height (dvh: the height a phone browser
+       really shows), so tall screens look as before and short ones lose only white space. */
+    .auth-container.signup-active .form-panel {
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding-top: clamp(3.25rem, 7dvh, 4rem);
+      padding-bottom: clamp(0.75rem, 2dvh, 2rem);
+    }
+
+    .signup-form-wrapper .logo-container {
+      margin-bottom: clamp(0.25rem, 1dvh, 1rem);
+    }
+
+    .signup-form-wrapper .logo-icon {
+      max-width: clamp(110px, 17dvh, 150px);
+      margin-bottom: 0;
+    }
+
+    .signup-form-wrapper .form-title {
+      font-size: clamp(1.2rem, 2.8dvh, 1.5rem);
+      margin-bottom: clamp(0.5rem, 1.4dvh, 1rem);
+    }
+
+    .signup-form-wrapper .divider {
+      margin: clamp(0.4rem, 1.2dvh, 0.875rem) 0;
+    }
+
+    .signup-form-wrapper .form-group {
+      margin-bottom: clamp(0.4rem, 1.1dvh, 0.75rem);
+    }
+
+    .signup-form-wrapper .form-input,
+    .signup-form-wrapper .google-btn {
+      padding-top: clamp(0.55rem, 1.3dvh, 0.75rem);
+      padding-bottom: clamp(0.55rem, 1.3dvh, 0.75rem);
+    }
+
+    .signup-form-wrapper .signup-age-group {
+      margin: clamp(0.5rem, 1.3dvh, 1rem) 0;
+    }
+
+    .signup-form-wrapper .msc-signup-consent {
+      gap: clamp(0.3rem, 0.8dvh, 0.5rem);
+      margin-bottom: clamp(0.6rem, 1.6dvh, 1.25rem);
+    }
+
+    .signup-form-wrapper .submit-btn {
+      padding: clamp(0.65rem, 1.5dvh, 0.875rem);
+    }
+
+    .signup-form-wrapper .switch-link {
+      margin-top: clamp(0.5rem, 1.5dvh, 1.25rem);
+    }
+
+    /* First and last name stay side by side on phones: one row fewer. */
+    .signup-form-wrapper .name-row {
+      gap: 0.5rem;
+    }
+
+    @media (max-width: 480px) {
+      .signup-form-wrapper .name-row {
+        flex-direction: row;
+        gap: 0.5rem;
+      }
+    }
   </style>
   <!-- Standard Favicon -->
   <!-- Fallback Shortcut Icon -->
@@ -996,7 +1062,7 @@
               <input type="tel" id="signup-phone" class="form-input" placeholder="Phone number (optional)"
                 autocomplete="tel" pattern="[+]?[0-9]{10,15}" maxlength="16">
             </div>
-            <div class="form-group" style="margin-top: 1rem; margin-bottom: 1.25rem;">
+            <div class="form-group signup-age-group">
               <label
                 style="display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.75rem; color: #6b7280; cursor: pointer; user-select: none;">
                 <input type="checkbox" id="signup-age-declaration" required
@@ -1006,6 +1072,9 @@
                     style="color: #4f46e5; text-decoration: none;">Privacy Policy</a>.</span>
               </label>
             </div>
+            <!-- Recruiter sharing + promotional emails tick-boxes, drawn by MSCCareerProfile.mountSignupConsent.
+                 The Google sign-up button above reads the same boxes. -->
+            <div id="signup-consent"></div>
             <button type="submit" class="submit-btn" id="signup-submit">
               Continue
               <span class="spinner"></span>
@@ -1372,6 +1441,7 @@
 
       // Signup Form
       const signupForm = document.getElementById('signup-form');
+      const signupConsent = MSCCareerProfile.mountSignupConsent(document.getElementById('signup-consent'));
       const signupError = document.getElementById('signup-error');
       const signupSuccess = document.getElementById('signup-success');
       const signupSubmit = document.getElementById('signup-submit');
@@ -1448,7 +1518,9 @@
                 last_name: lastName,
                 full_name: `${firstName} ${lastName}`.trim(),
                 msc_auth_redirect: MSCCareerProfile.safeRedirect(redirectUrl || '/'),
-                phone: document.getElementById('signup-phone')?.value.trim() || ''
+                phone: document.getElementById('signup-phone')?.value.trim() || '',
+                // Which consent boxes were ticked; recorded with server time once the account is signed in.
+                msc_signup_consent: signupConsent.read()
               }
             }
           });
@@ -1503,12 +1575,17 @@
       }
 
       googleLoginBtn.addEventListener('click', handleGoogleSignIn);
-      googleSignupBtn.addEventListener('click', handleGoogleSignIn);
+      // Only the sign-up button carries the consent boxes; logging in with Google records nothing.
+      googleSignupBtn.addEventListener('click', () => {
+        MSCCareerProfile.rememberSignupConsent(signupConsent.read());
+        handleGoogleSignIn();
+      });
 
       // Native Google Sign-In handler (for mobile apps)
       window.handleGoogleSignInToken = async function (id_token) {
         if (!id_token) return;
         try {
+          if (authContainer.classList.contains('signup-active')) MSCCareerProfile.rememberSignupConsent(signupConsent.read());
           const { error } = await supabaseClient.auth.signInWithIdToken({
             provider: 'google',
             token: id_token
