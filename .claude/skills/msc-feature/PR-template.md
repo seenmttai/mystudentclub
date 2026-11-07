@@ -20,8 +20,8 @@ Expected: <...>
 
 ## SQL and Workers
 
-- SQL: `supabase/migrations/<file>.sql`, run <date>, backup in `~/development/msc-backups/<date>-<slug>/`. Or "None".
-- Workers: `<name>` version `<id>`, dry-run compared with live. Or "None".
+- SQL: `supabase/migrations/<file>.sql`. It runs after Padam's go, with a backup in `~/development/msc-backups/<date>-<slug>/`. Add the run date once it has run. Or "None".
+- Workers: `<name>`: what changes. It deploys after Padam's go, after a dry-run comparison with live. Add the version id once deployed. Or "None".
 - Secrets, vars or routes changed: <names only, never values>. Or "None".
 
 ## How to undo
