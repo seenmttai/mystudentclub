@@ -1973,6 +1973,9 @@ async function fetchAndCacheProfileData() {
           "subscribedTopics",
           JSON.stringify(profileObj.notification_subscriptions),
         );
+                if (currentFcmToken && !(window.flutter_app && window.flutter_app.isReady)) {
+                    mscReconcileTopics(currentFcmToken, profileObj.notification_subscriptions, false).catch(() => {});
+                }
         updateNotificationBadge();
       }
       return profileObj;
@@ -2211,6 +2214,72 @@ function updateSpecificTopicAreaVisibility() {
       : "block";
 }
 
+// ---- Per-browser topic sync ------------------------------------------------------------------------------------
+// Firebase subscribes a device token, not a person. The header list ('subscribedTopics') is the account's list: it is
+// saved on the profile and shared by every browser and the app. So this browser also remembers which topics ITS OWN
+// token is really subscribed to ('mscDeviceTopics'), and reconciles the two: a topic turned off on another device is
+// unsubscribed here too, and one turned on elsewhere is subscribed. Without this, a browser could keep receiving a
+// topic its header no longer shows, with no way to turn it off.
+const MSC_TOPIC_URL = 'https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription';
+const MSC_DEVICE_TOPICS_KEY = 'mscDeviceTopics';
+const MSC_TYPE_WIDE_TOPICS = { industrial: 'Industrial-all', fresher: 'fresher-all', semi: 'semi-all', articleship: 'articleship-all' };
+// Every job topic a browser can hold: used once per browser token to clear subscriptions made before this sync existed.
+const MSC_ALL_JOB_TOPICS = ['all']
+    .concat(JOB_TYPES_NOTIF.map(type => MSC_TYPE_WIDE_TOPICS[type.value]).filter(Boolean))
+    .concat(LOCATIONS_NOTIF.flatMap(location => JOB_TYPES_NOTIF.map(type => `${location}-${type.value}`)));
+
+function mscReadDeviceTopics() {
+    try { return JSON.parse(localStorage.getItem(MSC_DEVICE_TOPICS_KEY) || 'null'); } catch (_) { return null; }
+}
+function mscWriteDeviceTopics(token, topics) {
+    try { localStorage.setItem(MSC_DEVICE_TOPICS_KEY, JSON.stringify({ token, topics })); } catch (_) {}
+}
+async function mscFcmTopicCall(token, topic, action) {
+    const response = await fetch(MSC_TOPIC_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, topic, action }),
+    });
+    if (!response.ok) throw new Error(await response.text());
+}
+// One subscribe/unsubscribe for this browser's token; keeps this browser's own list in step. Throws on failure.
+async function mscTopicRequest(token, topic, action) {
+    await mscFcmTopicCall(token, topic, action);
+    const saved = mscReadDeviceTopics();
+    let topics = saved && saved.token === token ? saved.topics : [];
+    topics = action === 'subscribe' ? Array.from(new Set(topics.concat(topic))) : topics.filter(t => t !== topic);
+    mscWriteDeviceTopics(token, topics);
+}
+// Make this browser's token hold exactly the account's topics ([wanted]). resubscribeAll repeats every subscribe
+// (the old once-a-day refresh). Returns how many calls failed; failures are retried on the next page load.
+async function mscReconcileTopics(token, wanted, resubscribeAll) {
+    wanted = Array.isArray(wanted) ? wanted : [];
+    const saved = mscReadDeviceTopics();
+    let failures = 0;
+    const run = async (list, action, call) => {
+        for (let i = 0; i < list.length; i += 8) {
+            await Promise.all(list.slice(i, i + 8).map(topic => call(topic, action).catch(() => { failures++; })));
+        }
+    };
+    // The browser got a new token: the old one keeps its topics until told otherwise, so release them.
+    if (saved && saved.token && saved.token !== token && Array.isArray(saved.topics) && saved.topics.length) {
+        await run(saved.topics, 'unsubscribe', (topic, action) => mscFcmTopicCall(saved.token, topic, action));
+        failures = 0; // an expired old token cannot be released; never retry that forever
+    }
+    const known = saved && saved.token === token && Array.isArray(saved.topics) ? saved.topics : null;
+    // First time with this token: clear every job topic it might hold from before; afterwards only what it added.
+    const toRemove = (known === null ? MSC_ALL_JOB_TOPICS : known).filter(topic => !wanted.includes(topic));
+    const toAdd = resubscribeAll || known === null ? wanted : wanted.filter(topic => !known.includes(topic));
+    if (known === null) mscWriteDeviceTopics(token, []);
+    const call = (topic, action) => mscTopicRequest(token, topic, action);
+    await run(toRemove, 'unsubscribe', call);
+    await run(toAdd, 'subscribe', call);
+    // A first clean-up that did not fully succeed runs again next time.
+    if (known === null && failures > 0) { try { localStorage.removeItem(MSC_DEVICE_TOPICS_KEY); } catch (_) {} }
+    return failures;
+}
+// ---- end per-browser topic sync --------------------------------------------------------------------------------
+
 async function manageTopicSubscription(topic, action) {
   if (!currentFcmToken) {
     if (window.flutter_app.fcmToken)
@@ -2231,15 +2300,7 @@ async function manageTopicSubscription(topic, action) {
     return false;
   }
   try {
-    const response = await fetch(
-      "https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: currentFcmToken, topic, action }),
-      },
-    );
-    if (!response.ok) throw new Error(await response.text());
+    await mscTopicRequest(currentFcmToken, topic, action);
     let topics = getSubscribedTopics();
     if (action === "subscribe" && !topics.includes(topic)) topics.push(topic);
     else if (action === "unsubscribe")
@@ -2500,14 +2561,13 @@ function shouldSync() {
 }
 
 async function syncNotificationTopics() {
-  currentFcmToken = window.flutter_app.fcmToken || currentFcmToken;
-  if (!currentFcmToken || !shouldSync()) return;
-  await Promise.all(
-    getSubscribedTopics().map((topic) =>
-      manageTopicSubscription(topic, "subscribe"),
-    ),
-  );
-  localStorage.setItem("notificationSyncTimestamp", Date.now().toString());
+    // Inside the MSC app the app manages its own topics natively.
+    if (window.flutter_app && window.flutter_app.isReady) return;
+    currentFcmToken = currentFcmToken || (window.flutter_app && window.flutter_app.fcmToken);
+    if (!currentFcmToken) return;
+    const daily = shouldSync();
+    await mscReconcileTopics(currentFcmToken, getSubscribedTopics(), daily);
+    if (daily) localStorage.setItem('notificationSyncTimestamp', Date.now().toString());
 }
 
 
