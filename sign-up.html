@@ -8,7 +8,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="/scripts/supabase.js"></script>
   <script src="/scripts/supabase-init.js"></script>
-  <script src="/scripts/career-profile.js?v=20261107.1"></script>
+  <script src="/scripts/career-profile.js?v=20261107.2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <style>
@@ -713,7 +713,8 @@
           email: email,
           password: password,
           options: {
-            emailRedirectTo: `${window.location.origin}/login.html`,
+            // The confirmation link opens the portal, where the portal popup and the profile popup follow.
+            emailRedirectTo: `${window.location.origin}/`,
             data: {
               full_name: name,
               msc_auth_redirect: MSCCareerProfile.safeRedirect(redirectUrl || '/'),
@@ -732,9 +733,8 @@
           successMessage.textContent = 'Sign up successful! Please check your email to confirm your account.';
           successMessage.classList.add('show');
           signupForm.reset();
-          showSignupOnboarding();
+          // No popup here: the portal popup and the profile popup come after the confirmation link.
         } else if (data.session) {
-          showSignupOnboarding();
           await completeAuthentication(data.user);
         } else {
           errorMessage.textContent = 'An unexpected issue occurred during signup. Please try again.';

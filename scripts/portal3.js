@@ -3759,8 +3759,10 @@ async function initializePage() {
             profile = await fetchAndCacheProfileData();
         }
 
-        // Show onboarding segment modal if looking_for is not set on the homepage
-        if (!profile || !profile.looking_for) {
+        // Show onboarding segment modal if looking_for is not set on the homepage. New sign-ups are asked by the
+        // required portal popup instead (scripts/career-profile.js), which also fills looking_for.
+        const newSignup = Boolean(currentSession?.user?.user_metadata?.msc_signup_consent);
+        if ((!profile || !profile.looking_for) && !newSignup) {
             const path = window.location.pathname;
             if (path === '/' || path === '/index.html') {
                 setTimeout(() => {

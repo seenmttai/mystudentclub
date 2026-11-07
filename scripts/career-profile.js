@@ -327,11 +327,19 @@
   // never while the database part is missing), and only until they have answered once.
   async function offerSignupIntake(user) {
     const doneKey = `${PREFIX}${user.id}:signup-intake-done`;
-    if (safeGet(doneKey)) return true;
+    // A new sign-up who refreshed or closed the tab on the "complete your profile" popup has not answered it yet.
+    const profilePopupPending = Boolean(user.user_metadata?.msc_signup_consent) && !user.user_metadata?.msc_onboarding_seen;
+    if (safeGet(doneKey) && !profilePopupPending) return true;
     if (!(await recordSignupConsent(user))) return true;
-    const { data, error } = await client().from('career_intakes').select('stage').eq('user_id', user.id).limit(1);
+    const { data, error } = await client().from('career_intakes').select('stage, details').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1);
     if (error) return true;
-    if (data?.length) { safeSet(doneKey, '1'); return true; }
+    if (data?.length) {
+      safeSet(doneKey, '1');
+      if (!profilePopupPending) return true;
+      // Portal already chosen: show the profile popup again, then go to that portal.
+      await afterSignupIntake(user, { ...(data[0].details || {}), stage: data[0].stage });
+      return false;
+    }
     const saved = await formModal({
       title: 'One last step',
       subtitle: 'Tell us what you are looking for, so we can show you the right jobs and opportunities.',
@@ -341,8 +349,44 @@
       signupIntake: true,
       source: { kind: 'signup-intake', title: 'Account signup', url: location.pathname }
     }, user);
-    if (saved) safeSet(doneKey, '1');
-    return saved !== null;
+    if (!saved) return saved !== null;
+    safeSet(doneKey, '1');
+    // Then the "complete your profile" popup once, then the portal they chose. The caller stops here (navigation).
+    await afterSignupIntake(user, saved);
+    return false;
+  }
+  // The portal page for each choice, and the job_preference value portal3.js uses on those pages.
+  const PORTAL_PAGES = {
+    'industrial-training': '/',
+    'articleship': '/ca-articleship-opportunities',
+    'ca-fresher': '/ca-fresher-jobs',
+    'experienced-ca': '/experienced-ca-jobs',
+    'semi-qualified': '/semi-qualified-ca-jobs'
+  };
+  function portalPreference(saved) {
+    switch (saved?.stage) {
+      case 'industrial-training': return 'industrial';
+      case 'articleship': return 'articleship';
+      case 'ca-fresher': return 'fresher_fresher';
+      case 'experienced-ca': return 'fresher_experienced';
+      case 'semi-qualified': return saved.experience_type === 'fresher' ? 'semi_fresher' : 'semi_experienced';
+      default: return null;
+    }
+  }
+  async function afterSignupIntake(user, saved) {
+    const preference = portalPreference(saved);
+    if (preference) { try { localStorage.setItem('userJobPreference', preference); } catch (_) {} }
+    let target = PORTAL_PAGES[saved.stage] || '/';
+    if (!user.user_metadata?.msc_onboarding_seen) {
+      const completeProfile = await showOnboarding();
+      if (completeProfile === null) return;
+      if (completeProfile) target = '/profile.html?onboarding=1#sec-resume';
+      const { error } = await client().auth.updateUser({ data: { msc_onboarding_seen: true } });
+      if (error) console.warn('Could not remember onboarding dismissal.');
+    }
+    try { sessionStorage.removeItem('msc_career_auth_pending'); sessionStorage.removeItem('msc_career_auth_redirect'); } catch (_) {}
+    const here = location.pathname.replace(/\.html$/, '').replace(/\/index$/, '/') || '/';
+    if (here !== target) global.location.href = target;
   }
   async function finishAuth(user, redirect) {
     const authenticated = await currentUser();

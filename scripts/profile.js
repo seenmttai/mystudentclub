@@ -1524,14 +1524,14 @@ const WZ = (() => {
     function handleNext() {
         const phase = st.phase;
         if (phase === 'cv') {
+            // Consent is optional: without it the CV is saved but not shared with recruiters (the student can tick
+            // "CV sharing consent" on the profile page later). It was asked right after the upload.
             const consentGiven = document.getElementById('wz-consent-chk')?.checked;
-            if (!consentGiven) {
-                showToast('Please accept the data sharing consent to continue.', 'warning', 5000);
-                return;
-            }
             saveConsentFromWizard();
-            saveConsentRecord(true).catch(console.error); // fire independently — don't wait on storer
-            updatePrivacyCard(true); // refresh UI immediately — loadConsentStatus ran before wizard
+            if (consentGiven) {
+                saveConsentRecord(true).catch(console.error); // fire independently — don't wait on storer
+                updatePrivacyCard(true); // refresh UI immediately — loadConsentStatus ran before wizard
+            }
             fireStorerAndProfill();
             st.history.push({ phase: 'cv' });
             goTo('photo', 'forward');
@@ -2193,6 +2193,8 @@ const WZ = (() => {
             localStorage.removeItem('userCVText'); // storer will set this on Next
 
             if (st.phase === 'cv') goTo('cv', 'forward');
+            // Right after the upload: may recruiters see this CV? (Also ticks the wizard's consent box when allowed.)
+            askCvConsentAfterUpload().catch(console.error);
         } catch (e) {
             console.error(e);
             showToast('Could not read the PDF. Please try a different file.', 'error');
@@ -3115,6 +3117,8 @@ async function handleFile(file, type) {
                 console.error('Failed to persist autofilled profile:', saveError);
                 showToast('Resume processed, but profile details could not be saved. Please click Save Profile and try again.', 'warning', 9000);
             }
+            // Right after the upload (once the loader is gone): may recruiters see this CV?
+            setTimeout(() => { askCvConsentAfterUpload().catch(console.error); }, 0);
         }
         refreshHeader();
     } catch (error) {
@@ -3320,6 +3324,67 @@ function updatePrivacyCard(isConsented) {
     }
 }
 
+// After a resume upload, ask once whether it may be shared with recruiters. "Not now" keeps the CV saved but not
+// shared (recorded as declined, like the portal's decline button) until the student ticks "CV sharing consent" on this
+// page. Students who already answered (yes or no) are not asked again. Resolves true when sharing is allowed.
+let cvConsentAsk = null;
+async function askCvConsentAfterUpload() {
+    if (!currentUser) return false;
+    if (cvConsentAsk) return cvConsentAsk;
+    const mainChk = document.getElementById('cvSharingConsent');
+    if (mainChk && mainChk.checked) return true;
+    try {
+        const { data } = await supabaseClient.from('consentform')
+            .select('cv_sharing_consent').eq('user_id', currentUser.id).maybeSingle();
+        if (data) return data.cv_sharing_consent === true;
+    } catch (e) {
+        console.warn('Could not check CV sharing consent:', e);
+    }
+    cvConsentAsk = new Promise(resolve => {
+        const overlay = document.createElement('div');
+        overlay.id = 'cvConsentAfterUpload';
+        overlay.setAttribute('role', 'dialog');
+        overlay.setAttribute('aria-modal', 'true');
+        overlay.setAttribute('aria-labelledby', 'cvConsentAfterUploadTitle');
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:30000;background:rgba(15,23,42,.6);display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;';
+        overlay.innerHTML = `
+            <div style="background:#fff;border-radius:16px;max-width:440px;width:100%;padding:24px;font-family:Poppins,Arial,sans-serif;box-shadow:0 20px 60px rgba(15,23,42,.25);box-sizing:border-box;">
+                <h3 id="cvConsentAfterUploadTitle" style="margin:0 0 8px;font-size:1.15rem;color:#1f2937;">Share your CV with recruiters?</h3>
+                <p style="margin:0 0 18px;font-size:.9rem;line-height:1.55;color:#4b5563;">${CONSENT_TEXT}</p>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                    <button type="button" data-cv-consent="yes" style="flex:1 1 160px;padding:12px 16px;border:0;border-radius:10px;background:#4f46e5;color:#fff;font:600 .95rem Poppins,Arial,sans-serif;cursor:pointer;">Yes, share my CV</button>
+                    <button type="button" data-cv-consent="no" style="flex:1 1 120px;padding:12px 16px;border:1px solid #d1d5db;border-radius:10px;background:#fff;color:#374151;font:600 .95rem Poppins,Arial,sans-serif;cursor:pointer;">Not now</button>
+                </div>
+                <p style="margin:12px 0 0;font-size:.75rem;line-height:1.5;color:#6b7280;">Your CV is saved either way. You can change this anytime in your profile.</p>
+            </div>`;
+        const answer = async (yes) => {
+            overlay.remove();
+            cvConsentAsk = null;
+            if (mainChk) mainChk.checked = yes;
+            const wizardChk = document.getElementById('wz-consent-chk');
+            if (wizardChk) wizardChk.checked = yes;
+            await saveConsentRecord(yes);
+            updatePrivacyCard(yes);
+            const statusText = document.getElementById('consentStatusText');
+            if (statusText) {
+                statusText.textContent = yes
+                    ? 'Consent given on ' + new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
+                    : 'Not shared with recruiters';
+            }
+            showToast(yes
+                ? 'Thanks! Recruiters can now see your CV.'
+                : 'Your CV is saved but not shared with recruiters. You can turn sharing on anytime in your profile.',
+                yes ? 'success' : 'info', 7000);
+            resolve(yes);
+        };
+        overlay.querySelector('[data-cv-consent="yes"]').addEventListener('click', () => answer(true));
+        overlay.querySelector('[data-cv-consent="no"]').addEventListener('click', () => answer(false));
+        document.body.appendChild(overlay);
+        overlay.querySelector('[data-cv-consent="yes"]').focus();
+    });
+    return cvConsentAsk;
+}
+
 // =================== SAVE ===================
 async function persistProfileRecord(profileData, ocrText) {
     const { error } = await supabaseClient.from('profiles').upsert({
@@ -3411,13 +3476,8 @@ async function handleSave(e) {
         return;
     }
 
-    // DPDP Act: Block save if CV is uploaded but consent not given
-    const consentCheckbox = document.getElementById('cvSharingConsent');
-    if (consentCheckbox && !consentCheckbox.checked) {
-        const modal = document.getElementById('consentRequiredModal');
-        if (modal) modal.style.display = 'flex';
-        return;
-    }
+    // DPDP Act: the CV may be saved without sharing consent; it is then simply not shared with recruiters
+    // (recruiter search only shows students whose consentform says so). Consent is asked right after the upload.
 
     const summaryField = document.getElementById('profile_summary');
     const headlineField = document.getElementById('headline');

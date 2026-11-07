@@ -16,20 +16,23 @@ test('signup onboarding keeps the requested copy and profile sections', () => {
   }
 });
 
-test('signup onboarding is success-triggered and dismissible', () => {
+test('no popup right after sign-up: the confirmation link opens the portal, where the profile popup follows', () => {
   assert.match(source, /id="signup-onboarding"[^>]+role="dialog"[^>]+aria-modal="true"[^>]+aria-hidden="true"[^>]+inert/);
-  assert.match(source, /successMessage\.classList\.add\('show'\)[\s\S]*?showSignupOnboarding\(\);/);
+  // 7 Nov 2026: sign-up only says "check your email"; the portal popup and then the profile popup come after the
+  // confirmation link, on the portal page (scripts/career-profile.js).
+  assert.doesNotMatch(source, /\bshowSignupOnboarding\(\);/);
+  assert.match(source, /emailRedirectTo: `\$\{window\.location\.origin\}\/`/);
   assert.match(source, /onboardingCloseButton\?\.addEventListener\('click', hideSignupOnboarding\)/);
   assert.match(source, /onboardingLaterButton\?\.addEventListener\('click', hideSignupOnboarding\)/);
   assert.match(source, /event\.key === 'Escape'[\s\S]*?hideSignupOnboarding\(\)/);
   assert.match(source, /event\.target === signupOnboarding/);
 });
 
-test('alternate login-page signup receives the same onboarding and remains dismissible', () => {
+test('alternate login-page signup shows no popup either and sends the confirmation link to the portal', () => {
   assert.match(loginSource, /Don’t just search for jobs\. Let recruiters find you\./);
   assert.match(loginSource, /Share your details in less than 2 minutes with MSC’s network of 1,000\+ recruiters\. Let your next opportunity find you\./);
   assert.match(loginSource, /id="login-signup-onboarding-cta"[^>]*>Complete My Profile →/);
-  assert.match(loginSource, /data\.user && !data\.session[\s\S]*?showLoginSignupOnboarding\(\)/);
-  assert.match(loginSource, /else if \(data\.session\)[\s\S]*?showLoginSignupOnboarding\(\)/);
+  assert.doesNotMatch(loginSource, /\bshowLoginSignupOnboarding\(\);/);
+  assert.match(loginSource, /emailRedirectTo: `\$\{window\.location\.origin\}\/`/);
   assert.match(loginSource, /loginSignupOnboardingClose\?\.addEventListener\('click', hideLoginSignupOnboarding\)/);
 });
