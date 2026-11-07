@@ -1445,6 +1445,17 @@
       const signupError = document.getElementById('signup-error');
       const signupSuccess = document.getElementById('signup-success');
       const signupSubmit = document.getElementById('signup-submit');
+      // The 18+ declaration must be ticked before signing up: Continue stays greyed out until it is
+      // (the checkbox's `required` alone was not enforced everywhere, e.g. in the app's web view).
+      const signupAgeBox = document.getElementById('signup-age-declaration');
+      const syncSignupSubmit = () => { signupSubmit.disabled = !signupAgeBox.checked; };
+      signupAgeBox.addEventListener('change', syncSignupSubmit);
+      syncSignupSubmit();
+      const showAgeRequired = () => {
+        signupError.textContent = 'Please confirm that you are 18 or older and agree to the Privacy Policy.';
+        signupError.classList.add('show');
+        signupAgeBox.focus();
+      };
       const loginSignupOnboarding = document.getElementById('login-signup-onboarding');
       const loginSignupOnboardingClose = document.getElementById('login-signup-onboarding-close');
       const loginSignupOnboardingLater = document.getElementById('login-signup-onboarding-later');
@@ -1496,6 +1507,11 @@
 
         signupError.classList.remove('show');
         signupSuccess.classList.remove('show');
+
+        if (!signupAgeBox.checked) {
+          showAgeRequired();
+          return;
+        }
 
         if (password.length < 6) {
           signupError.textContent = 'Password must be at least 6 characters long.';
@@ -1549,7 +1565,8 @@
           signupError.classList.add('show');
         } finally {
           signupSubmit.classList.remove('loading');
-          signupSubmit.disabled = false;
+          // After a successful sign-up the form is reset (box unticked), so Continue greys out again.
+          syncSignupSubmit();
         }
       });
 
@@ -1577,6 +1594,11 @@
       googleLoginBtn.addEventListener('click', handleGoogleSignIn);
       // Only the sign-up button carries the consent boxes; logging in with Google records nothing.
       googleSignupBtn.addEventListener('click', () => {
+        // Signing up with Google needs the same 18+ declaration as the email form.
+        if (!signupAgeBox.checked) {
+          showAgeRequired();
+          return;
+        }
         MSCCareerProfile.rememberSignupConsent(signupConsent.read());
         handleGoogleSignIn();
       });
