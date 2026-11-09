@@ -228,6 +228,11 @@
             border-bottom: none;
         }
 
+        .job-header:empty,
+        .job-header:has([data-field="title"]:empty) {
+            display: none !important;
+        }
+
         .job-title {
             text-decoration: underline;
         }

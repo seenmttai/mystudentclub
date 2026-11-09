@@ -625,8 +625,14 @@ test('mount: opens on the syllabus with Core, asks for the domain, and hides Sha
     assert.equal(doc.querySelector('.it-count').classList.contains('is-none'), true);
     assert.equal(app.summary().total, 63);
     assert.doesNotMatch(doc.body.textContent, /Share with MSC/);
-    // Release 1: the HR round and GD booklet is not in the course yet, so HR topics have no Read button (ROWS_NOT_LIVE).
-    const hrRead = [...doc.querySelectorAll('#it-panel-syllabus .it-section[data-section="hr"] .it-read')];
+    // Release 1: the HR round and GD booklet is not in the course yet, so HR topics have no Read button into it
+    // (ROWS_NOT_LIVE). One HR topic ("Your firm's interview page") reads the Articleship Interview Guide (row 4.3)
+    // instead: its Read button comes with that row, whichever of the two ships first.
+    const readsIn = title => [...doc.querySelectorAll('#it-panel-syllabus .it-section[data-section="hr"] .it-read')]
+        .filter(a => (a.getAttribute('href') || '').includes('&resource=' + encodeURIComponent(title).replace(/%20/g, '+')));
+    const hrRead = readsIn('HR round and GD booklet');
+    assert.equal(readsIn('Articleship Interview Guide').length, P.isRowLive('Articleship Interview Guide', 4) ? 1 : 0,
+        'the firm-page topic reads the Interview Guide only while its row is in the course');
     if (P.isRowLive('HR round and GD booklet', 4)) {
         assert.match(hrRead[0].getAttribute('href'), /^\/learning-management-system\/course\?course=msc-articleship-program&session=5&resource=HR\+round\+and\+GD\+booklet/);
         assert.match(hrRead[0].getAttribute('aria-label'), /^Read in HR round and GD booklet: /);

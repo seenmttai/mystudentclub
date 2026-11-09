@@ -761,14 +761,9 @@
                 if (!title && !desc && !bullets.length) return;
                 
                 var descEmpty = !desc;
-                
-                html += '<table class="exp-entry" data-preserve-label-columns style="width:100%; border-collapse:collapse; table-layout:fixed; margin-top: -1px;">'
-                    + '<colgroup>'
-                    + '<col class="exp-l">'
-                    + '<col class="exp-r">'
-                    + '</colgroup>'
-                    + '<tbody>'
-                    + '<tr>'
+                var titleEmpty = !title && !year;
+                var titleRowHTML = titleEmpty ? '' : (
+                    '<tr>'
                     + '<td class="exp-titlebar" colspan="2" style="background:var(--sub-bg); font-weight:bold; border: 1px solid #000; padding: calc(1.5px * var(--content-scale)) calc(9px * var(--content-scale));">'
                     + '<div class="exp-titlebar-inner" style="display:flex; justify-content:space-between; align-items:baseline;">'
                     + '<span class="exp-titletext"><span class="exp-role">' + title + '</span></span>'
@@ -776,6 +771,15 @@
                     + '</div>'
                     + '</td>'
                     + '</tr>'
+                );
+                
+                html += '<table class="exp-entry" data-preserve-label-columns style="width:100%; border-collapse:collapse; table-layout:fixed; margin-top: -1px;">'
+                    + '<colgroup>'
+                    + '<col class="exp-l">'
+                    + '<col class="exp-r">'
+                    + '</colgroup>'
+                    + '<tbody>'
+                    + titleRowHTML
                     + '<tr>'
                     + '<td class="exp-keylabel" style="' + (descEmpty ? 'display: none;' : '') + ' width:12%; background:var(--sub-bg); font-weight:bold; vertical-align:top; border: 1px solid #000; padding: calc(1.5px * var(--content-scale)) calc(9px * var(--content-scale));">' + desc + '</td>'
                     + '<td class="exp-keybody" ' + (descEmpty ? 'colspan="2" style="width:100% !important; border: 1px solid #000; padding: calc(1.5px * var(--content-scale)) calc(9px * var(--content-scale));"' : 'style="width:84%; border: 1px solid #000; padding: calc(1.5px * var(--content-scale)) calc(9px * var(--content-scale));"') + '>'

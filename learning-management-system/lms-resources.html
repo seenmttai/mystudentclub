@@ -574,16 +574,23 @@
                     const type = String(resource?.type || '').toLowerCase();
                     return type === 'docx' && this.hasViewPath(resource) && this.hasDownloadPath(resource);
                 },
+                isExcelDownloadResource(resource) {
+                    const viewPath = String(resource?.view_storage_path || '').toLowerCase();
+                    const dlPath = String(resource?.download_storage_path || '').toLowerCase();
+                    return viewPath.endsWith('.csv') && (dlPath.endsWith('.xlsx') || dlPath.endsWith('.xls'));
+                },
                 getViewLabel(resource) {
                     return this.isDocxPreviewResource(resource) ? 'Preview PDF' : 'View';
                 },
                 getDownloadLabel(resource) {
-                    return this.isDocxPreviewResource(resource) ? 'Download DOCX' : 'Download';
+                    if (this.isDocxPreviewResource(resource)) return 'Download DOCX';
+                    if (this.isExcelDownloadResource(resource)) return 'Download Excel';
+                    return 'Download';
                 },
                 getResourceFormatNote(resource) {
-                    return this.isDocxPreviewResource(resource)
-                        ? 'PDF preview available. Download returns the original DOCX file.'
-                        : '';
+                    if (this.isDocxPreviewResource(resource)) return 'PDF preview available. Download returns the original DOCX file.';
+                    if (this.isExcelDownloadResource(resource)) return 'Preview shows one sheet. Download the Excel file for every sheet.';
+                    return '';
                 },
                 getPreviewType(resource) {
                     if (this.isSpecialSheet(resource)) return 'iframe';
@@ -643,7 +650,9 @@
                     this.currentResourceTitle = resource.title;
                     this.currentResourceSubtitle = this.isDocxPreviewResource(resource) && type === 'pdf'
                         ? 'Previewing the PDF version. Download gets the original DOCX file.'
-                        : '';
+                        : (this.isExcelDownloadResource(resource) && type === 'csv'
+                            ? 'This preview shows one sheet. Download the Excel file for every sheet.'
+                            : '');
                     this.previewType = type;
                     this.viewerLoading = true;
                     this.currentZoomIndex = 1;
