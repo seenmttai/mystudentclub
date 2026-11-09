@@ -3609,3 +3609,69 @@ img.header-logo { height: 38px; width: auto; max-width: none; object-fit: contai
 
 /* The logo artwork reaches the edges of its image: never round or clip its corners. */
 img[src*="/assets/logo"] { border-radius: 0 !important; }
+
+/* CA Industrial Training Program strip (portal3.js renderItProgramStrip) */
+.itp-strip {
+  position: relative;
+  display: flex;
+  margin: 2px 16px 12px;
+  border: 1px solid #c7d7fe;
+  border-radius: 16px;
+  background: linear-gradient(100deg, #eef4ff 0%, #f5f3ff 60%, #fdf4ff 100%);
+  box-shadow: 0 1px 2px rgba(30, 64, 175, 0.06);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+.itp-strip.itp-hiding { opacity: 0; transform: translateY(-4px); }
+.itp-link {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 38px 10px 12px;
+  color: inherit;
+  text-decoration: none;
+  border-radius: 16px;
+  -webkit-tap-highlight-color: transparent;
+}
+.itp-link:active { background: rgba(37, 99, 235, 0.06); }
+.itp-link:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.itp-icon {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.28);
+}
+.itp-icon svg { width: 20px; height: 20px; }
+.itp-text { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.itp-eyebrow, .itp-title-ca, .itp-sub-long { display: none; }
+.itp-title { font-size: 14px; font-weight: 700; color: var(--text); line-height: 1.25; }
+.itp-sub { font-size: 12px; color: var(--sub); line-height: 1.35; }
+.itp-cta { flex-shrink: 0; margin-left: auto; display: inline-flex; color: var(--brand); font-size: 0; }
+.itp-cta svg { width: 20px; height: 20px; }
+.itp-close {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #94a3b8;
+}
+.itp-close:active { background: rgba(15, 23, 42, 0.06); }
+.itp-close svg { width: 16px; height: 16px; }
+[data-theme="dark"] .itp-strip {
+  border-color: rgba(129, 140, 248, 0.35);
+  background: linear-gradient(100deg, rgba(37, 99, 235, 0.16), rgba(124, 58, 237, 0.16));
+}
+[data-theme="dark"] .itp-cta { color: #93c5fd; }
