@@ -507,15 +507,19 @@ function refreshCardReviews() {
     const info = firmReviewsMap.get(card.dataset.company);
     if (!info) return;
     const chips = card.querySelector(".jc-chips");
-    if (chips && hasReviewRating(info) && !card.querySelector(".jc-chip-rating")) {
-      const a = document.createElement("a");
-      a.className = "jc-chip jc-chip-rating";
+    if (chips && hasReviewRating(info)) {
+      // The first render may already show a chip from the exact-name ratings: update it to the matched summary.
+      let a = card.querySelector(".jc-chip-rating");
+      if (!a) {
+        a = document.createElement("a");
+        a.className = "jc-chip jc-chip-rating";
+        a.style.cssText = "background: #fef9c3; color: #854d0e; border-color: #fde047; font-weight: 700; text-decoration: none;";
+        a.addEventListener("click", (e) => e.stopPropagation());
+        const exclusive = chips.querySelector(".jc-chip:not(.jc-chip-domain)");
+        if (exclusive && /Exclusive/.test(exclusive.textContent)) exclusive.after(a); else chips.prepend(a);
+      }
       a.href = `/articleship-firm-review.html?firm=${encodeURIComponent(info.firmName || "")}`;
-      a.style.cssText = "background: #fef9c3; color: #854d0e; border-color: #fde047; font-weight: 700; text-decoration: none;";
-      a.addEventListener("click", (e) => e.stopPropagation());
       a.innerHTML = `<i class="fa-solid fa-star" style="color: #ca8a04; margin-right: 4px;"></i>${info.avgOverall.toFixed(1)} (${info.count})`;
-      const exclusive = chips.querySelector(".jc-chip:not(.jc-chip-domain)");
-      if (exclusive && /Exclusive/.test(exclusive.textContent)) exclusive.after(a); else chips.prepend(a);
     }
     const divider = card.querySelector(".jc-divider");
     if (divider && !card.querySelector(".jc-review-facts")) {
