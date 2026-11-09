@@ -1675,6 +1675,23 @@ body {
   overflow: hidden;
 }
 
+/* Articleship: one line of what students reported in firm reviews */
+.job-card-review-facts {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: var(--text-secondary);
+  margin: 0 0 0.6rem;
+}
+
+.job-card-review-facts i {
+  color: #ca8a04;
+  font-size: 0.7rem;
+  flex-shrink: 0;
+}
+
 /* Action buttons row */
 .job-card-actions {
   display: grid;

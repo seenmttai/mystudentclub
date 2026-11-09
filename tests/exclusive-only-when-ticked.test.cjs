@@ -19,7 +19,7 @@ test('portal cards and modals lock only jobs ticked exclusive', () => {
 });
 
 test('job detail page asks to enrol only for jobs ticked exclusive', () => {
-  assert.match(read('job-details.js'), /const requiresEnrollment = Boolean\(job\.is_exclusive\) && !isEnrolledSync\(tableName\);/);
+  assert.match(read('job-details.js'), /const requiresEnrollment = Boolean\(job\.is_exclusive\) && tableName !== 'Articleship Jobs' && !isEnrolledSync\(tableName\);/);
 });
 
 test('jobs by email reads is_exclusive for Industrial Training only', () => {

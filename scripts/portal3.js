@@ -1,4 +1,4 @@
-import { getDaysAgo, isJobExpired } from './date-utils.js';
+import { getDaysAgo, isJobExpired, JOB_EXPIRATION_DAYS } from './date-utils.js';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 import { unlockJobDetails, getCachedUnlockedJob } from './browser-guard.js';
 import { calculateProfileCompletion as calculateSharedProfileCompletion, readCachedProfile } from './profile-completion.js';
@@ -142,9 +142,26 @@ function getPublicJobSelectColumns(tableName) {
     } else if (tableName === 'Industrial Training Job Portal') {
         columns += ', "Company Type", "Industry Type", "Stipend Range", "Functional Tags", "Technology Tags", is_exclusive';
     } else if (tableName === 'Articleship Jobs') {
-        columns += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range"';
+        columns += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range", is_exclusive';
     }
     return columns;
+}
+
+// Runs a public job select. If is_exclusive isn't in the database yet (before its migration runs),
+// retries without it, so shared links and lists keep working.
+async function runPublicJobSelect(build) {
+    const cols = getPublicJobSelectColumns(currentTable);
+    let result = await build(cols);
+    if (result && result.error && /is_exclusive/.test(result.error.message || '') && cols.includes(', is_exclusive')) {
+        result = await build(cols.replace(', is_exclusive', ''));
+    }
+    return result;
+}
+
+// Articleship exclusives are free to apply: ICAI Regulation 47 bars charging an articled assistant
+// anything for an engagement. On the other portals exclusives stay for enrolled members.
+function isExclusiveLocked(job) {
+    return Boolean(job && job.is_exclusive) && currentTable !== 'Articleship Jobs' && !isEnrolledSync(currentTable);
 }
 
 function slugifyText(text) {
@@ -177,6 +194,8 @@ let profileHydrationPromise = null;
 let appliedJobIds = new Set();
 let debounceTimeout = null;
 let firmReviewsMap = new Map();
+// Articleship exclusives shown pinned on top of page 1; later pages skip them so they don't show twice.
+let pinnedExclusiveIds = new Set();
 let allLocations = [];
 let allCategories = {};
 let currentFcmToken = null;
@@ -490,7 +509,7 @@ function renderJobCard(job) {
 
     if (currentTable === 'Articleship Jobs') {
         ratingInfo = firmReviewsMap.get(companyKey);
-        if (ratingInfo && ratingInfo.count > 5) {
+        if (hasReviewRating(ratingInfo)) {
             // Show gold star rating badge beside company name
             ratingHtml = `
                 <span class="job-card-rating-inline" style="
@@ -570,7 +589,7 @@ function renderJobCard(job) {
             </div>`);
     const infoRowHtml = infoRowItems.length ? `<div class="job-card-info-row">${infoRowItems.join('')}</div>` : '';
     const descriptionText = job.Description ? job.Description.replace(/[#*_`\[\]]/g, '').trim() : '';
-    const isLocked = isExclusive && !isEnrolledSync(currentTable);
+    const isLocked = isExclusiveLocked(job);
     let applyButtonHtml = '';
     if (isLocked) {
         applyButtonHtml = `
@@ -624,6 +643,7 @@ function renderJobCard(job) {
             ${industryType ? `<span class="job-tag job-tag-industry"><i class="fas fa-chart-line"></i> ${industryType}</span>` : ""}
             ${secondaryDomain ? `<span class="job-tag tag-secondary">${secondaryDomain}</span>` : ""}
         </div>
+        ${buildReviewFactsHtml(ratingInfo)}
         ${infoRowHtml}
         ${descriptionText ? `<p class="job-card-description">${descriptionText.slice(0, 120)}${descriptionText.length > 120 ? "…" : ""}</p>` : ""}
         <div class="job-card-actions">
@@ -947,7 +967,7 @@ function showModal(job) {
     const isExclusive = Boolean(job.is_exclusive);
 
     // --- Exclusive vacancy gate ---
-    if (isExclusive && !isEnrolledSync(currentTable)) {
+    if (isExclusiveLocked(job)) {
         showExclusiveLockedModal(job);
         return;
     }
@@ -988,8 +1008,8 @@ function showModal(job) {
     if (currentTable === 'Articleship Jobs') {
         const compKey = companyName.toLowerCase();
         const ratingInfo = firmReviewsMap.get(compKey);
-        if (ratingInfo) {
-            if (ratingInfo.count > 5) {
+        if (ratingInfo && ratingInfo.count > 0) {
+            if (hasReviewRating(ratingInfo)) {
                 modalRatingHtml = `
                     <div class="job-card-rating-inline" style="display: inline-flex; align-items: center; gap: 0.35rem; margin-top: 0.25rem;">
                         <span class="rating-value" style="font-weight: 700; color: #1e293b; font-size: 0.8rem; background: #fef08a; padding: 1px 6px; border-radius: 6px; display: inline-flex; align-items: center; gap: 2px;">
@@ -1000,8 +1020,9 @@ function showModal(job) {
                     </div>
                 `;
             }
+            modalRatingHtml += buildReviewFactsHtml(ratingInfo);
             modalReviewButtonHtml = `
-                <a href="/articleship-firm-review.html?firm=${encodeURIComponent(companyName)}" target="_blank" class="btn btn-secondary btn-modal-secondary" style="border-color: #2563eb; color: #2563eb; display: inline-flex; align-items: center; gap: 0.3rem;">
+                <a href="/articleship-firm-review.html?firm=${encodeURIComponent(ratingInfo.firmName || companyName)}" target="_blank" class="btn btn-secondary btn-modal-secondary" style="border-color: #2563eb; color: #2563eb; display: inline-flex; align-items: center; gap: 0.3rem;">
                     <i class="fas fa-comments"></i>
                     Read Reviews
                 </a>
@@ -1409,50 +1430,93 @@ function updateFilterCache() {
 
 }
 
+function hasReviewRating(info) {
+    return Boolean(info && info.count > 0 && typeof info.avgOverall === 'number' && !Number.isNaN(info.avgOverall));
+}
+
+// One short line of what students reported about a firm, built from review counts (no review text).
+// A fact shows only when at least 60% of the answers agree.
+function buildReviewFactsHtml(info) {
+    if (!info || !(info.count > 0)) return '';
+    const facts = [];
+    if (info.stipendMedian) facts.push(`Stipend ~₹${Number(info.stipendMedian).toLocaleString('en-IN')}`);
+    if (info.stipendAnswers > 0) {
+        if (info.stipendOnTime / info.stipendAnswers >= 0.6) facts.push('Stipend paid on time');
+        else if (info.stipendDelayed / info.stipendAnswers >= 0.6) facts.push('Stipend delays reported');
+    }
+    if (info.leaveAnswers > 0) {
+        if (info.leaveEasy / info.leaveAnswers >= 0.6) facts.push('Leave easy to get');
+        else if (info.leaveDifficult / info.leaveAnswers >= 0.6) facts.push('Leave hard to get');
+    }
+    if (facts.length === 0) return '';
+    const who = `${info.count} student review${info.count > 1 ? 's' : ''}`;
+    const safe = (t) => String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    return `<p class="job-card-review-facts"><i class="fas fa-comments" aria-hidden="true"></i> <span>From ${safe(who)}: ${facts.map(safe).join(' · ')}</span></p>`;
+}
+
+function toReviewInfo(name, row) {
+    if (!row) return { firmName: name, avgOverall: null, count: 0 };
+    const num = (v) => (v === null || v === undefined || v === '' ? null : Number(v));
+    return {
+        firmName: row.firm_name || name,
+        avgOverall: num(row.avg_overall),
+        count: Number(row.review_count) || 0,
+        stipendMedian: num(row.stipend_median),
+        stipendAnswers: Number(row.stipend_answers) || 0,
+        stipendOnTime: Number(row.stipend_on_time) || 0,
+        stipendDelayed: Number(row.stipend_delayed) || 0,
+        leaveAnswers: Number(row.leave_answers) || 0,
+        leaveEasy: Number(row.leave_easy) || 0,
+        leaveDifficult: Number(row.leave_difficult) || 0
+    };
+}
+
+// False after get_firm_review_summaries fails once (e.g. before its migration): use exact names after that.
+let reviewSummaryRpcAvailable = true;
+
 async function fetchFirmRatingsForVisibleJobs(jobs) {
     if (currentTable !== 'Articleship Jobs' || !Array.isArray(jobs) || jobs.length === 0) return;
 
-    const uncached = [];
-    jobs.forEach(j => {
-        const name = (j.Company || '').trim();
-        if (name && !firmReviewsMap.has(name.toLowerCase())) {
-            uncached.push(name);
-        }
-    });
-
-    if (uncached.length === 0) return;
-    const uniqueNames = Array.from(new Set(uncached));
+    const uniqueNames = Array.from(new Set(jobs
+        .map(j => (j.Company || '').trim())
+        .filter(name => name && !firmReviewsMap.has(name.toLowerCase()))));
+    if (uniqueNames.length === 0) return;
 
     try {
-        const { data, error } = await supabaseClient
-            .from('articleship_firm_reviews_public')
-            .select('firm_name, overall_rating')
-            .in('firm_name', uniqueNames);
-        if (error) throw error;
+        // Matches spellings of the same firm ("K K & Co." = "K K and Company"; S R Batliboi = EY).
+        const rpc = reviewSummaryRpcAvailable
+            ? await supabaseClient.rpc('get_firm_review_summaries', { p_names: uniqueNames })
+            : { error: true };
+        if (rpc.error) reviewSummaryRpcAvailable = false;
+        if (!rpc.error && Array.isArray(rpc.data)) {
+            const byName = new Map(rpc.data.map(r => [String(r.name || '').trim().toLowerCase(), r]));
+            uniqueNames.forEach(name => {
+                firmReviewsMap.set(name.toLowerCase(), toReviewInfo(name, byName.get(name.toLowerCase())));
+            });
+        } else {
+            // Before the review-summary function exists: exact firm names only, as before.
+            const { data, error } = await supabaseClient
+                .from('articleship_firm_reviews_public')
+                .select('firm_name, overall_rating')
+                .in('firm_name', uniqueNames);
+            if (error) throw error;
 
-        const groups = {};
-        (data || []).forEach(r => {
-            if (!r.firm_name) return;
-            const key = r.firm_name.trim().toLowerCase();
-            if (!groups[key]) {
-                groups[key] = { firmName: r.firm_name.trim(), ratings: [], count: 0 };
-            }
-            if (typeof r.overall_rating === 'number') {
-                groups[key].ratings.push(r.overall_rating);
-            }
-            groups[key].count++;
-        });
-
-        uniqueNames.forEach(name => {
-            const key = name.toLowerCase();
-            const g = groups[key];
-            if (g && g.ratings.length > 0) {
-                const avg = g.ratings.reduce((a, b) => a + b, 0) / g.ratings.length;
-                firmReviewsMap.set(key, { firmName: g.firmName, avgOverall: avg, count: g.count });
-            } else {
-                firmReviewsMap.set(key, { firmName: name, avgOverall: null, count: 0 });
-            }
-        });
+            const groups = {};
+            (data || []).forEach(r => {
+                if (!r.firm_name) return;
+                const key = r.firm_name.trim().toLowerCase();
+                if (!groups[key]) groups[key] = { firmName: r.firm_name.trim(), ratings: [], count: 0 };
+                if (typeof r.overall_rating === 'number') groups[key].ratings.push(r.overall_rating);
+                groups[key].count++;
+            });
+            uniqueNames.forEach(name => {
+                const g = groups[name.toLowerCase()];
+                const avg = g && g.ratings.length ? g.ratings.reduce((a, b) => a + b, 0) / g.ratings.length : null;
+                firmReviewsMap.set(name.toLowerCase(), g
+                    ? { firmName: g.firmName, avgOverall: avg, count: g.count }
+                    : { firmName: name, avgOverall: null, count: 0 });
+            });
+        }
 
         // Update rating badges on visible cards
         updateVisibleJobRatings();
@@ -1466,11 +1530,12 @@ function updateVisibleJobRatings() {
     const cards = document.querySelectorAll('.job-card');
     cards.forEach(card => {
         const compEl = card.querySelector('.job-card-company');
-        if (!compEl || card.querySelector('.job-card-rating-inline')) return;
+        if (!compEl) return;
         const nameSpan = compEl.querySelector('span');
         const companyName = nameSpan ? nameSpan.textContent.trim().toLowerCase() : '';
         const ratingInfo = firmReviewsMap.get(companyName);
-        if (ratingInfo && ratingInfo.count > 5 && ratingInfo.avgOverall != null) {
+        if (!ratingInfo) return;
+        if (hasReviewRating(ratingInfo) && !card.querySelector('.job-card-rating-inline')) {
             const ratingSpan = document.createElement('span');
             ratingSpan.className = 'job-card-rating-inline';
             ratingSpan.style.cssText = `
@@ -1492,6 +1557,11 @@ function updateVisibleJobRatings() {
                 <span style="color: #64748b; font-weight: 500; font-size: 0.68rem;">(${ratingInfo.count} review${ratingInfo.count > 1 ? 's' : ''})</span>
             `;
             compEl.appendChild(ratingSpan);
+        }
+        const tagsEl = card.querySelector('.job-card-tags');
+        if (tagsEl && !card.querySelector('.job-card-review-facts')) {
+            const factsHtml = buildReviewFactsHtml(ratingInfo);
+            if (factsHtml) tagsEl.insertAdjacentHTML('afterend', factsHtml);
         }
     });
 }
@@ -1588,7 +1658,7 @@ async function fetchJobs() {
         } else if (currentTable === "Industrial Training Job Portal") {
             selectColumns += ', "Company Type", "Industry Type", "Stipend Range", "Functional Tags", "Technology Tags", is_exclusive';
         } else if (currentTable === "Articleship Jobs") {
-            selectColumns += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range"';
+            selectColumns += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range", is_exclusive';
         }
         if (jobFilterColumnsAvailable) {
             selectColumns += extraSelectColumns(currentTable);
@@ -1766,8 +1836,25 @@ async function fetchJobs() {
             error = fallbackResult.error;
         }
 
+        // Rows the database returned for this page, before pinning or keyword filtering: decides paging.
+        const dbPageLength = (!error && Array.isArray(data)) ? data.length : 0;
+
         if (!error && data && state.sortBy === 'popular') {
             data.sort((a, b) => (b.application_count || 0) - (a.application_count || 0));
+        }
+
+        // Articleship: exclusive vacancies sit on top of page 1; later pages skip them.
+        if (!error && data) {
+            if (page === 0) pinnedExclusiveIds = new Set();
+            if (page === 0 && currentTable === 'Articleship Jobs' && selectColumns.includes('is_exclusive')) {
+                const pinned = await fetchPinnedExclusives(buildQuery, selectColumns);
+                if (pinned.length > 0) {
+                    pinned.forEach(job => pinnedExclusiveIds.add(job.id));
+                    data = [...pinned, ...data.filter(job => !pinnedExclusiveIds.has(job.id))];
+                }
+            } else if (page > 0 && pinnedExclusiveIds.size > 0) {
+                data = data.filter(job => !pinnedExclusiveIds.has(job.id));
+            }
         }
 
         if (!error && data && state.keywords.length > 0) {
@@ -1839,7 +1926,7 @@ async function fetchJobs() {
             }
 
             page++;
-            hasMoreData = data.length === limit;
+            hasMoreData = dbPageLength === limit;
 
             if (currentTable === 'Articleship Jobs') {
                 fetchFirmRatingsForVisibleJobs(data);
@@ -1913,6 +2000,18 @@ function disableStructuredFilters() {
     state.extra = {};
     if (currentTable === 'Industrial Training Job Portal') state.companyType = '';
     adjustFiltersForPortal();
+}
+
+// Exclusive articleship vacancies that match the current filters and are under 15 days old.
+async function fetchPinnedExclusives(buildQuery, selectColumns) {
+    try {
+        const cutoff = new Date(Date.now() - JOB_EXPIRATION_DAYS * 24 * 60 * 60 * 1000).toISOString();
+        const { data, error } = await buildQuery(selectColumns).eq('is_exclusive', true).gte('Created_At', cutoff);
+        // buildQuery already orders them by the sort the student picked.
+        return (error || !Array.isArray(data)) ? [] : data;
+    } catch (e) {
+        return [];
+    }
 }
 
 function resetAndFetch() {
@@ -3080,7 +3179,7 @@ async function loadBanners() {
     const bannerSection = document.querySelector('.banner-section');
     if (!carousel || !bannerSection) return;
     try {
-        const { data, error } = await supabaseClient.from('Banners').select('Image, Hyperlink, Type, visible_to_unenrolled');
+        const { data, error } = await supabaseClient.from('Banners').select('Image, Hyperlink, Type, visible_to_unenrolled').order('id', { ascending: true });
         if (error) throw error;
         const banners = data;
         carousel.innerHTML = '';
@@ -4015,11 +4114,11 @@ function checkAndOpenSharedJob() {
 // Fetch a specific shared job and open modal
 async function fetchSharedJob(jobId) {
     try {
-        const { data, error } = await supabaseClient
+        const { data, error } = await runPublicJobSelect(cols => supabaseClient
             .from(currentTable)
-            .select(getPublicJobSelectColumns(currentTable))
+            .select(cols)
             .eq('id', jobId)
-            .maybeSingle();
+            .maybeSingle());
 
         if (!error && data) {
             setTimeout(() => showModal(data), 300);
@@ -5056,11 +5155,11 @@ async function dv2PopulateTrending() {
     const list = document.getElementById('dv2TrendingList');
     if (!card || !list) return;
     try {
-        const { data, error } = await supabaseClient
+        const { data, error } = await runPublicJobSelect(cols => supabaseClient
             .from(currentTable)
-            .select(getPublicJobSelectColumns(currentTable))
+            .select(cols)
             .order('Created_At', { ascending: false, nullsFirst: false })
-            .limit(5);
+            .limit(5));
         if (error || !data || data.length === 0) return;
 
         list.innerHTML = '';
