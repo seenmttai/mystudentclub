@@ -265,6 +265,27 @@ function renderPortalChips() {
 
 
 // Helper to return public columns (excluding protected Application ID)
+// Locations are stored with one name per city (migration 202611060004: Bangalore = Bengaluru, Gurgaon = Gurugram...).
+// A student typing the other name still finds them, and older rows that kept the other name still match.
+const CITY_ALIASES = [
+    ['bengaluru', 'bangalore'], ['gurugram', 'gurgaon'], ['mumbai', 'bombay'], ['kolkata', 'calcutta'],
+    ['chennai', 'madras'], ['vadodara', 'baroda'], ['kochi', 'cochin'], ['mysuru', 'mysore'],
+    ['mangaluru', 'mangalore'], ['thiruvananthapuram', 'trivandrum'], ['delhi', 'new delhi'],
+];
+
+function expandLocationTerms(locations) {
+    const terms = [];
+    const add = (t) => { if (t && !terms.some(x => x.toLowerCase() === t.toLowerCase())) terms.push(t); };
+    for (const loc of locations) {
+        add(loc);
+        const low = String(loc).trim().toLowerCase();
+        for (const group of CITY_ALIASES) {
+            if (group.includes(low)) group.forEach(add);
+        }
+    }
+    return terms;
+}
+
 function getPublicJobSelectColumns(tableName) {
   let columns =
     'id, Company, Location, Salary, Description, Created_At, Category, application_count, posts_link, "Primary Domain"';
@@ -487,7 +508,7 @@ async function fetchJobs() {
     }
     if (state.locations.length > 0) {
       query = query.or(
-        state.locations.map((l) => `Location.ilike."%${l}%"`).join(","),
+        expandLocationTerms(state.locations).map((l) => `Location.ilike."%${l}%"`).join(","),
       );
     }
     if (state.categories.length > 0) {
