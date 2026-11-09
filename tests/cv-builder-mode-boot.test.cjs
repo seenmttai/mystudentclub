@@ -233,3 +233,43 @@ test('enrolled Articleship draft survives a normal visit untouched', async () =>
     assert.notEqual(JSON.parse(page.read('cv_maker_data') || '{}').personal?.name, 'Meera');
     page.close();
 });
+
+// ---------- Work Simulation "Add to my CV" reaches the Articleship CV, never the normal CV ----------
+
+const certNames = cv => ((cv && cv.certifications) || []).map(item => (item && typeof item === 'object' ? item.name : item));
+const WS_QUEUE = 'msc-articleship:cv-import';
+
+test('Work Simulation line queued before any CV: it opens in the Articleship CV; the normal CV is untouched', async () => {
+    const line = 'GST Work Simulation, MSC Articleship Program | Nov 2026: Prepared GSTR-1 for 18 invoices';
+    const page = await boot('?stage=articleship', {
+        user: { id: 'u1' }, courses: ['msc-articleship-program'],
+        storage: { cv_maker_data: LEGACY, [WS_QUEUE]: JSON.stringify([{ source: 'work-simulation', domain: 'gst', line, at: 1 }]) },
+        wait: 3000
+    });
+    const own = page.articleshipCv();
+    assert.ok(own, 'the Articleship CV exists');
+    assert.equal(certNames(own).filter(name => /Work Simulation/.test(name)).length, 1, 'the line, once');
+    assert.ok(certNames(own).some(name => name.includes('Prepared GSTR-1 for 18 invoices')));
+    assert.equal(page.read(WS_QUEUE), null, 'the device queue is cleared');
+    assert.equal(page.read('cv_maker_data'), LEGACY, 'the normal CV is byte-identical');
+    page.close();
+});
+
+test('Work Simulation: a newer line for a domain replaces the older one in the Articleship CV', async () => {
+    const older = 'GST Work Simulation, MSC Articleship Program | Nov 2026: Prepared GSTR-1 for 18 invoices';
+    const newer = 'GST Work Simulation, MSC Articleship Program | Nov 2026: Prepared GSTR-1 for 18 invoices; matched 40 bills with GSTR-2B';
+    const cv = { templateFile: 'articleship-layout-classic', personal: { name: 'Kirti Joshi' }, articleshipApplicant: true,
+        certifications: [{ name: 'Tally Prime course | Jan 2026', issuer: '' }, { name: older, issuer: '' }] };
+    const envelope = JSON.stringify({ v: 1, data: { cv }, updatedAt: 1, syncedAt: 0, dirty: false, owner: 'u1' });
+    const page = await boot('?stage=articleship', {
+        user: { id: 'u1' }, courses: ['msc-articleship-program'],
+        storage: { [ART_KEY]: envelope, [WS_QUEUE]: JSON.stringify([{ source: 'work-simulation', domain: 'gst', line: newer, at: 2 }]) },
+        wait: 3000
+    });
+    const names = certNames(page.articleshipCv());
+    assert.equal(page.articleshipCv().personal.name, 'Kirti Joshi', 'the student\'s own CV');
+    assert.deepEqual(names.filter(name => /Work Simulation/.test(name)).map(name => name.includes('matched 40 bills')), [true], 'one line per domain, the newer one');
+    assert.ok(names.some(name => /Tally Prime/.test(name)), 'other certificates stay');
+    assert.equal(page.read('cv_maker_data'), null, 'no normal CV is created');
+    page.close();
+});

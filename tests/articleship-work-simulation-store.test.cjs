@@ -201,54 +201,32 @@ test('my domain: shared key, MSCProgress first, ids validated', async () => {
   assert.equal(S.DOMAIN_IDS.length, 13);
 });
 
-test('Add to my CV: creates cv_maker_data, one line per domain, keeps the rest, queues the import', async () => {
+test('Add to my CV: queues one line per domain for the Articleship CV and never touches cv_maker_data (the normal CV)', async () => {
   const st = new MemStorage();
   let t = 100;
   const store = S.createStore({ global: {}, storage: st, now: () => t++ });
   const l1 = 'Statutory Audit Work Simulation, MSC Articleship Program | Nov 2026: Vouched 20 bills';
   let r = await store.addCvLine({ domain: 'statutory-audit', cvName: 'Statutory Audit Work Simulation', line: l1 });
-  assert.equal(r.cv, 'created');
-  let cv = JSON.parse(st.getItem('cv_maker_data'));
-  assert.deepEqual(cv.certifications, [{ name: l1, issuer: '' }]);
-  // a real CV with other certificates and an older MSC line written as HTML
-  st.setItem('cv_maker_data', JSON.stringify({ personal: { name: 'Asha' }, certifications: [
-    { name: 'PwC US Audit Job Simulation (Forage) | Oct 2026: Tested controls', issuer: '' },
-    { name: '<b>Statutory Audit Work Simulation, MSC Articleship Program</b> | Oct 2026: Counted stock', issuer: '' },
-    'NISM Series VIII',
-    { name: 'GST Work Simulation, MSC Articleship Program | Oct 2026: Prepared returns', issuer: '' }] }));
+  assert.equal(r.cv, 'added', 'queued for the Articleship CV');
+  assert.equal(st.getItem('cv_maker_data'), null, 'no normal CV is created');
+  // a student's normal CV stays byte for byte
+  const normal = JSON.stringify({ personal: { name: 'Asha' }, certifications: [{ name: 'NISM Series VIII', issuer: '' }] });
+  st.setItem('cv_maker_data', normal);
   r = await store.addCvLine({ domain: 'statutory-audit', cvName: 'Statutory Audit Work Simulation', line: l1 });
-  assert.equal(r.cv, 'updated');
-  cv = JSON.parse(st.getItem('cv_maker_data'));
-  assert.equal(cv.personal.name, 'Asha');
-  assert.equal(cv.certifications.length, 4);
-  assert.deepEqual(cv.certifications[1], { name: l1, issuer: '' }, 'replaced in place');
-  assert.equal(cv.certifications[2], 'NISM Series VIII');
-  assert.match(cv.certifications[3].name, /^GST Work Simulation/);
+  assert.equal(r.cv, 'added');
   r = await store.addCvLine({ domain: 'valuation', cvName: 'Valuation Work Simulation', line: 'Valuation Work Simulation, MSC Articleship Program | Nov 2026: Built a DCF' });
   assert.equal(r.cv, 'added');
-  assert.equal(JSON.parse(st.getItem('cv_maker_data')).certifications.length, 5);
+  assert.equal(st.getItem('cv_maker_data'), normal, 'the normal CV is never changed');
   const q = JSON.parse(st.getItem('msc-articleship:cv-import'));
   assert.equal(q.length, 2, 'one queued entry per domain');
   assert.deepEqual(Object.keys(q[0]).sort(), ['at', 'domain', 'line', 'source']);
   assert.equal(q[0].source, 'work-simulation');
-  // never overwrite a CV that cannot be read
-  st.setItem('cv_maker_data', '{broken');
-  r = await store.addCvLine({ domain: 'gst', cvName: 'GST Work Simulation', line: 'GST Work Simulation, MSC Articleship Program | Nov 2026: X' });
-  assert.equal(r.cv, 'skipped');
-  assert.equal(st.getItem('cv_maker_data'), '{broken');
-  // cv_maker_data that is not an object
-  st.setItem('cv_maker_data', '[1,2]');
-  assert.equal((await store.addCvLine({ domain: 'gst', cvName: 'GST Work Simulation', line: 'x' })).cv, 'skipped');
-  // consistency pass round 2 (I2-02): valid JSON whose certifications is not a list is the student's own data in a
-  // shape this page does not know: skipped, and the stored value is left byte for byte
-  for (const raw of ['{"personal":{"name":"Asha"},"certifications":"CA Inter, ICAI"}', '{"certifications":{"0":{"name":"CA Inter","issuer":"ICAI"}}}']) {
-    st.setItem('cv_maker_data', raw);
-    assert.equal((await store.addCvLine({ domain: 'gst', cvName: 'GST Work Simulation', line: 'GST Work Simulation, MSC Articleship Program | Nov 2026: X' })).cv, 'skipped');
-    assert.equal(st.getItem('cv_maker_data'), raw);
+  // the helper that edits a CV value still keeps its rules (it is no longer called by Add to my CV)
+  for (const raw of ['{"personal":{"name":"Asha"},"certifications":"CA Inter, ICAI"}', '{"certifications":{"0":{"name":"CA Inter","issuer":"ICAI"}}}', '{broken', '[1,2]']) {
     assert.equal(S.upsertCertification(raw, 'GST Work Simulation', 'x').status, 'skipped');
   }
-  // a null certifications is treated as none yet (a list is created)
   assert.equal(S.upsertCertification('{"certifications":null}', 'GST Work Simulation', 'x').status, 'added');
+  assert.equal(S.upsertCertification(null, 'GST Work Simulation', 'x').status, 'created');
 });
 
 test('Add to my CV calls the site hooks (sync, Promise, throwing)', async () => {
@@ -257,7 +235,7 @@ test('Add to my CV calls the site hooks (sync, Promise, throwing)', async () => 
     const store = S.createStore({ global: { MSCProgress: { addCvLine: impl } }, storage: new MemStorage(), now: () => 7 });
     const r = await store.addCvLine({ domain: 'gst', cvName: 'GST Work Simulation', line: 'L' });
     assert.equal(typeof r.hook, 'boolean');
-    assert.equal(r.cv, 'created');
+    assert.equal(r.cv, 'added');
   }
   assert.equal(calls.length, 2);
   assert.deepEqual(calls[0], { source: 'work-simulation', domain: 'gst', cvName: 'GST Work Simulation', line: 'L', at: 7 });

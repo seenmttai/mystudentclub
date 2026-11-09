@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en-IN" data-cv-builder="/cv-builder/?stage=articleship" data-login-url="/learning-management-system/" data-join-url="/learning-management-system/">
+<html lang="en-IN" class="ap-gated" data-cv-builder="/cv-builder/?stage=articleship" data-login-url="/learning-management-system/" data-join-url="/learning-management-system/">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -11,7 +11,10 @@
 <link rel="preload" href="fonts/nunito-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/nunito-800.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/caveat-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/articleship-program/shared/articleship-tools.css?v=20261110-r1">
 <link rel="stylesheet" href="css/ws.css">
+<!-- Enrolled students only: the page stays hidden behind the access card until the gate allows it. -->
+<style>html.ap-gated body > :not(.ap-gate):not(script) { visibility: hidden; }</style>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -35,6 +38,8 @@
 <!-- The site's account sync, "my domain" and CV hooks (INTEGRATION.md §3): window.MSCProgress over the shared progress engine -->
 <script src="/scripts/supabase.js"></script>
 <script src="/scripts/supabase-init.js"></script>
+<script src="/scripts/articleship-gate.js"></script>
+<script>MSCArticleshipGate.protect();</script>
 <script src="/scripts/articleship-progress.js"></script>
 <script src="/scripts/articleship-work-simulation-bridge.js"></script>
 <script src="js/ws-engine.js"></script>
