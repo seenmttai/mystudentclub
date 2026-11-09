@@ -4725,3 +4725,49 @@ body:has(.portal-nav-bar) {
 
 /* The logo artwork reaches the edges of its image: never round or clip its corners. */
 img[src*="/assets/logo"] { border-radius: 0 !important; }
+
+/* Same-company runs (portal3.js groupSameCompanyCards) */
+.job-card.company-group-hidden {
+  display: none !important;
+}
+
+.company-group-toggle {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  margin: -0.35rem 0 1rem;
+  padding: 0.7rem 1rem;
+  border: 1px dashed #bfdbfe;
+  border-radius: var(--radius-md, 10px);
+  background: #eff6ff;
+  color: #1d4ed8;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.company-group-toggle:hover {
+  background: #dbeafe;
+}
+
+.company-group-toggle .company-group-label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.company-group-toggle .company-group-action {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+
+.company-group-toggle .company-group-action i {
+  font-size: 0.7rem;
+}

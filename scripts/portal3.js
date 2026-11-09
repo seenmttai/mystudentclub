@@ -395,6 +395,96 @@ function toggleSaveJob(job, btnElement) {
     localStorage.setItem(SAVED_JOBS_KEY, JSON.stringify(saved));
 }
 
+// Same-company bursts (6 Nov 2026): when one company posts many roles within a day (e.g. 29 "Gratitude" roles in
+// five minutes), the newest card stays, the others move under it, and a "+N more roles from <company>" bar expands
+// them in place. Postings from different days are never grouped.
+const COMPANY_GROUP_MIN = 3;
+const COMPANY_GROUP_WINDOW_MS = 24 * 60 * 60 * 1000;
+const expandedCompanyGroups = new Set();
+
+function companyGroupKey(company) {
+    return String(company || '').toLowerCase()
+        .replace(/&/g, ' and ')
+        .replace(/[^a-z0-9]+/g, ' ')
+        .replace(/\b(pvt|private|ltd|limited|llp|inc|the)\b/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+function groupSameCompanyCards(container) {
+    if (!container) return;
+    container.querySelectorAll('.company-group-toggle').forEach(el => el.remove());
+    container.querySelectorAll('.job-card.company-group-hidden').forEach(el => el.classList.remove('company-group-hidden'));
+
+    // Build groups in display order: a card joins the open group of its company if it was posted within the window
+    // of that group's first card.
+    const cards = Array.from(container.children).filter(el => el.classList && el.classList.contains('job-card'));
+    const groups = [];
+    const groupsByKey = new Map();
+    for (const card of cards) {
+        const key = card.dataset.companyKey;
+        if (!key) continue;
+        const at = Date.parse(card.dataset.createdAt) || 0;
+        const sameCompany = groupsByKey.get(key) || [];
+        const open = at ? sameCompany.find(g => g.at && Math.abs(g.at - at) <= COMPANY_GROUP_WINDOW_MS) : null;
+        if (open) {
+            open.cards.push(card);
+        } else {
+            const group = { key, at, cards: [card] };
+            groups.push(group);
+            sameCompany.push(group);
+            groupsByKey.set(key, sameCompany);
+        }
+    }
+
+    for (const group of groups) {
+        const run = group.cards;
+        if (run.length < COMPANY_GROUP_MIN) continue;
+        // Keep the group together right under its first card.
+        let anchor = run[0];
+        for (const card of run.slice(1)) {
+            if (anchor.nextElementSibling !== card) anchor.after(card);
+            anchor = card;
+        }
+
+        const groupId = run[0].dataset.jobId;
+        const expanded = expandedCompanyGroups.has(groupId);
+        const rest = run.slice(1);
+        if (!expanded) rest.forEach(card => card.classList.add('company-group-hidden'));
+
+        const places = [...new Set(run.map(card => card.dataset.location).filter(Boolean))];
+        const placesText = places.slice(0, 3).join(', ') + (places.length > 3 ? ` +${places.length - 3}` : '');
+        const toggle = document.createElement('button');
+        toggle.type = 'button';
+        toggle.className = 'company-group-toggle' + (expanded ? ' expanded' : '');
+        toggle.setAttribute('aria-expanded', String(expanded));
+        const label = document.createElement('span');
+        label.className = 'company-group-label';
+        label.textContent = expanded
+            ? `Show fewer roles from ${run[0].dataset.companyName}`
+            : `+${rest.length} more roles from ${run[0].dataset.companyName}${placesText ? ` · ${placesText}` : ''}`;
+        const action = document.createElement('span');
+        action.className = 'company-group-action';
+        action.innerHTML = expanded ? 'Hide <i class="fas fa-chevron-up"></i>' : 'Show all <i class="fas fa-chevron-down"></i>';
+        toggle.append(label, action);
+        toggle.addEventListener('click', () => {
+            if (expandedCompanyGroups.has(groupId)) expandedCompanyGroups.delete(groupId);
+            else expandedCompanyGroups.add(groupId);
+            groupSameCompanyCards(container);
+            if (!expandedCompanyGroups.has(groupId)) run[0].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        });
+        // Expanded: the bar sits after the last card of the group; collapsed: right under the first card.
+        (expanded ? run[run.length - 1] : run[0]).after(toggle);
+    }
+
+    // Collapsing can leave the scroll sentinel on screen; the observer won't fire again, so load the next batch.
+    setTimeout(() => {
+        const sentinel = document.getElementById('sentinel');
+        if (!sentinel || !hasMoreData || isFetching) return;
+        if (sentinel.getBoundingClientRect().top < window.innerHeight + 200) fetchJobs();
+    }, 60);
+}
+
 function renderJobCard(job) {
     const companyName = (job.Company || '').trim();
     const companyKey = companyName.toLowerCase();
@@ -432,6 +522,10 @@ function renderJobCard(job) {
     const jobCard = document.createElement('article');
     jobCard.className = 'job-card' + (job.is_exclusive ? ' job-card-exclusive' : '');
     jobCard.dataset.jobId = job.id;
+    jobCard.dataset.companyKey = companyGroupKey(job.Company);
+    jobCard.dataset.companyName = (job.Company || '').trim();
+    jobCard.dataset.location = String(job.Location || '').split(',')[0].trim();
+    jobCard.dataset.createdAt = job.Created_At || '';
 
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
     const isExpired = isJobExpired(job.Created_At);
@@ -1458,6 +1552,7 @@ async function fetchJobs() {
                 if (card) fragment.appendChild(card);
             }
             dom.jobsContainer.appendChild(fragment);
+            groupSameCompanyCards(dom.jobsContainer);
             if (currentTable === 'Articleship Jobs') {
                 fetchFirmRatingsForVisibleJobs(lastJobListCache);
             }
@@ -1705,6 +1800,7 @@ async function fetchJobs() {
                     dom.jobsContainer.innerHTML = '<p class="no-jobs-found">No jobs found matching your criteria.</p>';
                 } else {
                     dom.jobsContainer.appendChild(fragment);
+                    groupSameCompanyCards(dom.jobsContainer);
                 }
             }
 
@@ -4888,11 +4984,20 @@ async function dv2PopulateTrending() {
             .from(currentTable)
             .select(getPublicJobSelectColumns(currentTable))
             .order('Created_At', { ascending: false, nullsFirst: false })
-            .limit(5);
+            .limit(20);
         if (error || !data || data.length === 0) return;
 
+        // One entry per company, so a burst of postings from one company doesn't fill the whole list.
+        const seenCompanies = new Set();
+        const picks = data.filter(job => {
+            const key = companyGroupKey(job.Company) || `id:${job.id}`;
+            if (seenCompanies.has(key)) return false;
+            seenCompanies.add(key);
+            return true;
+        }).slice(0, 5);
+
         list.innerHTML = '';
-        data.forEach(job => {
+        picks.forEach(job => {
             const item = document.createElement('button');
             item.type = 'button';
             item.className = 'dv2-trending-item';
