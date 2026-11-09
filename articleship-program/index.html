@@ -27,14 +27,13 @@
 
   <!-- Site Styles -->
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="sections.css?v=20261025.nextbatch">
+  <link rel="stylesheet" href="sections.css?v=20261109.register2">
   <link rel="stylesheet" href="footer.css?v=20261006.1">
   <link rel="stylesheet" href="../scripts/portal-style.css?v=20261008.1">
 
   <!-- Supabase & Firebase -->
   <script src="../scripts/supabase.js"></script>
   <script src="../scripts/supabase-init.js?v=20260927.9"></script>
-  <script src="../scripts/notify-waitlist.js?v=20261031.1"></script>
   <script src="../scripts/error-reporter.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging-compat.js"></script>
@@ -57,7 +56,7 @@
         <a href="#curriculum-section" class="header-nav-link">Curriculum</a>
         <a href="#certified-section" class="header-nav-link">Certificate</a>
         <a href="#mentor-section" class="header-nav-link">Mentor</a>
-        <a href="#waitlist-section" class="header-nav-link">Waitlist</a>
+        <a href="#register" class="header-nav-link">Register</a>
       </nav>
 
       <div class="header-actions">
@@ -126,13 +125,14 @@
           <div class="hero-status-row">
             <div class="eyebrow-pill">
               <span class="eyebrow-dot"></span>
-              <span>REGISTRATION CLOSED</span>
+              <span>REGISTRATIONS OPEN</span>
             </div>
 
             <div class="next-batch-pill" role="status">
-              <i class="fas fa-calendar-check" aria-hidden="true"></i>
-              <span>Next Batch Registrations Start on</span>
-              <span class="next-batch-date">Nov 15th</span>
+              <i class="fas fa-bolt" aria-hidden="true"></i>
+              <span>Register now at</span>
+              <span class="next-batch-mrp">&#8377;1,999</span>
+              <span class="next-batch-date">&#8377;1,499</span>
             </div>
           </div>
 
@@ -147,8 +147,8 @@
           </p>
 
           <div class="hero-cta-group">
-            <a href="#waitlist-section" class="btn-coral-primary" id="heroPrimaryCta">
-              <span>Join the Next Batch</span>
+            <a href="#register" class="btn-coral-primary" id="heroPrimaryCta">
+              <span>Register Now &bull; &#8377;1,499</span>
               <i class="fas fa-arrow-right"></i>
             </a>
             <a href="#curriculum-section" class="btn-outline-secondary">
@@ -671,7 +671,7 @@
               <span>Lifetime access to program resources</span>
             </li>
           </ul>
-          <a href="#waitlist-section" class="btn-navy-sample">
+          <a href="#register" class="btn-navy-sample">
             <span>Get Certificate</span>
             <i class="fas fa-arrow-right" style="font-size: 11px;"></i>
           </a>
@@ -827,82 +827,95 @@
       </div>
     </section>
 
-    <!-- ─── NOTIFY ME SECTION (COMPACT 2-COLUMN LANDSCAPE LAYOUT) ─── -->
-    <section class="notify-section" id="waitlist-section" data-aos="fade-up">
+    <!-- ─── REGISTER SECTION (registrations open; replaced the waitlist on 9 Nov 2026) ─── -->
+    <section class="notify-section register-section" id="register" data-aos="fade-up">
+      <span id="waitlist-section" class="anchor-alias" aria-hidden="true"></span>
       <div class="notify-section-inner">
-        <!-- Left Column: Copy & Value Proposition -->
+        <!-- Left Column: Copy -->
         <div class="notify-left">
-          <div class="notify-closed-badge">
+          <div class="notify-closed-badge register-open-badge">
             <span class="badge-dot"></span>
-            Registration Closed
+            Registrations Open
           </div>
 
           <h2 class="notify-heading">
-            Program <span class="hl-red">Currently Closed.</span><br>
-            <span class="hl-gr">Be First</span> When We Reopen.
+            Your Articleship <span class="hl-gr">Starts Here.</span>
           </h2>
 
           <p class="notify-sub">
-            Over 1,000 students have already secured top articleships through this program.
-            Don't miss the next batch &mdash; get notified the moment seats open.
+            Join the MSC Articleship Program for &#8377;1,499. Your registration is confirmed as soon as you pay,
+            and you'll get your further details within 2 days over mail and WhatsApp.
           </p>
 
           <div class="notify-perks-row">
             <div class="notify-perk-item">
-              <span class="notify-perk-icon"><i class="fas fa-bolt" style="color: #FBBF24;"></i></span>
-              <span>Instant Launch Alert</span>
+              <span class="notify-perk-icon"><i class="fas fa-check-circle" style="color: #34D399;"></i></span>
+              <span>Instant confirmation</span>
+            </div>
+            <div class="notify-perk-item">
+              <span class="notify-perk-icon"><i class="fab fa-whatsapp" style="color: #4ADE80;"></i></span>
+              <span>Details on mail &amp; WhatsApp</span>
             </div>
             <div class="notify-perk-item">
               <span class="notify-perk-icon"><i class="fas fa-shield-alt" style="color: #60A5FA;"></i></span>
-              <span>Zero Spam Guarantee</span>
-            </div>
-            <div class="notify-perk-item">
-              <span class="notify-perk-icon"><i class="fas fa-check-circle" style="color: #34D399;"></i></span>
-              <span>100% Free Priority Access</span>
+              <span>Secure payment by PayU</span>
             </div>
           </div>
         </div>
 
-        <!-- Right Column: Interactive Waitlist Action Card -->
+        <!-- Right Column: Registration Card -->
         <div class="notify-right">
-          <div class="notify-action-card">
+          <div class="notify-action-card register-card">
             <div class="notify-card-header">
-              <div class="notify-icon-wrap">🔔</div>
+              <div class="register-icon-wrap" aria-hidden="true">🎓</div>
               <div class="notify-card-title-group">
-                <span class="notify-card-badge">NEXT COHORT</span>
-                <h4 class="notify-card-title">Priority Waitlist</h4>
+                <span class="notify-card-badge register-card-badge">MSC Articleship Program</span>
+                <h3 class="notify-card-title">Register Now</h3>
               </div>
             </div>
 
-            <!-- Stats Row -->
-            <div class="notify-stats-row">
-              <div class="notify-stat">
-                <div class="notify-stat-num">1000+</div>
-                <div class="notify-stat-lbl">Students Placed</div>
-              </div>
-              <div class="notify-stat-divider"></div>
-              <div class="notify-stat">
-                <div class="notify-stat-num">Big 4</div>
-                <div class="notify-stat-lbl">Firms Covered</div>
-              </div>
-              <div class="notify-stat-divider"></div>
-              <div class="notify-stat">
-                <div class="notify-stat-num">100+</div>
-                <div class="notify-stat-lbl">Vacancies</div>
-              </div>
+            <div class="register-price-row">
+              <span class="register-price">&#8377;1,499</span>
+              <span class="register-mrp">&#8377;1,999</span>
+              <span class="register-off">25% OFF</span>
             </div>
 
-            <!-- Action CTA Button -->
-            <div class="notify-action">
-              <button id="notifyMeBtn" class="notify-me-btn js-notify-btn" type="button">
-                <span class="notify-btn-icon">🔔</span>
-                <span class="notify-btn-text">Notify Me When Open</span>
+            <form id="registerForm" class="register-form" method="post" action="#register" onsubmit="return false;" novalidate>
+              <label class="register-field">
+                <span>Full name</span>
+                <input type="text" name="name" id="regName" autocomplete="name" maxlength="60" required
+                  placeholder="As you want it on your certificate">
+              </label>
+              <label class="register-field">
+                <span>Email</span>
+                <input type="email" name="email" id="regEmail" autocomplete="email" maxlength="120" required
+                  placeholder="you@example.com">
+              </label>
+              <label class="register-field">
+                <span>WhatsApp number</span>
+                <div class="register-phone">
+                  <span class="register-phone-cc">+91</span>
+                  <input type="tel" name="phone" id="regPhone" autocomplete="tel-national" inputmode="numeric"
+                    maxlength="14" required placeholder="10-digit mobile number">
+                </div>
+              </label>
+
+              <button type="button" class="register-coupon-toggle" id="regCouponToggle" aria-expanded="false"
+                aria-controls="regCouponField">Have a coupon code?</button>
+              <label class="register-field register-coupon-field" id="regCouponField" hidden>
+                <span>Coupon code</span>
+                <input type="text" name="coupon" id="regCoupon" autocomplete="off" maxlength="30"
+                  autocapitalize="characters" placeholder="Enter code">
+              </label>
+
+              <button type="submit" class="notify-me-btn register-submit-btn" id="registerSubmit">
+                <i class="fas fa-lock" aria-hidden="true"></i>
+                <span class="register-submit-text">Pay &#8377;1,499 &amp; Register</span>
               </button>
-              <p id="notifyStatus" class="notify-status"></p>
-            </div>
+              <p id="registerStatus" class="notify-status register-status" role="status" aria-live="polite"></p>
+            </form>
 
-            <!-- Trust Line -->
-            <div class="notify-trust-line">No spam &bull; Instant notification &bull; Free to join</div>
+            <div class="notify-trust-line">Secure payment by PayU &bull; UPI, cards &amp; net banking</div>
           </div>
         </div>
       </div>
@@ -987,21 +1000,21 @@
   <!-- ─── FIXED BOTTOM CTA BAR (EXACT DESIGN MATCHING SCREENSHOT) ─── -->
   <div class="fixed-cta" id="cta-footer">
     <div class="timer-container">
-      <span class="status-closed-text">REGISTRATION CLOSED</span>
+      <span class="status-closed-text status-open-text">REGISTRATIONS OPEN</span>
     </div>
     <div class="price-container">
-      <span class="original">₹3999</span>
-      <span class="discounted">₹1999</span>
+      <span class="original">₹1,999</span>
+      <span class="discounted">₹1,499</span>
     </div>
-    <button type="button" id="notifyMeFooterBtn" class="notify-me-footer-btn js-notify-btn">
-      <span class="notify-footer-icon">🔔</span>
-      <span class="notify-footer-text">Notify Me</span>
-    </button>
+    <a href="#register" id="registerFooterBtn" class="notify-me-footer-btn">
+      <span class="notify-footer-text">Register Now</span>
+    </a>
   </div>
 
   <!-- Scripts -->
   <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
   <script src="app.js?v=20261003.actual1" type="module"></script>
+  <script src="register.js?v=20261109.3" defer></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
@@ -1035,126 +1048,6 @@
       }
 
       // Certificate 3D tilt & smooth spring physics are initialized via app.js initializeCertificate()
-
-      // ─── Notify Me Logic ───
-      const NOTIFY_FIREBASE_CONFIG = {
-        apiKey: "AIzaSyBTIXRJbaZy_3ulG0C8zSI_irZI7Ht2Y-8",
-        authDomain: "msc-notif.firebaseapp.com",
-        projectId: "msc-notif",
-        storageBucket: "msc-notif.appspot.com",
-        messagingSenderId: "228639798414",
-        appId: "1:228639798414:web:b8b3c96b15da5b770a45df",
-        measurementId: "G-X4M23TB936"
-      };
-      const NOTIFY_VAPID_KEY = "BGlNz4fQGzftJPr2U860MsoIo0dgNcqb2y2jAEbwJzjmj8CbDwJy_kD4eRAcruV6kNRs6Kz-mh9rdC37tVgeI5I";
-      const NOTIFY_TOPIC = "articleship-program-notify";
-      const MANAGE_TOPIC_URL = "https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription";
-
-      function updateAllArticleshipNotifyBtns(text = 'Added to Waitlist ✓', isSuccess = true) {
-        const allBtns = document.querySelectorAll('.js-notify-btn, #notifyMeBtn, #notifyMeFooterBtn');
-        allBtns.forEach(b => {
-          b.innerHTML = `<span>${text}</span>`;
-          if (isSuccess) {
-            b.style.setProperty('background', '#10B981', 'important');
-            b.style.setProperty('border-color', '#10B981', 'important');
-            b.style.setProperty('color', '#FFFFFF', 'important');
-            b.disabled = true;
-            b.style.pointerEvents = 'none';
-          }
-        });
-      }
-
-      // Check localStorage for prior subscription
-      try {
-        if (localStorage.getItem('msc_waitlist_' + NOTIFY_TOPIC) === 'true') {
-          updateAllArticleshipNotifyBtns('Added to Waitlist ✓', true);
-          const statusEl = document.getElementById('notifyStatus');
-          if (statusEl) {
-            statusEl.textContent = "You're on the list! We'll notify you when seats open.";
-            statusEl.style.color = "#86EFAC";
-          }
-        }
-      } catch (e) {}
-
-      if (window.MSCWaitlist && window.getSupabaseClient) {
-        window.MSCWaitlist.isOn(window.getSupabaseClient(), 'articleship').then(function (on) {
-          if (!on) return;
-          try { localStorage.setItem('msc_waitlist_' + NOTIFY_TOPIC, 'true'); } catch (e) {}
-          updateAllArticleshipNotifyBtns('Added to Waitlist ✓', true);
-          const statusEl = document.getElementById('notifyStatus');
-          if (statusEl) {
-            statusEl.textContent = "You're on the list! We'll notify you when seats open.";
-            statusEl.style.color = "#86EFAC";
-          }
-        });
-      }
-
-      async function subscribeArticleshipWaitlist(triggerBtn) {
-        const emailInput = document.getElementById('waitlistEmailInput');
-        const statusEl = document.getElementById('notifyStatus');
-        if (statusEl) {
-          statusEl.textContent = "Setting up notification...";
-          statusEl.style.color = "#93C5FD";
-        }
-        if (triggerBtn) {
-          triggerBtn.innerHTML = '<span>Enabling...</span>';
-        }
-
-        try {
-          if (typeof Notification !== 'undefined') {
-            const permission = await Notification.requestPermission();
-            if (permission === 'granted' && typeof firebase !== 'undefined') {
-              if (!firebase.apps.length) firebase.initializeApp(NOTIFY_FIREBASE_CONFIG);
-              const messaging = firebase.messaging();
-              if ('serviceWorker' in navigator) {
-                await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-              }
-              const fcmToken = await messaging.getToken({ vapidKey: NOTIFY_VAPID_KEY });
-              if (fcmToken) {
-                await fetch(MANAGE_TOPIC_URL, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ token: fcmToken, topic: NOTIFY_TOPIC, action: 'subscribe' })
-                });
-              }
-            }
-          }
-
-          try {
-            await window.MSCWaitlist?.join(window.getSupabaseClient?.(), 'articleship', window.__mscSession?.user?.email);
-          } catch (e) {}
-
-          try {
-            localStorage.setItem('msc_waitlist_' + NOTIFY_TOPIC, 'true');
-          } catch (e) {}
-
-          updateAllArticleshipNotifyBtns('Added to Waitlist ✓', true);
-          if (statusEl) {
-            statusEl.textContent = "You're on the list! We'll notify you when seats open.";
-            statusEl.style.color = "#86EFAC";
-          }
-        } catch (err) {
-          console.error(err);
-          try {
-            localStorage.setItem('msc_waitlist_' + NOTIFY_TOPIC, 'true');
-          } catch (e) {}
-          updateAllArticleshipNotifyBtns('Added to Waitlist ✓', true);
-          if (statusEl) {
-            statusEl.textContent = "You're on the list! We'll notify you soon.";
-            statusEl.style.color = "#86EFAC";
-          }
-        }
-      }
-
-      const articleshipNotifyTriggers = document.querySelectorAll('.js-notify-btn, #notifyMeBtn, #notifyMeFooterBtn');
-      articleshipNotifyTriggers.forEach(el => {
-        el.removeAttribute('onclick');
-        el.addEventListener('click', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          subscribeArticleshipWaitlist(el);
-        });
-      });
 
       // Expanded Menu Drawer Toggle
       const menuButton = document.getElementById('menuButton');
