@@ -7,7 +7,8 @@ const test = require('node:test');
 
 const root = path.resolve(__dirname, '..');
 const helperSrc = fs.readFileSync(path.join(root, 'scripts', 'notify-waitlist.js'), 'utf8');
-const PAGES = [['msc-ca-fresher-program', 'ca-fresher'], ['articleship-program', 'articleship'], ['ca-industrial-training-program', 'industrial-training']];
+// Articleship left the waitlist on 9 Nov 2026 (registrations open); see the test at the end.
+const PAGES = [['msc-ca-fresher-program', 'ca-fresher'], ['ca-industrial-training-program', 'industrial-training']];
 
 function load(storage = {}) {
   const logged = [];
@@ -109,4 +110,14 @@ test('each program page loads the helper first and uses its own topic', () => {
     assert.match(html, new RegExp(`MSCWaitlist\\??\\.isOn\\([^'"]*['"]${topic}['"]`), `${dir} isOn topic`);
     assert.doesNotMatch(html, /from\(['"]notifiable['"]\)/, `${dir} no direct insert left`);
   }
+});
+
+test('articleship page is open for registration (no waitlist left)', () => {
+  const html = fs.readFileSync(path.join(root, 'articleship-program', 'index.html'), 'utf8');
+  assert.doesNotMatch(html, /notify-waitlist\.js/, 'no waitlist helper');
+  assert.doesNotMatch(html, /MSCWaitlist/, 'no waitlist calls');
+  assert.match(html, /<form id="registerForm"/, 'registration form');
+  assert.match(html, /<script src="register\.js\?v=[\w.]+" defer><\/script>/, 'register.js loaded');
+  assert.match(html, /id="waitlist-section"/, 'old #waitlist-section links still land on the form');
+  assert.ok(fs.existsSync(path.join(root, 'articleship-program', 'registered.html')), 'confirmation page');
 });
