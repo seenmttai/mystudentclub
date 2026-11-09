@@ -327,13 +327,13 @@ async function fetchTrendingJobs() {
   }
 }
 
-// Exclusive articleship vacancies that match the current filters and are under 15 days old, newest first.
+// Exclusive articleship vacancies that match the current filters and are under 15 days old.
 async function fetchPinnedExclusives(buildQuery, selectCols) {
   try {
     const cutoff = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString();
     const { data, error } = await buildQuery(selectCols).eq("is_exclusive", true).gte("Created_At", cutoff);
-    if (error || !Array.isArray(data)) return [];
-    return data.slice().sort((a, b) => new Date(b.Created_At) - new Date(a.Created_At));
+    // buildQuery already orders them by the sort the student picked.
+    return error || !Array.isArray(data) ? [] : data;
   } catch (_) {
     return [];
   }
@@ -383,13 +383,18 @@ function toReviewInfo(name, row) {
 // Review summaries for the companies on this page, matching spellings of the same firm
 // ("K K & Co." = "K K and Company"; S R Batliboi = EY). Updates the cards already shown.
 const reviewSummaryDone = new Set();
+// False after get_firm_review_summaries fails once (e.g. before its migration).
+let reviewSummaryRpcAvailable = true;
 async function fetchReviewSummariesFor(jobs) {
   const names = Array.from(new Set((jobs || []).map((j) => (j.Company || "").trim())
     .filter((n) => n && !reviewSummaryDone.has(n.toLowerCase()))));
-  if (names.length === 0) return;
+  if (names.length === 0 || !reviewSummaryRpcAvailable) return;
   try {
     const { data, error } = await supabaseClient.rpc("get_firm_review_summaries", { p_names: names });
-    if (error || !Array.isArray(data)) return; // before the function exists: keep the exact-name ratings
+    if (error || !Array.isArray(data)) {
+      reviewSummaryRpcAvailable = false; // before the function exists: keep the exact-name ratings
+      return;
+    }
     const byName = new Map(data.map((r) => [String(r.name || "").trim().toLowerCase(), r]));
     names.forEach((n) => {
       const key = n.toLowerCase();
@@ -665,24 +670,20 @@ async function fetchJobs() {
       );
     }
     if (error) throw error;
+    // Rows the database returned for this page, before pinning: decides paging.
+    const dbPageLength = Array.isArray(data) ? data.length : 0;
 
     // Articleship: exclusive vacancies sit on top of page 1; later pages skip them.
-    // pinnedShift = rows added (+) or removed (-) here, so paging still counts the database page.
-    let pinnedShift = 0;
     if (data) {
       if (page === 0) pinnedExclusiveIds = new Set();
       if (page === 0 && currentTable === "Articleship Jobs" && selectCols.includes("is_exclusive")) {
         const pinned = await fetchPinnedExclusives(buildQuery, selectCols);
         if (pinned.length > 0) {
           pinned.forEach((job) => pinnedExclusiveIds.add(job.id));
-          const rest = data.filter((job) => !pinnedExclusiveIds.has(job.id));
-          pinnedShift = pinned.length - (data.length - rest.length);
-          data = [...pinned, ...rest];
+          data = [...pinned, ...data.filter((job) => !pinnedExclusiveIds.has(job.id))];
         }
       } else if (page > 0 && pinnedExclusiveIds.size > 0) {
-        const before = data.length;
         data = data.filter((job) => !pinnedExclusiveIds.has(job.id));
-        pinnedShift = data.length - before;
       }
     }
 
@@ -691,7 +692,7 @@ async function fetchJobs() {
       data.forEach((job) => frag.appendChild(renderJobCard(job)));
       if (dom.jobsList) dom.jobsList.appendChild(frag);
       page++;
-      hasMoreData = (data.length - pinnedShift) === limit;
+      hasMoreData = dbPageLength === limit;
       if (currentTable === "Articleship Jobs") fetchReviewSummariesFor(data);
     } else {
       hasMoreData = false;

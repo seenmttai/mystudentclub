@@ -16,7 +16,8 @@ test('articleship exclusives are free to apply and pinned on top of page 1', () 
   assert.doesNotMatch(src, /is_exclusive && !isEnrolledSync/);
   assert.match(src, /"Stipend Range", is_exclusive';/);
   assert.match(src, /buildQuery\(selectCols\)\.eq\("is_exclusive", true\)\.gte\("Created_At", cutoff\)/);
-  assert.match(src, /hasMoreData = \(data\.length - pinnedShift\) === limit;/);
+  assert.match(src, /hasMoreData = dbPageLength === limit;/);
+  assert.match(src, /reviewSummaryRpcAvailable = false/);
   assert.match(src, /withoutMissingExclusive\(selectCols, error\)/);
 });
 
