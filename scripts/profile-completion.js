@@ -152,6 +152,10 @@ export function getProfileCompletionItems(profile = {}, storage = globalThis.loc
     return items;
 }
 
+export function getMissingProfileItems(profile = {}, storage = globalThis.localStorage) {
+    return getProfileCompletionItems(profile, storage).filter(item => !item.filled);
+}
+
 export function calculateProfileCompletion(profile = {}, storage = globalThis.localStorage) {
     const items = getProfileCompletionItems(profile, storage);
     const total = items.reduce((sum, item) => sum + item.boost, 0);

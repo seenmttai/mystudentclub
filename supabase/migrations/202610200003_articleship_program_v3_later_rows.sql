@@ -414,6 +414,7 @@ WITH plan AS (
           "title": "Articleship Interview Guide",
           "type": "pdf",
           "view_storage_path": "articleship-program-v3/day-4/Articleship Interview Guide.pdf",
+          "copy": true,
           "group": "Interview booklets"
         }
       },

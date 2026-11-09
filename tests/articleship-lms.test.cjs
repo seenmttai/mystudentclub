@@ -97,7 +97,10 @@ const COPY_ROWS = ['MSC Articleship Guidebook', 'Choose your CV', 'The Nothing C
     // (the /ca-resource/ viewer draws URL links only), 21 Oct.
     'Articleship transfer guidelines', 'CA Final study guidelines',
     // Not in §0.3: page 2 carries the industrial-training notice mail to fill and copy (judge, 21 Oct).
-    'Industrial training guide'];
+    'Industrial training guide',
+    // Not in §0.3 (a 003 row): its firm finder and contents jump to pages inside the PDF (113 links), which only the
+    // copyable reader follows, 23 Oct.
+    'Articleship Interview Guide'];
 
 test('an Articleship enrollment appears on the LMS dashboard and opens its course', async () => {
     const { dashboard, queries, window } = loadDashboard([{ course: 'msc-articleship-program' }]);
