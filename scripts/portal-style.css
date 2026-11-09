@@ -1456,6 +1456,23 @@ body:has(.expanded-menu.active) .expanded-menu-backdrop {
   gap: 6px;
   flex-wrap: wrap;
 }
+
+/* Articleship: one line of what students reported in firm reviews */
+.jc-review-facts {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 8px 0 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #475569;
+}
+
+.jc-review-facts i {
+  color: #ca8a04;
+  font-size: 11px;
+  flex-shrink: 0;
+}
 .jc-chip {
   font-size: 11.5px;
   font-weight: 600;

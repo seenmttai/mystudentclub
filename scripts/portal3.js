@@ -139,6 +139,8 @@ let cachedSortedCategories = null;
 let currentFcmToken = null;
 let firebaseMessaging;
 let firmReviewsMap = new Map();
+// Articleship exclusives pinned on top of page 1; later pages skip them so they don't show twice.
+let pinnedExclusiveIds = new Set();
 
 const state = {
   keywords: [],
@@ -275,9 +277,22 @@ function getPublicJobSelectColumns(tableName) {
   } else if (tableName === "Industrial Training Job Portal") {
     columns += ', "Stipend Range", "Functional Tags", "Technology Tags", is_exclusive, "Company Type", "Industry Type"';
   } else if (tableName === "Articleship Jobs") {
-    columns += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range"';
+    columns += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range", is_exclusive';
   }
   return columns;
+}
+
+// If is_exclusive isn't in the database yet (before its migration runs), drop it from a select.
+function withoutMissingExclusive(cols, error) {
+  return error && /is_exclusive/.test(error.message || "") && cols.includes(", is_exclusive")
+    ? cols.replace(", is_exclusive", "")
+    : null;
+}
+
+// Articleship exclusives are free to apply (ICAI Regulation 47: nothing may be charged to an articled
+// assistant for an engagement). On the other portals exclusives stay for enrolled members.
+function isExclusiveLocked(job) {
+  return !!(job && job.is_exclusive) && currentTable !== "Articleship Jobs" && !isEnrolledSync("Industrial Training Job Portal");
 }
 
 //  TRENDING SECTION
@@ -285,12 +300,15 @@ async function fetchTrendingJobs() {
   if (!dom.trendingSection || !dom.trendingScroll) return;
   dom.trendingScroll.innerHTML = `<div class="trending-placeholder">${[0, 1, 2].map(() => '<div class="trending-card-skeleton"></div>').join("")}</div>`;
   try {
-    const selectCols = getPublicJobSelectColumns(currentTable);
-    const { data, error } = await supabaseClient
+    const trendingQuery = (cols) => supabaseClient
       .from(currentTable)
-      .select(selectCols)
+      .select(cols)
       .order("application_count", { ascending: false, nullsFirst: false })
       .limit(8);
+    const selectCols = getPublicJobSelectColumns(currentTable);
+    let { data, error } = await trendingQuery(selectCols);
+    const trendingFallback = withoutMissingExclusive(selectCols, error);
+    if (trendingFallback) ({ data, error } = await trendingQuery(trendingFallback));
     if (error) throw error;
     const jobs = (data || []).filter((j) => (j.application_count || 0) > 0);
     if (jobs.length === 0) {
@@ -307,6 +325,103 @@ async function fetchTrendingJobs() {
   } catch (_) {
     dom.trendingSection.style.display = "none";
   }
+}
+
+// Exclusive articleship vacancies that match the current filters and are under 15 days old, newest first.
+async function fetchPinnedExclusives(buildQuery, selectCols) {
+  try {
+    const cutoff = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString();
+    const { data, error } = await buildQuery(selectCols).eq("is_exclusive", true).gte("Created_At", cutoff);
+    if (error || !Array.isArray(data)) return [];
+    return data.slice().sort((a, b) => new Date(b.Created_At) - new Date(a.Created_At));
+  } catch (_) {
+    return [];
+  }
+}
+
+function hasReviewRating(info) {
+  return Boolean(info && info.count > 0 && typeof info.avgOverall === "number" && !Number.isNaN(info.avgOverall));
+}
+
+// One short line of what students reported about a firm, built from review counts (no review text).
+// A fact shows only when at least 60% of the answers agree.
+function buildReviewFactsHtml(info) {
+  if (!info || !(info.count > 0)) return "";
+  const facts = [];
+  if (info.stipendMedian) facts.push(`Stipend ~₹${Number(info.stipendMedian).toLocaleString("en-IN")}`);
+  if (info.stipendAnswers > 0) {
+    if (info.stipendOnTime / info.stipendAnswers >= 0.6) facts.push("Stipend paid on time");
+    else if (info.stipendDelayed / info.stipendAnswers >= 0.6) facts.push("Stipend delays reported");
+  }
+  if (info.leaveAnswers > 0) {
+    if (info.leaveEasy / info.leaveAnswers >= 0.6) facts.push("Leave easy to get");
+    else if (info.leaveDifficult / info.leaveAnswers >= 0.6) facts.push("Leave hard to get");
+  }
+  if (facts.length === 0) return "";
+  const who = `${info.count} student review${info.count > 1 ? "s" : ""}`;
+  const safe = (t) => String(t).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  return `<p class="jc-review-facts"><i class="fa-solid fa-comments" aria-hidden="true"></i> <span>From ${safe(who)}: ${facts.map(safe).join(" · ")}</span></p>`;
+}
+
+function toReviewInfo(name, row) {
+  if (!row) return { firmName: name, avgOverall: null, count: 0 };
+  const num = (v) => (v === null || v === undefined || v === "" ? null : Number(v));
+  return {
+    firmName: row.firm_name || name,
+    avgOverall: num(row.avg_overall),
+    count: Number(row.review_count) || 0,
+    stipendMedian: num(row.stipend_median),
+    stipendAnswers: Number(row.stipend_answers) || 0,
+    stipendOnTime: Number(row.stipend_on_time) || 0,
+    stipendDelayed: Number(row.stipend_delayed) || 0,
+    leaveAnswers: Number(row.leave_answers) || 0,
+    leaveEasy: Number(row.leave_easy) || 0,
+    leaveDifficult: Number(row.leave_difficult) || 0,
+  };
+}
+
+// Review summaries for the companies on this page, matching spellings of the same firm
+// ("K K & Co." = "K K and Company"; S R Batliboi = EY). Updates the cards already shown.
+const reviewSummaryDone = new Set();
+async function fetchReviewSummariesFor(jobs) {
+  const names = Array.from(new Set((jobs || []).map((j) => (j.Company || "").trim())
+    .filter((n) => n && !reviewSummaryDone.has(n.toLowerCase()))));
+  if (names.length === 0) return;
+  try {
+    const { data, error } = await supabaseClient.rpc("get_firm_review_summaries", { p_names: names });
+    if (error || !Array.isArray(data)) return; // before the function exists: keep the exact-name ratings
+    const byName = new Map(data.map((r) => [String(r.name || "").trim().toLowerCase(), r]));
+    names.forEach((n) => {
+      const key = n.toLowerCase();
+      reviewSummaryDone.add(key);
+      if (byName.has(key)) firmReviewsMap.set(key, toReviewInfo(n, byName.get(key)));
+    });
+    refreshCardReviews();
+  } catch (_) { /* ratings are optional */ }
+}
+
+function refreshCardReviews() {
+  if (currentTable !== "Articleship Jobs" || !dom.jobsList) return;
+  dom.jobsList.querySelectorAll(".job-card-new[data-company]").forEach((card) => {
+    const info = firmReviewsMap.get(card.dataset.company);
+    if (!info) return;
+    const chips = card.querySelector(".jc-chips");
+    if (chips && hasReviewRating(info) && !card.querySelector(".jc-chip-rating")) {
+      const a = document.createElement("a");
+      a.className = "jc-chip jc-chip-rating";
+      a.href = `/articleship-firm-review.html?firm=${encodeURIComponent(info.firmName || "")}`;
+      a.style.cssText = "background: #fef9c3; color: #854d0e; border-color: #fde047; font-weight: 700; text-decoration: none;";
+      a.addEventListener("click", (e) => e.stopPropagation());
+      a.innerHTML = `<i class="fa-solid fa-star" style="color: #ca8a04; margin-right: 4px;"></i>${info.avgOverall.toFixed(1)} (${info.count})`;
+      const exclusive = chips.querySelector(".jc-chip:not(.jc-chip-domain)");
+      if (exclusive && /Exclusive/.test(exclusive.textContent)) exclusive.after(a); else chips.prepend(a);
+    }
+    const divider = card.querySelector(".jc-divider");
+    if (divider && !card.querySelector(".jc-review-facts")) {
+      const html = buildReviewFactsHtml(info);
+      if (html) divider.insertAdjacentHTML("beforebegin", html);
+    }
+  });
 }
 
 async function fetchFirmReviews() {
@@ -394,7 +509,7 @@ function renderJobCard(job) {
   const postedText = postedDate ? `Posted ${postedDate}` : "";
 
   const isExclusive = !!job.is_exclusive;
-  const isLocked = isExclusive && !isEnrolledSync("Industrial Training Job Portal");
+  const isLocked = isExclusiveLocked(job);
 
   const companyKey = (job.Company || "").trim().toLowerCase();
   const ratingInfo = currentTable === "Articleship Jobs" ? firmReviewsMap.get(companyKey) : null;
@@ -402,6 +517,7 @@ function renderJobCard(job) {
   const card = document.createElement("article");
   card.className = "job-card-new" + (isExclusive ? " job-card-exclusive" : "");
   card.dataset.jobId = job.id;
+  card.dataset.company = companyKey;
   card.innerHTML = `
         <div class="jc-top">
             <div class="jc-avatar" style="background:${colors.bg};color:${colors.fg}">${initials}</div>
@@ -417,7 +533,7 @@ function renderJobCard(job) {
         </div>
         <div class="jc-chips">
             ${isExclusive ? `<span class="jc-chip" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; border-color: #d97706; font-weight: 700;">⭐ Exclusive</span>` : ""}
-            ${ratingInfo && ratingInfo.count > 5 ? `<a href="/articleship-firm-review.html?firm=${encodeURIComponent(job.Company || '')}" class="jc-chip" style="background: #fef9c3; color: #854d0e; border-color: #fde047; font-weight: 700; text-decoration: none;" onclick="event.stopPropagation();"><i class="fa-solid fa-star" style="color: #ca8a04; margin-right: 4px;"></i>${ratingInfo.avgOverall.toFixed(1)} (${ratingInfo.count})</a>` : ""}
+            ${hasReviewRating(ratingInfo) ? `<a href="/articleship-firm-review.html?firm=${encodeURIComponent(ratingInfo.firmName || job.Company || '')}" class="jc-chip jc-chip-rating" style="background: #fef9c3; color: #854d0e; border-color: #fde047; font-weight: 700; text-decoration: none;" onclick="event.stopPropagation();"><i class="fa-solid fa-star" style="color: #ca8a04; margin-right: 4px;"></i>${ratingInfo.avgOverall.toFixed(1)} (${ratingInfo.count})</a>` : ""}
             ${primaryDomain ? `<span class="jc-chip jc-chip-domain">${primaryDomain}</span>` : ""}
             ${secondaryDomain ? `<span class="jc-chip jc-chip-domain" style="background-color: #e0f2fe; color: #0369a1; border-color: #bae6fd;">${secondaryDomain}</span>` : ""}
             ${companyType ? `<span class="jc-chip"><i class="fa-solid fa-building" style="margin-right: 4px; color: #94a3b8;"></i>${companyType}</span>` : ""}
@@ -425,6 +541,7 @@ function renderJobCard(job) {
             ${industryType ? `<span class="jc-chip"><i class="fa-solid fa-industry" style="margin-right: 4px; color: #94a3b8;"></i>${industryType}</span>` : ""}
             ${job.Experience ? `<span class="jc-chip">${job.Experience}</span>` : ""}
         </div>
+        ${buildReviewFactsHtml(ratingInfo)}
         <div class="jc-divider"></div>
         <div class="jc-footer">
             <div class="jc-footer-left">
@@ -475,8 +592,9 @@ async function fetchJobs() {
   if (page > 0 && sentinelSpinner) sentinelSpinner.style.display = "block";
 
   try {
-    const selectCols = getPublicJobSelectColumns(currentTable);
-    let query = supabaseClient.from(currentTable).select(selectCols);
+    let selectCols = getPublicJobSelectColumns(currentTable);
+    const buildQuery = (cols) => {
+    let query = supabaseClient.from(currentTable).select(cols);
 
     if (state.keywords.length > 0) {
       const ors = state.keywords.map((k) => {
@@ -532,8 +650,15 @@ async function fetchJobs() {
       .order(sortCol, { ascending: isAsc, nullsFirst: false })
       .order("id", { ascending: false });
     query = query.range(page * limit, (page + 1) * limit - 1);
+    return query;
+    };
 
-    let { data, error } = await query;
+    let { data, error } = await buildQuery(selectCols);
+    const fallbackCols = withoutMissingExclusive(selectCols, error);
+    if (fallbackCols) {
+      selectCols = fallbackCols;
+      ({ data, error } = await buildQuery(selectCols));
+    }
     if (!error && data && state.sortBy === "popular") {
       data.sort(
         (a, b) => (b.application_count || 0) - (a.application_count || 0),
@@ -541,12 +666,33 @@ async function fetchJobs() {
     }
     if (error) throw error;
 
+    // Articleship: exclusive vacancies sit on top of page 1; later pages skip them.
+    // pinnedShift = rows added (+) or removed (-) here, so paging still counts the database page.
+    let pinnedShift = 0;
+    if (data) {
+      if (page === 0) pinnedExclusiveIds = new Set();
+      if (page === 0 && currentTable === "Articleship Jobs" && selectCols.includes("is_exclusive")) {
+        const pinned = await fetchPinnedExclusives(buildQuery, selectCols);
+        if (pinned.length > 0) {
+          pinned.forEach((job) => pinnedExclusiveIds.add(job.id));
+          const rest = data.filter((job) => !pinnedExclusiveIds.has(job.id));
+          pinnedShift = pinned.length - (data.length - rest.length);
+          data = [...pinned, ...rest];
+        }
+      } else if (page > 0 && pinnedExclusiveIds.size > 0) {
+        const before = data.length;
+        data = data.filter((job) => !pinnedExclusiveIds.has(job.id));
+        pinnedShift = data.length - before;
+      }
+    }
+
     if (data && data.length > 0) {
       const frag = document.createDocumentFragment();
       data.forEach((job) => frag.appendChild(renderJobCard(job)));
       if (dom.jobsList) dom.jobsList.appendChild(frag);
       page++;
-      hasMoreData = data.length === limit;
+      hasMoreData = (data.length - pinnedShift) === limit;
+      if (currentTable === "Articleship Jobs") fetchReviewSummariesFor(data);
     } else {
       hasMoreData = false;
       if (page === 0 && dom.jobsList) {
@@ -1048,7 +1194,7 @@ function showExclusiveLockedModal(job) {
 //  JOB DETAIL BOTTOM SHEET
 
 function showJobDetail(job) {
-  if (job.is_exclusive && !isEnrolledSync("Industrial Training Job Portal")) {
+  if (isExclusiveLocked(job)) {
     showExclusiveLockedModal(job);
     return;
   }
@@ -1182,7 +1328,7 @@ function showJobDetail(job) {
                     <div class="jd-hero-info">
                         <div class="jd-hero-company">
                             ${job.Company || ""}
-                            ${ratingInfo && ratingInfo.count > 5 ? `<span style="display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:700;color:#ca8a04;background:#fef9c3;padding:2px 7px;border-radius:6px;margin-left:6px;border:1px solid #fde047;vertical-align:middle;"><i class="fa-solid fa-star" style="font-size:10px;"></i>${ratingInfo.avgOverall.toFixed(1)}</span>` : ""}
+                            ${hasReviewRating(ratingInfo) ? `<span style="display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:700;color:#ca8a04;background:#fef9c3;padding:2px 7px;border-radius:6px;margin-left:6px;border:1px solid #fde047;vertical-align:middle;"><i class="fa-solid fa-star" style="font-size:10px;"></i>${ratingInfo.avgOverall.toFixed(1)}</span>` : ""}
                         </div>
                         <div class="jd-hero-location">${job.Location || ""}</div>
                     </div>
@@ -1222,7 +1368,7 @@ function showJobDetail(job) {
                 </button>
                 ${currentTable === "Articleship Jobs" ? (
                   ratingInfo && ratingInfo.count > 0 ? `
-                    <a href="/articleship-firm-review.html?firm=${encodeURIComponent(job.Company || '')}" class="jd-action-link" style="color: #2563eb;">
+                    <a href="/articleship-firm-review.html?firm=${encodeURIComponent(ratingInfo.firmName || job.Company || '')}" class="jd-action-link" style="color: #2563eb;">
                         <i class="fas fa-comments"></i> Read Reviews (${ratingInfo.count})
                     </a>` : `
                     <a href="/submit-review.html?firm=${encodeURIComponent(job.Company || '')}&location=${encodeURIComponent(job.Location ? job.Location.split(',')[0].trim() : '')}" class="jd-action-link">
@@ -1625,10 +1771,19 @@ async function loadBanners() {
   const bannerSection = document.querySelector(".banner-section");
   if (!carousel || !bannerSection) return;
   try {
-    const { data, error } = await supabaseClient
+    // web_only banners (paid programs) never show inside the phone apps.
+    let { data, error } = await supabaseClient
       .from("Banners")
-      .select("Image, Hyperlink, Type, visible_to_unenrolled");
+      .select("Image, Hyperlink, Type, visible_to_unenrolled, web_only")
+      .order("id", { ascending: true });
+    if (error && /web_only/.test(error.message || "")) {
+      ({ data, error } = await supabaseClient
+        .from("Banners")
+        .select("Image, Hyperlink, Type, visible_to_unenrolled")
+        .order("id", { ascending: true }));
+    }
     if (error) throw error;
+    data = (data || []).filter((b) => b.web_only !== true);
     const currentType =
       currentTable === "Semi Qualified Jobs"
         ? "Semi-Qualified"
@@ -2607,16 +2762,22 @@ function checkAndOpenSharedJob() {
 async function fetchSharedJob(jobId, targetTable) {
   const table = targetTable || currentTable;
   try {
+    let sharedCols = getPublicJobSelectColumns(table);
     let { data, error } = await supabaseClient
       .from(table)
-      .select(getPublicJobSelectColumns(table))
+      .select(sharedCols)
       .eq("id", jobId)
       .single();
+    const sharedFallback = withoutMissingExclusive(sharedCols, error);
+    if (sharedFallback) {
+      sharedCols = sharedFallback;
+      ({ data, error } = await supabaseClient.from(table).select(sharedCols).eq("id", jobId).single());
+    }
 
     if (error && !isNaN(jobId)) {
       const retry = await supabaseClient
         .from(table)
-        .select(getPublicJobSelectColumns(table))
+        .select(sharedCols)
         .eq("id", Number(jobId))
         .single();
       if (!retry.error && retry.data) {
