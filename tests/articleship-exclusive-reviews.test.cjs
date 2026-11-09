@@ -145,7 +145,9 @@ test('portal: articleship exclusives are free to apply, pinned on top of page 1,
   assert.doesNotMatch(src, /isExclusive && !isEnrolledSync/);
   assert.match(src, /"Stipend Range", is_exclusive';/);
   assert.match(src, /buildQuery\(selectColumns\)\.eq\('is_exclusive', true\)\.gte\('Created_At', cutoff\)/);
-  assert.match(src, /hasMoreData = \(data\.length - pinnedShift\) === limit;/);
+  assert.match(src, /hasMoreData = dbPageLength === limit;/);
+  assert.match(read('jobs-builder/src/pages/jobs/[category]/[slug].astro'), /hirer_email\.is\.null,hirer_email\.neq\.recruit@mystudentclub\.com/);
+  assert.match(src, /reviewSummaryRpcAvailable = false/);
   assert.match(src, /data = data\.filter\(job => !pinnedExclusiveIds\.has\(job\.id\)\);/);
   assert.match(src, /runPublicJobSelect\(cols => supabaseClient/);
 });

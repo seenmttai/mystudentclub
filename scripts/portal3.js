@@ -1378,6 +1378,9 @@ function toReviewInfo(name, row) {
     };
 }
 
+// False after get_firm_review_summaries fails once (e.g. before its migration): use exact names after that.
+let reviewSummaryRpcAvailable = true;
+
 async function fetchFirmRatingsForVisibleJobs(jobs) {
     if (currentTable !== 'Articleship Jobs' || !Array.isArray(jobs) || jobs.length === 0) return;
 
@@ -1388,7 +1391,10 @@ async function fetchFirmRatingsForVisibleJobs(jobs) {
 
     try {
         // Matches spellings of the same firm ("K K & Co." = "K K and Company"; S R Batliboi = EY).
-        const rpc = await supabaseClient.rpc('get_firm_review_summaries', { p_names: uniqueNames });
+        const rpc = reviewSummaryRpcAvailable
+            ? await supabaseClient.rpc('get_firm_review_summaries', { p_names: uniqueNames })
+            : { error: true };
+        if (rpc.error) reviewSummaryRpcAvailable = false;
         if (!rpc.error && Array.isArray(rpc.data)) {
             const byName = new Map(rpc.data.map(r => [String(r.name || '').trim().toLowerCase(), r]));
             uniqueNames.forEach(name => {
@@ -1710,27 +1716,24 @@ async function fetchJobs() {
             error = fallbackResult.error;
         }
 
+        // Rows the database returned for this page, before pinning or keyword filtering: decides paging.
+        const dbPageLength = (!error && Array.isArray(data)) ? data.length : 0;
+
         if (!error && data && state.sortBy === 'popular') {
             data.sort((a, b) => (b.application_count || 0) - (a.application_count || 0));
         }
 
         // Articleship: exclusive vacancies sit on top of page 1; later pages skip them.
-        // pinnedShift = rows added (+) or removed (-) here, so paging still counts the database page.
-        let pinnedShift = 0;
         if (!error && data) {
             if (page === 0) pinnedExclusiveIds = new Set();
             if (page === 0 && currentTable === 'Articleship Jobs' && selectColumns.includes('is_exclusive')) {
                 const pinned = await fetchPinnedExclusives(buildQuery, selectColumns);
                 if (pinned.length > 0) {
                     pinned.forEach(job => pinnedExclusiveIds.add(job.id));
-                    const rest = data.filter(job => !pinnedExclusiveIds.has(job.id));
-                    pinnedShift = pinned.length - (data.length - rest.length);
-                    data = [...pinned, ...rest];
+                    data = [...pinned, ...data.filter(job => !pinnedExclusiveIds.has(job.id))];
                 }
             } else if (page > 0 && pinnedExclusiveIds.size > 0) {
-                const before = data.length;
                 data = data.filter(job => !pinnedExclusiveIds.has(job.id));
-                pinnedShift = data.length - before;
             }
         }
 
@@ -1803,7 +1806,7 @@ async function fetchJobs() {
             }
 
             page++;
-            hasMoreData = (data.length - pinnedShift) === limit;
+            hasMoreData = dbPageLength === limit;
 
             if (currentTable === 'Articleship Jobs') {
                 fetchFirmRatingsForVisibleJobs(data);
@@ -1857,13 +1860,13 @@ async function fetchJobs() {
     }
 }
 
-// Exclusive articleship vacancies that match the current filters and are under 15 days old, newest first.
+// Exclusive articleship vacancies that match the current filters and are under 15 days old.
 async function fetchPinnedExclusives(buildQuery, selectColumns) {
     try {
         const cutoff = new Date(Date.now() - JOB_EXPIRATION_DAYS * 24 * 60 * 60 * 1000).toISOString();
         const { data, error } = await buildQuery(selectColumns).eq('is_exclusive', true).gte('Created_At', cutoff);
-        if (error || !Array.isArray(data)) return [];
-        return data.slice().sort((a, b) => new Date(b.Created_At) - new Date(a.Created_At));
+        // buildQuery already orders them by the sort the student picked.
+        return (error || !Array.isArray(data)) ? [] : data;
     } catch (e) {
         return [];
     }

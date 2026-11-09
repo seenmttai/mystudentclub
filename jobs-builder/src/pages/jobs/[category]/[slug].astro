@@ -44,6 +44,12 @@ export async function getStaticPaths() {
       .order('Created_At', { ascending: false })
       .limit(FETCH_LIMIT);
 
+    // MSC's own exclusive articleship cards (applications collected by MSC) get no public job page,
+    // so Google for Jobs never lists them as postings by the named firm.
+    if (tableName === 'Articleship Jobs') {
+      query = query.or('hirer_email.is.null,hirer_email.neq.recruit@mystudentclub.com');
+    }
+
     // If we have a sync state for this table, only fetch newer jobs
     if (!isFirstRun && syncState[tableName]) {
       query = query.gt('Created_At', syncState[tableName]);
