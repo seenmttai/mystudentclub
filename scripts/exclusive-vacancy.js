@@ -105,7 +105,7 @@ export function renderCardNote(job, tableName, enrolled) {
     if (!kind) return '';
     ensureExclusiveStyles();
     if (enrolled) {
-        return `<div class="msc-excl-note msc-excl-note--member"><i class="fas fa-circle-check" aria-hidden="true"></i><span>Exclusive by My Student Club · open to you as an MSC Articleship Program student</span></div>`;
+        return `<div class="msc-excl-note msc-excl-note--member"><i class="fas fa-circle-check" aria-hidden="true"></i><span>Exclusive by My Student Club · open to you as an MSC program student</span></div>`;
     }
     const text = kind === 'full'
         ? '<strong>Exclusive by My Student Club.</strong> Enroll in the MSC Articleship Program to apply.'
@@ -123,11 +123,11 @@ export function renderModalNote(job, tableName, enrolled) {
     const kind = getExclusiveKind(job, tableName);
     if (!kind) return '';
     if (enrolled) {
-        return `<div class="msc-excl-note msc-excl-note--member msc-excl-note--modal"><i class="fas fa-circle-check" aria-hidden="true"></i><span>Exclusive by My Student Club · you're applying as an MSC Articleship Program student</span></div>`;
+        return `<div class="msc-excl-note msc-excl-note--member msc-excl-note--modal"><i class="fas fa-circle-check" aria-hidden="true"></i><span>Exclusive by My Student Club · you're applying as an MSC program student</span></div>`;
     }
     if (kind !== 'partial') return '';
     return `<div class="msc-excl-box">
-        <div class="msc-excl-badge"><i class="fas fa-star" aria-hidden="true"></i> Exclusive vacancy by My Student Club</div>
+        <div class="msc-excl-badge"><i class="fas fa-star" aria-hidden="true"></i> Exclusive by My Student Club</div>
         <p>The recruiter posted this vacancy directly on My Student Club, and many such vacancies are posted here every week.</p>
         <p><strong>Want a higher chance of getting shortlisted?</strong> Enroll in the MSC Articleship Program:</p>
         ${benefitsList()}
@@ -214,7 +214,7 @@ export function showExclusiveAppliedPopup(job) {
         <h3 id="mscExclAppliedTitle">Application submitted</h3>
         <p class="msc-excl-sub">Your profile and CV have been sent to <strong>${company}</strong>${company.endsWith('.') ? '' : '.'}</p>
         <div class="msc-excl-box msc-excl-box--popup">
-            <div class="msc-excl-badge"><i class="fas fa-star" aria-hidden="true"></i> Exclusive vacancy by My Student Club</div>
+            <div class="msc-excl-badge"><i class="fas fa-star" aria-hidden="true"></i> Exclusive by My Student Club</div>
             <p>Exclusive vacancies get a lot of applicants. The chance of a shortlist is low for a normal applicant and significantly higher for an MSC Articleship Program student.</p>
             <div class="msc-excl-compare" aria-hidden="true">
                 <div class="msc-excl-compare-row"><span>Normal applicant</span><div class="msc-excl-bar"><i style="width: 22%"></i></div><b>Low</b></div>
@@ -289,8 +289,8 @@ export function ensureExclusiveStyles() {
 .msc-excl-lock h3 { margin: 0 0 0.5rem; font-size: 1.12rem; font-weight: 700; color: #92400e; }
 .msc-excl-lock > p { margin: 0 auto 0.9rem; max-width: 360px; color: #78350f; font-size: 0.9rem; line-height: 1.6; }
 .msc-excl-lock .msc-excl-benefits { max-width: 320px; margin: 0 auto 1.1rem; text-align: left; }
-.msc-excl-lock .msc-excl-cta { max-width: 340px; margin: 0 auto; }
-.msc-excl-lock .msc-excl-lock-price { margin: 0.6rem 0 0; font-size: 0.8rem; color: #92400e; }
+.msc-excl-lock .msc-excl-cta { max-width: 380px; margin: 0 auto; }
+.msc-excl-lock .msc-excl-lock-price { margin: 0.6rem auto 0; font-size: 0.8rem; color: #92400e; }
 .msc-excl-lock .msc-excl-lock-help { margin: 0.6rem auto 0; font-size: 0.8rem; color: #92400e; }
 .msc-excl-lock-help a { color: #b45309; font-weight: 600; text-decoration: underline; }
 .msc-excl-lock--popup { margin: 0; padding: 1.4rem 1rem 1.1rem; border: none; }
