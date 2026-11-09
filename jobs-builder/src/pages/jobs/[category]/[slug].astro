@@ -161,6 +161,9 @@ const ogImage = CATEGORY_OG_MAP[categorySlug as string] || 'https://www.mystuden
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- The phone app: Safari's own Open banner on an iPhone; scripts/app-banner.js shows the same bar on other phones. -->
+    <meta name="apple-itunes-app" content="app-id=6756720522">
+    <script is:inline src="/scripts/app-banner.js?v=20261110" defer></script>
     <title>{`${roleLabel} at ${companyName}, ${location} | My Student Club`}</title>
     <meta name="description" content={`${escapeHtml(roleLabel)} opening at ${escapeHtml(companyName)} in ${escapeHtml(location)}. Apply now on My Student Club – India's CA job portal for fresher, industrial training and articleship opportunities.`}>
     <meta name="robots" content="index, follow">
