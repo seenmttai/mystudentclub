@@ -2,6 +2,7 @@ import { getDaysAgo, isJobExpired } from './date-utils.js';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 import { unlockJobDetails, getCachedUnlockedJob } from './browser-guard.js';
 import { calculateProfileCompletion as calculateSharedProfileCompletion, readCachedProfile } from './profile-completion.js';
+import { ARTICLESHIP_TABLE, getExclusiveKind, isExclusiveLocked, exclusiveTagLabel, renderCardNote, renderModalNote, renderLockScreen, showExclusiveAppliedPopup, fetchMyProgramRegistrations, applyExclusiveDemo, ensureExclusiveStyles } from './exclusive-vacancy.js';
 
 function isSalaryDisclosed(val) {
     if (!val) return false;
@@ -120,9 +121,20 @@ function getPublicJobSelectColumns(tableName) {
     } else if (tableName === 'Industrial Training Job Portal') {
         columns += ', "Company Type", "Industry Type", "Stipend Range", "Functional Tags", "Technology Tags", is_exclusive';
     } else if (tableName === 'Articleship Jobs') {
-        columns += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range"';
+        columns += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range", is_exclusive';
     }
     return columns;
+}
+
+// Public job select that still works before a table has its is_exclusive column (Articleship gets it
+// in migration 202611090010): on that error it retries without the column.
+async function selectPublicJobs(build) {
+    const cols = getPublicJobSelectColumns(currentTable);
+    const result = await build(cols);
+    if (result && result.error && /is_exclusive/.test(result.error.message || '') && cols.includes(', is_exclusive')) {
+        return build(cols.replace(', is_exclusive', ''));
+    }
+    return result;
 }
 
 function slugifyText(text) {
@@ -429,8 +441,9 @@ function renderJobCard(job) {
         }
     }
 
+    const exclusiveKind = getExclusiveKind(job, currentTable);
     const jobCard = document.createElement('article');
-    jobCard.className = 'job-card' + (job.is_exclusive ? ' job-card-exclusive' : '');
+    jobCard.className = 'job-card' + ((job.is_exclusive || exclusiveKind) ? ' job-card-exclusive' : '');
     jobCard.dataset.jobId = job.id;
 
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
@@ -481,7 +494,8 @@ function renderJobCard(job) {
             </div>`);
     const infoRowHtml = infoRowItems.length ? `<div class="job-card-info-row">${infoRowItems.join('')}</div>` : '';
     const descriptionText = job.Description ? job.Description.replace(/[#*_`\[\]]/g, '').trim() : '';
-    const isLocked = isExclusive && !isEnrolledSync(currentTable);
+    const isLocked = isExclusiveLocked(job, currentTable, isEnrolledSync(currentTable));
+    const exclusiveNoteHtml = renderCardNote(job, currentTable, isEnrolledSync(currentTable));
     let applyButtonHtml = '';
     if (isLocked) {
         applyButtonHtml = `
@@ -520,7 +534,7 @@ function renderJobCard(job) {
         </div>
         <div class="job-card-tags">
             ${isExpired ? `<span class="job-tag tag-expired"><i class="fas fa-hourglass-end"></i> Expired</span>` : ""}
-            ${isExclusive ? `<span class="job-tag tag-exclusive"><i class="fas fa-star"></i> Exclusive</span>` : ""}
+            ${(isExclusive || exclusiveKind) ? `<span class="job-tag tag-exclusive"><i class="fas fa-star"></i> ${exclusiveTagLabel(currentTable)}</span>` : ""}
             ${isPopular ? `<span class="job-tag tag-popular"><i class="fas fa-fire"></i> Popular</span>` : ""}
             <span class="job-tag job-tag-location">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="11" height="11"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -538,7 +552,8 @@ function renderJobCard(job) {
         <div class="job-card-actions">
             ${applyButtonHtml}
             <a href="/jobs/${jobCategorySlug}/${jobSlug}.html" class="view-details-card-btn secondary" onclick="event.preventDefault();">View Details ›</a>
-        </div>`;
+        </div>
+        ${exclusiveNoteHtml}`;
 
     const applyBtn = jobCard.querySelector('.apply-now-card-btn.primary');
     if (applyBtn) {
@@ -567,7 +582,7 @@ function renderJobCard(job) {
     }
 
     jobCard.addEventListener('click', (e) => {
-        if (!e.target.closest('.apply-now-card-btn.primary') && !e.target.closest('.job-card-bookmark')) {
+        if (!e.target.closest('.apply-now-card-btn.primary') && !e.target.closest('.job-card-bookmark') && !e.target.closest('a.msc-excl-note')) {
             showModal(job);
         }
     });
@@ -697,6 +712,13 @@ function checkConnectLink(job) {
 }
 
 async function recordApplication(job, btnElement) {
+    if (job.__exclusiveDemo) {
+        // Preview demo only (?exclusive-demo on localhost / pages.dev): no database write.
+        btnElement.classList.add('applied');
+        btnElement.innerHTML = '<i class="fas fa-check"></i> Applied';
+        if (getExclusiveKind(job, currentTable) === 'partial') showExclusiveAppliedPopup(job);
+        return true;
+    }
     if (!currentSession) {
         window.location.href = `/login.html?redirect=${encodeURIComponent(window.location.href)}`;
         return false;
@@ -763,7 +785,11 @@ async function recordApplication(job, btnElement) {
             btnElement.style.pointerEvents = '';
             if ('disabled' in btnElement) btnElement.disabled = false;
         }
-        showToast('Application submitted to the hirer dashboard.', 'success');
+        if (recruiterPosted && getExclusiveKind(job, currentTable) === 'partial' && !isEnrolledSync(currentTable)) {
+            showExclusiveAppliedPopup(job);
+        } else {
+            showToast('Application submitted to the hirer dashboard.', 'success');
+        }
         return true;
     } catch (e) {
         console.error('Application exception:', e);
@@ -779,6 +805,13 @@ async function recordApplication(job, btnElement) {
 }
 
 function showExclusiveLockedModal(job) {
+    if (currentTable === ARTICLESHIP_TABLE) {
+        ensureExclusiveStyles();
+        dom.modalBody.innerHTML = renderLockScreen(job, { signedIn: Boolean(currentSession) });
+        dom.modalOverlay.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        return;
+    }
     const companyName = (job.Company || '').trim();
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
 
@@ -856,10 +889,13 @@ function showModal(job) {
     const isExclusive = Boolean(job.is_exclusive);
 
     // --- Exclusive vacancy gate ---
-    if (isExclusive && !isEnrolledSync(currentTable)) {
+    // Articleship: only MSC-posted exclusives lock; outside recruiters' vacancies stay open (exclusive-vacancy.js).
+    if (isExclusiveLocked(job, currentTable, isEnrolledSync(currentTable))) {
         showExclusiveLockedModal(job);
         return;
     }
+    const exclusiveModalNoteHtml = renderModalNote(job, currentTable, isEnrolledSync(currentTable));
+    if (exclusiveModalNoteHtml) ensureExclusiveStyles();
 
     const companyName = (job.Company || '').trim();
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
@@ -1095,6 +1131,7 @@ function showModal(job) {
         </div>
         <div id="modalPrimaryActionsContainer">
             ${primaryActionsHtml}
+            ${exclusiveModalNoteHtml}
         </div>
         ${secondaryActionsHtml}
         ${tagsSectionsHtml}
@@ -1493,7 +1530,7 @@ async function fetchJobs() {
         } else if (currentTable === "Industrial Training Job Portal") {
             selectColumns += ', "Company Type", "Industry Type", "Stipend Range", "Functional Tags", "Technology Tags", is_exclusive';
         } else if (currentTable === "Articleship Jobs") {
-            selectColumns += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range"';
+            selectColumns += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range", is_exclusive';
         }
 
         const buildQuery = (cols) => {
@@ -1689,6 +1726,8 @@ async function fetchJobs() {
         }
 
         if (error) throw error;
+
+        if (page === 0) applyExclusiveDemo(data, currentTable);
 
         if (data && data.length > 0) {
             // Batch DOM operations using DocumentFragment for better performance
@@ -2523,10 +2562,13 @@ async function fetchUserEnrollmentsOnce(userId) {
         userEnrollmentsCache = [];
     }
     const hasAny = userEnrollmentsCache.length > 0;
+    // Articleship registrations are paid through PayU with no LMS enrolment row, so check them by login email.
+    const programRegistrations = currentTable === ARTICLESHIP_TABLE ? await fetchMyProgramRegistrations(supabaseClient) : [];
     enrollmentStatusCache = {
         any: hasAny,
         industrialTraining: userEnrollmentsCache.includes('industrial-training-mastery'),
-        freshers: userEnrollmentsCache.includes('msc-ca-freshers-program')
+        freshers: userEnrollmentsCache.includes('msc-ca-freshers-program'),
+        articleship: userEnrollmentsCache.includes('msc-articleship-program') || programRegistrations.includes('msc-articleship-program')
     };
     return userEnrollmentsCache;
 }
@@ -2555,6 +2597,7 @@ async function prefetchEnrollmentStatus(userId) {
 function isEnrolledSync(tableName) {
     if (!enrollmentStatusCache) return false;
     if (tableName === 'Industrial Training Job Portal') return enrollmentStatusCache.industrialTraining;
+    if (tableName === ARTICLESHIP_TABLE) return enrollmentStatusCache.any || Boolean(enrollmentStatusCache.articleship);
     return enrollmentStatusCache.any;
 }
 
@@ -3843,11 +3886,11 @@ function checkAndOpenSharedJob() {
 // Fetch a specific shared job and open modal
 async function fetchSharedJob(jobId) {
     try {
-        const { data, error } = await supabaseClient
+        const { data, error } = await selectPublicJobs(cols => supabaseClient
             .from(currentTable)
-            .select(getPublicJobSelectColumns(currentTable))
+            .select(cols)
             .eq('id', jobId)
-            .maybeSingle();
+            .maybeSingle());
 
         if (!error && data) {
             setTimeout(() => showModal(data), 300);
@@ -4884,11 +4927,11 @@ async function dv2PopulateTrending() {
     const list = document.getElementById('dv2TrendingList');
     if (!card || !list) return;
     try {
-        const { data, error } = await supabaseClient
+        const { data, error } = await selectPublicJobs(cols => supabaseClient
             .from(currentTable)
-            .select(getPublicJobSelectColumns(currentTable))
+            .select(cols)
             .order('Created_At', { ascending: false, nullsFirst: false })
-            .limit(5);
+            .limit(5));
         if (error || !data || data.length === 0) return;
 
         list.innerHTML = '';
