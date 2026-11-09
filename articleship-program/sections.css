@@ -4073,3 +4073,222 @@ section[id] {
     animation: none;
   }
 }
+
+/* ─── REGISTER SECTION (registrations open, 9 Nov 2026) ─── */
+.next-batch-mrp {
+  text-decoration: line-through;
+  opacity: 0.8;
+  font-weight: 600;
+}
+
+.register-section {
+  scroll-margin-top: 80px;
+}
+
+.register-section .anchor-alias {
+  position: absolute;
+  top: 0;
+}
+
+.register-open-badge {
+  background: rgba(16, 185, 129, 0.14);
+  border-color: rgba(16, 185, 129, 0.35);
+  color: #86efac;
+}
+
+.register-open-badge .badge-dot {
+  background: #10b981;
+}
+
+.register-icon-wrap {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.14);
+  border: 1.5px solid rgba(16, 185, 129, 0.32);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.register-card-badge {
+  color: #86efac;
+}
+
+.register-price-row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 12px 16px;
+}
+
+.register-price {
+  font-family: 'Outfit', sans-serif;
+  font-size: 30px;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.register-mrp {
+  font-family: 'Outfit', sans-serif;
+  font-size: 16px;
+  color: #94a3b8;
+  text-decoration: line-through;
+}
+
+.register-off {
+  margin-left: auto;
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #052e16;
+  background: #86efac;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+}
+
+.register-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+}
+
+.register-field > span {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.register-field input {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-family: 'Noto Sans', sans-serif;
+  font-size: 16px;
+  color: #ffffff;
+  outline: none;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.register-field input::placeholder {
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.register-field input:focus {
+  border-color: #60a5fa;
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.register-field input[aria-invalid="true"] {
+  border-color: #f87171;
+}
+
+.register-phone {
+  display: flex;
+  align-items: stretch;
+}
+
+.register-phone-cc {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-right: none;
+  border-radius: 10px 0 0 10px;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.register-phone input {
+  border-radius: 0 10px 10px 0;
+}
+
+.register-coupon-toggle {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  padding: 0;
+  color: #93c5fd;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.register-coupon-field input {
+  text-transform: uppercase;
+}
+
+.register-submit-btn {
+  margin-top: 4px;
+}
+
+.register-submit-btn:disabled {
+  opacity: 0.7;
+  cursor: wait;
+  transform: none;
+}
+
+.register-status {
+  margin: 0;
+  min-height: 0;
+}
+
+.register-status:empty {
+  display: none;
+}
+
+.register-status.is-error {
+  color: #fca5a5;
+}
+
+.register-status.is-info {
+  color: #93c5fd;
+}
+
+.fixed-cta .status-open-text {
+  color: #86efac;
+}
+
+a.notify-me-footer-btn {
+  text-decoration: none;
+}
+
+@media (max-width: 880px) {
+  .register-card .notify-card-header,
+  .register-field,
+  .register-coupon-toggle {
+    text-align: left;
+  }
+}
+
+@media (max-width: 480px) {
+  .register-price {
+    font-size: 26px;
+  }
+  .next-batch-mrp {
+    display: none;
+  }
+}
