@@ -1,7 +1,7 @@
 // MSC Articleship Program registration (9 Nov 2026).
-// Sends name/email/WhatsApp (+ optional coupon) to the checkpayment Worker, which
-// fixes the price and returns a signed PayU form; this script then posts that
-// form to PayU. A ₹0 coupon comes back as a redirect to the confirmation page.
+// Sends name/email/WhatsApp to the checkpayment Worker, which fixes the price and
+// returns a signed PayU form; this script then posts that form to PayU.
+// (No coupon box on the page since 9 Nov 2026: there are no coupons.)
 (function () {
   'use strict';
 
@@ -14,9 +14,6 @@
   var nameEl = document.getElementById('regName');
   var emailEl = document.getElementById('regEmail');
   var phoneEl = document.getElementById('regPhone');
-  var couponEl = document.getElementById('regCoupon');
-  var couponField = document.getElementById('regCouponField');
-  var couponToggle = document.getElementById('regCouponToggle');
   var submitBtn = document.getElementById('registerSubmit');
   var submitText = submitBtn.querySelector('.register-submit-text');
   var statusEl = document.getElementById('registerStatus');
@@ -28,7 +25,7 @@
   }
 
   function markInvalid(el, message) {
-    [nameEl, emailEl, phoneEl, couponEl].forEach(function (x) { x.removeAttribute('aria-invalid'); });
+    [nameEl, emailEl, phoneEl].forEach(function (x) { x.removeAttribute('aria-invalid'); });
     if (el) {
       el.setAttribute('aria-invalid', 'true');
       el.focus();
@@ -47,13 +44,6 @@
     if (d.length === 11 && d.charAt(0) === '0') d = d.slice(1);
     return d;
   }
-
-  couponToggle.addEventListener('click', function () {
-    var open = couponField.hidden;
-    couponField.hidden = !open;
-    couponToggle.setAttribute('aria-expanded', String(open));
-    if (open) couponEl.focus();
-  });
 
   // Back from PayU without paying, or a payment we could not confirm.
   try {
@@ -107,7 +97,6 @@
     var name = nameEl.value.trim();
     var email = emailEl.value.trim();
     var phone = cleanPhone(phoneEl.value);
-    var coupon = couponEl.value.trim();
 
     if (name.replace(/[^A-Za-z]/g, '').length < 2) return markInvalid(nameEl, 'Please enter your full name in English letters.');
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return markInvalid(emailEl, 'Please enter a valid email.');
@@ -120,7 +109,7 @@
     fetch(START_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: name, email: email, phone: phone, coupon: coupon, site: window.location.origin })
+      body: JSON.stringify({ name: name, email: email, phone: phone, site: window.location.origin })
     })
       .then(function (res) {
         return res.json().catch(function () { return {}; }).then(function (data) { return { ok: res.ok, data: data }; });
@@ -136,7 +125,6 @@
           return;
         }
         busy(false);
-        if (d.error === 'invalid_coupon') return markInvalid(couponEl, "That coupon code isn't valid.");
         if (d.field === 'name') return markInvalid(nameEl, 'Please enter your full name in English letters.');
         if (d.field === 'email') return markInvalid(emailEl, 'Please enter a valid email.');
         if (d.field === 'phone') return markInvalid(phoneEl, 'Please enter your 10-digit WhatsApp number.');
