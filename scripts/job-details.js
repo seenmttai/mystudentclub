@@ -199,7 +199,8 @@ async function fetchJobDetails(id, tableName) {
         .single();
 
     if (error) throw error;
-    if (!data) throw new Error('Job not found');
+    // A hidden vacancy (third-party repost) reads as not found.
+    if (!data || data.hidden === true) throw new Error('Job not found');
 
     renderJob(data, tableName);
 }
