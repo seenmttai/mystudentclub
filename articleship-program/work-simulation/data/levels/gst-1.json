@@ -1,0 +1,3121 @@
+{
+ "id": "gst-1",
+ "domain": "gst",
+ "number": 1,
+ "title": "Monthly returns (GSTR-1 and GSTR-3B)",
+ "minutes": 40,
+ "learn": [
+  "Whose GSTR-1, which month and which table each invoice goes in",
+  "Why GSTR-1 turnover differs from the sales in the books",
+  "Why 3B credit stops at what GSTR-2B shows"
+ ],
+ "do": [
+  "Sort 12 invoices by GSTIN, month and GSTR-1 table",
+  "Tie GSTR-1 to the books; rework the 3B",
+  "Draft the note to the client"
+ ],
+ "case": {
+  "role": "First-year article assistant, GST team",
+  "client": "Tamhini Drivetech Private Limited, a Chakan company that makes gears, shafts and hubs for vehicle makers, with a depot at Hosur in Tamil Nadu",
+  "team": "Neethu Thomas (GST senior) and Varun Shetty (second-year article); at Tamhini, Pallavi Shinde prepares the workings for Mahesh Kadam, the accounts head",
+  "goal": "Get Chakan’s October GSTR-1 right, tie it to the books and check the 3B credit against GSTR-2B before the tax is paid.",
+  "period": "October 2026 (monthly returns)",
+  "where": "Firm office, Prabhat Road · Wednesday 4 November to Monday 16 November 2026"
+ },
+ "brief": {
+  "from": "neethu",
+  "time": "9:40 am",
+  "messages": [
+   "Tamhini’s October returns are yours. Sort Pallavi’s sales file into Chakan’s GSTR-1 and tie it to the books by Friday; their plant shuts for Diwali after that, and R1 is due on the 11th.",
+   "2B comes on the 14th. Then check her 3B working against it and draft the note to Mahesh; I file the 3B by the 20th."
+  ]
+ },
+ "documents": [
+  {
+   "id": "reg-note",
+   "type": "table",
+   "style": "plain",
+   "title": "Permanent file · GST registrations",
+   "kindLabel": "Firm file",
+   "heading": "Tamhini Drivetech · GST registrations (permanent file)",
+   "subtitle": "Bapat Venkatesh & Co., GST team · updated April 2026",
+   "columns": [
+    {
+     "key": "reg",
+     "label": "Registration"
+    },
+    {
+     "key": "gstin",
+     "label": "GSTIN",
+     "mono": true
+    },
+    {
+     "key": "series",
+     "label": "Invoice series"
+    }
+   ],
+   "rows": [
+    {
+     "reg": "Chakan plant, Pune (principal place)",
+     "gstin": "27ZHDCT5940H1Z4",
+     "series": "TD/MF manufactured goods · TD/TR traded goods · TD/SC scrap · TD/ST dispatches to Hosur"
+    },
+    {
+     "reg": "Hosur depot, Tamil Nadu (separate registration)",
+     "gstin": "33ZHDCT5940H1ZB",
+     "series": "TDH sales from the depot"
+    }
+   ],
+   "notes": [
+    "Both GSTINs are under PAN ZHDCT5940H. Each files GSTR-1 and GSTR-3B every month.",
+    "Books: one company in TallyPrime for both registrations."
+   ]
+  },
+  {
+   "id": "gate-out",
+   "type": "table",
+   "style": "register",
+   "title": "Gate outward register · 31 Oct – 2 Nov",
+   "heading": "Gate Outward Register · Main gate",
+   "company": "Tamhini Drivetech Private Limited, Chakan",
+   "period": "31-10-2026 to 02-11-2026",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date",
+     "format": "date"
+    },
+    {
+     "key": "time",
+     "label": "Time out"
+    },
+    {
+     "key": "gp",
+     "label": "Gate pass"
+    },
+    {
+     "key": "veh",
+     "label": "Vehicle"
+    },
+    {
+     "key": "party",
+     "label": "Party"
+    },
+    {
+     "key": "doc",
+     "label": "Invoice no."
+    },
+    {
+     "key": "rem",
+     "label": "Remarks"
+    }
+   ],
+   "rows": [
+    {
+     "date": "31-10-2026",
+     "time": "09:20",
+     "gp": "GP/O/4471",
+     "veh": "MH 14 KU 2290",
+     "party": "Ashvaratha Motors",
+     "doc": "TD/MF/26-27/1316",
+     "rem": ""
+    },
+    {
+     "date": "31-10-2026",
+     "time": "12:45",
+     "gp": "GP/O/4472",
+     "veh": "MH 12 RT 7781",
+     "party": "Kshitij Driveline",
+     "doc": "TD/MF/26-27/1317",
+     "rem": ""
+    },
+    {
+     "date": "31-10-2026",
+     "time": "16:10",
+     "gp": "GP/O/4473",
+     "veh": "KA 25 D 4418",
+     "party": "Malaprabha Precision",
+     "doc": "TD/MF/26-27/1319",
+     "rem": ""
+    },
+    {
+     "date": "31-10-2026",
+     "time": "19:35",
+     "gp": "GP/O/4474",
+     "veh": "MH 14 KU 2290",
+     "party": "Ashvaratha Motors",
+     "doc": "TD/MF/26-27/1320",
+     "rem": "Second trip"
+    },
+    {
+     "date": "02-11-2026",
+     "time": "10:15",
+     "gp": "GP/O/4475",
+     "veh": "MH 20 EL 6612",
+     "party": "Vayuvega Two Wheelers",
+     "doc": "TD/MF/26-27/1318",
+     "rem": "Packed 31-10; vehicle reported 02-11"
+    },
+    {
+     "date": "02-11-2026",
+     "time": "11:40",
+     "gp": "GP/O/4476",
+     "veh": "MH 14 LR 3307",
+     "party": "Kshitij Driveline",
+     "doc": "TD/MF/26-27/1321",
+     "rem": ""
+    },
+    {
+     "date": "02-11-2026",
+     "time": "15:05",
+     "gp": "GP/O/4477",
+     "veh": "MH 12 SX 9024",
+     "party": "Bilal Ferrous Traders",
+     "doc": "TD/SC/26-27/0131",
+     "rem": "Scrap"
+    }
+   ],
+   "notes": [
+    "No movement on Sunday 1 November."
+   ],
+   "annotations": [
+    {
+     "kind": "sign",
+     "text": "D. More",
+     "at": "bottom-right",
+     "color": "blue"
+    }
+   ]
+  },
+  {
+   "id": "mail-r1",
+   "type": "letter",
+   "style": "email",
+   "title": "Pallavi’s mail · GSTR-1 working",
+   "from": {
+    "name": "Pallavi Shinde",
+    "email": "pallavi.shinde@email.com"
+   },
+   "to": [
+    {
+     "name": "Neethu Thomas",
+     "email": "neethu.thomas@email.com"
+    }
+   ],
+   "date": "Wed, 4 Nov 2026, 9:12 am",
+   "subject": "GSTR-1 working · October 2026",
+   "body": [
+    "Neethu ma’am,",
+    "GSTR-1 working for October below, taken from our sales register. Totals agree with the three sales ledgers.",
+    {
+     "table": {
+      "columns": [
+       {
+        "key": "s",
+        "label": "B2B"
+       },
+       {
+        "key": "t",
+        "label": "Taxable (₹)",
+        "format": "inr"
+       },
+       {
+        "key": "i",
+        "label": "IGST (₹)",
+        "format": "inr"
+       },
+       {
+        "key": "c",
+        "label": "CGST (₹)",
+        "format": "inr"
+       },
+       {
+        "key": "g",
+        "label": "SGST (₹)",
+        "format": "inr"
+       }
+      ],
+      "rows": [
+       {
+        "s": "With CGST + SGST",
+        "t": 73691000,
+        "i": "–",
+        "c": 6632190,
+        "g": 6632190
+       },
+       {
+        "s": "With IGST",
+        "t": 31849000,
+        "i": 5732820,
+        "c": "–",
+        "g": "–"
+       },
+       {
+        "_class": "total",
+        "s": "Total",
+        "t": 105540000,
+        "i": 5732820,
+        "c": 6632190,
+        "g": 6632190
+       }
+      ]
+     }
+    },
+    "Naik’s 0227 was cancelled on the 14th, so I have left it out.",
+    "One doubt: Vayuvega’s 1318 is dated 31st, but the truck came only on Monday the 2nd. Shall I move it to November?",
+    "Regards,"
+   ],
+   "sign": {
+    "name": "Pallavi Shinde",
+    "role": "Accounts Executive",
+    "for": "Tamhini Drivetech Private Limited",
+    "hand": false
+   },
+   "attachments": [
+    "GSTR1_Oct26_working.xlsx"
+   ]
+  },
+  {
+   "id": "inv-01",
+   "type": "invoice",
+   "title": "Invoice 1 · Tax invoice",
+   "group": "d1",
+   "supplier": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "ZHDCT5940H"
+   },
+   "buyer": {
+    "name": "Ashvaratha Motors Limited",
+    "address": "Plot A-3, MIDC Chakan Phase II, Village Vasuli, Taluka Khed, Pune 410501",
+    "gstin": "27VSDCA4210X1ZM",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "TD/MF/26-27/1204",
+   "date": "07-Oct-2026",
+   "copy": "Original for recipient",
+   "placeOfSupply": "27-Maharashtra",
+   "tax": "intra",
+   "lines": [
+    {
+     "desc": "Input shaft 1142 (CV gearbox)",
+     "hsn": "8708 40",
+     "qty": 3000,
+     "unit": "nos",
+     "rate": 1420.0,
+     "taxable": 4260000.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "Output shaft 1187 (CV gearbox)",
+     "hsn": "8708 40",
+     "qty": 1200,
+     "unit": "nos",
+     "rate": 1968.0,
+     "taxable": 2361600.0,
+     "gstRate": 18
+    }
+   ],
+   "total": 7813488.0,
+   "irn": "ad425f371348a7ddd4fe540c1ef75f3b9f0d00e426144f4efb00916005bba200",
+   "ackNo": "132728638860065",
+   "ackDate": "07-10-2026",
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Tax is not payable on reverse charge.",
+    "Subject to Pune jurisdiction."
+   ],
+   "signFor": "Tamhini Drivetech Private Limited",
+   "signedBy": "M. Kadam",
+   "poRef": "ASH/PO/4500231187",
+   "poDate": "18-Sep-2026",
+   "paymentTerms": "60 days",
+   "dispatchDoc": "LR 88116 dt 07-Oct-2026",
+   "dispatchedThrough": "Mahalunge Roadlines",
+   "destination": "Ashvaratha Motors, Chakan",
+   "ewayBill": "3250 5789 4023 dt 07-10-2026",
+   "vehicle": "MH 14 KU 2290",
+   "bank": {
+    "name": "Vindhya Commercial Bank Ltd",
+    "account": "041760000918",
+    "branch": "Chakan",
+    "ifsc": "VNCB0000417"
+   },
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "DISPATCHED\n07 OCT 2026",
+     "color": "blue",
+     "at": "top-right",
+     "rotate": -6
+    }
+   ]
+  },
+  {
+   "id": "inv-02",
+   "type": "invoice",
+   "title": "Invoice 2 · Tax invoice",
+   "group": "d2",
+   "supplier": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "ZHDCT5940H"
+   },
+   "buyer": {
+    "name": "Lothal Motors Limited",
+    "address": "Survey 160, GIDC Sanand II, Ahmedabad 382170",
+    "gstin": "24WTACL5330D1ZF",
+    "state": "Gujarat",
+    "stateCode": "24"
+   },
+   "number": "TD/MF/26-27/1219",
+   "date": "12-Oct-2026",
+   "copy": "Original for recipient",
+   "placeOfSupply": "24-Gujarat",
+   "tax": "inter",
+   "lines": [
+    {
+     "desc": "Helical gear 2210 (gearbox)",
+     "hsn": "8708 40",
+     "qty": 2400,
+     "unit": "nos",
+     "rate": 1495.0,
+     "taxable": 3588000.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "Spur gear 2235 (gearbox)",
+     "hsn": "8708 40",
+     "qty": 1500,
+     "unit": "nos",
+     "rate": 1062.0,
+     "taxable": 1593000.0,
+     "gstRate": 18
+    }
+   ],
+   "total": 6113580.0,
+   "irn": "41c6189e6f976444630eb6841437c17a3906bf84069c1ad38bad27250537fad6",
+   "ackNo": "132760442690922",
+   "ackDate": "12-10-2026",
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Tax is not payable on reverse charge.",
+    "Subject to Pune jurisdiction."
+   ],
+   "signFor": "Tamhini Drivetech Private Limited",
+   "signedBy": "M. Kadam",
+   "poRef": "LML/PO/26/07714",
+   "poDate": "29-Sep-2026",
+   "paymentTerms": "60 days",
+   "dispatchDoc": "LR 88152 dt 12-Oct-2026",
+   "dispatchedThrough": "Mahalunge Roadlines",
+   "destination": "Sanand, Ahmedabad",
+   "ewayBill": "3526 9542 8691 dt 12-10-2026",
+   "vehicle": "GJ 01 DV 8830",
+   "bank": {
+    "name": "Vindhya Commercial Bank Ltd",
+    "account": "041760000918",
+    "branch": "Chakan",
+    "ifsc": "VNCB0000417"
+   },
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "DISPATCHED\n12 OCT 2026",
+     "color": "blue",
+     "at": "top-right",
+     "rotate": -6
+    }
+   ]
+  },
+  {
+   "id": "inv-03",
+   "type": "invoice",
+   "title": "Invoice 3 · Tax invoice",
+   "group": "d3",
+   "supplier": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "ZHDCT5940H"
+   },
+   "buyer": {
+    "name": "Naik Auto Spares Distributors",
+    "address": "Gala 21, Mankoli Naka, Bhiwandi, Thane 421302",
+    "gstin": "27ZYOFN5752Z1ZR",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "TD/TR/26-27/0227",
+   "date": "14-Oct-2026",
+   "copy": "Original for recipient",
+   "placeOfSupply": "27-Maharashtra",
+   "tax": "intra",
+   "lines": [
+    {
+     "desc": "Clutch plate 180 mm (three-wheeler, aftermarket)",
+     "hsn": "8708 93",
+     "qty": 900,
+     "unit": "nos",
+     "rate": 795.0,
+     "taxable": 715500.0,
+     "gstRate": 18
+    }
+   ],
+   "total": 844290.0,
+   "irn": "831e27183617ad0266ca1f0e84508f7801b1e927a08c2c88bd270fe4366af83a",
+   "ackNo": "132723425771720",
+   "ackDate": "14-10-2026",
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Tax is not payable on reverse charge.",
+    "Subject to Pune jurisdiction."
+   ],
+   "signFor": "Tamhini Drivetech Private Limited",
+   "signedBy": "M. Kadam",
+   "poRef": "NASD/1093 dt 12-10-2026",
+   "paymentTerms": "45 days",
+   "destination": "Bhiwandi, Thane",
+   "bank": {
+    "name": "Vindhya Commercial Bank Ltd",
+    "account": "041760000918",
+    "branch": "Chakan",
+    "ifsc": "VNCB0000417"
+   },
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "CANCELLED",
+     "color": "red",
+     "at": "top-right",
+     "rotate": -8
+    },
+    {
+     "kind": "hand",
+     "text": "Order withdrawn by party.\nIRN cancelled 14/10 – P.S.",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": -2
+    }
+   ]
+  },
+  {
+   "id": "inv-04",
+   "type": "invoice",
+   "title": "Invoice 4 · Tax invoice",
+   "group": "d4",
+   "supplier": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "ZHDCT5940H"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited (Hosur depot)",
+    "address": "Shed 6, Survey No. 112/3, SIPCOT Industrial Complex Phase I\nHosur, Krishnagiri District 635126",
+    "gstin": "33ZHDCT5940H1ZB",
+    "state": "Tamil Nadu",
+    "stateCode": "33"
+   },
+   "number": "TD/ST/26-27/0071",
+   "date": "15-Oct-2026",
+   "copy": "Original for recipient",
+   "placeOfSupply": "33-Tamil Nadu",
+   "tax": "inter",
+   "lines": [
+    {
+     "desc": "Input shaft 1142 (CV gearbox)",
+     "hsn": "8708 40",
+     "qty": 2800,
+     "unit": "nos",
+     "rate": 1305.0,
+     "taxable": 3654000.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "Wheel hub 4410 (LCV)",
+     "hsn": "8708 70",
+     "qty": 600,
+     "unit": "nos",
+     "rate": 2215.0,
+     "taxable": 1329000.0,
+     "gstRate": 18
+    }
+   ],
+   "total": 5879940.0,
+   "irn": "23e8793935b3d9c786ccca7a9f5ba5ebabf074d6fc8f602cb86e8d036052ad05",
+   "ackNo": "132748525911350",
+   "ackDate": "15-10-2026",
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Tax is not payable on reverse charge.",
+    "Subject to Pune jurisdiction."
+   ],
+   "signFor": "Tamhini Drivetech Private Limited",
+   "signedBy": "M. Kadam",
+   "poRef": "Depot indent DI-118 dt 09-10-2026",
+   "paymentTerms": "Not applicable",
+   "dispatchDoc": "LR 88177 dt 15-Oct-2026",
+   "dispatchedThrough": "Mahalunge Roadlines",
+   "destination": "Hosur depot, Tamil Nadu",
+   "ewayBill": "3470 5019 3035 dt 15-10-2026",
+   "vehicle": "MH 14 GD 5521",
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "DISPATCHED\n15 OCT 2026",
+     "color": "blue",
+     "at": "top-right",
+     "rotate": -6
+    }
+   ]
+  },
+  {
+   "id": "inv-05",
+   "type": "invoice",
+   "title": "Invoice 5 · Tax invoice",
+   "group": "d5",
+   "supplier": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Hosur depot: Shed 6, Survey No. 112/3\nSIPCOT Industrial Complex Phase I, Hosur 635126",
+    "gstin": "33ZHDCT5940H1ZB",
+    "state": "Tamil Nadu",
+    "stateCode": "33",
+    "phone": "98XXXXXXXX",
+    "pan": "ZHDCT5940H"
+   },
+   "buyer": {
+    "name": "Ponni Motors Limited",
+    "address": "Plot 2, SIPCOT Industrial Complex Phase II, Hosur, Krishnagiri District 635109",
+    "gstin": "33UHOCP1650L1Z9",
+    "state": "Tamil Nadu",
+    "stateCode": "33"
+   },
+   "number": "TDH/26-27/0612",
+   "date": "16-Oct-2026",
+   "copy": "Original for recipient",
+   "placeOfSupply": "33-Tamil Nadu",
+   "tax": "intra",
+   "lines": [
+    {
+     "desc": "Input shaft 1142 (CV gearbox)",
+     "hsn": "8708 40",
+     "qty": 2200,
+     "unit": "nos",
+     "rate": 1420.0,
+     "taxable": 3124000.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "Wheel hub 4410 (LCV)",
+     "hsn": "8708 70",
+     "qty": 400,
+     "unit": "nos",
+     "rate": 2410.0,
+     "taxable": 964000.0,
+     "gstRate": 18
+    }
+   ],
+   "total": 4823840.0,
+   "irn": "d729c3e21a7830d2c77314cf4998b19f4460bb4a42973020fda7ba2e5d967f62",
+   "ackNo": "132726432119770",
+   "ackDate": "16-10-2026",
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Tax is not payable on reverse charge.",
+    "Subject to Hosur jurisdiction."
+   ],
+   "signFor": "Tamhini Drivetech Private Limited",
+   "signedBy": "M. Kadam",
+   "poRef": "PML/PO/7721048",
+   "poDate": "03-Oct-2026",
+   "paymentTerms": "60 days",
+   "dispatchedThrough": "Road (local)",
+   "destination": "Ponni Motors, Hosur",
+   "ewayBill": "3567 9054 0045 dt 16-10-2026",
+   "vehicle": "TN 70 AH 3152",
+   "bank": {
+    "name": "Vindhya Commercial Bank Ltd",
+    "account": "041830004412",
+    "branch": "Hosur",
+    "ifsc": "VNCB0000418"
+   },
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "DISPATCHED\n16 OCT 2026",
+     "color": "blue",
+     "at": "top-right",
+     "rotate": -6
+    }
+   ]
+  },
+  {
+   "id": "inv-06",
+   "type": "invoice",
+   "title": "Invoice 6 · Tax invoice",
+   "group": "d6",
+   "supplier": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "ZHDCT5940H"
+   },
+   "buyer": {
+    "name": "Bilal Ferrous Traders",
+    "address": "Plot 7, Sector 10, PCNTDA, Bhosari, Pune 411026",
+    "gstin": "27XOAPA1054F1Z1",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "TD/SC/26-27/0119",
+   "date": "20-Oct-2026",
+   "copy": "Original for recipient",
+   "placeOfSupply": "27-Maharashtra",
+   "tax": "intra",
+   "lines": [
+    {
+     "desc": "Steel turnings (scrap)",
+     "hsn": "7204 41",
+     "qty": 38500,
+     "unit": "kg",
+     "rate": 27.5,
+     "taxable": 1058750.0,
+     "gstRate": 18
+    }
+   ],
+   "total": 1249325.0,
+   "irn": "3e3c449357ddb4525a8fdf5db88edfbc99ff6b7132542fc615fb837dd91082bb",
+   "ackNo": "132750907464462",
+   "ackDate": "20-10-2026",
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Tax is not payable on reverse charge.",
+    "Subject to Pune jurisdiction."
+   ],
+   "signFor": "Tamhini Drivetech Private Limited",
+   "signedBy": "M. Kadam",
+   "poRef": "Rate contract BFT/26-27",
+   "paymentTerms": "7 days",
+   "dispatchedThrough": "Buyer’s vehicle",
+   "destination": "Bhosari, Pune",
+   "ewayBill": "3165 3630 1133 dt 20-10-2026",
+   "vehicle": "MH 12 SX 9024",
+   "bank": {
+    "name": "Vindhya Commercial Bank Ltd",
+    "account": "041760000918",
+    "branch": "Chakan",
+    "ifsc": "VNCB0000417"
+   },
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "DISPATCHED\n20 OCT 2026",
+     "color": "blue",
+     "at": "top-right",
+     "rotate": -6
+    }
+   ]
+  },
+  {
+   "id": "inv-07",
+   "type": "invoice",
+   "title": "Invoice 7 · Tax invoice",
+   "group": "d7",
+   "supplier": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "ZHDCT5940H"
+   },
+   "buyer": {
+    "name": "Wardha Road Auto Agencies",
+    "address": "Plot 45, Wardha Road, Somalwada, Nagpur 440025",
+    "gstin": "27VQUFW5986C1ZV",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "TD/TR/26-27/0231",
+   "date": "22-Oct-2026",
+   "copy": "Original for recipient",
+   "placeOfSupply": "27-Maharashtra",
+   "tax": "intra",
+   "lines": [
+    {
+     "desc": "Clutch plate 240 mm (LCV, aftermarket)",
+     "hsn": "8708 93",
+     "qty": 450,
+     "unit": "nos",
+     "rate": 1380.0,
+     "taxable": 621000.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "Oil seal 55×75×10 (aftermarket)",
+     "hsn": "4016 93",
+     "qty": 6000,
+     "unit": "nos",
+     "rate": 68.0,
+     "taxable": 408000.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "Bearing 6204-2RS (aftermarket)",
+     "hsn": "8482 10",
+     "qty": 5000,
+     "unit": "nos",
+     "rate": 158.0,
+     "taxable": 790000.0,
+     "gstRate": 18
+    }
+   ],
+   "total": 2146420.0,
+   "irn": "c259c860ae55958151990f9107960c1955ee2e7ab34bb66ea97bb664b19fad2e",
+   "ackNo": "132786558268931",
+   "ackDate": "22-10-2026",
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Tax is not payable on reverse charge.",
+    "Subject to Pune jurisdiction."
+   ],
+   "signFor": "Tamhini Drivetech Private Limited",
+   "signedBy": "M. Kadam",
+   "poRef": "WRAA/PO/0412",
+   "poDate": "15-Oct-2026",
+   "paymentTerms": "45 days",
+   "dispatchDoc": "LR 88231 dt 22-Oct-2026",
+   "dispatchedThrough": "Mahalunge Roadlines",
+   "destination": "Nagpur",
+   "ewayBill": "3333 3142 0779 dt 22-10-2026",
+   "vehicle": "MH 40 BL 2716",
+   "bank": {
+    "name": "Vindhya Commercial Bank Ltd",
+    "account": "041760000918",
+    "branch": "Chakan",
+    "ifsc": "VNCB0000417"
+   },
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "DISPATCHED\n22 OCT 2026",
+     "color": "blue",
+     "at": "top-right",
+     "rotate": -6
+    }
+   ]
+  },
+  {
+   "id": "inv-08",
+   "type": "invoice",
+   "title": "Invoice 8 · Tax invoice",
+   "group": "d8",
+   "supplier": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "ZHDCT5940H"
+   },
+   "buyer": {
+    "name": "Kosli Driveline Private Limited",
+    "address": "Plot 211, Sector 8, IMT Manesar, Gurugram 122051",
+    "gstin": "06YNFCK9895C1ZR",
+    "state": "Haryana",
+    "stateCode": "06"
+   },
+   "number": "TD/MF/26-27/1262",
+   "date": "23-Oct-2026",
+   "copy": "Original for recipient",
+   "placeOfSupply": "06-Haryana",
+   "tax": "inter",
+   "lines": [
+    {
+     "desc": "Output shaft 1187 (CV gearbox)",
+     "hsn": "8708 40",
+     "qty": 1900,
+     "unit": "nos",
+     "rate": 1968.0,
+     "taxable": 3739200.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "Helical gear 2210 (gearbox)",
+     "hsn": "8708 40",
+     "qty": 900,
+     "unit": "nos",
+     "rate": 1495.0,
+     "taxable": 1345500.0,
+     "gstRate": 18
+    }
+   ],
+   "total": 5999946.0,
+   "irn": "21adf40c028f51229c9efad5de6f034a37eb75f5d861135254b9e818ad8ac882",
+   "ackNo": "132733160082706",
+   "ackDate": "23-10-2026",
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Tax is not payable on reverse charge.",
+    "Subject to Pune jurisdiction."
+   ],
+   "signFor": "Tamhini Drivetech Private Limited",
+   "signedBy": "M. Kadam",
+   "poRef": "KDPL/PO/2026/3318",
+   "poDate": "06-Oct-2026",
+   "paymentTerms": "75 days",
+   "dispatchDoc": "LR 88246 dt 23-Oct-2026",
+   "dispatchedThrough": "Mahalunge Roadlines",
+   "destination": "IMT Manesar, Gurugram",
+   "ewayBill": "3000 4004 0373 dt 23-10-2026",
+   "vehicle": "HR 55 AM 6104",
+   "bank": {
+    "name": "Vindhya Commercial Bank Ltd",
+    "account": "041760000918",
+    "branch": "Chakan",
+    "ifsc": "VNCB0000417"
+   },
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "DISPATCHED\n23 OCT 2026",
+     "color": "blue",
+     "at": "top-right",
+     "rotate": -6
+    }
+   ]
+  },
+  {
+   "id": "inv-09",
+   "type": "invoice",
+   "title": "Invoice 9 · Tax invoice",
+   "group": "d9",
+   "supplier": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "ZHDCT5940H"
+   },
+   "buyer": {
+    "name": "Golconda Motor Spares",
+    "address": "5-2-182, Ranigunj, Secunderabad 500003",
+    "gstin": "36WHFFG8255U1ZG",
+    "state": "Telangana",
+    "stateCode": "36"
+   },
+   "number": "TD/TR/26-27/0236",
+   "date": "24-Oct-2026",
+   "copy": "Original for recipient",
+   "placeOfSupply": "36-Telangana",
+   "tax": "inter",
+   "lines": [
+    {
+     "desc": "Taper roller bearing 30206 (aftermarket)",
+     "hsn": "8482 20",
+     "qty": 1800,
+     "unit": "nos",
+     "rate": 486.0,
+     "taxable": 874800.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "Oil seal 35×52×7 (aftermarket)",
+     "hsn": "4016 93",
+     "qty": 9000,
+     "unit": "nos",
+     "rate": 41.0,
+     "taxable": 369000.0,
+     "gstRate": 18
+    }
+   ],
+   "total": 1467684.0,
+   "irn": "dda84b13ab0a6f32997e8009b0448de660b6be1fdf68b5147b5ebf0a17494b78",
+   "ackNo": "132737915976411",
+   "ackDate": "24-10-2026",
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Tax is not payable on reverse charge.",
+    "Subject to Pune jurisdiction."
+   ],
+   "signFor": "Tamhini Drivetech Private Limited",
+   "signedBy": "M. Kadam",
+   "poRef": "GMS/1187",
+   "poDate": "17-Oct-2026",
+   "paymentTerms": "45 days",
+   "dispatchDoc": "LR 88262 dt 24-Oct-2026",
+   "dispatchedThrough": "Mahalunge Roadlines",
+   "destination": "Secunderabad",
+   "ewayBill": "3548 0343 4834 dt 24-10-2026",
+   "vehicle": "TS 08 UC 4471",
+   "bank": {
+    "name": "Vindhya Commercial Bank Ltd",
+    "account": "041760000918",
+    "branch": "Chakan",
+    "ifsc": "VNCB0000417"
+   },
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "DISPATCHED\n24 OCT 2026",
+     "color": "blue",
+     "at": "top-right",
+     "rotate": -6
+    }
+   ]
+  },
+  {
+   "id": "inv-10",
+   "type": "invoice",
+   "title": "Invoice 10 · Tax invoice",
+   "group": "d10",
+   "supplier": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Hosur depot: Shed 6, Survey No. 112/3\nSIPCOT Industrial Complex Phase I, Hosur 635126",
+    "gstin": "33ZHDCT5940H1ZB",
+    "state": "Tamil Nadu",
+    "stateCode": "33",
+    "phone": "98XXXXXXXX",
+    "pan": "ZHDCT5940H"
+   },
+   "buyer": {
+    "name": "Vaigai Axle Systems Private Limited",
+    "address": "Plot B-14, SIPCOT Industrial Park, Oragadam, Kancheepuram District 602105",
+    "gstin": "33UQFCV6805D1Z3",
+    "state": "Tamil Nadu",
+    "stateCode": "33"
+   },
+   "number": "TDH/26-27/0618",
+   "date": "27-Oct-2026",
+   "copy": "Original for recipient",
+   "placeOfSupply": "33-Tamil Nadu",
+   "tax": "intra",
+   "lines": [
+    {
+     "desc": "Wheel hub 4410 (LCV)",
+     "hsn": "8708 70",
+     "qty": 1100,
+     "unit": "nos",
+     "rate": 2410.0,
+     "taxable": 2651000.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "Companion flange 0880",
+     "hsn": "8708 99",
+     "qty": 1500,
+     "unit": "nos",
+     "rate": 845.0,
+     "taxable": 1267500.0,
+     "gstRate": 18
+    }
+   ],
+   "total": 4623830.0,
+   "irn": "6abcf54d082698dbb378f7400837faa4ddec1fc617dffaba3fab98d316d63ddb",
+   "ackNo": "132749307529976",
+   "ackDate": "27-10-2026",
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Tax is not payable on reverse charge.",
+    "Subject to Hosur jurisdiction."
+   ],
+   "signFor": "Tamhini Drivetech Private Limited",
+   "signedBy": "M. Kadam",
+   "poRef": "VAS/PO/26-0915",
+   "poDate": "12-Oct-2026",
+   "paymentTerms": "75 days",
+   "dispatchedThrough": "Road (local)",
+   "destination": "Oragadam, Kancheepuram",
+   "ewayBill": "3904 9608 4538 dt 27-10-2026",
+   "vehicle": "TN 70 AD 8817",
+   "bank": {
+    "name": "Vindhya Commercial Bank Ltd",
+    "account": "041830004412",
+    "branch": "Hosur",
+    "ifsc": "VNCB0000418"
+   },
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "DISPATCHED\n27 OCT 2026",
+     "color": "blue",
+     "at": "top-right",
+     "rotate": -6
+    }
+   ]
+  },
+  {
+   "id": "inv-11",
+   "type": "invoice",
+   "title": "Invoice 11 · Tax invoice",
+   "group": "d11",
+   "supplier": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "ZHDCT5940H"
+   },
+   "buyer": {
+    "name": "Vayuvega Two Wheelers Limited",
+    "address": "Plot E-52, MIDC Waluj, Chhatrapati Sambhajinagar 431136",
+    "gstin": "27YTACV2737H1ZK",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "TD/MF/26-27/1318",
+   "date": "31-Oct-2026",
+   "copy": "Original for recipient",
+   "placeOfSupply": "27-Maharashtra",
+   "tax": "intra",
+   "lines": [
+    {
+     "desc": "Countershaft 3310 (two-wheeler gearbox)",
+     "hsn": "8714 10",
+     "qty": 9000,
+     "unit": "nos",
+     "rate": 558.0,
+     "taxable": 5022000.0,
+     "gstRate": 18
+    }
+   ],
+   "total": 5925960.0,
+   "irn": "ab88cf3954757b621a5491a50d7326d3c9fc720f10ff7a100460b919a99a4676",
+   "ackNo": "132773171638221",
+   "ackDate": "31-10-2026",
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Tax is not payable on reverse charge.",
+    "Subject to Pune jurisdiction."
+   ],
+   "signFor": "Tamhini Drivetech Private Limited",
+   "signedBy": "M. Kadam",
+   "poRef": "VTW/PO/2026/11408",
+   "poDate": "14-Oct-2026",
+   "paymentTerms": "60 days",
+   "dispatchDoc": "LR 88317 dt 02-Nov-2026",
+   "dispatchedThrough": "Mahalunge Roadlines",
+   "destination": "Waluj, Chhatrapati Sambhajinagar",
+   "ewayBill": "3482 8830 6509 dt 02-11-2026",
+   "vehicle": "MH 20 EL 6612",
+   "bank": {
+    "name": "Vindhya Commercial Bank Ltd",
+    "account": "041760000918",
+    "branch": "Chakan",
+    "ifsc": "VNCB0000417"
+   },
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "DISPATCHED\n02 NOV 2026",
+     "color": "blue",
+     "at": "top-right",
+     "rotate": -6
+    },
+    {
+     "kind": "hand",
+     "text": "Packed 31/10. Vehicle came\nMon 2/11 – P.S.",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": -2
+    }
+   ]
+  },
+  {
+   "id": "inv-12",
+   "type": "invoice",
+   "title": "Invoice 12 · Tax invoice",
+   "group": "d12",
+   "supplier": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "ZHDCT5940H"
+   },
+   "buyer": {
+    "name": "Kshitij Driveline Systems Private Limited",
+    "address": "Plot J-118, MIDC Bhosari, Pune 411026",
+    "gstin": "27VJJCK8454A1ZD",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "TD/MF/26-27/1321",
+   "date": "02-Nov-2026",
+   "copy": "Original for recipient",
+   "placeOfSupply": "27-Maharashtra",
+   "tax": "intra",
+   "lines": [
+    {
+     "desc": "Input shaft 1142 (CV gearbox)",
+     "hsn": "8708 40",
+     "qty": 2500,
+     "unit": "nos",
+     "rate": 1412.0,
+     "taxable": 3530000.0,
+     "gstRate": 18
+    }
+   ],
+   "total": 4165400.0,
+   "irn": "3dd87b8bcd625cf3c3ad5273880bdd94b6edde80406fd9e75e7076cc67684faa",
+   "ackNo": "132736537195433",
+   "ackDate": "02-11-2026",
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Tax is not payable on reverse charge.",
+    "Subject to Pune jurisdiction."
+   ],
+   "signFor": "Tamhini Drivetech Private Limited",
+   "signedBy": "M. Kadam",
+   "poRef": "KDS/PO/45/2210",
+   "poDate": "20-Oct-2026",
+   "paymentTerms": "75 days",
+   "dispatchDoc": "LR 88319 dt 02-Nov-2026",
+   "dispatchedThrough": "Mahalunge Roadlines",
+   "destination": "Bhosari, Pune",
+   "ewayBill": "3498 5801 7018 dt 02-11-2026",
+   "vehicle": "MH 14 LR 3307",
+   "bank": {
+    "name": "Vindhya Commercial Bank Ltd",
+    "account": "041760000918",
+    "branch": "Chakan",
+    "ifsc": "VNCB0000417"
+   },
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "DISPATCHED\n02 NOV 2026",
+     "color": "blue",
+     "at": "top-right",
+     "rotate": -6
+    },
+    {
+     "kind": "hand",
+     "text": "Packed with the\n31/10 lot – P.S.",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": -2
+    }
+   ]
+  },
+  {
+   "id": "sales-reg",
+   "type": "table",
+   "style": "tally",
+   "title": "Sales register · October 2026",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune"
+   },
+   "ledger": "Sales Register · party-wise",
+   "period": "1-Oct-2026 to 31-Oct-2026",
+   "columns": [
+    {
+     "key": "p",
+     "label": "Particulars"
+    },
+    {
+     "key": "t",
+     "label": "Taxable value",
+     "format": "inr"
+    },
+    {
+     "key": "c",
+     "label": "CGST",
+     "format": "inr"
+    },
+    {
+     "key": "s",
+     "label": "SGST",
+     "format": "inr"
+    },
+    {
+     "key": "i",
+     "label": "IGST",
+     "format": "inr"
+    },
+    {
+     "key": "gr",
+     "label": "Gross total",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "_class": "head",
+     "p": "Chakan · GSTIN 27ZHDCT5940H1Z4"
+    },
+    {
+     "p": "Ashvaratha Motors Limited",
+     "t": 22039680,
+     "c": 1983571,
+     "s": 1983571,
+     "i": 0,
+     "gr": 26006822
+    },
+    {
+     "p": "Kshitij Driveline Systems Private Limited",
+     "t": 14693120,
+     "c": 1322381,
+     "s": 1322381,
+     "i": 0,
+     "gr": 17337882
+    },
+    {
+     "p": "Vayuvega Two Wheelers Limited",
+     "t": 9183200,
+     "c": 826488,
+     "s": 826488,
+     "i": 0,
+     "gr": 10836176
+    },
+    {
+     "p": "Naik Auto Spares Distributors",
+     "t": 4069800,
+     "c": 366282,
+     "s": 366282,
+     "i": 0,
+     "gr": 4802364
+    },
+    {
+     "p": "Wardha Road Auto Agencies",
+     "t": 2713200,
+     "c": 244188,
+     "s": 244188,
+     "i": 0,
+     "gr": 3201576
+    },
+    {
+     "p": "Bilal Ferrous Traders",
+     "t": 2986000,
+     "c": 268740,
+     "s": 268740,
+     "i": 0,
+     "gr": 3523480
+    },
+    {
+     "p": "Lothal Motors Limited",
+     "t": 9723200,
+     "c": 0,
+     "s": 0,
+     "i": 1750176,
+     "gr": 11473376
+    },
+    {
+     "p": "Malaprabha Precision Systems Private Limited",
+     "t": 7292400,
+     "c": 0,
+     "s": 0,
+     "i": 1312632,
+     "gr": 8605032
+    },
+    {
+     "p": "Kosli Driveline Private Limited",
+     "t": 7292400,
+     "c": 0,
+     "s": 0,
+     "i": 1312632,
+     "gr": 8605032
+    },
+    {
+     "p": "Bhalla Kohli Motor Stores",
+     "t": 3393450,
+     "c": 0,
+     "s": 0,
+     "i": 610821,
+     "gr": 4004271
+    },
+    {
+     "p": "Ahilya Auto Distributors",
+     "t": 2262300,
+     "c": 0,
+     "s": 0,
+     "i": 407214,
+     "gr": 2669514
+    },
+    {
+     "p": "Golconda Motor Spares",
+     "t": 1885250,
+     "c": 0,
+     "s": 0,
+     "i": 339345,
+     "gr": 2224595
+    },
+    {
+     "_class": "subtotal",
+     "p": "Chakan total",
+     "t": 87534000,
+     "c": 5011650,
+     "s": 5011650,
+     "i": 5732820,
+     "gr": 103290120
+    },
+    {
+     "_class": "head",
+     "p": "Hosur depot · GSTIN 33ZHDCT5940H1ZB"
+    },
+    {
+     "p": "Ponni Motors Limited",
+     "t": 9903300,
+     "c": 891297,
+     "s": 891297,
+     "i": 0,
+     "gr": 11685894
+    },
+    {
+     "p": "Vaigai Axle Systems Private Limited",
+     "t": 8102700,
+     "c": 729243,
+     "s": 729243,
+     "i": 0,
+     "gr": 9561186
+    },
+    {
+     "_class": "subtotal",
+     "p": "Hosur depot total",
+     "t": 18006000,
+     "c": 1620540,
+     "s": 1620540,
+     "i": 0,
+     "gr": 21247080
+    },
+    {
+     "_class": "total",
+     "p": "Grand total",
+     "t": 105540000,
+     "c": 6632190,
+     "s": 6632190,
+     "i": 5732820,
+     "gr": 124537200
+    }
+   ],
+   "notes": [
+    "Sales ledgers for October: Manufactured goods (domestic) ₹8,82,30,000 · Traded goods (domestic) ₹1,43,24,000 · Scrap sales ₹29,86,000.",
+    "Cancelled voucher TD/TR/26-27/0227 (Naik Auto Spares Distributors) carries no value."
+   ]
+  },
+  {
+   "id": "st-reg",
+   "type": "table",
+   "style": "tally",
+   "title": "Stock transfer register · October 2026",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune"
+   },
+   "ledger": "Stock Transfer Out · Chakan to Hosur depot",
+   "subtitle": "Voucher type: Stock Transfer Out (not posted to any sales ledger)",
+   "period": "1-Oct-2026 to 31-Oct-2026",
+   "columns": [
+    {
+     "key": "d",
+     "label": "Date",
+     "format": "date"
+    },
+    {
+     "key": "n",
+     "label": "Invoice no."
+    },
+    {
+     "key": "to",
+     "label": "Consignee"
+    },
+    {
+     "key": "t",
+     "label": "Taxable value",
+     "format": "inr"
+    },
+    {
+     "key": "i",
+     "label": "IGST",
+     "format": "inr"
+    },
+    {
+     "key": "gr",
+     "label": "Invoice value",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "d": "03-Oct-2026",
+     "n": "TD/ST/26-27/0068",
+     "to": "Hosur depot",
+     "t": 1840000,
+     "i": 331200.0,
+     "gr": 2171200.0
+    },
+    {
+     "d": "07-Oct-2026",
+     "n": "TD/ST/26-27/0069",
+     "to": "Hosur depot",
+     "t": 2160000,
+     "i": 388800.0,
+     "gr": 2548800.0
+    },
+    {
+     "d": "10-Oct-2026",
+     "n": "TD/ST/26-27/0070",
+     "to": "Hosur depot",
+     "t": 1620000,
+     "i": 291600.0,
+     "gr": 1911600.0
+    },
+    {
+     "d": "15-Oct-2026",
+     "n": "TD/ST/26-27/0071",
+     "to": "Hosur depot",
+     "t": 4983000.0,
+     "i": 896940.0,
+     "gr": 5879940.0
+    },
+    {
+     "d": "19-Oct-2026",
+     "n": "TD/ST/26-27/0072",
+     "to": "Hosur depot",
+     "t": 1785000,
+     "i": 321300.0,
+     "gr": 2106300.0
+    },
+    {
+     "d": "22-Oct-2026",
+     "n": "TD/ST/26-27/0073",
+     "to": "Hosur depot",
+     "t": 1452000,
+     "i": 261360.0,
+     "gr": 1713360.0
+    },
+    {
+     "d": "26-Oct-2026",
+     "n": "TD/ST/26-27/0074",
+     "to": "Hosur depot",
+     "t": 1505000,
+     "i": 270900.0,
+     "gr": 1775900.0
+    },
+    {
+     "d": "29-Oct-2026",
+     "n": "TD/ST/26-27/0075",
+     "to": "Hosur depot",
+     "t": 1220000.0,
+     "i": 219600.0,
+     "gr": 1439600.0
+    },
+    {
+     "_class": "total",
+     "d": "",
+     "n": "Total",
+     "to": "",
+     "t": 16565000,
+     "i": 2981700,
+     "gr": 19546700
+    }
+   ],
+   "notes": [
+    "Consignee GSTIN for every voucher: 33ZHDCT5940H1ZB (Tamhini Drivetech Private Limited, Hosur depot)."
+   ]
+  },
+  {
+   "id": "mail-3b",
+   "type": "letter",
+   "style": "email",
+   "title": "Pallavi’s mail · 3B working",
+   "from": {
+    "name": "Pallavi Shinde",
+    "email": "pallavi.shinde@email.com"
+   },
+   "to": [
+    {
+     "name": "Neethu Thomas",
+     "email": "neethu.thomas@email.com"
+    }
+   ],
+   "date": "Mon, 16 Nov 2026, 10:05 am",
+   "subject": "3B working · October 2026 · Chakan",
+   "body": [
+    "Neethu ma’am,",
+    "3B working for October below. Tax as per our sales register; ITC as per the purchase and journal registers.",
+    {
+     "table": {
+      "columns": [
+       {
+        "key": "r",
+        "label": "Row"
+       },
+       {
+        "key": "i",
+        "label": "IGST (₹)",
+        "format": "inr"
+       },
+       {
+        "key": "c",
+        "label": "CGST (₹)",
+        "format": "inr"
+       },
+       {
+        "key": "s",
+        "label": "SGST (₹)",
+        "format": "inr"
+       }
+      ],
+      "rows": [
+       {
+        "r": "3.1(a) Outward taxable supplies",
+        "i": 5732820,
+        "c": 6632190,
+        "s": 6632190
+       },
+       {
+        "r": "3.1(d) Inward supplies (liable to reverse charge)",
+        "i": 0,
+        "c": 0,
+        "s": 0
+       },
+       {
+        "r": "4A(5) All other ITC",
+        "i": 6918660,
+        "c": 3548752,
+        "s": 3548752
+       }
+      ]
+     }
+    },
+    "ITC break-up: purchase register IGST ₹69,18,660, CGST ₹24,52,885, SGST ₹24,52,885; journal register (job work, services, insurance) CGST ₹10,95,867, SGST ₹10,95,867.",
+    "Credit ledger after September’s 3B: nil under each head.",
+    "Cash figures after your check, please. I have to arrange funds by the 19th.",
+    "Regards,"
+   ],
+   "sign": {
+    "name": "Pallavi Shinde",
+    "role": "Accounts Executive",
+    "for": "Tamhini Drivetech Private Limited",
+    "hand": false
+   }
+  },
+  {
+   "id": "purch-reg",
+   "type": "table",
+   "style": "tally",
+   "title": "Purchase register · October 2026",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · GSTIN 27ZHDCT5940H1Z4"
+   },
+   "ledger": "Purchase Register · party-wise",
+   "period": "1-Oct-2026 to 31-Oct-2026",
+   "columns": [
+    {
+     "key": "p",
+     "label": "Particulars"
+    },
+    {
+     "key": "t",
+     "label": "Taxable value",
+     "format": "inr"
+    },
+    {
+     "key": "i",
+     "label": "IGST",
+     "format": "inr"
+    },
+    {
+     "key": "c",
+     "label": "CGST",
+     "format": "inr"
+    },
+    {
+     "key": "s",
+     "label": "SGST",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "p": "Alandi Paper Products",
+     "t": 230000,
+     "i": 0,
+     "c": 5750,
+     "s": 5750
+    },
+    {
+     "p": "Bhadar Forge and Engineering Private Limited",
+     "t": 8923320,
+     "i": 1606198,
+     "c": 0,
+     "s": 0
+    },
+    {
+     "p": "Ghanekar Alloy Steels Private Limited",
+     "t": 13503360,
+     "i": 0,
+     "c": 1215302,
+     "s": 1215302
+    },
+    {
+     "p": "Hebbal Tooling Solutions Private Limited",
+     "t": 1315000,
+     "i": 236700,
+     "c": 0,
+     "s": 0
+    },
+    {
+     "p": "Kharun Steels Private Limited",
+     "t": 12322680,
+     "i": 2218082,
+     "c": 0,
+     "s": 0
+    },
+    {
+     "p": "Kolak Polypack Private Limited",
+     "t": 396000,
+     "i": 71280,
+     "c": 0,
+     "s": 0
+    },
+    {
+     "p": "Moshi Corrugators",
+     "t": 527000,
+     "i": 0,
+     "c": 13175,
+     "s": 13175
+    },
+    {
+     "p": "Mundhwa Lubricants and Chemicals",
+     "t": 1076000,
+     "i": 0,
+     "c": 96840,
+     "s": 96840
+    },
+    {
+     "p": "Palar Seals and Gaskets Private Limited",
+     "t": 3491250,
+     "i": 628425,
+     "c": 0,
+     "s": 0
+    },
+    {
+     "p": "Phillaur Fasteners Private Limited",
+     "t": 571000,
+     "i": 102780,
+     "c": 0,
+     "s": 0
+    },
+    {
+     "p": "Rankala Forgings Private Limited",
+     "t": 12464640,
+     "i": 0,
+     "c": 1121818,
+     "s": 1121818
+    },
+    {
+     "p": "Sohna Friction Products Private Limited",
+     "t": 4797500,
+     "i": 863550,
+     "c": 0,
+     "s": 0
+    },
+    {
+     "p": "Vishwamitri Bearings Private Limited",
+     "t": 6620250,
+     "i": 1191645,
+     "c": 0,
+     "s": 0
+    },
+    {
+     "_class": "total",
+     "p": "Total",
+     "t": 66238000,
+     "i": 6918660,
+     "c": 2452885,
+     "s": 2452885
+    }
+   ],
+   "notes": [
+    "Input tax on job work, service and insurance bills is in the journal register: CGST ₹10,95,867, SGST ₹10,95,867."
+   ]
+  },
+  {
+   "id": "b2b-pivot",
+   "type": "table",
+   "style": "sheet",
+   "title": "Varun’s sheet · GSTR-2B supplier-wise",
+   "sheetName": "2B Oct-26 pivot",
+   "freeze": true,
+   "otherSheets": [
+    "B2B",
+    "Notes"
+   ],
+   "formula": "=SUMIFS(B2B!K:K,B2B!A:A,B4)",
+   "columns": [
+    {
+     "key": "p",
+     "label": "Supplier (as in 2B)"
+    },
+    {
+     "key": "g",
+     "label": "GSTIN",
+     "mono": true
+    },
+    {
+     "key": "n",
+     "label": "Records",
+     "format": "int"
+    },
+    {
+     "key": "t",
+     "label": "Taxable",
+     "format": "inr"
+    },
+    {
+     "key": "i",
+     "label": "IGST",
+     "format": "inr"
+    },
+    {
+     "key": "c",
+     "label": "CGST",
+     "format": "inr"
+    },
+    {
+     "key": "s",
+     "label": "SGST",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "p": "Bhadar Forge",
+     "g": "24YLTCB8047E1Z6",
+     "n": 4,
+     "t": 8923320,
+     "i": 1606198,
+     "c": 0,
+     "s": 0
+    },
+    {
+     "p": "Ghanekar Alloy Steels",
+     "g": "27UMVCG6849R1ZY",
+     "n": 6,
+     "t": 13503360,
+     "i": 0,
+     "c": 1215302,
+     "s": 1215302
+    },
+    {
+     "p": "Hebbal Tooling Solutions",
+     "g": "29ZEMCH0865A1ZP",
+     "n": 4,
+     "t": 1315000,
+     "i": 236700,
+     "c": 0,
+     "s": 0
+    },
+    {
+     "p": "Kharun Steels",
+     "g": "22UFLCK0414F1Z9",
+     "n": 5,
+     "t": 12322680,
+     "i": 2218082,
+     "c": 0,
+     "s": 0
+    },
+    {
+     "p": "Kolak Polypack",
+     "g": "24WGHCK4121C1Z7",
+     "n": 2,
+     "t": 256000,
+     "i": 46080,
+     "c": 0,
+     "s": 0
+    },
+    {
+     "p": "Moshi Corrugators",
+     "g": "27YNLPL0717M1Z1",
+     "n": 6,
+     "t": 527000,
+     "i": 0,
+     "c": 13175,
+     "s": 13175
+    },
+    {
+     "p": "Mundhwa Lubricants",
+     "g": "27WHQFM7542F1ZX",
+     "n": 3,
+     "t": 1076000,
+     "i": 0,
+     "c": 96840,
+     "s": 96840
+    },
+    {
+     "p": "Palar Seals",
+     "g": "33VMJCP6724Z1Z1",
+     "n": 4,
+     "t": 3491250,
+     "i": 628425,
+     "c": 0,
+     "s": 0
+    },
+    {
+     "p": "Phillaur Fasteners",
+     "g": "03UBZCP4197S1ZJ",
+     "n": 2,
+     "t": 571000,
+     "i": 102780,
+     "c": 0,
+     "s": 0
+    },
+    {
+     "p": "Rankala Forgings",
+     "g": "27UJPCR7248B1Z1",
+     "n": 7,
+     "t": 12464640,
+     "i": 0,
+     "c": 1121818,
+     "s": 1121818
+    },
+    {
+     "p": "Sohna Friction Products",
+     "g": "06ZDICS4933L1Z4",
+     "n": 3,
+     "t": 4797500,
+     "i": 863550,
+     "c": 0,
+     "s": 0
+    },
+    {
+     "p": "Vishwamitri Bearings",
+     "g": "24UQQCV0863H1ZL",
+     "n": 5,
+     "t": 6620250,
+     "i": 1191645,
+     "c": 0,
+     "s": 0
+    },
+    {
+     "_class": "subtotal",
+     "p": "Goods suppliers",
+     "g": "",
+     "n": 51,
+     "t": 65868000,
+     "i": 6893460,
+     "c": 2447135,
+     "s": 2447135
+    },
+    {
+     "_class": "subtotal",
+     "p": "Service suppliers",
+     "g": "",
+     "n": 58,
+     "t": 12176300,
+     "i": 0,
+     "c": 1095867,
+     "s": 1095867
+    },
+    {
+     "_class": "total",
+     "p": "GSTR-2B total",
+     "g": "",
+     "n": 109,
+     "t": 78044300,
+     "i": 6893460,
+     "c": 3543002,
+     "s": 3543002
+    }
+   ],
+   "notes": [
+    "Built from the GSTR-2B download of 14-11-2026 for the Chakan GSTIN. Service suppliers = job work, contract labour, freight, security, repairs, insurance and the rest; they agree with the journal register. Varun"
+   ]
+  },
+  {
+   "id": "gstr2b",
+   "type": "table",
+   "style": "portal",
+   "title": "GSTR-2B · October 2026 · summary",
+   "kindLabel": "Portal print",
+   "brand": "Goods and Services Tax",
+   "heading": "GSTR-2B · Auto-drafted ITC statement",
+   "subtitle": "Summary: ITC available",
+   "meta": [
+    {
+     "label": "GSTIN",
+     "value": "27ZHDCT5940H1Z4"
+    },
+    {
+     "label": "Legal name",
+     "value": "Tamhini Drivetech Private Limited"
+    },
+    {
+     "label": "Tax period",
+     "value": "October 2026"
+    },
+    {
+     "label": "Generated on",
+     "value": "14/11/2026"
+    }
+   ],
+   "columns": [
+    {
+     "key": "h",
+     "label": "Heading"
+    },
+    {
+     "key": "i",
+     "label": "Integrated tax (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "c",
+     "label": "Central tax (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "s",
+     "label": "State/UT tax (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "x",
+     "label": "Cess (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "h": "Part A · I. All other ITC: supplies from registered persons (not reverse charge)",
+     "i": 6893460,
+     "c": 3543002,
+     "s": 3543002,
+     "x": 0
+    },
+    {
+     "h": "Part A · II. Inward supplies from ISD",
+     "i": 0,
+     "c": 0,
+     "s": 0,
+     "x": 0
+    },
+    {
+     "h": "Part A · III. Inward supplies liable for reverse charge",
+     "i": 0,
+     "c": 0,
+     "s": 0,
+     "x": 0
+    },
+    {
+     "h": "Part A · IV. Import of goods",
+     "i": 0,
+     "c": 0,
+     "s": 0,
+     "x": 0
+    },
+    {
+     "h": "Part B · I. Others (credit notes)",
+     "i": 0,
+     "c": 0,
+     "s": 0,
+     "x": 0
+    }
+   ]
+  },
+  {
+   "id": "gstin-search",
+   "type": "table",
+   "style": "plain",
+   "title": "GST portal · Supplier searches",
+   "kindLabel": "Portal print",
+   "icon": "sheet",
+   "heading": "Search taxpayer · printed 16-11-2026",
+   "columns": [
+    {
+     "key": "n",
+     "label": "Supplier"
+    },
+    {
+     "key": "st",
+     "label": "Status"
+    },
+    {
+     "key": "f",
+     "label": "October 2026 returns"
+    }
+   ],
+   "rows": [
+    {
+     "n": "Alandi Paper Products (Kiran Kurhade) · 27ZDLPK9230K1ZG",
+     "st": "Cancelled, effective 15/09/2026",
+     "f": "None filed"
+    },
+    {
+     "n": "Kolak Polypack Private Limited · 24WGHCK4121C1Z7",
+     "st": "Active",
+     "f": "GSTR-1 filed 10/11/2026; GSTR-1A filed 13/11/2026"
+    },
+    {
+     "n": "Moshi Corrugators · 27YNLPL0717M1Z1",
+     "st": "Active",
+     "f": "GSTR-1 filed 10/11/2026"
+    },
+    {
+     "n": "Mundhwa Lubricants and Chemicals · 27WHQFM7542F1ZX",
+     "st": "Active",
+     "f": "GSTR-1 filed 11/11/2026"
+    },
+    {
+     "n": "Phillaur Fasteners Private Limited · 03UBZCP4197S1ZJ",
+     "st": "Active",
+     "f": "GSTR-1 filed 11/11/2026"
+    }
+   ],
+   "notes": [
+    "Status of Tamhini’s smaller suppliers, checked for the 3B. Varun"
+   ]
+  },
+  {
+   "id": "gstr2a-kolak",
+   "type": "table",
+   "style": "portal",
+   "title": "GSTR-2A · supplier detail · October",
+   "kindLabel": "Portal print",
+   "brand": "Goods and Services Tax",
+   "heading": "GSTR-2A · B2B invoices",
+   "subtitle": "Supplier: Kolak Polypack Private Limited",
+   "meta": [
+    {
+     "label": "GSTIN",
+     "value": "27ZHDCT5940H1Z4"
+    },
+    {
+     "label": "Tax period",
+     "value": "October 2026"
+    },
+    {
+     "label": "Viewed on",
+     "value": "16/11/2026"
+    }
+   ],
+   "columns": [
+    {
+     "key": "n",
+     "label": "Invoice number"
+    },
+    {
+     "key": "d",
+     "label": "Invoice date",
+     "format": "date"
+    },
+    {
+     "key": "t",
+     "label": "Taxable value (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "i",
+     "label": "Integrated tax (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "src",
+     "label": "Filed in"
+    },
+    {
+     "key": "fd",
+     "label": "Filing date"
+    }
+   ],
+   "rows": [
+    {
+     "n": "KP/26-27/1104",
+     "d": "05-10-2026",
+     "t": 130000,
+     "i": 23400.0,
+     "src": "GSTR-1",
+     "fd": "10/11/2026"
+    },
+    {
+     "n": "KP/26-27/1142",
+     "d": "19-10-2026",
+     "t": 126000,
+     "i": 22680.0,
+     "src": "GSTR-1",
+     "fd": "10/11/2026"
+    },
+    {
+     "n": "KP/26-27/1187",
+     "d": "29-10-2026",
+     "t": 140000,
+     "i": 25200.0,
+     "src": "GSTR-1A",
+     "fd": "13/11/2026"
+    }
+   ]
+  }
+ ],
+ "tasks": [
+  {
+   "id": "t1",
+   "type": "items",
+   "stage": "Fieldwork",
+   "title": "Sort October’s sales invoices",
+   "weight": 2,
+   "noun": [
+    "invoice",
+    "invoices"
+   ],
+   "prompt": "Pallavi’s October folder holds these 12 invoices. For each, pick the GSTR-1 it goes in: Chakan’s for October or November, Hosur’s, or none. Then say where in Chakan’s October return. Our registrations sheet, the gate register and her mail are under Other papers. Your calls go to Neethu when you move on.",
+   "lockOnLeave": {
+    "ask": "Hand your calls to Neethu?",
+    "note": "You can’t change them after this.",
+    "yes": "Hand them in",
+    "done": "Handed to Neethu. You can read your calls but not change them."
+   },
+   "hints": [
+    "Read the GSTIN printed at the top of each invoice first: whose GSTIN it is decides whose GSTR-1 it goes in, whoever the buyer is.",
+    "Check the month-end invoices against the gate register: an invoice made before or when the truck leaves keeps its own month. A cancelled number still counts in Table 13."
+   ],
+   "columns": [
+    {
+     "key": "label"
+    },
+    {
+     "key": "amount",
+     "format": "inr"
+    },
+    {
+     "key": "dated"
+    }
+   ],
+   "fields": [
+    {
+     "id": "goes",
+     "kind": "choice",
+     "label": "Goes in which GSTR-1",
+     "short": "Which GSTR-1",
+     "gate": true,
+     "neutral": true,
+     "options": [
+      {
+       "id": "oct",
+       "label": "Chakan · October",
+       "short": "Chakan Oct"
+      },
+      {
+       "id": "tn",
+       "label": "Hosur (Tamil Nadu)",
+       "short": "Hosur"
+      },
+      {
+       "id": "nov",
+       "label": "Chakan · November",
+       "short": "Chakan Nov"
+      },
+      {
+       "id": "none",
+       "label": "No GSTR-1"
+      }
+     ]
+    },
+    {
+     "id": "table",
+     "kind": "choice",
+     "label": "Where in Chakan’s October GSTR-1",
+     "showIf": {
+      "goes": "oct"
+     },
+     "options": [
+      {
+       "id": "cs",
+       "label": "B2B with CGST + SGST",
+       "short": "B2B, CGST + SGST"
+      },
+      {
+       "id": "ig",
+       "label": "B2B with IGST",
+       "short": "B2B, IGST"
+      },
+      {
+       "id": "b2c",
+       "label": "B2C (buyer has no GSTIN)",
+       "short": "B2C"
+      },
+      {
+       "id": "t13",
+       "label": "Table 13 only (cancelled)",
+       "short": "Table 13 only, cancelled"
+      }
+     ]
+    },
+    {
+     "id": "note",
+     "kind": "text",
+     "label": "Your note for the file",
+     "placeholder": "For example: place of supply Kerala, so IGST"
+    }
+   ],
+   "docs": [
+    "reg-note",
+    "gate-out",
+    "mail-r1",
+    "inv-01",
+    "inv-02",
+    "inv-03",
+    "inv-04",
+    "inv-05",
+    "inv-06",
+    "inv-07",
+    "inv-08",
+    "inv-09",
+    "inv-10",
+    "inv-11",
+    "inv-12"
+   ],
+   "items": [
+    {
+     "id": "d1",
+     "label": "Invoice 1 · Ashvaratha Motors",
+     "amount": 7813488.0,
+     "dated": "dated 7 Oct 2026",
+     "docs": [
+      "inv-01"
+     ],
+     "answer": {
+      "goes": "oct",
+      "table": "cs"
+     },
+     "note": "Invoice 1: Chakan to Ashvaratha’s plant at Chakan, both in Maharashtra, so CGST and SGST. B2B in Chakan’s GSTR-1, ₹66,21,600 taxable. The plain case; most of the month looks like this."
+    },
+    {
+     "id": "d2",
+     "label": "Invoice 2 · Lothal Motors",
+     "amount": 6113580.0,
+     "dated": "dated 12 Oct 2026",
+     "docs": [
+      "inv-02"
+     ],
+     "answer": {
+      "goes": "oct",
+      "table": "ig"
+     },
+     "note": "Invoice 2: the goods go to Sanand in Gujarat. The place of supply is outside Maharashtra, so the tax is IGST, ₹9,32,580, and it is B2B in Chakan’s GSTR-1."
+    },
+    {
+     "id": "d3",
+     "label": "Invoice 3 · Naik Auto Spares",
+     "amount": 844290.0,
+     "dated": "dated 14 Oct 2026",
+     "docs": [
+      "inv-03"
+     ],
+     "answer": {
+      "goes": "oct",
+      "table": "t13"
+     },
+     "note": "Invoice 3: stamped cancelled the day it was made, and the IRN cancelled with it. It goes in no B2B table, but the number was used, so Table 13 counts it under cancelled for the TD/TR series."
+    },
+    {
+     "id": "d4",
+     "label": "Invoice 4 · Tamhini, Hosur depot",
+     "amount": 5879940.0,
+     "dated": "dated 15 Oct 2026",
+     "docs": [
+      "inv-04"
+     ],
+     "answer": {
+      "goes": "oct",
+      "table": "ig"
+     },
+     "note": "Invoice 4: Chakan to Tamhini’s own Hosur depot. Two registrations of one PAN are distinct persons, so this transfer is a supply: B2B in Chakan’s GSTR-1, Hosur’s GSTIN as the buyer, IGST ₹8,96,940. Hosur takes the credit."
+    },
+    {
+     "id": "d5",
+     "label": "Invoice 5 · Ponni Motors",
+     "amount": 4823840.0,
+     "dated": "dated 16 Oct 2026",
+     "docs": [
+      "inv-05"
+     ],
+     "answer": {
+      "goes": "tn"
+     },
+     "note": "Invoice 5: look at the top. The seller is 33ZHDCT5940H1ZB, the Hosur depot, not Chakan. Hosur files its own GSTR-1 in Tamil Nadu, so this one stays out of Chakan’s return, whatever the sales register says."
+    },
+    {
+     "id": "d6",
+     "label": "Invoice 6 · Bilal Ferrous Traders",
+     "amount": 1249325.0,
+     "dated": "dated 20 Oct 2026",
+     "docs": [
+      "inv-06"
+     ],
+     "answer": {
+      "goes": "oct",
+      "table": "cs"
+     },
+     "note": "Invoice 6: scrap is a sale like any other. Bilal’s truck takes it to Bhosari, Pune, so CGST and SGST, ₹95,287.50 each, and B2B. Its HSN, 7204 41, gets its own line in the HSN summary, Table 12."
+    },
+    {
+     "id": "d7",
+     "label": "Invoice 7 · Wardha Road Auto",
+     "amount": 2146420.0,
+     "dated": "dated 22 Oct 2026",
+     "docs": [
+      "inv-07"
+     ],
+     "answer": {
+      "goes": "oct",
+      "table": "cs"
+     },
+     "note": "Invoice 7: Nagpur is a long way from Chakan, but it is in Maharashtra. Same State, so CGST and SGST and Chakan’s B2B table. Distance never decides the tax; the State of the place of supply does."
+    },
+    {
+     "id": "d8",
+     "label": "Invoice 8 · Kosli Driveline",
+     "amount": 5999946.0,
+     "dated": "dated 23 Oct 2026",
+     "docs": [
+      "inv-08"
+     ],
+     "answer": {
+      "goes": "oct",
+      "table": "ig"
+     },
+     "note": "Invoice 8: Manesar is in Haryana, so IGST, ₹9,15,246, B2B in Chakan’s GSTR-1."
+    },
+    {
+     "id": "d9",
+     "label": "Invoice 9 · Golconda Motor Spares",
+     "amount": 1467684.0,
+     "dated": "dated 24 Oct 2026",
+     "docs": [
+      "inv-09"
+     ],
+     "answer": {
+      "goes": "oct",
+      "table": "ig"
+     },
+     "note": "Invoice 9: Secunderabad is in Telangana, so IGST, ₹2,23,884. Golconda is a dealer with a GSTIN, which makes it B2B, not B2C. B2C is only for buyers with no registration."
+    },
+    {
+     "id": "d10",
+     "label": "Invoice 10 · Vaigai Axle Systems",
+     "amount": 4623830.0,
+     "dated": "dated 27 Oct 2026",
+     "docs": [
+      "inv-10"
+     ],
+     "answer": {
+      "goes": "tn"
+     },
+     "note": "Invoice 10: Hosur’s GSTIN again, 33ZHDCT5940H1ZB, and a buyer in Tamil Nadu, so CGST and SGST charged by Hosur. It belongs in Hosur’s GSTR-1. Pallavi’s register mixes both because the books are one company."
+    },
+    {
+     "id": "d11",
+     "label": "Invoice 11 · Vayuvega Two Wheelers",
+     "amount": 5925960.0,
+     "dated": "dated 31 Oct 2026",
+     "docs": [
+      "inv-11"
+     ],
+     "answer": {
+      "goes": "oct",
+      "table": "cs"
+     },
+     "note": "Invoice 11: dated 31 October; the truck came on 2 November. An invoice may be issued before the goods move, and one issued on time fixes the month by its date. October’s GSTR-1, B2B, CGST and SGST. Tell Pallavi to keep it in October."
+    },
+    {
+     "id": "d12",
+     "label": "Invoice 12 · Kshitij Driveline",
+     "amount": 4165400.0,
+     "dated": "dated 2 Nov 2026",
+     "docs": [
+      "inv-12"
+     ],
+     "answer": {
+      "goes": "nov"
+     },
+     "note": "Invoice 12: the shafts were packed on 31 October, but the invoice is dated 2 November, the day the truck left. Issued on time, so its date decides: November’s GSTR-1. It is in November’s books too."
+    }
+   ]
+  },
+  {
+   "id": "t2",
+   "type": "worksheet",
+   "stage": "Review",
+   "title": "Tie Chakan’s return to the books",
+   "prompt": "The sales ledgers show ₹10,55,40,000 for October. Work from there to Chakan’s GSTR-1: for each line, enter what it does to the books figure, minus to take out, plus to add, 0 if nothing. Then enter GSTR-1’s total.",
+   "hints": [
+    "Ask two questions of every line: is it in the sales ledgers, and is it in Chakan’s GSTR-1? Only a yes and a no make a difference."
+   ],
+   "columns": [
+    {
+     "key": "line",
+     "label": "Line"
+    },
+    {
+     "key": "amt",
+     "label": "Amount (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "id": "r1",
+     "cells": {
+      "line": "Sales in the books, October: the three sales ledgers",
+      "amt": 105540000
+     }
+    },
+    {
+     "id": "r2",
+     "cells": {
+      "line": "Hosur depot’s invoices to Ponni and Vaigai",
+      "amt": {
+       "input": true,
+       "answer": -18006000,
+       "tolerance": 1,
+       "signed": true,
+       "working": "Out: Hosur depot total in the sales register, ₹1,80,06,000"
+      }
+     }
+    },
+    {
+     "id": "r3",
+     "cells": {
+      "line": "Stock transfers, Chakan to the Hosur depot",
+      "amt": {
+       "input": true,
+       "answer": 16565000,
+       "tolerance": 1,
+       "signed": true,
+       "working": "In: stock transfer register total, TD/ST/26-27/0068 to 0075"
+      }
+     }
+    },
+    {
+     "id": "r4",
+     "cells": {
+      "line": "Invoice 3 (TD/TR/26-27/0227), cancelled on 14 October",
+      "amt": {
+       "input": true,
+       "answer": 0,
+       "tolerance": 1,
+       "signed": true,
+       "working": "No value in the books, none in GSTR-1"
+      }
+     }
+    },
+    {
+     "id": "r5",
+     "cells": {
+      "line": "Invoice 11 (TD/MF/26-27/1318), dated 31 October, out on 2 November",
+      "amt": {
+       "input": true,
+       "answer": 0,
+       "tolerance": 1,
+       "signed": true,
+       "working": "October in the books and in GSTR-1"
+      }
+     }
+    },
+    {
+     "id": "r6",
+     "_class": "total",
+     "cells": {
+      "line": "Chakan’s GSTR-1 for October: total taxable value",
+      "amt": {
+       "input": true,
+       "answer": 104099000,
+       "tolerance": 1,
+       "sign": false,
+       "follow": "105540000 + {r2.amt} + {r3.amt} + {r4.amt} + {r5.amt}",
+       "working": "10,55,40,000 − 1,80,06,000 + 1,65,65,000"
+      }
+     }
+    }
+   ],
+   "notes": {
+    "r2.amt": "Hosur bills Ponni and Vaigai on its own GSTIN. The sales are the company’s, so they sit in the books, but they belong in Hosur’s GSTR-1.",
+    "r3.amt": "Stock transfers never touch a sales ledger, yet each one is a supply from Chakan to Hosur. They add to Chakan’s GSTR-1, with IGST.",
+    "r4.amt": "Pallavi was right to leave it out of the values. It still shows in Table 13, as one cancelled number in the TD/TR series.",
+    "r5.amt": "Pallavi’s doubt again. Moving it to November would take ₹50,22,000 out here, but it was issued on time, on 31 October, so it stays in October.",
+    "r6.amt": "Pallavi took the whole sales register, with Hosur’s ₹1,80,06,000 in and the transfers’ ₹1,65,65,000 left out, so her working was ₹14,41,000 too high."
+   },
+   "docs": [
+    "sales-reg",
+    "st-reg",
+    "mail-r1",
+    "reg-note",
+    "inv-03",
+    "inv-11"
+   ]
+  },
+  {
+   "id": "t3",
+   "type": "worksheet",
+   "stage": "Review",
+   "title": "Check the credit, then the cash",
+   "prompt": "Pallavi built the 3B from her registers. Rework it: tax from Chakan’s GSTR-1, credit as GSTR-2B shows it with each gap explained, then the cash under each head. Enter the gaps as positive figures.",
+   "lockOnLeave": {
+    "ask": "Hand the 3B working to Neethu?",
+    "note": "You can’t change it after this.",
+    "yes": "Hand it in",
+    "done": "Handed to Neethu. You can read your working but not change it."
+   },
+   "hints": [
+    "Lay the purchase register beside Varun’s 2B sheet, supplier by supplier. Two suppliers differ; the portal searches and Kolak’s 2A tell you why.",
+    "The tax comes from Chakan’s GSTR-1 as you tied it, not from the grand total of Pallavi’s sales register. IGST credit pays IGST first."
+   ],
+   "columns": [
+    {
+     "key": "line",
+     "label": "Line"
+    },
+    {
+     "key": "ig",
+     "label": "IGST (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cg",
+     "label": "CGST (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "sg",
+     "label": "SGST (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "id": "r1",
+     "cells": {
+      "line": "3.1(a) Outward taxable supplies (Chakan’s GSTR-1)",
+      "ig": {
+       "input": true,
+       "answer": 8714520,
+       "tolerance": 1,
+       "sign": false,
+       "working": "57,32,820 customers + 29,81,700 stock transfers"
+      },
+      "cg": {
+       "input": true,
+       "answer": 5011650,
+       "tolerance": 1,
+       "sign": false,
+       "working": "Chakan total in the sales register"
+      },
+      "sg": {
+       "input": true,
+       "answer": 5011650,
+       "tolerance": 1,
+       "sign": false,
+       "working": "Same as CGST"
+      }
+     }
+    },
+    {
+     "id": "r2",
+     "cells": {
+      "line": "ITC in Pallavi’s working (purchase and journal registers)",
+      "ig": 6918660,
+      "cg": 3548752,
+      "sg": 3548752
+     }
+    },
+    {
+     "id": "r3",
+     "cells": {
+      "line": "Less: bill uploaded after the 2B cut-off",
+      "ig": {
+       "input": true,
+       "answer": [
+        25200,
+        -25200
+       ],
+       "tolerance": 1,
+       "working": "Kolak KP/26-27/1187, added by GSTR-1A on 13/11/2026"
+      },
+      "cg": "–",
+      "sg": "–"
+     }
+    },
+    {
+     "id": "r4",
+     "cells": {
+      "line": "Less: bills from a supplier whose GSTIN is cancelled",
+      "ig": "–",
+      "cg": {
+       "input": true,
+       "answer": [
+        5750,
+        -5750
+       ],
+       "tolerance": 1,
+       "working": "Alandi’s October bills, not in 2B"
+      },
+      "sg": {
+       "input": true,
+       "answer": [
+        5750,
+        -5750
+       ],
+       "tolerance": 1,
+       "working": "Alandi’s October bills, not in 2B"
+      }
+     }
+    },
+    {
+     "id": "r5",
+     "cells": {
+      "line": "4A(5) All other ITC, as GSTR-2B shows it",
+      "ig": {
+       "input": true,
+       "answer": 6893460,
+       "tolerance": 1,
+       "sign": false,
+       "working": "69,18,660 − 25,200"
+      },
+      "cg": {
+       "input": true,
+       "answer": 3543002,
+       "tolerance": 1,
+       "sign": false,
+       "working": "35,48,752 − 5,750"
+      },
+      "sg": {
+       "input": true,
+       "answer": 3543002,
+       "tolerance": 1,
+       "sign": false,
+       "working": "35,48,752 − 5,750"
+      }
+     }
+    },
+    {
+     "id": "r6",
+     "cells": {
+      "line": "Cash to pay",
+      "ig": {
+       "input": true,
+       "answer": 1821060,
+       "tolerance": 1,
+       "working": "87,14,520 − 68,93,460"
+      },
+      "cg": {
+       "input": true,
+       "answer": 1468648,
+       "tolerance": 1,
+       "working": "50,11,650 − 35,43,002"
+      },
+      "sg": {
+       "input": true,
+       "answer": 1468648,
+       "tolerance": 1,
+       "working": "50,11,650 − 35,43,002"
+      }
+     }
+    }
+   ],
+   "notes": {
+    "r1.ig": "Pallavi took IGST from the sales register alone and missed the transfers’ ₹29,81,700. Chakan supplied those goods, so the tax is Chakan’s.",
+    "r1.cg": "Chakan’s CGST only. The ₹16,20,540 of CGST on Hosur’s bills is the Hosur GSTIN’s tax and goes in Hosur’s own 3B.",
+    "r3.ig": "Kolak missed KP/26-27/1187 in its GSTR-1 and added it through GSTR-1A on 13 November. That lands in November’s 2B, so the ₹25,200 is claimed in November’s 3B.",
+    "r4.cg": "Alandi’s GSTIN was cancelled from 15 September, and its October bills are not in 2B. No 2B, no credit: the ₹5,750 + ₹5,750 stays out.",
+    "r5.ig": "The registers less the two gaps equal 2B under every head, so nothing is left unexplained.",
+    "r6.ig": "No head’s credit is more than its tax, so each head pays its own and nothing crosses over. Total cash ₹47,58,356."
+   },
+   "docs": [
+    "mail-3b",
+    "purch-reg",
+    "b2b-pivot",
+    "gstr2b",
+    "gstin-search",
+    "gstr2a-kolak",
+    "sales-reg",
+    "st-reg"
+   ]
+  },
+  {
+   "id": "t4",
+   "type": "compose",
+   "stage": "Report",
+   "title": "Draft the note to Mahesh",
+   "weight": 2,
+   "noun": [
+    "line",
+    "lines"
+   ],
+   "prompt": "Mahesh needs one mail from us: what changed in October’s returns and what his team does next. Pick the right line for each point.",
+   "hints": [
+    "Credit follows GSTR-2B. A bill uploaded late is claimed in the month 2B shows it; a bill 2B does not show gets no credit, though the purchase stands. The GSTIN that issues an invoice reports it."
+   ],
+   "previewLabel": "Your mail to Mahesh",
+   "slots": [
+    {
+     "id": "alandi",
+     "label": "Alandi Paper Products",
+     "options": [
+      {
+       "id": "a",
+       "text": "Alandi Paper Products: its GSTIN has been cancelled since 15 September, and its October bills (GST ₹11,500) are not in GSTR-2B. We have kept this credit out of October’s 3B; please hold back that GST from Alandi’s payments.",
+       "why": "The credit waits for 2B, and 2B will not show it while the registration stays cancelled. The supplier answers for the GST it charged.",
+       "correct": true
+      },
+      {
+       "id": "b",
+       "text": "Alandi Paper Products: its GSTIN has been cancelled since 15 September, but the boxes came in and the bills are genuine, so we have claimed the ₹11,500 in October’s 3B. We will check its status again next month.",
+       "why": "Genuine bills are not enough. Alandi’s October bills are not in 2B, so there is no credit to claim."
+      },
+      {
+       "id": "c",
+       "text": "Alandi Paper Products: its GSTIN has been cancelled since 15 September, so its October bills are void. Please reverse the ₹2,30,000 of purchases from your books, send the boxes back to Alandi and stop its payments.",
+       "why": "The purchase stands: the boxes came and went into packing. Only the ₹11,500 of GST credit is in question."
+      }
+     ]
+    },
+    {
+     "id": "kolak",
+     "label": "Kolak Polypack",
+     "options": [
+      {
+       "id": "a",
+       "text": "Kolak Polypack: bill KP/26-27/1187 of 29 October (IGST ₹25,200) is not in October’s 2B, so this credit is lost for good. Please reverse it in your books and ask Kolak to refund the tax.",
+       "why": "Not lost. Kolak added the bill through GSTR-1A, and it comes in November’s 2B."
+      },
+      {
+       "id": "b",
+       "text": "Kolak Polypack: bill KP/26-27/1187 of 29 October (IGST ₹25,200) was added through Kolak’s GSTR-1A on 13 November, after the cut-off, so it comes in November’s 2B. We will claim it in November’s 3B.",
+       "why": "A late upload only moves the credit to the month whose 2B shows the bill.",
+       "correct": true
+      },
+      {
+       "id": "c",
+       "text": "Kolak Polypack: bill KP/26-27/1187 of 29 October (IGST ₹25,200) already shows in GSTR-2A through Kolak’s GSTR-1A of 13 November, so we have claimed it in October’s 3B with Kolak’s other bills.",
+       "why": "The 3B credit follows 2B, not 2A. This bill comes in November’s 2B, so it is claimed in November’s 3B."
+      }
+     ]
+    },
+    {
+     "id": "process",
+     "label": "From November",
+     "options": [
+      {
+       "id": "a",
+       "text": "From November, please keep stock transfers out of the sales data. They are only movements between your own units, so they go in neither GSTR-1, and Hosur’s invoices can stay in Chakan’s GSTR-1.",
+       "why": "Two registrations of one PAN are distinct persons, so a transfer between them is a supply that Chakan reports."
+      },
+      {
+       "id": "b",
+       "text": "From November, please send the stock transfer register with the sales register. Transfers to Hosur go only in the Tamil Nadu GSTR-1, as Hosur receives the goods, and Hosur’s invoices go there too.",
+       "why": "The supplier reports, not the receiver. Chakan issues the transfer invoices, so they go in Chakan’s GSTR-1; Hosur sees them in its 2B."
+      },
+      {
+       "id": "c",
+       "text": "From November, please send the stock transfer register with the sales register. Transfers to Hosur go in Chakan’s GSTR-1 as B2B supplies with IGST, and Hosur’s own invoices go in the Tamil Nadu GSTR-1.",
+       "why": "Each GSTIN reports what it issued: Chakan the transfer invoices, Hosur its bills to Ponni and Vaigai.",
+       "correct": true
+      }
+     ]
+    }
+   ],
+   "template": "Subject: October 2026 GST returns, Chakan GSTIN\n\nMahesh sir,\n\nChakan’s October GSTR-1 is filed, and we have now checked the 3B working against GSTR-2B. Points from the month:\n\n{alandi}\n\n{kolak}\n\n{process}\n\n{_free}\n\nNeethu will send the 3B figures and the cash under each head for your approval today, so that the funds are ready by the 19th.\n\nRegards,\nGST team, Bapat Venkatesh & Co.",
+   "freeText": {
+    "label": "Your own line for the mail"
+   },
+   "docs": [
+    "mail-3b",
+    "gstin-search",
+    "gstr2a-kolak",
+    "b2b-pivot",
+    "purch-reg",
+    "st-reg",
+    "reg-note"
+   ]
+  }
+ ],
+ "wrap": {
+  "from": "neethu",
+  "text": "Pallavi took two shortcuts this month: she treated the sales register as Chakan’s GSTR-1 and the purchase register as the 3B credit. November’s returns start with the same two checks. Mahesh gets your note now and my 3B figures this afternoon."
+ },
+ "wrapPartial": {
+  "from": "neethu",
+  "text": "Chakan’s GSTR-1 holds what Chakan’s GSTIN issued in October, transfers to Hosur included. The 3B takes only the credit GSTR-2B shows. I file the 3B only when every head ties to the rupee."
+ },
+ "wrapRetry": {
+  "from": "neethu",
+  "text": "Read the GSTIN at the top of each invoice and the date it was issued: together they tell you whose return and which month. Then put the purchase register next to 2B, supplier by supplier, before you touch the 3B."
+ },
+ "passNeeds": [
+  {
+   "task": "t1",
+   "min": 0.75,
+   "note": "You need 9 of the 12 invoice calls right to pass; the right GSTR-1 with the wrong table counts half."
+  }
+ ],
+ "model": {
+  "intro": "Chakan’s GSTR-1 reports one GSTIN’s supplies, not the company’s sales register: Hosur’s invoices go to Hosur’s GSTR-1, the stock transfers come in and the 2 November invoice waits. In the 3B the credit follows GSTR-2B, so Kolak’s bill moves to November and Alandi’s bills stay out.",
+  "blocks": [
+   {
+    "type": "table",
+    "columns": [
+     {
+      "key": "s",
+      "label": "GSTR-1 B2B"
+     },
+     {
+      "key": "t",
+      "label": "Taxable value",
+      "format": "inr"
+     },
+     {
+      "key": "i",
+      "label": "IGST",
+      "format": "inr"
+     },
+     {
+      "key": "c",
+      "label": "CGST",
+      "format": "inr"
+     },
+     {
+      "key": "g",
+      "label": "SGST",
+      "format": "inr"
+     }
+    ],
+    "rows": [
+     {
+      "s": "Maharashtra buyers",
+      "t": 55685000,
+      "i": "–",
+      "c": 5011650,
+      "g": 5011650
+     },
+     {
+      "s": "Buyers in other States",
+      "t": 31849000,
+      "i": 5732820,
+      "c": "–",
+      "g": "–"
+     },
+     {
+      "s": "Stock transfers to Hosur depot",
+      "t": 16565000,
+      "i": 2981700,
+      "c": "–",
+      "g": "–"
+     },
+     {
+      "_class": "total",
+      "s": "Total: goes to 3B, 3.1(a)",
+      "t": 104099000,
+      "i": 8714520,
+      "c": 5011650,
+      "g": 5011650
+     }
+    ]
+   },
+   {
+    "type": "table",
+    "columns": [
+     {
+      "key": "s",
+      "label": "What goes in which table"
+     },
+     {
+      "key": "t",
+      "label": "GSTR-1 table"
+     }
+    ],
+    "rows": [
+     {
+      "s": "Registered buyer, your own other GSTIN included",
+      "t": "B2B, invoice by invoice (4A, 4B)"
+     },
+     {
+      "s": "Unregistered buyer in another State, invoice above ₹1 lakh",
+      "t": "B2C (Large), invoice by invoice (5)"
+     },
+     {
+      "s": "Any other sale to an unregistered buyer",
+      "t": "B2C (Others), totals by State and rate (7)"
+     },
+     {
+      "s": "Export",
+      "t": "Exports (6A)"
+     },
+     {
+      "s": "Supply to an SEZ unit",
+      "t": "B2B, flagged SEZ (6B)"
+     },
+     {
+      "s": "Credit or debit note to a registered buyer",
+      "t": "Credit and debit notes (9B)"
+     },
+     {
+      "s": "HSN-wise totals",
+      "t": "HSN summary (12)"
+     },
+     {
+      "s": "Every invoice series, cancelled numbers too",
+      "t": "Documents issued (13)"
+     }
+    ]
+   },
+   {
+    "type": "table",
+    "columns": [
+     {
+      "key": "s",
+      "label": "3B, reworked"
+     },
+     {
+      "key": "i",
+      "label": "IGST",
+      "format": "inr"
+     },
+     {
+      "key": "c",
+      "label": "CGST",
+      "format": "inr"
+     },
+     {
+      "key": "g",
+      "label": "SGST",
+      "format": "inr"
+     }
+    ],
+    "rows": [
+     {
+      "s": "3.1(a) tax",
+      "i": 8714520,
+      "c": 5011650,
+      "g": 5011650
+     },
+     {
+      "s": "4A(5) as per 2B",
+      "i": 6893460,
+      "c": 3543002,
+      "g": 3543002
+     },
+     {
+      "_class": "total",
+      "s": "Cash to pay",
+      "i": 1821060,
+      "c": 1468648,
+      "g": 1468648
+     }
+    ]
+   },
+   {
+    "type": "list",
+    "items": [
+     "Kolak’s ₹25,200: claimed in November’s 3B, once the bill shows in November’s 2B.",
+     "Alandi’s ₹11,500: stays out while its GSTIN is cancelled; Mahesh holds that GST back from Alandi’s payments.",
+     "From November: the stock transfer register comes with the sales register, and Hosur’s invoices go to Hosur’s GSTR-1.",
+     "Table 13: the TD/TR series shows one cancelled number, 0227."
+    ]
+   },
+   {
+    "type": "note",
+    "from": "neethu",
+    "text": "If a GSTR-1 mistake turns up after filing, put it right in GSTR-1A before the 3B is filed, so the 3B follows a correct GSTR-1."
+   }
+  ]
+ },
+ "principles": [
+  "GSTR-1 is filed per GSTIN: report what that registration supplied, transfers to your other GSTINs included.",
+  "For goods, an invoice issued on time (before or when the goods leave) fixes the month by its date; a late invoice takes the day they left.",
+  "3B credit stops at what GSTR-2B shows, and every gap from the books gets a reason and someone to act on it."
+ ],
+ "earned": {
+  "clause": "classified {docs} sales {docs|invoice|invoices} by GSTIN, month and GSTR-1 table[[; reconciled one month’s GSTR-1 ({turn}) with the books]][[; prepared the GSTR-3B working{w3|}]][[ with ITC matched to GSTR-2B{w3|}{late|}{gone|}{gone2|}]]",
+  "counts": {
+   "docs": {
+    "kind": "items",
+    "task": "t1",
+    "answered": "gate"
+   },
+   "turn": {
+    "kind": "cell",
+    "task": "t2",
+    "row": "r6",
+    "col": "amt",
+    "format": "crore1"
+   },
+   "w3": {
+    "kind": "correctCells",
+    "task": "t3",
+    "rows": [
+     "r6"
+    ]
+   },
+   "late": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "r3",
+    "col": "ig"
+   },
+   "gone": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "r4",
+    "col": "cg"
+   },
+   "gone2": {
+    "kind": "cell",
+    "task": "t3",
+    "row": "r4",
+    "col": "sg"
+   }
+  },
+  "fallback": "classified sales invoices by GSTIN, month and GSTR-1 table[[; reconciled one month’s GSTR-1 ({turn}) with the books]][[; prepared the GSTR-3B working{w3|}]][[ with ITC matched to GSTR-2B{w3|}{late|}{gone|}{gone2|}]]"
+ },
+ "interview": [
+  {
+   "q": "What’s the difference between GSTR-1 and GSTR-3B?",
+   "checking": "Whether you know which return carries the detail and which carries the tax.",
+   "outline": [
+    "GSTR-1 lists outward supplies, invoice by invoice for B2B, due by the 11th for monthly filers.",
+    "GSTR-3B is the summary: tax on supplies, credit from GSTR-2B, then the cash, by the 20th.",
+    "Its tax is auto-filled from GSTR-1[[, so in the simulation I tied GSTR-1 to the books first{turn|}]]."
+   ]
+  },
+  {
+   "q": "The books show more input credit than GSTR-2B. What goes in the 3B?",
+   "checking": "Whether you know GSTR-2B caps the credit, and can give a reason for every bill it leaves out.",
+   "outline": [
+    "Only what GSTR-2B shows, and only if eligible; the purchase register alone does not give the credit.",
+    "In the simulation one bill came through GSTR-1A after the cut-off, so it waits for November.",
+    "Another supplier’s GSTIN was cancelled, so 2B did not show its bills[[; I kept that credit out{gone|}{gone2|}]]."
+   ]
+  }
+ ]
+}

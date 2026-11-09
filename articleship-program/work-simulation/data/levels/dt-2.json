@@ -1,0 +1,4263 @@
+{
+ "id": "dt-2",
+ "domain": "direct-tax",
+ "number": 2,
+ "title": "TDS desk",
+ "minutes": 40,
+ "learn": [
+  "How the payment, the payee and the limit decide TDS",
+  "Why the ledger a bill is booked in never decides TDS",
+  "How to tie TDS receivable to Form 168, quarter by quarter"
+ ],
+ "do": [
+  "Check section and rate on ten payments",
+  "Tie TDS receivable to the tax-credit statement",
+  "Build the quarterly statement summary"
+ ],
+ "case": {
+  "role": "First-year article assistant on the direct-tax team’s TDS desk",
+  "client": "Tamhini Drivetech Private Limited, a Chakan company that makes gears, shafts and hubs for vehicle makers, with a depot at Hosur in Tamil Nadu; it also trades aftermarket parts",
+  "team": "Kunal Mehrotra (tax senior); Pallavi Shinde (accounts executive at Tamhini, keeps the TDS working)",
+  "goal": "Check ten payments before Tamhini’s October–December TDS statement is filed, tie TDS receivable to Form 168 and build the statement summary.",
+  "period": "Quarter ended 31 December 2026 (tax year 2026–27)",
+  "where": "Accounts room, Chakan plant · Monday 18 January 2027"
+ },
+ "brief": {
+  "from": "kunal",
+  "time": "9:40 am",
+  "messages": [
+   "Tamhini’s October–December TDS statement is due on 31 January. I’ve pulled ten payments from Pallavi’s working: check section and rate on each, and mark what’s short.",
+   "Then tie their TDS receivable to Form 168 and build the summary. By Thursday the 28th, please; I want to file on Friday the 29th."
+  ]
+ },
+ "documents": [
+  {
+   "id": "rate-card",
+   "type": "table",
+   "style": "plain",
+   "title": "TDS rate card, tax year 2026–27",
+   "kindLabel": "Firm’s rate card",
+   "heading": "TDS on payments to residents · tax year 2026–27",
+   "subtitle": "Bapat Venkatesh & Co. · direct-tax desk · Income-tax Act, 2025, section 393(1) Table",
+   "columns": [
+    {
+     "key": "p",
+     "label": "Payment"
+    },
+    {
+     "key": "r",
+     "label": "Rate"
+    },
+    {
+     "key": "w",
+     "label": "Deduct when the payee’s total"
+    },
+    {
+     "key": "c",
+     "label": "Section code",
+     "mono": true
+    },
+    {
+     "key": "e",
+     "label": "Entry"
+    }
+   ],
+   "rows": [
+    {
+     "p": "Commission or brokerage (not insurance)",
+     "e": "1(ii)",
+     "c": "1006",
+     "r": "2%",
+     "w": "crosses ₹20,000 in the year"
+    },
+    {
+     "p": "Rent or hire of plant, machinery or equipment",
+     "e": "2(ii)(a)",
+     "c": "1008",
+     "r": "2%",
+     "w": "is over ₹50,000 for a month"
+    },
+    {
+     "p": "Rent of land, building, furniture or fittings",
+     "e": "2(ii)(b)",
+     "c": "1009",
+     "r": "10%",
+     "w": "is over ₹50,000 for a month"
+    },
+    {
+     "p": "Contract work: individual or HUF",
+     "e": "6(i)",
+     "c": "1023",
+     "r": "1%",
+     "w": "is over ₹30,000 on a bill, or ₹1,00,000 in the year"
+    },
+    {
+     "p": "Contract work: firm, LLP, company or any other",
+     "e": "6(i)",
+     "c": "1024",
+     "r": "2%",
+     "w": "is over ₹30,000 on a bill, or ₹1,00,000 in the year"
+    },
+    {
+     "p": "Fees for technical services",
+     "e": "6(iii)",
+     "c": "1026",
+     "r": "2%",
+     "w": "crosses ₹50,000 in the year"
+    },
+    {
+     "p": "Fees for professional services",
+     "e": "6(iii)",
+     "c": "1027",
+     "r": "10%",
+     "w": "crosses ₹50,000 in the year"
+    },
+    {
+     "p": "Purchase of goods",
+     "e": "8(ii)",
+     "c": "1031",
+     "r": "0.1%",
+     "w": "crosses ₹50 lakh in the year: only on the part above"
+    }
+   ],
+   "notes": [
+    "A year’s limit, once crossed, brings in the whole year’s amount, earlier bills included. The ₹30,000 bill limit and the monthly rent limit bring in only that bill or that month. Purchase of goods is the exception: only the part above ₹50 lakh.",
+    "Deduct when the bill is credited or paid, whichever comes first.",
+    "When that date falls on or after 1 April 2026, quote the section 393 entry and code, not the old 194C, 194H, 194-I, 194J or 194Q.",
+    "Contract work is any work done under a contract, supply of labour included: job work on the client’s parts, carriage of goods, catering, and making a product to the client’s specification from material bought from the client. From tax year 2026–27 it also includes supply of manpower to work under the client’s supervision. A product made to the client’s specification from the supplier’s own material is a purchase.",
+    "Professional services: legal, medical, engineering, architecture, accountancy, technical consultancy, interior decoration, advertising and notified professions.",
+    "No TDS for a transporter who owns ten or fewer goods carriages and gives a declaration with PAN: report the payment with code T.",
+    "On services, deduct on the amount before GST when the bill shows GST separately.",
+    "For Tamhini: a company with turnover over ₹10 crore last year, so every row above applies to it."
+   ]
+  },
+  {
+   "id": "vendors",
+   "type": "table",
+   "style": "sheet",
+   "title": "Vendor master (extract)",
+   "kindLabel": "Client’s sheet",
+   "sheetName": "Vendor master",
+   "freeze": true,
+   "otherSheets": [
+    "Master",
+    "Customers"
+   ],
+   "formula": "=VLOOKUP(A2, Master!A:F, 2, FALSE)",
+   "columns": [
+    {
+     "key": "n",
+     "label": "Vendor"
+    },
+    {
+     "key": "k",
+     "label": "Constitution"
+    },
+    {
+     "key": "pan",
+     "label": "PAN",
+     "mono": true
+    },
+    {
+     "key": "g",
+     "label": "GSTIN",
+     "mono": true
+    },
+    {
+     "key": "x",
+     "label": "Note",
+     "wrap": true
+    }
+   ],
+   "rows": [
+    {
+     "_id": "p1",
+     "n": "Jadhavwadi Manpower Services",
+     "k": "Firm",
+     "pan": "YOIFJ5206L",
+     "g": "27YOIFJ5206L1ZP",
+     "x": "Contract labour, 110 workers"
+    },
+    {
+     "_id": "p2",
+     "n": "Sakhare Surface Treatment",
+     "k": "Proprietorship",
+     "pan": "ZJGPS6000S",
+     "g": "27ZJGPS6000S1ZY",
+     "x": "Prop. Mangesh Sakhare; job work"
+    },
+    {
+     "_id": "p3",
+     "n": "Kudalwadi Heat Treaters",
+     "k": "Firm",
+     "pan": "ZPIFK9501Q",
+     "g": "27ZPIFK9501Q1Z5",
+     "x": "Job work: heat treatment"
+    },
+    {
+     "_id": "p4",
+     "n": "Senthil Kumaran",
+     "k": "Individual",
+     "pan": "WREPK0785U",
+     "g": "33WREPK0785U1ZI",
+     "x": "Landlord, Hosur warehouse"
+    },
+    {
+     "_id": "p5",
+     "n": "Ambethan Power Rentals",
+     "k": "Firm",
+     "pan": "WKQFA5288Q",
+     "g": "27WKQFA5288Q1Z8",
+     "x": "DG set on hire from 1 Oct"
+    },
+    {
+     "_id": "p6",
+     "n": "Adv. Medha Paranjpe",
+     "k": "Individual",
+     "pan": "XWMPP5452S",
+     "g": "–",
+     "x": "Advocate"
+    },
+    {
+     "_id": "p7",
+     "n": "Rupesh Dhakne",
+     "k": "Individual",
+     "pan": "VKLPD3236G",
+     "g": "–",
+     "x": "Sales agent from 1 Oct"
+    },
+    {
+     "_id": "p8",
+     "n": "Mahalunge Roadlines",
+     "k": "Firm",
+     "pan": "WUOFM2259H",
+     "g": "27WUOFM2259H1Z8",
+     "x": "Transporter. No declaration"
+    },
+    {
+     "_id": "p9",
+     "n": "Dnyaneshwar Kalbhor",
+     "k": "Individual",
+     "pan": "WJMPK3416W",
+     "g": "–",
+     "x": "Declaration with PAN, 1 Oct"
+    },
+    {
+     "_id": "p10",
+     "n": "Kolak Polypack Private Limited",
+     "k": "Company",
+     "pan": "WGHCK4121C",
+     "g": "24WGHCK4121C1Z7",
+     "x": "VCI bags, stretch film"
+    }
+   ],
+   "notes": [
+    "Tamhini’s vendor master, the ten payees Kunal picked."
+   ]
+  },
+  {
+   "id": "working",
+   "type": "table",
+   "style": "sheet",
+   "title": "Pallavi’s TDS working, Oct–Dec",
+   "kindLabel": "Client’s sheet",
+   "sheetName": "Q3 review",
+   "otherSheets": [
+    "Q3 all payees",
+    "Challans"
+   ],
+   "formula": "=SUBTOTAL(9,C2:C11)",
+   "freeze": true,
+   "columns": [
+    {
+     "key": "n",
+     "label": "Payee"
+    },
+    {
+     "key": "l",
+     "label": "Booked under",
+     "wrap": true
+    },
+    {
+     "key": "amt",
+     "label": "Paid or credited (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "r",
+     "label": "Rate used"
+    },
+    {
+     "key": "tds",
+     "label": "TDS deducted (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "p1",
+     "n": "Jadhavwadi Manpower Services",
+     "l": "Contract labour charges",
+     "amt": 6699900,
+     "r": "2%",
+     "tds": 133998
+    },
+    {
+     "_id": "p2",
+     "n": "Sakhare Surface Treatment",
+     "l": "Job work charges",
+     "amt": 2930620,
+     "r": "1%",
+     "tds": 29306
+    },
+    {
+     "_id": "p3",
+     "n": "Kudalwadi Heat Treaters",
+     "l": "Job work charges",
+     "amt": 5442580,
+     "r": "1%",
+     "tds": 54426
+    },
+    {
+     "_id": "p4",
+     "n": "Senthil Kumaran",
+     "l": "Rent",
+     "amt": 750000,
+     "r": "10%",
+     "tds": 75000
+    },
+    {
+     "_id": "p5",
+     "n": "Ambethan Power Rentals",
+     "l": "Power and fuel",
+     "amt": 255000,
+     "r": "–",
+     "tds": 0
+    },
+    {
+     "_id": "p6",
+     "n": "Adv. Medha Paranjpe",
+     "l": "Legal and professional fees",
+     "amt": 60000,
+     "r": "10%",
+     "tds": 6000
+    },
+    {
+     "_id": "p7",
+     "n": "Rupesh Dhakne",
+     "l": "Sales promotion",
+     "amt": 32500,
+     "r": "–",
+     "tds": 0
+    },
+    {
+     "_id": "p8",
+     "n": "Mahalunge Roadlines",
+     "l": "Freight outward",
+     "amt": 4981700,
+     "r": "2%",
+     "tds": 99634
+    },
+    {
+     "_id": "p9",
+     "n": "Dnyaneshwar Kalbhor",
+     "l": "Freight outward",
+     "amt": 230000,
+     "r": "–",
+     "tds": 0
+    },
+    {
+     "_id": "p10",
+     "n": "Kolak Polypack Private Limited",
+     "l": "Purchases – packing materials",
+     "amt": 1095000,
+     "r": "–",
+     "tds": 0
+    },
+    {
+     "_class": "total",
+     "n": "Total",
+     "l": "",
+     "amt": 22477300,
+     "r": "",
+     "tds": 398364
+    }
+   ],
+   "notes": [
+    "Pallavi Shinde’s working for the October–December statement: the ten payees Kunal picked. Amounts are before GST."
+   ]
+  },
+  {
+   "id": "inv-p1",
+   "type": "invoice",
+   "style": "tally",
+   "title": "Payment 1 · Bill for December",
+   "tab": "Bill",
+   "group": "p1",
+   "supplier": {
+    "name": "Jadhavwadi Manpower Services",
+    "address": "Office 11, Jadhavwadi, Chikhli\nPune 412114",
+    "gstin": "27YOIFJ5206L1ZP",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "YOIFJ5206L"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "JMS/26-27/0233",
+   "date": "31-Dec-2026",
+   "placeOfSupply": "Maharashtra (27)",
+   "tax": "intra",
+   "poRef": "Agreement for supply of manpower dated 1-Apr-2026",
+   "paymentTerms": "15 days",
+   "lines": [
+    {
+     "desc": "Manpower supply, December 2026: 110 workers at your Chakan plant under your shift supervisors (2,860 man-days)",
+     "hsn": "9985",
+     "qty": 1,
+     "unit": "month",
+     "rate": 2233300,
+     "taxable": 2233300,
+     "gstRate": 18
+    }
+   ],
+   "total": 2635294.0,
+   "bank": {
+    "name": "Ambar Commercial Bank Ltd",
+    "account": "50710091185064",
+    "branch": "Chikhli",
+    "ifsc": "ABRC0000610"
+   },
+   "terms": [
+    "Wages, PF and ESI of the workers are paid by us; challans enclosed.",
+    "Interest @ 18% p.a. on bills unpaid after 15 days."
+   ],
+   "signFor": "Jadhavwadi Manpower Services",
+   "signedBy": "R. Jadhav"
+  },
+  {
+   "id": "led-p1",
+   "type": "table",
+   "style": "tally",
+   "title": "Payment 1 · Ledger, Jadhavwadi Manpower Services",
+   "tab": "Ledger",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Ledger: Jadhavwadi Manpower Services",
+   "subtitle": "Group: Sundry creditors – others",
+   "period": "1-Oct-2026 to 18-Jan-2027",
+   "group": "p1",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "vn",
+     "label": "Vch no."
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "31-10-2026",
+     "part": "Contract labour charges (bill JMS/26-27/0211)",
+     "vn": "JV 2104",
+     "dr": null,
+     "cr": 2635294
+    },
+    {
+     "date": "31-10-2026",
+     "part": "TDS payable",
+     "vn": "JV 2104",
+     "dr": 44666,
+     "cr": null
+    },
+    {
+     "date": "10-11-2026",
+     "part": "Cash credit – Vindhya Commercial Bank",
+     "vn": "PV 3870",
+     "dr": 2590628,
+     "cr": null
+    },
+    {
+     "date": "30-11-2026",
+     "part": "Contract labour charges (bill JMS/26-27/0222)",
+     "vn": "JV 2187",
+     "dr": null,
+     "cr": 2635294
+    },
+    {
+     "date": "30-11-2026",
+     "part": "TDS payable",
+     "vn": "JV 2187",
+     "dr": 44666,
+     "cr": null
+    },
+    {
+     "date": "10-12-2026",
+     "part": "Cash credit – Vindhya Commercial Bank",
+     "vn": "PV 4031",
+     "dr": 2590628,
+     "cr": null
+    },
+    {
+     "date": "31-12-2026",
+     "part": "Contract labour charges (bill JMS/26-27/0233)",
+     "vn": "JV 2318",
+     "dr": null,
+     "cr": 2635294
+    },
+    {
+     "date": "31-12-2026",
+     "part": "TDS payable",
+     "vn": "JV 2318",
+     "dr": 44666,
+     "cr": null
+    },
+    {
+     "date": "11-01-2027",
+     "part": "Cash credit – Vindhya Commercial Bank",
+     "vn": "PV 4506",
+     "dr": 2590628,
+     "cr": null
+    },
+    {
+     "_class": "total",
+     "date": "",
+     "part": "Total",
+     "vn": "",
+     "dr": 7905882,
+     "cr": 7905882
+    }
+   ],
+   "notes": [
+    "Bills include GST at 18%; TDS is worked on the amount before GST.",
+    "Closing balance on 18-01-2027: nil."
+   ]
+  },
+  {
+   "id": "inv-p2",
+   "type": "invoice",
+   "style": "book",
+   "title": "Payment 2 · Bill for December",
+   "tab": "Bill",
+   "group": "p2",
+   "supplier": {
+    "name": "Sakhare Surface Treatment",
+    "address": "Gat No. 307, Kharabwadi\nChakan, Pune 410501\nUdyam Reg. No. UDYAM-MH-26-0921929",
+    "gstin": "27ZJGPS6000S1ZY",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "ZJGPS6000S"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "SST/0236",
+   "date": "31/12/2026",
+   "placeOfSupply": "Maharashtra (27)",
+   "tax": "intra",
+   "poRef": "TD/WO/2026-27/0011",
+   "poDate": "1/4/2026",
+   "deliveryNote": "Your job-work challans JW-0544 to JW-0561",
+   "lines": [
+    {
+     "desc": "Phosphating: input shaft 1142",
+     "hsn": "9988",
+     "qty": 37580,
+     "unit": "nos",
+     "rate": 9.5,
+     "taxable": 357010.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "Blackening: companion flange 0880",
+     "hsn": "9988",
+     "qty": 59800,
+     "unit": "nos",
+     "rate": 7.25,
+     "taxable": 433550.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "Phosphating: countershaft 1190",
+     "hsn": "9988",
+     "qty": 11800,
+     "unit": "nos",
+     "rate": 11.0,
+     "taxable": 129800.0,
+     "gstRate": 18
+    }
+   ],
+   "roundOff": 0.2,
+   "total": 1086025.0,
+   "terms": [
+    "Your material, our labour. Payment within 30 days."
+   ],
+   "footer": "Subject to Pune jurisdiction.",
+   "signedBy": "M. Sakhare",
+   "signFor": "Sakhare Surface Treatment (Prop. Mangesh Sakhare)"
+  },
+  {
+   "id": "led-p2",
+   "type": "table",
+   "style": "tally",
+   "title": "Payment 2 · Ledger, Sakhare Surface Treatment",
+   "tab": "Ledger",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Ledger: Sakhare Surface Treatment",
+   "subtitle": "Group: Sundry creditors – micro and small enterprises",
+   "period": "1-Oct-2026 to 18-Jan-2027",
+   "group": "p2",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "vn",
+     "label": "Vch no."
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "31-10-2026",
+     "part": "Job work charges (bill SST/0212)",
+     "vn": "JV 2107",
+     "dr": null,
+     "cr": 1314662
+    },
+    {
+     "date": "31-10-2026",
+     "part": "TDS payable",
+     "vn": "JV 2107",
+     "dr": 11141,
+     "cr": null
+    },
+    {
+     "date": "25-11-2026",
+     "part": "Cash credit – Vindhya Commercial Bank",
+     "vn": "PV 3952",
+     "dr": 1303521,
+     "cr": null
+    },
+    {
+     "date": "30-11-2026",
+     "part": "Job work charges (bill SST/0224)",
+     "vn": "JV 2190",
+     "dr": null,
+     "cr": 1057445
+    },
+    {
+     "date": "30-11-2026",
+     "part": "TDS payable",
+     "vn": "JV 2190",
+     "dr": 8961,
+     "cr": null
+    },
+    {
+     "date": "28-12-2026",
+     "part": "Cash credit – Vindhya Commercial Bank",
+     "vn": "PV 4166",
+     "dr": 1048484,
+     "cr": null
+    },
+    {
+     "date": "31-12-2026",
+     "part": "Job work charges (bill SST/0236)",
+     "vn": "JV 2321",
+     "dr": null,
+     "cr": 1086025
+    },
+    {
+     "date": "31-12-2026",
+     "part": "TDS payable",
+     "vn": "JV 2321",
+     "dr": 9204,
+     "cr": null
+    },
+    {
+     "_class": "total",
+     "date": "",
+     "part": "Total",
+     "vn": "",
+     "dr": 2381311,
+     "cr": 3458132
+    }
+   ],
+   "notes": [
+    "Bills include GST at 18%; TDS is worked on the amount before GST.",
+    "Closing balance on 18-01-2027: ₹10,76,821 Cr (December bill, due 30 January)."
+   ]
+  },
+  {
+   "id": "inv-p3",
+   "type": "invoice",
+   "style": "dot",
+   "title": "Payment 3 · Bill for December",
+   "tab": "Bill",
+   "group": "p3",
+   "supplier": {
+    "name": "Kudalwadi Heat Treaters",
+    "address": "Survey 112, Kudalwadi, Chikhli\nPimpri-Chinchwad, Pune 412114\nUdyam Reg. No. UDYAM-MH-26-0906352",
+    "gstin": "27ZPIFK9501Q1Z5",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "ZPIFK9501Q"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "KHT/26-27/0291",
+   "date": "31/12/2026",
+   "copy": "Original for recipient",
+   "poRef": "TD/WO/2026-27/0007",
+   "poDate": "01/04/2026",
+   "paymentTerms": "45 days",
+   "deliveryNote": "Your job-work challans JW-0538 to JW-0563",
+   "placeOfSupply": "Maharashtra (27)",
+   "tax": "intra",
+   "lines": [
+    {
+     "desc": "Case carburising, hardening and tempering: helical gear 2210",
+     "hsn": "9988",
+     "qty": 15000,
+     "unit": "nos",
+     "rate": 42.0,
+     "taxable": 630000.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "Case carburising, hardening and tempering: spur gear 2235",
+     "hsn": "9988",
+     "qty": 17090,
+     "unit": "nos",
+     "rate": 36.0,
+     "taxable": 615240.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "Case carburising and hardening: input shaft 1142",
+     "hsn": "9988",
+     "qty": 8000,
+     "unit": "nos",
+     "rate": 58.0,
+     "taxable": 464000.0,
+     "gstRate": 18
+    }
+   ],
+   "roundOff": -0.2,
+   "total": 2016903.0,
+   "terms": [
+    "Hardness and case depth reports sent with each lot.",
+    "Interest @ 18% p.a. on bills unpaid after 45 days."
+   ],
+   "signFor": "Kudalwadi Heat Treaters",
+   "signedBy": "V. Kudale"
+  },
+  {
+   "id": "led-p3",
+   "type": "table",
+   "style": "tally",
+   "title": "Payment 3 · Ledger, Kudalwadi Heat Treaters",
+   "tab": "Ledger",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Ledger: Kudalwadi Heat Treaters",
+   "subtitle": "Group: Sundry creditors – micro and small enterprises",
+   "period": "1-Oct-2026 to 18-Jan-2027",
+   "group": "p3",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "vn",
+     "label": "Vch no."
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "31-10-2026",
+     "part": "Job work charges (bill KHT/26-27/0247)",
+     "vn": "JV 2109",
+     "dr": null,
+     "cr": 2441514
+    },
+    {
+     "date": "31-10-2026",
+     "part": "TDS payable",
+     "vn": "JV 2109",
+     "dr": 20691,
+     "cr": null
+    },
+    {
+     "date": "30-11-2026",
+     "part": "Job work charges (bill KHT/26-27/0270)",
+     "vn": "JV 2192",
+     "dr": null,
+     "cr": 1963827
+    },
+    {
+     "date": "30-11-2026",
+     "part": "TDS payable",
+     "vn": "JV 2192",
+     "dr": 16643,
+     "cr": null
+    },
+    {
+     "date": "16-12-2026",
+     "part": "Cash credit – Vindhya Commercial Bank",
+     "vn": "PV 4108",
+     "dr": 2420823,
+     "cr": null
+    },
+    {
+     "date": "31-12-2026",
+     "part": "Job work charges (bill KHT/26-27/0291)",
+     "vn": "JV 2323",
+     "dr": null,
+     "cr": 2016903
+    },
+    {
+     "date": "31-12-2026",
+     "part": "TDS payable",
+     "vn": "JV 2323",
+     "dr": 17092,
+     "cr": null
+    },
+    {
+     "date": "14-01-2027",
+     "part": "Cash credit – Vindhya Commercial Bank",
+     "vn": "PV 4538",
+     "dr": 1947184,
+     "cr": null
+    },
+    {
+     "_class": "total",
+     "date": "",
+     "part": "Total",
+     "vn": "",
+     "dr": 4422433,
+     "cr": 6422244
+    }
+   ],
+   "notes": [
+    "Bills include GST at 18%; TDS is worked on the amount before GST.",
+    "TDS at 1% on every bill since April."
+   ]
+  },
+  {
+   "id": "inv-p4",
+   "type": "invoice",
+   "style": "tally",
+   "title": "Payment 4 · Rent bill for December",
+   "tab": "Bill",
+   "group": "p4",
+   "supplier": {
+    "name": "Senthil Kumaran",
+    "address": "No. 18, Rayakottai Road\nHosur, Krishnagiri District 635109",
+    "gstin": "33WREPK0785U1ZI",
+    "state": "Tamil Nadu",
+    "stateCode": "33",
+    "phone": "98XXXXXXXX",
+    "pan": "WREPK0785U"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited (Hosur depot)",
+    "address": "Shed 6, Survey No. 112/3, SIPCOT Industrial Complex Phase I\nHosur, Krishnagiri District 635126",
+    "gstin": "33ZHDCT5940H1ZB",
+    "state": "Tamil Nadu",
+    "stateCode": "33"
+   },
+   "number": "SK/26-27/09",
+   "date": "31-Dec-2026",
+   "placeOfSupply": "Tamil Nadu (33)",
+   "tax": "intra",
+   "poRef": "Lease deed dated 2-Apr-2019 (renewed 1-Apr-2025)",
+   "lines": [
+    {
+     "desc": "Rent for warehouse at Shed 6, Survey No. 112/3, SIPCOT Industrial Complex Phase I, Hosur: December 2026",
+     "hsn": "9972",
+     "qty": 1,
+     "unit": "month",
+     "rate": 250000,
+     "taxable": 250000,
+     "gstRate": 18
+    }
+   ],
+   "total": 295000.0,
+   "bank": {
+    "name": "Vindhya Commercial Bank Ltd",
+    "account": "04180151170026",
+    "branch": "Hosur",
+    "ifsc": "VNCB0000731"
+   },
+   "terms": [
+    "Rent payable by the 10th of the following month."
+   ],
+   "signFor": "Senthil Kumaran",
+   "signedBy": "S. Kumaran"
+  },
+  {
+   "id": "led-p4",
+   "type": "table",
+   "style": "tally",
+   "title": "Payment 4 · Ledger, Senthil Kumaran",
+   "tab": "Ledger",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Ledger: Senthil Kumaran",
+   "subtitle": "Group: Sundry creditors – others",
+   "period": "1-Oct-2026 to 18-Jan-2027",
+   "group": "p4",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "vn",
+     "label": "Vch no."
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "31-10-2026",
+     "part": "Rent (bill SK/26-27/07)",
+     "vn": "JV 2111",
+     "dr": null,
+     "cr": 295000
+    },
+    {
+     "date": "31-10-2026",
+     "part": "TDS payable",
+     "vn": "JV 2111",
+     "dr": 25000,
+     "cr": null
+    },
+    {
+     "date": "09-11-2026",
+     "part": "Vindhya Commercial Bank – Hosur current account",
+     "vn": "PV 3866",
+     "dr": 270000,
+     "cr": null
+    },
+    {
+     "date": "30-11-2026",
+     "part": "Rent (bill SK/26-27/08)",
+     "vn": "JV 2194",
+     "dr": null,
+     "cr": 295000
+    },
+    {
+     "date": "30-11-2026",
+     "part": "TDS payable",
+     "vn": "JV 2194",
+     "dr": 25000,
+     "cr": null
+    },
+    {
+     "date": "09-12-2026",
+     "part": "Vindhya Commercial Bank – Hosur current account",
+     "vn": "PV 4026",
+     "dr": 270000,
+     "cr": null
+    },
+    {
+     "date": "31-12-2026",
+     "part": "Rent (bill SK/26-27/09)",
+     "vn": "JV 2325",
+     "dr": null,
+     "cr": 295000
+    },
+    {
+     "date": "31-12-2026",
+     "part": "TDS payable",
+     "vn": "JV 2325",
+     "dr": 25000,
+     "cr": null
+    },
+    {
+     "date": "08-01-2027",
+     "part": "Vindhya Commercial Bank – Hosur current account",
+     "vn": "PV 4471",
+     "dr": 270000,
+     "cr": null
+    },
+    {
+     "_class": "total",
+     "date": "",
+     "part": "Total",
+     "vn": "",
+     "dr": 885000,
+     "cr": 885000
+    }
+   ],
+   "notes": [
+    "Rent ₹2,50,000 a month plus GST; TDS on the rent before GST."
+   ]
+  },
+  {
+   "id": "inv-p5",
+   "type": "invoice",
+   "style": "tally",
+   "title": "Payment 5 · Hire bill for December",
+   "tab": "Bill",
+   "group": "p5",
+   "supplier": {
+    "name": "Ambethan Power Rentals",
+    "pan": "WKQFA5288Q",
+    "gstin": "27WKQFA5288Q1Z8",
+    "address": "Gat No. 212, Ambethan Road\nChakan, Pune 410501",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "APR/26-27/164",
+   "date": "31-Dec-2026",
+   "placeOfSupply": "Maharashtra (27)",
+   "tax": "intra",
+   "poRef": "Our hire letter dated 26-Sep-2026",
+   "lines": [
+    {
+     "desc": "Hire of 320 kVA silent DG set, Sr. No. KG-320-1187, at your Chakan plant: December 2026 (without operator)",
+     "hsn": "9973",
+     "qty": 1,
+     "unit": "month",
+     "rate": 85000,
+     "taxable": 85000,
+     "gstRate": 18
+    }
+   ],
+   "total": 100300.0,
+   "terms": [
+    "Diesel, running and log book by the hirer.",
+    "Payment within 10 days."
+   ],
+   "signFor": "Ambethan Power Rentals",
+   "signedBy": "S. Kadlag"
+  },
+  {
+   "id": "hire-p5",
+   "type": "letter",
+   "style": "letter",
+   "title": "Payment 5 · Hire letter",
+   "tab": "Hire letter",
+   "group": "p5",
+   "letterhead": {
+    "name": "Ambethan Power Rentals",
+    "address": "Gat No. 212, Ambethan Road, Chakan, Pune 410501",
+    "gstin": "27WKQFA5288Q1Z8",
+    "phone": "98XXXXXXXX"
+   },
+   "ref": "APR/HIRE/26-27/031",
+   "date": "26-09-2026",
+   "to": {
+    "name": "The Plant Head, Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC, Mahalunge, Pune 410501"
+   },
+   "subject": "Hire of a 320 kVA DG set from 1 October 2026",
+   "body": [
+    "Dear Mr Reddy,",
+    "We confirm the hire of one 320 kVA silent DG set (Sr. No. KG-320-1187) to you from 1 October 2026, on these terms:",
+    "- Hire charges: ₹85,000 a month plus GST, billed at the end of each month.",
+    "- The set stays at your Chakan plant for the hire period.",
+    "- Hire without operator: your maintenance team runs the set, keeps the log book and buys the diesel.",
+    "- We service the set every 250 running hours at no extra charge.",
+    "- Either side may end the hire with one month’s notice.",
+    "Please sign and return a copy."
+   ],
+   "sign": {
+    "closing": "For Ambethan Power Rentals",
+    "name": "Sachin Kadlag",
+    "role": "Partner",
+    "hand": "S. Kadlag"
+   },
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Accepted – V. Reddy 28/9",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": -3
+    }
+   ]
+  },
+  {
+   "id": "led-p5",
+   "type": "table",
+   "style": "tally",
+   "title": "Payment 5 · Ledger, Ambethan Power Rentals",
+   "tab": "Ledger",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Ledger: Ambethan Power Rentals",
+   "subtitle": "Group: Sundry creditors – others",
+   "period": "1-Oct-2026 to 18-Jan-2027",
+   "group": "p5",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "vn",
+     "label": "Vch no."
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "31-10-2026",
+     "part": "Power and fuel (bill APR/26-27/118)",
+     "vn": "JV 2114",
+     "dr": null,
+     "cr": 100300
+    },
+    {
+     "date": "07-11-2026",
+     "part": "Cash credit – Vindhya Commercial Bank",
+     "vn": "PV 3858",
+     "dr": 100300,
+     "cr": null
+    },
+    {
+     "date": "30-11-2026",
+     "part": "Power and fuel (bill APR/26-27/141)",
+     "vn": "JV 2197",
+     "dr": null,
+     "cr": 100300
+    },
+    {
+     "date": "08-12-2026",
+     "part": "Cash credit – Vindhya Commercial Bank",
+     "vn": "PV 4019",
+     "dr": 100300,
+     "cr": null
+    },
+    {
+     "date": "31-12-2026",
+     "part": "Power and fuel (bill APR/26-27/164)",
+     "vn": "JV 2327",
+     "dr": null,
+     "cr": 100300
+    },
+    {
+     "date": "08-01-2027",
+     "part": "Cash credit – Vindhya Commercial Bank",
+     "vn": "PV 4474",
+     "dr": 100300,
+     "cr": null
+    },
+    {
+     "_class": "total",
+     "date": "",
+     "part": "Total",
+     "vn": "",
+     "dr": 300900,
+     "cr": 300900
+    }
+   ],
+   "notes": [
+    "Narration on each journal: Being DG set hire charges for the month.",
+    "Closing balance on 18-01-2027: nil."
+   ]
+  },
+  {
+   "id": "bill-p6",
+   "type": "letter",
+   "style": "letter",
+   "title": "Payment 6 · Bill of 28 December",
+   "tab": "Bill",
+   "group": "p6",
+   "letterhead": {
+    "name": "Adv. Medha Paranjpe",
+    "address": "B.A., LL.B. · Advocate, High Court\nOffice 7, Shivajinagar Court Complex Road, Pune 411005",
+    "pan": "XWMPP5452S",
+    "phone": "98XXXXXXXX",
+    "email": "medha.paranjpe@email.com"
+   },
+   "ref": "Bill No. MP/26-27/31",
+   "date": "28-12-2026",
+   "to": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC, Mahalunge, Pune 410501"
+   },
+   "subject": "Professional fees",
+   "body": [
+    "Kind attn: Mr Mahesh Kadam, GM, Finance and Accounts",
+    {
+     "table": {
+      "columns": [
+       {
+        "key": "d",
+        "label": "Particulars"
+       },
+       {
+        "key": "a",
+        "label": "Amount (₹)",
+        "format": "inr"
+       }
+      ],
+      "rows": [
+       {
+        "d": "Legal opinion on the aftermarket distributor agreement, and its redraft with the termination and territory clauses (meetings of 9 and 21 December)",
+        "a": 60000
+       },
+       {
+        "_class": "total",
+        "d": "Total",
+        "a": 60000
+       }
+      ]
+     }
+    },
+    "Rupees sixty thousand only.",
+    "Please pay by NEFT to Satpura Bank Ltd, Shivajinagar branch, A/c 11020081174459, IFSC STPB0001632."
+   ],
+   "sign": {
+    "name": "Medha Paranjpe",
+    "hand": "Medha Paranjpe"
+   },
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "ENTERED · JV 2330",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": 3
+    }
+   ]
+  },
+  {
+   "id": "led-p6",
+   "type": "table",
+   "style": "tally",
+   "title": "Payment 6 · Ledger, Adv. Medha Paranjpe",
+   "tab": "Ledger",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Ledger: Adv. Medha Paranjpe",
+   "subtitle": "Group: Sundry creditors – others",
+   "period": "1-Apr-2026 to 18-Jan-2027",
+   "group": "p6",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "vn",
+     "label": "Vch no."
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "24-08-2026",
+     "part": "Legal and professional fees (bill MP/26-27/14)",
+     "vn": "JV 1561",
+     "dr": null,
+     "cr": 35000
+    },
+    {
+     "date": "02-09-2026",
+     "part": "Cash credit – Vindhya Commercial Bank",
+     "vn": "PV 3214",
+     "dr": 35000,
+     "cr": null
+    },
+    {
+     "date": "31-12-2026",
+     "part": "Legal and professional fees (bill MP/26-27/31)",
+     "vn": "JV 2330",
+     "dr": null,
+     "cr": 60000
+    },
+    {
+     "date": "31-12-2026",
+     "part": "TDS payable",
+     "vn": "JV 2330",
+     "dr": 6000,
+     "cr": null
+    },
+    {
+     "date": "05-01-2027",
+     "part": "Cash credit – Vindhya Commercial Bank",
+     "vn": "PV 4426",
+     "dr": 54000,
+     "cr": null
+    },
+    {
+     "_class": "total",
+     "date": "",
+     "part": "Total",
+     "vn": "",
+     "dr": 95000,
+     "cr": 95000
+    }
+   ],
+   "notes": [
+    "Narration, JV 1561: Being bill MP/26-27/14 for vetting the warranty terms of the new CNC turning centre booked. Under ₹50,000, no TDS.",
+    "Closing balance: nil."
+   ]
+  },
+  {
+   "id": "appt-p7",
+   "type": "letter",
+   "style": "letter",
+   "title": "Payment 7 · Appointment letter",
+   "tab": "Appointment",
+   "group": "p7",
+   "letterhead": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC, Mahalunge, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "cin": "U29301MH2004PTC942620"
+   },
+   "ref": "TD/SALES/2026-27/AG-03",
+   "date": "24-09-2026",
+   "to": {
+    "name": "Mr Rupesh Dhakne",
+    "address": "Plot 14, N-7 CIDCO, Chhatrapati Sambhajinagar 431003"
+   },
+   "subject": "Appointment as our commission agent for aftermarket parts, Marathwada",
+   "body": [
+    "Dear Mr Dhakne,",
+    "We appoint you as our commission agent for aftermarket bearings, oil seals and clutch plates in the Marathwada region from 1 October 2026.",
+    "- Commission: 2.5% of the invoice value, before GST, of orders you book for us, once the distributor has paid.",
+    "- You will send us one bill a month with the list of orders.",
+    "- You act for us in finding and booking orders. You do not buy, hold or sell our goods yourself, and you are not our employee.",
+    "Please sign a copy to confirm."
+   ],
+   "sign": {
+    "closing": "For Tamhini Drivetech Private Limited",
+    "name": "Amol Joglekar",
+    "role": "Managing Director",
+    "hand": "A. Joglekar"
+   }
+  },
+  {
+   "id": "bill-p7a",
+   "type": "letter",
+   "style": "letter",
+   "title": "Payment 7 · Commission bill, October",
+   "tab": "Bill Oct",
+   "group": "p7",
+   "letterhead": {
+    "name": "Rupesh Dhakne",
+    "address": "Sales agent, aftermarket auto parts\nPlot 14, N-7 CIDCO, Chhatrapati Sambhajinagar 431003",
+    "pan": "VKLPD3236G",
+    "phone": "98XXXXXXXX",
+    "email": "rupesh.dhakne@email.com"
+   },
+   "ref": "Bill No. RD/01",
+   "date": "02-11-2026",
+   "to": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune"
+   },
+   "subject": "Commission for October 2026",
+   "body": [
+    {
+     "table": {
+      "columns": [
+       {
+        "key": "d",
+        "label": "Particulars"
+       },
+       {
+        "key": "a",
+        "label": "Amount (₹)",
+        "format": "inr"
+       }
+      ],
+      "rows": [
+       {
+        "d": "Commission @ 2.5% on aftermarket orders booked through me in October 2026 and paid: ₹7,20,000 (list attached)",
+        "a": 18000
+       },
+       {
+        "_class": "total",
+        "d": "Total",
+        "a": 18000
+       }
+      ]
+     }
+    },
+    "I am not registered under GST."
+   ],
+   "sign": {
+    "name": "Rupesh Dhakne",
+    "hand": "R. Dhakne"
+   }
+  },
+  {
+   "id": "bill-p7b",
+   "type": "letter",
+   "style": "letter",
+   "title": "Payment 7 · Commission bill, December",
+   "tab": "Bill Dec",
+   "group": "p7",
+   "letterhead": {
+    "name": "Rupesh Dhakne",
+    "address": "Sales agent, aftermarket auto parts\nPlot 14, N-7 CIDCO, Chhatrapati Sambhajinagar 431003",
+    "pan": "VKLPD3236G",
+    "phone": "98XXXXXXXX",
+    "email": "rupesh.dhakne@email.com"
+   },
+   "ref": "Bill No. RD/02",
+   "date": "31-12-2026",
+   "to": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune"
+   },
+   "subject": "Commission for December 2026",
+   "body": [
+    {
+     "table": {
+      "columns": [
+       {
+        "key": "d",
+        "label": "Particulars"
+       },
+       {
+        "key": "a",
+        "label": "Amount (₹)",
+        "format": "inr"
+       }
+      ],
+      "rows": [
+       {
+        "d": "Commission @ 2.5% on aftermarket orders booked through me in December 2026 and paid: ₹5,80,000 (list attached)",
+        "a": 14500
+       },
+       {
+        "_class": "total",
+        "d": "Total",
+        "a": 14500
+       }
+      ]
+     }
+    },
+    "I am not registered under GST."
+   ],
+   "sign": {
+    "name": "Rupesh Dhakne",
+    "hand": "R. Dhakne"
+   }
+  },
+  {
+   "id": "led-p7",
+   "type": "table",
+   "style": "tally",
+   "title": "Payment 7 · Ledger, Rupesh Dhakne",
+   "tab": "Ledger",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Ledger: Rupesh Dhakne",
+   "subtitle": "Group: Sundry creditors – others",
+   "period": "1-Apr-2026 to 18-Jan-2027",
+   "group": "p7",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "vn",
+     "label": "Vch no."
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "02-11-2026",
+     "part": "Sales promotion (bill RD/01)",
+     "vn": "JV 2131",
+     "dr": null,
+     "cr": 18000
+    },
+    {
+     "date": "09-11-2026",
+     "part": "Cash credit – Vindhya Commercial Bank",
+     "vn": "PV 3863",
+     "dr": 18000,
+     "cr": null
+    },
+    {
+     "date": "31-12-2026",
+     "part": "Sales promotion (bill RD/02)",
+     "vn": "JV 2332",
+     "dr": null,
+     "cr": 14500
+    },
+    {
+     "date": "06-01-2027",
+     "part": "Cash credit – Vindhya Commercial Bank",
+     "vn": "PV 4448",
+     "dr": 14500,
+     "cr": null
+    },
+    {
+     "_class": "total",
+     "date": "",
+     "part": "Total",
+     "vn": "",
+     "dr": 32500,
+     "cr": 32500
+    }
+   ],
+   "notes": [
+    "No bill for November. Closing balance: nil."
+   ]
+  },
+  {
+   "id": "inv-p8",
+   "type": "invoice",
+   "style": "erp",
+   "title": "Payment 8 · Freight bill for December",
+   "tab": "Bill",
+   "group": "p8",
+   "supplier": {
+    "name": "Mahalunge Roadlines",
+    "address": "Fleet owners and transport contractors · own fleet of 26 trucks\nShop 3, Chakan–Talegaon Road, Mahalunge, Pune 410501",
+    "gstin": "27WUOFM2259H1Z8",
+    "state": "Maharashtra",
+    "stateCode": "27",
+    "phone": "98XXXXXXXX",
+    "pan": "WUOFM2259H"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "MRL/26-27/1129",
+   "date": "31-12-2026",
+   "placeOfSupply": "Maharashtra (27)",
+   "tax": "intra",
+   "lines": [
+    {
+     "desc": "Freight, full-truck trips to Chakan and Bhosari (trip sheet enclosed)",
+     "hsn": "9965",
+     "qty": 52,
+     "unit": "trips",
+     "rate": 4500.0,
+     "taxable": 234000.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "Freight, full-truck trips to Chhatrapati Sambhajinagar (trip sheet enclosed)",
+     "hsn": "9965",
+     "qty": 14,
+     "unit": "trips",
+     "rate": 26500.0,
+     "taxable": 371000.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "Freight, full-truck trips to Sanand, Gujarat (trip sheet enclosed)",
+     "hsn": "9965",
+     "qty": 6,
+     "unit": "trips",
+     "rate": 58000.0,
+     "taxable": 348000.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "Freight, full-truck trips to Manesar, Haryana (trip sheet enclosed)",
+     "hsn": "9965",
+     "qty": 4,
+     "unit": "trips",
+     "rate": 108500.0,
+     "taxable": 434000.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "Freight, full-truck trips to Dharwad, Karnataka (trip sheet enclosed)",
+     "hsn": "9965",
+     "qty": 5,
+     "unit": "trips",
+     "rate": 35500.0,
+     "taxable": 177500.0,
+     "gstRate": 18
+    }
+   ],
+   "total": 1846110.0,
+   "bank": {
+    "name": "Satpura Bank Ltd",
+    "account": "11020061148827",
+    "branch": "Chakan",
+    "ifsc": "STPB0001418"
+   },
+   "terms": [
+    "GST charged by us under forward charge.",
+    "Claims for damage within 7 days of delivery."
+   ],
+   "signFor": "Mahalunge Roadlines",
+   "signedBy": "N. Thorve"
+  },
+  {
+   "id": "led-p8",
+   "type": "table",
+   "style": "tally",
+   "title": "Payment 8 · Ledger, Mahalunge Roadlines",
+   "tab": "Ledger",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Ledger: Mahalunge Roadlines",
+   "subtitle": "Group: Sundry creditors – others",
+   "period": "1-Oct-2026 to 18-Jan-2027",
+   "group": "p8",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "vn",
+     "label": "Vch no."
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "31-10-2026",
+     "part": "Freight outward (bill MRL/26-27/1046)",
+     "vn": "JV 2116",
+     "dr": null,
+     "cr": 2234802
+    },
+    {
+     "date": "31-10-2026",
+     "part": "TDS payable",
+     "vn": "JV 2116",
+     "dr": 37878,
+     "cr": null
+    },
+    {
+     "date": "30-11-2026",
+     "part": "Freight outward (bill MRL/26-27/1088)",
+     "vn": "JV 2199",
+     "dr": null,
+     "cr": 1797494
+    },
+    {
+     "date": "30-11-2026",
+     "part": "TDS payable",
+     "vn": "JV 2199",
+     "dr": 30466,
+     "cr": null
+    },
+    {
+     "date": "02-12-2026",
+     "part": "Cash credit – Vindhya Commercial Bank",
+     "vn": "PV 3998",
+     "dr": 2196924,
+     "cr": null
+    },
+    {
+     "date": "31-12-2026",
+     "part": "Freight outward (bill MRL/26-27/1129)",
+     "vn": "JV 2334",
+     "dr": null,
+     "cr": 1846110
+    },
+    {
+     "date": "31-12-2026",
+     "part": "TDS payable",
+     "vn": "JV 2334",
+     "dr": 31290,
+     "cr": null
+    },
+    {
+     "date": "04-01-2027",
+     "part": "Cash credit – Vindhya Commercial Bank",
+     "vn": "PV 4384",
+     "dr": 1767028,
+     "cr": null
+    },
+    {
+     "_class": "total",
+     "date": "",
+     "part": "Total",
+     "vn": "",
+     "dr": 4063586,
+     "cr": 5878406
+    }
+   ],
+   "notes": [
+    "Bills include GST at 18%; TDS is worked on the amount before GST."
+   ]
+  },
+  {
+   "id": "decl-p9",
+   "type": "letter",
+   "style": "note",
+   "title": "Payment 9 · Transporter’s declaration",
+   "tab": "Declaration",
+   "group": "p9",
+   "date": "01-10-2026",
+   "body": [
+    "To, Tamhini Drivetech Pvt. Ltd., Chakan",
+    "I, Dnyaneshwar Kalbhor, own two goods carriages: MH 14 HG 6625 and MH 14 KS 3071.",
+    "I do not own more than ten goods carriages at any time in tax year 2026–27.",
+    "My PAN is WJMPK3416W. Please do not deduct TDS from my freight bills."
+   ],
+   "sign": {
+    "name": "Dnyaneshwar Kalbhor",
+    "hand": "D. Kalbhor"
+   },
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "RECEIVED\n01 OCT 2026\nACCOUNTS",
+     "color": "violet",
+     "at": "bottom-left",
+     "rotate": -6
+    }
+   ]
+  },
+  {
+   "id": "bill-p9",
+   "type": "card",
+   "style": "slip",
+   "handwritten": true,
+   "title": "Payment 9 · Freight bill for December",
+   "tab": "Bill",
+   "group": "p9",
+   "issuer": "Kalbhor Transport · Medankarwadi, Chakan, Pune 410501 · Phone 98XXXXXXXX",
+   "heading": "Freight bill",
+   "number": "23",
+   "fields": [
+    {
+     "label": "Date",
+     "value": "31-12-2026"
+    },
+    {
+     "label": "To",
+     "value": "Tamhini Drivetech Pvt. Ltd., Chakan"
+    },
+    {
+     "label": "Trips",
+     "value": "9 Dec and 22 Dec 2026: Chakan plant to your Hosur depot (your transfer invoices TD/ST/26-27/0088 and 0093)"
+    },
+    {
+     "label": "Rate",
+     "value": "₹46,000 a trip, full truck"
+    },
+    {
+     "label": "Amount",
+     "value": "₹92,000"
+    },
+    {
+     "label": "PAN",
+     "value": "WJMPK3416W"
+    },
+    {
+     "label": "GST",
+     "value": "Not registered"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "hand",
+     "text": "Decl. on file – no TDS. P.S.",
+     "color": "blue",
+     "at": "bottom-left",
+     "rotate": -4
+    }
+   ]
+  },
+  {
+   "id": "led-p9",
+   "type": "table",
+   "style": "tally",
+   "title": "Payment 9 · Ledger, Dnyaneshwar Kalbhor",
+   "tab": "Ledger",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Ledger: Dnyaneshwar Kalbhor",
+   "subtitle": "Group: Sundry creditors – others",
+   "period": "1-Oct-2026 to 18-Jan-2027",
+   "group": "p9",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "vn",
+     "label": "Vch no."
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "31-10-2026",
+     "part": "Freight outward (bill 19: trips of 7 and 22 Oct)",
+     "vn": "JV 2118",
+     "dr": null,
+     "cr": 92000
+    },
+    {
+     "date": "06-11-2026",
+     "part": "Cash credit – Vindhya Commercial Bank",
+     "vn": "PV 3851",
+     "dr": 92000,
+     "cr": null
+    },
+    {
+     "date": "30-11-2026",
+     "part": "Freight outward (bill 21: trip of 17 Nov)",
+     "vn": "JV 2201",
+     "dr": null,
+     "cr": 46000
+    },
+    {
+     "date": "05-12-2026",
+     "part": "Cash credit – Vindhya Commercial Bank",
+     "vn": "PV 4007",
+     "dr": 46000,
+     "cr": null
+    },
+    {
+     "date": "31-12-2026",
+     "part": "Freight outward (bill 23: trips of 9 and 22 Dec)",
+     "vn": "JV 2336",
+     "dr": null,
+     "cr": 92000
+    },
+    {
+     "date": "06-01-2027",
+     "part": "Cash credit – Vindhya Commercial Bank",
+     "vn": "PV 4449",
+     "dr": 92000,
+     "cr": null
+    },
+    {
+     "_class": "total",
+     "date": "",
+     "part": "Total",
+     "vn": "",
+     "dr": 230000,
+     "cr": 230000
+    }
+   ],
+   "notes": [
+    "First trip for Tamhini on 7 October 2026. Closing balance: nil."
+   ]
+  },
+  {
+   "id": "inv-p10",
+   "type": "invoice",
+   "style": "tally",
+   "title": "Payment 10 · Bill for December",
+   "tab": "Bill",
+   "group": "p10",
+   "supplier": {
+    "name": "Kolak Polypack Private Limited",
+    "address": "Plot 1407, Phase III\nGIDC Vapi 396195\nUdyam Reg. No. UDYAM-GJ-24-0957631",
+    "gstin": "24WGHCK4121C1Z7",
+    "state": "Gujarat",
+    "stateCode": "24",
+    "phone": "98XXXXXXXX",
+    "pan": "WGHCK4121C"
+   },
+   "buyer": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC\nVillage Mahalunge, Taluka Khed, Pune 410501",
+    "gstin": "27ZHDCT5940H1Z4",
+    "state": "Maharashtra",
+    "stateCode": "27"
+   },
+   "number": "KP/26-27/1244",
+   "date": "22/12/2026",
+   "copy": "Original for recipient",
+   "paymentTerms": "45 days",
+   "placeOfSupply": "Maharashtra (27)",
+   "tax": "inter",
+   "poRef": "TD/PO/2026-27/0968",
+   "poDate": "04/12/2026",
+   "lines": [
+    {
+     "desc": "VCI bags 400 × 600 mm, printed with your part codes, to your drawing TD-PK-0412, made from our own VCI film",
+     "hsn": "3923 21",
+     "qty": 30000,
+     "unit": "nos",
+     "rate": 7.3,
+     "taxable": 219000.0,
+     "gstRate": 18
+    },
+    {
+     "desc": "Stretch film roll, 500 mm, 23 micron",
+     "hsn": "3920 10",
+     "qty": 225,
+     "unit": "nos",
+     "rate": 640.0,
+     "taxable": 144000.0,
+     "gstRate": 18
+    }
+   ],
+   "total": 428340.0,
+   "bank": {
+    "name": "Narmada Valley Bank Ltd",
+    "account": "31200036654281",
+    "branch": "Vapi GIDC",
+    "ifsc": "NMVB0000377"
+   },
+   "terms": [
+    "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
+    "Subject to Vapi jurisdiction."
+   ],
+   "signFor": "Kolak Polypack Private Limited",
+   "signedBy": "P. Desai"
+  },
+  {
+   "id": "pur-p10",
+   "type": "table",
+   "style": "sheet",
+   "title": "Payment 10 · Purchases from Kolak, 2026–27",
+   "tab": "Purchases",
+   "group": "p10",
+   "kindLabel": "Client’s sheet",
+   "sheetName": "Kolak",
+   "otherSheets": [
+    "Ghanekar",
+    "Phillaur",
+    "Moshi"
+   ],
+   "formula": "=C9+B10",
+   "columns": [
+    {
+     "key": "m",
+     "label": "Month"
+    },
+    {
+     "key": "amt",
+     "label": "Purchases before GST (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cum",
+     "label": "Year to date (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "tds",
+     "label": "TDS (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "m": "Apr 2026",
+     "amt": 359000,
+     "cum": 359000,
+     "tds": 0
+    },
+    {
+     "m": "May 2026",
+     "amt": 373000,
+     "cum": 732000,
+     "tds": 0
+    },
+    {
+     "m": "Jun 2026",
+     "amt": 377000,
+     "cum": 1109000,
+     "tds": 0
+    },
+    {
+     "m": "Jul 2026",
+     "amt": 391000,
+     "cum": 1500000,
+     "tds": 0
+    },
+    {
+     "m": "Aug 2026",
+     "amt": 409000,
+     "cum": 1909000,
+     "tds": 0
+    },
+    {
+     "m": "Sep 2026",
+     "amt": 423000,
+     "cum": 2332000,
+     "tds": 0
+    },
+    {
+     "m": "Oct 2026",
+     "amt": 396000,
+     "cum": 2728000,
+     "tds": 0
+    },
+    {
+     "m": "Nov 2026",
+     "amt": 336000,
+     "cum": 3064000,
+     "tds": 0
+    },
+    {
+     "m": "Dec 2026",
+     "amt": 363000,
+     "cum": 3427000,
+     "tds": 0
+    },
+    {
+     "_class": "total",
+     "m": "Total",
+     "amt": 3427000,
+     "cum": null,
+     "tds": 0
+    }
+   ],
+   "notes": [
+    "From the purchase register: Kolak Polypack Private Limited, April–December 2026."
+   ]
+  },
+  {
+   "id": "f168",
+   "type": "table",
+   "style": "plain",
+   "title": "Form 168 extract, tax deducted at source",
+   "kindLabel": "Tax-credit statement",
+   "tab": "Form 168",
+   "icon": "receipt",
+   "heading": "Form 168 · Annual Information Statement · tax year 2026–27",
+   "subtitle": "Part B, item 1: information relating to tax deducted or collected at source (extract: April–September, the six deductors Kunal picked)",
+   "meta": [
+    {
+     "label": "PAN",
+     "value": "ZHDCT5940H"
+    },
+    {
+     "label": "Name",
+     "value": "Tamhini Drivetech Private Limited"
+    },
+    {
+     "label": "Viewed on",
+     "value": "18-01-2027"
+    }
+   ],
+   "columns": [
+    {
+     "key": "d",
+     "label": "Deductor"
+    },
+    {
+     "key": "q",
+     "label": "Quarter"
+    },
+    {
+     "key": "tds",
+     "label": "Tax deducted (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "amt",
+     "label": "Paid or credited (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "s",
+     "label": "Section 393(1) entry"
+    },
+    {
+     "key": "tan",
+     "label": "TAN",
+     "mono": true
+    }
+   ],
+   "rows": [
+    {
+     "_id": "ashv-q1",
+     "d": "Ashvaratha Motors Limited",
+     "tan": "PNEA93889D",
+     "s": "8(ii)",
+     "q": "Apr–Jun 2026",
+     "amt": 51776320,
+     "tds": 51776
+    },
+    {
+     "_id": "ashv-q2",
+     "d": "Ashvaratha Motors Limited",
+     "tan": "PNEA93889D",
+     "s": "8(ii)",
+     "q": "Jul–Sep 2026",
+     "amt": 62046240,
+     "tds": 62047
+    },
+    {
+     "_id": "vayu-q1",
+     "d": "Vayuvega Two Wheelers Limited",
+     "tan": "PNEV94826X",
+     "s": "8(ii)",
+     "q": "Apr–Jun 2026",
+     "amt": 18656800,
+     "tds": 18656
+    },
+    {
+     "_id": "vayu-q2",
+     "d": "Vayuvega Two Wheelers Limited",
+     "tan": "PNEV94826X",
+     "s": "8(ii)",
+     "q": "Jul–Sep 2026",
+     "amt": 25852600,
+     "tds": 25853
+    },
+    {
+     "_id": "vaig-q1",
+     "d": "Vaigai Axle Systems Private Limited",
+     "tan": "CHEV90361V",
+     "s": "8(ii)",
+     "q": "Apr–Jun 2026",
+     "amt": 15873700,
+     "tds": 15874
+    },
+    {
+     "_id": "loth-q1",
+     "d": "Lothal Motors Limited",
+     "tan": "AHML98196L",
+     "s": "8(ii)",
+     "q": "Apr–Jun 2026",
+     "amt": 20048400,
+     "tds": 20048
+    },
+    {
+     "_id": "loth-q2",
+     "d": "Lothal Motors Limited",
+     "tan": "AHML98196L",
+     "s": "8(ii)",
+     "q": "Jul–Sep 2026",
+     "amt": 27373200,
+     "tds": 27373
+    },
+    {
+     "_id": "kosl-q1",
+     "d": "Kosli Driveline Private Limited",
+     "tan": "RTKK92796R",
+     "s": "8(ii)",
+     "q": "Apr–Jun 2026",
+     "amt": 13786300,
+     "tds": 13786
+    },
+    {
+     "_id": "kosl-q2",
+     "d": "Kosli Driveline Private Limited",
+     "tan": "RTKK92796R",
+     "s": "8(ii)",
+     "q": "Jul–Sep 2026",
+     "amt": 20529900,
+     "tds": 20530
+    },
+    {
+     "_id": "vind-q1",
+     "d": "Vindhya Commercial Bank Ltd, Chakan",
+     "tan": "PNEV98339H",
+     "s": "5(ii)",
+     "q": "Apr–Jun 2026",
+     "amt": 96000,
+     "tds": 9600
+    },
+    {
+     "_id": "vind-q2",
+     "d": "Vindhya Commercial Bank Ltd, Chakan",
+     "tan": "PNEV98339H",
+     "s": "5(ii)",
+     "q": "Jul–Sep 2026",
+     "amt": 101250,
+     "tds": 10125
+    },
+    {
+     "_class": "total",
+     "d": "Total",
+     "tan": "",
+     "s": "",
+     "q": "",
+     "amt": 256140710,
+     "tds": 275668
+    }
+   ],
+   "notes": [
+    "Form 168 replaced Form 26AS from tax year 2026–27; 26AS still shows the years up to 2025–26.",
+    "Copied from Form 168 as viewed on 18 January 2027: every row it shows for these six deductors, April to September.",
+    "Statements for October–December are due by 31 January 2027; none is in yet."
+   ]
+  },
+  {
+   "id": "tdsr-reg",
+   "type": "table",
+   "style": "sheet",
+   "title": "Pallavi’s TDS receivable register, Apr–Sep",
+   "kindLabel": "Client’s sheet",
+   "tab": "Pallavi’s register",
+   "sheetName": "TDS receivable",
+   "otherSheets": [
+    "Oct–Dec",
+    "Certificates"
+   ],
+   "formula": "=SUM(B2:C2)",
+   "freeze": true,
+   "columns": [
+    {
+     "key": "d",
+     "label": "Deductor"
+    },
+    {
+     "key": "q1",
+     "label": "Apr–Jun (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "q2",
+     "label": "Jul–Sep (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "t",
+     "label": "Total (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "_id": "ashv",
+     "d": "Ashvaratha Motors Limited",
+     "q1": 51776,
+     "q2": 62047,
+     "t": 113823
+    },
+    {
+     "_id": "vayu",
+     "d": "Vayuvega Two Wheelers Limited",
+     "q1": 18656,
+     "q2": 25853,
+     "t": 44509
+    },
+    {
+     "_id": "vaig",
+     "d": "Vaigai Axle Systems Private Limited",
+     "q1": 15874,
+     "q2": 22811,
+     "t": 38685
+    },
+    {
+     "_id": "loth",
+     "d": "Lothal Motors Limited",
+     "q1": 20048,
+     "q2": 28093,
+     "t": 48141
+    },
+    {
+     "_id": "kosl",
+     "d": "Kosli Driveline Private Limited",
+     "q1": 13786,
+     "q2": 13396,
+     "t": 27182
+    },
+    {
+     "_id": "vind",
+     "d": "Vindhya Commercial Bank Ltd (FD interest)",
+     "q1": 9600,
+     "q2": null,
+     "t": 9600
+    },
+    {
+     "_class": "total",
+     "d": "Total",
+     "q1": 129740,
+     "q2": 152200,
+     "t": 281940
+    }
+   ],
+   "notes": [
+    "TDS receivable as booked from April to September 2026, by deductor and quarter, filtered to the six deductors Kunal picked.",
+    "Customers deduct 0.1% on what they buy from Tamhini; the bank deducts on FD interest."
+   ]
+  },
+  {
+   "id": "cert-vaigai",
+   "type": "card",
+   "style": "slip",
+   "title": "Vaigai’s TDS certificate, July–September",
+   "tab": "Certificate",
+   "kindLabel": "TDS certificate",
+   "issuer": "Vaigai Axle Systems Private Limited · Oragadam, Kancheepuram · TAN CHEV90361V",
+   "heading": "Certificate of tax deducted at source (Form No. 131)",
+   "fields": [
+    {
+     "label": "Deductee",
+     "value": "Tamhini Drivetech Private Limited"
+    },
+    {
+     "label": "PAN of the deductee",
+     "value": "ZHDCT5490H"
+    },
+    {
+     "label": "Quarter",
+     "value": "July–September 2026"
+    },
+    {
+     "label": "Section",
+     "value": "393(1) Table 8(ii), purchase of goods"
+    },
+    {
+     "label": "Amount paid or credited",
+     "value": "₹2,28,11,400"
+    },
+    {
+     "label": "Tax deducted and deposited",
+     "value": "₹22,811"
+    },
+    {
+     "label": "Last updated on",
+     "value": "12-11-2026"
+    }
+   ],
+   "annotations": [
+    {
+     "kind": "stamp",
+     "text": "RECEIVED\n16 NOV 2026",
+     "color": "violet",
+     "at": "top-right",
+     "rotate": 5
+    }
+   ]
+  },
+  {
+   "id": "fd1-advice",
+   "type": "letter",
+   "style": "letter",
+   "title": "Bank’s interest advice, FD-1, September",
+   "tab": "Bank advice",
+   "letterhead": {
+    "name": "Vindhya Commercial Bank Ltd",
+    "address": "Chakan branch (0417), Talegaon–Chakan Road, Chakan, Pune 410501 · TAN PNEV98339H"
+   },
+   "ref": "FD/0417/2026-27/INT/2291",
+   "date": "18-09-2026",
+   "to": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Plot B-47, Chakan Industrial Area Phase II, MIDC, Mahalunge, Pune 410501"
+   },
+   "subject": "Interest on fixed deposit (margin money, FD-1)",
+   "body": [
+    "Dear Customer,",
+    "We have paid the quarterly interest on your fixed deposit as below:",
+    {
+     "table": {
+      "columns": [
+       {
+        "key": "d",
+        "label": "Particulars"
+       },
+       {
+        "key": "a",
+        "label": "Amount (₹)",
+        "format": "inr"
+       }
+      ],
+      "rows": [
+       {
+        "d": "Deposit ₹60,00,000 at 6.75% a year (renewed on 18-06-2026), interest for the quarter to 18-09-2026",
+        "a": 101250
+       },
+       {
+        "d": "Less: tax deducted at source @ 10%",
+        "a": -10125,
+        "_check": false
+       },
+       {
+        "_class": "total",
+        "d": "Credited to your cash credit account on 18-09-2026",
+        "a": 91125
+       }
+      ]
+     }
+    },
+    "This is a computer-generated advice and needs no signature."
+   ],
+   "sign": {
+    "hand": false,
+    "closing": "Chakan branch"
+   }
+  },
+  {
+   "id": "led-fdint",
+   "type": "table",
+   "style": "tally",
+   "title": "Ledger, interest on fixed deposits",
+   "tab": "Interest ledger",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Ledger: Interest on fixed deposits",
+   "subtitle": "Group: Indirect incomes",
+   "period": "1-Apr-2026 to 30-Sep-2026",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "vn",
+     "label": "Vch no."
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "01-04-2026",
+     "part": "Interest accrued on fixed deposits (31 March accrual reversed)",
+     "vn": "JV 0003",
+     "dr": 13677,
+     "cr": null
+    },
+    {
+     "date": "18-06-2026",
+     "part": "Cash credit – Vindhya Commercial Bank (FD-1 interest)",
+     "vn": "RV 0611",
+     "dr": null,
+     "cr": 86400
+    },
+    {
+     "date": "18-06-2026",
+     "part": "TDS receivable – 2026–27 (FD-1 interest)",
+     "vn": "RV 0611",
+     "dr": null,
+     "cr": 9600
+    },
+    {
+     "date": "18-09-2026",
+     "part": "Cash credit – Vindhya Commercial Bank (FD-1 interest)",
+     "vn": "RV 0944",
+     "dr": null,
+     "cr": 91125
+    },
+    {
+     "_class": "total",
+     "date": "",
+     "part": "Total",
+     "vn": "",
+     "dr": 13677,
+     "cr": 187125
+    }
+   ],
+   "notes": [
+    "FD-2 was opened on 12-09-2026; its first interest falls in December."
+   ]
+  },
+  {
+   "id": "led-kosli",
+   "type": "table",
+   "style": "tally",
+   "title": "Ledger, TDS receivable (Kosli entries)",
+   "tab": "Kosli entries",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Ledger: TDS receivable – 2026–27",
+   "subtitle": "Filter: Kosli Driveline Private Limited",
+   "period": "1-Apr-2026 to 31-Dec-2026",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "vn",
+     "label": "Vch no."
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "30-04-2026",
+     "part": "Kosli Driveline Private Limited (TDS on Apr invoices)",
+     "vn": "JV 0412",
+     "dr": 1024,
+     "cr": null
+    },
+    {
+     "date": "31-05-2026",
+     "part": "Kosli Driveline Private Limited (TDS on May invoices)",
+     "vn": "JV 0688",
+     "dr": 6341,
+     "cr": null
+    },
+    {
+     "date": "30-06-2026",
+     "part": "Kosli Driveline Private Limited (TDS on Jun invoices)",
+     "vn": "JV 0957",
+     "dr": 6421,
+     "cr": null
+    },
+    {
+     "date": "31-07-2026",
+     "part": "Kosli Driveline Private Limited (TDS on Jul invoices)",
+     "vn": "JV 1240",
+     "dr": 6579,
+     "cr": null
+    },
+    {
+     "date": "31-08-2026",
+     "part": "Kosli Driveline Private Limited (TDS on Aug invoices)",
+     "vn": "JV 1611",
+     "dr": 6817,
+     "cr": null
+    },
+    {
+     "date": "14-10-2026",
+     "part": "Kosli Driveline Private Limited (TDS of 30-09-2026 on Sep invoices; advice came with their payment)",
+     "vn": "JV 1932",
+     "dr": 7134,
+     "cr": null
+    },
+    {
+     "date": "31-10-2026",
+     "part": "Kosli Driveline Private Limited (TDS on Oct invoices)",
+     "vn": "JV 2121",
+     "dr": 7292,
+     "cr": null
+    },
+    {
+     "date": "30-11-2026",
+     "part": "Kosli Driveline Private Limited (TDS on Nov invoices)",
+     "vn": "JV 2204",
+     "dr": 5866,
+     "cr": null
+    },
+    {
+     "date": "31-12-2026",
+     "part": "Kosli Driveline Private Limited (TDS on Dec invoices)",
+     "vn": "JV 2339",
+     "dr": 6024,
+     "cr": null
+    },
+    {
+     "_class": "total",
+     "date": "",
+     "part": "Total",
+     "vn": "",
+     "dr": 53498,
+     "cr": 0
+    }
+   ],
+   "notes": [
+    "Tamhini books each customer’s TDS from the customer’s monthly advice."
+   ]
+  },
+  {
+   "id": "led-lothal",
+   "type": "table",
+   "style": "tally",
+   "title": "Ledger, TDS receivable (Lothal entries)",
+   "tab": "Lothal entries",
+   "company": {
+    "name": "Tamhini Drivetech Private Limited",
+    "address": "Chakan, Pune · books for 2026–27"
+   },
+   "ledger": "Ledger: TDS receivable – 2026–27",
+   "subtitle": "Filter: Lothal Motors Limited",
+   "period": "1-Apr-2026 to 30-Sep-2026",
+   "columns": [
+    {
+     "key": "date",
+     "label": "Date"
+    },
+    {
+     "key": "part",
+     "label": "Particulars"
+    },
+    {
+     "key": "vn",
+     "label": "Vch no."
+    },
+    {
+     "key": "dr",
+     "label": "Debit (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "cr",
+     "label": "Credit (₹)",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "date": "30-04-2026",
+     "part": "Lothal Motors Limited (TDS on Apr invoices)",
+     "vn": "JV 0409",
+     "dr": 3032,
+     "cr": null
+    },
+    {
+     "date": "31-05-2026",
+     "part": "Lothal Motors Limited (TDS on May invoices)",
+     "vn": "JV 0684",
+     "dr": 8455,
+     "cr": null
+    },
+    {
+     "date": "30-06-2026",
+     "part": "Lothal Motors Limited (TDS on Jun invoices)",
+     "vn": "JV 0953",
+     "dr": 8561,
+     "cr": null
+    },
+    {
+     "date": "31-07-2026",
+     "part": "Lothal Motors Limited (TDS on Jul invoices)",
+     "vn": "JV 1236",
+     "dr": 8772,
+     "cr": null
+    },
+    {
+     "date": "31-08-2026",
+     "part": "Lothal Motors Limited (TDS on Aug invoices)",
+     "vn": "JV 1607",
+     "dr": 9809,
+     "cr": null
+    },
+    {
+     "date": "30-09-2026",
+     "part": "Lothal Motors Limited (TDS on Sep invoices)",
+     "vn": "JV 1884",
+     "dr": 9512,
+     "cr": null
+    },
+    {
+     "_class": "total",
+     "date": "",
+     "part": "Total",
+     "vn": "",
+     "dr": 48141,
+     "cr": 0
+    }
+   ],
+   "notes": [
+    "Tamhini books each customer’s TDS from the customer’s monthly advice."
+   ]
+  },
+  {
+   "id": "mail-lothal",
+   "type": "letter",
+   "style": "email",
+   "title": "Mail from Lothal Motors",
+   "tab": "Lothal’s mail",
+   "from": {
+    "name": "Hetal Vora",
+    "email": "hetal.vora@email.com"
+   },
+   "to": [
+    {
+     "name": "Pallavi Shinde",
+     "email": "pallavi.shinde@email.com"
+    }
+   ],
+   "date": "Fri, 15 Jan 2027, 4:12 pm",
+   "subject": "Re: TDS on our purchases, July–September",
+   "body": [
+    "Dear Ms Shinde,",
+    "As asked, the tax we deducted on your invoices in July–September 2026:",
+    {
+     "table": {
+      "columns": [
+       {
+        "key": "m",
+        "label": "Month"
+       },
+       {
+        "key": "a",
+        "label": "TDS (₹)",
+        "format": "inr"
+       }
+      ],
+      "rows": [
+       {
+        "m": "July 2026",
+        "a": 8772
+       },
+       {
+        "m": "August 2026",
+        "a": 9089
+       },
+       {
+        "m": "September 2026",
+        "a": 9512
+       },
+       {
+        "_class": "total",
+        "m": "Total",
+        "a": 27373
+       }
+      ]
+     }
+    },
+    "All of it was deposited and is in our statement for the quarter, filed on 28 October 2026.",
+    "Regards,"
+   ],
+   "sign": {
+    "name": "Hetal Vora",
+    "role": "Accounts Payable",
+    "for": "Lothal Motors Limited"
+   }
+  },
+  {
+   "id": "draft-140",
+   "type": "table",
+   "style": "sheet",
+   "title": "Pallavi’s draft statement, totals by section code",
+   "kindLabel": "Client’s sheet",
+   "sheetName": "Form 140 draft",
+   "otherSheets": [
+    "Deductees",
+    "Challans"
+   ],
+   "formula": "=SUMIF(Deductees!E:E,A2,Deductees!K:K)",
+   "freeze": true,
+   "columns": [
+    {
+     "key": "c",
+     "label": "Section code",
+     "mono": true
+    },
+    {
+     "key": "n",
+     "label": "Nature of payment",
+     "wrap": true
+    },
+    {
+     "key": "tds",
+     "label": "TDS (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "amt",
+     "label": "Paid or credited (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "who",
+     "label": "Payees in it",
+     "wrap": true
+    }
+   ],
+   "rows": [
+    {
+     "c": "1009",
+     "n": "Rent of land or building",
+     "who": "Senthil Kumaran",
+     "amt": 750000,
+     "tds": 75000
+    },
+    {
+     "c": "1023",
+     "n": "Contract work: individual or HUF",
+     "who": "Sakhare Surface Treatment; Chakan Annachhatra Caterers; Dnyaneshwar Kalbhor (code T, no tax)",
+     "amt": 4600620,
+     "tds": 43706
+    },
+    {
+     "c": "1024",
+     "n": "Contract work: others",
+     "who": "Jadhavwadi Manpower; Kudalwadi Heat Treaters; Mahalunge Roadlines; Talegaon Electricals; Kharadi Facility Services; Nighojkar Security",
+     "amt": 19055760,
+     "tds": 326689
+    },
+    {
+     "c": "1026",
+     "n": "Fees for technical services",
+     "who": "Baner Infosoft; Shirur Metrology Labs",
+     "amt": 299900,
+     "tds": 5998
+    },
+    {
+     "c": "1027",
+     "n": "Fees for professional services",
+     "who": "Six retainers; Bapat Venkatesh & Co.; Adv. Medha Paranjpe",
+     "amt": 1436300,
+     "tds": 143630
+    },
+    {
+     "c": "1031",
+     "n": "Purchase of goods",
+     "who": "Nine suppliers of steel, forgings, bearings, seals and other goods",
+     "amt": 178537600,
+     "tds": 178539
+    },
+    {
+     "_class": "total",
+     "c": "Total",
+     "n": "",
+     "who": "",
+     "amt": 204680180,
+     "tds": 773562
+    }
+   ],
+   "notes": [
+    "Draft for the October–December statement in Form 140 (Form 26Q until March 2026), before your review. Salary TDS goes in its own statement, Form 138.",
+    "Rows with no tax carry a reason code: T for a transporter with a declaration."
+   ]
+  },
+  {
+   "id": "challans",
+   "type": "table",
+   "style": "sheet",
+   "title": "TDS challans, October–December",
+   "kindLabel": "Client’s sheet",
+   "sheetName": "Challans",
+   "otherSheets": [
+    "Q3 review",
+    "Q3 all payees"
+   ],
+   "formula": "=SUM(B2:B7)",
+   "freeze": true,
+   "columns": [
+    {
+     "key": "m",
+     "label": "Deducted in"
+    },
+    {
+     "key": "tax",
+     "label": "Tax (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "int",
+     "label": "Interest (₹)",
+     "format": "inr"
+    },
+    {
+     "key": "due",
+     "label": "Due by"
+    },
+    {
+     "key": "paid",
+     "label": "Paid on"
+    },
+    {
+     "key": "who",
+     "label": "Deductees"
+    },
+    {
+     "key": "no",
+     "label": "Challan no.",
+     "mono": true
+    }
+   ],
+   "rows": [
+    {
+     "m": "Oct 2026",
+     "who": "Other than companies",
+     "no": "10280",
+     "tax": 402909,
+     "int": null,
+     "due": "07-11-2026",
+     "paid": "07-11-2026"
+    },
+    {
+     "m": "Oct 2026",
+     "who": "Companies",
+     "no": "10281",
+     "tax": 69705,
+     "int": null,
+     "due": "07-11-2026",
+     "paid": "07-11-2026"
+    },
+    {
+     "m": "Nov 2026",
+     "who": "Other than companies",
+     "no": "10317",
+     "tax": 422706,
+     "int": null,
+     "due": "07-12-2026",
+     "paid": "07-12-2026"
+    },
+    {
+     "m": "Nov 2026",
+     "who": "Companies",
+     "no": "10318",
+     "tax": 60114,
+     "int": null,
+     "due": "07-12-2026",
+     "paid": "07-12-2026"
+    },
+    {
+     "m": "Dec 2026",
+     "who": "Other than companies",
+     "no": "10354",
+     "tax": 396697,
+     "int": 5951,
+     "due": "07-01-2027",
+     "paid": "11-01-2027"
+    },
+    {
+     "m": "Dec 2026",
+     "who": "Companies",
+     "no": "10355",
+     "tax": 64541,
+     "int": 968,
+     "due": "07-01-2027",
+     "paid": "11-01-2027"
+    },
+    {
+     "_class": "total",
+     "m": "Total",
+     "who": "",
+     "no": "",
+     "tax": 1416672,
+     "int": 6919,
+     "due": "",
+     "paid": ""
+    }
+   ],
+   "notes": [
+    "TAN PNET93412D. All challans paid at Vindhya Commercial Bank, Chakan (BSR code 6390417). Companies and other deductees go on separate challans.",
+    "Tax includes salary TDS of ₹2,14,370 a month, which goes in Form 138. The rest, ₹7,73,562 for the quarter, is the draft statement’s total."
+   ]
+  }
+ ],
+ "tasks": [
+  {
+   "id": "t1",
+   "type": "items",
+   "stage": "Fieldwork",
+   "title": "Check section and rate on ten payments",
+   "prompt": "Open each payment with its bills and ledger; the rate card, the vendor master and Pallavi’s working are under Other papers. Decide which section 393 entry it falls under, the rate it needs, and whether what was deducted for October–December is fine or short.",
+   "weight": 2,
+   "noun": [
+    "payment",
+    "payments"
+   ],
+   "lockOnLeave": {
+    "ask": "Hand your ten payment calls to Kunal?",
+    "note": "You can’t change them after this.",
+    "yes": "Hand them in",
+    "done": "Handed to Kunal. You can read your calls but not change them."
+   },
+   "hints": [
+    "Decide what was paid for from the bill and the contract, not from the ledger it was booked in. Then who is paid: an individual, a firm or a company.",
+    "Check the limit: one bill, one month or the year’s total, earlier bills included. Then look for a paper that switches TDS off."
+   ],
+   "columns": [
+    {
+     "key": "label"
+    },
+    {
+     "key": "amount",
+     "format": "inr"
+    },
+    {
+     "key": "dated"
+    }
+   ],
+   "fields": [
+    {
+     "id": "verdict",
+     "kind": "choice",
+     "label": "What was deducted",
+     "gate": true,
+     "options": [
+      {
+       "id": "right",
+       "label": "Fine"
+      },
+      {
+       "id": "short",
+       "label": "Short"
+      }
+     ]
+    },
+    {
+     "id": "entry",
+     "kind": "choice",
+     "label": "Section 393 entry",
+     "weight": 2,
+     "options": [
+      {
+       "id": "contractor",
+       "label": "Contract work"
+      },
+      {
+       "id": "prof",
+       "label": "Fees for professional services"
+      },
+      {
+       "id": "tech",
+       "label": "Fees for technical services"
+      },
+      {
+       "id": "commission",
+       "label": "Commission or brokerage"
+      },
+      {
+       "id": "rentpm",
+       "label": "Rent: plant, machinery or equipment"
+      },
+      {
+       "id": "rentlb",
+       "label": "Rent: land, building or furniture"
+      },
+      {
+       "id": "goods",
+       "label": "Purchase of goods"
+      }
+     ]
+    },
+    {
+     "id": "rate",
+     "kind": "choice",
+     "label": "Rate to deduct on these payments",
+     "weight": 2,
+     "buttons": true,
+     "options": [
+      {
+       "id": "nil",
+       "label": "Nothing to deduct"
+      },
+      {
+       "id": "r01",
+       "label": "0.1%"
+      },
+      {
+       "id": "r1",
+       "label": "1%"
+      },
+      {
+       "id": "r2",
+       "label": "2%"
+      },
+      {
+       "id": "r10",
+       "label": "10%"
+      }
+     ]
+    },
+    {
+     "id": "note",
+     "kind": "text",
+     "label": "Your note for the file",
+     "placeholder": "For example: bill of 30 Nov, firm, 2% on ₹1,20,000"
+    }
+   ],
+   "docs": [
+    "rate-card",
+    "vendors",
+    "working",
+    "inv-p1",
+    "led-p1",
+    "inv-p2",
+    "led-p2",
+    "inv-p3",
+    "led-p3",
+    "inv-p4",
+    "led-p4",
+    "inv-p5",
+    "hire-p5",
+    "led-p5",
+    "bill-p6",
+    "led-p6",
+    "appt-p7",
+    "bill-p7a",
+    "bill-p7b",
+    "led-p7",
+    "inv-p8",
+    "led-p8",
+    "decl-p9",
+    "bill-p9",
+    "led-p9",
+    "inv-p10",
+    "pur-p10"
+   ],
+   "items": [
+    {
+     "id": "p1",
+     "label": "Payment 1 · Jadhavwadi Manpower Services",
+     "amount": 6699900,
+     "dated": "3 bills, Oct to Dec",
+     "docs": [
+      "inv-p1",
+      "led-p1"
+     ],
+     "prompt": "Contract labour at the Chakan plant, a bill a month.",
+     "answer": {
+      "verdict": "right",
+      "entry": "contractor",
+      "rate": "r2"
+     },
+     "note": "Payment 1: Fine. Supplying manpower to work under Tamhini’s supervisors is “work” in so many words from this year, so it is contract work. Jadhavwadi is a firm: 2% on ₹66,99,900 is ₹1,33,998, as deducted.",
+     "docRow": {
+      "vendors": "p1",
+      "working": "p1"
+     }
+    },
+    {
+     "id": "p2",
+     "label": "Payment 2 · Sakhare Surface Treatment",
+     "amount": 2930620,
+     "dated": "3 bills, Oct to Dec",
+     "docs": [
+      "inv-p2",
+      "led-p2"
+     ],
+     "prompt": "Phosphating and blackening on Tamhini’s shafts and flanges.",
+     "answer": {
+      "verdict": "right",
+      "entry": "contractor",
+      "rate": "r1"
+     },
+     "note": "Payment 2: Fine. Sakhare Surface Treatment is Mangesh Sakhare’s proprietorship, so the contractor is an individual: 1%. Job work on Tamhini’s own parts is contract work, not a purchase. ₹29,306 is right.",
+     "docRow": {
+      "vendors": "p2",
+      "working": "p2"
+     }
+    },
+    {
+     "id": "p3",
+     "label": "Payment 3 · Kudalwadi Heat Treaters",
+     "amount": 5442580,
+     "dated": "3 bills, Oct to Dec",
+     "docs": [
+      "inv-p3",
+      "led-p3"
+     ],
+     "prompt": "Heat treatment of Tamhini’s gears and shafts.",
+     "answer": {
+      "verdict": "short",
+      "entry": "contractor",
+      "rate": "r2"
+     },
+     "note": "Payment 3: Short. Kudalwadi is a partnership firm, so 2%, not 1%: ₹1,08,852 for the quarter against ₹54,426 deducted. Short ₹54,426. April to September carry the same 1%, so those quarters need correcting too.",
+     "docRow": {
+      "vendors": "p3",
+      "working": "p3"
+     }
+    },
+    {
+     "id": "p4",
+     "label": "Payment 4 · Senthil Kumaran",
+     "amount": 750000,
+     "dated": "3 bills, Oct to Dec",
+     "docs": [
+      "inv-p4",
+      "led-p4"
+     ],
+     "prompt": "Rent for the Hosur depot’s warehouse.",
+     "answer": {
+      "verdict": "right",
+      "entry": "rentlb",
+      "rate": "r10"
+     },
+     "note": "Payment 4: Fine. A warehouse is a building: 10% on ₹2,50,000 a month, far over the ₹50,000 a month limit. ₹75,000 for the quarter, worked on the rent before GST.",
+     "docRow": {
+      "vendors": "p4",
+      "working": "p4"
+     }
+    },
+    {
+     "id": "p5",
+     "label": "Payment 5 · Ambethan Power Rentals",
+     "amount": 255000,
+     "dated": "3 bills, Oct to Dec",
+     "docs": [
+      "inv-p5",
+      "hire-p5",
+      "led-p5"
+     ],
+     "prompt": "A DG set on monthly hire from October.",
+     "answer": {
+      "verdict": "short",
+      "entry": "rentpm",
+      "rate": "r2"
+     },
+     "note": "Payment 5: Short. A DG set hired without an operator is rent of machinery: 2% on ₹85,000 a month, ₹5,100 for the quarter, and nothing deducted. Booked under Power and fuel, it never reached Pallavi’s draft statement.",
+     "docRow": {
+      "vendors": "p5",
+      "working": "p5"
+     }
+    },
+    {
+     "id": "p6",
+     "label": "Payment 6 · Adv. Medha Paranjpe",
+     "amount": 60000,
+     "dated": "bill of 28 Dec",
+     "docs": [
+      "bill-p6",
+      "led-p6"
+     ],
+     "prompt": "Legal fees on the distributor agreement.",
+     "answer": {
+      "verdict": "short",
+      "entry": "prof",
+      "rate": "r10"
+     },
+     "note": "Payment 6: Short. Her August bill of ₹35,000 was under the limit on its own. December’s ₹60,000 takes the year to ₹95,000, so 10% is due on all of it: ₹9,500. ₹6,000 deducted, ₹3,500 short.",
+     "docRow": {
+      "vendors": "p6",
+      "working": "p6"
+     }
+    },
+    {
+     "id": "p7",
+     "label": "Payment 7 · Rupesh Dhakne",
+     "amount": 32500,
+     "dated": "2 bills, Oct and Dec",
+     "docs": [
+      "appt-p7",
+      "bill-p7a",
+      "bill-p7b",
+      "led-p7"
+     ],
+     "prompt": "Tamhini’s new agent for aftermarket orders in Marathwada.",
+     "answer": {
+      "verdict": "short",
+      "entry": "commission",
+      "rate": "r2"
+     },
+     "note": "Payment 7: Short. Each bill is under ₹20,000, but the year’s commission is ₹32,500. Once the total crosses the limit, 2% is due on the whole ₹32,500: ₹650. Booked under Sales promotion, so nobody looked.",
+     "docRow": {
+      "vendors": "p7",
+      "working": "p7"
+     }
+    },
+    {
+     "id": "p8",
+     "label": "Payment 8 · Mahalunge Roadlines",
+     "amount": 4981700,
+     "dated": "3 bills, Oct to Dec",
+     "docs": [
+      "inv-p8",
+      "led-p8"
+     ],
+     "prompt": "Freight outward, full-truck trips.",
+     "answer": {
+      "verdict": "right",
+      "entry": "contractor",
+      "rate": "r2"
+     },
+     "note": "Payment 8: Fine. Mahalunge owns 26 trucks and gave no declaration, so the small-transporter exemption is out either way. Carrying goods is contract work and Mahalunge is a firm, so 2%: ₹99,634 is right.",
+     "docRow": {
+      "vendors": "p8",
+      "working": "p8"
+     }
+    },
+    {
+     "id": "p9",
+     "label": "Payment 9 · Dnyaneshwar Kalbhor",
+     "amount": 230000,
+     "dated": "3 bills, Oct to Dec",
+     "docs": [
+      "decl-p9",
+      "bill-p9",
+      "led-p9"
+     ],
+     "prompt": "Truck trips from Chakan to the Hosur depot.",
+     "answer": {
+      "verdict": "right",
+      "entry": "contractor",
+      "rate": "nil"
+     },
+     "note": "Payment 9: Fine. Kalbhor owns two trucks and signed a declaration with his PAN before his first trip. No TDS on his bills, but he still goes in the statement, with code T.",
+     "docRow": {
+      "vendors": "p9",
+      "working": "p9"
+     }
+    },
+    {
+     "id": "p10",
+     "label": "Payment 10 · Kolak Polypack",
+     "amount": 1095000,
+     "dated": "purchases, Oct to Dec",
+     "docs": [
+      "inv-p10",
+      "pur-p10"
+     ],
+     "prompt": "Printed VCI bags and stretch film.",
+     "answer": {
+      "verdict": "right",
+      "entry": "goods",
+      "rate": "nil"
+     },
+     "note": "Payment 10: Fine. Bags made to Tamhini’s drawing from Kolak’s own film are a purchase, not contract work. Purchases this year are ₹34,27,000, under ₹50 lakh, so nothing is due yet. Keep an eye on it till March.",
+     "docRow": {
+      "vendors": "p10",
+      "working": "p10"
+     }
+    }
+   ]
+  },
+  {
+   "id": "t2",
+   "type": "items",
+   "stage": "Fieldwork",
+   "title": "Tie TDS receivable to the tax-credit statement",
+   "prompt": "Tamhini’s customers and its bank deduct TDS on what they pay it. Tie six deductors in Pallavi’s register to Form 168 (Form 26AS until last year) for April–September, quarter by quarter: the difference (Form 168 less the books) and what we do about it.",
+   "weight": 1,
+   "noun": [
+    "deductor",
+    "deductors"
+   ],
+   "sampleColumns": true,
+   "hints": [
+    "Compare quarter by quarter, not the half-year total. Then find whose figure is wrong before you pick: check the deductor’s certificate or mail against the ledger entries, and look for a deduction booked in a later month."
+   ],
+   "columns": [
+    {
+     "key": "label"
+    },
+    {
+     "key": "amount",
+     "format": "inr"
+    },
+    {
+     "key": "dated"
+    }
+   ],
+   "fields": [
+    {
+     "id": "action",
+     "kind": "choice",
+     "label": "Your call",
+     "gate": true,
+     "weight": 2,
+     "neutral": true,
+     "options": [
+      {
+       "id": "match",
+       "label": "Matches",
+       "short": "Matches"
+      },
+      {
+       "id": "ask",
+       "label": "Ask the deductor",
+       "short": "Ask them"
+      },
+      {
+       "id": "fix",
+       "label": "Tamhini corrects its books",
+       "short": "Fix books"
+      },
+      {
+       "id": "timing",
+       "label": "Timing only",
+       "short": "Timing"
+      }
+     ]
+    },
+    {
+     "id": "diff",
+     "kind": "number",
+     "label": "Form 168 less the books",
+     "short": "F168 − books",
+     "prefix": "₹",
+     "tolerance": 0,
+     "showIf": {
+      "action": [
+       "ask",
+       "fix",
+       "timing"
+      ]
+     }
+    },
+    {
+     "id": "note",
+     "kind": "text",
+     "label": "Your note for the file",
+     "placeholder": "For example: Q1 ties; Q2 short in Form 168 by ₹4,200"
+    }
+   ],
+   "docs": [
+    "f168",
+    "tdsr-reg",
+    "cert-vaigai",
+    "fd1-advice",
+    "led-fdint",
+    "led-kosli",
+    "mail-lothal",
+    "led-lothal"
+   ],
+   "items": [
+    {
+     "id": "r1",
+     "label": "Deductor 1 · Ashvaratha Motors",
+     "amount": 113823,
+     "dated": "booked Apr to Sep",
+     "docs": [
+      "f168",
+      "tdsr-reg"
+     ],
+     "prompt": "Tamhini’s biggest customer, a truck maker at Chakan.",
+     "answer": {
+      "action": "match"
+     },
+     "note": "Ashvaratha: ₹51,776 and ₹62,047 in both, quarter by quarter. Nothing to do.",
+     "docRow": {
+      "f168": [
+       "ashv-q1",
+       "ashv-q2"
+      ],
+      "tdsr-reg": "ashv"
+     }
+    },
+    {
+     "id": "r2",
+     "label": "Deductor 2 · Vaigai Axle Systems",
+     "amount": 38685,
+     "dated": "booked Apr to Sep",
+     "docs": [
+      "f168",
+      "tdsr-reg",
+      "cert-vaigai"
+     ],
+     "prompt": "Axle maker at Oragadam, Tamil Nadu.",
+     "answer": {
+      "action": "ask",
+      "diff": -22811
+     },
+     "note": "Vaigai: their July–September certificate quotes ZHDCT5490H for Tamhini’s ZHDCT5940H, so the ₹22,811 sits against another PAN. Write to them for a correction statement; credit follows Form 168.",
+     "docRow": {
+      "f168": [
+       "vaig-q1"
+      ],
+      "tdsr-reg": "vaig"
+     }
+    },
+    {
+     "id": "r3",
+     "label": "Deductor 3 · Vindhya Commercial Bank",
+     "amount": 9600,
+     "dated": "booked Apr to Sep",
+     "docs": [
+      "f168",
+      "tdsr-reg",
+      "fd1-advice",
+      "led-fdint"
+     ],
+     "prompt": "TDS on FD interest.",
+     "answer": {
+      "action": "fix",
+      "diff": 10125
+     },
+     "note": "Vindhya: September’s interest was booked at the ₹91,125 that reached the account. Interest is ₹1,01,250, and the ₹10,125 TDS is Tamhini’s to claim. Correct the books: gross up the interest, debit TDS receivable.",
+     "docRow": {
+      "f168": [
+       "vind-q1",
+       "vind-q2"
+      ],
+      "tdsr-reg": "vind"
+     }
+    },
+    {
+     "id": "r4",
+     "label": "Deductor 4 · Kosli Driveline",
+     "amount": 27182,
+     "dated": "booked Apr to Sep",
+     "docs": [
+      "f168",
+      "tdsr-reg",
+      "led-kosli"
+     ],
+     "prompt": "Driveline assembler at IMT Manesar, Haryana.",
+     "answer": {
+      "action": "timing",
+      "diff": 7134
+     },
+     "note": "Kosli: they deducted ₹7,134 on 30 September, and Pallavi booked it on 14 October, when the advice came with their payment. It is in the books already. Timing; no entry.",
+     "docRow": {
+      "f168": [
+       "kosl-q1",
+       "kosl-q2"
+      ],
+      "tdsr-reg": "kosl"
+     }
+    },
+    {
+     "id": "r5",
+     "label": "Deductor 5 · Vayuvega Two Wheelers",
+     "amount": 44509,
+     "dated": "booked Apr to Sep",
+     "docs": [
+      "f168",
+      "tdsr-reg"
+     ],
+     "prompt": "Two-wheeler maker in Chhatrapati Sambhajinagar.",
+     "answer": {
+      "action": "match"
+     },
+     "note": "Vayuvega: ₹18,656 and ₹25,853 in both, quarter by quarter. Nothing to do.",
+     "docRow": {
+      "f168": [
+       "vayu-q1",
+       "vayu-q2"
+      ],
+      "tdsr-reg": "vayu"
+     }
+    },
+    {
+     "id": "r6",
+     "label": "Deductor 6 · Lothal Motors",
+     "amount": 48141,
+     "dated": "booked Apr to Sep",
+     "docs": [
+      "f168",
+      "tdsr-reg",
+      "mail-lothal",
+      "led-lothal"
+     ],
+     "prompt": "Three-wheeler maker at Sanand, Gujarat.",
+     "answer": {
+      "action": "fix",
+      "diff": -720
+     },
+     "note": "Lothal: their mail and Form 168 both say ₹27,373 for July–September; Pallavi’s register says ₹28,093. The August entry reads 9,809 for their 9,089: two digits swapped, which is why ₹720 divides by 9. Correct the books.",
+     "docRow": {
+      "f168": [
+       "loth-q1",
+       "loth-q2"
+      ],
+      "tdsr-reg": "loth"
+     }
+    }
+   ]
+  },
+  {
+   "id": "t3",
+   "type": "worksheet",
+   "stage": "Review",
+   "title": "Build the statement summary",
+   "prompt": "Pallavi’s draft totals by section code are below. Enter the TDS each code should carry once your findings are in, the quarter’s new total, and the short TDS for a fresh challan before the statement is filed (its interest goes on top).",
+   "weight": 1,
+   "noun": [
+    "figure",
+    "figures"
+   ],
+   "hints": [
+    "Start from the draft and add only what your findings change: a short adds to the code it belongs to, even a code the draft does not have yet."
+   ],
+   "columns": [
+    {
+     "key": "code",
+     "label": "Section code"
+    },
+    {
+     "key": "draft",
+     "label": "Draft TDS",
+     "format": "inr"
+    },
+    {
+     "key": "after",
+     "label": "After your review",
+     "format": "inr"
+    }
+   ],
+   "rows": [
+    {
+     "id": "r1006",
+     "cells": {
+      "code": "1006 · Commission or brokerage",
+      "draft": 0,
+      "after": {
+       "input": true,
+       "answer": 650,
+       "tolerance": 2,
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "r1008",
+     "cells": {
+      "code": "1008 · Rent of machinery or equipment",
+      "draft": 0,
+      "after": {
+       "input": true,
+       "answer": 5100,
+       "tolerance": 2,
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "r1009",
+     "cells": {
+      "code": "1009 · Rent of land or building",
+      "draft": 75000,
+      "after": {
+       "input": true,
+       "answer": 75000,
+       "tolerance": 2,
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "r1023",
+     "cells": {
+      "code": "1023 · Contract work: individual or HUF",
+      "draft": 43706,
+      "after": {
+       "input": true,
+       "answer": 43706,
+       "tolerance": 2,
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "r1024",
+     "cells": {
+      "code": "1024 · Contract work: others",
+      "draft": 326689,
+      "after": {
+       "input": true,
+       "answer": 381115,
+       "tolerance": 2,
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "r1026",
+     "cells": {
+      "code": "1026 · Fees for technical services",
+      "draft": 5998,
+      "after": {
+       "input": true,
+       "answer": 5998,
+       "tolerance": 2,
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "r1027",
+     "cells": {
+      "code": "1027 · Fees for professional services",
+      "draft": 143630,
+      "after": {
+       "input": true,
+       "answer": 147130,
+       "tolerance": 2,
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "r1031",
+     "cells": {
+      "code": "1031 · Purchase of goods",
+      "draft": 178539,
+      "after": {
+       "input": true,
+       "answer": 178539,
+       "tolerance": 2,
+       "sign": false
+      }
+     }
+    },
+    {
+     "id": "rtot",
+     "_class": "total",
+     "cells": {
+      "code": "Total TDS for the quarter",
+      "draft": 773562,
+      "after": {
+       "input": true,
+       "answer": 837238,
+       "tolerance": 4,
+       "sign": false,
+       "follow": "{r1006.after} + {r1008.after} + {r1009.after} + {r1023.after} + {r1024.after} + {r1026.after} + {r1027.after} + {r1031.after}",
+       "noFollowIf": "draft"
+      }
+     }
+    },
+    {
+     "id": "rfresh",
+     "cells": {
+      "code": "Short TDS for a fresh challan (interest on top)",
+      "draft": "–",
+      "after": {
+       "input": true,
+       "answer": 63676,
+       "tolerance": 2,
+       "sign": false,
+       "follow": "{rtot.after} − 773562",
+       "noFollowIf": "draft"
+      }
+     }
+    }
+   ],
+   "notes": {
+    "r1006.after": "Rupesh Dhakne’s ₹32,500 at 2%: ₹650, a row Pallavi did not have.",
+    "r1008.after": "Ambethan’s DG set: 2% on ₹2,55,000 is ₹5,100, another new row.",
+    "r1009.after": "Senthil Kumaran’s rent was right; nothing changes.",
+    "r1023.after": "Sakhare was right and Kalbhor goes in with code T and no tax, so nothing changes. The caterers were not in your ten.",
+    "r1024.after": "Kudalwadi at 2% adds ₹54,426. Jadhavwadi and Mahalunge were already right.",
+    "r1026.after": "None of your ten sits here, so nothing changes.",
+    "r1027.after": "Medha Paranjpe’s December row now carries ₹9,500, 10% of the year’s ₹95,000: ₹3,500 more than drafted.",
+    "r1031.after": "Kolak stays out: under ₹50 lakh, nothing to deduct.",
+    "rtot.after": "₹7,73,562 in the draft plus the four shorts, ₹63,676.",
+    "rfresh.after": "Only the four shorts go on the new challan, interest on top: ₹54,426 + ₹5,100 + ₹3,500 + ₹650."
+   },
+   "layout": "grid",
+   "note": "Kudalwadi’s April–September bills carry the same 1%. That short is deposited with interest and those quarters get correction statements; this summary is October to December only.",
+   "docs": [
+    "draft-140",
+    "working",
+    "rate-card",
+    "led-p1",
+    "led-p2",
+    "led-p3",
+    "led-p4",
+    "led-p5",
+    "led-p6",
+    "led-p7",
+    "led-p8",
+    "led-p9",
+    "pur-p10"
+   ]
+  },
+  {
+   "id": "t4",
+   "type": "choice",
+   "stage": "Report",
+   "title": "Before the statement goes",
+   "prompt": "Three things Kunal will ask before he files on Friday: December’s challans, your short deductions and the dates.",
+   "weight": 2,
+   "noun": [
+    "question",
+    "questions"
+   ],
+   "hints": [
+    "Two different dates are at work here: when the tax had to reach the bank, and when the statement has to reach the department."
+   ],
+   "docs": [
+    "challans",
+    "rate-card"
+   ],
+   "questions": [
+    {
+     "id": "q1",
+     "text": "December’s two challans went in on 11 January. What does that mean for this statement?",
+     "multi": false,
+     "options": [
+      {
+       "id": "a",
+       "text": "They were late, so a fee of ₹200 a day runs from 7 January until the statement is filed.",
+       "why": "That fee is for filing the statement late, not for depositing late. A late deposit costs interest."
+      },
+      {
+       "id": "b",
+       "text": "They were late: interest at 1.5% a month or part, from deduction to deposit, is paid before filing.",
+       "why": "Due by 7 January. The challans carry ₹6,919 of interest; check it against the deduction dates before Friday.",
+       "correct": true
+      },
+      {
+       "id": "c",
+       "text": "They were on time: a month’s TDS can go in until the 15th of the next month, so nothing more is due.",
+       "why": "The 7th, except March, which has till 30 April. 11 January is four days late."
+      },
+      {
+       "id": "d",
+       "text": "They were late, so 30% of December’s contract and fee bills cannot be claimed as expenses in this tax year.",
+       "why": "Not when the TDS is paid long before the return is due on 31 October 2027. The cost here is interest."
+      }
+     ]
+    },
+    {
+     "id": "q2",
+     "text": "Your short deductions add up to the fresh challan in your summary. What happens to them before Friday?",
+     "multi": false,
+     "options": [
+      {
+       "id": "a",
+       "text": "We file as drafted, and Tamhini pays the shorts when the department’s notice of the default lists them.",
+       "why": "Filing a statement you know is short invites a default notice and more interest. Fix it before it goes."
+      },
+      {
+       "id": "b",
+       "text": "Tamhini recovers them from the same vendors’ next bills and shows them in the January–March statement.",
+       "why": "Recovering from the next bills is fine between Tamhini and the vendors. The tax itself is due now, in this quarter."
+      },
+      {
+       "id": "c",
+       "text": "Tamhini deposits them now on a fresh challan with interest, so each payee’s row shows the full TDS.",
+       "why": "Interest on a short deduction is paid before the statement goes. Then every payee’s row is right, and so is their credit.",
+       "correct": true
+      },
+      {
+       "id": "d",
+       "text": "Nothing now: the tax audit will report them, and 30% of those bills is disallowed in the return.",
+       "why": "Left alone, the bills with nothing deducted lose 30% in the return, and the tax audit reports every short either way. Deduct and pay the TDS this year, and nothing is disallowed."
+      }
+     ]
+    },
+    {
+     "id": "q3",
+     "text": "By when must this statement be filed, and the certificates in Form 131 (Form 16A until March 2026) issued?",
+     "multi": false,
+     "options": [
+      {
+       "id": "a",
+       "text": "By 31 January 2027; the certificates in Form 131 by 15 June 2027, after the year ends.",
+       "why": "15 June is for salary certificates, in Form 130. Other payments get Form 131 within fifteen days of the statement’s due date."
+      },
+      {
+       "id": "b",
+       "text": "By 15 February 2027; the certificates in Form 131 go out with the statement itself.",
+       "why": "The statement is due on 31 January. 15 February is the certificates’ date."
+      },
+      {
+       "id": "c",
+       "text": "By 7 February 2027, with January’s challan; the certificates in Form 131 within a month of filing.",
+       "why": "7 February is when January’s tax must be deposited. The statement is due on 31 January."
+      },
+      {
+       "id": "d",
+       "text": "By 31 January 2027; the certificates in Form 131 within fifteen days after, by 15 February 2027.",
+       "why": "Statements for October–December are due by 31 January. The fifteen days for certificates other than salary count from that due date, not from the day the statement is filed.",
+       "correct": true
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "wrap": {
+  "from": "kunal",
+  "text": "Four shorts, ₹63,676, each with its own cause: a firm taken for an individual, hire booked as power, commission booked as promotion, a limit read bill by bill. Pallavi deposits it with interest this week and I file on Friday the 29th. Vaigai’s correction and Tamhini’s two entries are yours to chase."
+ },
+ "wrapPartial": {
+  "from": "kunal",
+  "text": "Four of the ten were short, ₹63,676, and two of them hid under the wrong ledger head: hire as power, commission as promotion. The challan and Tamhini’s entries come from your figures, so the summary and the six deductors have to be right before Pallavi deposits or posts anything."
+ },
+ "wrapRetry": {
+  "from": "kunal",
+  "text": "Section follows what a payment is, not the ledger it was booked in; then the payee, then the limit. For Form 168, find whose paper is wrong, quarter by quarter. Build the summary from Pallavi’s draft plus your shorts."
+ },
+ "passNeeds": [
+  {
+   "task": "t1",
+   "min": 0.7,
+   "note": "You need more of the ten payment calls right to pass."
+  },
+  {
+   "task": "t2",
+   "min": 0.5,
+   "note": "Tie more of the six deductors to Form 168 before this passes."
+  },
+  {
+   "task": "t3",
+   "min": 0.5,
+   "note": "The statement summary needs more figures right, or following your figures, before this passes."
+  }
+ ],
+ "model": {
+  "intro": "Four payments were short by ₹63,676 in all; the other six were right, two of them with nothing to deduct. Of the six deductors, two match, two need Tamhini’s books corrected, one must correct its own statement, and one is timing.",
+  "blocks": [
+   {
+    "type": "table",
+    "columns": [
+     {
+      "key": "p",
+      "label": "Payment"
+     },
+     {
+      "key": "e",
+      "label": "Entry and rate"
+     },
+     {
+      "key": "d",
+      "label": "TDS due"
+     },
+     {
+      "key": "x",
+      "label": "Deducted"
+     },
+     {
+      "key": "s",
+      "label": "Short"
+     }
+    ],
+    "rows": [
+     {
+      "p": "1 · Jadhavwadi",
+      "e": "Contract work, firm: 2%",
+      "d": "₹1,33,998",
+      "x": "₹1,33,998",
+      "s": "–"
+     },
+     {
+      "p": "2 · Sakhare",
+      "e": "Contract work, individual: 1%",
+      "d": "₹29,306",
+      "x": "₹29,306",
+      "s": "–"
+     },
+     {
+      "p": "3 · Kudalwadi",
+      "e": "Contract work, firm: 2%",
+      "d": "₹1,08,852",
+      "x": "₹54,426",
+      "s": "₹54,426"
+     },
+     {
+      "p": "4 · Senthil Kumaran",
+      "e": "Rent, building: 10%",
+      "d": "₹75,000",
+      "x": "₹75,000",
+      "s": "–"
+     },
+     {
+      "p": "5 · Ambethan",
+      "e": "Rent, machinery: 2%",
+      "d": "₹5,100",
+      "x": "₹0",
+      "s": "₹5,100"
+     },
+     {
+      "p": "6 · Medha Paranjpe",
+      "e": "Professional fees: 10% on ₹95,000",
+      "d": "₹9,500",
+      "x": "₹6,000",
+      "s": "₹3,500"
+     },
+     {
+      "p": "7 · Rupesh Dhakne",
+      "e": "Commission: 2% on ₹32,500",
+      "d": "₹650",
+      "x": "₹0",
+      "s": "₹650"
+     },
+     {
+      "p": "8 · Mahalunge",
+      "e": "Contract work, firm: 2%",
+      "d": "₹99,634",
+      "x": "₹99,634",
+      "s": "–"
+     },
+     {
+      "p": "9 · Kalbhor",
+      "e": "Contract work: no TDS (declaration)",
+      "d": "₹0",
+      "x": "₹0",
+      "s": "–"
+     },
+     {
+      "p": "10 · Kolak",
+      "e": "Purchase of goods: under ₹50 lakh",
+      "d": "₹0",
+      "x": "₹0",
+      "s": "–"
+     },
+     {
+      "p": "Total",
+      "e": "Ten payments",
+      "d": "₹4,62,040",
+      "x": "₹3,98,364",
+      "s": "₹63,676"
+     }
+    ]
+   },
+   {
+    "type": "table",
+    "columns": [
+     {
+      "key": "d",
+      "label": "Deductor"
+     },
+     {
+      "key": "f",
+      "label": "Form 168 less the books"
+     },
+     {
+      "key": "a",
+      "label": "Action"
+     }
+    ],
+    "rows": [
+     {
+      "d": "Ashvaratha",
+      "f": "₹0",
+      "a": "Matches"
+     },
+     {
+      "d": "Vaigai",
+      "f": "−₹22,811",
+      "a": "Ask Vaigai to correct Tamhini’s PAN in its July–September statement"
+     },
+     {
+      "d": "Vindhya",
+      "f": "+₹10,125",
+      "a": "Book the TDS and gross up September’s interest to ₹1,01,250"
+     },
+     {
+      "d": "Kosli",
+      "f": "+₹7,134",
+      "a": "Timing: booked on 14 October"
+     },
+     {
+      "d": "Vayuvega",
+      "f": "₹0",
+      "a": "Matches"
+     },
+     {
+      "d": "Lothal",
+      "f": "−₹720",
+      "a": "Correct the August entry from 9,809 to 9,089"
+     }
+    ]
+   },
+   {
+    "type": "text",
+    "text": "Before Friday: ₹63,676 goes on a fresh challan with interest, and the four payees’ rows show the full TDS. December’s challans were four days late, and their ₹6,919 of interest went with them. Kudalwadi’s April–September short is deposited too, with interest, and those quarters get correction statements."
+   },
+   {
+    "type": "note",
+    "from": "kunal",
+    "text": "Two of the three new payees in your ten, Ambethan and Rupesh, never reached the draft. Start each quarter with the vendor master’s new names, and test the old rates too: Kudalwadi’s 1% has run since April."
+   }
+  ]
+ },
+ "principles": [
+  "Classify the payment from the bill and the contract, then the payee, then the limit: one bill, one month or the year’s total.",
+  "Credit follows Form 168, so find whose paper is wrong: the deductor corrects its statement, the client corrects its books, or it is timing.",
+  "Interest on a short deduction or a late deposit is paid before the statement goes, not after a notice."
+ ],
+ "earned": {
+  "clause": "classified payments to {payees} vendors by section and rate[[, found {short} short {short|deduction|deductions}]], prepared the quarterly TDS statement summary and reconciled TDS receivable with the tax-credit statement",
+  "fallback": "checked TDS on vendor payments, prepared the quarterly TDS statement summary and reconciled TDS receivable with the tax-credit statement",
+  "counts": {
+   "payees": {
+    "kind": "items",
+    "task": "t1"
+   },
+   "short": {
+    "kind": "itemsWhere",
+    "task": "t1",
+    "field": "verdict",
+    "equals": "short",
+    "withRight": "rate"
+   }
+  }
+ },
+ "interview": [
+  {
+   "q": "What do you check before you deduct TDS on a payment?",
+   "checking": "Whether you start from what the payment is, not from habit or the ledger it was booked in.",
+   "outline": [
+    "What the payment is, from the bill and the contract, not the ledger head; then who is paid.",
+    "Then the limit: one bill, one month or the year’s total; then the rate, contractors 1% or 2%.",
+    "In the simulation I classified payments to {payees} vendors that way[[ and found {short} short {short|deduction|deductions}]]."
+   ]
+  },
+  {
+   "q": "A client’s books and the tax-credit statement show different TDS. What do you do?",
+   "checking": "Whether you explain each difference instead of forcing it, and know that credit follows Form 168.",
+   "outline": [
+    "Credit follows Form 168, so I match it deductor by deductor and quarter by quarter.",
+    "A wrong PAN or a missing statement is the deductor’s to fix; I check their certificate first.",
+    "A missed or wrong entry in the books is corrected there; a later entry is only timing."
+   ]
+  }
+ ]
+}

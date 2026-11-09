@@ -106,12 +106,14 @@
 
     /**
      * Each domain's Work Simulation as it is named on a CV and on LinkedIn ("<name> Work Simulation, MSC Articleship
-     * Program"): the names in the CV Recommender's situations.json `workSimulation` lines (a test keeps them equal).
+     * Program"): the names in the CV Recommender's situations.json `workSimulation` lines (a test keeps them equal), which
+     * are the Work Simulation page's own `cvName`s (its data/catalogue.json).
      */
     const SIM_NAME = Object.freeze({
         'statutory-audit': 'Statutory Audit', 'internal-audit': 'Internal Audit', 'direct-tax': 'Direct Tax', 'gst': 'GST',
         'bank-audit': 'Bank Audit', 'transfer-pricing': 'Transfer Pricing', 'ma-tax': 'M&A Tax', 'valuation': 'Valuation',
-        'fdd': 'FDD', 'forensic': 'Forensic', 'consulting': 'Consulting', 'accounting': 'Accounting', 'ib-er': 'IB & ER'
+        'fdd': 'Financial Due Diligence', 'forensic': 'Forensic', 'consulting': 'Consulting',
+        'accounting': 'Accounting and Company Law', 'ib-er': 'IB and Equity Research'
     });
 
     /** A domain slug → its Work Simulation name ("Statutory Audit"); a new slug falls back to its label; '' when unknown. */

@@ -68,7 +68,13 @@
                 if (value && typeof value === 'object') return Object.values(value).some(hasValue);
                 return false;
             }
-            return hasValue(data?.personal) || hasUserEnteredData(data);
+            // A Work Simulation line added before there was any CV is not a draft: the articleship stage opens its blank
+            // starter and keeps the line (articleship-program/cv-builder/stage.js blankCv).
+            const logic = window.MSCArticleshipCvBuilder;
+            const mscLine = item => logic?.classifyCertification?.(item) === 'msc-simulation';
+            const ownWork = data && Array.isArray(data.certifications) && data.certifications.some(mscLine)
+                ? { ...data, certifications: data.certifications.filter(item => !mscLine(item)) } : data;
+            return hasValue(data?.personal) || hasUserEnteredData(ownWork);
         }
 
         // Articleship mode lists only the Articleship catalog in the template select.
@@ -378,11 +384,11 @@
             { type: 'script', src: '/scripts/articleship-gate.js?v=20261028-r2' }
         ];
         const ARTICLESHIP_FEATURE_ASSETS = [
-            { type: 'script', src: '/cv-builder/cv-articleship.js?v=20261018-r2' },
-            { type: 'script', src: '/scripts/articleship-progress.js?v=20261021-r1' },
-            { type: 'script', src: '/scripts/articleship-cv-builder.js?v=20261021-r1' },
-            { type: 'style', src: '/articleship-program/cv-builder/stage.css?v=20261020-v3b' },
-            { type: 'script', src: '/articleship-program/cv-builder/stage.js?v=20261025-r1' }
+            { type: 'script', src: '/cv-builder/cv-articleship.js?v=20261110-r1' },
+            { type: 'script', src: '/scripts/articleship-progress.js?v=20261110-r1' },
+            { type: 'script', src: '/scripts/articleship-cv-builder.js?v=20261110-r1' },
+            { type: 'style', src: '/articleship-program/cv-builder/stage.css?v=20261110-r1' },
+            { type: 'script', src: '/articleship-program/cv-builder/stage.js?v=20261110-r1' }
         ];
         const loadedAssets = new Set();
         let articleshipFeaturePromise = null;
