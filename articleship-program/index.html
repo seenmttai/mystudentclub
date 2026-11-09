@@ -880,7 +880,7 @@
               <span class="register-off">25% OFF</span>
             </div>
 
-            <form id="registerForm" class="register-form" novalidate>
+            <form id="registerForm" class="register-form" method="post" action="#register" onsubmit="return false;" novalidate>
               <label class="register-field">
                 <span>Full name</span>
                 <input type="text" name="name" id="regName" autocomplete="name" maxlength="60" required
@@ -1014,7 +1014,7 @@
   <!-- Scripts -->
   <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
   <script src="app.js?v=20261003.actual1" type="module"></script>
-  <script src="register.js?v=20261109.2" defer></script>
+  <script src="register.js?v=20261109.3" defer></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', async () => {

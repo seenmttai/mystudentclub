@@ -109,7 +109,7 @@
     var phone = cleanPhone(phoneEl.value);
     var coupon = couponEl.value.trim();
 
-    if (name.replace(/[^A-Za-z]/g, '').length < 2) return markInvalid(nameEl, 'Please enter your full name.');
+    if (name.replace(/[^A-Za-z]/g, '').length < 2) return markInvalid(nameEl, 'Please enter your full name in English letters.');
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return markInvalid(emailEl, 'Please enter a valid email.');
     if (!/^[6-9]\d{9}$/.test(phone)) return markInvalid(phoneEl, 'Please enter your 10-digit WhatsApp number.');
     markInvalid(null, '');
@@ -137,7 +137,7 @@
         }
         busy(false);
         if (d.error === 'invalid_coupon') return markInvalid(couponEl, "That coupon code isn't valid.");
-        if (d.field === 'name') return markInvalid(nameEl, 'Please enter your full name.');
+        if (d.field === 'name') return markInvalid(nameEl, 'Please enter your full name in English letters.');
         if (d.field === 'email') return markInvalid(emailEl, 'Please enter a valid email.');
         if (d.field === 'phone') return markInvalid(phoneEl, 'Please enter your 10-digit WhatsApp number.');
         setStatus('Something went wrong. Please try again, or WhatsApp us at ' + HELP + '.', 'error');
