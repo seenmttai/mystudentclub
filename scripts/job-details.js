@@ -1,7 +1,7 @@
 
 import { getDaysAgo, isJobExpired } from './date-utils.js';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
-import { ARTICLESHIP_TABLE, getExclusiveKind, isExclusiveLocked, exclusiveTagLabel, renderCardNote, renderModalNote, showExclusiveLockPopup, showExclusiveAppliedPopup, fetchMyProgramRegistrations, ensureExclusiveStyles } from './exclusive-vacancy.js';
+import { ARTICLESHIP_TABLE, getExclusiveKind, isExclusiveLocked, renderCardNote, renderModalNote, showExclusiveLockPopup, showExclusiveAppliedPopup, fetchMyProgramRegistrations, ensureExclusiveStyles } from './exclusive-vacancy.js';
 
 function isSalaryDisclosed(val) {
     if (!val) return false;
@@ -276,7 +276,7 @@ function renderJob(job, tableName) {
                     <i class="fas fa-tag"></i>
                     <span>${category}</span>
                 </div>
-                ${exclusiveKind ? `<div class="job-meta-item" style="color: #b45309; font-weight: 700;"><i class="fas fa-star"></i><span>${exclusiveTagLabel(tableName)}</span></div>` : ''}
+                ${exclusiveKind ? `<div class="job-meta-item" style="color: #b45309; font-weight: 700;"><i class="fas fa-star"></i><span>Exclusive</span></div>` : ''}
             </div>
             
             <!-- Mobile Apply Buttons (visible only on mobile) -->

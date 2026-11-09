@@ -2,7 +2,7 @@ import { getDaysAgo, isJobExpired } from './date-utils.js';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 import { unlockJobDetails, getCachedUnlockedJob } from './browser-guard.js';
 import { calculateProfileCompletion as calculateSharedProfileCompletion, readCachedProfile } from './profile-completion.js';
-import { ARTICLESHIP_TABLE, getExclusiveKind, isExclusiveLocked, exclusiveTagLabel, renderCardNote, renderModalNote, renderLockScreen, showExclusiveAppliedPopup, fetchMyProgramRegistrations, applyExclusiveDemo, ensureExclusiveStyles } from './exclusive-vacancy.js';
+import { ARTICLESHIP_TABLE, getExclusiveKind, isExclusiveLocked, renderCardNote, renderModalNote, renderLockScreen, showExclusiveAppliedPopup, fetchMyProgramRegistrations, applyExclusiveDemo, ensureExclusiveStyles } from './exclusive-vacancy.js';
 
 function isSalaryDisclosed(val) {
     if (!val) return false;
@@ -534,7 +534,7 @@ function renderJobCard(job) {
         </div>
         <div class="job-card-tags">
             ${isExpired ? `<span class="job-tag tag-expired"><i class="fas fa-hourglass-end"></i> Expired</span>` : ""}
-            ${(isExclusive || exclusiveKind) ? `<span class="job-tag tag-exclusive"><i class="fas fa-star"></i> ${exclusiveTagLabel(currentTable)}</span>` : ""}
+            ${(isExclusive || exclusiveKind) ? `<span class="job-tag tag-exclusive"><i class="fas fa-star"></i> Exclusive</span>` : ""}
             ${isPopular ? `<span class="job-tag tag-popular"><i class="fas fa-fire"></i> Popular</span>` : ""}
             <span class="job-tag job-tag-location">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="11" height="11"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
