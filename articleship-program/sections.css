@@ -4225,26 +4225,6 @@ section[id] {
   border-radius: 0 10px 10px 0;
 }
 
-.register-coupon-toggle {
-  align-self: flex-start;
-  background: none;
-  border: none;
-  padding: 0;
-  color: #93c5fd;
-  font-size: 13px;
-  font-weight: 600;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-.register-coupon-field[hidden] {
-  display: none;
-}
-
-.register-coupon-field input {
-  text-transform: uppercase;
-}
-
 .register-submit-btn {
   margin-top: 4px;
 }
@@ -4282,8 +4262,7 @@ a.notify-me-footer-btn {
 
 @media (max-width: 880px) {
   .register-card .notify-card-header,
-  .register-field,
-  .register-coupon-toggle {
+  .register-field {
     text-align: left;
   }
 }
