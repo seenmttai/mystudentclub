@@ -25,6 +25,8 @@
       --bg: #f4f7fb;
     }
 
+    :root { color-scheme: light; }
+
     * { box-sizing: border-box; }
 
     body {
@@ -182,19 +184,6 @@
 
     .ref { word-break: break-all; }
 
-    @media (prefers-color-scheme: dark) {
-      :root:not([data-theme="light"]) {
-        --card: #111833;
-        --bg: #0a0f24;
-        --ink: #e5e7eb;
-        --muted: #9ca3af;
-      }
-      :root:not([data-theme="light"]) .next { background: rgba(2, 132, 199, 0.12); border-color: rgba(56, 189, 248, 0.35); }
-      :root:not([data-theme="light"]) .tip { background: rgba(245, 158, 11, 0.12); }
-      :root:not([data-theme="light"]) .tip strong { color: #fbbf24; }
-      :root:not([data-theme="light"]) .sign .hoja { color: #93c5fd; }
-      :root:not([data-theme="light"]) .meta { border-top-color: rgba(255, 255, 255, 0.08); }
-    }
   </style>
 </head>
 
