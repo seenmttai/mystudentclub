@@ -1,11 +1,11 @@
 ---
 name: msc-feature
-description: Use for any build, change, fix or ship in an MSC repo (mystudentclub, hiremsc, msc-app), including SQL on the MSC Supabase project and MSC Cloudflare Workers. Walks the flow in which Claude builds the change and gets it ready, Padam gives the go, and only then Claude makes it live.
+description: Use for any build, change, fix or ship in an MSC repo (mystudentclub, hiremsc, msc-app), including SQL on the MSC Supabase project and MSC Cloudflare Workers. Walks the flow in which Claude builds the change and gets it ready, Aniket (or Padam) gives the go for anything live, and only then it goes live.
 ---
 
 # MSC feature flow
 
-MSC's tech is Padam plus Claude. Claude builds each change and gets it ready. **Nothing goes live until Padam gives the go.** The go is the Notion Tasks card moved to **Ship it**, or Padam saying "go" or "ship it" for that change in chat. A go for one change never covers another. Every change can be read in its PR and undone in minutes.
+MSC's tech is Padam, Aniket and Claude. Claude builds each change and gets it ready. **A change that can touch the live site, app, data or a Worker goes live only after Aniket's go** (or Padam's). Claude sends it to Aniket on WhatsApp with a deadline and follows up; Aniket reviews it and ships it, or says go and Claude ships it. A change that cannot touch anything live (docs, rule files, tests, tooling, read-only checks) Claude merges itself once tests pass. A go for one change never covers another. Every change can be read in its PR and undone in minutes.
 
 Background: `AGENTS.md` at the repo root, loaded through CLAUDE.md. Its repo note gives the live branch, the test command, where the preview is, and what merging does.
 
@@ -17,9 +17,9 @@ Background: `AGENTS.md` at the repo root, loaded through CLAUDE.md. Its repo not
 4. **Pull request.** Run `git push -u origin feature/<slug>`, then `gh pr create --base <live>` with the body from `PR-template.md` in this folder. mystudentclub also has `mobile`: port the logic on `feature/<slug>-mobile` from `origin/mobile`, test it, and open its own PR.
 5. **Preview.** Open the preview at desktop and phone width and click through the change. Fix whatever is off. If the preview needs new tables or a new Worker, say so in the PR and on the card. The SQL and the Worker only go in after the go.
 6. **Review.** Run `/code-review` on the diff. Fix the real findings and say in the PR what was fixed.
-7. **Hand it to Padam and stop.** Set the Notion Tasks card to **Review**, with the PR link and the preview link. Post one comment: what it does in one line, which SQL and Workers it needs, and "Move this card to Ship it to make it live." Then stop. Don't merge, run write SQL, deploy a Worker or set a secret.
+7. **Hand it over and stop.** Nothing live touched? Merge it (step 10). Otherwise it joins Aniket's ship queue (`~/development/msc-boss`), which sends it to him with a deadline. If there is a Notion Tasks card, set it to **Review** with the PR and preview links. Then stop. Don't merge, run write SQL, deploy a Worker or set a secret before the go.
 
-**Steps 8–11 run only after Padam's go for this change.** First re-check that the PR still merges cleanly and its tests pass on the latest live branch.
+**Steps 8–11 run only after the go for this change** (Aniket's or Padam's). First re-check that the PR still merges cleanly and its tests pass on the latest live branch.
 
 8. **SQL** (if any).
    - The migration file goes on the branch, where the repo note says.
@@ -43,7 +43,7 @@ Background: `AGENTS.md` at the repo root, loaded through CLAUDE.md. Its repo not
    - Merge with `gh pr merge <n> --squash`. If that is denied, use `gh api -X PUT repos/seenmttai/<repo>/pulls/<n>/merge -f merge_method=squash`.
    - Within 10 minutes, run the main flow on the live site and check the console.
    - If it's broken, undo at once: `git revert` the squash commit and push it to the live branch, run `npx wrangler rollback`, and run the reverse SQL from the PR. Then tell Padam.
-11. **Close the loop.** Set the Notion Tasks card to Done, with the PR and the live link. Tell Padam in one line: "Live: <what> · <link>".
+11. **Close the loop.** Set the Notion Tasks card to Done, with the PR and the live link. Tell whoever gave the go in one line: "Live: <what> · <link>".
 
 ## Flag these on the card
 
@@ -57,7 +57,7 @@ When a change touches one of these, say so in the first line of the card comment
 
 ## Red flags: stop and go back to the steps
 
-- You're about to merge, run write SQL, deploy a Worker or set a secret, and the card isn't in Ship it (and Padam hasn't said go for this change in chat).
+- You're about to merge, run write SQL, deploy a Worker or set a secret, and neither Aniket nor Padam has said go for this change (and it can touch something live).
 - A test is failing and you are about to merge.
 - You haven't opened the preview.
 - You're about to run SQL with no backup folder, or SQL that drops or deletes.

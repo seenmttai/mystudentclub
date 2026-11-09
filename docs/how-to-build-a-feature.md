@@ -1,12 +1,12 @@
-# How we build and ship (Padam + Claude)
+# How we build and ship (Padam, Aniket + Claude)
 
-Since 31 Oct 2026, MSC's tech is two people: Padam and Claude. Claude builds each change, you give the go, and then Claude makes it live. `AGENTS.md` has the full rules, and `/msc-feature` walks Claude through them.
+Since 10 Nov 2026, MSC's tech is Padam, Aniket and Claude. Claude builds each change. Changes that can't touch anything live, Claude merges itself. Anything live goes to Aniket on WhatsApp with a deadline; he reviews and ships it (or says go). `AGENTS.md` has the full rules, and `/msc-feature` walks Claude through them.
 
 ## For Padam
 
 - Ask in any Claude session, or add a card to Notion Tasks with Who = Claude. One line is enough.
 - Claude builds it on a branch, tests it, checks the preview and has it reviewed. The card then moves to **Review**, with a preview link and one line on what it does.
-- Happy with it? Move the card to **Ship it**, or say "go" in chat. Nothing goes live without that.
+- Aniket gets it on WhatsApp with a deadline and ships it. You can still say "go" yourself or move the card to **Ship it**.
 - Claude then makes it live and checks the live site. You get one line back: "Live: <what> · <link>".
 - Claude flags it on the card when a change touches:
   - money
