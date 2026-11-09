@@ -28,7 +28,7 @@ export function portalFor(table, experienced) {
 
 // Extra columns each portal reads for cards and the job popup.
 export function extraSelectColumns(table) {
-    if (table === 'Articleship Jobs') return ', pay_min, pay_max, deadline, firm_size, exposure_areas, client_types';
+    if (table === 'Articleship Jobs') return ', pay_min, pay_max, deadline, firm_size, exposure_areas, client_types, transfer_accepted';
     if (table === 'Industrial Training Job Portal' || table === 'Fresher Jobs' || table === 'Semi Qualified Jobs') {
         return ', pay_min, pay_max, deadline, employer_type';
     }
@@ -395,10 +395,18 @@ export const FILTERS_BY_PORTAL = {
 
 // Firm size (Articleship) and Company Type (the rest). The www pages have their own dropdowns for
 // these; mobile.mystudentclub.com shows them through this module (options.withTypeFilters).
+// The tiers include each other: Big 6 = Big 4 + Grant Thornton + BDO; Big 10 adds RSM, Forvis Mazars,
+// Baker Tilly (ASA) and Nexdigm. Each firm is stored at its smallest tier.
+export const FIRM_TIERS = {
+    'Big 4': ['Big 4'],
+    'Big 6': ['Big 4', 'Big 6'],
+    'Big 10': ['Big 4', 'Big 6', 'Big 10']
+};
+
 const FIRM_SIZE = {
     key: 'firmSize', label: 'Firm size', kind: 'select',
     options: () => [opt('', 'Any'), opt('Big 4'), opt('Big 6'), opt('Big 10'), opt('Mid-size CA Firm'), opt('Small-size CA Firm'), opt('Other', 'Other CA firms')],
-    apply: (q, v) => q.eq('firm_size', v),
+    apply: (q, v) => (FIRM_TIERS[v] ? q.in('firm_size', FIRM_TIERS[v]) : q.eq('firm_size', v)),
     pill: v => v
 };
 

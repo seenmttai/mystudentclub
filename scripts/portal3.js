@@ -2,7 +2,7 @@ import { getDaysAgo, isJobExpired } from './date-utils.js';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 import { unlockJobDetails, getCachedUnlockedJob } from './browser-guard.js';
 import { calculateProfileCompletion as calculateSharedProfileCompletion, readCachedProfile } from './profile-completion.js';
-import { portalFor, extraSelectColumns, companyTypeFilter, applyJobFilters, describeJobFilters, withoutFilterValue, renderJobFilters, syncJobFilters, formatPayRange, formatDeadline } from './job-filters.js';
+import { portalFor, extraSelectColumns, companyTypeFilter, applyJobFilters, describeJobFilters, withoutFilterValue, renderJobFilters, syncJobFilters, formatPayRange, formatDeadline, FIRM_TIERS } from './job-filters.js';
 
 function isSalaryDisclosed(val) {
     if (!val) return false;
@@ -599,6 +599,7 @@ function renderJobCard(job) {
             <span class="job-tag tag-primary"><i class="fas fa-briefcase"></i> ${primaryDomain}</span>
             ${companyType ? `<span class="job-tag"><i class="fas fa-building"></i> ${companyType}</span>` : ""}
             ${firmType ? `<span class="job-tag"><i class="fas fa-file-alt"></i> ${firmType}</span>` : ""}
+            ${job.transfer_accepted === true ? `<span class="job-tag"><i class="fas fa-exchange-alt"></i> Transfer cases welcome</span>` : ""}
             ${industryType ? `<span class="job-tag job-tag-industry"><i class="fas fa-chart-line"></i> ${industryType}</span>` : ""}
             ${secondaryDomain ? `<span class="job-tag tag-secondary">${secondaryDomain}</span>` : ""}
         </div>
@@ -1160,6 +1161,7 @@ function showModal(job) {
             ${job['Secondary Domain'] ? `<span class="job-tag" style="background-color: #e0f2fe; color: #0369a1; border-color: #bae6fd;">Secondary: ${job['Secondary Domain']}</span>` : ''}
             ${job['Company Type'] ? `<span class="job-tag"><i class="fas fa-building" style="margin-right: 4px;"></i>${job['Company Type']}</span>` : ''}
             ${(job['Firm Type'] || (job.firm_size && job.firm_size !== 'Other' ? job.firm_size : '')) ? `<span class="job-tag"><i class="fas fa-briefcase" style="margin-right: 4px;"></i>${job['Firm Type'] || job.firm_size}</span>` : ''}
+            ${job.transfer_accepted === true ? `<span class="job-tag"><i class="fas fa-exchange-alt" style="margin-right: 4px;"></i>Transfer cases welcome</span>` : ''}
             ${formatDeadline(job) ? `<span class="job-tag tag-deadline"><i class="far fa-calendar-alt" style="margin-right: 4px;"></i>${formatDeadline(job)}</span>` : ''}
             ${job['Industry Type'] ? `<span class="job-tag"><i class="fas fa-industry" style="margin-right: 4px;"></i>${job['Industry Type']}</span>` : ''}
         </div>
@@ -1681,7 +1683,8 @@ async function fetchJobs() {
                 q = q.eq('Industry Type', state.industryType);
             }
             if (state.firmType && currentTable === "Articleship Jobs") {
-                q = useFilterColumns ? q.eq('firm_size', state.firmType) : q.eq('Firm Type', state.firmType);
+                const tierCol = useFilterColumns ? 'firm_size' : 'Firm Type';
+                q = FIRM_TIERS[state.firmType] ? q.in(tierCol, FIRM_TIERS[state.firmType]) : q.eq(tierCol, state.firmType);
             }
 
             if (useFilterColumns) {

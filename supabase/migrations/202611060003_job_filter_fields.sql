@@ -470,8 +470,11 @@ begin
     if w is not null then
       null; -- a Firm Type set by the poster wins
     elsif co ~ '\m(deloitte|ey|ernst|kpmg|pwc|pricewaterhouse|price waterhouse|s r batliboi|srbc|b s r|bsr|lovelock)\M' then w := 'Big 4';
-    elsif co ~ '\m(grant thornton|walker chandiok|bdo|mska)\M' then w := 'Big 6';
-    elsif co ~ '\m(rsm|nangia|t ?r ?chadha|mazars|forvis|baker tilly|asa|crowe|cnk|nexdigm|knav|kreston|mgi|pkf|moore|hlb|singhi|lodha|sgco|mukund m chitale|chaturvedi and shah|kirtane|shah dhandharia|sharp and tannan|khimji|sr dinodia|s r dinodia)\M' then w := 'Big 10';
+    elsif co ~ '\m(grant thornton|walker chandiok|bdo|mska|m s k a)\M' then w := 'Big 6';
+    -- Big 10 = Big 4 + Grant Thornton + BDO + RSM + Forvis Mazars + Baker Tilly (ASA) + Nexdigm (Padam's list, 16 Oct 2026).
+    elsif co ~ '\m(rsm|suresh surana|mazars|forvis|baker tilly|nexdigm)\M|\masa (and|&) associates' and co !~ '\mrsm (and|&) associates\M' then w := 'Big 10';
+    -- Well-known multi-office networks and firms: mid-size, not Big 10.
+    elsif co ~ '\m(nangia|t ?r ?chadha|crowe|cnk|knav|kreston|mgi|pkf|moore|hlb|singhi|lodha|sgco|mukund m chitale|chaturvedi (and|&) shah|kirtane|shah dhandharia|sharp (and|&) tannan|khimji|s ?r dinodia)\M' then w := 'Mid-size CA Firm';
     else
       i := null;
       for m in select regexp_matches(d, '([0-9]{1,3})\s*\+?\s*(partners|professionals|employees|members|people|staff|article assistants|articles|chartered accountants|cas)\M', 'g') loop

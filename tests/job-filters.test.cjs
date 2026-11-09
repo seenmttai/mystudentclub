@@ -129,7 +129,7 @@ test('portal wiring: filters applied, reset, fingerprinted, and a fallback when 
   assert.match(src, /state\.extra = \{\};/);
   assert.match(src, /extra: state\.extra,/);
   assert.match(src, /isMissingFilterColumnError\(error\)/);
-  assert.match(src, /q\.eq\('firm_size', state\.firmType\)/);
+  assert.match(src, /q\.in\(tierCol, FIRM_TIERS\[state\.firmType\]\) : q\.eq\(tierCol, state\.firmType\)/);
   assert.match(src, /q = q\.or\(companyTypeFilter\(state\.companyType\)\);/);
   assert.match(src, /const payLow = useFilterColumns \? 'pay_max' : 'Salary';/);
   // Semi-qualified salaries are yearly, so the presets are in LPA.

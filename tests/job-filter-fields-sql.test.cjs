@@ -110,7 +110,7 @@ test('Articleship: Inter, ITT & OC, transfer, firm size, exposure, clients, trav
   assert.equal(job.inter_requirement, 'Both groups required');
   assert.equal(job.itt_oc_required, true);
   assert.equal(job.transfer_accepted, true);
-  assert.equal(job.firm_size, 'Big 10');
+  assert.equal(job.firm_size, 'Mid-size CA Firm', 'T R Chadha is mid-size; Big 10 is the agreed list');
   assert.deepEqual(job.exposure_areas, ['Statutory Audit', 'Tax Audit', 'Direct Tax', 'GST', 'Bank Audit', 'ROC & Company Law']);
   assert.deepEqual(job.client_types, ['Listed & MNC clients', 'Banks & NBFCs', 'Startups']);
   assert.equal(job.outstation_audits, true);
@@ -130,6 +130,18 @@ test('Articleship: firm size from partner count, single group, Big 4 by name', a
   assert.equal(big4.firm_size, 'Big 4');
   const other = await insert('Articleship Jobs', { Company: 'Gupta Associates', Description: 'Articleship in Delhi.' });
   assert.equal(other.firm_size, 'Other');
+});
+
+test('Articleship: Big 6 and Big 10 follow the agreed list; look-alikes and mid-size networks stay out', async () => {
+  await freshDB();
+  const size = async (Company) => (await insert('Articleship Jobs', { Company, Description: 'Articleship.' })).firm_size;
+  for (const name of ['Walker Chandiok & Co LLP', 'Grant Thornton Bharat', 'M S K A & Associates', 'BDO India']) assert.equal(await size(name), 'Big 6', name);
+  for (const name of ['RSM India', 'Suresh Surana & Associates LLP', 'Forvis Mazars', 'ASA & Associates LLP', 'Baker Tilly ASA', 'Nexdigm']) {
+    assert.equal(await size(name), 'Big 10', name);
+  }
+  for (const name of ['Nangia & Co LLP', 'Chaturvedi & Shah LLP', 'Lodha & Co', 'PKF Sridhar & Santhanam']) assert.equal(await size(name), 'Mid-size CA Firm', name);
+  assert.notEqual(await size('RSM & Associates'), 'Big 10');
+  assert.notEqual(await size('Asa Gupta & Co'), 'Big 10');
 });
 
 test('CA Fresher: qualifying attempt window, CTC range, work type, shift, mode, company key', async () => {
@@ -246,7 +258,7 @@ test('backfill fills old rows without touching their text; anon can read the new
   assert.equal(row.firm_size, null); // posted before the trigger existed
   await db.exec(`begin; ${backfill}; commit;`);
   row = (await db.query(`select * from "Articleship Jobs"`)).rows[0];
-  assert.equal(row.firm_size, 'Big 10');
+  assert.equal(row.firm_size, 'Mid-size CA Firm');
   assert.equal(row.transfer_accepted, true);
   assert.equal(row.pay_min, 10000);
   assert.deepEqual(row.exposure_areas, ['Statutory Audit', 'GST']);
@@ -283,7 +295,13 @@ test('works alongside the vacancy duplicate guard, which runs first', async () =
   const link = 'https://www.linkedin.com/jobs/view/1234567890/';
   const first = await insert('Fresher Jobs', { Company: 'EY', posts_link: link, Description: 'Hybrid. Excel.' });
   assert.equal(first.work_mode, 'Hybrid');
-  const dup = await db.query(`insert into "Fresher Jobs"(posts_link, "Company", "Description") values ($1, 'EY', 'Hybrid') returning id`, [link]);
-  assert.equal(dup.rows.length, 0, 'duplicate skipped');
+  // The guard either skips the duplicate (older version) or rejects it with unique_violation (master since 6 Nov).
+  let dupRows = null;
+  try {
+    dupRows = (await db.query(`insert into "Fresher Jobs"(posts_link, "Company", "Description") values ($1, 'EY', 'Hybrid') returning id`, [link])).rows;
+  } catch (err) {
+    assert.match(err.message, /duplicate vacancy/);
+  }
+  if (dupRows) assert.equal(dupRows.length, 0, 'duplicate skipped');
   assert.equal((await db.query('select count(*)::int n from "Fresher Jobs"')).rows[0].n, 1);
 });
